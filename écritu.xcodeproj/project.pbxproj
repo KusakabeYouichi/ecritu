@@ -1,0 +1,590 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
+		11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */; };
+		1C452267470AD5017D0E2C4B /* KeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
+		2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
+		4295AC8BC709B3CD3FE6E133 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF3F61E6678EA62C2C94678 /* ContentView.swift */; };
+		449ECACEDBC8A2BBA1DEF8E5 /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
+		494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */; };
+		4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */; };
+		500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */; };
+		5455038D3ECF9657CA458C8E /* KeyboardKeyComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */; };
+		55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
+		62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */; };
+		62FA4BB05C06F7163B788B14 /* KeyboardModeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */; };
+		86EE26729B525F6D695B17FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1791BF31100B74EA2421EB52 /* Assets.xcassets */; };
+		8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807A57473C85475BCAA585B /* EcrituApp.swift */; };
+		8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
+		8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
+		B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105353784C776E1A40C7A8AE /* SettingsModels.swift */; };
+		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
+		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		9D922AA6621488397E003E2D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C2AEB9D58AEFFB740EDC3C3D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A294BE5B70EA20DB02DB85AD;
+			remoteInfo = KeyboardExtension;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7DB30E7B1A9A5333890CA082 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				1C452267470AD5017D0E2C4B /* KeyboardExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		105353784C776E1A40C7A8AE /* SettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModels.swift; sourceTree = "<group>"; };
+		175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaLayout.swift; sourceTree = "<group>"; };
+		1791BF31100B74EA2421EB52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeyComponents.swift; sourceTree = "<group>"; };
+		39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DakutenDuckIcon.swift; sourceTree = "<group>"; };
+		4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = KeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransitionTests.swift; sourceTree = "<group>"; };
+		4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKeyView.swift; sourceTree = "<group>"; };
+		52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSectionViews.swift; sourceTree = "<group>"; };
+		5BD446779BCC5D4386967F9A /* Ecritu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ecritu.entitlements; sourceTree = "<group>"; };
+		5DF3F61E6678EA62C2C94678 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "écrituTests.xctest"; path = "écrituTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
+		76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransition.swift; sourceTree = "<group>"; };
+		83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEmojiCatalog.swift; sourceTree = "<group>"; };
+		B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeyboardExtension.entitlements; sourceTree = "<group>"; };
+		BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
+		C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCatalog.swift; sourceTree = "<group>"; };
+		DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayerZIndex.swift; sourceTree = "<group>"; };
+		E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaMap.swift; sourceTree = "<group>"; };
+		E807A57473C85475BCAA585B /* EcrituApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituApp.swift; sourceTree = "<group>"; };
+		E9737BDAEF466B520663D3C6 /* écritu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "écritu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		3436D36A0267FBBA4D3031FE /* App */ = {
+			isa = PBXGroup;
+			children = (
+				1791BF31100B74EA2421EB52 /* Assets.xcassets */,
+				5DF3F61E6678EA62C2C94678 /* ContentView.swift */,
+				5BD446779BCC5D4386967F9A /* Ecritu.entitlements */,
+				E807A57473C85475BCAA585B /* EcrituApp.swift */,
+				105353784C776E1A40C7A8AE /* SettingsModels.swift */,
+				52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		75392B2AC57D0625BC750522 = {
+			isa = PBXGroup;
+			children = (
+				3436D36A0267FBBA4D3031FE /* App */,
+				98946037E1DE2D5BDD19AC61 /* KeyboardExtension */,
+				EA3BE570E7C2CACCE3486700 /* Tests */,
+				9D77912A8CEA17C3CCC8BD95 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		98946037E1DE2D5BDD19AC61 /* KeyboardExtension */ = {
+			isa = PBXGroup;
+			children = (
+				83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */,
+				39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */,
+				175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */,
+				E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */,
+				4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */,
+				C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */,
+				B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */,
+				31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */,
+				DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */,
+				76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */,
+				6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */,
+				BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */,
+			);
+			path = KeyboardExtension;
+			sourceTree = "<group>";
+		};
+		9D77912A8CEA17C3CCC8BD95 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				E9737BDAEF466B520663D3C6 /* écritu.app */,
+				693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */,
+				4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EA3BE570E7C2CACCE3486700 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */,
+			);
+			path = Tests;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		65E0D8750AA690D94732710E /* écritu */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */;
+			buildPhases = (
+				7033AAA35E85A2153F4A5E58 /* Sources */,
+				DBFDF8AE2497155E13CCADDE /* Resources */,
+				7DB30E7B1A9A5333890CA082 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				AACF3B7AC89B28B4445A38A9 /* PBXTargetDependency */,
+			);
+			name = "écritu";
+			packageProductDependencies = (
+			);
+			productName = "écritu";
+			productReference = E9737BDAEF466B520663D3C6 /* écritu.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7EA37834FE97D1CD01AC865B /* écrituTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 0BADED2C6382BEE57923122F /* Build configuration list for PBXNativeTarget "écrituTests" */;
+			buildPhases = (
+				6006A30D6C0072653326C6E4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "écrituTests";
+			packageProductDependencies = (
+			);
+			productName = "écrituTests";
+			productReference = 693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		A294BE5B70EA20DB02DB85AD /* KeyboardExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */;
+			buildPhases = (
+				AF6737C5790E3B38F48F08BC /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = KeyboardExtension;
+			packageProductDependencies = (
+			);
+			productName = KeyboardExtension;
+			productReference = 4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		C2AEB9D58AEFFB740EDC3C3D /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+			};
+			buildConfigurationList = 3E048A9EDCCD8A142DF6789A /* Build configuration list for PBXProject "écritu" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 75392B2AC57D0625BC750522;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 9D77912A8CEA17C3CCC8BD95 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A294BE5B70EA20DB02DB85AD /* KeyboardExtension */,
+				65E0D8750AA690D94732710E /* écritu */,
+				7EA37834FE97D1CD01AC865B /* écrituTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		DBFDF8AE2497155E13CCADDE /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				86EE26729B525F6D695B17FB /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6006A30D6C0072653326C6E4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */,
+				449ECACEDBC8A2BBA1DEF8E5 /* FlickKanaMap.swift in Sources */,
+				11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */,
+				500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7033AAA35E85A2153F4A5E58 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4295AC8BC709B3CD3FE6E133 /* ContentView.swift in Sources */,
+				8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */,
+				B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */,
+				DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		AF6737C5790E3B38F48F08BC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */,
+				8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */,
+				0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */,
+				D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */,
+				55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */,
+				8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */,
+				5455038D3ECF9657CA458C8E /* KeyboardKeyComponents.swift in Sources */,
+				494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */,
+				62FA4BB05C06F7163B788B14 /* KeyboardModeTransition.swift in Sources */,
+				62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */,
+				4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		AACF3B7AC89B28B4445A38A9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A294BE5B70EA20DB02DB85AD /* KeyboardExtension */;
+			targetProxy = 9D922AA6621488397E003E2D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		0B2DB2CFBA91F4CC5720CC81 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		8207D3BABE7D90BDB04E7F0B /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 487V53DJMW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
+				INFOPLIST_KEY_CFBundleShortVersionString = 1.0;
+				INFOPLIST_KEY_CFBundleVersion = 1;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		932A5062A432B75EA56CE8A1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.tests;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B0243247437610E848A0ED75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 487V53DJMW;
+				INFOPLIST_FILE = KeyboardExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.keyboard;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		B44EA477DE862304E91A28BB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 487V53DJMW;
+				INFOPLIST_FILE = KeyboardExtension/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.keyboard;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		BAE844527834D49816327547 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.tests;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		E2A531803A1FBE849EDD07E0 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 487V53DJMW;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
+				INFOPLIST_KEY_CFBundleShortVersionString = 1.0;
+				INFOPLIST_KEY_CFBundleVersion = 1;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu;
+				SDKROOT = iphoneos;
+				SUPPORTS_MACCATALYST = NO;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		E920298ACCA45D34A02920CC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0BADED2C6382BEE57923122F /* Build configuration list for PBXNativeTarget "écrituTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				932A5062A432B75EA56CE8A1 /* Debug */,
+				BAE844527834D49816327547 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		3E048A9EDCCD8A142DF6789A /* Build configuration list for PBXProject "écritu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E920298ACCA45D34A02920CC /* Debug */,
+				0B2DB2CFBA91F4CC5720CC81 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E2A531803A1FBE849EDD07E0 /* Debug */,
+				8207D3BABE7D90BDB04E7F0B /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B44EA477DE862304E91A28BB /* Debug */,
+				B0243247437610E848A0ED75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = C2AEB9D58AEFFB740EDC3C3D /* Project object */;
+}

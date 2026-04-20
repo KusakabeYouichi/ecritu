@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 1391 1391" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Dakuten metaphor sweat overlay">
+  <g stroke="#111111" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none" transform="translate(220 -40)">
+    <path d="M 852 96 C 904 94 946 154 942 228 C 938 292 900 347 852 357 C 817 363 793 335 794 293 C 796 230 821 160 852 96 Z" transform="rotate(-24 866 228)"/>
+    <path d="M 1006 72 C 1062 72 1109 134 1104 213 C 1099 280 1061 337 1009 349 C 970 357 942 330 943 289 C 944 222 971 146 1006 72 Z" transform="rotate(-24 1028 206)"/>
+  </g>
+  <g stroke="#111111" stroke-width="7" stroke-linecap="round" fill="none" transform="translate(220 -40)">
+    <path d="M 853 129 C 832 164 823 206 828 244" transform="rotate(-24 866 228)"/>
+    <path d="M 1008 109 C 987 143 977 186 983 225" transform="rotate(-24 1028 206)"/>
+  </g>
+</svg>

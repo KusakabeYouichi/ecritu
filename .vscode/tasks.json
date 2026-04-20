@@ -1,0 +1,79 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Open iOS Simulator",
+      "type": "shell",
+      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; PREF=\"$HOME/Library/Preferences/com.apple.iphonesimulator.plist\"; /usr/bin/plutil -insert \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\" 2>/dev/null || /usr/bin/plutil -replace \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\"; open -a Simulator --args -CurrentDeviceUDID \"$SIM_UDID\"",
+      "problemMatcher": []
+    },
+    {
+      "label": "Ensure Booted iPhone 17 Pro",
+      "type": "shell",
+      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; PREF=\"$HOME/Library/Preferences/com.apple.iphonesimulator.plist\"; /usr/bin/plutil -insert \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\" 2>/dev/null || /usr/bin/plutil -replace \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\"; xcrun simctl boot \"$SIM_UDID\" >/dev/null 2>&1 || true; xcrun simctl bootstatus \"$SIM_UDID\" -b",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Disable Hardware Keyboard in Simulator",
+      "type": "shell",
+      "command": "osascript -e 'tell application \"Simulator\" to activate' -e 'delay 0.2' -e 'tell application \"System Events\"' -e 'tell process \"Simulator\"' -e 'try' -e 'set m to menu item \"Connect Hardware Keyboard\" of menu 1 of menu item \"Keyboard\" of menu 1 of menu bar item \"I/O\" of menu bar 1' -e 'if (value of attribute \"AXMenuItemMarkChar\" of m) is not missing value then perform action \"AXPress\" of m' -e 'end try' -e 'end tell' -e 'end tell'",
+      "problemMatcher": []
+    },
+    {
+      "label": "Build ecritu (iOS Simulator)",
+      "type": "shell",
+      "command": "xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -destination \"generic/platform=iOS Simulator\" -derivedDataPath \"${workspaceFolder}/build\" build",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Install ecritu on iPhone 17 Pro",
+      "type": "shell",
+      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; APP_PATH=\"$(find \"${workspaceFolder}/build/Build/Products/Debug-iphonesimulator\" -maxdepth 1 -name '*.app' 2>/dev/null | head -n 1)\"; if [ -z \"$APP_PATH\" ]; then APP_PATH=\"$(find \"${workspaceFolder}/build/Debug-iphonesimulator\" -maxdepth 1 -name '*.app' 2>/dev/null | head -n 1)\"; fi; if [ -z \"$APP_PATH\" ]; then echo 'No .app found under build/Build/Products/Debug-iphonesimulator'; exit 1; fi; xcrun simctl install \"$SIM_UDID\" \"$APP_PATH\"",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Launch ecritu on iPhone 17 Pro",
+      "type": "shell",
+      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; xcrun simctl launch \"$SIM_UDID\" com.kusakabe.ecritu",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Run ecritu on iPhone 17 Pro",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Open iOS Simulator",
+        "Ensure Booted iPhone 17 Pro",
+        "Disable Hardware Keyboard in Simulator",
+        "Build ecritu (iOS Simulator)",
+        "Install ecritu on iPhone 17 Pro",
+        "Launch ecritu on iPhone 17 Pro"
+      ],
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "Uninstall ecritu from iPhone 17 Pro",
+      "type": "shell",
+      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; xcrun simctl uninstall \"$SIM_UDID\" com.kusakabe.ecritu",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+name: écritu
+options:
+  deploymentTarget:
+    iOS: "16.0"
+settings:
+  base:
+    SWIFT_VERSION: 5.0
+
+targets:
+  écritu:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: App
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu
+        MARKETING_VERSION: 1.0
+        CURRENT_PROJECT_VERSION: 1
+        CODE_SIGN_ENTITLEMENTS: App/Ecritu.entitlements
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_CFBundleDisplayName: écritu
+        INFOPLIST_KEY_CFBundleShortVersionString: 1.0
+        INFOPLIST_KEY_CFBundleVersion: 1
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+    dependencies:
+      - target: KeyboardExtension
+        embed: true
+
+  KeyboardExtension:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: KeyboardExtension
+        excludes:
+          - Info.plist
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu.keyboard
+        MARKETING_VERSION: 1.0
+        CURRENT_PROJECT_VERSION: 1
+        CODE_SIGN_ENTITLEMENTS: KeyboardExtension/KeyboardExtension.entitlements
+        INFOPLIST_FILE: KeyboardExtension/Info.plist
+        APPLICATION_EXTENSION_API_ONLY: YES
+        SKIP_INSTALL: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+
+  écrituTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: Tests
+      - path: KeyboardExtension/KeyboardModeTransition.swift
+      - path: KeyboardExtension/FlickKanaMap.swift
+      - path: KeyboardExtension/FlickKanaLayout.swift
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu.tests
+        GENERATE_INFOPLIST_FILE: YES
+        TARGETED_DEVICE_FAMILY: "1"
+        SUPPORTS_MACCATALYST: NO
+
+schemes:
+  écritu:
+    build:
+      targets:
+        écritu: all
+    test:
+      gatherCoverageData: false
+      targets:
+        - name: écrituTests
