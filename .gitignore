@@ -60,3 +60,31 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# Temporary files
+tmp/
+
+# macOS
+.DS_Store
+
+# Local Python tooling
+.venv/
+__pycache__/
+*.py[cod]
+
+# Xcode build outputs
+build/
+.derived-*/
+DerivedData/
+
+# Xcode user-specific state
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Logs
+*.log
