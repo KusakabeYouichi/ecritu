@@ -25,6 +25,14 @@
 		8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807A57473C85475BCAA585B /* EcrituApp.swift */; };
 		8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
+		A17C6B0C9CFD4CE5A2C1D702 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */; };
+		C17C6B0C9CFD4CE5A2C1D702 /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */; };
+		F24A3C1A9E9A4E2C9A020001 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */; };
+		F24A3C1A9E9A4E2C9A020002 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010002 /* KanaTextNormalizer.swift */; };
+		F24A3C1A9E9A4E2C9A020003 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010003 /* KanaKanjiStore.swift */; };
+		F24A3C1A9E9A4E2C9A020004 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010004 /* KanaKanjiConverter.swift */; };
+		F24A3C1A9E9A4E2C9A020005 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010005 /* KanaKanjiSeedDictionary.swift */; };
+		F24A3C1A9E9A4E2C9A020006 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010006 /* KeyboardViewController+InputHandling.swift */; };
 		B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105353784C776E1A40C7A8AE /* SettingsModels.swift */; };
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
 		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
@@ -70,6 +78,14 @@
 		6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
 		76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransition.swift; sourceTree = "<group>"; };
 		83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEmojiCatalog.swift; sourceTree = "<group>"; };
+		A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialAjoutVocabMigration.json; sourceTree = "<group>"; };
+		C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
+		F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiTypes.swift; sourceTree = "<group>"; };
+		F14A3C1A9E9A4E2C9A010002 /* KanaTextNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaTextNormalizer.swift; sourceTree = "<group>"; };
+		F14A3C1A9E9A4E2C9A010003 /* KanaKanjiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiStore.swift; sourceTree = "<group>"; };
+		F14A3C1A9E9A4E2C9A010004 /* KanaKanjiConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverter.swift; sourceTree = "<group>"; };
+		F14A3C1A9E9A4E2C9A010005 /* KanaKanjiSeedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiSeedDictionary.swift; sourceTree = "<group>"; };
+		F14A3C1A9E9A4E2C9A010006 /* KeyboardViewController+InputHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+InputHandling.swift"; sourceTree = "<group>"; };
 		B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeyboardExtension.entitlements; sourceTree = "<group>"; };
 		BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCatalog.swift; sourceTree = "<group>"; };
@@ -111,12 +127,20 @@
 				175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */,
 				E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */,
 				4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */,
+				A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */,
+				C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */,
+				F14A3C1A9E9A4E2C9A010004 /* KanaKanjiConverter.swift */,
+				F14A3C1A9E9A4E2C9A010005 /* KanaKanjiSeedDictionary.swift */,
+				F14A3C1A9E9A4E2C9A010003 /* KanaKanjiStore.swift */,
+				F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */,
+				F14A3C1A9E9A4E2C9A010002 /* KanaTextNormalizer.swift */,
 				C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */,
 				B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */,
 				31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */,
 				DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */,
 				76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */,
 				6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */,
+				F14A3C1A9E9A4E2C9A010006 /* KeyboardViewController+InputHandling.swift */,
 				BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */,
 			);
 			path = KeyboardExtension;
@@ -185,6 +209,7 @@
 			buildConfigurationList = 89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */;
 			buildPhases = (
 				AF6737C5790E3B38F48F08BC /* Sources */,
+				A17C6B0C9CFD4CE5A2C1D704 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -228,6 +253,15 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A17C6B0C9CFD4CE5A2C1D704 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A17C6B0C9CFD4CE5A2C1D702 /* InitialAjoutVocabMigration.json in Resources */,
+				C17C6B0C9CFD4CE5A2C1D702 /* InitialSupprVocabMigration.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DBFDF8AE2497155E13CCADDE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -270,11 +304,17 @@
 				0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */,
 				D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */,
 				55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */,
+				F24A3C1A9E9A4E2C9A020004 /* KanaKanjiConverter.swift in Sources */,
+				F24A3C1A9E9A4E2C9A020005 /* KanaKanjiSeedDictionary.swift in Sources */,
+				F24A3C1A9E9A4E2C9A020003 /* KanaKanjiStore.swift in Sources */,
+				F24A3C1A9E9A4E2C9A020001 /* KanaKanjiTypes.swift in Sources */,
+				F24A3C1A9E9A4E2C9A020002 /* KanaTextNormalizer.swift in Sources */,
 				8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */,
 				5455038D3ECF9657CA458C8E /* KeyboardKeyComponents.swift in Sources */,
 				494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */,
 				62FA4BB05C06F7163B788B14 /* KeyboardModeTransition.swift in Sources */,
 				62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */,
+				F24A3C1A9E9A4E2C9A020006 /* KeyboardViewController+InputHandling.swift in Sources */,
 				4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

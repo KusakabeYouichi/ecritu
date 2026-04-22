@@ -229,6 +229,7 @@ struct SpaceFlickActionKeyButton: View {
     var titleOpacity: Double = 1
     var fixedWidth: CGFloat? = nil
     var isEnabled: Bool = true
+    var accessibilityLabelText: String = "空白"
     let onSpace: () -> Void
     let onTab: () -> Void
 
@@ -315,7 +316,7 @@ struct SpaceFlickActionKeyButton: View {
                 }
         )
         .zIndex(isTouching ? KeyboardLayerZIndex.touchingKey : 0)
-        .accessibilityLabel("空白")
+        .accessibilityLabel(accessibilityLabelText)
         .accessibilityHint("上フリックでタブ")
         .frame(width: fixedWidth)
     }

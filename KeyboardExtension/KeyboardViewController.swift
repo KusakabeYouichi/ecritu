@@ -5,8 +5,27 @@ final class KeyboardViewController: UIInputViewController {
     private var hostingController: UIHostingController<KeyboardRootView>?
     private var lastRenderConfiguration: RenderConfiguration?
     private var keyboardHeightConstraint: NSLayoutConstraint?
-    private var currentInputMode: KeyboardInputMode = .kana
+    var currentInputMode: KeyboardInputMode = .kana
     private var spaceToastTrigger = 0
+    var composingRawText = ""
+    var composingReading = ""
+    var activeConversion: ActiveConversion?
+    private lazy var kanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
+    lazy var kanaKanjiConverter = KanaKanjiConverter(store: kanaKanjiStore)
+
+    struct ActiveConversion: Equatable {
+        let reading: String
+        let sourceText: String
+        let candidates: [String]
+        var selectedIndex: Int
+        var committedText: String
+    }
+
+    struct CandidatePresentation: Equatable {
+        let composingText: String
+        let candidates: [String]
+        let selectedIndex: Int?
+    }
 
     private enum SharedDefaultsKeys {
         static let appGroupID = "group.com.kusakabe.ecritu"
@@ -20,6 +39,7 @@ final class KeyboardViewController: UIInputViewController {
         static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
+        static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
     }
 
     private static let hostTopOverlap: CGFloat = 0
@@ -51,12 +71,18 @@ final class KeyboardViewController: UIInputViewController {
         let keyRepeatInitialDelay: TimeInterval
         let keyRepeatInterval: TimeInterval
         let showsNextKeyboardKey: Bool
+        let composingText: String
+        let conversionCandidates: [String]
+        let selectedConversionCandidateIndex: Int?
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureInputAssistantBar()
         setupKeyboardView()
+        kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
+            self?.refreshKeyboardStateAsync()
+        }
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -70,11 +96,13 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
+        synchronizeConversionContextIfNeeded()
         refreshKeyboardState()
     }
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
+        synchronizeConversionContextIfNeeded()
         refreshKeyboardState()
     }
 
@@ -149,7 +177,7 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
-    private func refreshKeyboardStateAsync() {
+    func refreshKeyboardStateAsync() {
         DispatchQueue.main.async { [weak self] in
             self?.refreshKeyboardState()
         }
@@ -185,14 +213,10 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        let targetView: UIView = (inputView ?? view)
-        let constraint = targetView.heightAnchor.constraint(equalToConstant: preferredKeyboardHeight())
-        constraint.priority = UILayoutPriority.required
+        let constraint = view.heightAnchor.constraint(equalToConstant: preferredKeyboardHeight())
+        constraint.priority = UILayoutPriority(999)
         constraint.isActive = true
         keyboardHeightConstraint = constraint
-
-        let initialHeight = constraint.constant
-        preferredContentSize = CGSize(width: view.bounds.width, height: initialHeight)
     }
 
     private func updateKeyboardHeightIfNeeded() {
@@ -202,23 +226,13 @@ final class KeyboardViewController: UIInputViewController {
 
         let nextHeight = preferredKeyboardHeight()
 
-        let shouldUpdateConstraint = abs(keyboardHeightConstraint.constant - nextHeight) > 0.5
-        let shouldUpdatePreferredSize = abs(preferredContentSize.height - nextHeight) > 0.5
-
-        guard shouldUpdateConstraint || shouldUpdatePreferredSize else {
+        guard abs(keyboardHeightConstraint.constant - nextHeight) > 0.5 else {
             return
         }
 
-        if shouldUpdateConstraint {
-            keyboardHeightConstraint.constant = nextHeight
-        }
-
-        if shouldUpdatePreferredSize {
-            preferredContentSize = CGSize(width: view.bounds.width, height: nextHeight)
-        }
+        keyboardHeightConstraint.constant = nextHeight
 
         view.setNeedsLayout()
-        view.superview?.setNeedsLayout()
     }
 
     private func sharedStringValue(
@@ -260,8 +274,20 @@ final class KeyboardViewController: UIInputViewController {
         return min(max(number.doubleValue, range.lowerBound), range.upperBound)
     }
 
+    private func currentKanaKanjiCandidateSourceMode(from defaults: UserDefaults?) -> KanaKanjiCandidateSourceMode {
+        let rawValue = sharedStringValue(
+            from: defaults,
+            key: SharedDefaultsKeys.kanaKanjiCandidateSourceMode,
+            fallback: KanaKanjiCandidateSourceMode.surface.rawValue
+        )
+
+        return KanaKanjiCandidateSourceMode(rawValue: rawValue) ?? .surface
+    }
+
     private func makeRenderConfiguration() -> RenderConfiguration {
         let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        let candidateSourceMode = currentKanaKanjiCandidateSourceMode(from: sharedDefaults)
+        let candidatePresentation = makeCandidatePresentation(systemCandidateMode: candidateSourceMode)
         let directionProfile = sharedEnumValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.directionProfile,
@@ -277,8 +303,18 @@ final class KeyboardViewController: UIInputViewController {
             key: SharedDefaultsKeys.kanaModifierPlacement,
             fallback: KanaModifierPlacementMode.prefix
         )
+        let postModifierContext: String?
+
+        if !composingRawText.isEmpty {
+            postModifierContext = composingRawText
+        } else if let activeConversion {
+            postModifierContext = activeConversion.committedText
+        } else {
+            postModifierContext = textDocumentProxy.documentContextBeforeInput
+        }
+
         let kanaPostModifierButtonState = FlickKanaLayout.postModifierButtonState(
-            contextBeforeInput: textDocumentProxy.documentContextBeforeInput
+            contextBeforeInput: postModifierContext
         )
         let numberLayoutMode = sharedEnumValue(
             from: sharedDefaults,
@@ -337,7 +373,10 @@ final class KeyboardViewController: UIInputViewController {
             showsFlickGuideCharacters: showsFlickGuideCharacters,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
-            showsNextKeyboardKey: needsInputModeSwitchKey
+            showsNextKeyboardKey: needsInputModeSwitchKey,
+            composingText: candidatePresentation.composingText,
+            conversionCandidates: candidatePresentation.candidates,
+            selectedConversionCandidateIndex: candidatePresentation.selectedIndex
         )
     }
 
@@ -345,26 +384,28 @@ final class KeyboardViewController: UIInputViewController {
 
         return KeyboardRootView(
             onTextInput: { [weak self] text in
-                self?.textDocumentProxy.insertText(text)
-                self?.refreshKeyboardStateAsync()
+                self?.handleTextInput(text)
             },
             onDeleteBackward: { [weak self] in
-                self?.textDocumentProxy.deleteBackward()
-                self?.refreshKeyboardStateAsync()
+                self?.handleDeleteBackward()
             },
             onSpace: { [weak self] in
-                self?.textDocumentProxy.insertText(" ")
-                self?.refreshKeyboardStateAsync()
+                self?.handleSpaceInput()
             },
             onReturn: { [weak self] in
-                self?.textDocumentProxy.insertText("\n")
-                self?.refreshKeyboardStateAsync()
+                self?.handleReturnInput()
             },
             onAdvanceKeyboard: { [weak self] in
                 self?.advanceToNextInputMode()
             },
             onApplyKanaPostModifier: { [weak self] buttonState in
                 self?.applyKanaPostModifier(buttonState) ?? false
+            },
+            onSelectConversionCandidate: { [weak self] index in
+                self?.handleConversionCandidateSelection(index)
+            },
+            onCommitComposingText: { [weak self] in
+                self?.handleCommitComposingText()
             },
             onInputModeChanged: { [weak self] mode in
                 guard let self else {
@@ -376,6 +417,12 @@ final class KeyboardViewController: UIInputViewController {
                 }
 
                 self.currentInputMode = mode
+
+                if mode != .kana {
+                    self.commitActiveConversion(learn: true)
+                    self.clearComposingState()
+                }
+
                 self.refreshKeyboardStateAsync()
             },
             showsNextKeyboardKey: configuration.showsNextKeyboardKey,
@@ -393,23 +440,17 @@ final class KeyboardViewController: UIInputViewController {
             showsFlickGuideCharacters: configuration.showsFlickGuideCharacters,
             keyRepeatInitialDelay: configuration.keyRepeatInitialDelay,
             keyRepeatInterval: configuration.keyRepeatInterval,
+            composingText: configuration.composingText,
+            conversionCandidates: configuration.conversionCandidates,
+            selectedConversionCandidateIndex: configuration.selectedConversionCandidateIndex,
             initialSpaceToastText: "écritu"
         )
     }
 
-    private func applyKanaPostModifier(_ buttonState: KanaPostModifierButtonState) -> Bool {
-        guard let contextBeforeInput = textDocumentProxy.documentContextBeforeInput,
-              let lastCharacter = contextBeforeInput.last,
-              let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
-                  from: lastCharacter,
-                  for: buttonState
-              ) else {
-            return false
-        }
-
-        textDocumentProxy.deleteBackward()
-        textDocumentProxy.insertText(String(replacedCharacter))
-        refreshKeyboardStateAsync()
-        return true
+    func currentKanaKanjiCandidateSourceModeFromSharedDefaults() -> KanaKanjiCandidateSourceMode {
+        currentKanaKanjiCandidateSourceMode(
+            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        )
     }
 }
+
