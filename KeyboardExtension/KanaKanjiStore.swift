@@ -18,7 +18,9 @@ final class KanaKanjiStore {
     private var cachedInflectionDictionary: [String: [String: String]]?
     private var cachedInitialUserDictionary: [String: [String]]?
     private var cachedUserDictionary: [String: [String]]?
+    private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
     private var cachedLearningScores: [String: Int]?
+    private var cachedLearningScoresByReading: [String: [String: Int]]?
 
     init(appGroupID: String) {
         self.appGroupID = appGroupID
@@ -178,9 +180,14 @@ final class KanaKanjiStore {
     }
 
     func suppressedCandidatesByReading() -> [String: Set<String>] {
+        if let cachedSuppressedCandidatesByReading {
+            return cachedSuppressedCandidatesByReading
+        }
+
         guard let decodedDictionary = decodedStringArrayDictionary(
             forKey: KanaKanjiStorageKeys.suppressionVocabulary
         ) else {
+            cachedSuppressedCandidatesByReading = [:]
             return [:]
         }
 
@@ -210,6 +217,7 @@ final class KanaKanjiStore {
             }
         }
 
+        cachedSuppressedCandidatesByReading = result
         return result
     }
 
@@ -244,6 +252,7 @@ final class KanaKanjiStore {
               let learningData = defaults.data(forKey: KanaKanjiStorageKeys.learningScores),
               let decoded = try? JSONDecoder().decode([String: Int].self, from: learningData) else {
             cachedLearningScores = Self.initialLearningScores
+            cachedLearningScoresByReading = nil
             return Self.initialLearningScores
         }
 
@@ -259,12 +268,23 @@ final class KanaKanjiStore {
         }
 
         cachedLearningScores = scores
+        cachedLearningScoresByReading = nil
 
         if let encoded = try? JSONEncoder().encode(scores) {
             defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
         }
 
         return scores
+    }
+
+    func learningScores(for reading: String) -> [String: Int] {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return [:]
+        }
+
+        return learningScoresByReading()[normalizedReading] ?? [:]
     }
 
     func incrementLearning(reading: String, candidate: String) {
@@ -280,6 +300,13 @@ final class KanaKanjiStore {
         let key = learningKey(reading: normalizedReading, candidate: trimmedCandidate)
         scores[key, default: 0] += 1
         cachedLearningScores = scores
+
+        if var indexedScores = cachedLearningScoresByReading {
+            var candidateScores = indexedScores[normalizedReading] ?? [:]
+            candidateScores[trimmedCandidate] = scores[key, default: 0]
+            indexedScores[normalizedReading] = candidateScores
+            cachedLearningScoresByReading = indexedScores
+        }
 
         guard let defaults,
               let encoded = try? JSONEncoder().encode(scores) else {
@@ -363,5 +390,43 @@ final class KanaKanjiStore {
 
     private func learningKey(reading: String, candidate: String) -> String {
         reading + "\t" + candidate
+    }
+
+    private func learningScoresByReading() -> [String: [String: Int]] {
+        if let cachedLearningScoresByReading {
+            return cachedLearningScoresByReading
+        }
+
+        var indexedScores: [String: [String: Int]] = [:]
+
+        for (key, score) in learningScores() {
+            guard let parsed = parseLearningKey(key) else {
+                continue
+            }
+
+            var candidateScores = indexedScores[parsed.reading] ?? [:]
+            candidateScores[parsed.candidate] = score
+            indexedScores[parsed.reading] = candidateScores
+        }
+
+        cachedLearningScoresByReading = indexedScores
+        return indexedScores
+    }
+
+    private func parseLearningKey(_ key: String) -> (reading: String, candidate: String)? {
+        guard let separatorIndex = key.firstIndex(of: "\t") else {
+            return nil
+        }
+
+        let reading = String(key[..<separatorIndex])
+        let candidateStartIndex = key.index(after: separatorIndex)
+        let candidate = String(key[candidateStartIndex...])
+
+        guard !reading.isEmpty,
+              !candidate.isEmpty else {
+            return nil
+        }
+
+        return (reading, candidate)
     }
 }
