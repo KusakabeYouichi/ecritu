@@ -9,6 +9,8 @@ struct KeyboardRootView: View {
     let onReturn: () -> Void
     let onAdvanceKeyboard: () -> Void
     let onApplyKanaPostModifier: (KanaPostModifierButtonState) -> Bool
+    let onSelectConversionCandidate: (Int) -> Void
+    let onCommitComposingText: () -> Void
     let onInputModeChanged: (KeyboardInputMode) -> Void
     let showsNextKeyboardKey: Bool
     let directionProfile: FlickDirectionProfile
@@ -25,6 +27,9 @@ struct KeyboardRootView: View {
     let showsFlickGuideCharacters: Bool
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
+    let composingText: String
+    let conversionCandidates: [String]
+    let selectedConversionCandidateIndex: Int?
     let initialSpaceToastText: String?
 
     private enum EmojiCategory: Int, CaseIterable, Identifiable {
@@ -137,7 +142,7 @@ struct KeyboardRootView: View {
 
     private let shiftDoubleTapThreshold: TimeInterval = 0.32
     private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
-    private let candidatePlaceholderHeight: CGFloat = 29
+    private let candidatePlaceholderHeight: CGFloat = 34
     private let keyboardRowSpacing: CGFloat = 6
     private let keyboardTopPadding: CGFloat = 3
     private let keyboardHorizontalPadding: CGFloat = 8
@@ -153,6 +158,54 @@ struct KeyboardRootView: View {
     private let kaomojiHorizontalPadding: CGFloat = 8
     private let kaomojiFontSize: CGFloat = 18
     private let kaomojiMinInterItemSpacingMultiplier: CGFloat = 1.2
+
+    private var showsKanaConversionCandidates: Bool {
+        inputMode == .kana && !composingText.isEmpty
+    }
+
+    private var isActiveConversion: Bool {
+        selectedConversionCandidateIndex != nil
+    }
+
+    private var conversionStateLabel: String {
+        isActiveConversion ? "変換中" : "未確定"
+    }
+
+    private var conversionStateColor: Color {
+        isActiveConversion ? accentColor : Color.orange
+    }
+
+    private var isSpaceActsAsConversionKey: Bool {
+        inputMode == .kana && !composingText.isEmpty
+    }
+
+    private var spaceKeyDisplayTitle: String {
+        if isSpaceActsAsConversionKey {
+            return "変換"
+        }
+
+        if inputMode == .kana {
+            return spaceToastText ?? ""
+        }
+
+        return ""
+    }
+
+    private var spaceKeyDisplayOpacity: Double {
+        if isSpaceActsAsConversionKey {
+            return 1
+        }
+
+        return inputMode == .kana ? spaceToastOpacity : 0
+    }
+
+    private var spaceKeyAccessibilityLabel: String {
+        isSpaceActsAsConversionKey ? "変換" : "空白"
+    }
+
+    private var canTapComposingTextToCommit: Bool {
+        conversionCandidates.isEmpty && selectedConversionCandidateIndex == nil
+    }
 
     private struct KaomojiRowLayout {
         let items: [String]
@@ -676,8 +729,8 @@ struct KeyboardRootView: View {
                     .frame(height: rowHeight)
 
                 spaceActionKeyButton(
-                    title: inputMode == .kana ? (spaceToastText ?? "") : "",
-                    titleOpacity: inputMode == .kana ? spaceToastOpacity : 0
+                    title: spaceKeyDisplayTitle,
+                    titleOpacity: spaceKeyDisplayOpacity
                 )
                     .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)
             }
@@ -1064,7 +1117,7 @@ struct KeyboardRootView: View {
         }
     }
 
-    private var emojiCategoryHeaderView: some View {
+    private var topHeaderView: some View {
         Group {
             if inputMode == .emoji {
                 Text(isKaomojiMode ? "顔文字" : selectedEmojiCategory.frenchName)
@@ -1077,6 +1130,8 @@ struct KeyboardRootView: View {
                     .padding(.top, 2)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
+            } else if showsKanaConversionCandidates {
+                kanaConversionCandidateHeaderView
             } else {
                 Color.clear
                     .allowsHitTesting(false)
@@ -1086,6 +1141,117 @@ struct KeyboardRootView: View {
         .frame(height: candidatePlaceholderHeight)
     }
 
+    private var kanaConversionCandidateHeaderView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                if !composingText.isEmpty {
+                    Text(conversionStateLabel)
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(Color.white)
+                        .lineLimit(1)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(conversionStateColor.opacity(0.95))
+                        )
+
+                    if canTapComposingTextToCommit {
+                        Button {
+                            onCommitComposingText()
+                        } label: {
+                            Text(composingText)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(keyLabelColor.opacity(0.85))
+                                .lineLimit(1)
+                                .underline(true, color: conversionStateColor.opacity(0.92))
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(Color.white.opacity(0.6))
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .stroke(
+                                            conversionStateColor.opacity(0.45),
+                                            style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("\(composingText)を確定")
+                        .accessibilityHint("変換せずに確定")
+                    } else {
+                        Text(composingText)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(keyLabelColor.opacity(0.85))
+                            .lineLimit(1)
+                            .underline(true, color: conversionStateColor.opacity(0.92))
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(Color.white.opacity(0.6))
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .stroke(
+                                        conversionStateColor.opacity(0.45),
+                                        style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                                    )
+                            )
+                    }
+                }
+
+                if conversionCandidates.isEmpty {
+                    Text("候補なし")
+                        .font(.caption)
+                        .foregroundStyle(keyLabelColor.opacity(0.6))
+                        .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(Color.white.opacity(0.45))
+                        )
+                }
+
+                ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
+                    let isSelected = selectedConversionCandidateIndex == index
+
+                    Button {
+                        onSelectConversionCandidate(index)
+                    } label: {
+                        Text(candidate)
+                            .font(.caption.weight(.semibold))
+                            .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                            .lineLimit(1)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(
+                                        isSelected
+                                            ? accentColor.opacity(0.9)
+                                            : Color.white.opacity(0.72)
+                                    )
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .stroke(Color.black.opacity(0.08), lineWidth: isSelected ? 0 : 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(candidate)
+                }
+            }
+            .padding(.horizontal, 2)
+            .padding(.vertical, 1)
+            .frame(maxHeight: .infinity, alignment: .center)
+        }
+    }
+
     var body: some View {
         ZStack {
             keyboardBackgroundGradient
@@ -1093,7 +1259,7 @@ struct KeyboardRootView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: keyboardRowSpacing) {
-            emojiCategoryHeaderView
+            topHeaderView
 
             if inputMode == .emoji {
                 if isKaomojiMode {
@@ -1390,6 +1556,7 @@ struct KeyboardRootView: View {
             title: title,
             titleOpacity: titleOpacity,
             fixedWidth: fixedWidth,
+            accessibilityLabelText: spaceKeyAccessibilityLabel,
             onSpace: onSpace,
             onTab: { onTextInput("\t") }
         )
@@ -1427,8 +1594,8 @@ struct KeyboardRootView: View {
 
     private func spaceKeyButton(fixedWidth: CGFloat?) -> some View {
         spaceActionKeyButton(
-            title: inputMode == .kana ? (spaceToastText ?? "") : "",
-            titleOpacity: inputMode == .kana ? spaceToastOpacity : 0,
+            title: spaceKeyDisplayTitle,
+            titleOpacity: spaceKeyDisplayOpacity,
             fixedWidth: fixedWidth
         )
         .frame(maxWidth: fixedWidth == nil ? .infinity : nil)
@@ -1720,6 +1887,8 @@ struct KeyboardRootView: View {
         onReturn: {},
         onAdvanceKeyboard: {},
         onApplyKanaPostModifier: { _ in false },
+        onSelectConversionCandidate: { _ in },
+        onCommitComposingText: {},
         onInputModeChanged: { _ in },
         showsNextKeyboardKey: true,
         directionProfile: .ecritu,
@@ -1736,6 +1905,9 @@ struct KeyboardRootView: View {
         showsFlickGuideCharacters: true,
         keyRepeatInitialDelay: 0.5,
         keyRepeatInterval: 0.1,
+        composingText: "かな",
+        conversionCandidates: ["仮名", "かな"],
+        selectedConversionCandidateIndex: 0,
         initialSpaceToastText: nil
     )
 }

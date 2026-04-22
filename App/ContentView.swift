@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     private enum SettingsKeys {
@@ -13,6 +14,12 @@ struct ContentView: View {
         static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
+        static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
+        static let kanaKanjiInitialUserDictionaryMigrated = "kanaKanjiInitialUserDictionaryMigrated"
+        static let kanaKanjiInitialSuppressionDictionaryMigrated = "kanaKanjiInitialSuppressionDictionaryMigrated"
+        static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
+        static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+        static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     }
 
     private enum RepeatSettings {
@@ -91,6 +98,22 @@ struct ContentView: View {
             switch self {
             case .calculette: return "calculette"
             case .telephone: return "téléphone"
+            }
+        }
+    }
+
+    private enum KanaKanjiCandidateSourceModeOption: String, CaseIterable, Identifiable {
+        case normalise
+        case surface
+        case lesDeux
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .normalise: return "normalisé"
+            case .surface: return "surface"
+            case .lesDeux: return "les deux"
             }
         }
     }
@@ -216,11 +239,37 @@ struct ContentView: View {
     )
     private var keyRepeatInterval: Double = RepeatSettings.intervalDefault
 
+    @AppStorage(
+        SettingsKeys.kanaKanjiCandidateSourceMode,
+        store: Self.sharedDefaults
+    )
+    private var kanaKanjiCandidateSourceModeRawValue: String = KanaKanjiCandidateSourceModeOption.surface.rawValue
+
+    @State private var userDictionaryEntries: [VocabularyEntry] = []
+    @State private var userDictionaryReadingInput = ""
+    @State private var userDictionaryCandidateInput = ""
+    @State private var isUserDictionaryRegistrationVisible = false
+    @State private var userDictionaryScrollIndexTitle = ""
+    @State private var isUserDictionaryScrollIndexVisible = false
+    @State private var suppressionDictionaryEntries: [VocabularyEntry] = []
+    @State private var suppressionDictionaryReadingInput = ""
+    @State private var suppressionDictionaryCandidateInput = ""
+    @State private var isSuppressionDictionaryRegistrationVisible = false
+    @State private var suppressionDictionaryScrollIndexTitle = ""
+    @State private var isSuppressionDictionaryScrollIndexVisible = false
+
     private let setupSteps: [String] = [
         "設定 > 一般 > キーボード > キーボード > 新しいキーボードを追加",
         "作成したキーボードを有効化",
         "入力画面で地球儀キーから切り替え"
     ]
+
+    private struct VocabularyEntry: Identifiable {
+        let reading: String
+        let candidate: String
+
+        var id: String { reading + "\t" + candidate }
+    }
 
     private func rawValueSelection<Option: RawRepresentable>(
         from rawValue: String,
@@ -263,6 +312,12 @@ struct ContentView: View {
         }
     }
 
+    private var kanaKanjiCandidateSourceModeSelection: Binding<KanaKanjiCandidateSourceModeOption> {
+        rawValueSelection(from: kanaKanjiCandidateSourceModeRawValue, default: .surface) {
+            kanaKanjiCandidateSourceModeRawValue = $0
+        }
+    }
+
     private var accentPaletteSelection: Binding<AccentColorOption> {
         rawValueSelection(from: accentPaletteRawValue, default: .emeraude) {
             accentPaletteRawValue = $0
@@ -295,6 +350,894 @@ struct ContentView: View {
             get: { keyRepeatInterval },
             set: { keyRepeatInterval = snappedRepeatValue($0, to: RepeatSettings.intervalDefault) }
         )
+    }
+
+    private var canAddUserDictionaryEntry: Bool {
+        !normalizedKanaReading(from: userDictionaryReadingInput).isEmpty
+            && !userDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var canAddSuppressionDictionaryEntry: Bool {
+        !normalizedKanaReading(from: suppressionDictionaryReadingInput).isEmpty
+            && !suppressionDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var userVocabularyListMaxHeight: CGFloat {
+        // Give section-index titles more vertical breathing room.
+        336
+    }
+
+    private var userVocabularyListMinHeight: CGFloat {
+        // Keep this above the custom-index top/bottom insets to avoid layout conflicts.
+        40
+    }
+
+    private var userVocabularyListRowHeight: CGFloat {
+        30
+    }
+
+    private func userVocabularyListHeight(for entryCount: Int) -> CGFloat {
+        let contentHeight = CGFloat(max(entryCount, 1)) * userVocabularyListRowHeight
+        return min(userVocabularyListMaxHeight, max(userVocabularyListMinHeight, contentHeight))
+    }
+
+    private func normalizedKanaReading(from text: String) -> String {
+        var result = ""
+
+        for character in text {
+            let source = String(character)
+            let normalized = source.applyingTransform(.hiraganaToKatakana, reverse: true) ?? source
+
+            guard normalized.count == 1,
+                  let first = normalized.first,
+                  let scalar = String(first).unicodeScalars.first else {
+                continue
+            }
+
+            if (0x3040...0x309F).contains(scalar.value) || scalar.value == 0x30FC {
+                result.append(first)
+            }
+        }
+
+        return result
+    }
+
+    private func loadDictionaryEntries(forKey key: String) -> [String: [String]] {
+        guard let defaults = Self.sharedDefaults else {
+            return [:]
+        }
+
+        if let dictionaryData = defaults.data(forKey: key),
+           let decoded = try? JSONDecoder().decode([String: [String]].self, from: dictionaryData) {
+            return decoded
+        }
+
+        guard let rawDictionary = defaults.dictionary(forKey: key) else {
+            return [:]
+        }
+
+        var decoded: [String: [String]] = [:]
+
+        for (reading, rawCandidates) in rawDictionary {
+            if let candidates = rawCandidates as? [String] {
+                decoded[reading] = candidates
+            } else if let candidates = rawCandidates as? [Any] {
+                decoded[reading] = candidates.compactMap { $0 as? String }
+            }
+        }
+
+        return decoded
+    }
+
+    private func uniqueCandidatesPreservingOrder(_ candidates: [String]) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+
+        for candidate in candidates {
+            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmed.isEmpty,
+                  seen.insert(trimmed).inserted else {
+                continue
+            }
+
+            result.append(trimmed)
+        }
+
+        return result
+    }
+
+    private func normalizedDictionaryEntries(_ dictionary: [String: [String]]) -> [String: [String]] {
+        var normalized: [String: [String]] = [:]
+
+        for (reading, candidates) in dictionary {
+            let normalizedReading = normalizedKanaReading(from: reading)
+
+            guard !normalizedReading.isEmpty else {
+                continue
+            }
+
+            let mergedCandidates = uniqueCandidatesPreservingOrder(
+                (normalized[normalizedReading] ?? []) + candidates
+            )
+
+            if !mergedCandidates.isEmpty {
+                normalized[normalizedReading] = mergedCandidates
+            }
+        }
+
+        return normalized
+    }
+
+    private func mergedDictionary(
+        preferred: [String: [String]],
+        fallback: [String: [String]]
+    ) -> [String: [String]] {
+        var merged = fallback
+
+        for (reading, preferredCandidates) in preferred {
+            let combined = uniqueCandidatesPreservingOrder(
+                preferredCandidates + (fallback[reading] ?? [])
+            )
+
+            if combined.isEmpty {
+                merged.removeValue(forKey: reading)
+            } else {
+                merged[reading] = combined
+            }
+        }
+
+        return merged
+    }
+
+    private func loadBundledInitialDictionaryEntries(filename: String) -> [String: [String]] {
+        let fileExtension = "json"
+
+        if let resourceURL = Bundle.main.url(forResource: filename, withExtension: fileExtension),
+           let data = try? Data(contentsOf: resourceURL),
+           let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) {
+            return normalizedDictionaryEntries(decoded)
+        }
+
+        if let pluginsURL = Bundle.main.builtInPlugInsURL,
+           let pluginURLs = try? FileManager.default.contentsOfDirectory(
+                at: pluginsURL,
+                includingPropertiesForKeys: nil,
+                options: [.skipsHiddenFiles]
+           ) {
+            for pluginURL in pluginURLs where pluginURL.pathExtension == "appex" {
+                let resourceURL = pluginURL.appendingPathComponent("\(filename).\(fileExtension)")
+
+                guard FileManager.default.fileExists(atPath: resourceURL.path),
+                      let data = try? Data(contentsOf: resourceURL),
+                      let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+                    continue
+                }
+
+                return normalizedDictionaryEntries(decoded)
+            }
+        }
+
+        return [:]
+    }
+
+    private func loadBundledInitialUserDictionaryEntries() -> [String: [String]] {
+        loadBundledInitialDictionaryEntries(filename: "InitialAjoutVocabMigration")
+    }
+
+    private func loadBundledInitialSuppressionDictionaryEntries() -> [String: [String]] {
+        loadBundledInitialDictionaryEntries(filename: "InitialSupprVocabMigration")
+    }
+
+    private func migrateInitialUserDictionaryIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+              !defaults.bool(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated) else {
+            return
+        }
+
+        let initialDictionary = loadBundledInitialUserDictionaryEntries()
+
+        guard !initialDictionary.isEmpty else {
+            return
+        }
+
+        let currentDictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        )
+        let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
+        saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
+    }
+
+    private func migrateInitialSuppressionDictionaryIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+              !defaults.bool(forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated) else {
+            return
+        }
+
+        let initialDictionary = loadBundledInitialSuppressionDictionaryEntries()
+
+        guard !initialDictionary.isEmpty else {
+            return
+        }
+
+        let currentDictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        )
+        let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
+        saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated)
+    }
+
+    private func saveDictionaryEntries(_ entriesByReading: [String: [String]], forKey key: String) {
+        guard let defaults = Self.sharedDefaults,
+              let encoded = try? JSONEncoder().encode(entriesByReading) else {
+            return
+        }
+
+        defaults.set(encoded, forKey: key)
+    }
+
+    private func loadUserDictionaryEntries() {
+        let dictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        )
+
+        userDictionaryEntries = dictionary
+            .keys
+            .sorted()
+            .flatMap { reading in
+                (dictionary[reading] ?? []).map { candidate in
+                    VocabularyEntry(reading: reading, candidate: candidate)
+                }
+            }
+    }
+
+    private func saveUserDictionary(_ entriesByReading: [String: [String]]) {
+        saveDictionaryEntries(entriesByReading, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+    }
+
+    private func addUserDictionaryEntry() {
+        let reading = normalizedKanaReading(from: userDictionaryReadingInput)
+        let candidate = userDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !reading.isEmpty,
+              !candidate.isEmpty else {
+            return
+        }
+
+        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+
+        var candidates = dictionary[reading] ?? []
+
+        if let existingIndex = candidates.firstIndex(of: candidate) {
+            candidates.remove(at: existingIndex)
+        }
+
+        candidates.insert(candidate, at: 0)
+        dictionary[reading] = Array(candidates.prefix(32))
+        saveUserDictionary(dictionary)
+
+        userDictionaryReadingInput = ""
+        userDictionaryCandidateInput = ""
+        loadUserDictionaryEntries()
+    }
+
+    private func removeUserDictionaryEntry(_ entry: VocabularyEntry) {
+        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+
+        var candidates = dictionary[entry.reading] ?? []
+        candidates.removeAll { $0 == entry.candidate }
+
+        if candidates.isEmpty {
+            dictionary.removeValue(forKey: entry.reading)
+        } else {
+            dictionary[entry.reading] = candidates
+        }
+
+        saveUserDictionary(dictionary)
+        loadUserDictionaryEntries()
+    }
+
+    private func resetKanaKanjiLearning() {
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.kanaKanjiLearningScores)
+    }
+
+    private func loadSuppressionDictionaryEntries() {
+        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+
+        suppressionDictionaryEntries = dictionary
+            .keys
+            .sorted()
+            .flatMap { reading in
+                (dictionary[reading] ?? []).map { candidate in
+                    VocabularyEntry(reading: reading, candidate: candidate)
+                }
+            }
+    }
+
+    private func saveSuppressionDictionary(_ entriesByReading: [String: [String]]) {
+        saveDictionaryEntries(entriesByReading, forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+    }
+
+    private func addSuppressionDictionaryEntry() {
+        let reading = normalizedKanaReading(from: suppressionDictionaryReadingInput)
+        let candidate = suppressionDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !reading.isEmpty,
+              !candidate.isEmpty else {
+            return
+        }
+
+        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        var candidates = dictionary[reading] ?? []
+
+        if let existingIndex = candidates.firstIndex(of: candidate) {
+            candidates.remove(at: existingIndex)
+        }
+
+        candidates.insert(candidate, at: 0)
+        dictionary[reading] = Array(candidates.prefix(128))
+        saveSuppressionDictionary(dictionary)
+
+        suppressionDictionaryReadingInput = ""
+        suppressionDictionaryCandidateInput = ""
+        loadSuppressionDictionaryEntries()
+    }
+
+    private func removeSuppressionDictionaryEntry(_ entry: VocabularyEntry) {
+        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        var candidates = dictionary[entry.reading] ?? []
+        candidates.removeAll { $0 == entry.candidate }
+
+        if candidates.isEmpty {
+            dictionary.removeValue(forKey: entry.reading)
+        } else {
+            dictionary[entry.reading] = candidates
+        }
+
+        saveSuppressionDictionary(dictionary)
+        loadSuppressionDictionaryEntries()
+    }
+
+    private struct IndexedVocabularyList: UIViewRepresentable {
+        let entries: [VocabularyEntry]
+        let onDelete: (VocabularyEntry) -> Void
+        let onIndexIndicatorStateChange: (String, Bool) -> Void
+
+        private static let kanaIndexTitles: [String] = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"]
+        private static let allIndexTitles: [String] = kanaIndexTitles
+
+        func makeCoordinator() -> Coordinator {
+            Coordinator(
+                entries: entries,
+                onDelete: onDelete,
+                onIndexIndicatorStateChange: onIndexIndicatorStateChange
+            )
+        }
+
+        func makeUIView(context: Context) -> UITableView {
+            let tableView = UITableView(frame: .zero, style: .plain)
+            tableView.dataSource = context.coordinator
+            tableView.delegate = context.coordinator
+            tableView.register(UITableViewCell.self, forCellReuseIdentifier: Coordinator.cellReuseIdentifier)
+            tableView.backgroundColor = .clear
+            tableView.showsVerticalScrollIndicator = false
+            tableView.sectionHeaderTopPadding = 0
+            tableView.rowHeight = 30
+            tableView.separatorStyle = .none
+            context.coordinator.attachCustomIndex(to: tableView)
+            return tableView
+        }
+
+        func updateUIView(_ uiView: UITableView, context: Context) {
+            context.coordinator.update(
+                entries: entries,
+                onDelete: onDelete,
+                onIndexIndicatorStateChange: onIndexIndicatorStateChange
+            )
+            context.coordinator.attachCustomIndex(to: uiView)
+            uiView.reloadData()
+            uiView.layoutIfNeeded()
+            context.coordinator.refreshCustomIndexVisibility()
+        }
+
+        private static func indexTitle(for reading: String) -> String {
+            let trimmed = reading.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard let first = trimmed.first else {
+                return "あ"
+            }
+
+            let firstString = String(first)
+
+            let hiragana = firstString.applyingTransform(.hiraganaToKatakana, reverse: true) ?? firstString
+
+            guard let kana = hiragana.first else {
+                return "あ"
+            }
+
+            switch kana {
+            case "ぁ", "あ", "ぃ", "い", "ぅ", "う", "ぇ", "え", "ぉ", "お", "ゔ":
+                return "あ"
+            case "か", "が", "き", "ぎ", "く", "ぐ", "け", "げ", "こ", "ご":
+                return "か"
+            case "さ", "ざ", "し", "じ", "す", "ず", "せ", "ぜ", "そ", "ぞ":
+                return "さ"
+            case "た", "だ", "ち", "ぢ", "っ", "つ", "づ", "て", "で", "と", "ど":
+                return "た"
+            case "な", "に", "ぬ", "ね", "の":
+                return "な"
+            case "は", "ば", "ぱ", "ひ", "び", "ぴ", "ふ", "ぶ", "ぷ", "へ", "べ", "ぺ", "ほ", "ぼ", "ぽ":
+                return "は"
+            case "ま", "み", "む", "め", "も":
+                return "ま"
+            case "ゃ", "や", "ゅ", "ゆ", "ょ", "よ":
+                return "や"
+            case "ら", "り", "る", "れ", "ろ":
+                return "ら"
+            case "ゎ", "わ", "を", "ん":
+                return "わ"
+            default:
+                return "あ"
+            }
+        }
+
+        final class Coordinator: NSObject, UITableViewDataSource, UITableViewDelegate {
+            static let cellReuseIdentifier = "IndexedVocabularyCell"
+            static let candidateLabelTag = 1001
+            static let readingLabelTag = 1002
+
+            private var entries: [VocabularyEntry]
+            private var onDelete: (VocabularyEntry) -> Void
+            private var onIndexIndicatorStateChange: (String, Bool) -> Void
+            private var groupedEntries: [String: [VocabularyEntry]] = [:]
+            private var visibleSectionTitles: [String] = []
+            private var overlayHideWorkItem: DispatchWorkItem?
+            private var currentIndexIndicatorTitle = ""
+            private weak var tableView: UITableView?
+            private let customIndexContainerView = UIView()
+            private let customIndexStackView = UIStackView()
+            private var customIndexLabels: [UILabel] = []
+            private lazy var customIndexTapGesture = UITapGestureRecognizer(
+                target: self,
+                action: #selector(handleCustomIndexTap(_:))
+            )
+            private lazy var customIndexPanGesture = UIPanGestureRecognizer(
+                target: self,
+                action: #selector(handleCustomIndexPan(_:))
+            )
+
+            init(
+                entries: [VocabularyEntry],
+                onDelete: @escaping (VocabularyEntry) -> Void,
+                onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
+            ) {
+                self.entries = entries
+                self.onDelete = onDelete
+                self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
+                super.init()
+                rebuildSections()
+            }
+
+            func update(
+                entries: [VocabularyEntry],
+                onDelete: @escaping (VocabularyEntry) -> Void,
+                onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
+            ) {
+                self.entries = entries
+                self.onDelete = onDelete
+                self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
+                rebuildSections()
+            }
+
+            func attachCustomIndex(to tableView: UITableView) {
+                self.tableView = tableView
+
+                if customIndexContainerView.superview !== tableView {
+                    customIndexContainerView.translatesAutoresizingMaskIntoConstraints = false
+                    customIndexContainerView.backgroundColor = .clear
+                    customIndexContainerView.isUserInteractionEnabled = true
+                    customIndexContainerView.layer.zPosition = 10
+
+                    customIndexStackView.translatesAutoresizingMaskIntoConstraints = false
+                    customIndexStackView.axis = .vertical
+                    customIndexStackView.alignment = .center
+                    customIndexStackView.distribution = .fillEqually
+                    customIndexStackView.spacing = 0
+
+                    customIndexContainerView.addSubview(customIndexStackView)
+                    customIndexContainerView.addGestureRecognizer(customIndexTapGesture)
+                    customIndexContainerView.addGestureRecognizer(customIndexPanGesture)
+
+                    tableView.addSubview(customIndexContainerView)
+
+                    NSLayoutConstraint.activate([
+                        customIndexContainerView.trailingAnchor.constraint(equalTo: tableView.frameLayoutGuide.trailingAnchor, constant: -4),
+                        customIndexContainerView.topAnchor.constraint(equalTo: tableView.frameLayoutGuide.topAnchor, constant: 20),
+                        customIndexContainerView.bottomAnchor.constraint(equalTo: tableView.frameLayoutGuide.bottomAnchor, constant: -20),
+                        customIndexContainerView.widthAnchor.constraint(equalToConstant: 24),
+
+                        customIndexStackView.leadingAnchor.constraint(equalTo: customIndexContainerView.leadingAnchor),
+                        customIndexStackView.trailingAnchor.constraint(equalTo: customIndexContainerView.trailingAnchor),
+                        customIndexStackView.topAnchor.constraint(equalTo: customIndexContainerView.topAnchor),
+                        customIndexStackView.bottomAnchor.constraint(equalTo: customIndexContainerView.bottomAnchor)
+                    ])
+
+                    rebuildCustomIndexLabels()
+                }
+
+                if customIndexLabels.isEmpty {
+                    rebuildCustomIndexLabels()
+                }
+
+                tableView.bringSubviewToFront(customIndexContainerView)
+
+                refreshCustomIndexVisibility()
+
+                DispatchQueue.main.async { [weak self] in
+                    self?.refreshCustomIndexVisibility()
+                }
+            }
+
+            private func rebuildCustomIndexLabels() {
+                for label in customIndexLabels {
+                    customIndexStackView.removeArrangedSubview(label)
+                    label.removeFromSuperview()
+                }
+
+                customIndexLabels.removeAll()
+
+                for title in IndexedVocabularyList.allIndexTitles {
+                    let label = UILabel()
+                    label.translatesAutoresizingMaskIntoConstraints = false
+                    label.text = title
+                    label.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+                    label.textColor = .systemBlue
+                    label.textAlignment = .center
+
+                    NSLayoutConstraint.activate([
+                        label.widthAnchor.constraint(equalToConstant: 20)
+                    ])
+
+                    customIndexStackView.addArrangedSubview(label)
+                    customIndexLabels.append(label)
+                }
+            }
+
+            func refreshCustomIndexVisibility() {
+                let isScrollable = isTableViewScrollable()
+                let shouldShowIndex = !customIndexLabels.isEmpty && isScrollable
+
+                customIndexContainerView.isHidden = !shouldShowIndex
+                customIndexContainerView.isUserInteractionEnabled = shouldShowIndex
+
+                if !shouldShowIndex {
+                    hideScrollingIndexOverlayImmediately()
+                }
+            }
+
+            private func isTableViewScrollable() -> Bool {
+                guard let tableView else {
+                    return false
+                }
+
+                tableView.layoutIfNeeded()
+                let visibleHeight = tableView.bounds.height
+                guard visibleHeight > 1 else {
+                    return false
+                }
+
+                let contentHeight = tableView.contentSize.height
+
+                return contentHeight > visibleHeight + 1
+            }
+
+            private func nearestIndexPosition(for point: CGPoint) -> Int? {
+                guard !customIndexLabels.isEmpty else {
+                    return nil
+                }
+
+                customIndexStackView.layoutIfNeeded()
+
+                var nearestIndex = 0
+                var nearestDistance = CGFloat.greatestFiniteMagnitude
+
+                for (index, label) in customIndexLabels.enumerated() {
+                    let distance = abs(point.y - label.frame.midY)
+
+                    if distance < nearestDistance {
+                        nearestDistance = distance
+                        nearestIndex = index
+                    }
+                }
+
+                return nearestIndex
+            }
+
+            private func resolveSection(for title: String, at index: Int) -> Int {
+                guard !visibleSectionTitles.isEmpty else {
+                    return 0
+                }
+
+                if let exactIndex = visibleSectionTitles.firstIndex(of: title) {
+                    return exactIndex
+                }
+
+                for next in index..<IndexedVocabularyList.allIndexTitles.count {
+                    let candidate = IndexedVocabularyList.allIndexTitles[next]
+                    if let resolvedIndex = visibleSectionTitles.firstIndex(of: candidate) {
+                        return resolvedIndex
+                    }
+                }
+
+                for previous in stride(from: index, through: 0, by: -1) {
+                    let candidate = IndexedVocabularyList.allIndexTitles[previous]
+                    if let resolvedIndex = visibleSectionTitles.firstIndex(of: candidate) {
+                        return resolvedIndex
+                    }
+                }
+
+                return 0
+            }
+
+            private func navigateToSection(at index: Int) {
+                guard let tableView,
+                      !IndexedVocabularyList.allIndexTitles.isEmpty,
+                      !visibleSectionTitles.isEmpty else {
+                    return
+                }
+
+                let boundedIndex = min(max(index, 0), IndexedVocabularyList.allIndexTitles.count - 1)
+                let title = IndexedVocabularyList.allIndexTitles[boundedIndex]
+                showScrollingIndexOverlay(title: title)
+
+                let section = resolveSection(for: title, at: boundedIndex)
+                let rowCount = tableView.numberOfRows(inSection: section)
+
+                guard rowCount > 0 else {
+                    return
+                }
+
+                tableView.scrollToRow(at: IndexPath(row: 0, section: section), at: .top, animated: false)
+            }
+
+            @objc
+            private func handleCustomIndexTap(_ gesture: UITapGestureRecognizer) {
+                let point = gesture.location(in: customIndexStackView)
+
+                guard let index = nearestIndexPosition(for: point) else {
+                    return
+                }
+
+                navigateToSection(at: index)
+                scheduleHideScrollingIndexOverlay()
+            }
+
+            @objc
+            private func handleCustomIndexPan(_ gesture: UIPanGestureRecognizer) {
+                let point = gesture.location(in: customIndexStackView)
+
+                switch gesture.state {
+                case .began, .changed:
+                    if let index = nearestIndexPosition(for: point) {
+                        navigateToSection(at: index)
+                    }
+                case .ended, .cancelled, .failed:
+                    scheduleHideScrollingIndexOverlay()
+                default:
+                    break
+                }
+            }
+
+            private func rebuildSections() {
+                var grouped: [String: [VocabularyEntry]] = [:]
+
+                for indexTitle in IndexedVocabularyList.allIndexTitles {
+                    grouped[indexTitle] = []
+                }
+
+                for entry in entries {
+                    let indexTitle = IndexedVocabularyList.indexTitle(for: entry.reading)
+                    grouped[indexTitle, default: []].append(entry)
+                }
+
+                groupedEntries = grouped
+                visibleSectionTitles = IndexedVocabularyList.allIndexTitles.filter {
+                    !(groupedEntries[$0]?.isEmpty ?? true)
+                }
+
+                refreshCustomIndexVisibility()
+
+                if visibleSectionTitles.isEmpty {
+                    hideScrollingIndexOverlayImmediately()
+                }
+            }
+
+            private func currentVisibleSectionTitle(in tableView: UITableView) -> String? {
+                let topY = tableView.contentOffset.y + tableView.adjustedContentInset.top + 1
+                let probePoint = CGPoint(x: 8, y: max(topY, 1))
+
+                if let indexPath = tableView.indexPathForRow(at: probePoint),
+                   indexPath.section < visibleSectionTitles.count {
+                    return visibleSectionTitles[indexPath.section]
+                }
+
+                guard let firstVisible = tableView.indexPathsForVisibleRows?.sorted(by: {
+                    if $0.section == $1.section {
+                        return $0.row < $1.row
+                    }
+                    return $0.section < $1.section
+                }).first,
+                firstVisible.section < visibleSectionTitles.count else {
+                    return nil
+                }
+
+                return visibleSectionTitles[firstVisible.section]
+            }
+
+            private func showScrollingIndexOverlay(title: String?) {
+                guard isTableViewScrollable() else {
+                    hideScrollingIndexOverlayImmediately()
+                    return
+                }
+
+                guard let title, !title.isEmpty else {
+                    return
+                }
+
+                overlayHideWorkItem?.cancel()
+                currentIndexIndicatorTitle = title
+                onIndexIndicatorStateChange(title, true)
+            }
+
+            private func scheduleHideScrollingIndexOverlay() {
+                overlayHideWorkItem?.cancel()
+
+                let workItem = DispatchWorkItem { [weak self] in
+                    guard let self else {
+                        return
+                    }
+
+                    self.onIndexIndicatorStateChange(self.currentIndexIndicatorTitle, false)
+                }
+
+                overlayHideWorkItem = workItem
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: workItem)
+            }
+
+            private func hideScrollingIndexOverlayImmediately() {
+                overlayHideWorkItem?.cancel()
+                onIndexIndicatorStateChange(currentIndexIndicatorTitle, false)
+            }
+
+            private func entry(at indexPath: IndexPath) -> VocabularyEntry {
+                let sectionTitle = visibleSectionTitles[indexPath.section]
+                return groupedEntries[sectionTitle]![indexPath.row]
+            }
+
+            func numberOfSections(in tableView: UITableView) -> Int {
+                visibleSectionTitles.count
+            }
+
+            func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+                let sectionTitle = visibleSectionTitles[section]
+                return groupedEntries[sectionTitle]?.count ?? 0
+            }
+
+            func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+                nil
+            }
+
+            func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+                CGFloat.leastNonzeroMagnitude
+            }
+
+            func sectionIndexTitles(for tableView: UITableView) -> [String]? {
+                nil
+            }
+
+            func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
+                resolveSection(for: title, at: index)
+            }
+
+            func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+                guard let tableView = scrollView as? UITableView else {
+                    return
+                }
+
+                showScrollingIndexOverlay(title: currentVisibleSectionTitle(in: tableView))
+            }
+
+            func scrollViewDidScroll(_ scrollView: UIScrollView) {
+                guard let tableView = scrollView as? UITableView else {
+                    return
+                }
+
+                let isUserInteracting = scrollView.isTracking || scrollView.isDragging || scrollView.isDecelerating
+                guard isUserInteracting else {
+                    return
+                }
+
+                showScrollingIndexOverlay(title: currentVisibleSectionTitle(in: tableView))
+            }
+
+            func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+                if !decelerate {
+                    scheduleHideScrollingIndexOverlay()
+                }
+            }
+
+            func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+                scheduleHideScrollingIndexOverlay()
+            }
+
+            func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+                let cell = tableView.dequeueReusableCell(withIdentifier: Self.cellReuseIdentifier, for: indexPath)
+                let entry = entry(at: indexPath)
+
+                let candidateLabel: UILabel
+                let readingLabel: UILabel
+
+                if let existingCandidateLabel = cell.contentView.viewWithTag(Self.candidateLabelTag) as? UILabel,
+                   let existingReadingLabel = cell.contentView.viewWithTag(Self.readingLabelTag) as? UILabel {
+                    candidateLabel = existingCandidateLabel
+                    readingLabel = existingReadingLabel
+                } else {
+                    candidateLabel = UILabel()
+                    candidateLabel.tag = Self.candidateLabelTag
+                    candidateLabel.translatesAutoresizingMaskIntoConstraints = false
+                    candidateLabel.font = UIFont.systemFont(ofSize: 14, weight: .semibold)
+                    candidateLabel.textColor = .label
+                    candidateLabel.textAlignment = .left
+                    candidateLabel.lineBreakMode = .byTruncatingTail
+
+                    readingLabel = UILabel()
+                    readingLabel.tag = Self.readingLabelTag
+                    readingLabel.translatesAutoresizingMaskIntoConstraints = false
+                    readingLabel.font = UIFont.monospacedSystemFont(ofSize: 12, weight: .regular)
+                    readingLabel.textColor = .secondaryLabel
+                    readingLabel.textAlignment = .left
+                    readingLabel.lineBreakMode = .byTruncatingTail
+
+                    cell.contentView.addSubview(candidateLabel)
+                    cell.contentView.addSubview(readingLabel)
+
+                    NSLayoutConstraint.activate([
+                        candidateLabel.leadingAnchor.constraint(equalTo: cell.contentView.leadingAnchor, constant: 10),
+                        candidateLabel.trailingAnchor.constraint(lessThanOrEqualTo: cell.contentView.centerXAnchor, constant: -10),
+                        candidateLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor),
+
+                        readingLabel.leadingAnchor.constraint(equalTo: cell.contentView.centerXAnchor, constant: -2),
+                        readingLabel.trailingAnchor.constraint(lessThanOrEqualTo: cell.contentView.trailingAnchor, constant: -10),
+                        readingLabel.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+                    ])
+                }
+
+                candidateLabel.text = entry.candidate
+                readingLabel.text = entry.reading
+
+                cell.textLabel?.text = nil
+                cell.backgroundColor = UIColor.white.withAlphaComponent(0.72)
+                cell.selectionStyle = .none
+
+                return cell
+            }
+
+            func tableView(
+                _ tableView: UITableView,
+                trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+            ) -> UISwipeActionsConfiguration? {
+                let target = entry(at: indexPath)
+
+                let delete = UIContextualAction(style: .destructive, title: "削除") { [weak self] _, _, completion in
+                    self?.onDelete(target)
+                    completion(true)
+                }
+
+                return UISwipeActionsConfiguration(actions: [delete])
+            }
+        }
     }
 
     var body: some View {
@@ -656,6 +1599,260 @@ struct ContentView: View {
                     .settingsCardStyle()
 
                     VStack(alignment: .leading, spacing: 10) {
+                        Text("かな漢字候補モード")
+                            .font(.headline)
+
+                        Picker("かな漢字候補モード", selection: kanaKanjiCandidateSourceModeSelection) {
+                            ForEach(KanaKanjiCandidateSourceModeOption.allCases) { option in
+                                Text(option.title).tag(option)
+                            }
+                        }
+                        .pickerStyle(.segmented)
+
+                        Text("システム辞書候補の採用基準を切り替えます。surface(既定) / normalisé / les deux を選べます。")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .settingsCardStyle()
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Text("追加語彙")
+                                .font(.headline)
+
+                            Spacer(minLength: 8)
+
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isUserDictionaryRegistrationVisible.toggle()
+                                }
+                            } label: {
+                                Image(systemName: isUserDictionaryRegistrationVisible ? "xmark" : "plus")
+                                    .font(.headline.weight(.bold))
+                                    .frame(width: 28, height: 28)
+                                    .background(
+                                        Circle()
+                                            .fill(
+                                                isUserDictionaryRegistrationVisible
+                                                    ? Color.red.opacity(0.16)
+                                                    : Color.accentColor.opacity(0.14)
+                                            )
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(
+                                isUserDictionaryRegistrationVisible
+                                    ? "追加単語の登録欄を閉じる"
+                                    : "追加単語の登録欄を表示"
+                            )
+                        }
+
+                        if isUserDictionaryRegistrationVisible {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("追加単語の登録")
+                                    .font(.subheadline.weight(.semibold))
+
+                                HStack(spacing: 8) {
+                                    TextField("候補", text: $userDictionaryCandidateInput)
+                                        .textInputAutocapitalization(.never)
+                                        .autocorrectionDisabled()
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                .fill(Color.white.opacity(0.9))
+                                        )
+
+                                    TextField("よみ", text: $userDictionaryReadingInput)
+                                        .textInputAutocapitalization(.never)
+                                        .autocorrectionDisabled()
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                .fill(Color.white.opacity(0.9))
+                                        )
+
+                                    Button("登録") {
+                                        addUserDictionaryEntry()
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            isUserDictionaryRegistrationVisible = false
+                                        }
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .disabled(!canAddUserDictionaryEntry)
+                                }
+                            }
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                        }
+
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Spacer(minLength: 8)
+
+                            Text(userDictionaryScrollIndexTitle)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 8)
+                                .frame(minWidth: 26, minHeight: 20)
+                                .background(
+                                    Capsule(style: .continuous)
+                                        .fill(Color.white.opacity(0.82))
+                                )
+                                .opacity(isUserDictionaryScrollIndexVisible ? 1 : 0)
+                                .animation(.easeOut(duration: 0.28), value: isUserDictionaryScrollIndexVisible)
+                        }
+
+                        if userDictionaryEntries.isEmpty {
+                            Text("登録済みの追加単語はありません。")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            IndexedVocabularyList(
+                                entries: userDictionaryEntries,
+                                onDelete: removeUserDictionaryEntry,
+                                onIndexIndicatorStateChange: { title, isVisible in
+                                    DispatchQueue.main.async {
+                                        if !title.isEmpty {
+                                            userDictionaryScrollIndexTitle = title
+                                        }
+
+                                        withAnimation(.easeOut(duration: 0.28)) {
+                                            isUserDictionaryScrollIndexVisible = isVisible
+                                        }
+                                    }
+                                }
+                            )
+                            .frame(height: userVocabularyListHeight(for: userDictionaryEntries.count))
+                        }
+
+                        Button("学習履歴をリセット") {
+                            resetKanaKanjiLearning()
+                        }
+                        .buttonStyle(.bordered)
+
+                        Text("追加単語はキーボード拡張と共有され、候補の優先順位に反映されます。")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .settingsCardStyle()
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack(spacing: 8) {
+                            Text("抑制語彙")
+                                .font(.headline)
+
+                            Spacer(minLength: 8)
+
+                            Button {
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isSuppressionDictionaryRegistrationVisible.toggle()
+                                }
+                            } label: {
+                                Image(systemName: isSuppressionDictionaryRegistrationVisible ? "xmark" : "plus")
+                                    .font(.headline.weight(.bold))
+                                    .frame(width: 28, height: 28)
+                                    .background(
+                                        Circle()
+                                            .fill(
+                                                isSuppressionDictionaryRegistrationVisible
+                                                    ? Color.red.opacity(0.16)
+                                                    : Color.accentColor.opacity(0.14)
+                                            )
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel(
+                                isSuppressionDictionaryRegistrationVisible
+                                    ? "抑制単語の登録欄を閉じる"
+                                    : "抑制単語の登録欄を表示"
+                            )
+                        }
+
+                        if isSuppressionDictionaryRegistrationVisible {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("抑制単語の登録")
+                                    .font(.subheadline.weight(.semibold))
+
+                                HStack(spacing: 8) {
+                                    TextField("単語", text: $suppressionDictionaryCandidateInput)
+                                        .textInputAutocapitalization(.never)
+                                        .autocorrectionDisabled()
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                .fill(Color.white.opacity(0.9))
+                                        )
+
+                                    TextField("よみ", text: $suppressionDictionaryReadingInput)
+                                        .textInputAutocapitalization(.never)
+                                        .autocorrectionDisabled()
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                                .fill(Color.white.opacity(0.9))
+                                        )
+
+                                    Button("登録") {
+                                        addSuppressionDictionaryEntry()
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            isSuppressionDictionaryRegistrationVisible = false
+                                        }
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .disabled(!canAddSuppressionDictionaryEntry)
+                                }
+                            }
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                        }
+
+                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                            Spacer(minLength: 8)
+
+                            Text(suppressionDictionaryScrollIndexTitle)
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(.secondary)
+                                .padding(.horizontal, 8)
+                                .frame(minWidth: 26, minHeight: 20)
+                                .background(
+                                    Capsule(style: .continuous)
+                                        .fill(Color.white.opacity(0.82))
+                                )
+                                .opacity(isSuppressionDictionaryScrollIndexVisible ? 1 : 0)
+                                .animation(.easeOut(duration: 0.28), value: isSuppressionDictionaryScrollIndexVisible)
+                        }
+
+                        if suppressionDictionaryEntries.isEmpty {
+                            Text("登録済みの抑制単語はありません。")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            IndexedVocabularyList(
+                                entries: suppressionDictionaryEntries,
+                                onDelete: removeSuppressionDictionaryEntry,
+                                onIndexIndicatorStateChange: { title, isVisible in
+                                    DispatchQueue.main.async {
+                                        if !title.isEmpty {
+                                            suppressionDictionaryScrollIndexTitle = title
+                                        }
+
+                                        withAnimation(.easeOut(duration: 0.28)) {
+                                            isSuppressionDictionaryScrollIndexVisible = isVisible
+                                        }
+                                    }
+                                }
+                            )
+                            .frame(height: userVocabularyListHeight(for: suppressionDictionaryEntries.count))
+                        }
+
+                        Text("抑制は『読み+単語』の組み合わせで適用され、同じ単語でも別の読み候補には影響しません。")
+                            .font(.footnote)
+                            .foregroundStyle(.secondary)
+                    }
+                    .settingsCardStyle()
+
+                    VStack(alignment: .leading, spacing: 10) {
                         Text("有効化手順")
                             .font(.headline)
                         ForEach(Array(setupSteps.enumerated()), id: \.offset) { index, step in
@@ -670,11 +1867,17 @@ struct ContentView: View {
                     }
                     .settingsCardStyle()
 
-                    Text("フリックでひらがなを直接入力します。かな漢字変換は未実装です。")
+                    Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
                 .padding(20)
+            }
+            .onAppear {
+                migrateInitialUserDictionaryIfNeeded()
+                migrateInitialSuppressionDictionaryIfNeeded()
+                loadUserDictionaryEntries()
+                loadSuppressionDictionaryEntries()
             }
 #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
