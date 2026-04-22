@@ -3,7 +3,7 @@ import Foundation
 enum FlickKanaLayout {
     static let latinShiftKeyToken = "__latin_shift__"
     static let kanaWaSet = FlickKanaSet(label: "わ", center: "わ", up: "を", right: "ん", down: "〜", left: "ー")
-    static let kanaYaSet = FlickKanaSet(label: "や", center: "や", up: "ゆ", right: "よ", down: "ー", left: "ゃ")
+    static let kanaYaSet = FlickKanaSet(label: "や", center: "や", up: "『", right: "ゆ", down: "よ", left: "』")
 
     static let fiveByTwoRows: [[FlickKanaSet]] = [
         [
@@ -308,12 +308,30 @@ enum FlickKanaLayout {
         profile: FlickDirectionProfile,
         preservesAppleDirectionalOrder: Bool = false
     ) -> FlickKanaSet {
+        let usesProfileDependentGuideOrder = !preservesAppleDirectionalOrder
+
         if profile == .apple || preservesAppleDirectionalOrder {
-            return FlickKanaSet(label: center, center: center, up: up, right: right, down: down, left: left)
+            return FlickKanaSet(
+                label: center,
+                center: center,
+                up: up,
+                right: right,
+                down: down,
+                left: left,
+                usesProfileDependentGuideOrder: usesProfileDependentGuideOrder
+            )
         }
 
         // ecritu mode order: tap, up, right, left, down
-        return FlickKanaSet(label: center, center: center, up: left, right: up, down: down, left: right)
+        return FlickKanaSet(
+            label: center,
+            center: center,
+            up: left,
+            right: up,
+            down: down,
+            left: right,
+            usesProfileDependentGuideOrder: usesProfileDependentGuideOrder
+        )
     }
 
     private static func characterMap(for mode: DiacriticMode) -> [Character: Character]? {

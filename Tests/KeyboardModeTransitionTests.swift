@@ -238,16 +238,20 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertNil(FlickKanaLayout.postfixModifiedCharacter(from: "な", for: .kaomoji))
     }
 
-    func testYaKeyRemapFollowsProfileDirectionRule() {
-        let yaKey = FlickKanaLayout.fiveByTwoRows[1][2]
-        XCTAssertEqual(yaKey.center, "や")
+    func testYaKeyRemapMatchesExpectedSymbolsPerDirectionProfile() {
+        let ecrituYaKey = FlickKanaLayout.fiveByTwoRows[1][2]
+        XCTAssertEqual(ecrituYaKey.center, "や")
+        XCTAssertEqual(ecrituYaKey.up, "『")
+        XCTAssertEqual(ecrituYaKey.right, "ゆ")
+        XCTAssertEqual(ecrituYaKey.left, "』")
+        XCTAssertEqual(ecrituYaKey.down, "よ")
 
-        let appleYaKey = yaKey.remapped(for: .apple)
-
-        XCTAssertEqual(appleYaKey.left, yaKey.up)
-        XCTAssertEqual(appleYaKey.up, yaKey.right)
-        XCTAssertEqual(appleYaKey.right, yaKey.left)
-        XCTAssertEqual(appleYaKey.down, yaKey.down)
+        let appleYaKey = ecrituYaKey.remapped(for: .apple)
+        XCTAssertEqual(appleYaKey.center, "や")
+        XCTAssertEqual(appleYaKey.left, "『")
+        XCTAssertEqual(appleYaKey.up, "ゆ")
+        XCTAssertEqual(appleYaKey.right, "』")
+        XCTAssertEqual(appleYaKey.down, "よ")
     }
 
     func testNumberOneDirectionalArrowsAreSameAcrossProfiles() {
@@ -260,6 +264,53 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(appleOne.down, ecrituOne.down)
     }
 
+    func testDownGuideOrderUsesProfileSpecificDirectionOrderForStandardKeys() {
+        let ecrituYa = FlickKanaLayout.kanaYaSet
+        let appleYa = ecrituYa.remapped(for: .apple)
+
+        XCTAssertEqual(
+            ecrituYa.orderedDirectionalGuideTexts(for: .ecritu),
+            ["『", "ゆ", "』", "よ"]
+        )
+        XCTAssertEqual(
+            appleYa.orderedDirectionalGuideTexts(for: .apple),
+            ["『", "ゆ", "』", "よ"]
+        )
+    }
+
+    func testDownGuideOrderKeepsFixedOrderForExceptionKeys() {
+        let appleOne = FlickKanaLayout.numberRows(for: .apple, layoutMode: .telephone)[0][0]
+        let ecrituOne = FlickKanaLayout.numberRows(for: .ecritu, layoutMode: .telephone)[0][0]
+
+        XCTAssertEqual(
+            appleOne.orderedDirectionalGuideTexts(for: .apple),
+            ["←", "↑", "→", "↓"]
+        )
+        XCTAssertEqual(
+            ecrituOne.orderedDirectionalGuideTexts(for: .ecritu),
+            ["←", "↑", "→", "↓"]
+        )
+
+        let dakutenKey = FlickKanaSet(
+            label: "小",
+            center: "小",
+            up: "゛",
+            right: "…",
+            down: "゜",
+            left: "カ",
+            usesProfileDependentGuideOrder: false
+        )
+
+        XCTAssertEqual(
+            dakutenKey.orderedDirectionalGuideTexts(for: .apple),
+            ["カ", "゛", "…", "゜"]
+        )
+        XCTAssertEqual(
+            dakutenKey.orderedDirectionalGuideTexts(for: .ecritu),
+            ["カ", "゛", "…", "゜"]
+        )
+    }
+
     func testYaKeyAssignmentMatchesBetweenFiveByTwoAndThreeByThreePlusWa() {
         let fiveByTwoYa = FlickKanaLayout.fiveByTwoRows[1][2]
         let threeByThreeYa = FlickKanaLayout.threeByThreePlusWaRows[2][1]
@@ -267,6 +318,10 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(fiveByTwoYa.center, "や")
         XCTAssertEqual(threeByThreeYa.center, "や")
         XCTAssertEqual(fiveByTwoYa, threeByThreeYa)
+        XCTAssertEqual(fiveByTwoYa.up, "『")
+        XCTAssertEqual(fiveByTwoYa.right, "ゆ")
+        XCTAssertEqual(fiveByTwoYa.left, "』")
+        XCTAssertEqual(fiveByTwoYa.down, "よ")
     }
 
     private func makeState(

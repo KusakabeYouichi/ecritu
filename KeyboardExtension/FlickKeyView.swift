@@ -1,13 +1,37 @@
 import SwiftUI
 
+enum FlickGuideDisplayMode: String {
+    case off
+    case fourDirections
+    case down
+}
+
 private struct KeyboardAccentColorKey: EnvironmentKey {
     static let defaultValue = Color(red: 0.06, green: 0.73, blue: 0.56)
+}
+
+private struct FlickGuideDisplayModeKey: EnvironmentKey {
+    static let defaultValue: FlickGuideDisplayMode = .fourDirections
+}
+
+private struct FlickDirectionProfileKey: EnvironmentKey {
+    static let defaultValue: FlickDirectionProfile = .ecritu
 }
 
 extension EnvironmentValues {
     var keyboardAccentColor: Color {
         get { self[KeyboardAccentColorKey.self] }
         set { self[KeyboardAccentColorKey.self] = newValue }
+    }
+
+    var flickGuideDisplayMode: FlickGuideDisplayMode {
+        get { self[FlickGuideDisplayModeKey.self] }
+        set { self[FlickGuideDisplayModeKey.self] = newValue }
+    }
+
+    var flickDirectionProfile: FlickDirectionProfile {
+        get { self[FlickDirectionProfileKey.self] }
+        set { self[FlickDirectionProfileKey.self] = newValue }
     }
 }
 
@@ -50,8 +74,18 @@ struct FlickKeyView: View {
     @State private var longPressAnchorLocationX: CGFloat = 0
     @State private var keyFrameInGlobal: CGRect = .zero
     @Environment(\.keyboardAccentColor) private var accentColor
+    @Environment(\.flickGuideDisplayMode) private var flickGuideDisplayMode
+    @Environment(\.flickDirectionProfile) private var flickDirectionProfile
 
     private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
+
+    private var centerLabelOffsetY: CGFloat {
+        flickGuideDisplayMode == .down ? -6 : 0
+    }
+
+    private var idleMainLabelFontSize: CGFloat {
+        flickGuideDisplayMode == .down ? min(mainLabelFontSize, 24) : mainLabelFontSize
+    }
 
     var body: some View {
         ZStack {
@@ -67,13 +101,16 @@ struct FlickKeyView: View {
                     .foregroundStyle(Color.white)
             } else if let idleReplacement {
                 idleReplacement
+                    .offset(y: centerLabelOffsetY)
             } else {
                 Text(kana.center)
-                    .font(.system(size: mainLabelFontSize, weight: .bold, design: .rounded))
+                    .font(.system(size: idleMainLabelFontSize, weight: .bold, design: .rounded))
                     .foregroundStyle(keyLabelColor)
+                    .offset(y: centerLabelOffsetY)
             }
 
             directionalHints
+            downDirectionalHints
 
             if isTouching && activeDirection != .center && !longPressIsActive {
                 Text(kana.output(for: activeDirection))
@@ -146,7 +183,25 @@ struct FlickKeyView: View {
                 .offset(x: Metrics.directionHintHorizontalOffset)
         }
         .allowsHitTesting(false)
-        .opacity(isTouching || !showsDirectionalHints ? 0.0 : 1.0)
+        .opacity(isTouching || !showsDirectionalHints || flickGuideDisplayMode != .fourDirections ? 0.0 : 1.0)
+    }
+
+    private var downDirectionalHints: some View {
+        HStack(spacing: 2) {
+            ForEach(Array(downDirectionalHintTexts.enumerated()), id: \.offset) { _, text in
+                Text(text)
+                    .font(downDirectionalHintFont(for: text))
+                    .minimumScaleFactor(0.1)
+                    .lineLimit(1)
+                    .allowsTightening(true)
+                    .fixedSize(horizontal: true, vertical: false)
+                    .foregroundStyle(keyLabelColor.opacity(0.55))
+            }
+        }
+        .padding(.horizontal, 4)
+        .offset(y: Metrics.directionHintVerticalOffset)
+        .allowsHitTesting(false)
+        .opacity(isTouching || flickGuideDisplayMode != .down ? 0.0 : 1.0)
     }
 
     @ViewBuilder
@@ -199,6 +254,33 @@ struct FlickKeyView: View {
             return .system(size: 9, weight: .semibold, design: .rounded)
         default:
             return .system(size: 10, weight: .semibold, design: .rounded)
+        }
+    }
+
+    private var downDirectionalHintTexts: [String] {
+        kana.orderedDirectionalGuideTexts(for: flickDirectionProfile)
+    }
+
+    private func downDirectionalHintFont(for text: String) -> Font {
+        if isDakutenGuideText(text) {
+            return .system(size: 12, weight: .bold, design: .rounded)
+        }
+
+        if text == "小" {
+            return .system(size: 6, weight: .semibold, design: .rounded)
+        }
+
+        switch text.count {
+        case 7...:
+            return .system(size: 5, weight: .medium, design: .rounded)
+        case 5...6:
+            return .system(size: 6, weight: .medium, design: .rounded)
+        case 3...4:
+            return .system(size: 7, weight: .semibold, design: .rounded)
+        case 2:
+            return .system(size: 8, weight: .semibold, design: .rounded)
+        default:
+            return .system(size: 9, weight: .semibold, design: .rounded)
         }
     }
 
