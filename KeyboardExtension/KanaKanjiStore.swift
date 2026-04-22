@@ -145,9 +145,7 @@ final class KanaKanjiStore {
             return cachedUserDictionary
         }
 
-        guard let defaults,
-              let dictionaryData = defaults.data(forKey: KanaKanjiStorageKeys.userDictionary),
-              let decoded = try? JSONDecoder().decode([String: [String]].self, from: dictionaryData) else {
+        guard let decoded = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.userDictionary) else {
             cachedUserDictionary = [:]
             return [:]
         }
@@ -180,28 +178,9 @@ final class KanaKanjiStore {
     }
 
     func suppressedCandidatesByReading() -> [String: Set<String>] {
-        guard let defaults else {
-            return [:]
-        }
-
-        let decodedDictionary: [String: [String]]
-
-        if let suppressionData = defaults.data(forKey: KanaKanjiStorageKeys.suppressionVocabulary),
-           let decoded = try? JSONDecoder().decode([String: [String]].self, from: suppressionData) {
-            decodedDictionary = decoded
-        } else if let rawDictionary = defaults.dictionary(forKey: KanaKanjiStorageKeys.suppressionVocabulary) {
-            var decoded: [String: [String]] = [:]
-
-            for (reading, rawCandidates) in rawDictionary {
-                if let candidates = rawCandidates as? [String] {
-                    decoded[reading] = candidates
-                } else if let candidates = rawCandidates as? [Any] {
-                    decoded[reading] = candidates.compactMap { $0 as? String }
-                }
-            }
-
-            decodedDictionary = decoded
-        } else {
+        guard let decodedDictionary = decodedStringArrayDictionary(
+            forKey: KanaKanjiStorageKeys.suppressionVocabulary
+        ) else {
             return [:]
         }
 
@@ -317,6 +296,33 @@ final class KanaKanjiStore {
         }
 
         defaults.set(encoded, forKey: KanaKanjiStorageKeys.userDictionary)
+    }
+
+    private func decodedStringArrayDictionary(forKey key: String) -> [String: [String]]? {
+        guard let defaults else {
+            return nil
+        }
+
+        if let dictionaryData = defaults.data(forKey: key),
+           let decoded = try? JSONDecoder().decode([String: [String]].self, from: dictionaryData) {
+            return decoded
+        }
+
+        guard let rawDictionary = defaults.dictionary(forKey: key) else {
+            return nil
+        }
+
+        var decoded: [String: [String]] = [:]
+
+        for (reading, rawCandidates) in rawDictionary {
+            if let candidates = rawCandidates as? [String] {
+                decoded[reading] = candidates
+            } else if let candidates = rawCandidates as? [Any] {
+                decoded[reading] = candidates.compactMap { $0 as? String }
+            }
+        }
+
+        return decoded
     }
 
     private func normalizeDictionary(_ dictionary: [String: [String]]) -> [String: [String]] {

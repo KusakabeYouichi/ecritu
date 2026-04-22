@@ -11,6 +11,9 @@ struct ContentView: View {
         static let numberLayoutMode = "numberLayoutMode"
         static let accentPalette = "accentPalette"
         static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
+        static let kanaFlickGuideDisplayMode = "flickGuideDisplayModeKana"
+        static let latinFlickGuideDisplayMode = "flickGuideDisplayModeLatin"
+        static let numberFlickGuideDisplayMode = "flickGuideDisplayModeNumber"
         static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
@@ -98,6 +101,22 @@ struct ContentView: View {
             switch self {
             case .calculette: return "calculette"
             case .telephone: return "téléphone"
+            }
+        }
+    }
+
+    private enum FlickGuideDisplayOption: String, CaseIterable, Identifiable {
+        case off
+        case fourDirections
+        case down
+
+        var id: String { rawValue }
+
+        var title: String {
+            switch self {
+            case .off: return "オフ"
+            case .fourDirections: return "4方向"
+            case .down: return "下"
             }
         }
     }
@@ -222,10 +241,22 @@ struct ContentView: View {
     private var keyboardBackgroundThemeRawValue: String = KeyboardBackgroundThemeOption.bleu.rawValue
 
     @AppStorage(
-        SettingsKeys.showsFlickGuideCharacters,
+        SettingsKeys.kanaFlickGuideDisplayMode,
         store: Self.sharedDefaults
     )
-    private var showsFlickGuideCharacters: Bool = true
+    private var kanaFlickGuideDisplayModeRawValue: String = FlickGuideDisplayOption.fourDirections.rawValue
+
+    @AppStorage(
+        SettingsKeys.latinFlickGuideDisplayMode,
+        store: Self.sharedDefaults
+    )
+    private var latinFlickGuideDisplayModeRawValue: String = FlickGuideDisplayOption.fourDirections.rawValue
+
+    @AppStorage(
+        SettingsKeys.numberFlickGuideDisplayMode,
+        store: Self.sharedDefaults
+    )
+    private var numberFlickGuideDisplayModeRawValue: String = FlickGuideDisplayOption.fourDirections.rawValue
 
     @AppStorage(
         SettingsKeys.keyRepeatInitialDelay,
@@ -312,6 +343,24 @@ struct ContentView: View {
         }
     }
 
+    private var kanaFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
+        rawValueSelection(from: kanaFlickGuideDisplayModeRawValue, default: .fourDirections) {
+            kanaFlickGuideDisplayModeRawValue = $0
+        }
+    }
+
+    private var latinFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
+        rawValueSelection(from: latinFlickGuideDisplayModeRawValue, default: .fourDirections) {
+            latinFlickGuideDisplayModeRawValue = $0
+        }
+    }
+
+    private var numberFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
+        rawValueSelection(from: numberFlickGuideDisplayModeRawValue, default: .fourDirections) {
+            numberFlickGuideDisplayModeRawValue = $0
+        }
+    }
+
     private var kanaKanjiCandidateSourceModeSelection: Binding<KanaKanjiCandidateSourceModeOption> {
         rawValueSelection(from: kanaKanjiCandidateSourceModeRawValue, default: .surface) {
             kanaKanjiCandidateSourceModeRawValue = $0
@@ -336,6 +385,35 @@ struct ContentView: View {
 
     private func isAtRepeatDefault(_ value: Double, default defaultValue: Double) -> Bool {
         abs(value - defaultValue) <= RepeatSettings.snapThreshold
+    }
+
+    private func migrateLegacyFlickGuideSettingIfNeeded() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let guideModeKeys = [
+            SettingsKeys.kanaFlickGuideDisplayMode,
+            SettingsKeys.latinFlickGuideDisplayMode,
+            SettingsKeys.numberFlickGuideDisplayMode
+        ]
+
+        let hasStoredNewGuideMode = guideModeKeys.contains { key in
+            defaults.object(forKey: key) != nil
+        }
+
+        guard !hasStoredNewGuideMode,
+              let legacyShowsGuide = defaults.object(forKey: SettingsKeys.showsFlickGuideCharacters) as? Bool else {
+            return
+        }
+
+        let migratedMode = legacyShowsGuide
+            ? FlickGuideDisplayOption.fourDirections.rawValue
+            : FlickGuideDisplayOption.off.rawValue
+
+        guideModeKeys.forEach { key in
+            defaults.set(migratedMode, forKey: key)
+        }
     }
 
     private var keyRepeatInitialDelayBinding: Binding<Double> {
@@ -529,44 +607,44 @@ struct ContentView: View {
         loadBundledInitialDictionaryEntries(filename: "InitialSupprVocabMigration")
     }
 
-    private func migrateInitialUserDictionaryIfNeeded() {
+    private func migrateInitialDictionaryIfNeeded(
+        migrationFlagKey: String,
+        dictionaryKey: String,
+        initialDictionaryLoader: () -> [String: [String]]
+    ) {
         guard let defaults = Self.sharedDefaults,
-              !defaults.bool(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated) else {
+              !defaults.bool(forKey: migrationFlagKey) else {
             return
         }
 
-        let initialDictionary = loadBundledInitialUserDictionaryEntries()
+        let initialDictionary = initialDictionaryLoader()
 
         guard !initialDictionary.isEmpty else {
             return
         }
 
         let currentDictionary = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+            loadDictionaryEntries(forKey: dictionaryKey)
         )
         let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
-        saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
-        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
+        saveDictionaryEntries(merged, forKey: dictionaryKey)
+        defaults.set(true, forKey: migrationFlagKey)
+    }
+
+    private func migrateInitialUserDictionaryIfNeeded() {
+        migrateInitialDictionaryIfNeeded(
+            migrationFlagKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated,
+            dictionaryKey: SettingsKeys.kanaKanjiAjoutVocabulary,
+            initialDictionaryLoader: loadBundledInitialUserDictionaryEntries
+        )
     }
 
     private func migrateInitialSuppressionDictionaryIfNeeded() {
-        guard let defaults = Self.sharedDefaults,
-              !defaults.bool(forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated) else {
-            return
-        }
-
-        let initialDictionary = loadBundledInitialSuppressionDictionaryEntries()
-
-        guard !initialDictionary.isEmpty else {
-            return
-        }
-
-        let currentDictionary = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        migrateInitialDictionaryIfNeeded(
+            migrationFlagKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated,
+            dictionaryKey: SettingsKeys.kanaKanjiSuppressionVocabulary,
+            initialDictionaryLoader: loadBundledInitialSuppressionDictionaryEntries
         )
-        let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
-        saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated)
     }
 
     private func saveDictionaryEntries(_ entriesByReading: [String: [String]], forKey key: String) {
@@ -1482,13 +1560,39 @@ struct ContentView: View {
                     .settingsCardStyle()
 
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("表示")
+                        Text("ガイド文字表示")
                             .font(.headline)
 
-                        Toggle("フリックガイド文字", isOn: $showsFlickGuideCharacters)
-                            .tint(Color.orange)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("かな入力")
+                                .font(.subheadline.weight(.semibold))
+                            Picker("かな入力", selection: kanaFlickGuideDisplayModeSelection) {
+                                ForEach(FlickGuideDisplayOption.allCases) { option in
+                                    Text(option.title).tag(option)
+                                }
+                            }
+                            .pickerStyle(.segmented)
 
-                        Text("各キーの4方向に表示するガイド文字のON/OFFを切り替えます。")
+                            Text("ラテン文字入力")
+                                .font(.subheadline.weight(.semibold))
+                            Picker("ラテン文字入力", selection: latinFlickGuideDisplayModeSelection) {
+                                ForEach(FlickGuideDisplayOption.allCases) { option in
+                                    Text(option.title).tag(option)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+
+                            Text("数字入力")
+                                .font(.subheadline.weight(.semibold))
+                            Picker("数字入力", selection: numberFlickGuideDisplayModeSelection) {
+                                ForEach(FlickGuideDisplayOption.allCases) { option in
+                                    Text(option.title).tag(option)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+                        }
+
+                        Text("入力モードごとにガイド表示を選択します。『下』はメイン文字の下にガイド文字を横並びで表示します。")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
@@ -1874,6 +1978,7 @@ struct ContentView: View {
                 .padding(20)
             }
             .onAppear {
+                migrateLegacyFlickGuideSettingIfNeeded()
                 migrateInitialUserDictionaryIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
                 loadUserDictionaryEntries()

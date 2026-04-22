@@ -24,7 +24,9 @@ struct KeyboardRootView: View {
     let spaceToastTrigger: Int
     let returnKeySystemImageName: String?
     let isReturnKeyEnabled: Bool
-    let showsFlickGuideCharacters: Bool
+    let kanaFlickGuideDisplayMode: FlickGuideDisplayMode
+    let latinFlickGuideDisplayMode: FlickGuideDisplayMode
+    let numberFlickGuideDisplayMode: FlickGuideDisplayMode
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
     let composingText: String
@@ -220,6 +222,27 @@ struct KeyboardRootView: View {
         accentPalette.color
     }
 
+    private var currentFlickGuideDisplayMode: FlickGuideDisplayMode {
+        switch inputMode {
+        case .kana:
+            return kanaFlickGuideDisplayMode
+        case .latin:
+            return latinFlickGuideDisplayMode
+        case .number:
+            return numberFlickGuideDisplayMode
+        case .emoji:
+            return .off
+        }
+    }
+
+    private var showsFlickGuideCharacters: Bool {
+        currentFlickGuideDisplayMode == .fourDirections
+    }
+
+    private var isCurrentFlickGuideDisplayOff: Bool {
+        currentFlickGuideDisplayMode == .off
+    }
+
     private var keyboardBackgroundTheme: KeyboardBackgroundTheme {
         KeyboardBackgroundTheme(rawValue: keyboardBackgroundThemeRawValue) ?? .bleu
     }
@@ -351,34 +374,38 @@ struct KeyboardRootView: View {
                     up: "",
                     right: modeSwitchText,
                     down: "…",
-                    left: ""
+                    left: "",
+                    usesProfileDependentGuideOrder: false
                 )
             case .smallKana:
                 return FlickKanaSet(
                     label: "小",
                     center: "小",
-                    up: "゜",
-                    right: modeSwitchText,
-                    down: "…",
-                    left: "゛"
+                    up: "゛",
+                    right: "…",
+                    down: "゜",
+                    left: modeSwitchText,
+                    usesProfileDependentGuideOrder: false
                 )
             case .dakuten:
                 return FlickKanaSet(
                     label: "゛",
                     center: "゛",
-                    up: "゜",
-                    right: modeSwitchText,
-                    down: "…",
-                    left: "゛"
+                    up: "゛",
+                    right: "…",
+                    down: "゜",
+                    left: modeSwitchText,
+                    usesProfileDependentGuideOrder: false
                 )
             case .handakuten:
                 return FlickKanaSet(
                     label: "゜",
                     center: "゜",
-                    up: "゜",
-                    right: modeSwitchText,
-                    down: "…",
-                    left: "゛"
+                    up: "゛",
+                    right: "…",
+                    down: "゜",
+                    left: modeSwitchText,
+                    usesProfileDependentGuideOrder: false
                 )
             }
         }
@@ -386,10 +413,11 @@ struct KeyboardRootView: View {
         return FlickKanaSet(
             label: "小",
             center: "小",
-            up: "゜",
-            right: modeSwitchText,
-            down: "…",
-            left: "゛"
+            up: "゛",
+            right: "…",
+            down: "゜",
+            left: modeSwitchText,
+            usesProfileDependentGuideOrder: false
         )
     }
 
@@ -468,7 +496,14 @@ struct KeyboardRootView: View {
     private let mainFlickKeyHeight: CGFloat = 46
 
     private var kanaThreeByThreeMainLabelFontSize: CGFloat {
-        showsFlickGuideCharacters ? 24 : 26
+        switch currentFlickGuideDisplayMode {
+        case .off:
+            return 26
+        case .fourDirections:
+            return 24
+        case .down:
+            return 23
+        }
     }
 
     private var modifierMainLabelFontSize: CGFloat {
@@ -1451,6 +1486,8 @@ struct KeyboardRootView: View {
         .onChange(of: spaceToastTrigger) { _ in
             showInitialSpaceToastIfNeeded()
         }
+        .environment(\.flickDirectionProfile, directionProfile)
+        .environment(\.flickGuideDisplayMode, currentFlickGuideDisplayMode)
         .environment(\.keyboardAccentColor, accentColor)
     }
 
@@ -1693,7 +1730,7 @@ struct KeyboardRootView: View {
     private func latinFlickIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
         guard inputMode == .latin,
               latinLayoutMode == .flick,
-              !showsFlickGuideCharacters else {
+                            isCurrentFlickGuideDisplayOff else {
             return nil
         }
 
@@ -1726,7 +1763,7 @@ struct KeyboardRootView: View {
 
     private func numberPunctuationIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
         guard inputMode == .number,
-              !showsFlickGuideCharacters,
+              isCurrentFlickGuideDisplayOff,
                             kana.center == "." || kana.center == "'" || kana.center == "(" else {
             return nil
         }
@@ -1759,7 +1796,7 @@ struct KeyboardRootView: View {
 
     private var punctuationIdleReplacement: AnyView? {
         guard inputMode == .kana,
-              !showsFlickGuideCharacters else {
+                            isCurrentFlickGuideDisplayOff else {
             return nil
         }
 
@@ -1839,7 +1876,7 @@ struct KeyboardRootView: View {
     }
 
     private var modifierIdleReplacement: AnyView? {
-        guard inputMode == .kana, !showsFlickGuideCharacters else {
+        guard inputMode == .kana, isCurrentFlickGuideDisplayOff else {
             return nil
         }
 
@@ -1902,7 +1939,9 @@ struct KeyboardRootView: View {
         spaceToastTrigger: 1,
         returnKeySystemImageName: nil,
         isReturnKeyEnabled: true,
-        showsFlickGuideCharacters: true,
+        kanaFlickGuideDisplayMode: .fourDirections,
+        latinFlickGuideDisplayMode: .fourDirections,
+        numberFlickGuideDisplayMode: .fourDirections,
         keyRepeatInitialDelay: 0.5,
         keyRepeatInterval: 0.1,
         composingText: "かな",

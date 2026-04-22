@@ -81,6 +81,25 @@ struct FlickKanaSet: Identifiable, Hashable {
     let right: String
     let down: String
     let left: String
+    let usesProfileDependentGuideOrder: Bool
+
+    init(
+        label: String,
+        center: String,
+        up: String,
+        right: String,
+        down: String,
+        left: String,
+        usesProfileDependentGuideOrder: Bool = true
+    ) {
+        self.label = label
+        self.center = center
+        self.up = up
+        self.right = right
+        self.down = down
+        self.left = left
+        self.usesProfileDependentGuideOrder = usesProfileDependentGuideOrder
+    }
 
     var id: String { label }
 
@@ -99,6 +118,10 @@ struct FlickKanaSet: Identifiable, Hashable {
         case .ecritu:
             return self
         case .apple:
+            guard usesProfileDependentGuideOrder else {
+                return self
+            }
+
             // Apple profile order is [left, up, right, down] while
             // ecritu profile order is [up, right, left, down].
             return FlickKanaSet(
@@ -107,8 +130,38 @@ struct FlickKanaSet: Identifiable, Hashable {
                 up: right,
                 right: left,
                 down: down,
-                left: up
+                left: up,
+                usesProfileDependentGuideOrder: usesProfileDependentGuideOrder
             )
+        }
+    }
+
+    func orderedDirectionalGuideTexts(for profile: FlickDirectionProfile) -> [String] {
+        let directionalOrder: [FlickDirection]
+
+        if usesProfileDependentGuideOrder {
+            switch profile {
+            case .apple:
+                directionalOrder = [.left, .up, .right, .down]
+            case .ecritu:
+                directionalOrder = [.up, .right, .left, .down]
+            }
+        } else {
+            directionalOrder = [.left, .up, .right, .down]
+        }
+
+        var seen = Set<String>()
+
+        return directionalOrder.compactMap { direction in
+            let text = output(for: direction)
+
+            guard !text.isEmpty,
+                  text != center,
+                  seen.insert(text).inserted else {
+                return nil
+            }
+
+            return text
         }
     }
 }

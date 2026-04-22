@@ -36,6 +36,9 @@ final class KeyboardViewController: UIInputViewController {
         static let latinLayoutMode = "latinLayoutMode"
         static let accentPalette = "accentPalette"
         static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
+        static let kanaFlickGuideDisplayMode = "flickGuideDisplayModeKana"
+        static let latinFlickGuideDisplayMode = "flickGuideDisplayModeLatin"
+        static let numberFlickGuideDisplayMode = "flickGuideDisplayModeNumber"
         static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
@@ -67,7 +70,9 @@ final class KeyboardViewController: UIInputViewController {
         let spaceToastTrigger: Int
         let returnKeySystemImageName: String?
         let isReturnKeyEnabled: Bool
-        let showsFlickGuideCharacters: Bool
+        let kanaFlickGuideDisplayMode: FlickGuideDisplayMode
+        let latinFlickGuideDisplayMode: FlickGuideDisplayMode
+        let numberFlickGuideDisplayMode: FlickGuideDisplayMode
         let keyRepeatInitialDelay: TimeInterval
         let keyRepeatInterval: TimeInterval
         let showsNextKeyboardKey: Bool
@@ -274,6 +279,24 @@ final class KeyboardViewController: UIInputViewController {
         return min(max(number.doubleValue, range.lowerBound), range.upperBound)
     }
 
+    private func sharedFlickGuideDisplayModeValue(
+        from defaults: UserDefaults?,
+        key: String
+    ) -> FlickGuideDisplayMode {
+        if let rawValue = defaults?.string(forKey: key),
+           let mode = FlickGuideDisplayMode(rawValue: rawValue) {
+            return mode
+        }
+
+        let legacyShowsGuide = sharedBoolValue(
+            from: defaults,
+            key: SharedDefaultsKeys.showsFlickGuideCharacters,
+            fallback: true
+        )
+
+        return legacyShowsGuide ? .fourDirections : .off
+    }
+
     private func currentKanaKanjiCandidateSourceMode(from defaults: UserDefaults?) -> KanaKanjiCandidateSourceMode {
         let rawValue = sharedStringValue(
             from: defaults,
@@ -340,10 +363,17 @@ final class KeyboardViewController: UIInputViewController {
         let hasAnyText = textDocumentProxy.hasText
         let returnKeySystemImageName: String? = returnKeyType == .search ? "magnifyingglass" : nil
         let isReturnKeyEnabled = returnKeyType == .search ? hasAnyText : true
-        let showsFlickGuideCharacters = sharedBoolValue(
+        let kanaFlickGuideDisplayMode = sharedFlickGuideDisplayModeValue(
             from: sharedDefaults,
-            key: SharedDefaultsKeys.showsFlickGuideCharacters,
-            fallback: true
+            key: SharedDefaultsKeys.kanaFlickGuideDisplayMode
+        )
+        let latinFlickGuideDisplayMode = sharedFlickGuideDisplayModeValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.latinFlickGuideDisplayMode
+        )
+        let numberFlickGuideDisplayMode = sharedFlickGuideDisplayModeValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.numberFlickGuideDisplayMode
         )
         let keyRepeatInitialDelay = sharedDoubleValue(
             from: sharedDefaults,
@@ -370,7 +400,9 @@ final class KeyboardViewController: UIInputViewController {
             spaceToastTrigger: spaceToastTrigger,
             returnKeySystemImageName: returnKeySystemImageName,
             isReturnKeyEnabled: isReturnKeyEnabled,
-            showsFlickGuideCharacters: showsFlickGuideCharacters,
+            kanaFlickGuideDisplayMode: kanaFlickGuideDisplayMode,
+            latinFlickGuideDisplayMode: latinFlickGuideDisplayMode,
+            numberFlickGuideDisplayMode: numberFlickGuideDisplayMode,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
             showsNextKeyboardKey: needsInputModeSwitchKey,
@@ -437,7 +469,9 @@ final class KeyboardViewController: UIInputViewController {
             spaceToastTrigger: configuration.spaceToastTrigger,
             returnKeySystemImageName: configuration.returnKeySystemImageName,
             isReturnKeyEnabled: configuration.isReturnKeyEnabled,
-            showsFlickGuideCharacters: configuration.showsFlickGuideCharacters,
+            kanaFlickGuideDisplayMode: configuration.kanaFlickGuideDisplayMode,
+            latinFlickGuideDisplayMode: configuration.latinFlickGuideDisplayMode,
+            numberFlickGuideDisplayMode: configuration.numberFlickGuideDisplayMode,
             keyRepeatInitialDelay: configuration.keyRepeatInitialDelay,
             keyRepeatInterval: configuration.keyRepeatInterval,
             composingText: configuration.composingText,
