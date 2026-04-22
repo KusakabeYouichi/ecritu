@@ -1,6 +1,12 @@
 import Foundation
 
 final class KanaKanjiConverter {
+    private struct CandidateCacheKey: Hashable {
+        let reading: String
+        let limit: Int
+        let modeRawValue: String
+    }
+
     private enum InflectionClass {
         static let adjectiveI = "adjective-i"
         static let ichidan = "ichidan"
@@ -236,9 +242,13 @@ final class KanaKanjiConverter {
     private var mergedSystemDictionary: [String: [String]] = KanaKanjiSeedDictionary.seed
     private var systemCandidateSources: [String: [String: Set<String>]] = [:]
     private var systemInflectionClasses: [String: [String: String]] = [:]
+    private var candidateCache: [CandidateCacheKey: [String]] = [:]
+    private var candidateCacheOrder: [CandidateCacheKey] = []
     private var hasSystemInflectionMetadata = false
     private var isSystemDictionaryLoading = false
     private var isSystemDictionaryLoaded = false
+
+    private let candidateCacheLimit = 96
 
     init(store: KanaKanjiStore) {
         self.store = store
@@ -335,6 +345,7 @@ final class KanaKanjiConverter {
 
                 self.hasSystemInflectionMetadata = !inflectionDictionary.isEmpty
 
+                self.invalidateCandidateCache()
                 self.isSystemDictionaryLoaded = true
                 self.isSystemDictionaryLoading = false
             }
@@ -361,9 +372,19 @@ final class KanaKanjiConverter {
             return []
         }
 
+        let cacheKey = CandidateCacheKey(
+            reading: normalizedReading,
+            limit: limit,
+            modeRawValue: systemCandidateMode.rawValue
+        )
+
+        if let cachedCandidates = stateQueue.sync(execute: { candidateCache[cacheKey] }) {
+            return cachedCandidates
+        }
+
         let userDictionary = store.userDictionary()
         let initialUserDictionary = store.initialUserDictionary()
-        let learningScores = store.learningScores()
+        let learningScoresForReading = store.learningScores(for: normalizedReading)
         let suppressedCandidatesByReading = store.suppressedCandidatesByReading()
         var scores: [String: Int] = [:]
         let systemCandidates = systemCandidates(
@@ -398,17 +419,31 @@ final class KanaKanjiConverter {
             to: &scores
         )
 
-        addCandidates(
-            postfixPassthroughCandidates(
-                for: normalizedReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode,
-                limit: limit * 3
-            ),
-            baseScore: 1040,
-            to: &scores
+        let quickPostfixCandidates = quickPostfixCandidatesUsingCachedStem(
+            for: normalizedReading,
+            limit: limit,
+            systemCandidateMode: systemCandidateMode
         )
+
+        if !quickPostfixCandidates.isEmpty {
+            addCandidates(
+                quickPostfixCandidates,
+                baseScore: 1120,
+                to: &scores
+            )
+        } else {
+            addCandidates(
+                postfixPassthroughCandidates(
+                    for: normalizedReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode,
+                    limit: limit * 3
+                ),
+                baseScore: 1040,
+                to: &scores
+            )
+        }
 
         applyInflectionRankingHeuristics(
             for: normalizedReading,
@@ -419,8 +454,7 @@ final class KanaKanjiConverter {
         )
 
         applyLearning(
-            for: normalizedReading,
-            learningScores: learningScores,
+            learningScoresForReading,
             to: &scores
         )
 
@@ -446,7 +480,22 @@ final class KanaKanjiConverter {
             return lhs < rhs
         }
 
-        return Array(sortedCandidates.prefix(limit))
+        let finalCandidates = Array(sortedCandidates.prefix(limit))
+
+        stateQueue.sync {
+            if candidateCache[cacheKey] == nil {
+                candidateCacheOrder.append(cacheKey)
+            }
+
+            candidateCache[cacheKey] = finalCandidates
+
+            while candidateCacheOrder.count > candidateCacheLimit {
+                let removedKey = candidateCacheOrder.removeFirst()
+                candidateCache.removeValue(forKey: removedKey)
+            }
+        }
+
+        return finalCandidates
     }
 
     func learn(reading: String, candidate: String) {
@@ -460,6 +509,10 @@ final class KanaKanjiConverter {
 
         store.addUserEntry(reading: normalizedReading, candidate: trimmedCandidate)
         store.incrementLearning(reading: normalizedReading, candidate: trimmedCandidate)
+
+        stateQueue.sync {
+            invalidateCandidateCache()
+        }
     }
 
     private func addCandidates(
@@ -473,21 +526,52 @@ final class KanaKanjiConverter {
     }
 
     private func applyLearning(
-        for reading: String,
-        learningScores: [String: Int],
+        _ learningScoresForReading: [String: Int],
         to scores: inout [String: Int]
     ) {
-        let prefix = reading + "\t"
+        for (candidate, count) in learningScoresForReading {
+            scores[candidate, default: 0] += count * 64
+        }
+    }
 
-        for (key, count) in learningScores where key.hasPrefix(prefix) {
-            let candidate = String(key.dropFirst(prefix.count))
+    private func invalidateCandidateCache() {
+        candidateCache.removeAll(keepingCapacity: true)
+        candidateCacheOrder.removeAll(keepingCapacity: true)
+    }
 
-            guard !candidate.isEmpty else {
+    private func quickPostfixCandidatesUsingCachedStem(
+        for reading: String,
+        limit: Int,
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard reading.count >= 2,
+              limit > 0 else {
+            return []
+        }
+
+        for passthrough in Self.postfixPassthroughSuffixes where reading.hasSuffix(passthrough) {
+            let stem = String(reading.dropLast(passthrough.count))
+
+            guard !stem.isEmpty else {
                 continue
             }
 
-            scores[candidate, default: 0] += count * 64
+            let stemKey = CandidateCacheKey(
+                reading: stem,
+                limit: limit,
+                modeRawValue: systemCandidateMode.rawValue
+            )
+
+            guard let stemCandidates = stateQueue.sync(execute: { candidateCache[stemKey] }),
+                  !stemCandidates.isEmpty else {
+                continue
+            }
+
+            let derived = stemCandidates.map { $0 + passthrough }
+            return Array(uniqueCandidates(from: derived).prefix(limit))
         }
+
+        return []
     }
 
     private func applyInflectionRankingHeuristics(

@@ -93,17 +93,12 @@ extension KeyboardViewController {
         ).first
 
         let committedText = preferredCandidate ?? sourceText
-
-        // Commit marked text first, then replace deterministically when needed.
-        textDocumentProxy.unmarkText()
-
-        if committedText != sourceText {
-            deleteBackwardCharacterCount(sourceText.count)
-            textDocumentProxy.insertText(committedText)
-        }
-
-        kanaKanjiConverter.learn(reading: sourceReading, candidate: committedText)
-        clearComposingState()
+        commitComposingText(
+            sourceText: sourceText,
+            sourceReading: sourceReading,
+            committedText: committedText,
+            learn: true
+        )
     }
 
     func handleDeleteBackward() {
@@ -190,17 +185,17 @@ extension KeyboardViewController {
             return
         }
 
-        if var conversion = activeConversion {
+        if let conversion = activeConversion {
             guard conversion.candidates.indices.contains(index) else {
                 return
             }
 
-            if index != conversion.selectedIndex {
-                replaceActiveConversionText(with: conversion.candidates[index], conversion: &conversion)
-                activeConversion = conversion
-            }
-
-            commitActiveConversion(learn: true)
+            let selectedCandidate = conversion.candidates[index]
+            commitActiveConversion(
+                conversion,
+                committedText: selectedCandidate,
+                learn: true
+            )
             refreshKeyboardStateAsync()
             return
         }
@@ -219,10 +214,12 @@ extension KeyboardViewController {
             return
         }
 
-        replaceComposingText(with: candidates[index])
-        kanaKanjiConverter.learn(reading: composingReading, candidate: candidates[index])
-        textDocumentProxy.unmarkText()
-        clearComposingState()
+        commitComposingText(
+            sourceText: composingRawText,
+            sourceReading: composingReading,
+            committedText: candidates[index],
+            learn: true
+        )
         refreshKeyboardStateAsync()
     }
 
@@ -338,20 +335,67 @@ extension KeyboardViewController {
         composingReading = ""
     }
 
+    func commitComposingText(
+        sourceText: String,
+        sourceReading: String,
+        committedText: String,
+        learn: Bool
+    ) {
+        clearMarkedComposingText()
+
+        // If source text still exists as plain text after clearing marked text, replace it.
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        if !sourceText.isEmpty,
+           contextBeforeInput.hasSuffix(sourceText) {
+            deleteBackwardCharacterCount(sourceText.count)
+        }
+
+        textDocumentProxy.insertText(committedText)
+
+        if learn {
+            kanaKanjiConverter.learn(reading: sourceReading, candidate: committedText)
+        }
+
+        clearComposingState()
+    }
+
     func commitActiveConversion(learn: Bool) {
         guard let activeConversion else {
             return
         }
 
+        commitActiveConversion(
+            activeConversion,
+            committedText: activeConversion.committedText,
+            learn: learn
+        )
+    }
+
+    func commitActiveConversion(
+        _ conversion: ActiveConversion,
+        committedText: String,
+        learn: Bool
+    ) {
+        clearMarkedComposingText()
+
+        // If source text still exists as plain text after clearing marked text, replace it.
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        if !conversion.committedText.isEmpty,
+           contextBeforeInput.hasSuffix(conversion.committedText) {
+            deleteBackwardCharacterCount(conversion.committedText.count)
+        }
+
+        textDocumentProxy.insertText(committedText)
+
         if learn {
             kanaKanjiConverter.learn(
-                reading: activeConversion.reading,
-                candidate: activeConversion.committedText
+                reading: conversion.reading,
+                candidate: committedText
             )
         }
 
-        textDocumentProxy.unmarkText()
         self.activeConversion = nil
+        clearComposingState()
     }
 
     func synchronizeConversionContextIfNeeded() {
