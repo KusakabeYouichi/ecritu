@@ -8,10 +8,20 @@
 
 /* Begin PBXBuildFile section */
 		0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
+		0BC5EF45F0322335FA0A09EF /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 95F39BD8B372ACD5AD63CF28 /* ÉcrituPremierVocab.json */; };
 		11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */; };
+		1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
 		1C452267470AD5017D0E2C4B /* KeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		256E54F1234A13909B92EBC9 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
+		2B8DF44D16D0C01219D158CF /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
+		2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
+		36EEA841B7E5EC402DA055A5 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */; };
+		37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
+		38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
+		3B731B693D5ABC86B422C333 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
+		3C07669B9A8D1BE50AAA6B96 /* kana_kanji_inflection_dictionary.json in Resources */ = {isa = PBXBuildFile; fileRef = FE4F401291F2BB6C5C0731DD /* kana_kanji_inflection_dictionary.json */; };
 		4295AC8BC709B3CD3FE6E133 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF3F61E6678EA62C2C94678 /* ContentView.swift */; };
 		449ECACEDBC8A2BBA1DEF8E5 /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
 		494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */; };
@@ -21,24 +31,22 @@
 		55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
 		62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */; };
 		62FA4BB05C06F7163B788B14 /* KeyboardModeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */; };
+		64741B96C08B7301E67CDF92 /* kana_kanji_dictionary.sqlite in Resources */ = {isa = PBXBuildFile; fileRef = 89B0B947A92CC08F80E861BA /* kana_kanji_dictionary.sqlite */; };
+		80C53EDAEAB5510D13B9CAFB /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */; };
+		84BF13C3A732FB79236E8F11 /* ÉcrituSecondVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = A89F6800DC1076A0F756D7A5 /* ÉcrituSecondVocab.json */; };
 		86EE26729B525F6D695B17FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1791BF31100B74EA2421EB52 /* Assets.xcassets */; };
 		8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807A57473C85475BCAA585B /* EcrituApp.swift */; };
 		8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
+		8D78613535A703BDB593E778 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
 		8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
-		B8F42111A1B2C3D4E5F60101 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = B8F42111A1B2C3D4E5F60201 /* ÉcrituPremierVocab.json */; };
-		B8F42111A1B2C3D4E5F60102 /* kana_kanji_candidate_sources.json in Resources */ = {isa = PBXBuildFile; fileRef = B8F42111A1B2C3D4E5F60202 /* kana_kanji_candidate_sources.json */; };
-		B8F42111A1B2C3D4E5F60103 /* kana_kanji_inflection_dictionary.json in Resources */ = {isa = PBXBuildFile; fileRef = B8F42111A1B2C3D4E5F60203 /* kana_kanji_inflection_dictionary.json */; };
-		A17C6B0C9CFD4CE5A2C1D702 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */; };
-		C17C6B0C9CFD4CE5A2C1D702 /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */; };
-		F24A3C1A9E9A4E2C9A020001 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */; };
-		F24A3C1A9E9A4E2C9A020002 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010002 /* KanaTextNormalizer.swift */; };
-		F24A3C1A9E9A4E2C9A020003 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010003 /* KanaKanjiStore.swift */; };
-		F24A3C1A9E9A4E2C9A020004 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010004 /* KanaKanjiConverter.swift */; };
-		F24A3C1A9E9A4E2C9A020005 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010005 /* KanaKanjiSeedDictionary.swift */; };
-		F24A3C1A9E9A4E2C9A020006 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010006 /* KeyboardViewController+InputHandling.swift */; };
+		9CD485B6F82D22898978D8C4 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */; };
 		B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105353784C776E1A40C7A8AE /* SettingsModels.swift */; };
+		C61478A2E54A654F56A2799C /* kana_kanji_candidate_sources.json in Resources */ = {isa = PBXBuildFile; fileRef = B7C1B1FD63A967B3C35EAB12 /* kana_kanji_candidate_sources.json */; };
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
 		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
+		E21AE995B20E7DF2B75B6F82 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
+		E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */; };
+		F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -66,42 +74,58 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiStore.swift; sourceTree = "<group>"; };
 		105353784C776E1A40C7A8AE /* SettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModels.swift; sourceTree = "<group>"; };
 		175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaLayout.swift; sourceTree = "<group>"; };
 		1791BF31100B74EA2421EB52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialAjoutVocabMigration.json; sourceTree = "<group>"; };
+		273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiTypes.swift; sourceTree = "<group>"; };
+		280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiSeedDictionary.swift; sourceTree = "<group>"; };
 		31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeyComponents.swift; sourceTree = "<group>"; };
 		39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DakutenDuckIcon.swift; sourceTree = "<group>"; };
-		4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = KeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Edition.xcconfig; sourceTree = "<group>"; };
+		4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = KeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransitionTests.swift; sourceTree = "<group>"; };
 		4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKeyView.swift; sourceTree = "<group>"; };
+		4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaTextNormalizer.swift; sourceTree = "<group>"; };
 		52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSectionViews.swift; sourceTree = "<group>"; };
 		5BD446779BCC5D4386967F9A /* Ecritu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ecritu.entitlements; sourceTree = "<group>"; };
+		5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
 		5DF3F61E6678EA62C2C94678 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = file; name = "écrituTests.xctest"; path = "écrituTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "écrituTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
 		76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransition.swift; sourceTree = "<group>"; };
 		83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEmojiCatalog.swift; sourceTree = "<group>"; };
-		A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialAjoutVocabMigration.json; sourceTree = "<group>"; };
-		B8F42111A1B2C3D4E5F60201 /* ÉcrituPremierVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "ÉcrituPremierVocab.json"; path = "../tmp/ÉcrituPremierVocab.json"; sourceTree = "<group>"; };
-		B8F42111A1B2C3D4E5F60202 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = kana_kanji_candidate_sources.json; path = "../tmp/kana_kanji_candidate_sources.json"; sourceTree = "<group>"; };
-		B8F42111A1B2C3D4E5F60203 /* kana_kanji_inflection_dictionary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = kana_kanji_inflection_dictionary.json; path = "../tmp/kana_kanji_inflection_dictionary.json"; sourceTree = "<group>"; };
-		C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
-		F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiTypes.swift; sourceTree = "<group>"; };
-		F14A3C1A9E9A4E2C9A010002 /* KanaTextNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaTextNormalizer.swift; sourceTree = "<group>"; };
-		F14A3C1A9E9A4E2C9A010003 /* KanaKanjiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiStore.swift; sourceTree = "<group>"; };
-		F14A3C1A9E9A4E2C9A010004 /* KanaKanjiConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverter.swift; sourceTree = "<group>"; };
-		F14A3C1A9E9A4E2C9A010005 /* KanaKanjiSeedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiSeedDictionary.swift; sourceTree = "<group>"; };
-		F14A3C1A9E9A4E2C9A010006 /* KeyboardViewController+InputHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+InputHandling.swift"; sourceTree = "<group>"; };
+		89B0B947A92CC08F80E861BA /* kana_kanji_dictionary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = kana_kanji_dictionary.sqlite; sourceTree = "<group>"; };
+		95F39BD8B372ACD5AD63CF28 /* ÉcrituPremierVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituPremierVocab.json"; sourceTree = "<group>"; };
+		A89F6800DC1076A0F756D7A5 /* ÉcrituSecondVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituSecondVocab.json"; sourceTree = "<group>"; };
 		B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeyboardExtension.entitlements; sourceTree = "<group>"; };
+		B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverterRegressionTests.swift; sourceTree = "<group>"; };
+		B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverter.swift; sourceTree = "<group>"; };
+		B7C1B1FD63A967B3C35EAB12 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_candidate_sources.json; sourceTree = "<group>"; };
 		BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCatalog.swift; sourceTree = "<group>"; };
+		CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+InputHandling.swift"; sourceTree = "<group>"; };
 		DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayerZIndex.swift; sourceTree = "<group>"; };
 		E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaMap.swift; sourceTree = "<group>"; };
 		E807A57473C85475BCAA585B /* EcrituApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituApp.swift; sourceTree = "<group>"; };
-		E9737BDAEF466B520663D3C6 /* écritu.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "écritu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E9737BDAEF466B520663D3C6 /* écritu.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "écritu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		FE4F401291F2BB6C5C0731DD /* kana_kanji_inflection_dictionary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_inflection_dictionary.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		1C741FF3CFA4B1CD7B6DB62A /* tmp */ = {
+			isa = PBXGroup;
+			children = (
+				95F39BD8B372ACD5AD63CF28 /* ÉcrituPremierVocab.json */,
+				A89F6800DC1076A0F756D7A5 /* ÉcrituSecondVocab.json */,
+				B7C1B1FD63A967B3C35EAB12 /* kana_kanji_candidate_sources.json */,
+				89B0B947A92CC08F80E861BA /* kana_kanji_dictionary.sqlite */,
+				FE4F401291F2BB6C5C0731DD /* kana_kanji_inflection_dictionary.json */,
+			);
+			path = tmp;
+			sourceTree = "<group>";
+		};
 		3436D36A0267FBBA4D3031FE /* App */ = {
 			isa = PBXGroup;
 			children = (
@@ -119,10 +143,20 @@
 			isa = PBXGroup;
 			children = (
 				3436D36A0267FBBA4D3031FE /* App */,
+				7785D57E2779BD3D3D82F1C3 /* Config */,
 				98946037E1DE2D5BDD19AC61 /* KeyboardExtension */,
 				EA3BE570E7C2CACCE3486700 /* Tests */,
+				1C741FF3CFA4B1CD7B6DB62A /* tmp */,
 				9D77912A8CEA17C3CCC8BD95 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		7785D57E2779BD3D3D82F1C3 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */,
+			);
+			path = Config;
 			sourceTree = "<group>";
 		};
 		98946037E1DE2D5BDD19AC61 /* KeyboardExtension */ = {
@@ -133,24 +167,21 @@
 				175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */,
 				E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */,
 				4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */,
-				A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */,
-				C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */,
-				B8F42111A1B2C3D4E5F60201 /* ÉcrituPremierVocab.json */,
-				B8F42111A1B2C3D4E5F60202 /* kana_kanji_candidate_sources.json */,
-				B8F42111A1B2C3D4E5F60203 /* kana_kanji_inflection_dictionary.json */,
-				F14A3C1A9E9A4E2C9A010004 /* KanaKanjiConverter.swift */,
-				F14A3C1A9E9A4E2C9A010005 /* KanaKanjiSeedDictionary.swift */,
-				F14A3C1A9E9A4E2C9A010003 /* KanaKanjiStore.swift */,
-				F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */,
-				F14A3C1A9E9A4E2C9A010002 /* KanaTextNormalizer.swift */,
+				24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */,
+				5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */,
+				B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */,
+				280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */,
+				0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */,
+				273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */,
+				4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */,
 				C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */,
 				B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */,
 				31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */,
 				DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */,
 				76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */,
 				6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */,
-				F14A3C1A9E9A4E2C9A010006 /* KeyboardViewController+InputHandling.swift */,
 				BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */,
+				CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -158,8 +189,8 @@
 		9D77912A8CEA17C3CCC8BD95 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E9737BDAEF466B520663D3C6 /* écritu.app */,
-				693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */,
+				E9737BDAEF466B520663D3C6 /* écritu.app */,
+				693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */,
 				4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */,
 			);
 			name = Products;
@@ -168,6 +199,7 @@
 		EA3BE570E7C2CACCE3486700 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */,
 				4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */,
 			);
 			path = Tests;
@@ -176,9 +208,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		65E0D8750AA690D94732710E /* écritu */ = {
+		65E0D8750AA690D94732710E /* écritu */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */;
+			buildConfigurationList = 51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */;
 			buildPhases = (
 				7033AAA35E85A2153F4A5E58 /* Sources */,
 				DBFDF8AE2497155E13CCADDE /* Resources */,
@@ -193,12 +225,12 @@
 			packageProductDependencies = (
 			);
 			productName = "écritu";
-			productReference = E9737BDAEF466B520663D3C6 /* écritu.app */;
+			productReference = E9737BDAEF466B520663D3C6 /* écritu.app */;
 			productType = "com.apple.product-type.application";
 		};
-		7EA37834FE97D1CD01AC865B /* écrituTests */ = {
+		7EA37834FE97D1CD01AC865B /* écrituTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0BADED2C6382BEE57923122F /* Build configuration list for PBXNativeTarget "écrituTests" */;
+			buildConfigurationList = 0BADED2C6382BEE57923122F /* Build configuration list for PBXNativeTarget "écrituTests" */;
 			buildPhases = (
 				6006A30D6C0072653326C6E4 /* Sources */,
 			);
@@ -210,7 +242,7 @@
 			packageProductDependencies = (
 			);
 			productName = "écrituTests";
-			productReference = 693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */;
+			productReference = 693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		A294BE5B70EA20DB02DB85AD /* KeyboardExtension */ = {
@@ -218,7 +250,7 @@
 			buildConfigurationList = 89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */;
 			buildPhases = (
 				AF6737C5790E3B38F48F08BC /* Sources */,
-				A17C6B0C9CFD4CE5A2C1D704 /* Resources */,
+				DAFC31EE8DBF17957F350584 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -239,8 +271,16 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					65E0D8750AA690D94732710E = {
+						DevelopmentTeam = 487V53DJMW;
+					};
+					A294BE5B70EA20DB02DB85AD = {
+						DevelopmentTeam = 487V53DJMW;
+					};
+				};
 			};
-			buildConfigurationList = 3E048A9EDCCD8A142DF6789A /* Build configuration list for PBXProject "écritu" */;
+			buildConfigurationList = 3E048A9EDCCD8A142DF6789A /* Build configuration list for PBXProject "écritu" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -255,22 +295,24 @@
 			projectRoot = "";
 			targets = (
 				A294BE5B70EA20DB02DB85AD /* KeyboardExtension */,
-				65E0D8750AA690D94732710E /* écritu */,
-				7EA37834FE97D1CD01AC865B /* écrituTests */,
+				65E0D8750AA690D94732710E /* écritu */,
+				7EA37834FE97D1CD01AC865B /* écrituTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		A17C6B0C9CFD4CE5A2C1D704 /* Resources */ = {
+		DAFC31EE8DBF17957F350584 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A17C6B0C9CFD4CE5A2C1D702 /* InitialAjoutVocabMigration.json in Resources */,
-				C17C6B0C9CFD4CE5A2C1D702 /* InitialSupprVocabMigration.json in Resources */,
-				B8F42111A1B2C3D4E5F60101 /* ÉcrituPremierVocab.json in Resources */,
-				B8F42111A1B2C3D4E5F60102 /* kana_kanji_candidate_sources.json in Resources */,
-				B8F42111A1B2C3D4E5F60103 /* kana_kanji_inflection_dictionary.json in Resources */,
+				36EEA841B7E5EC402DA055A5 /* InitialAjoutVocabMigration.json in Resources */,
+				80C53EDAEAB5510D13B9CAFB /* InitialSupprVocabMigration.json in Resources */,
+				C61478A2E54A654F56A2799C /* kana_kanji_candidate_sources.json in Resources */,
+				64741B96C08B7301E67CDF92 /* kana_kanji_dictionary.sqlite in Resources */,
+				3C07669B9A8D1BE50AAA6B96 /* kana_kanji_inflection_dictionary.json in Resources */,
+				0BC5EF45F0322335FA0A09EF /* ÉcrituPremierVocab.json in Resources */,
+				84BF13C3A732FB79236E8F11 /* ÉcrituSecondVocab.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +333,12 @@
 			files = (
 				2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */,
 				449ECACEDBC8A2BBA1DEF8E5 /* FlickKanaMap.swift in Sources */,
+				37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */,
+				E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */,
+				38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */,
+				8D78613535A703BDB593E778 /* KanaKanjiStore.swift in Sources */,
+				256E54F1234A13909B92EBC9 /* KanaKanjiTypes.swift in Sources */,
+				2B8DF44D16D0C01219D158CF /* KanaTextNormalizer.swift in Sources */,
 				11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */,
 				500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */,
 			);
@@ -316,17 +364,17 @@
 				0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */,
 				D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */,
 				55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */,
-				F24A3C1A9E9A4E2C9A020004 /* KanaKanjiConverter.swift in Sources */,
-				F24A3C1A9E9A4E2C9A020005 /* KanaKanjiSeedDictionary.swift in Sources */,
-				F24A3C1A9E9A4E2C9A020003 /* KanaKanjiStore.swift in Sources */,
-				F24A3C1A9E9A4E2C9A020001 /* KanaKanjiTypes.swift in Sources */,
-				F24A3C1A9E9A4E2C9A020002 /* KanaTextNormalizer.swift in Sources */,
+				F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */,
+				1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */,
+				3B731B693D5ABC86B422C333 /* KanaKanjiStore.swift in Sources */,
+				2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */,
+				E21AE995B20E7DF2B75B6F82 /* KanaTextNormalizer.swift in Sources */,
 				8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */,
 				5455038D3ECF9657CA458C8E /* KeyboardKeyComponents.swift in Sources */,
 				494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */,
 				62FA4BB05C06F7163B788B14 /* KeyboardModeTransition.swift in Sources */,
 				62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */,
-				F24A3C1A9E9A4E2C9A020006 /* KeyboardViewController+InputHandling.swift in Sources */,
+				9CD485B6F82D22898978D8C4 /* KeyboardViewController+InputHandling.swift in Sources */,
 				4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -400,16 +448,17 @@
 		};
 		8207D3BABE7D90BDB04E7F0B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = 487V53DJMW;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
 				INFOPLIST_KEY_CFBundleShortVersionString = 1.0;
-				INFOPLIST_KEY_CFBundleVersion = 1;
+				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -427,8 +476,10 @@
 		};
 		932A5062A432B75EA56CE8A1 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -445,10 +496,11 @@
 		};
 		B0243247437610E848A0ED75 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = 487V53DJMW;
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -468,10 +520,11 @@
 		};
 		B44EA477DE862304E91A28BB /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = 487V53DJMW;
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -491,8 +544,10 @@
 		};
 		BAE844527834D49816327547 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -509,16 +564,17 @@
 		};
 		E2A531803A1FBE849EDD07E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = 487V53DJMW;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
 				INFOPLIST_KEY_CFBundleShortVersionString = 1.0;
-				INFOPLIST_KEY_CFBundleVersion = 1;
+				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -600,7 +656,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0BADED2C6382BEE57923122F /* Build configuration list for PBXNativeTarget "écrituTests" */ = {
+		0BADED2C6382BEE57923122F /* Build configuration list for PBXNativeTarget "écrituTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				932A5062A432B75EA56CE8A1 /* Debug */,
@@ -609,7 +665,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		3E048A9EDCCD8A142DF6789A /* Build configuration list for PBXProject "écritu" */ = {
+		3E048A9EDCCD8A142DF6789A /* Build configuration list for PBXProject "écritu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E920298ACCA45D34A02920CC /* Debug */,
@@ -618,7 +674,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */ = {
+		51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E2A531803A1FBE849EDD07E0 /* Debug */,

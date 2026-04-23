@@ -85,11 +85,9 @@ final class KeyboardViewController: UIInputViewController {
         super.viewDidLoad()
         configureInputAssistantBar()
         setupKeyboardView()
-#if targetEnvironment(simulator)
         kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
             self?.refreshKeyboardStateAsync()
         }
-#endif
     }
 
     override func viewWillAppear(_ animated: Bool) {

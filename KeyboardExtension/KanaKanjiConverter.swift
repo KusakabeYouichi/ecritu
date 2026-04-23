@@ -239,14 +239,8 @@ final class KanaKanjiConverter {
 
     private let store: KanaKanjiStore
     private let stateQueue = DispatchQueue(label: "com.kusakabe.ecritu.kana-kanji.converter-state")
-    private var mergedSystemDictionary: [String: [String]] = KanaKanjiSeedDictionary.seed
-    private var systemCandidateSources: [String: [String: Set<String>]] = [:]
-    private var systemInflectionClasses: [String: [String: String]] = [:]
     private var candidateCache: [CandidateCacheKey: [String]] = [:]
     private var candidateCacheOrder: [CandidateCacheKey] = []
-    private var hasSystemInflectionMetadata = false
-    private var isSystemDictionaryLoading = false
-    private var isSystemDictionaryLoaded = false
 
     private let candidateCacheLimit = 96
 
@@ -255,107 +249,7 @@ final class KanaKanjiConverter {
     }
 
     func preloadSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
-        var shouldStartLoading = false
-        var shouldNotifyLoadedImmediately = false
-
-        stateQueue.sync {
-            if isSystemDictionaryLoaded {
-                shouldNotifyLoadedImmediately = true
-                return
-            }
-
-            guard !isSystemDictionaryLoading else {
-                return
-            }
-
-            isSystemDictionaryLoading = true
-            shouldStartLoading = true
-        }
-
-        if shouldNotifyLoadedImmediately {
-            onLoaded?()
-            return
-        }
-
-        guard shouldStartLoading else {
-            return
-        }
-
-        DispatchQueue.global(qos: .utility).async { [weak self] in
-            guard let self else {
-                return
-            }
-
-            let systemDictionary = self.store.loadSystemDictionary()
-
-            guard !systemDictionary.isEmpty else {
-                self.stateQueue.sync {
-                    // Keep retrying until the external dictionary is actually available.
-                    self.isSystemDictionaryLoading = false
-                    self.isSystemDictionaryLoaded = false
-                }
-
-                if let onLoaded {
-                    DispatchQueue.main.async {
-                        onLoaded()
-                    }
-                }
-                return
-            }
-
-            let systemCandidateSources = self.store.loadSystemCandidateSources()
-            let inflectionDictionary = self.store.loadInflectionDictionary()
-
-            self.stateQueue.sync {
-                for (reading, candidates) in systemDictionary {
-                    if let existing = self.mergedSystemDictionary[reading] {
-                        self.mergedSystemDictionary[reading] = self.uniqueCandidates(
-                            from: candidates + existing
-                        )
-                    } else {
-                        self.mergedSystemDictionary[reading] = candidates
-                    }
-                }
-
-                for (reading, candidateSourceMap) in systemCandidateSources {
-                    var mergedSourceMap = self.systemCandidateSources[reading] ?? [:]
-
-                    for (candidate, sources) in candidateSourceMap {
-                        var mergedSources = mergedSourceMap[candidate] ?? []
-                        mergedSources.formUnion(sources)
-                        mergedSourceMap[candidate] = mergedSources
-                    }
-
-                    if !mergedSourceMap.isEmpty {
-                        self.systemCandidateSources[reading] = mergedSourceMap
-                    }
-                }
-
-                for (reading, candidateClassMap) in inflectionDictionary {
-                    var mergedMap = self.systemInflectionClasses[reading] ?? [:]
-
-                    for (candidate, inflectionClass) in candidateClassMap {
-                        mergedMap[candidate] = inflectionClass
-                    }
-
-                    if !mergedMap.isEmpty {
-                        self.systemInflectionClasses[reading] = mergedMap
-                    }
-                }
-
-                self.hasSystemInflectionMetadata = !inflectionDictionary.isEmpty
-
-                self.invalidateCandidateCache()
-                self.isSystemDictionaryLoaded = true
-                self.isSystemDictionaryLoading = false
-            }
-
-            if let onLoaded {
-                DispatchQueue.main.async {
-                    onLoaded()
-                }
-            }
-        }
+        store.prepareSystemDictionaryIfNeeded(onLoaded: onLoaded)
     }
 
     func candidates(
@@ -880,9 +774,7 @@ final class KanaKanjiConverter {
     }
 
     private func inflectionMetadata(for reading: String) -> (classMap: [String: String], hasMetadata: Bool) {
-        stateQueue.sync {
-            (systemInflectionClasses[reading] ?? [:], hasSystemInflectionMetadata)
-        }
+        store.systemInflectionMetadata(for: reading)
     }
 
     private func resolvedInflectionClass(
@@ -913,18 +805,18 @@ final class KanaKanjiConverter {
             return InflectionClass.kuru
         }
 
-        for pattern in Self.godanPatterns where baseReading.hasSuffix(pattern.dictionaryEnding) {
-            if candidate.hasSuffix(pattern.dictionaryEnding) {
-                return pattern.inflectionClass
-            }
-        }
-
         if baseReading.hasSuffix("る") && candidate.hasSuffix("る") {
             if isLikelyIchidanBaseReading(baseReading) {
                 return InflectionClass.ichidan
             }
 
             return InflectionClass.godanRu
+        }
+
+        for pattern in Self.godanPatterns where baseReading.hasSuffix(pattern.dictionaryEnding) {
+            if candidate.hasSuffix(pattern.dictionaryEnding) {
+                return pattern.inflectionClass
+            }
         }
 
         if baseReading.hasSuffix("い") && candidate.hasSuffix("い") {
@@ -951,25 +843,15 @@ final class KanaKanjiConverter {
         for reading: String,
         mode: KanaKanjiCandidateSourceMode
     ) -> [String] {
-        stateQueue.sync {
-            let candidates = mergedSystemDictionary[reading] ?? []
+        let storeCandidates = store.systemCandidates(for: reading, mode: mode)
 
-            guard let requiredSources = mode.requiredSystemSources,
-                    let sourceMap = systemCandidateSources[reading],
-                    !sourceMap.isEmpty else {
-                return candidates
-            }
-
-            return candidates.filter { candidate in
-                guard let candidateSources = sourceMap[candidate],
-                        !candidateSources.isEmpty else {
-                    // Keep fallback candidates even when no source metadata exists.
-                    return true
-                }
-
-                return !requiredSources.isDisjoint(with: candidateSources)
-            }
+        if storeCandidates.isEmpty {
+            return KanaKanjiSeedDictionary.seed[reading] ?? []
         }
+
+        return uniqueCandidates(
+            from: storeCandidates + (KanaKanjiSeedDictionary.seed[reading] ?? [])
+        )
     }
 
     private func candidatesForReading(

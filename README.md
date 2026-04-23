@@ -32,6 +32,11 @@
 
 ## MVP の制約
 - かな漢字変換は簡易実装(候補選択・学習・ユーザー辞書対応)。高精度辞書は `tools/build_sudachi_index.py` で別途投入。
+- 大規模辞書を実機で扱う場合は、`tools/build_kana_kanji_sqlite.py` でSQLite化して `tmp/kana_kanji_dictionary.sqlite` を生成してください。
+- `tools/build_kana_kanji_sqlite.py` は `--vocab-json` を複数指定できるため、語彙ファイルを増やす場合もマージして1つのSQLiteにできます。
+- エディション番号(`CFBundleVersion`)は `Config/Edition.xcconfig` の `ECRITU_EDITION_NUMBER` を単一ソースとして参照します。
+- VSCodeタスク実行時とXcode実機ビルド時で同じ番号になります。番号を進めるときは `Config/Edition.xcconfig` を更新してコミットしてください。
+- システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
 - Sudachi前処理では漢字以外の候補(カタカナ等)も保持できます。
 - 追加辞書の初期データは `KeyboardExtension/InitialAjoutVocabMigration.json` に同梱され、ビルドごとに拡張バンドルから読み込まれます。
 - 濁点/半濁点の後変換は未実装
