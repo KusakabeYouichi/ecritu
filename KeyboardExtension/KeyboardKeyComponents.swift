@@ -141,8 +141,8 @@ struct ActionKeyButton: View {
             LongPressGesture(minimumDuration: 0.4)
                 .onEnded { _ in
                     guard isEnabled,
-                          !repeatsWhileHolding,
-                          let onLongPress else {
+                            !repeatsWhileHolding,
+                            let onLongPress else {
                         return
                     }
 
@@ -154,7 +154,7 @@ struct ActionKeyButton: View {
             DragGesture(minimumDistance: 0)
                 .onChanged { _ in
                     guard isEnabled,
-                          repeatsWhileHolding else {
+                            repeatsWhileHolding else {
                         return
                     }
 
@@ -174,7 +174,7 @@ struct ActionKeyButton: View {
 
     private func beginRepeatingActionIfNeeded() {
         guard repeatTimer == nil,
-              repeatStartWorkItem == nil else {
+                repeatStartWorkItem == nil else {
             return
         }
 
@@ -185,7 +185,7 @@ struct ActionKeyButton: View {
 
     private func scheduleRepeatingActionStartIfNeeded() {
         guard repeatTimer == nil,
-              repeatStartWorkItem == nil else {
+                repeatStartWorkItem == nil else {
             return
         }
 

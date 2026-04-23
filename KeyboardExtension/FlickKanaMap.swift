@@ -8,7 +8,6 @@ enum FlickDirection {
     case down
     case left
 }
-
 enum FlickGestureResolver {
     static func resolve(translation: CGSize, threshold: CGFloat = 18) -> FlickDirection {
         let dx = translation.width
@@ -26,14 +25,12 @@ enum FlickGestureResolver {
         return dy > 0 ? .down : .up
     }
 }
-
 enum DiacriticMode {
     case none
     case dakuten
     case handakuten
     case smallKana
 }
-
 enum KanaModifierPlacementMode: String {
     case prefix
     case postfix
@@ -156,8 +153,8 @@ struct FlickKanaSet: Identifiable, Hashable {
             let text = output(for: direction)
 
             guard !text.isEmpty,
-                  text != center,
-                  seen.insert(text).inserted else {
+                    text != center,
+                    seen.insert(text).inserted else {
                 return nil
             }
 
@@ -165,4 +162,3 @@ struct FlickKanaSet: Identifiable, Hashable {
         }
     }
 }
-

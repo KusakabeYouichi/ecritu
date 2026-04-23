@@ -105,12 +105,12 @@ enum KeyboardModeTransition {
         var next = state
 
         if shouldApplyLatinShift(to: committedText, state: next),
-           next.latinShiftState == .on {
+            next.latinShiftState == .on {
             next.latinShiftState = .off
         }
 
         if next.inputMode == .kana,
-           next.diacriticMode != .none {
+            next.diacriticMode != .none {
             next.diacriticMode = .none
         }
 
@@ -129,8 +129,8 @@ enum KeyboardModeTransition {
         var next = state
 
         if let lastTapAt = next.lastLatinShiftTapAt,
-           now.timeIntervalSince(lastTapAt) <= doubleTapThreshold,
-           next.latinShiftState == .on {
+            now.timeIntervalSince(lastTapAt) <= doubleTapThreshold,
+            next.latinShiftState == .on {
             next.latinShiftState = .locked
             next.lastLatinShiftTapAt = nil
             return next
@@ -169,8 +169,8 @@ enum KeyboardModeTransition {
         state: KeyboardModeTransitionState
     ) -> Bool {
         guard state.inputMode == .latin,
-              state.latinShiftState != .off,
-              isLatinAlphabetKey(text) else {
+                state.latinShiftState != .off,
+                isLatinAlphabetKey(text) else {
             return false
         }
 
@@ -179,7 +179,7 @@ enum KeyboardModeTransition {
 
     private static func isLatinAlphabetKey(_ value: String) -> Bool {
         guard value.count == 1,
-              let scalar = value.unicodeScalars.first else {
+                let scalar = value.unicodeScalars.first else {
             return false
         }
 

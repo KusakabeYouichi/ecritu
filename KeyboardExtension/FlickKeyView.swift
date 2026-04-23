@@ -123,7 +123,7 @@ struct FlickKeyView: View {
             }
 
             if longPressIsActive,
-               !longPressCandidates.isEmpty {
+                !longPressCandidates.isEmpty {
                 longPressCandidatePanel
                     .offset(x: candidatePanelOffsetX, y: -Metrics.previewDistance)
                     .zIndex(KeyboardLayerZIndex.floatingOverlay)
@@ -145,8 +145,8 @@ struct FlickKeyView: View {
 
     private var displayText: String {
         if longPressIsActive,
-           !longPressCandidates.isEmpty,
-           longPressCandidates.indices.contains(highlightedLongPressIndex) {
+            !longPressCandidates.isEmpty,
+            longPressCandidates.indices.contains(highlightedLongPressIndex) {
             return longPressCandidates[highlightedLongPressIndex]
         }
 
@@ -377,7 +377,7 @@ struct FlickKeyView: View {
 
     private var candidatePanelOffsetX: CGFloat {
         guard keyFrameInGlobal.width > 0,
-              !longPressCandidates.isEmpty else {
+                !longPressCandidates.isEmpty else {
             return 0
         }
 
@@ -427,8 +427,8 @@ struct FlickKeyView: View {
                 cancelLongPressTimer()
 
                 if longPressIsActive,
-                   !longPressCandidates.isEmpty,
-                   longPressCandidates.indices.contains(highlightedLongPressIndex) {
+                    !longPressCandidates.isEmpty,
+                    longPressCandidates.indices.contains(highlightedLongPressIndex) {
                     onCommit(longPressCandidates[highlightedLongPressIndex])
                 } else {
                     onCommit(kana.output(for: activeDirection))

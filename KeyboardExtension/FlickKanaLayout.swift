@@ -123,8 +123,8 @@ enum FlickKanaLayout {
 
     static func latinLongPressCandidates(for center: String, layoutMode: LatinLayoutMode) -> [String] {
         guard layoutMode != .flick,
-              center.count == 1,
-              let first = center.lowercased().first else {
+                center.count == 1,
+                let first = center.lowercased().first else {
             return []
         }
 
@@ -363,9 +363,9 @@ enum FlickKanaLayout {
         let source = String(character)
 
         guard let hiragana = source.applyingTransform(.hiraganaToKatakana, reverse: true),
-              hiragana.count == 1,
-              let hiraganaCharacter = hiragana.first,
-              let replacedHiragana = map[hiraganaCharacter] else {
+                hiragana.count == 1,
+                let hiraganaCharacter = hiragana.first,
+                let replacedHiragana = map[hiraganaCharacter] else {
             return nil
         }
 
@@ -382,8 +382,8 @@ enum FlickKanaLayout {
         contextBeforeInput: String?
     ) -> KanaPostModifierButtonState {
         guard let contextBeforeInput,
-              let lastCharacter = contextBeforeInput.last,
-              let normalized = normalizedHiraganaKana(lastCharacter) else {
+                let lastCharacter = contextBeforeInput.last,
+                let normalized = normalizedHiraganaKana(lastCharacter) else {
             return .kaomoji
         }
 
@@ -445,7 +445,7 @@ enum FlickKanaLayout {
         map: [Character: Character]
     ) -> Character? {
         guard let normalized = normalizedHiraganaKana(character),
-              let replacedHiragana = map[normalized] else {
+                let replacedHiragana = map[normalized] else {
             return nil
         }
 
@@ -457,7 +457,7 @@ enum FlickKanaLayout {
         let transformed = source.applyingTransform(.hiraganaToKatakana, reverse: true) ?? source
 
         guard transformed.count == 1,
-              let normalized = transformed.first else {
+                let normalized = transformed.first else {
             return nil
         }
 
@@ -497,8 +497,8 @@ enum FlickKanaLayout {
 
     private static func transform(_ text: String, with map: [Character: Character]) -> String {
         guard text.count == 1,
-              let character = text.first,
-              let replaced = map[character] else {
+                let character = text.first,
+                let replaced = map[character] else {
             return text
         }
 

@@ -39,6 +39,10 @@ targets:
       - path: KeyboardExtension
         excludes:
           - Info.plist
+    resources:
+      - path: tmp/ÉcrituPremierVocab.json
+      - path: tmp/kana_kanji_candidate_sources.json
+      - path: tmp/kana_kanji_inflection_dictionary.json
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu.keyboard

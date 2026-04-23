@@ -206,7 +206,7 @@ struct KeyboardRootView: View {
     }
 
     private var canTapComposingTextToCommit: Bool {
-        conversionCandidates.isEmpty && selectedConversionCandidateIndex == nil
+        !composingText.isEmpty
     }
 
     private struct KaomojiRowLayout {
@@ -372,9 +372,9 @@ struct KeyboardRootView: View {
                     label: "^_^",
                     center: "^_^",
                     up: "",
-                    right: modeSwitchText,
+                    right: "",
                     down: "…",
-                    left: "",
+                    left: modeSwitchText,
                     usesProfileDependentGuideOrder: false
                 )
             case .smallKana:
@@ -511,13 +511,14 @@ struct KeyboardRootView: View {
             ? kanaThreeByThreeMainLabelFontSize
             : 28
 
-        let isPostfixKana = inputMode == .kana
-            && kanaModifierPlacementMode == .postfix
         let centerLabel = modifierSelectorKey.center
 
-        if isPostfixKana && centerLabel == "小" {
+        if inputMode == .kana && centerLabel == "小" {
             return baseSize * 0.6
         }
+
+        let isPostfixKana = inputMode == .kana
+            && kanaModifierPlacementMode == .postfix
 
         if isPostfixKana && centerLabel == "^_^" {
             return baseSize * 0.7
@@ -1520,7 +1521,7 @@ struct KeyboardRootView: View {
         }
 
         guard inputMode == .kana,
-              kanaModifierPlacementMode == .postfix else {
+                kanaModifierPlacementMode == .postfix else {
             transitionState = KeyboardModeTransition.selectModifier(
                 output,
                 state: transitionState
@@ -1601,8 +1602,8 @@ struct KeyboardRootView: View {
 
     private func showInitialSpaceToastIfNeeded() {
         guard inputMode == .kana,
-              let initialSpaceToastText,
-              !initialSpaceToastText.isEmpty else {
+                let initialSpaceToastText,
+                !initialSpaceToastText.isEmpty else {
             return
         }
 
@@ -1663,8 +1664,8 @@ struct KeyboardRootView: View {
 
     private func allowsDirectionalFlick(for kana: FlickKanaSet) -> Bool {
         guard inputMode == .latin,
-              latinLayoutMode != .flick,
-              isLatinAlphabetKey(kana.center) else {
+                latinLayoutMode != .flick,
+                isLatinAlphabetKey(kana.center) else {
             return true
         }
 
@@ -1673,8 +1674,8 @@ struct KeyboardRootView: View {
 
     private func shouldApplyLatinShift(to text: String) -> Bool {
         guard inputMode == .latin,
-              latinShiftState != .off,
-              isLatinAlphabetKey(text) else {
+                latinShiftState != .off,
+                isLatinAlphabetKey(text) else {
             return false
         }
 
@@ -1683,7 +1684,7 @@ struct KeyboardRootView: View {
 
     private func convertedKanaOutputIfNeeded(_ text: String) -> String {
         guard inputMode == .kana,
-              kanaCharacterMode == .katakana else {
+                kanaCharacterMode == .katakana else {
             return text
         }
 
@@ -1692,7 +1693,7 @@ struct KeyboardRootView: View {
 
     private func displayedKanaForKanaCharacterModeIfNeeded(_ kana: FlickKanaSet) -> FlickKanaSet {
         guard inputMode == .kana,
-              kanaCharacterMode == .katakana else {
+                kanaCharacterMode == .katakana else {
             return kana
         }
 
@@ -1712,8 +1713,8 @@ struct KeyboardRootView: View {
 
     private func displayedKana(for kana: FlickKanaSet) -> FlickKanaSet {
         guard inputMode == .latin,
-              latinShiftState != .off,
-              isLatinAlphabetKey(kana.center) else {
+                latinShiftState != .off,
+                isLatinAlphabetKey(kana.center) else {
             return kana
         }
 
@@ -1729,7 +1730,7 @@ struct KeyboardRootView: View {
 
     private func latinFlickIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
         guard inputMode == .latin,
-              latinLayoutMode == .flick,
+                latinLayoutMode == .flick,
                             isCurrentFlickGuideDisplayOff else {
             return nil
         }
@@ -1751,9 +1752,9 @@ struct KeyboardRootView: View {
             .filter { !$0.isEmpty }
 
         guard kana.center == "'",
-              parts.count >= 2,
-              parts[0] == "'",
-              parts[1] == "\"" else {
+                parts.count >= 2,
+                parts[0] == "'",
+                parts[1] == "\"" else {
             return parts.joined()
         }
 
@@ -1763,7 +1764,7 @@ struct KeyboardRootView: View {
 
     private func numberPunctuationIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
         guard inputMode == .number,
-              isCurrentFlickGuideDisplayOff,
+                isCurrentFlickGuideDisplayOff,
                             kana.center == "." || kana.center == "'" || kana.center == "(" else {
             return nil
         }
@@ -1853,7 +1854,7 @@ struct KeyboardRootView: View {
 
     private func isLatinAlphabetKey(_ value: String) -> Bool {
         guard value.count == 1,
-              let scalar = value.unicodeScalars.first else {
+                let scalar = value.unicodeScalars.first else {
             return false
         }
 

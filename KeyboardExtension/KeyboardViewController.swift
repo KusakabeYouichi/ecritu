@@ -85,9 +85,11 @@ final class KeyboardViewController: UIInputViewController {
         super.viewDidLoad()
         configureInputAssistantBar()
         setupKeyboardView()
+#if targetEnvironment(simulator)
         kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
             self?.refreshKeyboardStateAsync()
         }
+#endif
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -272,7 +274,7 @@ final class KeyboardViewController: UIInputViewController {
         range: ClosedRange<Double>
     ) -> Double {
         guard let defaults,
-              let number = defaults.object(forKey: key) as? NSNumber else {
+                let number = defaults.object(forKey: key) as? NSNumber else {
             return fallback
         }
 
@@ -284,7 +286,7 @@ final class KeyboardViewController: UIInputViewController {
         key: String
     ) -> FlickGuideDisplayMode {
         if let rawValue = defaults?.string(forKey: key),
-           let mode = FlickGuideDisplayMode(rawValue: rawValue) {
+            let mode = FlickGuideDisplayMode(rawValue: rawValue) {
             return mode
         }
 
@@ -487,4 +489,3 @@ final class KeyboardViewController: UIInputViewController {
         )
     }
 }
-

@@ -10,8 +10,8 @@ enum KanaTextNormalizer {
         let normalized = source.applyingTransform(.hiraganaToKatakana, reverse: true) ?? source
 
         guard normalized.count == 1,
-              let character = normalized.first,
-              isKanaCharacter(character) else {
+                let character = normalized.first,
+                isKanaCharacter(character) else {
             return nil
         }
 
