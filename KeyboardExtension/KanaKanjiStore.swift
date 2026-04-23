@@ -27,22 +27,47 @@ final class KanaKanjiStore {
         self.defaults = UserDefaults(suiteName: appGroupID)
     }
 
+    private func sharedOrBundledDictionaryData(filename: String) -> Data? {
+        if let containerURL = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: appGroupID
+        ) {
+            let sharedURL = containerURL.appendingPathComponent(filename)
+
+            if let data = try? Data(contentsOf: sharedURL), !data.isEmpty {
+                return data
+            }
+        }
+
+        let bundle = Bundle(for: KanaKanjiStore.self)
+        let nsFilename = filename as NSString
+        let resourceName = nsFilename.deletingPathExtension
+        let resourceExtension = nsFilename.pathExtension
+
+        let resourceURLs: [URL?] = [
+            bundle.url(forResource: filename, withExtension: nil),
+            resourceExtension.isEmpty
+                ? nil
+                : bundle.url(forResource: resourceName, withExtension: resourceExtension)
+        ]
+
+        for resourceURL in resourceURLs.compactMap({ $0 }) {
+            if let data = try? Data(contentsOf: resourceURL), !data.isEmpty {
+                return data
+            }
+        }
+
+        return nil
+    }
+
     func loadSystemDictionary() -> [String: [String]] {
         if let cachedSystemDictionary {
             return cachedSystemDictionary
         }
 
-        guard let containerURL = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupID
-        ) else {
-            return [:]
-        }
-
-        let systemDictionaryURL = containerURL
-            .appendingPathComponent(KanaKanjiStorageKeys.systemDictionaryFilename)
-
-        guard let data = try? Data(contentsOf: systemDictionaryURL),
-              let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+        guard let data = sharedOrBundledDictionaryData(
+            filename: KanaKanjiStorageKeys.systemDictionaryFilename
+        ),
+                let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
             return [:]
         }
 
@@ -56,17 +81,10 @@ final class KanaKanjiStore {
             return cachedSystemCandidateSources
         }
 
-        guard let containerURL = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupID
-        ) else {
-            return [:]
-        }
-
-        let sourceDictionaryURL = containerURL
-            .appendingPathComponent(KanaKanjiStorageKeys.systemCandidateSourcesFilename)
-
-        guard let data = try? Data(contentsOf: sourceDictionaryURL),
-              let decoded = try? JSONDecoder().decode([String: [String: [String]]].self, from: data) else {
+        guard let data = sharedOrBundledDictionaryData(
+            filename: KanaKanjiStorageKeys.systemCandidateSourcesFilename
+        ),
+                let decoded = try? JSONDecoder().decode([String: [String: [String]]].self, from: data) else {
             return [:]
         }
 
@@ -103,17 +121,10 @@ final class KanaKanjiStore {
             return cachedInflectionDictionary
         }
 
-        guard let containerURL = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupID
-        ) else {
-            return [:]
-        }
-
-        let inflectionDictionaryURL = containerURL
-            .appendingPathComponent(KanaKanjiStorageKeys.inflectionDictionaryFilename)
-
-        guard let data = try? Data(contentsOf: inflectionDictionaryURL),
-              let decoded = try? JSONDecoder().decode([String: [KanaKanjiInflectionEntry]].self, from: data) else {
+        guard let data = sharedOrBundledDictionaryData(
+            filename: KanaKanjiStorageKeys.inflectionDictionaryFilename
+        ),
+                let decoded = try? JSONDecoder().decode([String: [KanaKanjiInflectionEntry]].self, from: data) else {
             return [:]
         }
 
@@ -126,7 +137,7 @@ final class KanaKanjiStore {
                 let candidate = entry.candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
                 guard !candidate.isEmpty,
-                      !entry.inflectionClass.isEmpty else {
+                        !entry.inflectionClass.isEmpty else {
                     continue
                 }
 
@@ -226,7 +237,7 @@ final class KanaKanjiStore {
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !normalizedReading.isEmpty,
-              !trimmedCandidate.isEmpty else {
+                !trimmedCandidate.isEmpty else {
             return
         }
 
@@ -249,8 +260,8 @@ final class KanaKanjiStore {
         }
 
         guard let defaults,
-              let learningData = defaults.data(forKey: KanaKanjiStorageKeys.learningScores),
-              let decoded = try? JSONDecoder().decode([String: Int].self, from: learningData) else {
+                let learningData = defaults.data(forKey: KanaKanjiStorageKeys.learningScores),
+                let decoded = try? JSONDecoder().decode([String: Int].self, from: learningData) else {
             cachedLearningScores = Self.initialLearningScores
             cachedLearningScoresByReading = nil
             return Self.initialLearningScores
@@ -292,7 +303,7 @@ final class KanaKanjiStore {
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !normalizedReading.isEmpty,
-              !trimmedCandidate.isEmpty else {
+                !trimmedCandidate.isEmpty else {
             return
         }
 
@@ -309,7 +320,7 @@ final class KanaKanjiStore {
         }
 
         guard let defaults,
-              let encoded = try? JSONEncoder().encode(scores) else {
+                let encoded = try? JSONEncoder().encode(scores) else {
             return
         }
 
@@ -318,7 +329,7 @@ final class KanaKanjiStore {
 
     private func saveUserDictionary(_ dictionary: [String: [String]]) {
         guard let defaults,
-              let encoded = try? JSONEncoder().encode(dictionary) else {
+                let encoded = try? JSONEncoder().encode(dictionary) else {
             return
         }
 
@@ -331,7 +342,7 @@ final class KanaKanjiStore {
         }
 
         if let dictionaryData = defaults.data(forKey: key),
-           let decoded = try? JSONDecoder().decode([String: [String]].self, from: dictionaryData) {
+            let decoded = try? JSONDecoder().decode([String: [String]].self, from: dictionaryData) {
             return decoded
         }
 
@@ -377,7 +388,7 @@ final class KanaKanjiStore {
             let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !trimmed.isEmpty,
-                  !seen.contains(trimmed) else {
+                    !seen.contains(trimmed) else {
                 continue
             }
 
@@ -423,7 +434,7 @@ final class KanaKanjiStore {
         let candidate = String(key[candidateStartIndex...])
 
         guard !reading.isEmpty,
-              !candidate.isEmpty else {
+                !candidate.isEmpty else {
             return nil
         }
 

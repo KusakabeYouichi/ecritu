@@ -40,14 +40,14 @@ extension KeyboardViewController {
         commitActiveConversion(learn: true)
 
         if currentInputMode == .kana,
-           let normalizedKana = KanaTextNormalizer.normalizedKanaCharacter(from: text) {
+            let normalizedKana = KanaTextNormalizer.normalizedKanaCharacter(from: text) {
             composingRawText.append(text)
             composingReading.append(normalizedKana)
             setMarkedComposingText(composingRawText)
         } else {
             if currentInputMode == .kana,
-               !composingReading.isEmpty,
-               shouldAutoCommitConversion(beforeInserting: text) {
+                !composingReading.isEmpty,
+                shouldAutoCommitConversion(beforeInserting: text) {
                 commitComposingTextBeforeDelimiterInput()
                 textDocumentProxy.insertText(text)
                 refreshKeyboardStateAsync()
@@ -68,7 +68,7 @@ extension KeyboardViewController {
 
     func shouldAutoCommitConversion(beforeInserting text: String) -> Bool {
         switch text {
-        case "。", "、", "！", "？", ".", ",", "!", "?", "」", "』", "）", ")", "】", "]", "〉", "》":
+        case "。", "、", ".", ",", "!", "?", "」", "』", ")", "】", "]", "〉", "》":
             return true
         default:
             return false
@@ -77,7 +77,7 @@ extension KeyboardViewController {
 
     func commitComposingTextBeforeDelimiterInput() {
         guard !composingRawText.isEmpty,
-              !composingReading.isEmpty else {
+                !composingReading.isEmpty else {
             textDocumentProxy.unmarkText()
             clearComposingState()
             return
@@ -228,8 +228,13 @@ extension KeyboardViewController {
             return
         }
 
-        if activeConversion != nil {
-            commitActiveConversion(learn: true)
+        if let activeConversion {
+            commitActiveConversion(
+                activeConversion,
+                committedText: activeConversion.sourceText,
+                learn: true
+            )
+            clearMarkedComposingText()
             clearComposingState()
             refreshKeyboardStateAsync()
             return
@@ -239,18 +244,18 @@ extension KeyboardViewController {
             return
         }
 
-        if !composingReading.isEmpty {
-            kanaKanjiConverter.learn(reading: composingReading, candidate: composingRawText)
-        }
-
-        textDocumentProxy.unmarkText()
-        clearComposingState()
+        commitComposingText(
+            sourceText: composingRawText,
+            sourceReading: composingReading,
+            committedText: composingRawText,
+            learn: true
+        )
         refreshKeyboardStateAsync()
     }
 
     func cycleActiveConversionCandidate() {
         guard var conversion = activeConversion,
-              !conversion.candidates.isEmpty else {
+                !conversion.candidates.isEmpty else {
             return
         }
 
@@ -261,7 +266,7 @@ extension KeyboardViewController {
 
     func beginConversionFromComposingText() -> Bool {
         guard !composingRawText.isEmpty,
-              !composingReading.isEmpty else {
+                !composingReading.isEmpty else {
             return false
         }
 
@@ -346,11 +351,15 @@ extension KeyboardViewController {
         // If source text still exists as plain text after clearing marked text, replace it.
         let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
         if !sourceText.isEmpty,
-           contextBeforeInput.hasSuffix(sourceText) {
+            contextBeforeInput.hasSuffix(sourceText) {
             deleteBackwardCharacterCount(sourceText.count)
         }
 
         textDocumentProxy.insertText(committedText)
+        textDocumentProxy.unmarkText()
+        DispatchQueue.main.async { [weak self] in
+            self?.textDocumentProxy.unmarkText()
+        }
 
         if learn {
             kanaKanjiConverter.learn(reading: sourceReading, candidate: committedText)
@@ -381,11 +390,18 @@ extension KeyboardViewController {
         // If source text still exists as plain text after clearing marked text, replace it.
         let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
         if !conversion.committedText.isEmpty,
-           contextBeforeInput.hasSuffix(conversion.committedText) {
+            contextBeforeInput.hasSuffix(conversion.committedText) {
             deleteBackwardCharacterCount(conversion.committedText.count)
+        } else if !conversion.sourceText.isEmpty,
+                    contextBeforeInput.hasSuffix(conversion.sourceText) {
+            deleteBackwardCharacterCount(conversion.sourceText.count)
         }
 
         textDocumentProxy.insertText(committedText)
+        textDocumentProxy.unmarkText()
+        DispatchQueue.main.async { [weak self] in
+            self?.textDocumentProxy.unmarkText()
+        }
 
         if learn {
             kanaKanjiConverter.learn(
@@ -416,12 +432,12 @@ extension KeyboardViewController {
         commitActiveConversion(learn: true)
 
         if currentInputMode == .kana,
-           !composingRawText.isEmpty,
-           let lastCharacter = composingRawText.last,
-           let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
+            !composingRawText.isEmpty,
+            let lastCharacter = composingRawText.last,
+            let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
                 from: lastCharacter,
                 for: buttonState
-           ) {
+            ) {
             composingRawText.removeLast()
             composingRawText.append(String(replacedCharacter))
 
@@ -439,11 +455,11 @@ extension KeyboardViewController {
         }
 
         guard let contextBeforeInput = textDocumentProxy.documentContextBeforeInput,
-              let lastCharacter = contextBeforeInput.last,
-              let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
-                  from: lastCharacter,
-                  for: buttonState
-              ) else {
+                let lastCharacter = contextBeforeInput.last,
+                let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
+                    from: lastCharacter,
+                    for: buttonState
+                ) else {
             return false
         }
 
@@ -451,7 +467,7 @@ extension KeyboardViewController {
         textDocumentProxy.insertText(String(replacedCharacter))
 
         if currentInputMode == .kana,
-           !composingRawText.isEmpty {
+            !composingRawText.isEmpty {
             composingRawText.removeLast()
             composingRawText.append(String(replacedCharacter))
 

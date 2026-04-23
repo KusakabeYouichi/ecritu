@@ -25,6 +25,9 @@
 		8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807A57473C85475BCAA585B /* EcrituApp.swift */; };
 		8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		8F8895266804EE4794A101EE /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
+		B8F42111A1B2C3D4E5F60101 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = B8F42111A1B2C3D4E5F60201 /* ÉcrituPremierVocab.json */; };
+		B8F42111A1B2C3D4E5F60102 /* kana_kanji_candidate_sources.json in Resources */ = {isa = PBXBuildFile; fileRef = B8F42111A1B2C3D4E5F60202 /* kana_kanji_candidate_sources.json */; };
+		B8F42111A1B2C3D4E5F60103 /* kana_kanji_inflection_dictionary.json in Resources */ = {isa = PBXBuildFile; fileRef = B8F42111A1B2C3D4E5F60203 /* kana_kanji_inflection_dictionary.json */; };
 		A17C6B0C9CFD4CE5A2C1D702 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */; };
 		C17C6B0C9CFD4CE5A2C1D702 /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */; };
 		F24A3C1A9E9A4E2C9A020001 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */; };
@@ -79,6 +82,9 @@
 		76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransition.swift; sourceTree = "<group>"; };
 		83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEmojiCatalog.swift; sourceTree = "<group>"; };
 		A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialAjoutVocabMigration.json; sourceTree = "<group>"; };
+		B8F42111A1B2C3D4E5F60201 /* ÉcrituPremierVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "ÉcrituPremierVocab.json"; path = "../tmp/ÉcrituPremierVocab.json"; sourceTree = "<group>"; };
+		B8F42111A1B2C3D4E5F60202 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = kana_kanji_candidate_sources.json; path = "../tmp/kana_kanji_candidate_sources.json"; sourceTree = "<group>"; };
+		B8F42111A1B2C3D4E5F60203 /* kana_kanji_inflection_dictionary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = kana_kanji_inflection_dictionary.json; path = "../tmp/kana_kanji_inflection_dictionary.json"; sourceTree = "<group>"; };
 		C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
 		F14A3C1A9E9A4E2C9A010001 /* KanaKanjiTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiTypes.swift; sourceTree = "<group>"; };
 		F14A3C1A9E9A4E2C9A010002 /* KanaTextNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaTextNormalizer.swift; sourceTree = "<group>"; };
@@ -129,6 +135,9 @@
 				4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */,
 				A17C6B0C9CFD4CE5A2C1D703 /* InitialAjoutVocabMigration.json */,
 				C17C6B0C9CFD4CE5A2C1D703 /* InitialSupprVocabMigration.json */,
+				B8F42111A1B2C3D4E5F60201 /* ÉcrituPremierVocab.json */,
+				B8F42111A1B2C3D4E5F60202 /* kana_kanji_candidate_sources.json */,
+				B8F42111A1B2C3D4E5F60203 /* kana_kanji_inflection_dictionary.json */,
 				F14A3C1A9E9A4E2C9A010004 /* KanaKanjiConverter.swift */,
 				F14A3C1A9E9A4E2C9A010005 /* KanaKanjiSeedDictionary.swift */,
 				F14A3C1A9E9A4E2C9A010003 /* KanaKanjiStore.swift */,
@@ -259,6 +268,9 @@
 			files = (
 				A17C6B0C9CFD4CE5A2C1D702 /* InitialAjoutVocabMigration.json in Resources */,
 				C17C6B0C9CFD4CE5A2C1D702 /* InitialSupprVocabMigration.json in Resources */,
+				B8F42111A1B2C3D4E5F60101 /* ÉcrituPremierVocab.json in Resources */,
+				B8F42111A1B2C3D4E5F60102 /* kana_kanji_candidate_sources.json in Resources */,
+				B8F42111A1B2C3D4E5F60103 /* kana_kanji_inflection_dictionary.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -363,12 +363,10 @@ final class KanaKanjiConverter {
         limit: Int,
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
-        preloadSystemDictionaryIfNeeded()
-
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
 
         guard !normalizedReading.isEmpty,
-              limit > 0 else {
+                limit > 0 else {
             return []
         }
 
@@ -459,7 +457,7 @@ final class KanaKanjiConverter {
         )
 
         if let suppressedCandidates = suppressedCandidatesByReading[normalizedReading],
-           !suppressedCandidates.isEmpty {
+            !suppressedCandidates.isEmpty {
             for candidate in suppressedCandidates {
                 scores.removeValue(forKey: candidate)
             }
@@ -503,7 +501,7 @@ final class KanaKanjiConverter {
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !normalizedReading.isEmpty,
-              !trimmedCandidate.isEmpty else {
+                !trimmedCandidate.isEmpty else {
             return
         }
 
@@ -545,7 +543,7 @@ final class KanaKanjiConverter {
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard reading.count >= 2,
-              limit > 0 else {
+                limit > 0 else {
             return []
         }
 
@@ -563,7 +561,7 @@ final class KanaKanjiConverter {
             )
 
             guard let stemCandidates = stateQueue.sync(execute: { candidateCache[stemKey] }),
-                  !stemCandidates.isEmpty else {
+                    !stemCandidates.isEmpty else {
                 continue
             }
 
@@ -693,7 +691,7 @@ final class KanaKanjiConverter {
         limit: Int
     ) -> [String] {
         guard reading.count >= 2,
-              limit > 0 else {
+                limit > 0 else {
             return []
         }
 
@@ -732,7 +730,7 @@ final class KanaKanjiConverter {
         limit: Int
     ) -> [String] {
         guard reading.count >= 2,
-              limit > 0 else {
+                limit > 0 else {
             return []
         }
 
@@ -836,7 +834,7 @@ final class KanaKanjiConverter {
         }
 
         if readingStem.isEmpty,
-           !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
+            !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
             return []
         }
 
@@ -938,7 +936,7 @@ final class KanaKanjiConverter {
 
     private func isLikelyIchidanBaseReading(_ reading: String) -> Bool {
         guard reading.hasSuffix("る"),
-              reading.count >= 2 else {
+                reading.count >= 2 else {
             return false
         }
 
@@ -957,14 +955,14 @@ final class KanaKanjiConverter {
             let candidates = mergedSystemDictionary[reading] ?? []
 
             guard let requiredSources = mode.requiredSystemSources,
-                  let sourceMap = systemCandidateSources[reading],
-                  !sourceMap.isEmpty else {
+                    let sourceMap = systemCandidateSources[reading],
+                    !sourceMap.isEmpty else {
                 return candidates
             }
 
             return candidates.filter { candidate in
                 guard let candidateSources = sourceMap[candidate],
-                      !candidateSources.isEmpty else {
+                        !candidateSources.isEmpty else {
                     // Keep fallback candidates even when no source metadata exists.
                     return true
                 }
@@ -989,7 +987,7 @@ final class KanaKanjiConverter {
 
     private func removingSuffix(_ text: String, suffix: String) -> String? {
         guard !suffix.isEmpty,
-              text.hasSuffix(suffix) else {
+                text.hasSuffix(suffix) else {
             return nil
         }
 
@@ -1004,7 +1002,7 @@ final class KanaKanjiConverter {
             let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !trimmed.isEmpty,
-                  !seen.contains(trimmed) else {
+                    !seen.contains(trimmed) else {
                 continue
             }
 

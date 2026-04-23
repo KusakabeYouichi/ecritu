@@ -1873,5 +1873,4 @@ enum AppleEmojiCatalog {
         "🇲🇵",
         "🇰🇵",
     ]
-
 }

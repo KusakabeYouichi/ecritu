@@ -9,9 +9,18 @@ enum SettingsKeys {
     static let numberLayoutMode = "numberLayoutMode"
     static let accentPalette = "accentPalette"
     static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
+    static let kanaFlickGuideDisplayMode = "flickGuideDisplayModeKana"
+    static let latinFlickGuideDisplayMode = "flickGuideDisplayModeLatin"
+    static let numberFlickGuideDisplayMode = "flickGuideDisplayModeNumber"
     static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
     static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
     static let keyRepeatInterval = "keyRepeatInterval"
+    static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
+    static let kanaKanjiInitialUserDictionaryMigrated = "kanaKanjiInitialUserDictionaryMigrated"
+    static let kanaKanjiInitialSuppressionDictionaryMigrated = "kanaKanjiInitialSuppressionDictionaryMigrated"
+    static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
+    static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+    static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
 }
 
 enum RepeatSettings {
@@ -19,6 +28,7 @@ enum RepeatSettings {
     static let initialDelayRange: ClosedRange<Double> = 0.1...0.8
     static let intervalDefault = 0.1
     static let intervalRange: ClosedRange<Double> = 0.05...0.2
+    static let snapThreshold = 0.01
 }
 
 enum KanaLayoutOption: String, CaseIterable, Identifiable {
@@ -93,6 +103,38 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
     }
 }
 
+enum FlickGuideDisplayOption: String, CaseIterable, Identifiable {
+    case off
+    case fourDirections
+    case down
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .off: return "オフ"
+        case .fourDirections: return "4方向"
+        case .down: return "下"
+        }
+    }
+}
+
+enum KanaKanjiCandidateSourceModeOption: String, CaseIterable, Identifiable {
+    case normalise
+    case surface
+    case lesDeux
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .normalise: return "normalisé"
+        case .surface: return "surface"
+        case .lesDeux: return "les deux"
+        }
+    }
+}
+
 enum AccentColorOption: String, CaseIterable, Identifiable {
     case tuile
     case emeraude
@@ -150,4 +192,11 @@ enum KeyboardBackgroundThemeOption: String, CaseIterable, Identifiable {
             ]
         }
     }
+}
+
+struct VocabularyEntry: Identifiable {
+    let reading: String
+    let candidate: String
+
+    var id: String { reading + "\t" + candidate }
 }

@@ -312,8 +312,8 @@ enum SVGPathMiniParser {
             switch upperCommand {
             case "M":
                 guard index + 1 < tokens.count,
-                      let x = toNumber(tokens[index]),
-                      let y = toNumber(tokens[index + 1]) else {
+                        let x = toNumber(tokens[index]),
+                        let y = toNumber(tokens[index + 1]) else {
                     break
                 }
 
@@ -326,7 +326,7 @@ enum SVGPathMiniParser {
                 // Implicit subsequent line commands after M/m.
                 while index + 1 < tokens.count, !isCommand(tokens[index]) {
                     guard let lineX = toNumber(tokens[index]),
-                          let lineY = toNumber(tokens[index + 1]) else {
+                            let lineY = toNumber(tokens[index + 1]) else {
                         break
                     }
 
@@ -339,7 +339,7 @@ enum SVGPathMiniParser {
             case "L":
                 while index + 1 < tokens.count, !isCommand(tokens[index]) {
                     guard let x = toNumber(tokens[index]),
-                          let y = toNumber(tokens[index + 1]) else {
+                            let y = toNumber(tokens[index + 1]) else {
                         break
                     }
 
@@ -352,11 +352,11 @@ enum SVGPathMiniParser {
             case "C":
                 while index + 5 < tokens.count, !isCommand(tokens[index]) {
                     guard let x1 = toNumber(tokens[index]),
-                          let y1 = toNumber(tokens[index + 1]),
-                          let x2 = toNumber(tokens[index + 2]),
-                          let y2 = toNumber(tokens[index + 3]),
-                          let x = toNumber(tokens[index + 4]),
-                          let y = toNumber(tokens[index + 5]) else {
+                            let y1 = toNumber(tokens[index + 1]),
+                            let x2 = toNumber(tokens[index + 2]),
+                            let y2 = toNumber(tokens[index + 3]),
+                            let x = toNumber(tokens[index + 4]),
+                            let y = toNumber(tokens[index + 5]) else {
                         break
                     }
 
