@@ -1,19 +1,245 @@
 import Foundation
+import SQLite3
 
 private struct KanaKanjiInflectionEntry: Codable {
     let candidate: String
     let inflectionClass: String
 }
 
+private let sqliteTransientDestructor = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
+
+private final class KanaKanjiSQLiteIndex {
+    private let queryQueue = DispatchQueue(label: "com.kusakabe.ecritu.kana-kanji.sqlite-index")
+    private var database: OpaquePointer?
+    private var selectCandidatesStatement: OpaquePointer?
+    private var selectCandidatesBySourceStatement: OpaquePointer?
+    private var selectInflectionStatement: OpaquePointer?
+    private(set) var hasSourceMetadata = false
+    private(set) var hasInflectionMetadata = false
+
+    init?(databaseURL: URL) {
+        var openedDatabase: OpaquePointer?
+        let openResult = databaseURL.path.withCString { pathCString in
+            sqlite3_open_v2(
+                pathCString,
+                &openedDatabase,
+                SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX,
+                nil
+            )
+        }
+
+        guard openResult == SQLITE_OK,
+            let openedDatabase else {
+            if let openedDatabase {
+                sqlite3_close(openedDatabase)
+            }
+            return nil
+        }
+
+        database = openedDatabase
+
+        guard let candidateStatement = prepareStatement(
+            sql: "SELECT candidate FROM dictionary_entries WHERE reading = ? ORDER BY rank ASC"
+        ) else {
+            return nil
+        }
+        selectCandidatesStatement = candidateStatement
+
+        hasSourceMetadata = tableExists("candidate_sources")
+        if hasSourceMetadata {
+            selectCandidatesBySourceStatement = prepareStatement(
+                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?)) ORDER BY e.rank ASC"
+            )
+        }
+
+        hasInflectionMetadata = tableExists("inflection_classes")
+        if hasInflectionMetadata {
+            selectInflectionStatement = prepareStatement(
+                sql: "SELECT candidate, inflection_class FROM inflection_classes WHERE reading = ?"
+            )
+        }
+    }
+
+    deinit {
+        if let selectCandidatesStatement {
+            sqlite3_finalize(selectCandidatesStatement)
+        }
+
+        if let selectCandidatesBySourceStatement {
+            sqlite3_finalize(selectCandidatesBySourceStatement)
+        }
+
+        if let selectInflectionStatement {
+            sqlite3_finalize(selectInflectionStatement)
+        }
+
+        if let database {
+            sqlite3_close(database)
+        }
+    }
+
+    func candidates(for reading: String, requiredSources: Set<String>?) -> [String] {
+        queryQueue.sync {
+            if let requiredSources,
+                requiredSources.count == 1,
+                hasSourceMetadata,
+                let source = requiredSources.first,
+                let statement = selectCandidatesBySourceStatement {
+                return fetchCandidates(reading: reading, source: source, statement: statement)
+            }
+
+            guard let statement = selectCandidatesStatement else {
+                return []
+            }
+
+            return fetchCandidates(reading: reading, source: nil, statement: statement)
+        }
+    }
+
+    func inflectionClassMap(for reading: String) -> [String: String] {
+        queryQueue.sync {
+            guard hasInflectionMetadata,
+                let statement = selectInflectionStatement else {
+                return [:]
+            }
+
+            resetStatement(statement)
+
+            let bindResult = reading.withCString { readingCString in
+                sqlite3_bind_text(statement, 1, readingCString, -1, sqliteTransientDestructor)
+            }
+
+            guard bindResult == SQLITE_OK else {
+                return [:]
+            }
+
+            var result: [String: String] = [:]
+
+            while sqlite3_step(statement) == SQLITE_ROW {
+                guard let candidateCString = sqlite3_column_text(statement, 0),
+                    let inflectionClassCString = sqlite3_column_text(statement, 1) else {
+                    continue
+                }
+
+                let candidate = String(cString: candidateCString)
+                let inflectionClass = String(cString: inflectionClassCString)
+
+                guard !candidate.isEmpty,
+                    !inflectionClass.isEmpty else {
+                    continue
+                }
+
+                result[candidate] = inflectionClass
+            }
+
+            return result
+        }
+    }
+
+    private func fetchCandidates(
+        reading: String,
+        source: String?,
+        statement: OpaquePointer
+    ) -> [String] {
+        resetStatement(statement)
+
+        let readingBindResult = reading.withCString { readingCString in
+            sqlite3_bind_text(statement, 1, readingCString, -1, sqliteTransientDestructor)
+        }
+
+        guard readingBindResult == SQLITE_OK else {
+            return []
+        }
+
+        if let source {
+            let sourceBindResult = source.withCString { sourceCString in
+                sqlite3_bind_text(statement, 2, sourceCString, -1, sqliteTransientDestructor)
+            }
+
+            guard sourceBindResult == SQLITE_OK else {
+                return []
+            }
+        }
+
+        var results: [String] = []
+
+        while sqlite3_step(statement) == SQLITE_ROW {
+            guard let candidateCString = sqlite3_column_text(statement, 0) else {
+                continue
+            }
+
+            let candidate = String(cString: candidateCString)
+
+            if !candidate.isEmpty {
+                results.append(candidate)
+            }
+        }
+
+        return results
+    }
+
+    private func resetStatement(_ statement: OpaquePointer) {
+        sqlite3_reset(statement)
+        sqlite3_clear_bindings(statement)
+    }
+
+    private func prepareStatement(sql: String) -> OpaquePointer? {
+        guard let database else {
+            return nil
+        }
+
+        var statement: OpaquePointer?
+        let prepareResult = sql.withCString { sqlCString in
+            sqlite3_prepare_v2(database, sqlCString, -1, &statement, nil)
+        }
+
+        guard prepareResult == SQLITE_OK,
+            let statement else {
+            return nil
+        }
+
+        return statement
+    }
+
+    private func tableExists(_ tableName: String) -> Bool {
+        guard database != nil,
+            let statement = prepareStatement(
+                sql: "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1"
+            ) else {
+            return false
+        }
+
+        defer {
+            sqlite3_finalize(statement)
+        }
+
+        let bindResult = tableName.withCString { tableNameCString in
+            sqlite3_bind_text(statement, 1, tableNameCString, -1, sqliteTransientDestructor)
+        }
+
+        guard bindResult == SQLITE_OK else {
+            return false
+        }
+
+        return sqlite3_step(statement) == SQLITE_ROW
+    }
+}
+
 final class KanaKanjiStore {
     private let appGroupID: String
     private let defaults: UserDefaults?
     private let fileManager = FileManager.default
+    private let systemDictionaryQueue = DispatchQueue(
+        label: "com.kusakabe.ecritu.kana-kanji.system-dictionary"
+    )
     private static let initialLearningScores: [String: Int] = [
         "かった\t交った": -1_000_000_000,
         "かった\t支った": -1_000_000_000
     ]
+    private var sqliteIndex: KanaKanjiSQLiteIndex?
+    private var didAttemptSQLiteIndexLoad = false
     private var cachedSystemDictionary: [String: [String]]?
+    private var cachedSupplementalSystemDictionary: [String: [String]]?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     private var cachedInitialUserDictionary: [String: [String]]?
@@ -27,14 +253,17 @@ final class KanaKanjiStore {
         self.defaults = UserDefaults(suiteName: appGroupID)
     }
 
-    private func sharedOrBundledDictionaryData(filename: String) -> Data? {
+    private func sharedOrBundledDictionaryURL(filename: String) -> URL? {
         if let containerURL = fileManager.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
         ) {
             let sharedURL = containerURL.appendingPathComponent(filename)
 
-            if let data = try? Data(contentsOf: sharedURL), !data.isEmpty {
-                return data
+            if let values = try? sharedURL.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
+                values.isRegularFile == true,
+                let size = values.fileSize,
+                size > 0 {
+                return sharedURL
             }
         }
 
@@ -51,12 +280,141 @@ final class KanaKanjiStore {
         ]
 
         for resourceURL in resourceURLs.compactMap({ $0 }) {
-            if let data = try? Data(contentsOf: resourceURL), !data.isEmpty {
-                return data
+            if let values = try? resourceURL.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
+                values.isRegularFile == true,
+                let size = values.fileSize,
+                size > 0 {
+                return resourceURL
             }
         }
 
         return nil
+    }
+
+    private func sharedOrBundledDictionaryData(filename: String) -> Data? {
+        guard let resourceURL = sharedOrBundledDictionaryURL(filename: filename),
+            let data = try? Data(contentsOf: resourceURL),
+            !data.isEmpty else {
+            return nil
+        }
+
+        return data
+    }
+
+    private func sqliteIndexIfAvailable() -> KanaKanjiSQLiteIndex? {
+        systemDictionaryQueue.sync {
+            if let sqliteIndex {
+                return sqliteIndex
+            }
+
+            guard !didAttemptSQLiteIndexLoad else {
+                return nil
+            }
+
+            didAttemptSQLiteIndexLoad = true
+
+            guard let databaseURL = sharedOrBundledDictionaryURL(
+                filename: KanaKanjiStorageKeys.systemDictionarySQLiteFilename
+            ),
+                let sqliteIndex = KanaKanjiSQLiteIndex(databaseURL: databaseURL) else {
+                return nil
+            }
+
+            self.sqliteIndex = sqliteIndex
+            return sqliteIndex
+        }
+    }
+
+    func prepareSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
+        guard onLoaded != nil else {
+            _ = sqliteIndexIfAvailable()
+            return
+        }
+
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            _ = self?.sqliteIndexIfAvailable()
+
+            DispatchQueue.main.async {
+                onLoaded?()
+            }
+        }
+    }
+
+    func systemCandidates(
+        for reading: String,
+        mode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return []
+        }
+
+        let supplementalCandidates = loadSupplementalSystemDictionary()[normalizedReading] ?? []
+
+        if let sqliteIndex = sqliteIndexIfAvailable() {
+            let sqliteCandidates = sqliteIndex.candidates(
+                for: normalizedReading,
+                requiredSources: mode.requiredSystemSources
+            )
+
+            return mergedSystemCandidates(
+                primary: sqliteCandidates,
+                supplemental: supplementalCandidates
+            )
+        }
+
+        let dictionary = loadSystemDictionary()
+        let baseCandidates = dictionary[normalizedReading] ?? []
+
+        guard let requiredSources = mode.requiredSystemSources else {
+            return mergedSystemCandidates(
+                primary: baseCandidates,
+                supplemental: supplementalCandidates
+            )
+        }
+
+        let sourceMap = loadSystemCandidateSources()[normalizedReading] ?? [:]
+
+        guard !sourceMap.isEmpty else {
+            return mergedSystemCandidates(
+                primary: baseCandidates,
+                supplemental: supplementalCandidates
+            )
+        }
+
+        let filteredPrimaryCandidates = baseCandidates.filter { candidate in
+            guard let candidateSources = sourceMap[candidate],
+                !candidateSources.isEmpty else {
+                // Keep fallback candidates even when no source metadata exists.
+                return true
+            }
+
+            return !requiredSources.isDisjoint(with: candidateSources)
+        }
+
+        return mergedSystemCandidates(
+            primary: filteredPrimaryCandidates,
+            supplemental: supplementalCandidates
+        )
+    }
+
+    func systemInflectionMetadata(for reading: String) -> (classMap: [String: String], hasMetadata: Bool) {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return ([:], false)
+        }
+
+        if let sqliteIndex = sqliteIndexIfAvailable() {
+            return (
+                sqliteIndex.inflectionClassMap(for: normalizedReading),
+                sqliteIndex.hasInflectionMetadata
+            )
+        }
+
+        let inflectionDictionary = loadInflectionDictionary()
+        return (inflectionDictionary[normalizedReading] ?? [:], !inflectionDictionary.isEmpty)
     }
 
     func loadSystemDictionary() -> [String: [String]] {
@@ -74,6 +432,24 @@ final class KanaKanjiStore {
         // The generated Sudachi index is already normalized to hiragana readings.
         cachedSystemDictionary = decoded
         return decoded
+    }
+
+    func loadSupplementalSystemDictionary() -> [String: [String]] {
+        if let cachedSupplementalSystemDictionary {
+            return cachedSupplementalSystemDictionary
+        }
+
+        guard let data = sharedOrBundledDictionaryData(
+            filename: KanaKanjiStorageKeys.supplementalSystemDictionaryFilename
+        ),
+            let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+            cachedSupplementalSystemDictionary = [:]
+            return [:]
+        }
+
+        let normalized = normalizeDictionary(decoded)
+        cachedSupplementalSystemDictionary = normalized
+        return normalized
     }
 
     func loadSystemCandidateSources() -> [String: [String: Set<String>]] {
@@ -123,8 +499,44 @@ final class KanaKanjiStore {
 
         guard let data = sharedOrBundledDictionaryData(
             filename: KanaKanjiStorageKeys.inflectionDictionaryFilename
-        ),
-                let decoded = try? JSONDecoder().decode([String: [KanaKanjiInflectionEntry]].self, from: data) else {
+        ) else {
+            return [:]
+        }
+
+        if let decodedMap = try? JSONDecoder().decode([String: [String: String]].self, from: data) {
+            var normalizedMap: [String: [String: String]] = [:]
+
+            for (reading, candidateMap) in decodedMap {
+                let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+                guard !normalizedReading.isEmpty else {
+                    continue
+                }
+
+                var filteredMap: [String: String] = [:]
+
+                for (candidate, inflectionClass) in candidateMap {
+                    let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+                    let trimmedInflectionClass = inflectionClass.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                    guard !trimmedCandidate.isEmpty,
+                        !trimmedInflectionClass.isEmpty else {
+                        continue
+                    }
+
+                    filteredMap[trimmedCandidate] = trimmedInflectionClass
+                }
+
+                if !filteredMap.isEmpty {
+                    normalizedMap[normalizedReading] = filteredMap
+                }
+            }
+
+            cachedInflectionDictionary = normalizedMap
+            return normalizedMap
+        }
+
+        guard let decoded = try? JSONDecoder().decode([String: [KanaKanjiInflectionEntry]].self, from: data) else {
             return [:]
         }
 
@@ -151,6 +563,18 @@ final class KanaKanjiStore {
 
         cachedInflectionDictionary = inflectionMap
         return inflectionMap
+    }
+
+    func clearSystemDictionaryCaches() {
+        cachedSystemDictionary = nil
+        cachedSupplementalSystemDictionary = nil
+        cachedSystemCandidateSources = nil
+        cachedInflectionDictionary = nil
+
+        systemDictionaryQueue.sync {
+            sqliteIndex = nil
+            didAttemptSQLiteIndexLoad = false
+        }
     }
 
     func userDictionary() -> [String: [String]] {
@@ -397,6 +821,14 @@ final class KanaKanjiStore {
         }
 
         return result
+    }
+
+    private func mergedSystemCandidates(primary: [String], supplemental: [String]) -> [String] {
+        guard !supplemental.isEmpty else {
+            return primary
+        }
+
+        return uniqueCandidates(from: primary + supplemental)
     }
 
     private func learningKey(reading: String, candidate: String) -> String {

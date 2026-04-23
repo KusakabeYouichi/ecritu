@@ -67,11 +67,13 @@ extension KeyboardViewController {
     }
 
     func shouldAutoCommitConversion(beforeInserting text: String) -> Bool {
-        switch text {
-        case "。", "、", ".", ",", "!", "?", "」", "』", ")", "】", "]", "〉", "》":
-            return true
-        default:
+        guard !text.isEmpty else {
             return false
+        }
+
+        return text.unicodeScalars.allSatisfy { scalar in
+            CharacterSet.punctuationCharacters.contains(scalar)
+                || CharacterSet.symbols.contains(scalar)
         }
     }
 
@@ -415,14 +417,26 @@ extension KeyboardViewController {
     }
 
     func synchronizeConversionContextIfNeeded() {
-        guard let activeConversion else {
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+
+        if let activeConversion {
+            guard contextBeforeInput.hasSuffix(activeConversion.committedText) else {
+                self.activeConversion = nil
+                clearComposingState()
+                return
+            }
+
             return
         }
 
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        guard !composingRawText.isEmpty else {
+            return
+        }
 
-        guard contextBeforeInput.hasSuffix(activeConversion.committedText) else {
-            self.activeConversion = nil
+        guard contextBeforeInput.hasSuffix(composingRawText) else {
+            // Host app side actions (for example send button) can consume marked text.
+            // Drop stale internal state so next key starts from a clean composition.
+            textDocumentProxy.unmarkText()
             clearComposingState()
             return
         }

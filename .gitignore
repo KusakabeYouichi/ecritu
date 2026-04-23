@@ -62,7 +62,8 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 # Temporary files
-tmp/
+tmp/*
+!tmp/ÉcrituSecondVocab.json
 
 # macOS
 .DS_Store

@@ -3,9 +3,9 @@ import SwiftUI
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
 
-    private static let buildNumberText: String = {
-        let buildNumber = (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
-        return "build \(buildNumber)"
+    private static let editionNumberText: String = {
+        let editionNumber = (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
+        return "Édition n° \(editionNumber)"
     }()
 
     @AppStorage(
@@ -98,7 +98,7 @@ struct ContentView: View {
     @State private var isSuppressionDictionaryRegistrationVisible = false
     @State private var suppressionDictionaryScrollIndexTitle = ""
     @State private var isSuppressionDictionaryScrollIndexVisible = false
-    @GestureState private var isBuildNumberPressed = false
+    @GestureState private var isEditionNumberPressed = false
 
     private let setupSteps: [String] = [
         "設定 > 一般 > キーボード > キーボード > 新しいキーボードを追加",
@@ -593,16 +593,16 @@ struct ContentView: View {
                                 .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                                 .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
 
-                            Text(Self.buildNumberText)
+                            Text(Self.editionNumberText)
                                 .font(.system(size: 4, weight: .regular, design: .monospaced))
                                 .foregroundStyle(.secondary.opacity(0.9))
                                 .lineLimit(1)
-                                .scaleEffect(isBuildNumberPressed ? 6.0 : 1.0, anchor: .top)
-                                .animation(.easeOut(duration: 0.08), value: isBuildNumberPressed)
+                                .scaleEffect(isEditionNumberPressed ? 6.0 : 1.0, anchor: .top)
+                                .animation(.easeOut(duration: 0.08), value: isEditionNumberPressed)
                                 .contentShape(Rectangle())
                                 .simultaneousGesture(
                                     DragGesture(minimumDistance: 0)
-                                        .updating($isBuildNumberPressed) { _, state, _ in
+                                        .updating($isEditionNumberPressed) { _, state, _ in
                                             state = true
                                         }
                                 )
