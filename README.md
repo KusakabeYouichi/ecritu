@@ -35,7 +35,8 @@
 - 大規模辞書を実機で扱う場合は、`tools/build_kana_kanji_sqlite.py` でSQLite化して `tmp/kana_kanji_dictionary.sqlite` を生成してください。
 - `tools/build_kana_kanji_sqlite.py` は `--vocab-json` を複数指定できるため、語彙ファイルを増やす場合もマージして1つのSQLiteにできます。
 - エディション番号(`CFBundleVersion`)は `Config/Edition.xcconfig` の `ECRITU_EDITION_NUMBER` を単一ソースとして参照します。
-- VSCodeタスク実行時とXcode実機ビルド時で同じ番号になります。番号を進めるときは `Config/Edition.xcconfig` を更新してコミットしてください。
+- 番号の更新は VSCode の `Build ecritu (iOS Simulator)` タスク実行時のみ自動で行います。
+- Xcode側ビルドは `Config/Edition.xcconfig` の現在値をそのまま使います(自動更新しません)。
 - システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
 - Sudachi前処理では漢字以外の候補(カタカナ等)も保持できます。
 - 追加辞書の初期データは `KeyboardExtension/InitialAjoutVocabMigration.json` に同梱され、ビルドごとに拡張バンドルから読み込まれます。

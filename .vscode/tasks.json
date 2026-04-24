@@ -25,7 +25,7 @@
     {
       "label": "Build ecritu (iOS Simulator)",
       "type": "shell",
-      "command": "xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -destination \"generic/platform=iOS Simulator\" -derivedDataPath \"${workspaceFolder}/build\" build",
+      "command": "python3 tools/bump_edition_number.py Config/Edition.xcconfig && xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -destination \"generic/platform=iOS Simulator\" -derivedDataPath \"${workspaceFolder}/build\" build",
       "options": {
         "cwd": "${workspaceFolder}"
       },

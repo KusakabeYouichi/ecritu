@@ -1,3 +1,3 @@
 // Shared edition number for all environments (VSCode + Xcode).
 // Bump this value and commit when you want a new edition.
-ECRITU_EDITION_NUMBER = 20260423191249
+ECRITU_EDITION_NUMBER = 20260423191251
