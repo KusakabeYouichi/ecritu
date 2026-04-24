@@ -4,6 +4,11 @@
 <array>
 	<dict>
 		<key>phrase</key>
+		<string>écritu</string>
+		<key>shortcut</key>
+		<string>えくりちゅ</string>
+	<dict>
+		<key>phrase</key>
 		<string>	</string>
 		<key>shortcut</key>
 		<string>☻</string>

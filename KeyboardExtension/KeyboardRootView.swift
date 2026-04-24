@@ -205,6 +205,34 @@ struct KeyboardRootView: View {
         isSpaceActsAsConversionKey ? "変換" : "空白"
     }
 
+    private var isReturnActsAsCommitKey: Bool {
+        inputMode == .kana && !composingText.isEmpty
+    }
+
+    private var returnActionKeyTitle: String {
+        if isReturnActsAsCommitKey {
+            return "確定"
+        }
+
+        return returnKeySystemImageName == nil ? "⏎" : ""
+    }
+
+    private var returnActionKeySystemImageName: String? {
+        isReturnActsAsCommitKey ? nil : returnKeySystemImageName
+    }
+
+    private var returnActionKeyAccessibilityLabel: String {
+        if isReturnActsAsCommitKey {
+            return "確定"
+        }
+
+        return returnKeySystemImageName == nil ? "改行" : "検索"
+    }
+
+    private var returnActionKeyFontSize: CGFloat {
+        isReturnActsAsCommitKey ? 16 : 22
+    }
+
     private var canTapComposingTextToCommit: Bool {
         !composingText.isEmpty
     }
@@ -821,10 +849,10 @@ struct KeyboardRootView: View {
                     Color.clear
 
                     ActionKeyButton(
-                        title: returnKeySystemImageName == nil ? "⏎" : "",
-                        systemImageName: returnKeySystemImageName,
-                        accessibilityLabel: returnKeySystemImageName == nil ? "改行" : "検索",
-                        fontSize: 22,
+                        title: returnActionKeyTitle,
+                        systemImageName: returnActionKeySystemImageName,
+                        accessibilityLabel: returnActionKeyAccessibilityLabel,
+                        fontSize: returnActionKeyFontSize,
                         isEnabled: isReturnKeyEnabled,
                         action: onReturn
                     )
@@ -996,10 +1024,10 @@ struct KeyboardRootView: View {
                 Color.clear
 
                 ActionKeyButton(
-                    title: returnKeySystemImageName == nil ? "⏎" : "",
-                    systemImageName: returnKeySystemImageName,
-                    accessibilityLabel: returnKeySystemImageName == nil ? "改行" : "検索",
-                    fontSize: 22,
+                    title: returnActionKeyTitle,
+                    systemImageName: returnActionKeySystemImageName,
+                    accessibilityLabel: returnActionKeyAccessibilityLabel,
+                    fontSize: returnActionKeyFontSize,
                     isEnabled: isReturnKeyEnabled,
                     action: onReturn
                 )
@@ -1457,10 +1485,10 @@ struct KeyboardRootView: View {
                     }
 
                     ActionKeyButton(
-                        title: returnKeySystemImageName == nil ? "⏎" : "",
-                        systemImageName: returnKeySystemImageName,
-                        accessibilityLabel: returnKeySystemImageName == nil ? "改行" : "検索",
-                        fontSize: 22,
+                        title: returnActionKeyTitle,
+                        systemImageName: returnActionKeySystemImageName,
+                        accessibilityLabel: returnActionKeyAccessibilityLabel,
+                        fontSize: returnActionKeyFontSize,
                         fixedWidth: 72,
                         isEnabled: isReturnKeyEnabled,
                         action: onReturn

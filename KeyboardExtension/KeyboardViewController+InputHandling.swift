@@ -171,10 +171,24 @@ extension KeyboardViewController {
     }
 
     func handleReturnInput() {
-        commitActiveConversion(learn: true)
+        let hasActiveConversion = activeConversion != nil
+        let hasComposingText = !composingRawText.isEmpty
 
-        if !composingRawText.isEmpty {
-            textDocumentProxy.unmarkText()
+        if hasActiveConversion {
+            commitActiveConversion(learn: true)
+            refreshKeyboardStateAsync()
+            return
+        }
+
+        if hasComposingText {
+            commitComposingText(
+                sourceText: composingRawText,
+                sourceReading: composingReading,
+                committedText: composingRawText,
+                learn: true
+            )
+            refreshKeyboardStateAsync()
+            return
         }
 
         clearComposingState()

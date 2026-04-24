@@ -361,8 +361,9 @@ final class KeyboardViewController: UIInputViewController {
         )
         let returnKeyType = textDocumentProxy.returnKeyType
         let hasAnyText = textDocumentProxy.hasText
+        let hasPendingComposingText = !candidatePresentation.composingText.isEmpty
         let returnKeySystemImageName: String? = returnKeyType == .search ? "magnifyingglass" : nil
-        let isReturnKeyEnabled = returnKeyType == .search ? hasAnyText : true
+        let isReturnKeyEnabled = hasPendingComposingText || (returnKeyType == .search ? hasAnyText : true)
         let kanaFlickGuideDisplayMode = sharedFlickGuideDisplayModeValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.kanaFlickGuideDisplayMode
