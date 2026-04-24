@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260424184918"
+    private static let editionUpdatedAtRaw: String = "20260424235918"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,

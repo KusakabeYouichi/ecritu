@@ -9,7 +9,8 @@
 ## Build System Dictionary from SudachiDict
 1. Prepare Sudachi dictionary source CSV files.
 2. Run:
-   - `python tools/build_sudachi_index.py --input-glob "<SUDACHI_CSV_GLOB>" --output tmp/ÉcrituPremierVocab.json --max-candidates 8 --min-reading-len 2 --max-reading-len 10 --max-candidate-len 20`
+   - `python tools/build_sudachi_index.py --input-glob "<SUDACHI_CSV_GLOB>" --output tmp/ÉcrituPremierVocab.json --max-candidates 8 --min-reading-len 1 --max-reading-len 10 --max-candidate-len 20 --single-reading-max-candidates 8 --single-reading-max-candidate-len 1`
+   - 1文字読みは有効化しつつ、候補の長さと件数を絞ってノイズ増加を抑制します。
 3. Keep non-kanji candidates enabled (default). This preserves katakana and kana candidates (example: `にほん -> ニホン`).
 4. Install to simulator app-group container:
    - `bash tools/install_simulator_kana_dictionary.sh`

@@ -150,6 +150,21 @@ def contains_kanji(text: str) -> bool:
     return False
 
 
+def is_valid_single_reading_candidate(
+    reading: str,
+    candidate: str,
+    max_candidate_len: int,
+) -> bool:
+    if len(candidate) > max_candidate_len:
+        return False
+
+    if is_kana_like(candidate):
+        # 1文字読みでは、かな候補を同音同形に限定してノイズを抑える。
+        return katakana_to_hiragana(candidate) == reading
+
+    return True
+
+
 def extract_reading(row: List[str]) -> Optional[str]:
     if len(row) > SUDACHI_READING_INDEX:
         reading = row[SUDACHI_READING_INDEX].strip()
@@ -221,6 +236,8 @@ def build_index(
     min_reading_len: int,
     max_reading_len: int,
     max_candidate_len: int,
+    single_reading_max_candidates: int,
+    single_reading_max_candidate_len: int,
     include_non_japanese_candidates: bool,
     require_kanji_candidate: bool,
     candidate_policy: str,
@@ -261,8 +278,17 @@ def build_index(
         if len(reading) > max_reading_len:
             continue
 
+        is_single_reading = len(reading) == 1
+
         for candidate, sources in candidates_with_sources.items():
             if len(candidate) > max_candidate_len:
+                continue
+
+            if is_single_reading and not is_valid_single_reading_candidate(
+                reading=reading,
+                candidate=candidate,
+                max_candidate_len=single_reading_max_candidate_len,
+            ):
                 continue
 
             if not include_non_japanese_candidates and not contains_japanese_script(candidate):
@@ -286,7 +312,11 @@ def build_index(
             cand_counter.items(),
             key=lambda x: (-x[1], len(x[0]), x[0]),
         )
-        index[reading] = [cand for cand, _ in sorted_candidates[:max_candidates]]
+        per_reading_limit = max_candidates
+        if len(reading) == 1:
+            per_reading_limit = min(max_candidates, single_reading_max_candidates)
+
+        index[reading] = [cand for cand, _ in sorted_candidates[:per_reading_limit]]
 
     inflection_index: Dict[str, Dict[str, str]] = {}
     for reading, candidates in index.items():
@@ -378,7 +408,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--min-reading-len",
         type=int,
-        default=2,
+        default=1,
         help="Minimum reading length to keep",
     )
     parser.add_argument(
@@ -392,6 +422,18 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=24,
         help="Maximum candidate length to keep",
+    )
+    parser.add_argument(
+        "--single-reading-max-candidates",
+        type=int,
+        default=8,
+        help="Max candidates to keep for 1-character readings",
+    )
+    parser.add_argument(
+        "--single-reading-max-candidate-len",
+        type=int,
+        default=1,
+        help="Maximum candidate length to keep for 1-character readings",
     )
     parser.add_argument(
         "--include-non-japanese-candidates",
@@ -420,6 +462,8 @@ def main() -> int:
         min_reading_len=max(1, args.min_reading_len),
         max_reading_len=max(1, args.max_reading_len),
         max_candidate_len=max(1, args.max_candidate_len),
+        single_reading_max_candidates=max(1, args.single_reading_max_candidates),
+        single_reading_max_candidate_len=max(1, args.single_reading_max_candidate_len),
         include_non_japanese_candidates=args.include_non_japanese_candidates,
         require_kanji_candidate=args.require_kanji_candidate,
         candidate_policy=args.candidate_policy,
@@ -430,6 +474,8 @@ def main() -> int:
         json.dump(index, f, ensure_ascii=False, sort_keys=True)
 
     print(f"wrote {len(index)} readings -> {args.output}")
+    single_reading_count = sum(1 for reading in index if len(reading) == 1)
+    print(f"wrote {single_reading_count} single-character readings")
 
     output_sources = args.output_sources
     if output_sources is None:
