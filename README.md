@@ -41,6 +41,11 @@
 - エディション番号は実質ビルド番号として扱い、テスト用ビルドや失敗ビルドで増えても巻き戻しません。
 - Xcode側ビルドは `Config/Edition.xcconfig` の現在値をそのまま使います(自動更新しません)。
 - システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
+- clone直後のビルド失敗を避けるため、拡張バンドルには `KeyboardExtension/DefaultDictionaryResources/` の軽量プレースホルダー辞書を同梱しています。
+- 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。
+- Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、Sudachi CSV がある環境では `tmp/` 再生成とApp Group反映を自動実行します。
+- Sudachi CSV が無い環境では自動生成をスキップし、同梱プレースホルダー辞書でビルドを継続します。
+- Sudachi前処理では1文字読みも収録対象としつつ、1文字読み専用の候補数・候補長上限でノイズ増加を抑制します。
 - Sudachi前処理では漢字以外の候補(カタカナ等)も保持できます。
 - 追加辞書の初期データは `KeyboardExtension/InitialAjoutVocabMigration.json` に同梱され、ビルドごとに拡張バンドルから読み込まれます。
 - 濁点/半濁点の後変換は未実装

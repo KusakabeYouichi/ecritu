@@ -1,5 +1,5 @@
 // Shared edition number for all environments (VSCode + Xcode).
 // Treat this as a build number; test/failed builds may increment it.
 // VSCode build task increments the number and updates the timestamp.
-ECRITU_EDITION_NUMBER = 1003
-ECRITU_EDITION_UPDATED_AT = 20260424184918
+ECRITU_EDITION_NUMBER = 1005
+ECRITU_EDITION_UPDATED_AT = 20260424235918

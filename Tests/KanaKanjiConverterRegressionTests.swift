@@ -51,6 +51,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(candidates.contains("行く"), "candidates=\(candidates)")
     }
 
+    func testRegressionSingleCharacterReadingRemainsConvertibleOnSeedFallback() {
+        let candidates = converter.candidates(
+            for: "ひ",
+            limit: 12,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(candidates.contains("日"), "candidates=\(candidates)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return

@@ -47,16 +47,21 @@ targets:
       - path: KeyboardExtension
         excludes:
           - Info.plist
-      - path: tmp/ÉcrituPremierVocab.json
+      - path: KeyboardExtension/DefaultDictionaryResources/ÉcrituPremierVocab.json
         buildPhase: resources
-      - path: tmp/ÉcrituSecondVocab.json
+      - path: KeyboardExtension/DefaultDictionaryResources/ÉcrituSecondVocab.json
         buildPhase: resources
-      - path: tmp/kana_kanji_candidate_sources.json
+      - path: KeyboardExtension/DefaultDictionaryResources/kana_kanji_candidate_sources.json
         buildPhase: resources
-      - path: tmp/kana_kanji_inflection_dictionary.json
+      - path: KeyboardExtension/DefaultDictionaryResources/kana_kanji_inflection_dictionary.json
         buildPhase: resources
-      - path: tmp/kana_kanji_dictionary.sqlite
+      - path: KeyboardExtension/DefaultDictionaryResources/kana_kanji_dictionary.sqlite
         buildPhase: resources
+    preBuildScripts:
+      - name: Refresh Simulator Dictionary Artifacts
+        basedOnDependencyAnalysis: false
+        script: |
+          bash "$SRCROOT/tools/refresh_simulator_dictionary_on_build.sh"
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu.keyboard
