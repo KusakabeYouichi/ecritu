@@ -2,10 +2,35 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
+    private static let editionUpdatedAtRaw: String = "20260424184918"
+
+    private static func editionDateText(from rawValue: String?) -> String? {
+        guard let rawValue,
+            rawValue.count >= 8 else {
+            return nil
+        }
+
+        let yearPart = rawValue.prefix(4)
+        let monthPart = rawValue.dropFirst(4).prefix(2)
+        let dayPart = rawValue.dropFirst(6).prefix(2)
+
+        guard let month = Int(monthPart),
+            let day = Int(dayPart) else {
+            return nil
+        }
+
+        return "\(yearPart)-\(month)-\(day)"
+    }
 
     private static let editionNumberText: String = {
-        let editionNumber = (Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
-        return "Édition n° \(editionNumber)"
+        let info = Bundle.main.infoDictionary ?? [:]
+        let editionNumber = (info["CFBundleVersion"] as? String) ?? "?"
+
+        if let dateText = editionDateText(from: editionUpdatedAtRaw) {
+            return "édition n°\(editionNumber) (\(dateText))"
+        }
+
+        return "édition n°\(editionNumber)"
     }()
 
     @AppStorage(

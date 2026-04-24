@@ -36,6 +36,9 @@
 - `tools/build_kana_kanji_sqlite.py` は `--vocab-json` を複数指定できるため、語彙ファイルを増やす場合もマージして1つのSQLiteにできます。
 - エディション番号(`CFBundleVersion`)は `Config/Edition.xcconfig` の `ECRITU_EDITION_NUMBER` を単一ソースとして参照します。
 - 番号の更新は VSCode の `Build ecritu (iOS Simulator)` タスク実行時のみ自動で行います。
+- 同タスク実行時に `Config/Edition.xcconfig` の `ECRITU_EDITION_UPDATED_AT` も現在日時へ自動更新します。
+- 同タスク実行時に `App/ContentView.swift` 内の `editionUpdatedAtRaw` も同期更新され、コンテナーアプリ表示へ反映されます。
+- エディション番号は実質ビルド番号として扱い、テスト用ビルドや失敗ビルドで増えても巻き戻しません。
 - Xcode側ビルドは `Config/Edition.xcconfig` の現在値をそのまま使います(自動更新しません)。
 - システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
 - Sudachi前処理では漢字以外の候補(カタカナ等)も保持できます。
