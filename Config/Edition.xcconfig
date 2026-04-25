@@ -1,5 +1,14 @@
 // Shared edition number for all environments (VSCode + Xcode).
 // Treat this as a build number; test/failed builds may increment it.
 // VSCode build task increments the number and updates the timestamp.
+ECRITU_DEVELOPMENT_TEAM = 487V53DJMW
+ECRITU_APP_BUNDLE_IDENTIFIER = com.kusakabe.ecritu
+ECRITU_KEYBOARD_BUNDLE_IDENTIFIER = $(ECRITU_APP_BUNDLE_IDENTIFIER).keyboard
+ECRITU_TESTS_BUNDLE_IDENTIFIER = $(ECRITU_APP_BUNDLE_IDENTIFIER).tests
+ECRITU_APP_GROUP_IDENTIFIER = group.$(ECRITU_APP_BUNDLE_IDENTIFIER)
+
 ECRITU_EDITION_NUMBER = 1005
 ECRITU_EDITION_UPDATED_AT = 20260424235918
+
+// Optional per-developer signing overrides (ignored from git).
+#include? "Signing.local.xcconfig"

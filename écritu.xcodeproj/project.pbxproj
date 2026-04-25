@@ -274,10 +274,10 @@
 				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					65E0D8750AA690D94732710E = {
-						DevelopmentTeam = 487V53DJMW;
+						DevelopmentTeam = "$(ECRITU_DEVELOPMENT_TEAM)";
 					};
 					A294BE5B70EA20DB02DB85AD = {
-						DevelopmentTeam = 487V53DJMW;
+						DevelopmentTeam = "$(ECRITU_DEVELOPMENT_TEAM)";
 					};
 				};
 			};
@@ -477,11 +477,12 @@
 				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
-				DEVELOPMENT_TEAM = 487V53DJMW;
+				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
 				INFOPLIST_KEY_CFBundleShortVersionString = 1.0;
 				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
+				INFOPLIST_KEY_EcrituAppGroupIdentifier = "$(ECRITU_APP_GROUP_IDENTIFIER)";
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -491,7 +492,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_APP_BUNDLE_IDENTIFIER)";
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -511,7 +512,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_TESTS_BUNDLE_IDENTIFIER)";
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -525,7 +526,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
-				DEVELOPMENT_TEAM = 487V53DJMW;
+				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -534,7 +535,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.keyboard;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_KEYBOARD_BUNDLE_IDENTIFIER)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
@@ -549,7 +550,7 @@
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
-				DEVELOPMENT_TEAM = 487V53DJMW;
+				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -558,7 +559,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.keyboard;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_KEYBOARD_BUNDLE_IDENTIFIER)";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
@@ -579,7 +580,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu.tests;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_TESTS_BUNDLE_IDENTIFIER)";
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -594,11 +595,12 @@
 				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
-				DEVELOPMENT_TEAM = 487V53DJMW;
+				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = "écritu";
 				INFOPLIST_KEY_CFBundleShortVersionString = 1.0;
 				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
+				INFOPLIST_KEY_EcrituAppGroupIdentifier = "$(ECRITU_APP_GROUP_IDENTIFIER)";
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -608,7 +610,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.kusakabe.ecritu;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(ECRITU_APP_BUNDLE_IDENTIFIER)";
 				SDKROOT = iphoneos;
 				SUPPORTS_MACCATALYST = NO;
 				TARGETED_DEVICE_FAMILY = 1;

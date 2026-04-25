@@ -45,6 +45,8 @@
 - 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。
 - Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、Sudachi CSV がある環境では `tmp/` 再生成とApp Group反映を自動実行します。
 - Sudachi CSV が無い環境では自動生成をスキップし、同梱プレースホルダー辞書でビルドを継続します。
+- 他の開発環境で実機ビルドする場合は、`Config/Signing.local.xcconfig.example` を `Config/Signing.local.xcconfig` としてコピーし、`ECRITU_DEVELOPMENT_TEAM` と `ECRITU_APP_BUNDLE_IDENTIFIER` を各自の値に変更してください。
+- App Group は既定で `group.$(ECRITU_APP_BUNDLE_IDENTIFIER)` を使います。実機署名時はアプリ/拡張の両ターゲットで同じ Team / Bundle ID 系列 / App Group になるよう揃えてください。
 - Sudachi前処理では1文字読みも収録対象としつつ、1文字読み専用の候補数・候補長上限でノイズ増加を抑制します。
 - Sudachi前処理では漢字以外の候補(カタカナ等)も保持できます。
 - 追加辞書の初期データは `KeyboardExtension/InitialAjoutVocabMigration.json` に同梱され、ビルドごとに拡張バンドルから読み込まれます。

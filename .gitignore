@@ -89,3 +89,6 @@ DerivedData/
 
 # Logs
 *.log
+
+# Local signing overrides
+Config/Signing.local.xcconfig

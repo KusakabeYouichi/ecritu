@@ -18,8 +18,8 @@ targets:
       - path: App
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu
-        DEVELOPMENT_TEAM: 487V53DJMW
+        PRODUCT_BUNDLE_IDENTIFIER: $(ECRITU_APP_BUNDLE_IDENTIFIER)
+        DEVELOPMENT_TEAM: $(ECRITU_DEVELOPMENT_TEAM)
         MARKETING_VERSION: 1.0
         CURRENT_PROJECT_VERSION: $(ECRITU_EDITION_NUMBER)
         CODE_SIGN_ENTITLEMENTS: App/Ecritu.entitlements
@@ -28,6 +28,7 @@ targets:
         INFOPLIST_KEY_CFBundleShortVersionString: 1.0
         INFOPLIST_KEY_CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         INFOPLIST_KEY_EcrituEditionUpdatedAt: $(ECRITU_EDITION_UPDATED_AT)
+        INFOPLIST_KEY_EcrituAppGroupIdentifier: $(ECRITU_APP_GROUP_IDENTIFIER)
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         TARGETED_DEVICE_FAMILY: "1"
@@ -64,8 +65,8 @@ targets:
           bash "$SRCROOT/tools/refresh_simulator_dictionary_on_build.sh"
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu.keyboard
-        DEVELOPMENT_TEAM: 487V53DJMW
+        PRODUCT_BUNDLE_IDENTIFIER: $(ECRITU_KEYBOARD_BUNDLE_IDENTIFIER)
+        DEVELOPMENT_TEAM: $(ECRITU_DEVELOPMENT_TEAM)
         MARKETING_VERSION: 1.0
         CURRENT_PROJECT_VERSION: $(ECRITU_EDITION_NUMBER)
         CODE_SIGN_ENTITLEMENTS: KeyboardExtension/KeyboardExtension.entitlements
@@ -94,7 +95,7 @@ targets:
       - path: KeyboardExtension/KanaTextNormalizer.swift
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: com.kusakabe.ecritu.tests
+        PRODUCT_BUNDLE_IDENTIFIER: $(ECRITU_TESTS_BUNDLE_IDENTIFIER)
         CURRENT_PROJECT_VERSION: $(ECRITU_EDITION_NUMBER)
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
