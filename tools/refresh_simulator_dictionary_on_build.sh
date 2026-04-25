@@ -17,7 +17,10 @@ TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 
-mapfile -t SUDACHI_CSV_FILES < <(find "$ROOT_DIR/tmp/sudachi_raw" -type f -name '*_lex.csv' 2>/dev/null | sort)
+SUDACHI_CSV_FILES=()
+while IFS= read -r csv_file; do
+  SUDACHI_CSV_FILES+=("$csv_file")
+done < <(find "$ROOT_DIR/tmp/sudachi_raw" -type f -name '*_lex.csv' 2>/dev/null | sort)
 
 needs_regeneration() {
   ROOT_DIR="$ROOT_DIR" python3 - <<'PY'
