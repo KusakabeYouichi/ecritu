@@ -28,7 +28,15 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private enum SharedDefaultsKeys {
-        static let appGroupID = "group.com.kusakabe.ecritu"
+        static let appGroupID: String = {
+            guard
+                let value = Bundle.main.object(forInfoDictionaryKey: "EcrituAppGroupIdentifier") as? String,
+                !value.isEmpty
+            else {
+                return "group.com.kusakabe.ecritu"
+            }
+            return value
+        }()
         static let directionProfile = "flickDirectionProfile"
         static let kanaLayoutMode = "kanaLayoutMode"
         static let kanaModifierPlacement = "kanaModifierPlacement"

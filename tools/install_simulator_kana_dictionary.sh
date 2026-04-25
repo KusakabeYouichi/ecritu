@@ -7,6 +7,8 @@ SECOND_DICT_PATH="${ECRITU_SECOND_DICT_PATH:-$ROOT_DIR/tmp/ÉcrituSecondVocab.js
 INFLECTION_DICT_PATH="${2:-$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json}"
 SOURCE_TAG_DICT_PATH="${3:-$ROOT_DIR/tmp/kana_kanji_candidate_sources.json}"
 SQLITE_DICT_PATH="${4:-$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite}"
+APP_BUNDLE_ID="${ECRITU_APP_BUNDLE_IDENTIFIER:-com.kusakabe.ecritu}"
+APP_GROUP_ID="${ECRITU_APP_GROUP_IDENTIFIER:-group.com.kusakabe.ecritu}"
 
 if [[ ! -f "$DICT_PATH" ]]; then
   echo "Dictionary file not found: $DICT_PATH" >&2
@@ -23,10 +25,10 @@ fi
 xcrun simctl boot "$SIM_UDID" >/dev/null 2>&1 || true
 xcrun simctl bootstatus "$SIM_UDID" -b >/dev/null
 
-APP_GROUP_PATH="$(xcrun simctl get_app_container "$SIM_UDID" com.kusakabe.ecritu "group.com.kusakabe.ecritu")"
+APP_GROUP_PATH="$(xcrun simctl get_app_container "$SIM_UDID" "$APP_BUNDLE_ID" "$APP_GROUP_ID")"
 
 if [[ -z "$APP_GROUP_PATH" ]]; then
-  echo "Failed to resolve app group container path" >&2
+  echo "Failed to resolve app group container path (bundle=$APP_BUNDLE_ID, group=$APP_GROUP_ID)" >&2
   exit 1
 fi
 
