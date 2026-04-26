@@ -75,6 +75,7 @@ __pycache__/
 
 # Xcode build outputs
 build/
+build-device/
 .derived-*/
 DerivedData/
 
