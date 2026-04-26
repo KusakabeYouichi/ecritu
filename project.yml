@@ -42,6 +42,11 @@ targets:
     dependencies:
       - target: KeyboardExtension
         embed: true
+    preBuildScripts:
+      - name: Enforce Blank Line After Top-Level Brace
+        basedOnDependencyAnalysis: false
+        script: |
+          bash "$SRCROOT/tools/check_top_level_brace_blank_lines.sh"
 
   KeyboardExtension:
     type: app-extension
@@ -65,6 +70,10 @@ targets:
       - path: KeyboardExtension/DefaultDictionaryResources/kana_kanji_dictionary.sqlite
         buildPhase: resources
     preBuildScripts:
+      - name: Enforce Blank Line After Top-Level Brace
+        basedOnDependencyAnalysis: false
+        script: |
+          bash "$SRCROOT/tools/check_top_level_brace_blank_lines.sh"
       - name: Refresh Simulator Dictionary Artifacts
         basedOnDependencyAnalysis: false
         script: |
@@ -106,6 +115,11 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
+    preBuildScripts:
+      - name: Enforce Blank Line After Top-Level Brace
+        basedOnDependencyAnalysis: false
+        script: |
+          bash "$SRCROOT/tools/check_top_level_brace_blank_lines.sh"
 
 schemes:
   écritu:

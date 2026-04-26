@@ -22,6 +22,7 @@ for arg in "$@"; do
 done
 
 if [[ "$is_build_like_command" == "true" ]]; then
+  bash tools/check_top_level_brace_blank_lines.sh
   python3 tools/bump_edition_number.py Config/Edition.xcconfig
 fi
 

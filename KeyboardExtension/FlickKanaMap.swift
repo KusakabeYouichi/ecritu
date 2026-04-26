@@ -8,6 +8,7 @@ enum FlickDirection {
     case bas
     case gauche
 }
+
 enum FlickGestureResolver {
     static func resolve(translation: CGSize, threshold: CGFloat = 18) -> FlickDirection {
         let dx = translation.width
@@ -25,12 +26,14 @@ enum FlickGestureResolver {
         return dy > 0 ? .bas : .haut
     }
 }
+
 enum DiacriticMode {
     case none
     case dakuten
     case handakuten
     case smallKana
 }
+
 enum KanaModifierPlacementMode: String {
     case prefix
     case postfix

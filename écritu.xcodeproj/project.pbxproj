@@ -244,6 +244,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */;
 			buildPhases = (
+				3779834627D07EB92CE0379F /* Enforce Blank Line After Top-Level Brace */,
 				7033AAA35E85A2153F4A5E58 /* Sources */,
 				DBFDF8AE2497155E13CCADDE /* Resources */,
 				7DB30E7B1A9A5333890CA082 /* Embed Foundation Extensions */,
@@ -264,6 +265,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0BADED2C6382BEE57923122F /* Build configuration list for PBXNativeTarget "écrituTests" */;
 			buildPhases = (
+				418031ED91AC8E1450690841 /* Enforce Blank Line After Top-Level Brace */,
 				6006A30D6C0072653326C6E4 /* Sources */,
 			);
 			buildRules = (
@@ -281,6 +283,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */;
 			buildPhases = (
+				912055C11BAEE6ECCC43B589 /* Enforce Blank Line After Top-Level Brace */,
 				F0DA7A3466A4D9001E191240 /* Refresh Simulator Dictionary Artifacts */,
 				AF6737C5790E3B38F48F08BC /* Sources */,
 				DAFC31EE8DBF17957F350584 /* Resources */,
@@ -364,6 +367,63 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		3779834627D07EB92CE0379F /* Enforce Blank Line After Top-Level Brace */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Enforce Blank Line After Top-Level Brace";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/tools/check_top_level_brace_blank_lines.sh\"\n";
+		};
+		418031ED91AC8E1450690841 /* Enforce Blank Line After Top-Level Brace */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Enforce Blank Line After Top-Level Brace";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/tools/check_top_level_brace_blank_lines.sh\"\n";
+		};
+		912055C11BAEE6ECCC43B589 /* Enforce Blank Line After Top-Level Brace */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Enforce Blank Line After Top-Level Brace";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/tools/check_top_level_brace_blank_lines.sh\"\n";
+		};
 		F0DA7A3466A4D9001E191240 /* Refresh Simulator Dictionary Artifacts */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
