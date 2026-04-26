@@ -16,6 +16,12 @@ targets:
       Release: Config/Edition.xcconfig
     sources:
       - path: App
+      - path: third_party/APP_STORE_OPEN_SOURCE_NOTICES.md
+        buildPhase: resources
+      - path: third_party/sudachidict/LICENSE-2.0.txt
+        buildPhase: resources
+      - path: third_party/sudachidict/LEGAL
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(ECRITU_APP_BUNDLE_IDENTIFIER)
