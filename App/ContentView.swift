@@ -713,6 +713,8 @@ struct ContentView: View {
 
                     SetupStepsSection(steps: setupSteps)
 
+                    ThirdPartyLicensesSection()
+
                     Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
