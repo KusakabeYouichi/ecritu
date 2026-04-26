@@ -9,6 +9,8 @@ if [[ $# -eq 0 ]]; then
   exit 2
 fi
 
+bash tools/normalize_unicode_project_names.sh
+
 is_build_like_command=false
 for arg in "$@"; do
   case "$arg" in
