@@ -41,6 +41,7 @@
 		9CD485B6F82D22898978D8C4 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */; };
 		A77A8D7DFD358F9976420EF3 /* kana_kanji_candidate_sources.json in Resources */ = {isa = PBXBuildFile; fileRef = 753727472F0FBB8C1E318336 /* kana_kanji_candidate_sources.json */; };
 		B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105353784C776E1A40C7A8AE /* SettingsModels.swift */; };
+		C8B93A3113908A63DDD6F252 /* .FlickKanaMap.swift.swp in Resources */ = {isa = PBXBuildFile; fileRef = 11664503131DFA8964A579CC /* .FlickKanaMap.swift.swp */; };
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
 		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
 		DBBA852BCC8D33CCF73645E9 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */; };
@@ -77,6 +78,7 @@
 		0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituPremierVocab.json"; sourceTree = "<group>"; };
 		0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiStore.swift; sourceTree = "<group>"; };
 		105353784C776E1A40C7A8AE /* SettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModels.swift; sourceTree = "<group>"; };
+		11664503131DFA8964A579CC /* .FlickKanaMap.swift.swp */ = {isa = PBXFileReference; path = .FlickKanaMap.swift.swp; sourceTree = "<group>"; };
 		175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaLayout.swift; sourceTree = "<group>"; };
 		1791BF31100B74EA2421EB52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialAjoutVocabMigration.json; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 		98946037E1DE2D5BDD19AC61 /* KeyboardExtension */ = {
 			isa = PBXGroup;
 			children = (
+				11664503131DFA8964A579CC /* .FlickKanaMap.swift.swp */,
 				83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */,
 				39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */,
 				175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */,
@@ -307,6 +310,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C8B93A3113908A63DDD6F252 /* .FlickKanaMap.swift.swp in Resources */,
 				36EEA841B7E5EC402DA055A5 /* InitialAjoutVocabMigration.json in Resources */,
 				80C53EDAEAB5510D13B9CAFB /* InitialSupprVocabMigration.json in Resources */,
 				A77A8D7DFD358F9976420EF3 /* kana_kanji_candidate_sources.json in Resources */,

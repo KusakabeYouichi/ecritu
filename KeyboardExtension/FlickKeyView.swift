@@ -65,7 +65,7 @@ struct FlickKeyView: View {
     var allowsDirectionalFlick: Bool = true
     var onTouchStateChanged: (Bool) -> Void = { _ in }
 
-    @State private var activeDirection: FlickDirection = .center
+    @State private var activeDirection: FlickDirection = .milieu
     @State private var isTouching = false
     @State private var longPressIsActive = false
     @State private var highlightedLongPressIndex = 0
@@ -112,7 +112,7 @@ struct FlickKeyView: View {
             directionalHints
             downDirectionalHints
 
-            if isTouching && activeDirection != .center && !longPressIsActive {
+            if isTouching && activeDirection != .milieu && !longPressIsActive {
                 Text(kana.output(for: activeDirection))
                     .font(.system(size: 24, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
@@ -155,31 +155,31 @@ struct FlickKeyView: View {
 
     private var previewOffset: CGSize {
         switch activeDirection {
-        case .center:
+        case .milieu:
             return CGSize(width: 0, height: -Metrics.previewDistance)
-        case .up:
+        case .haut:
             return CGSize(width: 0, height: -Metrics.previewDistance)
-        case .right:
+        case .droite:
             return CGSize(width: Metrics.previewDistance, height: 0)
-        case .down:
+        case .bas:
             return CGSize(width: 0, height: Metrics.previewDistance)
-        case .left:
+        case .gauche:
             return CGSize(width: -Metrics.previewDistance, height: 0)
         }
     }
 
     private var directionalHints: some View {
         ZStack {
-            directionalHintText(kana.up, direction: .up)
+            directionalHintText(kana.up, direction: .haut)
                 .offset(y: -Metrics.directionHintVerticalOffset)
 
-            directionalHintText(kana.down, direction: .down)
+            directionalHintText(kana.down, direction: .bas)
                 .offset(y: Metrics.directionHintVerticalOffset)
 
-            directionalHintText(kana.left, direction: .left)
+            directionalHintText(kana.left, direction: .gauche)
                 .offset(x: -Metrics.directionHintHorizontalOffset)
 
-            directionalHintText(kana.right, direction: .right)
+            directionalHintText(kana.right, direction: .droite)
                 .offset(x: Metrics.directionHintHorizontalOffset)
         }
         .allowsHitTesting(false)
@@ -296,15 +296,15 @@ struct FlickKeyView: View {
         let baseOffset: CGSize
 
         switch direction {
-        case .up:
+        case .haut:
             baseOffset = CGSize(width: 4, height: 8)
-        case .left:
+        case .gauche:
             baseOffset = CGSize(width: 8, height: 4)
-        case .right:
+        case .droite:
             baseOffset = CGSize(width: 4, height: 4)
-        case .down:
+        case .bas:
             baseOffset = CGSize(width: 4, height: 4)
-        case .center:
+        case .milieu:
             baseOffset = CGSize(width: 4, height: 4)
         }
 
@@ -416,7 +416,7 @@ struct FlickKeyView: View {
                 }
 
                 guard allowsDirectionalFlick else {
-                    activeDirection = .center
+                    activeDirection = .milieu
                     return
                 }
 
@@ -434,7 +434,7 @@ struct FlickKeyView: View {
                     onCommit(kana.output(for: activeDirection))
                 }
 
-                activeDirection = .center
+                activeDirection = .milieu
                 longPressIsActive = false
                 isTouching = false
                 latestTouchLocationX = 0
@@ -444,11 +444,11 @@ struct FlickKeyView: View {
     }
 
     private func effectiveDirection(for direction: FlickDirection) -> FlickDirection {
-        guard direction != .center else {
-            return .center
+        guard direction != .milieu else {
+            return .milieu
         }
 
-        return kana.output(for: direction).isEmpty ? .center : direction
+        return kana.output(for: direction).isEmpty ? .milieu : direction
     }
 
     private func scheduleLongPressIfNeeded() {
@@ -460,7 +460,7 @@ struct FlickKeyView: View {
 
         let workItem = DispatchWorkItem {
             longPressIsActive = true
-            activeDirection = .center
+            activeDirection = .milieu
             longPressAnchorLocationX = latestTouchLocationX
             highlightedLongPressIndex = 0
         }

@@ -2,11 +2,11 @@ import CoreGraphics
 import Foundation
 
 enum FlickDirection {
-    case center
-    case up
-    case right
-    case down
-    case left
+    case milieu
+    case haut
+    case droite
+    case bas
+    case gauche
 }
 enum FlickGestureResolver {
     static func resolve(translation: CGSize, threshold: CGFloat = 18) -> FlickDirection {
@@ -15,14 +15,14 @@ enum FlickGestureResolver {
         let distance = sqrt(dx * dx + dy * dy)
 
         guard distance >= threshold else {
-            return .center
+            return .milieu
         }
 
         if abs(dx) > abs(dy) {
-            return dx > 0 ? .right : .left
+            return dx > 0 ? .droite : .gauche
         }
 
-        return dy > 0 ? .down : .up
+        return dy > 0 ? .bas : .haut
     }
 }
 enum DiacriticMode {
@@ -102,11 +102,11 @@ struct FlickKanaSet: Identifiable, Hashable {
 
     func output(for direction: FlickDirection) -> String {
         switch direction {
-        case .center: return center
-        case .up: return up
-        case .right: return right
-        case .down: return down
-        case .left: return left
+        case .milieu: return center
+        case .haut: return up
+        case .droite: return right
+        case .bas: return down
+        case .gauche: return left
         }
     }
 
@@ -139,12 +139,12 @@ struct FlickKanaSet: Identifiable, Hashable {
         if usesProfileDependentGuideOrder {
             switch profile {
             case .apple:
-                directionalOrder = [.left, .up, .right, .down]
+                directionalOrder = [.gauche, .haut, .droite, .bas]
             case .ecritu:
-                directionalOrder = [.up, .right, .left, .down]
+                directionalOrder = [.haut, .droite, .gauche, .bas]
             }
         } else {
-            directionalOrder = [.left, .up, .right, .down]
+            directionalOrder = [.gauche, .haut, .droite, .bas]
         }
 
         var seen = Set<String>()

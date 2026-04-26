@@ -234,14 +234,14 @@ struct SpaceFlickActionKeyButton: View {
     let onTab: () -> Void
 
     @Environment(\.keyboardAccentColor) private var accentColor
-    @State private var activeDirection: FlickDirection = .center
+    @State private var activeDirection: FlickDirection = .milieu
     @State private var isTouching = false
 
     private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
     private let tabPreviewText = "⇥"
 
     private var displayText: String {
-        activeDirection == .up ? tabPreviewText : title
+        activeDirection == .haut ? tabPreviewText : title
     }
 
     var body: some View {
@@ -259,14 +259,14 @@ struct SpaceFlickActionKeyButton: View {
             Text(title)
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
                 .foregroundStyle(isEnabled ? keyLabelColor : keyLabelColor.opacity(0.35))
-                .opacity(activeDirection == .up ? 0 : titleOpacity)
+                .opacity(activeDirection == .haut ? 0 : titleOpacity)
 
             if isTouching {
                 Text(displayText)
                     .font(
                         .system(
-                            size: activeDirection == .up ? 22 : 16,
-                            weight: activeDirection == .up ? .bold : .semibold,
+                            size: activeDirection == .haut ? 22 : 16,
+                            weight: activeDirection == .haut ? .bold : .semibold,
                             design: .rounded
                         )
                     )
@@ -274,7 +274,7 @@ struct SpaceFlickActionKeyButton: View {
                     .opacity(titleOpacity)
             }
 
-            if isTouching && activeDirection == .up {
+            if isTouching && activeDirection == .haut {
                 Text(tabPreviewText)
                     .font(.system(size: 26, weight: .bold, design: .rounded))
                     .foregroundStyle(.white)
@@ -298,17 +298,17 @@ struct SpaceFlickActionKeyButton: View {
 
                     isTouching = true
                     let direction = FlickGestureResolver.resolve(translation: value.translation)
-                    activeDirection = direction == .up ? .up : .center
+                    activeDirection = direction == .haut ? .haut : .milieu
                 }
                 .onEnded { _ in
                     defer {
                         isTouching = false
-                        activeDirection = .center
+                        activeDirection = .milieu
                     }
 
                     guard isEnabled else { return }
 
-                    if activeDirection == .up {
+                    if activeDirection == .haut {
                         onTab()
                     } else {
                         onSpace()
