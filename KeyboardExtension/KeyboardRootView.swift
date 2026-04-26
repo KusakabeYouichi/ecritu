@@ -410,8 +410,8 @@ struct KeyboardRootView: View {
                     label: "小",
                     center: "小",
                     up: "゛",
-                    right: "…",
-                    down: "゜",
+                    right: "゜",
+                    down: "…",
                     left: modeSwitchText,
                     usesProfileDependentGuideOrder: false
                 )
@@ -420,8 +420,8 @@ struct KeyboardRootView: View {
                     label: "゛",
                     center: "゛",
                     up: "゛",
-                    right: "…",
-                    down: "゜",
+                    right: "゜",
+                    down: "…",
                     left: modeSwitchText,
                     usesProfileDependentGuideOrder: false
                 )
@@ -430,8 +430,8 @@ struct KeyboardRootView: View {
                     label: "゜",
                     center: "゜",
                     up: "゛",
-                    right: "…",
-                    down: "゜",
+                    right: "゜",
+                    down: "…",
                     left: modeSwitchText,
                     usesProfileDependentGuideOrder: false
                 )
@@ -442,8 +442,8 @@ struct KeyboardRootView: View {
             label: "小",
             center: "小",
             up: "゛",
-            right: "…",
-            down: "゜",
+            right: "゜",
+            down: "…",
             left: modeSwitchText,
             usesProfileDependentGuideOrder: false
         )
