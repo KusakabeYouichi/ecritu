@@ -307,16 +307,23 @@ final class KanaKanjiStore {
                 return sqliteIndex
             }
 
+            guard let databaseURL = sharedOrBundledDictionaryURL(
+                filename: KanaKanjiStorageKeys.systemDictionarySQLiteFilename
+            ) else {
+                // Keep retry enabled so a later App Group install can be picked up.
+                didAttemptSQLiteIndexLoad = false
+                return nil
+            }
+
             guard !didAttemptSQLiteIndexLoad else {
                 return nil
             }
 
             didAttemptSQLiteIndexLoad = true
 
-            guard let databaseURL = sharedOrBundledDictionaryURL(
-                filename: KanaKanjiStorageKeys.systemDictionarySQLiteFilename
-            ),
-                let sqliteIndex = KanaKanjiSQLiteIndex(databaseURL: databaseURL) else {
+            guard let sqliteIndex = KanaKanjiSQLiteIndex(databaseURL: databaseURL) else {
+                // Allow retry in case the database is still being copied.
+                didAttemptSQLiteIndexLoad = false
                 return nil
             }
 
@@ -429,6 +436,11 @@ final class KanaKanjiStore {
             return [:]
         }
 
+        guard !decoded.isEmpty else {
+            // Do not pin an empty placeholder; allow retry after dictionary install.
+            return [:]
+        }
+
         // The generated Sudachi index is already normalized to hiragana readings.
         cachedSystemDictionary = decoded
         return decoded
@@ -443,11 +455,16 @@ final class KanaKanjiStore {
             filename: KanaKanjiStorageKeys.supplementalSystemDictionaryFilename
         ),
             let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
-            cachedSupplementalSystemDictionary = [:]
             return [:]
         }
 
         let normalized = normalizeDictionary(decoded)
+
+        guard !normalized.isEmpty else {
+            // Keep retry enabled for late dictionary deployment.
+            return [:]
+        }
+
         cachedSupplementalSystemDictionary = normalized
         return normalized
     }
@@ -486,6 +503,11 @@ final class KanaKanjiStore {
             if !sourceMap.isEmpty {
                 normalized[reading] = sourceMap
             }
+        }
+
+        guard !normalized.isEmpty else {
+            // Do not cache empty source metadata from placeholder resources.
+            return [:]
         }
 
         cachedSystemCandidateSources = normalized
@@ -532,6 +554,10 @@ final class KanaKanjiStore {
                 }
             }
 
+            guard !normalizedMap.isEmpty else {
+                return [:]
+            }
+
             cachedInflectionDictionary = normalizedMap
             return normalizedMap
         }
@@ -559,6 +585,10 @@ final class KanaKanjiStore {
             if !candidateClassMap.isEmpty {
                 inflectionMap[reading] = candidateClassMap
             }
+        }
+
+        guard !inflectionMap.isEmpty else {
+            return [:]
         }
 
         cachedInflectionDictionary = inflectionMap
