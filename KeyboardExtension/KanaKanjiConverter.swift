@@ -249,7 +249,18 @@ final class KanaKanjiConverter {
     }
 
     func preloadSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
-        store.prepareSystemDictionaryIfNeeded(onLoaded: onLoaded)
+        store.prepareSystemDictionaryIfNeeded { [weak self] in
+            guard let self else {
+                onLoaded?()
+                return
+            }
+
+            self.stateQueue.sync {
+                self.invalidateCandidateCache()
+            }
+
+            onLoaded?()
+        }
     }
 
     func candidates(
@@ -374,16 +385,18 @@ final class KanaKanjiConverter {
 
         let finalCandidates = Array(sortedCandidates.prefix(limit))
 
-        stateQueue.sync {
-            if candidateCache[cacheKey] == nil {
-                candidateCacheOrder.append(cacheKey)
-            }
+        if !finalCandidates.isEmpty {
+            stateQueue.sync {
+                if candidateCache[cacheKey] == nil {
+                    candidateCacheOrder.append(cacheKey)
+                }
 
-            candidateCache[cacheKey] = finalCandidates
+                candidateCache[cacheKey] = finalCandidates
 
-            while candidateCacheOrder.count > candidateCacheLimit {
-                let removedKey = candidateCacheOrder.removeFirst()
-                candidateCache.removeValue(forKey: removedKey)
+                while candidateCacheOrder.count > candidateCacheLimit {
+                    let removedKey = candidateCacheOrder.removeFirst()
+                    candidateCache.removeValue(forKey: removedKey)
+                }
             }
         }
 
