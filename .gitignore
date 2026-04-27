@@ -91,5 +91,8 @@ DerivedData/
 # Logs
 *.log
 
+# Editor swap files
+*.swp
+
 # Local signing overrides
 Config/Signing.local.xcconfig
