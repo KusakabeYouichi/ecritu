@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(git rev-parse --show-toplevel)"
+cd "$ROOT_DIR"
+
+before_scheme_diff="$(git diff -- ':(glob)**/*.xcscheme')"
+
+bash tools/normalize_unicode_project_names.sh
+
+after_scheme_diff="$(git diff -- ':(glob)**/*.xcscheme')"
+
+# If normalization rewrites any shared scheme file, stop this commit
+# so the normalized result can be reviewed and staged explicitly.
+if [[ "$before_scheme_diff" != "$after_scheme_diff" ]]; then
+  echo "[pre-commit] Normalized .xcscheme file(s)." >&2
+  echo "[pre-commit] Review and stage these files, then commit again:" >&2
+  git diff --name-only -- ':(glob)**/*.xcscheme' >&2
+  exit 1
+fi
