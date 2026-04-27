@@ -281,9 +281,9 @@
 			buildConfigurationList = 89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */;
 			buildPhases = (
 				912055C11BAEE6ECCC43B589 /* Enforce Blank Line After Top-Level Brace */,
-				F0DA7A3466A4D9001E191240 /* Refresh Simulator Dictionary Artifacts */,
 				AF6737C5790E3B38F48F08BC /* Sources */,
 				DAFC31EE8DBF17957F350584 /* Resources */,
+				F0DA7A3466A4D9001E191240 /* Refresh Simulator Dictionary Artifacts */,
 			);
 			buildRules = (
 			);

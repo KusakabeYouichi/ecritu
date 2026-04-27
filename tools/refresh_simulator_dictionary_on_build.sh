@@ -3,10 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
-# This hook is only meaningful for simulator builds.
-if [[ "${PLATFORM_NAME:-}" != *simulator* ]]; then
-  echo "[dict] Skip dictionary refresh (PLATFORM_NAME=${PLATFORM_NAME:-unknown})"
-  exit 0
+is_simulator_build=false
+if [[ "${PLATFORM_NAME:-}" == *simulator* ]]; then
+  is_simulator_build=true
 fi
 
 cd "$ROOT_DIR"
@@ -88,12 +87,42 @@ else
   echo "[dict] Skip regeneration (tmp/sudachi_raw/**/*_lex.csv not found)."
 fi
 
-if [[ -f "$TMP_PREMIER" && -f "$TMP_SOURCES" && -f "$TMP_INFLECTIONS" && -f "$TMP_SQLITE" ]]; then
-  if bash tools/install_simulator_kana_dictionary.sh; then
-    echo "[dict] App Group dictionary sync complete."
+if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" ]]; then
+  BUNDLE_RESOURCES_DIR="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
+  mkdir -p "$BUNDLE_RESOURCES_DIR"
+
+  copy_into_bundle_if_exists() {
+    local src_path="$1"
+    local dst_name="$2"
+
+    if [[ ! -f "$src_path" ]]; then
+      echo "[dict] Skip bundle overwrite (missing): $src_path"
+      return
+    fi
+
+    cp -f "$src_path" "$BUNDLE_RESOURCES_DIR/$dst_name"
+    echo "[dict] Overwrote bundle resource: $dst_name"
+  }
+
+  copy_into_bundle_if_exists "$TMP_PREMIER" "ÉcrituPremierVocab.json"
+  copy_into_bundle_if_exists "$TMP_SECOND" "ÉcrituSecondVocab.json"
+  copy_into_bundle_if_exists "$TMP_SOURCES" "kana_kanji_candidate_sources.json"
+  copy_into_bundle_if_exists "$TMP_INFLECTIONS" "kana_kanji_inflection_dictionary.json"
+  copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"
+else
+  echo "[dict] Skip bundle overwrite (TARGET_BUILD_DIR/UNLOCALIZED_RESOURCES_FOLDER_PATH not set)."
+fi
+
+if [[ "$is_simulator_build" == "true" ]]; then
+  if [[ -f "$TMP_PREMIER" && -f "$TMP_SOURCES" && -f "$TMP_INFLECTIONS" && -f "$TMP_SQLITE" ]]; then
+    if bash tools/install_simulator_kana_dictionary.sh; then
+      echo "[dict] App Group dictionary sync complete."
+    else
+      echo "[dict] Warning: App Group dictionary sync failed; build continues with bundled resources."
+    fi
   else
-    echo "[dict] Warning: App Group dictionary sync failed; build continues with bundled resources."
+    echo "[dict] Skip App Group sync (tmp dictionary artifacts are missing)."
   fi
 else
-  echo "[dict] Skip App Group sync (tmp dictionary artifacts are missing)."
+  echo "[dict] Skip App Group sync (PLATFORM_NAME=${PLATFORM_NAME:-unknown})."
 fi

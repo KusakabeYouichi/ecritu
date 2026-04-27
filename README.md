@@ -49,7 +49,9 @@
 - システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
 - clone直後のビルド失敗を避けるため、拡張バンドルには `KeyboardExtension/DefaultDictionaryResources/` の軽量プレースホルダー辞書を同梱しています。
 - 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。
-- Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、Sudachi CSV がある環境では `tmp/` 再生成とApp Group反映を自動実行します。
+- Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、Sudachi CSV がある環境では `tmp/` 再生成を行います。
+- 同スクリプトは、生成済み `tmp/` 辞書があれば拡張バンドル内リソースを上書きするため、実機ビルドでもシード辞書ではなく生成辞書を同梱できます。
+- App Group への辞書反映(`tools/install_simulator_kana_dictionary.sh`)はシミュレータビルド時のみ自動実行します。
 - Sudachi CSV が無い環境では自動生成をスキップし、同梱プレースホルダー辞書でビルドを継続します。
 - SudachiDict 関連の法的文書は `third_party/sudachidict/LICENSE-2.0.txt` と `third_party/sudachidict/LEGAL` をソース同梱しています。
 - コンテナーアプリには「オープンソースライセンス」セクションを実装し、上記文書をアプリ内で閲覧できます（App Store 配布時の確認導線）。
