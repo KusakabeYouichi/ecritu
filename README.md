@@ -30,6 +30,12 @@
 2. 作成したキーボードを選択
 3. 入力画面で地球儀キーを押して切り替え
 
+## Git フック (推奨)
+
+- 共有スキームファイルの表記ゆれを防ぐため、pre-commit フックを同梱しています。
+- 初回のみ、リポジトリルートで `git config core.hooksPath .githooks` を実行してください。
+- コミット時に `tools/normalize_unicode_project_names.sh` を実行し、`.xcscheme` が書き換わった場合はコミットを停止して再ステージを促します。
+
 ## MVP の制約
 - かな漢字変換は簡易実装(候補選択・学習・ユーザー辞書対応)。高精度辞書は `tools/build_sudachi_index.py` で別途投入。
 - 大規模辞書を実機で扱う場合は、`tools/build_kana_kanji_sqlite.py` でSQLite化して `tmp/kana_kanji_dictionary.sqlite` を生成してください。
