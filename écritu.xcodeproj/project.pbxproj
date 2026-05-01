@@ -307,9 +307,11 @@
 				TargetAttributes = {
 					65E0D8750AA690D94732710E = {
 						DevelopmentTeam = "$(ECRITU_DEVELOPMENT_TEAM)";
+						ProvisioningStyle = Automatic;
 					};
 					A294BE5B70EA20DB02DB85AD = {
 						DevelopmentTeam = "$(ECRITU_DEVELOPMENT_TEAM)";
+						ProvisioningStyle = Automatic;
 					};
 				};
 			};
@@ -569,6 +571,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				GENERATE_INFOPLIST_FILE = YES;
@@ -618,6 +621,7 @@
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
@@ -642,6 +646,7 @@
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
 				CODE_SIGN_ENTITLEMENTS = KeyboardExtension/KeyboardExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
@@ -687,6 +692,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = App/Ecritu.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				GENERATE_INFOPLIST_FILE = YES;
