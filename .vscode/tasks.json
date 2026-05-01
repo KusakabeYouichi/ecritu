@@ -44,7 +44,7 @@
     {
       "label": "Launch ecritu on iPhone 17 Pro",
       "type": "shell",
-      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; xcrun simctl launch \"$SIM_UDID\" com.kusakabe.ecritu",
+      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; APP_BUNDLE_ID=\"$(xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -showBuildSettings 2>/dev/null | awk -F ' = ' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}')\"; if [ -z \"$APP_BUNDLE_ID\" ]; then echo 'Failed to detect PRODUCT_BUNDLE_IDENTIFIER'; exit 1; fi; xcrun simctl launch \"$SIM_UDID\" \"$APP_BUNDLE_ID\"",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -69,7 +69,7 @@
     {
       "label": "Uninstall ecritu from iPhone 17 Pro",
       "type": "shell",
-      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; xcrun simctl uninstall \"$SIM_UDID\" com.kusakabe.ecritu",
+      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; APP_BUNDLE_ID=\"$(xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -showBuildSettings 2>/dev/null | awk -F ' = ' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}')\"; if [ -z \"$APP_BUNDLE_ID\" ]; then echo 'Failed to detect PRODUCT_BUNDLE_IDENTIFIER'; exit 1; fi; xcrun simctl uninstall \"$SIM_UDID\" \"$APP_BUNDLE_ID\"",
       "options": {
         "cwd": "${workspaceFolder}"
       },

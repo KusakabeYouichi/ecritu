@@ -36,6 +36,16 @@
 - 初回のみ、リポジトリルートで `git config core.hooksPath .githooks` を実行してください。
 - コミット時に `tools/normalize_unicode_project_names.sh` を実行し、`.xcscheme` が書き換わった場合はコミットを停止して再ステージを促します。
 
+## GitHub 共同開発セットアップ (無料アカウント前提)
+
+- 無料の Apple ID でも、シミュレータ開発とローカル実機検証は可能です。
+- 参加者ごとの署名衝突を避けるため、各自で `Config/Signing.local.xcconfig` を作成してください。
+	1. `cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig`
+	2. `ECRITU_DEVELOPMENT_TEAM` を自分の Team ID に変更
+	3. `ECRITU_APP_BUNDLE_IDENTIFIER` を一意な値に変更 (例: `com.<yourname>.ecritu.dev`)
+- GitHub 上のブランチ運用と PR 手順は `CONTRIBUTING.md` を参照してください。
+- PR 作成時は GitHub Actions の `iOS CI` が自動で走り、署名不要のシミュレータテストを行います。
+
 ## MVP の制約
 - かな漢字変換は簡易実装(候補選択・学習・ユーザー辞書対応)。高精度辞書は `tools/build_sudachi_index.py` で別途投入。
 - 大規模辞書を実機で扱う場合は、`tools/build_kana_kanji_sqlite.py` でSQLite化して `tmp/kana_kanji_dictionary.sqlite` を生成してください。
