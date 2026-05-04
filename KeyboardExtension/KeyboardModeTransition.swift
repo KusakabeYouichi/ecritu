@@ -20,13 +20,19 @@ enum KanaCharacterMode: Equatable {
     }
 }
 
+enum EmojiInputSubmode: Equatable {
+    case emoji
+    case kaomoji
+    case symbols
+}
+
 struct KeyboardModeTransitionState: Equatable {
     var inputMode: KeyboardInputMode
     var diacriticMode: DiacriticMode
     var kanaCharacterMode: KanaCharacterMode
     var latinShiftState: LatinShiftState
     var lastLatinShiftTapAt: Date?
-    var isKaomojiMode: Bool
+    var emojiInputSubmode: EmojiInputSubmode
     var spaceToastText: String?
     var spaceToastOpacity: Double
 }
@@ -43,7 +49,7 @@ enum KeyboardModeTransition {
         next.lastLatinShiftTapAt = nil
 
         if mode != .emoji {
-            next.isKaomojiMode = false
+            next.emojiInputSubmode = .emoji
         }
 
         if mode != .kana {
@@ -56,13 +62,19 @@ enum KeyboardModeTransition {
 
     static func enterEmojiMode(from state: KeyboardModeTransitionState) -> KeyboardModeTransitionState {
         var next = switchInputMode(state, to: .emoji)
-        next.isKaomojiMode = false
+        next.emojiInputSubmode = .emoji
         return next
     }
 
     static func enterKaomojiMode(from state: KeyboardModeTransitionState) -> KeyboardModeTransitionState {
         var next = switchInputMode(state, to: .emoji)
-        next.isKaomojiMode = true
+        next.emojiInputSubmode = .kaomoji
+        return next
+    }
+
+    static func enterSymbolsMode(from state: KeyboardModeTransitionState) -> KeyboardModeTransitionState {
+        var next = switchInputMode(state, to: .emoji)
+        next.emojiInputSubmode = .symbols
         return next
     }
 

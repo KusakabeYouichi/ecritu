@@ -7,7 +7,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
             diacriticMode: .dakuten,
             latinShiftState: .on,
             lastLatinShiftTapAt: Date(timeIntervalSinceReferenceDate: 10),
-            isKaomojiMode: true,
+            emojiInputSubmode: .kaomoji,
             spaceToastText: "écritu",
             spaceToastOpacity: 1
         )
@@ -18,7 +18,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(next.diacriticMode, .none)
         XCTAssertEqual(next.latinShiftState, .off)
         XCTAssertNil(next.lastLatinShiftTapAt)
-        XCTAssertFalse(next.isKaomojiMode)
+        XCTAssertEqual(next.emojiInputSubmode, .emoji)
         XCTAssertNil(next.spaceToastText)
         XCTAssertEqual(next.spaceToastOpacity, 0)
     }
@@ -74,11 +74,15 @@ final class KeyboardModeTransitionTests: XCTestCase {
 
         let kaomoji = KeyboardModeTransition.enterKaomojiMode(from: state)
         XCTAssertEqual(kaomoji.inputMode, .emoji)
-        XCTAssertTrue(kaomoji.isKaomojiMode)
+        XCTAssertEqual(kaomoji.emojiInputSubmode, .kaomoji)
 
-        let emoji = KeyboardModeTransition.enterEmojiMode(from: kaomoji)
+        let symbols = KeyboardModeTransition.enterSymbolsMode(from: kaomoji)
+        XCTAssertEqual(symbols.inputMode, .emoji)
+        XCTAssertEqual(symbols.emojiInputSubmode, .symbols)
+
+        let emoji = KeyboardModeTransition.enterEmojiMode(from: symbols)
         XCTAssertEqual(emoji.inputMode, .emoji)
-        XCTAssertFalse(emoji.isKaomojiMode)
+        XCTAssertEqual(emoji.emojiInputSubmode, .emoji)
     }
 
     func testFinishCommitConsumesOneShotStates() {
@@ -330,7 +334,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
         kanaCharacterMode: KanaCharacterMode = .hiragana,
         latinShiftState: LatinShiftState = .off,
         lastLatinShiftTapAt: Date? = nil,
-        isKaomojiMode: Bool = false,
+        emojiInputSubmode: EmojiInputSubmode = .emoji,
         spaceToastText: String? = nil,
         spaceToastOpacity: Double = 0
     ) -> KeyboardModeTransitionState {
@@ -340,7 +344,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
             kanaCharacterMode: kanaCharacterMode,
             latinShiftState: latinShiftState,
             lastLatinShiftTapAt: lastLatinShiftTapAt,
-            isKaomojiMode: isKaomojiMode,
+            emojiInputSubmode: emojiInputSubmode,
             spaceToastText: spaceToastText,
             spaceToastOpacity: spaceToastOpacity
         )

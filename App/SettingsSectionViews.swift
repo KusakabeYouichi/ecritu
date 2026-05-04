@@ -253,6 +253,29 @@ struct NumberLayoutSettingsSection: View {
     }
 }
 
+struct BasicSymbolOrderSettingsSection: View {
+    @Binding var selection: BasicSymbolOrderOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("基本記号の並び順")
+                .font(.headline)
+
+            Picker("基本記号の並び順", selection: $selection) {
+                ForEach(BasicSymbolOrderOption.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text("記号モードの『基本記号』カテゴリの並び順を切り替えます。既定は ASCII 順です。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct AccentColorSettingsSection: View {
     @Binding var selection: AccentColorOption
 
