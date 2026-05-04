@@ -1,5 +1,30 @@
 import Foundation
 
+enum TemperatureUnitPreference: String {
+    case celsius
+    case fahrenheit
+
+    var primarySymbol: String {
+        switch self {
+        case .celsius:
+            return "℃"
+        case .fahrenheit:
+            return "℉"
+        }
+    }
+
+    static func fromAppleTemperatureUnit(_ rawValue: String) -> TemperatureUnitPreference? {
+        switch rawValue.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() {
+        case "celsius", "centigrade":
+            return .celsius
+        case "fahrenheit":
+            return .fahrenheit
+        default:
+            return nil
+        }
+    }
+}
+
 enum FlickKanaLayout {
     static let latinShiftKeyToken = "__latin_shift__"
     static let kanaWaSet = FlickKanaSet(label: "わ", center: "わ", up: "を", right: "ん", down: "〜", left: "ー")
@@ -67,11 +92,22 @@ enum FlickKanaLayout {
         return applyingMap(map, to: kanaWaSet)
     }
 
-    static func numberRows(for profile: FlickDirectionProfile, layoutMode: NumberLayoutMode) -> [[FlickKanaSet]] {
+    static func numberRows(
+        for profile: FlickDirectionProfile,
+        layoutMode: NumberLayoutMode,
+        temperatureUnit: TemperatureUnitPreference = .celsius
+    ) -> [[FlickKanaSet]] {
         let row123: [FlickKanaSet] = [
             numberSet(center: "1", left: "←", up: "↑", right: "→", down: "↓", profile: profile, preservesAppleDirectionalOrder: true),
             numberSet(center: "2", left: "¥", up: "$", right: "€", down: "₿", profile: profile),
-            numberSet(center: "3", left: "%", up: "°", right: "#", down: "℃", profile: profile)
+            numberSet(
+                center: "3",
+                left: "%",
+                up: "°",
+                right: "#",
+                down: temperatureUnit.primarySymbol,
+                profile: profile
+            )
         ]
 
         let row456: [FlickKanaSet] = [

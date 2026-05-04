@@ -4,13 +4,13 @@
     {
       "label": "Open iOS Simulator",
       "type": "shell",
-      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; PREF=\"$HOME/Library/Preferences/com.apple.iphonesimulator.plist\"; /usr/bin/plutil -insert \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\" 2>/dev/null || /usr/bin/plutil -replace \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\"; open -a Simulator --args -CurrentDeviceUDID \"$SIM_UDID\"",
+      "command": "SIM_UDID=\"3F938359-9491-4D88-8ED8-178CF3D74F61\"; if ! xcrun simctl list devices available | grep -q \"$SIM_UDID\"; then echo 'Configured iPhone 17 Pro simulator is not available'; exit 1; fi; PREF=\"$HOME/Library/Preferences/com.apple.iphonesimulator.plist\"; /usr/bin/plutil -insert \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\" 2>/dev/null || /usr/bin/plutil -replace \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\"; open -a Simulator --args -CurrentDeviceUDID \"$SIM_UDID\"",
       "problemMatcher": []
     },
     {
       "label": "Ensure Booted iPhone 17 Pro",
       "type": "shell",
-      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; PREF=\"$HOME/Library/Preferences/com.apple.iphonesimulator.plist\"; /usr/bin/plutil -insert \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\" 2>/dev/null || /usr/bin/plutil -replace \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\"; xcrun simctl boot \"$SIM_UDID\" >/dev/null 2>&1 || true; xcrun simctl bootstatus \"$SIM_UDID\" -b",
+      "command": "SIM_UDID=\"3F938359-9491-4D88-8ED8-178CF3D74F61\"; if ! xcrun simctl list devices available | grep -q \"$SIM_UDID\"; then echo 'Configured iPhone 17 Pro simulator is not available'; exit 1; fi; xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | while read -r OTHER_UDID; do if [ \"$OTHER_UDID\" != \"$SIM_UDID\" ]; then xcrun simctl shutdown \"$OTHER_UDID\" >/dev/null 2>&1 || true; fi; done; PREF=\"$HOME/Library/Preferences/com.apple.iphonesimulator.plist\"; /usr/bin/plutil -insert \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\" 2>/dev/null || /usr/bin/plutil -replace \"DevicePreferences.$SIM_UDID.ConnectHardwareKeyboard\" -bool NO \"$PREF\"; xcrun simctl boot \"$SIM_UDID\" >/dev/null 2>&1 || true; xcrun simctl bootstatus \"$SIM_UDID\" -b",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -35,7 +35,7 @@
     {
       "label": "Install ecritu on iPhone 17 Pro",
       "type": "shell",
-      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; APP_PATH=\"$(find \"${workspaceFolder}/build/Build/Products/Debug-iphonesimulator\" -maxdepth 1 -name '*.app' 2>/dev/null | head -n 1)\"; if [ -z \"$APP_PATH\" ]; then APP_PATH=\"$(find \"${workspaceFolder}/build/Debug-iphonesimulator\" -maxdepth 1 -name '*.app' 2>/dev/null | head -n 1)\"; fi; if [ -z \"$APP_PATH\" ]; then echo 'No .app found under build/Build/Products/Debug-iphonesimulator'; exit 1; fi; xcrun simctl install \"$SIM_UDID\" \"$APP_PATH\"",
+      "command": "SIM_UDID=\"3F938359-9491-4D88-8ED8-178CF3D74F61\"; if ! xcrun simctl list devices available | grep -q \"$SIM_UDID\"; then echo 'Configured iPhone 17 Pro simulator is not available'; exit 1; fi; APP_PATH=\"$(find \"${workspaceFolder}/build/Build/Products/Debug-iphonesimulator\" -maxdepth 1 -name '*.app' 2>/dev/null | head -n 1)\"; if [ -z \"$APP_PATH\" ]; then APP_PATH=\"$(find \"${workspaceFolder}/build/Debug-iphonesimulator\" -maxdepth 1 -name '*.app' 2>/dev/null | head -n 1)\"; fi; if [ -z \"$APP_PATH\" ]; then echo 'No .app found under build/Build/Products/Debug-iphonesimulator'; exit 1; fi; xcrun simctl install \"$SIM_UDID\" \"$APP_PATH\"",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -44,7 +44,7 @@
     {
       "label": "Launch ecritu on iPhone 17 Pro",
       "type": "shell",
-      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; APP_BUNDLE_ID=\"$(xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -showBuildSettings 2>/dev/null | awk -F ' = ' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}')\"; if [ -z \"$APP_BUNDLE_ID\" ]; then echo 'Failed to detect PRODUCT_BUNDLE_IDENTIFIER'; exit 1; fi; xcrun simctl launch \"$SIM_UDID\" \"$APP_BUNDLE_ID\"",
+      "command": "SIM_UDID=\"3F938359-9491-4D88-8ED8-178CF3D74F61\"; if ! xcrun simctl list devices available | grep -q \"$SIM_UDID\"; then echo 'Configured iPhone 17 Pro simulator is not available'; exit 1; fi; APP_BUNDLE_ID=\"$(xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -showBuildSettings 2>/dev/null | awk -F ' = ' '/^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=/{print $2; exit}')\"; if [ -z \"$APP_BUNDLE_ID\" ]; then echo 'Failed to detect PRODUCT_BUNDLE_IDENTIFIER'; exit 1; fi; xcrun simctl launch \"$SIM_UDID\" \"$APP_BUNDLE_ID\"",
       "options": {
         "cwd": "${workspaceFolder}"
       },
@@ -69,7 +69,7 @@
     {
       "label": "Uninstall ecritu from iPhone 17 Pro",
       "type": "shell",
-      "command": "SIM_UDID=\"$(xcrun simctl list devices available | sed -nE 's/^[[:space:]]*iPhone 17 Pro \\(([A-F0-9-]+)\\) \\((Booted|Shutdown)\\).*/\\1/p' | head -n 1)\"; if [ -z \"$SIM_UDID\" ]; then echo 'iPhone 17 Pro simulator is not available'; exit 1; fi; APP_BUNDLE_ID=\"$(xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -showBuildSettings 2>/dev/null | awk -F ' = ' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}')\"; if [ -z \"$APP_BUNDLE_ID\" ]; then echo 'Failed to detect PRODUCT_BUNDLE_IDENTIFIER'; exit 1; fi; xcrun simctl uninstall \"$SIM_UDID\" \"$APP_BUNDLE_ID\"",
+      "command": "SIM_UDID=\"3F938359-9491-4D88-8ED8-178CF3D74F61\"; if ! xcrun simctl list devices available | grep -q \"$SIM_UDID\"; then echo 'Configured iPhone 17 Pro simulator is not available'; exit 1; fi; APP_BUNDLE_ID=\"$(xcodebuild -project \"écritu.xcodeproj\" -scheme \"écritu\" -showBuildSettings 2>/dev/null | awk -F ' = ' '/^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=/{print $2; exit}')\"; if [ -z \"$APP_BUNDLE_ID\" ]; then echo 'Failed to detect PRODUCT_BUNDLE_IDENTIFIER'; exit 1; fi; xcrun simctl uninstall \"$SIM_UDID\" \"$APP_BUNDLE_ID\"",
       "options": {
         "cwd": "${workspaceFolder}"
       },

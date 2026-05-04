@@ -1,12 +1,22 @@
 import SwiftUI
+import CoreFoundation
 
 enum SettingsKeys {
+    private static func fallbackAppGroupID() -> String {
+        guard let bundleID = Bundle.main.bundleIdentifier,
+            !bundleID.isEmpty else {
+            return "group.com.kusakabe.ecritu"
+        }
+
+        return "group.\(bundleID)"
+    }
+
     static let appGroupID: String = {
         guard
             let value = Bundle.main.object(forInfoDictionaryKey: "EcrituAppGroupIdentifier") as? String,
             !value.isEmpty
         else {
-            return "group.com.kusakabe.ecritu"
+            return fallbackAppGroupID()
         }
         return value
     }()
@@ -15,6 +25,7 @@ enum SettingsKeys {
     static let kanaModifierPlacement = "kanaModifierPlacement"
     static let latinLayoutMode = "latinLayoutMode"
     static let numberLayoutMode = "numberLayoutMode"
+    static let basicSymbolOrder = "basicSymbolOrder"
     static let accentPalette = "accentPalette"
     static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
     static let kanaFlickGuideDisplayMode = "flickGuideDisplayModeKana"
@@ -107,6 +118,20 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
         switch self {
         case .calculette: return "calculette"
         case .telephone: return "téléphone"
+        }
+    }
+}
+
+enum BasicSymbolOrderOption: String, CaseIterable, Identifiable {
+    case ascii
+    case ebcdic
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .ascii: return "ASCII"
+        case .ebcdic: return "EBCDIC"
         }
     }
 }
@@ -207,4 +232,22 @@ struct VocabularyEntry: Identifiable {
     let candidate: String
 
     var id: String { reading + "\t" + candidate }
+}
+
+enum SettingsSyncNotification {
+    static var darwinNotificationName: String {
+        "com.kusakabe.ecritu.settings-changed.\(SettingsKeys.appGroupID)"
+    }
+
+    static func postSettingsDidChange() {
+        let notificationName = CFNotificationName(darwinNotificationName as CFString)
+
+        CFNotificationCenterPostNotification(
+            CFNotificationCenterGetDarwinNotifyCenter(),
+            notificationName,
+            nil,
+            nil,
+            true
+        )
+    }
 }

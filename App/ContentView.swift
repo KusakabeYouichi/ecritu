@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260430145119"
+    private static let editionUpdatedAtRaw: String = "20260504002437"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -62,6 +62,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var numberLayoutModeRawValue: String = NumberLayoutOption.calculette.rawValue
+
+    @AppStorage(
+        SettingsKeys.basicSymbolOrder,
+        store: Self.sharedDefaults
+    )
+    private var basicSymbolOrderRawValue: String = BasicSymbolOrderOption.ascii.rawValue
 
     @AppStorage(
         SettingsKeys.accentPalette,
@@ -169,6 +175,12 @@ struct ContentView: View {
     private var numberLayoutSelection: Binding<NumberLayoutOption> {
         rawValueSelection(from: numberLayoutModeRawValue, default: .calculette) {
             numberLayoutModeRawValue = $0
+        }
+    }
+
+    private var basicSymbolOrderSelection: Binding<BasicSymbolOrderOption> {
+        rawValueSelection(from: basicSymbolOrderRawValue, default: .ascii) {
+            basicSymbolOrderRawValue = $0
         }
     }
 
@@ -652,6 +664,8 @@ struct ContentView: View {
 
                     NumberLayoutSettingsSection(selection: numberLayoutSelection)
 
+                    BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
+
                     AccentColorSettingsSection(selection: accentPaletteSelection)
 
                     ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
@@ -727,6 +741,14 @@ struct ContentView: View {
                 migrateInitialSuppressionDictionaryIfNeeded()
                 loadUserDictionaryEntries()
                 loadSuppressionDictionaryEntries()
+            }
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: UserDefaults.didChangeNotification,
+                    object: Self.sharedDefaults
+                )
+            ) { _ in
+                SettingsSyncNotification.postSettingsDidChange()
             }
 #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)

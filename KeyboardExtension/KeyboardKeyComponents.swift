@@ -338,6 +338,24 @@ struct EmojiKeyButton: View {
     }
 }
 
+struct SymbolKeyButton: View {
+    let symbol: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(symbol)
+                .font(.system(size: 24, weight: .semibold, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(EmojiTapFeedbackButtonStyle())
+        .accessibilityLabel(symbol)
+    }
+}
+
 struct EmojiTapFeedbackButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -420,5 +438,41 @@ struct EmojiCategoryKeyButton: View {
         }
         .buttonStyle(.plain)
         .accessibilityLabel(icon)
+    }
+}
+
+struct SymbolCategoryKeyButton: View {
+    let icon: String
+    let tintColor: Color
+    let isSelected: Bool
+    let accessibilityLabel: String
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(icon)
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .foregroundStyle(isSelected ? tintColor : tintColor.opacity(0.8))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(
+                            isSelected
+                                ? tintColor.opacity(0.22)
+                                : Color.white.opacity(0.78)
+                        )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(
+                            isSelected
+                                ? tintColor.opacity(0.75)
+                                : Color.black.opacity(0.11),
+                            lineWidth: isSelected ? 1.4 : 1
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
     }
 }
