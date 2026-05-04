@@ -482,7 +482,10 @@ struct UserDictionarySettingsSection: View {
     let listHeight: CGFloat
     let onAddEntry: () -> Void
     let onDeleteEntry: (VocabularyEntry) -> Void
+    let onDeleteAll: () -> Void
     let onResetLearning: () -> Void
+
+    @State private var isDeleteAllConfirmationPresented = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -595,10 +598,33 @@ struct UserDictionarySettingsSection: View {
                 .frame(height: listHeight)
             }
 
-            Button("学習履歴をリセット") {
-                onResetLearning()
+            HStack(spacing: 12) {
+                Button("学習履歴をリセット") {
+                    onResetLearning()
+                }
+                .buttonStyle(.bordered)
+
+                if !entries.isEmpty {
+                    Button(role: .destructive) {
+                        isDeleteAllConfirmationPresented = true
+                    } label: {
+                        Text("すべて削除する")
+                    }
+                    .buttonStyle(.bordered)
+                    .confirmationDialog(
+                        "追加語彙をすべて削除しますか?",
+                        isPresented: $isDeleteAllConfirmationPresented,
+                        titleVisibility: .visible
+                    ) {
+                        Button("すべて削除する", role: .destructive) {
+                            onDeleteAll()
+                        }
+                        Button("キャンセル", role: .cancel) {}
+                    } message: {
+                        Text("この操作は元に戻せません。")
+                    }
+                }
             }
-            .buttonStyle(.bordered)
 
             Text("追加単語はキーボード拡張と共有され、候補の優先順位に反映されます。")
                 .font(.footnote)

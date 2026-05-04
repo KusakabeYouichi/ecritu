@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260504002437"
+    private static let editionUpdatedAtRaw: String = "20260505021313"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -554,6 +554,11 @@ struct ContentView: View {
         loadUserDictionaryEntries()
     }
 
+    private func removeAllUserDictionaryEntries() {
+        saveUserDictionary([:])
+        loadUserDictionaryEntries()
+    }
+
     private func resetKanaKanjiLearning() {
         Self.sharedDefaults?.removeObject(forKey: SettingsKeys.kanaKanjiLearningScores)
     }
@@ -709,6 +714,7 @@ struct ContentView: View {
                         listHeight: userVocabularyListHeight(for: userDictionaryEntries.count),
                         onAddEntry: addUserDictionaryEntry,
                         onDeleteEntry: removeUserDictionaryEntry,
+                        onDeleteAll: removeAllUserDictionaryEntries,
                         onResetLearning: resetKanaKanjiLearning
                     )
 
