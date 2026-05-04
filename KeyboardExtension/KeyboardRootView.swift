@@ -21,6 +21,8 @@ struct KeyboardRootView: View {
     let latinLayoutMode: LatinLayoutMode
     let accentPaletteRawValue: String
     let keyboardBackgroundThemeRawValue: String
+    let basicSymbolOrderRawValue: String
+    let temperatureUnitRawValue: String
     let spaceToastTrigger: Int
     let returnKeySystemImageName: String?
     let isReturnKeyEnabled: Bool
@@ -94,6 +96,146 @@ struct KeyboardRootView: View {
         }
     }
 
+    private enum BasicSymbolOrder: String {
+        case ascii
+        case ebcdic
+    }
+
+    private enum SymbolCategory: Int, CaseIterable, Identifiable {
+        case basic
+        case brackets
+        case currency
+        case units
+        case math
+        case arrows
+        case enclosed
+
+        var id: Int { rawValue }
+
+        func icon(temperatureUnit: TemperatureUnitPreference) -> String {
+            switch self {
+            case .basic: return "!?"
+            case .brackets: return "『』"
+            case .currency: return "€"
+            case .units: return temperatureUnit.primarySymbol
+            case .math: return "∑"
+            case .arrows: return "↗"
+            case .enclosed: return "⓪"
+            }
+        }
+
+        var frenchName: String {
+            switch self {
+            case .basic: return "Symboles de base"
+            case .brackets: return "Parenthèses et guillemets"
+            case .currency: return "Monnaies"
+            case .units: return "Unités"
+            case .math: return "Mathématiques"
+            case .arrows: return "Flèches"
+            case .enclosed: return "Caractères entourés"
+            }
+        }
+
+        var tintColor: Color {
+            switch self {
+            case .basic:
+                return Color(red: 0.16, green: 0.40, blue: 0.86)
+            case .brackets:
+                return Color(red: 0.08, green: 0.60, blue: 0.48)
+            case .currency:
+                return Color(red: 0.10, green: 0.66, blue: 0.32)
+            case .units:
+                return Color(red: 0.92, green: 0.50, blue: 0.14)
+            case .math:
+                return Color(red: 0.77, green: 0.30, blue: 0.23)
+            case .arrows:
+                return Color(red: 0.48, green: 0.36, blue: 0.87)
+            case .enclosed:
+                return Color(red: 0.88, green: 0.26, blue: 0.57)
+            }
+        }
+
+        func symbols(
+            basicOrder: BasicSymbolOrder,
+            temperatureUnit: TemperatureUnitPreference
+        ) -> [String] {
+            switch self {
+            case .basic:
+                switch basicOrder {
+                case .ascii:
+                    return Self.basicSymbolsASCII
+                case .ebcdic:
+                    return Self.basicSymbolsEBCDIC
+                }
+            case .brackets:
+                return Self.bracketAndQuoteSymbols
+            case .currency:
+                return Self.currencySymbols
+            case .units:
+                return Self.unitSymbols(for: temperatureUnit)
+            case .math:
+                return Self.mathSymbols
+            case .arrows:
+                return Self.arrowSymbols
+            case .enclosed:
+                return Self.enclosedSymbols
+            }
+        }
+
+        // ASCII punctuation in code point order.
+        private static let basicSymbolsASCII: [String] = [
+            "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
+            ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~"
+        ]
+
+        private static let basicSymbolsEBCDIC: [String] = [
+            ".", "<", "(", "+", "|", "&", "!", "$", "*", ")", ";", "-", "/", ",", "%", "_",
+            ">", "?", "`", ":", "#", "@", "'", "=", "\"", "~", "^", "[", "]", "{", "}", "\\"
+        ]
+
+        private static let bracketAndQuoteSymbols: [String] = [
+            "(", ")", "[", "]", "{", "}", "<", ">",
+            "『", "』", "「", "」", "【", "】", "〔", "〕", "〈", "〉", "《", "》",
+            "“", "”", "‘", "’", "«", "»", "‹", "›", "〝", "〟"
+        ]
+
+        private static let currencySymbols: [String] = [
+            "€", "$", "¢", "£", "¥", "₩", "₹", "₽", "₺", "฿", "₫", "₴", "₦", "₱", "₡", "₲", "₵", "₭", "₸", "₮", "₳", "₰"
+        ]
+
+        private static let unitSymbolsTail: [String] = [
+            "°", "′", "″", "%", "‰", "μ", "Ω", "ℓ", "㎜", "㎝", "㎞", "㎡", "㎢", "㎥", "㎎", "㎏", "㏄", "㎖", "㎗", "㎐", "㎑", "㎒", "㎓"
+        ]
+
+        private static func unitSymbols(for temperatureUnit: TemperatureUnitPreference) -> [String] {
+            switch temperatureUnit {
+            case .celsius:
+                return ["℃", "℉"] + unitSymbolsTail
+            case .fahrenheit:
+                return ["℉", "℃"] + unitSymbolsTail
+            }
+        }
+
+        private static let mathSymbols: [String] = [
+            "+", "-", "±", "×", "÷", "=", "≠", "≈", "≡", "<", ">", "≤", "≥", "¬", "∧", "∨", "⊻",
+            "∀", "∃", "∞", "√", "∛", "∜", "∑", "∏", "∫", "∬", "∮", "∂", "∇",
+            "∈", "∉", "∋", "∌", "∩", "∪", "⊂", "⊃", "⊆", "⊇", "⊄", "⊅", "∝", "∴", "∵", "⊥", "∠"
+        ]
+
+        private static let arrowSymbols: [String] = [
+            "←", "↑", "→", "↓", "↔", "↕", "↖", "↗", "↘", "↙",
+            "⇐", "⇑", "⇒", "⇓", "⇔", "⇕", "↩", "↪",
+            "➔", "➜", "➝", "➞", "➟", "➠"
+        ]
+
+        private static let enclosedSymbols: [String] = [
+            "©", "®", "⓪", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩", "⑪", "⑫", "⑬", "⑭", "⑮", "⑯", "⑰", "⑱", "⑲", "⑳",
+            "㉑", "㉒", "㉓", "㉔", "㉕", "㉖", "㉗", "㉘", "㉙", "㉚",
+            "Ⓐ", "Ⓑ", "Ⓒ", "Ⓓ", "Ⓔ", "Ⓕ", "Ⓖ", "Ⓗ", "Ⓘ", "Ⓙ", "Ⓚ", "Ⓛ", "Ⓜ", "Ⓝ", "Ⓞ", "Ⓟ", "Ⓠ", "Ⓡ", "Ⓢ", "Ⓣ", "Ⓤ", "Ⓥ", "Ⓦ", "Ⓧ", "Ⓨ", "Ⓩ",
+            "ⓐ", "ⓑ", "ⓒ", "ⓓ", "ⓔ", "ⓕ", "ⓖ", "ⓗ", "ⓘ", "ⓙ", "ⓚ", "ⓛ", "ⓜ", "ⓝ", "ⓞ", "ⓟ", "ⓠ", "ⓡ", "ⓢ", "ⓣ", "ⓤ", "ⓥ", "ⓦ", "ⓧ", "ⓨ", "ⓩ"
+        ]
+    }
+
     private enum AccentPalette: String {
         case tuile
         case emeraude
@@ -140,11 +282,13 @@ struct KeyboardRootView: View {
     @State private var latinShiftState: LatinShiftState = .off
     @State private var lastLatinShiftTapAt: Date? = nil
     @State private var selectedEmojiCategory: EmojiCategory = .people
-    @State private var isKaomojiMode = false
+    @State private var selectedSymbolCategory: SymbolCategory = .basic
+    @State private var emojiInputSubmode: EmojiInputSubmode = .emoji
 
     private let shiftDoubleTapThreshold: TimeInterval = 0.32
     private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
-    private let candidatePlaceholderHeight: CGFloat = 34
+    private let candidateHeaderExpandedHeight: CGFloat = 35
+    private let candidateHeaderCollapsedHeight: CGFloat = 3
     private let keyboardRowSpacing: CGFloat = 6
     private let keyboardTopPadding: CGFloat = 3
     private let keyboardHorizontalPadding: CGFloat = 8
@@ -163,6 +307,11 @@ struct KeyboardRootView: View {
 
     private var showsKanaConversionCandidates: Bool {
         inputMode == .kana && !composingText.isEmpty
+    }
+
+    private var candidateHeaderHeight: CGFloat {
+        // 候補表示時の押し下げをなくすため、テキスト系モードでも常に同じヘッダー領域を予約する。
+        return candidateHeaderExpandedHeight
     }
 
     private var isActiveConversion: Bool {
@@ -250,6 +399,14 @@ struct KeyboardRootView: View {
         accentPalette.color
     }
 
+    private var basicSymbolOrder: BasicSymbolOrder {
+        BasicSymbolOrder(rawValue: basicSymbolOrderRawValue) ?? .ascii
+    }
+
+    private var temperatureUnit: TemperatureUnitPreference {
+        TemperatureUnitPreference(rawValue: temperatureUnitRawValue) ?? .celsius
+    }
+
     private var currentFlickGuideDisplayMode: FlickGuideDisplayMode {
         switch inputMode {
         case .kana:
@@ -291,7 +448,7 @@ struct KeyboardRootView: View {
                 kanaCharacterMode: kanaCharacterMode,
                 latinShiftState: latinShiftState,
                 lastLatinShiftTapAt: lastLatinShiftTapAt,
-                isKaomojiMode: isKaomojiMode,
+                emojiInputSubmode: emojiInputSubmode,
                 spaceToastText: spaceToastText,
                 spaceToastOpacity: spaceToastOpacity
             )
@@ -302,7 +459,7 @@ struct KeyboardRootView: View {
             kanaCharacterMode = newValue.kanaCharacterMode
             latinShiftState = newValue.latinShiftState
             lastLatinShiftTapAt = newValue.lastLatinShiftTapAt
-            isKaomojiMode = newValue.isKaomojiMode
+            emojiInputSubmode = newValue.emojiInputSubmode
             spaceToastText = newValue.spaceToastText
             spaceToastOpacity = newValue.spaceToastOpacity
         }
@@ -325,7 +482,11 @@ struct KeyboardRootView: View {
                 }
             }
         case .number:
-            return FlickKanaLayout.numberRows(for: directionProfile, layoutMode: numberLayoutMode)
+            return FlickKanaLayout.numberRows(
+                for: directionProfile,
+                layoutMode: numberLayoutMode,
+                temperatureUnit: temperatureUnit
+            )
         case .latin:
             return FlickKanaLayout.latinRows(for: directionProfile, layoutMode: latinLayoutMode)
         case .emoji:
@@ -339,6 +500,10 @@ struct KeyboardRootView: View {
 
     private var isKanaFiveByTwoMode: Bool {
         inputMode == .kana && kanaLayoutMode == .fiveByTwo
+    }
+
+    private var kanaCandidateHeaderTopPadding: CGFloat {
+        isKanaThreeByThreeMode ? 14 : 12
     }
 
     private var usesThreeByThreeGridForNumberOrLatin: Bool {
@@ -451,6 +616,10 @@ struct KeyboardRootView: View {
 
     private var emojiGridColumns: [GridItem] {
         Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 9)
+    }
+
+    private var symbolGridColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 8)
     }
 
     private func measuredKaomojiWidth(_ kaomoji: String) -> CGFloat {
@@ -618,6 +787,10 @@ struct KeyboardRootView: View {
 
     private var kaomojiTransitionIconFontSize: CGFloat {
         usesWideLeftModeSwitchButtons ? 32 : 28
+    }
+
+    private var symbolTransitionIconFontSize: CGFloat {
+        usesWideLeftModeSwitchButtons ? 22.4 : 19.2
     }
 
     private let kaomojiModeReturnIconFontSize: CGFloat = 32
@@ -987,14 +1160,24 @@ struct KeyboardRootView: View {
             )
                 .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
         case 3:
-            ActionKeyButton(
-                title: "☺︎",
-                accessibilityLabel: "絵文字",
-                fontSize: kaomojiTransitionIconFontSize,
-                onLongPress: enterKaomojiMode,
-                action: enterEmojiMode
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
+            if inputMode == .number {
+                ActionKeyButton(
+                    title: "⌘",
+                    accessibilityLabel: "記号入力",
+                    fontSize: symbolTransitionIconFontSize,
+                    action: enterSymbolsMode
+                )
+                    .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
+            } else {
+                ActionKeyButton(
+                    title: "☺︎",
+                    accessibilityLabel: "絵文字",
+                    fontSize: kaomojiTransitionIconFontSize,
+                    onLongPress: enterKaomojiMode,
+                    action: enterEmojiMode
+                )
+                    .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
+            }
         default:
             Color.clear
                 .allowsHitTesting(false)
@@ -1118,6 +1301,62 @@ struct KeyboardRootView: View {
         }
     }
 
+    private var symbolKeyboardView: some View {
+        VStack(spacing: keyboardRowSpacing) {
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
+                    ForEach(
+                        Array(
+                            selectedSymbolCategory
+                                .symbols(basicOrder: basicSymbolOrder, temperatureUnit: temperatureUnit)
+                                .enumerated()
+                        ),
+                        id: \.offset
+                    ) { _, symbol in
+                        SymbolKeyButton(symbol: symbol) {
+                            onTextInput(symbol)
+                        }
+                        .frame(height: compactEmojiKeyHeight)
+                    }
+                }
+                .padding(.vertical, 2)
+            }
+
+            HStack(spacing: keyboardRowSpacing) {
+                ActionKeyButton(
+                    title: "123",
+                    fixedWidth: 56,
+                    action: { switchInputMode(.number) }
+                )
+                    .frame(height: compactActionKeyHeight)
+
+                ForEach(SymbolCategory.allCases, id: \.self) { category in
+                    SymbolCategoryKeyButton(
+                        icon: category.icon(temperatureUnit: temperatureUnit),
+                        tintColor: category.tintColor,
+                        isSelected: selectedSymbolCategory == category,
+                        accessibilityLabel: category.frenchName,
+                        action: { selectedSymbolCategory = category }
+                    )
+                        .frame(maxWidth: .infinity)
+                        .frame(height: compactActionKeyHeight)
+                }
+
+                ActionKeyButton(
+                    title: "⌫",
+                    accessibilityLabel: "削除",
+                    fontSize: 26,
+                    fixedWidth: 56,
+                    repeatsWhileHolding: true,
+                    repeatInitialDelay: keyRepeatInitialDelay,
+                    repeatInterval: keyRepeatInterval,
+                    action: onDeleteBackward
+                )
+                    .frame(height: compactActionKeyHeight)
+            }
+        }
+    }
+
     private var kaomojiKeyboardView: some View {
         GeometryReader { geometry in
             let rows = kaomojiRows(for: geometry.size.width)
@@ -1160,7 +1399,7 @@ struct KeyboardRootView: View {
                         title: "☺︎",
                         accessibilityLabel: "絵文字",
                         fontSize: kaomojiModeReturnIconFontSize,
-                        action: { isKaomojiMode = false }
+                        action: { emojiInputSubmode = .emoji }
                     )
                         .frame(maxWidth: .infinity)
                         .frame(height: compactActionKeyHeight)
@@ -1184,14 +1423,14 @@ struct KeyboardRootView: View {
     private var topHeaderView: some View {
         Group {
             if inputMode == .emoji {
-                Text(isKaomojiMode ? "顔文字" : selectedEmojiCategory.frenchName)
+                Text(emojiHeaderTitle)
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(keyLabelColor.opacity(0.82))
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     .padding(.leading, 2)
-                    .padding(.top, 2)
+                    .padding(.top, 0)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
             } else if showsKanaConversionCandidates {
@@ -1202,7 +1441,18 @@ struct KeyboardRootView: View {
                     .accessibilityHidden(true)
             }
         }
-        .frame(height: candidatePlaceholderHeight)
+        .frame(height: candidateHeaderHeight)
+    }
+
+    private var emojiHeaderTitle: String {
+        switch emojiInputSubmode {
+        case .emoji:
+            return selectedEmojiCategory.frenchName
+        case .kaomoji:
+            return "Kaomojis"
+        case .symbols:
+            return selectedSymbolCategory.frenchName
+        }
     }
 
     private var kanaConversionCandidateHeaderView: some View {
@@ -1311,8 +1561,9 @@ struct KeyboardRootView: View {
                 }
             }
             .padding(.horizontal, 2)
-            .padding(.vertical, 1)
-            .frame(maxHeight: .infinity, alignment: .center)
+            .padding(.top, kanaCandidateHeaderTopPadding)
+            .padding(.bottom, 0)
+            .frame(maxHeight: .infinity, alignment: .top)
         }
     }
 
@@ -1326,10 +1577,13 @@ struct KeyboardRootView: View {
             topHeaderView
 
             if inputMode == .emoji {
-                if isKaomojiMode {
-                    kaomojiKeyboardView
-                } else {
+                switch emojiInputSubmode {
+                case .emoji:
                     emojiKeyboardView
+                case .kaomoji:
+                    kaomojiKeyboardView
+                case .symbols:
+                    symbolKeyboardView
                 }
             } else if isKanaThreeByThreeMode {
                 threeByThreeKanaGrid
@@ -1463,6 +1717,15 @@ struct KeyboardRootView: View {
                             fontSize: leftModeSwitchLatinFontSize,
                             fixedWidth: 58,
                             action: { switchInputMode(.latin) }
+                        )
+                            .frame(height: compactActionKeyHeight)
+
+                        ActionKeyButton(
+                            title: "⌘",
+                            accessibilityLabel: "記号入力",
+                            fontSize: symbolTransitionIconFontSize,
+                            fixedWidth: 58,
+                            action: enterSymbolsMode
                         )
                             .frame(height: compactActionKeyHeight)
                     } else {
@@ -1609,6 +1872,12 @@ struct KeyboardRootView: View {
 
     private func enterKaomojiMode() {
         transitionState = KeyboardModeTransition.enterKaomojiMode(
+            from: transitionState
+        )
+    }
+
+    private func enterSymbolsMode() {
+        transitionState = KeyboardModeTransition.enterSymbolsMode(
             from: transitionState
         )
     }
@@ -1965,6 +2234,8 @@ struct KeyboardRootView: View {
         latinLayoutMode: .flick,
         accentPaletteRawValue: "emeraude",
         keyboardBackgroundThemeRawValue: "bleu",
+        basicSymbolOrderRawValue: "ascii",
+        temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
         spaceToastTrigger: 1,
         returnKeySystemImageName: nil,
         isReturnKeyEnabled: true,
