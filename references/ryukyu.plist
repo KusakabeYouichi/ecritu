@@ -644,9 +644,9 @@
 	<dict><key>phrase</key><string>伊武部原</string><key>shortcut</key><string>いんぶばる</string></dict>
 	<dict><key>phrase</key><string>いんぶビーチ</string><key>shortcut</key><string>いんぶびーち</string></dict>
 	<dict><key>phrase</key><string>上儀保</string><key>shortcut</key><string>うぃーじーぶ</string></dict>
-	<dict><key>phrase</key><string>V.I.P</string><key>shortcut</key><string>ヴぃっぷ</string></dict>
+	<dict><key>phrase</key><string>V.I.P</string><key>shortcut</key><string>ゔぃっぷ</string></dict>
 	<dict><key>phrase</key><string>上の河</string><key>shortcut</key><string>ういぬはー</string></dict>
-	<dict><key>phrase</key><string>ヴィラフサキ</string><key>shortcut</key><string>ヴぃらふらき</string></dict>
+	<dict><key>phrase</key><string>ヴィラフサキ</string><key>shortcut</key><string>ゔぃらふらき</string></dict>
 	<dict><key>phrase</key><string>ウィングタワー</string><key>shortcut</key><string>うぃんぐたわー</string></dict>
 	<dict><key>phrase</key><string>ウーグ浜</string><key>shortcut</key><string>うーぐはま</string></dict>
 	<dict><key>phrase</key><string>ウージー</string><key>shortcut</key><string>うーじー</string></dict>
@@ -656,7 +656,7 @@
 	<dict><key>phrase</key><string>ウーマクカマデー</string><key>shortcut</key><string>うーまくかまでー</string></dict>
 	<dict><key>phrase</key><string>ウーリー御嶽</string><key>shortcut</key><string>うーりーうたき</string></dict>
 	<dict><key>phrase</key><string>上阿嘉</string><key>shortcut</key><string>うえあか</string></dict>
-	<dict><key>phrase</key><string>ヴェアリアス</string><key>shortcut</key><string>ヴぇありあす</string></dict>
+	<dict><key>phrase</key><string>ヴェアリアス</string><key>shortcut</key><string>ゔぇありあす</string></dict>
 	<dict><key>phrase</key><string>親川グスク</string><key>shortcut</key><string>うぇーがーぐすく</string></dict>
 	<dict><key>phrase</key><string>親方</string><key>shortcut</key><string>うえかた</string></dict>
 	<dict><key>phrase</key><string>上カナバカ</string><key>shortcut</key><string>うえかなばか</string></dict>
@@ -6226,5 +6226,107 @@
 	<dict><key>phrase</key><string>ンムクジプットゥルー</string><key>shortcut</key><string>んむくじぷっとぅるー</string></dict>
 	<dict><key>phrase</key><string>芋煮</string><key>shortcut</key><string>んむにー</string></dict>
 	<dict><key>phrase</key><string>ンムニー</string><key>shortcut</key><string>んむにー</string></dict>
+	<!-- 沖縄関係の語彙リストの追加分 -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>請福</string><key>shortcut</key><string>せいふく</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>久米仙</string><key>shortcut</key><string>くめせん</string></dict> -->
+	<dict><key>phrase</key><string>石庵</string><key>shortcut</key><string>いっしゃん</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>沖映通り</string><key>shortcut</key><string>おきえいどおり</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>神里原</string><key>shortcut</key><string>かんざとばる</string></dict> -->
+	<dict><key>phrase</key><string>栄町</string><key>shortcut</key><string>さかえまち</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>勢理客</string><key>shortcut</key><string>じっちゃく</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>城岳</string><key>shortcut</key><string>じょうがく</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>勢理客</string><key>shortcut</key><string>せりきゃく</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>崇元寺</string><key>shortcut</key><string>そうげんじ</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>照喜名</string><key>shortcut</key><string>てるきな</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>とまりん</string><key>shortcut</key><string>とまりん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>仲尾次</string><key>shortcut</key><string>なかおじ</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>農連</string><key>shortcut</key><string>のうれん</string></dict> -->
+	<dict><key>phrase</key><string>農連市場</string><key>shortcut</key><string>のうれんいちば</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>比屋定</string><key>shortcut</key><string>ひやじょう</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>真境名</string><key>shortcut</key><string>まじきな</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>真和志</string><key>shortcut</key><string>まわし</string></dict> -->
+	<dict><key>phrase</key><string>屋我地</string><key>shortcut</key><string>やがち</string></dict>
+	<dict><key>phrase</key><string>屋我地島</string><key>shortcut</key><string>やがちしま</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>和飲食堂</string><key>shortcut</key><string>わいんしょくどう</string></dict> -->
+	<dict><key>phrase</key><string>新小屋</string><key>shortcut</key><string>あらこや</string></dict>
+	<dict><key>phrase</key><string>彌榮</string><key>shortcut</key><string>いやさか</string></dict>
+	<dict><key>phrase</key><string>宇那志</string><key>shortcut</key><string>うなし</string></dict>
+	<dict><key>phrase</key><string>宇良家</string><key>shortcut</key><string>うらや</string></dict>
+	<dict><key>phrase</key><string>潤旬庵</string><key>shortcut</key><string>うりずんあん</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>開南</string><key>shortcut</key><string>かいなん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>海邦</string><key>shortcut</key><string>かいほう</string></dict> -->
+	<dict><key>phrase</key><string>花々緒</string><key>shortcut</key><string>かかお</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>花人逢</string><key>shortcut</key><string>かじんほう</string></dict> -->
+	<dict><key>phrase</key><string>かりゆしウェア</string><key>shortcut</key><string>かりゆしうぇあ</string></dict>
+	<dict><key>phrase</key><string>漢謝園</string><key>shortcut</key><string>かんじゃえん</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>橘餅</string><key>shortcut</key><string>きっぱん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>桔餅</string><key>shortcut</key><string>きっぱん</string></dict> -->
+	<dict><key>phrase</key><string>㐂平</string><key>shortcut</key><string>きへい</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>球陽堂</string><key>shortcut</key><string>きゅうようどう</string></dict> -->
+	<dict><key>phrase</key><string>京美堂</string><key>shortcut</key><string>きょうびどう</string></dict>
+	<dict><key>phrase</key><string>串六×九</string><key>shortcut</key><string>くしろっく</string></dict>
+	<dict><key>phrase</key><string>外為どっとコム</string><key>shortcut</key><string>がいためどっとこむ</string></dict>
+	<dict><key>phrase</key><string>康竜</string><key>shortcut</key><string>こうりゅう</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>蔡温</string><key>shortcut</key><string>さいおん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>綵花</string><key>shortcut</key><string>さいか</string></dict> -->
+	<dict><key>phrase</key><string>齊華房</string><key>shortcut</key><string>さいかぼう</string></dict>
+	<dict><key>phrase</key><string>榮東</string><key>shortcut</key><string>さかあがり</string></dict>
+	<dict><key>phrase</key><string>紗鼓</string><key>shortcut</key><string>さこ</string></dict>
+	<dict><key>phrase</key><string>紗鼓めし</string><key>shortcut</key><string>さこめし</string></dict>
+	<dict><key>phrase</key><string>幸門</string><key>shortcut</key><string>さちじょう</string></dict>
+	<dict><key>phrase</key><string>佐辺</string><key>shortcut</key><string>さなべ</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>三絃</string><key>shortcut</key><string>さんしん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>三線</string><key>shortcut</key><string>さんしん</string></dict> -->
+	<dict><key>phrase</key><string>じぇいや</string><key>shortcut</key><string>じぇいや</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>十貫瀬</string><key>shortcut</key><string>じっかんじ</string></dict> -->
+	<dict><key>phrase</key><string>志のわ</string><key>shortcut</key><string>しのわ</string></dict>
+	<dict><key>phrase</key><string>紫美</string><key>shortcut</key><string>しび</string></dict>
+	<dict><key>phrase</key><string>寿二庵</string><key>shortcut</key><string>じゅにあん</string></dict>
+	<dict><key>phrase</key><string>尚学</string><key>shortcut</key><string>しょうがく</string></dict>
+	<dict><key>phrase</key><string>すず菜</string><key>shortcut</key><string>すずな</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>沖銀</string><key>shortcut</key><string>おきぎん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>沖尚</string><key>shortcut</key><string>おきしょう</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>沖大</string><key>shortcut</key><string>おきだい</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>沖電</string><key>shortcut</key><string>おきでん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>沖東</string><key>shortcut</key><string>おきとう</string></dict> -->
+	<dict><key>phrase</key><string>沖東交通</string><key>shortcut</key><string>おきとうこうつう</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>沖縄尚学</string><key>shortcut</key><string>おきなわしょうがく</string></dict> -->
+	<dict><key>phrase</key><string>バッフィーノ</string><key>shortcut</key><string>ばっふぃーの</string></dict>
+	<dict><key>phrase</key><string>離</string><key>shortcut</key><string>はなれ</string></dict>
+	<dict><key>phrase</key><string>比屋定篤子</string><key>shortcut</key><string>ひやじょうあつこ</string></dict>
+	<dict><key>phrase</key><string>藤商</string><key>shortcut</key><string>ふじしょう</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>舞富名</string><key>shortcut</key><string>まいふな</string></dict> -->
+	<dict><key>phrase</key><string>蘭桂坊</string><key>shortcut</key><string>らんけいぼう</string></dict>
+	<dict><key>phrase</key><string>流求茶館</string><key>shortcut</key><string>りゅうきゅうちゃかん</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>琉神マブヤー</string><key>shortcut</key><string>りゅうじんまぶやー</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>琉生病院</string><key>shortcut</key><string>りゅうせいびょういん</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>琉装</string><key>shortcut</key><string>りゅうそう</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>琉大</string><key>shortcut</key><string>りゅうだい</string></dict> -->
+	<dict><key>phrase</key><string>林昌</string><key>shortcut</key><string>りんしょう</string></dict>
+	<dict><key>phrase</key><string>八汐荘</string><key>shortcut</key><string>やしおそう</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>安木屋</string><key>shortcut</key><string>やすきや</string></dict> -->
+	<!-- 重複のため除去: <dict><key>phrase</key><string>燕郷房</string><key>shortcut</key><string>やんきょうふぁん</string></dict> -->
+	<dict><key>phrase</key><string>結アパート</string><key>shortcut</key><string>ゆいあぱーと</string></dict>
+	<dict><key>phrase</key><string>海音</string><key>shortcut</key><string>みおん</string></dict>
+	<dict><key>phrase</key><string>陽心会</string><key>shortcut</key><string>ようしんかい</string></dict>
+	<dict><key>phrase</key><string>串清</string><key>shortcut</key><string>くしきよ</string></dict>
+	<dict><key>phrase</key><string>餐仕</string><key>shortcut</key><string>さんじ</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>琉銀</string><key>shortcut</key><string>りゅうぎん</string></dict> -->
+	<dict><key>phrase</key><string>和香</string><key>shortcut</key><string>わか</string></dict>
+	<dict><key>phrase</key><string>大亜</string><key>shortcut</key><string>だいあ</string></dict>
+	<dict><key>phrase</key><string>大典寺</string><key>shortcut</key><string>だいてんじ</string></dict>
+	<dict><key>phrase</key><string>暖治</string><key>shortcut</key><string>だんじ</string></dict>
+	<dict><key>phrase</key><string>暖暮</string><key>shortcut</key><string>だんぼ</string></dict>
+	<dict><key>phrase</key><string>豆腐餻</string><key>shortcut</key><string>とうふよう</string></dict>
+	<!-- 重複のため除去: <dict><key>phrase</key><string>冬瓜漬</string><key>shortcut</key><string>とうがづけ</string></dict> -->
+	<dict><key>phrase</key><string>東光園</string><key>shortcut</key><string>とうこうえん</string></dict>
+	<dict><key>phrase</key><string>仲々</string><key>shortcut</key><string>なかなか</string></dict>
+	<dict><key>phrase</key><string>なか邑</string><key>shortcut</key><string>なかむら</string></dict>
+	<dict><key>phrase</key><string>なはーと</string><key>shortcut</key><string>なはーと</string></dict>
+	<dict><key>phrase</key><string>にく久</string><key>shortcut</key><string>にくきゅう</string></dict>
+	<dict><key>phrase</key><string>弐ノ弐</string><key>shortcut</key><string>にのに</string></dict>
+	<dict><key>phrase</key><string>鳥拓</string><key>shortcut</key><string>とりたく</string></dict>
+	<dict><key>phrase</key><string>冬茹</string><key>shortcut</key><string>どんこ</string></dict>
+	<dict><key>phrase</key><string>二万八千石</string><key>shortcut</key><string>にまんはっせんごく</string></dict>
 </array>
 </plist>

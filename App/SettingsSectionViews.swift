@@ -493,6 +493,10 @@ struct UserDictionarySettingsSection: View {
                 Text("追加語彙")
                     .font(.headline)
 
+                Text("\(entries.count)件")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
                 Spacer(minLength: 8)
 
                 Button {
@@ -653,6 +657,10 @@ struct SuppressionDictionarySettingsSection: View {
                 Text("抑制語彙")
                     .font(.headline)
 
+                Text("\(entries.count)件")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
                 Spacer(minLength: 8)
 
                 Button {
@@ -766,9 +774,78 @@ struct SuppressionDictionarySettingsSection: View {
     }
 }
 
+struct ReadOnlyDictionarySettingsSection: View {
+    let title: String
+    let entries: [VocabularyEntry]
+    @Binding var scrollIndexTitle: String
+    @Binding var isScrollIndexVisible: Bool
+    let listHeight: CGFloat
+    let emptyMessage: String
+    let description: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Text(title)
+                    .font(.headline)
+
+                Text("\(entries.count)件")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: 8)
+            }
+
+            HStack(alignment: .firstTextBaseline, spacing: 8) {
+                Spacer(minLength: 8)
+
+                Text(scrollIndexTitle)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+                    .padding(.horizontal, 8)
+                    .frame(minWidth: 26, minHeight: 20)
+                    .background(
+                        Capsule(style: .continuous)
+                            .fill(Color.white.opacity(0.82))
+                    )
+                    .opacity(isScrollIndexVisible ? 1 : 0)
+                    .animation(.easeOut(duration: 0.28), value: isScrollIndexVisible)
+            }
+
+            if entries.isEmpty {
+                Text(emptyMessage)
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                IndexedVocabularyList(
+                    entries: entries,
+                    onDelete: nil,
+                    onIndexIndicatorStateChange: { title, isVisible in
+                        DispatchQueue.main.async {
+                            if !title.isEmpty {
+                                scrollIndexTitle = title
+                            }
+
+                            withAnimation(.easeOut(duration: 0.28)) {
+                                isScrollIndexVisible = isVisible
+                            }
+                        }
+                    }
+                )
+                .frame(height: listHeight)
+            }
+
+            Text(description)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct IndexedVocabularyList: UIViewRepresentable {
     let entries: [VocabularyEntry]
-    let onDelete: (VocabularyEntry) -> Void
+    let onDelete: ((VocabularyEntry) -> Void)?
     let onIndexIndicatorStateChange: (String, Bool) -> Void
 
     private static let kanaIndexTitles: [String] = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"]
@@ -855,7 +932,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
         static let readingLabelTag = 1002
 
         private var entries: [VocabularyEntry]
-        private var onDelete: (VocabularyEntry) -> Void
+        private var onDelete: ((VocabularyEntry) -> Void)?
         private var onIndexIndicatorStateChange: (String, Bool) -> Void
         private var groupedEntries: [String: [VocabularyEntry]] = [:]
         private var visibleSectionTitles: [String] = []
@@ -876,7 +953,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
 
         init(
             entries: [VocabularyEntry],
-            onDelete: @escaping (VocabularyEntry) -> Void,
+            onDelete: ((VocabularyEntry) -> Void)?,
             onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
         ) {
             self.entries = entries
@@ -888,7 +965,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
 
         func update(
             entries: [VocabularyEntry],
-            onDelete: @escaping (VocabularyEntry) -> Void,
+            onDelete: ((VocabularyEntry) -> Void)?,
             onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
         ) {
             self.entries = entries
@@ -1294,10 +1371,14 @@ struct IndexedVocabularyList: UIViewRepresentable {
             _ tableView: UITableView,
             trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
         ) -> UISwipeActionsConfiguration? {
+            guard let onDelete else {
+                return nil
+            }
+
             let target = entry(at: indexPath)
 
-            let delete = UIContextualAction(style: .destructive, title: "削除") { [weak self] _, _, completion in
-                self?.onDelete(target)
+            let delete = UIContextualAction(style: .destructive, title: "削除") { _, _, completion in
+                onDelete(target)
                 completion(true)
             }
 

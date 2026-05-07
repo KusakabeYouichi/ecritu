@@ -16,6 +16,10 @@ TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 
+REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
+REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
+REF_APPLE_PLIST="$ROOT_DIR/references/apple.plist"
+
 SUDACHI_CSV_FILES=()
 while IFS= read -r csv_file; do
   SUDACHI_CSV_FILES+=("$csv_file")
@@ -32,11 +36,11 @@ inputs = [
     *sorted(root.glob("tmp/sudachi_raw/**/*_lex.csv")),
     root / "tools" / "build_sudachi_index.py",
     root / "tools" / "build_kana_kanji_sqlite.py",
+  root / "tools" / "build_second_vocab_from_references.py",
+  root / "references" / "ryukyu.plist",
+  root / "references" / "vin.plist",
+  root / "references" / "apple.plist",
 ]
-
-second_vocab = root / "tmp" / "ÉcrituSecondVocab.json"
-if second_vocab.exists():
-    inputs.append(second_vocab)
 
 outputs = [
     root / "tmp" / "ÉcrituPremierVocab.json",
@@ -86,6 +90,12 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
 else
   echo "[dict] Skip regeneration (tmp/sudachi_raw/**/*_lex.csv not found)."
 fi
+
+python3 tools/build_second_vocab_from_references.py \
+  --input-plist "$REF_RYUKYU_PLIST" \
+  --input-plist "$REF_VIN_PLIST" \
+  --input-plist "$REF_APPLE_PLIST" \
+  --output "$TMP_SECOND"
 
 if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" ]]; then
   BUNDLE_RESOURCES_DIR="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
