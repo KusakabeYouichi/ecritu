@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260505021313"
+    private static let editionUpdatedAtRaw: String = "20260507103816"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -129,6 +129,12 @@ struct ContentView: View {
     @State private var isSuppressionDictionaryRegistrationVisible = false
     @State private var suppressionDictionaryScrollIndexTitle = ""
     @State private var isSuppressionDictionaryScrollIndexVisible = false
+    @State private var firstVocabularyEntries: [VocabularyEntry] = []
+    @State private var firstVocabularyScrollIndexTitle = ""
+    @State private var isFirstVocabularyScrollIndexVisible = false
+    @State private var secondVocabularyEntries: [VocabularyEntry] = []
+    @State private var secondVocabularyScrollIndexTitle = ""
+    @State private var isSecondVocabularyScrollIndexVisible = false
     @GestureState private var isEditionNumberPressed = false
 
     private let setupSteps: [String] = [
@@ -444,6 +450,53 @@ struct ContentView: View {
         loadBundledInitialDictionaryEntries(filename: "InitialSupprVocabMigration")
     }
 
+    private func loadAppGroupDictionaryEntries(filename: String) -> [String: [String]] {
+        guard
+            let containerURL = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: SettingsKeys.appGroupID
+            )
+        else {
+            return [:]
+        }
+
+        let fileURL = containerURL.appendingPathComponent(filename)
+
+        guard
+            let data = try? Data(contentsOf: fileURL),
+            let decoded = try? JSONDecoder().decode([String: [String]].self, from: data)
+        else {
+            return [:]
+        }
+
+        return normalizedDictionaryEntries(decoded)
+    }
+
+    private func sortedVocabularyEntries(from dictionary: [String: [String]]) -> [VocabularyEntry] {
+        dictionary
+            .keys
+            .sorted()
+            .flatMap { reading in
+                (dictionary[reading] ?? []).map { candidate in
+                    VocabularyEntry(reading: reading, candidate: candidate)
+                }
+            }
+    }
+
+    private func loadSystemVocabularyEntries() {
+        let firstFromAppGroup = loadAppGroupDictionaryEntries(filename: "ÉcrituPremierVocab.json")
+        let firstDictionary = firstFromAppGroup.isEmpty
+            ? loadBundledInitialDictionaryEntries(filename: "ÉcrituPremierVocab")
+            : firstFromAppGroup
+
+        let secondFromAppGroup = loadAppGroupDictionaryEntries(filename: "ÉcrituSecondVocab.json")
+        let secondDictionary = secondFromAppGroup.isEmpty
+            ? loadBundledInitialDictionaryEntries(filename: "ÉcrituSecondVocab")
+            : secondFromAppGroup
+
+        firstVocabularyEntries = sortedVocabularyEntries(from: firstDictionary)
+        secondVocabularyEntries = sortedVocabularyEntries(from: secondDictionary)
+    }
+
     private func migrateInitialDictionaryIfNeeded(
         migrationFlagKey: String,
         dictionaryKey: String,
@@ -731,6 +784,26 @@ struct ContentView: View {
                         onDeleteEntry: removeSuppressionDictionaryEntry
                     )
 
+                    ReadOnlyDictionarySettingsSection(
+                        title: "第1語彙",
+                        entries: firstVocabularyEntries,
+                        scrollIndexTitle: $firstVocabularyScrollIndexTitle,
+                        isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
+                        listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
+                        emptyMessage: "第1語彙は読み込まれていません。",
+                        description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。"
+                    )
+
+                    ReadOnlyDictionarySettingsSection(
+                        title: "第2語彙",
+                        entries: secondVocabularyEntries,
+                        scrollIndexTitle: $secondVocabularyScrollIndexTitle,
+                        isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
+                        listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
+                        emptyMessage: "第2語彙は読み込まれていません。",
+                        description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。"
+                    )
+
                     SetupStepsSection(steps: setupSteps)
 
                     ThirdPartyLicensesSection()
@@ -747,6 +820,7 @@ struct ContentView: View {
                 migrateInitialSuppressionDictionaryIfNeeded()
                 loadUserDictionaryEntries()
                 loadSuppressionDictionaryEntries()
+                loadSystemVocabularyEntries()
             }
             .onReceive(
                 NotificationCenter.default.publisher(
