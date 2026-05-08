@@ -20,6 +20,7 @@
 		2D41A6A9E4C2789278485192 /* LEGAL in Resources */ = {isa = PBXBuildFile; fileRef = F5ED4830F4FA66EFEFE9B5AB /* LEGAL */; };
 		2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
 		36EEA841B7E5EC402DA055A5 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */; };
+		7F3B5D1A9C8E4F2AA1D0B611 /* InitialShortcutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = C0A94A84B0A349F9A58C2E11 /* InitialShortcutVocabMigration.json */; };
 		37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
 		38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
 		3B731B693D5ABC86B422C333 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
@@ -86,6 +87,7 @@
 		175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaLayout.swift; sourceTree = "<group>"; };
 		1791BF31100B74EA2421EB52 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialAjoutVocabMigration.json; sourceTree = "<group>"; };
+		C0A94A84B0A349F9A58C2E11 /* InitialShortcutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialShortcutVocabMigration.json; sourceTree = "<group>"; };
 		273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiTypes.swift; sourceTree = "<group>"; };
 		280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiSeedDictionary.swift; sourceTree = "<group>"; };
 		2D2A68C12E9937EB406DC707 /* kana_kanji_dictionary.sqlite */ = {isa = PBXFileReference; lastKnownFileType = file; path = kana_kanji_dictionary.sqlite; sourceTree = "<group>"; };
@@ -188,6 +190,7 @@
 				E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */,
 				4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */,
 				24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */,
+				C0A94A84B0A349F9A58C2E11 /* InitialShortcutVocabMigration.json */,
 				5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */,
 				B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */,
 				280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */,
@@ -342,6 +345,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				36EEA841B7E5EC402DA055A5 /* InitialAjoutVocabMigration.json in Resources */,
+				7F3B5D1A9C8E4F2AA1D0B611 /* InitialShortcutVocabMigration.json in Resources */,
 				80C53EDAEAB5510D13B9CAFB /* InitialSupprVocabMigration.json in Resources */,
 				A77A8D7DFD358F9976420EF3 /* kana_kanji_candidate_sources.json in Resources */,
 				77EA3B3953C08408CF31FE13 /* kana_kanji_dictionary.sqlite in Resources */,

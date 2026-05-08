@@ -243,6 +243,7 @@ final class KanaKanjiStore {
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     private var cachedInitialUserDictionary: [String: [String]]?
+    private var cachedInitialShortcutVocabulary: [String]?
     private var cachedUserDictionary: [String: [String]]?
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
     private var cachedLearningScores: [String: Int]?
@@ -644,6 +645,67 @@ final class KanaKanjiStore {
         return normalized
     }
 
+    func shortcutVocabulary() -> [String] {
+        let userCandidates = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) ?? []
+
+        if !userCandidates.isEmpty {
+            return uniqueCandidates(
+                from: userCandidates + initialShortcutVocabulary()
+            )
+        }
+
+        if let legacyDictionary = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.shortcutVocabulary) {
+            let legacyCandidates = legacyDictionary["☻"] ?? legacyDictionary
+                .keys
+                .sorted()
+                .flatMap { legacyDictionary[$0] ?? [] }
+
+            if !legacyCandidates.isEmpty {
+                return uniqueCandidates(
+                    from: legacyCandidates + initialShortcutVocabulary()
+                )
+            }
+        }
+
+        return initialShortcutVocabulary()
+    }
+
+    func initialShortcutVocabulary() -> [String] {
+        if let cachedInitialShortcutVocabulary {
+            return cachedInitialShortcutVocabulary
+        }
+
+        let bundle = Bundle(for: KanaKanjiStore.self)
+
+        guard let initialDictionaryURL = bundle.url(
+            forResource: KanaKanjiStorageKeys.initialShortcutVocabularyResourceName,
+            withExtension: "json"
+        ),
+            let data = try? Data(contentsOf: initialDictionaryURL) else {
+            cachedInitialShortcutVocabulary = []
+            return []
+        }
+
+        if let decodedArray = try? JSONDecoder().decode([String].self, from: data) {
+            let normalized = uniqueCandidates(from: decodedArray)
+            cachedInitialShortcutVocabulary = normalized
+            return normalized
+        }
+
+        if let decodedDictionary = try? JSONDecoder().decode([String: [String]].self, from: data) {
+            let candidates = decodedDictionary["☻"] ?? decodedDictionary
+                .keys
+                .sorted()
+                .flatMap { decodedDictionary[$0] ?? [] }
+            let normalized = uniqueCandidates(from: candidates)
+            cachedInitialShortcutVocabulary = normalized
+            return normalized
+        }
+
+        cachedInitialShortcutVocabulary = []
+        return []
+    }
+
     func suppressedCandidatesByReading() -> [String: Set<String>] {
         if let cachedSuppressedCandidatesByReading {
             return cachedSuppressedCandidatesByReading
@@ -788,6 +850,23 @@ final class KanaKanjiStore {
         }
 
         defaults.set(encoded, forKey: KanaKanjiStorageKeys.userDictionary)
+    }
+
+    private func decodedStringArray(forKey key: String) -> [String]? {
+        guard let defaults else {
+            return nil
+        }
+
+        if let arrayData = defaults.data(forKey: key),
+            let decoded = try? JSONDecoder().decode([String].self, from: arrayData) {
+            return decoded
+        }
+
+        if let rawArray = defaults.array(forKey: key) {
+            return rawArray.compactMap { $0 as? String }
+        }
+
+        return nil
     }
 
     private func decodedStringArrayDictionary(forKey key: String) -> [String: [String]]? {

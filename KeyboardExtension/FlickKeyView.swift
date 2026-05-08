@@ -58,6 +58,7 @@ struct FlickKeyView: View {
 
     let kana: FlickKanaSet
     let onCommit: (String) -> Void
+    var onCommitWithDirection: ((String, FlickDirection) -> Void)? = nil
     var mainLabelFontSize: CGFloat = 28
     var showsDirectionalHints: Bool = true
     var idleReplacement: AnyView? = nil
@@ -426,12 +427,20 @@ struct FlickKeyView: View {
             .onEnded { _ in
                 cancelLongPressTimer()
 
+                let committedText: String
+
                 if longPressIsActive,
                     !longPressCandidates.isEmpty,
                     longPressCandidates.indices.contains(highlightedLongPressIndex) {
-                    onCommit(longPressCandidates[highlightedLongPressIndex])
+                    committedText = longPressCandidates[highlightedLongPressIndex]
                 } else {
-                    onCommit(kana.output(for: activeDirection))
+                    committedText = kana.output(for: activeDirection)
+                }
+
+                if let onCommitWithDirection {
+                    onCommitWithDirection(committedText, activeDirection)
+                } else {
+                    onCommit(committedText)
                 }
 
                 activeDirection = .milieu

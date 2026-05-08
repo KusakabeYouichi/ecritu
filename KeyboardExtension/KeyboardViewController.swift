@@ -141,6 +141,7 @@ final class KeyboardViewController: UIInputViewController {
         let keyRepeatInitialDelay: TimeInterval
         let keyRepeatInterval: TimeInterval
         let showsNextKeyboardKey: Bool
+        let shortcutVocabulary: [String]
         let composingText: String
         let conversionCandidates: [String]
         let selectedConversionCandidateIndex: Int?
@@ -342,7 +343,7 @@ final class KeyboardViewController: UIInputViewController {
         return sharedEnumValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.latinLayoutMode,
-            fallback: .flick
+            fallback: .azerty
         )
     }
 
@@ -694,7 +695,7 @@ final class KeyboardViewController: UIInputViewController {
         let latinLayoutMode = sharedEnumValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.latinLayoutMode,
-            fallback: LatinLayoutMode.flick
+            fallback: LatinLayoutMode.azerty
         )
         let accentPaletteRawValue = sharedStringValue(
             from: sharedDefaults,
@@ -762,6 +763,7 @@ final class KeyboardViewController: UIInputViewController {
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
             showsNextKeyboardKey: needsInputModeSwitchKey,
+            shortcutVocabulary: kanaKanjiStore.shortcutVocabulary(),
             composingText: candidatePresentation.composingText,
             conversionCandidates: candidatePresentation.candidates,
             selectedConversionCandidateIndex: candidatePresentation.selectedIndex
@@ -786,8 +788,11 @@ final class KeyboardViewController: UIInputViewController {
             onAdvanceKeyboard: { [weak self] in
                 self?.advanceToNextInputMode()
             },
-            onApplyKanaPostModifier: { [weak self] buttonState in
-                self?.applyKanaPostModifier(buttonState) ?? false
+            onApplyKanaPostModifier: { [weak self] buttonState, preferLatestContext in
+                self?.applyKanaPostModifier(
+                    buttonState,
+                    preferLatestContext: preferLatestContext
+                ) ?? false
             },
             onSelectConversionCandidate: { [weak self] index in
                 self?.handleConversionCandidateSelection(index)
@@ -832,6 +837,7 @@ final class KeyboardViewController: UIInputViewController {
             numberFlickGuideDisplayMode: configuration.numberFlickGuideDisplayMode,
             keyRepeatInitialDelay: configuration.keyRepeatInitialDelay,
             keyRepeatInterval: configuration.keyRepeatInterval,
+            shortcutVocabulary: configuration.shortcutVocabulary,
             composingText: configuration.composingText,
             conversionCandidates: configuration.conversionCandidates,
             selectedConversionCandidateIndex: configuration.selectedConversionCandidateIndex,

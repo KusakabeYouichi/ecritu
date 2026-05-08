@@ -2,6 +2,11 @@ import Foundation
 import UIKit
 
 extension KeyboardViewController {
+    private enum CandidateLimits {
+        static let presentation = 24
+        static let conversion = 24
+    }
+
     func makeCandidatePresentation(
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> CandidatePresentation {
@@ -25,7 +30,7 @@ extension KeyboardViewController {
             composingText: composingRawText,
             candidates: kanaKanjiConverter.candidates(
                 for: composingReading,
-                limit: 8,
+                limit: CandidateLimits.presentation,
                 systemCandidateMode: systemCandidateMode
             ),
             selectedIndex: nil
@@ -90,7 +95,7 @@ extension KeyboardViewController {
 
         let preferredCandidate = kanaKanjiConverter.candidates(
             for: sourceReading,
-            limit: 12,
+            limit: CandidateLimits.conversion,
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         ).first
 
@@ -222,7 +227,7 @@ extension KeyboardViewController {
 
         let candidates = kanaKanjiConverter.candidates(
             for: composingReading,
-            limit: 8,
+            limit: CandidateLimits.presentation,
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         )
 
@@ -288,7 +293,7 @@ extension KeyboardViewController {
 
         let candidates = kanaKanjiConverter.candidates(
             for: composingReading,
-            limit: 12,
+            limit: CandidateLimits.conversion,
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         )
 
@@ -456,15 +461,38 @@ extension KeyboardViewController {
         }
     }
 
-    func applyKanaPostModifier(_ buttonState: KanaPostModifierButtonState) -> Bool {
+    func applyKanaPostModifier(
+        _ buttonState: KanaPostModifierButtonState,
+        preferLatestContext: Bool = false
+    ) -> Bool {
         commitActiveConversion(learn: true)
+
+        let resolvedButtonState: KanaPostModifierButtonState = {
+            guard preferLatestContext else {
+                return buttonState
+            }
+
+            let contextForResolution: String?
+
+            if !composingRawText.isEmpty {
+                contextForResolution = composingRawText
+            } else {
+                contextForResolution = textDocumentProxy.documentContextBeforeInput
+            }
+
+            let latestState = FlickKanaLayout.postModifierButtonState(
+                contextBeforeInput: contextForResolution
+            )
+
+            return latestState == .kaomoji ? buttonState : latestState
+        }()
 
         if currentInputMode == .kana,
             !composingRawText.isEmpty,
             let lastCharacter = composingRawText.last,
             let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
                 from: lastCharacter,
-                for: buttonState
+                for: resolvedButtonState
             ) {
             composingRawText.removeLast()
             composingRawText.append(String(replacedCharacter))
@@ -486,7 +514,7 @@ extension KeyboardViewController {
                 let lastCharacter = contextBeforeInput.last,
                 let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
                     from: lastCharacter,
-                    for: buttonState
+                    for: resolvedButtonState
                 ) else {
             return false
         }
