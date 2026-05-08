@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260508095945"
+    private static let editionUpdatedAtRaw: String = "20260509063458"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -211,6 +211,10 @@ struct ContentView: View {
         }
     }
 
+    private var isLatinFlickLayoutSelected: Bool {
+        (LatinLayoutOption(rawValue: latinLayoutModeRawValue) ?? .azerty) == .flick
+    }
+
     private var kanaKanjiCandidateSourceModeSelection: Binding<KanaKanjiCandidateSourceModeOption> {
         rawValueSelection(from: kanaKanjiCandidateSourceModeRawValue, default: .surface) {
             kanaKanjiCandidateSourceModeRawValue = $0
@@ -375,6 +379,22 @@ struct ContentView: View {
         return result
     }
 
+    private func uniqueShortcutCandidatesPreservingOrder(_ candidates: [String]) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+
+        for candidate in candidates {
+            guard !candidate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                seen.insert(candidate).inserted else {
+                continue
+            }
+
+            result.append(candidate)
+        }
+
+        return result
+    }
+
     private func normalizedDictionaryEntries(_ dictionary: [String: [String]]) -> [String: [String]] {
         var normalized: [String: [String]] = [:]
 
@@ -464,7 +484,7 @@ struct ContentView: View {
         if let resourceURL = Bundle.main.url(forResource: filename, withExtension: fileExtension),
             let data = try? Data(contentsOf: resourceURL),
             let decoded = try? JSONDecoder().decode([String].self, from: data) {
-            return uniqueCandidatesPreservingOrder(decoded)
+            return uniqueShortcutCandidatesPreservingOrder(decoded)
         }
 
         if let pluginsURL = Bundle.main.builtInPlugInsURL,
@@ -482,7 +502,7 @@ struct ContentView: View {
                     continue
                 }
 
-                return uniqueCandidatesPreservingOrder(decoded)
+                return uniqueShortcutCandidatesPreservingOrder(decoded)
             }
         }
 
@@ -496,11 +516,11 @@ struct ContentView: View {
 
         if let shortcutData = defaults.data(forKey: SettingsKeys.kanaKanjiShortcutVocabulary),
             let decoded = try? JSONDecoder().decode([String].self, from: shortcutData) {
-            return uniqueCandidatesPreservingOrder(decoded)
+            return uniqueShortcutCandidatesPreservingOrder(decoded)
         }
 
         if let rawArray = defaults.array(forKey: SettingsKeys.kanaKanjiShortcutVocabulary) {
-            return uniqueCandidatesPreservingOrder(rawArray.compactMap { $0 as? String })
+            return uniqueShortcutCandidatesPreservingOrder(rawArray.compactMap { $0 as? String })
         }
 
         let legacyDictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiShortcutVocabulary)
@@ -510,7 +530,7 @@ struct ContentView: View {
                 .keys
                 .sorted()
                 .flatMap { legacyDictionary[$0] ?? [] }
-            return uniqueCandidatesPreservingOrder(candidates)
+            return uniqueShortcutCandidatesPreservingOrder(candidates)
         }
 
         return []
@@ -625,7 +645,7 @@ struct ContentView: View {
 
         let currentCandidates = loadShortcutVocabularyCandidates()
         // Keep initial shortcut order authoritative while preserving existing entries.
-        let mergedCandidates = uniqueCandidatesPreservingOrder(initialCandidates + currentCandidates)
+        let mergedCandidates = uniqueShortcutCandidatesPreservingOrder(initialCandidates + currentCandidates)
 
         if mergedCandidates != currentCandidates {
             saveShortcutVocabularyCandidates(mergedCandidates)
@@ -688,6 +708,41 @@ struct ContentView: View {
         loadUserDictionaryEntries()
     }
 
+    private func updateUserDictionaryEntry(_ originalEntry: VocabularyEntry) {
+        let reading = normalizedKanaReading(from: userDictionaryReadingInput)
+        let candidate = userDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !reading.isEmpty,
+            !candidate.isEmpty else {
+            return
+        }
+
+        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+
+        var originalCandidates = dictionary[originalEntry.reading] ?? []
+        originalCandidates.removeAll { $0 == originalEntry.candidate }
+
+        if originalCandidates.isEmpty {
+            dictionary.removeValue(forKey: originalEntry.reading)
+        } else {
+            dictionary[originalEntry.reading] = originalCandidates
+        }
+
+        var targetCandidates = dictionary[reading] ?? []
+
+        if let existingIndex = targetCandidates.firstIndex(of: candidate) {
+            targetCandidates.remove(at: existingIndex)
+        }
+
+        targetCandidates.insert(candidate, at: 0)
+        dictionary[reading] = Array(targetCandidates.prefix(32))
+
+        saveUserDictionary(dictionary)
+        userDictionaryReadingInput = ""
+        userDictionaryCandidateInput = ""
+        loadUserDictionaryEntries()
+    }
+
     private func removeUserDictionaryEntry(_ entry: VocabularyEntry) {
         var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
 
@@ -706,6 +761,16 @@ struct ContentView: View {
 
     private func removeAllUserDictionaryEntries() {
         saveUserDictionary([:])
+        loadUserDictionaryEntries()
+    }
+
+    private func reimportInitialUserDictionaryEntries() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        defaults.removeObject(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
+        migrateInitialUserDictionaryIfNeeded()
         loadUserDictionaryEntries()
     }
 
@@ -755,6 +820,41 @@ struct ContentView: View {
         loadSuppressionDictionaryEntries()
     }
 
+    private func updateSuppressionDictionaryEntry(_ originalEntry: VocabularyEntry) {
+        let reading = normalizedKanaReading(from: suppressionDictionaryReadingInput)
+        let candidate = suppressionDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !reading.isEmpty,
+            !candidate.isEmpty else {
+            return
+        }
+
+        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+
+        var originalCandidates = dictionary[originalEntry.reading] ?? []
+        originalCandidates.removeAll { $0 == originalEntry.candidate }
+
+        if originalCandidates.isEmpty {
+            dictionary.removeValue(forKey: originalEntry.reading)
+        } else {
+            dictionary[originalEntry.reading] = originalCandidates
+        }
+
+        var targetCandidates = dictionary[reading] ?? []
+
+        if let existingIndex = targetCandidates.firstIndex(of: candidate) {
+            targetCandidates.remove(at: existingIndex)
+        }
+
+        targetCandidates.insert(candidate, at: 0)
+        dictionary[reading] = Array(targetCandidates.prefix(128))
+
+        saveSuppressionDictionary(dictionary)
+        suppressionDictionaryReadingInput = ""
+        suppressionDictionaryCandidateInput = ""
+        loadSuppressionDictionaryEntries()
+    }
+
     private func removeSuppressionDictionaryEntry(_ entry: VocabularyEntry) {
         var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
         var candidates = dictionary[entry.reading] ?? []
@@ -777,13 +877,34 @@ struct ContentView: View {
     }
 
     private func addShortcutDictionaryEntry() {
-        let candidate = shortcutDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        let candidate = shortcutDictionaryCandidateInput
 
-        guard !candidate.isEmpty else {
+        guard !candidate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
             return
         }
 
         var candidates = loadShortcutVocabularyCandidates()
+
+        if let existingIndex = candidates.firstIndex(of: candidate) {
+            candidates.remove(at: existingIndex)
+        }
+
+        candidates.insert(candidate, at: 0)
+        saveShortcutVocabularyCandidates(Array(candidates.prefix(128)))
+
+        shortcutDictionaryCandidateInput = ""
+        loadShortcutDictionaryEntries()
+    }
+
+    private func updateShortcutDictionaryEntry(_ originalEntry: VocabularyEntry) {
+        let candidate = shortcutDictionaryCandidateInput
+
+        guard !candidate.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            return
+        }
+
+        var candidates = loadShortcutVocabularyCandidates()
+        candidates.removeAll { $0 == originalEntry.candidate }
 
         if let existingIndex = candidates.firstIndex(of: candidate) {
             candidates.remove(at: existingIndex)
@@ -865,7 +986,8 @@ struct ContentView: View {
                         FlickGuideDisplaySettingsSection(
                             kanaSelection: kanaFlickGuideDisplayModeSelection,
                             latinSelection: latinFlickGuideDisplayModeSelection,
-                            numberSelection: numberFlickGuideDisplayModeSelection
+                            numberSelection: numberFlickGuideDisplayModeSelection,
+                            isLatinGuideAvailable: isLatinFlickLayoutSelected
                         )
 
                         KeyRepeatSettingsSection(
@@ -900,9 +1022,11 @@ struct ContentView: View {
                             canAddEntry: canAddUserDictionaryEntry,
                             listHeight: userVocabularyListHeight(for: userDictionaryEntries.count),
                             onAddEntry: addUserDictionaryEntry,
+                            onUpdateEntry: updateUserDictionaryEntry,
                             onDeleteEntry: removeUserDictionaryEntry,
                             onDeleteAll: removeAllUserDictionaryEntries,
-                            onResetLearning: resetKanaKanjiLearning
+                            onResetLearning: resetKanaKanjiLearning,
+                            onReimportInitialEntries: reimportInitialUserDictionaryEntries
                         )
 
                         SuppressionDictionarySettingsSection(
@@ -915,6 +1039,7 @@ struct ContentView: View {
                             canAddEntry: canAddSuppressionDictionaryEntry,
                             listHeight: userVocabularyListHeight(for: suppressionDictionaryEntries.count),
                             onAddEntry: addSuppressionDictionaryEntry,
+                            onUpdateEntry: updateSuppressionDictionaryEntry,
                             onDeleteEntry: removeSuppressionDictionaryEntry
                         )
 
@@ -925,6 +1050,7 @@ struct ContentView: View {
                             canAddEntry: canAddShortcutDictionaryEntry,
                             listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
                             onAddEntry: addShortcutDictionaryEntry,
+                            onUpdateEntry: updateShortcutDictionaryEntry,
                             onDeleteEntry: removeShortcutDictionaryEntry
                         )
 

@@ -427,6 +427,7 @@ struct FlickGuideDisplaySettingsSection: View {
     @Binding var kanaSelection: FlickGuideDisplayOption
     @Binding var latinSelection: FlickGuideDisplayOption
     @Binding var numberSelection: FlickGuideDisplayOption
+    let isLatinGuideAvailable: Bool
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -451,6 +452,7 @@ struct FlickGuideDisplaySettingsSection: View {
                     }
                 }
                 .pickerStyle(.segmented)
+                .disabled(!isLatinGuideAvailable)
 
                 Text("数字入力")
                     .font(.subheadline.weight(.semibold))
@@ -465,6 +467,12 @@ struct FlickGuideDisplaySettingsSection: View {
             Text("入力モードごとにガイド表示を選択します。『下』はメイン文字の下にガイド文字を横並びで表示します。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
+
+            if !isLatinGuideAvailable {
+                Text("ラテン文字配列が 3x3 以外のとき、ラテン文字配列のガイド文字は表示されません。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
         }
         .settingsCardStyle()
     }
@@ -481,11 +489,15 @@ struct UserDictionarySettingsSection: View {
     let canAddEntry: Bool
     let listHeight: CGFloat
     let onAddEntry: () -> Void
+    let onUpdateEntry: (VocabularyEntry) -> Void
     let onDeleteEntry: (VocabularyEntry) -> Void
     let onDeleteAll: () -> Void
     let onResetLearning: () -> Void
+    let onReimportInitialEntries: () -> Void
 
     @State private var isDeleteAllConfirmationPresented = false
+    @State private var isReimportConfirmationPresented = false
+    @State private var editingEntry: VocabularyEntry?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -500,8 +512,16 @@ struct UserDictionarySettingsSection: View {
                 Spacer(minLength: 8)
 
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible.toggle()
+                    if isRegistrationVisible {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = false
+                        }
+                        editingEntry = nil
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = true
+                        }
+                        editingEntry = nil
                     }
                 } label: {
                     Image(systemName: isRegistrationVisible ? "xmark" : "plus")
@@ -526,10 +546,10 @@ struct UserDictionarySettingsSection: View {
 
             if isRegistrationVisible {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("追加単語の登録")
+                    Text(editingEntry == nil ? "追加単語の登録" : "追加単語の編集")
                         .font(.subheadline.weight(.semibold))
 
-                    HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         TextField("候補", text: $candidateInput)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
@@ -539,6 +559,7 @@ struct UserDictionarySettingsSection: View {
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(AppTheme.controlBackground)
                             )
+                            .frame(maxWidth: .infinity)
 
                         TextField("よみ", text: $readingInput)
                             .textInputAutocapitalization(.never)
@@ -549,15 +570,39 @@ struct UserDictionarySettingsSection: View {
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(AppTheme.controlBackground)
                             )
+                            .frame(maxWidth: .infinity)
 
-                        Button("登録") {
-                            onAddEntry()
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                isRegistrationVisible = false
+                        HStack(spacing: 8) {
+                            Button(editingEntry == nil ? "登録" : "保存") {
+                                if let editingEntry {
+                                    onUpdateEntry(editingEntry)
+                                } else {
+                                    onAddEntry()
+                                }
+                                editingEntry = nil
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isRegistrationVisible = false
+                                }
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .font(.footnote.weight(.semibold))
+                            .disabled(!canAddEntry)
+
+                            if editingEntry != nil {
+                                Button("キャンセル") {
+                                    editingEntry = nil
+                                    readingInput = ""
+                                    candidateInput = ""
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isRegistrationVisible = false
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .font(.subheadline)
                             }
                         }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(!canAddEntry)
                     }
                 }
                 .transition(.opacity.combined(with: .move(edge: .top)))
@@ -586,15 +631,34 @@ struct UserDictionarySettingsSection: View {
             } else {
                 IndexedVocabularyList(
                     entries: entries,
-                    onDelete: onDeleteEntry,
+                    listHeight: listHeight,
+                    onDelete: { entry in
+                        if editingEntry?.id == entry.id {
+                            editingEntry = nil
+                            readingInput = ""
+                            candidateInput = ""
+                        }
+                        onDeleteEntry(entry)
+                    },
+                    onSelect: { entry in
+                        editingEntry = entry
+                        readingInput = entry.reading
+                        candidateInput = entry.candidate
+
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = true
+                        }
+                    },
                     onIndexIndicatorStateChange: { title, isVisible in
                         DispatchQueue.main.async {
-                            if !title.isEmpty {
+                            if !title.isEmpty, scrollIndexTitle != title {
                                 scrollIndexTitle = title
                             }
 
-                            withAnimation(.easeOut(duration: 0.28)) {
-                                isScrollIndexVisible = isVisible
+                            if isScrollIndexVisible != isVisible {
+                                withAnimation(.easeOut(duration: 0.28)) {
+                                    isScrollIndexVisible = isVisible
+                                }
                             }
                         }
                     }
@@ -602,30 +666,59 @@ struct UserDictionarySettingsSection: View {
                 .frame(height: listHeight)
             }
 
-            HStack(spacing: 12) {
-                Button("学習履歴をリセット") {
-                    onResetLearning()
-                }
-                .buttonStyle(.bordered)
-
-                if !entries.isEmpty {
-                    Button(role: .destructive) {
-                        isDeleteAllConfirmationPresented = true
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(spacing: 12) {
+                    Button {
+                        isReimportConfirmationPresented = true
                     } label: {
-                        Text("すべて削除する")
+                        Text("初期語彙再投入")
+                            .font(.footnote)
                     }
                     .buttonStyle(.bordered)
+                    .controlSize(.small)
                     .confirmationDialog(
-                        "追加語彙をすべて削除しますか?",
-                        isPresented: $isDeleteAllConfirmationPresented,
+                        "初期追加語彙を再投入しますか?",
+                        isPresented: $isReimportConfirmationPresented,
                         titleVisibility: .visible
                     ) {
-                        Button("すべて削除する", role: .destructive) {
-                            onDeleteAll()
+                        Button("再投入する") {
+                            onReimportInitialEntries()
                         }
                         Button("キャンセル", role: .cancel) {}
                     } message: {
-                        Text("この操作は元に戻せません。")
+                        Text("現在の追加語彙を残したまま、初期追加語彙を再投入します。")
+                    }
+
+                    Button {
+                        onResetLearning()
+                    } label: {
+                        Text("学習リセット")
+                            .font(.footnote)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+
+                    if !entries.isEmpty {
+                        Button(role: .destructive) {
+                            isDeleteAllConfirmationPresented = true
+                        } label: {
+                            Text("全削除")
+                                .font(.footnote)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                        .confirmationDialog(
+                            "追加語彙をすべて削除しますか?",
+                            isPresented: $isDeleteAllConfirmationPresented,
+                            titleVisibility: .visible
+                        ) {
+                            Button("すべて削除", role: .destructive) {
+                                onDeleteAll()
+                            }
+                            Button("キャンセル", role: .cancel) {}
+                        } message: {
+                            Text("この操作は元に戻せません。")
+                        }
                     }
                 }
             }
@@ -649,7 +742,10 @@ struct SuppressionDictionarySettingsSection: View {
     let canAddEntry: Bool
     let listHeight: CGFloat
     let onAddEntry: () -> Void
+    let onUpdateEntry: (VocabularyEntry) -> Void
     let onDeleteEntry: (VocabularyEntry) -> Void
+
+    @State private var editingEntry: VocabularyEntry?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -664,8 +760,16 @@ struct SuppressionDictionarySettingsSection: View {
                 Spacer(minLength: 8)
 
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible.toggle()
+                    if isRegistrationVisible {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = false
+                        }
+                        editingEntry = nil
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = true
+                        }
+                        editingEntry = nil
                     }
                 } label: {
                     Image(systemName: isRegistrationVisible ? "xmark" : "plus")
@@ -690,10 +794,10 @@ struct SuppressionDictionarySettingsSection: View {
 
             if isRegistrationVisible {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("抑制単語の登録")
+                    Text(editingEntry == nil ? "抑制単語の登録" : "抑制単語の編集")
                         .font(.subheadline.weight(.semibold))
 
-                    HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         TextField("単語", text: $candidateInput)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
@@ -703,6 +807,7 @@ struct SuppressionDictionarySettingsSection: View {
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(AppTheme.controlBackground)
                             )
+                            .frame(maxWidth: .infinity)
 
                         TextField("よみ", text: $readingInput)
                             .textInputAutocapitalization(.never)
@@ -713,15 +818,39 @@ struct SuppressionDictionarySettingsSection: View {
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(AppTheme.controlBackground)
                             )
+                            .frame(maxWidth: .infinity)
 
-                        Button("登録") {
-                            onAddEntry()
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                isRegistrationVisible = false
+                        HStack(spacing: 8) {
+                            Button(editingEntry == nil ? "登録" : "保存") {
+                                if let editingEntry {
+                                    onUpdateEntry(editingEntry)
+                                } else {
+                                    onAddEntry()
+                                }
+                                editingEntry = nil
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isRegistrationVisible = false
+                                }
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .font(.footnote.weight(.semibold))
+                            .disabled(!canAddEntry)
+
+                            if editingEntry != nil {
+                                Button("キャンセル") {
+                                    editingEntry = nil
+                                    readingInput = ""
+                                    candidateInput = ""
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isRegistrationVisible = false
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .font(.subheadline)
                             }
                         }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(!canAddEntry)
                     }
                 }
                 .transition(.opacity.combined(with: .move(edge: .top)))
@@ -750,15 +879,34 @@ struct SuppressionDictionarySettingsSection: View {
             } else {
                 IndexedVocabularyList(
                     entries: entries,
-                    onDelete: onDeleteEntry,
+                    listHeight: listHeight,
+                    onDelete: { entry in
+                        if editingEntry?.id == entry.id {
+                            editingEntry = nil
+                            readingInput = ""
+                            candidateInput = ""
+                        }
+                        onDeleteEntry(entry)
+                    },
+                    onSelect: { entry in
+                        editingEntry = entry
+                        readingInput = entry.reading
+                        candidateInput = entry.candidate
+
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = true
+                        }
+                    },
                     onIndexIndicatorStateChange: { title, isVisible in
                         DispatchQueue.main.async {
-                            if !title.isEmpty {
+                            if !title.isEmpty, scrollIndexTitle != title {
                                 scrollIndexTitle = title
                             }
 
-                            withAnimation(.easeOut(duration: 0.28)) {
-                                isScrollIndexVisible = isVisible
+                            if isScrollIndexVisible != isVisible {
+                                withAnimation(.easeOut(duration: 0.28)) {
+                                    isScrollIndexVisible = isVisible
+                                }
                             }
                         }
                     }
@@ -780,10 +928,12 @@ struct ShortcutDictionarySettingsSection: View {
     @Binding var isRegistrationVisible: Bool
 
     @State private var pendingDeletionEntry: VocabularyEntry?
+    @State private var editingEntry: VocabularyEntry?
 
     let canAddEntry: Bool
     let listHeight: CGFloat
     let onAddEntry: () -> Void
+    let onUpdateEntry: (VocabularyEntry) -> Void
     let onDeleteEntry: (VocabularyEntry) -> Void
 
     var body: some View {
@@ -799,8 +949,16 @@ struct ShortcutDictionarySettingsSection: View {
                 Spacer(minLength: 8)
 
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible.toggle()
+                    if isRegistrationVisible {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = false
+                        }
+                        editingEntry = nil
+                    } else {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = true
+                        }
+                        editingEntry = nil
                     }
                 } label: {
                     Image(systemName: isRegistrationVisible ? "xmark" : "plus")
@@ -825,10 +983,10 @@ struct ShortcutDictionarySettingsSection: View {
 
             if isRegistrationVisible {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("ショートカット語彙の登録")
+                    Text(editingEntry == nil ? "ショートカット語彙の登録" : "ショートカット語彙の編集")
                         .font(.subheadline.weight(.semibold))
 
-                    HStack(spacing: 8) {
+                    VStack(alignment: .leading, spacing: 8) {
                         TextField("候補", text: $candidateInput)
                             .textInputAutocapitalization(.never)
                             .autocorrectionDisabled()
@@ -838,15 +996,53 @@ struct ShortcutDictionarySettingsSection: View {
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                                     .fill(AppTheme.controlBackground)
                             )
+                            .frame(maxWidth: .infinity)
 
-                        Button("登録") {
-                            onAddEntry()
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                isRegistrationVisible = false
+                        HStack(spacing: 6) {
+                            Text("よみ")
+                                .foregroundStyle(.secondary)
+                            Spacer(minLength: 8)
+                            Text("☻（固定）")
+                                .foregroundStyle(.secondary)
+                        }
+                        .font(.footnote)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(AppTheme.controlBackground)
+                        )
+
+                        HStack(spacing: 8) {
+                            Button(editingEntry == nil ? "登録" : "保存") {
+                                if let editingEntry {
+                                    onUpdateEntry(editingEntry)
+                                } else {
+                                    onAddEntry()
+                                }
+                                editingEntry = nil
+                                withAnimation(.easeInOut(duration: 0.2)) {
+                                    isRegistrationVisible = false
+                                }
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.small)
+                            .font(.footnote.weight(.semibold))
+                            .disabled(!canAddEntry)
+
+                            if editingEntry != nil {
+                                Button("キャンセル") {
+                                    editingEntry = nil
+                                    candidateInput = ""
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        isRegistrationVisible = false
+                                    }
+                                }
+                                .buttonStyle(.bordered)
+                                .controlSize(.small)
+                                .font(.subheadline)
                             }
                         }
-                        .buttonStyle(.borderedProminent)
-                        .disabled(!canAddEntry)
                     }
 
                     Text("読みは ☻ で固定されます。")
@@ -865,22 +1061,36 @@ struct ShortcutDictionarySettingsSection: View {
                     ForEach(entries) { entry in
                         HStack(spacing: 8) {
                             Text(entry.candidate)
-                                .font(.subheadline.weight(.semibold))
+                                .font(.system(size: 14, weight: .semibold))
                                 .foregroundStyle(.primary)
                                 .lineLimit(1)
                                 .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         .padding(.horizontal, 10)
-                        .padding(.vertical, 8)
+                        .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(AppTheme.listRowBackground)
                         )
-                        .listRowInsets(EdgeInsets(top: 3, leading: 0, bottom: 3, trailing: 0))
+                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                         .listRowSeparator(.hidden)
                         .listRowBackground(Color.clear)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            editingEntry = entry
+                            candidateInput = entry.candidate
+                            pendingDeletionEntry = nil
+
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isRegistrationVisible = true
+                            }
+                        }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button(role: .destructive) {
+                                if editingEntry?.id == entry.id {
+                                    editingEntry = nil
+                                    candidateInput = ""
+                                }
                                 pendingDeletionEntry = entry
                             } label: {
                                 Text("削除")
@@ -889,6 +1099,7 @@ struct ShortcutDictionarySettingsSection: View {
                     }
                 }
                 .listStyle(.plain)
+                .environment(\.defaultMinListRowHeight, 30)
                 .scrollContentBackground(.hidden)
                 .background(Color.clear)
                 .frame(height: listHeight)
@@ -970,15 +1181,19 @@ struct ReadOnlyDictionarySettingsSection: View {
             } else {
                 IndexedVocabularyList(
                     entries: entries,
+                    listHeight: listHeight,
                     onDelete: nil,
+                    onSelect: nil,
                     onIndexIndicatorStateChange: { title, isVisible in
                         DispatchQueue.main.async {
-                            if !title.isEmpty {
+                            if !title.isEmpty, scrollIndexTitle != title {
                                 scrollIndexTitle = title
                             }
 
-                            withAnimation(.easeOut(duration: 0.28)) {
-                                isScrollIndexVisible = isVisible
+                            if isScrollIndexVisible != isVisible {
+                                withAnimation(.easeOut(duration: 0.28)) {
+                                    isScrollIndexVisible = isVisible
+                                }
                             }
                         }
                     }
@@ -996,21 +1211,31 @@ struct ReadOnlyDictionarySettingsSection: View {
 
 struct IndexedVocabularyList: UIViewRepresentable {
     let entries: [VocabularyEntry]
+    let listHeight: CGFloat
     let onDelete: ((VocabularyEntry) -> Void)?
+    let onSelect: ((VocabularyEntry) -> Void)?
     let onIndexIndicatorStateChange: (String, Bool) -> Void
 
     private static let kanaIndexTitles: [String] = ["あ", "か", "さ", "た", "な", "は", "ま", "や", "ら", "わ"]
     private static let allIndexTitles: [String] = kanaIndexTitles
+    private static let customIndexWidth: CGFloat = 28
+    private static let customIndexVerticalInset: CGFloat = 4
+    private static let customIndexFontSize: CGFloat = 12
 
     func makeCoordinator() -> Coordinator {
         Coordinator(
             entries: entries,
+            listHeight: listHeight,
             onDelete: onDelete,
+            onSelect: onSelect,
             onIndexIndicatorStateChange: onIndexIndicatorStateChange
         )
     }
 
-    func makeUIView(context: Context) -> UITableView {
+    func makeUIView(context: Context) -> UIView {
+        let containerView = UIView(frame: .zero)
+        containerView.backgroundColor = .clear
+
         let tableView = UITableView(frame: .zero, style: .plain)
         tableView.dataSource = context.coordinator
         tableView.delegate = context.coordinator
@@ -1020,20 +1245,86 @@ struct IndexedVocabularyList: UIViewRepresentable {
         tableView.sectionHeaderTopPadding = 0
         tableView.rowHeight = 30
         tableView.separatorStyle = .none
-        tableView.sectionIndexColor = .systemBlue
+        tableView.sectionIndexColor = .clear
         tableView.sectionIndexBackgroundColor = .clear
         tableView.sectionIndexTrackingBackgroundColor = .clear
-        return tableView
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
+        let indexContainerView = UIView(frame: .zero)
+        indexContainerView.backgroundColor = .clear
+        indexContainerView.translatesAutoresizingMaskIntoConstraints = false
+        indexContainerView.isUserInteractionEnabled = true
+
+        let indexStackView = UIStackView(frame: .zero)
+        indexStackView.axis = .vertical
+        indexStackView.alignment = .fill
+        indexStackView.distribution = .fillEqually
+        indexStackView.spacing = 0
+        indexStackView.translatesAutoresizingMaskIntoConstraints = false
+
+        indexContainerView.addSubview(indexStackView)
+        containerView.addSubview(tableView)
+        containerView.addSubview(indexContainerView)
+
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+
+            indexContainerView.topAnchor.constraint(
+                equalTo: tableView.topAnchor,
+                constant: Self.customIndexVerticalInset
+            ),
+            indexContainerView.bottomAnchor.constraint(
+                equalTo: tableView.bottomAnchor,
+                constant: -Self.customIndexVerticalInset
+            ),
+            indexContainerView.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: -2),
+            indexContainerView.widthAnchor.constraint(equalToConstant: Self.customIndexWidth),
+
+            indexStackView.topAnchor.constraint(equalTo: indexContainerView.topAnchor),
+            indexStackView.bottomAnchor.constraint(equalTo: indexContainerView.bottomAnchor),
+            indexStackView.leadingAnchor.constraint(equalTo: indexContainerView.leadingAnchor),
+            indexStackView.trailingAnchor.constraint(equalTo: indexContainerView.trailingAnchor)
+        ])
+
+        let tapGesture = UITapGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleCustomIndexTap(_:))
+        )
+        indexContainerView.addGestureRecognizer(tapGesture)
+
+        let panGesture = UIPanGestureRecognizer(
+            target: context.coordinator,
+            action: #selector(Coordinator.handleCustomIndexPan(_:))
+        )
+        panGesture.maximumNumberOfTouches = 1
+        indexContainerView.addGestureRecognizer(panGesture)
+
+        context.coordinator.attach(
+            tableView: tableView,
+            indexContainerView: indexContainerView,
+            indexStackView: indexStackView
+        )
+
+        return containerView
     }
 
-    func updateUIView(_ uiView: UITableView, context: Context) {
-        context.coordinator.update(
+    func updateUIView(_ uiView: UIView, context: Context) {
+        let needsReload = context.coordinator.update(
             entries: entries,
+            listHeight: listHeight,
             onDelete: onDelete,
+            onSelect: onSelect,
             onIndexIndicatorStateChange: onIndexIndicatorStateChange
         )
-        uiView.reloadData()
-        context.coordinator.refreshCustomIndexVisibility()
+
+        if needsReload {
+            context.coordinator.reloadData()
+        } else {
+            context.coordinator.refreshCustomIndexPresentation()
+        }
     }
 
     private static func indexTitle(for reading: String) -> String {
@@ -1083,40 +1374,153 @@ struct IndexedVocabularyList: UIViewRepresentable {
         static let readingLabelTag = 1002
 
         private var entries: [VocabularyEntry]
+        private var listHeight: CGFloat
         private var onDelete: ((VocabularyEntry) -> Void)?
+        private var onSelect: ((VocabularyEntry) -> Void)?
         private var onIndexIndicatorStateChange: (String, Bool) -> Void
         private var groupedEntries: [String: [VocabularyEntry]] = [:]
         private var visibleSectionTitles: [String] = []
         private var overlayHideWorkItem: DispatchWorkItem?
         private var currentIndexIndicatorTitle = ""
+        private weak var tableView: UITableView?
+        private weak var indexContainerView: UIView?
+        private weak var indexStackView: UIStackView?
+        private var displayedIndexTitles: [String] = []
+        private var entryIDs: [String]
 
         init(
             entries: [VocabularyEntry],
+            listHeight: CGFloat,
             onDelete: ((VocabularyEntry) -> Void)?,
+            onSelect: ((VocabularyEntry) -> Void)?,
             onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
         ) {
             self.entries = entries
+            self.listHeight = listHeight
             self.onDelete = onDelete
+            self.onSelect = onSelect
             self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
+            self.entryIDs = entries.map(\.id)
             super.init()
             rebuildSections()
         }
 
+        func attach(tableView: UITableView, indexContainerView: UIView, indexStackView: UIStackView) {
+            self.tableView = tableView
+            self.indexContainerView = indexContainerView
+            self.indexStackView = indexStackView
+            tableView.reloadData()
+            tableView.layoutIfNeeded()
+            refreshCustomIndexPresentation()
+            schedulePostLayoutCustomIndexRefresh()
+        }
+
+        func reloadData() {
+            tableView?.reloadData()
+            tableView?.layoutIfNeeded()
+            refreshCustomIndexPresentation()
+            schedulePostLayoutCustomIndexRefresh()
+        }
+
+        func refreshCustomIndexPresentation() {
+            refreshCustomIndexTitles()
+            refreshCustomIndexVisibility()
+        }
+
+        private func schedulePostLayoutCustomIndexRefresh() {
+            DispatchQueue.main.async { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                self.refreshCustomIndexTitles()
+                self.refreshCustomIndexVisibility()
+            }
+        }
+
+        @discardableResult
         func update(
             entries: [VocabularyEntry],
+            listHeight: CGFloat,
             onDelete: ((VocabularyEntry) -> Void)?,
+            onSelect: ((VocabularyEntry) -> Void)?,
             onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
-        ) {
+        ) -> Bool {
+            let nextEntryIDs = entries.map(\.id)
+            let entriesChanged = entryIDs != nextEntryIDs
+            let deleteAvailabilityChanged = (self.onDelete != nil) != (onDelete != nil)
+            let selectAvailabilityChanged = (self.onSelect != nil) != (onSelect != nil)
+            let listHeightChanged = abs(self.listHeight - listHeight) > 0.5
+
             self.entries = entries
+            self.listHeight = listHeight
             self.onDelete = onDelete
+            self.onSelect = onSelect
             self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
-            rebuildSections()
+
+            if entriesChanged {
+                entryIDs = nextEntryIDs
+                rebuildSections()
+            }
+
+            return entriesChanged || deleteAvailabilityChanged || selectAvailabilityChanged || listHeightChanged
         }
 
         func refreshCustomIndexVisibility() {
             if visibleSectionTitles.isEmpty {
                 hideScrollingIndexOverlayImmediately()
             }
+
+            indexContainerView?.isHidden = displayedIndexTitles.isEmpty || !canScrollInTableView()
+        }
+
+        private func refreshCustomIndexTitles() {
+            guard let indexStackView else {
+                return
+            }
+
+            let nextTitles: [String] = visibleSectionTitles.count > 1 && canScrollInTableView()
+                ? visibleSectionTitles
+                : []
+
+            if displayedIndexTitles == nextTitles {
+                indexContainerView?.isHidden = nextTitles.isEmpty
+                return
+            }
+
+            displayedIndexTitles = nextTitles
+
+            for arrangedSubview in indexStackView.arrangedSubviews {
+                indexStackView.removeArrangedSubview(arrangedSubview)
+                arrangedSubview.removeFromSuperview()
+            }
+
+            for title in nextTitles {
+                let label = UILabel()
+                label.text = title
+                label.font = UIFont.systemFont(ofSize: IndexedVocabularyList.customIndexFontSize, weight: .semibold)
+                label.textColor = .systemBlue
+                label.textAlignment = .center
+                label.isUserInteractionEnabled = false
+                indexStackView.addArrangedSubview(label)
+            }
+
+            indexContainerView?.isHidden = nextTitles.isEmpty
+        }
+
+        private func canScrollInTableView() -> Bool {
+            guard listHeight > 1 else {
+                return false
+            }
+
+            let totalRows = visibleSectionTitles.reduce(0) { partialResult, title in
+                partialResult + (groupedEntries[title]?.count ?? 0)
+            }
+            let rowHeight = tableView?.rowHeight ?? 30
+            let resolvedRowHeight = rowHeight > 0 ? rowHeight : 30
+            let contentHeight = CGFloat(totalRows) * resolvedRowHeight
+
+            return contentHeight > listHeight + 1
         }
 
         private func resolveSection(for title: String, at index: Int) -> Int {
@@ -1221,6 +1625,80 @@ struct IndexedVocabularyList: UIViewRepresentable {
             onIndexIndicatorStateChange(currentIndexIndicatorTitle, false)
         }
 
+        private func sectionIndexTitlesForCustomIndex() -> [String] {
+            displayedIndexTitles
+        }
+
+        private func customIndexTitle(for locationY: CGFloat, in indexView: UIView) -> String? {
+            let titles = sectionIndexTitlesForCustomIndex()
+
+            guard !titles.isEmpty, indexView.bounds.height > 0 else {
+                return nil
+            }
+
+            let clampedY = min(max(locationY, 0), max(0, indexView.bounds.height - 0.5))
+            let slotHeight = indexView.bounds.height / CGFloat(titles.count)
+
+            guard slotHeight > 0 else {
+                return nil
+            }
+
+            let slot = min(titles.count - 1, max(0, Int(clampedY / slotHeight)))
+            return titles[slot]
+        }
+
+        private func scrollToCustomIndexTitle(_ title: String, animated: Bool) {
+            guard let tableView else {
+                return
+            }
+
+            let titleIndex = IndexedVocabularyList.allIndexTitles.firstIndex(of: title) ?? 0
+            let section = resolveSection(for: title, at: titleIndex)
+
+            guard section < visibleSectionTitles.count else {
+                return
+            }
+
+            let rowCount = tableView.numberOfRows(inSection: section)
+            guard rowCount > 0 else {
+                return
+            }
+
+            tableView.scrollToRow(at: IndexPath(row: 0, section: section), at: .top, animated: animated)
+        }
+
+        @objc func handleCustomIndexTap(_ gesture: UITapGestureRecognizer) {
+            guard gesture.state == .ended,
+                let indexView = gesture.view,
+                let title = customIndexTitle(for: gesture.location(in: indexView).y, in: indexView) else {
+                return
+            }
+
+            scrollToCustomIndexTitle(title, animated: true)
+            showScrollingIndexOverlay(title: title)
+            scheduleHideScrollingIndexOverlay()
+        }
+
+        @objc func handleCustomIndexPan(_ gesture: UIPanGestureRecognizer) {
+            guard let indexView = gesture.view else {
+                return
+            }
+
+            switch gesture.state {
+            case .began, .changed:
+                guard let title = customIndexTitle(for: gesture.location(in: indexView).y, in: indexView) else {
+                    return
+                }
+
+                scrollToCustomIndexTitle(title, animated: false)
+                showScrollingIndexOverlay(title: title)
+            case .ended, .cancelled, .failed:
+                scheduleHideScrollingIndexOverlay()
+            default:
+                break
+            }
+        }
+
         private func entry(at indexPath: IndexPath) -> VocabularyEntry {
             let sectionTitle = visibleSectionTitles[indexPath.section]
             return groupedEntries[sectionTitle]![indexPath.row]
@@ -1244,7 +1722,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
         }
 
         func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-            visibleSectionTitles.isEmpty ? nil : IndexedVocabularyList.allIndexTitles
+            nil
         }
 
         func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
@@ -1334,6 +1812,12 @@ struct IndexedVocabularyList: UIViewRepresentable {
             cell.selectionStyle = .none
 
             return cell
+        }
+
+        func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+            let selectedEntry = entry(at: indexPath)
+            onSelect?(selectedEntry)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
 
         func tableView(
