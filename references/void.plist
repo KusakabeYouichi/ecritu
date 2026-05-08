@@ -3,9 +3,6 @@
 <plist version="1.0">
 <array>
 	<!-- 4. その他・分類に不能 -->
-	<dict><key>phrase</key><string>AirTag</string><key>shortcut</key><string>えあたぐ</string></dict>
-	<dict><key>phrase</key><string>AirMac Extreme</string><key>shortcut</key><string>えあまっくえくすとりーむ</string></dict>
-	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
 	<dict><key>phrase</key><string>écritu</string><key>shortcut</key><string>えくりちゅ</string></dict>
 	<dict><key>phrase</key><string>iReal b</string><key>shortcut</key><string>あいりあるびー</string></dict>
 	<dict><key>phrase</key><string>iReal Pro</string><key>shortcut</key><string>あいりあるぷろ</string></dict>
@@ -134,7 +131,6 @@
 	<dict><key>phrase</key><string>宝隆軒</string><key>shortcut</key><string>ほうりゅうけん</string></dict>
 	<dict><key>phrase</key><string>µ</string><key>shortcut</key><string>まいくろ</string></dict>
 	<dict><key>phrase</key><string>Microwave</string><key>shortcut</key><string>まいくろうえいゔ</string></dict>
-	<dict><key>phrase</key><string>Mountain Lion</string><key>shortcut</key><string>まうんてんらいおん</string></dict>
 	<dict><key>phrase</key><string>MaxValu</string><key>shortcut</key><string>まっくすばりゅ</string></dict>
 	<dict><key>phrase</key><string>丸環</string><key>shortcut</key><string>まるかん</string></dict>
 	<dict><key>phrase</key><string>海色</string><key>shortcut</key><string>みいろ</string></dict>

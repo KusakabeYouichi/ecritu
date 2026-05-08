@@ -128,6 +128,7 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
 enum BasicSymbolOrderOption: String, CaseIterable, Identifiable {
     case ascii
     case ebcdic
+    case ansi
 
     var id: String { rawValue }
 
@@ -135,6 +136,7 @@ enum BasicSymbolOrderOption: String, CaseIterable, Identifiable {
         switch self {
         case .ascii: return "ASCII"
         case .ebcdic: return "EBCDIC"
+        case .ansi: return "ANSI"
         }
     }
 }

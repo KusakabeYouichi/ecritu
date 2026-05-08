@@ -166,6 +166,7 @@ struct KeyboardRootView: View {
     private enum BasicSymbolOrder: String {
         case ascii
         case ebcdic
+        case ansi
     }
 
     private enum SymbolCategory: Int, CaseIterable, Identifiable {
@@ -233,6 +234,8 @@ struct KeyboardRootView: View {
                     return Self.basicSymbolsASCII
                 case .ebcdic:
                     return Self.basicSymbolsEBCDIC
+                case .ansi:
+                    return Self.basicSymbolsANSI
                 }
             case .brackets:
                 return Self.bracketAndQuoteSymbols
@@ -258,6 +261,13 @@ struct KeyboardRootView: View {
         private static let basicSymbolsEBCDIC: [String] = [
             ".", "<", "(", "+", "|", "&", "!", "$", "*", ")", ";", "-", "/", ",", "%", "_",
             ">", "?", "`", ":", "#", "@", "'", "=", "\"", "~", "^", "[", "]", "{", "}", "\\"
+        ]
+
+        private static let basicSymbolsANSI: [String] = [
+            "!", "@", "#", "$", "%", "^", "&", "*",
+            "(", ")", "-", "_", "=", "+", "[", "]",
+            "{", "}", ";", ":", "'", "\"", ",", ".",
+            "<", ">", "/", "?", "\\", "|", "`", "~"
         ]
 
         private static let bracketAndQuoteSymbols: [String] = [
@@ -496,6 +506,9 @@ struct KeyboardRootView: View {
         case .kana:
             return kanaFlickGuideDisplayMode
         case .latin:
+            guard latinLayoutMode == .flick else {
+                return .off
+            }
             return latinFlickGuideDisplayMode
         case .number:
             return numberFlickGuideDisplayMode
