@@ -78,7 +78,7 @@ struct FlickKeyView: View {
     @Environment(\.flickGuideDisplayMode) private var flickGuideDisplayMode
     @Environment(\.flickDirectionProfile) private var flickDirectionProfile
 
-    private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
+    private let keyLabelColor = KeyboardThemePalette.keyLabel
 
     private var centerLabelOffsetY: CGFloat {
         flickGuideDisplayMode == .down ? -6 : 0
@@ -91,10 +91,10 @@ struct FlickKeyView: View {
     var body: some View {
         ZStack {
             RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
-                .fill(isTouching ? accentColor.opacity(0.85) : Color.white.opacity(0.95))
+                .fill(isTouching ? accentColor.opacity(0.85) : KeyboardThemePalette.keyBackground)
 
             RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
-                .stroke(Color.black.opacity(0.12), lineWidth: 1)
+                .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
 
             if isTouching {
                 Text(displayText)
@@ -330,15 +330,19 @@ struct FlickKeyView: View {
             ForEach(Array(longPressCandidates.enumerated()), id: \.offset) { index, candidate in
                 Text(candidate)
                     .font(.system(size: candidateFontSize, weight: .semibold, design: .rounded))
-                    .foregroundStyle(Color.black.opacity(0.9))
+                    .foregroundStyle(KeyboardThemePalette.longPressPanelText)
                     .frame(width: cellWidth, height: Metrics.candidateCellHeight)
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(index == highlightedLongPressIndex ? Color(red: 0.84, green: 0.89, blue: 1.0) : Color.white)
+                            .fill(
+                                index == highlightedLongPressIndex
+                                    ? KeyboardThemePalette.longPressPanelCellHighlight
+                                    : KeyboardThemePalette.longPressPanelCellBackground
+                            )
                     )
                     .overlay(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(Color.black.opacity(0.12), lineWidth: 1)
+                            .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
                     )
             }
         }
@@ -346,13 +350,13 @@ struct FlickKeyView: View {
         .padding(.vertical, Metrics.candidatePanelVerticalPadding)
         .background(
             RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
-                .fill(Color(red: 0.97, green: 0.97, blue: 0.98))
+                .fill(KeyboardThemePalette.longPressPanelBackground)
         )
         .overlay(
             RoundedRectangle(cornerRadius: Metrics.keyCornerRadius, style: .continuous)
-                .stroke(Color.black.opacity(0.16), lineWidth: 1)
+                .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
         )
-        .shadow(color: Color.black.opacity(0.18), radius: 4, y: 1)
+        .shadow(color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
         .allowsHitTesting(false)
     }
 

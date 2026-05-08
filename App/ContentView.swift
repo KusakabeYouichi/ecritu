@@ -805,154 +805,159 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    HStack {
-                        Spacer(minLength: 0)
+            ZStack {
+                AppTheme.screenBackground
+                    .ignoresSafeArea()
 
-                        VStack(spacing: 4) {
-                            Image("AppLogoDisplay")
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 92, height: 92)
-                                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Spacer(minLength: 0)
 
-                            Text(Self.editionNumberText)
-                                .font(.system(size: 4, weight: .regular, design: .monospaced))
-                                .foregroundStyle(.secondary.opacity(0.9))
-                                .lineLimit(1)
-                                .scaleEffect(isEditionNumberPressed ? 6.0 : 1.0, anchor: .top)
-                                .animation(.easeOut(duration: 0.08), value: isEditionNumberPressed)
-                                .contentShape(Rectangle())
-                                .simultaneousGesture(
-                                    DragGesture(minimumDistance: 0)
-                                        .updating($isEditionNumberPressed) { _, state, _ in
-                                            state = true
-                                        }
-                                )
-                                .zIndex(1)
-                                .accessibilityHidden(true)
-                        }
+                            VStack(spacing: 4) {
+                                Image("AppLogoDisplay")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 92, height: 92)
+                                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                                    .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
 
-                        Spacer(minLength: 0)
-                    }
-
-                    Text("このアプリはカスタムキーボード拡張の設定・管理を行うコンテナー・アプリ (Containing App) です。キーボード本体は拡張ターゲット側で実装されています。")
-                        .font(.body)
-                        .foregroundStyle(.secondary)
-
-                    DirectionSettingsSection(selection: directionSelection)
-
-                    KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
-
-                    KanaLayoutSettingsSection(selection: kanaLayoutSelection)
-
-                    LatinLayoutSettingsSection(selection: latinLayoutSelection)
-
-                    NumberLayoutSettingsSection(selection: numberLayoutSelection)
-
-                    BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
-
-                    AccentColorSettingsSection(selection: accentPaletteSelection)
-
-                    ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
-
-                    FlickGuideDisplaySettingsSection(
-                        kanaSelection: kanaFlickGuideDisplayModeSelection,
-                        latinSelection: latinFlickGuideDisplayModeSelection,
-                        numberSelection: numberFlickGuideDisplayModeSelection
-                    )
-
-                    KeyRepeatSettingsSection(
-                        keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
-                        keyRepeatInterval: keyRepeatIntervalBinding
-                    )
-
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("かな漢字候補モード")
-                            .font(.headline)
-
-                        Picker("かな漢字候補モード", selection: kanaKanjiCandidateSourceModeSelection) {
-                            ForEach(KanaKanjiCandidateSourceModeOption.allCases) { option in
-                                Text(option.title).tag(option)
+                                Text(Self.editionNumberText)
+                                    .font(.system(size: 4, weight: .regular, design: .monospaced))
+                                    .foregroundStyle(.secondary.opacity(0.9))
+                                    .lineLimit(1)
+                                    .scaleEffect(isEditionNumberPressed ? 6.0 : 1.0, anchor: .top)
+                                    .animation(.easeOut(duration: 0.08), value: isEditionNumberPressed)
+                                    .contentShape(Rectangle())
+                                    .simultaneousGesture(
+                                        DragGesture(minimumDistance: 0)
+                                            .updating($isEditionNumberPressed) { _, state, _ in
+                                                state = true
+                                            }
+                                    )
+                                    .zIndex(1)
+                                    .accessibilityHidden(true)
                             }
-                        }
-                        .pickerStyle(.segmented)
 
-                        Text("システム辞書候補の採用基準を切り替えます。surface(既定) / normalisé / les deux を選べます。")
+                            Spacer(minLength: 0)
+                        }
+
+                        Text("このアプリはカスタムキーボード拡張の設定・管理を行うコンテナー・アプリ (Containing App) です。キーボード本体は拡張ターゲット側で実装されています。")
+                            .font(.body)
+                            .foregroundStyle(.secondary)
+
+                        DirectionSettingsSection(selection: directionSelection)
+
+                        KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
+
+                        KanaLayoutSettingsSection(selection: kanaLayoutSelection)
+
+                        LatinLayoutSettingsSection(selection: latinLayoutSelection)
+
+                        NumberLayoutSettingsSection(selection: numberLayoutSelection)
+
+                        BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
+
+                        AccentColorSettingsSection(selection: accentPaletteSelection)
+
+                        ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
+
+                        FlickGuideDisplaySettingsSection(
+                            kanaSelection: kanaFlickGuideDisplayModeSelection,
+                            latinSelection: latinFlickGuideDisplayModeSelection,
+                            numberSelection: numberFlickGuideDisplayModeSelection
+                        )
+
+                        KeyRepeatSettingsSection(
+                            keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
+                            keyRepeatInterval: keyRepeatIntervalBinding
+                        )
+
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("かな漢字候補モード")
+                                .font(.headline)
+
+                            Picker("かな漢字候補モード", selection: kanaKanjiCandidateSourceModeSelection) {
+                                ForEach(KanaKanjiCandidateSourceModeOption.allCases) { option in
+                                    Text(option.title).tag(option)
+                                }
+                            }
+                            .pickerStyle(.segmented)
+
+                            Text("システム辞書候補の採用基準を切り替えます。surface(既定) / normalisé / les deux を選べます。")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .settingsCardStyle()
+
+                        UserDictionarySettingsSection(
+                            entries: $userDictionaryEntries,
+                            readingInput: $userDictionaryReadingInput,
+                            candidateInput: $userDictionaryCandidateInput,
+                            isRegistrationVisible: $isUserDictionaryRegistrationVisible,
+                            scrollIndexTitle: $userDictionaryScrollIndexTitle,
+                            isScrollIndexVisible: $isUserDictionaryScrollIndexVisible,
+                            canAddEntry: canAddUserDictionaryEntry,
+                            listHeight: userVocabularyListHeight(for: userDictionaryEntries.count),
+                            onAddEntry: addUserDictionaryEntry,
+                            onDeleteEntry: removeUserDictionaryEntry,
+                            onDeleteAll: removeAllUserDictionaryEntries,
+                            onResetLearning: resetKanaKanjiLearning
+                        )
+
+                        SuppressionDictionarySettingsSection(
+                            entries: $suppressionDictionaryEntries,
+                            readingInput: $suppressionDictionaryReadingInput,
+                            candidateInput: $suppressionDictionaryCandidateInput,
+                            isRegistrationVisible: $isSuppressionDictionaryRegistrationVisible,
+                            scrollIndexTitle: $suppressionDictionaryScrollIndexTitle,
+                            isScrollIndexVisible: $isSuppressionDictionaryScrollIndexVisible,
+                            canAddEntry: canAddSuppressionDictionaryEntry,
+                            listHeight: userVocabularyListHeight(for: suppressionDictionaryEntries.count),
+                            onAddEntry: addSuppressionDictionaryEntry,
+                            onDeleteEntry: removeSuppressionDictionaryEntry
+                        )
+
+                        ShortcutDictionarySettingsSection(
+                            entries: $shortcutDictionaryEntries,
+                            candidateInput: $shortcutDictionaryCandidateInput,
+                            isRegistrationVisible: $isShortcutDictionaryRegistrationVisible,
+                            canAddEntry: canAddShortcutDictionaryEntry,
+                            listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
+                            onAddEntry: addShortcutDictionaryEntry,
+                            onDeleteEntry: removeShortcutDictionaryEntry
+                        )
+
+                        ReadOnlyDictionarySettingsSection(
+                            title: "第1語彙",
+                            entries: firstVocabularyEntries,
+                            scrollIndexTitle: $firstVocabularyScrollIndexTitle,
+                            isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
+                            listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
+                            emptyMessage: "第1語彙は読み込まれていません。",
+                            description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。"
+                        )
+
+                        ReadOnlyDictionarySettingsSection(
+                            title: "第2語彙",
+                            entries: secondVocabularyEntries,
+                            scrollIndexTitle: $secondVocabularyScrollIndexTitle,
+                            isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
+                            listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
+                            emptyMessage: "第2語彙は読み込まれていません。",
+                            description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。"
+                        )
+
+                        SetupStepsSection(steps: setupSteps)
+
+                        ThirdPartyLicensesSection()
+
+                        Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
                     }
-                    .settingsCardStyle()
-
-                    UserDictionarySettingsSection(
-                        entries: $userDictionaryEntries,
-                        readingInput: $userDictionaryReadingInput,
-                        candidateInput: $userDictionaryCandidateInput,
-                        isRegistrationVisible: $isUserDictionaryRegistrationVisible,
-                        scrollIndexTitle: $userDictionaryScrollIndexTitle,
-                        isScrollIndexVisible: $isUserDictionaryScrollIndexVisible,
-                        canAddEntry: canAddUserDictionaryEntry,
-                        listHeight: userVocabularyListHeight(for: userDictionaryEntries.count),
-                        onAddEntry: addUserDictionaryEntry,
-                        onDeleteEntry: removeUserDictionaryEntry,
-                        onDeleteAll: removeAllUserDictionaryEntries,
-                        onResetLearning: resetKanaKanjiLearning
-                    )
-
-                    SuppressionDictionarySettingsSection(
-                        entries: $suppressionDictionaryEntries,
-                        readingInput: $suppressionDictionaryReadingInput,
-                        candidateInput: $suppressionDictionaryCandidateInput,
-                        isRegistrationVisible: $isSuppressionDictionaryRegistrationVisible,
-                        scrollIndexTitle: $suppressionDictionaryScrollIndexTitle,
-                        isScrollIndexVisible: $isSuppressionDictionaryScrollIndexVisible,
-                        canAddEntry: canAddSuppressionDictionaryEntry,
-                        listHeight: userVocabularyListHeight(for: suppressionDictionaryEntries.count),
-                        onAddEntry: addSuppressionDictionaryEntry,
-                        onDeleteEntry: removeSuppressionDictionaryEntry
-                    )
-
-                    ShortcutDictionarySettingsSection(
-                        entries: $shortcutDictionaryEntries,
-                        candidateInput: $shortcutDictionaryCandidateInput,
-                        isRegistrationVisible: $isShortcutDictionaryRegistrationVisible,
-                        canAddEntry: canAddShortcutDictionaryEntry,
-                        listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
-                        onAddEntry: addShortcutDictionaryEntry,
-                        onDeleteEntry: removeShortcutDictionaryEntry
-                    )
-
-                    ReadOnlyDictionarySettingsSection(
-                        title: "第1語彙",
-                        entries: firstVocabularyEntries,
-                        scrollIndexTitle: $firstVocabularyScrollIndexTitle,
-                        isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
-                        listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
-                        emptyMessage: "第1語彙は読み込まれていません。",
-                        description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。"
-                    )
-
-                    ReadOnlyDictionarySettingsSection(
-                        title: "第2語彙",
-                        entries: secondVocabularyEntries,
-                        scrollIndexTitle: $secondVocabularyScrollIndexTitle,
-                        isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
-                        listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
-                        emptyMessage: "第2語彙は読み込まれていません。",
-                        description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。"
-                    )
-
-                    SetupStepsSection(steps: setupSteps)
-
-                    ThirdPartyLicensesSection()
-
-                    Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
+                    .padding(20)
                 }
-                .padding(20)
             }
             .onAppear {
                 migrateLegacyFlickGuideSettingIfNeeded()
@@ -989,15 +994,4 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-}
-
-private extension View {
-    func settingsCardStyle() -> some View {
-        padding(14)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color(white: 0.94))
-            )
-    }
 }

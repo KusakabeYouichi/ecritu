@@ -106,12 +106,13 @@ final class KeyboardViewController: UIInputViewController {
     private static let maximumEmojiHeight: CGFloat = 290
     private static let portraitSystemAccessoryOffset: CGFloat = 6
     private static let landscapeKeyboardHeight: CGFloat = 244
-    private static let baseKeyboardBackgroundColor = UIColor(
-        red: 0.89,
-        green: 0.90,
-        blue: 0.92,
-        alpha: 1.0
-    )
+    private static let baseKeyboardBackgroundColor = UIColor { trait in
+        if trait.userInterfaceStyle == .dark {
+            return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
+        }
+
+        return UIColor(red: 0.89, green: 0.90, blue: 0.92, alpha: 1.0)
+    }
 
     private enum PortraitHeightProfile {
         case kanaThreeByThree
@@ -207,10 +208,20 @@ final class KeyboardViewController: UIInputViewController {
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
-        guard
+        let styleDidChange = previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle
+        let sizeClassDidChange =
             previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass
                 || previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass
-        else {
+
+        guard styleDidChange || sizeClassDidChange else {
+            return
+        }
+
+        if styleDidChange {
+            applyKeyboardBaseBackground()
+        }
+
+        guard sizeClassDidChange else {
             return
         }
 

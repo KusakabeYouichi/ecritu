@@ -300,8 +300,8 @@ struct AccentColorSettingsSection: View {
                                 RoundedRectangle(cornerRadius: 9, style: .continuous)
                                     .fill(
                                         isSelected
-                                            ? Color.white.opacity(0.96)
-                                            : Color.white.opacity(0.7)
+                                            ? AppTheme.selectedControlBackground
+                                            : AppTheme.controlBackground
                                     )
                             )
                             .overlay(
@@ -309,7 +309,7 @@ struct AccentColorSettingsSection: View {
                                     .stroke(
                                         isSelected
                                             ? option.color.opacity(0.65)
-                                            : Color.black.opacity(0.1),
+                                            : AppTheme.subtleBorder,
                                         lineWidth: isSelected ? 1.3 : 1
                                     )
                             )
@@ -321,7 +321,7 @@ struct AccentColorSettingsSection: View {
             .padding(4)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color(white: 0.9))
+                    .fill(AppTheme.cardInnerBackground)
             )
 
             Text("キー押下時のアクセント色を切り替えます。チュイレは瓦の色、エメロードは宝石の色です。")
@@ -359,7 +359,7 @@ struct ThemeColorSettingsSection: View {
                                 .frame(width: 52, height: 30)
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                        .stroke(Color.black.opacity(0.1), lineWidth: 1)
+                                        .stroke(AppTheme.subtleBorder, lineWidth: 1)
                                 )
 
                             VStack(alignment: .leading, spacing: 2) {
@@ -382,7 +382,7 @@ struct ThemeColorSettingsSection: View {
                                 .foregroundStyle(
                                     isSelected
                                         ? Color.accentColor
-                                        : Color.black.opacity(0.22)
+                                        : AppTheme.subduedIcon
                                 )
                         }
                         .padding(.horizontal, 10)
@@ -391,16 +391,16 @@ struct ThemeColorSettingsSection: View {
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .fill(
                                     isSelected
-                                        ? Color.white.opacity(0.96)
-                                        : Color.white.opacity(0.72)
+                                        ? AppTheme.selectedControlBackground
+                                        : AppTheme.controlBackground
                                 )
                         )
                         .overlay(
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .stroke(
                                     isSelected
-                                        ? Color.black.opacity(0.15)
-                                        : Color.black.opacity(0.08),
+                                        ? AppTheme.emphasisBorder
+                                        : AppTheme.subtleBorder,
                                     lineWidth: isSelected ? 1.2 : 1
                                 )
                         )
@@ -412,7 +412,7 @@ struct ThemeColorSettingsSection: View {
             .padding(4)
             .background(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color(white: 0.9))
+                    .fill(AppTheme.cardInnerBackground)
             )
 
             Text("キーボード背景のグラデイションを切り替えます。左の色見本は実際の背景色です。")
@@ -537,7 +537,7 @@ struct UserDictionarySettingsSection: View {
                             .padding(.vertical, 8)
                             .background(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color.white.opacity(0.9))
+                                    .fill(AppTheme.controlBackground)
                             )
 
                         TextField("よみ", text: $readingInput)
@@ -547,7 +547,7 @@ struct UserDictionarySettingsSection: View {
                             .padding(.vertical, 8)
                             .background(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color.white.opacity(0.9))
+                                    .fill(AppTheme.controlBackground)
                             )
 
                         Button("登録") {
@@ -573,7 +573,7 @@ struct UserDictionarySettingsSection: View {
                     .frame(minWidth: 26, minHeight: 20)
                     .background(
                         Capsule(style: .continuous)
-                            .fill(Color.white.opacity(0.82))
+                            .fill(AppTheme.indexBadgeBackground)
                     )
                     .opacity(isScrollIndexVisible ? 1 : 0)
                     .animation(.easeOut(duration: 0.28), value: isScrollIndexVisible)
@@ -701,7 +701,7 @@ struct SuppressionDictionarySettingsSection: View {
                             .padding(.vertical, 8)
                             .background(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color.white.opacity(0.9))
+                                    .fill(AppTheme.controlBackground)
                             )
 
                         TextField("よみ", text: $readingInput)
@@ -711,7 +711,7 @@ struct SuppressionDictionarySettingsSection: View {
                             .padding(.vertical, 8)
                             .background(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color.white.opacity(0.9))
+                                    .fill(AppTheme.controlBackground)
                             )
 
                         Button("登録") {
@@ -737,7 +737,7 @@ struct SuppressionDictionarySettingsSection: View {
                     .frame(minWidth: 26, minHeight: 20)
                     .background(
                         Capsule(style: .continuous)
-                            .fill(Color.white.opacity(0.82))
+                            .fill(AppTheme.indexBadgeBackground)
                     )
                     .opacity(isScrollIndexVisible ? 1 : 0)
                     .animation(.easeOut(duration: 0.28), value: isScrollIndexVisible)
@@ -836,7 +836,7 @@ struct ShortcutDictionarySettingsSection: View {
                             .padding(.vertical, 8)
                             .background(
                                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(Color.white.opacity(0.9))
+                                    .fill(AppTheme.controlBackground)
                             )
 
                         Button("登録") {
@@ -874,7 +874,7 @@ struct ShortcutDictionarySettingsSection: View {
                         .padding(.vertical, 8)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(Color.white.opacity(0.72))
+                                .fill(AppTheme.listRowBackground)
                         )
                         .listRowInsets(EdgeInsets(top: 3, leading: 0, bottom: 3, trailing: 0))
                         .listRowSeparator(.hidden)
@@ -957,7 +957,7 @@ struct ReadOnlyDictionarySettingsSection: View {
                     .frame(minWidth: 26, minHeight: 20)
                     .background(
                         Capsule(style: .continuous)
-                            .fill(Color.white.opacity(0.82))
+                            .fill(AppTheme.indexBadgeBackground)
                     )
                     .opacity(isScrollIndexVisible ? 1 : 0)
                     .animation(.easeOut(duration: 0.28), value: isScrollIndexVisible)
@@ -1330,7 +1330,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
             readingLabel.text = entry.reading
 
             cell.textLabel?.text = nil
-            cell.backgroundColor = UIColor.white.withAlphaComponent(0.72)
+            cell.backgroundColor = UIColor.secondarySystemGroupedBackground.withAlphaComponent(0.95)
             cell.selectionStyle = .none
 
             return cell
@@ -1353,16 +1353,5 @@ struct IndexedVocabularyList: UIViewRepresentable {
 
             return UISwipeActionsConfiguration(actions: [delete])
         }
-    }
-}
-
-private extension View {
-    func settingsCardStyle() -> some View {
-        padding(14)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(Color(white: 0.94))
-            )
     }
 }

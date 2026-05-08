@@ -77,12 +77,7 @@ struct ThirdPartyLicensesSection: View {
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(white: 0.94))
-        )
+        .settingsCardStyle()
     }
 }
 
@@ -120,7 +115,7 @@ private struct ThirdPartyLicenseDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .padding(16)
         }
-        .background(Color(white: 0.98))
+        .background(AppTheme.screenBackground)
 #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
 #endif
