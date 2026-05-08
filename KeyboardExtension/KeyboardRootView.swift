@@ -8,7 +8,7 @@ struct KeyboardRootView: View {
     let onSpace: () -> Void
     let onReturn: () -> Void
     let onAdvanceKeyboard: () -> Void
-    let onApplyKanaPostModifier: (KanaPostModifierButtonState) -> Bool
+    let onApplyKanaPostModifier: (KanaPostModifierButtonState, Bool) -> Bool
     let onSelectConversionCandidate: (Int) -> Void
     let onCommitComposingText: () -> Void
     let onInputModeChanged: (KeyboardInputMode) -> Void
@@ -31,6 +31,7 @@ struct KeyboardRootView: View {
     let numberFlickGuideDisplayMode: FlickGuideDisplayMode
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
+    let shortcutVocabulary: [String]
     let composingText: String
     let conversionCandidates: [String]
     let selectedConversionCandidateIndex: Int?
@@ -630,11 +631,36 @@ struct KeyboardRootView: View {
         return max(kaomojiMinKeyWidth, textWidth + kaomojiHorizontalPadding * 2)
     }
 
-    private func kaomojiRows(for availableWidth: CGFloat) -> [KaomojiRowLayout] {
+    private var shortcutVocabularyEntries: [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+
+        for candidate in shortcutVocabulary {
+            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmed.isEmpty,
+                seen.insert(trimmed).inserted else {
+                continue
+            }
+
+            result.append(trimmed)
+        }
+
+        return result
+    }
+
+    private func kaomojiRows(
+        for availableWidth: CGFloat,
+        entries: [String]
+    ) -> [KaomojiRowLayout] {
         let minSpacing = keyboardRowSpacing * kaomojiMinInterItemSpacingMultiplier
 
+        guard !entries.isEmpty else {
+            return []
+        }
+
         guard availableWidth > 0 else {
-            return [KaomojiRowLayout(items: KaomojiCatalog.entries, spacing: minSpacing)]
+            return [KaomojiRowLayout(items: entries, spacing: minSpacing)]
         }
 
         var rows: [KaomojiRowLayout] = []
@@ -660,7 +686,7 @@ struct KeyboardRootView: View {
             currentRowItemsWidth = 0
         }
 
-        for kaomoji in KaomojiCatalog.entries {
+        for kaomoji in entries {
             let keyWidth = min(measuredKaomojiWidth(kaomoji), availableWidth)
 
             if currentRow.isEmpty {
@@ -688,6 +714,37 @@ struct KeyboardRootView: View {
         appendCurrentRow()
 
         return rows
+    }
+
+    @ViewBuilder
+    private func kaomojiRowLayoutsView(
+        _ rows: [KaomojiRowLayout],
+        availableWidth: CGFloat,
+        sectionID: String
+    ) -> some View {
+        let indexedRows = Array(rows.enumerated()).map { index, row in
+            (id: "\(sectionID)-row-\(index)", row: row)
+        }
+
+        ForEach(indexedRows, id: \.id) { rowEntry in
+            let row = rowEntry.row
+            HStack(spacing: row.spacing) {
+                ForEach(Array(row.items.enumerated()), id: \.offset) { _, kaomoji in
+                    KaomojiKeyButton(kaomoji: kaomoji) {
+                        onTextInput(kaomoji)
+                    }
+                    .frame(
+                        width: min(measuredKaomojiWidth(kaomoji), availableWidth),
+                        height: compactKaomojiKeyHeight
+                    )
+                }
+
+                if row.items.count == 1 {
+                    Spacer(minLength: 0)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 
     private let mainFlickKeyHeight: CGFloat = 46
@@ -1050,6 +1107,7 @@ struct KeyboardRootView: View {
                 FlickKeyView(
                     kana: modifierSelectorKey,
                     onCommit: selectModifierMode,
+                    onCommitWithDirection: selectModifierMode,
                     mainLabelFontSize: modifierMainLabelFontSize,
                     showsDirectionalHints: showsFlickGuideCharacters,
                     idleReplacement: modifierIdleReplacement,
@@ -1324,9 +1382,9 @@ struct KeyboardRootView: View {
 
             HStack(spacing: keyboardRowSpacing) {
                 ActionKeyButton(
-                    title: "123",
+                    title: "あい",
                     fixedWidth: 56,
-                    action: { switchInputMode(.number) }
+                    action: { switchInputMode(.kana) }
                 )
                     .frame(height: compactActionKeyHeight)
 
@@ -1359,28 +1417,36 @@ struct KeyboardRootView: View {
 
     private var kaomojiKeyboardView: some View {
         GeometryReader { geometry in
-            let rows = kaomojiRows(for: geometry.size.width)
+            let shortcutEntries = shortcutVocabularyEntries
+            let fixedEntries = KaomojiCatalog.entries
+            let shortcutRows = kaomojiRows(for: geometry.size.width, entries: shortcutEntries)
+            let fixedRows = kaomojiRows(for: geometry.size.width, entries: fixedEntries)
 
             VStack(spacing: keyboardRowSpacing) {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
-                        ForEach(Array(rows.enumerated()), id: \.offset) { _, row in
-                            HStack(spacing: row.spacing) {
-                                ForEach(Array(row.items.enumerated()), id: \.offset) { _, kaomoji in
-                                    KaomojiKeyButton(kaomoji: kaomoji) {
-                                        onTextInput(kaomoji)
-                                    }
-                                    .frame(
-                                        width: min(measuredKaomojiWidth(kaomoji), geometry.size.width),
-                                        height: compactKaomojiKeyHeight
-                                    )
-                                }
+                        if !shortcutRows.isEmpty {
+                            kaomojiRowLayoutsView(
+                                shortcutRows,
+                                availableWidth: geometry.size.width,
+                                sectionID: "shortcut"
+                            )
+                        }
 
-                                if row.items.count == 1 {
-                                    Spacer(minLength: 0)
-                                }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                        if !shortcutRows.isEmpty,
+                            !fixedRows.isEmpty {
+                            Rectangle()
+                                .fill(Color.black.opacity(0.18))
+                                .frame(height: 1)
+                                .padding(.vertical, 4)
+                        }
+
+                        if !fixedRows.isEmpty {
+                            kaomojiRowLayoutsView(
+                                fixedRows,
+                                availableWidth: geometry.size.width,
+                                sectionID: "fixed"
+                            )
                         }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -1449,7 +1515,7 @@ struct KeyboardRootView: View {
         case .emoji:
             return selectedEmojiCategory.frenchName
         case .kaomoji:
-            return "Kaomojis"
+            return "Raccourci / Kaomojis"
         case .symbols:
             return selectedSymbolCategory.frenchName
         }
@@ -1676,6 +1742,7 @@ struct KeyboardRootView: View {
                         FlickKeyView(
                             kana: modifierSelectorKey,
                             onCommit: selectModifierMode,
+                            onCommitWithDirection: selectModifierMode,
                             mainLabelFontSize: modifierMainLabelFontSize,
                             showsDirectionalHints: showsFlickGuideCharacters,
                             idleReplacement: modifierIdleReplacement,
@@ -1806,6 +1873,10 @@ struct KeyboardRootView: View {
     }
 
     private func selectModifierMode(_ output: String) {
+        selectModifierMode(output, direction: .milieu)
+    }
+
+    private func selectModifierMode(_ output: String, direction: FlickDirection) {
         if output == "…" {
             commitText(output)
             return
@@ -1833,7 +1904,11 @@ struct KeyboardRootView: View {
             return
         }
 
-        let applied = onApplyKanaPostModifier(buttonState)
+        let prefersLatestContextResolution = direction == .milieu
+        let applied = onApplyKanaPostModifier(
+            buttonState,
+            prefersLatestContextResolution
+        )
 
         if applied {
             var next = transitionState
@@ -2221,7 +2296,7 @@ struct KeyboardRootView: View {
         onSpace: {},
         onReturn: {},
         onAdvanceKeyboard: {},
-        onApplyKanaPostModifier: { _ in false },
+        onApplyKanaPostModifier: { _, _ in false },
         onSelectConversionCandidate: { _ in },
         onCommitComposingText: {},
         onInputModeChanged: { _ in },
@@ -2244,6 +2319,7 @@ struct KeyboardRootView: View {
         numberFlickGuideDisplayMode: .fourDirections,
         keyRepeatInitialDelay: 0.5,
         keyRepeatInterval: 0.1,
+        shortcutVocabulary: [],
         composingText: "かな",
         conversionCandidates: ["仮名", "かな"],
         selectedConversionCandidateIndex: 0,

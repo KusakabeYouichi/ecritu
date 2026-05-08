@@ -2,6 +2,7 @@ import Foundation
 
 enum KanaKanjiStorageKeys {
     static let userDictionary = "ÉcrituAjoutVocab"
+    static let shortcutVocabulary = "ÉcrituShortcutVocab"
     static let suppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let learningScores = "kanaKanjiLearningScores"
     static let systemDictionarySQLiteFilename = "kana_kanji_dictionary.sqlite"
@@ -10,6 +11,7 @@ enum KanaKanjiStorageKeys {
     static let systemCandidateSourcesFilename = "kana_kanji_candidate_sources.json"
     static let inflectionDictionaryFilename = "kana_kanji_inflection_dictionary.json"
     static let initialUserDictionaryResourceName = "InitialAjoutVocabMigration"
+    static let initialShortcutVocabularyResourceName = "InitialShortcutVocabMigration"
 }
 
 enum KanaKanjiCandidateSourceMode: String {

@@ -194,6 +194,7 @@
 	<dict><key>phrase</key><string>Hastings River</string><key>shortcut</key><string>へいすてぃんぐすりゔぁー</string></dict>
 	<dict><key>phrase</key><string>Haut-Médoc</string><key>shortcut</key><string>おーめどっく</string></dict>
 	<dict><key>phrase</key><string>Hawke's Bay</string><key>shortcut</key><string>ほーくすべい</string></dict>
+	<dict><key>phrase</key><string>Henschke</string><key>shortcut</key><string>へんちき</string></dict>
 	<dict><key>phrase</key><string>Henschke Hill of Grace</string><key>shortcut</key><string>へんちきひるおゔぐれいす</string></dict>
 	<dict><key>phrase</key><string>Hill of Grace</string><key>shortcut</key><string>ひりんぐ</string></dict>
 	<dict><key>phrase</key><string>Horse Heaven Hills</string><key>shortcut</key><string>ほーすへゔぇんひるず</string></dict>
@@ -382,7 +383,7 @@
 	<dict><key>phrase</key><string>Vino Nobile di Montepulciano</string><key>shortcut</key><string>ゔぃーののびれでぃもんてぷるちあーの</string></dict>
 	<dict><key>phrase</key><string>Vintage Cava</string><key>shortcut</key><string>びんてーじかば</string></dict>
 	<dict><key>phrase</key><string>Vosne-Romanée Grand Cru</string><key>shortcut</key><string>ゔぉーぬろまねぐらんくりゅ</string></dict>
-	<dict><key>phrase</key><string>Vosne-Romanée村</string><key>shortcut</key><string>ゔぉーぬろまねむら</string></dict>
+	<dict><key>phrase</key><string>Vosne-Romanée</string><key>shortcut</key><string>ゔぉーぬろまね</string></dict>
 	<dict><key>phrase</key><string>Waiheke Island</string><key>shortcut</key><string>わいへけいっらんっ</string></dict>
 	<dict><key>phrase</key><string>Waipara Valley</string><key>shortcut</key><string>わいぱらゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Wairau Valley</string><key>shortcut</key><string>わいらうゔぁれー</string></dict>
@@ -423,7 +424,7 @@
 	<dict><key>phrase</key><string>アレッサンドリア県</string><key>shortcut</key><string>あれっさんどりあけん</string></dict>
 	<dict><key>phrase</key><string>アレッサンドリア県ガヴィ</string><key>shortcut</key><string>あれっさんどりあけんがゔぃ</string></dict>
 	<dict><key>phrase</key><string>アレッツォ県</string><key>shortcut</key><string>あれっつぉけん</string></dict>
-	<dict><key>phrase</key><string>アロース・コルトン村</string><key>shortcut</key><string>あろーすこるとんむら</string></dict>
+	<dict><key>phrase</key><string>アロース・コルトン</string><key>shortcut</key><string>あろーすこるとん</string></dict>
 	<dict><key>phrase</key><string>アンジェ市</string><key>shortcut</key><string>あんじぇし</string></dict>
 	<dict><key>phrase</key><string>アンジュー&amp;ソミュール地区</string><key>shortcut</key><string>あんじゅーそみゅーるちく</string></dict>
 	<dict><key>phrase</key><string>アンダルシア地方</string><key>shortcut</key><string>あんだるしあちほう</string></dict>
@@ -449,8 +450,8 @@
 	<dict><key>phrase</key><string>ヴァンデ県</string><key>shortcut</key><string>ゔぁんでけん</string></dict>
 	<dict><key>phrase</key><string>ヴィーノ・ノビレ・ディ・モンテプルチャーノ</string><key>shortcut</key><string>ゔぃーののびれでぃもんてぷるちゃーの</string></dict>
 	<dict><key>phrase</key><string>ウィラメット川</string><key>shortcut</key><string>うぃらめっとかわ</string></dict>
-	<dict><key>phrase</key><string>ヴィルティンゲン村</string><key>shortcut</key><string>ゔぃるてぃんげんむら</string></dict>
-	<dict><key>phrase</key><string>ヴージョ村</string><key>shortcut</key><string>ゔーじょむら</string></dict>
+	<dict><key>phrase</key><string>ヴィルティンゲン</string><key>shortcut</key><string>ゔぃるてぃんげん</string></dict>
+	<dict><key>phrase</key><string>ヴージョ</string><key>shortcut</key><string>ゔーじょ</string></dict>
 	<dict><key>phrase</key><string>ヴェスヴィウス火山</string><key>shortcut</key><string>ゔぇすゔぃうすかざん</string></dict>
 	<dict><key>phrase</key><string>ヴェスヴィウス山</string><key>shortcut</key><string>ゔぇすゔぃうすやま</string></dict>
 	<dict><key>phrase</key><string>ヴェスヴィオ火山</string><key>shortcut</key><string>ゔぇすゔぃおかざん</string></dict>
@@ -459,7 +460,6 @@
 	<dict><key>phrase</key><string>ヴェルミオ山</string><key>shortcut</key><string>ゔぇるみおやま</string></dict>
 	<dict><key>phrase</key><string>ヴォージュ山脈</string><key>shortcut</key><string>ゔぉーじゅさんみゃく</string></dict>
 	<dict><key>phrase</key><string>ヴォーヌ・ロマネ</string><key>shortcut</key><string>ゔぉーぬろまね</string></dict>
-	<dict><key>phrase</key><string>ヴォーヌ・ロマネ村</string><key>shortcut</key><string>ゔぉーぬろまねむら</string></dict>
 	<dict><key>phrase</key><string>ウラル山脈</string><key>shortcut</key><string>うらるさんみゃく</string></dict>
 	<dict><key>phrase</key><string>ヴルカンラント・シュタイヤーマルク</string><key>shortcut</key><string>ゔるかんらんとしゅたいやーまるく</string></dict>
 	<dict><key>phrase</key><string>ウルグアイ川</string><key>shortcut</key><string>うるぐあいかわ</string></dict>
@@ -489,7 +489,7 @@
 	<dict><key>phrase</key><string>オンタリオ湖</string><key>shortcut</key><string>おんたりおみずうみ</string></dict>
 	<dict><key>phrase</key><string>カスケード山脈</string><key>shortcut</key><string>かすけーどさんみゃく</string></dict>
 	<dict><key>phrase</key><string>ガスコーニュ地方</string><key>shortcut</key><string>がすこーにゅちほう</string></dict>
-	<dict><key>phrase</key><string>カステル村</string><key>shortcut</key><string>かすてるむら</string></dict>
+	<dict><key>phrase</key><string>カステル</string><key>shortcut</key><string>かすてる</string></dict>
 	<dict><key>phrase</key><string>カチャポアル川流域</string><key>shortcut</key><string>かちゃぽあるせんりゅういき</string></dict>
 	<dict><key>phrase</key><string>ガッルーラ地方</string><key>shortcut</key><string>がっるーらちほう</string></dict>
 	<dict><key>phrase</key><string>カバ</string><key>shortcut</key><string>かば</string></dict>
@@ -503,7 +503,7 @@
 	<dict><key>phrase</key><string>カルパチア盆地</string><key>shortcut</key><string>かるぱちあぼんち</string></dict>
 	<dict><key>phrase</key><string>ガロンヌ県</string><key>shortcut</key><string>がろんぬけん</string></dict>
 	<dict><key>phrase</key><string>ガロンヌ川</string><key>shortcut</key><string>がろんぬかわ</string></dict>
-	<dict><key>phrase</key><string>カンシー村</string><key>shortcut</key><string>かんしーむら</string></dict>
+	<dict><key>phrase</key><string>カンシー</string><key>shortcut</key><string>かんしー</string></dict>
 	<dict><key>phrase</key><string>カンタブリア山脈</string><key>shortcut</key><string>かんたぶりあさんみゃく</string></dict>
 	<dict><key>phrase</key><string>カンタベリー地方</string><key>shortcut</key><string>かんたべりーちほう</string></dict>
 	<dict><key>phrase</key><string>カンプ川沿</string><key>shortcut</key><string>かんぷかわえん</string></dict>
@@ -515,7 +515,7 @@
 	<dict><key>phrase</key><string>クナワラ</string><key>shortcut</key><string>くなわら</string></dict>
 	<dict><key>phrase</key><string>クパ川沿</string><key>shortcut</key><string>くぱかわえん</string></dict>
 	<dict><key>phrase</key><string>グラン・クリュ</string><key>shortcut</key><string>ぐらんくりゅ</string></dict>
-	<dict><key>phrase</key><string>クリコヴァ村</string><key>shortcut</key><string>くりこゔぁむら</string></dict>
+	<dict><key>phrase</key><string>クリコヴァ</string><key>shortcut</key><string>くりこゔぁ</string></dict>
 	<dict><key>phrase</key><string>クリシャナ地方</string><key>shortcut</key><string>くりしゃなちほう</string></dict>
 	<dict><key>phrase</key><string>グレート・ディヴァイディング山脈</string><key>shortcut</key><string>ぐれーとでぃゔぁいでぃんぐさんみゃく</string></dict>
 	<dict><key>phrase</key><string>クレムスタール</string><key>shortcut</key><string>くれむすたーる</string></dict>

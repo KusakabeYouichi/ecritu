@@ -774,6 +774,157 @@ struct SuppressionDictionarySettingsSection: View {
     }
 }
 
+struct ShortcutDictionarySettingsSection: View {
+    @Binding var entries: [VocabularyEntry]
+    @Binding var candidateInput: String
+    @Binding var isRegistrationVisible: Bool
+
+    @State private var pendingDeletionEntry: VocabularyEntry?
+
+    let canAddEntry: Bool
+    let listHeight: CGFloat
+    let onAddEntry: () -> Void
+    let onDeleteEntry: (VocabularyEntry) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Text("ショートカット語彙")
+                    .font(.headline)
+
+                Text("\(entries.count)件")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: 8)
+
+                Button {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible.toggle()
+                    }
+                } label: {
+                    Image(systemName: isRegistrationVisible ? "xmark" : "plus")
+                        .font(.headline.weight(.bold))
+                        .frame(width: 28, height: 28)
+                        .background(
+                            Circle()
+                                .fill(
+                                    isRegistrationVisible
+                                        ? Color.red.opacity(0.16)
+                                        : Color.accentColor.opacity(0.14)
+                                )
+                        )
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(
+                    isRegistrationVisible
+                        ? "ショートカット語彙の登録欄を閉じる"
+                        : "ショートカット語彙の登録欄を表示"
+                )
+            }
+
+            if isRegistrationVisible {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("ショートカット語彙の登録")
+                        .font(.subheadline.weight(.semibold))
+
+                    HStack(spacing: 8) {
+                        TextField("候補", text: $candidateInput)
+                            .textInputAutocapitalization(.never)
+                            .autocorrectionDisabled()
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .fill(Color.white.opacity(0.9))
+                            )
+
+                        Button("登録") {
+                            onAddEntry()
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isRegistrationVisible = false
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .disabled(!canAddEntry)
+                    }
+
+                    Text("読みは ☻ で固定されます。")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+
+            if entries.isEmpty {
+                Text("登録済みのショートカット語彙はありません。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                List {
+                    ForEach(entries) { entry in
+                        HStack(spacing: 8) {
+                            Text(entry.candidate)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color.white.opacity(0.72))
+                        )
+                        .listRowInsets(EdgeInsets(top: 3, leading: 0, bottom: 3, trailing: 0))
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                pendingDeletionEntry = entry
+                            } label: {
+                                Text("削除")
+                            }
+                        }
+                    }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .background(Color.clear)
+                .frame(height: listHeight)
+            }
+
+            Text("ショートカット語彙は顔文字入力の先頭側に表示され、固定顔文字とは区切り線で分離されます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+        .alert(
+            "ショートカット語彙を削除しますか？",
+            isPresented: Binding(
+                get: { pendingDeletionEntry != nil },
+                set: { isPresented in
+                    if !isPresented {
+                        pendingDeletionEntry = nil
+                    }
+                }
+            ),
+            presenting: pendingDeletionEntry
+        ) { entry in
+            Button("キャンセル", role: .cancel) {
+                pendingDeletionEntry = nil
+            }
+
+            Button("削除", role: .destructive) {
+                onDeleteEntry(entry)
+                pendingDeletionEntry = nil
+            }
+        } message: { entry in
+            Text("「\(entry.candidate)」を削除します。")
+        }
+    }
+}
+
 struct ReadOnlyDictionarySettingsSection: View {
     let title: String
     let entries: [VocabularyEntry]
@@ -869,7 +1020,9 @@ struct IndexedVocabularyList: UIViewRepresentable {
         tableView.sectionHeaderTopPadding = 0
         tableView.rowHeight = 30
         tableView.separatorStyle = .none
-        context.coordinator.attachCustomIndex(to: tableView)
+        tableView.sectionIndexColor = .systemBlue
+        tableView.sectionIndexBackgroundColor = .clear
+        tableView.sectionIndexTrackingBackgroundColor = .clear
         return tableView
     }
 
@@ -879,9 +1032,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
             onDelete: onDelete,
             onIndexIndicatorStateChange: onIndexIndicatorStateChange
         )
-        context.coordinator.attachCustomIndex(to: uiView)
         uiView.reloadData()
-        uiView.layoutIfNeeded()
         context.coordinator.refreshCustomIndexVisibility()
     }
 
@@ -938,18 +1089,6 @@ struct IndexedVocabularyList: UIViewRepresentable {
         private var visibleSectionTitles: [String] = []
         private var overlayHideWorkItem: DispatchWorkItem?
         private var currentIndexIndicatorTitle = ""
-        private weak var tableView: UITableView?
-        private let customIndexContainerView = UIView()
-        private let customIndexStackView = UIStackView()
-        private var customIndexLabels: [UILabel] = []
-        private lazy var customIndexTapGesture = UITapGestureRecognizer(
-            target: self,
-            action: #selector(handleCustomIndexTap(_:))
-        )
-        private lazy var customIndexPanGesture = UIPanGestureRecognizer(
-            target: self,
-            action: #selector(handleCustomIndexPan(_:))
-        )
 
         init(
             entries: [VocabularyEntry],
@@ -974,128 +1113,10 @@ struct IndexedVocabularyList: UIViewRepresentable {
             rebuildSections()
         }
 
-        func attachCustomIndex(to tableView: UITableView) {
-            self.tableView = tableView
-
-            if customIndexContainerView.superview !== tableView {
-                customIndexContainerView.translatesAutoresizingMaskIntoConstraints = false
-                customIndexContainerView.backgroundColor = .clear
-                customIndexContainerView.isUserInteractionEnabled = true
-                customIndexContainerView.layer.zPosition = 10
-
-                customIndexStackView.translatesAutoresizingMaskIntoConstraints = false
-                customIndexStackView.axis = .vertical
-                customIndexStackView.alignment = .center
-                customIndexStackView.distribution = .fillEqually
-                customIndexStackView.spacing = 0
-
-                customIndexContainerView.addSubview(customIndexStackView)
-                customIndexContainerView.addGestureRecognizer(customIndexTapGesture)
-                customIndexContainerView.addGestureRecognizer(customIndexPanGesture)
-
-                tableView.addSubview(customIndexContainerView)
-
-                NSLayoutConstraint.activate([
-                    customIndexContainerView.trailingAnchor.constraint(equalTo: tableView.frameLayoutGuide.trailingAnchor, constant: -4),
-                    customIndexContainerView.topAnchor.constraint(equalTo: tableView.frameLayoutGuide.topAnchor, constant: 20),
-                    customIndexContainerView.bottomAnchor.constraint(equalTo: tableView.frameLayoutGuide.bottomAnchor, constant: -20),
-                    customIndexContainerView.widthAnchor.constraint(equalToConstant: 24),
-
-                    customIndexStackView.leadingAnchor.constraint(equalTo: customIndexContainerView.leadingAnchor),
-                    customIndexStackView.trailingAnchor.constraint(equalTo: customIndexContainerView.trailingAnchor),
-                    customIndexStackView.topAnchor.constraint(equalTo: customIndexContainerView.topAnchor),
-                    customIndexStackView.bottomAnchor.constraint(equalTo: customIndexContainerView.bottomAnchor)
-                ])
-
-                rebuildCustomIndexLabels()
-            }
-
-            if customIndexLabels.isEmpty {
-                rebuildCustomIndexLabels()
-            }
-
-            tableView.bringSubviewToFront(customIndexContainerView)
-
-            refreshCustomIndexVisibility()
-
-            DispatchQueue.main.async { [weak self] in
-                self?.refreshCustomIndexVisibility()
-            }
-        }
-
-        private func rebuildCustomIndexLabels() {
-            for label in customIndexLabels {
-                customIndexStackView.removeArrangedSubview(label)
-                label.removeFromSuperview()
-            }
-
-            customIndexLabels.removeAll()
-
-            for title in IndexedVocabularyList.allIndexTitles {
-                let label = UILabel()
-                label.translatesAutoresizingMaskIntoConstraints = false
-                label.text = title
-                label.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
-                label.textColor = .systemBlue
-                label.textAlignment = .center
-
-                NSLayoutConstraint.activate([
-                    label.widthAnchor.constraint(equalToConstant: 20)
-                ])
-
-                customIndexStackView.addArrangedSubview(label)
-                customIndexLabels.append(label)
-            }
-        }
-
         func refreshCustomIndexVisibility() {
-            let isScrollable = isTableViewScrollable()
-            let shouldShowIndex = !customIndexLabels.isEmpty && isScrollable
-
-            customIndexContainerView.isHidden = !shouldShowIndex
-            customIndexContainerView.isUserInteractionEnabled = shouldShowIndex
-
-            if !shouldShowIndex {
+            if visibleSectionTitles.isEmpty {
                 hideScrollingIndexOverlayImmediately()
             }
-        }
-
-        private func isTableViewScrollable() -> Bool {
-            guard let tableView else {
-                return false
-            }
-
-            tableView.layoutIfNeeded()
-            let visibleHeight = tableView.bounds.height
-            guard visibleHeight > 1 else {
-                return false
-            }
-
-            let contentHeight = tableView.contentSize.height
-
-            return contentHeight > visibleHeight + 1
-        }
-
-        private func nearestIndexPosition(for point: CGPoint) -> Int? {
-            guard !customIndexLabels.isEmpty else {
-                return nil
-            }
-
-            customIndexStackView.layoutIfNeeded()
-
-            var nearestIndex = 0
-            var nearestDistance = CGFloat.greatestFiniteMagnitude
-
-            for (index, label) in customIndexLabels.enumerated() {
-                let distance = abs(point.y - label.frame.midY)
-
-                if distance < nearestDistance {
-                    nearestDistance = distance
-                    nearestIndex = index
-                }
-            }
-
-            return nearestIndex
         }
 
         private func resolveSection(for title: String, at index: Int) -> Int {
@@ -1122,55 +1143,6 @@ struct IndexedVocabularyList: UIViewRepresentable {
             }
 
             return 0
-        }
-
-        private func navigateToSection(at index: Int) {
-            guard let tableView,
-                    !IndexedVocabularyList.allIndexTitles.isEmpty,
-                    !visibleSectionTitles.isEmpty else {
-                return
-            }
-
-            let boundedIndex = min(max(index, 0), IndexedVocabularyList.allIndexTitles.count - 1)
-            let title = IndexedVocabularyList.allIndexTitles[boundedIndex]
-            showScrollingIndexOverlay(title: title)
-
-            let section = resolveSection(for: title, at: boundedIndex)
-            let rowCount = tableView.numberOfRows(inSection: section)
-
-            guard rowCount > 0 else {
-                return
-            }
-
-            tableView.scrollToRow(at: IndexPath(row: 0, section: section), at: .top, animated: false)
-        }
-
-        @objc
-        private func handleCustomIndexTap(_ gesture: UITapGestureRecognizer) {
-            let point = gesture.location(in: customIndexStackView)
-
-            guard let index = nearestIndexPosition(for: point) else {
-                return
-            }
-
-            navigateToSection(at: index)
-            scheduleHideScrollingIndexOverlay()
-        }
-
-        @objc
-        private func handleCustomIndexPan(_ gesture: UIPanGestureRecognizer) {
-            let point = gesture.location(in: customIndexStackView)
-
-            switch gesture.state {
-            case .began, .changed:
-                if let index = nearestIndexPosition(for: point) {
-                    navigateToSection(at: index)
-                }
-            case .ended, .cancelled, .failed:
-                scheduleHideScrollingIndexOverlay()
-            default:
-                break
-            }
         }
 
         private func rebuildSections() {
@@ -1220,11 +1192,6 @@ struct IndexedVocabularyList: UIViewRepresentable {
         }
 
         private func showScrollingIndexOverlay(title: String?) {
-            guard isTableViewScrollable() else {
-                hideScrollingIndexOverlayImmediately()
-                return
-            }
-
             guard let title, !title.isEmpty else {
                 return
             }
@@ -1277,11 +1244,13 @@ struct IndexedVocabularyList: UIViewRepresentable {
         }
 
         func sectionIndexTitles(for tableView: UITableView) -> [String]? {
-            nil
+            visibleSectionTitles.isEmpty ? nil : IndexedVocabularyList.allIndexTitles
         }
 
         func tableView(_ tableView: UITableView, sectionForSectionIndexTitle title: String, at index: Int) -> Int {
-            resolveSection(for: title, at: index)
+            showScrollingIndexOverlay(title: title)
+            scheduleHideScrollingIndexOverlay()
+            return resolveSection(for: title, at: index)
         }
 
         func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

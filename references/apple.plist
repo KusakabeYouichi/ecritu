@@ -27,6 +27,10 @@
 	<dict><key>phrase</key><string></string><key>shortcut</key><string>あっぷる</string></dict>
 	<dict><key>phrase</key><string>Apple</string><key>shortcut</key><string>あっぷる</string></dict>
 	<dict><key>phrase</key><string>Apple Watch</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
+	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
+	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
+	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっちうるとら</string></dict>
+	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっちえすいー</string></dict>
 	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーゔぃー</string></dict>
 	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーびー</string></dict>
 	<dict><key>phrase</key><string>AirTag</string><key>shortcut</key><string>えあたぐ</string></dict>
@@ -68,5 +72,18 @@
 	<dict><key>phrase</key><string>FaceTimeオーディオ</string><key>shortcut</key><string>ふぇいすたいむおーでぃお</string></dict>
 	<dict><key>phrase</key><string>iMessage</string><key>shortcut</key><string>あいめっせーじ</string></dict>
 	<dict><key>phrase</key><string>Apple Support</string><key>shortcut</key><string>あっぷるさぽーと</string></dict>
+	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
+	<dict><key>phrase</key><string>iTunes</string><key>shortcut</key><string>あいちゅーんず</string></dict>
+
+	<!-- カネゴリー4 -->
+	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
+	<dict><key>phrase</key><string>Pages</string><key>shortcut</key><string>ぺいじず</string></dict>
+	<dict><key>phrase</key><string>Numbers</string><key>shortcut</key><string>なんばーず</string></dict>
+	<dict><key>phrase</key><string>Keynote</string><key>shortcut</key><string>きーのーと</string></dict>
+	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
+	<dict><key>phrase</key><string>Safari</string><key>shortcut</key><string>さふぁり</string></dict>
+	<dict><key>phrase</key><string>GarageBand</string><key>shortcut</key><string>がれーじばんど</string></dict>
+	<dict><key>phrase</key><string>iMovie</string><key>shortcut</key><string>あいむーゔぃー</string></dict>
+	<dict><key>phrase</key><string>TestFlight</string><key>shortcut</key><string>てすとふらい</string></dict>
 </array>
 </plist>

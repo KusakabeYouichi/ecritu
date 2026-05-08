@@ -34,6 +34,7 @@ root = Path(os.environ["ROOT_DIR"])
 
 inputs = [
     *sorted(root.glob("tmp/sudachi_raw/**/*_lex.csv")),
+  root / "tools" / "refresh_simulator_dictionary_on_build.sh",
     root / "tools" / "build_sudachi_index.py",
     root / "tools" / "build_kana_kanji_sqlite.py",
   root / "tools" / "build_second_vocab_from_references.py",
@@ -68,7 +69,7 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
       --output "$TMP_PREMIER" \
       --output-sources "$TMP_SOURCES" \
       --output-inflections "$TMP_INFLECTIONS" \
-      --max-candidates 8 \
+      --max-candidates 24 \
       --min-reading-len 1 \
       --max-reading-len 10 \
       --max-candidate-len 20 \

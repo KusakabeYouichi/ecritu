@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260507103816"
+    private static let editionUpdatedAtRaw: String = "20260508095945"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -129,6 +129,9 @@ struct ContentView: View {
     @State private var isSuppressionDictionaryRegistrationVisible = false
     @State private var suppressionDictionaryScrollIndexTitle = ""
     @State private var isSuppressionDictionaryScrollIndexVisible = false
+    @State private var shortcutDictionaryEntries: [VocabularyEntry] = []
+    @State private var shortcutDictionaryCandidateInput = ""
+    @State private var isShortcutDictionaryRegistrationVisible = false
     @State private var firstVocabularyEntries: [VocabularyEntry] = []
     @State private var firstVocabularyScrollIndexTitle = ""
     @State private var isFirstVocabularyScrollIndexVisible = false
@@ -281,6 +284,10 @@ struct ContentView: View {
     private var canAddSuppressionDictionaryEntry: Bool {
         !normalizedKanaReading(from: suppressionDictionaryReadingInput).isEmpty
             && !suppressionDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    private var canAddShortcutDictionaryEntry: Bool {
+        !shortcutDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private var userVocabularyListMaxHeight: CGFloat {
@@ -450,6 +457,74 @@ struct ContentView: View {
         loadBundledInitialDictionaryEntries(filename: "InitialSupprVocabMigration")
     }
 
+    private func loadBundledInitialShortcutVocabularyEntries() -> [String] {
+        let fileExtension = "json"
+        let filename = "InitialShortcutVocabMigration"
+
+        if let resourceURL = Bundle.main.url(forResource: filename, withExtension: fileExtension),
+            let data = try? Data(contentsOf: resourceURL),
+            let decoded = try? JSONDecoder().decode([String].self, from: data) {
+            return uniqueCandidatesPreservingOrder(decoded)
+        }
+
+        if let pluginsURL = Bundle.main.builtInPlugInsURL,
+            let pluginURLs = try? FileManager.default.contentsOfDirectory(
+                at: pluginsURL,
+                includingPropertiesForKeys: nil,
+                options: [.skipsHiddenFiles]
+            ) {
+            for pluginURL in pluginURLs where pluginURL.pathExtension == "appex" {
+                let resourceURL = pluginURL.appendingPathComponent("\(filename).\(fileExtension)")
+
+                guard FileManager.default.fileExists(atPath: resourceURL.path),
+                    let data = try? Data(contentsOf: resourceURL),
+                    let decoded = try? JSONDecoder().decode([String].self, from: data) else {
+                    continue
+                }
+
+                return uniqueCandidatesPreservingOrder(decoded)
+            }
+        }
+
+        return []
+    }
+
+    private func loadShortcutVocabularyCandidates() -> [String] {
+        guard let defaults = Self.sharedDefaults else {
+            return []
+        }
+
+        if let shortcutData = defaults.data(forKey: SettingsKeys.kanaKanjiShortcutVocabulary),
+            let decoded = try? JSONDecoder().decode([String].self, from: shortcutData) {
+            return uniqueCandidatesPreservingOrder(decoded)
+        }
+
+        if let rawArray = defaults.array(forKey: SettingsKeys.kanaKanjiShortcutVocabulary) {
+            return uniqueCandidatesPreservingOrder(rawArray.compactMap { $0 as? String })
+        }
+
+        let legacyDictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiShortcutVocabulary)
+
+        if !legacyDictionary.isEmpty {
+            let candidates = legacyDictionary["☻"] ?? legacyDictionary
+                .keys
+                .sorted()
+                .flatMap { legacyDictionary[$0] ?? [] }
+            return uniqueCandidatesPreservingOrder(candidates)
+        }
+
+        return []
+    }
+
+    private func saveShortcutVocabularyCandidates(_ candidates: [String]) {
+        guard let defaults = Self.sharedDefaults,
+            let encoded = try? JSONEncoder().encode(candidates) else {
+            return
+        }
+
+        defaults.set(encoded, forKey: SettingsKeys.kanaKanjiShortcutVocabulary)
+    }
+
     private func loadAppGroupDictionaryEntries(filename: String) -> [String: [String]] {
         guard
             let containerURL = FileManager.default.containerURL(
@@ -535,6 +610,28 @@ struct ContentView: View {
             dictionaryKey: SettingsKeys.kanaKanjiSuppressionVocabulary,
             initialDictionaryLoader: loadBundledInitialSuppressionDictionaryEntries
         )
+    }
+
+    private func migrateInitialShortcutVocabularyIfNeeded() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let initialCandidates = loadBundledInitialShortcutVocabularyEntries()
+
+        guard !initialCandidates.isEmpty else {
+            return
+        }
+
+        let currentCandidates = loadShortcutVocabularyCandidates()
+        // Keep initial shortcut order authoritative while preserving existing entries.
+        let mergedCandidates = uniqueCandidatesPreservingOrder(initialCandidates + currentCandidates)
+
+        if mergedCandidates != currentCandidates {
+            saveShortcutVocabularyCandidates(mergedCandidates)
+        }
+
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyMigrated)
     }
 
     private func saveDictionaryEntries(_ entriesByReading: [String: [String]], forKey key: String) {
@@ -673,6 +770,39 @@ struct ContentView: View {
         loadSuppressionDictionaryEntries()
     }
 
+    private func loadShortcutDictionaryEntries() {
+        shortcutDictionaryEntries = loadShortcutVocabularyCandidates().map { candidate in
+            VocabularyEntry(reading: "☻", candidate: candidate)
+        }
+    }
+
+    private func addShortcutDictionaryEntry() {
+        let candidate = shortcutDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !candidate.isEmpty else {
+            return
+        }
+
+        var candidates = loadShortcutVocabularyCandidates()
+
+        if let existingIndex = candidates.firstIndex(of: candidate) {
+            candidates.remove(at: existingIndex)
+        }
+
+        candidates.insert(candidate, at: 0)
+        saveShortcutVocabularyCandidates(Array(candidates.prefix(128)))
+
+        shortcutDictionaryCandidateInput = ""
+        loadShortcutDictionaryEntries()
+    }
+
+    private func removeShortcutDictionaryEntry(_ entry: VocabularyEntry) {
+        var candidates = loadShortcutVocabularyCandidates()
+        candidates.removeAll { $0 == entry.candidate }
+        saveShortcutVocabularyCandidates(candidates)
+        loadShortcutDictionaryEntries()
+    }
+
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -784,6 +914,16 @@ struct ContentView: View {
                         onDeleteEntry: removeSuppressionDictionaryEntry
                     )
 
+                    ShortcutDictionarySettingsSection(
+                        entries: $shortcutDictionaryEntries,
+                        candidateInput: $shortcutDictionaryCandidateInput,
+                        isRegistrationVisible: $isShortcutDictionaryRegistrationVisible,
+                        canAddEntry: canAddShortcutDictionaryEntry,
+                        listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
+                        onAddEntry: addShortcutDictionaryEntry,
+                        onDeleteEntry: removeShortcutDictionaryEntry
+                    )
+
                     ReadOnlyDictionarySettingsSection(
                         title: "第1語彙",
                         entries: firstVocabularyEntries,
@@ -817,9 +957,11 @@ struct ContentView: View {
             .onAppear {
                 migrateLegacyFlickGuideSettingIfNeeded()
                 migrateInitialUserDictionaryIfNeeded()
+                migrateInitialShortcutVocabularyIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
                 loadUserDictionaryEntries()
                 loadSuppressionDictionaryEntries()
+                loadShortcutDictionaryEntries()
                 loadSystemVocabularyEntries()
             }
             .onReceive(
