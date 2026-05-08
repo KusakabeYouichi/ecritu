@@ -9,7 +9,7 @@ struct LatinShiftKeyButton: View {
 
     @Environment(\.keyboardAccentColor) private var accentColor
     @State private var didTriggerLongPress = false
-    private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
+    private let keyLabelColor = KeyboardThemePalette.keyLabel
 
     private var shiftSymbol: String {
         "⇧"
@@ -24,7 +24,7 @@ struct LatinShiftKeyButton: View {
             return Color(red: 0.38, green: 0.52, blue: 0.88)
         }
 
-        return Color.white.opacity(0.92)
+        return KeyboardThemePalette.keyBackground
     }
 
     private var shiftForegroundColor: Color {
@@ -33,14 +33,14 @@ struct LatinShiftKeyButton: View {
 
     private var shiftBorderColor: Color {
         if isLocked {
-            return Color.white.opacity(0.62)
+            return KeyboardThemePalette.keyStrokeOnAccent.opacity(0.95)
         }
 
         if isOn {
-            return Color.white.opacity(0.35)
+            return KeyboardThemePalette.keyStrokeOnAccent
         }
 
-        return Color.black.opacity(0.14)
+        return KeyboardThemePalette.keyBorder
     }
 
     var body: some View {
@@ -102,7 +102,7 @@ struct ActionKeyButton: View {
     @State private var didTriggerLongPress = false
     @State private var repeatStartWorkItem: DispatchWorkItem?
     @State private var repeatTimer: Timer?
-    private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
+    private let keyLabelColor = KeyboardThemePalette.keyLabel
 
     var body: some View {
         Button(action: {
@@ -123,15 +123,15 @@ struct ActionKeyButton: View {
                         .opacity(titleOpacity)
                 }
             }
-            .foregroundStyle(isEnabled ? keyLabelColor : keyLabelColor.opacity(0.35))
+            .foregroundStyle(isEnabled ? keyLabelColor : KeyboardThemePalette.keyLabelSecondary)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(isEnabled ? Color.white.opacity(0.92) : Color(white: 0.9).opacity(0.92))
+                    .fill(isEnabled ? KeyboardThemePalette.keyBackground : KeyboardThemePalette.keyBackgroundDisabled)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(Color.black.opacity(0.14), lineWidth: 1)
+                    .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
             )
         }
         .disabled(!isEnabled)
@@ -237,7 +237,7 @@ struct SpaceFlickActionKeyButton: View {
     @State private var activeDirection: FlickDirection = .milieu
     @State private var isTouching = false
 
-    private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
+    private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let tabPreviewText = "⇥"
 
     private var displayText: String {
@@ -249,16 +249,16 @@ struct SpaceFlickActionKeyButton: View {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(
                     isEnabled
-                        ? (isTouching ? accentColor.opacity(0.85) : Color.white.opacity(0.92))
-                        : Color(white: 0.9).opacity(0.92)
+                        ? (isTouching ? accentColor.opacity(0.85) : KeyboardThemePalette.keyBackground)
+                        : KeyboardThemePalette.keyBackgroundDisabled
                 )
 
             RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(Color.black.opacity(0.14), lineWidth: 1)
+                .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
 
             Text(title)
                 .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(isEnabled ? keyLabelColor : keyLabelColor.opacity(0.35))
+                .foregroundStyle(isEnabled ? keyLabelColor : KeyboardThemePalette.keyLabelSecondary)
                 .opacity(activeDirection == .haut ? 0 : titleOpacity)
 
             if isTouching {
@@ -283,7 +283,7 @@ struct SpaceFlickActionKeyButton: View {
                     .background(Capsule().fill(accentColor.opacity(0.95)))
                     .overlay(
                         Capsule()
-                            .stroke(Color.white.opacity(0.32), lineWidth: 1)
+                            .stroke(KeyboardThemePalette.keyStrokeOnAccent, lineWidth: 1)
                     )
                     .shadow(color: Color.black.opacity(0.16), radius: 1.5, y: 1)
                     .offset(y: -44)
@@ -362,7 +362,7 @@ struct EmojiTapFeedbackButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.84 : 1)
             .background(
                 Circle()
-                    .fill(configuration.isPressed ? Color.black.opacity(0.15) : Color.clear)
+                    .fill(configuration.isPressed ? KeyboardThemePalette.pressFeedbackCircle : Color.clear)
                     .frame(width: 24, height: 24)
             )
             .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
@@ -394,12 +394,12 @@ struct KaomojiTapFeedbackButtonStyle: ButtonStyle {
             .scaleEffect(configuration.isPressed ? 0.98 : 1)
             .background(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(configuration.isPressed ? Color.black.opacity(0.12) : Color.clear)
+                    .fill(configuration.isPressed ? KeyboardThemePalette.pressFeedbackRounded : Color.clear)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .stroke(
-                        configuration.isPressed ? Color.black.opacity(0.16) : Color.clear,
+                        configuration.isPressed ? KeyboardThemePalette.pressFeedbackRoundedBorder : Color.clear,
                         lineWidth: 1
                     )
             )
@@ -411,7 +411,7 @@ struct EmojiCategoryKeyButton: View {
     let icon: String
     let isSelected: Bool
     let action: () -> Void
-    private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
+    private let keyLabelColor = KeyboardThemePalette.keyLabel
 
     var body: some View {
         Button(action: action) {
@@ -422,16 +422,16 @@ struct EmojiCategoryKeyButton: View {
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(
                             isSelected
-                                ? Color.white.opacity(0.98)
-                                : Color.white.opacity(0.78)
+                                ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                                : KeyboardThemePalette.categoryButtonBackground
                         )
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(
                             isSelected
-                                ? keyLabelColor.opacity(0.55)
-                                : Color.black.opacity(0.11),
+                                ? KeyboardThemePalette.keyBorderEmphasis
+                                : KeyboardThemePalette.keyBorder,
                             lineWidth: isSelected ? 1.4 : 1
                         )
                 )
@@ -459,7 +459,7 @@ struct SymbolCategoryKeyButton: View {
                         .fill(
                             isSelected
                                 ? tintColor.opacity(0.22)
-                                : Color.white.opacity(0.78)
+                                : KeyboardThemePalette.categoryButtonBackground
                         )
                 )
                 .overlay(
@@ -467,7 +467,7 @@ struct SymbolCategoryKeyButton: View {
                         .stroke(
                             isSelected
                                 ? tintColor.opacity(0.75)
-                                : Color.black.opacity(0.11),
+                                : KeyboardThemePalette.keyBorder,
                             lineWidth: isSelected ? 1.4 : 1
                         )
                 )

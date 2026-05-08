@@ -2,6 +2,72 @@ import Foundation
 import SwiftUI
 import UIKit
 
+enum KeyboardThemePalette {
+    static let keyLabel = Color(uiColor: .label)
+    static let keyLabelSecondary = Color(uiColor: .secondaryLabel)
+    static let keyLabelTertiary = Color(uiColor: .tertiaryLabel)
+
+    static let keyBackground = Color(uiColor: .secondarySystemBackground).opacity(0.92)
+    static let keyBackgroundDisabled = Color(uiColor: .tertiarySystemFill).opacity(0.92)
+    static let keyBorder = Color(uiColor: .separator).opacity(0.42)
+    static let keyBorderEmphasis = Color(uiColor: .separator).opacity(0.62)
+    static let keyStrokeOnAccent = Color.white.opacity(0.32)
+
+    static let categoryButtonBackground = Color(uiColor: .tertiarySystemBackground).opacity(0.9)
+    static let categoryButtonBackgroundSelected = Color(uiColor: .secondarySystemBackground)
+
+    static let candidateHeaderChipBackground = Color(uiColor: .secondarySystemBackground).opacity(0.82)
+    static let candidateHeaderSubtleBackground = Color(uiColor: .secondarySystemBackground).opacity(0.68)
+    static let candidateHeaderPlaceholderBackground = Color(uiColor: .tertiarySystemFill).opacity(0.9)
+    static let candidateHeaderBorder = Color(uiColor: .separator).opacity(0.38)
+
+    static let longPressPanelText = Color(uiColor: .label)
+    static let longPressPanelCellBackground = Color(uiColor: .tertiarySystemBackground)
+    static let longPressPanelCellHighlight = Color(
+        uiColor: UIColor { trait in
+            if trait.userInterfaceStyle == .dark {
+                return UIColor(red: 0.24, green: 0.33, blue: 0.49, alpha: 1.0)
+            }
+
+            return UIColor(red: 0.84, green: 0.89, blue: 1.0, alpha: 1.0)
+        }
+    )
+    static let longPressPanelBackground = Color(uiColor: .secondarySystemBackground)
+    static let longPressPanelBorder = Color(uiColor: .separator).opacity(0.45)
+    static let longPressPanelShadow = Color.black.opacity(0.18)
+
+    static let pressFeedbackCircle = Color(
+        uiColor: UIColor { trait in
+            if trait.userInterfaceStyle == .dark {
+                return UIColor.white.withAlphaComponent(0.18)
+            }
+
+            return UIColor.black.withAlphaComponent(0.15)
+        }
+    )
+    static let pressFeedbackRounded = Color(
+        uiColor: UIColor { trait in
+            if trait.userInterfaceStyle == .dark {
+                return UIColor.white.withAlphaComponent(0.14)
+            }
+
+            return UIColor.black.withAlphaComponent(0.12)
+        }
+    )
+    static let pressFeedbackRoundedBorder = Color(
+        uiColor: UIColor { trait in
+            if trait.userInterfaceStyle == .dark {
+                return UIColor.white.withAlphaComponent(0.2)
+            }
+
+            return UIColor.black.withAlphaComponent(0.16)
+        }
+    )
+    static let thinDivider = Color(uiColor: .separator).opacity(0.5)
+
+    static let iconHighlight = Color(uiColor: .systemBackground)
+}
+
 struct KeyboardRootView: View {
     let onTextInput: (String) -> Void
     let onDeleteBackward: () -> Void
@@ -255,15 +321,31 @@ struct KeyboardRootView: View {
         case bleu
         case sakura
 
-        var gradientStops: [Gradient.Stop] {
+        func gradientStops(for colorScheme: ColorScheme) -> [Gradient.Stop] {
             switch self {
             case .bleu:
+                if colorScheme == .dark {
+                    return [
+                        .init(color: Color(red: 0.12, green: 0.14, blue: 0.18), location: 0.0),
+                        .init(color: Color(red: 0.12, green: 0.21, blue: 0.30), location: 0.34),
+                        .init(color: Color(red: 0.10, green: 0.17, blue: 0.25), location: 1.0)
+                    ]
+                }
+
                 return [
                     .init(color: Color(red: 0.89, green: 0.90, blue: 0.92), location: 0.0),
                     .init(color: Color(red: 0.8, green: 0.86, blue: 0.95), location: 0.34),
                     .init(color: Color(red: 0.9, green: 0.95, blue: 1.0), location: 1.0)
                 ]
             case .sakura:
+                if colorScheme == .dark {
+                    return [
+                        .init(color: Color(red: 0.13, green: 0.13, blue: 0.16), location: 0.0),
+                        .init(color: Color(red: 0.24, green: 0.18, blue: 0.23), location: 0.34),
+                        .init(color: Color(red: 0.18, green: 0.14, blue: 0.20), location: 1.0)
+                    ]
+                }
+
                 return [
                     .init(color: Color(red: 0.89, green: 0.90, blue: 0.92), location: 0.0),
                     .init(color: Color(red: 0.95, green: 0.84, blue: 0.88), location: 0.34),
@@ -285,9 +367,10 @@ struct KeyboardRootView: View {
     @State private var selectedEmojiCategory: EmojiCategory = .people
     @State private var selectedSymbolCategory: SymbolCategory = .basic
     @State private var emojiInputSubmode: EmojiInputSubmode = .emoji
+    @Environment(\.colorScheme) private var colorScheme
 
     private let shiftDoubleTapThreshold: TimeInterval = 0.32
-    private let keyLabelColor = Color(red: 0.11, green: 0.13, blue: 0.16)
+    private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let candidateHeaderExpandedHeight: CGFloat = 35
     private let candidateHeaderCollapsedHeight: CGFloat = 3
     private let keyboardRowSpacing: CGFloat = 6
@@ -435,7 +518,7 @@ struct KeyboardRootView: View {
 
     private var keyboardBackgroundGradient: LinearGradient {
         LinearGradient(
-            gradient: Gradient(stops: keyboardBackgroundTheme.gradientStops),
+            gradient: Gradient(stops: keyboardBackgroundTheme.gradientStops(for: colorScheme)),
             startPoint: .top,
             endPoint: .bottom
         )
@@ -1436,7 +1519,7 @@ struct KeyboardRootView: View {
                         if !shortcutRows.isEmpty,
                             !fixedRows.isEmpty {
                             Rectangle()
-                                .fill(Color.black.opacity(0.18))
+                                .fill(KeyboardThemePalette.thinDivider)
                                 .frame(height: 1)
                                 .padding(.vertical, 4)
                         }
@@ -1549,7 +1632,7 @@ struct KeyboardRootView: View {
                                 .padding(.vertical, 4)
                                 .background(
                                     RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(Color.white.opacity(0.6))
+                                        .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 7, style: .continuous)
@@ -1572,7 +1655,7 @@ struct KeyboardRootView: View {
                             .padding(.vertical, 4)
                             .background(
                                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .fill(Color.white.opacity(0.6))
+                                    .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 7, style: .continuous)
@@ -1593,7 +1676,7 @@ struct KeyboardRootView: View {
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .fill(Color.white.opacity(0.45))
+                                .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
                         )
                 }
 
@@ -1614,12 +1697,15 @@ struct KeyboardRootView: View {
                                     .fill(
                                         isSelected
                                             ? accentColor.opacity(0.9)
-                                            : Color.white.opacity(0.72)
+                                            : KeyboardThemePalette.candidateHeaderChipBackground
                                     )
                             )
                             .overlay(
                                 RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .stroke(Color.black.opacity(0.08), lineWidth: isSelected ? 0 : 1)
+                                    .stroke(
+                                        KeyboardThemePalette.candidateHeaderBorder,
+                                        lineWidth: isSelected ? 0 : 1
+                                    )
                             )
                     }
                     .buttonStyle(.plain)

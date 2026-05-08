@@ -19,7 +19,7 @@ struct DakutenDuckCompositeIconView: View {
             let shiftKeyBlue = Color(red: 0.38, green: 0.52, blue: 0.88)
             let duckStrokeColor = isSmallKanaMode
                 ? shiftKeyBlue
-                : Color(red: 0.11, green: 0.13, blue: 0.16)
+                : KeyboardThemePalette.keyLabel
             let overlayColor = shiftKeyBlue
             let handakutenVisualOffset = CGAffineTransform(translationX: 3, y: -4)
 
@@ -77,7 +77,7 @@ struct DakutenDuckCompositeIconView: View {
                         height: eyeHighlightRadius * 2
                     )
                 )
-                .fill(Color.white)
+                .fill(KeyboardThemePalette.iconHighlight)
 
                 if showsHandakutenMark {
                     DakutenDuckVectorPaths.handakutenHaloBand

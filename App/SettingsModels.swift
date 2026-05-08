@@ -1,5 +1,6 @@
 import SwiftUI
 import CoreFoundation
+import UIKit
 
 enum SettingsKeys {
     private static func fallbackAppGroupID() -> String {
@@ -251,5 +252,29 @@ enum SettingsSyncNotification {
             nil,
             true
         )
+    }
+}
+
+enum AppTheme {
+    static let screenBackground = Color(uiColor: .systemGroupedBackground)
+    static let cardBackground = Color(uiColor: .secondarySystemGroupedBackground)
+    static let cardInnerBackground = Color(uiColor: .tertiarySystemGroupedBackground)
+    static let controlBackground = Color(uiColor: .tertiarySystemBackground)
+    static let selectedControlBackground = Color(uiColor: .secondarySystemBackground)
+    static let listRowBackground = Color(uiColor: .secondarySystemGroupedBackground)
+    static let indexBadgeBackground = Color(uiColor: .tertiarySystemFill)
+    static let subtleBorder = Color(uiColor: .separator).opacity(0.35)
+    static let emphasisBorder = Color(uiColor: .separator).opacity(0.6)
+    static let subduedIcon = Color(uiColor: .tertiaryLabel)
+}
+
+extension View {
+    func settingsCardStyle() -> some View {
+        padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(AppTheme.cardBackground)
+            )
     }
 }
