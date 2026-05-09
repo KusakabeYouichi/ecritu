@@ -816,14 +816,20 @@ final class KeyboardViewController: UIInputViewController {
                     return
                 }
 
-                guard self.currentInputMode != mode else {
+                let previousMode = self.currentInputMode
+
+                guard previousMode != mode else {
                     return
+                }
+
+                if previousMode == .kana,
+                    mode != .kana {
+                    self.commitPendingComposingTextBeforeInputModeSwitch()
                 }
 
                 self.currentInputMode = mode
 
                 if mode != .kana {
-                    self.commitActiveConversion(learn: true)
                     self.clearComposingState()
                 }
 

@@ -6,6 +6,7 @@ Supported inputs:
 - Other CSV-like lexicon rows (heuristic fallback)
 
 For Sudachi raw lexicon CSV (19 columns), this script uses:
+- cost column: index 3
 - POS column: index 5
 - inflection type column: index 9
 - reading column: index 11
@@ -32,8 +33,11 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple
 SUDACHI_READING_INDEX = 11
 SUDACHI_NORMALIZED_INDEX = 12
 SUDACHI_SURFACE_FALLBACK_INDEX = 4
+SUDACHI_COST_INDEX = 3
 SUDACHI_POS_INDEX = 5
 SUDACHI_INFLECTION_TYPE_INDEX = 9
+
+UNKNOWN_COST_SENTINEL = 10**9
 
 SOURCE_TAG_NORMALIZED = "normalized"
 SOURCE_TAG_SURFACE = "surface"
@@ -218,6 +222,21 @@ def extract_surface_candidate(row: List[str]) -> Optional[str]:
     return fallback
 
 
+def extract_cost(row: List[str]) -> Optional[int]:
+    if len(row) <= SUDACHI_COST_INDEX:
+        return None
+
+    raw_cost = row[SUDACHI_COST_INDEX].strip()
+
+    if not raw_cost or raw_cost == "*":
+        return None
+
+    try:
+        return int(raw_cost)
+    except ValueError:
+        return None
+
+
 def iter_csv_rows(paths: Iterable[str]) -> Iterable[List[str]]:
     for path in paths:
         with open(path, "r", encoding="utf-8") as f:
@@ -243,6 +262,9 @@ def build_index(
     candidate_policy: str,
 ) -> Tuple[Dict[str, List[str]], Dict[str, Dict[str, str]], Dict[str, Dict[str, List[str]]]]:
     counters: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    cost_stats: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
+        lambda: defaultdict(lambda: {"sum": 0, "count": 0, "min": UNKNOWN_COST_SENTINEL})
+    )
     class_counters: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(int))
     )
@@ -257,6 +279,7 @@ def build_index(
         reading = extract_reading(row)
         normalized_candidate = extract_normalized_candidate(row)
         surface_candidate = extract_surface_candidate(row)
+        candidate_cost = extract_cost(row)
 
         candidates_with_sources: Dict[str, Set[str]] = defaultdict(set)
 
@@ -299,6 +322,12 @@ def build_index(
 
             counters[reading][candidate] += 1
 
+            if candidate_cost is not None:
+                stats = cost_stats[reading][candidate]
+                stats["sum"] += candidate_cost
+                stats["count"] += 1
+                stats["min"] = min(stats["min"], candidate_cost)
+
             for source in sources:
                 source_counters[reading][candidate][source] += 1
 
@@ -308,9 +337,32 @@ def build_index(
 
     index: Dict[str, List[str]] = {}
     for reading, cand_counter in counters.items():
+
+        def candidate_sort_key(item: Tuple[str, int]) -> Tuple[int, int, float, int, int, str]:
+            candidate, frequency = item
+            stats = cost_stats[reading].get(candidate)
+
+            if stats and stats["count"] > 0:
+                has_no_cost = 0
+                min_cost = stats["min"]
+                avg_cost = stats["sum"] / stats["count"]
+            else:
+                has_no_cost = 1
+                min_cost = UNKNOWN_COST_SENTINEL
+                avg_cost = float(UNKNOWN_COST_SENTINEL)
+
+            return (
+                -frequency,
+                has_no_cost,
+                min_cost,
+                avg_cost,
+                len(candidate),
+                candidate,
+            )
+
         sorted_candidates = sorted(
             cand_counter.items(),
-            key=lambda x: (-x[1], len(x[0]), x[0]),
+            key=candidate_sort_key,
         )
         per_reading_limit = max_candidates
         if len(reading) == 1:
