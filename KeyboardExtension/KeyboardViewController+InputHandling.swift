@@ -274,6 +274,28 @@ extension KeyboardViewController {
         refreshKeyboardStateAsync()
     }
 
+    func commitPendingComposingTextBeforeInputModeSwitch() {
+        guard currentInputMode == .kana else {
+            return
+        }
+
+        if activeConversion != nil {
+            commitActiveConversion(learn: true)
+            return
+        }
+
+        guard !composingRawText.isEmpty else {
+            return
+        }
+
+        commitComposingText(
+            sourceText: composingRawText,
+            sourceReading: composingReading,
+            committedText: composingRawText,
+            learn: true
+        )
+    }
+
     func cycleActiveConversionCandidate() {
         guard var conversion = activeConversion,
                 !conversion.candidates.isEmpty else {
