@@ -26,13 +26,19 @@ extension KeyboardViewController {
             return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
         }
 
+        let rawCandidates = kanaKanjiConverter.candidates(
+            for: composingReading,
+            limit: CandidateLimits.presentation,
+            systemCandidateMode: systemCandidateMode
+        )
+        let presentationCandidates = candidatesForPresentation(
+            from: rawCandidates,
+            composingText: composingRawText
+        )
+
         return CandidatePresentation(
             composingText: composingRawText,
-            candidates: kanaKanjiConverter.candidates(
-                for: composingReading,
-                limit: CandidateLimits.presentation,
-                systemCandidateMode: systemCandidateMode
-            ),
+            candidates: presentationCandidates,
             selectedIndex: nil
         )
     }
@@ -230,15 +236,19 @@ extension KeyboardViewController {
             limit: CandidateLimits.presentation,
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         )
+        let presentationCandidates = candidatesForPresentation(
+            from: candidates,
+            composingText: composingRawText
+        )
 
-        guard candidates.indices.contains(index) else {
+        guard presentationCandidates.indices.contains(index) else {
             return
         }
 
         commitComposingText(
             sourceText: composingRawText,
             sourceReading: composingReading,
-            committedText: candidates[index],
+            committedText: presentationCandidates[index],
             learn: true
         )
         refreshKeyboardStateAsync()
@@ -366,6 +376,29 @@ extension KeyboardViewController {
     func clearMarkedComposingText() {
         textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
         textDocumentProxy.unmarkText()
+    }
+
+    func candidatesForPresentation(
+        from candidates: [String],
+        composingText: String
+    ) -> [String] {
+        guard !composingText.isEmpty else {
+            return candidates
+        }
+
+        return candidates.filter { candidate in
+            !(candidate == composingText && isKanaOnlyText(candidate))
+        }
+    }
+
+    func isKanaOnlyText(_ text: String) -> Bool {
+        guard !text.isEmpty else {
+            return false
+        }
+
+        return text.allSatisfy { character in
+            KanaTextNormalizer.normalizedKanaCharacter(from: String(character)) != nil
+        }
     }
 
     func deleteBackwardCharacterCount(_ count: Int) {
