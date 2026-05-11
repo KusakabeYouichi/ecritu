@@ -63,7 +63,6 @@ fastlane/test_output
 
 # Temporary files
 tmp/*
-!tmp/ÉcrituSecondVocab.json
 
 # macOS
 .DS_Store
@@ -76,6 +75,7 @@ __pycache__/
 # Xcode build outputs
 build/
 build-device/
+build-device-agent-verify*/
 .derived-*/
 DerivedData/
 
