@@ -147,5 +147,8 @@
 	<dict><key>phrase</key><string>魯肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict>
 	<dict><key>phrase</key><string>滷肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict>
 	<dict><key>phrase</key><string>富士酢</string><key>shortcut</key><string>ふじす</string></dict>
+	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
+	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>うぃんどうず</string></dict>
+	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>ういんどうず</string></dict>
 </array>
 </plist>
