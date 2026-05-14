@@ -138,6 +138,53 @@ struct SetupStepsSection: View {
     }
 }
 
+struct KanaModeSwitcherAssignmentSection: View {
+    @Binding var tapSelection: KanaModeSwitcherActionOption
+    @Binding var rightFlickSelection: KanaModeSwitcherActionOption
+    @Binding var upFlickSelection: KanaModeSwitcherActionOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("かな左下キー割り当て")
+                .font(.headline)
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("タップ")
+                    .font(.subheadline.weight(.semibold))
+                Picker("タップ", selection: $tapSelection) {
+                    ForEach(KanaModeSwitcherActionOption.allCases) { option in
+                        Text("\(option.title) (\(option.keyLabel))").tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text("右フリック")
+                    .font(.subheadline.weight(.semibold))
+                Picker("右フリック", selection: $rightFlickSelection) {
+                    ForEach(KanaModeSwitcherActionOption.allCases) { option in
+                        Text("\(option.title) (\(option.keyLabel))").tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text("上フリック")
+                    .font(.subheadline.weight(.semibold))
+                Picker("上フリック", selection: $upFlickSelection) {
+                    ForEach(KanaModeSwitcherActionOption.allCases) { option in
+                        Text("\(option.title) (\(option.keyLabel))").tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            Text("かな入力モード左下キーのタップ・右フリック・上フリックの動作を設定します。同じ機能を複数方向に割り当てることもできます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 

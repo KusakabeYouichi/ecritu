@@ -61,9 +61,15 @@ struct FlickKeyView: View {
     var onCommitWithDirection: ((String, FlickDirection) -> Void)? = nil
     var mainLabelFontSize: CGFloat = 28
     var showsDirectionalHints: Bool = true
+    var showsGuideText: Bool = true
     var idleReplacement: AnyView? = nil
     var longPressCandidates: [String] = []
     var allowsDirectionalFlick: Bool = true
+    var directionalFlickThreshold: CGFloat = 18
+    var directionalCommitThreshold: CGFloat? = nil
+    var activePreviewFontSize: CGFloat = 24
+    var activePreviewHorizontalPadding: CGFloat = 12
+    var directionalHintHorizontalOffset: CGFloat = Metrics.directionHintHorizontalOffset
     var onTouchStateChanged: (Bool) -> Void = { _ in }
 
     @State private var activeDirection: FlickDirection = .milieu
@@ -115,9 +121,12 @@ struct FlickKeyView: View {
 
             if isTouching && activeDirection != .milieu && !longPressIsActive {
                 Text(kana.output(for: activeDirection))
-                    .font(.system(size: 24, weight: .bold, design: .rounded))
+                    .font(.system(size: activePreviewFontSize, weight: .bold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .allowsTightening(true)
                     .foregroundStyle(.white)
-                    .padding(.horizontal, 12)
+                        .padding(.horizontal, activePreviewHorizontalPadding)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(accentColor.opacity(0.95)))
                     .offset(previewOffset)
@@ -178,13 +187,13 @@ struct FlickKeyView: View {
                 .offset(y: Metrics.directionHintVerticalOffset)
 
             directionalHintText(kana.left, direction: .gauche)
-                .offset(x: -Metrics.directionHintHorizontalOffset)
+                .offset(x: -directionalHintHorizontalOffset)
 
             directionalHintText(kana.right, direction: .droite)
-                .offset(x: Metrics.directionHintHorizontalOffset)
+                .offset(x: directionalHintHorizontalOffset)
         }
         .allowsHitTesting(false)
-        .opacity(isTouching || !showsDirectionalHints || flickGuideDisplayMode != .fourDirections ? 0.0 : 1.0)
+        .opacity(isTouching || !showsGuideText || !showsDirectionalHints || flickGuideDisplayMode != .fourDirections ? 0.0 : 1.0)
     }
 
     private var downDirectionalHints: some View {
@@ -202,7 +211,7 @@ struct FlickKeyView: View {
         .padding(.horizontal, 4)
         .offset(y: Metrics.directionHintVerticalOffset)
         .allowsHitTesting(false)
-        .opacity(isTouching || flickGuideDisplayMode != .down ? 0.0 : 1.0)
+        .opacity(isTouching || !showsGuideText || flickGuideDisplayMode != .down ? 0.0 : 1.0)
     }
 
     @ViewBuilder
@@ -425,11 +434,28 @@ struct FlickKeyView: View {
                     return
                 }
 
-                let resolvedDirection = FlickGestureResolver.resolve(translation: value.translation)
+                let resolvedDirection = FlickGestureResolver.resolve(
+                    translation: value.translation,
+                    threshold: directionalFlickThreshold
+                )
                 activeDirection = effectiveDirection(for: resolvedDirection)
             }
-            .onEnded { _ in
+            .onEnded { value in
                 cancelLongPressTimer()
+
+                let committedDirection: FlickDirection = {
+                    guard !longPressIsActive,
+                        allowsDirectionalFlick,
+                        let directionalCommitThreshold else {
+                        return activeDirection
+                    }
+
+                    let resolvedDirection = FlickGestureResolver.resolve(
+                        translation: value.translation,
+                        threshold: directionalCommitThreshold
+                    )
+                    return effectiveDirection(for: resolvedDirection)
+                }()
 
                 let committedText: String
 
@@ -438,11 +464,11 @@ struct FlickKeyView: View {
                     longPressCandidates.indices.contains(highlightedLongPressIndex) {
                     committedText = longPressCandidates[highlightedLongPressIndex]
                 } else {
-                    committedText = kana.output(for: activeDirection)
+                    committedText = kana.output(for: committedDirection)
                 }
 
                 if let onCommitWithDirection {
-                    onCommitWithDirection(committedText, activeDirection)
+                    onCommitWithDirection(committedText, committedDirection)
                 } else {
                     onCommit(committedText)
                 }

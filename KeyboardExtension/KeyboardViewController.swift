@@ -68,6 +68,9 @@ final class KeyboardViewController: UIInputViewController {
         static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
+        static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
+        static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
+        static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
@@ -141,6 +144,9 @@ final class KeyboardViewController: UIInputViewController {
         let numberFlickGuideDisplayMode: FlickGuideDisplayMode
         let keyRepeatInitialDelay: TimeInterval
         let keyRepeatInterval: TimeInterval
+        let kanaModeSwitcherTapActionRawValue: String
+        let kanaModeSwitcherRightFlickActionRawValue: String
+        let kanaModeSwitcherUpFlickActionRawValue: String
         let showsNextKeyboardKey: Bool
         let shortcutVocabulary: [String]
         let composingText: String
@@ -753,6 +759,21 @@ final class KeyboardViewController: UIInputViewController {
             fallback: 0.1,
             range: 0.05...0.2
         )
+        let kanaModeSwitcherTapActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaModeSwitcherTapAction,
+            fallback: "emoji"
+        )
+        let kanaModeSwitcherRightFlickActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaModeSwitcherRightFlickAction,
+            fallback: "kaomoji"
+        )
+        let kanaModeSwitcherUpFlickActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaModeSwitcherUpFlickAction,
+            fallback: "symbols"
+        )
 
         return RenderConfiguration(
             directionProfile: directionProfile,
@@ -773,6 +794,9 @@ final class KeyboardViewController: UIInputViewController {
             numberFlickGuideDisplayMode: numberFlickGuideDisplayMode,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
+            kanaModeSwitcherTapActionRawValue: kanaModeSwitcherTapActionRawValue,
+            kanaModeSwitcherRightFlickActionRawValue: kanaModeSwitcherRightFlickActionRawValue,
+            kanaModeSwitcherUpFlickActionRawValue: kanaModeSwitcherUpFlickActionRawValue,
             showsNextKeyboardKey: needsInputModeSwitchKey,
             shortcutVocabulary: kanaKanjiStore.shortcutVocabulary(),
             composingText: candidatePresentation.composingText,
@@ -854,6 +878,9 @@ final class KeyboardViewController: UIInputViewController {
             numberFlickGuideDisplayMode: configuration.numberFlickGuideDisplayMode,
             keyRepeatInitialDelay: configuration.keyRepeatInitialDelay,
             keyRepeatInterval: configuration.keyRepeatInterval,
+            kanaModeSwitcherTapActionRawValue: configuration.kanaModeSwitcherTapActionRawValue,
+            kanaModeSwitcherRightFlickActionRawValue: configuration.kanaModeSwitcherRightFlickActionRawValue,
+            kanaModeSwitcherUpFlickActionRawValue: configuration.kanaModeSwitcherUpFlickActionRawValue,
             shortcutVocabulary: configuration.shortcutVocabulary,
             composingText: configuration.composingText,
             conversionCandidates: configuration.conversionCandidates,
