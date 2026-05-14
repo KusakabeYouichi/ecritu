@@ -35,6 +35,9 @@ enum SettingsKeys {
     static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
     static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
     static let keyRepeatInterval = "keyRepeatInterval"
+    static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
+    static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
+    static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
     static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
     static let kanaKanjiInitialUserDictionaryMigrated = "kanaKanjiInitialUserDictionaryMigrated"
     static let kanaKanjiShortcutVocabulary = "ÉcrituShortcutVocab"
@@ -169,6 +172,30 @@ enum KanaKanjiCandidateSourceModeOption: String, CaseIterable, Identifiable {
         case .normalise: return "normalisé"
         case .surface: return "surface"
         case .lesDeux: return "les deux"
+        }
+    }
+}
+
+enum KanaModeSwitcherActionOption: String, CaseIterable, Identifiable {
+    case emoji
+    case kaomoji
+    case symbols
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .emoji: return "絵文字"
+        case .kaomoji: return "顔文字"
+        case .symbols: return "記号"
+        }
+    }
+
+    var keyLabel: String {
+        switch self {
+        case .emoji: return "☺︎"
+        case .kaomoji: return "^_^"
+        case .symbols: return "⌘"
         }
     }
 }

@@ -97,6 +97,9 @@ struct KeyboardRootView: View {
     let numberFlickGuideDisplayMode: FlickGuideDisplayMode
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
+    let kanaModeSwitcherTapActionRawValue: String
+    let kanaModeSwitcherRightFlickActionRawValue: String
+    let kanaModeSwitcherUpFlickActionRawValue: String
     let shortcutVocabulary: [String]
     let composingText: String
     let conversionCandidates: [String]
@@ -255,19 +258,22 @@ struct KeyboardRootView: View {
         // ASCII punctuation in code point order.
         private static let basicSymbolsASCII: [String] = [
             "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
-            ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~"
+            ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~",
+            "", "⌘", "☻", "・", "「", "」", "『", "』"
         ]
 
         private static let basicSymbolsEBCDIC: [String] = [
             ".", "<", "(", "+", "|", "&", "!", "$", "*", ")", ";", "-", "/", ",", "%", "_",
-            ">", "?", "`", ":", "#", "@", "'", "=", "\"", "~", "^", "[", "]", "{", "}", "\\"
+            ">", "?", "`", ":", "#", "@", "'", "=", "\"", "~", "^", "[", "]", "{", "}", "\\",
+            "", "⌘", "☻", "・", "「", "」", "『", "』"
         ]
 
         private static let basicSymbolsANSI: [String] = [
             "!", "@", "#", "$", "%", "^", "&", "*",
             "(", ")", "-", "_", "=", "+", "[", "]",
             "{", "}", ";", ":", "'", "\"", ",", ".",
-            "<", ">", "/", "?", "\\", "|", "`", "~"
+            "<", ">", "/", "?", "\\", "|", "`", "~",
+            "", "⌘", "☻", "・", "「", "」", "『", "』"
         ]
 
         private static let bracketAndQuoteSymbols: [String] = [
@@ -311,6 +317,23 @@ struct KeyboardRootView: View {
             "Ⓐ", "Ⓑ", "Ⓒ", "Ⓓ", "Ⓔ", "Ⓕ", "Ⓖ", "Ⓗ", "Ⓘ", "Ⓙ", "Ⓚ", "Ⓛ", "Ⓜ", "Ⓝ", "Ⓞ", "Ⓟ", "Ⓠ", "Ⓡ", "Ⓢ", "Ⓣ", "Ⓤ", "Ⓥ", "Ⓦ", "Ⓧ", "Ⓨ", "Ⓩ",
             "ⓐ", "ⓑ", "ⓒ", "ⓓ", "ⓔ", "ⓕ", "ⓖ", "ⓗ", "ⓘ", "ⓙ", "ⓚ", "ⓛ", "ⓜ", "ⓝ", "ⓞ", "ⓟ", "ⓠ", "ⓡ", "ⓢ", "ⓣ", "ⓤ", "ⓥ", "ⓦ", "ⓧ", "ⓨ", "ⓩ"
         ]
+    }
+
+    private enum KanaModeSwitcherAction: String {
+        case emoji
+        case kaomoji
+        case symbols
+
+        var keyLabel: String {
+            switch self {
+            case .emoji:
+                return "☺︎"
+            case .kaomoji:
+                return "^_^"
+            case .symbols:
+                return "⌘"
+            }
+        }
     }
 
     private enum AccentPalette: String {
@@ -651,6 +674,30 @@ struct KeyboardRootView: View {
         left: "。"
     )
 
+    private var kanaModeSwitcherTapAction: KanaModeSwitcherAction {
+        KanaModeSwitcherAction(rawValue: kanaModeSwitcherTapActionRawValue) ?? .emoji
+    }
+
+    private var kanaModeSwitcherRightFlickAction: KanaModeSwitcherAction {
+        KanaModeSwitcherAction(rawValue: kanaModeSwitcherRightFlickActionRawValue) ?? .kaomoji
+    }
+
+    private var kanaModeSwitcherUpFlickAction: KanaModeSwitcherAction {
+        KanaModeSwitcherAction(rawValue: kanaModeSwitcherUpFlickActionRawValue) ?? .symbols
+    }
+
+    private var kanaModeSwitcherKana: FlickKanaSet {
+        FlickKanaSet(
+            label: kanaModeSwitcherTapAction.keyLabel,
+            center: kanaModeSwitcherTapAction.keyLabel,
+            up: kanaModeSwitcherUpFlickAction.keyLabel,
+            right: kanaModeSwitcherRightFlickAction.keyLabel,
+            down: "",
+            left: "",
+            usesProfileDependentGuideOrder: false
+        )
+    }
+
     private var modifierSelectorKey: FlickKanaSet {
         let usesPostfixModifierSwap = inputMode == .kana && kanaModifierPlacementMode == .postfix
         let modeSwitchText = inputMode == .kana ? kanaCharacterMode.toggleGuide : "123"
@@ -877,6 +924,24 @@ struct KeyboardRootView: View {
         return baseSize
     }
 
+    private var modifierDirectionalFlickThreshold: CGFloat {
+        if inputMode == .kana && kanaModifierPlacementMode == .postfix {
+            // Postfix modifier misfires are expensive (e.g. つ -> づ), so require larger movement.
+            return 26
+        }
+
+        return 18
+    }
+
+    private var modifierDirectionalCommitThreshold: CGFloat? {
+        if inputMode == .kana && kanaModifierPlacementMode == .postfix {
+            // Prefer center on postfix modifier unless movement is clearly directional.
+            return 32
+        }
+
+        return nil
+    }
+
     private var selectorKeySize: CGFloat {
         mainFlickKeyHeight
     }
@@ -946,6 +1011,18 @@ struct KeyboardRootView: View {
         usesWideLeftModeSwitchButtons ? 22.4 : 19.2
     }
 
+    private var kanaModeSwitcherMainLabelFontSize: CGFloat {
+        18
+    }
+
+    private var kanaModeSwitcherPreviewFontSize: CGFloat {
+        14
+    }
+
+    private var kanaModeSwitcherPreviewHorizontalPadding: CGFloat {
+        8
+    }
+
     private let kaomojiModeReturnIconFontSize: CGFloat = 32
 
     private var kanaFiveByTwoTopNumberKeys: [String] {
@@ -981,12 +1058,16 @@ struct KeyboardRootView: View {
                 .frame(width: leftModeSwitchButtonWidth, height: height)
         case 3:
             if isKanaFiveByTwoMode {
-                ActionKeyButton(
-                    title: "☺︎",
-                    accessibilityLabel: "絵文字/顔文字",
-                    fontSize: kaomojiTransitionIconFontSize,
-                    onLongPress: enterKaomojiMode,
-                    action: enterEmojiMode
+                FlickKeyView(
+                    kana: kanaModeSwitcherKana,
+                    onCommit: selectKanaModeSwitcher,
+                    onCommitWithDirection: selectKanaModeSwitcher,
+                    mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
+                    showsDirectionalHints: showsFlickGuideCharacters,
+                    showsGuideText: false,
+                    activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                    activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
+                    directionalHintHorizontalOffset: 16
                 )
                     .frame(width: leftModeSwitchButtonWidth, height: height)
             } else {
@@ -1191,12 +1272,19 @@ struct KeyboardRootView: View {
             .zIndex(zIndex(for: 2))
 
             HStack(spacing: rowSpacing) {
-                ActionKeyButton(
-                    title: "☺︎",
-                    accessibilityLabel: "絵文字",
-                    fontSize: kaomojiTransitionIconFontSize,
-                    onLongPress: enterKaomojiMode,
-                    action: enterEmojiMode
+                FlickKeyView(
+                    kana: kanaModeSwitcherKana,
+                    onCommit: selectKanaModeSwitcher,
+                    onCommitWithDirection: selectKanaModeSwitcher,
+                    mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
+                    showsDirectionalHints: showsFlickGuideCharacters,
+                    showsGuideText: false,
+                    activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                    activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
+                    directionalHintHorizontalOffset: 16,
+                    onTouchStateChanged: { isTouching in
+                        updateActiveLayer(isTouching, layerIndex: 3)
+                    }
                 )
                     .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
 
@@ -1207,6 +1295,8 @@ struct KeyboardRootView: View {
                     mainLabelFontSize: modifierMainLabelFontSize,
                     showsDirectionalHints: showsFlickGuideCharacters,
                     idleReplacement: modifierIdleReplacement,
+                    directionalFlickThreshold: modifierDirectionalFlickThreshold,
+                    directionalCommitThreshold: modifierDirectionalCommitThreshold,
                     onTouchStateChanged: { isTouching in
                         updateActiveLayer(isTouching, layerIndex: 3)
                     }
@@ -1458,21 +1548,7 @@ struct KeyboardRootView: View {
     private var symbolKeyboardView: some View {
         VStack(spacing: keyboardRowSpacing) {
             ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
-                    ForEach(
-                        Array(
-                            selectedSymbolCategory
-                                .symbols(basicOrder: basicSymbolOrder, temperatureUnit: temperatureUnit)
-                                .enumerated()
-                        ),
-                        id: \.offset
-                    ) { _, symbol in
-                        SymbolKeyButton(symbol: symbol) {
-                            onTextInput(symbol)
-                        }
-                        .frame(height: compactEmojiKeyHeight)
-                    }
-                }
+                symbolCategoryContentView
                 .padding(.vertical, 2)
             }
 
@@ -1509,6 +1585,92 @@ struct KeyboardRootView: View {
                     .frame(height: compactActionKeyHeight)
             }
         }
+    }
+
+    @ViewBuilder
+    private var symbolCategoryContentView: some View {
+        let symbols = selectedSymbolCategory.symbols(
+            basicOrder: basicSymbolOrder,
+            temperatureUnit: temperatureUnit
+        )
+
+        switch selectedSymbolCategory {
+        case .basic:
+            let splitIndex = max(0, symbols.count - 8)
+            let leadingSymbols = Array(symbols.prefix(splitIndex))
+            let trailingSymbols = Array(symbols.dropFirst(splitIndex))
+
+            LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                symbolGridSection(leadingSymbols)
+
+                if !leadingSymbols.isEmpty && !trailingSymbols.isEmpty {
+                    symbolSectionDivider
+                }
+
+                symbolGridSection(trailingSymbols)
+            }
+
+        case .enclosed:
+            let numberStart = symbols.firstIndex(of: "⓪")
+            let upperStart = symbols.firstIndex(of: "Ⓐ")
+            let lowerStart = symbols.firstIndex(of: "ⓐ")
+
+            if let numberStart,
+                let upperStart,
+                let lowerStart,
+                numberStart < upperStart,
+                upperStart < lowerStart {
+                let markSymbols = Array(symbols[..<numberStart])
+                let numberSymbols = Array(symbols[numberStart..<upperStart])
+                let upperSymbols = Array(symbols[upperStart..<lowerStart])
+                let lowerSymbols = Array(symbols[lowerStart...])
+
+                LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                    symbolGridSection(markSymbols)
+
+                    if !markSymbols.isEmpty && !numberSymbols.isEmpty {
+                        symbolSectionDivider
+                    }
+
+                    symbolGridSection(numberSymbols)
+
+                    if !numberSymbols.isEmpty && !upperSymbols.isEmpty {
+                        symbolSectionDivider
+                    }
+
+                    symbolGridSection(upperSymbols)
+
+                    if !upperSymbols.isEmpty && !lowerSymbols.isEmpty {
+                        symbolSectionDivider
+                    }
+
+                    symbolGridSection(lowerSymbols)
+                }
+            } else {
+                symbolGridSection(symbols)
+            }
+
+        default:
+            symbolGridSection(symbols)
+        }
+    }
+
+    private func symbolGridSection(_ symbols: [String]) -> some View {
+        LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
+            ForEach(Array(symbols.enumerated()), id: \.offset) { _, symbol in
+                SymbolKeyButton(symbol: symbol) {
+                    onTextInput(symbol)
+                }
+                .frame(height: compactEmojiKeyHeight)
+            }
+        }
+    }
+
+    private var symbolSectionDivider: some View {
+        Rectangle()
+            .fill(KeyboardThemePalette.thinDivider)
+            .frame(height: 1)
+            .padding(.vertical, 2)
     }
 
     private var kaomojiKeyboardView: some View {
@@ -1845,6 +2007,8 @@ struct KeyboardRootView: View {
                             mainLabelFontSize: modifierMainLabelFontSize,
                             showsDirectionalHints: showsFlickGuideCharacters,
                             idleReplacement: modifierIdleReplacement,
+                            directionalFlickThreshold: modifierDirectionalFlickThreshold,
+                            directionalCommitThreshold: modifierDirectionalCommitThreshold,
                             onTouchStateChanged: { isTouching in
                                 updateActiveLayer(isTouching, layerIndex: rows.count)
                             }
@@ -2036,6 +2200,34 @@ struct KeyboardRootView: View {
             transitionState,
             to: mode
         )
+    }
+
+    private func selectKanaModeSwitcher(_ output: String) {
+        selectKanaModeSwitcher(output, direction: .milieu)
+    }
+
+    private func selectKanaModeSwitcher(_ output: String, direction: FlickDirection) {
+        let action: KanaModeSwitcherAction
+
+        switch direction {
+        case .milieu:
+            action = kanaModeSwitcherTapAction
+        case .droite:
+            action = kanaModeSwitcherRightFlickAction
+        case .haut:
+            action = kanaModeSwitcherUpFlickAction
+        default:
+            return
+        }
+
+        switch action {
+        case .emoji:
+            enterEmojiMode()
+        case .kaomoji:
+            enterKaomojiMode()
+        case .symbols:
+            enterSymbolsMode()
+        }
     }
 
     private func enterEmojiMode() {
@@ -2418,6 +2610,9 @@ struct KeyboardRootView: View {
         numberFlickGuideDisplayMode: .fourDirections,
         keyRepeatInitialDelay: 0.5,
         keyRepeatInterval: 0.1,
+          kanaModeSwitcherTapActionRawValue: "emoji",
+          kanaModeSwitcherRightFlickActionRawValue: "kaomoji",
+          kanaModeSwitcherUpFlickActionRawValue: "symbols",
         shortcutVocabulary: [],
         composingText: "かな",
         conversionCandidates: ["仮名", "かな"],

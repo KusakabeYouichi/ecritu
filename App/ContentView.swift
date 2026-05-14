@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260511101724"
+    private static let editionUpdatedAtRaw: String = "20260514104928"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -110,6 +110,24 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var keyRepeatInterval: Double = RepeatSettings.intervalDefault
+
+    @AppStorage(
+        SettingsKeys.kanaModeSwitcherTapAction,
+        store: Self.sharedDefaults
+    )
+    private var kanaModeSwitcherTapActionRawValue: String = KanaModeSwitcherActionOption.emoji.rawValue
+
+    @AppStorage(
+        SettingsKeys.kanaModeSwitcherRightFlickAction,
+        store: Self.sharedDefaults
+    )
+    private var kanaModeSwitcherRightFlickActionRawValue: String = KanaModeSwitcherActionOption.kaomoji.rawValue
+
+    @AppStorage(
+        SettingsKeys.kanaModeSwitcherUpFlickAction,
+        store: Self.sharedDefaults
+    )
+    private var kanaModeSwitcherUpFlickActionRawValue: String = KanaModeSwitcherActionOption.symbols.rawValue
 
     @AppStorage(
         SettingsKeys.kanaKanjiCandidateSourceMode,
@@ -278,6 +296,24 @@ struct ContentView: View {
             get: { keyRepeatInterval },
             set: { keyRepeatInterval = snappedRepeatValue($0, to: RepeatSettings.intervalDefault) }
         )
+    }
+
+    private var kanaModeSwitcherTapActionSelection: Binding<KanaModeSwitcherActionOption> {
+        rawValueSelection(from: kanaModeSwitcherTapActionRawValue, default: .emoji) {
+            kanaModeSwitcherTapActionRawValue = $0
+        }
+    }
+
+    private var kanaModeSwitcherRightFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
+        rawValueSelection(from: kanaModeSwitcherRightFlickActionRawValue, default: .kaomoji) {
+            kanaModeSwitcherRightFlickActionRawValue = $0
+        }
+    }
+
+    private var kanaModeSwitcherUpFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
+        rawValueSelection(from: kanaModeSwitcherUpFlickActionRawValue, default: .symbols) {
+            kanaModeSwitcherUpFlickActionRawValue = $0
+        }
     }
 
     private var canAddUserDictionaryEntry: Bool {
@@ -993,6 +1029,12 @@ struct ContentView: View {
                         KeyRepeatSettingsSection(
                             keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
                             keyRepeatInterval: keyRepeatIntervalBinding
+                        )
+
+                        KanaModeSwitcherAssignmentSection(
+                            tapSelection: kanaModeSwitcherTapActionSelection,
+                            rightFlickSelection: kanaModeSwitcherRightFlickActionSelection,
+                            upFlickSelection: kanaModeSwitcherUpFlickActionSelection
                         )
 
                         VStack(alignment: .leading, spacing: 10) {
