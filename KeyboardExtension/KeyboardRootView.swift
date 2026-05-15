@@ -410,6 +410,8 @@ struct KeyboardRootView: View {
     private let keyboardTopPadding: CGFloat = 3
     private let keyboardHorizontalPadding: CGFloat = 8
     private let keyboardBottomPadding: CGFloat = 20
+    private let candidateStateFontSize: CGFloat = 15
+    private let candidateTextFontSize: CGFloat = 16
     private let compactActionKeyHeight: CGFloat = 42
     private let compactModeSwitchKeyWidth: CGFloat = 32
     private let wideModeSwitchKeyWidth: CGFloat = 58
@@ -623,7 +625,7 @@ struct KeyboardRootView: View {
     }
 
     private var kanaCandidateHeaderTopPadding: CGFloat {
-        isKanaThreeByThreeMode ? 14 : 12
+        isKanaThreeByThreeMode ? 6 : 4
     }
 
     private var usesThreeByThreeGridForNumberOrLatin: Bool {
@@ -1784,7 +1786,7 @@ struct KeyboardRootView: View {
             HStack(spacing: 6) {
                 if !composingText.isEmpty {
                     Text(conversionStateLabel)
-                        .font(.caption2.weight(.bold))
+                        .font(.system(size: candidateStateFontSize, weight: .bold))
                         .foregroundStyle(Color.white)
                         .lineLimit(1)
                         .padding(.horizontal, 7)
@@ -1799,7 +1801,7 @@ struct KeyboardRootView: View {
                             onCommitComposingText()
                         } label: {
                             Text(composingText)
-                                .font(.caption.weight(.semibold))
+                                .font(.system(size: candidateTextFontSize, weight: .semibold))
                                 .foregroundStyle(keyLabelColor.opacity(0.85))
                                 .lineLimit(1)
                                 .underline(true, color: conversionStateColor.opacity(0.92))
@@ -1822,7 +1824,7 @@ struct KeyboardRootView: View {
                         .accessibilityHint("変換せずに確定")
                     } else {
                         Text(composingText)
-                            .font(.caption.weight(.semibold))
+                            .font(.system(size: candidateTextFontSize, weight: .semibold))
                             .foregroundStyle(keyLabelColor.opacity(0.85))
                             .lineLimit(1)
                             .underline(true, color: conversionStateColor.opacity(0.92))
@@ -1844,7 +1846,7 @@ struct KeyboardRootView: View {
 
                 if conversionCandidates.isEmpty {
                     Text("候補なし")
-                        .font(.caption)
+                        .font(.system(size: candidateTextFontSize, weight: .regular))
                         .foregroundStyle(keyLabelColor.opacity(0.6))
                         .lineLimit(1)
                         .padding(.horizontal, 8)
@@ -1862,7 +1864,7 @@ struct KeyboardRootView: View {
                         onSelectConversionCandidate(index)
                     } label: {
                         Text(candidate)
-                            .font(.caption.weight(.semibold))
+                            .font(.system(size: candidateTextFontSize, weight: .semibold))
                             .foregroundStyle(isSelected ? Color.white : keyLabelColor)
                             .lineLimit(1)
                             .padding(.horizontal, 8)

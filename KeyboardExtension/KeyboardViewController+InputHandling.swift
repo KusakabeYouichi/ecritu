@@ -48,6 +48,8 @@ extension KeyboardViewController {
             return
         }
 
+        recordKeyboardInputProbe(event: "text", text: text)
+
         commitActiveConversion(learn: true)
 
         if currentInputMode == .kana,
@@ -115,6 +117,8 @@ extension KeyboardViewController {
     }
 
     func handleDeleteBackward() {
+        recordKeyboardInputProbe(event: "delete")
+
         if activeConversion != nil {
             commitActiveConversion(learn: false)
             clearComposingState()
@@ -145,6 +149,8 @@ extension KeyboardViewController {
     }
 
     func handleSpaceInput() {
+        recordKeyboardInputProbe(event: "space", text: " ")
+
         guard currentInputMode == .kana else {
             commitActiveConversion(learn: true)
 
@@ -182,6 +188,8 @@ extension KeyboardViewController {
     }
 
     func handleReturnInput() {
+        recordKeyboardInputProbe(event: "return", text: "\\n")
+
         let hasActiveConversion = activeConversion != nil
         let hasComposingText = !composingRawText.isEmpty
 

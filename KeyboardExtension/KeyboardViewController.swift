@@ -6,8 +6,13 @@ final class KeyboardViewController: UIInputViewController {
     private var hostingController: UIHostingController<KeyboardRootView>?
     private var lastRenderConfiguration: RenderConfiguration?
     private var keyboardHeightConstraint: NSLayoutConstraint?
+    private var keyboardMaxHeightConstraint: NSLayoutConstraint?
+    private weak var keyboardSizingView: UIView?
     private var cachedPortraitSafeAreaBottomInset: CGFloat?
     private var isObservingSettingsDidChange = false
+    private var keyboardHeightLockValue: CGFloat?
+    private var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
+    private var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
     var currentInputMode: KeyboardInputMode = .kana
     private var spaceToastTrigger = 0
     var composingRawText = ""
@@ -71,6 +76,10 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
         static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
         static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+        static let keyboardInputProbeCount = "keyboardInputProbeCount"
+        static let keyboardInputProbeHeartbeat = "keyboardInputProbeHeartbeat"
+        static let keyboardInputProbeLastEvent = "keyboardInputProbeLastEvent"
+        static let keyboardInputProbeLastText = "keyboardInputProbeLastText"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
@@ -109,6 +118,7 @@ final class KeyboardViewController: UIInputViewController {
     private static let maximumEmojiHeight: CGFloat = 290
     private static let portraitSystemAccessoryOffset: CGFloat = 6
     private static let landscapeKeyboardHeight: CGFloat = 244
+    private static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
             return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
@@ -156,6 +166,9 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        configureKeyboardContainerSizing()
+        beginKeyboardHeightLock()
+        prepareKeyboardVisualForTransition()
         configureInputAssistantBar()
         startObservingSettingsDidChange()
         setupKeyboardView()
@@ -165,12 +178,16 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     deinit {
+        keyboardHeightLockReleaseWorkItem?.cancel()
         stopObservingSettingsDidChange()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        configureKeyboardContainerSizing()
+        beginKeyboardHeightLock(using: makeRenderConfiguration())
         configureInputAssistantBar()
+        prepareKeyboardVisualForTransition()
         spaceToastTrigger += 1
         refreshKeyboardState()
     }
@@ -197,12 +214,22 @@ final class KeyboardViewController: UIInputViewController {
         applyKeyboardBaseBackground()
     }
 
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+
+        let configuration = makeRenderConfiguration()
+        installKeyboardHeightConstraintIfNeeded(using: configuration)
+        updateKeyboardHeightIfNeeded(using: configuration)
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
         let configuration = makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded(using: configuration)
         updateKeyboardHeightIfNeeded(using: configuration)
+
+        updateKeyboardVisualVisibility(using: configuration)
 
         guard lastRenderConfiguration != nil else {
             return
@@ -260,6 +287,7 @@ final class KeyboardViewController: UIInputViewController {
         host.didMove(toParent: self)
         hostingController = host
         lastRenderConfiguration = configuration
+        prepareKeyboardVisualForTransition()
         applyKeyboardBaseBackground()
     }
 
@@ -267,6 +295,63 @@ final class KeyboardViewController: UIInputViewController {
         let assistant = inputAssistantItem
         assistant.leadingBarButtonGroups = []
         assistant.trailingBarButtonGroups = []
+    }
+
+    private func configureKeyboardContainerSizing() {
+        (inputView as? UIInputView)?.allowsSelfSizing = false
+
+        if let inputView {
+            migrateKeyboardConstraintsIfNeeded(to: inputView)
+        }
+    }
+
+    private func migrateKeyboardConstraintsIfNeeded(to sizingView: UIView) {
+        guard keyboardSizingView !== sizingView else {
+            return
+        }
+
+        keyboardHeightConstraint?.isActive = false
+        keyboardHeightConstraint = nil
+        keyboardMaxHeightConstraint?.isActive = false
+        keyboardMaxHeightConstraint = nil
+        keyboardSizingView = sizingView
+    }
+
+    private func beginKeyboardHeightLock(using configuration: RenderConfiguration? = nil) {
+        let lockHeight = preferredKeyboardHeight(using: configuration)
+        keyboardHeightLockValue = lockHeight
+        keyboardHeightLockReleaseTime = CFAbsoluteTimeGetCurrent() + Self.keyboardSwitchHeightLockDuration
+        synchronizePreferredContentSize(height: lockHeight)
+
+        keyboardHeightLockReleaseWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else {
+                return
+            }
+
+            self.keyboardHeightLockValue = nil
+            self.keyboardHeightLockReleaseTime = 0
+            self.refreshKeyboardStateAsync()
+        }
+        keyboardHeightLockReleaseWorkItem = workItem
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + Self.keyboardSwitchHeightLockDuration,
+            execute: workItem
+        )
+    }
+
+    private func effectivePreferredKeyboardHeight(using configuration: RenderConfiguration? = nil) -> CGFloat {
+        if let keyboardHeightLockValue,
+            CFAbsoluteTimeGetCurrent() < keyboardHeightLockReleaseTime {
+            return keyboardHeightLockValue
+        }
+
+        if keyboardHeightLockValue != nil {
+            self.keyboardHeightLockValue = nil
+            keyboardHeightLockReleaseTime = 0
+        }
+
+        return preferredKeyboardHeight(using: configuration)
     }
 
     private func startObservingSettingsDidChange() {
@@ -338,6 +423,48 @@ final class KeyboardViewController: UIInputViewController {
         hostingController?.view.backgroundColor = Self.baseKeyboardBackgroundColor
     }
 
+    private func prepareKeyboardVisualForTransition() {
+        view.alpha = 1
+        hostingController?.view.alpha = 1
+    }
+
+    private func updateKeyboardVisualVisibility(using _: RenderConfiguration) {
+        if view.alpha != 1 {
+            view.alpha = 1
+        }
+
+        if hostingController?.view.alpha != 1 {
+            hostingController?.view.alpha = 1
+        }
+    }
+
+    private func synchronizePreferredContentSize(height: CGFloat) {
+        let targetWidth = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
+        let targetSize = CGSize(width: targetWidth, height: height)
+
+        guard abs(preferredContentSize.height - targetSize.height) > 0.5
+            || abs(preferredContentSize.width - targetSize.width) > 0.5 else {
+            return
+        }
+
+        preferredContentSize = targetSize
+    }
+
+    func recordKeyboardInputProbe(event: String, text: String? = nil) {
+        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID) else {
+            return
+        }
+
+        let nextCount = defaults.integer(forKey: SharedDefaultsKeys.keyboardInputProbeCount) + 1
+        defaults.set(nextCount, forKey: SharedDefaultsKeys.keyboardInputProbeCount)
+        defaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardInputProbeHeartbeat)
+        defaults.set(event, forKey: SharedDefaultsKeys.keyboardInputProbeLastEvent)
+
+        if let text, !text.isEmpty {
+            defaults.set(String(text.prefix(12)), forKey: SharedDefaultsKeys.keyboardInputProbeLastText)
+        }
+    }
+
     private func effectiveKanaLayoutModeForHeight() -> KanaLayoutMode {
         if let mode = lastRenderConfiguration?.kanaLayoutMode {
             return mode
@@ -406,19 +533,19 @@ final class KeyboardViewController: UIInputViewController {
         switch profile {
         case .kanaThreeByThree:
             // 3x3+わは独立補正で高さを合わせる。
-            return 40
+            return 46
         case .compactGrid:
             // 数字/ラテンフリック系も3x3+わと同一高さに揃える。
-            return 40
+            return 46
         case .compactActionRow:
             // compactActionRowはベースが4pt低い分だけ加算して揃える。
-            return 44
+            return 50
         case .kanaFiveByTwo:
-            // 5x2は現状高めに見えるため、やや下げる。
-            return -6
+            // 5x2も他モードと同程度の見た目高さに寄せる。
+            return 0
         case .emoji:
             // 絵文字/記号入力もテキスト系モードと同等の見た目高さに揃える。
-            return 40
+            return 46
         }
     }
 
@@ -564,32 +691,80 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func installKeyboardHeightConstraintIfNeeded(using configuration: RenderConfiguration? = nil) {
+        let initialHeight = effectivePreferredKeyboardHeight(using: configuration)
+        synchronizePreferredContentSize(height: initialHeight)
+        guard let sizingView = inputView ?? view else {
+            return
+        }
+
+        migrateKeyboardConstraintsIfNeeded(to: sizingView)
+
+        if let keyboardMaxHeightConstraint {
+            if abs(keyboardMaxHeightConstraint.constant - initialHeight) > 0.5 {
+                keyboardMaxHeightConstraint.constant = initialHeight
+            }
+        } else {
+            let maxConstraint = sizingView.heightAnchor.constraint(
+                lessThanOrEqualToConstant: initialHeight
+            )
+            maxConstraint.priority = .required
+            maxConstraint.isActive = true
+            keyboardMaxHeightConstraint = maxConstraint
+        }
+
         guard keyboardHeightConstraint == nil else {
             return
         }
 
-        let constraint = view.heightAnchor.constraint(
-            equalToConstant: preferredKeyboardHeight(using: configuration)
+        let constraint = sizingView.heightAnchor.constraint(
+            equalToConstant: initialHeight
         )
-        constraint.priority = UILayoutPriority(999)
+        constraint.priority = .required
         constraint.isActive = true
         keyboardHeightConstraint = constraint
     }
 
     private func updateKeyboardHeightIfNeeded(using configuration: RenderConfiguration? = nil) {
+        guard let sizingView = inputView ?? view else {
+            return
+        }
+
+        migrateKeyboardConstraintsIfNeeded(to: sizingView)
+
         guard let keyboardHeightConstraint else {
+            installKeyboardHeightConstraintIfNeeded(using: configuration)
             return
         }
 
-        let nextHeight = preferredKeyboardHeight(using: configuration)
+        let nextHeight = effectivePreferredKeyboardHeight(using: configuration)
+        synchronizePreferredContentSize(height: nextHeight)
 
-        guard abs(keyboardHeightConstraint.constant - nextHeight) > 0.5 else {
+        let needsEqualHeightUpdate = abs(keyboardHeightConstraint.constant - nextHeight) > 0.5
+        let needsMaxHeightUpdate = {
+            guard let keyboardMaxHeightConstraint else {
+                return false
+            }
+
+            return abs(keyboardMaxHeightConstraint.constant - nextHeight) > 0.5
+        }()
+
+        guard needsEqualHeightUpdate || needsMaxHeightUpdate else {
             return
         }
 
-        keyboardHeightConstraint.constant = nextHeight
+        UIView.performWithoutAnimation {
+            if needsMaxHeightUpdate {
+                keyboardMaxHeightConstraint?.constant = nextHeight
+            }
 
-        view.setNeedsLayout()
+            if needsEqualHeightUpdate {
+                keyboardHeightConstraint.constant = nextHeight
+            }
+
+            view.layoutIfNeeded()
+            inputView?.layoutIfNeeded()
+            view.superview?.layoutIfNeeded()
+        }
     }
 
     private func sharedStringValue(

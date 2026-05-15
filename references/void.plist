@@ -150,5 +150,7 @@
 	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
 	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>うぃんどうず</string></dict>
 	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>ういんどうず</string></dict>
+	<dict><key>phrase</key><string>Philips</string><key>shortcut</key><string>ふぃりっぷす</string></dict>
+	<dict><key>phrase</key><string>Philips Hue</string><key>shortcut</key><string>ふぃりっぷすひゅー</string></dict>
 </array>
 </plist>
