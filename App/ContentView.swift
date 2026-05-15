@@ -1,8 +1,11 @@
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260514143514"
+    private static let editionUpdatedAtRaw: String = "20260515094445"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -156,6 +159,15 @@ struct ContentView: View {
     @State private var secondVocabularyEntries: [VocabularyEntry] = []
     @State private var secondVocabularyScrollIndexTitle = ""
     @State private var isSecondVocabularyScrollIndexVisible = false
+    @State private var keyboardLayoutDebugLines: [String] = []
+    @State private var keyboardLayoutDebugHeartbeat: Double = 0
+    @State private var keyboardLayoutDebugReporterBundleID = ""
+    @State private var keyboardLayoutDebugReporterAppGroupID = ""
+    @State private var keyboardLayoutDebugLastEvent = ""
+    @State private var keyboardInputProbeCount = 0
+    @State private var keyboardInputProbeHeartbeat: Double = 0
+    @State private var keyboardInputProbeLastEvent = ""
+    @State private var keyboardInputProbeLastText = ""
     @GestureState private var isEditionNumberPressed = false
 
     private let setupSteps: [String] = [
@@ -347,6 +359,117 @@ struct ContentView: View {
     private func userVocabularyListHeight(for entryCount: Int) -> CGFloat {
         let contentHeight = CGFloat(max(entryCount, 1)) * userVocabularyListRowHeight
         return min(userVocabularyListMaxHeight, max(userVocabularyListMinHeight, contentHeight))
+    }
+
+    private var keyboardLayoutDebugLogText: String {
+        let visibleLines = Array(keyboardLayoutDebugLines.suffix(120))
+
+        if visibleLines.isEmpty {
+            return "ログはまだありません。キーボードを開いて操作した後、この画面に戻って「ログ更新」を押してください。"
+        }
+
+        return visibleLines.joined(separator: "\n")
+    }
+
+    private var keyboardLayoutDebugHeartbeatText: String {
+        guard keyboardLayoutDebugHeartbeat > 0 else {
+            return "なし"
+        }
+
+        return Date(timeIntervalSince1970: keyboardLayoutDebugHeartbeat)
+            .formatted(date: .numeric, time: .standard)
+    }
+
+    private var keyboardInputProbeHeartbeatText: String {
+        guard keyboardInputProbeHeartbeat > 0 else {
+            return "なし"
+        }
+
+        return Date(timeIntervalSince1970: keyboardInputProbeHeartbeat)
+            .formatted(date: .numeric, time: .standard)
+    }
+
+    private func loadKeyboardLayoutDebugLines() {
+        keyboardLayoutDebugLines = Self.sharedDefaults?.stringArray(
+            forKey: SettingsKeys.keyboardLayoutDebugLines
+        ) ?? []
+        keyboardLayoutDebugHeartbeat = Self.sharedDefaults?.double(
+            forKey: SettingsKeys.keyboardLayoutDebugHeartbeat
+        ) ?? 0
+        keyboardLayoutDebugReporterBundleID = Self.sharedDefaults?.string(
+            forKey: SettingsKeys.keyboardLayoutDebugReporterBundleID
+        ) ?? ""
+        keyboardLayoutDebugReporterAppGroupID = Self.sharedDefaults?.string(
+            forKey: SettingsKeys.keyboardLayoutDebugReporterAppGroupID
+        ) ?? ""
+        keyboardLayoutDebugLastEvent = Self.sharedDefaults?.string(
+            forKey: SettingsKeys.keyboardLayoutDebugLastEvent
+        ) ?? ""
+        keyboardInputProbeCount = Self.sharedDefaults?.integer(
+            forKey: SettingsKeys.keyboardInputProbeCount
+        ) ?? 0
+        keyboardInputProbeHeartbeat = Self.sharedDefaults?.double(
+            forKey: SettingsKeys.keyboardInputProbeHeartbeat
+        ) ?? 0
+        keyboardInputProbeLastEvent = Self.sharedDefaults?.string(
+            forKey: SettingsKeys.keyboardInputProbeLastEvent
+        ) ?? ""
+        keyboardInputProbeLastText = Self.sharedDefaults?.string(
+            forKey: SettingsKeys.keyboardInputProbeLastText
+        ) ?? ""
+    }
+
+    private func clearKeyboardLayoutDebugLines() {
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardLayoutDebugLines)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardLayoutDebugHeartbeat)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardLayoutDebugReporterBundleID)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardLayoutDebugReporterAppGroupID)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardLayoutDebugLastEvent)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardInputProbeCount)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardInputProbeHeartbeat)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardInputProbeLastEvent)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.keyboardInputProbeLastText)
+        keyboardLayoutDebugLines = []
+        keyboardLayoutDebugHeartbeat = 0
+        keyboardLayoutDebugReporterBundleID = ""
+        keyboardLayoutDebugReporterAppGroupID = ""
+        keyboardLayoutDebugLastEvent = ""
+        keyboardInputProbeCount = 0
+        keyboardInputProbeHeartbeat = 0
+        keyboardInputProbeLastEvent = ""
+        keyboardInputProbeLastText = ""
+    }
+
+    private func appendKeyboardLayoutDebugProbeFromApp() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        var lines = defaults.stringArray(forKey: SettingsKeys.keyboardLayoutDebugLines) ?? []
+        let uptime = ProcessInfo.processInfo.systemUptime
+        let line = "[KBLayout][AppProbe] t=\(String(format: "%.3f", uptime)) bundle=\(Bundle.main.bundleIdentifier ?? "unknown") group=\(SettingsKeys.appGroupID)"
+        lines.append(line)
+
+        if lines.count > 600 {
+            lines.removeFirst(lines.count - 600)
+        }
+
+        defaults.set(lines, forKey: SettingsKeys.keyboardLayoutDebugLines)
+        defaults.set(Date().timeIntervalSince1970, forKey: SettingsKeys.keyboardLayoutDebugHeartbeat)
+        defaults.set(
+            Bundle.main.bundleIdentifier ?? "unknown",
+            forKey: SettingsKeys.keyboardLayoutDebugReporterBundleID
+        )
+        defaults.set(SettingsKeys.appGroupID, forKey: SettingsKeys.keyboardLayoutDebugReporterAppGroupID)
+        defaults.set("AppProbe", forKey: SettingsKeys.keyboardLayoutDebugLastEvent)
+
+        loadKeyboardLayoutDebugLines()
+    }
+
+    private func copyKeyboardLayoutDebugLinesToPasteboard() {
+#if os(iOS)
+        UIPasteboard.general.string = keyboardLayoutDebugLogText
+#endif
     }
 
     private func normalizedKanaReading(from text: String) -> String {
@@ -1120,6 +1243,77 @@ struct ContentView: View {
 
                         ThirdPartyLicensesSection()
 
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("キーボードデバッグログ")
+                                .font(.headline)
+
+                            HStack(spacing: 12) {
+                                Button("ログ更新") {
+                                    loadKeyboardLayoutDebugLines()
+                                }
+
+                                Button("アプリ側テスト") {
+                                    appendKeyboardLayoutDebugProbeFromApp()
+                                }
+
+                                Button("ログコピー") {
+                                    copyKeyboardLayoutDebugLinesToPasteboard()
+                                }
+
+                                Button("ログ消去", role: .destructive) {
+                                    clearKeyboardLayoutDebugLines()
+                                }
+
+                                Spacer(minLength: 8)
+
+                                Text("\(keyboardLayoutDebugLines.count)件")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("最終受信: \(keyboardLayoutDebugHeartbeatText)")
+                                Text(
+                                    "送信元Bundle: \(keyboardLayoutDebugReporterBundleID.isEmpty ? "なし" : keyboardLayoutDebugReporterBundleID)"
+                                )
+                                Text(
+                                    "送信元Group: \(keyboardLayoutDebugReporterAppGroupID.isEmpty ? "なし" : keyboardLayoutDebugReporterAppGroupID)"
+                                )
+                                Text(
+                                    "最終イベント: \(keyboardLayoutDebugLastEvent.isEmpty ? "なし" : keyboardLayoutDebugLastEvent)"
+                                )
+                                Text("入力プローブ回数: \(keyboardInputProbeCount)")
+                                Text("入力プローブ最終受信: \(keyboardInputProbeHeartbeatText)")
+                                Text(
+                                    "入力プローブ最終イベント: \(keyboardInputProbeLastEvent.isEmpty ? "なし" : keyboardInputProbeLastEvent)"
+                                )
+                                Text(
+                                    "入力プローブ最終文字: \(keyboardInputProbeLastText.isEmpty ? "なし" : keyboardInputProbeLastText)"
+                                )
+                            }
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+
+                            ScrollView {
+                                Text(keyboardLayoutDebugLogText)
+                                    .font(.system(size: 11, weight: .regular, design: .monospaced))
+                                    .foregroundStyle(.secondary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .textSelection(.enabled)
+                                    .padding(8)
+                            }
+                            .frame(minHeight: 120, maxHeight: 220)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(AppTheme.cardInnerBackground)
+                            )
+
+                            Text("Consoleに表示されない場合でも、ここにKBLayoutログが保存されます。")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .settingsCardStyle()
+
                         Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
@@ -1136,6 +1330,7 @@ struct ContentView: View {
                 loadSuppressionDictionaryEntries()
                 loadShortcutDictionaryEntries()
                 loadSystemVocabularyEntries()
+                loadKeyboardLayoutDebugLines()
             }
             .onReceive(
                 NotificationCenter.default.publisher(
