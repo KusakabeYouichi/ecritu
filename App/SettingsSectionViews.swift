@@ -138,6 +138,76 @@ struct SetupStepsSection: View {
     }
 }
 
+private struct SegmentedSettingsCard<Option: Hashable>: View {
+    let title: String
+    let pickerTitle: String
+    @Binding var selection: Option
+    let options: [Option]
+    let optionTitle: (Option) -> String
+    let footnote: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.headline)
+
+            Picker(pickerTitle, selection: $selection) {
+                ForEach(options, id: \.self) { option in
+                    Text(optionTitle(option)).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text(footnote)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
+private struct ScrollIndexBadgeView: View {
+    let title: String
+    let isVisible: Bool
+
+    var body: some View {
+        HStack(alignment: .firstTextBaseline, spacing: 8) {
+            Spacer(minLength: 8)
+
+            Text(title)
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .padding(.horizontal, 8)
+                .frame(minWidth: 26, minHeight: 20)
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(AppTheme.indexBadgeBackground)
+                )
+                .opacity(isVisible ? 1 : 0)
+                .animation(.easeOut(duration: 0.28), value: isVisible)
+        }
+    }
+}
+
+private func applyScrollIndexIndicatorState(
+    title: String,
+    isVisible: Bool,
+    scrollIndexTitle: Binding<String>,
+    isScrollIndexVisible: Binding<Bool>
+) {
+    DispatchQueue.main.async {
+        if !title.isEmpty, scrollIndexTitle.wrappedValue != title {
+            scrollIndexTitle.wrappedValue = title
+        }
+
+        if isScrollIndexVisible.wrappedValue != isVisible {
+            withAnimation(.easeOut(duration: 0.28)) {
+                isScrollIndexVisible.wrappedValue = isVisible
+            }
+        }
+    }
+}
+
 struct KanaModeSwitcherAssignmentSection: View {
     @Binding var tapSelection: KanaModeSwitcherActionOption
     @Binding var rightFlickSelection: KanaModeSwitcherActionOption
@@ -189,22 +259,14 @@ struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("フリック方向")
-                .font(.headline)
-
-            Picker("フリック方向", selection: $selection) {
-                ForEach(DirectionOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("Apple / écritu の切り替えは次回のキーボード表示時に反映されます。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "フリック方向",
+            pickerTitle: "フリック方向",
+            selection: $selection,
+            options: Array(DirectionOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "Apple / écritu の切り替えは次回のキーボード表示時に反映されます。"
+        )
     }
 }
 
@@ -212,22 +274,14 @@ struct KanaModifierSettingsSection: View {
     @Binding var selection: KanaModifierPlacementOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("かな修飾")
-                .font(.headline)
-
-            Picker("かな修飾", selection: $selection) {
-                ForEach(KanaModifierPlacementOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("濁点・半濁点・拗音/促音の入力方式を切り替えます。前置修飾は修飾を先に選択、後置修飾は文字入力後に修飾を選択します。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "かな修飾",
+            pickerTitle: "かな修飾",
+            selection: $selection,
+            options: Array(KanaModifierPlacementOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "濁点・半濁点・拗音/促音の入力方式を切り替えます。前置修飾は修飾を先に選択、後置修飾は文字入力後に修飾を選択します。"
+        )
     }
 }
 
@@ -235,22 +289,14 @@ struct KanaLayoutSettingsSection: View {
     @Binding var selection: KanaLayoutOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("かな配列")
-                .font(.headline)
-
-            Picker("かな配列", selection: $selection) {
-                ForEach(KanaLayoutOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("かなモードで使う配列を切り替えます。標準は 5x2、3x3+わ は Apple標準の日本語配列に合わせて各段5ボタン(3かな + 機能2)で表示します。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "かな配列",
+            pickerTitle: "かな配列",
+            selection: $selection,
+            options: Array(KanaLayoutOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "かなモードで使う配列を切り替えます。標準は 5x2、3x3+わ は Apple標準の日本語配列に合わせて各段5ボタン(3かな + 機能2)で表示します。"
+        )
     }
 }
 
@@ -258,22 +304,14 @@ struct LandscapeCandidateSideSettingsSection: View {
     @Binding var selection: LandscapeCandidateSideOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("横向きサイド配置")
-                .font(.headline)
-
-            Picker("横向きサイド配置", selection: $selection) {
-                ForEach(LandscapeCandidateSideOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("横向きのかな入力時に、候補エリアをキーの左または右へ表示します。縦向きには影響しません。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "横向きサイド配置",
+            pickerTitle: "横向きサイド配置",
+            selection: $selection,
+            options: Array(LandscapeCandidateSideOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "横向きのかな入力時に、候補エリアをキーの左または右へ表示します。縦向きには影響しません。"
+        )
     }
 }
 
@@ -281,22 +319,14 @@ struct LandscapeNumberPaneSideSettingsSection: View {
     @Binding var selection: LandscapeCandidateSideOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("横向き数字ペイン配置")
-                .font(.headline)
-
-            Picker("横向き数字ペイン配置", selection: $selection) {
-                ForEach(LandscapeCandidateSideOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("横向きの数字3x3入力時に、数字キー塊を左または右へ配置します。かな入力モードの候補配置には影響しません。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "横向き数字ペイン配置",
+            pickerTitle: "横向き数字ペイン配置",
+            selection: $selection,
+            options: Array(LandscapeCandidateSideOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "横向きの数字3x3入力時に、数字キー塊を左または右へ配置します。かな入力モードの候補配置には影響しません。"
+        )
     }
 }
 
@@ -304,22 +334,14 @@ struct LatinLayoutSettingsSection: View {
     @Binding var selection: LatinLayoutOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("ラテン文字配列")
-                .font(.headline)
-
-            Picker("ラテン文字配列", selection: $selection) {
-                ForEach(LatinLayoutOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("abcモードで使う配列を切り替えます。qwerty/azertyでは文字キーを長押ししてアクセント付き文字を入力できます。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "ラテン文字配列",
+            pickerTitle: "ラテン文字配列",
+            selection: $selection,
+            options: Array(LatinLayoutOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "abcモードで使う配列を切り替えます。qwerty/azertyでは文字キーを長押ししてアクセント付き文字を入力できます。"
+        )
     }
 }
 
@@ -327,22 +349,14 @@ struct NumberLayoutSettingsSection: View {
     @Binding var selection: NumberLayoutOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("数字配列")
-                .font(.headline)
-
-            Picker("数字配列", selection: $selection) {
-                ForEach(NumberLayoutOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("123モードの数字キー配列を切り替えます。téléphone は上段が 1-2-3、calculette は上段が 7-8-9 です。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "数字配列",
+            pickerTitle: "数字配列",
+            selection: $selection,
+            options: Array(NumberLayoutOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "123モードの数字キー配列を切り替えます。téléphone は上段が 1-2-3、calculette は上段が 7-8-9 です。"
+        )
     }
 }
 
@@ -350,22 +364,14 @@ struct BasicSymbolOrderSettingsSection: View {
     @Binding var selection: BasicSymbolOrderOption
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("基本記号の並び順")
-                .font(.headline)
-
-            Picker("基本記号の並び順", selection: $selection) {
-                ForEach(BasicSymbolOrderOption.allCases) { option in
-                    Text(option.title).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Text("記号モードの『基本記号』カテゴリの並び順を切り替えます。既定は ASCII 順です。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "基本記号の並び順",
+            pickerTitle: "基本記号の並び順",
+            selection: $selection,
+            options: Array(BasicSymbolOrderOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "記号モードの『基本記号』カテゴリの並び順を切り替えます。既定は ASCII 順です。"
+        )
     }
 }
 
@@ -571,6 +577,137 @@ struct FlickGuideDisplaySettingsSection: View {
     }
 }
 
+private struct DictionaryRegistrationHeaderView: View {
+    let title: String
+    let count: Int
+    let isRegistrationVisible: Bool
+    let showAccessibilityLabel: String
+    let hideAccessibilityLabel: String
+    let onToggleRegistration: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Text(title)
+                .font(.headline)
+
+            Text("\(count)件")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+
+            Spacer(minLength: 8)
+
+            Button(action: onToggleRegistration) {
+                Image(systemName: isRegistrationVisible ? "xmark" : "plus")
+                    .font(.headline.weight(.bold))
+                    .frame(width: 28, height: 28)
+                    .background(
+                        Circle()
+                            .fill(
+                                isRegistrationVisible
+                                    ? Color.red.opacity(0.16)
+                                    : Color.accentColor.opacity(0.14)
+                            )
+                    )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(
+                isRegistrationVisible
+                    ? hideAccessibilityLabel
+                    : showAccessibilityLabel
+            )
+        }
+    }
+}
+
+private struct DictionaryInputField: View {
+    let placeholder: String
+    @Binding var text: String
+
+    var body: some View {
+        TextField(placeholder, text: $text)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(AppTheme.controlBackground)
+            )
+            .frame(maxWidth: .infinity)
+    }
+}
+
+private struct DictionaryRegistrationActionRow: View {
+    let isEditing: Bool
+    let canSubmit: Bool
+    let onSubmit: () -> Void
+    let onCancel: () -> Void
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Button(isEditing ? "保存" : "登録") {
+                onSubmit()
+            }
+            .buttonStyle(.borderedProminent)
+            .controlSize(.small)
+            .font(.footnote.weight(.semibold))
+            .disabled(!canSubmit)
+
+            if isEditing {
+                Button("キャンセル") {
+                    onCancel()
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .font(.subheadline)
+            }
+        }
+    }
+}
+
+private struct DictionaryRegistrationForm<Fields: View>: View {
+    let title: String
+    let isEditing: Bool
+    let canSubmit: Bool
+    let onSubmit: () -> Void
+    let onCancel: () -> Void
+    let fields: Fields
+
+    init(
+        title: String,
+        isEditing: Bool,
+        canSubmit: Bool,
+        onSubmit: @escaping () -> Void,
+        onCancel: @escaping () -> Void,
+        @ViewBuilder fields: () -> Fields
+    ) {
+        self.title = title
+        self.isEditing = isEditing
+        self.canSubmit = canSubmit
+        self.onSubmit = onSubmit
+        self.onCancel = onCancel
+        self.fields = fields()
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+
+            VStack(alignment: .leading, spacing: 8) {
+                fields
+
+                DictionaryRegistrationActionRow(
+                    isEditing: isEditing,
+                    canSubmit: canSubmit,
+                    onSubmit: onSubmit,
+                    onCancel: onCancel
+                )
+            }
+        }
+    }
+}
+
 struct UserDictionarySettingsSection: View {
     @Binding var entries: [VocabularyEntry]
     @Binding var readingInput: String
@@ -594,128 +731,55 @@ struct UserDictionarySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Text("追加語彙")
-                    .font(.headline)
+            DictionaryRegistrationHeaderView(
+                title: "追加語彙",
+                count: entries.count,
+                isRegistrationVisible: isRegistrationVisible,
+                showAccessibilityLabel: "追加単語の登録欄を表示",
+                hideAccessibilityLabel: "追加単語の登録欄を閉じる",
+                onToggleRegistration: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible.toggle()
+                    }
+                    editingEntry = nil
+                }
+            )
 
-                Text("\(entries.count)件")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Spacer(minLength: 8)
-
-                Button {
-                    if isRegistrationVisible {
+            if isRegistrationVisible {
+                DictionaryRegistrationForm(
+                    title: editingEntry == nil ? "追加単語の登録" : "追加単語の編集",
+                    isEditing: editingEntry != nil,
+                    canSubmit: canAddEntry,
+                    onSubmit: {
+                        if let editingEntry {
+                            onUpdateEntry(editingEntry)
+                        } else {
+                            onAddEntry()
+                        }
+                        editingEntry = nil
                         withAnimation(.easeInOut(duration: 0.2)) {
                             isRegistrationVisible = false
                         }
+                    },
+                    onCancel: {
                         editingEntry = nil
-                    } else {
+                        readingInput = ""
+                        candidateInput = ""
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = true
-                        }
-                        editingEntry = nil
-                    }
-                } label: {
-                    Image(systemName: isRegistrationVisible ? "xmark" : "plus")
-                        .font(.headline.weight(.bold))
-                        .frame(width: 28, height: 28)
-                        .background(
-                            Circle()
-                                .fill(
-                                    isRegistrationVisible
-                                        ? Color.red.opacity(0.16)
-                                        : Color.accentColor.opacity(0.14)
-                                )
-                        )
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(
-                    isRegistrationVisible
-                        ? "追加単語の登録欄を閉じる"
-                        : "追加単語の登録欄を表示"
-                )
-            }
-
-            if isRegistrationVisible {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(editingEntry == nil ? "追加単語の登録" : "追加単語の編集")
-                        .font(.subheadline.weight(.semibold))
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("候補", text: $candidateInput)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(AppTheme.controlBackground)
-                            )
-                            .frame(maxWidth: .infinity)
-
-                        TextField("よみ", text: $readingInput)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(AppTheme.controlBackground)
-                            )
-                            .frame(maxWidth: .infinity)
-
-                        HStack(spacing: 8) {
-                            Button(editingEntry == nil ? "登録" : "保存") {
-                                if let editingEntry {
-                                    onUpdateEntry(editingEntry)
-                                } else {
-                                    onAddEntry()
-                                }
-                                editingEntry = nil
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    isRegistrationVisible = false
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
-                            .font(.footnote.weight(.semibold))
-                            .disabled(!canAddEntry)
-
-                            if editingEntry != nil {
-                                Button("キャンセル") {
-                                    editingEntry = nil
-                                    readingInput = ""
-                                    candidateInput = ""
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        isRegistrationVisible = false
-                                    }
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                                .font(.subheadline)
-                            }
+                            isRegistrationVisible = false
                         }
                     }
+                ) {
+                    DictionaryInputField(placeholder: "候補", text: $candidateInput)
+                    DictionaryInputField(placeholder: "よみ", text: $readingInput)
                 }
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Spacer(minLength: 8)
-
-                Text(scrollIndexTitle)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .frame(minWidth: 26, minHeight: 20)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(AppTheme.indexBadgeBackground)
-                    )
-                    .opacity(isScrollIndexVisible ? 1 : 0)
-                    .animation(.easeOut(duration: 0.28), value: isScrollIndexVisible)
-            }
+            ScrollIndexBadgeView(
+                title: scrollIndexTitle,
+                isVisible: isScrollIndexVisible
+            )
 
             if entries.isEmpty {
                 Text("登録済みの追加単語はありません。")
@@ -743,17 +807,12 @@ struct UserDictionarySettingsSection: View {
                         }
                     },
                     onIndexIndicatorStateChange: { title, isVisible in
-                        DispatchQueue.main.async {
-                            if !title.isEmpty, scrollIndexTitle != title {
-                                scrollIndexTitle = title
-                            }
-
-                            if isScrollIndexVisible != isVisible {
-                                withAnimation(.easeOut(duration: 0.28)) {
-                                    isScrollIndexVisible = isVisible
-                                }
-                            }
-                        }
+                        applyScrollIndexIndicatorState(
+                            title: title,
+                            isVisible: isVisible,
+                            scrollIndexTitle: $scrollIndexTitle,
+                            isScrollIndexVisible: $isScrollIndexVisible
+                        )
                     }
                 )
                 .frame(height: listHeight)
@@ -842,128 +901,55 @@ struct SuppressionDictionarySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Text("抑制語彙")
-                    .font(.headline)
+            DictionaryRegistrationHeaderView(
+                title: "抑制語彙",
+                count: entries.count,
+                isRegistrationVisible: isRegistrationVisible,
+                showAccessibilityLabel: "抑制単語の登録欄を表示",
+                hideAccessibilityLabel: "抑制単語の登録欄を閉じる",
+                onToggleRegistration: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible.toggle()
+                    }
+                    editingEntry = nil
+                }
+            )
 
-                Text("\(entries.count)件")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Spacer(minLength: 8)
-
-                Button {
-                    if isRegistrationVisible {
+            if isRegistrationVisible {
+                DictionaryRegistrationForm(
+                    title: editingEntry == nil ? "抑制単語の登録" : "抑制単語の編集",
+                    isEditing: editingEntry != nil,
+                    canSubmit: canAddEntry,
+                    onSubmit: {
+                        if let editingEntry {
+                            onUpdateEntry(editingEntry)
+                        } else {
+                            onAddEntry()
+                        }
+                        editingEntry = nil
                         withAnimation(.easeInOut(duration: 0.2)) {
                             isRegistrationVisible = false
                         }
+                    },
+                    onCancel: {
                         editingEntry = nil
-                    } else {
+                        readingInput = ""
+                        candidateInput = ""
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = true
-                        }
-                        editingEntry = nil
-                    }
-                } label: {
-                    Image(systemName: isRegistrationVisible ? "xmark" : "plus")
-                        .font(.headline.weight(.bold))
-                        .frame(width: 28, height: 28)
-                        .background(
-                            Circle()
-                                .fill(
-                                    isRegistrationVisible
-                                        ? Color.red.opacity(0.16)
-                                        : Color.accentColor.opacity(0.14)
-                                )
-                        )
-                }
-                .buttonStyle(.plain)
-                .accessibilityLabel(
-                    isRegistrationVisible
-                        ? "抑制単語の登録欄を閉じる"
-                        : "抑制単語の登録欄を表示"
-                )
-            }
-
-            if isRegistrationVisible {
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(editingEntry == nil ? "抑制単語の登録" : "抑制単語の編集")
-                        .font(.subheadline.weight(.semibold))
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("単語", text: $candidateInput)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(AppTheme.controlBackground)
-                            )
-                            .frame(maxWidth: .infinity)
-
-                        TextField("よみ", text: $readingInput)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(AppTheme.controlBackground)
-                            )
-                            .frame(maxWidth: .infinity)
-
-                        HStack(spacing: 8) {
-                            Button(editingEntry == nil ? "登録" : "保存") {
-                                if let editingEntry {
-                                    onUpdateEntry(editingEntry)
-                                } else {
-                                    onAddEntry()
-                                }
-                                editingEntry = nil
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    isRegistrationVisible = false
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
-                            .font(.footnote.weight(.semibold))
-                            .disabled(!canAddEntry)
-
-                            if editingEntry != nil {
-                                Button("キャンセル") {
-                                    editingEntry = nil
-                                    readingInput = ""
-                                    candidateInput = ""
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        isRegistrationVisible = false
-                                    }
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                                .font(.subheadline)
-                            }
+                            isRegistrationVisible = false
                         }
                     }
+                ) {
+                    DictionaryInputField(placeholder: "単語", text: $candidateInput)
+                    DictionaryInputField(placeholder: "よみ", text: $readingInput)
                 }
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Spacer(minLength: 8)
-
-                Text(scrollIndexTitle)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .frame(minWidth: 26, minHeight: 20)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(AppTheme.indexBadgeBackground)
-                    )
-                    .opacity(isScrollIndexVisible ? 1 : 0)
-                    .animation(.easeOut(duration: 0.28), value: isScrollIndexVisible)
-            }
+            ScrollIndexBadgeView(
+                title: scrollIndexTitle,
+                isVisible: isScrollIndexVisible
+            )
 
             if entries.isEmpty {
                 Text("登録済みの抑制単語はありません。")
@@ -991,17 +977,12 @@ struct SuppressionDictionarySettingsSection: View {
                         }
                     },
                     onIndexIndicatorStateChange: { title, isVisible in
-                        DispatchQueue.main.async {
-                            if !title.isEmpty, scrollIndexTitle != title {
-                                scrollIndexTitle = title
-                            }
-
-                            if isScrollIndexVisible != isVisible {
-                                withAnimation(.easeOut(duration: 0.28)) {
-                                    isScrollIndexVisible = isVisible
-                                }
-                            }
-                        }
+                        applyScrollIndexIndicatorState(
+                            title: title,
+                            isVisible: isVisible,
+                            scrollIndexTitle: $scrollIndexTitle,
+                            isScrollIndexVisible: $isScrollIndexVisible
+                        )
                     }
                 )
                 .frame(height: listHeight)
@@ -1031,65 +1012,46 @@ struct ShortcutDictionarySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 8) {
-                Text("ショートカット語彙")
-                    .font(.headline)
-
-                Text("\(entries.count)件")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                Spacer(minLength: 8)
-
-                Button {
-                    if isRegistrationVisible {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = false
-                        }
-                        editingEntry = nil
-                    } else {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            isRegistrationVisible = true
-                        }
-                        editingEntry = nil
+            DictionaryRegistrationHeaderView(
+                title: "ショートカット語彙",
+                count: entries.count,
+                isRegistrationVisible: isRegistrationVisible,
+                showAccessibilityLabel: "ショートカット語彙の登録欄を表示",
+                hideAccessibilityLabel: "ショートカット語彙の登録欄を閉じる",
+                onToggleRegistration: {
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible.toggle()
                     }
-                } label: {
-                    Image(systemName: isRegistrationVisible ? "xmark" : "plus")
-                        .font(.headline.weight(.bold))
-                        .frame(width: 28, height: 28)
-                        .background(
-                            Circle()
-                                .fill(
-                                    isRegistrationVisible
-                                        ? Color.red.opacity(0.16)
-                                        : Color.accentColor.opacity(0.14)
-                                )
-                        )
+                    editingEntry = nil
                 }
-                .buttonStyle(.plain)
-                .accessibilityLabel(
-                    isRegistrationVisible
-                        ? "ショートカット語彙の登録欄を閉じる"
-                        : "ショートカット語彙の登録欄を表示"
-                )
-            }
+            )
 
             if isRegistrationVisible {
                 VStack(alignment: .leading, spacing: 8) {
-                    Text(editingEntry == nil ? "ショートカット語彙の登録" : "ショートカット語彙の編集")
-                        .font(.subheadline.weight(.semibold))
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        TextField("候補", text: $candidateInput)
-                            .textInputAutocapitalization(.never)
-                            .autocorrectionDisabled()
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 8)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .fill(AppTheme.controlBackground)
-                            )
-                            .frame(maxWidth: .infinity)
+                    DictionaryRegistrationForm(
+                        title: editingEntry == nil ? "ショートカット語彙の登録" : "ショートカット語彙の編集",
+                        isEditing: editingEntry != nil,
+                        canSubmit: canAddEntry,
+                        onSubmit: {
+                            if let editingEntry {
+                                onUpdateEntry(editingEntry)
+                            } else {
+                                onAddEntry()
+                            }
+                            editingEntry = nil
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isRegistrationVisible = false
+                            }
+                        },
+                        onCancel: {
+                            editingEntry = nil
+                            candidateInput = ""
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                isRegistrationVisible = false
+                            }
+                        }
+                    ) {
+                        DictionaryInputField(placeholder: "候補", text: $candidateInput)
 
                         HStack(spacing: 6) {
                             Text("よみ")
@@ -1105,37 +1067,6 @@ struct ShortcutDictionarySettingsSection: View {
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(AppTheme.controlBackground)
                         )
-
-                        HStack(spacing: 8) {
-                            Button(editingEntry == nil ? "登録" : "保存") {
-                                if let editingEntry {
-                                    onUpdateEntry(editingEntry)
-                                } else {
-                                    onAddEntry()
-                                }
-                                editingEntry = nil
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    isRegistrationVisible = false
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .controlSize(.small)
-                            .font(.footnote.weight(.semibold))
-                            .disabled(!canAddEntry)
-
-                            if editingEntry != nil {
-                                Button("キャンセル") {
-                                    editingEntry = nil
-                                    candidateInput = ""
-                                    withAnimation(.easeInOut(duration: 0.2)) {
-                                        isRegistrationVisible = false
-                                    }
-                                }
-                                .buttonStyle(.bordered)
-                                .controlSize(.small)
-                                .font(.subheadline)
-                            }
-                        }
                     }
 
                     Text("読みは ☻ で固定されます。")
@@ -1251,21 +1182,10 @@ struct ReadOnlyDictionarySettingsSection: View {
                 Spacer(minLength: 8)
             }
 
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
-                Spacer(minLength: 8)
-
-                Text(scrollIndexTitle)
-                    .font(.caption.weight(.semibold))
-                    .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .frame(minWidth: 26, minHeight: 20)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(AppTheme.indexBadgeBackground)
-                    )
-                    .opacity(isScrollIndexVisible ? 1 : 0)
-                    .animation(.easeOut(duration: 0.28), value: isScrollIndexVisible)
-            }
+            ScrollIndexBadgeView(
+                title: scrollIndexTitle,
+                isVisible: isScrollIndexVisible
+            )
 
             if entries.isEmpty {
                 Text(emptyMessage)
@@ -1278,17 +1198,12 @@ struct ReadOnlyDictionarySettingsSection: View {
                     onDelete: nil,
                     onSelect: nil,
                     onIndexIndicatorStateChange: { title, isVisible in
-                        DispatchQueue.main.async {
-                            if !title.isEmpty, scrollIndexTitle != title {
-                                scrollIndexTitle = title
-                            }
-
-                            if isScrollIndexVisible != isVisible {
-                                withAnimation(.easeOut(duration: 0.28)) {
-                                    isScrollIndexVisible = isVisible
-                                }
-                            }
-                        }
+                        applyScrollIndexIndicatorState(
+                            title: title,
+                            isVisible: isVisible,
+                            scrollIndexTitle: $scrollIndexTitle,
+                            isScrollIndexVisible: $isScrollIndexVisible
+                        )
                     }
                 )
                 .frame(height: listHeight)

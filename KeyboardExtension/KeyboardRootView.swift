@@ -502,13 +502,14 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    private func latinSpaceLeftActionButtons(
+    private func latinActionButtons(
+        symbols: [String],
         fixedWidth: CGFloat? = nil,
         keyHeight: CGFloat? = nil
     ) -> some View {
         let resolvedKeyHeight = keyHeight ?? compactActionKeyHeight
 
-        ForEach(latinSpaceLeftActionSymbols, id: \.self) { symbol in
+        ForEach(symbols, id: \.self) { symbol in
             ActionKeyButton(
                 title: symbol,
                 fontSize: 20,
@@ -520,21 +521,27 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
+    private func latinSpaceLeftActionButtons(
+        fixedWidth: CGFloat? = nil,
+        keyHeight: CGFloat? = nil
+    ) -> some View {
+        latinActionButtons(
+            symbols: latinSpaceLeftActionSymbols,
+            fixedWidth: fixedWidth,
+            keyHeight: keyHeight
+        )
+    }
+
+    @ViewBuilder
     private func latinSpaceRightActionButtons(
         fixedWidth: CGFloat? = nil,
         keyHeight: CGFloat? = nil
     ) -> some View {
-        let resolvedKeyHeight = keyHeight ?? compactActionKeyHeight
-
-        ForEach(latinSpaceRightActionSymbols, id: \.self) { symbol in
-            ActionKeyButton(
-                title: symbol,
-                fontSize: 20,
-                fixedWidth: fixedWidth,
-                action: { commitText(symbol) }
-            )
-                .frame(height: resolvedKeyHeight)
-        }
+        latinActionButtons(
+            symbols: latinSpaceRightActionSymbols,
+            fixedWidth: fixedWidth,
+            keyHeight: keyHeight
+        )
     }
 
     private func isLandscapeLatinRightShiftKey(_ kana: FlickKanaSet) -> Bool {
@@ -1240,33 +1247,69 @@ struct KeyboardRootView: View {
         ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     }
 
+    private func leftModeSwitchNumberButton(height: CGFloat) -> some View {
+        ActionKeyButton(
+            title: "123",
+            fontSize: leftModeSwitchNumberFontSize,
+            isEnabled: inputMode != .number,
+            action: { switchInputMode(.number) }
+        )
+            .frame(width: leftModeSwitchButtonWidth, height: height)
+    }
+
+    private func leftModeSwitchLatinButton(height: CGFloat) -> some View {
+        ActionKeyButton(
+            title: "abc",
+            fontSize: leftModeSwitchLatinFontSize,
+            isEnabled: inputMode != .latin,
+            action: { switchInputMode(.latin) }
+        )
+            .frame(width: leftModeSwitchButtonWidth, height: height)
+    }
+
+    private func leftModeSwitchKanaButton(height: CGFloat, fontSize: CGFloat) -> some View {
+        ActionKeyButton(
+            title: kanaModeSwitchButtonTitle,
+            fontSize: fontSize,
+            isEnabled: inputMode != .kana,
+            action: { switchInputMode(.kana) }
+        )
+            .frame(width: leftModeSwitchButtonWidth, height: height)
+    }
+
+    private func leftModeSwitchEmojiButton(height: CGFloat) -> some View {
+        ActionKeyButton(
+            title: "☺︎",
+            accessibilityLabel: "絵文字",
+            fontSize: kaomojiTransitionIconFontSize,
+            onLongPress: enterKaomojiMode,
+            action: enterEmojiMode
+        )
+            .frame(width: leftModeSwitchButtonWidth, height: height)
+    }
+
+    private func leftModeSwitchSymbolsButton(height: CGFloat) -> some View {
+        ActionKeyButton(
+            title: "⌘",
+            accessibilityLabel: "記号入力",
+            fontSize: symbolTransitionIconFontSize,
+            action: enterSymbolsMode
+        )
+            .frame(width: leftModeSwitchButtonWidth, height: height)
+    }
+
     @ViewBuilder
     private func compactLeftModeSwitchButton(slot slotIndex: Int, height: CGFloat) -> some View {
         switch slotIndex {
         case 0:
-            ActionKeyButton(
-                title: "123",
-                fontSize: leftModeSwitchNumberFontSize,
-                isEnabled: inputMode != .number,
-                action: { switchInputMode(.number) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: height)
+            leftModeSwitchNumberButton(height: height)
         case 1:
-            ActionKeyButton(
-                title: "abc",
-                fontSize: leftModeSwitchLatinFontSize,
-                isEnabled: inputMode != .latin,
-                action: { switchInputMode(.latin) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: height)
+            leftModeSwitchLatinButton(height: height)
         case 2:
-            ActionKeyButton(
-                title: kanaModeSwitchButtonTitle,
-                fontSize: compactKanaModeSwitchButtonFontSize,
-                isEnabled: inputMode != .kana,
-                action: { switchInputMode(.kana) }
+            leftModeSwitchKanaButton(
+                height: height,
+                fontSize: compactKanaModeSwitchButtonFontSize
             )
-                .frame(width: leftModeSwitchButtonWidth, height: height)
         case 3:
             if isKanaFiveByTwoMode {
                 FlickKeyView(
@@ -1306,29 +1349,12 @@ struct KeyboardRootView: View {
         let rowSpacing: CGFloat = keyboardRowSpacing
 
         return VStack(spacing: rowSpacing) {
-            ActionKeyButton(
-                title: "123",
-                fontSize: leftModeSwitchNumberFontSize,
-                isEnabled: inputMode != .number,
-                action: { switchInputMode(.number) }
+            leftModeSwitchNumberButton(height: rowHeight)
+            leftModeSwitchLatinButton(height: rowHeight)
+            leftModeSwitchKanaButton(
+                height: rowHeight,
+                fontSize: standardKanaModeSwitchButtonFontSize
             )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
-
-            ActionKeyButton(
-                title: "abc",
-                fontSize: leftModeSwitchLatinFontSize,
-                isEnabled: inputMode != .latin,
-                action: { switchInputMode(.latin) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
-
-            ActionKeyButton(
-                title: kanaModeSwitchButtonTitle,
-                fontSize: standardKanaModeSwitchButtonFontSize,
-                isEnabled: inputMode != .kana,
-                action: { switchInputMode(.kana) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
 
             FlickKeyView(
                 kana: kanaModeSwitcherKana,
@@ -1621,47 +1647,19 @@ struct KeyboardRootView: View {
     private func threeByThreeLeftColumnButton(rowIndex: Int, rowHeight: CGFloat) -> some View {
         switch rowIndex {
         case 0:
-            ActionKeyButton(
-                title: "123",
-                fontSize: leftModeSwitchNumberFontSize,
-                isEnabled: inputMode != .number,
-                action: { switchInputMode(.number) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
+            leftModeSwitchNumberButton(height: rowHeight)
         case 1:
-            ActionKeyButton(
-                title: "abc",
-                fontSize: leftModeSwitchLatinFontSize,
-                isEnabled: inputMode != .latin,
-                action: { switchInputMode(.latin) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
+            leftModeSwitchLatinButton(height: rowHeight)
         case 2:
-            ActionKeyButton(
-                title: kanaModeSwitchButtonTitle,
-                fontSize: standardKanaModeSwitchButtonFontSize,
-                isEnabled: inputMode != .kana,
-                action: { switchInputMode(.kana) }
+            leftModeSwitchKanaButton(
+                height: rowHeight,
+                fontSize: standardKanaModeSwitchButtonFontSize
             )
-                .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
         case 3:
             if inputMode == .number {
-                ActionKeyButton(
-                    title: "⌘",
-                    accessibilityLabel: "記号入力",
-                    fontSize: symbolTransitionIconFontSize,
-                    action: enterSymbolsMode
-                )
-                    .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
+                leftModeSwitchSymbolsButton(height: rowHeight)
             } else {
-                ActionKeyButton(
-                    title: "☺︎",
-                    accessibilityLabel: "絵文字",
-                    fontSize: kaomojiTransitionIconFontSize,
-                    onLongPress: enterKaomojiMode,
-                    action: enterEmojiMode
-                )
-                    .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
+                leftModeSwitchEmojiButton(height: rowHeight)
             }
         default:
             Color.clear
@@ -2548,38 +2546,13 @@ struct KeyboardRootView: View {
 
     private var landscapeLatinModeSwitchColumn: some View {
         VStack(spacing: keyboardRowSpacing) {
-            ActionKeyButton(
-                title: "123",
-                fontSize: leftModeSwitchNumberFontSize,
-                isEnabled: inputMode != .number,
-                action: { switchInputMode(.number) }
+            leftModeSwitchNumberButton(height: mainFlickKeyHeight)
+            leftModeSwitchLatinButton(height: mainFlickKeyHeight)
+            leftModeSwitchKanaButton(
+                height: mainFlickKeyHeight,
+                fontSize: compactKanaModeSwitchButtonFontSize
             )
-                .frame(width: leftModeSwitchButtonWidth, height: mainFlickKeyHeight)
-
-            ActionKeyButton(
-                title: "abc",
-                fontSize: leftModeSwitchLatinFontSize,
-                isEnabled: inputMode != .latin,
-                action: { switchInputMode(.latin) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: mainFlickKeyHeight)
-
-            ActionKeyButton(
-                title: kanaModeSwitchButtonTitle,
-                fontSize: compactKanaModeSwitchButtonFontSize,
-                isEnabled: inputMode != .kana,
-                action: { switchInputMode(.kana) }
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: mainFlickKeyHeight)
-
-            ActionKeyButton(
-                title: "☺︎",
-                accessibilityLabel: "絵文字",
-                fontSize: kaomojiTransitionIconFontSize,
-                onLongPress: enterKaomojiMode,
-                action: enterEmojiMode
-            )
-                .frame(width: leftModeSwitchButtonWidth, height: mainFlickKeyHeight)
+            leftModeSwitchEmojiButton(height: mainFlickKeyHeight)
         }
     }
 
