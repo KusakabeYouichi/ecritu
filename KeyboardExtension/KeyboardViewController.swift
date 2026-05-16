@@ -576,8 +576,8 @@ final class KeyboardViewController: UIInputViewController {
             // compactActionRowはベースが4pt低い分だけ加算して揃える。
             return 50
         case .kanaFiveByTwo:
-            // 5x2も他モードと同程度の見た目高さに寄せる。
-            return 0
+            // 5x2(上段数字+かな2段+下段アクション)は実質4段なのでcompactActionRowと同等に合わせる。
+            return 50
         case .emoji:
             // 絵文字/記号入力もテキスト系モードと同等の見た目高さに揃える。
             return 46
@@ -641,12 +641,12 @@ final class KeyboardViewController: UIInputViewController {
                 + rowSpacing * 3
                 + Self.keyboardVerticalPadding
         case .kanaFiveByTwo:
-            // Header + top number row + 3 main rows + action row + internal row spacing + padding.
+            // Header + top number row + 2 kana rows + action row + internal row spacing + padding.
             return headerHeight
                 + rowSpacing
-                + Self.mainKeyRowHeight * 4
+                + Self.mainKeyRowHeight * 3
                 + Self.actionRowHeight
-                + rowSpacing * 4
+                + rowSpacing * 3
                 + Self.keyboardVerticalPadding
         case .emoji:
             // 絵文字/記号入力もテキスト系と同じ基準高さに揃える。
