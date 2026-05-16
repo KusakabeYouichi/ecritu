@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 struct KeyRepeatSettingsSection: View {
     @Binding var keyRepeatInitialDelay: Double
@@ -166,6 +167,117 @@ private struct SegmentedSettingsCard<Option: Hashable>: View {
     }
 }
 
+private enum KanaPaneArrangementItem: String, CaseIterable, Identifiable {
+    case kana
+    case candidate
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .kana:
+            return "かな"
+        case .candidate:
+            return "候補"
+        }
+    }
+}
+
+private enum NumberPaneArrangementItem: String, CaseIterable, Identifiable {
+    case number
+    case symbols
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .number:
+            return "数字"
+        case .symbols:
+            return "記号"
+        }
+    }
+}
+
+private struct PanePairSwapDropDelegate<Item: Equatable>: DropDelegate {
+    let targetItem: Item
+    let orderedItems: [Item]
+    @Binding var draggingItem: Item?
+    let onReorder: ([Item]) -> Void
+
+    func dropEntered(info _: DropInfo) {
+        guard let draggingItem,
+            draggingItem != targetItem,
+            let sourceIndex = orderedItems.firstIndex(of: draggingItem),
+            let targetIndex = orderedItems.firstIndex(of: targetItem) else {
+            return
+        }
+
+        var nextOrder = orderedItems
+        nextOrder.swapAt(sourceIndex, targetIndex)
+        onReorder(nextOrder)
+        self.draggingItem = targetItem
+    }
+
+    func performDrop(info _: DropInfo) -> Bool {
+        draggingItem = nil
+        return true
+    }
+}
+
+private struct DraggablePanePairRow<Item: Identifiable & Equatable>: View where Item.ID == String {
+    let items: [Item]
+    let title: (Item) -> String
+    let onReorder: ([Item]) -> Void
+
+    @State private var draggingItem: Item?
+
+    var body: some View {
+        HStack(spacing: 10) {
+            ForEach(items) { item in
+                HStack(spacing: 7) {
+                    Image(systemName: "line.3.horizontal")
+                        .rotationEffect(.degrees(90))
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+
+                    Text(title(item))
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, 11)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(AppTheme.controlBackground)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(
+                            draggingItem == item
+                                ? Color.accentColor.opacity(0.55)
+                                : AppTheme.subtleBorder,
+                            lineWidth: draggingItem == item ? 1.4 : 1
+                        )
+                )
+                .onDrag {
+                    draggingItem = item
+                    return NSItemProvider(object: NSString(string: item.id))
+                }
+                .onDrop(
+                    of: [UTType.text],
+                    delegate: PanePairSwapDropDelegate(
+                        targetItem: item,
+                        orderedItems: items,
+                        draggingItem: $draggingItem,
+                        onReorder: onReorder
+                    )
+                )
+            }
+        }
+    }
+}
+
 private struct ScrollIndexBadgeView: View {
     let title: String
     let isVisible: Bool
@@ -303,30 +415,68 @@ struct KanaLayoutSettingsSection: View {
 struct LandscapeCandidateSideSettingsSection: View {
     @Binding var selection: LandscapeCandidateSideOption
 
+    private var paneOrder: [KanaPaneArrangementItem] {
+        selection == .left ? [.candidate, .kana] : [.kana, .candidate]
+    }
+
+    private func updateSelection(from order: [KanaPaneArrangementItem]) {
+        guard let first = order.first else {
+            return
+        }
+
+        selection = first == .candidate ? .left : .right
+    }
+
     var body: some View {
-        SegmentedSettingsCard(
-            title: "横向きサイド配置",
-            pickerTitle: "横向きサイド配置",
-            selection: $selection,
-            options: Array(LandscapeCandidateSideOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "横向きのかな入力時に、候補エリアをキーの左または右へ表示します。縦向きには影響しません。"
-        )
+        VStack(alignment: .leading, spacing: 10) {
+            Text("かなペイン配列 (horizontal)")
+                .font(.headline)
+
+            DraggablePanePairRow(
+                items: paneOrder,
+                title: { $0.title },
+                onReorder: updateSelection
+            )
+
+            Text("『かな』『候補』をドラグして並び順を入れ替えます。横向きのかな入力時に反映され、縦向きには影響しません。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
     }
 }
 
 struct LandscapeNumberPaneSideSettingsSection: View {
     @Binding var selection: LandscapeCandidateSideOption
 
+    private var paneOrder: [NumberPaneArrangementItem] {
+        selection == .left ? [.number, .symbols] : [.symbols, .number]
+    }
+
+    private func updateSelection(from order: [NumberPaneArrangementItem]) {
+        guard let first = order.first else {
+            return
+        }
+
+        selection = first == .number ? .left : .right
+    }
+
     var body: some View {
-        SegmentedSettingsCard(
-            title: "横向き数字ペイン配置",
-            pickerTitle: "横向き数字ペイン配置",
-            selection: $selection,
-            options: Array(LandscapeCandidateSideOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "横向きの数字3x3入力時に、数字キー塊を左または右へ配置します。かな入力モードの候補配置には影響しません。"
-        )
+        VStack(alignment: .leading, spacing: 10) {
+            Text("数字ペイン配列 (horizontal)")
+                .font(.headline)
+
+            DraggablePanePairRow(
+                items: paneOrder,
+                title: { $0.title },
+                onReorder: updateSelection
+            )
+
+            Text("『数字』『記号』をドラグして並び順を入れ替えます。横向きの数字3x3入力時に反映され、かな入力モードの候補配置には影響しません。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
     }
 }
 

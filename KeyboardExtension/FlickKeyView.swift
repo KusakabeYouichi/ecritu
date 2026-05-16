@@ -68,6 +68,7 @@ struct FlickKeyView: View {
     var directionalFlickThreshold: CGFloat = 18
     var directionalCommitThreshold: CGFloat? = nil
     var activePreviewFontSize: CGFloat = 24
+    var activePreviewFontSizeProvider: ((FlickDirection, String) -> CGFloat)? = nil
     var activePreviewHorizontalPadding: CGFloat = 12
     var directionalHintHorizontalOffset: CGFloat = Metrics.directionHintHorizontalOffset
     var directionalHintFontScale: CGFloat = 1
@@ -122,7 +123,13 @@ struct FlickKeyView: View {
 
             if isTouching && activeDirection != .milieu && !longPressIsActive {
                 Text(kana.output(for: activeDirection))
-                    .font(.system(size: activePreviewFontSize, weight: .bold, design: .rounded))
+                    .font(
+                        .system(
+                            size: resolvedActivePreviewFontSize(for: activeDirection),
+                            weight: .bold,
+                            design: .rounded
+                        )
+                    )
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
                     .allowsTightening(true)
@@ -162,6 +169,16 @@ struct FlickKeyView: View {
         }
 
         return kana.output(for: activeDirection)
+    }
+
+    private func resolvedActivePreviewFontSize(for direction: FlickDirection) -> CGFloat {
+        let previewText = kana.output(for: direction)
+
+        if let activePreviewFontSizeProvider {
+            return activePreviewFontSizeProvider(direction, previewText)
+        }
+
+        return activePreviewFontSize
     }
 
     private var previewOffset: CGSize {

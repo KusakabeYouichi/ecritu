@@ -484,7 +484,12 @@ struct KeyboardRootView: View {
     }
 
     private var latinSpaceRightActionSymbols: [String] {
-        ["!", "?", "@", "&", "/"]
+        if !isLandscapeLayout,
+            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            return [".", "/", "@"]
+        }
+
+        return ["!", "?", "@", "&", "/"]
     }
 
     private var latinSpaceLeftActionSymbols: [String] {
@@ -1076,6 +1081,14 @@ struct KeyboardRootView: View {
         isLandscapeLayout ? 40 : 46
     }
 
+    private var fourRowAlignedClusterHeight: CGFloat {
+        mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+    }
+
+    private var fourRowAlignedTopContentHeight: CGFloat {
+        fourRowAlignedClusterHeight - mainFlickKeyHeight - keyboardRowSpacing
+    }
+
     private var kanaThreeByThreeMainLabelFontSize: CGFloat {
         switch currentFlickGuideDisplayMode {
         case .off:
@@ -1215,26 +1228,95 @@ struct KeyboardRootView: View {
         unifiedLeftModeSwitchFontSize
     }
 
+    private var portraitCompactLeftModeSwitchKaomojiIconFontSize: CGFloat {
+        28
+    }
+
     private var kaomojiTransitionIconFontSize: CGFloat {
-        isLandscapeLayout
-            ? landscapeLeftModeSwitchKaomojiIconFontSize
-            : unifiedLeftModeSwitchFontSize
+        if isLandscapeLayout {
+            return landscapeLeftModeSwitchKaomojiIconFontSize
+        }
+
+        if usesWideLeftModeSwitchButtons {
+            return unifiedLeftModeSwitchFontSize
+        }
+
+        return portraitCompactLeftModeSwitchKaomojiIconFontSize
     }
 
     private var symbolTransitionIconFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize
+        if isLandscapeLayout {
+            return unifiedLeftModeSwitchFontSize
+        }
+
+        return 16
+    }
+
+    private var portraitCompactKanaModeSwitcherIconFontSize: CGFloat {
+        portraitCompactLeftModeSwitchKaomojiIconFontSize
+    }
+
+    private var kanaModeSwitcherEmojiIconFontSize: CGFloat {
+        if isLandscapeLayout {
+            return landscapeLeftModeSwitchKaomojiIconFontSize
+        }
+
+        if !usesWideLeftModeSwitchButtons {
+            return portraitCompactKanaModeSwitcherIconFontSize
+        }
+
+        return unifiedLeftModeSwitchFontSize
     }
 
     private var kanaModeSwitcherMainLabelFontSize: CGFloat {
-        if isLandscapeLayout, kanaModeSwitcherKana.center == "☺︎" {
-            return landscapeLeftModeSwitchKaomojiIconFontSize
+        if kanaModeSwitcherTapAction == .emoji {
+            return kanaModeSwitcherEmojiIconFontSize
         }
 
         return unifiedLeftModeSwitchFontSize
     }
 
     private var kanaModeSwitcherPreviewFontSize: CGFloat {
-        14
+        return 14
+    }
+
+    private func kanaModeSwitcherAction(for direction: FlickDirection) -> KanaModeSwitcherAction? {
+        switch direction {
+        case .droite:
+            return kanaModeSwitcherRightFlickAction
+        case .haut:
+            return kanaModeSwitcherUpFlickAction
+        default:
+            return nil
+        }
+    }
+
+    private func kanaModeSwitcherPreviewFontSizeForDirection(
+        _ direction: FlickDirection,
+        previewText: String
+    ) -> CGFloat {
+        guard !isLandscapeLayout else {
+            return kanaModeSwitcherPreviewFontSize
+        }
+
+        if let action = kanaModeSwitcherAction(for: direction) {
+            switch action {
+            case .symbols:
+                return symbolTransitionIconFontSize
+            case .emoji, .kaomoji:
+                return kanaModeSwitcherEmojiIconFontSize
+            }
+        }
+
+        if previewText == "⌘" {
+            return symbolTransitionIconFontSize
+        }
+
+        if previewText == "☺︎" || previewText == "^_^" {
+            return kanaModeSwitcherEmojiIconFontSize
+        }
+
+        return kanaModeSwitcherPreviewFontSize
     }
 
     private var kanaModeSwitcherPreviewHorizontalPadding: CGFloat {
@@ -1320,10 +1402,18 @@ struct KeyboardRootView: View {
                     showsDirectionalHints: showsFlickGuideCharacters,
                     showsGuideText: false,
                     activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                    activePreviewFontSizeProvider: { direction, previewText in
+                        kanaModeSwitcherPreviewFontSizeForDirection(
+                            direction,
+                            previewText: previewText
+                        )
+                    },
                     activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
                     directionalHintHorizontalOffset: 16
                 )
                     .frame(width: leftModeSwitchButtonWidth, height: height)
+            } else if inputMode == .latin {
+                leftModeSwitchEmojiButton(height: height)
             } else {
                 Color.clear
                     .allowsHitTesting(false)
@@ -1364,6 +1454,12 @@ struct KeyboardRootView: View {
                 showsDirectionalHints: showsFlickGuideCharacters,
                 showsGuideText: false,
                 activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                activePreviewFontSizeProvider: { direction, previewText in
+                    kanaModeSwitcherPreviewFontSizeForDirection(
+                        direction,
+                        previewText: previewText
+                    )
+                },
                 activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
                 directionalHintHorizontalOffset: 16,
                 onTouchStateChanged: { isTouching in
@@ -1743,25 +1839,16 @@ struct KeyboardRootView: View {
         let rowSpacing: CGFloat = keyboardRowSpacing
         // Keep number-mode keys the same width as mode-switch keys.
         let keyWidth = leftModeSwitchButtonWidth
+        let numberClusterOnLeft = landscapeNumberPaneSide == .left
 
         return HStack(spacing: 0) {
-            if landscapeNumberPaneSide == .left {
-                landscapeNumberCompactColumns(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth,
-                    numberClusterOnLeft: true
-                )
-                Spacer(minLength: 0)
-            } else {
-                Spacer(minLength: 0)
-                landscapeNumberCompactColumns(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth,
-                    numberClusterOnLeft: false
-                )
-            }
+            landscapeNumberCompactColumns(
+                rowHeight: rowHeight,
+                rowSpacing: rowSpacing,
+                keyWidth: keyWidth,
+                numberClusterOnLeft: numberClusterOnLeft
+            )
+            Spacer(minLength: 0)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
@@ -1792,12 +1879,8 @@ struct KeyboardRootView: View {
                     keyWidth: keyWidth
                 )
             } else {
+                landscapeNumberModeSwitchColumn(rowHeight: rowHeight, rowSpacing: rowSpacing)
                 landscapeNumberSymbolPanel(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth
-                )
-                landscapeNumberUtilityColumn(
                     rowHeight: rowHeight,
                     rowSpacing: rowSpacing,
                     keyWidth: keyWidth
@@ -1807,7 +1890,11 @@ struct KeyboardRootView: View {
                     rowSpacing: rowSpacing,
                     keyWidth: keyWidth
                 )
-                landscapeNumberModeSwitchColumn(rowHeight: rowHeight, rowSpacing: rowSpacing)
+                landscapeNumberUtilityColumn(
+                    rowHeight: rowHeight,
+                    rowSpacing: rowSpacing,
+                    keyWidth: keyWidth
+                )
             }
         }
     }
@@ -1918,6 +2005,7 @@ struct KeyboardRootView: View {
                 }
                 .padding(.vertical, 2)
             }
+            .frame(height: fourRowAlignedTopContentHeight)
 
             HStack(spacing: keyboardRowSpacing) {
                 ActionKeyButton(
@@ -1925,7 +2013,7 @@ struct KeyboardRootView: View {
                     fixedWidth: 56,
                     action: { switchInputMode(.kana) }
                 )
-                    .frame(height: compactActionKeyHeight)
+                    .frame(height: mainFlickKeyHeight)
 
                 ForEach(EmojiCategory.allCases, id: \.self) { category in
                     EmojiCategoryKeyButton(
@@ -1934,7 +2022,7 @@ struct KeyboardRootView: View {
                         action: { selectedEmojiCategory = category }
                     )
                         .frame(maxWidth: .infinity)
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: mainFlickKeyHeight)
                 }
 
                 ActionKeyButton(
@@ -1947,9 +2035,11 @@ struct KeyboardRootView: View {
                     repeatInterval: keyRepeatInterval,
                     action: onDeleteBackward
                 )
-                    .frame(height: compactActionKeyHeight)
+                    .frame(height: mainFlickKeyHeight)
             }
+            .frame(height: mainFlickKeyHeight)
         }
+        .frame(height: fourRowAlignedClusterHeight, alignment: .top)
     }
 
     private var symbolKeyboardView: some View {
@@ -1958,6 +2048,7 @@ struct KeyboardRootView: View {
                 symbolCategoryContentView
                 .padding(.vertical, 2)
             }
+            .frame(height: fourRowAlignedTopContentHeight)
 
             HStack(spacing: keyboardRowSpacing) {
                 ActionKeyButton(
@@ -1965,7 +2056,7 @@ struct KeyboardRootView: View {
                     fixedWidth: 56,
                     action: { switchInputMode(.kana) }
                 )
-                    .frame(height: compactActionKeyHeight)
+                    .frame(height: mainFlickKeyHeight)
 
                 ForEach(SymbolCategory.allCases, id: \.self) { category in
                     SymbolCategoryKeyButton(
@@ -1976,7 +2067,7 @@ struct KeyboardRootView: View {
                         action: { selectedSymbolCategory = category }
                     )
                         .frame(maxWidth: .infinity)
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: mainFlickKeyHeight)
                 }
 
                 ActionKeyButton(
@@ -1989,9 +2080,11 @@ struct KeyboardRootView: View {
                     repeatInterval: keyRepeatInterval,
                     action: onDeleteBackward
                 )
-                    .frame(height: compactActionKeyHeight)
+                    .frame(height: mainFlickKeyHeight)
             }
+            .frame(height: mainFlickKeyHeight)
         }
+        .frame(height: fourRowAlignedClusterHeight, alignment: .top)
     }
 
     @ViewBuilder
@@ -2117,6 +2210,7 @@ struct KeyboardRootView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 2)
                 }
+                .frame(height: fourRowAlignedTopContentHeight)
 
                 HStack(spacing: keyboardRowSpacing) {
                     ActionKeyButton(
@@ -2124,7 +2218,7 @@ struct KeyboardRootView: View {
                         fixedWidth: 56,
                         action: { switchInputMode(.kana) }
                     )
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: mainFlickKeyHeight)
 
                     ActionKeyButton(
                         title: "☺︎",
@@ -2133,7 +2227,7 @@ struct KeyboardRootView: View {
                         action: { emojiInputSubmode = .emoji }
                     )
                         .frame(maxWidth: .infinity)
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: mainFlickKeyHeight)
 
                     ActionKeyButton(
                         title: "⌫",
@@ -2145,10 +2239,13 @@ struct KeyboardRootView: View {
                         repeatInterval: keyRepeatInterval,
                         action: onDeleteBackward
                     )
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: mainFlickKeyHeight)
                 }
+                .frame(height: mainFlickKeyHeight)
             }
+            .frame(height: fourRowAlignedClusterHeight, alignment: .top)
         }
+        .frame(height: fourRowAlignedClusterHeight, alignment: .top)
     }
 
     private var topHeaderView: some View {
@@ -3017,15 +3114,18 @@ struct KeyboardRootView: View {
                 .zIndex(zIndex(for: rowIndex))
             }
 
+            let unifiedActionRowHeight = isLandscapeLayout ? compactActionKeyHeight : mainFlickKeyHeight
+            let unifiedActionRowTopSpacing = isLandscapeLayout ? actionRowTopSpacing : 0
+
             HStack(spacing: keyboardRowSpacing) {
-                if showsCompactLeftModeSwitchButtons && rows.count < 3 {
+                if showsCompactLeftModeSwitchButtons && rows.count <= 3 {
                     let compactLeftModeSwitchSlot = isKanaFiveByTwoMode ? rows.count + 1 : rows.count
-                    compactLeftModeSwitchButton(slot: compactLeftModeSwitchSlot, height: compactActionKeyHeight)
+                    compactLeftModeSwitchButton(slot: compactLeftModeSwitchSlot, height: unifiedActionRowHeight)
                 }
 
                 if showsNextKeyboardKey {
                     ActionKeyButton(title: "🌐", fixedWidth: 54, action: onAdvanceKeyboard)
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: unifiedActionRowHeight)
                 }
 
                 ActionKeyButton(
@@ -3038,12 +3138,12 @@ struct KeyboardRootView: View {
                     repeatInterval: keyRepeatInterval,
                     action: onDeleteBackward
                 )
-                    .frame(height: compactActionKeyHeight)
+                    .frame(height: unifiedActionRowHeight)
 
-                spaceKeyButton(fixedWidth: nil)
+                spaceKeyButton(fixedWidth: nil, keyHeight: unifiedActionRowHeight)
 
                 if inputMode == .latin {
-                    latinSpaceRightActionButtons()
+                    latinSpaceRightActionButtons(keyHeight: unifiedActionRowHeight)
                 }
 
                 if inputMode == .kana {
@@ -3087,7 +3187,7 @@ struct KeyboardRootView: View {
                         fixedWidth: 58,
                         action: { switchInputMode(.kana) }
                     )
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: unifiedActionRowHeight)
 
                     ActionKeyButton(
                         title: "abc",
@@ -3095,7 +3195,7 @@ struct KeyboardRootView: View {
                         fixedWidth: 58,
                         action: { switchInputMode(.latin) }
                     )
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: unifiedActionRowHeight)
 
                     ActionKeyButton(
                         title: "⌘",
@@ -3104,7 +3204,7 @@ struct KeyboardRootView: View {
                         fixedWidth: 58,
                         action: enterSymbolsMode
                     )
-                        .frame(height: compactActionKeyHeight)
+                        .frame(height: unifiedActionRowHeight)
                 } else {
                     if !showsCompactLeftModeSwitchButtons {
                         ActionKeyButton(
@@ -3112,7 +3212,7 @@ struct KeyboardRootView: View {
                             fixedWidth: 58,
                             action: { switchInputMode(.kana) }
                         )
-                            .frame(height: compactActionKeyHeight)
+                            .frame(height: unifiedActionRowHeight)
 
                         ActionKeyButton(
                             title: "123",
@@ -3120,7 +3220,7 @@ struct KeyboardRootView: View {
                             fixedWidth: 58,
                             action: { switchInputMode(.number) }
                         )
-                            .frame(height: compactActionKeyHeight)
+                            .frame(height: unifiedActionRowHeight)
                     }
                 }
 
@@ -3133,9 +3233,9 @@ struct KeyboardRootView: View {
                     isEnabled: isReturnKeyEnabled,
                     action: onReturn
                 )
-                    .frame(height: compactActionKeyHeight)
+                    .frame(height: unifiedActionRowHeight)
             }
-            .padding(.top, actionRowTopSpacing)
+            .padding(.top, unifiedActionRowTopSpacing)
             .zIndex(zIndex(for: rows.count))
         }
     }
