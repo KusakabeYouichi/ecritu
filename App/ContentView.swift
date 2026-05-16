@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260515094445"
+    private static let editionUpdatedAtRaw: String = "20260516200849"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -47,6 +47,18 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var kanaLayoutModeRawValue: String = KanaLayoutOption.fiveByTwo.rawValue
+
+    @AppStorage(
+        SettingsKeys.landscapeCandidateSide,
+        store: Self.sharedDefaults
+    )
+    private var landscapeCandidateSideRawValue: String = LandscapeCandidateSideOption.left.rawValue
+
+    @AppStorage(
+        SettingsKeys.landscapeNumberPaneSide,
+        store: Self.sharedDefaults
+    )
+    private var landscapeNumberPaneSideRawValue: String = LandscapeCandidateSideOption.left.rawValue
 
     @AppStorage(
         SettingsKeys.kanaModifierPlacement,
@@ -196,6 +208,18 @@ struct ContentView: View {
     private var kanaLayoutSelection: Binding<KanaLayoutOption> {
         rawValueSelection(from: kanaLayoutModeRawValue, default: .fiveByTwo) {
             kanaLayoutModeRawValue = $0
+        }
+    }
+
+    private var landscapeCandidateSideSelection: Binding<LandscapeCandidateSideOption> {
+        rawValueSelection(from: landscapeCandidateSideRawValue, default: .left) {
+            landscapeCandidateSideRawValue = $0
+        }
+    }
+
+    private var landscapeNumberPaneSideSelection: Binding<LandscapeCandidateSideOption> {
+        rawValueSelection(from: landscapeNumberPaneSideRawValue, default: .left) {
+            landscapeNumberPaneSideRawValue = $0
         }
     }
 
@@ -1131,6 +1155,10 @@ struct ContentView: View {
                         KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
 
                         KanaLayoutSettingsSection(selection: kanaLayoutSelection)
+
+                        LandscapeCandidateSideSettingsSection(selection: landscapeCandidateSideSelection)
+
+                        LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
 
                         LatinLayoutSettingsSection(selection: latinLayoutSelection)
 

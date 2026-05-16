@@ -38,6 +38,8 @@ enum SettingsKeys {
     static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
     static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
     static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+    static let landscapeCandidateSide = "landscapeCandidateSide"
+    static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
     static let keyboardLayoutDebugLines = "keyboardLayoutDebugLines"
     static let keyboardLayoutDebugHeartbeat = "keyboardLayoutDebugHeartbeat"
     static let keyboardLayoutDebugReporterBundleID = "keyboardLayoutDebugReporterBundleID"
@@ -205,6 +207,20 @@ enum KanaModeSwitcherActionOption: String, CaseIterable, Identifiable {
         case .emoji: return "☺︎"
         case .kaomoji: return "^_^"
         case .symbols: return "⌘"
+        }
+    }
+}
+
+enum LandscapeCandidateSideOption: String, CaseIterable, Identifiable {
+    case left
+    case right
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .left: return "左"
+        case .right: return "右"
         }
     }
 }
