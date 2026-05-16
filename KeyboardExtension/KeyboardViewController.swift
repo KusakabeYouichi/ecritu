@@ -78,10 +78,6 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
         static let landscapeCandidateSide = "landscapeCandidateSide"
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
-        static let keyboardInputProbeCount = "keyboardInputProbeCount"
-        static let keyboardInputProbeHeartbeat = "keyboardInputProbeHeartbeat"
-        static let keyboardInputProbeLastEvent = "keyboardInputProbeLastEvent"
-        static let keyboardInputProbeLastText = "keyboardInputProbeLastText"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
@@ -452,21 +448,6 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         preferredContentSize = targetSize
-    }
-
-    func recordKeyboardInputProbe(event: String, text: String? = nil) {
-        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID) else {
-            return
-        }
-
-        let nextCount = defaults.integer(forKey: SharedDefaultsKeys.keyboardInputProbeCount) + 1
-        defaults.set(nextCount, forKey: SharedDefaultsKeys.keyboardInputProbeCount)
-        defaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardInputProbeHeartbeat)
-        defaults.set(event, forKey: SharedDefaultsKeys.keyboardInputProbeLastEvent)
-
-        if let text, !text.isEmpty {
-            defaults.set(String(text.prefix(12)), forKey: SharedDefaultsKeys.keyboardInputProbeLastText)
-        }
     }
 
     private func effectiveKanaLayoutModeForHeight() -> KanaLayoutMode {

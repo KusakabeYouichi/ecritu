@@ -40,15 +40,6 @@ enum SettingsKeys {
     static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
     static let landscapeCandidateSide = "landscapeCandidateSide"
     static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
-    static let keyboardLayoutDebugLines = "keyboardLayoutDebugLines"
-    static let keyboardLayoutDebugHeartbeat = "keyboardLayoutDebugHeartbeat"
-    static let keyboardLayoutDebugReporterBundleID = "keyboardLayoutDebugReporterBundleID"
-    static let keyboardLayoutDebugReporterAppGroupID = "keyboardLayoutDebugReporterAppGroupID"
-    static let keyboardLayoutDebugLastEvent = "keyboardLayoutDebugLastEvent"
-    static let keyboardInputProbeCount = "keyboardInputProbeCount"
-    static let keyboardInputProbeHeartbeat = "keyboardInputProbeHeartbeat"
-    static let keyboardInputProbeLastEvent = "keyboardInputProbeLastEvent"
-    static let keyboardInputProbeLastText = "keyboardInputProbeLastText"
     static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
     static let kanaKanjiInitialUserDictionaryMigrated = "kanaKanjiInitialUserDictionaryMigrated"
     static let kanaKanjiShortcutVocabulary = "ÉcrituShortcutVocab"
@@ -57,6 +48,7 @@ enum SettingsKeys {
     static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
+    static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
 }
 
 enum RepeatSettings {
