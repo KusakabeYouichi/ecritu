@@ -76,6 +76,8 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
         static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
         static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+        static let landscapeCandidateSide = "landscapeCandidateSide"
+        static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
         static let keyboardInputProbeCount = "keyboardInputProbeCount"
         static let keyboardInputProbeHeartbeat = "keyboardInputProbeHeartbeat"
         static let keyboardInputProbeLastEvent = "keyboardInputProbeLastEvent"
@@ -100,6 +102,7 @@ final class KeyboardViewController: UIInputViewController {
 
     private static let hostTopOverlap: CGFloat = 0
     private static let baselinePortraitScreenWidth: CGFloat = 390
+    private static let baselineLandscapeScreenHeight: CGFloat = 393
     private static let candidateHeaderExpandedHeight: CGFloat = 35
     private static let candidateHeaderCollapsedHeight: CGFloat = 3
     private static let keyboardVerticalPadding: CGFloat = 23
@@ -117,7 +120,6 @@ final class KeyboardViewController: UIInputViewController {
     private static let minimumEmojiHeight: CGFloat = 228
     private static let maximumEmojiHeight: CGFloat = 290
     private static let portraitSystemAccessoryOffset: CGFloat = 6
-    private static let landscapeKeyboardHeight: CGFloat = 244
     private static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
@@ -157,6 +159,8 @@ final class KeyboardViewController: UIInputViewController {
         let kanaModeSwitcherTapActionRawValue: String
         let kanaModeSwitcherRightFlickActionRawValue: String
         let kanaModeSwitcherUpFlickActionRawValue: String
+        let landscapeCandidateSideRawValue: String
+        let landscapeNumberPaneSideRawValue: String
         let showsNextKeyboardKey: Bool
         let shortcutVocabulary: [String]
         let composingText: String
@@ -529,6 +533,56 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
+    private func landscapeHeightBounds(for profile: PortraitHeightProfile) -> ClosedRange<CGFloat> {
+        switch profile {
+        case .kanaThreeByThree:
+            return 162...194
+        case .compactGrid:
+            if shouldUseKanaLandscapeHeightForCompactGrid() {
+                return 162...194
+            }
+
+            return 172...204
+        case .compactActionRow:
+            return 162...194
+        case .kanaFiveByTwo:
+            return 162...194
+        case .emoji:
+            return 170...204
+        }
+    }
+
+    private func baseLandscapeKeyboardHeight(for profile: PortraitHeightProfile) -> CGFloat {
+        switch profile {
+        case .kanaThreeByThree:
+            return 176
+        case .compactGrid:
+            if shouldUseKanaLandscapeHeightForCompactGrid() {
+                return 176
+            }
+
+            return 186
+        case .compactActionRow:
+            return 176
+        case .kanaFiveByTwo:
+            return 176
+        case .emoji:
+            return 188
+        }
+    }
+
+    private func shouldUseKanaLandscapeHeightForCompactGrid() -> Bool {
+        if currentInputMode == .number {
+            return true
+        }
+
+        if currentInputMode == .latin {
+            return effectiveLatinLayoutModeForHeight() == .flick
+        }
+
+        return false
+    }
+
     private func portraitHeightFineTuning(for profile: PortraitHeightProfile) -> CGFloat {
         switch profile {
         case .kanaThreeByThree:
@@ -665,7 +719,12 @@ final class KeyboardViewController: UIInputViewController {
         }()
 
         if isLandscapeOrientation {
-            return min(Self.landscapeKeyboardHeight, shorterScreenEdge * 0.9)
+            let profile = portraitHeightProfile()
+            let baseLandscapeHeight = baseLandscapeKeyboardHeight(for: profile)
+            let scale = max(0.9, min(shorterScreenEdge / Self.baselineLandscapeScreenHeight, 1.08))
+            let scaledLandscapeHeight = round(baseLandscapeHeight * scale)
+            let bounds = landscapeHeightBounds(for: profile)
+            return min(max(scaledLandscapeHeight, bounds.lowerBound), bounds.upperBound)
         }
 
         let profile = portraitHeightProfile()
@@ -949,6 +1008,16 @@ final class KeyboardViewController: UIInputViewController {
             key: SharedDefaultsKeys.kanaModeSwitcherUpFlickAction,
             fallback: "symbols"
         )
+        let landscapeCandidateSideRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.landscapeCandidateSide,
+            fallback: "left"
+        )
+        let landscapeNumberPaneSideRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.landscapeNumberPaneSide,
+            fallback: "left"
+        )
 
         return RenderConfiguration(
             directionProfile: directionProfile,
@@ -972,6 +1041,8 @@ final class KeyboardViewController: UIInputViewController {
             kanaModeSwitcherTapActionRawValue: kanaModeSwitcherTapActionRawValue,
             kanaModeSwitcherRightFlickActionRawValue: kanaModeSwitcherRightFlickActionRawValue,
             kanaModeSwitcherUpFlickActionRawValue: kanaModeSwitcherUpFlickActionRawValue,
+            landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
+            landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
             showsNextKeyboardKey: needsInputModeSwitchKey,
             shortcutVocabulary: kanaKanjiStore.shortcutVocabulary(),
             composingText: candidatePresentation.composingText,
@@ -1056,6 +1127,8 @@ final class KeyboardViewController: UIInputViewController {
             kanaModeSwitcherTapActionRawValue: configuration.kanaModeSwitcherTapActionRawValue,
             kanaModeSwitcherRightFlickActionRawValue: configuration.kanaModeSwitcherRightFlickActionRawValue,
             kanaModeSwitcherUpFlickActionRawValue: configuration.kanaModeSwitcherUpFlickActionRawValue,
+            landscapeCandidateSideRawValue: configuration.landscapeCandidateSideRawValue,
+            landscapeNumberPaneSideRawValue: configuration.landscapeNumberPaneSideRawValue,
             shortcutVocabulary: configuration.shortcutVocabulary,
             composingText: configuration.composingText,
             conversionCandidates: configuration.conversionCandidates,

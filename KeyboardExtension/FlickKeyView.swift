@@ -70,6 +70,7 @@ struct FlickKeyView: View {
     var activePreviewFontSize: CGFloat = 24
     var activePreviewHorizontalPadding: CGFloat = 12
     var directionalHintHorizontalOffset: CGFloat = Metrics.directionHintHorizontalOffset
+    var directionalHintFontScale: CGFloat = 1
     var onTouchStateChanged: (Bool) -> Void = { _ in }
 
     @State private var activeDirection: FlickDirection = .milieu
@@ -246,24 +247,24 @@ struct FlickKeyView: View {
 
     private func directionalHintFont(for text: String) -> Font {
         if isDakutenGuideText(text) {
-            return .system(size: 25, weight: .bold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(25), weight: .bold, design: .rounded)
         }
 
         if text == "小" {
-            return .system(size: 6, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(6), weight: .semibold, design: .rounded)
         }
 
         switch text.count {
         case 7...:
-            return .system(size: 6, weight: .medium, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(6), weight: .medium, design: .rounded)
         case 5...6:
-            return .system(size: 7, weight: .medium, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(7), weight: .medium, design: .rounded)
         case 3...4:
-            return .system(size: 8, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(8), weight: .semibold, design: .rounded)
         case 2:
-            return .system(size: 9, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(9), weight: .semibold, design: .rounded)
         default:
-            return .system(size: 10, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(10), weight: .semibold, design: .rounded)
         }
     }
 
@@ -273,25 +274,29 @@ struct FlickKeyView: View {
 
     private func downDirectionalHintFont(for text: String) -> Font {
         if isDakutenGuideText(text) {
-            return .system(size: 12, weight: .bold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(12), weight: .bold, design: .rounded)
         }
 
         if text == "小" {
-            return .system(size: 6, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(6), weight: .semibold, design: .rounded)
         }
 
         switch text.count {
         case 7...:
-            return .system(size: 5, weight: .medium, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(5), weight: .medium, design: .rounded)
         case 5...6:
-            return .system(size: 6, weight: .medium, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(6), weight: .medium, design: .rounded)
         case 3...4:
-            return .system(size: 7, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(7), weight: .semibold, design: .rounded)
         case 2:
-            return .system(size: 8, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(8), weight: .semibold, design: .rounded)
         default:
-            return .system(size: 9, weight: .semibold, design: .rounded)
+            return .system(size: scaledDirectionalHintSize(9), weight: .semibold, design: .rounded)
         }
+    }
+
+    private func scaledDirectionalHintSize(_ baseSize: CGFloat) -> CGFloat {
+        baseSize * directionalHintFontScale
     }
 
     private func isDakutenGuideText(_ text: String) -> Bool {

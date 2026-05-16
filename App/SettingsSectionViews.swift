@@ -254,6 +254,52 @@ struct KanaLayoutSettingsSection: View {
     }
 }
 
+struct LandscapeCandidateSideSettingsSection: View {
+    @Binding var selection: LandscapeCandidateSideOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("横向きサイド配置")
+                .font(.headline)
+
+            Picker("横向きサイド配置", selection: $selection) {
+                ForEach(LandscapeCandidateSideOption.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text("横向きのかな入力時に、候補エリアをキーの左または右へ表示します。縦向きには影響しません。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
+struct LandscapeNumberPaneSideSettingsSection: View {
+    @Binding var selection: LandscapeCandidateSideOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("横向き数字ペイン配置")
+                .font(.headline)
+
+            Picker("横向き数字ペイン配置", selection: $selection) {
+                ForEach(LandscapeCandidateSideOption.allCases) { option in
+                    Text(option.title).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text("横向きの数字3x3入力時に、数字キー塊を左または右へ配置します。かな入力モードの候補配置には影響しません。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct LatinLayoutSettingsSection: View {
     @Binding var selection: LatinLayoutOption
 
