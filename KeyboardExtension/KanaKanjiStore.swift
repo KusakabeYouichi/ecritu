@@ -649,8 +649,8 @@ final class KanaKanjiStore {
         let userCandidates = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) ?? []
 
         if !userCandidates.isEmpty {
-            return uniqueCandidates(
-                from: userCandidates + initialShortcutVocabulary()
+            return uniqueShortcutCandidates(
+                from: initialShortcutVocabulary() + userCandidates
             )
         }
 
@@ -661,8 +661,8 @@ final class KanaKanjiStore {
                 .flatMap { legacyDictionary[$0] ?? [] }
 
             if !legacyCandidates.isEmpty {
-                return uniqueCandidates(
-                    from: legacyCandidates + initialShortcutVocabulary()
+                return uniqueShortcutCandidates(
+                    from: initialShortcutVocabulary() + legacyCandidates
                 )
             }
         }
@@ -687,7 +687,7 @@ final class KanaKanjiStore {
         }
 
         if let decodedArray = try? JSONDecoder().decode([String].self, from: data) {
-            let normalized = uniqueCandidates(from: decodedArray)
+            let normalized = uniqueShortcutCandidates(from: decodedArray)
             cachedInitialShortcutVocabulary = normalized
             return normalized
         }
@@ -697,7 +697,7 @@ final class KanaKanjiStore {
                 .keys
                 .sorted()
                 .flatMap { decodedDictionary[$0] ?? [] }
-            let normalized = uniqueCandidates(from: candidates)
+            let normalized = uniqueShortcutCandidates(from: candidates)
             cachedInitialShortcutVocabulary = normalized
             return normalized
         }
@@ -927,6 +927,25 @@ final class KanaKanjiStore {
 
             seen.insert(trimmed)
             result.append(trimmed)
+        }
+
+        return result
+    }
+
+    private func uniqueShortcutCandidates(from candidates: [String]) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+
+        for candidate in candidates {
+            let normalized = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !normalized.isEmpty,
+                    !seen.contains(normalized) else {
+                continue
+            }
+
+            seen.insert(normalized)
+            result.append(candidate)
         }
 
         return result
