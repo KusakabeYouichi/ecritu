@@ -77,6 +77,8 @@ struct KeyboardRootView: View {
     let onApplyKanaPostModifier: (KanaPostModifierButtonState, Bool) -> Bool
     let onSelectConversionCandidate: (Int) -> Void
     let onCommitComposingText: () -> Void
+    let onCommitComposingTextAsKatakana: () -> Void
+    let onUpgradeRecentKanaCommitToKatakana: () -> Bool
     let onInputModeChanged: (KeyboardInputMode) -> Void
     let showsNextKeyboardKey: Bool
     let directionProfile: FlickDirectionProfile
@@ -407,10 +409,16 @@ struct KeyboardRootView: View {
     @State private var selectedEmojiCategory: EmojiCategory = .people
     @State private var selectedSymbolCategory: SymbolCategory = .basic
     @State private var emojiInputSubmode: EmojiInputSubmode = .emoji
+    @State private var didTriggerComposingCommitLongPress = false
+    @State private var katakanaCommitFeedbackText: String? = nil
+    @State private var pendingKatakanaCommitWorkItem: DispatchWorkItem?
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private let shiftDoubleTapThreshold: TimeInterval = 0.32
+    private let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
+    private let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
+    private let katakanaCommitFeedbackDelay: TimeInterval = 0.14
     private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let candidateHeaderExpandedHeight: CGFloat = 35
     private let candidateHeaderCollapsedHeight: CGFloat = 3
@@ -672,6 +680,14 @@ struct KeyboardRootView: View {
 
     private var returnActionKeyFontSize: CGFloat {
         isReturnActsAsCommitKey ? 16 : 22
+    }
+
+    private var returnKeyKatakanaDoubleTapAction: (() -> Void)? {
+        isReturnActsAsCommitKey ? handleReturnKeyKatakanaDoubleTap : nil
+    }
+
+    private var returnKeyKatakanaLongPressAction: (() -> Void)? {
+        isReturnActsAsCommitKey ? handleReturnKeyKatakanaLongPress : nil
     }
 
     private var canTapComposingTextToCommit: Bool {
@@ -1372,7 +1388,10 @@ struct KeyboardRootView: View {
             title: "abc",
             fontSize: leftModeSwitchLatinFontSize,
             isEnabled: inputMode != .latin,
-            action: { switchInputMode(.latin) }
+            onLongPress: handleLatinModeSwitchLongPress,
+            onDoubleTap: handleLatinModeSwitchDoubleTap,
+            doubleTapThreshold: latinModeSwitchDoubleTapThreshold,
+            action: handleLatinModeSwitchTap
         )
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
@@ -1653,6 +1672,10 @@ struct KeyboardRootView: View {
                         accessibilityLabel: returnActionKeyAccessibilityLabel,
                         fontSize: returnActionKeyFontSize,
                         isEnabled: isReturnKeyEnabled,
+                        onLongPress: returnKeyKatakanaLongPressAction,
+                        onDoubleTap: returnKeyKatakanaDoubleTapAction,
+                        doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+                        prefersImmediateSingleTapWhenDoubleTapEnabled: true,
                         action: onReturn
                     )
                         .frame(maxWidth: .infinity)
@@ -1827,6 +1850,10 @@ struct KeyboardRootView: View {
                     accessibilityLabel: returnActionKeyAccessibilityLabel,
                     fontSize: returnActionKeyFontSize,
                     isEnabled: isReturnKeyEnabled,
+                    onLongPress: returnKeyKatakanaLongPressAction,
+                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
+                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
                     action: onReturn
                 )
                     .frame(maxWidth: .infinity)
@@ -1993,6 +2020,10 @@ struct KeyboardRootView: View {
                     accessibilityLabel: returnActionKeyAccessibilityLabel,
                     fontSize: returnActionKeyFontSize,
                     isEnabled: isReturnKeyEnabled,
+                    onLongPress: returnKeyKatakanaLongPressAction,
+                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
+                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
                     action: onReturn
                 )
                     .frame(maxWidth: .infinity)
@@ -2335,31 +2366,55 @@ struct KeyboardRootView: View {
                         )
 
                     if canTapComposingTextToCommit {
+                        let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
+
                         Button {
-                            onCommitComposingText()
+                            handleComposingTextCommitTap()
                         } label: {
                             Text(composingText)
                                 .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                .foregroundStyle(keyLabelColor.opacity(0.85))
+                                .foregroundStyle(
+                                    showsKatakanaCommitFeedback
+                                        ? Color.white
+                                        : keyLabelColor.opacity(0.85)
+                                )
                                 .lineLimit(1)
-                                .underline(true, color: conversionStateColor.opacity(0.92))
+                                .underline(
+                                    !showsKatakanaCommitFeedback,
+                                    color: conversionStateColor.opacity(0.92)
+                                )
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 4)
                                 .background(
                                     RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
+                                        .fill(
+                                            showsKatakanaCommitFeedback
+                                                ? accentColor.opacity(0.95)
+                                                : KeyboardThemePalette.candidateHeaderSubtleBackground
+                                        )
                                 )
                                 .overlay(
                                     RoundedRectangle(cornerRadius: 7, style: .continuous)
                                         .stroke(
-                                            conversionStateColor.opacity(0.45),
-                                            style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                                            showsKatakanaCommitFeedback
+                                                ? Color.clear
+                                                : conversionStateColor.opacity(0.45),
+                                            style: StrokeStyle(
+                                                lineWidth: showsKatakanaCommitFeedback ? 0 : 1,
+                                                dash: [3, 2]
+                                            )
                                         )
                                 )
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("\(composingText)を確定")
-                        .accessibilityHint("変換せずに確定")
+                        .accessibilityHint("通常タップで変換せずに確定。ロングタップでカタカナ確定")
+                        .simultaneousGesture(
+                            LongPressGesture(minimumDuration: 0.4)
+                                .onEnded { _ in
+                                    handleComposingTextCommitLongPress()
+                                }
+                        )
                     } else {
                         Text(composingText)
                             .font(.system(size: candidateTextFontSize, weight: .semibold))
@@ -2458,22 +2513,39 @@ struct KeyboardRootView: View {
                     )
 
                 if canTapComposingTextToCommit {
+                    let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
+
                     Button {
-                        onCommitComposingText()
+                        handleComposingTextCommitTap()
                     } label: {
                         Text(composingText)
                             .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .foregroundStyle(keyLabelColor.opacity(0.9))
+                            .foregroundStyle(
+                                showsKatakanaCommitFeedback
+                                    ? Color.white
+                                    : keyLabelColor.opacity(0.9)
+                            )
                             .lineLimit(1)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 6)
                             .background(
                                 RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                    .fill(KeyboardThemePalette.candidateHeaderChipBackground)
+                                    .fill(
+                                        showsKatakanaCommitFeedback
+                                            ? accentColor.opacity(0.95)
+                                            : KeyboardThemePalette.candidateHeaderChipBackground
+                                    )
                             )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityHint("通常タップで変換せずに確定。ロングタップでカタカナ確定")
+                    .simultaneousGesture(
+                        LongPressGesture(minimumDuration: 0.4)
+                            .onEnded { _ in
+                                handleComposingTextCommitLongPress()
+                            }
+                    )
                 } else {
                     Text(composingText)
                         .font(.system(size: candidateTextFontSize, weight: .semibold))
@@ -2669,6 +2741,10 @@ struct KeyboardRootView: View {
                     fontSize: returnActionKeyFontSize,
                     fixedWidth: 72,
                     isEnabled: isReturnKeyEnabled,
+                    onLongPress: returnKeyKatakanaLongPressAction,
+                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
+                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
                     action: onReturn
                 )
                     .frame(height: mainFlickKeyHeight)
@@ -2804,6 +2880,10 @@ struct KeyboardRootView: View {
             accessibilityLabel: returnActionKeyAccessibilityLabel,
             fontSize: returnActionKeyFontSize,
             isEnabled: isReturnKeyEnabled,
+            onLongPress: returnKeyKatakanaLongPressAction,
+            onDoubleTap: returnKeyKatakanaDoubleTapAction,
+            doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+            prefersImmediateSingleTapWhenDoubleTapEnabled: true,
             action: onReturn
         )
             .frame(width: fixedWidth, height: mainFlickKeyHeight)
@@ -3011,6 +3091,10 @@ struct KeyboardRootView: View {
                             accessibilityLabel: returnActionKeyAccessibilityLabel,
                             fontSize: returnActionKeyFontSize,
                             isEnabled: isReturnKeyEnabled,
+                            onLongPress: returnKeyKatakanaLongPressAction,
+                            onDoubleTap: returnKeyKatakanaDoubleTapAction,
+                            doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+                            prefersImmediateSingleTapWhenDoubleTapEnabled: true,
                             action: onReturn
                         )
                             .frame(maxWidth: .infinity)
@@ -3267,6 +3351,10 @@ struct KeyboardRootView: View {
                     fontSize: returnActionKeyFontSize,
                     fixedWidth: 72,
                     isEnabled: isReturnKeyEnabled,
+                    onLongPress: returnKeyKatakanaLongPressAction,
+                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
+                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
                     action: onReturn
                 )
                     .frame(height: unifiedActionRowHeight)
@@ -3328,6 +3416,10 @@ struct KeyboardRootView: View {
         }
         .onChange(of: spaceToastTrigger) { _ in
             showInitialSpaceToastIfNeeded()
+        }
+        .onDisappear {
+            didTriggerComposingCommitLongPress = false
+            cancelPendingKatakanaCommit()
         }
         .environment(\.flickDirectionProfile, directionProfile)
         .environment(\.flickGuideDisplayMode, currentFlickGuideDisplayMode)
@@ -3421,6 +3513,96 @@ struct KeyboardRootView: View {
             transitionState,
             to: mode
         )
+    }
+
+    private func switchToLatinMode(with shiftState: LatinShiftState) {
+        var next = KeyboardModeTransition.switchInputMode(
+            transitionState,
+            to: .latin
+        )
+
+        next.latinShiftState = shiftState
+        next.lastLatinShiftTapAt = nil
+        transitionState = next
+    }
+
+    private func handleLatinModeSwitchTap() {
+        switchToLatinMode(with: .off)
+    }
+
+    private func handleLatinModeSwitchDoubleTap() {
+        switchToLatinMode(with: .locked)
+    }
+
+    private func handleLatinModeSwitchLongPress() {
+        switchToLatinMode(with: .on)
+    }
+
+    private func handleComposingTextCommitTap() {
+        guard canTapComposingTextToCommit else {
+            return
+        }
+
+        if didTriggerComposingCommitLongPress {
+            didTriggerComposingCommitLongPress = false
+            return
+        }
+
+        onCommitComposingText()
+    }
+
+    private func handleComposingTextCommitLongPress() {
+        guard canTapComposingTextToCommit else {
+            return
+        }
+
+        didTriggerComposingCommitLongPress = true
+        triggerKatakanaComposingCommitFeedbackAndCommit()
+    }
+
+    private func handleReturnKeyKatakanaDoubleTap() {
+        if !composingText.isEmpty {
+            triggerKatakanaComposingCommitFeedbackAndCommit()
+            return
+        }
+
+        _ = onUpgradeRecentKanaCommitToKatakana()
+    }
+
+    private func handleReturnKeyKatakanaLongPress() {
+        if !composingText.isEmpty {
+            triggerKatakanaComposingCommitFeedbackAndCommit()
+        }
+    }
+
+    private func triggerKatakanaComposingCommitFeedbackAndCommit() {
+        guard !composingText.isEmpty else {
+            return
+        }
+
+        cancelPendingKatakanaCommit()
+
+        let previewText = composingText
+        katakanaCommitFeedbackText = previewText
+
+        let workItem = DispatchWorkItem {
+            self.pendingKatakanaCommitWorkItem = nil
+            self.katakanaCommitFeedbackText = nil
+            onCommitComposingTextAsKatakana()
+        }
+
+        pendingKatakanaCommitWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + katakanaCommitFeedbackDelay, execute: workItem)
+    }
+
+    private func isShowingKatakanaCommitFeedback(for text: String) -> Bool {
+        katakanaCommitFeedbackText == text
+    }
+
+    private func cancelPendingKatakanaCommit() {
+        pendingKatakanaCommitWorkItem?.cancel()
+        pendingKatakanaCommitWorkItem = nil
+        katakanaCommitFeedbackText = nil
     }
 
     private func selectKanaModeSwitcher(_ output: String) {
@@ -3816,6 +3998,8 @@ struct KeyboardRootView: View {
         onApplyKanaPostModifier: { _, _ in false },
         onSelectConversionCandidate: { _ in },
         onCommitComposingText: {},
+        onCommitComposingTextAsKatakana: {},
+        onUpgradeRecentKanaCommitToKatakana: { false },
         onInputModeChanged: { _ in },
         showsNextKeyboardKey: true,
         directionProfile: .ecritu,

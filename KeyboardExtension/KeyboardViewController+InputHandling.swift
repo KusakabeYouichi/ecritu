@@ -48,6 +48,8 @@ extension KeyboardViewController {
             return
         }
 
+        clearRecentKanaPlainCommitUpgradeContext()
+
         commitActiveConversion(learn: true)
 
         if currentInputMode == .kana,
@@ -89,6 +91,8 @@ extension KeyboardViewController {
     }
 
     func commitComposingTextBeforeDelimiterInput() {
+        clearRecentKanaPlainCommitUpgradeContext()
+
         guard !composingRawText.isEmpty,
                 !composingReading.isEmpty else {
             textDocumentProxy.unmarkText()
@@ -115,6 +119,8 @@ extension KeyboardViewController {
     }
 
     func handleDeleteBackward() {
+        clearRecentKanaPlainCommitUpgradeContext()
+
         if activeConversion != nil {
             commitActiveConversion(learn: false)
             clearComposingState()
@@ -145,6 +151,8 @@ extension KeyboardViewController {
     }
 
     func handleSpaceInput() {
+        clearRecentKanaPlainCommitUpgradeContext()
+
         guard currentInputMode == .kana else {
             commitActiveConversion(learn: true)
 
@@ -186,12 +194,26 @@ extension KeyboardViewController {
         let hasComposingText = !composingRawText.isEmpty
 
         if hasActiveConversion {
+            if let activeConversion {
+                rememberRecentKanaPlainCommit(
+                    sourceText: activeConversion.sourceText,
+                    sourceReading: activeConversion.reading,
+                    committedText: activeConversion.sourceText
+                )
+            }
+
             commitActiveConversion(learn: true)
             refreshKeyboardStateAsync()
             return
         }
 
         if hasComposingText {
+            rememberRecentKanaPlainCommit(
+                sourceText: composingRawText,
+                sourceReading: composingReading,
+                committedText: composingRawText
+            )
+
             commitComposingText(
                 sourceText: composingRawText,
                 sourceReading: composingReading,
@@ -202,12 +224,15 @@ extension KeyboardViewController {
             return
         }
 
+        clearRecentKanaPlainCommitUpgradeContext()
         clearComposingState()
         textDocumentProxy.insertText("\n")
         refreshKeyboardStateAsync()
     }
 
     func handleConversionCandidateSelection(_ index: Int) {
+        clearRecentKanaPlainCommitUpgradeContext()
+
         guard currentInputMode == .kana else {
             return
         }
@@ -255,6 +280,8 @@ extension KeyboardViewController {
     }
 
     func handleCommitComposingText() {
+        clearRecentKanaPlainCommitUpgradeContext()
+
         guard currentInputMode == .kana else {
             return
         }
@@ -284,7 +311,114 @@ extension KeyboardViewController {
         refreshKeyboardStateAsync()
     }
 
+    func handleCommitComposingTextAsKatakana() {
+        clearRecentKanaPlainCommitUpgradeContext()
+
+        guard currentInputMode == .kana else {
+            return
+        }
+
+        if let activeConversion {
+            let committedText = katakanaCommittedText(from: activeConversion.sourceText)
+
+            commitActiveConversion(
+                activeConversion,
+                committedText: committedText,
+                learn: true
+            )
+            clearMarkedComposingText()
+            clearComposingState()
+            refreshKeyboardStateAsync()
+            return
+        }
+
+        guard !composingRawText.isEmpty else {
+            return
+        }
+
+        let committedText = katakanaCommittedText(from: composingRawText)
+
+        commitComposingText(
+            sourceText: composingRawText,
+            sourceReading: composingReading,
+            committedText: committedText,
+            learn: true
+        )
+        refreshKeyboardStateAsync()
+    }
+
+    func katakanaCommittedText(from text: String) -> String {
+        guard !text.isEmpty else {
+            return text
+        }
+
+        return text.applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
+    }
+
+    func clearRecentKanaPlainCommitUpgradeContext() {
+        recentKanaPlainCommit = nil
+    }
+
+    func rememberRecentKanaPlainCommit(
+        sourceText: String,
+        sourceReading: String,
+        committedText: String
+    ) {
+        guard !sourceText.isEmpty,
+                !committedText.isEmpty else {
+            recentKanaPlainCommit = nil
+            return
+        }
+
+        recentKanaPlainCommit = RecentKanaPlainCommit(
+            sourceText: sourceText,
+            sourceReading: sourceReading,
+            committedText: committedText,
+            committedAt: Date()
+        )
+    }
+
+    func upgradeRecentKanaCommitToKatakana() -> Bool {
+        guard let recentKanaPlainCommit else {
+            return false
+        }
+
+        if Date().timeIntervalSince(recentKanaPlainCommit.committedAt) > recentKanaPlainCommitUpgradeWindow {
+            self.recentKanaPlainCommit = nil
+            return false
+        }
+
+        let katakanaText = katakanaCommittedText(from: recentKanaPlainCommit.committedText)
+        guard katakanaText != recentKanaPlainCommit.committedText else {
+            self.recentKanaPlainCommit = nil
+            return false
+        }
+
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        guard contextBeforeInput.hasSuffix(recentKanaPlainCommit.committedText) else {
+            self.recentKanaPlainCommit = nil
+            return false
+        }
+
+        deleteBackwardCharacterCount(recentKanaPlainCommit.committedText.count)
+        textDocumentProxy.insertText(katakanaText)
+        textDocumentProxy.unmarkText()
+
+        if !recentKanaPlainCommit.sourceReading.isEmpty {
+            kanaKanjiConverter.learn(
+                reading: recentKanaPlainCommit.sourceReading,
+                candidate: katakanaText
+            )
+        }
+
+        self.recentKanaPlainCommit = nil
+        clearComposingState()
+        return true
+    }
+
     func commitPendingComposingTextBeforeInputModeSwitch() {
+        clearRecentKanaPlainCommitUpgradeContext()
+
         guard currentInputMode == .kana else {
             return
         }
