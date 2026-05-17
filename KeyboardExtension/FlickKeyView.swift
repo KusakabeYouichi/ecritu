@@ -68,6 +68,7 @@ struct FlickKeyView: View {
     var directionalFlickThreshold: CGFloat = 18
     var directionalCommitThreshold: CGFloat? = nil
     var activePreviewFontSize: CGFloat = 24
+    var activeMainLabelFontSizeProvider: ((FlickDirection, String) -> CGFloat)? = nil
     var activePreviewFontSizeProvider: ((FlickDirection, String) -> CGFloat)? = nil
     var activePreviewHorizontalPadding: CGFloat = 12
     var directionalHintHorizontalOffset: CGFloat = Metrics.directionHintHorizontalOffset
@@ -106,7 +107,13 @@ struct FlickKeyView: View {
 
             if isTouching {
                 Text(displayText)
-                    .font(.system(size: mainLabelFontSize, weight: .bold, design: .rounded))
+                    .font(
+                        .system(
+                            size: resolvedActiveMainLabelFontSize(for: activeDirection),
+                            weight: .bold,
+                            design: .rounded
+                        )
+                    )
                     .foregroundStyle(Color.white)
             } else if let idleReplacement {
                 idleReplacement
@@ -169,6 +176,16 @@ struct FlickKeyView: View {
         }
 
         return kana.output(for: activeDirection)
+    }
+
+    private func resolvedActiveMainLabelFontSize(for direction: FlickDirection) -> CGFloat {
+        let currentText = kana.output(for: direction)
+
+        if let activeMainLabelFontSizeProvider {
+            return activeMainLabelFontSizeProvider(direction, currentText)
+        }
+
+        return mainLabelFontSize
     }
 
     private func resolvedActivePreviewFontSize(for direction: FlickDirection) -> CGFloat {
