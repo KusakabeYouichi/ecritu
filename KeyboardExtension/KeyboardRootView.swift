@@ -589,9 +589,9 @@ struct KeyboardRootView: View {
         LandscapeCandidateSide(rawValue: landscapeNumberPaneSideRawValue) ?? .left
     }
 
-    private var landscapeEmojiHeaderHeight: CGFloat { 18 }
+    private var landscapeEmojiHeaderHeight: CGFloat { 26 }
 
-    private var emojiHeaderTopPadding: CGFloat { isLandscapeLayout ? 2 : 0 }
+    private var emojiHeaderTopPadding: CGFloat { isLandscapeLayout ? 8 : 13 }
 
     private var candidateHeaderHeight: CGFloat {
         if isLandscapeLayout {
@@ -1276,6 +1276,34 @@ struct KeyboardRootView: View {
         return unifiedLeftModeSwitchFontSize
     }
 
+    private func kanaModeSwitcherMainLabelFontSizeForDirection(
+        _ direction: FlickDirection,
+        mainText: String
+    ) -> CGFloat {
+        if direction == .milieu {
+            return kanaModeSwitcherMainLabelFontSize
+        }
+
+        if let action = kanaModeSwitcherAction(for: direction) {
+            switch action {
+            case .symbols:
+                return symbolTransitionIconFontSize
+            case .emoji, .kaomoji:
+                return kanaModeSwitcherEmojiIconFontSize
+            }
+        }
+
+        if mainText == "⌘" {
+            return symbolTransitionIconFontSize
+        }
+
+        if mainText == "☺︎" || mainText == "^_^" {
+            return kanaModeSwitcherEmojiIconFontSize
+        }
+
+        return kanaModeSwitcherMainLabelFontSize
+    }
+
     private var kanaModeSwitcherPreviewFontSize: CGFloat {
         return 14
     }
@@ -1454,6 +1482,12 @@ struct KeyboardRootView: View {
                 showsDirectionalHints: showsFlickGuideCharacters,
                 showsGuideText: false,
                 activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                activeMainLabelFontSizeProvider: { direction, mainText in
+                    kanaModeSwitcherMainLabelFontSizeForDirection(
+                        direction,
+                        mainText: mainText
+                    )
+                },
                 activePreviewFontSizeProvider: { direction, previewText in
                     kanaModeSwitcherPreviewFontSizeForDirection(
                         direction,
@@ -1468,6 +1502,8 @@ struct KeyboardRootView: View {
             )
                 .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
         }
+        // Keep left-column flick previews above the main 4th-row modifier cluster.
+        .zIndex(KeyboardLayerZIndex.activeRow + 1)
     }
 
     private func threeByThreeKanaMainCluster(
