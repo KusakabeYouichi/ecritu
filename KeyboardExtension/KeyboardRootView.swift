@@ -966,14 +966,14 @@ struct KeyboardRootView: View {
         var result: [String] = []
 
         for candidate in shortcutVocabulary {
-            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+            let normalized = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
-            guard !trimmed.isEmpty,
-                seen.insert(trimmed).inserted else {
+            guard !normalized.isEmpty,
+                seen.insert(normalized).inserted else {
                 continue
             }
 
-            result.append(trimmed)
+            result.append(candidate)
         }
 
         return result
