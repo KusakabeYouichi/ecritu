@@ -18,6 +18,8 @@ final class KeyboardViewController: UIInputViewController {
     var composingRawText = ""
     var composingReading = ""
     var activeConversion: ActiveConversion?
+    var recentKanaPlainCommit: RecentKanaPlainCommit?
+    let recentKanaPlainCommitUpgradeWindow: TimeInterval = 0.45
     private lazy var kanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
     lazy var kanaKanjiConverter = KanaKanjiConverter(store: kanaKanjiStore)
 
@@ -33,6 +35,13 @@ final class KeyboardViewController: UIInputViewController {
         let composingText: String
         let candidates: [String]
         let selectedIndex: Int?
+    }
+
+    struct RecentKanaPlainCommit: Equatable {
+        let sourceText: String
+        let sourceReading: String
+        let committedText: String
+        let committedAt: Date
     }
 
     private enum SharedDefaultsKeys {
@@ -1061,6 +1070,22 @@ final class KeyboardViewController: UIInputViewController {
             },
             onCommitComposingText: { [weak self] in
                 self?.handleCommitComposingText()
+            },
+            onCommitComposingTextAsKatakana: { [weak self] in
+                self?.handleCommitComposingTextAsKatakana()
+            },
+            onUpgradeRecentKanaCommitToKatakana: { [weak self] in
+                guard let self else {
+                    return false
+                }
+
+                let upgraded = self.upgradeRecentKanaCommitToKatakana()
+
+                if upgraded {
+                    self.refreshKeyboardStateAsync()
+                }
+
+                return upgraded
             },
             onInputModeChanged: { [weak self] mode in
                 guard let self else {

@@ -95,11 +95,16 @@ struct ActionKeyButton: View {
     var fixedWidth: CGFloat? = nil
     var isEnabled: Bool = true
     var onLongPress: (() -> Void)? = nil
+    var onDoubleTap: (() -> Void)? = nil
+    var doubleTapThreshold: TimeInterval = 0.28
+    var prefersImmediateSingleTapWhenDoubleTapEnabled = false
     var repeatsWhileHolding = false
     var repeatInitialDelay: TimeInterval = 0.5
     var repeatInterval: TimeInterval = 0.1
     let action: () -> Void
     @State private var didTriggerLongPress = false
+    @State private var pendingSingleTapWorkItem: DispatchWorkItem?
+    @State private var lastImmediateSingleTapAt: Date?
     @State private var repeatStartWorkItem: DispatchWorkItem?
     @State private var repeatTimer: Timer?
     private let keyLabelColor = KeyboardThemePalette.keyLabel
@@ -111,7 +116,7 @@ struct ActionKeyButton: View {
                 return
             }
 
-            action()
+            handleTapAction()
         }) {
             Group {
                 if let systemImageName {
@@ -146,6 +151,8 @@ struct ActionKeyButton: View {
                         return
                     }
 
+                    cancelPendingSingleTapAction()
+                    lastImmediateSingleTapAt = nil
                     didTriggerLongPress = true
                     onLongPress()
                 }
@@ -166,10 +173,62 @@ struct ActionKeyButton: View {
                 }
         )
         .onDisappear {
+            cancelPendingSingleTapAction()
+            lastImmediateSingleTapAt = nil
             cancelRepeatingActionStart()
             stopRepeatingAction()
         }
         .frame(width: fixedWidth)
+    }
+
+    private func handleTapAction() {
+        guard isEnabled else {
+            return
+        }
+
+        guard !repeatsWhileHolding,
+                let onDoubleTap else {
+            action()
+            return
+        }
+
+        if prefersImmediateSingleTapWhenDoubleTapEnabled {
+            let now = Date()
+            let safeThreshold = max(0.05, doubleTapThreshold)
+
+            if let lastImmediateSingleTapAt,
+                now.timeIntervalSince(lastImmediateSingleTapAt) <= safeThreshold {
+                self.lastImmediateSingleTapAt = nil
+                onDoubleTap()
+                return
+            }
+
+            self.lastImmediateSingleTapAt = now
+            action()
+            return
+        }
+
+        if let pendingSingleTapWorkItem {
+            pendingSingleTapWorkItem.cancel()
+            self.pendingSingleTapWorkItem = nil
+            onDoubleTap()
+            return
+        }
+
+        let safeThreshold = max(0.05, doubleTapThreshold)
+
+        let workItem = DispatchWorkItem {
+            pendingSingleTapWorkItem = nil
+            action()
+        }
+
+        pendingSingleTapWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + safeThreshold, execute: workItem)
+    }
+
+    private func cancelPendingSingleTapAction() {
+        pendingSingleTapWorkItem?.cancel()
+        pendingSingleTapWorkItem = nil
     }
 
     private func beginRepeatingActionIfNeeded() {
@@ -178,6 +237,8 @@ struct ActionKeyButton: View {
             return
         }
 
+        cancelPendingSingleTapAction()
+        lastImmediateSingleTapAt = nil
         didTriggerLongPress = true
         action()
         scheduleRepeatingActionStartIfNeeded()

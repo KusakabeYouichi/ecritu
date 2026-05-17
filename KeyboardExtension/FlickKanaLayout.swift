@@ -122,20 +122,37 @@ enum FlickKanaLayout {
             numberSet(center: "9", left: "|", up: "\\", right: "`", down: "^", profile: profile)
         ]
 
-        let leftParenKey = numberSet(center: "(", left: ")", up: "[", right: "]", down: "&", profile: profile)
+        let telephoneLeftParenKey = numberSet(
+            center: "(",
+            left: ")",
+            up: "[",
+            right: "]",
+            down: "&",
+            profile: profile
+        )
         let zeroKey = numberSet(center: "0", left: "{", up: "}", right: "\"", down: "'", profile: profile)
-        let dotKey = numberSet(center: ".", left: ",", up: "-", right: "/", down: "@", profile: profile)
+        let telephoneDotKey = numberSet(center: ".", left: ",", up: "-", right: "/", down: "@", profile: profile)
+        let calculetteDotKey = numberSet(center: ".", left: ",", up: "&", right: "/", down: "@", profile: profile)
+        let calculetteRightBottomKey = numberSet(
+            center: "-",
+            left: "(",
+            up: "[",
+            right: ")",
+            down: "]",
+            profile: profile,
+            preservesAppleDirectionalOrder: true
+        )
 
         let rowBottomTelephone: [FlickKanaSet] = [
-            leftParenKey,
+            telephoneLeftParenKey,
             zeroKey,
-            dotKey
+            telephoneDotKey
         ]
 
         let rowBottomCalculette: [FlickKanaSet] = [
             zeroKey,
-            dotKey,
-            leftParenKey
+            calculetteDotKey,
+            calculetteRightBottomKey
         ]
 
         switch layoutMode {
