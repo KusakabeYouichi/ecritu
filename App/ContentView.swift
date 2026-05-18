@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260518091959"
+    private static let editionUpdatedAtRaw: String = "20260518094728"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -526,6 +526,30 @@ struct ContentView: View {
         return merged
     }
 
+    private func dictionarySignature(_ dictionary: [String: [String]]) -> String {
+        let normalized = normalizedDictionaryEntries(dictionary)
+
+        guard !normalized.isEmpty else {
+            return "empty"
+        }
+
+        guard let data = try? JSONSerialization.data(
+            withJSONObject: normalized,
+            options: [.sortedKeys]
+        ) else {
+            return "encoding-error"
+        }
+
+        var hash: UInt64 = 0xcbf29ce484222325
+
+        for byte in data {
+            hash ^= UInt64(byte)
+            hash = hash &* 0x100000001b3
+        }
+
+        return String(format: "%016llx", hash)
+    }
+
     private func loadBundledInitialDictionaryEntries(filename: String) -> [String: [String]] {
         let fileExtension = "json"
 
@@ -705,10 +729,39 @@ struct ContentView: View {
     }
 
     private func migrateInitialUserDictionaryIfNeeded() {
-        migrateInitialDictionaryIfNeeded(
-            migrationFlagKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated,
-            dictionaryKey: SettingsKeys.kanaKanjiAjoutVocabulary,
-            initialDictionaryLoader: loadBundledInitialUserDictionaryEntries
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let initialDictionary = loadBundledInitialUserDictionaryEntries()
+
+        guard !initialDictionary.isEmpty else {
+            return
+        }
+
+        let initialSignature = dictionarySignature(initialDictionary)
+        let appliedSignature = defaults.string(
+            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSignature
+        )
+
+        guard appliedSignature != initialSignature else {
+            return
+        }
+
+        let currentDictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        )
+
+        let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
+
+        if merged != currentDictionary {
+            saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        }
+
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
+        defaults.set(
+            initialSignature,
+            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSignature
         )
     }
 
