@@ -19,6 +19,7 @@ TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
 REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
 REF_APPLE_PLIST="$ROOT_DIR/references/apple.plist"
+REF_VOID_PLIST="$ROOT_DIR/references/void.plist"
 
 SUDACHI_CSV_FILES=()
 while IFS= read -r csv_file; do
@@ -41,6 +42,7 @@ inputs = [
   root / "references" / "ryukyu.plist",
   root / "references" / "vin.plist",
   root / "references" / "apple.plist",
+  root / "references" / "void.plist",
 ]
 
 outputs = [
@@ -96,6 +98,7 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_RYUKYU_PLIST" \
   --input-plist "$REF_VIN_PLIST" \
   --input-plist "$REF_APPLE_PLIST" \
+  --input-plist "$REF_VOID_PLIST" \
   --output "$TMP_SECOND"
 
 if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" ]]; then
