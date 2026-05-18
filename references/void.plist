@@ -152,5 +152,8 @@
 	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>ういんどうず</string></dict>
 	<dict><key>phrase</key><string>Philips</string><key>shortcut</key><string>ふぃりっぷす</string></dict>
 	<dict><key>phrase</key><string>Philips Hue</string><key>shortcut</key><string>ふぃりっぷすひゅー</string></dict>
+	<dict><key>phrase</key><string>バスマティー</string><key>shortcut</key><string>ばすまてぃー</string></dict>
+	<dict><key>phrase</key><string>バスマティ</string><key>shortcut</key><string>ばすまてぃ</string></dict>
+	<dict><key>phrase</key><string>カルナローリ</string><key>shortcut</key><string>かるなろーり</string></dict>
 </array>
 </plist>

@@ -422,6 +422,7 @@ struct KeyboardRootView: View {
     private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let candidateHeaderExpandedHeight: CGFloat = 35
     private let candidateHeaderCollapsedHeight: CGFloat = 3
+    private let candidateHeaderContentDownshift: CGFloat = 4
     private var keyboardRowSpacing: CGFloat { isLandscapeLayout ? 4 : 6 }
     private var keyboardTopPadding: CGFloat {
         if isLandscapeLayout
@@ -432,7 +433,7 @@ struct KeyboardRootView: View {
         return isLandscapeLayout ? 1 : 3
     }
     private var keyboardHorizontalPadding: CGFloat { isLandscapeLayout ? 6 : 8 }
-    private var keyboardBottomPadding: CGFloat { isLandscapeLayout ? 6 : 20 }
+    private var keyboardBottomPadding: CGFloat { isLandscapeLayout ? 4 : 20 }
     private let candidateStateFontSize: CGFloat = 15
     private let candidateTextFontSize: CGFloat = 16
     private var compactActionKeyHeight: CGFloat { isLandscapeLayout ? 34 : 42 }
@@ -814,7 +815,7 @@ struct KeyboardRootView: View {
     }
 
     private var kanaCandidateHeaderTopPadding: CGFloat {
-        isKanaThreeByThreeMode ? 6 : 4
+        (isKanaThreeByThreeMode ? 6 : 4) + candidateHeaderContentDownshift
     }
 
     private var usesThreeByThreeGridForNumberOrLatin: Bool {
