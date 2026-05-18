@@ -12,6 +12,7 @@ cd "$ROOT_DIR"
 
 TMP_PREMIER="$ROOT_DIR/tmp/ÉcrituPremierVocab.json"
 TMP_SECOND="$ROOT_DIR/tmp/ÉcrituSecondVocab.json"
+TMP_INITIAL_AJOUT="$ROOT_DIR/tmp/InitialAjoutVocabMigration.json"
 TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
@@ -42,7 +43,6 @@ inputs = [
   root / "references" / "ryukyu.plist",
   root / "references" / "vin.plist",
   root / "references" / "apple.plist",
-  root / "references" / "void.plist",
 ]
 
 outputs = [
@@ -98,8 +98,11 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_RYUKYU_PLIST" \
   --input-plist "$REF_VIN_PLIST" \
   --input-plist "$REF_APPLE_PLIST" \
-  --input-plist "$REF_VOID_PLIST" \
   --output "$TMP_SECOND"
+
+python3 tools/build_second_vocab_from_references.py \
+  --input-plist "$REF_VOID_PLIST" \
+  --output "$TMP_INITIAL_AJOUT"
 
 if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" ]]; then
   BUNDLE_RESOURCES_DIR="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
@@ -120,6 +123,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
 
   copy_into_bundle_if_exists "$TMP_PREMIER" "ÉcrituPremierVocab.json"
   copy_into_bundle_if_exists "$TMP_SECOND" "ÉcrituSecondVocab.json"
+  copy_into_bundle_if_exists "$TMP_INITIAL_AJOUT" "InitialAjoutVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_SOURCES" "kana_kanji_candidate_sources.json"
   copy_into_bundle_if_exists "$TMP_INFLECTIONS" "kana_kanji_inflection_dictionary.json"
   copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"

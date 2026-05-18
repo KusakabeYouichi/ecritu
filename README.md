@@ -57,7 +57,8 @@
 - エディション番号は実質ビルド番号として扱い、テスト用ビルドや失敗ビルドで増えても巻き戻しません。
 - Xcode側ビルドは `Config/Edition.xcconfig` の現在値をそのまま使います(自動更新しません)。
 - システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
-- 補助語彙 `tmp/ÉcrituSecondVocab.json` は `references/ryukyu.plist` / `references/vin.plist` / `references/apple.plist` / `references/void.plist` からビルド時に生成します。
+- 補助語彙 `tmp/ÉcrituSecondVocab.json` は `references/ryukyu.plist` / `references/vin.plist` / `references/apple.plist` からビルド時に生成します。
+- 追加語彙の初期投入データ `InitialAjoutVocabMigration.json` は `references/void.plist` からビルド時に生成し、更新時はシグネチャ比較で再マージされます。
 - clone直後のビルド失敗を避けるため、拡張バンドルには `KeyboardExtension/DefaultDictionaryResources/` の軽量プレースホルダー辞書を同梱しています。
 - 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。
 - Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、Sudachi CSV がある環境では `tmp/` 再生成を行います。

@@ -42,6 +42,7 @@ enum SettingsKeys {
     static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
     static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
     static let kanaKanjiInitialUserDictionaryMigrated = "kanaKanjiInitialUserDictionaryMigrated"
+    static let kanaKanjiInitialUserDictionaryAppliedSignature = "kanaKanjiInitialUserDictionaryAppliedSignature"
     static let kanaKanjiShortcutVocabulary = "ÉcrituShortcutVocab"
     static let kanaKanjiInitialShortcutVocabularyMigrated = "kanaKanjiInitialShortcutVocabularyMigrated"
     static let kanaKanjiInitialSuppressionDictionaryMigrated = "kanaKanjiInitialSuppressionDictionaryMigrated"
