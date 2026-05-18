@@ -608,6 +608,13 @@ final class KanaKanjiStore {
         }
     }
 
+    func clearSharedDataCaches() {
+        cachedUserDictionary = nil
+        cachedSuppressedCandidatesByReading = nil
+        cachedLearningScores = nil
+        cachedLearningScoresByReading = nil
+    }
+
     func userDictionary() -> [String: [String]] {
         if let cachedUserDictionary {
             return cachedUserDictionary

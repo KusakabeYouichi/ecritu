@@ -888,10 +888,20 @@ struct UserDictionarySettingsSection: View {
                 showAccessibilityLabel: "追加単語の登録欄を表示",
                 hideAccessibilityLabel: "追加単語の登録欄を閉じる",
                 onToggleRegistration: {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible.toggle()
+                    if isRegistrationVisible {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = false
+                        }
+                        return
                     }
+
                     editingEntry = nil
+                    readingInput = ""
+                    candidateInput = ""
+
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible = true
+                    }
                 }
             )
 
@@ -939,6 +949,7 @@ struct UserDictionarySettingsSection: View {
                 IndexedVocabularyList(
                     entries: entries,
                     listHeight: listHeight,
+                    selectedEntryID: editingEntry?.id,
                     onDelete: { entry in
                         if editingEntry?.id == entry.id {
                             editingEntry = nil
@@ -1058,10 +1069,20 @@ struct SuppressionDictionarySettingsSection: View {
                 showAccessibilityLabel: "抑制単語の登録欄を表示",
                 hideAccessibilityLabel: "抑制単語の登録欄を閉じる",
                 onToggleRegistration: {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible.toggle()
+                    if isRegistrationVisible {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = false
+                        }
+                        return
                     }
+
                     editingEntry = nil
+                    readingInput = ""
+                    candidateInput = ""
+
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible = true
+                    }
                 }
             )
 
@@ -1109,6 +1130,7 @@ struct SuppressionDictionarySettingsSection: View {
                 IndexedVocabularyList(
                     entries: entries,
                     listHeight: listHeight,
+                    selectedEntryID: editingEntry?.id,
                     onDelete: { entry in
                         if editingEntry?.id == entry.id {
                             editingEntry = nil
@@ -1169,10 +1191,19 @@ struct ShortcutDictionarySettingsSection: View {
                 showAccessibilityLabel: "ショートカット語彙の登録欄を表示",
                 hideAccessibilityLabel: "ショートカット語彙の登録欄を閉じる",
                 onToggleRegistration: {
-                    withAnimation(.easeInOut(duration: 0.2)) {
-                        isRegistrationVisible.toggle()
+                    if isRegistrationVisible {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            isRegistrationVisible = false
+                        }
+                        return
                     }
+
                     editingEntry = nil
+                    candidateInput = ""
+
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        isRegistrationVisible = true
+                    }
                 }
             )
 
@@ -1244,7 +1275,20 @@ struct ShortcutDictionarySettingsSection: View {
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(AppTheme.listRowBackground)
+                                .fill(
+                                    editingEntry?.id == entry.id
+                                        ? Color.accentColor.opacity(0.22)
+                                        : AppTheme.listRowBackground
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .stroke(
+                                            editingEntry?.id == entry.id
+                                                ? Color.accentColor.opacity(0.6)
+                                                : Color.clear,
+                                            lineWidth: 1
+                                        )
+                                )
                         )
                         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
                         .listRowSeparator(.hidden)
@@ -1345,6 +1389,7 @@ struct ReadOnlyDictionarySettingsSection: View {
                 IndexedVocabularyList(
                     entries: entries,
                     listHeight: listHeight,
+                    selectedEntryID: nil,
                     onDelete: nil,
                     onSelect: nil,
                     onIndexIndicatorStateChange: { title, isVisible in
@@ -1370,6 +1415,7 @@ struct ReadOnlyDictionarySettingsSection: View {
 struct IndexedVocabularyList: UIViewRepresentable {
     let entries: [VocabularyEntry]
     let listHeight: CGFloat
+    let selectedEntryID: String?
     let onDelete: ((VocabularyEntry) -> Void)?
     let onSelect: ((VocabularyEntry) -> Void)?
     let onIndexIndicatorStateChange: (String, Bool) -> Void
@@ -1384,6 +1430,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
         Coordinator(
             entries: entries,
             listHeight: listHeight,
+            selectedEntryID: selectedEntryID,
             onDelete: onDelete,
             onSelect: onSelect,
             onIndexIndicatorStateChange: onIndexIndicatorStateChange
@@ -1473,6 +1520,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
         let needsReload = context.coordinator.update(
             entries: entries,
             listHeight: listHeight,
+            selectedEntryID: selectedEntryID,
             onDelete: onDelete,
             onSelect: onSelect,
             onIndexIndicatorStateChange: onIndexIndicatorStateChange
@@ -1533,6 +1581,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
 
         private var entries: [VocabularyEntry]
         private var listHeight: CGFloat
+        private var selectedEntryID: String?
         private var onDelete: ((VocabularyEntry) -> Void)?
         private var onSelect: ((VocabularyEntry) -> Void)?
         private var onIndexIndicatorStateChange: (String, Bool) -> Void
@@ -1544,23 +1593,53 @@ struct IndexedVocabularyList: UIViewRepresentable {
         private weak var indexContainerView: UIView?
         private weak var indexStackView: UIStackView?
         private var displayedIndexTitles: [String] = []
-        private var entryIDs: [String]
+        private var entriesStorageIdentity: UInt
 
         init(
             entries: [VocabularyEntry],
             listHeight: CGFloat,
+            selectedEntryID: String?,
             onDelete: ((VocabularyEntry) -> Void)?,
             onSelect: ((VocabularyEntry) -> Void)?,
             onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
         ) {
             self.entries = entries
             self.listHeight = listHeight
+            self.selectedEntryID = selectedEntryID
             self.onDelete = onDelete
             self.onSelect = onSelect
             self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
-            self.entryIDs = entries.map(\.id)
+            self.entriesStorageIdentity = Self.storageIdentity(for: entries)
             super.init()
             rebuildSections()
+        }
+
+        private static func storageIdentity(for entries: [VocabularyEntry]) -> UInt {
+            let baseAddress: UInt = entries.withUnsafeBufferPointer { buffer in
+                guard let base = buffer.baseAddress else {
+                    return 0
+                }
+                return UInt(bitPattern: base)
+            }
+
+            return baseAddress ^ UInt(entries.count)
+        }
+
+        private static func hasDifferentEntryIDs(
+            _ lhs: [VocabularyEntry],
+            _ rhs: [VocabularyEntry]
+        ) -> Bool {
+            guard lhs.count == rhs.count else {
+                return true
+            }
+
+            for index in lhs.indices {
+                if lhs[index].id != rhs[index].id {
+                    return true
+                }
+            }
+
+            return false
         }
 
         func attach(tableView: UITableView, indexContainerView: UIView, indexStackView: UIStackView) {
@@ -1600,28 +1679,42 @@ struct IndexedVocabularyList: UIViewRepresentable {
         func update(
             entries: [VocabularyEntry],
             listHeight: CGFloat,
+            selectedEntryID: String?,
             onDelete: ((VocabularyEntry) -> Void)?,
             onSelect: ((VocabularyEntry) -> Void)?,
             onIndexIndicatorStateChange: @escaping (String, Bool) -> Void
         ) -> Bool {
-            let nextEntryIDs = entries.map(\.id)
-            let entriesChanged = entryIDs != nextEntryIDs
+            let nextEntriesStorageIdentity = Self.storageIdentity(for: entries)
+            let entriesChanged: Bool
+
+            if entriesStorageIdentity == nextEntriesStorageIdentity {
+                entriesChanged = false
+            } else {
+                entriesChanged = Self.hasDifferentEntryIDs(self.entries, entries)
+                entriesStorageIdentity = nextEntriesStorageIdentity
+            }
+
             let deleteAvailabilityChanged = (self.onDelete != nil) != (onDelete != nil)
             let selectAvailabilityChanged = (self.onSelect != nil) != (onSelect != nil)
+            let selectedEntryChanged = self.selectedEntryID != selectedEntryID
             let listHeightChanged = abs(self.listHeight - listHeight) > 0.5
 
             self.entries = entries
             self.listHeight = listHeight
+            self.selectedEntryID = selectedEntryID
             self.onDelete = onDelete
             self.onSelect = onSelect
             self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
 
             if entriesChanged {
-                entryIDs = nextEntryIDs
                 rebuildSections()
             }
 
-            return entriesChanged || deleteAvailabilityChanged || selectAvailabilityChanged || listHeightChanged
+            return entriesChanged
+                || deleteAvailabilityChanged
+                || selectAvailabilityChanged
+                || selectedEntryChanged
+                || listHeightChanged
         }
 
         func refreshCustomIndexVisibility() {
@@ -1965,8 +2058,12 @@ struct IndexedVocabularyList: UIViewRepresentable {
             candidateLabel.text = entry.candidate
             readingLabel.text = entry.reading
 
+            let isSelected = entry.id == selectedEntryID
+
             cell.textLabel?.text = nil
-            cell.backgroundColor = UIColor.secondarySystemGroupedBackground.withAlphaComponent(0.95)
+            cell.backgroundColor = isSelected
+                ? UIColor.systemBlue.withAlphaComponent(0.18)
+                : UIColor.secondarySystemGroupedBackground.withAlphaComponent(0.95)
             cell.selectionStyle = .none
 
             return cell

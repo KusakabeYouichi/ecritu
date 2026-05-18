@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260518094728"
+    private static let editionUpdatedAtRaw: String = "20260518112126"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -911,12 +911,15 @@ struct ContentView: View {
         }
 
         defaults.removeObject(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
+        defaults.removeObject(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSignature)
         migrateInitialUserDictionaryIfNeeded()
         loadUserDictionaryEntries()
+        SettingsSyncNotification.postSettingsDidChange()
     }
 
     private func resetKanaKanjiLearning() {
         Self.sharedDefaults?.removeObject(forKey: SettingsKeys.kanaKanjiLearningScores)
+        SettingsSyncNotification.postSettingsDidChange()
     }
 
     private func loadSuppressionDictionaryEntries() {

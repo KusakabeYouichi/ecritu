@@ -102,7 +102,7 @@ final class KeyboardViewController: UIInputViewController {
         let controller = Unmanaged<KeyboardViewController>
             .fromOpaque(observer)
             .takeUnretainedValue()
-        controller.refreshKeyboardStateAsync()
+        controller.handleSharedSettingsDidChange()
     }
 
     private static let hostTopOverlap: CGFloat = 0
@@ -423,6 +423,17 @@ final class KeyboardViewController: UIInputViewController {
     func refreshKeyboardStateAsync() {
         DispatchQueue.main.async { [weak self] in
             self?.refreshKeyboardState()
+        }
+    }
+
+    private func handleSharedSettingsDidChange() {
+        DispatchQueue.main.async { [weak self] in
+            guard let self else {
+                return
+            }
+
+            self.kanaKanjiConverter.clearSharedDataCaches()
+            self.refreshKeyboardState()
         }
     }
 
