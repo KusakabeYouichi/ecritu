@@ -401,12 +401,23 @@ struct EmojiKeyButton: View {
 
 struct SymbolKeyButton: View {
     let symbol: String
+    let font: Font
     let action: () -> Void
+
+    init(
+        symbol: String,
+        font: Font = .system(size: 24, weight: .semibold, design: .rounded),
+        action: @escaping () -> Void
+    ) {
+        self.symbol = symbol
+        self.font = font
+        self.action = action
+    }
 
     var body: some View {
         Button(action: action) {
             Text(symbol)
-                .font(.system(size: 24, weight: .semibold, design: .rounded))
+                .font(font)
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
