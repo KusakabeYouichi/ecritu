@@ -17,6 +17,7 @@ final class KeyboardViewController: UIInputViewController {
     private var spaceToastTrigger = 0
     var composingRawText = ""
     var composingReading = ""
+    var hasParenthesesWrapper = false
     var activeConversion: ActiveConversion?
     var recentKanaPlainCommit: RecentKanaPlainCommit?
     let recentKanaPlainCommitUpgradeWindow: TimeInterval = 0.45
@@ -171,6 +172,7 @@ final class KeyboardViewController: UIInputViewController {
         let composingText: String
         let conversionCandidates: [String]
         let selectedConversionCandidateIndex: Int?
+        let showsParenthesesWrapper: Bool
     }
 
     override func viewDidLoad() {
@@ -1048,7 +1050,8 @@ final class KeyboardViewController: UIInputViewController {
             shortcutVocabulary: kanaKanjiStore.shortcutVocabulary(),
             composingText: candidatePresentation.composingText,
             conversionCandidates: candidatePresentation.candidates,
-            selectedConversionCandidateIndex: candidatePresentation.selectedIndex
+            selectedConversionCandidateIndex: candidatePresentation.selectedIndex,
+            showsParenthesesWrapper: hasParenthesesWrapper
         )
     }
 
@@ -1150,6 +1153,7 @@ final class KeyboardViewController: UIInputViewController {
             composingText: configuration.composingText,
             conversionCandidates: configuration.conversionCandidates,
             selectedConversionCandidateIndex: configuration.selectedConversionCandidateIndex,
+            showsParenthesesWrapper: configuration.showsParenthesesWrapper,
             initialSpaceToastText: "écritu"
         )
     }
