@@ -740,8 +740,9 @@ extension KeyboardViewController {
                     from: lastCharacter,
                     for: resolvedButtonState
                 ) else {
-            // Display-only wrapper toggle when no postfix transform target exists.
-            if currentInputMode == .kana {
+            // Display-only wrapper toggle is only for kaomoji state.
+            if currentInputMode == .kana,
+                resolvedButtonState == .kaomoji {
                 hasParenthesesWrapper.toggle()
                 refreshKeyboardStateAsync()
                 return true
