@@ -2225,9 +2225,13 @@ struct KeyboardRootView: View {
     }
 
     private func symbolGridSection(_ symbols: [String]) -> some View {
-        LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
+        let symbolFont: Font = selectedSymbolCategory == .enclosed
+            ? .custom("HiraginoSans-W6", size: 24)
+            : .system(size: 24, weight: .semibold, design: .rounded)
+
+        return LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
             ForEach(Array(symbols.enumerated()), id: \.offset) { _, symbol in
-                SymbolKeyButton(symbol: symbol) {
+                SymbolKeyButton(symbol: symbol, font: symbolFont) {
                     onTextInput(symbol)
                 }
                 .frame(height: compactEmojiKeyHeight)
