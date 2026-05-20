@@ -169,5 +169,7 @@
 	<dict><key>phrase</key><string>10円玉</string><key>shortcut</key><string>じゅうえんだま</string></dict>
 	<dict><key>phrase</key><string>5円玉</string><key>shortcut</key><string>ごえんだま</string></dict>
 	<dict><key>phrase</key><string>1円玉</string><key>shortcut</key><string>いちえんだま</string></dict>
+	<dict><key>phrase</key><string>ビリヤニ</string><key>shortcut</key><string>びりやに</string></dict>
+	<dict><key>phrase</key><string>数日</string><key>shortcut</key><string>すうじつ</string></dict>
 </array>
 </plist>
