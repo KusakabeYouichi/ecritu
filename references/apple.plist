@@ -53,6 +53,7 @@
 	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
 	<dict><key>phrase</key><string>HomePod</string><key>shortcut</key><string>ほーむぽっど</string></dict>
 	<dict><key>phrase</key><string>HomePod mini</string><key>shortcut</key><string>ほーむぽっどみに</string></dict>
+	<dict><key>phrase</key><string>Apple Vision Pro</string><key>shortcut</key><string>あっぷるゔぃじょんぷろ</string></dict>
 
 	<!-- OSや機能 -->
 	<dict><key>phrase</key><string>iOS</string><key>shortcut</key><string>あいおーえす</string></dict>
@@ -103,6 +104,7 @@
 	<dict><key>phrase</key><string>Apple Support</string><key>shortcut</key><string>あっぷるさぽーと</string></dict>
 	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
 	<dict><key>phrase</key><string>iTunes</string><key>shortcut</key><string>あいちゅーんず</string></dict>
+	<dict><key>phrase</key><string>Apple Intelligence</string><key>shortcut</key><string>あっぷるいんてりじぇんす</string></dict>
 
 	<!-- アプリ -->
 	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
@@ -131,5 +133,7 @@
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えーゆー</string></dict>
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
 	<dict><key>phrase</key><string>SoftBank</string><key>shortcut</key><string>そふとばんく</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
 </array>
 </plist>
