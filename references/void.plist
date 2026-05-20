@@ -155,5 +155,19 @@
 	<dict><key>phrase</key><string>バスマティー</string><key>shortcut</key><string>ばすまてぃー</string></dict>
 	<dict><key>phrase</key><string>バスマティ</string><key>shortcut</key><string>ばすまてぃ</string></dict>
 	<dict><key>phrase</key><string>カルナローリ</string><key>shortcut</key><string>かるなろーり</string></dict>
+	<dict><key>phrase</key><string>Facebook</string><key>shortcut</key><string>ふぇいすぶっく</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
+	<dict><key>phrase</key><string>青マンゴー</string><key>shortcut</key><string>あおまんごー</string></dict>
+	<dict><key>phrase</key><string>一万円札</string><key>shortcut</key><string>いちまんえんさつ</string></dict>
+	<dict><key>phrase</key><string>五千円札</string><key>shortcut</key><string>ごせんえんさつ</string></dict>
+	<dict><key>phrase</key><string>二千円札</string><key>shortcut</key><string>にせんえんさつ</string></dict>
+	<dict><key>phrase</key><string>千円札</string><key>shortcut</key><string>せんえんさつ</string></dict>
+	<dict><key>phrase</key><string>500円玉</string><key>shortcut</key><string>ごひゃくえんだま</string></dict>
+	<dict><key>phrase</key><string>100円玉</string><key>shortcut</key><string>ひゃくえんだま</string></dict>
+	<dict><key>phrase</key><string>50円玉</string><key>shortcut</key><string>ごじゅうえんだま</string></dict>
+	<dict><key>phrase</key><string>10円玉</string><key>shortcut</key><string>じゅうえんだま</string></dict>
+	<dict><key>phrase</key><string>5円玉</string><key>shortcut</key><string>ごえんだま</string></dict>
+	<dict><key>phrase</key><string>1円玉</string><key>shortcut</key><string>いちえんだま</string></dict>
 </array>
 </plist>

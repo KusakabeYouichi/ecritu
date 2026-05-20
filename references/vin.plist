@@ -846,6 +846,86 @@
 	<dict><key>phrase</key><string>カルカッソンヌ</string><key>shortcut</key><string>かるかっそんぬ</string></dict>
 	<dict><key>phrase</key><string>和歌山県</string><key>shortcut</key><string>わかやまけん</string></dict>
 	<dict><key>phrase</key><string>釡石市</string><key>shortcut</key><string>かまいしし</string></dict>
+	<dict><key>phrase</key><string>アイダホ州</string><key>shortcut</key><string>あいだほしゅう</string></dict>
+	<dict><key>phrase</key><string>アラゴン州</string><key>shortcut</key><string>あらごんしゅう</string></dict>
+	<dict><key>phrase</key><string>カディス</string><key>shortcut</key><string>かでぃす</string></dict>
+	<dict><key>phrase</key><string>ウンブリア州</string><key>shortcut</key><string>うんぶりあしゅう</string></dict>
+	<dict><key>phrase</key><string>オレゴン州</string><key>shortcut</key><string>おれごんしゅう</string></dict>
+	<dict><key>phrase</key><string>オンタリオ州</string><key>shortcut</key><string>おんたりおしゅう</string></dict>
+	<dict><key>phrase</key><string>ナイアガラ・ペニンシュラ</string><key>shortcut</key><string>ないあがらぺにんしゅら</string></dict>
+	<dict><key>phrase</key><string>カタマルカ州</string><key>shortcut</key><string>かたまるかしゅう</string></dict>
+	<dict><key>phrase</key><string>カタルーニャ州</string><key>shortcut</key><string>かたるーにゃしゅう</string></dict>
+	<dict><key>phrase</key><string>カラブリア州</string><key>shortcut</key><string>からぶりあしゅう</string></dict>
+	<dict><key>phrase</key><string>カリフォルニア州</string><key>shortcut</key><string>かりふぉるにあしゅう</string></dict>
+	<dict><key>phrase</key><string>オークヴィル</string><key>shortcut</key><string>おーくゔぃる</string></dict>
+	<dict><key>phrase</key><string>カンパーニア州</string><key>shortcut</key><string>かんぱーにあしゅう</string></dict>
+	<dict><key>phrase</key><string>ガリシア州</string><key>shortcut</key><string>がりしあしゅう</string></dict>
+	<dict><key>phrase</key><string>ケベック州</string><key>shortcut</key><string>けべっくしゅう</string></dict>
+	<dict><key>phrase</key><string>コーンウォール州</string><key>shortcut</key><string>こーんうぉーるしゅう</string></dict>
+	<dict><key>phrase</key><string>サルタ州</string><key>shortcut</key><string>さるたしゅう</string></dict>
+	<dict><key>phrase</key><string>ザクセン州</string><key>shortcut</key><string>ざくせんしゅう</string></dict>
+	<dict><key>phrase</key><string>シチリア州</string><key>shortcut</key><string>しちりあしゅう</string></dict>
+	<dict><key>phrase</key><string>シュタイヤーマルク州</string><key>shortcut</key><string>しゅだいやーまるくしゅう</string></dict>
+	<dict><key>phrase</key><string>ジュネーヴ州</string><key>shortcut</key><string>じゅねーゔしゅう</string></dict>
+	<dict><key>phrase</key><string>スペインカタルーニャ州</string><key>shortcut</key><string>すぺいんかたるーにゃしゅう</string></dict>
+	<dict><key>phrase</key><string>スペイン・アンダルシア州</string><key>shortcut</key><string>すぺいんあんだるしあしゅう</string></dict>
+	<dict><key>phrase</key><string>タスマニア州</string><key>shortcut</key><string>たすまにあしゅう</string></dict>
+	<dict><key>phrase</key><string>タマウリパス州</string><key>shortcut</key><string>たまうりぱすしゅう</string></dict>
+	<dict><key>phrase</key><string>ダービーシャー州</string><key>shortcut</key><string>だーびーしゃーしゅう</string></dict>
+	<dict><key>phrase</key><string>チューリヒ州</string><key>shortcut</key><string>ちゅーりひしゅう</string></dict>
+	<dict><key>phrase</key><string>ティチーノ州</string><key>shortcut</key><string>てぃちーのしゅう</string></dict>
+	<dict><key>phrase</key><string>テネシー州</string><key>shortcut</key><string>てねしーしゅう</string></dict>
+	<dict><key>phrase</key><string>トスカーナ州</string><key>shortcut</key><string>とすかーなしゅう</string></dict>
+	<dict><key>phrase</key><string>ナバーラ州</string><key>shortcut</key><string>なばーらしゅう</string></dict>
+	<dict><key>phrase</key><string>ニューヨーク州</string><key>shortcut</key><string>にゅーよーくしゅう</string></dict>
+	<dict><key>phrase</key><string>ヌーシャテル州</string><key>shortcut</key><string>ぬーしゃてるしゅう</string></dict>
+	<dict><key>phrase</key><string>ハリスコ州</string><key>shortcut</key><string>はりすこしゅう</string></dict>
+	<dict><key>phrase</key><string>バイエルン州</string><key>shortcut</key><string>ばいえるんしゅう</string></dict>
+	<dict><key>phrase</key><string>バスク州</string><key>shortcut</key><string>ばすくしゅう</string></dict>
+	<dict><key>phrase</key><string>バレンシア州</string><key>shortcut</key><string>ばれんしあしゅう</string></dict>
+	<dict><key>phrase</key><string>ピエモンテ州</string><key>shortcut</key><string>ぴえもんてしゅう</string></dict>
+	<dict><key>phrase</key><string>アルバ名産</string><key>shortcut</key><string>あるば</string></dict>
+	<dict><key>phrase</key><string>フフイ州</string><key>shortcut</key><string>ふふいしゅう</string></dict>
+	<dict><key>phrase</key><string>フリブール州</string><key>shortcut</key><string>ふりぶーるしゅう</string></dict>
+	<dict><key>phrase</key><string>プーリア州</string><key>shortcut</key><string>ぷーりあしゅう</string></dict>
+	<dict><key>phrase</key><string>ヘッセン州</string><key>shortcut</key><string>へっせんしゅう</string></dict>
+	<dict><key>phrase</key><string>ベルリン州</string><key>shortcut</key><string>べるりんしゅう</string></dict>
+	<dict><key>phrase</key><string>ベルン州</string><key>shortcut</key><string>べるんしゅう</string></dict>
+	<dict><key>phrase</key><string>ビーレーゼー</string><key>shortcut</key><string>びーれーぜー</string></dict>
+	<dict><key>phrase</key><string>ペンシルバニア州</string><key>shortcut</key><string>ぺんしるばにあしゅう</string></dict>
+	<dict><key>phrase</key><string>マドリード州</string><key>shortcut</key><string>まどりーどしゅう</string></dict>
+	<dict><key>phrase</key><string>マニトバ州</string><key>shortcut</key><string>まにとばしゅう</string></dict>
+	<dict><key>phrase</key><string>マルケ州</string><key>shortcut</key><string>まるけしゅう</string></dict>
+	<dict><key>phrase</key><string>ミシガン州</string><key>shortcut</key><string>みしがんしゅう</string></dict>
+	<dict><key>phrase</key><string>ムルシア州</string><key>shortcut</key><string>むるしあしゅう</string></dict>
+	<dict><key>phrase</key><string>メンドーサ州</string><key>shortcut</key><string>めんどーさしゅう</string></dict>
+	<dict><key>phrase</key><string>モリーゼ州</string><key>shortcut</key><string>もりーぜしゅう</string></dict>
+	<dict><key>phrase</key><string>ラツィオ州</string><key>shortcut</key><string>らつぃおしゅう</string></dict>
+	<dict><key>phrase</key><string>リグーリア州</string><key>shortcut</key><string>りぐーりあしゅう</string></dict>
+	<dict><key>phrase</key><string>レスターシャー州</string><key>shortcut</key><string>れすたーしゃーしゅう</string></dict>
+	<dict><key>phrase</key><string>ロンバルディア州</string><key>shortcut</key><string>ろんばるでぃあしゅう</string></dict>
+	<dict><key>phrase</key><string>ワシントン州</string><key>shortcut</key><string>わしんとんしゅう</string></dict>
+	<dict><key>phrase</key><string>ヴァレー州</string><key>shortcut</key><string>ゔぁれーしゅう</string></dict>
+	<dict><key>phrase</key><string>ヴァージニア州</string><key>shortcut</key><string>ゔぁーじにあしゅう</string></dict>
+	<dict><key>phrase</key><string>ヴェストシュタイヤーマルク州</string><key>shortcut</key><string>ゔぇすとしゅだいやーまるくしゅう</string></dict>
+	<dict><key>phrase</key><string>ヴォー州</string><key>shortcut</key><string>ゔぉーしゅう</string></dict>
+	<dict><key>phrase</key><string>北ケープ州</string><key>shortcut</key><string>きたけーぷしゅう</string></dict>
+	<dict><key>phrase</key><string>アデレード</string><key>shortcut</key><string>あでれーど</string></dict>
+	<dict><key>phrase</key><string>アルバニー</string><key>shortcut</key><string>あるばにー</string></dict>
+	<dict><key>phrase</key><string>ジェノヴァ</string><key>shortcut</key><string>じぇのゔぁ</string></dict>
+	<dict><key>phrase</key><string>トリノ</string><key>shortcut</key><string>とりの</string></dict>
+	<dict><key>phrase</key><string>ドレスデン</string><key>shortcut</key><string>どれすでん</string></dict>
+	<dict><key>phrase</key><string>ナポリ</string><key>shortcut</key><string>なぽり</string></dict>
+	<dict><key>phrase</key><string>バルセロナ</string><key>shortcut</key><string>ばるせろな</string></dict>
+	<dict><key>phrase</key><string>ボローニャ</string><key>shortcut</key><string>ぼろーにゃ</string></dict>
+	<dict><key>phrase</key><string>ミラノ</string><key>shortcut</key><string>みらの</string></dict>
+	<dict><key>phrase</key><string>ローマ</string><key>shortcut</key><string>ろーま</string></dict>
+	<dict><key>phrase</key><string>本州</string><key>shortcut</key><string>ほんしゅう</string></dict>
+	<dict><key>phrase</key><string>東ケープ州</string><key>shortcut</key><string>ひがしけーぷしゅう</string></dict>
+	<dict><key>phrase</key><string>欧州</string><key>shortcut</key><string>おうしゅう</string></dict>
+	<dict><key>phrase</key><string>西ケープ州</string><key>shortcut</key><string>にしけーぷしゅう</string></dict>
+	<dict><key>phrase</key><string>西豪州</string><key>shortcut</key><string>にしごうしゅう</string></dict>
+	<dict><key>phrase</key><string>豪州</string><key>shortcut</key><string>ごうしゅう</string></dict>
 
 	<!-- 地名(国) -->
 	<dict><key>phrase</key><string>Argentina</string><key>shortcut</key><string>あるぜんちん</string></dict>
@@ -2563,5 +2643,13 @@
 	<dict><key>phrase</key><string>有名ワイン産地名</string><key>shortcut</key><string>ゆうめいわいんさんちめい</string></dict>
 	<dict><key>phrase</key><string>有名産地</string><key>shortcut</key><string>ゆうめいさんち</string></dict>
 	<dict><key>phrase</key><string>山麓</string><key>shortcut</key><string>さんろく</string></dict>
+	<dict><key>phrase</key><string>信州ワインバレー構想</string><key>shortcut</key><string>しんしゅうわいんばれーこうそう</string></dict>
+	<dict><key>phrase</key><string>州名</string><key>shortcut</key><string>しゅうめい</string></dict>
+	<dict><key>phrase</key><string>州名表示</string><key>shortcut</key><string>しゅうめいひょうじ</string></dict>
+	<dict><key>phrase</key><string>州境</string><key>shortcut</key><string>しゅうきょう</string></dict>
+	<dict><key>phrase</key><string>州都</string><key>shortcut</key><string>しゅうと</string></dict>
+	<dict><key>phrase</key><string>欧州連合</string><key>shortcut</key><string>おうしゅうれんごう</string></dict>
+	<dict><key>phrase</key><string>甲州ワイン</string><key>shortcut</key><string>こうしゅうわいん</string></dict>
+	<dict><key>phrase</key><string>自治州</string><key>shortcut</key><string>じちしゅう</string></dict>
 </array>
 </plist>

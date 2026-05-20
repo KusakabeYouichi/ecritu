@@ -51,6 +51,8 @@
 	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっくぷろ</string></dict>
 	<dict><key>phrase</key><string>AirMac Extreme</string><key>shortcut</key><string>えあまっくえくすとりーむ</string></dict>
 	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
+	<dict><key>phrase</key><string>HomePod</string><key>shortcut</key><string>ほーむぽっど</string></dict>
+	<dict><key>phrase</key><string>HomePod mini</string><key>shortcut</key><string>ほーむぽっどみに</string></dict>
 
 	<!-- OSや機能 -->
 	<dict><key>phrase</key><string>iOS</string><key>shortcut</key><string>あいおーえす</string></dict>
@@ -112,5 +114,22 @@
 	<dict><key>phrase</key><string>GarageBand</string><key>shortcut</key><string>がれーじばんど</string></dict>
 	<dict><key>phrase</key><string>iMovie</string><key>shortcut</key><string>あいむーゔぃー</string></dict>
 	<dict><key>phrase</key><string>TestFlight</string><key>shortcut</key><string>てすとふらい</string></dict>
+
+	<!-- misc. -->
+	<dict><key>phrase</key><string>Type-C</string><key>shortcut</key><string>たいぷしー</string></dict>
+	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえー</string></dict>
+	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえい</string></dict>
+	<dict><key>phrase</key><string>Intel</string><key>shortcut</key><string>いんてる</string></dict>
+	<dict><key>phrase</key><string>Microsoft</string><key>shortcut</key><string>まいくろそふと</string></dict>
+	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
+	<dict><key>phrase</key><string>Netflix</string><key>shortcut</key><string>ねっとふりっくす</string></dict>
+	<dict><key>phrase</key><string>VScode</string><key>shortcut</key><string>ゔいえすこーど</string></dict>
+	<dict><key>phrase</key><string>Threads</string><key>shortcut</key><string>すれっず</string></dict>
+	<dict><key>phrase</key><string>フルアクセス</string><key>shortcut</key><string>ふるあくせす</string></dict>
+	<dict><key>phrase</key><string>Google</string><key>shortcut</key><string>ぐーぐる</string></dict>
+	<dict><key>phrase</key><string>docomo</string><key>shortcut</key><string>どこも</string></dict>
+	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えーゆー</string></dict>
+	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
+	<dict><key>phrase</key><string>SoftBank</string><key>shortcut</key><string>そふとばんく</string></dict>
 </array>
 </plist>
