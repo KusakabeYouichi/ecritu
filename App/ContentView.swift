@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260520114752"
+    private static let editionUpdatedAtRaw: String = "20260520132446"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -704,30 +704,6 @@ struct ContentView: View {
         secondVocabularyEntries = sortedVocabularyEntries(from: secondDictionary)
     }
 
-    private func migrateInitialDictionaryIfNeeded(
-        migrationFlagKey: String,
-        dictionaryKey: String,
-        initialDictionaryLoader: () -> [String: [String]]
-    ) {
-        guard let defaults = Self.sharedDefaults,
-                !defaults.bool(forKey: migrationFlagKey) else {
-            return
-        }
-
-        let initialDictionary = initialDictionaryLoader()
-
-        guard !initialDictionary.isEmpty else {
-            return
-        }
-
-        let currentDictionary = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: dictionaryKey)
-        )
-        let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
-        saveDictionaryEntries(merged, forKey: dictionaryKey)
-        defaults.set(true, forKey: migrationFlagKey)
-    }
-
     private func migrateInitialUserDictionaryIfNeeded() {
         guard let defaults = Self.sharedDefaults else {
             return
@@ -766,10 +742,39 @@ struct ContentView: View {
     }
 
     private func migrateInitialSuppressionDictionaryIfNeeded() {
-        migrateInitialDictionaryIfNeeded(
-            migrationFlagKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated,
-            dictionaryKey: SettingsKeys.kanaKanjiSuppressionVocabulary,
-            initialDictionaryLoader: loadBundledInitialSuppressionDictionaryEntries
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let initialDictionary = loadBundledInitialSuppressionDictionaryEntries()
+
+        guard !initialDictionary.isEmpty else {
+            return
+        }
+
+        let initialSignature = dictionarySignature(initialDictionary)
+        let appliedSignature = defaults.string(
+            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSignature
+        )
+
+        guard appliedSignature != initialSignature else {
+            return
+        }
+
+        let currentDictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        )
+
+        let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
+
+        if merged != currentDictionary {
+            saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        }
+
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated)
+        defaults.set(
+            initialSignature,
+            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSignature
         )
     }
 
