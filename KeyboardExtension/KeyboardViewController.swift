@@ -309,7 +309,7 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func configureKeyboardContainerSizing() {
-        (inputView as? UIInputView)?.allowsSelfSizing = false
+        inputView?.allowsSelfSizing = false
 
         if let inputView {
             migrateKeyboardConstraintsIfNeeded(to: inputView)
@@ -902,11 +902,7 @@ final class KeyboardViewController: UIInputViewController {
             return unit
         }
 
-        if #available(iOS 16.0, *) {
-            return Locale.autoupdatingCurrent.measurementSystem == .us ? .fahrenheit : .celsius
-        }
-
-        return Locale.autoupdatingCurrent.usesMetricSystem ? .celsius : .fahrenheit
+        return Locale.autoupdatingCurrent.measurementSystem == .us ? .fahrenheit : .celsius
     }
 
     private func makeRenderConfiguration() -> RenderConfiguration {
