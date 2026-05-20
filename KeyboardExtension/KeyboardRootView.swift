@@ -108,6 +108,7 @@ struct KeyboardRootView: View {
     let composingText: String
     let conversionCandidates: [String]
     let selectedConversionCandidateIndex: Int?
+    let showsParenthesesWrapper: Bool
     let initialSpaceToastText: String?
 
     private enum EmojiCategory: Int, CaseIterable, Identifiable {
@@ -449,7 +450,7 @@ struct KeyboardRootView: View {
     private let kaomojiMinInterItemSpacingMultiplier: CGFloat = 1.2
 
     private var showsKanaConversionCandidates: Bool {
-        inputMode == .kana && !composingText.isEmpty
+        inputMode == .kana && (!composingText.isEmpty || showsParenthesesWrapper)
     }
 
     private var isLandscapeLayout: Bool {
@@ -2354,8 +2355,10 @@ struct KeyboardRootView: View {
     private var kanaConversionCandidateHeaderView: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 6) {
-                if !composingText.isEmpty {
-                    Text(conversionStateLabel)
+                let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
+
+                if !composingText.isEmpty || showsWrapperOnly {
+                    Text(showsWrapperOnly ? "()" : conversionStateLabel)
                         .font(.system(size: candidateStateFontSize, weight: .bold))
                         .foregroundStyle(Color.white)
                         .lineLimit(1)
@@ -2366,24 +2369,39 @@ struct KeyboardRootView: View {
                                 .fill(conversionStateColor.opacity(0.95))
                         )
 
-                    if canTapComposingTextToCommit {
+                    if !showsWrapperOnly, canTapComposingTextToCommit {
                         let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
 
                         Button {
                             handleComposingTextCommitTap()
                         } label: {
-                            Text(composingText)
+                            if showsParenthesesWrapper {
+                                HStack(spacing: 0) {
+                                    Text("(")
+                                        .foregroundStyle(
+                                            showsKatakanaCommitFeedback
+                                                ? Color.white
+                                                : accentColor
+                                        )
+                                    Text(composingText)
+                                        .foregroundStyle(
+                                            showsKatakanaCommitFeedback
+                                                ? Color.white
+                                                : keyLabelColor.opacity(0.85)
+                                        )
+                                        .underline(
+                                            !showsKatakanaCommitFeedback,
+                                            color: conversionStateColor.opacity(0.92)
+                                        )
+                                    Text(")")
+                                        .foregroundStyle(
+                                            showsKatakanaCommitFeedback
+                                                ? Color.white
+                                                : accentColor
+                                        )
+                                }
                                 .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                .foregroundStyle(
-                                    showsKatakanaCommitFeedback
-                                        ? Color.white
-                                        : keyLabelColor.opacity(0.85)
-                                )
                                 .lineLimit(1)
-                                .underline(
-                                    !showsKatakanaCommitFeedback,
-                                    color: conversionStateColor.opacity(0.92)
-                                )
                                 .padding(.horizontal, 7)
                                 .padding(.vertical, 4)
                                 .background(
@@ -2406,6 +2424,42 @@ struct KeyboardRootView: View {
                                             )
                                         )
                                 )
+                            } else {
+                                Text(composingText)
+                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                    .foregroundStyle(
+                                        showsKatakanaCommitFeedback
+                                            ? Color.white
+                                            : keyLabelColor.opacity(0.85)
+                                    )
+                                    .lineLimit(1)
+                                    .underline(
+                                        !showsKatakanaCommitFeedback,
+                                        color: conversionStateColor.opacity(0.92)
+                                    )
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .fill(
+                                                showsKatakanaCommitFeedback
+                                                    ? accentColor.opacity(0.95)
+                                                    : KeyboardThemePalette.candidateHeaderSubtleBackground
+                                            )
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .stroke(
+                                                showsKatakanaCommitFeedback
+                                                    ? Color.clear
+                                                    : conversionStateColor.opacity(0.45),
+                                                style: StrokeStyle(
+                                                    lineWidth: showsKatakanaCommitFeedback ? 0 : 1,
+                                                    dash: [3, 2]
+                                                )
+                                            )
+                                    )
+                            }
                         }
                         .buttonStyle(.plain)
                         .accessibilityLabel("\(composingText)を確定")
@@ -2416,12 +2470,19 @@ struct KeyboardRootView: View {
                                     handleComposingTextCommitLongPress()
                                 }
                         )
-                    } else {
-                        Text(composingText)
+                    } else if !showsWrapperOnly {
+                        if showsParenthesesWrapper {
+                            HStack(spacing: 0) {
+                                Text("(")
+                                    .foregroundStyle(accentColor)
+                                Text(composingText)
+                                    .foregroundStyle(keyLabelColor.opacity(0.85))
+                                    .underline(true, color: conversionStateColor.opacity(0.92))
+                                Text(")")
+                                    .foregroundStyle(accentColor)
+                            }
                             .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .foregroundStyle(keyLabelColor.opacity(0.85))
                             .lineLimit(1)
-                            .underline(true, color: conversionStateColor.opacity(0.92))
                             .padding(.horizontal, 7)
                             .padding(.vertical, 4)
                             .background(
@@ -2435,20 +2496,42 @@ struct KeyboardRootView: View {
                                         style: StrokeStyle(lineWidth: 1, dash: [3, 2])
                                     )
                             )
+                        } else {
+                            Text(composingText)
+                                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                .foregroundStyle(keyLabelColor.opacity(0.85))
+                                .lineLimit(1)
+                                .underline(true, color: conversionStateColor.opacity(0.92))
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .stroke(
+                                            conversionStateColor.opacity(0.45),
+                                            style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                                        )
+                                )
+                        }
                     }
                 }
 
                 if conversionCandidates.isEmpty {
-                    Text("候補なし")
-                        .font(.system(size: candidateTextFontSize, weight: .regular))
-                        .foregroundStyle(keyLabelColor.opacity(0.6))
-                        .lineLimit(1)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                        )
+                    if !(showsParenthesesWrapper && composingText.isEmpty) {
+                        Text("候補なし")
+                            .font(.system(size: candidateTextFontSize, weight: .regular))
+                            .foregroundStyle(keyLabelColor.opacity(0.6))
+                            .lineLimit(1)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                            )
+                    }
                 }
 
                 ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
@@ -2457,9 +2540,16 @@ struct KeyboardRootView: View {
                     Button {
                         onSelectConversionCandidate(index)
                     } label: {
-                        Text(candidate)
+                        if showsParenthesesWrapper {
+                            HStack(spacing: 0) {
+                                Text("(")
+                                    .foregroundStyle(isSelected ? Color.white : accentColor)
+                                Text(candidate)
+                                    .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                Text(")")
+                                    .foregroundStyle(isSelected ? Color.white : accentColor)
+                            }
                             .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .foregroundStyle(isSelected ? Color.white : keyLabelColor)
                             .lineLimit(1)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
@@ -2478,6 +2568,29 @@ struct KeyboardRootView: View {
                                         lineWidth: isSelected ? 0 : 1
                                     )
                             )
+                        } else {
+                            Text(candidate)
+                                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                .lineLimit(1)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(
+                                            isSelected
+                                                ? accentColor.opacity(0.9)
+                                                : KeyboardThemePalette.candidateHeaderChipBackground
+                                        )
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .stroke(
+                                            KeyboardThemePalette.candidateHeaderBorder,
+                                            lineWidth: isSelected ? 0 : 1
+                                        )
+                                )
+                        }
                     }
                     .buttonStyle(.plain)
                     .accessibilityLabel(candidate)
@@ -2501,8 +2614,10 @@ struct KeyboardRootView: View {
 
     private var landscapeKanaCandidateSidebar: some View {
         VStack(alignment: .leading, spacing: 4) {
-            if !composingText.isEmpty {
-                Text(conversionStateLabel)
+            let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
+
+            if !composingText.isEmpty || showsWrapperOnly {
+                Text(showsWrapperOnly ? "()" : conversionStateLabel)
                     .font(.system(size: candidateStateFontSize, weight: .bold))
                     .foregroundStyle(Color.white)
                     .lineLimit(1)
@@ -2513,19 +2628,34 @@ struct KeyboardRootView: View {
                             .fill(conversionStateColor.opacity(0.95))
                     )
 
-                if canTapComposingTextToCommit {
+                if !showsWrapperOnly, canTapComposingTextToCommit {
                     let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
 
                     Button {
                         handleComposingTextCommitTap()
                     } label: {
-                        Text(composingText)
+                        if showsParenthesesWrapper {
+                            HStack(spacing: 0) {
+                                Text("(")
+                                    .foregroundStyle(
+                                        showsKatakanaCommitFeedback
+                                            ? Color.white
+                                            : accentColor
+                                    )
+                                Text(composingText)
+                                    .foregroundStyle(
+                                        showsKatakanaCommitFeedback
+                                            ? Color.white
+                                            : keyLabelColor.opacity(0.9)
+                                    )
+                                Text(")")
+                                    .foregroundStyle(
+                                        showsKatakanaCommitFeedback
+                                            ? Color.white
+                                            : accentColor
+                                    )
+                            }
                             .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .foregroundStyle(
-                                showsKatakanaCommitFeedback
-                                    ? Color.white
-                                    : keyLabelColor.opacity(0.9)
-                            )
                             .lineLimit(1)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.horizontal, 8)
@@ -2538,6 +2668,27 @@ struct KeyboardRootView: View {
                                             : KeyboardThemePalette.candidateHeaderChipBackground
                                     )
                             )
+                        } else {
+                            Text(composingText)
+                                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                .foregroundStyle(
+                                    showsKatakanaCommitFeedback
+                                        ? Color.white
+                                        : keyLabelColor.opacity(0.9)
+                                )
+                                .lineLimit(1)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 6)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                        .fill(
+                                            showsKatakanaCommitFeedback
+                                                ? accentColor.opacity(0.95)
+                                                : KeyboardThemePalette.candidateHeaderChipBackground
+                                        )
+                                )
+                        }
                     }
                     .buttonStyle(.plain)
                     .accessibilityHint("通常タップで変換せずに確定。ロングタップでカタカナ確定")
@@ -2547,10 +2698,17 @@ struct KeyboardRootView: View {
                                 handleComposingTextCommitLongPress()
                             }
                     )
-                } else {
-                    Text(composingText)
+                } else if !showsWrapperOnly {
+                    if showsParenthesesWrapper {
+                        HStack(spacing: 0) {
+                            Text("(")
+                                .foregroundStyle(accentColor)
+                            Text(composingText)
+                                .foregroundStyle(keyLabelColor.opacity(0.9))
+                            Text(")")
+                                .foregroundStyle(accentColor)
+                        }
                         .font(.system(size: candidateTextFontSize, weight: .semibold))
-                        .foregroundStyle(keyLabelColor.opacity(0.9))
                         .lineLimit(1)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 8)
@@ -2559,15 +2717,30 @@ struct KeyboardRootView: View {
                             RoundedRectangle(cornerRadius: 9, style: .continuous)
                                 .fill(KeyboardThemePalette.candidateHeaderChipBackground)
                         )
+                    } else {
+                        Text(composingText)
+                            .font(.system(size: candidateTextFontSize, weight: .semibold))
+                            .foregroundStyle(keyLabelColor.opacity(0.9))
+                            .lineLimit(1)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 6)
+                            .background(
+                                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                    .fill(KeyboardThemePalette.candidateHeaderChipBackground)
+                            )
+                    }
                 }
             }
 
             if conversionCandidates.isEmpty {
-                ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .frame(height: 24)
+                if !(showsParenthesesWrapper && composingText.isEmpty) {
+                    ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .frame(height: 24)
+                    }
                 }
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
@@ -2578,9 +2751,16 @@ struct KeyboardRootView: View {
                             Button {
                                 onSelectConversionCandidate(index)
                             } label: {
-                                Text(candidate)
+                                if showsParenthesesWrapper {
+                                    HStack(spacing: 0) {
+                                        Text("(")
+                                            .foregroundStyle(isSelected ? Color.white : accentColor)
+                                        Text(candidate)
+                                            .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                        Text(")")
+                                            .foregroundStyle(isSelected ? Color.white : accentColor)
+                                    }
                                     .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .foregroundStyle(isSelected ? Color.white : keyLabelColor)
                                     .lineLimit(1)
                                     .frame(maxWidth: .infinity, alignment: .leading)
                                     .padding(.horizontal, 8)
@@ -2593,6 +2773,23 @@ struct KeyboardRootView: View {
                                                     : KeyboardThemePalette.candidateHeaderChipBackground
                                             )
                                     )
+                                } else {
+                                    Text(candidate)
+                                        .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                        .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                        .lineLimit(1)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                        .padding(.horizontal, 8)
+                                        .padding(.vertical, 6)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                                .fill(
+                                                    isSelected
+                                                        ? accentColor.opacity(0.9)
+                                                        : KeyboardThemePalette.candidateHeaderChipBackground
+                                                )
+                                        )
+                                }
                             }
                             .buttonStyle(.plain)
                         }
@@ -3459,6 +3656,11 @@ struct KeyboardRootView: View {
             return
         }
 
+        // Ignore character mode toggle outputs (left flick on modifier key)
+        if output == "カ" || output == "ひ" {
+            return
+        }
+
         guard inputMode == .kana,
                 kanaModifierPlacementMode == .postfix else {
             transitionState = KeyboardModeTransition.selectModifier(
@@ -3473,11 +3675,6 @@ struct KeyboardRootView: View {
                 output,
                 state: transitionState
             )
-            return
-        }
-
-        if buttonState == .kaomoji {
-            enterKaomojiMode()
             return
         }
 
@@ -4030,6 +4227,7 @@ struct KeyboardRootView: View {
         composingText: "かな",
         conversionCandidates: ["仮名", "かな"],
         selectedConversionCandidateIndex: 0,
+        showsParenthesesWrapper: false,
         initialSpaceToastText: nil
     )
 }

@@ -56,6 +56,7 @@ extension KeyboardViewController {
             let normalizedKana = KanaTextNormalizer.normalizedKanaCharacter(from: text) {
             composingRawText.append(text)
             composingReading.append(normalizedKana)
+
             setMarkedComposingText(composingRawText)
         } else {
             if currentInputMode == .kana,
@@ -138,10 +139,17 @@ extension KeyboardViewController {
 
             if composingRawText.isEmpty {
                 clearMarkedComposingText()
+                clearComposingState()
             } else {
                 setMarkedComposingText(composingRawText)
             }
 
+            refreshKeyboardStateAsync()
+            return
+        }
+
+        if hasParenthesesWrapper {
+            hasParenthesesWrapper = false
             refreshKeyboardStateAsync()
             return
         }
@@ -173,6 +181,10 @@ extension KeyboardViewController {
         }
 
         guard !composingReading.isEmpty else {
+            if hasParenthesesWrapper {
+                hasParenthesesWrapper = false
+            }
+
             textDocumentProxy.insertText(" ")
             refreshKeyboardStateAsync()
             return
@@ -220,6 +232,14 @@ extension KeyboardViewController {
                 committedText: composingRawText,
                 learn: true
             )
+            refreshKeyboardStateAsync()
+            return
+        }
+
+        if hasParenthesesWrapper {
+            clearRecentKanaPlainCommitUpgradeContext()
+            textDocumentProxy.insertText("()")
+            clearComposingState()
             refreshKeyboardStateAsync()
             return
         }
@@ -548,6 +568,19 @@ extension KeyboardViewController {
     func clearComposingState() {
         composingRawText = ""
         composingReading = ""
+        hasParenthesesWrapper = false
+    }
+
+    func wrappedCommittedTextIfNeeded(_ text: String) -> String {
+        guard hasParenthesesWrapper else {
+            return text
+        }
+
+        if text.hasPrefix("(") && text.hasSuffix(")") {
+            return text
+        }
+
+        return "(\(text))"
     }
 
     func commitComposingText(
@@ -556,6 +589,7 @@ extension KeyboardViewController {
         committedText: String,
         learn: Bool
     ) {
+        let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText)
         clearMarkedComposingText()
 
         // If source text still exists as plain text after clearing marked text, replace it.
@@ -565,7 +599,7 @@ extension KeyboardViewController {
             deleteBackwardCharacterCount(sourceText.count)
         }
 
-        textDocumentProxy.insertText(committedText)
+        textDocumentProxy.insertText(committedTextForInsertion)
         textDocumentProxy.unmarkText()
         DispatchQueue.main.async { [weak self] in
             self?.textDocumentProxy.unmarkText()
@@ -595,6 +629,7 @@ extension KeyboardViewController {
         committedText: String,
         learn: Bool
     ) {
+        let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText)
         clearMarkedComposingText()
 
         // If source text still exists as plain text after clearing marked text, replace it.
@@ -607,7 +642,7 @@ extension KeyboardViewController {
             deleteBackwardCharacterCount(conversion.sourceText.count)
         }
 
-        textDocumentProxy.insertText(committedText)
+        textDocumentProxy.insertText(committedTextForInsertion)
         textDocumentProxy.unmarkText()
         DispatchQueue.main.async { [weak self] in
             self?.textDocumentProxy.unmarkText()
@@ -705,6 +740,13 @@ extension KeyboardViewController {
                     from: lastCharacter,
                     for: resolvedButtonState
                 ) else {
+            // Display-only wrapper toggle when no postfix transform target exists.
+            if currentInputMode == .kana {
+                hasParenthesesWrapper.toggle()
+                refreshKeyboardStateAsync()
+                return true
+            }
+
             return false
         }
 
