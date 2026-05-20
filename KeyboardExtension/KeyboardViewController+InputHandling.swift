@@ -689,6 +689,10 @@ extension KeyboardViewController {
         _ buttonState: KanaPostModifierButtonState,
         preferLatestContext: Bool = false
     ) -> Bool {
+        let hadPendingComposingText = !composingRawText.isEmpty
+            || !composingReading.isEmpty
+            || activeConversion != nil
+
         commitActiveConversion(learn: true)
 
         let resolvedButtonState: KanaPostModifierButtonState = {
@@ -742,7 +746,8 @@ extension KeyboardViewController {
                 ) else {
             // Display-only wrapper toggle is only for kaomoji state.
             if currentInputMode == .kana,
-                resolvedButtonState == .kaomoji {
+                resolvedButtonState == .kaomoji,
+                !hadPendingComposingText {
                 hasParenthesesWrapper.toggle()
                 refreshKeyboardStateAsync()
                 return true
