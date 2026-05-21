@@ -93,12 +93,13 @@
 	<dict><key>phrase</key><string>Kodiak</string><key>shortcut</key><string>こでぃあっく</string></dict>
 
 	<!-- サーヴィス -->
+	<dict><key>phrase</key><string>AppleCare</string><key>shortcut</key><string>あっぷるけあ</string></dict>
+	<dict><key>phrase</key><string>AppleCare+</string><key>shortcut</key><string>あっぷるけあぷらす</string></dict>
 	<dict><key>phrase</key><string>Apple Music</string><key>shortcut</key><string>あっぷるみゅーじっく</string></dict>
 	<dict><key>phrase</key><string>Apple Pay</string><key>shortcut</key><string>あっぷるぺい</string></dict>
 	<dict><key>phrase</key><string>App Store</string><key>shortcut</key><string>あっぷすとあ</string></dict>
 	<dict><key>phrase</key><string>Apple Store</string><key>shortcut</key><string>あっぷるすとあ</string></dict>
 	<dict><key>phrase</key><string>FaceTime</string><key>shortcut</key><string>ふぇいすたいむ</string></dict>
-	<dict><key>phrase</key><string>FaceTimeオーディオ</string><key>shortcut</key><string>ふぇいすたいむ</string></dict>
 	<dict><key>phrase</key><string>FaceTimeオーディオ</string><key>shortcut</key><string>ふぇいすたいむおーでぃお</string></dict>
 	<dict><key>phrase</key><string>iMessage</string><key>shortcut</key><string>あいめっせーじ</string></dict>
 	<dict><key>phrase</key><string>Apple Support</string><key>shortcut</key><string>あっぷるさぽーと</string></dict>
