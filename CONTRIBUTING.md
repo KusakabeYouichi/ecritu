@@ -24,6 +24,15 @@ cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig
 4. VS Code のタスク `Run ecritu on iPhone 17 Pro` を実行し、
 シミュレータでビルド・インストール・起動できることを確認します。
 
+5. 第一語彙(Sudachi由来)を使う場合は、初回に次を実行してCSVを準備します。
+
+```bash
+bash tools/fetch_sudachi_raw.sh
+```
+
+- `tmp/sudachi_raw/` が作成され、以後のXcodeビルドで第一語彙JSON/SQLiteが再生成されます。
+- CSVを更新したい場合は `bash tools/fetch_sudachi_raw.sh --force` を使います。
+
 ## 2. ブランチと PR
 
 1. `main` から作業ブランチを切ります。
