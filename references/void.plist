@@ -171,5 +171,9 @@
 	<dict><key>phrase</key><string>1円玉</string><key>shortcut</key><string>いちえんだま</string></dict>
 	<dict><key>phrase</key><string>ビリヤニ</string><key>shortcut</key><string>びりやに</string></dict>
 	<dict><key>phrase</key><string>数日</string><key>shortcut</key><string>すうじつ</string></dict>
+	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
+	<dict><key>phrase</key><string>香菜</string><key>shortcut</key><string>しゃんつぁい</string></dict>
+	<dict><key>phrase</key><string>油淋鶏</string><key>shortcut</key><string>ゆーりんちー</string></dict>
+	<dict><key>phrase</key><string>ボタンインコ</string><key>shortcut</key><string>ぼたんいんこ</string></dict>
 </array>
 </plist>
