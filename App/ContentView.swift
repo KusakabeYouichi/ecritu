@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260522011756"
+    private static let editionUpdatedAtRaw: String = "20260522012625"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -171,6 +171,8 @@ struct ContentView: View {
     @State private var secondVocabularyEntries: [VocabularyEntry] = []
     @State private var secondVocabularyScrollIndexTitle = ""
     @State private var isSecondVocabularyScrollIndexVisible = false
+    @State private var didRunFirstAppearanceBootstrap = false
+    @State private var isBootstrappingInitialData = false
     @GestureState private var isEditionNumberPressed = false
 
     private let setupSteps: [String] = [
@@ -1073,6 +1075,49 @@ struct ContentView: View {
         loadShortcutDictionaryEntries()
     }
 
+    private func handleContainerAppAppear() {
+        if didRunFirstAppearanceBootstrap {
+            // Subsequent appearances refresh synchronously to reflect external changes.
+            loadUserDictionaryEntries()
+            loadSuppressionDictionaryEntries()
+            loadShortcutDictionaryEntries()
+            loadSystemVocabularyEntries()
+            return
+        }
+
+        guard !isBootstrappingInitialData else {
+            return
+        }
+
+        didRunFirstAppearanceBootstrap = true
+        isBootstrappingInitialData = true
+
+        Task { @MainActor in
+            // Let SwiftUI present the first frame before expensive file I/O and JSON decode.
+            await Task.yield()
+
+            clearLegacyKeyboardDebugLogKeysIfNeeded()
+            migrateLegacyFlickGuideSettingIfNeeded()
+
+            await Task.yield()
+
+            migrateInitialUserDictionaryIfNeeded()
+            migrateInitialShortcutVocabularyIfNeeded()
+            migrateInitialSuppressionDictionaryIfNeeded()
+
+            await Task.yield()
+
+            loadUserDictionaryEntries()
+            loadSuppressionDictionaryEntries()
+            loadShortcutDictionaryEntries()
+
+            await Task.yield()
+
+            loadSystemVocabularyEntries()
+            isBootstrappingInitialData = false
+        }
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -1219,7 +1264,9 @@ struct ContentView: View {
                             scrollIndexTitle: $firstVocabularyScrollIndexTitle,
                             isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
                             listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
-                            emptyMessage: "第1語彙は読み込まれていません。",
+                            emptyMessage: isBootstrappingInitialData
+                                ? "第1語彙を読み込み中..."
+                                : "第1語彙は読み込まれていません。",
                             description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。"
                         )
 
@@ -1229,7 +1276,9 @@ struct ContentView: View {
                             scrollIndexTitle: $secondVocabularyScrollIndexTitle,
                             isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
                             listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
-                            emptyMessage: "第2語彙は読み込まれていません。",
+                            emptyMessage: isBootstrappingInitialData
+                                ? "第2語彙を読み込み中..."
+                                : "第2語彙は読み込まれていません。",
                             description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。"
                         )
 
@@ -1245,15 +1294,7 @@ struct ContentView: View {
                 }
             }
             .onAppear {
-                clearLegacyKeyboardDebugLogKeysIfNeeded()
-                migrateLegacyFlickGuideSettingIfNeeded()
-                migrateInitialUserDictionaryIfNeeded()
-                migrateInitialShortcutVocabularyIfNeeded()
-                migrateInitialSuppressionDictionaryIfNeeded()
-                loadUserDictionaryEntries()
-                loadSuppressionDictionaryEntries()
-                loadShortcutDictionaryEntries()
-                loadSystemVocabularyEntries()
+                handleContainerAppAppear()
             }
             .onReceive(
                 NotificationCenter.default.publisher(
