@@ -7,6 +7,11 @@ SUDACHI_REF="develop"
 FORCE_OVERWRITE=false
 INCLUDE_FULL=false
 
+fatal_error() {
+  echo "[dict][error] $1" >&2
+  exit 1
+}
+
 usage() {
   cat <<'USAGE'
 Usage: bash tools/fetch_sudachi_raw.sh [options]
@@ -61,13 +66,11 @@ while (($# > 0)); do
 done
 
 if ! command -v curl >/dev/null 2>&1; then
-  echo "[dict] curl is required but was not found in PATH" >&2
-  exit 1
+  fatal_error "curl コマンドが見つかりません。インストールして PATH を確認してください。"
 fi
 
 if ! command -v tar >/dev/null 2>&1; then
-  echo "[dict] tar is required but was not found in PATH" >&2
-  exit 1
+  fatal_error "tar コマンドが見つかりません。インストールして PATH を確認してください。"
 fi
 
 mkdir -p "$DEST_DIR"
@@ -88,16 +91,19 @@ trap cleanup EXIT
 archive_path="$tmp_dir/sudachidict.tar.gz"
 archive_url="https://github.com/WorksApplications/SudachiDict/archive/refs/heads/${SUDACHI_REF}.tar.gz"
 
-echo "[dict] Downloading SudachiDict (${SUDACHI_REF})..."
-curl -fL "$archive_url" -o "$archive_path"
+echo "[dict] SudachiDict (${SUDACHI_REF}) をダウンロードしています..."
+if ! curl -fL "$archive_url" -o "$archive_path"; then
+  fatal_error "SudachiDict の取得に失敗しました。ref=${SUDACHI_REF}、ネットワーク接続、アクセス制限を確認してください。URL: $archive_url"
+fi
 
-echo "[dict] Extracting archive..."
-tar -xzf "$archive_path" -C "$tmp_dir"
+echo "[dict] アーカイブを展開しています..."
+if ! tar -xzf "$archive_path" -C "$tmp_dir"; then
+  fatal_error "SudachiDict アーカイブの展開に失敗しました。ダウンロードファイル破損の可能性があります。"
+fi
 
 source_root="$(find "$tmp_dir" -mindepth 1 -maxdepth 1 -type d -name 'SudachiDict-*' | head -n 1)"
 if [[ -z "$source_root" ]]; then
-  echo "[dict] Failed to locate extracted SudachiDict directory" >&2
-  exit 1
+  fatal_error "展開後に SudachiDict ディレクトリを検出できませんでした。"
 fi
 
 if [[ "$FORCE_OVERWRITE" == "true" ]]; then
@@ -110,12 +116,16 @@ if [[ "$INCLUDE_FULL" == "true" ]]; then
 fi
 
 copied_count=0
+missing_required_dirs=()
 
 for module in "${modules[@]}"; do
   module_text_dir="$source_root/$module/src/main/text"
 
   if [[ ! -d "$module_text_dir" ]]; then
-    echo "[dict] Skip missing module directory: $module_text_dir"
+    if [[ "$module" == "sudachidict_core" || "$module" == "sudachidict_small" ]]; then
+      missing_required_dirs+=("$module_text_dir")
+    fi
+    echo "[dict] 警告: 想定モジュールディレクトリが見つかりません: $module_text_dir" >&2
     continue
   fi
 
@@ -129,8 +139,10 @@ for module in "${modules[@]}"; do
 done
 
 if ((copied_count == 0)); then
-  echo "[dict] No *_lex.csv files were copied. Check SudachiDict ref/modules." >&2
-  exit 1
+  if ((${#missing_required_dirs[@]} > 0)); then
+    fatal_error "SudachiDict の取得に失敗しました。必要な CSV ディレクトリが見つかりません。SudachiDict 側の構成変更の可能性があります。ref=${SUDACHI_REF}"
+  fi
+  fatal_error "SudachiDict の取得に失敗しました。*_lex.csv を取得できませんでした。ref=${SUDACHI_REF} とモジュール内容を確認してください。"
 fi
 
 final_count="$(find "$DEST_DIR" -type f -name '*_lex.csv' | wc -l | tr -d ' ')"
