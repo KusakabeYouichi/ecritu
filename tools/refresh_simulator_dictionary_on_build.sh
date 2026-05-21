@@ -92,6 +92,7 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
   fi
 else
   echo "[dict] Skip regeneration (tmp/sudachi_raw/**/*_lex.csv not found)."
+  echo "[dict] Hint: run 'bash tools/fetch_sudachi_raw.sh' once to provision SudachiDict CSV files."
 fi
 
 python3 tools/build_second_vocab_from_references.py \

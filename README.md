@@ -57,6 +57,8 @@
 - エディション番号は実質ビルド番号として扱い、テスト用ビルドや失敗ビルドで増えても巻き戻しません。
 - Xcode側ビルドは `Config/Edition.xcconfig` の現在値をそのまま使います(自動更新しません)。
 - システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
+- SudachiDict CSV の初回準備は `bash tools/fetch_sudachi_raw.sh` を実行してください(`tmp/sudachi_raw/` を作成します)。
+- 既存CSVを取り直す場合は `bash tools/fetch_sudachi_raw.sh --force` を使います。
 - 補助語彙 `tmp/ÉcrituSecondVocab.json` は `references/ryukyu.plist` / `references/vin.plist` / `references/apple.plist` からビルド時に生成します。
 - 追加語彙の初期投入データ `InitialAjoutVocabMigration.json` は `references/void.plist` からビルド時に生成し、更新時はシグネチャ比較で再マージされます。
 - clone直後のビルド失敗を避けるため、拡張バンドルには `KeyboardExtension/DefaultDictionaryResources/` の軽量プレースホルダー辞書を同梱しています。
