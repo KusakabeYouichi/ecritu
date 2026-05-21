@@ -1593,6 +1593,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
         private weak var indexContainerView: UIView?
         private weak var indexStackView: UIStackView?
         private var displayedIndexTitles: [String] = []
+        private var isRowSwipeActionVisible = false
         private var entriesStorageIdentity: UInt
 
         init(
@@ -1609,6 +1610,10 @@ struct IndexedVocabularyList: UIViewRepresentable {
             self.onDelete = onDelete
             self.onSelect = onSelect
             self.onIndexIndicatorStateChange = onIndexIndicatorStateChange
+
+            if onDelete == nil {
+                isRowSwipeActionVisible = false
+            }
             self.entriesStorageIdentity = Self.storageIdentity(for: entries)
             super.init()
             rebuildSections()
@@ -1662,6 +1667,45 @@ struct IndexedVocabularyList: UIViewRepresentable {
         func refreshCustomIndexPresentation() {
             refreshCustomIndexTitles()
             refreshCustomIndexVisibility()
+        }
+
+        private var isCustomIndexInteractionEnabled: Bool {
+            guard onDelete != nil else {
+                return true
+            }
+
+            return !isRowSwipeActionVisible
+        }
+
+        private var customIndexLabelColor: UIColor {
+            if isCustomIndexInteractionEnabled {
+                return .systemBlue
+            }
+
+            return UIColor.systemBlue.withAlphaComponent(0.58)
+        }
+
+        private func refreshCustomIndexInteractionState() {
+            indexContainerView?.isUserInteractionEnabled = isCustomIndexInteractionEnabled
+            updateCustomIndexLabelAppearance()
+        }
+
+        private func updateCustomIndexLabelAppearance() {
+            guard let indexStackView else {
+                return
+            }
+
+            let color = customIndexLabelColor
+
+            for arrangedSubview in indexStackView.arrangedSubviews {
+                guard let label = arrangedSubview as? UILabel else {
+                    continue
+                }
+
+                if label.textColor != color {
+                    label.textColor = color
+                }
+            }
         }
 
         private func schedulePostLayoutCustomIndexRefresh() {
@@ -1723,6 +1767,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
             }
 
             indexContainerView?.isHidden = displayedIndexTitles.isEmpty || !canScrollInTableView()
+            refreshCustomIndexInteractionState()
         }
 
         private func refreshCustomIndexTitles() {
@@ -1736,6 +1781,7 @@ struct IndexedVocabularyList: UIViewRepresentable {
 
             if displayedIndexTitles == nextTitles {
                 indexContainerView?.isHidden = nextTitles.isEmpty
+                refreshCustomIndexInteractionState()
                 return
             }
 
@@ -1750,13 +1796,14 @@ struct IndexedVocabularyList: UIViewRepresentable {
                 let label = UILabel()
                 label.text = title
                 label.font = UIFont.systemFont(ofSize: IndexedVocabularyList.customIndexFontSize, weight: .semibold)
-                label.textColor = .systemBlue
+                label.textColor = customIndexLabelColor
                 label.textAlignment = .center
                 label.isUserInteractionEnabled = false
                 indexStackView.addArrangedSubview(label)
             }
 
             indexContainerView?.isHidden = nextTitles.isEmpty
+            refreshCustomIndexInteractionState()
         }
 
         private func canScrollInTableView() -> Bool {
@@ -1880,6 +1927,17 @@ struct IndexedVocabularyList: UIViewRepresentable {
             displayedIndexTitles
         }
 
+        private func dismissVisibleSwipeActionImmediately() {
+            guard isRowSwipeActionVisible,
+                let tableView else {
+                return
+            }
+
+            tableView.setEditing(false, animated: false)
+            isRowSwipeActionVisible = false
+            refreshCustomIndexInteractionState()
+        }
+
         private func customIndexTitle(for locationY: CGFloat, in indexView: UIView) -> String? {
             let titles = sectionIndexTitlesForCustomIndex()
 
@@ -1919,6 +1977,11 @@ struct IndexedVocabularyList: UIViewRepresentable {
         }
 
         @objc func handleCustomIndexTap(_ gesture: UITapGestureRecognizer) {
+            guard isCustomIndexInteractionEnabled else {
+                dismissVisibleSwipeActionImmediately()
+                return
+            }
+
             guard gesture.state == .ended,
                 let indexView = gesture.view,
                 let title = customIndexTitle(for: gesture.location(in: indexView).y, in: indexView) else {
@@ -1931,6 +1994,14 @@ struct IndexedVocabularyList: UIViewRepresentable {
         }
 
         @objc func handleCustomIndexPan(_ gesture: UIPanGestureRecognizer) {
+            guard isCustomIndexInteractionEnabled else {
+                dismissVisibleSwipeActionImmediately()
+                if gesture.state == .ended || gesture.state == .cancelled || gesture.state == .failed {
+                    scheduleHideScrollingIndexOverlay()
+                }
+                return
+            }
+
             guard let indexView = gesture.view else {
                 return
             }
@@ -1986,6 +2057,8 @@ struct IndexedVocabularyList: UIViewRepresentable {
             guard let tableView = scrollView as? UITableView else {
                 return
             }
+
+            dismissVisibleSwipeActionImmediately()
 
             showScrollingIndexOverlay(title: currentVisibleSectionTitle(in: tableView))
         }
@@ -2073,6 +2146,24 @@ struct IndexedVocabularyList: UIViewRepresentable {
             let selectedEntry = entry(at: indexPath)
             onSelect?(selectedEntry)
             tableView.deselectRow(at: indexPath, animated: true)
+        }
+
+        func tableView(_ tableView: UITableView, willBeginEditingRowAt indexPath: IndexPath) {
+            guard onDelete != nil else {
+                return
+            }
+
+            isRowSwipeActionVisible = true
+            refreshCustomIndexInteractionState()
+        }
+
+        func tableView(_ tableView: UITableView, didEndEditingRowAt indexPath: IndexPath?) {
+            guard onDelete != nil else {
+                return
+            }
+
+            isRowSwipeActionVisible = false
+            refreshCustomIndexInteractionState()
         }
 
         func tableView(
