@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260522072845"
+    private static let editionUpdatedAtRaw: String = "20260522080144"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -156,6 +156,9 @@ struct ContentView: View {
     @State private var isUserDictionaryRegistrationVisible = false
     @State private var userDictionaryScrollIndexTitle = ""
     @State private var isUserDictionaryScrollIndexVisible = false
+    @State private var learnedDictionaryEntries: [VocabularyEntry] = []
+    @State private var learnedDictionaryScrollIndexTitle = ""
+    @State private var isLearnedDictionaryScrollIndexVisible = false
     @State private var suppressionDictionaryEntries: [VocabularyEntry] = []
     @State private var suppressionDictionaryReadingInput = ""
     @State private var suppressionDictionaryCandidateInput = ""
@@ -449,6 +452,35 @@ struct ContentView: View {
         }
 
         return decoded
+    }
+
+    private func loadLearningScores() -> [String: Int] {
+        guard let defaults = Self.sharedDefaults,
+            let learningData = defaults.data(forKey: SettingsKeys.kanaKanjiLearningScores),
+            let decoded = try? JSONDecoder().decode([String: Int].self, from: learningData) else {
+            return [:]
+        }
+
+        return decoded
+    }
+
+    private func parseLearningKey(_ key: String) -> VocabularyEntry? {
+        guard let separatorIndex = key.firstIndex(of: "\t") else {
+            return nil
+        }
+
+        let readingRaw = String(key[..<separatorIndex])
+        let candidateStartIndex = key.index(after: separatorIndex)
+        let candidateRaw = String(key[candidateStartIndex...])
+        let reading = normalizedKanaReading(from: readingRaw)
+        let candidate = candidateRaw.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !reading.isEmpty,
+            !candidate.isEmpty else {
+            return nil
+        }
+
+        return VocabularyEntry(reading: reading, candidate: candidate)
     }
 
     private func uniqueCandidatesPreservingOrder(_ candidates: [String]) -> [String] {
@@ -802,6 +834,53 @@ struct ContentView: View {
         defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialShortcutVocabularyMigrated)
     }
 
+    private func migrateLearningVocabularySeparationIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            !defaults.bool(forKey: SettingsKeys.kanaKanjiLearningVocabularyMigrationCompleted) else {
+            return
+        }
+
+        let currentUserDictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        )
+        let currentLearnedDictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
+        )
+
+        var learnedFromScores: [String: [String]] = [:]
+
+        for (key, score) in loadLearningScores() where score > 0 {
+            guard let entry = parseLearningKey(key) else {
+                continue
+            }
+
+            // Legacy mixed data cannot be distinguished reliably. Keep ambiguous items on manual side.
+            if currentUserDictionary[entry.reading]?.contains(entry.candidate) == true {
+                continue
+            }
+
+            var candidates = learnedFromScores[entry.reading] ?? []
+
+            if let existingIndex = candidates.firstIndex(of: entry.candidate) {
+                candidates.remove(at: existingIndex)
+            }
+
+            candidates.insert(entry.candidate, at: 0)
+            learnedFromScores[entry.reading] = Array(candidates.prefix(32))
+        }
+
+        let mergedLearnedDictionary = mergedDictionary(
+            preferred: currentLearnedDictionary,
+            fallback: learnedFromScores
+        )
+
+        if mergedLearnedDictionary != currentLearnedDictionary {
+            saveDictionaryEntries(mergedLearnedDictionary, forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
+        }
+
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiLearningVocabularyMigrationCompleted)
+    }
+
     private func saveDictionaryEntries(_ entriesByReading: [String: [String]], forKey key: String) {
         guard let defaults = Self.sharedDefaults,
                 let encoded = try? JSONEncoder().encode(entriesByReading) else {
@@ -826,8 +905,27 @@ struct ContentView: View {
             }
     }
 
+    private func loadLearnedDictionaryEntries() {
+        let dictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
+        )
+
+        learnedDictionaryEntries = dictionary
+            .keys
+            .sorted()
+            .flatMap { reading in
+                (dictionary[reading] ?? []).map { candidate in
+                    VocabularyEntry(reading: reading, candidate: candidate)
+                }
+            }
+    }
+
     private func saveUserDictionary(_ entriesByReading: [String: [String]]) {
         saveDictionaryEntries(entriesByReading, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+    }
+
+    private func saveLearnedDictionary(_ entriesByReading: [String: [String]]) {
+        saveDictionaryEntries(entriesByReading, forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
     }
 
     private func addUserDictionaryEntry() {
@@ -912,6 +1010,26 @@ struct ContentView: View {
         loadUserDictionaryEntries()
     }
 
+    private func removeLearnedDictionaryEntry(_ entry: VocabularyEntry) {
+        var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
+        var candidates = dictionary[entry.reading] ?? []
+        candidates.removeAll { $0 == entry.candidate }
+
+        if candidates.isEmpty {
+            dictionary.removeValue(forKey: entry.reading)
+        } else {
+            dictionary[entry.reading] = candidates
+        }
+
+        saveLearnedDictionary(dictionary)
+        loadLearnedDictionaryEntries()
+    }
+
+    private func removeAllLearnedDictionaryEntries() {
+        saveLearnedDictionary([:])
+        loadLearnedDictionaryEntries()
+    }
+
     private func reimportInitialUserDictionaryEntries() {
         guard let defaults = Self.sharedDefaults else {
             return
@@ -926,6 +1044,8 @@ struct ContentView: View {
 
     private func resetKanaKanjiLearning() {
         Self.sharedDefaults?.removeObject(forKey: SettingsKeys.kanaKanjiLearningScores)
+        Self.sharedDefaults?.removeObject(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
+        loadLearnedDictionaryEntries()
         SettingsSyncNotification.postSettingsDidChange()
     }
 
@@ -1079,6 +1199,7 @@ struct ContentView: View {
         if didRunFirstAppearanceBootstrap {
             // Subsequent appearances refresh synchronously to reflect external changes.
             loadUserDictionaryEntries()
+            loadLearnedDictionaryEntries()
             loadSuppressionDictionaryEntries()
             loadShortcutDictionaryEntries()
             loadSystemVocabularyEntries()
@@ -1104,10 +1225,12 @@ struct ContentView: View {
             migrateInitialUserDictionaryIfNeeded()
             migrateInitialShortcutVocabularyIfNeeded()
             migrateInitialSuppressionDictionaryIfNeeded()
+            migrateLearningVocabularySeparationIfNeeded()
 
             await Task.yield()
 
             loadUserDictionaryEntries()
+            loadLearnedDictionaryEntries()
             loadSuppressionDictionaryEntries()
             loadShortcutDictionaryEntries()
 
@@ -1229,8 +1352,17 @@ struct ContentView: View {
                             onUpdateEntry: updateUserDictionaryEntry,
                             onDeleteEntry: removeUserDictionaryEntry,
                             onDeleteAll: removeAllUserDictionaryEntries,
-                            onResetLearning: resetKanaKanjiLearning,
                             onReimportInitialEntries: reimportInitialUserDictionaryEntries
+                        )
+
+                        LearnedDictionarySettingsSection(
+                            entries: $learnedDictionaryEntries,
+                            scrollIndexTitle: $learnedDictionaryScrollIndexTitle,
+                            isScrollIndexVisible: $isLearnedDictionaryScrollIndexVisible,
+                            listHeight: userVocabularyListHeight(for: learnedDictionaryEntries.count),
+                            onDeleteEntry: removeLearnedDictionaryEntry,
+                            onDeleteAll: removeAllLearnedDictionaryEntries,
+                            onResetLearning: resetKanaKanjiLearning
                         )
 
                         SuppressionDictionarySettingsSection(

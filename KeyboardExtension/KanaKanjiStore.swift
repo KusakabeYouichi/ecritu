@@ -245,6 +245,7 @@ final class KanaKanjiStore {
     private var cachedInitialUserDictionary: [String: [String]]?
     private var cachedInitialShortcutVocabulary: [String]?
     private var cachedUserDictionary: [String: [String]]?
+    private var cachedLearnedDictionary: [String: [String]]?
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
     private var cachedLearningScores: [String: Int]?
     private var cachedLearningScoresByReading: [String: [String: Int]]?
@@ -610,6 +611,7 @@ final class KanaKanjiStore {
 
     func clearSharedDataCaches() {
         cachedUserDictionary = nil
+        cachedLearnedDictionary = nil
         cachedSuppressedCandidatesByReading = nil
         cachedLearningScores = nil
         cachedLearningScoresByReading = nil
@@ -627,6 +629,21 @@ final class KanaKanjiStore {
 
         let normalized = normalizeDictionary(decoded)
         cachedUserDictionary = normalized
+        return normalized
+    }
+
+    func learnedDictionary() -> [String: [String]] {
+        if let cachedLearnedDictionary {
+            return cachedLearnedDictionary
+        }
+
+        guard let decoded = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.learnedDictionary) else {
+            cachedLearnedDictionary = [:]
+            return [:]
+        }
+
+        let normalized = normalizeDictionary(decoded)
+        cachedLearnedDictionary = normalized
         return normalized
     }
 
@@ -777,6 +794,28 @@ final class KanaKanjiStore {
         saveUserDictionary(dictionary)
     }
 
+    func addLearnedEntry(reading: String, candidate: String) {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !normalizedReading.isEmpty,
+                !trimmedCandidate.isEmpty else {
+            return
+        }
+
+        var dictionary = learnedDictionary()
+        var candidates = dictionary[normalizedReading] ?? []
+
+        if let existingIndex = candidates.firstIndex(of: trimmedCandidate) {
+            candidates.remove(at: existingIndex)
+        }
+
+        candidates.insert(trimmedCandidate, at: 0)
+        dictionary[normalizedReading] = Array(candidates.prefix(32))
+        cachedLearnedDictionary = dictionary
+        saveLearnedDictionary(dictionary)
+    }
+
     func learningScores() -> [String: Int] {
         if let cachedLearningScores {
             return cachedLearningScores
@@ -857,6 +896,15 @@ final class KanaKanjiStore {
         }
 
         defaults.set(encoded, forKey: KanaKanjiStorageKeys.userDictionary)
+    }
+
+    private func saveLearnedDictionary(_ dictionary: [String: [String]]) {
+        guard let defaults,
+                let encoded = try? JSONEncoder().encode(dictionary) else {
+            return
+        }
+
+        defaults.set(encoded, forKey: KanaKanjiStorageKeys.learnedDictionary)
     }
 
     private func decodedStringArray(forKey key: String) -> [String]? {
