@@ -53,6 +53,12 @@ enum SettingsKeys {
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
+    static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
+    static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
+    static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
+    static let keyboardDiagnosticsLastHeartbeat = "keyboardDiagnosticsLastHeartbeat"
+    static let keyboardDiagnosticsLastEvent = "keyboardDiagnosticsLastEvent"
+    static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
 }
 
 enum RepeatSettings {
