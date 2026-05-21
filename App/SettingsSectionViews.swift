@@ -872,7 +872,6 @@ struct UserDictionarySettingsSection: View {
     let onUpdateEntry: (VocabularyEntry) -> Void
     let onDeleteEntry: (VocabularyEntry) -> Void
     let onDeleteAll: () -> Void
-    let onResetLearning: () -> Void
     let onReimportInitialEntries: () -> Void
 
     @State private var isDeleteAllConfirmationPresented = false
@@ -1002,15 +1001,6 @@ struct UserDictionarySettingsSection: View {
                         Text("現在の追加語彙を残したまま、初期追加語彙を再投入します。")
                     }
 
-                    Button {
-                        onResetLearning()
-                    } label: {
-                        Text("学習リセット")
-                            .font(.footnote)
-                    }
-                    .buttonStyle(.bordered)
-                    .controlSize(.small)
-
                     if !entries.isEmpty {
                         Button(role: .destructive) {
                             isDeleteAllConfirmationPresented = true
@@ -1037,6 +1027,101 @@ struct UserDictionarySettingsSection: View {
             }
 
             Text("追加単語はキーボード拡張と共有され、候補の優先順位に反映されます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
+struct LearnedDictionarySettingsSection: View {
+    @Binding var entries: [VocabularyEntry]
+    @Binding var scrollIndexTitle: String
+    @Binding var isScrollIndexVisible: Bool
+
+    let listHeight: CGFloat
+    let onDeleteEntry: (VocabularyEntry) -> Void
+    let onDeleteAll: () -> Void
+    let onResetLearning: () -> Void
+
+    @State private var isDeleteAllConfirmationPresented = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Text("学習語彙")
+                    .font(.headline)
+
+                Text("\(entries.count)件")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: 8)
+            }
+
+            ScrollIndexBadgeView(
+                title: scrollIndexTitle,
+                isVisible: isScrollIndexVisible
+            )
+
+            if entries.isEmpty {
+                Text("学習で蓄積された語彙はありません。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                IndexedVocabularyList(
+                    entries: entries,
+                    listHeight: listHeight,
+                    selectedEntryID: nil,
+                    onDelete: onDeleteEntry,
+                    onSelect: nil,
+                    onIndexIndicatorStateChange: { title, isVisible in
+                        applyScrollIndexIndicatorState(
+                            title: title,
+                            isVisible: isVisible,
+                            scrollIndexTitle: $scrollIndexTitle,
+                            isScrollIndexVisible: $isScrollIndexVisible
+                        )
+                    }
+                )
+                .frame(height: listHeight)
+            }
+
+            HStack(spacing: 12) {
+                Button {
+                    onResetLearning()
+                } label: {
+                    Text("学習リセット")
+                        .font(.footnote)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+
+                if !entries.isEmpty {
+                    Button(role: .destructive) {
+                        isDeleteAllConfirmationPresented = true
+                    } label: {
+                        Text("学習語彙全削除")
+                            .font(.footnote)
+                    }
+                    .buttonStyle(.bordered)
+                    .controlSize(.small)
+                    .confirmationDialog(
+                        "学習語彙をすべて削除しますか?",
+                        isPresented: $isDeleteAllConfirmationPresented,
+                        titleVisibility: .visible
+                    ) {
+                        Button("すべて削除", role: .destructive) {
+                            onDeleteAll()
+                        }
+                        Button("キャンセル", role: .cancel) {}
+                    } message: {
+                        Text("この操作は元に戻せません。")
+                    }
+                }
+            }
+
+            Text("学習語彙は確定操作から自動登録された候補です。手動で登録する追加語彙とは別に管理されます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

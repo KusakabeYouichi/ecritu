@@ -293,7 +293,12 @@ final class KanaKanjiConverter {
             return cachedCandidates
         }
 
-        let userDictionary = store.userDictionary()
+        let manualUserDictionary = store.userDictionary()
+        let learnedDictionary = store.learnedDictionary()
+        let userDictionary = mergedDictionary(
+            preferred: manualUserDictionary,
+            fallback: learnedDictionary
+        )
         let initialUserDictionary = store.initialUserDictionary()
         let learningScoresForReading = store.learningScores(for: normalizedReading)
         let suppressedCandidatesByReading = store.suppressedCandidatesByReading()
@@ -303,8 +308,14 @@ final class KanaKanjiConverter {
             mode: systemCandidateMode
         )
         let userCandidates = uniqueCandidates(
-            from: (userDictionary[normalizedReading] ?? [])
+            from: (manualUserDictionary[normalizedReading] ?? [])
                 + (initialUserDictionary[normalizedReading] ?? [])
+        )
+        let userCandidateSet = Set(userCandidates)
+        let learnedCandidates = uniqueCandidates(
+            from: (learnedDictionary[normalizedReading] ?? []).filter {
+                !userCandidateSet.contains($0)
+            }
         )
 
         addCandidates(
@@ -315,6 +326,11 @@ final class KanaKanjiConverter {
         addCandidates(
             userCandidates,
             baseScore: 2400,
+            to: &scores
+        )
+        addCandidates(
+            learnedCandidates,
+            baseScore: 2280,
             to: &scores
         )
 
@@ -420,7 +436,7 @@ final class KanaKanjiConverter {
             return
         }
 
-        store.addUserEntry(reading: normalizedReading, candidate: trimmedCandidate)
+        store.addLearnedEntry(reading: normalizedReading, candidate: trimmedCandidate)
         store.incrementLearning(reading: normalizedReading, candidate: trimmedCandidate)
 
         stateQueue.sync {
@@ -436,6 +452,25 @@ final class KanaKanjiConverter {
         for (index, candidate) in uniqueCandidates(from: candidates).enumerated() {
             scores[candidate, default: 0] += max(1, baseScore - index)
         }
+    }
+
+    private func mergedDictionary(
+        preferred: [String: [String]],
+        fallback: [String: [String]]
+    ) -> [String: [String]] {
+        var merged = preferred
+
+        for (reading, fallbackCandidates) in fallback {
+            let combined = uniqueCandidates(
+                from: (merged[reading] ?? []) + fallbackCandidates
+            )
+
+            if !combined.isEmpty {
+                merged[reading] = combined
+            }
+        }
+
+        return merged
     }
 
     private func applyLearning(

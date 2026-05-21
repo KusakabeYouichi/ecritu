@@ -2,6 +2,7 @@ import Foundation
 
 enum KanaKanjiStorageKeys {
     static let userDictionary = "ÉcrituAjoutVocab"
+    static let learnedDictionary = "kanaKanjiLearnedVocabulary"
     static let shortcutVocabulary = "ÉcrituShortcutVocab"
     static let suppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let learningScores = "kanaKanjiLearningScores"
