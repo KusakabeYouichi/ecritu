@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DEST_DIR="$ROOT_DIR/tmp/sudachi_raw"
 SUDACHI_REF="develop"
+RAW_DICT_BASE_URL="https://d2ej7fkh96fzlu.cloudfront.net/sudachidict-raw"
 FORCE_OVERWRITE=false
 INCLUDE_FULL=false
 
@@ -25,6 +26,89 @@ Options:
   --include-full        Also import sudachidict_full data when available
   -h, --help            Show this help
 USAGE
+}
+
+extract_dict_version_from_gradle_properties() {
+  local gradle_properties_path="$1"
+
+  if [[ ! -f "$gradle_properties_path" ]]; then
+    return 1
+  fi
+
+  awk -F= '
+    /^dict\.version[[:space:]]*=/ {
+      gsub(/[[:space:]]/, "", $2)
+      if ($2 != "") {
+        print $2
+        exit 0
+      }
+    }
+  ' "$gradle_properties_path"
+}
+
+raw_sources_for_module() {
+  local module="$1"
+
+  case "$module" in
+    sudachidict_small)
+      echo "small"
+      ;;
+    sudachidict_core)
+      echo "small core"
+      ;;
+    sudachidict_full)
+      echo "small core notcore"
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+copy_raw_lex_sources_for_module() {
+  local module="$1"
+  local dict_version="$2"
+  local module_dest_dir="$DEST_DIR/$module"
+  local source_names
+  local source_name
+
+  source_names="$(raw_sources_for_module "$module" || true)"
+  if [[ -z "$source_names" ]]; then
+    echo "[dict] 警告: 未知モジュールのため raw 辞書取得をスキップします: $module" >&2
+    return
+  fi
+
+  mkdir -p "$module_dest_dir"
+
+  for source_name in $source_names; do
+    local zip_url="$RAW_DICT_BASE_URL/${dict_version}/${source_name}_lex.zip"
+    local zip_path="$tmp_dir/${module}_${source_name}_lex.zip"
+    local extract_dir="$tmp_dir/${module}_${source_name}_extract"
+    local found_csv_count=0
+
+    echo "[dict] raw 辞書 ZIP を取得しています: $zip_url"
+    if ! curl -fL "$zip_url" -o "$zip_path"; then
+      echo "[dict] 警告: raw 辞書 ZIP の取得に失敗しました: $zip_url" >&2
+      continue
+    fi
+
+    mkdir -p "$extract_dir"
+    if ! tar -xf "$zip_path" -C "$extract_dir"; then
+      echo "[dict] 警告: raw 辞書 ZIP の展開に失敗しました: $zip_path" >&2
+      continue
+    fi
+
+    while IFS= read -r csv_file; do
+      file_name="$(basename "$csv_file")"
+      cp -f "$csv_file" "$module_dest_dir/$file_name"
+      copied_count=$((copied_count + 1))
+      found_csv_count=$((found_csv_count + 1))
+    done < <(find "$extract_dir" -type f -name '*_lex.csv' | sort)
+
+    if ((found_csv_count == 0)); then
+      echo "[dict] 警告: raw 辞書 ZIP に *_lex.csv が見つかりません: $zip_url" >&2
+    fi
+  done
 }
 
 while (($# > 0)); do
@@ -117,11 +201,13 @@ fi
 
 copied_count=0
 missing_required_dirs=()
+missing_module_dirs=()
 
 for module in "${modules[@]}"; do
   module_text_dir="$source_root/$module/src/main/text"
 
   if [[ ! -d "$module_text_dir" ]]; then
+    missing_module_dirs+=("$module")
     if [[ "$module" == "sudachidict_core" || "$module" == "sudachidict_small" ]]; then
       missing_required_dirs+=("$module_text_dir")
     fi
@@ -138,11 +224,24 @@ for module in "${modules[@]}"; do
   done < <(find "$module_text_dir" -type f -name '*_lex.csv' | sort)
 done
 
+if ((${#missing_module_dirs[@]} > 0)); then
+  dict_version="$(extract_dict_version_from_gradle_properties "$source_root/gradle.properties" || true)"
+
+  if [[ -z "$dict_version" ]]; then
+    echo "[dict] 警告: gradle.properties から dict.version を取得できないため raw 辞書フォールバックをスキップします。" >&2
+  else
+    echo "[dict] 想定モジュールが見つからないため raw 辞書 ZIP 取得へフォールバックします。dict.version=${dict_version}"
+    for module in "${missing_module_dirs[@]}"; do
+      copy_raw_lex_sources_for_module "$module" "$dict_version"
+    done
+  fi
+fi
+
 if ((copied_count == 0)); then
   if ((${#missing_required_dirs[@]} > 0)); then
-    fatal_error "SudachiDict の取得に失敗しました。必要な CSV ディレクトリが見つかりません。SudachiDict 側の構成変更の可能性があります。ref=${SUDACHI_REF}"
+    fatal_error "SudachiDict の取得に失敗しました。必要な CSV ディレクトリが見つからず raw 辞書フォールバックでも取得できませんでした。ref=${SUDACHI_REF}"
   fi
-  fatal_error "SudachiDict の取得に失敗しました。*_lex.csv を取得できませんでした。ref=${SUDACHI_REF} とモジュール内容を確認してください。"
+  fatal_error "SudachiDict の取得に失敗しました。*_lex.csv を取得できませんでした。ref=${SUDACHI_REF}、dict.version、raw 辞書 URL を確認してください。"
 fi
 
 final_count="$(find "$DEST_DIR" -type f -name '*_lex.csv' | wc -l | tr -d ' ')"
