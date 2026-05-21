@@ -75,7 +75,7 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
       --min-reading-len 1 \
       --max-reading-len 10 \
       --max-candidate-len 20 \
-      --single-reading-max-candidates 8 \
+      --single-reading-max-candidates 21 \
       --single-reading-max-candidate-len 1 \
       && python3 tools/build_kana_kanji_sqlite.py \
         --vocab-json "$TMP_PREMIER" \

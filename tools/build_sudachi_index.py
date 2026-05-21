@@ -478,7 +478,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--single-reading-max-candidates",
         type=int,
-        default=8,
+        default=21,
         help="Max candidates to keep for 1-character readings",
     )
     parser.add_argument(
