@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260522080144"
+    private static let editionUpdatedAtRaw: String = "20260522082630"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -174,6 +174,12 @@ struct ContentView: View {
     @State private var secondVocabularyEntries: [VocabularyEntry] = []
     @State private var secondVocabularyScrollIndexTitle = ""
     @State private var isSecondVocabularyScrollIndexVisible = false
+    @State private var keyboardDiagnosticsLogLines: [String] = []
+    @State private var keyboardDiagnosticsInstallMarker = ""
+    @State private var keyboardDiagnosticsSessionActive = false
+    @State private var keyboardDiagnosticsLastHeartbeatDate: Date?
+    @State private var keyboardDiagnosticsLastEvent = ""
+    @State private var keyboardDiagnosticsLastSessionID = ""
     @State private var didRunFirstAppearanceBootstrap = false
     @State private var isBootstrappingInitialData = false
     @GestureState private var isEditionNumberPressed = false
@@ -452,6 +458,156 @@ struct ContentView: View {
         }
 
         return decoded
+    }
+
+    private func decodeStringArray(forKey key: String, defaults: UserDefaults) -> [String] {
+        if let data = defaults.data(forKey: key),
+            let decoded = try? JSONDecoder().decode([String].self, from: data) {
+            return decoded
+        }
+
+        if let raw = defaults.array(forKey: key) {
+            return raw.compactMap { $0 as? String }
+        }
+
+        return []
+    }
+
+    private func keyboardExtensionBundleForDiagnostics() -> Bundle? {
+        guard let pluginsURL = Bundle.main.builtInPlugInsURL,
+            let pluginURLs = try? FileManager.default.contentsOfDirectory(
+                at: pluginsURL,
+                includingPropertiesForKeys: nil,
+                options: [.skipsHiddenFiles]
+            ) else {
+            return nil
+        }
+
+        for pluginURL in pluginURLs where pluginURL.pathExtension == "appex" {
+            guard let bundle = Bundle(url: pluginURL),
+                let bundleID = bundle.bundleIdentifier else {
+                continue
+            }
+
+            if bundleID.hasSuffix(".keyboard") {
+                return bundle
+            }
+        }
+
+        guard let firstPluginURL = pluginURLs.first(where: { $0.pathExtension == "appex" }) else {
+            return nil
+        }
+
+        return Bundle(url: firstPluginURL)
+    }
+
+    private func keyboardDiagnosticsInstallMarkerForCurrentBuild() -> String {
+        let bundle = keyboardExtensionBundleForDiagnostics() ?? Bundle.main
+        let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
+        let buildNumber = (bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
+        let resourceValues = try? bundle.bundleURL.resourceValues(
+            forKeys: [.creationDateKey, .contentModificationDateKey]
+        )
+        let date = resourceValues?.creationDate ?? resourceValues?.contentModificationDate
+        let timestamp = Int(date?.timeIntervalSince1970 ?? 0)
+        return "\(bundleID)|\(buildNumber)|\(timestamp)"
+    }
+
+    private func clearKeyboardDiagnosticsIfInstallChanged() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let currentMarker = keyboardDiagnosticsInstallMarkerForCurrentBuild()
+        let savedMarker = defaults.string(forKey: SettingsKeys.keyboardDiagnosticsInstallMarker)
+
+        if savedMarker != currentMarker {
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
+            defaults.set(currentMarker, forKey: SettingsKeys.keyboardDiagnosticsInstallMarker)
+        }
+
+        keyboardDiagnosticsInstallMarker = currentMarker
+    }
+
+    private func loadKeyboardDiagnosticsState() {
+        guard let defaults = Self.sharedDefaults else {
+            keyboardDiagnosticsLogLines = []
+            keyboardDiagnosticsInstallMarker = ""
+            keyboardDiagnosticsSessionActive = false
+            keyboardDiagnosticsLastHeartbeatDate = nil
+            keyboardDiagnosticsLastEvent = ""
+            keyboardDiagnosticsLastSessionID = ""
+            return
+        }
+
+        keyboardDiagnosticsLogLines = decodeStringArray(
+            forKey: SettingsKeys.keyboardDiagnosticsLogLines,
+            defaults: defaults
+        )
+        keyboardDiagnosticsInstallMarker = defaults.string(
+            forKey: SettingsKeys.keyboardDiagnosticsInstallMarker
+        ) ?? ""
+        keyboardDiagnosticsSessionActive = defaults.bool(
+            forKey: SettingsKeys.keyboardDiagnosticsSessionActive
+        )
+
+        let heartbeatRawValue = defaults.double(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
+        keyboardDiagnosticsLastHeartbeatDate = heartbeatRawValue > 0
+            ? Date(timeIntervalSince1970: heartbeatRawValue)
+            : nil
+
+        keyboardDiagnosticsLastEvent = defaults.string(
+            forKey: SettingsKeys.keyboardDiagnosticsLastEvent
+        ) ?? ""
+        keyboardDiagnosticsLastSessionID = defaults.string(
+            forKey: SettingsKeys.keyboardDiagnosticsLastSessionID
+        ) ?? ""
+    }
+
+    private func clearKeyboardDiagnosticsState() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
+        loadKeyboardDiagnosticsState()
+    }
+
+    private func keyboardDiagnosticsLastHeartbeatText() -> String {
+        guard let keyboardDiagnosticsLastHeartbeatDate else {
+            return "記録なし"
+        }
+
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ja_JP")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        return formatter.string(from: keyboardDiagnosticsLastHeartbeatDate)
+    }
+
+    private func keyboardDiagnosticsExportText() -> String {
+        var sections: [String] = []
+        sections.append("installMarker: \(keyboardDiagnosticsInstallMarker)")
+        sections.append("sessionActive: \(keyboardDiagnosticsSessionActive ? "true" : "false")")
+        sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
+        sections.append("lastSessionID: \(keyboardDiagnosticsLastSessionID)")
+        sections.append("lastEvent: \(keyboardDiagnosticsLastEvent)")
+        sections.append("--- logs ---")
+        sections.append(contentsOf: keyboardDiagnosticsLogLines)
+        return sections.joined(separator: "\n")
+    }
+
+    private func copyKeyboardDiagnosticsToPasteboard() {
+#if os(iOS)
+        UIPasteboard.general.string = keyboardDiagnosticsExportText()
+#endif
     }
 
     private func loadLearningScores() -> [String: Int] {
@@ -1198,6 +1354,8 @@ struct ContentView: View {
     private func handleContainerAppAppear() {
         if didRunFirstAppearanceBootstrap {
             // Subsequent appearances refresh synchronously to reflect external changes.
+            clearKeyboardDiagnosticsIfInstallChanged()
+            loadKeyboardDiagnosticsState()
             loadUserDictionaryEntries()
             loadLearnedDictionaryEntries()
             loadSuppressionDictionaryEntries()
@@ -1219,6 +1377,8 @@ struct ContentView: View {
 
             clearLegacyKeyboardDebugLogKeysIfNeeded()
             migrateLegacyFlickGuideSettingIfNeeded()
+            clearKeyboardDiagnosticsIfInstallChanged()
+            loadKeyboardDiagnosticsState()
 
             await Task.yield()
 
@@ -1417,6 +1577,21 @@ struct ContentView: View {
                         SetupStepsSection(steps: setupSteps)
 
                         ThirdPartyLicensesSection()
+
+                        KeyboardDiagnosticsSection(
+                            isSessionActive: keyboardDiagnosticsSessionActive,
+                            lastHeartbeatText: keyboardDiagnosticsLastHeartbeatText(),
+                            lastEvent: keyboardDiagnosticsLastEvent,
+                            lastSessionID: keyboardDiagnosticsLastSessionID,
+                            installMarker: keyboardDiagnosticsInstallMarker,
+                            logLines: keyboardDiagnosticsLogLines,
+                            onReload: {
+                                clearKeyboardDiagnosticsIfInstallChanged()
+                                loadKeyboardDiagnosticsState()
+                            },
+                            onCopy: copyKeyboardDiagnosticsToPasteboard,
+                            onClear: clearKeyboardDiagnosticsState
+                        )
 
                         Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                             .font(.footnote)

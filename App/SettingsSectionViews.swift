@@ -139,6 +139,132 @@ struct SetupStepsSection: View {
     }
 }
 
+struct KeyboardDiagnosticsSection: View {
+    let isSessionActive: Bool
+    let lastHeartbeatText: String
+    let lastEvent: String
+    let lastSessionID: String
+    let installMarker: String
+    let logLines: [String]
+    let onReload: () -> Void
+    let onCopy: () -> Void
+    let onClear: () -> Void
+
+    @State private var isClearConfirmationPresented = false
+    @State private var isCopiedBadgeVisible = false
+
+    private var logText: String {
+        logLines.joined(separator: "\n")
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                Text("キーボード診断ログ")
+                    .font(.headline)
+
+                Text("\(logLines.count)件")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Spacer(minLength: 8)
+
+                Text(isSessionActive ? "稼働中" : "停止")
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(isSessionActive ? .green : .secondary)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(
+                        Capsule(style: .continuous)
+                            .fill((isSessionActive ? Color.green : Color.secondary).opacity(0.12))
+                    )
+            }
+
+            VStack(alignment: .leading, spacing: 3) {
+                Text("最終ハートビート: \(lastHeartbeatText)")
+                Text("最終セッションID: \(lastSessionID.isEmpty ? "なし" : lastSessionID)")
+                Text("最終イベント: \(lastEvent.isEmpty ? "なし" : lastEvent)")
+            }
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+
+            HStack(spacing: 10) {
+                Button("更新") {
+                    onReload()
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+
+                Button("コピー") {
+                    onCopy()
+                    withAnimation(.easeOut(duration: 0.16)) {
+                        isCopiedBadgeVisible = true
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            isCopiedBadgeVisible = false
+                        }
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+
+                Button(role: .destructive) {
+                    isClearConfirmationPresented = true
+                } label: {
+                    Text("ログクリア")
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+                .confirmationDialog(
+                    "診断ログを削除しますか?",
+                    isPresented: $isClearConfirmationPresented,
+                    titleVisibility: .visible
+                ) {
+                    Button("削除", role: .destructive) {
+                        onClear()
+                    }
+                    Button("キャンセル", role: .cancel) {}
+                } message: {
+                    Text("保存済みの診断ログが削除されます。")
+                }
+
+                if isCopiedBadgeVisible {
+                    Text("コピーしました")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            if logLines.isEmpty {
+                Text("診断ログはまだありません。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            } else {
+                ScrollView {
+                    Text(logText)
+                        .font(.system(size: 11, weight: .regular, design: .monospaced))
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 8)
+                }
+                .frame(maxHeight: 220)
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(AppTheme.controlBackground)
+                )
+            }
+
+            Text("インストール識別子: \(installMarker.isEmpty ? "未設定" : installMarker)")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 private struct SegmentedSettingsCard<Option: Hashable>: View {
     let title: String
     let pickerTitle: String

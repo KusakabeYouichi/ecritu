@@ -23,6 +23,8 @@ final class KeyboardViewController: UIInputViewController {
     let recentKanaPlainCommitUpgradeWindow: TimeInterval = 0.45
     private lazy var kanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
     lazy var kanaKanjiConverter = KanaKanjiConverter(store: kanaKanjiStore)
+    private lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+    private var diagnosticsSessionID = UUID().uuidString
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -89,6 +91,12 @@ final class KeyboardViewController: UIInputViewController {
         static let landscapeCandidateSide = "landscapeCandidateSide"
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+        static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
+        static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
+        static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
+        static let keyboardDiagnosticsLastHeartbeat = "keyboardDiagnosticsLastHeartbeat"
+        static let keyboardDiagnosticsLastEvent = "keyboardDiagnosticsLastEvent"
+        static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
         }
@@ -105,6 +113,12 @@ final class KeyboardViewController: UIInputViewController {
             .takeUnretainedValue()
         controller.handleSharedSettingsDidChange()
     }
+
+    private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
 
     private static let hostTopOverlap: CGFloat = 0
     private static let baselinePortraitScreenWidth: CGFloat = 390
@@ -177,6 +191,8 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        startKeyboardDiagnosticsSession()
+        updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
@@ -185,16 +201,22 @@ final class KeyboardViewController: UIInputViewController {
         setupKeyboardView()
         kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
             self?.refreshKeyboardStateAsync()
+            self?.updateKeyboardDiagnosticsHeartbeat(
+                event: "システム辞書プリロード完了",
+                appendLog: true
+            )
         }
     }
 
     deinit {
+        finishKeyboardDiagnosticsSession(reason: "deinit")
         keyboardHeightLockReleaseWorkItem?.cancel()
         stopObservingSettingsDidChange()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock(using: makeRenderConfiguration())
         configureInputAssistantBar()
@@ -205,18 +227,21 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
+        updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
         synchronizeConversionContextIfNeeded()
         refreshKeyboardState()
     }
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
+        updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
         synchronizeConversionContextIfNeeded()
         refreshKeyboardState()
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
 
         guard lastRenderConfiguration != nil else {
             return
@@ -405,6 +430,211 @@ final class KeyboardViewController: UIInputViewController {
         isObservingSettingsDidChange = false
     }
 
+    private func keyboardInputModeName(_ mode: KeyboardInputMode) -> String {
+        switch mode {
+        case .kana:
+            return "kana"
+        case .number:
+            return "number"
+        case .latin:
+            return "latin"
+        case .emoji:
+            return "emoji"
+        }
+    }
+
+    private func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
+        if let data = defaults.data(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines),
+            let decoded = try? JSONDecoder().decode([String].self, from: data) {
+            return decoded
+        }
+
+        if let raw = defaults.array(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines) {
+            return raw.compactMap { $0 as? String }
+        }
+
+        return []
+    }
+
+    private func saveDiagnosticsLogLines(_ lines: [String], to defaults: UserDefaults) {
+        if let encoded = try? JSONEncoder().encode(lines) {
+            defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+            return
+        }
+
+        defaults.set(lines, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+    }
+
+    private func keyboardDiagnosticsCurrentInstallMarker() -> String {
+        let bundle = Bundle.main
+        let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
+        let buildNumber = (bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
+        let resourceValues = try? bundle.bundleURL.resourceValues(
+            forKeys: [.creationDateKey, .contentModificationDateKey]
+        )
+        let date = resourceValues?.creationDate ?? resourceValues?.contentModificationDate
+        let timestamp = Int(date?.timeIntervalSince1970 ?? 0)
+        return "\(bundleID)|\(buildNumber)|\(timestamp)"
+    }
+
+    private func clearKeyboardDiagnosticsStorage(
+        in defaults: UserDefaults,
+        preservingInstallMarker installMarker: String
+    ) {
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        defaults.set(installMarker, forKey: SharedDefaultsKeys.keyboardDiagnosticsInstallMarker)
+    }
+
+    private func resetKeyboardDiagnosticsIfInstallChanged() {
+        guard let sharedDefaults else {
+            return
+        }
+
+        let currentMarker = keyboardDiagnosticsCurrentInstallMarker()
+        let previousMarker = sharedDefaults.string(forKey: SharedDefaultsKeys.keyboardDiagnosticsInstallMarker)
+
+        guard previousMarker != currentMarker else {
+            return
+        }
+
+        clearKeyboardDiagnosticsStorage(
+            in: sharedDefaults,
+            preservingInstallMarker: currentMarker
+        )
+
+        let previousMarkerDescription = previousMarker ?? "none"
+        appendKeyboardDiagnosticsLog(
+            "診断ログをインストール単位で初期化 previous=\(previousMarkerDescription)",
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+    }
+
+    private func appendKeyboardDiagnosticsLog(
+        _ event: String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        guard let sharedDefaults else {
+            return
+        }
+
+        let sourceFile = (file as NSString).lastPathComponent
+        let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
+        let entry = "\(timestamp) [\(diagnosticsSessionID)] \(event) (\(sourceFile):\(line) \(function))"
+
+        var lines = diagnosticsLogLines(from: sharedDefaults)
+        lines.append(entry)
+
+        let maxLineCount = 320
+        if lines.count > maxLineCount {
+            lines.removeFirst(lines.count - maxLineCount)
+        }
+
+        saveDiagnosticsLogLines(lines, to: sharedDefaults)
+        sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
+        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+    }
+
+    private func updateKeyboardDiagnosticsHeartbeat(
+        event: String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function,
+        appendLog: Bool = false
+    ) {
+        guard let sharedDefaults else {
+            return
+        }
+
+        let sourceFile = (file as NSString).lastPathComponent
+        let summary = "\(event) @ \(sourceFile):\(line) \(function)"
+
+        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+        sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
+        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+
+        if appendLog {
+            appendKeyboardDiagnosticsLog(event, file: file, line: line, function: function)
+        }
+    }
+
+    private func startKeyboardDiagnosticsSession() {
+        resetKeyboardDiagnosticsIfInstallChanged()
+
+        guard let sharedDefaults else {
+            return
+        }
+
+        let previousSessionWasActive = sharedDefaults.bool(
+            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive
+        )
+
+        if previousSessionWasActive {
+            let previousSessionID = sharedDefaults.string(
+                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID
+            ) ?? "unknown"
+            let previousEvent = sharedDefaults.string(
+                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent
+            ) ?? "unknown"
+            let previousHeartbeat = sharedDefaults.double(
+                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat
+            )
+            let elapsed: String = {
+                guard previousHeartbeat > 0 else {
+                    return "unknown"
+                }
+
+                let delta = max(0, Date().timeIntervalSince(Date(timeIntervalSince1970: previousHeartbeat)))
+                return String(format: "%.1f", delta)
+            }()
+
+            appendKeyboardDiagnosticsLog(
+                "前回セッションが非正常終了の可能性 session=\(previousSessionID) lastEvent=\(previousEvent) elapsedSec=\(elapsed)",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
+
+        diagnosticsSessionID = UUID().uuidString
+        sharedDefaults.set(true, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
+        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        appendKeyboardDiagnosticsLog(
+            "キーボード拡張セッション開始",
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+    }
+
+    private func finishKeyboardDiagnosticsSession(
+        reason: String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        guard let sharedDefaults else {
+            return
+        }
+
+        appendKeyboardDiagnosticsLog(
+            "キーボード拡張セッション終了 reason=\(reason)",
+            file: file,
+            line: line,
+            function: function
+        )
+        sharedDefaults.set(false, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
+        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+    }
+
     private func refreshKeyboardState() {
         let configuration = makeRenderConfiguration()
         applyKeyboardBaseBackground()
@@ -434,6 +664,10 @@ final class KeyboardViewController: UIInputViewController {
                 return
             }
 
+            self.updateKeyboardDiagnosticsHeartbeat(
+                event: "共有設定変更通知を受信",
+                appendLog: true
+            )
             self.kanaKanjiConverter.clearSharedDataCaches()
             self.refreshKeyboardState()
         }
@@ -1114,6 +1348,10 @@ final class KeyboardViewController: UIInputViewController {
                 }
 
                 self.currentInputMode = mode
+                self.updateKeyboardDiagnosticsHeartbeat(
+                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode))",
+                    appendLog: true
+                )
 
                 if mode != .kana {
                     self.clearComposingState()
