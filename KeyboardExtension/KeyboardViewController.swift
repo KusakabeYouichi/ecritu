@@ -21,6 +21,9 @@ final class KeyboardViewController: UIInputViewController {
     var activeConversion: ActiveConversion?
     var recentKanaPlainCommit: RecentKanaPlainCommit?
     let recentKanaPlainCommitUpgradeWindow: TimeInterval = 0.45
+    var lastTextProxyEditAt: CFAbsoluteTime = 0
+    let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
+    var lastSynchronizedContextBeforeInput = ""
     private lazy var kanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
     lazy var kanaKanjiConverter = KanaKanjiConverter(store: kanaKanjiStore)
     private lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
@@ -228,14 +231,18 @@ final class KeyboardViewController: UIInputViewController {
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
-        synchronizeConversionContextIfNeeded()
+        synchronizeConversionContextIfNeeded(
+            triggeredByExternalChange: shouldTreatAsExternalTextChange()
+        )
         refreshKeyboardState()
     }
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
-        synchronizeConversionContextIfNeeded()
+        synchronizeConversionContextIfNeeded(
+            triggeredByExternalChange: shouldTreatAsExternalTextChange()
+        )
         refreshKeyboardState()
     }
 
@@ -325,6 +332,15 @@ final class KeyboardViewController: UIInputViewController {
         lastRenderConfiguration = configuration
         prepareKeyboardVisualForTransition()
         applyKeyboardBaseBackground()
+    }
+
+    func markTextProxyEdit() {
+        lastTextProxyEditAt = CFAbsoluteTimeGetCurrent()
+    }
+
+    func shouldTreatAsExternalTextChange() -> Bool {
+        let elapsed = CFAbsoluteTimeGetCurrent() - lastTextProxyEditAt
+        return elapsed > externalTextChangeDetectionWindow
     }
 
     private func configureInputAssistantBar() {

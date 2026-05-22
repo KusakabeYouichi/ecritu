@@ -63,16 +63,19 @@ extension KeyboardViewController {
                 !composingReading.isEmpty,
                 shouldAutoCommitConversion(beforeInserting: text) {
                 commitComposingTextBeforeDelimiterInput()
+                markTextProxyEdit()
                 textDocumentProxy.insertText(text)
                 refreshKeyboardStateAsync()
                 return
             }
 
             if !composingRawText.isEmpty {
+                markTextProxyEdit()
                 textDocumentProxy.unmarkText()
                 clearComposingState()
             }
 
+            markTextProxyEdit()
             textDocumentProxy.insertText(text)
             clearComposingState()
         }
@@ -96,6 +99,7 @@ extension KeyboardViewController {
 
         guard !composingRawText.isEmpty,
                 !composingReading.isEmpty else {
+            markTextProxyEdit()
             textDocumentProxy.unmarkText()
             clearComposingState()
             return
@@ -125,6 +129,7 @@ extension KeyboardViewController {
         if activeConversion != nil {
             commitActiveConversion(learn: false)
             clearComposingState()
+            markTextProxyEdit()
             textDocumentProxy.deleteBackward()
             refreshKeyboardStateAsync()
             return
@@ -154,6 +159,7 @@ extension KeyboardViewController {
             return
         }
 
+        markTextProxyEdit()
         textDocumentProxy.deleteBackward()
         refreshKeyboardStateAsync()
     }
@@ -165,10 +171,12 @@ extension KeyboardViewController {
             commitActiveConversion(learn: true)
 
             if !composingRawText.isEmpty {
+                markTextProxyEdit()
                 textDocumentProxy.unmarkText()
             }
 
             clearComposingState()
+            markTextProxyEdit()
             textDocumentProxy.insertText(" ")
             refreshKeyboardStateAsync()
             return
@@ -185,13 +193,16 @@ extension KeyboardViewController {
                 hasParenthesesWrapper = false
             }
 
+            markTextProxyEdit()
             textDocumentProxy.insertText(" ")
             refreshKeyboardStateAsync()
             return
         }
 
         guard beginConversionFromComposingText() else {
+            markTextProxyEdit()
             textDocumentProxy.unmarkText()
+            markTextProxyEdit()
             textDocumentProxy.insertText(" ")
             clearComposingState()
             refreshKeyboardStateAsync()
@@ -238,6 +249,7 @@ extension KeyboardViewController {
 
         if hasParenthesesWrapper {
             clearRecentKanaPlainCommitUpgradeContext()
+            markTextProxyEdit()
             textDocumentProxy.insertText("()")
             clearComposingState()
             refreshKeyboardStateAsync()
@@ -246,6 +258,7 @@ extension KeyboardViewController {
 
         clearRecentKanaPlainCommitUpgradeContext()
         clearComposingState()
+        markTextProxyEdit()
         textDocumentProxy.insertText("\n")
         refreshKeyboardStateAsync()
     }
@@ -421,7 +434,9 @@ extension KeyboardViewController {
         }
 
         deleteBackwardCharacterCount(recentKanaPlainCommit.committedText.count)
+        markTextProxyEdit()
         textDocumentProxy.insertText(katakanaText)
+        markTextProxyEdit()
         textDocumentProxy.unmarkText()
 
         if !recentKanaPlainCommit.sourceReading.isEmpty {
@@ -521,6 +536,7 @@ extension KeyboardViewController {
     }
 
     func setMarkedComposingText(_ text: String) {
+        markTextProxyEdit()
         textDocumentProxy.setMarkedText(
             text,
             selectedRange: NSRange(location: text.count, length: 0)
@@ -528,7 +544,9 @@ extension KeyboardViewController {
     }
 
     func clearMarkedComposingText() {
+        markTextProxyEdit()
         textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
+        markTextProxyEdit()
         textDocumentProxy.unmarkText()
     }
 
@@ -560,6 +578,7 @@ extension KeyboardViewController {
             return
         }
 
+        markTextProxyEdit()
         for _ in 0..<count {
             textDocumentProxy.deleteBackward()
         }
@@ -599,9 +618,12 @@ extension KeyboardViewController {
             deleteBackwardCharacterCount(sourceText.count)
         }
 
+        markTextProxyEdit()
         textDocumentProxy.insertText(committedTextForInsertion)
+        markTextProxyEdit()
         textDocumentProxy.unmarkText()
         DispatchQueue.main.async { [weak self] in
+            self?.markTextProxyEdit()
             self?.textDocumentProxy.unmarkText()
         }
 
@@ -642,9 +664,12 @@ extension KeyboardViewController {
             deleteBackwardCharacterCount(conversion.sourceText.count)
         }
 
+        markTextProxyEdit()
         textDocumentProxy.insertText(committedTextForInsertion)
+        markTextProxyEdit()
         textDocumentProxy.unmarkText()
         DispatchQueue.main.async { [weak self] in
+            self?.markTextProxyEdit()
             self?.textDocumentProxy.unmarkText()
         }
 
@@ -659,8 +684,13 @@ extension KeyboardViewController {
         clearComposingState()
     }
 
-    func synchronizeConversionContextIfNeeded() {
+    func synchronizeConversionContextIfNeeded(triggeredByExternalChange: Bool = false) {
         let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let previousContextBeforeInput = lastSynchronizedContextBeforeInput
+
+        defer {
+            lastSynchronizedContextBeforeInput = contextBeforeInput
+        }
 
         if let activeConversion {
             guard contextBeforeInput.hasSuffix(activeConversion.committedText) else {
@@ -676,13 +706,30 @@ extension KeyboardViewController {
             return
         }
 
-        guard contextBeforeInput.hasSuffix(composingRawText) else {
-            // Host app side actions (for example send button) can consume marked text.
-            // Drop stale internal state so next key starts from a clean composition.
-            textDocumentProxy.unmarkText()
-            clearComposingState()
+        if contextBeforeInput.hasSuffix(composingRawText) {
+            let hostLikelyConsumedCommittedText =
+                !previousContextBeforeInput.isEmpty
+                && previousContextBeforeInput.hasSuffix(composingRawText)
+                && previousContextBeforeInput.count > contextBeforeInput.count
+                && contextBeforeInput == composingRawText
+
+            if (triggeredByExternalChange && contextBeforeInput == composingRawText)
+                || hostLikelyConsumedCommittedText {
+                // Host app actions such as send can leave only marked text.
+                // Treat it as stale composition and clear it so it doesn't remain.
+                markTextProxyEdit()
+                textDocumentProxy.unmarkText()
+                clearComposingState()
+            }
+
             return
         }
+
+        // Host app side actions (for example send button) can consume marked text.
+        // Drop stale internal state so next key starts from a clean composition.
+        markTextProxyEdit()
+        textDocumentProxy.unmarkText()
+        clearComposingState()
     }
 
     func applyKanaPostModifier(
@@ -756,7 +803,9 @@ extension KeyboardViewController {
             return false
         }
 
+        markTextProxyEdit()
         textDocumentProxy.deleteBackward()
+        markTextProxyEdit()
         textDocumentProxy.insertText(String(replacedCharacter))
 
         if currentInputMode == .kana,
