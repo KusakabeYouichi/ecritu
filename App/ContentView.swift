@@ -5,7 +5,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260522133342"
+    private static let editionUpdatedAtRaw: String = "20260522140641"
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -181,7 +181,7 @@ struct ContentView: View {
     @State private var keyboardDiagnosticsLastEvent = ""
     @State private var keyboardDiagnosticsLastSessionID = ""
     @State private var didRunFirstAppearanceBootstrap = false
-    @State private var isBootstrappingInitialData = false
+    @State private var isBootstrappingInitialData = true
     @GestureState private var isEditionNumberPressed = false
 
     private let setupSteps: [String] = [
@@ -879,7 +879,19 @@ struct ContentView: View {
             }
     }
 
-    private func loadSystemVocabularyEntries() {
+    private struct InitialDataSnapshot {
+        let userDictionaryEntries: [VocabularyEntry]
+        let learnedDictionaryEntries: [VocabularyEntry]
+        let suppressionDictionaryEntries: [VocabularyEntry]
+        let shortcutDictionaryEntries: [VocabularyEntry]
+        let firstVocabularyEntries: [VocabularyEntry]
+        let secondVocabularyEntries: [VocabularyEntry]
+    }
+
+    private func systemVocabularyEntriesSnapshot() -> (
+        first: [VocabularyEntry],
+        second: [VocabularyEntry]
+    ) {
         let firstFromAppGroup = loadAppGroupDictionaryEntries(filename: "ÉcrituPremierVocab.json")
         let firstDictionary = firstFromAppGroup.isEmpty
             ? loadBundledInitialDictionaryEntries(filename: "ÉcrituPremierVocab")
@@ -890,8 +902,47 @@ struct ContentView: View {
             ? loadBundledInitialDictionaryEntries(filename: "ÉcrituSecondVocab")
             : secondFromAppGroup
 
-        firstVocabularyEntries = sortedVocabularyEntries(from: firstDictionary)
-        secondVocabularyEntries = sortedVocabularyEntries(from: secondDictionary)
+        return (
+            first: sortedVocabularyEntries(from: firstDictionary),
+            second: sortedVocabularyEntries(from: secondDictionary)
+        )
+    }
+
+    private func buildInitialDataSnapshot() -> InitialDataSnapshot {
+        let systemEntries = systemVocabularyEntriesSnapshot()
+
+        return InitialDataSnapshot(
+            userDictionaryEntries: userDictionaryEntriesSnapshot(),
+            learnedDictionaryEntries: learnedDictionaryEntriesSnapshot(),
+            suppressionDictionaryEntries: suppressionDictionaryEntriesSnapshot(),
+            shortcutDictionaryEntries: shortcutDictionaryEntriesSnapshot(),
+            firstVocabularyEntries: systemEntries.first,
+            secondVocabularyEntries: systemEntries.second
+        )
+    }
+
+    private func applyInitialDataSnapshot(_ snapshot: InitialDataSnapshot) {
+        userDictionaryEntries = snapshot.userDictionaryEntries
+        learnedDictionaryEntries = snapshot.learnedDictionaryEntries
+        suppressionDictionaryEntries = snapshot.suppressionDictionaryEntries
+        shortcutDictionaryEntries = snapshot.shortcutDictionaryEntries
+        firstVocabularyEntries = snapshot.firstVocabularyEntries
+        secondVocabularyEntries = snapshot.secondVocabularyEntries
+    }
+
+    private func loadInitialDataSnapshotInBackground() async -> InitialDataSnapshot {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .userInitiated).async {
+                let snapshot = buildInitialDataSnapshot()
+                continuation.resume(returning: snapshot)
+            }
+        }
+    }
+
+    private func loadSystemVocabularyEntries() {
+        let systemEntries = systemVocabularyEntriesSnapshot()
+        firstVocabularyEntries = systemEntries.first
+        secondVocabularyEntries = systemEntries.second
     }
 
     private func migrateInitialUserDictionaryIfNeeded() {
@@ -1046,12 +1097,12 @@ struct ContentView: View {
         defaults.set(encoded, forKey: key)
     }
 
-    private func loadUserDictionaryEntries() {
+    private func userDictionaryEntriesSnapshot() -> [VocabularyEntry] {
         let dictionary = normalizedDictionaryEntries(
             loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
         )
 
-        userDictionaryEntries = dictionary
+        return dictionary
             .keys
             .sorted()
             .flatMap { reading in
@@ -1061,12 +1112,12 @@ struct ContentView: View {
             }
     }
 
-    private func loadLearnedDictionaryEntries() {
+    private func learnedDictionaryEntriesSnapshot() -> [VocabularyEntry] {
         let dictionary = normalizedDictionaryEntries(
             loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
         )
 
-        learnedDictionaryEntries = dictionary
+        return dictionary
             .keys
             .sorted()
             .flatMap { reading in
@@ -1074,6 +1125,33 @@ struct ContentView: View {
                     VocabularyEntry(reading: reading, candidate: candidate)
                 }
             }
+    }
+
+    private func suppressionDictionaryEntriesSnapshot() -> [VocabularyEntry] {
+        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+
+        return dictionary
+            .keys
+            .sorted()
+            .flatMap { reading in
+                (dictionary[reading] ?? []).map { candidate in
+                    VocabularyEntry(reading: reading, candidate: candidate)
+                }
+            }
+    }
+
+    private func shortcutDictionaryEntriesSnapshot() -> [VocabularyEntry] {
+        loadShortcutVocabularyCandidates().map { candidate in
+            VocabularyEntry(reading: "☻", candidate: candidate)
+        }
+    }
+
+    private func loadUserDictionaryEntries() {
+        userDictionaryEntries = userDictionaryEntriesSnapshot()
+    }
+
+    private func loadLearnedDictionaryEntries() {
+        learnedDictionaryEntries = learnedDictionaryEntriesSnapshot()
     }
 
     private func saveUserDictionary(_ entriesByReading: [String: [String]]) {
@@ -1206,16 +1284,7 @@ struct ContentView: View {
     }
 
     private func loadSuppressionDictionaryEntries() {
-        let dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-
-        suppressionDictionaryEntries = dictionary
-            .keys
-            .sorted()
-            .flatMap { reading in
-                (dictionary[reading] ?? []).map { candidate in
-                    VocabularyEntry(reading: reading, candidate: candidate)
-                }
-            }
+        suppressionDictionaryEntries = suppressionDictionaryEntriesSnapshot()
     }
 
     private func saveSuppressionDictionary(_ entriesByReading: [String: [String]]) {
@@ -1298,9 +1367,7 @@ struct ContentView: View {
     }
 
     private func loadShortcutDictionaryEntries() {
-        shortcutDictionaryEntries = loadShortcutVocabularyCandidates().map { candidate in
-            VocabularyEntry(reading: "☻", candidate: candidate)
-        }
+        shortcutDictionaryEntries = shortcutDictionaryEntriesSnapshot()
     }
 
     private func addShortcutDictionaryEntry() {
@@ -1353,6 +1420,10 @@ struct ContentView: View {
 
     private func handleContainerAppAppear() {
         if didRunFirstAppearanceBootstrap {
+            guard !isBootstrappingInitialData else {
+                return
+            }
+
             // Subsequent appearances refresh synchronously to reflect external changes.
             clearKeyboardDiagnosticsIfInstallChanged()
             loadKeyboardDiagnosticsState()
@@ -1361,10 +1432,6 @@ struct ContentView: View {
             loadSuppressionDictionaryEntries()
             loadShortcutDictionaryEntries()
             loadSystemVocabularyEntries()
-            return
-        }
-
-        guard !isBootstrappingInitialData else {
             return
         }
 
@@ -1389,15 +1456,34 @@ struct ContentView: View {
 
             await Task.yield()
 
-            loadUserDictionaryEntries()
-            loadLearnedDictionaryEntries()
-            loadSuppressionDictionaryEntries()
-            loadShortcutDictionaryEntries()
-
-            await Task.yield()
-
-            loadSystemVocabularyEntries()
+            let initialDataSnapshot = await loadInitialDataSnapshotInBackground()
+            applyInitialDataSnapshot(initialDataSnapshot)
             isBootstrappingInitialData = false
+        }
+    }
+
+    @ViewBuilder
+    private var initialLoadingToast: some View {
+        if isBootstrappingInitialData {
+            VStack {
+                HStack(spacing: 8) {
+                    ProgressView()
+                        .controlSize(.small)
+
+                    Text("Loading... 辞書データを読み込み中")
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.primary)
+                }
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
+                .background(.ultraThinMaterial, in: Capsule())
+                .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .padding(.horizontal, 24)
+            .transition(.opacity)
+            .allowsHitTesting(false)
+            .animation(.easeInOut(duration: 0.16), value: isBootstrappingInitialData)
         }
     }
 
@@ -1407,38 +1493,41 @@ struct ContentView: View {
                 AppTheme.screenBackground
                     .ignoresSafeArea()
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 16) {
-                        HStack {
-                            Spacer(minLength: 0)
+                if isBootstrappingInitialData {
+                    Color.clear
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 16) {
+                            HStack {
+                                Spacer(minLength: 0)
 
-                            VStack(spacing: 4) {
-                                Image("AppLogoDisplay")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 92, height: 92)
-                                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                                    .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
+                                VStack(spacing: 4) {
+                                    Image("AppLogoDisplay")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 92, height: 92)
+                                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                                        .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
 
-                                Text(Self.editionNumberText)
-                                    .font(.system(size: 4, weight: .regular, design: .monospaced))
-                                    .foregroundStyle(.secondary.opacity(0.9))
-                                    .lineLimit(1)
-                                    .scaleEffect(isEditionNumberPressed ? 6.0 : 1.0, anchor: .top)
-                                    .animation(.easeOut(duration: 0.08), value: isEditionNumberPressed)
-                                    .contentShape(Rectangle())
-                                    .simultaneousGesture(
-                                        DragGesture(minimumDistance: 0)
-                                            .updating($isEditionNumberPressed) { _, state, _ in
-                                                state = true
-                                            }
-                                    )
-                                    .zIndex(1)
-                                    .accessibilityHidden(true)
+                                    Text(Self.editionNumberText)
+                                        .font(.system(size: 4, weight: .regular, design: .monospaced))
+                                        .foregroundStyle(.secondary.opacity(0.9))
+                                        .lineLimit(1)
+                                        .scaleEffect(isEditionNumberPressed ? 6.0 : 1.0, anchor: .top)
+                                        .animation(.easeOut(duration: 0.08), value: isEditionNumberPressed)
+                                        .contentShape(Rectangle())
+                                        .simultaneousGesture(
+                                            DragGesture(minimumDistance: 0)
+                                                .updating($isEditionNumberPressed) { _, state, _ in
+                                                    state = true
+                                                }
+                                        )
+                                        .zIndex(1)
+                                        .accessibilityHidden(true)
+                                }
+
+                                Spacer(minLength: 0)
                             }
-
-                            Spacer(minLength: 0)
-                        }
 
                         Text("このアプリはカスタムキーボード拡張の設定・管理を行うコンテナー・アプリ (Containing App) です。キーボード本体は拡張ターゲット側で実装されています。")
                             .font(.body)
@@ -1596,9 +1685,12 @@ struct ContentView: View {
                         Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                        }
+                        .padding(20)
                     }
-                    .padding(20)
                 }
+
+                initialLoadingToast
             }
             .onAppear {
                 handleContainerAppAppear()
