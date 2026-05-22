@@ -10,9 +10,11 @@ struct LatinShiftKeyButton: View {
     @Environment(\.keyboardAccentColor) private var accentColor
     @State private var didTriggerLongPress = false
     private let keyLabelColor = KeyboardThemePalette.keyLabel
+    private let shiftSymbolHorizontalOffset: CGFloat = 1
+    private let shiftSymbolVerticalOffset: CGFloat = 3
 
-    private var shiftSymbol: String {
-        "⇧"
+    private var shiftSymbolName: String {
+        "shift.fill"
     }
 
     private var shiftBackgroundColor: Color {
@@ -53,9 +55,10 @@ struct LatinShiftKeyButton: View {
             onTap()
         }) {
             VStack(spacing: 2) {
-                Text(shiftSymbol)
-                    .font(.system(size: 24, weight: .semibold, design: .rounded))
+                Image(systemName: shiftSymbolName)
+                    .font(.system(size: 19, weight: .semibold))
                     .foregroundStyle(shiftForegroundColor)
+                    .offset(x: shiftSymbolHorizontalOffset, y: shiftSymbolVerticalOffset)
 
                 Capsule()
                     .fill(shiftForegroundColor.opacity(isLocked ? 0.95 : 0))
