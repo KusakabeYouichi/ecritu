@@ -54,6 +54,8 @@ struct KeyboardRootView: View {
     @State private var lastShownSpaceToastTrigger = -1
     @State private var latinShiftState: LatinShiftState = .off
     @State private var lastLatinShiftTapAt: Date? = nil
+    @State private var isAwaitingLatinModeSwitchSecondTap = false
+    @State private var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     @State private var selectedEmojiCategory: EmojiCategory = .people
     @State private var selectedSymbolCategory: SymbolCategory = .basic
     @State private var emojiInputSubmode: EmojiInputSubmode = .emoji
@@ -64,6 +66,7 @@ struct KeyboardRootView: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private let shiftDoubleTapThreshold: TimeInterval = 0.32
+    private let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
     private let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
     private let katakanaCommitFeedbackDelay: TimeInterval = 0.14
     private let keyLabelColor = KeyboardThemePalette.keyLabel
@@ -1027,14 +1030,24 @@ struct KeyboardRootView: View {
     }
 
     private func leftModeSwitchLatinButton(height: CGFloat) -> some View {
-        ActionKeyButton(
-            title: "abc",
-            fontSize: leftModeSwitchLatinFontSize,
-            isEnabled: inputMode != .latin,
-            onLongPress: handleLatinModeSwitchLongPress,
-            action: handleLatinModeSwitchTap
-        )
-            .frame(width: leftModeSwitchButtonWidth, height: height)
+        ZStack {
+            ActionKeyButton(
+                title: "abc",
+                fontSize: leftModeSwitchLatinFontSize,
+                isEnabled: inputMode != .latin,
+                onLongPress: handleLatinModeSwitchLongPress,
+                action: handleLatinModeSwitchTap
+            )
+
+            if inputMode == .latin,
+                isAwaitingLatinModeSwitchSecondTap {
+                Color.clear
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                    .onTapGesture(perform: handleLatinModeSwitchDoubleTap)
+            }
+        }
+        .frame(width: leftModeSwitchButtonWidth, height: height)
     }
 
     private func leftModeSwitchKanaButton(height: CGFloat, fontSize: CGFloat) -> some View {
@@ -3247,6 +3260,7 @@ struct KeyboardRootView: View {
         .onDisappear {
             didTriggerComposingCommitLongPress = false
             cancelPendingKatakanaCommit()
+            cancelLatinModeSwitchSecondTapWindow()
         }
         .environment(\.flickDirectionProfile, directionProfile)
         .environment(\.flickGuideDisplayMode, currentFlickGuideDisplayMode)
@@ -3282,11 +3296,6 @@ struct KeyboardRootView: View {
     private func selectModifierMode(_ output: String, direction: FlickDirection) {
         if output == "…" {
             commitText(output)
-            return
-        }
-
-        // Ignore character mode toggle outputs (left flick on modifier key)
-        if output == "カ" || output == "ひ" {
             return
         }
 
@@ -3336,6 +3345,10 @@ struct KeyboardRootView: View {
     }
 
     private func switchInputMode(_ mode: KeyboardInputMode) {
+        if mode != .latin {
+            cancelLatinModeSwitchSecondTapWindow()
+        }
+
         transitionState = KeyboardModeTransition.switchInputMode(
             transitionState,
             to: mode
@@ -3354,11 +3367,47 @@ struct KeyboardRootView: View {
     }
 
     private func handleLatinModeSwitchTap() {
+        guard inputMode != .latin else {
+            return
+        }
+
         switchToLatinMode(with: .off)
+        startLatinModeSwitchSecondTapWindow()
+    }
+
+    private func handleLatinModeSwitchDoubleTap() {
+        guard inputMode == .latin,
+                isAwaitingLatinModeSwitchSecondTap else {
+            return
+        }
+
+        cancelLatinModeSwitchSecondTapWindow()
+        switchToLatinMode(with: .locked)
     }
 
     private func handleLatinModeSwitchLongPress() {
+        cancelLatinModeSwitchSecondTapWindow()
         switchToLatinMode(with: .locked)
+    }
+
+    private func startLatinModeSwitchSecondTapWindow() {
+        cancelLatinModeSwitchSecondTapWindow()
+        isAwaitingLatinModeSwitchSecondTap = true
+
+        let safeThreshold = max(0.05, latinModeSwitchDoubleTapThreshold)
+        let workItem = DispatchWorkItem {
+            self.pendingLatinModeSwitchSecondTapResetWorkItem = nil
+            self.isAwaitingLatinModeSwitchSecondTap = false
+        }
+
+        pendingLatinModeSwitchSecondTapResetWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + safeThreshold, execute: workItem)
+    }
+
+    private func cancelLatinModeSwitchSecondTapWindow() {
+        pendingLatinModeSwitchSecondTapResetWorkItem?.cancel()
+        pendingLatinModeSwitchSecondTapResetWorkItem = nil
+        isAwaitingLatinModeSwitchSecondTap = false
     }
 
     private func handleComposingTextCommitTap() {
