@@ -69,7 +69,7 @@
 - 自動取得に成功すると、そのまま `tmp/` の辞書再生成まで実行します。自動取得に失敗した場合はビルドを止めず、同梱プレースホルダー辞書で継続します。
 - Sudachi CSV が最終的に見つからない場合は、既定で「フォールバック用 seed 辞書(約108エントリー)のみでビルド継続するか」を確認します（拒否時はビルド中止）。
 - 自動取得を無効化する場合は環境変数 `ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD=0` を設定してください（必要なら `ECRITU_AUTO_FETCH_SUDACHI_INCLUDE_FULL=1` で full 辞書も自動取得対象にできます）。
-- フォールバック確認を無効化する場合は `ECRITU_PROMPT_ON_SUDACHI_FALLBACK=0`、非対話環境の既定動作を中止側に寄せる場合は `ECRITU_SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT=abort` を設定してください。
+- フォールバック確認を無効化する場合は `ECRITU_PROMPT_ON_SUDACHI_FALLBACK=0`、非対話環境の既定動作を中止側に寄せる場合は `ECRITU_SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT=abort` を設定してください（確認ダイアログを表示できない環境でもこの既定値を使用します）。
 - 同スクリプトは、生成済み `tmp/` 辞書があれば拡張バンドル内リソースを上書きするため、実機ビルドでもシード辞書ではなく生成辞書を同梱できます。
 - App Group への辞書反映(`tools/install_simulator_kana_dictionary.sh`)はシミュレータビルド時のみ自動実行します。
 - Sudachi CSV が無い環境では自動生成をスキップし、同梱プレースホルダー辞書でビルドを継続します。

@@ -68,6 +68,7 @@ PY
 confirm_seed_fallback_continue() {
   local entry_count="$1"
   local prompt_message="Sudachiデータの取得に失敗したので、フォールバック用の${entry_count}エントリーだけの辞書でビルドを継続しますか?"
+  local osascript_result=""
 
   if ! is_truthy "$PROMPT_ON_SUDACHI_FALLBACK"; then
     return 0
@@ -87,13 +88,21 @@ confirm_seed_fallback_continue() {
   fi
 
   if command -v osascript >/dev/null 2>&1 && [[ -z "${CI:-}" ]]; then
-    if osascript \
+    osascript_result="$(osascript \
       -e 'set promptText to item 1 of argv' \
-      -e 'display dialog promptText buttons {"中止", "継続"} default button "中止" with title "écritu Dictionary Build" with icon caution' \
-      "$prompt_message" >/dev/null; then
+      -e 'set dialogResult to display dialog promptText buttons {"中止", "継続"} default button "中止" with title "écritu Dictionary Build" with icon caution' \
+      -e 'button returned of dialogResult' \
+      "$prompt_message" 2>/dev/null || true)"
+
+    if [[ "$osascript_result" == "継続" ]]; then
       return 0
     fi
-    return 1
+
+    if [[ "$osascript_result" == "中止" ]]; then
+      return 1
+    fi
+
+    echo "[dict] Warning: フォールバック確認ダイアログを表示できませんでした。非対話既定値(${SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT})を使用します。"
   fi
 
   case "$SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT" in
@@ -109,13 +118,14 @@ confirm_seed_fallback_continue() {
 discover_sudachi_csv_files
 
 if ((${#SUDACHI_CSV_FILES[@]} == 0)) && is_truthy "$AUTO_FETCH_SUDACHI_ON_BUILD"; then
-  fetch_args=()
+  echo "[dict] Sudachi CSV が見つからないため自動取得を試行します..."
   if is_truthy "$AUTO_FETCH_SUDACHI_INCLUDE_FULL"; then
-    fetch_args+=("--include-full")
+    FETCH_SUDACHI_CMD=(bash tools/fetch_sudachi_raw.sh --include-full)
+  else
+    FETCH_SUDACHI_CMD=(bash tools/fetch_sudachi_raw.sh)
   fi
 
-  echo "[dict] Sudachi CSV が見つからないため自動取得を試行します..."
-  if bash tools/fetch_sudachi_raw.sh "${fetch_args[@]}"; then
+  if "${FETCH_SUDACHI_CMD[@]}"; then
     discover_sudachi_csv_files
     echo "[dict] Sudachi CSV 自動取得に成功しました。"
   else
