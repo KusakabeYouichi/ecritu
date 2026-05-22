@@ -81,6 +81,7 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "た", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "よう", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "れば", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "られ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "られる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "られない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "させる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -112,6 +113,7 @@ final class KanaKanjiConverter {
                 pattern.aForm + "れない",
                 pattern.aForm + "れて",
                 pattern.aForm + "れた",
+                pattern.aForm + "れ",
                 pattern.iForm + "ます",
                 pattern.iForm + "ました",
                 pattern.iForm + "ません",
@@ -156,6 +158,7 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "した", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しよう", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "され", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "される", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "させる", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -180,6 +183,7 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "した", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しよう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "され", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "される", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "させる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
@@ -204,6 +208,7 @@ final class KanaKanjiConverter {
         ("きた", "来た"),
         ("こよう", "来よう"),
         ("くれば", "来れば"),
+        ("こられ", "来られ"),
         ("こられる", "来られる"),
         ("こられない", "来られない")
     ]
@@ -250,6 +255,7 @@ final class KanaKanjiConverter {
 
     private static let inflectionRankingSuffixes: [String] = [
         "させられない", "させられる", "こられない", "こられる", "られない", "られる",
+        "こられ", "され", "られ",
         "させない", "させる", "たくない", "なかった", "たかった", "くなかった",
         "している", "きている", "ている", "してる", "きてる", "てる",
         "きました", "しました", "きません", "しません", "ました", "ます",
