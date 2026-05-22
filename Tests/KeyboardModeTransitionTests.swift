@@ -315,6 +315,43 @@ final class KeyboardModeTransitionTests: XCTestCase {
         )
     }
 
+    func testYaSecondaryBracketFlickOutputMap() {
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(
+                forPrimaryOutput: "『",
+                verticalDirection: .haut
+            ),
+            "("
+        )
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(
+                forPrimaryOutput: "『",
+                verticalDirection: .bas
+            ),
+            "「"
+        )
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(
+                forPrimaryOutput: "』",
+                verticalDirection: .haut
+            ),
+            ")"
+        )
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(
+                forPrimaryOutput: "』",
+                verticalDirection: .bas
+            ),
+            "」"
+        )
+        XCTAssertNil(
+            FlickKanaLayout.secondaryBracketFlickOutput(
+                forPrimaryOutput: "ゆ",
+                verticalDirection: .haut
+            )
+        )
+    }
+
     func testYaKeyAssignmentMatchesBetweenFiveByTwoAndThreeByThreePlusWa() {
         let fiveByTwoYa = FlickKanaLayout.fiveByTwoRows[1][2]
         let threeByThreeYa = FlickKanaLayout.threeByThreePlusWaRows[2][1]
