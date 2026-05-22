@@ -39,6 +39,7 @@ struct FlickKeyView: View {
     private enum Metrics {
         static let keyCornerRadius: CGFloat = 10
         static let previewDistance: CGFloat = 44
+        static let secondaryFlickThreshold: CGFloat = 12
         static let directionHintVerticalOffset: CGFloat = 16
         static let directionHintHorizontalOffset: CGFloat = 20
 
@@ -83,6 +84,9 @@ struct FlickKeyView: View {
     @State private var latestTouchLocationX: CGFloat = 0
     @State private var longPressAnchorLocationX: CGFloat = 0
     @State private var keyFrameInGlobal: CGRect = .zero
+    @State private var secondaryFlickPrimaryDirection: FlickDirection?
+    @State private var secondaryFlickVerticalDirection: FlickDirection?
+    @State private var secondaryFlickAnchorTranslation: CGSize = .zero
     @Environment(\.keyboardAccentColor) private var accentColor
     @Environment(\.flickGuideDisplayMode) private var flickGuideDisplayMode
     @Environment(\.flickDirectionProfile) private var flickDirectionProfile
@@ -128,8 +132,10 @@ struct FlickKeyView: View {
             directionalHints
             downDirectionalHints
 
-            if isTouching && activeDirection != .milieu && !longPressIsActive {
-                Text(kana.output(for: activeDirection))
+            if isTouching,
+                !longPressIsActive,
+                (activeDirection != .milieu || secondaryFlickPrimaryDirection != nil) {
+                Text(displayText)
                     .font(
                         .system(
                             size: resolvedActivePreviewFontSize(for: activeDirection),
@@ -141,10 +147,10 @@ struct FlickKeyView: View {
                     .minimumScaleFactor(0.6)
                     .allowsTightening(true)
                     .foregroundStyle(.white)
-                        .padding(.horizontal, activePreviewHorizontalPadding)
+                    .padding(.horizontal, activePreviewHorizontalPadding)
                     .padding(.vertical, 6)
                     .background(Capsule().fill(accentColor.opacity(0.95)))
-                    .offset(previewOffset)
+                    .offset(resolvedPreviewOffset)
             }
 
             if longPressIsActive,
@@ -175,7 +181,43 @@ struct FlickKeyView: View {
             return longPressCandidates[highlightedLongPressIndex]
         }
 
+        if let secondaryOutput = resolvedSecondaryFlickOutput {
+            return secondaryOutput
+        }
+
+        if let primaryDirection = secondaryFlickPrimaryDirection {
+            return kana.output(for: primaryDirection)
+        }
+
         return kana.output(for: activeDirection)
+    }
+
+    private var resolvedSecondaryFlickOutput: String? {
+        guard let primaryDirection = secondaryFlickPrimaryDirection,
+            let verticalDirection = secondaryFlickVerticalDirection else {
+            return nil
+        }
+
+        return FlickKanaLayout.secondaryBracketFlickOutput(
+            forPrimaryOutput: kana.output(for: primaryDirection),
+            verticalDirection: verticalDirection
+        )
+    }
+
+    private var resolvedPreviewOffset: CGSize {
+        if let primaryDirection = secondaryFlickPrimaryDirection {
+            let xOffset = primaryDirection == .gauche ? -Metrics.previewDistance : Metrics.previewDistance
+
+            if let verticalDirection = secondaryFlickVerticalDirection,
+                resolvedSecondaryFlickOutput != nil {
+                let yOffset = verticalDirection == .haut ? -Metrics.previewDistance : Metrics.previewDistance
+                return CGSize(width: xOffset, height: yOffset)
+            }
+
+            return CGSize(width: xOffset, height: 0)
+        }
+
+        return previewOffset(for: activeDirection)
     }
 
     private func resolvedActiveMainLabelFontSize(for direction: FlickDirection) -> CGFloat {
@@ -198,8 +240,8 @@ struct FlickKeyView: View {
         return activePreviewFontSize
     }
 
-    private var previewOffset: CGSize {
-        switch activeDirection {
+    private func previewOffset(for direction: FlickDirection) -> CGSize {
+        switch direction {
         case .milieu:
             return CGSize(width: 0, height: -Metrics.previewDistance)
         case .haut:
@@ -459,6 +501,7 @@ struct FlickKeyView: View {
                 if !isTouching {
                     onTouchStateChanged(true)
                     scheduleLongPressIfNeeded()
+                    resetSecondaryFlickState()
                 }
                 isTouching = true
                 latestTouchLocationX = value.location.x
@@ -470,6 +513,7 @@ struct FlickKeyView: View {
 
                 guard allowsDirectionalFlick else {
                     activeDirection = .milieu
+                    resetSecondaryFlickState()
                     return
                 }
 
@@ -477,7 +521,12 @@ struct FlickKeyView: View {
                     translation: value.translation,
                     threshold: directionalFlickThreshold
                 )
-                activeDirection = effectiveDirection(for: resolvedDirection)
+                let effectiveResolvedDirection = effectiveDirection(for: resolvedDirection)
+                activeDirection = effectiveResolvedDirection
+                updateSecondaryFlickState(
+                    translation: value.translation,
+                    resolvedDirection: effectiveResolvedDirection
+                )
             }
             .onEnded { value in
                 cancelLongPressTimer()
@@ -497,22 +546,33 @@ struct FlickKeyView: View {
                 }()
 
                 let committedText: String
+                let committedDirectionForCallback: FlickDirection
 
                 if longPressIsActive,
                     !longPressCandidates.isEmpty,
                     longPressCandidates.indices.contains(highlightedLongPressIndex) {
                     committedText = longPressCandidates[highlightedLongPressIndex]
+                    committedDirectionForCallback = committedDirection
+                } else if let secondaryOutput = resolvedSecondaryFlickOutput,
+                    let primaryDirection = secondaryFlickPrimaryDirection {
+                    committedText = secondaryOutput
+                    committedDirectionForCallback = primaryDirection
+                } else if let primaryDirection = secondaryFlickPrimaryDirection {
+                    committedText = kana.output(for: primaryDirection)
+                    committedDirectionForCallback = primaryDirection
                 } else {
                     committedText = kana.output(for: committedDirection)
+                    committedDirectionForCallback = committedDirection
                 }
 
                 if let onCommitWithDirection {
-                    onCommitWithDirection(committedText, committedDirection)
+                    onCommitWithDirection(committedText, committedDirectionForCallback)
                 } else {
                     onCommit(committedText)
                 }
 
                 activeDirection = .milieu
+                resetSecondaryFlickState()
                 longPressIsActive = false
                 isTouching = false
                 latestTouchLocationX = 0
@@ -527,6 +587,60 @@ struct FlickKeyView: View {
         }
 
         return kana.output(for: direction).isEmpty ? .milieu : direction
+    }
+
+    private func updateSecondaryFlickState(
+        translation: CGSize,
+        resolvedDirection: FlickDirection
+    ) {
+        if secondaryFlickPrimaryDirection == nil {
+            guard resolvedDirection == .gauche || resolvedDirection == .droite else {
+                return
+            }
+
+            let primaryOutput = kana.output(for: resolvedDirection)
+
+            guard primaryOutput == "『" || primaryOutput == "』" else {
+                return
+            }
+
+            secondaryFlickPrimaryDirection = resolvedDirection
+            secondaryFlickVerticalDirection = nil
+            secondaryFlickAnchorTranslation = translation
+            return
+        }
+
+        guard let primaryDirection = secondaryFlickPrimaryDirection else {
+            return
+        }
+
+        if (primaryDirection == .gauche && resolvedDirection == .droite)
+            || (primaryDirection == .droite && resolvedDirection == .gauche) {
+            resetSecondaryFlickState()
+            return
+        }
+
+        let relativeTranslation = CGSize(
+            width: translation.width - secondaryFlickAnchorTranslation.width,
+            height: translation.height - secondaryFlickAnchorTranslation.height
+        )
+        let resolvedVerticalDirection = FlickGestureResolver.resolve(
+            translation: relativeTranslation,
+            threshold: Metrics.secondaryFlickThreshold
+        )
+
+        if resolvedVerticalDirection == .haut || resolvedVerticalDirection == .bas {
+            secondaryFlickVerticalDirection = resolvedVerticalDirection
+            return
+        }
+
+        secondaryFlickVerticalDirection = nil
+    }
+
+    private func resetSecondaryFlickState() {
+        secondaryFlickPrimaryDirection = nil
+        secondaryFlickVerticalDirection = nil
+        secondaryFlickAnchorTranslation = .zero
     }
 
     private func scheduleLongPressIfNeeded() {

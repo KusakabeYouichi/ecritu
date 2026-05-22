@@ -30,6 +30,24 @@ enum FlickKanaLayout {
     static let kanaWaSet = FlickKanaSet(label: "わ", center: "わ", up: "を", right: "ん", down: "〜", left: "ー")
     static let kanaYaSet = FlickKanaSet(label: "や", center: "や", up: "『", right: "ゆ", down: "よ", left: "』")
 
+    static func secondaryBracketFlickOutput(
+        forPrimaryOutput primaryOutput: String,
+        verticalDirection: FlickDirection
+    ) -> String? {
+        switch (primaryOutput, verticalDirection) {
+        case ("『", .haut):
+            return "("
+        case ("『", .bas):
+            return "「"
+        case ("』", .haut):
+            return ")"
+        case ("』", .bas):
+            return "」"
+        default:
+            return nil
+        }
+    }
+
     static let fiveByTwoRows: [[FlickKanaSet]] = [
         [
             FlickKanaSet(label: "あ", center: "あ", up: "い", right: "う", down: "お", left: "え"),
