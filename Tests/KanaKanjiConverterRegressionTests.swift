@@ -145,6 +145,39 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionTeIruVariantsAreDerivedFromBaseVerbCandidates() {
+        converter.learn(reading: "おちる", candidate: "落ちる")
+
+        let teCandidates = converter.candidates(
+            for: "おちて",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+        let teruCandidates = converter.candidates(
+            for: "おちてる",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+        let teIruCandidates = converter.candidates(
+            for: "おちている",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            teCandidates.contains("落ちて"),
+            "candidates=\(teCandidates)"
+        )
+        XCTAssertTrue(
+            teruCandidates.contains("落ちてる"),
+            "candidates=\(teruCandidates)"
+        )
+        XCTAssertTrue(
+            teIruCandidates.contains("落ちている"),
+            "candidates=\(teIruCandidates)"
+        )
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
