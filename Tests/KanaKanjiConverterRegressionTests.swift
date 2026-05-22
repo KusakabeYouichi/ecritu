@@ -96,6 +96,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(candidates.contains("お行く"), "candidates=\(candidates)")
     }
 
+    func testRegressionGodanPassiveFormsAreDerivedFromBaseVerbCandidates() {
+        converter.learn(reading: "けす", candidate: "消す")
+        converter.learn(reading: "うる", candidate: "売る")
+
+        let kesareruCandidates = converter.candidates(
+            for: "けされる",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+        let urareruCandidates = converter.candidates(
+            for: "うられる",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            kesareruCandidates.contains("消される"),
+            "candidates=\(kesareruCandidates)"
+        )
+        XCTAssertTrue(
+            urareruCandidates.contains("売られる"),
+            "candidates=\(urareruCandidates)"
+        )
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return

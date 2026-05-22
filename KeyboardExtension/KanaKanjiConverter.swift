@@ -106,6 +106,10 @@ final class KanaKanjiConverter {
             let suffixes = [
                 pattern.aForm + "ない",
                 pattern.aForm + "なかった",
+                pattern.aForm + "れる",
+                pattern.aForm + "れない",
+                pattern.aForm + "れて",
+                pattern.aForm + "れた",
                 pattern.iForm + "ます",
                 pattern.iForm + "ました",
                 pattern.iForm + "ません",
