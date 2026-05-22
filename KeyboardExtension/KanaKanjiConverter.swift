@@ -76,6 +76,8 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "たくない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "たかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "て", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "ている", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "た", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "よう", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "れば", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -120,6 +122,8 @@ final class KanaKanjiConverter {
                 pattern.eForm + "ば",
                 pattern.oForm + "う",
                 pattern.teForm,
+                pattern.teForm + "る",
+                pattern.teForm + "いる",
                 pattern.taForm
             ]
 
@@ -147,6 +151,8 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "したくない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "したかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "して", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してる", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "している", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "した", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しよう", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -169,6 +175,8 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "したくない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "したかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "して", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "している", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "した", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しよう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
@@ -191,6 +199,8 @@ final class KanaKanjiConverter {
         ("きたくない", "来たくない"),
         ("きたかった", "来たかった"),
         ("きて", "来て"),
+        ("きてる", "来てる"),
+        ("きている", "来ている"),
         ("きた", "来た"),
         ("こよう", "来よう"),
         ("くれば", "来れば"),
@@ -241,6 +251,7 @@ final class KanaKanjiConverter {
     private static let inflectionRankingSuffixes: [String] = [
         "させられない", "させられる", "こられない", "こられる", "られない", "られる",
         "させない", "させる", "たくない", "なかった", "たかった", "くなかった",
+        "している", "きている", "ている", "してる", "きてる", "てる",
         "きました", "しました", "きません", "しません", "ました", "ます",
         "くない", "かった", "ければ", "くれば", "よう", "こよう", "こい", "たい", "れば",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
