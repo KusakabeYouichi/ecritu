@@ -65,7 +65,11 @@
 - 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。
 - 第1語彙が0件になる環境の切り分けには、`bash tools/diagnose_kana_dictionary.sh` を実行してください。`tmp/`・ビルド済み `.app`・シミュレータ App Group の辞書有無/件数を一括で確認できます。
 - 他環境の調査では、上記スクリプトの出力全文を共有すると原因を特定しやすくなります。
-- Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、Sudachi CSV がある環境では `tmp/` 再生成を行います。
+- Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、`tmp/sudachi_raw` にCSVが無い場合は `tools/fetch_sudachi_raw.sh` の自動実行を試みます。
+- 自動取得に成功すると、そのまま `tmp/` の辞書再生成まで実行します。自動取得に失敗した場合はビルドを止めず、同梱プレースホルダー辞書で継続します。
+- Sudachi CSV が最終的に見つからない場合は、既定で「フォールバック用 seed 辞書(約108エントリー)のみでビルド継続するか」を確認します（拒否時はビルド中止）。
+- 自動取得を無効化する場合は環境変数 `ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD=0` を設定してください（必要なら `ECRITU_AUTO_FETCH_SUDACHI_INCLUDE_FULL=1` で full 辞書も自動取得対象にできます）。
+- フォールバック確認を無効化する場合は `ECRITU_PROMPT_ON_SUDACHI_FALLBACK=0`、非対話環境の既定動作を中止側に寄せる場合は `ECRITU_SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT=abort` を設定してください。
 - 同スクリプトは、生成済み `tmp/` 辞書があれば拡張バンドル内リソースを上書きするため、実機ビルドでもシード辞書ではなく生成辞書を同梱できます。
 - App Group への辞書反映(`tools/install_simulator_kana_dictionary.sh`)はシミュレータビルド時のみ自動実行します。
 - Sudachi CSV が無い環境では自動生成をスキップし、同梱プレースホルダー辞書でビルドを継続します。
