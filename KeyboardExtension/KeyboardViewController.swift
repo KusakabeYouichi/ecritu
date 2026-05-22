@@ -1,6 +1,7 @@
 import SwiftUI
 import UIKit
 import CoreFoundation
+import Darwin
 
 final class KeyboardViewController: UIInputViewController {
     private var hostingController: UIHostingController<KeyboardRootView>?
@@ -144,6 +145,7 @@ final class KeyboardViewController: UIInputViewController {
     private static let maximumEmojiHeight: CGFloat = 290
     private static let portraitSystemAccessoryOffset: CGFloat = 6
     private static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
+    private static let minimumPhysicalMemoryForSystemDictionaryPreload: UInt64 = 5 * 1024 * 1024 * 1024
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
             return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
@@ -202,10 +204,19 @@ final class KeyboardViewController: UIInputViewController {
         configureInputAssistantBar()
         startObservingSettingsDidChange()
         setupKeyboardView()
-        kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
-            self?.refreshKeyboardStateAsync()
-            self?.updateKeyboardDiagnosticsHeartbeat(
-                event: "システム辞書プリロード完了",
+
+        if shouldPreloadSystemDictionaryAtLaunch() {
+            updateKeyboardDiagnosticsHeartbeat(event: "システム辞書プリロード開始", appendLog: true)
+            kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
+                self?.refreshKeyboardStateAsync()
+                self?.updateKeyboardDiagnosticsHeartbeat(
+                    event: "システム辞書プリロード完了",
+                    appendLog: true
+                )
+            }
+        } else {
+            updateKeyboardDiagnosticsHeartbeat(
+                event: "システム辞書プリロードを省略 physicalMemoryGB=\(physicalMemoryGBText())",
                 appendLog: true
             )
         }
@@ -255,6 +266,13 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         applyKeyboardBaseBackground()
+    }
+
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        updateKeyboardDiagnosticsHeartbeat(event: "メモリ警告受信 キャッシュ解放開始", appendLog: true)
+        kanaKanjiConverter.clearAllCaches()
+        updateKeyboardDiagnosticsHeartbeat(event: "メモリ警告受信 キャッシュ解放完了", appendLog: true)
     }
 
     override func viewWillLayoutSubviews() {
@@ -459,6 +477,57 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
+    private func shouldPreloadSystemDictionaryAtLaunch() -> Bool {
+#if targetEnvironment(simulator)
+        true
+#else
+        ProcessInfo.processInfo.physicalMemory >= Self.minimumPhysicalMemoryForSystemDictionaryPreload
+#endif
+    }
+
+    private func physicalMemoryGBText() -> String {
+        let physicalMemoryGB = Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824
+        return String(format: "%.1f", physicalMemoryGB)
+    }
+
+    private func diagnosticsProcessLabel() -> String {
+        let bundleID = Bundle.main.bundleIdentifier ?? "unknown.keyboard.bundle"
+        let processName = ProcessInfo.processInfo.processName
+        return "\(bundleID)(\(processName))"
+    }
+
+    private func currentResidentMemoryBytes() -> UInt64? {
+        var info = mach_task_basic_info_data_t()
+        var count = mach_msg_type_number_t(
+            MemoryLayout<mach_task_basic_info_data_t>.size / MemoryLayout<integer_t>.size
+        )
+
+        let result: kern_return_t = withUnsafeMutablePointer(to: &info) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPointer in
+                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), intPointer, &count)
+            }
+        }
+
+        guard result == KERN_SUCCESS else {
+            return nil
+        }
+
+        return UInt64(info.resident_size)
+    }
+
+    private func diagnosticsResidentMemoryMBText() -> String {
+        guard let bytes = currentResidentMemoryBytes() else {
+            return "unknown"
+        }
+
+        let mb = Double(bytes) / 1_048_576
+        return String(format: "%.1f", mb)
+    }
+
+    private func diagnosticsRuntimeContext() -> String {
+        "process=\(diagnosticsProcessLabel()) rssMB=\(diagnosticsResidentMemoryMBText())"
+    }
+
     private func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
         if let data = defaults.data(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines),
             let decoded = try? JSONDecoder().decode([String].self, from: data) {
@@ -543,7 +612,8 @@ final class KeyboardViewController: UIInputViewController {
 
         let sourceFile = (file as NSString).lastPathComponent
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
-        let entry = "\(timestamp) [\(diagnosticsSessionID)] \(event) (\(sourceFile):\(line) \(function))"
+        let entry =
+            "\(timestamp) [\(diagnosticsSessionID)] \(event) {\(diagnosticsRuntimeContext())} (\(sourceFile):\(line) \(function))"
 
         var lines = diagnosticsLogLines(from: sharedDefaults)
         lines.append(entry)
@@ -571,7 +641,7 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         let sourceFile = (file as NSString).lastPathComponent
-        let summary = "\(event) @ \(sourceFile):\(line) \(function)"
+        let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
 
         sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
         sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)

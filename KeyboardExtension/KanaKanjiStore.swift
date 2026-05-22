@@ -359,20 +359,14 @@ final class KanaKanjiStore {
             return []
         }
 
-        let supplementalCandidates = loadSupplementalSystemDictionary()[normalizedReading] ?? []
-
         if let sqliteIndex = sqliteIndexIfAvailable() {
-            let sqliteCandidates = sqliteIndex.candidates(
+            return sqliteIndex.candidates(
                 for: normalizedReading,
                 requiredSources: mode.requiredSystemSources
             )
-
-            return mergedSystemCandidates(
-                primary: sqliteCandidates,
-                supplemental: supplementalCandidates
-            )
         }
 
+        let supplementalCandidates = loadSupplementalSystemDictionary()[normalizedReading] ?? []
         let dictionary = loadSystemDictionary()
         let baseCandidates = dictionary[normalizedReading] ?? []
 
