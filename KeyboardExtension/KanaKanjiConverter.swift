@@ -223,6 +223,7 @@ final class KanaKanjiConverter {
     private static let postfixPassthroughSuffixes: [String] = [
         "では", "には", "とは", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
     ]
+    private static let politePrefixPassthroughPrefixes: [String] = ["お"]
 
     private static let maxPostfixPassthroughDepth = 3
 
@@ -343,6 +344,18 @@ final class KanaKanjiConverter {
                 limit: limit * 3
             ),
             baseScore: 980,
+            to: &scores
+        )
+
+        addCandidates(
+            politePrefixPassthroughCandidates(
+                for: normalizedReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode,
+                limit: limit * 2
+            ),
+            baseScore: 1100,
             to: &scores
         )
 
@@ -733,6 +746,81 @@ final class KanaKanjiConverter {
         }
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func politePrefixPassthroughCandidates(
+        for reading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        limit: Int
+    ) -> [String] {
+        guard reading.count >= 2,
+            limit > 0 else {
+            return []
+        }
+
+        var derived: [String] = []
+
+        for prefix in Self.politePrefixPassthroughPrefixes where reading.hasPrefix(prefix) {
+            let stem = String(reading.dropFirst(prefix.count))
+
+            guard !stem.isEmpty else {
+                continue
+            }
+
+            let stemCandidates = candidatesForReading(
+                stem,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            )
+
+            guard !stemCandidates.isEmpty else {
+                continue
+            }
+
+            let metadata = inflectionMetadata(for: stem)
+            let userCandidateSet = Set(
+                (userDictionary[stem] ?? []) + (initialUserDictionary[stem] ?? [])
+            )
+
+            for candidate in stemCandidates {
+                guard resolvedInflectionClass(
+                    for: candidate,
+                    baseReading: stem,
+                    systemClassMap: metadata.classMap,
+                    hasSystemMetadata: metadata.hasMetadata,
+                    userCandidateSet: userCandidateSet
+                ) == nil else {
+                    continue
+                }
+
+                guard shouldApplyPolitePrefix(prefix, to: candidate) else {
+                    continue
+                }
+
+                derived.append(prefix + candidate)
+            }
+        }
+
+        return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func shouldApplyPolitePrefix(_ prefix: String, to candidate: String) -> Bool {
+        guard !candidate.hasPrefix(prefix),
+            !candidate.hasPrefix("御"),
+            let firstScalar = candidate.unicodeScalars.first else {
+            return false
+        }
+
+        if (0x4E00...0x9FFF).contains(firstScalar.value)
+            || (0x3400...0x4DBF).contains(firstScalar.value)
+            || firstScalar.value == 0x3005 {
+            return true
+        }
+
+        return false
     }
 
     private func deriveIkuIrregularCandidates(

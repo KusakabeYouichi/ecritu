@@ -61,6 +61,41 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(candidates.contains("日"), "candidates=\(candidates)")
     }
 
+    func testRegressionHonorificPrefixCandidatesAreDerivedFromRegisteredBaseWords() {
+        converter.learn(reading: "かんじょう", candidate: "勘定")
+        converter.learn(reading: "さけ", candidate: "酒")
+
+        let accountCandidates = converter.candidates(
+            for: "おかんじょう",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+        let sakeCandidates = converter.candidates(
+            for: "おさけ",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            accountCandidates.contains("お勘定"),
+            "candidates=\(accountCandidates)"
+        )
+        XCTAssertTrue(
+            sakeCandidates.contains("お酒"),
+            "candidates=\(sakeCandidates)"
+        )
+    }
+
+    func testRegressionHonorificPrefixDerivationSkipsInflectableCandidates() {
+        let candidates = converter.candidates(
+            for: "おいく",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertFalse(candidates.contains("お行く"), "candidates=\(candidates)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
