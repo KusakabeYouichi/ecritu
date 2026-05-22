@@ -176,5 +176,6 @@
 	<dict><key>phrase</key><string>香菜</string><key>shortcut</key><string>しゃんつぁい</string></dict>
 	<dict><key>phrase</key><string>油淋鶏</string><key>shortcut</key><string>ゆーりんちー</string></dict>
 	<dict><key>phrase</key><string>ボタンインコ</string><key>shortcut</key><string>ぼたんいんこ</string></dict>
+	<dict><key>phrase</key><string>原価率</string><key>shortcut</key><string>げんかりつ</string></dict>
 </array>
 </plist>
