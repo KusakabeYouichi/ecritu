@@ -64,7 +64,6 @@ struct KeyboardRootView: View {
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
     private let shiftDoubleTapThreshold: TimeInterval = 0.32
-    private let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
     private let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
     private let katakanaCommitFeedbackDelay: TimeInterval = 0.14
     private let keyLabelColor = KeyboardThemePalette.keyLabel
@@ -1033,8 +1032,6 @@ struct KeyboardRootView: View {
             fontSize: leftModeSwitchLatinFontSize,
             isEnabled: inputMode != .latin,
             onLongPress: handleLatinModeSwitchLongPress,
-            onDoubleTap: handleLatinModeSwitchDoubleTap,
-            doubleTapThreshold: latinModeSwitchDoubleTapThreshold,
             action: handleLatinModeSwitchTap
         )
             .frame(width: leftModeSwitchButtonWidth, height: height)
@@ -3360,12 +3357,8 @@ struct KeyboardRootView: View {
         switchToLatinMode(with: .off)
     }
 
-    private func handleLatinModeSwitchDoubleTap() {
-        switchToLatinMode(with: .locked)
-    }
-
     private func handleLatinModeSwitchLongPress() {
-        switchToLatinMode(with: .on)
+        switchToLatinMode(with: .locked)
     }
 
     private func handleComposingTextCommitTap() {
