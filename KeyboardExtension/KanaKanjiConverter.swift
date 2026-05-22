@@ -316,6 +316,15 @@ final class KanaKanjiConverter {
         }
     }
 
+    func clearAllCaches() {
+        store.clearSystemDictionaryCaches()
+        store.clearSharedDataCaches()
+
+        stateQueue.sync {
+            invalidateCandidateCache()
+        }
+    }
+
     func candidates(
         for reading: String,
         limit: Int,

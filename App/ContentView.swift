@@ -1,11 +1,17 @@
 import SwiftUI
+import Darwin
 #if os(iOS)
 import UIKit
 #endif
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260522184203"
+    private static let editionUpdatedAtRaw: String = "20260523020813"
+    private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return formatter
+    }()
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -174,12 +180,15 @@ struct ContentView: View {
     @State private var secondVocabularyEntries: [VocabularyEntry] = []
     @State private var secondVocabularyScrollIndexTitle = ""
     @State private var isSecondVocabularyScrollIndexVisible = false
+    @State private var didLoadSystemVocabularyEntries = false
+    @State private var isLoadingSystemVocabularyEntries = false
     @State private var keyboardDiagnosticsLogLines: [String] = []
     @State private var keyboardDiagnosticsInstallMarker = ""
     @State private var keyboardDiagnosticsSessionActive = false
     @State private var keyboardDiagnosticsLastHeartbeatDate: Date?
     @State private var keyboardDiagnosticsLastEvent = ""
     @State private var keyboardDiagnosticsLastSessionID = ""
+    @State private var containerDiagnosticsSessionID = UUID().uuidString
     @State private var didRunFirstAppearanceBootstrap = false
     @State private var isBootstrappingInitialData = true
     @GestureState private var isEditionNumberPressed = false
@@ -884,8 +893,6 @@ struct ContentView: View {
         let learnedDictionaryEntries: [VocabularyEntry]
         let suppressionDictionaryEntries: [VocabularyEntry]
         let shortcutDictionaryEntries: [VocabularyEntry]
-        let firstVocabularyEntries: [VocabularyEntry]
-        let secondVocabularyEntries: [VocabularyEntry]
     }
 
     private func systemVocabularyEntriesSnapshot() -> (
@@ -909,15 +916,11 @@ struct ContentView: View {
     }
 
     private func buildInitialDataSnapshot() -> InitialDataSnapshot {
-        let systemEntries = systemVocabularyEntriesSnapshot()
-
         return InitialDataSnapshot(
             userDictionaryEntries: userDictionaryEntriesSnapshot(),
             learnedDictionaryEntries: learnedDictionaryEntriesSnapshot(),
             suppressionDictionaryEntries: suppressionDictionaryEntriesSnapshot(),
-            shortcutDictionaryEntries: shortcutDictionaryEntriesSnapshot(),
-            firstVocabularyEntries: systemEntries.first,
-            secondVocabularyEntries: systemEntries.second
+            shortcutDictionaryEntries: shortcutDictionaryEntriesSnapshot()
         )
     }
 
@@ -926,8 +929,6 @@ struct ContentView: View {
         learnedDictionaryEntries = snapshot.learnedDictionaryEntries
         suppressionDictionaryEntries = snapshot.suppressionDictionaryEntries
         shortcutDictionaryEntries = snapshot.shortcutDictionaryEntries
-        firstVocabularyEntries = snapshot.firstVocabularyEntries
-        secondVocabularyEntries = snapshot.secondVocabularyEntries
     }
 
     private func loadInitialDataSnapshotInBackground() async -> InitialDataSnapshot {
@@ -939,10 +940,123 @@ struct ContentView: View {
         }
     }
 
-    private func loadSystemVocabularyEntries() {
-        let systemEntries = systemVocabularyEntriesSnapshot()
-        firstVocabularyEntries = systemEntries.first
-        secondVocabularyEntries = systemEntries.second
+    private func shouldAutoLoadSystemVocabularyOnAppear() -> Bool {
+#if targetEnvironment(simulator)
+        true
+#else
+        false
+#endif
+    }
+
+    private func saveStringArray(_ values: [String], forKey key: String, defaults: UserDefaults) {
+        if let encoded = try? JSONEncoder().encode(values) {
+            defaults.set(encoded, forKey: key)
+            return
+        }
+
+        defaults.set(values, forKey: key)
+    }
+
+    private func containerDiagnosticsProcessLabel() -> String {
+        let bundleID = Bundle.main.bundleIdentifier ?? "unknown.container.bundle"
+        let processName = ProcessInfo.processInfo.processName
+        return "\(bundleID)(\(processName))"
+    }
+
+    private func containerCurrentResidentMemoryBytes() -> UInt64? {
+        var info = mach_task_basic_info_data_t()
+        var count = mach_msg_type_number_t(
+            MemoryLayout<mach_task_basic_info_data_t>.size / MemoryLayout<integer_t>.size
+        )
+
+        let result: kern_return_t = withUnsafeMutablePointer(to: &info) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPointer in
+                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), intPointer, &count)
+            }
+        }
+
+        guard result == KERN_SUCCESS else {
+            return nil
+        }
+
+        return UInt64(info.resident_size)
+    }
+
+    private func containerResidentMemoryMBText() -> String {
+        guard let bytes = containerCurrentResidentMemoryBytes() else {
+            return "unknown"
+        }
+
+        let mb = Double(bytes) / 1_048_576
+        return String(format: "%.1f", mb)
+    }
+
+    private func appendContainerDiagnosticsLog(
+        _ event: String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function
+    ) {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let sourceFile = (file as NSString).lastPathComponent
+        let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
+        let context =
+            "process=\(containerDiagnosticsProcessLabel()) rssMB=\(containerResidentMemoryMBText())"
+        let entry =
+            "\(timestamp) [container:\(containerDiagnosticsSessionID)] \(event) {\(context)} (\(sourceFile):\(line) \(function))"
+
+        var lines = decodeStringArray(
+            forKey: SettingsKeys.keyboardDiagnosticsLogLines,
+            defaults: defaults
+        )
+        lines.append(entry)
+
+        let maxLineCount = 320
+        if lines.count > maxLineCount {
+            lines.removeFirst(lines.count - maxLineCount)
+        }
+
+        saveStringArray(lines, forKey: SettingsKeys.keyboardDiagnosticsLogLines, defaults: defaults)
+    }
+
+    private func loadSystemVocabularyEntriesInBackground() async -> (
+        first: [VocabularyEntry],
+        second: [VocabularyEntry]
+    ) {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                continuation.resume(returning: systemVocabularyEntriesSnapshot())
+            }
+        }
+    }
+
+    private func requestSystemVocabularyEntriesLoadIfNeeded(force: Bool = false) {
+        guard !isLoadingSystemVocabularyEntries else {
+            return
+        }
+
+        guard force || !didLoadSystemVocabularyEntries else {
+            return
+        }
+
+        isLoadingSystemVocabularyEntries = true
+        appendContainerDiagnosticsLog("コンテナでシステム語彙ロード開始")
+
+        Task { @MainActor in
+            let systemEntries = await loadSystemVocabularyEntriesInBackground()
+            firstVocabularyEntries = systemEntries.first
+            secondVocabularyEntries = systemEntries.second
+            didLoadSystemVocabularyEntries = true
+            isLoadingSystemVocabularyEntries = false
+
+            appendContainerDiagnosticsLog(
+                "コンテナでシステム語彙ロード完了 first=\(systemEntries.first.count) second=\(systemEntries.second.count)"
+            )
+            loadKeyboardDiagnosticsState()
+        }
     }
 
     private func migrateInitialUserDictionaryIfNeeded() {
@@ -1431,11 +1545,20 @@ struct ContentView: View {
             loadLearnedDictionaryEntries()
             loadSuppressionDictionaryEntries()
             loadShortcutDictionaryEntries()
-            loadSystemVocabularyEntries()
+
+            if didLoadSystemVocabularyEntries {
+                requestSystemVocabularyEntriesLoadIfNeeded(force: true)
+            } else if shouldAutoLoadSystemVocabularyOnAppear() {
+                requestSystemVocabularyEntriesLoadIfNeeded()
+            }
+
+            appendContainerDiagnosticsLog("コンテナ再表示")
+            loadKeyboardDiagnosticsState()
             return
         }
 
         didRunFirstAppearanceBootstrap = true
+        containerDiagnosticsSessionID = UUID().uuidString
         isBootstrappingInitialData = true
 
         Task { @MainActor in
@@ -1446,6 +1569,7 @@ struct ContentView: View {
             migrateLegacyFlickGuideSettingIfNeeded()
             clearKeyboardDiagnosticsIfInstallChanged()
             loadKeyboardDiagnosticsState()
+            appendContainerDiagnosticsLog("コンテナ初回表示 bootstrap開始")
 
             await Task.yield()
 
@@ -1459,6 +1583,13 @@ struct ContentView: View {
             let initialDataSnapshot = await loadInitialDataSnapshotInBackground()
             applyInitialDataSnapshot(initialDataSnapshot)
             isBootstrappingInitialData = false
+
+            appendContainerDiagnosticsLog("コンテナ初回表示 bootstrap完了")
+            loadKeyboardDiagnosticsState()
+
+            if shouldAutoLoadSystemVocabularyOnAppear() {
+                requestSystemVocabularyEntriesLoadIfNeeded()
+            }
         }
     }
 
@@ -1639,15 +1770,48 @@ struct ContentView: View {
                             onDeleteEntry: removeShortcutDictionaryEntry
                         )
 
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("システム語彙ロード")
+                                .font(.headline)
+
+                            Text("実機での初期メモリピークを避けるため、第1/第2語彙は必要時に読み込みます。")
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+
+                            Button {
+                                requestSystemVocabularyEntriesLoadIfNeeded(force: true)
+                            } label: {
+                                HStack(spacing: 8) {
+                                    if isLoadingSystemVocabularyEntries {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                    }
+
+                                    Text(
+                                        isLoadingSystemVocabularyEntries
+                                            ? "システム語彙を読み込み中..."
+                                            : didLoadSystemVocabularyEntries
+                                                ? "システム語彙を再読み込み"
+                                                : "システム語彙を読み込む"
+                                    )
+                                    .font(.subheadline.weight(.semibold))
+                                }
+                                .frame(maxWidth: .infinity)
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(isLoadingSystemVocabularyEntries)
+                        }
+                        .settingsCardStyle()
+
                         ReadOnlyDictionarySettingsSection(
                             title: "第1語彙",
                             entries: firstVocabularyEntries,
                             scrollIndexTitle: $firstVocabularyScrollIndexTitle,
                             isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
                             listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
-                            emptyMessage: isBootstrappingInitialData
+                            emptyMessage: isLoadingSystemVocabularyEntries
                                 ? "第1語彙を読み込み中..."
-                                : "第1語彙は読み込まれていません。",
+                                : "第1語彙はまだ読み込まれていません。",
                             description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。"
                         )
 
@@ -1657,9 +1821,9 @@ struct ContentView: View {
                             scrollIndexTitle: $secondVocabularyScrollIndexTitle,
                             isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
                             listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
-                            emptyMessage: isBootstrappingInitialData
+                            emptyMessage: isLoadingSystemVocabularyEntries
                                 ? "第2語彙を読み込み中..."
-                                : "第2語彙は読み込まれていません。",
+                                : "第2語彙はまだ読み込まれていません。",
                             description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。"
                         )
 
