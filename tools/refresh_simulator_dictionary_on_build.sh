@@ -2,6 +2,10 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+AUTO_FETCH_SUDACHI_ON_BUILD="${ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD:-1}"
+AUTO_FETCH_SUDACHI_INCLUDE_FULL="${ECRITU_AUTO_FETCH_SUDACHI_INCLUDE_FULL:-0}"
+PROMPT_ON_SUDACHI_FALLBACK="${ECRITU_PROMPT_ON_SUDACHI_FALLBACK:-1}"
+SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT="${ECRITU_SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT:-continue}"
 
 is_simulator_build=false
 if [[ "${PLATFORM_NAME:-}" == *simulator* ]]; then
@@ -23,9 +27,101 @@ REF_APPLE_PLIST="$ROOT_DIR/references/apple.plist"
 REF_VOID_PLIST="$ROOT_DIR/references/void.plist"
 
 SUDACHI_CSV_FILES=()
-while IFS= read -r csv_file; do
-  SUDACHI_CSV_FILES+=("$csv_file")
-done < <(find "$ROOT_DIR/tmp/sudachi_raw" -type f -name '*_lex.csv' 2>/dev/null | sort)
+
+discover_sudachi_csv_files() {
+  SUDACHI_CSV_FILES=()
+  while IFS= read -r csv_file; do
+    SUDACHI_CSV_FILES+=("$csv_file")
+  done < <(find "$ROOT_DIR/tmp/sudachi_raw" -type f -name '*_lex.csv' 2>/dev/null | sort)
+}
+
+is_truthy() {
+  case "$1" in
+    1|true|TRUE|yes|YES|on|ON)
+      return 0
+      ;;
+    *)
+      return 1
+      ;;
+  esac
+}
+
+seed_entry_count() {
+  ROOT_DIR="$ROOT_DIR" python3 - <<'PY'
+from pathlib import Path
+import os
+import re
+
+seed_path = Path(os.environ["ROOT_DIR"]) / "KeyboardExtension" / "KanaKanjiSeedDictionary.swift"
+
+try:
+    text = seed_path.read_text(encoding="utf-8")
+except OSError:
+    print("108")
+    raise SystemExit(0)
+
+entries = len(re.findall(r'"[^"]+"\s*:\s*\[', text))
+print(entries if entries > 0 else 108)
+PY
+}
+
+confirm_seed_fallback_continue() {
+  local entry_count="$1"
+  local prompt_message="Sudachiデータの取得に失敗したので、フォールバック用の${entry_count}エントリーだけの辞書でビルドを継続しますか?"
+
+  if ! is_truthy "$PROMPT_ON_SUDACHI_FALLBACK"; then
+    return 0
+  fi
+
+  if [[ -t 0 && -t 1 ]]; then
+    local answer=""
+    read -r -p "[dict] ${prompt_message} [y/N] " answer
+    case "$answer" in
+      y|Y|yes|YES)
+        return 0
+        ;;
+      *)
+        return 1
+        ;;
+    esac
+  fi
+
+  if command -v osascript >/dev/null 2>&1 && [[ -z "${CI:-}" ]]; then
+    if osascript \
+      -e 'set promptText to item 1 of argv' \
+      -e 'display dialog promptText buttons {"中止", "継続"} default button "中止" with title "écritu Dictionary Build" with icon caution' \
+      "$prompt_message" >/dev/null; then
+      return 0
+    fi
+    return 1
+  fi
+
+  case "$SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT" in
+    abort|ABORT|stop|STOP)
+      return 1
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+}
+
+discover_sudachi_csv_files
+
+if ((${#SUDACHI_CSV_FILES[@]} == 0)) && is_truthy "$AUTO_FETCH_SUDACHI_ON_BUILD"; then
+  fetch_args=()
+  if is_truthy "$AUTO_FETCH_SUDACHI_INCLUDE_FULL"; then
+    fetch_args+=("--include-full")
+  fi
+
+  echo "[dict] Sudachi CSV が見つからないため自動取得を試行します..."
+  if bash tools/fetch_sudachi_raw.sh "${fetch_args[@]}"; then
+    discover_sudachi_csv_files
+    echo "[dict] Sudachi CSV 自動取得に成功しました。"
+  else
+    echo "[dict] Warning: Sudachi CSV 自動取得に失敗しました。従来どおり同梱プレースホルダー辞書で継続します。"
+  fi
+fi
 
 needs_regeneration() {
   ROOT_DIR="$ROOT_DIR" python3 - <<'PY'
@@ -91,8 +187,21 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
     echo "[dict] Skip regeneration (tmp artifacts are up-to-date)."
   fi
 else
+  SEED_ENTRY_COUNT="$(seed_entry_count)"
+  if ! confirm_seed_fallback_continue "$SEED_ENTRY_COUNT"; then
+    echo "[dict] Sudachi CSV が未取得のためビルドを中止しました。"
+    echo "[dict] Hint: run 'bash tools/fetch_sudachi_raw.sh' and retry build."
+    exit 1
+  fi
+
+  echo "[dict] フォールバック seed 辞書(${SEED_ENTRY_COUNT}エントリー)でビルドを継続します。"
   echo "[dict] Skip regeneration (tmp/sudachi_raw/**/*_lex.csv not found)."
-  echo "[dict] Hint: run 'bash tools/fetch_sudachi_raw.sh' once to provision SudachiDict CSV files."
+  if is_truthy "$AUTO_FETCH_SUDACHI_ON_BUILD"; then
+    echo "[dict] Hint: network or access restriction may block auto-fetch; run 'bash tools/fetch_sudachi_raw.sh' manually."
+  else
+    echo "[dict] Hint: auto-fetch is disabled (ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD=$AUTO_FETCH_SUDACHI_ON_BUILD)."
+    echo "[dict] Hint: run 'bash tools/fetch_sudachi_raw.sh' manually or enable auto-fetch."
+  fi
 fi
 
 python3 tools/build_second_vocab_from_references.py \
