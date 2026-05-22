@@ -50,6 +50,14 @@ CANDIDATE_POLICY_BOTH = "both"
 def extract_inflection_class(row: List[str], reading: str, candidate: str) -> Optional[str]:
     pos = row[SUDACHI_POS_INDEX].strip() if len(row) > SUDACHI_POS_INDEX else ""
     inflection_type = row[SUDACHI_INFLECTION_TYPE_INDEX].strip() if len(row) > SUDACHI_INFLECTION_TYPE_INDEX else ""
+    pos_details = [
+        value.strip()
+        for value in row[SUDACHI_POS_INDEX:SUDACHI_INFLECTION_TYPE_INDEX]
+        if value.strip() and value.strip() != "*"
+    ]
+
+    if any("サ変可能" in value for value in pos_details):
+        return "suru"
 
     if "サ行変格" in inflection_type or "サ変" in inflection_type:
         return "suru"

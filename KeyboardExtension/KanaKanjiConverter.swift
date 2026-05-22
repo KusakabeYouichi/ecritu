@@ -158,6 +158,28 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru])
     ]
 
+    private static let sahenNounSuruInflectionRules: [InflectionRule] = [
+        InflectionRule(readingSuffix: "する", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "します", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "したい", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "したくない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "したかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "して", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "した", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しよう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "される", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "されない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "させる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "させない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "させられる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru])
+    ]
+
     private static let kuruInflectionForms: [(readingSuffix: String, kanjiOutputSuffix: String)] = [
         ("こない", "来ない"),
         ("こなかった", "来なかった"),
@@ -207,6 +229,7 @@ final class KanaKanjiConverter {
         adjectiveInflectionRules
         + ichidanInflectionRules
         + godanInflectionRules
+        + sahenNounSuruInflectionRules
         + suruInflectionRules
         + kuruInflectionRules
 
@@ -904,13 +927,22 @@ final class KanaKanjiConverter {
                 continue
             }
 
-            guard let inflectionClass = resolvedInflectionClass(
+            let resolvedClass = resolvedInflectionClass(
                 for: candidate,
                 baseReading: baseReading,
                 systemClassMap: metadata.classMap,
                 hasSystemMetadata: metadata.hasMetadata,
                 userCandidateSet: userCandidateSet
-            ), rule.allowedClasses.contains(inflectionClass) else {
+            )
+
+            let inflectionClass = resolvedClass
+                ?? inferredSahenInflectionClass(
+                    for: candidate,
+                    rule: rule
+                )
+
+            guard let inflectionClass,
+                rule.allowedClasses.contains(inflectionClass) else {
                 continue
             }
 
@@ -942,6 +974,23 @@ final class KanaKanjiConverter {
         }
 
         return inferredInflectionClass(for: candidate, baseReading: baseReading)
+    }
+
+    private func inferredSahenInflectionClass(
+        for candidate: String,
+        rule: InflectionRule
+    ) -> String? {
+        guard rule.baseReadingSuffix.isEmpty,
+            rule.allowedClasses == [InflectionClass.suru],
+            !candidate.hasSuffix("する"),
+            !candidate.hasSuffix("くる"),
+            !candidate.hasSuffix("来る"),
+            !containsHiragana(candidate),
+            containsKanjiOrKatakana(candidate) else {
+            return nil
+        }
+
+        return InflectionClass.suru
     }
 
     private func inferredInflectionClass(for candidate: String, baseReading: String) -> String? {
@@ -985,6 +1034,17 @@ final class KanaKanjiConverter {
 
         return Self.iVowelKanaBeforeRu.contains(preRu)
             || Self.eVowelKanaBeforeRu.contains(preRu)
+    }
+
+    private func containsKanjiOrKatakana(_ text: String) -> Bool {
+        for scalar in text.unicodeScalars {
+            if (0x30A0...0x30FF).contains(scalar.value)
+                || (0x3400...0x9FFF).contains(scalar.value) {
+                return true
+            }
+        }
+
+        return false
     }
 
     private func systemCandidates(

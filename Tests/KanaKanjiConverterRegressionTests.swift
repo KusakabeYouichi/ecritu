@@ -121,6 +121,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionSahenNounCandidatesDeriveSuruForms() {
+        converter.learn(reading: "かくにん", candidate: "確認")
+
+        let suruCandidates = converter.candidates(
+            for: "かくにんする",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+        let pastCandidates = converter.candidates(
+            for: "かくにんした",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            suruCandidates.contains("確認する"),
+            "candidates=\(suruCandidates)"
+        )
+        XCTAssertTrue(
+            pastCandidates.contains("確認した"),
+            "candidates=\(pastCandidates)"
+        )
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
