@@ -1441,6 +1441,7 @@ struct KeyboardRootView: View {
                 showsDirectionalHints: showsFlickGuideCharacters,
                 idleReplacement: rowKeyIdleReplacement(for: renderedKana),
                 longPressCandidates: longPressCandidates(for: kana),
+                longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
                 directionalHintFontScale: directionalHintScale,
                 onTouchStateChanged: { isTouching in
@@ -2505,6 +2506,7 @@ struct KeyboardRootView: View {
                                 showsDirectionalHints: showsFlickGuideCharacters,
                                 idleReplacement: rowKeyIdleReplacement(for: renderedKana),
                                 longPressCandidates: longPressCandidates(for: kana),
+                                longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
                                 onTouchStateChanged: { isTouching in
                                     updateActiveLayer(isTouching, layerIndex: rowIndex)
@@ -2683,6 +2685,7 @@ struct KeyboardRootView: View {
                 showsDirectionalHints: showsFlickGuideCharacters,
                 idleReplacement: rowKeyIdleReplacement(for: renderedKana),
                 longPressCandidates: longPressCandidates(for: kana),
+                longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
                 onTouchStateChanged: { isTouching in
                     updateActiveLayer(isTouching, layerIndex: rowIndex)
@@ -3060,6 +3063,7 @@ struct KeyboardRootView: View {
                                 showsDirectionalHints: showsFlickGuideCharacters,
                                 idleReplacement: rowKeyIdleReplacement(for: renderedKana),
                                 longPressCandidates: longPressCandidates(for: kana),
+                                longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
                                 onTouchStateChanged: { isTouching in
                                     updateActiveLayer(isTouching, layerIndex: rowIndex)
@@ -3595,6 +3599,16 @@ struct KeyboardRootView: View {
         }
 
         return candidates.map(uppercasedLongPressCandidate)
+    }
+
+    private func longPressCandidatePanelPlacement(forRowIndex rowIndex: Int) -> LongPressCandidatePanelPlacement {
+        if isLandscapeLayout,
+            inputMode == .latin,
+            rowIndex == 0 {
+            return .below
+        }
+
+        return .above
     }
 
     private func uppercasedLongPressCandidate(_ candidate: String) -> String {
