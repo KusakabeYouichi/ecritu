@@ -71,6 +71,7 @@ struct FlickKeyView: View {
     var idleReplacement: AnyView? = nil
     var longPressCandidates: [String] = []
     var longPressCandidatePanelPlacement: LongPressCandidatePanelPlacement = .above
+    var onLongPress: (() -> Void)? = nil
     var allowsDirectionalFlick: Bool = true
     var directionalFlickThreshold: CGFloat = 18
     var directionalCommitThreshold: CGFloat? = nil
@@ -89,6 +90,7 @@ struct FlickKeyView: View {
     @State private var longPressIsActive = false
     @State private var highlightedLongPressIndex = 0
     @State private var longPressWorkItem: DispatchWorkItem?
+    @State private var didTriggerLongPressAction = false
     @State private var latestTouchLocationX: CGFloat = 0
     @State private var longPressAnchorLocationX: CGFloat = 0
     @State private var keyFrameInGlobal: CGRect = .zero
@@ -521,11 +523,16 @@ struct FlickKeyView: View {
             .onChanged { value in
                 if !isTouching {
                     onTouchStateChanged(true)
+                    didTriggerLongPressAction = false
                     scheduleLongPressIfNeeded()
                     resetSecondaryFlickState()
                 }
                 isTouching = true
                 latestTouchLocationX = value.location.x
+
+                if didTriggerLongPressAction {
+                    return
+                }
 
                 if longPressIsActive {
                     highlightedLongPressIndex = longPressIndex(for: value.location.x)
@@ -544,6 +551,14 @@ struct FlickKeyView: View {
                 )
                 let effectiveResolvedDirection = effectiveDirection(for: resolvedDirection)
                 activeDirection = effectiveResolvedDirection
+
+                if onLongPress != nil,
+                    longPressCandidates.isEmpty,
+                    effectiveResolvedDirection != .milieu {
+                    // Do not let long-press override a deliberate directional flick.
+                    cancelLongPressTimer()
+                }
+
                 updateSecondaryFlickState(
                     translation: value.translation,
                     resolvedDirection: effectiveResolvedDirection
@@ -551,6 +566,18 @@ struct FlickKeyView: View {
             }
             .onEnded { value in
                 cancelLongPressTimer()
+
+                if didTriggerLongPressAction {
+                    activeDirection = .milieu
+                    resetSecondaryFlickState()
+                    longPressIsActive = false
+                    isTouching = false
+                    latestTouchLocationX = 0
+                    longPressAnchorLocationX = 0
+                    didTriggerLongPressAction = false
+                    onTouchStateChanged(false)
+                    return
+                }
 
                 let committedDirection: FlickDirection = {
                     guard !longPressIsActive,
@@ -598,6 +625,7 @@ struct FlickKeyView: View {
                 isTouching = false
                 latestTouchLocationX = 0
                 longPressAnchorLocationX = 0
+                didTriggerLongPressAction = false
                 onTouchStateChanged(false)
             }
     }
@@ -665,13 +693,19 @@ struct FlickKeyView: View {
     }
 
     private func scheduleLongPressIfNeeded() {
-        guard !longPressCandidates.isEmpty else {
+        guard !longPressCandidates.isEmpty || onLongPress != nil else {
             return
         }
 
         cancelLongPressTimer()
 
         let workItem = DispatchWorkItem {
+            if let onLongPress {
+                didTriggerLongPressAction = true
+                onLongPress()
+                return
+            }
+
             longPressIsActive = true
             activeDirection = .milieu
             longPressAnchorLocationX = latestTouchLocationX
