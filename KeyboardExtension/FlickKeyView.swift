@@ -6,6 +6,11 @@ enum FlickGuideDisplayMode: String {
     case down
 }
 
+enum LongPressCandidatePanelPlacement {
+    case above
+    case below
+}
+
 private struct KeyboardAccentColorKey: EnvironmentKey {
     static let defaultValue = Color(red: 0.06, green: 0.73, blue: 0.56)
 }
@@ -65,6 +70,7 @@ struct FlickKeyView: View {
     var showsGuideText: Bool = true
     var idleReplacement: AnyView? = nil
     var longPressCandidates: [String] = []
+    var longPressCandidatePanelPlacement: LongPressCandidatePanelPlacement = .above
     var allowsDirectionalFlick: Bool = true
     var directionalFlickThreshold: CGFloat = 18
     var directionalCommitThreshold: CGFloat? = nil
@@ -156,7 +162,7 @@ struct FlickKeyView: View {
             if longPressIsActive,
                 !longPressCandidates.isEmpty {
                 longPressCandidatePanel
-                    .offset(x: candidatePanelOffsetX, y: -Metrics.previewDistance)
+                    .offset(x: candidatePanelOffsetX, y: candidatePanelOffsetY)
                     .zIndex(KeyboardLayerZIndex.floatingOverlay)
             }
         }
@@ -493,6 +499,15 @@ struct FlickKeyView: View {
         }
 
         return shift
+    }
+
+    private var candidatePanelOffsetY: CGFloat {
+        switch longPressCandidatePanelPlacement {
+        case .above:
+            return -Metrics.previewDistance
+        case .below:
+            return Metrics.previewDistance
+        }
     }
 
     private var flickGesture: some Gesture {
