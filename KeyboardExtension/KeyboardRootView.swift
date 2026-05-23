@@ -546,6 +546,18 @@ struct KeyboardRootView: View {
         )
     }
 
+    private var compactKeyboardSwitchKana: FlickKanaSet {
+        FlickKanaSet(
+            label: "🌐",
+            center: "🌐",
+            up: kanaModeSwitcherUpFlickAction.keyLabel,
+            right: kanaModeSwitcherRightFlickAction.keyLabel,
+            down: "",
+            left: "",
+            usesProfileDependentGuideOrder: false
+        )
+    }
+
     private var modifierSelectorKey: FlickKanaSet {
         let modeSwitchText = inputMode == .kana ? kanaCharacterMode.toggleGuide : "123"
 
@@ -770,6 +782,33 @@ struct KeyboardRootView: View {
         isLandscapeLayout ? 0.82 : 1
     }
 
+    private var shorterScreenEdge: CGFloat {
+        min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+    }
+
+    private var usesCompactKanaFiveByTwoBottomActionRow: Bool {
+        !isLandscapeLayout
+            && isKanaFiveByTwoMode
+            && showsNextKeyboardKey
+            && shorterScreenEdge <= 390
+    }
+
+    private var bottomActionRowGlobeKeyWidth: CGFloat {
+        usesCompactKanaFiveByTwoBottomActionRow ? 44 : 54
+    }
+
+    private var bottomActionRowDeleteKeyWidth: CGFloat {
+        usesCompactKanaFiveByTwoBottomActionRow ? 56 : 64
+    }
+
+    private var bottomActionRowKanaTrailingKeyWidth: CGFloat {
+        usesCompactKanaFiveByTwoBottomActionRow ? selectorKeySize : kanaFiveByTwoTrailingKeyWidth
+    }
+
+    private var bottomActionRowReturnKeyWidth: CGFloat {
+        usesCompactKanaFiveByTwoBottomActionRow ? 64 : 72
+    }
+
     private var numberDownDirectionalHintScale: CGFloat {
         1.12
     }
@@ -831,6 +870,12 @@ struct KeyboardRootView: View {
 
     private var actionRowTopSpacing: CGFloat {
         inputMode == .kana ? 0 : 8
+    }
+
+    private var shouldShowCompactLeftModeSwitchInBottomActionRow: Bool {
+        showsCompactLeftModeSwitchButtons
+            && rows.count <= 3
+            && !usesCompactKanaFiveByTwoBottomActionRow
     }
 
     private var showsCompactLeftModeSwitchButtons: Bool {
@@ -3100,21 +3145,47 @@ struct KeyboardRootView: View {
             let unifiedActionRowTopSpacing = isLandscapeLayout ? actionRowTopSpacing : 0
 
             HStack(spacing: keyboardRowSpacing) {
-                if showsCompactLeftModeSwitchButtons && rows.count <= 3 {
+                if shouldShowCompactLeftModeSwitchInBottomActionRow {
                     let compactLeftModeSwitchSlot = isKanaFiveByTwoMode ? rows.count + 1 : rows.count
                     compactLeftModeSwitchButton(slot: compactLeftModeSwitchSlot, height: unifiedActionRowHeight)
                 }
 
                 if showsNextKeyboardKey {
-                    ActionKeyButton(title: "🌐", fixedWidth: 54, action: onAdvanceKeyboard)
-                        .frame(height: unifiedActionRowHeight)
+                    if usesCompactKanaFiveByTwoBottomActionRow {
+                        FlickKeyView(
+                            kana: compactKeyboardSwitchKana,
+                            onCommit: selectCompactKeyboardSwitchKey,
+                            onCommitWithDirection: selectCompactKeyboardSwitchKey,
+                            mainLabelFontSize: kaomojiTransitionIconFontSize,
+                            showsDirectionalHints: showsFlickGuideCharacters,
+                            showsGuideText: false,
+                            onLongPress: handleCompactKeyboardSwitchLongPress,
+                            activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                            activePreviewFontSizeProvider: { direction, previewText in
+                                kanaModeSwitcherPreviewFontSizeForDirection(
+                                    direction,
+                                    previewText: previewText
+                                )
+                            },
+                            activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
+                            directionalHintHorizontalOffset: 16
+                        )
+                            .frame(width: bottomActionRowGlobeKeyWidth, height: unifiedActionRowHeight)
+                    } else {
+                        ActionKeyButton(
+                            title: "🌐",
+                            fixedWidth: bottomActionRowGlobeKeyWidth,
+                            action: onAdvanceKeyboard
+                        )
+                            .frame(height: unifiedActionRowHeight)
+                    }
                 }
 
                 ActionKeyButton(
                     title: "⌫",
                     accessibilityLabel: "削除",
                     fontSize: 26,
-                    fixedWidth: 64,
+                    fixedWidth: bottomActionRowDeleteKeyWidth,
                     repeatsWhileHolding: true,
                     repeatInitialDelay: keyRepeatInitialDelay,
                     repeatInterval: keyRepeatInterval,
@@ -3142,7 +3213,7 @@ struct KeyboardRootView: View {
                             updateActiveLayer(isTouching, layerIndex: rows.count)
                         }
                     )
-                        .frame(width: kanaFiveByTwoTrailingKeyWidth, height: selectorKeySize)
+                        .frame(width: bottomActionRowKanaTrailingKeyWidth, height: selectorKeySize)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10, style: .continuous)
                                 .stroke(
@@ -3162,7 +3233,7 @@ struct KeyboardRootView: View {
                             updateActiveLayer(isTouching, layerIndex: rows.count)
                         }
                     )
-                        .frame(width: kanaFiveByTwoTrailingKeyWidth, height: selectorKeySize)
+                        .frame(width: bottomActionRowKanaTrailingKeyWidth, height: selectorKeySize)
                 } else if inputMode == .number {
                     ActionKeyButton(
                         title: "あい",
@@ -3211,7 +3282,7 @@ struct KeyboardRootView: View {
                     systemImageName: returnActionKeySystemImageName,
                     accessibilityLabel: returnActionKeyAccessibilityLabel,
                     fontSize: returnActionKeyFontSize,
-                    fixedWidth: 72,
+                    fixedWidth: bottomActionRowReturnKeyWidth,
                     isEnabled: isReturnKeyEnabled,
                     onLongPress: returnKeyKatakanaLongPressAction,
                     onDoubleTap: returnKeyKatakanaDoubleTapAction,
@@ -3501,6 +3572,25 @@ struct KeyboardRootView: View {
 
     private func selectKanaModeSwitcher(_ output: String) {
         selectKanaModeSwitcher(output, direction: .milieu)
+    }
+
+    private func selectCompactKeyboardSwitchKey(_ output: String) {
+        selectCompactKeyboardSwitchKey(output, direction: .milieu)
+    }
+
+    private func selectCompactKeyboardSwitchKey(_ output: String, direction: FlickDirection) {
+        switch direction {
+        case .milieu:
+            onAdvanceKeyboard()
+        case .droite, .haut:
+            selectKanaModeSwitcher(output, direction: direction)
+        default:
+            return
+        }
+    }
+
+    private func handleCompactKeyboardSwitchLongPress() {
+        selectKanaModeSwitcher(kanaModeSwitcherTapAction.keyLabel, direction: .milieu)
     }
 
     private func selectKanaModeSwitcher(_ output: String, direction: FlickDirection) {
