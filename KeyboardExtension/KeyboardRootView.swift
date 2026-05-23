@@ -770,6 +770,14 @@ struct KeyboardRootView: View {
         isLandscapeLayout ? 0.82 : 1
     }
 
+    private var numberDownDirectionalHintScale: CGFloat {
+        1.12
+    }
+
+    private var numberDownDirectionalHintVerticalOffsetAdjustment: CGFloat {
+        -2
+    }
+
     private var modifierMainLabelFontSize: CGFloat {
         let baseSize: CGFloat = isKanaThreeByThreeMode
             ? kanaThreeByThreeMainLabelFontSize
@@ -1444,6 +1452,10 @@ struct KeyboardRootView: View {
                 longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
                 directionalHintFontScale: directionalHintScale,
+                downDirectionalHintFontScale: inputMode == .number ? numberDownDirectionalHintScale : 1,
+                downDirectionalHintVerticalOffsetAdjustment: inputMode == .number
+                    ? numberDownDirectionalHintVerticalOffsetAdjustment
+                    : 0,
                 onTouchStateChanged: { isTouching in
                     updateActiveLayer(isTouching, layerIndex: rowIndex)
                 }
@@ -2508,6 +2520,12 @@ struct KeyboardRootView: View {
                                 longPressCandidates: longPressCandidates(for: kana),
                                 longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
                                 allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
+                                downDirectionalHintFontScale: inputMode == .number
+                                    ? numberDownDirectionalHintScale
+                                    : 1,
+                                downDirectionalHintVerticalOffsetAdjustment: inputMode == .number
+                                    ? numberDownDirectionalHintVerticalOffsetAdjustment
+                                    : 0,
                                 onTouchStateChanged: { isTouching in
                                     updateActiveLayer(isTouching, layerIndex: rowIndex)
                                 }
