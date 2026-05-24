@@ -31,6 +31,7 @@ struct KeyboardRootView: View {
     let kanaFlickGuideDisplayMode: FlickGuideDisplayMode
     let latinFlickGuideDisplayMode: FlickGuideDisplayMode
     let numberFlickGuideDisplayMode: FlickGuideDisplayMode
+    let modifierFlickGuideDisplayMode: FlickGuideDisplayMode
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
     let kanaModeSwitcherTapActionRawValue: String
@@ -380,8 +381,16 @@ struct KeyboardRootView: View {
         currentFlickGuideDisplayMode == .fourDirections
     }
 
+    private var showsModifierFlickGuideCharacters: Bool {
+        modifierFlickGuideDisplayMode == .fourDirections
+    }
+
     private var isCurrentFlickGuideDisplayOff: Bool {
         currentFlickGuideDisplayMode == .off
+    }
+
+    private var isModifierFlickGuideDisplayOff: Bool {
+        modifierFlickGuideDisplayMode == .off
     }
 
     private var keyboardBackgroundTheme: KeyboardBackgroundTheme {
@@ -763,8 +772,8 @@ struct KeyboardRootView: View {
         fourRowAlignedClusterHeight - mainFlickKeyHeight - keyboardRowSpacing
     }
 
-    private var kanaThreeByThreeMainLabelFontSize: CGFloat {
-        switch currentFlickGuideDisplayMode {
+    private func kanaThreeByThreeMainLabelFontSize(for displayMode: FlickGuideDisplayMode) -> CGFloat {
+        switch displayMode {
         case .off:
             return 26
         case .fourDirections:
@@ -772,6 +781,10 @@ struct KeyboardRootView: View {
         case .down:
             return 23
         }
+    }
+
+    private var kanaThreeByThreeMainLabelFontSize: CGFloat {
+        kanaThreeByThreeMainLabelFontSize(for: currentFlickGuideDisplayMode)
     }
 
     private var numberThreeByThreeMainLabelFontSize: CGFloat {
@@ -819,7 +832,7 @@ struct KeyboardRootView: View {
 
     private var modifierMainLabelFontSize: CGFloat {
         let baseSize: CGFloat = isKanaThreeByThreeMode
-            ? kanaThreeByThreeMainLabelFontSize
+            ? kanaThreeByThreeMainLabelFontSize(for: modifierFlickGuideDisplayMode)
             : 28
 
         let centerLabel = modifierSelectorKey.center
@@ -1399,7 +1412,8 @@ struct KeyboardRootView: View {
                     onCommit: selectModifierMode,
                     onCommitWithDirection: selectModifierMode,
                     mainLabelFontSize: modifierMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
+                    flickGuideDisplayModeOverride: modifierFlickGuideDisplayMode,
+                    showsDirectionalHints: showsModifierFlickGuideCharacters,
                     idleReplacement: modifierIdleReplacement,
                     directionalFlickThreshold: modifierDirectionalFlickThreshold,
                     directionalCommitThreshold: modifierDirectionalCommitThreshold,
@@ -2609,7 +2623,8 @@ struct KeyboardRootView: View {
                     onCommit: selectModifierMode,
                     onCommitWithDirection: selectModifierMode,
                     mainLabelFontSize: modifierMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
+                    flickGuideDisplayModeOverride: modifierFlickGuideDisplayMode,
+                    showsDirectionalHints: showsModifierFlickGuideCharacters,
                     idleReplacement: modifierIdleReplacement,
                     directionalFlickThreshold: modifierDirectionalFlickThreshold,
                     directionalCommitThreshold: modifierDirectionalCommitThreshold,
@@ -3205,7 +3220,8 @@ struct KeyboardRootView: View {
                         onCommit: selectModifierMode,
                         onCommitWithDirection: selectModifierMode,
                         mainLabelFontSize: modifierMainLabelFontSize,
-                        showsDirectionalHints: showsFlickGuideCharacters,
+                        flickGuideDisplayModeOverride: modifierFlickGuideDisplayMode,
+                        showsDirectionalHints: showsModifierFlickGuideCharacters,
                         idleReplacement: modifierIdleReplacement,
                         directionalFlickThreshold: modifierDirectionalFlickThreshold,
                         directionalCommitThreshold: modifierDirectionalCommitThreshold,
@@ -3942,7 +3958,7 @@ struct KeyboardRootView: View {
     }
 
     private var modifierIdleReplacement: AnyView? {
-        guard inputMode == .kana, isCurrentFlickGuideDisplayOff else {
+        guard inputMode == .kana, isModifierFlickGuideDisplayOff else {
             return nil
         }
 
@@ -4012,6 +4028,7 @@ struct KeyboardRootView: View {
         kanaFlickGuideDisplayMode: .fourDirections,
         latinFlickGuideDisplayMode: .fourDirections,
         numberFlickGuideDisplayMode: .fourDirections,
+        modifierFlickGuideDisplayMode: .fourDirections,
         keyRepeatInitialDelay: 0.5,
         keyRepeatInterval: 0.1,
                 kanaModeSwitcherTapActionRawValue: "emoji",
