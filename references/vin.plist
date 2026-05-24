@@ -927,6 +927,17 @@
 	<dict><key>phrase</key><string>西豪州</string><key>shortcut</key><string>にしごうしゅう</string></dict>
 	<dict><key>phrase</key><string>豪州</string><key>shortcut</key><string>ごうしゅう</string></dict>
 
+	<dict><key>phrase</key><string>Chambertin</string><key>shortcut</key><string>しゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Chambertin Clos-de-Bèze</string><key>shortcut</key><string>しゃんべるたんくろどべーず</string></dict>
+	<dict><key>phrase</key><string>Chapelle-Chambertin</string><key>shortcut</key><string>しゃぺるしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Charmes-Chambertin</string><key>shortcut</key><string>しゃるむしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Gevrey-Chambertin</string><key>shortcut</key><string>じゅゔれしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Griotte-Chambertin</string><key>shortcut</key><string>ぐりおっとしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Latricières-Chambertin</string><key>shortcut</key><string>らとりしえーるしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Mazis-Chambertin</string><key>shortcut</key><string>まじしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Mazoyères-Chambertin</string><key>shortcut</key><string>まぞわいえーるしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>Ruchottes-Chambertin</string><key>shortcut</key><string>りゅしょっとしゃんべるたん</string></dict>
+
 	<!-- 地名(国) -->
 	<dict><key>phrase</key><string>Argentina</string><key>shortcut</key><string>あるぜんちん</string></dict>
 	<dict><key>phrase</key><string>Australia</string><key>shortcut</key><string>おーすとらりあ</string></dict>
