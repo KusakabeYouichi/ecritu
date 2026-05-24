@@ -66,6 +66,7 @@ struct FlickKeyView: View {
     let onCommit: (String) -> Void
     var onCommitWithDirection: ((String, FlickDirection) -> Void)? = nil
     var mainLabelFontSize: CGFloat = 28
+    var flickGuideDisplayModeOverride: FlickGuideDisplayMode? = nil
     var showsDirectionalHints: Bool = true
     var showsGuideText: Bool = true
     var idleReplacement: AnyView? = nil
@@ -103,12 +104,16 @@ struct FlickKeyView: View {
 
     private let keyLabelColor = KeyboardThemePalette.keyLabel
 
+    private var effectiveFlickGuideDisplayMode: FlickGuideDisplayMode {
+        flickGuideDisplayModeOverride ?? flickGuideDisplayMode
+    }
+
     private var centerLabelOffsetY: CGFloat {
-        flickGuideDisplayMode == .down ? -6 : 0
+        effectiveFlickGuideDisplayMode == .down ? -6 : 0
     }
 
     private var idleMainLabelFontSize: CGFloat {
-        flickGuideDisplayMode == .down ? min(mainLabelFontSize, 24) : mainLabelFontSize
+        effectiveFlickGuideDisplayMode == .down ? min(mainLabelFontSize, 24) : mainLabelFontSize
     }
 
     var body: some View {
@@ -280,7 +285,14 @@ struct FlickKeyView: View {
                 .offset(x: directionalHintHorizontalOffset)
         }
         .allowsHitTesting(false)
-        .opacity(isTouching || !showsGuideText || !showsDirectionalHints || flickGuideDisplayMode != .fourDirections ? 0.0 : 1.0)
+        .opacity(
+            isTouching
+                || !showsGuideText
+                || !showsDirectionalHints
+                || effectiveFlickGuideDisplayMode != .fourDirections
+                ? 0.0
+                : 1.0
+        )
     }
 
     private var downDirectionalHints: some View {
@@ -298,7 +310,7 @@ struct FlickKeyView: View {
         .padding(.horizontal, 4)
         .offset(y: Metrics.directionHintVerticalOffset + downDirectionalHintVerticalOffsetAdjustment)
         .allowsHitTesting(false)
-        .opacity(isTouching || !showsGuideText || flickGuideDisplayMode != .down ? 0.0 : 1.0)
+        .opacity(isTouching || !showsGuideText || effectiveFlickGuideDisplayMode != .down ? 0.0 : 1.0)
     }
 
     @ViewBuilder

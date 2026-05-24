@@ -802,6 +802,7 @@ struct FlickGuideDisplaySettingsSection: View {
     @Binding var kanaSelection: FlickGuideDisplayOption
     @Binding var latinSelection: FlickGuideDisplayOption
     @Binding var numberSelection: FlickGuideDisplayOption
+    @Binding var modifierSelection: FlickGuideDisplayOption
     let isLatinGuideAvailable: Bool
 
     var body: some View {
@@ -837,9 +838,18 @@ struct FlickGuideDisplaySettingsSection: View {
                     }
                 }
                 .pickerStyle(.segmented)
+
+                Text("濁点・半濁点・小文字キー")
+                    .font(.subheadline.weight(.semibold))
+                Picker("濁点・半濁点・小文字キー", selection: $modifierSelection) {
+                    ForEach(FlickGuideDisplayOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
             }
 
-            Text("入力モードごとにガイド表示を選択します。『下』はメイン文字の下にガイド文字を横並びで表示します。")
+            Text("入力モードごとにガイド表示を選択できます。濁点・半濁点・小文字キーは入力モード設定と独立して適用されます。『下』はメイン文字の下にガイド文字を横並びで表示します。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
 

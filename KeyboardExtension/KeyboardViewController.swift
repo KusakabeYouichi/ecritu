@@ -86,6 +86,7 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaFlickGuideDisplayMode = "flickGuideDisplayModeKana"
         static let latinFlickGuideDisplayMode = "flickGuideDisplayModeLatin"
         static let numberFlickGuideDisplayMode = "flickGuideDisplayModeNumber"
+        static let modifierFlickGuideDisplayMode = "flickGuideDisplayModeModifier"
         static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
@@ -179,6 +180,7 @@ final class KeyboardViewController: UIInputViewController {
         let kanaFlickGuideDisplayMode: FlickGuideDisplayMode
         let latinFlickGuideDisplayMode: FlickGuideDisplayMode
         let numberFlickGuideDisplayMode: FlickGuideDisplayMode
+        let modifierFlickGuideDisplayMode: FlickGuideDisplayMode
         let keyRepeatInitialDelay: TimeInterval
         let keyRepeatInterval: TimeInterval
         let kanaModeSwitcherTapActionRawValue: String
@@ -1300,6 +1302,16 @@ final class KeyboardViewController: UIInputViewController {
             from: sharedDefaults,
             key: SharedDefaultsKeys.numberFlickGuideDisplayMode
         )
+        let modifierFlickGuideDisplayMode: FlickGuideDisplayMode
+
+        if sharedDefaults?.object(forKey: SharedDefaultsKeys.modifierFlickGuideDisplayMode) != nil {
+            modifierFlickGuideDisplayMode = sharedFlickGuideDisplayModeValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.modifierFlickGuideDisplayMode
+            )
+        } else {
+            modifierFlickGuideDisplayMode = kanaFlickGuideDisplayMode
+        }
         let keyRepeatInitialDelay = sharedDoubleValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.keyRepeatInitialDelay,
@@ -1355,6 +1367,7 @@ final class KeyboardViewController: UIInputViewController {
             kanaFlickGuideDisplayMode: kanaFlickGuideDisplayMode,
             latinFlickGuideDisplayMode: latinFlickGuideDisplayMode,
             numberFlickGuideDisplayMode: numberFlickGuideDisplayMode,
+            modifierFlickGuideDisplayMode: modifierFlickGuideDisplayMode,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
             kanaModeSwitcherTapActionRawValue: kanaModeSwitcherTapActionRawValue,
@@ -1462,6 +1475,7 @@ final class KeyboardViewController: UIInputViewController {
             kanaFlickGuideDisplayMode: configuration.kanaFlickGuideDisplayMode,
             latinFlickGuideDisplayMode: configuration.latinFlickGuideDisplayMode,
             numberFlickGuideDisplayMode: configuration.numberFlickGuideDisplayMode,
+            modifierFlickGuideDisplayMode: configuration.modifierFlickGuideDisplayMode,
             keyRepeatInitialDelay: configuration.keyRepeatInitialDelay,
             keyRepeatInterval: configuration.keyRepeatInterval,
             kanaModeSwitcherTapActionRawValue: configuration.kanaModeSwitcherTapActionRawValue,

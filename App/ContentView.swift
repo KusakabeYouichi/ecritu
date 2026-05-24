@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260524103952"
+    private static let editionUpdatedAtRaw: String = "20260525003946"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -119,6 +119,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var numberFlickGuideDisplayModeRawValue: String = FlickGuideDisplayOption.fourDirections.rawValue
+
+    @AppStorage(
+        SettingsKeys.modifierFlickGuideDisplayMode,
+        store: Self.sharedDefaults
+    )
+    private var modifierFlickGuideDisplayModeRawValue: String = FlickGuideDisplayOption.fourDirections.rawValue
 
     @AppStorage(
         SettingsKeys.keyRepeatInitialDelay,
@@ -276,6 +282,12 @@ struct ContentView: View {
         }
     }
 
+    private var modifierFlickGuideDisplayModeSelection: Binding<FlickGuideDisplayOption> {
+        rawValueSelection(from: modifierFlickGuideDisplayModeRawValue, default: .fourDirections) {
+            modifierFlickGuideDisplayModeRawValue = $0
+        }
+    }
+
     private var isLatinFlickLayoutSelected: Bool {
         (LatinLayoutOption(rawValue: latinLayoutModeRawValue) ?? .azerty) == .flick
     }
@@ -307,27 +319,41 @@ struct ContentView: View {
             return
         }
 
+        let modifierGuideModeKey = SettingsKeys.modifierFlickGuideDisplayMode
         let guideModeKeys = [
             SettingsKeys.kanaFlickGuideDisplayMode,
             SettingsKeys.latinFlickGuideDisplayMode,
-            SettingsKeys.numberFlickGuideDisplayMode
+            SettingsKeys.numberFlickGuideDisplayMode,
+            modifierGuideModeKey
         ]
 
         let hasStoredNewGuideMode = guideModeKeys.contains { key in
             defaults.object(forKey: key) != nil
         }
 
-        guard !hasStoredNewGuideMode,
-                let legacyShowsGuide = defaults.object(forKey: SettingsKeys.showsFlickGuideCharacters) as? Bool else {
-            return
+        if !hasStoredNewGuideMode,
+            let legacyShowsGuide = defaults.object(forKey: SettingsKeys.showsFlickGuideCharacters) as? Bool {
+            let migratedMode = legacyShowsGuide
+                ? FlickGuideDisplayOption.fourDirections.rawValue
+                : FlickGuideDisplayOption.off.rawValue
+
+            guideModeKeys.forEach { key in
+                defaults.set(migratedMode, forKey: key)
+            }
         }
 
-        let migratedMode = legacyShowsGuide
-            ? FlickGuideDisplayOption.fourDirections.rawValue
-            : FlickGuideDisplayOption.off.rawValue
+        if defaults.object(forKey: modifierGuideModeKey) == nil {
+            let migratedModifierMode = defaults.string(forKey: SettingsKeys.kanaFlickGuideDisplayMode)
+                ?? {
+                    guard let legacyShowsGuide = defaults.object(forKey: SettingsKeys.showsFlickGuideCharacters) as? Bool else {
+                        return FlickGuideDisplayOption.fourDirections.rawValue
+                    }
 
-        guideModeKeys.forEach { key in
-            defaults.set(migratedMode, forKey: key)
+                    return legacyShowsGuide
+                        ? FlickGuideDisplayOption.fourDirections.rawValue
+                        : FlickGuideDisplayOption.off.rawValue
+                }()
+            defaults.set(migratedModifierMode, forKey: modifierGuideModeKey)
         }
     }
 
@@ -1688,6 +1714,7 @@ struct ContentView: View {
                             kanaSelection: kanaFlickGuideDisplayModeSelection,
                             latinSelection: latinFlickGuideDisplayModeSelection,
                             numberSelection: numberFlickGuideDisplayModeSelection,
+                            modifierSelection: modifierFlickGuideDisplayModeSelection,
                             isLatinGuideAvailable: isLatinFlickLayoutSelected
                         )
 

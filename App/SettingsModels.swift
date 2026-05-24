@@ -32,6 +32,7 @@ enum SettingsKeys {
     static let kanaFlickGuideDisplayMode = "flickGuideDisplayModeKana"
     static let latinFlickGuideDisplayMode = "flickGuideDisplayModeLatin"
     static let numberFlickGuideDisplayMode = "flickGuideDisplayModeNumber"
+    static let modifierFlickGuideDisplayMode = "flickGuideDisplayModeModifier"
     static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
     static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
     static let keyRepeatInterval = "keyRepeatInterval"
