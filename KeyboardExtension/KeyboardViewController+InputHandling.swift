@@ -50,6 +50,16 @@ extension KeyboardViewController {
 
         clearRecentKanaPlainCommitUpgradeContext()
 
+        if currentInputMode == .kana,
+            let activeConversion,
+            shouldAutoCommitConversion(beforeInserting: text) {
+            commitActiveConversionBeforeDelimiterInput(activeConversion)
+            markTextProxyEdit()
+            textDocumentProxy.insertText(text)
+            refreshKeyboardStateAsync()
+            return
+        }
+
         commitActiveConversion(learn: true)
 
         if currentInputMode == .kana,
@@ -108,17 +118,61 @@ extension KeyboardViewController {
         let sourceText = composingRawText
         let sourceReading = composingReading
 
-        let preferredCandidate = kanaKanjiConverter.candidates(
+        let systemCandidates = kanaKanjiConverter.candidates(
             for: sourceReading,
             limit: CandidateLimits.conversion,
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
-        ).first
+        )
+        let presentationCandidates = candidatesForPresentation(
+            from: systemCandidates,
+            composingText: sourceText
+        )
+
+        // 自動確定では「未変換かな」を第0候補として扱い、設定で第0/第1候補を選べるようにする。
+        var autoCommitCandidates: [String] = [sourceText]
+        for candidate in presentationCandidates where !autoCommitCandidates.contains(candidate) {
+            autoCommitCandidates.append(candidate)
+        }
+
+        let preferredIndex = currentDelimiterAutoCommitCandidateIndexFromSharedDefaults()
+        let preferredCandidate: String?
+
+        if autoCommitCandidates.indices.contains(preferredIndex) {
+            preferredCandidate = autoCommitCandidates[preferredIndex]
+        } else {
+            preferredCandidate = autoCommitCandidates.first
+        }
 
         let committedText = preferredCandidate ?? sourceText
         commitComposingText(
             sourceText: sourceText,
             sourceReading: sourceReading,
             committedText: committedText,
+            learn: true
+        )
+    }
+
+    func commitActiveConversionBeforeDelimiterInput(_ conversion: ActiveConversion) {
+        var autoCommitCandidates: [String] = [conversion.sourceText]
+
+        for candidate in conversion.candidates where !autoCommitCandidates.contains(candidate) {
+            autoCommitCandidates.append(candidate)
+        }
+
+        let preferredIndex = currentDelimiterAutoCommitCandidateIndexFromSharedDefaults()
+        let preferredCandidate: String
+
+        if autoCommitCandidates.indices.contains(preferredIndex) {
+            preferredCandidate = autoCommitCandidates[preferredIndex]
+        } else if let fallbackCandidate = autoCommitCandidates.first {
+            preferredCandidate = fallbackCandidate
+        } else {
+            preferredCandidate = conversion.committedText
+        }
+
+        commitActiveConversion(
+            conversion,
+            committedText: preferredCandidate,
             learn: true
         )
     }

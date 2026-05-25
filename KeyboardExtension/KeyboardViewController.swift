@@ -93,6 +93,7 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
         static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
         static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+        static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
         static let landscapeCandidateSide = "landscapeCandidateSide"
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
@@ -1218,6 +1219,21 @@ final class KeyboardViewController: UIInputViewController {
         return KanaKanjiCandidateSourceMode(rawValue: rawValue) ?? .surface
     }
 
+    private func currentDelimiterAutoCommitCandidateIndex(from defaults: UserDefaults?) -> Int {
+        let rawValue = sharedStringValue(
+            from: defaults,
+            key: SharedDefaultsKeys.delimiterAutoCommitCandidate,
+            fallback: "zero"
+        )
+
+        switch rawValue {
+        case "one":
+            return 1
+        default:
+            return 0
+        }
+    }
+
     private func currentTemperatureUnit() -> TemperatureUnitPreference {
         if let rawValue = UserDefaults.standard.string(forKey: "AppleTemperatureUnit"),
             let unit = TemperatureUnitPreference.fromAppleTemperatureUnit(rawValue) {
@@ -1494,6 +1510,12 @@ final class KeyboardViewController: UIInputViewController {
 
     func currentKanaKanjiCandidateSourceModeFromSharedDefaults() -> KanaKanjiCandidateSourceMode {
         currentKanaKanjiCandidateSourceMode(
+            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        )
+    }
+
+    func currentDelimiterAutoCommitCandidateIndexFromSharedDefaults() -> Int {
+        currentDelimiterAutoCommitCandidateIndex(
             from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
         )
     }
