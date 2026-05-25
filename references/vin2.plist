@@ -3,18 +3,6 @@
 <plist version="1.0">
 <array>
 	<!-- ぶどう品種 -->
-	<dict><key>phrase</key><string>アイレン</string><key>shortcut</key><string>あいれん</string></dict>
-	<dict><key>phrase</key><string>Seibel</string><key>shortcut</key><string>せいべる</string></dict>
-	<dict><key>phrase</key><string>Seibel 5656</string><key>shortcut</key><string>せいべるごせんろくひゃくごじゅうろく</string></dict>
-	<dict><key>phrase</key><string>Monastrell</string><key>shortcut</key><string>もなすとれる</string></dict>
-	<dict><key>phrase</key><string>Pinot Noir</string><key>shortcut</key><string>ぴののわーる</string></dict>
-	<dict><key>phrase</key><string>Carmenère</string><key>shortcut</key><string>かるめねーる</string></dict>
-	<dict><key>phrase</key><string>Zweigelt</string><key>shortcut</key><string>つゔぁいげると</string></dict>
-	<dict><key>phrase</key><string>Grenache Noir</string><key>shortcut</key><string>ぐるなっしゅ</string></dict>
-	<dict><key>phrase</key><string>Bourgogne Gamay</string><key>shortcut</key><string>ぶるごーにゅがめい</string></dict>
-	<dict><key>phrase</key><string>Bourgogne Aligoté</string><key>shortcut</key><string>ぶるごーにゅありごて</string></dict>
-	<dict><key>phrase</key><string>Black Queen</string><key>shortcut</key><string>ぶらっくくぃーん</string></dict>
-	<dict><key>phrase</key><string>Malvasia</string><key>shortcut</key><string>まるゔぁじあ</string></dict>
 
 	<!-- ワイン関連用語 (地名・種名など) -->
 	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>じーあい</string></dict>
@@ -31,18 +19,18 @@
 	<dict><key>phrase</key><string>G.I.バロッサ</string><key>shortcut</key><string>じーあいばろっさ</string></dict>
 	<dict><key>phrase</key><string>G.I.バロッサ・ヴァレー</string><key>shortcut</key><string>じーあいばろっさゔぁれー</string></dict>
 	<dict><key>phrase</key><string>G.I.ブリティッシュ・コロンビア</string><key>shortcut</key><string>じーあいぶりてぃっしゅころんびあ</string></dict>
-	<dict><key>phrase</key><string>G.I.制度</string><key>shortcut</key><string>じーあいせいど</string></dict>
 	<dict><key>phrase</key><string>G.I.勝沼</string><key>shortcut</key><string>じーあいかつぬま</string></dict>
-	<dict><key>phrase</key><string>G.I.指定</string><key>shortcut</key><string>じーあいしてい</string></dict>
-	<dict><key>phrase</key><string>G.I.未指定</string><key>shortcut</key><string>じーあいみししてい</string></dict>
-	<dict><key>phrase</key><string>G.I.登録</string><key>shortcut</key><string>じーあいとうろく</string></dict>
-	<dict><key>phrase</key><string>G.I.登録数</string><key>shortcut</key><string>じーあいとうろくすう</string></dict>
-	<dict><key>phrase</key><string>G.I.認定</string><key>shortcut</key><string>じーあいにんてい</string></dict>
 	<dict><key>phrase</key><string>G.I.長野</string><key>shortcut</key><string>じーあいながの</string></dict>
 	<dict><key>phrase</key><string>G.I.長野エクセレンス</string><key>shortcut</key><string>じーあいながのえくせれんす</string></dict>
 	<dict><key>phrase</key><string>G.I.長野グランド</string><key>shortcut</key><string>じーあいながのぐらんど</string></dict>
 	<dict><key>phrase</key><string>G.I.長野プラス</string><key>shortcut</key><string>じーあいながのぷらす</string></dict>
 	<dict><key>phrase</key><string>G.I.長野プレミアム</string><key>shortcut</key><string>じーあいながのぷれみあむ</string></dict>
+	<dict><key>phrase</key><string>G.I.制度</string><key>shortcut</key><string>じーあいせいど</string></dict>
+	<dict><key>phrase</key><string>G.I.指定</string><key>shortcut</key><string>じーあいしてい</string></dict>
+	<dict><key>phrase</key><string>G.I.未指定</string><key>shortcut</key><string>じーあいみししてい</string></dict>
+	<dict><key>phrase</key><string>G.I.登録</string><key>shortcut</key><string>じーあいとうろく</string></dict>
+	<dict><key>phrase</key><string>G.I.登録数</string><key>shortcut</key><string>じーあいとうろくすう</string></dict>
+	<dict><key>phrase</key><string>G.I.認定</string><key>shortcut</key><string>じーあいにんてい</string></dict>
 	<dict><key>phrase</key><string>Côtes d'Auvergne</string><key>shortcut</key><string>こー</string></dict>
 	<dict><key>phrase</key><string>Côtes de Bergerac</string><key>shortcut</key><string>こー</string></dict>
 	<dict><key>phrase</key><string>Côtes de Blaye</string><key>shortcut</key><string>こー</string></dict>
@@ -2273,7 +2261,6 @@
 	<dict><key>phrase</key><string>マインフィアエック</string><key>shortcut</key><string>まいんふぃあーえっく</string></dict>
 	<dict><key>phrase</key><string>マオタイチュウ</string><key>shortcut</key><string>まおたいちゅう</string></dict>
 	<dict><key>phrase</key><string>マオリ民族</string><key>shortcut</key><string>まぉりみんぞく</string></dict>
-	<dict><key>phrase</key><string>マカベオ</string><key>shortcut</key><string>まかべお</string></dict>
 	<dict><key>phrase</key><string>マカロン</string><key>shortcut</key><string>まかろん</string></dict>
 	<dict><key>phrase</key><string>マクラーレン・ヴェール</string><key>shortcut</key><string>まくらーれんゔぇーる</string></dict>
 	<dict><key>phrase</key><string>マグナム</string><key>shortcut</key><string>まぐなむ</string></dict>
@@ -2554,8 +2541,6 @@
 	<dict><key>phrase</key><string>リオハ・アルタ</string><key>shortcut</key><string>りおはあるた</string></dict>
 	<dict><key>phrase</key><string>リオハ・オリエンタル</string><key>shortcut</key><string>りおはおりえんたる</string></dict>
 	<dict><key>phrase</key><string>リオハ・バハ</string><key>shortcut</key><string>りおはばは</string></dict>
-	<dict><key>phrase</key><string>リオハ全体</string><key>shortcut</key><string>りおはぜんたい</string></dict>
-	<dict><key>phrase</key><string>リオハ独自</string><key>shortcut</key><string>りおはどくじ</string></dict>
 	<dict><key>phrase</key><string>リオ・オハ</string><key>shortcut</key><string>りおおは</string></dict>
 	<dict><key>phrase</key><string>リオ・ネグロ</string><key>shortcut</key><string>りおねぐろ</string></dict>
 	<dict><key>phrase</key><string>リキュール</string><key>shortcut</key><string>りきゅうる</string></dict>
@@ -2604,9 +2589,6 @@
 	<dict><key>phrase</key><string>ルカツィテリ</string><key>shortcut</key><string>るかつぃてり</string></dict>
 	<dict><key>phrase</key><string>ルクサルド</string><key>shortcut</key><string>るくさるど</string></dict>
 	<dict><key>phrase</key><string>ルクセンブルク</string><key>shortcut</key><string>りゅくさんぶーる</string></dict>
-	<dict><key>phrase</key><string>ルクセンブルク南部</string><key>shortcut</key><string>りゅくさんぶーるなんぶ</string></dict>
-	<dict><key>phrase</key><string>ルクセンブルク政府</string><key>shortcut</key><string>りゅくさんぶーるせいふ</string></dict>
-	<dict><key>phrase</key><string>ルクセンブルク最北</string><key>shortcut</key><string>りゅくさんぶーるさいほく</string></dict>
 	<dict><key>phrase</key><string>ルッカ</string><key>shortcut</key><string>るっか</string></dict>
 	<dict><key>phrase</key><string>ルドルフ・シュタイナー</string><key>shortcut</key><string>るどるふしゅたいなー</string></dict>
 	<dict><key>phrase</key><string>ルネッサンス</string><key>shortcut</key><string>るねっさんす</string></dict>
@@ -4821,43 +4803,13 @@
 	<dict><key>phrase</key><string>白酒</string><key>shortcut</key><string>ぱいちゅう</string></dict>
 	<dict><key>phrase</key><string>白雲母</string><key>shortcut</key><string>しろうんも</string></dict>
 	<dict><key>phrase</key><string>白麹菌</string><key>shortcut</key><string>しらこうじきん</string></dict>
-	<dict><key>phrase</key><string>白黒</string><key>shortcut</key><string>しろくろ</string></dict>
-	<dict><key>phrase</key><string>皮切</string><key>shortcut</key><string>かわきり</string></dict>
-	<dict><key>phrase</key><string>皿数</string><key>shortcut</key><string>さらかず</string></dict>
-	<dict><key>phrase</key><string>目安</string><key>shortcut</key><string>めやす</string></dict>
-	<dict><key>phrase</key><string>目的</string><key>shortcut</key><string>もくてき</string></dict>
-	<dict><key>phrase</key><string>目覚</string><key>shortcut</key><string>めざまし</string></dict>
-	<dict><key>phrase</key><string>直前</string><key>shortcut</key><string>ちょくぜん</string></dict>
-	<dict><key>phrase</key><string>直射日光</string><key>shortcut</key><string>ちょくしゃにっこう</string></dict>
-	<dict><key>phrase</key><string>直接グラス</string><key>shortcut</key><string>ちょくせつぐらす</string></dict>
-	<dict><key>phrase</key><string>直接日本酒</string><key>shortcut</key><string>ちょくせつにほんしゅ</string></dict>
-	<dict><key>phrase</key><string>直接材料</string><key>shortcut</key><string>ちょくせつざいりょう</string></dict>
 	<dict><key>phrase</key><string>直火</string><key>shortcut</key><string>じかび</string></dict>
-	<dict><key>phrase</key><string>直線距離</string><key>shortcut</key><string>ちょくせんきょり</string></dict>
-	<dict><key>phrase</key><string>直訳</string><key>shortcut</key><string>ちょくやく</string></dict>
 	<dict><key>phrase</key><string>相互供与</string><key>shortcut</key><string>あいたがいきょうよ</string></dict>
 	<dict><key>phrase</key><string>相互売買</string><key>shortcut</key><string>あいたがいばいばい</string></dict>
-	<dict><key>phrase</key><string>相反</string><key>shortcut</key><string>そうはん</string></dict>
-	<dict><key>phrase</key><string>相対的</string><key>shortcut</key><string>そうたいてき</string></dict>
-	<dict><key>phrase</key><string>相当</string><key>shortcut</key><string>そうとう</string></dict>
-	<dict><key>phrase</key><string>相当程度</string><key>shortcut</key><string>そうとうていど</string></dict>
-	<dict><key>phrase</key><string>相性</string><key>shortcut</key><string>あいしょう</string></dict>
-	<dict><key>phrase</key><string>相次</string><key>shortcut</key><string>あいじ</string></dict>
-	<dict><key>phrase</key><string>相殺</string><key>shortcut</key><string>そうさい</string></dict>
-	<dict><key>phrase</key><string>省略</string><key>shortcut</key><string>しょうりゃく</string></dict>
-	<dict><key>phrase</key><string>真上</string><key>shortcut</key><string>まうえ</string></dict>
-	<dict><key>phrase</key><string>真横</string><key>shortcut</key><string>まよこ</string></dict>
-	<dict><key>phrase</key><string>真珠</string><key>shortcut</key><string>しんじゅ</string></dict>
-	<dict><key>phrase</key><string>着目</string><key>shortcut</key><string>ちゃくもく</string></dict>
 	<dict><key>phrase</key><string>着色</string><key>shortcut</key><string>ちゃくしょく</string></dict>
 	<dict><key>phrase</key><string>着色良好</string><key>shortcut</key><string>ちゃくしょくりょうこう</string></dict>
-	<dict><key>phrase</key><string>知名度</string><key>shortcut</key><string>ちめいど</string></dict>
-	<dict><key>phrase</key><string>知識</string><key>shortcut</key><string>ちしき</string></dict>
-	<dict><key>phrase</key><string>短所</string><key>shortcut</key><string>たんしょ</string></dict>
-	<dict><key>phrase</key><string>短時間</string><key>shortcut</key><string>たんじかん</string></dict>
 	<dict><key>phrase</key><string>短梢</string><key>shortcut</key><string>たんしょう</string></dict>
 	<dict><key>phrase</key><string>短稈渡船</string><key>shortcut</key><string>たんかんわたりぶね</string></dict>
-	<dict><key>phrase</key><string>短縮</string><key>shortcut</key><string>たんしゅく</string></dict>
 	<dict><key>phrase</key><string>石原早生</string><key>shortcut</key><string>いしはらそうせい</string></dict>
 	<dict><key>phrase</key><string>石垣</string><key>shortcut</key><string>いしがき</string></dict>
 	<dict><key>phrase</key><string>石灰</string><key>shortcut</key><string>いしばい</string></dict>
@@ -4872,57 +4824,25 @@
 	<dict><key>phrase</key><string>砂糖</string><key>shortcut</key><string>さとう</string></dict>
 	<dict><key>phrase</key><string>砂質</string><key>shortcut</key><string>さしつ</string></dict>
 	<dict><key>phrase</key><string>砂質ローム</string><key>shortcut</key><string>さしつろーむ</string></dict>
-	<dict><key>phrase</key><string>研究</string><key>shortcut</key><string>けんきゅう</string></dict>
-	<dict><key>phrase</key><string>研究・開発</string><key>shortcut</key><string>けんきゅうかいはつ</string></dict>
-	<dict><key>phrase</key><string>研究所経由</string><key>shortcut</key><string>けんきゅうしょけいゆ</string></dict>
-	<dict><key>phrase</key><string>研究機関</string><key>shortcut</key><string>けんきゅうきかん</string></dict>
-	<dict><key>phrase</key><string>研究者</string><key>shortcut</key><string>けんきゅうしゃ</string></dict>
-	<dict><key>phrase</key><string>研究部門</string><key>shortcut</key><string>けんきゅうぶもん</string></dict>
-	<dict><key>phrase</key><string>研鑽</string><key>shortcut</key><string>けんさん</string></dict>
-	<dict><key>phrase</key><string>破壊</string><key>shortcut</key><string>はかい</string></dict>
-	<dict><key>phrase</key><string>破損</string><key>shortcut</key><string>はそん</string></dict>
 	<dict><key>phrase</key><string>硫酸銅</string><key>shortcut</key><string>りゅうさんどう</string></dict>
 	<dict><key>phrase</key><string>硫黄</string><key>shortcut</key><string>いおう</string></dict>
 	<dict><key>phrase</key><string>硬度</string><key>shortcut</key><string>こうど</string></dict>
 	<dict><key>phrase</key><string>硬水</string><key>shortcut</key><string>こうすい</string></dict>
 	<dict><key>phrase</key><string>硬質</string><key>shortcut</key><string>こうしつ</string></dict>
-	<dict><key>phrase</key><string>確保</string><key>shortcut</key><string>かくほ</string></dict>
-	<dict><key>phrase</key><string>確信</string><key>shortcut</key><string>かくしん</string></dict>
-	<dict><key>phrase</key><string>確率</string><key>shortcut</key><string>かくりつ</string></dict>
-	<dict><key>phrase</key><string>確立</string><key>shortcut</key><string>かくりつ</string></dict>
-	<dict><key>phrase</key><string>確認</string><key>shortcut</key><string>かくにん</string></dict>
 	<dict><key>phrase</key><string>碾茶</string><key>shortcut</key><string>ひきちゃ</string></dict>
 	<dict><key>phrase</key><string>磁器</string><key>shortcut</key><string>じき</string></dict>
 	<dict><key>phrase</key><string>礎</string><key>shortcut</key><string>いしずえ</string></dict>
 	<dict><key>phrase</key><string>礫</string><key>shortcut</key><string>つぶて</string></dict>
-	<dict><key>phrase</key><string>社交行事</string><key>shortcut</key><string>しゃこうぎょうじ</string></dict>
-	<dict><key>phrase</key><string>社会問題化</string><key>shortcut</key><string>しゃかいもんだいか</string></dict>
-	<dict><key>phrase</key><string>祖先</string><key>shortcut</key><string>そせん</string></dict>
 	<dict><key>phrase</key><string>祝地区</string><key>shortcut</key><string>いわいちく</string></dict>
-	<dict><key>phrase</key><string>祭典</string><key>shortcut</key><string>さいてん</string></dict>
 	<dict><key>phrase</key><string>禁酒政策</string><key>shortcut</key><string>きんしゅせいさく</string></dict>
 	<dict><key>phrase</key><string>禁酒法</string><key>shortcut</key><string>きんしゅほう</string></dict>
 	<dict><key>phrase</key><string>禁酒法時代</string><key>shortcut</key><string>きんしゅほうじだい</string></dict>
 	<dict><key>phrase</key><string>福岡</string><key>shortcut</key><string>ふくおか</string></dict>
-	<dict><key>phrase</key><string>秀逸</string><key>shortcut</key><string>しゅういつ</string></dict>
 	<dict><key>phrase</key><string>秋田</string><key>shortcut</key><string>あいだ</string></dict>
 	<dict><key>phrase</key><string>秋雨</string><key>shortcut</key><string>あきさめ</string></dict>
-	<dict><key>phrase</key><string>科学者</string><key>shortcut</key><string>かがくしゃ</string></dict>
-	<dict><key>phrase</key><string>称号</string><key>shortcut</key><string>しょうごう</string></dict>
-	<dict><key>phrase</key><string>移民</string><key>shortcut</key><string>いみん</string></dict>
-	<dict><key>phrase</key><string>移行</string><key>shortcut</key><string>いこう</string></dict>
-	<dict><key>phrase</key><string>移行期間</string><key>shortcut</key><string>いこうきかん</string></dict>
-	<dict><key>phrase</key><string>稀有</string><key>shortcut</key><string>けう</string></dict>
-	<dict><key>phrase</key><string>程度</string><key>shortcut</key><string>ていど</string></dict>
-	<dict><key>phrase</key><string>税務署</string><key>shortcut</key><string>ぜいむしょ</string></dict>
-	<dict><key>phrase</key><string>税金</string><key>shortcut</key><string>ぜいきん</string></dict>
-	<dict><key>phrase</key><string>税関職員</string><key>shortcut</key><string>ぜいかんしょくいん</string></dict>
 	<dict><key>phrase</key><string>稚内</string><key>shortcut</key><string>わっかない</string></dict>
 	<dict><key>phrase</key><string>種名</string><key>shortcut</key><string>しゅめい</string></dict>
-	<dict><key>phrase</key><string>種子</string><key>shortcut</key><string>しゅし</string></dict>
-	<dict><key>phrase</key><string>種類</string><key>shortcut</key><string>しゅるい</string></dict>
 	<dict><key>phrase</key><string>稲作地帯</string><key>shortcut</key><string>いなさくちたい</string></dict>
-	<dict><key>phrase</key><string>稼働</string><key>shortcut</key><string>かどう</string></dict>
 	<dict><key>phrase</key><string>穀倉地帯</string><key>shortcut</key><string>こくぐらちたい</string></dict>
 	<dict><key>phrase</key><string>穀物</string><key>shortcut</key><string>こくもつ</string></dict>
 	<dict><key>phrase</key><string>穀物原料</string><key>shortcut</key><string>こくもつげんりょう</string></dict>
@@ -5769,9 +5689,6 @@
 	<dict><key>phrase</key><string>高緯度</string><key>shortcut</key><string>こういど</string></dict>
 	<dict><key>phrase</key><string>高評価</string><key>shortcut</key><string>こうひょうか</string></dict>
 	<dict><key>phrase</key><string>高速鉄道</string><key>shortcut</key><string>こうそくてつどう</string></dict>
-	<dict><key>phrase</key><string>高騰</string><key>shortcut</key><string>こうとう</string></dict>
-	<dict><key>phrase</key><string>魅了</string><key>shortcut</key><string>みりょう</string></dict>
-	<dict><key>phrase</key><string>魅力</string><key>shortcut</key><string>みりょく</string></dict>
 	<dict><key>phrase</key><string>魚介</string><key>shortcut</key><string>ぎょかい</string></dict>
 	<dict><key>phrase</key><string>魚介消費量</string><key>shortcut</key><string>ぎょかいしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>魚介類</string><key>shortcut</key><string>ぎょかいるい</string></dict>
@@ -5807,7 +5724,7 @@
 	<dict><key>phrase</key><string>黒船来航</string><key>shortcut</key><string>くろふねらいこう</string></dict>
 	<dict><key>phrase</key><string>黒麹菌</string><key>shortcut</key><string>くろこうじきん</string></dict>
 	<dict><key>phrase</key><string>龍憲</string><key>shortcut</key><string>りゅうけん</string></dict>
-	<dict><key>phrase</key><string>安土桃山時代</string><key>shortcut</key><string>あづちとうざんじだい</string></dict>
+	<dict><key>phrase</key><string>安土桃山時代</string><key>shortcut</key><string>あづちももやまじだい</string></dict>
 	<dict><key>phrase</key><string>闇市</string><key>shortcut</key><string>やみいち</string></dict>
 	<dict><key>phrase</key><string>河川</string><key>shortcut</key><string>かせん</string></dict>
 	<dict><key>phrase</key><string>火山</string><key>shortcut</key><string>かざん</string></dict>
@@ -5829,7 +5746,72 @@
 	<dict><key>phrase</key><string>山椒</string><key>shortcut</key><string>さんしょう</string></dict>
 
 	<!-- 一般の語彙 -->
+	<dict><key>phrase</key><string>種子</string><key>shortcut</key><string>しゅし</string></dict>
+	<dict><key>phrase</key><string>種類</string><key>shortcut</key><string>しゅるい</string></dict>
+	<dict><key>phrase</key><string>稼働</string><key>shortcut</key><string>かどう</string></dict>
+	<dict><key>phrase</key><string>科学者</string><key>shortcut</key><string>かがくしゃ</string></dict>
+	<dict><key>phrase</key><string>称号</string><key>shortcut</key><string>しょうごう</string></dict>
+	<dict><key>phrase</key><string>移民</string><key>shortcut</key><string>いみん</string></dict>
+	<dict><key>phrase</key><string>移行</string><key>shortcut</key><string>いこう</string></dict>
+	<dict><key>phrase</key><string>移行期間</string><key>shortcut</key><string>いこうきかん</string></dict>
+	<dict><key>phrase</key><string>稀有</string><key>shortcut</key><string>けう</string></dict>
+	<dict><key>phrase</key><string>程度</string><key>shortcut</key><string>ていど</string></dict>
+	<dict><key>phrase</key><string>税務署</string><key>shortcut</key><string>ぜいむしょ</string></dict>
+	<dict><key>phrase</key><string>税金</string><key>shortcut</key><string>ぜいきん</string></dict>
+	<dict><key>phrase</key><string>税関職員</string><key>shortcut</key><string>ぜいかんしょくいん</string></dict>
+	<dict><key>phrase</key><string>祭典</string><key>shortcut</key><string>さいてん</string></dict>
+	<dict><key>phrase</key><string>秀逸</string><key>shortcut</key><string>しゅういつ</string></dict>
+	<dict><key>phrase</key><string>社交行事</string><key>shortcut</key><string>しゃこうぎょうじ</string></dict>
+	<dict><key>phrase</key><string>社会問題化</string><key>shortcut</key><string>しゃかいもんだいか</string></dict>
+	<dict><key>phrase</key><string>祖先</string><key>shortcut</key><string>そせん</string></dict>
+	<dict><key>phrase</key><string>確保</string><key>shortcut</key><string>かくほ</string></dict>
+	<dict><key>phrase</key><string>確信</string><key>shortcut</key><string>かくしん</string></dict>
+	<dict><key>phrase</key><string>確率</string><key>shortcut</key><string>かくりつ</string></dict>
+	<dict><key>phrase</key><string>確立</string><key>shortcut</key><string>かくりつ</string></dict>
+	<dict><key>phrase</key><string>確認</string><key>shortcut</key><string>かくにん</string></dict>
+	<dict><key>phrase</key><string>研究</string><key>shortcut</key><string>けんきゅう</string></dict>
+	<dict><key>phrase</key><string>研究・開発</string><key>shortcut</key><string>けんきゅうかいはつ</string></dict>
+	<dict><key>phrase</key><string>研究所経由</string><key>shortcut</key><string>けんきゅうしょけいゆ</string></dict>
+	<dict><key>phrase</key><string>研究機関</string><key>shortcut</key><string>けんきゅうきかん</string></dict>
+	<dict><key>phrase</key><string>研究者</string><key>shortcut</key><string>けんきゅうしゃ</string></dict>
+	<dict><key>phrase</key><string>研究部門</string><key>shortcut</key><string>けんきゅうぶもん</string></dict>
+	<dict><key>phrase</key><string>研鑽</string><key>shortcut</key><string>けんさん</string></dict>
+	<dict><key>phrase</key><string>破壊</string><key>shortcut</key><string>はかい</string></dict>
+	<dict><key>phrase</key><string>破損</string><key>shortcut</key><string>はそん</string></dict>
+	<dict><key>phrase</key><string>短縮</string><key>shortcut</key><string>たんしゅく</string></dict>
+	<dict><key>phrase</key><string>知名度</string><key>shortcut</key><string>ちめいど</string></dict>
+	<dict><key>phrase</key><string>知識</string><key>shortcut</key><string>ちしき</string></dict>
+	<dict><key>phrase</key><string>短所</string><key>shortcut</key><string>たんしょ</string></dict>
+	<dict><key>phrase</key><string>短時間</string><key>shortcut</key><string>たんじかん</string></dict>
+	<dict><key>phrase</key><string>相反</string><key>shortcut</key><string>そうはん</string></dict>
+	<dict><key>phrase</key><string>相対的</string><key>shortcut</key><string>そうたいてき</string></dict>
+	<dict><key>phrase</key><string>相当</string><key>shortcut</key><string>そうとう</string></dict>
+	<dict><key>phrase</key><string>相当程度</string><key>shortcut</key><string>そうとうていど</string></dict>
+	<dict><key>phrase</key><string>相性</string><key>shortcut</key><string>あいしょう</string></dict>
+	<dict><key>phrase</key><string>相次</string><key>shortcut</key><string>あいじ</string></dict>
+	<dict><key>phrase</key><string>相殺</string><key>shortcut</key><string>そうさい</string></dict>
+	<dict><key>phrase</key><string>省略</string><key>shortcut</key><string>しょうりゃく</string></dict>
+	<dict><key>phrase</key><string>真上</string><key>shortcut</key><string>まうえ</string></dict>
+	<dict><key>phrase</key><string>真横</string><key>shortcut</key><string>まよこ</string></dict>
+	<dict><key>phrase</key><string>真珠</string><key>shortcut</key><string>しんじゅ</string></dict>
+	<dict><key>phrase</key><string>着目</string><key>shortcut</key><string>ちゃくもく</string></dict>
+	<dict><key>phrase</key><string>直線距離</string><key>shortcut</key><string>ちょくせんきょり</string></dict>
+	<dict><key>phrase</key><string>直訳</string><key>shortcut</key><string>ちょくやく</string></dict>
+	<dict><key>phrase</key><string>白黒</string><key>shortcut</key><string>しろくろ</string></dict>
+	<dict><key>phrase</key><string>皮切</string><key>shortcut</key><string>かわきり</string></dict>
+	<dict><key>phrase</key><string>皿数</string><key>shortcut</key><string>さらかず</string></dict>
+	<dict><key>phrase</key><string>目安</string><key>shortcut</key><string>めやす</string></dict>
+	<dict><key>phrase</key><string>目的</string><key>shortcut</key><string>もくてき</string></dict>
+	<dict><key>phrase</key><string>目覚</string><key>shortcut</key><string>めざまし</string></dict>
+	<dict><key>phrase</key><string>直前</string><key>shortcut</key><string>ちょくぜん</string></dict>
+	<dict><key>phrase</key><string>直射日光</string><key>shortcut</key><string>ちょくしゃにっこう</string></dict>
+	<dict><key>phrase</key><string>直接グラス</string><key>shortcut</key><string>ちょくせつぐらす</string></dict>
+	<dict><key>phrase</key><string>直接日本酒</string><key>shortcut</key><string>ちょくせつにほんしゅ</string></dict>
+	<dict><key>phrase</key><string>直接材料</string><key>shortcut</key><string>ちょくせつざいりょう</string></dict>
 	<dict><key>phrase</key><string>乾燥</string><key>shortcut</key><string>かんそう</string></dict>
+	<dict><key>phrase</key><string>高騰</string><key>shortcut</key><string>こうとう</string></dict>
+	<dict><key>phrase</key><string>魅了</string><key>shortcut</key><string>みりょう</string></dict>
+	<dict><key>phrase</key><string>魅力</string><key>shortcut</key><string>みりょく</string></dict>
 	<dict><key>phrase</key><string>仕分</string><key>shortcut</key><string>しわけ</string></dict>
 	<dict><key>phrase</key><string>任意</string><key>shortcut</key><string>にんい</string></dict>
 	<dict><key>phrase</key><string>企図</string><key>shortcut</key><string>きと</string></dict>
