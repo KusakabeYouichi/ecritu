@@ -193,6 +193,43 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionAdditionalInflectionFormsAreDerivedWithoutVocabularyAppend() {
+        let cases: [(reading: String, expected: String)] = [
+            ("かわねば", "買わねば"),
+            ("みやすい", "見やすい"),
+            ("かかさず", "欠かさず"),
+            ("くわせる", "食わせる")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
+    func testRegressionOrdinalMeFallbackPrefersKanjiMeAfterCommittedNumberInput() {
+        let candidates = converter.candidates(
+            for: "10ぎょうめ",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertEqual(candidates.first, "行め", "candidates=\(candidates)")
+
+        if let meIndex = candidates.firstIndex(of: "行め"),
+            let mokuIndex = candidates.firstIndex(of: "行目") {
+            XCTAssertGreaterThan(mokuIndex, meIndex, "candidates=\(candidates)")
+        }
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
