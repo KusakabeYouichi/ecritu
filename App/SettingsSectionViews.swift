@@ -493,6 +493,21 @@ struct KanaModeSwitcherAssignmentSection: View {
     }
 }
 
+struct DelimiterAutoCommitCandidateSettingsSection: View {
+    @Binding var selection: DelimiterAutoCommitCandidateOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "句読点入力時の自動確定候補",
+            pickerTitle: "句読点入力時の自動確定候補",
+            selection: $selection,
+            options: Array(DelimiterAutoCommitCandidateOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "未確定状態で句読点・記号を入力して自動確定するときに使う候補です。既定は第0候補で、第1候補は右隣の候補を確定します。"
+        )
+    }
+}
+
 struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 
