@@ -53,9 +53,7 @@ extension KeyboardViewController {
         if currentInputMode == .kana,
             let activeConversion,
             shouldAutoCommitConversion(beforeInserting: text) {
-            commitActiveConversionBeforeDelimiterInput(activeConversion)
-            markTextProxyEdit()
-            textDocumentProxy.insertText(text)
+            commitActiveConversionBeforeDelimiterInput(activeConversion, delimiter: text)
             refreshKeyboardStateAsync()
             return
         }
@@ -72,9 +70,7 @@ extension KeyboardViewController {
             if currentInputMode == .kana,
                 !composingReading.isEmpty,
                 shouldAutoCommitConversion(beforeInserting: text) {
-                commitComposingTextBeforeDelimiterInput()
-                markTextProxyEdit()
-                textDocumentProxy.insertText(text)
+                commitComposingTextBeforeDelimiterInput(delimiter: text)
                 refreshKeyboardStateAsync()
                 return
             }
@@ -104,7 +100,7 @@ extension KeyboardViewController {
         }
     }
 
-    func commitComposingTextBeforeDelimiterInput() {
+    func commitComposingTextBeforeDelimiterInput(delimiter: String) {
         clearRecentKanaPlainCommitUpgradeContext()
 
         guard !composingRawText.isEmpty,
@@ -148,11 +144,15 @@ extension KeyboardViewController {
             sourceText: sourceText,
             sourceReading: sourceReading,
             committedText: committedText,
-            learn: true
+            learn: true,
+            trailingText: delimiter
         )
     }
 
-    func commitActiveConversionBeforeDelimiterInput(_ conversion: ActiveConversion) {
+    func commitActiveConversionBeforeDelimiterInput(
+        _ conversion: ActiveConversion,
+        delimiter: String
+    ) {
         var autoCommitCandidates: [String] = [conversion.sourceText]
 
         for candidate in conversion.candidates where !autoCommitCandidates.contains(candidate) {
@@ -173,7 +173,8 @@ extension KeyboardViewController {
         commitActiveConversion(
             conversion,
             committedText: preferredCandidate,
-            learn: true
+            learn: true,
+            trailingText: delimiter
         )
     }
 
@@ -660,9 +661,10 @@ extension KeyboardViewController {
         sourceText: String,
         sourceReading: String,
         committedText: String,
-        learn: Bool
+        learn: Bool,
+        trailingText: String = ""
     ) {
-        let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText)
+        let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
         // Prefer replacing current marked text directly to avoid deleting already committed text.
         markTextProxyEdit()
         textDocumentProxy.setMarkedText(
@@ -698,9 +700,10 @@ extension KeyboardViewController {
     func commitActiveConversion(
         _ conversion: ActiveConversion,
         committedText: String,
-        learn: Bool
+        learn: Bool,
+        trailingText: String = ""
     ) {
-        let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText)
+        let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
         // Replace marked conversion text directly and commit it.
         markTextProxyEdit()
         textDocumentProxy.setMarkedText(
