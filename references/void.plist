@@ -177,6 +177,10 @@
 	<dict><key>phrase</key><string>油淋鶏</string><key>shortcut</key><string>ゆーりんちー</string></dict>
 	<dict><key>phrase</key><string>ボタンインコ</string><key>shortcut</key><string>ぼたんいんこ</string></dict>
 	<dict><key>phrase</key><string>原価率</string><key>shortcut</key><string>げんかりつ</string></dict>
-	<dict><key>phrase</key><string>甘酢漬け</string><key>shortcut</key><string>あまずづけ</string></dict>
+	<dict><key>phrase</key><string>何年</string><key>shortcut</key><string>なんねん</string></dict>
+	<dict><key>phrase</key><string>ヒング</string><key>shortcut</key><string>ひんぐ</string></dict>
+	<dict><key>phrase</key><string>アサフェティダ</string><key>shortcut</key><string>あさふぇてぃだ</string></dict>
+	<dict><key>phrase</key><string>高確率</string><key>shortcut</key><string>こうかくりつ</string></dict>
+	<dict><key>phrase</key><string>低確率</string><key>shortcut</key><string>ていかくりつ</string></dict>
 </array>
 </plist>
