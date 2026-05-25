@@ -209,11 +209,20 @@ final class KeyboardViewController: UIInputViewController {
         setupKeyboardView()
 
         if shouldPreloadSystemDictionaryAtLaunch() {
-            updateKeyboardDiagnosticsHeartbeat(event: "システム辞書プリロード開始", appendLog: true)
+            let preloadStartedAt = CFAbsoluteTimeGetCurrent()
+            updateKeyboardDiagnosticsHeartbeat(
+                event: "システム辞書プリロード開始 physicalMemoryGB=\(physicalMemoryGBText())",
+                appendLog: true
+            )
             kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
-                self?.refreshKeyboardStateAsync()
-                self?.updateKeyboardDiagnosticsHeartbeat(
-                    event: "システム辞書プリロード完了",
+                guard let self else {
+                    return
+                }
+
+                let elapsedMs = max(0, Int((CFAbsoluteTimeGetCurrent() - preloadStartedAt) * 1000))
+                self.refreshKeyboardStateAsync()
+                self.updateKeyboardDiagnosticsHeartbeat(
+                    event: "システム辞書プリロード完了 elapsedMs=\(elapsedMs)",
                     appendLog: true
                 )
             }
@@ -557,12 +566,61 @@ final class KeyboardViewController: UIInputViewController {
         let bundle = Bundle.main
         let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
         let buildNumber = (bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
-        let resourceValues = try? bundle.bundleURL.resourceValues(
+        let installToken = diagnosticsInstallToken(for: bundle)
+        return "\(bundleID)|\(buildNumber)|\(installToken.value)|\(installToken.source)"
+    }
+
+    private func diagnosticsInstallToken(for bundle: Bundle) -> (value: Int, source: String) {
+        if let timestamp = bundleTimestampForDiagnostics(bundle) {
+            return (timestamp, "date")
+        }
+
+        return (deterministicDiagnosticsPathToken(bundle.bundlePath), "pathHash")
+    }
+
+    private func bundleTimestampForDiagnostics(_ bundle: Bundle) -> Int? {
+        if let bundleValues = try? bundle.bundleURL.resourceValues(
             forKeys: [.creationDateKey, .contentModificationDateKey]
-        )
-        let date = resourceValues?.creationDate ?? resourceValues?.contentModificationDate
-        let timestamp = Int(date?.timeIntervalSince1970 ?? 0)
-        return "\(bundleID)|\(buildNumber)|\(timestamp)"
+        ),
+            let bundleDate = bundleValues.creationDate ?? bundleValues.contentModificationDate {
+            let seconds = Int(bundleDate.timeIntervalSince1970)
+            if seconds > 0 {
+                return seconds
+            }
+        }
+
+        if let executableURL = bundle.executableURL,
+            let executableValues = try? executableURL.resourceValues(
+                forKeys: [.creationDateKey, .contentModificationDateKey]
+            ),
+            let executableDate = executableValues.creationDate ?? executableValues.contentModificationDate {
+            let seconds = Int(executableDate.timeIntervalSince1970)
+            if seconds > 0 {
+                return seconds
+            }
+        }
+
+        if let attributes = try? FileManager.default.attributesOfItem(atPath: bundle.bundlePath),
+            let modifiedDate = attributes[.modificationDate] as? Date {
+            let seconds = Int(modifiedDate.timeIntervalSince1970)
+            if seconds > 0 {
+                return seconds
+            }
+        }
+
+        return nil
+    }
+
+    private func deterministicDiagnosticsPathToken(_ path: String) -> Int {
+        var hash: UInt32 = 2_166_136_261
+
+        for byte in path.utf8 {
+            hash ^= UInt32(byte)
+            hash = hash &* 16_777_619
+        }
+
+        let value = Int(hash)
+        return value == 0 ? 1 : value
     }
 
     private func clearKeyboardDiagnosticsStorage(
@@ -596,7 +654,7 @@ final class KeyboardViewController: UIInputViewController {
 
         let previousMarkerDescription = previousMarker ?? "none"
         appendKeyboardDiagnosticsLog(
-            "診断ログをインストール単位で初期化 previous=\(previousMarkerDescription)",
+            "診断ログをインストール単位で初期化 previous=\(previousMarkerDescription) current=\(currentMarker)",
             file: #fileID,
             line: #line,
             function: #function
