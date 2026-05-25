@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260525142812"
+    private static let editionUpdatedAtRaw: String = "20260525150252"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -202,6 +202,7 @@ struct ContentView: View {
     @State private var keyboardDiagnosticsLastSessionID = ""
     @State private var containerDiagnosticsSessionID = UUID().uuidString
     @State private var didRunFirstAppearanceBootstrap = false
+    @State private var didCompleteInitialDataSnapshot = false
     @State private var isBootstrappingInitialData = true
     @GestureState private var isEditionNumberPressed = false
 
@@ -210,6 +211,10 @@ struct ContentView: View {
         "作成したキーボードを有効化",
         "入力画面で地球儀キーから切り替え"
     ]
+
+    private var isContainerBusy: Bool {
+        isBootstrappingInitialData || isLoadingSystemVocabularyEntries
+    }
 
     private func rawValueSelection<Option: RawRepresentable>(
         from rawValue: String,
@@ -552,12 +557,61 @@ struct ContentView: View {
         let bundle = keyboardExtensionBundleForDiagnostics() ?? Bundle.main
         let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
         let buildNumber = (bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
-        let resourceValues = try? bundle.bundleURL.resourceValues(
+        let installToken = diagnosticsInstallToken(for: bundle)
+        return "\(bundleID)|\(buildNumber)|\(installToken.value)|\(installToken.source)"
+    }
+
+    private func diagnosticsInstallToken(for bundle: Bundle) -> (value: Int, source: String) {
+        if let timestamp = bundleTimestampForDiagnostics(bundle) {
+            return (timestamp, "date")
+        }
+
+        return (deterministicDiagnosticsPathToken(bundle.bundlePath), "pathHash")
+    }
+
+    private func bundleTimestampForDiagnostics(_ bundle: Bundle) -> Int? {
+        if let bundleValues = try? bundle.bundleURL.resourceValues(
             forKeys: [.creationDateKey, .contentModificationDateKey]
-        )
-        let date = resourceValues?.creationDate ?? resourceValues?.contentModificationDate
-        let timestamp = Int(date?.timeIntervalSince1970 ?? 0)
-        return "\(bundleID)|\(buildNumber)|\(timestamp)"
+        ),
+            let bundleDate = bundleValues.creationDate ?? bundleValues.contentModificationDate {
+            let seconds = Int(bundleDate.timeIntervalSince1970)
+            if seconds > 0 {
+                return seconds
+            }
+        }
+
+        if let executableURL = bundle.executableURL,
+            let executableValues = try? executableURL.resourceValues(
+                forKeys: [.creationDateKey, .contentModificationDateKey]
+            ),
+            let executableDate = executableValues.creationDate ?? executableValues.contentModificationDate {
+            let seconds = Int(executableDate.timeIntervalSince1970)
+            if seconds > 0 {
+                return seconds
+            }
+        }
+
+        if let attributes = try? FileManager.default.attributesOfItem(atPath: bundle.bundlePath),
+            let modifiedDate = attributes[.modificationDate] as? Date {
+            let seconds = Int(modifiedDate.timeIntervalSince1970)
+            if seconds > 0 {
+                return seconds
+            }
+        }
+
+        return nil
+    }
+
+    private func deterministicDiagnosticsPathToken(_ path: String) -> Int {
+        var hash: UInt32 = 2_166_136_261
+
+        for byte in path.utf8 {
+            hash ^= UInt32(byte)
+            hash = hash &* 16_777_619
+        }
+
+        let value = Int(hash)
+        return value == 0 ? 1 : value
     }
 
     private func clearKeyboardDiagnosticsIfInstallChanged() {
@@ -1060,6 +1114,10 @@ struct ContentView: View {
         saveStringArray(lines, forKey: SettingsKeys.keyboardDiagnosticsLogLines, defaults: defaults)
     }
 
+    private func containerDiagnosticsElapsedMilliseconds(since start: CFAbsoluteTime) -> Int {
+        max(0, Int((CFAbsoluteTimeGetCurrent() - start) * 1000))
+    }
+
     private func loadSystemVocabularyEntriesInBackground() async -> (
         first: [VocabularyEntry],
         second: [VocabularyEntry]
@@ -1081,7 +1139,8 @@ struct ContentView: View {
         }
 
         isLoadingSystemVocabularyEntries = true
-        appendContainerDiagnosticsLog("コンテナでシステム語彙ロード開始")
+        let loadStartedAt = CFAbsoluteTimeGetCurrent()
+        appendContainerDiagnosticsLog("コンテナでシステム語彙ロード開始 force=\(force)")
 
         Task { @MainActor in
             let systemEntries = await loadSystemVocabularyEntriesInBackground()
@@ -1089,12 +1148,21 @@ struct ContentView: View {
             secondVocabularyEntries = systemEntries.second
             didLoadSystemVocabularyEntries = true
             isLoadingSystemVocabularyEntries = false
+            finishBootstrappingIfNeeded()
 
             appendContainerDiagnosticsLog(
-                "コンテナでシステム語彙ロード完了 first=\(systemEntries.first.count) second=\(systemEntries.second.count)"
+                "コンテナでシステム語彙ロード完了 first=\(systemEntries.first.count) second=\(systemEntries.second.count) elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: loadStartedAt))"
             )
             loadKeyboardDiagnosticsState()
         }
+    }
+
+    private func finishBootstrappingIfNeeded() {
+        guard !isLoadingSystemVocabularyEntries else {
+            return
+        }
+
+        isBootstrappingInitialData = false
     }
 
     private func migrateInitialUserDictionaryIfNeeded() {
@@ -1576,22 +1644,29 @@ struct ContentView: View {
                 return
             }
 
-            // Subsequent appearances refresh synchronously to reflect external changes.
-            clearKeyboardDiagnosticsIfInstallChanged()
-            loadKeyboardDiagnosticsState()
-            loadUserDictionaryEntries()
-            loadLearnedDictionaryEntries()
-            loadSuppressionDictionaryEntries()
-            loadShortcutDictionaryEntries()
+            isBootstrappingInitialData = true
 
-            if didLoadSystemVocabularyEntries {
-                requestSystemVocabularyEntriesLoadIfNeeded(force: true)
-            } else if shouldAutoLoadSystemVocabularyOnAppear() {
-                requestSystemVocabularyEntriesLoadIfNeeded()
+            Task { @MainActor in
+                let refreshStartedAt = CFAbsoluteTimeGetCurrent()
+                clearKeyboardDiagnosticsIfInstallChanged()
+                loadKeyboardDiagnosticsState()
+                appendContainerDiagnosticsLog("コンテナ再表示 refresh開始")
+
+                let refreshedSnapshot = await loadInitialDataSnapshotInBackground()
+                applyInitialDataSnapshot(refreshedSnapshot)
+
+                if didLoadSystemVocabularyEntries {
+                    requestSystemVocabularyEntriesLoadIfNeeded(force: true)
+                } else if shouldAutoLoadSystemVocabularyOnAppear() {
+                    requestSystemVocabularyEntriesLoadIfNeeded()
+                }
+
+                finishBootstrappingIfNeeded()
+                appendContainerDiagnosticsLog(
+                    "コンテナ再表示 refresh完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: refreshStartedAt)) user=\(userDictionaryEntries.count) learned=\(learnedDictionaryEntries.count) suppression=\(suppressionDictionaryEntries.count) shortcut=\(shortcutDictionaryEntries.count)"
+                )
+                loadKeyboardDiagnosticsState()
             }
-
-            appendContainerDiagnosticsLog("コンテナ再表示")
-            loadKeyboardDiagnosticsState()
             return
         }
 
@@ -1600,6 +1675,7 @@ struct ContentView: View {
         isBootstrappingInitialData = true
 
         Task { @MainActor in
+            let bootstrapStartedAt = CFAbsoluteTimeGetCurrent()
             // Let SwiftUI present the first frame before expensive file I/O and JSON decode.
             await Task.yield()
 
@@ -1620,39 +1696,54 @@ struct ContentView: View {
 
             let initialDataSnapshot = await loadInitialDataSnapshotInBackground()
             applyInitialDataSnapshot(initialDataSnapshot)
-            isBootstrappingInitialData = false
+            didCompleteInitialDataSnapshot = true
 
-            appendContainerDiagnosticsLog("コンテナ初回表示 bootstrap完了")
+            appendContainerDiagnosticsLog(
+                "コンテナ初回表示 bootstrap完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: bootstrapStartedAt)) user=\(initialDataSnapshot.userDictionaryEntries.count) learned=\(initialDataSnapshot.learnedDictionaryEntries.count) suppression=\(initialDataSnapshot.suppressionDictionaryEntries.count) shortcut=\(initialDataSnapshot.shortcutDictionaryEntries.count)"
+            )
             loadKeyboardDiagnosticsState()
 
             if shouldAutoLoadSystemVocabularyOnAppear() {
                 requestSystemVocabularyEntriesLoadIfNeeded()
             }
+
+            finishBootstrappingIfNeeded()
         }
+    }
+
+    private var loadingToastMessage: String {
+        if isLoadingSystemVocabularyEntries {
+            return "Loading... システム語彙を読み込み中"
+        }
+
+        return "Loading... 語彙データを読み込み中"
+    }
+
+    private var loadingToastLabel: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .controlSize(.small)
+
+            Text(loadingToastMessage)
+                .font(.footnote.weight(.semibold))
+                .foregroundStyle(.primary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial, in: Capsule())
+        .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
     }
 
     @ViewBuilder
     private var initialLoadingToast: some View {
-        if isBootstrappingInitialData {
+        if isContainerBusy,
+            didCompleteInitialDataSnapshot {
             VStack {
-                HStack(spacing: 8) {
-                    ProgressView()
-                        .controlSize(.small)
-
-                    Text("Loading... 語彙データを読み込み中")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.primary)
-                }
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
-                .background(.ultraThinMaterial, in: Capsule())
-                .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+                loadingToastLabel
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
             .padding(.horizontal, 24)
-            .transition(.opacity)
             .allowsHitTesting(false)
-            .animation(.easeInOut(duration: 0.16), value: isBootstrappingInitialData)
         }
     }
 
@@ -1662,8 +1753,12 @@ struct ContentView: View {
                 AppTheme.screenBackground
                     .ignoresSafeArea()
 
-                if isBootstrappingInitialData {
-                    Color.clear
+                if !didCompleteInitialDataSnapshot {
+                    VStack {
+                        loadingToastLabel
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                    .padding(.horizontal, 24)
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
@@ -1895,6 +1990,7 @@ struct ContentView: View {
                         }
                         .padding(20)
                     }
+                    .disabled(isContainerBusy)
                 }
 
                 initialLoadingToast
