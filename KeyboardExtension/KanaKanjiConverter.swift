@@ -87,7 +87,11 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "させる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "させない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "させられる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
-        InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan])
+        InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan])
     ]
 
     private static let godanPatterns: [GodanPattern] = [
@@ -109,8 +113,14 @@ final class KanaKanjiConverter {
             let suffixes = [
                 pattern.aForm + "ない",
                 pattern.aForm + "なかった",
+                pattern.aForm + "ねば",
+                pattern.aForm + "ず",
                 pattern.aForm + "れる",
                 pattern.aForm + "れない",
+                pattern.aForm + "せる",
+                pattern.aForm + "せない",
+                pattern.aForm + "せられる",
+                pattern.aForm + "せられない",
                 pattern.aForm + "れて",
                 pattern.aForm + "れた",
                 pattern.aForm + "れ",
@@ -254,12 +264,12 @@ final class KanaKanjiConverter {
     ]
 
     private static let inflectionRankingSuffixes: [String] = [
-        "させられない", "させられる", "こられない", "こられる", "られない", "られる",
+        "させられない", "させられる", "せられない", "せられる", "こられない", "こられる", "られない", "られる",
         "こられ", "され", "られ",
-        "させない", "させる", "たくない", "なかった", "たかった", "くなかった",
+        "させない", "させる", "せない", "せる", "やすくない", "たくない", "なかった", "やすかった", "たかった", "くなかった",
         "している", "きている", "ている", "してる", "きてる", "てる",
         "きました", "しました", "きません", "しません", "ました", "ます",
-        "くない", "かった", "ければ", "くれば", "よう", "こよう", "こい", "たい", "れば",
+        "くない", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たい", "れば", "ねば", "ず",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
         "ない", "きて", "きた", "くて", "て", "た"
     ]
@@ -371,6 +381,9 @@ final class KanaKanjiConverter {
                 !userCandidateSet.contains($0)
             }
         )
+        let hasDirectCandidates = !systemCandidates.isEmpty
+            || !userCandidates.isEmpty
+            || !learnedCandidates.isEmpty
 
         addCandidates(
             systemCandidates,
@@ -409,6 +422,19 @@ final class KanaKanjiConverter {
                 limit: limit * 2
             ),
             baseScore: 1100,
+            to: &scores
+        )
+
+        addCandidates(
+            ordinalMeFallbackCandidates(
+                for: normalizedReading,
+                hasDirectCandidates: hasDirectCandidates,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode,
+                limit: limit * 2
+            ),
+            baseScore: 1080,
             to: &scores
         )
 
@@ -860,6 +886,71 @@ final class KanaKanjiConverter {
         return Array(uniqueCandidates(from: derived).prefix(limit))
     }
 
+    private func ordinalMeFallbackCandidates(
+        for reading: String,
+        hasDirectCandidates: Bool,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        limit: Int
+    ) -> [String] {
+        guard !hasDirectCandidates,
+            reading.count >= 2,
+            reading.hasSuffix("め"),
+            limit > 0 else {
+            return []
+        }
+
+        let stem = String(reading.dropLast(1))
+
+        guard !stem.isEmpty else {
+            return []
+        }
+
+        let stemCandidates = uniqueCandidates(
+            from: candidatesForReading(
+                stem,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            ) + inflectionCandidates(
+                for: stem,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode,
+                limit: limit
+            )
+        )
+
+        guard !stemCandidates.isEmpty else {
+            return []
+        }
+
+        let kanjiStemCandidates = stemCandidates.filter(containsKanji)
+        let nonKanjiStemCandidates = stemCandidates.filter { !containsKanji($0) }
+
+        guard !kanjiStemCandidates.isEmpty else {
+            return []
+        }
+
+        var derived: [String] = []
+
+        for candidate in kanjiStemCandidates {
+            derived.append(candidate + "め")
+        }
+
+        for candidate in nonKanjiStemCandidates {
+            derived.append(candidate + "め")
+        }
+
+        // Keep kanji+"目" candidates available, but behind kanji+"め".
+        for candidate in kanjiStemCandidates {
+            derived.append(candidate + "目")
+        }
+
+        return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
     private func shouldApplyPolitePrefix(_ prefix: String, to candidate: String) -> Bool {
         guard !candidate.hasPrefix(prefix),
             !candidate.hasPrefix("御"),
@@ -1066,6 +1157,16 @@ final class KanaKanjiConverter {
         for scalar in text.unicodeScalars {
             if (0x30A0...0x30FF).contains(scalar.value)
                 || (0x3400...0x9FFF).contains(scalar.value) {
+                return true
+            }
+        }
+
+        return false
+    }
+
+    private func containsKanji(_ text: String) -> Bool {
+        for scalar in text.unicodeScalars {
+            if (0x3400...0x9FFF).contains(scalar.value) {
                 return true
             }
         }
