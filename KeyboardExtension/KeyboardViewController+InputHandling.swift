@@ -713,9 +713,6 @@ extension KeyboardViewController {
         if !conversion.committedText.isEmpty,
             contextBeforeInput.hasSuffix(conversion.committedText) {
             deleteBackwardCharacterCount(conversion.committedText.count)
-        } else if !conversion.sourceText.isEmpty,
-                    contextBeforeInput.hasSuffix(conversion.sourceText) {
-            deleteBackwardCharacterCount(conversion.sourceText.count)
         }
 
         markTextProxyEdit()
