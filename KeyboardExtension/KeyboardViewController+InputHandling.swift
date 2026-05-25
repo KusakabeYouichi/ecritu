@@ -663,17 +663,12 @@ extension KeyboardViewController {
         learn: Bool
     ) {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText)
-        clearMarkedComposingText()
-
-        // If source text still exists as plain text after clearing marked text, replace it.
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
-        if !sourceText.isEmpty,
-            contextBeforeInput.hasSuffix(sourceText) {
-            deleteBackwardCharacterCount(sourceText.count)
-        }
-
+        // Prefer replacing current marked text directly to avoid deleting already committed text.
         markTextProxyEdit()
-        textDocumentProxy.insertText(committedTextForInsertion)
+        textDocumentProxy.setMarkedText(
+            committedTextForInsertion,
+            selectedRange: NSRange(location: committedTextForInsertion.count, length: 0)
+        )
         markTextProxyEdit()
         textDocumentProxy.unmarkText()
         DispatchQueue.main.async { [weak self] in
@@ -706,17 +701,12 @@ extension KeyboardViewController {
         learn: Bool
     ) {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText)
-        clearMarkedComposingText()
-
-        // If source text still exists as plain text after clearing marked text, replace it.
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
-        if !conversion.committedText.isEmpty,
-            contextBeforeInput.hasSuffix(conversion.committedText) {
-            deleteBackwardCharacterCount(conversion.committedText.count)
-        }
-
+        // Replace marked conversion text directly and commit it.
         markTextProxyEdit()
-        textDocumentProxy.insertText(committedTextForInsertion)
+        textDocumentProxy.setMarkedText(
+            committedTextForInsertion,
+            selectedRange: NSRange(location: committedTextForInsertion.count, length: 0)
+        )
         markTextProxyEdit()
         textDocumentProxy.unmarkText()
         DispatchQueue.main.async { [weak self] in
