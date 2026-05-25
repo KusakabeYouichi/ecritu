@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260525100707"
+    private static let editionUpdatedAtRaw: String = "20260525114759"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -155,6 +155,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var kanaModeSwitcherUpFlickActionRawValue: String = KanaModeSwitcherActionOption.symbols.rawValue
+
+    @AppStorage(
+        SettingsKeys.delimiterAutoCommitCandidate,
+        store: Self.sharedDefaults
+    )
+    private var delimiterAutoCommitCandidateRawValue: String = DelimiterAutoCommitCandidateOption.zero.rawValue
 
     @AppStorage(
         SettingsKeys.kanaKanjiCandidateSourceMode,
@@ -386,6 +392,12 @@ struct ContentView: View {
     private var kanaModeSwitcherUpFlickActionSelection: Binding<KanaModeSwitcherActionOption> {
         rawValueSelection(from: kanaModeSwitcherUpFlickActionRawValue, default: .symbols) {
             kanaModeSwitcherUpFlickActionRawValue = $0
+        }
+    }
+
+    private var delimiterAutoCommitCandidateSelection: Binding<DelimiterAutoCommitCandidateOption> {
+        rawValueSelection(from: delimiterAutoCommitCandidateRawValue, default: .zero) {
+            delimiterAutoCommitCandidateRawValue = $0
         }
     }
 
@@ -1727,6 +1739,10 @@ struct ContentView: View {
                             tapSelection: kanaModeSwitcherTapActionSelection,
                             rightFlickSelection: kanaModeSwitcherRightFlickActionSelection,
                             upFlickSelection: kanaModeSwitcherUpFlickActionSelection
+                        )
+
+                        DelimiterAutoCommitCandidateSettingsSection(
+                            selection: delimiterAutoCommitCandidateSelection
                         )
 
                         VStack(alignment: .leading, spacing: 10) {

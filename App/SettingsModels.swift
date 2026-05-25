@@ -39,6 +39,7 @@ enum SettingsKeys {
     static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
     static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
     static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+    static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
     static let landscapeCandidateSide = "landscapeCandidateSide"
     static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
     static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
@@ -210,6 +211,20 @@ enum KanaModeSwitcherActionOption: String, CaseIterable, Identifiable {
         case .emoji: return "☺︎"
         case .kaomoji: return "^_^"
         case .symbols: return "⌘"
+        }
+    }
+}
+
+enum DelimiterAutoCommitCandidateOption: String, CaseIterable, Identifiable {
+    case zero
+    case one
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .zero: return "第0候補"
+        case .one: return "第1候補"
         }
     }
 }
