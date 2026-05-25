@@ -26,6 +26,8 @@ import csv
 import glob
 import json
 import os
+import re
+import unicodedata
 from collections import defaultdict
 from typing import Dict, Iterable, List, Optional, Set, Tuple
 
@@ -45,6 +47,11 @@ SOURCE_TAG_SURFACE = "surface"
 CANDIDATE_POLICY_NORMALIZED = "normalized"
 CANDIDATE_POLICY_SURFACE = "surface"
 CANDIDATE_POLICY_BOTH = "both"
+
+KIGOU_READING = "きごう"
+UNICODE_ESCAPE_PATTERN = re.compile(r"\\u([0-9a-fA-F]{4})")
+KAOMOJI_BRACKET_PATTERN = re.compile(r"(?:\\u0028|\\u0029|[()（）［］｛｝])")
+ASCII_EMOTICON_PATTERN = re.compile(r"^[><^;:_\-~@oO0|/\\.]+$")
 
 
 def extract_inflection_class(row: List[str], reading: str, candidate: str) -> Optional[str]:
@@ -146,6 +153,13 @@ def normalize_candidate(text: str) -> str:
     return text.strip()
 
 
+def decode_unicode_escape_sequences(text: str) -> str:
+    def replace(match: re.Match[str]) -> str:
+        return chr(int(match.group(1), 16))
+
+    return UNICODE_ESCAPE_PATTERN.sub(replace, text)
+
+
 def contains_japanese_script(text: str) -> bool:
     for ch in text:
         code = ord(ch)
@@ -160,6 +174,38 @@ def contains_kanji(text: str) -> bool:
         if 0x3400 <= code <= 0x9FFF:
             return True
     return False
+
+
+def is_kigou_kaomoji_candidate(candidate: str) -> bool:
+    expanded = decode_unicode_escape_sequences(candidate)
+
+    if len(expanded) < 2:
+        return False
+
+    if expanded.lower() in {"orz", "otz"}:
+        return True
+
+    has_bracket = bool(KAOMOJI_BRACKET_PATTERN.search(candidate) or KAOMOJI_BRACKET_PATTERN.search(expanded))
+
+    if has_bracket and len(expanded) >= 3:
+        return True
+
+    if len(expanded) <= 8 and ASCII_EMOTICON_PATTERN.fullmatch(expanded):
+        return True
+
+    if len(expanded) <= 8 and not contains_kanji(expanded) and not is_kana_like(expanded):
+        has_symbol = any(unicodedata.category(ch)[0] in {"P", "S"} for ch in expanded)
+        if has_symbol:
+            return True
+
+    return False
+
+
+def should_exclude_candidate_for_reading(reading: str, candidate: str) -> bool:
+    if reading != KIGOU_READING:
+        return False
+
+    return is_kigou_kaomoji_candidate(candidate)
 
 
 def is_valid_single_reading_candidate(
@@ -313,6 +359,9 @@ def build_index(
 
         for candidate, sources in candidates_with_sources.items():
             if len(candidate) > max_candidate_len:
+                continue
+
+            if should_exclude_candidate_for_reading(reading, candidate):
                 continue
 
             if is_single_reading and not is_valid_single_reading_candidate(
