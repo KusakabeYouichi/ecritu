@@ -3,138 +3,142 @@
 <plist version="1.0">
 <array>
 	<!-- カネゴリー1 -->
-	<dict><key>phrase</key><string>iPad</string><key>shortcut</key><string>あいぱっど</string></dict>
+	<dict><key>phrase</key><string></string><key>shortcut</key><string>あっぷる</string></dict>
+	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
+	<dict><key>phrase</key><string>AirMac Extreme</string><key>shortcut</key><string>えあまっくえくすとりーむ</string></dict>
+	<dict><key>phrase</key><string>AirPods Max</string><key>shortcut</key><string>えあぽっず</string></dict>
+	<dict><key>phrase</key><string>AirPods Max</string><key>shortcut</key><string>えあぽっずまっくす</string></dict>
+	<dict><key>phrase</key><string>AirPods Pro</string><key>shortcut</key><string>えあぽっず</string></dict>
+	<dict><key>phrase</key><string>AirPods Pro</string><key>shortcut</key><string>えあぽっずぷろ</string></dict>
+	<dict><key>phrase</key><string>AirPods</string><key>shortcut</key><string>えあぽっず</string></dict>
+	<dict><key>phrase</key><string>AirTag</string><key>shortcut</key><string>えあたぐ</string></dict>
+	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーゔぃー</string></dict>
+	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーびー</string></dict>
+	<dict><key>phrase</key><string>Apple Vision Pro</string><key>shortcut</key><string>あっぷるゔぃじょんぷろ</string></dict>
+	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
+	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっちえすいー</string></dict>
+	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
+	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっちうるとら</string></dict>
+	<dict><key>phrase</key><string>Apple Watch</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
+	<dict><key>phrase</key><string>Apple</string><key>shortcut</key><string>あっぷる</string></dict>
+	<dict><key>phrase</key><string>HomePod mini</string><key>shortcut</key><string>ほーむぽっどみに</string></dict>
+	<dict><key>phrase</key><string>HomePod</string><key>shortcut</key><string>ほーむぽっど</string></dict>
+	<dict><key>phrase</key><string>iMac</string><key>shortcut</key><string>あいまっく</string></dict>
 	<dict><key>phrase</key><string>iPad Air</string><key>shortcut</key><string>あいぱっど</string></dict>
-	<dict><key>phrase</key><string>iPad mini</string><key>shortcut</key><string>あいぱっど</string></dict>
-	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad Air</string><key>shortcut</key><string>あいぱっどえあ</string></dict>
-	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっどぷろ</string></dict>
+	<dict><key>phrase</key><string>iPad mini</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad mini</string><key>shortcut</key><string>あいぱっどみに</string></dict>
-	<dict><key>phrase</key><string>iPhone</string><key>shortcut</key><string>あいふぉん</string></dict>
+	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっど</string></dict>
+	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっどぷろ</string></dict>
+	<dict><key>phrase</key><string>iPad</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPhone 12 mini</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone 13 mini</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone 15</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone 16</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone 17</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone 18</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone Pro Max</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone SE</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
 	<dict><key>phrase</key><string>iPhone Pro Max</string><key>shortcut</key><string>あいふぉんぷろまっくす</string></dict>
-	<dict><key>phrase</key><string>iMac</string><key>shortcut</key><string>あいまっく</string></dict>
-	<dict><key>phrase</key><string></string><key>shortcut</key><string>あっぷる</string></dict>
-	<dict><key>phrase</key><string>Apple</string><key>shortcut</key><string>あっぷる</string></dict>
-	<dict><key>phrase</key><string>Apple Watch</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
-	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
-	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっち</string></dict>
-	<dict><key>phrase</key><string>Apple Watch Ultra</string><key>shortcut</key><string>あっぷるうぉっちうるとら</string></dict>
-	<dict><key>phrase</key><string>Apple Watch SE</string><key>shortcut</key><string>あっぷるうぉっちえすいー</string></dict>
-	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーゔぃー</string></dict>
-	<dict><key>phrase</key><string>Apple TV</string><key>shortcut</key><string>あっぷるてぃーびー</string></dict>
-	<dict><key>phrase</key><string>AirTag</string><key>shortcut</key><string>えあたぐ</string></dict>
-	<dict><key>phrase</key><string>AirPods</string><key>shortcut</key><string>えあぽっず</string></dict>
-	<dict><key>phrase</key><string>AirPods Max</string><key>shortcut</key><string>えあぽっず</string></dict>
-	<dict><key>phrase</key><string>AirPods Pro</string><key>shortcut</key><string>えあぽっず</string></dict>
-	<dict><key>phrase</key><string>AirPods Pro</string><key>shortcut</key><string>えあぽっずぷろ</string></dict>
-	<dict><key>phrase</key><string>AirPods Max</string><key>shortcut</key><string>えあぽっずまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉん</string></dict>
+	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone SE</string><key>shortcut</key><string>あいふぉん</string></dict>
+	<dict><key>phrase</key><string>iPhone</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>Mac</string><key>shortcut</key><string>まっく</string></dict>
+	<dict><key>phrase</key><string>MacBook Air</string><key>shortcut</key><string>まっくぶっく</string></dict>
+	<dict><key>phrase</key><string>MacBook Air</string><key>shortcut</key><string>まっくぶっくえあ</string></dict>
+	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっく</string></dict>
+	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっくねお</string></dict>
+	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっく</string></dict>
+	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっくぷろ</string></dict>
+	<dict><key>phrase</key><string>MacBook</string><key>shortcut</key><string>まっくぶっく</string></dict>
 	<dict><key>phrase</key><string>Macintosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
 	<dict><key>phrase</key><string>McIntosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
-	<dict><key>phrase</key><string>MacBook</string><key>shortcut</key><string>まっくぶっく</string></dict>
-	<dict><key>phrase</key><string>MacBook Air</string><key>shortcut</key><string>まっくぶっく</string></dict>
-	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっく</string></dict>
-	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっく</string></dict>
-	<dict><key>phrase</key><string>MacBook Air</string><key>shortcut</key><string>まっくぶっくえあ</string></dict>
-	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっくねお</string></dict>
-	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっくぷろ</string></dict>
-	<dict><key>phrase</key><string>AirMac Extreme</string><key>shortcut</key><string>えあまっくえくすとりーむ</string></dict>
-	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
-	<dict><key>phrase</key><string>HomePod</string><key>shortcut</key><string>ほーむぽっど</string></dict>
-	<dict><key>phrase</key><string>HomePod mini</string><key>shortcut</key><string>ほーむぽっどみに</string></dict>
-	<dict><key>phrase</key><string>Apple Vision Pro</string><key>shortcut</key><string>あっぷるゔぃじょんぷろ</string></dict>
 
 	<!-- OSや機能 -->
-	<dict><key>phrase</key><string>iOS</string><key>shortcut</key><string>あいおーえす</string></dict>
-	<dict><key>phrase</key><string>iPadOS</string><key>shortcut</key><string>あいぱっどおーえす</string></dict>
-	<dict><key>phrase</key><string>watchOS</string><key>shortcut</key><string>うぉっちおーえす</string></dict>
-	<dict><key>phrase</key><string>Siri</string><key>shortcut</key><string>しり</string></dict>
-	<dict><key>phrase</key><string>macOS</string><key>shortcut</key><string>まっくおーえす</string></dict>
-	<dict><key>phrase</key><string>OS X</string><key>shortcut</key><string>おーえすてん</string></dict>
-	<dict><key>phrase</key><string>Mac OS X</string><key>shortcut</key><string>まっくおーえすてん</string></dict>
-	<dict><key>phrase</key><string>tvOS</string><key>shortcut</key><string>てぃーびーおーえす</string></dict>
-	<dict><key>phrase</key><string>tvOS</string><key>shortcut</key><string>てぃーゔぃーおーえす</string></dict>
-	<dict><key>phrase</key><string>iCloud</string><key>shortcut</key><string>あいくらうど</string></dict>
 	<dict><key>phrase</key><string>AirDrop</string><key>shortcut</key><string>えあどろっぷ</string></dict>
+	<dict><key>phrase</key><string>AirPlay</string><key>shortcut</key><string>えあぷれい</string></dict>
 	<dict><key>phrase</key><string>Apple Intelligence</string><key>shortcut</key><string>あっぷるいんてりじぇんす</string></dict>
-	<dict><key>phrase</key><string>Tahoe</string><key>shortcut</key><string>たほ</string></dict>
-	<dict><key>phrase</key><string>Sequoia</string><key>shortcut</key><string>せこいあ</string></dict>
-	<dict><key>phrase</key><string>Sonoma</string><key>shortcut</key><string>そのま</string></dict>
-	<dict><key>phrase</key><string>Ventura</string><key>shortcut</key><string>べんちゅら</string></dict>
-	<dict><key>phrase</key><string>Monterey</string><key>shortcut</key><string>もんとれー</string></dict>
 	<dict><key>phrase</key><string>Big Sur</string><key>shortcut</key><string>びっぐさー</string></dict>
 	<dict><key>phrase</key><string>Catalina</string><key>shortcut</key><string>かたりな</string></dict>
-	<dict><key>phrase</key><string>Mojave</string><key>shortcut</key><string>もはべ</string></dict>
-	<dict><key>phrase</key><string>High Sierra</string><key>shortcut</key><string>はいしえら</string></dict>
-	<dict><key>phrase</key><string>Sierra</string><key>shortcut</key><string>しえら</string></dict>
-	<dict><key>phrase</key><string>El Capitan</string><key>shortcut</key><string>えるきゃぴたん</string></dict>
-	<dict><key>phrase</key><string>Yosemite</string><key>shortcut</key><string>よせみて</string></dict>
-	<dict><key>phrase</key><string>Mavericks</string><key>shortcut</key><string>まーべりっくす</string></dict>
-	<dict><key>phrase</key><string>Mountain Lion</string><key>shortcut</key><string>まうんてんらいおん</string></dict>
-	<dict><key>phrase</key><string>Lion</string><key>shortcut</key><string>らいおん</string></dict>
-	<dict><key>phrase</key><string>Snow Leopard</string><key>shortcut</key><string>すのーれぱーど</string></dict>
-	<dict><key>phrase</key><string>Leopard</string><key>shortcut</key><string>れぱーど</string></dict>
-	<dict><key>phrase</key><string>Tiger</string><key>shortcut</key><string>たいがー</string></dict>
-	<dict><key>phrase</key><string>Panther</string><key>shortcut</key><string>ぱんさー</string></dict>
-	<dict><key>phrase</key><string>Jaguar</string><key>shortcut</key><string>じゃがー</string></dict>
-	<dict><key>phrase</key><string>Puma</string><key>shortcut</key><string>ぴゅーま</string></dict>
 	<dict><key>phrase</key><string>Cheetah</string><key>shortcut</key><string>ちーたー</string></dict>
+	<dict><key>phrase</key><string>El Capitan</string><key>shortcut</key><string>えるきゃぴたん</string></dict>
+	<dict><key>phrase</key><string>High Sierra</string><key>shortcut</key><string>はいしえら</string></dict>
+	<dict><key>phrase</key><string>iCloud</string><key>shortcut</key><string>あいくらうど</string></dict>
+	<dict><key>phrase</key><string>iOS</string><key>shortcut</key><string>あいおーえす</string></dict>
+	<dict><key>phrase</key><string>iPadOS</string><key>shortcut</key><string>あいぱっどおーえす</string></dict>
+	<dict><key>phrase</key><string>Jaguar</string><key>shortcut</key><string>じゃがー</string></dict>
 	<dict><key>phrase</key><string>Kodiak</string><key>shortcut</key><string>こでぃあっく</string></dict>
+	<dict><key>phrase</key><string>Leopard</string><key>shortcut</key><string>れぱーど</string></dict>
+	<dict><key>phrase</key><string>Lion</string><key>shortcut</key><string>らいおん</string></dict>
+	<dict><key>phrase</key><string>Mac OS X</string><key>shortcut</key><string>まっくおーえすてん</string></dict>
+	<dict><key>phrase</key><string>macOS</string><key>shortcut</key><string>まっくおーえす</string></dict>
+	<dict><key>phrase</key><string>Mavericks</string><key>shortcut</key><string>まーべりっくす</string></dict>
+	<dict><key>phrase</key><string>Mojave</string><key>shortcut</key><string>もはべ</string></dict>
+	<dict><key>phrase</key><string>Monterey</string><key>shortcut</key><string>もんとれー</string></dict>
+	<dict><key>phrase</key><string>Mountain Lion</string><key>shortcut</key><string>まうんてんらいおん</string></dict>
+	<dict><key>phrase</key><string>OS X</string><key>shortcut</key><string>おーえすてん</string></dict>
+	<dict><key>phrase</key><string>Panther</string><key>shortcut</key><string>ぱんさー</string></dict>
+	<dict><key>phrase</key><string>Puma</string><key>shortcut</key><string>ぴゅーま</string></dict>
+	<dict><key>phrase</key><string>Sequoia</string><key>shortcut</key><string>せこいあ</string></dict>
+	<dict><key>phrase</key><string>Sierra</string><key>shortcut</key><string>しえら</string></dict>
+	<dict><key>phrase</key><string>Siri</string><key>shortcut</key><string>しり</string></dict>
+	<dict><key>phrase</key><string>Snow Leopard</string><key>shortcut</key><string>すのーれぱーど</string></dict>
+	<dict><key>phrase</key><string>Sonoma</string><key>shortcut</key><string>そのま</string></dict>
+	<dict><key>phrase</key><string>Tahoe</string><key>shortcut</key><string>たほ</string></dict>
+	<dict><key>phrase</key><string>Tiger</string><key>shortcut</key><string>たいがー</string></dict>
+	<dict><key>phrase</key><string>tvOS</string><key>shortcut</key><string>てぃーゔぃーおーえす</string></dict>
+	<dict><key>phrase</key><string>tvOS</string><key>shortcut</key><string>てぃーびーおーえす</string></dict>
+	<dict><key>phrase</key><string>Ventura</string><key>shortcut</key><string>べんちゅら</string></dict>
+	<dict><key>phrase</key><string>watchOS</string><key>shortcut</key><string>うぉっちおーえす</string></dict>
+	<dict><key>phrase</key><string>Yosemite</string><key>shortcut</key><string>よせみて</string></dict>
 
 	<!-- サーヴィス -->
-	<dict><key>phrase</key><string>AppleCare</string><key>shortcut</key><string>あっぷるけあ</string></dict>
-	<dict><key>phrase</key><string>AppleCare+</string><key>shortcut</key><string>あっぷるけあぷらす</string></dict>
+	<dict><key>phrase</key><string>App Store</string><key>shortcut</key><string>あっぷすとあ</string></dict>
+	<dict><key>phrase</key><string>Apple Intelligence</string><key>shortcut</key><string>あっぷるいんてりじぇんす</string></dict>
 	<dict><key>phrase</key><string>Apple Music</string><key>shortcut</key><string>あっぷるみゅーじっく</string></dict>
 	<dict><key>phrase</key><string>Apple Pay</string><key>shortcut</key><string>あっぷるぺい</string></dict>
-	<dict><key>phrase</key><string>App Store</string><key>shortcut</key><string>あっぷすとあ</string></dict>
 	<dict><key>phrase</key><string>Apple Store</string><key>shortcut</key><string>あっぷるすとあ</string></dict>
+	<dict><key>phrase</key><string>Apple Support</string><key>shortcut</key><string>あっぷるさぽーと</string></dict>
+	<dict><key>phrase</key><string>AppleCare+</string><key>shortcut</key><string>あっぷるけあぷらす</string></dict>
+	<dict><key>phrase</key><string>AppleCare</string><key>shortcut</key><string>あっぷるけあ</string></dict>
 	<dict><key>phrase</key><string>FaceTime</string><key>shortcut</key><string>ふぇいすたいむ</string></dict>
 	<dict><key>phrase</key><string>FaceTimeオーディオ</string><key>shortcut</key><string>ふぇいすたいむおーでぃお</string></dict>
 	<dict><key>phrase</key><string>iMessage</string><key>shortcut</key><string>あいめっせーじ</string></dict>
-	<dict><key>phrase</key><string>Apple Support</string><key>shortcut</key><string>あっぷるさぽーと</string></dict>
-	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
 	<dict><key>phrase</key><string>iTunes</string><key>shortcut</key><string>あいちゅーんず</string></dict>
-	<dict><key>phrase</key><string>Apple Intelligence</string><key>shortcut</key><string>あっぷるいんてりじぇんす</string></dict>
+	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
 
 	<!-- アプリ -->
-	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
-	<dict><key>phrase</key><string>Pages</string><key>shortcut</key><string>ぺいじず</string></dict>
-	<dict><key>phrase</key><string>Numbers</string><key>shortcut</key><string>なんばーず</string></dict>
-	<dict><key>phrase</key><string>Keynote</string><key>shortcut</key><string>きーのーと</string></dict>
 	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
-	<dict><key>phrase</key><string>Safari</string><key>shortcut</key><string>さふぁり</string></dict>
 	<dict><key>phrase</key><string>GarageBand</string><key>shortcut</key><string>がれーじばんど</string></dict>
 	<dict><key>phrase</key><string>iMovie</string><key>shortcut</key><string>あいむーゔぃー</string></dict>
-	<dict><key>phrase</key><string>TestFlight</string><key>shortcut</key><string>てすとふらい</string></dict>
+	<dict><key>phrase</key><string>Keynote</string><key>shortcut</key><string>きーのーと</string></dict>
+	<dict><key>phrase</key><string>Numbers</string><key>shortcut</key><string>なんばーず</string></dict>
+	<dict><key>phrase</key><string>Pages</string><key>shortcut</key><string>ぺいじず</string></dict>
+	<dict><key>phrase</key><string>Safari</string><key>shortcut</key><string>さふぁり</string></dict>
+	<dict><key>phrase</key><string>TestFlight</string><key>shortcut</key><string>てすとふらいと</string></dict>
+	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
 
 	<!-- misc. -->
-	<dict><key>phrase</key><string>Type-C</string><key>shortcut</key><string>たいぷしー</string></dict>
-	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえー</string></dict>
-	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえい</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
+	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
+	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
+	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えーゆー</string></dict>
+	<dict><key>phrase</key><string>Bluetooth</string><key>shortcut</key><string>ぶるーとぅーす</string></dict>
+	<dict><key>phrase</key><string>docomo</string><key>shortcut</key><string>どこも</string></dict>
+	<dict><key>phrase</key><string>Google</string><key>shortcut</key><string>ぐーぐる</string></dict>
 	<dict><key>phrase</key><string>Intel</string><key>shortcut</key><string>いんてる</string></dict>
 	<dict><key>phrase</key><string>Microsoft</string><key>shortcut</key><string>まいくろそふと</string></dict>
-	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
 	<dict><key>phrase</key><string>Netflix</string><key>shortcut</key><string>ねっとふりっくす</string></dict>
-	<dict><key>phrase</key><string>VScode</string><key>shortcut</key><string>ゔいえすこーど</string></dict>
-	<dict><key>phrase</key><string>Threads</string><key>shortcut</key><string>すれっず</string></dict>
-	<dict><key>phrase</key><string>フルアクセス</string><key>shortcut</key><string>ふるあくせす</string></dict>
-	<dict><key>phrase</key><string>Google</string><key>shortcut</key><string>ぐーぐる</string></dict>
-	<dict><key>phrase</key><string>docomo</string><key>shortcut</key><string>どこも</string></dict>
-	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えーゆー</string></dict>
-	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
 	<dict><key>phrase</key><string>SoftBank</string><key>shortcut</key><string>そふとばんく</string></dict>
-	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
-	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
+	<dict><key>phrase</key><string>Threads</string><key>shortcut</key><string>すれっず</string></dict>
+	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえい</string></dict>
+	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえー</string></dict>
+	<dict><key>phrase</key><string>Type-C</string><key>shortcut</key><string>たいぷしー</string></dict>
+	<dict><key>phrase</key><string>VScode</string><key>shortcut</key><string>ゔいえすこーど</string></dict>
+	<dict><key>phrase</key><string>エミュレイター</string><key>shortcut</key><string>えみゅれいたー</string></dict>
+	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
+	<dict><key>phrase</key><string>フルアクセス</string><key>shortcut</key><string>ふるあくせす</string></dict>
 </array>
 </plist>
