@@ -142,10 +142,90 @@ struct KeyboardRootView: View {
         latinLayoutMode == .qwerty
     }
 
+    private var usesPortraitLatinInlineDeleteLayout: Bool {
+        !isLandscapeLayout
+            && inputMode == .latin
+            && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty)
+    }
+
+    private var portraitLatinQwertyBottomRowSlackWidth: CGFloat {
+        guard usesPortraitLatinInlineDeleteLayout,
+            latinLayoutMode == .qwerty else {
+            return 0
+        }
+
+        let estimatedKeyboardWidth = max(
+            1,
+            UIScreen.main.bounds.width - keyboardHorizontalPadding * 2
+        )
+        let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
+            ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
+            : 0
+        let letterAreaWidth = max(1, estimatedKeyboardWidth - leadingControlWidth)
+        let topRowLetterCount = CGFloat(max(rows.first?.count ?? 10, 1))
+        let topRowLetterSpacingCount = CGFloat(max(Int(topRowLetterCount) - 1, 0))
+        let topRowLetterWidth = max(
+            1,
+            (letterAreaWidth - keyboardRowSpacing * topRowLetterSpacingCount) / topRowLetterCount
+        )
+
+        // Width budget previously expressed as trailing inset; now redistributed to Shift/Delete.
+        let trailingPitchFactor: CGFloat = 0.75
+        return (topRowLetterWidth + keyboardRowSpacing) * trailingPitchFactor
+    }
+
+    private func portraitQwertyBottomRowKeyMetrics(rowIndex: Int) -> (letter: CGFloat, edge: CGFloat)? {
+        guard usesPortraitLatinInlineDeleteLayout,
+            latinLayoutMode == .qwerty,
+            rowIndex == 2 else {
+            return nil
+        }
+
+        let estimatedKeyboardWidth = max(
+            1,
+            UIScreen.main.bounds.width - keyboardHorizontalPadding * 2
+        )
+        let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
+            ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
+            : 0
+        let availableRowWidth = max(1, estimatedKeyboardWidth - leadingControlWidth)
+        let spacingCount: CGFloat = 8
+        let keyCount: CGFloat = 9
+        let letterKeyWidth = max(
+            1,
+            (availableRowWidth
+                - portraitLatinQwertyBottomRowSlackWidth
+                - keyboardRowSpacing * spacingCount) / keyCount
+        )
+        let edgeKeyWidth = letterKeyWidth + portraitLatinQwertyBottomRowSlackWidth / 2
+
+        return (letter: letterKeyWidth, edge: edgeKeyWidth)
+    }
+
+    private func shouldReplacePortraitAzertyRightShiftWithDelete(
+        rowIndex: Int,
+        kana: FlickKanaSet
+    ) -> Bool {
+        usesPortraitLatinInlineDeleteLayout
+            && latinLayoutMode == .azerty
+            && rowIndex == 2
+            && isLandscapeLatinRightShiftKey(kana)
+    }
+
+    private func shouldAppendPortraitQwertyDeleteKey(rowIndex: Int) -> Bool {
+        usesPortraitLatinInlineDeleteLayout
+            && latinLayoutMode == .qwerty
+            && rowIndex == 2
+    }
+
+    private var portraitLatinDeleteReplacementSymbol: String {
+        "@"
+    }
+
     private var latinSpaceRightActionSymbols: [String] {
         if !isLandscapeLayout,
             latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
-            return [".", "/", "@"]
+            return ["/", ".", "-"]
         }
 
         return ["!", "?", "@", "&", "/"]
@@ -2794,6 +2874,28 @@ struct KeyboardRootView: View {
             .frame(width: fixedWidth, height: mainFlickKeyHeight)
     }
 
+    @ViewBuilder
+    private func inlineLatinDeleteKey(fixedWidth: CGFloat? = nil) -> some View {
+        let deleteKey = ActionKeyButton(
+            title: "⌫",
+            accessibilityLabel: "削除",
+            fontSize: 26,
+            repeatsWhileHolding: true,
+            repeatInitialDelay: keyRepeatInitialDelay,
+            repeatInterval: keyRepeatInterval,
+            action: onDeleteBackward
+        )
+
+        if let fixedWidth {
+            deleteKey
+                .frame(width: fixedWidth, height: mainFlickKeyHeight)
+        } else {
+            deleteKey
+                .frame(maxWidth: .infinity)
+                .frame(height: mainFlickKeyHeight)
+        }
+    }
+
     private func landscapeLatinInlineReturnKey(fixedWidth: CGFloat) -> some View {
         ActionKeyButton(
             title: returnActionKeyTitle,
@@ -3116,6 +3218,7 @@ struct KeyboardRootView: View {
 
             ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
                 HStack(spacing: keyboardRowSpacing) {
+                    let qwertyBottomRowKeyMetrics = portraitQwertyBottomRowKeyMetrics(rowIndex: rowIndex)
                     let compactLeftModeSwitchSlot = isKanaFiveByTwoMode ? rowIndex + 1 : rowIndex
 
                     if showsCompactLeftModeSwitchButtons && compactLeftModeSwitchSlot < 4 {
@@ -3123,19 +3226,31 @@ struct KeyboardRootView: View {
                     }
 
                     ForEach(row) { kana in
-                        if isLatinShiftKey(kana) {
-                            LatinShiftKeyButton(
+                        if shouldReplacePortraitAzertyRightShiftWithDelete(
+                            rowIndex: rowIndex,
+                            kana: kana
+                        ) {
+                            inlineLatinDeleteKey()
+                        } else if isLatinShiftKey(kana) {
+                            let shiftKey = LatinShiftKeyButton(
                                 isOn: latinShiftState != .off,
                                 isLocked: latinShiftState == .locked,
                                 onTap: handleLatinShiftTap,
                                 onLongPress: handleLatinShiftLongPress
                             )
-                                .frame(maxWidth: .infinity)
-                                .frame(height: mainFlickKeyHeight)
+
+                            if let qwertyBottomRowKeyMetrics {
+                                shiftKey
+                                    .frame(width: qwertyBottomRowKeyMetrics.edge, height: mainFlickKeyHeight)
+                            } else {
+                                shiftKey
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: mainFlickKeyHeight)
+                            }
                         } else {
                             let renderedKana = displayedKana(for: kana)
 
-                            FlickKeyView(
+                            let letterKey = FlickKeyView(
                                 kana: renderedKana,
                                 onCommit: commitText,
                                 showsDirectionalHints: showsFlickGuideCharacters,
@@ -3147,9 +3262,20 @@ struct KeyboardRootView: View {
                                     updateActiveLayer(isTouching, layerIndex: rowIndex)
                                 }
                             )
-                                .frame(maxWidth: .infinity)
-                                .frame(height: mainFlickKeyHeight)
+
+                            if let qwertyBottomRowKeyMetrics {
+                                letterKey
+                                    .frame(width: qwertyBottomRowKeyMetrics.letter, height: mainFlickKeyHeight)
+                            } else {
+                                letterKey
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: mainFlickKeyHeight)
+                            }
                         }
+                    }
+
+                    if shouldAppendPortraitQwertyDeleteKey(rowIndex: rowIndex) {
+                        inlineLatinDeleteKey(fixedWidth: qwertyBottomRowKeyMetrics?.edge)
                     }
                 }
                 .padding(horizontalInsetsForMainRow(rowIndex))
@@ -3196,17 +3322,27 @@ struct KeyboardRootView: View {
                     }
                 }
 
-                ActionKeyButton(
-                    title: "⌫",
-                    accessibilityLabel: "削除",
-                    fontSize: 26,
-                    fixedWidth: bottomActionRowDeleteKeyWidth,
-                    repeatsWhileHolding: true,
-                    repeatInitialDelay: keyRepeatInitialDelay,
-                    repeatInterval: keyRepeatInterval,
-                    action: onDeleteBackward
-                )
-                    .frame(height: unifiedActionRowHeight)
+                if usesPortraitLatinInlineDeleteLayout {
+                    ActionKeyButton(
+                        title: portraitLatinDeleteReplacementSymbol,
+                        fontSize: 22,
+                        fixedWidth: bottomActionRowDeleteKeyWidth,
+                        action: { commitText(portraitLatinDeleteReplacementSymbol) }
+                    )
+                        .frame(height: unifiedActionRowHeight)
+                } else {
+                    ActionKeyButton(
+                        title: "⌫",
+                        accessibilityLabel: "削除",
+                        fontSize: 26,
+                        fixedWidth: bottomActionRowDeleteKeyWidth,
+                        repeatsWhileHolding: true,
+                        repeatInitialDelay: keyRepeatInitialDelay,
+                        repeatInterval: keyRepeatInterval,
+                        action: onDeleteBackward
+                    )
+                        .frame(height: unifiedActionRowHeight)
+                }
 
                 spaceKeyButton(fixedWidth: nil, keyHeight: unifiedActionRowHeight)
 
