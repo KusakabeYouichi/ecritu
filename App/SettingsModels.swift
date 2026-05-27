@@ -42,6 +42,7 @@ enum SettingsKeys {
     static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
     static let landscapeCandidateSide = "landscapeCandidateSide"
     static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
+    static let landscapeLatinSuggestionMode = "landscapeLatinSuggestionMode"
     static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
     static let kanaKanjiInitialUserDictionaryMigrated = "kanaKanjiInitialUserDictionaryMigrated"
     static let kanaKanjiInitialUserDictionaryAppliedSignature = "kanaKanjiInitialUserDictionaryAppliedSignature"
@@ -240,6 +241,20 @@ enum LandscapeCandidateSideOption: String, CaseIterable, Identifiable {
         switch self {
         case .left: return "左"
         case .right: return "右"
+        }
+    }
+}
+
+enum LandscapeLatinSuggestionModeOption: String, CaseIterable, Identifiable {
+    case sidebar
+    case off
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .sidebar: return "使う"
+        case .off: return "使わない"
         }
     }
 }

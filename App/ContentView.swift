@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260527162745"
+    private static let editionUpdatedAtRaw: String = "20260527191813"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -65,6 +65,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var landscapeNumberPaneSideRawValue: String = LandscapeCandidateSideOption.left.rawValue
+
+    @AppStorage(
+        SettingsKeys.landscapeLatinSuggestionMode,
+        store: Self.sharedDefaults
+    )
+    private var landscapeLatinSuggestionModeRawValue: String = LandscapeLatinSuggestionModeOption.sidebar.rawValue
 
     @AppStorage(
         SettingsKeys.kanaModifierPlacement,
@@ -248,6 +254,12 @@ struct ContentView: View {
     private var landscapeNumberPaneSideSelection: Binding<LandscapeCandidateSideOption> {
         rawValueSelection(from: landscapeNumberPaneSideRawValue, default: .left) {
             landscapeNumberPaneSideRawValue = $0
+        }
+    }
+
+    private var landscapeLatinSuggestionModeSelection: Binding<LandscapeLatinSuggestionModeOption> {
+        rawValueSelection(from: landscapeLatinSuggestionModeRawValue, default: .sidebar) {
+            landscapeLatinSuggestionModeRawValue = $0
         }
     }
 
@@ -1805,7 +1817,10 @@ struct ContentView: View {
 
                         KanaLayoutSettingsSection(selection: kanaLayoutSelection)
 
-                        LandscapeCandidateSideSettingsSection(selection: landscapeCandidateSideSelection)
+                        LandscapeCandidateSideSettingsSection(
+                            selection: landscapeCandidateSideSelection,
+                            latinSuggestionMode: landscapeLatinSuggestionModeSelection
+                        )
 
                         LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
 

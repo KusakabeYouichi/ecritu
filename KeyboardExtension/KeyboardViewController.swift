@@ -100,6 +100,7 @@ final class KeyboardViewController: UIInputViewController {
         static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
         static let landscapeCandidateSide = "landscapeCandidateSide"
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
+        static let landscapeLatinSuggestionMode = "landscapeLatinSuggestionMode"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
@@ -195,11 +196,14 @@ final class KeyboardViewController: UIInputViewController {
         let kanaModeSwitcherUpFlickActionRawValue: String
         let landscapeCandidateSideRawValue: String
         let landscapeNumberPaneSideRawValue: String
+        let landscapeLatinSuggestionModeRawValue: String
         let showsNextKeyboardKey: Bool
         let shortcutVocabulary: [String]
         let composingText: String
         let conversionCandidates: [String]
         let selectedConversionCandidateIndex: Int?
+        let latinSuggestionQuery: String
+        let latinSuggestions: [String]
         let showsParenthesesWrapper: Bool
     }
 
@@ -1496,6 +1500,13 @@ final class KeyboardViewController: UIInputViewController {
             key: SharedDefaultsKeys.landscapeNumberPaneSide,
             fallback: "left"
         )
+        let landscapeLatinSuggestionModeRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.landscapeLatinSuggestionMode,
+            fallback: "sidebar"
+        )
+        let latinSuggestionQuery = currentLatinSuggestionQueryFromTextContext()
+        let latinSuggestions = currentLatinSuggestions()
 
         return RenderConfiguration(
             directionProfile: directionProfile,
@@ -1522,11 +1533,14 @@ final class KeyboardViewController: UIInputViewController {
             kanaModeSwitcherUpFlickActionRawValue: kanaModeSwitcherUpFlickActionRawValue,
             landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
+            landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
             showsNextKeyboardKey: needsInputModeSwitchKey,
             shortcutVocabulary: kanaKanjiStore.shortcutVocabulary(),
             composingText: candidatePresentation.composingText,
             conversionCandidates: candidatePresentation.candidates,
             selectedConversionCandidateIndex: candidatePresentation.selectedIndex,
+            latinSuggestionQuery: latinSuggestionQuery,
+            latinSuggestions: latinSuggestions,
             showsParenthesesWrapper: hasParenthesesWrapper
         )
     }
@@ -1630,10 +1644,13 @@ final class KeyboardViewController: UIInputViewController {
             kanaModeSwitcherUpFlickActionRawValue: configuration.kanaModeSwitcherUpFlickActionRawValue,
             landscapeCandidateSideRawValue: configuration.landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: configuration.landscapeNumberPaneSideRawValue,
+            landscapeLatinSuggestionModeRawValue: configuration.landscapeLatinSuggestionModeRawValue,
             shortcutVocabulary: configuration.shortcutVocabulary,
             composingText: configuration.composingText,
             conversionCandidates: configuration.conversionCandidates,
             selectedConversionCandidateIndex: configuration.selectedConversionCandidateIndex,
+            latinSuggestionQuery: configuration.latinSuggestionQuery,
+            latinSuggestions: configuration.latinSuggestions,
             showsParenthesesWrapper: configuration.showsParenthesesWrapper,
             initialSpaceToastText: "écritu"
         )
@@ -1649,5 +1666,9 @@ final class KeyboardViewController: UIInputViewController {
         currentDelimiterAutoCommitCandidateIndex(
             from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
         )
+    }
+
+    func latinSuggestions(prefix: String, limit: Int) -> [String] {
+        kanaKanjiStore.latinSuggestions(prefix: prefix, limit: limit)
     }
 }

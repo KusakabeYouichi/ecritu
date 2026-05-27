@@ -293,16 +293,16 @@ private struct SegmentedSettingsCard<Option: Hashable>: View {
     }
 }
 
-private enum KanaPaneArrangementItem: String, CaseIterable, Identifiable {
-    case kana
+private enum LatinCandidatePaneArrangementItem: String, CaseIterable, Identifiable {
+    case latin
     case candidate
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .kana:
-            return "かな"
+        case .latin:
+            return "ラテン文字"
         case .candidate:
             return "候補"
         }
@@ -555,12 +555,17 @@ struct KanaLayoutSettingsSection: View {
 
 struct LandscapeCandidateSideSettingsSection: View {
     @Binding var selection: LandscapeCandidateSideOption
+    @Binding var latinSuggestionMode: LandscapeLatinSuggestionModeOption
 
-    private var paneOrder: [KanaPaneArrangementItem] {
-        selection == .left ? [.candidate, .kana] : [.kana, .candidate]
+    private var paneOrder: [LatinCandidatePaneArrangementItem] {
+        selection == .left ? [.candidate, .latin] : [.latin, .candidate]
     }
 
-    private func updateSelection(from order: [KanaPaneArrangementItem]) {
+    private var usesLandscapeLatinSuggestionPane: Bool {
+        latinSuggestionMode == .sidebar
+    }
+
+    private func updateSelection(from order: [LatinCandidatePaneArrangementItem]) {
         guard let first = order.first else {
             return
         }
@@ -570,16 +575,43 @@ struct LandscapeCandidateSideSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("かなペイン配列 (horizontal)")
+            Text("ラテン文字候補ペイン (horizontal)")
                 .font(.headline)
+
+            Button {
+                latinSuggestionMode = usesLandscapeLatinSuggestionPane ? .off : .sidebar
+            } label: {
+                HStack(spacing: 8) {
+                    Image(systemName: usesLandscapeLatinSuggestionPane ? "checkmark.square.fill" : "square")
+                        .font(.system(size: 17, weight: .semibold))
+                        .foregroundStyle(usesLandscapeLatinSuggestionPane ? Color.accentColor : .secondary)
+
+                    Text("横向きラテン文字入力で候補ペインを使う")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.primary)
+
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 9)
+                .background(
+                    RoundedRectangle(cornerRadius: 9, style: .continuous)
+                        .fill(AppTheme.cardInnerBackground)
+                )
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("横向きラテン文字入力で候補ペインを使う")
+            .accessibilityValue(usesLandscapeLatinSuggestionPane ? "オン" : "オフ")
 
             DraggablePanePairRow(
                 items: paneOrder,
                 title: { $0.title },
                 onReorder: updateSelection
             )
+            .disabled(!usesLandscapeLatinSuggestionPane)
+            .opacity(usesLandscapeLatinSuggestionPane ? 1 : 0.55)
 
-            Text("『かな』『候補』をドラグして並び順を入れ替えます。横向きのかな入力時に反映され、縦向きには影響しません。")
+            Text("『ラテン文字』『候補』をドラグして並び順を入れ替えます。オン/オフは横向きラテン文字入力時のみ有効です。チェックを外している間は左右配置を変更できません。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
