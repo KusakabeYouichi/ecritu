@@ -304,6 +304,11 @@ extension KeyboardRootView {
         case right
     }
 
+    enum LandscapeLatinSuggestionMode: String {
+        case sidebar
+        case off
+    }
+
     enum AccentPalette: String {
         case tuile
         case emeraude

@@ -39,10 +39,13 @@ struct KeyboardRootView: View {
     let kanaModeSwitcherUpFlickActionRawValue: String
     let landscapeCandidateSideRawValue: String
     let landscapeNumberPaneSideRawValue: String
+    let landscapeLatinSuggestionModeRawValue: String
     let shortcutVocabulary: [String]
     let composingText: String
     let conversionCandidates: [String]
     let selectedConversionCandidateIndex: Int?
+    let latinSuggestionQuery: String
+    let latinSuggestions: [String]
     let showsParenthesesWrapper: Bool
     let initialSpaceToastText: String?
 
@@ -108,6 +111,16 @@ struct KeyboardRootView: View {
 
     private var usesLandscapeKanaCandidateSidebar: Bool {
         isLandscapeLayout && inputMode == .kana
+    }
+
+    private var usesLandscapeLatinSuggestionSidebar: Bool {
+        isLandscapeLayout
+            && inputMode == .latin
+            && landscapeLatinSuggestionMode == .sidebar
+    }
+
+    private var showsLatinSuggestionCandidates: Bool {
+        inputMode == .latin && !latinSuggestionQuery.isEmpty
     }
 
     private var usesLandscapeLatinTypewriterLayout: Bool {
@@ -223,6 +236,11 @@ struct KeyboardRootView: View {
     }
 
     private var latinSpaceRightActionSymbols: [String] {
+        if usesLandscapeLatinSuggestionSidebar,
+            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            return ["@", "-", "."]
+        }
+
         if !isLandscapeLayout,
             latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
             return ["/", ".", "-"]
@@ -232,7 +250,12 @@ struct KeyboardRootView: View {
     }
 
     private var latinSpaceLeftActionSymbols: [String] {
-        [":", "_", "(", ")"]
+        if usesLandscapeLatinSuggestionSidebar,
+            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            return []
+        }
+
+        return [":", "_", "(", ")"]
     }
 
     private var landscapeNumberSymbolPanelRows: [[String]] {
@@ -326,6 +349,10 @@ struct KeyboardRootView: View {
 
     private var landscapeNumberPaneSide: LandscapeCandidateSide {
         LandscapeCandidateSide(rawValue: landscapeNumberPaneSideRawValue) ?? .left
+    }
+
+    private var landscapeLatinSuggestionMode: LandscapeLatinSuggestionMode {
+        LandscapeLatinSuggestionMode(rawValue: landscapeLatinSuggestionModeRawValue) ?? .sidebar
     }
 
     private var landscapeEmojiHeaderHeight: CGFloat { 26 }
@@ -2126,6 +2153,8 @@ struct KeyboardRootView: View {
                     .accessibilityHidden(true)
             } else if showsKanaConversionCandidates {
                 kanaConversionCandidateHeaderView
+            } else if showsLatinSuggestionCandidates {
+                latinSuggestionHeaderView
             } else {
                 Color.clear
                     .allowsHitTesting(false)
@@ -2397,6 +2426,52 @@ struct KeyboardRootView: View {
         }
     }
 
+    private var latinSuggestionHeaderView: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                if latinSuggestions.isEmpty {
+                    Text("候補なし")
+                        .font(.system(size: candidateTextFontSize, weight: .regular))
+                        .foregroundStyle(keyLabelColor.opacity(0.6))
+                        .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                        )
+                }
+
+                ForEach(Array(latinSuggestions.enumerated()), id: \.offset) { index, candidate in
+                    Button {
+                        onSelectConversionCandidate(index)
+                    } label: {
+                        Text(candidate)
+                            .font(.system(size: candidateTextFontSize, weight: .semibold))
+                            .foregroundStyle(keyLabelColor)
+                            .lineLimit(1)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(KeyboardThemePalette.candidateHeaderChipBackground)
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
+                            )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(candidate)
+                }
+            }
+            .padding(.horizontal, 2)
+            .padding(.top, kanaCandidateHeaderTopPadding)
+            .padding(.bottom, 0)
+            .frame(maxHeight: .infinity, alignment: .top)
+        }
+    }
+
     private func landscapeCandidateSidebarWidth() -> CGFloat {
         let screenWidth = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
         let ratio: CGFloat = isKanaFiveByTwoMode ? 0.34 : 0.4
@@ -2604,6 +2679,105 @@ struct KeyboardRootView: View {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
         )
+    }
+
+    private var landscapeLatinSuggestionSidebar: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if latinSuggestionQuery.isEmpty {
+                ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(height: 24)
+                }
+            } else if latinSuggestions.isEmpty {
+                Text("候補なし")
+                    .font(.system(size: candidateTextFontSize, weight: .regular))
+                    .foregroundStyle(keyLabelColor.opacity(0.6))
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 6)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                    )
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVStack(alignment: .leading, spacing: 4) {
+                        ForEach(Array(latinSuggestions.enumerated()), id: \.offset) { index, candidate in
+                            Button {
+                                onSelectConversionCandidate(index)
+                            } label: {
+                                Text(candidate)
+                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                    .foregroundStyle(keyLabelColor)
+                                    .lineLimit(1)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 6)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 9, style: .continuous)
+                                            .fill(KeyboardThemePalette.candidateHeaderChipBackground)
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                    .padding(.vertical, 0)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(maxHeight: .infinity, alignment: .top)
+        .padding(.horizontal, 6)
+        .padding(.vertical, 5)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
+        )
+    }
+
+    private var landscapeLatinReferenceClusterHeight: CGFloat {
+        // ラテン横画面の主要クラスターは4段固定。
+        mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
+    }
+
+    @ViewBuilder
+    private var landscapeLatinSwappableMainCluster: some View {
+        if usesLandscapeLatinTypewriterLayout {
+            landscapeLatinTypewriterMainCluster
+        } else if usesThreeByThreeGridForNumberOrLatin {
+            landscapeLatinThreeByThreeMainCluster
+        } else {
+            keyboardMainContent
+        }
+    }
+
+    private var landscapeLatinThreeByThreeMainCluster: some View {
+        let rowHeight = mainFlickKeyHeight
+        let rowSpacing: CGFloat = keyboardRowSpacing
+
+        return VStack(spacing: rowSpacing) {
+            ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
+                HStack(spacing: rowSpacing) {
+                    ForEach(row) { kana in
+                        threeByThreeMainKey(kana, rowIndex: rowIndex)
+                    }
+
+                    threeByThreeRightColumnButton(
+                        rowIndex: rowIndex,
+                        rowHeight: rowHeight,
+                        rowSpacing: rowSpacing
+                    )
+                }
+                .zIndex(zIndex(for: rowIndex))
+            }
+        }
     }
 
     private var landscapeKanaFiveByTwoLeftColumn: some View {
@@ -3481,6 +3655,30 @@ struct KeyboardRootView: View {
                         }
                     }
                     .padding(.top, isKanaFiveByTwoMode ? keyboardRowSpacing + 1 : 0)
+                } else if usesLandscapeLatinSuggestionSidebar {
+                    HStack(spacing: keyboardRowSpacing) {
+                        landscapeLatinModeSwitchColumn
+                            .frame(width: leftModeSwitchButtonWidth)
+                            .frame(height: landscapeLatinReferenceClusterHeight, alignment: .top)
+
+                        if landscapeKanaCandidateSide == .left {
+                            landscapeLatinSuggestionSidebar
+                                .frame(width: landscapeCandidateSidebarWidth())
+                                .frame(height: landscapeLatinReferenceClusterHeight, alignment: .top)
+
+                            landscapeLatinSwappableMainCluster
+                                .frame(maxWidth: .infinity)
+                                .frame(height: landscapeLatinReferenceClusterHeight, alignment: .top)
+                        } else {
+                            landscapeLatinSwappableMainCluster
+                                .frame(maxWidth: .infinity)
+                                .frame(height: landscapeLatinReferenceClusterHeight, alignment: .top)
+
+                            landscapeLatinSuggestionSidebar
+                                .frame(width: landscapeCandidateSidebarWidth())
+                                .frame(height: landscapeLatinReferenceClusterHeight, alignment: .top)
+                        }
+                    }
                 } else {
                     topHeaderView
                     keyboardMainContent
@@ -4172,10 +4370,13 @@ struct KeyboardRootView: View {
                 kanaModeSwitcherUpFlickActionRawValue: "symbols",
                 landscapeCandidateSideRawValue: "left",
             landscapeNumberPaneSideRawValue: "left",
+        landscapeLatinSuggestionModeRawValue: "sidebar",
         shortcutVocabulary: [],
         composingText: "かな",
         conversionCandidates: ["仮名", "かな"],
         selectedConversionCandidateIndex: 0,
+        latinSuggestionQuery: "caf",
+        latinSuggestions: ["cafe", "café"],
         showsParenthesesWrapper: false,
         initialSpaceToastText: nil
     )

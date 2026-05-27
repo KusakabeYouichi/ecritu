@@ -5,6 +5,33 @@ extension KeyboardViewController {
     private enum CandidateLimits {
         static let presentation = 24
         static let conversion = 24
+        static let latinSuggestion = 40
+    }
+
+    func currentLatinSuggestionQueryFromTextContext() -> String {
+        guard currentInputMode == .latin,
+            let contextBeforeInput = textDocumentProxy.documentContextBeforeInput,
+            !contextBeforeInput.isEmpty else {
+            return ""
+        }
+
+        return trailingLatinSuggestionToken(from: contextBeforeInput)
+    }
+
+    func currentLatinSuggestions(limit: Int = CandidateLimits.latinSuggestion) -> [String] {
+        let query = currentLatinSuggestionQueryFromTextContext()
+
+        guard !query.isEmpty else {
+            return []
+        }
+
+        let lookupLimit = max(limit + 12, limit * 2)
+        let suggestions = latinSuggestions(prefix: query, limit: lookupLimit)
+        let filteredSuggestions = suggestions.filter { suggestion in
+            !isCurrentLatinSuggestionQuery(suggestion, query: query)
+        }
+
+        return Array(filteredSuggestions.prefix(limit))
     }
 
     func makeCandidatePresentation(
@@ -321,6 +348,24 @@ extension KeyboardViewController {
     func handleConversionCandidateSelection(_ index: Int) {
         clearRecentKanaPlainCommitUpgradeContext()
 
+        if currentInputMode == .latin {
+            let token = currentLatinSuggestionQueryFromTextContext()
+
+            guard !token.isEmpty else {
+                return
+            }
+
+            let suggestions = currentLatinSuggestions(limit: CandidateLimits.latinSuggestion)
+
+            guard suggestions.indices.contains(index) else {
+                return
+            }
+
+            commitLatinSuggestion(suggestions[index], replacing: token)
+            refreshKeyboardStateAsync()
+            return
+        }
+
         guard currentInputMode == .kana else {
             return
         }
@@ -365,6 +410,31 @@ extension KeyboardViewController {
             learn: true
         )
         refreshKeyboardStateAsync()
+    }
+
+    func commitLatinSuggestion(_ suggestion: String, replacing token: String) {
+        guard !suggestion.isEmpty,
+            !token.isEmpty else {
+            return
+        }
+
+        commitActiveConversion(learn: true)
+
+        if !composingRawText.isEmpty {
+            markTextProxyEdit()
+            textDocumentProxy.unmarkText()
+            clearComposingState()
+        }
+
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+
+        if contextBeforeInput.hasSuffix(token) {
+            deleteBackwardCharacterCount(token.count)
+        }
+
+        markTextProxyEdit()
+        textDocumentProxy.insertText(suggestion)
+        clearComposingState()
     }
 
     func handleCommitComposingText() {
@@ -626,6 +696,75 @@ extension KeyboardViewController {
         return text.allSatisfy { character in
             KanaTextNormalizer.normalizedKanaCharacter(from: String(character)) != nil
         }
+    }
+
+    func trailingLatinSuggestionToken(from context: String) -> String {
+        guard !context.isEmpty else {
+            return ""
+        }
+
+        var tokenScalars: [UnicodeScalar] = []
+        let maxTokenScalars = 64
+
+        for scalar in context.unicodeScalars.reversed() {
+            guard isLatinSuggestionTokenScalar(scalar) else {
+                break
+            }
+
+            tokenScalars.append(scalar)
+
+            if tokenScalars.count >= maxTokenScalars {
+                break
+            }
+        }
+
+        guard !tokenScalars.isEmpty else {
+            return ""
+        }
+
+        let token = String(String.UnicodeScalarView(tokenScalars.reversed()))
+
+        guard isLatinSuggestionToken(token) else {
+            return ""
+        }
+
+        return token
+    }
+
+    func isLatinSuggestionTokenScalar(_ scalar: UnicodeScalar) -> Bool {
+        switch scalar {
+        case " ", "-", ".", "&", "'", "’", "/", ",", "+", ":", ";", "(", ")", "!", "?":
+            return true
+        default:
+            break
+        }
+
+        if CharacterSet.decimalDigits.contains(scalar) {
+            return true
+        }
+
+        let category = scalar.properties.generalCategory
+
+        if category == .nonspacingMark || category == .spacingMark {
+            return true
+        }
+
+        return CharacterSet.letters.contains(scalar)
+    }
+
+    func isLatinSuggestionToken(_ token: String) -> Bool {
+        guard token.range(of: #"[\p{Latin}0-9]"#, options: .regularExpression) != nil else {
+            return false
+        }
+
+        return token.range(
+            of: #"^[\p{Latin}\p{M}0-9 \-\.&'’/,+:;()!?]+$"#,
+            options: .regularExpression
+        ) != nil
+    }
+
+    func isCurrentLatinSuggestionQuery(_ suggestion: String, query: String) -> Bool {
+        suggestion.trimmingCharacters(in: .whitespacesAndNewlines) == query
     }
 
     func deleteBackwardCharacterCount(_ count: Int) {
