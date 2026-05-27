@@ -4,6 +4,8 @@ import CoreFoundation
 import Darwin
 
 final class KeyboardViewController: UIInputViewController {
+    private static let sharedKanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
+    private static let sharedKanaKanjiConverter = KanaKanjiConverter(store: sharedKanaKanjiStore)
     private var hostingController: UIHostingController<KeyboardRootView>?
     private var lastRenderConfiguration: RenderConfiguration?
     private var keyboardHeightConstraint: NSLayoutConstraint?
@@ -14,6 +16,7 @@ final class KeyboardViewController: UIInputViewController {
     private var keyboardHeightLockValue: CGFloat?
     private var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
     private var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
+    private var dictionaryPreloadWorkItem: DispatchWorkItem?
     var currentInputMode: KeyboardInputMode = .kana
     private var spaceToastTrigger = 0
     var composingRawText = ""
@@ -25,10 +28,11 @@ final class KeyboardViewController: UIInputViewController {
     var lastTextProxyEditAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     var lastSynchronizedContextBeforeInput = ""
-    private lazy var kanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
-    lazy var kanaKanjiConverter = KanaKanjiConverter(store: kanaKanjiStore)
+    private var kanaKanjiStore: KanaKanjiStore { Self.sharedKanaKanjiStore }
+    var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
     private lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
     private var diagnosticsSessionID = UUID().uuidString
+    private let diagnosticsControllerID = UUID().uuidString
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -100,6 +104,7 @@ final class KeyboardViewController: UIInputViewController {
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
         static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
+        static let keyboardDiagnosticsSessionOwnerToken = "keyboardDiagnosticsSessionOwnerToken"
         static let keyboardDiagnosticsLastHeartbeat = "keyboardDiagnosticsLastHeartbeat"
         static let keyboardDiagnosticsLastEvent = "keyboardDiagnosticsLastEvent"
         static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
@@ -147,6 +152,7 @@ final class KeyboardViewController: UIInputViewController {
     private static let maximumEmojiHeight: CGFloat = 290
     private static let portraitSystemAccessoryOffset: CGFloat = 6
     private static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
+    private static let deviceSystemDictionaryPreloadDelay: TimeInterval = 1.2
     private static let minimumPhysicalMemoryForSystemDictionaryPreload: UInt64 = 5 * 1024 * 1024 * 1024
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
@@ -207,35 +213,12 @@ final class KeyboardViewController: UIInputViewController {
         configureInputAssistantBar()
         startObservingSettingsDidChange()
         setupKeyboardView()
-
-        if shouldPreloadSystemDictionaryAtLaunch() {
-            let preloadStartedAt = CFAbsoluteTimeGetCurrent()
-            updateKeyboardDiagnosticsHeartbeat(
-                event: "システム辞書プリロード開始 physicalMemoryGB=\(physicalMemoryGBText())",
-                appendLog: true
-            )
-            kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
-                guard let self else {
-                    return
-                }
-
-                let elapsedMs = max(0, Int((CFAbsoluteTimeGetCurrent() - preloadStartedAt) * 1000))
-                self.refreshKeyboardStateAsync()
-                self.updateKeyboardDiagnosticsHeartbeat(
-                    event: "システム辞書プリロード完了 elapsedMs=\(elapsedMs)",
-                    appendLog: true
-                )
-            }
-        } else {
-            updateKeyboardDiagnosticsHeartbeat(
-                event: "システム辞書プリロードを省略 physicalMemoryGB=\(physicalMemoryGBText())",
-                appendLog: true
-            )
-        }
+        requestSystemDictionaryPreloadIfNeeded()
     }
 
     deinit {
         finishKeyboardDiagnosticsSession(reason: "deinit")
+        dictionaryPreloadWorkItem?.cancel()
         keyboardHeightLockReleaseWorkItem?.cancel()
         stopObservingSettingsDidChange()
     }
@@ -497,6 +480,54 @@ final class KeyboardViewController: UIInputViewController {
 #endif
     }
 
+    private func requestSystemDictionaryPreloadIfNeeded() {
+        guard shouldPreloadSystemDictionaryAtLaunch() else {
+            updateKeyboardDiagnosticsHeartbeat(
+                event: "システム辞書プリロードを省略 physicalMemoryGB=\(physicalMemoryGBText())",
+                appendLog: true
+            )
+            return
+        }
+
+#if targetEnvironment(simulator)
+        startSystemDictionaryPreload(trigger: "immediate")
+#else
+        let delay = Self.deviceSystemDictionaryPreloadDelay
+        updateKeyboardDiagnosticsHeartbeat(
+            event: "システム辞書プリロードを遅延予定 delaySec=\(String(format: "%.1f", delay)) physicalMemoryGB=\(physicalMemoryGBText())",
+            appendLog: true
+        )
+
+        dictionaryPreloadWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            self?.startSystemDictionaryPreload(trigger: "delayed")
+        }
+        dictionaryPreloadWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
+#endif
+    }
+
+    private func startSystemDictionaryPreload(trigger: String) {
+        let preloadStartedAt = CFAbsoluteTimeGetCurrent()
+        updateKeyboardDiagnosticsHeartbeat(
+            event: "システム辞書プリロード開始 trigger=\(trigger) physicalMemoryGB=\(physicalMemoryGBText())",
+            appendLog: true
+        )
+
+        kanaKanjiConverter.preloadSystemDictionaryIfNeeded { [weak self] in
+            guard let self else {
+                return
+            }
+
+            let elapsedMs = max(0, Int((CFAbsoluteTimeGetCurrent() - preloadStartedAt) * 1000))
+            self.refreshKeyboardStateAsync()
+            self.updateKeyboardDiagnosticsHeartbeat(
+                event: "システム辞書プリロード完了 trigger=\(trigger) elapsedMs=\(elapsedMs)",
+                appendLog: true
+            )
+        }
+    }
+
     private func physicalMemoryGBText() -> String {
         let physicalMemoryGB = Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824
         return String(format: "%.1f", physicalMemoryGB)
@@ -506,6 +537,14 @@ final class KeyboardViewController: UIInputViewController {
         let bundleID = Bundle.main.bundleIdentifier ?? "unknown.keyboard.bundle"
         let processName = ProcessInfo.processInfo.processName
         return "\(bundleID)(\(processName))"
+    }
+
+    private func diagnosticsProcessID() -> Int32 {
+        getpid()
+    }
+
+    private func diagnosticsSessionOwnerToken() -> String {
+        "\(diagnosticsProcessID()):\(diagnosticsControllerID)"
     }
 
     private func currentResidentMemoryBytes() -> UInt64? {
@@ -537,7 +576,7 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func diagnosticsRuntimeContext() -> String {
-        "process=\(diagnosticsProcessLabel()) rssMB=\(diagnosticsResidentMemoryMBText())"
+        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText())"
     }
 
     private func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
@@ -629,6 +668,7 @@ final class KeyboardViewController: UIInputViewController {
     ) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
@@ -723,6 +763,9 @@ final class KeyboardViewController: UIInputViewController {
         let previousSessionWasActive = sharedDefaults.bool(
             forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive
         )
+        let previousOwnerToken = sharedDefaults.string(
+            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+        ) ?? "unknown"
 
         if previousSessionWasActive {
             let previousSessionID = sharedDefaults.string(
@@ -743,8 +786,15 @@ final class KeyboardViewController: UIInputViewController {
                 return String(format: "%.1f", delta)
             }()
 
+            let activeOwnerPrefix = "\(diagnosticsProcessID()):"
+            let looksLikeControllerOverlap = previousOwnerToken.hasPrefix(activeOwnerPrefix)
+                && previousOwnerToken != diagnosticsSessionOwnerToken()
+            let reason = looksLikeControllerOverlap
+                ? "前回セッション継続中の可能性(多重生存)"
+                : "前回セッションが非正常終了の可能性"
+
             appendKeyboardDiagnosticsLog(
-                "前回セッションが非正常終了の可能性 session=\(previousSessionID) lastEvent=\(previousEvent) elapsedSec=\(elapsed)",
+                "\(reason) session=\(previousSessionID) owner=\(previousOwnerToken) lastEvent=\(previousEvent) elapsedSec=\(elapsed)",
                 file: #fileID,
                 line: #line,
                 function: #function
@@ -753,6 +803,10 @@ final class KeyboardViewController: UIInputViewController {
 
         diagnosticsSessionID = UUID().uuidString
         sharedDefaults.set(true, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
+        sharedDefaults.set(
+            diagnosticsSessionOwnerToken(),
+            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+        )
         sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
         appendKeyboardDiagnosticsLog(
             "キーボード拡張セッション開始",
@@ -778,8 +832,27 @@ final class KeyboardViewController: UIInputViewController {
             line: line,
             function: function
         )
-        sharedDefaults.set(false, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
-        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+
+        let currentOwnerToken = diagnosticsSessionOwnerToken()
+        let storedOwnerToken = sharedDefaults.string(
+            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+        )
+
+        if storedOwnerToken == nil || storedOwnerToken == currentOwnerToken {
+            sharedDefaults.set(false, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
+            sharedDefaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
+            sharedDefaults.set(
+                Date().timeIntervalSince1970,
+                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat
+            )
+        } else {
+            appendKeyboardDiagnosticsLog(
+                "終了時owner不一致のためactive更新を見送り currentOwner=\(currentOwnerToken) storedOwner=\(storedOwnerToken ?? "none")",
+                file: file,
+                line: line,
+                function: function
+            )
+        }
     }
 
     private func refreshKeyboardState() {
