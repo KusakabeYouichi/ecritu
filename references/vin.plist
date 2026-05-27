@@ -1247,6 +1247,7 @@
 	<dict><key>phrase</key><string>Dornfelder</string><key>shortcut</key><string>どるんふぇるだー</string></dict>
 	<dict><key>phrase</key><string>Duras</string><key>shortcut</key><string>でゅらす</string></dict>
 	<dict><key>phrase</key><string>Fer Servadou</string><key>shortcut</key><string>ふぇーるせるゔぁどぅ</string></dict>
+	<dict><key>phrase</key><string>Fetească Albă</string><key>shortcut</key><string>ふぇてあすかあるば</string></dict>
 	<dict><key>phrase</key><string>Fetească Neagră</string><key>shortcut</key><string>ふぇてあすかねあぐら</string></dict>
 	<dict><key>phrase</key><string>Fetească Regală</string><key>shortcut</key><string>ふぇてあすかれがーら</string></dict>
 	<dict><key>phrase</key><string>Fiano</string><key>shortcut</key><string>ふぃあーの</string></dict>
@@ -2540,12 +2541,13 @@
 	<dict><key>phrase</key><string>和歌山梅酒</string><key>shortcut</key><string>わかやまうめしゅ</string></dict>
 
 	<!-- fromage -->
-	<dict><key>phrase</key><string>Caciocavallo Silano</string><key>shortcut</key><string>かちょかゔぁっろしらーの</string></dict>
 	<dict><key>phrase</key><string>Beaufort</string><key>shortcut</key><string>ぼーふぉーる</string></dict>
+	<dict><key>phrase</key><string>Caciocavallo Silano</string><key>shortcut</key><string>かちょかゔぁっろしらーの</string></dict>
 	<dict><key>phrase</key><string>Comté</string><key>shortcut</key><string>こんて</string></dict>
+	<dict><key>phrase</key><string>Feta</string><key>shortcut</key><string>ふぇた</string></dict>
+	<dict><key>phrase</key><string>fromage</string><key>shortcut</key><string>ふろまーじゅ</string></dict>
 	<dict><key>phrase</key><string>Gruyère</string><key>shortcut</key><string>ぐりゅいえーる</string></dict>
 	<dict><key>phrase</key><string>Reblochon</string><key>shortcut</key><string>るぶろしょん</string></dict>
-	<dict><key>phrase</key><string>fromage</string><key>shortcut</key><string>ふろまーじゅ</string></dict>
 	<dict><key>phrase</key><string>ウォッシュ</string><key>shortcut</key><string>うぉっしゅ</string></dict>
 	<dict><key>phrase</key><string>ウォッシュタイプ</string><key>shortcut</key><string>うぉっしゅたいぷ</string></dict>
 	<dict><key>phrase</key><string>ウォッシュチーズ</string><key>shortcut</key><string>うぉっしゅちーず</string></dict>
@@ -2562,15 +2564,15 @@
 	<dict><key>phrase</key><string>ソフトタイプ</string><key>shortcut</key><string>そふとたいぷ</string></dict>
 	<dict><key>phrase</key><string>ソフトタイプチーズ</string><key>shortcut</key><string>そふとたいぷちーず</string></dict>
 	<dict><key>phrase</key><string>ソフトチーズ</string><key>shortcut</key><string>そふとちーず</string></dict>
-	<dict><key>phrase</key><string>チェダーチーズ</string><key>shortcut</key><string>ちぇだーちーず</string></dict>
 	<dict><key>phrase</key><string>チーズ</string><key>shortcut</key><string>ちーず</string></dict>
 	<dict><key>phrase</key><string>チーズアイ</string><key>shortcut</key><string>ちーずあい</string></dict>
 	<dict><key>phrase</key><string>チーズタイプ</string><key>shortcut</key><string>ちーずたいぷ</string></dict>
-	<dict><key>phrase</key><string>チーズ作</string><key>shortcut</key><string>ちーずさく</string></dict>
-	<dict><key>phrase</key><string>チーズ内部</string><key>shortcut</key><string>ちーずないぶ</string></dict>
-	<dict><key>phrase</key><string>チーズ専用</string><key>shortcut</key><string>ちーずせんよう</string></dict>
 	<dict><key>phrase</key><string>チーズ工房</string><key>shortcut</key><string>ちーずこうぼう</string></dict>
+	<dict><key>phrase</key><string>チーズ作</string><key>shortcut</key><string>ちーずさく</string></dict>
+	<dict><key>phrase</key><string>チーズ専用</string><key>shortcut</key><string>ちーずせんよう</string></dict>
+	<dict><key>phrase</key><string>チーズ内部</string><key>shortcut</key><string>ちーずないぶ</string></dict>
 	<dict><key>phrase</key><string>チーズ文化</string><key>shortcut</key><string>ちーずぶんか</string></dict>
+	<dict><key>phrase</key><string>チェダーチーズ</string><key>shortcut</key><string>ちぇだーちーず</string></dict>
 	<dict><key>phrase</key><string>ティエラッシュ地方</string><key>shortcut</key><string>てぃえらっしゅちほう</string></dict>
 	<dict><key>phrase</key><string>ナチュラルチーズ</string><key>shortcut</key><string>なちゅらるちーず</string></dict>
 	<dict><key>phrase</key><string>フランドル地方</string><key>shortcut</key><string>ふらんどるちほう</string></dict>
@@ -2593,22 +2595,22 @@
 	<dict><key>phrase</key><string>加熱熟成</string><key>shortcut</key><string>かねつじゅくせい</string></dict>
 	<dict><key>phrase</key><string>加熱熟成方法</string><key>shortcut</key><string>かねつじゅくせいほうほう</string></dict>
 	<dict><key>phrase</key><string>加熱熟成法</string><key>shortcut</key><string>かねつじゅくせいほう</string></dict>
-	<dict><key>phrase</key><string>半加熱圧搾</string><key>shortcut</key><string>はんかねつあっさく</string></dict>
-	<dict><key>phrase</key><string>半加熱圧搾タイプ</string><key>shortcut</key><string>はんかねつあっさくたいぷ</string></dict>
-	<dict><key>phrase</key><string>大型チーズ</string><key>shortcut</key><string>おおがたちーず</string></dict>
 	<dict><key>phrase</key><string>山羊</string><key>shortcut</key><string>やぎ</string></dict>
 	<dict><key>phrase</key><string>山羊乳</string><key>shortcut</key><string>やぎにゅう</string></dict>
-	<dict><key>phrase</key><string>羊主体</string><key>shortcut</key><string>ひつじしゅたい</string></dict>
-	<dict><key>phrase</key><string>羊乳</string><key>shortcut</key><string>ようにゅう</string></dict>
-	<dict><key>phrase</key><string>羊乳主体</string><key>shortcut</key><string>ようにゅうしゅたい</string></dict>
-	<dict><key>phrase</key><string>羊乳製</string><key>shortcut</key><string>ようにゅうせい</string></dict>
-	<dict><key>phrase</key><string>羊乳製チーズ</string><key>shortcut</key><string>ようにゅうせいちーず</string></dict>
 	<dict><key>phrase</key><string>青カビ</string><key>shortcut</key><string>あおかび</string></dict>
 	<dict><key>phrase</key><string>青カビタイプ</string><key>shortcut</key><string>あおかびたいぷ</string></dict>
 	<dict><key>phrase</key><string>青カビタイプチーズ</string><key>shortcut</key><string>あおかびたいぷちーず</string></dict>
 	<dict><key>phrase</key><string>青カビチーズ</string><key>shortcut</key><string>あおかびちーず</string></dict>
 	<dict><key>phrase</key><string>青カビ菌</string><key>shortcut</key><string>あおかびきん</string></dict>
+	<dict><key>phrase</key><string>大型チーズ</string><key>shortcut</key><string>おおがたちーず</string></dict>
+	<dict><key>phrase</key><string>半加熱圧搾</string><key>shortcut</key><string>はんかねつあっさく</string></dict>
+	<dict><key>phrase</key><string>半加熱圧搾タイプ</string><key>shortcut</key><string>はんかねつあっさくたいぷ</string></dict>
 	<dict><key>phrase</key><string>非加熱圧搾タイプ</string><key>shortcut</key><string>ひかねつあっさくたいぷ</string></dict>
+	<dict><key>phrase</key><string>羊主体</string><key>shortcut</key><string>ひつじしゅたい</string></dict>
+	<dict><key>phrase</key><string>羊乳</string><key>shortcut</key><string>ようにゅう</string></dict>
+	<dict><key>phrase</key><string>羊乳主体</string><key>shortcut</key><string>ようにゅうしゅたい</string></dict>
+	<dict><key>phrase</key><string>羊乳製</string><key>shortcut</key><string>ようにゅうせい</string></dict>
+	<dict><key>phrase</key><string>羊乳製チーズ</string><key>shortcut</key><string>ようにゅうせいちーず</string></dict>
 
 	<!-- 団体 -->
 	<dict><key>phrase</key><string>クロスターノイブルク栽培醸造学校</string><key>shortcut</key><string>くろすたーのいぶるくさいばいじょうぞうがっこう</string></dict>

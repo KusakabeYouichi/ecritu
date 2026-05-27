@@ -38,14 +38,14 @@
 	<dict><key>phrase</key><string>Côte des Blancs</string><key>shortcut</key><string>こー</string></dict>
 	<dict><key>phrase</key><string>Côte du Vivarais</string><key>shortcut</key><string>こー</string></dict>
 	<dict><key>phrase</key><string>Crémant</string><key>shortcut</key><string>くれまん</string></dict>
-	<dict><key>phrase</key><string>Crémant d'Alsace</string><key>shortcut</key><string>あるざす</string></dict>
-	<dict><key>phrase</key><string>Crémant de Bordeaux</string><key>shortcut</key><string>ぼるどー</string></dict>
-	<dict><key>phrase</key><string>Crémant de Bourgogne</string><key>shortcut</key><string>くれまんでぶるごーにゅ</string></dict>
-	<dict><key>phrase</key><string>Crémant de Die</string><key>shortcut</key><string>くれまんででぃ</string></dict>
-	<dict><key>phrase</key><string>Crémant de Limoux</string><key>shortcut</key><string>くれまんでりもぅ</string></dict>
-	<dict><key>phrase</key><string>Crémant de Loire</string><key>shortcut</key><string>くれまんでろわーるー</string></dict>
-	<dict><key>phrase</key><string>Crémant de Savoie</string><key>shortcut</key><string>さゔぉあ</string></dict>
-	<dict><key>phrase</key><string>Crémant du Jura</string><key>shortcut</key><string>じゅら</string></dict>
+	<dict><key>phrase</key><string>Crémant d'Alsace</string><key>shortcut</key><string>くれまんだるざす</string></dict>
+	<dict><key>phrase</key><string>Crémant de Bordeaux</string><key>shortcut</key><string>くれまんどぼるどー</string></dict>
+	<dict><key>phrase</key><string>Crémant de Bourgogne</string><key>shortcut</key><string>くれまんどぶるごーにゅ</string></dict>
+	<dict><key>phrase</key><string>Crémant de Die</string><key>shortcut</key><string>くれまんどでぃ</string></dict>
+	<dict><key>phrase</key><string>Crémant de Limoux</string><key>shortcut</key><string>くれまんどりむー</string></dict>
+	<dict><key>phrase</key><string>Crémant de Loire</string><key>shortcut</key><string>くれまんどろわーる</string></dict>
+	<dict><key>phrase</key><string>Crémant de Savoie</string><key>shortcut</key><string>くれまんどさゔぉあ</string></dict>
+	<dict><key>phrase</key><string>Crémant du Jura</string><key>shortcut</key><string>くれまんでゅじゅら</string></dict>
 	<dict><key>phrase</key><string>Carnuntum</string><key>shortcut</key><string>かるぬんとぅむ</string></dict>
 	<dict><key>phrase</key><string>Carnuntum D.A.C.</string><key>shortcut</key><string>かるぬんとぅむでぃーえーしー</string></dict>
 	<dict><key>phrase</key><string>Canada</string><key>shortcut</key><string>かなだ</string></dict>
