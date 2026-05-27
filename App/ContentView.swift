@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260527160620"
+    private static let editionUpdatedAtRaw: String = "20260527162745"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -625,6 +625,7 @@ struct ContentView: View {
         if savedMarker != currentMarker {
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionOwnerToken)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
@@ -676,6 +677,7 @@ struct ContentView: View {
 
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionOwnerToken)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
