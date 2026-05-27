@@ -3,184 +3,194 @@
 <plist version="1.0">
 <array>
 	<!-- 4. その他・分類に不能 -->
+	<dict><key>phrase</key><string>고추</string><key>shortcut</key><string>こちゅ</string></dict>
+	<dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>さき</string></dict>
+	<dict><key>phrase</key><string>µ</string><key>shortcut</key><string>まいくろ</string></dict>
+	<dict><key>phrase</key><string>100円玉</string><key>shortcut</key><string>ひゃくえんだま</string></dict>
+	<dict><key>phrase</key><string>10円玉</string><key>shortcut</key><string>じゅうえんだま</string></dict>
+	<dict><key>phrase</key><string>1か月</string><key>shortcut</key><string>いっかげつ</string></dict>
+	<dict><key>phrase</key><string>1つ</string><key>shortcut</key><string>ひとつ</string></dict>
+	<dict><key>phrase</key><string>1円玉</string><key>shortcut</key><string>いちえんだま</string></dict>
+	<dict><key>phrase</key><string>1軒</string><key>shortcut</key><string>いっけん</string></dict>
+	<dict><key>phrase</key><string>1次</string><key>shortcut</key><string>いちじ</string></dict>
+	<dict><key>phrase</key><string>1週間</string><key>shortcut</key><string>いっしゅうかん</string></dict>
+	<dict><key>phrase</key><string>1台</string><key>shortcut</key><string>いちだい</string></dict>
+	<dict><key>phrase</key><string>1本</string><key>shortcut</key><string>いっぽん</string></dict>
+	<dict><key>phrase</key><string>1枚</string><key>shortcut</key><string>いちまい</string></dict>
+	<dict><key>phrase</key><string>2か月</string><key>shortcut</key><string>にかげつ</string></dict>
+	<dict><key>phrase</key><string>2つ</string><key>shortcut</key><string>ふたつ</string></dict>
+	<dict><key>phrase</key><string>2軒</string><key>shortcut</key><string>にけん</string></dict>
+	<dict><key>phrase</key><string>2次</string><key>shortcut</key><string>にじ</string></dict>
+	<dict><key>phrase</key><string>2週間</string><key>shortcut</key><string>にしゅうかん</string></dict>
+	<dict><key>phrase</key><string>2台</string><key>shortcut</key><string>にだい</string></dict>
+	<dict><key>phrase</key><string>2本</string><key>shortcut</key><string>にほん</string></dict>
+	<dict><key>phrase</key><string>2枚</string><key>shortcut</key><string>にまい</string></dict>
+	<dict><key>phrase</key><string>3か月</string><key>shortcut</key><string>さんかげつ</string></dict>
+	<dict><key>phrase</key><string>3つ</string><key>shortcut</key><string>みっつ</string></dict>
+	<dict><key>phrase</key><string>3軒</string><key>shortcut</key><string>さんけん</string></dict>
+	<dict><key>phrase</key><string>3週間</string><key>shortcut</key><string>さんしゅうかん</string></dict>
+	<dict><key>phrase</key><string>3台</string><key>shortcut</key><string>さんだい</string></dict>
+	<dict><key>phrase</key><string>3本</string><key>shortcut</key><string>さんぼん</string></dict>
+	<dict><key>phrase</key><string>3枚</string><key>shortcut</key><string>さんまい</string></dict>
+	<dict><key>phrase</key><string>4週間</string><key>shortcut</key><string>よんしゅうかん</string></dict>
+	<dict><key>phrase</key><string>500円玉</string><key>shortcut</key><string>ごひゃくえんだま</string></dict>
+	<dict><key>phrase</key><string>50円玉</string><key>shortcut</key><string>ごじゅうえんだま</string></dict>
+	<dict><key>phrase</key><string>5円玉</string><key>shortcut</key><string>ごえんだま</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
+	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
+	<dict><key>phrase</key><string>Binance</string><key>shortcut</key><string>ばいなんす</string></dict>
+	<dict><key>phrase</key><string>Buy&amp;Ship</string><key>shortcut</key><string>ばいあんどしっぷ</string></dict>
 	<dict><key>phrase</key><string>écritu</string><key>shortcut</key><string>えくりちゅ</string></dict>
+	<dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
+	<dict><key>phrase</key><string>Facebook</string><key>shortcut</key><string>ふぇいすぶっく</string></dict>
+	<dict><key>phrase</key><string>Fostex</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
+	<dict><key>phrase</key><string>Hermès</string><key>shortcut</key><string>えるめす</string></dict>
 	<dict><key>phrase</key><string>iReal b</string><key>shortcut</key><string>あいりあるびー</string></dict>
 	<dict><key>phrase</key><string>iReal Pro</string><key>shortcut</key><string>あいりあるぷろ</string></dict>
-	<dict><key>phrase</key><string>久寿玉</string><key>shortcut</key><string>くすだま</string></dict>
-	<dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
+	<dict><key>phrase</key><string>Lightning</string><key>shortcut</key><string>らいとにんぐ</string></dict>
+	<dict><key>phrase</key><string>Linksys</string><key>shortcut</key><string>りんくしす</string></dict>
+	<dict><key>phrase</key><string>MaxValu</string><key>shortcut</key><string>まっくすばりゅ</string></dict>
+	<dict><key>phrase</key><string>Microwave</string><key>shortcut</key><string>まいくろうえいゔ</string></dict>
+	<dict><key>phrase</key><string>nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
+	<dict><key>phrase</key><string>Philips Hue</string><key>shortcut</key><string>ふぃりっぷすひゅー</string></dict>
+	<dict><key>phrase</key><string>Philips</string><key>shortcut</key><string>ふぃりっぷす</string></dict>
+	<dict><key>phrase</key><string>Raspberry Pi</string><key>shortcut</key><string>らずべりーぱい</string></dict>
+	<dict><key>phrase</key><string>Square</string><key>shortcut</key><string>すくえあ</string></dict>
+	<dict><key>phrase</key><string>US-BUYER</string><key>shortcut</key><string>ゆーえすばいやー</string></dict>
+	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>うぃんどうず</string></dict>
+	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>ういんどうず</string></dict>
+	<dict><key>phrase</key><string>アサフェティダ</string><key>shortcut</key><string>あさふぇてぃだ</string></dict>
+	<dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
+	<dict><key>phrase</key><string>カルナローリ</string><key>shortcut</key><string>かるなろーり</string></dict>
+	<dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>
+	<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict>
+	<dict><key>phrase</key><string>しな乃</string><key>shortcut</key><string>しなの</string></dict>
+	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
+	<dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string></dict>
+	<dict><key>phrase</key><string>スヰートポーヅ</string><key>shortcut</key><string>すいーとぽーづ</string></dict>
+	<dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
+	<dict><key>phrase</key><string>テット・ド・フロマージュ</string><key>shortcut</key><string>てっとどふろまーじゅ</string></dict>
+	<dict><key>phrase</key><string>テット・ド・モアンヌ</string><key>shortcut</key><string>てっとどもあんぬ</string></dict>
+	<dict><key>phrase</key><string>なか川</string><key>shortcut</key><string>なかがわ</string></dict>
+	<dict><key>phrase</key><string>に志かわ</string><key>shortcut</key><string>にしかわ</string></dict>
+	<dict><key>phrase</key><string>バスマティ</string><key>shortcut</key><string>ばすまてぃ</string></dict>
+	<dict><key>phrase</key><string>バスマティー</string><key>shortcut</key><string>ばすまてぃー</string></dict>
+	<dict><key>phrase</key><string>ビリヤニ</string><key>shortcut</key><string>びりやに</string></dict>
+	<dict><key>phrase</key><string>ヒング</string><key>shortcut</key><string>ひんぐ</string></dict>
+	<dict><key>phrase</key><string>ブーダン・ノワール</string><key>shortcut</key><string>ぶーだんのわーる</string></dict>
+	<dict><key>phrase</key><string>フェネグリーク</string><key>shortcut</key><string>ふぇねぐりーく</string></dict>
+	<dict><key>phrase</key><string>ボタンインコ</string><key>shortcut</key><string>ぼたんいんこ</string></dict>
+	<dict><key>phrase</key><string>みやび庵</string><key>shortcut</key><string>みやびあん</string></dict>
+	<dict><key>phrase</key><string>モビット</string><key>shortcut</key><string>もびっと</string></dict>
 	<dict><key>phrase</key><string>維新號</string><key>shortcut</key><string>いしんごう</string></dict>
-	<dict><key>phrase</key><string>1次</string><key>shortcut</key><string>いちじ</string></dict>
-	<dict><key>phrase</key><string>1台</string><key>shortcut</key><string>いちだい</string></dict>
-	<dict><key>phrase</key><string>1枚</string><key>shortcut</key><string>いちまい</string></dict>
-	<dict><key>phrase</key><string>1か月</string><key>shortcut</key><string>いっかげつ</string></dict>
-	<dict><key>phrase</key><string>1軒</string><key>shortcut</key><string>いっけん</string></dict>
-	<dict><key>phrase</key><string>1週間</string><key>shortcut</key><string>いっしゅうかん</string></dict>
-	<dict><key>phrase</key><string>1本</string><key>shortcut</key><string>いっぽん</string></dict>
-	<dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いておん</string></dict>
 	<dict><key>phrase</key><string>井之下</string><key>shortcut</key><string>いのした</string></dict>
+	<dict><key>phrase</key><string>一万円札</string><key>shortcut</key><string>いちまんえんさつ</string></dict>
+	<dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
 	<dict><key>phrase</key><string>碓屋</string><key>shortcut</key><string>うすや</string></dict>
 	<dict><key>phrase</key><string>雲白肉</string><key>shortcut</key><string>うんぱいろう</string></dict>
-	<dict><key>phrase</key><string>Hermès</string><key>shortcut</key><string>えるめす</string></dict>
 	<dict><key>phrase</key><string>演色</string><key>shortcut</key><string>えんしょく</string></dict>
 	<dict><key>phrase</key><string>演色性能</string><key>shortcut</key><string>えんしょくせいのう</string></dict>
+	<dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>
+	<dict><key>phrase</key><string>何か月</string><key>shortcut</key><string>なんかげつ</string></dict>
+	<dict><key>phrase</key><string>何年</string><key>shortcut</key><string>なんねん</string></dict>
+	<dict><key>phrase</key><string>過放電</string><key>shortcut</key><string>かほうでん</string></dict>
 	<dict><key>phrase</key><string>改源</string><key>shortcut</key><string>かいげん</string></dict>
+	<dict><key>phrase</key><string>海色</string><key>shortcut</key><string>みいろ</string></dict>
+	<dict><key>phrase</key><string>拡大率</string><key>shortcut</key><string>かくだいりつ</string></dict>
 	<dict><key>phrase</key><string>核種</string><key>shortcut</key><string>かくしゅ</string></dict>
 	<dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>
-	<dict><key>phrase</key><string>拡大率</string><key>shortcut</key><string>かくだいりつ</string></dict>
-	<dict><key>phrase</key><string>過放電</string><key>shortcut</key><string>かほうでん</string></dict>
-	<dict><key>phrase</key><string>上一之町</string><key>shortcut</key><string>かみいちのまち</string></dict>
-	<dict><key>phrase</key><string>上三之町</string><key>shortcut</key><string>かみさんのまち</string></dict>
-	<dict><key>phrase</key><string>上二之町</string><key>shortcut</key><string>かみにのまち</string></dict>
-	<dict><key>phrase</key><string>生醤油</string><key>shortcut</key><string>きじょうゆ</string></dict>
+	<dict><key>phrase</key><string>丸環</string><key>shortcut</key><string>まるかん</string></dict>
 	<dict><key>phrase</key><string>紀の善</string><key>shortcut</key><string>きのぜん</string></dict>
+	<dict><key>phrase</key><string>紀雅</string><key>shortcut</key><string>のりまさ</string></dict>
+	<dict><key>phrase</key><string>久寿玉</string><key>shortcut</key><string>くすだま</string></dict>
 	<dict><key>phrase</key><string>玉荷包</string><key>shortcut</key><string>ぎょっかほう</string></dict>
 	<dict><key>phrase</key><string>金環蝕</string><key>shortcut</key><string>きんかんしょく</string></dict>
 	<dict><key>phrase</key><string>金環日蝕</string><key>shortcut</key><string>きんかんにっしょく</string></dict>
 	<dict><key>phrase</key><string>空芯菜</string><key>shortcut</key><string>くうしんさい</string></dict>
 	<dict><key>phrase</key><string>桑田佳祐</string><key>shortcut</key><string>くわたけいすけ</string></dict>
 	<dict><key>phrase</key><string>群林堂</string><key>shortcut</key><string>ぐんりんどう</string></dict>
-	<dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>
 	<dict><key>phrase</key><string>経世会</string><key>shortcut</key><string>けいせいかい</string></dict>
-	<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict>
-	<dict><key>phrase</key><string>高演色</string><key>shortcut</key><string>こうえんしょく</string></dict>
-	<dict><key>phrase</key><string>香茹</string><key>shortcut</key><string>こうこ</string></dict>
+	<dict><key>phrase</key><string>原価率</string><key>shortcut</key><string>げんかりつ</string></dict>
+	<dict><key>phrase</key><string>五千円札</string><key>shortcut</key><string>ごせんえんさつ</string></dict>
 	<dict><key>phrase</key><string>光視症</string><key>shortcut</key><string>こうししょう</string></dict>
+	<dict><key>phrase</key><string>香菜</string><key>shortcut</key><string>しゃんつぁい</string></dict>
 	<dict><key>phrase</key><string>香信</string><key>shortcut</key><string>こうしん</string></dict>
-	<dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>
-	<dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>
+	<dict><key>phrase</key><string>香茹</string><key>shortcut</key><string>こうこ</string></dict>
+	<dict><key>phrase</key><string>高演色</string><key>shortcut</key><string>こうえんしょく</string></dict>
+	<dict><key>phrase</key><string>高確率</string><key>shortcut</key><string>こうかくりつ</string></dict>
 	<dict><key>phrase</key><string>黒葉</string><key>shortcut</key><string>こくよう</string></dict>
-	<dict><key>phrase</key><string>고추</string><key>shortcut</key><string>こちゅ</string></dict>
-	<dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>さき</string></dict>
 	<dict><key>phrase</key><string>三角環</string><key>shortcut</key><string>さんかくかん</string></dict>
-	<dict><key>phrase</key><string>3か月</string><key>shortcut</key><string>さんかげつ</string></dict>
-	<dict><key>phrase</key><string>3軒</string><key>shortcut</key><string>さんけん</string></dict>
-	<dict><key>phrase</key><string>3週間</string><key>shortcut</key><string>さんしゅうかん</string></dict>
 	<dict><key>phrase</key><string>三州屋</string><key>shortcut</key><string>さんしゅうや</string></dict>
-	<dict><key>phrase</key><string>3台</string><key>shortcut</key><string>さんだい</string></dict>
 	<dict><key>phrase</key><string>三番叟</string><key>shortcut</key><string>さんばそう</string></dict>
 	<dict><key>phrase</key><string>三方六</string><key>shortcut</key><string>さんぽうろく</string></dict>
-	<dict><key>phrase</key><string>3本</string><key>shortcut</key><string>さんぼん</string></dict>
-	<dict><key>phrase</key><string>3枚</string><key>shortcut</key><string>さんまい</string></dict>
 	<dict><key>phrase</key><string>志な乃</string><key>shortcut</key><string>しなの</string></dict>
-	<dict><key>phrase</key><string>しな乃</string><key>shortcut</key><string>しなの</string></dict>
-	<dict><key>phrase</key><string>蜀郷香</string><key>shortcut</key><string>しゅうしゃんしゃん</string></dict>
-	<dict><key>phrase</key><string>醇良</string><key>shortcut</key><string>じゅんりょう</string></dict>
-	<dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
-	<dict><key>phrase</key><string>スヰートポーヅ</string><key>shortcut</key><string>すいーとぽーづ</string></dict>
-	<dict><key>phrase</key><string>Square</string><key>shortcut</key><string>すくえあ</string></dict>
-	<dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すさき</string></dict>
 	<dict><key>phrase</key><string>寿司の美登利</string><key>shortcut</key><string>すしのみどり</string></dict>
-	<dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string></dict>
 	<dict><key>phrase</key><string>寿美久</string><key>shortcut</key><string>すみきゅう</string></dict>
-	<dict><key>phrase</key><string>生香園</string><key>shortcut</key><string>せいこうえん</string></dict>
+	<dict><key>phrase</key><string>宗和好み</string><key>shortcut</key><string>そうわごのみ</string></dict>
+	<dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すさき</string></dict>
+	<dict><key>phrase</key><string>醇良</string><key>shortcut</key><string>じゅんりょう</string></dict>
+	<dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>
+	<dict><key>phrase</key><string>上一之町</string><key>shortcut</key><string>かみいちのまち</string></dict>
+	<dict><key>phrase</key><string>上三之町</string><key>shortcut</key><string>かみさんのまち</string></dict>
+	<dict><key>phrase</key><string>上二之町</string><key>shortcut</key><string>かみにのまち</string></dict>
+	<dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
+	<dict><key>phrase</key><string>数個</string><key>shortcut</key><string>すうこ</string></dict>
+	<dict><key>phrase</key><string>数週間</string><key>shortcut</key><string>すうしゅうかん</string></dict>
+	<dict><key>phrase</key><string>数日</string><key>shortcut</key><string>すうじつ</string></dict>
+	<dict><key>phrase</key><string>数本</string><key>shortcut</key><string>すうほん</string></dict>
+	<dict><key>phrase</key><string>数枚</string><key>shortcut</key><string>すうまい</string></dict>
 	<dict><key>phrase</key><string>正式版</string><key>shortcut</key><string>せいしきばん</string></dict>
-	<dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>
 	<dict><key>phrase</key><string>清和会</string><key>shortcut</key><string>せいわかい</string></dict>
+	<dict><key>phrase</key><string>生香園</string><key>shortcut</key><string>せいこうえん</string></dict>
+	<dict><key>phrase</key><string>生醤油</string><key>shortcut</key><string>きじょうゆ</string></dict>
+	<dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>
+	<dict><key>phrase</key><string>西之一色町</string><key>shortcut</key><string>にしのいっしきまち</string></dict>
+	<dict><key>phrase</key><string>青マンゴー</string><key>shortcut</key><string>あおまんごー</string></dict>
+	<dict><key>phrase</key><string>千円札</string><key>shortcut</key><string>せんえんさつ</string></dict>
+	<dict><key>phrase</key><string>千鳥酢</string><key>shortcut</key><string>ちどりす</string></dict>
 	<dict><key>phrase</key><string>線量</string><key>shortcut</key><string>せんりょう</string></dict>
 	<dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>
-	<dict><key>phrase</key><string>宗和好み</string><key>shortcut</key><string>そうわごのみ</string></dict>
-	<dict><key>phrase</key><string>担仔麺</string><key>shortcut</key><string>たーみー</string></dict>
-	<dict><key>phrase</key><string>第1世代</string><key>shortcut</key><string>だいいちせだい</string></dict>
-	<dict><key>phrase</key><string>第3世代</string><key>shortcut</key><string>だいさんせだい</string></dict>
-	<dict><key>phrase</key><string>台南担仔麺</string><key>shortcut</key><string>たいなんたーみー</string></dict>
-	<dict><key>phrase</key><string>第2世代</string><key>shortcut</key><string>だいにせだい</string></dict>
 	<dict><key>phrase</key><string>多頭飼い</string><key>shortcut</key><string>たとうがい</string></dict>
+	<dict><key>phrase</key><string>台南担仔麺</string><key>shortcut</key><string>たいなんたーみー</string></dict>
+	<dict><key>phrase</key><string>第1世代</string><key>shortcut</key><string>だいいちせだい</string></dict>
+	<dict><key>phrase</key><string>第2世代</string><key>shortcut</key><string>だいにせだい</string></dict>
+	<dict><key>phrase</key><string>第3世代</string><key>shortcut</key><string>だいさんせだい</string></dict>
+	<dict><key>phrase</key><string>担仔麺</string><key>shortcut</key><string>たーみー</string></dict>
 	<dict><key>phrase</key><string>短焦点</string><key>shortcut</key><string>たんしょうてん</string></dict>
 	<dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
+	<dict><key>phrase</key><string>中山七里</string><key>shortcut</key><string>なかやましちり</string></dict>
 	<dict><key>phrase</key><string>昼光色</string><key>shortcut</key><string>ちゅうこうしょく</string></dict>
 	<dict><key>phrase</key><string>昼白色</string><key>shortcut</key><string>ちゅうはくしょく</string></dict>
 	<dict><key>phrase</key><string>調光器</string><key>shortcut</key><string>ちょうこうき</string></dict>
 	<dict><key>phrase</key><string>超短焦点</string><key>shortcut</key><string>ちょうたんしょうてん</string></dict>
-	<dict><key>phrase</key><string>趙楊</string><key>shortcut</key><string>ちょうよう</string></dict>
-	<dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
-	<dict><key>phrase</key><string>テット・ド・フロマージュ</string><key>shortcut</key><string>てっとどふろまーじゅ</string></dict>
-	<dict><key>phrase</key><string>テット・ド・モアンヌ</string><key>shortcut</key><string>てっとどもあんぬ</string></dict>
+	<dict><key>phrase</key><string>低確率</string><key>shortcut</key><string>ていかくりつ</string></dict>
 	<dict><key>phrase</key><string>電界強度</string><key>shortcut</key><string>でんかいきょうど</string></dict>
 	<dict><key>phrase</key><string>陶柿園</string><key>shortcut</key><string>とうしえん</string></dict>
-	<dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
 	<dict><key>phrase</key><string>独標</string><key>shortcut</key><string>どっぴょう</string></dict>
-	<dict><key>phrase</key><string>なか川</string><key>shortcut</key><string>なかがわ</string></dict>
-	<dict><key>phrase</key><string>中山七里</string><key>shortcut</key><string>なかやましちり</string></dict>
-	<dict><key>phrase</key><string>nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
-	<dict><key>phrase</key><string>何か月</string><key>shortcut</key><string>なんかげつ</string></dict>
 	<dict><key>phrase</key><string>南極老人星</string><key>shortcut</key><string>なんきょくろうじんせい</string></dict>
-	<dict><key>phrase</key><string>2か月</string><key>shortcut</key><string>にかげつ</string></dict>
-	<dict><key>phrase</key><string>2軒</string><key>shortcut</key><string>にけん</string></dict>
-	<dict><key>phrase</key><string>2次</string><key>shortcut</key><string>にじ</string></dict>
-	<dict><key>phrase</key><string>に志かわ</string><key>shortcut</key><string>にしかわ</string></dict>
-	<dict><key>phrase</key><string>西之一色町</string><key>shortcut</key><string>にしのいっしきまち</string></dict>
-	<dict><key>phrase</key><string>2週間</string><key>shortcut</key><string>にしゅうかん</string></dict>
-	<dict><key>phrase</key><string>2台</string><key>shortcut</key><string>にだい</string></dict>
-	<dict><key>phrase</key><string>2本</string><key>shortcut</key><string>にほん</string></dict>
-	<dict><key>phrase</key><string>2枚</string><key>shortcut</key><string>にまい</string></dict>
+	<dict><key>phrase</key><string>二千円札</string><key>shortcut</key><string>にせんえんさつ</string></dict>
 	<dict><key>phrase</key><string>乃が美</string><key>shortcut</key><string>のがみ</string></dict>
-	<dict><key>phrase</key><string>紀雅</string><key>shortcut</key><string>のりまさ</string></dict>
-	<dict><key>phrase</key><string>Buy&amp;Ship</string><key>shortcut</key><string>ばいあんどしっぷ</string></dict>
-	<dict><key>phrase</key><string>Binance</string><key>shortcut</key><string>ばいなんす</string></dict>
+	<dict><key>phrase</key><string>梅香</string><key>shortcut</key><string>めいしゃん</string></dict>
+	<dict><key>phrase</key><string>伯耆国</string><key>shortcut</key><string>ほうきこく</string></dict>
 	<dict><key>phrase</key><string>半影蝕</string><key>shortcut</key><string>はんえいしょく</string></dict>
 	<dict><key>phrase</key><string>半人半馬</string><key>shortcut</key><string>はんじんはんば</string></dict>
-	<dict><key>phrase</key><string>1つ</string><key>shortcut</key><string>ひとつ</string></dict>
-	<dict><key>phrase</key><string>ブーダン・ノワール</string><key>shortcut</key><string>ぶーだんのわーる</string></dict>
-	<dict><key>phrase</key><string>Fostex</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
+	<dict><key>phrase</key><string>範囲外</string><key>shortcut</key><string>はんいがい</string></dict>
+	<dict><key>phrase</key><string>範囲内</string><key>shortcut</key><string>はんいない</string></dict>
+	<dict><key>phrase</key><string>美登利寿司</string><key>shortcut</key><string>みどりずし</string></dict>
+	<dict><key>phrase</key><string>富士酢</string><key>shortcut</key><string>ふじす</string></dict>
+	<dict><key>phrase</key><string>部分日蝕</string><key>shortcut</key><string>ぶぶんにっしょく</string></dict>
 	<dict><key>phrase</key><string>復号化</string><key>shortcut</key><string>ふくごうか</string></dict>
 	<dict><key>phrase</key><string>福州園</string><key>shortcut</key><string>ふくしゅうえん</string></dict>
-	<dict><key>phrase</key><string>2つ</string><key>shortcut</key><string>ふたつ</string></dict>
-	<dict><key>phrase</key><string>部分日蝕</string><key>shortcut</key><string>ぶぶんにっしょく</string></dict>
-	<dict><key>phrase</key><string>伯耆国</string><key>shortcut</key><string>ほうきこく</string></dict>
-	<dict><key>phrase</key><string>防湿庫</string><key>shortcut</key><string>ぼうしつこ</string></dict>
 	<dict><key>phrase</key><string>宝隆軒</string><key>shortcut</key><string>ほうりゅうけん</string></dict>
-	<dict><key>phrase</key><string>µ</string><key>shortcut</key><string>まいくろ</string></dict>
-	<dict><key>phrase</key><string>Microwave</string><key>shortcut</key><string>まいくろうえいゔ</string></dict>
-	<dict><key>phrase</key><string>MaxValu</string><key>shortcut</key><string>まっくすばりゅ</string></dict>
-	<dict><key>phrase</key><string>丸環</string><key>shortcut</key><string>まるかん</string></dict>
-	<dict><key>phrase</key><string>海色</string><key>shortcut</key><string>みいろ</string></dict>
-	<dict><key>phrase</key><string>3つ</string><key>shortcut</key><string>みっつ</string></dict>
-	<dict><key>phrase</key><string>美登利寿司</string><key>shortcut</key><string>みどりずし</string></dict>
-	<dict><key>phrase</key><string>みやび庵</string><key>shortcut</key><string>みやびあん</string></dict>
-	<dict><key>phrase</key><string>梅香</string><key>shortcut</key><string>めいしゃん</string></dict>
-	<dict><key>phrase</key><string>US-BUYER</string><key>shortcut</key><string>ゆーえすばいやー</string></dict>
-	<dict><key>phrase</key><string>4週間</string><key>shortcut</key><string>よんしゅうかん</string></dict>
-	<dict><key>phrase</key><string>Lightning</string><key>shortcut</key><string>らいとにんぐ</string></dict>
-	<dict><key>phrase</key><string>Raspberry Pi</string><key>shortcut</key><string>らずべりーぱい</string></dict>
+	<dict><key>phrase</key><string>防湿庫</string><key>shortcut</key><string>ぼうしつこ</string></dict>
 	<dict><key>phrase</key><string>柳月</string><key>shortcut</key><string>りゅうげつ</string></dict>
-	<dict><key>phrase</key><string>Linksys</string><key>shortcut</key><string>りんくしす</string></dict>
+	<dict><key>phrase</key><string>油淋鶏</string><key>shortcut</key><string>ゆーりんちー</string></dict>
+	<dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いておん</string></dict>
+	<dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
 	<dict><key>phrase</key><string>魯肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict>
 	<dict><key>phrase</key><string>滷肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict>
-	<dict><key>phrase</key><string>千鳥酢</string><key>shortcut</key><string>ちどりす</string></dict>
-	<dict><key>phrase</key><string>富士酢</string><key>shortcut</key><string>ふじす</string></dict>
-	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
-	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>うぃんどうず</string></dict>
-	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>ういんどうず</string></dict>
-	<dict><key>phrase</key><string>Philips</string><key>shortcut</key><string>ふぃりっぷす</string></dict>
-	<dict><key>phrase</key><string>Philips Hue</string><key>shortcut</key><string>ふぃりっぷすひゅー</string></dict>
-	<dict><key>phrase</key><string>バスマティー</string><key>shortcut</key><string>ばすまてぃー</string></dict>
-	<dict><key>phrase</key><string>バスマティ</string><key>shortcut</key><string>ばすまてぃ</string></dict>
-	<dict><key>phrase</key><string>カルナローリ</string><key>shortcut</key><string>かるなろーり</string></dict>
-	<dict><key>phrase</key><string>Facebook</string><key>shortcut</key><string>ふぇいすぶっく</string></dict>
-	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
-	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
-	<dict><key>phrase</key><string>青マンゴー</string><key>shortcut</key><string>あおまんごー</string></dict>
-	<dict><key>phrase</key><string>一万円札</string><key>shortcut</key><string>いちまんえんさつ</string></dict>
-	<dict><key>phrase</key><string>五千円札</string><key>shortcut</key><string>ごせんえんさつ</string></dict>
-	<dict><key>phrase</key><string>二千円札</string><key>shortcut</key><string>にせんえんさつ</string></dict>
-	<dict><key>phrase</key><string>千円札</string><key>shortcut</key><string>せんえんさつ</string></dict>
-	<dict><key>phrase</key><string>500円玉</string><key>shortcut</key><string>ごひゃくえんだま</string></dict>
-	<dict><key>phrase</key><string>100円玉</string><key>shortcut</key><string>ひゃくえんだま</string></dict>
-	<dict><key>phrase</key><string>50円玉</string><key>shortcut</key><string>ごじゅうえんだま</string></dict>
-	<dict><key>phrase</key><string>10円玉</string><key>shortcut</key><string>じゅうえんだま</string></dict>
-	<dict><key>phrase</key><string>5円玉</string><key>shortcut</key><string>ごえんだま</string></dict>
-	<dict><key>phrase</key><string>1円玉</string><key>shortcut</key><string>いちえんだま</string></dict>
-	<dict><key>phrase</key><string>ビリヤニ</string><key>shortcut</key><string>びりやに</string></dict>
-	<dict><key>phrase</key><string>数日</string><key>shortcut</key><string>すうじつ</string></dict>
-	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
-	<dict><key>phrase</key><string>香菜</string><key>shortcut</key><string>しゃんつぁい</string></dict>
-	<dict><key>phrase</key><string>油淋鶏</string><key>shortcut</key><string>ゆーりんちー</string></dict>
-	<dict><key>phrase</key><string>ボタンインコ</string><key>shortcut</key><string>ぼたんいんこ</string></dict>
-	<dict><key>phrase</key><string>原価率</string><key>shortcut</key><string>げんかりつ</string></dict>
-	<dict><key>phrase</key><string>何年</string><key>shortcut</key><string>なんねん</string></dict>
-	<dict><key>phrase</key><string>ヒング</string><key>shortcut</key><string>ひんぐ</string></dict>
-	<dict><key>phrase</key><string>アサフェティダ</string><key>shortcut</key><string>あさふぇてぃだ</string></dict>
-	<dict><key>phrase</key><string>高確率</string><key>shortcut</key><string>こうかくりつ</string></dict>
-	<dict><key>phrase</key><string>低確率</string><key>shortcut</key><string>ていかくりつ</string></dict>
+	<dict><key>phrase</key><string>蜀郷香</string><key>shortcut</key><string>しゅうしゃんしゃん</string></dict>
+	<dict><key>phrase</key><string>趙楊</string><key>shortcut</key><string>ちょうよう</string></dict>
 </array>
 </plist>
