@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260528174805"
+    private static let editionUpdatedAtRaw: String = "20260528185731"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -220,6 +220,34 @@ struct ContentView: View {
 
     private var isContainerBusy: Bool {
         isBootstrappingInitialData || isLoadingSystemVocabularyEntries
+    }
+
+    private var settingsSyncSignature: String {
+        [
+            directionProfileRawValue,
+            kanaLayoutModeRawValue,
+            landscapeCandidateSideRawValue,
+            landscapeNumberPaneSideRawValue,
+            landscapeLatinSuggestionModeRawValue,
+            kanaModifierPlacementRawValue,
+            latinLayoutModeRawValue,
+            numberLayoutModeRawValue,
+            basicSymbolOrderRawValue,
+            accentPaletteRawValue,
+            keyboardBackgroundThemeRawValue,
+            kanaFlickGuideDisplayModeRawValue,
+            latinFlickGuideDisplayModeRawValue,
+            numberFlickGuideDisplayModeRawValue,
+            modifierFlickGuideDisplayModeRawValue,
+            String(keyRepeatInitialDelay),
+            String(keyRepeatInterval),
+            kanaModeSwitcherTapActionRawValue,
+            kanaModeSwitcherRightFlickActionRawValue,
+            kanaModeSwitcherUpFlickActionRawValue,
+            delimiterAutoCommitCandidateRawValue,
+            kanaKanjiCandidateSourceModeRawValue
+        ]
+            .joined(separator: "|")
     }
 
     private func rawValueSelection<Option: RawRepresentable>(
@@ -960,6 +988,7 @@ struct ContentView: View {
         }
 
         defaults.set(encoded, forKey: SettingsKeys.kanaKanjiShortcutVocabulary)
+        SettingsSyncNotification.postSettingsDidChange()
     }
 
     private func loadAppGroupDictionaryEntries(filename: String) -> [String: [String]] {
@@ -1329,6 +1358,7 @@ struct ContentView: View {
         }
 
         defaults.set(encoded, forKey: key)
+        SettingsSyncNotification.postSettingsDidChange()
     }
 
     private func userDictionaryEntriesSnapshot() -> [VocabularyEntry] {
@@ -2015,12 +2045,7 @@ struct ContentView: View {
             .onAppear {
                 handleContainerAppAppear()
             }
-            .onReceive(
-                NotificationCenter.default.publisher(
-                    for: UserDefaults.didChangeNotification,
-                    object: Self.sharedDefaults
-                )
-            ) { _ in
+            .onChange(of: settingsSyncSignature) { _ in
                 SettingsSyncNotification.postSettingsDidChange()
             }
 #if os(iOS)

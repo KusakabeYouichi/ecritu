@@ -366,3 +366,530 @@ extension KeyboardRootView {
         let spacing: CGFloat
     }
 }
+
+    struct KeyboardRootEmojiKeyboardSectionView: View {
+        @Binding var selectedEmojiCategory: KeyboardRootView.EmojiCategory
+        let keyboardRowSpacing: CGFloat
+        let emojiGridColumns: [GridItem]
+        let emojiGridSpacing: CGFloat
+        let compactEmojiKeyHeight: CGFloat
+        let mainFlickKeyHeight: CGFloat
+        let fourRowAlignedTopContentHeight: CGFloat
+        let fourRowAlignedClusterHeight: CGFloat
+        let keyRepeatInitialDelay: TimeInterval
+        let keyRepeatInterval: TimeInterval
+        let onTextInput: (String) -> Void
+        let onSwitchToKana: () -> Void
+        let onDeleteBackward: () -> Void
+
+        var body: some View {
+            VStack(spacing: keyboardRowSpacing) {
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVGrid(columns: emojiGridColumns, spacing: emojiGridSpacing) {
+                        ForEach(Array(selectedEmojiCategory.emojis.enumerated()), id: \.offset) { _, emoji in
+                            EmojiKeyButton(emoji: emoji) {
+                                onTextInput(emoji)
+                            }
+                            .frame(height: compactEmojiKeyHeight)
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .frame(height: fourRowAlignedTopContentHeight)
+
+                HStack(spacing: keyboardRowSpacing) {
+                    ActionKeyButton(
+                        title: "あい",
+                        fixedWidth: 56,
+                        action: onSwitchToKana
+                    )
+                    .frame(height: mainFlickKeyHeight)
+
+                    ForEach(KeyboardRootView.EmojiCategory.allCases, id: \.self) { category in
+                        EmojiCategoryKeyButton(
+                            icon: category.icon,
+                            isSelected: selectedEmojiCategory == category,
+                            action: { selectedEmojiCategory = category }
+                        )
+                        .frame(maxWidth: .infinity)
+                        .frame(height: mainFlickKeyHeight)
+                    }
+
+                    ActionKeyButton(
+                        title: "⌫",
+                        accessibilityLabel: "削除",
+                        fontSize: 26,
+                        fixedWidth: 56,
+                        repeatsWhileHolding: true,
+                        repeatInitialDelay: keyRepeatInitialDelay,
+                        repeatInterval: keyRepeatInterval,
+                        action: onDeleteBackward
+                    )
+                    .frame(height: mainFlickKeyHeight)
+                }
+                .frame(height: mainFlickKeyHeight)
+            }
+            .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+        }
+    }
+
+    struct KeyboardRootSymbolKeyboardSectionView: View {
+        @Binding var selectedSymbolCategory: KeyboardRootView.SymbolCategory
+        let basicSymbolOrder: KeyboardRootView.BasicSymbolOrder
+        let temperatureUnit: TemperatureUnitPreference
+        let keyboardRowSpacing: CGFloat
+        let symbolGridColumns: [GridItem]
+        let emojiGridSpacing: CGFloat
+        let compactEmojiKeyHeight: CGFloat
+        let mainFlickKeyHeight: CGFloat
+        let fourRowAlignedTopContentHeight: CGFloat
+        let fourRowAlignedClusterHeight: CGFloat
+        let keyRepeatInitialDelay: TimeInterval
+        let keyRepeatInterval: TimeInterval
+        let onTextInput: (String) -> Void
+        let onSwitchToKana: () -> Void
+        let onDeleteBackward: () -> Void
+
+        var body: some View {
+            VStack(spacing: keyboardRowSpacing) {
+                ScrollView(.vertical, showsIndicators: false) {
+                    symbolCategoryContentView
+                        .padding(.vertical, 2)
+                }
+                .frame(height: fourRowAlignedTopContentHeight)
+
+                HStack(spacing: keyboardRowSpacing) {
+                    ActionKeyButton(
+                        title: "あい",
+                        fixedWidth: 56,
+                        action: onSwitchToKana
+                    )
+                    .frame(height: mainFlickKeyHeight)
+
+                    ForEach(KeyboardRootView.SymbolCategory.allCases, id: \.self) { category in
+                        SymbolCategoryKeyButton(
+                            icon: category.icon(temperatureUnit: temperatureUnit),
+                            tintColor: category.tintColor,
+                            isSelected: selectedSymbolCategory == category,
+                            accessibilityLabel: category.frenchName,
+                            action: { selectedSymbolCategory = category }
+                        )
+                        .frame(maxWidth: .infinity)
+                        .frame(height: mainFlickKeyHeight)
+                    }
+
+                    ActionKeyButton(
+                        title: "⌫",
+                        accessibilityLabel: "削除",
+                        fontSize: 26,
+                        fixedWidth: 56,
+                        repeatsWhileHolding: true,
+                        repeatInitialDelay: keyRepeatInitialDelay,
+                        repeatInterval: keyRepeatInterval,
+                        action: onDeleteBackward
+                    )
+                    .frame(height: mainFlickKeyHeight)
+                }
+                .frame(height: mainFlickKeyHeight)
+            }
+            .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+        }
+
+        @ViewBuilder
+        private var symbolCategoryContentView: some View {
+            let symbols = selectedSymbolCategory.symbols(
+                basicOrder: basicSymbolOrder,
+                temperatureUnit: temperatureUnit
+            )
+
+            switch selectedSymbolCategory {
+            case .basic:
+                let splitIndex = max(0, symbols.count - 8)
+                let leadingSymbols = Array(symbols.prefix(splitIndex))
+                let trailingSymbols = Array(symbols.dropFirst(splitIndex))
+                symbolGridSections([leadingSymbols, trailingSymbols])
+
+            case .enclosed:
+                let numberStart = symbols.firstIndex(of: "⓪")
+                let upperStart = symbols.firstIndex(of: "Ⓐ")
+                let lowerStart = symbols.firstIndex(of: "ⓐ")
+
+                if let numberStart,
+                    let upperStart,
+                    let lowerStart,
+                    numberStart < upperStart,
+                    upperStart < lowerStart {
+                    let markSymbols = Array(symbols[..<numberStart])
+                    let numberSymbols = Array(symbols[numberStart..<upperStart])
+                    let upperSymbols = Array(symbols[upperStart..<lowerStart])
+                    let lowerSymbols = Array(symbols[lowerStart...])
+                    symbolGridSections([markSymbols, numberSymbols, upperSymbols, lowerSymbols])
+                } else {
+                    symbolGridSection(symbols)
+                }
+
+            default:
+                symbolGridSection(symbols)
+            }
+        }
+
+        @ViewBuilder
+        private func symbolGridSections(_ sections: [[String]]) -> some View {
+            LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                ForEach(Array(sections.enumerated()), id: \.offset) { index, sectionSymbols in
+                    symbolGridSection(sectionSymbols)
+
+                    if index + 1 < sections.count {
+                        let nextSectionSymbols = sections[index + 1]
+                        if !sectionSymbols.isEmpty && !nextSectionSymbols.isEmpty {
+                            symbolSectionDivider
+                        }
+                    }
+                }
+            }
+        }
+
+        private func symbolGridSection(_ symbols: [String]) -> some View {
+            let symbolFont: Font = selectedSymbolCategory == .enclosed
+                ? .custom("HiraginoSans-W6", size: 24)
+                : .system(size: 24, weight: .semibold, design: .rounded)
+
+            return LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
+                ForEach(Array(symbols.enumerated()), id: \.offset) { _, symbol in
+                    SymbolKeyButton(symbol: symbol, font: symbolFont) {
+                        onTextInput(symbol)
+                    }
+                    .frame(height: compactEmojiKeyHeight)
+                }
+            }
+        }
+
+        private var symbolSectionDivider: some View {
+            Rectangle()
+                .fill(KeyboardThemePalette.thinDivider)
+                .frame(height: 1)
+                .padding(.vertical, 2)
+        }
+    }
+
+    struct KeyboardRootKanaCandidateHeaderView: View {
+        let showsParenthesesWrapper: Bool
+        let composingText: String
+        let conversionStateLabel: String
+        let conversionStateColor: Color
+        let candidateStateFontSize: CGFloat
+        let candidateTextFontSize: CGFloat
+        let canTapComposingTextToCommit: Bool
+        let showsKatakanaCommitFeedback: Bool
+        let accentColor: Color
+        let keyLabelColor: Color
+        let conversionCandidates: [String]
+        let selectedConversionCandidateIndex: Int?
+        let kanaCandidateHeaderTopPadding: CGFloat
+        let onSelectConversionCandidate: (Int) -> Void
+        let onComposingTextCommitTap: () -> Void
+        let onComposingTextCommitLongPress: () -> Void
+
+        var body: some View {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
+
+                    if !composingText.isEmpty || showsWrapperOnly {
+                        Text(showsWrapperOnly ? "()" : conversionStateLabel)
+                            .font(.system(size: candidateStateFontSize, weight: .bold))
+                            .foregroundStyle(Color.white)
+                            .lineLimit(1)
+                            .padding(.horizontal, 7)
+                            .padding(.vertical, 3)
+                            .background(
+                                Capsule(style: .continuous)
+                                    .fill(conversionStateColor.opacity(0.95))
+                            )
+
+                        if !showsWrapperOnly, canTapComposingTextToCommit {
+                            Button {
+                                onComposingTextCommitTap()
+                            } label: {
+                                if showsParenthesesWrapper {
+                                    HStack(spacing: 0) {
+                                        Text("(")
+                                            .foregroundStyle(
+                                                showsKatakanaCommitFeedback
+                                                    ? Color.white
+                                                    : accentColor
+                                            )
+                                        Text(composingText)
+                                            .foregroundStyle(
+                                                showsKatakanaCommitFeedback
+                                                    ? Color.white
+                                                    : keyLabelColor.opacity(0.85)
+                                            )
+                                            .underline(
+                                                !showsKatakanaCommitFeedback,
+                                                color: conversionStateColor.opacity(0.92)
+                                            )
+                                        Text(")")
+                                            .foregroundStyle(
+                                                showsKatakanaCommitFeedback
+                                                    ? Color.white
+                                                    : accentColor
+                                            )
+                                    }
+                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                    .lineLimit(1)
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .fill(
+                                                showsKatakanaCommitFeedback
+                                                    ? accentColor.opacity(0.95)
+                                                    : KeyboardThemePalette.candidateHeaderSubtleBackground
+                                            )
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .stroke(
+                                                showsKatakanaCommitFeedback
+                                                    ? Color.clear
+                                                    : conversionStateColor.opacity(0.45),
+                                                style: StrokeStyle(
+                                                    lineWidth: showsKatakanaCommitFeedback ? 0 : 1,
+                                                    dash: [3, 2]
+                                                )
+                                            )
+                                    )
+                                } else {
+                                    Text(composingText)
+                                        .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                        .foregroundStyle(
+                                            showsKatakanaCommitFeedback
+                                                ? Color.white
+                                                : keyLabelColor.opacity(0.85)
+                                        )
+                                        .lineLimit(1)
+                                        .underline(
+                                            !showsKatakanaCommitFeedback,
+                                            color: conversionStateColor.opacity(0.92)
+                                        )
+                                        .padding(.horizontal, 7)
+                                        .padding(.vertical, 4)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                                .fill(
+                                                    showsKatakanaCommitFeedback
+                                                        ? accentColor.opacity(0.95)
+                                                        : KeyboardThemePalette.candidateHeaderSubtleBackground
+                                                )
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                                .stroke(
+                                                    showsKatakanaCommitFeedback
+                                                        ? Color.clear
+                                                        : conversionStateColor.opacity(0.45),
+                                                    style: StrokeStyle(
+                                                        lineWidth: showsKatakanaCommitFeedback ? 0 : 1,
+                                                        dash: [3, 2]
+                                                    )
+                                                )
+                                        )
+                                }
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("\(composingText)を確定")
+                            .accessibilityHint("通常タップで変換せずに確定。ロングタップでカタカナ確定")
+                            .simultaneousGesture(
+                                LongPressGesture(minimumDuration: 0.4)
+                                    .onEnded { _ in
+                                        onComposingTextCommitLongPress()
+                                    }
+                            )
+                        } else if !showsWrapperOnly {
+                            if showsParenthesesWrapper {
+                                HStack(spacing: 0) {
+                                    Text("(")
+                                        .foregroundStyle(accentColor)
+                                    Text(composingText)
+                                        .foregroundStyle(keyLabelColor.opacity(0.85))
+                                        .underline(true, color: conversionStateColor.opacity(0.92))
+                                    Text(")")
+                                        .foregroundStyle(accentColor)
+                                }
+                                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                .lineLimit(1)
+                                .padding(.horizontal, 7)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .stroke(
+                                            conversionStateColor.opacity(0.45),
+                                            style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                                        )
+                                )
+                            } else {
+                                Text(composingText)
+                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                    .foregroundStyle(keyLabelColor.opacity(0.85))
+                                    .lineLimit(1)
+                                    .underline(true, color: conversionStateColor.opacity(0.92))
+                                    .padding(.horizontal, 7)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .stroke(
+                                                conversionStateColor.opacity(0.45),
+                                                style: StrokeStyle(lineWidth: 1, dash: [3, 2])
+                                            )
+                                    )
+                            }
+                        }
+                    }
+
+                    if conversionCandidates.isEmpty {
+                        if !(showsParenthesesWrapper && composingText.isEmpty) {
+                            Text("候補なし")
+                                .font(.system(size: candidateTextFontSize, weight: .regular))
+                                .foregroundStyle(keyLabelColor.opacity(0.6))
+                                .lineLimit(1)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                                )
+                        }
+                    }
+
+                    ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
+                        let isSelected = selectedConversionCandidateIndex == index
+
+                        Button {
+                            onSelectConversionCandidate(index)
+                        } label: {
+                            if showsParenthesesWrapper {
+                                HStack(spacing: 0) {
+                                    Text("(")
+                                        .foregroundStyle(isSelected ? Color.white : accentColor)
+                                    Text(candidate)
+                                        .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                    Text(")")
+                                        .foregroundStyle(isSelected ? Color.white : accentColor)
+                                }
+                                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                .lineLimit(1)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(
+                                            isSelected
+                                                ? accentColor.opacity(0.9)
+                                                : KeyboardThemePalette.candidateHeaderChipBackground
+                                        )
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .stroke(
+                                            KeyboardThemePalette.candidateHeaderBorder,
+                                            lineWidth: isSelected ? 0 : 1
+                                        )
+                                )
+                            } else {
+                                Text(candidate)
+                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                    .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                    .lineLimit(1)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .fill(
+                                                isSelected
+                                                    ? accentColor.opacity(0.9)
+                                                    : KeyboardThemePalette.candidateHeaderChipBackground
+                                            )
+                                    )
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                            .stroke(
+                                                KeyboardThemePalette.candidateHeaderBorder,
+                                                lineWidth: isSelected ? 0 : 1
+                                            )
+                                    )
+                            }
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(candidate)
+                    }
+                }
+                .padding(.horizontal, 2)
+                .padding(.top, kanaCandidateHeaderTopPadding)
+                .padding(.bottom, 0)
+                .frame(maxHeight: .infinity, alignment: .top)
+            }
+        }
+    }
+
+    struct KeyboardRootLatinSuggestionHeaderView: View {
+        let latinSuggestions: [String]
+        let candidateTextFontSize: CGFloat
+        let keyLabelColor: Color
+        let kanaCandidateHeaderTopPadding: CGFloat
+        let onSelectConversionCandidate: (Int) -> Void
+
+        var body: some View {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    if latinSuggestions.isEmpty {
+                        Text("候補なし")
+                            .font(.system(size: candidateTextFontSize, weight: .regular))
+                            .foregroundStyle(keyLabelColor.opacity(0.6))
+                            .lineLimit(1)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                            )
+                    }
+
+                    ForEach(Array(latinSuggestions.enumerated()), id: \.offset) { index, candidate in
+                        Button {
+                            onSelectConversionCandidate(index)
+                        } label: {
+                            Text(candidate)
+                                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                                .foregroundStyle(keyLabelColor)
+                                .lineLimit(1)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .fill(KeyboardThemePalette.candidateHeaderChipBackground)
+                                )
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                        .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
+                                )
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel(candidate)
+                    }
+                }
+                .padding(.horizontal, 2)
+                .padding(.top, kanaCandidateHeaderTopPadding)
+                .padding(.bottom, 0)
+                .frame(maxHeight: .infinity, alignment: .top)
+            }
+        }
+    }
