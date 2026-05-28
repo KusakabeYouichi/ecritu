@@ -69,6 +69,17 @@ final class KanaKanjiConverter {
         InflectionRule(readingSuffix: "くて", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "ければ", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "く", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなる", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなった", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなって", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなってる", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなっている", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなってた", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなっていた", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなってくる", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなってきた", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなってきて", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなってきます", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "すぎる", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "すぎない", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "すぎなかった", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
@@ -504,6 +515,28 @@ final class KanaKanjiConverter {
 
     private static let sahenNounSuruInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "する", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できます", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できてる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できている", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できた", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できていた", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できてない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できていない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できてなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できていなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できてます", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できています", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できてました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できていました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できてません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できていません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "できれば", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "します", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
@@ -779,7 +812,10 @@ final class KanaKanjiConverter {
     }()
 
     private static let postfixPassthroughSuffixes: [String] = [
-        "では", "には", "とは", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
+        "ほうがいい", "ほうがよい", "ほうが", "ようになる", "ようにする", "ようにして", "ように", "ような", "ようだ", "ようです", "では", "には", "とは", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
+    ]
+    private static let postfixPassthroughPrefixReplacements: [(from: String, to: String)] = [
+        ("ほう", "方")
     ]
     private static let politePrefixPassthroughPrefixes: [String] = ["お"]
 
@@ -787,6 +823,29 @@ final class KanaKanjiConverter {
 
     private static let kuruKanjiCandidateBoost = 1450
     private static let godanImperativeCandidateBoost = 320
+    private static let numericUnitFallbackCandidateBoost = 320
+
+    private static let numericUnitFallbackCandidatesByReading: [String: [String]] = [
+        "せんえん": ["千円"],
+        "まんえん": ["万円"],
+        "おくえん": ["億円"],
+        "ちょうえん": ["兆円"]
+    ]
+
+    private static func postfixOutputSuffixVariants(for suffix: String) -> [String] {
+        var variants = [suffix]
+
+        for replacement in Self.postfixPassthroughPrefixReplacements where suffix.hasPrefix(replacement.from) {
+            let tail = String(suffix.dropFirst(replacement.from.count))
+            let converted = replacement.to + tail
+
+            if !variants.contains(converted) {
+                variants.append(converted)
+            }
+        }
+
+        return variants
+    }
 
     private static let iVowelKanaBeforeRu: Set<Character> = [
         "い", "き", "ぎ", "し", "じ", "ち", "ぢ", "に", "ひ", "び", "ぴ", "み", "り", "ゐ"
@@ -939,6 +998,23 @@ final class KanaKanjiConverter {
                 limit: limit * 2
             ),
             baseScore: 1080,
+            to: &scores
+        )
+
+        let numericUnitFallback = numericUnitFallbackCandidates(
+            for: normalizedReading,
+            limit: limit * 2
+        )
+
+        addCandidates(
+            numericUnitFallback,
+            baseScore: 1070,
+            to: &scores
+        )
+
+        applyNumericUnitFallbackPriorityBoost(
+            for: normalizedReading,
+            fallbackCandidates: numericUnitFallback,
             to: &scores
         )
 
@@ -1111,7 +1187,10 @@ final class KanaKanjiConverter {
                 continue
             }
 
-            let derived = stemCandidates.map { $0 + passthrough }
+            let suffixVariants = Self.postfixOutputSuffixVariants(for: passthrough)
+            let derived = stemCandidates.flatMap { candidate in
+                suffixVariants.map { candidate + $0 }
+            }
             return Array(uniqueCandidates(from: derived).prefix(limit))
         }
 
@@ -1159,6 +1238,26 @@ final class KanaKanjiConverter {
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
+    }
+
+    private func applyNumericUnitFallbackPriorityBoost(
+        for reading: String,
+        fallbackCandidates: [String],
+        to scores: inout [String: Int]
+    ) {
+        guard hasLeadingNumberPrefix(in: reading),
+            !fallbackCandidates.isEmpty else {
+            return
+        }
+
+        for candidate in fallbackCandidates {
+            scores[candidate, default: 0] += Self.numericUnitFallbackCandidateBoost
+        }
+    }
+
+    private func hasLeadingNumberPrefix(in text: String) -> Bool {
+        let trimmed = trimmingLeadingNumberPrefix(from: text)
+        return !trimmed.isEmpty && trimmed != text
     }
 
     private func applyGodanImperativeBoost(
@@ -1321,7 +1420,9 @@ final class KanaKanjiConverter {
                 )
 
                 for candidate in stemCandidates {
-                    derived.append(candidate + nextSuffix)
+                    for outputSuffix in Self.postfixOutputSuffixVariants(for: nextSuffix) {
+                        derived.append(candidate + outputSuffix)
+                    }
                 }
 
                 queue.append((nextStem, nextSuffix, current.depth + 1))
@@ -1472,6 +1573,33 @@ final class KanaKanjiConverter {
         // Keep kanji+"目" candidates available, but behind kanji+"め".
         for candidate in kanjiStemCandidates {
             derived.append(candidate + "目")
+        }
+
+        return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func numericUnitFallbackCandidates(
+        for reading: String,
+        limit: Int
+    ) -> [String] {
+        guard limit > 0 else {
+            return []
+        }
+
+        var lookupKeys = [reading]
+        let trimmedReading = trimmingLeadingNumberPrefix(from: reading)
+
+        if !trimmedReading.isEmpty,
+            trimmedReading != reading {
+            lookupKeys.append(trimmedReading)
+        }
+
+        var derived: [String] = []
+
+        for key in lookupKeys {
+            if let fallbackCandidates = Self.numericUnitFallbackCandidatesByReading[key] {
+                derived.append(contentsOf: fallbackCandidates)
+            }
         }
 
         return Array(uniqueCandidates(from: derived).prefix(limit))

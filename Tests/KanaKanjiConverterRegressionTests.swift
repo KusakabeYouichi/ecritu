@@ -509,6 +509,69 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionRequestedAndRelatedInflectionPhrasesAreDerived() {
+        converter.learn(reading: "すくない", candidate: "少ない")
+        converter.learn(reading: "よむ", candidate: "読む")
+        converter.learn(reading: "とれる", candidate: "取れる")
+        converter.learn(reading: "きょうゆう", candidate: "共有")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("すくなくなってきた", "少なくなってきた"),
+            ("すくなくなってくる", "少なくなってくる"),
+            ("よんだほうが", "読んだ方が"),
+            ("よんだほうがいい", "読んだ方がいい"),
+            ("とれるように", "取れるように"),
+            ("とれるような", "取れるような"),
+            ("きょうゆうできる", "共有できる"),
+            ("きょうゆうできない", "共有できない")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
+    func testRegressionNumericUnitReadingsIncludeCurrencyCandidates() {
+        let cases: [(reading: String, expected: String)] = [
+            ("せんえん", "千円"),
+            ("まんえん", "万円"),
+            ("おくえん", "億円"),
+            ("ちょうえん", "兆円")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
+    func testRegressionNumericPrefixBoostPrioritizesCurrencyUnitFallback() {
+        let candidates = converter.candidates(
+            for: "4まんえん",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertEqual(candidates.first, "万円", "candidates=\(candidates)")
+    }
+
     func testRegressionOrdinalMeFallbackPrefersKanjiMeAfterCommittedNumberInput() {
         let candidates = converter.candidates(
             for: "10ぎょうめ",
