@@ -32,7 +32,9 @@ final class KeyboardViewController: UIInputViewController {
     var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
     private lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
     private var diagnosticsSessionID = UUID().uuidString
+    private var diagnosticsSessionStartedAt = Date()
     private let diagnosticsControllerID = UUID().uuidString
+    private var pendingRefreshKeyboardStateRequests = 0
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -155,6 +157,11 @@ final class KeyboardViewController: UIInputViewController {
     private static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
     private static let deviceSystemDictionaryPreloadDelay: TimeInterval = 1.2
     private static let minimumPhysicalMemoryForSystemDictionaryPreload: UInt64 = 5 * 1024 * 1024 * 1024
+    private static let maximumResidentMemoryMBForSystemDictionaryPreload: Double = 95
+    private static let refreshQueueBacklogLogThreshold = 6
+    private static let refreshQueueWaitSlowThresholdMs = 60
+    private static let renderConfigurationSlowThresholdMs = 16
+    private static let refreshKeyboardStateSlowThresholdMs = 28
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
             return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
@@ -265,6 +272,25 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         applyKeyboardBaseBackground()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
+
+        if let workItem = dictionaryPreloadWorkItem {
+            workItem.cancel()
+            dictionaryPreloadWorkItem = nil
+            updateKeyboardDiagnosticsHeartbeat(
+                event: "キーボード非表示のため辞書プリロード予約をキャンセル",
+                appendLog: true
+            )
+        }
+    }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        updateKeyboardDiagnosticsHeartbeat(event: "viewDidDisappear", appendLog: true)
     }
 
     override func didReceiveMemoryWarning() {
@@ -485,6 +511,15 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func requestSystemDictionaryPreloadIfNeeded() {
+        if let residentMemoryMB = currentResidentMemoryMB(),
+            residentMemoryMB >= Self.maximumResidentMemoryMBForSystemDictionaryPreload {
+            updateKeyboardDiagnosticsHeartbeat(
+                event: "システム辞書プリロードを省略 rssMB=\(String(format: "%.1f", residentMemoryMB)) thresholdMB=\(String(format: "%.1f", Self.maximumResidentMemoryMBForSystemDictionaryPreload)) physicalMemoryGB=\(physicalMemoryGBText())",
+                appendLog: true
+            )
+            return
+        }
+
         guard shouldPreloadSystemDictionaryAtLaunch() else {
             updateKeyboardDiagnosticsHeartbeat(
                 event: "システム辞書プリロードを省略 physicalMemoryGB=\(physicalMemoryGBText())",
@@ -579,6 +614,14 @@ final class KeyboardViewController: UIInputViewController {
         return String(format: "%.1f", mb)
     }
 
+    private func currentResidentMemoryMB() -> Double? {
+        guard let bytes = currentResidentMemoryBytes() else {
+            return nil
+        }
+
+        return Double(bytes) / 1_048_576
+    }
+
     private func diagnosticsRuntimeContext() -> String {
         "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText())"
     }
@@ -609,61 +652,7 @@ final class KeyboardViewController: UIInputViewController {
         let bundle = Bundle.main
         let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
         let buildNumber = (bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
-        let installToken = diagnosticsInstallToken(for: bundle)
-        return "\(bundleID)|\(buildNumber)|\(installToken.value)|\(installToken.source)"
-    }
-
-    private func diagnosticsInstallToken(for bundle: Bundle) -> (value: Int, source: String) {
-        if let timestamp = bundleTimestampForDiagnostics(bundle) {
-            return (timestamp, "date")
-        }
-
-        return (deterministicDiagnosticsPathToken(bundle.bundlePath), "pathHash")
-    }
-
-    private func bundleTimestampForDiagnostics(_ bundle: Bundle) -> Int? {
-        if let bundleValues = try? bundle.bundleURL.resourceValues(
-            forKeys: [.creationDateKey, .contentModificationDateKey]
-        ),
-            let bundleDate = bundleValues.creationDate ?? bundleValues.contentModificationDate {
-            let seconds = Int(bundleDate.timeIntervalSince1970)
-            if seconds > 0 {
-                return seconds
-            }
-        }
-
-        if let executableURL = bundle.executableURL,
-            let executableValues = try? executableURL.resourceValues(
-                forKeys: [.creationDateKey, .contentModificationDateKey]
-            ),
-            let executableDate = executableValues.creationDate ?? executableValues.contentModificationDate {
-            let seconds = Int(executableDate.timeIntervalSince1970)
-            if seconds > 0 {
-                return seconds
-            }
-        }
-
-        if let attributes = try? FileManager.default.attributesOfItem(atPath: bundle.bundlePath),
-            let modifiedDate = attributes[.modificationDate] as? Date {
-            let seconds = Int(modifiedDate.timeIntervalSince1970)
-            if seconds > 0 {
-                return seconds
-            }
-        }
-
-        return nil
-    }
-
-    private func deterministicDiagnosticsPathToken(_ path: String) -> Int {
-        var hash: UInt32 = 2_166_136_261
-
-        for byte in path.utf8 {
-            hash ^= UInt32(byte)
-            hash = hash &* 16_777_619
-        }
-
-        let value = Int(hash)
-        return value == 0 ? 1 : value
+        return "\(bundleID)|\(buildNumber)|build"
     }
 
     private func clearKeyboardDiagnosticsStorage(
@@ -806,6 +795,7 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         diagnosticsSessionID = UUID().uuidString
+        diagnosticsSessionStartedAt = Date()
         sharedDefaults.set(true, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
         sharedDefaults.set(
             diagnosticsSessionOwnerToken(),
@@ -830,8 +820,10 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        let elapsedSec = max(0, Date().timeIntervalSince(diagnosticsSessionStartedAt))
+
         appendKeyboardDiagnosticsLog(
-            "キーボード拡張セッション終了 reason=\(reason)",
+            "キーボード拡張セッション終了 reason=\(reason) elapsedSec=\(String(format: "%.1f", elapsedSec))",
             file: file,
             line: line,
             function: function
@@ -859,13 +851,37 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
-    private func refreshKeyboardState() {
+    func appendKeyboardDiagnosticsLogFromInputHandling(_ event: String) {
+        appendKeyboardDiagnosticsLog(event)
+    }
+
+    func performanceElapsedMilliseconds(since startedAt: CFAbsoluteTime) -> Int {
+        max(0, Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000))
+    }
+
+    private func refreshKeyboardState(trigger: String = "direct") {
+        let refreshStartedAt = CFAbsoluteTimeGetCurrent()
+        let configurationStartedAt = CFAbsoluteTimeGetCurrent()
         let configuration = makeRenderConfiguration()
+        let configurationElapsedMs = performanceElapsedMilliseconds(since: configurationStartedAt)
+
         applyKeyboardBaseBackground()
         installKeyboardHeightConstraintIfNeeded()
         updateKeyboardHeightIfNeeded(using: configuration)
 
         guard configuration != lastRenderConfiguration else {
+            let refreshElapsedMs = performanceElapsedMilliseconds(since: refreshStartedAt)
+
+            if configurationElapsedMs >= Self.renderConfigurationSlowThresholdMs
+                || refreshElapsedMs >= Self.refreshKeyboardStateSlowThresholdMs {
+                appendKeyboardDiagnosticsLog(
+                    "refreshKeyboardState遅延 trigger=\(trigger) elapsedMs=\(refreshElapsedMs) configMs=\(configurationElapsedMs) changed=false pending=\(pendingRefreshKeyboardStateRequests)",
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+            }
+
             return
         }
 
@@ -874,11 +890,61 @@ final class KeyboardViewController: UIInputViewController {
             hostingController?.rootView = makeRootView(from: configuration)
             hostingController?.view.layoutIfNeeded()
         }
+
+        let refreshElapsedMs = performanceElapsedMilliseconds(since: refreshStartedAt)
+
+        if configurationElapsedMs >= Self.renderConfigurationSlowThresholdMs
+            || refreshElapsedMs >= Self.refreshKeyboardStateSlowThresholdMs {
+            appendKeyboardDiagnosticsLog(
+                "refreshKeyboardState遅延 trigger=\(trigger) elapsedMs=\(refreshElapsedMs) configMs=\(configurationElapsedMs) changed=true pending=\(pendingRefreshKeyboardStateRequests)",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
     }
 
     func refreshKeyboardStateAsync() {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.refreshKeyboardStateAsync()
+            }
+            return
+        }
+
+        pendingRefreshKeyboardStateRequests += 1
+        let queuedDepth = pendingRefreshKeyboardStateRequests
+        let enqueuedAt = CFAbsoluteTimeGetCurrent()
+
+        if queuedDepth >= Self.refreshQueueBacklogLogThreshold {
+            appendKeyboardDiagnosticsLog(
+                "refreshKeyboardStateAsync滞留 queueDepth=\(queuedDepth)",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
+
         DispatchQueue.main.async { [weak self] in
-            self?.refreshKeyboardState()
+            guard let self else {
+                return
+            }
+
+            self.pendingRefreshKeyboardStateRequests = max(0, self.pendingRefreshKeyboardStateRequests - 1)
+
+            let queueWaitMs = self.performanceElapsedMilliseconds(since: enqueuedAt)
+
+            if queueWaitMs >= Self.refreshQueueWaitSlowThresholdMs
+                || queuedDepth >= Self.refreshQueueBacklogLogThreshold {
+                self.appendKeyboardDiagnosticsLog(
+                    "refreshKeyboardStateAsync実行 waitMs=\(queueWaitMs) queueDepthAtEnqueue=\(queuedDepth) pendingNow=\(self.pendingRefreshKeyboardStateRequests)",
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+            }
+
+            self.refreshKeyboardState(trigger: "async")
         }
     }
 
@@ -893,7 +959,7 @@ final class KeyboardViewController: UIInputViewController {
                 appendLog: true
             )
             self.kanaKanjiConverter.clearSharedDataCaches()
-            self.refreshKeyboardState()
+            self.refreshKeyboardState(trigger: "settingsChanged")
         }
     }
 
