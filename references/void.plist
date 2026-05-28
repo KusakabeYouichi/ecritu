@@ -192,5 +192,9 @@
 	<dict><key>phrase</key><string>滷肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict>
 	<dict><key>phrase</key><string>蜀郷香</string><key>shortcut</key><string>しゅうしゃんしゃん</string></dict>
 	<dict><key>phrase</key><string>趙楊</string><key>shortcut</key><string>ちょうよう</string></dict>
+	<dict><key>phrase</key><string>イネディット</string><key>shortcut</key><string>いねでぃっと</string></dict>
+	<dict><key>phrase</key><string>デュヴェル</string><key>shortcut</key><string>でゅゔぇる</string></dict>
+	<dict><key>phrase</key><string>ビッグワン</string><key>shortcut</key><string>びっぐわん</string></dict>
+	<dict><key>phrase</key><string>Big 1</string><key>shortcut</key><string>びっぐわん</string></dict>
 </array>
 </plist>
