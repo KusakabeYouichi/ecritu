@@ -8,6 +8,15 @@ extension KeyboardViewController {
         static let latinSuggestion = 40
     }
 
+    private enum DiagnosticsThresholds {
+        static let latinSuggestionSlowMs = 18
+        static let candidatePresentationSlowMs = 18
+    }
+
+    private func inputHandlingTextLengthSummary(_ text: String) -> String {
+        "len=\(text.count)"
+    }
+
     func currentLatinSuggestionQueryFromTextContext() -> String {
         guard currentInputMode == .latin,
             let contextBeforeInput = textDocumentProxy.documentContextBeforeInput,
@@ -19,6 +28,7 @@ extension KeyboardViewController {
     }
 
     func currentLatinSuggestions(limit: Int = CandidateLimits.latinSuggestion) -> [String] {
+        let startedAt = CFAbsoluteTimeGetCurrent()
         let query = currentLatinSuggestionQueryFromTextContext()
 
         guard !query.isEmpty else {
@@ -30,13 +40,23 @@ extension KeyboardViewController {
         let filteredSuggestions = suggestions.filter { suggestion in
             !isCurrentLatinSuggestionQuery(suggestion, query: query)
         }
+        let results = Array(filteredSuggestions.prefix(limit))
 
-        return Array(filteredSuggestions.prefix(limit))
+        let elapsedMs = performanceElapsedMilliseconds(since: startedAt)
+        if elapsedMs >= DiagnosticsThresholds.latinSuggestionSlowMs {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "latin候補取得遅延 elapsedMs=\(elapsedMs) queryLen=\(query.count) lookupLimit=\(lookupLimit) result=\(results.count)"
+            )
+        }
+
+        return results
     }
 
     func makeCandidatePresentation(
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> CandidatePresentation {
+        let startedAt = CFAbsoluteTimeGetCurrent()
+
         guard currentInputMode == .kana else {
             return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
         }
@@ -62,6 +82,13 @@ extension KeyboardViewController {
             from: rawCandidates,
             composingText: composingRawText
         )
+
+        let elapsedMs = performanceElapsedMilliseconds(since: startedAt)
+        if elapsedMs >= DiagnosticsThresholds.candidatePresentationSlowMs {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "候補提示生成遅延 elapsedMs=\(elapsedMs) readingLen=\(composingReading.count) raw=\(rawCandidates.count) presented=\(presentationCandidates.count)"
+            )
+        }
 
         return CandidatePresentation(
             composingText: composingRawText,
@@ -877,6 +904,9 @@ extension KeyboardViewController {
 
         if let activeConversion {
             guard contextBeforeInput.hasSuffix(activeConversion.committedText) else {
+                appendKeyboardDiagnosticsLogFromInputHandling(
+                    "変換状態不一致で破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) committedLen=\(activeConversion.committedText.count)"
+                )
                 self.activeConversion = nil
                 clearComposingState()
                 return
@@ -900,6 +930,9 @@ extension KeyboardViewController {
                 || hostLikelyConsumedCommittedText {
                 // Host app actions such as send can leave only marked text.
                 // Treat it as stale composition and clear it so it doesn't remain.
+                appendKeyboardDiagnosticsLogFromInputHandling(
+                    "編集中テキストを破棄 external=\(triggeredByExternalChange) hostConsumed=\(hostLikelyConsumedCommittedText) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=\(inputHandlingTextLengthSummary(previousContextBeforeInput))"
+                )
                 markTextProxyEdit()
                 textDocumentProxy.unmarkText()
                 clearComposingState()
@@ -910,6 +943,9 @@ extension KeyboardViewController {
 
         // Host app side actions (for example send button) can consume marked text.
         // Drop stale internal state so next key starts from a clean composition.
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "文脈不一致で編集中テキストを破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=\(inputHandlingTextLengthSummary(previousContextBeforeInput))"
+        )
         markTextProxyEdit()
         textDocumentProxy.unmarkText()
         clearComposingState()
