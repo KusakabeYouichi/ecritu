@@ -929,6 +929,7 @@
 
 	<!-- G.I. -->
 	<dict><key>phrase</key><string>Canterbury</string><key>shortcut</key><string>かんたべりー</string></dict>
+	<dict><key>phrase</key><string>Hokkaido</string><key>shortcut</key><string>ほっかいどうー</string></dict>
 	<dict><key>phrase</key><string>Martinborough</string><key>shortcut</key><string>まーてぃんぼろ</string></dict>
 	<dict><key>phrase</key><string>Nagano</string><key>shortcut</key><string>ながの</string></dict>
 	<dict><key>phrase</key><string>North Canterbury</string><key>shortcut</key><string>のーすかんたべりー</string></dict>
@@ -940,6 +941,7 @@
 	<dict><key>phrase</key><string>バロッサ・ヴァレー</string><key>shortcut</key><string>ばろっさゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ブリティッシュ・コロンビア</string><key>shortcut</key><string>ぶりてぃっしゅころんびあ</string></dict>
 	<dict><key>phrase</key><string>勝沼</string><key>shortcut</key><string>かつぬま</string></dict>
+	<dict><key>phrase</key><string>静岡</string><key>shortcut</key><string>しずおか</string></dict>
 	<dict><key>phrase</key><string>長野</string><key>shortcut</key><string>ながの</string></dict>
 	<dict><key>phrase</key><string>長野プレミアム</string><key>shortcut</key><string>ながのぷれみあむ</string></dict>
 
@@ -1146,6 +1148,34 @@
 	<dict><key>phrase</key><string>洞爺湖</string><key>shortcut</key><string>とうやこ</string></dict>
 	<dict><key>phrase</key><string>洞爺湖町</string><key>shortcut</key><string>とうやこちょう</string></dict>
 
+	<!-- 海流 -->
+	<dict><key>phrase</key><string>アラスカ海流</string><key>shortcut</key><string>あらすかかいりゅう</string></dict>
+	<dict><key>phrase</key><string>カリフォルニア海流</string><key>shortcut</key><string>かりふぉるにぁかいりゅう</string></dict>
+	<dict><key>phrase</key><string>フンボルト寒流</string><key>shortcut</key><string>ふんぼるとかんりゅう</string></dict>
+	<dict><key>phrase</key><string>フンボルト海流</string><key>shortcut</key><string>ふんぼるとかいりゅう</string></dict>
+	<dict><key>phrase</key><string>ベンゲラ海流</string><key>shortcut</key><string>べんげらかいりゅう</string></dict>
+	<dict><key>phrase</key><string>メキシコ海流</string><key>shortcut</key><string>めきしこかいりゅう</string></dict>
+	<dict><key>phrase</key><string>北大西洋海流</string><key>shortcut</key><string>きたたいせいようかいりゅう</string></dict>
+	<dict><key>phrase</key><string>寒流</string><key>shortcut</key><string>かんりゅう</string></dict>
+	<dict><key>phrase</key><string>暖流</string><key>shortcut</key><string>だんりゅう</string></dict>
+	<dict><key>phrase</key><string>海流</string><key>shortcut</key><string>かいりゅう</string></dict>
+
+	<!-- 海・海峡 -->
+	<dict><key>phrase</key><string>アドリア海</string><key>shortcut</key><string>あどりあかい</string></dict>
+	<dict><key>phrase</key><string>アマルフィ海岸</string><key>shortcut</key><string>あまるふぃかいがん</string></dict>
+	<dict><key>phrase</key><string>イオニア海</string><key>shortcut</key><string>いおにあかい</string></dict>
+	<dict><key>phrase</key><string>イギリス海峡</string><key>shortcut</key><string>いぎりすかいきょう</string></dict>
+	<dict><key>phrase</key><string>エーゲ海</string><key>shortcut</key><string>えーげかい</string></dict>
+	<dict><key>phrase</key><string>カスピ海</string><key>shortcut</key><string>かすぴかい</string></dict>
+	<dict><key>phrase</key><string>カレー海峡</string><key>shortcut</key><string>かれーかいきょう</string></dict>
+	<dict><key>phrase</key><string>カンタブリア海</string><key>shortcut</key><string>かんたぶりあかい</string></dict>
+	<dict><key>phrase</key><string>ティレニア海</string><key>shortcut</key><string>てぃれにかい</string></dict>
+	<dict><key>phrase</key><string>ドーヴァー海峡</string><key>shortcut</key><string>どーゔぁーかいきょう</string></dict>
+	<dict><key>phrase</key><string>メッシーナ海峡</string><key>shortcut</key><string>めっしーなかいきょう</string></dict>
+	<dict><key>phrase</key><string>紅海</string><key>shortcut</key><string>こうかい</string></dict>
+	<dict><key>phrase</key><string>黒海</string><key>shortcut</key><string>こっかい</string></dict>
+	<dict><key>phrase</key><string>地中海</string><key>shortcut</key><string>ちちゅうかい</string></dict>
+
 	<!-- 格付けや分類 -->
 	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>じーあい</string></dict>
 	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>じーあいしー</string></dict>
@@ -1207,6 +1237,7 @@
 	<dict><key>phrase</key><string>Regional Wines</string><key>shortcut</key><string>りーじょなるわいん</string></dict>
 
 	<!-- ワイン用葡萄品種名 -->
+	<dict><key>phrase</key><string>セパージュ</string><key>shortcut</key><string>せぱーじゅ</string></dict>
 	<dict><key>phrase</key><string>5BB</string><key>shortcut</key><string>ごびーびー</string></dict>
 	<dict><key>phrase</key><string>Agiorgitiko</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
 	<dict><key>phrase</key><string>Aglianico</string><key>shortcut</key><string>ありあにこ</string></dict>
@@ -1451,7 +1482,9 @@
 
 	<dict><key>phrase</key><string>San Diego</string><key>shortcut</key><string>さんでぃえご</string></dict>
 	<dict><key>phrase</key><string>San José</string><key>shortcut</key><string>さんじょせ</string></dict>
+
 	<!-- 人名 -->
+    <dict><key>phrase</key><string>詫間憲久</string><key>shortcut</key><string>たくまのりひさ</string></dict>
  	<dict><key>phrase</key><string>シャプタル</string><key>shortcut</key><string>しゃぷたる</string></dict>
  	<dict><key>phrase</key><string>ジャン・アントワーヌ・シャプタル</string><key>shortcut</key><string>じゃんあんとわーぬしゃぷたる</string></dict>
  	<dict><key>phrase</key><string>ヨハン</string><key>shortcut</key><string>よはん</string></dict>
@@ -1719,7 +1752,7 @@
 	<dict><key>phrase</key><string>気候帯</string><key>shortcut</key><string>きこうたい</string></dict>
 	<dict><key>phrase</key><string>気候的</string><key>shortcut</key><string>きこうてき</string></dict>
 	<dict><key>phrase</key><string>気候風土</string><key>shortcut</key><string>きこうふうど</string></dict>
-	<dict><key>phrase</key><string>気候風土的影響</string><key>shortcut</key><string>きこうふうどてきえいき</string></dict>ょう
+	<dict><key>phrase</key><string>気候風土的影響</string><key>shortcut</key><string>きこうふうどてきえいきょう</string></dict>
 	<dict><key>phrase</key><string>気候変動</string><key>shortcut</key><string>きこうへんどう</string></dict>
 	<dict><key>phrase</key><string>高山気候</string><key>shortcut</key><string>こうざんきこう</string></dict>
 	<dict><key>phrase</key><string>高山性気候</string><key>shortcut</key><string>こうざんせいきこう</string></dict>
@@ -1727,7 +1760,7 @@
 	<dict><key>phrase</key><string>大陸性気候</string><key>shortcut</key><string>たいりくせいきこう</string></dict>
 	<dict><key>phrase</key><string>地中海性気候</string><key>shortcut</key><string>ちちゅうかいせいきこう</string></dict>
 	<dict><key>phrase</key><string>地理的・気候的</string><key>shortcut</key><string>ちりてききこうてき</string></dict>
-	<dict><key>phrase</key><string>内陸型地中海性気候</string><key>shortcut</key><string>ないりくがたちちゅうかいせいき</string></dict>こう
+	<dict><key>phrase</key><string>内陸型地中海性気候</string><key>shortcut</key><string>ないりくがたちちゅうかいせいきこう</string></dict>
 	<dict><key>phrase</key><string>内陸性気候</string><key>shortcut</key><string>ないりくせいきこう</string></dict>
 	<dict><key>phrase</key><string>半海洋性気候</string><key>shortcut</key><string>はんかいようせいきこう</string></dict>
 	<dict><key>phrase</key><string>半大陸性気候</string><key>shortcut</key><string>はんたいりくせいきこう</string></dict>
