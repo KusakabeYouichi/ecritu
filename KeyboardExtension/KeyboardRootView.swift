@@ -136,8 +136,8 @@ struct KeyboardRootView: View {
 
     private var landscapeLatinInlinePunctuationKeys: [FlickKanaSet] {
         let marks: [String] = latinLayoutMode == .qwerty
-            ? [",", ".", "-"]
-            : [",", ".", "-", "'"]
+            ? [",", "/"]
+            : [",", "/", "'"]
 
         return marks.map { mark in
             FlickKanaSet(
@@ -236,23 +236,28 @@ struct KeyboardRootView: View {
     }
 
     private var latinSpaceRightActionSymbols: [String] {
-        if usesLandscapeLatinSuggestionSidebar,
+        if isLandscapeLayout,
             latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
-            return ["@", "-", "."]
+            return [".", "-"]
         }
 
         if !isLandscapeLayout,
             latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
-            return ["/", ".", "-"]
+            return [".", "-"]
         }
 
         return ["!", "?", "@", "&", "/"]
     }
 
     private var latinSpaceLeftActionSymbols: [String] {
-        if usesLandscapeLatinSuggestionSidebar,
+        if isLandscapeLayout,
             latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
-            return []
+            return ["@", "_"]
+        }
+
+        if !isLandscapeLayout,
+            latinLayoutMode == .qwerty || latinLayoutMode == .azerty {
+            return ["/"]
         }
 
         return [":", "_", "(", ")"]
@@ -2990,7 +2995,8 @@ struct KeyboardRootView: View {
     private func landscapeLatinTypewriterKey(
         _ kana: FlickKanaSet,
         rowIndex: Int,
-        fixedWidth: CGFloat? = nil
+        fixedWidth: CGFloat? = nil,
+        shiftFixedWidth: CGFloat? = nil
     ) -> some View {
         if isLatinShiftKey(kana) {
             let shiftKey = LatinShiftKeyButton(
@@ -2999,10 +3005,11 @@ struct KeyboardRootView: View {
                 onTap: handleLatinShiftTap,
                 onLongPress: handleLatinShiftLongPress
             )
+            let resolvedShiftWidth = shiftFixedWidth ?? fixedWidth
 
-            if let fixedWidth {
+            if let resolvedShiftWidth {
                 shiftKey
-                    .frame(width: fixedWidth, height: mainFlickKeyHeight)
+                    .frame(width: resolvedShiftWidth, height: mainFlickKeyHeight)
             } else {
                 shiftKey
                     .frame(maxWidth: .infinity)
@@ -3188,6 +3195,8 @@ struct KeyboardRootView: View {
                     - CGFloat(middleRowLeadingKeyCount) * resolvedKeyWidth
                     - CGFloat(middleRowLeadingKeyCount) * keyboardRowSpacing
             )
+            let shiftKeyExtraWidth = max(0, (resolvedKeyWidth + keyboardRowSpacing) / 2)
+            let widenedShiftKeyWidth = resolvedKeyWidth + shiftKeyExtraWidth
 
             VStack(alignment: .leading, spacing: keyboardRowSpacing) {
                 HStack(spacing: keyboardRowSpacing) {
@@ -3218,7 +3227,12 @@ struct KeyboardRootView: View {
 
                 HStack(spacing: keyboardRowSpacing) {
                     ForEach(Array(bottomRow.enumerated()), id: \.offset) { _, kana in
-                        landscapeLatinTypewriterKey(kana, rowIndex: 2, fixedWidth: resolvedKeyWidth)
+                        landscapeLatinTypewriterKey(
+                            kana,
+                            rowIndex: 2,
+                            fixedWidth: resolvedKeyWidth,
+                            shiftFixedWidth: widenedShiftKeyWidth
+                        )
                     }
 
                     if inlineReturnRowIndex == 2 {
@@ -3500,7 +3514,6 @@ struct KeyboardRootView: View {
                     ActionKeyButton(
                         title: portraitLatinDeleteReplacementSymbol,
                         fontSize: 22,
-                        fixedWidth: bottomActionRowDeleteKeyWidth,
                         action: { commitText(portraitLatinDeleteReplacementSymbol) }
                     )
                         .frame(height: unifiedActionRowHeight)
@@ -3516,6 +3529,10 @@ struct KeyboardRootView: View {
                         action: onDeleteBackward
                     )
                         .frame(height: unifiedActionRowHeight)
+                }
+
+                if usesPortraitLatinInlineDeleteLayout {
+                    latinSpaceLeftActionButtons(keyHeight: unifiedActionRowHeight)
                 }
 
                 spaceKeyButton(fixedWidth: nil, keyHeight: unifiedActionRowHeight)
