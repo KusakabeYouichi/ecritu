@@ -511,6 +511,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     func testRegressionRequestedAndRelatedInflectionPhrasesAreDerived() {
         converter.learn(reading: "すくない", candidate: "少ない")
+        converter.learn(reading: "おおい", candidate: "多い")
         converter.learn(reading: "よむ", candidate: "読む")
         converter.learn(reading: "とれる", candidate: "取れる")
         converter.learn(reading: "きょうゆう", candidate: "共有")
@@ -518,6 +519,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let cases: [(reading: String, expected: String)] = [
             ("すくなくなってきた", "少なくなってきた"),
             ("すくなくなってくる", "少なくなってくる"),
+            ("おおいのだ", "多いのだ"),
+            ("おおいのです", "多いのです"),
             ("よんだほうが", "読んだ方が"),
             ("よんだほうがいい", "読んだ方がいい"),
             ("とれるように", "取れるように"),

@@ -58,6 +58,8 @@ final class KanaKanjiConverter {
 
     private static let adjectiveInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "いです", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "のだ", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "のです", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くない", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くないです", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くなかった", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
