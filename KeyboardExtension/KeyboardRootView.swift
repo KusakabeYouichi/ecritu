@@ -3128,25 +3128,27 @@ struct KeyboardRootView: View {
             let middleLeadingOffsetFactor = middleRawLeadingOffsetFactor - minimumRawLeadingOffsetFactor
             let bottomLeadingOffsetFactor = bottomRawLeadingOffsetFactor - minimumRawLeadingOffsetFactor
 
-            let rowSpecs: [(count: Int, offsetFactor: CGFloat)] = [
-                (topRow.count + 1, topLeadingOffsetFactor),
+            let rowSpecs: [(keyPitchCount: CGFloat, offsetFactor: CGFloat)] = [
+                (CGFloat(topRow.count + 1), topLeadingOffsetFactor),
                 (
-                    middleRow.count
-                        + (inlineReturnRowIndex == 1 ? 1 : 0)
-                        + (needsQwertyMiddleRowApostrophe ? 1 : 0),
+                    CGFloat(
+                        middleRow.count
+                            + (inlineReturnRowIndex == 1 ? 1 : 0)
+                            + (needsQwertyMiddleRowApostrophe ? 1 : 0)
+                    ),
                     middleLeadingOffsetFactor
                 ),
                 (
-                    bottomRow.count + (inlineReturnRowIndex == 2 ? 1 : 0),
+                    CGFloat(bottomRow.count + (inlineReturnRowIndex == 2 ? 1 : 0)) + 1,
                     bottomLeadingOffsetFactor
                 )
-            ].filter { $0.count > 0 }
+            ].filter { $0.keyPitchCount > 0 }
 
             let resolvedKeyWidth = max(
                 1,
                 rowSpecs
                     .map { spec in
-                        let denominator = CGFloat(spec.count) + spec.offsetFactor
+                        let denominator = spec.keyPitchCount + spec.offsetFactor
 
                         guard denominator > 0 else {
                             return 1
@@ -3154,7 +3156,7 @@ struct KeyboardRootView: View {
 
                         let numerator = geometry.size.width
                             - keyboardRowSpacing
-                            * (CGFloat(max(spec.count - 1, 0)) + spec.offsetFactor)
+                            * (max(spec.keyPitchCount - 1, 0) + spec.offsetFactor)
 
                         return numerator / denominator
                     }
@@ -3173,11 +3175,14 @@ struct KeyboardRootView: View {
                 leadingOffsetFactor: bottomLeadingOffsetFactor,
                 keyPitch: keyPitch
             )
+            let shiftKeyExtraWidth = max(0, (resolvedKeyWidth + keyboardRowSpacing) / 2)
+            let widenedShiftKeyWidth = resolvedKeyWidth + shiftKeyExtraWidth
             let rightShiftIndexInBottomRow = bottomRow.firstIndex(where: isLandscapeLatinRightShiftKey)
                 ?? max(bottomRow.count - 1, 0)
             let referenceRightEdgeX = bottomInsets.leading
                 + CGFloat(rightShiftIndexInBottomRow + 1) * resolvedKeyWidth
                 + CGFloat(rightShiftIndexInBottomRow) * keyboardRowSpacing
+                + shiftKeyExtraWidth * 2
             let topRowLeadingKeyCount = topRow.count
             let topDeleteKeyWidth = max(
                 resolvedKeyWidth,
@@ -3195,9 +3200,6 @@ struct KeyboardRootView: View {
                     - CGFloat(middleRowLeadingKeyCount) * resolvedKeyWidth
                     - CGFloat(middleRowLeadingKeyCount) * keyboardRowSpacing
             )
-            let shiftKeyExtraWidth = max(0, (resolvedKeyWidth + keyboardRowSpacing) / 2)
-            let widenedShiftKeyWidth = resolvedKeyWidth + shiftKeyExtraWidth
-
             VStack(alignment: .leading, spacing: keyboardRowSpacing) {
                 HStack(spacing: keyboardRowSpacing) {
                     ForEach(Array(topRow.enumerated()), id: \.offset) { _, kana in
