@@ -126,6 +126,7 @@
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えーゆー</string></dict>
 	<dict><key>phrase</key><string>Bluetooth</string><key>shortcut</key><string>ぶるーとぅーす</string></dict>
+	<dict><key>phrase</key><string>Wi-Fi</string><key>shortcut</key><string>ふぁいふぁい</string></dict>
 	<dict><key>phrase</key><string>docomo</string><key>shortcut</key><string>どこも</string></dict>
 	<dict><key>phrase</key><string>Google</string><key>shortcut</key><string>ぐーぐる</string></dict>
 	<dict><key>phrase</key><string>Intel</string><key>shortcut</key><string>いんてる</string></dict>
