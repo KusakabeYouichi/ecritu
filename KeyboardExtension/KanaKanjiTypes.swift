@@ -144,6 +144,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すぎません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "すぎれば", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "て", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てある", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "てる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ている", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "てた", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -827,6 +828,7 @@ extension KanaKanjiConverter {
         "てしまう", "でしまう", "ちゃう", "じゃう",
         "している", "きている", "でいる", "ている", "してる", "きてる", "でる", "てる",
         "きました", "しました", "きません", "しません", "ました", "ます",
+        "なら", "から",
         "くない", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たい", "れば", "ねば", "ず",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
         "ない", "きて", "きた", "くて", "て", "た"
@@ -843,7 +845,7 @@ extension KanaKanjiConverter {
     }()
 
     static let postfixPassthroughSuffixes: [String] = [
-        "ほうがいい", "ほうがよい", "ほうが", "ようになる", "ようにする", "ようにして", "ように", "ような", "ようだ", "ようです", "こと", "では", "には", "とは", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
+        "ほうがいい", "ほうがよい", "ほうが", "ようになる", "ようにする", "ようにして", "ように", "ような", "ようだ", "ようです", "こと", "では", "には", "とは", "なら", "から", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
     ]
     static let postfixPassthroughPrefixReplacements: [(from: String, to: String)] = [
         ("ほう", "方")
