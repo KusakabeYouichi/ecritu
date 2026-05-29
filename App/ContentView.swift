@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260528185731"
+    private static let editionUpdatedAtRaw: String = "20260529100238"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -597,61 +597,7 @@ struct ContentView: View {
         let bundle = keyboardExtensionBundleForDiagnostics() ?? Bundle.main
         let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
         let buildNumber = (bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
-        let installToken = diagnosticsInstallToken(for: bundle)
-        return "\(bundleID)|\(buildNumber)|\(installToken.value)|\(installToken.source)"
-    }
-
-    private func diagnosticsInstallToken(for bundle: Bundle) -> (value: Int, source: String) {
-        if let timestamp = bundleTimestampForDiagnostics(bundle) {
-            return (timestamp, "date")
-        }
-
-        return (deterministicDiagnosticsPathToken(bundle.bundlePath), "pathHash")
-    }
-
-    private func bundleTimestampForDiagnostics(_ bundle: Bundle) -> Int? {
-        if let bundleValues = try? bundle.bundleURL.resourceValues(
-            forKeys: [.creationDateKey, .contentModificationDateKey]
-        ),
-            let bundleDate = bundleValues.creationDate ?? bundleValues.contentModificationDate {
-            let seconds = Int(bundleDate.timeIntervalSince1970)
-            if seconds > 0 {
-                return seconds
-            }
-        }
-
-        if let executableURL = bundle.executableURL,
-            let executableValues = try? executableURL.resourceValues(
-                forKeys: [.creationDateKey, .contentModificationDateKey]
-            ),
-            let executableDate = executableValues.creationDate ?? executableValues.contentModificationDate {
-            let seconds = Int(executableDate.timeIntervalSince1970)
-            if seconds > 0 {
-                return seconds
-            }
-        }
-
-        if let attributes = try? FileManager.default.attributesOfItem(atPath: bundle.bundlePath),
-            let modifiedDate = attributes[.modificationDate] as? Date {
-            let seconds = Int(modifiedDate.timeIntervalSince1970)
-            if seconds > 0 {
-                return seconds
-            }
-        }
-
-        return nil
-    }
-
-    private func deterministicDiagnosticsPathToken(_ path: String) -> Int {
-        var hash: UInt32 = 2_166_136_261
-
-        for byte in path.utf8 {
-            hash ^= UInt32(byte)
-            hash = hash &* 16_777_619
-        }
-
-        let value = Int(hash)
-        return value == 0 ? 1 : value
+        return "\(bundleID)|\(buildNumber)|build"
     }
 
     private func clearKeyboardDiagnosticsIfInstallChanged() {
@@ -664,6 +610,7 @@ struct ContentView: View {
 
         if savedMarker != currentMarker {
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFlightRecorderEvents)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionOwnerToken)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
@@ -716,6 +663,7 @@ struct ContentView: View {
         }
 
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFlightRecorderEvents)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionOwnerToken)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)

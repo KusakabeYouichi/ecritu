@@ -35,6 +35,7 @@ final class KeyboardViewController: UIInputViewController {
     private var diagnosticsSessionStartedAt = Date()
     private let diagnosticsControllerID = UUID().uuidString
     private var pendingRefreshKeyboardStateRequests = 0
+    private var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -111,6 +112,7 @@ final class KeyboardViewController: UIInputViewController {
         static let keyboardDiagnosticsLastHeartbeat = "keyboardDiagnosticsLastHeartbeat"
         static let keyboardDiagnosticsLastEvent = "keyboardDiagnosticsLastEvent"
         static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
+        static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
         }
@@ -162,6 +164,9 @@ final class KeyboardViewController: UIInputViewController {
     private static let refreshQueueWaitSlowThresholdMs = 60
     private static let renderConfigurationSlowThresholdMs = 16
     private static let refreshKeyboardStateSlowThresholdMs = 28
+    private static let diagnosticsFlightRecorderWindowSec: TimeInterval = 6
+    private static let diagnosticsFlightRecorderMaxEventCount = 120
+    private static let diagnosticsFlightRecorderMinRecordIntervalSec: TimeInterval = 0.12
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
             return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
@@ -212,6 +217,12 @@ final class KeyboardViewController: UIInputViewController {
         let latinSuggestionQuery: String
         let latinSuggestions: [String]
         let showsParenthesesWrapper: Bool
+    }
+
+    private struct DiagnosticsFlightRecorderEvent: Codable {
+        let timestamp: TimeInterval
+        let event: String
+        let source: String
     }
 
     override func viewDidLoad() {
@@ -648,6 +659,117 @@ final class KeyboardViewController: UIInputViewController {
         defaults.set(lines, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
     }
 
+    private func flightRecorderEvents(from defaults: UserDefaults) -> [DiagnosticsFlightRecorderEvent] {
+        guard
+            let data = defaults.data(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents),
+            let decoded = try? JSONDecoder().decode([DiagnosticsFlightRecorderEvent].self, from: data)
+        else {
+            return []
+        }
+
+        return decoded
+    }
+
+    private func saveFlightRecorderEvents(_ events: [DiagnosticsFlightRecorderEvent], to defaults: UserDefaults) {
+        if let encoded = try? JSONEncoder().encode(events) {
+            defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
+            return
+        }
+
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
+    }
+
+    private func trimmedFlightRecorderEvents(
+        _ events: [DiagnosticsFlightRecorderEvent],
+        anchorTimestamp: TimeInterval
+    ) -> [DiagnosticsFlightRecorderEvent] {
+        let minimumTimestamp = anchorTimestamp - Self.diagnosticsFlightRecorderWindowSec
+        var filtered = events.filter { $0.timestamp >= minimumTimestamp }
+
+        if filtered.count > Self.diagnosticsFlightRecorderMaxEventCount {
+            filtered.removeFirst(filtered.count - Self.diagnosticsFlightRecorderMaxEventCount)
+        }
+
+        return filtered
+    }
+
+    private func clearFlightRecorderEvents(in defaults: UserDefaults) {
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
+        diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
+    }
+
+    private func observeKeyboardDiagnosticsEvent(
+        _ event: String,
+        file: String = #fileID,
+        line: Int = #line,
+        function: String = #function,
+        forceRecord: Bool = false
+    ) {
+        guard let sharedDefaults else {
+            return
+        }
+
+        let now = Date().timeIntervalSince1970
+        let sourceFile = (file as NSString).lastPathComponent
+        let source = "\(sourceFile):\(line) \(function)"
+        let dedupeKey = "\(event)|\(source)"
+
+        if !forceRecord,
+            let previous = diagnosticsFlightRecorderLastObservedAt[dedupeKey],
+            now - previous < Self.diagnosticsFlightRecorderMinRecordIntervalSec {
+            return
+        }
+
+        var events = flightRecorderEvents(from: sharedDefaults)
+        events.append(
+            DiagnosticsFlightRecorderEvent(
+                timestamp: now,
+                event: event,
+                source: source
+            )
+        )
+
+        let anchorTimestamp = events.last?.timestamp ?? now
+        events = trimmedFlightRecorderEvents(events, anchorTimestamp: anchorTimestamp)
+        saveFlightRecorderEvents(events, to: sharedDefaults)
+        diagnosticsFlightRecorderLastObservedAt[dedupeKey] = now
+    }
+
+    private func flushFlightRecorderEventsIfPresent(reason: String) {
+        guard let sharedDefaults else {
+            return
+        }
+
+        let events = flightRecorderEvents(from: sharedDefaults)
+        guard !events.isEmpty else {
+            return
+        }
+
+        let anchorTimestamp = events.last?.timestamp ?? Date().timeIntervalSince1970
+        let trimmed = trimmedFlightRecorderEvents(events, anchorTimestamp: anchorTimestamp)
+
+        appendKeyboardDiagnosticsLog(
+            "終了直前の高頻度イベントを退避 count=\(trimmed.count) windowSec=\(Int(Self.diagnosticsFlightRecorderWindowSec)) reason=\(reason)",
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+
+        for item in trimmed {
+            let timestampText = Self.diagnosticsTimestampFormatter.string(
+                from: Date(timeIntervalSince1970: item.timestamp)
+            )
+            appendKeyboardDiagnosticsLog(
+                "直前イベント \(timestampText) \(item.event) @ \(item.source)",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
+
+        clearFlightRecorderEvents(in: sharedDefaults)
+    }
+
     private func keyboardDiagnosticsCurrentInstallMarker() -> String {
         let bundle = Bundle.main
         let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
@@ -660,6 +782,7 @@ final class KeyboardViewController: UIInputViewController {
         preservingInstallMarker installMarker: String
     ) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
@@ -734,6 +857,8 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        observeKeyboardDiagnosticsEvent(event, file: file, line: line, function: function)
+
         let sourceFile = (file as NSString).lastPathComponent
         let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
 
@@ -752,6 +877,8 @@ final class KeyboardViewController: UIInputViewController {
         guard let sharedDefaults else {
             return
         }
+
+        diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
 
         let previousSessionWasActive = sharedDefaults.bool(
             forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive
@@ -792,6 +919,9 @@ final class KeyboardViewController: UIInputViewController {
                 line: #line,
                 function: #function
             )
+            flushFlightRecorderEventsIfPresent(reason: reason)
+        } else {
+            clearFlightRecorderEvents(in: sharedDefaults)
         }
 
         diagnosticsSessionID = UUID().uuidString
@@ -841,6 +971,7 @@ final class KeyboardViewController: UIInputViewController {
                 Date().timeIntervalSince1970,
                 forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat
             )
+            clearFlightRecorderEvents(in: sharedDefaults)
         } else {
             appendKeyboardDiagnosticsLog(
                 "終了時owner不一致のためactive更新を見送り currentOwner=\(currentOwnerToken) storedOwner=\(storedOwnerToken ?? "none")",
