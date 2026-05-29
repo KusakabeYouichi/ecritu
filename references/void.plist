@@ -197,5 +197,8 @@
 	<dict><key>phrase</key><string>ビッグワン</string><key>shortcut</key><string>びっぐわん</string></dict>
 	<dict><key>phrase</key><string>Big 1</string><key>shortcut</key><string>びっぐわん</string></dict>
 	<dict><key>phrase</key><string>イナミ</string><key>shortcut</key><string>いなみ</string></dict>
+	<dict><key>phrase</key><string>登録番号</string><key>shortcut</key><string>とうろくばんごう</string></dict>
+	<dict><key>phrase</key><string>オニョン</string><key>shortcut</key><string>おにょん</string></dict>
+	<dict><key>phrase</key><string>オリヴ</string><key>shortcut</key><string>おりゔ</string></dict>
 </array>
 </plist>
