@@ -6,7 +6,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260529104232"
+    private static let editionUpdatedAtRaw: String = "20260529115709"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -206,6 +206,7 @@ struct ContentView: View {
     @State private var keyboardDiagnosticsLastHeartbeatDate: Date?
     @State private var keyboardDiagnosticsLastEvent = ""
     @State private var keyboardDiagnosticsLastSessionID = ""
+    @State private var keyboardDiagnosticsFailSafeProfile = "normal"
     @State private var containerDiagnosticsSessionID = UUID().uuidString
     @State private var didRunFirstAppearanceBootstrap = false
     @State private var didCompleteInitialDataSnapshot = false
@@ -616,6 +617,7 @@ struct ContentView: View {
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
+            defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFailSafeProfile)
             defaults.set(currentMarker, forKey: SettingsKeys.keyboardDiagnosticsInstallMarker)
         }
 
@@ -630,6 +632,7 @@ struct ContentView: View {
             keyboardDiagnosticsLastHeartbeatDate = nil
             keyboardDiagnosticsLastEvent = ""
             keyboardDiagnosticsLastSessionID = ""
+            keyboardDiagnosticsFailSafeProfile = "normal"
             return
         }
 
@@ -655,6 +658,13 @@ struct ContentView: View {
         keyboardDiagnosticsLastSessionID = defaults.string(
             forKey: SettingsKeys.keyboardDiagnosticsLastSessionID
         ) ?? ""
+
+        let failSafeRawValue = defaults.string(
+            forKey: SettingsKeys.keyboardDiagnosticsFailSafeProfile
+        ) ?? "normal"
+        keyboardDiagnosticsFailSafeProfile = normalizedKeyboardDiagnosticsFailSafeProfile(
+            failSafeRawValue
+        )
     }
 
     private func clearKeyboardDiagnosticsState() {
@@ -669,7 +679,17 @@ struct ContentView: View {
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastHeartbeat)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFailSafeProfile)
         loadKeyboardDiagnosticsState()
+    }
+
+    private func normalizedKeyboardDiagnosticsFailSafeProfile(_ rawValue: String) -> String {
+        switch rawValue {
+        case "normal", "elevated", "critical":
+            return rawValue
+        default:
+            return "normal"
+        }
     }
 
     private func keyboardDiagnosticsLastHeartbeatText() -> String {
@@ -687,6 +707,7 @@ struct ContentView: View {
         var sections: [String] = []
         sections.append("installMarker: \(keyboardDiagnosticsInstallMarker)")
         sections.append("sessionActive: \(keyboardDiagnosticsSessionActive ? "true" : "false")")
+        sections.append("failSafeProfile: \(keyboardDiagnosticsFailSafeProfile)")
         sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
         sections.append("lastSessionID: \(keyboardDiagnosticsLastSessionID)")
         sections.append("lastEvent: \(keyboardDiagnosticsLastEvent)")
@@ -1966,6 +1987,7 @@ struct ContentView: View {
 
                         KeyboardDiagnosticsSection(
                             isSessionActive: keyboardDiagnosticsSessionActive,
+                            failSafeProfile: keyboardDiagnosticsFailSafeProfile,
                             lastHeartbeatText: keyboardDiagnosticsLastHeartbeatText(),
                             lastEvent: keyboardDiagnosticsLastEvent,
                             lastSessionID: keyboardDiagnosticsLastSessionID,

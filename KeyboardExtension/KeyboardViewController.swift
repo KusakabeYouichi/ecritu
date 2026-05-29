@@ -36,6 +36,9 @@ final class KeyboardViewController: UIInputViewController {
     private let diagnosticsControllerID = UUID().uuidString
     private var pendingRefreshKeyboardStateRequests = 0
     private var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
+    private var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
+    private var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
+    private var didApplyInactiveSessionMitigation = false
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -112,6 +115,7 @@ final class KeyboardViewController: UIInputViewController {
         static let keyboardDiagnosticsLastHeartbeat = "keyboardDiagnosticsLastHeartbeat"
         static let keyboardDiagnosticsLastEvent = "keyboardDiagnosticsLastEvent"
         static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
+        static let keyboardDiagnosticsFailSafeProfile = "keyboardDiagnosticsFailSafeProfile"
         static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
@@ -164,6 +168,10 @@ final class KeyboardViewController: UIInputViewController {
     private static let refreshQueueWaitSlowThresholdMs = 60
     private static let renderConfigurationSlowThresholdMs = 16
     private static let refreshKeyboardStateSlowThresholdMs = 28
+    private static let memoryFailSafeElevatedStartMB: Double = 120
+    private static let memoryFailSafeCriticalStartMB: Double = 150
+    private static let memoryFailSafeRecoverDeltaMB: Double = 14
+    private static let refreshQueueDropThresholdInCriticalMode = 2
     private static let diagnosticsFlightRecorderWindowSec: TimeInterval = 6
     private static let diagnosticsFlightRecorderMaxEventCount = 120
     private static let diagnosticsFlightRecorderMinRecordIntervalSec: TimeInterval = 0.12
@@ -225,6 +233,12 @@ final class KeyboardViewController: UIInputViewController {
         let source: String
     }
 
+    private enum MemoryFailSafeProfile: String {
+        case normal
+        case elevated
+        case critical
+    }
+
     override func viewDidLoad() {
         super.viewDidLoad()
         startKeyboardDiagnosticsSession()
@@ -248,30 +262,46 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
+
+        guard !shouldSuppressHeavyOperations(reason: "viewWillAppear") else {
+            return
+        }
+
         configureKeyboardContainerSizing()
+        ensureKeyboardViewIfNeeded()
         beginKeyboardHeightLock(using: makeRenderConfiguration())
         configureInputAssistantBar()
         prepareKeyboardVisualForTransition()
         spaceToastTrigger += 1
-        refreshKeyboardState()
+        refreshKeyboardState(trigger: "viewWillAppear")
     }
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
+
+        guard !shouldSuppressHeavyOperations(reason: "textDidChange") else {
+            return
+        }
+
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
         )
-        refreshKeyboardState()
+        refreshKeyboardState(trigger: "textDidChange")
     }
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
+
+        guard !shouldSuppressHeavyOperations(reason: "selectionDidChange") else {
+            return
+        }
+
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
         )
-        refreshKeyboardState()
+        refreshKeyboardState(trigger: "selectionDidChange")
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -297,17 +327,50 @@ final class KeyboardViewController: UIInputViewController {
                 appendLog: true
             )
         }
+
+        performHiddenKeyboardMemoryTrim(
+            reason: "viewWillDisappear",
+            releaseHostingView: false,
+            includeSystemCaches: memoryFailSafeProfile != .normal
+        )
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidDisappear", appendLog: true)
+
+        performHiddenKeyboardMemoryTrim(
+            reason: "viewDidDisappear",
+            releaseHostingView: true,
+            includeSystemCaches: true
+        )
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         updateKeyboardDiagnosticsHeartbeat(event: "メモリ警告受信 キャッシュ解放開始", appendLog: true)
+
+        if memoryFailSafeProfile != .critical {
+            memoryFailSafeProfile = .critical
+            persistKeyboardDiagnosticsFailSafeProfile()
+            appendKeyboardDiagnosticsLog(
+                "メモリ警告を受けてフェイルセーフをcriticalへ昇格 rssMB=\(diagnosticsResidentMemoryMBText())",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
+
         kanaKanjiConverter.clearAllCaches()
+
+        if view.window == nil {
+            performHiddenKeyboardMemoryTrim(
+                reason: "memoryWarningHidden",
+                releaseHostingView: true,
+                includeSystemCaches: true
+            )
+        }
+
         updateKeyboardDiagnosticsHeartbeat(event: "メモリ警告受信 キャッシュ解放完了", appendLog: true)
     }
 
@@ -386,6 +449,15 @@ final class KeyboardViewController: UIInputViewController {
         lastRenderConfiguration = configuration
         prepareKeyboardVisualForTransition()
         applyKeyboardBaseBackground()
+    }
+
+    private func ensureKeyboardViewIfNeeded() {
+        guard hostingController == nil else {
+            return
+        }
+
+        setupKeyboardView()
+        updateKeyboardDiagnosticsHeartbeat(event: "キーボードビューを再構築", appendLog: true)
     }
 
     func markTextProxyEdit() {
@@ -522,6 +594,12 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func requestSystemDictionaryPreloadIfNeeded() {
+        guard !shouldSuppressHeavyOperations(reason: "requestSystemDictionaryPreloadIfNeeded") else {
+            return
+        }
+
+        updateMemoryFailSafeProfile(trigger: "requestSystemDictionaryPreloadIfNeeded")
+
         if let residentMemoryMB = currentResidentMemoryMB(),
             residentMemoryMB >= Self.maximumResidentMemoryMBForSystemDictionaryPreload {
             updateKeyboardDiagnosticsHeartbeat(
@@ -568,6 +646,12 @@ final class KeyboardViewController: UIInputViewController {
             guard let self else {
                 return
             }
+
+            guard !self.shouldSuppressHeavyOperations(reason: "systemDictionaryPreloadCompletion") else {
+                return
+            }
+
+            self.updateMemoryFailSafeProfile(trigger: "systemDictionaryPreloadCompletion")
 
             let elapsedMs = max(0, Int((CFAbsoluteTimeGetCurrent() - preloadStartedAt) * 1000))
             self.refreshKeyboardStateAsync()
@@ -633,8 +717,215 @@ final class KeyboardViewController: UIInputViewController {
         return Double(bytes) / 1_048_576
     }
 
+    private func shouldSuppressHeavyOperations(reason: String) -> Bool {
+        guard let sharedDefaults,
+            let activeOwnerToken = sharedDefaults.string(
+                forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+            ),
+            !activeOwnerToken.isEmpty else {
+            didApplyInactiveSessionMitigation = false
+            return false
+        }
+
+        let currentOwnerToken = diagnosticsSessionOwnerToken()
+
+        guard activeOwnerToken != currentOwnerToken else {
+            didApplyInactiveSessionMitigation = false
+            return false
+        }
+
+        let now = CFAbsoluteTimeGetCurrent()
+
+        if now - lastInactiveSessionSuppressionLogAt >= 1.0 {
+            appendKeyboardDiagnosticsLog(
+                "多重生存中の非アクティブインスタンスで重い更新を抑止 reason=\(reason) activeOwner=\(activeOwnerToken) currentOwner=\(currentOwnerToken)",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+            lastInactiveSessionSuppressionLogAt = now
+        }
+
+        if !didApplyInactiveSessionMitigation {
+            performHiddenKeyboardMemoryTrim(
+                reason: "inactiveSession-\(reason)",
+                releaseHostingView: view.window == nil,
+                includeSystemCaches: true
+            )
+            didApplyInactiveSessionMitigation = true
+        }
+
+        return true
+    }
+
+    private func performHiddenKeyboardMemoryTrim(
+        reason: String,
+        releaseHostingView: Bool,
+        includeSystemCaches: Bool
+    ) {
+        pendingRefreshKeyboardStateRequests = 0
+        activeConversion = nil
+        clearComposingState()
+        clearRecentKanaPlainCommitUpgradeContext()
+        lastSynchronizedContextBeforeInput = ""
+
+        keyboardHeightLockReleaseWorkItem?.cancel()
+        keyboardHeightLockReleaseWorkItem = nil
+        keyboardHeightLockValue = nil
+        keyboardHeightLockReleaseTime = 0
+
+        dictionaryPreloadWorkItem?.cancel()
+        dictionaryPreloadWorkItem = nil
+
+        if includeSystemCaches {
+            kanaKanjiConverter.clearAllCaches()
+        } else {
+            kanaKanjiConverter.clearSharedDataCaches()
+        }
+
+        if releaseHostingView,
+            let host = hostingController {
+            host.willMove(toParent: nil)
+            host.view.removeFromSuperview()
+            host.removeFromParent()
+            hostingController = nil
+        }
+
+        lastRenderConfiguration = nil
+
+        updateKeyboardDiagnosticsHeartbeat(
+            event: "キーボード非表示でメモリ解放 reason=\(reason) releaseView=\(releaseHostingView) clearSystem=\(includeSystemCaches) profile=\(memoryFailSafeProfile.rawValue)",
+            appendLog: true
+        )
+    }
+
+    private func updateMemoryFailSafeProfile(trigger: String) {
+        guard let residentMemoryMB = currentResidentMemoryMB() else {
+            return
+        }
+
+        let nextProfile = nextMemoryFailSafeProfile(for: residentMemoryMB)
+
+        guard nextProfile != memoryFailSafeProfile else {
+            return
+        }
+
+        let previousProfile = memoryFailSafeProfile
+        memoryFailSafeProfile = nextProfile
+        persistKeyboardDiagnosticsFailSafeProfile()
+
+        appendKeyboardDiagnosticsLog(
+            "メモリフェイルセーフ遷移 \(previousProfile.rawValue) -> \(nextProfile.rawValue) trigger=\(trigger) rssMB=\(String(format: "%.1f", residentMemoryMB))",
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+
+        switch nextProfile {
+        case .normal:
+            break
+        case .elevated:
+            kanaKanjiConverter.clearSharedDataCaches()
+        case .critical:
+            kanaKanjiConverter.clearAllCaches()
+        }
+    }
+
+    private func nextMemoryFailSafeProfile(for residentMemoryMB: Double) -> MemoryFailSafeProfile {
+        let elevatedStart = Self.memoryFailSafeElevatedStartMB
+        let criticalStart = Self.memoryFailSafeCriticalStartMB
+        let recoverDelta = Self.memoryFailSafeRecoverDeltaMB
+
+        switch memoryFailSafeProfile {
+        case .normal:
+            if residentMemoryMB >= criticalStart {
+                return .critical
+            }
+
+            if residentMemoryMB >= elevatedStart {
+                return .elevated
+            }
+
+            return .normal
+        case .elevated:
+            if residentMemoryMB >= criticalStart {
+                return .critical
+            }
+
+            if residentMemoryMB < elevatedStart - recoverDelta {
+                return .normal
+            }
+
+            return .elevated
+        case .critical:
+            if residentMemoryMB >= criticalStart - recoverDelta {
+                return .critical
+            }
+
+            if residentMemoryMB >= elevatedStart - recoverDelta {
+                return .elevated
+            }
+
+            return .normal
+        }
+    }
+
+    func effectiveKanaPresentationCandidateLimit() -> Int {
+        switch memoryFailSafeProfile {
+        case .normal:
+            return 24
+        case .elevated:
+            return 14
+        case .critical:
+            return 8
+        }
+    }
+
+    func effectiveKanaConversionCandidateLimit() -> Int {
+        switch memoryFailSafeProfile {
+        case .normal:
+            return 24
+        case .elevated:
+            return 14
+        case .critical:
+            return 8
+        }
+    }
+
+    func effectiveLatinSuggestionLimit(defaultLimit: Int) -> Int {
+        let normalizedLimit = max(0, defaultLimit)
+
+        switch memoryFailSafeProfile {
+        case .normal:
+            return normalizedLimit
+        case .elevated:
+            return min(normalizedLimit, 18)
+        case .critical:
+            return 0
+        }
+    }
+
+    private func effectiveShortcutVocabularyForRender() -> [String] {
+        switch memoryFailSafeProfile {
+        case .normal:
+            return kanaKanjiStore.shortcutVocabulary()
+        case .elevated:
+            return Array(kanaKanjiStore.shortcutVocabulary().prefix(20))
+        case .critical:
+            return []
+        }
+    }
+
     private func diagnosticsRuntimeContext() -> String {
-        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText())"
+        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText()) failSafe=\(memoryFailSafeProfile.rawValue)"
+    }
+
+    private func persistKeyboardDiagnosticsFailSafeProfile(in defaults: UserDefaults? = nil) {
+        let targetDefaults = defaults ?? sharedDefaults
+        targetDefaults?.set(
+            memoryFailSafeProfile.rawValue,
+            forKey: SharedDefaultsKeys.keyboardDiagnosticsFailSafeProfile
+        )
     }
 
     private func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
@@ -788,6 +1079,7 @@ final class KeyboardViewController: UIInputViewController {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFailSafeProfile)
         defaults.set(installMarker, forKey: SharedDefaultsKeys.keyboardDiagnosticsInstallMarker)
     }
 
@@ -858,6 +1150,7 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         observeKeyboardDiagnosticsEvent(event, file: file, line: line, function: function)
+        persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
 
         let sourceFile = (file as NSString).lastPathComponent
         let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
@@ -932,6 +1225,7 @@ final class KeyboardViewController: UIInputViewController {
             forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
         )
         sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
         appendKeyboardDiagnosticsLog(
             "キーボード拡張セッション開始",
             file: #fileID,
@@ -991,6 +1285,20 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func refreshKeyboardState(trigger: String = "direct") {
+        guard !shouldSuppressHeavyOperations(reason: "refreshKeyboardState-\(trigger)") else {
+            return
+        }
+
+        updateMemoryFailSafeProfile(trigger: "refreshKeyboardState-\(trigger)")
+
+        let shouldRenderKeyboardView = view.window != nil || trigger == "viewWillAppear"
+
+        if shouldRenderKeyboardView {
+            ensureKeyboardViewIfNeeded()
+        } else if hostingController == nil {
+            return
+        }
+
         let refreshStartedAt = CFAbsoluteTimeGetCurrent()
         let configurationStartedAt = CFAbsoluteTimeGetCurrent()
         let configuration = makeRenderConfiguration()
@@ -1043,9 +1351,33 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        guard !shouldSuppressHeavyOperations(reason: "refreshKeyboardStateAsync-enqueue") else {
+            return
+        }
+
+        updateMemoryFailSafeProfile(trigger: "refreshKeyboardStateAsync-enqueue")
+
+        if view.window == nil,
+            hostingController == nil {
+            return
+        }
+
         pendingRefreshKeyboardStateRequests += 1
         let queuedDepth = pendingRefreshKeyboardStateRequests
         let enqueuedAt = CFAbsoluteTimeGetCurrent()
+
+        if memoryFailSafeProfile == .critical,
+            queuedDepth >= Self.refreshQueueDropThresholdInCriticalMode {
+            pendingRefreshKeyboardStateRequests = max(0, pendingRefreshKeyboardStateRequests - 1)
+
+            appendKeyboardDiagnosticsLog(
+                "criticalフェイルセーフでrefreshKeyboardStateAsyncを間引き queueDepth=\(queuedDepth)",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+            return
+        }
 
         if queuedDepth >= Self.refreshQueueBacklogLogThreshold {
             appendKeyboardDiagnosticsLog(
@@ -1062,6 +1394,12 @@ final class KeyboardViewController: UIInputViewController {
             }
 
             self.pendingRefreshKeyboardStateRequests = max(0, self.pendingRefreshKeyboardStateRequests - 1)
+
+            guard !self.shouldSuppressHeavyOperations(reason: "refreshKeyboardStateAsync-execute") else {
+                return
+            }
+
+            self.updateMemoryFailSafeProfile(trigger: "refreshKeyboardStateAsync-execute")
 
             let queueWaitMs = self.performanceElapsedMilliseconds(since: enqueuedAt)
 
@@ -1084,6 +1422,12 @@ final class KeyboardViewController: UIInputViewController {
             guard let self else {
                 return
             }
+
+            guard !self.shouldSuppressHeavyOperations(reason: "handleSharedSettingsDidChange") else {
+                return
+            }
+
+            self.updateMemoryFailSafeProfile(trigger: "handleSharedSettingsDidChange")
 
             self.updateKeyboardDiagnosticsHeartbeat(
                 event: "共有設定変更通知を受信",
@@ -1576,6 +1920,8 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func makeRenderConfiguration() -> RenderConfiguration {
+        updateMemoryFailSafeProfile(trigger: "makeRenderConfiguration")
+
         let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
         let candidateSourceMode = currentKanaKanjiCandidateSourceMode(from: sharedDefaults)
         let candidatePresentation = makeCandidatePresentation(systemCandidateMode: candidateSourceMode)
@@ -1732,7 +2078,7 @@ final class KeyboardViewController: UIInputViewController {
             landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
             showsNextKeyboardKey: needsInputModeSwitchKey,
-            shortcutVocabulary: kanaKanjiStore.shortcutVocabulary(),
+            shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,
             conversionCandidates: candidatePresentation.candidates,
             selectedConversionCandidateIndex: candidatePresentation.selectedIndex,
