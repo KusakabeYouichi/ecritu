@@ -359,7 +359,6 @@
 	<dict><key>phrase</key><string>アスティ県</string><key>shortcut</key><string>あすてぃけん</string></dict>
 	<dict><key>phrase</key><string>アッティカ地方</string><key>shortcut</key><string>あってぃかちほう</string></dict>
 	<dict><key>phrase</key><string>アデレード</string><key>shortcut</key><string>あでれーど</string></dict>
-	<dict><key>phrase</key><string>アデレード</string><key>shortcut</key><string>あでれーど</string></dict>
 	<dict><key>phrase</key><string>アトランティカ地方</string><key>shortcut</key><string>あとらんてぃかちほう</string></dict>
 	<dict><key>phrase</key><string>アラゴン州</string><key>shortcut</key><string>あらごんしゅう</string></dict>
 	<dict><key>phrase</key><string>アラビア半島</string><key>shortcut</key><string>あらびあはんしま</string></dict>
@@ -442,7 +441,6 @@
 	<dict><key>phrase</key><string>コート・ド・ニュイ</string><key>shortcut</key><string>こーとどにゅい</string></dict>
 	<dict><key>phrase</key><string>コート・ド・ボーヌ</string><key>shortcut</key><string>こーとどぼーぬ</string></dict>
 	<dict><key>phrase</key><string>コート・ドール</string><key>shortcut</key><string>こーとどーる</string></dict>
-	<dict><key>phrase</key><string>コーンウォール州</string><key>shortcut</key><string>こーんうぉーるしゅう</string></dict>
 	<dict><key>phrase</key><string>コーンウォール州</string><key>shortcut</key><string>こーんうぉーるしゅう</string></dict>
 	<dict><key>phrase</key><string>サウス・ウェスト・イングランド地方</string><key>shortcut</key><string>さうすうぇすといんぐらんどちほう</string></dict>
 	<dict><key>phrase</key><string>サセックス地方</string><key>shortcut</key><string>させっくすちほう</string></dict>
@@ -806,7 +804,6 @@
 	<dict><key>phrase</key><string>本州</string><key>shortcut</key><string>ほんしゅう</string></dict>
 	<dict><key>phrase</key><string>札幌市</string><key>shortcut</key><string>さっぽろし</string></dict>
 	<dict><key>phrase</key><string>村山地方</string><key>shortcut</key><string>むらやまちほう</string></dict>
-	<dict><key>phrase</key><string>村山地方</string><key>shortcut</key><string>むらやまちほう</string></dict>
 	<dict><key>phrase</key><string>東ケープ州</string><key>shortcut</key><string>ひがしけーぷしゅう</string></dict>
 	<dict><key>phrase</key><string>東北地方</string><key>shortcut</key><string>とうほくちほう</string></dict>
 	<dict><key>phrase</key><string>東御市</string><key>shortcut</key><string>とうみし</string></dict>
@@ -1026,7 +1023,6 @@
 	<dict><key>phrase</key><string>ジュンベルチュカ山脈</string><key>shortcut</key><string>じゅんべるちゅかさんみゃく</string></dict>
 	<dict><key>phrase</key><string>スノーイー山脈</string><key>shortcut</key><string>すのーいーさんみゃく</string></dict>
 	<dict><key>phrase</key><string>セントヘレナ山</string><key>shortcut</key><string>せんとへれなさん</string></dict>
-	<dict><key>phrase</key><string>セント・ヘレナ山</string><key>shortcut</key><string>せんとへれなさん</string></dict>
 	<dict><key>phrase</key><string>タトラ山脈</string><key>shortcut</key><string>たとらさんみゃく</string></dict>
 	<dict><key>phrase</key><string>ティレニア山脈</string><key>shortcut</key><string>てぃれにあさんみゃく</string></dict>
 	<dict><key>phrase</key><string>デマンダ山脈</string><key>shortcut</key><string>でまんださんみゃく</string></dict>
@@ -1851,31 +1847,30 @@
 	<dict><key>phrase</key><string>1次醗酵</string><key>shortcut</key><string>いちじはっこう</string></dict>
 	<dict><key>phrase</key><string>2回蒸溜</string><key>shortcut</key><string>にかいじょうりゅう</string></dict>
 	<dict><key>phrase</key><string>2次醗酵</string><key>shortcut</key><string>にじはっこう</string></dict>
-	<dict><key>phrase</key><string>2次醗酵</string><key>shortcut</key><string>にじはっこう</string></dict>
 	<dict><key>phrase</key><string>Aging</string><key>shortcut</key><string>えいじんぐ</string></dict>
-	<dict><key>phrase</key><string>Alcoholic fermentation</string><key>shortcut</key><string>あるこほりっふぇっめんたちおん</string></dict>
-	<dict><key>phrase</key><string>Appassimento</string><key>shortcut</key><string>あっぱっしめんと</string></dict>
-	<dict><key>phrase</key><string>Assemblage</string><key>shortcut</key><string>あっせんっらげ</string></dict>
-	<dict><key>phrase</key><string>Barrel fermentation</string><key>shortcut</key><string>ばっれるふぇっめんたちおん</string></dict>
-	<dict><key>phrase</key><string>Blend</string><key>shortcut</key><string>っれんっ</string></dict>
-	<dict><key>phrase</key><string>Blending</string><key>shortcut</key><string>っれんぢんっ</string></dict>
-	<dict><key>phrase</key><string>Carbonic maceration</string><key>shortcut</key><string>かっぼにっませらちおん</string></dict>
+	<dict><key>phrase</key><string>Alcoholic fermentation</string><key>shortcut</key><string>あるこほりっくふぁーめんていしょん</string></dict>
+	<dict><key>phrase</key><string>Appassimento</string><key>shortcut</key><string>あぱっしめんと</string></dict>
+	<dict><key>phrase</key><string>Assemblage</string><key>shortcut</key><string>あっさんぶらーじゅ</string></dict>
+	<dict><key>phrase</key><string>Barrel fermentation</string><key>shortcut</key><string>ばれるふぁーめんていしょん</string></dict>
+	<dict><key>phrase</key><string>Blend</string><key>shortcut</key><string>ぶれんど</string></dict>
+	<dict><key>phrase</key><string>Blending</string><key>shortcut</key><string>ぶれんでぃんぐ</string></dict>
+	<dict><key>phrase</key><string>Carbonic maceration</string><key>shortcut</key><string>かるぼにっくませれいしょん</string></dict>
 	<dict><key>phrase</key><string>Cidre</string><key>shortcut</key><string>しーどる</string></dict>
 	<dict><key>phrase</key><string>Clairette de Die Méthode Ancestrale</string><key>shortcut</key><string>っらいれってでぢえめてょであんせっっられ</string></dict>
 	<dict><key>phrase</key><string>Deuxième Fermentation en Bouteille</string><key>shortcut</key><string>でうっしえめふぇっめんたちおんえんぼうていっれ</string></dict>
 	<dict><key>phrase</key><string>Disgorgement</string><key>shortcut</key><string>ぢっごっげめんっ</string></dict>
 	<dict><key>phrase</key><string>Dosage Zéro</string><key>shortcut</key><string>どさーじゅぜろ</string></dict>
 	<dict><key>phrase</key><string>Dosage</string><key>shortcut</key><string>どさーじゅ</string></dict>
-	<dict><key>phrase</key><string>Fermentation Malolactique</string><key>shortcut</key><string>ふぇっめんたちおんまろらっちけ</string></dict>
-	<dict><key>phrase</key><string>Fermentation alcoolique</string><key>shortcut</key><string>ふぇっめんたちおんあるこおりけ</string></dict>
-	<dict><key>phrase</key><string>Fermentation en tonneau</string><key>shortcut</key><string>ふぇっめんたちおんえんとんお</string></dict>
+	<dict><key>phrase</key><string>Fermentation Malolactique</string><key>shortcut</key><string>ふぇるまんたしおんまろらくてぃっく</string></dict>
+	<dict><key>phrase</key><string>Fermentation alcoolique</string><key>shortcut</key><string>ふぇるまんたしおんあるこおりけ</string></dict>
+	<dict><key>phrase</key><string>Fermentation en tonneau</string><key>shortcut</key><string>ふぇるまんたしおんあんとのー</string></dict>
 	<dict><key>phrase</key><string>Filtration</string><key>shortcut</key><string>ふぃるっらちおん</string></dict>
 	<dict><key>phrase</key><string>Fining</string><key>shortcut</key><string>ふぃにんっ</string></dict>
 	<dict><key>phrase</key><string>International Blends</string><key>shortcut</key><string>いんてっなちおなるっれんっっ</string></dict>
 	<dict><key>phrase</key><string>Limoux méthode ancestrale</string><key>shortcut</key><string>りもうっっめてょであんせっっられ</string></dict>
 	<dict><key>phrase</key><string>M.L.F.</string><key>shortcut</key><string>えむえるえふ</string></dict>
-	<dict><key>phrase</key><string>Maceration</string><key>shortcut</key><string>ませらちおん</string></dict>
-	<dict><key>phrase</key><string>Malo-lactic fermentation</string><key>shortcut</key><string>まろらっちっふぇっめんたちおん</string></dict>
+	<dict><key>phrase</key><string>Maceration</string><key>shortcut</key><string>ませらしおん</string></dict>
+	<dict><key>phrase</key><string>Malo-lactic fermentation</string><key>shortcut</key><string>まろらくてぃっくふぁーめんていしょん</string></dict>
 	<dict><key>phrase</key><string>Méthode Ancestrale</string><key>shortcut</key><string>めてょであんせっっられ</string></dict>
 	<dict><key>phrase</key><string>Méthode Cap Classique</string><key>shortcut</key><string>めてょでかっっらっしけ</string></dict>
 	<dict><key>phrase</key><string>Méthode ancestrale</string><key>shortcut</key><string>めてょであんせっっられ</string></dict>

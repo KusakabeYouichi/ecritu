@@ -107,6 +107,8 @@
 	<dict><key>phrase</key><string>iMessage</string><key>shortcut</key><string>あいめっせーじ</string></dict>
 	<dict><key>phrase</key><string>iTunes</string><key>shortcut</key><string>あいちゅーんず</string></dict>
 	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
+	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましーん</string></dict>
+	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましん</string></dict>
 
 	<!-- アプリ -->
 	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
@@ -142,5 +144,12 @@
 	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
 	<dict><key>phrase</key><string>フルアクセス</string><key>shortcut</key><string>ふるあくせす</string></dict>
 	<dict><key>phrase</key><string>テンキー</string><key>shortcut</key><string>てんきー</string></dict>
+	<dict><key>phrase</key><string>Excel</string><key>shortcut</key><string>えくせる</string></dict>
+	<dict><key>phrase</key><string>Word</string><key>shortcut</key><string>わーど</string></dict>
+	<dict><key>phrase</key><string>PowerPoint</string><key>shortcut</key><string>ぱわーぽいんと</string></dict>
+	<dict><key>phrase</key><string>Outlook</string><key>shortcut</key><string>あうとるっく</string></dict>
+	<dict><key>phrase</key><string>Final Cut Pro</string><key>shortcut</key><string>ふぁいなるかっとぷろ</string></dict>
+	<dict><key>phrase</key><string>Logic Pro</string><key>shortcut</key><string>ろじっくぷろ</string></dict>
+	<dict><key>phrase</key><string>Python</string><key>shortcut</key><string>ぱいそん</string></dict>
 </array>
 </plist>
