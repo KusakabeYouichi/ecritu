@@ -384,6 +384,8 @@ extension KanaKanjiConverter {
         var rules: [InflectionRule] = []
 
         for pattern in godanPatterns {
+            let passiveTeForm = pattern.aForm + "れて"
+
             var suffixes = [
                 pattern.aForm + "ない",
                 pattern.aForm + "なかった",
@@ -395,7 +397,6 @@ extension KanaKanjiConverter {
                 pattern.aForm + "せない",
                 pattern.aForm + "せられる",
                 pattern.aForm + "せられない",
-                pattern.aForm + "れて",
                 pattern.aForm + "れた",
                 pattern.aForm + "れ",
                 pattern.iForm + "ます",
@@ -425,6 +426,7 @@ extension KanaKanjiConverter {
 
             suffixes.append(contentsOf: KanaKanjiConverter.taRiSuruInflectionSuffixes(for: pattern.taForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.teForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: passiveTeForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teMiruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teShimauInflectionSuffixes(for: pattern.teForm))
