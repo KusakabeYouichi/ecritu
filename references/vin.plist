@@ -969,6 +969,12 @@
 	<dict><key>phrase</key><string>エトルリア人</string><key>shortcut</key><string>えとるりあじん</string></dict>
 	<dict><key>phrase</key><string>エトルリア時代</string><key>shortcut</key><string>えとるりあじだい</string></dict>
 	<dict><key>phrase</key><string>カナダ</string><key>shortcut</key><string>かなだ</string></dict>
+	<dict><key>phrase</key><string>ギリシャ</string><key>shortcut</key><string>ぎりしゃ</string></dict>
+	<dict><key>phrase</key><string>ギリシャ人</string><key>shortcut</key><string>ぎりしゃじん</string></dict>
+	<dict><key>phrase</key><string>エトルリア人</string><key>shortcut</key><string>えとるりあじん</string></dict>
+	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
+	<dict><key>phrase</key><string>キューバ</string><key>shortcut</key><string>きゅーば</string></dict>
+
 
 	<!-- 地名(山) -->
 	<dict><key>phrase</key><string>秩父山麓</string><key>shortcut</key><string>ちちぶさんふもと</string></dict>
@@ -1857,12 +1863,12 @@
 	<dict><key>phrase</key><string>Carbonic maceration</string><key>shortcut</key><string>かるぼにっくませれいしょん</string></dict>
 	<dict><key>phrase</key><string>Cidre</string><key>shortcut</key><string>しーどる</string></dict>
 	<dict><key>phrase</key><string>Clairette de Die Méthode Ancestrale</string><key>shortcut</key><string>っらいれってでぢえめてょであんせっっられ</string></dict>
-	<dict><key>phrase</key><string>Deuxième Fermentation en Bouteille</string><key>shortcut</key><string>でうっしえめふぇっめんたちおんえんぼうていっれ</string></dict>
+	<dict><key>phrase</key><string>Deuxième Fermentation en Bouteille</string><key>shortcut</key><string>どぅーじえーむふぁるまんたしおんあんぶていゆ</string></dict>
 	<dict><key>phrase</key><string>Disgorgement</string><key>shortcut</key><string>ぢっごっげめんっ</string></dict>
 	<dict><key>phrase</key><string>Dosage Zéro</string><key>shortcut</key><string>どさーじゅぜろ</string></dict>
 	<dict><key>phrase</key><string>Dosage</string><key>shortcut</key><string>どさーじゅ</string></dict>
 	<dict><key>phrase</key><string>Fermentation Malolactique</string><key>shortcut</key><string>ふぇるまんたしおんまろらくてぃっく</string></dict>
-	<dict><key>phrase</key><string>Fermentation alcoolique</string><key>shortcut</key><string>ふぇるまんたしおんあるこおりけ</string></dict>
+	<dict><key>phrase</key><string>Fermentation alcoolique</string><key>shortcut</key><string>ふぇるまんたしおんあるこりっく</string></dict>
 	<dict><key>phrase</key><string>Fermentation en tonneau</string><key>shortcut</key><string>ふぇるまんたしおんあんとのー</string></dict>
 	<dict><key>phrase</key><string>Filtration</string><key>shortcut</key><string>ふぃるっらちおん</string></dict>
 	<dict><key>phrase</key><string>Fining</string><key>shortcut</key><string>ふぃにんっ</string></dict>
