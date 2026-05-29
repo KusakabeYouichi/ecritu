@@ -3,9 +3,9 @@ import UIKit
 
 extension KeyboardViewController {
     private enum CandidateLimits {
-        static let presentation = 24
-        static let conversion = 24
-        static let latinSuggestion = 40
+        static let presentationDefault = 24
+        static let conversionDefault = 24
+        static let latinSuggestionDefault = 40
     }
 
     private enum DiagnosticsThresholds {
@@ -27,20 +27,22 @@ extension KeyboardViewController {
         return trailingLatinSuggestionToken(from: contextBeforeInput)
     }
 
-    func currentLatinSuggestions(limit: Int = CandidateLimits.latinSuggestion) -> [String] {
+    func currentLatinSuggestions(limit: Int = CandidateLimits.latinSuggestionDefault) -> [String] {
         let startedAt = CFAbsoluteTimeGetCurrent()
         let query = currentLatinSuggestionQueryFromTextContext()
+        let effectiveLimit = effectiveLatinSuggestionLimit(defaultLimit: limit)
 
-        guard !query.isEmpty else {
+        guard !query.isEmpty,
+            effectiveLimit > 0 else {
             return []
         }
 
-        let lookupLimit = max(limit + 12, limit * 2)
+        let lookupLimit = max(effectiveLimit + 12, effectiveLimit * 2)
         let suggestions = latinSuggestions(prefix: query, limit: lookupLimit)
         let filteredSuggestions = suggestions.filter { suggestion in
             !isCurrentLatinSuggestionQuery(suggestion, query: query)
         }
-        let results = Array(filteredSuggestions.prefix(limit))
+        let results = Array(filteredSuggestions.prefix(effectiveLimit))
 
         let elapsedMs = performanceElapsedMilliseconds(since: startedAt)
         if elapsedMs >= DiagnosticsThresholds.latinSuggestionSlowMs {
@@ -73,9 +75,19 @@ extension KeyboardViewController {
             return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
         }
 
+        let presentationLimit = effectiveKanaPresentationCandidateLimit()
+
+        guard presentationLimit > 0 else {
+            return CandidatePresentation(
+                composingText: composingRawText,
+                candidates: [],
+                selectedIndex: nil
+            )
+        }
+
         let rawCandidates = kanaKanjiConverter.candidates(
             for: composingReading,
-            limit: CandidateLimits.presentation,
+            limit: presentationLimit,
             systemCandidateMode: systemCandidateMode
         )
         let presentationCandidates = candidatesForPresentation(
@@ -170,7 +182,7 @@ extension KeyboardViewController {
 
         let systemCandidates = kanaKanjiConverter.candidates(
             for: sourceReading,
-            limit: CandidateLimits.conversion,
+            limit: effectiveKanaConversionCandidateLimit(),
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         )
         let presentationCandidates = candidatesForPresentation(
@@ -382,7 +394,7 @@ extension KeyboardViewController {
                 return
             }
 
-            let suggestions = currentLatinSuggestions(limit: CandidateLimits.latinSuggestion)
+            let suggestions = currentLatinSuggestions(limit: CandidateLimits.latinSuggestionDefault)
 
             guard suggestions.indices.contains(index) else {
                 return
@@ -418,7 +430,7 @@ extension KeyboardViewController {
 
         let candidates = kanaKanjiConverter.candidates(
             for: composingReading,
-            limit: CandidateLimits.presentation,
+            limit: effectiveKanaPresentationCandidateLimit(),
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         )
         let presentationCandidates = candidatesForPresentation(
@@ -646,7 +658,7 @@ extension KeyboardViewController {
 
         let candidates = kanaKanjiConverter.candidates(
             for: composingReading,
-            limit: CandidateLimits.conversion,
+            limit: effectiveKanaConversionCandidateLimit(),
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         )
 

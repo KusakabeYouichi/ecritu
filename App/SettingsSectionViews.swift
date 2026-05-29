@@ -141,6 +141,7 @@ struct SetupStepsSection: View {
 
 struct KeyboardDiagnosticsSection: View {
     let isSessionActive: Bool
+    let failSafeProfile: String
     let lastHeartbeatText: String
     let lastEvent: String
     let lastSessionID: String
@@ -181,6 +182,7 @@ struct KeyboardDiagnosticsSection: View {
             }
 
             VStack(alignment: .leading, spacing: 3) {
+                Text("fail-safe: \(failSafeProfile)")
                 Text("最終ハートビート: \(lastHeartbeatText)")
                 Text("最終セッションID: \(lastSessionID.isEmpty ? "なし" : lastSessionID)")
                 Text("最終イベント: \(lastEvent.isEmpty ? "なし" : lastEvent)")

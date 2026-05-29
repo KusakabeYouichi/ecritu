@@ -63,6 +63,7 @@ enum SettingsKeys {
     static let keyboardDiagnosticsLastHeartbeat = "keyboardDiagnosticsLastHeartbeat"
     static let keyboardDiagnosticsLastEvent = "keyboardDiagnosticsLastEvent"
     static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
+    static let keyboardDiagnosticsFailSafeProfile = "keyboardDiagnosticsFailSafeProfile"
     static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
 }
 
