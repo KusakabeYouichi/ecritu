@@ -133,7 +133,19 @@ if ((${#SUDACHI_CSV_FILES[@]} == 0)) && is_truthy "$AUTO_FETCH_SUDACHI_ON_BUILD"
   fi
 fi
 
-needs_regeneration() {
+# Build supplemental and initial-migration vocab first so SQLite regeneration
+# can include the latest plist-derived entries (e.g. apple.plist additions).
+python3 tools/build_second_vocab_from_references.py \
+  --input-plist "$REF_RYUKYU_PLIST" \
+  --input-plist "$REF_VIN_PLIST" \
+  --input-plist "$REF_APPLE_PLIST" \
+  --output "$TMP_SECOND"
+
+python3 tools/build_second_vocab_from_references.py \
+  --input-plist "$REF_VOID_PLIST" \
+  --output "$TMP_INITIAL_AJOUT"
+
+needs_sudachi_regeneration() {
   ROOT_DIR="$ROOT_DIR" python3 - <<'PY'
 from pathlib import Path
 import os
@@ -143,19 +155,13 @@ root = Path(os.environ["ROOT_DIR"])
 inputs = [
     *sorted(root.glob("tmp/sudachi_raw/**/*_lex.csv")),
   root / "tools" / "refresh_simulator_dictionary_on_build.sh",
-    root / "tools" / "build_sudachi_index.py",
-    root / "tools" / "build_kana_kanji_sqlite.py",
-  root / "tools" / "build_second_vocab_from_references.py",
-  root / "references" / "ryukyu.plist",
-  root / "references" / "vin.plist",
-  root / "references" / "apple.plist",
+  root / "tools" / "build_sudachi_index.py",
 ]
 
 outputs = [
     root / "tmp" / "ÉcrituPremierVocab.json",
     root / "tmp" / "kana_kanji_candidate_sources.json",
     root / "tmp" / "kana_kanji_inflection_dictionary.json",
-    root / "tmp" / "kana_kanji_dictionary.sqlite",
 ]
 
 if not inputs or any(not out.exists() for out in outputs):
@@ -168,9 +174,70 @@ print("1" if newest_input > oldest_output else "0")
 PY
 }
 
+needs_sqlite_regeneration() {
+  if [[ ! -f "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
+  if [[ "$TMP_PREMIER" -nt "$TMP_SQLITE" ]] \
+    || [[ "$TMP_SECOND" -nt "$TMP_SQLITE" ]] \
+    || [[ "$ROOT_DIR/tools/build_kana_kanji_sqlite.py" -nt "$TMP_SQLITE" ]] \
+    || [[ "$ROOT_DIR/tools/refresh_simulator_dictionary_on_build.sh" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$TMP_SOURCES" && "$TMP_SOURCES" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$TMP_INFLECTIONS" && "$TMP_INFLECTIONS" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
+  return 1
+}
+
+regenerate_sqlite_if_possible() {
+  if [[ ! -f "$TMP_PREMIER" || ! -f "$TMP_SECOND" ]]; then
+    if [[ -f "$TMP_SQLITE" ]]; then
+      echo "[dict] Warning: sqlite再生成に必要な語彙JSONが不足しているため、古いSQLiteを削除してJSONフォールバックを優先します。"
+      rm -f "$TMP_SQLITE"
+    else
+      echo "[dict] Skip sqlite regeneration (missing vocab json: $TMP_PREMIER or $TMP_SECOND)."
+    fi
+    return
+  fi
+
+  if ! needs_sqlite_regeneration; then
+    echo "[dict] Skip sqlite regeneration (kana_kanji_dictionary.sqlite is up-to-date)."
+    return
+  fi
+
+  local sqlite_args=(
+    python3 tools/build_kana_kanji_sqlite.py
+    --vocab-json "$TMP_PREMIER"
+    --vocab-json "$TMP_SECOND"
+    --output "$TMP_SQLITE"
+  )
+
+  if [[ -f "$TMP_SOURCES" ]]; then
+    sqlite_args+=(--sources-json "$TMP_SOURCES")
+  fi
+
+  if [[ -f "$TMP_INFLECTIONS" ]]; then
+    sqlite_args+=(--inflections-json "$TMP_INFLECTIONS")
+  fi
+
+  if "${sqlite_args[@]}"; then
+    echo "[dict] SQLite regeneration complete."
+  else
+    echo "[dict] Warning: sqlite regeneration failed. Keeping previous artifacts if present."
+  fi
+}
+
 if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
-  if [[ "$(needs_regeneration)" == "1" ]]; then
-    echo "[dict] Regenerating tmp dictionary artifacts from Sudachi CSV..."
+  if [[ "$(needs_sudachi_regeneration)" == "1" ]]; then
+    echo "[dict] Regenerating Sudachi-derived dictionary artifacts..."
 
     if python3 tools/build_sudachi_index.py \
       --input-glob "tmp/sudachi_raw/**/*_lex.csv" \
@@ -182,19 +249,13 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
       --max-reading-len 10 \
       --max-candidate-len 20 \
       --single-reading-max-candidates 21 \
-      --single-reading-max-candidate-len 1 \
-      && python3 tools/build_kana_kanji_sqlite.py \
-        --vocab-json "$TMP_PREMIER" \
-        --vocab-json "$TMP_SECOND" \
-        --sources-json "$TMP_SOURCES" \
-        --inflections-json "$TMP_INFLECTIONS" \
-        --output "$TMP_SQLITE"; then
-      echo "[dict] Regeneration complete."
+      --single-reading-max-candidate-len 1; then
+      echo "[dict] Sudachi regeneration complete."
     else
-      echo "[dict] Warning: regeneration failed. Keeping previous artifacts if present."
+      echo "[dict] Warning: Sudachi regeneration failed. Keeping previous artifacts if present."
     fi
   else
-    echo "[dict] Skip regeneration (tmp artifacts are up-to-date)."
+    echo "[dict] Skip Sudachi regeneration (tmp artifacts are up-to-date)."
   fi
 else
   SEED_ENTRY_COUNT="$(seed_entry_count)"
@@ -214,15 +275,7 @@ else
   fi
 fi
 
-python3 tools/build_second_vocab_from_references.py \
-  --input-plist "$REF_RYUKYU_PLIST" \
-  --input-plist "$REF_VIN_PLIST" \
-  --input-plist "$REF_APPLE_PLIST" \
-  --output "$TMP_SECOND"
-
-python3 tools/build_second_vocab_from_references.py \
-  --input-plist "$REF_VOID_PLIST" \
-  --output "$TMP_INITIAL_AJOUT"
+regenerate_sqlite_if_possible
 
 if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" ]]; then
   BUNDLE_RESOURCES_DIR="${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"
@@ -252,7 +305,7 @@ else
 fi
 
 if [[ "$is_simulator_build" == "true" ]]; then
-  if [[ -f "$TMP_PREMIER" && -f "$TMP_SOURCES" && -f "$TMP_INFLECTIONS" && -f "$TMP_SQLITE" ]]; then
+  if [[ -f "$TMP_PREMIER" && -f "$TMP_SQLITE" ]]; then
     if bash tools/install_simulator_kana_dictionary.sh; then
       echo "[dict] App Group dictionary sync complete."
     else
