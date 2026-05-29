@@ -200,5 +200,9 @@
 	<dict><key>phrase</key><string>登録番号</string><key>shortcut</key><string>とうろくばんごう</string></dict>
 	<dict><key>phrase</key><string>オニョン</string><key>shortcut</key><string>おにょん</string></dict>
 	<dict><key>phrase</key><string>オリヴ</string><key>shortcut</key><string>おりゔ</string></dict>
+	<dict><key>phrase</key><string>苦椒醤</string><key>shortcut</key><string>こちゅじゃん</string></dict>
+	<dict><key>phrase</key><string>고추장</string><key>shortcut</key><string>こちゅじゃん</string></dict>
+	<dict><key>phrase</key><string>モクテル</string><key>shortcut</key><string>もくてる</string></dict>
+	<dict><key>phrase</key><string>ノンアル</string><key>shortcut</key><string>のんある</string></dict>
 </array>
 </plist>
