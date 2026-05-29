@@ -2089,7 +2089,6 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func makeRootView(from configuration: RenderConfiguration) -> KeyboardRootView {
-
         return KeyboardRootView(
             onTextInput: { [weak self] text in
                 self?.handleTextInput(text)
