@@ -102,6 +102,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "のだ", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "のです", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くない", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "くなく", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くないです", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くなかった", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くなかったです", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
