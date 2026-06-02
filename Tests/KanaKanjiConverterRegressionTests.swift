@@ -397,6 +397,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionShimauRenyoFormsAreDerivedAcrossVerbClasses() {
+        converter.learn(reading: "でる", candidate: "出る")
+        converter.learn(reading: "かく", candidate: "書く")
+        converter.learn(reading: "かくにん", candidate: "確認")
+        converter.learn(reading: "くる", candidate: "来る")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("でてしまい", "出てしまい"),
+            ("かいてしまい", "書いてしまい"),
+            ("かくにんしてしまい", "確認してしまい"),
+            ("きてしまい", "来てしまい")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionAdjectiveSugiruFormsAreDerivedFromBaseAdjectiveCandidates() {
         converter.learn(reading: "おそい", candidate: "遅い")
 
