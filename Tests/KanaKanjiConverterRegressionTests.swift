@@ -518,6 +518,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionPostfixKudasaiChainsAreDerivedFromBaseCandidates() {
+        converter.learn(reading: "おくる", candidate: "送る")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("おくってください", "送ってください"),
+            ("おくってくださいね", "送ってくださいね")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionAdjectivePoliteFormsAreDerivedFromBaseAdjectiveCandidates() {
         converter.learn(reading: "おそい", candidate: "遅い")
 
