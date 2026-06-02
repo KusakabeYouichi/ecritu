@@ -32,6 +32,15 @@ enum KanaKanjiCandidateSourceMode: String {
     }
 }
 
+enum UserDictionaryCandidateDisplayMode: String {
+    case off
+    case on
+
+    var usesUserDictionaryCandidates: Bool {
+        self == .on
+    }
+}
+
 enum ContactCandidateDisplayMode: String {
     case off
     case namesOnly
