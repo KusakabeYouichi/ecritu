@@ -2,36 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<dict><key>phrase</key><string>ギリシャ</string><key>shortcut</key><string>ぎりしゃ</string></dict>
-	<dict><key>phrase</key><string>ギリシャ人</string><key>shortcut</key><string>ぎりしゃじん</string></dict>
-	<dict><key>phrase</key><string>エトルリア人</string><key>shortcut</key><string>えとるりあじん</string></dict>
-	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
-	<dict><key>phrase</key><string>キューバ</string><key>shortcut</key><string>きゅーば</string></dict>
-	<!-- ぶどう品種 -->
-	<dict><key>phrase</key><string>Neuburger</string><key>shortcut</key><string>のいぶるがー</string></dict>
-	<dict><key>phrase</key><string>Nosiola</string><key>shortcut</key><string>のじおーら</string></dict>
-	<dict><key>phrase</key><string>Roussanne・Marsanne</string><key>shortcut</key><string>ろーざんぬまるさね</string></dict>
-	<dict><key>phrase</key><string>Rotgipfler</string><key>shortcut</key><string>ろーとぎぷふらー</string></dict>
-	<dict><key>phrase</key><string>Spanna</string><key>shortcut</key><string>すぱんな</string></dict>
-	<dict><key>phrase</key><string>Torrontés</string><key>shortcut</key><string>とろんてす</string></dict>
-	<dict><key>phrase</key><string>Tribidrag</string><key>shortcut</key><string>とりびどらぐ</string></dict>
-	<dict><key>phrase</key><string>Verdelho</string><key>shortcut</key><string>ゔぇるでーりょ</string></dict>
-	<dict><key>phrase</key><string>di Soave</string><key>shortcut</key><string>でぃそあゔぇ</string></dict>
-	<dict><key>phrase</key><string>Riesling Lion</string><key>shortcut</key><string>りーすりんぐらいおん</string></dict>
-	<dict><key>phrase</key><string>アギオルギティコ</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
-	<dict><key>phrase</key><string>アリゴテ</string><key>shortcut</key><string>ありごて</string></dict>
-	<dict><key>phrase</key><string>アルバリーニョ</string><key>shortcut</key><string>あるばりーにょ</string></dict>
-	<dict><key>phrase</key><string>アルバローラ</string><key>shortcut</key><string>あるばろーら</string></dict>
-	<dict><key>phrase</key><string>アルヴァリーニョ</string><key>shortcut</key><string>あるゔぁりーにょ</string></dict>
-	<dict><key>phrase</key><string>オーセロワ</string><key>shortcut</key><string>おーせろわ</string></dict>
-	<dict><key>phrase</key><string>カベルネ・ソーヴィニヨン</string><key>shortcut</key><string>かべるねそーゔぃによん</string></dict>
-	<dict><key>phrase</key><string>カベルネ・フラン</string><key>shortcut</key><string>かべるねふらん</string></dict>
-	<dict><key>phrase</key><string>カリニェナ</string><key>shortcut</key><string>かりにぇな</string></dict>
-	<dict><key>phrase</key><string>カリニャン</string><key>shortcut</key><string>かりにゃん</string></dict>
-	<dict><key>phrase</key><string>ガメイ</string><key>shortcut</key><string>がめい</string></dict>
-	<dict><key>phrase</key><string>ガルガネガ</string><key>shortcut</key><string>がるがねが</string></dict>
-	<dict><key>phrase</key><string>ガルナッチャ</string><key>shortcut</key><string>がるなっちゃ</string></dict>
-
 	<!-- ワイン関連用語 (地名・種名など) -->
 	<dict><key>phrase</key><string>カヘティ</string><key>shortcut</key><string>かへてぃ</string></dict>
 	<dict><key>phrase</key><string>Côtes d'Auvergne</string><key>shortcut</key><string>こー</string></dict>
@@ -77,7 +47,6 @@
 	<dict><key>phrase</key><string>Crémant du Jura</string><key>shortcut</key><string>くれまんでゅじゅら</string></dict>
 	<dict><key>phrase</key><string>Carnuntum</string><key>shortcut</key><string>かるぬんとぅむ</string></dict>
 	<dict><key>phrase</key><string>Carnuntum D.A.C.</string><key>shortcut</key><string>かるぬんとぅむでぃーえーしー</string></dict>
-	<dict><key>phrase</key><string>Canada</string><key>shortcut</key><string>かなだ</string></dict>
 	<dict><key>phrase</key><string>Cahors</string><key>shortcut</key><string>かおーる</string></dict>
 	<dict><key>phrase</key><string>Bourgogne</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>
 	<dict><key>phrase</key><string>Cadillac Côtes de Bordeaux</string><key>shortcut</key><string>ぼるどー</string></dict>
@@ -106,14 +75,11 @@
 	<dict><key>phrase</key><string>Baco Blanc</string><key>shortcut</key><string>ばこぶらん</string></dict>
 	<dict><key>phrase</key><string>Austral</string><key>shortcut</key><string>おーすとらるー</string></dict>
 	<dict><key>phrase</key><string>Asti</string><key>shortcut</key><string>あすてぃ</string></dict>
-	<dict><key>phrase</key><string>B.O.B.</string><key>shortcut</key><string>びおびー</string></dict>
-	<dict><key>phrase</key><string>B.O.P.</string><key>shortcut</key><string>びおぴー</string></dict>
+	<dict><key>phrase</key><string>B.O.B.</string><key>shortcut</key><string>びーおびー</string></dict>
+	<dict><key>phrase</key><string>B.O.P.</string><key>shortcut</key><string>びーおぴー</string></dict>
 	<dict><key>phrase</key><string>BC V.Q.A.</string><key>shortcut</key><string>ぶりてぃっしゅころんびあゔぃーきゅーえー</string></dict>
 	<dict><key>phrase</key><string>Barbera d'Alba</string><key>shortcut</key><string>ばるべーらだるば</string></dict>
 	<dict><key>phrase</key><string>Barbera d'Asti</string><key>shortcut</key><string>ばるべーらだすてぃー</string></dict>
-
-	<!-- ぶどう品種 -->
-	<dict><key>phrase</key><string>Boal</string><key>shortcut</key><string>ぼある</string></dict>
 
 	<!-- ワイン関連技術用語・その他 -->
 	<dict><key>phrase</key><string>オフドライ</string><key>shortcut</key><string>おふどらい</string></dict>
@@ -401,7 +367,6 @@
 	<dict><key>phrase</key><string>エタノール</string><key>shortcut</key><string>えたのーる</string></dict>
 	<dict><key>phrase</key><string>エチケット</string><key>shortcut</key><string>えちけっと</string></dict>
 	<dict><key>phrase</key><string>エチケット上</string><key>shortcut</key><string>えちけっとうわっ</string></dict>
-	<dict><key>phrase</key><string>エチルアルコール</string><key>shortcut</key><string>えちるあるこーる</string></dict>
 	<dict><key>phrase</key><string>エッグ・リキュール</string><key>shortcut</key><string>えっぐりきゅーる</string></dict>
 	<dict><key>phrase</key><string>エッセンス</string><key>shortcut</key><string>えっせんす</string></dict>
 	<dict><key>phrase</key><string>エトナ</string><key>shortcut</key><string>えとな</string></dict>
@@ -521,7 +486,6 @@
 	<dict><key>phrase</key><string>カビネット</string><key>shortcut</key><string>かびねっと</string></dict>
 	<dict><key>phrase</key><string>カビ由来</string><key>shortcut</key><string>かびゆらい</string></dict>
 	<dict><key>phrase</key><string>カフェイン</string><key>shortcut</key><string>かふぇいん</string></dict>
-	<dict><key>phrase</key><string>カプロン酸エチル</string><key>shortcut</key><string>かぷろんさんえちる</string></dict>
 	<dict><key>phrase</key><string>カマンチャカ</string><key>shortcut</key><string>かまんちゃか</string></dict>
 	<dict><key>phrase</key><string>カラテッリ</string><key>shortcut</key><string>からてっり</string></dict>
 	<dict><key>phrase</key><string>カラブリア</string><key>shortcut</key><string>からぶりあ</string></dict>
@@ -2056,7 +2020,6 @@
 	<dict><key>phrase</key><string>メソポタミア文明</string><key>shortcut</key><string>めそぽたみあぶんめい</string></dict>
 	<dict><key>phrase</key><string>メゾン</string><key>shortcut</key><string>めぞん</string></dict>
 	<dict><key>phrase</key><string>メタノール</string><key>shortcut</key><string>めたのーる</string></dict>
-	<dict><key>phrase</key><string>メチル・アルコール</string><key>shortcut</key><string>めちるあるこーる</string></dict>
 	<dict><key>phrase</key><string>メッセージ・イン・ア・ボトル</string><key>shortcut</key><string>めっせーじいんあぼとる</string></dict>
 	<dict><key>phrase</key><string>メテオ・フランス</string><key>shortcut</key><string>めておふらんす</string></dict>
 	<dict><key>phrase</key><string>メトキシピラジン</string><key>shortcut</key><string>めときしぴらじん</string></dict>
@@ -4990,7 +4953,6 @@
 	<dict><key>phrase</key><string>贈答品</string><key>shortcut</key><string>ぞうとうひん</string></dict>
 	<dict><key>phrase</key><string>赤ロゼ</string><key>shortcut</key><string>あかろぜぜ</string></dict>
 	<dict><key>phrase</key><string>赤ワイン</string><key>shortcut</key><string>あかわいん</string></dict>
-	<dict><key>phrase</key><string>赤ワインソース仕立</string><key>shortcut</key><string>あかわいんそーすしたて</string></dict>
 	<dict><key>phrase</key><string>赤ワイン・白ワイン</string><key>shortcut</key><string>あかわいんしろわいん</string></dict>
 	<dict><key>phrase</key><string>赤・ 白・ロゼ</string><key>shortcut</key><string>あかしらろぜぜ</string></dict>
 	<dict><key>phrase</key><string>赤・ロゼ</string><key>shortcut</key><string>あかろぜぜ</string></dict>
@@ -5002,7 +4964,6 @@
 	<dict><key>phrase</key><string>赤・白・ロゼワイン</string><key>shortcut</key><string>あかしらろぜわいん</string></dict>
 	<dict><key>phrase</key><string>赤品種</string><key>shortcut</key><string>あかひんしゅ</string></dict>
 	<dict><key>phrase</key><string>赤土</string><key>shortcut</key><string>あかつち</string></dict>
-	<dict><key>phrase</key><string>赤玉ポートワイン</string><key>shortcut</key><string>あかだまぽーとわいん</string></dict>
 	<dict><key>phrase</key><string>赤白両方</string><key>shortcut</key><string>あかしろりょうほう</string></dict>
 	<dict><key>phrase</key><string>赤紫色</string><key>shortcut</key><string>あかむらさきいろ</string></dict>
 	<dict><key>phrase</key><string>赤色</string><key>shortcut</key><string>せきしょく</string></dict>
@@ -5126,8 +5087,6 @@
 	<dict><key>phrase</key><string>酒類全体</string><key>shortcut</key><string>しゅるいぜんたい</string></dict>
 	<dict><key>phrase</key><string>酒類分類</string><key>shortcut</key><string>しゅるいぶんるい</string></dict>
 	<dict><key>phrase</key><string>酒類課税数量</string><key>shortcut</key><string>しゅるいかぜいすうりょう</string></dict>
-	<dict><key>phrase</key><string>酢酸</string><key>shortcut</key><string>さくさん</string></dict>
-	<dict><key>phrase</key><string>酢酸イソアミル</string><key>shortcut</key><string>さくさんいそあみる</string></dict>
 	<dict><key>phrase</key><string>酪農</string><key>shortcut</key><string>らくのう</string></dict>
 	<dict><key>phrase</key><string>酵素</string><key>shortcut</key><string>こうそ</string></dict>
 	<dict><key>phrase</key><string>酵素剤</string><key>shortcut</key><string>こうそざい</string></dict>
@@ -5169,7 +5128,6 @@
 	<dict><key>phrase</key><string>鉄分</string><key>shortcut</key><string>てつぶん</string></dict>
 	<dict><key>phrase</key><string>銀色</string><key>shortcut</key><string>ぎんしょく</string></dict>
 	<dict><key>phrase</key><string>銘醸ワイン</string><key>shortcut</key><string>めいじょうわいん</string></dict>
-	<dict><key>phrase</key><string>鍋料理</string><key>shortcut</key><string>なべりょうり</string></dict>
 	<dict><key>phrase</key><string>鎌倉幕府</string><key>shortcut</key><string>かまくらばくふ</string></dict>
 	<dict><key>phrase</key><string>鎖国</string><key>shortcut</key><string>さこく</string></dict>
 	<dict><key>phrase</key><string>長年協議</string><key>shortcut</key><string>ちゃんねんきょうぎ</string></dict>
@@ -5271,14 +5229,7 @@
 	<dict><key>phrase</key><string>魚介消費量</string><key>shortcut</key><string>ぎょかいしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>魚介類</string><key>shortcut</key><string>ぎょかいるい</string></dict>
 	<dict><key>phrase</key><string>鮮魚</string><key>shortcut</key><string>せんぎょ</string></dict>
-	<dict><key>phrase</key><string>鯉</string><key>shortcut</key><string>こい</string></dict>
-	<dict><key>phrase</key><string>鰻</string><key>shortcut</key><string>うなぎ</string></dict>
-	<dict><key>phrase</key><string>鱈</string><key>shortcut</key><string>たら</string></dict>
 	<dict><key>phrase</key><string>鳥居平</string><key>shortcut</key><string>とりいひら</string></dict>
-	<dict><key>phrase</key><string>鳥類</string><key>shortcut</key><string>ちょうるい</string></dict>
-	<dict><key>phrase</key><string>鳩</string><key>shortcut</key><string>はと</string></dict>
-	<dict><key>phrase</key><string>鴨</string><key>shortcut</key><string>かもの</string></dict>
-	<dict><key>phrase</key><string>鶏肉</string><key>shortcut</key><string>けいにく</string></dict>
 	<dict><key>phrase</key><string>鷹狩</string><key>shortcut</key><string>たかがり</string></dict>
 	<dict><key>phrase</key><string>麦焼酎</string><key>shortcut</key><string>むぎじょうちゅう</string></dict>
 	<dict><key>phrase</key><string>麦芽</string><key>shortcut</key><string>ばくが</string></dict>
@@ -5290,7 +5241,6 @@
 	<dict><key>phrase</key><string>黄金</string><key>shortcut</key><string>ふぁんぐむ</string></dict>
 	<dict><key>phrase</key><string>黄金色</string><key>shortcut</key><string>こがねいろ</string></dict>
 	<dict><key>phrase</key><string>黒スグリ</string><key>shortcut</key><string>くろすぐり</string></dict>
-	<dict><key>phrase</key><string>黒トリュフ</string><key>shortcut</key><string>くろとりゅふ</string></dict>
 	<dict><key>phrase</key><string>黒ビール</string><key>shortcut</key><string>くろびーる</string></dict>
 	<dict><key>phrase</key><string>黒ワイン</string><key>shortcut</key><string>くろわいん</string></dict>
 	<dict><key>phrase</key><string>黒・白</string><key>shortcut</key><string>くろしら</string></dict>
@@ -5320,6 +5270,16 @@
 	<dict><key>phrase</key><string>山椒</string><key>shortcut</key><string>さんしょう</string></dict>
 
 	<!-- 料理など -->
+	<dict><key>phrase</key><string>鯉</string><key>shortcut</key><string>こい</string></dict>
+	<dict><key>phrase</key><string>鰻</string><key>shortcut</key><string>うなぎ</string></dict>
+	<dict><key>phrase</key><string>鱈</string><key>shortcut</key><string>たら</string></dict>
+	<dict><key>phrase</key><string>鳥類</string><key>shortcut</key><string>ちょうるい</string></dict>
+	<dict><key>phrase</key><string>鳩</string><key>shortcut</key><string>はと</string></dict>
+	<dict><key>phrase</key><string>鴨</string><key>shortcut</key><string>かもの</string></dict>
+	<dict><key>phrase</key><string>鶏肉</string><key>shortcut</key><string>けいにく</string></dict>
+	<dict><key>phrase</key><string>赤ワインソース仕立</string><key>shortcut</key><string>あかわいんそーすしたて</string></dict>
+	<dict><key>phrase</key><string>黒トリュフ</string><key>shortcut</key><string>くろとりゅふ</string></dict>
+	<dict><key>phrase</key><string>鍋料理</string><key>shortcut</key><string>なべりょうり</string></dict>
 	<dict><key>phrase</key><string>アサツキ</string><key>shortcut</key><string>あさつき</string></dict>
 	<dict><key>phrase</key><string>アサリ</string><key>shortcut</key><string>あさり</string></dict>
 	<dict><key>phrase</key><string>アジア料理</string><key>shortcut</key><string>あじありょうり</string></dict>

@@ -541,6 +541,7 @@
 	<!-- 地名(国) -->
 	<dict><key>phrase</key><string>Argentina</string><key>shortcut</key><string>あるぜんちん</string></dict>
 	<dict><key>phrase</key><string>Australia</string><key>shortcut</key><string>おーすとらりあ</string></dict>
+	<dict><key>phrase</key><string>Canada</string><key>shortcut</key><string>かなだ</string></dict>
 	<dict><key>phrase</key><string>Chile</string><key>shortcut</key><string>ちり</string></dict>
 	<dict><key>phrase</key><string>Croatia</string><key>shortcut</key><string>くろあちあ</string></dict>
 	<dict><key>phrase</key><string>France</string><key>shortcut</key><string>ふらんす</string></dict>
@@ -570,7 +571,6 @@
 	<dict><key>phrase</key><string>エトルリア人</string><key>shortcut</key><string>えとるりあじん</string></dict>
 	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
 	<dict><key>phrase</key><string>キューバ</string><key>shortcut</key><string>きゅーば</string></dict>
-
 
 	<!-- 地名(山) -->
 	<dict><key>phrase</key><string>秩父山麓</string><key>shortcut</key><string>ちちぶさんふもと</string></dict>
@@ -755,7 +755,7 @@
 	<dict><key>phrase</key><string>洞爺湖</string><key>shortcut</key><string>とうやこ</string></dict>
 	<dict><key>phrase</key><string>洞爺湖町</string><key>shortcut</key><string>とうやこちょう</string></dict>
 
-    <!-- 地方 -->
+	<!-- 地方 -->
 	<dict><key>phrase</key><string>Champagne</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>
 	<dict><key>phrase</key><string>アッティカ</string><key>shortcut</key><string>あってぃか</string></dict>
 	<dict><key>phrase</key><string>アトランティカ</string><key>shortcut</key><string>あとらんてぃか</string></dict>
@@ -853,7 +853,7 @@
 	<dict><key>phrase</key><string>ティエラッシュ</string><key>shortcut</key><string>てぃえらっしゅ</string></dict>
 	<dict><key>phrase</key><string>フランドル</string><key>shortcut</key><string>ふらんどる</string></dict>
 
-    <!-- 地区 -->
+	<!-- 地区 -->
 	<dict><key>phrase</key><string>Beaujolais</string><key>shortcut</key><string>ぼーじょれ</string></dict>
 	<dict><key>phrase</key><string>アンジュー&amp;ソミュール</string><key>shortcut</key><string>あんじゅーそみゅーる</string></dict>
 	<dict><key>phrase</key><string>アンジュー</string><key>shortcut</key><string>あんじゅー</string></dict>
@@ -894,7 +894,7 @@
 	<dict><key>phrase</key><string>播磨</string><key>shortcut</key><string>はりま</string></dict>
 	<dict><key>phrase</key><string>菱山</string><key>shortcut</key><string>ひしやま</string></dict>
 
-    <!-- 州 -->
+	<!-- 州 -->
 	<dict><key>phrase</key><string>アイダホ州</string><key>shortcut</key><string>あいだほしゅう</string></dict>
 	<dict><key>phrase</key><string>アラゴン州</string><key>shortcut</key><string>あらごんしゅう</string></dict>
 	<dict><key>phrase</key><string>ウンブリア州</string><key>shortcut</key><string>うんぶりあしゅう</string></dict>
@@ -959,7 +959,7 @@
 	<dict><key>phrase</key><string>西ケープ州</string><key>shortcut</key><string>にしけーぷしゅう</string></dict>
 	<dict><key>phrase</key><string>サマセット州</string><key>shortcut</key><string>さませっとしゅう</string></dict>
 
-    <!-- 県 -->
+	<!-- 県 -->
 	<dict><key>phrase</key><string>アヴェッリーノ県</string><key>shortcut</key><string>あゔぇっりーのけん</string></dict>
 	<dict><key>phrase</key><string>アスティ県</string><key>shortcut</key><string>あすてぃけん</string></dict>
 	<dict><key>phrase</key><string>アレッサンドリア県</string><key>shortcut</key><string>あれっさんどりあけん</string></dict>
@@ -1036,7 +1036,7 @@
 	<dict><key>phrase</key><string>兵庫県</string><key>shortcut</key><string>ひょうごけん</string></dict>
 	<dict><key>phrase</key><string>和歌山県</string><key>shortcut</key><string>わかやまけん</string></dict>
 
-    <!-- 市 -->
+	<!-- 市 -->
 	<dict><key>phrase</key><string>アンジェ市</string><key>shortcut</key><string>あんじぇし</string></dict>
 	<dict><key>phrase</key><string>クレムス市</string><key>shortcut</key><string>くれむすし</string></dict>
 	<dict><key>phrase</key><string>ソミュール市</string><key>shortcut</key><string>そみゅーるし</string></dict>
@@ -1095,7 +1095,7 @@
 	<dict><key>phrase</key><string>陸前高田市</string><key>shortcut</key><string>りくぜんたかたし</string></dict>
 	<dict><key>phrase</key><string>釡石市</string><key>shortcut</key><string>かまいしし</string></dict>
 
-    <!-- 村 -->
+	<!-- 村 -->
 	<dict><key>phrase</key><string>チェダー村</string><key>shortcut</key><string>ちぇだーむら</string></dict>
 	<dict><key>phrase</key><string>サン・ジュリアン村</string><key>shortcut</key><string>さんじゅりあんむら</string></dict>
 	<dict><key>phrase</key><string>サン・テステフ村</string><key>shortcut</key><string>さんてすてふむら</string></dict>
@@ -1132,8 +1132,8 @@
 	<dict><key>phrase</key><string>青木村</string><key>shortcut</key><string>あおきむら</string></dict>
 	<dict><key>phrase</key><string>高山村</string><key>shortcut</key><string>こうざんむら</string></dict>
 
-    <!--    6 産地 -->
-    <!-- 渓谷 -->
+	<!-- 産地 -->
+	<!-- 渓谷 -->
 	<dict><key>phrase</key><string>ストルマ渓谷</string><key>shortcut</key><string>すとるまけいこく</string></dict>
 	<dict><key>phrase</key><string>ドウロ渓谷</string><key>shortcut</key><string>どうろけいこく</string></dict>
 	<dict><key>phrase</key><string>ドナウ渓谷</string><key>shortcut</key><string>どなうけいこく</string></dict>
@@ -1141,7 +1141,7 @@
 	<dict><key>phrase</key><string>ローヌ渓谷</string><key>shortcut</key><string>ろーぬけいこく</string></dict>
 	<dict><key>phrase</key><string>ロワール渓谷</string><key>shortcut</key><string>ろわーるけいこく</string></dict>
 
-    <!-- 盆地 -->
+	<!-- 盆地 -->
 	<dict><key>phrase</key><string>カルパチア盆地</string><key>shortcut</key><string>かるぱちあぼんち</string></dict>
 	<dict><key>phrase</key><string>タポルツァ盆地</string><key>shortcut</key><string>たぽるつぁぼんち</string></dict>
 	<dict><key>phrase</key><string>パリ盆地</string><key>shortcut</key><string>ぱりぼんち</string></dict>
@@ -1154,7 +1154,7 @@
 	<dict><key>phrase</key><string>甲州盆地</string><key>shortcut</key><string>こうしゅうぼんち</string></dict>
 	<dict><key>phrase</key><string>長野盆地</string><key>shortcut</key><string>ながのぼんち</string></dict>
 
-    <!-- 半島 -->
+	<!-- 半島 -->
 	<dict><key>phrase</key><string>アラビア半島</string><key>shortcut</key><string>あらびあはんとう</string></dict>
 	<dict><key>phrase</key><string>イストラ半島</string><key>shortcut</key><string>いすとらはんとう</string></dict>
 	<dict><key>phrase</key><string>イタリア半島</string><key>shortcut</key><string>いたりあはんとう</string></dict>
@@ -1164,14 +1164,14 @@
 	<dict><key>phrase</key><string>ペロポネソス半島</string><key>shortcut</key><string>ぺろぽねそすはんとう</string></dict>
 	<dict><key>phrase</key><string>下北半島</string><key>shortcut</key><string>しもきたはんとう</string></dict>
 
-    <!-- 諸島 -->
+	<!-- 諸島 -->
 	<dict><key>phrase</key><string>マデラ諸島</string><key>shortcut</key><string>までらしょとう</string></dict>
 	<dict><key>phrase</key><string>アソーレス諸島</string><key>shortcut</key><string>あそーれすしょとう</string></dict>
 	<dict><key>phrase</key><string>カナリア諸島</string><key>shortcut</key><string>かなりあしょとう</string></dict>
 	<dict><key>phrase</key><string>キクラデス諸島</string><key>shortcut</key><string>きくらですしょとう</string></dict>
 	<dict><key>phrase</key><string>バレアレス諸島</string><key>shortcut</key><string>ばれあれすしょとう</string></dict>
 
-    <!-- 島 -->
+	<!-- 島 -->
 	<dict><key>phrase</key><string>ウスティカ島</string><key>shortcut</key><string>うすてぃかとう</string></dict>
 	<dict><key>phrase</key><string>コルシカ島</string><key>shortcut</key><string>こるしかしま</string></dict>
 	<dict><key>phrase</key><string>マヨルカ島</string><key>shortcut</key><string>まよるかとう</string></dict>
@@ -1181,7 +1181,7 @@
 	<dict><key>phrase</key><string>南島</string><key>shortcut</key><string>みなみじま</string></dict>
 	<dict><key>phrase</key><string>北島</string><key>shortcut</key><string>きたじま</string></dict>
 
-    <!-- 湾 -->
+	<!-- 湾 -->
 	<dict><key>phrase</key><string>サンフランシスコ湾</string><key>shortcut</key><string>さんふらんしすこわん</string></dict>
 	<dict><key>phrase</key><string>サン・パブロ湾</string><key>shortcut</key><string>さんぱぶろわん</string></dict>
 	<dict><key>phrase</key><string>タスマン湾</string><key>shortcut</key><string>たすまんわん</string></dict>
@@ -1276,7 +1276,6 @@
 	<dict><key>phrase</key><string>Regional Wines</string><key>shortcut</key><string>りーじょなるわいん</string></dict>
 
 	<!-- ワイン用葡萄品種名 -->
-	<dict><key>phrase</key><string>セパージュ</string><key>shortcut</key><string>せぱーじゅ</string></dict>
 	<dict><key>phrase</key><string>5BB</string><key>shortcut</key><string>ごびーびー</string></dict>
 	<dict><key>phrase</key><string>Agiorgitiko</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
 	<dict><key>phrase</key><string>Aglianico</string><key>shortcut</key><string>ありあにこ</string></dict>
@@ -1313,6 +1312,7 @@
 	<dict><key>phrase</key><string>Corvina</string><key>shortcut</key><string>こるゔぃーな</string></dict>
 	<dict><key>phrase</key><string>Côt</string><key>shortcut</key><string>こー</string></dict>
 	<dict><key>phrase</key><string>Côt</string><key>shortcut</key><string>こっと</string></dict>
+	<dict><key>phrase</key><string>di Soave</string><key>shortcut</key><string>でぃそあゔぇ</string></dict>
 	<dict><key>phrase</key><string>Dolcetto</string><key>shortcut</key><string>どるちぇっと</string></dict>
 	<dict><key>phrase</key><string>Dornfelder</string><key>shortcut</key><string>どるんふぇるだー</string></dict>
 	<dict><key>phrase</key><string>Duras</string><key>shortcut</key><string>でゅらす</string></dict>
@@ -1360,7 +1360,9 @@
 	<dict><key>phrase</key><string>Nebbiolo</string><key>shortcut</key><string>ねっびおーろ</string></dict>
 	<dict><key>phrase</key><string>Nero d'Avola</string><key>shortcut</key><string>ねーろだゔぉら</string></dict>
 	<dict><key>phrase</key><string>Neuburger</string><key>shortcut</key><string>のいぶるがー</string></dict>
+	<dict><key>phrase</key><string>Neuburger</string><key>shortcut</key><string>のいぶるがー</string></dict>
 	<dict><key>phrase</key><string>Négrette</string><key>shortcut</key><string>ねぐれっと</string></dict>
+	<dict><key>phrase</key><string>Nosiola</string><key>shortcut</key><string>のじおーら</string></dict>
 	<dict><key>phrase</key><string>Nosiola</string><key>shortcut</key><string>のじおーら</string></dict>
 	<dict><key>phrase</key><string>Pais</string><key>shortcut</key><string>ぱいす</string></dict>
 	<dict><key>phrase</key><string>Palomino</string><key>shortcut</key><string>ぱろみの</string></dict>
@@ -1378,11 +1380,14 @@
 	<dict><key>phrase</key><string>Poulsard</string><key>shortcut</key><string>ぷーるさーる</string></dict>
 	<dict><key>phrase</key><string>Primitivo</string><key>shortcut</key><string>ぷりみてぃーゔぉ</string></dict>
 	<dict><key>phrase</key><string>Ribolla Gialla</string><key>shortcut</key><string>りぼっらじゃっら</string></dict>
+	<dict><key>phrase</key><string>Riesling Lion</string><key>shortcut</key><string>りーすりんぐらいおん</string></dict>
 	<dict><key>phrase</key><string>Riesling</string><key>shortcut</key><string>りーすりんぐ</string></dict>
 	<dict><key>phrase</key><string>Rkatsiteli</string><key>shortcut</key><string>るかつぃてり</string></dict>
 	<dict><key>phrase</key><string>Roditis</string><key>shortcut</key><string>ろでぃてぃす</string></dict>
 	<dict><key>phrase</key><string>Rotgipfler</string><key>shortcut</key><string>ろーとぎぷふらー</string></dict>
+	<dict><key>phrase</key><string>Rotgipfler</string><key>shortcut</key><string>ろーとぎぷふらー</string></dict>
 	<dict><key>phrase</key><string>Roussanne</string><key>shortcut</key><string>ろーざんぬ</string></dict>
+	<dict><key>phrase</key><string>Roussanne・Marsanne</string><key>shortcut</key><string>ろーざんぬまるさね</string></dict>
 	<dict><key>phrase</key><string>Saint-Emilion des Charentes</string><key>shortcut</key><string>さんてみりおんでしゃらんと</string></dict>
 	<dict><key>phrase</key><string>Sangiovese</string><key>shortcut</key><string>さんじょゔぇーぜ</string></dict>
 	<dict><key>phrase</key><string>Saperavi</string><key>shortcut</key><string>さぺらゔぃ</string></dict>
@@ -1400,6 +1405,7 @@
 	<dict><key>phrase</key><string>Silvaner</string><key>shortcut</key><string>じるゔぁーなー</string></dict>
 	<dict><key>phrase</key><string>Sémillon</string><key>shortcut</key><string>せみよん</string></dict>
 	<dict><key>phrase</key><string>Spanna</string><key>shortcut</key><string>すぱんな</string></dict>
+	<dict><key>phrase</key><string>Spanna</string><key>shortcut</key><string>すぱんな</string></dict>
 	<dict><key>phrase</key><string>Spätburgunder</string><key>shortcut</key><string>しゅぺーとぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>Síria</string><key>shortcut</key><string>しりあ</string></dict>
 	<dict><key>phrase</key><string>Syrah</string><key>shortcut</key><string>しらー</string></dict>
@@ -1409,13 +1415,16 @@
 	<dict><key>phrase</key><string>Tinta Barroca</string><key>shortcut</key><string>てぃんたばろっか</string></dict>
 	<dict><key>phrase</key><string>Tinta Roriz</string><key>shortcut</key><string>てぃんたろりす</string></dict>
 	<dict><key>phrase</key><string>Torrontés</string><key>shortcut</key><string>とろんてす</string></dict>
+	<dict><key>phrase</key><string>Torrontés</string><key>shortcut</key><string>とろんてす</string></dict>
 	<dict><key>phrase</key><string>Touriga Franca</string><key>shortcut</key><string>とうりがふらんか</string></dict>
 	<dict><key>phrase</key><string>Touriga Nacional</string><key>shortcut</key><string>とうりがなしょなる</string></dict>
 	<dict><key>phrase</key><string>Trebbiano</string><key>shortcut</key><string>とれっびあーの</string></dict>
 	<dict><key>phrase</key><string>Tribidrag</string><key>shortcut</key><string>とりびどらぐ</string></dict>
+	<dict><key>phrase</key><string>Tribidrag</string><key>shortcut</key><string>とりびどらぐ</string></dict>
 	<dict><key>phrase</key><string>Trollinger</string><key>shortcut</key><string>とろりんがー</string></dict>
 	<dict><key>phrase</key><string>Trousseau</string><key>shortcut</key><string>とぅるそー</string></dict>
 	<dict><key>phrase</key><string>Verdejo</string><key>shortcut</key><string>べるでほ</string></dict>
+	<dict><key>phrase</key><string>Verdelho</string><key>shortcut</key><string>ゔぇるでーりょ</string></dict>
 	<dict><key>phrase</key><string>Verdelho</string><key>shortcut</key><string>ゔぇるでーりょ</string></dict>
 	<dict><key>phrase</key><string>Verdicchio</string><key>shortcut</key><string>ゔぇるでっきお</string></dict>
 	<dict><key>phrase</key><string>Vermentino</string><key>shortcut</key><string>ゔぇるめんてぃーの</string></dict>
@@ -1427,8 +1436,13 @@
 	<dict><key>phrase</key><string>Zinfandel</string><key>shortcut</key><string>じんふぁんでる</string></dict>
 	<dict><key>phrase</key><string>Zweigelt</string><key>shortcut</key><string>つゔぁいげると</string></dict>
 	<dict><key>phrase</key><string>アイレン</string><key>shortcut</key><string>あいれん</string></dict>
+	<dict><key>phrase</key><string>アギオルギティコ</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
 	<dict><key>phrase</key><string>アタランギ・クローン</string><key>shortcut</key><string>あたらんぎくろーん</string></dict>
 	<dict><key>phrase</key><string>アリアニコ</string><key>shortcut</key><string>ありあにこ</string></dict>
+	<dict><key>phrase</key><string>アリゴテ</string><key>shortcut</key><string>ありごて</string></dict>
+	<dict><key>phrase</key><string>アルヴァリーニョ</string><key>shortcut</key><string>あるゔぁりーにょ</string></dict>
+	<dict><key>phrase</key><string>アルバリーニョ</string><key>shortcut</key><string>あるばりーにょ</string></dict>
+	<dict><key>phrase</key><string>アルバローラ</string><key>shortcut</key><string>あるばろーら</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇら</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ系</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇらけい</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ種</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇらしゅ</string></dict>
@@ -1446,7 +1460,15 @@
 	<dict><key>phrase</key><string>ヴェーデンスヴィル・クローン</string><key>shortcut</key><string>ゔぇーでんすゔぃるくろーん</string></dict>
 	<dict><key>phrase</key><string>ヴェルメンティーノ</string><key>shortcut</key><string>ゔぇるめんてぃーの</string></dict>
 	<dict><key>phrase</key><string>ヴォルティス</string><key>shortcut</key><string>ゔぉるてぃす</string></dict>
+	<dict><key>phrase</key><string>オーセロワ</string><key>shortcut</key><string>おーせろわ</string></dict>
+	<dict><key>phrase</key><string>カベルネ・ソーヴィニヨン</string><key>shortcut</key><string>かべるねそーゔぃによん</string></dict>
+	<dict><key>phrase</key><string>カベルネ・フラン</string><key>shortcut</key><string>かべるねふらん</string></dict>
+	<dict><key>phrase</key><string>ガメイ</string><key>shortcut</key><string>がめい</string></dict>
 	<dict><key>phrase</key><string>カリニェナ</string><key>shortcut</key><string>かりにぇな</string></dict>
+	<dict><key>phrase</key><string>カリニェナ</string><key>shortcut</key><string>かりにぇな</string></dict>
+	<dict><key>phrase</key><string>カリニャン</string><key>shortcut</key><string>かりにゃん</string></dict>
+	<dict><key>phrase</key><string>ガルガネガ</string><key>shortcut</key><string>がるがねが</string></dict>
+	<dict><key>phrase</key><string>ガルナッチャ</string><key>shortcut</key><string>がるなっちゃ</string></dict>
 	<dict><key>phrase</key><string>キアヴェンナスカ</string><key>shortcut</key><string>きあゔぇんなすか</string></dict>
 	<dict><key>phrase</key><string>クリオジャ・チカ</string><key>shortcut</key><string>くりおじゃちか</string></dict>
 	<dict><key>phrase</key><string>グルナッシュ</string><key>shortcut</key><string>ぐるなっしゅ</string></dict>
@@ -1458,6 +1480,7 @@
 	<dict><key>phrase</key><string>シャルドネ</string><key>shortcut</key><string>しゃるどね</string></dict>
 	<dict><key>phrase</key><string>シラー</string><key>shortcut</key><string>しらー</string></dict>
 	<dict><key>phrase</key><string>シラーズ</string><key>shortcut</key><string>しらーず</string></dict>
+	<dict><key>phrase</key><string>セパージュ</string><key>shortcut</key><string>せぱーじゅ</string></dict>
 	<dict><key>phrase</key><string>ソーヴィニヨン・ブラン</string><key>shortcut</key><string>そーゔぃによんぶらん</string></dict>
 	<dict><key>phrase</key><string>タイ</string><key>shortcut</key><string>たい</string></dict>
 	<dict><key>phrase</key><string>タナ</string><key>shortcut</key><string>たな</string></dict>
@@ -1523,7 +1546,7 @@
 	<dict><key>phrase</key><string>San José</string><key>shortcut</key><string>さんじょせ</string></dict>
 
 	<!-- 人名 -->
-    <dict><key>phrase</key><string>詫間憲久</string><key>shortcut</key><string>たくまのりひさ</string></dict>
+	<dict><key>phrase</key><string>詫間憲久</string><key>shortcut</key><string>たくまのりひさ</string></dict>
  	<dict><key>phrase</key><string>シャプタル</string><key>shortcut</key><string>しゃぷたる</string></dict>
  	<dict><key>phrase</key><string>ジャン・アントワーヌ・シャプタル</string><key>shortcut</key><string>じゃんあんとわーぬしゃぷたる</string></dict>
  	<dict><key>phrase</key><string>ヨハン</string><key>shortcut</key><string>よはん</string></dict>
@@ -2688,6 +2711,8 @@
 	<dict><key>phrase</key><string>ヴーヴ・クリコ</string><key>shortcut</key><string>ゔーゔくりこ</string></dict>
 	<dict><key>phrase</key><string>モエ・エ・シャンドン</string><key>shortcut</key><string>もええしゃんどん</string></dict>
 	<dict><key>phrase</key><string>クリュグ</string><key>shortcut</key><string>くりゅぐ</string></dict>
+	<dict><key>phrase</key><string>赤玉ポートワイン</string><key>shortcut</key><string>あかだまぽーとわいん</string></dict>
+
 
 	<!-- 団体 -->
 	<dict><key>phrase</key><string>クロスターノイブルク栽培醸造学校</string><key>shortcut</key><string>くろすたーのいぶるくさいばいじょうぞうがっこう</string></dict>
@@ -2723,6 +2748,11 @@
 	<dict><key>phrase</key><string>二酸化硫黄</string><key>shortcut</key><string>にさんかいおう</string></dict>
 	<dict><key>phrase</key><string>亜硫酸</string><key>shortcut</key><string>ありゅうさん</string></dict>
 	<dict><key>phrase</key><string>亜硫酸塩</string><key>shortcut</key><string>ありゅうさんえん</string></dict>
+	<dict><key>phrase</key><string>酢酸</string><key>shortcut</key><string>さくさん</string></dict>
+	<dict><key>phrase</key><string>酢酸イソアミル</string><key>shortcut</key><string>さくさんいそあみる</string></dict>
+	<dict><key>phrase</key><string>エチルアルコール</string><key>shortcut</key><string>えちるあるこーる</string></dict>
+	<dict><key>phrase</key><string>カプロン酸エチル</string><key>shortcut</key><string>かぷろんさんえちる</string></dict>
+	<dict><key>phrase</key><string>メチル・アルコール</string><key>shortcut</key><string>めちるあるこーる</string></dict>
 
 	<!-- ワインについて補足 -->
 	<dict><key>phrase</key><string>Chilled</string><key>shortcut</key><string>ちるど</string></dict>
@@ -2764,6 +2794,8 @@
 	<dict><key>phrase</key><string>フィロキセラ禍</string><key>shortcut</key><string>ふぃろきせらか</string></dict>
 	<dict><key>phrase</key><string>ぶどう</string><key>shortcut</key><string>ぶどう</string></dict>
 	<dict><key>phrase</key><string>ぶどう品種</string><key>shortcut</key><string>ぶどうひんしゅ</string></dict>
+	<dict><key>phrase</key><string>黒ぶどう</string><key>shortcut</key><string>くろぶどう</string></dict>
+	<dict><key>phrase</key><string>白ぶどう</string><key>shortcut</key><string>しろぶどう</string></dict>
 	<dict><key>phrase</key><string>プリミティーヴォ</string><key>shortcut</key><string>ぷりみてぃーゔぉ</string></dict>
 	<dict><key>phrase</key><string>遅摘み</string><key>shortcut</key><string>おそづみ</string></dict>
 	<dict><key>phrase</key><string>勘解由</string><key>shortcut</key><string>かげゆ</string></dict>
