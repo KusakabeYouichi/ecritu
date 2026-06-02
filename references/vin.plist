@@ -1219,7 +1219,8 @@
 	<dict><key>phrase</key><string>黒海</string><key>shortcut</key><string>こっかい</string></dict>
 	<dict><key>phrase</key><string>地中海</string><key>shortcut</key><string>ちちゅうかい</string></dict>
 
-	<!-- 格付けや分類 -->
+	<!-- 格付けや分類、ワインのタイプ -->
+	<dict><key>phrase</key><string>エプモーソ</string><key>shortcut</key><string>えぷもーそ</string></dict>
 	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>じーあい</string></dict>
 	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>じーあいしー</string></dict>
 	<dict><key>phrase</key><string>G.I.制度</string><key>shortcut</key><string>じーあいせいど</string></dict>
@@ -2679,6 +2680,15 @@
 	<dict><key>phrase</key><string>羊乳製</string><key>shortcut</key><string>ようにゅうせい</string></dict>
 	<dict><key>phrase</key><string>羊乳製チーズ</string><key>shortcut</key><string>ようにゅうせいちーず</string></dict>
 
+	<!-- 銘柄 -->
+	<dict><key>phrase</key><string>テタンジェ</string><key>shortcut</key><string>てたんじぇ</string></dict>
+	<dict><key>phrase</key><string>ボランジェ</string><key>shortcut</key><string>ぼらんじぇ</string></dict>
+	<dict><key>phrase</key><string>ポール・ロジェ</string><key>shortcut</key><string>ぽーるろじぇ</string></dict>
+	<dict><key>phrase</key><string>ドン・ペリニヨン</string><key>shortcut</key><string>どんぺりによん</string></dict>
+	<dict><key>phrase</key><string>ヴーヴ・クリコ</string><key>shortcut</key><string>ゔーゔくりこ</string></dict>
+	<dict><key>phrase</key><string>モエ・エ・シャンドン</string><key>shortcut</key><string>もええしゃんどん</string></dict>
+	<dict><key>phrase</key><string>クリュグ</string><key>shortcut</key><string>くりゅぐ</string></dict>
+
 	<!-- 団体 -->
 	<dict><key>phrase</key><string>クロスターノイブルク栽培醸造学校</string><key>shortcut</key><string>くろすたーのいぶるくさいばいじょうぞうがっこう</string></dict>
 	<dict><key>phrase</key><string>クロスター・エーバーバッハ醸造所</string><key>shortcut</key><string>くろすたーえーばーばっはじょうぞうしょ</string></dict>
@@ -2767,6 +2777,7 @@
 	<dict><key>phrase</key><string>新梢</string><key>shortcut</key><string>しんしょう</string></dict>
 
 	<!-- 料理・食材 -->
+	<dict><key>phrase</key><string>アスペルジュ</string><key>shortcut</key><string>あすぺるじゅ</string></dict>
 	<dict><key>phrase</key><string>川マス</string><key>shortcut</key><string>かわます</string></dict>
 	<dict><key>phrase</key><string>カワカマス</string><key>shortcut</key><string>かわかます</string></dict>
 	<dict><key>phrase</key><string>山鶉</string><key>shortcut</key><string>やまうずら</string></dict>
