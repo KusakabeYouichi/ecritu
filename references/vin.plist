@@ -2820,6 +2820,7 @@
 	<dict><key>phrase</key><string>グァンチャーレ</string><key>shortcut</key><string>ぐぁんちゃーれ</string></dict>
 	<dict><key>phrase</key><string>パンチェッタ</string><key>shortcut</key><string>ぱんちぇった</string></dict>
 	<dict><key>phrase</key><string>タブレ</string><key>shortcut</key><string>たぶれ</string></dict>
+	<dict><key>phrase</key><string>手長エビ</string><key>shortcut</key><string>てながえび</string></dict>
 
 	<!-- カクテル -->
 	<dict><key>phrase</key><string>モヒート</string><key>shortcut</key><string>もひーと</string></dict>
