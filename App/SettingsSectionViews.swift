@@ -581,6 +581,21 @@ struct ContactCandidateDisplaySettingsSection: View {
     }
 }
 
+struct UserDictionaryCandidateDisplaySettingsSection: View {
+    @Binding var selection: UserDictionaryCandidateDisplayModeOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "ユーザ辞書候補",
+            pickerTitle: "ユーザ辞書候補",
+            selection: $selection,
+            options: Array(UserDictionaryCandidateDisplayModeOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "iOSの[設定]-[一般]-[キーボード]-[ユーザ辞書]に登録された候補を使うかどうかを切り替えます。"
+        )
+    }
+}
+
 struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 

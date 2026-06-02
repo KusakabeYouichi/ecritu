@@ -118,6 +118,7 @@ final class KeyboardViewController: UIInputViewController {
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
         static let landscapeLatinSuggestionMode = "landscapeLatinSuggestionMode"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+        static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
         static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
@@ -696,7 +697,13 @@ final class KeyboardViewController: UIInputViewController {
             contactCandidates = []
         }
 
-        let lexiconCandidates = supplementaryLexiconCandidatesByReading[normalizedReading] ?? []
+        let lexiconCandidates: [String]
+
+        if currentUserDictionaryCandidateDisplayModeFromSharedDefaults().usesUserDictionaryCandidates {
+            lexiconCandidates = supplementaryLexiconCandidatesByReading[normalizedReading] ?? []
+        } else {
+            lexiconCandidates = []
+        }
 
         if contactCandidates.isEmpty {
             return lexiconCandidates
@@ -2397,6 +2404,18 @@ final class KeyboardViewController: UIInputViewController {
         return ContactCandidateDisplayMode(rawValue: rawValue) ?? .namesOnly
     }
 
+    private func currentUserDictionaryCandidateDisplayMode(
+        from defaults: UserDefaults?
+    ) -> UserDictionaryCandidateDisplayMode {
+        let rawValue = sharedStringValue(
+            from: defaults,
+            key: SharedDefaultsKeys.userDictionaryCandidateDisplayMode,
+            fallback: UserDictionaryCandidateDisplayMode.on.rawValue
+        )
+
+        return UserDictionaryCandidateDisplayMode(rawValue: rawValue) ?? .on
+    }
+
     private func currentDelimiterAutoCommitCandidateIndex(from defaults: UserDefaults?) -> Int {
         let rawValue = sharedStringValue(
             from: defaults,
@@ -2702,6 +2721,12 @@ final class KeyboardViewController: UIInputViewController {
 
     func currentKanaKanjiCandidateSourceModeFromSharedDefaults() -> KanaKanjiCandidateSourceMode {
         currentKanaKanjiCandidateSourceMode(
+            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        )
+    }
+
+    private func currentUserDictionaryCandidateDisplayModeFromSharedDefaults() -> UserDictionaryCandidateDisplayMode {
+        currentUserDictionaryCandidateDisplayMode(
             from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
         )
     }

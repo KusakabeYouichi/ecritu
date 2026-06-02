@@ -54,6 +54,7 @@ enum SettingsKeys {
     static let kanaKanjiInitialSuppressionDictionaryAppliedSignature = "kanaKanjiInitialSuppressionDictionaryAppliedSignature"
     static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+    static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
     static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
@@ -192,6 +193,22 @@ enum KanaKanjiCandidateSourceModeOption: String, CaseIterable, Identifiable {
         case .normalise: return "normalisé"
         case .surface: return "surface"
         case .lesDeux: return "les deux"
+        }
+    }
+}
+
+enum UserDictionaryCandidateDisplayModeOption: String, CaseIterable, Identifiable {
+    case off
+    case on
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .off:
+            return "使わない"
+        case .on:
+            return "使う"
         }
     }
 }

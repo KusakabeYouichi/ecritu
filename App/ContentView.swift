@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260602181930"
+    private static let editionUpdatedAtRaw: String = "20260602195718"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -176,6 +176,12 @@ struct ContentView: View {
     private var kanaKanjiCandidateSourceModeRawValue: String = KanaKanjiCandidateSourceModeOption.surface.rawValue
 
     @AppStorage(
+        SettingsKeys.userDictionaryCandidateDisplayMode,
+        store: Self.sharedDefaults
+    )
+    private var userDictionaryCandidateDisplayModeRawValue: String = UserDictionaryCandidateDisplayModeOption.on.rawValue
+
+    @AppStorage(
         SettingsKeys.contactCandidateDisplayMode,
         store: Self.sharedDefaults
     )
@@ -257,6 +263,7 @@ struct ContentView: View {
             kanaModeSwitcherUpFlickActionRawValue,
             delimiterAutoCommitCandidateRawValue,
             kanaKanjiCandidateSourceModeRawValue,
+            userDictionaryCandidateDisplayModeRawValue,
             contactCandidateDisplayModeRawValue
         ]
             .joined(separator: "|")
@@ -364,6 +371,12 @@ struct ContentView: View {
     private var contactCandidateDisplayModeSelection: Binding<ContactCandidateDisplayModeOption> {
         rawValueSelection(from: contactCandidateDisplayModeRawValue, default: .namesOnly) {
             contactCandidateDisplayModeRawValue = $0
+        }
+    }
+
+    private var userDictionaryCandidateDisplayModeSelection: Binding<UserDictionaryCandidateDisplayModeOption> {
+        rawValueSelection(from: userDictionaryCandidateDisplayModeRawValue, default: .on) {
+            userDictionaryCandidateDisplayModeRawValue = $0
         }
     }
 
@@ -2061,6 +2074,10 @@ struct ContentView: View {
 
                         ContactCandidateDisplaySettingsSection(
                             selection: contactCandidateDisplayModeSelection
+                        )
+
+                        UserDictionaryCandidateDisplaySettingsSection(
+                            selection: userDictionaryCandidateDisplayModeSelection
                         )
 
                         UserDictionarySettingsSection(
