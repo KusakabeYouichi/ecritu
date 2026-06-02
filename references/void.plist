@@ -222,5 +222,7 @@
 	<dict><key>phrase</key><string>都市伝説</string><key>shortcut</key><string>としでんせつ</string></dict>
 	<dict><key>phrase</key><string>占守</string><key>shortcut</key><string>しゅむしゅ</string></dict>
 	<dict><key>phrase</key><string>占守島</string><key>shortcut</key><string>しゅむしゅとう</string></dict>
+	<dict><key>phrase</key><string>人身事故</string><key>shortcut</key><string>じんしんじこ</string></dict>
+	<dict><key>phrase</key><string>ジャングリア</string><key>shortcut</key><string>じゃんぐりあ</string></dict>
 </array>
 </plist>
