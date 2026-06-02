@@ -740,6 +740,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionGodanNegativePastConditionalIsDerivedFromBaseVerbCandidate() {
+        converter.learn(reading: "とどく", candidate: "届く")
+
+        let candidates = converter.candidates(
+            for: "とどかなかったら",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("届かなかったら"),
+            "candidates=\(candidates)"
+        )
+    }
+
     func testRegressionAdditionalInflectionFormsAreDerivedWithoutVocabularyAppend() {
         let cases: [(reading: String, expected: String)] = [
             ("かわねば", "買わねば"),
