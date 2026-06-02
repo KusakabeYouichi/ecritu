@@ -625,6 +625,57 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(candidates.first, "万円", "candidates=\(candidates)")
     }
 
+    func testRegressionNumericCounterCompoundFallbackDerivesSuuBai() {
+        let candidates = converter.candidates(
+            for: "すうばい",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(candidates.contains("数倍"), "candidates=\(candidates)")
+    }
+
+    func testRegressionNumericCounterCompoundFallbackDerivesNanPatsu() {
+        let candidates = converter.candidates(
+            for: "なんぱつ",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(candidates.contains("何発"), "candidates=\(candidates)")
+    }
+
+    func testRegressionNumericCounterCompoundFallbackDerivesHonCounterByNumberRule() {
+        let cases: [(reading: String, expected: String)] = [
+            ("いっぽん", "一本"),
+            ("にほん", "二本"),
+            ("さんぼん", "三本"),
+            ("よんほん", "四本"),
+            ("ごほん", "五本"),
+            ("ろっぽん", "六本"),
+            ("ななほん", "七本"),
+            ("はっぽん", "八本"),
+            ("きゅうほん", "九本"),
+            ("じっぽん", "十本"),
+            ("じゅっぽん", "十本"),
+            ("なんぼん", "何本"),
+            ("すうほん", "数本")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionOrdinalMeFallbackPrefersKanjiMeAfterCommittedNumberInput() {
         let candidates = converter.candidates(
             for: "10ぎょうめ",

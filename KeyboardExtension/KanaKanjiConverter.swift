@@ -14,12 +14,55 @@ final class KanaKanjiConverter {
     private static let kuruKanjiCandidateBoost = 1450
     private static let godanImperativeCandidateBoost = 320
     private static let numericUnitFallbackCandidateBoost = 320
+    private static let numericCounterCompoundCandidateBoost = 360
 
     private static let numericUnitFallbackCandidatesByReading: [String: [String]] = [
         "せんえん": ["千円"],
         "まんえん": ["万円"],
         "おくえん": ["億円"],
         "ちょうえん": ["兆円"]
+    ]
+
+    private static let numericCounterPrefixCandidatesByReading: [String: [String]] = [
+        "いっ": ["一"],
+        "きゅう": ["九"],
+        "ご": ["五"],
+        "さん": ["三"],
+        "じっ": ["十"],
+        "じゅっ": ["十"],
+        "に": ["二"],
+        "なな": ["七"],
+        "なん": ["何"],
+        "はっ": ["八"],
+        "よん": ["四"],
+        "ろっ": ["六"],
+        "すう": ["数"]
+    ]
+
+    private static let numericCounterSuffixCandidatesByReading: [String: [String]] = [
+        "ほん": ["本"],
+        "ぼん": ["本"],
+        "ぽん": ["本"],
+        "はい": ["倍"],
+        "ばい": ["倍"],
+        "はつ": ["発"],
+        "ぱつ": ["発"]
+    ]
+
+    private static let numericCounterAllowedSuffixReadingsByPrefixReading: [String: Set<String>] = [
+        "いっ": ["ぽん"],
+        "きゅう": ["ほん"],
+        "ご": ["ほん"],
+        "さん": ["ぼん"],
+        "じっ": ["ぽん"],
+        "じゅっ": ["ぽん"],
+        "に": ["ほん"],
+        "なな": ["ほん"],
+        "なん": ["はい", "ばい", "はつ", "ぱつ", "ぼん"],
+        "はっ": ["ぽん"],
+        "よん": ["ほん"],
+        "ろっ": ["ぽん"],
+        "すう": ["はい", "ばい", "ほん"]
     ]
 
     private static func postfixOutputSuffixVariants(for suffix: String) -> [String] {
@@ -196,9 +239,23 @@ final class KanaKanjiConverter {
             limit: limit * 2
         )
 
+        let numericCounterCompoundFallback = numericCounterCompoundCandidates(
+            for: normalizedReading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode,
+            limit: limit * 2
+        )
+
         addCandidates(
             numericUnitFallback,
             baseScore: 1070,
+            to: &scores
+        )
+
+        addCandidates(
+            numericCounterCompoundFallback,
+            baseScore: Self.numericCounterCompoundCandidateBoost,
             to: &scores
         )
 
@@ -789,6 +846,75 @@ final class KanaKanjiConverter {
         for key in lookupKeys {
             if let fallbackCandidates = Self.numericUnitFallbackCandidatesByReading[key] {
                 derived.append(contentsOf: fallbackCandidates)
+            }
+        }
+
+        return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func numericCounterCompoundCandidates(
+        for reading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        limit: Int
+    ) -> [String] {
+        guard limit > 0 else {
+            return []
+        }
+
+        var derived: [String] = []
+
+        for (prefixReading, allowedPrefixes) in Self.numericCounterPrefixCandidatesByReading {
+            guard reading.hasPrefix(prefixReading) else {
+                continue
+            }
+
+            let suffixReading = String(reading.dropFirst(prefixReading.count))
+
+            guard !suffixReading.isEmpty else {
+                continue
+            }
+
+            if let allowedSuffixReadings = Self.numericCounterAllowedSuffixReadingsByPrefixReading[prefixReading],
+                !allowedSuffixReadings.contains(suffixReading) {
+                continue
+            }
+
+            guard let allowedSuffixes = Self.numericCounterSuffixCandidatesByReading[suffixReading] else {
+                continue
+            }
+
+            let prefixCandidates = uniqueCandidates(
+                from: candidatesForReading(
+                    prefixReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            ).filter { allowedPrefixes.contains($0) }
+
+            let resolvedPrefixCandidates = prefixCandidates.isEmpty
+                ? allowedPrefixes
+                : prefixCandidates
+
+            let suffixCandidates = uniqueCandidates(
+                from: candidatesForReading(
+                    suffixReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            ).filter { allowedSuffixes.contains($0) }
+
+            let resolvedSuffixCandidates = suffixCandidates.isEmpty
+                ? allowedSuffixes
+                : suffixCandidates
+
+            for prefixCandidate in resolvedPrefixCandidates {
+                for suffixCandidate in resolvedSuffixCandidates {
+                    derived.append(prefixCandidate + suffixCandidate)
+                }
             }
         }
 
