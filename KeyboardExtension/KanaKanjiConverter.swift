@@ -69,6 +69,10 @@ final class KanaKanjiConverter {
         "ねおち"
     ]
 
+    private static let godanRuKanjiSuffixOverrides: [String] = [
+        "入る"
+    ]
+
     private static func postfixOutputSuffixVariants(for suffix: String) -> [String] {
         var variants = [suffix]
 
@@ -1091,6 +1095,10 @@ final class KanaKanjiConverter {
 
         if candidate.hasSuffix("来る") || candidate.hasSuffix("くる") {
             return InflectionClass.kuru
+        }
+
+        if Self.godanRuKanjiSuffixOverrides.contains(where: { candidate.hasSuffix($0) }) {
+            return InflectionClass.godanRu
         }
 
         if baseReading.hasSuffix("る") && candidate.hasSuffix("る") {
