@@ -691,6 +691,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionGodanTagaruFormsAreDerivedFromBaseVerbCandidate() {
+        converter.learn(reading: "よぶ", candidate: "呼ぶ")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("よびたがる", "呼びたがる"),
+            ("よびたがって", "呼びたがって"),
+            ("よびたがった", "呼びたがった"),
+            ("よびたがらない", "呼びたがらない")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionAdditionalInflectionFormsAreDerivedWithoutVocabularyAppend() {
         let cases: [(reading: String, expected: String)] = [
             ("かわねば", "買わねば"),

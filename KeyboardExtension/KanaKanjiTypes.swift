@@ -361,6 +361,23 @@ extension KanaKanjiConverter {
         ]
     }
 
+    static func taiGaruInflectionSuffixes(for iForm: String) -> [String] {
+        guard !iForm.isEmpty else {
+            return []
+        }
+
+        return [
+            iForm + "たがる",
+            iForm + "たがった",
+            iForm + "たがって",
+            iForm + "たがらない",
+            iForm + "たがらなかった",
+            iForm + "たがります",
+            iForm + "たがりました",
+            iForm + "たがりません"
+        ]
+    }
+
     static func taRiSuruInflectionSuffixes(for taForm: String) -> [String] {
         guard !taForm.isEmpty else {
             return []
@@ -451,6 +468,7 @@ extension KanaKanjiConverter {
             ]
 
             suffixes.append(contentsOf: KanaKanjiConverter.taRiSuruInflectionSuffixes(for: pattern.taForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.taiGaruInflectionSuffixes(for: pattern.iForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: passiveTeForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: pattern.teForm))
@@ -836,7 +854,7 @@ extension KanaKanjiConverter {
         "こられ", "され", "られ",
         "くありませんでした", "くなかったです", "くないです", "かったです", "くありません",
         "すぎなかった", "すぎました", "すぎません", "にくくない", "すぎない", "すぎます", "にくかった",
-        "させない", "させる", "せない", "せる", "やすくない", "たくない", "なかった", "やすかった", "たかった", "くなかった",
+        "させない", "させる", "せない", "せる", "やすくない", "たがらなかった", "たがりました", "たがりません", "たくない", "なかった", "やすかった", "たかった", "くなかった",
         "すぎて", "すぎれば", "すぎた", "すぎる", "にくい", "にくく", "いです", "すぎ",
         "していなかった", "きていなかった", "でいなかった", "ていなかった", "してなかった", "きてなかった", "でなかった", "てなかった",
         "していません", "きていません", "でいません", "ていません", "していました", "きていました", "でいました", "ていました",
@@ -858,7 +876,8 @@ extension KanaKanjiConverter {
         "している", "きている", "でいる", "ている", "してる", "きてる", "でる", "てる",
         "きました", "しました", "きません", "しません", "ました", "ます",
         "なら", "から",
-        "くない", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たい", "れば", "ねば", "ず",
+        "くない", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たがらない", "たがります", "たい", "れば", "ねば", "ず",
+        "たがった", "たがって", "たがる",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
         "ない", "きて", "きた", "くて", "て", "た"
     ]
