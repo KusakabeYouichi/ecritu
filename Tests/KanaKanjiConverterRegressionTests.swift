@@ -501,6 +501,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionPostfixNadoChainsAreDerivedFromBaseCandidates() {
+        converter.learn(reading: "かび", candidate: "カビ")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("かびを", "カビを"),
+            ("かびなど", "カビなど"),
+            ("かびなどを", "カビなどを")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionVerbNikuiFormsAreDerivedAcrossVerbClasses() {
         converter.learn(reading: "かく", candidate: "書く")
         converter.learn(reading: "たべる", candidate: "食べる")
