@@ -153,5 +153,7 @@
 	<dict><key>phrase</key><string>Python</string><key>shortcut</key><string>ぱいそん</string></dict>
 	<dict><key>phrase</key><string>チェックサム</string><key>shortcut</key><string>ちぇっくさむ</string></dict>
 	<dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
+	<dict><key>phrase</key><string>IIJmio</string><key>shortcut</key><string>あいあいじぇいみお</string></dict>
+	<dict><key>phrase</key><string>IIJ</string><key>shortcut</key><string>あいあいじぇい</string></dict>
 </array>
 </plist>

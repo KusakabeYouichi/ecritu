@@ -204,5 +204,14 @@
 	<dict><key>phrase</key><string>고추장</string><key>shortcut</key><string>こちゅじゃん</string></dict>
 	<dict><key>phrase</key><string>モクテル</string><key>shortcut</key><string>もくてる</string></dict>
 	<dict><key>phrase</key><string>ノンアル</string><key>shortcut</key><string>のんある</string></dict>
+
+	<dict><key>phrase</key><string>何箇所</string><key>shortcut</key><string>なんかしょ</string></dict>
+	<dict><key>phrase</key><string>扁桃体</string><key>shortcut</key><string>へんとうたい</string></dict>
+	<dict><key>phrase</key><string>サン・ヴァンサン</string><key>shortcut</key><string>さんゔぁんさん</string></dict>
+	<dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
+	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string></dict>
+	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>
+	<dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
+	<dict><key>phrase</key><string>大問題</string><key>shortcut</key><string>だいもんだい</string></dict>
 </array>
 </plist>

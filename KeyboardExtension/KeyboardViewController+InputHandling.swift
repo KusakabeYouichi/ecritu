@@ -13,6 +13,10 @@ extension KeyboardViewController {
         static let candidatePresentationSlowMs = 18
     }
 
+    private enum ExternalCandidateLimits {
+        static let lookupMultiplier = 2
+    }
+
     private func inputHandlingTextLengthSummary(_ text: String) -> String {
         "len=\(text.count)"
     }
@@ -85,7 +89,7 @@ extension KeyboardViewController {
             )
         }
 
-        let rawCandidates = kanaKanjiConverter.candidates(
+        let rawCandidates = kanaKanjiCandidates(
             for: composingReading,
             limit: presentationLimit,
             systemCandidateMode: systemCandidateMode
@@ -180,7 +184,7 @@ extension KeyboardViewController {
         let sourceText = composingRawText
         let sourceReading = composingReading
 
-        let systemCandidates = kanaKanjiConverter.candidates(
+        let systemCandidates = kanaKanjiCandidates(
             for: sourceReading,
             limit: effectiveKanaConversionCandidateLimit(),
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
@@ -428,7 +432,7 @@ extension KeyboardViewController {
             return
         }
 
-        let candidates = kanaKanjiConverter.candidates(
+        let candidates = kanaKanjiCandidates(
             for: composingReading,
             limit: effectiveKanaPresentationCandidateLimit(),
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
@@ -656,7 +660,7 @@ extension KeyboardViewController {
             return false
         }
 
-        let candidates = kanaKanjiConverter.candidates(
+        let candidates = kanaKanjiCandidates(
             for: composingReading,
             limit: effectiveKanaConversionCandidateLimit(),
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
@@ -705,6 +709,48 @@ extension KeyboardViewController {
             text,
             selectedRange: NSRange(location: text.count, length: 0)
         )
+    }
+
+    func kanaKanjiCandidates(
+        for reading: String,
+        limit: Int,
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard limit > 0 else {
+            return []
+        }
+
+        let converterLimit = max(limit * ExternalCandidateLimits.lookupMultiplier, limit + 12)
+        let converterCandidates = kanaKanjiConverter.candidates(
+            for: reading,
+            limit: converterLimit,
+            systemCandidateMode: systemCandidateMode
+        )
+        let supplementaryCandidates = supplementaryLexiconCandidates(for: reading)
+
+        if supplementaryCandidates.isEmpty {
+            return Array(converterCandidates.prefix(limit))
+        }
+
+        var mergedCandidates: [String] = []
+        var seenCandidates = Set<String>()
+
+        for candidate in supplementaryCandidates + converterCandidates {
+            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmedCandidate.isEmpty,
+                seenCandidates.insert(trimmedCandidate).inserted else {
+                continue
+            }
+
+            mergedCandidates.append(trimmedCandidate)
+
+            if mergedCandidates.count >= limit {
+                break
+            }
+        }
+
+        return mergedCandidates
     }
 
     func clearMarkedComposingText() {

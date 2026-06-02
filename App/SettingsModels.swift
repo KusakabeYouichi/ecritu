@@ -54,6 +54,7 @@ enum SettingsKeys {
     static let kanaKanjiInitialSuppressionDictionaryAppliedSignature = "kanaKanjiInitialSuppressionDictionaryAppliedSignature"
     static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+    static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
     static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
@@ -191,6 +192,36 @@ enum KanaKanjiCandidateSourceModeOption: String, CaseIterable, Identifiable {
         case .normalise: return "normalisé"
         case .surface: return "surface"
         case .lesDeux: return "les deux"
+        }
+    }
+}
+
+enum ContactCandidateDisplayModeOption: String, CaseIterable, Identifiable {
+    case off
+    case namesOnly
+    case namesPlusFullName
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .off:
+            return "連絡先候補を使わない"
+        case .namesOnly:
+            return "一致した名前だけ候補にする"
+        case .namesPlusFullName:
+            return "姓/名一致でフルネームも候補にする"
+        }
+    }
+
+    var subtitle: String {
+        switch self {
+        case .off:
+            return "連絡先由来の候補を表示しません。"
+        case .namesOnly:
+            return "姓・名・ニックネームなど、一致した項目のみ表示します。(既定)"
+        case .namesPlusFullName:
+            return "姓または名が一致したときにフルネームも表示します。"
         }
     }
 }

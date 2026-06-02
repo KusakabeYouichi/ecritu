@@ -219,7 +219,6 @@
 	<dict><key>phrase</key><string>アセトアルデヒド</string><key>shortcut</key><string>あせとあるでひど</string></dict>
 	<dict><key>phrase</key><string>アセノフグラッド</string><key>shortcut</key><string>あせのふぐらっど</string></dict>
 	<dict><key>phrase</key><string>アゼルバイジャン</string><key>shortcut</key><string>あぜるばいじゃん</string></dict>
-	<dict><key>phrase</key><string>アソーレス諸島</string><key>shortcut</key><string>あそーれすしょとう</string></dict>
 	<dict><key>phrase</key><string>アタカマ</string><key>shortcut</key><string>あたかま</string></dict>
 	<dict><key>phrase</key><string>アタカマ沙漠</string><key>shortcut</key><string>あたかまさばく</string></dict>
 	<dict><key>phrase</key><string>アタカマ砂漠</string><key>shortcut</key><string>あたかまさばく</string></dict>
@@ -517,7 +516,6 @@
 	<dict><key>phrase</key><string>カトリック伝道者</string><key>shortcut</key><string>かとりっくでんどうしゃ</string></dict>
 	<dict><key>phrase</key><string>カナディアンウイスキー</string><key>shortcut</key><string>かなでぃあんういすきー</string></dict>
 	<dict><key>phrase</key><string>カナリア</string><key>shortcut</key><string>かなりあ</string></dict>
-	<dict><key>phrase</key><string>カナリア諸島</string><key>shortcut</key><string>かなりあしょとう</string></dict>
 	<dict><key>phrase</key><string>カバ</string><key>shortcut</key><string>かば</string></dict>
 	<dict><key>phrase</key><string>カビ</string><key>shortcut</key><string>かび</string></dict>
 	<dict><key>phrase</key><string>カビネット</string><key>shortcut</key><string>かびねっと</string></dict>
@@ -574,7 +572,6 @@
 	<dict><key>phrase</key><string>ガレストロ</string><key>shortcut</key><string>がれすとろ</string></dict>
 	<dict><key>phrase</key><string>ガンマ線照射</string><key>shortcut</key><string>がんませんしょうしゃ</string></dict>
 	<dict><key>phrase</key><string>キクラデス文明</string><key>shortcut</key><string>きくらですふみあき</string></dict>
-	<dict><key>phrase</key><string>キクラデス諸島</string><key>shortcut</key><string>きくらですしょとう</string></dict>
 	<dict><key>phrase</key><string>キシナウ</string><key>shortcut</key><string>きしなう</string></dict>
 	<dict><key>phrase</key><string>キツネ</string><key>shortcut</key><string>きつね</string></dict>
 	<dict><key>phrase</key><string>キナ</string><key>shortcut</key><string>きな</string></dict>
@@ -1517,8 +1514,7 @@
 	<dict><key>phrase</key><string>バルバレスコ</string><key>shortcut</key><string>ばるばれすこ</string></dict>
 	<dict><key>phrase</key><string>バルパライソ</string><key>shortcut</key><string>ばるぱらいそ</string></dict>
 	<dict><key>phrase</key><string>バレアレス</string><key>shortcut</key><string>ばれあれす</string></dict>
-	<dict><key>phrase</key><string>バレアレス諸島</string><key>shortcut</key><string>ばれあれすしょとう</string></dict>
-	<dict><key>phrase</key><string>バレアレス諸島マヨルカ島</string><key>shortcut</key><string>ばれあれすしょとうまよるかとう</string></dict>
+	<dict><key>phrase</key><string>マヨルカ島</string><key>shortcut</key><string>まよるかとう</string></dict>
 	<dict><key>phrase</key><string>バレンシア</string><key>shortcut</key><string>ばれんしあ</string></dict>
 	<dict><key>phrase</key><string>バロッサ・ヴァレー</string><key>shortcut</key><string>ばろっさゔぁれー</string></dict>
 	<dict><key>phrase</key><string>バローロ</string><key>shortcut</key><string>ばろーろ</string></dict>
@@ -4939,8 +4935,6 @@
 	<dict><key>phrase</key><string>説明</string><key>shortcut</key><string>せつめい</string></dict>
 	<dict><key>phrase</key><string>説明文</string><key>shortcut</key><string>せつめいぶん</string></dict>
 	<dict><key>phrase</key><string>課税数量</string><key>shortcut</key><string>かぜいすうりょう</string></dict>
-	<dict><key>phrase</key><string>諸島</string><key>shortcut</key><string>しょとう</string></dict>
-	<dict><key>phrase</key><string>諸島地域</string><key>shortcut</key><string>しょとうちいき</string></dict>
 	<dict><key>phrase</key><string>諸説</string><key>shortcut</key><string>しょせつ</string></dict>
 	<dict><key>phrase</key><string>謳歌</string><key>shortcut</key><string>おうか</string></dict>
 	<dict><key>phrase</key><string>識別</string><key>shortcut</key><string>しきべつ</string></dict>
@@ -5317,10 +5311,8 @@
 	<dict><key>phrase</key><string>高山</string><key>shortcut</key><string>こうざん</string></dict>
 	<dict><key>phrase</key><string>国際ワイン見本市</string><key>shortcut</key><string>こくさいわいんみほんいち</string></dict>
 	<dict><key>phrase</key><string>国際見本市</string><key>shortcut</key><string>こくさいみほんいち</string></dict>
-	<dict><key>phrase</key><string>国立原産地</string><key>shortcut</key><string>くにたちげんさんち</string></dict>
 	<dict><key>phrase</key><string>死火山</string><key>shortcut</key><string>しかざん</string></dict>
 	<dict><key>phrase</key><string>室町時代</string><key>shortcut</key><string>むろまちじだい</string></dict>
-	<dict><key>phrase</key><string>主産地</string><key>shortcut</key><string>しゅさんち</string></dict>
 	<dict><key>phrase</key><string>小川</string><key>shortcut</key><string>かみこがわ</string></dict>
 	<dict><key>phrase</key><string>山地気候</string><key>shortcut</key><string>さんちきこう</string></dict>
 	<dict><key>phrase</key><string>山鶉</string><key>shortcut</key><string>やまうずら</string></dict>

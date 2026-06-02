@@ -588,6 +588,7 @@
 				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
 				INFOPLIST_KEY_EcrituAppGroupIdentifier = "$(ECRITU_APP_GROUP_IDENTIFIER)";
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
+				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
@@ -709,6 +710,7 @@
 				INFOPLIST_KEY_CFBundleVersion = "$(CURRENT_PROJECT_VERSION)";
 				INFOPLIST_KEY_EcrituAppGroupIdentifier = "$(ECRITU_APP_GROUP_IDENTIFIER)";
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
+				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;

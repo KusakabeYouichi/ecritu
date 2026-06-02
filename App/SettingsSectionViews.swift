@@ -510,6 +510,77 @@ struct DelimiterAutoCommitCandidateSettingsSection: View {
     }
 }
 
+struct ContactCandidateDisplaySettingsSection: View {
+    @Binding var selection: ContactCandidateDisplayModeOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("連絡先候補")
+                .font(.headline)
+
+            VStack(spacing: 8) {
+                ForEach(ContactCandidateDisplayModeOption.allCases) { option in
+                    let isSelected = selection == option
+
+                    Button {
+                        selection = option
+                    } label: {
+                        HStack(alignment: .top, spacing: 9) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(option.title)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundStyle(.primary)
+                                    .fixedSize(horizontal: false, vertical: true)
+
+                                Text(option.subtitle)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(
+                                    isSelected
+                                        ? Color.accentColor
+                                        : AppTheme.subduedIcon
+                                )
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 9)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(
+                                    isSelected
+                                        ? AppTheme.selectedControlBackground
+                                        : AppTheme.controlBackground
+                                )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .stroke(
+                                    isSelected
+                                        ? AppTheme.emphasisBorder
+                                        : AppTheme.subtleBorder,
+                                    lineWidth: isSelected ? 1.2 : 1
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(option.title)
+                }
+            }
+            .padding(4)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(AppTheme.cardInnerBackground)
+            )
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 
@@ -1636,6 +1707,39 @@ struct ReadOnlyDictionarySettingsSection: View {
     let listHeight: CGFloat
     let emptyMessage: String
     let description: String
+    let actionButtonTitle: String?
+    let actionButtonLoadingTitle: String?
+    let isActionLoading: Bool
+    let isActionDisabled: Bool
+    let onAction: (() -> Void)?
+
+    init(
+        title: String,
+        entries: [VocabularyEntry],
+        scrollIndexTitle: Binding<String>,
+        isScrollIndexVisible: Binding<Bool>,
+        listHeight: CGFloat,
+        emptyMessage: String,
+        description: String,
+        actionButtonTitle: String? = nil,
+        actionButtonLoadingTitle: String? = nil,
+        isActionLoading: Bool = false,
+        isActionDisabled: Bool = false,
+        onAction: (() -> Void)? = nil
+    ) {
+        self.title = title
+        self.entries = entries
+        self._scrollIndexTitle = scrollIndexTitle
+        self._isScrollIndexVisible = isScrollIndexVisible
+        self.listHeight = listHeight
+        self.emptyMessage = emptyMessage
+        self.description = description
+        self.actionButtonTitle = actionButtonTitle
+        self.actionButtonLoadingTitle = actionButtonLoadingTitle
+        self.isActionLoading = isActionLoading
+        self.isActionDisabled = isActionDisabled
+        self.onAction = onAction
+    }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -1648,6 +1752,24 @@ struct ReadOnlyDictionarySettingsSection: View {
                     .foregroundStyle(.secondary)
 
                 Spacer(minLength: 8)
+            }
+
+            if let onAction,
+                let actionButtonTitle {
+                Button(action: onAction) {
+                    HStack(spacing: 8) {
+                        if isActionLoading {
+                            ProgressView()
+                                .controlSize(.small)
+                        }
+
+                        Text(isActionLoading ? (actionButtonLoadingTitle ?? actionButtonTitle) : actionButtonTitle)
+                            .font(.subheadline.weight(.semibold))
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(isActionDisabled || isActionLoading)
             }
 
             ScrollIndexBadgeView(
