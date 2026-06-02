@@ -155,5 +155,6 @@
 	<dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
 	<dict><key>phrase</key><string>IIJmio</string><key>shortcut</key><string>あいあいじぇいみお</string></dict>
 	<dict><key>phrase</key><string>IIJ</string><key>shortcut</key><string>あいあいじぇい</string></dict>
+	<dict><key>phrase</key><string>Google Maps</string><key>shortcut</key><string>ぐーぐるまっぷ</string></dict>
 </array>
 </plist>
