@@ -636,7 +636,6 @@ final class KeyboardViewController: UIInputViewController {
         let normalizedUserInput = KanaTextNormalizer.normalizedReading(userInput)
         if !normalizedUserInput.isEmpty {
             readingKeys.append(normalizedUserInput)
-            readingKeys.append(contentsOf: contactStyleDerivedReadings(from: normalizedUserInput))
         }
 
         let tokenSource = userInput.replacingOccurrences(of: "・", with: " ")
@@ -650,45 +649,15 @@ final class KeyboardViewController: UIInputViewController {
 
             if !normalizedToken.isEmpty {
                 readingKeys.append(normalizedToken)
-                readingKeys.append(contentsOf: contactStyleDerivedReadings(from: normalizedToken))
             }
         }
 
         let normalizedCandidate = KanaTextNormalizer.normalizedReading(candidate)
         if !normalizedCandidate.isEmpty {
             readingKeys.append(normalizedCandidate)
-            readingKeys.append(contentsOf: contactStyleDerivedReadings(from: normalizedCandidate))
         }
 
         return readingKeys
-    }
-
-    private func contactStyleDerivedReadings(from reading: String) -> [String] {
-        let characters = Array(reading)
-
-        guard characters.count >= 4 else {
-            return []
-        }
-
-        var derived: [String] = []
-        let maxFragmentLength = min(6, characters.count - 1)
-
-        for fragmentLength in 2...maxFragmentLength {
-            let prefix = String(characters.prefix(fragmentLength))
-            let suffix = String(characters.suffix(fragmentLength))
-
-            if !prefix.isEmpty,
-                prefix != reading {
-                derived.append(prefix)
-            }
-
-            if !suffix.isEmpty,
-                suffix != reading {
-                derived.append(suffix)
-            }
-        }
-
-        return derived
     }
 
     func supplementaryLexiconCandidates(for reading: String) -> [String] {
