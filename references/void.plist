@@ -213,5 +213,8 @@
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>
 	<dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
 	<dict><key>phrase</key><string>大問題</string><key>shortcut</key><string>だいもんだい</string></dict>
+	<dict><key>phrase</key><string>都市伝説</string><key>shortcut</key><string>としでんせつ</string></dict>
+	<dict><key>phrase</key><string>占守</string><key>shortcut</key><string>しゅむしゅ</string></dict>
+	<dict><key>phrase</key><string>占守島</string><key>shortcut</key><string>しゅむしゅとう</string></dict>
 </array>
 </plist>
