@@ -46,6 +46,7 @@ final class KeyboardViewController: UIInputViewController {
     private var pendingRefreshKeyboardStateRequests = 0
     private var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
     private var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
+    private var hasDeferredSharedSettingsCatchUp = false
     private var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     private var didApplyInactiveSessionMitigation = false
 
@@ -339,6 +340,11 @@ final class KeyboardViewController: UIInputViewController {
             }
 
             DispatchQueue.main.async {
+                if self.view.window == nil {
+                    self.clearSupplementaryLexiconCandidatesForMemoryTrim()
+                    return
+                }
+
                 self.isRefreshingSupplementaryLexicon = false
                 self.supplementaryLexiconLastRefreshAt = Date()
 
@@ -360,6 +366,12 @@ final class KeyboardViewController: UIInputViewController {
                 }
             }
         }
+    }
+
+    private func clearSupplementaryLexiconCandidatesForMemoryTrim() {
+        isRefreshingSupplementaryLexicon = false
+        supplementaryLexiconLastRefreshAt = Date()
+        supplementaryLexiconCandidatesByReading = [:]
     }
 
     private func buildSupplementaryLexiconCandidates(from lexicon: UILexicon) -> [String: [String]] {
@@ -486,6 +498,11 @@ final class KeyboardViewController: UIInputViewController {
             }
 
             DispatchQueue.main.async {
+                if self.view.window == nil {
+                    self.clearContactCandidatesIfNeeded(refreshKeyboardState: false)
+                    return
+                }
+
                 guard self.currentContactCandidateDisplayModeFromSharedDefaults() == displayMode else {
                     self.isRefreshingContactCandidates = false
                     self.refreshContactCandidatesIfNeeded(force: true)
@@ -1197,6 +1214,12 @@ final class KeyboardViewController: UIInputViewController {
         dictionaryPreloadWorkItem?.cancel()
         dictionaryPreloadWorkItem = nil
 
+        keyboardBootstrapWorkItem?.cancel()
+        keyboardBootstrapWorkItem = nil
+
+        clearSupplementaryLexiconCandidatesForMemoryTrim()
+        clearContactCandidatesIfNeeded(refreshKeyboardState: false)
+
         if includeSystemCaches {
             kanaKanjiConverter.clearAllCaches()
         } else {
@@ -1249,6 +1272,35 @@ final class KeyboardViewController: UIInputViewController {
         case .critical:
             kanaKanjiConverter.clearAllCaches()
         }
+
+        if previousProfile == .critical,
+            nextProfile != .critical {
+            applyDeferredSharedSettingsCatchUpIfNeeded(trigger: trigger)
+        }
+    }
+
+    private func applyDeferredSharedSettingsCatchUpIfNeeded(trigger: String) {
+        guard hasDeferredSharedSettingsCatchUp,
+            memoryFailSafeProfile != .critical else {
+            return
+        }
+
+        guard view.window != nil || hostingController != nil else {
+            return
+        }
+
+        hasDeferredSharedSettingsCatchUp = false
+
+        appendKeyboardDiagnosticsLog(
+            "critical中に保留した共有設定反映を再開 trigger=\(trigger) profile=\(memoryFailSafeProfile.rawValue)",
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+
+        kanaKanjiConverter.clearSharedDataCaches()
+        refreshContactCandidatesIfNeeded(force: true)
+        refreshKeyboardStateAsync()
     }
 
     private func nextMemoryFailSafeProfile(for residentMemoryMB: Double) -> MemoryFailSafeProfile {
@@ -1854,6 +1906,25 @@ final class KeyboardViewController: UIInputViewController {
                 appendLog: true
             )
             self.kanaKanjiConverter.clearSharedDataCaches()
+
+            if self.memoryFailSafeProfile == .critical {
+                self.hasDeferredSharedSettingsCatchUp = true
+
+                if !self.currentContactCandidateDisplayModeFromSharedDefaults().usesContacts {
+                    self.clearContactCandidatesIfNeeded(refreshKeyboardState: false)
+                }
+
+                self.appendKeyboardDiagnosticsLog(
+                    "criticalフェイルセーフで共有設定変更処理を軽量化 contactRefresh=skip refresh=async deferredCatchUp=true",
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+                self.refreshKeyboardStateAsync()
+                return
+            }
+
+            self.hasDeferredSharedSettingsCatchUp = false
             self.refreshContactCandidatesIfNeeded(force: true)
             self.refreshKeyboardState(trigger: "settingsChanged")
         }
