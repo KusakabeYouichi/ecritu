@@ -214,6 +214,7 @@
 	<!-- 活用あり (用言): 辞書形を登録 -->
 	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string></dict>
 	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string></dict>
+	<dict><key>phrase</key><string>手に入る</string><key>shortcut</key><string>てにはいる</string></dict>
 
 	<!-- 活用なし (名詞など) -->
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>

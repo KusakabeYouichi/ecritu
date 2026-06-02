@@ -935,6 +935,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionHairuCompoundVerbFormsAreDerivedFromDictionaryForm() {
+        converter.learn(reading: "てにはいる", candidate: "手に入る")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("てにはいって", "手に入って"),
+            ("てにはいった", "手に入った"),
+            ("てにはいらない", "手に入らない"),
+            ("てにはいれば", "手に入れば"),
+            ("てにはいります", "手に入ります")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
