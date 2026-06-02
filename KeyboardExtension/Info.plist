@@ -22,6 +22,8 @@
     <string>$(CURRENT_PROJECT_VERSION)</string>
     <key>EcrituAppGroupIdentifier</key>
     <string>$(ECRITU_APP_GROUP_IDENTIFIER)</string>
+    <key>NSContactsUsageDescription</key>
+    <string>連絡先の名前を変換候補として使うために連絡先データにアクセスします。</string>
     <key>NSExtension</key>
     <dict>
         <key>NSExtensionAttributes</key>

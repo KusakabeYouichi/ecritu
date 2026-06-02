@@ -1,12 +1,13 @@
 import SwiftUI
 import Darwin
+import Contacts
 #if os(iOS)
 import UIKit
 #endif
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260529152731"
+    private static let editionUpdatedAtRaw: String = "20260601215921"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -174,6 +175,12 @@ struct ContentView: View {
     )
     private var kanaKanjiCandidateSourceModeRawValue: String = KanaKanjiCandidateSourceModeOption.surface.rawValue
 
+    @AppStorage(
+        SettingsKeys.contactCandidateDisplayMode,
+        store: Self.sharedDefaults
+    )
+    private var contactCandidateDisplayModeRawValue: String = ContactCandidateDisplayModeOption.namesOnly.rawValue
+
     @State private var userDictionaryEntries: [VocabularyEntry] = []
     @State private var userDictionaryReadingInput = ""
     @State private var userDictionaryCandidateInput = ""
@@ -198,8 +205,10 @@ struct ContentView: View {
     @State private var secondVocabularyEntries: [VocabularyEntry] = []
     @State private var secondVocabularyScrollIndexTitle = ""
     @State private var isSecondVocabularyScrollIndexVisible = false
-    @State private var didLoadSystemVocabularyEntries = false
-    @State private var isLoadingSystemVocabularyEntries = false
+    @State private var didLoadFirstVocabularyEntries = false
+    @State private var isLoadingFirstVocabularyEntries = false
+    @State private var didLoadSecondVocabularyEntries = false
+    @State private var isLoadingSecondVocabularyEntries = false
     @State private var keyboardDiagnosticsLogLines: [String] = []
     @State private var keyboardDiagnosticsInstallMarker = ""
     @State private var keyboardDiagnosticsSessionActive = false
@@ -211,6 +220,7 @@ struct ContentView: View {
     @State private var didRunFirstAppearanceBootstrap = false
     @State private var didCompleteInitialDataSnapshot = false
     @State private var isBootstrappingInitialData = true
+    @State private var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
 
     private let setupSteps: [String] = [
@@ -220,7 +230,7 @@ struct ContentView: View {
     ]
 
     private var isContainerBusy: Bool {
-        isBootstrappingInitialData || isLoadingSystemVocabularyEntries
+        isBootstrappingInitialData || isLoadingFirstVocabularyEntries || isLoadingSecondVocabularyEntries
     }
 
     private var settingsSyncSignature: String {
@@ -246,7 +256,8 @@ struct ContentView: View {
             kanaModeSwitcherRightFlickActionRawValue,
             kanaModeSwitcherUpFlickActionRawValue,
             delimiterAutoCommitCandidateRawValue,
-            kanaKanjiCandidateSourceModeRawValue
+            kanaKanjiCandidateSourceModeRawValue,
+            contactCandidateDisplayModeRawValue
         ]
             .joined(separator: "|")
     }
@@ -348,6 +359,16 @@ struct ContentView: View {
         rawValueSelection(from: kanaKanjiCandidateSourceModeRawValue, default: .surface) {
             kanaKanjiCandidateSourceModeRawValue = $0
         }
+    }
+
+    private var contactCandidateDisplayModeSelection: Binding<ContactCandidateDisplayModeOption> {
+        rawValueSelection(from: contactCandidateDisplayModeRawValue, default: .namesOnly) {
+            contactCandidateDisplayModeRawValue = $0
+        }
+    }
+
+    private var shouldUseContactCandidates: Bool {
+        (ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .namesOnly) != .off
     }
 
     private var accentPaletteSelection: Binding<AccentColorOption> {
@@ -554,13 +575,23 @@ struct ContentView: View {
     }
 
     private func decodeStringArray(forKey key: String, defaults: UserDefaults) -> [String] {
+        let maxLogDataBytes = 262_144
+        let maxLogLineCount = 320
+
         if let data = defaults.data(forKey: key),
+            data.count <= maxLogDataBytes,
             let decoded = try? JSONDecoder().decode([String].self, from: data) {
-            return decoded
+            return Array(decoded.suffix(maxLogLineCount))
+        }
+
+        if let data = defaults.data(forKey: key),
+            data.count > maxLogDataBytes {
+            defaults.removeObject(forKey: key)
+            return []
         }
 
         if let raw = defaults.array(forKey: key) {
-            return raw.compactMap { $0 as? String }
+            return Array(raw.compactMap { $0 as? String }.suffix(maxLogLineCount))
         }
 
         return []
@@ -999,24 +1030,22 @@ struct ContentView: View {
         let shortcutDictionaryEntries: [VocabularyEntry]
     }
 
-    private func systemVocabularyEntriesSnapshot() -> (
-        first: [VocabularyEntry],
-        second: [VocabularyEntry]
-    ) {
+    private func firstSystemVocabularyEntriesSnapshot() -> [VocabularyEntry] {
         let firstFromAppGroup = loadAppGroupDictionaryEntries(filename: "ÉcrituPremierVocab.json")
         let firstDictionary = firstFromAppGroup.isEmpty
             ? loadBundledInitialDictionaryEntries(filename: "ÉcrituPremierVocab")
             : firstFromAppGroup
 
+        return sortedVocabularyEntries(from: firstDictionary)
+    }
+
+    private func secondSystemVocabularyEntriesSnapshot() -> [VocabularyEntry] {
         let secondFromAppGroup = loadAppGroupDictionaryEntries(filename: "ÉcrituSecondVocab.json")
         let secondDictionary = secondFromAppGroup.isEmpty
             ? loadBundledInitialDictionaryEntries(filename: "ÉcrituSecondVocab")
             : secondFromAppGroup
 
-        return (
-            first: sortedVocabularyEntries(from: firstDictionary),
-            second: sortedVocabularyEntries(from: secondDictionary)
-        )
+        return sortedVocabularyEntries(from: secondDictionary)
     }
 
     private func buildInitialDataSnapshot() -> InitialDataSnapshot {
@@ -1044,12 +1073,55 @@ struct ContentView: View {
         }
     }
 
+    private func performInitialMigrationsInBackground() async {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                migrateInitialUserDictionaryIfNeeded()
+                migrateInitialShortcutVocabularyIfNeeded()
+                migrateInitialSuppressionDictionaryIfNeeded()
+                migrateLearningVocabularySeparationIfNeeded()
+                continuation.resume()
+            }
+        }
+    }
+
+    private func startInitialSnapshotLoadInBackground(
+        logEventPrefix: String,
+        onCompleted: (() -> Void)? = nil
+    ) {
+        Task { @MainActor in
+            let snapshotStartedAt = CFAbsoluteTimeGetCurrent()
+            let snapshot = await loadInitialDataSnapshotInBackground()
+            applyInitialDataSnapshot(snapshot)
+            didCompleteInitialDataSnapshot = true
+
+            appendContainerDiagnosticsLog(
+                "\(logEventPrefix) snapshot反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: snapshotStartedAt)) user=\(snapshot.userDictionaryEntries.count) learned=\(snapshot.learnedDictionaryEntries.count) suppression=\(snapshot.suppressionDictionaryEntries.count) shortcut=\(snapshot.shortcutDictionaryEntries.count)"
+            )
+            loadKeyboardDiagnosticsState()
+            onCompleted?()
+        }
+    }
+
+    private func startInitialMigrationsAndRefreshSnapshotInBackground(onCompleted: (() -> Void)? = nil) {
+        Task { @MainActor in
+            let migrationStartedAt = CFAbsoluteTimeGetCurrent()
+            await performInitialMigrationsInBackground()
+
+            let migratedSnapshot = await loadInitialDataSnapshotInBackground()
+            applyInitialDataSnapshot(migratedSnapshot)
+
+            appendContainerDiagnosticsLog(
+                "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) user=\(migratedSnapshot.userDictionaryEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
+            )
+            loadKeyboardDiagnosticsState()
+            SettingsSyncNotification.postSettingsDidChange()
+            onCompleted?()
+        }
+    }
+
     private func shouldAutoLoadSystemVocabularyOnAppear() -> Bool {
-#if targetEnvironment(simulator)
-        true
-#else
         false
-#endif
     }
 
     private func saveStringArray(_ values: [String], forKey key: String, defaults: UserDefaults) {
@@ -1130,51 +1202,152 @@ struct ContentView: View {
         max(0, Int((CFAbsoluteTimeGetCurrent() - start) * 1000))
     }
 
-    private func loadSystemVocabularyEntriesInBackground() async -> (
-        first: [VocabularyEntry],
-        second: [VocabularyEntry]
-    ) {
+    private func loadFirstSystemVocabularyEntriesInBackground() async -> [VocabularyEntry] {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
-                continuation.resume(returning: systemVocabularyEntriesSnapshot())
+                continuation.resume(returning: firstSystemVocabularyEntriesSnapshot())
             }
         }
     }
 
-    private func requestSystemVocabularyEntriesLoadIfNeeded(force: Bool = false) {
-        guard !isLoadingSystemVocabularyEntries else {
+    private func loadSecondSystemVocabularyEntriesInBackground() async -> [VocabularyEntry] {
+        await withCheckedContinuation { continuation in
+            DispatchQueue.global(qos: .utility).async {
+                continuation.resume(returning: secondSystemVocabularyEntriesSnapshot())
+            }
+        }
+    }
+
+    private func requestFirstSystemVocabularyEntriesLoadIfNeeded(force: Bool = false) {
+        guard !isLoadingFirstVocabularyEntries else {
             return
         }
 
-        guard force || !didLoadSystemVocabularyEntries else {
+        guard force || !didLoadFirstVocabularyEntries else {
             return
         }
 
-        isLoadingSystemVocabularyEntries = true
+        isLoadingFirstVocabularyEntries = true
         let loadStartedAt = CFAbsoluteTimeGetCurrent()
-        appendContainerDiagnosticsLog("コンテナでシステム語彙ロード開始 force=\(force)")
+        appendContainerDiagnosticsLog("コンテナで第1語彙ロード開始 force=\(force)")
 
         Task { @MainActor in
-            let systemEntries = await loadSystemVocabularyEntriesInBackground()
-            firstVocabularyEntries = systemEntries.first
-            secondVocabularyEntries = systemEntries.second
-            didLoadSystemVocabularyEntries = true
-            isLoadingSystemVocabularyEntries = false
+            let firstEntries = await loadFirstSystemVocabularyEntriesInBackground()
+            firstVocabularyEntries = firstEntries
+            didLoadFirstVocabularyEntries = true
+            isLoadingFirstVocabularyEntries = false
             finishBootstrappingIfNeeded()
 
             appendContainerDiagnosticsLog(
-                "コンテナでシステム語彙ロード完了 first=\(systemEntries.first.count) second=\(systemEntries.second.count) elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: loadStartedAt))"
+                "コンテナで第1語彙ロード完了 count=\(firstEntries.count) elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: loadStartedAt))"
             )
             loadKeyboardDiagnosticsState()
         }
     }
 
+    private func requestSecondSystemVocabularyEntriesLoadIfNeeded(force: Bool = false) {
+        guard !isLoadingSecondVocabularyEntries else {
+            return
+        }
+
+        guard force || !didLoadSecondVocabularyEntries else {
+            return
+        }
+
+        isLoadingSecondVocabularyEntries = true
+        let loadStartedAt = CFAbsoluteTimeGetCurrent()
+        appendContainerDiagnosticsLog("コンテナで第2語彙ロード開始 force=\(force)")
+
+        Task { @MainActor in
+            let secondEntries = await loadSecondSystemVocabularyEntriesInBackground()
+            secondVocabularyEntries = secondEntries
+            didLoadSecondVocabularyEntries = true
+            isLoadingSecondVocabularyEntries = false
+            finishBootstrappingIfNeeded()
+
+            appendContainerDiagnosticsLog(
+                "コンテナで第2語彙ロード完了 count=\(secondEntries.count) elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: loadStartedAt))"
+            )
+            loadKeyboardDiagnosticsState()
+        }
+    }
+
+    private func requestContactsAccessIfNeeded() async {
+        guard shouldUseContactCandidates else {
+            appendContainerDiagnosticsLog("連絡先アクセス許可リクエスト中止 reason=contactCandidatesDisabled")
+            return
+        }
+
+        let usageDescription = (Bundle.main.object(forInfoDictionaryKey: "NSContactsUsageDescription") as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            ?? ""
+
+        guard !usageDescription.isEmpty else {
+            appendContainerDiagnosticsLog("連絡先アクセス許可リクエスト中止 reason=missingUsageDescription")
+            return
+        }
+
+        let status = CNContactStore.authorizationStatus(for: .contacts)
+
+        switch status {
+        case .authorized, .limited:
+            appendContainerDiagnosticsLog("連絡先アクセス状態 status=authorized")
+        case .denied, .restricted:
+            appendContainerDiagnosticsLog("連絡先アクセス状態 status=deniedOrRestricted")
+        case .notDetermined:
+            appendContainerDiagnosticsLog("連絡先アクセス許可リクエスト開始")
+            let granted = await withCheckedContinuation { continuation in
+                CNContactStore().requestAccess(for: .contacts) { granted, _ in
+                    continuation.resume(returning: granted)
+                }
+            }
+            appendContainerDiagnosticsLog("連絡先アクセス許可リクエスト完了 granted=\(granted)")
+        @unknown default:
+            appendContainerDiagnosticsLog("連絡先アクセス状態 status=unknown")
+        }
+    }
+
+    private func requestContactsAccessIfNeededInBackground() {
+        Task { @MainActor in
+            await requestContactsAccessIfNeeded()
+        }
+    }
+
     private func finishBootstrappingIfNeeded() {
-        guard !isLoadingSystemVocabularyEntries else {
+        guard !isLoadingFirstVocabularyEntries,
+            !isLoadingSecondVocabularyEntries else {
+            return
+        }
+
+        guard isBootstrappingInitialData else {
             return
         }
 
         isBootstrappingInitialData = false
+        containerBootstrapFailSafeWorkItem?.cancel()
+        containerBootstrapFailSafeWorkItem = nil
+    }
+
+    private func scheduleContainerBootstrapFailSafe(timeoutSeconds: TimeInterval = 15) {
+        containerBootstrapFailSafeWorkItem?.cancel()
+
+        let workItem = DispatchWorkItem {
+            guard isContainerBusy else {
+                return
+            }
+
+            appendContainerDiagnosticsLog(
+                "コンテナbootstrapフェイルセーフ発動 busy解除 timeoutSeconds=\(Int(timeoutSeconds))"
+            )
+            isLoadingFirstVocabularyEntries = false
+            isLoadingSecondVocabularyEntries = false
+            isBootstrappingInitialData = false
+            didCompleteInitialDataSnapshot = true
+            loadKeyboardDiagnosticsState()
+        }
+
+        containerBootstrapFailSafeWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + timeoutSeconds, execute: workItem)
     }
 
     private func migrateInitialUserDictionaryIfNeeded() {
@@ -1658,23 +1831,31 @@ struct ContentView: View {
             }
 
             isBootstrappingInitialData = true
+            scheduleContainerBootstrapFailSafe()
 
             Task { @MainActor in
                 let refreshStartedAt = CFAbsoluteTimeGetCurrent()
+                requestContactsAccessIfNeededInBackground()
                 clearKeyboardDiagnosticsIfInstallChanged()
                 loadKeyboardDiagnosticsState()
                 appendContainerDiagnosticsLog("コンテナ再表示 refresh開始")
+                startInitialSnapshotLoadInBackground(logEventPrefix: "コンテナ再表示") {
+                    finishBootstrappingIfNeeded()
+                }
+                let shouldAutoLoadSystemVocabulary = shouldAutoLoadSystemVocabularyOnAppear()
 
-                let refreshedSnapshot = await loadInitialDataSnapshotInBackground()
-                applyInitialDataSnapshot(refreshedSnapshot)
-
-                if didLoadSystemVocabularyEntries {
-                    requestSystemVocabularyEntriesLoadIfNeeded(force: true)
-                } else if shouldAutoLoadSystemVocabularyOnAppear() {
-                    requestSystemVocabularyEntriesLoadIfNeeded()
+                if didLoadFirstVocabularyEntries {
+                    requestFirstSystemVocabularyEntriesLoadIfNeeded(force: true)
+                } else if shouldAutoLoadSystemVocabulary {
+                    requestFirstSystemVocabularyEntriesLoadIfNeeded()
                 }
 
-                finishBootstrappingIfNeeded()
+                if didLoadSecondVocabularyEntries {
+                    requestSecondSystemVocabularyEntriesLoadIfNeeded(force: true)
+                } else if shouldAutoLoadSystemVocabulary {
+                    requestSecondSystemVocabularyEntriesLoadIfNeeded()
+                }
+
                 appendContainerDiagnosticsLog(
                     "コンテナ再表示 refresh完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: refreshStartedAt)) user=\(userDictionaryEntries.count) learned=\(learnedDictionaryEntries.count) suppression=\(suppressionDictionaryEntries.count) shortcut=\(shortcutDictionaryEntries.count)"
                 )
@@ -1686,47 +1867,52 @@ struct ContentView: View {
         didRunFirstAppearanceBootstrap = true
         containerDiagnosticsSessionID = UUID().uuidString
         isBootstrappingInitialData = true
+        scheduleContainerBootstrapFailSafe()
 
         Task { @MainActor in
             let bootstrapStartedAt = CFAbsoluteTimeGetCurrent()
             // Let SwiftUI present the first frame before expensive file I/O and JSON decode.
             await Task.yield()
 
+            requestContactsAccessIfNeededInBackground()
+
             clearLegacyKeyboardDebugLogKeysIfNeeded()
             migrateLegacyFlickGuideSettingIfNeeded()
             clearKeyboardDiagnosticsIfInstallChanged()
             loadKeyboardDiagnosticsState()
             appendContainerDiagnosticsLog("コンテナ初回表示 bootstrap開始")
-
-            await Task.yield()
-
-            migrateInitialUserDictionaryIfNeeded()
-            migrateInitialShortcutVocabularyIfNeeded()
-            migrateInitialSuppressionDictionaryIfNeeded()
-            migrateLearningVocabularySeparationIfNeeded()
-
-            await Task.yield()
-
-            let initialDataSnapshot = await loadInitialDataSnapshotInBackground()
-            applyInitialDataSnapshot(initialDataSnapshot)
-            didCompleteInitialDataSnapshot = true
-
-            appendContainerDiagnosticsLog(
-                "コンテナ初回表示 bootstrap完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: bootstrapStartedAt)) user=\(initialDataSnapshot.userDictionaryEntries.count) learned=\(initialDataSnapshot.learnedDictionaryEntries.count) suppression=\(initialDataSnapshot.suppressionDictionaryEntries.count) shortcut=\(initialDataSnapshot.shortcutDictionaryEntries.count)"
-            )
-            loadKeyboardDiagnosticsState()
-
-            if shouldAutoLoadSystemVocabularyOnAppear() {
-                requestSystemVocabularyEntriesLoadIfNeeded()
+            startInitialSnapshotLoadInBackground(logEventPrefix: "コンテナ初回表示") {
+                startInitialMigrationsAndRefreshSnapshotInBackground {
+                    appendContainerDiagnosticsLog(
+                        "コンテナ初回表示 bootstrap完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: bootstrapStartedAt))"
+                    )
+                    loadKeyboardDiagnosticsState()
+                    finishBootstrappingIfNeeded()
+                }
             }
 
-            finishBootstrappingIfNeeded()
+            if shouldAutoLoadSystemVocabularyOnAppear() {
+                requestFirstSystemVocabularyEntriesLoadIfNeeded()
+                requestSecondSystemVocabularyEntriesLoadIfNeeded()
+            }
         }
     }
 
     private var loadingToastMessage: String {
-        if isLoadingSystemVocabularyEntries {
-            return "Loading... システム語彙を読み込み中"
+        if isLoadingFirstVocabularyEntries && isLoadingSecondVocabularyEntries {
+            return "Loading... 第1/第2語彙を読み込み中"
+        }
+
+        if isLoadingFirstVocabularyEntries {
+            return "Loading... 第1語彙を読み込み中"
+        }
+
+        if isLoadingSecondVocabularyEntries {
+            return "Loading... 第2語彙を読み込み中"
+        }
+
+        if isBootstrappingInitialData {
+            return "Loading... 起動準備中"
         }
 
         return "Loading... 語彙データを読み込み中"
@@ -1873,6 +2059,10 @@ struct ContentView: View {
                         }
                         .settingsCardStyle()
 
+                        ContactCandidateDisplaySettingsSection(
+                            selection: contactCandidateDisplayModeSelection
+                        )
+
                         UserDictionarySettingsSection(
                             entries: $userDictionaryEntries,
                             readingInput: $userDictionaryReadingInput,
@@ -1924,49 +2114,25 @@ struct ContentView: View {
                             onDeleteEntry: removeShortcutDictionaryEntry
                         )
 
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("システム語彙ロード")
-                                .font(.headline)
-
-                            Text("実機での初期メモリピークを避けるため、第1/第2語彙は必要時に読み込みます。")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-
-                            Button {
-                                requestSystemVocabularyEntriesLoadIfNeeded(force: true)
-                            } label: {
-                                HStack(spacing: 8) {
-                                    if isLoadingSystemVocabularyEntries {
-                                        ProgressView()
-                                            .controlSize(.small)
-                                    }
-
-                                    Text(
-                                        isLoadingSystemVocabularyEntries
-                                            ? "システム語彙を読み込み中..."
-                                            : didLoadSystemVocabularyEntries
-                                                ? "システム語彙を再読み込み"
-                                                : "システム語彙を読み込む"
-                                    )
-                                    .font(.subheadline.weight(.semibold))
-                                }
-                                .frame(maxWidth: .infinity)
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .disabled(isLoadingSystemVocabularyEntries)
-                        }
-                        .settingsCardStyle()
-
                         ReadOnlyDictionarySettingsSection(
                             title: "第1語彙",
                             entries: firstVocabularyEntries,
                             scrollIndexTitle: $firstVocabularyScrollIndexTitle,
                             isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
                             listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
-                            emptyMessage: isLoadingSystemVocabularyEntries
+                            emptyMessage: isLoadingFirstVocabularyEntries
                                 ? "第1語彙を読み込み中..."
                                 : "第1語彙はまだ読み込まれていません。",
-                            description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。"
+                            description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。",
+                            actionButtonTitle: didLoadFirstVocabularyEntries
+                                ? "第1語彙を再読み込み"
+                                : "第1語彙を読み込む",
+                            actionButtonLoadingTitle: "第1語彙を読み込み中...",
+                            isActionLoading: isLoadingFirstVocabularyEntries,
+                            isActionDisabled: isLoadingSecondVocabularyEntries,
+                            onAction: {
+                                requestFirstSystemVocabularyEntriesLoadIfNeeded(force: true)
+                            }
                         )
 
                         ReadOnlyDictionarySettingsSection(
@@ -1975,10 +2141,19 @@ struct ContentView: View {
                             scrollIndexTitle: $secondVocabularyScrollIndexTitle,
                             isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
                             listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
-                            emptyMessage: isLoadingSystemVocabularyEntries
+                            emptyMessage: isLoadingSecondVocabularyEntries
                                 ? "第2語彙を読み込み中..."
                                 : "第2語彙はまだ読み込まれていません。",
-                            description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。"
+                            description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。",
+                            actionButtonTitle: didLoadSecondVocabularyEntries
+                                ? "第2語彙を再読み込み"
+                                : "第2語彙を読み込む",
+                            actionButtonLoadingTitle: "第2語彙を読み込み中...",
+                            isActionLoading: isLoadingSecondVocabularyEntries,
+                            isActionDisabled: isLoadingFirstVocabularyEntries,
+                            onAction: {
+                                requestSecondSystemVocabularyEntriesLoadIfNeeded(force: true)
+                            }
                         )
 
                         SetupStepsSection(steps: setupSteps)
@@ -2007,7 +2182,7 @@ struct ContentView: View {
                         }
                         .padding(20)
                     }
-                    .disabled(isContainerBusy)
+                    .disabled(isBootstrappingInitialData)
                 }
 
                 initialLoadingToast

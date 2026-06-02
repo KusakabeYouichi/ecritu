@@ -2,10 +2,12 @@ import SwiftUI
 import UIKit
 import CoreFoundation
 import Darwin
+import Contacts
 
 final class KeyboardViewController: UIInputViewController {
     private static let sharedKanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
     private static let sharedKanaKanjiConverter = KanaKanjiConverter(store: sharedKanaKanjiStore)
+    private static let isSupplementaryExternalCandidatesEnabled = true
     private var hostingController: UIHostingController<KeyboardRootView>?
     private var lastRenderConfiguration: RenderConfiguration?
     private var keyboardHeightConstraint: NSLayoutConstraint?
@@ -17,6 +19,13 @@ final class KeyboardViewController: UIInputViewController {
     private var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
     private var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
     private var dictionaryPreloadWorkItem: DispatchWorkItem?
+    private var keyboardBootstrapWorkItem: DispatchWorkItem?
+    private var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
+    private var contactCandidatesByReading: [String: [String]] = [:]
+    private var isRefreshingSupplementaryLexicon = false
+    private var supplementaryLexiconLastRefreshAt: Date?
+    private var isRefreshingContactCandidates = false
+    private var contactCandidatesLastRefreshAt: Date?
     var currentInputMode: KeyboardInputMode = .kana
     private var spaceToastTrigger = 0
     var composingRawText = ""
@@ -108,6 +117,7 @@ final class KeyboardViewController: UIInputViewController {
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
         static let landscapeLatinSuggestionMode = "landscapeLatinSuggestionMode"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+        static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
         static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
@@ -249,11 +259,11 @@ final class KeyboardViewController: UIInputViewController {
         configureInputAssistantBar()
         startObservingSettingsDidChange()
         setupKeyboardView()
-        requestSystemDictionaryPreloadIfNeeded()
     }
 
     deinit {
         finishKeyboardDiagnosticsSession(reason: "deinit")
+        keyboardBootstrapWorkItem?.cancel()
         dictionaryPreloadWorkItem?.cancel()
         keyboardHeightLockReleaseWorkItem?.cancel()
         stopObservingSettingsDidChange()
@@ -304,9 +314,425 @@ final class KeyboardViewController: UIInputViewController {
         refreshKeyboardState(trigger: "selectionDidChange")
     }
 
+    private func refreshSupplementaryLexiconIfNeeded(force: Bool) {
+        guard Self.isSupplementaryExternalCandidatesEnabled else {
+            supplementaryLexiconCandidatesByReading = [:]
+            return
+        }
+
+        if !force,
+            isRefreshingSupplementaryLexicon {
+            return
+        }
+
+        if !force,
+            let lastRefreshAt = supplementaryLexiconLastRefreshAt,
+            Date().timeIntervalSince(lastRefreshAt) < 30 {
+            return
+        }
+
+        isRefreshingSupplementaryLexicon = true
+
+        requestSupplementaryLexicon { [weak self] lexicon in
+            guard let self else {
+                return
+            }
+
+            DispatchQueue.main.async {
+                self.isRefreshingSupplementaryLexicon = false
+                self.supplementaryLexiconLastRefreshAt = Date()
+
+                let mergedCandidates = self.buildSupplementaryLexiconCandidates(from: lexicon)
+                let previousCandidates = self.supplementaryLexiconCandidatesByReading
+                self.supplementaryLexiconCandidatesByReading = mergedCandidates
+
+                let entryCount = mergedCandidates.values.reduce(0) { partialResult, candidates in
+                    partialResult + candidates.count
+                }
+
+                self.updateKeyboardDiagnosticsHeartbeat(
+                    event: "補助語彙を更新 entries=\(entryCount)",
+                    appendLog: true
+                )
+
+                if previousCandidates != mergedCandidates {
+                    self.refreshKeyboardStateAsync()
+                }
+            }
+        }
+    }
+
+    private func buildSupplementaryLexiconCandidates(from lexicon: UILexicon) -> [String: [String]] {
+        var dictionary: [String: [String]] = [:]
+        let maxCandidatesPerReading = 128
+
+        for entry in lexicon.entries {
+            let candidate = entry.documentText.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !candidate.isEmpty,
+                candidate.count <= 64 else {
+                continue
+            }
+
+            let userInput = entry.userInput.trimmingCharacters(in: .whitespacesAndNewlines)
+            var readingKeys = supplementaryReadingKeys(userInput: userInput, candidate: candidate)
+
+            guard !readingKeys.isEmpty else {
+                continue
+            }
+
+            readingKeys = Array(Set(readingKeys))
+
+            for reading in readingKeys {
+                var candidates = dictionary[reading] ?? []
+
+                if !candidates.contains(candidate) {
+                    candidates.append(candidate)
+                }
+
+                dictionary[reading] = Array(candidates.prefix(maxCandidatesPerReading))
+            }
+        }
+
+        return dictionary
+    }
+
+    private func refreshContactCandidatesIfNeeded(force: Bool) {
+        guard Self.isSupplementaryExternalCandidatesEnabled else {
+            contactCandidatesByReading = [:]
+            return
+        }
+
+        let displayMode = currentContactCandidateDisplayModeFromSharedDefaults()
+
+        guard displayMode.usesContacts else {
+            clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+            return
+        }
+
+        if !force,
+            isRefreshingContactCandidates {
+            return
+        }
+
+        if !force,
+            let lastRefreshAt = contactCandidatesLastRefreshAt,
+            Date().timeIntervalSince(lastRefreshAt) < 30 {
+            return
+        }
+
+        let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+
+        switch authorizationStatus {
+        case .authorized, .limited:
+            loadContactCandidates(displayMode: displayMode)
+        case .notDetermined:
+            // Avoid permission prompts from extension process; app-side permission flow should handle this.
+            clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+        case .denied, .restricted:
+            clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+        @unknown default:
+            clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+        }
+    }
+
+    private func clearContactCandidatesIfNeeded(refreshKeyboardState: Bool) {
+        let hadContactCandidates = !contactCandidatesByReading.isEmpty
+        isRefreshingContactCandidates = false
+        contactCandidatesLastRefreshAt = Date()
+        contactCandidatesByReading = [:]
+
+        if refreshKeyboardState,
+            hadContactCandidates {
+            refreshKeyboardStateAsync()
+        }
+    }
+
+    private func loadContactCandidates(displayMode: ContactCandidateDisplayMode) {
+        isRefreshingContactCandidates = true
+
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self else {
+                return
+            }
+
+            let store = CNContactStore()
+            let request = CNContactFetchRequest(keysToFetch: [
+                CNContactGivenNameKey as CNKeyDescriptor,
+                CNContactMiddleNameKey as CNKeyDescriptor,
+                CNContactFamilyNameKey as CNKeyDescriptor,
+                CNContactNicknameKey as CNKeyDescriptor,
+                CNContactOrganizationNameKey as CNKeyDescriptor,
+                CNContactPhoneticGivenNameKey as CNKeyDescriptor,
+                CNContactPhoneticMiddleNameKey as CNKeyDescriptor,
+                CNContactPhoneticFamilyNameKey as CNKeyDescriptor
+            ])
+
+            var dictionary: [String: [String]] = [:]
+
+            do {
+                try store.enumerateContacts(with: request) { contact, _ in
+                    self.appendContactCandidates(
+                        from: contact,
+                        displayMode: displayMode,
+                        to: &dictionary
+                    )
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+                }
+                return
+            }
+
+            DispatchQueue.main.async {
+                guard self.currentContactCandidateDisplayModeFromSharedDefaults() == displayMode else {
+                    self.isRefreshingContactCandidates = false
+                    self.refreshContactCandidatesIfNeeded(force: true)
+                    return
+                }
+
+                self.isRefreshingContactCandidates = false
+                self.contactCandidatesLastRefreshAt = Date()
+
+                let previous = self.contactCandidatesByReading
+                self.contactCandidatesByReading = dictionary
+
+                if previous != dictionary {
+                    self.refreshKeyboardStateAsync()
+                }
+            }
+        }
+    }
+
+    private func appendContactCandidates(
+        from contact: CNContact,
+        displayMode: ContactCandidateDisplayMode,
+        to dictionary: inout [String: [String]]
+    ) {
+        let familyName = contact.familyName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let givenName = contact.givenName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let middleName = contact.middleName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let nickname = contact.nickname.trimmingCharacters(in: .whitespacesAndNewlines)
+        let organizationName = contact.organizationName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let fullName = [familyName, givenName, middleName].filter { !$0.isEmpty }.joined()
+
+        let phoneticFamily = contact.phoneticFamilyName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let phoneticGiven = contact.phoneticGivenName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let phoneticMiddle = contact.phoneticMiddleName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let fullNamePhonetic = [phoneticFamily, phoneticGiven, phoneticMiddle].joined()
+        let includeFullNameForNameMatches = displayMode.includesFullNameForNameMatches
+
+        let readingCandidates: [(String, [String])] = [
+            (
+                phoneticFamily,
+                contactNameCandidates(
+                    primaryName: familyName,
+                    fullName: fullName,
+                    includeFullName: includeFullNameForNameMatches
+                )
+            ),
+            (
+                phoneticGiven,
+                contactNameCandidates(
+                    primaryName: givenName,
+                    fullName: fullName,
+                    includeFullName: includeFullNameForNameMatches
+                )
+            ),
+            (
+                phoneticMiddle,
+                contactNameCandidates(
+                    primaryName: middleName,
+                    fullName: fullName,
+                    includeFullName: includeFullNameForNameMatches
+                )
+            ),
+            (fullNamePhonetic, [fullName]),
+            (
+                familyName,
+                contactNameCandidates(
+                    primaryName: familyName,
+                    fullName: fullName,
+                    includeFullName: includeFullNameForNameMatches
+                )
+            ),
+            (
+                givenName,
+                contactNameCandidates(
+                    primaryName: givenName,
+                    fullName: fullName,
+                    includeFullName: includeFullNameForNameMatches
+                )
+            ),
+            (
+                middleName,
+                contactNameCandidates(
+                    primaryName: middleName,
+                    fullName: fullName,
+                    includeFullName: includeFullNameForNameMatches
+                )
+            ),
+            (fullName, [fullName]),
+            (nickname, [nickname]),
+            (organizationName, [organizationName])
+        ]
+
+        for (readingText, candidates) in readingCandidates {
+            appendCandidates(candidates, forReadingText: readingText, to: &dictionary)
+        }
+    }
+
+    private func contactNameCandidates(
+        primaryName: String,
+        fullName: String,
+        includeFullName: Bool
+    ) -> [String] {
+        guard !primaryName.isEmpty else {
+            return []
+        }
+
+        guard includeFullName,
+            !fullName.isEmpty,
+            fullName != primaryName else {
+            return [primaryName]
+        }
+
+        return [primaryName, fullName]
+    }
+
+    private func appendCandidates(
+        _ candidates: [String],
+        forReadingText readingText: String,
+        to dictionary: inout [String: [String]]
+    ) {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(readingText)
+
+        guard !normalizedReading.isEmpty else {
+            return
+        }
+
+        var existingCandidates = dictionary[normalizedReading] ?? []
+
+        for candidate in candidates {
+            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmed.isEmpty,
+                !existingCandidates.contains(trimmed) else {
+                continue
+            }
+
+            existingCandidates.append(trimmed)
+        }
+
+        if !existingCandidates.isEmpty {
+            dictionary[normalizedReading] = Array(existingCandidates.prefix(48))
+        }
+    }
+
+    private func supplementaryReadingKeys(userInput: String, candidate: String) -> [String] {
+        var readingKeys: [String] = []
+
+        let normalizedUserInput = KanaTextNormalizer.normalizedReading(userInput)
+        if !normalizedUserInput.isEmpty {
+            readingKeys.append(normalizedUserInput)
+            readingKeys.append(contentsOf: contactStyleDerivedReadings(from: normalizedUserInput))
+        }
+
+        let tokenSource = userInput.replacingOccurrences(of: "・", with: " ")
+        let separators = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
+        let userInputTokens = tokenSource
+            .components(separatedBy: separators)
+            .filter { !$0.isEmpty }
+
+        for token in userInputTokens {
+            let normalizedToken = KanaTextNormalizer.normalizedReading(token)
+
+            if !normalizedToken.isEmpty {
+                readingKeys.append(normalizedToken)
+                readingKeys.append(contentsOf: contactStyleDerivedReadings(from: normalizedToken))
+            }
+        }
+
+        let normalizedCandidate = KanaTextNormalizer.normalizedReading(candidate)
+        if !normalizedCandidate.isEmpty {
+            readingKeys.append(normalizedCandidate)
+            readingKeys.append(contentsOf: contactStyleDerivedReadings(from: normalizedCandidate))
+        }
+
+        return readingKeys
+    }
+
+    private func contactStyleDerivedReadings(from reading: String) -> [String] {
+        let characters = Array(reading)
+
+        guard characters.count >= 4 else {
+            return []
+        }
+
+        var derived: [String] = []
+        let maxFragmentLength = min(6, characters.count - 1)
+
+        for fragmentLength in 2...maxFragmentLength {
+            let prefix = String(characters.prefix(fragmentLength))
+            let suffix = String(characters.suffix(fragmentLength))
+
+            if !prefix.isEmpty,
+                prefix != reading {
+                derived.append(prefix)
+            }
+
+            if !suffix.isEmpty,
+                suffix != reading {
+                derived.append(suffix)
+            }
+        }
+
+        return derived
+    }
+
+    func supplementaryLexiconCandidates(for reading: String) -> [String] {
+        guard Self.isSupplementaryExternalCandidatesEnabled else {
+            return []
+        }
+
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return []
+        }
+
+        let contactCandidates: [String]
+
+        if currentContactCandidateDisplayModeFromSharedDefaults().usesContacts {
+            contactCandidates = contactCandidatesByReading[normalizedReading] ?? []
+        } else {
+            contactCandidates = []
+        }
+
+        let lexiconCandidates = supplementaryLexiconCandidatesByReading[normalizedReading] ?? []
+
+        if contactCandidates.isEmpty {
+            return lexiconCandidates
+        }
+
+        var mergedCandidates: [String] = []
+        var seenCandidates = Set<String>()
+
+        for candidate in contactCandidates + lexiconCandidates {
+            if seenCandidates.insert(candidate).inserted {
+                mergedCandidates.append(candidate)
+            }
+        }
+
+        return mergedCandidates
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
+
+        scheduleKeyboardBootstrapIfNeeded()
 
         guard lastRenderConfiguration != nil else {
             return
@@ -402,9 +828,7 @@ final class KeyboardViewController: UIInputViewController {
         super.traitCollectionDidChange(previousTraitCollection)
 
         let styleDidChange = previousTraitCollection?.userInterfaceStyle != traitCollection.userInterfaceStyle
-        let sizeClassDidChange =
-            previousTraitCollection?.horizontalSizeClass != traitCollection.horizontalSizeClass
-                || previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass
+        let sizeClassDidChange = previousTraitCollection?.verticalSizeClass != traitCollection.verticalSizeClass
 
         guard styleDidChange || sizeClassDidChange else {
             return
@@ -449,6 +873,33 @@ final class KeyboardViewController: UIInputViewController {
         lastRenderConfiguration = configuration
         prepareKeyboardVisualForTransition()
         applyKeyboardBaseBackground()
+    }
+
+    private func scheduleKeyboardBootstrapIfNeeded() {
+        guard keyboardBootstrapWorkItem == nil else {
+            return
+        }
+
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else {
+                return
+            }
+
+            self.keyboardBootstrapWorkItem = nil
+
+            guard !self.shouldSuppressHeavyOperations(reason: "keyboardBootstrap") else {
+                return
+            }
+
+            if Self.isSupplementaryExternalCandidatesEnabled {
+                self.refreshSupplementaryLexiconIfNeeded(force: true)
+                self.refreshContactCandidatesIfNeeded(force: true)
+            }
+            self.requestSystemDictionaryPreloadIfNeeded()
+        }
+
+        keyboardBootstrapWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: workItem)
     }
 
     private func ensureKeyboardViewIfNeeded() {
@@ -1434,6 +1885,7 @@ final class KeyboardViewController: UIInputViewController {
                 appendLog: true
             )
             self.kanaKanjiConverter.clearSharedDataCaches()
+            self.refreshContactCandidatesIfNeeded(force: true)
             self.refreshKeyboardState(trigger: "settingsChanged")
         }
     }
@@ -1895,6 +2347,16 @@ final class KeyboardViewController: UIInputViewController {
         return KanaKanjiCandidateSourceMode(rawValue: rawValue) ?? .surface
     }
 
+    private func currentContactCandidateDisplayMode(from defaults: UserDefaults?) -> ContactCandidateDisplayMode {
+        let rawValue = sharedStringValue(
+            from: defaults,
+            key: SharedDefaultsKeys.contactCandidateDisplayMode,
+            fallback: ContactCandidateDisplayMode.namesOnly.rawValue
+        )
+
+        return ContactCandidateDisplayMode(rawValue: rawValue) ?? .namesOnly
+    }
+
     private func currentDelimiterAutoCommitCandidateIndex(from defaults: UserDefaults?) -> Int {
         let rawValue = sharedStringValue(
             from: defaults,
@@ -2200,6 +2662,12 @@ final class KeyboardViewController: UIInputViewController {
 
     func currentKanaKanjiCandidateSourceModeFromSharedDefaults() -> KanaKanjiCandidateSourceMode {
         currentKanaKanjiCandidateSourceMode(
+            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        )
+    }
+
+    private func currentContactCandidateDisplayModeFromSharedDefaults() -> ContactCandidateDisplayMode {
+        currentContactCandidateDisplayMode(
             from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
         )
     }

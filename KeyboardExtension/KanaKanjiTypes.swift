@@ -32,6 +32,20 @@ enum KanaKanjiCandidateSourceMode: String {
     }
 }
 
+enum ContactCandidateDisplayMode: String {
+    case off
+    case namesOnly
+    case namesPlusFullName
+
+    var usesContacts: Bool {
+        self != .off
+    }
+
+    var includesFullNameForNameMatches: Bool {
+        self == .namesPlusFullName
+    }
+}
+
 // MARK: - Kana-Kanji inflection definitions split from KanaKanjiConverter.swift
 extension KanaKanjiConverter {
     enum InflectionClass {
