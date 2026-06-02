@@ -65,6 +65,10 @@ final class KanaKanjiConverter {
         "すう": ["はい", "ばい", "ほん"]
     ]
 
+    private static let mixedScriptSahenOptInReadings: Set<String> = [
+        "ねおち"
+    ]
+
     private static func postfixOutputSuffixVariants(for suffix: String) -> [String] {
         var variants = [suffix]
 
@@ -1016,6 +1020,7 @@ final class KanaKanjiConverter {
             let inflectionClass = resolvedClass
                 ?? inferredSahenInflectionClass(
                     for: candidate,
+                    baseReading: baseReading,
                     rule: rule
                 )
 
@@ -1056,6 +1061,7 @@ final class KanaKanjiConverter {
 
     private func inferredSahenInflectionClass(
         for candidate: String,
+        baseReading: String,
         rule: InflectionRule
     ) -> String? {
         guard rule.baseReadingSuffix.isEmpty,
@@ -1063,8 +1069,15 @@ final class KanaKanjiConverter {
             !candidate.hasSuffix("する"),
             !candidate.hasSuffix("くる"),
             !candidate.hasSuffix("来る"),
-            !containsHiragana(candidate),
             containsKanjiOrKatakana(candidate) else {
+            return nil
+        }
+
+        if !containsHiragana(candidate) {
+            return InflectionClass.suru
+        }
+
+        guard Self.mixedScriptSahenOptInReadings.contains(baseReading) else {
             return nil
         }
 
