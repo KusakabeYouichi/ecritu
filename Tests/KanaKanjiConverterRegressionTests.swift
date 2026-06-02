@@ -583,11 +583,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     func testRegressionAdditionalPostfixAndTeAruFormsAreDerivedFromBaseCandidates() {
         converter.learn(reading: "ならべる", candidate: "並べる")
+        converter.learn(reading: "かく", candidate: "書く")
         converter.learn(reading: "すき", candidate: "好き")
         converter.learn(reading: "わすれる", candidate: "忘れる")
 
         let cases: [(reading: String, expected: String)] = [
             ("ならべてある", "並べてある"),
+            ("かいてある", "書いてある"),
+            ("かいてあった", "書いてあった"),
             ("すきなら", "好きなら"),
             ("わすれたから", "忘れたから")
         ]

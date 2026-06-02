@@ -361,6 +361,17 @@ extension KanaKanjiConverter {
         ]
     }
 
+    static func teAruInflectionSuffixes(for teForm: String) -> [String] {
+        guard !teForm.isEmpty else {
+            return []
+        }
+
+        return [
+            teForm + "ある",
+            teForm + "あった"
+        ]
+    }
+
     static func taiGaruInflectionSuffixes(for iForm: String) -> [String] {
         guard !iForm.isEmpty else {
             return []
@@ -471,6 +482,7 @@ extension KanaKanjiConverter {
             suffixes.append(contentsOf: KanaKanjiConverter.taiGaruInflectionSuffixes(for: pattern.iForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: passiveTeForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.teAruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teMiruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teShimauInflectionSuffixes(for: pattern.teForm))
@@ -886,6 +898,7 @@ extension KanaKanjiConverter {
         var suffixes = ["った"]
         suffixes.append(contentsOf: KanaKanjiConverter.taRiSuruInflectionSuffixes(for: "った"))
         suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: "って"))
+        suffixes.append(contentsOf: KanaKanjiConverter.teAruInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teMiruInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teShimauInflectionSuffixes(for: "って"))
