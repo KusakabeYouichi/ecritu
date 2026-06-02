@@ -676,6 +676,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionMixedScriptSahenOptInDerivesNeOchiSuru() {
+        converter.learn(reading: "ねおち", candidate: "寝落ち")
+
+        let candidates = converter.candidates(
+            for: "ねおちする",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(candidates.contains("寝落ちする"), "candidates=\(candidates)")
+    }
+
+    func testRegressionMixedScriptSahenOptInSkipsUnlistedReadings() {
+        converter.learn(reading: "かくうち", candidate: "架空ち")
+
+        let candidates = converter.candidates(
+            for: "かくうちする",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertFalse(candidates.contains("架空ちする"), "candidates=\(candidates)")
+    }
+
     func testRegressionOrdinalMeFallbackPrefersKanjiMeAfterCommittedNumberInput() {
         let candidates = converter.candidates(
             for: "10ぎょうめ",
