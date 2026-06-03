@@ -209,12 +209,15 @@
 	<dict><key>phrase</key><string>扁桃体</string><key>shortcut</key><string>へんとうたい</string></dict>
 	<dict><key>phrase</key><string>サン・ヴァンサン</string><key>shortcut</key><string>さんゔぁんさん</string></dict>
 	<dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
-	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string></dict>
 
 	<!-- 活用あり (用言): 辞書形を登録 -->
 	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string></dict>
 	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string></dict>
 	<dict><key>phrase</key><string>手に入る</string><key>shortcut</key><string>てにはいる</string></dict>
+
+	<!-- サ変動詞化する名詞 -->
+	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string></dict>
+	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string></dict>
 
 	<!-- 活用なし (名詞など) -->
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>
@@ -227,6 +230,6 @@
 	<dict><key>phrase</key><string>ジャングリア</string><key>shortcut</key><string>じゃんぐりあ</string></dict>
 	<dict><key>phrase</key><string>島豚</string><key>shortcut</key><string>しまぶた</string></dict>
 	<dict><key>phrase</key><string>発行権</string><key>shortcut</key><string>はっこうけん</string></dict>
-	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>自画自賛</string></dict>
+	<dict><key>phrase</key><string>ワイン検定</string><key>shortcut</key><string>ワイン検定</string></dict>
 </array>
 </plist>
