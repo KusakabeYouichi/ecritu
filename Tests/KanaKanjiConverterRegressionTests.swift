@@ -106,6 +106,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(candidates.contains("お行く"), "candidates=\(candidates)")
     }
 
+    func testRegressionHonorificGoDoesNotDeriveFromSuruVerbSurface() {
+        converter.learn(reading: "べんきょうする", candidate: "勉強する")
+
+        let candidates = converter.candidates(
+            for: "ごべんきょうする",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertFalse(candidates.contains("ご勉強する"), "candidates=\(candidates)")
+    }
+
     func testRegressionGodanPassiveFormsAreDerivedFromBaseVerbCandidates() {
         converter.learn(reading: "けす", candidate: "消す")
         converter.learn(reading: "うる", candidate: "売る")
