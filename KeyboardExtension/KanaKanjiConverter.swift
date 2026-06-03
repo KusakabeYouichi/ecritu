@@ -725,13 +725,19 @@ final class KanaKanjiConverter {
             )
 
             for candidate in stemCandidates {
-                guard resolvedInflectionClass(
+                let resolvedClass = resolvedInflectionClass(
                     for: candidate,
                     baseReading: stem,
                     systemClassMap: metadata.classMap,
                     hasSystemMetadata: metadata.hasMetadata,
                     userCandidateSet: userCandidateSet
-                ) == nil else {
+                )
+
+                guard !shouldSkipPolitePrefixCandidate(
+                    prefix,
+                    candidate: candidate,
+                    resolvedClass: resolvedClass
+                ) else {
                     continue
                 }
 
@@ -744,6 +750,25 @@ final class KanaKanjiConverter {
         }
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func shouldSkipPolitePrefixCandidate(
+        _ prefix: String,
+        candidate: String,
+        resolvedClass: String?
+    ) -> Bool {
+        guard let resolvedClass else {
+            return false
+        }
+
+        // Allow honorific-go for sahen nouns like "相談" that may be tagged as suru-capable.
+        if prefix == "ご",
+            resolvedClass == InflectionClass.suru,
+            !candidate.hasSuffix("する") {
+            return false
+        }
+
+        return true
     }
 
     private func ordinalMeFallbackCandidates(
