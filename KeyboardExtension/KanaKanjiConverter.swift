@@ -7,7 +7,7 @@ final class KanaKanjiConverter {
         let modeRawValue: String
     }
 
-    private static let politePrefixPassthroughPrefixes: [String] = ["お"]
+    private static let politePrefixPassthroughPrefixes: [String] = ["お", "ご"]
 
     private static let maxPostfixPassthroughDepth = 3
 

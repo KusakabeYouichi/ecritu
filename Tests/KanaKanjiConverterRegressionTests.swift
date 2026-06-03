@@ -64,6 +64,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionHonorificPrefixCandidatesAreDerivedFromRegisteredBaseWords() {
         converter.learn(reading: "かんじょう", candidate: "勘定")
         converter.learn(reading: "さけ", candidate: "酒")
+        converter.learn(reading: "そうだん", candidate: "相談")
 
         let accountCandidates = converter.candidates(
             for: "おかんじょう",
@@ -75,6 +76,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             limit: 24,
             systemCandidateMode: .surface
         )
+        let consultationCandidates = converter.candidates(
+            for: "ごそうだん",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
 
         XCTAssertTrue(
             accountCandidates.contains("お勘定"),
@@ -83,6 +89,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(
             sakeCandidates.contains("お酒"),
             "candidates=\(sakeCandidates)"
+        )
+        XCTAssertTrue(
+            consultationCandidates.contains("ご相談"),
+            "candidates=\(consultationCandidates)"
         )
     }
 
