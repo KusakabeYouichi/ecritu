@@ -8,6 +8,22 @@ final class KeyboardViewController: UIInputViewController {
     private static let sharedKanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
     private static let sharedKanaKanjiConverter = KanaKanjiConverter(store: sharedKanaKanjiStore)
     private static let isSupplementaryExternalCandidatesEnabled = true
+    private static let organizationPrefixReadingsToTrim: [String] = [
+        "かぶしきがいしゃ",
+        "ゆうげんがいしゃ",
+        "ごうどうがいしゃ",
+        "ごうめいがいしゃ",
+        "ごうしがいしゃ",
+        "いっぱんしゃだんほうじん",
+        "いっぱんざいだんほうじん",
+        "こうえきしゃだんほうじん",
+        "こうえきざいだんほうじん",
+        "とくていひえいりかつどうほうじん",
+        "しゃかいふくしほうじん",
+        "いりょうほうじん",
+        "がっこうほうじん",
+        "しゅうきょうほうじん"
+    ]
     private var hostingController: UIHostingController<KeyboardRootView>?
     private var lastRenderConfiguration: RenderConfiguration?
     private var keyboardHeightConstraint: NSLayoutConstraint?
@@ -481,6 +497,7 @@ final class KeyboardViewController: UIInputViewController {
                 CNContactFamilyNameKey as CNKeyDescriptor,
                 CNContactNicknameKey as CNKeyDescriptor,
                 CNContactOrganizationNameKey as CNKeyDescriptor,
+                CNContactPhoneticOrganizationNameKey as CNKeyDescriptor,
                 CNContactPhoneticGivenNameKey as CNKeyDescriptor,
                 CNContactPhoneticMiddleNameKey as CNKeyDescriptor,
                 CNContactPhoneticFamilyNameKey as CNKeyDescriptor
@@ -538,6 +555,7 @@ final class KeyboardViewController: UIInputViewController {
         let middleName = contact.middleName.trimmingCharacters(in: .whitespacesAndNewlines)
         let nickname = contact.nickname.trimmingCharacters(in: .whitespacesAndNewlines)
         let organizationName = contact.organizationName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let phoneticOrganizationName = contact.phoneticOrganizationName.trimmingCharacters(in: .whitespacesAndNewlines)
         let fullName = [familyName, givenName, middleName].filter { !$0.isEmpty }.joined()
 
         let phoneticFamily = contact.phoneticFamilyName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -597,12 +615,74 @@ final class KeyboardViewController: UIInputViewController {
                 )
             ),
             (fullName, [fullName]),
-            (nickname, [nickname]),
-            (organizationName, [organizationName])
+            (nickname, [nickname])
         ]
 
         for (readingText, candidates) in readingCandidates {
             appendCandidates(candidates, forReadingText: readingText, to: &dictionary)
+        }
+
+        if !organizationName.isEmpty {
+            let organizationReadingKeys = companyReadingKeys(
+                organizationName: organizationName,
+                phoneticOrganizationName: phoneticOrganizationName
+            )
+
+            for readingKey in organizationReadingKeys {
+                appendCandidates([organizationName], forReadingText: readingKey, to: &dictionary)
+            }
+        }
+    }
+
+    private func companyReadingKeys(
+        organizationName: String,
+        phoneticOrganizationName: String
+    ) -> [String] {
+        var keys: [String] = []
+        var seen = Set<String>()
+
+        func appendKey(_ reading: String) {
+            let normalized = KanaTextNormalizer.normalizedReading(reading)
+
+            guard !normalized.isEmpty,
+                seen.insert(normalized).inserted else {
+                return
+            }
+
+            keys.append(normalized)
+
+            let trimmed = trimmingOrganizationPrefix(from: normalized)
+
+            guard !trimmed.isEmpty,
+                trimmed != normalized,
+                seen.insert(trimmed).inserted else {
+                return
+            }
+
+            keys.append(trimmed)
+        }
+
+        appendKey(organizationName)
+        appendKey(phoneticOrganizationName)
+
+        return keys
+    }
+
+    private func trimmingOrganizationPrefix(from normalizedReading: String) -> String {
+        var reading = normalizedReading
+
+        while true {
+            var matched = false
+
+            for prefix in Self.organizationPrefixReadingsToTrim where reading.hasPrefix(prefix) {
+                reading = String(reading.dropFirst(prefix.count))
+                matched = true
+                break
+            }
+
+            guard matched else {
+                return reading
+            }
         }
     }
 
