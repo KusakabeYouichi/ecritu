@@ -37,6 +37,9 @@ final class KeyboardViewController: UIInputViewController {
     var lastTextProxyEditAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     var lastSynchronizedContextBeforeInput = ""
+    var composingContextPrefixTail = ""
+    var pendingHostCallbackUnderlineClearNudgeWidth: Int?
+    var pendingHostCallbackUnderlineClearDeadline: CFAbsoluteTime = 0
     private var kanaKanjiStore: KanaKanjiStore { Self.sharedKanaKanjiStore }
     var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
     private lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
@@ -299,6 +302,7 @@ final class KeyboardViewController: UIInputViewController {
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
         )
+        consumePendingHostCallbackUnderlineClearPassIfNeeded(trigger: "textDidChange")
         refreshKeyboardState(trigger: "textDidChange")
     }
 
@@ -313,6 +317,7 @@ final class KeyboardViewController: UIInputViewController {
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
         )
+        consumePendingHostCallbackUnderlineClearPassIfNeeded(trigger: "selectionDidChange")
         refreshKeyboardState(trigger: "selectionDidChange")
     }
 

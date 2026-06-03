@@ -8,6 +8,17 @@ extension KeyboardViewController {
         static let latinSuggestionDefault = 40
     }
 
+    private enum CommitSafetyLimits {
+        static let composingContextPrefixTailLength = 16
+        static let delayedUnderlineClearMs: Int = 30
+        static let delayedUnderlineClearLongMs: Int = 480
+        static let delayedUnderlineClearLongerMs: Int = 900
+        static let verifiedEphemeralClearDelayMs: Int = 120
+        static let verifiedEphemeralMarker = "\u{2060}"
+        static let hostCallbackUnderlineClearWindow: CFTimeInterval = 2.4
+        static let minimumNoReplaceClearNudgeWidth = 8
+    }
+
     private enum DiagnosticsThresholds {
         static let latinSuggestionSlowMs = 18
         static let candidatePresentationSlowMs = 18
@@ -19,6 +30,40 @@ extension KeyboardViewController {
 
     private func inputHandlingTextLengthSummary(_ text: String) -> String {
         "len=\(text.count)"
+    }
+
+    func appendCommitUnderlineDiagnostics(
+        _ stage: String,
+        committedTextLength: Int? = nil,
+        markedTextLength: Int? = nil,
+        note: String = ""
+    ) {
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextAfterInput = textDocumentProxy.documentContextAfterInput ?? ""
+
+        var components: [String] = [
+            "下線診断",
+            "stage=\(stage)",
+            "before=\(inputHandlingTextLengthSummary(contextBeforeInput))",
+            "after=\(inputHandlingTextLengthSummary(contextAfterInput))",
+            "composingLen=\(composingRawText.count)",
+            "readingLen=\(composingReading.count)",
+            "active=\(activeConversion == nil ? 0 : 1)"
+        ]
+
+        if let committedTextLength {
+            components.append("committedLen=\(committedTextLength)")
+        }
+
+        if let markedTextLength {
+            components.append("markedLen=\(markedTextLength)")
+        }
+
+        if !note.isEmpty {
+            components.append("note=\(note)")
+        }
+
+        appendKeyboardDiagnosticsLogFromInputHandling(components.joined(separator: " "))
     }
 
     func currentLatinSuggestionQueryFromTextContext() -> String {
@@ -132,6 +177,10 @@ extension KeyboardViewController {
 
         if currentInputMode == .kana,
             let normalizedKana = KanaTextNormalizer.normalizedKanaCharacter(from: text) {
+            if composingRawText.isEmpty {
+                rememberComposingContextPrefixTail()
+            }
+
             composingRawText.append(text)
             composingReading.append(normalizedKana)
 
@@ -493,7 +542,6 @@ extension KeyboardViewController {
                 committedText: activeConversion.sourceText,
                 learn: true
             )
-            clearMarkedComposingText()
             clearComposingState()
             refreshKeyboardStateAsync()
             return
@@ -527,7 +575,6 @@ extension KeyboardViewController {
                 committedText: committedText,
                 learn: true
             )
-            clearMarkedComposingText()
             clearComposingState()
             refreshKeyboardStateAsync()
             return
@@ -760,6 +807,427 @@ extension KeyboardViewController {
         textDocumentProxy.unmarkText()
     }
 
+    func rememberComposingContextPrefixTail() {
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        composingContextPrefixTail = String(
+            contextBeforeInput.suffix(CommitSafetyLimits.composingContextPrefixTailLength)
+        )
+    }
+
+    func performNonDestructiveUnderlineClearPass(
+        stage: String,
+        nudgeWidth: Int
+    ) {
+        let resolvedNudgeWidth = max(1, nudgeWidth)
+
+        appendCommitUnderlineDiagnostics(
+            "clearPass:start:\(stage)",
+            note: "nudge=\(resolvedNudgeWidth)"
+        )
+
+        markTextProxyEdit()
+        textDocumentProxy.unmarkText()
+
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextAfterInput = textDocumentProxy.documentContextAfterInput ?? ""
+
+        if !contextBeforeInput.isEmpty {
+            let backwardOffset = min(resolvedNudgeWidth, contextBeforeInput.count)
+            markTextProxyEdit()
+            textDocumentProxy.adjustTextPosition(byCharacterOffset: -backwardOffset)
+            markTextProxyEdit()
+            textDocumentProxy.adjustTextPosition(byCharacterOffset: backwardOffset)
+        } else if !contextAfterInput.isEmpty {
+            let forwardOffset = min(resolvedNudgeWidth, contextAfterInput.count)
+            markTextProxyEdit()
+            textDocumentProxy.adjustTextPosition(byCharacterOffset: forwardOffset)
+            markTextProxyEdit()
+            textDocumentProxy.adjustTextPosition(byCharacterOffset: -forwardOffset)
+        }
+
+        markTextProxyEdit()
+        textDocumentProxy.unmarkText()
+
+        appendCommitUnderlineDiagnostics(
+            "clearPass:end:\(stage)",
+            note: "nudge=\(resolvedNudgeWidth)"
+        )
+    }
+
+    func clearMarkedTextArtifactsAfterCommit(
+        committedTextLength: Int,
+        nudgeWidth: Int = 1,
+        allowVerifiedEphemeralFallback: Bool = false
+    ) {
+        let resolvedNudgeWidth = max(1, nudgeWidth)
+
+        appendCommitUnderlineDiagnostics(
+            "clearArtifacts:start",
+            committedTextLength: committedTextLength,
+            note: "nudge=\(resolvedNudgeWidth)"
+        )
+
+        // Apply repeated non-destructive unmarking so hosts such as Notes/Safari
+        // can clear visual underline artifacts without mutating committed text.
+        performNonDestructiveUnderlineClearPass(
+            stage: "immediate-1",
+            nudgeWidth: resolvedNudgeWidth
+        )
+        performNonDestructiveUnderlineClearPass(
+            stage: "immediate-2",
+            nudgeWidth: resolvedNudgeWidth
+        )
+
+        schedulePendingHostCallbackUnderlineClearPass(nudgeWidth: resolvedNudgeWidth)
+
+        DispatchQueue.main.async { [weak self] in
+            self?.performNonDestructiveUnderlineClearPass(
+                stage: "async",
+                nudgeWidth: resolvedNudgeWidth
+            )
+        }
+
+        let delayedPasses: [(interval: DispatchTimeInterval, stage: String)] = [
+            (.milliseconds(CommitSafetyLimits.delayedUnderlineClearMs), "delayed-30ms"),
+            (.milliseconds(120), "delayed-120ms"),
+            (.milliseconds(CommitSafetyLimits.delayedUnderlineClearLongMs), "delayed-480ms"),
+            (.milliseconds(CommitSafetyLimits.delayedUnderlineClearLongerMs), "delayed-900ms")
+        ]
+
+        for delayedPass in delayedPasses {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delayedPass.interval) { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                // Skip delayed clear once user starts a new composition.
+                guard self.activeConversion == nil,
+                    self.composingRawText.isEmpty,
+                    self.composingReading.isEmpty else {
+                    self.appendCommitUnderlineDiagnostics(
+                        "clearArtifacts:skip:\(delayedPass.stage)"
+                    )
+                    return
+                }
+
+                self.performNonDestructiveUnderlineClearPass(
+                    stage: delayedPass.stage,
+                    nudgeWidth: resolvedNudgeWidth
+                )
+            }
+        }
+
+        if allowVerifiedEphemeralFallback {
+            appendCommitUnderlineDiagnostics(
+                "clearArtifacts:verifiedEphemeralScheduled",
+                committedTextLength: committedTextLength,
+                note: "delayMs=\(CommitSafetyLimits.verifiedEphemeralClearDelayMs)"
+            )
+
+            DispatchQueue.main.asyncAfter(
+                deadline: .now() + .milliseconds(CommitSafetyLimits.verifiedEphemeralClearDelayMs)
+            ) { [weak self] in
+                guard let self else {
+                    return
+                }
+
+                guard self.activeConversion == nil,
+                    self.composingRawText.isEmpty,
+                    self.composingReading.isEmpty else {
+                    self.appendCommitUnderlineDiagnostics("clearArtifacts:skip:verifiedEphemeral")
+                    return
+                }
+
+                self.performVerifiedEphemeralUnderlineClearPass(stage: "verifiedEphemeral")
+            }
+        }
+
+        appendCommitUnderlineDiagnostics(
+            "clearArtifacts:scheduled",
+            committedTextLength: committedTextLength,
+            note: "nudge=\(resolvedNudgeWidth)"
+        )
+    }
+
+    func performVerifiedEphemeralUnderlineClearPass(stage: String) {
+        let marker = CommitSafetyLimits.verifiedEphemeralMarker
+        let contextBeforeInsert = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextAfterInput = textDocumentProxy.documentContextAfterInput ?? ""
+
+        guard !contextBeforeInsert.isEmpty || !contextAfterInput.isEmpty else {
+            appendCommitUnderlineDiagnostics("clearPass:skip:\(stage)", note: "reason=noContext")
+            return
+        }
+
+        appendCommitUnderlineDiagnostics(
+            "clearPass:start:\(stage)",
+            note: "before=\(inputHandlingTextLengthSummary(contextBeforeInsert))"
+        )
+
+        markTextProxyEdit()
+        textDocumentProxy.insertText(marker)
+
+        let contextAfterInsert = textDocumentProxy.documentContextBeforeInput ?? ""
+        let insertAppearsAtSuffix = contextAfterInsert.hasSuffix(marker)
+        let insertLikelyApplied = insertAppearsAtSuffix
+            && (contextAfterInsert.count > contextBeforeInsert.count
+                || !contextBeforeInsert.hasSuffix(marker))
+
+        if insertLikelyApplied {
+            appendCommitUnderlineDiagnostics("clearPass:verifiedEphemeralDelete:\(stage)")
+            markTextProxyEdit()
+            textDocumentProxy.deleteBackward()
+        } else {
+            appendCommitUnderlineDiagnostics(
+                "clearPass:verifiedEphemeralSkipDelete:\(stage)",
+                note: "before=\(inputHandlingTextLengthSummary(contextBeforeInsert)) afterInsert=\(inputHandlingTextLengthSummary(contextAfterInsert))"
+            )
+        }
+
+        markTextProxyEdit()
+        textDocumentProxy.unmarkText()
+
+        let contextAfterPass = textDocumentProxy.documentContextBeforeInput ?? ""
+        appendCommitUnderlineDiagnostics(
+            "clearPass:end:\(stage)",
+            note: "before=\(inputHandlingTextLengthSummary(contextBeforeInsert)) afterInsert=\(inputHandlingTextLengthSummary(contextAfterInsert)) afterPass=\(inputHandlingTextLengthSummary(contextAfterPass))"
+        )
+    }
+
+    func schedulePendingHostCallbackUnderlineClearPass(nudgeWidth: Int) {
+        let resolvedNudgeWidth = max(1, nudgeWidth)
+        pendingHostCallbackUnderlineClearNudgeWidth = resolvedNudgeWidth
+        pendingHostCallbackUnderlineClearDeadline =
+            CFAbsoluteTimeGetCurrent() + CommitSafetyLimits.hostCallbackUnderlineClearWindow
+
+        appendCommitUnderlineDiagnostics(
+            "clearArtifacts:hostSyncScheduled",
+            note: "nudge=\(resolvedNudgeWidth)"
+        )
+    }
+
+    func consumePendingHostCallbackUnderlineClearPassIfNeeded(trigger: String) {
+        guard let nudgeWidth = pendingHostCallbackUnderlineClearNudgeWidth else {
+            return
+        }
+
+        let now = CFAbsoluteTimeGetCurrent()
+
+        if now > pendingHostCallbackUnderlineClearDeadline {
+            pendingHostCallbackUnderlineClearNudgeWidth = nil
+            pendingHostCallbackUnderlineClearDeadline = 0
+            appendCommitUnderlineDiagnostics("clearArtifacts:hostSyncExpired:\(trigger)")
+            return
+        }
+
+        guard activeConversion == nil,
+            composingRawText.isEmpty,
+            composingReading.isEmpty else {
+            pendingHostCallbackUnderlineClearNudgeWidth = nil
+            pendingHostCallbackUnderlineClearDeadline = 0
+            appendCommitUnderlineDiagnostics("clearArtifacts:hostSyncSkip:\(trigger)")
+            return
+        }
+
+        pendingHostCallbackUnderlineClearNudgeWidth = nil
+        pendingHostCallbackUnderlineClearDeadline = 0
+
+        performNonDestructiveUnderlineClearPass(
+            stage: "hostSync-\(trigger)",
+            nudgeWidth: nudgeWidth
+        )
+    }
+
+    func performNoReplaceCommitPreflightToggleIfNeeded(
+        committedText: String,
+        contextBeforeInput: String
+    ) {
+        guard !committedText.isEmpty else {
+            return
+        }
+
+        guard !composingRawText.isEmpty || activeConversion != nil else {
+            appendCommitUnderlineDiagnostics("finalize:noReplacePreflightSkip", note: "reason=noComposing")
+            return
+        }
+
+        let hasContextAnchor = composingContextPrefixTail.isEmpty
+            || contextBeforeInput.hasSuffix(composingContextPrefixTail)
+
+        guard hasContextAnchor else {
+            appendCommitUnderlineDiagnostics("finalize:noReplacePreflightSkip", note: "reason=anchorMismatch")
+            return
+        }
+
+        appendCommitUnderlineDiagnostics(
+            "finalize:noReplacePreflightToggle",
+            committedTextLength: committedText.count
+        )
+
+        markTextProxyEdit()
+        textDocumentProxy.setMarkedText(
+            committedText,
+            selectedRange: NSRange(location: 0, length: 0)
+        )
+        markTextProxyEdit()
+        textDocumentProxy.setMarkedText(
+            committedText,
+            selectedRange: NSRange(location: committedText.count, length: 0)
+        )
+    }
+
+    func finalizeCommitWithoutReplacingText(_ committedText: String) {
+        appendCommitUnderlineDiagnostics(
+            "finalize:start",
+            committedTextLength: committedText.count
+        )
+
+        var shouldUseExtendedNudgeWidth = false
+
+        if !committedText.isEmpty {
+            let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+            let expectedMarkedSuffix = composingContextPrefixTail + committedText
+            let canReplaceByDeleteAndInsert = contextBeforeInput.hasSuffix(expectedMarkedSuffix)
+                || contextBeforeInput.hasSuffix(committedText)
+
+            appendCommitUnderlineDiagnostics(
+                "finalize:decision",
+                committedTextLength: committedText.count,
+                note: "canReplace=\(canReplaceByDeleteAndInsert ? 1 : 0)"
+            )
+
+            if canReplaceByDeleteAndInsert {
+                markTextProxyEdit()
+                textDocumentProxy.unmarkText()
+
+                let contextAfterUnmark = textDocumentProxy.documentContextBeforeInput ?? ""
+                if contextAfterUnmark.hasSuffix(committedText) {
+                    appendCommitUnderlineDiagnostics(
+                        "finalize:unmarkSucceededReplace",
+                        committedTextLength: committedText.count
+                    )
+                } else {
+                    appendCommitUnderlineDiagnostics(
+                        "finalize:toggleMarkedAfterUnmark",
+                        committedTextLength: committedText.count
+                    )
+                    markTextProxyEdit()
+                    textDocumentProxy.setMarkedText(
+                        committedText,
+                        selectedRange: NSRange(location: 0, length: 0)
+                    )
+                    markTextProxyEdit()
+                    textDocumentProxy.setMarkedText(
+                        committedText,
+                        selectedRange: NSRange(location: committedText.count, length: 0)
+                    )
+                }
+            } else {
+                shouldUseExtendedNudgeWidth = true
+
+                // Hosts such as Notes/Safari may hide marked text from context.
+                // Prime marked state first, then try unmark and fallback insert.
+                performNoReplaceCommitPreflightToggleIfNeeded(
+                    committedText: committedText,
+                    contextBeforeInput: contextBeforeInput
+                )
+
+                // Try unmark first, then force commit with insert if needed.
+                appendCommitUnderlineDiagnostics(
+                    "finalize:noReplaceTryUnmark",
+                    committedTextLength: committedText.count
+                )
+                markTextProxyEdit()
+                textDocumentProxy.unmarkText()
+
+                let contextAfterUnmark = textDocumentProxy.documentContextBeforeInput ?? ""
+                let likelyCommittedByUnmark = contextAfterUnmark.hasSuffix(committedText)
+                    && contextAfterUnmark.count >= contextBeforeInput.count
+
+                if !likelyCommittedByUnmark {
+                    appendCommitUnderlineDiagnostics(
+                        "finalize:insertFallbackNoReplace",
+                        committedTextLength: committedText.count,
+                        note: "afterUnmark=\(inputHandlingTextLengthSummary(contextAfterUnmark))"
+                    )
+                    markTextProxyEdit()
+                    textDocumentProxy.insertText(committedText)
+                } else {
+                    appendCommitUnderlineDiagnostics(
+                        "finalize:unmarkSucceededNoReplace",
+                        committedTextLength: committedText.count,
+                        note: "afterUnmark=\(inputHandlingTextLengthSummary(contextAfterUnmark))"
+                    )
+                }
+            }
+        }
+
+        let clearNudgeWidth = shouldUseExtendedNudgeWidth
+            ? max(CommitSafetyLimits.minimumNoReplaceClearNudgeWidth, committedText.count)
+            : 1
+
+        appendCommitUnderlineDiagnostics(
+            "finalize:clearPlan",
+            committedTextLength: committedText.count,
+            note: "nudge=\(clearNudgeWidth)"
+        )
+
+        clearMarkedTextArtifactsAfterCommit(
+            committedTextLength: committedText.count,
+            nudgeWidth: clearNudgeWidth,
+            allowVerifiedEphemeralFallback: shouldUseExtendedNudgeWidth
+        )
+    }
+
+    func commitMarkedTextByReplacingCurrentMarkedText(
+        currentMarkedText: String,
+        committedText: String
+    ) {
+        appendCommitUnderlineDiagnostics(
+            "commitReplace:start",
+            committedTextLength: committedText.count,
+            markedTextLength: currentMarkedText.count
+        )
+
+        if currentMarkedText == committedText {
+            appendCommitUnderlineDiagnostics(
+                "commitReplace:sameText",
+                committedTextLength: committedText.count,
+                markedTextLength: currentMarkedText.count
+            )
+            finalizeCommitWithoutReplacingText(committedText)
+            return
+        }
+
+        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let expectedMarkedSuffix = composingContextPrefixTail + currentMarkedText
+        let canLikelyReplaceMarkedText = !currentMarkedText.isEmpty
+            && contextBeforeInput.hasSuffix(expectedMarkedSuffix)
+
+        if !canLikelyReplaceMarkedText {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "確定置換をフォールバック context=\(inputHandlingTextLengthSummary(contextBeforeInput)) markedLen=\(currentMarkedText.count) committedLen=\(committedText.count)"
+            )
+        }
+
+        // Prefer replacing the currently marked range directly and avoid
+        // deleteBackward-based replacement that can remove surrounding text.
+        appendCommitUnderlineDiagnostics(
+            "commitReplace:setMarked",
+            committedTextLength: committedText.count,
+            markedTextLength: currentMarkedText.count
+        )
+        markTextProxyEdit()
+        textDocumentProxy.setMarkedText(
+            committedText,
+            selectedRange: NSRange(location: committedText.count, length: 0)
+        )
+        clearMarkedTextArtifactsAfterCommit(
+            committedTextLength: committedText.count,
+            nudgeWidth: 1
+        )
+    }
+
     func candidatesForPresentation(
         from candidates: [String],
         composingText: String
@@ -867,6 +1335,7 @@ extension KeyboardViewController {
         composingRawText = ""
         composingReading = ""
         hasParenthesesWrapper = false
+        composingContextPrefixTail = ""
     }
 
     func wrappedCommittedTextIfNeeded(_ text: String) -> String {
@@ -889,18 +1358,10 @@ extension KeyboardViewController {
         trailingText: String = ""
     ) {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
-        // Prefer replacing current marked text directly to avoid deleting already committed text.
-        markTextProxyEdit()
-        textDocumentProxy.setMarkedText(
-            committedTextForInsertion,
-            selectedRange: NSRange(location: committedTextForInsertion.count, length: 0)
+        commitMarkedTextByReplacingCurrentMarkedText(
+            currentMarkedText: sourceText,
+            committedText: committedTextForInsertion
         )
-        markTextProxyEdit()
-        textDocumentProxy.unmarkText()
-        DispatchQueue.main.async { [weak self] in
-            self?.markTextProxyEdit()
-            self?.textDocumentProxy.unmarkText()
-        }
 
         if learn {
             kanaKanjiConverter.learn(reading: sourceReading, candidate: committedText)
@@ -928,18 +1389,11 @@ extension KeyboardViewController {
         trailingText: String = ""
     ) {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
-        // Replace marked conversion text directly and commit it.
-        markTextProxyEdit()
-        textDocumentProxy.setMarkedText(
-            committedTextForInsertion,
-            selectedRange: NSRange(location: committedTextForInsertion.count, length: 0)
+
+        commitMarkedTextByReplacingCurrentMarkedText(
+            currentMarkedText: conversion.committedText,
+            committedText: committedTextForInsertion
         )
-        markTextProxyEdit()
-        textDocumentProxy.unmarkText()
-        DispatchQueue.main.async { [weak self] in
-            self?.markTextProxyEdit()
-            self?.textDocumentProxy.unmarkText()
-        }
 
         if learn {
             kanaKanjiConverter.learn(
