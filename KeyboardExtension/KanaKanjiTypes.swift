@@ -149,6 +149,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ます", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
