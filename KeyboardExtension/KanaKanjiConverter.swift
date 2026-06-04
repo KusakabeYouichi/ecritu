@@ -525,7 +525,7 @@ final class KanaKanjiConverter {
         for candidate in Array(scores.keys) {
             var delta = 0
 
-            if candidate.hasSuffix(matchedSuffix) {
+            if hasMatchingInflectionRankingSuffix(candidate, readingSuffix: matchedSuffix) {
                 delta += 220
             } else if !containsHiragana(candidate) {
                 // Readings that look inflected should not prioritize pure-kanji name-like entries.
@@ -545,6 +545,25 @@ final class KanaKanjiConverter {
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
+    }
+
+    private func hasMatchingInflectionRankingSuffix(
+        _ candidate: String,
+        readingSuffix: String
+    ) -> Bool {
+        if candidate.hasSuffix(readingSuffix) {
+            return true
+        }
+
+        guard let katakanaSuffix = readingSuffix.applyingTransform(
+            .hiraganaToKatakana,
+            reverse: false
+        ),
+            katakanaSuffix != readingSuffix else {
+            return false
+        }
+
+        return candidate.hasSuffix(katakanaSuffix)
     }
 
     private func applyNumericUnitFallbackPriorityBoost(
