@@ -125,8 +125,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let cases: [(reading: String, expected: String)] = [
             ("おつれする", "お連れする"),
+            ("おつれしたい", "お連れしたい"),
             ("おむかえする", "お迎えする"),
-            ("およびする", "お呼びする")
+            ("おむかえしたい", "お迎えしたい"),
+            ("およびする", "お呼びする"),
+            ("およびしたい", "お呼びしたい")
         ]
 
         for testCase in cases {
