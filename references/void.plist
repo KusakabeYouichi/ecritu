@@ -2,7 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- 4. その他・分類に不能 -->
 	<dict><key>phrase</key><string>고추</string><key>shortcut</key><string>こちゅ</string></dict>
 	<dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>さき</string></dict>
 	<dict><key>phrase</key><string>µ</string><key>shortcut</key><string>まいくろ</string></dict>
@@ -208,6 +207,7 @@
 	<dict><key>phrase</key><string>何箇所</string><key>shortcut</key><string>なんかしょ</string></dict>
 	<dict><key>phrase</key><string>扁桃体</string><key>shortcut</key><string>へんとうたい</string></dict>
 	<dict><key>phrase</key><string>サン・ヴァンサン</string><key>shortcut</key><string>さんゔぁんさん</string></dict>
+	<dict><key>phrase</key><string>St. Vincent</string><key>shortcut</key><string>さんゔぁんさん</string></dict>
 	<dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
 
 	<!-- 活用あり (用言): 辞書形を登録 -->
@@ -230,6 +230,11 @@
 	<dict><key>phrase</key><string>ジャングリア</string><key>shortcut</key><string>じゃんぐりあ</string></dict>
 	<dict><key>phrase</key><string>島豚</string><key>shortcut</key><string>しまぶた</string></dict>
 	<dict><key>phrase</key><string>発行権</string><key>shortcut</key><string>はっこうけん</string></dict>
-	<dict><key>phrase</key><string>ワイン検定</string><key>shortcut</key><string>ワイン検定</string></dict>
+	<dict><key>phrase</key><string>ワイン検定</string><key>shortcut</key><string>わいんけんてい</string></dict>
+	<dict><key>phrase</key><string>ワインエキスパート</string><key>shortcut</key><string>わいんえきすぱーと</string></dict>
+	<dict><key>phrase</key><string>ソムリエ・エクセレンス</string><key>shortcut</key><string>そむりええくせれんす</string></dict>
+	<dict><key>phrase</key><string>ワインエキスパート・エクセレンス</string><key>shortcut</key><string>わいんえきすぱーとえくせれんす</string></dict>
+	<dict><key>phrase</key><string>SAKE DIPLOMA</string><key>shortcut</key><string>さけでぃぷろま</string></dict>
+	<dict><key>phrase</key><string>カップヌードル</string><key>shortcut</key><string>かっぷぬーどる</string></dict>
 </array>
 </plist>
