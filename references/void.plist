@@ -251,5 +251,7 @@
 	<dict><key>phrase</key><string>コインチェック</string><key>shortcut</key><string>こいんちぇっく</string></dict>
 	<dict><key>phrase</key><string>Coincheck</string><key>shortcut</key><string>こいんちぇっく</string></dict>
 	<dict><key>phrase</key><string>問題数</string><key>shortcut</key><string>もんだいすう</string></dict>
+	<dict><key>phrase</key><string>発泡スチロール</string><key>shortcut</key><string>はっぽうすちろーる</string></dict>
+	<dict><key>phrase</key><string>呪術廻戦</string><key>shortcut</key><string>じゅじゅつかいせん</string></dict>
 </array>
 </plist>
