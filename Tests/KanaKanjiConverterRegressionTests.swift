@@ -448,8 +448,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     func testRegressionAdjectiveSugiruFormsAreDerivedFromBaseAdjectiveCandidates() {
         converter.learn(reading: "おそい", candidate: "遅い")
+        converter.learn(reading: "わるい", candidate: "悪い")
 
         let cases: [(reading: String, expected: String)] = [
+            ("わるすぎ", "悪すぎ"),
             ("おそすぎる", "遅すぎる"),
             ("おそすぎない", "遅すぎない"),
             ("おそすぎて", "遅すぎて"),
@@ -755,11 +757,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.learn(reading: "くる", candidate: "来る")
 
         let cases: [(reading: String, expected: String)] = [
+            ("かきすぎ", "書きすぎ"),
             ("かきすぎる", "書きすぎる"),
             ("かきすぎた", "書きすぎた"),
+            ("たべすぎ", "食べすぎ"),
             ("たべすぎる", "食べすぎる"),
+            ("あんないしすぎ", "案内しすぎ"),
             ("あんないしすぎない", "案内しすぎない"),
+            ("かくにんしすぎ", "確認しすぎ"),
             ("かくにんしすぎました", "確認しすぎました"),
+            ("きすぎ", "来すぎ"),
             ("きすぎる", "来すぎる"),
             ("きすぎません", "来すぎません")
         ]
