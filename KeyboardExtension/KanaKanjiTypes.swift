@@ -116,6 +116,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "くなかった", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くなかったです", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "かった", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "かったり", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "かったです", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くありません", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くありませんでした", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
@@ -900,7 +901,7 @@ extension KanaKanjiConverter {
         "している", "きている", "でいる", "ている", "してる", "きてる", "でる", "てる",
         "きました", "しました", "きません", "しません", "ました", "ます",
         "なら", "から",
-        "くない", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たがらない", "たがります", "たい", "れば", "ねば", "ず",
+        "くない", "かったり", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たがらない", "たがります", "たい", "れば", "ねば", "ず",
         "たがった", "たがって", "たがる",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
         "ない", "きて", "きた", "くて", "て", "た"
