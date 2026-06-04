@@ -135,10 +135,20 @@
 	<dict><key>phrase</key><string>上二之町</string><key>shortcut</key><string>かみにのまち</string></dict>
 	<dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
 	<dict><key>phrase</key><string>数個</string><key>shortcut</key><string>すうこ</string></dict>
+	<dict><key>phrase</key><string>数か月</string><key>shortcut</key><string>すうかげつ</string></dict>
+	<dict><key>phrase</key><string>数か所</string><key>shortcut</key><string>すうかしょ</string></dict>
 	<dict><key>phrase</key><string>数週間</string><key>shortcut</key><string>すうしゅうかん</string></dict>
+	<dict><key>phrase</key><string>数時間</string><key>shortcut</key><string>すうじかん</string></dict>
 	<dict><key>phrase</key><string>数日</string><key>shortcut</key><string>すうじつ</string></dict>
+	<dict><key>phrase</key><string>数台</string><key>shortcut</key><string>すうだい</string></dict>
+	<dict><key>phrase</key><string>数年</string><key>shortcut</key><string>すうねん</string></dict>
+	<dict><key>phrase</key><string>数人</string><key>shortcut</key><string>すうにん</string></dict>
+	<dict><key>phrase</key><string>数秒</string><key>shortcut</key><string>すうびょう</string></dict>
+	<dict><key>phrase</key><string>数分</string><key>shortcut</key><string>すうふん</string></dict>
 	<dict><key>phrase</key><string>数本</string><key>shortcut</key><string>すうほん</string></dict>
 	<dict><key>phrase</key><string>数枚</string><key>shortcut</key><string>すうまい</string></dict>
+	<dict><key>phrase</key><string>数件</string><key>shortcut</key><string>すうけん</string></dict>
+	<dict><key>phrase</key><string>数回</string><key>shortcut</key><string>すうかい</string></dict>
 	<dict><key>phrase</key><string>正式版</string><key>shortcut</key><string>せいしきばん</string></dict>
 	<dict><key>phrase</key><string>清和会</string><key>shortcut</key><string>せいわかい</string></dict>
 	<dict><key>phrase</key><string>生香園</string><key>shortcut</key><string>せいこうえん</string></dict>
@@ -247,5 +257,6 @@
 	<dict><key>phrase</key><string>ナチュール・ワイン</string><key>shortcut</key><string>なちゅーるわいん</string></dict>
 	<dict><key>phrase</key><string>ナチュラル・ワイン</string><key>shortcut</key><string>なちゅらるわいん</string></dict>
 	<dict><key>phrase</key><string>コンヴェンショナル</string><key>shortcut</key><string>こんゔぇんしょなる</string></dict>
+	<dict><key>phrase</key><string>戦死者</string><key>shortcut</key><string>せんししゃ</string></dict>
 </array>
 </plist>
