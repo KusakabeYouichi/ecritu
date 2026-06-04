@@ -588,6 +588,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionAdjectiveTariFormIsDerivedFromBaseAdjectiveCandidate() {
+        converter.learn(reading: "いたい", candidate: "痛い")
+
+        let candidates = converter.candidates(
+            for: "いたかったり",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("痛かったり"),
+            "candidates=\(candidates)"
+        )
+    }
+
     func testRegressionAdjectiveRenyoNegativeFormIsDerivedFromBaseAdjectiveCandidate() {
         converter.learn(reading: "たかい", candidate: "高い")
 
