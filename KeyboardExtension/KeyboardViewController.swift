@@ -50,6 +50,8 @@ final class KeyboardViewController: UIInputViewController {
     var activeConversion: ActiveConversion?
     var recentKanaPlainCommit: RecentKanaPlainCommit?
     let recentKanaPlainCommitUpgradeWindow: TimeInterval = 0.45
+    var lastKanaPostModifierAppliedAt: CFAbsoluteTime = 0
+    var lastKanaPostModifierResultCharacter: Character?
     var lastTextProxyEditAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     var lastSynchronizedContextBeforeInput = ""
