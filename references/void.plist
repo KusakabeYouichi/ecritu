@@ -226,6 +226,9 @@
 	<dict><key>phrase</key><string>島豚</string><key>shortcut</key><string>しまぶた</string></dict>
 	<dict><key>phrase</key><string>発行権</string><key>shortcut</key><string>はっこうけん</string></dict>
 	<dict><key>phrase</key><string>ワイン検定</string><key>shortcut</key><string>わいんけんてい</string></dict>
+	<dict><key>phrase</key><string>ブロンズクラス</string><key>shortcut</key><string>ぶろんずくらす</string></dict>
+	<dict><key>phrase</key><string>シルバークラス</string><key>shortcut</key><string>しるばーくらす</string></dict>
+	<dict><key>phrase</key><string>シルヴァークラス</string><key>shortcut</key><string>しるゔぁーくらす</string></dict>
 	<dict><key>phrase</key><string>ワインエキスパート</string><key>shortcut</key><string>わいんえきすぱーと</string></dict>
 	<dict><key>phrase</key><string>ソムリエ・エクセレンス</string><key>shortcut</key><string>そむりええくせれんす</string></dict>
 	<dict><key>phrase</key><string>ワインエキスパート・エクセレンス</string><key>shortcut</key><string>わいんえきすぱーとえくせれんす</string></dict>
@@ -243,5 +246,10 @@
 	<dict><key>phrase</key><string>ナチュラル・ワイン</string><key>shortcut</key><string>なちゅらるわいん</string></dict>
 	<dict><key>phrase</key><string>コンヴェンショナル</string><key>shortcut</key><string>こんゔぇんしょなる</string></dict>
 	<dict><key>phrase</key><string>戦死者</string><key>shortcut</key><string>せんししゃ</string></dict>
+	<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict>
+	<dict><key>phrase</key><string>ランティーユ</string><key>shortcut</key><string>らんてぃーゆ</string></dict>
+	<dict><key>phrase</key><string>コインチェック</string><key>shortcut</key><string>こいんちぇっく</string></dict>
+	<dict><key>phrase</key><string>Coincheck</string><key>shortcut</key><string>こいんちぇっく</string></dict>
+	<dict><key>phrase</key><string>問題数</string><key>shortcut</key><string>もんだいすう</string></dict>
 </array>
 </plist>
