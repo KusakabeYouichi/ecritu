@@ -236,5 +236,16 @@
 	<dict><key>phrase</key><string>ワインエキスパート・エクセレンス</string><key>shortcut</key><string>わいんえきすぱーとえくせれんす</string></dict>
 	<dict><key>phrase</key><string>SAKE DIPLOMA</string><key>shortcut</key><string>さけでぃぷろま</string></dict>
 	<dict><key>phrase</key><string>カップヌードル</string><key>shortcut</key><string>かっぷぬーどる</string></dict>
+	<dict><key>phrase</key><string>サ変動詞</string><key>shortcut</key><string>さへんどうし</string></dict>
+	<dict><key>phrase</key><string>カ変動詞</string><key>shortcut</key><string>かへんどうし</string></dict>
+	<dict><key>phrase</key><string>サ行変格活用変</string><key>shortcut</key><string>さぎょうへんかくかつよう</string></dict>
+	<dict><key>phrase</key><string>カ行変格活用変</string><key>shortcut</key><string>かぎょうへんかくかつよう</string></dict>
+	<dict><key>phrase</key><string>カ行変格活用変</string><key>shortcut</key><string>かぎょうへんかくかつよう</string></dict>
+	<dict><key>phrase</key><string>名詞形</string><key>shortcut</key><string>めいしけい</string></dict>
+	<dict><key>phrase</key><string>ナチュール系</string><key>shortcut</key><string>なちゅーるけい</string></dict>
+	<dict><key>phrase</key><string>ナチュラル系</string><key>shortcut</key><string>なちゅらるけい</string></dict>
+	<dict><key>phrase</key><string>ナチュール・ワイン</string><key>shortcut</key><string>なちゅーるわいん</string></dict>
+	<dict><key>phrase</key><string>ナチュラル・ワイン</string><key>shortcut</key><string>なちゅらるわいん</string></dict>
+	<dict><key>phrase</key><string>コンヴェンショナル</string><key>shortcut</key><string>こんゔぇんしょなる</string></dict>
 </array>
 </plist>
