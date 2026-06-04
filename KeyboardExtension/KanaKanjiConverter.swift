@@ -44,6 +44,12 @@ final class KanaKanjiConverter {
         "になる"
     ]
 
+    private static let honorificOSoftRequestSuffixes: [String] = [
+        "なきように",
+        "なきよう",
+        "なく"
+    ]
+
     private static let maxPostfixPassthroughDepth = 3
 
     private static let kuruKanjiCandidateBoost = 1450
@@ -799,6 +805,16 @@ final class KanaKanjiConverter {
                 )
             )
 
+            derived.append(
+                contentsOf: politePrefixSoftRequestCandidates(
+                    prefix: prefix,
+                    stemReading: stem,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            )
+
             let stemCandidates = candidatesForReading(
                 stem,
                 userDictionary: userDictionary,
@@ -841,6 +857,98 @@ final class KanaKanjiConverter {
         }
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func politePrefixSoftRequestCandidates(
+        prefix: String,
+        stemReading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard prefix == "お" else {
+            return []
+        }
+
+        var derived: [String] = []
+
+        for requestSuffix in Self.honorificOSoftRequestSuffixes where stemReading.hasSuffix(requestSuffix) {
+            guard let baseStemReading = removingSuffix(stemReading, suffix: requestSuffix),
+                !baseStemReading.isEmpty else {
+                continue
+            }
+
+            derived.append(
+                contentsOf: politePrefixDirectStemCandidates(
+                    prefix: prefix,
+                    stemReading: baseStemReading,
+                    trailingSuffix: requestSuffix,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            )
+
+            derived.append(
+                contentsOf: politePrefixRenyouCandidates(
+                    prefix: prefix,
+                    trailingSuffix: requestSuffix,
+                    renyouReading: baseStemReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            )
+        }
+
+        return uniqueCandidates(from: derived)
+    }
+
+    private func politePrefixDirectStemCandidates(
+        prefix: String,
+        stemReading: String,
+        trailingSuffix: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard !stemReading.isEmpty else {
+            return []
+        }
+
+        let stemCandidates = candidatesForReading(
+            stemReading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode
+        )
+
+        guard !stemCandidates.isEmpty else {
+            return []
+        }
+
+        let metadata = inflectionMetadata(for: stemReading)
+        var derived: [String] = []
+
+        for candidate in stemCandidates {
+            let resolvedClass = metadata.classMap[candidate]
+
+            guard !shouldSkipPolitePrefixCandidate(
+                prefix,
+                candidate: candidate,
+                resolvedClass: resolvedClass
+            ) else {
+                continue
+            }
+
+            guard shouldApplyPolitePrefix(prefix, to: candidate) else {
+                continue
+            }
+
+            derived.append(prefix + candidate + trailingSuffix)
+        }
+
+        return uniqueCandidates(from: derived)
     }
 
     private func politePrefixRenyouCandidates(
