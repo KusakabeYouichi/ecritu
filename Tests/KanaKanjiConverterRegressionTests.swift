@@ -118,6 +118,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(candidates.contains("ご勉強する"), "candidates=\(candidates)")
     }
 
+    func testRegressionHonorificOSuruCandidatesAreDerivedFromVerbRenyouForms() {
+        converter.learn(reading: "つれる", candidate: "連れる")
+        converter.learn(reading: "むかえる", candidate: "迎える")
+        converter.learn(reading: "よぶ", candidate: "呼ぶ")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("おつれする", "お連れする"),
+            ("おむかえする", "お迎えする"),
+            ("およびする", "お呼びする")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionGodanPassiveFormsAreDerivedFromBaseVerbCandidates() {
         converter.learn(reading: "けす", candidate: "消す")
         converter.learn(reading: "うる", candidate: "売る")

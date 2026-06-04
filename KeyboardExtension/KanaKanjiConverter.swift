@@ -708,6 +708,16 @@ final class KanaKanjiConverter {
                 continue
             }
 
+            derived.append(
+                contentsOf: politePrefixSuruCandidates(
+                    prefix: prefix,
+                    stemReading: stem,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            )
+
             let stemCandidates = candidatesForReading(
                 stem,
                 userDictionary: userDictionary,
@@ -750,6 +760,117 @@ final class KanaKanjiConverter {
         }
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func politePrefixSuruCandidates(
+        prefix: String,
+        stemReading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard prefix == "お",
+            let renyouReading = removingSuffix(stemReading, suffix: "する"),
+            !renyouReading.isEmpty else {
+            return []
+        }
+
+        var derived: [String] = []
+
+        derived.append(
+            contentsOf: politePrefixSuruCandidates(
+                prefix: prefix,
+                baseReading: renyouReading + "る",
+                expectedInflectionClass: InflectionClass.ichidan,
+                dictionaryEnding: "る",
+                renyouEnding: "",
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            )
+        )
+
+        for pattern in Self.godanPatterns where renyouReading.hasSuffix(pattern.iForm) {
+            guard let readingStem = removingSuffix(renyouReading, suffix: pattern.iForm) else {
+                continue
+            }
+
+            let baseReading = readingStem + pattern.dictionaryEnding
+
+            derived.append(
+                contentsOf: politePrefixSuruCandidates(
+                    prefix: prefix,
+                    baseReading: baseReading,
+                    expectedInflectionClass: pattern.inflectionClass,
+                    dictionaryEnding: pattern.dictionaryEnding,
+                    renyouEnding: pattern.iForm,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            )
+        }
+
+        return uniqueCandidates(from: derived)
+    }
+
+    private func politePrefixSuruCandidates(
+        prefix: String,
+        baseReading: String,
+        expectedInflectionClass: String,
+        dictionaryEnding: String,
+        renyouEnding: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard !baseReading.isEmpty,
+            !dictionaryEnding.isEmpty else {
+            return []
+        }
+
+        let baseCandidates = candidatesForReading(
+            baseReading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode
+        )
+
+        guard !baseCandidates.isEmpty else {
+            return []
+        }
+
+        let metadata = inflectionMetadata(for: baseReading)
+        let userCandidateSet = Set(
+            (userDictionary[baseReading] ?? []) + (initialUserDictionary[baseReading] ?? [])
+        )
+        var derived: [String] = []
+
+        for candidate in baseCandidates {
+            let resolvedClass = resolvedInflectionClass(
+                for: candidate,
+                baseReading: baseReading,
+                systemClassMap: metadata.classMap,
+                hasSystemMetadata: metadata.hasMetadata,
+                userCandidateSet: userCandidateSet
+            )
+
+            guard resolvedClass == expectedInflectionClass,
+                candidate.hasSuffix(dictionaryEnding) else {
+                continue
+            }
+
+            let stem = String(candidate.dropLast(dictionaryEnding.count))
+            let renyouCandidate = stem + renyouEnding
+
+            guard shouldApplyPolitePrefix(prefix, to: renyouCandidate) else {
+                continue
+            }
+
+            derived.append(prefix + renyouCandidate + "する")
+        }
+
+        return uniqueCandidates(from: derived)
     }
 
     private func shouldSkipPolitePrefixCandidate(
