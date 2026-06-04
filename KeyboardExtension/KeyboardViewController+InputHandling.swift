@@ -28,6 +28,12 @@ extension KeyboardViewController {
         static let lookupMultiplier = 2
     }
 
+    private enum KanaPostModifierSafetyLimits {
+        static let rapidDakutenSecondTapSuppressionSec: CFTimeInterval = 0.14
+    }
+
+    private static let rapidDakutenSecondTapTargets: Set<Character> = ["っ", "ぅ"]
+
     private func inputHandlingTextLengthSummary(_ text: String) -> String {
         "len=\(text.count)"
     }
@@ -1493,13 +1499,56 @@ extension KeyboardViewController {
             return latestState == .kaomoji ? buttonState : latestState
         }()
 
+        func normalizedHiraganaKanaForPostModifier(_ character: Character) -> Character? {
+            let source = String(character)
+            let transformed = source.applyingTransform(.hiraganaToKatakana, reverse: true) ?? source
+
+            guard transformed.count == 1,
+                let normalized = transformed.first else {
+                return nil
+            }
+
+            return normalized
+        }
+
+        func shouldSuppressRapidDakutenSecondTap(for character: Character) -> Bool {
+            guard resolvedButtonState == .dakuten,
+                let normalized = normalizedHiraganaKanaForPostModifier(character),
+                Self.rapidDakutenSecondTapTargets.contains(normalized) else {
+                return false
+            }
+
+            let elapsed = CFAbsoluteTimeGetCurrent() - lastKanaPostModifierAppliedAt
+
+            guard elapsed >= 0,
+                elapsed < KanaPostModifierSafetyLimits.rapidDakutenSecondTapSuppressionSec,
+                let previousCharacter = lastKanaPostModifierResultCharacter,
+                let normalizedPrevious = normalizedHiraganaKanaForPostModifier(previousCharacter),
+                normalizedPrevious == normalized else {
+                return false
+            }
+
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "後置修飾2段階抑止 normalized=\(normalized) elapsedMs=\(Int((elapsed * 1000).rounded()))"
+            )
+            return true
+        }
+
+        func resolvedPostModifierCharacter(from character: Character) -> Character? {
+            guard !shouldSuppressRapidDakutenSecondTap(for: character) else {
+                return nil
+            }
+
+            return FlickKanaLayout.postfixModifiedCharacter(
+                from: character,
+                for: resolvedButtonState
+            )
+        }
+
         if currentInputMode == .kana,
             !composingRawText.isEmpty,
             let lastCharacter = composingRawText.last,
-            let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
-                from: lastCharacter,
-                for: resolvedButtonState
-            ) {
+            let replacedCharacter = resolvedPostModifierCharacter(from: lastCharacter) {
             composingRawText.removeLast()
             composingRawText.append(String(replacedCharacter))
 
@@ -1512,16 +1561,15 @@ extension KeyboardViewController {
             }
 
             setMarkedComposingText(composingRawText)
+            lastKanaPostModifierAppliedAt = CFAbsoluteTimeGetCurrent()
+            lastKanaPostModifierResultCharacter = replacedCharacter
             refreshKeyboardStateAsync()
             return true
         }
 
         guard let contextBeforeInput = textDocumentProxy.documentContextBeforeInput,
                 let lastCharacter = contextBeforeInput.last,
-                let replacedCharacter = FlickKanaLayout.postfixModifiedCharacter(
-                    from: lastCharacter,
-                    for: resolvedButtonState
-                ) else {
+                let replacedCharacter = resolvedPostModifierCharacter(from: lastCharacter) else {
             // Display-only wrapper toggle is only for kaomoji state.
             if currentInputMode == .kana,
                 resolvedButtonState == .kaomoji,
@@ -1552,6 +1600,9 @@ extension KeyboardViewController {
                 composingReading.append(normalizedKana)
             }
         }
+
+        lastKanaPostModifierAppliedAt = CFAbsoluteTimeGetCurrent()
+        lastKanaPostModifierResultCharacter = replacedCharacter
 
         refreshKeyboardStateAsync()
         return true
