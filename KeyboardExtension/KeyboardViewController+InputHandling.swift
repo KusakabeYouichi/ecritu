@@ -26,6 +26,8 @@ extension KeyboardViewController {
 
     private enum ExternalCandidateLimits {
         static let lookupMultiplier = 2
+        static let minimumConverterSlots = 8
+        static let preferredConverterSharePercent = 67
     }
 
     private enum KanaPostModifierSafetyLimits {
@@ -785,10 +787,40 @@ extension KeyboardViewController {
             return Array(converterCandidates.prefix(limit))
         }
 
+        return Self.mergeSupplementaryAndConverterCandidates(
+            supplementaryCandidates: supplementaryCandidates,
+            converterCandidates: converterCandidates,
+            limit: limit
+        )
+    }
+
+    static func mergeSupplementaryAndConverterCandidates(
+        supplementaryCandidates: [String],
+        converterCandidates: [String],
+        limit: Int
+    ) -> [String] {
+        guard limit > 0 else {
+            return []
+        }
+
+        guard !supplementaryCandidates.isEmpty else {
+            return Array(uniqueTrimmedCandidates(from: converterCandidates).prefix(limit))
+        }
+
+        let converterSlotTarget = min(
+            converterCandidates.count,
+            max(
+                ExternalCandidateLimits.minimumConverterSlots,
+                (limit * ExternalCandidateLimits.preferredConverterSharePercent) / 100
+            )
+        )
+        let supplementaryLimit = max(0, limit - converterSlotTarget)
+        let cappedSupplementary = Array(supplementaryCandidates.prefix(supplementaryLimit))
+
         var mergedCandidates: [String] = []
         var seenCandidates = Set<String>()
 
-        for candidate in supplementaryCandidates + converterCandidates {
+        for candidate in cappedSupplementary + converterCandidates {
             let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !trimmedCandidate.isEmpty,
@@ -804,6 +836,24 @@ extension KeyboardViewController {
         }
 
         return mergedCandidates
+    }
+
+    private static func uniqueTrimmedCandidates(from candidates: [String]) -> [String] {
+        var result: [String] = []
+        var seen = Set<String>()
+
+        for candidate in candidates {
+            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmed.isEmpty,
+                seen.insert(trimmed).inserted else {
+                continue
+            }
+
+            result.append(trimmed)
+        }
+
+        return result
     }
 
     func clearMarkedComposingText() {
