@@ -9,6 +9,30 @@ final class KanaKanjiConverter {
 
     private static let politePrefixPassthroughPrefixes: [String] = ["お", "ご"]
 
+    private static func honorificOSuruInflectionSuffixes() -> [String] {
+        var suffixes = ["する"]
+        suffixes.append(contentsOf: KanaKanjiConverter.suruInflectionRules.map(\.readingSuffix))
+
+        var seen = Set<String>()
+        var unique: [String] = []
+
+        for suffix in suffixes where !suffix.isEmpty {
+            guard seen.insert(suffix).inserted else {
+                continue
+            }
+
+            unique.append(suffix)
+        }
+
+        return unique.sorted {
+            if $0.count != $1.count {
+                return $0.count > $1.count
+            }
+
+            return $0 > $1
+        }
+    }
+
     private static let maxPostfixPassthroughDepth = 3
 
     private static let kuruKanjiCandidateBoost = 1450
@@ -769,46 +793,53 @@ final class KanaKanjiConverter {
         initialUserDictionary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
-        guard prefix == "お",
-            let renyouReading = removingSuffix(stemReading, suffix: "する"),
-            !renyouReading.isEmpty else {
+        guard prefix == "お" else {
             return []
         }
 
         var derived: [String] = []
 
-        derived.append(
-            contentsOf: politePrefixSuruCandidates(
-                prefix: prefix,
-                baseReading: renyouReading + "る",
-                expectedInflectionClass: InflectionClass.ichidan,
-                dictionaryEnding: "る",
-                renyouEnding: "",
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode
-            )
-        )
-
-        for pattern in Self.godanPatterns where renyouReading.hasSuffix(pattern.iForm) {
-            guard let readingStem = removingSuffix(renyouReading, suffix: pattern.iForm) else {
+        for suruSuffix in Self.honorificOSuruInflectionSuffixes() where stemReading.hasSuffix(suruSuffix) {
+            guard let renyouReading = removingSuffix(stemReading, suffix: suruSuffix),
+                !renyouReading.isEmpty else {
                 continue
             }
-
-            let baseReading = readingStem + pattern.dictionaryEnding
 
             derived.append(
                 contentsOf: politePrefixSuruCandidates(
                     prefix: prefix,
-                    baseReading: baseReading,
-                    expectedInflectionClass: pattern.inflectionClass,
-                    dictionaryEnding: pattern.dictionaryEnding,
-                    renyouEnding: pattern.iForm,
+                    suruSuffix: suruSuffix,
+                    baseReading: renyouReading + "る",
+                    expectedInflectionClass: InflectionClass.ichidan,
+                    dictionaryEnding: "る",
+                    renyouEnding: "",
                     userDictionary: userDictionary,
                     initialUserDictionary: initialUserDictionary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
+
+            for pattern in Self.godanPatterns where renyouReading.hasSuffix(pattern.iForm) {
+                guard let readingStem = removingSuffix(renyouReading, suffix: pattern.iForm) else {
+                    continue
+                }
+
+                let baseReading = readingStem + pattern.dictionaryEnding
+
+                derived.append(
+                    contentsOf: politePrefixSuruCandidates(
+                        prefix: prefix,
+                        suruSuffix: suruSuffix,
+                        baseReading: baseReading,
+                        expectedInflectionClass: pattern.inflectionClass,
+                        dictionaryEnding: pattern.dictionaryEnding,
+                        renyouEnding: pattern.iForm,
+                        userDictionary: userDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode
+                    )
+                )
+            }
         }
 
         return uniqueCandidates(from: derived)
@@ -816,6 +847,7 @@ final class KanaKanjiConverter {
 
     private func politePrefixSuruCandidates(
         prefix: String,
+        suruSuffix: String,
         baseReading: String,
         expectedInflectionClass: String,
         dictionaryEnding: String,
@@ -867,7 +899,7 @@ final class KanaKanjiConverter {
                 continue
             }
 
-            derived.append(prefix + renyouCandidate + "する")
+            derived.append(prefix + renyouCandidate + suruSuffix)
         }
 
         return uniqueCandidates(from: derived)
