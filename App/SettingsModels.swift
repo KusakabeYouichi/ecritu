@@ -56,6 +56,7 @@ enum SettingsKeys {
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
     static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
     static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
+    static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
     static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"

@@ -141,6 +141,7 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
         static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
         static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
+        static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
         static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
@@ -446,6 +447,21 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        let cachedCandidates = cachedContactCandidatesFromSharedDefaults()
+
+        if !cachedCandidates.isEmpty {
+            isRefreshingContactCandidates = false
+            contactCandidatesLastRefreshAt = Date()
+
+            let previous = contactCandidatesByReading
+            contactCandidatesByReading = cachedCandidates
+
+            if previous != cachedCandidates {
+                refreshKeyboardStateAsync()
+            }
+            return
+        }
+
         if !force,
             isRefreshingContactCandidates {
             return
@@ -470,6 +486,16 @@ final class KeyboardViewController: UIInputViewController {
         @unknown default:
             clearContactCandidatesIfNeeded(refreshKeyboardState: true)
         }
+    }
+
+    private func cachedContactCandidatesFromSharedDefaults() -> [String: [String]] {
+        guard let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID),
+            let dictionary = sharedDefaults.dictionary(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache)
+                as? [String: [String]] else {
+            return [:]
+        }
+
+        return dictionary
     }
 
     private func clearContactCandidatesIfNeeded(refreshKeyboardState: Bool) {

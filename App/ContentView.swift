@@ -7,12 +7,24 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260604192121"
+    private static let editionUpdatedAtRaw: String = "20260604202010"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
     }()
+
+    private static let contactFetchKeys: [CNKeyDescriptor] = [
+        CNContactGivenNameKey as CNKeyDescriptor,
+        CNContactMiddleNameKey as CNKeyDescriptor,
+        CNContactFamilyNameKey as CNKeyDescriptor,
+        CNContactNicknameKey as CNKeyDescriptor,
+        CNContactOrganizationNameKey as CNKeyDescriptor,
+        CNContactPhoneticOrganizationNameKey as CNKeyDescriptor,
+        CNContactPhoneticGivenNameKey as CNKeyDescriptor,
+        CNContactPhoneticMiddleNameKey as CNKeyDescriptor,
+        CNContactPhoneticFamilyNameKey as CNKeyDescriptor
+    ]
 
     private static func editionDateText(from rawValue: String?) -> String? {
         guard let rawValue,
@@ -42,6 +54,171 @@ struct ContentView: View {
 
         return "édition n°\(editionNumber)"
     }()
+
+    private static func normalizedContactReading(_ text: String) -> String {
+        var normalized = ""
+
+        for character in text {
+            let source = String(character).precomposedStringWithCanonicalMapping
+            let converted = source.applyingTransform(.hiraganaToKatakana, reverse: true) ?? source
+
+            guard converted.count == 1,
+                let scalar = converted.unicodeScalars.first else {
+                continue
+            }
+
+            let isHiragana = (0x3040...0x309F).contains(scalar.value)
+            let isLongVowelMark = scalar.value == 0x30FC
+
+            guard isHiragana || isLongVowelMark,
+                let normalizedCharacter = converted.first else {
+                continue
+            }
+
+            normalized.append(normalizedCharacter)
+        }
+
+        return normalized
+    }
+
+    private static func contactNameCandidates(
+        primaryName: String,
+        fullName: String,
+        includeFullName: Bool
+    ) -> [String] {
+        guard !primaryName.isEmpty else {
+            return []
+        }
+
+        guard includeFullName,
+            !fullName.isEmpty,
+            fullName != primaryName else {
+            return [primaryName]
+        }
+
+        return [primaryName, fullName]
+    }
+
+    private static func appendContactCandidates(
+        _ candidates: [String],
+        forReadingText readingText: String,
+        to dictionary: inout [String: [String]]
+    ) {
+        let normalizedReading = normalizedContactReading(readingText)
+
+        guard !normalizedReading.isEmpty else {
+            return
+        }
+
+        var existingCandidates = dictionary[normalizedReading] ?? []
+
+        for candidate in candidates {
+            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmed.isEmpty,
+                !existingCandidates.contains(trimmed) else {
+                continue
+            }
+
+            existingCandidates.append(trimmed)
+        }
+
+        if !existingCandidates.isEmpty {
+            dictionary[normalizedReading] = Array(existingCandidates.prefix(48))
+        }
+    }
+
+    private static func buildContactCandidatesByReading(
+        displayMode: ContactCandidateDisplayModeOption
+    ) -> [String: [String]] {
+        let includeFullNameForNameMatches = displayMode == .namesPlusFullName
+        let store = CNContactStore()
+        let request = CNContactFetchRequest(keysToFetch: contactFetchKeys)
+        var dictionary: [String: [String]] = [:]
+
+        do {
+            try store.enumerateContacts(with: request) { contact, _ in
+                let familyName = contact.familyName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let givenName = contact.givenName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let middleName = contact.middleName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let nickname = contact.nickname.trimmingCharacters(in: .whitespacesAndNewlines)
+                let organizationName = contact.organizationName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let phoneticOrganizationName = contact.phoneticOrganizationName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let fullName = [familyName, givenName, middleName]
+                    .filter { !$0.isEmpty }
+                    .joined()
+
+                let phoneticFamily = contact.phoneticFamilyName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let phoneticGiven = contact.phoneticGivenName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let phoneticMiddle = contact.phoneticMiddleName.trimmingCharacters(in: .whitespacesAndNewlines)
+                let fullNamePhonetic = [phoneticFamily, phoneticGiven, phoneticMiddle].joined()
+
+                let readingCandidates: [(String, [String])] = [
+                    (
+                        phoneticFamily,
+                        contactNameCandidates(
+                            primaryName: familyName,
+                            fullName: fullName,
+                            includeFullName: includeFullNameForNameMatches
+                        )
+                    ),
+                    (
+                        phoneticGiven,
+                        contactNameCandidates(
+                            primaryName: givenName,
+                            fullName: fullName,
+                            includeFullName: includeFullNameForNameMatches
+                        )
+                    ),
+                    (
+                        phoneticMiddle,
+                        contactNameCandidates(
+                            primaryName: middleName,
+                            fullName: fullName,
+                            includeFullName: includeFullNameForNameMatches
+                        )
+                    ),
+                    (fullNamePhonetic, [fullName]),
+                    (
+                        familyName,
+                        contactNameCandidates(
+                            primaryName: familyName,
+                            fullName: fullName,
+                            includeFullName: includeFullNameForNameMatches
+                        )
+                    ),
+                    (
+                        givenName,
+                        contactNameCandidates(
+                            primaryName: givenName,
+                            fullName: fullName,
+                            includeFullName: includeFullNameForNameMatches
+                        )
+                    ),
+                    (
+                        middleName,
+                        contactNameCandidates(
+                            primaryName: middleName,
+                            fullName: fullName,
+                            includeFullName: includeFullNameForNameMatches
+                        )
+                    ),
+                    (fullName, [fullName]),
+                    (nickname, [nickname]),
+                    (organizationName, [organizationName]),
+                    (phoneticOrganizationName, [organizationName])
+                ]
+
+                for (readingText, candidates) in readingCandidates {
+                    appendContactCandidates(candidates, forReadingText: readingText, to: &dictionary)
+                }
+            }
+        } catch {
+            return [:]
+        }
+
+        return dictionary
+    }
 
     @AppStorage(
         SettingsKeys.directionProfile,
@@ -228,6 +405,9 @@ struct ContentView: View {
     @State private var isBootstrappingInitialData = true
     @State private var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
+    @Environment(\.scenePhase) private var scenePhase
+
+    @State private var contactAuthorizationStatus: CNAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
 
     private let setupSteps: [String] = [
         "設定 > 一般 > キーボード > キーボード > 新しいキーボードを追加",
@@ -382,6 +562,40 @@ struct ContentView: View {
 
     private var shouldUseContactCandidates: Bool {
         (ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .namesOnly) != .off
+    }
+
+    private var contactPermissionStatusMessage: String {
+        guard shouldUseContactCandidates else {
+            return "連絡先候補はオフです。連絡先候補を使う場合は「連絡先候補」の設定で OFF 以外を選択してください。"
+        }
+
+        switch contactAuthorizationStatus {
+        case .notDetermined:
+            return "連絡先候補を使うには連絡先アクセスの許可が必要です。"
+        case .denied, .restricted:
+            return "連絡先アクセスが許可されていません。設定アプリで連絡先アクセスを許可してください。"
+        case .authorized, .limited:
+            return "連絡先アクセスは許可されています。候補が出ない場合は「連絡先アクセスを確認する」を押して再読み込みしてください。"
+        @unknown default:
+            return "連絡先アクセス状態を確認できませんでした。"
+        }
+    }
+
+    private var contactPermissionActionTitle: String {
+        guard shouldUseContactCandidates else {
+            return "連絡先候補を有効にしてください"
+        }
+
+        switch contactAuthorizationStatus {
+        case .denied, .restricted:
+            return "設定アプリを開く"
+        case .authorized, .limited:
+            return "連絡先アクセスを確認する"
+        case .notDetermined:
+            return "連絡先アクセスを確認する"
+        @unknown default:
+            return "連絡先アクセスを確認する"
+        }
     }
 
     private var accentPaletteSelection: Binding<AccentColorOption> {
@@ -1301,6 +1515,7 @@ struct ContentView: View {
         }
 
         let status = CNContactStore.authorizationStatus(for: .contacts)
+        contactAuthorizationStatus = status
 
         switch status {
         case .authorized, .limited:
@@ -1314,9 +1529,90 @@ struct ContentView: View {
                     continuation.resume(returning: granted)
                 }
             }
+            contactAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
             appendContainerDiagnosticsLog("連絡先アクセス許可リクエスト完了 granted=\(granted)")
         @unknown default:
             appendContainerDiagnosticsLog("連絡先アクセス状態 status=unknown")
+        }
+
+        syncContactCandidatesCacheFromContainerApp()
+    }
+
+    private func syncContactCandidatesCacheFromContainerApp() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let cacheKey = SettingsKeys.contactCandidatesByReadingCache
+        let mode = ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .namesOnly
+
+        guard mode != .off else {
+            if defaults.object(forKey: cacheKey) != nil {
+                defaults.removeObject(forKey: cacheKey)
+                SettingsSyncNotification.postSettingsDidChange()
+            }
+            return
+        }
+
+        let status = CNContactStore.authorizationStatus(for: .contacts)
+
+        guard hasGrantedContactsAccess(status) else {
+            if defaults.object(forKey: cacheKey) != nil {
+                defaults.removeObject(forKey: cacheKey)
+                SettingsSyncNotification.postSettingsDidChange()
+            }
+            return
+        }
+
+        DispatchQueue.global(qos: .utility).async {
+            let dictionary = Self.buildContactCandidatesByReading(displayMode: mode)
+
+            DispatchQueue.main.async {
+                guard let defaults = Self.sharedDefaults else {
+                    return
+                }
+
+                let previous = defaults.dictionary(forKey: cacheKey) as? [String: [String]] ?? [:]
+
+                guard previous != dictionary else {
+                    return
+                }
+
+                defaults.set(dictionary, forKey: cacheKey)
+                SettingsSyncNotification.postSettingsDidChange()
+            }
+        }
+    }
+
+    private func hasGrantedContactsAccess(_ status: CNAuthorizationStatus) -> Bool {
+        if #available(iOS 18.0, *) {
+            return status == .authorized || status == .limited
+        }
+
+        return status == .authorized
+    }
+
+    private func refreshContactAuthorizationStatus() {
+        contactAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+    }
+
+    private func handleContactPermissionAction() {
+        guard shouldUseContactCandidates else {
+            return
+        }
+
+        switch contactAuthorizationStatus {
+        case .denied, .restricted:
+#if os(iOS)
+            guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
+                return
+            }
+
+            UIApplication.shared.open(settingsURL)
+#endif
+        default:
+            requestContactsAccessIfNeededInBackground()
+            SettingsSyncNotification.postSettingsDidChange()
         }
     }
 
@@ -1838,6 +2134,8 @@ struct ContentView: View {
     }
 
     private func handleContainerAppAppear() {
+        refreshContactAuthorizationStatus()
+
         if didRunFirstAppearanceBootstrap {
             guard !isBootstrappingInitialData else {
                 return
@@ -2076,6 +2374,22 @@ struct ContentView: View {
                             selection: contactCandidateDisplayModeSelection
                         )
 
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("連絡先アクセス")
+                                .font(.headline)
+
+                            Text(contactPermissionStatusMessage)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+
+                            Button(contactPermissionActionTitle) {
+                                handleContactPermissionAction()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .disabled(!shouldUseContactCandidates)
+                        }
+                        .settingsCardStyle()
+
                         UserDictionaryCandidateDisplaySettingsSection(
                             selection: userDictionaryCandidateDisplayModeSelection
                         )
@@ -2209,6 +2523,29 @@ struct ContentView: View {
             }
             .onChange(of: settingsSyncSignature) { _ in
                 SettingsSyncNotification.postSettingsDidChange()
+            }
+            .onChange(of: contactCandidateDisplayModeRawValue) { newValue in
+                let mode = ContactCandidateDisplayModeOption(rawValue: newValue) ?? .namesOnly
+
+                guard mode != .off else {
+                    syncContactCandidatesCacheFromContainerApp()
+                    return
+                }
+
+                requestContactsAccessIfNeededInBackground()
+                syncContactCandidatesCacheFromContainerApp()
+            }
+            .onChange(of: scenePhase) { newPhase in
+                guard newPhase == .active else {
+                    return
+                }
+
+                refreshContactAuthorizationStatus()
+
+                if shouldUseContactCandidates {
+                    syncContactCandidatesCacheFromContainerApp()
+                    SettingsSyncNotification.postSettingsDidChange()
+                }
             }
 #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
