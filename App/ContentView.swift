@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260605141131"
+    private static let editionUpdatedAtRaw: String = "20260605145446"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -128,6 +128,37 @@ struct ContentView: View {
         }
     }
 
+    private static func shouldUseOrganizationNameReadingFallback(_ organizationName: String) -> Bool {
+        let source = organizationName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !source.isEmpty else {
+            return false
+        }
+
+        var hasKana = false
+
+        for scalar in source.precomposedStringWithCanonicalMapping.unicodeScalars {
+            if CharacterSet.whitespacesAndNewlines.contains(scalar) {
+                continue
+            }
+
+            if scalar.value == 0x30FB || scalar.value == 0xFF65 {
+                continue
+            }
+
+            let normalized = normalizedContactReading(String(scalar))
+
+            if !normalized.isEmpty {
+                hasKana = true
+                continue
+            }
+
+            return false
+        }
+
+        return hasKana
+    }
+
     private static func buildContactCandidatesByReading(
         displayMode: ContactCandidateDisplayModeOption
     ) -> [String: [String]] {
@@ -153,7 +184,7 @@ struct ContentView: View {
                 let phoneticMiddle = contact.phoneticMiddleName.trimmingCharacters(in: .whitespacesAndNewlines)
                 let fullNamePhonetic = [phoneticFamily, phoneticGiven, phoneticMiddle].joined()
 
-                let readingCandidates: [(String, [String])] = [
+                var readingCandidates: [(String, [String])] = [
                     (
                         phoneticFamily,
                         contactNameCandidates(
@@ -205,9 +236,12 @@ struct ContentView: View {
                     ),
                     (fullName, [fullName]),
                     (nickname, [nickname]),
-                    (organizationName, [organizationName]),
                     (phoneticOrganizationName, [organizationName])
                 ]
+
+                if shouldUseOrganizationNameReadingFallback(organizationName) {
+                    readingCandidates.append((organizationName, [organizationName]))
+                }
 
                 for (readingText, candidates) in readingCandidates {
                     appendContactCandidates(candidates, forReadingText: readingText, to: &dictionary)

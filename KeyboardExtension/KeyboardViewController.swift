@@ -690,10 +690,43 @@ final class KeyboardViewController: UIInputViewController {
             keys.append(trimmed)
         }
 
-        appendKey(organizationName)
+        if shouldUseOrganizationNameReadingFallback(organizationName) {
+            appendKey(organizationName)
+        }
         appendKey(phoneticOrganizationName)
 
         return keys
+    }
+
+    private func shouldUseOrganizationNameReadingFallback(_ organizationName: String) -> Bool {
+        let source = organizationName.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        guard !source.isEmpty else {
+            return false
+        }
+
+        var hasKana = false
+
+        for scalar in source.precomposedStringWithCanonicalMapping.unicodeScalars {
+            if CharacterSet.whitespacesAndNewlines.contains(scalar) {
+                continue
+            }
+
+            if scalar.value == 0x30FB || scalar.value == 0xFF65 {
+                continue
+            }
+
+            let normalized = KanaTextNormalizer.normalizedReading(String(scalar))
+
+            if !normalized.isEmpty {
+                hasKana = true
+                continue
+            }
+
+            return false
+        }
+
+        return hasKana
     }
 
     private func trimmingOrganizationPrefix(from normalizedReading: String) -> String {
