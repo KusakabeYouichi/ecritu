@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260605135959"
+    private static let editionUpdatedAtRaw: String = "20260605140555"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -407,8 +407,6 @@ struct ContentView: View {
     @GestureState private var isEditionNumberPressed = false
     @Environment(\.scenePhase) private var scenePhase
 
-    @State private var contactAuthorizationStatus: CNAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
-
     private let setupSteps: [String] = [
         "設定 > 一般 > キーボード > キーボード > 新しいキーボードを追加",
         "作成したキーボードを有効化",
@@ -562,40 +560,6 @@ struct ContentView: View {
 
     private var shouldUseContactCandidates: Bool {
         (ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .namesOnly) != .off
-    }
-
-    private var contactPermissionStatusMessage: String {
-        guard shouldUseContactCandidates else {
-            return "連絡先候補はオフです。連絡先候補を使う場合は「連絡先候補」の設定で OFF 以外を選択してください。"
-        }
-
-        switch contactAuthorizationStatus {
-        case .notDetermined:
-            return "連絡先候補を使うには連絡先アクセスの許可が必要です。"
-        case .denied, .restricted:
-            return "連絡先アクセスが許可されていません。設定アプリで連絡先アクセスを許可してください。"
-        case .authorized, .limited:
-            return "連絡先アクセスは許可されています。候補が出ない場合は「連絡先アクセスを確認する」を押して再読み込みしてください。"
-        @unknown default:
-            return "連絡先アクセス状態を確認できませんでした。"
-        }
-    }
-
-    private var contactPermissionActionTitle: String {
-        guard shouldUseContactCandidates else {
-            return "連絡先候補を有効にしてください"
-        }
-
-        switch contactAuthorizationStatus {
-        case .denied, .restricted:
-            return "設定アプリを開く"
-        case .authorized, .limited:
-            return "連絡先アクセスを確認する"
-        case .notDetermined:
-            return "連絡先アクセスを確認する"
-        @unknown default:
-            return "連絡先アクセスを確認する"
-        }
     }
 
     private var accentPaletteSelection: Binding<AccentColorOption> {
@@ -1515,7 +1479,6 @@ struct ContentView: View {
         }
 
         let status = CNContactStore.authorizationStatus(for: .contacts)
-        contactAuthorizationStatus = status
 
         switch status {
         case .authorized, .limited:
@@ -1529,7 +1492,6 @@ struct ContentView: View {
                     continuation.resume(returning: granted)
                 }
             }
-            contactAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
             appendContainerDiagnosticsLog("連絡先アクセス許可リクエスト完了 granted=\(granted)")
         @unknown default:
             appendContainerDiagnosticsLog("連絡先アクセス状態 status=unknown")
@@ -1590,30 +1552,6 @@ struct ContentView: View {
         }
 
         return status == .authorized
-    }
-
-    private func refreshContactAuthorizationStatus() {
-        contactAuthorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
-    }
-
-    private func handleContactPermissionAction() {
-        guard shouldUseContactCandidates else {
-            return
-        }
-
-        switch contactAuthorizationStatus {
-        case .denied, .restricted:
-#if os(iOS)
-            guard let settingsURL = URL(string: UIApplication.openSettingsURLString) else {
-                return
-            }
-
-            UIApplication.shared.open(settingsURL)
-#endif
-        default:
-            requestContactsAccessIfNeededInBackground()
-            SettingsSyncNotification.postSettingsDidChange()
-        }
     }
 
     private func requestContactsAccessIfNeededInBackground() {
@@ -2134,8 +2072,6 @@ struct ContentView: View {
     }
 
     private func handleContainerAppAppear() {
-        refreshContactAuthorizationStatus()
-
         if didRunFirstAppearanceBootstrap {
             guard !isBootstrappingInitialData else {
                 return
@@ -2374,22 +2310,6 @@ struct ContentView: View {
                             selection: contactCandidateDisplayModeSelection
                         )
 
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("連絡先アクセス")
-                                .font(.headline)
-
-                            Text(contactPermissionStatusMessage)
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-
-                            Button(contactPermissionActionTitle) {
-                                handleContactPermissionAction()
-                            }
-                            .buttonStyle(.borderedProminent)
-                            .disabled(!shouldUseContactCandidates)
-                        }
-                        .settingsCardStyle()
-
                         UserDictionaryCandidateDisplaySettingsSection(
                             selection: userDictionaryCandidateDisplayModeSelection
                         )
@@ -2539,8 +2459,6 @@ struct ContentView: View {
                 guard newPhase == .active else {
                     return
                 }
-
-                refreshContactAuthorizationStatus()
 
                 if shouldUseContactCandidates {
                     syncContactCandidatesCacheFromContainerApp()
