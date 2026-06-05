@@ -65,6 +65,7 @@ final class KeyboardViewController: UIInputViewController {
     private var diagnosticsSessionStartedAt = Date()
     private let diagnosticsControllerID = UUID().uuidString
     private var pendingRefreshKeyboardStateRequests = 0
+    private var isRefreshKeyboardStateAsyncScheduled = false
     private var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
     private var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
     private var hasDeferredSharedSettingsCatchUp = false
@@ -1354,6 +1355,7 @@ final class KeyboardViewController: UIInputViewController {
         includeSystemCaches: Bool
     ) {
         pendingRefreshKeyboardStateRequests = 0
+        isRefreshKeyboardStateAsyncScheduled = false
         activeConversion = nil
         clearComposingState()
         clearRecentKanaPlainCommitUpgradeContext()
@@ -2013,6 +2015,26 @@ final class KeyboardViewController: UIInputViewController {
             )
         }
 
+        if isRefreshKeyboardStateAsyncScheduled {
+            return
+        }
+
+        scheduleRefreshKeyboardStateAsyncExecution(
+            enqueuedAt: enqueuedAt,
+            queuedDepthAtEnqueue: queuedDepth
+        )
+    }
+
+    private func scheduleRefreshKeyboardStateAsyncExecution(
+        enqueuedAt: CFAbsoluteTime,
+        queuedDepthAtEnqueue: Int
+    ) {
+        guard !isRefreshKeyboardStateAsyncScheduled else {
+            return
+        }
+
+        isRefreshKeyboardStateAsyncScheduled = true
+
         DispatchQueue.main.async { [weak self] in
             guard let self else {
                 return
@@ -2021,6 +2043,8 @@ final class KeyboardViewController: UIInputViewController {
             self.pendingRefreshKeyboardStateRequests = max(0, self.pendingRefreshKeyboardStateRequests - 1)
 
             guard !self.shouldSuppressHeavyOperations(reason: "refreshKeyboardStateAsync-execute") else {
+                self.pendingRefreshKeyboardStateRequests = 0
+                self.isRefreshKeyboardStateAsyncScheduled = false
                 return
             }
 
@@ -2029,9 +2053,9 @@ final class KeyboardViewController: UIInputViewController {
             let queueWaitMs = self.performanceElapsedMilliseconds(since: enqueuedAt)
 
             if queueWaitMs >= Self.refreshQueueWaitSlowThresholdMs
-                || queuedDepth >= Self.refreshQueueBacklogLogThreshold {
+                || queuedDepthAtEnqueue >= Self.refreshQueueBacklogLogThreshold {
                 self.appendKeyboardDiagnosticsLog(
-                    "refreshKeyboardStateAsync実行 waitMs=\(queueWaitMs) queueDepthAtEnqueue=\(queuedDepth) pendingNow=\(self.pendingRefreshKeyboardStateRequests)",
+                    "refreshKeyboardStateAsync実行 waitMs=\(queueWaitMs) queueDepthAtEnqueue=\(queuedDepthAtEnqueue) pendingNow=\(self.pendingRefreshKeyboardStateRequests)",
                     file: #fileID,
                     line: #line,
                     function: #function
@@ -2039,6 +2063,14 @@ final class KeyboardViewController: UIInputViewController {
             }
 
             self.refreshKeyboardState(trigger: "async")
+            self.isRefreshKeyboardStateAsyncScheduled = false
+
+            if self.pendingRefreshKeyboardStateRequests > 0 {
+                self.scheduleRefreshKeyboardStateAsyncExecution(
+                    enqueuedAt: CFAbsoluteTimeGetCurrent(),
+                    queuedDepthAtEnqueue: self.pendingRefreshKeyboardStateRequests
+                )
+            }
         }
     }
 
