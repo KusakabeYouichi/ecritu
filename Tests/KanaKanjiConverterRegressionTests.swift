@@ -1046,6 +1046,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionIchidanPastConditionalIsDerivedFromBaseVerbCandidate() {
+        converter.learn(reading: "しらべる", candidate: "調べる")
+
+        let candidates = converter.candidates(
+            for: "しらべたら",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("調べたら"),
+            "candidates=\(candidates)"
+        )
+    }
+
     func testRegressionAdditionalInflectionFormsAreDerivedWithoutVocabularyAppend() {
         let cases: [(reading: String, expected: String)] = [
             ("かわねば", "買わねば"),
