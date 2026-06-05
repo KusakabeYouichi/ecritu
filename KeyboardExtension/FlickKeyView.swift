@@ -625,12 +625,6 @@ struct FlickKeyView: View {
                     committedDirectionForCallback = committedDirection
                 }
 
-                if let onCommitWithDirection {
-                    onCommitWithDirection(committedText, committedDirectionForCallback)
-                } else {
-                    onCommit(committedText)
-                }
-
                 activeDirection = .milieu
                 resetSecondaryFlickState()
                 longPressIsActive = false
@@ -639,6 +633,12 @@ struct FlickKeyView: View {
                 longPressAnchorLocationX = 0
                 didTriggerLongPressAction = false
                 onTouchStateChanged(false)
+
+                if let onCommitWithDirection {
+                    onCommitWithDirection(committedText, committedDirectionForCallback)
+                } else {
+                    onCommit(committedText)
+                }
             }
     }
 
