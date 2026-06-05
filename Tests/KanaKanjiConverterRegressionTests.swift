@@ -1118,6 +1118,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.learn(reading: "おおい", candidate: "多い")
         converter.learn(reading: "おおきい", candidate: "大きい")
         converter.learn(reading: "おす", candidate: "押す")
+        converter.learn(reading: "きをつける", candidate: "気を付ける")
         converter.learn(reading: "つかう", candidate: "使う")
         converter.learn(reading: "よむ", candidate: "読む")
         converter.learn(reading: "とれる", candidate: "取れる")
@@ -1130,6 +1131,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("おおいのです", "多いのです"),
             ("おおきいし", "大きいし"),
             ("おさないよう", "押さないよう"),
+            ("きをつける", "気を付ける"),
+            ("きをつけて", "気を付けて"),
             ("つかったこと", "使ったこと"),
             ("よんだほうが", "読んだ方が"),
             ("よんだほうがいい", "読んだ方がいい"),
