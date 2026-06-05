@@ -15,6 +15,26 @@ enum KanaKanjiStorageKeys {
     static let initialShortcutVocabularyResourceName = "InitialShortcutVocabMigration"
 }
 
+enum KanaKanjiCandidateSourceTag {
+    static let normalized = "normalized"
+    static let surface = "surface"
+    static let adjectiveGaru = "adjective-garu"
+}
+
+enum KanaKanjiSemanticSeed {
+    static let adjectiveGaruCandidatesByReading: [String: Set<String>] = [
+        "あつい": ["暑い"],
+        "うれしい": ["嬉しい"],
+        "かなしい": ["悲しい"],
+        "こわい": ["怖い"],
+        "さむい": ["寒い"],
+        "さびしい": ["寂しい"],
+        "たのしい": ["楽しい"],
+        "はずかしい": ["恥ずかしい"],
+        "くやしい": ["悔しい"]
+    ]
+}
+
 enum KanaKanjiCandidateSourceMode: String {
     case normalise
     case surface
@@ -23,9 +43,9 @@ enum KanaKanjiCandidateSourceMode: String {
     var requiredSystemSources: Set<String>? {
         switch self {
         case .normalise:
-            return ["normalized"]
+            return [KanaKanjiCandidateSourceTag.normalized]
         case .surface:
-            return ["surface"]
+            return [KanaKanjiCandidateSourceTag.surface]
         case .lesDeux:
             return nil
         }
@@ -419,6 +439,17 @@ extension KanaKanjiConverter {
             iForm + "たがりません"
         ]
     }
+
+    static let adjectiveGaruInflectionForms: [(readingSuffix: String, outputSuffix: String)] = [
+        ("がらなかった", "がらなかった"),
+        ("がりました", "がりました"),
+        ("がりません", "がりません"),
+        ("がらない", "がらない"),
+        ("がり", "がり"),
+        ("がった", "がった"),
+        ("がって", "がって"),
+        ("がる", "がる")
+    ]
 
     static func taRiSuruInflectionSuffixes(for taForm: String) -> [String] {
         guard !taForm.isEmpty else {
@@ -903,7 +934,7 @@ extension KanaKanjiConverter {
         "こられ", "され", "られ",
         "くありませんでした", "くなかったです", "くないです", "かったです", "くありません",
         "すぎなかった", "すぎました", "すぎません", "にくくない", "すぎない", "すぎます", "にくかった",
-        "させない", "させる", "せない", "せる", "やすくない", "たがらなかった", "たがりました", "たがりません", "たくない", "なかったら", "なかった", "やすかった", "たかった", "くなかった",
+        "させない", "させる", "せない", "せる", "やすくない", "たがらなかった", "たがりました", "たがりません", "がらなかった", "がりました", "がりません", "たくない", "なかったら", "なかった", "やすかった", "たかった", "くなかった",
         "すぎて", "すぎれば", "すぎた", "すぎる", "にくい", "にくく", "いです", "すぎ",
         "していなかった", "きていなかった", "でいなかった", "ていなかった", "してなかった", "きてなかった", "でなかった", "てなかった",
         "していません", "きていません", "でいません", "ていません", "していました", "きていました", "でいました", "ていました",
@@ -927,8 +958,9 @@ extension KanaKanjiConverter {
         "だったら", "だった", "だ", "なら", "から",
         "んですけれど", "んですけど", "んだけれど", "んだけど", "けれど", "けど",
         "んです", "んだ",
-        "くない", "かったり", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たがらない", "たがります", "たい", "れば", "ねば", "ず",
-        "たがった", "たがって", "たがる",
+        "くない", "かったり", "かった", "ければ", "くれば", "やすい", "やすく", "よう", "こよう", "こい", "たがらない", "たがります", "がらない", "たい", "れば", "ねば", "ず",
+        "がり",
+        "たがった", "たがって", "たがる", "がった", "がって", "がる",
         "って", "った", "いて", "いた", "いで", "いだ", "んで", "んだ", "して", "した",
         "ない", "きて", "きた", "くて", "て", "た"
     ]

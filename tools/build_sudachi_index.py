@@ -43,6 +43,7 @@ UNKNOWN_COST_SENTINEL = 10**9
 
 SOURCE_TAG_NORMALIZED = "normalized"
 SOURCE_TAG_SURFACE = "surface"
+SOURCE_TAG_ADJECTIVE_GARU = "adjective-garu"
 
 CANDIDATE_POLICY_NORMALIZED = "normalized"
 CANDIDATE_POLICY_SURFACE = "surface"
@@ -303,6 +304,47 @@ def iter_csv_rows(paths: Iterable[str]) -> Iterable[List[str]]:
                 yield row
 
 
+def load_adjective_garu_allowlist(path: Optional[str]) -> Dict[str, Set[str]]:
+    if not path:
+        return {}
+
+    with open(path, "r", encoding="utf-8") as f:
+        raw = json.load(f)
+
+    if not isinstance(raw, dict):
+        raise ValueError("adjective-garu allowlist must be an object")
+
+    allowlist: Dict[str, Set[str]] = {}
+
+    for raw_reading, raw_candidates in raw.items():
+        if not isinstance(raw_reading, str):
+            continue
+
+        reading = katakana_to_hiragana(raw_reading.strip())
+
+        if not reading or not is_hiragana_like(reading):
+            continue
+
+        if not isinstance(raw_candidates, list):
+            continue
+
+        candidates: Set[str] = set()
+
+        for raw_candidate in raw_candidates:
+            if not isinstance(raw_candidate, str):
+                continue
+
+            candidate = normalize_candidate(raw_candidate)
+
+            if candidate:
+                candidates.add(candidate)
+
+        if candidates:
+            allowlist[reading] = candidates
+
+    return allowlist
+
+
 def build_index(
     paths: List[str],
     max_candidates: int,
@@ -314,6 +356,7 @@ def build_index(
     include_non_japanese_candidates: bool,
     require_kanji_candidate: bool,
     candidate_policy: str,
+    adjective_garu_allowlist: Dict[str, Set[str]],
 ) -> Tuple[Dict[str, List[str]], Dict[str, Dict[str, str]], Dict[str, Dict[str, List[str]]]]:
     counters: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     cost_stats: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
@@ -475,6 +518,30 @@ def build_index(
         if candidate_source_map:
             candidate_source_index[reading] = candidate_source_map
 
+    for reading, allowed_candidates in adjective_garu_allowlist.items():
+        inflection_map = inflection_index.get(reading)
+
+        if not inflection_map:
+            continue
+
+        available_candidates = set(index.get(reading, []))
+        metadata_map = candidate_source_index.setdefault(reading, {})
+
+        for candidate in sorted(allowed_candidates):
+            if candidate not in available_candidates:
+                continue
+
+            if inflection_map.get(candidate) != "adjective-i":
+                continue
+
+            sources = metadata_map.setdefault(candidate, [])
+
+            if SOURCE_TAG_ADJECTIVE_GARU not in sources:
+                sources.append(SOURCE_TAG_ADJECTIVE_GARU)
+
+        if not metadata_map:
+            candidate_source_index.pop(reading, None)
+
     return index, inflection_index, candidate_source_index
 
 
@@ -497,6 +564,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-sources",
         help="Output path for reading->candidate->[sourceTag] JSON",
+    )
+    parser.add_argument(
+        "--adjective-garu-allowlist",
+        help="Optional JSON path for adjective->garu allowlist (reading->candidates)",
     )
     parser.add_argument(
         "--candidate-policy",
@@ -576,6 +647,7 @@ def main() -> int:
         include_non_japanese_candidates=args.include_non_japanese_candidates,
         require_kanji_candidate=args.require_kanji_candidate,
         candidate_policy=args.candidate_policy,
+        adjective_garu_allowlist=load_adjective_garu_allowlist(args.adjective_garu_allowlist),
     )
 
     os.makedirs(os.path.dirname(args.output) or ".", exist_ok=True)

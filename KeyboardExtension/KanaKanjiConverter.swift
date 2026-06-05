@@ -276,6 +276,18 @@ final class KanaKanjiConverter {
         )
 
         addCandidates(
+            adjectiveGaruCandidates(
+                for: normalizedReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode,
+                limit: limit * 3
+            ),
+            baseScore: 970,
+            to: &scores
+        )
+
+        addCandidates(
             politePrefixPassthroughCandidates(
                 for: normalizedReading,
                 userDictionary: userDictionary,
@@ -392,7 +404,14 @@ final class KanaKanjiConverter {
             return lhs < rhs
         }
 
-        let finalCandidates = Array(sortedCandidates.prefix(limit))
+        let filteredSortedCandidates = filterArchaicAdjectiveSurfaceCandidates(
+            for: normalizedReading,
+            candidates: sortedCandidates,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary
+        )
+
+        let finalCandidates = Array(filteredSortedCandidates.prefix(limit))
 
         if !finalCandidates.isEmpty {
             stateQueue.sync {
@@ -694,6 +713,73 @@ final class KanaKanjiConverter {
                     systemCandidateMode: systemCandidateMode
                 )
             )
+        }
+
+        return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    private func adjectiveGaruCandidates(
+        for reading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        limit: Int
+    ) -> [String] {
+        guard reading.count >= 3,
+            limit > 0 else {
+            return []
+        }
+
+        var derived: [String] = []
+
+        for form in Self.adjectiveGaruInflectionForms where reading.hasSuffix(form.readingSuffix) {
+            guard let readingStem = removingSuffix(reading, suffix: form.readingSuffix),
+                !readingStem.isEmpty else {
+                continue
+            }
+
+            let baseReading = readingStem + "い"
+            let baseCandidates = candidatesForReading(
+                baseReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            )
+
+            guard !baseCandidates.isEmpty else {
+                continue
+            }
+
+            let metadata = inflectionMetadata(for: baseReading)
+            let semanticMetadata = adjectiveGaruMetadata(for: baseReading)
+
+            guard semanticMetadata.hasMetadata,
+                !semanticMetadata.allowedCandidates.isEmpty else {
+                continue
+            }
+
+            let userCandidateSet = Set(
+                (userDictionary[baseReading] ?? []) + (initialUserDictionary[baseReading] ?? [])
+            )
+
+            for candidate in baseCandidates {
+                let resolvedClass = resolvedInflectionClass(
+                    for: candidate,
+                    baseReading: baseReading,
+                    systemClassMap: metadata.classMap,
+                    hasSystemMetadata: metadata.hasMetadata,
+                    userCandidateSet: userCandidateSet
+                )
+
+                guard resolvedClass == InflectionClass.adjectiveI,
+                    semanticMetadata.allowedCandidates.contains(candidate),
+                    candidate.hasSuffix("い") else {
+                    continue
+                }
+
+                let candidateStem = String(candidate.dropLast(1))
+                derived.append(candidateStem + form.outputSuffix)
+            }
         }
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
@@ -1545,6 +1631,20 @@ final class KanaKanjiConverter {
         store.systemInflectionMetadata(for: reading)
     }
 
+    private func adjectiveGaruMetadata(
+        for reading: String
+    ) -> (allowedCandidates: Set<String>, hasMetadata: Bool) {
+        let metadata = store.systemCandidates(
+            for: reading,
+            taggedWith: KanaKanjiCandidateSourceTag.adjectiveGaru
+        )
+
+        return (
+            allowedCandidates: metadata.candidates,
+            hasMetadata: metadata.hasMetadata
+        )
+    }
+
     private func resolvedInflectionClass(
         for candidate: String,
         baseReading: String,
@@ -1662,14 +1762,97 @@ final class KanaKanjiConverter {
         mode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         let storeCandidates = store.systemCandidates(for: reading, mode: mode)
+        let seedCandidates = KanaKanjiSeedDictionary.seed[reading] ?? []
+
+        let mergedCandidates: [String]
 
         if storeCandidates.isEmpty {
-            return KanaKanjiSeedDictionary.seed[reading] ?? []
+            mergedCandidates = seedCandidates
+        } else {
+            mergedCandidates = uniqueCandidates(
+                from: storeCandidates + seedCandidates
+            )
         }
 
-        return uniqueCandidates(
-            from: storeCandidates + (KanaKanjiSeedDictionary.seed[reading] ?? [])
+        return filterArchaicAdjectiveSurfaceCandidates(
+            for: reading,
+            candidates: mergedCandidates
         )
+    }
+
+    private func filterArchaicAdjectiveSurfaceCandidates(
+        for reading: String,
+        candidates: [String]
+    ) -> [String] {
+        filterArchaicAdjectiveSurfaceCandidates(
+            for: reading,
+            candidates: candidates,
+            userDictionary: nil,
+            initialUserDictionary: nil
+        )
+    }
+
+    private func filterArchaicAdjectiveSurfaceCandidates(
+        for reading: String,
+        candidates: [String],
+        userDictionary: [String: [String]]?,
+        initialUserDictionary: [String: [String]]?
+    ) -> [String] {
+        guard reading.hasSuffix("かる") || reading.hasSuffix("かり") else {
+            return candidates
+        }
+
+        guard let baseReadingStem = removingSuffix(reading, suffix: "かる")
+            ?? removingSuffix(reading, suffix: "かり"),
+            !baseReadingStem.isEmpty else {
+            return candidates
+        }
+
+        let baseReading = baseReadingStem + "い"
+        let userBaseCandidates = userDictionary?[baseReading] ?? []
+        let initialBaseCandidates = initialUserDictionary?[baseReading] ?? []
+        let storeBaseCandidates = store.systemCandidates(
+            for: baseReading,
+            mode: .lesDeux
+        )
+        let seedBaseCandidates = KanaKanjiSeedDictionary.seed[baseReading] ?? []
+        let baseCandidates = Set(
+            uniqueCandidates(
+                from: userBaseCandidates
+                    + initialBaseCandidates
+                    + storeBaseCandidates
+                    + seedBaseCandidates
+            )
+        )
+
+        guard !baseCandidates.isEmpty else {
+            return candidates
+        }
+
+        var filtered: [String] = []
+
+        for candidate in candidates {
+            guard candidate.hasSuffix("かる") || candidate.hasSuffix("かり") else {
+                filtered.append(candidate)
+                continue
+            }
+
+            guard candidate.count > 2 else {
+                filtered.append(candidate)
+                continue
+            }
+
+            let stem = String(candidate.dropLast(2))
+            let modernIAdjective = stem + "い"
+
+            if baseCandidates.contains(modernIAdjective) {
+                continue
+            }
+
+            filtered.append(candidate)
+        }
+
+        return filtered
     }
 
     private func candidatesForReading(

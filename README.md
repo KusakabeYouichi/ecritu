@@ -63,6 +63,7 @@
 - 追加語彙の初期投入データ `InitialAjoutVocabMigration.json` は `references/void.plist` からビルド時に生成し、更新時はシグネチャ比較で再マージされます。
 - clone直後のビルド失敗を避けるため、拡張バンドルには `KeyboardExtension/DefaultDictionaryResources/` の軽量プレースホルダー辞書を同梱しています。
 - 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。
+- `こわい→怖がる` のような「形容詞 + がる」派生は、`references/adjective_garu_allowlist.json` の初期シードで許可対象を管理します（候補爆発を避けるため、許可語のみ派生）。
 - 第1語彙が0件になる環境の切り分けには、`bash tools/diagnose_kana_dictionary.sh` を実行してください。`tmp/`・ビルド済み `.app`・シミュレータ App Group の辞書有無/件数を一括で確認できます。
 - 他環境の調査では、上記スクリプトの出力全文を共有すると原因を特定しやすくなります。
 - Xcodeで `KeyboardExtension` をビルドすると、`tools/refresh_simulator_dictionary_on_build.sh` が毎回実行され、`tmp/sudachi_raw` にCSVが無い場合は `tools/fetch_sudachi_raw.sh` の自動実行を試みます。

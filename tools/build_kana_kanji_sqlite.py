@@ -6,7 +6,7 @@ SQLite database for on-demand lookup on device.
 
 Expected JSON inputs:
 - vocab JSON: {"reading": ["candidate1", "candidate2", ...]}
-- sources JSON: {"reading": {"candidate": ["normalized", "surface"]}}
+- sources JSON: {"reading": {"candidate": ["normalized", "surface", "adjective-garu"]}}
 - inflections JSON (either format):
   - {"reading": {"candidate": "inflection-class"}}
   - {"reading": [{"candidate": "...", "inflectionClass": "..."}, ...]}
@@ -21,7 +21,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Set, Tuple
 
 
-ALLOWED_SOURCES = {"normalized", "surface"}
+ALLOWED_SOURCES = {"normalized", "surface", "adjective-garu"}
 
 
 def parse_args() -> argparse.Namespace:

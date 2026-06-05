@@ -937,6 +937,70 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionAdjectiveGaruFormsAreDerivedOnlyForAllowlistedCandidates() {
+        converter.learn(reading: "こわい", candidate: "怖い")
+        converter.learn(reading: "さむい", candidate: "寒い")
+        converter.learn(reading: "あつい", candidate: "暑い")
+        converter.learn(reading: "あかい", candidate: "赤い")
+
+        let allowedCases: [(reading: String, expected: String)] = [
+            ("こわがる", "怖がる"),
+            ("こわがった", "怖がった"),
+            ("こわがらない", "怖がらない"),
+            ("こわがり", "怖がり"),
+            ("さむがる", "寒がる"),
+            ("あつがる", "暑がる")
+        ]
+
+        for testCase in allowedCases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+
+        let blockedCandidates = converter.candidates(
+            for: "あかがる",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertFalse(
+            blockedCandidates.contains("赤がる"),
+            "candidates=\(blockedCandidates)"
+        )
+
+        let blockedArchaicCases: [(reading: String, blocked: String)] = [
+            ("こわかる", "怖かる"),
+            ("こわかり", "怖かり"),
+            ("さむかり", "寒かり")
+        ]
+
+        for testCase in blockedArchaicCases {
+            // Ensure blocked forms are filtered even if they exist in learned/user candidates.
+            converter.learn(reading: testCase.reading, candidate: testCase.blocked)
+        }
+
+        for testCase in blockedArchaicCases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertFalse(
+                candidates.contains(testCase.blocked),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionGodanNegativePastConditionalIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "とどく", candidate: "届く")
 

@@ -25,6 +25,7 @@ REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
 REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
 REF_APPLE_PLIST="$ROOT_DIR/references/apple.plist"
 REF_VOID_PLIST="$ROOT_DIR/references/void.plist"
+REF_ADJECTIVE_GARU_ALLOWLIST="$ROOT_DIR/references/adjective_garu_allowlist.json"
 
 SUDACHI_CSV_FILES=()
 
@@ -156,6 +157,7 @@ inputs = [
     *sorted(root.glob("tmp/sudachi_raw/**/*_lex.csv")),
   root / "tools" / "refresh_simulator_dictionary_on_build.sh",
   root / "tools" / "build_sudachi_index.py",
+  root / "references" / "adjective_garu_allowlist.json",
 ]
 
 outputs = [
@@ -239,17 +241,25 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
   if [[ "$(needs_sudachi_regeneration)" == "1" ]]; then
     echo "[dict] Regenerating Sudachi-derived dictionary artifacts..."
 
-    if python3 tools/build_sudachi_index.py \
-      --input-glob "tmp/sudachi_raw/**/*_lex.csv" \
-      --output "$TMP_PREMIER" \
-      --output-sources "$TMP_SOURCES" \
-      --output-inflections "$TMP_INFLECTIONS" \
-      --max-candidates 24 \
-      --min-reading-len 1 \
-      --max-reading-len 10 \
-      --max-candidate-len 20 \
-      --single-reading-max-candidates 21 \
-      --single-reading-max-candidate-len 1; then
+    sudachi_args=(
+      python3 tools/build_sudachi_index.py
+      --input-glob "tmp/sudachi_raw/**/*_lex.csv"
+      --output "$TMP_PREMIER"
+      --output-sources "$TMP_SOURCES"
+      --output-inflections "$TMP_INFLECTIONS"
+      --max-candidates 24
+      --min-reading-len 1
+      --max-reading-len 10
+      --max-candidate-len 20
+      --single-reading-max-candidates 21
+      --single-reading-max-candidate-len 1
+    )
+
+    if [[ -f "$REF_ADJECTIVE_GARU_ALLOWLIST" ]]; then
+      sudachi_args+=(--adjective-garu-allowlist "$REF_ADJECTIVE_GARU_ALLOWLIST")
+    fi
+
+    if "${sudachi_args[@]}"; then
       echo "[dict] Sudachi regeneration complete."
     else
       echo "[dict] Warning: Sudachi regeneration failed. Keeping previous artifacts if present."
