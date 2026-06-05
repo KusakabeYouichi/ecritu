@@ -13,6 +13,7 @@ private final class KanaKanjiSQLiteIndex {
     private var database: OpaquePointer?
     private var selectCandidatesStatement: OpaquePointer?
     private var selectCandidatesBySourceStatement: OpaquePointer?
+    private var selectCandidatesWithExactSourceStatement: OpaquePointer?
     private var selectInflectionStatement: OpaquePointer?
     private(set) var hasSourceMetadata = false
     private(set) var hasInflectionMetadata = false
@@ -50,6 +51,9 @@ private final class KanaKanjiSQLiteIndex {
             selectCandidatesBySourceStatement = prepareStatement(
                 sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?)) ORDER BY e.rank ASC"
             )
+            selectCandidatesWithExactSourceStatement = prepareStatement(
+                sql: "SELECT e.candidate FROM dictionary_entries e INNER JOIN candidate_sources s ON s.reading = e.reading AND s.candidate = e.candidate WHERE e.reading = ? AND s.source = ? ORDER BY e.rank ASC"
+            )
         }
 
         hasInflectionMetadata = tableExists("inflection_classes")
@@ -67,6 +71,10 @@ private final class KanaKanjiSQLiteIndex {
 
         if let selectCandidatesBySourceStatement {
             sqlite3_finalize(selectCandidatesBySourceStatement)
+        }
+
+        if let selectCandidatesWithExactSourceStatement {
+            sqlite3_finalize(selectCandidatesWithExactSourceStatement)
         }
 
         if let selectInflectionStatement {
@@ -93,6 +101,17 @@ private final class KanaKanjiSQLiteIndex {
             }
 
             return fetchCandidates(reading: reading, source: nil, statement: statement)
+        }
+    }
+
+    func candidates(withExactSource source: String, for reading: String) -> [String] {
+        queryQueue.sync {
+            guard hasSourceMetadata,
+                let statement = selectCandidatesWithExactSourceStatement else {
+                return []
+            }
+
+            return fetchCandidates(reading: reading, source: source, statement: statement)
         }
     }
 
@@ -425,6 +444,55 @@ final class KanaKanjiStore {
         return (inflectionDictionary[normalizedReading] ?? [:], !inflectionDictionary.isEmpty)
     }
 
+    func systemCandidates(
+        for reading: String,
+        taggedWith sourceTag: String
+    ) -> (candidates: Set<String>, hasMetadata: Bool) {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return ([], false)
+        }
+
+        var candidates = Set<String>()
+        let sqliteIndex = sqliteIndexIfAvailable()
+        let hasSQLiteSourceMetadata = sqliteIndex?.hasSourceMetadata == true
+
+        if let sqliteIndex,
+            sqliteIndex.hasSourceMetadata {
+            candidates.formUnion(
+                sqliteIndex.candidates(
+                    withExactSource: sourceTag,
+                    for: normalizedReading
+                )
+            )
+        }
+
+        let sourceMapByCandidate: [String: Set<String>]
+
+        if hasSQLiteSourceMetadata {
+            sourceMapByCandidate = [:]
+        } else {
+            sourceMapByCandidate = loadSystemCandidateSources()[normalizedReading] ?? [:]
+        }
+
+        for (candidate, sources) in sourceMapByCandidate where sources.contains(sourceTag) {
+            candidates.insert(candidate)
+        }
+
+        var hasMetadata = !sourceMapByCandidate.isEmpty
+            || (sqliteIndex?.hasSourceMetadata == true)
+
+        if sourceTag == KanaKanjiCandidateSourceTag.adjectiveGaru,
+            let seedCandidates = KanaKanjiSemanticSeed.adjectiveGaruCandidatesByReading[normalizedReading],
+            !seedCandidates.isEmpty {
+            candidates.formUnion(seedCandidates)
+            hasMetadata = true
+        }
+
+        return (candidates, hasMetadata)
+    }
+
     func latinSuggestions(prefix: String, limit: Int) -> [String] {
         guard limit > 0 else {
             return []
@@ -531,7 +599,9 @@ final class KanaKanjiStore {
                 var sources: Set<String> = []
 
                 for source in rawSources {
-                    if source == "normalized" || source == "surface" {
+                    if source == KanaKanjiCandidateSourceTag.normalized
+                        || source == KanaKanjiCandidateSourceTag.surface
+                        || source == KanaKanjiCandidateSourceTag.adjectiveGaru {
                         sources.insert(source)
                     }
                 }
