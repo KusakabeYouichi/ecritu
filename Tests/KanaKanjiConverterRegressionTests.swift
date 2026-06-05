@@ -847,6 +847,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionPostfixDePrefersLongerStemOverMadeAmbiguity() {
+        converter.learn(reading: "なま", candidate: "生")
+
+        let candidates = converter.candidates(
+            for: "なまで",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("生で"),
+            "candidates=\(candidates)"
+        )
+    }
+
     func testRegressionVerbNikuiFormsAreDerivedAcrossVerbClasses() {
         converter.learn(reading: "かく", candidate: "書く")
         converter.learn(reading: "たべる", candidate: "食べる")

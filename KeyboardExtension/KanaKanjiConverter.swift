@@ -501,6 +501,8 @@ final class KanaKanjiConverter {
             return []
         }
 
+        var weightedDerivedCandidates: [(stemLength: Int, derived: [String])] = []
+
         for passthrough in Self.postfixPassthroughSuffixes where reading.hasSuffix(passthrough) {
             let stem = String(reading.dropLast(passthrough.count))
 
@@ -523,10 +525,30 @@ final class KanaKanjiConverter {
             let derived = stemCandidates.flatMap { candidate in
                 suffixVariants.map { candidate + $0 }
             }
-            return Array(uniqueCandidates(from: derived).prefix(limit))
+
+            guard !derived.isEmpty else {
+                continue
+            }
+
+            weightedDerivedCandidates.append((stemLength: stem.count, derived: derived))
         }
 
-        return []
+        guard !weightedDerivedCandidates.isEmpty else {
+            return []
+        }
+
+        let prioritized = weightedDerivedCandidates.sorted { lhs, rhs in
+            if lhs.stemLength != rhs.stemLength {
+                return lhs.stemLength > rhs.stemLength
+            }
+
+            return lhs.derived.count > rhs.derived.count
+        }
+
+        let merged = prioritized.flatMap(\.derived)
+
+        return Array(uniqueCandidates(from: merged).prefix(limit))
+
     }
 
     private func applyInflectionRankingHeuristics(
