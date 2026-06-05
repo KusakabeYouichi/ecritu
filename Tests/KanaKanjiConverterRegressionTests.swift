@@ -61,6 +61,70 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(candidates.contains("日"), "candidates=\(candidates)")
     }
 
+    func testRegressionKiwotsukeruVariantsRemainConvertibleOnSeedFallback() {
+        let baseCandidates = converter.candidates(
+            for: "きをつける",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            baseCandidates.contains("気を付ける"),
+            "candidates=\(baseCandidates)"
+        )
+        XCTAssertTrue(
+            baseCandidates.contains("気をつける"),
+            "candidates=\(baseCandidates)"
+        )
+
+        let teFormCandidates = converter.candidates(
+            for: "きをつけて",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            teFormCandidates.contains("気を付けて"),
+            "candidates=\(teFormCandidates)"
+        )
+        XCTAssertTrue(
+            teFormCandidates.contains("気をつけて"),
+            "candidates=\(teFormCandidates)"
+        )
+    }
+
+    func testRegressionKigatsukuVariantsRemainConvertibleOnSeedFallback() {
+        let baseCandidates = converter.candidates(
+            for: "きがつく",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            baseCandidates.contains("気が付く"),
+            "candidates=\(baseCandidates)"
+        )
+        XCTAssertTrue(
+            baseCandidates.contains("気がつく"),
+            "candidates=\(baseCandidates)"
+        )
+
+        let taFormCandidates = converter.candidates(
+            for: "きがついた",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            taFormCandidates.contains("気が付いた"),
+            "candidates=\(taFormCandidates)"
+        )
+        XCTAssertTrue(
+            taFormCandidates.contains("気がついた"),
+            "candidates=\(taFormCandidates)"
+        )
+    }
+
     func testRegressionHonorificPrefixCandidatesAreDerivedFromRegisteredBaseWords() {
         converter.learn(reading: "かんじょう", candidate: "勘定")
         converter.learn(reading: "さけ", candidate: "酒")
