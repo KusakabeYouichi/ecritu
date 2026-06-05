@@ -1121,6 +1121,61 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionKotoNegativePostfixChainIsDerived() {
+        converter.learn(reading: "きく", candidate: "聞く")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("きいたことない", "聞いたことない"),
+            ("きいたことなく", "聞いたことなく"),
+            ("きいたことなければ", "聞いたことなければ")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
+    func testRegressionSuppressionAppliesToDerivedInflectionCandidates() {
+        guard let defaults = UserDefaults(suiteName: defaultsSuiteName) else {
+            XCTFail("failed to open test defaults")
+            return
+        }
+
+        defaults.set(
+            ["おいしい": ["美味しい"]],
+            forKey: KanaKanjiStorageKeys.suppressionVocabulary
+        )
+
+        let baseCandidates = converter.candidates(
+            for: "おいしい",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+        let inflectedCandidates = converter.candidates(
+            for: "おいしく",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertFalse(
+            baseCandidates.contains("美味しい"),
+            "candidates=\(baseCandidates)"
+        )
+        XCTAssertFalse(
+            inflectedCandidates.contains("美味しく"),
+            "candidates=\(inflectedCandidates)"
+        )
+    }
+
     func testRegressionNumericUnitReadingsIncludeCurrencyCandidates() {
         let cases: [(reading: String, expected: String)] = [
             ("せんえん", "千円"),
