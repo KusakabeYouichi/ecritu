@@ -1,1 +1,65 @@
-{}
+{
+	"あつい": {
+		"暑い": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"うれしい": {
+		"嬉しい": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"かなしい": {
+		"悲しい": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"こわい": {
+		"怖い": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"さむい": {
+		"寒い": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"さびしい": {
+		"寂しい": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"たのしい": {
+		"楽しい": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"はずかしい": {
+		"恥ずかしい": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	},
+	"くやしい": {
+		"悔しい": [
+			"normalized",
+			"surface",
+			"adjective-garu"
+		]
+	}
+}
