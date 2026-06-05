@@ -1176,6 +1176,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionIchidanTeAspectConjunctiveFormsAreDerivedFromBaseVerbCandidate() {
+        converter.learn(reading: "にる", candidate: "似る")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("にていて", "似ていて"),
+            ("にてて", "似てて")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionSuppressionAppliesToDerivedInflectionCandidates() {
         guard let defaults = UserDefaults(suiteName: defaultsSuiteName) else {
             XCTFail("failed to open test defaults")
