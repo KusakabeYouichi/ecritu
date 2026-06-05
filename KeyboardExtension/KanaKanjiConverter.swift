@@ -1861,11 +1861,26 @@ final class KanaKanjiConverter {
         initialUserDictionary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
-        uniqueCandidates(
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return []
+        }
+
+        let candidates = uniqueCandidates(
             from: (userDictionary[reading] ?? [])
                 + (initialUserDictionary[reading] ?? [])
                 + systemCandidates(for: reading, mode: systemCandidateMode)
         )
+
+        let suppressedByReading = store.suppressedCandidatesByReading()
+
+        guard let suppressedCandidates = suppressedByReading[normalizedReading],
+            !suppressedCandidates.isEmpty else {
+            return candidates
+        }
+
+        return candidates.filter { !suppressedCandidates.contains($0) }
     }
 
     private func removingSuffix(_ text: String, suffix: String) -> String? {
