@@ -42,6 +42,7 @@ final class KeyboardViewController: UIInputViewController {
     private var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
     private var dictionaryPreloadWorkItem: DispatchWorkItem?
     private var keyboardBootstrapWorkItem: DispatchWorkItem?
+    private var sharedDataPrewarmWorkItem: DispatchWorkItem?
     private var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     private var contactCandidatesByReading: [String: [String]] = [:]
     private var isRefreshingSupplementaryLexicon = false
@@ -209,6 +210,9 @@ final class KeyboardViewController: UIInputViewController {
     private static let refreshQueueWaitSlowThresholdMs = 60
     private static let renderConfigurationSlowThresholdMs = 16
     private static let refreshKeyboardStateSlowThresholdMs = 28
+    private static let maximumContactCandidateReadings = 4096
+    private static let maximumContactCandidateTotalEntries = 16384
+    private static let maximumContactCandidatesPerReading = 48
     private static let memoryFailSafeElevatedStartMB: Double = 120
     private static let memoryFailSafeCriticalStartMB: Double = 150
     private static let memoryFailSafeRecoverDeltaMB: Double = 14
@@ -371,30 +375,43 @@ final class KeyboardViewController: UIInputViewController {
                 return
             }
 
-            DispatchQueue.main.async {
-                if self.view.window == nil {
-                    self.clearSupplementaryLexiconCandidatesForMemoryTrim()
+            let lexiconEntries: [(userInput: String, candidate: String)] = lexicon.entries.map { entry in
+                (entry.userInput, entry.documentText)
+            }
+
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                guard let self else {
                     return
                 }
 
-                self.isRefreshingSupplementaryLexicon = false
-                self.supplementaryLexiconLastRefreshAt = Date()
-
-                let mergedCandidates = self.buildSupplementaryLexiconCandidates(from: lexicon)
-                let previousCandidates = self.supplementaryLexiconCandidatesByReading
-                self.supplementaryLexiconCandidatesByReading = mergedCandidates
+                let mergedCandidates = self.buildSupplementaryLexiconCandidates(
+                    fromEntries: lexiconEntries
+                )
 
                 let entryCount = mergedCandidates.values.reduce(0) { partialResult, candidates in
                     partialResult + candidates.count
                 }
 
-                self.updateKeyboardDiagnosticsHeartbeat(
-                    event: "補助語彙を更新 entries=\(entryCount)",
-                    appendLog: true
-                )
+                DispatchQueue.main.async {
+                    if self.view.window == nil {
+                        self.clearSupplementaryLexiconCandidatesForMemoryTrim()
+                        return
+                    }
 
-                if previousCandidates != mergedCandidates {
-                    self.refreshKeyboardStateAsync()
+                    self.isRefreshingSupplementaryLexicon = false
+                    self.supplementaryLexiconLastRefreshAt = Date()
+
+                    let previousCandidates = self.supplementaryLexiconCandidatesByReading
+                    self.supplementaryLexiconCandidatesByReading = mergedCandidates
+
+                    self.updateKeyboardDiagnosticsHeartbeat(
+                        event: "補助語彙を更新 entries=\(entryCount)",
+                        appendLog: true
+                    )
+
+                    if previousCandidates != mergedCandidates {
+                        self.refreshKeyboardStateAsync()
+                    }
                 }
             }
         }
@@ -406,12 +423,15 @@ final class KeyboardViewController: UIInputViewController {
         supplementaryLexiconCandidatesByReading = [:]
     }
 
-    private func buildSupplementaryLexiconCandidates(from lexicon: UILexicon) -> [String: [String]] {
+    private func buildSupplementaryLexiconCandidates(
+        fromEntries entries: [(userInput: String, candidate: String)]
+    ) -> [String: [String]] {
         var dictionary: [String: [String]] = [:]
+        var seenCandidatesByReading: [String: Set<String>] = [:]
         let maxCandidatesPerReading = 128
 
-        for entry in lexicon.entries {
-            let candidate = entry.documentText.trimmingCharacters(in: .whitespacesAndNewlines)
+        for entry in entries {
+            let candidate = entry.candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !candidate.isEmpty,
                 candidate.count <= 64 else {
@@ -425,16 +445,27 @@ final class KeyboardViewController: UIInputViewController {
                 continue
             }
 
-            readingKeys = Array(Set(readingKeys))
+            var seenReadings = Set<String>()
+            readingKeys = readingKeys.filter { seenReadings.insert($0).inserted }
 
             for reading in readingKeys {
-                var candidates = dictionary[reading] ?? []
+                let existingCount = dictionary[reading]?.count ?? 0
 
-                if !candidates.contains(candidate) {
-                    candidates.append(candidate)
+                guard existingCount < maxCandidatesPerReading else {
+                    continue
                 }
 
-                dictionary[reading] = Array(candidates.prefix(maxCandidatesPerReading))
+                var seenCandidates = seenCandidatesByReading[reading] ?? Set(dictionary[reading] ?? [])
+
+                guard seenCandidates.insert(candidate).inserted else {
+                    seenCandidatesByReading[reading] = seenCandidates
+                    continue
+                }
+
+                seenCandidatesByReading[reading] = seenCandidates
+                var candidates = dictionary[reading] ?? []
+                candidates.append(candidate)
+                dictionary[reading] = candidates
             }
         }
 
@@ -454,21 +485,6 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        let cachedCandidates = cachedContactCandidatesFromSharedDefaults()
-
-        if !cachedCandidates.isEmpty {
-            isRefreshingContactCandidates = false
-            contactCandidatesLastRefreshAt = Date()
-
-            let previous = contactCandidatesByReading
-            contactCandidatesByReading = cachedCandidates
-
-            if previous != cachedCandidates {
-                refreshKeyboardStateAsync()
-            }
-            return
-        }
-
         if !force,
             isRefreshingContactCandidates {
             return
@@ -480,18 +496,63 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+        isRefreshingContactCandidates = true
+        loadCachedContactCandidatesInBackground { [weak self] cachedCandidates in
+            guard let self else {
+                return
+            }
 
-        switch authorizationStatus {
-        case .authorized, .limited:
-            loadContactCandidates(displayMode: displayMode)
-        case .notDetermined:
-            // Avoid permission prompts from extension process; app-side permission flow should handle this.
-            clearContactCandidatesIfNeeded(refreshKeyboardState: true)
-        case .denied, .restricted:
-            clearContactCandidatesIfNeeded(refreshKeyboardState: true)
-        @unknown default:
-            clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+            let currentDisplayMode = self.currentContactCandidateDisplayModeFromSharedDefaults()
+
+            guard currentDisplayMode.usesContacts else {
+                self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+                return
+            }
+
+            if !cachedCandidates.isEmpty {
+                self.isRefreshingContactCandidates = false
+                self.contactCandidatesLastRefreshAt = Date()
+
+                let previous = self.contactCandidatesByReading
+                self.contactCandidatesByReading = cachedCandidates
+
+                if previous != cachedCandidates {
+                    self.refreshKeyboardStateAsync()
+                }
+                return
+            }
+
+            let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
+
+            switch authorizationStatus {
+            case .authorized, .limited:
+                self.loadContactCandidates(displayMode: currentDisplayMode)
+            case .notDetermined:
+                // Avoid permission prompts from extension process; app-side permission flow should handle this.
+                self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+            case .denied, .restricted:
+                self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+            @unknown default:
+                self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
+            }
+        }
+    }
+
+    private func loadCachedContactCandidatesInBackground(
+        completion: @escaping ([String: [String]]) -> Void
+    ) {
+        DispatchQueue.global(qos: .utility).async { [weak self] in
+            guard let self else {
+                return
+            }
+
+            let cachedCandidates = self.limitContactCandidateDictionary(
+                self.cachedContactCandidatesFromSharedDefaults()
+            )
+
+            DispatchQueue.main.async {
+                completion(cachedCandidates)
+            }
         }
     }
 
@@ -539,14 +600,25 @@ final class KeyboardViewController: UIInputViewController {
             ])
 
             var dictionary: [String: [String]] = [:]
+            var totalCandidateCount = 0
+            var didReachLimit = false
 
             do {
-                try store.enumerateContacts(with: request) { contact, _ in
+                try store.enumerateContacts(with: request) { contact, stop in
                     self.appendContactCandidates(
                         from: contact,
                         displayMode: displayMode,
-                        to: &dictionary
+                        to: &dictionary,
+                        totalCandidateCount: &totalCandidateCount
                     )
+
+                    if self.hasReachedContactCandidateBuildLimit(
+                        readingCount: dictionary.count,
+                        totalCandidateCount: totalCandidateCount
+                    ) {
+                        didReachLimit = true
+                        stop.pointee = true
+                    }
                 }
             } catch {
                 DispatchQueue.main.async {
@@ -573,6 +645,13 @@ final class KeyboardViewController: UIInputViewController {
                 let previous = self.contactCandidatesByReading
                 self.contactCandidatesByReading = dictionary
 
+                if didReachLimit {
+                    self.updateKeyboardDiagnosticsHeartbeat(
+                        event: "連絡先候補を上限で打ち切り readings=\(dictionary.count) entries=\(totalCandidateCount)",
+                        appendLog: true
+                    )
+                }
+
                 if previous != dictionary {
                     self.refreshKeyboardStateAsync()
                 }
@@ -583,7 +662,8 @@ final class KeyboardViewController: UIInputViewController {
     private func appendContactCandidates(
         from contact: CNContact,
         displayMode: ContactCandidateDisplayMode,
-        to dictionary: inout [String: [String]]
+        to dictionary: inout [String: [String]],
+        totalCandidateCount: inout Int
     ) {
         let familyName = contact.familyName.trimmingCharacters(in: .whitespacesAndNewlines)
         let givenName = contact.givenName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -654,7 +734,12 @@ final class KeyboardViewController: UIInputViewController {
         ]
 
         for (readingText, candidates) in readingCandidates {
-            appendCandidates(candidates, forReadingText: readingText, to: &dictionary)
+            appendCandidates(
+                candidates,
+                forReadingText: readingText,
+                to: &dictionary,
+                totalCandidateCount: &totalCandidateCount
+            )
         }
 
         if !organizationName.isEmpty {
@@ -664,7 +749,12 @@ final class KeyboardViewController: UIInputViewController {
             )
 
             for readingKey in organizationReadingKeys {
-                appendCandidates([organizationName], forReadingText: readingKey, to: &dictionary)
+                appendCandidates(
+                    [organizationName],
+                    forReadingText: readingKey,
+                    to: &dictionary,
+                    totalCandidateCount: &totalCandidateCount
+                )
             }
         }
     }
@@ -775,7 +865,8 @@ final class KeyboardViewController: UIInputViewController {
     private func appendCandidates(
         _ candidates: [String],
         forReadingText readingText: String,
-        to dictionary: inout [String: [String]]
+        to dictionary: inout [String: [String]],
+        totalCandidateCount: inout Int
     ) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(readingText)
 
@@ -783,22 +874,75 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        if dictionary[normalizedReading] == nil,
+            dictionary.count >= Self.maximumContactCandidateReadings {
+            return
+        }
+
+        guard totalCandidateCount < Self.maximumContactCandidateTotalEntries else {
+            return
+        }
+
         var existingCandidates = dictionary[normalizedReading] ?? []
+        var existingCandidateSet = Set(existingCandidates)
 
         for candidate in candidates {
+            if existingCandidates.count >= Self.maximumContactCandidatesPerReading
+                || totalCandidateCount >= Self.maximumContactCandidateTotalEntries {
+                break
+            }
+
             let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !trimmed.isEmpty,
-                !existingCandidates.contains(trimmed) else {
+                existingCandidateSet.insert(trimmed).inserted else {
                 continue
             }
 
             existingCandidates.append(trimmed)
+            totalCandidateCount += 1
         }
 
         if !existingCandidates.isEmpty {
-            dictionary[normalizedReading] = Array(existingCandidates.prefix(48))
+            dictionary[normalizedReading] = existingCandidates
         }
+    }
+
+    private func hasReachedContactCandidateBuildLimit(
+        readingCount: Int,
+        totalCandidateCount: Int
+    ) -> Bool {
+        readingCount >= Self.maximumContactCandidateReadings
+            || totalCandidateCount >= Self.maximumContactCandidateTotalEntries
+    }
+
+    private func limitContactCandidateDictionary(
+        _ source: [String: [String]]
+    ) -> [String: [String]] {
+        guard !source.isEmpty else {
+            return [:]
+        }
+
+        var limited: [String: [String]] = [:]
+        var totalCandidateCount = 0
+
+        for (reading, candidates) in source {
+            if hasReachedContactCandidateBuildLimit(
+                readingCount: limited.count,
+                totalCandidateCount: totalCandidateCount
+            ) {
+                break
+            }
+
+            appendCandidates(
+                candidates,
+                forReadingText: reading,
+                to: &limited,
+                totalCandidateCount: &totalCandidateCount
+            )
+        }
+
+        return limited
     }
 
     private func supplementaryReadingKeys(userInput: String, candidate: String) -> [String] {
@@ -1041,11 +1185,47 @@ final class KeyboardViewController: UIInputViewController {
                 self.refreshSupplementaryLexiconIfNeeded(force: true)
                 self.refreshContactCandidatesIfNeeded(force: true)
             }
+            self.requestSharedDataPrewarmIfNeeded()
             self.requestSystemDictionaryPreloadIfNeeded()
         }
 
         keyboardBootstrapWorkItem = workItem
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: workItem)
+    }
+
+    private func requestSharedDataPrewarmIfNeeded() {
+        guard !shouldSuppressHeavyOperations(reason: "requestSharedDataPrewarmIfNeeded") else {
+            return
+        }
+
+        sharedDataPrewarmWorkItem?.cancel()
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else {
+                return
+            }
+
+            self.sharedDataPrewarmWorkItem = nil
+
+            guard !self.shouldSuppressHeavyOperations(reason: "sharedDataPrewarm") else {
+                return
+            }
+
+            let startedAt = CFAbsoluteTimeGetCurrent()
+            self.kanaKanjiConverter.preloadSharedDataCachesIfNeeded()
+            let elapsedMs = self.performanceElapsedMilliseconds(since: startedAt)
+
+            if elapsedMs >= Self.renderConfigurationSlowThresholdMs {
+                self.appendKeyboardDiagnosticsLog(
+                    "共有データプリウォーム遅延 elapsedMs=\(elapsedMs)",
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+            }
+        }
+
+        sharedDataPrewarmWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: workItem)
     }
 
     private func ensureKeyboardViewIfNeeded() {
@@ -1377,6 +1557,9 @@ final class KeyboardViewController: UIInputViewController {
 
         keyboardBootstrapWorkItem?.cancel()
         keyboardBootstrapWorkItem = nil
+
+        sharedDataPrewarmWorkItem?.cancel()
+        sharedDataPrewarmWorkItem = nil
 
         clearSupplementaryLexiconCandidatesForMemoryTrim()
         clearContactCandidatesIfNeeded(refreshKeyboardState: false)
