@@ -431,6 +431,24 @@ extension KanaKanjiConverter {
         ]
     }
 
+    static func teIkuInflectionSuffixes(for teForm: String) -> [String] {
+        guard !teForm.isEmpty else {
+            return []
+        }
+
+        return [
+            teForm + "いく",
+            teForm + "いった",
+            teForm + "いって",
+            teForm + "いかない",
+            teForm + "いかなかった",
+            teForm + "いきます",
+            teForm + "いきました",
+            teForm + "いきません",
+            teForm + "って"
+        ]
+    }
+
     static func taiGaruInflectionSuffixes(for iForm: String) -> [String] {
         guard !iForm.isEmpty else {
             return []
@@ -560,6 +578,7 @@ extension KanaKanjiConverter {
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: passiveTeForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teKuruInflectionSuffixes(for: pattern.teForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.teIkuInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teMiruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teShimauInflectionSuffixes(for: pattern.teForm))
@@ -995,6 +1014,7 @@ extension KanaKanjiConverter {
         suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teAruInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teKuruInflectionSuffixes(for: "って"))
+        suffixes.append(contentsOf: KanaKanjiConverter.teIkuInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teMiruInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teShimauInflectionSuffixes(for: "って"))

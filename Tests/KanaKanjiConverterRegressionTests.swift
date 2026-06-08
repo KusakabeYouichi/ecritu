@@ -42,6 +42,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionGodanTeIkuChainDerivesMotteikuVariants() {
+        converter.learn(reading: "もつ", candidate: "持つ")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("もっていく", "持っていく"),
+            ("もっていって", "持っていって"),
+            ("もってって", "持ってって")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionSourceFilteredModeStillReturnsSeedFallbackCandidates() {
         let candidates = converter.candidates(
             for: "いく",
