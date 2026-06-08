@@ -521,6 +521,7 @@ extension KanaKanjiConverter {
                 pattern.aForm + "れる",
                 pattern.aForm + "れない",
                 pattern.aForm + "せる",
+                pattern.aForm + "せて",
                 pattern.aForm + "せない",
                 pattern.aForm + "せられる",
                 pattern.aForm + "せられない",

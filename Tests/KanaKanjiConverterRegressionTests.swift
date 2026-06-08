@@ -1178,6 +1178,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionGodanCausativeTeFormIsDerivedFromBaseVerbCandidate() {
+        converter.learn(reading: "おわる", candidate: "終わる")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("おわらせる", "終わらせる"),
+            ("おわらせて", "終わらせて")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionIchidanZuFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "つける", candidate: "付ける")
 
