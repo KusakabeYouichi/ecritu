@@ -257,5 +257,19 @@
 	<dict><key>phrase</key><string>総理府</string><key>shortcut</key><string>そうりふ</string></dict>
 	<dict><key>phrase</key><string>美山荘</string><key>shortcut</key><string>みやまそう</string></dict>
 	<dict><key>phrase</key><string>椿山荘</string><key>shortcut</key><string>ちんざんそう</string></dict>
+	<dict><key>phrase</key><string>南高梅</string><key>shortcut</key><string>なんこうばい</string></dict>
+	<dict><key>phrase</key><string>一定数</string><key>shortcut</key><string>いっていすう</string></dict>
+	<dict><key>phrase</key><string>一定時間</string><key>shortcut</key><string>いっていじかん</string></dict>
+	<dict><key>phrase</key><string>明治維新</string><key>shortcut</key><string>めいじいしん</string></dict>
+	<dict><key>phrase</key><string>明治時代</string><key>shortcut</key><string>めいじじだい</string></dict>
+	<dict><key>phrase</key><string>江戸時代</string><key>shortcut</key><string>えどじだい</string></dict>
+	<dict><key>phrase</key><string>鎌倉時代</string><key>shortcut</key><string>かまくらじだい</string></dict>
+	<dict><key>phrase</key><string>室町時代</string><key>shortcut</key><string>むろまちじだい</string></dict>
+	<dict><key>phrase</key><string>平安時代</string><key>shortcut</key><string>へいあんじだい</string></dict>
+	<dict><key>phrase</key><string>電球光</string><key>shortcut</key><string>でんきゅうこう</string></dict>
+	<dict><key>phrase</key><string>赤とうがらし</string><key>shortcut</key><string>あかとうがらし</string></dict>
+	<dict><key>phrase</key><string>赤唐辛子</string><key>shortcut</key><string>あかとうがらし</string></dict>
+	<dict><key>phrase</key><string>青とうがらし</string><key>shortcut</key><string>あおとうがらし</string></dict>
+	<dict><key>phrase</key><string>青唐辛子</string><key>shortcut</key><string>あおとうがらし</string></dict>
 </array>
 </plist>
