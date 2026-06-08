@@ -5,6 +5,12 @@ import Darwin
 import Contacts
 
 final class KeyboardViewController: UIInputViewController {
+    enum UserInitiatedRefreshReason: String {
+        case kanaInput = "kanaInput"
+        case commit = "commit"
+        case postModifier = "postModifier"
+    }
+
     private static let sharedKanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
     private static let sharedKanaKanjiConverter = KanaKanjiConverter(store: sharedKanaKanjiStore)
     private static let isSupplementaryExternalCandidatesEnabled = true
@@ -2023,6 +2029,24 @@ final class KeyboardViewController: UIInputViewController {
             enqueuedAt: enqueuedAt,
             queuedDepthAtEnqueue: queuedDepth
         )
+    }
+
+    func refreshKeyboardStateForUserInitiatedAction(_ reason: UserInitiatedRefreshReason) {
+        if !Thread.isMainThread {
+            DispatchQueue.main.async { [weak self] in
+                self?.refreshKeyboardStateForUserInitiatedAction(reason)
+            }
+            return
+        }
+
+        let trigger = "refreshKeyboardStateImmediate-\(reason.rawValue)"
+
+        guard !shouldSuppressHeavyOperations(reason: trigger) else {
+            return
+        }
+
+        updateMemoryFailSafeProfile(trigger: trigger)
+        refreshKeyboardState(trigger: "immediate-\(reason.rawValue)")
     }
 
     private func scheduleRefreshKeyboardStateAsyncExecution(
