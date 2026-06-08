@@ -125,6 +125,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionYamadaSurnameRemainsInTopCandidatesAfterKatakanaLearning() {
+        converter.learn(reading: "やまだ", candidate: "ヤマダ")
+
+        let candidates = converter.candidates(
+            for: "やまだ",
+            limit: 8,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertEqual(candidates.first, "山田", "candidates=\(candidates)")
+        XCTAssertTrue(candidates.contains("ヤマダ"), "candidates=\(candidates)")
+    }
+
     func testRegressionHonorificPrefixCandidatesAreDerivedFromRegisteredBaseWords() {
         converter.learn(reading: "かんじょう", candidate: "勘定")
         converter.learn(reading: "さけ", candidate: "酒")

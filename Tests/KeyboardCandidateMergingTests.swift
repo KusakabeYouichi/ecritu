@@ -42,4 +42,32 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         XCTAssertTrue(merged.contains("変換候補A"), "merged=\(merged)")
         XCTAssertTrue(merged.contains("変換候補B"), "merged=\(merged)")
     }
+
+    func testKatakanaSupplementaryForSameReadingIsDeferredBehindConverter() {
+        let split = KeyboardViewController.splitSupplementaryCandidatesForMerge(
+            reading: "やまだ",
+            supplementaryCandidates: ["ヤマダ"],
+            converterCandidates: ["山田", "ヤマダ"]
+        )
+
+        XCTAssertTrue(split.prioritized.isEmpty)
+        XCTAssertEqual(split.deferred, ["ヤマダ"])
+
+        let mergedPrimary = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+            supplementaryCandidates: split.prioritized,
+            converterCandidates: ["山田", "ヤマダ"],
+            limit: 8
+        )
+
+        var merged = mergedPrimary
+
+        if merged.count < 8 {
+            for candidate in split.deferred where !merged.contains(candidate) {
+                merged.append(candidate)
+            }
+        }
+
+        XCTAssertEqual(merged.first, "山田", "merged=\(merged)")
+        XCTAssertTrue(merged.contains("ヤマダ"), "merged=\(merged)")
+    }
 }
