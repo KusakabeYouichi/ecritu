@@ -131,6 +131,11 @@ final class KanaKanjiConverter {
         "ねおち"
     ]
 
+    private static let sahenPhraseParticleSuffixes: [String] = [
+        "には", "では", "とは", "へは",
+        "が", "を", "に", "で", "と", "へ", "は", "も", "の", "や"
+    ]
+
     private static let godanRuKanjiSuffixOverrides: [String] = [
         "入る"
     ]
@@ -1783,11 +1788,34 @@ final class KanaKanjiConverter {
             return InflectionClass.suru
         }
 
+        if isLikelySahenPhraseStem(candidate) {
+            return InflectionClass.suru
+        }
+
         guard Self.mixedScriptSahenOptInReadings.contains(baseReading) else {
             return nil
         }
 
         return InflectionClass.suru
+    }
+
+    private func isLikelySahenPhraseStem(_ candidate: String) -> Bool {
+        guard containsKanji(candidate) else {
+            return false
+        }
+
+        for suffix in Self.sahenPhraseParticleSuffixes where candidate.hasSuffix(suffix) {
+            let stem = String(candidate.dropLast(suffix.count))
+
+            guard !stem.isEmpty,
+                containsKanji(stem) else {
+                continue
+            }
+
+            return true
+        }
+
+        return false
     }
 
     private func inferredExplicitSuruInflectionClass(

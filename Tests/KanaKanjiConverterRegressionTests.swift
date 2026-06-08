@@ -411,6 +411,41 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionKigaSuruChainDerivesBothAffirmativeAndNegative() {
+        let cases: [(reading: String, expected: String)] = [
+            ("きがする", "気がする"),
+            ("きがしない", "気がしない")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
+    func testRegressionMixedScriptPhraseStemCanDeriveSuruFormsWithoutOptIn() {
+        converter.learn(reading: "おとが", candidate: "音が")
+
+        let candidates = converter.candidates(
+            for: "おとがする",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("音がする"),
+            "candidates=\(candidates)"
+        )
+    }
+
     func testRegressionSahenNounTeMiruChainDerivesShiteMite() {
         converter.learn(reading: "けんさくしてみる", candidate: "検索してみる")
 
