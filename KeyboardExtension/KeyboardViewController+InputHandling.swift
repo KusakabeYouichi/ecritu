@@ -177,7 +177,7 @@ extension KeyboardViewController {
             let activeConversion,
             shouldAutoCommitConversion(beforeInserting: text) {
             commitActiveConversionBeforeDelimiterInput(activeConversion, delimiter: text)
-            refreshKeyboardStateAsync()
+            refreshKeyboardStateForUserInitiatedAction(.kanaInput)
             return
         }
 
@@ -198,7 +198,7 @@ extension KeyboardViewController {
                 !composingReading.isEmpty,
                 shouldAutoCommitConversion(beforeInserting: text) {
                 commitComposingTextBeforeDelimiterInput(delimiter: text)
-                refreshKeyboardStateAsync()
+                refreshKeyboardStateForUserInitiatedAction(.kanaInput)
                 return
             }
 
@@ -213,7 +213,11 @@ extension KeyboardViewController {
             clearComposingState()
         }
 
-        refreshKeyboardStateAsync()
+        if currentInputMode == .kana {
+            refreshKeyboardStateForUserInitiatedAction(.kanaInput)
+        } else {
+            refreshKeyboardStateAsync()
+        }
     }
 
     func shouldAutoCommitConversion(beforeInserting text: String) -> Bool {
@@ -408,7 +412,7 @@ extension KeyboardViewController {
             }
 
             commitActiveConversion(learn: true)
-            refreshKeyboardStateAsync()
+            refreshKeyboardStateForUserInitiatedAction(.commit)
             return
         }
 
@@ -425,7 +429,7 @@ extension KeyboardViewController {
                 committedText: composingRawText,
                 learn: true
             )
-            refreshKeyboardStateAsync()
+            refreshKeyboardStateForUserInitiatedAction(.commit)
             return
         }
 
@@ -551,7 +555,7 @@ extension KeyboardViewController {
                 learn: true
             )
             clearComposingState()
-            refreshKeyboardStateAsync()
+            refreshKeyboardStateForUserInitiatedAction(.commit)
             return
         }
 
@@ -565,7 +569,7 @@ extension KeyboardViewController {
             committedText: composingRawText,
             learn: true
         )
-        refreshKeyboardStateAsync()
+        refreshKeyboardStateForUserInitiatedAction(.commit)
     }
 
     func handleCommitComposingTextAsKatakana() {
@@ -584,7 +588,7 @@ extension KeyboardViewController {
                 learn: true
             )
             clearComposingState()
-            refreshKeyboardStateAsync()
+            refreshKeyboardStateForUserInitiatedAction(.commit)
             return
         }
 
@@ -600,7 +604,7 @@ extension KeyboardViewController {
             committedText: committedText,
             learn: true
         )
-        refreshKeyboardStateAsync()
+        refreshKeyboardStateForUserInitiatedAction(.commit)
     }
 
     func katakanaCommittedText(from text: String) -> String {
@@ -1613,7 +1617,7 @@ extension KeyboardViewController {
             setMarkedComposingText(composingRawText)
             lastKanaPostModifierAppliedAt = CFAbsoluteTimeGetCurrent()
             lastKanaPostModifierResultCharacter = replacedCharacter
-            refreshKeyboardStateAsync()
+            refreshKeyboardStateForUserInitiatedAction(.postModifier)
             return true
         }
 
@@ -1625,7 +1629,7 @@ extension KeyboardViewController {
                 resolvedButtonState == .kaomoji,
                 !hadPendingComposingText {
                 hasParenthesesWrapper.toggle()
-                refreshKeyboardStateAsync()
+                refreshKeyboardStateForUserInitiatedAction(.postModifier)
                 return true
             }
 
@@ -1654,7 +1658,7 @@ extension KeyboardViewController {
         lastKanaPostModifierAppliedAt = CFAbsoluteTimeGetCurrent()
         lastKanaPostModifierResultCharacter = replacedCharacter
 
-        refreshKeyboardStateAsync()
+        refreshKeyboardStateForUserInitiatedAction(.postModifier)
         return true
     }
 }
