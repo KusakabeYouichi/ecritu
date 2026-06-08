@@ -98,6 +98,7 @@ struct FlickKeyView: View {
     @State private var secondaryFlickPrimaryDirection: FlickDirection?
     @State private var secondaryFlickVerticalDirection: FlickDirection?
     @State private var secondaryFlickAnchorTranslation: CGSize = .zero
+    @GestureState private var isGestureInProgress = false
     @Environment(\.keyboardAccentColor) private var accentColor
     @Environment(\.flickGuideDisplayMode) private var flickGuideDisplayMode
     @Environment(\.flickDirectionProfile) private var flickDirectionProfile
@@ -185,6 +186,14 @@ struct FlickKeyView: View {
         )
         .onPreferenceChange(FlickKeyFramePreferenceKey.self) { newValue in
             keyFrameInGlobal = newValue
+        }
+        .onChange(of: isGestureInProgress) { inProgress in
+            if !inProgress {
+                finalizeTouchInteractionState()
+            }
+        }
+        .onDisappear {
+            finalizeTouchInteractionState()
         }
         .zIndex(isTouching ? KeyboardLayerZIndex.touchingKey : 0)
     }
@@ -532,6 +541,9 @@ struct FlickKeyView: View {
 
     private var flickGesture: some Gesture {
         DragGesture(minimumDistance: 0)
+            .updating($isGestureInProgress) { _, state, _ in
+                state = true
+            }
             .onChanged { value in
                 if !isTouching {
                     onTouchStateChanged(true)
@@ -580,14 +592,7 @@ struct FlickKeyView: View {
                 cancelLongPressTimer()
 
                 if didTriggerLongPressAction {
-                    activeDirection = .milieu
-                    resetSecondaryFlickState()
-                    longPressIsActive = false
-                    isTouching = false
-                    latestTouchLocationX = 0
-                    longPressAnchorLocationX = 0
-                    didTriggerLongPressAction = false
-                    onTouchStateChanged(false)
+                    finalizeTouchInteractionState()
                     return
                 }
 
@@ -625,14 +630,7 @@ struct FlickKeyView: View {
                     committedDirectionForCallback = committedDirection
                 }
 
-                activeDirection = .milieu
-                resetSecondaryFlickState()
-                longPressIsActive = false
-                isTouching = false
-                latestTouchLocationX = 0
-                longPressAnchorLocationX = 0
-                didTriggerLongPressAction = false
-                onTouchStateChanged(false)
+                finalizeTouchInteractionState()
 
                 if let onCommitWithDirection {
                     onCommitWithDirection(committedText, committedDirectionForCallback)
@@ -731,6 +729,21 @@ struct FlickKeyView: View {
     private func cancelLongPressTimer() {
         longPressWorkItem?.cancel()
         longPressWorkItem = nil
+    }
+
+    private func finalizeTouchInteractionState() {
+        cancelLongPressTimer()
+        activeDirection = .milieu
+        resetSecondaryFlickState()
+        longPressIsActive = false
+        latestTouchLocationX = 0
+        longPressAnchorLocationX = 0
+        didTriggerLongPressAction = false
+
+        if isTouching {
+            isTouching = false
+            onTouchStateChanged(false)
+        }
     }
 
     private func longPressIndex(for locationX: CGFloat) -> Int {
