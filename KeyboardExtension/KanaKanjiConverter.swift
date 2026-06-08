@@ -198,6 +198,14 @@ final class KanaKanjiConverter {
         }
     }
 
+    func preloadSharedDataCachesIfNeeded() {
+        _ = store.userDictionary()
+        _ = store.learnedDictionary()
+        _ = store.initialUserDictionary()
+        _ = store.suppressedCandidatesByReading()
+        _ = store.learningScores(for: "あ")
+    }
+
     func candidates(
         for reading: String,
         limit: Int,
