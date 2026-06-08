@@ -264,6 +264,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ちゃいません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ちゃった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ちゃって", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "かた", baseReadingSuffix: "る", outputCandidateSuffix: "方", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "た", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "たら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "たり", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -592,6 +593,15 @@ extension KanaKanjiConverter {
                     )
                 )
             }
+
+            rules.append(
+                InflectionRule(
+                    readingSuffix: pattern.iForm + "かた",
+                    baseReadingSuffix: pattern.dictionaryEnding,
+                    outputCandidateSuffix: pattern.iForm + "方",
+                    allowedClasses: [pattern.inflectionClass]
+                )
+            )
         }
 
         return rules
