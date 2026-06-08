@@ -1517,6 +1517,37 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionNumericCounterCompoundFallbackDerivesHikiCounterByNumberRule() {
+        let cases: [(reading: String, expected: String)] = [
+            ("いっぴき", "一匹"),
+            ("にひき", "二匹"),
+            ("さんびき", "三匹"),
+            ("よんひき", "四匹"),
+            ("ごひき", "五匹"),
+            ("ろっぴき", "六匹"),
+            ("ななひき", "七匹"),
+            ("はっぴき", "八匹"),
+            ("きゅうひき", "九匹"),
+            ("じっぴき", "十匹"),
+            ("じゅっぴき", "十匹"),
+            ("なんびき", "何匹"),
+            ("すうひき", "数匹")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionNumericCounterCompoundFallbackDerivesSuuCounterVariants() {
         let cases: [(reading: String, expected: String)] = [
             ("すうこ", "数個"),
