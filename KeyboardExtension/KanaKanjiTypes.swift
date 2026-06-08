@@ -990,7 +990,7 @@ extension KanaKanjiConverter {
     ]
 
     static let ikuIrregularInflectionSuffixes: [String] = {
-        var suffixes = ["った"]
+        var suffixes = ["った", "ったら"]
         suffixes.append(contentsOf: KanaKanjiConverter.taRiSuruInflectionSuffixes(for: "った"))
         suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teAruInflectionSuffixes(for: "って"))
