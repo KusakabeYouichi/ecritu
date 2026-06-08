@@ -364,6 +364,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionSahenNounTeMiruChainDerivesShiteMite() {
+        converter.learn(reading: "けんさくしてみる", candidate: "検索してみる")
+
+        let directCandidates = converter.candidates(
+            for: "けんさくしてみる",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            directCandidates.contains("検索してみる"),
+            "candidates=\(directCandidates)"
+        )
+
+        let cases: [(reading: String, expected: String)] = [
+            ("けんさくしてみて", "検索してみて")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionTeIruVariantsAreDerivedFromBaseVerbCandidates() {
         converter.learn(reading: "おちる", candidate: "落ちる")
 
