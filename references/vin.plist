@@ -3170,6 +3170,8 @@
 	<dict><key>phrase</key><string>Gruyère</string><key>shortcut</key><string>ぐりゅいえーる</string></dict>
 	<dict><key>phrase</key><string>Reblochon</string><key>shortcut</key><string>るぶろしょん</string></dict>
 	<dict><key>phrase</key><string>ケソ・マンチェゴ</string><key>shortcut</key><string>けそまんちぇご</string></dict>
+	<dict><key>phrase</key><string>パスタフィラータ</string><key>shortcut</key><string>ぱすたふぃらーた</string></dict>
+	<dict><key>phrase</key><string>パスタフィラータ方式</string><key>shortcut</key><string>ぱすたふぃらーたほうしき</string></dict>
 
 	<!-- 紅茶 -->
 	<dict><key>phrase</key><string>アッサム種</string><key>shortcut</key><string>あっさむしゅ</string></dict>

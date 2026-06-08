@@ -237,9 +237,8 @@
 	<dict><key>phrase</key><string>カップヌードル</string><key>shortcut</key><string>かっぷぬーどる</string></dict>
 	<dict><key>phrase</key><string>サ変動詞</string><key>shortcut</key><string>さへんどうし</string></dict>
 	<dict><key>phrase</key><string>カ変動詞</string><key>shortcut</key><string>かへんどうし</string></dict>
-	<dict><key>phrase</key><string>サ行変格活用変</string><key>shortcut</key><string>さぎょうへんかくかつよう</string></dict>
-	<dict><key>phrase</key><string>カ行変格活用変</string><key>shortcut</key><string>かぎょうへんかくかつよう</string></dict>
-	<dict><key>phrase</key><string>カ行変格活用変</string><key>shortcut</key><string>かぎょうへんかくかつよう</string></dict>
+	<dict><key>phrase</key><string>サ行変格活用</string><key>shortcut</key><string>さぎょうへんかくかつよう</string></dict>
+	<dict><key>phrase</key><string>カ行変格活用</string><key>shortcut</key><string>かぎょうへんかくかつよう</string></dict>
 	<dict><key>phrase</key><string>名詞形</string><key>shortcut</key><string>めいしけい</string></dict>
 	<dict><key>phrase</key><string>ナチュール系</string><key>shortcut</key><string>なちゅーるけい</string></dict>
 	<dict><key>phrase</key><string>ナチュラル系</string><key>shortcut</key><string>なちゅらるけい</string></dict>
@@ -271,5 +270,6 @@
 	<dict><key>phrase</key><string>赤唐辛子</string><key>shortcut</key><string>あかとうがらし</string></dict>
 	<dict><key>phrase</key><string>青とうがらし</string><key>shortcut</key><string>あおとうがらし</string></dict>
 	<dict><key>phrase</key><string>青唐辛子</string><key>shortcut</key><string>あおとうがらし</string></dict>
+	<dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict>
 </array>
 </plist>
