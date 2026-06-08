@@ -56,6 +56,7 @@ final class KanaKanjiConverter {
     private static let godanImperativeCandidateBoost = 320
     private static let numericUnitFallbackCandidateBoost = 320
     private static let numericCounterCompoundCandidateBoost = 360
+    private static let sameReadingPureKatakanaPenalty = 128
 
     private static let numericUnitFallbackCandidatesByReading: [String: [String]] = [
         "せんえん": ["千円"],
@@ -382,6 +383,11 @@ final class KanaKanjiConverter {
             to: &scores
         )
 
+        applySameReadingScriptPreference(
+            for: normalizedReading,
+            to: &scores
+        )
+
         if let suppressedCandidates = suppressedCandidatesByReading[normalizedReading],
             !suppressedCandidates.isEmpty {
             for candidate in suppressedCandidates {
@@ -484,6 +490,64 @@ final class KanaKanjiConverter {
         for (candidate, count) in learningScoresForReading {
             scores[candidate, default: 0] += count * 64
         }
+    }
+
+    private func applySameReadingScriptPreference(
+        for reading: String,
+        to scores: inout [String: Int]
+    ) {
+        var matchingCandidates: [String] = []
+
+        for candidate in scores.keys {
+            if KanaTextNormalizer.normalizedReading(candidate) == reading {
+                matchingCandidates.append(candidate)
+            }
+        }
+
+        guard !matchingCandidates.isEmpty else {
+            return
+        }
+
+        let nonKatakanaCandidates = matchingCandidates.filter {
+            !Self.isPureKatakanaCandidate($0)
+        }
+
+        guard !nonKatakanaCandidates.isEmpty else {
+            return
+        }
+
+        let lowestNonKatakanaScore = nonKatakanaCandidates
+            .map { scores[$0, default: 0] }
+            .min() ?? 0
+
+        for candidate in matchingCandidates where Self.isPureKatakanaCandidate(candidate) {
+            let penalizedScore = scores[candidate, default: 0] - Self.sameReadingPureKatakanaPenalty
+            scores[candidate] = min(penalizedScore, lowestNonKatakanaScore - 1)
+        }
+    }
+
+    private static func isPureKatakanaCandidate(_ candidate: String) -> Bool {
+        guard !candidate.isEmpty else {
+            return false
+        }
+
+        for scalar in candidate.unicodeScalars {
+            if scalar.value == 0x30FB || scalar.value == 0x30FC
+                || scalar.value == 0xFF65 || scalar.value == 0xFF70
+                || scalar.value == 0xFF9E || scalar.value == 0xFF9F {
+                continue
+            }
+
+            if (0x30A0...0x30FF).contains(scalar.value)
+                || (0x31F0...0x31FF).contains(scalar.value)
+                || (0xFF66...0xFF9D).contains(scalar.value) {
+                continue
+            }
+
+            return false
+        }
+
+        return true
     }
 
     private func invalidateCandidateCache() {

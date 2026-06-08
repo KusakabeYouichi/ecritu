@@ -791,11 +791,110 @@ extension KeyboardViewController {
             return Array(converterCandidates.prefix(limit))
         }
 
-        return Self.mergeSupplementaryAndConverterCandidates(
+        let supplementarySplit = Self.splitSupplementaryCandidatesForMerge(
+            reading: reading,
             supplementaryCandidates: supplementaryCandidates,
+            converterCandidates: converterCandidates
+        )
+
+        let mergedPrimaryCandidates = Self.mergeSupplementaryAndConverterCandidates(
+            supplementaryCandidates: supplementarySplit.prioritized,
             converterCandidates: converterCandidates,
             limit: limit
         )
+
+        guard !supplementarySplit.deferred.isEmpty,
+            mergedPrimaryCandidates.count < limit else {
+            return mergedPrimaryCandidates
+        }
+
+        var mergedCandidates = mergedPrimaryCandidates
+        var seenCandidates = Set(mergedPrimaryCandidates)
+
+        for candidate in supplementarySplit.deferred {
+            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmedCandidate.isEmpty,
+                seenCandidates.insert(trimmedCandidate).inserted else {
+                continue
+            }
+
+            mergedCandidates.append(trimmedCandidate)
+
+            if mergedCandidates.count >= limit {
+                break
+            }
+        }
+
+        return mergedCandidates
+    }
+
+    static func splitSupplementaryCandidatesForMerge(
+        reading: String,
+        supplementaryCandidates: [String],
+        converterCandidates: [String]
+    ) -> (prioritized: [String], deferred: [String]) {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return (supplementaryCandidates, [])
+        }
+
+        let hasNonKatakanaConverterCandidate = converterCandidates.contains { candidate in
+            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmedCandidate.isEmpty else {
+                return false
+            }
+
+            return KanaTextNormalizer.normalizedReading(trimmedCandidate) == normalizedReading
+                && !isPureKatakanaCandidate(trimmedCandidate)
+        }
+
+        guard hasNonKatakanaConverterCandidate else {
+            return (supplementaryCandidates, [])
+        }
+
+        var prioritized: [String] = []
+        var deferred: [String] = []
+
+        for candidate in supplementaryCandidates {
+            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !trimmedCandidate.isEmpty else {
+                continue
+            }
+
+            if isPureKatakanaCandidate(trimmedCandidate)
+                && KanaTextNormalizer.normalizedReading(trimmedCandidate) == normalizedReading {
+                deferred.append(trimmedCandidate)
+            } else {
+                prioritized.append(trimmedCandidate)
+            }
+        }
+
+        return (prioritized, deferred)
+    }
+
+    private static func isPureKatakanaCandidate(_ candidate: String) -> Bool {
+        guard !candidate.isEmpty else {
+            return false
+        }
+
+        for scalar in candidate.unicodeScalars {
+            if scalar.value == 0x30FC || scalar.value == 0x30FB {
+                continue
+            }
+
+            if (0x30A0...0x30FF).contains(scalar.value)
+                || (0x31F0...0x31FF).contains(scalar.value) {
+                continue
+            }
+
+            return false
+        }
+
+        return true
     }
 
     static func mergeSupplementaryAndConverterCandidates(
