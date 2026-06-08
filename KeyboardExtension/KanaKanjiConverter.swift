@@ -1708,6 +1708,10 @@ final class KanaKanjiConverter {
                     baseReading: baseReading,
                     rule: rule
                 )
+                ?? inferredExplicitSuruInflectionClass(
+                    for: candidate,
+                    rule: rule
+                )
 
             guard let inflectionClass,
                 rule.allowedClasses.contains(inflectionClass) else {
@@ -1777,6 +1781,18 @@ final class KanaKanjiConverter {
         }
 
         guard Self.mixedScriptSahenOptInReadings.contains(baseReading) else {
+            return nil
+        }
+
+        return InflectionClass.suru
+    }
+
+    private func inferredExplicitSuruInflectionClass(
+        for candidate: String,
+        rule: InflectionRule
+    ) -> String? {
+        guard rule.allowedClasses.contains(InflectionClass.suru),
+            candidate.hasSuffix("する") else {
             return nil
         }
 
