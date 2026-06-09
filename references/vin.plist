@@ -695,6 +695,114 @@
 	<dict><key>phrase</key><string>WHO</string><key>shortcut</key><string>★ </string></dict>
 	<dict><key>phrase</key><string>WIETA</string><key>shortcut</key><string>★ </string></dict>
 	<dict><key>phrase</key><string>WOSA</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>3MH</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>3MHA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>4MMP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>ACQUA PANNA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>ADH</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>AGWA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>ALDH</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>AVEC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>AXR#1</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>BATF</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>BOURGOGNE</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>BWI</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>BYO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CBA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CCOF</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CCPA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CCSW</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CFR</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CIB</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CICV</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CIF</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CIVC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CM</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CMD</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CNES</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>COPNC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>COPNL</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CT</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CTC製法</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CVCI</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CVIC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>CVRVV</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>DAC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>DIAM</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>DNA解析</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>DNA鑑定</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>DOPSTOP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>DRC</string><key>shortcut</key><string>でぃーあーるしー</string></dict>
+	<dict><key>phrase</key><string>DRCエイベル</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>EPA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>ESCA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>EU</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>EUシンボルマーク</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>EUレベル</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>EU圏内</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>EXW</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>EXW条件下</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>FCA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>FCL</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>FOB</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>GSM</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>GWRDC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>Grange Hermitage BIN1</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>HPO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>HSO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>HU CLASSIFICATION</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>IBMP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>INV</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>IPW</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>ISO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>KMW</string><key>shortcut</key><string>かーえむゔぇー</string></dict>
+	<dict><key>phrase</key><string>KMW値</string><key>shortcut</key><string>かーえむゔぇーち</string></dict>
+	<dict><key>phrase</key><string>KMW糖度</string><key>shortcut</key><string>かーえむゔぇーとうど</string></dict>
+	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>KWV</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>LCL</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>LIVE</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>LODI RULES</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>Laurenz Moser III</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>MA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>MCC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>MC法</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>MLF</string><key>shortcut</key><string>えむえるえふ</string></dict>
+	<dict><key>phrase</key><string>MOVI</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>MV6</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>ND</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>NM</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>OVP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>PIWI</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>PIWI品種</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>PiPA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>RC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>RM</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>SIP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>SR</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>STELVIN</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>UCD5</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>UK Quality Wine Schemes</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDL</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDN</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDN, VDL, Primeur</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDP. Die Prädikatsweingüter</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDP. Erste Lage</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDP. Große Lage</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDP. Großes Gewächs</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDP. Gutswein</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDP. Ortswein</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VIGNO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VS</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VSP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VSP仕立</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>XO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>登録業態MA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>貿易条件CIF</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>農業省農牧庁SAG</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>生産者集団SIP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>米国カリフォルニア州UCデイヴィス校</string><key>shortcut</key><string>★</string></dict>
 
 	<!-- 地名(国名) -->
 	<dict><key>phrase</key><string>インドネシア</string><key>shortcut</key><string>いんどねしあ</string></dict>
@@ -1522,6 +1630,8 @@
 	<dict><key>phrase</key><string>Regional Wines</string><key>shortcut</key><string>りーじょなるわいん</string></dict>
 
 	<!-- ワイン用ぶどう品種名 / セパージュ -->
+	<dict><key>phrase</key><string>Friulano</string><key>shortcut</key><string>ふりうらーの</string></dict>
+	<dict><key>phrase</key><string>Voltis</string><key>shortcut</key><string>ゔぉるてぃす</string></dict>
 	<dict><key>phrase</key><string>グロロー・グリ</string><key>shortcut</key><string>ぐろろーぐり</string></dict>
 	<dict><key>phrase</key><string>グレーコ</string><key>shortcut</key><string>ぐれーこ</string></dict>
 	<dict><key>phrase</key><string>グレーラ</string><key>shortcut</key><string>ぐれーら</string></dict>
@@ -1862,6 +1972,9 @@
 	<dict><key>phrase</key><string>San José</string><key>shortcut</key><string>さんじょせ</string></dict>
 
 	<!-- 人名・人物 -->
+	<dict><key>phrase</key><string>Fritz Zweigelt</string><key>shortcut</key><string>ふりっつつゔぁいげると</string></dict>
+	<dict><key>phrase</key><string>Fritz Zweigelt博士</string><key>shortcut</key><string>ふりっつつゔぁいげるとはかせ</string></dict>
+	<dict><key>phrase</key><string>Fritz Zweigelt教授</string><key>shortcut</key><string>ふりっつつゔぁいげるときょうじゅ</string></dict>
 	<dict><key>phrase</key><string>コンスタンティン・フランク博士</string><key>shortcut</key><string>こんすたんてぃんふらんくはかせ</string></dict>
 	<dict><key>phrase</key><string>クライヴ・ペイトン</string><key>shortcut</key><string>くらいゔぺいとん</string></dict>
 	<dict><key>phrase</key><string>カトリック伝道者Francisco de Aguirre</string><key>shortcut</key><string>かとりっくでんどうしゃ</string></dict>
@@ -2228,6 +2341,7 @@
 	<dict><key>phrase</key><string>剪定法</string><key>shortcut</key><string>んていほう</string></dict>
 
 	<!-- 醸造技術 -->
+	<dict><key>phrase</key><string>Pas Dosé</string><key>shortcut</key><string>ぱどせ</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレイション</string><key>shortcut</key><string>かるぼにっくませれいしょん</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレーション</string><key>shortcut</key><string>かるぼにっくませれーしょん</string></dict>
 	<dict><key>phrase</key><string>1回蒸溜</string><key>shortcut</key><string>いっかいじょうりゅう</string></dict>
@@ -3071,6 +3185,9 @@
 	<dict><key>phrase</key><string>Hilling</string><key>shortcut</key><string>ひりんぐ</string></dict>
 
 	<!-- 物質 -->
+	<dict><key>phrase</key><string>SO2</string><key>shortcut</key><string>えすおーとぅー</string></dict>
+	<dict><key>phrase</key><string>SO₂</string><key>shortcut</key><string>えすおーとぅー</string></dict>
+	<dict><key>phrase</key><string>IBMP</string><key>shortcut</key><string>あいびーむぴー</string></dict>
 	<dict><key>phrase</key><string>グリセリン</string><key>shortcut</key><string>ぐりせりん</string></dict>
 	<dict><key>phrase</key><string>グルコン酸</string><key>shortcut</key><string>ぐるこんさん</string></dict>
 	<dict><key>phrase</key><string>クエン酸</string><key>shortcut</key><string>くえんさん</string></dict>
@@ -3189,6 +3306,28 @@
 	<dict><key>phrase</key><string>カネフォラ種</string><key>shortcut</key><string>かねふぉらしゅ</string></dict>
 	<dict><key>phrase</key><string>アラビカ種</string><key>shortcut</key><string>あらびかしゅ</string></dict>
 	<dict><key>phrase</key><string>アカネ科</string><key>shortcut</key><string>あかねか</string></dict>
+
+	<!-- 水 -->
+	<dict><key>phrase</key><string>CHATELDON</string><key>shortcut</key><string>しゃてるどん</string></dict>
+	<dict><key>phrase</key><string>ACQUA PANNA</string><key>shortcut</key><string>あくあぱんな</string></dict>
+	<dict><key>phrase</key><string>COURMAYEUR</string><key>shortcut</key><string>くーるまいよーる</string></dict>
+	<dict><key>phrase</key><string>Contrex</string><key>shortcut</key><string>こんとれっくす</string></dict>
+	<dict><key>phrase</key><string>Crystal Geyser</string><key>shortcut</key><string>くりすたるがいざー</string></dict>
+	<dict><key>phrase</key><string>Ferrarelle</string><key>shortcut</key><string>ふぇられっれ</string></dict>
+	<dict><key>phrase</key><string>Gerol Steiner</string><key>shortcut</key><string>げろるしゅたいなー</string></dict>
+	<dict><key>phrase</key><string>Perrier</string><key>shortcut</key><string>ぺりえ</string></dict>
+	<dict><key>phrase</key><string>S.Pellegrino</string><key>shortcut</key><string>さんぺれぐりの</string></dict>
+	<dict><key>phrase</key><string>Sant Aniol</string><key>shortcut</key><string>さんたにおる</string></dict>
+	<dict><key>phrase</key><string>Vittel</string><key>shortcut</key><string>ゔぃってる</string></dict>
+	<dict><key>phrase</key><string>Volvic</string><key>shortcut</key><string>ゔぉるゔぃっく</string></dict>
+	<dict><key>phrase</key><string>Voss Artisan</string><key>shortcut</key><string>ゔぉすあーてぃざん</string></dict>
+	<dict><key>phrase</key><string>クールマイヨール</string><key>shortcut</key><string>くーるまいよーる</string></dict>
+	<dict><key>phrase</key><string>ゲロルシュタイナー</string><key>shortcut</key><string>げろるしゅたいなー</string></dict>
+	<dict><key>phrase</key><string>コントレックス</string><key>shortcut</key><string>こんとれっくす</string></dict>
+	<dict><key>phrase</key><string>サンペレグリノ</string><key>shortcut</key><string>さんぺれぐりの</string></dict>
+	<dict><key>phrase</key><string>シャテルドン</string><key>shortcut</key><string>しゃてるどん</string></dict>
+	<dict><key>phrase</key><string>ヴィッテル</string><key>shortcut</key><string>ゔぃってる</string></dict>
+	<dict><key>phrase</key><string>ヴォス・アーティザン</string><key>shortcut</key><string>ゔぉすあーてぃざん</string></dict>
 
 	<!-- 料理・食材 -->
 	<dict><key>phrase</key><string>グアンチャーレ</string><key>shortcut</key><string>ぐあんちゃーれ</string></dict>
@@ -3379,6 +3518,7 @@
 	<dict><key>phrase</key><string>モヒート</string><key>shortcut</key><string>もひーと</string></dict>
 
 	<!-- リキュール -->
+	<dict><key>phrase</key><string>MIDORI</string><key>shortcut</key><string>みどり</string></dict>
 
 	<!-- その他 -->
 	<dict><key>phrase</key><string>洞爺湖サミット</string><key>shortcut</key><string>とうやこさみっと</string></dict>
@@ -3943,7 +4083,6 @@
 	<dict><key>phrase</key><string>クームスヴィル</string><key>shortcut</key><string>くーむすゔぃる</string></dict>
 	<dict><key>phrase</key><string>クーラー</string><key>shortcut</key><string>くーらー</string></dict>
 	<dict><key>phrase</key><string>クールクライメット</string><key>shortcut</key><string>くーるくらいめっと</string></dict>
-	<dict><key>phrase</key><string>クールマイヨール</string><key>shortcut</key><string>くーるまいよーる</string></dict>
 	<dict><key>phrase</key><string>グラウブルグンダー</string><key>shortcut</key><string>ぐらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>グラシェヴィナ</string><key>shortcut</key><string>ぐらしぇゔぃな</string></dict>
 	<dict><key>phrase</key><string>グラス</string><key>shortcut</key><string>ぐらす</string></dict>
@@ -4064,7 +4203,6 @@
 	<dict><key>phrase</key><string>コンテナ</string><key>shortcut</key><string>こんてな</string></dict>
 	<dict><key>phrase</key><string>コンテナヤード</string><key>shortcut</key><string>こんてなやーど</string></dict>
 	<dict><key>phrase</key><string>コント</string><key>shortcut</key><string>こんと</string></dict>
-	<dict><key>phrase</key><string>コントレックス</string><key>shortcut</key><string>こんとれっくす</string></dict>
 	<dict><key>phrase</key><string>コントロール</string><key>shortcut</key><string>こんとろーる</string></dict>
 	<dict><key>phrase</key><string>コンドリュー</string><key>shortcut</key><string>こんどりゅー</string></dict>
 	<dict><key>phrase</key><string>コース</string><key>shortcut</key><string>こーす</string></dict>
@@ -4202,7 +4340,6 @@
 	<dict><key>phrase</key><string>シフトチェンジ</string><key>shortcut</key><string>しふとちぇんじ</string></dict>
 	<dict><key>phrase</key><string>シマ・コルゴ</string><key>shortcut</key><string>しまこるご</string></dict>
 	<dict><key>phrase</key><string>シャッケトラ</string><key>shortcut</key><string>しゃっけとら</string></dict>
-	<dict><key>phrase</key><string>シャテルドン</string><key>shortcut</key><string>しゃてるどん</string></dict>
 	<dict><key>phrase</key><string>シャトー</string><key>shortcut</key><string>しゃとー</string></dict>
 	<dict><key>phrase</key><string>シャトーヌフ</string><key>shortcut</key><string>しゃとーぬふ</string></dict>
 	<dict><key>phrase</key><string>シャトーヌフ・デュ・パプ</string><key>shortcut</key><string>しゃとーぬふでゅぱぷ</string></dict>
@@ -5630,7 +5767,6 @@
 	<dict><key>phrase</key><string>ヴィセンブール</string><key>shortcut</key><string>ゔぃせんぶーる</string></dict>
 	<dict><key>phrase</key><string>ヴィダル</string><key>shortcut</key><string>ゔぃだる</string></dict>
 	<dict><key>phrase</key><string>ヴィダル・ブラン</string><key>shortcut</key><string>ゔぃだるぶらん</string></dict>
-	<dict><key>phrase</key><string>ヴィッテル</string><key>shortcut</key><string>ゔぃってる</string></dict>
 	<dict><key>phrase</key><string>ヴィドック</string><key>shortcut</key><string>ゔぃどっく</string></dict>
 	<dict><key>phrase</key><string>ヴィナッチャ</string><key>shortcut</key><string>ゔぃなっちゃ</string></dict>
 	<dict><key>phrase</key><string>ヴィニュロン</string><key>shortcut</key><string>ゔぃにゅろん</string></dict>
@@ -5664,7 +5800,6 @@
 	<dict><key>phrase</key><string>ヴェルモット</string><key>shortcut</key><string>ゔぇるもっと</string></dict>
 	<dict><key>phrase</key><string>ヴェレンシュタイン</string><key>shortcut</key><string>ゔぇれんしゅたいん</string></dict>
 	<dict><key>phrase</key><string>ヴェローナ</string><key>shortcut</key><string>ゔぇろーな</string></dict>
-	<dict><key>phrase</key><string>ヴォス・アーティザン</string><key>shortcut</key><string>ゔぉすあーてぃざん</string></dict>
 	<dict><key>phrase</key><string>ヴォリューム</string><key>shortcut</key><string>ゔぉりゅーむ</string></dict>
 	<dict><key>phrase</key><string>ヴォルネイ</string><key>shortcut</key><string>ゔぉるねい</string></dict>
 	<dict><key>phrase</key><string>ヴォルムス</string><key>shortcut</key><string>ゔぉるむす</string></dict>

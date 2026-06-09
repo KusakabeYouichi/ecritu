@@ -3,18 +3,9 @@
 	<dict><key>phrase</key><string>20フィート</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>20フィートコンテナ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>225ℓ樽</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>3MH</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>3MHA</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>40フィート</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>40フィートコンテナ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>4MMP</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>A17</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ACQUA PANNA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ADH</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>AGWA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ALDH</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>AVEC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>AXR#1</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Aargau</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abbacchio allo Scottadito</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abboccato</string><key>shortcut</key><string>★</string></dict>
@@ -113,10 +104,6 @@
 	<dict><key>phrase</key><string>Añada</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Añejo</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>A級</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>BATF</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>BOURGOGNE</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>BWI</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>BYO</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Babic</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Backhendl</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Badacsony</string><key>shortcut</key><string>★</string></dict>
@@ -272,28 +259,6 @@
 	<dict><key>phrase</key><string>Bœuf de Bazas</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>C&F</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>C-Ⅰ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CBA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CCOF</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CCPA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CCSW</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CFR</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CHATELDON</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CIB</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CICV</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CIF</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CIVC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CM</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CMD</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CNES</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>COPNC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>COPNL</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>COURMAYEUR</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CT</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CTC製法</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CVCI</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CVIC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>CVRVV</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cabardès</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cabernet d'Anjou</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cabrales</string><key>shortcut</key><string>★</string></dict>
@@ -464,7 +429,6 @@
 	<dict><key>phrase</key><string>Confit de Canard</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Conservation Champions</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Constantia</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Contrex</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cool</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Coombsville</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Coonawarra</string><key>shortcut</key><string>★</string></dict>
@@ -537,7 +501,6 @@
 	<dict><key>phrase</key><string>Crown gall</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Crozes-Hermitage</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cryo-extraction</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Crystal Geyser</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cserszegi Fűszeres</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Csongrád</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cuba</string><key>shortcut</key><string>★</string></dict>
@@ -559,13 +522,6 @@
 	<dict><key>phrase</key><string>Côte-Rôtie</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Côtes de</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>D.H.C.地域</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>DAC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>DIAM</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>DNA解析</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>DNA鑑定</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>DOPSTOP</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>DRC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>DRCエイベル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Dafnes</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Dalmacija</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Dalmatia</string><key>shortcut</key><string>★</string></dict>
@@ -643,19 +599,6 @@
 	<dict><key>phrase</key><string>Dézaley内</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Dôle</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Dôle Blanche</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EPA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ESCA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EU</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EUシンボルマーク</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EUレベル</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EUワイン規則</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EU共通</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EU各国</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EU圏内</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EU規則</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EU随一</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EXW</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>EXW条件下</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>East Kelowna Slopes</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>East Sussex</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Eaux-de-Vie</string><key>shortcut</key><string>★</string></dict>
@@ -728,9 +671,6 @@
 	<dict><key>phrase</key><string>Extra Seco</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Extra Trocken</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Extra sec</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>FCA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>FCL</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>FOB</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Far North California</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Fara</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Fargues</string><key>shortcut</key><string>★</string></dict>
@@ -742,7 +682,6 @@
 	<dict><key>phrase</key><string>Felsenspiel</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Fendant</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Fernão Pires</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Ferrarelle</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Feta</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Feuillaison</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Feuille morte</string><key>shortcut</key><string>★</string></dict>
@@ -793,10 +732,6 @@
 	<dict><key>phrase</key><string>Free On Board</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Free State</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Fribourg</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Fritz Zweigelt</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Fritz Zweigelt博士</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Fritz Zweigelt教授</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Friulano</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Friuli-Venezia Giulia</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Frizzante</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Fromage de Herve</string><key>shortcut</key><string>★</string></dict>
@@ -813,8 +748,6 @@
 	<dict><key>phrase</key><string>Furaneol®</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Furfural</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>F級</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>GSM</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>GWRDC</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gaglioppo</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gaillac</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gaillac等</string><key>shortcut</key><string>★</string></dict>
@@ -843,7 +776,6 @@
 	<dict><key>phrase</key><string>Geographical Indication</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Geographical Indications</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Geographical Unit</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Gerol Steiner</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gers</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Geschnetzeltes</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gesetz</string><key>shortcut</key><string>★</string></dict>
@@ -876,7 +808,6 @@
 	<dict><key>phrase</key><string>Grand Roussillon</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Grande Champagne</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Grange</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Grange Hermitage BIN1</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Grappa</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Grasă de Cotnari</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Grauburgunder</string><key>shortcut</key><string>★</string></dict>
@@ -915,9 +846,6 @@
 	<dict><key>phrase</key><string>Guyot</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Guyot Double</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Guyot Simple</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>HPO</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>HSO</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>HU CLASSIFICATION</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Halbtrocken</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Halászlé</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Hambledon</string><key>shortcut</key><string>★</string></dict>
@@ -966,10 +894,6 @@
 	<dict><key>phrase</key><string>Hunter Semillon</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Höllenberg</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>H字</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>IBMP</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>INV</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>IPW</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ISO</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ice</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Idaho</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Idiazábal</string><key>shortcut</key><string>★</string></dict>
@@ -1015,11 +939,6 @@
 	<dict><key>phrase</key><string>Jurançon Sec</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Jägermeister</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Jéroboam</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>KMW</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>KMW値</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>KMW糖度</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>KWV</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Kabar</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Kabinett</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Kaefferkopf</string><key>shortcut</key><string>★</string></dict>
@@ -1064,9 +983,6 @@
 	<dict><key>phrase</key><string>L'Etivaz</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>L'examen du vin</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>L'Étoile</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>LCL</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>LIVE</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>LODI RULES</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>La Clape</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>La Côte</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>La Francesa</string><key>shortcut</key><string>★</string></dict>
@@ -1095,7 +1011,6 @@
 	<dict><key>phrase</key><string>Lanzarote</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Laski Rizling</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Late Bottled Vintage Port</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Laurenz Moser III</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Lazio</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Le Mesnil sur Oger</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Leaf growth</string><key>shortcut</key><string>★</string></dict>
@@ -1158,14 +1073,6 @@
 	<dict><key>phrase</key><string>Luxembourg Mosel</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Léognan</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>M310</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MA</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MCC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MC法</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MIDORI</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MLF</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MLF開始</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MOVI</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>MV6</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Macarons de Saint-Emilion</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Macau</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Maccheroni alla Chitarra</string><key>shortcut</key><string>★</string></dict>
@@ -1376,8 +1283,6 @@
 	<dict><key>phrase</key><string>Mâcon-Villages</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Mâconnais</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Müllerrebe</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ND</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>NM</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Nabuchodonosor</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Nagano</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Namizno vino</string><key>shortcut</key><string>★</string></dict>
@@ -1427,7 +1332,6 @@
 	<dict><key>phrase</key><string>Négociant-Distributeur</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Négociant-Manipulant</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Nürnberger Bratwurst</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>OVP</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Oakville</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Obermosel</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Oechsle</string><key>shortcut</key><string>★</string></dict>
@@ -1470,8 +1374,6 @@
 	<dict><key>phrase</key><string>Ouzo以外</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Overhead vine training</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Oïdium</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>PIWI</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>PIWI品種</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Paarl</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pablo Morande</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pacherenc du Vic-Bilh</string><key>shortcut</key><string>★</string></dict>
@@ -1495,7 +1397,6 @@
 	<dict><key>phrase</key><string>Parmigiano Reggiano</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Paros</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Parral</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Pas Dosé</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pascual Harriague</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Passerina</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Passito</string><key>shortcut</key><string>★</string></dict>
@@ -1526,7 +1427,6 @@
 	<dict><key>phrase</key><string>Perlwein</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pernand-Vergelesses</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pernod</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Perrier</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Perrières</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pessac</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pessac-Léognan</string><key>shortcut</key><string>★</string></dict>
@@ -1540,7 +1440,6 @@
 	<dict><key>phrase</key><string>Pezsgő</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pfingstberg</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Phylloxera</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>PiPA</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Piacentinu Ennese</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Piave</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pic-Saint-Loup</string><key>shortcut</key><string>★</string></dict>
@@ -1645,8 +1544,6 @@
 	<dict><key>phrase</key><string>Quincy</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Quinquina</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Québec</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>RC</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>RM</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Raboso</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Racha</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Racking</string><key>shortcut</key><string>★</string></dict>
@@ -1766,12 +1663,6 @@
 	<dict><key>phrase</key><string>Réserve</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Río Negro</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Río Oja</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>S.Pellegrino</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>SIP</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>SO2</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>SO₂</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>SR</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>STELVIN</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Saale</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Saale-Unstrut</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Saar</string><key>shortcut</key><string>★</string></dict>
@@ -1813,7 +1704,6 @@
 	<dict><key>phrase</key><string>Sankt Laurent</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Sanlúcar de Barrameda</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Sans le Classement</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Sant Aniol</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Sant Sadurní d'Anoia</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Sant'Antimo</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Santa Clara</string><key>shortcut</key><string>★</string></dict>
@@ -2096,8 +1986,6 @@
 	<dict><key>phrase</key><string>Távora-Varosa</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Tête de Moine</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Tămâioasă Românească</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>UCD5</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>UK Quality Wine Schemes</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ugni Blanc</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ull de Llebre</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Umbria</string><key>shortcut</key><string>★</string></dict>
@@ -2120,19 +2008,6 @@
 	<dict><key>phrase</key><string>V.coignetiae</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>V.riparia</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>V.rupestris</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDL</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDN</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDN, VDL, Primeur</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDP. Die Prädikatsweingüter</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDP. Erste Lage</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDP. Große Lage</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDP. Großes Gewächs</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDP. Gutswein</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDP. Ortswein</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VIGNO</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VS</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VSP</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VSP仕立</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vaccarèse</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vacqueyras</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vacuum distillation</string><key>shortcut</key><string>★</string></dict>
@@ -2257,16 +2132,13 @@
 	<dict><key>phrase</key><string>Vitis rupestris</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vitis vinifera</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vitis vinifera種</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vittel</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vix</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Viña Clasificada</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Viñedo Singular</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vodka</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Volnay</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Voltis</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Volvic</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vorbourg</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Voss Artisan</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vougeot</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vouvray</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vouvray Mousseux</string><key>shortcut</key><string>★</string></dict>
@@ -2324,7 +2196,6 @@
 	<dict><key>phrase</key><string>Wurstwaren</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Württemberg</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Würzgarten</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>XO</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Xino</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Yamanashi</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Yountville</string><key>shortcut</key><string>★</string></dict>
@@ -2708,7 +2579,6 @@
 	<dict><key>phrase</key><string>ゲミシュター・サッツ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ゲミシュト</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ゲミシュト同様広</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ゲロルシュタイナー</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ゲヴュルツトラミネール</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>コキンボ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>コク味</string><key>shortcut</key><string>★</string></dict>
@@ -2786,7 +2656,6 @@
 	<dict><key>phrase</key><string>サントル・ロワール地区</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>サントル・ロワール地区サンセール</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>サントル・ロワール地区最大</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>サンペレグリノ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>サン・ジミニャーノ周辺</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>サン・ダニエーレ産プロシュート</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>サン・テミリオン</string><key>shortcut</key><string>★</string></dict>
@@ -4103,7 +3972,6 @@
 	<dict><key>phrase</key><string>生産者名</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>生産者直詰</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>生産者達</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>生産者集団SIP</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>生育期</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>生育期前期</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>生酛系酒母</string><key>shortcut</key><string>★</string></dict>
@@ -4134,7 +4002,6 @@
 	<dict><key>phrase</key><string>発生前</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>登美の丘ワイナリー</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>登録数</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>登録業態MA</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>白&ロゼ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>白ワイン&ロゼワイン</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>白ワイン&赤ワイン</string><key>shortcut</key><string>★</string></dict>
@@ -4186,7 +4053,6 @@
 	<dict><key>phrase</key><string>範囲内</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>範囲外</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>簡略化</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>米国カリフォルニア州UCデイヴィス校</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>米消費量</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>米由来</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>米質</string><key>shortcut</key><string>★</string></dict>
@@ -4302,7 +4168,6 @@
 	<dict><key>phrase</key><string>貴腐ワイン造</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>貴腐化</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>費用負担者</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>貿易条件CIF</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>赤ワイン煮</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>赤ワイン用</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>赤ワイン用品種</string><key>shortcut</key><string>★</string></dict>
@@ -4329,7 +4194,6 @@
 	<dict><key>phrase</key><string>辛口～甘口白</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>農事暦</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>農地総面積</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>農業省農牧庁SAG</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>逆浸透膜</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>途切</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>通常アルコール度</string><key>shortcut</key><string>★</string></dict>
@@ -4381,7 +4245,6 @@
 	<dict><key>phrase</key><string>饅頭形</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>香味付</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>香味等</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>香気成分IBMP</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>香草入</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>馬小屋臭</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>馬蹄型</string><key>shortcut</key><string>★</string></dict>
