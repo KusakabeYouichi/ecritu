@@ -692,6 +692,35 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionShimauContractionStemFormsAreDerivedAcrossVerbClasses() {
+        converter.learn(reading: "たべる", candidate: "食べる")
+        converter.learn(reading: "いく", candidate: "行く")
+        converter.learn(reading: "よむ", candidate: "読む")
+        converter.learn(reading: "くる", candidate: "来る")
+        converter.learn(reading: "かくにん", candidate: "確認")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("たべちゃ", "食べちゃ"),
+            ("いっちゃ", "行っちゃ"),
+            ("よんじゃ", "読んじゃ"),
+            ("きちゃ", "来ちゃ"),
+            ("かくにんしちゃ", "確認しちゃ")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionShimauRenyoFormsAreDerivedAcrossVerbClasses() {
         converter.learn(reading: "でる", candidate: "出る")
         converter.learn(reading: "かく", candidate: "書く")

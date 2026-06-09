@@ -264,6 +264,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ちゃいません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ちゃった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ちゃって", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "ちゃ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "かた", baseReadingSuffix: "る", outputCandidateSuffix: "方", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "た", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "たら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -323,6 +324,7 @@ extension KanaKanjiConverter {
 
         if teForm.hasSuffix("て") {
             let contractionStem = String(teForm.dropLast())
+            suffixes.append(contractionStem + "ちゃ")
             suffixes.append(contractionStem + "ちゃう")
             suffixes.append(contractionStem + "ちゃわない")
             suffixes.append(contractionStem + "ちゃわなかった")
@@ -333,6 +335,7 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "ちゃって")
         } else if teForm.hasSuffix("で") {
             let contractionStem = String(teForm.dropLast())
+            suffixes.append(contractionStem + "じゃ")
             suffixes.append(contractionStem + "じゃう")
             suffixes.append(contractionStem + "じゃわない")
             suffixes.append(contractionStem + "じゃわなかった")
@@ -688,6 +691,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しちゃいません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しちゃった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しちゃって", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しちゃ", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "した", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "したら", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "したり", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -817,6 +821,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しちゃいません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しちゃった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しちゃって", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しちゃ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "した", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "したら", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "したり", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
@@ -922,6 +927,7 @@ extension KanaKanjiConverter {
         ("きちゃいません", "来ちゃいません"),
         ("きちゃった", "来ちゃった"),
         ("きちゃって", "来ちゃって"),
+        ("きちゃ", "来ちゃ"),
         ("きた", "来た"),
         ("きたら", "来たら"),
         ("きたり", "来たり"),
@@ -1006,6 +1012,7 @@ extension KanaKanjiConverter {
         "てしまって", "でしまって", "ちゃって", "じゃって",
         "てしまった", "でしまった", "ちゃった", "じゃった",
         "てしまう", "でしまう", "ちゃう", "じゃう",
+        "ちゃ", "じゃ",
         "している", "きている", "でいる", "ている", "してる", "きてる", "でる", "てる",
         "きました", "しました", "きません", "しません", "ました", "ます",
         "だったら", "だった", "だ", "なら", "から",
