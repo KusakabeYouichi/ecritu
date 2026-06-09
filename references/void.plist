@@ -271,5 +271,6 @@
 	<dict><key>phrase</key><string>青とうがらし</string><key>shortcut</key><string>あおとうがらし</string></dict>
 	<dict><key>phrase</key><string>青唐辛子</string><key>shortcut</key><string>あおとうがらし</string></dict>
 	<dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict>
+	<dict><key>phrase</key><string>カツカレー</string><key>shortcut</key><string>かつかれー</string></dict>
 </array>
 </plist>
