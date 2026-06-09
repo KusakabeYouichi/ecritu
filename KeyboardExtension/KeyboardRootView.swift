@@ -1986,10 +1986,15 @@ struct KeyboardRootView: View {
                         title: "☺︎",
                         accessibilityLabel: "絵文字",
                         fontSize: kaomojiModeReturnIconFontSize,
+                        fixedWidth: 56,
                         action: { emojiInputSubmode = .emoji }
                     )
-                        .frame(maxWidth: .infinity)
                         .frame(height: mainFlickKeyHeight)
+
+                    spaceKeyButton(
+                        fixedWidth: nil,
+                        keyHeight: mainFlickKeyHeight
+                    )
 
                     ActionKeyButton(
                         title: "⌫",
