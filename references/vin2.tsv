@@ -168,10 +168,6 @@
 	<dict><key>phrase</key><string>Blanche Armagnac</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Blanchot</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Blanco</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Blauburgunder</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Blauer Portugieser</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Blauer Wildbacher</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Blauer Zweigelt</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Blaye</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Blaye Côtes de Bordeaux</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Bleu d'Auvergne</string><key>shortcut</key><string>★</string></dict>
@@ -1591,12 +1587,8 @@
 	<dict><key>phrase</key><string>Ribeiro</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ribera del Guadiana</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ribollita</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Ricard</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Richard Smart</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Richard Smart博士</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Richebourg</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ried</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Riesling Italico</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Riesling Vendanges Tardives</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rigotte de Condrieu</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rillette de Tours</string><key>shortcut</key><string>★</string></dict>
@@ -1634,23 +1626,19 @@
 	<dict><key>phrase</key><string>Rosé de Loire</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rosé des Riceys</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Roséwein</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Rotburger</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Roter Veltliner</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Roter Veltliner×Silvaner</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Rotling</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rotundone</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rouge violet</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Roupeiro</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Roussette</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rubin</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rubis</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Ruby Cabernet</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ruchè</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ruchè di Castagnole Monferrato</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rudolf Steiner</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rufina</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rully</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Ruländer</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rum</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rutherford</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rutherglen</string><key>shortcut</key><string>★</string></dict>
