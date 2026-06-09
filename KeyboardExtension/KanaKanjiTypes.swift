@@ -442,6 +442,8 @@ extension KanaKanjiConverter {
 
         return [
             teForm + "いく",
+            teForm + "く",
+            teForm + "け",
             teForm + "いった",
             teForm + "いって",
             teForm + "いかない",
