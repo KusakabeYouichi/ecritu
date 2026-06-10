@@ -766,7 +766,7 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.setMarkedText(
             text,
-            selectedRange: NSRange(location: text.count, length: 0)
+            selectedRange: NSRange(location: text.utf16.count, length: 0)
         )
     }
 
@@ -977,7 +977,7 @@ extension KeyboardViewController {
         stage: String,
         nudgeWidth: Int
     ) {
-        let resolvedNudgeWidth = max(1, nudgeWidth)
+        let resolvedNudgeWidth = max(0, nudgeWidth)
 
         appendCommitUnderlineDiagnostics(
             "clearPass:start:\(stage)",
@@ -990,13 +990,15 @@ extension KeyboardViewController {
         let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
         let contextAfterInput = textDocumentProxy.documentContextAfterInput ?? ""
 
-        if !contextBeforeInput.isEmpty {
+        if resolvedNudgeWidth > 0,
+            !contextBeforeInput.isEmpty {
             let backwardOffset = min(resolvedNudgeWidth, contextBeforeInput.count)
             markTextProxyEdit()
             textDocumentProxy.adjustTextPosition(byCharacterOffset: -backwardOffset)
             markTextProxyEdit()
             textDocumentProxy.adjustTextPosition(byCharacterOffset: backwardOffset)
-        } else if !contextAfterInput.isEmpty {
+        } else if resolvedNudgeWidth > 0,
+            !contextAfterInput.isEmpty {
             let forwardOffset = min(resolvedNudgeWidth, contextAfterInput.count)
             markTextProxyEdit()
             textDocumentProxy.adjustTextPosition(byCharacterOffset: forwardOffset)
@@ -1018,7 +1020,7 @@ extension KeyboardViewController {
         nudgeWidth: Int = 1,
         allowVerifiedEphemeralFallback: Bool = false
     ) {
-        let resolvedNudgeWidth = max(1, nudgeWidth)
+        let resolvedNudgeWidth = max(0, nudgeWidth)
 
         appendCommitUnderlineDiagnostics(
             "clearArtifacts:start",
@@ -1154,7 +1156,7 @@ extension KeyboardViewController {
     }
 
     func schedulePendingHostCallbackUnderlineClearPass(nudgeWidth: Int) {
-        let resolvedNudgeWidth = max(1, nudgeWidth)
+        let resolvedNudgeWidth = max(0, nudgeWidth)
         pendingHostCallbackUnderlineClearNudgeWidth = resolvedNudgeWidth
         pendingHostCallbackUnderlineClearDeadline =
             CFAbsoluteTimeGetCurrent() + CommitSafetyLimits.hostCallbackUnderlineClearWindow
@@ -1231,7 +1233,7 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.setMarkedText(
             committedText,
-            selectedRange: NSRange(location: committedText.count, length: 0)
+            selectedRange: NSRange(location: committedText.utf16.count, length: 0)
         )
     }
 
@@ -1278,7 +1280,7 @@ extension KeyboardViewController {
                     markTextProxyEdit()
                     textDocumentProxy.setMarkedText(
                         committedText,
-                        selectedRange: NSRange(location: committedText.count, length: 0)
+                        selectedRange: NSRange(location: committedText.utf16.count, length: 0)
                     )
                 }
             } else {
@@ -1321,9 +1323,15 @@ extension KeyboardViewController {
             }
         }
 
-        let clearNudgeWidth = shouldUseExtendedNudgeWidth
-            ? max(CommitSafetyLimits.minimumNoReplaceClearNudgeWidth, committedText.count)
-            : 1
+        let clearNudgeWidth: Int
+
+        if shouldAvoidCursorNudgeAfterCommit(committedText) {
+            clearNudgeWidth = 0
+        } else if shouldUseExtendedNudgeWidth {
+            clearNudgeWidth = max(CommitSafetyLimits.minimumNoReplaceClearNudgeWidth, committedText.count)
+        } else {
+            clearNudgeWidth = 1
+        }
 
         appendCommitUnderlineDiagnostics(
             "finalize:clearPlan",
@@ -1379,12 +1387,32 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.setMarkedText(
             committedText,
-            selectedRange: NSRange(location: committedText.count, length: 0)
+            selectedRange: NSRange(location: committedText.utf16.count, length: 0)
         )
+
+        let clearNudgeWidth = shouldAvoidCursorNudgeAfterCommit(committedText) ? 0 : 1
         clearMarkedTextArtifactsAfterCommit(
             committedTextLength: committedText.count,
-            nudgeWidth: 1
+            nudgeWidth: clearNudgeWidth
         )
+    }
+
+    func shouldAvoidCursorNudgeAfterCommit(_ committedText: String) -> Bool {
+        guard !committedText.isEmpty else {
+            return false
+        }
+
+        if committedText.unicodeScalars.contains(where: {
+            $0.properties.isEmoji || $0.properties.isEmojiPresentation
+        }) {
+            return true
+        }
+
+        let hasLetterOrDigit = committedText.unicodeScalars.contains {
+            CharacterSet.letters.contains($0) || CharacterSet.decimalDigits.contains($0)
+        }
+
+        return !hasLetterOrDigit
     }
 
     func candidatesForPresentation(
