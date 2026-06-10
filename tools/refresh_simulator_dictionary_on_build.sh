@@ -23,7 +23,7 @@ TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
 REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
-REF_APPLE_PLIST="$ROOT_DIR/references/apple.plist"
+REF_IT_PLIST="$ROOT_DIR/references/it.plist"
 REF_VOID_PLIST="$ROOT_DIR/references/void.plist"
 REF_ADJECTIVE_GARU_ALLOWLIST="$ROOT_DIR/references/adjective_garu_allowlist.json"
 
@@ -135,11 +135,11 @@ if ((${#SUDACHI_CSV_FILES[@]} == 0)) && is_truthy "$AUTO_FETCH_SUDACHI_ON_BUILD"
 fi
 
 # Build supplemental and initial-migration vocab first so SQLite regeneration
-# can include the latest plist-derived entries (e.g. apple.plist additions).
+# can include the latest plist-derived entries (e.g. it.plist additions).
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_RYUKYU_PLIST" \
   --input-plist "$REF_VIN_PLIST" \
-  --input-plist "$REF_APPLE_PLIST" \
+  --input-plist "$REF_IT_PLIST" \
   --output "$TMP_SECOND"
 
 python3 tools/build_second_vocab_from_references.py \
