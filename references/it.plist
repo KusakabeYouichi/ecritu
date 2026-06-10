@@ -156,5 +156,9 @@
 	<dict><key>phrase</key><string>IIJmio</string><key>shortcut</key><string>あいあいじぇいみお</string></dict>
 	<dict><key>phrase</key><string>IIJ</string><key>shortcut</key><string>あいあいじぇい</string></dict>
 	<dict><key>phrase</key><string>Google Maps</string><key>shortcut</key><string>ぐーぐるまっぷ</string></dict>
+	<dict><key>phrase</key><string>Unix</string><key>shortcut</key><string>ゆにっくす</string></dict>
+	<dict><key>phrase</key><string>Linux</string><key>shortcut</key><string>りなっくす</string></dict>
+	<dict><key>phrase</key><string>NetBSD</string><key>shortcut</key><string>ねっとびーえすでぃー</string></dict>
+	<dict><key>phrase</key><string>BSD</string><key>shortcut</key><string>びーえすでぃー</string></dict>
 </array>
 </plist>
