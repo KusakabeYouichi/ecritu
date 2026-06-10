@@ -129,6 +129,130 @@ extension KeyboardRootView {
         }
     }
 
+    struct KaomojiCategory: Identifiable, Hashable {
+        enum Kind: Hashable {
+            case shortcut
+            case existing
+            case imported(String)
+            case search
+        }
+
+        let kind: Kind
+
+        var id: String {
+            switch kind {
+            case .shortcut:
+                return "shortcut"
+            case .existing:
+                return "existing"
+            case .imported(let name):
+                return "imported:\(name)"
+            case .search:
+                return "search"
+            }
+        }
+
+        var title: String {
+            switch kind {
+            case .shortcut:
+                return "ショートカット"
+            case .existing:
+                return "基本"
+            case .imported(let name):
+                switch name {
+                case "笑":
+                    return "Sourire / Rire (笑顔)"
+                case "かわいい":
+                    return "Kawaii / Chou (かわいい)"
+                case "照れ":
+                    return "Timide (照れ・恥ずかしがり)"
+                case "焦り":
+                    return "Stress / Panique (焦り・緊張・パニック)"
+                case "しょぼん":
+                    return "Dé çu Dé primé (がっかり・しょぼん)"
+                case "悲":
+                    return "Triste (悲しい)"
+                case "怒":
+                    return "En colè re (怒り)"
+                case "驚き":
+                    return "Surprise (驚き)"
+                case "くそねみ":
+                    return "Dodo (くそねみ・超眠い・ねんね)"
+                case "挨拶":
+                    return "Coucou (やあ!・親しい挨拶)"
+                case "ラブ":
+                    return "Amour (ラブ・愛)"
+                case "激しい":
+                    return "Excité / Crazy (激しい・狂気)"
+                case "うごき":
+                    return "Action (アクシオン・動き)"
+                case "キモい":
+                    return "Bizarre (奇妙・キモい)"
+                case "キャラ":
+                    return "Hé ros (主人公・キャラ)"
+                case "特殊":
+                    return "Spé cial (特殊)"
+                case "ライン":
+                    return "Lignes (区切り線)"
+                default:
+                    return name
+                }
+            case .search:
+                return "検索"
+            }
+        }
+
+        var icon: String {
+            switch kind {
+            case .shortcut:
+                return "⚡️"
+            case .existing:
+                return "🙂"
+            case .imported(let name):
+                switch name {
+                case "キャラ":
+                    return "🧑"
+                case "ライン":
+                    return "💬"
+                case "挨拶":
+                    return "🙋"
+                case "キモい":
+                    return "🤪"
+                case "特殊":
+                    return "✨"
+                case "笑":
+                    return "😂"
+                case "焦り":
+                    return "💦"
+                case "かわいい":
+                    return "🥰"
+                case "驚き":
+                    return "😲"
+                case "怒":
+                    return "😠"
+                case "しょぼん":
+                    return "😔"
+                case "ラブ":
+                    return "❤️"
+                case "激しい":
+                    return "💥"
+                case "照れ":
+                    return "😊"
+                case "くそねみ":
+                    return "😴"
+                case "悲":
+                    return "😢"
+                case "うごき":
+                    return "🏃"
+                default:
+                    return "🗂️"
+                }
+            case .search:
+                return "🔎"
+            }
+        }
+    }
+
     enum BasicSymbolOrder: String {
         case ascii
         case ebcdic

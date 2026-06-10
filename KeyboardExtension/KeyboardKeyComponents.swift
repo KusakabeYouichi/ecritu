@@ -551,3 +551,43 @@ struct SymbolCategoryKeyButton: View {
         .accessibilityLabel(accessibilityLabel)
     }
 }
+
+struct KaomojiCategoryKeyButton: View {
+    let icon: String
+    let accessibilityLabel: String
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Text(icon)
+                .font(.system(size: 18, weight: .semibold, design: .rounded))
+                .lineLimit(1)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .foregroundStyle(
+                isSelected
+                    ? KeyboardThemePalette.keyLabel
+                    : KeyboardThemePalette.keyLabelSecondary
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(
+                        isSelected
+                            ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                            : KeyboardThemePalette.categoryButtonBackground
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(
+                        isSelected
+                            ? KeyboardThemePalette.keyBorderEmphasis
+                            : KeyboardThemePalette.keyBorder,
+                        lineWidth: isSelected ? 1.4 : 1
+                    )
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(accessibilityLabel)
+    }
+}
