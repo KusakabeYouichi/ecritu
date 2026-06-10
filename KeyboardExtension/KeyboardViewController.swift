@@ -30,6 +30,144 @@ final class KeyboardViewController: UIInputViewController {
         "がっこうほうじん",
         "しゅうきょうほうじん"
     ]
+    private static let emojiReadingCandidatesByReading: [String: [String]] = {
+        let allCandidates = Set(
+            AppleEmojiCatalog.people
+                + AppleEmojiCatalog.nature
+                + AppleEmojiCatalog.foodAndDrink
+                + AppleEmojiCatalog.activity
+                + AppleEmojiCatalog.travelAndPlaces
+                + AppleEmojiCatalog.objects
+                + AppleEmojiCatalog.symbols
+                + AppleEmojiCatalog.flags
+        )
+        let entries: [(String, [String])] = [
+            ("えがお", ["😀", "😄", "😊", "🙂"]),
+            ("にこにこ", ["😊", "😄", "😁"]),
+            ("にっこり", ["🙂", "😊", "☺️"]),
+            ("うれしい", ["😊", "🥰", "😍"]),
+            ("しあわせ", ["😊", "🥰", "😇"]),
+            ("てれる", ["😊", "☺️", "🥰"]),
+            ("わらい", ["😂", "🤣", "😆"]),
+            ("えへへ", ["😅", "😊", "😄"]),
+            ("にやり", ["😏", "😼", "😎"]),
+            ("なみだ", ["😭", "😢", "🥲"]),
+            ("かなしい", ["😢", "🥲", "😞"]),
+            ("しょんぼり", ["😔", "😞", "🙁"]),
+            ("おこり", ["😡", "😠", "🤬"]),
+            ("いかり", ["😠", "😡", "🤬"]),
+            ("げきおこ", ["🤬", "😡", "😤"]),
+            ("おどろき", ["😳", "😲", "😮"]),
+            ("びっくり", ["😳", "😲", "😱"]),
+            ("しんぱい", ["😟", "😰", "😨"]),
+            ("ねむい", ["😴", "😪", "🥱"]),
+            ("つかれた", ["😮‍💨", "😩", "😪"]),
+            ("あせ", ["😅", "😓", "😥"]),
+            ("あせる", ["😅", "😓", "😰"]),
+            ("ぴえん", ["🥺"]),
+            ("うるうる", ["🥹", "🥺", "🥲"]),
+            ("はーと", ["❤️", "💔", "💕"]),
+            ("らぶ", ["❤️", "💕", "🥰"]),
+            ("だいすき", ["🥰", "😍", "❤️"]),
+            ("はーとぶれいく", ["💔"]),
+            ("きらきら", ["✨"]),
+            ("まる", ["⭕️"]),
+            ("ばつ", ["❌"]),
+            ("ひゃく", ["💯"]),
+            ("おんぷ", ["🎵", "🎶"]),
+            ("ぱーてぃー", ["🥳", "🎉"]),
+            ("おいわい", ["🎉", "🥳", "✨"]),
+            ("ぷれぜんと", ["🎁", "🎉"]),
+            ("けーき", ["🎂"]),
+            ("こーひー", ["☕️"]),
+            ("びーる", ["🍺"]),
+            ("かんぱい", ["🍺", "🍻", "🥂"]),
+            ("はんばーがー", ["🍔"]),
+            ("ごはん", ["🍚", "🍙", "🍛"]),
+            ("すし", ["🍣"]),
+            ("らーめん", ["🍜"]),
+            ("ぴざ", ["🍕"]),
+            ("ぽてと", ["🍟"]),
+            ("いちご", ["🍓"]),
+            ("いぬ", ["🐶"]),
+            ("ねこ", ["🐱"]),
+            ("さる", ["🐵"]),
+            ("うさぎ", ["🐰"]),
+            ("ぱんだ", ["🐼"]),
+            ("ぺんぎん", ["🐧"]),
+            ("ひよこ", ["🐤"]),
+            ("くるま", ["🚗"]),
+            ("たくしー", ["🚕"]),
+            ("ばす", ["🚌"]),
+            ("でんしゃ", ["🚃", "🚅"]),
+            ("しんかんせん", ["🚅"]),
+            ("ひこうき", ["✈️"]),
+            ("ろけっと", ["🚀"]),
+            ("たいよう", ["☀️"]),
+            ("つき", ["🌙"]),
+            ("あめ", ["☔️"]),
+            ("ゆき", ["❄️"]),
+            ("ほのお", ["🔥"]),
+            ("ぐっど", ["👍"]),
+            ("いいね", ["👍", "👌"]),
+            ("だめ", ["👎", "❌"]),
+            ("ぴーす", ["✌️", "👍"]),
+            ("おねがい", ["🙏"]),
+            ("ありがとう", ["🙏", "😊"]),
+            ("はくしゅ", ["👏"]),
+            ("ばんざい", ["🙌"]),
+            ("がっつぽーず", ["💪", "✊"]),
+            ("てをふる", ["👋"]),
+            ("おーけー", ["👌"]),
+            ("どくろ", ["💀", "☠️"]),
+            ("おばけ", ["👻"]),
+            ("うんち", ["💩"]),
+            ("ろぼっと", ["🤖"])
+        ]
+        return buildSupplementarySymbolCandidatesByReading(entries: entries, allowedCandidates: allCandidates)
+    }()
+    private static let kaomojiReadingCandidatesByReading: [String: [String]] = {
+        let allCandidates = Set(KaomojiCatalog.entries)
+        let entries: [(String, [String])] = [
+            ("えがお", ["^_^", "(^^)", "(*^^*)", "(o^^o)"]),
+            ("にこにこ", ["^_^", "(^^)", "(*^^*)"]),
+            ("にっこり", ["(o^^o)", "(*^_^*)", "(^_^)v"]),
+            ("わらい", ["(≧∀≦)", "(⌒▽⌒)", "(*´∀`*)"]),
+            ("うれしい", ["٩( 'ω' )و", "٩(^‿^)۶", "(*^▽^*)"]),
+            ("たのしい", ["(⌒▽⌒)", "o(^▽^)o", "♪( ´▽`)"]),
+            ("てれ", ["(//∇//)", "(〃ω〃)"]),
+            ("おねがい", ["m(_ _)m", "m(__)m", "(^人^)"]),
+            ("かなしい", ["( T_T)/(^-^ )"]),
+            ("ないた", ["(T_T)", "(;_;)", "(´;ω;`)"]),
+            ("しょんぼり", ["(-_-)", "( ¬_¬)", "( ..ω.. )"]),
+            ("ねむい", ["(-_-)zzz", "(( _ _ ))..zzzZZ"]),
+            ("つかれた", ["(-_-)", "(_ _)..o○", "(´-`)..oO"]),
+            ("いかり", ["( *`ω´)", "o(`ω´ )o"]),
+            ("びっくり", ["(・Д・)", "(　oдo)", "Σ('◉⌓◉’)" ]),
+            ("はてな", ["(・・?)", "(@_@)", "(o_o)"]),
+            ("しょっく", ["Σ(oдolll)", "Σ(-。-/)/", "((((;oДo)))))))"]),
+            ("あせる", [":(;'o'ωo'):", "(ㆀ˘.з.˘)", "(⁎⁍̴̆Ɛ⁍̴̆⁎)"]),
+            ("ごめん", ["m(_ _)m", "m(._.)m", "(>人<;)"]),
+            ("どうも", ["m(__)m", "(^人^)"]),
+            ("やった", ["٩( 'ω' )و", "(^^)v", "(^-^)v"]),
+            ("ぴーす", ["✌︎('ω')✌︎", "( ✌︎'ω')✌︎", "✌︎('ω'✌︎ )"]),
+            ("きりっ", ["(`・ω・´)", "(`・∀・´)", "(=^▽^)σ"]),
+            ("どや", ["(`・ω・´)", "( ͡° ͜ʖ ͡°)"]),
+            ("どんまい", ["( T_T)/(^-^ )", "ʅ(◞‿◟)ʃ"]),
+            ("よろしく", ["(^人^)", "m(_ _)m"]),
+            ("おつかれ", ["(^_^)a", "(-^-)ゞ", "(`_´)ゞ"]),
+            ("くま", ["ʕ•ᴥ•ʔ", "(ᵔᴥᵔ)"]),
+            ("ねこ", ["(=^x^=)", "(=^ェ^=)"]),
+            ("いぬ", ["U・x・U", "U^ェ^U"]),
+            ("ぺんぎん", ["∧( 'Θ' )∧", "ϵ( 'Θ' )϶"]),
+            ("かお", ["('ω')", "(・ω・)", "(°_°)"]),
+            ("へんがお", ["(๑•ૅㅁ•๑)", "(΄◉◞౪◟◉`)", "Σ੧(❛□❛✿)"]),
+            ("しろめ", ["(o_o)", "(O_O)", "(@_@)"]),
+            ("おこ", ["( *`ω´)", "o(`ω´ )o"]),
+            ("いや", [">_<", "(>_<)", "(ノ_<)"])
+        ]
+        return buildSupplementarySymbolCandidatesByReading(entries: entries, allowedCandidates: allCandidates)
+    }()
     private var hostingController: UIHostingController<KeyboardRootView>?
     private var lastRenderConfiguration: RenderConfiguration?
     private var keyboardHeightConstraint: NSLayoutConstraint?
@@ -149,6 +287,8 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
         static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
         static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
+        static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
+        static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
         static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
@@ -975,6 +1115,39 @@ final class KeyboardViewController: UIInputViewController {
         return readingKeys
     }
 
+    private static func buildSupplementarySymbolCandidatesByReading(
+        entries: [(String, [String])],
+        allowedCandidates: Set<String>
+    ) -> [String: [String]] {
+        var dictionary: [String: [String]] = [:]
+
+        for (reading, candidates) in entries {
+            let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+            guard !normalizedReading.isEmpty else {
+                continue
+            }
+
+            var mergedCandidates = dictionary[normalizedReading] ?? []
+            var seenCandidates = Set(mergedCandidates)
+
+            for candidate in candidates {
+                guard allowedCandidates.contains(candidate),
+                    seenCandidates.insert(candidate).inserted else {
+                    continue
+                }
+
+                mergedCandidates.append(candidate)
+            }
+
+            if !mergedCandidates.isEmpty {
+                dictionary[normalizedReading] = mergedCandidates
+            }
+        }
+
+        return dictionary
+    }
+
     func supplementaryLexiconCandidates(for reading: String) -> [String] {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
             return []
@@ -1002,14 +1175,32 @@ final class KeyboardViewController: UIInputViewController {
             lexiconCandidates = []
         }
 
-        if contactCandidates.isEmpty {
-            return lexiconCandidates
+        let emojiCandidates: [String]
+
+        if currentEmojiCandidateDisplayEnabledFromSharedDefaults() {
+            emojiCandidates = Self.emojiReadingCandidatesByReading[normalizedReading] ?? []
+        } else {
+            emojiCandidates = []
+        }
+
+        let kaomojiCandidates: [String]
+
+        if currentKaomojiCandidateDisplayEnabledFromSharedDefaults() {
+            kaomojiCandidates = Self.kaomojiReadingCandidatesByReading[normalizedReading] ?? []
+        } else {
+            kaomojiCandidates = []
+        }
+
+        if contactCandidates.isEmpty,
+            lexiconCandidates.isEmpty,
+            emojiCandidates.isEmpty {
+            return kaomojiCandidates
         }
 
         var mergedCandidates: [String] = []
         var seenCandidates = Set<String>()
 
-        for candidate in contactCandidates + lexiconCandidates {
+        for candidate in contactCandidates + lexiconCandidates + emojiCandidates + kaomojiCandidates {
             if seenCandidates.insert(candidate).inserted {
                 mergedCandidates.append(candidate)
             }
@@ -2801,6 +2992,22 @@ final class KeyboardViewController: UIInputViewController {
         return UserDictionaryCandidateDisplayMode(rawValue: rawValue) ?? .on
     }
 
+    private func currentEmojiCandidateDisplayEnabled(from defaults: UserDefaults?) -> Bool {
+        sharedBoolValue(
+            from: defaults,
+            key: SharedDefaultsKeys.emojiCandidateDisplayEnabled,
+            fallback: true
+        )
+    }
+
+    private func currentKaomojiCandidateDisplayEnabled(from defaults: UserDefaults?) -> Bool {
+        sharedBoolValue(
+            from: defaults,
+            key: SharedDefaultsKeys.kaomojiCandidateDisplayEnabled,
+            fallback: true
+        )
+    }
+
     private func currentDelimiterAutoCommitCandidateIndex(from defaults: UserDefaults?) -> Int {
         let rawValue = sharedStringValue(
             from: defaults,
@@ -3118,6 +3325,18 @@ final class KeyboardViewController: UIInputViewController {
 
     private func currentContactCandidateDisplayModeFromSharedDefaults() -> ContactCandidateDisplayMode {
         currentContactCandidateDisplayMode(
+            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        )
+    }
+
+    private func currentEmojiCandidateDisplayEnabledFromSharedDefaults() -> Bool {
+        currentEmojiCandidateDisplayEnabled(
+            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        )
+    }
+
+    private func currentKaomojiCandidateDisplayEnabledFromSharedDefaults() -> Bool {
+        currentKaomojiCandidateDisplayEnabled(
             from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
         )
     }

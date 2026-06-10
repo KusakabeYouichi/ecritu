@@ -596,6 +596,29 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
     }
 }
 
+struct EmojiKaomojiCandidateSettingsSection: View {
+    @Binding var enablesEmojiCandidates: Bool
+    @Binding var enablesKaomojiCandidates: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("emojis & les émoticônes")
+                .font(.headline)
+
+            VStack(spacing: 10) {
+                Toggle("emoji 😀", isOn: $enablesEmojiCandidates)
+                Toggle("émoticône (^_^)", isOn: $enablesKaomojiCandidates)
+            }
+            .toggleStyle(.switch)
+
+            Text("かな漢字変換の候補に絵文字/顔文字を含めるかを切り替えます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 

@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     private static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260610093538"
+    private static let editionUpdatedAtRaw: String = "20260610111852"
     private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -398,6 +398,18 @@ struct ContentView: View {
     )
     private var contactCandidateDisplayModeRawValue: String = ContactCandidateDisplayModeOption.namesOnly.rawValue
 
+    @AppStorage(
+        SettingsKeys.emojiCandidateDisplayEnabled,
+        store: Self.sharedDefaults
+    )
+    private var emojiCandidateDisplayEnabled = true
+
+    @AppStorage(
+        SettingsKeys.kaomojiCandidateDisplayEnabled,
+        store: Self.sharedDefaults
+    )
+    private var kaomojiCandidateDisplayEnabled = true
+
     @State private var userDictionaryEntries: [VocabularyEntry] = []
     @State private var userDictionaryReadingInput = ""
     @State private var userDictionaryCandidateInput = ""
@@ -476,7 +488,9 @@ struct ContentView: View {
             delimiterAutoCommitCandidateRawValue,
             kanaKanjiCandidateSourceModeRawValue,
             userDictionaryCandidateDisplayModeRawValue,
-            contactCandidateDisplayModeRawValue
+            contactCandidateDisplayModeRawValue,
+            String(emojiCandidateDisplayEnabled),
+            String(kaomojiCandidateDisplayEnabled)
         ]
             .joined(separator: "|")
     }
@@ -2342,6 +2356,11 @@ struct ContentView: View {
 
                         ContactCandidateDisplaySettingsSection(
                             selection: contactCandidateDisplayModeSelection
+                        )
+
+                        EmojiKaomojiCandidateSettingsSection(
+                            enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
+                            enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
                         )
 
                         UserDictionaryCandidateDisplaySettingsSection(
