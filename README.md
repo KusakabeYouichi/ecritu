@@ -59,7 +59,7 @@
 - システム語彙は `tmp/ÉcrituPremierVocab.json` (Sudachi由来) に加え、補助語彙 `tmp/ÉcrituSecondVocab.json` も読み込みます。
 - SudachiDict CSV の初回準備は `bash tools/fetch_sudachi_raw.sh` を実行してください(`tmp/sudachi_raw/` を作成します)。
 - 既存CSVを取り直す場合は `bash tools/fetch_sudachi_raw.sh --force` を使います。
-- 補助語彙 `tmp/ÉcrituSecondVocab.json` は `references/ryukyu.plist` / `references/vin.plist` / `references/apple.plist` からビルド時に生成します。
+- 補助語彙 `tmp/ÉcrituSecondVocab.json` は `references/ryukyu.plist` / `references/vin.plist` / `references/it.plist` からビルド時に生成します。
 - 追加語彙の初期投入データ `InitialAjoutVocabMigration.json` は `references/void.plist` からビルド時に生成し、更新時はシグネチャ比較で再マージされます。
 - clone直後のビルド失敗を避けるため、拡張バンドルには `KeyboardExtension/DefaultDictionaryResources/` の軽量プレースホルダー辞書を同梱しています。
 - 実運用の高精度辞書を使う場合は、`tools/build_sudachi_index.py` / `tools/build_kana_kanji_sqlite.py` で `tmp/` 配下に生成し、`tools/install_simulator_kana_dictionary.sh` でシミュレータのApp Groupへ反映してください。

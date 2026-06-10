@@ -19,7 +19,7 @@ from xml.sax.saxutils import escape
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Convert apple.list to apple.plist")
+    parser = argparse.ArgumentParser(description="Convert apple.list to it.plist")
     parser.add_argument("--input", required=True, help="Input list path")
     parser.add_argument("--output", required=True, help="Output plist path")
     return parser.parse_args()
