@@ -238,10 +238,7 @@ final class KanaKanjiConverter {
 
         let manualUserDictionary = store.userDictionary()
         let learnedDictionary = store.learnedDictionary()
-        let userDictionary = mergedDictionary(
-            preferred: manualUserDictionary,
-            fallback: learnedDictionary
-        )
+        let userDictionary = manualUserDictionary
         let initialUserDictionary = store.initialUserDictionary()
         let learningScoresForReading = store.learningScores(for: normalizedReading)
         let suppressedCandidatesByReading = store.suppressedCandidatesByReading()
@@ -478,25 +475,6 @@ final class KanaKanjiConverter {
         for (index, candidate) in uniqueCandidates(from: candidates).enumerated() {
             scores[candidate, default: 0] += max(1, baseScore - index)
         }
-    }
-
-    private func mergedDictionary(
-        preferred: [String: [String]],
-        fallback: [String: [String]]
-    ) -> [String: [String]] {
-        var merged = preferred
-
-        for (reading, fallbackCandidates) in fallback {
-            let combined = uniqueCandidates(
-                from: (merged[reading] ?? []) + fallbackCandidates
-            )
-
-            if !combined.isEmpty {
-                merged[reading] = combined
-            }
-        }
-
-        return merged
     }
 
     private func applyLearning(
@@ -861,7 +839,10 @@ final class KanaKanjiConverter {
             }
 
             let userCandidateSet = Set(
-                (userDictionary[baseReading] ?? []) + (initialUserDictionary[baseReading] ?? [])
+                combinedUserCandidates(
+                    for: baseReading,
+                    userDictionary: userDictionary
+                ) + (initialUserDictionary[baseReading] ?? [])
             )
 
             for candidate in baseCandidates {
@@ -1016,7 +997,10 @@ final class KanaKanjiConverter {
 
             let metadata = inflectionMetadata(for: stem)
             let userCandidateSet = Set(
-                (userDictionary[stem] ?? []) + (initialUserDictionary[stem] ?? [])
+                combinedUserCandidates(
+                    for: stem,
+                    userDictionary: userDictionary
+                ) + (initialUserDictionary[stem] ?? [])
             )
 
             for candidate in stemCandidates {
@@ -1266,7 +1250,10 @@ final class KanaKanjiConverter {
 
         let metadata = inflectionMetadata(for: baseReading)
         let userCandidateSet = Set(
-            (userDictionary[baseReading] ?? []) + (initialUserDictionary[baseReading] ?? [])
+            combinedUserCandidates(
+                for: baseReading,
+                userDictionary: userDictionary
+            ) + (initialUserDictionary[baseReading] ?? [])
         )
         var derived: [String] = []
 
@@ -1385,7 +1372,10 @@ final class KanaKanjiConverter {
 
         let metadata = inflectionMetadata(for: baseReading)
         let userCandidateSet = Set(
-            (userDictionary[baseReading] ?? []) + (initialUserDictionary[baseReading] ?? [])
+            combinedUserCandidates(
+                for: baseReading,
+                userDictionary: userDictionary
+            ) + (initialUserDictionary[baseReading] ?? [])
         )
         var derived: [String] = []
 
@@ -1693,7 +1683,10 @@ final class KanaKanjiConverter {
 
         let metadata = inflectionMetadata(for: baseReading)
         let userCandidateSet = Set(
-            (userDictionary[baseReading] ?? []) + (initialUserDictionary[baseReading] ?? [])
+            combinedUserCandidates(
+                for: baseReading,
+                userDictionary: userDictionary
+            ) + (initialUserDictionary[baseReading] ?? [])
         )
         var results: [String] = []
 
@@ -2009,9 +2002,11 @@ final class KanaKanjiConverter {
         }
 
         let candidates = uniqueCandidates(
-            from: (userDictionary[reading] ?? [])
-                + (initialUserDictionary[reading] ?? [])
-                + systemCandidates(for: reading, mode: systemCandidateMode)
+            from: combinedUserCandidates(
+                for: normalizedReading,
+                userDictionary: userDictionary
+            ) + (initialUserDictionary[normalizedReading] ?? [])
+                + systemCandidates(for: normalizedReading, mode: systemCandidateMode)
         )
 
         let suppressedByReading = store.suppressedCandidatesByReading()
@@ -2022,6 +2017,24 @@ final class KanaKanjiConverter {
         }
 
         return candidates.filter { !suppressedCandidates.contains($0) }
+    }
+
+    private func combinedUserCandidates(
+        for reading: String,
+        userDictionary: [String: [String]]
+    ) -> [String] {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty else {
+            return []
+        }
+
+        let learnedDictionary = store.learnedDictionary()
+
+        return uniqueCandidates(
+            from: (userDictionary[normalizedReading] ?? [])
+                + (learnedDictionary[normalizedReading] ?? [])
+        )
     }
 
     private func removingSuffix(_ text: String, suffix: String) -> String? {
