@@ -62,6 +62,9 @@ struct KeyboardRootView: View {
     @State private var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     @State private var selectedEmojiCategory: EmojiCategory = .people
     @State private var selectedSymbolCategory: SymbolCategory = .basic
+    @State private var selectedKaomojiCategoryID = "existing"
+    @State private var selectedKaomojiReadingPrefix: String? = nil
+    @State private var selectedKaomojiReading: String? = nil
     @State private var emojiInputSubmode: EmojiInputSubmode = .emoji
     @State private var didTriggerComposingCommitLongPress = false
     @State private var katakanaCommitFeedbackText: String? = nil
@@ -100,6 +103,8 @@ struct KeyboardRootView: View {
     private let kaomojiHorizontalPadding: CGFloat = 8
     private let kaomojiFontSize: CGFloat = 18
     private let kaomojiMinInterItemSpacingMultiplier: CGFloat = 1.2
+    private let kaomojiCategoryButtonWidth: CGFloat = 40
+    private let kaomojiSearchReadingDisplayLimit = 120
 
     private var showsKanaConversionCandidates: Bool {
         inputMode == .kana && (!composingText.isEmpty || showsParenthesesWrapper)
@@ -746,6 +751,110 @@ struct KeyboardRootView: View {
 
     private var symbolGridColumns: [GridItem] {
         Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 8)
+    }
+
+    private var kaomojiSearchReadingColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: keyboardRowSpacing), count: 3)
+    }
+
+    private var kaomojiCategories: [KaomojiCategory] {
+        let preferredImportedCategoryOrder: [String] = [
+            "笑",
+            "かわいい",
+            "照れ",
+            "焦り",
+            "しょぼん",
+            "悲",
+            "怒",
+            "驚き",
+            "くそねみ",
+            "挨拶",
+            "ラブ",
+            "激しい",
+            "うごき",
+            "キモい",
+            "キャラ",
+            "特殊",
+            "ライン"
+        ]
+
+        let importedCategorySet = Set(KaomojiCatalog.importedCategoryOrder)
+        let orderedImportedCategories = preferredImportedCategoryOrder
+            .filter { importedCategorySet.contains($0) }
+        let remainingImportedCategories = KaomojiCatalog.importedCategoryOrder
+            .filter { !orderedImportedCategories.contains($0) }
+
+        var categories: [KaomojiCategory] = [
+            KaomojiCategory(kind: .shortcut),
+            KaomojiCategory(kind: .existing),
+            KaomojiCategory(kind: .search)
+        ]
+
+        categories.append(contentsOf: orderedImportedCategories.map { name in
+            KaomojiCategory(kind: .imported(name))
+        })
+        categories.append(contentsOf: remainingImportedCategories.map { name in
+            KaomojiCategory(kind: .imported(name))
+        })
+        return categories
+    }
+
+    private var selectedKaomojiCategory: KaomojiCategory {
+        kaomojiCategories.first(where: { $0.id == selectedKaomojiCategoryID })
+            ?? KaomojiCategory(kind: .existing)
+    }
+
+    private var isKaomojiSearchCategorySelected: Bool {
+        if case .search = selectedKaomojiCategory.kind {
+            return true
+        }
+
+        return false
+    }
+
+    private var selectedKaomojiCategoryEntries: [String] {
+        switch selectedKaomojiCategory.kind {
+        case .shortcut:
+            return shortcutVocabularyEntries
+        case .existing:
+            return KaomojiCatalog.existingEntries
+        case .imported(let name):
+            return KaomojiCatalog.entries(forImportedCategory: name)
+        case .search:
+            return []
+        }
+    }
+
+    private var kaomojiSearchReadings: [String] {
+        return Array(
+            KaomojiCatalog.readings(prefix: selectedKaomojiReadingPrefix)
+                .prefix(kaomojiSearchReadingDisplayLimit)
+        )
+    }
+
+    private var selectedKaomojiSearchResults: [String] {
+        guard let selectedKaomojiReading,
+            !selectedKaomojiReading.isEmpty else {
+            return []
+        }
+
+        return KaomojiCatalog.entries(forReading: selectedKaomojiReading)
+    }
+
+    private func selectKaomojiCategory(_ category: KaomojiCategory) {
+        selectedKaomojiCategoryID = category.id
+
+        if case .search = category.kind {
+            return
+        }
+
+        selectedKaomojiReadingPrefix = nil
+        selectedKaomojiReading = nil
+    }
+
+    private func selectKaomojiReadingPrefix(_ prefix: String?) {
+        selectedKaomojiReadingPrefix = prefix
+        selectedKaomojiReading = nil
     }
 
     private func measuredKaomojiWidth(_ kaomoji: String) -> CGFloat {
@@ -1935,42 +2044,197 @@ struct KeyboardRootView: View {
         )
     }
 
+    private func kaomojiSearchPrefixButton(
+        title: String,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .lineLimit(1)
+                .padding(.horizontal, 10)
+                .padding(.vertical, 5)
+                .foregroundStyle(
+                    isSelected
+                        ? KeyboardThemePalette.keyLabel
+                        : KeyboardThemePalette.keyLabelSecondary
+                )
+                .background(
+                    Capsule(style: .continuous)
+                        .fill(
+                            isSelected
+                                ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                                : KeyboardThemePalette.categoryButtonBackground
+                        )
+                )
+                .overlay(
+                    Capsule(style: .continuous)
+                        .stroke(
+                            isSelected
+                                ? KeyboardThemePalette.keyBorderEmphasis
+                                : KeyboardThemePalette.keyBorder,
+                            lineWidth: isSelected ? 1.2 : 1
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func kaomojiSearchReadingButton(
+        reading: String,
+        isSelected: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(reading)
+                .font(.system(size: 13, weight: .semibold, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.65)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 6)
+                .foregroundStyle(
+                    isSelected
+                        ? KeyboardThemePalette.keyLabel
+                        : KeyboardThemePalette.keyLabelSecondary
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(
+                            isSelected
+                                ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                                : KeyboardThemePalette.categoryButtonBackground
+                        )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(
+                            isSelected
+                                ? KeyboardThemePalette.keyBorderEmphasis
+                                : KeyboardThemePalette.keyBorder,
+                            lineWidth: isSelected ? 1.2 : 1
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+    }
+
     private var kaomojiKeyboardView: some View {
         GeometryReader { geometry in
-            let shortcutEntries = shortcutVocabularyEntries
-            let fixedEntries = KaomojiCatalog.entries
-            let shortcutRows = kaomojiRows(for: geometry.size.width, entries: shortcutEntries)
-            let fixedRows = kaomojiRows(for: geometry.size.width, entries: fixedEntries)
+            let categoryRows = kaomojiRows(
+                for: geometry.size.width,
+                entries: selectedKaomojiCategoryEntries
+            )
+            let searchResultRows = kaomojiRows(
+                for: geometry.size.width,
+                entries: selectedKaomojiSearchResults
+            )
 
             VStack(spacing: keyboardRowSpacing) {
                 ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
-                        if !shortcutRows.isEmpty {
+                    if isKaomojiSearchCategorySelected {
+                        VStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                            Text("1) 上の文字を選ぶ  2) 読みを選ぶ  3) 下の顔文字をタップ")
+                                .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
+
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 8) {
+                                    kaomojiSearchPrefixButton(
+                                        title: "全",
+                                        isSelected: selectedKaomojiReadingPrefix == nil,
+                                        action: { selectKaomojiReadingPrefix(nil) }
+                                    )
+
+                                    ForEach(KaomojiCatalog.readingIndexHeadings, id: \.self) { heading in
+                                        kaomojiSearchPrefixButton(
+                                            title: heading,
+                                            isSelected: selectedKaomojiReadingPrefix == heading,
+                                            action: { selectKaomojiReadingPrefix(heading) }
+                                        )
+                                    }
+                                }
+                            }
+
+                            if let selectedKaomojiReading,
+                                !selectedKaomojiReading.isEmpty {
+                                HStack(spacing: 8) {
+                                    Text("よみ: \(selectedKaomojiReading)")
+                                        .font(.system(size: 12, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
+
+                                    Spacer(minLength: 0)
+
+                                    Button(action: { self.selectedKaomojiReading = nil }) {
+                                        Text("読みを選び直す")
+                                            .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                            .lineLimit(1)
+                                            .padding(.horizontal, 10)
+                                            .padding(.vertical, 5)
+                                            .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
+                                            .background(
+                                                Capsule(style: .continuous)
+                                                    .fill(KeyboardThemePalette.categoryButtonBackground)
+                                            )
+                                            .overlay(
+                                                Capsule(style: .continuous)
+                                                    .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
+                                            )
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+
+                                Rectangle()
+                                    .fill(KeyboardThemePalette.thinDivider)
+                                    .frame(height: 1)
+                                    .padding(.vertical, 4)
+
+                                if searchResultRows.isEmpty {
+                                    Text("該当する顔文字がありません")
+                                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                                        .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
+                                } else {
+                                    Text("候補をタップして入力")
+                                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                                        .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
+
+                                    kaomojiRowLayoutsView(
+                                        searchResultRows,
+                                        availableWidth: geometry.size.width,
+                                        sectionID: "kaomoji-search-results"
+                                    )
+                                }
+                            } else {
+                                LazyVGrid(columns: kaomojiSearchReadingColumns, spacing: keyboardRowSpacing) {
+                                    ForEach(kaomojiSearchReadings, id: \.self) { reading in
+                                        kaomojiSearchReadingButton(
+                                            reading: reading,
+                                            isSelected: selectedKaomojiReading == reading,
+                                            action: { selectedKaomojiReading = reading }
+                                        )
+                                    }
+                                }
+
+                                if kaomojiSearchReadings.isEmpty {
+                                    Text("該当する読みがありません")
+                                        .font(.system(size: 12, weight: .regular, design: .rounded))
+                                        .foregroundStyle(KeyboardThemePalette.keyLabelSecondary)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 2)
+                    } else {
+                        LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
                             kaomojiRowLayoutsView(
-                                shortcutRows,
+                                categoryRows,
                                 availableWidth: geometry.size.width,
-                                sectionID: "shortcut"
+                                sectionID: "kaomoji-category-\(selectedKaomojiCategoryID)"
                             )
                         }
-
-                        if !shortcutRows.isEmpty,
-                            !fixedRows.isEmpty {
-                            Rectangle()
-                                .fill(KeyboardThemePalette.thinDivider)
-                                .frame(height: 1)
-                                .padding(.vertical, 4)
-                        }
-
-                        if !fixedRows.isEmpty {
-                            kaomojiRowLayoutsView(
-                                fixedRows,
-                                availableWidth: geometry.size.width,
-                                sectionID: "fixed"
-                            )
-                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 2)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 2)
                 }
                 .frame(height: fourRowAlignedTopContentHeight)
 
@@ -1982,19 +2246,21 @@ struct KeyboardRootView: View {
                     )
                         .frame(height: mainFlickKeyHeight)
 
-                    ActionKeyButton(
-                        title: "☺︎",
-                        accessibilityLabel: "絵文字",
-                        fontSize: kaomojiModeReturnIconFontSize,
-                        fixedWidth: 56,
-                        action: { emojiInputSubmode = .emoji }
-                    )
-                        .frame(height: mainFlickKeyHeight)
-
-                    spaceKeyButton(
-                        fixedWidth: nil,
-                        keyHeight: mainFlickKeyHeight
-                    )
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: keyboardRowSpacing) {
+                            ForEach(kaomojiCategories) { category in
+                                KaomojiCategoryKeyButton(
+                                    icon: category.icon,
+                                    accessibilityLabel: category.title,
+                                    isSelected: selectedKaomojiCategoryID == category.id,
+                                    action: { selectKaomojiCategory(category) }
+                                )
+                                .frame(width: kaomojiCategoryButtonWidth)
+                                .frame(height: mainFlickKeyHeight)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity)
 
                     ActionKeyButton(
                         title: "⌫",
@@ -2046,7 +2312,7 @@ struct KeyboardRootView: View {
         case .emoji:
             return selectedEmojiCategory.frenchName
         case .kaomoji:
-            return "Raccourci / Kaomojis"
+            return selectedKaomojiCategory.title
         case .symbols:
             return selectedSymbolCategory.frenchName
         }
