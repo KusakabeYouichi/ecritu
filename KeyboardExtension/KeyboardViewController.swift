@@ -182,6 +182,7 @@ final class KeyboardViewController: UIInputViewController {
     private var keyboardBootstrapWorkItem: DispatchWorkItem?
     private var sharedDataPrewarmWorkItem: DispatchWorkItem?
     private var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
+    private var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     private var contactCandidatesByReading: [String: [String]] = [:]
     private var isRefreshingSupplementaryLexicon = false
     private var supplementaryLexiconLastRefreshAt: Date?
@@ -290,6 +291,8 @@ final class KeyboardViewController: UIInputViewController {
         static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
         static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
         static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
+        static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
+        static let supplementaryLexiconIndexSignature = "supplementaryLexiconIndexSignature"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
         static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
@@ -353,6 +356,7 @@ final class KeyboardViewController: UIInputViewController {
     private static let maximumContactCandidateReadings = 4096
     private static let maximumContactCandidateTotalEntries = 16384
     private static let maximumContactCandidatesPerReading = 48
+    private static let maximumSupplementaryMergedCandidateCacheEntries = 512
     private static let memoryFailSafeElevatedStartMB: Double = 120
     private static let memoryFailSafeCriticalStartMB: Double = 150
     private static let memoryFailSafeRecoverDeltaMB: Double = 14
@@ -494,8 +498,11 @@ final class KeyboardViewController: UIInputViewController {
     private func refreshSupplementaryLexiconIfNeeded(force: Bool) {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
             supplementaryLexiconCandidatesByReading = [:]
+            supplementaryMergedCandidatesCacheByKey = [:]
             return
         }
+
+        hydrateSupplementaryLexiconCandidatesFromPersistentCacheIfNeeded()
 
         if !force,
             isRefreshingSupplementaryLexicon {
@@ -524,9 +531,23 @@ final class KeyboardViewController: UIInputViewController {
                     return
                 }
 
-                let mergedCandidates = self.buildSupplementaryLexiconCandidates(
-                    fromEntries: lexiconEntries
-                )
+                let signature = self.supplementaryLexiconEntriesSignature(fromEntries: lexiconEntries)
+                let mergedCandidates: [String: [String]]
+                let usedPersistentIndex: Bool
+
+                if let cachedCandidates = self.cachedSupplementaryLexiconIndex(signature: signature) {
+                    mergedCandidates = cachedCandidates
+                    usedPersistentIndex = true
+                } else {
+                    mergedCandidates = self.buildSupplementaryLexiconCandidates(
+                        fromEntries: lexiconEntries
+                    )
+                    usedPersistentIndex = false
+                    self.storeSupplementaryLexiconIndex(
+                        signature: signature,
+                        dictionary: mergedCandidates
+                    )
+                }
 
                 let entryCount = mergedCandidates.values.reduce(0) { partialResult, candidates in
                     partialResult + candidates.count
@@ -543,9 +564,10 @@ final class KeyboardViewController: UIInputViewController {
 
                     let previousCandidates = self.supplementaryLexiconCandidatesByReading
                     self.supplementaryLexiconCandidatesByReading = mergedCandidates
+                    self.supplementaryMergedCandidatesCacheByKey = [:]
 
                     self.updateKeyboardDiagnosticsHeartbeat(
-                        event: "補助語彙を更新 entries=\(entryCount)",
+                        event: "補助語彙を更新 entries=\(entryCount) indexCache=\(usedPersistentIndex ? "hit" : "miss")",
                         appendLog: true
                     )
 
@@ -561,6 +583,22 @@ final class KeyboardViewController: UIInputViewController {
         isRefreshingSupplementaryLexicon = false
         supplementaryLexiconLastRefreshAt = Date()
         supplementaryLexiconCandidatesByReading = [:]
+        supplementaryMergedCandidatesCacheByKey = [:]
+    }
+
+    private func hydrateSupplementaryLexiconCandidatesFromPersistentCacheIfNeeded() {
+        guard supplementaryLexiconCandidatesByReading.isEmpty else {
+            return
+        }
+
+        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID),
+            let cachedDictionary = defaults.dictionary(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
+                as? [String: [String]],
+            !cachedDictionary.isEmpty else {
+            return
+        }
+
+        supplementaryLexiconCandidatesByReading = cachedDictionary
     }
 
     private func buildSupplementaryLexiconCandidates(
@@ -612,9 +650,69 @@ final class KeyboardViewController: UIInputViewController {
         return dictionary
     }
 
+    private func supplementaryLexiconEntriesSignature(
+        fromEntries entries: [(userInput: String, candidate: String)]
+    ) -> String {
+        var aggregateHash: UInt64 = 1469598103934665603
+        var entryCount = 0
+
+        for entry in entries {
+            let userInput = entry.userInput.trimmingCharacters(in: .whitespacesAndNewlines)
+            let candidate = entry.candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !candidate.isEmpty,
+                candidate.count <= 64 else {
+                continue
+            }
+
+            let pairHash = stableSupplementaryHash(userInput) ^ (stableSupplementaryHash(candidate) &* 1099511628211)
+            aggregateHash ^= pairHash
+            aggregateHash = aggregateHash &* 1099511628211
+            entryCount += 1
+        }
+
+        return "\(entryCount):\(String(aggregateHash, radix: 16))"
+    }
+
+    private func stableSupplementaryHash(_ value: String) -> UInt64 {
+        var hash: UInt64 = 1469598103934665603
+
+        for byte in value.utf8 {
+            hash ^= UInt64(byte)
+            hash = hash &* 1099511628211
+        }
+
+        return hash
+    }
+
+    private func cachedSupplementaryLexiconIndex(signature: String) -> [String: [String]]? {
+        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID),
+            defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) == signature,
+            let dictionary = defaults.dictionary(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
+                as? [String: [String]],
+            !dictionary.isEmpty else {
+            return nil
+        }
+
+        return dictionary
+    }
+
+    private func storeSupplementaryLexiconIndex(
+        signature: String,
+        dictionary: [String: [String]]
+    ) {
+        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID) else {
+            return
+        }
+
+        defaults.set(signature, forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
+        defaults.set(dictionary, forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
+    }
+
     private func refreshContactCandidatesIfNeeded(force: Bool) {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
             contactCandidatesByReading = [:]
+            supplementaryMergedCandidatesCacheByKey = [:]
             return
         }
 
@@ -655,6 +753,7 @@ final class KeyboardViewController: UIInputViewController {
 
                 let previous = self.contactCandidatesByReading
                 self.contactCandidatesByReading = cachedCandidates
+                self.supplementaryMergedCandidatesCacheByKey = [:]
 
                 if previous != cachedCandidates {
                     self.refreshKeyboardStateAsync()
@@ -711,6 +810,7 @@ final class KeyboardViewController: UIInputViewController {
         isRefreshingContactCandidates = false
         contactCandidatesLastRefreshAt = Date()
         contactCandidatesByReading = [:]
+        supplementaryMergedCandidatesCacheByKey = [:]
 
         if refreshKeyboardState,
             hadContactCandidates {
@@ -784,6 +884,7 @@ final class KeyboardViewController: UIInputViewController {
 
                 let previous = self.contactCandidatesByReading
                 self.contactCandidatesByReading = dictionary
+                self.supplementaryMergedCandidatesCacheByKey = [:]
 
                 if didReachLimit {
                     self.updateKeyboardDiagnosticsHeartbeat(
@@ -1159,9 +1260,22 @@ final class KeyboardViewController: UIInputViewController {
             return []
         }
 
+        let defaults = sharedDefaults
+        let usesContacts = currentContactCandidateDisplayMode(from: defaults).usesContacts
+        let usesUserDictionaryCandidates = currentUserDictionaryCandidateDisplayMode(from: defaults)
+            .usesUserDictionaryCandidates
+        let showsEmojiCandidates = currentEmojiCandidateDisplayEnabled(from: defaults)
+        let showsKaomojiCandidates = currentKaomojiCandidateDisplayEnabled(from: defaults)
+
+        let cacheKey = "\(normalizedReading)|c:\(usesContacts ? 1 : 0)|u:\(usesUserDictionaryCandidates ? 1 : 0)|e:\(showsEmojiCandidates ? 1 : 0)|k:\(showsKaomojiCandidates ? 1 : 0)"
+
+        if let cachedCandidates = supplementaryMergedCandidatesCacheByKey[cacheKey] {
+            return cachedCandidates
+        }
+
         let contactCandidates: [String]
 
-        if currentContactCandidateDisplayModeFromSharedDefaults().usesContacts {
+        if usesContacts {
             contactCandidates = contactCandidatesByReading[normalizedReading] ?? []
         } else {
             contactCandidates = []
@@ -1169,7 +1283,7 @@ final class KeyboardViewController: UIInputViewController {
 
         let lexiconCandidates: [String]
 
-        if currentUserDictionaryCandidateDisplayModeFromSharedDefaults().usesUserDictionaryCandidates {
+        if usesUserDictionaryCandidates {
             lexiconCandidates = supplementaryLexiconCandidatesByReading[normalizedReading] ?? []
         } else {
             lexiconCandidates = []
@@ -1177,7 +1291,7 @@ final class KeyboardViewController: UIInputViewController {
 
         let emojiCandidates: [String]
 
-        if currentEmojiCandidateDisplayEnabledFromSharedDefaults() {
+        if showsEmojiCandidates {
             emojiCandidates = Self.emojiReadingCandidatesByReading[normalizedReading] ?? []
         } else {
             emojiCandidates = []
@@ -1185,7 +1299,7 @@ final class KeyboardViewController: UIInputViewController {
 
         let kaomojiCandidates: [String]
 
-        if currentKaomojiCandidateDisplayEnabledFromSharedDefaults() {
+        if showsKaomojiCandidates {
             kaomojiCandidates = Self.kaomojiReadingCandidatesByReading[normalizedReading] ?? []
         } else {
             kaomojiCandidates = []
@@ -1194,6 +1308,12 @@ final class KeyboardViewController: UIInputViewController {
         if contactCandidates.isEmpty,
             lexiconCandidates.isEmpty,
             emojiCandidates.isEmpty {
+            supplementaryMergedCandidatesCacheByKey[cacheKey] = kaomojiCandidates
+
+            if supplementaryMergedCandidatesCacheByKey.count > Self.maximumSupplementaryMergedCandidateCacheEntries {
+                supplementaryMergedCandidatesCacheByKey.removeAll(keepingCapacity: true)
+            }
+
             return kaomojiCandidates
         }
 
@@ -1204,6 +1324,12 @@ final class KeyboardViewController: UIInputViewController {
             if seenCandidates.insert(candidate).inserted {
                 mergedCandidates.append(candidate)
             }
+        }
+
+        supplementaryMergedCandidatesCacheByKey[cacheKey] = mergedCandidates
+
+        if supplementaryMergedCandidatesCacheByKey.count > Self.maximumSupplementaryMergedCandidateCacheEntries {
+            supplementaryMergedCandidatesCacheByKey.removeAll(keepingCapacity: true)
         }
 
         return mergedCandidates
@@ -3313,37 +3439,37 @@ final class KeyboardViewController: UIInputViewController {
 
     func currentKanaKanjiCandidateSourceModeFromSharedDefaults() -> KanaKanjiCandidateSourceMode {
         currentKanaKanjiCandidateSourceMode(
-            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+            from: sharedDefaults
         )
     }
 
     private func currentUserDictionaryCandidateDisplayModeFromSharedDefaults() -> UserDictionaryCandidateDisplayMode {
         currentUserDictionaryCandidateDisplayMode(
-            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+            from: sharedDefaults
         )
     }
 
     private func currentContactCandidateDisplayModeFromSharedDefaults() -> ContactCandidateDisplayMode {
         currentContactCandidateDisplayMode(
-            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+            from: sharedDefaults
         )
     }
 
     private func currentEmojiCandidateDisplayEnabledFromSharedDefaults() -> Bool {
         currentEmojiCandidateDisplayEnabled(
-            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+            from: sharedDefaults
         )
     }
 
     private func currentKaomojiCandidateDisplayEnabledFromSharedDefaults() -> Bool {
         currentKaomojiCandidateDisplayEnabled(
-            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+            from: sharedDefaults
         )
     }
 
     func currentDelimiterAutoCommitCandidateIndexFromSharedDefaults() -> Int {
         currentDelimiterAutoCommitCandidateIndex(
-            from: UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+            from: sharedDefaults
         )
     }
 
