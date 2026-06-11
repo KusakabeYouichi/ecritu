@@ -187,6 +187,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(candidates.contains("ヤマダ"), "candidates=\(candidates)")
     }
 
+    func testRegressionLoanwordKatakanaCandidateIsNotDroppedBySameReadingPenalty() {
+        let candidates = converter.candidates(
+            for: "さいと",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertEqual(candidates.first, "サイト", "candidates=\(candidates)")
+    }
+
     func testRegressionHonorificPrefixCandidatesAreDerivedFromRegisteredBaseWords() {
         converter.learn(reading: "かんじょう", candidate: "勘定")
         converter.learn(reading: "さけ", candidate: "酒")
