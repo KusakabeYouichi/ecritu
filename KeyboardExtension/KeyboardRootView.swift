@@ -1298,27 +1298,70 @@ struct KeyboardRootView: View {
             return landscapeLeftModeSwitchKaomojiIconFontSize
         }
 
-        if !usesWideLeftModeSwitchButtons {
-            return portraitCompactKanaModeSwitcherIconFontSize
-        }
-
         return max(1, portraitWideLeftModeSwitchKaomojiIconFontSize - 1)
     }
 
-    private var kanaModeSwitcherMainLabelFontSize: CGFloat {
-        if kanaModeSwitcherTapAction == .emoji {
-            return kanaModeSwitcherFaceEmojiMainLabelFontSize
+    private func compactKanaModeSwitcherMainLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
+        switch action {
+        case .symbols:
+            return symbolTransitionIconFontSize
+        case .emoji:
+            return compactKanaModeSwitcherEmojiMainLabelFontSize
+        case .kaomoji:
+            return unifiedLeftModeSwitchFontSize
         }
+    }
 
-        if kanaModeSwitcherTapAction == .kaomoji {
+    private func wideKanaModeSwitcherMainLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
+        switch action {
+        case .symbols:
+            return symbolTransitionIconFontSize
+        case .emoji:
+            return kanaModeSwitcherFaceEmojiMainLabelFontSize
+        case .kaomoji:
             return kanaModeSwitcherKaomojiMainLabelFontSize
         }
+    }
 
-        if kanaModeSwitcherTapAction == .symbols {
+    private func compactKanaModeSwitcherActiveLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
+        switch action {
+        case .symbols:
             return symbolTransitionIconFontSize
+        case .emoji:
+            return compactKanaModeSwitcherEmojiActiveIconFontSize
+        case .kaomoji:
+            return compactKanaModeSwitcherPreviewIconFontSize
+        }
+    }
+
+    private func wideKanaModeSwitcherActiveMainLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
+        switch action {
+        case .symbols:
+            return symbolTransitionIconFontSize
+        case .emoji:
+            return kanaModeSwitcherFaceEmojiIconFontSize
+        case .kaomoji:
+            return kanaModeSwitcherKaomojiMainLabelFontSize
+        }
+    }
+
+    private func wideKanaModeSwitcherActivePreviewFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
+        switch action {
+        case .symbols:
+            return symbolTransitionIconFontSize
+        case .emoji:
+            return kanaModeSwitcherFaceEmojiIconFontSize
+        case .kaomoji:
+            return kanaModeSwitcherEmojiIconFontSize
+        }
+    }
+
+    private var kanaModeSwitcherMainLabelFontSize: CGFloat {
+        if !usesWideLeftModeSwitchButtons {
+            return compactKanaModeSwitcherMainLabelFontSize(for: kanaModeSwitcherTapAction)
         }
 
-        return unifiedLeftModeSwitchFontSize
+        return wideKanaModeSwitcherMainLabelFontSize(for: kanaModeSwitcherTapAction)
     }
 
     private func kanaModeSwitcherMainLabelFontSizeForDirection(
@@ -1329,27 +1372,36 @@ struct KeyboardRootView: View {
             return kaomojiTransitionIconFontSize
         }
 
+        if !usesWideLeftModeSwitchButtons {
+            if direction == .milieu {
+                return kanaModeSwitcherMainLabelFontSize
+            }
+
+            if let action = kanaModeSwitcherAction(for: direction) {
+                return compactKanaModeSwitcherActiveLabelFontSize(for: action)
+            }
+
+            if mainText == "⌘" {
+                return symbolTransitionIconFontSize
+            }
+
+            if mainText == "☺︎" {
+                return compactKanaModeSwitcherEmojiActiveIconFontSize
+            }
+
+            if mainText == "^_^" {
+                return compactKanaModeSwitcherPreviewIconFontSize
+            }
+
+            return kanaModeSwitcherMainLabelFontSize
+        }
+
         if direction == .milieu {
             return kanaModeSwitcherMainLabelFontSize
         }
 
         if let action = kanaModeSwitcherAction(for: direction) {
-            switch action {
-            case .symbols:
-                return symbolTransitionIconFontSize
-            case .emoji:
-                if !usesWideLeftModeSwitchButtons {
-                    return compactKanaModeSwitcherPreviewIconFontSize
-                }
-
-                return kanaModeSwitcherFaceEmojiIconFontSize
-            case .kaomoji:
-                if !usesWideLeftModeSwitchButtons {
-                    return compactKanaModeSwitcherPreviewIconFontSize
-                }
-
-                return kanaModeSwitcherKaomojiMainLabelFontSize
-            }
+            return wideKanaModeSwitcherActiveMainLabelFontSize(for: action)
         }
 
         if mainText == "⌘" {
@@ -1357,18 +1409,10 @@ struct KeyboardRootView: View {
         }
 
         if mainText == "☺︎" {
-            if !usesWideLeftModeSwitchButtons {
-                return compactKanaModeSwitcherPreviewIconFontSize
-            }
-
             return kanaModeSwitcherFaceEmojiIconFontSize
         }
 
         if mainText == "^_^" {
-            if !usesWideLeftModeSwitchButtons {
-                return compactKanaModeSwitcherPreviewIconFontSize
-            }
-
             return kanaModeSwitcherKaomojiMainLabelFontSize
         }
 
@@ -1381,6 +1425,14 @@ struct KeyboardRootView: View {
 
     private var compactKanaModeSwitcherPreviewIconFontSize: CGFloat {
         18
+    }
+
+    private var compactKanaModeSwitcherEmojiMainLabelFontSize: CGFloat {
+        unifiedLeftModeSwitchFontSize + 2
+    }
+
+    private var compactKanaModeSwitcherEmojiActiveIconFontSize: CGFloat {
+        compactKanaModeSwitcherPreviewIconFontSize + 2
     }
 
     private func kanaModeSwitcherAction(for direction: FlickDirection) -> KanaModeSwitcherAction? {
@@ -1402,23 +1454,28 @@ struct KeyboardRootView: View {
             return kanaModeSwitcherPreviewFontSize
         }
 
-        if let action = kanaModeSwitcherAction(for: direction) {
-            switch action {
-            case .symbols:
-                return symbolTransitionIconFontSize
-            case .emoji:
-                if !usesWideLeftModeSwitchButtons {
-                    return compactKanaModeSwitcherPreviewIconFontSize
-                }
-
-                return kanaModeSwitcherFaceEmojiIconFontSize
-            case .kaomoji:
-                if !usesWideLeftModeSwitchButtons {
-                    return compactKanaModeSwitcherPreviewIconFontSize
-                }
-
-                return kanaModeSwitcherEmojiIconFontSize
+        if !usesWideLeftModeSwitchButtons {
+            if let action = kanaModeSwitcherAction(for: direction) {
+                return compactKanaModeSwitcherActiveLabelFontSize(for: action)
             }
+
+            if previewText == "⌘" {
+                return symbolTransitionIconFontSize
+            }
+
+            if previewText == "☺︎" {
+                return compactKanaModeSwitcherEmojiActiveIconFontSize
+            }
+
+            if previewText == "^_^" {
+                return compactKanaModeSwitcherPreviewIconFontSize
+            }
+
+            return kanaModeSwitcherPreviewFontSize
+        }
+
+        if let action = kanaModeSwitcherAction(for: direction) {
+            return wideKanaModeSwitcherActivePreviewFontSize(for: action)
         }
 
         if previewText == "⌘" {
@@ -1426,18 +1483,10 @@ struct KeyboardRootView: View {
         }
 
         if previewText == "☺︎" {
-            if !usesWideLeftModeSwitchButtons {
-                return compactKanaModeSwitcherPreviewIconFontSize
-            }
-
             return kanaModeSwitcherFaceEmojiIconFontSize
         }
 
         if previewText == "^_^" {
-            if !usesWideLeftModeSwitchButtons {
-                return compactKanaModeSwitcherPreviewIconFontSize
-            }
-
             return kanaModeSwitcherEmojiIconFontSize
         }
 
