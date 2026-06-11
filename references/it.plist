@@ -160,5 +160,7 @@
 	<dict><key>phrase</key><string>Linux</string><key>shortcut</key><string>りなっくす</string></dict>
 	<dict><key>phrase</key><string>NetBSD</string><key>shortcut</key><string>ねっとびーえすでぃー</string></dict>
 	<dict><key>phrase</key><string>BSD</string><key>shortcut</key><string>びーえすでぃー</string></dict>
+	<dict><key>phrase</key><string>アナログ方式</string><key>shortcut</key><string>あなろぐほうしき</string></dict>
+	<dict><key>phrase</key><string>デジタル方式</string><key>shortcut</key><string>でじたるほうしき</string></dict>
 </array>
 </plist>
