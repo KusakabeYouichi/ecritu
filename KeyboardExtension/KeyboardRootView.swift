@@ -1170,15 +1170,31 @@ struct KeyboardRootView: View {
     }
 
     private var leftModeSwitchNumberFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize
+        if usesWideLeftModeSwitchButtons && !isLandscapeLayout {
+            return 18
+        }
+
+        return unifiedLeftModeSwitchFontSize
     }
 
     private var leftModeSwitchLatinFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize
+        if usesWideLeftModeSwitchButtons && !isLandscapeLayout {
+            return 18
+        }
+
+        return unifiedLeftModeSwitchFontSize
     }
 
     private var portraitCompactLeftModeSwitchKaomojiIconFontSize: CGFloat {
         28
+    }
+
+    private var portraitWideLeftModeSwitchKaomojiIconFontSize: CGFloat {
+        20
+    }
+
+    private var portraitWideLeftModeSwitchEmojiIconFontSize: CGFloat {
+        26
     }
 
     private var kaomojiTransitionIconFontSize: CGFloat {
@@ -1187,7 +1203,7 @@ struct KeyboardRootView: View {
         }
 
         if usesWideLeftModeSwitchButtons {
-            return unifiedLeftModeSwitchFontSize
+            return portraitWideLeftModeSwitchKaomojiIconFontSize
         }
 
         return portraitCompactLeftModeSwitchKaomojiIconFontSize
@@ -1196,6 +1212,10 @@ struct KeyboardRootView: View {
     private var symbolTransitionIconFontSize: CGFloat {
         if isLandscapeLayout {
             return unifiedLeftModeSwitchFontSize
+        }
+
+        if usesWideLeftModeSwitchButtons {
+            return 20
         }
 
         return 16
@@ -1214,12 +1234,52 @@ struct KeyboardRootView: View {
             return portraitCompactKanaModeSwitcherIconFontSize
         }
 
-        return unifiedLeftModeSwitchFontSize
+        return portraitWideLeftModeSwitchKaomojiIconFontSize
+    }
+
+    private var kanaModeSwitcherFaceEmojiIconFontSize: CGFloat {
+        if isLandscapeLayout {
+            return landscapeLeftModeSwitchKaomojiIconFontSize
+        }
+
+        if !usesWideLeftModeSwitchButtons {
+            return portraitCompactKanaModeSwitcherIconFontSize
+        }
+
+        return portraitWideLeftModeSwitchEmojiIconFontSize
+    }
+
+    private var kanaModeSwitcherFaceEmojiMainLabelFontSize: CGFloat {
+        if isLandscapeLayout || !usesWideLeftModeSwitchButtons {
+            return kanaModeSwitcherFaceEmojiIconFontSize
+        }
+
+        return portraitWideLeftModeSwitchEmojiIconFontSize + 1
+    }
+
+    private var kanaModeSwitcherKaomojiMainLabelFontSize: CGFloat {
+        if isLandscapeLayout {
+            return landscapeLeftModeSwitchKaomojiIconFontSize
+        }
+
+        if !usesWideLeftModeSwitchButtons {
+            return portraitCompactKanaModeSwitcherIconFontSize
+        }
+
+        return max(1, portraitWideLeftModeSwitchKaomojiIconFontSize - 1)
     }
 
     private var kanaModeSwitcherMainLabelFontSize: CGFloat {
         if kanaModeSwitcherTapAction == .emoji {
-            return kanaModeSwitcherEmojiIconFontSize
+            return kanaModeSwitcherFaceEmojiMainLabelFontSize
+        }
+
+        if kanaModeSwitcherTapAction == .kaomoji {
+            return kanaModeSwitcherKaomojiMainLabelFontSize
+        }
+
+        if kanaModeSwitcherTapAction == .symbols {
+            return symbolTransitionIconFontSize
         }
 
         return unifiedLeftModeSwitchFontSize
@@ -1229,6 +1289,10 @@ struct KeyboardRootView: View {
         _ direction: FlickDirection,
         mainText: String
     ) -> CGFloat {
+        if mainText == "🌐" {
+            return kaomojiTransitionIconFontSize
+        }
+
         if direction == .milieu {
             return kanaModeSwitcherMainLabelFontSize
         }
@@ -1237,8 +1301,18 @@ struct KeyboardRootView: View {
             switch action {
             case .symbols:
                 return symbolTransitionIconFontSize
-            case .emoji, .kaomoji:
-                return kanaModeSwitcherEmojiIconFontSize
+            case .emoji:
+                if !usesWideLeftModeSwitchButtons {
+                    return compactKanaModeSwitcherPreviewIconFontSize
+                }
+
+                return kanaModeSwitcherFaceEmojiIconFontSize
+            case .kaomoji:
+                if !usesWideLeftModeSwitchButtons {
+                    return compactKanaModeSwitcherPreviewIconFontSize
+                }
+
+                return kanaModeSwitcherKaomojiMainLabelFontSize
             }
         }
 
@@ -1246,8 +1320,20 @@ struct KeyboardRootView: View {
             return symbolTransitionIconFontSize
         }
 
-        if mainText == "☺︎" || mainText == "^_^" {
-            return kanaModeSwitcherEmojiIconFontSize
+        if mainText == "☺︎" {
+            if !usesWideLeftModeSwitchButtons {
+                return compactKanaModeSwitcherPreviewIconFontSize
+            }
+
+            return kanaModeSwitcherFaceEmojiIconFontSize
+        }
+
+        if mainText == "^_^" {
+            if !usesWideLeftModeSwitchButtons {
+                return compactKanaModeSwitcherPreviewIconFontSize
+            }
+
+            return kanaModeSwitcherKaomojiMainLabelFontSize
         }
 
         return kanaModeSwitcherMainLabelFontSize
@@ -1284,7 +1370,13 @@ struct KeyboardRootView: View {
             switch action {
             case .symbols:
                 return symbolTransitionIconFontSize
-            case .emoji, .kaomoji:
+            case .emoji:
+                if !usesWideLeftModeSwitchButtons {
+                    return compactKanaModeSwitcherPreviewIconFontSize
+                }
+
+                return kanaModeSwitcherFaceEmojiIconFontSize
+            case .kaomoji:
                 if !usesWideLeftModeSwitchButtons {
                     return compactKanaModeSwitcherPreviewIconFontSize
                 }
@@ -1297,7 +1389,15 @@ struct KeyboardRootView: View {
             return symbolTransitionIconFontSize
         }
 
-        if previewText == "☺︎" || previewText == "^_^" {
+        if previewText == "☺︎" {
+            if !usesWideLeftModeSwitchButtons {
+                return compactKanaModeSwitcherPreviewIconFontSize
+            }
+
+            return kanaModeSwitcherFaceEmojiIconFontSize
+        }
+
+        if previewText == "^_^" {
             if !usesWideLeftModeSwitchButtons {
                 return compactKanaModeSwitcherPreviewIconFontSize
             }
@@ -1367,7 +1467,7 @@ struct KeyboardRootView: View {
         ActionKeyButton(
             title: "☺︎",
             accessibilityLabel: "絵文字",
-            fontSize: kaomojiTransitionIconFontSize,
+            fontSize: kanaModeSwitcherFaceEmojiIconFontSize,
             onLongPress: enterKaomojiMode,
             action: enterEmojiMode
         )
@@ -1406,6 +1506,12 @@ struct KeyboardRootView: View {
                     showsDirectionalHints: showsFlickGuideCharacters,
                     showsGuideText: false,
                     activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                    activeMainLabelFontSizeProvider: { direction, mainText in
+                        kanaModeSwitcherMainLabelFontSizeForDirection(
+                            direction,
+                            mainText: mainText
+                        )
+                    },
                     activePreviewFontSizeProvider: { direction, previewText in
                         kanaModeSwitcherPreviewFontSizeForDirection(
                             direction,
@@ -3380,6 +3486,12 @@ struct KeyboardRootView: View {
                             showsGuideText: false,
                             onLongPress: handleCompactKeyboardSwitchLongPress,
                             activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
+                            activeMainLabelFontSizeProvider: { direction, mainText in
+                                kanaModeSwitcherMainLabelFontSizeForDirection(
+                                    direction,
+                                    mainText: mainText
+                                )
+                            },
                             activePreviewFontSizeProvider: { direction, previewText in
                                 kanaModeSwitcherPreviewFontSizeForDirection(
                                     direction,
