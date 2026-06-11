@@ -472,6 +472,27 @@ extension KanaKanjiConverter {
         ]
     }
 
+    static func makuInflectionSuffixes(for renyouForm: String) -> [String] {
+        guard !renyouForm.isEmpty else {
+            return []
+        }
+
+        return [
+            renyouForm + "まくる",
+            renyouForm + "まくらない",
+            renyouForm + "まくらなかった",
+            renyouForm + "まくり",
+            renyouForm + "まくります",
+            renyouForm + "まくりました",
+            renyouForm + "まくりません",
+            renyouForm + "まくれ",
+            renyouForm + "まくれば",
+            renyouForm + "まくろう",
+            renyouForm + "まくった",
+            renyouForm + "まくって"
+        ]
+    }
+
     static let adjectiveGaruInflectionForms: [(readingSuffix: String, outputSuffix: String)] = [
         ("がらなかった", "がらなかった"),
         ("がりました", "がりました"),
@@ -580,6 +601,7 @@ extension KanaKanjiConverter {
 
             suffixes.append(contentsOf: KanaKanjiConverter.taRiSuruInflectionSuffixes(for: pattern.taForm))
             suffixes.append(contentsOf: KanaKanjiConverter.taiGaruInflectionSuffixes(for: pattern.iForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.makuInflectionSuffixes(for: pattern.iForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: passiveTeForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAruInflectionSuffixes(for: pattern.teForm))
