@@ -1533,24 +1533,40 @@ extension KeyboardViewController {
 
         var tokenScalars: [UnicodeScalar] = []
         let maxTokenScalars = 64
+        var containsLatinCore = false
 
         for scalar in context.unicodeScalars.reversed() {
-            guard isLatinSuggestionTokenScalar(scalar) else {
+            if isLatinSuggestionCoreScalar(scalar) {
+                tokenScalars.append(scalar)
+                containsLatinCore = true
+            } else if isLatinSuggestionMarkScalar(scalar) {
+                guard !tokenScalars.isEmpty else {
+                    break
+                }
+
+                tokenScalars.append(scalar)
+            } else if isLatinSuggestionConnectorScalar(scalar) {
+                guard containsLatinCore else {
+                    break
+                }
+
+                tokenScalars.append(scalar)
+            } else {
                 break
             }
-
-            tokenScalars.append(scalar)
 
             if tokenScalars.count >= maxTokenScalars {
                 break
             }
         }
 
-        guard !tokenScalars.isEmpty else {
+        guard !tokenScalars.isEmpty,
+            containsLatinCore else {
             return ""
         }
 
         let token = String(String.UnicodeScalarView(tokenScalars.reversed()))
+            .trimmingCharacters(in: latinSuggestionTokenBoundaryCharacterSet)
 
         guard isLatinSuggestionToken(token) else {
             return ""
@@ -1559,25 +1575,38 @@ extension KeyboardViewController {
         return token
     }
 
-    func isLatinSuggestionTokenScalar(_ scalar: UnicodeScalar) -> Bool {
+    private var latinSuggestionTokenBoundaryCharacterSet: CharacterSet {
+        CharacterSet(charactersIn: " -.&'’/,+:;()!?")
+            .union(.whitespacesAndNewlines)
+    }
+
+    private func isLatinSuggestionConnectorScalar(_ scalar: UnicodeScalar) -> Bool {
         switch scalar {
         case " ", "-", ".", "&", "'", "’", "/", ",", "+", ":", ";", "(", ")", "!", "?":
             return true
         default:
-            break
+            return false
         }
+    }
 
+    private func isLatinSuggestionCoreScalar(_ scalar: UnicodeScalar) -> Bool {
         if CharacterSet.decimalDigits.contains(scalar) {
             return true
         }
 
-        let category = scalar.properties.generalCategory
+        let scalarText = String(scalar)
 
-        if category == .nonspacingMark || category == .spacingMark {
+        if scalarText.range(of: #"\p{Latin}"#, options: .regularExpression) != nil {
             return true
         }
 
-        return CharacterSet.letters.contains(scalar)
+        return false
+    }
+
+    private func isLatinSuggestionMarkScalar(_ scalar: UnicodeScalar) -> Bool {
+        let category = scalar.properties.generalCategory
+
+        return category == .nonspacingMark || category == .spacingMark
     }
 
     func isLatinSuggestionToken(_ token: String) -> Bool {
