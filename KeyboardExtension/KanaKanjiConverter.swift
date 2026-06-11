@@ -398,6 +398,7 @@ final class KanaKanjiConverter {
 
         applySameReadingScriptPreference(
             for: normalizedReading,
+            systemCandidates: systemCandidates,
             to: &scores
         )
 
@@ -488,6 +489,7 @@ final class KanaKanjiConverter {
 
     private func applySameReadingScriptPreference(
         for reading: String,
+        systemCandidates: [String],
         to scores: inout [String: Int]
     ) {
         var matchingCandidates: [String] = []
@@ -514,10 +516,38 @@ final class KanaKanjiConverter {
             .map { scores[$0, default: 0] }
             .min() ?? 0
 
+        let protectedKatakanaCandidates = preferredLeadingKatakanaCandidates(
+            fromSystemCandidates: systemCandidates
+        )
+
         for candidate in matchingCandidates where Self.isPureKatakanaCandidate(candidate) {
+            if protectedKatakanaCandidates.contains(candidate) {
+                continue
+            }
+
             let penalizedScore = scores[candidate, default: 0] - Self.sameReadingPureKatakanaPenalty
             scores[candidate] = min(penalizedScore, lowestNonKatakanaScore - 1)
         }
+    }
+
+    private func preferredLeadingKatakanaCandidates(fromSystemCandidates candidates: [String]) -> Set<String> {
+        let uniqueSystemCandidates = uniqueCandidates(from: candidates)
+
+        guard !uniqueSystemCandidates.isEmpty else {
+            return []
+        }
+
+        var protectedCandidates = Set<String>()
+
+        for candidate in uniqueSystemCandidates {
+            if !Self.isPureKatakanaCandidate(candidate) {
+                break
+            }
+
+            protectedCandidates.insert(candidate)
+        }
+
+        return protectedCandidates
     }
 
     private static func isPureKatakanaCandidate(_ candidate: String) -> Bool {
