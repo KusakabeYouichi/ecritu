@@ -1043,6 +1043,42 @@ struct KeyboardRootView: View {
         usesCompactKanaFiveByTwoBottomActionRow ? 64 : 72
     }
 
+    private var portraitLatinInlineActionBaseKeyWidth: CGFloat {
+        guard usesPortraitLatinInlineDeleteLayout else {
+            return 0
+        }
+
+        let estimatedKeyboardWidth = max(
+            1,
+            UIScreen.main.bounds.width - keyboardHorizontalPadding * 2
+        )
+        let leadingControlWidth: CGFloat = shouldShowCompactLeftModeSwitchInBottomActionRow
+            ? leftModeSwitchButtonWidth
+            : 0
+        let globeKeyWidth: CGFloat = showsNextKeyboardKey
+            ? bottomActionRowGlobeKeyWidth
+            : 0
+        let fixedWidthTotal = leadingControlWidth + globeKeyWidth + bottomActionRowReturnKeyWidth
+        let spacingCount = CGFloat(5
+            + (shouldShowCompactLeftModeSwitchInBottomActionRow ? 1 : 0)
+            + (showsNextKeyboardKey ? 1 : 0))
+        let flexibleKeyCount: CGFloat = 5
+
+        return max(
+            1,
+            (estimatedKeyboardWidth - fixedWidthTotal - keyboardRowSpacing * spacingCount)
+                / flexibleKeyCount
+        )
+    }
+
+    private var portraitLatinInlineActionSymbolKeyWidth: CGFloat {
+        max(1, portraitLatinInlineActionBaseKeyWidth - 3)
+    }
+
+    private var portraitLatinInlineReturnKeyWidth: CGFloat {
+        66
+    }
+
     private var numberDownDirectionalHintScale: CGFloat {
         1.12
     }
@@ -3521,6 +3557,7 @@ struct KeyboardRootView: View {
                     ActionKeyButton(
                         title: portraitLatinDeleteReplacementSymbol,
                         fontSize: 22,
+                        fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                         action: { commitText(portraitLatinDeleteReplacementSymbol) }
                     )
                         .frame(height: unifiedActionRowHeight)
@@ -3539,13 +3576,21 @@ struct KeyboardRootView: View {
                 }
 
                 if usesPortraitLatinInlineDeleteLayout {
-                    latinSpaceLeftActionButtons(keyHeight: unifiedActionRowHeight)
+                    latinSpaceLeftActionButtons(
+                        fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
+                        keyHeight: unifiedActionRowHeight
+                    )
                 }
 
                 spaceKeyButton(fixedWidth: nil, keyHeight: unifiedActionRowHeight)
 
                 if inputMode == .latin {
-                    latinSpaceRightActionButtons(keyHeight: unifiedActionRowHeight)
+                    latinSpaceRightActionButtons(
+                        fixedWidth: usesPortraitLatinInlineDeleteLayout
+                            ? portraitLatinInlineActionSymbolKeyWidth
+                            : nil,
+                        keyHeight: unifiedActionRowHeight
+                    )
                 }
 
                 if inputMode == .kana {
@@ -3632,7 +3677,9 @@ struct KeyboardRootView: View {
                     systemImageName: returnActionKeySystemImageName,
                     accessibilityLabel: returnActionKeyAccessibilityLabel,
                     fontSize: returnActionKeyFontSize,
-                    fixedWidth: bottomActionRowReturnKeyWidth,
+                    fixedWidth: usesPortraitLatinInlineDeleteLayout
+                        ? portraitLatinInlineReturnKeyWidth
+                        : bottomActionRowReturnKeyWidth,
                     isEnabled: isReturnKeyEnabled,
                     onLongPress: returnKeyKatakanaLongPressAction,
                     onDoubleTap: returnKeyKatakanaDoubleTapAction,
