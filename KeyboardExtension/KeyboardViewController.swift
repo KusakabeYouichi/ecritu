@@ -1300,7 +1300,23 @@ final class KeyboardViewController: UIInputViewController {
         let kaomojiCandidates: [String]
 
         if showsKaomojiCandidates {
-            kaomojiCandidates = Self.kaomojiReadingCandidatesByReading[normalizedReading] ?? []
+            let catalogCandidates = KaomojiCatalog.entries(forReading: normalizedReading)
+            let legacyCandidates = Self.kaomojiReadingCandidatesByReading[normalizedReading] ?? []
+
+            if catalogCandidates.isEmpty {
+                kaomojiCandidates = legacyCandidates
+            } else if legacyCandidates.isEmpty {
+                kaomojiCandidates = catalogCandidates
+            } else {
+                var mergedKaomojiCandidates = catalogCandidates
+                var seenKaomojiCandidates = Set(catalogCandidates)
+
+                for candidate in legacyCandidates where seenKaomojiCandidates.insert(candidate).inserted {
+                    mergedKaomojiCandidates.append(candidate)
+                }
+
+                kaomojiCandidates = mergedKaomojiCandidates
+            }
         } else {
             kaomojiCandidates = []
         }

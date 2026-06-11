@@ -1348,13 +1348,51 @@ extension KeyboardViewController {
 
     func commitMarkedTextByReplacingCurrentMarkedText(
         currentMarkedText: String,
-        committedText: String
+        committedText: String,
+        sourceTextForFallbackReplacement: String? = nil
     ) {
         appendCommitUnderlineDiagnostics(
             "commitReplace:start",
             committedTextLength: committedText.count,
             markedTextLength: currentMarkedText.count
         )
+
+        if let sourceTextForFallbackReplacement,
+            !sourceTextForFallbackReplacement.isEmpty,
+            sourceTextForFallbackReplacement != committedText {
+            let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+            let expectedSourceSuffix = composingContextPrefixTail + sourceTextForFallbackReplacement
+            let hasSourceSuffix = contextBeforeInput.hasSuffix(expectedSourceSuffix)
+                || contextBeforeInput.hasSuffix(sourceTextForFallbackReplacement)
+            let alreadyCommittedAtSuffix = contextBeforeInput.hasSuffix(composingContextPrefixTail + committedText)
+                || contextBeforeInput.hasSuffix(committedText)
+
+            if hasSourceSuffix && !alreadyCommittedAtSuffix {
+                appendKeyboardDiagnosticsLogFromInputHandling(
+                    "確定置換をsource直接置換で実施 context=\(inputHandlingTextLengthSummary(contextBeforeInput)) sourceLen=\(sourceTextForFallbackReplacement.count) committedLen=\(committedText.count)"
+                )
+
+                markTextProxyEdit()
+                textDocumentProxy.unmarkText()
+
+                let contextAfterUnmark = textDocumentProxy.documentContextBeforeInput ?? ""
+                let stillHasSourceSuffix = contextAfterUnmark.hasSuffix(expectedSourceSuffix)
+                    || contextAfterUnmark.hasSuffix(sourceTextForFallbackReplacement)
+
+                if stillHasSourceSuffix {
+                    deleteBackwardCharacterCount(sourceTextForFallbackReplacement.count)
+                    markTextProxyEdit()
+                    textDocumentProxy.insertText(committedText)
+
+                    let clearNudgeWidth = shouldAvoidCursorNudgeAfterCommit(committedText) ? 0 : 1
+                    clearMarkedTextArtifactsAfterCommit(
+                        committedTextLength: committedText.count,
+                        nudgeWidth: clearNudgeWidth
+                    )
+                    return
+                }
+            }
+        }
 
         if currentMarkedText == committedText {
             appendCommitUnderlineDiagnostics(
@@ -1547,7 +1585,8 @@ extension KeyboardViewController {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
         commitMarkedTextByReplacingCurrentMarkedText(
             currentMarkedText: sourceText,
-            committedText: committedTextForInsertion
+            committedText: committedTextForInsertion,
+            sourceTextForFallbackReplacement: sourceText
         )
 
         if learn {
@@ -1579,7 +1618,8 @@ extension KeyboardViewController {
 
         commitMarkedTextByReplacingCurrentMarkedText(
             currentMarkedText: conversion.committedText,
-            committedText: committedTextForInsertion
+            committedText: committedTextForInsertion,
+            sourceTextForFallbackReplacement: conversion.sourceText
         )
 
         if learn {
