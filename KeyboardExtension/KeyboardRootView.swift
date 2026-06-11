@@ -1837,9 +1837,14 @@ struct KeyboardRootView: View {
                 .frame(height: mainFlickKeyHeight)
         } else {
             let renderedKana = displayedKana(for: kana)
-            let mainLabelFontSize = inputMode == .number
+            let baseMainLabelFontSize = inputMode == .number
                 ? numberThreeByThreeMainLabelFontSize
                 : CGFloat(28)
+            let mainLabelFontSize = inputMode == .latin
+                && latinLayoutMode == .flick
+                && renderedKana.center == "@"
+                ? baseMainLabelFontSize - 1
+                : baseMainLabelFontSize
             let directionalHintScale = inputMode == .number
                 ? numberThreeByThreeDirectionalHintScale
                 : CGFloat(1)
