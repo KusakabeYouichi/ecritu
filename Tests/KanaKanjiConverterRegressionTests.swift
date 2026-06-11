@@ -389,6 +389,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionMakuAuxiliaryVariantsAreDerivedFromGodanBase() {
+        converter.learn(reading: "へる", candidate: "減る")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("へりまくる", "減りまくる"),
+            ("へりまくって", "減りまくって")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionSahenNounCandidatesDeriveSuruForms() {
         converter.learn(reading: "かくにん", candidate: "確認")
 
