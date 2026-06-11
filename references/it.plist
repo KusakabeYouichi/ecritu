@@ -163,5 +163,11 @@
 	<dict><key>phrase</key><string>アナログ方式</string><key>shortcut</key><string>あなろぐほうしき</string></dict>
 	<dict><key>phrase</key><string>デジタル方式</string><key>shortcut</key><string>でじたるほうしき</string></dict>
 	<dict><key>phrase</key><string>サイト</string><key>shortcut</key><string>さいと</string></dict>
+	<dict><key>phrase</key><string>ミーム</string><key>shortcut</key><string>みーむ</string></dict>
+	<dict><key>phrase</key><string>ネットミーム</string><key>shortcut</key><string>ねっとみーむ</string></dict>
+	<dict><key>phrase</key><string>SimCity™</string><key>shortcut</key><string>しむしてぃー</string></dict>
+	<dict><key>phrase</key><string>Wizardry</string><key>shortcut</key><string>うぃざどりー</string></dict>
+	<dict><key>phrase</key><string>Ultima</string><key>shortcut</key><string>うるてぃまー</string></dict>
+	<dict><key>phrase</key><string>rogue</string><key>shortcut</key><string>ろーぐ</string></dict>
 </array>
 </plist>
