@@ -918,12 +918,15 @@ extension KeyboardViewController {
             )
         )
         let supplementaryLimit = max(0, limit - converterSlotTarget)
-        let cappedSupplementary = Array(supplementaryCandidates.prefix(supplementaryLimit))
+        let prioritizedSupplementary = prioritizedSupplementaryCandidates(
+            from: supplementaryCandidates,
+            limit: supplementaryLimit
+        )
 
         var mergedCandidates: [String] = []
         var seenCandidates = Set<String>()
 
-        for candidate in cappedSupplementary + converterCandidates {
+        for candidate in prioritizedSupplementary + converterCandidates {
             let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !trimmedCandidate.isEmpty,
@@ -939,6 +942,53 @@ extension KeyboardViewController {
         }
 
         return mergedCandidates
+    }
+
+    private static func prioritizedSupplementaryCandidates(
+        from candidates: [String],
+        limit: Int
+    ) -> [String] {
+        guard limit > 0 else {
+            return []
+        }
+
+        let normalizedCandidates = uniqueTrimmedCandidates(from: candidates)
+
+        guard normalizedCandidates.count > limit else {
+            return normalizedCandidates
+        }
+
+        let tailQuota = min(max(1, limit / 3), max(0, limit - 1))
+        let headQuota = max(0, limit - tailQuota)
+
+        var prioritizedCandidates: [String] = Array(normalizedCandidates.prefix(headQuota))
+        var seenCandidates = Set(prioritizedCandidates)
+
+        for candidate in normalizedCandidates.suffix(tailQuota) {
+            guard seenCandidates.insert(candidate).inserted else {
+                continue
+            }
+
+            prioritizedCandidates.append(candidate)
+        }
+
+        if prioritizedCandidates.count >= limit {
+            return Array(prioritizedCandidates.prefix(limit))
+        }
+
+        for candidate in normalizedCandidates {
+            guard seenCandidates.insert(candidate).inserted else {
+                continue
+            }
+
+            prioritizedCandidates.append(candidate)
+
+            if prioritizedCandidates.count >= limit {
+                break
+            }
+        }
+
+        return prioritizedCandidates
     }
 
     private static func uniqueTrimmedCandidates(from candidates: [String]) -> [String] {
