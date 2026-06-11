@@ -6297,8 +6297,7 @@
 	<dict><key>phrase</key><string>cobb</string><key>shortcut</key><string>こぶ</string></dict>
 	<dict><key>phrase</key><string>プラヌラ</string><key>shortcut</key><string>ぷらぬら</string></dict>
 	<dict><key>phrase</key><string>拓水</string><key>shortcut</key><string>たくすい</string></dict>
-	<dict><key>phrase</key><string>デヴァイス</string><key>shortcut</key><string>でゔぁいす</string></dict>
-	<dict><key>phrase</key><string>ナンプラー</string><key>shortcut</key><string>なんぷらー</string></dict>
-	<dict><key>phrase</key><string>グランメゾン</string><key>shortcut</key><string>ぐらんめぞん</string></dict>
+	<dict><key>phrase</key><string>尚家</string><key>shortcut</key><string>しょうけ</string></dict>
+	<dict><key>phrase</key><string>第二尚家</string><key>shortcut</key><string>だいにしょうけ</string></dict>
 </array>
 </plist>
