@@ -174,6 +174,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionKiniiruVariantsRemainConvertibleOnSeedFallback() {
+        let baseCandidates = converter.candidates(
+            for: "きにいる",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            baseCandidates.contains("気に入る"),
+            "candidates=\(baseCandidates)"
+        )
+
+        let teFormCandidates = converter.candidates(
+            for: "きにいって",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            teFormCandidates.contains("気に入って"),
+            "candidates=\(teFormCandidates)"
+        )
+    }
+
     func testRegressionYamadaSurnameRemainsInTopCandidatesAfterKatakanaLearning() {
         converter.learn(reading: "やまだ", candidate: "ヤマダ")
 
