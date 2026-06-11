@@ -1257,6 +1257,10 @@ struct KeyboardRootView: View {
         return 14
     }
 
+    private var compactKanaModeSwitcherPreviewIconFontSize: CGFloat {
+        18
+    }
+
     private func kanaModeSwitcherAction(for direction: FlickDirection) -> KanaModeSwitcherAction? {
         switch direction {
         case .droite:
@@ -1281,6 +1285,10 @@ struct KeyboardRootView: View {
             case .symbols:
                 return symbolTransitionIconFontSize
             case .emoji, .kaomoji:
+                if !usesWideLeftModeSwitchButtons {
+                    return compactKanaModeSwitcherPreviewIconFontSize
+                }
+
                 return kanaModeSwitcherEmojiIconFontSize
             }
         }
@@ -1290,6 +1298,10 @@ struct KeyboardRootView: View {
         }
 
         if previewText == "☺︎" || previewText == "^_^" {
+            if !usesWideLeftModeSwitchButtons {
+                return compactKanaModeSwitcherPreviewIconFontSize
+            }
+
             return kanaModeSwitcherEmojiIconFontSize
         }
 
@@ -1297,7 +1309,11 @@ struct KeyboardRootView: View {
     }
 
     private var kanaModeSwitcherPreviewHorizontalPadding: CGFloat {
-        8
+        if !usesWideLeftModeSwitchButtons {
+            return 3
+        }
+
+        return 8
     }
 
     private let kaomojiModeReturnIconFontSize: CGFloat = 32

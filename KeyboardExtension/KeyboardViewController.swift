@@ -3201,6 +3201,8 @@ final class KeyboardViewController: UIInputViewController {
             postModifierContext = composingRawText
         } else if let activeConversion {
             postModifierContext = activeConversion.committedText
+        } else if !lastSynchronizedContextBeforeInput.isEmpty {
+            postModifierContext = lastSynchronizedContextBeforeInput
         } else {
             postModifierContext = textDocumentProxy.documentContextBeforeInput
         }
