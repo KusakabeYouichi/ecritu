@@ -162,5 +162,6 @@
 	<dict><key>phrase</key><string>BSD</string><key>shortcut</key><string>びーえすでぃー</string></dict>
 	<dict><key>phrase</key><string>アナログ方式</string><key>shortcut</key><string>あなろぐほうしき</string></dict>
 	<dict><key>phrase</key><string>デジタル方式</string><key>shortcut</key><string>でじたるほうしき</string></dict>
+	<dict><key>phrase</key><string>サイト</string><key>shortcut</key><string>さいと</string></dict>
 </array>
 </plist>
