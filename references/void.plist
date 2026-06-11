@@ -280,5 +280,6 @@
     <dict><key>phrase</key><string>ナンプラー</string><key>shortcut</key><string>なんぷらー</string></dict>
     <dict><key>phrase</key><string>グランメゾン</string><key>shortcut</key><string>ぐらんめぞん</string></dict>
     <dict><key>phrase</key><string>ガウレ</string><key>shortcut</key><string>がうれ</string></dict>
+    <dict><key>phrase</key><string>秘密結社</string><key>shortcut</key><string>ひみつけっしゃ</string></dict>
 </array>
 </plist>
