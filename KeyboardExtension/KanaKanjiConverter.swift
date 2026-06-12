@@ -73,6 +73,33 @@ final class KanaKanjiConverter {
         return predicateStemEndingKana.contains(last)
     }
 
+    private static func suffixFormsVerbConjugationWithNEnding(_ suffix: String) -> Bool {
+        suffix.hasPrefix("だ") || suffix.hasPrefix("で")
+    }
+
+    private func normalizedTaggedCandidates(for reading: String) -> Set<String> {
+        store.systemCandidates(
+            for: reading,
+            taggedWith: KanaKanjiCandidateSourceTag.normalized
+        ).candidates
+    }
+
+    private func filterVerbStemFragmentCandidatesIfNeeded(
+        _ candidates: [String],
+        stemReading: String,
+        nextSuffix: String
+    ) -> [String] {
+        guard Self.suffixFormsVerbConjugationWithNEnding(nextSuffix) else {
+            return candidates
+        }
+
+        let normalizedSet = normalizedTaggedCandidates(for: stemReading)
+        return candidates.filter { candidate in
+            guard candidate.hasSuffix("ん") else { return true }
+            return normalizedSet.contains(candidate)
+        }
+    }
+
     private static let kuruKanjiCandidateBoost = 1450
     private static let godanImperativeCandidateBoost = 320
     private static let numericUnitFallbackCandidateBoost = 320
@@ -695,8 +722,18 @@ final class KanaKanjiConverter {
                 continue
             }
 
+            let filteredStemCandidates = filterVerbStemFragmentCandidatesIfNeeded(
+                stemCandidates,
+                stemReading: stem,
+                nextSuffix: passthrough
+            )
+
+            guard !filteredStemCandidates.isEmpty else {
+                continue
+            }
+
             let suffixVariants = Self.postfixOutputSuffixVariants(for: passthrough)
-            let derived = stemCandidates.flatMap { candidate in
+            let derived = filteredStemCandidates.flatMap { candidate in
                 suffixVariants.map { candidate + $0 }
             }
 
@@ -1040,7 +1077,13 @@ final class KanaKanjiConverter {
                         )
                     )
 
-                    for candidate in stemCandidates {
+                    let filteredStemCandidates = filterVerbStemFragmentCandidatesIfNeeded(
+                        stemCandidates,
+                        stemReading: nextStem,
+                        nextSuffix: nextSuffix
+                    )
+
+                    for candidate in filteredStemCandidates {
                         for outputSuffix in Self.postfixOutputSuffixVariants(for: nextSuffix) {
                             derived.append(candidate + outputSuffix)
                         }
