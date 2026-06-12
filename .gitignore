@@ -96,3 +96,6 @@ DerivedData/
 
 # Local signing overrides
 Config/Signing.local.xcconfig
+
+# Claude Code per-developer settings
+.claude/settings.local.json
