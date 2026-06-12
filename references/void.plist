@@ -281,5 +281,8 @@
     <dict><key>phrase</key><string>グランメゾン</string><key>shortcut</key><string>ぐらんめぞん</string></dict>
     <dict><key>phrase</key><string>ガウレ</string><key>shortcut</key><string>がうれ</string></dict>
     <dict><key>phrase</key><string>秘密結社</string><key>shortcut</key><string>ひみつけっしゃ</string></dict>
+    <dict><key>phrase</key><string>具志堅用高</string><key>shortcut</key><string>ぐしけんようこう</string></dict>
+    <dict><key>phrase</key><string>帯状疱疹</string><key>shortcut</key><string>たいじょうほうしん</string></dict>
+    <dict><key>phrase</key><string>シナモンロール</string><key>shortcut</key><string>しなもんろーる</string></dict>
 </array>
 </plist>
