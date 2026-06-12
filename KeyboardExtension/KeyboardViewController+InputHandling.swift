@@ -1409,7 +1409,8 @@ extension KeyboardViewController {
 
         if let sourceTextForFallbackReplacement,
             !sourceTextForFallbackReplacement.isEmpty,
-            sourceTextForFallbackReplacement != committedText {
+            sourceTextForFallbackReplacement != committedText,
+            currentMarkedText == sourceTextForFallbackReplacement {
             let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
             let expectedSourceSuffix = composingContextPrefixTail + sourceTextForFallbackReplacement
             let expectedCommittedSuffix = composingContextPrefixTail + committedText
