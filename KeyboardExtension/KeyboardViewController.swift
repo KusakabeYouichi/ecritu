@@ -200,10 +200,13 @@ final class KeyboardViewController: UIInputViewController {
     var lastKanaPostModifierResultCharacter: Character?
     var lastTextProxyEditAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
-    var lastSynchronizedContextBeforeInput = ""
+    var lastSynchronizedContextBeforeInputTail = ""
+    var lastSynchronizedContextBeforeInputLength = 0
     var composingContextPrefixTail = ""
     var pendingHostCallbackUnderlineClearNudgeWidth: Int?
     var pendingHostCallbackUnderlineClearDeadline: CFAbsoluteTime = 0
+    var cachedContextBeforeInput: String?
+    var cachedContextAfterInput: String?
     private var kanaKanjiStore: KanaKanjiStore { Self.sharedKanaKanjiStore }
     var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
     private lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
@@ -237,6 +240,11 @@ final class KeyboardViewController: UIInputViewController {
         let sourceReading: String
         let committedText: String
         let committedAt: Date
+    }
+
+    enum TextContextLimits {
+        static let synchronizedContextTailLength = 192
+        static let latinSuggestionScanTailLength = 192
     }
 
     private enum SharedDefaultsKeys {
@@ -473,6 +481,8 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        invalidateTextContextCache()
+
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
         )
@@ -487,6 +497,8 @@ final class KeyboardViewController: UIInputViewController {
         guard !shouldSuppressHeavyOperations(reason: "selectionDidChange") else {
             return
         }
+
+        invalidateTextContextCache()
 
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
@@ -1572,6 +1584,59 @@ final class KeyboardViewController: UIInputViewController {
 
     func markTextProxyEdit() {
         lastTextProxyEditAt = CFAbsoluteTimeGetCurrent()
+        invalidateTextContextCache()
+    }
+
+    func invalidateTextContextCache() {
+        cachedContextBeforeInput = nil
+        cachedContextAfterInput = nil
+    }
+
+    func currentTextContextSnapshot() -> (beforeInput: String, afterInput: String) {
+        if let cachedContextBeforeInput,
+            let cachedContextAfterInput {
+            return (cachedContextBeforeInput, cachedContextAfterInput)
+        }
+
+        let beforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let afterInput = textDocumentProxy.documentContextAfterInput ?? ""
+        cachedContextBeforeInput = beforeInput
+        cachedContextAfterInput = afterInput
+        return (beforeInput, afterInput)
+    }
+
+    func currentTextContextBeforeInput() -> String {
+        currentTextContextSnapshot().beforeInput
+    }
+
+    func currentTextContextAfterInput() -> String {
+        currentTextContextSnapshot().afterInput
+    }
+
+    func currentTextContextBeforeInputTail(maxLength: Int) -> String {
+        guard maxLength > 0 else {
+            return ""
+        }
+
+        let beforeInput = currentTextContextBeforeInput()
+
+        if beforeInput.count <= maxLength {
+            return beforeInput
+        }
+
+        return String(beforeInput.suffix(maxLength))
+    }
+
+    func context(_ context: String, hasSuffix expectedSuffix: String) -> Bool {
+        guard !expectedSuffix.isEmpty else {
+            return true
+        }
+
+        guard context.count >= expectedSuffix.count else {
+            return false
+        }
+
+        return String(context.suffix(expectedSuffix.count)) == expectedSuffix
     }
 
     func shouldTreatAsExternalTextChange() -> Bool {
@@ -1878,7 +1943,9 @@ final class KeyboardViewController: UIInputViewController {
         activeConversion = nil
         clearComposingState()
         clearRecentKanaPlainCommitUpgradeContext()
-        lastSynchronizedContextBeforeInput = ""
+        lastSynchronizedContextBeforeInputTail = ""
+        lastSynchronizedContextBeforeInputLength = 0
+        invalidateTextContextCache()
 
         keyboardHeightLockReleaseWorkItem?.cancel()
         keyboardHeightLockReleaseWorkItem = nil
@@ -3201,10 +3268,10 @@ final class KeyboardViewController: UIInputViewController {
             postModifierContext = composingRawText
         } else if let activeConversion {
             postModifierContext = activeConversion.committedText
-        } else if !lastSynchronizedContextBeforeInput.isEmpty {
-            postModifierContext = lastSynchronizedContextBeforeInput
+        } else if !lastSynchronizedContextBeforeInputTail.isEmpty {
+            postModifierContext = lastSynchronizedContextBeforeInputTail
         } else {
-            postModifierContext = textDocumentProxy.documentContextBeforeInput
+            postModifierContext = currentTextContextBeforeInput()
         }
 
         let kanaPostModifierButtonState = FlickKanaLayout.postModifierButtonState(

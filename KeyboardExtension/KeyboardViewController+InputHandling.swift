@@ -28,6 +28,8 @@ extension KeyboardViewController {
         static let lookupMultiplier = 2
         static let minimumConverterSlots = 8
         static let preferredConverterSharePercent = 67
+        static let shortReadingMaximumLength = 2
+        static let shortReadingMinimumConverterSlots = 20
     }
 
     private enum KanaPostModifierSafetyLimits {
@@ -46,8 +48,8 @@ extension KeyboardViewController {
         markedTextLength: Int? = nil,
         note: String = ""
     ) {
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
-        let contextAfterInput = textDocumentProxy.documentContextAfterInput ?? ""
+        let contextBeforeInput = currentTextContextBeforeInput()
+        let contextAfterInput = currentTextContextAfterInput()
 
         var components: [String] = [
             "下線診断",
@@ -75,9 +77,15 @@ extension KeyboardViewController {
     }
 
     func currentLatinSuggestionQueryFromTextContext() -> String {
-        guard currentInputMode == .latin,
-            let contextBeforeInput = textDocumentProxy.documentContextBeforeInput,
-            !contextBeforeInput.isEmpty else {
+        guard currentInputMode == .latin else {
+            return ""
+        }
+
+        let contextBeforeInput = currentTextContextBeforeInputTail(
+            maxLength: TextContextLimits.latinSuggestionScanTailLength
+        )
+
+        guard !contextBeforeInput.isEmpty else {
             return ""
         }
 
@@ -530,7 +538,7 @@ extension KeyboardViewController {
             clearComposingState()
         }
 
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextBeforeInput = currentTextContextBeforeInput()
 
         if contextBeforeInput.hasSuffix(token) {
             deleteBackwardCharacterCount(token.count)
@@ -654,7 +662,7 @@ extension KeyboardViewController {
             return false
         }
 
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextBeforeInput = currentTextContextBeforeInput()
         guard contextBeforeInput.hasSuffix(recentKanaPlainCommit.committedText) else {
             self.recentKanaPlainCommit = nil
             return false
@@ -798,6 +806,7 @@ extension KeyboardViewController {
         )
 
         let mergedPrimaryCandidates = Self.mergeSupplementaryAndConverterCandidates(
+            reading: reading,
             supplementaryCandidates: supplementarySplit.prioritized,
             converterCandidates: converterCandidates,
             limit: limit
@@ -898,6 +907,7 @@ extension KeyboardViewController {
     }
 
     static func mergeSupplementaryAndConverterCandidates(
+        reading: String,
         supplementaryCandidates: [String],
         converterCandidates: [String],
         limit: Int
@@ -906,14 +916,28 @@ extension KeyboardViewController {
             return []
         }
 
+        let uniqueConverterCandidates = uniqueTrimmedCandidates(from: converterCandidates)
+
         guard !supplementaryCandidates.isEmpty else {
-            return Array(uniqueTrimmedCandidates(from: converterCandidates).prefix(limit))
+            return Array(uniqueConverterCandidates.prefix(limit))
+        }
+
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        let minimumConverterSlots: Int
+
+        if normalizedReading.count <= ExternalCandidateLimits.shortReadingMaximumLength {
+            minimumConverterSlots = max(
+                ExternalCandidateLimits.minimumConverterSlots,
+                ExternalCandidateLimits.shortReadingMinimumConverterSlots
+            )
+        } else {
+            minimumConverterSlots = ExternalCandidateLimits.minimumConverterSlots
         }
 
         let converterSlotTarget = min(
-            converterCandidates.count,
+            uniqueConverterCandidates.count,
             max(
-                ExternalCandidateLimits.minimumConverterSlots,
+                minimumConverterSlots,
                 (limit * ExternalCandidateLimits.preferredConverterSharePercent) / 100
             )
         )
@@ -926,15 +950,44 @@ extension KeyboardViewController {
         var mergedCandidates: [String] = []
         var seenCandidates = Set<String>()
 
-        for candidate in prioritizedSupplementary + converterCandidates {
-            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmedCandidate.isEmpty,
-                seenCandidates.insert(trimmedCandidate).inserted else {
+        for candidate in uniqueConverterCandidates.prefix(converterSlotTarget) {
+            guard seenCandidates.insert(candidate).inserted else {
                 continue
             }
 
-            mergedCandidates.append(trimmedCandidate)
+            mergedCandidates.append(candidate)
+
+            if mergedCandidates.count >= limit {
+                break
+            }
+        }
+
+        guard mergedCandidates.count < limit else {
+            return mergedCandidates
+        }
+
+        for candidate in prioritizedSupplementary {
+            guard seenCandidates.insert(candidate).inserted else {
+                continue
+            }
+
+            mergedCandidates.append(candidate)
+
+            if mergedCandidates.count >= limit {
+                break
+            }
+        }
+
+        guard mergedCandidates.count < limit else {
+            return mergedCandidates
+        }
+
+        for candidate in uniqueConverterCandidates.dropFirst(converterSlotTarget) {
+            guard seenCandidates.insert(candidate).inserted else {
+                continue
+            }
+
+            mergedCandidates.append(candidate)
 
             if mergedCandidates.count >= limit {
                 break
@@ -1017,7 +1070,7 @@ extension KeyboardViewController {
     }
 
     func rememberComposingContextPrefixTail() {
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextBeforeInput = currentTextContextBeforeInput()
         composingContextPrefixTail = String(
             contextBeforeInput.suffix(CommitSafetyLimits.composingContextPrefixTailLength)
         )
@@ -1037,8 +1090,8 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.unmarkText()
 
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
-        let contextAfterInput = textDocumentProxy.documentContextAfterInput ?? ""
+        let contextBeforeInput = currentTextContextBeforeInput()
+        let contextAfterInput = currentTextContextAfterInput()
 
         if resolvedNudgeWidth > 0,
             !contextBeforeInput.isEmpty {
@@ -1162,8 +1215,8 @@ extension KeyboardViewController {
 
     func performVerifiedEphemeralUnderlineClearPass(stage: String) {
         let marker = CommitSafetyLimits.verifiedEphemeralMarker
-        let contextBeforeInsert = textDocumentProxy.documentContextBeforeInput ?? ""
-        let contextAfterInput = textDocumentProxy.documentContextAfterInput ?? ""
+        let contextBeforeInsert = currentTextContextBeforeInput()
+        let contextAfterInput = currentTextContextAfterInput()
 
         guard !contextBeforeInsert.isEmpty || !contextAfterInput.isEmpty else {
             appendCommitUnderlineDiagnostics("clearPass:skip:\(stage)", note: "reason=noContext")
@@ -1178,7 +1231,7 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.insertText(marker)
 
-        let contextAfterInsert = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextAfterInsert = currentTextContextBeforeInput()
         let insertAppearsAtSuffix = contextAfterInsert.hasSuffix(marker)
         let insertLikelyApplied = insertAppearsAtSuffix
             && (contextAfterInsert.count > contextBeforeInsert.count
@@ -1198,7 +1251,7 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.unmarkText()
 
-        let contextAfterPass = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextAfterPass = currentTextContextBeforeInput()
         appendCommitUnderlineDiagnostics(
             "clearPass:end:\(stage)",
             note: "before=\(inputHandlingTextLengthSummary(contextBeforeInsert)) afterInsert=\(inputHandlingTextLengthSummary(contextAfterInsert)) afterPass=\(inputHandlingTextLengthSummary(contextAfterPass))"
@@ -1296,7 +1349,7 @@ extension KeyboardViewController {
         var shouldUseExtendedNudgeWidth = false
 
         if !committedText.isEmpty {
-            let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+            let contextBeforeInput = currentTextContextBeforeInput()
             let expectedMarkedSuffix = composingContextPrefixTail + committedText
             let canReplaceByDeleteAndInsert = contextBeforeInput.hasSuffix(expectedMarkedSuffix)
                 || contextBeforeInput.hasSuffix(committedText)
@@ -1311,7 +1364,7 @@ extension KeyboardViewController {
                 markTextProxyEdit()
                 textDocumentProxy.unmarkText()
 
-                let contextAfterUnmark = textDocumentProxy.documentContextBeforeInput ?? ""
+                let contextAfterUnmark = currentTextContextBeforeInput()
                 if contextAfterUnmark.hasSuffix(committedText) {
                     appendCommitUnderlineDiagnostics(
                         "finalize:unmarkSucceededReplace",
@@ -1351,7 +1404,7 @@ extension KeyboardViewController {
                 markTextProxyEdit()
                 textDocumentProxy.unmarkText()
 
-                let contextAfterUnmark = textDocumentProxy.documentContextBeforeInput ?? ""
+                let contextAfterUnmark = currentTextContextBeforeInput()
                 let likelyCommittedByUnmark = contextAfterUnmark.hasSuffix(committedText)
                     && contextAfterUnmark.count >= contextBeforeInput.count
 
@@ -1411,7 +1464,7 @@ extension KeyboardViewController {
             !sourceTextForFallbackReplacement.isEmpty,
             sourceTextForFallbackReplacement != committedText,
             currentMarkedText == sourceTextForFallbackReplacement {
-            let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+            let contextBeforeInput = currentTextContextBeforeInput()
             let expectedSourceSuffix = composingContextPrefixTail + sourceTextForFallbackReplacement
             let expectedCommittedSuffix = composingContextPrefixTail + committedText
             let hasSourceSuffix = contextBeforeInput.hasSuffix(expectedSourceSuffix)
@@ -1425,7 +1478,7 @@ extension KeyboardViewController {
                 markTextProxyEdit()
                 textDocumentProxy.unmarkText()
 
-                let contextAfterUnmark = textDocumentProxy.documentContextBeforeInput ?? ""
+                let contextAfterUnmark = currentTextContextBeforeInput()
                 let stillHasSourceSuffix = contextAfterUnmark.hasSuffix(expectedSourceSuffix)
 
                 if stillHasSourceSuffix {
@@ -1453,7 +1506,7 @@ extension KeyboardViewController {
             return
         }
 
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
+        let contextBeforeInput = currentTextContextBeforeInput()
         let expectedMarkedSuffix = composingContextPrefixTail + currentMarkedText
         let canLikelyReplaceMarkedText = !currentMarkedText.isEmpty
             && contextBeforeInput.hasSuffix(expectedMarkedSuffix)
@@ -1712,15 +1765,19 @@ extension KeyboardViewController {
     }
 
     func synchronizeConversionContextIfNeeded(triggeredByExternalChange: Bool = false) {
-        let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
-        let previousContextBeforeInput = lastSynchronizedContextBeforeInput
+        let contextBeforeInput = currentTextContextBeforeInput()
+        let previousContextBeforeInputTail = lastSynchronizedContextBeforeInputTail
+        let previousContextBeforeInputLength = lastSynchronizedContextBeforeInputLength
 
         defer {
-            lastSynchronizedContextBeforeInput = contextBeforeInput
+            lastSynchronizedContextBeforeInputTail = String(
+                contextBeforeInput.suffix(TextContextLimits.synchronizedContextTailLength)
+            )
+            lastSynchronizedContextBeforeInputLength = contextBeforeInput.count
         }
 
         if let activeConversion {
-            guard contextBeforeInput.hasSuffix(activeConversion.committedText) else {
+            guard context(contextBeforeInput, hasSuffix: activeConversion.committedText) else {
                 appendKeyboardDiagnosticsLogFromInputHandling(
                     "変換状態不一致で破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) committedLen=\(activeConversion.committedText.count)"
                 )
@@ -1736,11 +1793,11 @@ extension KeyboardViewController {
             return
         }
 
-        if contextBeforeInput.hasSuffix(composingRawText) {
+        if context(contextBeforeInput, hasSuffix: composingRawText) {
             let hostLikelyConsumedCommittedText =
-                !previousContextBeforeInput.isEmpty
-                && previousContextBeforeInput.hasSuffix(composingRawText)
-                && previousContextBeforeInput.count > contextBeforeInput.count
+                !previousContextBeforeInputTail.isEmpty
+                && context(previousContextBeforeInputTail, hasSuffix: composingRawText)
+                && previousContextBeforeInputLength > contextBeforeInput.count
                 && contextBeforeInput == composingRawText
 
             if (triggeredByExternalChange && contextBeforeInput == composingRawText)
@@ -1748,7 +1805,7 @@ extension KeyboardViewController {
                 // Host app actions such as send can leave only marked text.
                 // Treat it as stale composition and clear it so it doesn't remain.
                 appendKeyboardDiagnosticsLogFromInputHandling(
-                    "編集中テキストを破棄 external=\(triggeredByExternalChange) hostConsumed=\(hostLikelyConsumedCommittedText) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=\(inputHandlingTextLengthSummary(previousContextBeforeInput))"
+                    "編集中テキストを破棄 external=\(triggeredByExternalChange) hostConsumed=\(hostLikelyConsumedCommittedText) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=len=\(previousContextBeforeInputLength)"
                 )
                 markTextProxyEdit()
                 textDocumentProxy.unmarkText()
@@ -1761,7 +1818,7 @@ extension KeyboardViewController {
         // Host app side actions (for example send button) can consume marked text.
         // Drop stale internal state so next key starts from a clean composition.
         appendKeyboardDiagnosticsLogFromInputHandling(
-            "文脈不一致で編集中テキストを破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=\(inputHandlingTextLengthSummary(previousContextBeforeInput))"
+            "文脈不一致で編集中テキストを破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=len=\(previousContextBeforeInputLength)"
         )
         markTextProxyEdit()
         textDocumentProxy.unmarkText()
@@ -1788,7 +1845,9 @@ extension KeyboardViewController {
             if !composingRawText.isEmpty {
                 contextForResolution = composingRawText
             } else {
-                contextForResolution = textDocumentProxy.documentContextBeforeInput
+                contextForResolution = currentTextContextBeforeInputTail(
+                    maxLength: TextContextLimits.synchronizedContextTailLength
+                )
             }
 
             let latestState = FlickKanaLayout.postModifierButtonState(
@@ -1866,8 +1925,11 @@ extension KeyboardViewController {
             return true
         }
 
-        guard let contextBeforeInput = textDocumentProxy.documentContextBeforeInput,
-                let lastCharacter = contextBeforeInput.last,
+        let contextBeforeInput = currentTextContextBeforeInputTail(
+            maxLength: TextContextLimits.synchronizedContextTailLength
+        )
+
+        guard let lastCharacter = contextBeforeInput.last,
                 let replacedCharacter = resolvedPostModifierCharacter(from: lastCharacter) else {
             // Display-only wrapper toggle is only for kaomoji state.
             if currentInputMode == .kana,

@@ -6,6 +6,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         let converter = ["カナダ", "金田", "叶田", "鐘田"] + (1...40).map { "変換候補\($0)" }
 
         let merged = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+            reading: "かなだ",
             supplementaryCandidates: supplementary,
             converterCandidates: converter,
             limit: 24
@@ -15,17 +16,19 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         XCTAssertTrue(merged.contains("カナダ"), "merged=\(merged)")
     }
 
-    func testSupplementaryMergingStillAllowsSupplementaryPriority() {
+    func testSupplementaryMergingPrioritizesConverterBeforeSupplementary() {
         let supplementary = (1...20).map { "補助候補\($0)" }
         let converter = (1...20).map { "変換候補\($0)" }
 
         let merged = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+            reading: "かな",
             supplementaryCandidates: supplementary,
             converterCandidates: converter,
             limit: 24
         )
 
-        XCTAssertEqual(Array(merged.prefix(8)), Array(supplementary.prefix(8)))
+        XCTAssertEqual(Array(merged.prefix(20)), Array(converter.prefix(20)))
+        XCTAssertEqual(Array(merged.suffix(4)), Array(supplementary.prefix(4)))
     }
 
     func testSupplementaryMergingFallsBackWhenConverterIsSparse() {
@@ -33,6 +36,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         let converter = ["変換候補A", "変換候補B"]
 
         let merged = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+            reading: "かな",
             supplementaryCandidates: supplementary,
             converterCandidates: converter,
             limit: 12
@@ -54,6 +58,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         XCTAssertEqual(split.deferred, ["ヤマダ"])
 
         let mergedPrimary = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+            reading: "やまだ",
             supplementaryCandidates: split.prioritized,
             converterCandidates: ["山田", "ヤマダ"],
             limit: 8

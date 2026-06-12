@@ -57,6 +57,9 @@ final class KanaKanjiConverter {
     private static let numericUnitFallbackCandidateBoost = 320
     private static let numericCounterCompoundCandidateBoost = 360
     private static let sameReadingPureKatakanaPenalty = 128
+    private static let seedLeadingKanjiCandidateBoost = 1600
+    private static let seedSingleKanjiPriorityBaseBoost = 220
+    private static let seedSingleKanjiPriorityStep = 12
 
     private static let numericUnitFallbackCandidatesByReading: [String: [String]] = [
         "せんえん": ["千円"],
@@ -137,7 +140,8 @@ final class KanaKanjiConverter {
     ]
 
     private static let godanRuKanjiSuffixOverrides: [String] = [
-        "入る"
+        "入る",
+        "減る"
     ]
 
     private static func postfixOutputSuffixVariants(for suffix: String) -> [String] {
@@ -402,6 +406,11 @@ final class KanaKanjiConverter {
             to: &scores
         )
 
+        applySeedSingleKanjiPriorityBoost(
+            for: normalizedReading,
+            to: &scores
+        )
+
         if let suppressedCandidates = suppressedCandidatesByReading[normalizedReading],
             !suppressedCandidates.isEmpty {
             for candidate in suppressedCandidates {
@@ -428,6 +437,7 @@ final class KanaKanjiConverter {
             for: normalizedReading,
             candidates: sortedCandidates,
             userDictionary: userDictionary,
+            learnedDictionary: learnedDictionary,
             initialUserDictionary: initialUserDictionary
         )
 
@@ -548,6 +558,56 @@ final class KanaKanjiConverter {
         }
 
         return protectedCandidates
+    }
+
+    private func applySeedSingleKanjiPriorityBoost(
+        for reading: String,
+        to scores: inout [String: Int]
+    ) {
+        guard let seedCandidates = KanaKanjiSeedDictionary.seed[reading],
+            !seedCandidates.isEmpty else {
+            return
+        }
+
+        for (index, candidate) in uniqueCandidates(from: seedCandidates).enumerated() {
+            if index == 0,
+                Self.containsKanjiCandidate(candidate) {
+                scores[candidate, default: 0] += Self.seedLeadingKanjiCandidateBoost
+            }
+
+            guard Self.isSingleKanjiCandidate(candidate) else {
+                continue
+            }
+
+            let boost = max(
+                24,
+                Self.seedSingleKanjiPriorityBaseBoost - (index * Self.seedSingleKanjiPriorityStep)
+            )
+            scores[candidate, default: 0] += boost
+        }
+    }
+
+    private static func isSingleKanjiCandidate(_ candidate: String) -> Bool {
+        guard candidate.count == 1,
+            let scalar = candidate.unicodeScalars.first else {
+            return false
+        }
+
+        return (0x3400...0x4DBF).contains(scalar.value)
+            || (0x4E00...0x9FFF).contains(scalar.value)
+            || (0xF900...0xFAFF).contains(scalar.value)
+    }
+
+    private static func containsKanjiCandidate(_ candidate: String) -> Bool {
+        for scalar in candidate.unicodeScalars {
+            if (0x3400...0x4DBF).contains(scalar.value)
+                || (0x4E00...0x9FFF).contains(scalar.value)
+                || (0xF900...0xFAFF).contains(scalar.value) {
+                return true
+            }
+        }
+
+        return false
     }
 
     private static func isPureKatakanaCandidate(_ candidate: String) -> Bool {
@@ -1952,6 +2012,7 @@ final class KanaKanjiConverter {
             for: reading,
             candidates: candidates,
             userDictionary: nil,
+            learnedDictionary: nil,
             initialUserDictionary: nil
         )
     }
@@ -1960,6 +2021,7 @@ final class KanaKanjiConverter {
         for reading: String,
         candidates: [String],
         userDictionary: [String: [String]]?,
+        learnedDictionary: [String: [String]]?,
         initialUserDictionary: [String: [String]]?
     ) -> [String] {
         guard reading.hasSuffix("かる") || reading.hasSuffix("かり") else {
@@ -1974,6 +2036,7 @@ final class KanaKanjiConverter {
 
         let baseReading = baseReadingStem + "い"
         let userBaseCandidates = userDictionary?[baseReading] ?? []
+        let learnedBaseCandidates = learnedDictionary?[baseReading] ?? []
         let initialBaseCandidates = initialUserDictionary?[baseReading] ?? []
         let storeBaseCandidates = store.systemCandidates(
             for: baseReading,
@@ -1983,6 +2046,7 @@ final class KanaKanjiConverter {
         let baseCandidates = Set(
             uniqueCandidates(
                 from: userBaseCandidates
+                    + learnedBaseCandidates
                     + initialBaseCandidates
                     + storeBaseCandidates
                     + seedBaseCandidates
