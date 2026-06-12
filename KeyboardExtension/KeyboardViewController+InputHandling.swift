@@ -1412,10 +1412,9 @@ extension KeyboardViewController {
             sourceTextForFallbackReplacement != committedText {
             let contextBeforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
             let expectedSourceSuffix = composingContextPrefixTail + sourceTextForFallbackReplacement
+            let expectedCommittedSuffix = composingContextPrefixTail + committedText
             let hasSourceSuffix = contextBeforeInput.hasSuffix(expectedSourceSuffix)
-                || contextBeforeInput.hasSuffix(sourceTextForFallbackReplacement)
-            let alreadyCommittedAtSuffix = contextBeforeInput.hasSuffix(composingContextPrefixTail + committedText)
-                || contextBeforeInput.hasSuffix(committedText)
+            let alreadyCommittedAtSuffix = contextBeforeInput.hasSuffix(expectedCommittedSuffix)
 
             if hasSourceSuffix && !alreadyCommittedAtSuffix {
                 appendKeyboardDiagnosticsLogFromInputHandling(
@@ -1427,7 +1426,6 @@ extension KeyboardViewController {
 
                 let contextAfterUnmark = textDocumentProxy.documentContextBeforeInput ?? ""
                 let stillHasSourceSuffix = contextAfterUnmark.hasSuffix(expectedSourceSuffix)
-                    || contextAfterUnmark.hasSuffix(sourceTextForFallbackReplacement)
 
                 if stillHasSourceSuffix {
                     deleteBackwardCharacterCount(sourceTextForFallbackReplacement.count)
