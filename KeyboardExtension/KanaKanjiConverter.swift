@@ -52,6 +52,27 @@ final class KanaKanjiConverter {
 
     private static let maxPostfixPassthroughDepth = 3
 
+    private static let predicateRequiredExplanatorySuffixes: [String] = [
+        "んですけれど", "んですけど", "んだけれど", "んだけど", "んです", "んだ", "のです", "のだ"
+    ]
+
+    private static let predicateStemEndingKana: Set<Character> = [
+        "う", "く", "ぐ", "す", "ず", "つ", "づ", "ぬ", "ふ", "ぶ", "ぷ", "む", "ゆ", "る",
+        "い", "た", "だ"
+    ]
+
+    private static func explanatorySuffixRequiresPredicateStem(_ suffix: String) -> Bool {
+        for restricted in predicateRequiredExplanatorySuffixes where suffix.hasPrefix(restricted) {
+            return true
+        }
+        return false
+    }
+
+    private static func isPredicateLikeStemReading(_ reading: String) -> Bool {
+        guard let last = reading.last else { return false }
+        return predicateStemEndingKana.contains(last)
+    }
+
     private static let kuruKanjiCandidateBoost = 1450
     private static let godanImperativeCandidateBoost = 320
     private static let numericUnitFallbackCandidateBoost = 320
@@ -658,6 +679,11 @@ final class KanaKanjiConverter {
                 continue
             }
 
+            if Self.explanatorySuffixRequiresPredicateStem(passthrough),
+                !Self.isPredicateLikeStemReading(stem) {
+                continue
+            }
+
             let stemKey = CandidateCacheKey(
                 reading: stem,
                 limit: limit,
@@ -995,24 +1021,29 @@ final class KanaKanjiConverter {
                     continue
                 }
 
-                let stemCandidates = uniqueCandidates(
-                    from: candidatesForReading(
-                        nextStem,
-                        userDictionary: userDictionary,
-                        initialUserDictionary: initialUserDictionary,
-                        systemCandidateMode: systemCandidateMode
-                    ) + inflectionCandidates(
-                        for: nextStem,
-                        userDictionary: userDictionary,
-                        initialUserDictionary: initialUserDictionary,
-                        systemCandidateMode: systemCandidateMode,
-                        limit: limit
-                    )
-                )
+                let allowAttachment = !Self.explanatorySuffixRequiresPredicateStem(nextSuffix)
+                    || Self.isPredicateLikeStemReading(nextStem)
 
-                for candidate in stemCandidates {
-                    for outputSuffix in Self.postfixOutputSuffixVariants(for: nextSuffix) {
-                        derived.append(candidate + outputSuffix)
+                if allowAttachment {
+                    let stemCandidates = uniqueCandidates(
+                        from: candidatesForReading(
+                            nextStem,
+                            userDictionary: userDictionary,
+                            initialUserDictionary: initialUserDictionary,
+                            systemCandidateMode: systemCandidateMode
+                        ) + inflectionCandidates(
+                            for: nextStem,
+                            userDictionary: userDictionary,
+                            initialUserDictionary: initialUserDictionary,
+                            systemCandidateMode: systemCandidateMode,
+                            limit: limit
+                        )
+                    )
+
+                    for candidate in stemCandidates {
+                        for outputSuffix in Self.postfixOutputSuffixVariants(for: nextSuffix) {
+                            derived.append(candidate + outputSuffix)
+                        }
                     }
                 }
 

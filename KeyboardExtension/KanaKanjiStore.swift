@@ -434,14 +434,13 @@ final class KanaKanjiStore {
         }
 
         if let sqliteIndex = sqliteIndexIfAvailable() {
-            return (
-                sqliteIndex.inflectionClassMap(for: normalizedReading),
-                sqliteIndex.hasInflectionMetadata
-            )
+            let classMap = sqliteIndex.inflectionClassMap(for: normalizedReading)
+            return (classMap, !classMap.isEmpty)
         }
 
         let inflectionDictionary = loadInflectionDictionary()
-        return (inflectionDictionary[normalizedReading] ?? [:], !inflectionDictionary.isEmpty)
+        let classMap = inflectionDictionary[normalizedReading] ?? [:]
+        return (classMap, !classMap.isEmpty)
     }
 
     func systemCandidates(
