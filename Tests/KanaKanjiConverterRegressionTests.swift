@@ -110,6 +110,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(candidates.contains("日"), "candidates=\(candidates)")
     }
 
+    func testRegressionKaiPrioritizesCommonSingleKanjiCandidateOnSeedFallback() {
+        let candidates = converter.candidates(
+            for: "かい",
+            limit: 12,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertEqual(candidates.first, "回", "candidates=\(candidates)")
+        XCTAssertTrue(candidates.contains("会"), "candidates=\(candidates)")
+    }
+
     func testRegressionKiwotsukeruVariantsRemainConvertibleOnSeedFallback() {
         let baseCandidates = converter.candidates(
             for: "きをつける",
