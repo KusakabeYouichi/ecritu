@@ -121,9 +121,16 @@
 	<dict><key>phrase</key><string>TestFlight</string><key>shortcut</key><string>てすとふらいと</string></dict>
 	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
 
-	<!-- misc. -->
+	<!-- AI -->
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
+	<dict><key>phrase</key><string>Claude</string><key>shortcut</key><string>くろーど</string></dict>
+	<dict><key>phrase</key><string>GPT</string><key>shortcut</key><string>じーぴーてぃー</string></dict>
+	<dict><key>phrase</key><string>Gemini</string><key>shortcut</key><string>じぇみに</string></dict>
+	<dict><key>phrase</key><string>Mythos</string><key>shortcut</key><string>みとす</string></dict>
+	<dict><key>phrase</key><string>Anthropic</string><key>shortcut</key><string>あんそろぴっく</string></dict>
+
+	<!-- misc. -->
 	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えいゆー</string></dict>
 	<dict><key>phrase</key><string>au</string><key>shortcut</key><string>えーゆー</string></dict>
