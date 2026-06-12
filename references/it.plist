@@ -169,5 +169,6 @@
 	<dict><key>phrase</key><string>Wizardry</string><key>shortcut</key><string>うぃざどりー</string></dict>
 	<dict><key>phrase</key><string>Ultima</string><key>shortcut</key><string>うるてぃまー</string></dict>
 	<dict><key>phrase</key><string>rogue</string><key>shortcut</key><string>ろーぐ</string></dict>
+	<dict><key>phrase</key><string>ニーモニック</string><key>shortcut</key><string>にーもにっく</string></dict>
 </array>
 </plist>
