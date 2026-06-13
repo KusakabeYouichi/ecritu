@@ -3007,87 +3007,94 @@
 	<dict><key>phrase</key><string>鈴鹿</string><key>shortcut</key><string>すずか</string></dict>
 	<dict><key>phrase</key><string>醪</string><key>shortcut</key><string>もろみ</string></dict>
 	<!-- SAKE 2 -->
-	<dict><key>phrase</key><string>含糖質物</string><key>shortcut</key><string>がんとうしつぶつ</string></dict>
-	<dict><key>phrase</key><string>一級酒</string><key>shortcut</key><string>いっきゅうしゅ</string></dict>
-	<dict><key>phrase</key><string>御香水</string><key>shortcut</key><string>ごこうすい</string></dict>
-	<dict><key>phrase</key><string>一般米</string><key>shortcut</key><string>いっぱんまい</string></dict>
-	<dict><key>phrase</key><string>掛米</string><key>shortcut</key><string>かけまい</string></dict>
-	<dict><key>phrase</key><string>カプロン酸</string><key>shortcut</key><string>かぷろんさん</string></dict>
-	<dict><key>phrase</key><string>神蔵</string><key>shortcut</key><string>かんぞう</string></dict>
-	<dict><key>phrase</key><string>貴醸酒</string><key>shortcut</key><string>きぞうしゅ</string></dict>
-	<dict><key>phrase</key><string>木樽</string><key>shortcut</key><string>きだる</string></dict>
+	<dict><key>phrase</key><string>〆張鶴</string><key>shortcut</key><string>しめはりつる</string></dict>
+	<dict><key>phrase</key><string>〆張鶴</string><key>shortcut</key><string>しめはりづる</string></dict>
 	<dict><key>phrase</key><string>こうじ米</string><key>shortcut</key><string>こうじまい</string></dict>
-	<dict><key>phrase</key><string>高精米</string><key>shortcut</key><string>こうせいまい</string></dict>
-	<dict><key>phrase</key><string>好適米</string><key>shortcut</key><string>こうてきまい</string></dict>
-	<dict><key>phrase</key><string>国酒</string><key>shortcut</key><string>こくしゅ</string></dict>
-	<dict><key>phrase</key><string>越淡麗</string><key>shortcut</key><string>こしたんれい</string></dict>
-	<dict><key>phrase</key><string>米こうじ</string><key>shortcut</key><string>こめこうじ</string></dict>
-	<dict><key>phrase</key><string>混醸</string><key>shortcut</key><string>こんじょう</string></dict>
-	<dict><key>phrase</key><string>三増酒</string><key>shortcut</key><string>さんぞうしゅ</string></dict>
+	<dict><key>phrase</key><string>たかね錦</string><key>shortcut</key><string>たかねにしき</string></dict>
+	<dict><key>phrase</key><string>でんぷん質物</string><key>shortcut</key><string>でんぷんしつぶつ</string></dict>
+	<dict><key>phrase</key><string>ひだほまれ</string><key>shortcut</key><string>ひだほまれ</string></dict>
+	<dict><key>phrase</key><string>ひなた燗</string><key>shortcut</key><string>ひなたかん</string></dict>
+	<dict><key>phrase</key><string>カプロン酸</string><key>shortcut</key><string>かぷろんさん</string></dict>
+	<dict><key>phrase</key><string>一級酒</string><key>shortcut</key><string>いっきゅうしゅ</string></dict>
+	<dict><key>phrase</key><string>一般米</string><key>shortcut</key><string>いっぱんまい</string></dict>
 	<dict><key>phrase</key><string>三倍増醸法</string><key>shortcut</key><string>さんばいぞうじょうほう</string></dict>
-	<dict><key>phrase</key><string>酒母米</string><key>shortcut</key><string>しゅぼまい</string></dict>
-	<dict><key>phrase</key><string>醇良酒</string><key>shortcut</key><string>じゅんりょうしゅ</string></dict>
-	<dict><key>phrase</key><string>上燗</string><key>shortcut</key><string>じょうかん</string></dict>
+	<dict><key>phrase</key><string>三増酒</string><key>shortcut</key><string>さんぞうしゅ</string></dict>
 	<dict><key>phrase</key><string>上喜元</string><key>shortcut</key><string>じょうきげん</string></dict>
-	<dict><key>phrase</key><string>蒸米</string><key>shortcut</key><string>じょうまい</string></dict>
-	<dict><key>phrase</key><string>蒸米機</string><key>shortcut</key><string>じょうまいき</string></dict>
-	<dict><key>phrase</key><string>真精米歩合</string><key>shortcut</key><string>しんせいまいぶあい</string></dict>
-	<dict><key>phrase</key><string>浸漬</string><key>shortcut</key><string>しんし</string></dict>
-	<dict><key>phrase</key><string>浸漬米</string><key>shortcut</key><string>しんせきまい</string></dict>
+	<dict><key>phrase</key><string>上燗</string><key>shortcut</key><string>じょうかん</string></dict>
+	<dict><key>phrase</key><string>中生</string><key>shortcut</key><string>なかて</string></dict>
+	<dict><key>phrase</key><string>二次醪</string><key>shortcut</key><string>にじもろみ</string></dict>
+	<dict><key>phrase</key><string>人肌燗</string><key>shortcut</key><string>ひとはだかん</string></dict>
+	<dict><key>phrase</key><string>側板</string><key>shortcut</key><string>がわいた</string></dict>
+	<dict><key>phrase</key><string>出羽桜</string><key>shortcut</key><string>でわさくら</string></dict>
+	<dict><key>phrase</key><string>出羽桜</string><key>shortcut</key><string>でわざくら</string></dict>
+	<dict><key>phrase</key><string>出羽燦々</string><key>shortcut</key><string>でわさんさん</string></dict>
+	<dict><key>phrase</key><string>千粒重</string><key>shortcut</key><string>せんりゅうじゅう</string></dict>
+	<dict><key>phrase</key><string>含糖質物</string><key>shortcut</key><string>がんとうしつぶつ</string></dict>
+	<dict><key>phrase</key><string>和歌山梅酒</string><key>shortcut</key><string>わかやまうめしゅ</string></dict>
+	<dict><key>phrase</key><string>国酒</string><key>shortcut</key><string>こくしゅ</string></dict>
+	<dict><key>phrase</key><string>増醸酒</string><key>shortcut</key><string>ぞうじょうしゅ</string></dict>
+	<dict><key>phrase</key><string>外硬内軟</string><key>shortcut</key><string>がいこうないなん</string></dict>
+	<dict><key>phrase</key><string>多酸酵母</string><key>shortcut</key><string>たさんこうぼ</string></dict>
+	<dict><key>phrase</key><string>天狗舞</string><key>shortcut</key><string>てんぐまい</string></dict>
+	<dict><key>phrase</key><string>好適米</string><key>shortcut</key><string>こうてきまい</string></dict>
+	<dict><key>phrase</key><string>宮水</string><key>shortcut</key><string>みやみず</string></dict>
+	<dict><key>phrase</key><string>山廃</string><key>shortcut</key><string>やまはい</string></dict>
+	<dict><key>phrase</key><string>山廃仕込</string><key>shortcut</key><string>やまはいじこみ</string></dict>
+	<dict><key>phrase</key><string>山廃系酒母</string><key>shortcut</key><string>やまはいけいしゅぼ</string></dict>
+	<dict><key>phrase</key><string>山田穂</string><key>shortcut</key><string>やまだぼ</string></dict>
+	<dict><key>phrase</key><string>御香水</string><key>shortcut</key><string>ごこうすい</string></dict>
+	<dict><key>phrase</key><string>微泡</string><key>shortcut</key><string>びほう</string></dict>
 	<dict><key>phrase</key><string>心白</string><key>shortcut</key><string>しんぱく</string></dict>
 	<dict><key>phrase</key><string>心白発現率</string><key>shortcut</key><string>しんぱくはつげんりつ</string></dict>
 	<dict><key>phrase</key><string>心白米</string><key>shortcut</key><string>しんぱくまい</string></dict>
-	<dict><key>phrase</key><string>清酒</string><key>shortcut</key><string>すみさけ</string></dict>
-	<dict><key>phrase</key><string>増醸酒</string><key>shortcut</key><string>ぞうじょうしゅ</string></dict>
-	<dict><key>phrase</key><string>総ハゼ</string><key>shortcut</key><string>そうはぜ</string></dict>
-	<dict><key>phrase</key><string>速醸酛</string><key>shortcut</key><string>そくじょうもと</string></dict>
-	<dict><key>phrase</key><string>たかね錦</string><key>shortcut</key><string>たかねにしき</string></dict>
-	<dict><key>phrase</key><string>多酸酵母</string><key>shortcut</key><string>たさんこうぼ</string></dict>
-	<dict><key>phrase</key><string>竪型精米機</string><key>shortcut</key><string>たてがたせいまいき</string></dict>
-	<dict><key>phrase</key><string>玉栄</string><key>shortcut</key><string>たまさかえ</string></dict>
-	<dict><key>phrase</key><string>樽側板</string><key>shortcut</key><string>たるがわいた</string></dict>
-	<dict><key>phrase</key><string>側板</string><key>shortcut</key><string>がわいた</string></dict>
-	<dict><key>phrase</key><string>樽香</string><key>shortcut</key><string>たるこう</string></dict>
-	<dict><key>phrase</key><string>突きハゼ</string><key>shortcut</key><string>つきはぜ</string></dict>
-	<dict><key>phrase</key><string>出羽桜</string><key>shortcut</key><string>でわざくら</string></dict>
-	<dict><key>phrase</key><string>糖化性</string><key>shortcut</key><string>とうかせい</string></dict>
-	<dict><key>phrase</key><string>胴割れ</string><key>shortcut</key><string>どうわれ</string></dict>
-	<dict><key>phrase</key><string>特定名称酒</string><key>shortcut</key><string>とくていめいしょうしゅ</string></dict>
-	<dict><key>phrase</key><string>特級酒</string><key>shortcut</key><string>とっきゅうしゅ</string></dict>
-	<dict><key>phrase</key><string>二次醪</string><key>shortcut</key><string>にじもろみ</string></dict>
-	<dict><key>phrase</key><string>白酒</string><key>shortcut</key><string>ぱいちゅう</string></dict>
-	<dict><key>phrase</key><string>火落ち</string><key>shortcut</key><string>ひおち</string></dict>
-	<dict><key>phrase</key><string>火落ち菌</string><key>shortcut</key><string>ひおちきん</string></dict>
-	<dict><key>phrase</key><string>ひだほまれ</string><key>shortcut</key><string>ひだほまれ</string></dict>
-	<dict><key>phrase</key><string>人肌燗</string><key>shortcut</key><string>ひとはだかん</string></dict>
-	<dict><key>phrase</key><string>ひなた燗</string><key>shortcut</key><string>ひなたかん</string></dict>
-	<dict><key>phrase</key><string>黄酒</string><key>shortcut</key><string>ほあんちゅう</string></dict>
-	<dict><key>phrase</key><string>補酒</string><key>shortcut</key><string>ほしゅ</string></dict>
-	<dict><key>phrase</key><string>見掛精米歩合</string><key>shortcut</key><string>みかけせいまいぶあい</string></dict>
-	<dict><key>phrase</key><string>美郷錦</string><key>shortcut</key><string>みさとにしき</string></dict>
-	<dict><key>phrase</key><string>村米</string><key>shortcut</key><string>むらまい</string></dict>
-	<dict><key>phrase</key><string>酛米</string><key>shortcut</key><string>もとまい</string></dict>
-	<dict><key>phrase</key><string>山田穂</string><key>shortcut</key><string>やまだぼ</string></dict>
-	<dict><key>phrase</key><string>山廃</string><key>shortcut</key><string>やまはい</string></dict>
-	<dict><key>phrase</key><string>山廃系酒母</string><key>shortcut</key><string>やまはいけいしゅぼ</string></dict>
-	<dict><key>phrase</key><string>山廃仕込</string><key>shortcut</key><string>やまはいじこみ</string></dict>
-	<dict><key>phrase</key><string>良酒</string><key>shortcut</key><string>りょうしゅ</string></dict>
-	<dict><key>phrase</key><string>渡船</string><key>shortcut</key><string>わたりぶね</string></dict>
-	<dict><key>phrase</key><string>千粒重</string><key>shortcut</key><string>せんりゅうじゅう</string></dict>
-	<dict><key>phrase</key><string>外硬内軟</string><key>shortcut</key><string>がいこうないなん</string></dict>
-	<dict><key>phrase</key><string>櫂つき</string><key>shortcut</key><string>かいつき</string></dict>
-	<dict><key>phrase</key><string>香気成分</string><key>shortcut</key><string>こうきせいぶん</string></dict>
-	<dict><key>phrase</key><string>砕米</string><key>shortcut</key><string>さいまい</string></dict>
-	<dict><key>phrase</key><string>宮水</string><key>shortcut</key><string>みやみず</string></dict>
+	<dict><key>phrase</key><string>掛米</string><key>shortcut</key><string>かけまい</string></dict>
 	<dict><key>phrase</key><string>整粒</string><key>shortcut</key><string>せいりゅう</string></dict>
 	<dict><key>phrase</key><string>整粒歩合</string><key>shortcut</key><string>せいりゅうぶあい</string></dict>
+	<dict><key>phrase</key><string>木樽</string><key>shortcut</key><string>きだる</string></dict>
+	<dict><key>phrase</key><string>村米</string><key>shortcut</key><string>むらまい</string></dict>
+	<dict><key>phrase</key><string>樽側板</string><key>shortcut</key><string>たるがわいた</string></dict>
+	<dict><key>phrase</key><string>樽香</string><key>shortcut</key><string>たるこう</string></dict>
+	<dict><key>phrase</key><string>櫂つき</string><key>shortcut</key><string>かいつき</string></dict>
+	<dict><key>phrase</key><string>浦霞</string><key>shortcut</key><string>うらかすみ</string></dict>
+	<dict><key>phrase</key><string>浦霞</string><key>shortcut</key><string>うらがすみ</string></dict>
+	<dict><key>phrase</key><string>浸漬</string><key>shortcut</key><string>しんし</string></dict>
+	<dict><key>phrase</key><string>浸漬米</string><key>shortcut</key><string>しんせきまい</string></dict>
+	<dict><key>phrase</key><string>混醸</string><key>shortcut</key><string>こんじょう</string></dict>
+	<dict><key>phrase</key><string>清酒</string><key>shortcut</key><string>すみさけ</string></dict>
+	<dict><key>phrase</key><string>渡船</string><key>shortcut</key><string>わたりぶね</string></dict>
+	<dict><key>phrase</key><string>火落ち</string><key>shortcut</key><string>ひおち</string></dict>
+	<dict><key>phrase</key><string>火落ち菌</string><key>shortcut</key><string>ひおちきん</string></dict>
+	<dict><key>phrase</key><string>特定名称酒</string><key>shortcut</key><string>とくていめいしょうしゅ</string></dict>
+	<dict><key>phrase</key><string>特級酒</string><key>shortcut</key><string>とっきゅうしゅ</string></dict>
+	<dict><key>phrase</key><string>玉栄</string><key>shortcut</key><string>たまさかえ</string></dict>
+	<dict><key>phrase</key><string>白酒</string><key>shortcut</key><string>ぱいちゅう</string></dict>
+	<dict><key>phrase</key><string>真精米歩合</string><key>shortcut</key><string>しんせいまいぶあい</string></dict>
 	<dict><key>phrase</key><string>短稈</string><key>shortcut</key><string>たんかん</string></dict>
-	<dict><key>phrase</key><string>出羽燦々</string><key>shortcut</key><string>でわさんさん</string></dict>
-	<dict><key>phrase</key><string>でんぷん質物</string><key>shortcut</key><string>でんぷんしつぶつ</string></dict>
-	<dict><key>phrase</key><string>中生</string><key>shortcut</key><string>なかて</string></dict>
+	<dict><key>phrase</key><string>砕米</string><key>shortcut</key><string>さいまい</string></dict>
+	<dict><key>phrase</key><string>神蔵</string><key>shortcut</key><string>かんぞう</string></dict>
+	<dict><key>phrase</key><string>突きハゼ</string><key>shortcut</key><string>つきはぜ</string></dict>
+	<dict><key>phrase</key><string>竪型精米機</string><key>shortcut</key><string>たてがたせいまいき</string></dict>
+	<dict><key>phrase</key><string>米こうじ</string><key>shortcut</key><string>こめこうじ</string></dict>
+	<dict><key>phrase</key><string>糖化性</string><key>shortcut</key><string>とうかせい</string></dict>
+	<dict><key>phrase</key><string>総ハゼ</string><key>shortcut</key><string>そうはぜ</string></dict>
+	<dict><key>phrase</key><string>美郷錦</string><key>shortcut</key><string>みさとにしき</string></dict>
+	<dict><key>phrase</key><string>胴割れ</string><key>shortcut</key><string>どうわれ</string></dict>
+	<dict><key>phrase</key><string>良酒</string><key>shortcut</key><string>りょうしゅ</string></dict>
+	<dict><key>phrase</key><string>蒸米</string><key>shortcut</key><string>じょうまい</string></dict>
+	<dict><key>phrase</key><string>蒸米機</string><key>shortcut</key><string>じょうまいき</string></dict>
+	<dict><key>phrase</key><string>補酒</string><key>shortcut</key><string>ほしゅ</string></dict>
+	<dict><key>phrase</key><string>見掛精米歩合</string><key>shortcut</key><string>みかけせいまいぶあい</string></dict>
+	<dict><key>phrase</key><string>貴醸酒</string><key>shortcut</key><string>きぞうしゅ</string></dict>
+	<dict><key>phrase</key><string>越淡麗</string><key>shortcut</key><string>こしたんれい</string></dict>
 	<dict><key>phrase</key><string>軟質米</string><key>shortcut</key><string>なんしつまい</string></dict>
-	<dict><key>phrase</key><string>微泡</string><key>shortcut</key><string>びほう</string></dict>
-	<dict><key>phrase</key><string>和歌山梅酒</string><key>shortcut</key><string>わかやまうめしゅ</string></dict>
+	<dict><key>phrase</key><string>速醸酛</string><key>shortcut</key><string>そくじょうもと</string></dict>
+	<dict><key>phrase</key><string>酒母米</string><key>shortcut</key><string>しゅぼまい</string></dict>
+	<dict><key>phrase</key><string>酛米</string><key>shortcut</key><string>もとまい</string></dict>
+	<dict><key>phrase</key><string>醇良酒</string><key>shortcut</key><string>じゅんりょうしゅ</string></dict>
+	<dict><key>phrase</key><string>香気成分</string><key>shortcut</key><string>こうきせいぶん</string></dict>
+	<dict><key>phrase</key><string>香露</string><key>shortcut</key><string>こうろ</string></dict>
+	<dict><key>phrase</key><string>高精米</string><key>shortcut</key><string>こうせいまい</string></dict>
+	<dict><key>phrase</key><string>黄酒</string><key>shortcut</key><string>ほあんちゅう</string></dict>
 
 	<!-- fromage -->
 	<dict><key>phrase</key><string>Beaufort</string><key>shortcut</key><string>ぼーふぉーる</string></dict>
@@ -8633,5 +8640,7 @@
 	<dict><key>phrase</key><string>山鶉</string><key>shortcut</key><string>やまうずら</string></dict>
 	<dict><key>phrase</key><string>雌山羊</string><key>shortcut</key><string>めすやぎ</string></dict>
 	<dict><key>phrase</key><string>山椒</string><key>shortcut</key><string>さんしょう</string></dict>
+	<dict><key>phrase</key><string>シャプティエ</string><key>shortcut</key><string>しゃぷてぃえ</string></dict>
+	<dict><key>phrase</key><string>ペイドック</string><key>shortcut</key><string>ぺいどっく</string></dict>
 </array>
 </plist>
