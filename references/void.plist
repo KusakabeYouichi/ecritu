@@ -215,7 +215,7 @@
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string></dict>
 
 	<!-- 活用なし (名詞など) -->
-	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>
+	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
 	<dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
 	<dict><key>phrase</key><string>大問題</string><key>shortcut</key><string>だいもんだい</string></dict>
 	<dict><key>phrase</key><string>都市伝説</string><key>shortcut</key><string>としでんせつ</string></dict>
@@ -284,5 +284,13 @@
     <dict><key>phrase</key><string>具志堅用高</string><key>shortcut</key><string>ぐしけんようこう</string></dict>
     <dict><key>phrase</key><string>帯状疱疹</string><key>shortcut</key><string>たいじょうほうしん</string></dict>
     <dict><key>phrase</key><string>シナモンロール</string><key>shortcut</key><string>しなもんろーる</string></dict>
+    <dict><key>phrase</key><string>臣籍降下</string><key>shortcut</key><string>しんせきこうか</string></dict>
+    <dict><key>phrase</key><string>臣籍降嫁</string><key>shortcut</key><string>しんせきこうか</string></dict>
+    <dict><key>phrase</key><string>賜姓降下</string><key>shortcut</key><string>しせいこうか</string></dict>
+    <dict><key>phrase</key><string>皇室典範</string><key>shortcut</key><string>こうしつてんぱん</string></dict>
+    <dict><key>phrase</key><string>陰謀論</string><key>shortcut</key><string>いんぼうろん</string></dict>
+    <dict><key>phrase</key><string>ネット上</string><key>shortcut</key><string>ねっとじょう</string></dict>
+    <dict><key>phrase</key><string>アペロ</string><key>shortcut</key><string>あぺろ</string></dict>
+    <dict><key>phrase</key><string>リアンクール</string><key>shortcut</key><string>りあんくーる</string></dict>
 </array>
 </plist>

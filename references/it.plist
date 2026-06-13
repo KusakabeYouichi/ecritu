@@ -129,6 +129,11 @@
 	<dict><key>phrase</key><string>Gemini</string><key>shortcut</key><string>じぇみに</string></dict>
 	<dict><key>phrase</key><string>Mythos</string><key>shortcut</key><string>みとす</string></dict>
 	<dict><key>phrase</key><string>Anthropic</string><key>shortcut</key><string>あんそろぴっく</string></dict>
+	<dict><key>phrase</key><string>Copilot</string><key>shortcut</key><string>こぱいろっと</string></dict>
+	<dict><key>phrase</key><string>Microsoft Copilot</string><key>shortcut</key><string>まいくろそふとこぱいろっと</string></dict>
+	<dict><key>phrase</key><string>ChatGPT</string><key>shortcut</key><string>ちゃっとじーぴーてぃー</string></dict>
+	<dict><key>phrase</key><string>Codex</string><key>shortcut</key><string>こーでっくす</string></dict>
+	<dict><key>phrase</key><string>OpenAI</string><key>shortcut</key><string>おーぷんえいあい</string></dict>
 
 	<!-- misc. -->
 	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
@@ -177,5 +182,7 @@
 	<dict><key>phrase</key><string>Ultima</string><key>shortcut</key><string>うるてぃまー</string></dict>
 	<dict><key>phrase</key><string>rogue</string><key>shortcut</key><string>ろーぐ</string></dict>
 	<dict><key>phrase</key><string>ニーモニック</string><key>shortcut</key><string>にーもにっく</string></dict>
+	<dict><key>phrase</key><string>PayPal</string><key>shortcut</key><string>ぺいぱる</string></dict>
+	<dict><key>phrase</key><string>PayPay</string><key>shortcut</key><string>ぺいぺい</string></dict>
 </array>
 </plist>
