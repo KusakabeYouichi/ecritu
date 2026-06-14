@@ -292,5 +292,39 @@
     <dict><key>phrase</key><string>ネット上</string><key>shortcut</key><string>ねっとじょう</string></dict>
     <dict><key>phrase</key><string>アペロ</string><key>shortcut</key><string>あぺろ</string></dict>
     <dict><key>phrase</key><string>リアンクール</string><key>shortcut</key><string>りあんくーる</string></dict>
+    <dict><key>phrase</key><string>パン・ド・ミー</string><key>shortcut</key><string>ぱんどみー</string></dict>
+    <dict><key>phrase</key><string>cous cous</string><key>shortcut</key><string>くすくす</string></dict>
+    <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict>
+    <dict><key>phrase</key><string>父方</string><key>shortcut</key><string>ちちがた</string></dict>
+    <dict><key>phrase</key><string>バタール</string><key>shortcut</key><string>ばたーる</string></dict>
+    <dict><key>phrase</key><string>バゲット</string><key>shortcut</key><string>ばげっと</string></dict>
+    <dict><key>phrase</key><string>フィセル</string><key>shortcut</key><string>ふぃせる</string></dict>
+    <dict><key>phrase</key><string>ロー</string><key>shortcut</key><string>ろー</string></dict>
+    <dict><key>phrase</key><string>ブルー</string><key>shortcut</key><string>ぶるー</string></dict>
+    <dict><key>phrase</key><string>ブルー・レア</string><key>shortcut</key><string>ぶるーれあ</string></dict>
+    <dict><key>phrase</key><string>レア</string><key>shortcut</key><string>れあ</string></dict>
+    <dict><key>phrase</key><string>ミディアム・レア</string><key>shortcut</key><string>みでぃあむれあ</string></dict>
+    <dict><key>phrase</key><string>ミディアム</string><key>shortcut</key><string>みでぃあむ</string></dict>
+    <dict><key>phrase</key><string>ミディアム・ウェル</string><key>shortcut</key><string>みでぃあむうぇる</string></dict>
+    <dict><key>phrase</key><string>ウェルダン</string><key>shortcut</key><string>うぇるだん</string></dict>
+    <dict><key>phrase</key><string>ヴェリー・ウェルダン</string><key>shortcut</key><string>ゔぇりーうぇるだん</string></dict>
+    <dict><key>phrase</key><string>raw</string><key>shortcut</key><string>ろー</string></dict>
+    <dict><key>phrase</key><string>blue</string><key>shortcut</key><string>ぶるー</string></dict>
+    <dict><key>phrase</key><string>blue rare</string><key>shortcut</key><string>ぶるーれあ</string></dict>
+    <dict><key>phrase</key><string>rare</string><key>shortcut</key><string>れあ</string></dict>
+    <dict><key>phrase</key><string>medium rare</string><key>shortcut</key><string>みでぃあむれあ</string></dict>
+    <dict><key>phrase</key><string>medium</string><key>shortcut</key><string>みでぃあむ</string></dict>
+    <dict><key>phrase</key><string>medium well</string><key>shortcut</key><string>みでぃあむうぇる</string></dict>
+    <dict><key>phrase</key><string>woell-done</string><key>shortcut</key><string>うぇるだん</string></dict>
+    <dict><key>phrase</key><string>very well-done</string><key>shortcut</key><string>ゔぇりーうぇるだん</string></dict>
+    <dict><key>phrase</key><string>ブル</string><key>shortcut</key><string>ぶる</string></dict>
+    <dict><key>phrase</key><string>セニャン</string><key>shortcut</key><string>せにゃん</string></dict>
+    <dict><key>phrase</key><string>ア・ポワン</string><key>shortcut</key><string>あぽわん</string></dict>
+    <dict><key>phrase</key><string>ピヤン・キュイ</string><key>shortcut</key><string>びやんきゅい</string></dict>
+    <dict><key>phrase</key><string>bleu</string><key>shortcut</key><string>ぶる</string></dict>
+    <dict><key>phrase</key><string>saignant</string><key>shortcut</key><string>せにゃん</string></dict>
+    <dict><key>phrase</key><string>a point</string><key>shortcut</key><string>あぽわん</string></dict>
+    <dict><key>phrase</key><string>bien cuit</string><key>shortcut</key><string>びやんきゅい</string></dict>
+    <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>スプレッド</string></dict>
 </array>
 </plist>

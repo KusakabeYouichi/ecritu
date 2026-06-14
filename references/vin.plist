@@ -3,6 +3,10 @@
 <plist version="1.0">
 <array>
 	<!-- AOC名や地名 -->
+	<dict><key>phrase</key><string>ポマール</string><key>shortcut</key><string>ぽまーる</string></dict>
+	<dict><key>phrase</key><string>ポサウイエ</string><key>shortcut</key><string>ぽさういえ</string></dict>
+	<dict><key>phrase</key><string>ソアーヴェ</string><key>shortcut</key><string>そあーゔぇ</string></dict>
+	<dict><key>phrase</key><string>セトゥーバル</string><key>shortcut</key><string>せとぅーばる</string></dict>
 	<dict><key>phrase</key><string>サティニー</string><key>shortcut</key><string>さてぃにー</string></dict>
 	<dict><key>phrase</key><string>カウケネス</string><key>shortcut</key><string>かうけねす</string></dict>
 	<dict><key>phrase</key><string>サン・ジュリアン</string><key>shortcut</key><string>さんじゅりあん</string></dict>
@@ -1575,6 +1579,14 @@
 	<dict><key>phrase</key><string>地中海</string><key>shortcut</key><string>ちちゅうかい</string></dict>
 
 	<!-- 格付けや分類、ワインのタイプ -->
+	<dict><key>phrase</key><string>Vin Doux Naturel</string><key>shortcut</key><string>ゔぁんどぅーなちゅれる</string></dict>
+	<dict><key>phrase</key><string>Vin doux naturel</string><key>shortcut</key><string>ゔぁんどぅーなちゅれる</string></dict>
+	<dict><key>phrase</key><string>Vin Gris</string><key>shortcut</key><string>ゔぁんぐり</string></dict>
+	<dict><key>phrase</key><string>Vin Jaune</string><key>shortcut</key><string>ゔぁんじょーぬ</string></dict>
+	<dict><key>phrase</key><string>Vin Santo</string><key>shortcut</key><string>ゔぃんさんと </string></dict>
+	<dict><key>phrase</key><string>Vin Varietal</string><key>shortcut</key><string>ゔぁんゔぁりえたる </string></dict>
+	<dict><key>phrase</key><string>Vin biologique</string><key>shortcut</key><string>ゔぁんびおろじっく</string></dict>
+	<dict><key>phrase</key><string>Weißherbst</string><key>shortcut</key><string>ゔぁいすへるぷすと</string></dict>
 	<dict><key>phrase</key><string>エプモーソ</string><key>shortcut</key><string>えぷもーそ</string></dict>
 	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>じーあい</string></dict>
 	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>じーあいしー</string></dict>
@@ -1630,6 +1642,17 @@
 	<dict><key>phrase</key><string>Regional Wines</string><key>shortcut</key><string>りーじょなるわいん</string></dict>
 
 	<!-- ワイン用ぶどう品種名 / セパージュ -->
+	<dict><key>phrase</key><string>Tai</string><key>shortcut</key><string>たい</string></dict>
+	<dict><key>phrase</key><string>Weißburgunder</string><key>shortcut</key><string>ゔぁいすぶるぐんだー</string></dict>
+	<dict><key>phrase</key><string>Weißer Burgunder</string><key>shortcut</key><string>ゔぁいさーぶるぐんだー</string></dict>
+	<dict><key>phrase</key><string>Vitis amurensis</string><key>shortcut</key><string>ゔぃてぃすあむれんしす </string></dict>
+	<dict><key>phrase</key><string>Vitis berlandieri</string><key>shortcut</key><string>ゔぃてぃすべるらんでぃえり</string></dict>
+	<dict><key>phrase</key><string>Vitis coignetiae</string><key>shortcut</key><string>ゔぃてぃすこわにえ</string></dict>
+	<dict><key>phrase</key><string>Vitis davidii</string><key>shortcut</key><string>ゔぃてぃすだゔぃでぃ</string></dict>
+	<dict><key>phrase</key><string>Vitis labrusca</string><key>shortcut</key><string>ゔぃてぃすらぶるすか</string></dict>
+	<dict><key>phrase</key><string>Vitis riparia</string><key>shortcut</key><string>ゔぃてぃすりぱりあ</string></dict>
+	<dict><key>phrase</key><string>Vitis rupestris</string><key>shortcut</key><string>ゔぃてぃすらぺすとりす</string></dict>
+	<dict><key>phrase</key><string>Vitis vinifera</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇら</string></dict>
 	<dict><key>phrase</key><string>5BB</string><key>shortcut</key><string>ごびーびー</string></dict>
 	<dict><key>phrase</key><string>AXR</string><key>shortcut</key><string>えいえっくすあーる</string></dict>
 	<dict><key>phrase</key><string>Agiorgitiko</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
@@ -2352,6 +2375,24 @@
 	<dict><key>phrase</key><string>剪定法</string><key>shortcut</key><string>んていほう</string></dict>
 
 	<!-- 醸造技術 -->
+	<dict><key>phrase</key><string>セニエ</string><key>shortcut</key><string>せにえ</string></dict>
+	<dict><key>phrase</key><string>セニエ法</string><key>shortcut</key><string>せにえ</string></dict>
+	<dict><key>phrase</key><string>Quercus Alba</string><key>shortcut</key><string>けるかすあるば</string></dict>
+	<dict><key>phrase</key><string>Quercus robur</string><key>shortcut</key><string>けるかすろぶーる</string></dict>
+	<dict><key>phrase</key><string>Quercus petraea</string><key>shortcut</key><string>けるかすぺとらえあ</string></dict>
+	<dict><key>phrase</key><string>アメリカンオーク樽</string><key>shortcut</key><string>あめりかんおーくだる</string></dict>
+	<dict><key>phrase</key><string>オーク材</string><key>shortcut</key><string>おーくざい</string></dict>
+	<dict><key>phrase</key><string>オーク樽</string><key>shortcut</key><string>おーくだる</string></dict>
+	<dict><key>phrase</key><string>ペドンキュラータ・オーク</string><key>shortcut</key><string>ぺどんきゅらーおーく</string></dict>
+	<dict><key>phrase</key><string>スラヴォニア</string><key>shortcut</key><string>すらゔぉにあ</string></dict>
+	<dict><key>phrase</key><string>スラヴォニア・オーク</string><key>shortcut</key><string>すらゔぉにあおーく</string></dict>
+	<dict><key>phrase</key><string>セシル・オーク</string><key>shortcut</key><string>せしるおーく</string></dict>
+	<dict><key>phrase</key><string>フレンチ・オーク</string><key>shortcut</key><string>ふれんちおーく</string></dict>
+	<dict><key>phrase</key><string>レッド・オーク</string><key>shortcut</key><string>れっどおーく</string></dict>
+	<dict><key>phrase</key><string>アメリカンオーク</string><key>shortcut</key><string>あめりかんおーく</string></dict>
+	<dict><key>phrase</key><string>アメリカン・ホワイト・オーク</string><key>shortcut</key><string>あめりかんほわいとおーく</string></dict>
+	<dict><key>phrase</key><string>オーク</string><key>shortcut</key><string>おーく</string></dict>
+	<dict><key>phrase</key><string>オーク樽熟成</string><key>shortcut</key><string>おーくたるじゅくせい</string></dict>
 	<dict><key>phrase</key><string>Pas Dosé</string><key>shortcut</key><string>ぱどせ</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレイション</string><key>shortcut</key><string>かるぼにっくませれいしょん</string></dict>
 	<dict><key>phrase</key><string>カルボニック・マセレーション</string><key>shortcut</key><string>かるぼにっくませれーしょん</string></dict>
@@ -2402,7 +2443,6 @@
 	<dict><key>phrase</key><string>アルコール醗酵時</string><key>shortcut</key><string>あるこーるはっこうじ</string></dict>
 	<dict><key>phrase</key><string>アルコール醗酵終了後</string><key>shortcut</key><string>あるこーるはっこうしゅうりょうご</string></dict>
 	<dict><key>phrase</key><string>アルコール醗酵途上</string><key>shortcut</key><string>あるこーるはっこうとじょう</string></dict>
-	<dict><key>phrase</key><string>オーク樽熟成</string><key>shortcut</key><string>おーくたるじゅくせい</string></dict>
 	<dict><key>phrase</key><string>クヴェヴリ醗酵</string><key>shortcut</key><string>くゔぇゔりはっこう</string></dict>
 	<dict><key>phrase</key><string>クヴェヴリ醸造</string><key>shortcut</key><string>くゔぇゔりじょうぞう</string></dict>
 	<dict><key>phrase</key><string>ケープ・ブレンド</string><key>shortcut</key><string>けーぷぶれんど</string></dict>
@@ -2942,6 +2982,8 @@
 	<dict><key>phrase</key><string>酒精強化ワイン</string><key>shortcut</key><string>しゅせいきょうかわいん</string></dict>
 
 	<!-- SAKE -->
+    <dict><key>phrase</key><string>新政</string><key>shortcut</key><string>あらまさ</string></dict>
+    <dict><key>phrase</key><string>新政酵母</string><key>shortcut</key><string>あらまさこうぼ</string></dict>
 	<dict><key>phrase</key><string>6号酵母</string><key>shortcut</key><string>ろくごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>7号酵母</string><key>shortcut</key><string>ななごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>9号酵母</string><key>shortcut</key><string>きゅうごうこうぼ</string></dict>
@@ -3202,7 +3244,13 @@
 	<dict><key>phrase</key><string>Dehilling</string><key>shortcut</key><string>でぃひりんぐ</string></dict>
 	<dict><key>phrase</key><string>Hilling</string><key>shortcut</key><string>ひりんぐ</string></dict>
 
+
 	<!-- 物質 -->
+	<dict><key>phrase</key><string>ポリフェノール</string><key>shortcut</key><string>ぽりふぇのーる</string></dict>
+	<dict><key>phrase</key><string>ポリフェノール類</string><key>shortcut</key><string>ぽりふぇのーるるい</string></dict>
+	<dict><key>phrase</key><string>Velcorin® </string><key>shortcut</key><string>ゔぇるくろん</string></dict>
+	<dict><key>phrase</key><string>コハク酸</string><key>shortcut</key><string>こはくさん</string></dict>
+	<dict><key>phrase</key><string>リンゴ酸</string><key>shortcut</key><string>りんごさん</string></dict>
 	<dict><key>phrase</key><string>SO2</string><key>shortcut</key><string>えすおーとぅー</string></dict>
 	<dict><key>phrase</key><string>SO₂</string><key>shortcut</key><string>えすおーとぅー</string></dict>
 	<dict><key>phrase</key><string>IBMP</string><key>shortcut</key><string>あいびーむぴー</string></dict>
@@ -3307,6 +3355,7 @@
 	<dict><key>phrase</key><string>ケソ・マンチェゴ</string><key>shortcut</key><string>けそまんちぇご</string></dict>
 	<dict><key>phrase</key><string>パスタフィラータ</string><key>shortcut</key><string>ぱすたふぃらーた</string></dict>
 	<dict><key>phrase</key><string>パスタフィラータ方式</string><key>shortcut</key><string>ぱすたふぃらーたほうしき</string></dict>
+	<dict><key>phrase</key><string>ポン・レヴェック</string><key>shortcut</key><string>ぽんれゔぇっく</string></dict>
 
 	<!-- 紅茶 -->
 	<dict><key>phrase</key><string>アッサム種</string><key>shortcut</key><string>あっさむしゅ</string></dict>
@@ -3348,6 +3397,8 @@
 	<dict><key>phrase</key><string>ヴォス・アーティザン</string><key>shortcut</key><string>ゔぉすあーてぃざん</string></dict>
 
 	<!-- 料理・食材 -->
+	<dict><key>phrase</key><string>ゼリー寄せ</string><key>shortcut</key><string>ぜりーよせ</string></dict>
+	<dict><key>phrase</key><string>セビーチェ</string><key>shortcut</key><string>せびーちぇ</string></dict>
 	<dict><key>phrase</key><string>グアンチャーレ</string><key>shortcut</key><string>ぐあんちゃーれ</string></dict>
 	<dict><key>phrase</key><string>クリーム煮</string><key>shortcut</key><string>くりーむに</string></dict>
 	<dict><key>phrase</key><string>カポナータ</string><key>shortcut</key><string>かぽなーた</string></dict>
@@ -3534,10 +3585,15 @@
 	<dict><key>phrase</key><string>オーセンティック・カクテル</string><key>shortcut</key><string>おーせんてぃっくかくてる</string></dict>
 	<dict><key>phrase</key><string>ウオッカ・マティーニ</string><key>shortcut</key><string>うおっかまてぃーに</string></dict>
 	<dict><key>phrase</key><string>モヒート</string><key>shortcut</key><string>もひーと</string></dict>
+	<dict><key>phrase</key><string>Kir</string><key>shortcut</key><string>きーる</string></dict>
 
-	<!-- リキュール -->
+	<!-- リキュール・スピリッツ -->
 	<dict><key>phrase</key><string>MIDORI</string><key>shortcut</key><string>みどり</string></dict>
 	<dict><key>phrase</key><string>Ricard</string><key>shortcut</key><string>りかーる</string></dict>
+	<dict><key>phrase</key><string>Gin</string><key>shortcut</key><string>じん</string></dict>
+	<dict><key>phrase</key><string>Rum</string><key>shortcut</key><string>らむ</string></dict>
+	<dict><key>phrase</key><string>アネホ</string><key>shortcut</key><string>★ </string></dict>
+
 
 	<!-- その他 -->
 	<dict><key>phrase</key><string>洞爺湖サミット</string><key>shortcut</key><string>とうやこさみっと</string></dict>
@@ -3720,8 +3776,6 @@
 	<dict><key>phrase</key><string>アメリカワイン</string><key>shortcut</key><string>あめりかわいん</string></dict>
 	<dict><key>phrase</key><string>アメリカン</string><key>shortcut</key><string>あめりかん</string></dict>
 	<dict><key>phrase</key><string>アメリカンウイスキー</string><key>shortcut</key><string>あめりかんういすきー</string></dict>
-	<dict><key>phrase</key><string>アメリカンオーク</string><key>shortcut</key><string>あめりかんおーく</string></dict>
-	<dict><key>phrase</key><string>アメリカン・ホワイト・オーク</string><key>shortcut</key><string>あめりかんほわいとおーく</string></dict>
 	<dict><key>phrase</key><string>カリフォルニア</string><key>shortcut</key><string>かりふぉるにあ</string></dict>
 	<dict><key>phrase</key><string>アメリカーノ</string><key>shortcut</key><string>あめりかーの</string></dict>
 	<dict><key>phrase</key><string>アモンティリャード</string><key>shortcut</key><string>あもんてぃりゃーど</string></dict>
@@ -3911,7 +3965,6 @@
 	<dict><key>phrase</key><string>オーガニック認証機関</string><key>shortcut</key><string>おーがにっくすにんしょうきかん</string></dict>
 	<dict><key>phrase</key><string>オーガニック農業国</string><key>shortcut</key><string>おーがにっくすのうぎょうこく</string></dict>
 	<dict><key>phrase</key><string>オーガニック農産物</string><key>shortcut</key><string>おーがにっくすのうさんぶつ</string></dict>
-	<dict><key>phrase</key><string>オーク</string><key>shortcut</key><string>おーく</string></dict>
 	<dict><key>phrase</key><string>オークステイヴ</string><key>shortcut</key><string>おーくすていゔ</string></dict>
 	<dict><key>phrase</key><string>オークチップ</string><key>shortcut</key><string>おーくちっぷ</string></dict>
 	<dict><key>phrase</key><string>オークランド</string><key>shortcut</key><string>おーくらんど</string></dict>
@@ -4545,8 +4598,6 @@
 	<dict><key>phrase</key><string>スモーキー</string><key>shortcut</key><string>すもーきー</string></dict>
 	<dict><key>phrase</key><string>スモーキーフレイヴァー</string><key>shortcut</key><string>すもーきーふれいゔぁー</string></dict>
 	<dict><key>phrase</key><string>スライス</string><key>shortcut</key><string>すらいす</string></dict>
-	<dict><key>phrase</key><string>スラヴォニア</string><key>shortcut</key><string>すらゔぉにあ</string></dict>
-	<dict><key>phrase</key><string>スラヴォニア・オーク</string><key>shortcut</key><string>すらゔぉにあおーく</string></dict>
 	<dict><key>phrase</key><string>スリム</string><key>shortcut</key><string>すりむ</string></dict>
 	<dict><key>phrase</key><string>スリランカ</string><key>shortcut</key><string>すりらんか</string></dict>
 	<dict><key>phrase</key><string>スリヴェン</string><key>shortcut</key><string>すりゔぇん</string></dict>
@@ -4570,7 +4621,6 @@
 	<dict><key>phrase</key><string>セイヴォリー</string><key>shortcut</key><string>せいゔぉりー</string></dict>
 	<dict><key>phrase</key><string>セカンドワイン</string><key>shortcut</key><string>せかんどわいん</string></dict>
 	<dict><key>phrase</key><string>セクサールド</string><key>shortcut</key><string>せくさーるど</string></dict>
-	<dict><key>phrase</key><string>セシル・オーク</string><key>shortcut</key><string>せしるおーく</string></dict>
 	<dict><key>phrase</key><string>セック</string><key>shortcut</key><string>せっく</string></dict>
 	<dict><key>phrase</key><string>セット</string><key>shortcut</key><string>せっと</string></dict>
 	<dict><key>phrase</key><string>セブンヒル</string><key>shortcut</key><string>せぶんひる</string></dict>
@@ -5101,7 +5151,6 @@
 	<dict><key>phrase</key><string>フルーティー</string><key>shortcut</key><string>ふるーてぃー</string></dict>
 	<dict><key>phrase</key><string>フルーリー</string><key>shortcut</key><string>ふるーりー</string></dict>
 	<dict><key>phrase</key><string>フレイヴァー</string><key>shortcut</key><string>ふれいゔぁー</string></dict>
-	<dict><key>phrase</key><string>フレンチ・オーク</string><key>shortcut</key><string>ふれんちおーく</string></dict>
 	<dict><key>phrase</key><string>フレーヴァー</string><key>shortcut</key><string>ふれーゔぁー</string></dict>
 	<dict><key>phrase</key><string>フロマントー</string><key>shortcut</key><string>ふろまんとー</string></dict>
 	<dict><key>phrase</key><string>フロリダ</string><key>shortcut</key><string>ふろりだ</string></dict>
@@ -5675,7 +5724,6 @@
 	<dict><key>phrase</key><string>レセルバ</string><key>shortcut</key><string>れせるば</string></dict>
 	<dict><key>phrase</key><string>レゼルヴァ</string><key>shortcut</key><string>れぜるゔぁ</string></dict>
 	<dict><key>phrase</key><string>レタス</string><key>shortcut</key><string>れたす</string></dict>
-	<dict><key>phrase</key><string>レッド・オーク</string><key>shortcut</key><string>れっどおーく</string></dict>
 	<dict><key>phrase</key><string>レニエ</string><key>shortcut</key><string>れにえ</string></dict>
 	<dict><key>phrase</key><string>レバノン法典</string><key>shortcut</key><string>ればのんほうてん</string></dict>
 	<dict><key>phrase</key><string>レバンテ</string><key>shortcut</key><string>ればんて</string></dict>
