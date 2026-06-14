@@ -184,5 +184,6 @@
 	<dict><key>phrase</key><string>ニーモニック</string><key>shortcut</key><string>にーもにっく</string></dict>
 	<dict><key>phrase</key><string>PayPal</string><key>shortcut</key><string>ぺいぱる</string></dict>
 	<dict><key>phrase</key><string>PayPay</string><key>shortcut</key><string>ぺいぺい</string></dict>
+	<dict><key>phrase</key><string>スプレッド・シート</string><key>shortcut</key><string>すぷれっどしーと</string></dict>
 </array>
 </plist>

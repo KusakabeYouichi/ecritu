@@ -780,7 +780,6 @@
 	<dict><key>phrase</key><string>Giaconda</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gigondas</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gigot d'Agneau en Croûte</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Gin</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Gisborne</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Givry</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Glacé</string><key>shortcut</key><string>★</string></dict>
@@ -952,7 +951,6 @@
 	<dict><key>phrase</key><string>Kerikeri</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Kilimanjaro</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Kindzmarauli</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Kir</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Kirchberg de Barr</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Kirsch</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Klein Karoo</string><key>shortcut</key><string>★</string></dict>
@@ -1639,7 +1637,6 @@
 	<dict><key>phrase</key><string>Rudolf Steiner</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rufina</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rully</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Rum</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rutherford</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rutherglen</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ruwertal</string><key>shortcut</key><string>★</string></dict>
@@ -1869,9 +1866,7 @@
 	<dict><key>phrase</key><string>Tacoronte-Acentejo</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Tafelspitz</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Tahbilk</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Tai</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Taille</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Tai主体</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Tajarin</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Talagante</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Taleggio</string><key>shortcut</key><string>★</string></dict>
@@ -2055,12 +2050,6 @@
 	<dict><key>phrase</key><string>Vieux</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vila Nova de Gaia</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Villány</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vin Doux Naturel</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vin Gris</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vin Jaune</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vin Santo</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vin Varietal</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vin biologique</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vin de Constance</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vin de Corse</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vin de Corse Coteaux du Cap Corse</string><key>shortcut</key><string>★</string></dict>
@@ -2111,15 +2100,6 @@
 	<dict><key>phrase</key><string>Viseu</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Visperterminen</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vitello Tonnato</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis amurensis</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis berlandieri</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis coignetiae</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis davidii</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis labrusca</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis riparia</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis rupestris</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis vinifera</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Vitis vinifera種</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Vix</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Viña Clasificada</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Viñedo Singular</string><key>shortcut</key><string>★</string></dict>
@@ -2152,9 +2132,6 @@
 	<dict><key>phrase</key><string>Weingut</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Weinviertel</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Weiß</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Weißburgunder</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Weißer Burgunder</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Weißherbst</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Well-structured</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Wellington</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Welsh Wine</string><key>shortcut</key><string>★</string></dict>
@@ -2226,8 +2203,6 @@
 	<dict><key>phrase</key><string>deux abeilles</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>dégustation</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>display</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>div</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>div style</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>divers</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>drc</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>drying</string><key>shortcut</key><string>★</string></dict>
@@ -2321,7 +2296,6 @@
 	<dict><key>phrase</key><string>アニス香</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アニゼ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アニヴィエ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>アネホ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アパッシメント</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アパルタ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アパルタ丘陵</string><key>shortcut</key><string>★</string></dict>
@@ -2332,7 +2306,6 @@
 	<dict><key>phrase</key><string>アマローネ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アマローネ・デッラ・ヴァルポリチェッラ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アメリカWashington</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>アメリカンオーク樽</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アモリン社</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アランビック・ア・ルパス</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>アリエール産</string><key>shortcut</key><string>★</string></dict>
@@ -2426,13 +2399,9 @@
 	<dict><key>phrase</key><string>オロロソ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>オンダラビ・ベルツァ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>オーク・ノール・ディストリクト・オブ・ナパ・ヴァレー</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>オーク材</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>オーク樽</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>オーク樽由来</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>オーストリアワイン法</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>オーセイ・デュレス</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>オート麦</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>オー・メドック最大</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>カケル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>カスク</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>カステ</string><key>shortcut</key><string>★</string></dict>
@@ -2575,7 +2544,6 @@
 	<dict><key>phrase</key><string>コッリ・ディ・ルーニー</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>コドゥル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>コナホマレ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>コハク酸</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>コミューン名</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>コリアンダーシード等</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>コリェイタ</string><key>shortcut</key><string>★</string></dict>
@@ -2776,20 +2744,12 @@
 	<dict><key>phrase</key><string>セイヴァル・ブラン</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>セカノ・インテリオル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>セシャージュ・ナチュレル</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>セトゥーバル</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>セニエ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>セニエ法</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>セビーチェ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>セレサ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>セロンス</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ゼクト・オーストリア・レゼルヴェ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ゼリー寄</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ソアーヴェ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ソットゾーナ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ソノマ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ソノマ・カウンティ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ソノマ両群</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ソノマ側</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ソブレタブラ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ソミュール・シャンピニィ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ソモンターノ</string><key>shortcut</key><string>★</string></dict>
@@ -3161,7 +3121,6 @@
 	<dict><key>phrase</key><string>ペサロ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ペデルナル・ヴァレー</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ペドロ・ヒメネス × クリオジャ・チカ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ペドンキュラータ・オーク</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ペニンスラ・デ・セトゥーバル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ペノーラ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ペラン家</string><key>shortcut</key><string>★</string></dict>
@@ -3196,13 +3155,8 @@
 	<dict><key>phrase</key><string>ボート型</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ボーモン・シュール・ヴェル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ポイヤック産仔羊</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ポサウイエ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ポサウイエ地域</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ポマール</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ポミーノ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ポリフェノール類</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ポルト造</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ポン・レヴェック</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ポート型</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>マイイ・シャンパーニュ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>マイクロ・クライメット</string><key>shortcut</key><string>★</string></dict>
@@ -3373,8 +3327,6 @@
 	<dict><key>phrase</key><string>リラック</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>リリオリラ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>リレ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>リンゴ酸</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>リンゴ酸菌</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>リンドウ科</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>リンドウ科ジェンシアン</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>リヴァロ</string><key>shortcut</key><string>★</string></dict>
@@ -3493,11 +3445,6 @@
 	<dict><key>phrase</key><string>休眠期</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>バルサミコ酢</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Essex</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>低アルコール</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>低アルコール濃度</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>低亜硫酸</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>低投入型</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>低振動低騒音</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>低温殺菌法</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>低緯度</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>使用限度量</string><key>shortcut</key><string>★</string></dict>
@@ -3505,7 +3452,6 @@
 	<dict><key>phrase</key><string>供給地</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>保存紙</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>保湿性</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>保険料込</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>修道僧</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>修道院近</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>個性豊</string><key>shortcut</key><string>★</string></dict>
@@ -3616,7 +3562,6 @@
 	<dict><key>phrase</key><string>品質共</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>品質分類外</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>メドック地区外</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Velcorin®</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>喜望峰</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ローター・ヴェルトリーナー</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>国際ブドウ・ブドウ酒機構</string><key>shortcut</key><string>★</string></dict>
@@ -3666,9 +3611,6 @@
 	<dict><key>phrase</key><string>好気的</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>婚約式</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>嫌気性</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Quercus Alba</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Quercus petraea</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Quercus robur</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>完熟期</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>完熟果</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>客様</string><key>shortcut</key><string>★</string></dict>
@@ -3762,15 +3704,10 @@
 	<dict><key>phrase</key><string>料理Zwiebelkuchen</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>断崖壁</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>新カテゴリApera</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>新ギリシャワイン・サバイバル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>新ギリシャワイン・リバイバル</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>新ギリシャワイン・リメイク</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>新ギリシャワイン・ルネッサンス</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>新ドイツワイン法</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>新ルクセンブルクワイン法</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>新ワイン法</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>新政</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>新政酵母</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>施設名</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>日帰</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>日常ワイン用</string><key>shortcut</key><string>★</string></dict>
