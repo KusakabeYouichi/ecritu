@@ -77,6 +77,7 @@ targets:
         basedOnDependencyAnalysis: false
         script: |
           bash "$SRCROOT/tools/check_top_level_brace_blank_lines.sh"
+    postBuildScripts:
       - name: Refresh Simulator Dictionary Artifacts
         basedOnDependencyAnalysis: false
         script: |
