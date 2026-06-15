@@ -77,6 +77,17 @@ final class KanaKanjiConverter {
         suffix.hasPrefix("だ") || suffix.hasPrefix("で")
     }
 
+    private static let verbalStemRequiredPostfixPrefixes: [String] = [
+        "よう"
+    ]
+
+    private static func postfixSuffixRequiresVerbalStem(_ suffix: String) -> Bool {
+        for required in verbalStemRequiredPostfixPrefixes where suffix.hasPrefix(required) {
+            return true
+        }
+        return false
+    }
+
     private func normalizedTaggedCandidates(for reading: String) -> Set<String> {
         store.systemCandidates(
             for: reading,
@@ -97,6 +108,34 @@ final class KanaKanjiConverter {
         return candidates.filter { candidate in
             guard candidate.hasSuffix("ん") else { return true }
             return normalizedSet.contains(candidate)
+        }
+    }
+
+    private func filterNonVerbalCandidatesForVerbalPostfix(
+        _ candidates: [String],
+        stemReading: String,
+        nextSuffix: String
+    ) -> [String] {
+        guard Self.postfixSuffixRequiresVerbalStem(nextSuffix) else {
+            return candidates
+        }
+
+        let metadata = inflectionMetadata(for: stemReading)
+
+        return candidates.filter { candidate in
+            if candidate.hasSuffix("する")
+                || candidate.hasSuffix("くる")
+                || candidate.hasSuffix("来る") {
+                return true
+            }
+
+            guard let className = metadata.classMap[candidate] else {
+                return false
+            }
+
+            return className == InflectionClass.ichidan
+                || className.hasPrefix("godan-")
+                || className == InflectionClass.kuru
         }
     }
 
@@ -740,8 +779,13 @@ final class KanaKanjiConverter {
                 continue
             }
 
-            let filteredStemCandidates = filterVerbStemFragmentCandidatesIfNeeded(
+            let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
                 stemCandidates,
+                stemReading: stem,
+                nextSuffix: passthrough
+            )
+            let filteredStemCandidates = filterNonVerbalCandidatesForVerbalPostfix(
+                nEndingFiltered,
                 stemReading: stem,
                 nextSuffix: passthrough
             )
@@ -1095,8 +1139,13 @@ final class KanaKanjiConverter {
                         )
                     )
 
-                    let filteredStemCandidates = filterVerbStemFragmentCandidatesIfNeeded(
+                    let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
                         stemCandidates,
+                        stemReading: nextStem,
+                        nextSuffix: nextSuffix
+                    )
+                    let filteredStemCandidates = filterNonVerbalCandidatesForVerbalPostfix(
+                        nEndingFiltered,
                         stemReading: nextStem,
                         nextSuffix: nextSuffix
                     )
