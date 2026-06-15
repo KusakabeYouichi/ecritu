@@ -119,6 +119,179 @@ extension KeyboardViewController {
         return results
     }
 
+    func currentCandidatePresentationForRender(
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> CandidatePresentation {
+        guard currentInputMode == .kana else {
+            invalidateSettledCandidatePresentation()
+            return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
+        }
+
+        if let activeConversion {
+            invalidateSettledCandidatePresentation()
+            return CandidatePresentation(
+                composingText: activeConversion.sourceText,
+                candidates: activeConversion.candidates,
+                selectedIndex: activeConversion.selectedIndex
+            )
+        }
+
+        guard !composingReading.isEmpty else {
+            invalidateSettledCandidatePresentation()
+            return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
+        }
+
+        let cacheKey = CandidatePresentationCacheKey(
+            reading: composingReading,
+            composingRawText: composingRawText,
+            modeRawValue: systemCandidateMode.rawValue
+        )
+
+        if let cached = settledCandidatePresentation,
+            settledCandidatePresentationKey == cacheKey {
+            return cached
+        }
+
+        kickOffAsyncCandidateGeneration(
+            reading: composingReading,
+            composingRawText: composingRawText,
+            systemCandidateMode: systemCandidateMode
+        )
+
+        return CandidatePresentation(
+            composingText: composingRawText,
+            candidates: [],
+            selectedIndex: nil
+        )
+    }
+
+    func invalidateSettledCandidatePresentation() {
+        settledCandidatePresentation = nil
+        settledCandidatePresentationKey = nil
+    }
+
+    private func kickOffAsyncCandidateGeneration(
+        reading: String,
+        composingRawText: String,
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) {
+        candidateGenerationCounter &+= 1
+        let generation = candidateGenerationCounter
+        let presentationLimit = effectiveKanaPresentationCandidateLimit()
+
+        guard presentationLimit > 0 else {
+            return
+        }
+
+        let converter = kanaKanjiConverter
+        let pendingKey = CandidatePresentationCacheKey(
+            reading: reading,
+            composingRawText: composingRawText,
+            modeRawValue: systemCandidateMode.rawValue
+        )
+
+        candidateGenerationQueue.async { [weak self] in
+            let converterLimit = max(
+                presentationLimit * ExternalCandidateLimits.lookupMultiplier,
+                presentationLimit + 12
+            )
+            let converterCandidates = converter.candidates(
+                for: reading,
+                limit: converterLimit,
+                systemCandidateMode: systemCandidateMode
+            )
+
+            DispatchQueue.main.async {
+                guard let self else {
+                    return
+                }
+
+                self.applyAsyncCandidateGenerationResult(
+                    generation: generation,
+                    cacheKey: pendingKey,
+                    converterCandidates: converterCandidates,
+                    presentationLimit: presentationLimit,
+                    systemCandidateMode: systemCandidateMode
+                )
+            }
+        }
+    }
+
+    private func applyAsyncCandidateGenerationResult(
+        generation: UInt64,
+        cacheKey: CandidatePresentationCacheKey,
+        converterCandidates: [String],
+        presentationLimit: Int,
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) {
+        guard generation == candidateGenerationCounter else {
+            return
+        }
+
+        guard cacheKey.reading == composingReading,
+            cacheKey.composingRawText == composingRawText,
+            currentInputMode == .kana,
+            activeConversion == nil else {
+            return
+        }
+
+        let supplementaryCandidates = supplementaryLexiconCandidates(for: cacheKey.reading)
+
+        let merged: [String]
+        if supplementaryCandidates.isEmpty {
+            merged = Array(converterCandidates.prefix(presentationLimit))
+        } else {
+            let supplementarySplit = Self.splitSupplementaryCandidatesForMerge(
+                reading: cacheKey.reading,
+                supplementaryCandidates: supplementaryCandidates,
+                converterCandidates: converterCandidates
+            )
+            var mergedPrimary = Self.mergeSupplementaryAndConverterCandidates(
+                reading: cacheKey.reading,
+                supplementaryCandidates: supplementarySplit.prioritized,
+                converterCandidates: converterCandidates,
+                limit: presentationLimit
+            )
+
+            if !supplementarySplit.deferred.isEmpty,
+                mergedPrimary.count < presentationLimit {
+                var seen = Set(mergedPrimary)
+                for candidate in supplementarySplit.deferred {
+                    let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+
+                    guard !trimmed.isEmpty,
+                        seen.insert(trimmed).inserted else {
+                        continue
+                    }
+
+                    mergedPrimary.append(trimmed)
+
+                    if mergedPrimary.count >= presentationLimit {
+                        break
+                    }
+                }
+            }
+
+            merged = mergedPrimary
+        }
+
+        let filtered = candidatesForPresentation(
+            from: merged,
+            composingText: cacheKey.composingRawText
+        )
+
+        let presentation = CandidatePresentation(
+            composingText: cacheKey.composingRawText,
+            candidates: filtered,
+            selectedIndex: nil
+        )
+
+        settledCandidatePresentation = presentation
+        settledCandidatePresentationKey = cacheKey
+
+        refreshKeyboardStateAsync()
+    }
+
     func makeCandidatePresentation(
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> CandidatePresentation {
@@ -1692,6 +1865,7 @@ extension KeyboardViewController {
         composingReading = ""
         hasParenthesesWrapper = false
         composingContextPrefixTail = ""
+        invalidateSettledCandidatePresentation()
     }
 
     func toggleParenthesesWrapper() {

@@ -215,6 +215,19 @@ final class KeyboardViewController: UIInputViewController {
     private let diagnosticsControllerID = UUID().uuidString
     private var pendingRefreshKeyboardStateRequests = 0
     private var isRefreshKeyboardStateAsyncScheduled = false
+    var candidateGenerationCounter: UInt64 = 0
+    var settledCandidatePresentation: CandidatePresentation?
+    var settledCandidatePresentationKey: CandidatePresentationCacheKey?
+    let candidateGenerationQueue = DispatchQueue(
+        label: "com.kusakabe.ecritu.candidate-generation",
+        qos: .userInitiated
+    )
+
+    struct CandidatePresentationCacheKey: Equatable {
+        let reading: String
+        let composingRawText: String
+        let modeRawValue: String
+    }
     private var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
     private var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
     private var hasDeferredSharedSettingsCatchUp = false
@@ -2719,6 +2732,7 @@ final class KeyboardViewController: UIInputViewController {
             )
             self.applyConverterFeatureFlagsFromSharedDefaults()
             self.kanaKanjiConverter.clearSharedDataCaches()
+            self.invalidateSettledCandidatePresentation()
 
             if self.memoryFailSafeProfile == .critical {
                 self.hasDeferredSharedSettingsCatchUp = true
@@ -3267,7 +3281,9 @@ final class KeyboardViewController: UIInputViewController {
 
         let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
         let candidateSourceMode = currentKanaKanjiCandidateSourceMode(from: sharedDefaults)
-        let candidatePresentation = makeCandidatePresentation(systemCandidateMode: candidateSourceMode)
+        let candidatePresentation = currentCandidatePresentationForRender(
+            systemCandidateMode: candidateSourceMode
+        )
         let directionProfile = sharedEnumValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.directionProfile,
