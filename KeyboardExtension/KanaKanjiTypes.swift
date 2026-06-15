@@ -253,6 +253,15 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "てみます", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "てみました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "てみません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたい", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたく", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたくて", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたくない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたくなくて", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたくなかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたくありません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てみたければ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "てしまう", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "てしまわない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "てしまわなかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -327,6 +336,7 @@ extension KanaKanjiConverter {
             teForm + "しまった",
             teForm + "しまって"
         ]
+        suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: teForm + "しまい"))
 
         if teForm.hasSuffix("て") {
             let contractionStem = String(teForm.dropLast())
@@ -339,6 +349,7 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "ちゃいません")
             suffixes.append(contractionStem + "ちゃった")
             suffixes.append(contractionStem + "ちゃって")
+            suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "ちゃい"))
         } else if teForm.hasSuffix("で") {
             let contractionStem = String(teForm.dropLast())
             suffixes.append(contractionStem + "じゃ")
@@ -350,6 +361,7 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "じゃいません")
             suffixes.append(contractionStem + "じゃった")
             suffixes.append(contractionStem + "じゃって")
+            suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "じゃい"))
         }
 
         return suffixes
@@ -370,6 +382,7 @@ extension KanaKanjiConverter {
             teForm + "おきました",
             teForm + "おきません"
         ]
+        suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: teForm + "おき"))
 
         if teForm.hasSuffix("て") {
             let contractionStem = String(teForm.dropLast())
@@ -381,6 +394,7 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "ときます")
             suffixes.append(contractionStem + "ときました")
             suffixes.append(contractionStem + "ときません")
+            suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "とき"))
         } else if teForm.hasSuffix("で") {
             let contractionStem = String(teForm.dropLast())
             suffixes.append(contractionStem + "どく")
@@ -391,9 +405,28 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "どきます")
             suffixes.append(contractionStem + "どきました")
             suffixes.append(contractionStem + "どきません")
+            suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "どき"))
         }
 
         return suffixes
+    }
+
+    static func taiAdjectiveFamilyInflectionSuffixes(for iStem: String) -> [String] {
+        guard !iStem.isEmpty else {
+            return []
+        }
+
+        return [
+            iStem + "たい",
+            iStem + "たく",
+            iStem + "たくて",
+            iStem + "たくない",
+            iStem + "たくなくて",
+            iStem + "たくなかった",
+            iStem + "たくありません",
+            iStem + "たかった",
+            iStem + "たければ"
+        ]
     }
 
     static func teMiruInflectionSuffixes(for teForm: String) -> [String] {
@@ -410,7 +443,7 @@ extension KanaKanjiConverter {
             teForm + "みます",
             teForm + "みました",
             teForm + "みません"
-        ]
+        ] + taiAdjectiveFamilyInflectionSuffixes(for: teForm + "み")
     }
 
     static func teAruInflectionSuffixes(for teForm: String) -> [String] {
@@ -438,7 +471,7 @@ extension KanaKanjiConverter {
             teForm + "きます",
             teForm + "きました",
             teForm + "きません"
-        ]
+        ] + taiAdjectiveFamilyInflectionSuffixes(for: teForm + "き")
     }
 
     static func teIkuInflectionSuffixes(for teForm: String) -> [String] {
@@ -458,7 +491,7 @@ extension KanaKanjiConverter {
             teForm + "いきました",
             teForm + "いきません",
             teForm + "って"
-        ]
+        ] + taiAdjectiveFamilyInflectionSuffixes(for: teForm + "いき")
     }
 
     static func taiGaruInflectionSuffixes(for iForm: String) -> [String] {
@@ -555,6 +588,8 @@ extension KanaKanjiConverter {
             teForm + "ません",
             teForm + "いません"
         ]
+            + taiAdjectiveFamilyInflectionSuffixes(for: teForm + "い")
+            + taiAdjectiveFamilyInflectionSuffixes(for: teForm)
     }
 
     static let godanInflectionRules: [InflectionRule] = {
@@ -716,6 +751,15 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "してみます", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してみました", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してみません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたい", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたく", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくて", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくなくて", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくありません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたければ", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してしまう", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してしまわない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してしまわなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -878,6 +922,15 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "してみます", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してみました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してみません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたい", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたく", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくなくて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたくありません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してみたければ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してしまう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してしまわない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "してしまわなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
@@ -1016,6 +1069,15 @@ extension KanaKanjiConverter {
         ("きてみます", "来てみます"),
         ("きてみました", "来てみました"),
         ("きてみません", "来てみません"),
+        ("きてみたい", "来てみたい"),
+        ("きてみたく", "来てみたく"),
+        ("きてみたくて", "来てみたくて"),
+        ("きてみたくない", "来てみたくない"),
+        ("きてみたくなくて", "来てみたくなくて"),
+        ("きてみたくなかった", "来てみたくなかった"),
+        ("きてみたくありません", "来てみたくありません"),
+        ("きてみたかった", "来てみたかった"),
+        ("きてみたければ", "来てみたければ"),
         ("きてしまう", "来てしまう"),
         ("きてしまわない", "来てしまわない"),
         ("きてしまわなかった", "来てしまわなかった"),
