@@ -23,6 +23,7 @@ struct KeyboardRootView: View {
     let numberLayoutMode: NumberLayoutMode
     let latinLayoutMode: LatinLayoutMode
     let accentPaletteRawValue: String
+    let isSystemDictionaryFallback: Bool
     let keyboardBackgroundThemeRawValue: String
     let basicSymbolOrderRawValue: String
     let temperatureUnitRawValue: String
@@ -473,7 +474,11 @@ struct KeyboardRootView: View {
     }
 
     private var accentColor: Color {
-        accentPalette.color
+        if isSystemDictionaryFallback {
+            return Color(uiColor: .systemGray)
+        }
+
+        return accentPalette.color
     }
 
     private var basicSymbolOrder: BasicSymbolOrder {
@@ -4532,6 +4537,7 @@ struct KeyboardRootView: View {
         numberLayoutMode: .calculette,
         latinLayoutMode: .flick,
         accentPaletteRawValue: "emeraude",
+        isSystemDictionaryFallback: false,
         keyboardBackgroundThemeRawValue: "bleu",
         basicSymbolOrderRawValue: "ascii",
         temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,

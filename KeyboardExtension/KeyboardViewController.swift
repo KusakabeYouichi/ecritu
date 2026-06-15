@@ -400,6 +400,7 @@ final class KeyboardViewController: UIInputViewController {
         let numberLayoutMode: NumberLayoutMode
         let latinLayoutMode: LatinLayoutMode
         let accentPaletteRawValue: String
+        let isSystemDictionaryFallback: Bool
         let keyboardBackgroundThemeRawValue: String
         let basicSymbolOrderRawValue: String
         let temperatureUnitRawValue: String
@@ -3411,6 +3412,7 @@ final class KeyboardViewController: UIInputViewController {
             numberLayoutMode: numberLayoutMode,
             latinLayoutMode: latinLayoutMode,
             accentPaletteRawValue: accentPaletteRawValue,
+            isSystemDictionaryFallback: kanaKanjiStore.isSystemDictionaryFallback(),
             keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
             basicSymbolOrderRawValue: basicSymbolOrderRawValue,
             temperatureUnitRawValue: temperatureUnitRawValue,
@@ -3528,6 +3530,7 @@ final class KeyboardViewController: UIInputViewController {
             numberLayoutMode: configuration.numberLayoutMode,
             latinLayoutMode: configuration.latinLayoutMode,
             accentPaletteRawValue: configuration.accentPaletteRawValue,
+            isSystemDictionaryFallback: configuration.isSystemDictionaryFallback,
             keyboardBackgroundThemeRawValue: configuration.keyboardBackgroundThemeRawValue,
             basicSymbolOrderRawValue: configuration.basicSymbolOrderRawValue,
             temperatureUnitRawValue: configuration.temperatureUnitRawValue,
