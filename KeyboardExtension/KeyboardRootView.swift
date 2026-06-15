@@ -8,7 +8,8 @@ struct KeyboardRootView: View {
     let onSpace: () -> Void
     let onReturn: () -> Void
     let onAdvanceKeyboard: () -> Void
-    let onApplyKanaPostModifier: (KanaPostModifierButtonState, Bool) -> Bool
+    let onApplyKanaPostModifier: (KanaPostModifierButtonState, Bool) -> KanaPostModifierApplyOutcome
+    let onToggleParenthesesWrapper: () -> Void
     let onSelectConversionCandidate: (Int) -> Void
     let onCommitComposingText: () -> Void
     let onCommitComposingTextAsKatakana: () -> Void
@@ -37,6 +38,10 @@ struct KeyboardRootView: View {
     let kanaModeSwitcherTapActionRawValue: String
     let kanaModeSwitcherRightFlickActionRawValue: String
     let kanaModeSwitcherUpFlickActionRawValue: String
+    let kanaPostModifierEmptyTapActionRawValue: String
+    let kanaPostModifierEmptyTapKaomojiCategoryID: String
+    let kanaPostModifierEmptyTapEmojiCategoryID: String
+    let kanaPostModifierEmptyTapSymbolCategoryID: String
     let landscapeCandidateSideRawValue: String
     let landscapeNumberPaneSideRawValue: String
     let landscapeLatinSuggestionModeRawValue: String
@@ -66,6 +71,7 @@ struct KeyboardRootView: View {
     @State private var selectedKaomojiReadingPrefix: String? = nil
     @State private var selectedKaomojiReading: String? = nil
     @State private var emojiInputSubmode: EmojiInputSubmode = .emoji
+    @State private var returnToKanaAfterNextCommit: Bool = false
     @State private var didTriggerComposingCommitLongPress = false
     @State private var katakanaCommitFeedbackText: String? = nil
     @State private var pendingKatakanaCommitWorkItem: DispatchWorkItem?
@@ -965,7 +971,7 @@ struct KeyboardRootView: View {
             HStack(spacing: row.spacing) {
                 ForEach(Array(row.items.enumerated()), id: \.offset) { _, kaomoji in
                     KaomojiKeyButton(kaomoji: kaomoji) {
-                        onTextInput(kaomoji)
+                        commitEmojiKaomojiSymbolText(kaomoji)
                     }
                     .frame(
                         width: min(measuredKaomojiWidth(kaomoji), availableWidth),
@@ -1843,6 +1849,7 @@ struct KeyboardRootView: View {
                     flickGuideDisplayModeOverride: modifierFlickGuideDisplayMode,
                     showsDirectionalHints: showsModifierFlickGuideCharacters,
                     idleReplacement: modifierIdleReplacement,
+                    onLongPress: onToggleParenthesesWrapper,
                     directionalFlickThreshold: modifierDirectionalFlickThreshold,
                     directionalCommitThreshold: modifierDirectionalCommitThreshold,
                     onTouchStateChanged: { isTouching in
@@ -2230,7 +2237,7 @@ struct KeyboardRootView: View {
             fourRowAlignedClusterHeight: fourRowAlignedClusterHeight,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
-            onTextInput: onTextInput,
+            onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
             onDeleteBackward: onDeleteBackward
         )
@@ -2250,7 +2257,7 @@ struct KeyboardRootView: View {
             fourRowAlignedClusterHeight: fourRowAlignedClusterHeight,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
-            onTextInput: onTextInput,
+            onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
             onDeleteBackward: onDeleteBackward
         )
@@ -2969,6 +2976,7 @@ struct KeyboardRootView: View {
                     flickGuideDisplayModeOverride: modifierFlickGuideDisplayMode,
                     showsDirectionalHints: showsModifierFlickGuideCharacters,
                     idleReplacement: modifierIdleReplacement,
+                    onLongPress: onToggleParenthesesWrapper,
                     directionalFlickThreshold: modifierDirectionalFlickThreshold,
                     directionalCommitThreshold: modifierDirectionalCommitThreshold,
                     onTouchStateChanged: { isTouching in
@@ -3651,6 +3659,7 @@ struct KeyboardRootView: View {
                         flickGuideDisplayModeOverride: modifierFlickGuideDisplayMode,
                         showsDirectionalHints: showsModifierFlickGuideCharacters,
                         idleReplacement: modifierIdleReplacement,
+                        onLongPress: onToggleParenthesesWrapper,
                         directionalFlickThreshold: modifierDirectionalFlickThreshold,
                         directionalCommitThreshold: modifierDirectionalCommitThreshold,
                         onTouchStateChanged: { isTouching in
@@ -3850,6 +3859,17 @@ struct KeyboardRootView: View {
             text,
             state: transitionState
         )
+
+        consumeReturnToKanaAfterNextCommitIfNeeded()
+    }
+
+    private func consumeReturnToKanaAfterNextCommitIfNeeded() {
+        guard returnToKanaAfterNextCommit else {
+            return
+        }
+
+        returnToKanaAfterNextCommit = false
+        switchInputMode(.kana)
     }
 
     private func selectModifierMode(_ output: String) {
@@ -3880,16 +3900,50 @@ struct KeyboardRootView: View {
         }
 
         let prefersLatestContextResolution = direction == .milieu
-        let applied = onApplyKanaPostModifier(
+        let outcome = onApplyKanaPostModifier(
             buttonState,
             prefersLatestContextResolution
         )
 
-        if applied {
+        switch outcome {
+        case .applied:
             var next = transitionState
             next.diacriticMode = .none
             transitionState = next
+        case .idleEmptyContext:
+            if direction == .milieu {
+                performPostModifierEmptyTapAction()
+            }
+        case .ignored:
+            break
         }
+    }
+
+    private func performPostModifierEmptyTapAction() {
+        switch kanaPostModifierEmptyTapActionRawValue {
+        case "emoji":
+            if let rawValue = Int(kanaPostModifierEmptyTapEmojiCategoryID),
+                let category = EmojiCategory(rawValue: rawValue) {
+                selectedEmojiCategory = category
+            }
+            enterEmojiMode()
+        case "symbols":
+            if let rawValue = Int(kanaPostModifierEmptyTapSymbolCategoryID),
+                let category = SymbolCategory(rawValue: rawValue) {
+                selectedSymbolCategory = category
+            }
+            enterSymbolsMode()
+        default:
+            selectedKaomojiCategoryID = kanaPostModifierEmptyTapKaomojiCategoryID
+            enterKaomojiMode()
+        }
+
+        returnToKanaAfterNextCommit = true
+    }
+
+    private func commitEmojiKaomojiSymbolText(_ text: String) {
+        onTextInput(text)
+        consumeReturnToKanaAfterNextCommitIfNeeded()
     }
 
     private func postModifierButtonState(forModifierOutput output: String) -> KanaPostModifierButtonState? {
@@ -3910,6 +3964,10 @@ struct KeyboardRootView: View {
     private func switchInputMode(_ mode: KeyboardInputMode) {
         if mode != .latin {
             cancelLatinModeSwitchSecondTapWindow()
+        }
+
+        if mode != .emoji {
+            returnToKanaAfterNextCommit = false
         }
 
         transitionState = KeyboardModeTransition.switchInputMode(
@@ -4459,7 +4517,8 @@ struct KeyboardRootView: View {
         onSpace: {},
         onReturn: {},
         onAdvanceKeyboard: {},
-        onApplyKanaPostModifier: { _, _ in false },
+        onApplyKanaPostModifier: { _, _ in .ignored },
+        onToggleParenthesesWrapper: {},
         onSelectConversionCandidate: { _ in },
         onCommitComposingText: {},
         onCommitComposingTextAsKatakana: {},
@@ -4488,6 +4547,10 @@ struct KeyboardRootView: View {
                 kanaModeSwitcherTapActionRawValue: "emoji",
                 kanaModeSwitcherRightFlickActionRawValue: "kaomoji",
                 kanaModeSwitcherUpFlickActionRawValue: "symbols",
+                kanaPostModifierEmptyTapActionRawValue: "kaomoji",
+                kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
+                kanaPostModifierEmptyTapEmojiCategoryID: "0",
+                kanaPostModifierEmptyTapSymbolCategoryID: "0",
                 landscapeCandidateSideRawValue: "left",
             landscapeNumberPaneSideRawValue: "left",
         landscapeLatinSuggestionModeRawValue: "sidebar",

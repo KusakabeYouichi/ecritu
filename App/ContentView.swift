@@ -375,6 +375,30 @@ struct ContentView: View {
     private var kanaModeSwitcherUpFlickActionRawValue: String = KanaModeSwitcherActionOption.symbols.rawValue
 
     @AppStorage(
+        SettingsKeys.kanaPostModifierEmptyTapAction,
+        store: Self.sharedDefaults
+    )
+    private var kanaPostModifierEmptyTapActionRawValue: String = KanaPostModifierEmptyTapActionOption.default.rawValue
+
+    @AppStorage(
+        SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory,
+        store: Self.sharedDefaults
+    )
+    private var kanaPostModifierEmptyTapKaomojiCategoryID: String = KaomojiCategoryChoice.defaultID
+
+    @AppStorage(
+        SettingsKeys.kanaPostModifierEmptyTapEmojiCategory,
+        store: Self.sharedDefaults
+    )
+    private var kanaPostModifierEmptyTapEmojiCategoryID: String = EmojiCategoryChoice.defaultID
+
+    @AppStorage(
+        SettingsKeys.kanaPostModifierEmptyTapSymbolCategory,
+        store: Self.sharedDefaults
+    )
+    private var kanaPostModifierEmptyTapSymbolCategoryID: String = SymbolCategoryChoice.defaultID
+
+    @AppStorage(
         SettingsKeys.delimiterAutoCommitCandidate,
         store: Self.sharedDefaults
     )
@@ -699,6 +723,33 @@ struct ContentView: View {
         rawValueSelection(from: kanaModeSwitcherUpFlickActionRawValue, default: .symbols) {
             kanaModeSwitcherUpFlickActionRawValue = $0
         }
+    }
+
+    private var kanaPostModifierEmptyTapActionSelection: Binding<KanaPostModifierEmptyTapActionOption> {
+        rawValueSelection(from: kanaPostModifierEmptyTapActionRawValue, default: .default) {
+            kanaPostModifierEmptyTapActionRawValue = $0
+        }
+    }
+
+    private var kanaPostModifierEmptyTapKaomojiCategoryBinding: Binding<String> {
+        Binding(
+            get: { kanaPostModifierEmptyTapKaomojiCategoryID },
+            set: { kanaPostModifierEmptyTapKaomojiCategoryID = $0 }
+        )
+    }
+
+    private var kanaPostModifierEmptyTapEmojiCategoryBinding: Binding<String> {
+        Binding(
+            get: { kanaPostModifierEmptyTapEmojiCategoryID },
+            set: { kanaPostModifierEmptyTapEmojiCategoryID = $0 }
+        )
+    }
+
+    private var kanaPostModifierEmptyTapSymbolCategoryBinding: Binding<String> {
+        Binding(
+            get: { kanaPostModifierEmptyTapSymbolCategoryID },
+            set: { kanaPostModifierEmptyTapSymbolCategoryID = $0 }
+        )
     }
 
     private var delimiterAutoCommitCandidateSelection: Binding<DelimiterAutoCommitCandidateOption> {
@@ -2331,6 +2382,13 @@ struct ContentView: View {
                             tapSelection: kanaModeSwitcherTapActionSelection,
                             rightFlickSelection: kanaModeSwitcherRightFlickActionSelection,
                             upFlickSelection: kanaModeSwitcherUpFlickActionSelection
+                        )
+
+                        KanaPostModifierEmptyTapAssignmentSection(
+                            actionSelection: kanaPostModifierEmptyTapActionSelection,
+                            kaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryBinding,
+                            emojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryBinding,
+                            symbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryBinding
                         )
 
                         DelimiterAutoCommitCandidateSettingsSection(

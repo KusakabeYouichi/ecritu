@@ -495,6 +495,119 @@ struct KanaModeSwitcherAssignmentSection: View {
     }
 }
 
+struct KanaPostModifierEmptyTapAssignmentSection: View {
+    @Binding var actionSelection: KanaPostModifierEmptyTapActionOption
+    @Binding var kaomojiCategoryID: String
+    @Binding var emojiCategoryID: String
+    @Binding var symbolCategoryID: String
+
+    private var currentCategoryDescriptors: [CategoryChoiceDescriptor] {
+        switch actionSelection {
+        case .kaomoji: return KaomojiCategoryChoice.all
+        case .emoji: return EmojiCategoryChoice.all
+        case .symbols: return SymbolCategoryChoice.all
+        }
+    }
+
+    private var currentCategoryBinding: Binding<String> {
+        switch actionSelection {
+        case .kaomoji: return $kaomojiCategoryID
+        case .emoji: return $emojiCategoryID
+        case .symbols: return $symbolCategoryID
+        }
+    }
+
+    private var currentCategoryFallback: String {
+        switch actionSelection {
+        case .kaomoji: return KaomojiCategoryChoice.defaultID
+        case .emoji: return EmojiCategoryChoice.defaultID
+        case .symbols: return SymbolCategoryChoice.defaultID
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                DakutenDuckCompositeIconView()
+                    .frame(width: 22, height: 22)
+                Text("タップで切り替え (後置修飾、未確定なし)")
+                    .font(.headline)
+            }
+
+            VStack(spacing: 8) {
+                ForEach(KanaPostModifierEmptyTapActionOption.allCases) { option in
+                    let isSelected = actionSelection == option
+
+                    Button {
+                        actionSelection = option
+                    } label: {
+                        HStack(spacing: 9) {
+                            Text(option.iconLabel)
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                                .frame(width: 38, alignment: .center)
+
+                            Text(option.title)
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.primary)
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 16, weight: .semibold))
+                                .foregroundStyle(
+                                    isSelected
+                                        ? Color.accentColor
+                                        : AppTheme.subduedIcon
+                                )
+                        }
+                        .padding(.horizontal, 10)
+                        .padding(.vertical, 9)
+                        .background(
+                            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                .fill(
+                                    isSelected
+                                        ? AppTheme.selectedControlBackground
+                                        : AppTheme.controlBackground
+                                )
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("切替時に開くカテゴリー")
+                    .font(.subheadline.weight(.semibold))
+
+                Picker("カテゴリー", selection: currentCategoryBinding) {
+                    ForEach(currentCategoryDescriptors) { descriptor in
+                        Text("\(descriptor.icon)  \(descriptor.title)").tag(descriptor.id)
+                    }
+                }
+                .pickerStyle(.menu)
+                .onAppear {
+                    let validIDs = Set(currentCategoryDescriptors.map(\.id))
+
+                    if !validIDs.contains(currentCategoryBinding.wrappedValue) {
+                        currentCategoryBinding.wrappedValue = currentCategoryFallback
+                    }
+                }
+                .onChange(of: actionSelection) { _ in
+                    let validIDs = Set(currentCategoryDescriptors.map(\.id))
+
+                    if !validIDs.contains(currentCategoryBinding.wrappedValue) {
+                        currentCategoryBinding.wrappedValue = currentCategoryFallback
+                    }
+                }
+            }
+
+            Text("後置修飾モードで未確定文字がないときに修飾キーをタップしたとき切り替える入力モードと、初期表示するカテゴリーを指定します。切り替え先で1つ確定すると自動的にかな入力モードへ戻ります。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct DelimiterAutoCommitCandidateSettingsSection: View {
     @Binding var selection: DelimiterAutoCommitCandidateOption
 
