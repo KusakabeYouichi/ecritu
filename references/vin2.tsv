@@ -6,10 +6,6 @@
 	<dict><key>phrase</key><string>40フィート</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>40フィートコンテナ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>A17</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Aargau</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Abbacchio allo Scottadito</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Abboccato</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Abkhazia</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abona</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abondance</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abricot</string><key>shortcut</key><string>★</string></dict>
@@ -27,7 +23,6 @@
 	<dict><key>phrase</key><string>Alavesa</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Alba</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Albana</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Alcohol and Tobacco Tax and Trade Bureau</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Alella</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Alentejano</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Aletta</string><key>shortcut</key><string>★</string></dict>
@@ -63,8 +58,6 @@
 	<dict><key>phrase</key><string>Apera</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Appalachian High Country</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Appenzell</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Appenzeller®</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Appletiser®</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Apéritif</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Aquavit</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Aragonez</string><key>shortcut</key><string>★</string></dict>

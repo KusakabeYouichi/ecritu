@@ -3,6 +3,8 @@
 <plist version="1.0">
 <array>
 	<!-- AOC名や地名 -->
+	<dict><key>phrase</key><string>Abkhazia</string><key>shortcut</key><string>あぶはじあ</string></dict>
+	<dict><key>phrase</key><string>Aargau</string><key>shortcut</key><string>あーるがう</string></dict>
 	<dict><key>phrase</key><string>ポマール</string><key>shortcut</key><string>ぽまーる</string></dict>
 	<dict><key>phrase</key><string>ポサウイエ</string><key>shortcut</key><string>ぽさういえ</string></dict>
 	<dict><key>phrase</key><string>ソアーヴェ</string><key>shortcut</key><string>そあーゔぇ</string></dict>
@@ -658,8 +660,8 @@
 	<dict><key>phrase</key><string>アー・ペー・ヌマー</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 	<dict><key>phrase</key><string>A.P. Nr.</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 	<dict><key>phrase</key><string>B.O.B.</string><key>shortcut</key><string>びーおびー</string></dict>
-	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>でぃーえいしー </string></dict>
+	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string> </string></dict>
 	<dict><key>phrase</key><string>D.V.A.</string><key>shortcut</key><string>★ </string></dict>
 	<dict><key>phrase</key><string>G.C.D.O.</string><key>shortcut</key><string>じーしーでぃーおー</string></dict>
 	<dict><key>phrase</key><string>G.D.O.</string><key>shortcut</key><string>じーでぃーおー</string></dict>
@@ -790,7 +792,7 @@
 	<dict><key>phrase</key><string>UK Quality Wine Schemes</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>VDL</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>VDN</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>VDN, VDL, Primeur</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>Primeur</string><key>shortcut</key><string>ぷりむーる</string></dict>
 	<dict><key>phrase</key><string>VDP. Die Prädikatsweingüter</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>VDP. Erste Lage</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>VDP. Große Lage</string><key>shortcut</key><string>★</string></dict>
@@ -1578,7 +1580,8 @@
 	<dict><key>phrase</key><string>黒海</string><key>shortcut</key><string>こっかい</string></dict>
 	<dict><key>phrase</key><string>地中海</string><key>shortcut</key><string>ちちゅうかい</string></dict>
 
-	<!-- 格付けや分類、ワインのタイプ -->
+	<!-- 格付けや分類、ワインのタイプ、区分、種別、種類 -->
+	<dict><key>phrase</key><string>Abboccato</string><key>shortcut</key><string>あっぼかーと</string></dict>
 	<dict><key>phrase</key><string>Vin Doux Naturel</string><key>shortcut</key><string>ゔぁんどぅーなちゅれる</string></dict>
 	<dict><key>phrase</key><string>Vin doux naturel</string><key>shortcut</key><string>ゔぁんどぅーなちゅれる</string></dict>
 	<dict><key>phrase</key><string>Vin Gris</string><key>shortcut</key><string>ゔぁんぐり</string></dict>
@@ -3139,6 +3142,7 @@
 	<dict><key>phrase</key><string>黄酒</string><key>shortcut</key><string>ほあんちゅう</string></dict>
 
 	<!-- fromage -->
+	<dict><key>phrase</key><string>Appenzeller®</string><key>shortcut</key><string>あっぺんつぇらー</string></dict>
 	<dict><key>phrase</key><string>Beaufort</string><key>shortcut</key><string>ぼーふぉーる</string></dict>
 	<dict><key>phrase</key><string>Caciocavallo Silano</string><key>shortcut</key><string>かちょかゔぁっろしらーの</string></dict>
 	<dict><key>phrase</key><string>Comté</string><key>shortcut</key><string>こんて</string></dict>
@@ -3220,6 +3224,7 @@
 
 
 	<!-- 団体・組織 -->
+	<dict><key>phrase</key><string>Alcohol and Tobacco Tax and Trade Bureau</string><key>shortcut</key><string>あるこーるあんどたばこたっくすあんどとれいどびゅーろー</string></dict>
 	<dict><key>phrase</key><string>ヴィーニョ・ヴェルデ地域生産委員会</string><key>shortcut</key><string>ゔぃーにょゔぇるでちいきせいさんいいんかい</string></dict>
 	<dict><key>phrase</key><string>キャップ・クラシック生産者協会</string><key>shortcut</key><string>きゃっぷくらしっくせいさんしゃきょうかい</string></dict>
 	<dict><key>phrase</key><string>イギリス王立科学会</string><key>shortcut</key><string>いぎりすおうりつかがくかい</string></dict>
@@ -3397,6 +3402,7 @@
 	<dict><key>phrase</key><string>ヴォス・アーティザン</string><key>shortcut</key><string>ゔぉすあーてぃざん</string></dict>
 
 	<!-- 料理・食材 -->
+	<dict><key>phrase</key><string>Abbacchio allo Scottadito</string><key>shortcut</key><string>あばっきおあっろすこったでぃーと</string></dict>
 	<dict><key>phrase</key><string>ゼリー寄せ</string><key>shortcut</key><string>ぜりーよせ</string></dict>
 	<dict><key>phrase</key><string>セビーチェ</string><key>shortcut</key><string>せびーちぇ</string></dict>
 	<dict><key>phrase</key><string>グアンチャーレ</string><key>shortcut</key><string>ぐあんちゃーれ</string></dict>
@@ -3593,7 +3599,7 @@
 	<dict><key>phrase</key><string>Gin</string><key>shortcut</key><string>じん</string></dict>
 	<dict><key>phrase</key><string>Rum</string><key>shortcut</key><string>らむ</string></dict>
 	<dict><key>phrase</key><string>アネホ</string><key>shortcut</key><string>★ </string></dict>
-
+	<dict><key>phrase</key><string>Appletiser®</string><key>shortcut</key><string>あっぷるたいざー</string></dict>
 
 	<!-- その他 -->
 	<dict><key>phrase</key><string>洞爺湖サミット</string><key>shortcut</key><string>とうやこさみっと</string></dict>

@@ -213,6 +213,7 @@
 	<!-- サ変動詞化する名詞 -->
 	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string></dict>
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string></dict>
+    <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string></dict>
 
 	<!-- 活用なし (名詞など) -->
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
@@ -325,6 +326,9 @@
     <dict><key>phrase</key><string>saignant</string><key>shortcut</key><string>せにゃん</string></dict>
     <dict><key>phrase</key><string>a point</string><key>shortcut</key><string>あぽわん</string></dict>
     <dict><key>phrase</key><string>bien cuit</string><key>shortcut</key><string>びやんきゅい</string></dict>
-    <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>スプレッド</string></dict>
+    <dict><key>phrase</key><string>Baguette</string><key>shortcut</key><string>ばげっと</string></dict>
+    <dict><key>phrase</key><string>Ficelle</string><key>shortcut</key><string>ふぃせる</string></dict>
+    <dict><key>phrase</key><string>Parisien</string><key>shortcut</key><string>ぱりじゃん</string></dict>
+    <dict><key>phrase</key><string>Batard</string><key>shortcut</key><string>ばたーる</string></dict>
 </array>
 </plist>
