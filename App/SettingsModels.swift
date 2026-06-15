@@ -58,6 +58,7 @@ enum SettingsKeys {
     static let kanaKanjiInitialSuppressionDictionaryAppliedSignature = "kanaKanjiInitialSuppressionDictionaryAppliedSignature"
     static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+    static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
     static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
     static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
     static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"

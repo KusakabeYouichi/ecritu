@@ -434,6 +434,12 @@ struct ContentView: View {
     )
     private var kaomojiCandidateDisplayEnabled = true
 
+    @AppStorage(
+        SettingsKeys.historicalKanaCandidatesEnabled,
+        store: Self.sharedDefaults
+    )
+    private var historicalKanaCandidatesEnabled = false
+
     @State private var userDictionaryEntries: [VocabularyEntry] = []
     @State private var userDictionaryReadingInput = ""
     @State private var userDictionaryCandidateInput = ""
@@ -514,7 +520,8 @@ struct ContentView: View {
             userDictionaryCandidateDisplayModeRawValue,
             contactCandidateDisplayModeRawValue,
             String(emojiCandidateDisplayEnabled),
-            String(kaomojiCandidateDisplayEnabled)
+            String(kaomojiCandidateDisplayEnabled),
+            String(historicalKanaCandidatesEnabled)
         ]
             .joined(separator: "|")
     }
@@ -2411,6 +2418,10 @@ struct ContentView: View {
                                 .foregroundStyle(.secondary)
                         }
                         .settingsCardStyle()
+
+                        HistoricalKanaCandidatesSettingsSection(
+                            isEnabled: $historicalKanaCandidatesEnabled
+                        )
 
                         ContactCandidateDisplaySettingsSection(
                             selection: contactCandidateDisplayModeSelection

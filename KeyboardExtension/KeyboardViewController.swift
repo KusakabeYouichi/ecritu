@@ -298,6 +298,7 @@ final class KeyboardViewController: UIInputViewController {
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
         static let landscapeLatinSuggestionMode = "landscapeLatinSuggestionMode"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
+        static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
         static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
         static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
         static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
@@ -454,7 +455,17 @@ final class KeyboardViewController: UIInputViewController {
         prepareKeyboardVisualForTransition()
         configureInputAssistantBar()
         startObservingSettingsDidChange()
+        applyConverterFeatureFlagsFromSharedDefaults()
         setupKeyboardView()
+    }
+
+    private func applyConverterFeatureFlagsFromSharedDefaults() {
+        let historicalKanaAllowed = sharedBoolValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.historicalKanaCandidatesEnabled,
+            fallback: false
+        )
+        kanaKanjiConverter.setHistoricalKanaSurfaceAllowed(historicalKanaAllowed)
     }
 
     deinit {
@@ -2706,6 +2717,7 @@ final class KeyboardViewController: UIInputViewController {
                 event: "共有設定変更通知を受信",
                 appendLog: true
             )
+            self.applyConverterFeatureFlagsFromSharedDefaults()
             self.kanaKanjiConverter.clearSharedDataCaches()
 
             if self.memoryFailSafeProfile == .critical {
