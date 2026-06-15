@@ -527,11 +527,16 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(spacing: 6) {
+            HStack(alignment: .firstTextBaseline, spacing: 2) {
                 DakutenDuckCompositeIconView()
-                    .frame(width: 22, height: 22)
-                Text("タップで切り替え (後置修飾、未確定なし)")
+                    .frame(width: 18, height: 18)
+                    .alignmentGuide(.firstTextBaseline) { dimensions in
+                        dimensions[VerticalAlignment.center] + 6
+                    }
+                Text("タップ (後置修飾、未確定なし)")
                     .font(.headline)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.85)
             }
 
             VStack(spacing: 8) {
