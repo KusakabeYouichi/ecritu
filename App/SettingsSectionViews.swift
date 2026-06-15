@@ -732,6 +732,25 @@ struct EmojiKaomojiCandidateSettingsSection: View {
     }
 }
 
+struct HistoricalKanaCandidatesSettingsSection: View {
+    @Binding var isEnabled: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("旧仮名遣い候補")
+                .font(.headline)
+
+            Toggle("旧仮名遣いの候補を含める", isOn: $isEnabled)
+                .toggleStyle(.switch)
+
+            Text("「かえる→変へる」「かんがえる→考へる」のような歴史的仮名遣い表記の候補を変換結果に含めるかを切り替えます。既定はオフ(現代仮名遣いのみ)。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 

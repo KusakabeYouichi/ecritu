@@ -222,8 +222,21 @@ final class KanaKanjiConverter {
 
     private let candidateCacheLimit = 96
 
+    private var historicalKanaSurfaceAllowed: Bool = false
+
     init(store: KanaKanjiStore) {
         self.store = store
+    }
+
+    func setHistoricalKanaSurfaceAllowed(_ allowed: Bool) {
+        stateQueue.sync {
+            guard historicalKanaSurfaceAllowed != allowed else {
+                return
+            }
+
+            historicalKanaSurfaceAllowed = allowed
+            invalidateCandidateCache()
+        }
     }
 
     func preloadSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
@@ -481,12 +494,17 @@ final class KanaKanjiConverter {
             return lhs < rhs
         }
 
-        let filteredSortedCandidates = filterArchaicAdjectiveSurfaceCandidates(
+        let archaicAdjectiveFiltered = filterArchaicAdjectiveSurfaceCandidates(
             for: normalizedReading,
             candidates: sortedCandidates,
             userDictionary: userDictionary,
             learnedDictionary: learnedDictionary,
             initialUserDictionary: initialUserDictionary
+        )
+
+        let filteredSortedCandidates = filterHistoricalKanaSurfaceCandidates(
+            for: normalizedReading,
+            candidates: archaicAdjectiveFiltered
         )
 
         let finalCandidates = Array(filteredSortedCandidates.prefix(limit))
@@ -2072,10 +2090,36 @@ final class KanaKanjiConverter {
             )
         }
 
-        return filterArchaicAdjectiveSurfaceCandidates(
+        let archaicAdjectiveFiltered = filterArchaicAdjectiveSurfaceCandidates(
             for: reading,
             candidates: mergedCandidates
         )
+
+        return filterHistoricalKanaSurfaceCandidates(
+            for: reading,
+            candidates: archaicAdjectiveFiltered
+        )
+    }
+
+    private func filterHistoricalKanaSurfaceCandidates(
+        for reading: String,
+        candidates: [String]
+    ) -> [String] {
+        let allowed = stateQueue.sync { historicalKanaSurfaceAllowed }
+
+        guard !allowed,
+            reading.hasSuffix("える") else {
+            return candidates
+        }
+
+        return candidates.filter { candidate in
+            guard candidate.count >= 2,
+                candidate.hasSuffix("へる") else {
+                return true
+            }
+
+            return false
+        }
     }
 
     private func filterArchaicAdjectiveSurfaceCandidates(
