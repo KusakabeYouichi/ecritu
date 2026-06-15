@@ -17,6 +17,7 @@ private final class KanaKanjiSQLiteIndex {
     private var selectInflectionStatement: OpaquePointer?
     private(set) var hasSourceMetadata = false
     private(set) var hasInflectionMetadata = false
+    private(set) var hasAnyEntries = false
 
     init?(databaseURL: URL) {
         var openedDatabase: OpaquePointer?
@@ -61,6 +62,13 @@ private final class KanaKanjiSQLiteIndex {
             selectInflectionStatement = prepareStatement(
                 sql: "SELECT candidate, inflection_class FROM inflection_classes WHERE reading = ?"
             )
+        }
+
+        if let probeStatement = prepareStatement(
+            sql: "SELECT 1 FROM dictionary_entries LIMIT 1"
+        ) {
+            hasAnyEntries = sqlite3_step(probeStatement) == SQLITE_ROW
+            sqlite3_finalize(probeStatement)
         }
     }
 
@@ -356,6 +364,14 @@ final class KanaKanjiStore {
             self.sqliteIndex = sqliteIndex
             return sqliteIndex
         }
+    }
+
+    func isSystemDictionaryFallback() -> Bool {
+        guard let sqliteIndex = sqliteIndexIfAvailable() else {
+            return true
+        }
+
+        return !sqliteIndex.hasAnyEntries
     }
 
     func prepareSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
