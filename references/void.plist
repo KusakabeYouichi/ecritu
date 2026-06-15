@@ -330,5 +330,7 @@
     <dict><key>phrase</key><string>Ficelle</string><key>shortcut</key><string>ふぃせる</string></dict>
     <dict><key>phrase</key><string>Parisien</string><key>shortcut</key><string>ぱりじゃん</string></dict>
     <dict><key>phrase</key><string>Batard</string><key>shortcut</key><string>ばたーる</string></dict>
+    <dict><key>phrase</key><string>日本ソムリエ協会</string><key>shortcut</key><string>にほんそむりえきょうかい</string></dict>
+    <dict><key>phrase</key><string>ソムリエ協会</string><key>shortcut</key><string>そむりえきょうかい</string></dict>
 </array>
 </plist>
