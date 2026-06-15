@@ -289,6 +289,10 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
         static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
         static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+        static let kanaPostModifierEmptyTapAction = "kanaPostModifierEmptyTapAction"
+        static let kanaPostModifierEmptyTapKaomojiCategory = "kanaPostModifierEmptyTapKaomojiCategory"
+        static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"
+        static let kanaPostModifierEmptyTapSymbolCategory = "kanaPostModifierEmptyTapSymbolCategory"
         static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
         static let landscapeCandidateSide = "landscapeCandidateSide"
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
@@ -411,6 +415,10 @@ final class KeyboardViewController: UIInputViewController {
         let kanaModeSwitcherTapActionRawValue: String
         let kanaModeSwitcherRightFlickActionRawValue: String
         let kanaModeSwitcherUpFlickActionRawValue: String
+        let kanaPostModifierEmptyTapActionRawValue: String
+        let kanaPostModifierEmptyTapKaomojiCategoryID: String
+        let kanaPostModifierEmptyTapEmojiCategoryID: String
+        let kanaPostModifierEmptyTapSymbolCategoryID: String
         let landscapeCandidateSideRawValue: String
         let landscapeNumberPaneSideRawValue: String
         let landscapeLatinSuggestionModeRawValue: String
@@ -3357,6 +3365,26 @@ final class KeyboardViewController: UIInputViewController {
             key: SharedDefaultsKeys.kanaModeSwitcherUpFlickAction,
             fallback: "symbols"
         )
+        let kanaPostModifierEmptyTapActionRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaPostModifierEmptyTapAction,
+            fallback: "kaomoji"
+        )
+        let kanaPostModifierEmptyTapKaomojiCategoryID = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaPostModifierEmptyTapKaomojiCategory,
+            fallback: "existing"
+        )
+        let kanaPostModifierEmptyTapEmojiCategoryID = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaPostModifierEmptyTapEmojiCategory,
+            fallback: "0"
+        )
+        let kanaPostModifierEmptyTapSymbolCategoryID = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaPostModifierEmptyTapSymbolCategory,
+            fallback: "0"
+        )
         let landscapeCandidateSideRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.landscapeCandidateSide,
@@ -3398,6 +3426,10 @@ final class KeyboardViewController: UIInputViewController {
             kanaModeSwitcherTapActionRawValue: kanaModeSwitcherTapActionRawValue,
             kanaModeSwitcherRightFlickActionRawValue: kanaModeSwitcherRightFlickActionRawValue,
             kanaModeSwitcherUpFlickActionRawValue: kanaModeSwitcherUpFlickActionRawValue,
+            kanaPostModifierEmptyTapActionRawValue: kanaPostModifierEmptyTapActionRawValue,
+            kanaPostModifierEmptyTapKaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryID,
+            kanaPostModifierEmptyTapEmojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryID,
+            kanaPostModifierEmptyTapSymbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryID,
             landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
@@ -3433,7 +3465,10 @@ final class KeyboardViewController: UIInputViewController {
                 self?.applyKanaPostModifier(
                     buttonState,
                     preferLatestContext: preferLatestContext
-                ) ?? false
+                ) ?? .ignored
+            },
+            onToggleParenthesesWrapper: { [weak self] in
+                self?.toggleParenthesesWrapper()
             },
             onSelectConversionCandidate: { [weak self] index in
                 self?.handleConversionCandidateSelection(index)
@@ -3508,6 +3543,10 @@ final class KeyboardViewController: UIInputViewController {
             kanaModeSwitcherTapActionRawValue: configuration.kanaModeSwitcherTapActionRawValue,
             kanaModeSwitcherRightFlickActionRawValue: configuration.kanaModeSwitcherRightFlickActionRawValue,
             kanaModeSwitcherUpFlickActionRawValue: configuration.kanaModeSwitcherUpFlickActionRawValue,
+            kanaPostModifierEmptyTapActionRawValue: configuration.kanaPostModifierEmptyTapActionRawValue,
+            kanaPostModifierEmptyTapKaomojiCategoryID: configuration.kanaPostModifierEmptyTapKaomojiCategoryID,
+            kanaPostModifierEmptyTapEmojiCategoryID: configuration.kanaPostModifierEmptyTapEmojiCategoryID,
+            kanaPostModifierEmptyTapSymbolCategoryID: configuration.kanaPostModifierEmptyTapSymbolCategoryID,
             landscapeCandidateSideRawValue: configuration.landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: configuration.landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: configuration.landscapeLatinSuggestionModeRawValue,

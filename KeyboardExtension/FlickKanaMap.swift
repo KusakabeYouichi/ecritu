@@ -46,6 +46,12 @@ enum KanaPostModifierButtonState: Equatable {
     case kaomoji
 }
 
+enum KanaPostModifierApplyOutcome {
+    case applied
+    case idleEmptyContext
+    case ignored
+}
+
 enum KeyboardInputMode {
     case kana
     case number

@@ -39,6 +39,10 @@ enum SettingsKeys {
     static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
     static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
     static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
+    static let kanaPostModifierEmptyTapAction = "kanaPostModifierEmptyTapAction"
+    static let kanaPostModifierEmptyTapKaomojiCategory = "kanaPostModifierEmptyTapKaomojiCategory"
+    static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"
+    static let kanaPostModifierEmptyTapSymbolCategory = "kanaPostModifierEmptyTapSymbolCategory"
     static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
     static let landscapeCandidateSide = "landscapeCandidateSide"
     static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
@@ -268,6 +272,109 @@ enum KanaModeSwitcherActionOption: String, CaseIterable, Identifiable {
         case .symbols: return "⌘"
         }
     }
+}
+
+enum KanaPostModifierEmptyTapActionOption: String, CaseIterable, Identifiable {
+    case kaomoji
+    case emoji
+    case symbols
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .kaomoji: return "顔文字入力モード"
+        case .emoji: return "絵文字入力モード"
+        case .symbols: return "記号入力モード"
+        }
+    }
+
+    var iconLabel: String {
+        switch self {
+        case .kaomoji: return "^_^"
+        case .emoji: return "☺︎"
+        case .symbols: return "⌘"
+        }
+    }
+
+    static let `default`: KanaPostModifierEmptyTapActionOption = .kaomoji
+}
+
+struct CategoryChoiceDescriptor: Identifiable, Hashable {
+    let id: String
+    let title: String
+    let icon: String
+}
+
+enum KaomojiCategoryChoice {
+    // Mirrored from KeyboardExtension/KeyboardRootViewSupportTypes.swift (KaomojiCategory)
+    // and KeyboardExtension/KaomojiCatalog.swift (importedCategoryOrder).
+    static let defaultID = "existing"
+
+    static let all: [CategoryChoiceDescriptor] = {
+        var entries: [CategoryChoiceDescriptor] = [
+            CategoryChoiceDescriptor(id: "existing", title: "基本", icon: "🙂"),
+            CategoryChoiceDescriptor(id: "shortcut", title: "ショートカット", icon: "⚡️"),
+            CategoryChoiceDescriptor(id: "search", title: "検索", icon: "🔎")
+        ]
+
+        let importedCategories: [(name: String, icon: String)] = [
+            ("キャラ", "🧑"),
+            ("ライン", "💬"),
+            ("挨拶", "🙋"),
+            ("キモい", "🤪"),
+            ("特殊", "✨"),
+            ("笑", "😂"),
+            ("焦り", "💦"),
+            ("かわいい", "🥰"),
+            ("驚き", "😲"),
+            ("怒", "😠"),
+            ("しょぼん", "😔"),
+            ("ラブ", "❤️"),
+            ("激しい", "💥"),
+            ("照れ", "😊"),
+            ("くそねみ", "😴"),
+            ("悲", "😢"),
+            ("うごき", "🏃")
+        ]
+
+        entries.append(contentsOf: importedCategories.map {
+            CategoryChoiceDescriptor(id: "imported:\($0.name)", title: $0.name, icon: $0.icon)
+        })
+
+        return entries
+    }()
+}
+
+enum EmojiCategoryChoice {
+    // Mirrored from KeyboardExtension/KeyboardRootViewSupportTypes.swift (EmojiCategory).
+    static let defaultID = "0"
+
+    static let all: [CategoryChoiceDescriptor] = [
+        CategoryChoiceDescriptor(id: "0", title: "ひと", icon: "😀"),
+        CategoryChoiceDescriptor(id: "1", title: "動物・自然", icon: "🐻"),
+        CategoryChoiceDescriptor(id: "2", title: "食べもの・飲みもの", icon: "🍔"),
+        CategoryChoiceDescriptor(id: "3", title: "アクティビティ", icon: "🏀"),
+        CategoryChoiceDescriptor(id: "4", title: "旅行・場所", icon: "🚗"),
+        CategoryChoiceDescriptor(id: "5", title: "もの", icon: "💡"),
+        CategoryChoiceDescriptor(id: "6", title: "記号", icon: "❤️"),
+        CategoryChoiceDescriptor(id: "7", title: "国旗", icon: "🇫🇷")
+    ]
+}
+
+enum SymbolCategoryChoice {
+    // Mirrored from KeyboardExtension/KeyboardRootViewSupportTypes.swift (SymbolCategory).
+    static let defaultID = "0"
+
+    static let all: [CategoryChoiceDescriptor] = [
+        CategoryChoiceDescriptor(id: "0", title: "基本記号", icon: "!?"),
+        CategoryChoiceDescriptor(id: "1", title: "括弧・引用符", icon: "『』"),
+        CategoryChoiceDescriptor(id: "2", title: "通貨", icon: "€"),
+        CategoryChoiceDescriptor(id: "3", title: "単位", icon: "℃"),
+        CategoryChoiceDescriptor(id: "4", title: "数学", icon: "∑"),
+        CategoryChoiceDescriptor(id: "5", title: "矢印", icon: "↗"),
+        CategoryChoiceDescriptor(id: "6", title: "囲み文字", icon: "⓪")
+    ]
 }
 
 enum DelimiterAutoCommitCandidateOption: String, CaseIterable, Identifiable {

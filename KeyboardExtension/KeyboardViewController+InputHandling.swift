@@ -1694,6 +1694,15 @@ extension KeyboardViewController {
         composingContextPrefixTail = ""
     }
 
+    func toggleParenthesesWrapper() {
+        guard currentInputMode == .kana else {
+            return
+        }
+
+        hasParenthesesWrapper.toggle()
+        refreshKeyboardStateForUserInitiatedAction(.postModifier)
+    }
+
     func wrappedCommittedTextIfNeeded(_ text: String) -> String {
         guard hasParenthesesWrapper else {
             return text
@@ -1828,7 +1837,7 @@ extension KeyboardViewController {
     func applyKanaPostModifier(
         _ buttonState: KanaPostModifierButtonState,
         preferLatestContext: Bool = false
-    ) -> Bool {
+    ) -> KanaPostModifierApplyOutcome {
         let hadPendingComposingText = !composingRawText.isEmpty
             || !composingReading.isEmpty
             || activeConversion != nil
@@ -1922,7 +1931,7 @@ extension KeyboardViewController {
             lastKanaPostModifierAppliedAt = CFAbsoluteTimeGetCurrent()
             lastKanaPostModifierResultCharacter = replacedCharacter
             refreshKeyboardStateForUserInitiatedAction(.postModifier)
-            return true
+            return .applied
         }
 
         let contextBeforeInput = currentTextContextBeforeInputTail(
@@ -1931,16 +1940,7 @@ extension KeyboardViewController {
 
         guard let lastCharacter = contextBeforeInput.last,
                 let replacedCharacter = resolvedPostModifierCharacter(from: lastCharacter) else {
-            // Display-only wrapper toggle is only for kaomoji state.
-            if currentInputMode == .kana,
-                resolvedButtonState == .kaomoji,
-                !hadPendingComposingText {
-                hasParenthesesWrapper.toggle()
-                refreshKeyboardStateForUserInitiatedAction(.postModifier)
-                return true
-            }
-
-            return false
+            return hadPendingComposingText ? .ignored : .idleEmptyContext
         }
 
         markTextProxyEdit()
@@ -1966,6 +1966,6 @@ extension KeyboardViewController {
         lastKanaPostModifierResultCharacter = replacedCharacter
 
         refreshKeyboardStateForUserInitiatedAction(.postModifier)
-        return true
+        return .applied
     }
 }
