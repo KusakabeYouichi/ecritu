@@ -111,6 +111,48 @@ final class KanaKanjiConverter {
         }
     }
 
+    private func isDeinflectedSuppressed(
+        candidate: String,
+        reading: String,
+        suppressedByReading: [String: Set<String>]
+    ) -> Bool {
+        guard !suppressedByReading.isEmpty else {
+            return false
+        }
+
+        for rule in Self.allInflectionRules {
+            guard reading.hasSuffix(rule.readingSuffix),
+                candidate.hasSuffix(rule.outputCandidateSuffix) else {
+                continue
+            }
+
+            let readingStem = String(reading.dropLast(rule.readingSuffix.count))
+            let candidateStem = String(candidate.dropLast(rule.outputCandidateSuffix.count))
+
+            if readingStem.isEmpty,
+                !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
+                continue
+            }
+
+            let baseReading = readingStem + rule.baseReadingSuffix
+
+            guard let suppressedSet = suppressedByReading[baseReading],
+                !suppressedSet.isEmpty else {
+                continue
+            }
+
+            for baseCandidateSuffix in rule.baseCandidateSuffixes {
+                let baseCandidate = candidateStem + baseCandidateSuffix
+
+                if suppressedSet.contains(baseCandidate) {
+                    return true
+                }
+            }
+        }
+
+        return false
+    }
+
     private func filterNonVerbalCandidatesForVerbalPostfix(
         _ candidates: [String],
         stemReading: String,
@@ -516,6 +558,14 @@ final class KanaKanjiConverter {
             for candidate in suppressedCandidates {
                 scores.removeValue(forKey: candidate)
             }
+        }
+
+        for candidate in Array(scores.keys) where isDeinflectedSuppressed(
+            candidate: candidate,
+            reading: normalizedReading,
+            suppressedByReading: suppressedCandidatesByReading
+        ) {
+            scores.removeValue(forKey: candidate)
         }
 
         let sortedCandidates = scores.keys.sorted { lhs, rhs in
@@ -2272,12 +2322,23 @@ final class KanaKanjiConverter {
 
         let suppressedByReading = store.suppressedCandidatesByReading()
 
-        guard let suppressedCandidates = suppressedByReading[normalizedReading],
-            !suppressedCandidates.isEmpty else {
+        guard !suppressedByReading.isEmpty else {
             return candidates
         }
 
-        return candidates.filter { !suppressedCandidates.contains($0) }
+        let directSuppressed = suppressedByReading[normalizedReading] ?? []
+
+        return candidates.filter { candidate in
+            if directSuppressed.contains(candidate) {
+                return false
+            }
+
+            return !isDeinflectedSuppressed(
+                candidate: candidate,
+                reading: normalizedReading,
+                suppressedByReading: suppressedByReading
+            )
+        }
     }
 
     private func combinedUserCandidates(
