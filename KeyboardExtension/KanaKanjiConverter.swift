@@ -111,6 +111,32 @@ final class KanaKanjiConverter {
         }
     }
 
+    private static let godanPotentialConjugationSuffixes: [String] = [
+        "る",
+        "ない", "なかった",
+        "た", "たら", "たり",
+        "て",
+        "ます", "ました", "ません", "ませんでした",
+        "れば",
+        "よう",
+        "たい", "たく", "たくて", "たくない", "たくなかった", "たかった", "たければ"
+    ]
+
+    private static let godanPotentialDeinflectionMappings: [(readingSuffix: String, baseReadingSuffix: String)] = {
+        var mappings: [(readingSuffix: String, baseReadingSuffix: String)] = []
+        for pattern in godanPatterns {
+            for conjugation in godanPotentialConjugationSuffixes {
+                mappings.append(
+                    (
+                        readingSuffix: pattern.eForm + conjugation,
+                        baseReadingSuffix: pattern.dictionaryEnding
+                    )
+                )
+            }
+        }
+        return mappings
+    }()
+
     private func isDeinflectedSuppressed(
         candidate: String,
         reading: String,
@@ -147,6 +173,28 @@ final class KanaKanjiConverter {
                 if suppressedSet.contains(baseCandidate) {
                     return true
                 }
+            }
+        }
+
+        for mapping in Self.godanPotentialDeinflectionMappings {
+            guard reading.hasSuffix(mapping.readingSuffix),
+                candidate.hasSuffix(mapping.readingSuffix) else {
+                continue
+            }
+
+            let readingStem = String(reading.dropLast(mapping.readingSuffix.count))
+            let candidateStem = String(candidate.dropLast(mapping.readingSuffix.count))
+
+            guard !readingStem.isEmpty else {
+                continue
+            }
+
+            let baseReading = readingStem + mapping.baseReadingSuffix
+            let baseCandidate = candidateStem + mapping.baseReadingSuffix
+
+            if let suppressedSet = suppressedByReading[baseReading],
+                suppressedSet.contains(baseCandidate) {
+                return true
             }
         }
 
