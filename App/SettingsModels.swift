@@ -284,9 +284,9 @@ enum KanaPostModifierEmptyTapActionOption: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .kaomoji: return "顔文字入力モード"
-        case .emoji: return "絵文字入力モード"
-        case .symbols: return "記号入力モード"
+        case .kaomoji: return "顔文字入力モードに一時切り替え"
+        case .emoji: return "絵文字入力モードに一時切り替え"
+        case .symbols: return "記号入力モードに一時切り替え"
         }
     }
 
