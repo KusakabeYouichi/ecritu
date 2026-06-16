@@ -2423,13 +2423,13 @@ struct ContentView: View {
                             isEnabled: $historicalKanaCandidatesEnabled
                         )
 
-                        ContactCandidateDisplaySettingsSection(
-                            selection: contactCandidateDisplayModeSelection
-                        )
-
                         EmojiKaomojiCandidateSettingsSection(
                             enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
                             enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
+                        )
+
+                        ContactCandidateDisplaySettingsSection(
+                            selection: contactCandidateDisplayModeSelection
                         )
 
                         UserDictionaryCandidateDisplaySettingsSection(
