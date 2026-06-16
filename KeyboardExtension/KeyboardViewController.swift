@@ -222,6 +222,14 @@ final class KeyboardViewController: UIInputViewController {
         label: "com.kusakabe.ecritu.candidate-generation",
         qos: .userInitiated
     )
+    var markedTextWatchdogTimer: DispatchSourceTimer?
+    var lastMarkedTextUpdateAt: CFAbsoluteTime = 0
+    static let markedTextWatchdogInterval: TimeInterval = 1.5
+    static let markedTextWatchdogQuietPeriod: TimeInterval = 1.0
+    static let markedTextWatchdogQueue = DispatchQueue(
+        label: "com.kusakabe.ecritu.marked-text-watchdog",
+        qos: .utility
+    )
 
     struct CandidatePresentationCacheKey: Equatable {
         let reading: String
@@ -1412,6 +1420,8 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
+
+        stopMarkedTextWatchdog()
 
         if let workItem = dictionaryPreloadWorkItem {
             workItem.cancel()
