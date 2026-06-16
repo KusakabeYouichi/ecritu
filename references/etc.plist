@@ -274,6 +274,6 @@
 	<dict><key>phrase</key><string>労働者</string><key>shortcut</key><string>ろうどうしゃ</string></dict>
 	<dict><key>phrase</key><string>労働条件</string><key>shortcut</key><string>ろうどうじょうけん</string></dict>
 	<dict><key>phrase</key><string>謳歌</string><key>shortcut</key><string>おうか</string></dict>
-	<dict><key>phrase</key><string>TGV</string><key>shortcut</key><string>てぃーじーゔい</string></dict>$
+	<dict><key>phrase</key><string>TGV</string><key>shortcut</key><string>てぃーじーゔい</string></dict>
 </array>
 </plist>

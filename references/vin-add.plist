@@ -1,6 +1,5 @@
-# -------------------------------------------------------
 <!-- ぶどう品種 -->
-	<dict><key>phrase</key><string>Albana</string><key>shortcut</key><string>あるばーな/string></dict>
+	<dict><key>phrase</key><string>Albana</string><key>shortcut</key><string>あるばーな</string></dict>
 	<dict><key>phrase</key><string>Altesse</string><key>shortcut</key><string>あるてす</string></dict>
 	<dict><key>phrase</key><string>Amigne</string><key>shortcut</key><string>あみーにょ</string></dict>
 	<dict><key>phrase</key><string>Ansonica</string><key>shortcut</key><string>あんそにか</string></dict>
@@ -2355,7 +2354,7 @@
 	<dict><key>phrase</key><string>ウイスキー+スイート・ベルモット</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ウイスキー+炭酸</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ウイスキー貯蔵樽</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ウイスキー</string><key>shortcut</key><string>ウイスキー</string></dict>
+	<dict><key>phrase</key><string>ウイスキー</string><key>shortcut</key><string>ういすきー</string></dict>
 	<dict><key>phrase</key><string>ウデド</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ウドンコ病</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ウドン粉病</string><key>shortcut</key><string>★</string></dict>
@@ -4105,5 +4104,3 @@
 	<dict><key>phrase</key><string>黄麹菌</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>黒系</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>火山灰</string><key>shortcut</key><string>★</string></dict>
-# -------------------------------------------------------
-# 略語

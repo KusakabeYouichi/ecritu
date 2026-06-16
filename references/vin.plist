@@ -661,47 +661,47 @@
 	<dict><key>phrase</key><string>アー・ペー・ヌマー</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 	<dict><key>phrase</key><string>A.P. Nr.</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 	<dict><key>phrase</key><string>B.O.B.</string><key>shortcut</key><string>びーおびー</string></dict>
-	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>でぃーえいしー </string></dict>
-	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string> </string></dict>
-	<dict><key>phrase</key><string>D.V.A.</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>でぃーえいしー</string></dict>
+	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string>でぃーえいちしー</string></dict>
+	<dict><key>phrase</key><string>D.V.A.</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>G.C.D.O.</string><key>shortcut</key><string>じーしーでぃーおー</string></dict>
 	<dict><key>phrase</key><string>G.D.O.</string><key>shortcut</key><string>じーでぃーおー</string></dict>
-	<dict><key>phrase</key><string>I.G.</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>I.G.</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>I.G.P.</string><key>shortcut</key><string>あいじーぴー</string></dict>
 	<dict><key>phrase</key><string>I.G.T.</string><key>shortcut</key><string>あいじーてぃー</string></dict>
-	<dict><key>phrase</key><string>I.N.A.O.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>L.B.V</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>O.E.M.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>O.F.J.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>O.I.V.</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>I.N.A.O.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>L.B.V</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>O.E.M.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>O.F.J.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>O.I.V.</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>P.D.O.</string><key>shortcut</key><string>ぴーでぃーおー</string></dict>
-	<dict><key>phrase</key><string>P.G.I.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>T.S.G.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.C.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.C.P.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.D.L.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.D.N.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.O.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.O.R.S.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.O.S.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.P.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.Q.A.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.R.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.S.I.G.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>V.S.O.P.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>VDP.</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>P.G.I.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>T.S.G.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.C.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.C.P.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.D.L.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.D.N.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.O.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.O.R.S.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.O.S.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.P.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.Q.A.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.R.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.S.I.G.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>V.S.O.P.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>VDP.</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>W.O.</string><key>shortcut</key><string>だぶりゅーおー</string></dict>
-	<dict><key>phrase</key><string>g.U.</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>g.g.A.</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>g.U.</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>g.g.A.</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>TCA</string><key>shortcut</key><string>てぃーしーえい</string></dict>
-	<dict><key>phrase</key><string>TCP</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>TPO</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>TTB</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>WAC</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>WHO</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>WIETA</string><key>shortcut</key><string>★ </string></dict>
-	<dict><key>phrase</key><string>WOSA</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>TCP</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>TPO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>TTB</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>WAC</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>WHO</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>WIETA</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>WOSA</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>3MH</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>3MHA</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>4MMP</string><key>shortcut</key><string>★</string></dict>
@@ -1265,7 +1265,7 @@
 	<dict><key>phrase</key><string>トゥクマン州</string><key>shortcut</key><string>とぅくまんしゅう</string></dict>
 	<dict><key>phrase</key><string>トレンティーノ・アルト・アディジェ州</string><key>shortcut</key><string>とれんてぃーのあるとあでぃじぇしゅう</string></dict>
 	<dict><key>phrase</key><string>ニュー・サウス・ウェールズ州</string><key>shortcut</key><string>にゅーさうすうぇーるずしゅう</string></dict>
-	<dict><key>phrase</key><string>ニーダーエステライヒ州</string><key>shortcut</key><string>ニーだーえすたらいひしゅう</string></dict>
+	<dict><key>phrase</key><string>ニーダーエステライヒ州</string><key>shortcut</key><string>にーだーえすたらいひしゅう</string></dict>
 	<dict><key>phrase</key><string>ネウケン州</string><key>shortcut</key><string>ねうけん</string></dict>
 	<dict><key>phrase</key><string>ノッティンガムシャー州</string><key>shortcut</key><string>のってぃんがむしゃーしゅう</string></dict>
 	<dict><key>phrase</key><string>ノヴァ・スコシア州</string><key>shortcut</key><string>のゔぁすこしあ</string></dict>
@@ -1589,8 +1589,8 @@
 	<dict><key>phrase</key><string>Vin doux naturel</string><key>shortcut</key><string>ゔぁんどぅーなちゅれる</string></dict>
 	<dict><key>phrase</key><string>Vin Gris</string><key>shortcut</key><string>ゔぁんぐり</string></dict>
 	<dict><key>phrase</key><string>Vin Jaune</string><key>shortcut</key><string>ゔぁんじょーぬ</string></dict>
-	<dict><key>phrase</key><string>Vin Santo</string><key>shortcut</key><string>ゔぃんさんと </string></dict>
-	<dict><key>phrase</key><string>Vin Varietal</string><key>shortcut</key><string>ゔぁんゔぁりえたる </string></dict>
+	<dict><key>phrase</key><string>Vin Santo</string><key>shortcut</key><string>ゔぃんさんと</string></dict>
+	<dict><key>phrase</key><string>Vin Varietal</string><key>shortcut</key><string>ゔぁんゔぁりえたる</string></dict>
 	<dict><key>phrase</key><string>Vin biologique</string><key>shortcut</key><string>ゔぁんびおろじっく</string></dict>
 	<dict><key>phrase</key><string>Weißherbst</string><key>shortcut</key><string>ゔぁいすへるぷすと</string></dict>
 	<dict><key>phrase</key><string>エプモーソ</string><key>shortcut</key><string>えぷもーそ</string></dict>
@@ -1669,7 +1669,7 @@
 	<dict><key>phrase</key><string>Blauburgunder</string><key>shortcut</key><string>ぶらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>Blauer Portugieser</string><key>shortcut</key><string>ぶらうあーぽるとぅぎーざー</string></dict>
 	<dict><key>phrase</key><string>Blauer Wildbacher</string><key>shortcut</key><string>ぶらうあーゔぃるとばっはー</string></dict>
-	<dict><key>phrase</key><string>Blauer Zweigelt</string><key>shortcut</key><string>ぶらうあーつゔぁいげると </string></dict>
+	<dict><key>phrase</key><string>Blauer Zweigelt</string><key>shortcut</key><string>ぶらうあーつゔぁいげると</string></dict>
 	<dict><key>phrase</key><string>Blaufränkisch</string><key>shortcut</key><string>ぶらうふれんきっしゅ</string></dict>
 	<dict><key>phrase</key><string>Boal</string><key>shortcut</key><string>ぼある</string></dict>
 	<dict><key>phrase</key><string>Bobal</string><key>shortcut</key><string>ぼばる</string></dict>
@@ -1817,7 +1817,7 @@
 	<dict><key>phrase</key><string>Vermentino</string><key>shortcut</key><string>ゔぇるめんてぃーの</string></dict>
 	<dict><key>phrase</key><string>Vinhão</string><key>shortcut</key><string>ゔぃにゃん</string></dict>
 	<dict><key>phrase</key><string>Viognier</string><key>shortcut</key><string>ゔぃおにぃえっ</string></dict>
-	<dict><key>phrase</key><string>Vitis amurensis</string><key>shortcut</key><string>ゔぃてぃすあむれんしす </string></dict>
+	<dict><key>phrase</key><string>Vitis amurensis</string><key>shortcut</key><string>ゔぃてぃすあむれんしす</string></dict>
 	<dict><key>phrase</key><string>Vitis berlandieri</string><key>shortcut</key><string>ゔぃてぃすべるらんでぃえり</string></dict>
 	<dict><key>phrase</key><string>Vitis coignetiae</string><key>shortcut</key><string>ゔぃてぃすこわにえ</string></dict>
 	<dict><key>phrase</key><string>Vitis davidii</string><key>shortcut</key><string>ゔぃてぃすだゔぃでぃ</string></dict>
@@ -1940,7 +1940,7 @@
 	<dict><key>phrase</key><string>ベルランディエリ</string><key>shortcut</key><string>べるらんでぃえり</string></dict>
 	<dict><key>phrase</key><string>ペドロ・ヒメネス</string><key>shortcut</key><string>べどろひめねす</string></dict>
 	<dict><key>phrase</key><string>ボナルダ</string><key>shortcut</key><string>ぼなるだ</string></dict>
-	<dict><key>phrase</key><string>ボルドー系品種</string><key>shortcut</key><string>ぼるどーけいひんしゅ★</string></dict>
+	<dict><key>phrase</key><string>ボルドー系品種</string><key>shortcut</key><string>ぼるどーけいひんしゅ</string></dict>
 	<dict><key>phrase</key><string>ボンビーノ・ネーロ</string><key>shortcut</key><string>ぼんびーのねーろ</string></dict>
 	<dict><key>phrase</key><string>ポマール・クローン</string><key>shortcut</key><string>ぽまーるくろーん</string></dict>
 	<dict><key>phrase</key><string>ポルトギザッツ</string><key>shortcut</key><string>ぽるとぎざっつ</string></dict>
@@ -1965,7 +1965,7 @@
 	<dict><key>phrase</key><string>メルロ</string><key>shortcut</key><string>めるろ</string></dict>
 	<dict><key>phrase</key><string>メルロー</string><key>shortcut</key><string>めるろー</string></dict>
 	<dict><key>phrase</key><string>モスカテル</string><key>shortcut</key><string>もすかてる</string></dict>
-	<dict><key>phrase</key><string>モスカテル・デ・アレハンドリア</string><key>shortcut</key><string>もすかてるでアレハンドリア</string></dict>
+	<dict><key>phrase</key><string>モスカテル・デ・アレハンドリア</string><key>shortcut</key><string>もすかてるであれはんどりあ</string></dict>
 	<dict><key>phrase</key><string>モスカート・ジャッロ</string><key>shortcut</key><string>もすかーとじゃっろ</string></dict>
 	<dict><key>phrase</key><string>モスカート・ダスティ</string><key>shortcut</key><string>もすかーとだすてぃ</string></dict>
 	<dict><key>phrase</key><string>モスカート・ビアンコ</string><key>shortcut</key><string>もすかーとびあんこ</string></dict>
@@ -3043,8 +3043,8 @@
 	<dict><key>phrase</key><string>酒精強化ワイン</string><key>shortcut</key><string>しゅせいきょうかわいん</string></dict>
 
 	<!-- SAKE -->
-    <dict><key>phrase</key><string>新政</string><key>shortcut</key><string>あらまさ</string></dict>
-    <dict><key>phrase</key><string>新政酵母</string><key>shortcut</key><string>あらまさこうぼ</string></dict>
+	<dict><key>phrase</key><string>新政</string><key>shortcut</key><string>あらまさ</string></dict>
+	<dict><key>phrase</key><string>新政酵母</string><key>shortcut</key><string>あらまさこうぼ</string></dict>
 	<dict><key>phrase</key><string>6号酵母</string><key>shortcut</key><string>ろくごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>7号酵母</string><key>shortcut</key><string>ななごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>9号酵母</string><key>shortcut</key><string>きゅうごうこうぼ</string></dict>
@@ -3656,7 +3656,7 @@
 	<dict><key>phrase</key><string>Ricard</string><key>shortcut</key><string>りかーる</string></dict>
 	<dict><key>phrase</key><string>Gin</string><key>shortcut</key><string>じん</string></dict>
 	<dict><key>phrase</key><string>Rum</string><key>shortcut</key><string>らむ</string></dict>
-	<dict><key>phrase</key><string>アネホ</string><key>shortcut</key><string>★ </string></dict>
+	<dict><key>phrase</key><string>アネホ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Appletiser®</string><key>shortcut</key><string>あっぷるたいざー</string></dict>
 
 	<!-- その他 -->
