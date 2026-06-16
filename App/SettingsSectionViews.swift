@@ -633,7 +633,7 @@ struct ContactCandidateDisplaySettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("連絡先候補")
+            Text("iOSの連絡先候補")
                 .font(.headline)
 
             VStack(spacing: 8) {
@@ -704,8 +704,8 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "ユーザ辞書候補",
-            pickerTitle: "ユーザ辞書候補",
+            title: "iOSのユーザ辞書",
+            pickerTitle: "iOSのユーザ辞書",
             selection: $selection,
             options: Array(UserDictionaryCandidateDisplayModeOption.allCases),
             optionTitle: { $0.title },
