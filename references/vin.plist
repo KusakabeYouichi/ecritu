@@ -3,6 +3,7 @@
 <plist version="1.0">
 <array>
 	<!-- AOC名や地名 -->
+	<dict><key>phrase</key><string>Cabernet d'Anjou</string><key>shortcut</key><string>かべるねだんじゅ</string></dict>
 	<dict><key>phrase</key><string>Abkhazia</string><key>shortcut</key><string>あぶはじあ</string></dict>
 	<dict><key>phrase</key><string>Aargau</string><key>shortcut</key><string>あーるがう</string></dict>
 	<dict><key>phrase</key><string>ポマール</string><key>shortcut</key><string>ぽまーる</string></dict>
@@ -1581,6 +1582,8 @@
 	<dict><key>phrase</key><string>地中海</string><key>shortcut</key><string>ちちゅうかい</string></dict>
 
 	<!-- 格付けや分類、ワインのタイプ、区分、種別、種類 -->
+	<dict><key>phrase</key><string>Eszencia</string><key>shortcut</key><string>えせんつぃあ</string></dict>
+	<dict><key>phrase</key><string>Aszú</string><key>shortcut</key><string>あすー</string></dict>
 	<dict><key>phrase</key><string>Abboccato</string><key>shortcut</key><string>あっぼかーと</string></dict>
 	<dict><key>phrase</key><string>Vin Doux Naturel</string><key>shortcut</key><string>ゔぁんどぅーなちゅれる</string></dict>
 	<dict><key>phrase</key><string>Vin doux naturel</string><key>shortcut</key><string>ゔぁんどぅーなちゅれる</string></dict>

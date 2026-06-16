@@ -1,21 +1,19 @@
 # -------------------------------------------------------
 <!-- ぶどう品種 -->
-	<dict><key>phrase</key><string>Albana</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Altesse</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Amigne</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Ansonica</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Aragonez</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Aszú</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Babic</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Baga</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Bastardo</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Bombino Bianco</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Bombino Nero</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Bourboulenc</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Brachetto</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Brunello</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>Albana</string><key>shortcut</key><string>あるばーな/string></dict>
+	<dict><key>phrase</key><string>Altesse</string><key>shortcut</key><string>あるてす</string></dict>
+	<dict><key>phrase</key><string>Amigne</string><key>shortcut</key><string>あみーにょ</string></dict>
+	<dict><key>phrase</key><string>Ansonica</string><key>shortcut</key><string>あんそにか</string></dict>
+	<dict><key>phrase</key><string>Aragonez</string><key>shortcut</key><string>あらごねす</string></dict>
+	<dict><key>phrase</key><string>Babic</string><key>shortcut</key><string>ばびっち</string></dict>
+	<dict><key>phrase</key><string>Baga</string><key>shortcut</key><string>ばが</string></dict>
+	<dict><key>phrase</key><string>Bastardo</string><key>shortcut</key><string>ばすたるど</string></dict>
+	<dict><key>phrase</key><string>Bombino Bianco</string><key>shortcut</key><string>ぼんびーのびあんこ</string></dict>
+	<dict><key>phrase</key><string>Bombino Nero</string><key>shortcut</key><string>ぼんびーのねーろ</string></dict>
+	<dict><key>phrase</key><string>Bourboulenc</string><key>shortcut</key><string>ぶーるぶーらん/string></dict>
+	<dict><key>phrase</key><string>Brachetto</string><key>shortcut</key><string>ぶらけっと</string></dict>
+	<dict><key>phrase</key><string>Brunello</string><key>shortcut</key><string>ぶるねっろ</string></dict>
 	<dict><key>phrase</key><string>Cabernet Sauvignon</string><key>shortcut</key><string>かべるねそーゔぃによん</string></dict>
-	<dict><key>phrase</key><string>Cabernet d'Anjou</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Calabrese</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Cariñena</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Castelão</string><key>shortcut</key><string>★</string></dict>
@@ -241,7 +239,6 @@
 	<dict><key>phrase</key><string>高品質ピノ・ノワール生産者</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>2次的産地表示</string><key>shortcut</key><string>★</string></dict>
 <!-- 不明、未分類 -->
-	<dict><key>phrase</key><string>A17</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abona</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abondance</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abricot</string><key>shortcut</key><string>★</string></dict>
@@ -1197,7 +1194,6 @@
 	<dict><key>phrase</key><string>Luxembourg</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Luxembourg Mosel</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Léognan</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>M310</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Macarons de Saint-Emilion</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Macau</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Maccheroni alla Chitarra</string><key>shortcut</key><string>★</string></dict>
@@ -1217,7 +1213,6 @@
 	<dict><key>phrase</key><string>Mahogany</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Mahón Menorca</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Mailly-Champagne</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Main</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Maindreieck</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Mainviereck</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Mainviereck, Maindreieck, Steigerwald</string><key>shortcut</key><string>★</string></dict>
@@ -1626,7 +1621,6 @@
 	<dict><key>phrase</key><string>Ramadas</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Ramandolo</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rapsani</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Rare</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rară Neagră</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Raschera</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rasteau</string><key>shortcut</key><string>★</string></dict>
@@ -1833,7 +1827,6 @@
 	<dict><key>phrase</key><string>Sobretabla</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Socalcos</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Société de Récoltants</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Soft</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Solano</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Sommelière</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Somontano</string><key>shortcut</key><string>★</string></dict>
@@ -2202,7 +2195,6 @@
 	<dict><key>phrase</key><string>Zwiebelkuchen</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Zéta</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Zürich</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>andere</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>aperçu</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>aperçu</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>au bord de l’eu</string><key>shortcut</key><string>★</string></dict>
@@ -2222,24 +2214,18 @@
 	<dict><key>phrase</key><string>culture</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>dedaze</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>des Charentes</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>detalhe</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>detalle</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>deux abeilles</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>dégustation</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>display</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>divers</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>drc</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>drying</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>eau-de-vie</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>fortified wines</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>general</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>gestion</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ja</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>kantharos</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>krimisa</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>kylix</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>limit</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>liqueur</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>lncolore</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ma</string><key>shortcut</key><string>★</string></dict>
@@ -2247,11 +2233,8 @@
 	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>mce_root_block</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>melting</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>normal</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>oenochooi</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>overview</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>pH</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>panoramica</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>phénolique</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>sa</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>saké</string><key>shortcut</key><string>★</string></dict>
@@ -2259,7 +2242,6 @@
 	<dict><key>phrase</key><string>seasoning</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>sec</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>service</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>span</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>span style</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>spiritueux</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>strong</string><key>shortcut</key><string>★</string></dict>
@@ -2269,7 +2251,6 @@
 	<dict><key>phrase</key><string>table</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>tal</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>trois abeilles</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>true</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>true-false</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>tyloses</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>udedo</string><key>shortcut</key><string>★</string></dict>
@@ -3406,7 +3387,6 @@
 	<dict><key>phrase</key><string>値下</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>健全度</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>健康面</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>偶発的</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>傾斜面</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>優良品質V.C.P. ワイン</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>優良年</string><key>shortcut</key><string>★</string></dict>
@@ -3458,7 +3438,6 @@
 	<dict><key>phrase</key><string>動ビン</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>動ビン時</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>動物系</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>勘違</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>包装紙</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>化合物チロース</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>北インド産</string><key>shortcut</key><string>★</string></dict>
@@ -3910,7 +3889,6 @@
 	<dict><key>phrase</key><string>第2アロマ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>第3アロマ</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>第4アロマ</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>第二次世界大戦中</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>第何位</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>筒状</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>範囲内</string><key>shortcut</key><string>★</string></dict>
@@ -3965,7 +3943,6 @@
 	<dict><key>phrase</key><string>自家消費用</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>自然交配種</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>自然豊</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>興味深</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>舌全体</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>船会社</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>良品質</string><key>shortcut</key><string>★</string></dict>
@@ -3999,7 +3976,6 @@
 	<dict><key>phrase</key><string>行程</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>表ラベル</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>表示Trois Etoiles</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>補助的</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>補給地</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>複数残</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>複数選</string><key>shortcut</key><string>★</string></dict>
@@ -4008,13 +3984,11 @@
 	<dict><key>phrase</key><string>グレート・サザン</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>西ケープ州・喜望峰周辺</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>西地区・中央地区・東地区</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>見極</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>解禁日</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>記号</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>許容範囲内</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>許容量範囲内</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>評価法</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>認知度</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>調合剤</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>調合済</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>調理時</string><key>shortcut</key><string>★</string></dict>
