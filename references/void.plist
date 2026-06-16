@@ -332,5 +332,35 @@
     <dict><key>phrase</key><string>Batard</string><key>shortcut</key><string>ばたーる</string></dict>
     <dict><key>phrase</key><string>日本ソムリエ協会</string><key>shortcut</key><string>にほんそむりえきょうかい</string></dict>
     <dict><key>phrase</key><string>ソムリエ協会</string><key>shortcut</key><string>そむりえきょうかい</string></dict>
+    <dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string></dict>
+    <dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string></dict>
+    <dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string></dict>
+    <dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string></dict>
+    <dict><key>phrase</key><string>気が長い</string><key>shortcut</key><string>きがながい</string></dict>
+    <dict><key>phrase</key><string>気が早い</string><key>shortcut</key><string>きがはやい</string></dict>
+    <dict><key>phrase</key><string>気が向く</string><key>shortcut</key><string>きがむく</string></dict>
+    <dict><key>phrase</key><string>気に入る</string><key>shortcut</key><string>きにいる</string></dict>
+    <dict><key>phrase</key><string>気にかかる</string><key>shortcut</key><string>きにかかる</string></dict>
+    <dict><key>phrase</key><string>気に掛ける</string><key>shortcut</key><string>きにかける</string></dict>
+    <dict><key>phrase</key><string>気にかける</string><key>shortcut</key><string>きにかける</string></dict>
+    <dict><key>phrase</key><string>気に食わない</string><key>shortcut</key><string>きにくわない</string></dict>
+    <dict><key>phrase</key><string>気にくわない</string><key>shortcut</key><string>きにくわない</string></dict>
+    <dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string></dict>
+    <dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string></dict>
+    <dict><key>phrase</key><string>気にとめる</string><key>shortcut</key><string>きにとめる</string></dict>
+    <dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string></dict>
+    <dict><key>phrase</key><string>気に病む</string><key>shortcut</key><string>きにやむ</string></dict>
+    <dict><key>phrase</key><string>気を失う</string><key>shortcut</key><string>きをうしなう</string></dict>
+    <dict><key>phrase</key><string>気を利かせる</string><key>shortcut</key><string>きをきかせる</string></dict>
+    <dict><key>phrase</key><string>気を配る</string><key>shortcut</key><string>きをくばる</string></dict>
+    <dict><key>phrase</key><string>気を遣う</string><key>shortcut</key><string>きをつかう</string></dict>
+    <dict><key>phrase</key><string>気を使う</string><key>shortcut</key><string>きをつかう</string></dict>
+    <dict><key>phrase</key><string>気をつかう</string><key>shortcut</key><string>きをつかう</string></dict>
+    <dict><key>phrase</key><string>気を引く</string><key>shortcut</key><string>きをひく</string></dict>
+    <dict><key>phrase</key><string>気を回す</string><key>shortcut</key><string>きをまわす</string></dict>
+    <dict><key>phrase</key><string>気を揉む</string><key>shortcut</key><string>きをもむ</string></dict>
+    <dict><key>phrase</key><string>気をもむ</string><key>shortcut</key><string>きをもむ</string></dict>
+    <dict><key>phrase</key><string>気を良くする</string><key>shortcut</key><string>きをよくする</string></dict>
+    <dict><key>phrase</key><string>気をよくする</string><key>shortcut</key><string>きをよくする</string></dict>
 </array>
 </plist>
