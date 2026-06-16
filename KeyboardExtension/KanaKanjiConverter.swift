@@ -587,6 +587,7 @@ final class KanaKanjiConverter {
             userDictionary: userDictionary,
             initialUserDictionary: initialUserDictionary,
             systemCandidateMode: systemCandidateMode,
+            systemCandidates: systemCandidates,
             to: &scores
         )
 
@@ -932,6 +933,7 @@ final class KanaKanjiConverter {
         userDictionary: [String: [String]],
         initialUserDictionary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
+        systemCandidates: [String],
         to scores: inout [String: Int]
     ) {
         guard let matchedSuffix = matchingInflectionRankingSuffix(for: reading) else {
@@ -945,13 +947,17 @@ final class KanaKanjiConverter {
             return
         }
 
+        let trustedDirectCandidates = Set(systemCandidates.prefix(3))
+
         for candidate in Array(scores.keys) {
             var delta = 0
 
             if hasMatchingInflectionRankingSuffix(candidate, readingSuffix: matchedSuffix) {
                 delta += 220
-            } else if !containsHiragana(candidate) {
-                // Readings that look inflected should not prioritize pure-kanji name-like entries.
+            } else if !containsHiragana(candidate),
+                !trustedDirectCandidates.contains(candidate) {
+                // Readings that look inflected should not prioritize pure-kanji name-like entries,
+                // except for top-ranked direct dictionary candidates which are trusted common words.
                 delta -= 260
             }
 
