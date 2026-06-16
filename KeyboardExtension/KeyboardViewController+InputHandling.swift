@@ -949,6 +949,73 @@ extension KeyboardViewController {
             text,
             selectedRange: NSRange(location: text.utf16.count, length: 0)
         )
+
+        lastMarkedTextUpdateAt = CFAbsoluteTimeGetCurrent()
+
+        if text.isEmpty {
+            stopMarkedTextWatchdog()
+        } else {
+            startMarkedTextWatchdogIfNeeded()
+        }
+    }
+
+    func startMarkedTextWatchdogIfNeeded() {
+        guard markedTextWatchdogTimer == nil else {
+            return
+        }
+
+        let timer = DispatchSource.makeTimerSource(queue: Self.markedTextWatchdogQueue)
+        timer.schedule(
+            deadline: .now() + Self.markedTextWatchdogInterval,
+            repeating: Self.markedTextWatchdogInterval,
+            leeway: .milliseconds(200)
+        )
+        timer.setEventHandler { [weak self] in
+            DispatchQueue.main.async {
+                self?.checkMarkedTextHealth()
+            }
+        }
+        timer.resume()
+        markedTextWatchdogTimer = timer
+    }
+
+    func stopMarkedTextWatchdog() {
+        markedTextWatchdogTimer?.cancel()
+        markedTextWatchdogTimer = nil
+    }
+
+    private func checkMarkedTextHealth() {
+        guard currentInputMode == .kana else {
+            stopMarkedTextWatchdog()
+            return
+        }
+
+        guard !composingRawText.isEmpty || activeConversion != nil else {
+            stopMarkedTextWatchdog()
+            return
+        }
+
+        // 直近の marked text 更新から間もないときはスキップ
+        // (キーを連打している間は無駄な hasText IPC を発生させない)
+        let elapsedSinceUpdate = CFAbsoluteTimeGetCurrent() - lastMarkedTextUpdateAt
+        if elapsedSinceUpdate < Self.markedTextWatchdogQuietPeriod {
+            return
+        }
+
+        // documentContextBeforeInput / After は marked text を含まない仕様のため、
+        // 「ホスト側で marked が失われたか」の信頼できる proxy 信号は hasText のみ。
+        // 入力欄全体が空になっていれば marked text も確実に失われている。
+        guard !textDocumentProxy.hasText else {
+            return
+        }
+
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "watchdog: 入力欄が空のため編集中状態を破棄 composingLen=\(composingRawText.count) hasActiveConversion=\(activeConversion != nil)"
+        )
+        self.activeConversion = nil
+        clearComposingState()
+        stopMarkedTextWatchdog()
+        refreshKeyboardStateAsync()
     }
 
     func kanaKanjiCandidates(
@@ -1866,6 +1933,10 @@ extension KeyboardViewController {
         hasParenthesesWrapper = false
         composingContextPrefixTail = ""
         invalidateSettledCandidatePresentation()
+
+        if activeConversion == nil {
+            stopMarkedTextWatchdog()
+        }
     }
 
     func toggleParenthesesWrapper() {
