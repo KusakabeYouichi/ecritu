@@ -6,8 +6,8 @@
     <dict><key>phrase</key><string>The Beatles</string><key>shortcut</key><string>ざびーとるず</string></dict>
     <dict><key>phrase</key><string>マイケル・ジャクソン</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
     <dict><key>phrase</key><string>Michael Jackson</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
-    <dict><key>phrase</key><string>エルヴィス・プレスリー</string><key>shortcut</key><string>えるびすぷれすりー</string></dict>
-    <dict><key>phrase</key><string>Elvis Presley</string><key>shortcut</key><string>えるびすぷれすりー</string></dict>
+    <dict><key>phrase</key><string>エルヴィス・プレスリー</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
+    <dict><key>phrase</key><string>Elvis Presley</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
     <dict><key>phrase</key><string>ボブ・ディラン</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
     <dict><key>phrase</key><string>Bob Dylan</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
     <dict><key>phrase</key><string>ザ・ローリング・ストーンズ</string><key>shortcut</key><string>ざろーりんぐすとーんず</string></dict>
@@ -18,12 +18,12 @@
     <dict><key>phrase</key><string>Madonna</string><key>shortcut</key><string>まどんな</string></dict>
     <dict><key>phrase</key><string>レッド・ツェッペリン</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
     <dict><key>phrase</key><string>Led Zeppelin</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
-    <dict><key>phrase</key><string>デヴィッド・ボウイ</string><key>shortcut</key><string>でびっどぼうい</string></dict>
-    <dict><key>phrase</key><string>David Bowie</string><key>shortcut</key><string>でびっどぼうい</string></dict>
+    <dict><key>phrase</key><string>デヴィッド・ボウイ</string><key>shortcut</key><string>でゔぃっどぼうい</string></dict>
+    <dict><key>phrase</key><string>David Bowie</string><key>shortcut</key><string>でゔぃっどぼうい</string></dict>
     <dict><key>phrase</key><string>プリンス</string><key>shortcut</key><string>ぷりんす</string></dict>
     <dict><key>phrase</key><string>Prince</string><key>shortcut</key><string>ぷりんす</string></dict>
-    <dict><key>phrase</key><string>スティーヴィー・ワンダー</string><key>shortcut</key><string>すてぃーびーわんだー</string></dict>
-    <dict><key>phrase</key><string>Stevie Wonder</string><key>shortcut</key><string>すてぃーびーわんだー</string></dict>
+    <dict><key>phrase</key><string>スティーヴィー・ワンダー</string><key>shortcut</key><string>すてぃーゔぃーわんだー</string></dict>
+    <dict><key>phrase</key><string>Stevie Wonder</string><key>shortcut</key><string>すてぃーゔぃーわんだー</string></dict>
     <dict><key>phrase</key><string>ジミ・ヘンドリックス</string><key>shortcut</key><string>じみへんどりっくす</string></dict>
     <dict><key>phrase</key><string>Jimi Hendrix</string><key>shortcut</key><string>じみへんどりっくす</string></dict>
     <dict><key>phrase</key><string>ボブ・マーリー</string><key>shortcut</key><string>ぼぶまーりー</string></dict>
@@ -32,8 +32,8 @@
     <dict><key>phrase</key><string>Aretha Franklin</string><key>shortcut</key><string>あれさふらんくりん</string></dict>
     <dict><key>phrase</key><string>ピンク・フロイド</string><key>shortcut</key><string>ぴんくふろいど</string></dict>
     <dict><key>phrase</key><string>Pink Floyd</string><key>shortcut</key><string>ぴんくふろいど</string></dict>
-    <dict><key>phrase</key><string>ニルヴァーナ</string><key>shortcut</key><string>にるばーな</string></dict>
-    <dict><key>phrase</key><string>Nirvana</string><key>shortcut</key><string>にるばーな</string></dict>
+    <dict><key>phrase</key><string>ニルヴァーナ</string><key>shortcut</key><string>にるゔぁーな</string></dict>
+    <dict><key>phrase</key><string>Nirvana</string><key>shortcut</key><string>にるゔぁーな</string></dict>
     <dict><key>phrase</key><string>エルトン・ジョン</string><key>shortcut</key><string>えるとんじょん</string></dict>
     <dict><key>phrase</key><string>Elton John</string><key>shortcut</key><string>えるとんじょん</string></dict>
     <dict><key>phrase</key><string>ポール・マッカートニー</string><key>shortcut</key><string>ぽーるまっかーとにー</string></dict>
@@ -50,8 +50,8 @@
     <dict><key>phrase</key><string>Beyoncé</string><key>shortcut</key><string>びよんせ</string></dict>
     <dict><key>phrase</key><string>エミネム</string><key>shortcut</key><string>えみねむ</string></dict>
     <dict><key>phrase</key><string>Eminem</string><key>shortcut</key><string>えみねむ</string></dict>
-    <dict><key>phrase</key><string>マイルズ・デイヴィス</string><key>shortcut</key><string>まいるずでいびす</string></dict>
-    <dict><key>phrase</key><string>Miles Davis</string><key>shortcut</key><string>まいるずでいびす</string></dict>
+    <dict><key>phrase</key><string>マイルズ・デイヴィス</string><key>shortcut</key><string>まいるずでいゔぃす</string></dict>
+    <dict><key>phrase</key><string>Miles Davis</string><key>shortcut</key><string>まいるずでいゔぃす</string></dict>
     <dict><key>phrase</key><string>ルイ・アームストロング</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
     <dict><key>phrase</key><string>Louis Armstrong</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
     <dict><key>phrase</key><string>フランク・シナトラ</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
@@ -70,8 +70,8 @@
     <dict><key>phrase</key><string>Metallica</string><key>shortcut</key><string>めたりか</string></dict>
     <dict><key>phrase</key><string>ガンズ・アンド・ローゼズ</string><key>shortcut</key><string>がんずあんどろーぜず</string></dict>
     <dict><key>phrase</key><string>Guns N' Roses</string><key>shortcut</key><string>がんずあんどろーぜず</string></dict>
-    <dict><key>phrase</key><string>ボン・ジョヴィ</string><key>shortcut</key><string>ぼんじょび</string></dict>
-    <dict><key>phrase</key><string>Bon Jovi</string><key>shortcut</key><string>ぼんじょび</string></dict>
+    <dict><key>phrase</key><string>ボン・ジョヴィ</string><key>shortcut</key><string>ぼんじょゔぃ</string></dict>
+    <dict><key>phrase</key><string>Bon Jovi</string><key>shortcut</key><string>ぼんじょゔぃ</string></dict>
     <dict><key>phrase</key><string>エアロスミス</string><key>shortcut</key><string>えあろすみす</string></dict>
     <dict><key>phrase</key><string>Aerosmith</string><key>shortcut</key><string>えあろすみす</string></dict>
     <dict><key>phrase</key><string>レッド・ホット・チリ・ペッパーズ</string><key>shortcut</key><string>れっどほっとちりぺっぱーず</string></dict>
@@ -128,8 +128,8 @@
     <dict><key>phrase</key><string>Bee Gees</string><key>shortcut</key><string>びーじーず</string></dict>
     <dict><key>phrase</key><string>バックストリート・ボーイズ</string><key>shortcut</key><string>ばっくすとりーとぼーいず</string></dict>
     <dict><key>phrase</key><string>Backstreet Boys</string><key>shortcut</key><string>ばっくすとりーとぼーいず</string></dict>
-    <dict><key>phrase</key><string>マーヴィン・ゲイ</string><key>shortcut</key><string>まーびんげい</string></dict>
-    <dict><key>phrase</key><string>Marvin Gaye</string><key>shortcut</key><string>まーびんげい</string></dict>
+    <dict><key>phrase</key><string>マーヴィン・ゲイ</string><key>shortcut</key><string>まーゔぃんげい</string></dict>
+    <dict><key>phrase</key><string>Marvin Gaye</string><key>shortcut</key><string>まーゔぃんげい</string></dict>
     <dict><key>phrase</key><string>サム・クック</string><key>shortcut</key><string>さむくっく</string></dict>
     <dict><key>phrase</key><string>Sam Cooke</string><key>shortcut</key><string>さむくっく</string></dict>
     <dict><key>phrase</key><string>レイ・チャールズ</string><key>shortcut</key><string>れいちゃーるず</string></dict>
@@ -144,8 +144,8 @@
     <dict><key>phrase</key><string>Black Sabbath</string><key>shortcut</key><string>ぶらっくさばす</string></dict>
     <dict><key>phrase</key><string>オジー・オズボーン</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
     <dict><key>phrase</key><string>Ozzy Osbourne</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
-    <dict><key>phrase</key><string>ヴァン・ヘイレン</string><key>shortcut</key><string>ばんへいれん</string></dict>
-    <dict><key>phrase</key><string>Van Halen</string><key>shortcut</key><string>ばんへいれん</string></dict>
+    <dict><key>phrase</key><string>ヴァン・ヘイレン</string><key>shortcut</key><string>ゔぁんへいれん</string></dict>
+    <dict><key>phrase</key><string>Van Halen</string><key>shortcut</key><string>ゔぁんへいれん</string></dict>
     <dict><key>phrase</key><string>グリーン・デイ</string><key>shortcut</key><string>ぐりーんでい</string></dict>
     <dict><key>phrase</key><string>Green Day</string><key>shortcut</key><string>ぐりーんでい</string></dict>
     <dict><key>phrase</key><string>リンキン・パーク</string><key>shortcut</key><string>りんきんぱーく</string></dict>
