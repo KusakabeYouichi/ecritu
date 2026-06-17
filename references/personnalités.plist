@@ -100,9 +100,9 @@
     <dict><key>phrase</key><string>Billie Eilish</string><key>shortcut</key><string>びりーあいりっしゅ</string></dict>
     <dict><key>phrase</key><string>ザ・ウィークエンド</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
     <dict><key>phrase</key><string>The Weeknd</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
-    <dict><key>phrase</key><string>ツーパック</string><key>shortcut</key><string>つーぱっく</string></dict>
+    <dict><key>phrase</key><string>2パック</string><key>shortcut</key><string>つーぱっく</string></dict>
     <dict><key>phrase</key><string>2Pac</string><key>shortcut</key><string>つーぱっく</string></dict>
-    <dict><key>phrase</key><string>ジェイ・ズィー</string><key>shortcut</key><string>じぇいずぃー</string></dict>
+    <dict><key>phrase</key><string>ジェイ・Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
     <dict><key>phrase</key><string>Jay-Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
     <dict><key>phrase</key><string>カニエ・ウェスト</string><key>shortcut</key><string>かにえうぇすと</string></dict>
     <dict><key>phrase</key><string>Kanye West</string><key>shortcut</key><string>かにえうぇすと</string></dict>
@@ -110,7 +110,7 @@
     <dict><key>phrase</key><string>Kendrick Lamar</string><key>shortcut</key><string>けんどりっくらまー</string></dict>
     <dict><key>phrase</key><string>ドクター・ドレー</string><key>shortcut</key><string>どくたーどれー</string></dict>
     <dict><key>phrase</key><string>Dr. Dre</string><key>shortcut</key><string>どくたーどれー</string></dict>
-    <dict><key>phrase</key><string>ノトーリアス・ビーアイジー</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
+    <dict><key>phrase</key><string>ノトーリアス・B.I.G.</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
     <dict><key>phrase</key><string>The Notorious B.I.G.</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
     <dict><key>phrase</key><string>ドレイク</string><key>shortcut</key><string>どれいく</string></dict>
     <dict><key>phrase</key><string>Drake</string><key>shortcut</key><string>どれいく</string></dict>
@@ -166,7 +166,7 @@
     <dict><key>phrase</key><string>The Doors</string><key>shortcut</key><string>ざどあーず</string></dict>
     <dict><key>phrase</key><string>ジョン・コルトレーン</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
     <dict><key>phrase</key><string>John Coltrane</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
-    <dict><key>phrase</key><string>ビービーキング</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
+    <dict><key>phrase</key><string>B.B.キング</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
     <dict><key>phrase</key><string>B.B. King</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
     <dict><key>phrase</key><string>ロバート・ジョンソン</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
     <dict><key>phrase</key><string>Robert Johnson</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
