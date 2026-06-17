@@ -823,7 +823,7 @@
 	<dict><key>phrase</key><string>大雨降らばん</string><key>shortcut</key><string>うふあみふらばん</string></dict>
 	<dict><key>phrase</key><string>大石原</string><key>shortcut</key><string>うふいしばる</string></dict>
 	<dict><key>phrase</key><string>うぶ岩</string><key>shortcut</key><string>うぶいわ</string></dict>
-	<dict><key>phrase</key><string>うぶく</string><key>shortcut</key><string>うぶく</string><key>pos</key></dict>
+	<dict><key>phrase</key><string>うぶく</string><key>shortcut</key><string>うぶく</string></dict>
 	<dict><key>phrase</key><string>うぶくい</string><key>shortcut</key><string>うぶくい</string></dict>
 	<dict><key>phrase</key><string>大城グスク</string><key>shortcut</key><string>うふぐしくぐすく</string></dict>
 	<dict><key>phrase</key><string>大城</string><key>shortcut</key><string>うふぐすく</string></dict>
@@ -5155,7 +5155,7 @@
 	<dict><key>phrase</key><string>前堂</string><key>shortcut</key><string>まえどう</string></dict>
 	<dict><key>phrase</key><string>前徳</string><key>shortcut</key><string>まえとく</string></dict>
 	<dict><key>phrase</key><string>前徳比嘉</string><key>shortcut</key><string>まえとくひが</string></dict>
-	<dict><key>phrase</key><string>前泊</string><key>shortcut</key><string>まえどまり</string><key>pos</key></dict>
+	<dict><key>phrase</key><string>前泊</string><key>shortcut</key><string>まえどまり</string></dict>
 	<dict><key>phrase</key><string>前泊海岸</string><key>shortcut</key><string>まえどまりかいがん</string></dict>
 	<dict><key>phrase</key><string>前泊ビーチ</string><key>shortcut</key><string>まえどまりびーち</string></dict>
 	<dict><key>phrase</key><string>前ヌ浜ビーチ</string><key>shortcut</key><string>まえぬはまびーち</string></dict>
