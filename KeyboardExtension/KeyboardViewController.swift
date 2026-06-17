@@ -651,6 +651,17 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        // 保存されている signature が現行スキーマ(v2 接頭辞付き)でないキャッシュは
+        // インデックス化ロジックが古い可能性があるので破棄する。これがないと、
+        // 旧スキームで生成された「候補側カナ抽出キー」混入キャッシュが
+        // 起動毎に in-memory へ復活し続けてしまう。
+        let storedSignature = defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) ?? ""
+        guard storedSignature.hasPrefix("v2:") else {
+            defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
+            defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
+            return
+        }
+
         supplementaryLexiconCandidatesByReading = cachedDictionary
     }
 
@@ -724,7 +735,9 @@ final class KeyboardViewController: UIInputViewController {
             entryCount += 1
         }
 
-        return "\(entryCount):\(String(aggregateHash, radix: 16))"
+        // v2: 補助語彙のインデックスから候補側カナ抽出キーを除外したバージョン。
+        // インデックス化ロジックを変更したら必ずバージョンを上げてキャッシュ無効化する。
+        return "v2:\(entryCount):\(String(aggregateHash, radix: 16))"
     }
 
     private func stableSupplementaryHash(_ value: String) -> UInt64 {
@@ -1261,10 +1274,10 @@ final class KeyboardViewController: UIInputViewController {
             }
         }
 
-        let normalizedCandidate = KanaTextNormalizer.normalizedReading(candidate)
-        if !normalizedCandidate.isEmpty {
-            readingKeys.append(normalizedCandidate)
-        }
+        // 候補側からカナ部分を抽出してキー化することは行わない。
+        // (例: ワイン検定 から「わいん」を派生キーにすると「わいん」入力時に
+        //  ワイン検定 が候補に紛れる、という UX 上の混入を避ける。)
+        // 部分プレフィックスマッチが必要になった場合は、別のサジェスト機構として実装する。
 
         return readingKeys
     }

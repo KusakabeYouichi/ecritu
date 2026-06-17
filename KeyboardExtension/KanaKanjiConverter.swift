@@ -2022,12 +2022,23 @@ final class KanaKanjiConverter {
         }
 
         let metadata = inflectionMetadata(for: baseReading)
-        let userCandidateSet = Set(
+        // resolvedInflectionClass の「user 候補は inference 許可」用には initialUserDictionary 等も含めるが、
+        // inferredSahenInflectionClass の「user 自身が追加したものだけ救済」用は
+        // initialUserDictionary(references plist 由来。migration で userDictionary にもマージされる)
+        // と一致する候補を除いた、本当の手動追加分のみに絞る。
+        let initialCandidatesForBase = Set(initialUserDictionary[baseReading] ?? [])
+        let initialOrUserCandidateSet = Set(
             combinedUserCandidates(
                 for: baseReading,
                 userDictionary: userDictionary
-            ) + (initialUserDictionary[baseReading] ?? [])
-        )
+            )
+        ).union(initialCandidatesForBase)
+        let userOwnCandidateSet = Set(
+            combinedUserCandidates(
+                for: baseReading,
+                userDictionary: userDictionary
+            )
+        ).subtracting(initialCandidatesForBase)
         var results: [String] = []
 
         for candidate in baseCandidates {
@@ -2040,7 +2051,7 @@ final class KanaKanjiConverter {
                 baseReading: baseReading,
                 systemClassMap: metadata.classMap,
                 hasSystemMetadata: metadata.hasMetadata,
-                userCandidateSet: userCandidateSet
+                userCandidateSet: initialOrUserCandidateSet
             )
 
             let inflectionClass = resolvedClass
@@ -2048,7 +2059,7 @@ final class KanaKanjiConverter {
                     for: candidate,
                     baseReading: baseReading,
                     rule: rule,
-                    userCandidateSet: userCandidateSet
+                    userCandidateSet: userOwnCandidateSet
                 )
                 ?? inferredExplicitSuruInflectionClass(
                     for: candidate,
