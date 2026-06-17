@@ -3,204 +3,204 @@
 <plist version="1.0">
 <array>
     <dict><key>phrase</key><string>ザ・ビートルズ</string><key>shortcut</key><string>ざびーとるず</string></dict>
-    <dict><key>phrase</key><string>The Beatles</string><key>shortcut</key><string>ざびーとるず</string></dict>
     <dict><key>phrase</key><string>マイケル・ジャクソン</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
-    <dict><key>phrase</key><string>Michael Jackson</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
     <dict><key>phrase</key><string>エルヴィス・プレスリー</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
-    <dict><key>phrase</key><string>Elvis Presley</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
     <dict><key>phrase</key><string>ボブ・ディラン</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
-    <dict><key>phrase</key><string>Bob Dylan</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
     <dict><key>phrase</key><string>ザ・ローリング・ストーンズ</string><key>shortcut</key><string>ざろーりんぐすとーんず</string></dict>
-    <dict><key>phrase</key><string>The Rolling Stones</string><key>shortcut</key><string>ざろーりんぐすとーんず</string></dict>
     <dict><key>phrase</key><string>クイーン</string><key>shortcut</key><string>くいーん</string></dict>
-    <dict><key>phrase</key><string>Queen</string><key>shortcut</key><string>くいーん</string></dict>
     <dict><key>phrase</key><string>マドンナ</string><key>shortcut</key><string>まどんな</string></dict>
-    <dict><key>phrase</key><string>Madonna</string><key>shortcut</key><string>まどんな</string></dict>
     <dict><key>phrase</key><string>レッド・ツェッペリン</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
-    <dict><key>phrase</key><string>Led Zeppelin</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
     <dict><key>phrase</key><string>デヴィッド・ボウイ</string><key>shortcut</key><string>でゔぃっどぼうい</string></dict>
-    <dict><key>phrase</key><string>David Bowie</string><key>shortcut</key><string>でゔぃっどぼうい</string></dict>
     <dict><key>phrase</key><string>プリンス</string><key>shortcut</key><string>ぷりんす</string></dict>
-    <dict><key>phrase</key><string>Prince</string><key>shortcut</key><string>ぷりんす</string></dict>
     <dict><key>phrase</key><string>スティーヴィー・ワンダー</string><key>shortcut</key><string>すてぃーゔぃーわんだー</string></dict>
-    <dict><key>phrase</key><string>Stevie Wonder</string><key>shortcut</key><string>すてぃーゔぃーわんだー</string></dict>
     <dict><key>phrase</key><string>ジミ・ヘンドリックス</string><key>shortcut</key><string>じみへんどりっくす</string></dict>
-    <dict><key>phrase</key><string>Jimi Hendrix</string><key>shortcut</key><string>じみへんどりっくす</string></dict>
     <dict><key>phrase</key><string>ボブ・マーリー</string><key>shortcut</key><string>ぼぶまーりー</string></dict>
-    <dict><key>phrase</key><string>Bob Marley</string><key>shortcut</key><string>ぼぶまーりー</string></dict>
     <dict><key>phrase</key><string>アレサ・フランクリン</string><key>shortcut</key><string>あれさふらんくりん</string></dict>
-    <dict><key>phrase</key><string>Aretha Franklin</string><key>shortcut</key><string>あれさふらんくりん</string></dict>
     <dict><key>phrase</key><string>ピンク・フロイド</string><key>shortcut</key><string>ぴんくふろいど</string></dict>
-    <dict><key>phrase</key><string>Pink Floyd</string><key>shortcut</key><string>ぴんくふろいど</string></dict>
     <dict><key>phrase</key><string>ニルヴァーナ</string><key>shortcut</key><string>にるゔぁーな</string></dict>
-    <dict><key>phrase</key><string>Nirvana</string><key>shortcut</key><string>にるゔぁーな</string></dict>
     <dict><key>phrase</key><string>エルトン・ジョン</string><key>shortcut</key><string>えるとんじょん</string></dict>
-    <dict><key>phrase</key><string>Elton John</string><key>shortcut</key><string>えるとんじょん</string></dict>
     <dict><key>phrase</key><string>ポール・マッカートニー</string><key>shortcut</key><string>ぽーるまっかーとにー</string></dict>
-    <dict><key>phrase</key><string>Paul McCartney</string><key>shortcut</key><string>ぽーるまっかーとにー</string></dict>
     <dict><key>phrase</key><string>ジョン・レノン</string><key>shortcut</key><string>じょんれのん</string></dict>
-    <dict><key>phrase</key><string>John Lennon</string><key>shortcut</key><string>じょんれのん</string></dict>
     <dict><key>phrase</key><string>ジェームス・ブラウン</string><key>shortcut</key><string>じぇーむすぶらうん</string></dict>
-    <dict><key>phrase</key><string>James Brown</string><key>shortcut</key><string>じぇーむすぶらうん</string></dict>
     <dict><key>phrase</key><string>エリック・クラプトン</string><key>shortcut</key><string>えりっくくらぷとん</string></dict>
-    <dict><key>phrase</key><string>Eric Clapton</string><key>shortcut</key><string>えりっくくらぷとん</string></dict>
     <dict><key>phrase</key><string>テイラー・スウィフト</string><key>shortcut</key><string>ているーすうぃふと</string></dict>
-    <dict><key>phrase</key><string>Taylor Swift</string><key>shortcut</key><string>ているーすうぃふと</string></dict>
     <dict><key>phrase</key><string>ビヨンセ</string><key>shortcut</key><string>びよんせ</string></dict>
-    <dict><key>phrase</key><string>Beyoncé</string><key>shortcut</key><string>びよんせ</string></dict>
     <dict><key>phrase</key><string>エミネム</string><key>shortcut</key><string>えみねむ</string></dict>
-    <dict><key>phrase</key><string>Eminem</string><key>shortcut</key><string>えみねむ</string></dict>
     <dict><key>phrase</key><string>マイルズ・デイヴィス</string><key>shortcut</key><string>まいるずでいゔぃす</string></dict>
-    <dict><key>phrase</key><string>Miles Davis</string><key>shortcut</key><string>まいるずでいゔぃす</string></dict>
     <dict><key>phrase</key><string>ルイ・アームストロング</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
-    <dict><key>phrase</key><string>Louis Armstrong</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
     <dict><key>phrase</key><string>フランク・シナトラ</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
-    <dict><key>phrase</key><string>Frank Sinatra</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
     <dict><key>phrase</key><string>ホイットニー・ヒューストン</string><key>shortcut</key><string>ほいっとにーひゅーすとん</string></dict>
-    <dict><key>phrase</key><string>Whitney Houston</string><key>shortcut</key><string>ほいっとにーひゅーすとん</string></dict>
     <dict><key>phrase</key><string>マライア・キャリー</string><key>shortcut</key><string>まらいあきゃりー</string></dict>
-    <dict><key>phrase</key><string>Mariah Carey</string><key>shortcut</key><string>まらいあきゃりー</string></dict>
     <dict><key>phrase</key><string>セリーヌ・ディオン</string><key>shortcut</key><string>せりーぬでぃおん</string></dict>
-    <dict><key>phrase</key><string>Céline Dion</string><key>shortcut</key><string>せりーぬでぃおん</string></dict>
     <dict><key>phrase</key><string>ユーツー</string><key>shortcut</key><string>ゆーつー</string></dict>
-    <dict><key>phrase</key><string>U2</string><key>shortcut</key><string>ゆーつー</string></dict>
     <dict><key>phrase</key><string>エーシーディーシー</string><key>shortcut</key><string>えーしーでぃーしー</string></dict>
-    <dict><key>phrase</key><string>AC/DC</string><key>shortcut</key><string>えーしーでぃーしー</string></dict>
     <dict><key>phrase</key><string>メタリカ</string><key>shortcut</key><string>めたりか</string></dict>
-    <dict><key>phrase</key><string>Metallica</string><key>shortcut</key><string>めたりか</string></dict>
     <dict><key>phrase</key><string>ガンズ・アンド・ローゼズ</string><key>shortcut</key><string>がんずあんどろーぜず</string></dict>
-    <dict><key>phrase</key><string>Guns N' Roses</string><key>shortcut</key><string>がんずあんどろーぜず</string></dict>
     <dict><key>phrase</key><string>ボン・ジョヴィ</string><key>shortcut</key><string>ぼんじょゔぃ</string></dict>
-    <dict><key>phrase</key><string>Bon Jovi</string><key>shortcut</key><string>ぼんじょゔぃ</string></dict>
     <dict><key>phrase</key><string>エアロスミス</string><key>shortcut</key><string>えあろすみす</string></dict>
-    <dict><key>phrase</key><string>Aerosmith</string><key>shortcut</key><string>えあろすみす</string></dict>
     <dict><key>phrase</key><string>レッド・ホット・チリ・ペッパーズ</string><key>shortcut</key><string>れっどほっとちりぺっぱーず</string></dict>
-    <dict><key>phrase</key><string>Red Hot Chili Peppers</string><key>shortcut</key><string>れっどほっとちりぺっぱーず</string></dict>
     <dict><key>phrase</key><string>オアシス</string><key>shortcut</key><string>おあしす</string></dict>
-    <dict><key>phrase</key><string>Oasis</string><key>shortcut</key><string>おあしす</string></dict>
     <dict><key>phrase</key><string>レディオヘッド</string><key>shortcut</key><string>れでぃおへっど</string></dict>
-    <dict><key>phrase</key><string>Radiohead</string><key>shortcut</key><string>れでぃおへっど</string></dict>
     <dict><key>phrase</key><string>コールドプレイ</string><key>shortcut</key><string>こーるどぷれい</string></dict>
-    <dict><key>phrase</key><string>Coldplay</string><key>shortcut</key><string>こーるどぷれい</string></dict>
     <dict><key>phrase</key><string>ブルーノ・マーズ</string><key>shortcut</key><string>ぶるーのまーず</string></dict>
-    <dict><key>phrase</key><string>Bruno Mars</string><key>shortcut</key><string>ぶるーのまーず</string></dict>
     <dict><key>phrase</key><string>エド・シーラン</string><key>shortcut</key><string>えどしーらん</string></dict>
-    <dict><key>phrase</key><string>Ed Sheeran</string><key>shortcut</key><string>えどしーらん</string></dict>
     <dict><key>phrase</key><string>レディー・ガガ</string><key>shortcut</key><string>れでぃーがが</string></dict>
-    <dict><key>phrase</key><string>Lady Gaga</string><key>shortcut</key><string>れでぃーがが</string></dict>
     <dict><key>phrase</key><string>アデル</string><key>shortcut</key><string>あでる</string></dict>
-    <dict><key>phrase</key><string>Adele</string><key>shortcut</key><string>あでる</string></dict>
     <dict><key>phrase</key><string>リアーナ</string><key>shortcut</key><string>りあーな</string></dict>
-    <dict><key>phrase</key><string>Rihanna</string><key>shortcut</key><string>りあーな</string></dict>
     <dict><key>phrase</key><string>ジャスティン・ビーバー</string><key>shortcut</key><string>じゃすてぃんびーばー</string></dict>
-    <dict><key>phrase</key><string>Justin Bieber</string><key>shortcut</key><string>じゃすてぃんびーばー</string></dict>
     <dict><key>phrase</key><string>アリアナ・グランデ</string><key>shortcut</key><string>ありあなぐらんで</string></dict>
-    <dict><key>phrase</key><string>Ariana Grande</string><key>shortcut</key><string>ありあなぐらんで</string></dict>
     <dict><key>phrase</key><string>ビリー・アイリッシュ</string><key>shortcut</key><string>びりーあいりっしゅ</string></dict>
-    <dict><key>phrase</key><string>Billie Eilish</string><key>shortcut</key><string>びりーあいりっしゅ</string></dict>
     <dict><key>phrase</key><string>ザ・ウィークエンド</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
-    <dict><key>phrase</key><string>The Weeknd</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
     <dict><key>phrase</key><string>2パック</string><key>shortcut</key><string>つーぱっく</string></dict>
-    <dict><key>phrase</key><string>2Pac</string><key>shortcut</key><string>つーぱっく</string></dict>
     <dict><key>phrase</key><string>ジェイ・Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
-    <dict><key>phrase</key><string>Jay-Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
     <dict><key>phrase</key><string>カニエ・ウェスト</string><key>shortcut</key><string>かにえうぇすと</string></dict>
-    <dict><key>phrase</key><string>Kanye West</string><key>shortcut</key><string>かにえうぇすと</string></dict>
     <dict><key>phrase</key><string>ケンドリック・ラマー</string><key>shortcut</key><string>けんどりっくらまー</string></dict>
-    <dict><key>phrase</key><string>Kendrick Lamar</string><key>shortcut</key><string>けんどりっくらまー</string></dict>
     <dict><key>phrase</key><string>ドクター・ドレー</string><key>shortcut</key><string>どくたーどれー</string></dict>
-    <dict><key>phrase</key><string>Dr. Dre</string><key>shortcut</key><string>どくたーどれー</string></dict>
     <dict><key>phrase</key><string>ノトーリアス・B.I.G.</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
-    <dict><key>phrase</key><string>The Notorious B.I.G.</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
     <dict><key>phrase</key><string>ドレイク</string><key>shortcut</key><string>どれいく</string></dict>
-    <dict><key>phrase</key><string>Drake</string><key>shortcut</key><string>どれいく</string></dict>
     <dict><key>phrase</key><string>デュア・リパ</string><key>shortcut</key><string>でゅありぱ</string></dict>
-    <dict><key>phrase</key><string>Dua Lipa</string><key>shortcut</key><string>でゅありぱ</string></dict>
     <dict><key>phrase</key><string>ブリトニー・スピアーズ</string><key>shortcut</key><string>ぶりとにーすぴあーず</string></dict>
-    <dict><key>phrase</key><string>Britney Spears</string><key>shortcut</key><string>ぶりとにーすぴあーず</string></dict>
     <dict><key>phrase</key><string>ジャネット・ジャクソン</string><key>shortcut</key><string>じゃねっとじゃくそん</string></dict>
-    <dict><key>phrase</key><string>Janet Jackson</string><key>shortcut</key><string>じゃねっとじゃくそん</string></dict>
     <dict><key>phrase</key><string>アバ</string><key>shortcut</key><string>あば</string></dict>
-    <dict><key>phrase</key><string>ABBA</string><key>shortcut</key><string>あば</string></dict>
     <dict><key>phrase</key><string>ビーチ・ボーイズ</string><key>shortcut</key><string>びーちぼーいず</string></dict>
-    <dict><key>phrase</key><string>The Beach Boys</string><key>shortcut</key><string>びーちぼーいず</string></dict>
     <dict><key>phrase</key><string>ビー・ジーズ</string><key>shortcut</key><string>びーじーず</string></dict>
-    <dict><key>phrase</key><string>Bee Gees</string><key>shortcut</key><string>びーじーず</string></dict>
     <dict><key>phrase</key><string>バックストリート・ボーイズ</string><key>shortcut</key><string>ばっくすとりーとぼーいず</string></dict>
-    <dict><key>phrase</key><string>Backstreet Boys</string><key>shortcut</key><string>ばっくすとりーとぼーいず</string></dict>
     <dict><key>phrase</key><string>マーヴィン・ゲイ</string><key>shortcut</key><string>まーゔぃんげい</string></dict>
-    <dict><key>phrase</key><string>Marvin Gaye</string><key>shortcut</key><string>まーゔぃんげい</string></dict>
     <dict><key>phrase</key><string>サム・クック</string><key>shortcut</key><string>さむくっく</string></dict>
-    <dict><key>phrase</key><string>Sam Cooke</string><key>shortcut</key><string>さむくっく</string></dict>
     <dict><key>phrase</key><string>レイ・チャールズ</string><key>shortcut</key><string>れいちゃーるず</string></dict>
-    <dict><key>phrase</key><string>Ray Charles</string><key>shortcut</key><string>れいちゃーるず</string></dict>
     <dict><key>phrase</key><string>ダイアナ・ロス</string><key>shortcut</key><string>だいあなろす</string></dict>
-    <dict><key>phrase</key><string>Diana Ross</string><key>shortcut</key><string>だいあなろす</string></dict>
     <dict><key>phrase</key><string>ザ・フー</string><key>shortcut</key><string>ざふー</string></dict>
-    <dict><key>phrase</key><string>The Who</string><key>shortcut</key><string>ざふー</string></dict>
     <dict><key>phrase</key><string>ディープ・パープル</string><key>shortcut</key><string>でぃーぷぱーぷる</string></dict>
-    <dict><key>phrase</key><string>Deep Purple</string><key>shortcut</key><string>でぃーぷぱーぷる</string></dict>
     <dict><key>phrase</key><string>ブラック・サバス</string><key>shortcut</key><string>ぶらっくさばす</string></dict>
-    <dict><key>phrase</key><string>Black Sabbath</string><key>shortcut</key><string>ぶらっくさばす</string></dict>
     <dict><key>phrase</key><string>オジー・オズボーン</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
-    <dict><key>phrase</key><string>Ozzy Osbourne</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
     <dict><key>phrase</key><string>ヴァン・ヘイレン</string><key>shortcut</key><string>ゔぁんへいれん</string></dict>
-    <dict><key>phrase</key><string>Van Halen</string><key>shortcut</key><string>ゔぁんへいれん</string></dict>
     <dict><key>phrase</key><string>グリーン・デイ</string><key>shortcut</key><string>ぐりーんでい</string></dict>
-    <dict><key>phrase</key><string>Green Day</string><key>shortcut</key><string>ぐりーんでい</string></dict>
     <dict><key>phrase</key><string>リンキン・パーク</string><key>shortcut</key><string>りんきんぱーく</string></dict>
-    <dict><key>phrase</key><string>Linkin Park</string><key>shortcut</key><string>りんきんぱーく</string></dict>
     <dict><key>phrase</key><string>ミューズ</string><key>shortcut</key><string>みゅーず</string></dict>
-    <dict><key>phrase</key><string>Muse</string><key>shortcut</key><string>みゅーず</string></dict>
     <dict><key>phrase</key><string>フー・ファイターズ</string><key>shortcut</key><string>ふーふぁいたーず</string></dict>
-    <dict><key>phrase</key><string>Foo Fighters</string><key>shortcut</key><string>ふーふぁいたーず</string></dict>
     <dict><key>phrase</key><string>ブルース・スプリングスティーン</string><key>shortcut</key><string>ぶるーすすぷりんぐすてぃーん</string></dict>
-    <dict><key>phrase</key><string>Bruce Springsteen</string><key>shortcut</key><string>ぶるーすすぷりんぐすてぃーん</string></dict>
     <dict><key>phrase</key><string>ニール・ヤング</string><key>shortcut</key><string>にーるやんぐ</string></dict>
-    <dict><key>phrase</key><string>Neil Young</string><key>shortcut</key><string>にーるやんぐ</string></dict>
     <dict><key>phrase</key><string>ザ・クラッシュ</string><key>shortcut</key><string>ざくらっしゅ</string></dict>
-    <dict><key>phrase</key><string>The Clash</string><key>shortcut</key><string>ざくらっしゅ</string></dict>
     <dict><key>phrase</key><string>セックス・ピストルズ</string><key>shortcut</key><string>せっくすぴすとるず</string></dict>
-    <dict><key>phrase</key><string>Sex Pistols</string><key>shortcut</key><string>せっくすぴすとるず</string></dict>
     <dict><key>phrase</key><string>ザ・ドアーズ</string><key>shortcut</key><string>ざどあーず</string></dict>
-    <dict><key>phrase</key><string>The Doors</string><key>shortcut</key><string>ざどあーず</string></dict>
     <dict><key>phrase</key><string>ジョン・コルトレーン</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
-    <dict><key>phrase</key><string>John Coltrane</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
     <dict><key>phrase</key><string>B.B.キング</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
-    <dict><key>phrase</key><string>B.B. King</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
     <dict><key>phrase</key><string>ロバート・ジョンソン</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
-    <dict><key>phrase</key><string>Robert Johnson</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
     <dict><key>phrase</key><string>チャック・ベリー</string><key>shortcut</key><string>ちゃっくべりー</string></dict>
-    <dict><key>phrase</key><string>Chuck Berry</string><key>shortcut</key><string>ちゃっくべりー</string></dict>
     <dict><key>phrase</key><string>リトル・リチャード</string><key>shortcut</key><string>りとるりちゃーど</string></dict>
-    <dict><key>phrase</key><string>Little Richard</string><key>shortcut</key><string>りとるりちゃーど</string></dict>
     <dict><key>phrase</key><string>ジョニー・キャッシュ</string><key>shortcut</key><string>じょにーきゃっしゅ</string></dict>
-    <dict><key>phrase</key><string>Johnny Cash</string><key>shortcut</key><string>じょにーきゃっしゅ</string></dict>
     <dict><key>phrase</key><string>サイモン&amp;ガーファンクル</string><key>shortcut</key><string>さいもんあんどがーふぁんくる</string></dict>
-    <dict><key>phrase</key><string>Simon &amp; Garfunkel</string><key>shortcut</key><string>さいもんあんどがーふぁんくる</string></dict>
     <dict><key>phrase</key><string>ジョニ・ミッチェル</string><key>shortcut</key><string>じょにみっちぇる</string></dict>
-    <dict><key>phrase</key><string>Joni Mitchell</string><key>shortcut</key><string>じょにみっちぇる</string></dict>
     <dict><key>phrase</key><string>レナード・コーエン</string><key>shortcut</key><string>れなーどこーえん</string></dict>
-    <dict><key>phrase</key><string>Leonard Cohen</string><key>shortcut</key><string>れなーどこーえん</string></dict>
     <dict><key>phrase</key><string>エラ・フィッツジェラルド</string><key>shortcut</key><string>えらふぃっつじぇらるど</string></dict>
-    <dict><key>phrase</key><string>Ella Fitzgerald</string><key>shortcut</key><string>えらふぃっつじぇらるど</string></dict>
     <dict><key>phrase</key><string>ニーナ・シモン</string><key>shortcut</key><string>にーなしもん</string></dict>
-    <dict><key>phrase</key><string>Nina Simone</string><key>shortcut</key><string>にーなしもん</string></dict>
     <dict><key>phrase</key><string>ビリー・ホリデイ</string><key>shortcut</key><string>びりーほりでい</string></dict>
-    <dict><key>phrase</key><string>Billie Holiday</string><key>shortcut</key><string>びりーほりでい</string></dict>
     <dict><key>phrase</key><string>ダフト・パンク</string><key>shortcut</key><string>だふとぱんく</string></dict>
-    <dict><key>phrase</key><string>Daft Punk</string><key>shortcut</key><string>だふとぱんく</string></dict>
     <dict><key>phrase</key><string>クラフトワーク</string><key>shortcut</key><string>くらふとわーく</string></dict>
-    <dict><key>phrase</key><string>Kraftwerk</string><key>shortcut</key><string>くらふとわーく</string></dict>
     <dict><key>phrase</key><string>カルロス・サンタナ</string><key>shortcut</key><string>かるろすさんたな</string></dict>
-    <dict><key>phrase</key><string>Carlos Santana</string><key>shortcut</key><string>かるろすさんたな</string></dict>
     <dict><key>phrase</key><string>エンニオ・モリコーネ</string><key>shortcut</key><string>えんにおもりこーね</string></dict>
-    <dict><key>phrase</key><string>Ennio Morricone</string><key>shortcut</key><string>えんにおもりこーね</string></dict>
     <dict><key>phrase</key><string>ビョーク</string><key>shortcut</key><string>びょーく</string></dict>
-    <dict><key>phrase</key><string>Björk</string><key>shortcut</key><string>びょーく</string></dict>
     <dict><key>phrase</key><string>セルジオ・メンデス</string><key>shortcut</key><string>せるじおめんです</string></dict>
-    <dict><key>phrase</key><string>Sérgio Mendes</string><key>shortcut</key><string>せるじおめんです</string></dict>
     <dict><key>phrase</key><string>アストル・ピアソラ</string><key>shortcut</key><string>あすとるぴあそら</string></dict>
+    <dict><key>phrase</key><string>The Beatles</string><key>shortcut</key><string>ざびーとるず</string></dict>
+    <dict><key>phrase</key><string>Michael Jackson</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
+    <dict><key>phrase</key><string>Elvis Presley</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
+    <dict><key>phrase</key><string>Bob Dylan</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
+    <dict><key>phrase</key><string>The Rolling Stones</string><key>shortcut</key><string>ざろーりんぐすとーんず</string></dict>
+    <dict><key>phrase</key><string>Queen</string><key>shortcut</key><string>くいーん</string></dict>
+    <dict><key>phrase</key><string>Madonna</string><key>shortcut</key><string>まどんな</string></dict>
+    <dict><key>phrase</key><string>Led Zeppelin</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
+    <dict><key>phrase</key><string>David Bowie</string><key>shortcut</key><string>でゔぃっどぼうい</string></dict>
+    <dict><key>phrase</key><string>Prince</string><key>shortcut</key><string>ぷりんす</string></dict>
+    <dict><key>phrase</key><string>Stevie Wonder</string><key>shortcut</key><string>すてぃーゔぃーわんだー</string></dict>
+    <dict><key>phrase</key><string>Jimi Hendrix</string><key>shortcut</key><string>じみへんどりっくす</string></dict>
+    <dict><key>phrase</key><string>Bob Marley</string><key>shortcut</key><string>ぼぶまーりー</string></dict>
+    <dict><key>phrase</key><string>Aretha Franklin</string><key>shortcut</key><string>あれさふらんくりん</string></dict>
+    <dict><key>phrase</key><string>Pink Floyd</string><key>shortcut</key><string>ぴんくふろいど</string></dict>
+    <dict><key>phrase</key><string>Nirvana</string><key>shortcut</key><string>にるゔぁーな</string></dict>
+    <dict><key>phrase</key><string>Elton John</string><key>shortcut</key><string>えるとんじょん</string></dict>
+    <dict><key>phrase</key><string>Paul McCartney</string><key>shortcut</key><string>ぽーるまっかーとにー</string></dict>
+    <dict><key>phrase</key><string>John Lennon</string><key>shortcut</key><string>じょんれのん</string></dict>
+    <dict><key>phrase</key><string>James Brown</string><key>shortcut</key><string>じぇーむすぶらうん</string></dict>
+    <dict><key>phrase</key><string>Eric Clapton</string><key>shortcut</key><string>えりっくくらぷとん</string></dict>
+    <dict><key>phrase</key><string>Taylor Swift</string><key>shortcut</key><string>ているーすうぃふと</string></dict>
+    <dict><key>phrase</key><string>Beyoncé</string><key>shortcut</key><string>びよんせ</string></dict>
+    <dict><key>phrase</key><string>Eminem</string><key>shortcut</key><string>えみねむ</string></dict>
+    <dict><key>phrase</key><string>Miles Davis</string><key>shortcut</key><string>まいるずでいゔぃす</string></dict>
+    <dict><key>phrase</key><string>Louis Armstrong</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
+    <dict><key>phrase</key><string>Frank Sinatra</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
+    <dict><key>phrase</key><string>Whitney Houston</string><key>shortcut</key><string>ほいっとにーひゅーすとん</string></dict>
+    <dict><key>phrase</key><string>Mariah Carey</string><key>shortcut</key><string>まらいあきゃりー</string></dict>
+    <dict><key>phrase</key><string>Céline Dion</string><key>shortcut</key><string>せりーぬでぃおん</string></dict>
+    <dict><key>phrase</key><string>U2</string><key>shortcut</key><string>ゆーつー</string></dict>
+    <dict><key>phrase</key><string>AC/DC</string><key>shortcut</key><string>えーしーでぃーしー</string></dict>
+    <dict><key>phrase</key><string>Metallica</string><key>shortcut</key><string>めたりか</string></dict>
+    <dict><key>phrase</key><string>Guns N' Roses</string><key>shortcut</key><string>がんずあんどろーぜず</string></dict>
+    <dict><key>phrase</key><string>Bon Jovi</string><key>shortcut</key><string>ぼんじょゔぃ</string></dict>
+    <dict><key>phrase</key><string>Aerosmith</string><key>shortcut</key><string>えあろすみす</string></dict>
+    <dict><key>phrase</key><string>Red Hot Chili Peppers</string><key>shortcut</key><string>れっどほっとちりぺっぱーず</string></dict>
+    <dict><key>phrase</key><string>Oasis</string><key>shortcut</key><string>おあしす</string></dict>
+    <dict><key>phrase</key><string>Radiohead</string><key>shortcut</key><string>れでぃおへっど</string></dict>
+    <dict><key>phrase</key><string>Coldplay</string><key>shortcut</key><string>こーるどぷれい</string></dict>
+    <dict><key>phrase</key><string>Bruno Mars</string><key>shortcut</key><string>ぶるーのまーず</string></dict>
+    <dict><key>phrase</key><string>Ed Sheeran</string><key>shortcut</key><string>えどしーらん</string></dict>
+    <dict><key>phrase</key><string>Lady Gaga</string><key>shortcut</key><string>れでぃーがが</string></dict>
+    <dict><key>phrase</key><string>Adele</string><key>shortcut</key><string>あでる</string></dict>
+    <dict><key>phrase</key><string>Rihanna</string><key>shortcut</key><string>りあーな</string></dict>
+    <dict><key>phrase</key><string>Justin Bieber</string><key>shortcut</key><string>じゃすてぃんびーばー</string></dict>
+    <dict><key>phrase</key><string>Ariana Grande</string><key>shortcut</key><string>ありあなぐらんで</string></dict>
+    <dict><key>phrase</key><string>Billie Eilish</string><key>shortcut</key><string>びりーあいりっしゅ</string></dict>
+    <dict><key>phrase</key><string>The Weeknd</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
+    <dict><key>phrase</key><string>2Pac</string><key>shortcut</key><string>つーぱっく</string></dict>
+    <dict><key>phrase</key><string>Jay-Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
+    <dict><key>phrase</key><string>Kanye West</string><key>shortcut</key><string>かにえうぇすと</string></dict>
+    <dict><key>phrase</key><string>Kendrick Lamar</string><key>shortcut</key><string>けんどりっくらまー</string></dict>
+    <dict><key>phrase</key><string>Dr. Dre</string><key>shortcut</key><string>どくたーどれー</string></dict>
+    <dict><key>phrase</key><string>The Notorious B.I.G.</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
+    <dict><key>phrase</key><string>Drake</string><key>shortcut</key><string>どれいく</string></dict>
+    <dict><key>phrase</key><string>Dua Lipa</string><key>shortcut</key><string>でゅありぱ</string></dict>
+    <dict><key>phrase</key><string>Britney Spears</string><key>shortcut</key><string>ぶりとにーすぴあーず</string></dict>
+    <dict><key>phrase</key><string>Janet Jackson</string><key>shortcut</key><string>じゃねっとじゃくそん</string></dict>
+    <dict><key>phrase</key><string>ABBA</string><key>shortcut</key><string>あば</string></dict>
+    <dict><key>phrase</key><string>The Beach Boys</string><key>shortcut</key><string>びーちぼーいず</string></dict>
+    <dict><key>phrase</key><string>Bee Gees</string><key>shortcut</key><string>びーじーず</string></dict>
+    <dict><key>phrase</key><string>Backstreet Boys</string><key>shortcut</key><string>ばっくすとりーとぼーいず</string></dict>
+    <dict><key>phrase</key><string>Marvin Gaye</string><key>shortcut</key><string>まーゔぃんげい</string></dict>
+    <dict><key>phrase</key><string>Sam Cooke</string><key>shortcut</key><string>さむくっく</string></dict>
+    <dict><key>phrase</key><string>Ray Charles</string><key>shortcut</key><string>れいちゃーるず</string></dict>
+    <dict><key>phrase</key><string>Diana Ross</string><key>shortcut</key><string>だいあなろす</string></dict>
+    <dict><key>phrase</key><string>The Who</string><key>shortcut</key><string>ざふー</string></dict>
+    <dict><key>phrase</key><string>Deep Purple</string><key>shortcut</key><string>でぃーぷぱーぷる</string></dict>
+    <dict><key>phrase</key><string>Black Sabbath</string><key>shortcut</key><string>ぶらっくさばす</string></dict>
+    <dict><key>phrase</key><string>Ozzy Osbourne</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
+    <dict><key>phrase</key><string>Van Halen</string><key>shortcut</key><string>ゔぁんへいれん</string></dict>
+    <dict><key>phrase</key><string>Green Day</string><key>shortcut</key><string>ぐりーんでい</string></dict>
+    <dict><key>phrase</key><string>Linkin Park</string><key>shortcut</key><string>りんきんぱーく</string></dict>
+    <dict><key>phrase</key><string>Muse</string><key>shortcut</key><string>みゅーず</string></dict>
+    <dict><key>phrase</key><string>Foo Fighters</string><key>shortcut</key><string>ふーふぁいたーず</string></dict>
+    <dict><key>phrase</key><string>Bruce Springsteen</string><key>shortcut</key><string>ぶるーすすぷりんぐすてぃーん</string></dict>
+    <dict><key>phrase</key><string>Neil Young</string><key>shortcut</key><string>にーるやんぐ</string></dict>
+    <dict><key>phrase</key><string>The Clash</string><key>shortcut</key><string>ざくらっしゅ</string></dict>
+    <dict><key>phrase</key><string>Sex Pistols</string><key>shortcut</key><string>せっくすぴすとるず</string></dict>
+    <dict><key>phrase</key><string>The Doors</string><key>shortcut</key><string>ざどあーず</string></dict>
+    <dict><key>phrase</key><string>John Coltrane</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
+    <dict><key>phrase</key><string>B.B. King</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
+    <dict><key>phrase</key><string>Robert Johnson</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
+    <dict><key>phrase</key><string>Chuck Berry</string><key>shortcut</key><string>ちゃっくべりー</string></dict>
+    <dict><key>phrase</key><string>Little Richard</string><key>shortcut</key><string>りとるりちゃーど</string></dict>
+    <dict><key>phrase</key><string>Johnny Cash</string><key>shortcut</key><string>じょにーきゃっしゅ</string></dict>
+    <dict><key>phrase</key><string>Simon &amp; Garfunkel</string><key>shortcut</key><string>さいもんあんどがーふぁんくる</string></dict>
+    <dict><key>phrase</key><string>Joni Mitchell</string><key>shortcut</key><string>じょにみっちぇる</string></dict>
+    <dict><key>phrase</key><string>Leonard Cohen</string><key>shortcut</key><string>れなーどこーえん</string></dict>
+    <dict><key>phrase</key><string>Ella Fitzgerald</string><key>shortcut</key><string>えらふぃっつじぇらるど</string></dict>
+    <dict><key>phrase</key><string>Nina Simone</string><key>shortcut</key><string>にーなしもん</string></dict>
+    <dict><key>phrase</key><string>Billie Holiday</string><key>shortcut</key><string>びりーほりでい</string></dict>
+    <dict><key>phrase</key><string>Daft Punk</string><key>shortcut</key><string>だふとぱんく</string></dict>
+    <dict><key>phrase</key><string>Kraftwerk</string><key>shortcut</key><string>くらふとわーく</string></dict>
+    <dict><key>phrase</key><string>Carlos Santana</string><key>shortcut</key><string>かるろすさんたな</string></dict>
+    <dict><key>phrase</key><string>Ennio Morricone</string><key>shortcut</key><string>えんにおもりこーね</string></dict>
+    <dict><key>phrase</key><string>Björk</string><key>shortcut</key><string>びょーく</string></dict>
+    <dict><key>phrase</key><string>Sérgio Mendes</string><key>shortcut</key><string>せるじおめんです</string></dict>
     <dict><key>phrase</key><string>Ástor Piazzolla</string><key>shortcut</key><string>あすとるぴあそら</string></dict>
 </array>
 </plist>
