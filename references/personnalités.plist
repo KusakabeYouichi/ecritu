@@ -2,11 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
+    <!-- 世界のミュージシャン100 (A) -->
     <dict><key>phrase</key><string>ザ・ビートルズ</string><key>shortcut</key><string>ざびーとるず</string></dict>
+    <dict><key>phrase</key><string>ビートルズ</string><key>shortcut</key><string>びーとるず</string></dict>
     <dict><key>phrase</key><string>マイケル・ジャクソン</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
     <dict><key>phrase</key><string>エルヴィス・プレスリー</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
     <dict><key>phrase</key><string>ボブ・ディラン</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
     <dict><key>phrase</key><string>ザ・ローリング・ストーンズ</string><key>shortcut</key><string>ざろーりんぐすとーんず</string></dict>
+    <dict><key>phrase</key><string>ローリング・ストーンズ</string><key>shortcut</key><string>ろーりんぐすとーんず</string></dict>
     <dict><key>phrase</key><string>クイーン</string><key>shortcut</key><string>くいーん</string></dict>
     <dict><key>phrase</key><string>マドンナ</string><key>shortcut</key><string>まどんな</string></dict>
     <dict><key>phrase</key><string>レッド・ツェッペリン</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
@@ -51,6 +54,7 @@
     <dict><key>phrase</key><string>アリアナ・グランデ</string><key>shortcut</key><string>ありあなぐらんで</string></dict>
     <dict><key>phrase</key><string>ビリー・アイリッシュ</string><key>shortcut</key><string>びりーあいりっしゅ</string></dict>
     <dict><key>phrase</key><string>ザ・ウィークエンド</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
+    <dict><key>phrase</key><string>ウィークエンド</string><key>shortcut</key><string>うぃーくえんど</string></dict>
     <dict><key>phrase</key><string>2パック</string><key>shortcut</key><string>つーぱっく</string></dict>
     <dict><key>phrase</key><string>ジェイ・Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
     <dict><key>phrase</key><string>カニエ・ウェスト</string><key>shortcut</key><string>かにえうぇすと</string></dict>
@@ -70,6 +74,7 @@
     <dict><key>phrase</key><string>レイ・チャールズ</string><key>shortcut</key><string>れいちゃーるず</string></dict>
     <dict><key>phrase</key><string>ダイアナ・ロス</string><key>shortcut</key><string>だいあなろす</string></dict>
     <dict><key>phrase</key><string>ザ・フー</string><key>shortcut</key><string>ざふー</string></dict>
+    <dict><key>phrase</key><string>フー</string><key>shortcut</key><string>ふー</string></dict>
     <dict><key>phrase</key><string>ディープ・パープル</string><key>shortcut</key><string>でぃーぷぱーぷる</string></dict>
     <dict><key>phrase</key><string>ブラック・サバス</string><key>shortcut</key><string>ぶらっくさばす</string></dict>
     <dict><key>phrase</key><string>オジー・オズボーン</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
@@ -81,8 +86,10 @@
     <dict><key>phrase</key><string>ブルース・スプリングスティーン</string><key>shortcut</key><string>ぶるーすすぷりんぐすてぃーん</string></dict>
     <dict><key>phrase</key><string>ニール・ヤング</string><key>shortcut</key><string>にーるやんぐ</string></dict>
     <dict><key>phrase</key><string>ザ・クラッシュ</string><key>shortcut</key><string>ざくらっしゅ</string></dict>
+    <dict><key>phrase</key><string>クラッシュ</string><key>shortcut</key><string>くらっしゅ</string></dict>
     <dict><key>phrase</key><string>セックス・ピストルズ</string><key>shortcut</key><string>せっくすぴすとるず</string></dict>
     <dict><key>phrase</key><string>ザ・ドアーズ</string><key>shortcut</key><string>ざどあーず</string></dict>
+    <dict><key>phrase</key><string>ドアーズ</string><key>shortcut</key><string>どあーず</string></dict>
     <dict><key>phrase</key><string>ジョン・コルトレーン</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
     <dict><key>phrase</key><string>B.B.キング</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
     <dict><key>phrase</key><string>ロバート・ジョンソン</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
@@ -102,11 +109,14 @@
     <dict><key>phrase</key><string>ビョーク</string><key>shortcut</key><string>びょーく</string></dict>
     <dict><key>phrase</key><string>セルジオ・メンデス</string><key>shortcut</key><string>せるじおめんです</string></dict>
     <dict><key>phrase</key><string>アストル・ピアソラ</string><key>shortcut</key><string>あすとるぴあそら</string></dict>
+    <!-- 世界のミュージシャン100 (B) -->
     <dict><key>phrase</key><string>The Beatles</string><key>shortcut</key><string>ざびーとるず</string></dict>
+    <dict><key>phrase</key><string>The Beatles</string><key>shortcut</key><string>びーとるず</string></dict>
     <dict><key>phrase</key><string>Michael Jackson</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
     <dict><key>phrase</key><string>Elvis Presley</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
     <dict><key>phrase</key><string>Bob Dylan</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
     <dict><key>phrase</key><string>The Rolling Stones</string><key>shortcut</key><string>ざろーりんぐすとーんず</string></dict>
+    <dict><key>phrase</key><string>The Rolling Stones</string><key>shortcut</key><string>ろーりんぐすとーんず</string></dict>
     <dict><key>phrase</key><string>Queen</string><key>shortcut</key><string>くいーん</string></dict>
     <dict><key>phrase</key><string>Madonna</string><key>shortcut</key><string>まどんな</string></dict>
     <dict><key>phrase</key><string>Led Zeppelin</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
@@ -151,17 +161,20 @@
     <dict><key>phrase</key><string>Ariana Grande</string><key>shortcut</key><string>ありあなぐらんで</string></dict>
     <dict><key>phrase</key><string>Billie Eilish</string><key>shortcut</key><string>びりーあいりっしゅ</string></dict>
     <dict><key>phrase</key><string>The Weeknd</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
+    <dict><key>phrase</key><string>The Weeknd</string><key>shortcut</key><string>うぃーくえんど</string></dict>
     <dict><key>phrase</key><string>2Pac</string><key>shortcut</key><string>つーぱっく</string></dict>
     <dict><key>phrase</key><string>Jay-Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
     <dict><key>phrase</key><string>Kanye West</string><key>shortcut</key><string>かにえうぇすと</string></dict>
     <dict><key>phrase</key><string>Kendrick Lamar</string><key>shortcut</key><string>けんどりっくらまー</string></dict>
     <dict><key>phrase</key><string>Dr. Dre</string><key>shortcut</key><string>どくたーどれー</string></dict>
+    <dict><key>phrase</key><string>The Notorious B.I.G.</string><key>shortcut</key><string>ざのとーりあすびーあいじー</string></dict>
     <dict><key>phrase</key><string>The Notorious B.I.G.</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
     <dict><key>phrase</key><string>Drake</string><key>shortcut</key><string>どれいく</string></dict>
     <dict><key>phrase</key><string>Dua Lipa</string><key>shortcut</key><string>でゅありぱ</string></dict>
     <dict><key>phrase</key><string>Britney Spears</string><key>shortcut</key><string>ぶりとにーすぴあーず</string></dict>
     <dict><key>phrase</key><string>Janet Jackson</string><key>shortcut</key><string>じゃねっとじゃくそん</string></dict>
     <dict><key>phrase</key><string>ABBA</string><key>shortcut</key><string>あば</string></dict>
+    <dict><key>phrase</key><string>The Beach Boys</string><key>shortcut</key><string>ざびーちぼーいず</string></dict>
     <dict><key>phrase</key><string>The Beach Boys</string><key>shortcut</key><string>びーちぼーいず</string></dict>
     <dict><key>phrase</key><string>Bee Gees</string><key>shortcut</key><string>びーじーず</string></dict>
     <dict><key>phrase</key><string>Backstreet Boys</string><key>shortcut</key><string>ばっくすとりーとぼーいず</string></dict>
@@ -170,6 +183,7 @@
     <dict><key>phrase</key><string>Ray Charles</string><key>shortcut</key><string>れいちゃーるず</string></dict>
     <dict><key>phrase</key><string>Diana Ross</string><key>shortcut</key><string>だいあなろす</string></dict>
     <dict><key>phrase</key><string>The Who</string><key>shortcut</key><string>ざふー</string></dict>
+    <dict><key>phrase</key><string>The Who</string><key>shortcut</key><string>ふー</string></dict>
     <dict><key>phrase</key><string>Deep Purple</string><key>shortcut</key><string>でぃーぷぱーぷる</string></dict>
     <dict><key>phrase</key><string>Black Sabbath</string><key>shortcut</key><string>ぶらっくさばす</string></dict>
     <dict><key>phrase</key><string>Ozzy Osbourne</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
@@ -181,8 +195,10 @@
     <dict><key>phrase</key><string>Bruce Springsteen</string><key>shortcut</key><string>ぶるーすすぷりんぐすてぃーん</string></dict>
     <dict><key>phrase</key><string>Neil Young</string><key>shortcut</key><string>にーるやんぐ</string></dict>
     <dict><key>phrase</key><string>The Clash</string><key>shortcut</key><string>ざくらっしゅ</string></dict>
+    <dict><key>phrase</key><string>The Clash</string><key>shortcut</key><string>くらっしゅ</string></dict>
     <dict><key>phrase</key><string>Sex Pistols</string><key>shortcut</key><string>せっくすぴすとるず</string></dict>
     <dict><key>phrase</key><string>The Doors</string><key>shortcut</key><string>ざどあーず</string></dict>
+    <dict><key>phrase</key><string>The Doors</string><key>shortcut</key><string>どあーず</string></dict>
     <dict><key>phrase</key><string>John Coltrane</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
     <dict><key>phrase</key><string>B.B. King</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
     <dict><key>phrase</key><string>Robert Johnson</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
