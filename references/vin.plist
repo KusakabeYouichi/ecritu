@@ -1676,6 +1676,7 @@
 	<dict><key>phrase</key><string>Boal</string><key>shortcut</key><string>ぼある</string></dict>
 	<dict><key>phrase</key><string>Bobal</string><key>shortcut</key><string>ぼばる</string></dict>
 	<dict><key>phrase</key><string>Bonarda</string><key>shortcut</key><string>ぼるなだ</string></dict>
+	<dict><key>phrase</key><string>Băbească Neagră</string><key>shortcut</key><string>ばべあすかねあぐら</string></dict>
 	<dict><key>phrase</key><string>Cabernet Franc</string><key>shortcut</key><string>かべるねふらん</string></dict>
 	<dict><key>phrase</key><string>Cabernet Sauvignon</string><key>shortcut</key><string>かべるねそーゔぃによんーゔぃによん</string></dict>
 	<dict><key>phrase</key><string>Cannonau</string><key>shortcut</key><string>かんのなう</string></dict>
@@ -1763,6 +1764,7 @@
 	<dict><key>phrase</key><string>Portugieser</string><key>shortcut</key><string>ぽるとぎーざー</string></dict>
 	<dict><key>phrase</key><string>Poulsard</string><key>shortcut</key><string>ぷーるさーる</string></dict>
 	<dict><key>phrase</key><string>Primitivo</string><key>shortcut</key><string>ぷりみてぃーゔぉ</string></dict>
+	<dict><key>phrase</key><string>Rară Neagră</string><key>shortcut</key><string>ららねあぐら</string></dict>
 	<dict><key>phrase</key><string>Ribolla Gialla</string><key>shortcut</key><string>りぼっらじゃっら</string></dict>
 	<dict><key>phrase</key><string>Riesling Italico</string><key>shortcut</key><string>りーすりんぐいたりこ</string></dict>
 	<dict><key>phrase</key><string>Riesling Lion</string><key>shortcut</key><string>りーすりんぐらいおん</string></dict>
@@ -5689,7 +5691,6 @@
 	<dict><key>phrase</key><string>ラマンドロ</string><key>shortcut</key><string>らまんどろ</string></dict>
 	<dict><key>phrase</key><string>ラム</string><key>shortcut</key><string>らむ</string></dict>
 	<dict><key>phrase</key><string>ラランド・ド・ポムロール</string><key>shortcut</key><string>ららんどどぽむろーる</string></dict>
-	<dict><key>phrase</key><string>ララ・ネアグラ</string><key>shortcut</key><string>ららねあぐら</string></dict>
 	<dict><key>phrase</key><string>ラロヴァ</string><key>shortcut</key><string>らろゔぁ</string></dict>
 	<dict><key>phrase</key><string>ランク</string><key>shortcut</key><string>らんく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ラングドック</string><key>shortcut</key><string>らんぐどっく</string></dict>
