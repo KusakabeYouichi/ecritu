@@ -17,6 +17,8 @@ cd "$ROOT_DIR"
 TMP_PREMIER="$ROOT_DIR/tmp/ÉcrituPremierVocab.json"
 TMP_SECOND="$ROOT_DIR/tmp/ÉcrituSecondVocab.json"
 TMP_INITIAL_AJOUT="$ROOT_DIR/tmp/InitialAjoutVocabMigration.json"
+TMP_SECOND_INFLECTIONS="$ROOT_DIR/tmp/references_second_inflections.json"
+TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_void_inflections.json"
 TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
@@ -140,11 +142,13 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_RYUKYU_PLIST" \
   --input-plist "$REF_VIN_PLIST" \
   --input-plist "$REF_IT_PLIST" \
-  --output "$TMP_SECOND"
+  --output "$TMP_SECOND" \
+  --output-inflections "$TMP_SECOND_INFLECTIONS"
 
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_VOID_PLIST" \
-  --output "$TMP_INITIAL_AJOUT"
+  --output "$TMP_INITIAL_AJOUT" \
+  --output-inflections "$TMP_INITIAL_AJOUT_INFLECTIONS"
 
 needs_sudachi_regeneration() {
   ROOT_DIR="$ROOT_DIR" python3 - <<'PY'
@@ -228,6 +232,14 @@ regenerate_sqlite_if_possible() {
 
   if [[ -f "$TMP_INFLECTIONS" ]]; then
     sqlite_args+=(--inflections-json "$TMP_INFLECTIONS")
+  fi
+
+  if [[ -f "$TMP_SECOND_INFLECTIONS" ]]; then
+    sqlite_args+=(--inflections-json "$TMP_SECOND_INFLECTIONS")
+  fi
+
+  if [[ -f "$TMP_INITIAL_AJOUT_INFLECTIONS" ]]; then
+    sqlite_args+=(--inflections-json "$TMP_INITIAL_AJOUT_INFLECTIONS")
   fi
 
   if "${sqlite_args[@]}"; then

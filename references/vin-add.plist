@@ -2231,7 +2231,7 @@
 	<dict><key>phrase</key><string>lncolore</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>ma</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>margin-block</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>★</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>mce_root_block</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>melting</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>oenochooi</string><key>shortcut</key><string>★</string></dict>
@@ -2242,7 +2242,7 @@
 	<dict><key>phrase</key><string>sans alcool</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>seasoning</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>sec</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>service</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>service</string><key>shortcut</key><string>★</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>span style</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>spiritueux</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>strong</string><key>shortcut</key><string>★</string></dict>
@@ -3910,7 +3910,7 @@
 	<dict><key>phrase</key><string>糖</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>糖以外</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>糖分量</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>糖化</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>糖化</string><key>shortcut</key><string>★</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>糖度測定法</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>紅酒</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>紅麹菌</string><key>shortcut</key><string>★</string></dict>
