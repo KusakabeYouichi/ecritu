@@ -1111,6 +1111,7 @@
 	<dict><key>phrase</key><string>十勝</string><key>shortcut</key><string>とかち</string></dict>
 	<dict><key>phrase</key><string>南河内</string><key>shortcut</key><string>みなみかわち</string></dict>
 	<dict><key>phrase</key><string>南西</string><key>shortcut</key><string>なんせい</string></dict>
+	<dict><key>phrase</key><string>南西地方</string><key>shortcut</key><string>なんせいちほう</string></dict>
 	<dict><key>phrase</key><string>地中海</string><key>shortcut</key><string>ちちゅうかい</string></dict>
 	<dict><key>phrase</key><string>地中海沿岸</string><key>shortcut</key><string>ちちゅうかいえんがん</string></dict>
 	<dict><key>phrase</key><string>大西洋</string><key>shortcut</key><string>たいせいよう</string></dict>
@@ -1121,6 +1122,7 @@
 	<dict><key>phrase</key><string>球磨</string><key>shortcut</key><string>くま</string></dict>
 	<dict><key>phrase</key><string>石狩</string><key>shortcut</key><string>いしかり</string></dict>
 	<dict><key>phrase</key><string>空知</string><key>shortcut</key><string>そらち</string></dict>
+	<dict><key>phrase</key><string>置賜</string><key>shortcut</key><string>おきたま</string></dict>
 	<dict><key>phrase</key><string>置賜</string><key>shortcut</key><string>おいたま</string></dict>
 	<dict><key>phrase</key><string>関東</string><key>shortcut</key><string>かんとう</string></dict>
 	<dict><key>phrase</key><string>湖水</string><key>shortcut</key><string>こすい</string></dict>
@@ -3460,6 +3462,7 @@
 	<dict><key>phrase</key><string>ヴォス・アーティザン</string><key>shortcut</key><string>ゔぉすあーてぃざん</string></dict>
 
 	<!-- 料理・食材 -->
+	<dict><key>phrase</key><string>クレピネット</string><key>shortcut</key><string>くれぴねっと</string></dict>
 	<dict><key>phrase</key><string>Abbacchio allo Scottadito</string><key>shortcut</key><string>あばっきおあっろすこったでぃーと</string></dict>
 	<dict><key>phrase</key><string>ゼリー寄せ</string><key>shortcut</key><string>ぜりーよせ</string></dict>
 	<dict><key>phrase</key><string>セビーチェ</string><key>shortcut</key><string>せびーちぇ</string></dict>
