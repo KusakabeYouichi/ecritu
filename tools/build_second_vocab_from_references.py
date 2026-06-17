@@ -12,8 +12,39 @@ from __future__ import annotations
 import argparse
 import json
 import plistlib
+import re
+import sys
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
+
+
+# plist で <key>X</key> の直後に来てよい値要素の開始タグ。
+VALID_VALUE_PREFIXES = (
+    "<string>", "<integer>", "<real>", "<true/>", "<false/>",
+    "<date>", "<data>", "<dict>", "<dict/>", "<array>", "<array/>",
+)
+
+KEY_PATTERN = re.compile(r"<key>([^<]+)</key>")
+
+
+def validate_plist_structure(path: Path) -> List[Tuple[int, str, str]]:
+    """各 <key>X</key> の直後に値要素が続いているか line ベースで検査。
+    値が欠落している(<key>X</key></dict> や <key>X</key><key>Y</key> 等)を
+    (line_num, key_name, line) のリストで返す。"""
+    text = path.read_text(encoding="utf-8")
+    issues: List[Tuple[int, str, str]] = []
+    for line_num, raw_line in enumerate(text.splitlines(), 1):
+        line = raw_line
+        scan_pos = 0
+        while True:
+            m = KEY_PATTERN.search(line, scan_pos)
+            if not m:
+                break
+            scan_pos = m.end()
+            rest = line[scan_pos:].lstrip()
+            if not any(rest.startswith(p) for p in VALID_VALUE_PREFIXES):
+                issues.append((line_num, m.group(1), raw_line.strip()))
+    return issues
 
 
 # plist pos label -> Swift InflectionClass internal label
@@ -75,6 +106,22 @@ def load_plist(
     merged: Dict[str, List[str]],
     inflections: Optional[Dict[str, Dict[str, str]]],
 ) -> None:
+    issues = validate_plist_structure(path)
+    if issues:
+        print(f"[validate] {path}: 値の欠落した <key> を検出", file=sys.stderr)
+        for line_num, key_name, line in issues:
+            print(
+                f"  line {line_num}: <key>{key_name}</key> の後に値要素が無い\n"
+                f"    {line}",
+                file=sys.stderr,
+            )
+        print(
+            "対応: <key>{key}</key> 全体を削除するか、適切な値タグ"
+            "(例: <string>サ変名詞</string>) を補ってください。",
+            file=sys.stderr,
+        )
+        raise SystemExit(2)
+
     with path.open("rb") as f:
         obj = plistlib.load(f)
 
