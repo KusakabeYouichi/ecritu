@@ -365,5 +365,7 @@
     <dict><key>phrase</key><string>ソウルフード</string><key>shortcut</key><string>そうるふーど</string></dict>
     <dict><key>phrase</key><string>横構図</string><key>shortcut</key><string>よここうず</string></dict>
     <dict><key>phrase</key><string>縦構図</string><key>shortcut</key><string>たてこうず</string></dict>
+    <dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
 </array>
 </plist>
