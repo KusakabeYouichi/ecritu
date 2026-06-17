@@ -6226,6 +6226,82 @@
 	<dict><key>phrase</key><string>ンムクジプットゥルー</string><key>shortcut</key><string>んむくじぷっとぅるー</string></dict>
 	<dict><key>phrase</key><string>芋煮</string><key>shortcut</key><string>んむにー</string></dict>
 	<dict><key>phrase</key><string>ンムニー</string><key>shortcut</key><string>んむにー</string></dict>
+	<!-- 沖縄の観光スポットの追加分 -->
+	<dict><key>phrase</key><string>DMMかりゆし水族館</string><key>shortcut</key><string>でぃーえむえむかりゆしすいぞくかん</string></dict>
+	<dict><key>phrase</key><string>イムギャーマリン公園</string><key>shortcut</key><string>いむぎゃーまりんこうえん</string></dict>
+	<dict><key>phrase</key><string>ウーグの浜</string><key>shortcut</key><string>うーぐのはま</string></dict>
+	<dict><key>phrase</key><string>ウッカガー</string><key>shortcut</key><string>うっかがー</string></dict>
+	<dict><key>phrase</key><string>おきなわワールド</string><key>shortcut</key><string>おきなわわーるど</string></dict>
+	<dict><key>phrase</key><string>かりゆし水族館</string><key>shortcut</key><string>かりゆしすいぞくかん</string></dict>
+	<dict><key>phrase</key><string>ガンガラーの谷</string><key>shortcut</key><string>がんがらーのたに</string></dict>
+	<dict><key>phrase</key><string>ジャングリア沖縄</string><key>shortcut</key><string>じゃんぐりあおきなわ</string></dict>
+	<dict><key>phrase</key><string>ナゴパイナップルパーク</string><key>shortcut</key><string>なごぱいなっぷるぱーく</string></dict>
+	<dict><key>phrase</key><string>ひめゆりの塔</string><key>shortcut</key><string>ひめゆりのとう</string></dict>
+	<dict><key>phrase</key><string>ブセナ海中公園</string><key>shortcut</key><string>ぶせなかいちゅうこうえん</string></dict>
+	<dict><key>phrase</key><string>マリュドゥの滝</string><key>shortcut</key><string>まりゅどぅのたき</string></dict>
+	<dict><key>phrase</key><string>安慶名闘牛場</string><key>shortcut</key><string>あげなとうぎゅうじょう</string></dict>
+	<dict><key>phrase</key><string>伊是名城跡</string><key>shortcut</key><string>いぜなじょうあと</string></dict>
+	<dict><key>phrase</key><string>伊良部大橋</string><key>shortcut</key><string>いらぶおおはし</string></dict>
+	<dict><key>phrase</key><string>浦添市美術館</string><key>shortcut</key><string>うらそえしびじゅつかん</string></dict>
+	<dict><key>phrase</key><string>浦内川</string><key>shortcut</key><string>うらうちがわ</string></dict>
+	<dict><key>phrase</key><string>奥武島の畳石</string><key>shortcut</key><string>おうじまのたたみいし</string></dict>
+	<dict><key>phrase</key><string>沖宮</string><key>shortcut</key><string>おきのぐう</string></dict>
+	<dict><key>phrase</key><string>沖縄こどもの国</string><key>shortcut</key><string>おきなわこどものくに</string></dict>
+	<dict><key>phrase</key><string>沖縄県立博物館</string><key>shortcut</key><string>おきなわけんりつはくぶつかん</string></dict>
+	<dict><key>phrase</key><string>沖縄県立博物館・美術館</string><key>shortcut</key><string>おきなわけんりつはくぶつかんびじゅつかん</string></dict>
+	<dict><key>phrase</key><string>沖縄子どもの国</string><key>shortcut</key><string>おきなわこどものくに</string></dict>
+	<dict><key>phrase</key><string>沖縄美ら海水族館</string><key>shortcut</key><string>おきなわちゅうらうみすいぞくかん</string></dict>
+	<dict><key>phrase</key><string>沖縄美ら海水族館</string><key>shortcut</key><string>おきなわちゅらうみすいぞくかん</string></dict>
+	<dict><key>phrase</key><string>乙羽岳</string><key>shortcut</key><string>おとはだけ</string></dict>
+	<dict><key>phrase</key><string>恩納岳</string><key>shortcut</key><string>おんなだけ</string></dict>
+	<dict><key>phrase</key><string>嘉数高台公園</string><key>shortcut</key><string>かかずたかだいこうえん</string></dict>
+	<dict><key>phrase</key><string>果報バンタ</string><key>shortcut</key><string>かふうばんた</string></dict>
+	<dict><key>phrase</key><string>漢那ダム</string><key>shortcut</key><string>かんなだむ</string></dict>
+	<dict><key>phrase</key><string>観音寺</string><key>shortcut</key><string>かんのんじ</string></dict>
+	<dict><key>phrase</key><string>喜屋武岬</string><key>shortcut</key><string>きゃんみさき</string></dict>
+	<dict><key>phrase</key><string>旧海軍司令部壕</string><key>shortcut</key><string>きゅうかいぐんしれいぶごう</string></dict>
+	<dict><key>phrase</key><string>玉取崎展望台</string><key>shortcut</key><string>たまとりざきてんぼうだい</string></dict>
+	<dict><key>phrase</key><string>金武大川</string><key>shortcut</key><string>きんのおおかわ</string></dict>
+	<dict><key>phrase</key><string>県立博物館</string><key>shortcut</key><string>けんりつはくぶつかん</string></dict>
+	<dict><key>phrase</key><string>県立博物館・美術館</string><key>shortcut</key><string>けんりつはくぶつかんびじゅつかん</string></dict>
+	<dict><key>phrase</key><string>轟壕</string><key>shortcut</key><string>とどろきごう</string></dict>
+	<dict><key>phrase</key><string>国営沖縄記念公園</string><key>shortcut</key><string>こくえいおきなわきねんこうえん</string></dict>
+	<dict><key>phrase</key><string>今帰仁城跡</string><key>shortcut</key><string>なきじんじょうあと</string></dict>
+	<dict><key>phrase</key><string>佐敷町の景観</string><key>shortcut</key><string>さしきちょうのけいかん</string></dict>
+	<dict><key>phrase</key><string>座喜味城跡</string><key>shortcut</key><string>ざきみじょうあと</string></dict>
+	<dict><key>phrase</key><string>子どもの国</string><key>shortcut</key><string>こどものくに</string></dict>
+	<dict><key>phrase</key><string>首里金城の大アカギ</string><key>shortcut</key><string>しゅりきんじょうのおおあかぎ</string></dict>
+	<dict><key>phrase</key><string>首里金城町石畳道</string><key>shortcut</key><string>しゅりきんじょうちょういしだたみみち</string></dict>
+	<dict><key>phrase</key><string>上野村ドイツ文化村</string><key>shortcut</key><string>うえのむらどいつぶんかむら</string></dict>
+	<dict><key>phrase</key><string>崇元寺石門</string><key>shortcut</key><string>すうげんじいしもん</string></dict>
+	<dict><key>phrase</key><string>瀬長島ウミカジテラス</string><key>shortcut</key><string>せながじまうみかじてらす</string></dict>
+	<dict><key>phrase</key><string>ミカジテラス</string><key>shortcut</key><string>うみかじてらす</string></dict>
+	<dict><key>phrase</key><string>西表島マリュドゥの滝</string><key>shortcut</key><string>いりおもてじままりゅどぅのたき</string></dict>
+	<dict><key>phrase</key><string>青の洞窟</string><key>shortcut</key><string>あおのどうくつ</string></dict>
+	<dict><key>phrase</key><string>石垣島鍾乳洞</string><key>shortcut</key><string>いしがきじましょうにゅうどう</string></dict>
+	<dict><key>phrase</key><string>川平湾</string><key>shortcut</key><string>かびらわん</string></dict>
+	<dict><key>phrase</key><string>大里城址公園</string><key>shortcut</key><string>おおざとじょうしこうえん</string></dict>
+	<dict><key>phrase</key><string>第一牧志公設市場</string><key>shortcut</key><string>だいいちまきしこうせついちば</string></dict>
+	<dict><key>phrase</key><string>知念岬公園</string><key>shortcut</key><string>ちねんみさきこうえん</string></dict>
+	<dict><key>phrase</key><string>池間大橋</string><key>shortcut</key><string>いけまおおはし</string></dict>
+	<dict><key>phrase</key><string>竹富島の町並み</string><key>shortcut</key><string>たけとみじまのまちなみ</string></dict>
+	<dict><key>phrase</key><string>中城城跡</string><key>shortcut</key><string>なかぐすくじょうあと</string></dict>
+	<dict><key>phrase</key><string>中村家住宅</string><key>shortcut</key><string>なかむらけじゅうたく</string></dict>
+	<dict><key>phrase</key><string>東平安名崎</string><key>shortcut</key><string>ひがしへんなざき</string></dict>
+	<dict><key>phrase</key><string>波照間島高那崎</string><key>shortcut</key><string>はてるまじまたかなざき</string></dict>
+	<dict><key>phrase</key><string>比地大滝</string><key>shortcut</key><string>ひじおおたき</string></dict>
+	<dict><key>phrase</key><string>備瀬のフクギ並木</string><key>shortcut</key><string>びせのふくぎなみき</string></dict>
+	<dict><key>phrase</key><string>美らSUNビーチ</string><key>shortcut</key><string>ちゅらさんびーち</string></dict>
+	<dict><key>phrase</key><string>美浜アメリカンビレッジ</string><key>shortcut</key><string>みはまあめりかんびれっじ</string></dict>
+	<dict><key>phrase</key><string>アメリカンビレッジ</string><key>shortcut</key><string>あめりかんびれっじ</string></dict>
+	<dict><key>phrase</key><string>浜比嘉島</string><key>shortcut</key><string>はまひがじま</string></dict>
+	<dict><key>phrase</key><string>平和祈念公園</string><key>shortcut</key><string>へいわきねんこうえん</string></dict>
+	<dict><key>phrase</key><string>名護城公園</string><key>shortcut</key><string>なごじょうこうえん</string></dict>
+	<dict><key>phrase</key><string>由布島</string><key>shortcut</key><string>ゆぶじま</string></dict>
+	<dict><key>phrase</key><string>与那覇前浜ビーチ</string><key>shortcut</key><string>よなはまえはまびーち</string></dict>
+	<dict><key>phrase</key><string>来間大橋</string><key>shortcut</key><string>くりまおおはし</string></dict>
+	<dict><key>phrase</key><string>嵐山展望台</string><key>shortcut</key><string>あらしやまてんぼうだい</string></dict>
+
 	<!-- 沖縄関係の語彙リストの追加分 -->
 	<dict><key>phrase</key><string>石庵</string><key>shortcut</key><string>いっしゃん</string></dict>
 	<dict><key>phrase</key><string>栄町</string><key>shortcut</key><string>さかえまち</string></dict>
