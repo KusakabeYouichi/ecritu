@@ -2179,38 +2179,11 @@ extension KeyboardViewController {
             return .applied
         }
 
-        let contextBeforeInput = currentTextContextBeforeInputTail(
-            maxLength: TextContextLimits.synchronizedContextTailLength
-        )
-
-        guard let lastCharacter = contextBeforeInput.last,
-                let replacedCharacter = resolvedPostModifierCharacter(from: lastCharacter) else {
-            return hadPendingComposingText ? .ignored : .idleEmptyContext
-        }
-
-        markTextProxyEdit()
-        textDocumentProxy.deleteBackward()
-        markTextProxyEdit()
-        textDocumentProxy.insertText(String(replacedCharacter))
-
-        if currentInputMode == .kana,
-            !composingRawText.isEmpty {
-            composingRawText.removeLast()
-            composingRawText.append(String(replacedCharacter))
-
-            if !composingReading.isEmpty {
-                composingReading.removeLast()
-            }
-
-            if let normalizedKana = KanaTextNormalizer.normalizedKanaCharacter(from: String(replacedCharacter)) {
-                composingReading.append(normalizedKana)
-            }
-        }
-
-        lastKanaPostModifierAppliedAt = CFAbsoluteTimeGetCurrent()
-        lastKanaPostModifierResultCharacter = replacedCharacter
-
-        refreshKeyboardStateForUserInitiatedAction(.postModifier)
-        return .applied
+        // 確定済み文字列の末尾には濁点/半濁点/小書きを適用しない。
+        // 直前に commitActiveConversion が走っていた場合(hadPendingComposingText=true)は
+        // ユーザの直近操作が「変換確定」だったので mode 切替は不適切→.ignored、
+        // 完全に編集状態が無い(idle)場合は .idleEmptyContext を返して後置修飾空タップ
+        // アクション(顔文字/絵文字/記号モードへの一時切替)を発火させる。
+        return hadPendingComposingText ? .ignored : .idleEmptyContext
     }
 }
