@@ -2047,7 +2047,8 @@ final class KanaKanjiConverter {
                 ?? inferredSahenInflectionClass(
                     for: candidate,
                     baseReading: baseReading,
-                    rule: rule
+                    rule: rule,
+                    userCandidateSet: userCandidateSet
                 )
                 ?? inferredExplicitSuruInflectionClass(
                     for: candidate,
@@ -2106,7 +2107,8 @@ final class KanaKanjiConverter {
     private func inferredSahenInflectionClass(
         for candidate: String,
         baseReading: String,
-        rule: InflectionRule
+        rule: InflectionRule,
+        userCandidateSet: Set<String>
     ) -> String? {
         guard rule.baseReadingSuffix.isEmpty,
             rule.allowedClasses == [InflectionClass.suru],
@@ -2114,6 +2116,13 @@ final class KanaKanjiConverter {
             !candidate.hasSuffix("くる"),
             !candidate.hasSuffix("来る"),
             containsKanjiOrKatakana(candidate) else {
+            return nil
+        }
+
+        // システム辞書がサ変クラス情報を持っている前提では、明示的に classMap に
+        // 載っていない候補(りんご→林檎、ぶどう→葡萄 等)は「辞書がサ変ではないと判定」
+        // とみなして推論しない。ユーザ追加の候補のみ推論で救済する。
+        guard userCandidateSet.contains(candidate) else {
             return nil
         }
 
