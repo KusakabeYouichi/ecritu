@@ -6184,6 +6184,7 @@
 	<dict><key>phrase</key><string>交配育種</string><key>shortcut</key><string>こうはいいくしゅ</string></dict>
 	<dict><key>phrase</key><string>交雑</string><key>shortcut</key><string>こうざつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>京都府</string><key>shortcut</key><string>きょうとふ</string></dict>
+	<dict><key>phrase</key><string>仔牛</string><key>shortcut</key><string>こうし</string></dict>
 	<dict><key>phrase</key><string>仔羊</string><key>shortcut</key><string>こひつじ</string></dict>
 	<dict><key>phrase</key><string>仙台</string><key>shortcut</key><string>せんだい</string></dict>
 	<dict><key>phrase</key><string>仲卸問屋</string><key>shortcut</key><string>なかおろしといや</string></dict>
