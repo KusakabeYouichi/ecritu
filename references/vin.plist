@@ -3559,13 +3559,98 @@
 	<dict><key>phrase</key><string>新梢</string><key>shortcut</key><string>しんしょう</string></dict>
 
 	<!-- フロマージュ -->
+	<dict><key>phrase</key><string>Appenzell</string><key>shortcut</key><string>あっぺんつぇる</string></dict>
+	<dict><key>phrase</key><string>Appenzeller®️</string><key>shortcut</key><string>あっぺんつぇらー</string></dict>
+	<dict><key>phrase</key><string>Asiago</string><key>shortcut</key><string>あじあーご</string></dict>
+	<dict><key>phrase</key><string>Banon</string><key>shortcut</key><string>ばのん</string></dict>
+	<dict><key>phrase</key><string>Bleu d'Auvergne</string><key>shortcut</key><string>ぶるーどーゔぇるにゅ</string></dict>
+	<dict><key>phrase</key><string>Bleu des Causses</string><key>shortcut</key><string>ぶるーでこーす</string></dict>
+	<dict><key>phrase</key><string>Blue Stilton Cheese</string><key>shortcut</key><string>ぶるーすてぃるとんちーず</string></dict>
+	<dict><key>phrase</key><string>Bra</string><key>shortcut</key><string>ぶら</string></dict>
+	<dict><key>phrase</key><string>Brie de Meaux</string><key>shortcut</key><string>ぶりどもー</string></dict>
+	<dict><key>phrase</key><string>Brie de Meaux</string><key>shortcut</key><string>ぶりーどもー</string></dict>
+	<dict><key>phrase</key><string>Brie de Melun</string><key>shortcut</key><string>ぶりどむらん</string></dict>
+	<dict><key>phrase</key><string>Brie de Melun</string><key>shortcut</key><string>ぶりーどむらん</string></dict>
+	<dict><key>phrase</key><string>Cabrales</string><key>shortcut</key><string>かぶられす</string></dict>
+	<dict><key>phrase</key><string>Canestrato Pugliese</string><key>shortcut</key><string>かねすとらーとぷりえーぜ</string></dict>
+	<dict><key>phrase</key><string>Cantal</string><key>shortcut</key><string>かんたる</string></dict>
+	<dict><key>phrase</key><string>Castelmagno</string><key>shortcut</key><string>かすてるまーにょ</string></dict>
+	<dict><key>phrase</key><string>Chaource</string><key>shortcut</key><string>しゃうるす</string></dict>
+	<dict><key>phrase</key><string>Chavignol</string><key>shortcut</key><string>しゃびにょる</string></dict>
+	<dict><key>phrase</key><string>Cheddar Cheese</string><key>shortcut</key><string>ちぇだーちーず</string></dict>
+	<dict><key>phrase</key><string>Cheddar</string><key>shortcut</key><string>ちぇだー</string></dict>
+	<dict><key>phrase</key><string>Chèvre</string><key>shortcut</key><string>しぇーゔる</string></dict>
+	<dict><key>phrase</key><string>Crottin de Chavignol</string><key>shortcut</key><string>くろたんどしゃびにょる</string></dict>
+	<dict><key>phrase</key><string>Emmentaler</string><key>shortcut</key><string>えめんたーらー</string></dict>
+	<dict><key>phrase</key><string>Emmentaler®️</string><key>shortcut</key><string>えめんたーらー</string></dict>
+	<dict><key>phrase</key><string>Epoisses</string><key>shortcut</key><string>えぽわす</string></dict>
+	<dict><key>phrase</key><string>Feta</string><key>shortcut</key><string>ふぇた</string></dict>
+	<dict><key>phrase</key><string>Fontina</string><key>shortcut</key><string>ふぉんてぃーな</string></dict>
+	<dict><key>phrase</key><string>Fourme d'Ambert</string><key>shortcut</key><string>ふるむだんべーる</string></dict>
+	<dict><key>phrase</key><string>Fromage de Herve</string><key>shortcut</key><string>ふろまーじゅどえるゔ</string></dict>
+	<dict><key>phrase</key><string>Fromage de chèvre</string><key>shortcut</key><string>ふろまーじゅどしぇーゔる</string></dict>
+	<dict><key>phrase</key><string>Fromage frais</string><key>shortcut</key><string>ふろまーじゅふれ</string></dict>
+	<dict><key>phrase</key><string>Fromage à pâte molle à croûte fleurie</string><key>shortcut</key><string>ふろまーじゅあぱっともーるあくるーとふるーりー</string></dict>
+	<dict><key>phrase</key><string>Fromage à pâte molle à croûte lavée</string><key>shortcut</key><string>ふろまーじゅあぱっともーるあくるーとらゔぇ</string></dict>
+	<dict><key>phrase</key><string>Fromage à pâte persillée</string><key>shortcut</key><string>ふろまーじゅあぱっとぺるしえ</string></dict>
+	<dict><key>phrase</key><string>Fromage à pâte pressée cuite</string><key>shortcut</key><string>ふろまーじゅあぱっとぷれっせきゅい</string></dict>
+	<dict><key>phrase</key><string>Fromage à pâte pressée non cuite</string><key>shortcut</key><string>ふろまーじゅあぱっとぷれっせのんきゅい</string></dict>
 	<dict><key>phrase</key><string>Fromage</string><key>shortcut</key><string>ふろまーじゅ</string></dict>
+	<dict><key>phrase</key><string>Gorgonzola</string><key>shortcut</key><string>ごるごんぞーら</string></dict>
 	<dict><key>phrase</key><string>Gruyère</string><key>shortcut</key><string>ぐりゅいえーる</string></dict>
+	<dict><key>phrase</key><string>Idiazábal</string><key>shortcut</key><string>いでぃあさばる</string></dict>
+	<dict><key>phrase</key><string>Langres</string><key>shortcut</key><string>らんぐる</string></dict>
+	<dict><key>phrase</key><string>Livarot</string><key>shortcut</key><string>りゔぁろ</string></dict>
+	<dict><key>phrase</key><string>Mahón Menorca</string><key>shortcut</key><string>まおんめのるか</string></dict>
+	<dict><key>phrase</key><string>Maroilles</string><key>shortcut</key><string>まろわーる</string></dict>
+	<dict><key>phrase</key><string>Mimolette</string><key>shortcut</key><string>みもれっと</string></dict>
+	<dict><key>phrase</key><string>Mont d'Or</string><key>shortcut</key><string>もんどーる</string></dict>
+	<dict><key>phrase</key><string>Morbier</string><key>shortcut</key><string>もるびえ</string></dict>
+	<dict><key>phrase</key><string>Mozzarella di Bufala Campana</string><key>shortcut</key><string>もっつぁれっらでぃぶふぁらかんぱーな</string></dict>
+	<dict><key>phrase</key><string>Mozzarella</string><key>shortcut</key><string>もっつぁれっら</string></dict>
+	<dict><key>phrase</key><string>Munster Géromé</string><key>shortcut</key><string>まんすてーるじぇろめ</string></dict>
+	<dict><key>phrase</key><string>Munster</string><key>shortcut</key><string>まんすてーる</string></dict>
+	<dict><key>phrase</key><string>Ossau-Iraty</string><key>shortcut</key><string>おっそーいらてぃ</string></dict>
+	<dict><key>phrase</key><string>Parmigiano Reggiano</string><key>shortcut</key><string>ぱるみじゃーのれっじゃーの</string></dict>
+	<dict><key>phrase</key><string>Pecorino Romano</string><key>shortcut</key><string>ぺこりーのろまーの</string></dict>
+	<dict><key>phrase</key><string>Pecorino Sardo</string><key>shortcut</key><string>ぺこりーのさるど</string></dict>
+	<dict><key>phrase</key><string>Pecorino Toscano</string><key>shortcut</key><string>ぺこりーのとすかーの</string></dict>
+	<dict><key>phrase</key><string>Picodon</string><key>shortcut</key><string>ぴこどん</string></dict>
+	<dict><key>phrase</key><string>Pont-l'Évêque</string><key>shortcut</key><string>ぽんれゔぇっく</string></dict>
+	<dict><key>phrase</key><string>Pouligny-Saint-Pierre</string><key>shortcut</key><string>ぷーりにぃさんぴえーる</string></dict>
+	<dict><key>phrase</key><string>Queso Manchego</string><key>shortcut</key><string>けそまんちぇご</string></dict>
+	<dict><key>phrase</key><string>Queso Tetilla</string><key>shortcut</key><string>けそててぃーじゃ</string></dict>
+	<dict><key>phrase</key><string>Raclette</string><key>shortcut</key><string>らくれっと</string></dict>
+	<dict><key>phrase</key><string>Ragusano</string><key>shortcut</key><string>らぐさーの</string></dict>
 	<dict><key>phrase</key><string>Reblochon</string><key>shortcut</key><string>るぶろしょん</string></dict>
+	<dict><key>phrase</key><string>Robiola di Roccaverano</string><key>shortcut</key><string>ろびおらでぃろっかゔぇらーの</string></dict>
+	<dict><key>phrase</key><string>Roquefort</string><key>shortcut</key><string>ろっくふぉーる</string></dict>
+	<dict><key>phrase</key><string>Saint-Nectaire</string><key>shortcut</key><string>さんねくてーる</string></dict>
+	<dict><key>phrase</key><string>Sainte-Maure de Touraine</string><key>shortcut</key><string>さんともーるどとぅーれーぬ</string></dict>
+	<dict><key>phrase</key><string>Sbrinz</string><key>shortcut</key><string>すぶりんつ</string></dict>
+	<dict><key>phrase</key><string>Selles-sur-Cher</string><key>shortcut</key><string>せるしゅーるしぇーる</string></dict>
+	<dict><key>phrase</key><string>Stilton Cheese</string><key>shortcut</key><string>すてぃるとんちーず</string></dict>
+	<dict><key>phrase</key><string>Stilton</string><key>shortcut</key><string>すてぃるとん</string></dict>
+	<dict><key>phrase</key><string>Taleggio</string><key>shortcut</key><string>たれっじょ</string></dict>
+	<dict><key>phrase</key><string>Tête de Moine</string><key>shortcut</key><string>てっとどもわんぬ</string></dict>
+	<dict><key>phrase</key><string>Vacherin Mont d'Or</string><key>shortcut</key><string>ゔぁしゅらんもんどーる</string></dict>
+	<dict><key>phrase</key><string>Valençay</string><key>shortcut</key><string>ゔぁらんせ</string></dict>
+	<dict><key>phrase</key><string>Walliser Raclette</string><key>shortcut</key><string>ゔぁりさーらくれっと</string></dict>
+	<dict><key>phrase</key><string>West Country Farmhouse Cheddar Cheese</string><key>shortcut</key><string>うぇすとかんとりーふぁーむはうすちぇだーちーず</string></dict>
+	<dict><key>phrase</key><string>White Stilton Cheese</string><key>shortcut</key><string>ほわいとすてぃるとんちーず</string></dict>
+	<dict><key>phrase</key><string>White Stilton</string><key>shortcut</key><string>ほわいとすてぃるとん</string></dict>
+	<dict><key>phrase</key><string>エポワス</string><key>shortcut</key><string>えぽわす</string></dict>
+	<dict><key>phrase</key><string>オッソー・イラティ</string><key>shortcut</key><string>おっそーいらてぃー</string></dict>
 	<dict><key>phrase</key><string>ケソ・マンチェゴ</string><key>shortcut</key><string>けそまんちぇご</string></dict>
+	<dict><key>phrase</key><string>シャウルス</string><key>shortcut</key><string>しゃうるす</string></dict>
 	<dict><key>phrase</key><string>パスタフィラータ</string><key>shortcut</key><string>ぱすたふぃらーた</string></dict>
 	<dict><key>phrase</key><string>パスタフィラータ方式</string><key>shortcut</key><string>ぱすたふぃらーたほうしき</string></dict>
 	<dict><key>phrase</key><string>ポン・レヴェック</string><key>shortcut</key><string>ぽんれゔぇっく</string></dict>
+	<dict><key>phrase</key><string>リヴァロ</string><key>shortcut</key><string>りゔぁろ</string></dict>
+	<dict><key>phrase</key><string>ヴァランセ</string><key>shortcut</key><string>ゔぁらんせ</string></dict>
+	<dict><key>phrase</key><string>水牛乳</string><key>shortcut</key><string>すいぎゅうにゅう</string></dict>
+	<dict><key>phrase</key><string>牛乳製</string><key>shortcut</key><string>ぎゅうにゅうせい</string></dict>
+	<dict><key>phrase</key><string>羊乳</string><key>shortcut</key><string>ようにゅう</string></dict>
 
 	<!-- 紅茶 -->
 	<dict><key>phrase</key><string>アッサム種</string><key>shortcut</key><string>あっさむしゅ</string></dict>
@@ -4140,7 +4225,8 @@
 	<dict><key>phrase</key><string>エーバーバッハ修道院</string><key>shortcut</key><string>えーばーばっはしゅうどういん</string></dict>
 	<dict><key>phrase</key><string>オイディウム</string><key>shortcut</key><string>おいでぃうむ</string></dict>
 	<dict><key>phrase</key><string>オクシタニー地域圏</string><key>shortcut</key><string>おくしたにーちいきけん</string></dict>
-	<dict><key>phrase</key><string>オス</string><key>shortcut</key><string>おす</string></dict>
+	<dict><key>phrase</key><string>オクシタニー圏</string><key>shortcut</key><string>おくしたにーけん</string></dict>
+	<dict><key>phrase</key><string>トラス・オス・モンテス</string><key>shortcut</key><string>とらすおすもんてす</string></dict>
 	<dict><key>phrase</key><string>オスピス・ド・ボーヌ</string><key>shortcut</key><string>おすぴすどぼーぬ</string></dict>
 	<dict><key>phrase</key><string>オスマン</string><key>shortcut</key><string>おすまん</string></dict>
 	<dict><key>phrase</key><string>オスマン帝国</string><key>shortcut</key><string>おすまんていこく</string></dict>
@@ -5024,7 +5110,6 @@
 	<dict><key>phrase</key><string>トラキア</string><key>shortcut</key><string>とらきあ</string></dict>
 	<dict><key>phrase</key><string>トラクター</string><key>shortcut</key><string>とらくたー</string></dict>
 	<dict><key>phrase</key><string>トラジャ</string><key>shortcut</key><string>とらじゃ</string></dict>
-	<dict><key>phrase</key><string>トラス</string><key>shortcut</key><string>とらす</string></dict>
 	<dict><key>phrase</key><string>トラック会社</string><key>shortcut</key><string>とらっくかいしゃ</string></dict>
 	<dict><key>phrase</key><string>トラディショナル・メソッド</string><key>shortcut</key><string>とらでぃしょなるめそっど</string></dict>
 	<dict><key>phrase</key><string>トラディショナル方式</string><key>shortcut</key><string>とらでぃしょなるほうしき</string></dict>
@@ -5777,7 +5862,6 @@
 	<dict><key>phrase</key><string>モロッコ</string><key>shortcut</key><string>もろっこ</string></dict>
 	<dict><key>phrase</key><string>モンタルチーノ</string><key>shortcut</key><string>もんたるちーの</string></dict>
 	<dict><key>phrase</key><string>モンツィンゲン</string><key>shortcut</key><string>もんつぃんげん</string></dict>
-	<dict><key>phrase</key><string>モンテス</string><key>shortcut</key><string>もんてす</string></dict>
 	<dict><key>phrase</key><string>モンテビデオ</string><key>shortcut</key><string>もんてびでお</string></dict>
 	<dict><key>phrase</key><string>モンテリマール</string><key>shortcut</key><string>もんてりまーる</string></dict>
 	<dict><key>phrase</key><string>モントレー・カウンティ</string><key>shortcut</key><string>もんとれーかうんてぃ</string></dict>
