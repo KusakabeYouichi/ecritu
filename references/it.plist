@@ -185,5 +185,9 @@
 	<dict><key>phrase</key><string>PayPal</string><key>shortcut</key><string>ぺいぱる</string></dict>
 	<dict><key>phrase</key><string>PayPay</string><key>shortcut</key><string>ぺいぺい</string></dict>
 	<dict><key>phrase</key><string>スプレッド・シート</string><key>shortcut</key><string>すぷれっどしーと</string></dict>
+	<dict><key>phrase</key><string>コードポイント</string><key>shortcut</key><string>こーどぽいんと</string></dict>
+	<dict><key>phrase</key><string>Unicode</string><key>shortcut</key><string>ゆにこーど</string></dict>
+	<dict><key>phrase</key><string>Shift_JIS</string><key>shortcut</key><string>しふとじす</string></dict>
+	<dict><key>phrase</key><string>暗号化</string><key>shortcut</key><string>あんごうか</string><key>pos</key><string>サ変名詞</string></dict>
 </array>
 </plist>
