@@ -91,6 +91,7 @@ struct FlickKeyView: View {
     @State private var longPressIsActive = false
     @State private var highlightedLongPressIndex = 0
     @State private var longPressWorkItem: DispatchWorkItem?
+    @State private var stuckTouchWatchdogWorkItem: DispatchWorkItem?
     @State private var didTriggerLongPressAction = false
     @State private var latestTouchLocationX: CGFloat = 0
     @State private var longPressAnchorLocationX: CGFloat = 0
@@ -550,6 +551,7 @@ struct FlickKeyView: View {
                     didTriggerLongPressAction = false
                     scheduleLongPressIfNeeded()
                     resetSecondaryFlickState()
+                    scheduleStuckTouchWatchdog()
                 }
                 isTouching = true
                 latestTouchLocationX = value.location.x
@@ -731,8 +733,30 @@ struct FlickKeyView: View {
         longPressWorkItem = nil
     }
 
+    private func scheduleStuckTouchWatchdog() {
+        // SwiftUI の @GestureState reset / .onEnded がメインスレッド過負荷等で
+        // 取りこぼされ isTouching が残ってしまうケースのフェイルセーフ。
+        // 既存タイマーをキャンセルして 1.2 秒後に「指は離れているのに isTouching=true」
+        // の状態を検知したら強制的に押下表示を解除する。
+        stuckTouchWatchdogWorkItem?.cancel()
+
+        let workItem = DispatchWorkItem {
+            if isTouching && !isGestureInProgress {
+                finalizeTouchInteractionState()
+            }
+        }
+        stuckTouchWatchdogWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2, execute: workItem)
+    }
+
+    private func cancelStuckTouchWatchdog() {
+        stuckTouchWatchdogWorkItem?.cancel()
+        stuckTouchWatchdogWorkItem = nil
+    }
+
     private func finalizeTouchInteractionState() {
         cancelLongPressTimer()
+        cancelStuckTouchWatchdog()
         activeDirection = .milieu
         resetSecondaryFlickState()
         longPressIsActive = false
