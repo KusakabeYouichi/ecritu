@@ -43,6 +43,7 @@ struct KeyboardRootView: View {
     let kanaPostModifierEmptyTapKaomojiCategoryID: String
     let kanaPostModifierEmptyTapEmojiCategoryID: String
     let kanaPostModifierEmptyTapSymbolCategoryID: String
+    let kanaPostModifierFlickDakutenEnabled: Bool
     let landscapeCandidateSideRawValue: String
     let landscapeNumberPaneSideRawValue: String
     let landscapeLatinSuggestionModeRawValue: String
@@ -699,6 +700,8 @@ struct KeyboardRootView: View {
         let modeSwitchText = inputMode == .kana ? kanaCharacterMode.toggleGuide : "123"
 
         if inputMode == .kana && kanaModifierPlacementMode == .postfix {
+            let postfixFlickUp = kanaPostModifierFlickDakutenEnabled ? "゛" : ""
+            let postfixFlickRight = kanaPostModifierFlickDakutenEnabled ? "゜" : ""
             switch kanaPostModifierButtonState {
             case .kaomoji:
                 return makeModifierSelectorKey(
@@ -710,22 +713,22 @@ struct KeyboardRootView: View {
             case .smallKana:
                 return makeModifierSelectorKey(
                     label: "小",
-                    up: "゛",
-                    right: "゜",
+                    up: postfixFlickUp,
+                    right: postfixFlickRight,
                     modeSwitchText: modeSwitchText
                 )
             case .dakuten:
                 return makeModifierSelectorKey(
                     label: "゛",
-                    up: "゛",
-                    right: "゜",
+                    up: postfixFlickUp,
+                    right: postfixFlickRight,
                     modeSwitchText: modeSwitchText
                 )
             case .handakuten:
                 return makeModifierSelectorKey(
                     label: "゜",
-                    up: "゛",
-                    right: "゜",
+                    up: postfixFlickUp,
+                    right: postfixFlickRight,
                     modeSwitchText: modeSwitchText
                 )
             }
@@ -4557,6 +4560,7 @@ struct KeyboardRootView: View {
                 kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
                 kanaPostModifierEmptyTapEmojiCategoryID: "0",
                 kanaPostModifierEmptyTapSymbolCategoryID: "0",
+                kanaPostModifierFlickDakutenEnabled: true,
                 landscapeCandidateSideRawValue: "left",
             landscapeNumberPaneSideRawValue: "left",
         landscapeLatinSuggestionModeRawValue: "sidebar",

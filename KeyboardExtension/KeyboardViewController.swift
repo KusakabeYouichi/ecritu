@@ -314,6 +314,7 @@ final class KeyboardViewController: UIInputViewController {
         static let kanaPostModifierEmptyTapKaomojiCategory = "kanaPostModifierEmptyTapKaomojiCategory"
         static let kanaPostModifierEmptyTapEmojiCategory = "kanaPostModifierEmptyTapEmojiCategory"
         static let kanaPostModifierEmptyTapSymbolCategory = "kanaPostModifierEmptyTapSymbolCategory"
+        static let kanaPostModifierFlickDakutenEnabled = "kanaPostModifierFlickDakutenEnabled"
         static let delimiterAutoCommitCandidate = "delimiterAutoCommitCandidate"
         static let landscapeCandidateSide = "landscapeCandidateSide"
         static let landscapeNumberPaneSide = "landscapeNumberPaneSide"
@@ -442,6 +443,7 @@ final class KeyboardViewController: UIInputViewController {
         let kanaPostModifierEmptyTapKaomojiCategoryID: String
         let kanaPostModifierEmptyTapEmojiCategoryID: String
         let kanaPostModifierEmptyTapSymbolCategoryID: String
+        let kanaPostModifierFlickDakutenEnabled: Bool
         let landscapeCandidateSideRawValue: String
         let landscapeNumberPaneSideRawValue: String
         let landscapeLatinSuggestionModeRawValue: String
@@ -3437,6 +3439,11 @@ final class KeyboardViewController: UIInputViewController {
             key: SharedDefaultsKeys.kanaPostModifierEmptyTapSymbolCategory,
             fallback: "0"
         )
+        let kanaPostModifierFlickDakutenEnabled = sharedBoolValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.kanaPostModifierFlickDakutenEnabled,
+            fallback: true
+        )
         let landscapeCandidateSideRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.landscapeCandidateSide,
@@ -3483,6 +3490,7 @@ final class KeyboardViewController: UIInputViewController {
             kanaPostModifierEmptyTapKaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryID,
             kanaPostModifierEmptyTapEmojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryID,
             kanaPostModifierEmptyTapSymbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryID,
+            kanaPostModifierFlickDakutenEnabled: kanaPostModifierFlickDakutenEnabled,
             landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
@@ -3601,6 +3609,7 @@ final class KeyboardViewController: UIInputViewController {
             kanaPostModifierEmptyTapKaomojiCategoryID: configuration.kanaPostModifierEmptyTapKaomojiCategoryID,
             kanaPostModifierEmptyTapEmojiCategoryID: configuration.kanaPostModifierEmptyTapEmojiCategoryID,
             kanaPostModifierEmptyTapSymbolCategoryID: configuration.kanaPostModifierEmptyTapSymbolCategoryID,
+            kanaPostModifierFlickDakutenEnabled: configuration.kanaPostModifierFlickDakutenEnabled,
             landscapeCandidateSideRawValue: configuration.landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: configuration.landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: configuration.landscapeLatinSuggestionModeRawValue,

@@ -613,6 +613,24 @@ struct KanaPostModifierEmptyTapAssignmentSection: View {
     }
 }
 
+struct KanaPostModifierFlickDakutenSettingsSection: View {
+    @Binding var isEnabled: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Toggle(isOn: $isEnabled) {
+                Text("後置修飾キーのフリックで濁点・半濁点")
+                    .font(.headline)
+            }
+
+            Text("オンの場合、後置修飾キーを上フリックで濁点(゛)、右フリックで半濁点(゜)を強制します。オフにすると上/右フリックは中央タップと同じ扱いになり、誤って「つ→づ」になるのを抑止できます(2タップで「つ→っ→づ」は引き続き可能)。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct DelimiterAutoCommitCandidateSettingsSection: View {
     @Binding var selection: DelimiterAutoCommitCandidateOption
 
