@@ -529,7 +529,12 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        invalidateTextContextCache()
+        // 自前操作(setMarkedText / 自分の insertText 等)による text change の場合は
+        // 既にキャッシュ側で整合性を保っているので無効化しない。
+        // host 側の autocorrect・paste・選択カーソル移動など外部由来のみ無効化する。
+        if shouldTreatAsExternalTextChange() {
+            invalidateTextContextCache()
+        }
 
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
@@ -546,7 +551,9 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        invalidateTextContextCache()
+        if shouldTreatAsExternalTextChange() {
+            invalidateTextContextCache()
+        }
 
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
@@ -1648,6 +1655,41 @@ final class KeyboardViewController: UIInputViewController {
     func markTextProxyEdit() {
         lastTextProxyEditAt = CFAbsoluteTimeGetCurrent()
         invalidateTextContextCache()
+    }
+
+    // setMarkedText のように beforeInput/afterInput を変えない自前編集に使う。
+    // タイムスタンプだけ更新してキャッシュ無効化を回避する(XPC 再取得を削減)。
+    func noteOwnTextProxyEditTimestamp() {
+        lastTextProxyEditAt = CFAbsoluteTimeGetCurrent()
+    }
+
+    // 自前で insertText を発行した直後にキャッシュ末尾を更新して XPC 再取得を回避する。
+    func applyCachedContextInsertion(_ text: String) {
+        guard !text.isEmpty,
+            var cached = cachedContextBeforeInput else {
+            return
+        }
+
+        cached.append(text)
+
+        if cached.count > TextContextLimits.cachedContextBeforeInputMaxLength {
+            cached = String(cached.suffix(TextContextLimits.cachedContextBeforeInputMaxLength))
+        }
+
+        cachedContextBeforeInput = cached
+    }
+
+    // 自前で deleteBackward を発行した直後にキャッシュ末尾を縮めて XPC 再取得を回避する。
+    func applyCachedContextDeletion(count: Int = 1) {
+        guard count > 0,
+            var cached = cachedContextBeforeInput,
+            !cached.isEmpty else {
+            return
+        }
+
+        let removeCount = min(count, cached.count)
+        cached = String(cached.dropLast(removeCount))
+        cachedContextBeforeInput = cached
     }
 
     func invalidateTextContextCache() {

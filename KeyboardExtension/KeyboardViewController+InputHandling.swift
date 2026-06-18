@@ -944,7 +944,9 @@ extension KeyboardViewController {
     }
 
     func setMarkedComposingText(_ text: String) {
-        markTextProxyEdit()
+        // setMarkedText は documentContextBeforeInput/AfterInput を変えないため
+        // キャッシュ無効化は不要(タイムスタンプのみ更新)。
+        noteOwnTextProxyEditTimestamp()
         textDocumentProxy.setMarkedText(
             text,
             selectedRange: NSRange(location: text.utf16.count, length: 0)
