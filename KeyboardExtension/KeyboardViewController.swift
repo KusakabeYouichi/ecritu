@@ -266,6 +266,11 @@ final class KeyboardViewController: UIInputViewController {
     enum TextContextLimits {
         static let synchronizedContextTailLength = 192
         static let latinSuggestionScanTailLength = 192
+        // documentContextBeforeInput/AfterInput を XPC から取得した直後にこの長さで
+        // 切り詰めてキャッシュに保持。Facebook 等の長文投稿で host 側コンテキストが
+        // 数十KBになっても downstream の String 操作と保持メモリを定数化する。
+        static let cachedContextBeforeInputMaxLength = 512
+        static let cachedContextAfterInputMaxLength = 512
     }
 
     private enum SharedDefaultsKeys {
@@ -1656,8 +1661,23 @@ final class KeyboardViewController: UIInputViewController {
             return (cachedContextBeforeInput, cachedContextAfterInput)
         }
 
-        let beforeInput = textDocumentProxy.documentContextBeforeInput ?? ""
-        let afterInput = textDocumentProxy.documentContextAfterInput ?? ""
+        let rawBefore = textDocumentProxy.documentContextBeforeInput ?? ""
+        let rawAfter = textDocumentProxy.documentContextAfterInput ?? ""
+
+        let beforeInput: String
+        if rawBefore.count > TextContextLimits.cachedContextBeforeInputMaxLength {
+            beforeInput = String(rawBefore.suffix(TextContextLimits.cachedContextBeforeInputMaxLength))
+        } else {
+            beforeInput = rawBefore
+        }
+
+        let afterInput: String
+        if rawAfter.count > TextContextLimits.cachedContextAfterInputMaxLength {
+            afterInput = String(rawAfter.prefix(TextContextLimits.cachedContextAfterInputMaxLength))
+        } else {
+            afterInput = rawAfter
+        }
+
         cachedContextBeforeInput = beforeInput
         cachedContextAfterInput = afterInput
         return (beforeInput, afterInput)
