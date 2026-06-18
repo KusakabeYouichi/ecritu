@@ -351,6 +351,7 @@ extension KanaKanjiConverter {
             teForm + "しまって"
         ]
         suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: teForm + "しまい"))
+        suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: teForm + "しまった"))
 
         if teForm.hasSuffix("て") {
             let contractionStem = String(teForm.dropLast())
@@ -364,6 +365,7 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "ちゃった")
             suffixes.append(contractionStem + "ちゃって")
             suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "ちゃい"))
+            suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: contractionStem + "ちゃった"))
         } else if teForm.hasSuffix("で") {
             let contractionStem = String(teForm.dropLast())
             suffixes.append(contractionStem + "じゃ")
@@ -376,6 +378,7 @@ extension KanaKanjiConverter {
             suffixes.append(contractionStem + "じゃった")
             suffixes.append(contractionStem + "じゃって")
             suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "じゃい"))
+            suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: contractionStem + "じゃった"))
         }
 
         return suffixes
