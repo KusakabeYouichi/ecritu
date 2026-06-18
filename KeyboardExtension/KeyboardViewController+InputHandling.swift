@@ -1305,9 +1305,11 @@ extension KeyboardViewController {
     }
 
     func clearMarkedComposingText() {
-        markTextProxyEdit()
+        // setMarkedText("", ...) と unmarkText は marked text が空の状態では
+        // documentContextBeforeInput/AfterInput を変えないため、キャッシュ無効化は不要。
+        noteOwnTextProxyEditTimestamp()
         textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
-        markTextProxyEdit()
+        noteOwnTextProxyEditTimestamp()
         textDocumentProxy.unmarkText()
     }
 
@@ -1329,7 +1331,10 @@ extension KeyboardViewController {
             note: "nudge=\(resolvedNudgeWidth)"
         )
 
-        markTextProxyEdit()
+        // この時点で marked text は既に空(コミット後)であり、unmarkText も
+        // adjustTextPosition の往復(byCharacterOffset を相殺)も documentContextBeforeInput/
+        // AfterInput を変えない。キャッシュを温存して XPC 再取得を回避する。
+        noteOwnTextProxyEditTimestamp()
         textDocumentProxy.unmarkText()
 
         let contextBeforeInput = currentTextContextBeforeInput()
@@ -1338,20 +1343,20 @@ extension KeyboardViewController {
         if resolvedNudgeWidth > 0,
             !contextBeforeInput.isEmpty {
             let backwardOffset = min(resolvedNudgeWidth, contextBeforeInput.count)
-            markTextProxyEdit()
+            noteOwnTextProxyEditTimestamp()
             textDocumentProxy.adjustTextPosition(byCharacterOffset: -backwardOffset)
-            markTextProxyEdit()
+            noteOwnTextProxyEditTimestamp()
             textDocumentProxy.adjustTextPosition(byCharacterOffset: backwardOffset)
         } else if resolvedNudgeWidth > 0,
             !contextAfterInput.isEmpty {
             let forwardOffset = min(resolvedNudgeWidth, contextAfterInput.count)
-            markTextProxyEdit()
+            noteOwnTextProxyEditTimestamp()
             textDocumentProxy.adjustTextPosition(byCharacterOffset: forwardOffset)
-            markTextProxyEdit()
+            noteOwnTextProxyEditTimestamp()
             textDocumentProxy.adjustTextPosition(byCharacterOffset: -forwardOffset)
         }
 
-        markTextProxyEdit()
+        noteOwnTextProxyEditTimestamp()
         textDocumentProxy.unmarkText()
 
         appendCommitUnderlineDiagnostics(
