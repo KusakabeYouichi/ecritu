@@ -736,7 +736,8 @@ final class KanaKanjiConverter {
             .min() ?? 0
 
         let protectedKatakanaCandidates = preferredLeadingKatakanaCandidates(
-            fromSystemCandidates: systemCandidates
+            fromSystemCandidates: systemCandidates,
+            reading: reading
         )
 
         for candidate in matchingCandidates where Self.isPureKatakanaCandidate(candidate) {
@@ -749,7 +750,10 @@ final class KanaKanjiConverter {
         }
     }
 
-    private func preferredLeadingKatakanaCandidates(fromSystemCandidates candidates: [String]) -> Set<String> {
+    private func preferredLeadingKatakanaCandidates(
+        fromSystemCandidates candidates: [String],
+        reading: String
+    ) -> Set<String> {
         let uniqueSystemCandidates = uniqueCandidates(from: candidates)
 
         guard !uniqueSystemCandidates.isEmpty else {
@@ -758,11 +762,17 @@ final class KanaKanjiConverter {
 
         var protectedCandidates = Set<String>()
 
+        // 読みと一致する候補をシステム順に走査し、最初に non-katakana が
+        // 現れるまでに登場した katakana を保護対象にする。
+        // 読みと無関係な kanji 候補(例: 「かっと」に対する 褐土 が rank0)で
+        // 早期 break しないよう、 mismatch する候補は単にスキップする。
         for candidate in uniqueSystemCandidates {
+            if KanaTextNormalizer.normalizedReading(candidate) != reading {
+                continue
+            }
             if !Self.isPureKatakanaCandidate(candidate) {
                 break
             }
-
             protectedCandidates.insert(candidate)
         }
 
