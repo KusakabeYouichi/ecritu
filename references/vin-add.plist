@@ -1991,20 +1991,24 @@
 	<dict><key>phrase</key><string>火山灰</string><key>shortcut</key><string>かざんばい</string></dict>
 	<!-- 清酒醸造技術用語 -->
 	<dict><key>phrase</key><string>全国新酒鑑評会</string><key>shortcut</key><string>ぜんこくしんしゅかんぴょうかい</string></dict>
-	<dict><key>phrase</key><string>初添</string><key>shortcut</key><string>はつそい</string></dict>
+	<dict><key>phrase</key><string>初添</string><key>shortcut</key><string>はつぞえ</string></dict>
 	<dict><key>phrase</key><string>副原料</string><key>shortcut</key><string>ふくげんりょう</string></dict>
 	<dict><key>phrase</key><string>原料用</string><key>shortcut</key><string>げんりょうよう</string></dict>
 	<dict><key>phrase</key><string>原料米</string><key>shortcut</key><string>げんりょうべい</string></dict>
-	<dict><key>phrase</key><string>土踏</string><key>shortcut</key><string>つちふむ</string></dict>
-	<dict><key>phrase</key><string>女酒</string><key>shortcut</key><string>むすめさけ</string></dict>
-	<dict><key>phrase</key><string>段仕込</string><key>shortcut</key><string>たんしこめ</string></dict>
+	<dict><key>phrase</key><string>女酒</string><key>shortcut</key><string>おんなざけ</string></dict>
+	<dict><key>phrase</key><string>段仕込</string><key>shortcut</key><string>たんじこみ</string></dict>
 	<dict><key>phrase</key><string>深蒸</string><key>shortcut</key><string>しんむし</string></dict>
 	<dict><key>phrase</key><string>清酒粕</string><key>shortcut</key><string>せいしゅかす</string></dict>
 	<dict><key>phrase</key><string>生酛系酒母</string><key>shortcut</key><string>きもとけいしゅぼ</string></dict>
-	<dict><key>phrase</key><string>生酛系酒母造</string><key>shortcut</key><string>きもとけいしゅぼつくり</string></dict>
-	<dict><key>phrase</key><string>白ワイン蒸</string><key>shortcut</key><string>しろわいんむし</string></dict>
-	<dict><key>phrase</key><string>破精込</string><key>shortcut</key><string>われせいこめ</string></dict>
+	<dict><key>phrase</key><string>生酛系酒母造り</string><key>shortcut</key><string>きもとけいしゅぼづくり</string></dict>
+	<dict><key>phrase</key><string>破精込み</string><key>shortcut</key><string>はぜこみ</string></dict>
+	<dict><key>phrase</key><string>破精廻り</string><key>shortcut</key><string>はぜまわり</string></dict>
+	<dict><key>phrase</key><string>突き破精</string><key>shortcut</key><string>つきはぜ</string></dict>
+	<dict><key>phrase</key><string>総破精</string><key>shortcut</key><string>そうはぜ</string></dict>
+	<dict><key>phrase</key><string>米質</string><key>shortcut</key><string>べいしつ</string></dict>
 	<dict><key>phrase</key><string>米質</string><key>shortcut</key><string>べいじち</string></dict>
+	<dict><key>phrase</key><string>米質</string><key>shortcut</key><string>こめじち</string></dict>
+
 	<!-- ワイン醸造技術用語 -->
 	<dict><key>phrase</key><string>1次加工</string><key>shortcut</key><string>いちじかこう</string></dict>
 	<dict><key>phrase</key><string>225ℓ樽</string><key>shortcut</key><string>にひゃくにじゅうごりっとるだる</string></dict>
@@ -2814,6 +2818,7 @@
 	<dict><key>phrase</key><string>真澄</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>辛口シェリーFino</string><key>shortcut</key><string>★</string></dict>
 	<!-- 料理や食材 -->
+	<dict><key>phrase</key><string>白ワイン蒸し</string><key>shortcut</key><string>しろわいんむし</string></dict>
 	<dict><key>phrase</key><string>Entrecôte</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Abruzzo</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Acidulee</string><key>shortcut</key><string>★</string></dict>
@@ -3028,14 +3033,14 @@
 	<dict><key>phrase</key><string>赤ワイン煮</string><key>shortcut</key><string>あかわいんしゃ</string></dict>
 	<dict><key>phrase</key><string>輪切</string><key>shortcut</key><string>わきり</string></dict>
 	<dict><key>phrase</key><string>饅頭形</string><key>shortcut</key><string>まんじゅうかたち</string></dict>
-	<dict><key>phrase</key><string>香草入</string><key>shortcut</key><string>こうそういれ</string></dict>
-	<dict><key>phrase</key><string>馬蹄型</string><key>shortcut</key><string>ばていかた</string></dict>
 	<dict><key>phrase</key><string>骨付</string><key>shortcut</key><string>ほねつき</string></dict>
 	<dict><key>phrase</key><string>魚以上</string><key>shortcut</key><string>さかないじょう</string></dict>
 	<dict><key>phrase</key><string>鯉科</string><key>shortcut</key><string>こいか</string></dict>
 	<dict><key>phrase</key><string>鰓穴</string><key>shortcut</key><string>えらあな</string></dict>
 	<dict><key>phrase</key><string>鴨脂</string><key>shortcut</key><string>かもあぶら</string></dict>
 	<!-- チーズ -->
+	<dict><key>phrase</key><string>香草入り</string><key>shortcut</key><string>こうそういり</string></dict>
+	<dict><key>phrase</key><string>馬蹄型</string><key>shortcut</key><string>ばていけい</string></dict>
 	<dict><key>phrase</key><string>Abricot</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Brocciu</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Bufala</string><key>shortcut</key><string>★</string></dict>
@@ -3052,7 +3057,6 @@
 	<dict><key>phrase</key><string>Requeijão Serra da Estrela</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Rigotte de Condrieu</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>カチョカヴァッロ</string><key>shortcut</key><string>かちょかゔぁっろ</string></dict>
-	<dict><key>phrase</key><string>カチョカヴァッロ等</string><key>shortcut</key><string>かちょかゔぁっろとう</string></dict>
 	<dict><key>phrase</key><string>ケソ・マンチェゴ</string><key>shortcut</key><string>けそまんちぇご</string></dict>
 	<dict><key>phrase</key><string>パスタ・フィラータ</string><key>shortcut</key><string>ぱすたふぃらーた</string></dict>
 	<dict><key>phrase</key><string>パスタ・フィラータタイプ</string><key>shortcut</key><string>ぱすたふぃらーたたいぷ</string></dict>
@@ -3612,19 +3616,9 @@
 	<dict><key>phrase</key><string>choice_no</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>dedaze</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>deux abeilles</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>ja</string><key>shortcut</key><string>じぇーえー</string></dict>
-	<dict><key>phrase</key><string>ma</string><key>shortcut</key><string>えむえー</string></dict>
-	<dict><key>phrase</key><string>margin-block</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>mce_root_block</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>sa</string><key>shortcut</key><string>えすえー</string></dict>
-	<dict><key>phrase</key><string>span style</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>strong</string><key>shortcut</key><string>すとろんぐ</string></dict>
-	<dict><key>phrase</key><string>style</string><key>shortcut</key><string>すたいる</string></dict>
 	<dict><key>phrase</key><string>symposia</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>table</string><key>shortcut</key><string>てーぶる</string></dict>
 	<dict><key>phrase</key><string>tal</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>trois abeilles</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>true-false</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>udedo</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>une abeille</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>visão geral</string><key>shortcut</key><string>★</string></dict>
@@ -3904,5 +3898,6 @@
 	<dict><key>phrase</key><string>電動式</string><key>shortcut</key><string>でんどうしき</string></dict>
 	<dict><key>phrase</key><string>食品衛生法</string><key>shortcut</key><string>しょくひんえいせいほう</string></dict>
 	<dict><key>phrase</key><string>食文化</string><key>shortcut</key><string>くいぶんか</string></dict>
+	<dict><key>phrase</key><string>土踏</string><key>shortcut</key><string>つちふむ</string></dict>
 </array>
 </plist>
