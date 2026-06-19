@@ -529,12 +529,11 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        // 自前操作(setMarkedText / 自分の insertText 等)による text change の場合は
-        // 既にキャッシュ側で整合性を保っているので無効化しない。
-        // host 側の autocorrect・paste・選択カーソル移動など外部由来のみ無効化する。
-        if shouldTreatAsExternalTextChange() {
-            invalidateTextContextCache()
-        }
+        // textDidChange は host 側のテキストが変化した(送信/autocorrect/paste/選択など
+        // 何らかの理由で)シグナルなので、自前/外部を問わずキャッシュを必ず無効化する。
+        // 「自前操作なら skip」の最適化は send 時に stale context で nudge 計算が
+        // 狂って iMessage 等で下線残留を招くため採用しない。
+        invalidateTextContextCache()
 
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
@@ -551,9 +550,7 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        if shouldTreatAsExternalTextChange() {
-            invalidateTextContextCache()
-        }
+        invalidateTextContextCache()
 
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()

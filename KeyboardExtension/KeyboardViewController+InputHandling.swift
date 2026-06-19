@@ -1331,10 +1331,13 @@ extension KeyboardViewController {
             note: "nudge=\(resolvedNudgeWidth)"
         )
 
-        // この時点で marked text は既に空(コミット後)であり、unmarkText も
-        // adjustTextPosition の往復(byCharacterOffset を相殺)も documentContextBeforeInput/
-        // AfterInput を変えない。キャッシュを温存して XPC 再取得を回避する。
-        noteOwnTextProxyEditTimestamp()
+        // 直前のコミット/送信で host 側テキストが変化している可能性が高いため、
+        // pass の入口で1回キャッシュを破棄して fresh な context で nudge 幅を算出する。
+        // (cc7bad3 で全部 noteOwn... 化したら iMessage 送信時に stale context で
+        // adjustTextPosition が実コンテンツより長く動こうとして下線残留する不具合あり)。
+        invalidateTextContextCache()
+
+        markTextProxyEdit()
         textDocumentProxy.unmarkText()
 
         let contextBeforeInput = currentTextContextBeforeInput()
