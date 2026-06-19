@@ -205,45 +205,102 @@
 	<dict><key>phrase</key><string>St. Vincent</string><key>shortcut</key><string>さんゔぁんさん</string></dict>
 	<dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
 
+	<!-- パン -->
+    <dict><key>phrase</key><string>ベイグル</string><key>shortcut</key><string>べいぐる</string></dict>
+    <dict><key>phrase</key><string>クロワッサン</string><key>shortcut</key><string>くろわっさん</string></dict>
+    <dict><key>phrase</key><string>パン・ド・ミー</string><key>shortcut</key><string>ぱんどみー</string></dict>
+    <dict><key>phrase</key><string>バゲット</string><key>shortcut</key><string>ばげっと</string></dict>
+    <dict><key>phrase</key><string>バタール</string><key>shortcut</key><string>ばたーる</string></dict>
+    <dict><key>phrase</key><string>パリジャン</string><key>shortcut</key><string>ぱりじゃん</string></dict>
+    <dict><key>phrase</key><string>フィセル</string><key>shortcut</key><string>ふぃせる</string></dict>
+    <dict><key>phrase</key><string>エピ</string><key>shortcut</key><string>えぴ</string></dict>
+    <dict><key>phrase</key><string>クッペ</string><key>shortcut</key><string>くっぺ</string></dict>
+    <dict><key>phrase</key><string>シャンピニオン</string><key>shortcut</key><string>しゃんぴにおん</string></dict>
+    <dict><key>phrase</key><string>タバチェ</string><key>shortcut</key><string>たぱちぇ</string></dict>
+    <dict><key>phrase</key><string>ファンデュ</string><key>shortcut</key><string>ふぁんでゅ</string></dict>
+    <dict><key>phrase</key><string>パン・ド・カンパーニュ</string><key>shortcut</key><string>ぱんどかんぱーにゅ</string></dict>
+    <dict><key>phrase</key><string>パン・コンプレ</string><key>shortcut</key><string>ぱんこんぷれ</string></dict>
+    <dict><key>phrase</key><string>パン・オ・ルヴァン</string><key>shortcut</key><string>ぱんおるゔぁん</string></dict>
+    <dict><key>phrase</key><string>ブール</string><key>shortcut</key><string>ぶーる</string></dict>
+    <dict><key>phrase</key><string>クラスト</string><key>shortcut</key><string>くらすと</string></dict>
+    <dict><key>phrase</key><string>クープ</string><key>shortcut</key><string>くーぷ</string></dict>
+    <dict><key>phrase</key><string>ルヴァン</string><key>shortcut</key><string>るゔぁん</string></dict>
+    <dict><key>phrase</key><string>bagel</string><key>shortcut</key><string>べいぐる</string></dict>
+    <dict><key>phrase</key><string>croissant</string><key>shortcut</key><string>くろわっさん</string></dict>
+    <dict><key>phrase</key><string>pain de mie</string><key>shortcut</key><string>ぱんどみー</string></dict>
+    <dict><key>phrase</key><string>baguette</string><key>shortcut</key><string>ばげっと</string></dict>
+    <dict><key>phrase</key><string>bâtard</string><key>shortcut</key><string>ばたーる</string></dict>
+    <dict><key>phrase</key><string>parisien</string><key>shortcut</key><string>ぱりじゃん</string></dict>
+    <dict><key>phrase</key><string>ficelle</string><key>shortcut</key><string>ふぃせる</string></dict>
+    <dict><key>phrase</key><string>epi</string><key>shortcut</key><string>えぴ</string></dict>
+    <dict><key>phrase</key><string>coupé</string><key>shortcut</key><string>くっぺ</string></dict>
+    <dict><key>phrase</key><string>champignon</string><key>shortcut</key><string>しゃんぴにおん</string></dict>
+    <dict><key>phrase</key><string>tabatière</string><key>shortcut</key><string>たぱちぇ</string></dict>
+    <dict><key>phrase</key><string>fendu</string><key>shortcut</key><string>ふぁんでゅ</string></dict>
+    <dict><key>phrase</key><string>pain de campagne</string><key>shortcut</key><string>ぱんどかんぱーにゅ</string></dict>
+    <dict><key>phrase</key><string>pain complet</string><key>shortcut</key><string>ぱんこんぷれ</string></dict>
+    <dict><key>phrase</key><string>pain au levain</string><key>shortcut</key><string>ぱんおるゔぁん</string></dict>
+    <dict><key>phrase</key><string>boule</string><key>shortcut</key><string>ぶーる</string></dict>
+    <dict><key>phrase</key><string>crust</string><key>shortcut</key><string>くらすと</string></dict>
+    <dict><key>phrase</key><string>coupe</string><key>shortcut</key><string>くーぷ</string></dict>
+    <dict><key>phrase</key><string>levain</string><key>shortcut</key><string>るゔぁん</string></dict>
+
+    <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>
+    <dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict>
+    <dict><key>phrase</key><string>ケイマン</string><key>shortcut</key><string>けいまん</string></dict>
+    <dict><key>phrase</key><string>ボクスター</string><key>shortcut</key><string>ぼくすたー</string></dict>
+    <dict><key>phrase</key><string>カイエン</string><key>shortcut</key><string>かいえん</string></dict>
+    <dict><key>phrase</key><string>マカン</string><key>shortcut</key><string>まかん</string></dict>
+    <dict><key>phrase</key><string>パナメーラ</string><key>shortcut</key><string>ぱなめーら</string></dict>
+    <dict><key>phrase</key><string>タイカン</string><key>shortcut</key><string>たいかん</string></dict>
+    <dict><key>phrase</key><string>Carrera</string><key>shortcut</key><string>かれら</string></dict>
+    <dict><key>phrase</key><string>Spyder</string><key>shortcut</key><string>すぱいだー</string></dict>
+    <dict><key>phrase</key><string>Cayman</string><key>shortcut</key><string>けいまん</string></dict>
+    <dict><key>phrase</key><string>Boxster</string><key>shortcut</key><string>ぼくすたー</string></dict>
+    <dict><key>phrase</key><string>Cayenne</string><key>shortcut</key><string>かいえん</string></dict>
+    <dict><key>phrase</key><string>Macan</string><key>shortcut</key><string>まかん</string></dict>
+    <dict><key>phrase</key><string>Panamera</string><key>shortcut</key><string>ぱなめーら</string></dict>
+    <dict><key>phrase</key><string>Taycan</string><key>shortcut</key><string>たいかん</string></dict>
+
 	<!-- 活用あり (用言): 辞書形を登録 -->
-	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string></dict>
-	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string></dict>
-	<dict><key>phrase</key><string>手に入る</string><key>shortcut</key><string>てにはいる</string></dict>
-    <dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string></dict>
-    <dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string></dict>
-    <dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string></dict>
-    <dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string></dict>
-    <dict><key>phrase</key><string>気が長い</string><key>shortcut</key><string>きがながい</string></dict>
-    <dict><key>phrase</key><string>気が早い</string><key>shortcut</key><string>きがはやい</string></dict>
-    <dict><key>phrase</key><string>気が向く</string><key>shortcut</key><string>きがむく</string></dict>
-    <dict><key>phrase</key><string>気に入る</string><key>shortcut</key><string>きにいる</string></dict>
-    <dict><key>phrase</key><string>気にかかる</string><key>shortcut</key><string>きにかかる</string></dict>
-    <dict><key>phrase</key><string>気に掛ける</string><key>shortcut</key><string>きにかける</string></dict>
-    <dict><key>phrase</key><string>気にかける</string><key>shortcut</key><string>きにかける</string></dict>
-    <dict><key>phrase</key><string>気に食わない</string><key>shortcut</key><string>きにくわない</string></dict>
-    <dict><key>phrase</key><string>気にくわない</string><key>shortcut</key><string>きにくわない</string></dict>
-    <dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string></dict>
-    <dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string></dict>
-    <dict><key>phrase</key><string>気にとめる</string><key>shortcut</key><string>きにとめる</string></dict>
-    <dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string></dict>
-    <dict><key>phrase</key><string>気に病む</string><key>shortcut</key><string>きにやむ</string></dict>
-    <dict><key>phrase</key><string>気を失う</string><key>shortcut</key><string>きをうしなう</string></dict>
-    <dict><key>phrase</key><string>気を利かせる</string><key>shortcut</key><string>きをきかせる</string></dict>
-    <dict><key>phrase</key><string>気を配る</string><key>shortcut</key><string>きをくばる</string></dict>
-    <dict><key>phrase</key><string>気を遣う</string><key>shortcut</key><string>きをつかう</string></dict>
-    <dict><key>phrase</key><string>気を使う</string><key>shortcut</key><string>きをつかう</string></dict>
-    <dict><key>phrase</key><string>気をつかう</string><key>shortcut</key><string>きをつかう</string></dict>
-    <dict><key>phrase</key><string>気を引く</string><key>shortcut</key><string>きをひく</string></dict>
-    <dict><key>phrase</key><string>気を回す</string><key>shortcut</key><string>きをまわす</string></dict>
-    <dict><key>phrase</key><string>気を揉む</string><key>shortcut</key><string>きをもむ</string></dict>
-    <dict><key>phrase</key><string>気をもむ</string><key>shortcut</key><string>きをもむ</string></dict>
-    <dict><key>phrase</key><string>気を良くする</string><key>shortcut</key><string>きをよくする</string></dict>
-    <dict><key>phrase</key><string>気をよくする</string><key>shortcut</key><string>きをよくする</string></dict>
+	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>手に入る</string><key>shortcut</key><string>てにはいる</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気が長い</string><key>shortcut</key><string>きがながい</string><key>pos</key><string>形容詞</string></dict>
+    <dict><key>phrase</key><string>気が早い</string><key>shortcut</key><string>きがはやい</string><key>pos</key><string>形容詞</string></dict>
+    <dict><key>phrase</key><string>気が向く</string><key>shortcut</key><string>きがむく</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気に入る</string><key>shortcut</key><string>きにいる</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気にかかる</string><key>shortcut</key><string>きにかかる</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気に掛ける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気にかける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気に食わない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
+    <dict><key>phrase</key><string>気にくわない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
+    <dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気にとめる</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気に病む</string><key>shortcut</key><string>きにやむ</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を失う</string><key>shortcut</key><string>きをうしなう</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を利かせる</string><key>shortcut</key><string>きをきかせる</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気を配る</string><key>shortcut</key><string>きをくばる</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を遣う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を使う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気をつかう</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を引く</string><key>shortcut</key><string>きをひく</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を回す</string><key>shortcut</key><string>きをまわす</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を揉む</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気をもむ</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を良くする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>気をよくする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- サ変動詞化する名詞 -->
-	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string></dict>
-	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string></dict>
-    <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string></dict>
+	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- 活用なし (名詞など) -->
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
@@ -367,6 +424,5 @@
     <dict><key>phrase</key><string>縦構図</string><key>shortcut</key><string>たてこうず</string></dict>
     <dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>ベイグル</string><key>shortcut</key><string>べいぐる</string></dict>
 </array>
 </plist>
