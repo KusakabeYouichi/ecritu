@@ -261,6 +261,7 @@
     <dict><key>phrase</key><string>Macan</string><key>shortcut</key><string>まかん</string></dict>
     <dict><key>phrase</key><string>Panamera</string><key>shortcut</key><string>ぱなめーら</string></dict>
     <dict><key>phrase</key><string>Taycan</string><key>shortcut</key><string>たいかん</string></dict>
+    <dict><key>phrase</key><string>Porsche</string><key>shortcut</key><string>ぽるしぇ</string></dict>
 
 	<!-- 活用あり (用言): 辞書形を登録 -->
 	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string><key>pos</key><string>五段</string></dict>
@@ -296,6 +297,8 @@
     <dict><key>phrase</key><string>気をもむ</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を良くする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>気をよくする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
 
 	<!-- サ変動詞化する名詞 -->
 	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string><key>pos</key><string>サ変名詞</string></dict>
@@ -422,7 +425,8 @@
     <dict><key>phrase</key><string>ソウルフード</string><key>shortcut</key><string>そうるふーど</string></dict>
     <dict><key>phrase</key><string>横構図</string><key>shortcut</key><string>よここうず</string></dict>
     <dict><key>phrase</key><string>縦構図</string><key>shortcut</key><string>たてこうず</string></dict>
-    <dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>ラーメン二郎</string><key>shortcut</key><string>らーめんじろう</string></dict>
+    <dict><key>phrase</key><string>二郎系</string><key>shortcut</key><string>じろうけい</string></dict>
+    <dict><key>phrase</key><string>二郎インスパイア系</string><key>shortcut</key><string>じろういんすぱいあけい</string></dict>
 </array>
 </plist>
