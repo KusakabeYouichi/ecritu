@@ -1187,6 +1187,14 @@ struct KeyboardRootView: View {
         return numberLayoutMode
     }
 
+    // clavier system 行に並べる 4 つの記号(shift 状態で切替)。
+    private var clavierSystemRowSymbols: [String] {
+        if latinShiftState != .off {
+            return ["!", "?", "'", "\""]
+        }
+        return ["#", "$", "%", "&"]
+    }
+
     private var usesWideLeftModeSwitchButtons: Bool {
         if isLandscapeLayout {
             return true
@@ -3709,6 +3717,26 @@ struct KeyboardRootView: View {
                     )
                         .frame(width: bottomActionRowKanaTrailingKeyWidth, height: selectorKeySize)
                 } else if inputMode == .number {
+                    if effectiveNumberLayoutMode == .clavier && !isLandscapeLayout {
+                        LatinShiftKeyButton(
+                            isOn: latinShiftState != .off,
+                            isLocked: latinShiftState == .locked,
+                            onTap: handleLatinShiftTap,
+                            onLongPress: handleLatinShiftLongPress
+                        )
+                            .frame(width: 44, height: unifiedActionRowHeight)
+
+                        ForEach(clavierSystemRowSymbols, id: \.self) { symbol in
+                            ActionKeyButton(
+                                title: symbol,
+                                fontSize: 20,
+                                fixedWidth: 36,
+                                action: { commitText(symbol) }
+                            )
+                                .frame(height: unifiedActionRowHeight)
+                        }
+                    }
+
                     ActionKeyButton(
                         title: "あい",
                         fixedWidth: 58,
