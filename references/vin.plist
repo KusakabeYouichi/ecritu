@@ -1650,6 +1650,10 @@
 	<dict><key>phrase</key><string>Regional Wines</string><key>shortcut</key><string>りーじょなるわいん</string></dict>
 
 	<!-- ワイン用ぶどう品種名 / セパージュ -->
+	<dict><key>phrase</key><string>ピンク・シャルドネ</string><key>shortcut</key><string>ぴんくしゃるどね</string></dict>
+	<dict><key>phrase</key><string>シャルドネ・ローズ</string><key>shortcut</key><string>しゃるどねろーず</string></dict>
+	<dict><key>phrase</key><string>Chardonnay rose</string><key>shortcut</key><string>しゃるどねろーず</string></dict>
+	<dict><key>phrase</key><string>Arbanne</string><key>shortcut</key><string>あるばんぬ</string></dict>
 	<dict><key>phrase</key><string>5BB</string><key>shortcut</key><string>ごびーびー</string></dict>
 	<dict><key>phrase</key><string>AXR</string><key>shortcut</key><string>えいえっくすあーる</string></dict>
 	<dict><key>phrase</key><string>Agiorgitiko</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
@@ -1852,6 +1856,7 @@
 	<dict><key>phrase</key><string>Pinot Blanc</string><key>shortcut</key><string>ぴのぶらん</string></dict>
 	<dict><key>phrase</key><string>Pinot Gris</string><key>shortcut</key><string>ぴのぐり</string></dict>
 	<dict><key>phrase</key><string>Pinot Meunier</string><key>shortcut</key><string>ぴのむにえ</string></dict>
+	<dict><key>phrase</key><string>Meunier</string><key>shortcut</key><string>むにえ</string></dict>
 	<dict><key>phrase</key><string>Pinot Nero</string><key>shortcut</key><string>ぴのねーろ</string></dict>
 	<dict><key>phrase</key><string>Pinot Noir</string><key>shortcut</key><string>ぴののわーる</string></dict>
 	<dict><key>phrase</key><string>Pinot Sivi</string><key>shortcut</key><string>ぴのしゔぃ</string></dict>

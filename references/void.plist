@@ -299,11 +299,13 @@
     <dict><key>phrase</key><string>気をよくする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>全会一致</string><key>shortcut</key><string>ぜんかいいっち</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- サ変動詞化する名詞 -->
 	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>オウンゴール</string><key>shortcut</key><string>おうんごーる</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- 活用なし (名詞など) -->
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
@@ -428,5 +430,14 @@
     <dict><key>phrase</key><string>ラーメン二郎</string><key>shortcut</key><string>らーめんじろう</string></dict>
     <dict><key>phrase</key><string>二郎系</string><key>shortcut</key><string>じろうけい</string></dict>
     <dict><key>phrase</key><string>二郎インスパイア系</string><key>shortcut</key><string>じろういんすぱいあけい</string></dict>
+    <dict><key>phrase</key><string>ラバーダッキー</string><key>shortcut</key><string>らばーだっきー</string></dict>
+    <dict><key>phrase</key><string>意味不明</string><key>shortcut</key><string>いみふめい</string></dict>
+    <dict><key>phrase</key><string>夜香木</string><key>shortcut</key><string>やこうぼく</string></dict>
+    <dict><key>phrase</key><string>ナイト・ジャスミン</string><key>shortcut</key><string>ないとじゃすみん</string></dict>
+    <dict><key>phrase</key><string>キュマン</string><key>shortcut</key><string>きゅまん</string></dict>
+    <dict><key>phrase</key><string>高音域</string><key>shortcut</key><string>こうおんいき</string></dict>
+    <dict><key>phrase</key><string>中音域</string><key>shortcut</key><string>ちゅうおんいき</string></dict>
+    <dict><key>phrase</key><string>低音域</string><key>shortcut</key><string>ていおんいき</string></dict>
+    <dict><key>phrase</key><string>意味不明</string><key>shortcut</key><string>いみふめい</string></dict>
 </array>
 </plist>
