@@ -73,6 +73,7 @@ enum LatinLayoutMode: String {
 enum NumberLayoutMode: String {
     case calculette
     case telephone
+    case clavier
 }
 
 enum FlickDirectionProfile: String {

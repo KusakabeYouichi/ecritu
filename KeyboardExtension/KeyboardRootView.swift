@@ -578,8 +578,9 @@ struct KeyboardRootView: View {
         case .number:
             return FlickKanaLayout.numberRows(
                 for: directionProfile,
-                layoutMode: numberLayoutMode,
-                temperatureUnit: temperatureUnit
+                layoutMode: effectiveNumberLayoutMode,
+                temperatureUnit: temperatureUnit,
+                isShifted: latinShiftState != .off
             )
         case .latin:
             return FlickKanaLayout.latinRows(for: directionProfile, layoutMode: latinLayoutMode)
@@ -1171,7 +1172,19 @@ struct KeyboardRootView: View {
             return latinLayoutMode == .qwerty || latinLayoutMode == .azerty
         }
 
+        if inputMode == .number {
+            return effectiveNumberLayoutMode == .clavier
+        }
+
         return false
+    }
+
+    // clavier 配列は縦画面専用。横画面の場合は calculette にフォールバックする。
+    private var effectiveNumberLayoutMode: NumberLayoutMode {
+        if numberLayoutMode == .clavier && isLandscapeLayout {
+            return .calculette
+        }
+        return numberLayoutMode
     }
 
     private var usesWideLeftModeSwitchButtons: Bool {
