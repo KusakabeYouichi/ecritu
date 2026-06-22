@@ -944,20 +944,32 @@ extension KeyboardViewController {
     }
 
     func setMarkedComposingText(_ text: String) {
-        // setMarkedText は documentContextBeforeInput/AfterInput を変えないため
-        // キャッシュ無効化は不要(タイムスタンプのみ更新)。
-        noteOwnTextProxyEditTimestamp()
-
         // iMessage 等で marked text を短くする置換(例: 「ひんしゅ」→「品種」)時に
-        // 最後の1文字が消し残るホストバグの防衛策。前回より短くなる場合は明示的に
-        // 一度 marked を空にしてから新しい marked を set し直す。
-        if text.count < lastSetMarkedTextLength {
-            textDocumentProxy.setMarkedText(
-                "",
-                selectedRange: NSRange(location: 0, length: 0)
-            )
+        // 最後の1文字が消し残るホストバグの強化防衛策。前回より短くなる場合は
+        // (1) unmarkText で marked text を host に確定させ、
+        // (2) deleteBackward を旧 marked 長分だけ繰り返して確定文字を削除し、
+        // (3) 新しい marked を setMarkedText で立てる
+        // という3段階に分解する。setMarkedText の置換ロジックに依存しないため、
+        // host の shrink バグを完全に回避できる。
+        //
+        // 途中の textDidChange / selectionDidChange は synchronize を呼ぶと
+        // composingRawText と context の半端な mismatch で discard が走るため、
+        // suppressTextProxyChangeHandling で抑制する。
+        if text.count < lastSetMarkedTextLength && lastSetMarkedTextLength > 0 {
+            suppressTextProxyChangeHandling = true
+            markTextProxyEdit()
+            textDocumentProxy.unmarkText()
+            for _ in 0..<lastSetMarkedTextLength {
+                markTextProxyEdit()
+                textDocumentProxy.deleteBackward()
+            }
+            suppressTextProxyChangeHandling = false
+            invalidateTextContextCache()
         }
 
+        // setMarkedText 自体は documentContextBeforeInput/AfterInput を変えないため
+        // キャッシュ無効化は不要(タイムスタンプのみ更新)。
+        noteOwnTextProxyEditTimestamp()
         textDocumentProxy.setMarkedText(
             text,
             selectedRange: NSRange(location: text.utf16.count, length: 0)
