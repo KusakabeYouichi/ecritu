@@ -1210,11 +1210,21 @@ struct KeyboardRootView: View {
     }
 
     // clavier system 行に並べる 4 つの記号(shift 状態で切替)。
+    // 配置順: index 0 = delete 跡(AZERTY の `@` 位置)、index 1 = space-left(`/`)、
+    //         index 2/3 = space-right(`.`/`-`)。
     private var clavierSystemRowSymbols: [String] {
         if latinShiftState != .off {
             return ["!", "?", "'", "\""]
         }
         return ["#", "$", "%", "&"]
+    }
+
+    private func clavierInlineSymbol(at index: Int) -> String {
+        let symbols = clavierSystemRowSymbols
+        guard symbols.indices.contains(index) else {
+            return ""
+        }
+        return symbols[index]
     }
 
     private var usesWideLeftModeSwitchButtons: Bool {
@@ -1666,6 +1676,10 @@ struct KeyboardRootView: View {
                     .frame(width: leftModeSwitchButtonWidth, height: height)
             } else if inputMode == .latin {
                 leftModeSwitchEmojiButton(height: height)
+            } else if inputMode == .number && effectiveNumberLayoutMode == .clavier {
+                // clavier 縦画面では電卓/電話モードと同じく ⌘ (記号入力モードへの切替)を
+                // 左コンパクト列の最下段(slot 3)に配置する。
+                leftModeSwitchSymbolsButton(height: height)
             } else {
                 Color.clear
                     .allowsHitTesting(false)
@@ -3673,8 +3687,16 @@ struct KeyboardRootView: View {
                     )
                         .frame(height: unifiedActionRowHeight)
                 } else if usesPortraitClavierInlineDeleteLayout {
-                    // clavier portrait は行3 右端に delete が出るので system 行では非表示。
-                    EmptyView()
+                    // delete 自体は行3 右端に配置済み。AZERTY 行末の `@` と同じスロットには
+                    // clavier の最初の記号(`#`/shift時 `!`)を置き、space 位置を AZERTY と
+                    // 揃える。
+                    ActionKeyButton(
+                        title: clavierInlineSymbol(at: 0),
+                        fontSize: 22,
+                        fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
+                        action: { commitText(clavierInlineSymbol(at: 0)) }
+                    )
+                        .frame(height: unifiedActionRowHeight)
                 } else {
                     ActionKeyButton(
                         title: "⌫",
@@ -3694,6 +3716,15 @@ struct KeyboardRootView: View {
                         fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                         keyHeight: unifiedActionRowHeight
                     )
+                } else if usesPortraitClavierInlineDeleteLayout {
+                    // AZERTY の space-left 位置(`/`)に clavier の2番目の記号を置く。
+                    ActionKeyButton(
+                        title: clavierInlineSymbol(at: 1),
+                        fontSize: 20,
+                        fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
+                        action: { commitText(clavierInlineSymbol(at: 1)) }
+                    )
+                        .frame(height: unifiedActionRowHeight)
                 }
 
                 spaceKeyButton(fixedWidth: nil, keyHeight: unifiedActionRowHeight)
@@ -3705,6 +3736,17 @@ struct KeyboardRootView: View {
                             : nil,
                         keyHeight: unifiedActionRowHeight
                     )
+                } else if usesPortraitClavierInlineDeleteLayout {
+                    // AZERTY の space-right 位置(`.`/`-`)に clavier の3,4番目の記号を置く。
+                    ForEach([2, 3], id: \.self) { index in
+                        ActionKeyButton(
+                            title: clavierInlineSymbol(at: index),
+                            fontSize: 20,
+                            fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
+                            action: { commitText(clavierInlineSymbol(at: index)) }
+                        )
+                            .frame(height: unifiedActionRowHeight)
+                    }
                 }
 
                 if inputMode == .kana {
@@ -3746,18 +3788,11 @@ struct KeyboardRootView: View {
                         .frame(width: bottomActionRowKanaTrailingKeyWidth, height: selectorKeySize)
                 } else if inputMode == .number {
                     if effectiveNumberLayoutMode == .clavier && !isLandscapeLayout {
-                        // clavier portrait: shift は行3 左、delete は行3 右に配置済み。
-                        // あい/abc/⌘ は左の compact mode switch 列で切替可能なので
-                        // system 行には #$%& 系の記号 4 個だけ残す。
-                        ForEach(clavierSystemRowSymbols, id: \.self) { symbol in
-                            ActionKeyButton(
-                                title: symbol,
-                                fontSize: 18,
-                                fixedWidth: 34,
-                                action: { commitText(symbol) }
-                            )
-                                .frame(height: unifiedActionRowHeight)
-                        }
+                        // clavier portrait: shift は行3 左、delete は行3 右、#$%& は
+                        // delete跡 / space-left / space-right に配置済み(AZERTY と
+                        // 同じ位置)。 あい/abc/⌘ は左 compact mode switch 列に集約
+                        // しているので system 行右端には何も追加しない。
+                        EmptyView()
                     } else {
                         ActionKeyButton(
                             title: "あい",
