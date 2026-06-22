@@ -113,7 +113,8 @@ enum FlickKanaLayout {
     static func numberRows(
         for profile: FlickDirectionProfile,
         layoutMode: NumberLayoutMode,
-        temperatureUnit: TemperatureUnitPreference = .celsius
+        temperatureUnit: TemperatureUnitPreference = .celsius,
+        isShifted: Bool = false
     ) -> [[FlickKanaSet]] {
         let row123: [FlickKanaSet] = [
             numberSet(center: "1", left: "←", up: "↑", right: "→", down: "↓", profile: profile, preservesAppleDirectionalOrder: true),
@@ -178,7 +179,44 @@ enum FlickKanaLayout {
             return [row123, row456, row789, rowBottomTelephone]
         case .calculette:
             return [row789, row456, row123, rowBottomCalculette]
+        case .clavier:
+            return clavierRows(for: profile, isShifted: isShifted)
         }
+    }
+
+    // clavier 配列(縦画面専用、AZERTY 風の 4 段)。
+    // 横画面では呼ばれない想定。呼び出し側で fallback して calculette を使う。
+    private static func clavierRows(
+        for profile: FlickDirectionProfile,
+        isShifted: Bool
+    ) -> [[FlickKanaSet]] {
+        // 共通: 行1 は shift の有無に関係なく数字 1-9, 0
+        let row1Chars = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+
+        let row2Chars: [String] = isShifted
+            ? ["・", "±", "〜", "…", "\\", "^", "_", "`", "|", "~"]
+            : ["@", "+", "-", "*", "/", "=", ",", ".", ":", ";"]
+
+        let row3Chars: [String] = isShifted
+            ? ["「", "」", "『", "』", "【", "】", "○", "×"]
+            : ["(", ")", "[", "]", "{", "}", "<", ">"]
+
+        let row4Chars: [String] = isShifted
+            ? ["!", "?", "'", "\""]
+            : ["#", "$", "%", "&"]
+
+        func numberOnlySet(_ ch: String) -> FlickKanaSet {
+            numberSet(center: ch, left: "", up: "", right: "", down: "", profile: profile)
+        }
+
+        let row1 = row1Chars.map(numberOnlySet)
+        let row2 = row2Chars.map(numberOnlySet)
+        let row3 = row3Chars.map(numberOnlySet)
+        // 行4 左端に shift トグルを置く(AZERTY 行3 の shift_left と同じトークン)。
+        var row4: [FlickKanaSet] = [shiftKey(position: .left)]
+        row4.append(contentsOf: row4Chars.map(numberOnlySet))
+
+        return [row1, row2, row3, row4]
     }
 
     static func latinRows(for profile: FlickDirectionProfile, layoutMode: LatinLayoutMode) -> [[FlickKanaSet]] {

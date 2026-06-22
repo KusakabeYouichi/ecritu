@@ -944,7 +944,7 @@ struct NumberLayoutSettingsSection: View {
             selection: $selection,
             options: Array(NumberLayoutOption.allCases),
             optionTitle: { $0.title },
-            footnote: "123モードの数字キー配列を切り替えます。téléphone は上段が 1-2-3、calculette は上段が 7-8-9 です。"
+            footnote: "123モードの数字キー配列を切り替えます。téléphone は上段が 1-2-3、calculette は上段が 7-8-9、clavier は AZERTY 風の数字+記号配列(shift で 2 種類の記号セットを切替)です。\nclavier は縦画面のみ対応。横画面では自動的に calculette が使われます。"
         )
     }
 }

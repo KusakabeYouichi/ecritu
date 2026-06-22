@@ -147,6 +147,7 @@ enum LatinLayoutOption: String, CaseIterable, Identifiable {
 enum NumberLayoutOption: String, CaseIterable, Identifiable {
     case calculette
     case telephone
+    case clavier
 
     var id: String { rawValue }
 
@@ -154,6 +155,7 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
         switch self {
         case .calculette: return "calculette"
         case .telephone: return "téléphone"
+        case .clavier: return "clavier"
         }
     }
 }
