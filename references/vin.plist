@@ -3946,6 +3946,7 @@
 	<dict><key>phrase</key><string>理想都市</string><key>shortcut</key><string>りそうとし</string></dict>
 
 	<!-- ワイン関連技術用語・その他 -->
+	<dict><key>phrase</key><string>ワイン用</string><key>shortcut</key><string>わいんよう</string></dict>
 	<dict><key>phrase</key><string>オフドライ</string><key>shortcut</key><string>おふどらい</string></dict>
 	<dict><key>phrase</key><string>Ahr</string><key>shortcut</key><string>あーる</string></dict>
 	<dict><key>phrase</key><string>Amontillado</string><key>shortcut</key><string>あもんてぃりゃーど</string></dict>

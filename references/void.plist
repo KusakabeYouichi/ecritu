@@ -439,5 +439,7 @@
     <dict><key>phrase</key><string>中音域</string><key>shortcut</key><string>ちゅうおんいき</string></dict>
     <dict><key>phrase</key><string>低音域</string><key>shortcut</key><string>ていおんいき</string></dict>
     <dict><key>phrase</key><string>意味不明</string><key>shortcut</key><string>いみふめい</string></dict>
+    <dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるべっと</string></dict>
+    <dict><key>phrase</key><string>オランダ語</string><key>shortcut</key><string>おらんだご</string></dict>
 </array>
 </plist>
