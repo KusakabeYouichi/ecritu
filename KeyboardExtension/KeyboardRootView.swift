@@ -1248,6 +1248,13 @@ struct KeyboardRootView: View {
             return true
         }
 
+        // 数字配列が clavier の場合は(他モードのときも含めて)左モード切替列を幅狭で
+        // 統一する(AZERTY/QWERTY のとき幅狭にしているのと同じ理由 = clavier モード時に
+        // 行幅を最大化したい)。
+        if numberLayoutMode == .clavier {
+            return false
+        }
+
         return kanaLayoutMode == .threeByThreePlusWa && latinLayoutMode == .flick
     }
 
