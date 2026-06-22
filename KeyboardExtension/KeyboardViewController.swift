@@ -224,6 +224,10 @@ final class KeyboardViewController: UIInputViewController {
     )
     var markedTextWatchdogTimer: DispatchSourceTimer?
     var lastMarkedTextUpdateAt: CFAbsoluteTime = 0
+    // 直近に setMarkedText で渡した marked text の文字数。短縮置換時の host バグ
+    // (iMessage 等で1文字残る現象)を回避するため、shrink を検知して明示的に
+    // marked を空クリアしてから新しい marked を set する。
+    var lastSetMarkedTextLength: Int = 0
     static let markedTextWatchdogInterval: TimeInterval = 1.5
     static let markedTextWatchdogQuietPeriod: TimeInterval = 1.0
     static let markedTextWatchdogQueue = DispatchQueue(
