@@ -134,7 +134,9 @@ enum KeyboardModeTransition {
         now: Date,
         doubleTapThreshold: TimeInterval
     ) -> KeyboardModeTransitionState {
-        guard state.inputMode == .latin else {
+        // latin だけでなく number mode (clavier 配列) でも shift state を切り替えられる
+        // ようにする。kana mode は shift キーが存在しないため呼ばれない。
+        guard state.inputMode == .latin || state.inputMode == .number else {
             return state
         }
 
@@ -166,7 +168,7 @@ enum KeyboardModeTransition {
     static func handleLatinShiftLongPress(
         _ state: KeyboardModeTransitionState
     ) -> KeyboardModeTransitionState {
-        guard state.inputMode == .latin else {
+        guard state.inputMode == .latin || state.inputMode == .number else {
             return state
         }
 
