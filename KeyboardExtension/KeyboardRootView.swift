@@ -1081,7 +1081,7 @@ struct KeyboardRootView: View {
     }
 
     private var portraitLatinInlineActionBaseKeyWidth: CGFloat {
-        guard usesPortraitLatinInlineDeleteLayout else {
+        guard usesPortraitLatinInlineDeleteLayout || usesPortraitClavierInlineDeleteLayout else {
             return 0
         }
 
@@ -3727,7 +3727,16 @@ struct KeyboardRootView: View {
                         .frame(height: unifiedActionRowHeight)
                 }
 
-                spaceKeyButton(fixedWidth: nil, keyHeight: unifiedActionRowHeight)
+                // AZERTY portrait と clavier portrait では space を inline action 幅と
+                // 同じサイズに固定し、5 つの flex スロット(@, /, space, ., -)が等幅に
+                // 並ぶようにする。それ以外のモード(kana/calculette/telephone 等)は従来通り
+                // space が残りを全部取る。
+                spaceKeyButton(
+                    fixedWidth: (usesPortraitLatinInlineDeleteLayout || usesPortraitClavierInlineDeleteLayout)
+                        ? portraitLatinInlineActionSymbolKeyWidth
+                        : nil,
+                    keyHeight: unifiedActionRowHeight
+                )
 
                 if inputMode == .latin {
                     latinSpaceRightActionButtons(
@@ -3842,7 +3851,7 @@ struct KeyboardRootView: View {
                     systemImageName: returnActionKeySystemImageName,
                     accessibilityLabel: returnActionKeyAccessibilityLabel,
                     fontSize: returnActionKeyFontSize,
-                    fixedWidth: usesPortraitLatinInlineDeleteLayout
+                    fixedWidth: (usesPortraitLatinInlineDeleteLayout || usesPortraitClavierInlineDeleteLayout)
                         ? portraitLatinInlineReturnKeyWidth
                         : bottomActionRowReturnKeyWidth,
                     isEnabled: isReturnKeyEnabled,
@@ -4465,6 +4474,7 @@ struct KeyboardRootView: View {
     private func numberPunctuationIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
         guard inputMode == .number,
                 isCurrentFlickGuideDisplayOff,
+                            effectiveNumberLayoutMode != .clavier,
                             kana.center == "." || kana.center == "'" || kana.center == "(" else {
             return nil
         }
