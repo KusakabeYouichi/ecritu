@@ -1222,6 +1222,9 @@ struct KeyboardRootView: View {
         return .bold
     }
 
+    // clavier 配列はメイン letter キーも system 行の inline 記号キーも 26pt に統一する。
+    private var clavierKeyFontSize: CGFloat { 26 }
+
     // clavier system 行に並べる 4 つの記号(shift 状態で切替)。
     // 配置順: index 0 = delete 跡(AZERTY の `@` 位置)、index 1 = space-left(`/`)、
     //         index 2/3 = space-right(`.`/`-`)。
@@ -3617,6 +3620,9 @@ struct KeyboardRootView: View {
                             let letterKey = FlickKeyView(
                                 kana: renderedKana,
                                 onCommit: commitText,
+                                mainLabelFontSize: (inputMode == .number && effectiveNumberLayoutMode == .clavier)
+                                    ? clavierKeyFontSize
+                                    : 28,
                                 mainLabelFontWeight: rowKeyMainLabelFontWeight,
                                 showsDirectionalHints: showsFlickGuideCharacters,
                                 idleReplacement: rowKeyIdleReplacement(for: renderedKana),
@@ -3704,10 +3710,10 @@ struct KeyboardRootView: View {
                 } else if usesPortraitClavierInlineDeleteLayout {
                     // delete 自体は行3 右端に配置済み。AZERTY 行末の `@` と同じスロットには
                     // clavier の最初の記号(`#`/shift時 `!`)を置き、space 位置を AZERTY と
-                    // 揃える。
+                    // 揃える。フォントサイズは clavier の他キーと統一(26pt)。
                     ActionKeyButton(
                         title: clavierInlineSymbol(at: 0),
-                        fontSize: 22,
+                        fontSize: clavierKeyFontSize,
                         fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                         action: { commitText(clavierInlineSymbol(at: 0)) }
                     )
@@ -3735,7 +3741,7 @@ struct KeyboardRootView: View {
                     // AZERTY の space-left 位置(`/`)に clavier の2番目の記号を置く。
                     ActionKeyButton(
                         title: clavierInlineSymbol(at: 1),
-                        fontSize: 20,
+                        fontSize: clavierKeyFontSize,
                         fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                         action: { commitText(clavierInlineSymbol(at: 1)) }
                     )
@@ -3756,7 +3762,7 @@ struct KeyboardRootView: View {
                     ForEach([2, 3], id: \.self) { index in
                         ActionKeyButton(
                             title: clavierInlineSymbol(at: index),
-                            fontSize: 20,
+                            fontSize: clavierKeyFontSize,
                             fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                             action: { commitText(clavierInlineSymbol(at: index)) }
                         )
