@@ -66,6 +66,7 @@ struct FlickKeyView: View {
     let onCommit: (String) -> Void
     var onCommitWithDirection: ((String, FlickDirection) -> Void)? = nil
     var mainLabelFontSize: CGFloat = 28
+    var mainLabelFontWeight: Font.Weight = .bold
     var flickGuideDisplayModeOverride: FlickGuideDisplayMode? = nil
     var showsDirectionalHints: Bool = true
     var showsGuideText: Bool = true
@@ -141,7 +142,7 @@ struct FlickKeyView: View {
                     .offset(y: centerLabelOffsetY)
             } else {
                 Text(kana.center)
-                    .font(.system(size: idleMainLabelFontSize, weight: .bold, design: .rounded))
+                    .font(.system(size: idleMainLabelFontSize, weight: mainLabelFontWeight, design: .rounded))
                     .foregroundStyle(keyLabelColor)
                     .offset(y: centerLabelOffsetY)
             }

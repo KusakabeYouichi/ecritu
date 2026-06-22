@@ -1209,6 +1209,19 @@ struct KeyboardRootView: View {
         return numberLayoutMode
     }
 
+    // メインキー(letter / number / kana)の中央ラベルのフォントウエイト。
+    // AZERTY/QWERTY の英字キー、および clavier 配列の数字・記号キーは semibold、
+    // それ以外(かなフリック、calculette/telephone)は従来通り bold。
+    private var rowKeyMainLabelFontWeight: Font.Weight {
+        if inputMode == .latin && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty) {
+            return .semibold
+        }
+        if inputMode == .number && effectiveNumberLayoutMode == .clavier {
+            return .semibold
+        }
+        return .bold
+    }
+
     // clavier system 行に並べる 4 つの記号(shift 状態で切替)。
     // 配置順: index 0 = delete 跡(AZERTY の `@` 位置)、index 1 = space-left(`/`)、
     //         index 2/3 = space-right(`.`/`-`)。
@@ -3178,6 +3191,7 @@ struct KeyboardRootView: View {
                 kana: renderedKana,
                 onCommit: commitText,
                 mainLabelFontSize: 25,
+                mainLabelFontWeight: rowKeyMainLabelFontWeight,
                 showsDirectionalHints: showsFlickGuideCharacters,
                 idleReplacement: rowKeyIdleReplacement(for: renderedKana),
                 longPressCandidates: longPressCandidates(for: kana),
@@ -3603,6 +3617,7 @@ struct KeyboardRootView: View {
                             let letterKey = FlickKeyView(
                                 kana: renderedKana,
                                 onCommit: commitText,
+                                mainLabelFontWeight: rowKeyMainLabelFontWeight,
                                 showsDirectionalHints: showsFlickGuideCharacters,
                                 idleReplacement: rowKeyIdleReplacement(for: renderedKana),
                                 longPressCandidates: longPressCandidates(for: kana),
