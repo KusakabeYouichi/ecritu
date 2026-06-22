@@ -3727,16 +3727,7 @@ struct KeyboardRootView: View {
                         .frame(height: unifiedActionRowHeight)
                 }
 
-                // AZERTY portrait と clavier portrait では space を inline action 幅と
-                // 同じサイズに固定し、5 つの flex スロット(@, /, space, ., -)が等幅に
-                // 並ぶようにする。それ以外のモード(kana/calculette/telephone 等)は従来通り
-                // space が残りを全部取る。
-                spaceKeyButton(
-                    fixedWidth: (usesPortraitLatinInlineDeleteLayout || usesPortraitClavierInlineDeleteLayout)
-                        ? portraitLatinInlineActionSymbolKeyWidth
-                        : nil,
-                    keyHeight: unifiedActionRowHeight
-                )
+                spaceKeyButton(fixedWidth: nil, keyHeight: unifiedActionRowHeight)
 
                 if inputMode == .latin {
                     latinSpaceRightActionButtons(
