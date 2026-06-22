@@ -3718,48 +3718,51 @@ struct KeyboardRootView: View {
                         .frame(width: bottomActionRowKanaTrailingKeyWidth, height: selectorKeySize)
                 } else if inputMode == .number {
                     if effectiveNumberLayoutMode == .clavier && !isLandscapeLayout {
+                        // clavier モードでは あい/abc/⌘ は左の compact mode switch 列で
+                        // 切替可能なので、system 行の右側スロットに shift トグル + 記号 4 個
+                        // を割り当てる。横幅破綻を避けるためコンパクトな固定幅を使う。
                         LatinShiftKeyButton(
                             isOn: latinShiftState != .off,
                             isLocked: latinShiftState == .locked,
                             onTap: handleLatinShiftTap,
                             onLongPress: handleLatinShiftLongPress
                         )
-                            .frame(width: 44, height: unifiedActionRowHeight)
+                            .frame(width: 40, height: unifiedActionRowHeight)
 
                         ForEach(clavierSystemRowSymbols, id: \.self) { symbol in
                             ActionKeyButton(
                                 title: symbol,
-                                fontSize: 20,
-                                fixedWidth: 36,
+                                fontSize: 18,
+                                fixedWidth: 34,
                                 action: { commitText(symbol) }
                             )
                                 .frame(height: unifiedActionRowHeight)
                         }
+                    } else {
+                        ActionKeyButton(
+                            title: "あい",
+                            fixedWidth: 58,
+                            action: { switchInputMode(.kana) }
+                        )
+                            .frame(height: unifiedActionRowHeight)
+
+                        ActionKeyButton(
+                            title: "abc",
+                            fontSize: leftModeSwitchLatinFontSize,
+                            fixedWidth: 58,
+                            action: { switchInputMode(.latin) }
+                        )
+                            .frame(height: unifiedActionRowHeight)
+
+                        ActionKeyButton(
+                            title: "⌘",
+                            accessibilityLabel: "記号入力",
+                            fontSize: symbolTransitionIconFontSize,
+                            fixedWidth: 58,
+                            action: enterSymbolsMode
+                        )
+                            .frame(height: unifiedActionRowHeight)
                     }
-
-                    ActionKeyButton(
-                        title: "あい",
-                        fixedWidth: 58,
-                        action: { switchInputMode(.kana) }
-                    )
-                        .frame(height: unifiedActionRowHeight)
-
-                    ActionKeyButton(
-                        title: "abc",
-                        fontSize: leftModeSwitchLatinFontSize,
-                        fixedWidth: 58,
-                        action: { switchInputMode(.latin) }
-                    )
-                        .frame(height: unifiedActionRowHeight)
-
-                    ActionKeyButton(
-                        title: "⌘",
-                        accessibilityLabel: "記号入力",
-                        fontSize: symbolTransitionIconFontSize,
-                        fixedWidth: 58,
-                        action: enterSymbolsMode
-                    )
-                        .frame(height: unifiedActionRowHeight)
                 } else {
                     if !showsCompactLeftModeSwitchButtons {
                         ActionKeyButton(
