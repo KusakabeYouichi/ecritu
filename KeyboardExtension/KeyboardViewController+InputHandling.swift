@@ -947,10 +947,22 @@ extension KeyboardViewController {
         // setMarkedText は documentContextBeforeInput/AfterInput を変えないため
         // キャッシュ無効化は不要(タイムスタンプのみ更新)。
         noteOwnTextProxyEditTimestamp()
+
+        // iMessage 等で marked text を短くする置換(例: 「ひんしゅ」→「品種」)時に
+        // 最後の1文字が消し残るホストバグの防衛策。前回より短くなる場合は明示的に
+        // 一度 marked を空にしてから新しい marked を set し直す。
+        if text.count < lastSetMarkedTextLength {
+            textDocumentProxy.setMarkedText(
+                "",
+                selectedRange: NSRange(location: 0, length: 0)
+            )
+        }
+
         textDocumentProxy.setMarkedText(
             text,
             selectedRange: NSRange(location: text.utf16.count, length: 0)
         )
+        lastSetMarkedTextLength = text.count
 
         lastMarkedTextUpdateAt = CFAbsoluteTimeGetCurrent()
 
@@ -1311,6 +1323,7 @@ extension KeyboardViewController {
         textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
         noteOwnTextProxyEditTimestamp()
         textDocumentProxy.unmarkText()
+        lastSetMarkedTextLength = 0
     }
 
     func rememberComposingContextPrefixTail() {
@@ -1942,6 +1955,9 @@ extension KeyboardViewController {
         composingReading = ""
         hasParenthesesWrapper = false
         composingContextPrefixTail = ""
+        // marked text 長の追跡もリセット(次回 setMarkedComposingText で新規 marked を
+        // 立てるとき shrink 防衛策が誤発火しないように)。
+        lastSetMarkedTextLength = 0
         invalidateSettledCandidatePresentation()
 
         if activeConversion == nil {
