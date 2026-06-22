@@ -238,6 +238,23 @@ struct KeyboardRootView: View {
             && isLandscapeLatinRightShiftKey(kana)
     }
 
+    // clavier 縦画面では行3 (rowIndex == 2) の右 shift トークンを delete に差し替える
+    // (AZERTY portrait の挙動と同じ)。
+    private var usesPortraitClavierInlineDeleteLayout: Bool {
+        !isLandscapeLayout
+            && inputMode == .number
+            && effectiveNumberLayoutMode == .clavier
+    }
+
+    private func shouldReplacePortraitClavierRightShiftWithDelete(
+        rowIndex: Int,
+        kana: FlickKanaSet
+    ) -> Bool {
+        usesPortraitClavierInlineDeleteLayout
+            && rowIndex == 2
+            && isLandscapeLatinRightShiftKey(kana)
+    }
+
     private func shouldAppendPortraitQwertyDeleteKey(rowIndex: Int) -> Bool {
         usesPortraitLatinInlineDeleteLayout
             && latinLayoutMode == .qwerty
@@ -500,6 +517,11 @@ struct KeyboardRootView: View {
             }
             return latinFlickGuideDisplayMode
         case .number:
+            // clavier はフリック方向を持たない単純キーなので、フリックガイドは常に off
+            // (これにより中央ラベルの上方オフセットがかからず、文字が中央表示になる)
+            if effectiveNumberLayoutMode == .clavier {
+                return .off
+            }
             return numberFlickGuideDisplayMode
         case .emoji:
             return .off
@@ -3540,6 +3562,9 @@ struct KeyboardRootView: View {
                         if shouldReplacePortraitAzertyRightShiftWithDelete(
                             rowIndex: rowIndex,
                             kana: kana
+                        ) || shouldReplacePortraitClavierRightShiftWithDelete(
+                            rowIndex: rowIndex,
+                            kana: kana
                         ) {
                             inlineLatinDeleteKey()
                         } else if isLatinShiftKey(kana) {
@@ -3647,6 +3672,9 @@ struct KeyboardRootView: View {
                         action: { commitText(portraitLatinDeleteReplacementSymbol) }
                     )
                         .frame(height: unifiedActionRowHeight)
+                } else if usesPortraitClavierInlineDeleteLayout {
+                    // clavier portrait は行3 右端に delete が出るので system 行では非表示。
+                    EmptyView()
                 } else {
                     ActionKeyButton(
                         title: "⌫",
@@ -3718,17 +3746,9 @@ struct KeyboardRootView: View {
                         .frame(width: bottomActionRowKanaTrailingKeyWidth, height: selectorKeySize)
                 } else if inputMode == .number {
                     if effectiveNumberLayoutMode == .clavier && !isLandscapeLayout {
-                        // clavier モードでは あい/abc/⌘ は左の compact mode switch 列で
-                        // 切替可能なので、system 行の右側スロットに shift トグル + 記号 4 個
-                        // を割り当てる。横幅破綻を避けるためコンパクトな固定幅を使う。
-                        LatinShiftKeyButton(
-                            isOn: latinShiftState != .off,
-                            isLocked: latinShiftState == .locked,
-                            onTap: handleLatinShiftTap,
-                            onLongPress: handleLatinShiftLongPress
-                        )
-                            .frame(width: 40, height: unifiedActionRowHeight)
-
+                        // clavier portrait: shift は行3 左、delete は行3 右に配置済み。
+                        // あい/abc/⌘ は左の compact mode switch 列で切替可能なので
+                        // system 行には #$%& 系の記号 4 個だけ残す。
                         ForEach(clavierSystemRowSymbols, id: \.self) { symbol in
                             ActionKeyButton(
                                 title: symbol,

@@ -197,20 +197,26 @@ enum FlickKanaLayout {
             ? ["・", "±", "〜", "…", "\\", "^", "_", "`", "|", "~"]
             : ["@", "+", "-", "*", "/", "=", ",", ".", ":", ";"]
 
-        // 行3: 8 つの記号(AZERTY 行3 の shift+6+shift と同じ 8 スロット)。
-        // shift トグルは system 行に置く(KeyboardRootView 側で追加)。
+        // 行3: AZERTY 行3 と同じ構造 = shift_left + 6 記号 + shift_right (8 スロット)。
+        // 描画時に portrait モードでは shift_right を delete に差し替える
+        // (`shouldReplacePortraitClavierRightShiftWithDelete`)。
+        // 元の 8 文字のうち末尾2つ(<> / ○×)はドロップして 6 文字に絞る。
         let row3Chars: [String] = isShifted
-            ? ["「", "」", "『", "』", "【", "】", "○", "×"]
-            : ["(", ")", "[", "]", "{", "}", "<", ">"]
+            ? ["「", "」", "『", "』", "【", "】"]
+            : ["(", ")", "[", "]", "{", "}"]
 
         func numberOnlySet(_ ch: String) -> FlickKanaSet {
             numberSet(center: ch, left: "", up: "", right: "", down: "", profile: profile)
         }
 
+        var row3: [FlickKanaSet] = [shiftKey(position: .left)]
+        row3.append(contentsOf: row3Chars.map(numberOnlySet))
+        row3.append(shiftKey(position: .right))
+
         return [
             row1Chars.map(numberOnlySet),
             row2Chars.map(numberOnlySet),
-            row3Chars.map(numberOnlySet)
+            row3
         ]
     }
 
