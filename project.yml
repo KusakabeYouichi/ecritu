@@ -38,7 +38,7 @@ targets:
         INFOPLIST_KEY_EcrituEditionUpdatedAt: $(ECRITU_EDITION_UPDATED_AT)
         INFOPLIST_KEY_EcrituAppGroupIdentifier: $(ECRITU_APP_GROUP_IDENTIFIER)
         INFOPLIST_KEY_NSContactsUsageDescription: 連絡先の名前を変換候補として使うために連絡先データにアクセスします。
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        INFOPLIST_KEY_UILaunchStoryboardName: LaunchScreen
         INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
         TARGETED_DEVICE_FAMILY: "1"
         SUPPORTS_MACCATALYST: NO
