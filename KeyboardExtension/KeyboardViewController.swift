@@ -224,14 +224,6 @@ final class KeyboardViewController: UIInputViewController {
     )
     var markedTextWatchdogTimer: DispatchSourceTimer?
     var lastMarkedTextUpdateAt: CFAbsoluteTime = 0
-    // 直近に setMarkedText で渡した marked text の文字数。短縮置換時の host バグ
-    // (iMessage 等で1文字残る現象)を回避するため、shrink を検知して明示的に
-    // unmarkText + deleteBackward でコミット&削除してから新しい marked を set する。
-    var lastSetMarkedTextLength: Int = 0
-    // shrink 防衛策の途中で textDidChange / selectionDidChange の本体処理(synchronize や
-    // refresh)を一時的に止めるためのフラグ。途中状態で composingRawText と context が
-    // mismatch して synchronize が編集中テキストを誤って discard するのを防ぐ。
-    var suppressTextProxyChangeHandling: Bool = false
     static let markedTextWatchdogInterval: TimeInterval = 1.5
     static let markedTextWatchdogQuietPeriod: TimeInterval = 1.0
     static let markedTextWatchdogQueue = DispatchQueue(
@@ -533,13 +525,6 @@ final class KeyboardViewController: UIInputViewController {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
 
-        // setMarkedComposingText の shrink 防衛策など、内部処理の途中で発火する
-        // textDidChange は synchronize を発動させると半端な状態で discard が走る
-        // ため抑制する。
-        guard !suppressTextProxyChangeHandling else {
-            return
-        }
-
         guard !shouldSuppressHeavyOperations(reason: "textDidChange") else {
             return
         }
@@ -560,10 +545,6 @@ final class KeyboardViewController: UIInputViewController {
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
-
-        guard !suppressTextProxyChangeHandling else {
-            return
-        }
 
         guard !shouldSuppressHeavyOperations(reason: "selectionDidChange") else {
             return
