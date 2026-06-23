@@ -1230,9 +1230,9 @@ struct KeyboardRootView: View {
     //         index 2/3 = space-right(`.`/`-`)。
     private var clavierSystemRowSymbols: [String] {
         if latinShiftState != .off {
-            return ["!", "?", "'", "\""]
+            return ["・", "〜", "…", "±"]
         }
-        return ["#", "$", "%", "&"]
+        return ["@", "/", ".", "-"]
     }
 
     private func clavierInlineSymbol(at index: Int) -> String {
