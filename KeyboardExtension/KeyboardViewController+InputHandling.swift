@@ -1165,16 +1165,29 @@ extension KeyboardViewController {
         }
 
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
-        let minimumConverterSlots: Int
+        let preliminaryMinimumConverterSlots: Int
 
         if normalizedReading.count <= ExternalCandidateLimits.shortReadingMaximumLength {
-            minimumConverterSlots = max(
+            preliminaryMinimumConverterSlots = max(
                 ExternalCandidateLimits.minimumConverterSlots,
                 ExternalCandidateLimits.shortReadingMinimumConverterSlots
             )
         } else {
-            minimumConverterSlots = ExternalCandidateLimits.minimumConverterSlots
+            preliminaryMinimumConverterSlots = ExternalCandidateLimits.minimumConverterSlots
         }
+
+        // 補完候補(連絡先・ユーザー辞書 等)が一切表示されなくなる事態を防ぐため、
+        // limit に対して最低限の補完スロットを確保する。
+        // 例: limit=14 で短い読み(≤2文字)の場合、preliminary が 20 だと supplementaryLimit=0 となり
+        // 連絡先「麻理(まり)」のようなユーザー指定候補が完全に消える。
+        let supplementaryReserveSlots = min(
+            supplementaryCandidates.count,
+            max(2, limit / 4)
+        )
+        let minimumConverterSlots = min(
+            preliminaryMinimumConverterSlots,
+            max(0, limit - supplementaryReserveSlots)
+        )
 
         let converterSlotTarget = min(
             uniqueConverterCandidates.count,
