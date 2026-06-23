@@ -168,19 +168,19 @@ final class KeyboardViewController: UIInputViewController {
         ]
         return buildSupplementarySymbolCandidatesByReading(entries: entries, allowedCandidates: allCandidates)
     }()
-    private var hostingController: UIHostingController<KeyboardRootView>?
-    private var lastRenderConfiguration: RenderConfiguration?
+    var hostingController: UIHostingController<KeyboardRootView>?
+    var lastRenderConfiguration: RenderConfiguration?
     private var keyboardHeightConstraint: NSLayoutConstraint?
     private var keyboardMaxHeightConstraint: NSLayoutConstraint?
     private weak var keyboardSizingView: UIView?
     private var cachedPortraitSafeAreaBottomInset: CGFloat?
     private var isObservingSettingsDidChange = false
-    private var keyboardHeightLockValue: CGFloat?
-    private var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
-    private var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
-    private var dictionaryPreloadWorkItem: DispatchWorkItem?
-    private var keyboardBootstrapWorkItem: DispatchWorkItem?
-    private var sharedDataPrewarmWorkItem: DispatchWorkItem?
+    var keyboardHeightLockValue: CGFloat?
+    var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
+    var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
+    var dictionaryPreloadWorkItem: DispatchWorkItem?
+    var keyboardBootstrapWorkItem: DispatchWorkItem?
+    var sharedDataPrewarmWorkItem: DispatchWorkItem?
     private var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     private var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     private var contactCandidatesByReading: [String: [String]] = [:]
@@ -209,12 +209,12 @@ final class KeyboardViewController: UIInputViewController {
     var cachedContextAfterInput: String?
     private var kanaKanjiStore: KanaKanjiStore { Self.sharedKanaKanjiStore }
     var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
-    private lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
-    private var diagnosticsSessionID = UUID().uuidString
-    private var diagnosticsSessionStartedAt = Date()
-    private let diagnosticsControllerID = UUID().uuidString
-    private var pendingRefreshKeyboardStateRequests = 0
-    private var isRefreshKeyboardStateAsyncScheduled = false
+    lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+    var diagnosticsSessionID = UUID().uuidString
+    var diagnosticsSessionStartedAt = Date()
+    let diagnosticsControllerID = UUID().uuidString
+    var pendingRefreshKeyboardStateRequests = 0
+    var isRefreshKeyboardStateAsyncScheduled = false
     var candidateGenerationCounter: UInt64 = 0
     var settledCandidatePresentation: CandidatePresentation?
     var settledCandidatePresentationKey: CandidatePresentationCacheKey?
@@ -236,11 +236,11 @@ final class KeyboardViewController: UIInputViewController {
         let composingRawText: String
         let modeRawValue: String
     }
-    private var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
-    private var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
-    private var hasDeferredSharedSettingsCatchUp = false
-    private var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
-    private var didApplyInactiveSessionMitigation = false
+    var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
+    var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
+    var hasDeferredSharedSettingsCatchUp = false
+    var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
+    var didApplyInactiveSessionMitigation = false
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -273,7 +273,7 @@ final class KeyboardViewController: UIInputViewController {
         static let cachedContextAfterInputMaxLength = 512
     }
 
-    private enum SharedDefaultsKeys {
+    enum SharedDefaultsKeys {
         private static func fallbackAppGroupID() -> String {
             guard let bundleID = Bundle.main.bundleIdentifier,
                 !bundleID.isEmpty else {
@@ -359,7 +359,7 @@ final class KeyboardViewController: UIInputViewController {
         controller.handleSharedSettingsDidChange()
     }
 
-    private static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
+    static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return formatter
@@ -397,13 +397,13 @@ final class KeyboardViewController: UIInputViewController {
     private static let maximumContactCandidateTotalEntries = 16384
     private static let maximumContactCandidatesPerReading = 48
     private static let maximumSupplementaryMergedCandidateCacheEntries = 512
-    private static let memoryFailSafeElevatedStartMB: Double = 120
-    private static let memoryFailSafeCriticalStartMB: Double = 150
-    private static let memoryFailSafeRecoverDeltaMB: Double = 14
+    static let memoryFailSafeElevatedStartMB: Double = 120
+    static let memoryFailSafeCriticalStartMB: Double = 150
+    static let memoryFailSafeRecoverDeltaMB: Double = 14
     private static let refreshQueueDropThresholdInCriticalMode = 2
-    private static let diagnosticsFlightRecorderWindowSec: TimeInterval = 6
-    private static let diagnosticsFlightRecorderMaxEventCount = 120
-    private static let diagnosticsFlightRecorderMinRecordIntervalSec: TimeInterval = 0.12
+    static let diagnosticsFlightRecorderWindowSec: TimeInterval = 6
+    static let diagnosticsFlightRecorderMaxEventCount = 120
+    static let diagnosticsFlightRecorderMinRecordIntervalSec: TimeInterval = 0.12
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
             return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
@@ -420,7 +420,7 @@ final class KeyboardViewController: UIInputViewController {
         case emoji
     }
 
-    private struct RenderConfiguration: Equatable {
+    struct RenderConfiguration: Equatable {
         let directionProfile: FlickDirectionProfile
         let kanaLayoutMode: KanaLayoutMode
         let kanaModifierPlacementMode: KanaModifierPlacementMode
@@ -462,13 +462,13 @@ final class KeyboardViewController: UIInputViewController {
         let showsParenthesesWrapper: Bool
     }
 
-    private struct DiagnosticsFlightRecorderEvent: Codable {
+    struct DiagnosticsFlightRecorderEvent: Codable {
         let timestamp: TimeInterval
         let event: String
         let source: String
     }
 
-    private enum MemoryFailSafeProfile: String {
+    enum MemoryFailSafeProfile: String {
         case normal
         case elevated
         case critical
@@ -643,7 +643,7 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
-    private func clearSupplementaryLexiconCandidatesForMemoryTrim() {
+    func clearSupplementaryLexiconCandidatesForMemoryTrim() {
         isRefreshingSupplementaryLexicon = false
         supplementaryLexiconLastRefreshAt = Date()
         supplementaryLexiconCandidatesByReading = [:]
@@ -786,7 +786,7 @@ final class KeyboardViewController: UIInputViewController {
         defaults.set(dictionary, forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
     }
 
-    private func refreshContactCandidatesIfNeeded(force: Bool) {
+    func refreshContactCandidatesIfNeeded(force: Bool) {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
             contactCandidatesByReading = [:]
             supplementaryMergedCandidatesCacheByKey = [:]
@@ -882,7 +882,7 @@ final class KeyboardViewController: UIInputViewController {
         return dictionary
     }
 
-    private func clearContactCandidatesIfNeeded(refreshKeyboardState: Bool) {
+    func clearContactCandidatesIfNeeded(refreshKeyboardState: Bool) {
         let hadContactCandidates = !contactCandidatesByReading.isEmpty
         isRefreshingContactCandidates = false
         contactCandidatesLastRefreshAt = Date()
@@ -1954,255 +1954,6 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
-    private func physicalMemoryGBText() -> String {
-        let physicalMemoryGB = Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824
-        return String(format: "%.1f", physicalMemoryGB)
-    }
-
-    private func diagnosticsProcessLabel() -> String {
-        let bundleID = Bundle.main.bundleIdentifier ?? "unknown.keyboard.bundle"
-        let processName = ProcessInfo.processInfo.processName
-        return "\(bundleID)(\(processName))"
-    }
-
-    private func diagnosticsProcessID() -> Int32 {
-        getpid()
-    }
-
-    private func diagnosticsSessionOwnerToken() -> String {
-        "\(diagnosticsProcessID()):\(diagnosticsControllerID)"
-    }
-
-    private func currentResidentMemoryBytes() -> UInt64? {
-        var info = mach_task_basic_info_data_t()
-        var count = mach_msg_type_number_t(
-            MemoryLayout<mach_task_basic_info_data_t>.size / MemoryLayout<integer_t>.size
-        )
-
-        let result: kern_return_t = withUnsafeMutablePointer(to: &info) { pointer in
-            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPointer in
-                task_info(mach_task_self_, task_flavor_t(MACH_TASK_BASIC_INFO), intPointer, &count)
-            }
-        }
-
-        guard result == KERN_SUCCESS else {
-            return nil
-        }
-
-        return UInt64(info.resident_size)
-    }
-
-    private func diagnosticsResidentMemoryMBText() -> String {
-        guard let bytes = currentResidentMemoryBytes() else {
-            return "unknown"
-        }
-
-        let mb = Double(bytes) / 1_048_576
-        return String(format: "%.1f", mb)
-    }
-
-    private func currentResidentMemoryMB() -> Double? {
-        guard let bytes = currentResidentMemoryBytes() else {
-            return nil
-        }
-
-        return Double(bytes) / 1_048_576
-    }
-
-    private func shouldSuppressHeavyOperations(reason: String) -> Bool {
-        guard let sharedDefaults,
-            let activeOwnerToken = sharedDefaults.string(
-                forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
-            ),
-            !activeOwnerToken.isEmpty else {
-            didApplyInactiveSessionMitigation = false
-            return false
-        }
-
-        let currentOwnerToken = diagnosticsSessionOwnerToken()
-
-        guard activeOwnerToken != currentOwnerToken else {
-            didApplyInactiveSessionMitigation = false
-            return false
-        }
-
-        let now = CFAbsoluteTimeGetCurrent()
-
-        if now - lastInactiveSessionSuppressionLogAt >= 1.0 {
-            appendKeyboardDiagnosticsLog(
-                "多重生存中の非アクティブインスタンスで重い更新を抑止 reason=\(reason) activeOwner=\(activeOwnerToken) currentOwner=\(currentOwnerToken)",
-                file: #fileID,
-                line: #line,
-                function: #function
-            )
-            lastInactiveSessionSuppressionLogAt = now
-        }
-
-        if !didApplyInactiveSessionMitigation {
-            performHiddenKeyboardMemoryTrim(
-                reason: "inactiveSession-\(reason)",
-                releaseHostingView: view.window == nil,
-                includeSystemCaches: true
-            )
-            didApplyInactiveSessionMitigation = true
-        }
-
-        return true
-    }
-
-    private func performHiddenKeyboardMemoryTrim(
-        reason: String,
-        releaseHostingView: Bool,
-        includeSystemCaches: Bool
-    ) {
-        pendingRefreshKeyboardStateRequests = 0
-        isRefreshKeyboardStateAsyncScheduled = false
-        activeConversion = nil
-        clearComposingState()
-        clearRecentKanaPlainCommitUpgradeContext()
-        lastSynchronizedContextBeforeInputTail = ""
-        lastSynchronizedContextBeforeInputLength = 0
-        invalidateTextContextCache()
-
-        keyboardHeightLockReleaseWorkItem?.cancel()
-        keyboardHeightLockReleaseWorkItem = nil
-        keyboardHeightLockValue = nil
-        keyboardHeightLockReleaseTime = 0
-
-        dictionaryPreloadWorkItem?.cancel()
-        dictionaryPreloadWorkItem = nil
-
-        keyboardBootstrapWorkItem?.cancel()
-        keyboardBootstrapWorkItem = nil
-
-        sharedDataPrewarmWorkItem?.cancel()
-        sharedDataPrewarmWorkItem = nil
-
-        clearSupplementaryLexiconCandidatesForMemoryTrim()
-        clearContactCandidatesIfNeeded(refreshKeyboardState: false)
-
-        if includeSystemCaches {
-            kanaKanjiConverter.clearAllCaches()
-        } else {
-            kanaKanjiConverter.clearSharedDataCaches()
-        }
-
-        if releaseHostingView,
-            let host = hostingController {
-            host.willMove(toParent: nil)
-            host.view.removeFromSuperview()
-            host.removeFromParent()
-            hostingController = nil
-        }
-
-        lastRenderConfiguration = nil
-
-        updateKeyboardDiagnosticsHeartbeat(
-            event: "キーボード非表示でメモリ解放 reason=\(reason) releaseView=\(releaseHostingView) clearSystem=\(includeSystemCaches) profile=\(memoryFailSafeProfile.rawValue)",
-            appendLog: true
-        )
-    }
-
-    private func updateMemoryFailSafeProfile(trigger: String) {
-        guard let residentMemoryMB = currentResidentMemoryMB() else {
-            return
-        }
-
-        let nextProfile = nextMemoryFailSafeProfile(for: residentMemoryMB)
-
-        guard nextProfile != memoryFailSafeProfile else {
-            return
-        }
-
-        let previousProfile = memoryFailSafeProfile
-        memoryFailSafeProfile = nextProfile
-        persistKeyboardDiagnosticsFailSafeProfile()
-
-        appendKeyboardDiagnosticsLog(
-            "メモリフェイルセーフ遷移 \(previousProfile.rawValue) -> \(nextProfile.rawValue) trigger=\(trigger) rssMB=\(String(format: "%.1f", residentMemoryMB))",
-            file: #fileID,
-            line: #line,
-            function: #function
-        )
-
-        switch nextProfile {
-        case .normal:
-            break
-        case .elevated:
-            kanaKanjiConverter.clearSharedDataCaches()
-        case .critical:
-            kanaKanjiConverter.clearAllCaches()
-        }
-
-        if previousProfile == .critical,
-            nextProfile != .critical {
-            applyDeferredSharedSettingsCatchUpIfNeeded(trigger: trigger)
-        }
-    }
-
-    private func applyDeferredSharedSettingsCatchUpIfNeeded(trigger: String) {
-        guard hasDeferredSharedSettingsCatchUp,
-            memoryFailSafeProfile != .critical else {
-            return
-        }
-
-        guard view.window != nil || hostingController != nil else {
-            return
-        }
-
-        hasDeferredSharedSettingsCatchUp = false
-
-        appendKeyboardDiagnosticsLog(
-            "critical中に保留した共有設定反映を再開 trigger=\(trigger) profile=\(memoryFailSafeProfile.rawValue)",
-            file: #fileID,
-            line: #line,
-            function: #function
-        )
-
-        kanaKanjiConverter.clearSharedDataCaches()
-        refreshContactCandidatesIfNeeded(force: true)
-        refreshKeyboardStateAsync()
-    }
-
-    private func nextMemoryFailSafeProfile(for residentMemoryMB: Double) -> MemoryFailSafeProfile {
-        let elevatedStart = Self.memoryFailSafeElevatedStartMB
-        let criticalStart = Self.memoryFailSafeCriticalStartMB
-        let recoverDelta = Self.memoryFailSafeRecoverDeltaMB
-
-        switch memoryFailSafeProfile {
-        case .normal:
-            if residentMemoryMB >= criticalStart {
-                return .critical
-            }
-
-            if residentMemoryMB >= elevatedStart {
-                return .elevated
-            }
-
-            return .normal
-        case .elevated:
-            if residentMemoryMB >= criticalStart {
-                return .critical
-            }
-
-            if residentMemoryMB < elevatedStart - recoverDelta {
-                return .normal
-            }
-
-            return .elevated
-        case .critical:
-            if residentMemoryMB >= criticalStart - recoverDelta {
-                return .critical
-            }
-
-            if residentMemoryMB >= elevatedStart - recoverDelta {
-                return .elevated
-            }
-
-            return .normal
-        }
-    }
-
     func effectiveKanaPresentationCandidateLimit() -> Int {
         switch memoryFailSafeProfile {
         case .normal:
@@ -2247,374 +1998,6 @@ final class KeyboardViewController: UIInputViewController {
         case .critical:
             return []
         }
-    }
-
-    private func diagnosticsRuntimeContext() -> String {
-        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText()) failSafe=\(memoryFailSafeProfile.rawValue)"
-    }
-
-    private func persistKeyboardDiagnosticsFailSafeProfile(in defaults: UserDefaults? = nil) {
-        let targetDefaults = defaults ?? sharedDefaults
-        targetDefaults?.set(
-            memoryFailSafeProfile.rawValue,
-            forKey: SharedDefaultsKeys.keyboardDiagnosticsFailSafeProfile
-        )
-    }
-
-    private func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
-        if let data = defaults.data(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines),
-            let decoded = try? JSONDecoder().decode([String].self, from: data) {
-            return decoded
-        }
-
-        if let raw = defaults.array(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines) {
-            return raw.compactMap { $0 as? String }
-        }
-
-        return []
-    }
-
-    private func saveDiagnosticsLogLines(_ lines: [String], to defaults: UserDefaults) {
-        if let encoded = try? JSONEncoder().encode(lines) {
-            defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
-            return
-        }
-
-        defaults.set(lines, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
-    }
-
-    private func flightRecorderEvents(from defaults: UserDefaults) -> [DiagnosticsFlightRecorderEvent] {
-        guard
-            let data = defaults.data(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents),
-            let decoded = try? JSONDecoder().decode([DiagnosticsFlightRecorderEvent].self, from: data)
-        else {
-            return []
-        }
-
-        return decoded
-    }
-
-    private func saveFlightRecorderEvents(_ events: [DiagnosticsFlightRecorderEvent], to defaults: UserDefaults) {
-        if let encoded = try? JSONEncoder().encode(events) {
-            defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
-            return
-        }
-
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
-    }
-
-    private func trimmedFlightRecorderEvents(
-        _ events: [DiagnosticsFlightRecorderEvent],
-        anchorTimestamp: TimeInterval
-    ) -> [DiagnosticsFlightRecorderEvent] {
-        let minimumTimestamp = anchorTimestamp - Self.diagnosticsFlightRecorderWindowSec
-        var filtered = events.filter { $0.timestamp >= minimumTimestamp }
-
-        if filtered.count > Self.diagnosticsFlightRecorderMaxEventCount {
-            filtered.removeFirst(filtered.count - Self.diagnosticsFlightRecorderMaxEventCount)
-        }
-
-        return filtered
-    }
-
-    private func clearFlightRecorderEvents(in defaults: UserDefaults) {
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
-        diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
-    }
-
-    private func observeKeyboardDiagnosticsEvent(
-        _ event: String,
-        file: String = #fileID,
-        line: Int = #line,
-        function: String = #function,
-        forceRecord: Bool = false
-    ) {
-        guard let sharedDefaults else {
-            return
-        }
-
-        let now = Date().timeIntervalSince1970
-        let sourceFile = (file as NSString).lastPathComponent
-        let source = "\(sourceFile):\(line) \(function)"
-        let dedupeKey = "\(event)|\(source)"
-
-        if !forceRecord,
-            let previous = diagnosticsFlightRecorderLastObservedAt[dedupeKey],
-            now - previous < Self.diagnosticsFlightRecorderMinRecordIntervalSec {
-            return
-        }
-
-        var events = flightRecorderEvents(from: sharedDefaults)
-        events.append(
-            DiagnosticsFlightRecorderEvent(
-                timestamp: now,
-                event: event,
-                source: source
-            )
-        )
-
-        let anchorTimestamp = events.last?.timestamp ?? now
-        events = trimmedFlightRecorderEvents(events, anchorTimestamp: anchorTimestamp)
-        saveFlightRecorderEvents(events, to: sharedDefaults)
-        diagnosticsFlightRecorderLastObservedAt[dedupeKey] = now
-    }
-
-    private func flushFlightRecorderEventsIfPresent(reason: String) {
-        guard let sharedDefaults else {
-            return
-        }
-
-        let events = flightRecorderEvents(from: sharedDefaults)
-        guard !events.isEmpty else {
-            return
-        }
-
-        let anchorTimestamp = events.last?.timestamp ?? Date().timeIntervalSince1970
-        let trimmed = trimmedFlightRecorderEvents(events, anchorTimestamp: anchorTimestamp)
-
-        appendKeyboardDiagnosticsLog(
-            "終了直前の高頻度イベントを退避 count=\(trimmed.count) windowSec=\(Int(Self.diagnosticsFlightRecorderWindowSec)) reason=\(reason)",
-            file: #fileID,
-            line: #line,
-            function: #function
-        )
-
-        for item in trimmed {
-            let timestampText = Self.diagnosticsTimestampFormatter.string(
-                from: Date(timeIntervalSince1970: item.timestamp)
-            )
-            appendKeyboardDiagnosticsLog(
-                "直前イベント \(timestampText) \(item.event) @ \(item.source)",
-                file: #fileID,
-                line: #line,
-                function: #function
-            )
-        }
-
-        clearFlightRecorderEvents(in: sharedDefaults)
-    }
-
-    private func keyboardDiagnosticsCurrentInstallMarker() -> String {
-        let bundle = Bundle.main
-        let bundleID = bundle.bundleIdentifier ?? "unknown.keyboard.bundle"
-        let buildNumber = (bundle.object(forInfoDictionaryKey: "CFBundleVersion") as? String) ?? "?"
-        return "\(bundleID)|\(buildNumber)|build"
-    }
-
-    private func clearKeyboardDiagnosticsStorage(
-        in defaults: UserDefaults,
-        preservingInstallMarker installMarker: String
-    ) {
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
-        defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFailSafeProfile)
-        defaults.set(installMarker, forKey: SharedDefaultsKeys.keyboardDiagnosticsInstallMarker)
-    }
-
-    private func resetKeyboardDiagnosticsIfInstallChanged() {
-        guard let sharedDefaults else {
-            return
-        }
-
-        let currentMarker = keyboardDiagnosticsCurrentInstallMarker()
-        let previousMarker = sharedDefaults.string(forKey: SharedDefaultsKeys.keyboardDiagnosticsInstallMarker)
-
-        guard previousMarker != currentMarker else {
-            return
-        }
-
-        clearKeyboardDiagnosticsStorage(
-            in: sharedDefaults,
-            preservingInstallMarker: currentMarker
-        )
-
-        let previousMarkerDescription = previousMarker ?? "none"
-        appendKeyboardDiagnosticsLog(
-            "診断ログをインストール単位で初期化 previous=\(previousMarkerDescription) current=\(currentMarker)",
-            file: #fileID,
-            line: #line,
-            function: #function
-        )
-    }
-
-    private func appendKeyboardDiagnosticsLog(
-        _ event: String,
-        file: String = #fileID,
-        line: Int = #line,
-        function: String = #function
-    ) {
-        guard let sharedDefaults else {
-            return
-        }
-
-        let sourceFile = (file as NSString).lastPathComponent
-        let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
-        let entry =
-            "\(timestamp) [\(diagnosticsSessionID)] \(event) {\(diagnosticsRuntimeContext())} (\(sourceFile):\(line) \(function))"
-
-        var lines = diagnosticsLogLines(from: sharedDefaults)
-        lines.append(entry)
-
-        let maxLineCount = 320
-        if lines.count > maxLineCount {
-            lines.removeFirst(lines.count - maxLineCount)
-        }
-
-        saveDiagnosticsLogLines(lines, to: sharedDefaults)
-        sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
-        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
-        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
-    }
-
-    private func updateKeyboardDiagnosticsHeartbeat(
-        event: String,
-        file: String = #fileID,
-        line: Int = #line,
-        function: String = #function,
-        appendLog: Bool = false
-    ) {
-        guard let sharedDefaults else {
-            return
-        }
-
-        observeKeyboardDiagnosticsEvent(event, file: file, line: line, function: function)
-        persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
-
-        let sourceFile = (file as NSString).lastPathComponent
-        let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
-
-        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
-        sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
-        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
-
-        if appendLog {
-            appendKeyboardDiagnosticsLog(event, file: file, line: line, function: function)
-        }
-    }
-
-    private func startKeyboardDiagnosticsSession() {
-        resetKeyboardDiagnosticsIfInstallChanged()
-
-        guard let sharedDefaults else {
-            return
-        }
-
-        diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
-
-        let previousSessionWasActive = sharedDefaults.bool(
-            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive
-        )
-        let previousOwnerToken = sharedDefaults.string(
-            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
-        ) ?? "unknown"
-
-        if previousSessionWasActive {
-            let previousSessionID = sharedDefaults.string(
-                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID
-            ) ?? "unknown"
-            let previousEvent = sharedDefaults.string(
-                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent
-            ) ?? "unknown"
-            let previousHeartbeat = sharedDefaults.double(
-                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat
-            )
-            let elapsed: String = {
-                guard previousHeartbeat > 0 else {
-                    return "unknown"
-                }
-
-                let delta = max(0, Date().timeIntervalSince(Date(timeIntervalSince1970: previousHeartbeat)))
-                return String(format: "%.1f", delta)
-            }()
-
-            let activeOwnerPrefix = "\(diagnosticsProcessID()):"
-            let looksLikeControllerOverlap = previousOwnerToken.hasPrefix(activeOwnerPrefix)
-                && previousOwnerToken != diagnosticsSessionOwnerToken()
-            let reason = looksLikeControllerOverlap
-                ? "前回セッション継続中の可能性(多重生存)"
-                : "前回セッションが非正常終了の可能性"
-
-            appendKeyboardDiagnosticsLog(
-                "\(reason) session=\(previousSessionID) owner=\(previousOwnerToken) lastEvent=\(previousEvent) elapsedSec=\(elapsed)",
-                file: #fileID,
-                line: #line,
-                function: #function
-            )
-            flushFlightRecorderEventsIfPresent(reason: reason)
-        } else {
-            clearFlightRecorderEvents(in: sharedDefaults)
-        }
-
-        diagnosticsSessionID = UUID().uuidString
-        diagnosticsSessionStartedAt = Date()
-        sharedDefaults.set(true, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
-        sharedDefaults.set(
-            diagnosticsSessionOwnerToken(),
-            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
-        )
-        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
-        persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
-        appendKeyboardDiagnosticsLog(
-            "キーボード拡張セッション開始",
-            file: #fileID,
-            line: #line,
-            function: #function
-        )
-    }
-
-    private func finishKeyboardDiagnosticsSession(
-        reason: String,
-        file: String = #fileID,
-        line: Int = #line,
-        function: String = #function
-    ) {
-        guard let sharedDefaults else {
-            return
-        }
-
-        let elapsedSec = max(0, Date().timeIntervalSince(diagnosticsSessionStartedAt))
-
-        appendKeyboardDiagnosticsLog(
-            "キーボード拡張セッション終了 reason=\(reason) elapsedSec=\(String(format: "%.1f", elapsedSec))",
-            file: file,
-            line: line,
-            function: function
-        )
-
-        let currentOwnerToken = diagnosticsSessionOwnerToken()
-        let storedOwnerToken = sharedDefaults.string(
-            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
-        )
-
-        if storedOwnerToken == nil || storedOwnerToken == currentOwnerToken {
-            sharedDefaults.set(false, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
-            sharedDefaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
-            sharedDefaults.set(
-                Date().timeIntervalSince1970,
-                forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat
-            )
-            clearFlightRecorderEvents(in: sharedDefaults)
-        } else {
-            appendKeyboardDiagnosticsLog(
-                "終了時owner不一致のためactive更新を見送り currentOwner=\(currentOwnerToken) storedOwner=\(storedOwnerToken ?? "none")",
-                file: file,
-                line: line,
-                function: function
-            )
-        }
-    }
-
-    func appendKeyboardDiagnosticsLogFromInputHandling(_ event: String) {
-        appendKeyboardDiagnosticsLog(event)
-    }
-
-    func performanceElapsedMilliseconds(since startedAt: CFAbsoluteTime) -> Int {
-        max(0, Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000))
     }
 
     private func refreshKeyboardState(trigger: String = "direct") {
