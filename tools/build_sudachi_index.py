@@ -373,6 +373,16 @@ def build_index(
     include_surface = candidate_policy in (CANDIDATE_POLICY_SURFACE, CANDIDATE_POLICY_BOTH)
 
     for row in iter_csv_rows(paths):
+        inflection_type = (
+            row[SUDACHI_INFLECTION_TYPE_INDEX].strip()
+            if len(row) > SUDACHI_INFLECTION_TYPE_INDEX
+            else ""
+        )
+        # 文語(古語・古典)動詞は除外。現代語の活用派生規則と合わず、
+        # 例: 伸ぶ(文語上二段-バ行)が「のんで→伸んで」と五段-バ行扱いで誤派生する。
+        if "文語" in inflection_type:
+            continue
+
         reading = extract_reading(row)
         normalized_candidate = extract_normalized_candidate(row)
         surface_candidate = extract_surface_candidate(row)
