@@ -60,6 +60,7 @@
 		CBAC06FB9B0379B8CDDE4F94 /* DictionarySettingsSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */; };
 		D0E16641D1302864E6C24DD0 /* ContentView+Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69E8277B29FFE7871F04CFB /* ContentView+Diagnostics.swift */; };
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
+		D2A3F64295CDC6096E2250C1 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */; };
 		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
 		DBBA852BCC8D33CCF73645E9 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */; };
 		E21AE995B20E7DF2B75B6F82 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
@@ -146,6 +147,7 @@
 		CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+Settings.swift"; sourceTree = "<group>"; };
 		D1D8903DCA2E8999598CB053 /* KeyboardRootView+LandscapeLayouts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+LandscapeLayouts.swift"; sourceTree = "<group>"; };
 		DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayerZIndex.swift; sourceTree = "<group>"; };
+		DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+EmojiKaomojiLayouts.swift"; sourceTree = "<group>"; };
 		E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+Diagnostics.swift"; sourceTree = "<group>"; };
 		E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaMap.swift; sourceTree = "<group>"; };
 		E807A57473C85475BCAA585B /* EcrituApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituApp.swift; sourceTree = "<group>"; };
@@ -254,6 +256,7 @@
 				C70D58332DA6C2CA250CEDAD /* KeyboardRootView+Interaction.swift */,
 				4FCBC2AEE4D692642405836F /* KeyboardRootView+FontSizes.swift */,
 				D1D8903DCA2E8999598CB053 /* KeyboardRootView+LandscapeLayouts.swift */,
+				DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -558,6 +561,7 @@
 				30C12A3041A204821A7DE60A /* KeyboardRootView+Interaction.swift in Sources */,
 				FC91CDA19A4DE7BCD13D9440 /* KeyboardRootView+FontSizes.swift in Sources */,
 				C848B966372EB6D1820CD43E /* KeyboardRootView+LandscapeLayouts.swift in Sources */,
+				D2A3F64295CDC6096E2250C1 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
