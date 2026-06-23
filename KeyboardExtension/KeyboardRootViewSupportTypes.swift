@@ -319,14 +319,16 @@ extension KeyboardRootView {
         ) -> [String] {
             switch self {
             case .basic:
+                let baseSymbols: [String]
                 switch basicOrder {
                 case .ascii:
-                    return Self.basicSymbolsASCII
+                    baseSymbols = Self.basicSymbolsASCII
                 case .ebcdic:
-                    return Self.basicSymbolsEBCDIC
+                    baseSymbols = Self.basicSymbolsEBCDIC
                 case .ansi:
-                    return Self.basicSymbolsANSI
+                    baseSymbols = Self.basicSymbolsANSI
                 }
+                return baseSymbols + Self.basicSymbolsExtras
             case .brackets:
                 return Self.bracketAndQuoteSymbols
             case .currency:
@@ -361,6 +363,12 @@ extension KeyboardRootView {
             "{", "}", ";", ":", "'", "\"", ",", ".",
             "<", ">", "/", "?", "\\", "|", "`", "~",
             "", "⌘", "☻", "・", "「", "」", "『", "』"
+        ]
+
+        // basicカテゴリーの末尾に区切り線を挟んで配置する図形記号(16個)。
+        static let basicSymbolsExtras: [String] = [
+            "○", "●", "△", "▲", "▽", "▼", "□", "■",
+            "◇", "◆", "☆", "★", "◎", "×", "※", "✓"
         ]
 
         private static let bracketAndQuoteSymbols: [String] = [
@@ -628,10 +636,14 @@ extension KeyboardRootView {
 
             switch selectedSymbolCategory {
             case .basic:
-                let splitIndex = max(0, symbols.count - 8)
-                let leadingSymbols = Array(symbols.prefix(splitIndex))
-                let trailingSymbols = Array(symbols.dropFirst(splitIndex))
-                symbolGridSections([leadingSymbols, trailingSymbols])
+                let extrasCount = KeyboardRootView.SymbolCategory.basicSymbolsExtras.count
+                let middleCount = 8  // ⌘ ☻ ・ 「」『』 などの第2セクション
+                let extrasStart = max(0, symbols.count - extrasCount)
+                let middleStart = max(0, extrasStart - middleCount)
+                let leadingSymbols = Array(symbols.prefix(middleStart))
+                let middleSymbols = Array(symbols[middleStart..<extrasStart])
+                let trailingSymbols = Array(symbols.suffix(extrasCount))
+                symbolGridSections([leadingSymbols, middleSymbols, trailingSymbols])
 
             case .enclosed:
                 let numberStart = symbols.firstIndex(of: "⓪")
