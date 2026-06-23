@@ -196,6 +196,19 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "なきゃいけない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なくちゃならない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なきゃならない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 関西方言の「〜ている→〜とる」縮約(食べとる, 食べとった 等)
+        InflectionRule(readingSuffix: "とる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とって", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とらない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とらん", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とらなかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とらんかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とります", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とりました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とりません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "とれば", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ます", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -419,6 +432,34 @@ extension KanaKanjiConverter {
             suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: contractionStem + "じゃった"))
         }
 
+        return suffixes
+    }
+
+    static func teIruContractionInflectionSuffixes(for teForm: String) -> [String] {
+        // 関西方言の「〜ている→〜とる」(〜でいる→〜どる)縮約
+        // 「いる→おる」+ 音便で「と/ど」に変化
+        guard !teForm.isEmpty else {
+            return []
+        }
+        let lastChar = teForm.last!
+        let stem = String(teForm.dropLast())
+        let baseSyllable: String
+        if lastChar == "て" {
+            baseSyllable = "と"
+        } else if lastChar == "で" {
+            baseSyllable = "ど"
+        } else {
+            return []
+        }
+
+        let endings = [
+            "る", "った", "って", "ったら",
+            "らない", "らん", "らなかった", "らんかった",
+            "ります", "りました", "りません",
+            "れば", "ろう", "れ"
+        ]
+        var suffixes = endings.map { stem + baseSyllable + $0 }
+        suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: stem + baseSyllable + "った"))
         return suffixes
     }
 
@@ -733,6 +774,7 @@ extension KanaKanjiConverter {
             suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teMiruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teShimauInflectionSuffixes(for: pattern.teForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.teIruContractionInflectionSuffixes(for: pattern.teForm))
 
             for suffix in suffixes {
                 rules.append(
@@ -772,6 +814,18 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しなきゃいけない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなくちゃならない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなきゃならない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 関西方言の「〜している→〜しとる」縮約
+        InflectionRule(readingSuffix: "しとる", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとって", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとったら", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとらない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとらん", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとらなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとらんかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとります", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとりました", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しとりません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "します", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しました", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -1117,6 +1171,18 @@ extension KanaKanjiConverter {
         ("こなきゃいけない", "来なきゃいけない"),
         ("こなくちゃならない", "来なくちゃならない"),
         ("こなきゃならない", "来なきゃならない"),
+        // 関西方言の「〜ている→〜とる」縮約(来とる, 来とった 等)
+        ("きとる", "来とる"),
+        ("きとった", "来とった"),
+        ("きとって", "来とって"),
+        ("きとったら", "来とったら"),
+        ("きとらない", "来とらない"),
+        ("きとらん", "来とらん"),
+        ("きとらなかった", "来とらなかった"),
+        ("きとらんかった", "来とらんかった"),
+        ("きとります", "来とります"),
+        ("きとりました", "来とりました"),
+        ("きとりません", "来とりません"),
         ("こい", "来い"),
         ("きます", "来ます"),
         ("きました", "来ました"),
@@ -1328,6 +1394,7 @@ extension KanaKanjiConverter {
         suffixes.append(contentsOf: KanaKanjiConverter.teOkuInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teMiruInflectionSuffixes(for: "って"))
         suffixes.append(contentsOf: KanaKanjiConverter.teShimauInflectionSuffixes(for: "って"))
+        suffixes.append(contentsOf: KanaKanjiConverter.teIruContractionInflectionSuffixes(for: "って"))
         return suffixes
     }()
 
