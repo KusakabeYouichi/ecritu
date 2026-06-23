@@ -55,6 +55,7 @@
 		E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */; };
 		EC8FDC01B55FCFCE162E0226 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
+		7B1D9A4E6F8C2A0D5B3E1C09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -126,6 +127,7 @@
 		E807A57473C85475BCAA585B /* EcrituApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituApp.swift; sourceTree = "<group>"; };
 		E9737BDAEF466B520663D3C6 /* écritu.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "écritu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5ED4830F4FA66EFEFE9B5AB /* LEGAL */ = {isa = PBXFileReference; path = LEGAL; sourceTree = "<group>"; };
+		8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -136,6 +138,7 @@
 				5DF3F61E6678EA62C2C94678 /* ContentView.swift */,
 				5BD446779BCC5D4386967F9A /* Ecritu.entitlements */,
 				E807A57473C85475BCAA585B /* EcrituApp.swift */,
+				8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */,
 				105353784C776E1A40C7A8AE /* SettingsModels.swift */,
 				52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */,
 				1101C5F140F04B38C98D298F /* ThirdPartyLicensesView.swift */,
@@ -368,6 +371,7 @@
 			files = (
 				8B889DCACD9F73C8DC3120CD /* APP_STORE_OPEN_SOURCE_NOTICES.md in Resources */,
 				86EE26729B525F6D695B17FB /* Assets.xcassets in Resources */,
+				7B1D9A4E6F8C2A0D5B3E1C09 /* LaunchScreen.storyboard in Resources */,
 				2D41A6A9E4C2789278485192 /* LEGAL in Resources */,
 				3CE284AC441A0CC766575E9E /* LICENSE-2.0.txt in Resources */,
 			);
@@ -596,7 +600,7 @@
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
 				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -720,7 +724,7 @@
 				INFOPLIST_KEY_EcrituEditionUpdatedAt = "$(ECRITU_EDITION_UPDATED_AT)";
 				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
