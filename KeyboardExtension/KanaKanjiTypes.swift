@@ -189,6 +189,13 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "んかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "んかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "んで", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 「〜なくては/〜なければ」の口語縮約(食べなくちゃ, 食べなきゃ 等)
+        InflectionRule(readingSuffix: "なくちゃ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なきゃ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なくちゃいけない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なきゃいけない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なくちゃならない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なきゃならない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ます", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -655,6 +662,13 @@ extension KanaKanjiConverter {
                 pattern.aForm + "んかった",
                 pattern.aForm + "んかったら",
                 pattern.aForm + "んで",
+                // 「〜なくては/〜なければ」の口語縮約(知らなくちゃ, 知らなきゃ 等)
+                pattern.aForm + "なくちゃ",
+                pattern.aForm + "なきゃ",
+                pattern.aForm + "なくちゃいけない",
+                pattern.aForm + "なきゃいけない",
+                pattern.aForm + "なくちゃならない",
+                pattern.aForm + "なきゃならない",
                 pattern.aForm + "ねば",
                 pattern.aForm + "ず",
                 pattern.aForm + "れる",
@@ -751,6 +765,13 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "せんかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "せんかったら", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "せんで", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 「〜なくては/〜なければ」の口語縮約(しなくちゃ, しなきゃ 等)
+        InflectionRule(readingSuffix: "しなくちゃ", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなきゃ", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくちゃいけない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなきゃいけない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくちゃならない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなきゃならない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "します", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しました", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -1089,6 +1110,13 @@ extension KanaKanjiConverter {
         ("こんかった", "来んかった"),
         ("こんかったら", "来んかったら"),
         ("こんで", "来んで"),
+        // 「〜なくては/〜なければ」の口語縮約(来なくちゃ, 来なきゃ 等)
+        ("こなくちゃ", "来なくちゃ"),
+        ("こなきゃ", "来なきゃ"),
+        ("こなくちゃいけない", "来なくちゃいけない"),
+        ("こなきゃいけない", "来なきゃいけない"),
+        ("こなくちゃならない", "来なくちゃならない"),
+        ("こなきゃならない", "来なきゃならない"),
         ("こい", "来い"),
         ("きます", "来ます"),
         ("きました", "来ました"),
@@ -1304,7 +1332,7 @@ extension KanaKanjiConverter {
     }()
 
     static let postfixPassthroughSuffixes: [String] = [
-        "ほうがいい", "ほうがよい", "ほうが", "ようになる", "ようにする", "ようにして", "ように", "よう", "ような", "ようだ", "ようです", "みたいでした", "みたいだった", "みたいです", "みたいだ", "みたいな", "みたいに", "みたい", "っぽくなかった", "っぽくないです", "っぽくなった", "っぽくなって", "っぽくなる", "っぽければ", "っぽかった", "っぽいですか", "っぽいです", "っぽくない", "っぽくて", "っぽく", "っぽい", "はずがない", "はずだった", "はずでした", "はずです", "はずだ", "はず", "です", "んですけれど", "んですけど", "んだけれど", "んだけど", "のだ", "んです", "んだ", "だろう", "だったら", "だった", "なければ", "なくても", "なくなりました", "なくなりません", "なくなります", "なくなりたい", "なくならなかった", "なくならない", "なくなった", "なくなって", "なくなれば", "なくなろう", "なくなり", "なくなる", "なくて", "なかった", "なく", "ない", "だ", "けれど", "けど", "ください", "だけだ", "こと", "など", "だけ", "では", "には", "とは", "よりも", "より", "まで", "なら", "から", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "し", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
+        "ほうがいい", "ほうがよい", "ほうが", "ようになる", "ようにする", "ようにして", "ように", "よう", "ような", "ようだ", "ようです", "みたいでした", "みたいだった", "みたいです", "みたいだ", "みたいな", "みたいに", "みたい", "っぽくなかった", "っぽくないです", "っぽくなった", "っぽくなって", "っぽくなる", "っぽければ", "っぽかった", "っぽいですか", "っぽいです", "っぽくない", "っぽくて", "っぽく", "っぽい", "はずがない", "はずだった", "はずでした", "はずです", "はずだ", "はず", "です", "んですけれど", "んですけど", "んだけれど", "んだけど", "のだ", "んです", "んだ", "だろう", "だったら", "だった", "なければ", "なくても", "なくなりました", "なくなりません", "なくなります", "なくなりたい", "なくならなかった", "なくならない", "なくなった", "なくなって", "なくなれば", "なくなろう", "なくなり", "なくなる", "なくちゃいけない", "なきゃいけない", "なくちゃならない", "なきゃならない", "なくちゃ", "なきゃ", "なくて", "なかった", "なく", "ない", "だ", "けれど", "けど", "ください", "だけだ", "こと", "など", "だけ", "では", "には", "とは", "よりも", "より", "まで", "なら", "から", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "し", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
     ]
     static let postfixPassthroughPrefixReplacements: [(from: String, to: String)] = [
         ("ほう", "方")
