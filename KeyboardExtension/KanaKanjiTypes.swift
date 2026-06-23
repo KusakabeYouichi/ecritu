@@ -1084,6 +1084,11 @@ extension KanaKanjiConverter {
     static let kuruInflectionForms: [(readingSuffix: String, kanjiOutputSuffix: String)] = [
         ("こない", "来ない"),
         ("こなかった", "来なかった"),
+        // 関西弁・口語の否定縮約形(来ない→来ん 等)
+        ("こん", "来ん"),
+        ("こんかった", "来んかった"),
+        ("こんかったら", "来んかったら"),
+        ("こんで", "来んで"),
         ("こい", "来い"),
         ("きます", "来ます"),
         ("きました", "来ました"),
