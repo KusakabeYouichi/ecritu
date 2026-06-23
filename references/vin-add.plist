@@ -9,13 +9,12 @@
 	<dict><key>phrase</key><string>Bosco</string><key>shortcut</key><string>ぼすこ</string></dict>
 	<dict><key>phrase</key><string>Braquet</string><key>shortcut</key><string>ぶらけ</string></dict>
 	<dict><key>phrase</key><string>Breton</string><key>shortcut</key><string>ぶるとん</string></dict>
-	<dict><key>phrase</key><string>Bukettraube</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Busuioacă de Bohotin</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Campbell Early</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Canaiolo Nero</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Carmine</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Cereza</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Chacolí</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>Bukettraube</string><key>shortcut</key><string>ぶけっととらうべ</string></dict>
+	<dict><key>phrase</key><string>Busuioacă de Bohotin</string><key>shortcut</key><string>ぶすいおあかでぼほてぃん</string></dict>
+	<dict><key>phrase</key><string>Campbell Early</string><key>shortcut</key><string>きゃんべるあーりー</string></dict>
+	<dict><key>phrase</key><string>Canaiolo Nero</string><key>shortcut</key><string>かないおーろねーろ</string></dict>
+	<dict><key>phrase</key><string>Carmine</string><key>shortcut</key><string>かるみん</string></dict>
+	<dict><key>phrase</key><string>Cereza</string><key>shortcut</key><string>せれさ</string></dict>
 	<dict><key>phrase</key><string>Clevner</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Criolla Chica</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Criolla Grande</string><key>shortcut</key><string>★</string></dict>
@@ -2404,6 +2403,7 @@
 	<dict><key>phrase</key><string>辛口酒</string><key>shortcut</key><string>からくちさけ</string></dict>
 	<dict><key>phrase</key><string>醤香型</string><key>shortcut</key><string>ひしおこうかた</string></dict>
 	<!-- ワインの分類名、区分、種類 -->
+	<dict><key>phrase</key><string>Chacolí</string><key>shortcut</key><string>ちゃこり</string></dict>
 	<dict><key>phrase</key><string>P.G.I. Area Wines</string><key>shortcut</key><string>ぴーじーあいえりあわいん</string></dict>
 	<dict><key>phrase</key><string>Grand Auxerrois</string><key>shortcut</key><string>★</string></dict>
 	<dict><key>phrase</key><string>Pinot Gris Vendanges Tardives</string><key>shortcut</key><string>★</string></dict>
