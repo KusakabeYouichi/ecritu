@@ -82,12 +82,12 @@ struct KeyboardRootView: View {
 
     let shiftDoubleTapThreshold: TimeInterval = 0.32
     let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
-    private let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
+    let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
     let katakanaCommitFeedbackDelay: TimeInterval = 0.14
     let keyLabelColor = KeyboardThemePalette.keyLabel
     private let candidateHeaderExpandedHeight: CGFloat = 35
     private let candidateHeaderContentDownshift: CGFloat = 4
-    private var keyboardRowSpacing: CGFloat { isLandscapeLayout ? 4 : 6 }
+    var keyboardRowSpacing: CGFloat { isLandscapeLayout ? 4 : 6 }
     private var keyboardTopPadding: CGFloat {
         if isLandscapeLayout
             && (inputMode == .kana || inputMode == .number || isLandscapeLatinThreeByThreeMode) {
@@ -98,8 +98,8 @@ struct KeyboardRootView: View {
     }
     private var keyboardHorizontalPadding: CGFloat { isLandscapeLayout ? 6 : 8 }
     private var keyboardBottomPadding: CGFloat { isLandscapeLayout ? 4 : 20 }
-    private let candidateStateFontSize: CGFloat = 15
-    private let candidateTextFontSize: CGFloat = 16
+    let candidateStateFontSize: CGFloat = 15
+    let candidateTextFontSize: CGFloat = 16
     var compactActionKeyHeight: CGFloat { isLandscapeLayout ? 34 : 42 }
     private let compactModeSwitchKeyWidth: CGFloat = 32
     private let wideModeSwitchKeyWidth: CGFloat = 58
@@ -122,49 +122,11 @@ struct KeyboardRootView: View {
         verticalSizeClass == .compact
     }
 
-    private var usesLandscapeKanaCandidateSidebar: Bool {
-        isLandscapeLayout && inputMode == .kana
-    }
-
-    private var usesLandscapeLatinSuggestionSidebar: Bool {
-        isLandscapeLayout
-            && inputMode == .latin
-            && landscapeLatinSuggestionMode == .sidebar
-    }
-
     private var showsLatinSuggestionCandidates: Bool {
         inputMode == .latin && !latinSuggestionQuery.isEmpty
     }
 
-    private var usesLandscapeLatinTypewriterLayout: Bool {
-        isLandscapeLayout
-            && inputMode == .latin
-            && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty)
-    }
-
-    private var landscapeLatinInlineReturnRowIndex: Int {
-        // Keep return key directly under delete: right of L (QWERTY) / m (AZERTY).
-        1
-    }
-
-    private var landscapeLatinInlinePunctuationKeys: [FlickKanaSet] {
-        let marks: [String] = latinLayoutMode == .qwerty
-            ? [",", "/"]
-            : [",", "/", "'"]
-
-        return marks.map { mark in
-            FlickKanaSet(
-                label: mark,
-                center: mark,
-                up: "",
-                right: "",
-                down: "",
-                left: ""
-            )
-        }
-    }
-
-    private var needsQwertyMiddleRowApostrophe: Bool {
+    var needsQwertyMiddleRowApostrophe: Bool {
         latinLayoutMode == .qwerty
     }
 
@@ -293,16 +255,6 @@ struct KeyboardRootView: View {
         return [":", "_", "(", ")"]
     }
 
-    private var landscapeNumberSymbolPanelRows: [[String]] {
-        // Custom landscape number-side companion symbols (4 rows x 6 columns).
-        [
-            ["+", "€", "℃", "mm", "mg", "ml"],
-            ["-", "$", "℉", "cm", "cg", "cl"],
-            ["±", "¥", "°", "m", "g", "l"],
-            ["(", ")", "/", "km", "kg", "kl"]
-        ]
-    }
-
     @ViewBuilder
     private func latinActionButtons(
         symbols: [String],
@@ -323,7 +275,7 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    private func latinSpaceLeftActionButtons(
+    func latinSpaceLeftActionButtons(
         fixedWidth: CGFloat? = nil,
         keyHeight: CGFloat? = nil
     ) -> some View {
@@ -335,7 +287,7 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    private func latinSpaceRightActionButtons(
+    func latinSpaceRightActionButtons(
         fixedWidth: CGFloat? = nil,
         keyHeight: CGFloat? = nil
     ) -> some View {
@@ -344,50 +296,6 @@ struct KeyboardRootView: View {
             fixedWidth: fixedWidth,
             keyHeight: keyHeight
         )
-    }
-
-    private func isLandscapeLatinRightShiftKey(_ kana: FlickKanaSet) -> Bool {
-        kana.label == "__latin_shift_right__"
-    }
-
-    private var landscapeLatinRightShiftKey: FlickKanaSet {
-        FlickKanaSet(
-            label: "__latin_shift_right__",
-            center: FlickKanaLayout.latinShiftKeyToken,
-            up: "",
-            right: "",
-            down: "",
-            left: ""
-        )
-    }
-
-    private func landscapeBottomRowWithInlinePunctuation(_ row: [FlickKanaSet]) -> [FlickKanaSet] {
-        var augmentedRow = row
-
-        // QWERTY rows don't include a right-shift token in source rows; add it back in landscape.
-        if latinLayoutMode == .qwerty,
-            !augmentedRow.contains(where: isLandscapeLatinRightShiftKey) {
-            augmentedRow.append(landscapeLatinRightShiftKey)
-        }
-
-        guard let rightShiftIndex = augmentedRow.firstIndex(where: isLandscapeLatinRightShiftKey) else {
-            return augmentedRow
-        }
-
-        augmentedRow.insert(contentsOf: landscapeLatinInlinePunctuationKeys, at: rightShiftIndex)
-        return augmentedRow
-    }
-
-    private var landscapeKanaCandidateSide: LandscapeCandidateSide {
-        LandscapeCandidateSide(rawValue: landscapeCandidateSideRawValue) ?? .left
-    }
-
-    private var landscapeNumberPaneSide: LandscapeCandidateSide {
-        LandscapeCandidateSide(rawValue: landscapeNumberPaneSideRawValue) ?? .left
-    }
-
-    private var landscapeLatinSuggestionMode: LandscapeLatinSuggestionMode {
-        LandscapeLatinSuggestionMode(rawValue: landscapeLatinSuggestionModeRawValue) ?? .sidebar
     }
 
     private var landscapeEmojiHeaderHeight: CGFloat { 26 }
@@ -411,11 +319,11 @@ struct KeyboardRootView: View {
         selectedConversionCandidateIndex != nil
     }
 
-    private var conversionStateLabel: String {
+    var conversionStateLabel: String {
         isActiveConversion ? "変換中" : "未確定"
     }
 
-    private var conversionStateColor: Color {
+    var conversionStateColor: Color {
         isActiveConversion ? accentColor : Color.orange
     }
 
@@ -451,7 +359,7 @@ struct KeyboardRootView: View {
         inputMode == .kana && !composingText.isEmpty
     }
 
-    private var returnActionKeyTitle: String {
+    var returnActionKeyTitle: String {
         if isReturnActsAsCommitKey {
             return "確定"
         }
@@ -459,11 +367,11 @@ struct KeyboardRootView: View {
         return returnKeySystemImageName == nil ? "⏎" : ""
     }
 
-    private var returnActionKeySystemImageName: String? {
+    var returnActionKeySystemImageName: String? {
         isReturnActsAsCommitKey ? nil : returnKeySystemImageName
     }
 
-    private var returnActionKeyAccessibilityLabel: String {
+    var returnActionKeyAccessibilityLabel: String {
         if isReturnActsAsCommitKey {
             return "確定"
         }
@@ -471,11 +379,11 @@ struct KeyboardRootView: View {
         return returnKeySystemImageName == nil ? "改行" : "検索"
     }
 
-    private var returnKeyKatakanaDoubleTapAction: (() -> Void)? {
+    var returnKeyKatakanaDoubleTapAction: (() -> Void)? {
         isReturnActsAsCommitKey ? handleReturnKeyKatakanaDoubleTap : nil
     }
 
-    private var returnKeyKatakanaLongPressAction: (() -> Void)? {
+    var returnKeyKatakanaLongPressAction: (() -> Void)? {
         isReturnActsAsCommitKey ? handleReturnKeyKatakanaLongPress : nil
     }
 
@@ -487,7 +395,7 @@ struct KeyboardRootView: View {
         AccentPalette(rawValue: accentPaletteRawValue) ?? .emeraude
     }
 
-    private var accentColor: Color {
+    var accentColor: Color {
         if isSystemDictionaryFallback {
             return Color(uiColor: .systemGray)
         }
@@ -524,11 +432,11 @@ struct KeyboardRootView: View {
         }
     }
 
-    private var showsFlickGuideCharacters: Bool {
+    var showsFlickGuideCharacters: Bool {
         currentFlickGuideDisplayMode == .fourDirections
     }
 
-    private var showsModifierFlickGuideCharacters: Bool {
+    var showsModifierFlickGuideCharacters: Bool {
         modifierFlickGuideDisplayMode == .fourDirections
     }
 
@@ -581,11 +489,11 @@ struct KeyboardRootView: View {
         kanaModifierPlacementMode == .prefix ? diacriticMode : .none
     }
 
-    private var isPrefixModifierActive: Bool {
+    var isPrefixModifierActive: Bool {
         inputMode == .kana && kanaModifierPlacementMode == .prefix && diacriticMode != .none
     }
 
-    private var rows: [[FlickKanaSet]] {
+    var rows: [[FlickKanaSet]] {
         switch inputMode {
         case .kana:
             return FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: kanaLayoutMode).map { row in
@@ -611,7 +519,7 @@ struct KeyboardRootView: View {
         inputMode == .kana && kanaLayoutMode == .threeByThreePlusWa
     }
 
-    private var isKanaFiveByTwoMode: Bool {
+    var isKanaFiveByTwoMode: Bool {
         inputMode == .kana && kanaLayoutMode == .fiveByTwo
     }
 
@@ -619,29 +527,17 @@ struct KeyboardRootView: View {
         (isKanaThreeByThreeMode ? 6 : 4) + candidateHeaderContentDownshift
     }
 
-    private var usesThreeByThreeGridForNumberOrLatin: Bool {
+    var usesThreeByThreeGridForNumberOrLatin: Bool {
         (inputMode == .number || inputMode == .latin)
             && rows.count == 4
             && rows.allSatisfy { $0.count == 3 }
-    }
-
-    private var usesLandscapeCompactNumberLayout: Bool {
-        isLandscapeLayout
-            && inputMode == .number
-            && usesThreeByThreeGridForNumberOrLatin
-    }
-
-    private var isLandscapeLatinThreeByThreeMode: Bool {
-        isLandscapeLayout
-            && inputMode == .latin
-            && usesThreeByThreeGridForNumberOrLatin
     }
 
     private var kanaFiveByTwoSideInset: CGFloat {
         isKanaFiveByTwoMode ? 6 : 0
     }
 
-    private func horizontalInsetsForMainRow(_ rowIndex: Int) -> EdgeInsets {
+    func horizontalInsetsForMainRow(_ rowIndex: Int) -> EdgeInsets {
         guard isKanaFiveByTwoMode else {
             return EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
         }
@@ -1014,7 +910,7 @@ struct KeyboardRootView: View {
         }
     }
 
-    private var mainFlickKeyHeight: CGFloat {
+    var mainFlickKeyHeight: CGFloat {
         isLandscapeLayout ? 40 : 46
     }
 
@@ -1093,15 +989,15 @@ struct KeyboardRootView: View {
         66
     }
 
-    private var numberDownDirectionalHintScale: CGFloat {
+    var numberDownDirectionalHintScale: CGFloat {
         1.12
     }
 
-    private var numberDownDirectionalHintVerticalOffsetAdjustment: CGFloat {
+    var numberDownDirectionalHintVerticalOffsetAdjustment: CGFloat {
         -2
     }
 
-    private var modifierDirectionalFlickThreshold: CGFloat {
+    var modifierDirectionalFlickThreshold: CGFloat {
         if inputMode == .kana && kanaModifierPlacementMode == .postfix {
             // Postfix modifier misfires are expensive (e.g. つ -> づ), so require larger movement.
             return 26
@@ -1110,7 +1006,7 @@ struct KeyboardRootView: View {
         return 18
     }
 
-    private var modifierDirectionalCommitThreshold: CGFloat? {
+    var modifierDirectionalCommitThreshold: CGFloat? {
         if inputMode == .kana && kanaModifierPlacementMode == .postfix {
             // Prefer center on postfix modifier unless movement is clearly directional.
             return 32
@@ -1119,11 +1015,11 @@ struct KeyboardRootView: View {
         return nil
     }
 
-    private var selectorKeySize: CGFloat {
+    var selectorKeySize: CGFloat {
         mainFlickKeyHeight
     }
 
-    private var kanaFiveByTwoTrailingKeyWidth: CGFloat {
+    var kanaFiveByTwoTrailingKeyWidth: CGFloat {
         if isKanaFiveByTwoMode {
             return selectorKeySize + 8
         }
@@ -1131,7 +1027,7 @@ struct KeyboardRootView: View {
         return selectorKeySize
     }
 
-    private var actionRowTopSpacing: CGFloat {
+    var actionRowTopSpacing: CGFloat {
         inputMode == .kana ? 0 : 8
     }
 
@@ -1168,7 +1064,7 @@ struct KeyboardRootView: View {
     // メインキー(letter / number / kana)の中央ラベルのフォントウエイト。
     // AZERTY/QWERTY の英字キー、および clavier 配列の数字・記号キーは semibold、
     // それ以外(かなフリック、calculette/telephone)は従来通り bold。
-    private var rowKeyMainLabelFontWeight: Font.Weight {
+    var rowKeyMainLabelFontWeight: Font.Weight {
         if inputMode == .latin && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty) {
             return .semibold
         }
@@ -1214,7 +1110,7 @@ struct KeyboardRootView: View {
         return kanaLayoutMode == .threeByThreePlusWa && latinLayoutMode == .flick
     }
 
-    private var leftModeSwitchButtonWidth: CGFloat {
+    var leftModeSwitchButtonWidth: CGFloat {
         usesWideLeftModeSwitchButtons ? wideModeSwitchKeyWidth : compactModeSwitchKeyWidth
     }
 
@@ -1248,11 +1144,11 @@ struct KeyboardRootView: View {
 
     private let kaomojiModeReturnIconFontSize: CGFloat = 32
 
-    private var kanaFiveByTwoTopNumberKeys: [String] {
+    var kanaFiveByTwoTopNumberKeys: [String] {
         ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     }
 
-    private func leftModeSwitchNumberButton(height: CGFloat) -> some View {
+    func leftModeSwitchNumberButton(height: CGFloat) -> some View {
         ActionKeyButton(
             title: "123",
             fontSize: leftModeSwitchNumberFontSize,
@@ -1262,7 +1158,7 @@ struct KeyboardRootView: View {
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
 
-    private func leftModeSwitchLatinButton(height: CGFloat) -> some View {
+    func leftModeSwitchLatinButton(height: CGFloat) -> some View {
         ZStack {
             ActionKeyButton(
                 title: "abc",
@@ -1283,7 +1179,7 @@ struct KeyboardRootView: View {
         .frame(width: leftModeSwitchButtonWidth, height: height)
     }
 
-    private func leftModeSwitchKanaButton(height: CGFloat, fontSize: CGFloat) -> some View {
+    func leftModeSwitchKanaButton(height: CGFloat, fontSize: CGFloat) -> some View {
         ActionKeyButton(
             title: kanaModeSwitchButtonTitle,
             fontSize: fontSize,
@@ -1293,7 +1189,7 @@ struct KeyboardRootView: View {
             .frame(width: leftModeSwitchButtonWidth, height: height)
     }
 
-    private func leftModeSwitchEmojiButton(height: CGFloat) -> some View {
+    func leftModeSwitchEmojiButton(height: CGFloat) -> some View {
         ActionKeyButton(
             title: "☺︎",
             accessibilityLabel: "絵文字",
@@ -1315,7 +1211,7 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    private func compactLeftModeSwitchButton(slot slotIndex: Int, height: CGFloat) -> some View {
+    func compactLeftModeSwitchButton(slot slotIndex: Int, height: CGFloat) -> some View {
         switch slotIndex {
         case 0:
             leftModeSwitchNumberButton(height: height)
@@ -1370,7 +1266,7 @@ struct KeyboardRootView: View {
         }
     }
 
-    private var threeByThreeKanaRows: [[FlickKanaSet]] {
+    var threeByThreeKanaRows: [[FlickKanaSet]] {
         FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: .threeByThreePlusWa).map { row in
             row.map {
                 displayedKanaForKanaCharacterModeIfNeeded($0.remapped(for: directionProfile))
@@ -1378,7 +1274,7 @@ struct KeyboardRootView: View {
         }
     }
 
-    private var threeByThreeKanaLeftColumn: some View {
+    var threeByThreeKanaLeftColumn: some View {
         let rowHeight: CGFloat = mainFlickKeyHeight
         let rowSpacing: CGFloat = keyboardRowSpacing
 
@@ -1422,7 +1318,7 @@ struct KeyboardRootView: View {
         .zIndex(KeyboardLayerZIndex.activeRow + 1)
     }
 
-    private func threeByThreeKanaMainCluster(
+    func threeByThreeKanaMainCluster(
         kanaRows: [[FlickKanaSet]],
         rowHeight: CGFloat,
         rowSpacing: CGFloat
@@ -1660,7 +1556,7 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    private func threeByThreeMainKey(_ kana: FlickKanaSet, rowIndex: Int) -> some View {
+    func threeByThreeMainKey(_ kana: FlickKanaSet, rowIndex: Int) -> some View {
         if isLatinShiftKey(kana) {
             LatinShiftKeyButton(
                 isOn: latinShiftState != .off,
@@ -1708,7 +1604,7 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    private func threeByThreeLeftColumnButton(rowIndex: Int, rowHeight: CGFloat) -> some View {
+    func threeByThreeLeftColumnButton(rowIndex: Int, rowHeight: CGFloat) -> some View {
         switch rowIndex {
         case 0:
             leftModeSwitchNumberButton(height: rowHeight)
@@ -1733,7 +1629,7 @@ struct KeyboardRootView: View {
     }
 
     @ViewBuilder
-    private func threeByThreeRightColumnButton(rowIndex: Int, rowHeight: CGFloat, rowSpacing: CGFloat) -> some View {
+    func threeByThreeRightColumnButton(rowIndex: Int, rowHeight: CGFloat, rowSpacing: CGFloat) -> some View {
         switch rowIndex {
         case 0:
             ActionKeyButton(
@@ -1802,168 +1698,6 @@ struct KeyboardRootView: View {
                     )
                 }
                 .zIndex(zIndex(for: rowIndex))
-            }
-        }
-    }
-
-    private var landscapeNumberNarrowGrid: some View {
-        let rowHeight = mainFlickKeyHeight
-        let rowSpacing: CGFloat = keyboardRowSpacing
-        // Keep number-mode keys the same width as mode-switch keys.
-        let keyWidth = leftModeSwitchButtonWidth
-        let numberClusterOnLeft = landscapeNumberPaneSide == .left
-
-        return HStack(spacing: 0) {
-            landscapeNumberCompactColumns(
-                rowHeight: rowHeight,
-                rowSpacing: rowSpacing,
-                keyWidth: keyWidth,
-                numberClusterOnLeft: numberClusterOnLeft
-            )
-            Spacer(minLength: 0)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-    }
-
-    @ViewBuilder
-    private func landscapeNumberCompactColumns(
-        rowHeight: CGFloat,
-        rowSpacing: CGFloat,
-        keyWidth: CGFloat,
-        numberClusterOnLeft: Bool
-    ) -> some View {
-        HStack(spacing: rowSpacing) {
-            if numberClusterOnLeft {
-                landscapeNumberModeSwitchColumn(rowHeight: rowHeight, rowSpacing: rowSpacing)
-                landscapeNumberMainKeyCluster(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth
-                )
-                landscapeNumberUtilityColumn(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth
-                )
-                landscapeNumberSymbolPanel(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth
-                )
-            } else {
-                landscapeNumberModeSwitchColumn(rowHeight: rowHeight, rowSpacing: rowSpacing)
-                landscapeNumberSymbolPanel(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth
-                )
-                landscapeNumberMainKeyCluster(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth
-                )
-                landscapeNumberUtilityColumn(
-                    rowHeight: rowHeight,
-                    rowSpacing: rowSpacing,
-                    keyWidth: keyWidth
-                )
-            }
-        }
-    }
-
-    private func landscapeNumberModeSwitchColumn(
-        rowHeight: CGFloat,
-        rowSpacing: CGFloat
-    ) -> some View {
-        VStack(spacing: rowSpacing) {
-            ForEach(0..<4, id: \.self) { rowIndex in
-                threeByThreeLeftColumnButton(rowIndex: rowIndex, rowHeight: rowHeight)
-            }
-        }
-    }
-
-    private func landscapeNumberMainKeyCluster(
-        rowHeight: CGFloat,
-        rowSpacing: CGFloat,
-        keyWidth: CGFloat
-    ) -> some View {
-        VStack(spacing: rowSpacing) {
-            ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
-                HStack(spacing: rowSpacing) {
-                    ForEach(row) { kana in
-                        threeByThreeMainKey(kana, rowIndex: rowIndex)
-                            .frame(width: keyWidth, height: rowHeight)
-                    }
-                }
-                .zIndex(zIndex(for: rowIndex))
-            }
-        }
-    }
-
-    private func landscapeNumberUtilityColumn(
-        rowHeight: CGFloat,
-        rowSpacing: CGFloat,
-        keyWidth: CGFloat
-    ) -> some View {
-        VStack(spacing: rowSpacing) {
-            ActionKeyButton(
-                title: "⌫",
-                accessibilityLabel: "削除",
-                fontSize: 26,
-                repeatsWhileHolding: true,
-                repeatInitialDelay: keyRepeatInitialDelay,
-                repeatInterval: keyRepeatInterval,
-                action: onDeleteBackward
-            )
-                .frame(width: keyWidth, height: rowHeight)
-
-            spaceActionKeyButton(title: "")
-                .frame(width: keyWidth, height: rowHeight)
-
-            ZStack(alignment: .top) {
-                Color.clear
-
-                ActionKeyButton(
-                    title: returnActionKeyTitle,
-                    systemImageName: returnActionKeySystemImageName,
-                    accessibilityLabel: returnActionKeyAccessibilityLabel,
-                    fontSize: returnActionKeyFontSize,
-                    isEnabled: isReturnKeyEnabled,
-                    onLongPress: returnKeyKatakanaLongPressAction,
-                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                    action: onReturn
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight * 2 + rowSpacing)
-            }
-            .frame(width: keyWidth, height: rowHeight, alignment: .top)
-            .zIndex(KeyboardLayerZIndex.rightEdgeUtilityColumn)
-
-            Color.clear
-                .allowsHitTesting(false)
-                .frame(width: keyWidth, height: rowHeight)
-        }
-    }
-
-    private func landscapeNumberSymbolPanel(
-        rowHeight: CGFloat,
-        rowSpacing: CGFloat,
-        keyWidth: CGFloat
-    ) -> some View {
-        VStack(spacing: rowSpacing) {
-            ForEach(Array(landscapeNumberSymbolPanelRows.enumerated()), id: \.offset) { _, symbols in
-                HStack(spacing: rowSpacing) {
-                    ForEach(symbols, id: \.self) { symbol in
-                        ActionKeyButton(
-                            title: symbol,
-                            fontSize: 20,
-                            action: { commitText(symbol) }
-                        )
-                            .frame(width: keyWidth, height: rowHeight)
-                    }
-                }
             }
         }
     }
@@ -2311,585 +2045,10 @@ struct KeyboardRootView: View {
         )
     }
 
-    private func landscapeCandidateSidebarWidth() -> CGFloat {
-        let screenWidth = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
-        let ratio: CGFloat = isKanaFiveByTwoMode ? 0.34 : 0.4
-        let desired = screenWidth * ratio
-        return min(max(desired, 180), 320)
-    }
+    var landscapeEmptyCandidatePlaceholderCount: Int { 6 }
 
-    private var landscapeEmptyCandidatePlaceholderCount: Int { 6 }
-
-    private var landscapeKanaCandidateSidebar: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
-
-            if !composingText.isEmpty || showsWrapperOnly {
-                Text(showsWrapperOnly ? "()" : conversionStateLabel)
-                    .font(.system(size: candidateStateFontSize, weight: .bold))
-                    .foregroundStyle(Color.white)
-                    .lineLimit(1)
-                    .padding(.horizontal, 7)
-                    .padding(.vertical, 3)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(conversionStateColor.opacity(0.95))
-                    )
-
-                if !showsWrapperOnly, canTapComposingTextToCommit {
-                    let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
-
-                    Button {
-                        handleComposingTextCommitTap()
-                    } label: {
-                        if showsParenthesesWrapper {
-                            HStack(spacing: 0) {
-                                Text("(")
-                                    .foregroundStyle(
-                                        showsKatakanaCommitFeedback
-                                            ? Color.white
-                                            : accentColor
-                                    )
-                                Text(composingText)
-                                    .foregroundStyle(
-                                        showsKatakanaCommitFeedback
-                                            ? Color.white
-                                            : keyLabelColor.opacity(0.9)
-                                    )
-                                Text(")")
-                                    .foregroundStyle(
-                                        showsKatakanaCommitFeedback
-                                            ? Color.white
-                                            : accentColor
-                                    )
-                            }
-                            .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
-                            .background(
-                                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                    .fill(
-                                        showsKatakanaCommitFeedback
-                                            ? accentColor.opacity(0.95)
-                                            : KeyboardThemePalette.candidateHeaderChipBackground
-                                    )
-                            )
-                        } else {
-                            Text(composingText)
-                                .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                .foregroundStyle(
-                                    showsKatakanaCommitFeedback
-                                        ? Color.white
-                                        : keyLabelColor.opacity(0.9)
-                                )
-                                .lineLimit(1)
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 6)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                        .fill(
-                                            showsKatakanaCommitFeedback
-                                                ? accentColor.opacity(0.95)
-                                                : KeyboardThemePalette.candidateHeaderChipBackground
-                                        )
-                                )
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityHint("通常タップで変換せずに確定。ロングタップでカタカナ確定")
-                    .simultaneousGesture(
-                        LongPressGesture(minimumDuration: 0.4)
-                            .onEnded { _ in
-                                handleComposingTextCommitLongPress()
-                            }
-                    )
-                } else if !showsWrapperOnly {
-                    if showsParenthesesWrapper {
-                        HStack(spacing: 0) {
-                            Text("(")
-                                .foregroundStyle(accentColor)
-                            Text(composingText)
-                                .foregroundStyle(keyLabelColor.opacity(0.9))
-                            Text(")")
-                                .foregroundStyle(accentColor)
-                        }
-                        .font(.system(size: candidateTextFontSize, weight: .semibold))
-                        .lineLimit(1)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 6)
-                        .background(
-                            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                        )
-                    } else {
-                        Text(composingText)
-                            .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .foregroundStyle(keyLabelColor.opacity(0.9))
-                            .lineLimit(1)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 6)
-                            .background(
-                                RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                    .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                            )
-                    }
-                }
-            }
-
-            if conversionCandidates.isEmpty {
-                if !(showsParenthesesWrapper && composingText.isEmpty) {
-                    ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .frame(height: 24)
-                    }
-                }
-            } else {
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(alignment: .leading, spacing: 4) {
-                        ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
-                            let isSelected = selectedConversionCandidateIndex == index
-
-                            Button {
-                                onSelectConversionCandidate(index)
-                            } label: {
-                                if showsParenthesesWrapper {
-                                    HStack(spacing: 0) {
-                                        Text("(")
-                                            .foregroundStyle(isSelected ? Color.white : accentColor)
-                                        Text(candidate)
-                                            .foregroundStyle(isSelected ? Color.white : keyLabelColor)
-                                        Text(")")
-                                            .foregroundStyle(isSelected ? Color.white : accentColor)
-                                    }
-                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                            .fill(
-                                                isSelected
-                                                    ? accentColor.opacity(0.9)
-                                                    : KeyboardThemePalette.candidateHeaderChipBackground
-                                            )
-                                    )
-                                } else {
-                                    Text(candidate)
-                                        .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                        .foregroundStyle(isSelected ? Color.white : keyLabelColor)
-                                        .lineLimit(1)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.horizontal, 8)
-                                        .padding(.vertical, 6)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                                .fill(
-                                                    isSelected
-                                                        ? accentColor.opacity(0.9)
-                                                        : KeyboardThemePalette.candidateHeaderChipBackground
-                                                )
-                                        )
-                                }
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 0)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 5)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
-        )
-    }
-
-    private var landscapeLatinSuggestionSidebar: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            if latinSuggestionQuery.isEmpty {
-                ForEach(0..<landscapeEmptyCandidatePlaceholderCount, id: \.self) { _ in
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .frame(height: 24)
-                }
-            } else if latinSuggestions.isEmpty {
-                Text("候補なし")
-                    .font(.system(size: candidateTextFontSize, weight: .regular))
-                    .foregroundStyle(keyLabelColor.opacity(0.6))
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 6)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                    )
-            } else {
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVStack(alignment: .leading, spacing: 4) {
-                        ForEach(Array(latinSuggestions.enumerated()), id: \.offset) { index, candidate in
-                            Button {
-                                onSelectConversionCandidate(index)
-                            } label: {
-                                Text(candidate)
-                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .foregroundStyle(keyLabelColor)
-                                    .lineLimit(1)
-                                    .frame(maxWidth: .infinity, alignment: .leading)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 6)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 9, style: .continuous)
-                                            .fill(KeyboardThemePalette.candidateHeaderChipBackground)
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                    .padding(.vertical, 0)
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 5)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
-        )
-    }
-
-    private var landscapeLatinReferenceClusterHeight: CGFloat {
-        // ラテン横画面の主要クラスターは4段固定。
-        mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
-    }
-
-    @ViewBuilder
-    private var landscapeLatinSwappableMainCluster: some View {
-        if usesLandscapeLatinTypewriterLayout {
-            landscapeLatinTypewriterMainCluster
-        } else if usesThreeByThreeGridForNumberOrLatin {
-            landscapeLatinThreeByThreeMainCluster
-        } else {
-            keyboardMainContent
-        }
-    }
-
-    private var landscapeLatinThreeByThreeMainCluster: some View {
-        let rowHeight = mainFlickKeyHeight
-        let rowSpacing: CGFloat = keyboardRowSpacing
-
-        return VStack(spacing: rowSpacing) {
-            ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
-                HStack(spacing: rowSpacing) {
-                    ForEach(row) { kana in
-                        threeByThreeMainKey(kana, rowIndex: rowIndex)
-                    }
-
-                    threeByThreeRightColumnButton(
-                        rowIndex: rowIndex,
-                        rowHeight: rowHeight,
-                        rowSpacing: rowSpacing
-                    )
-                }
-                .zIndex(zIndex(for: rowIndex))
-            }
-        }
-    }
-
-    private var landscapeKanaFiveByTwoLeftColumn: some View {
-        let modeSwitchHeight: CGFloat = mainFlickKeyHeight
-
-        return VStack(spacing: keyboardRowSpacing) {
-            compactLeftModeSwitchButton(slot: 0, height: modeSwitchHeight)
-
-            ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, _ in
-                compactLeftModeSwitchButton(slot: rowIndex + 1, height: modeSwitchHeight)
-            }
-
-            if rows.count < 3 {
-                compactLeftModeSwitchButton(slot: rows.count + 1, height: modeSwitchHeight)
-            }
-        }
-    }
-
-    private var landscapeKanaFiveByTwoMainCluster: some View {
-        VStack(spacing: keyboardRowSpacing) {
-            HStack(spacing: keyboardRowSpacing) {
-                ForEach(kanaFiveByTwoTopNumberKeys, id: \.self) { key in
-                    ActionKeyButton(
-                        title: key,
-                        fontSize: 18,
-                        action: { commitText(key) }
-                    )
-                        .frame(maxWidth: .infinity)
-                        .frame(height: mainFlickKeyHeight)
-                }
-            }
-
-            ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
-                HStack(spacing: keyboardRowSpacing) {
-                    ForEach(row) { kana in
-                        if isLatinShiftKey(kana) {
-                            LatinShiftKeyButton(
-                                isOn: latinShiftState != .off,
-                                isLocked: latinShiftState == .locked,
-                                onTap: handleLatinShiftTap,
-                                onLongPress: handleLatinShiftLongPress
-                            )
-                                .frame(maxWidth: .infinity)
-                                .frame(height: mainFlickKeyHeight)
-                        } else {
-                            let renderedKana = displayedKana(for: kana)
-
-                            FlickKeyView(
-                                kana: renderedKana,
-                                onCommit: commitText,
-                                showsDirectionalHints: showsFlickGuideCharacters,
-                                idleReplacement: rowKeyIdleReplacement(for: renderedKana),
-                                longPressCandidates: longPressCandidates(for: kana),
-                                longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
-                                allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
-                                downDirectionalHintFontScale: inputMode == .number
-                                    ? numberDownDirectionalHintScale
-                                    : 1,
-                                downDirectionalHintVerticalOffsetAdjustment: inputMode == .number
-                                    ? numberDownDirectionalHintVerticalOffsetAdjustment
-                                    : 0,
-                                onTouchStateChanged: { isTouching in
-                                    updateActiveLayer(isTouching, layerIndex: rowIndex)
-                                }
-                            )
-                                .frame(maxWidth: .infinity)
-                                .frame(height: mainFlickKeyHeight)
-                        }
-                    }
-                }
-                .padding(horizontalInsetsForMainRow(rowIndex))
-                .zIndex(zIndex(for: rowIndex))
-            }
-
-            HStack(spacing: keyboardRowSpacing) {
-                if showsNextKeyboardKey {
-                    ActionKeyButton(title: "🌐", fixedWidth: 54, action: onAdvanceKeyboard)
-                        .frame(height: mainFlickKeyHeight)
-                }
-
-                ActionKeyButton(
-                    title: "⌫",
-                    accessibilityLabel: "削除",
-                    fontSize: 26,
-                    fixedWidth: 64,
-                    repeatsWhileHolding: true,
-                    repeatInitialDelay: keyRepeatInitialDelay,
-                    repeatInterval: keyRepeatInterval,
-                    action: onDeleteBackward
-                )
-                    .frame(height: mainFlickKeyHeight)
-
-                spaceKeyButton(fixedWidth: nil, keyHeight: mainFlickKeyHeight)
-
-                FlickKeyView(
-                    kana: modifierSelectorKey,
-                    onCommit: selectModifierMode,
-                    onCommitWithDirection: selectModifierMode,
-                    mainLabelFontSize: modifierMainLabelFontSize,
-                    flickGuideDisplayModeOverride: modifierFlickGuideDisplayMode,
-                    showsDirectionalHints: showsModifierFlickGuideCharacters,
-                    idleReplacement: modifierIdleReplacement,
-                    onLongPress: onToggleParenthesesWrapper,
-                    directionalFlickThreshold: modifierDirectionalFlickThreshold,
-                    directionalCommitThreshold: modifierDirectionalCommitThreshold,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: rows.count)
-                    }
-                )
-                    .frame(width: kanaFiveByTwoTrailingKeyWidth, height: selectorKeySize)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(
-                                isPrefixModifierActive
-                                    ? accentColor.opacity(0.95)
-                                    : Color.clear,
-                                lineWidth: 2
-                            )
-                    )
-
-                FlickKeyView(
-                    kana: punctuationKana,
-                    onCommit: commitText,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    idleReplacement: punctuationIdleReplacement,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: rows.count)
-                    }
-                )
-                    .frame(width: kanaFiveByTwoTrailingKeyWidth, height: selectorKeySize)
-
-                ActionKeyButton(
-                    title: returnActionKeyTitle,
-                    systemImageName: returnActionKeySystemImageName,
-                    accessibilityLabel: returnActionKeyAccessibilityLabel,
-                    fontSize: returnActionKeyFontSize,
-                    fixedWidth: 72,
-                    isEnabled: isReturnKeyEnabled,
-                    onLongPress: returnKeyKatakanaLongPressAction,
-                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                    action: onReturn
-                )
-                    .frame(height: mainFlickKeyHeight)
-            }
-            .zIndex(zIndex(for: rows.count))
-        }
-    }
-
-    private var landscapeLatinModeSwitchColumn: some View {
-        VStack(spacing: keyboardRowSpacing) {
-            leftModeSwitchNumberButton(height: mainFlickKeyHeight)
-            leftModeSwitchLatinButton(height: mainFlickKeyHeight)
-            leftModeSwitchKanaButton(
-                height: mainFlickKeyHeight,
-                fontSize: compactKanaModeSwitchButtonFontSize
-            )
-            leftModeSwitchEmojiButton(height: mainFlickKeyHeight)
-        }
-    }
-
-    private let landscapeLatinTypewriterMiddleRowOffsetFactor: CGFloat = 0.25
-    private let landscapeLatinTypewriterBottomRowOffsetFromMiddleFactor: CGFloat = 0.5
-
-    private func landscapeLatinTypewriterLetterAnchorOffsetFactor(_ rowIndex: Int) -> CGFloat {
-        switch rowIndex {
-        case 1:
-            return landscapeLatinTypewriterMiddleRowOffsetFactor
-        case 2:
-            return landscapeLatinTypewriterMiddleRowOffsetFactor
-                + landscapeLatinTypewriterBottomRowOffsetFromMiddleFactor
-        default:
-            return 0
-        }
-    }
-
-    private func landscapeLatinTypewriterLeadingControlPitchCount(_ row: [FlickKanaSet]) -> CGFloat {
-        CGFloat(row.prefix { isLatinShiftKey($0) }.count)
-    }
-
-    private func landscapeLatinTypewriterRowInsets(
-        leadingOffsetFactor: CGFloat,
-        keyPitch: CGFloat
-    ) -> EdgeInsets {
-        EdgeInsets(
-            top: 0,
-            leading: leadingOffsetFactor * keyPitch,
-            bottom: 0,
-            trailing: 0
-        )
-    }
-
-    private func landscapeLatinTypewriterRowInsets(_ rowIndex: Int, keyPitch: CGFloat) -> EdgeInsets {
-        landscapeLatinTypewriterRowInsets(
-            leadingOffsetFactor: landscapeLatinTypewriterLetterAnchorOffsetFactor(rowIndex),
-            keyPitch: keyPitch
-        )
-    }
-
-    private func landscapeLatinTypewriterRowInsets(_ rowIndex: Int) -> EdgeInsets {
-        guard usesLandscapeLatinTypewriterLayout else {
-            return EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0)
-        }
-
-        let fallbackKeyPitch = mainFlickKeyHeight + keyboardRowSpacing
-        return landscapeLatinTypewriterRowInsets(rowIndex, keyPitch: fallbackKeyPitch)
-    }
-
-    @ViewBuilder
-    private func landscapeLatinTypewriterKey(
-        _ kana: FlickKanaSet,
-        rowIndex: Int,
-        fixedWidth: CGFloat? = nil,
-        shiftFixedWidth: CGFloat? = nil
-    ) -> some View {
-        if isLatinShiftKey(kana) {
-            let shiftKey = LatinShiftKeyButton(
-                isOn: latinShiftState != .off,
-                isLocked: latinShiftState == .locked,
-                onTap: handleLatinShiftTap,
-                onLongPress: handleLatinShiftLongPress
-            )
-            let resolvedShiftWidth = shiftFixedWidth ?? fixedWidth
-
-            if let resolvedShiftWidth {
-                shiftKey
-                    .frame(width: resolvedShiftWidth, height: mainFlickKeyHeight)
-            } else {
-                shiftKey
-                    .frame(maxWidth: .infinity)
-                    .frame(height: mainFlickKeyHeight)
-            }
-        } else {
-            let renderedKana = displayedKana(for: kana)
-            let letterKey = FlickKeyView(
-                kana: renderedKana,
-                onCommit: commitText,
-                mainLabelFontSize: 25,
-                mainLabelFontWeight: rowKeyMainLabelFontWeight,
-                showsDirectionalHints: showsFlickGuideCharacters,
-                idleReplacement: rowKeyIdleReplacement(for: renderedKana),
-                longPressCandidates: longPressCandidates(for: kana),
-                longPressCandidatePanelPlacement: longPressCandidatePanelPlacement(forRowIndex: rowIndex),
-                allowsDirectionalFlick: allowsDirectionalFlick(for: kana),
-                onTouchStateChanged: { isTouching in
-                    updateActiveLayer(isTouching, layerIndex: rowIndex)
-                }
-            )
-
-            if let fixedWidth {
-                letterKey
-                    .frame(width: fixedWidth, height: mainFlickKeyHeight)
-            } else {
-                letterKey
-                    .frame(maxWidth: .infinity)
-                    .frame(height: mainFlickKeyHeight)
-            }
-        }
-    }
-
-    private func landscapeLatinInlineDeleteKey(fixedWidth: CGFloat) -> some View {
-        ActionKeyButton(
-            title: "⌫",
-            accessibilityLabel: "削除",
-            fontSize: 26,
-            repeatsWhileHolding: true,
-            repeatInitialDelay: keyRepeatInitialDelay,
-            repeatInterval: keyRepeatInterval,
-            action: onDeleteBackward
-        )
-            .frame(width: fixedWidth, height: mainFlickKeyHeight)
-    }
+    let landscapeLatinTypewriterMiddleRowOffsetFactor: CGFloat = 0.25
+    let landscapeLatinTypewriterBottomRowOffsetFromMiddleFactor: CGFloat = 0.5
 
     @ViewBuilder
     private func inlineLatinDeleteKey(fixedWidth: CGFloat? = nil) -> some View {
@@ -2913,297 +2072,8 @@ struct KeyboardRootView: View {
         }
     }
 
-    private func landscapeLatinInlineReturnKey(fixedWidth: CGFloat) -> some View {
-        ActionKeyButton(
-            title: returnActionKeyTitle,
-            systemImageName: returnActionKeySystemImageName,
-            accessibilityLabel: returnActionKeyAccessibilityLabel,
-            fontSize: returnActionKeyFontSize,
-            isEnabled: isReturnKeyEnabled,
-            onLongPress: returnKeyKatakanaLongPressAction,
-            onDoubleTap: returnKeyKatakanaDoubleTapAction,
-            doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-            prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-            action: onReturn
-        )
-            .frame(width: fixedWidth, height: mainFlickKeyHeight)
-    }
-
-    private func landscapeLatinInlineApostropheKey(fixedWidth: CGFloat) -> some View {
-        ActionKeyButton(
-            title: "'",
-            fontSize: 20,
-            action: { commitText("'") }
-        )
-            .frame(width: fixedWidth, height: mainFlickKeyHeight)
-    }
-
-    private var landscapeLatinInlineActionTypewriterMainCluster: some View {
-        GeometryReader { geometry in
-            let topRow = rows.indices.contains(0) ? rows[0] : []
-            let middleRow = rows.indices.contains(1) ? rows[1] : []
-            let bottomRow = rows.indices.contains(2)
-                ? landscapeBottomRowWithInlinePunctuation(rows[2])
-                : []
-            let inlineReturnRowIndex = landscapeLatinInlineReturnRowIndex
-
-            let topRawLeadingOffsetFactor = landscapeLatinTypewriterLetterAnchorOffsetFactor(0)
-                - landscapeLatinTypewriterLeadingControlPitchCount(topRow)
-            let middleRawLeadingOffsetFactor = landscapeLatinTypewriterLetterAnchorOffsetFactor(1)
-                - landscapeLatinTypewriterLeadingControlPitchCount(middleRow)
-            let bottomRawLeadingOffsetFactor = landscapeLatinTypewriterLetterAnchorOffsetFactor(2)
-                - landscapeLatinTypewriterLeadingControlPitchCount(bottomRow)
-
-            let minimumRawLeadingOffsetFactor = min(
-                topRawLeadingOffsetFactor,
-                middleRawLeadingOffsetFactor,
-                bottomRawLeadingOffsetFactor
-            )
-
-            let topLeadingOffsetFactor = topRawLeadingOffsetFactor - minimumRawLeadingOffsetFactor
-            let middleLeadingOffsetFactor = middleRawLeadingOffsetFactor - minimumRawLeadingOffsetFactor
-            let bottomLeadingOffsetFactor = bottomRawLeadingOffsetFactor - minimumRawLeadingOffsetFactor
-
-            let rowSpecs: [(keyPitchCount: CGFloat, offsetFactor: CGFloat)] = [
-                (CGFloat(topRow.count + 1), topLeadingOffsetFactor),
-                (
-                    CGFloat(
-                        middleRow.count
-                            + (inlineReturnRowIndex == 1 ? 1 : 0)
-                            + (needsQwertyMiddleRowApostrophe ? 1 : 0)
-                    ),
-                    middleLeadingOffsetFactor
-                ),
-                (
-                    CGFloat(bottomRow.count + (inlineReturnRowIndex == 2 ? 1 : 0)) + 1,
-                    bottomLeadingOffsetFactor
-                )
-            ].filter { $0.keyPitchCount > 0 }
-
-            let resolvedKeyWidth = max(
-                1,
-                rowSpecs
-                    .map { spec in
-                        let denominator = spec.keyPitchCount + spec.offsetFactor
-
-                        guard denominator > 0 else {
-                            return 1
-                        }
-
-                        let numerator = geometry.size.width
-                            - keyboardRowSpacing
-                            * (max(spec.keyPitchCount - 1, 0) + spec.offsetFactor)
-
-                        return numerator / denominator
-                    }
-                    .min() ?? 1
-            )
-            let keyPitch = resolvedKeyWidth + keyboardRowSpacing
-            let topInsets = landscapeLatinTypewriterRowInsets(
-                leadingOffsetFactor: topLeadingOffsetFactor,
-                keyPitch: keyPitch
-            )
-            let middleInsets = landscapeLatinTypewriterRowInsets(
-                leadingOffsetFactor: middleLeadingOffsetFactor,
-                keyPitch: keyPitch
-            )
-            let bottomInsets = landscapeLatinTypewriterRowInsets(
-                leadingOffsetFactor: bottomLeadingOffsetFactor,
-                keyPitch: keyPitch
-            )
-            let shiftKeyExtraWidth = max(0, (resolvedKeyWidth + keyboardRowSpacing) / 2)
-            let widenedShiftKeyWidth = resolvedKeyWidth + shiftKeyExtraWidth
-            let rightShiftIndexInBottomRow = bottomRow.firstIndex(where: isLandscapeLatinRightShiftKey)
-                ?? max(bottomRow.count - 1, 0)
-            let referenceRightEdgeX = bottomInsets.leading
-                + CGFloat(rightShiftIndexInBottomRow + 1) * resolvedKeyWidth
-                + CGFloat(rightShiftIndexInBottomRow) * keyboardRowSpacing
-                + shiftKeyExtraWidth * 2
-            let topRowLeadingKeyCount = topRow.count
-            let topDeleteKeyWidth = max(
-                resolvedKeyWidth,
-                referenceRightEdgeX
-                    - topInsets.leading
-                    - CGFloat(topRowLeadingKeyCount) * resolvedKeyWidth
-                    - CGFloat(topRowLeadingKeyCount) * keyboardRowSpacing
-            )
-            let middleRowLeadingKeyCount = middleRow.count
-                + (needsQwertyMiddleRowApostrophe ? 1 : 0)
-            let middleReturnKeyWidth = max(
-                resolvedKeyWidth,
-                referenceRightEdgeX
-                    - middleInsets.leading
-                    - CGFloat(middleRowLeadingKeyCount) * resolvedKeyWidth
-                    - CGFloat(middleRowLeadingKeyCount) * keyboardRowSpacing
-            )
-            VStack(alignment: .leading, spacing: keyboardRowSpacing) {
-                HStack(spacing: keyboardRowSpacing) {
-                    ForEach(Array(topRow.enumerated()), id: \.offset) { _, kana in
-                        landscapeLatinTypewriterKey(kana, rowIndex: 0, fixedWidth: resolvedKeyWidth)
-                    }
-
-                    landscapeLatinInlineDeleteKey(fixedWidth: topDeleteKeyWidth)
-                }
-                .padding(topInsets)
-                .zIndex(zIndex(for: 0))
-
-                HStack(spacing: keyboardRowSpacing) {
-                    ForEach(Array(middleRow.enumerated()), id: \.offset) { _, kana in
-                        landscapeLatinTypewriterKey(kana, rowIndex: 1, fixedWidth: resolvedKeyWidth)
-                    }
-
-                    if needsQwertyMiddleRowApostrophe {
-                        landscapeLatinInlineApostropheKey(fixedWidth: resolvedKeyWidth)
-                    }
-
-                    if inlineReturnRowIndex == 1 {
-                        landscapeLatinInlineReturnKey(fixedWidth: middleReturnKeyWidth)
-                    }
-                }
-                .padding(middleInsets)
-                .zIndex(zIndex(for: 1))
-
-                HStack(spacing: keyboardRowSpacing) {
-                    ForEach(Array(bottomRow.enumerated()), id: \.offset) { _, kana in
-                        landscapeLatinTypewriterKey(
-                            kana,
-                            rowIndex: 2,
-                            fixedWidth: resolvedKeyWidth,
-                            shiftFixedWidth: widenedShiftKeyWidth
-                        )
-                    }
-
-                    if inlineReturnRowIndex == 2 {
-                        landscapeLatinInlineReturnKey(fixedWidth: resolvedKeyWidth)
-                    }
-                }
-                .padding(bottomInsets)
-                .zIndex(zIndex(for: 2))
-
-                HStack(spacing: keyboardRowSpacing) {
-                    if showsNextKeyboardKey {
-                        ActionKeyButton(title: "🌐", fixedWidth: 54, action: onAdvanceKeyboard)
-                            .frame(height: mainFlickKeyHeight)
-                    }
-
-                    latinSpaceLeftActionButtons(fixedWidth: 44, keyHeight: mainFlickKeyHeight)
-
-                    spaceKeyButton(fixedWidth: nil, keyHeight: mainFlickKeyHeight)
-
-                    latinSpaceRightActionButtons(fixedWidth: 44, keyHeight: mainFlickKeyHeight)
-                }
-                .zIndex(zIndex(for: rows.count))
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        }
-    }
-
-    private var landscapeLatinTypewriterMainCluster: some View {
-        Group {
-            if usesLandscapeLatinTypewriterLayout {
-                landscapeLatinInlineActionTypewriterMainCluster
-            } else {
-                VStack(spacing: keyboardRowSpacing) {
-                    ForEach(Array(rows.enumerated()), id: \.offset) { rowIndex, row in
-                        HStack(spacing: keyboardRowSpacing) {
-                            ForEach(row) { kana in
-                                landscapeLatinTypewriterKey(kana, rowIndex: rowIndex)
-                            }
-                        }
-                        .padding(landscapeLatinTypewriterRowInsets(rowIndex))
-                        .zIndex(zIndex(for: rowIndex))
-                    }
-
-                    HStack(spacing: keyboardRowSpacing) {
-                        if showsNextKeyboardKey {
-                            ActionKeyButton(title: "🌐", fixedWidth: 54, action: onAdvanceKeyboard)
-                                .frame(height: compactActionKeyHeight)
-                        }
-
-                        ActionKeyButton(
-                            title: "⌫",
-                            accessibilityLabel: "削除",
-                            fontSize: 26,
-                            repeatsWhileHolding: true,
-                            repeatInitialDelay: keyRepeatInitialDelay,
-                            repeatInterval: keyRepeatInterval,
-                            action: onDeleteBackward
-                        )
-                            .frame(maxWidth: .infinity)
-                            .frame(height: compactActionKeyHeight)
-
-                        spaceKeyButton(fixedWidth: nil)
-
-                        ActionKeyButton(
-                            title: returnActionKeyTitle,
-                            systemImageName: returnActionKeySystemImageName,
-                            accessibilityLabel: returnActionKeyAccessibilityLabel,
-                            fontSize: returnActionKeyFontSize,
-                            isEnabled: isReturnKeyEnabled,
-                            onLongPress: returnKeyKatakanaLongPressAction,
-                            onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                            doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                            prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                            action: onReturn
-                        )
-                            .frame(maxWidth: .infinity)
-                            .frame(height: compactActionKeyHeight)
-                    }
-                    .padding(.top, actionRowTopSpacing)
-                    .zIndex(zIndex(for: rows.count))
-                }
-            }
-        }
-    }
-
     @ViewBuilder
-    private var landscapeKanaFixedModeSwitchColumn: some View {
-        if isKanaThreeByThreeMode {
-            threeByThreeKanaLeftColumn
-        } else if isKanaFiveByTwoMode {
-            landscapeKanaFiveByTwoLeftColumn
-        } else {
-            Color.clear
-                .allowsHitTesting(false)
-                .frame(width: leftModeSwitchButtonWidth)
-        }
-    }
-
-    @ViewBuilder
-    private var landscapeKanaSwappableMainCluster: some View {
-        if isKanaThreeByThreeMode {
-            threeByThreeKanaMainCluster(
-                kanaRows: threeByThreeKanaRows,
-                rowHeight: mainFlickKeyHeight,
-                rowSpacing: keyboardRowSpacing
-            )
-        } else if isKanaFiveByTwoMode {
-            landscapeKanaFiveByTwoMainCluster
-        } else {
-            keyboardMainContent
-        }
-    }
-
-    private var landscapeKanaReferenceClusterHeight: CGFloat {
-        if isKanaThreeByThreeMode {
-            // 3x3+わのかな塊は4段固定。
-            return mainFlickKeyHeight * 4 + keyboardRowSpacing * 3
-        }
-
-        if isKanaFiveByTwoMode {
-            // 5x2は上段数字 + かな段 + 下段アクションを含める。
-            let topAndKanaRowCount = CGFloat(rows.count + 1)
-            let verticalGapCount = CGFloat(rows.count + 1)
-            return topAndKanaRowCount * mainFlickKeyHeight
-                + mainFlickKeyHeight
-                + verticalGapCount * keyboardRowSpacing
-        }
-
-        return 0
-    }
-
-    @ViewBuilder
-    private var keyboardMainContent: some View {
+    var keyboardMainContent: some View {
         if inputMode == .emoji {
             switch emojiInputSubmode {
             case .emoji:
