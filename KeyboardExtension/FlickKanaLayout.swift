@@ -194,15 +194,14 @@ enum FlickKanaLayout {
         let row1Chars = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
 
         let row2Chars: [String] = isShifted
-            ? ["・", "±", "〜", "…", "\\", "^", "_", "`", "|", "~"]
-            : ["@", "+", "-", "*", "/", "=", ",", ".", ":", ";"]
+            ? ["!", "?", "'", "\"", "~", "_", "^", "`", "\\", "|"]
+            : ["#", "$", "%", "&", "*", "+", "=", ":", ";", ","]
 
         // 行3: AZERTY 行3 と同じ構造 = shift_left + 6 記号 + shift_right (8 スロット)。
         // 描画時に portrait モードでは shift_right を delete に差し替える
         // (`shouldReplacePortraitClavierRightShiftWithDelete`)。
-        // 元の 8 文字のうち末尾2つ(<> / ○×)はドロップして 6 文字に絞る。
         let row3Chars: [String] = isShifted
-            ? ["「", "」", "『", "』", "【", "】"]
+            ? ["<", ">", "『", "』", "「", "」"]
             : ["(", ")", "[", "]", "{", "}"]
 
         func numberOnlySet(_ ch: String) -> FlickKanaSet {
