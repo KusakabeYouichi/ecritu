@@ -447,7 +447,7 @@ struct KeyboardRootView: View {
         isSpaceActsAsConversionKey ? "変換" : "空白"
     }
 
-    private var isReturnActsAsCommitKey: Bool {
+    var isReturnActsAsCommitKey: Bool {
         inputMode == .kana && !composingText.isEmpty
     }
 
@@ -469,10 +469,6 @@ struct KeyboardRootView: View {
         }
 
         return returnKeySystemImageName == nil ? "改行" : "検索"
-    }
-
-    private var returnActionKeyFontSize: CGFloat {
-        isReturnActsAsCommitKey ? 16 : 22
     }
 
     private var returnKeyKatakanaDoubleTapAction: (() -> Void)? {
@@ -507,7 +503,7 @@ struct KeyboardRootView: View {
         TemperatureUnitPreference(rawValue: temperatureUnitRawValue) ?? .celsius
     }
 
-    private var currentFlickGuideDisplayMode: FlickGuideDisplayMode {
+    var currentFlickGuideDisplayMode: FlickGuideDisplayMode {
         switch inputMode {
         case .kana:
             return kanaFlickGuideDisplayMode
@@ -611,7 +607,7 @@ struct KeyboardRootView: View {
         }
     }
 
-    private var isKanaThreeByThreeMode: Bool {
+    var isKanaThreeByThreeMode: Bool {
         inputMode == .kana && kanaLayoutMode == .threeByThreePlusWa
     }
 
@@ -719,7 +715,7 @@ struct KeyboardRootView: View {
         )
     }
 
-    private var modifierSelectorKey: FlickKanaSet {
+    var modifierSelectorKey: FlickKanaSet {
         let modeSwitchText = inputMode == .kana ? kanaCharacterMode.toggleGuide : "123"
 
         if inputMode == .kana && kanaModifierPlacementMode == .postfix {
@@ -1030,25 +1026,6 @@ struct KeyboardRootView: View {
         fourRowAlignedClusterHeight - mainFlickKeyHeight - keyboardRowSpacing
     }
 
-    private func kanaThreeByThreeMainLabelFontSize(for displayMode: FlickGuideDisplayMode) -> CGFloat {
-        switch displayMode {
-        case .off:
-            return 26
-        case .fourDirections:
-            return 24
-        case .down:
-            return 23
-        }
-    }
-
-    private var kanaThreeByThreeMainLabelFontSize: CGFloat {
-        kanaThreeByThreeMainLabelFontSize(for: currentFlickGuideDisplayMode)
-    }
-
-    private var numberThreeByThreeMainLabelFontSize: CGFloat {
-        isLandscapeLayout ? 24 : 28
-    }
-
     private var numberThreeByThreeDirectionalHintScale: CGFloat {
         isLandscapeLayout ? 0.82 : 1
     }
@@ -1122,27 +1099,6 @@ struct KeyboardRootView: View {
 
     private var numberDownDirectionalHintVerticalOffsetAdjustment: CGFloat {
         -2
-    }
-
-    private var modifierMainLabelFontSize: CGFloat {
-        let baseSize: CGFloat = isKanaThreeByThreeMode
-            ? kanaThreeByThreeMainLabelFontSize(for: modifierFlickGuideDisplayMode)
-            : 28
-
-        let centerLabel = modifierSelectorKey.center
-
-        if inputMode == .kana && centerLabel == "小" {
-            return baseSize * 0.6
-        }
-
-        let isPostfixKana = inputMode == .kana
-            && kanaModifierPlacementMode == .postfix
-
-        if isPostfixKana && centerLabel == "^_^" {
-            return baseSize * 0.7
-        }
-
-        return baseSize
     }
 
     private var modifierDirectionalFlickThreshold: CGFloat {
@@ -1223,19 +1179,7 @@ struct KeyboardRootView: View {
     }
 
     // clavier 配列はメイン letter キーも system 行の inline 記号キーも 26pt に統一する。
-    private var clavierKeyFontSize: CGFloat { 26 }
-
-    // 漢数字(一二三四五六七八九〇)はASCII数字より字幅が広いので少し小さめに描画する。
-    private func clavierMainKeyFontSize(for text: String) -> CGFloat {
-        guard text.count == 1, let scalar = text.unicodeScalars.first else {
-            return clavierKeyFontSize
-        }
-        // CJK統合漢字 (一〜九) と 〇 (U+3007)
-        if (0x4E00...0x9FFF).contains(scalar.value) || scalar.value == 0x3007 {
-            return clavierKeyFontSize - 4
-        }
-        return clavierKeyFontSize
-    }
+    var clavierKeyFontSize: CGFloat { 26 }
 
     // clavier system 行に並べる 4 つの記号(shift 状態で切替)。
     // 配置順: index 0 = delete 跡(AZERTY の `@` 位置)、index 1 = space-left(`/`)、
@@ -1255,7 +1199,7 @@ struct KeyboardRootView: View {
         return symbols[index]
     }
 
-    private var usesWideLeftModeSwitchButtons: Bool {
+    var usesWideLeftModeSwitchButtons: Bool {
         if isLandscapeLayout {
             return true
         }
@@ -1283,261 +1227,7 @@ struct KeyboardRootView: View {
         usesWideLeftModeSwitchButtons ? "あいう" : "あい"
     }
 
-    private var landscapeLeftModeSwitchFontSize: CGFloat {
-        16
-    }
-
-    private var landscapeLeftModeSwitchKaomojiIconFontSize: CGFloat {
-        24
-    }
-
-    private var portraitLeftModeSwitchFontSize: CGFloat {
-        13
-    }
-
-    private var unifiedLeftModeSwitchFontSize: CGFloat {
-        isLandscapeLayout ? landscapeLeftModeSwitchFontSize : portraitLeftModeSwitchFontSize
-    }
-
-    private var compactKanaModeSwitchButtonFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize
-    }
-
-    private var standardKanaModeSwitchButtonFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize
-    }
-
-    private var leftModeSwitchNumberFontSize: CGFloat {
-        if usesWideLeftModeSwitchButtons && !isLandscapeLayout {
-            return 18
-        }
-
-        return unifiedLeftModeSwitchFontSize
-    }
-
-    private var leftModeSwitchLatinFontSize: CGFloat {
-        if usesWideLeftModeSwitchButtons && !isLandscapeLayout {
-            return 18
-        }
-
-        return unifiedLeftModeSwitchFontSize
-    }
-
-    private var portraitCompactLeftModeSwitchKaomojiIconFontSize: CGFloat {
-        28
-    }
-
-    private var portraitWideLeftModeSwitchKaomojiIconFontSize: CGFloat {
-        20
-    }
-
-    private var portraitWideLeftModeSwitchEmojiIconFontSize: CGFloat {
-        26
-    }
-
-    private var kaomojiTransitionIconFontSize: CGFloat {
-        if isLandscapeLayout {
-            return landscapeLeftModeSwitchKaomojiIconFontSize
-        }
-
-        if usesWideLeftModeSwitchButtons {
-            return portraitWideLeftModeSwitchKaomojiIconFontSize
-        }
-
-        return portraitCompactLeftModeSwitchKaomojiIconFontSize
-    }
-
-    private var symbolTransitionIconFontSize: CGFloat {
-        if isLandscapeLayout {
-            return unifiedLeftModeSwitchFontSize
-        }
-
-        if usesWideLeftModeSwitchButtons {
-            return 20
-        }
-
-        return 16
-    }
-
-    private var portraitCompactKanaModeSwitcherIconFontSize: CGFloat {
-        portraitCompactLeftModeSwitchKaomojiIconFontSize
-    }
-
-    private var kanaModeSwitcherEmojiIconFontSize: CGFloat {
-        if isLandscapeLayout {
-            return landscapeLeftModeSwitchKaomojiIconFontSize
-        }
-
-        if !usesWideLeftModeSwitchButtons {
-            return portraitCompactKanaModeSwitcherIconFontSize
-        }
-
-        return portraitWideLeftModeSwitchKaomojiIconFontSize
-    }
-
-    private var kanaModeSwitcherFaceEmojiIconFontSize: CGFloat {
-        if isLandscapeLayout {
-            return landscapeLeftModeSwitchKaomojiIconFontSize
-        }
-
-        if !usesWideLeftModeSwitchButtons {
-            return portraitCompactKanaModeSwitcherIconFontSize
-        }
-
-        return portraitWideLeftModeSwitchEmojiIconFontSize
-    }
-
-    private var kanaModeSwitcherFaceEmojiMainLabelFontSize: CGFloat {
-        if isLandscapeLayout || !usesWideLeftModeSwitchButtons {
-            return kanaModeSwitcherFaceEmojiIconFontSize
-        }
-
-        return portraitWideLeftModeSwitchEmojiIconFontSize + 1
-    }
-
-    private var kanaModeSwitcherKaomojiMainLabelFontSize: CGFloat {
-        if isLandscapeLayout {
-            return landscapeLeftModeSwitchKaomojiIconFontSize
-        }
-
-        return max(1, portraitWideLeftModeSwitchKaomojiIconFontSize - 1)
-    }
-
-    private func compactKanaModeSwitcherMainLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
-        switch action {
-        case .symbols:
-            return symbolTransitionIconFontSize
-        case .emoji:
-            return compactKanaModeSwitcherEmojiMainLabelFontSize
-        case .kaomoji:
-            return unifiedLeftModeSwitchFontSize
-        }
-    }
-
-    private func wideKanaModeSwitcherMainLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
-        switch action {
-        case .symbols:
-            return symbolTransitionIconFontSize
-        case .emoji:
-            return kanaModeSwitcherFaceEmojiMainLabelFontSize
-        case .kaomoji:
-            return kanaModeSwitcherKaomojiMainLabelFontSize
-        }
-    }
-
-    private func compactKanaModeSwitcherActiveLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
-        switch action {
-        case .symbols:
-            return symbolTransitionIconFontSize
-        case .emoji:
-            return compactKanaModeSwitcherEmojiActiveIconFontSize
-        case .kaomoji:
-            return compactKanaModeSwitcherPreviewIconFontSize
-        }
-    }
-
-    private func wideKanaModeSwitcherActiveMainLabelFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
-        switch action {
-        case .symbols:
-            return symbolTransitionIconFontSize
-        case .emoji:
-            return kanaModeSwitcherFaceEmojiIconFontSize
-        case .kaomoji:
-            return kanaModeSwitcherKaomojiMainLabelFontSize
-        }
-    }
-
-    private func wideKanaModeSwitcherActivePreviewFontSize(for action: KanaModeSwitcherAction) -> CGFloat {
-        switch action {
-        case .symbols:
-            return symbolTransitionIconFontSize
-        case .emoji:
-            return kanaModeSwitcherFaceEmojiIconFontSize
-        case .kaomoji:
-            return kanaModeSwitcherEmojiIconFontSize
-        }
-    }
-
-    private var kanaModeSwitcherMainLabelFontSize: CGFloat {
-        if !usesWideLeftModeSwitchButtons {
-            return compactKanaModeSwitcherMainLabelFontSize(for: kanaModeSwitcherTapAction)
-        }
-
-        return wideKanaModeSwitcherMainLabelFontSize(for: kanaModeSwitcherTapAction)
-    }
-
-    private func kanaModeSwitcherMainLabelFontSizeForDirection(
-        _ direction: FlickDirection,
-        mainText: String
-    ) -> CGFloat {
-        if mainText == "🌐" {
-            return kaomojiTransitionIconFontSize
-        }
-
-        if !usesWideLeftModeSwitchButtons {
-            if direction == .milieu {
-                return kanaModeSwitcherMainLabelFontSize
-            }
-
-            if let action = kanaModeSwitcherAction(for: direction) {
-                return compactKanaModeSwitcherActiveLabelFontSize(for: action)
-            }
-
-            if mainText == "⌘" {
-                return symbolTransitionIconFontSize
-            }
-
-            if mainText == "☺︎" {
-                return compactKanaModeSwitcherEmojiActiveIconFontSize
-            }
-
-            if mainText == "^_^" {
-                return compactKanaModeSwitcherPreviewIconFontSize
-            }
-
-            return kanaModeSwitcherMainLabelFontSize
-        }
-
-        if direction == .milieu {
-            return kanaModeSwitcherMainLabelFontSize
-        }
-
-        if let action = kanaModeSwitcherAction(for: direction) {
-            return wideKanaModeSwitcherActiveMainLabelFontSize(for: action)
-        }
-
-        if mainText == "⌘" {
-            return symbolTransitionIconFontSize
-        }
-
-        if mainText == "☺︎" {
-            return kanaModeSwitcherFaceEmojiIconFontSize
-        }
-
-        if mainText == "^_^" {
-            return kanaModeSwitcherKaomojiMainLabelFontSize
-        }
-
-        return kanaModeSwitcherMainLabelFontSize
-    }
-
-    private var kanaModeSwitcherPreviewFontSize: CGFloat {
-        return 14
-    }
-
-    private var compactKanaModeSwitcherPreviewIconFontSize: CGFloat {
-        18
-    }
-
-    private var compactKanaModeSwitcherEmojiMainLabelFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize + 2
-    }
-
-    private var compactKanaModeSwitcherEmojiActiveIconFontSize: CGFloat {
-        compactKanaModeSwitcherPreviewIconFontSize + 2
-    }
-
-    private func kanaModeSwitcherAction(for direction: FlickDirection) -> KanaModeSwitcherAction? {
+    func kanaModeSwitcherAction(for direction: FlickDirection) -> KanaModeSwitcherAction? {
         switch direction {
         case .droite:
             return kanaModeSwitcherRightFlickAction
@@ -1546,53 +1236,6 @@ struct KeyboardRootView: View {
         default:
             return nil
         }
-    }
-
-    private func kanaModeSwitcherPreviewFontSizeForDirection(
-        _ direction: FlickDirection,
-        previewText: String
-    ) -> CGFloat {
-        guard !isLandscapeLayout else {
-            return kanaModeSwitcherPreviewFontSize
-        }
-
-        if !usesWideLeftModeSwitchButtons {
-            if let action = kanaModeSwitcherAction(for: direction) {
-                return compactKanaModeSwitcherActiveLabelFontSize(for: action)
-            }
-
-            if previewText == "⌘" {
-                return symbolTransitionIconFontSize
-            }
-
-            if previewText == "☺︎" {
-                return compactKanaModeSwitcherEmojiActiveIconFontSize
-            }
-
-            if previewText == "^_^" {
-                return compactKanaModeSwitcherPreviewIconFontSize
-            }
-
-            return kanaModeSwitcherPreviewFontSize
-        }
-
-        if let action = kanaModeSwitcherAction(for: direction) {
-            return wideKanaModeSwitcherActivePreviewFontSize(for: action)
-        }
-
-        if previewText == "⌘" {
-            return symbolTransitionIconFontSize
-        }
-
-        if previewText == "☺︎" {
-            return kanaModeSwitcherFaceEmojiIconFontSize
-        }
-
-        if previewText == "^_^" {
-            return kanaModeSwitcherEmojiIconFontSize
-        }
-
-        return kanaModeSwitcherPreviewFontSize
     }
 
     private var kanaModeSwitcherPreviewHorizontalPadding: CGFloat {
