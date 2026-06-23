@@ -209,6 +209,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "とりました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "とりません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "とれば", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 関西方言の「〜てしまった→〜てもうた」縮約(食べてもうた 等)
+        InflectionRule(readingSuffix: "てもう", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てもうた", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "てもうて", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ます", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -431,6 +435,21 @@ extension KanaKanjiConverter {
             suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: contractionStem + "じゃい"))
             suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: contractionStem + "じゃった"))
         }
+
+        // 関西方言の「〜てしまった→〜てもうた」縮約
+        // 「しまう→もう/まう」(食べてしまう→食べてもう/食べてまう, 食べてしまった→食べてもうた/食べてまった)
+        suffixes.append(teForm + "もう")
+        suffixes.append(teForm + "もうた")
+        suffixes.append(teForm + "もうて")
+        suffixes.append(teForm + "もうたら")
+        suffixes.append(teForm + "もわない")
+        suffixes.append(teForm + "まう")
+        suffixes.append(teForm + "まった")
+        suffixes.append(teForm + "まって")
+        suffixes.append(teForm + "まったら")
+        suffixes.append(teForm + "まわない")
+        suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: teForm + "もうた"))
+        suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: teForm + "まった"))
 
         return suffixes
     }
@@ -826,6 +845,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しとります", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しとりました", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しとりません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 関西方言の「〜してしまった→〜してもうた」縮約
+        InflectionRule(readingSuffix: "してもう", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してもうた", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "してもうて", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "します", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しました", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -1183,6 +1206,10 @@ extension KanaKanjiConverter {
         ("きとります", "来とります"),
         ("きとりました", "来とりました"),
         ("きとりません", "来とりません"),
+        // 関西方言の「〜てしまった→〜てもうた」縮約(来てもうた 等)
+        ("きてもう", "来てもう"),
+        ("きてもうた", "来てもうた"),
+        ("きてもうて", "来てもうて"),
         ("こい", "来い"),
         ("きます", "来ます"),
         ("きました", "来ました"),
