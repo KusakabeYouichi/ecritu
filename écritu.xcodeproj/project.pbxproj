@@ -50,6 +50,7 @@
 		A77A8D7DFD358F9976420EF3 /* kana_kanji_candidate_sources.json in Resources */ = {isa = PBXBuildFile; fileRef = 753727472F0FBB8C1E318336 /* kana_kanji_candidate_sources.json */; };
 		AA96FF3BF4C2394ED6E45AA9 /* ThirdPartyLicensesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1101C5F140F04B38C98D298F /* ThirdPartyLicensesView.swift */; };
 		B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105353784C776E1A40C7A8AE /* SettingsModels.swift */; };
+		B22E76DC1B5D975F1DC62A62 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */; };
 		B81FC3000865E20CAEE4D4E9 /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */; };
 		CBAC06FB9B0379B8CDDE4F94 /* DictionarySettingsSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */; };
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
@@ -137,6 +138,7 @@
 		E807A57473C85475BCAA585B /* EcrituApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituApp.swift; sourceTree = "<group>"; };
 		E9737BDAEF466B520663D3C6 /* écritu.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "écritu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+Layout.swift"; sourceTree = "<group>"; };
+		F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+SupplementaryCandidates.swift"; sourceTree = "<group>"; };
 		F5ED4830F4FA66EFEFE9B5AB /* LEGAL */ = {isa = PBXFileReference; path = LEGAL; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -230,6 +232,7 @@
 				6EE34AD2022A99BC02FBDD3C /* DefaultDictionaryResources */,
 				E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */,
 				EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */,
+				F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -526,6 +529,7 @@
 				4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */,
 				F807D4921FE2F90C8C2AC439 /* KeyboardViewController+Diagnostics.swift in Sources */,
 				ECDBEEB3F6EF91C0EB7C3E85 /* KeyboardViewController+Layout.swift in Sources */,
+				B22E76DC1B5D975F1DC62A62 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
