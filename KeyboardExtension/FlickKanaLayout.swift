@@ -190,8 +190,10 @@ enum FlickKanaLayout {
         for profile: FlickDirectionProfile,
         isShifted: Bool
     ) -> [[FlickKanaSet]] {
-        // 行1: 1-9, 0(shift 不問)
-        let row1Chars = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
+        // 行1: 1-9, 0(shift時は漢数字 一二三四五六七八九〇)
+        let row1Chars: [String] = isShifted
+            ? ["一", "二", "三", "四", "五", "六", "七", "八", "九", "〇"]
+            : ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
 
         let row2Chars: [String] = isShifted
             ? ["!", "?", "'", "\"", "~", "_", "^", "`", "\\", "|"]

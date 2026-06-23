@@ -1225,6 +1225,18 @@ struct KeyboardRootView: View {
     // clavier 配列はメイン letter キーも system 行の inline 記号キーも 26pt に統一する。
     private var clavierKeyFontSize: CGFloat { 26 }
 
+    // 漢数字(一二三四五六七八九〇)はASCII数字より字幅が広いので少し小さめに描画する。
+    private func clavierMainKeyFontSize(for text: String) -> CGFloat {
+        guard text.count == 1, let scalar = text.unicodeScalars.first else {
+            return clavierKeyFontSize
+        }
+        // CJK統合漢字 (一〜九) と 〇 (U+3007)
+        if (0x4E00...0x9FFF).contains(scalar.value) || scalar.value == 0x3007 {
+            return clavierKeyFontSize - 4
+        }
+        return clavierKeyFontSize
+    }
+
     // clavier system 行に並べる 4 つの記号(shift 状態で切替)。
     // 配置順: index 0 = delete 跡(AZERTY の `@` 位置)、index 1 = space-left(`/`)、
     //         index 2/3 = space-right(`.`/`-`)。
@@ -3628,7 +3640,7 @@ struct KeyboardRootView: View {
                                 kana: renderedKana,
                                 onCommit: commitText,
                                 mainLabelFontSize: (inputMode == .number && effectiveNumberLayoutMode == .clavier)
-                                    ? clavierKeyFontSize
+                                    ? clavierMainKeyFontSize(for: renderedKana.center)
                                     : 28,
                                 mainLabelFontWeight: rowKeyMainLabelFontWeight,
                                 showsDirectionalHints: showsFlickGuideCharacters,
