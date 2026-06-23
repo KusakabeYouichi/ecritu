@@ -497,6 +497,33 @@ extension KanaKanjiConverter {
         return suffixes
     }
 
+    static func godanCausativeInflectionSuffixes(for aForm: String) -> [String] {
+        // 五段の使役・使役受身。「〜せる」「〜させられる」は一段動詞として活用する。
+        // 例: 書く → 書かせる/書かせた/書かせて/書かせられた 等
+        guard !aForm.isEmpty else {
+            return []
+        }
+
+        let causativeStem = aForm + "せ"
+        let causativePassiveStem = aForm + "せられ"
+
+        let oneDanEndings = [
+            "る", "ない", "なかった",
+            "た", "たら", "たり", "て",
+            "れば", "よう",
+            "ます", "ました", "ません", "ませんでした",
+            "なさい",
+            "たい", "たく", "たくない", "たくなくて", "たくなかった", "たかった", "たければ"
+        ]
+
+        var suffixes = oneDanEndings.flatMap { ending in
+            [causativeStem + ending, causativePassiveStem + ending]
+        }
+        suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: causativeStem + "た"))
+        suffixes.append(contentsOf: taRiSuruInflectionSuffixes(for: causativePassiveStem + "た"))
+        return suffixes
+    }
+
     static func teOkuInflectionSuffixes(for teForm: String) -> [String] {
         guard !teForm.isEmpty else {
             return []
@@ -752,11 +779,6 @@ extension KanaKanjiConverter {
                 pattern.aForm + "ず",
                 pattern.aForm + "れる",
                 pattern.aForm + "れない",
-                pattern.aForm + "せる",
-                pattern.aForm + "せて",
-                pattern.aForm + "せない",
-                pattern.aForm + "せられる",
-                pattern.aForm + "せられない",
                 pattern.aForm + "れた",
                 pattern.aForm + "れ",
                 pattern.iForm + "ます",
@@ -806,6 +828,10 @@ extension KanaKanjiConverter {
             suffixes.append(contentsOf: KanaKanjiConverter.makuInflectionSuffixes(for: pattern.iForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: passiveTeForm))
+            suffixes.append(contentsOf: KanaKanjiConverter.godanCausativeInflectionSuffixes(for: pattern.aForm))
+            // 使役/使役受身の te-aspect 派生(書かせている, 書かせていた, 書かせられている 等)
+            suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.aForm + "せて"))
+            suffixes.append(contentsOf: KanaKanjiConverter.teAspectInflectionSuffixes(for: pattern.aForm + "せられて"))
             suffixes.append(contentsOf: KanaKanjiConverter.teAruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teKuruInflectionSuffixes(for: pattern.teForm))
             suffixes.append(contentsOf: KanaKanjiConverter.teIkuInflectionSuffixes(for: pattern.teForm))
