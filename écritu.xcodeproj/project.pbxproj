@@ -52,6 +52,7 @@
 		B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 105353784C776E1A40C7A8AE /* SettingsModels.swift */; };
 		B22E76DC1B5D975F1DC62A62 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */; };
 		B81FC3000865E20CAEE4D4E9 /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */; };
+		C62F944FB8A8DE4CE9BF51FF /* KeyboardViewController+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */; };
 		CBAC06FB9B0379B8CDDE4F94 /* DictionarySettingsSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */; };
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
 		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
@@ -132,6 +133,7 @@
 		C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCatalog.swift; sourceTree = "<group>"; };
 		CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DictionarySettingsSections.swift; sourceTree = "<group>"; };
 		CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+InputHandling.swift"; sourceTree = "<group>"; };
+		CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+Settings.swift"; sourceTree = "<group>"; };
 		DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayerZIndex.swift; sourceTree = "<group>"; };
 		E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+Diagnostics.swift"; sourceTree = "<group>"; };
 		E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaMap.swift; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 				E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */,
 				EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */,
 				F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */,
+				CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -530,6 +533,7 @@
 				F807D4921FE2F90C8C2AC439 /* KeyboardViewController+Diagnostics.swift in Sources */,
 				ECDBEEB3F6EF91C0EB7C3E85 /* KeyboardViewController+Layout.swift in Sources */,
 				B22E76DC1B5D975F1DC62A62 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */,
+				C62F944FB8A8DE4CE9BF51FF /* KeyboardViewController+Settings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
