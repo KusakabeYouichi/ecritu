@@ -184,6 +184,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 関西弁・口語の否定縮約形(食べない→食べん, 食べなかった→食べんかった 等)
+        InflectionRule(readingSuffix: "ん", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "んかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "んかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "んで", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ます", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ました", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ません", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -645,6 +650,11 @@ extension KanaKanjiConverter {
                 pattern.aForm + "ない",
                 pattern.aForm + "なかった",
                 pattern.aForm + "なかったら",
+                // 関西弁・口語の否定縮約形(知らない→知らん, 知らなかった→知らんかった 等)
+                pattern.aForm + "ん",
+                pattern.aForm + "んかった",
+                pattern.aForm + "んかったら",
+                pattern.aForm + "んで",
                 pattern.aForm + "ねば",
                 pattern.aForm + "ず",
                 pattern.aForm + "れる",
@@ -736,6 +746,11 @@ extension KanaKanjiConverter {
     static let suruInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 関西弁・口語の否定縮約形(しない→せん, しなかった→せんかった 等)
+        InflectionRule(readingSuffix: "せん", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "せんかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "せんかったら", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "せんで", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "します", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しました", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しません", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
