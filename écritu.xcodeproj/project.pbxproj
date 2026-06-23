@@ -33,6 +33,7 @@
 		494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */; };
 		4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */; };
 		500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */; };
+		524BCC76C91E62075115AF3A /* ContentView+DictionaryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */; };
 		5455038D3ECF9657CA458C8E /* KeyboardKeyComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */; };
 		55453E798FC6382F14E94B48 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
 		62E37AD409B322FD8E105704 /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */; };
@@ -125,6 +126,7 @@
 		6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
 		753727472F0FBB8C1E318336 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_candidate_sources.json; sourceTree = "<group>"; };
 		76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransition.swift; sourceTree = "<group>"; };
+		7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+DictionaryStore.swift"; sourceTree = "<group>"; };
 		83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEmojiCatalog.swift; sourceTree = "<group>"; };
 		88923D70417B1F65997342BF /* ÉcrituSecondVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituSecondVocab.json"; sourceTree = "<group>"; };
 		8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */,
 				CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */,
 				1350C355909AB4D0F84C48DF /* IndexedVocabularyList.swift */,
+				7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -514,6 +517,7 @@
 				B81FC3000865E20CAEE4D4E9 /* SettingsComponents.swift in Sources */,
 				CBAC06FB9B0379B8CDDE4F94 /* DictionarySettingsSections.swift in Sources */,
 				285326EF479921408BB11307 /* IndexedVocabularyList.swift in Sources */,
+				524BCC76C91E62075115AF3A /* ContentView+DictionaryStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
