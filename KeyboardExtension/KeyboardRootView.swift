@@ -56,35 +56,35 @@ struct KeyboardRootView: View {
     let showsParenthesesWrapper: Bool
     let initialSpaceToastText: String?
 
-    @State private var inputMode: KeyboardInputMode = .kana
-    @State private var diacriticMode: DiacriticMode = .none
-    @State private var kanaCharacterMode: KanaCharacterMode = .hiragana
-    @State private var activeLayerIndex: Int? = nil
-    @State private var spaceToastText: String? = nil
-    @State private var spaceToastOpacity: Double = 0
-    @State private var lastShownSpaceToastTrigger = -1
-    @State private var latinShiftState: LatinShiftState = .off
+    @State var inputMode: KeyboardInputMode = .kana
+    @State var diacriticMode: DiacriticMode = .none
+    @State var kanaCharacterMode: KanaCharacterMode = .hiragana
+    @State var activeLayerIndex: Int? = nil
+    @State var spaceToastText: String? = nil
+    @State var spaceToastOpacity: Double = 0
+    @State var lastShownSpaceToastTrigger = -1
+    @State var latinShiftState: LatinShiftState = .off
     @State private var lastLatinShiftTapAt: Date? = nil
-    @State private var isAwaitingLatinModeSwitchSecondTap = false
-    @State private var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
-    @State private var selectedEmojiCategory: EmojiCategory = .people
-    @State private var selectedSymbolCategory: SymbolCategory = .basic
-    @State private var selectedKaomojiCategoryID = "existing"
+    @State var isAwaitingLatinModeSwitchSecondTap = false
+    @State var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
+    @State var selectedEmojiCategory: EmojiCategory = .people
+    @State var selectedSymbolCategory: SymbolCategory = .basic
+    @State var selectedKaomojiCategoryID = "existing"
     @State private var selectedKaomojiReadingPrefix: String? = nil
     @State private var selectedKaomojiReading: String? = nil
     @State private var emojiInputSubmode: EmojiInputSubmode = .emoji
-    @State private var returnToKanaAfterNextCommit: Bool = false
-    @State private var didTriggerComposingCommitLongPress = false
-    @State private var katakanaCommitFeedbackText: String? = nil
-    @State private var pendingKatakanaCommitWorkItem: DispatchWorkItem?
+    @State var returnToKanaAfterNextCommit: Bool = false
+    @State var didTriggerComposingCommitLongPress = false
+    @State var katakanaCommitFeedbackText: String? = nil
+    @State var pendingKatakanaCommitWorkItem: DispatchWorkItem?
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) private var verticalSizeClass
 
-    private let shiftDoubleTapThreshold: TimeInterval = 0.32
-    private let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
+    let shiftDoubleTapThreshold: TimeInterval = 0.32
+    let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
     private let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
-    private let katakanaCommitFeedbackDelay: TimeInterval = 0.14
-    private let keyLabelColor = KeyboardThemePalette.keyLabel
+    let katakanaCommitFeedbackDelay: TimeInterval = 0.14
+    let keyLabelColor = KeyboardThemePalette.keyLabel
     private let candidateHeaderExpandedHeight: CGFloat = 35
     private let candidateHeaderContentDownshift: CGFloat = 4
     private var keyboardRowSpacing: CGFloat { isLandscapeLayout ? 4 : 6 }
@@ -100,7 +100,7 @@ struct KeyboardRootView: View {
     private var keyboardBottomPadding: CGFloat { isLandscapeLayout ? 4 : 20 }
     private let candidateStateFontSize: CGFloat = 15
     private let candidateTextFontSize: CGFloat = 16
-    private var compactActionKeyHeight: CGFloat { isLandscapeLayout ? 34 : 42 }
+    var compactActionKeyHeight: CGFloat { isLandscapeLayout ? 34 : 42 }
     private let compactModeSwitchKeyWidth: CGFloat = 32
     private let wideModeSwitchKeyWidth: CGFloat = 58
     private let compactEmojiKeyHeight: CGFloat = 28
@@ -118,7 +118,7 @@ struct KeyboardRootView: View {
         inputMode == .kana && (!composingText.isEmpty || showsParenthesesWrapper)
     }
 
-    private var isLandscapeLayout: Bool {
+    var isLandscapeLayout: Bool {
         verticalSizeClass == .compact
     }
 
@@ -423,7 +423,7 @@ struct KeyboardRootView: View {
         inputMode == .kana && !composingText.isEmpty
     }
 
-    private var spaceKeyDisplayTitle: String {
+    var spaceKeyDisplayTitle: String {
         if isSpaceActsAsConversionKey {
             return "変換"
         }
@@ -435,7 +435,7 @@ struct KeyboardRootView: View {
         return ""
     }
 
-    private var spaceKeyDisplayOpacity: Double {
+    var spaceKeyDisplayOpacity: Double {
         if isSpaceActsAsConversionKey {
             return 1
         }
@@ -443,7 +443,7 @@ struct KeyboardRootView: View {
         return inputMode == .kana ? spaceToastOpacity : 0
     }
 
-    private var spaceKeyAccessibilityLabel: String {
+    var spaceKeyAccessibilityLabel: String {
         isSpaceActsAsConversionKey ? "変換" : "空白"
     }
 
@@ -483,7 +483,7 @@ struct KeyboardRootView: View {
         isReturnActsAsCommitKey ? handleReturnKeyKatakanaLongPress : nil
     }
 
-    private var canTapComposingTextToCommit: Bool {
+    var canTapComposingTextToCommit: Bool {
         !composingText.isEmpty
     }
 
@@ -536,11 +536,11 @@ struct KeyboardRootView: View {
         modifierFlickGuideDisplayMode == .fourDirections
     }
 
-    private var isCurrentFlickGuideDisplayOff: Bool {
+    var isCurrentFlickGuideDisplayOff: Bool {
         currentFlickGuideDisplayMode == .off
     }
 
-    private var isModifierFlickGuideDisplayOff: Bool {
+    var isModifierFlickGuideDisplayOff: Bool {
         modifierFlickGuideDisplayMode == .off
     }
 
@@ -556,7 +556,7 @@ struct KeyboardRootView: View {
         )
     }
 
-    private var transitionState: KeyboardModeTransitionState {
+    var transitionState: KeyboardModeTransitionState {
         get {
             KeyboardModeTransitionState(
                 inputMode: inputMode,
@@ -674,7 +674,7 @@ struct KeyboardRootView: View {
         )
     }
 
-    private let punctuationKana = FlickKanaSet(
+    let punctuationKana = FlickKanaSet(
         label: "、",
         center: "、",
         up: "?",
@@ -683,15 +683,15 @@ struct KeyboardRootView: View {
         left: "。"
     )
 
-    private var kanaModeSwitcherTapAction: KanaModeSwitcherAction {
+    var kanaModeSwitcherTapAction: KanaModeSwitcherAction {
         KanaModeSwitcherAction(rawValue: kanaModeSwitcherTapActionRawValue) ?? .emoji
     }
 
-    private var kanaModeSwitcherRightFlickAction: KanaModeSwitcherAction {
+    var kanaModeSwitcherRightFlickAction: KanaModeSwitcherAction {
         KanaModeSwitcherAction(rawValue: kanaModeSwitcherRightFlickActionRawValue) ?? .kaomoji
     }
 
-    private var kanaModeSwitcherUpFlickAction: KanaModeSwitcherAction {
+    var kanaModeSwitcherUpFlickAction: KanaModeSwitcherAction {
         KanaModeSwitcherAction(rawValue: kanaModeSwitcherUpFlickActionRawValue) ?? .symbols
     }
 
@@ -1202,7 +1202,7 @@ struct KeyboardRootView: View {
     }
 
     // clavier 配列は縦画面専用。横画面の場合は calculette にフォールバックする。
-    private var effectiveNumberLayoutMode: NumberLayoutMode {
+    var effectiveNumberLayoutMode: NumberLayoutMode {
         if numberLayoutMode == .clavier && isLandscapeLayout {
             return .calculette
         }
@@ -3986,676 +3986,6 @@ struct KeyboardRootView: View {
         .environment(\.keyboardAccentColor, accentColor)
     }
 
-    private func commitText(_ text: String) {
-        guard !text.isEmpty else {
-            return
-        }
-
-        if text == FlickKanaLayout.latinShiftKeyToken {
-            handleLatinShiftTap()
-            return
-        }
-
-        let usesShift = shouldApplyLatinShift(to: text)
-        let shiftedOutput = usesShift ? text.uppercased() : text
-        let output = convertedKanaOutputIfNeeded(shiftedOutput)
-
-        onTextInput(output)
-
-        transitionState = KeyboardModeTransition.finishCommit(
-            text,
-            state: transitionState
-        )
-
-        consumeReturnToKanaAfterNextCommitIfNeeded()
-    }
-
-    private func consumeReturnToKanaAfterNextCommitIfNeeded() {
-        guard returnToKanaAfterNextCommit else {
-            return
-        }
-
-        returnToKanaAfterNextCommit = false
-        switchInputMode(.kana)
-    }
-
-    private func selectModifierMode(_ output: String) {
-        selectModifierMode(output, direction: .milieu)
-    }
-
-    private func selectModifierMode(_ output: String, direction: FlickDirection) {
-        if output == "…" {
-            commitText(output)
-            return
-        }
-
-        guard inputMode == .kana,
-                kanaModifierPlacementMode == .postfix else {
-            transitionState = KeyboardModeTransition.selectModifier(
-                output,
-                state: transitionState
-            )
-            return
-        }
-
-        guard let buttonState = postModifierButtonState(forModifierOutput: output) else {
-            transitionState = KeyboardModeTransition.selectModifier(
-                output,
-                state: transitionState
-            )
-            return
-        }
-
-        let prefersLatestContextResolution = direction == .milieu
-        let outcome = onApplyKanaPostModifier(
-            buttonState,
-            prefersLatestContextResolution
-        )
-
-        switch outcome {
-        case .applied:
-            var next = transitionState
-            next.diacriticMode = .none
-            transitionState = next
-        case .idleEmptyContext:
-            if direction == .milieu {
-                performPostModifierEmptyTapAction()
-            }
-        case .ignored:
-            break
-        }
-    }
-
-    private func performPostModifierEmptyTapAction() {
-        switch kanaPostModifierEmptyTapActionRawValue {
-        case "emoji":
-            if let rawValue = Int(kanaPostModifierEmptyTapEmojiCategoryID),
-                let category = EmojiCategory(rawValue: rawValue) {
-                selectedEmojiCategory = category
-            }
-            enterEmojiMode()
-        case "symbols":
-            if let rawValue = Int(kanaPostModifierEmptyTapSymbolCategoryID),
-                let category = SymbolCategory(rawValue: rawValue) {
-                selectedSymbolCategory = category
-            }
-            enterSymbolsMode()
-        default:
-            selectedKaomojiCategoryID = kanaPostModifierEmptyTapKaomojiCategoryID
-            enterKaomojiMode()
-        }
-
-        returnToKanaAfterNextCommit = true
-    }
-
-    private func commitEmojiKaomojiSymbolText(_ text: String) {
-        onTextInput(text)
-        consumeReturnToKanaAfterNextCommitIfNeeded()
-    }
-
-    private func postModifierButtonState(forModifierOutput output: String) -> KanaPostModifierButtonState? {
-        switch output {
-        case "^_^":
-            return .kaomoji
-        case "゛":
-            return .dakuten
-        case "゜":
-            return .handakuten
-        case "小":
-            return .smallKana
-        default:
-            return nil
-        }
-    }
-
-    private func switchInputMode(_ mode: KeyboardInputMode) {
-        if mode != .latin {
-            cancelLatinModeSwitchSecondTapWindow()
-        }
-
-        if mode != .emoji {
-            returnToKanaAfterNextCommit = false
-        }
-
-        transitionState = KeyboardModeTransition.switchInputMode(
-            transitionState,
-            to: mode
-        )
-    }
-
-    private func switchToLatinMode(with shiftState: LatinShiftState) {
-        var next = KeyboardModeTransition.switchInputMode(
-            transitionState,
-            to: .latin
-        )
-
-        next.latinShiftState = shiftState
-        next.lastLatinShiftTapAt = nil
-        transitionState = next
-    }
-
-    private func handleLatinModeSwitchTap() {
-        guard inputMode != .latin else {
-            return
-        }
-
-        switchToLatinMode(with: .off)
-        startLatinModeSwitchSecondTapWindow()
-    }
-
-    private func handleLatinModeSwitchDoubleTap() {
-        guard inputMode == .latin,
-                isAwaitingLatinModeSwitchSecondTap else {
-            return
-        }
-
-        cancelLatinModeSwitchSecondTapWindow()
-        switchToLatinMode(with: .locked)
-    }
-
-    private func handleLatinModeSwitchLongPress() {
-        cancelLatinModeSwitchSecondTapWindow()
-        switchToLatinMode(with: .locked)
-    }
-
-    private func startLatinModeSwitchSecondTapWindow() {
-        cancelLatinModeSwitchSecondTapWindow()
-        isAwaitingLatinModeSwitchSecondTap = true
-
-        let safeThreshold = max(0.05, latinModeSwitchDoubleTapThreshold)
-        let workItem = DispatchWorkItem {
-            self.pendingLatinModeSwitchSecondTapResetWorkItem = nil
-            self.isAwaitingLatinModeSwitchSecondTap = false
-        }
-
-        pendingLatinModeSwitchSecondTapResetWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + safeThreshold, execute: workItem)
-    }
-
-    private func cancelLatinModeSwitchSecondTapWindow() {
-        pendingLatinModeSwitchSecondTapResetWorkItem?.cancel()
-        pendingLatinModeSwitchSecondTapResetWorkItem = nil
-        isAwaitingLatinModeSwitchSecondTap = false
-    }
-
-    private func handleComposingTextCommitTap() {
-        guard canTapComposingTextToCommit else {
-            return
-        }
-
-        if didTriggerComposingCommitLongPress {
-            didTriggerComposingCommitLongPress = false
-            return
-        }
-
-        onCommitComposingText()
-    }
-
-    private func handleComposingTextCommitLongPress() {
-        guard canTapComposingTextToCommit else {
-            return
-        }
-
-        didTriggerComposingCommitLongPress = true
-        triggerKatakanaComposingCommitFeedbackAndCommit()
-    }
-
-    private func handleReturnKeyKatakanaDoubleTap() {
-        if !composingText.isEmpty {
-            triggerKatakanaComposingCommitFeedbackAndCommit()
-            return
-        }
-
-        _ = onUpgradeRecentKanaCommitToKatakana()
-    }
-
-    private func handleReturnKeyKatakanaLongPress() {
-        if !composingText.isEmpty {
-            triggerKatakanaComposingCommitFeedbackAndCommit()
-        }
-    }
-
-    private func triggerKatakanaComposingCommitFeedbackAndCommit() {
-        guard !composingText.isEmpty else {
-            return
-        }
-
-        cancelPendingKatakanaCommit()
-
-        let previewText = composingText
-        katakanaCommitFeedbackText = previewText
-
-        let workItem = DispatchWorkItem {
-            self.pendingKatakanaCommitWorkItem = nil
-            self.katakanaCommitFeedbackText = nil
-            onCommitComposingTextAsKatakana()
-        }
-
-        pendingKatakanaCommitWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + katakanaCommitFeedbackDelay, execute: workItem)
-    }
-
-    private func isShowingKatakanaCommitFeedback(for text: String) -> Bool {
-        katakanaCommitFeedbackText == text
-    }
-
-    private func cancelPendingKatakanaCommit() {
-        pendingKatakanaCommitWorkItem?.cancel()
-        pendingKatakanaCommitWorkItem = nil
-        katakanaCommitFeedbackText = nil
-    }
-
-    private func selectKanaModeSwitcher(_ output: String) {
-        selectKanaModeSwitcher(output, direction: .milieu)
-    }
-
-    private func selectCompactKeyboardSwitchKey(_ output: String) {
-        selectCompactKeyboardSwitchKey(output, direction: .milieu)
-    }
-
-    private func selectCompactKeyboardSwitchKey(_ output: String, direction: FlickDirection) {
-        switch direction {
-        case .milieu:
-            onAdvanceKeyboard()
-        case .droite, .haut:
-            selectKanaModeSwitcher(output, direction: direction)
-        default:
-            return
-        }
-    }
-
-    private func handleCompactKeyboardSwitchLongPress() {
-        selectKanaModeSwitcher(kanaModeSwitcherTapAction.keyLabel, direction: .milieu)
-    }
-
-    private func selectKanaModeSwitcher(_ output: String, direction: FlickDirection) {
-        let action: KanaModeSwitcherAction
-
-        switch direction {
-        case .milieu:
-            action = kanaModeSwitcherTapAction
-        case .droite:
-            action = kanaModeSwitcherRightFlickAction
-        case .haut:
-            action = kanaModeSwitcherUpFlickAction
-        default:
-            return
-        }
-
-        switch action {
-        case .emoji:
-            enterEmojiMode()
-        case .kaomoji:
-            enterKaomojiMode()
-        case .symbols:
-            enterSymbolsMode()
-        }
-    }
-
-    private func enterEmojiMode() {
-        transitionState = KeyboardModeTransition.enterEmojiMode(
-            from: transitionState
-        )
-    }
-
-    private func enterKaomojiMode() {
-        transitionState = KeyboardModeTransition.enterKaomojiMode(
-            from: transitionState
-        )
-    }
-
-    private func enterSymbolsMode() {
-        transitionState = KeyboardModeTransition.enterSymbolsMode(
-            from: transitionState
-        )
-    }
-
-    private func spaceActionKeyButton(
-        title: String,
-        titleOpacity: Double = 1,
-        fixedWidth: CGFloat? = nil
-    ) -> some View {
-        SpaceFlickActionKeyButton(
-            title: title,
-            titleOpacity: titleOpacity,
-            fixedWidth: fixedWidth,
-            accessibilityLabelText: spaceKeyAccessibilityLabel,
-            onSpace: onSpace,
-            onTab: { onTextInput("\t") }
-        )
-    }
-
-    private func showInitialSpaceToastIfNeeded() {
-        guard inputMode == .kana,
-                let initialSpaceToastText,
-                !initialSpaceToastText.isEmpty else {
-            return
-        }
-
-        guard lastShownSpaceToastTrigger != spaceToastTrigger else {
-            return
-        }
-
-        lastShownSpaceToastTrigger = spaceToastTrigger
-
-        spaceToastText = initialSpaceToastText
-        spaceToastOpacity = 1
-
-        let fadeDelay: TimeInterval = 0.85
-        let fadeDuration: TimeInterval = 0.32
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + fadeDelay) {
-            withAnimation(.easeOut(duration: fadeDuration)) {
-                spaceToastOpacity = 0
-            }
-
-            DispatchQueue.main.asyncAfter(deadline: .now() + fadeDuration + 0.02) {
-                spaceToastText = nil
-            }
-        }
-    }
-
-    private func spaceKeyButton(
-        fixedWidth: CGFloat?,
-        keyHeight: CGFloat? = nil
-    ) -> some View {
-        let resolvedKeyHeight = keyHeight ?? compactActionKeyHeight
-
-        return spaceActionKeyButton(
-            title: spaceKeyDisplayTitle,
-            titleOpacity: spaceKeyDisplayOpacity,
-            fixedWidth: fixedWidth
-        )
-        .frame(maxWidth: fixedWidth == nil ? .infinity : nil)
-        .frame(height: resolvedKeyHeight)
-    }
-
-    private func longPressCandidates(for kana: FlickKanaSet) -> [String] {
-        guard inputMode == .latin else {
-            return []
-        }
-
-        let candidates = FlickKanaLayout.latinLongPressCandidates(for: kana.center, layoutMode: latinLayoutMode)
-
-        guard latinShiftState != .off else {
-            return candidates
-        }
-
-        return candidates.map(uppercasedLongPressCandidate)
-    }
-
-    private func longPressCandidatePanelPlacement(forRowIndex rowIndex: Int) -> LongPressCandidatePanelPlacement {
-        if isLandscapeLayout,
-            inputMode == .latin,
-            rowIndex == 0 {
-            return .below
-        }
-
-        return .above
-    }
-
-    private func uppercasedLongPressCandidate(_ candidate: String) -> String {
-        if candidate == "ß" {
-            return "ẞ"
-        }
-
-        return candidate.uppercased()
-    }
-
-    private func allowsDirectionalFlick(for kana: FlickKanaSet) -> Bool {
-        guard inputMode == .latin,
-                latinLayoutMode != .flick,
-                isLatinAlphabetKey(kana.center) else {
-            return true
-        }
-
-        return false
-    }
-
-    private func shouldApplyLatinShift(to text: String) -> Bool {
-        guard inputMode == .latin,
-                latinShiftState != .off,
-                isLatinAlphabetKey(text) else {
-            return false
-        }
-
-        return true
-    }
-
-    private func convertedKanaOutputIfNeeded(_ text: String) -> String {
-        guard inputMode == .kana,
-                kanaCharacterMode == .katakana else {
-            return text
-        }
-
-        return text.applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
-    }
-
-    private func displayedKanaForKanaCharacterModeIfNeeded(_ kana: FlickKanaSet) -> FlickKanaSet {
-        guard inputMode == .kana,
-                kanaCharacterMode == .katakana else {
-            return kana
-        }
-
-        return FlickKanaSet(
-            label: kanaTextForDisplay(kana.label),
-            center: kanaTextForDisplay(kana.center),
-            up: kanaTextForDisplay(kana.up),
-            right: kanaTextForDisplay(kana.right),
-            down: kanaTextForDisplay(kana.down),
-            left: kanaTextForDisplay(kana.left)
-        )
-    }
-
-    private func kanaTextForDisplay(_ text: String) -> String {
-        text.applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
-    }
-
-    private func displayedKana(for kana: FlickKanaSet) -> FlickKanaSet {
-        guard inputMode == .latin,
-                latinShiftState != .off,
-                isLatinAlphabetKey(kana.center) else {
-            return kana
-        }
-
-        return FlickKanaSet(
-            label: kana.label.uppercased(),
-            center: kana.center.uppercased(),
-            up: kana.up.uppercased(),
-            right: kana.right.uppercased(),
-            down: kana.down.uppercased(),
-            left: kana.left.uppercased()
-        )
-    }
-
-    private func latinFlickIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
-        guard inputMode == .latin,
-                latinLayoutMode == .flick,
-                            isCurrentFlickGuideDisplayOff else {
-            return nil
-        }
-
-        let compactText = latinFlickCompactText(for: kana)
-
-        return AnyView(
-            Text(compactText)
-                .font(.system(size: 22, weight: .semibold, design: .rounded))
-                .minimumScaleFactor(0.6)
-                .lineLimit(1)
-                .foregroundStyle(keyLabelColor)
-                .padding(.horizontal, 3)
-        )
-    }
-
-    private func latinFlickCompactText(for kana: FlickKanaSet) -> String {
-        let parts = [kana.center, kana.left, kana.up, kana.right, kana.down]
-            .filter { !$0.isEmpty }
-
-        guard kana.center == "'",
-                parts.count >= 2,
-                parts[0] == "'",
-                parts[1] == "\"" else {
-            return parts.joined()
-        }
-
-        // Add a thin gap only between adjacent single/double quotes.
-        return parts[0] + "\u{2009}" + parts.dropFirst().joined()
-    }
-
-    private func numberPunctuationIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
-        guard inputMode == .number,
-                isCurrentFlickGuideDisplayOff,
-                            effectiveNumberLayoutMode != .clavier,
-                            kana.center == "." || kana.center == "'" || kana.center == "(" else {
-            return nil
-        }
-
-        let compactText = [kana.center, kana.left, kana.up, kana.right, kana.down]
-            .filter { !$0.isEmpty }
-            .joined()
-
-        return AnyView(
-            Text(compactText)
-                .font(.system(size: 17, weight: .semibold, design: .rounded))
-                .minimumScaleFactor(0.5)
-                .lineLimit(1)
-                .foregroundStyle(keyLabelColor)
-                .padding(.horizontal, 3)
-        )
-    }
-
-    private func rowKeyIdleReplacement(for kana: FlickKanaSet) -> AnyView? {
-        if let latinReplacement = latinFlickIdleReplacement(for: kana) {
-            return latinReplacement
-        }
-
-        if let numberReplacement = numberPunctuationIdleReplacement(for: kana) {
-            return numberReplacement
-        }
-
-        return nil
-    }
-
-    private var punctuationIdleReplacement: AnyView? {
-        guard inputMode == .kana,
-                            isCurrentFlickGuideDisplayOff else {
-            return nil
-        }
-
-        let topLineText = [
-            punctuationKana.center,
-            punctuationKana.left
-        ]
-        .filter { !$0.isEmpty }
-        .joined()
-
-        let bottomLineText = [
-            punctuationKana.up,
-            punctuationKana.right,
-            punctuationKana.down
-        ]
-        .filter { !$0.isEmpty }
-        .joined()
-
-        return AnyView(
-            VStack(spacing: -3) {
-                Text(topLineText)
-                    .font(.system(size: 21, weight: .bold, design: .rounded))
-                    .minimumScaleFactor(0.7)
-                    .lineLimit(1)
-
-                Text(bottomLineText)
-                    .font(.system(size: 19, weight: .semibold, design: .rounded))
-                    .minimumScaleFactor(0.7)
-                    .lineLimit(1)
-            }
-                .foregroundStyle(keyLabelColor)
-                .padding(.horizontal, 2)
-                .padding(.vertical, 1)
-        )
-    }
-
-    private func isLatinShiftKey(_ kana: FlickKanaSet) -> Bool {
-        kana.center == FlickKanaLayout.latinShiftKeyToken
-    }
-
-    private func handleLatinShiftTap() {
-        transitionState = KeyboardModeTransition.handleLatinShiftTap(
-            transitionState,
-            now: Date(),
-            doubleTapThreshold: shiftDoubleTapThreshold
-        )
-    }
-
-    private func handleLatinShiftLongPress() {
-        transitionState = KeyboardModeTransition.handleLatinShiftLongPress(
-            transitionState
-        )
-    }
-
-    private func isLatinAlphabetKey(_ value: String) -> Bool {
-        guard value.count == 1,
-                let scalar = value.unicodeScalars.first else {
-            return false
-        }
-
-        return CharacterSet.letters.contains(scalar)
-    }
-
-    private func updateActiveLayer(_ isTouching: Bool, layerIndex: Int) {
-        if isTouching {
-            activeLayerIndex = layerIndex
-            return
-        }
-
-        if activeLayerIndex == layerIndex {
-            activeLayerIndex = nil
-        }
-    }
-
-    private func zIndex(for layerIndex: Int) -> Double {
-        activeLayerIndex == layerIndex ? KeyboardLayerZIndex.activeRow : 0
-    }
-
-    private var modifierIdleReplacement: AnyView? {
-        guard inputMode == .kana, isModifierFlickGuideDisplayOff else {
-            return nil
-        }
-
-        if kanaModifierPlacementMode == .postfix {
-            return AnyView(
-                Group {
-                    switch kanaPostModifierButtonState {
-                    case .kaomoji:
-                        DakutenDuckCompositeIconView()
-                    case .smallKana:
-                        DakutenDuckCompositeIconView(isSmallKanaMode: true)
-                            .scaleEffect(0.6)
-                            .offset(x: -3, y: 3)
-                    case .dakuten:
-                        DakutenDuckCompositeIconView(showsDakutenMark: true)
-                    case .handakuten:
-                        DakutenDuckCompositeIconView(showsHandakutenMark: true)
-                    }
-                }
-                    .padding(7)
-            )
-        }
-
-        return AnyView(
-            DakutenDuckCompositeIconView(
-                showsDakutenMark: diacriticMode == .dakuten,
-                showsHandakutenMark: diacriticMode == .handakuten,
-                isSmallKanaMode: diacriticMode == .smallKana
-            )
-                .scaleEffect(diacriticMode == .smallKana ? 0.6 : 1)
-                .offset(
-                    x: diacriticMode == .smallKana ? -3 : 0,
-                    y: diacriticMode == .smallKana ? 3 : 0
-                )
-                .padding(7)
-        )
-    }
 }
 
 #Preview {

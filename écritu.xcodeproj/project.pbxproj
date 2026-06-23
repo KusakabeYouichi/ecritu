@@ -22,6 +22,7 @@
 		2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2D41A6A9E4C2789278485192 /* LEGAL in Resources */ = {isa = PBXBuildFile; fileRef = F5ED4830F4FA66EFEFE9B5AB /* LEGAL */; };
 		2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
+		30C12A3041A204821A7DE60A /* KeyboardRootView+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D58332DA6C2CA250CEDAD /* KeyboardRootView+Interaction.swift */; };
 		36EEA841B7E5EC402DA055A5 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */; };
 		37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
 		38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
@@ -131,6 +132,7 @@
 		BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		C1ECA6389592415ABEA9CA17 /* APP_STORE_OPEN_SOURCE_NOTICES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_STORE_OPEN_SOURCE_NOTICES.md; sourceTree = "<group>"; };
 		C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaomojiCatalog.swift; sourceTree = "<group>"; };
+		C70D58332DA6C2CA250CEDAD /* KeyboardRootView+Interaction.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+Interaction.swift"; sourceTree = "<group>"; };
 		CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DictionarySettingsSections.swift; sourceTree = "<group>"; };
 		CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+InputHandling.swift"; sourceTree = "<group>"; };
 		CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+Settings.swift"; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 				EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */,
 				F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */,
 				CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */,
+				C70D58332DA6C2CA250CEDAD /* KeyboardRootView+Interaction.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -534,6 +537,7 @@
 				ECDBEEB3F6EF91C0EB7C3E85 /* KeyboardViewController+Layout.swift in Sources */,
 				B22E76DC1B5D975F1DC62A62 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */,
 				C62F944FB8A8DE4CE9BF51FF /* KeyboardViewController+Settings.swift in Sources */,
+				30C12A3041A204821A7DE60A /* KeyboardRootView+Interaction.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
