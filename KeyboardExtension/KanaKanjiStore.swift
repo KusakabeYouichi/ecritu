@@ -374,26 +374,6 @@ final class KanaKanjiStore {
         return !sqliteIndex.hasAnyEntries
     }
 
-    // [MEMDIAG] どの in-memory キャッシュが常駐しているかのスナップショット。
-    // nil=未ロード(SQLite経路で不要)、数値=ロード済み件数。後で削除可。
-    func memoryDiagnosticsSnapshot() -> String {
-        func n(_ count: Int?) -> String {
-            count.map(String.init) ?? "nil"
-        }
-        let sqliteActive = sqliteIndex != nil
-        return [
-            "sqlite=\(sqliteActive)/has=\(sqliteIndex?.hasAnyEntries ?? false)",
-            "sysDict=\(n(cachedSystemDictionary?.count))",
-            "inflDict=\(n(cachedInflectionDictionary?.count))",
-            "supplSys=\(n(cachedSupplementalSystemDictionary?.count))",
-            "srcMap=\(n(cachedSystemCandidateSources?.count))",
-            "latin=\(n(cachedLatinSuggestionEntries?.count))",
-            "userDict=\(n(cachedUserDictionary?.count))",
-            "learned=\(n(cachedLearnedDictionary?.count))",
-            "initUser=\(n(cachedInitialUserDictionary?.count))"
-        ].joined(separator: " ")
-    }
-
     func prepareSystemDictionaryIfNeeded(onLoaded: (() -> Void)? = nil) {
         guard onLoaded != nil else {
             _ = sqliteIndexIfAvailable()
