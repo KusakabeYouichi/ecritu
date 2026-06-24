@@ -17,6 +17,7 @@
 		12943D63AB06654429DA11D6 /* KeyboardRootView+GridLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A884772319A4160D03A970D9 /* KeyboardRootView+GridLayouts.swift */; };
 		1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
 		1C452267470AD5017D0E2C4B /* KeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		23B05161BF547868088CAA9A /* SupplementaryCandidateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */; };
 		256E54F1234A13909B92EBC9 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
 		285326EF479921408BB11307 /* IndexedVocabularyList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1350C355909AB4D0F84C48DF /* IndexedVocabularyList.swift */; };
@@ -63,6 +64,7 @@
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
 		D2A3F64295CDC6096E2250C1 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */; };
 		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
+		DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */; };
 		DBBA852BCC8D33CCF73645E9 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */; };
 		E21AE995B20E7DF2B75B6F82 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
 		E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */; };
@@ -126,6 +128,7 @@
 		5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
 		5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootViewSupportTypes.swift; sourceTree = "<group>"; };
 		5DF3F61E6678EA62C2C94678 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SupplementaryCandidateMerger.swift; sourceTree = "<group>"; };
 		693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "écrituTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
 		753727472F0FBB8C1E318336 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_candidate_sources.json; sourceTree = "<group>"; };
@@ -260,6 +263,7 @@
 				D1D8903DCA2E8999598CB053 /* KeyboardRootView+LandscapeLayouts.swift */,
 				DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */,
 				A884772319A4160D03A970D9 /* KeyboardRootView+GridLayouts.swift */,
+				66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -513,6 +517,7 @@
 				0F8A21202683F7A7645F26B6 /* KeyboardCandidateMergingTests.swift in Sources */,
 				11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */,
 				500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */,
+				23B05161BF547868088CAA9A /* SupplementaryCandidateMerger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -566,6 +571,7 @@
 				C848B966372EB6D1820CD43E /* KeyboardRootView+LandscapeLayouts.swift in Sources */,
 				D2A3F64295CDC6096E2250C1 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */,
 				12943D63AB06654429DA11D6 /* KeyboardRootView+GridLayouts.swift in Sources */,
+				DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
