@@ -218,5 +218,212 @@
     <dict><key>phrase</key><string>Björk</string><key>shortcut</key><string>びょーく</string></dict>
     <dict><key>phrase</key><string>Sérgio Mendes</string><key>shortcut</key><string>せるじおめんです</string></dict>
     <dict><key>phrase</key><string>Ástor Piazzolla</string><key>shortcut</key><string>あすとるぴあそら</string></dict>
+
+    <!-- Jazz 102 (A) -->
+	<dict><key>phrase</key><string>J・J・ジョンソン</string><key>shortcut</key><string>じぇいじぇいじょんそん</string></dict>
+	<dict><key>phrase</key><string>アーティ・ショウ</string><key>shortcut</key><string>あーてぃしょう</string></dict>
+	<dict><key>phrase</key><string>アート・ブレイキー</string><key>shortcut</key><string>あーとぶれいきー</string></dict>
+	<dict><key>phrase</key><string>アート・ペッパー</string><key>shortcut</key><string>あーとぺっぱー</string></dict>
+	<dict><key>phrase</key><string>アストラッド・ジルベルト</string><key>shortcut</key><string>あすとらっどじるべると</string></dict>
+	<dict><key>phrase</key><string>アビー・リンカーン</string><key>shortcut</key><string>あびーりんかーん</string></dict>
+	<dict><key>phrase</key><string>アリス・コルトレーン</string><key>shortcut</key><string>ありすこるとれーん</string></dict>
+	<dict><key>phrase</key><string>アルバート・アイラー</string><key>shortcut</key><string>あるばーとあいらー</string></dict>
+	<dict><key>phrase</key><string>アンソニー・ブラクストン</string><key>shortcut</key><string>あんそにーぶらくすとん</string></dict>
+	<dict><key>phrase</key><string>アントニオ・カルロス・ジョビン</string><key>shortcut</key><string>あんとにおかるろすじょびん</string></dict>
+	<dict><key>phrase</key><string>ウィントン・マルサリス</string><key>shortcut</key><string>うぃんとんまるさりす</string></dict>
+	<dict><key>phrase</key><string>ウェイン・ショーター</string><key>shortcut</key><string>うぇいんしょーたー</string></dict>
+	<dict><key>phrase</key><string>ウェス・モンゴメリー</string><key>shortcut</key><string>うぇすもんごめりー</string></dict>
+	<dict><key>phrase</key><string>エスペランサ・スポルディング</string><key>shortcut</key><string>えすぺらんさすぽるでぃんぐ</string></dict>
+	<dict><key>phrase</key><string>エラ・フィッツジェラルド</string><key>shortcut</key><string>えらふぃっつじぇらるど</string></dict>
+	<dict><key>phrase</key><string>エリック・ドルフィー</string><key>shortcut</key><string>えりっくどるふぃー</string></dict>
+	<dict><key>phrase</key><string>エルヴィン・ジョーンズ</string><key>shortcut</key><string>えるゔぃんじょーんず</string></dict>
+	<dict><key>phrase</key><string>オーネット・コールマン</string><key>shortcut</key><string>おーねっとこーるまん</string></dict>
+	<dict><key>phrase</key><string>カーラ・ブレイ</string><key>shortcut</key><string>かーらぶれい</string></dict>
+	<dict><key>phrase</key><string>カウント・ベイシー</string><key>shortcut</key><string>かうんとべいしー</string></dict>
+	<dict><key>phrase</key><string>カマシ・ワシントン</string><key>shortcut</key><string>かましわしんとん</string></dict>
+	<dict><key>phrase</key><string>キース・ジャレット</string><key>shortcut</key><string>きーすじゃれっと</string></dict>
+	<dict><key>phrase</key><string>キャノンボール・アダレイ</string><key>shortcut</key><string>きゃのんぼーるあだれい</string></dict>
+	<dict><key>phrase</key><string>ギル・エヴァンス</string><key>shortcut</key><string>ぎるえゔぁんす</string></dict>
+	<dict><key>phrase</key><string>キング・オリヴァー</string><key>shortcut</key><string>きんぐおりゔぁー</string></dict>
+	<dict><key>phrase</key><string>クリス・ポッター</string><key>shortcut</key><string>くりすぽったー</string></dict>
+	<dict><key>phrase</key><string>クリフォード・ブラウン</string><key>shortcut</key><string>くりふぉーどぶらうん</string></dict>
+	<dict><key>phrase</key><string>グレン・ミラー</string><key>shortcut</key><string>ぐれんみらー</string></dict>
+	<dict><key>phrase</key><string>ケニー・バレル</string><key>shortcut</key><string>けにーばれる</string></dict>
+	<dict><key>phrase</key><string>コール・ポーター</string><key>shortcut</key><string>こーるぽーたー</string></dict>
+	<dict><key>phrase</key><string>コールマン・ホーキンス</string><key>shortcut</key><string>こーるまんほーきんす</string></dict>
+	<dict><key>phrase</key><string>サラ・ヴォーン</string><key>shortcut</key><string>さらゔぉーん</string></dict>
+	<dict><key>phrase</key><string>サン・ラ</string><key>shortcut</key><string>さんら</string></dict>
+	<dict><key>phrase</key><string>ジェームズ・P・ジョンソン</string><key>shortcut</key><string>じぇーむずぴーじょんそん</string></dict>
+	<dict><key>phrase</key><string>ジェリー・マリガン</string><key>shortcut</key><string>じぇりーまりがん</string></dict>
+	<dict><key>phrase</key><string>ジェリー・ロール・モートン</string><key>shortcut</key><string>じぇりーろーるもーとん</string></dict>
+	<dict><key>phrase</key><string>シドニー・ベシェ</string><key>shortcut</key><string>しどにーべしぇ</string></dict>
+	<dict><key>phrase</key><string>ジム・ホール</string><key>shortcut</key><string>じむほーる</string></dict>
+	<dict><key>phrase</key><string>ジャコ・パストリアス</string><key>shortcut</key><string>じゃこぱすとりあす</string></dict>
+	<dict><key>phrase</key><string>ジャンゴ・ラインハルト</string><key>shortcut</key><string>じゃんごらいんはると</string></dict>
+	<dict><key>phrase</key><string>ジョアン・ジルベルト</string><key>shortcut</key><string>じょあんじるべると</string></dict>
+	<dict><key>phrase</key><string>ジョー・ザヴィヌル</string><key>shortcut</key><string>じょーざゔぃぬる</string></dict>
+	<dict><key>phrase</key><string>ジョージ・ガーシュウィン</string><key>shortcut</key><string>じょーじがーしゅうぃん</string></dict>
+	<dict><key>phrase</key><string>ジョージ・ラッセル</string><key>shortcut</key><string>じょーじらっせる</string></dict>
+	<dict><key>phrase</key><string>ジョー・ヘンダーソン</string><key>shortcut</key><string>じょーへんだーそん</string></dict>
+	<dict><key>phrase</key><string>ジョシュア・レッドマン</string><key>shortcut</key><string>じょしゅあれっどまん</string></dict>
+	<dict><key>phrase</key><string>ジョン・コルトレーン</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
+	<dict><key>phrase</key><string>ジョン・マクラフリン</string><key>shortcut</key><string>じょんまくらふりん</string></dict>
+	<dict><key>phrase</key><string>スコット・ラファロ</string><key>shortcut</key><string>すこっとらふぁろ</string></dict>
+	<dict><key>phrase</key><string>スタン・ゲッツ</string><key>shortcut</key><string>すたんげっつ</string></dict>
+	<dict><key>phrase</key><string>スタンリー・クラーク</string><key>shortcut</key><string>すたんりーくらーく</string></dict>
+	<dict><key>phrase</key><string>セシル・テイラー</string><key>shortcut</key><string>せしるていらー</string></dict>
+	<dict><key>phrase</key><string>セロニアス・モンク</string><key>shortcut</key><string>せろにあすもんく</string></dict>
+	<dict><key>phrase</key><string>ソニー・ロリンズ</string><key>shortcut</key><string>そにーろりんず</string></dict>
+	<dict><key>phrase</key><string>タッド・ダメロン</string><key>shortcut</key><string>たっどだめろん</string></dict>
+	<dict><key>phrase</key><string>チェット・ベイカー</string><key>shortcut</key><string>ちぇっとべいかー</string></dict>
+	<dict><key>phrase</key><string>チック・コリア</string><key>shortcut</key><string>ちっくこりあ</string></dict>
+	<dict><key>phrase</key><string>チャーリー・クリスチャン</string><key>shortcut</key><string>ちゃーりーくりすちゃん</string></dict>
+	<dict><key>phrase</key><string>チャーリー・パーカー</string><key>shortcut</key><string>ちゃーりーぱーかー</string></dict>
+	<dict><key>phrase</key><string>チャーリー・ヘイデン</string><key>shortcut</key><string>ちゃーりーへいでん</string></dict>
+	<dict><key>phrase</key><string>チャールズ・ミンガス</string><key>shortcut</key><string>ちゃーるずみんがす</string></dict>
+	<dict><key>phrase</key><string>デイヴ・ブルーベック</string><key>shortcut</key><string>でいゔぶるーべっく</string></dict>
+	<dict><key>phrase</key><string>ディジー・ガレスピー</string><key>shortcut</key><string>でぃじーがれすぴー</string></dict>
+	<dict><key>phrase</key><string>デューク・エリントン</string><key>shortcut</key><string>でゅーくえりんとん</string></dict>
+	<dict><key>phrase</key><string>トニー・ウィリアムス</string><key>shortcut</key><string>とにーうぃりあむす</string></dict>
+	<dict><key>phrase</key><string>ナット・キング・コール</string><key>shortcut</key><string>なっときんぐこーる</string></dict>
+	<dict><key>phrase</key><string>ニナ・シモン</string><key>shortcut</key><string>になしもん</string></dict>
+	<dict><key>phrase</key><string>ハービー・ハンコック</string><key>shortcut</key><string>はーびーはんこっく</string></dict>
+	<dict><key>phrase</key><string>パット・メセニー</string><key>shortcut</key><string>ぱっとめせにー</string></dict>
+	<dict><key>phrase</key><string>バド・パウエル</string><key>shortcut</key><string>ばどぱうえる</string></dict>
+	<dict><key>phrase</key><string>ハンク・モブレー</string><key>shortcut</key><string>はんくもぶれー</string></dict>
+	<dict><key>phrase</key><string>ビリー・ストレイホーン</string><key>shortcut</key><string>びりーすとれいほーん</string></dict>
+	<dict><key>phrase</key><string>ビリー・ホリデイ</string><key>shortcut</key><string>びりーほりでい</string></dict>
+	<dict><key>phrase</key><string>ビル・エヴァンス</string><key>shortcut</key><string>びるえゔぁんす</string></dict>
+	<dict><key>phrase</key><string>ファッツ・ウォーラー</string><key>shortcut</key><string>ふぁっつうぉーらー</string></dict>
+	<dict><key>phrase</key><string>フィリー・ジョー・ジョーンズ</string><key>shortcut</key><string>ふぃりーじょーじょーんず</string></dict>
+	<dict><key>phrase</key><string>ブラッド・メルドー</string><key>shortcut</key><string>ぶらっどめるどー</string></dict>
+	<dict><key>phrase</key><string>フランク・シナトラ</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
+	<dict><key>phrase</key><string>フレッチャー・ヘンダーソン</string><key>shortcut</key><string>ふれっちゃーへんだーそん</string></dict>
+	<dict><key>phrase</key><string>フレディ・ハバード</string><key>shortcut</key><string>ふれでぃはばーど</string></dict>
+	<dict><key>phrase</key><string>ベニー・グッドマン</string><key>shortcut</key><string>べにーぐっどまん</string></dict>
+	<dict><key>phrase</key><string>ベニー・ゴルソン</string><key>shortcut</key><string>べにーごるそん</string></dict>
+	<dict><key>phrase</key><string>ポール・チェンバース</string><key>shortcut</key><string>ぽーるちぇんばーす</string></dict>
+	<dict><key>phrase</key><string>ポール・デスモンド</string><key>shortcut</key><string>ぽーるですもんど</string></dict>
+	<dict><key>phrase</key><string>ホレス・シルヴァー</string><key>shortcut</key><string>ほれすしるゔぁー</string></dict>
+	<dict><key>phrase</key><string>マイケル・ブレッカー</string><key>shortcut</key><string>まいけるぶれっかー</string></dict>
+	<dict><key>phrase</key><string>マイルス・デイヴィス</string><key>shortcut</key><string>まいるすでいゔぃす</string></dict>
+	<dict><key>phrase</key><string>マックス・ローチ</string><key>shortcut</key><string>まっくすろーち</string></dict>
+	<dict><key>phrase</key><string>マッコイ・タイナー</string><key>shortcut</key><string>まっこいたいなー</string></dict>
+	<dict><key>phrase</key><string>マリア・シュナイダー</string><key>shortcut</key><string>まりあしゅないだー</string></dict>
+	<dict><key>phrase</key><string>ミルト・ジャクソン</string><key>shortcut</key><string>みるとじゃくそん</string></dict>
+	<dict><key>phrase</key><string>メアリー・ルー・ウィリアムズ</string><key>shortcut</key><string>めありーるーうぃりあむず</string></dict>
+	<dict><key>phrase</key><string>ライオネル・ハンプトン</string><key>shortcut</key><string>らいおねるはんぷとん</string></dict>
+	<dict><key>phrase</key><string>ラサーン・ローランド・カーク</string><key>shortcut</key><string>らさーんろーらんどかーく</string></dict>
+	<dict><key>phrase</key><string>リー・コニッツ</string><key>shortcut</key><string>りーこにっつ</string></dict>
+	<dict><key>phrase</key><string>リー・モーガン</string><key>shortcut</key><string>りーもーがん</string></dict>
+	<dict><key>phrase</key><string>ルイ・アームストロング</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
+	<dict><key>phrase</key><string>レスター・ヤング</string><key>shortcut</key><string>れすたーやんぐ</string></dict>
+	<dict><key>phrase</key><string>レニー・トリスターノ</string><key>shortcut</key><string>れにーとりすたーの</string></dict>
+	<dict><key>phrase</key><string>ロイ・エルドリッジ</string><key>shortcut</key><string>ろいえるどりっじ</string></dict>
+	<dict><key>phrase</key><string>ロイ・ハーグローヴ</string><key>shortcut</key><string>ろいはーぐろーゔ</string></dict>
+	<dict><key>phrase</key><string>ロバート・グラスパー</string><key>shortcut</key><string>ろばーとぐらすぱー</string></dict>
+    <!-- Jazz 102 (B) -->
+	<dict><key>phrase</key><string>Abbey Lincoln</string><key>shortcut</key><string>あびーりんかーん</string></dict>
+	<dict><key>phrase</key><string>Albert Ayler</string><key>shortcut</key><string>あるばーとあいらー</string></dict>
+	<dict><key>phrase</key><string>Alice Coltrane</string><key>shortcut</key><string>ありすこるとれーん</string></dict>
+	<dict><key>phrase</key><string>Anthony Braxton</string><key>shortcut</key><string>あんそにーぶらくすとん</string></dict>
+	<dict><key>phrase</key><string>Antônio Carlos Jobim</string><key>shortcut</key><string>あんとにおかるろすじょびん</string></dict>
+	<dict><key>phrase</key><string>Art Blakey</string><key>shortcut</key><string>あーとぶれいきー</string></dict>
+	<dict><key>phrase</key><string>Art Pepper</string><key>shortcut</key><string>あーとぺっぱー</string></dict>
+	<dict><key>phrase</key><string>Artie Shaw</string><key>shortcut</key><string>あーてぃしょう</string></dict>
+	<dict><key>phrase</key><string>Astrud Gilberto</string><key>shortcut</key><string>あすとらっどじるべると</string></dict>
+	<dict><key>phrase</key><string>Benny Golson</string><key>shortcut</key><string>べにーごるそん</string></dict>
+	<dict><key>phrase</key><string>Benny Goodman</string><key>shortcut</key><string>べにーぐっどまん</string></dict>
+	<dict><key>phrase</key><string>Bill Evans</string><key>shortcut</key><string>びるえゔぁんす</string></dict>
+	<dict><key>phrase</key><string>Billie Holiday</string><key>shortcut</key><string>びりーほりでい</string></dict>
+	<dict><key>phrase</key><string>Billy Strayhorn</string><key>shortcut</key><string>びりーすとれいほーん</string></dict>
+	<dict><key>phrase</key><string>Brad Mehldau</string><key>shortcut</key><string>ぶらっどめるどー</string></dict>
+	<dict><key>phrase</key><string>Bud Powell</string><key>shortcut</key><string>ばどぱうえる</string></dict>
+	<dict><key>phrase</key><string>Cannonball Adderley</string><key>shortcut</key><string>きゃのんぼーるあだれい</string></dict>
+	<dict><key>phrase</key><string>Carla Bley</string><key>shortcut</key><string>かーらぶれい</string></dict>
+	<dict><key>phrase</key><string>Cecil Taylor</string><key>shortcut</key><string>せしるていらー</string></dict>
+	<dict><key>phrase</key><string>Charles Mingus</string><key>shortcut</key><string>ちゃーるずみんがす</string></dict>
+	<dict><key>phrase</key><string>Charlie Christian</string><key>shortcut</key><string>ちゃーりーくりすちゃん</string></dict>
+	<dict><key>phrase</key><string>Charlie Haden</string><key>shortcut</key><string>ちゃーりーへいでん</string></dict>
+	<dict><key>phrase</key><string>Charlie Parker</string><key>shortcut</key><string>ちゃーりーぱーかー</string></dict>
+	<dict><key>phrase</key><string>Chet Baker</string><key>shortcut</key><string>ちぇっとべいかー</string></dict>
+	<dict><key>phrase</key><string>Chick Corea</string><key>shortcut</key><string>ちっくこりあ</string></dict>
+	<dict><key>phrase</key><string>Chris Potter</string><key>shortcut</key><string>くりすぽったー</string></dict>
+	<dict><key>phrase</key><string>Clifford Brown</string><key>shortcut</key><string>くりふぉーどぶらうん</string></dict>
+	<dict><key>phrase</key><string>Cole Porter</string><key>shortcut</key><string>こーるぽーたー</string></dict>
+	<dict><key>phrase</key><string>Coleman Hawkins</string><key>shortcut</key><string>こーるまんほーきんす</string></dict>
+	<dict><key>phrase</key><string>Count Basie</string><key>shortcut</key><string>かうんとべいしー</string></dict>
+	<dict><key>phrase</key><string>Dave Brubeck</string><key>shortcut</key><string>でいゔぶるーべっく</string></dict>
+	<dict><key>phrase</key><string>Dizzy Gillespie</string><key>shortcut</key><string>でぃじーがれすぴー</string></dict>
+	<dict><key>phrase</key><string>Django Reinhardt</string><key>shortcut</key><string>じゃんごらいんはると</string></dict>
+	<dict><key>phrase</key><string>Duke Ellington</string><key>shortcut</key><string>でゅーくえりんとん</string></dict>
+	<dict><key>phrase</key><string>Ella Fitzgerald</string><key>shortcut</key><string>えらふぃっつじぇらるど</string></dict>
+	<dict><key>phrase</key><string>Elvin Jones</string><key>shortcut</key><string>えるゔぃんじょーんず</string></dict>
+	<dict><key>phrase</key><string>Eric Dolphy</string><key>shortcut</key><string>えりっくどるふぃー</string></dict>
+	<dict><key>phrase</key><string>Esperanza Spalding</string><key>shortcut</key><string>えすぺらんさすぽるでぃんぐ</string></dict>
+	<dict><key>phrase</key><string>Fats Waller</string><key>shortcut</key><string>ふぁっつうぉーらー</string></dict>
+	<dict><key>phrase</key><string>Fletcher Henderson</string><key>shortcut</key><string>ふれっちゃーへんだーそん</string></dict>
+	<dict><key>phrase</key><string>Frank Sinatra</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
+	<dict><key>phrase</key><string>Freddie Hubbard</string><key>shortcut</key><string>ふれでぃはばーど</string></dict>
+	<dict><key>phrase</key><string>George Gershwin</string><key>shortcut</key><string>じょーじがーしゅうぃん</string></dict>
+	<dict><key>phrase</key><string>George Russell</string><key>shortcut</key><string>じょーじらっせる</string></dict>
+	<dict><key>phrase</key><string>Gerry Mulligan</string><key>shortcut</key><string>じぇりーまりがん</string></dict>
+	<dict><key>phrase</key><string>Gil Evans</string><key>shortcut</key><string>ぎるえゔぁんす</string></dict>
+	<dict><key>phrase</key><string>Glenn Miller</string><key>shortcut</key><string>ぐれんみらー</string></dict>
+	<dict><key>phrase</key><string>Hank Mobley</string><key>shortcut</key><string>はんくもぶれー</string></dict>
+	<dict><key>phrase</key><string>Herbie Hancock</string><key>shortcut</key><string>はーびーはんこっく</string></dict>
+	<dict><key>phrase</key><string>Horace Silver</string><key>shortcut</key><string>ほれすしるゔぁー</string></dict>
+	<dict><key>phrase</key><string>J. J. Johnson</string><key>shortcut</key><string>じぇいじぇいじょんそん</string></dict>
+	<dict><key>phrase</key><string>Jaco Pastorius</string><key>shortcut</key><string>じゃこぱすとりあす</string></dict>
+	<dict><key>phrase</key><string>James P. Johnson</string><key>shortcut</key><string>じぇーむずぴーじょんそん</string></dict>
+	<dict><key>phrase</key><string>Jelly Roll Morton</string><key>shortcut</key><string>じぇりーろーるもーとん</string></dict>
+	<dict><key>phrase</key><string>Jim Hall</string><key>shortcut</key><string>じむほーる</string></dict>
+	<dict><key>phrase</key><string>Joe Henderson</string><key>shortcut</key><string>じょーへんだーそん</string></dict>
+	<dict><key>phrase</key><string>Joe Zawinul</string><key>shortcut</key><string>じょーざゔぃぬる</string></dict>
+	<dict><key>phrase</key><string>John Coltrane</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
+	<dict><key>phrase</key><string>John McLaughlin</string><key>shortcut</key><string>じょんまくらふりん</string></dict>
+	<dict><key>phrase</key><string>João Gilberto</string><key>shortcut</key><string>じょあんじるべると</string></dict>
+	<dict><key>phrase</key><string>Joshua Redman</string><key>shortcut</key><string>じょしゅあれっどまん</string></dict>
+	<dict><key>phrase</key><string>Kamasi Washington</string><key>shortcut</key><string>かましわしんとん</string></dict>
+	<dict><key>phrase</key><string>Keith Jarrett</string><key>shortcut</key><string>きーすじゃれっと</string></dict>
+	<dict><key>phrase</key><string>Kenny Burrell</string><key>shortcut</key><string>けにーばれる</string></dict>
+	<dict><key>phrase</key><string>King Oliver</string><key>shortcut</key><string>きんぐおりゔぁー</string></dict>
+	<dict><key>phrase</key><string>Lee Konitz</string><key>shortcut</key><string>りーこにっつ</string></dict>
+	<dict><key>phrase</key><string>Lee Morgan</string><key>shortcut</key><string>りーもーがん</string></dict>
+	<dict><key>phrase</key><string>Lennie Tristano</string><key>shortcut</key><string>れにーとりすたーの</string></dict>
+	<dict><key>phrase</key><string>Lester Young</string><key>shortcut</key><string>れすたーやんぐ</string></dict>
+	<dict><key>phrase</key><string>Lionel Hampton</string><key>shortcut</key><string>らいおねるはんぷとん</string></dict>
+	<dict><key>phrase</key><string>Louis Armstrong</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
+	<dict><key>phrase</key><string>Maria Schneider</string><key>shortcut</key><string>まりあしゅないだー</string></dict>
+	<dict><key>phrase</key><string>Mary Lou Williams</string><key>shortcut</key><string>めありーるーうぃりあむず</string></dict>
+	<dict><key>phrase</key><string>Max Roach</string><key>shortcut</key><string>まっくすろーち</string></dict>
+	<dict><key>phrase</key><string>McCoy Tyner</string><key>shortcut</key><string>まっこいたいなー</string></dict>
+	<dict><key>phrase</key><string>Michael Brecker</string><key>shortcut</key><string>まいけるぶれっかー</string></dict>
+	<dict><key>phrase</key><string>Miles Davis</string><key>shortcut</key><string>まいるすでいゔぃす</string></dict>
+	<dict><key>phrase</key><string>Milt Jackson</string><key>shortcut</key><string>みるとじゃくそん</string></dict>
+	<dict><key>phrase</key><string>Nat King Cole</string><key>shortcut</key><string>なっときんぐこーる</string></dict>
+	<dict><key>phrase</key><string>Nina Simone</string><key>shortcut</key><string>になしもん</string></dict>
+	<dict><key>phrase</key><string>Ornette Coleman</string><key>shortcut</key><string>おーねっとこーるまん</string></dict>
+	<dict><key>phrase</key><string>Pat Metheny</string><key>shortcut</key><string>ぱっとめせにー</string></dict>
+	<dict><key>phrase</key><string>Paul Chambers</string><key>shortcut</key><string>ぽーるちぇんばーす</string></dict>
+	<dict><key>phrase</key><string>Paul Desmond</string><key>shortcut</key><string>ぽーるですもんど</string></dict>
+	<dict><key>phrase</key><string>Philly Joe Jones</string><key>shortcut</key><string>ふぃりーじょーじょーんず</string></dict>
+	<dict><key>phrase</key><string>Rahsaan Roland Kirk</string><key>shortcut</key><string>らさーんろーらんどかーく</string></dict>
+	<dict><key>phrase</key><string>Robert Glasper</string><key>shortcut</key><string>ろばーとぐらすぱー</string></dict>
+	<dict><key>phrase</key><string>Roy Eldridge</string><key>shortcut</key><string>ろいえるどりっじ</string></dict>
+	<dict><key>phrase</key><string>Roy Hargrove</string><key>shortcut</key><string>ろいはーぐろーゔ</string></dict>
+	<dict><key>phrase</key><string>Sarah Vaughan</string><key>shortcut</key><string>さらゔぉーん</string></dict>
+	<dict><key>phrase</key><string>Scott LaFaro</string><key>shortcut</key><string>すこっとらふぁろ</string></dict>
+	<dict><key>phrase</key><string>Sidney Bechet</string><key>shortcut</key><string>しどにーべしぇ</string></dict>
+	<dict><key>phrase</key><string>Sonny Rollins</string><key>shortcut</key><string>そにーろりんず</string></dict>
+	<dict><key>phrase</key><string>Stan Getz</string><key>shortcut</key><string>すたんげっつ</string></dict>
+	<dict><key>phrase</key><string>Stanley Clarke</string><key>shortcut</key><string>すたんりーくらーく</string></dict>
+	<dict><key>phrase</key><string>Sun Ra</string><key>shortcut</key><string>さんら</string></dict>
+	<dict><key>phrase</key><string>Tadd Dameron</string><key>shortcut</key><string>たっどだめろん</string></dict>
+	<dict><key>phrase</key><string>Thelonious Monk</string><key>shortcut</key><string>せろにあすもんく</string></dict>
+	<dict><key>phrase</key><string>Tony Williams</string><key>shortcut</key><string>とにーうぃりあむす</string></dict>
+	<dict><key>phrase</key><string>Wayne Shorter</string><key>shortcut</key><string>うぇいんしょーたー</string></dict>
+	<dict><key>phrase</key><string>Wes Montgomery</string><key>shortcut</key><string>うぇすもんごめりー</string></dict>
+	<dict><key>phrase</key><string>Wynton Marsalis</string><key>shortcut</key><string>うぃんとんまるさりす</string></dict>
 </array>
 </plist>
