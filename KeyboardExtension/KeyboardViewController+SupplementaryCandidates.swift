@@ -80,6 +80,7 @@ extension KeyboardViewController {
                         event: "補助語彙を更新 entries=\(entryCount) indexCache=\(usedPersistentIndex ? "hit" : "miss")",
                         appendLog: true
                     )
+                    self.logMemoryBreakdown(trigger: "supplementaryLexiconUpdated") // [MEMDIAG]
 
                     if previousCandidates != mergedCandidates {
                         self.refreshKeyboardStateAsync()
