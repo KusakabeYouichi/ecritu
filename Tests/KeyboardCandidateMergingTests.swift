@@ -5,7 +5,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         let supplementary = (1...40).map { "補助候補\($0)" }
         let converter = ["カナダ", "金田", "叶田", "鐘田"] + (1...40).map { "変換候補\($0)" }
 
-        let merged = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
             reading: "かなだ",
             supplementaryCandidates: supplementary,
             converterCandidates: converter,
@@ -20,7 +20,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         let supplementary = (1...20).map { "補助候補\($0)" }
         let converter = (1...20).map { "変換候補\($0)" }
 
-        let merged = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
             reading: "かな",
             supplementaryCandidates: supplementary,
             converterCandidates: converter,
@@ -35,7 +35,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         let supplementary = (1...20).map { "補助候補\($0)" }
         let converter = ["変換候補A", "変換候補B"]
 
-        let merged = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
             reading: "かな",
             supplementaryCandidates: supplementary,
             converterCandidates: converter,
@@ -48,7 +48,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
     }
 
     func testKatakanaSupplementaryForSameReadingIsDeferredBehindConverter() {
-        let split = KeyboardViewController.splitSupplementaryCandidatesForMerge(
+        let split = SupplementaryCandidateMerger.splitSupplementaryCandidatesForMerge(
             reading: "やまだ",
             supplementaryCandidates: ["ヤマダ"],
             converterCandidates: ["山田", "ヤマダ"]
@@ -57,7 +57,7 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         XCTAssertTrue(split.prioritized.isEmpty)
         XCTAssertEqual(split.deferred, ["ヤマダ"])
 
-        let mergedPrimary = KeyboardViewController.mergeSupplementaryAndConverterCandidates(
+        let mergedPrimary = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
             reading: "やまだ",
             supplementaryCandidates: split.prioritized,
             converterCandidates: ["山田", "ヤマダ"],
