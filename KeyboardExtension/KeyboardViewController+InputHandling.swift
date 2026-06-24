@@ -233,38 +233,12 @@ extension KeyboardViewController {
         if supplementaryCandidates.isEmpty {
             merged = Array(converterCandidates.prefix(presentationLimit))
         } else {
-            let supplementarySplit = SupplementaryCandidateMerger.splitSupplementaryCandidatesForMerge(
+            merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
                 reading: cacheKey.reading,
                 supplementaryCandidates: supplementaryCandidates,
-                converterCandidates: converterCandidates
-            )
-            var mergedPrimary = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
-                reading: cacheKey.reading,
-                supplementaryCandidates: supplementarySplit.prioritized,
                 converterCandidates: converterCandidates,
                 limit: presentationLimit
             )
-
-            if !supplementarySplit.deferred.isEmpty,
-                mergedPrimary.count < presentationLimit {
-                var seen = Set(mergedPrimary)
-                for candidate in supplementarySplit.deferred {
-                    let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                    guard !trimmed.isEmpty,
-                        seen.insert(trimmed).inserted else {
-                        continue
-                    }
-
-                    mergedPrimary.append(trimmed)
-
-                    if mergedPrimary.count >= presentationLimit {
-                        break
-                    }
-                }
-            }
-
-            merged = mergedPrimary
         }
 
         let filtered = candidatesForPresentation(
@@ -1033,43 +1007,12 @@ extension KeyboardViewController {
             return Array(converterCandidates.prefix(limit))
         }
 
-        let supplementarySplit = SupplementaryCandidateMerger.splitSupplementaryCandidatesForMerge(
+        return SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
             reading: reading,
             supplementaryCandidates: supplementaryCandidates,
-            converterCandidates: converterCandidates
-        )
-
-        let mergedPrimaryCandidates = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
-            reading: reading,
-            supplementaryCandidates: supplementarySplit.prioritized,
             converterCandidates: converterCandidates,
             limit: limit
         )
-
-        guard !supplementarySplit.deferred.isEmpty,
-            mergedPrimaryCandidates.count < limit else {
-            return mergedPrimaryCandidates
-        }
-
-        var mergedCandidates = mergedPrimaryCandidates
-        var seenCandidates = Set(mergedPrimaryCandidates)
-
-        for candidate in supplementarySplit.deferred {
-            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmedCandidate.isEmpty,
-                seenCandidates.insert(trimmedCandidate).inserted else {
-                continue
-            }
-
-            mergedCandidates.append(trimmedCandidate)
-
-            if mergedCandidates.count >= limit {
-                break
-            }
-        }
-
-        return mergedCandidates
     }
 
     func clearMarkedComposingText() {
