@@ -140,6 +140,18 @@ struct ContentView: View {
     private var keyRepeatInterval: Double = RepeatSettings.intervalDefault
 
     @AppStorage(
+        SettingsKeys.idleCommitEnabled,
+        store: Self.sharedDefaults
+    )
+    private var idleCommitEnabled: Bool = IdleCommitSettings.enabledDefault
+
+    @AppStorage(
+        SettingsKeys.idleCommitInterval,
+        store: Self.sharedDefaults
+    )
+    private var idleCommitInterval: Double = IdleCommitSettings.intervalDefault
+
+    @AppStorage(
         SettingsKeys.kanaModeSwitcherTapAction,
         store: Self.sharedDefaults
     )
@@ -460,6 +472,17 @@ struct ContentView: View {
         )
     }
 
+    private var idleCommitIntervalBinding: Binding<Double> {
+        Binding(
+            get: { idleCommitInterval },
+            set: {
+                idleCommitInterval = abs($0 - IdleCommitSettings.intervalDefault) <= IdleCommitSettings.snapThreshold
+                    ? IdleCommitSettings.intervalDefault
+                    : $0
+            }
+        )
+    }
+
     private var kanaModeSwitcherTapActionSelection: Binding<KanaModeSwitcherActionOption> {
         rawValueSelection(from: kanaModeSwitcherTapActionRawValue, default: .emoji) {
             kanaModeSwitcherTapActionRawValue = $0
@@ -683,6 +706,11 @@ struct ContentView: View {
                         KeyRepeatSettingsSection(
                             keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
                             keyRepeatInterval: keyRepeatIntervalBinding
+                        )
+
+                        IdleCommitSettingsSection(
+                            idleCommitEnabled: $idleCommitEnabled,
+                            idleCommitInterval: idleCommitIntervalBinding
                         )
 
                         KanaModeSwitcherAssignmentSection(

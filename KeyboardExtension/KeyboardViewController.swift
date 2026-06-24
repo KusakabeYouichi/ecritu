@@ -223,9 +223,12 @@ final class KeyboardViewController: UIInputViewController {
         qos: .userInitiated
     )
     var markedTextWatchdogTimer: DispatchSourceTimer?
+    var idleCommitWorkItem: DispatchWorkItem?
     var lastMarkedTextUpdateAt: CFAbsoluteTime = 0
     static let markedTextWatchdogInterval: TimeInterval = 1.5
     static let markedTextWatchdogQuietPeriod: TimeInterval = 1.0
+    static let idleCommitIntervalDefault: TimeInterval = 1.2
+    static let idleCommitIntervalRange: ClosedRange<Double> = 0.3...5.0
     static let markedTextWatchdogQueue = DispatchQueue(
         label: "com.kusakabe.ecritu.marked-text-watchdog",
         qos: .utility
@@ -312,6 +315,8 @@ final class KeyboardViewController: UIInputViewController {
         static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
         static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
         static let keyRepeatInterval = "keyRepeatInterval"
+        static let idleCommitEnabled = "idleCommitEnabled"
+        static let idleCommitInterval = "idleCommitInterval"
         static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
         static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
         static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
@@ -607,6 +612,7 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
 
         stopMarkedTextWatchdog()
+        cancelIdleCommit()
 
         if let workItem = dictionaryPreloadWorkItem {
             workItem.cancel()

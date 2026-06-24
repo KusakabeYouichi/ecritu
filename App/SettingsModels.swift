@@ -36,6 +36,8 @@ enum SettingsKeys {
     static let showsFlickGuideCharacters = "showsFlickGuideCharacters"
     static let keyRepeatInitialDelay = "keyRepeatInitialDelay"
     static let keyRepeatInterval = "keyRepeatInterval"
+    static let idleCommitEnabled = "idleCommitEnabled"
+    static let idleCommitInterval = "idleCommitInterval"
     static let kanaModeSwitcherTapAction = "kanaModeSwitcherTapAction"
     static let kanaModeSwitcherRightFlickAction = "kanaModeSwitcherRightFlickAction"
     static let kanaModeSwitcherUpFlickAction = "kanaModeSwitcherUpFlickAction"
@@ -83,6 +85,13 @@ enum RepeatSettings {
     static let initialDelayRange: ClosedRange<Double> = 0.1...0.8
     static let intervalDefault = 0.1
     static let intervalRange: ClosedRange<Double> = 0.05...0.2
+    static let snapThreshold = 0.01
+}
+
+enum IdleCommitSettings {
+    static let enabledDefault = true
+    static let intervalDefault = 1.2
+    static let intervalRange: ClosedRange<Double> = 0.3...5.0
     static let snapThreshold = 0.01
 }
 
