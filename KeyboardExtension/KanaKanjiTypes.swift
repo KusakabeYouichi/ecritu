@@ -389,7 +389,12 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
-        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan])
+        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 「〜やすい」の漢字「易い」候補(食べ易い 等)
+        InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", outputCandidateSuffix: "易い", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", outputCandidateSuffix: "易く", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", outputCandidateSuffix: "易くない", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", outputCandidateSuffix: "易かった", allowedClasses: [InflectionClass.ichidan])
     ]
 
     static let godanPatterns: [GodanPattern] = [
@@ -862,6 +867,25 @@ extension KanaKanjiConverter {
                     allowedClasses: [pattern.inflectionClass]
                 )
             )
+
+            // 「〜やすい」を漢字「易い」でも出せるようにする(打ち易い 等)。
+            // かな候補は上の suffixes(やすい/やすく/…)で別途生成される。
+            let yasuiKanjiForms: [(reading: String, candidate: String)] = [
+                ("やすい", "易い"),
+                ("やすく", "易く"),
+                ("やすくない", "易くない"),
+                ("やすかった", "易かった")
+            ]
+            for form in yasuiKanjiForms {
+                rules.append(
+                    InflectionRule(
+                        readingSuffix: pattern.iForm + form.reading,
+                        baseReadingSuffix: pattern.dictionaryEnding,
+                        outputCandidateSuffix: pattern.iForm + form.candidate,
+                        allowedClasses: [pattern.inflectionClass]
+                    )
+                )
+            }
         }
 
         return rules

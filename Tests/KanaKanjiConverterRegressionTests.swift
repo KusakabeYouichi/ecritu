@@ -113,6 +113,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionYasuiYasuiKanjiFormIsDerivedFromBaseVerbCandidate() {
+        converter.learn(reading: "うつ", candidate: "打つ")
+        converter.learn(reading: "たべる", candidate: "食べる")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("うちやすい", "打ち易い"),
+            ("たべやすい", "食べ易い")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionSourceFilteredModeStillReturnsSeedFallbackCandidates() {
         let candidates = converter.candidates(
             for: "いく",
