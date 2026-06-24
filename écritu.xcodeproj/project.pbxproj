@@ -21,7 +21,6 @@
 		256E54F1234A13909B92EBC9 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
 		285326EF479921408BB11307 /* IndexedVocabularyList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1350C355909AB4D0F84C48DF /* IndexedVocabularyList.swift */; };
-		2AB16CCE2CDDB767F8E7B2F8 /* KeyboardMemoryDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72A1964DA444EECD0EA44BBA /* KeyboardMemoryDiagnostics.swift */; };
 		2B8DF44D16D0C01219D158CF /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
 		2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2D41A6A9E4C2789278485192 /* LEGAL in Resources */ = {isa = PBXBuildFile; fileRef = F5ED4830F4FA66EFEFE9B5AB /* LEGAL */; };
@@ -132,7 +131,6 @@
 		66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SupplementaryCandidateMerger.swift; sourceTree = "<group>"; };
 		693BB077926B6B9DCDCDA8EA /* écrituTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = "écrituTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardRootView.swift; sourceTree = "<group>"; };
-		72A1964DA444EECD0EA44BBA /* KeyboardMemoryDiagnostics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyboardMemoryDiagnostics.swift; sourceTree = "<group>"; };
 		753727472F0FBB8C1E318336 /* kana_kanji_candidate_sources.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_candidate_sources.json; sourceTree = "<group>"; };
 		76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransition.swift; sourceTree = "<group>"; };
 		7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+DictionaryStore.swift"; sourceTree = "<group>"; };
@@ -266,7 +264,6 @@
 				DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */,
 				A884772319A4160D03A970D9 /* KeyboardRootView+GridLayouts.swift */,
 				66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */,
-				72A1964DA444EECD0EA44BBA /* KeyboardMemoryDiagnostics.swift */,
 			);
 			path = KeyboardExtension;
 			sourceTree = "<group>";
@@ -575,7 +572,6 @@
 				D2A3F64295CDC6096E2250C1 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */,
 				12943D63AB06654429DA11D6 /* KeyboardRootView+GridLayouts.swift in Sources */,
 				DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */,
-				2AB16CCE2CDDB767F8E7B2F8 /* KeyboardMemoryDiagnostics.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

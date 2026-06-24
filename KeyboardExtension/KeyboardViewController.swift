@@ -592,7 +592,6 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
-        logMemoryBreakdown(trigger: "viewDidAppear") // [MEMDIAG]
 
         scheduleKeyboardBootstrapIfNeeded()
 
@@ -1003,7 +1002,6 @@ final class KeyboardViewController: UIInputViewController {
                 event: "システム辞書プリロード完了 trigger=\(trigger) elapsedMs=\(elapsedMs)",
                 appendLog: true
             )
-            self.logMemoryBreakdown(trigger: "systemDictionaryPreloadCompletion") // [MEMDIAG]
         }
     }
 

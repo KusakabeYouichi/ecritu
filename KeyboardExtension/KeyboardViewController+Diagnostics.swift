@@ -5,22 +5,6 @@ import Darwin
 import Contacts
 
 extension KeyboardViewController {
-    // [MEMDIAG] メモリ内訳を診断ログに出す一時メソッド。後でこのブロックと呼び出し行を削除可。
-    func logMemoryBreakdown(trigger: String) {
-        let controllerCaches = [
-            "supplLex=\(supplementaryLexiconCandidatesByReading.count)",
-            "contacts=\(contactCandidatesByReading.count)",
-            "mergedCache=\(supplementaryMergedCandidatesCacheByKey.count)"
-        ].joined(separator: " ")
-        let extra = "\(kanaKanjiStore.memoryDiagnosticsSnapshot()) \(controllerCaches)"
-        appendKeyboardDiagnosticsLog(
-            KeyboardMemoryDiagnostics.reportLine(trigger: trigger, extra: extra),
-            file: #fileID,
-            line: #line,
-            function: #function
-        )
-    }
-
     func physicalMemoryGBText() -> String {
         let physicalMemoryGB = Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824
         return String(format: "%.1f", physicalMemoryGB)
