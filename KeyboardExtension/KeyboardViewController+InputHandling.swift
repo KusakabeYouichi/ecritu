@@ -457,6 +457,10 @@ extension KeyboardViewController {
     }
 
     func handleDeleteBackward() {
+        if revertIdleCommitToComposingIfNeeded() {
+            return
+        }
+
         clearRecentKanaPlainCommitUpgradeContext()
 
         if activeConversion != nil {
@@ -769,7 +773,8 @@ extension KeyboardViewController {
     func rememberRecentKanaPlainCommit(
         sourceText: String,
         sourceReading: String,
-        committedText: String
+        committedText: String,
+        fromIdleCommit: Bool = false
     ) {
         guard !sourceText.isEmpty,
                 !committedText.isEmpty else {
@@ -781,7 +786,8 @@ extension KeyboardViewController {
             sourceText: sourceText,
             sourceReading: sourceReading,
             committedText: committedText,
-            committedAt: Date()
+            committedAt: Date(),
+            fromIdleCommit: fromIdleCommit
         )
     }
 
@@ -973,17 +979,65 @@ extension KeyboardViewController {
             return
         }
 
+        let committedRawText = composingRawText
+        let committedReading = composingReading
+
         appendKeyboardDiagnosticsLogFromInputHandling(
-            "アイドル確定 composingLen=\(composingRawText.count)"
+            "アイドル確定 composingLen=\(committedRawText.count)"
         )
 
         commitComposingText(
-            sourceText: composingRawText,
-            sourceReading: composingReading,
-            committedText: composingRawText,
+            sourceText: committedRawText,
+            sourceReading: committedReading,
+            committedText: committedRawText,
             learn: false
         )
         refreshKeyboardStateForUserInitiatedAction(.commit)
+
+        // 直後の削除キーで未確定へ戻せるよう記録する(fromIdleCommit)。
+        rememberRecentKanaPlainCommit(
+            sourceText: committedRawText,
+            sourceReading: committedReading,
+            committedText: committedRawText,
+            fromIdleCommit: true
+        )
+    }
+
+    // アイドル確定の直後に削除キーが押されたら、1文字削除ではなく
+    // 確定した文字列を未確定(marked)状態に戻す。
+    func revertIdleCommitToComposingIfNeeded() -> Bool {
+        guard let recent = recentKanaPlainCommit,
+            recent.fromIdleCommit,
+            currentInputMode == .kana,
+            activeConversion == nil,
+            composingRawText.isEmpty else {
+            return false
+        }
+
+        if Date().timeIntervalSince(recent.committedAt) > idleCommitUndoWindow {
+            recentKanaPlainCommit = nil
+            return false
+        }
+
+        let contextBeforeInput = currentTextContextBeforeInput()
+        guard contextBeforeInput.hasSuffix(recent.committedText) else {
+            recentKanaPlainCommit = nil
+            return false
+        }
+
+        recentKanaPlainCommit = nil
+
+        deleteBackwardCharacterCount(recent.committedText.count)
+        composingRawText = recent.sourceText
+        composingReading = recent.sourceReading
+        rememberComposingContextPrefixTail()
+        setMarkedComposingText(recent.sourceText)
+
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "アイドル確定を削除キーで未確定へ復帰 len=\(recent.sourceText.count)"
+        )
+        refreshKeyboardStateAsync()
+        return true
     }
 
     func startMarkedTextWatchdogIfNeeded() {
