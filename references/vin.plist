@@ -2127,7 +2127,7 @@
 	<dict><key>phrase</key><string>ラブルスカ</string><key>shortcut</key><string>らぶるすか</string></dict>
 	<dict><key>phrase</key><string>ララ・ネアグラ</string><key>shortcut</key><string>ららねあぐら</string></dict>
 	<dict><key>phrase</key><string>ランブルスコ・ディ・ソルバーラ</string><key>shortcut</key><string>らんぶるすこでぃそるばーら</string></dict>
-	<dict><key>phrase</key><string>リスト</string><key>shortcut</key><string>りすと</string></dict>
+	<dict><key>phrase</key><string>リスト</string><key>shortcut</key><string>りすと</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>リパリア</string><key>shortcut</key><string>りぱりあ</string></dict>
 	<dict><key>phrase</key><string>リボッラ・ジャッラ</string><key>shortcut</key><string>りぼっらじゃっら</string></dict>
 	<dict><key>phrase</key><string>リースリング</string><key>shortcut</key><string>りーすりんぐ</string></dict>
@@ -2261,7 +2261,7 @@
 	<dict><key>phrase</key><string>アンリ</string><key>shortcut</key><string>あんり</string></dict>
 	<dict><key>phrase</key><string>アンリ4世</string><key>shortcut</key><string>あんりよんせい</string></dict>
 	<dict><key>phrase</key><string>イエス・キリスト</string><key>shortcut</key><string>いえすきりすと</string></dict>
-	<dict><key>phrase</key><string>カール</string><key>shortcut</key><string>かーる</string></dict>
+	<dict><key>phrase</key><string>カール</string><key>shortcut</key><string>かーる</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>カール5世</string><key>shortcut</key><string>かーるごせい</string></dict>
 	<dict><key>phrase</key><string>カール大帝</string><key>shortcut</key><string>かーるたいてい</string></dict>
 	<dict><key>phrase</key><string>キャロル・メレディス博士</string><key>shortcut</key><string>きゃろるめれでぃすはかせ</string></dict>
@@ -2439,7 +2439,7 @@
 	<dict><key>phrase</key><string>短梢</string><key>shortcut</key><string>たんしょう</string></dict>
 	<dict><key>phrase</key><string>穀物栽培</string><key>shortcut</key><string>こくもつさいばい</string></dict>
 	<dict><key>phrase</key><string>節間</string><key>shortcut</key><string>せっかん</string></dict>
-	<dict><key>phrase</key><string>結実</string><key>shortcut</key><string>けつじつ</string></dict>
+	<dict><key>phrase</key><string>結実</string><key>shortcut</key><string>けつじつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>総収穫量</string><key>shortcut</key><string>そうしゅうかくりょう</string></dict>
 	<dict><key>phrase</key><string>総栽培面積</string><key>shortcut</key><string>そうさいばいめんせき</string></dict>
 	<dict><key>phrase</key><string>背斜谷</string><key>shortcut</key><string>はいしゃこく</string></dict>
@@ -4693,7 +4693,7 @@
 	<dict><key>phrase</key><string>ザグレブ</string><key>shortcut</key><string>ざぐれぶ</string></dict>
 	<dict><key>phrase</key><string>シェア</string><key>shortcut</key><string>しぇあ</string></dict>
 	<dict><key>phrase</key><string>シェイカー</string><key>shortcut</key><string>しぇいかー</string></dict>
-	<dict><key>phrase</key><string>シェイク</string><key>shortcut</key><string>しぇいく</string></dict>
+	<dict><key>phrase</key><string>シェイク</string><key>shortcut</key><string>しぇいく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>シェイクスピア時代</string><key>shortcut</key><string>しぇいくすぴあじだい</string></dict>
 	<dict><key>phrase</key><string>シェフ</string><key>shortcut</key><string>しぇふ</string></dict>
 	<dict><key>phrase</key><string>シェリシュ</string><key>shortcut</key><string>しぇりしゅ</string></dict>
@@ -4926,7 +4926,7 @@
 	<dict><key>phrase</key><string>セカンドワイン</string><key>shortcut</key><string>せかんどわいん</string></dict>
 	<dict><key>phrase</key><string>セクサールド</string><key>shortcut</key><string>せくさーるど</string></dict>
 	<dict><key>phrase</key><string>セック</string><key>shortcut</key><string>せっく</string></dict>
-	<dict><key>phrase</key><string>セット</string><key>shortcut</key><string>せっと</string></dict>
+	<dict><key>phrase</key><string>セット</string><key>shortcut</key><string>せっと</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>セブンヒル</string><key>shortcut</key><string>せぶんひる</string></dict>
 	<dict><key>phrase</key><string>セミスイート</string><key>shortcut</key><string>せみすいーと</string></dict>
 	<dict><key>phrase</key><string>セミヨン</string><key>shortcut</key><string>せみよん</string></dict>
@@ -5509,7 +5509,7 @@
 	<dict><key>phrase</key><string>ブレタノマイセス</string><key>shortcut</key><string>ぶれたのまいせす</string></dict>
 	<dict><key>phrase</key><string>ブレタノミセス</string><key>shortcut</key><string>ぶれたのみせす</string></dict>
 	<dict><key>phrase</key><string>ブレンダー</string><key>shortcut</key><string>ぶれんだー</string></dict>
-	<dict><key>phrase</key><string>ブロック</string><key>shortcut</key><string>ぶろっく</string></dict>
+	<dict><key>phrase</key><string>ブロック</string><key>shortcut</key><string>ぶろっく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ブロワ</string><key>shortcut</key><string>ぶろわ</string></dict>
 	<dict><key>phrase</key><string>ブロンナー</string><key>shortcut</key><string>ぶろんなー</string></dict>
 	<dict><key>phrase</key><string>ブーケ</string><key>shortcut</key><string>ぶーけ</string></dict>
@@ -5732,7 +5732,7 @@
 	<dict><key>phrase</key><string>マタカナ</string><key>shortcut</key><string>またかな</string></dict>
 	<dict><key>phrase</key><string>マチュザレム</string><key>shortcut</key><string>まちゅざれむ</string></dict>
 	<dict><key>phrase</key><string>マッシュルーム</string><key>shortcut</key><string>まっしゅるーむ</string></dict>
-	<dict><key>phrase</key><string>マッチ</string><key>shortcut</key><string>まっち</string></dict>
+	<dict><key>phrase</key><string>マッチ</string><key>shortcut</key><string>まっち</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>マティーニ</string><key>shortcut</key><string>まてぃーに</string></dict>
 	<dict><key>phrase</key><string>マドリード</string><key>shortcut</key><string>まどりーど</string></dict>
 	<dict><key>phrase</key><string>マホガニー</string><key>shortcut</key><string>まほがにー</string></dict>
@@ -5955,7 +5955,7 @@
 	<dict><key>phrase</key><string>リコッタ</string><key>shortcut</key><string>りこった</string></dict>
 	<dict><key>phrase</key><string>リコリス</string><key>shortcut</key><string>りこりす</string></dict>
 	<dict><key>phrase</key><string>リスタン</string><key>shortcut</key><string>りすたん</string></dict>
-	<dict><key>phrase</key><string>リスト</string><key>shortcut</key><string>りすと</string></dict>
+	<dict><key>phrase</key><string>リスト</string><key>shortcut</key><string>りすと</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>リストラック</string><key>shortcut</key><string>りすとらっく</string></dict>
 	<dict><key>phrase</key><string>リスト化</string><key>shortcut</key><string>りすとか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>リスボン</string><key>shortcut</key><string>りすぼん</string></dict>
@@ -6039,7 +6039,7 @@
 	<dict><key>phrase</key><string>ロサレホ</string><key>shortcut</key><string>ろされほ</string></dict>
 	<dict><key>phrase</key><string>ロシア</string><key>shortcut</key><string>ろしあ</string></dict>
 	<dict><key>phrase</key><string>ロシアン・リバー・ヴァレー</string><key>shortcut</key><string>ろしあんりばーゔぁれー</string></dict>
-	<dict><key>phrase</key><string>ロス</string><key>shortcut</key><string>ろす</string></dict>
+	<dict><key>phrase</key><string>ロス</string><key>shortcut</key><string>ろす</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ロゼ</string><key>shortcut</key><string>ろぜ</string></dict>
 	<dict><key>phrase</key><string>ロゼ・白ワイン</string><key>shortcut</key><string>ろぜぜしろわいん</string></dict>
 	<dict><key>phrase</key><string>ロタンドン</string><key>shortcut</key><string>ろたんどん</string></dict>
@@ -6072,7 +6072,7 @@
 	<dict><key>phrase</key><string>ローマ神話</string><key>shortcut</key><string>ろーましんわ</string></dict>
 	<dict><key>phrase</key><string>ローム・粘土</string><key>shortcut</key><string>ろーむねばつち</string></dict>
 	<dict><key>phrase</key><string>ローリエ</string><key>shortcut</key><string>ろーりえ</string></dict>
-	<dict><key>phrase</key><string>ロール</string><key>shortcut</key><string>ろーる</string></dict>
+	<dict><key>phrase</key><string>ロール</string><key>shortcut</key><string>ろーる</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ローレライ</string><key>shortcut</key><string>ろーれらい</string></dict>
 	<dict><key>phrase</key><string>ローレル</string><key>shortcut</key><string>ろーれる</string></dict>
 	<dict><key>phrase</key><string>ローレルウッド</string><key>shortcut</key><string>ろーれるうっど</string></dict>
@@ -6371,7 +6371,7 @@
 	<dict><key>phrase</key><string>北インド</string><key>shortcut</key><string>きたいんど</string></dict>
 	<dict><key>phrase</key><string>北ピエモンテ</string><key>shortcut</key><string>きたぴえもんて</string></dict>
 	<dict><key>phrase</key><string>北マケドニア</string><key>shortcut</key><string>きたまけどにあ</string></dict>
-	<dict><key>phrase</key><string>北上</string><key>shortcut</key><string>ほくじょう</string></dict>
+	<dict><key>phrase</key><string>北上</string><key>shortcut</key><string>ほくじょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>北向</string><key>shortcut</key><string>きたむかい</string></dict>
 	<dict><key>phrase</key><string>北回帰線</string><key>shortcut</key><string>きたかいきせん</string></dict>
 	<dict><key>phrase</key><string>北岸</string><key>shortcut</key><string>ほくがん</string></dict>
@@ -6845,7 +6845,7 @@
 	<dict><key>phrase</key><string>定期的</string><key>shortcut</key><string>ていきてき</string></dict>
 	<dict><key>phrase</key><string>定番</string><key>shortcut</key><string>ていばん</string></dict>
 	<dict><key>phrase</key><string>定着</string><key>shortcut</key><string>ていちゃく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>定義</string><key>shortcut</key><string>ていぎ</string></dict>
+	<dict><key>phrase</key><string>定義</string><key>shortcut</key><string>ていぎ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>定評</string><key>shortcut</key><string>ていひょう</string></dict>
 	<dict><key>phrase</key><string>宝庫</string><key>shortcut</key><string>ほうこ</string></dict>
 	<dict><key>phrase</key><string>宝水ワイナリー</string><key>shortcut</key><string>ほうすいわいなりー</string></dict>
@@ -7020,7 +7020,7 @@
 	<dict><key>phrase</key><string>建国</string><key>shortcut</key><string>けんこく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>建物</string><key>shortcut</key><string>たてもの</string></dict>
 	<dict><key>phrase</key><string>建設</string><key>shortcut</key><string>けんせつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>建造</string><key>shortcut</key><string>けんぞう</string></dict>
+	<dict><key>phrase</key><string>建造</string><key>shortcut</key><string>けんぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>弧状</string><key>shortcut</key><string>こじょう</string></dict>
 	<dict><key>phrase</key><string>強力</string><key>shortcut</key><string>きょうりょく</string></dict>
 	<dict><key>phrase</key><string>強化</string><key>shortcut</key><string>きょうか</string><key>pos</key><string>サ変名詞</string></dict>
@@ -7720,7 +7720,7 @@
 	<dict><key>phrase</key><string>流入</string><key>shortcut</key><string>りゅうにゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>流出</string><key>shortcut</key><string>りゅうしゅつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>流域</string><key>shortcut</key><string>りゅういき</string></dict>
-	<dict><key>phrase</key><string>流行</string><key>shortcut</key><string>りゅうこう</string></dict>
+	<dict><key>phrase</key><string>流行</string><key>shortcut</key><string>りゅうこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>流通</string><key>shortcut</key><string>りゅうつう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>流通業者</string><key>shortcut</key><string>りゅうつうぎょうしゃ</string></dict>
 	<dict><key>phrase</key><string>浙江省</string><key>shortcut</key><string>せっこうしょう</string></dict>
@@ -8212,7 +8212,7 @@
 	<dict><key>phrase</key><string>節度</string><key>shortcut</key><string>せつど</string></dict>
 	<dict><key>phrase</key><string>節間</string><key>shortcut</key><string>せっかん</string></dict>
 	<dict><key>phrase</key><string>範囲</string><key>shortcut</key><string>はんい</string></dict>
-	<dict><key>phrase</key><string>築城</string><key>shortcut</key><string>ちくじょう</string></dict>
+	<dict><key>phrase</key><string>築城</string><key>shortcut</key><string>ちくじょう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>築造</string><key>shortcut</key><string>ちくぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>米作</string><key>shortcut</key><string>べいさく</string></dict>
 	<dict><key>phrase</key><string>米国</string><key>shortcut</key><string>べいこく</string></dict>
@@ -8272,7 +8272,7 @@
 	<dict><key>phrase</key><string>経緯</string><key>shortcut</key><string>いきさつ</string></dict>
 	<dict><key>phrase</key><string>経験</string><key>shortcut</key><string>けいけん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>結合</string><key>shortcut</key><string>けつごう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>結実</string><key>shortcut</key><string>けつじつ</string></dict>
+	<dict><key>phrase</key><string>結実</string><key>shortcut</key><string>けつじつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>結成</string><key>shortcut</key><string>けっせい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>結果</string><key>shortcut</key><string>けっか</string></dict>
 	<dict><key>phrase</key><string>結果枝</string><key>shortcut</key><string>けっかし</string></dict>

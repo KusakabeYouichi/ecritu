@@ -86,7 +86,7 @@
     <dict><key>phrase</key><string>ブルース・スプリングスティーン</string><key>shortcut</key><string>ぶるーすすぷりんぐすてぃーん</string></dict>
     <dict><key>phrase</key><string>ニール・ヤング</string><key>shortcut</key><string>にーるやんぐ</string></dict>
     <dict><key>phrase</key><string>ザ・クラッシュ</string><key>shortcut</key><string>ざくらっしゅ</string></dict>
-    <dict><key>phrase</key><string>クラッシュ</string><key>shortcut</key><string>くらっしゅ</string></dict>
+    <dict><key>phrase</key><string>クラッシュ</string><key>shortcut</key><string>くらっしゅ</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>セックス・ピストルズ</string><key>shortcut</key><string>せっくすぴすとるず</string></dict>
     <dict><key>phrase</key><string>ザ・ドアーズ</string><key>shortcut</key><string>ざどあーず</string></dict>
     <dict><key>phrase</key><string>ドアーズ</string><key>shortcut</key><string>どあーず</string></dict>

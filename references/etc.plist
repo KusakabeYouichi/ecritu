@@ -191,7 +191,7 @@
 	<dict><key>phrase</key><string>相次</string><key>shortcut</key><string>あいじ</string></dict>
 	<dict><key>phrase</key><string>相性</string><key>shortcut</key><string>あいしょう</string></dict>
 	<dict><key>phrase</key><string>相対的</string><key>shortcut</key><string>そうたいてき</string></dict>
-	<dict><key>phrase</key><string>相当</string><key>shortcut</key><string>そうとう</string></dict>
+	<dict><key>phrase</key><string>相当</string><key>shortcut</key><string>そうとう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>相当程度</string><key>shortcut</key><string>そうとうていど</string></dict>
 	<dict><key>phrase</key><string>相反</string><key>shortcut</key><string>そうはん</string></dict>
 	<dict><key>phrase</key><string>側部</string><key>shortcut</key><string>そくぶ</string></dict>
