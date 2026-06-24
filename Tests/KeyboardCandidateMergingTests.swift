@@ -54,35 +54,19 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         XCTAssertTrue(merged.contains("変換候補B"), "merged=\(merged)")
     }
 
-    func testKatakanaSupplementaryForSameReadingIsDedupedAgainstConverter() {
-        let split = SupplementaryCandidateMerger.splitSupplementaryCandidatesForMerge(
+    func testKatakanaSupplementaryForSameReadingIsKeptAndDedupedAgainstConverter() {
+        // 連絡先・ユーザー辞書由来のカタカナ候補(ヤマダ)は後ろに回さず通常の補助候補として
+        // 扱う。変換候補が漢字を優先(山田が先頭)しつつ、カタカナ候補も保持され、
+        // 変換候補側と重複する場合は merge の重複排除で1件にまとまる。
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
             reading: "やまだ",
             supplementaryCandidates: ["ヤマダ"],
-            converterCandidates: ["山田", "ヤマダ"]
-        )
-
-        // split は変換候補「文字列」から同一読みを正規化して判定するため、漢字候補(山田)は
-        // 読み「やまだ」と一致せず検出されない。よってカタカナ補助候補の defer は発生せず、
-        // 重複排除は後段の merge(seen 集合)が担う。
-        XCTAssertEqual(split.prioritized, ["ヤマダ"])
-        XCTAssertTrue(split.deferred.isEmpty)
-
-        let mergedPrimary = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
-            reading: "やまだ",
-            supplementaryCandidates: split.prioritized,
             converterCandidates: ["山田", "ヤマダ"],
             limit: 8
         )
 
-        var merged = mergedPrimary
-
-        if merged.count < 8 {
-            for candidate in split.deferred where !merged.contains(candidate) {
-                merged.append(candidate)
-            }
-        }
-
         XCTAssertEqual(merged.first, "山田", "merged=\(merged)")
         XCTAssertTrue(merged.contains("ヤマダ"), "merged=\(merged)")
+        XCTAssertEqual(merged.filter { $0 == "ヤマダ" }.count, 1, "merged=\(merged)")
     }
 }
