@@ -516,20 +516,23 @@ final class KeyboardViewController: UIInputViewController {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
 
-        guard !shouldSuppressHeavyOperations(reason: "textDidChange") else {
-            return
-        }
-
         // textDidChange は host 側のテキストが変化した(送信/autocorrect/paste/選択など
         // 何らかの理由で)シグナルなので、自前/外部を問わずキャッシュを必ず無効化する。
         // 「自前操作なら skip」の最適化は send 時に stale context で nudge 計算が
         // 狂って iMessage 等で下線残留を招くため採用しない。
+        // 多重生存の非アクティブインスタンスでも、未確定の確定/クリアと下線残留クリアは
+        // 正しさに不可欠なので必ず実行し、重い再描画(refreshKeyboardState)のみ抑止する。
         invalidateTextContextCache()
 
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
         )
         consumePendingHostCallbackUnderlineClearPassIfNeeded(trigger: "textDidChange")
+
+        guard !shouldSuppressHeavyOperations(reason: "textDidChange") else {
+            return
+        }
+
         refreshKeyboardState(trigger: "textDidChange")
     }
 
@@ -537,16 +540,19 @@ final class KeyboardViewController: UIInputViewController {
         super.selectionDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
 
-        guard !shouldSuppressHeavyOperations(reason: "selectionDidChange") else {
-            return
-        }
-
+        // 多重生存の非アクティブインスタンスでも、未確定の確定/クリアと下線残留クリアは
+        // 正しさに不可欠なので必ず実行し、重い再描画(refreshKeyboardState)のみ抑止する。
         invalidateTextContextCache()
 
         synchronizeConversionContextIfNeeded(
             triggeredByExternalChange: shouldTreatAsExternalTextChange()
         )
         consumePendingHostCallbackUnderlineClearPassIfNeeded(trigger: "selectionDidChange")
+
+        guard !shouldSuppressHeavyOperations(reason: "selectionDidChange") else {
+            return
+        }
+
         refreshKeyboardState(trigger: "selectionDidChange")
     }
 
