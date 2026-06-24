@@ -447,5 +447,54 @@
     <dict><key>phrase</key><string>寅の日</string><key>shortcut</key><string>とらのひ</string></dict>
     <dict><key>phrase</key><string>巳の日</string><key>shortcut</key><string>みのひ</string></dict>
     <dict><key>phrase</key><string>己巳の日</string><key>shortcut</key><string>つちのとみのひ</string></dict>
+
+	<dict><key>phrase</key><string>北京烤鴨</string><key>shortcut</key><string>ぺいちんかおやー</string></dict>
+	<dict><key>phrase</key><string>成吉思汗</string><key>shortcut</key><string>じんぎすかん</string></dict>
+	<dict><key>phrase</key><string>酸辣湯麺</string><key>shortcut</key><string>さんらーたんめん</string></dict>
+	<dict><key>phrase</key><string>酸辣湯麺</string><key>shortcut</key><string>すーらーたんめん</string></dict>
+	<dict><key>phrase</key><string>饅頭</string><key>shortcut</key><string>まんとう</string></dict>
+	<dict><key>phrase</key><string>包子</string><key>shortcut</key><string>ぱおず</string></dict>
+	<dict><key>phrase</key><string>餃子</string><key>shortcut</key><string>ぎょーざ</string></dict>
+	<dict><key>phrase</key><string>餃子</string><key>shortcut</key><string>ぎょうざ</string></dict>
+	<dict><key>phrase</key><string>餃子</string><key>shortcut</key><string>ちゃおず</string></dict>
+	<dict><key>phrase</key><string>刀削麺</string><key>shortcut</key><string>だおしゃおみえん</string></dict>
+	<dict><key>phrase</key><string>刀削麺</string><key>shortcut</key><string>とうしょうめん</string></dict>
+	<dict><key>phrase</key><string>杏仁羹</string><key>shortcut</key><string>きょうにんかん</string></dict>
+	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>あんにんどうふ</string></dict>
+	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>きょうにんどーふ</string></dict>
+	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>きょうにんどうふ</string></dict>
+	<dict><key>phrase</key><string>麻婆豆腐</string><key>shortcut</key><string>まーぼーどーふー</string></dict>
+	<dict><key>phrase</key><string>麻婆豆腐</string><key>shortcut</key><string>まーぼーどうふ</string></dict>
+	<dict><key>phrase</key><string>魚香肉絲</string><key>shortcut</key><string>ゆーしゃんろーすー</string></dict>
+	<dict><key>phrase</key><string>大千干焼魚</string><key>shortcut</key><string>だーちぇんがんしゃおゆー</string></dict>
+	<dict><key>phrase</key><string>宮保鶏丁</string><key>shortcut</key><string>ごんばおじーでぃん</string></dict>
+	<dict><key>phrase</key><string>夫妻肺片</string><key>shortcut</key><string>ふーちーふぇいぴぃえん</string></dict>
+	<dict><key>phrase</key><string>鶏豆花</string><key>shortcut</key><string>じーどぅーほわ</string></dict>
+	<dict><key>phrase</key><string>開水白菜</string><key>shortcut</key><string>かいしゅいぱいつぁい</string></dict>
+	<dict><key>phrase</key><string>回鍋肉</string><key>shortcut</key><string>ほいこーろー</string></dict>
+	<dict><key>phrase</key><string>青椒肉丝</string><key>shortcut</key><string>ちんじゃおろーすー</string></dict>
+	<dict><key>phrase</key><string>青椒肉絲</string><key>shortcut</key><string>ちんじゃおろーすー</string></dict>
+	<dict><key>phrase</key><string>干烧虾仁</string><key>shortcut</key><string>かんしゃおしゃーれん</string></dict>
+	<dict><key>phrase</key><string>干焼蝦仁</string><key>shortcut</key><string>かんしゃおしゃーれん</string></dict>
+	<dict><key>phrase</key><string>棒棒鶏</string><key>shortcut</key><string>ばんばんじー</string></dict>
+	<dict><key>phrase</key><string>口水鶏</string><key>shortcut</key><string>こうしゅいじー</string></dict>
+	<dict><key>phrase</key><string>咕咾肉</string><key>shortcut</key><string>ぐーらおろー</string></dict>
+	<dict><key>phrase</key><string>魚翅湯</string><key>shortcut</key><string>ゆいちいたん</string></dict>
+	<dict><key>phrase</key><string>芙蓉蟹</string><key>shortcut</key><string>ふーよーはい</string></dict>
+	<dict><key>phrase</key><string>烧卖</string><key>shortcut</key><string>しゃおまい</string></dict>
+	<dict><key>phrase</key><string>焼売</string><key>shortcut</key><string>しゅうまい</string></dict>
+	<dict><key>phrase</key><string>八宝菜</string><key>shortcut</key><string>ぱーぱおつぁい</string></dict>
+	<dict><key>phrase</key><string>八宝菜</string><key>shortcut</key><string>はっぽうさい</string></dict>
+	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しゃおろんばお</string></dict>
+	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽー</string></dict>
+	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽう</string></dict>
+	<dict><key>phrase</key><string>上海炒麺</string><key>shortcut</key><string>しゃんはいちゃうみん</string></dict>
+	<dict><key>phrase</key><string>揚州炒飯</string><key>shortcut</key><string>やんじょうちゃおふぁん</string></dict>
+	<dict><key>phrase</key><string>清蒸大闸蟹</string><key>shortcut</key><string>ちんじょんだじゃしぇ</string></dict>
+	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>とんぽーろう</string></dict>
+	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽーろー</string></dict>
+	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽうろう</string></dict>
+	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽーろう</string></dict>
+	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽうろー</string></dict>
 </array>
 </plist>
