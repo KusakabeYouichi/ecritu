@@ -1846,8 +1846,22 @@ extension KeyboardViewController {
         appendKeyboardDiagnosticsLogFromInputHandling(
             "文脈不一致で編集中テキストを破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=len=\(previousContextBeforeInputLength)"
         )
-        markTextProxyEdit()
-        textDocumentProxy.unmarkText()
+
+        if triggeredByExternalChange && contextBeforeInput.isEmpty {
+            // 行頭・確定文字なしで送信した場合、host は marked を送信済みだが入力欄に
+            // marked を残す。ここで unmarkText すると残った marked が実テキストとして確定し
+            // 入力欄に残る(送信済みなのに残留)。確定文字が無い(context空)場面なので、
+            // commit せず marked を空置換して取り除く。確定済みテキストが無いため
+            // 巻き込み削除のリスクがない。
+            markTextProxyEdit()
+            textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
+            markTextProxyEdit()
+            textDocumentProxy.unmarkText()
+        } else {
+            markTextProxyEdit()
+            textDocumentProxy.unmarkText()
+        }
+
         clearComposingState()
     }
 
