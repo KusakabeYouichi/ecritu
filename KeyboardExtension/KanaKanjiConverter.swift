@@ -211,6 +211,14 @@ final class KanaKanjiConverter {
         }
 
         let metadata = inflectionMetadata(for: stemReading)
+        // 追加語彙・学習語彙の動詞はシステム辞書の活用クラスメタデータを持たないため、
+        // 活用候補生成と同じ推論(resolvedInflectionClass)で動詞性を判定する。
+        // これにより「使った/読んだ」等と同様に「よう/ように/ような」も導出できる。
+        // 品詞が明示(systemClassMap)されている語はそちらが優先される。
+        let normalizedStemReading = KanaTextNormalizer.normalizedReading(stemReading)
+        let userCandidateSet = Set(
+            combinedUserCandidates(for: stemReading, userDictionary: store.userDictionary())
+        ).union(store.initialUserDictionary()[normalizedStemReading] ?? [])
 
         return candidates.filter { candidate in
             if candidate.hasSuffix("する")
@@ -219,7 +227,13 @@ final class KanaKanjiConverter {
                 return true
             }
 
-            guard let className = metadata.classMap[candidate] else {
+            guard let className = resolvedInflectionClass(
+                for: candidate,
+                baseReading: stemReading,
+                systemClassMap: metadata.classMap,
+                hasSystemMetadata: metadata.hasMetadata,
+                userCandidateSet: userCandidateSet
+            ) else {
                 return false
             }
 
