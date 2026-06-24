@@ -196,6 +196,7 @@ final class KeyboardViewController: UIInputViewController {
     var activeConversion: ActiveConversion?
     var recentKanaPlainCommit: RecentKanaPlainCommit?
     let recentKanaPlainCommitUpgradeWindow: TimeInterval = 0.45
+    let idleCommitUndoWindow: TimeInterval = 4.0
     var lastKanaPostModifierAppliedAt: CFAbsoluteTime = 0
     var lastKanaPostModifierResultCharacter: Character?
     var lastTextProxyEditAt: CFAbsoluteTime = 0
@@ -264,6 +265,7 @@ final class KeyboardViewController: UIInputViewController {
         let sourceReading: String
         let committedText: String
         let committedAt: Date
+        var fromIdleCommit: Bool = false
     }
 
     enum TextContextLimits {
