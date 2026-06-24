@@ -3237,6 +3237,7 @@
 	<dict><key>phrase</key><string>袋中</string><key>shortcut</key><string>たいちゅう</string></dict>
 	<dict><key>phrase</key><string>大東</string><key>shortcut</key><string>だいとう</string></dict>
 	<dict><key>phrase</key><string>大道</string><key>shortcut</key><string>だいどう</string></dict>
+	<dict><key>phrase</key><string>大東島</string><key>shortcut</key><string>だいとうじま</string></dict>
 	<dict><key>phrase</key><string>大東諸島</string><key>shortcut</key><string>だいとうしょとう</string></dict>
 	<dict><key>phrase</key><string>大道通り</string><key>shortcut</key><string>だいどうどおり</string></dict>
 	<dict><key>phrase</key><string>大道橋</string><key>shortcut</key><string>だいどうばし</string></dict>
@@ -6385,5 +6386,9 @@
 	<dict><key>phrase</key><string>沖縄支店</string><key>shortcut</key><string>おきなわしてん</string></dict>
 	<dict><key>phrase</key><string>EIBUN</string><key>shortcut</key><string>えいぶん</string></dict>
 	<dict><key>phrase</key><string>cobb</string><key>shortcut</key><string>こぶ</string></dict>
+	<dict><key>phrase</key><string>大東ずし</string><key>shortcut</key><string>だいとうずし</string></dict>
+	<dict><key>phrase</key><string>大東寿司</string><key>shortcut</key><string>だいとうずし</string></dict>
+	<dict><key>phrase</key><string>大東鮨</string><key>shortcut</key><string>だいとうずし</string></dict>
+	<dict><key>phrase</key><string>魚まる</string><key>shortcut</key><string>うおまる</string></dict>
 </array>
 </plist>

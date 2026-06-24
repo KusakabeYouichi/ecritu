@@ -442,5 +442,10 @@
     <dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるべっと</string></dict>
     <dict><key>phrase</key><string>オランダ語</string><key>shortcut</key><string>おらんだご</string></dict>
     <dict><key>phrase</key><string>作業台</string><key>shortcut</key><string>さぎょうだい</string></dict>
+    <dict><key>phrase</key><string>一粒万倍日</string><key>shortcut</key><string>いちりゅうまんばいび</string></dict>
+    <dict><key>phrase</key><string>六曜</string><key>shortcut</key><string>ろくよう</string></dict>
+    <dict><key>phrase</key><string>寅の日</string><key>shortcut</key><string>とらのひ</string></dict>
+    <dict><key>phrase</key><string>巳の日</string><key>shortcut</key><string>みのひ</string></dict>
+    <dict><key>phrase</key><string>己巳の日</string><key>shortcut</key><string>つちのとみのひ</string></dict>
 </array>
 </plist>
