@@ -117,6 +117,73 @@ struct KeyRepeatSettingsSection: View {
     }
 }
 
+struct IdleCommitSettingsSection: View {
+    @Binding var idleCommitEnabled: Bool
+    @Binding var idleCommitInterval: Double
+
+    private func isAtDefault(_ value: Double, default defaultValue: Double) -> Bool {
+        abs(value - defaultValue) <= 0.001
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("自動確定(アイドル)")
+                .font(.headline)
+
+            Toggle("入力が止まったら未確定を自動確定", isOn: $idleCommitEnabled)
+                .font(.subheadline.weight(.semibold))
+                .tint(Color.orange)
+
+            if idleCommitEnabled {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack {
+                        Text("確定までの待ち時間")
+                            .font(.subheadline.weight(.semibold))
+                        Spacer(minLength: 12)
+                        if isAtDefault(idleCommitInterval, default: IdleCommitSettings.intervalDefault) {
+                            Text("デフォルト")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(Color.orange)
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .background(
+                                    Capsule(style: .continuous)
+                                        .fill(Color.orange.opacity(0.12))
+                                )
+                        }
+                        Text("\(idleCommitInterval.formatted(.number.precision(.fractionLength(1)))) 秒")
+                            .font(.caption.monospacedDigit())
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Slider(value: $idleCommitInterval, in: IdleCommitSettings.intervalRange, step: 0.1)
+                        .tint(Color.orange)
+
+                    HStack {
+                        Text("デフォルト: \(IdleCommitSettings.intervalDefault.formatted(.number.precision(.fractionLength(1)))) 秒")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+
+                        Spacer(minLength: 8)
+
+                        if !isAtDefault(idleCommitInterval, default: IdleCommitSettings.intervalDefault) {
+                            Button("デフォルトに戻す") {
+                                idleCommitInterval = IdleCommitSettings.intervalDefault
+                            }
+                            .font(.caption.weight(.semibold))
+                        }
+                    }
+                }
+            }
+
+            Text("未確定(下線)の文字は、メッセージ送信ボタンを押すと送信に含まれず消えます(iOSの拡張キーボード共通の制約)。入力が上の時間だけ止まると未確定を自動で確定し、送信に乗るようにします。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct SetupStepsSection: View {
     let steps: [String]
 

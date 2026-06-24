@@ -285,4 +285,21 @@ extension KeyboardViewController {
             from: sharedDefaults
         )
     }
+
+    func currentIdleCommitEnabled(from defaults: UserDefaults?) -> Bool {
+        sharedBoolValue(
+            from: defaults,
+            key: SharedDefaultsKeys.idleCommitEnabled,
+            fallback: true
+        )
+    }
+
+    func currentIdleCommitInterval(from defaults: UserDefaults?) -> TimeInterval {
+        sharedDoubleValue(
+            from: defaults,
+            key: SharedDefaultsKeys.idleCommitInterval,
+            fallback: Self.idleCommitIntervalDefault,
+            range: Self.idleCommitIntervalRange
+        )
+    }
 }

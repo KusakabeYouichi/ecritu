@@ -922,9 +922,59 @@ extension KeyboardViewController {
 
         if text.isEmpty {
             stopMarkedTextWatchdog()
+            cancelIdleCommit()
         } else {
             startMarkedTextWatchdogIfNeeded()
+            scheduleIdleCommitIfNeeded()
         }
+    }
+
+    // 入力が一定時間止まったら未確定(marked)を実テキストに確定する。
+    // ホストは送信時に拡張のmarkedを破棄するため、送信前に確定しておくことで送信に乗せる。
+    func scheduleIdleCommitIfNeeded() {
+        cancelIdleCommit()
+
+        guard currentInputMode == .kana,
+            activeConversion == nil,
+            !composingRawText.isEmpty,
+            currentIdleCommitEnabled(from: sharedDefaults) else {
+            return
+        }
+
+        let interval = currentIdleCommitInterval(from: sharedDefaults)
+        let work = DispatchWorkItem { [weak self] in
+            self?.performIdleCommit()
+        }
+        idleCommitWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + interval, execute: work)
+    }
+
+    func cancelIdleCommit() {
+        idleCommitWorkItem?.cancel()
+        idleCommitWorkItem = nil
+    }
+
+    private func performIdleCommit() {
+        idleCommitWorkItem = nil
+
+        guard currentInputMode == .kana,
+            activeConversion == nil,
+            !composingRawText.isEmpty,
+            currentIdleCommitEnabled(from: sharedDefaults) else {
+            return
+        }
+
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "アイドル確定 composingLen=\(composingRawText.count)"
+        )
+
+        commitComposingText(
+            sourceText: composingRawText,
+            sourceReading: composingReading,
+            committedText: composingRawText,
+            learn: false
+        )
+        refreshKeyboardStateForUserInitiatedAction(.commit)
     }
 
     func startMarkedTextWatchdogIfNeeded() {
@@ -1654,6 +1704,7 @@ extension KeyboardViewController {
         hasParenthesesWrapper = false
         composingContextPrefixTail = ""
         invalidateSettledCandidatePresentation()
+        cancelIdleCommit()
 
         if activeConversion == nil {
             stopMarkedTextWatchdog()
