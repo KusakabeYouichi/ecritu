@@ -964,6 +964,15 @@ extension KeyboardViewController {
             return
         }
 
+        // 行頭・確定文字なし(context空)では未確定のまま送信に乗る(host が marked を送る)。
+        // この場合はアイドル確定する必要がなく、確定すると再変換できなくなるので避ける。
+        guard !currentTextContextBeforeInput().isEmpty else {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "アイドル確定スキップ 行頭(確定文字なし) composingLen=\(composingRawText.count)"
+            )
+            return
+        }
+
         appendKeyboardDiagnosticsLogFromInputHandling(
             "アイドル確定 composingLen=\(composingRawText.count)"
         )
