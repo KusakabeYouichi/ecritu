@@ -90,6 +90,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionLearnedVerbSupportsYouFormsViaInference() {
+        // 学習語彙(品詞メタデータなし)の動詞でも、活用クラス推論により
+        // 「よう/ように/ような」後置が導出できることを確認する。
+        converter.learn(reading: "とれる", candidate: "取れる")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("とれるように", "取れるように"),
+            ("とれるような", "取れるような")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionGodanYasuiFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "うつ", candidate: "打つ")
         converter.learn(reading: "かく", candidate: "書く")
