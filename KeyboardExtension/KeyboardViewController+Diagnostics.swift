@@ -43,6 +43,44 @@ extension KeyboardViewController {
         return UInt64(info.resident_size)
     }
 
+    // iOS の jetsam 判定に使われる phys_footprint。RSS(resident_size)と違い
+    // 共有/クリーンページや mmap を含まないため、実際の強制終了圧の指標になる。
+    func currentFootprintBytes() -> UInt64? {
+        var info = task_vm_info_data_t()
+        var count = mach_msg_type_number_t(
+            MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<natural_t>.size
+        )
+
+        let result: kern_return_t = withUnsafeMutablePointer(to: &info) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { intPointer in
+                task_info(mach_task_self_, task_flavor_t(TASK_VM_INFO), intPointer, &count)
+            }
+        }
+
+        guard result == KERN_SUCCESS else {
+            return nil
+        }
+
+        return UInt64(info.phys_footprint)
+    }
+
+    func currentFootprintMB() -> Double? {
+        guard let bytes = currentFootprintBytes() else {
+            return nil
+        }
+
+        return Double(bytes) / 1_048_576
+    }
+
+    func diagnosticsFootprintMBText() -> String {
+        guard let bytes = currentFootprintBytes() else {
+            return "unknown"
+        }
+
+        let mb = Double(bytes) / 1_048_576
+        return String(format: "%.1f", mb)
+    }
+
     func diagnosticsResidentMemoryMBText() -> String {
         guard let bytes = currentResidentMemoryBytes() else {
             return "unknown"
@@ -255,7 +293,7 @@ extension KeyboardViewController {
     }
 
     func diagnosticsRuntimeContext() -> String {
-        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText()) failSafe=\(memoryFailSafeProfile.rawValue)"
+        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText()) footprintMB=\(diagnosticsFootprintMBText()) failSafe=\(memoryFailSafeProfile.rawValue)"
     }
 
     func persistKeyboardDiagnosticsFailSafeProfile(in defaults: UserDefaults? = nil) {
