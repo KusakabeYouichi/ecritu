@@ -290,7 +290,7 @@ extension KeyboardViewController {
         sharedBoolValue(
             from: defaults,
             key: SharedDefaultsKeys.idleCommitEnabled,
-            fallback: true
+            fallback: false
         )
     }
 

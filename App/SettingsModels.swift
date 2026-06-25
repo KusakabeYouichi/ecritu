@@ -89,7 +89,7 @@ enum RepeatSettings {
 }
 
 enum IdleCommitSettings {
-    static let enabledDefault = true
+    static let enabledDefault = false
     static let intervalDefault = 1.2
     static let intervalRange: ClosedRange<Double> = 0.3...5.0
     static let snapThreshold = 0.01
