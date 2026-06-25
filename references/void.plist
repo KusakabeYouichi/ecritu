@@ -245,6 +245,16 @@
     <dict><key>phrase</key><string>coupe</string><key>shortcut</key><string>くーぷ</string></dict>
     <dict><key>phrase</key><string>levain</string><key>shortcut</key><string>るゔぁん</string></dict>
 
+	<!-- バター -->
+    <dict><key>phrase</key><string>エシレ</string><key>shortcut</key><string>えしれ</string></dict>
+    <dict><key>phrase</key><string>イズニー</string><key>shortcut</key><string>いずにー</string></dict>
+    <dict><key>phrase</key><string>レスキュール</string><key>shortcut</key><string>れすきゅーる</string></dict>
+    <dict><key>phrase</key><string>ブレス</string><key>shortcut</key><string>ぶれす</string></dict>
+    <dict><key>phrase</key><string>Échiré</string><key>shortcut</key><string>えしれ</string></dict>
+    <dict><key>phrase</key><string>Isigny</string><key>shortcut</key><string>いずにー</string></dict>
+    <dict><key>phrase</key><string>Lescure</string><key>shortcut</key><string>れすきゅーる</string></dict>
+    <dict><key>phrase</key><string>Bresse</string><key>shortcut</key><string>ぶれす</string></dict>
+
     <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>
     <dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict>
     <dict><key>phrase</key><string>ケイマン</string><key>shortcut</key><string>けいまん</string></dict>
@@ -309,6 +319,7 @@
     <dict><key>phrase</key><string>オウンゴール</string><key>shortcut</key><string>おうんごーる</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- 活用なし (名詞など) -->
+	<dict><key>phrase</key><string>未変換</string><key>shortcut</key><string>みへんかん</string></dict>
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
 	<dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
 	<dict><key>phrase</key><string>大問題</string><key>shortcut</key><string>だいもんだい</string></dict>
