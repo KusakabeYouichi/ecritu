@@ -190,5 +190,11 @@
 	<dict><key>phrase</key><string>Shift_JIS</string><key>shortcut</key><string>しふとじす</string></dict>
 	<dict><key>phrase</key><string>暗号化</string><key>shortcut</key><string>あんごうか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>テザリング</string><key>shortcut</key><string>てざりんぐ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>タップ</string><key>shortcut</key><string>たっぷ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ダブルタップ</string><key>shortcut</key><string>だぶるたっぷ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ロングタップ</string><key>shortcut</key><string>ろんぐたっぷ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ペースト</string><key>shortcut</key><string>ぺーすと</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>
 </array>
 </plist>
