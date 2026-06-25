@@ -29,7 +29,7 @@
                         <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="LCK-cn-PRr" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Mb1-Js-Cu4"/>
-                            <constraint firstItem="LCK-cn-PRr" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="hwR-7n-RAB"/>
+                            <constraint firstItem="LCK-cn-PRr" firstAttribute="centerY" secondItem="6Tk-OE-BBY" secondAttribute="centerY" id="hwR-7n-RAB"/>
                         </constraints>
                     </view>
                 </viewController>
