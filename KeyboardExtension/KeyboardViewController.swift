@@ -395,7 +395,7 @@ final class KeyboardViewController: UIInputViewController {
     static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
     private static let deviceSystemDictionaryPreloadDelay: TimeInterval = 1.2
     private static let minimumPhysicalMemoryForSystemDictionaryPreload: UInt64 = 5 * 1024 * 1024 * 1024
-    private static let maximumResidentMemoryMBForSystemDictionaryPreload: Double = 95
+    private static let maximumFootprintMBForSystemDictionaryPreload: Double = 100
     private static let refreshQueueBacklogLogThreshold = 6
     private static let refreshQueueWaitSlowThresholdMs = 60
     private static let renderConfigurationSlowThresholdMs = 16
@@ -407,9 +407,12 @@ final class KeyboardViewController: UIInputViewController {
     // メモリ調査中は `下線診断`(clearPass等)の冗長ログを抑止し、320行バッファの寿命を延ばす。
     // 調査が終わったら true に戻すこと。
     static let isCommitUnderlineDiagnosticsLoggingEnabled = false
-    static let memoryFailSafeElevatedStartMB: Double = 120
-    static let memoryFailSafeCriticalStartMB: Double = 150
-    static let memoryFailSafeRecoverDeltaMB: Double = 14
+    // メモリフェイルセーフは jetsam 実値(phys_footprint)で判定する。RSS(resident_size)は
+    // 共有/クリーンページや mmap を含み jetsam 圧を過大評価するため使わない。
+    // 閾値は実測(通常ピーク約48MB)に十分な余裕を持たせた footprint MB。
+    static let memoryFailSafeElevatedStartMB: Double = 90
+    static let memoryFailSafeCriticalStartMB: Double = 115
+    static let memoryFailSafeRecoverDeltaMB: Double = 12
     private static let refreshQueueDropThresholdInCriticalMode = 2
     static let diagnosticsFlightRecorderWindowSec: TimeInterval = 6
     static let diagnosticsFlightRecorderMaxEventCount = 120
@@ -954,10 +957,10 @@ final class KeyboardViewController: UIInputViewController {
 
         updateMemoryFailSafeProfile(trigger: "requestSystemDictionaryPreloadIfNeeded")
 
-        if let residentMemoryMB = currentResidentMemoryMB(),
-            residentMemoryMB >= Self.maximumResidentMemoryMBForSystemDictionaryPreload {
+        if let footprintMB = currentFootprintMB(),
+            footprintMB >= Self.maximumFootprintMBForSystemDictionaryPreload {
             updateKeyboardDiagnosticsHeartbeat(
-                event: "システム辞書プリロードを省略 rssMB=\(String(format: "%.1f", residentMemoryMB)) thresholdMB=\(String(format: "%.1f", Self.maximumResidentMemoryMBForSystemDictionaryPreload)) physicalMemoryGB=\(physicalMemoryGBText())",
+                event: "システム辞書プリロードを省略 footprintMB=\(String(format: "%.1f", footprintMB)) thresholdMB=\(String(format: "%.1f", Self.maximumFootprintMBForSystemDictionaryPreload)) physicalMemoryGB=\(physicalMemoryGBText())",
                 appendLog: true
             )
             return
