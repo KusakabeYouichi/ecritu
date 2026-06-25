@@ -921,6 +921,10 @@ struct ContentView: View {
             }
 #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            // 初期ロード中はナビバーを隠し、ローディング表示を
+            // セーフエリア中央(RootLoadingView/LaunchScreenと同じ基準)に置く。
+            // ナビバーがあると "écritu" タイトル分だけ下にずれてしまうため。
+            .toolbar(didCompleteInitialDataSnapshot ? .visible : .hidden, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("écritu")
