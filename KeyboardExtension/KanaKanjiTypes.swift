@@ -786,6 +786,17 @@ extension KanaKanjiConverter {
                 pattern.aForm + "れない",
                 pattern.aForm + "れた",
                 pattern.aForm + "れ",
+                // 受身「〜れる」は一段活用なので、条件形・否定過去・丁寧・意志形も派生させる。
+                // (書かれた はあるのに 書かれたら が無い、等の穴を塞ぐ)
+                pattern.aForm + "れたら",
+                pattern.aForm + "れれば",
+                pattern.aForm + "れなかった",
+                pattern.aForm + "れなかったら",
+                pattern.aForm + "れます",
+                pattern.aForm + "れました",
+                pattern.aForm + "れません",
+                pattern.aForm + "れよう",
+                pattern.aForm + "れたり",
                 pattern.iForm + "ます",
                 pattern.iForm + "ました",
                 pattern.iForm + "ません",
