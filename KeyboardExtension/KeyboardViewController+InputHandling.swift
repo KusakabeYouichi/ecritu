@@ -40,6 +40,10 @@ extension KeyboardViewController {
         markedTextLength: Int? = nil,
         note: String = ""
     ) {
+        guard Self.isCommitUnderlineDiagnosticsLoggingEnabled else {
+            return
+        }
+
         let contextBeforeInput = currentTextContextBeforeInput()
         let contextAfterInput = currentTextContextAfterInput()
 

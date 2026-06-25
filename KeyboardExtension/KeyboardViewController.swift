@@ -404,6 +404,9 @@ final class KeyboardViewController: UIInputViewController {
     static let maximumContactCandidateTotalEntries = 16384
     static let maximumContactCandidatesPerReading = 48
     static let maximumSupplementaryMergedCandidateCacheEntries = 512
+    // メモリ調査中は `下線診断`(clearPass等)の冗長ログを抑止し、320行バッファの寿命を延ばす。
+    // 調査が終わったら true に戻すこと。
+    static let isCommitUnderlineDiagnosticsLoggingEnabled = false
     static let memoryFailSafeElevatedStartMB: Double = 120
     static let memoryFailSafeCriticalStartMB: Double = 150
     static let memoryFailSafeRecoverDeltaMB: Double = 14
