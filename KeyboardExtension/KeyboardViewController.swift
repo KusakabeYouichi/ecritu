@@ -404,9 +404,7 @@ final class KeyboardViewController: UIInputViewController {
     static let maximumContactCandidateTotalEntries = 16384
     static let maximumContactCandidatesPerReading = 48
     static let maximumSupplementaryMergedCandidateCacheEntries = 512
-    // メモリ調査中は `下線診断`(clearPass等)の冗長ログを抑止し、320行バッファの寿命を延ばす。
-    // 調査が終わったら true に戻すこと。
-    static let isCommitUnderlineDiagnosticsLoggingEnabled = false
+    static let isCommitUnderlineDiagnosticsLoggingEnabled = true
     // メモリフェイルセーフは jetsam 実値(phys_footprint)で判定する。RSS(resident_size)は
     // 共有/クリーンページや mmap を含み jetsam 圧を過大評価するため使わない。
     // 閾値は実測(通常ピーク約48MB)に十分な余裕を持たせた footprint MB。
