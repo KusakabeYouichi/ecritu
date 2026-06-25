@@ -14,19 +14,19 @@
                         <rect key="frame" x="0.0" y="0.0" width="402" height="874"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="center" distribution="fill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="LCK-cn-PRr">
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="horizontal" alignment="center" distribution="fill" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="LCK-cn-PRr">
                                 <subviews>
                                     <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" hidesWhenStopped="NO" animating="YES" style="medium" translatesAutoresizingMaskIntoConstraints="NO" id="Sgr-T7-bjQ"/>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading… 起動準備中" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="qDH-CV-MGl">
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
-                                        <color key="textColor" systemColor="secondaryLabelColor"/>
+                                        <color key="textColor" systemColor="labelColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
                                 </subviews>
                             </stackView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" systemColor="systemGroupedBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="LCK-cn-PRr" firstAttribute="centerX" secondItem="Ze5-6b-2t3" secondAttribute="centerX" id="Mb1-Js-Cu4"/>
                             <constraint firstItem="LCK-cn-PRr" firstAttribute="centerY" secondItem="Ze5-6b-2t3" secondAttribute="centerY" id="hwR-7n-RAB"/>
