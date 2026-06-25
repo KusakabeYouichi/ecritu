@@ -17,16 +17,26 @@ private struct RootLoadingView: View {
             if shouldShowContentView {
                 ContentView()
             } else {
-                VStack(spacing: 10) {
-                    ProgressView()
-                        .controlSize(.small)
+                // ContentView 初期化中のトースト(loadingToastLabel)と見た目を揃え、
+                // 起動→初期化の切り替わりで位置・形が動かないようにする。
+                ZStack {
+                    AppTheme.screenBackground
+                        .ignoresSafeArea()
 
-                    Text("Loading... 起動準備中")
-                        .font(.footnote.weight(.semibold))
-                        .foregroundStyle(.secondary)
+                    HStack(spacing: 8) {
+                        ProgressView()
+                            .controlSize(.small)
+
+                        Text("Loading... 起動準備中")
+                            .font(.footnote.weight(.semibold))
+                            .foregroundStyle(.primary)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(uiColor: .systemBackground).ignoresSafeArea())
                 .task {
                     guard !shouldShowContentView else {
                         return
