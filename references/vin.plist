@@ -8992,5 +8992,7 @@
 	<dict><key>phrase</key><string>山椒</string><key>shortcut</key><string>さんしょう</string></dict>
 	<dict><key>phrase</key><string>シャプティエ</string><key>shortcut</key><string>しゃぷてぃえ</string></dict>
 	<dict><key>phrase</key><string>ペイドック</string><key>shortcut</key><string>ぺいどっく</string></dict>
+	<dict><key>phrase</key><string>オーパス・ワン</string><key>shortcut</key><string>おーぱすわん</string></dict>
+	<dict><key>phrase</key><string>Opus One</string><key>shortcut</key><string>おーぱすわん</string></dict>
 </array>
 </plist>
