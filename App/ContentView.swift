@@ -889,8 +889,6 @@ struct ContentView: View {
                     }
                     .disabled(isBootstrappingInitialData)
                 }
-
-                initialLoadingToast
             }
             .onAppear {
                 handleContainerAppAppear()
@@ -934,6 +932,11 @@ struct ContentView: View {
                 }
             }
 #endif
+        }
+        // ナビバーの内側ではなくデバイスのセーフエリア中央に乗せ、
+        // 起動時の他のローディング表示と縦位置を揃える。
+        .overlay {
+            initialLoadingToast
         }
     }
 }
