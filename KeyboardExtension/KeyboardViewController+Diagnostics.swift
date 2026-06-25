@@ -193,11 +193,11 @@ extension KeyboardViewController {
     }
 
     func updateMemoryFailSafeProfile(trigger: String) {
-        guard let residentMemoryMB = currentResidentMemoryMB() else {
+        guard let footprintMB = currentFootprintMB() else {
             return
         }
 
-        let nextProfile = nextMemoryFailSafeProfile(for: residentMemoryMB)
+        let nextProfile = nextMemoryFailSafeProfile(for: footprintMB)
 
         guard nextProfile != memoryFailSafeProfile else {
             return
@@ -208,7 +208,7 @@ extension KeyboardViewController {
         persistKeyboardDiagnosticsFailSafeProfile()
 
         appendKeyboardDiagnosticsLog(
-            "メモリフェイルセーフ遷移 \(previousProfile.rawValue) -> \(nextProfile.rawValue) trigger=\(trigger) rssMB=\(String(format: "%.1f", residentMemoryMB))",
+            "メモリフェイルセーフ遷移 \(previousProfile.rawValue) -> \(nextProfile.rawValue) trigger=\(trigger) footprintMB=\(String(format: "%.1f", footprintMB))",
             file: #fileID,
             line: #line,
             function: #function
@@ -253,38 +253,38 @@ extension KeyboardViewController {
         refreshKeyboardStateAsync()
     }
 
-    func nextMemoryFailSafeProfile(for residentMemoryMB: Double) -> MemoryFailSafeProfile {
+    func nextMemoryFailSafeProfile(for footprintMB: Double) -> MemoryFailSafeProfile {
         let elevatedStart = Self.memoryFailSafeElevatedStartMB
         let criticalStart = Self.memoryFailSafeCriticalStartMB
         let recoverDelta = Self.memoryFailSafeRecoverDeltaMB
 
         switch memoryFailSafeProfile {
         case .normal:
-            if residentMemoryMB >= criticalStart {
+            if footprintMB >= criticalStart {
                 return .critical
             }
 
-            if residentMemoryMB >= elevatedStart {
+            if footprintMB >= elevatedStart {
                 return .elevated
             }
 
             return .normal
         case .elevated:
-            if residentMemoryMB >= criticalStart {
+            if footprintMB >= criticalStart {
                 return .critical
             }
 
-            if residentMemoryMB < elevatedStart - recoverDelta {
+            if footprintMB < elevatedStart - recoverDelta {
                 return .normal
             }
 
             return .elevated
         case .critical:
-            if residentMemoryMB >= criticalStart - recoverDelta {
+            if footprintMB >= criticalStart - recoverDelta {
                 return .critical
             }
 
-            if residentMemoryMB >= elevatedStart - recoverDelta {
+            if footprintMB >= elevatedStart - recoverDelta {
                 return .elevated
             }
 
