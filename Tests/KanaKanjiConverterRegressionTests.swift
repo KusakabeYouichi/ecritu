@@ -1908,6 +1908,52 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionNounKanjiSuffixAffixDerivesBetsuCompounds() {
+        converter.learn(reading: "しゅるい", candidate: "種類")
+        converter.learn(reading: "くに", candidate: "国")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("しゅるいべつ", "種類別"),
+            ("くにべつ", "国別")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
+    func testRegressionNounKanjiPrefixAffixDerivesBetsuCompounds() {
+        converter.learn(reading: "かいしゃ", candidate: "会社")
+        converter.learn(reading: "しょうひん", candidate: "商品")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("べつかいしゃ", "別会社"),
+            ("べつしょうひん", "別商品")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionMixedScriptSahenOptInDerivesNeOchiSuru() {
         converter.learn(reading: "ねおち", candidate: "寝落ち")
 

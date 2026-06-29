@@ -343,6 +343,16 @@ final class KanaKanjiConverter {
         "ぶんのいち": ["分の一"]
     ]
 
+    // 名詞に付く生産的な漢字接尾辞(種類別・色別・国別…)。語幹(名詞)+接尾辞漢字。
+    private static let nounKanjiSuffixAffixCandidatesByReading: [(reading: String, candidate: String)] = [
+        ("べつ", "別")
+    ]
+
+    // 名詞に付く生産的な漢字接頭辞(別会社・別人物・別商品…)。接頭辞漢字+語幹(名詞)。
+    private static let nounKanjiPrefixAffixCandidatesByReading: [(reading: String, candidate: String)] = [
+        ("べつ", "別")
+    ]
+
     private static let mixedScriptSahenOptInReadings: Set<String> = [
         "ねおち"
     ]
@@ -584,6 +594,18 @@ final class KanaKanjiConverter {
         applyNumericUnitFallbackPriorityBoost(
             for: normalizedReading,
             fallbackCandidates: numericUnitFallback,
+            to: &scores
+        )
+
+        addCandidates(
+            nounKanjiAffixCandidates(
+                for: normalizedReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode,
+                limit: limit * 2
+            ),
+            baseScore: 1000,
             to: &scores
         )
 
@@ -2071,6 +2093,63 @@ final class KanaKanjiConverter {
         }
 
         return results
+    }
+
+    // 名詞に付く生産的な漢字接辞を組み合わせる: 語幹(名詞)+別(種類別)、別+語幹(別会社)。
+    // 語幹は漢字を含む候補に限り、1モーラ語幹(区別/差別等の誤分割)は除外する。
+    // 辞書語(餞別等)は system 候補が上位に来るため、補完として低めのスコアで併置する。
+    private func nounKanjiAffixCandidates(
+        for reading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        limit: Int
+    ) -> [String] {
+        guard reading.count >= 4,
+            limit > 0 else {
+            return []
+        }
+
+        func kanjiStemCandidates(for stemReading: String) -> [String] {
+            uniqueCandidates(
+                from: candidatesForReading(
+                    stemReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            ).filter { containsKanji($0) }
+        }
+
+        var derived: [String] = []
+
+        for affix in Self.nounKanjiSuffixAffixCandidatesByReading
+            where reading.hasSuffix(affix.reading) {
+            let stem = String(reading.dropLast(affix.reading.count))
+
+            guard stem.count >= 2 else {
+                continue
+            }
+
+            for candidate in kanjiStemCandidates(for: stem).prefix(6) {
+                derived.append(candidate + affix.candidate)
+            }
+        }
+
+        for affix in Self.nounKanjiPrefixAffixCandidatesByReading
+            where reading.hasPrefix(affix.reading) {
+            let stem = String(reading.dropFirst(affix.reading.count))
+
+            guard stem.count >= 2 else {
+                continue
+            }
+
+            for candidate in kanjiStemCandidates(for: stem).prefix(6) {
+                derived.append(affix.candidate + candidate)
+            }
+        }
+
+        return Array(uniqueCandidates(from: derived).prefix(limit))
     }
 
     private func shouldApplyPolitePrefix(_ prefix: String, to candidate: String) -> Bool {
