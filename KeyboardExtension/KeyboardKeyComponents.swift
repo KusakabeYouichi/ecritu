@@ -451,9 +451,6 @@ struct SymbolKeyButton: View {
     let longPressLabel: String?
     let action: () -> Void
 
-    // 指を離すと @GestureState が自動的に false へ戻るため、吹き出しが残留しない。
-    @GestureState private var isInspecting = false
-
     init(
         symbol: String,
         font: Font = .system(size: 24, weight: .semibold, design: .rounded),
@@ -467,28 +464,25 @@ struct SymbolKeyButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
-            Text(symbol)
-                .font(font)
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .contentShape(Rectangle())
-        }
-        .buttonStyle(EmojiTapFeedbackButtonStyle())
-        .accessibilityLabel(accessibilityText)
-        .overlay(alignment: .top) {
-            if isInspecting, let longPressLabel {
-                SymbolLongPressBubble(text: longPressLabel)
-                    .fixedSize()
-                    .offset(y: -34)
-                    .allowsHitTesting(false)
-                    .transition(.opacity)
+        Group {
+            if let longPressLabel {
+                Button(action: action) { symbolLabel }
+                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel))
+            } else {
+                Button(action: action) { symbolLabel }
+                    .buttonStyle(EmojiTapFeedbackButtonStyle())
             }
         }
-        .zIndex(isInspecting ? 1 : 0)
-        // longPressLabel が無いカテゴリーではジェスチャーを無効化し、通常のタップ入力のみとする。
-        .gesture(inspectGesture, including: longPressLabel == nil ? .subviews : .all)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var symbolLabel: some View {
+        Text(symbol)
+            .font(font)
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .contentShape(Rectangle())
     }
 
     private var accessibilityText: String {
@@ -497,19 +491,32 @@ struct SymbolKeyButton: View {
         }
         return "\(symbol) \(longPressLabel)"
     }
+}
 
-    private var inspectGesture: some Gesture {
-        // 0.25秒の長押しが成立した後、指が触れている間だけ isInspecting=true。
-        LongPressGesture(minimumDuration: 0.25)
-            .sequenced(before: DragGesture(minimumDistance: 0))
-            .updating($isInspecting) { value, state, _ in
-                switch value {
-                case .second(true, _):
-                    state = true
-                default:
-                    state = false
+// 通貨記号用: 押している間だけ通貨コード/ティッカーを吹き出し表示する。
+// ScrollView 内でも確実に発火するよう、ジェスチャーではなく isPressed で駆動する。
+private struct SymbolInspectButtonStyle: ButtonStyle {
+    let label: String
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.84 : 1)
+            .background(
+                Circle()
+                    .fill(configuration.isPressed ? KeyboardThemePalette.pressFeedbackCircle : Color.clear)
+                    .frame(width: 24, height: 24)
+            )
+            .overlay(alignment: .top) {
+                if configuration.isPressed {
+                    SymbolLongPressBubble(text: label)
+                        .fixedSize()
+                        .offset(y: -34)
+                        .allowsHitTesting(false)
+                        .transition(.opacity)
                 }
             }
+            .zIndex(configuration.isPressed ? 1 : 0)
+            .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
     }
 }
 
