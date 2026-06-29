@@ -1954,6 +1954,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionPoliteVolitionalMashouAcrossConjugationClasses() {
+        converter.learn(reading: "かう", candidate: "買う")
+        converter.learn(reading: "たべる", candidate: "食べる")
+        converter.learn(reading: "べんきょう", candidate: "勉強")
+        converter.learn(reading: "くる", candidate: "来る")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("かいましょう", "買いましょう"),
+            ("たべましょう", "食べましょう"),
+            ("べんきょうしましょう", "勉強しましょう"),
+            ("きましょう", "来ましょう")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionMixedScriptSahenOptInDerivesNeOchiSuru() {
         converter.learn(reading: "ねおち", candidate: "寝落ち")
 
