@@ -448,15 +448,21 @@ struct EmojiKeyButton: View {
 struct SymbolKeyButton: View {
     let symbol: String
     let font: Font
+    let longPressLabel: String?
     let action: () -> Void
+
+    // 指を離すと @GestureState が自動的に false へ戻るため、吹き出しが残留しない。
+    @GestureState private var isInspecting = false
 
     init(
         symbol: String,
         font: Font = .system(size: 24, weight: .semibold, design: .rounded),
+        longPressLabel: String? = nil,
         action: @escaping () -> Void
     ) {
         self.symbol = symbol
         self.font = font
+        self.longPressLabel = longPressLabel
         self.action = action
     }
 
@@ -470,7 +476,58 @@ struct SymbolKeyButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(EmojiTapFeedbackButtonStyle())
-        .accessibilityLabel(symbol)
+        .accessibilityLabel(accessibilityText)
+        .overlay(alignment: .top) {
+            if isInspecting, let longPressLabel {
+                SymbolLongPressBubble(text: longPressLabel)
+                    .fixedSize()
+                    .offset(y: -34)
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
+        }
+        .zIndex(isInspecting ? 1 : 0)
+        // longPressLabel が無いカテゴリーではジェスチャーを無効化し、通常のタップ入力のみとする。
+        .gesture(inspectGesture, including: longPressLabel == nil ? .subviews : .all)
+    }
+
+    private var accessibilityText: String {
+        guard let longPressLabel else {
+            return symbol
+        }
+        return "\(symbol) \(longPressLabel)"
+    }
+
+    private var inspectGesture: some Gesture {
+        // 0.25秒の長押しが成立した後、指が触れている間だけ isInspecting=true。
+        LongPressGesture(minimumDuration: 0.25)
+            .sequenced(before: DragGesture(minimumDistance: 0))
+            .updating($isInspecting) { value, state, _ in
+                switch value {
+                case .second(true, _):
+                    state = true
+                default:
+                    state = false
+                }
+            }
+    }
+}
+
+private struct SymbolLongPressBubble: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.system(size: 13, weight: .bold, design: .rounded))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 5)
+            .background(Capsule().fill(Color.black.opacity(0.82)))
+            .overlay(
+                Capsule()
+                    .stroke(KeyboardThemePalette.keyStrokeOnAccent, lineWidth: 1)
+            )
+            .shadow(color: Color.black.opacity(0.18), radius: 2, y: 1)
     }
 }
 

@@ -389,6 +389,21 @@ extension KeyboardRootView {
             "Ξ", "⟠", "Ł", "Ð", "₳", "₮", "✕"
         ]
 
+        // 長押し中に吹き出し表示する通貨コード(ISO-4217)。¢・₰はISOコードを持たないため割り当てない。
+        static let currencyISOCodes: [String: String] = [
+            "€": "EUR", "$": "USD", "£": "GBP", "¥": "JPY", "₩": "KRW",
+            "₹": "INR", "₽": "RUB", "₺": "TRY", "฿": "THB", "₫": "VND",
+            "₴": "UAH", "₦": "NGN", "₱": "PHP", "₡": "CRC", "₲": "PYG",
+            "₵": "GHS", "₭": "LAK", "₸": "KZT", "₮": "MNT", "₪": "ILS",
+            "₾": "GEL", "⃀": "KGS", "⃁": "SAR"
+        ]
+
+        // 長押し中に吹き出し表示する暗号資産のティッカーシンボル。
+        static let cryptoTickerSymbols: [String: String] = [
+            "₿": "BTC", "Ξ": "ETH", "⟠": "ETH", "Ł": "LTC",
+            "Ð": "DOGE", "₳": "ADA", "₮": "USDT", "✕": "XRP"
+        ]
+
         private static let unitSymbolsTail: [String] = [
             "°", "′", "″", "%", "‰", "μ", "Ω", "ℓ", "㎜", "㎝", "㎞", "㎡", "㎢", "㎥", "㎎", "㎏", "㏄", "㎖", "㎗", "㎐", "㎑", "㎒", "㎓"
         ]
@@ -661,7 +676,13 @@ extension KeyboardRootView {
                 let fiatSymbols = Array(symbols.prefix(bitcoinStart))
                 let bitcoinSymbols = Array(symbols[bitcoinStart..<cryptoStart])
                 let cryptoSymbols = Array(symbols.suffix(cryptoCount))
-                symbolGridSections([fiatSymbols, bitcoinSymbols, cryptoSymbols])
+                let isoCodes = KeyboardRootView.SymbolCategory.currencyISOCodes
+                let tickers = KeyboardRootView.SymbolCategory.cryptoTickerSymbols
+                symbolGridSectionsLabeled([
+                    (fiatSymbols, isoCodes),
+                    (bitcoinSymbols, tickers),
+                    (cryptoSymbols, tickers)
+                ])
 
             case .enclosed:
                 let numberStart = symbols.firstIndex(of: "⓪")
@@ -703,14 +724,39 @@ extension KeyboardRootView {
             }
         }
 
-        private func symbolGridSection(_ symbols: [String]) -> some View {
+        @ViewBuilder
+        private func symbolGridSectionsLabeled(
+            _ sections: [(symbols: [String], labels: [String: String])]
+        ) -> some View {
+            LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                ForEach(Array(sections.enumerated()), id: \.offset) { index, section in
+                    symbolGridSection(section.symbols, labels: section.labels)
+
+                    if index + 1 < sections.count {
+                        let nextSectionSymbols = sections[index + 1].symbols
+                        if !section.symbols.isEmpty && !nextSectionSymbols.isEmpty {
+                            symbolSectionDivider
+                        }
+                    }
+                }
+            }
+        }
+
+        private func symbolGridSection(
+            _ symbols: [String],
+            labels: [String: String]? = nil
+        ) -> some View {
             let symbolFont: Font = selectedSymbolCategory == .enclosed
                 ? .custom("HiraginoSans-W6", size: 24)
                 : .system(size: 24, weight: .semibold, design: .rounded)
 
             return LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
                 ForEach(Array(symbols.enumerated()), id: \.offset) { _, symbol in
-                    SymbolKeyButton(symbol: symbol, font: symbolFont) {
+                    SymbolKeyButton(
+                        symbol: symbol,
+                        font: symbolFont,
+                        longPressLabel: labels?[symbol]
+                    ) {
                         onTextInput(symbol)
                     }
                     .frame(height: compactEmojiKeyHeight)
