@@ -61,6 +61,9 @@ CANDIDATE_POLICY_SURFACE = "surface"
 CANDIDATE_POLICY_BOTH = "both"
 
 KIGOU_READING = "きごう"
+# Sudachiは記号・顔文字・合字・囲み数字等に品詞「補助記号」を与え、それらの読みを
+# 一律「キゴウ(記号)」とする。きごう読みではこの品詞を丸ごと除外する。
+KIGOU_EXCLUDED_POS_PREFIX = "補助記号"
 UNICODE_ESCAPE_PATTERN = re.compile(r"\\u([0-9a-fA-F]{4})")
 KAOMOJI_BRACKET_PATTERN = re.compile(r"(?:\\u0028|\\u0029|[()（）［］｛｝])")
 ASCII_EMOTICON_PATTERN = re.compile(r"^[><^;:_\-~@oO0|/\\.]+$")
@@ -213,9 +216,18 @@ def is_kigou_kaomoji_candidate(candidate: str) -> bool:
     return False
 
 
-def should_exclude_candidate_for_reading(reading: str, candidate: str) -> bool:
+def should_exclude_candidate_for_reading(
+    reading: str, candidate: str, row: Optional[List[str]] = None
+) -> bool:
     if reading != KIGOU_READING:
         return False
+
+    # 品詞「補助記号」を一括除外。文字種ベース判定はかなブロック記号・繰返し記号・
+    # 漢字混じり顔文字・合字を取りこぼすため、品詞で弾く方が確実かつ将来の新規記号にも強い。
+    if row is not None and len(row) > SUDACHI_POS_INDEX:
+        pos = row[SUDACHI_POS_INDEX].strip()
+        if pos.startswith(KIGOU_EXCLUDED_POS_PREFIX):
+            return True
 
     return is_kigou_kaomoji_candidate(candidate)
 
@@ -468,7 +480,7 @@ def build_index(
             if len(candidate) > max_candidate_len:
                 continue
 
-            if should_exclude_candidate_for_reading(reading, candidate):
+            if should_exclude_candidate_for_reading(reading, candidate, row):
                 continue
 
             if is_single_reading and not is_valid_single_reading_candidate(
