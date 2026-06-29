@@ -68,6 +68,17 @@ enum KeyboardThemePalette {
     static let iconHighlight = Color(uiColor: .systemBackground)
 }
 
+// iOS17+ でのみ ScrollView のクリップを無効化する(iOS16では従来どおりクリップ)。
+private struct SymbolScrollClipDisabledModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.scrollClipDisabled()
+        } else {
+            content
+        }
+    }
+}
+
 extension KeyboardRootView {
     enum EmojiCategory: Int, CaseIterable, Identifiable {
         case people
@@ -612,6 +623,8 @@ extension KeyboardRootView {
                         .padding(.vertical, 2)
                 }
                 .frame(height: fourRowAlignedTopContentHeight)
+                // 通貨記号の長押し吹き出しが最上段で見切れないようクリップを解除(iOS17+)。
+                .modifier(SymbolScrollClipDisabledModifier())
 
                 HStack(spacing: keyboardRowSpacing) {
                     ActionKeyButton(
