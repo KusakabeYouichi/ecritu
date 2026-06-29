@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import UIKit
 
 struct LatinShiftKeyButton: View {
     let isOn: Bool
@@ -516,7 +517,7 @@ struct SymbolKeyButton: View {
     }
 }
 
-// 通貨記号用: 押している間だけ通貨コード/ティッカーを吹き出し表示する。
+// 通貨記号/国旗用: 押している間だけ通貨コード・ティッカー・国名を吹き出し表示する。
 // ScrollView 内でも確実に発火するよう、ジェスチャーではなく isPressed で駆動する。
 private struct SymbolInspectButtonStyle: ButtonStyle {
     let label: String
@@ -529,10 +530,9 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
                     .fill(configuration.isPressed ? KeyboardThemePalette.pressFeedbackCircle : Color.clear)
                     .frame(width: 24, height: 24)
             )
-            .overlay(alignment: .top) {
+            .overlay {
                 if configuration.isPressed {
-                    SymbolLongPressBubble(text: label)
-                        .offset(y: -36)
+                    SymbolInspectBubbleOverlay(text: label)
                         .allowsHitTesting(false)
                         .transition(.opacity)
                 }
@@ -542,8 +542,52 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
     }
 }
 
+// キー上に吹き出しを配置する。なるべく1行で表示し、画面端に当たる場合は内側へずらす。
+// 1行で最大幅を超える長い名前(バチカン等)のみ2行に折り返す。
+private struct SymbolInspectBubbleOverlay: View {
+    let text: String
+
+    private let maxBubbleWidth: CGFloat = 320
+    private let screenMargin: CGFloat = 6
+    private let horizontalPadding: CGFloat = 10
+    private let verticalOffset: CGFloat = -36
+
+    // 1行表示に必要なテキスト幅を UIFont で実測する。
+    private var idealTextWidth: CGFloat {
+        var font = UIFont.systemFont(ofSize: 13, weight: .bold)
+        if let descriptor = font.fontDescriptor.withDesign(.rounded) {
+            font = UIFont(descriptor: descriptor, size: 13)
+        }
+        return ceil((text as NSString).size(withAttributes: [.font: font]).width)
+    }
+
+    var body: some View {
+        let maxTextWidth = maxBubbleWidth - horizontalPadding * 2
+        let textWidth = min(idealTextWidth, maxTextWidth)
+        let bubbleWidth = textWidth + horizontalPadding * 2
+
+        GeometryReader { proxy in
+            let keyFrame = proxy.frame(in: .global)
+            let screenWidth = UIScreen.main.bounds.width
+            let half = bubbleWidth / 2
+            let keyCenterX = keyFrame.midX
+            // 吹き出し中心を画面内[margin+half, width-margin-half]にクランプし、はみ出しを内側へずらす。
+            let clampedCenterX = min(
+                max(keyCenterX, screenMargin + half),
+                max(screenMargin + half, screenWidth - screenMargin - half)
+            )
+            let dx = clampedCenterX - keyCenterX
+
+            SymbolLongPressBubble(text: text, textWidth: textWidth)
+                .frame(width: proxy.size.width, alignment: .center)
+                .offset(x: dx, y: verticalOffset)
+        }
+    }
+}
+
 private struct SymbolLongPressBubble: View {
     let text: String
+    let textWidth: CGFloat
 
     var body: some View {
         Text(text)
@@ -551,9 +595,8 @@ private struct SymbolLongPressBubble: View {
             .foregroundStyle(.white)
             .multilineTextAlignment(.center)
             .lineLimit(2)
-            // 通貨コード(短)から国名(最長51字)まで扱うため、最大幅で折り返す。
-            .frame(maxWidth: 200)
             .fixedSize(horizontal: false, vertical: true)
+            .frame(width: textWidth)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
             .background(
