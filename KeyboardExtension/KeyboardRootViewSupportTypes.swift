@@ -389,7 +389,7 @@ extension KeyboardRootView {
         ]
 
         private static let currencySymbols: [String] = [
-            "€", "$", "¢", "£", "¥", "₩", "₹", "₽", "₺", "฿", "₫", "₴", "₦", "₱", "₡", "₲", "₵", "₭", "₸", "₮", "₰", "₪", "₾", "⃀", "﷼"
+            "€", "$", "¢", "£", "¥", "₩", "₹", "₽", "₺", "฿", "₫", "₴", "₦", "₱", "₡", "₲", "₵", "₭", "₸", "₮", "₰", "₪", "₾", "﷼"
         ]
 
         // 通貨カテゴリー末尾に区切り線を挟んで配置する暗号資産記号。
@@ -406,7 +406,7 @@ extension KeyboardRootView {
             "₹": "INR", "₽": "RUB", "₺": "TRY", "฿": "THB", "₫": "VND",
             "₴": "UAH", "₦": "NGN", "₱": "PHP", "₡": "CRC", "₲": "PYG",
             "₵": "GHS", "₭": "LAK", "₸": "KZT", "₮": "MNT", "₪": "ILS",
-            "₾": "GEL", "⃀": "KGS", "﷼": "SAR"
+            "₾": "GEL", "﷼": "SAR"
         ]
 
         // 長押し中に吹き出し表示する暗号資産のティッカーシンボル。
@@ -414,10 +414,6 @@ extension KeyboardRootView {
             "₿": "BTC", "Ξ": "ETH", "⟠": "ETH", "Ł": "LTC",
             "Ð": "DOGE", "₳": "ADA", "₮": "USDT", "✕": "XRP"
         ]
-
-        // SF Rounded にグリフが無く豆腐化する新しい記号は、標準フォント(フォールバックが
-        // 効きやすい)で描画する。ソム記号(⃀ U+20C0, Unicode 16)が該当。
-        static let symbolsNeedingDefaultFont: Set<String> = ["⃀"]
 
         private static let unitSymbolsTail: [String] = [
             "°", "′", "″", "%", "‰", "μ", "Ω", "ℓ", "㎜", "㎝", "㎞", "㎡", "㎢", "㎥", "㎎", "㎏", "㏄", "㎖", "㎗", "㎐", "㎑", "㎒", "㎓"
@@ -769,12 +765,9 @@ extension KeyboardRootView {
 
             return LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
                 ForEach(Array(symbols.enumerated()), id: \.offset) { _, symbol in
-                    let keyFont = KeyboardRootView.SymbolCategory.symbolsNeedingDefaultFont.contains(symbol)
-                        ? Font.system(size: 24, weight: .semibold)
-                        : symbolFont
                     SymbolKeyButton(
                         symbol: symbol,
-                        font: keyFont,
+                        font: symbolFont,
                         longPressLabel: labels?[symbol]
                     ) {
                         onTextInput(symbol)
