@@ -35,9 +35,15 @@ from typing import Dict, Iterable, List, Optional, Set, Tuple
 SUDACHI_READING_INDEX = 11
 SUDACHI_NORMALIZED_INDEX = 12
 SUDACHI_SURFACE_FALLBACK_INDEX = 4
+SUDACHI_LEFT_ID_INDEX = 1
+SUDACHI_RIGHT_ID_INDEX = 2
 SUDACHI_COST_INDEX = 3
 SUDACHI_POS_INDEX = 5
 SUDACHI_INFLECTION_TYPE_INDEX = 9
+
+# 活用語の品詞(動詞・形容詞)。誤読みの活用パラダイムが波及するため、
+# 非連接エントリ(left_id=right_id=-1)ではこれらを収穫対象から除外する。
+INFLECTING_POS_PREFIXES = ("動詞", "形容詞")
 
 UNKNOWN_COST_SENTINEL = 10**9
 
@@ -207,6 +213,24 @@ def should_exclude_candidate_for_reading(reading: str, candidate: str) -> bool:
         return False
 
     return is_kigou_kaomoji_candidate(candidate)
+
+
+def is_disconnected_inflecting_row(row: List[str]) -> bool:
+    """Sudachiが単独トークン化しない非連接エントリ(left_id=right_id=-1)のうち、
+    活用語(動詞・形容詞)を判定する。
+
+    非連接エントリは旧仮名遣い・文語形などを古文照合用に保持したもので、
+    連接行列に載らず通常解析には出力されない。活用語をここから収穫すると、
+    誤読み(例: 惚れる→トレル)の活用形が一括で語彙に紛れ込むため除外する。
+    名詞(地名・固有名詞)は単独で無害かつ必要なので除外しない。"""
+    if len(row) <= SUDACHI_RIGHT_ID_INDEX:
+        return False
+
+    if row[SUDACHI_LEFT_ID_INDEX].strip() != "-1" or row[SUDACHI_RIGHT_ID_INDEX].strip() != "-1":
+        return False
+
+    pos = row[SUDACHI_POS_INDEX].strip() if len(row) > SUDACHI_POS_INDEX else ""
+    return pos.startswith(INFLECTING_POS_PREFIXES)
 
 
 def is_valid_single_reading_candidate(
@@ -381,6 +405,10 @@ def build_index(
         # 文語(古語・古典)動詞は除外。現代語の活用派生規則と合わず、
         # 例: 伸ぶ(文語上二段-バ行)が「のんで→伸んで」と五段-バ行扱いで誤派生する。
         if "文語" in inflection_type:
+            continue
+
+        # 非連接(left_id=right_id=-1)の活用語は誤読みの活用形が紛れ込むため除外。
+        if is_disconnected_inflecting_row(row):
             continue
 
         reading = extract_reading(row)
