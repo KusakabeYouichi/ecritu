@@ -1080,6 +1080,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionPostfixNomiAttachesToNounLikeDake() {
+        converter.learn(reading: "おきなわけん", candidate: "沖縄県")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("おきなわけんだけ", "沖縄県だけ"),
+            ("おきなわけんのみ", "沖縄県のみ")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionPostfixKudasaiChainsAreDerivedFromBaseCandidates() {
         converter.learn(reading: "おくる", candidate: "送る")
 
