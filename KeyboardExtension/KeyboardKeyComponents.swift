@@ -298,8 +298,10 @@ struct SpaceFlickActionKeyButton: View {
     let onTab: () -> Void
 
     @Environment(\.keyboardAccentColor) private var accentColor
+    @GestureState private var isGestureInProgress = false
     @State private var activeDirection: FlickDirection = .milieu
     @State private var isTouching = false
+    @State private var stuckTouchWatchdogWorkItem: DispatchWorkItem?
 
     private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let tabPreviewText = "⇥"
@@ -357,17 +359,22 @@ struct SpaceFlickActionKeyButton: View {
         .contentShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
         .gesture(
             DragGesture(minimumDistance: 0)
+                .updating($isGestureInProgress) { _, state, _ in
+                    state = true
+                }
                 .onChanged { value in
                     guard isEnabled else { return }
 
+                    if !isTouching {
+                        scheduleStuckTouchWatchdog()
+                    }
                     isTouching = true
                     let direction = FlickGestureResolver.resolve(translation: value.translation)
                     activeDirection = direction == .haut ? .haut : .milieu
                 }
                 .onEnded { _ in
                     defer {
-                        isTouching = false
-                        activeDirection = .milieu
+                        finalizeTouchInteractionState()
                     }
 
                     guard isEnabled else { return }
@@ -379,10 +386,46 @@ struct SpaceFlickActionKeyButton: View {
                     }
                 }
         )
+        .onChange(of: isGestureInProgress) { inProgress in
+            if !inProgress {
+                finalizeTouchInteractionState()
+            }
+        }
+        .onDisappear {
+            finalizeTouchInteractionState()
+        }
         .zIndex(isTouching ? KeyboardLayerZIndex.touchingKey : 0)
         .accessibilityLabel(accessibilityLabelText)
         .accessibilityHint("上フリックでタブ")
         .frame(width: fixedWidth)
+    }
+
+    private func scheduleStuckTouchWatchdog() {
+        // FlickKeyView と同じく、.onEnded / @GestureState reset がメインスレッド
+        // 過負荷で取りこぼされ isTouching が残るケースのフェイルセーフ。
+        // 1.2 秒後に「指は離れているのに isTouching=true」なら強制解除する。
+        stuckTouchWatchdogWorkItem?.cancel()
+
+        let workItem = DispatchWorkItem {
+            if isTouching && !isGestureInProgress {
+                finalizeTouchInteractionState()
+            }
+        }
+        stuckTouchWatchdogWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.2, execute: workItem)
+    }
+
+    private func cancelStuckTouchWatchdog() {
+        stuckTouchWatchdogWorkItem?.cancel()
+        stuckTouchWatchdogWorkItem = nil
+    }
+
+    private func finalizeTouchInteractionState() {
+        cancelStuckTouchWatchdog()
+        activeDirection = .milieu
+        if isTouching {
+            isTouching = false
+        }
     }
 }
 
