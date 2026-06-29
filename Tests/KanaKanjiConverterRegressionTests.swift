@@ -1102,6 +1102,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionPostfixTameAndTameniDeriveFromVerbStem() {
+        converter.learn(reading: "だす", candidate: "出す")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("だすため", "出すため"),
+            ("だすために", "出すために")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionPostfixKudasaiChainsAreDerivedFromBaseCandidates() {
         converter.learn(reading: "おくる", candidate: "送る")
 
