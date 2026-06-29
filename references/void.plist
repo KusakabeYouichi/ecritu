@@ -508,5 +508,15 @@
 	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽうろう</string></dict>
 	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽーろう</string></dict>
 	<dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽうろー</string></dict>
+	<dict><key>phrase</key><string>福砂屋</string><key>shortcut</key><string>ふくさや</string></dict>
+	<dict><key>phrase</key><string>袱紗仕立て</string><key>shortcut</key><string>ふくさじたて</string></dict>
+	<dict><key>phrase</key><string>ブルグル</string><key>shortcut</key><string>ぶるぐる</string></dict>
+	<dict><key>phrase</key><string>ブルグア</string><key>shortcut</key><string>ぶるぐあ</string></dict>
+	<dict><key>phrase</key><string>チャパティー</string><key>shortcut</key><string>ちゃぱてぃー</string></dict>
+	<dict><key>phrase</key><string>コーデュロイ</string><key>shortcut</key><string>こーでゅろい</string></dict>
+	<dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
+	<dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるゔぇっと</string></dict>
+	<dict><key>phrase</key><string>ヴェルヴェッティーン</string><key>shortcut</key><string>ゔぇるゔぇってぃーん</string></dict>
+	<dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict>
 </array>
 </plist>
