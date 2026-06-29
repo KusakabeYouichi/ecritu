@@ -40,10 +40,15 @@ SUDACHI_RIGHT_ID_INDEX = 2
 SUDACHI_COST_INDEX = 3
 SUDACHI_POS_INDEX = 5
 SUDACHI_INFLECTION_TYPE_INDEX = 9
+SUDACHI_INFLECTION_FORM_INDEX = 10
 
 # 活用語の品詞(動詞・形容詞)。誤読みの活用パラダイムが波及するため、
 # 非連接エントリ(left_id=right_id=-1)ではこれらを収穫対象から除外する。
 INFLECTING_POS_PREFIXES = ("動詞", "形容詞")
+
+# 活用語の辞書形(見出し語)の活用形。これ以外の活用形は静的辞書には収めず、
+# 活用エンジンに生成させる。
+BASE_INFLECTION_FORMS = ("終止形-一般", "連体形-一般")
 
 UNKNOWN_COST_SENTINEL = 10**9
 
@@ -233,6 +238,22 @@ def is_disconnected_inflecting_row(row: List[str]) -> bool:
     return pos.startswith(INFLECTING_POS_PREFIXES)
 
 
+def is_nonbase_inflected_row(row: List[str]) -> bool:
+    """活用語(動詞・形容詞)の非辞書形(活用形)の行を判定する。
+
+    活用形の表層は単独で語にならない断片(例: 知ん・死ん・買っ)であり、
+    かつ活用形固有の読み(例: 知る→撥音便シン)が本来と異なる読みバケツを
+    汚染する(しん の一覧に 知る/知ん が紛れ込む)。活用は活用エンジンが
+    辞書形+活用辞書から生成するため、静的辞書には辞書形のみを収める。
+    非活用語(名詞等, form=*)には影響しない。"""
+    pos = row[SUDACHI_POS_INDEX].strip() if len(row) > SUDACHI_POS_INDEX else ""
+    if not pos.startswith(INFLECTING_POS_PREFIXES):
+        return False
+
+    form = row[SUDACHI_INFLECTION_FORM_INDEX].strip() if len(row) > SUDACHI_INFLECTION_FORM_INDEX else ""
+    return form not in BASE_INFLECTION_FORMS
+
+
 def is_valid_single_reading_candidate(
     reading: str,
     candidate: str,
@@ -409,6 +430,11 @@ def build_index(
 
         # 非連接(left_id=right_id=-1)の活用語は誤読みの活用形が紛れ込むため除外。
         if is_disconnected_inflecting_row(row):
+            continue
+
+        # 活用語は辞書形のみ収穫。活用形(撥音便等)は断片かつ誤読みバケツを
+        # 汚染するため除外し、活用は活用エンジンに生成させる。
+        if is_nonbase_inflected_row(row):
             continue
 
         reading = extract_reading(row)
