@@ -146,6 +146,7 @@
 	<dict><key>phrase</key><string>Intel</string><key>shortcut</key><string>いんてる</string></dict>
 	<dict><key>phrase</key><string>Microsoft</string><key>shortcut</key><string>まいくろそふと</string></dict>
 	<dict><key>phrase</key><string>Netflix</string><key>shortcut</key><string>ねっとふりっくす</string></dict>
+	<dict><key>phrase</key><string>YouTube</string><key>shortcut</key><string>ゆーちゅーぶ</string></dict>
 	<dict><key>phrase</key><string>SoftBank</string><key>shortcut</key><string>そふとばんく</string></dict>
 	<dict><key>phrase</key><string>Threads</string><key>shortcut</key><string>すれっず</string></dict>
 	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえい</string></dict>
@@ -196,5 +197,6 @@
 	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ペースト</string><key>shortcut</key><string>ぺーすと</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
 </array>
 </plist>
