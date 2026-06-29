@@ -553,7 +553,12 @@ extension KeyboardRootView {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVGrid(columns: emojiGridColumns, spacing: emojiGridSpacing) {
                         ForEach(Array(selectedEmojiCategory.emojis.enumerated()), id: \.offset) { _, emoji in
-                            EmojiKeyButton(emoji: emoji) {
+                            EmojiKeyButton(
+                                emoji: emoji,
+                                longPressLabel: selectedEmojiCategory == .flags
+                                    ? AppleEmojiCatalog.flagOfficialNames[emoji]
+                                    : nil
+                            ) {
                                 onTextInput(emoji)
                             }
                             .frame(height: compactEmojiKeyHeight)
@@ -562,6 +567,8 @@ extension KeyboardRootView {
                     .padding(.vertical, 2)
                 }
                 .frame(height: fourRowAlignedTopContentHeight)
+                // 国旗の長押し吹き出しが最上段で見切れないようクリップを解除(iOS17+)。
+                .modifier(SymbolScrollClipDisabledModifier())
 
                 HStack(spacing: keyboardRowSpacing) {
                     ActionKeyButton(

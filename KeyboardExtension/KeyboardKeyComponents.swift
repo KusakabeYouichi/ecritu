@@ -431,17 +431,40 @@ struct SpaceFlickActionKeyButton: View {
 
 struct EmojiKeyButton: View {
     let emoji: String
+    let longPressLabel: String?
     let action: () -> Void
 
+    init(emoji: String, longPressLabel: String? = nil, action: @escaping () -> Void) {
+        self.emoji = emoji
+        self.longPressLabel = longPressLabel
+        self.action = action
+    }
+
     var body: some View {
-        Button(action: action) {
-            Text(emoji)
-                .font(.system(size: 24))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .contentShape(Rectangle())
+        Group {
+            if let longPressLabel {
+                Button(action: action) { emojiLabel }
+                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel))
+            } else {
+                Button(action: action) { emojiLabel }
+                    .buttonStyle(EmojiTapFeedbackButtonStyle())
+            }
         }
-        .buttonStyle(EmojiTapFeedbackButtonStyle())
-        .accessibilityLabel(emoji)
+        .accessibilityLabel(accessibilityText)
+    }
+
+    private var emojiLabel: some View {
+        Text(emoji)
+            .font(.system(size: 24))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .contentShape(Rectangle())
+    }
+
+    private var accessibilityText: String {
+        guard let longPressLabel else {
+            return emoji
+        }
+        return "\(emoji) \(longPressLabel)"
     }
 }
 
@@ -509,8 +532,7 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
             .overlay(alignment: .top) {
                 if configuration.isPressed {
                     SymbolLongPressBubble(text: label)
-                        .fixedSize()
-                        .offset(y: -34)
+                        .offset(y: -36)
                         .allowsHitTesting(false)
                         .transition(.opacity)
                 }
@@ -527,11 +549,19 @@ private struct SymbolLongPressBubble: View {
         Text(text)
             .font(.system(size: 13, weight: .bold, design: .rounded))
             .foregroundStyle(.white)
+            .multilineTextAlignment(.center)
+            .lineLimit(2)
+            // 通貨コード(短)から国名(最長51字)まで扱うため、最大幅で折り返す。
+            .frame(maxWidth: 200)
+            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 10)
             .padding(.vertical, 5)
-            .background(Capsule().fill(Color.black.opacity(0.82)))
+            .background(
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
+                    .fill(Color.black.opacity(0.82))
+            )
             .overlay(
-                Capsule()
+                RoundedRectangle(cornerRadius: 9, style: .continuous)
                     .stroke(KeyboardThemePalette.keyStrokeOnAccent, lineWidth: 1)
             )
             .shadow(color: Color.black.opacity(0.18), radius: 2, y: 1)
