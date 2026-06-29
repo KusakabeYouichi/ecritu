@@ -332,7 +332,7 @@ extension KeyboardRootView {
             case .brackets:
                 return Self.bracketAndQuoteSymbols
             case .currency:
-                return Self.currencySymbols
+                return Self.currencySymbols + Self.bitcoinSymbols + Self.cryptoAlternativeSymbols
             case .units:
                 return Self.unitSymbols(for: temperatureUnit)
             case .math:
@@ -379,6 +379,14 @@ extension KeyboardRootView {
 
         private static let currencySymbols: [String] = [
             "€", "$", "¢", "£", "¥", "₩", "₹", "₽", "₺", "฿", "₫", "₴", "₦", "₱", "₡", "₲", "₵", "₭", "₸", "₮", "₳", "₰"
+        ]
+
+        // 通貨カテゴリー末尾に区切り線を挟んで配置する暗号資産記号。
+        static let bitcoinSymbols: [String] = ["₿"]
+
+        // 専用記号を持たない暗号資産の代替表記。
+        static let cryptoAlternativeSymbols: [String] = [
+            "Ξ", "⟠", "Ł", "Ð", "₳", "₮", "✕"
         ]
 
         private static let unitSymbolsTail: [String] = [
@@ -644,6 +652,16 @@ extension KeyboardRootView {
                 let middleSymbols = Array(symbols[middleStart..<extrasStart])
                 let trailingSymbols = Array(symbols.suffix(extrasCount))
                 symbolGridSections([leadingSymbols, middleSymbols, trailingSymbols])
+
+            case .currency:
+                let cryptoCount = KeyboardRootView.SymbolCategory.cryptoAlternativeSymbols.count
+                let bitcoinCount = KeyboardRootView.SymbolCategory.bitcoinSymbols.count
+                let cryptoStart = max(0, symbols.count - cryptoCount)
+                let bitcoinStart = max(0, cryptoStart - bitcoinCount)
+                let fiatSymbols = Array(symbols.prefix(bitcoinStart))
+                let bitcoinSymbols = Array(symbols[bitcoinStart..<cryptoStart])
+                let cryptoSymbols = Array(symbols.suffix(cryptoCount))
+                symbolGridSections([fiatSymbols, bitcoinSymbols, cryptoSymbols])
 
             case .enclosed:
                 let numberStart = symbols.firstIndex(of: "⓪")
