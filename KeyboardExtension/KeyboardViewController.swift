@@ -404,7 +404,7 @@ final class KeyboardViewController: UIInputViewController {
     static let maximumContactCandidateTotalEntries = 16384
     static let maximumContactCandidatesPerReading = 48
     static let maximumSupplementaryMergedCandidateCacheEntries = 512
-    static let isCommitUnderlineDiagnosticsLoggingEnabled = true
+    static let isCommitUnderlineDiagnosticsLoggingEnabled = false
     // メモリフェイルセーフは jetsam 実値(phys_footprint)で判定する。RSS(resident_size)は
     // 共有/クリーンページや mmap を含み jetsam 圧を過大評価するため使わない。
     // 閾値は実測(通常ピーク約48MB)に十分な余裕を持たせた footprint MB。
