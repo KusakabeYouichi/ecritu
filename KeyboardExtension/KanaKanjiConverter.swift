@@ -277,6 +277,7 @@ final class KanaKanjiConverter {
 
     private static let numericCounterSuffixCandidatesByReading: [String: [String]] = [
         "こ": ["個"],
+        "えん": ["円"],
         "かい": ["回"],
         "かげつ": ["か月", "カ月", "ヶ月", "ヵ月", "箇月"],
         "かしょ": ["か所", "箇所", "カ所", "ヶ所", "ヵ所"],
@@ -324,6 +325,22 @@ final class KanaKanjiConverter {
             "こ", "かい", "かげつ", "かしょ", "けん", "しゅうかん", "じかん", "じつ", "だい", "にん", "ねん",
             "はい", "ばい", "はつ", "ぱつ", "びょう", "ふん", "ひき", "ほん", "まい"
         ]
+    ]
+
+    // 大数位(桁). 接頭(数/何/数字)と助数詞の間に挟まる「千・百・万…」を表す。
+    // 連濁・促音の読み(ぜん/びゃく/ぴゃく等)も含め、読み一致で正しい組のみ生成する。
+    private static let numericMagnitudeCandidatesByReading: [(reading: String, candidate: String)] = [
+        ("せん", "千"), ("ぜん", "千"),
+        ("ひゃく", "百"), ("びゃく", "百"), ("ぴゃく", "百"),
+        ("まん", "万"),
+        ("おく", "億"),
+        ("ちょう", "兆"),
+        ("じゅう", "十")
+    ]
+
+    // 「分の一」等の分数末尾。助数詞の「分(ふん/ぷん)」とは読み(ぶん)で区別される。
+    private static let numericFractionSuffixCandidatesByReading: [String: [String]] = [
+        "ぶんのいち": ["分の一"]
     ]
 
     private static let mixedScriptSahenOptInReadings: Set<String> = [
@@ -1969,7 +1986,91 @@ final class KanaKanjiConverter {
             }
         }
 
+        // 桁(千/百/万…)を挟む汎用パス: 接頭 + 桁+ + (助数詞 | 分の一 | ∅)。
+        // 例: すうせんねん→数千年, なんびゃくねん→何百年, すうせんぶんのいち→数千分の一。
+        // 接頭直結の助数詞(数年・三本等)は上の既存パスが拗音・連濁制約付きで担当し、
+        // ここは必ず桁を1つ以上含む組(または接頭+分の一)のみを生成する。
+        for (prefixReading, allowedPrefixes) in Self.numericCounterPrefixCandidatesByReading {
+            guard reading.hasPrefix(prefixReading) else {
+                continue
+            }
+
+            let afterPrefix = String(reading.dropFirst(prefixReading.count))
+
+            guard !afterPrefix.isEmpty else {
+                continue
+            }
+
+            let prefixCandidates = uniqueCandidates(
+                from: candidatesForReading(
+                    prefixReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            ).filter { allowedPrefixes.contains($0) }
+
+            let resolvedPrefixCandidates = prefixCandidates.isEmpty
+                ? allowedPrefixes
+                : prefixCandidates
+
+            var tailCandidates: [String] = []
+
+            // 桁始まり: 桁+ (助数詞 | 分の一 | ∅)
+            for magnitude in Self.numericMagnitudeCandidatesByReading
+                where afterPrefix.hasPrefix(magnitude.reading) {
+                let afterMagnitude = String(afterPrefix.dropFirst(magnitude.reading.count))
+
+                for tail in numericMagnitudeTailCandidates(for: afterMagnitude) {
+                    tailCandidates.append(magnitude.candidate + tail)
+                }
+            }
+
+            // 桁なしの分数: 接頭 + 分の一 (例: すうぶんのいち→数分の一)
+            if let fractions = Self.numericFractionSuffixCandidatesByReading[afterPrefix] {
+                tailCandidates.append(contentsOf: fractions)
+            }
+
+            for prefixCandidate in resolvedPrefixCandidates {
+                for tail in tailCandidates {
+                    derived.append(prefixCandidate + tail)
+                }
+            }
+        }
+
         return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    // 桁の連なりと末尾(助数詞 | 分の一 | ∅)を読みから分解し、漢字列候補を返す。
+    // ∅(空文字)は桁を1つ以上消費済みの場合のみ許可し、「数千」等の助数詞なしを表す。
+    private func numericMagnitudeTailCandidates(
+        for reading: String,
+        magnitudeConsumed: Bool = true
+    ) -> [String] {
+        if reading.isEmpty {
+            return magnitudeConsumed ? [""] : []
+        }
+
+        var results: [String] = []
+
+        if let counters = Self.numericCounterSuffixCandidatesByReading[reading] {
+            results.append(contentsOf: counters)
+        }
+
+        if let fractions = Self.numericFractionSuffixCandidatesByReading[reading] {
+            results.append(contentsOf: fractions)
+        }
+
+        for magnitude in Self.numericMagnitudeCandidatesByReading
+            where reading.hasPrefix(magnitude.reading) {
+            let rest = String(reading.dropFirst(magnitude.reading.count))
+
+            for tail in numericMagnitudeTailCandidates(for: rest, magnitudeConsumed: true) {
+                results.append(magnitude.candidate + tail)
+            }
+        }
+
+        return results
     }
 
     private func shouldApplyPolitePrefix(_ prefix: String, to candidate: String) -> Bool {

@@ -1876,6 +1876,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionNumericMagnitudeCompoundDerivesSuuSenNenAndVariants() {
+        let cases: [(reading: String, expected: String)] = [
+            ("すうせんねん", "数千年"),
+            ("すうひゃくねん", "数百年"),
+            ("すうまんねん", "数万年"),
+            ("すうおくねん", "数億年"),
+            ("なんびゃくねん", "何百年"),
+            ("なんぜんねん", "何千年"),
+            ("なんまんねん", "何万年"),
+            ("すうせんえん", "数千円"),
+            ("すうじゅうにん", "数十人"),
+            ("すうせん", "数千"),
+            ("なんびゃく", "何百"),
+            ("すうぶんのいち", "数分の一"),
+            ("なんぶんのいち", "何分の一"),
+            ("すうせんぶんのいち", "数千分の一")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionMixedScriptSahenOptInDerivesNeOchiSuru() {
         converter.learn(reading: "ねおち", candidate: "寝落ち")
 
