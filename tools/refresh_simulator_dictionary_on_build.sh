@@ -248,6 +248,11 @@ regenerate_sqlite_if_possible() {
     sqlite_args+=(--inflections-json "$TMP_INITIAL_AJOUT_INFLECTIONS")
   fi
 
+  # 追加語彙(InitialAjout)は dictionary_entries には入れないが、活用クラスは保持する。
+  if [[ -f "$TMP_INITIAL_AJOUT" ]]; then
+    sqlite_args+=(--inflection-extra-vocab-json "$TMP_INITIAL_AJOUT")
+  fi
+
   if "${sqlite_args[@]}"; then
     echo "[dict] SQLite regeneration complete."
   else
