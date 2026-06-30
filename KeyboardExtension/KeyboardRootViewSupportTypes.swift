@@ -553,11 +553,13 @@ extension KeyboardRootView {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVGrid(columns: emojiGridColumns, spacing: emojiGridSpacing) {
                         ForEach(Array(selectedEmojiCategory.emojis.enumerated()), id: \.offset) { _, emoji in
+                            let isFlags = selectedEmojiCategory == .flags
+                            let countryName = isFlags ? AppleEmojiCatalog.flagOfficialNames[emoji] : nil
+                            let nonCountryName = isFlags ? AppleEmojiCatalog.flagNonCountryNames[emoji] : nil
                             EmojiKeyButton(
                                 emoji: emoji,
-                                longPressLabel: selectedEmojiCategory == .flags
-                                    ? AppleEmojiCatalog.flagOfficialNames[emoji]
-                                    : nil
+                                longPressLabel: countryName ?? nonCountryName,
+                                longPressLabelIsAlternate: countryName == nil && nonCountryName != nil
                             ) {
                                 onTextInput(emoji)
                             }

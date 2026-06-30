@@ -433,11 +433,18 @@ struct SpaceFlickActionKeyButton: View {
 struct EmojiKeyButton: View {
     let emoji: String
     let longPressLabel: String?
+    let longPressLabelIsAlternate: Bool
     let action: () -> Void
 
-    init(emoji: String, longPressLabel: String? = nil, action: @escaping () -> Void) {
+    init(
+        emoji: String,
+        longPressLabel: String? = nil,
+        longPressLabelIsAlternate: Bool = false,
+        action: @escaping () -> Void
+    ) {
         self.emoji = emoji
         self.longPressLabel = longPressLabel
+        self.longPressLabelIsAlternate = longPressLabelIsAlternate
         self.action = action
     }
 
@@ -445,7 +452,7 @@ struct EmojiKeyButton: View {
         Group {
             if let longPressLabel {
                 Button(action: action) { emojiLabel }
-                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel))
+                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel, isAlternate: longPressLabelIsAlternate))
             } else {
                 Button(action: action) { emojiLabel }
                     .buttonStyle(EmojiTapFeedbackButtonStyle())
@@ -521,6 +528,15 @@ struct SymbolKeyButton: View {
 // ScrollView 内でも確実に発火するよう、ジェスチャーではなく isPressed で駆動する。
 private struct SymbolInspectButtonStyle: ButtonStyle {
     let label: String
+    // 国・地域(ISO)でない国旗は吹き出しを別色にする。
+    var isAlternate: Bool = false
+
+    private static let countryColor = Color.black.opacity(0.82)
+    private static let alternateColor = Color(red: 0.12, green: 0.30, blue: 0.62).opacity(0.94)
+
+    private var bubbleColor: Color {
+        isAlternate ? Self.alternateColor : Self.countryColor
+    }
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -532,7 +548,7 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
             )
             .overlay {
                 if configuration.isPressed {
-                    SymbolInspectBubbleOverlay(text: label)
+                    SymbolInspectBubbleOverlay(text: label, backgroundColor: bubbleColor)
                         .allowsHitTesting(false)
                         .transition(.opacity)
                 }
@@ -546,6 +562,7 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
 // 1行で最大幅を超える長い名前(バチカン等)のみ2行に折り返す。
 private struct SymbolInspectBubbleOverlay: View {
     let text: String
+    var backgroundColor: Color = Color.black.opacity(0.82)
 
     private let maxBubbleWidth: CGFloat = 320
     private let screenMargin: CGFloat = 6
@@ -578,7 +595,7 @@ private struct SymbolInspectBubbleOverlay: View {
             )
             let dx = clampedCenterX - keyCenterX
 
-            SymbolLongPressBubble(text: text, textWidth: textWidth)
+            SymbolLongPressBubble(text: text, textWidth: textWidth, backgroundColor: backgroundColor)
                 .frame(width: proxy.size.width, alignment: .center)
                 .offset(x: dx, y: verticalOffset)
         }
@@ -588,6 +605,7 @@ private struct SymbolInspectBubbleOverlay: View {
 private struct SymbolLongPressBubble: View {
     let text: String
     let textWidth: CGFloat
+    var backgroundColor: Color = Color.black.opacity(0.82)
 
     var body: some View {
         Text(text)
@@ -601,7 +619,7 @@ private struct SymbolLongPressBubble: View {
             .padding(.vertical, 5)
             .background(
                 RoundedRectangle(cornerRadius: 9, style: .continuous)
-                    .fill(Color.black.opacity(0.82))
+                    .fill(backgroundColor)
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 9, style: .continuous)

@@ -1609,7 +1609,6 @@ enum AppleEmojiCatalog {
         "🇨🇦",
         "🇿🇦",
         "🇺🇾",
-        "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
         "🇮🇱",
         "🇮🇶",
         "🇮🇷",
@@ -1636,7 +1635,6 @@ enum AppleEmojiCatalog {
         "🇬🇾",
         "🇰🇿",
         "🇶🇦",
-        "🇮🇨",
         "🇬🇦",
         "🇨🇲",
         "🇬🇲",
@@ -1661,12 +1659,10 @@ enum AppleEmojiCatalog {
         "🇨🇮",
         "🇨🇨",
         "🇨🇷",
-        "🇽🇰",
         "🇰🇲",
         "🇨🇴",
         "🇨🇬",
         "🇨🇩",
-        "🇨🇶",
         "🇸🇦",
         "🇬🇸",
         "🇼🇸",
@@ -1798,7 +1794,6 @@ enum AppleEmojiCatalog {
         "🇷🇪",
         "🇷🇺",
         "🇻🇬",
-        "🇪🇺",
         "🇰🇷",
         "🇭🇰",
         "🇪🇭",
@@ -1809,7 +1804,6 @@ enum AppleEmojiCatalog {
         "🇹🇱",
         "🇸🇸",
         "🇦🇶",
-        "🎌",
         "🇬🇫",
         "🇵🇫",
         "🇹🇫",
@@ -1818,6 +1812,12 @@ enum AppleEmojiCatalog {
         "🇲🇰",
         "🇲🇵",
         "🇰🇵",
+        "🏴󠁧󠁢󠁷󠁬󠁳󠁿",
+        "🇮🇨",
+        "🇽🇰",
+        "🇨🇶",
+        "🇪🇺",
+        "🎌",
     ]
 
     // 国旗の正式国名(フランス語, ISO 3166 /tmp/iso3166 由来)。長押し中に吹き出し表示する。
@@ -2053,5 +2053,15 @@ enum AppleEmojiCatalog {
         "🇲🇰": "Macédoine du nord",
         "🇲🇵": "Mariannes du nord, îles",
         "🇰🇵": "Corée, république populaire démocratique de",
+    ]
+
+    // 国・地域(ISO)でない国旗の名称(仏語)。吹き出しは国旗とは別色で表示する。
+    static let flagNonCountryNames: [String: String] = [
+        "🏴󠁧󠁢󠁷󠁬󠁳󠁿": "Pays de Galles",
+        "🇮🇨": "Îles Canaries",
+        "🇽🇰": "Kosovo",
+        "🇨🇶": "Sercq",
+        "🇪🇺": "Union européenne",
+        "🎌": "Drapeaux croisés",
     ]
 }
