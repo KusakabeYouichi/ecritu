@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- 通貨記号(カタカナ名+記号) -->
+	<dict><key>phrase</key><string>ユーロ</string><key>shortcut</key><string>ゆーろ</string></dict>
+	<dict><key>phrase</key><string>€</string><key>shortcut</key><string>ゆーろ</string></dict>
+	<dict><key>phrase</key><string>ドル</string><key>shortcut</key><string>どる</string></dict>
+	<dict><key>phrase</key><string>$</string><key>shortcut</key><string>どる</string></dict>
+	<dict><key>phrase</key><string>ポンド</string><key>shortcut</key><string>ぽんど</string></dict>
+	<dict><key>phrase</key><string>£</string><key>shortcut</key><string>ぽんど</string></dict>
+	<dict><key>phrase</key><string>¥</string><key>shortcut</key><string>えん</string></dict>
+	<dict><key>phrase</key><string>ウォン</string><key>shortcut</key><string>うぉん</string></dict>
+	<dict><key>phrase</key><string>₩</string><key>shortcut</key><string>うぉん</string></dict>
+	<dict><key>phrase</key><string>ルピー</string><key>shortcut</key><string>るぴー</string></dict>
+	<dict><key>phrase</key><string>₹</string><key>shortcut</key><string>るぴー</string></dict>
+	<dict><key>phrase</key><string>ルーブル</string><key>shortcut</key><string>るーぶる</string></dict>
+	<dict><key>phrase</key><string>₽</string><key>shortcut</key><string>るーぶる</string></dict>
+	<dict><key>phrase</key><string>リラ</string><key>shortcut</key><string>りら</string></dict>
+	<dict><key>phrase</key><string>₺</string><key>shortcut</key><string>りら</string></dict>
+	<dict><key>phrase</key><string>バーツ</string><key>shortcut</key><string>ばーつ</string></dict>
+	<dict><key>phrase</key><string>฿</string><key>shortcut</key><string>ばーつ</string></dict>
+	<dict><key>phrase</key><string>ドン</string><key>shortcut</key><string>どん</string></dict>
+	<dict><key>phrase</key><string>₫</string><key>shortcut</key><string>どん</string></dict>
+	<dict><key>phrase</key><string>フリヴニャ</string><key>shortcut</key><string>ふりゔにゃ</string></dict>
+	<dict><key>phrase</key><string>₴</string><key>shortcut</key><string>ふりゔにゃ</string></dict>
+	<dict><key>phrase</key><string>ナイラ</string><key>shortcut</key><string>ないら</string></dict>
+	<dict><key>phrase</key><string>₦</string><key>shortcut</key><string>ないら</string></dict>
+	<dict><key>phrase</key><string>ペソ</string><key>shortcut</key><string>ぺそ</string></dict>
+	<dict><key>phrase</key><string>₱</string><key>shortcut</key><string>ぺそ</string></dict>
+	<dict><key>phrase</key><string>コロン</string><key>shortcut</key><string>ころん</string></dict>
+	<dict><key>phrase</key><string>₡</string><key>shortcut</key><string>ころん</string></dict>
+	<dict><key>phrase</key><string>グアラニ</string><key>shortcut</key><string>ぐあらに</string></dict>
+	<dict><key>phrase</key><string>₲</string><key>shortcut</key><string>ぐあらに</string></dict>
+	<dict><key>phrase</key><string>セディ</string><key>shortcut</key><string>せでぃ</string></dict>
+	<dict><key>phrase</key><string>₵</string><key>shortcut</key><string>せでぃ</string></dict>
+	<dict><key>phrase</key><string>キープ</string><key>shortcut</key><string>きーぷ</string></dict>
+	<dict><key>phrase</key><string>₭</string><key>shortcut</key><string>きーぷ</string></dict>
+	<dict><key>phrase</key><string>テンゲ</string><key>shortcut</key><string>てんげ</string></dict>
+	<dict><key>phrase</key><string>₸</string><key>shortcut</key><string>てんげ</string></dict>
+	<dict><key>phrase</key><string>トゥグルグ</string><key>shortcut</key><string>とぅぐるぐ</string></dict>
+	<dict><key>phrase</key><string>₮</string><key>shortcut</key><string>とぅぐるぐ</string></dict>
+	<dict><key>phrase</key><string>シェケル</string><key>shortcut</key><string>しぇける</string></dict>
+	<dict><key>phrase</key><string>₪</string><key>shortcut</key><string>しぇける</string></dict>
+	<dict><key>phrase</key><string>ラリ</string><key>shortcut</key><string>らり</string></dict>
+	<dict><key>phrase</key><string>₾</string><key>shortcut</key><string>らり</string></dict>
+	<dict><key>phrase</key><string>リヤル</string><key>shortcut</key><string>りやる</string></dict>
+	<dict><key>phrase</key><string>﷼</string><key>shortcut</key><string>りやる</string></dict>
+	<!-- 暗号資産ティッカー(カタカナ名+記号) -->
+	<dict><key>phrase</key><string>ビットコイン</string><key>shortcut</key><string>びっとこいん</string></dict>
+	<dict><key>phrase</key><string>₿</string><key>shortcut</key><string>びっとこいん</string></dict>
+	<dict><key>phrase</key><string>イーサリアム</string><key>shortcut</key><string>いーさりあむ</string></dict>
+	<dict><key>phrase</key><string>Ξ</string><key>shortcut</key><string>いーさりあむ</string></dict>
+	<dict><key>phrase</key><string>⟠</string><key>shortcut</key><string>いーさりあむ</string></dict>
+	<dict><key>phrase</key><string>ライトコイン</string><key>shortcut</key><string>らいとこいん</string></dict>
+	<dict><key>phrase</key><string>Ł</string><key>shortcut</key><string>らいとこいん</string></dict>
+	<dict><key>phrase</key><string>ドージコイン</string><key>shortcut</key><string>どーじこいん</string></dict>
+	<dict><key>phrase</key><string>Ð</string><key>shortcut</key><string>どーじこいん</string></dict>
+	<dict><key>phrase</key><string>カルダノ</string><key>shortcut</key><string>かるだの</string></dict>
+	<dict><key>phrase</key><string>₳</string><key>shortcut</key><string>かるだの</string></dict>
+	<dict><key>phrase</key><string>テザー</string><key>shortcut</key><string>てざー</string></dict>
+	<dict><key>phrase</key><string>₮</string><key>shortcut</key><string>てざー</string></dict>
+	<dict><key>phrase</key><string>リップル</string><key>shortcut</key><string>りっぷる</string></dict>
+	<dict><key>phrase</key><string>✕</string><key>shortcut</key><string>りっぷる</string></dict>
+</array>
+</plist>
