@@ -198,5 +198,6 @@
 	<dict><key>phrase</key><string>ペースト</string><key>shortcut</key><string>ぺーすと</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string><key>pos</key><string>サ変名詞</string></dict>
 </array>
 </plist>
