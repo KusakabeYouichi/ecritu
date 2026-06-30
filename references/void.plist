@@ -313,7 +313,6 @@
 	<dict><key>phrase</key><string>全会一致</string><key>shortcut</key><string>ぜんかいいっち</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- サ変動詞化する名詞 -->
-	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>
