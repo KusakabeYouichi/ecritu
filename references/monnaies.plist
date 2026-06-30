@@ -46,6 +46,11 @@
 	<dict><key>phrase</key><string>₾</string><key>shortcut</key><string>らり</string></dict>
 	<dict><key>phrase</key><string>リヤル</string><key>shortcut</key><string>りやる</string></dict>
 	<dict><key>phrase</key><string>﷼</string><key>shortcut</key><string>りやる</string></dict>
+	<!-- 補助単位(カタカナ名+記号) -->
+	<dict><key>phrase</key><string>セント</string><key>shortcut</key><string>せんと</string></dict>
+	<dict><key>phrase</key><string>¢</string><key>shortcut</key><string>せんと</string></dict>
+	<dict><key>phrase</key><string>ペニヒ</string><key>shortcut</key><string>ぺにひ</string></dict>
+	<dict><key>phrase</key><string>₰</string><key>shortcut</key><string>ぺにひ</string></dict>
 	<!-- 暗号資産ティッカー(カタカナ名+記号) -->
 	<dict><key>phrase</key><string>ビットコイン</string><key>shortcut</key><string>びっとこいん</string></dict>
 	<dict><key>phrase</key><string>₿</string><key>shortcut</key><string>びっとこいん</string></dict>

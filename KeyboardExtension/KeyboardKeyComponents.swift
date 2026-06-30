@@ -433,18 +433,18 @@ struct SpaceFlickActionKeyButton: View {
 struct EmojiKeyButton: View {
     let emoji: String
     let longPressLabel: String?
-    let longPressLabelIsAlternate: Bool
+    let longPressLabelKind: SymbolInspectBubbleKind
     let action: () -> Void
 
     init(
         emoji: String,
         longPressLabel: String? = nil,
-        longPressLabelIsAlternate: Bool = false,
+        longPressLabelKind: SymbolInspectBubbleKind = .standard,
         action: @escaping () -> Void
     ) {
         self.emoji = emoji
         self.longPressLabel = longPressLabel
-        self.longPressLabelIsAlternate = longPressLabelIsAlternate
+        self.longPressLabelKind = longPressLabelKind
         self.action = action
     }
 
@@ -452,7 +452,7 @@ struct EmojiKeyButton: View {
         Group {
             if let longPressLabel {
                 Button(action: action) { emojiLabel }
-                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel, isAlternate: longPressLabelIsAlternate))
+                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel, kind: longPressLabelKind))
             } else {
                 Button(action: action) { emojiLabel }
                     .buttonStyle(EmojiTapFeedbackButtonStyle())
@@ -480,17 +480,20 @@ struct SymbolKeyButton: View {
     let symbol: String
     let font: Font
     let longPressLabel: String?
+    let longPressLabelKind: SymbolInspectBubbleKind
     let action: () -> Void
 
     init(
         symbol: String,
         font: Font = .system(size: 24, weight: .semibold, design: .rounded),
         longPressLabel: String? = nil,
+        longPressLabelKind: SymbolInspectBubbleKind = .standard,
         action: @escaping () -> Void
     ) {
         self.symbol = symbol
         self.font = font
         self.longPressLabel = longPressLabel
+        self.longPressLabelKind = longPressLabelKind
         self.action = action
     }
 
@@ -498,7 +501,7 @@ struct SymbolKeyButton: View {
         Group {
             if let longPressLabel {
                 Button(action: action) { symbolLabel }
-                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel))
+                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel, kind: longPressLabelKind))
             } else {
                 Button(action: action) { symbolLabel }
                     .buttonStyle(EmojiTapFeedbackButtonStyle())
@@ -526,17 +529,24 @@ struct SymbolKeyButton: View {
 
 // 通貨記号/国旗用: 押している間だけ通貨コード・ティッカー・国名を吹き出し表示する。
 // ScrollView 内でも確実に発火するよう、ジェスチャーではなく isPressed で駆動する。
+// 吹き出しの色種別。通貨記号/ティッカー(黒)、非ISO国旗(青)、補助単位 cent/Pfennig(緑)。
+enum SymbolInspectBubbleKind {
+    case standard
+    case alternate
+    case subunit
+
+    var bubbleColor: Color {
+        switch self {
+        case .standard: return Color.black.opacity(0.82)
+        case .alternate: return Color(red: 0.12, green: 0.30, blue: 0.62).opacity(0.94)
+        case .subunit: return Color(red: 0.10, green: 0.45, blue: 0.38).opacity(0.94)
+        }
+    }
+}
+
 private struct SymbolInspectButtonStyle: ButtonStyle {
     let label: String
-    // 国・地域(ISO)でない国旗は吹き出しを別色にする。
-    var isAlternate: Bool = false
-
-    private static let countryColor = Color.black.opacity(0.82)
-    private static let alternateColor = Color(red: 0.12, green: 0.30, blue: 0.62).opacity(0.94)
-
-    private var bubbleColor: Color {
-        isAlternate ? Self.alternateColor : Self.countryColor
-    }
+    var kind: SymbolInspectBubbleKind = .standard
 
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
@@ -548,7 +558,7 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
             )
             .overlay {
                 if configuration.isPressed {
-                    SymbolInspectBubbleOverlay(text: label, backgroundColor: bubbleColor)
+                    SymbolInspectBubbleOverlay(text: label, backgroundColor: kind.bubbleColor)
                         .allowsHitTesting(false)
                         .transition(.opacity)
                 }

@@ -415,6 +415,11 @@ extension KeyboardRootView {
             "Ð": "DOGE", "₳": "ADA", "₮": "USDT", "✕": "XRP"
         ]
 
+        // 補助単位(ISO通貨コードを持たない)。吹き出しは別色・コードでなく名称を表示する。
+        static let currencySubunitLabels: [String: String] = [
+            "¢": "cent", "₰": "Pfennig"
+        ]
+
         private static let unitSymbolsTail: [String] = [
             "°", "′", "″", "%", "‰", "μ", "Ω", "ℓ", "㎜", "㎝", "㎞", "㎡", "㎢", "㎥", "㎎", "㎏", "㏄", "㎖", "㎗", "㎐", "㎑", "㎒", "㎓"
         ]
@@ -636,7 +641,7 @@ extension KeyboardRootView {
                     EmojiKeyButton(
                         emoji: emoji,
                         longPressLabel: countryName ?? nonCountryName,
-                        longPressLabelIsAlternate: countryName == nil && nonCountryName != nil
+                        longPressLabelKind: (countryName == nil && nonCountryName != nil) ? .alternate : .standard
                     ) {
                         onTextInput(emoji)
                     }
@@ -737,9 +742,11 @@ extension KeyboardRootView {
                 let bitcoinSymbols = Array(symbols[bitcoinStart..<cryptoStart])
                 let cryptoSymbols = Array(symbols.suffix(cryptoCount))
                 let isoCodes = KeyboardRootView.SymbolCategory.currencyISOCodes
+                let subunits = KeyboardRootView.SymbolCategory.currencySubunitLabels
+                let fiatLabels = isoCodes.merging(subunits) { current, _ in current }
                 let tickers = KeyboardRootView.SymbolCategory.cryptoTickerSymbols
                 symbolGridSectionsLabeled([
-                    (fiatSymbols, isoCodes),
+                    (fiatSymbols, fiatLabels),
                     (bitcoinSymbols, tickers),
                     (cryptoSymbols, tickers)
                 ])
@@ -812,10 +819,14 @@ extension KeyboardRootView {
 
             return LazyVGrid(columns: symbolGridColumns, spacing: emojiGridSpacing) {
                 ForEach(Array(symbols.enumerated()), id: \.offset) { _, symbol in
+                    let kind: SymbolInspectBubbleKind = KeyboardRootView.SymbolCategory.currencySubunitLabels[symbol] != nil
+                        ? .subunit
+                        : .standard
                     SymbolKeyButton(
                         symbol: symbol,
                         font: symbolFont,
-                        longPressLabel: labels?[symbol]
+                        longPressLabel: labels?[symbol],
+                        longPressLabelKind: kind
                     ) {
                         onTextInput(symbol)
                     }
