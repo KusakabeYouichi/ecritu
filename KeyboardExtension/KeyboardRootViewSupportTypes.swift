@@ -597,23 +597,34 @@ extension KeyboardRootView {
         @ViewBuilder
         private var emojiScrollContent: some View {
             if selectedEmojiCategory == .flags {
+                let territorySet = AppleEmojiCatalog.flagOverseasTerritories
                 let nonCountrySet = Set(AppleEmojiCatalog.flagNonCountryNames.keys)
                 let all = selectedEmojiCategory.emojis
-                let countryFlags = all.filter { !nonCountrySet.contains($0) }
-                let nonCountryFlags = all.filter { nonCountrySet.contains($0) }
+                // {普通の国 → 海外領土・属領 → その他の旗} の順に区切り線で分ける。
+                let countryFlags = all.filter { !territorySet.contains($0) && !nonCountrySet.contains($0) }
+                let territoryFlags = all.filter { territorySet.contains($0) }
+                let otherFlags = all.filter { nonCountrySet.contains($0) }
                 LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
                     emojiGrid(countryFlags)
-                    if !nonCountryFlags.isEmpty {
-                        Rectangle()
-                            .fill(KeyboardThemePalette.thinDivider)
-                            .frame(height: 1)
-                            .padding(.vertical, 2)
-                        emojiGrid(nonCountryFlags)
+                    if !territoryFlags.isEmpty {
+                        flagSectionDivider
+                        emojiGrid(territoryFlags)
+                    }
+                    if !otherFlags.isEmpty {
+                        flagSectionDivider
+                        emojiGrid(otherFlags)
                     }
                 }
             } else {
                 emojiGrid(selectedEmojiCategory.emojis)
             }
+        }
+
+        private var flagSectionDivider: some View {
+            Rectangle()
+                .fill(KeyboardThemePalette.thinDivider)
+                .frame(height: 1)
+                .padding(.vertical, 2)
         }
 
         private func emojiGrid(_ emojis: [String]) -> some View {
