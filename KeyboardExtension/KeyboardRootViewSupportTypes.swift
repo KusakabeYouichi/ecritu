@@ -359,13 +359,13 @@ extension KeyboardRootView {
         private static let basicSymbolsASCII: [String] = [
             "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
             ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~",
-            "", "⌘", "☻", "・", "「", "」", "『", "』"
+            "", "⌘", "☻", "・", "←", "↑", "→", "↓", "「", "」", "『", "』"
         ]
 
         private static let basicSymbolsEBCDIC: [String] = [
             ".", "<", "(", "+", "|", "&", "!", "$", "*", ")", ";", "-", "/", ",", "%", "_",
             ">", "?", "`", ":", "#", "@", "'", "=", "\"", "~", "^", "[", "]", "{", "}", "\\",
-            "", "⌘", "☻", "・", "「", "」", "『", "』"
+            "", "⌘", "☻", "・", "←", "↑", "→", "↓", "「", "」", "『", "』"
         ]
 
         private static let basicSymbolsANSI: [String] = [
@@ -373,7 +373,7 @@ extension KeyboardRootView {
             "(", ")", "-", "_", "=", "+", "[", "]",
             "{", "}", ";", ":", "'", "\"", ",", ".",
             "<", ">", "/", "?", "\\", "|", "`", "~",
-            "", "⌘", "☻", "・", "「", "」", "『", "』"
+            "", "⌘", "☻", "・", "←", "↑", "→", "↓", "「", "」", "『", "』"
         ]
 
         // basicカテゴリーの末尾に区切り線を挟んで配置する図形記号(16個)。
@@ -725,7 +725,7 @@ extension KeyboardRootView {
             switch selectedSymbolCategory {
             case .basic:
                 let extrasCount = KeyboardRootView.SymbolCategory.basicSymbolsExtras.count
-                let middleCount = 8  // ⌘ ☻ ・ 「」『』 などの第2セクション
+                let middleCount = 12  // ⌘ ☻ ・ ←↑→↓ 「」『』 などの第2セクション
                 let extrasStart = max(0, symbols.count - extrasCount)
                 let middleStart = max(0, extrasStart - middleCount)
                 let leadingSymbols = Array(symbols.prefix(middleStart))
