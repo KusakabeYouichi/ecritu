@@ -45,6 +45,16 @@ def parse_args() -> argparse.Namespace:
         help="Optional reading->candidate inflection JSON (repeatable)",
     )
     parser.add_argument(
+        "--inflection-extra-vocab-json",
+        action="append",
+        default=[],
+        help=(
+            "Optional reading->candidates JSON whose candidates may carry inflection "
+            "classes but are NOT added to dictionary_entries (e.g. 追加語彙/InitialAjout). "
+            "Repeatable."
+        ),
+    )
+    parser.add_argument(
         "--output",
         required=True,
         help="Output SQLite file path",
@@ -184,6 +194,7 @@ def build_sqlite(
     vocab: Dict[str, List[str]],
     sources: Dict[str, Dict[str, Set[str]]],
     inflections: Dict[str, Dict[str, str]],
+    inflection_extra_vocab: Dict[str, Set[str]] = {},
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists():
@@ -263,7 +274,10 @@ def build_sqlite(
 
         inflection_rows: List[Tuple[str, str, str]] = []
         for reading, candidate_map in inflections.items():
-            allowed_candidates = dictionary_candidate_set.get(reading)
+            # dictionary_entries の候補に加え、追加語彙(InitialAjout)の候補も活用クラス
+            # 保持を許可する。これにより追加語彙のサ変名詞も基本する形が生成できる。
+            allowed_candidates = set(dictionary_candidate_set.get(reading, set()))
+            allowed_candidates |= inflection_extra_vocab.get(reading, set())
             if not allowed_candidates:
                 continue
 
@@ -295,20 +309,26 @@ def main() -> int:
     vocab_paths = [Path(path) for path in args.vocab_json]
     source_paths = [Path(path) for path in args.sources_json]
     inflection_paths = [Path(path) for path in args.inflections_json]
+    extra_vocab_paths = [Path(path) for path in args.inflection_extra_vocab_json]
 
-    for path in vocab_paths + source_paths + inflection_paths:
+    for path in vocab_paths + source_paths + inflection_paths + extra_vocab_paths:
         if not path.exists():
             raise FileNotFoundError(path)
 
     vocab = merge_vocab(vocab_paths)
     sources = merge_sources(source_paths)
     inflections = merge_inflections(inflection_paths)
+    extra_vocab = {
+        reading: set(candidates)
+        for reading, candidates in merge_vocab(extra_vocab_paths).items()
+    }
 
     build_sqlite(
         output_path=Path(args.output),
         vocab=vocab,
         sources=sources,
         inflections=inflections,
+        inflection_extra_vocab=extra_vocab,
     )
     return 0
 
