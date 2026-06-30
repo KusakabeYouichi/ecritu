@@ -551,22 +551,8 @@ extension KeyboardRootView {
         var body: some View {
             VStack(spacing: keyboardRowSpacing) {
                 ScrollView(.vertical, showsIndicators: false) {
-                    LazyVGrid(columns: emojiGridColumns, spacing: emojiGridSpacing) {
-                        ForEach(Array(selectedEmojiCategory.emojis.enumerated()), id: \.offset) { _, emoji in
-                            let isFlags = selectedEmojiCategory == .flags
-                            let countryName = isFlags ? AppleEmojiCatalog.flagOfficialNames[emoji] : nil
-                            let nonCountryName = isFlags ? AppleEmojiCatalog.flagNonCountryNames[emoji] : nil
-                            EmojiKeyButton(
-                                emoji: emoji,
-                                longPressLabel: countryName ?? nonCountryName,
-                                longPressLabelIsAlternate: countryName == nil && nonCountryName != nil
-                            ) {
-                                onTextInput(emoji)
-                            }
-                            .frame(height: compactEmojiKeyHeight)
-                        }
-                    }
-                    .padding(.vertical, 2)
+                    emojiScrollContent
+                        .padding(.vertical, 2)
                 }
                 .frame(height: fourRowAlignedTopContentHeight)
                 // 国旗の長押し吹き出しが最上段で見切れないようクリップを解除(iOS17+)。
@@ -605,6 +591,47 @@ extension KeyboardRootView {
                 .frame(height: mainFlickKeyHeight)
             }
             .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+        }
+
+        // 国旗カテゴリーのみ、国・地域(ISO)の国旗と非ISO国旗の間に区切り線を挟む。
+        @ViewBuilder
+        private var emojiScrollContent: some View {
+            if selectedEmojiCategory == .flags {
+                let nonCountrySet = Set(AppleEmojiCatalog.flagNonCountryNames.keys)
+                let all = selectedEmojiCategory.emojis
+                let countryFlags = all.filter { !nonCountrySet.contains($0) }
+                let nonCountryFlags = all.filter { nonCountrySet.contains($0) }
+                LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                    emojiGrid(countryFlags)
+                    if !nonCountryFlags.isEmpty {
+                        Rectangle()
+                            .fill(KeyboardThemePalette.thinDivider)
+                            .frame(height: 1)
+                            .padding(.vertical, 2)
+                        emojiGrid(nonCountryFlags)
+                    }
+                }
+            } else {
+                emojiGrid(selectedEmojiCategory.emojis)
+            }
+        }
+
+        private func emojiGrid(_ emojis: [String]) -> some View {
+            LazyVGrid(columns: emojiGridColumns, spacing: emojiGridSpacing) {
+                ForEach(Array(emojis.enumerated()), id: \.offset) { _, emoji in
+                    let isFlags = selectedEmojiCategory == .flags
+                    let countryName = isFlags ? AppleEmojiCatalog.flagOfficialNames[emoji] : nil
+                    let nonCountryName = isFlags ? AppleEmojiCatalog.flagNonCountryNames[emoji] : nil
+                    EmojiKeyButton(
+                        emoji: emoji,
+                        longPressLabel: countryName ?? nonCountryName,
+                        longPressLabelIsAlternate: countryName == nil && nonCountryName != nil
+                    ) {
+                        onTextInput(emoji)
+                    }
+                    .frame(height: compactEmojiKeyHeight)
+                }
+            }
         }
     }
 
