@@ -28,6 +28,7 @@ REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
 REF_IT_PLIST="$ROOT_DIR/references/it.plist"
 REF_VOID_PLIST="$ROOT_DIR/references/void.plist"
 REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
+REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_ADJECTIVE_GARU_ALLOWLIST="$ROOT_DIR/references/adjective_garu_allowlist.json"
 
 SUDACHI_CSV_FILES=()
@@ -144,6 +145,7 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_VIN_PLIST" \
   --input-plist "$REF_IT_PLIST" \
   --input-plist "$REF_PERSONNALITES_PLIST" \
+  --input-plist "$REF_DRAPEAUX_PLIST" \
   --output "$TMP_SECOND" \
   --output-inflections "$TMP_SECOND_INFLECTIONS"
 
