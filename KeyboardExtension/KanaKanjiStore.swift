@@ -15,8 +15,10 @@ private final class KanaKanjiSQLiteIndex {
     private var selectCandidatesBySourceStatement: OpaquePointer?
     private var selectCandidatesWithExactSourceStatement: OpaquePointer?
     private var selectInflectionStatement: OpaquePointer?
+    private var selectWordCostStatement: OpaquePointer?
     private(set) var hasSourceMetadata = false
     private(set) var hasInflectionMetadata = false
+    private(set) var hasWordCostMetadata = false
     private(set) var hasAnyEntries = false
 
     init?(databaseURL: URL) {
@@ -64,6 +66,13 @@ private final class KanaKanjiSQLiteIndex {
             )
         }
 
+        hasWordCostMetadata = tableExists("word_costs")
+        if hasWordCostMetadata {
+            selectWordCostStatement = prepareStatement(
+                sql: "SELECT candidate, cost FROM word_costs WHERE reading = ?"
+            )
+        }
+
         if let probeStatement = prepareStatement(
             sql: "SELECT 1 FROM dictionary_entries LIMIT 1"
         ) {
@@ -87,6 +96,10 @@ private final class KanaKanjiSQLiteIndex {
 
         if let selectInflectionStatement {
             sqlite3_finalize(selectInflectionStatement)
+        }
+
+        if let selectWordCostStatement {
+            sqlite3_finalize(selectWordCostStatement)
         }
 
         if let database {
@@ -157,6 +170,42 @@ private final class KanaKanjiSQLiteIndex {
                 }
 
                 result[candidate] = inflectionClass
+            }
+
+            return result
+        }
+    }
+
+    func wordCostMap(for reading: String) -> [String: Int] {
+        queryQueue.sync {
+            guard hasWordCostMetadata,
+                let statement = selectWordCostStatement else {
+                return [:]
+            }
+
+            resetStatement(statement)
+
+            let bindResult = reading.withCString { readingCString in
+                sqlite3_bind_text(statement, 1, readingCString, -1, sqliteTransientDestructor)
+            }
+
+            guard bindResult == SQLITE_OK else {
+                return [:]
+            }
+
+            var result: [String: Int] = [:]
+
+            while sqlite3_step(statement) == SQLITE_ROW {
+                guard let candidateCString = sqlite3_column_text(statement, 0) else {
+                    continue
+                }
+
+                let candidate = String(cString: candidateCString)
+                guard !candidate.isEmpty else {
+                    continue
+                }
+
+                result[candidate] = Int(sqlite3_column_int(statement, 1))
             }
 
             return result
@@ -457,6 +506,17 @@ final class KanaKanjiStore {
         let inflectionDictionary = loadInflectionDictionary()
         let classMap = inflectionDictionary[normalizedReading] ?? [:]
         return (classMap, !classMap.isEmpty)
+    }
+
+    // 案A(連文節ビタビ)用: 読みに対する語コスト(Sudachi由来, 小さいほど高頻度)。
+    // sqlite の word_costs 由来。無ければ空(= 呼び出し側で既定コストにフォールバック)。
+    func wordCosts(for reading: String) -> [String: Int] {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        guard !normalizedReading.isEmpty,
+            let sqliteIndex = sqliteIndexIfAvailable() else {
+            return [:]
+        }
+        return sqliteIndex.wordCostMap(for: normalizedReading)
     }
 
     func systemCandidates(
