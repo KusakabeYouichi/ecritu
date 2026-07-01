@@ -191,11 +191,28 @@ extension KeyboardViewController {
                 presentationLimit * ExternalCandidateLimits.lookupMultiplier,
                 presentationLimit + 12
             )
-            let converterCandidates = converter.candidates(
+            var converterCandidates = converter.candidates(
                 for: reading,
                 limit: converterLimit,
                 systemCandidateMode: systemCandidateMode
             )
+
+            // 連文節変換(案C): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ合流。
+            // 既存の単文節候補は必ず残し、重複は除外する(退行防止)。
+            if Self.isMultiClauseConversionEnabled {
+                let multiClause = converter.multiClauseCandidates(
+                    for: reading,
+                    systemCandidateMode: systemCandidateMode
+                )
+                if !multiClause.isEmpty {
+                    let existing = Set(converterCandidates)
+                    let fresh = multiClause.filter { !existing.contains($0) }
+                    if !fresh.isEmpty {
+                        let insertAt = min(1, converterCandidates.count)
+                        converterCandidates.insert(contentsOf: fresh, at: insertAt)
+                    }
+                }
+            }
 
             DispatchQueue.main.async {
                 guard let self else {

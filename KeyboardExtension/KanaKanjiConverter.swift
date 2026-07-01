@@ -723,6 +723,87 @@ final class KanaKanjiConverter {
         return finalCandidates
     }
 
+    // MARK: - 連文節変換(プロトタイプ / 案C)
+    //
+    // 既存の単文節 candidates() を「文節変換器」として再利用し、読み全体を少数の文節へ
+    // 分割して最良の連結を1件返す。現段階は言語モデル(LM)無しの等重み版で、経路コストは
+    //   (弱文節数, 文節数)  ※弱文節 = 変換されずかな素通りのままの文節
+    // の辞書順最小化(DP)で決める。LM(bigram)導入は後続ステップ。
+    // 呼び出し側でフラグ(isMultiClauseConversionEnabled)により on/off する。
+    private static let multiClauseMinReadingCount = 4
+    private static let multiClauseMaxSegmentReadingCount = 12
+    private static let multiClauseMaxSegmentCount = 8
+
+    func multiClauseCandidates(
+        for reading: String,
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        let normalized = KanaTextNormalizer.normalizedReading(reading)
+        let chars = Array(normalized)
+        guard chars.count >= Self.multiClauseMinReadingCount else {
+            return []
+        }
+
+        struct Cell {
+            var weak: Int
+            var segmentCount: Int
+            var segments: [(reading: String, surface: String)]
+        }
+
+        var dp: [Cell?] = Array(repeating: nil, count: chars.count + 1)
+        dp[0] = Cell(weak: 0, segmentCount: 0, segments: [])
+
+        for pos in 0..<chars.count {
+            guard let current = dp[pos] else {
+                continue
+            }
+            guard current.segmentCount < Self.multiClauseMaxSegmentCount else {
+                continue
+            }
+
+            let maxLen = min(Self.multiClauseMaxSegmentReadingCount, chars.count - pos)
+            for len in 1...maxLen {
+                let segmentReading = String(chars[pos..<(pos + len)])
+                guard let top = candidates(
+                    for: segmentReading,
+                    limit: 1,
+                    systemCandidateMode: systemCandidateMode
+                ).first else {
+                    continue
+                }
+
+                let isWeak = (top == segmentReading)
+                let candidate = Cell(
+                    weak: current.weak + (isWeak ? 1 : 0),
+                    segmentCount: current.segmentCount + 1,
+                    segments: current.segments + [(segmentReading, top)]
+                )
+
+                let end = pos + len
+                if let existing = dp[end] {
+                    if (candidate.weak, candidate.segmentCount) < (existing.weak, existing.segmentCount) {
+                        dp[end] = candidate
+                    }
+                } else {
+                    dp[end] = candidate
+                }
+            }
+        }
+
+        guard let best = dp[chars.count],
+            best.segments.count >= 2,
+            best.weak * 2 <= best.segmentCount else {
+            return []
+        }
+
+        let joined = best.segments.map(\.surface).joined()
+        if joined == normalized {
+            return []
+        }
+
+        return [joined]
+    }
+
     func learn(reading: String, candidate: String) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
