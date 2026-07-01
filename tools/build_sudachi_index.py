@@ -419,6 +419,8 @@ def build_index(
     cost_stats: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
         lambda: defaultdict(lambda: {"sum": 0, "count": 0, "min": UNKNOWN_COST_SENTINEL})
     )
+    # 案A(連文節)用: 連接エントリのみの語コスト min。
+    connecting_min_cost: Dict[str, Dict[str, int]] = defaultdict(dict)
     class_counters: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(int))
     )
@@ -504,6 +506,20 @@ def build_index(
                 stats["count"] += 1
                 stats["min"] = min(stats["min"], candidate_cost)
 
+                # 案A(連文節)用の語コストは、連接エントリ(left/right id != -1)からのみ
+                # min を採る。非連接(-1/-1)は cost=0 のダミーが多く、既存ソート用の
+                # cost_stats とは分けて集計し、単文節側の挙動を変えない。
+                row_is_connecting = (
+                    len(row) > SUDACHI_RIGHT_ID_INDEX
+                    and row[SUDACHI_LEFT_ID_INDEX].strip() != "-1"
+                    and row[SUDACHI_RIGHT_ID_INDEX].strip() != "-1"
+                )
+                if row_is_connecting:
+                    prev = connecting_min_cost[reading].get(candidate)
+                    connecting_min_cost[reading][candidate] = (
+                        candidate_cost if prev is None else min(prev, candidate_cost)
+                    )
+
             for source in sources:
                 source_counters[reading][candidate][source] += 1
 
@@ -545,6 +561,20 @@ def build_index(
             per_reading_limit = min(max_candidates, single_reading_max_candidates)
 
         index[reading] = [cand for cand, _ in sorted_candidates[:per_reading_limit]]
+
+    # 連文節変換(案A)用: 出力候補ごとの Sudachi 語コスト(min)を書き出す。
+    # コスト不明(参照/かな素通り等)は出力しない。
+    cost_index: Dict[str, Dict[str, int]] = {}
+    for reading, candidates in index.items():
+        reading_costs = connecting_min_cost.get(reading)
+        if not reading_costs:
+            continue
+        candidate_cost_map: Dict[str, int] = {}
+        for candidate in candidates:
+            if candidate in reading_costs:
+                candidate_cost_map[candidate] = int(reading_costs[candidate])
+        if candidate_cost_map:
+            cost_index[reading] = candidate_cost_map
 
     inflection_index: Dict[str, Dict[str, str]] = {}
     for reading, candidates in index.items():
@@ -618,7 +648,7 @@ def build_index(
         if not metadata_map:
             candidate_source_index.pop(reading, None)
 
-    return index, inflection_index, candidate_source_index
+    return index, inflection_index, candidate_source_index, cost_index
 
 
 def parse_args() -> argparse.Namespace:
@@ -640,6 +670,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-sources",
         help="Output path for reading->candidate->[sourceTag] JSON",
+    )
+    parser.add_argument(
+        "--output-costs",
+        help="Optional output path for reading->candidate->SudachiWordCost JSON(連文節/案A用)",
     )
     parser.add_argument(
         "--adjective-garu-allowlist",
@@ -712,7 +746,7 @@ def main() -> int:
         print(f"No files matched: {args.input_glob}")
         return 1
 
-    index, inflection_index, candidate_source_index = build_index(
+    index, inflection_index, candidate_source_index, cost_index = build_index(
         paths=paths,
         max_candidates=max(1, args.max_candidates),
         min_reading_len=max(1, args.min_reading_len),
@@ -753,6 +787,12 @@ def main() -> int:
         print(
             f"wrote {len(inflection_index)} readings with inflection classes -> {args.output_inflections}"
         )
+
+    if args.output_costs:
+        os.makedirs(os.path.dirname(args.output_costs) or ".", exist_ok=True)
+        with open(args.output_costs, "w", encoding="utf-8") as f:
+            json.dump(cost_index, f, ensure_ascii=False, sort_keys=True)
+        print(f"wrote {len(cost_index)} readings with word costs -> {args.output_costs}")
 
     return 0
 

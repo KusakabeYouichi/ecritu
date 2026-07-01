@@ -21,6 +21,7 @@ TMP_SECOND_INFLECTIONS="$ROOT_DIR/tmp/references_second_inflections.json"
 TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_void_inflections.json"
 TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
+TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
@@ -174,6 +175,7 @@ outputs = [
     root / "tmp" / "ÉcrituPremierVocab.json",
     root / "tmp" / "kana_kanji_candidate_sources.json",
     root / "tmp" / "kana_kanji_inflection_dictionary.json",
+    root / "tmp" / "kana_kanji_word_costs.json",
 ]
 
 if not inputs or any(not out.exists() for out in outputs):
@@ -240,6 +242,10 @@ regenerate_sqlite_if_possible() {
     sqlite_args+=(--inflections-json "$TMP_INFLECTIONS")
   fi
 
+  if [[ -f "$TMP_COSTS" ]]; then
+    sqlite_args+=(--costs-json "$TMP_COSTS")
+  fi
+
   if [[ -f "$TMP_SECOND_INFLECTIONS" ]]; then
     sqlite_args+=(--inflections-json "$TMP_SECOND_INFLECTIONS")
   fi
@@ -270,6 +276,7 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
       --output "$TMP_PREMIER"
       --output-sources "$TMP_SOURCES"
       --output-inflections "$TMP_INFLECTIONS"
+      --output-costs "$TMP_COSTS"
       --max-candidates 24
       --min-reading-len 1
       --max-reading-len 10
