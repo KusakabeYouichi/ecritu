@@ -45,6 +45,12 @@ def parse_args() -> argparse.Namespace:
         help="Optional reading->candidate inflection JSON (repeatable)",
     )
     parser.add_argument(
+        "--costs-json",
+        action="append",
+        default=[],
+        help="Optional reading->candidate->SudachiWordCost JSON(連文節/案A用, repeatable)",
+    )
+    parser.add_argument(
         "--inflection-extra-vocab-json",
         action="append",
         default=[],
@@ -183,6 +189,34 @@ def merge_inflections(paths: Iterable[Path]) -> Dict[str, Dict[str, str]]:
                     continue
                 candidate_map[candidate] = inflection_class
 
+    return merged
+
+
+def merge_costs(paths: Iterable[Path]) -> Dict[str, Dict[str, int]]:
+    merged: Dict[str, Dict[str, int]] = {}
+
+    for path in paths:
+        obj = load_json(path)
+        if not isinstance(obj, dict):
+            raise ValueError(f"{path} must be an object")
+
+        for reading, raw_map in obj.items():
+            if not isinstance(reading, str) or not isinstance(raw_map, dict):
+                continue
+
+            candidate_map = merged.setdefault(reading, {})
+            for candidate, raw_cost in raw_map.items():
+                if not isinstance(candidate, str) or not isinstance(raw_cost, int):
+                    continue
+                cand = candidate.strip()
+                if not cand:
+                    continue
+                # 重複時は小さいコスト(より高頻度)を採用。
+                if cand in candidate_map:
+                    candidate_map[cand] = min(candidate_map[cand], raw_cost)
+                else:
+                    candidate_map[cand] = raw_cost
+
             if not candidate_map:
                 merged.pop(reading, None)
 
@@ -195,6 +229,7 @@ def build_sqlite(
     sources: Dict[str, Dict[str, Set[str]]],
     inflections: Dict[str, Dict[str, str]],
     inflection_extra_vocab: Dict[str, Set[str]] = {},
+    costs: Dict[str, Dict[str, int]] = {},
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists():
@@ -237,6 +272,16 @@ def build_sqlite(
 
             CREATE INDEX idx_inflection_classes_lookup
                 ON inflection_classes (reading, candidate);
+
+            CREATE TABLE word_costs (
+                reading TEXT NOT NULL,
+                candidate TEXT NOT NULL,
+                cost INTEGER NOT NULL,
+                PRIMARY KEY (reading, candidate)
+            );
+
+            CREATE INDEX idx_word_costs_lookup
+                ON word_costs (reading, candidate);
             """
         )
 
@@ -292,6 +337,23 @@ def build_sqlite(
                 inflection_rows,
             )
 
+        # 語コスト(案A ビタビ用)。dictionary_entries に載る候補のみ保持。
+        cost_rows: List[Tuple[str, str, int]] = []
+        for reading, candidate_map in costs.items():
+            allowed_candidates = dictionary_candidate_set.get(reading)
+            if not allowed_candidates:
+                continue
+            for candidate, cost in candidate_map.items():
+                if candidate not in allowed_candidates:
+                    continue
+                cost_rows.append((reading, candidate, int(cost)))
+
+        if cost_rows:
+            conn.executemany(
+                "INSERT INTO word_costs(reading, candidate, cost) VALUES (?, ?, ?)",
+                cost_rows,
+            )
+
         conn.commit()
 
         print(f"wrote sqlite: {output_path}")
@@ -310,14 +372,16 @@ def main() -> int:
     source_paths = [Path(path) for path in args.sources_json]
     inflection_paths = [Path(path) for path in args.inflections_json]
     extra_vocab_paths = [Path(path) for path in args.inflection_extra_vocab_json]
+    cost_paths = [Path(path) for path in args.costs_json]
 
-    for path in vocab_paths + source_paths + inflection_paths + extra_vocab_paths:
+    for path in vocab_paths + source_paths + inflection_paths + extra_vocab_paths + cost_paths:
         if not path.exists():
             raise FileNotFoundError(path)
 
     vocab = merge_vocab(vocab_paths)
     sources = merge_sources(source_paths)
     inflections = merge_inflections(inflection_paths)
+    costs = merge_costs(cost_paths)
     extra_vocab = {
         reading: set(candidates)
         for reading, candidates in merge_vocab(extra_vocab_paths).items()
@@ -329,6 +393,7 @@ def main() -> int:
         sources=sources,
         inflections=inflections,
         inflection_extra_vocab=extra_vocab,
+        costs=costs,
     )
     return 0
 
