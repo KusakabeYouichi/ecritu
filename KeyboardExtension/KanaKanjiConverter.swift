@@ -740,6 +740,13 @@ final class KanaKanjiConverter {
     private static let multiClauseKanaPassthroughCost = 30000
     private static let multiClauseUnknownConvertedCost = 10000
     private static let multiClauseSegmentPenaltyCost = 1500
+    // 語頭(文節頭)に来られない文字で始まる分割は日本語としてほぼあり得ないため強く減点。
+    // 連接コスト(A2)の簡易代替。撥音ん・長音ー・促音っ・小書きかな等。
+    private static let multiClauseForbiddenInitialPenaltyCost = 100000
+    private static let multiClauseForbiddenInitials: Set<Character> = [
+        "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
+        "ゃ", "ゅ", "ょ", "ゎ", "ゕ", "ゖ", "ゝ", "ゞ", "・"
+    ]
 
     func multiClauseCandidates(
         for reading: String,
@@ -801,8 +808,17 @@ final class KanaKanjiConverter {
                     continue
                 }
 
+                // 文節頭に来られない文字(ん・ー・小書き等)で始まる分割を強く減点。
+                var forbiddenInitialPenalty = 0
+                if let firstChar = segmentReading.first,
+                    Self.multiClauseForbiddenInitials.contains(firstChar) {
+                    forbiddenInitialPenalty = Self.multiClauseForbiddenInitialPenaltyCost
+                }
+
                 let end = pos + len
-                let totalCost = baseCost + bestEmission + Self.multiClauseSegmentPenaltyCost
+                let totalCost = baseCost + bestEmission
+                    + Self.multiClauseSegmentPenaltyCost
+                    + forbiddenInitialPenalty
                 if dpCost[end] == nil || totalCost < dpCost[end]! {
                     dpCost[end] = totalCost
                     dpSurface[end] = surface
