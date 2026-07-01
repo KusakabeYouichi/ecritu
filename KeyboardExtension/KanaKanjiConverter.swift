@@ -747,6 +747,11 @@ final class KanaKanjiConverter {
         "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
         "ゃ", "ゅ", "ょ", "ゎ", "ゕ", "ゖ", "ゝ", "ゞ", "・"
     ]
+    // ローンワード的な読みの指標(長音・小書き母音)。これらを含む読みはカタカナ表記が
+    // 妥当なので、カタカナ素通りを減点しない(例: らんてぃーゆ→ランティーユ は許容)。
+    private static let multiClauseLoanwordMarkers: Set<Character> = [
+        "ー", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ", "ゎ"
+    ]
 
     func multiClauseCandidates(
         for reading: String,
@@ -795,9 +800,7 @@ final class KanaKanjiConverter {
                     ).first {
                     // 活用形・追加語彙・複合など(コスト表に無い)を補完。
                     bestSurface = top
-                    bestEmission = (top == segmentReading)
-                        ? Self.multiClauseKanaPassthroughCost
-                        : Self.multiClauseUnknownConvertedCost
+                    bestEmission = supplementEmissionCost(surface: top, reading: segmentReading)
                 } else {
                     // 何も無い span はかな素通り(強く減点、最後の手段)。
                     bestSurface = segmentReading
@@ -857,6 +860,28 @@ final class KanaKanjiConverter {
         }
 
         return [joined]
+    }
+
+    // 補完候補(candidates()由来)の放出コスト。読みのかな表記そのまま(=素通り)は
+    // 原則減点。ただしローンワード的な読みのカタカナ表記は妥当なので減点しない。
+    private func supplementEmissionCost(surface: String, reading: String) -> Int {
+        let surfaceAsReading = KanaTextNormalizer.normalizedReading(surface)
+        if surfaceAsReading == reading {
+            // surface が読みのかな表記(ひらがな or カタカナ)= 実変換ではない。
+            let isKatakanaForm = (surface != reading)
+            if isKatakanaForm, readingLooksLikeLoanword(reading) {
+                return Self.multiClauseUnknownConvertedCost
+            }
+            return Self.multiClauseKanaPassthroughCost
+        }
+        return Self.multiClauseUnknownConvertedCost
+    }
+
+    private func readingLooksLikeLoanword(_ reading: String) -> Bool {
+        for character in reading where Self.multiClauseLoanwordMarkers.contains(character) {
+            return true
+        }
+        return false
     }
 
     func learn(reading: String, candidate: String) {
