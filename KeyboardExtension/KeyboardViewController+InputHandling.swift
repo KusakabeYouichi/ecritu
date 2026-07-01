@@ -665,24 +665,22 @@ extension KeyboardViewController {
             return
         }
 
-        let candidates = kanaKanjiCandidates(
-            for: composingReading,
-            limit: effectiveKanaPresentationCandidateLimit(),
+        // 表示に使っているのと同一の候補リストを index 参照する(再計算しない)。
+        // 連文節候補は非同期経路(settled presentation)にのみ挿入されるため、ここで
+        // kanaKanjiCandidates を再計算すると表示とズレて末尾候補が範囲外になり、タップ
+        // しても確定しない不具合になっていた。表示と同じ presentation を使うことで一致させる。
+        let presentation = currentCandidatePresentationForRender(
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         )
-        let presentationCandidates = candidatesForPresentation(
-            from: candidates,
-            composingText: composingRawText
-        )
 
-        guard presentationCandidates.indices.contains(index) else {
+        guard presentation.candidates.indices.contains(index) else {
             return
         }
 
         commitComposingText(
             sourceText: composingRawText,
             sourceReading: composingReading,
-            committedText: presentationCandidates[index],
+            committedText: presentation.candidates[index],
             learn: true
         )
         refreshKeyboardStateAsync()
