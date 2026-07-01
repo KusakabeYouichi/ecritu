@@ -809,16 +809,23 @@ final class KanaKanjiConverter {
                 }
 
                 // 文節頭に来られない文字(ん・ー・小書き等)で始まる分割を強く減点。
-                var forbiddenInitialPenalty = 0
+                var morphotacticPenalty = 0
                 if let firstChar = segmentReading.first,
                     Self.multiClauseForbiddenInitials.contains(firstChar) {
-                    forbiddenInitialPenalty = Self.multiClauseForbiddenInitialPenaltyCost
+                    morphotacticPenalty += Self.multiClauseForbiddenInitialPenaltyCost
+                }
+
+                // 「を」は現代仮名遣いでは目的格助詞専用で、内容語の語中・語頭には現れない
+                // (その音は「お」を使う)。2文字以上に「を」を含む分割はほぼあり得ないため
+                // 強く減点し、「を」は常に単独文節(=助詞を)に切り出す(例: をた→おた を回避)。
+                if len > 1, segmentReading.contains("を") {
+                    morphotacticPenalty += Self.multiClauseForbiddenInitialPenaltyCost
                 }
 
                 let end = pos + len
                 let totalCost = baseCost + bestEmission
                     + Self.multiClauseSegmentPenaltyCost
-                    + forbiddenInitialPenalty
+                    + morphotacticPenalty
                 if dpCost[end] == nil || totalCost < dpCost[end]! {
                     dpCost[end] = totalCost
                     dpSurface[end] = surface
