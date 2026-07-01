@@ -3,30 +3,13 @@
 <plist version="1.0">
 <array>
 	<!-- 一般の語彙 -->
-	<dict><key>phrase</key><string>A17</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>M310</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Main</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Rare</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>Soft</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>andere</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>detalhe</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>detalle</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>display</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>divers</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>general</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>limit</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>normal</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>overview</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>panoramica</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>span</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>true</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>偶発的</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>勘違</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>第二次世界大戦中</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>興味深</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>補助的</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>見極</string><key>shortcut</key><string>★</string></dict>
-	<dict><key>phrase</key><string>認知度</string><key>shortcut</key><string>★</string></dict>
+	<dict><key>phrase</key><string>偶発的</string><key>shortcut</key><string>ぐうはつてき</string></dict>
+	<dict><key>phrase</key><string>勘違い</string><key>shortcut</key><string>かんちがい</string></dict>
+	<dict><key>phrase</key><string>第二次世界大戦中</string><key>shortcut</key><string>だいにじせかいたいせんんちゅう</string></dict>
+	<dict><key>phrase</key><string>興味深い</string><key>shortcut</key><string>きょうみぶかい</string></dict>
+	<dict><key>phrase</key><string>補助的</string><key>shortcut</key><string>ほじょてき</string></dict>
+	<dict><key>phrase</key><string>見極める</string><key>shortcut</key><string>みきわめる</string></dict>
+	<dict><key>phrase</key><string>認知度</string><key>shortcut</key><string>にんちど</string></dict>
 	<dict><key>phrase</key><string>アイデンティティ保持</string><key>shortcut</key><string>あいでんてぃてぃほじ</string></dict>
 	<dict><key>phrase</key><string>エネルギー</string><key>shortcut</key><string>えねるぎー</string></dict>
 	<dict><key>phrase</key><string>ガイドライン</string><key>shortcut</key><string>がいどらいん</string></dict>
