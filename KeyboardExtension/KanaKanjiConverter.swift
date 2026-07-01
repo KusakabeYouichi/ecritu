@@ -723,16 +723,23 @@ final class KanaKanjiConverter {
         return finalCandidates
     }
 
-    // MARK: - 連文節変換(プロトタイプ / 案C)
+    // MARK: - 連文節変換(案A1: 語コスト版ビタビ)
     //
-    // 既存の単文節 candidates() を「文節変換器」として再利用し、読み全体を少数の文節へ
-    // 分割して最良の連結を1件返す。現段階は言語モデル(LM)無しの等重み版で、経路コストは
-    //   (弱文節数, 文節数)  ※弱文節 = 変換されずかな素通りのままの文節
-    // の辞書順最小化(DP)で決める。LM(bigram)導入は後続ステップ。
+    // 読み全体を文節ラティスに分割し、Sudachi 語コスト最小の経路を DP(ビタビ)で選ぶ。
+    // 連接コスト(matrix.def)は未導入(=案A2)。連接が無いため各文節は「最安の変換」を
+    // 独立に選べば最適で、経路コスト = Σ(語コスト) + 文節数ペナルティ。
+    //   - 語コストは store.wordCosts(word_costs テーブル, Sudachi連接エントリ由来)。
+    //   - コスト不明な文節(活用形・追加語彙・かな素通り)は candidates() の top1 を
+    //     既定コストで補完。かな素通りは強く減点。
     // 呼び出し側でフラグ(isMultiClauseConversionEnabled)により on/off する。
     private static let multiClauseMinReadingCount = 4
     private static let multiClauseMaxSegmentReadingCount = 12
-    private static let multiClauseMaxSegmentCount = 8
+    private static let multiClauseMaxSegmentCount = 16
+    private static let multiClauseSupplementMaxLen = 8
+    // コスト定数(Sudachi 連接コストのスケール ~4000〜12000 に合わせる)。
+    private static let multiClauseKanaPassthroughCost = 30000
+    private static let multiClauseUnknownConvertedCost = 10000
+    private static let multiClauseSegmentPenaltyCost = 1500
 
     func multiClauseCandidates(
         for reading: String,
@@ -740,63 +747,88 @@ final class KanaKanjiConverter {
     ) -> [String] {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         let chars = Array(normalized)
-        guard chars.count >= Self.multiClauseMinReadingCount else {
+        let n = chars.count
+        guard n >= Self.multiClauseMinReadingCount else {
             return []
         }
 
-        struct Cell {
-            var weak: Int
-            var segmentCount: Int
-            var segments: [(reading: String, surface: String)]
-        }
+        var dpCost: [Int?] = Array(repeating: nil, count: n + 1)
+        var dpSurface: [String] = Array(repeating: "", count: n + 1)
+        var dpPrev: [Int] = Array(repeating: -1, count: n + 1)
+        var dpSegmentCount: [Int] = Array(repeating: 0, count: n + 1)
+        dpCost[0] = 0
 
-        var dp: [Cell?] = Array(repeating: nil, count: chars.count + 1)
-        dp[0] = Cell(weak: 0, segmentCount: 0, segments: [])
-
-        for pos in 0..<chars.count {
-            guard let current = dp[pos] else {
+        for pos in 0..<n {
+            guard let baseCost = dpCost[pos] else {
                 continue
             }
-            guard current.segmentCount < Self.multiClauseMaxSegmentCount else {
+            guard dpSegmentCount[pos] < Self.multiClauseMaxSegmentCount else {
                 continue
             }
 
-            let maxLen = min(Self.multiClauseMaxSegmentReadingCount, chars.count - pos)
+            let maxLen = min(Self.multiClauseMaxSegmentReadingCount, n - pos)
             for len in 1...maxLen {
                 let segmentReading = String(chars[pos..<(pos + len)])
-                guard let top = candidates(
-                    for: segmentReading,
-                    limit: 1,
-                    systemCandidateMode: systemCandidateMode
-                ).first else {
+
+                // その文節の「最安の変換」1つを選ぶ(連接無しなので文節内は独立最適)。
+                var bestSurface: String?
+                var bestEmission = Int.max
+
+                let costMap = store.wordCosts(for: segmentReading)
+                if !costMap.isEmpty {
+                    for (surface, cost) in costMap where cost < bestEmission {
+                        bestEmission = cost
+                        bestSurface = surface
+                    }
+                } else if len <= Self.multiClauseSupplementMaxLen,
+                    let top = candidates(
+                        for: segmentReading,
+                        limit: 1,
+                        systemCandidateMode: systemCandidateMode
+                    ).first {
+                    // 活用形・追加語彙・複合など(コスト表に無い)を補完。
+                    bestSurface = top
+                    bestEmission = (top == segmentReading)
+                        ? Self.multiClauseKanaPassthroughCost
+                        : Self.multiClauseUnknownConvertedCost
+                } else {
+                    // 何も無い span はかな素通り(強く減点、最後の手段)。
+                    bestSurface = segmentReading
+                    bestEmission = Self.multiClauseKanaPassthroughCost
+                }
+
+                guard let surface = bestSurface else {
                     continue
                 }
 
-                let isWeak = (top == segmentReading)
-                let candidate = Cell(
-                    weak: current.weak + (isWeak ? 1 : 0),
-                    segmentCount: current.segmentCount + 1,
-                    segments: current.segments + [(segmentReading, top)]
-                )
-
                 let end = pos + len
-                if let existing = dp[end] {
-                    if (candidate.weak, candidate.segmentCount) < (existing.weak, existing.segmentCount) {
-                        dp[end] = candidate
-                    }
-                } else {
-                    dp[end] = candidate
+                let totalCost = baseCost + bestEmission + Self.multiClauseSegmentPenaltyCost
+                if dpCost[end] == nil || totalCost < dpCost[end]! {
+                    dpCost[end] = totalCost
+                    dpSurface[end] = surface
+                    dpPrev[end] = pos
+                    dpSegmentCount[end] = dpSegmentCount[pos] + 1
                 }
             }
         }
 
-        guard let best = dp[chars.count],
-            best.segments.count >= 2,
-            best.weak * 2 <= best.segmentCount else {
+        guard dpCost[n] != nil, dpSegmentCount[n] >= 2 else {
             return []
         }
 
-        let joined = best.segments.map(\.surface).joined()
+        var segments: [String] = []
+        var pos = n
+        while pos > 0 {
+            let prev = dpPrev[pos]
+            guard prev >= 0 else {
+                return []
+            }
+            segments.append(dpSurface[pos])
+            pos = prev
+        }
+        segments.reverse()
+
+        let joined = segments.joined()
         if joined == normalized {
             return []
         }
