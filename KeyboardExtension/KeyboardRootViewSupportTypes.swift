@@ -861,9 +861,90 @@ extension KeyboardRootView {
         let onComposingTextCommitTap: () -> Void
         let onComposingTextCommitLongPress: () -> Void
 
+        @ViewBuilder private var conversionCandidateChips: some View {
+            if conversionCandidates.isEmpty {
+                if !(showsParenthesesWrapper && composingText.isEmpty) {
+                    Text("候補なし")
+                        .font(.system(size: candidateTextFontSize, weight: .regular))
+                        .foregroundStyle(keyLabelColor.opacity(0.6))
+                        .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
+                        )
+                }
+            }
+
+            ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
+                let isSelected = selectedConversionCandidateIndex == index
+
+                Button {
+                    onSelectConversionCandidate(index)
+                } label: {
+                    if showsParenthesesWrapper {
+                        HStack(spacing: 0) {
+                            Text("(")
+                                .foregroundStyle(isSelected ? Color.white : accentColor)
+                            Text(candidate)
+                                .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                            Text(")")
+                                .foregroundStyle(isSelected ? Color.white : accentColor)
+                        }
+                        .font(.system(size: candidateTextFontSize, weight: .semibold))
+                        .lineLimit(1)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(
+                                    isSelected
+                                        ? accentColor.opacity(0.9)
+                                        : KeyboardThemePalette.candidateHeaderChipBackground
+                                )
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .stroke(
+                                    KeyboardThemePalette.candidateHeaderBorder,
+                                    lineWidth: isSelected ? 0 : 1
+                                )
+                        )
+                    } else {
+                        Text(candidate)
+                            .font(.system(size: candidateTextFontSize, weight: .semibold))
+                            .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                            .lineLimit(1)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .fill(
+                                        isSelected
+                                            ? accentColor.opacity(0.9)
+                                            : KeyboardThemePalette.candidateHeaderChipBackground
+                                    )
+                            )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                    .stroke(
+                                        KeyboardThemePalette.candidateHeaderBorder,
+                                        lineWidth: isSelected ? 0 : 1
+                                    )
+                            )
+                    }
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel(candidate)
+            }
+        }
+
         var body: some View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
+                    conversionCandidateChips
+
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
                     if !composingText.isEmpty || showsWrapperOnly {
@@ -1026,82 +1107,6 @@ extension KeyboardRootView {
                         }
                     }
 
-                    if conversionCandidates.isEmpty {
-                        if !(showsParenthesesWrapper && composingText.isEmpty) {
-                            Text("候補なし")
-                                .font(.system(size: candidateTextFontSize, weight: .regular))
-                                .foregroundStyle(keyLabelColor.opacity(0.6))
-                                .lineLimit(1)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
-                                )
-                        }
-                    }
-
-                    ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
-                        let isSelected = selectedConversionCandidateIndex == index
-
-                        Button {
-                            onSelectConversionCandidate(index)
-                        } label: {
-                            if showsParenthesesWrapper {
-                                HStack(spacing: 0) {
-                                    Text("(")
-                                        .foregroundStyle(isSelected ? Color.white : accentColor)
-                                    Text(candidate)
-                                        .foregroundStyle(isSelected ? Color.white : keyLabelColor)
-                                    Text(")")
-                                        .foregroundStyle(isSelected ? Color.white : accentColor)
-                                }
-                                .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                .lineLimit(1)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(
-                                            isSelected
-                                                ? accentColor.opacity(0.9)
-                                                : KeyboardThemePalette.candidateHeaderChipBackground
-                                        )
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .stroke(
-                                            KeyboardThemePalette.candidateHeaderBorder,
-                                            lineWidth: isSelected ? 0 : 1
-                                        )
-                                )
-                            } else {
-                                Text(candidate)
-                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .foregroundStyle(isSelected ? Color.white : keyLabelColor)
-                                    .lineLimit(1)
-                                    .padding(.horizontal, 8)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                            .fill(
-                                                isSelected
-                                                    ? accentColor.opacity(0.9)
-                                                    : KeyboardThemePalette.candidateHeaderChipBackground
-                                            )
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                            .stroke(
-                                                KeyboardThemePalette.candidateHeaderBorder,
-                                                lineWidth: isSelected ? 0 : 1
-                                            )
-                                    )
-                            }
-                        }
-                        .buttonStyle(.plain)
-                        .accessibilityLabel(candidate)
-                    }
                 }
                 .padding(.horizontal, 2)
                 .padding(.top, kanaCandidateHeaderTopPadding)
