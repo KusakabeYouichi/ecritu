@@ -744,6 +744,9 @@ final class KanaKanjiConverter {
     private static let multiClauseDictUnknownCost = 6000    // 辞書/変換にあるがコーパス未知(=そこそこレア)
     private static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     private static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
+    // 追加語彙/学習語彙(void.plist 等のキュレーション or 学習)由来の語は強く優遇する。実コストは
+    // min(通常コスト, この値)。強い bigram 並みに安くして分割・素通りに確実に勝たせる(=常に列挙も行う)。
+    private static let multiClauseCuratedWordCost = 1500
     // 語頭(文節頭)に来られない文字で始まる分割は日本語としてほぼあり得ないため強く減点。撥音ん・
     // 長音ー・促音っ・小書きかな等。「を」も現代仮名遣いでは目的格助詞専用なので語中に含めない。
     private static let multiClauseForbiddenPenaltyCost = 100000
@@ -765,6 +768,7 @@ final class KanaKanjiConverter {
         let surface: String
         let reading: String
         let isDictWord: Bool   // 辞書/変換で得た語(true) or かな素通り(false)
+        let isCurated: Bool    // 追加語彙/学習語彙(void.plist 等の手動キュレーション or 学習)由来
     }
 
     func multiClauseCandidates(
@@ -783,6 +787,9 @@ final class KanaKanjiConverter {
         }
 
         let suppressedByReading = store.suppressedCandidatesByReading()
+        // 追加語彙(void.plist 等の手動キュレーション)と学習語彙。どちらもユーザ意図なので優遇する。
+        let initialUserDictionary = store.initialUserDictionary()
+        let learnedDictionary = store.learnedDictionary()
 
         // --- 1. ラティスのノード列挙 ---
         var nodes: [MultiClauseNode] = []
@@ -794,29 +801,44 @@ final class KanaKanjiConverter {
             for len in 1...maxLen {
                 let end = start + len
                 let segmentReading = String(chars[start..<end])
+                let suppressed = suppressedByReading[segmentReading]
 
-                var surfaces: [(surface: String, isDictWord: Bool)] = []
+                var surfaces: [(surface: String, isDictWord: Bool, isCurated: Bool)] = []
+                var seenSurfaces = Set<String>()
+                func add(_ surface: String, isDictWord: Bool, isCurated: Bool) {
+                    if let suppressed, suppressed.contains(surface) {
+                        return
+                    }
+                    if seenSurfaces.insert(surface).inserted {
+                        surfaces.append((surface, isDictWord, isCurated))
+                    }
+                }
 
-                // (a) word_costs(Sudachi 由来)から top-K を列挙。抑制語彙は除外。
+                // (a) 追加語彙/学習語彙(curated)を常に列挙する。分割・素通りに確実に勝たせるため。
+                for surface in initialUserDictionary[segmentReading] ?? [] {
+                    add(surface, isDictWord: true, isCurated: true)
+                }
+                for surface in learnedDictionary[segmentReading] ?? [] {
+                    add(surface, isDictWord: true, isCurated: true)
+                }
+
+                // (b) word_costs(Sudachi 由来)から top-K を列挙。抑制語彙は除外。
                 let costMap = store.wordCosts(for: segmentReading)
                 if !costMap.isEmpty {
-                    let suppressed = suppressedByReading[segmentReading]
                     let ordered = costMap.sorted { lhs, rhs in
                         lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key < rhs.key
                     }
+                    var dictCount = 0
                     for (surface, _) in ordered {
-                        if let suppressed, suppressed.contains(surface) {
-                            continue
-                        }
-                        surfaces.append((surface, true))
-                        if surfaces.count >= Self.multiClauseTopK {
+                        add(surface, isDictWord: true, isCurated: false)
+                        dictCount += 1
+                        if dictCount >= Self.multiClauseTopK {
                             break
                         }
                     }
                 }
 
-                // (b) word_costs に無ければ candidates() で補完(活用形・追加語彙など)。
-                //     実変換(かな素通りでない)のときだけ辞書語ノードとして採用。
+                // (c) それも無ければ candidates() で補完(活用形など)。実変換のときだけ採用。
                 if surfaces.isEmpty, len <= Self.multiClauseSupplementMaxLen,
                     let top = candidates(
                         for: segmentReading,
@@ -824,10 +846,10 @@ final class KanaKanjiConverter {
                         systemCandidateMode: systemCandidateMode
                     ).first,
                     KanaTextNormalizer.normalizedReading(top) != segmentReading {
-                    surfaces.append((top, true))
+                    add(top, isDictWord: true, isCurated: false)
                 }
 
-                // (c) それでも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
+                // (d) それでも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
                 if surfaces.isEmpty {
                     let passthrough: String
                     if readingLooksLikeLoanword(segmentReading),
@@ -836,17 +858,18 @@ final class KanaKanjiConverter {
                     } else {
                         passthrough = segmentReading
                     }
-                    surfaces.append((passthrough, false))
+                    add(passthrough, isDictWord: false, isCurated: false)
                 }
 
-                for (surface, isDictWord) in surfaces {
+                for (surface, isDictWord, isCurated) in surfaces {
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
                         start: start,
                         end: end,
                         surface: surface,
                         reading: segmentReading,
-                        isDictWord: isDictWord
+                        isDictWord: isDictWord,
+                        isCurated: isCurated
                     ))
                     nodesEndingAt[end].append(index)
                     nodesStartingAt[start].append(index)
@@ -887,7 +910,7 @@ final class KanaKanjiConverter {
         let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
 
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
-        func transitionCost(prev: String, surface: String, reading: String, isDictWord: Bool) -> Int {
+        func transitionCost(prev: String, surface: String, reading: String, isDictWord: Bool, isCurated: Bool) -> Int {
             var base: Int
             if let bigram = bigramCosts["\(prev)\t\(surface)"] {
                 base = bigram
@@ -897,6 +920,12 @@ final class KanaKanjiConverter {
                 base = Self.multiClauseDictUnknownCost
             } else {
                 base = Self.multiClausePassthroughPerCharCost * reading.count
+            }
+            // 追加語彙/学習語彙は強い下限で優遇(自然な LM コストがより安ければそちらを尊重)。
+            // ただし絵文字/記号のみの表層(void の €/🇮🇳/₿ 等)は本文へ割り込ませないため優遇せず、
+            // 列挙のみ(単文節候補としては到達可)。語形(かな/漢字/ラテン字を含む)だけ強化する。
+            if isCurated, Self.isWordLikeSurface(surface) {
+                base = min(base, Self.multiClauseCuratedWordCost)
             }
             var penalty = 0
             if Self.isKatakanaString(surface), !readingLooksLikeLoanword(reading) {
@@ -924,7 +953,8 @@ final class KanaKanjiConverter {
                         prev: Self.multiClauseBOSMarker,
                         surface: node.surface,
                         reading: node.reading,
-                        isDictWord: node.isDictWord
+                        isDictWord: node.isDictWord,
+                        isCurated: node.isCurated
                     )
                     if cost < best[idx] {
                         best[idx] = cost
@@ -940,7 +970,8 @@ final class KanaKanjiConverter {
                         prev: nodes[prevIdx].surface,
                         surface: node.surface,
                         reading: node.reading,
-                        isDictWord: node.isDictWord
+                        isDictWord: node.isDictWord,
+                        isCurated: node.isCurated
                     )
                     if cost < best[idx] {
                         best[idx] = cost
@@ -961,7 +992,8 @@ final class KanaKanjiConverter {
                 prev: nodes[idx].surface,
                 surface: Self.multiClauseEOSMarker,
                 reading: "",
-                isDictWord: true
+                isDictWord: true,
+                isCurated: false
             )
             if total < bestTotal {
                 bestTotal = total
@@ -993,6 +1025,23 @@ final class KanaKanjiConverter {
 
     private static func hiraganaToKatakana(_ text: String) -> String {
         text.applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
+    }
+
+    // 語形(かな・漢字・ラテン字を含む)か。絵文字/記号のみなら false。curated 優遇の対象判定に使う。
+    private static func isWordLikeSurface(_ text: String) -> Bool {
+        for scalar in text.unicodeScalars {
+            let value = scalar.value
+            if (0x3041...0x3096).contains(value)      // ひらがな
+                || (0x30A1...0x30FA).contains(value)  // カタカナ
+                || value == 0x30FC                    // 長音符
+                || (0x4E00...0x9FFF).contains(value)  // CJK 統合漢字
+                || (0x3400...0x4DBF).contains(value)  // CJK 拡張A
+                || (0x0041...0x005A).contains(value)  // A-Z
+                || (0x0061...0x007A).contains(value) { // a-z
+                return true
+            }
+        }
+        return false
     }
 
     private static func isKatakanaString(_ text: String) -> Bool {
