@@ -197,8 +197,8 @@ extension KeyboardViewController {
                 systemCandidateMode: systemCandidateMode
             )
 
-            // 連文節変換(案C): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ合流。
-            // 既存の単文節候補は必ず残し、重複は除外する(退行防止)。
+            // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
+            // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
             if Self.isMultiClauseConversionEnabled {
                 let multiClause = converter.multiClauseCandidates(
                     for: reading,

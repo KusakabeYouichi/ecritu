@@ -733,16 +733,20 @@ final class KanaKanjiConverter {
     //     既定コストで補完。かな素通りは強く減点。
     // 呼び出し側でフラグ(isMultiClauseConversionEnabled)により on/off する。
     private static let multiClauseMinReadingCount = 4
+    private static let multiClauseMaxReadingCount = 40      // これを超える長文は連文節DPを回さない(計算量抑制)
     private static let multiClauseMaxSegmentReadingCount = 12
-    private static let multiClauseMaxSegmentCount = 16
     private static let multiClauseSupplementMaxLen = 8
-    // コスト定数(Sudachi 連接コストのスケール ~4000〜12000 に合わせる)。
-    private static let multiClauseKanaPassthroughCost = 30000
-    private static let multiClauseUnknownConvertedCost = 10000
-    private static let multiClauseSegmentPenaltyCost = 1500
-    // 語頭(文節頭)に来られない文字で始まる分割は日本語としてほぼあり得ないため強く減点。
-    // 連接コスト(A2)の簡易代替。撥音ん・長音ー・促音っ・小書きかな等。
-    private static let multiClauseForbiddenInitialPenaltyCost = 100000
+    private static let multiClauseTopK = 8                  // 1文節あたり列挙する変換候補数(sim: TOPK)
+    private static let multiClauseBOSMarker = "<BOS>"
+    private static let multiClauseEOSMarker = "<EOS>"
+    // LM コスト定数(cost = -logP × scale, scale=500 で学習)。sim_lm.py で検証した値と一致させる。
+    private static let multiClauseBackoffCost = 500         // bigram 未観測・unigram 既知
+    private static let multiClauseDictUnknownCost = 6000    // 辞書/変換にあるがコーパス未知(=そこそこレア)
+    private static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
+    private static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
+    // 語頭(文節頭)に来られない文字で始まる分割は日本語としてほぼあり得ないため強く減点。撥音ん・
+    // 長音ー・促音っ・小書きかな等。「を」も現代仮名遣いでは目的格助詞専用なので語中に含めない。
+    private static let multiClauseForbiddenPenaltyCost = 100000
     private static let multiClauseForbiddenInitials: Set<Character> = [
         "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
         "ゃ", "ゅ", "ょ", "ゎ", "ゕ", "ゖ", "ゝ", "ゞ", "・"
@@ -753,128 +757,256 @@ final class KanaKanjiConverter {
         "ー", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ", "ゎ"
     ]
 
+    // ラティスのノード(1 つの文節候補)。同じ span でも表層ごとに別ノードを立て、bigram の
+    // 文脈(直前の表層)を DP でつなぐ。
+    private struct MultiClauseNode {
+        let start: Int
+        let end: Int
+        let surface: String
+        let reading: String
+        let isDictWord: Bool   // 辞書/変換で得た語(true) or かな素通り(false)
+    }
+
     func multiClauseCandidates(
         for reading: String,
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
+        guard store.hasWordLMMetadata else {
+            return []
+        }
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         let chars = Array(normalized)
         let n = chars.count
-        guard n >= Self.multiClauseMinReadingCount else {
+        guard n >= Self.multiClauseMinReadingCount,
+            n <= Self.multiClauseMaxReadingCount else {
             return []
         }
 
-        var dpCost: [Int?] = Array(repeating: nil, count: n + 1)
-        var dpSurface: [String] = Array(repeating: "", count: n + 1)
-        var dpPrev: [Int] = Array(repeating: -1, count: n + 1)
-        var dpSegmentCount: [Int] = Array(repeating: 0, count: n + 1)
-        dpCost[0] = 0
+        let suppressedByReading = store.suppressedCandidatesByReading()
 
-        for pos in 0..<n {
-            guard let baseCost = dpCost[pos] else {
-                continue
-            }
-            guard dpSegmentCount[pos] < Self.multiClauseMaxSegmentCount else {
-                continue
-            }
+        // --- 1. ラティスのノード列挙 ---
+        var nodes: [MultiClauseNode] = []
+        var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
+        var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
-            let maxLen = min(Self.multiClauseMaxSegmentReadingCount, n - pos)
+        for start in 0..<n {
+            let maxLen = min(Self.multiClauseMaxSegmentReadingCount, n - start)
             for len in 1...maxLen {
-                let segmentReading = String(chars[pos..<(pos + len)])
+                let end = start + len
+                let segmentReading = String(chars[start..<end])
 
-                // その文節の「最安の変換」1つを選ぶ(連接無しなので文節内は独立最適)。
-                var bestSurface: String?
-                var bestEmission = Int.max
+                var surfaces: [(surface: String, isDictWord: Bool)] = []
 
+                // (a) word_costs(Sudachi 由来)から top-K を列挙。抑制語彙は除外。
                 let costMap = store.wordCosts(for: segmentReading)
                 if !costMap.isEmpty {
-                    for (surface, cost) in costMap where cost < bestEmission {
-                        bestEmission = cost
-                        bestSurface = surface
+                    let suppressed = suppressedByReading[segmentReading]
+                    let ordered = costMap.sorted { lhs, rhs in
+                        lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key < rhs.key
                     }
-                } else if len <= Self.multiClauseSupplementMaxLen,
+                    for (surface, _) in ordered {
+                        if let suppressed, suppressed.contains(surface) {
+                            continue
+                        }
+                        surfaces.append((surface, true))
+                        if surfaces.count >= Self.multiClauseTopK {
+                            break
+                        }
+                    }
+                }
+
+                // (b) word_costs に無ければ candidates() で補完(活用形・追加語彙など)。
+                //     実変換(かな素通りでない)のときだけ辞書語ノードとして採用。
+                if surfaces.isEmpty, len <= Self.multiClauseSupplementMaxLen,
                     let top = candidates(
                         for: segmentReading,
                         limit: 1,
                         systemCandidateMode: systemCandidateMode
-                    ).first {
-                    // 活用形・追加語彙・複合など(コスト表に無い)を補完。
-                    bestSurface = top
-                    bestEmission = supplementEmissionCost(surface: top, reading: segmentReading)
-                } else {
-                    // 何も無い span はかな素通り(強く減点、最後の手段)。
-                    bestSurface = segmentReading
-                    bestEmission = Self.multiClauseKanaPassthroughCost
+                    ).first,
+                    KanaTextNormalizer.normalizedReading(top) != segmentReading {
+                    surfaces.append((top, true))
                 }
 
-                guard let surface = bestSurface else {
-                    continue
+                // (c) それでも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
+                if surfaces.isEmpty {
+                    let passthrough: String
+                    if readingLooksLikeLoanword(segmentReading),
+                        len <= Self.multiClauseSupplementMaxLen {
+                        passthrough = Self.hiraganaToKatakana(segmentReading)
+                    } else {
+                        passthrough = segmentReading
+                    }
+                    surfaces.append((passthrough, false))
                 }
 
-                // 文節頭に来られない文字(ん・ー・小書き等)で始まる分割を強く減点。
-                var morphotacticPenalty = 0
-                if let firstChar = segmentReading.first,
-                    Self.multiClauseForbiddenInitials.contains(firstChar) {
-                    morphotacticPenalty += Self.multiClauseForbiddenInitialPenaltyCost
-                }
-
-                // 「を」は現代仮名遣いでは目的格助詞専用で、内容語の語中・語頭には現れない
-                // (その音は「お」を使う)。2文字以上に「を」を含む分割はほぼあり得ないため
-                // 強く減点し、「を」は常に単独文節(=助詞を)に切り出す(例: をた→おた を回避)。
-                if len > 1, segmentReading.contains("を") {
-                    morphotacticPenalty += Self.multiClauseForbiddenInitialPenaltyCost
-                }
-
-                let end = pos + len
-                let totalCost = baseCost + bestEmission
-                    + Self.multiClauseSegmentPenaltyCost
-                    + morphotacticPenalty
-                if dpCost[end] == nil || totalCost < dpCost[end]! {
-                    dpCost[end] = totalCost
-                    dpSurface[end] = surface
-                    dpPrev[end] = pos
-                    dpSegmentCount[end] = dpSegmentCount[pos] + 1
+                for (surface, isDictWord) in surfaces {
+                    let index = nodes.count
+                    nodes.append(MultiClauseNode(
+                        start: start,
+                        end: end,
+                        surface: surface,
+                        reading: segmentReading,
+                        isDictWord: isDictWord
+                    ))
+                    nodesEndingAt[end].append(index)
+                    nodesStartingAt[start].append(index)
                 }
             }
         }
 
-        guard dpCost[n] != nil, dpSegmentCount[n] >= 2 else {
+        // --- 2. LM コスト(unigram/bigram)を一括ロード(sqlite アクセスを最小化) ---
+        var unigramSurfaces = Set<String>()
+        unigramSurfaces.insert(Self.multiClauseEOSMarker)
+        for node in nodes {
+            unigramSurfaces.insert(node.surface)
+        }
+        let unigramCosts = store.wordLMUnigramCosts(for: Array(unigramSurfaces))
+
+        var bigramPairs: [(String, String)] = []
+        var seenPairs = Set<String>()
+        func addPair(_ prev: String, _ cur: String) {
+            if seenPairs.insert("\(prev)\t\(cur)").inserted {
+                bigramPairs.append((prev, cur))
+            }
+        }
+        for idx in nodesStartingAt[0] {
+            addPair(Self.multiClauseBOSMarker, nodes[idx].surface)
+        }
+        if n >= 1 {
+            for boundary in 1..<n {
+                for prevIdx in nodesEndingAt[boundary] {
+                    for curIdx in nodesStartingAt[boundary] {
+                        addPair(nodes[prevIdx].surface, nodes[curIdx].surface)
+                    }
+                }
+            }
+        }
+        for idx in nodesEndingAt[n] {
+            addPair(nodes[idx].surface, Self.multiClauseEOSMarker)
+        }
+        let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
+
+        // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
+        func transitionCost(prev: String, surface: String, reading: String, isDictWord: Bool) -> Int {
+            var base: Int
+            if let bigram = bigramCosts["\(prev)\t\(surface)"] {
+                base = bigram
+            } else if let unigram = unigramCosts[surface] {
+                base = unigram + Self.multiClauseBackoffCost
+            } else if isDictWord {
+                base = Self.multiClauseDictUnknownCost
+            } else {
+                base = Self.multiClausePassthroughPerCharCost * reading.count
+            }
+            var penalty = 0
+            if Self.isKatakanaString(surface), !readingLooksLikeLoanword(reading) {
+                penalty += Self.multiClauseKatakanaNativeCost
+            }
+            if reading.count > 1, reading.contains("を") {
+                penalty += Self.multiClauseForbiddenPenaltyCost
+            }
+            if let first = reading.first, Self.multiClauseForbiddenInitials.contains(first) {
+                penalty += Self.multiClauseForbiddenPenaltyCost
+            }
+            return base + penalty
+        }
+
+        // --- 4. Viterbi DP(ノード = (span, 表層)) ---
+        let infinity = Int.max / 4
+        var best = Array(repeating: infinity, count: nodes.count)
+        var backPointer = Array(repeating: -1, count: nodes.count)
+
+        for boundary in 1...n {
+            for idx in nodesEndingAt[boundary] {
+                let node = nodes[idx]
+                if node.start == 0 {
+                    let cost = transitionCost(
+                        prev: Self.multiClauseBOSMarker,
+                        surface: node.surface,
+                        reading: node.reading,
+                        isDictWord: node.isDictWord
+                    )
+                    if cost < best[idx] {
+                        best[idx] = cost
+                        backPointer[idx] = -1
+                    }
+                }
+                for prevIdx in nodesEndingAt[node.start] {
+                    let prevCost = best[prevIdx]
+                    if prevCost >= infinity {
+                        continue
+                    }
+                    let cost = prevCost + transitionCost(
+                        prev: nodes[prevIdx].surface,
+                        surface: node.surface,
+                        reading: node.reading,
+                        isDictWord: node.isDictWord
+                    )
+                    if cost < best[idx] {
+                        best[idx] = cost
+                        backPointer[idx] = prevIdx
+                    }
+                }
+            }
+        }
+
+        // --- 5. EOS 込みで最良の終端ノードを選ぶ ---
+        var bestTotal = infinity
+        var bestEndIndex = -1
+        for idx in nodesEndingAt[n] {
+            if best[idx] >= infinity {
+                continue
+            }
+            let total = best[idx] + transitionCost(
+                prev: nodes[idx].surface,
+                surface: Self.multiClauseEOSMarker,
+                reading: "",
+                isDictWord: true
+            )
+            if total < bestTotal {
+                bestTotal = total
+                bestEndIndex = idx
+            }
+        }
+        guard bestEndIndex >= 0 else {
             return []
         }
 
+        // --- 6. バックトラック ---
         var segments: [String] = []
-        var pos = n
-        while pos > 0 {
-            let prev = dpPrev[pos]
-            guard prev >= 0 else {
-                return []
-            }
-            segments.append(dpSurface[pos])
-            pos = prev
+        var idx = bestEndIndex
+        while idx >= 0 {
+            segments.append(nodes[idx].surface)
+            idx = backPointer[idx]
         }
         segments.reverse()
+        guard segments.count >= 2 else {
+            return []   // 単文節は既存の単文節経路に任せる
+        }
 
         let joined = segments.joined()
         if joined == normalized {
             return []
         }
-
         return [joined]
     }
 
-    // 補完候補(candidates()由来)の放出コスト。読みのかな表記そのまま(=素通り)は
-    // 原則減点。ただしローンワード的な読みのカタカナ表記は妥当なので減点しない。
-    private func supplementEmissionCost(surface: String, reading: String) -> Int {
-        let surfaceAsReading = KanaTextNormalizer.normalizedReading(surface)
-        if surfaceAsReading == reading {
-            // surface が読みのかな表記(ひらがな or カタカナ)= 実変換ではない。
-            let isKatakanaForm = (surface != reading)
-            if isKatakanaForm, readingLooksLikeLoanword(reading) {
-                return Self.multiClauseUnknownConvertedCost
-            }
-            return Self.multiClauseKanaPassthroughCost
+    private static func hiraganaToKatakana(_ text: String) -> String {
+        text.applyingTransform(.hiraganaToKatakana, reverse: false) ?? text
+    }
+
+    private static func isKatakanaString(_ text: String) -> Bool {
+        guard !text.isEmpty else {
+            return false
         }
-        return Self.multiClauseUnknownConvertedCost
+        for scalar in text.unicodeScalars {
+            // カタカナ(ァ U+30A1 〜 ヺ U+30FA)と長音符(ー U+30FC)。
+            if (0x30A1...0x30FA).contains(scalar.value) || scalar.value == 0x30FC {
+                continue
+            }
+            return false
+        }
+        return true
     }
 
     private func readingLooksLikeLoanword(_ reading: String) -> Bool {
