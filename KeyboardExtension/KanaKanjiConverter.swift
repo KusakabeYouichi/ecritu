@@ -838,18 +838,10 @@ final class KanaKanjiConverter {
                     }
                 }
 
-                // (c) それも無ければ candidates() で補完(活用形など)。実変換のときだけ採用。
-                if surfaces.isEmpty, len <= Self.multiClauseSupplementMaxLen,
-                    let top = candidates(
-                        for: segmentReading,
-                        limit: 1,
-                        systemCandidateMode: systemCandidateMode
-                    ).first,
-                    KanaTextNormalizer.normalizedReading(top) != segmentReading {
-                    add(top, isDictWord: true, isCurated: false)
-                }
-
-                // (d) それでも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
+                // (c) word_costs にも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
+                //     ※以前は candidates() で補完していたが、多字 span に dictUnknown 一律コストの
+                //       blob(例: てんきです→天気です)を作り、正しい細分割(天気+です)を大域的に
+                //       上回って DP を歪めていた(はいい→配意 等)。活用形は word_costs 分解で拾う。
                 if surfaces.isEmpty {
                     let passthrough: String
                     if readingLooksLikeLoanword(segmentReading),
