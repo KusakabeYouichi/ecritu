@@ -23,6 +23,7 @@ TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_void_inflections.json"
 TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
+TMP_WORD_LM="$ROOT_DIR/tmp/word_lm.json"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
@@ -34,6 +35,7 @@ REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
 REF_ADJECTIVE_GARU_ALLOWLIST="$ROOT_DIR/references/adjective_garu_allowlist.json"
+REF_WORD_LM_GZ="$ROOT_DIR/references/word_lm.json.gz"
 
 SUDACHI_CSV_FILES=()
 
@@ -215,10 +217,21 @@ needs_sqlite_regeneration() {
     return 0
   fi
 
+  if [[ -f "$TMP_WORD_LM" && "$TMP_WORD_LM" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
   return 1
 }
 
 regenerate_sqlite_if_possible() {
+  # 連文節変換用の単語 n-gram LM は references/word_lm.json.gz にコミットしてある。
+  # gz が tmp より新しい(または未展開)ときだけ展開し、mtime を安定させて無駄な再生成を防ぐ。
+  if [[ -f "$REF_WORD_LM_GZ" ]] && { [[ ! -f "$TMP_WORD_LM" ]] || [[ "$REF_WORD_LM_GZ" -nt "$TMP_WORD_LM" ]]; }; then
+    echo "[dict] Decompressing word LM ($(du -h "$REF_WORD_LM_GZ" | cut -f1)) -> tmp/word_lm.json ..."
+    gunzip -c "$REF_WORD_LM_GZ" > "$TMP_WORD_LM"
+  fi
+
   if [[ ! -f "$TMP_PREMIER" || ! -f "$TMP_SECOND" ]]; then
     if [[ -f "$TMP_SQLITE" ]]; then
       echo "[dict] Warning: sqlite再生成に必要な語彙JSONが不足しているため、古いSQLiteを削除してJSONフォールバックを優先します。"
@@ -251,6 +264,10 @@ regenerate_sqlite_if_possible() {
 
   if [[ -f "$TMP_COSTS" ]]; then
     sqlite_args+=(--costs-json "$TMP_COSTS")
+  fi
+
+  if [[ -f "$TMP_WORD_LM" ]]; then
+    sqlite_args+=(--word-lm-json "$TMP_WORD_LM")
   fi
 
   if [[ -f "$TMP_SECOND_INFLECTIONS" ]]; then
