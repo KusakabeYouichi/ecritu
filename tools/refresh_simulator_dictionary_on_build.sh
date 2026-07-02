@@ -17,6 +17,7 @@ cd "$ROOT_DIR"
 TMP_PREMIER="$ROOT_DIR/tmp/ÉcrituPremierVocab.json"
 TMP_SECOND="$ROOT_DIR/tmp/ÉcrituSecondVocab.json"
 TMP_INITIAL_AJOUT="$ROOT_DIR/tmp/InitialAjoutVocabMigration.json"
+TMP_INITIAL_SUPPR="$ROOT_DIR/tmp/InitialSupprVocabMigration.json"
 TMP_SECOND_INFLECTIONS="$ROOT_DIR/tmp/references_second_inflections.json"
 TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_void_inflections.json"
 TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
@@ -28,6 +29,7 @@ REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
 REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
 REF_IT_PLIST="$ROOT_DIR/references/it.plist"
 REF_VOID_PLIST="$ROOT_DIR/references/void.plist"
+REF_SUPPR_PLIST="$ROOT_DIR/references/suppr.plist"
 REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
@@ -156,6 +158,11 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_VOID_PLIST" \
   --output "$TMP_INITIAL_AJOUT" \
   --output-inflections "$TMP_INITIAL_AJOUT_INFLECTIONS"
+
+# 抑制語彙(区切りコメント付き plist を源泉に JSON を生成)
+python3 tools/build_second_vocab_from_references.py \
+  --input-plist "$REF_SUPPR_PLIST" \
+  --output "$TMP_INITIAL_SUPPR"
 
 needs_sudachi_regeneration() {
   ROOT_DIR="$ROOT_DIR" python3 - <<'PY'
@@ -337,6 +344,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
   copy_into_bundle_if_exists "$TMP_PREMIER" "ÉcrituPremierVocab.json"
   copy_into_bundle_if_exists "$TMP_SECOND" "ÉcrituSecondVocab.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_AJOUT" "InitialAjoutVocabMigration.json"
+  copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR" "InitialSupprVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_SOURCES" "kana_kanji_candidate_sources.json"
   copy_into_bundle_if_exists "$TMP_INFLECTIONS" "kana_kanji_inflection_dictionary.json"
   copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"
