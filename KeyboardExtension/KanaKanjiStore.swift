@@ -934,8 +934,18 @@ final class KanaKanjiStore {
         }
 
         let normalized = normalizeDictionary(decoded)
-        cachedLearnedDictionary = normalized
-        return normalized
+        // かな識別(候補==読み)は「変換」ではない。過去に誤って学習した分を読み込み時に除外し、
+        // 単文節/連文節どちらの候補にも出さない(連文節では最安素通りになり変換をブロックする)。
+        var cleaned: [String: [String]] = [:]
+        cleaned.reserveCapacity(normalized.count)
+        for (reading, candidates) in normalized {
+            let filtered = candidates.filter { $0 != reading }
+            if !filtered.isEmpty {
+                cleaned[reading] = filtered
+            }
+        }
+        cachedLearnedDictionary = cleaned
+        return cleaned
     }
 
     func initialUserDictionary() -> [String: [String]] {
@@ -1091,6 +1101,12 @@ final class KanaKanjiStore {
 
         guard !normalizedReading.isEmpty,
                 !trimmedCandidate.isEmpty else {
+            return
+        }
+
+        // かな識別(候補==読み)は「変換」ではないので学習しない(全経路での最終防波堤)。
+        // これを学習すると連文節DPで最安の素通り単スパンになり、その読みが変換不能になる。
+        guard trimmedCandidate != normalizedReading else {
             return
         }
 

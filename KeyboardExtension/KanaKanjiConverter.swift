@@ -815,10 +815,12 @@ final class KanaKanjiConverter {
                 }
 
                 // (a) 追加語彙/学習語彙(curated)を常に列挙する。分割・素通りに確実に勝たせるため。
-                for surface in initialUserDictionary[segmentReading] ?? [] {
+                //     ただし surface==読み(かな識別=変換でない)は優遇しない。過去にかな確定を
+                //     学習してしまった履歴が最安の単スパンになり変換をブロックするのを防ぐ。
+                for surface in initialUserDictionary[segmentReading] ?? [] where surface != segmentReading {
                     add(surface, isDictWord: true, isCurated: true)
                 }
-                for surface in learnedDictionary[segmentReading] ?? [] {
+                for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading {
                     add(surface, isDictWord: true, isCurated: true)
                 }
 
@@ -1063,6 +1065,13 @@ final class KanaKanjiConverter {
 
         guard !normalizedReading.isEmpty,
                 !trimmedCandidate.isEmpty else {
+            return
+        }
+
+        // かな識別(変換せず読みのかなのまま確定)は「変換」ではないので学習しない。
+        // これを学習すると連文節DPの追加/学習語彙優遇で最安の単スパン(素通り)になり、
+        // 以後その読みが二度と変換できなくなる(joined==reading で連文節候補が消える)。
+        guard trimmedCandidate != normalizedReading else {
             return
         }
 
