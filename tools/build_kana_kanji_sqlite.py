@@ -51,6 +51,10 @@ def parse_args() -> argparse.Namespace:
         help="Optional reading->candidate->SudachiWordCost JSON(連文節/案A用, repeatable)",
     )
     parser.add_argument(
+        "--word-lm-json",
+        help="Optional word n-gram LM JSON({unigram,bigram,params})(連文節/案1用)",
+    )
+    parser.add_argument(
         "--inflection-extra-vocab-json",
         action="append",
         default=[],
@@ -230,6 +234,7 @@ def build_sqlite(
     inflections: Dict[str, Dict[str, str]],
     inflection_extra_vocab: Dict[str, Set[str]] = {},
     costs: Dict[str, Dict[str, int]] = {},
+    word_lm=None,
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists():
@@ -282,6 +287,23 @@ def build_sqlite(
 
             CREATE INDEX idx_word_costs_lookup
                 ON word_costs (reading, candidate);
+
+            CREATE TABLE word_lm_unigram (
+                surface TEXT PRIMARY KEY,
+                cost INTEGER NOT NULL
+            );
+
+            CREATE TABLE word_lm_bigram (
+                prev TEXT NOT NULL,
+                cur TEXT NOT NULL,
+                cost INTEGER NOT NULL,
+                PRIMARY KEY (prev, cur)
+            );
+
+            CREATE TABLE word_lm_params (
+                key TEXT PRIMARY KEY,
+                value INTEGER NOT NULL
+            );
             """
         )
 
@@ -354,6 +376,32 @@ def build_sqlite(
                 cost_rows,
             )
 
+        # 単語 n-gram LM(案1・連文節)
+        if word_lm:
+            unigram = word_lm.get("unigram", {})
+            bigram = word_lm.get("bigram", {})
+            params = word_lm.get("params", {})
+            conn.executemany(
+                "INSERT OR REPLACE INTO word_lm_unigram(surface, cost) VALUES (?, ?)",
+                [(s, int(c)) for s, c in unigram.items()],
+            )
+            bigram_rows = []
+            for key, c in bigram.items():
+                prev, _, cur = key.partition("\t")
+                if prev and cur:
+                    bigram_rows.append((prev, cur, int(c)))
+            conn.executemany(
+                "INSERT OR REPLACE INTO word_lm_bigram(prev, cur, cost) VALUES (?, ?, ?)",
+                bigram_rows,
+            )
+            for k in ("oovCost", "backoffPenalty", "scale"):
+                if k in params:
+                    conn.execute(
+                        "INSERT OR REPLACE INTO word_lm_params(key, value) VALUES (?, ?)",
+                        (k, int(params[k])),
+                    )
+            print(f"word_lm: unigram={len(unigram)} bigram={len(bigram_rows)}")
+
         conn.commit()
 
         print(f"wrote sqlite: {output_path}")
@@ -382,6 +430,13 @@ def main() -> int:
     sources = merge_sources(source_paths)
     inflections = merge_inflections(inflection_paths)
     costs = merge_costs(cost_paths)
+
+    word_lm = None
+    if args.word_lm_json:
+        lm_path = Path(args.word_lm_json)
+        if not lm_path.exists():
+            raise FileNotFoundError(lm_path)
+        word_lm = load_json(lm_path)
     extra_vocab = {
         reading: set(candidates)
         for reading, candidates in merge_vocab(extra_vocab_paths).items()
@@ -394,6 +449,7 @@ def main() -> int:
         inflections=inflections,
         inflection_extra_vocab=extra_vocab,
         costs=costs,
+        word_lm=word_lm,
     )
     return 0
 
