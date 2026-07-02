@@ -405,8 +405,9 @@ final class KeyboardViewController: UIInputViewController {
     static let maximumContactCandidatesPerReading = 48
     static let maximumSupplementaryMergedCandidateCacheEntries = 512
     static let isCommitUnderlineDiagnosticsLoggingEnabled = false
-    // 連文節変換(案C プロトタイプ)。既定 off で導入し実機で比較する。
-    static let isMultiClauseConversionEnabled = false
+    // 連文節変換(案1: 自前単語 n-gram LM のラティス Viterbi)。連文節候補を先頭の次へ合流する
+    // (既存の単文節候補は保持)ため退行リスクは低い。実機で検証する。
+    static let isMultiClauseConversionEnabled = true
     // メモリフェイルセーフは jetsam 実値(phys_footprint)で判定する。RSS(resident_size)は
     // 共有/クリーンページや mmap を含み jetsam 圧を過大評価するため使わない。
     // 閾値は実測(通常ピーク約48MB)に十分な余裕を持たせた footprint MB。

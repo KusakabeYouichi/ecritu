@@ -16,9 +16,12 @@ private final class KanaKanjiSQLiteIndex {
     private var selectCandidatesWithExactSourceStatement: OpaquePointer?
     private var selectInflectionStatement: OpaquePointer?
     private var selectWordCostStatement: OpaquePointer?
+    private var selectWordLMUnigramStatement: OpaquePointer?
+    private var selectWordLMBigramStatement: OpaquePointer?
     private(set) var hasSourceMetadata = false
     private(set) var hasInflectionMetadata = false
     private(set) var hasWordCostMetadata = false
+    private(set) var hasWordLMMetadata = false
     private(set) var hasAnyEntries = false
 
     init?(databaseURL: URL) {
@@ -73,6 +76,17 @@ private final class KanaKanjiSQLiteIndex {
             )
         }
 
+        // 連文節変換(案1: 自前単語 n-gram LM)。unigram/bigram の両テーブルが揃って初めて有効。
+        hasWordLMMetadata = tableExists("word_lm_unigram") && tableExists("word_lm_bigram")
+        if hasWordLMMetadata {
+            selectWordLMUnigramStatement = prepareStatement(
+                sql: "SELECT cost FROM word_lm_unigram WHERE surface = ?"
+            )
+            selectWordLMBigramStatement = prepareStatement(
+                sql: "SELECT cost FROM word_lm_bigram WHERE prev = ? AND cur = ?"
+            )
+        }
+
         if let probeStatement = prepareStatement(
             sql: "SELECT 1 FROM dictionary_entries LIMIT 1"
         ) {
@@ -100,6 +114,14 @@ private final class KanaKanjiSQLiteIndex {
 
         if let selectWordCostStatement {
             sqlite3_finalize(selectWordCostStatement)
+        }
+
+        if let selectWordLMUnigramStatement {
+            sqlite3_finalize(selectWordLMUnigramStatement)
+        }
+
+        if let selectWordLMBigramStatement {
+            sqlite3_finalize(selectWordLMBigramStatement)
         }
 
         if let database {
@@ -206,6 +228,69 @@ private final class KanaKanjiSQLiteIndex {
                 }
 
                 result[candidate] = Int(sqlite3_column_int(statement, 1))
+            }
+
+            return result
+        }
+    }
+
+    // 連文節 DP 用: 与えた表層集合の unigram コストをまとめて引く(1 回の sync 内で完結)。
+    func wordLMUnigramCosts(for surfaces: [String]) -> [String: Int] {
+        queryQueue.sync {
+            guard hasWordLMMetadata,
+                let statement = selectWordLMUnigramStatement else {
+                return [:]
+            }
+
+            var result: [String: Int] = [:]
+            result.reserveCapacity(surfaces.count)
+
+            for surface in surfaces where result[surface] == nil {
+                resetStatement(statement)
+                let bindResult = surface.withCString { surfaceCString in
+                    sqlite3_bind_text(statement, 1, surfaceCString, -1, sqliteTransientDestructor)
+                }
+                guard bindResult == SQLITE_OK else {
+                    continue
+                }
+                if sqlite3_step(statement) == SQLITE_ROW {
+                    result[surface] = Int(sqlite3_column_int(statement, 0))
+                }
+            }
+
+            return result
+        }
+    }
+
+    // 連文節 DP 用: 与えた (prev, cur) 対の bigram コストをまとめて引く。キーは "prev\tcur"。
+    func wordLMBigramCosts(for pairs: [(String, String)]) -> [String: Int] {
+        queryQueue.sync {
+            guard hasWordLMMetadata,
+                let statement = selectWordLMBigramStatement else {
+                return [:]
+            }
+
+            var result: [String: Int] = [:]
+            result.reserveCapacity(pairs.count)
+
+            for (prev, cur) in pairs {
+                let key = "\(prev)\t\(cur)"
+                if result[key] != nil {
+                    continue
+                }
+                resetStatement(statement)
+                let prevBind = prev.withCString { prevCString in
+                    sqlite3_bind_text(statement, 1, prevCString, -1, sqliteTransientDestructor)
+                }
+                let curBind = cur.withCString { curCString in
+                    sqlite3_bind_text(statement, 2, curCString, -1, sqliteTransientDestructor)
+                }
+                guard prevBind == SQLITE_OK, curBind == SQLITE_OK else {
+                    continue
+                }
+                if sqlite3_step(statement) == SQLITE_ROW {
+                    result[key] = Int(sqlite3_column_int(statement, 0))
+                }
             }
 
             return result
@@ -517,6 +602,27 @@ final class KanaKanjiStore {
             return [:]
         }
         return sqliteIndex.wordCostMap(for: normalizedReading)
+    }
+
+    // 連文節 DP(案1: 自前単語 n-gram LM)が利用可能か。
+    var hasWordLMMetadata: Bool {
+        sqliteIndexIfAvailable()?.hasWordLMMetadata ?? false
+    }
+
+    // 連文節 DP 用: 表層集合の unigram コストをまとめて取得。
+    func wordLMUnigramCosts(for surfaces: [String]) -> [String: Int] {
+        guard let sqliteIndex = sqliteIndexIfAvailable() else {
+            return [:]
+        }
+        return sqliteIndex.wordLMUnigramCosts(for: surfaces)
+    }
+
+    // 連文節 DP 用: (prev, cur) 対の bigram コストをまとめて取得(キー "prev\tcur")。
+    func wordLMBigramCosts(for pairs: [(String, String)]) -> [String: Int] {
+        guard let sqliteIndex = sqliteIndexIfAvailable() else {
+            return [:]
+        }
+        return sqliteIndex.wordLMBigramCosts(for: pairs)
     }
 
     func systemCandidates(
