@@ -458,7 +458,14 @@ def build_index(
 
         candidates_with_sources: Dict[str, Set[str]] = defaultdict(set)
 
-        if include_normalized and normalized_candidate:
+        # 助動詞(られる/れる/せる/ない/た 等)の「正規化形」は収穫しない。
+        # 撥音便などの活用形(surface=らん, 読み=ラン)の正規化形(られる)が、
+        # 読み「らん」の単独候補として紛れ込む不具合を防ぐ(助動詞は動詞に付く語で単独候補にならない)。
+        # surface は残す(です/ます 等は surface=正規化 なので影響しない)。
+        row_pos1 = row[SUDACHI_POS_INDEX].strip() if len(row) > SUDACHI_POS_INDEX else ""
+        is_auxiliary_verb = (row_pos1 == "助動詞")
+
+        if include_normalized and normalized_candidate and not is_auxiliary_verb:
             candidates_with_sources[normalized_candidate].add(SOURCE_TAG_NORMALIZED)
 
         if include_surface and surface_candidate:
