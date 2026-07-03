@@ -245,6 +245,7 @@ final class KanaKanjiConverter {
 
     private static let kuruKanjiCandidateBoost = 1450
     private static let godanImperativeCandidateBoost = 320
+    private static let godanVolitionalCandidateBoost = 320
     private static let numericUnitFallbackCandidateBoost = 320
     private static let numericCounterCompoundCandidateBoost = 360
     private static let sameReadingPureKatakanaPenalty = 128
@@ -1353,6 +1354,13 @@ final class KanaKanjiConverter {
                 systemCandidateMode: systemCandidateMode,
                 to: &scores
             )
+            applyGodanVolitionalBoost(
+                for: reading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode,
+                to: &scores
+            )
             return
         }
 
@@ -1381,6 +1389,13 @@ final class KanaKanjiConverter {
 
         applyKuruCandidateBoost(for: reading, to: &scores)
         applyGodanImperativeBoost(
+            for: reading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode,
+            to: &scores
+        )
+        applyGodanVolitionalBoost(
             for: reading,
             userDictionary: userDictionary,
             initialUserDictionary: initialUserDictionary,
@@ -1463,6 +1478,53 @@ final class KanaKanjiConverter {
                 }
 
                 scores[candidate, default: 0] += Self.godanImperativeCandidateBoost
+            }
+        }
+    }
+
+    // 五段の意志形(行こう/書こう/読もう…=oForm+う)は活用ゴミではなく実在動詞の派生。
+    // 「いこう→意向/移行/以降…」のような同音異義の名詞群(辞書1200)に埋もれて最下位に
+    // 落ちるのを防ぐため、基本形(行く 等)が辞書にあることを確認したうえでブーストする。
+    // 一段/カ変/サ変の意志形(よう/こよう/しよう)は inflectionRankingSuffixes 側で +500 され
+    // るため対象外。ここは godan(oForm≠よ)専用。
+    private func applyGodanVolitionalBoost(
+        for reading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        to scores: inout [String: Int]
+    ) {
+        for pattern in Self.godanPatterns {
+            let volitionalEnding = pattern.oForm + "う"
+
+            guard reading.hasSuffix(volitionalEnding),
+                let stem = removingSuffix(reading, suffix: volitionalEnding) else {
+                continue
+            }
+
+            let baseReading = stem + pattern.dictionaryEnding
+            let baseCandidates = Set(
+                candidatesForReading(
+                    baseReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+            )
+
+            guard !baseCandidates.isEmpty else {
+                continue
+            }
+
+            for candidate in Array(scores.keys) where candidate.hasSuffix(volitionalEnding) {
+                let candidateStem = String(candidate.dropLast(volitionalEnding.count))
+                let baseCandidate = candidateStem + pattern.dictionaryEnding
+
+                guard baseCandidates.contains(baseCandidate) else {
+                    continue
+                }
+
+                scores[candidate, default: 0] += Self.godanVolitionalCandidateBoost
             }
         }
     }
