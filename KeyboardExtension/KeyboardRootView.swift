@@ -319,8 +319,15 @@ struct KeyboardRootView: View {
         selectedConversionCandidateIndex != nil
     }
 
+    // VoiceOver 用の状態名(表示はアイコンのミニカプセルに置き換え済み)。
     var conversionStateLabel: String {
         isActiveConversion ? "変換中" : "未確定"
+    }
+
+    // 状態はテキストラベルでなく SF Symbols のミニカプセルで示す(候補エリアの節約)。
+    // 鉛筆=未確定(編集中)、循環矢印=変換中(スペース送り)。
+    var conversionStateIconName: String {
+        isActiveConversion ? "arrow.triangle.2.circlepath" : "pencil"
     }
 
     var conversionStateColor: Color {
@@ -938,6 +945,7 @@ struct KeyboardRootView: View {
             showsParenthesesWrapper: showsParenthesesWrapper,
             composingText: composingText,
             conversionStateLabel: conversionStateLabel,
+            conversionStateIconName: conversionStateIconName,
             conversionStateColor: conversionStateColor,
             candidateStateFontSize: candidateStateFontSize,
             candidateTextFontSize: candidateTextFontSize,

@@ -880,6 +880,7 @@ extension KeyboardRootView {
         let showsParenthesesWrapper: Bool
         let composingText: String
         let conversionStateLabel: String
+        let conversionStateIconName: String
         let conversionStateColor: Color
         let candidateStateFontSize: CGFloat
         let candidateTextFontSize: CGFloat
@@ -897,16 +898,17 @@ extension KeyboardRootView {
         @ViewBuilder private var conversionCandidateChips: some View {
             if conversionCandidates.isEmpty {
                 if !(showsParenthesesWrapper && composingText.isEmpty) {
-                    Text("候補なし")
+                    // 変換候補が入力かなのみ=「候補なし」。文字ラベルでなく空集合アイコンで示す。
+                    Image(systemName: "circle.slash")
                         .font(.system(size: candidateTextFontSize, weight: .regular))
                         .foregroundStyle(keyLabelColor.opacity(0.6))
-                        .lineLimit(1)
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
                         .background(
                             RoundedRectangle(cornerRadius: 7, style: .continuous)
                                 .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
                         )
+                        .accessibilityLabel("候補なし")
                 }
             }
 
@@ -1005,16 +1007,24 @@ extension KeyboardRootView {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
                     if !composingText.isEmpty || showsWrapperOnly {
-                        Text(showsWrapperOnly ? "()" : conversionStateLabel)
-                            .font(.system(size: candidateStateFontSize, weight: .bold))
-                            .foregroundStyle(Color.white)
-                            .lineLimit(1)
-                            .padding(.horizontal, 7)
-                            .padding(.vertical, 3)
-                            .background(
-                                Capsule(style: .continuous)
-                                    .fill(conversionStateColor.opacity(0.95))
-                            )
+                        // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
+                        Group {
+                            if showsWrapperOnly {
+                                Text("()")
+                            } else {
+                                Image(systemName: conversionStateIconName)
+                            }
+                        }
+                        .font(.system(size: candidateStateFontSize, weight: .bold))
+                        .foregroundStyle(Color.white)
+                        .lineLimit(1)
+                        .padding(.horizontal, 7)
+                        .padding(.vertical, 3)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(conversionStateColor.opacity(0.95))
+                        )
+                        .accessibilityLabel(conversionStateLabel)
                     }
 
                     conversionCandidateChips
@@ -1063,16 +1073,17 @@ extension KeyboardRootView {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     if latinSuggestions.isEmpty {
-                        Text("候補なし")
+                        // かな側と同じ空集合アイコン(候補なし)。
+                        Image(systemName: "circle.slash")
                             .font(.system(size: candidateTextFontSize, weight: .regular))
                             .foregroundStyle(keyLabelColor.opacity(0.6))
-                            .lineLimit(1)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
                             .background(
                                 RoundedRectangle(cornerRadius: 7, style: .continuous)
                                     .fill(KeyboardThemePalette.candidateHeaderPlaceholderBackground)
                             )
+                            .accessibilityLabel("候補なし")
                     }
 
                     ForEach(Array(latinSuggestions.enumerated()), id: \.offset) { index, candidate in
