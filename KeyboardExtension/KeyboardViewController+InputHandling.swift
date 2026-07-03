@@ -736,7 +736,8 @@ extension KeyboardViewController {
             sourceText: composingRawText,
             sourceReading: composingReading,
             committedText: composingRawText,
-            learn: true
+            learn: true,
+            learnKanaIdentity: true  // かな候補チップの明示タップ=かなが正書という意思表示
         )
         refreshKeyboardStateForUserInitiatedAction(.commit)
     }
@@ -1655,6 +1656,13 @@ extension KeyboardViewController {
             return candidates
         }
 
+        // かな識別(候補==入力かな)は末尾のかな候補チップに一本化して変換候補からは省く。
+        // ただしユーザがかなチップで明示確定して学習済みの語(ちゃんと/そして 等かなが正書
+        // の語)は「その読みの変換結果」として変換候補側にも出す(チップより前に来る)。
+        if kanaKanjiConverter.hasLearnedKanaIdentity(for: composingReading) {
+            return candidates
+        }
+
         return candidates.filter { candidate in
             !(candidate == composingText && isKanaOnlyText(candidate))
         }
@@ -1818,6 +1826,7 @@ extension KeyboardViewController {
         sourceReading: String,
         committedText: String,
         learn: Bool,
+        learnKanaIdentity: Bool = false,
         trailingText: String = ""
     ) {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
@@ -1828,7 +1837,11 @@ extension KeyboardViewController {
         )
 
         if learn {
-            kanaKanjiConverter.learn(reading: sourceReading, candidate: committedText)
+            kanaKanjiConverter.learn(
+                reading: sourceReading,
+                candidate: committedText,
+                allowKanaIdentity: learnKanaIdentity
+            )
         }
 
         clearComposingState()

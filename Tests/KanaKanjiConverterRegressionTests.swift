@@ -2197,6 +2197,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionKanaIdentityLearningRequiresExplicitChipCommitAndShortReading() {
+        // かな識別(候補==読み)は通常の確定では学習しない(連文節の素通りブロック事故防止)。
+        converter.learn(reading: "ちゃんと", candidate: "ちゃんと")
+        XCTAssertFalse(converter.hasLearnedKanaIdentity(for: "ちゃんと"))
+
+        // かな候補チップの明示タップ(allowKanaIdentity)なら単語相当の読みは学習する。
+        converter.learn(reading: "ちゃんと", candidate: "ちゃんと", allowKanaIdentity: true)
+        XCTAssertTrue(converter.hasLearnedKanaIdentity(for: "ちゃんと"))
+
+        // 文丸ごとの読みは明示タップでも学習しない。
+        converter.learn(
+            reading: "きょうはいいてんきですね",
+            candidate: "きょうはいいてんきですね",
+            allowKanaIdentity: true
+        )
+        XCTAssertFalse(converter.hasLearnedKanaIdentity(for: "きょうはいいてんきですね"))
+
+        // 保存→再読込(learnedDictionary の読み込みフィルタ)でも単語相当の識別は残る。
+        let reloaded = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        XCTAssertTrue(reloaded.hasLearnedKanaIdentity(for: "ちゃんと"))
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
