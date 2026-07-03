@@ -30,7 +30,8 @@ final class KeyboardViewController: UIInputViewController {
         "がっこうほうじん",
         "しゅうきょうほうじん"
     ]
-    static let emojiReadingCandidatesByReading: [String: [String]] = {
+    // 手書きの厳選読み(顔・仕草など)。emoji.plist(CLDR由来)より優先してマージする。
+    private static let curatedEmojiReadingCandidatesByReading: [String: [String]] = {
         let allCandidates = Set(
             AppleEmojiCatalog.people
                 + AppleEmojiCatalog.nature
@@ -126,6 +127,31 @@ final class KeyboardViewController: UIInputViewController {
         ]
         return buildSupplementarySymbolCandidatesByReading(entries: entries, allowedCandidates: allCandidates)
     }()
+
+    // 絵文字候補の読み→絵文字マップ。厳選読み(curated)を優先し、バンドルの
+    // EmojiReadingVocab.json(references/emoji.plist=CLDR整備版 由来)をマージする。
+    static let emojiReadingCandidatesByReading: [String: [String]] = {
+        var merged = curatedEmojiReadingCandidatesByReading
+        guard let url = Bundle(for: KeyboardViewController.self).url(
+                forResource: "EmojiReadingVocab", withExtension: "json"),
+            let data = try? Data(contentsOf: url),
+            let loaded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+            return merged
+        }
+        for (reading, emojis) in loaded {
+            if var existing = merged[reading] {
+                var seen = Set(existing)
+                for emoji in emojis where seen.insert(emoji).inserted {
+                    existing.append(emoji)
+                }
+                merged[reading] = existing
+            } else {
+                merged[reading] = emojis
+            }
+        }
+        return merged
+    }()
+
     static let kaomojiReadingCandidatesByReading: [String: [String]] = {
         let allCandidates = Set(KaomojiCatalog.entries)
         let entries: [(String, [String])] = [

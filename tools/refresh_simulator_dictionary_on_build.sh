@@ -24,6 +24,7 @@ TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
 TMP_WORD_LM="$ROOT_DIR/tmp/word_lm.json"
+TMP_EMOJI_READING="$ROOT_DIR/tmp/EmojiReadingVocab.json"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
@@ -34,6 +35,7 @@ REF_SUPPR_PLIST="$ROOT_DIR/references/suppr.plist"
 REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
+REF_EMOJI_PLIST="$ROOT_DIR/references/emoji.plist"
 REF_ADJECTIVE_GARU_ALLOWLIST="$ROOT_DIR/references/adjective_garu_allowlist.json"
 REF_WORD_LM_GZ="$ROOT_DIR/references/word_lm.json.gz"
 
@@ -165,6 +167,14 @@ python3 tools/build_second_vocab_from_references.py \
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_SUPPR_PLIST" \
   --output "$TMP_INITIAL_SUPPR"
+
+# 絵文字の読み(emoji.plist=CLDR由来を整備したもの)→ 読み→[絵文字] JSON。
+# 絵文字候補(emojiCandidateDisplayEnabled配下)専用で、通常のかな漢字変換(sqlite)には入れない。
+if [[ -f "$REF_EMOJI_PLIST" ]]; then
+  python3 tools/build_second_vocab_from_references.py \
+    --input-plist "$REF_EMOJI_PLIST" \
+    --output "$TMP_EMOJI_READING"
+fi
 
 needs_sudachi_regeneration() {
   ROOT_DIR="$ROOT_DIR" python3 - <<'PY'
@@ -365,6 +375,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
   copy_into_bundle_if_exists "$TMP_SOURCES" "kana_kanji_candidate_sources.json"
   copy_into_bundle_if_exists "$TMP_INFLECTIONS" "kana_kanji_inflection_dictionary.json"
   copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"
+  copy_into_bundle_if_exists "$TMP_EMOJI_READING" "EmojiReadingVocab.json"
 else
   echo "[dict] Skip bundle overwrite (TARGET_BUILD_DIR/UNLOCALIZED_RESOURCES_FOLDER_PATH not set)."
 fi
