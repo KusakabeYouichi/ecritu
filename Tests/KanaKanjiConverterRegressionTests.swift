@@ -2096,6 +2096,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionWaveDashElongationSurfacesAreFilteredOut() {
+        // SudachiDict の「〜」水増し表記(ちゃ〜んと 等)は既定変換に不要。どの生成経路から
+        // 入っても(ここでは学習経由で注入)最終段で除去され、正規表記が残ることを確認する。
+        converter.learn(reading: "ちゃんと", candidate: "チャント")
+        converter.learn(reading: "ちゃんと", candidate: "ちゃ〜んと")
+
+        let candidates = converter.candidates(
+            for: "ちゃんと",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertFalse(
+            candidates.contains("ちゃ〜んと"),
+            "candidates=\(candidates)"
+        )
+        XCTAssertTrue(
+            candidates.contains("チャント"),
+            "candidates=\(candidates)"
+        )
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return

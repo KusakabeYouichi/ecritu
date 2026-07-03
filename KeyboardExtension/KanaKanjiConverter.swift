@@ -487,7 +487,7 @@ final class KanaKanjiConverter {
         let systemCandidates = systemCandidates(
             for: normalizedReading,
             mode: systemCandidateMode
-        )
+        ).filter { !Self.hasWaveDashElongation($0, reading: normalizedReading) }
         let userCandidates = uniqueCandidates(
             from: (manualUserDictionary[normalizedReading] ?? [])
                 + (initialUserDictionary[normalizedReading] ?? [])
@@ -678,6 +678,12 @@ final class KanaKanjiConverter {
             scores.removeValue(forKey: candidate)
         }
 
+        // 「〜」水増し表記(ちゃ〜んと 等)はどの生成経路から入っても最終段で除去する。
+        for candidate in Array(scores.keys)
+        where Self.hasWaveDashElongation(candidate, reading: normalizedReading) {
+            scores.removeValue(forKey: candidate)
+        }
+
         let sortedCandidates = scores.keys.sorted { lhs, rhs in
             let lhsScore = scores[lhs, default: 0]
             let rhsScore = scores[rhs, default: 0]
@@ -810,6 +816,9 @@ final class KanaKanjiConverter {
                 var seenSurfaces = Set<String>()
                 func add(_ surface: String, isDictWord: Bool, isCurated: Bool) {
                     if let suppressed, suppressed.contains(surface) {
+                        return
+                    }
+                    if Self.hasWaveDashElongation(surface, reading: segmentReading) {
                         return
                     }
                     if seenSurfaces.insert(surface).inserted {
@@ -1039,6 +1048,18 @@ final class KanaKanjiConverter {
             }
         }
         return false
+    }
+
+    // SudachiDict の「〜」水増し表記(ちゃ〜んと/あの〜/アンケ〜ト/う〜ん 等 ~228件)を弾く。
+    // 波ダッシュ(U+301C)や全角チルダ(U+FF5E)は母音を伸ばす砕けた強調表記で、既定変換には
+    // 不要。読み自体に波ダッシュを含む場合(ユーザが〜を打った)は除外しない。
+    // 連文節では OOV(コーパス未収録)扱いになり一律 dictUnknownCost で正規のレア語(例:
+    // ちゃんと=unigram 6550)を下回って逆転するため、列挙段階で落とす。
+    private static func hasWaveDashElongation(_ surface: String, reading: String) -> Bool {
+        func containsWaveDash(_ text: String) -> Bool {
+            text.unicodeScalars.contains { $0.value == 0x301C || $0.value == 0xFF5E }
+        }
+        return containsWaveDash(surface) && !containsWaveDash(reading)
     }
 
     private static func isKatakanaString(_ text: String) -> Bool {
