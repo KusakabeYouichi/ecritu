@@ -149,6 +149,12 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "そうで", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "そうもない", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "そうにない", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        // 伝聞「〜そうだ」: 終止形にそのまま付く(様態=語幹+そう とは別物)。おおいそうな→多いそうな 等。
+        // baseReadingSuffix "" は「のだ/のです」と同型で、読みからそう系接尾を外した全体を基本形として引く。
+        InflectionRule(readingSuffix: "そう", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "そうだ", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "そうな", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "そうです", baseReadingSuffix: "", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "く", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くする", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "くなり", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
