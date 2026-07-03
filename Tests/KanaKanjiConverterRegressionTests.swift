@@ -2173,6 +2173,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionYatsuPostfixIsDerivedFromVerbStem() {
+        // 「入れるやつ」のような 動詞+やつ(口語の体言化)は postfix 素通りで導出する。
+        converter.learn(reading: "いれる", candidate: "入れる")
+        converter.learn(reading: "つかう", candidate: "使う")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("いれるやつ", "入れるやつ"),
+            ("つかうやつ", "使うやつ")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
