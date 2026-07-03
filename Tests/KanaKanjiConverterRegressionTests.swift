@@ -2118,6 +2118,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionNakaguroDecorationSurfacesAreFilteredOut() {
+        // SudachiDict の中黒装飾表記(ち・ゃ・ん/ア・リ・ガ・ト 等)は既定変換に不要。
+        // どの経路から入っても(ここでは学習経由で注入)除去され、正当な外国名区切り
+        // (アイ・アール=セグメント複数文字)は残ることを確認する。
+        converter.learn(reading: "ちゃんと", candidate: "ち・ゃ・んと")
+        converter.learn(reading: "ひみつ", candidate: "ヒ・ミ・ツ")
+        converter.learn(reading: "あいあーる", candidate: "アイ・アール")
+
+        let chanto = converter.candidates(for: "ちゃんと", limit: 24, systemCandidateMode: .surface)
+        XCTAssertFalse(chanto.contains("ち・ゃ・んと"), "candidates=\(chanto)")
+
+        let himitsu = converter.candidates(for: "ひみつ", limit: 24, systemCandidateMode: .surface)
+        XCTAssertFalse(himitsu.contains("ヒ・ミ・ツ"), "candidates=\(himitsu)")
+
+        let air = converter.candidates(for: "あいあーる", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(air.contains("アイ・アール"), "candidates=\(air)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return

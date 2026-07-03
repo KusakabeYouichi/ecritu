@@ -487,7 +487,7 @@ final class KanaKanjiConverter {
         let systemCandidates = systemCandidates(
             for: normalizedReading,
             mode: systemCandidateMode
-        ).filter { !Self.hasWaveDashElongation($0, reading: normalizedReading) }
+        )
         let userCandidates = uniqueCandidates(
             from: (manualUserDictionary[normalizedReading] ?? [])
                 + (initialUserDictionary[normalizedReading] ?? [])
@@ -678,9 +678,10 @@ final class KanaKanjiConverter {
             scores.removeValue(forKey: candidate)
         }
 
-        // 「〜」水増し表記(ちゃ〜んと 等)はどの生成経路から入っても最終段で除去する。
+        // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)はどの生成経路(学習・追加語彙含む)から
+        // 入っても最終段で除去する。
         for candidate in Array(scores.keys)
-        where Self.hasWaveDashElongation(candidate, reading: normalizedReading) {
+        where Self.isDecorativeVariantSurface(candidate, reading: normalizedReading) {
             scores.removeValue(forKey: candidate)
         }
 
@@ -818,7 +819,7 @@ final class KanaKanjiConverter {
                     if let suppressed, suppressed.contains(surface) {
                         return
                     }
-                    if Self.hasWaveDashElongation(surface, reading: segmentReading) {
+                    if Self.isDecorativeVariantSurface(surface, reading: segmentReading) {
                         return
                     }
                     if seenSurfaces.insert(surface).inserted {
@@ -1060,6 +1061,30 @@ final class KanaKanjiConverter {
             text.unicodeScalars.contains { $0.value == 0x301C || $0.value == 0xFF5E }
         }
         return containsWaveDash(surface) && !containsWaveDash(reading)
+    }
+
+    // SudachiDict の中黒装飾表記を弾く。
+    // (a) 中黒を除くと読みそのもの: ち・ゃ・ん/そ・し・て 等(postfix 合成形 ち・ゃ・んと も一致)
+    // (b) 中黒を除くと読みのカタカナ化かつ全セグメント1文字: ア・リ・ガ・ト/ヒ・ミ・ツ 等
+    // アイ・アール/チャン・クアン・ハー等の正当な外国名・社名区切り(セグメント複数文字)は
+    // (b) の per-char 条件で残る。読み自体に中黒を含む場合(ユーザが・を打った)は除外しない。
+    private static func hasNakaguroDecorationSpelling(_ surface: String, reading: String) -> Bool {
+        guard surface.contains("・"), !reading.contains("・") else {
+            return false
+        }
+        let stripped = surface.replacingOccurrences(of: "・", with: "")
+        if stripped == reading {
+            return true
+        }
+        let segments = surface.split(separator: "・", omittingEmptySubsequences: false)
+        return segments.allSatisfy { $0.count == 1 }
+            && stripped == Self.hiraganaToKatakana(reading)
+    }
+
+    // 装飾表記(〜水増し・中黒散らし)の総合判定。候補列挙の各段で共通に使う。
+    private static func isDecorativeVariantSurface(_ surface: String, reading: String) -> Bool {
+        hasWaveDashElongation(surface, reading: reading)
+            || hasNakaguroDecorationSpelling(surface, reading: reading)
     }
 
     private static func isKatakanaString(_ text: String) -> Bool {
@@ -2910,10 +2935,13 @@ final class KanaKanjiConverter {
             candidates: mergedCandidates
         )
 
+        // 装飾表記(〜水増し・中黒散らし)はここで一括除去する。candidates() の直接列挙の
+        // ほか、postfix 語幹・活用基底(candidatesForReading)も本関数を通るため、
+        // ち・ゃ・ん+と→ち・ゃ・んと のような合成前に断てる。
         return filterHistoricalKanaSurfaceCandidates(
             for: reading,
             candidates: archaicAdjectiveFiltered
-        )
+        ).filter { !Self.isDecorativeVariantSurface($0, reading: reading) }
     }
 
     private func filterHistoricalKanaSurfaceCandidates(
