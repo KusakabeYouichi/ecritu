@@ -282,6 +282,8 @@
     <dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気が付く</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気がつく</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気が長い</string><key>shortcut</key><string>きがながい</string><key>pos</key><string>形容詞</string></dict>
     <dict><key>phrase</key><string>気が早い</string><key>shortcut</key><string>きがはやい</string><key>pos</key><string>形容詞</string></dict>
     <dict><key>phrase</key><string>気が向く</string><key>shortcut</key><string>きがむく</string><key>pos</key><string>五段</string></dict>
@@ -302,6 +304,8 @@
     <dict><key>phrase</key><string>気を遣う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を使う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気をつかう</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気を付ける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気をつける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気を引く</string><key>shortcut</key><string>きをひく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を回す</string><key>shortcut</key><string>きをまわす</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を揉む</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
