@@ -134,6 +134,9 @@
 	<dict><key>phrase</key><string>ChatGPT</string><key>shortcut</key><string>ちゃっとじーぴーてぃー</string></dict>
 	<dict><key>phrase</key><string>Codex</string><key>shortcut</key><string>こーでっくす</string></dict>
 	<dict><key>phrase</key><string>OpenAI</string><key>shortcut</key><string>おーぷんえいあい</string></dict>
+	<dict><key>phrase</key><string>Fable</string><key>shortcut</key><string>ふぇいぶる</string></dict>
+	<dict><key>phrase</key><string>Fable 5</string><key>shortcut</key><string>ふぇいぶる</string></dict>
+	<dict><key>phrase</key><string>Fable 5</string><key>shortcut</key><string>ふぇいぶるふぁいゔ</string></dict>
 
 	<!-- misc. -->
 	<dict><key>phrase</key><string>Amazon</string><key>shortcut</key><string>あまぞん</string></dict>
@@ -199,5 +202,8 @@
 	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>アップデイト</string><key>shortcut</key><string>あっぷでいと</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>デグレ</string><key>shortcut</key><string>でぐれ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>再設計</string><key>shortcut</key><string>さいせっけい</string><key>pos</key><string>サ変名詞</string></dict>
 </array>
 </plist>
