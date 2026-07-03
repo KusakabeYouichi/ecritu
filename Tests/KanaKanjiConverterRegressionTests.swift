@@ -2154,6 +2154,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    func testRegressionNounKanjiKaSuffixesAreDerivedFromKanjiStem() {
+        // 予約課/予約可 のような 名詞+か(課/可/化/科/下)は SudachiDict に単語として
+        // 載らないことが多い。漢字語幹から派生することを確認する。
+        converter.learn(reading: "よやく", candidate: "予約")
+
+        let candidates = converter.candidates(
+            for: "よやくか",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        for expected in ["予約課", "予約可", "予約化"] {
+            XCTAssertTrue(
+                candidates.contains(expected),
+                "expected=\(expected) candidates=\(candidates)"
+            )
+        }
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
