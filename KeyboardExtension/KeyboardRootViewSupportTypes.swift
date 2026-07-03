@@ -940,11 +940,35 @@ extension KeyboardRootView {
             }
         }
 
+        // 末尾に「かなのみの候補」として出す(変換候補と同じチップ体裁)。タップで確定、
+        // ロングタップでカタカナ確定。カタカナ確定フィードバック時はハイライト。
+        @ViewBuilder private func composingKanaChip(_ text: String) -> some View {
+            Text(text)
+                .font(.system(size: candidateTextFontSize, weight: .semibold))
+                .foregroundStyle(showsKatakanaCommitFeedback ? Color.white : keyLabelColor)
+                .lineLimit(1)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 4)
+                .background(
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .fill(
+                            showsKatakanaCommitFeedback
+                                ? accentColor.opacity(0.9)
+                                : KeyboardThemePalette.candidateHeaderChipBackground
+                        )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 7, style: .continuous)
+                        .stroke(
+                            KeyboardThemePalette.candidateHeaderBorder,
+                            lineWidth: showsKatakanaCommitFeedback ? 0 : 1
+                        )
+                )
+        }
+
         var body: some View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
-                    conversionCandidateChips
-
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
                     if !composingText.isEmpty || showsWrapperOnly {
@@ -958,96 +982,17 @@ extension KeyboardRootView {
                                 Capsule(style: .continuous)
                                     .fill(conversionStateColor.opacity(0.95))
                             )
+                    }
 
-                        if !showsWrapperOnly, canTapComposingTextToCommit {
+                    conversionCandidateChips
+
+                    if !composingText.isEmpty {
+                        let kanaChipText = showsParenthesesWrapper ? "(\(composingText))" : composingText
+                        if canTapComposingTextToCommit {
                             Button {
                                 onComposingTextCommitTap()
                             } label: {
-                                if showsParenthesesWrapper {
-                                    HStack(spacing: 0) {
-                                        Text("(")
-                                            .foregroundStyle(
-                                                showsKatakanaCommitFeedback
-                                                    ? Color.white
-                                                    : accentColor
-                                            )
-                                        Text(composingText)
-                                            .foregroundStyle(
-                                                showsKatakanaCommitFeedback
-                                                    ? Color.white
-                                                    : keyLabelColor.opacity(0.85)
-                                            )
-                                            .underline(
-                                                !showsKatakanaCommitFeedback,
-                                                color: conversionStateColor.opacity(0.92)
-                                            )
-                                        Text(")")
-                                            .foregroundStyle(
-                                                showsKatakanaCommitFeedback
-                                                    ? Color.white
-                                                    : accentColor
-                                            )
-                                    }
-                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .lineLimit(1)
-                                    .padding(.horizontal, 7)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                            .fill(
-                                                showsKatakanaCommitFeedback
-                                                    ? accentColor.opacity(0.95)
-                                                    : KeyboardThemePalette.candidateHeaderSubtleBackground
-                                            )
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                            .stroke(
-                                                showsKatakanaCommitFeedback
-                                                    ? Color.clear
-                                                    : conversionStateColor.opacity(0.45),
-                                                style: StrokeStyle(
-                                                    lineWidth: showsKatakanaCommitFeedback ? 0 : 1,
-                                                    dash: [3, 2]
-                                                )
-                                            )
-                                    )
-                                } else {
-                                    Text(composingText)
-                                        .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                        .foregroundStyle(
-                                            showsKatakanaCommitFeedback
-                                                ? Color.white
-                                                : keyLabelColor.opacity(0.85)
-                                        )
-                                        .lineLimit(1)
-                                        .underline(
-                                            !showsKatakanaCommitFeedback,
-                                            color: conversionStateColor.opacity(0.92)
-                                        )
-                                        .padding(.horizontal, 7)
-                                        .padding(.vertical, 4)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                                .fill(
-                                                    showsKatakanaCommitFeedback
-                                                        ? accentColor.opacity(0.95)
-                                                        : KeyboardThemePalette.candidateHeaderSubtleBackground
-                                                )
-                                        )
-                                        .overlay(
-                                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                                .stroke(
-                                                    showsKatakanaCommitFeedback
-                                                        ? Color.clear
-                                                        : conversionStateColor.opacity(0.45),
-                                                    style: StrokeStyle(
-                                                        lineWidth: showsKatakanaCommitFeedback ? 0 : 1,
-                                                        dash: [3, 2]
-                                                    )
-                                                )
-                                        )
-                                }
+                                composingKanaChip(kanaChipText)
                             }
                             .buttonStyle(.plain)
                             .accessibilityLabel("\(composingText)を確定")
@@ -1058,53 +1003,11 @@ extension KeyboardRootView {
                                         onComposingTextCommitLongPress()
                                     }
                             )
-                        } else if !showsWrapperOnly {
-                            if showsParenthesesWrapper {
-                                HStack(spacing: 0) {
-                                    Text("(")
-                                        .foregroundStyle(accentColor)
-                                    Text(composingText)
-                                        .foregroundStyle(keyLabelColor.opacity(0.85))
-                                        .underline(true, color: conversionStateColor.opacity(0.92))
-                                    Text(")")
-                                        .foregroundStyle(accentColor)
-                                }
-                                .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                .lineLimit(1)
-                                .padding(.horizontal, 7)
-                                .padding(.vertical, 4)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
-                                )
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                        .stroke(
-                                            conversionStateColor.opacity(0.45),
-                                            style: StrokeStyle(lineWidth: 1, dash: [3, 2])
-                                        )
-                                )
-                            } else {
-                                Text(composingText)
-                                    .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                    .foregroundStyle(keyLabelColor.opacity(0.85))
-                                    .lineLimit(1)
-                                    .underline(true, color: conversionStateColor.opacity(0.92))
-                                    .padding(.horizontal, 7)
-                                    .padding(.vertical, 4)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                            .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
-                                    )
-                                    .overlay(
-                                        RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                            .stroke(
-                                                conversionStateColor.opacity(0.45),
-                                                style: StrokeStyle(lineWidth: 1, dash: [3, 2])
-                                            )
-                                    )
-                            }
+                        } else {
+                            composingKanaChip(kanaChipText)
                         }
+                    } else if showsWrapperOnly {
+                        composingKanaChip("()")
                     }
 
                 }
