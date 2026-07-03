@@ -10,6 +10,7 @@
 	<dict><key>phrase</key><string>大いに</string><key>shortcut</key><string>おおいに</string></dict>
 	<dict><key>phrase</key><string>沖繩</string><key>shortcut</key><string>おきなわ</string></dict>
 	<dict><key>phrase</key><string>恐らく</string><key>shortcut</key><string>おそらく</string></dict>
+	<dict><key>phrase</key><string>仝じ</string><key>shortcut</key><string>おなじ</string></dict>
 	<dict><key>phrase</key><string>ヶ月</string><key>shortcut</key><string>かげつ</string></dict>
 	<dict><key>phrase</key><string>ケ月</string><key>shortcut</key><string>かげつ</string></dict>
 	<dict><key>phrase</key><string>ヵ月</string><key>shortcut</key><string>かげつ</string></dict>
