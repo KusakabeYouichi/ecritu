@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260703093622"
+    private static let editionUpdatedAtRaw: String = "20260703100922"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -203,7 +203,7 @@ struct ContentView: View {
         SettingsKeys.delimiterAutoCommitCandidate,
         store: Self.sharedDefaults
     )
-    private var delimiterAutoCommitCandidateRawValue: String = DelimiterAutoCommitCandidateOption.zero.rawValue
+    private var delimiterAutoCommitCandidateRawValue: String = DelimiterAutoCommitCandidateOption.one.rawValue
 
     @AppStorage(
         SettingsKeys.kanaKanjiCandidateSourceMode,
@@ -529,7 +529,7 @@ struct ContentView: View {
     }
 
     private var delimiterAutoCommitCandidateSelection: Binding<DelimiterAutoCommitCandidateOption> {
-        rawValueSelection(from: delimiterAutoCommitCandidateRawValue, default: .zero) {
+        rawValueSelection(from: delimiterAutoCommitCandidateRawValue, default: .one) {
             delimiterAutoCommitCandidateRawValue = $0
         }
     }

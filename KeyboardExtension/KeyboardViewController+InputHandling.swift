@@ -423,7 +423,8 @@ extension KeyboardViewController {
             composingText: sourceText
         )
 
-        // 自動確定では「未変換かな」を第0候補として扱い、設定で第0/第1候補を選べるようにする。
+        // 自動確定候補: index0=未変換かな, index1=先頭の変換候補, ... 。設定 delimiterAutoCommitCandidate
+        // (既定=先頭の変換候補=index1)でどれを確定するか選ぶ。確定キーは別実装で常に未変換かな。
         var autoCommitCandidates: [String] = [sourceText]
         for candidate in presentationCandidates where !autoCommitCandidates.contains(candidate) {
             autoCommitCandidates.append(candidate)
