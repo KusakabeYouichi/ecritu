@@ -413,15 +413,13 @@ extension KeyboardViewController {
         let sourceText = composingRawText
         let sourceReading = composingReading
 
-        let systemCandidates = kanaKanjiCandidates(
-            for: sourceReading,
-            limit: effectiveKanaConversionCandidateLimit(),
+        // 表示中の候補(非同期で連文節変換をマージ済み)をそのまま使う。以前は同期の単文節候補
+        // (kanaKanjiCandidates)だけを見ており、連文節しか変換が無い長文では index1 が存在せず
+        // 設定に関わらず常に未変換かなへ fallback していた。表示中候補なら「先頭の変換候補」設定が
+        // 連文節にも効き、かつ主スレッドでの連文節DP再計算も避けられる。
+        let presentationCandidates = currentCandidatePresentationForRender(
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
-        )
-        let presentationCandidates = candidatesForPresentation(
-            from: systemCandidates,
-            composingText: sourceText
-        )
+        ).candidates
 
         // 自動確定候補: index0=未変換かな, index1=先頭の変換候補, ... 。設定 delimiterAutoCommitCandidate
         // (既定=先頭の変換候補=index1)でどれを確定するか選ぶ。確定キーは別実装で常に未変換かな。
