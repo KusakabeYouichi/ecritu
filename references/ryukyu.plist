@@ -6390,5 +6390,8 @@
 	<dict><key>phrase</key><string>大東寿司</string><key>shortcut</key><string>だいとうずし</string></dict>
 	<dict><key>phrase</key><string>大東鮨</string><key>shortcut</key><string>だいとうずし</string></dict>
 	<dict><key>phrase</key><string>魚まる</string><key>shortcut</key><string>うおまる</string></dict>
+	<dict><key>phrase</key><string>佐平</string><key>shortcut</key><string>さひら</string></dict>
+	<dict><key>phrase</key><string>佐平建設</string><key>shortcut</key><string>さひらけんせつ</string></dict>
+	<dict><key>phrase</key><string>ANGE</string><key>shortcut</key><string>あんじゅ</string></dict>
 </array>
 </plist>
