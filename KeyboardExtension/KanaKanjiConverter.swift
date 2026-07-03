@@ -517,14 +517,15 @@ final class KanaKanjiConverter {
             to: &scores
         )
 
+        let inflectionDerivedCandidates = inflectionCandidates(
+            for: normalizedReading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode,
+            limit: limit * 3
+        )
         addCandidates(
-            inflectionCandidates(
-                for: normalizedReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode,
-                limit: limit * 3
-            ),
+            inflectionDerivedCandidates,
             baseScore: 980,
             to: &scores
         )
@@ -641,6 +642,7 @@ final class KanaKanjiConverter {
             initialUserDictionary: initialUserDictionary,
             systemCandidateMode: systemCandidateMode,
             systemCandidates: systemCandidates,
+            inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
             to: &scores
         )
 
@@ -1340,6 +1342,7 @@ final class KanaKanjiConverter {
         initialUserDictionary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         systemCandidates: [String],
+        inflectionDerivedCandidates: Set<String>,
         to scores: inout [String: Int]
     ) {
         guard let matchedSuffix = matchingInflectionRankingSuffix(for: reading) else {
@@ -1358,7 +1361,11 @@ final class KanaKanjiConverter {
         for candidate in Array(scores.keys) {
             var delta = 0
 
-            if hasMatchingInflectionRankingSuffix(candidate, readingSuffix: matchedSuffix) {
+            if inflectionDerivedCandidates.contains(candidate) {
+                // 正規の活用形(書かない/食べない 等)は、語幹+ない の分解ゴミ(呵々ない/田部ない)
+                // や辞書の別候補より確実に上位へ。postfix(1120)+語尾(220) を超える強めのブースト。
+                delta += 500
+            } else if hasMatchingInflectionRankingSuffix(candidate, readingSuffix: matchedSuffix) {
                 delta += 220
             } else if !containsHiragana(candidate),
                 !trustedDirectCandidates.contains(candidate) {
