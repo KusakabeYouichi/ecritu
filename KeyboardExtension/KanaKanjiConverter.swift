@@ -1123,7 +1123,7 @@ final class KanaKanjiConverter {
         return false
     }
 
-    func learn(reading: String, candidate: String) {
+    func learn(reading: String, candidate: String, allowKanaIdentity: Bool = false) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -1132,19 +1132,39 @@ final class KanaKanjiConverter {
             return
         }
 
-        // かな識別(変換せず読みのかなのまま確定)は「変換」ではないので学習しない。
-        // これを学習すると連文節DPの追加/学習語彙優遇で最安の単スパン(素通り)になり、
-        // 以後その読みが二度と変換できなくなる(joined==reading で連文節候補が消える)。
-        guard trimmedCandidate != normalizedReading else {
-            return
+        // かな識別(変換せず読みのかなのまま確定)は原則学習しない。学習すると連文節DPの
+        // 追加/学習語彙優遇で最安の単スパン(素通り)になり、以後その読みが二度と変換でき
+        // なくなる(joined==reading で連文節候補が消える)。
+        // 例外: かな候補チップの明示タップ(allowKanaIdentity)かつ単語相当の短い読み。
+        // ちゃんと/そして 等「かなが正書」の語を変換候補側にも出せるようにする。
+        // 連文節側は surface==segmentReading スキップで引き続き防護されるため安全。
+        if trimmedCandidate == normalizedReading {
+            guard allowKanaIdentity,
+                normalizedReading.count <= KanaKanjiStore.kanaIdentityLearnableMaxReadingCount else {
+                return
+            }
         }
 
-        store.addLearnedEntry(reading: normalizedReading, candidate: trimmedCandidate)
+        store.addLearnedEntry(
+            reading: normalizedReading,
+            candidate: trimmedCandidate,
+            allowKanaIdentity: allowKanaIdentity
+        )
         store.incrementLearning(reading: normalizedReading, candidate: trimmedCandidate)
 
         stateQueue.sync {
             invalidateCandidateCache()
         }
+    }
+
+    // かな候補チップの明示タップでかな識別を学習済みか(candidatesForPresentation が
+    // 変換候補側にもかな識別を表示するかの判定に使う)。
+    func hasLearnedKanaIdentity(for reading: String) -> Bool {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        guard !normalizedReading.isEmpty else {
+            return false
+        }
+        return (store.learnedDictionary()[normalizedReading] ?? []).contains(normalizedReading)
     }
 
     private func addCandidates(

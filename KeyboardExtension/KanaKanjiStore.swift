@@ -393,6 +393,10 @@ final class KanaKanjiStore {
     private let systemDictionaryQueue = DispatchQueue(
         label: "com.kusakabe.ecritu.kana-kanji.system-dictionary"
     )
+    // かな識別(候補==読み)の学習を許可する読みの最大長。ちゃんと/そして/ありがとう 等の
+    // 単語相当は許可し、文丸ごと(きょうはいいてんきですね 等)は拒否して連文節の
+    // 最安素通りブロック事故(かな確定学習の事故時代の汚染含む)を防ぐ。
+    static let kanaIdentityLearnableMaxReadingCount = 6
     private static let initialLearningScores: [String: Int] = [
         "かった\t交った": -1_000_000_000,
         "かった\t支った": -1_000_000_000
@@ -934,12 +938,15 @@ final class KanaKanjiStore {
         }
 
         let normalized = normalizeDictionary(decoded)
-        // かな識別(候補==読み)は「変換」ではない。過去に誤って学習した分を読み込み時に除外し、
-        // 単文節/連文節どちらの候補にも出さない(連文節では最安素通りになり変換をブロックする)。
+        // かな識別(候補==読み)は原則「変換」ではない。文丸ごとの誤学習(かな確定を学習して
+        // いた時代の汚染)は読み込み時に除外し、連文節の最安素通りブロックを防ぐ。
+        // ただし単語相当の短い読み(ちゃんと/そして 等。かな候補チップの明示タップで学習)は
+        // 許可し、変換候補側にも出せるようにする。
         var cleaned: [String: [String]] = [:]
         cleaned.reserveCapacity(normalized.count)
         for (reading, candidates) in normalized {
-            let filtered = candidates.filter { $0 != reading }
+            let allowsIdentity = reading.count <= Self.kanaIdentityLearnableMaxReadingCount
+            let filtered = allowsIdentity ? candidates : candidates.filter { $0 != reading }
             if !filtered.isEmpty {
                 cleaned[reading] = filtered
             }
@@ -1095,7 +1102,7 @@ final class KanaKanjiStore {
         saveUserDictionary(dictionary)
     }
 
-    func addLearnedEntry(reading: String, candidate: String) {
+    func addLearnedEntry(reading: String, candidate: String, allowKanaIdentity: Bool = false) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -1104,10 +1111,14 @@ final class KanaKanjiStore {
             return
         }
 
-        // かな識別(候補==読み)は「変換」ではないので学習しない(全経路での最終防波堤)。
-        // これを学習すると連文節DPで最安の素通り単スパンになり、その読みが変換不能になる。
-        guard trimmedCandidate != normalizedReading else {
-            return
+        // かな識別(候補==読み)は原則学習しない(全経路での最終防波堤)。学習すると連文節DP
+        // で最安の素通り単スパンになり、その読みが変換不能になる。例外はかな候補チップの
+        // 明示タップ(allowKanaIdentity)かつ単語相当の短い読みのみ。
+        if trimmedCandidate == normalizedReading {
+            guard allowKanaIdentity,
+                normalizedReading.count <= Self.kanaIdentityLearnableMaxReadingCount else {
+                return
+            }
         }
 
         var dictionary = learnedDictionary()
