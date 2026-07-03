@@ -598,10 +598,19 @@ extension KeyboardRootView {
             .frame(height: fourRowAlignedClusterHeight, alignment: .top)
         }
 
-        // 国旗カテゴリーのみ、国・地域(ISO)の国旗と非ISO国旗の間に区切り線を挟む。
+        // 国旗/食べ物カテゴリーは、サブグループの間に区切り線を挟む。
         @ViewBuilder
         private var emojiScrollContent: some View {
-            if selectedEmojiCategory == .flags {
+            if selectedEmojiCategory == .food {
+                LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
+                    ForEach(Array(AppleEmojiCatalog.foodAndDrinkSections.enumerated()), id: \.offset) { index, section in
+                        if index > 0 {
+                            emojiSectionDivider
+                        }
+                        emojiGrid(section)
+                    }
+                }
+            } else if selectedEmojiCategory == .flags {
                 let territorySet = AppleEmojiCatalog.flagOverseasTerritories
                 let nonCountrySet = Set(AppleEmojiCatalog.flagNonCountryNames.keys)
                 let all = selectedEmojiCategory.emojis
@@ -612,11 +621,11 @@ extension KeyboardRootView {
                 LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
                     emojiGrid(countryFlags)
                     if !territoryFlags.isEmpty {
-                        flagSectionDivider
+                        emojiSectionDivider
                         emojiGrid(territoryFlags)
                     }
                     if !otherFlags.isEmpty {
-                        flagSectionDivider
+                        emojiSectionDivider
                         emojiGrid(otherFlags)
                     }
                 }
@@ -625,7 +634,7 @@ extension KeyboardRootView {
             }
         }
 
-        private var flagSectionDivider: some View {
+        private var emojiSectionDivider: some View {
             Rectangle()
                 .fill(KeyboardThemePalette.thinDivider)
                 .frame(height: 1)
