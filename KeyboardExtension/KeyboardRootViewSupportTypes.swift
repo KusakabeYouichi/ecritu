@@ -80,23 +80,26 @@ private struct SymbolScrollClipDisabledModifier: ViewModifier {
 }
 
 extension KeyboardRootView {
+    // 宣言順=カテゴリボタンの表示順(顔→食べ物→動物→行動→オブジェクト→乗り物→国旗→シンボル)。
+    // rawValue は設定(kanaPostModifierEmptyTapEmojiCategoryID)に永続化されているため、
+    // 並べ替えても歴史的な値を明示指定して互換を維持する。
     enum EmojiCategory: Int, CaseIterable, Identifiable {
-        case people
-        case animals
-        case food
-        case activities
-        case travel
-        case objects
-        case symbols
-        case flags
+        case people = 0
+        case food = 2
+        case animals = 1
+        case activities = 3
+        case objects = 5
+        case travel = 4
+        case flags = 7
+        case symbols = 6
 
         var id: Int { rawValue }
 
         var icon: String {
             switch self {
             case .people: return "😀"
-            case .animals: return "🐻"
-            case .food: return "🍔"
+            case .animals: return "🦆"
+            case .food: return "🍷"
             case .activities: return "🏀"
             case .travel: return "🚗"
             case .objects: return "💡"
@@ -136,6 +139,25 @@ extension KeyboardRootView {
                 return AppleEmojiCatalog.symbols
             case .flags:
                 return AppleEmojiCatalog.flags
+            }
+        }
+
+        // サブグループ(区切り線で仕切る)。単一セクションのカテゴリは区切り線なし。
+        // 国旗は動的分割(国→領土→その他)のため emojiScrollContent 側で特別扱い。
+        var sections: [[String]] {
+            switch self {
+            case .people:
+                return AppleEmojiCatalog.peopleSections
+            case .animals:
+                return AppleEmojiCatalog.natureSections
+            case .food:
+                return AppleEmojiCatalog.foodAndDrinkSections
+            case .activities:
+                return AppleEmojiCatalog.activitySections
+            case .travel:
+                return AppleEmojiCatalog.travelAndPlacesSections
+            case .objects, .symbols, .flags:
+                return [emojis]
             }
         }
     }
@@ -598,12 +620,14 @@ extension KeyboardRootView {
             .frame(height: fourRowAlignedClusterHeight, alignment: .top)
         }
 
-        // 国旗/食べ物カテゴリーは、サブグループの間に区切り線を挟む。
+        // 複数セクションのカテゴリー(顔/食べ物/動物/行動/乗り物)は、サブグループの間に
+        // 区切り線を挟む。国旗は動的分割(国→領土→その他)のため特別扱い。
         @ViewBuilder
         private var emojiScrollContent: some View {
-            if selectedEmojiCategory == .food {
+            let sections = selectedEmojiCategory.sections
+            if selectedEmojiCategory != .flags, sections.count > 1 {
                 LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
-                    ForEach(Array(AppleEmojiCatalog.foodAndDrinkSections.enumerated()), id: \.offset) { index, section in
+                    ForEach(Array(sections.enumerated()), id: \.offset) { index, section in
                         if index > 0 {
                             emojiSectionDivider
                         }
