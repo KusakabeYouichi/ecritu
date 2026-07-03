@@ -518,5 +518,6 @@
 	<dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるゔぇっと</string></dict>
 	<dict><key>phrase</key><string>ヴェルヴェッティーン</string><key>shortcut</key><string>ゔぇるゔぇってぃーん</string></dict>
 	<dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict>
+	<dict><key>phrase</key><string>超過死亡</string><key>shortcut</key><string>ちょうかしぼう</string></dict>
 </array>
 </plist>
