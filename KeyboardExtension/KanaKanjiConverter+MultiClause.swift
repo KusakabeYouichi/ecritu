@@ -12,42 +12,42 @@ extension KanaKanjiConverter {
     //   - コスト不明な文節(活用形・追加語彙・かな素通り)は candidates() の top1 を
     //     既定コストで補完。かな素通りは強く減点。
     // 呼び出し側でフラグ(isMultiClauseConversionEnabled)により on/off する。
-    private static let multiClauseMinReadingCount = 4
-    private static let multiClauseMaxReadingCount = 40      // これを超える長文は連文節DPを回さない(計算量抑制)
-    private static let multiClauseMaxSegmentReadingCount = 12
-    private static let multiClauseSupplementMaxLen = 8
-    private static let multiClauseTopK = 8                  // 1文節あたり列挙する変換候補数(sim: TOPK)
-    private static let multiClauseBOSMarker = "<BOS>"
-    private static let multiClauseEOSMarker = "<EOS>"
+    static let multiClauseMinReadingCount = 4
+    static let multiClauseMaxReadingCount = 40      // これを超える長文は連文節DPを回さない(計算量抑制)
+    static let multiClauseMaxSegmentReadingCount = 12
+    static let multiClauseSupplementMaxLen = 8
+    static let multiClauseTopK = 8                  // 1文節あたり列挙する変換候補数(sim: TOPK)
+    static let multiClauseBOSMarker = "<BOS>"
+    static let multiClauseEOSMarker = "<EOS>"
     // LM コスト定数(cost = -logP × scale, scale=500 で学習)。sim_lm.py で検証した値と一致させる。
-    private static let multiClauseBackoffCost = 500         // bigram 未観測・unigram 既知
+    static let multiClauseBackoffCost = 500         // bigram 未観測・unigram 既知
     // 辞書/変換にはあるがコーパス(LM)未収録の語。unigram 最大(8139)+バックオフ(500)より
     // 上に置き「どの既知語よりレア」として扱う。以前の 6000 は LM 中央値(7649)より安く、
     // 八津(OOV)が 奴(unigram 5963)に勝つ・ちゃ〜んと が ちゃんと に勝つ等の OOV 逆転を
     // 起こしていた。候補バー(単一経路)には引き続き全辞書候補が並ぶため、レア語は手動選択
     // +学習(curated 1500)で救済される。
-    private static let multiClauseDictUnknownCost = 8700
-    private static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
-    private static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
+    static let multiClauseDictUnknownCost = 8700
+    static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
+    static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
     // 追加語彙/学習語彙(void.plist 等のキュレーション or 学習)由来の語は強く優遇する。実コストは
     // min(通常コスト, この値)。強い bigram 並みに安くして分割・素通りに確実に勝たせる(=常に列挙も行う)。
-    private static let multiClauseCuratedWordCost = 1500
+    static let multiClauseCuratedWordCost = 1500
     // 語頭(文節頭)に来られない文字で始まる分割は日本語としてほぼあり得ないため強く減点。撥音ん・
     // 長音ー・促音っ・小書きかな等。「を」も現代仮名遣いでは目的格助詞専用なので語中に含めない。
-    private static let multiClauseForbiddenPenaltyCost = 100000
-    private static let multiClauseForbiddenInitials: Set<Character> = [
+    static let multiClauseForbiddenPenaltyCost = 100000
+    static let multiClauseForbiddenInitials: Set<Character> = [
         "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
         "ゃ", "ゅ", "ょ", "ゎ", "ゕ", "ゖ", "ゝ", "ゞ", "・"
     ]
     // ローンワード的な読みの指標(長音・小書き母音)。これらを含む読みはカタカナ表記が
     // 妥当なので、カタカナ素通りを減点しない(例: らんてぃーゆ→ランティーユ は許容)。
-    private static let multiClauseLoanwordMarkers: Set<Character> = [
+    static let multiClauseLoanwordMarkers: Set<Character> = [
         "ー", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ", "ゎ"
     ]
 
     // ラティスのノード(1 つの文節候補)。同じ span でも表層ごとに別ノードを立て、bigram の
     // 文脈(直前の表層)を DP でつなぐ。
-    private struct MultiClauseNode {
+    struct MultiClauseNode {
         let start: Int
         let end: Int
         let surface: String
@@ -307,7 +307,7 @@ extension KanaKanjiConverter {
     }
 
     // 語形(かな・漢字・ラテン字を含む)か。絵文字/記号のみなら false。curated 優遇の対象判定に使う。
-    private static func isWordLikeSurface(_ text: String) -> Bool {
+    static func isWordLikeSurface(_ text: String) -> Bool {
         for scalar in text.unicodeScalars {
             let value = scalar.value
             if (0x3041...0x3096).contains(value)      // ひらがな
@@ -323,7 +323,7 @@ extension KanaKanjiConverter {
         return false
     }
 
-    private static func isKatakanaString(_ text: String) -> Bool {
+    static func isKatakanaString(_ text: String) -> Bool {
         guard !text.isEmpty else {
             return false
         }
@@ -337,7 +337,7 @@ extension KanaKanjiConverter {
         return true
     }
 
-    private func readingLooksLikeLoanword(_ reading: String) -> Bool {
+    func readingLooksLikeLoanword(_ reading: String) -> Bool {
         for character in reading where Self.multiClauseLoanwordMarkers.contains(character) {
             return true
         }
