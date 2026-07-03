@@ -760,7 +760,12 @@ final class KanaKanjiConverter {
     private static let multiClauseEOSMarker = "<EOS>"
     // LM コスト定数(cost = -logP × scale, scale=500 で学習)。sim_lm.py で検証した値と一致させる。
     private static let multiClauseBackoffCost = 500         // bigram 未観測・unigram 既知
-    private static let multiClauseDictUnknownCost = 6000    // 辞書/変換にあるがコーパス未知(=そこそこレア)
+    // 辞書/変換にはあるがコーパス(LM)未収録の語。unigram 最大(8139)+バックオフ(500)より
+    // 上に置き「どの既知語よりレア」として扱う。以前の 6000 は LM 中央値(7649)より安く、
+    // 八津(OOV)が 奴(unigram 5963)に勝つ・ちゃ〜んと が ちゃんと に勝つ等の OOV 逆転を
+    // 起こしていた。候補バー(単一経路)には引き続き全辞書候補が並ぶため、レア語は手動選択
+    // +学習(curated 1500)で救済される。
+    private static let multiClauseDictUnknownCost = 8700
     private static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     private static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
     // 追加語彙/学習語彙(void.plist 等のキュレーション or 学習)由来の語は強く優遇する。実コストは
