@@ -391,15 +391,17 @@ enum SymbolCategoryChoice {
 }
 
 enum DelimiterAutoCommitCandidateOption: String, CaseIterable, Identifiable {
-    case zero
+    // rawValue は既存設定との互換のため "one"/"zero" のまま。表示順(allCases)は
+    // 「先頭の変換候補」を先、「未変換かな」を後にする。
     case one
+    case zero
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .zero: return "第0候補"
-        case .one: return "第1候補"
+        case .one: return "先頭の変換候補"
+        case .zero: return "未変換かな"
         }
     }
 }

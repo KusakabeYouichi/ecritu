@@ -527,7 +527,7 @@ struct DelimiterAutoCommitCandidateSettingsSection: View {
             selection: $selection,
             options: Array(DelimiterAutoCommitCandidateOption.allCases),
             optionTitle: { $0.title },
-            footnote: "未確定状態で句読点・記号を入力して自動確定するときに使う候補です。既定は第0候補で、第1候補は右隣の候補を確定します。"
+            footnote: "未確定状態で句読点・記号を入力して自動確定するときに、どの候補を確定するかです。既定は「先頭の変換候補」。「未変換かな」は入力したひらがなをそのまま確定します(確定キーは設定に関わらず常に未変換かなを確定します)。"
         )
     }
 }

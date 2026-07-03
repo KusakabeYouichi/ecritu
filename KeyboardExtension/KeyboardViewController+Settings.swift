@@ -230,7 +230,7 @@ extension KeyboardViewController {
         let rawValue = sharedStringValue(
             from: defaults,
             key: SharedDefaultsKeys.delimiterAutoCommitCandidate,
-            fallback: "zero"
+            fallback: "one"
         )
 
         switch rawValue {
