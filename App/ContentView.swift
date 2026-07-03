@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260703182501"
+    private static let editionUpdatedAtRaw: String = "20260703183503"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]

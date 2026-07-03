@@ -345,8 +345,15 @@ final class KanaKanjiConverter {
     ]
 
     // 名詞に付く生産的な漢字接尾辞(種類別・色別・国別…)。語幹(名詞)+接尾辞漢字。
+    // か: 予約課/入場可/自動化/情報科/管理下 のような複合は SudachiDict に単語として
+    //     載らないことが多いため、ここで派生させる(家/歌/価 は既存語が辞書にあり非生産的)。
     private static let nounKanjiSuffixAffixCandidatesByReading: [(reading: String, candidate: String)] = [
-        ("べつ", "別")
+        ("べつ", "別"),
+        ("か", "課"),
+        ("か", "可"),
+        ("か", "化"),
+        ("か", "科"),
+        ("か", "下")
     ]
 
     // 名詞に付く生産的な漢字接頭辞(別会社・別人物・別商品…)。接頭辞漢字+語幹(名詞)。
