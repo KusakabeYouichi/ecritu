@@ -137,6 +137,57 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionGodanVolitionalFormsAreDerivedFromBaseVerbCandidate() {
+        // -る動詞は五段/一段が読みで曖昧(帰る/変える)なため seed fallback ではクラス
+        // 解決できないことがある。ここでは曖昧でない五段(く/む/す/ぐ)で導出を確認する。
+        // (帰ろう 等の五段ラ行は本番=実辞書で動作確認済み)
+        converter.learn(reading: "いく", candidate: "行く")
+        converter.learn(reading: "かく", candidate: "書く")
+        converter.learn(reading: "よむ", candidate: "読む")
+        converter.learn(reading: "はなす", candidate: "話す")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("いこう", "行こう"),
+            ("かこう", "書こう"),
+            ("よもう", "読もう"),
+            ("はなそう", "話そう")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
+    func testRegressionGodanVolitionalFormAcceptsTrailingParticles() {
+        // ユーザ報告: いこうかと→行こうかと。逐次入力(プレフィックスを順に評価)で
+        // 候補キャッシュ連鎖を成立させたうえで、意志形+助詞(かと)が導出されることを確認。
+        converter.learn(reading: "いく", candidate: "行く")
+
+        for prefix in ["いこう", "いこうか"] {
+            _ = converter.candidates(for: prefix, limit: 24, systemCandidateMode: .surface)
+        }
+
+        let candidates = converter.candidates(
+            for: "いこうかと",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("行こうかと"),
+            "candidates=\(candidates)"
+        )
+    }
+
     func testRegressionYasuiYasuiKanjiFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "うつ", candidate: "打つ")
         converter.learn(reading: "たべる", candidate: "食べる")
