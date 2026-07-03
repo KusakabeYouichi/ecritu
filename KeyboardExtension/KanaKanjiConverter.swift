@@ -678,10 +678,12 @@ final class KanaKanjiConverter {
             scores.removeValue(forKey: candidate)
         }
 
-        // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)はどの生成経路(学習・追加語彙含む)から
-        // 入っても最終段で除去する。
+        // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)はどの生成経路(学習含む)から入っても
+        // 最終段で除去する。ただしユーザ明示登録(追加語彙/手動)は尊重して残す
+        // (あ・うん/ぱ・る・る 等、実在固有名の復活経路)。
         for candidate in Array(scores.keys)
-        where Self.isDecorativeVariantSurface(candidate, reading: normalizedReading) {
+        where !userCandidateSet.contains(candidate)
+            && Self.isDecorativeVariantSurface(candidate, reading: normalizedReading) {
             scores.removeValue(forKey: candidate)
         }
 
@@ -815,11 +817,11 @@ final class KanaKanjiConverter {
 
                 var surfaces: [(surface: String, isDictWord: Bool, isCurated: Bool)] = []
                 var seenSurfaces = Set<String>()
-                func add(_ surface: String, isDictWord: Bool, isCurated: Bool) {
+                func add(_ surface: String, isDictWord: Bool, isCurated: Bool, exemptDecorative: Bool = false) {
                     if let suppressed, suppressed.contains(surface) {
                         return
                     }
-                    if Self.isDecorativeVariantSurface(surface, reading: segmentReading) {
+                    if !exemptDecorative, Self.isDecorativeVariantSurface(surface, reading: segmentReading) {
                         return
                     }
                     if seenSurfaces.insert(surface).inserted {
@@ -830,8 +832,9 @@ final class KanaKanjiConverter {
                 // (a) 追加語彙/学習語彙(curated)を常に列挙する。分割・素通りに確実に勝たせるため。
                 //     ただし surface==読み(かな識別=変換でない)は優遇しない。過去にかな確定を
                 //     学習してしまった履歴が最安の単スパンになり変換をブロックするのを防ぐ。
+                //     追加語彙はユーザ明示登録なので装飾フィルタも免除(あ・うん 等の実在固有名)。
                 for surface in initialUserDictionary[segmentReading] ?? [] where surface != segmentReading {
-                    add(surface, isDictWord: true, isCurated: true)
+                    add(surface, isDictWord: true, isCurated: true, exemptDecorative: true)
                 }
                 for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading {
                     add(surface, isDictWord: true, isCurated: true)

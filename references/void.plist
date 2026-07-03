@@ -523,5 +523,9 @@
 	<dict><key>phrase</key><string>ヴェルヴェッティーン</string><key>shortcut</key><string>ゔぇるゔぇってぃーん</string></dict>
 	<dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict>
 	<dict><key>phrase</key><string>超過死亡</string><key>shortcut</key><string>ちょうかしぼう</string></dict>
+	<!-- 中黒装飾フィルタで既定候補から外れた実在固有名の復活(映画/ゆうちょ/出版社) -->
+	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>
+	<dict><key>phrase</key><string>ぱ・る・る</string><key>shortcut</key><string>ぱるる</string></dict>
+	<dict><key>phrase</key><string>さ・え・ら</string><key>shortcut</key><string>さえら</string></dict>
 </array>
 </plist>

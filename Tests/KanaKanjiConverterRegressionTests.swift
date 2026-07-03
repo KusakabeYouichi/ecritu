@@ -2136,6 +2136,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(air.contains("アイ・アール"), "candidates=\(air)")
     }
 
+    func testRegressionUserRegisteredNakaguroSurfaceSurvivesDecorativeFilter() {
+        // ユーザ明示登録(追加語彙)の中黒表記(あ・うん 等の実在固有名)は
+        // 装飾フィルタから免除され、候補に残ることを確認する。
+        let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
+        store.addUserEntry(reading: "あうん", candidate: "あ・うん")
+
+        let candidates = converter.candidates(
+            for: "あうん",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("あ・うん"),
+            "candidates=\(candidates)"
+        )
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
