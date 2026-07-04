@@ -74,6 +74,44 @@ final class KanaKanjiConverter {
         _ = store.learningScores(for: "あ")
     }
 
+    // 候補スコアの基礎点。生成経路ごとの優先順位をここで一元管理する。
+    // 大小関係の意図: 追加語彙 > 学習語彙 > 辞書 > quick postfix > 丁寧接頭辞 > 序数
+    //   > 数値単位 > BFS postfix > 名詞漢字接辞 > 活用 > ガル形。
+    // 補正(ブースト/ペナルティ)は +RankingHeuristics の定数を参照。
+    enum CandidateScore {
+        static let userDictionary = 2400        // 追加語彙(手動+初期)
+        static let learnedDictionary = 2280     // 学習語彙
+        static let systemDictionary = 1200      // 辞書(sqlite/seed)
+        static let quickPostfix = 1120          // postfix(語幹キャッシュ利用)
+        static let politePrefix = 1100          // お/ご 丁寧接頭辞派生
+        static let ordinalMeFallback = 1080     // 序数(〜つ目)
+        static let numericUnitFallback = 1070   // 数値+単位
+        static let bfsPostfix = 1040            // postfix(BFS完全探索)
+        static let nounKanjiAffix = 1000        // 名詞+漢字接辞(課/可/別 等)
+        static let inflection = 980             // 活用形派生
+        static let adjectiveGaru = 970          // ガル形派生
+        // 歴史的経緯: 数詞複合はブースト値(360)を基礎点として流用してきた。
+        // 辞書語より大きく下に置く意図はそのまま名前だけ明示する。
+        static let numericCounterCompound = 360
+    }
+
+    // candidates() のステージ間で共有する読み・辞書・直接候補のスナップショット。
+    struct CandidateGenerationContext {
+        let reading: String
+        let limit: Int
+        let mode: KanaKanjiCandidateSourceMode
+        let userDictionary: [String: [String]]
+        let learnedDictionary: [String: [String]]
+        let initialUserDictionary: [String: [String]]
+        let learningScoresForReading: [String: Int]
+        let suppressedCandidatesByReading: [String: Set<String>]
+        let systemCandidates: [String]
+        let userCandidates: [String]
+        let userCandidateSet: Set<String>
+        let learnedCandidates: [String]
+        let hasDirectCandidates: Bool
+    }
+
     func candidates(
         for reading: String,
         limit: Int,
@@ -96,245 +134,23 @@ final class KanaKanjiConverter {
             return cachedCandidates
         }
 
-        let manualUserDictionary = store.userDictionary()
-        let learnedDictionary = store.learnedDictionary()
-        let userDictionary = manualUserDictionary
-        let initialUserDictionary = store.initialUserDictionary()
-        let learningScoresForReading = store.learningScores(for: normalizedReading)
-        let suppressedCandidatesByReading = store.suppressedCandidatesByReading()
-        var scores: [String: Int] = [:]
-        let systemCandidates = systemCandidates(
-            for: normalizedReading,
+        let context = makeGenerationContext(
+            reading: normalizedReading,
+            limit: limit,
             mode: systemCandidateMode
         )
-        let userCandidates = uniqueCandidates(
-            from: (manualUserDictionary[normalizedReading] ?? [])
-                + (initialUserDictionary[normalizedReading] ?? [])
-        )
-        let userCandidateSet = Set(userCandidates)
-        let learnedCandidates = uniqueCandidates(
-            from: (learnedDictionary[normalizedReading] ?? []).filter {
-                !userCandidateSet.contains($0)
-            }
-        )
-        let hasDirectCandidates = !systemCandidates.isEmpty
-            || !userCandidates.isEmpty
-            || !learnedCandidates.isEmpty
 
-        addCandidates(
-            systemCandidates,
-            baseScore: 1200,
+        var scores: [String: Int] = [:]
+        collectDirectCandidates(context, into: &scores)
+        let inflectionDerivedCandidates = collectDerivedCandidates(context, into: &scores)
+        applyRankingAdjustments(
+            context,
+            inflectionDerivedCandidates: inflectionDerivedCandidates,
             to: &scores
         )
-        addCandidates(
-            userCandidates,
-            baseScore: 2400,
-            to: &scores
-        )
-        addCandidates(
-            learnedCandidates,
-            baseScore: 2280,
-            to: &scores
-        )
+        applySuppressionsAndDecorativeFilter(context, to: &scores)
 
-        let inflectionDerivedCandidates = inflectionCandidates(
-            for: normalizedReading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
-            systemCandidateMode: systemCandidateMode,
-            limit: limit * 3
-        )
-        addCandidates(
-            inflectionDerivedCandidates,
-            baseScore: 980,
-            to: &scores
-        )
-
-        addCandidates(
-            adjectiveGaruCandidates(
-                for: normalizedReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode,
-                limit: limit * 3
-            ),
-            baseScore: 970,
-            to: &scores
-        )
-
-        addCandidates(
-            politePrefixPassthroughCandidates(
-                for: normalizedReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode,
-                limit: limit * 2
-            ),
-            baseScore: 1100,
-            to: &scores
-        )
-
-        addCandidates(
-            ordinalMeFallbackCandidates(
-                for: normalizedReading,
-                hasDirectCandidates: hasDirectCandidates,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode,
-                limit: limit * 2
-            ),
-            baseScore: 1080,
-            to: &scores
-        )
-
-        let numericUnitFallback = numericUnitFallbackCandidates(
-            for: normalizedReading,
-            limit: limit * 2
-        )
-
-        let numericCounterCompoundFallback = numericCounterCompoundCandidates(
-            for: normalizedReading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
-            systemCandidateMode: systemCandidateMode,
-            limit: limit * 2
-        )
-
-        addCandidates(
-            numericUnitFallback,
-            baseScore: 1070,
-            to: &scores
-        )
-
-        addCandidates(
-            numericCounterCompoundFallback,
-            baseScore: Self.numericCounterCompoundCandidateBoost,
-            to: &scores
-        )
-
-        applyNumericUnitFallbackPriorityBoost(
-            for: normalizedReading,
-            fallbackCandidates: numericUnitFallback,
-            to: &scores
-        )
-
-        addCandidates(
-            nounKanjiAffixCandidates(
-                for: normalizedReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode,
-                limit: limit * 2
-            ),
-            baseScore: 1000,
-            to: &scores
-        )
-
-        let quickPostfixCandidates = quickPostfixCandidatesUsingCachedStem(
-            for: normalizedReading,
-            limit: limit,
-            systemCandidateMode: systemCandidateMode
-        )
-
-        if !quickPostfixCandidates.isEmpty {
-            addCandidates(
-                quickPostfixCandidates,
-                baseScore: 1120,
-                to: &scores
-            )
-        } else {
-            addCandidates(
-                postfixPassthroughCandidates(
-                    for: normalizedReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
-                    systemCandidateMode: systemCandidateMode,
-                    limit: limit * 3
-                ),
-                baseScore: 1040,
-                to: &scores
-            )
-        }
-
-        applyInflectionRankingHeuristics(
-            for: normalizedReading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
-            systemCandidateMode: systemCandidateMode,
-            systemCandidates: systemCandidates,
-            inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
-            to: &scores
-        )
-
-        applyLearning(
-            learningScoresForReading,
-            to: &scores
-        )
-
-        applySameReadingScriptPreference(
-            for: normalizedReading,
-            systemCandidates: systemCandidates,
-            to: &scores
-        )
-
-        applySeedSingleKanjiPriorityBoost(
-            for: normalizedReading,
-            to: &scores
-        )
-
-        if let suppressedCandidates = suppressedCandidatesByReading[normalizedReading],
-            !suppressedCandidates.isEmpty {
-            for candidate in suppressedCandidates {
-                scores.removeValue(forKey: candidate)
-            }
-        }
-
-        for candidate in Array(scores.keys) where isDeinflectedSuppressed(
-            candidate: candidate,
-            reading: normalizedReading,
-            suppressedByReading: suppressedCandidatesByReading
-        ) {
-            scores.removeValue(forKey: candidate)
-        }
-
-        // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)はどの生成経路(学習含む)から入っても
-        // 最終段で除去する。ただしユーザ明示登録(追加語彙/手動)は尊重して残す
-        // (あ・うん/ぱ・る・る 等、実在固有名の復活経路)。
-        for candidate in Array(scores.keys)
-        where !userCandidateSet.contains(candidate)
-            && Self.isDecorativeVariantSurface(candidate, reading: normalizedReading) {
-            scores.removeValue(forKey: candidate)
-        }
-
-        let sortedCandidates = scores.keys.sorted { lhs, rhs in
-            let lhsScore = scores[lhs, default: 0]
-            let rhsScore = scores[rhs, default: 0]
-
-            if lhsScore != rhsScore {
-                return lhsScore > rhsScore
-            }
-
-            if lhs.count != rhs.count {
-                return lhs.count < rhs.count
-            }
-
-            return lhs < rhs
-        }
-
-        let archaicAdjectiveFiltered = filterArchaicAdjectiveSurfaceCandidates(
-            for: normalizedReading,
-            candidates: sortedCandidates,
-            userDictionary: userDictionary,
-            learnedDictionary: learnedDictionary,
-            initialUserDictionary: initialUserDictionary
-        )
-
-        let filteredSortedCandidates = filterHistoricalKanaSurfaceCandidates(
-            for: normalizedReading,
-            candidates: archaicAdjectiveFiltered
-        )
-
-        let finalCandidates = Array(filteredSortedCandidates.prefix(limit))
+        let finalCandidates = finalizeSortedCandidates(context, scores: scores)
 
         if !finalCandidates.isEmpty {
             stateQueue.sync {
@@ -352,6 +168,263 @@ final class KanaKanjiConverter {
         }
 
         return finalCandidates
+    }
+
+    // ステージ0: 辞書スナップショットと直接候補(辞書/追加語彙/学習語彙)の収集。
+    private func makeGenerationContext(
+        reading: String,
+        limit: Int,
+        mode: KanaKanjiCandidateSourceMode
+    ) -> CandidateGenerationContext {
+        let manualUserDictionary = store.userDictionary()
+        let learnedDictionary = store.learnedDictionary()
+        let initialUserDictionary = store.initialUserDictionary()
+
+        let systemCandidates = systemCandidates(for: reading, mode: mode)
+        let userCandidates = uniqueCandidates(
+            from: (manualUserDictionary[reading] ?? [])
+                + (initialUserDictionary[reading] ?? [])
+        )
+        let userCandidateSet = Set(userCandidates)
+        let learnedCandidates = uniqueCandidates(
+            from: (learnedDictionary[reading] ?? []).filter {
+                !userCandidateSet.contains($0)
+            }
+        )
+
+        return CandidateGenerationContext(
+            reading: reading,
+            limit: limit,
+            mode: mode,
+            userDictionary: manualUserDictionary,
+            learnedDictionary: learnedDictionary,
+            initialUserDictionary: initialUserDictionary,
+            learningScoresForReading: store.learningScores(for: reading),
+            suppressedCandidatesByReading: store.suppressedCandidatesByReading(),
+            systemCandidates: systemCandidates,
+            userCandidates: userCandidates,
+            userCandidateSet: userCandidateSet,
+            learnedCandidates: learnedCandidates,
+            hasDirectCandidates: !systemCandidates.isEmpty
+                || !userCandidates.isEmpty
+                || !learnedCandidates.isEmpty
+        )
+    }
+
+    // ステージ1: 直接候補(辞書/追加語彙/学習語彙)を基礎点で登録する。
+    private func collectDirectCandidates(
+        _ context: CandidateGenerationContext,
+        into scores: inout [String: Int]
+    ) {
+        addCandidates(context.systemCandidates, baseScore: CandidateScore.systemDictionary, to: &scores)
+        addCandidates(context.userCandidates, baseScore: CandidateScore.userDictionary, to: &scores)
+        addCandidates(context.learnedCandidates, baseScore: CandidateScore.learnedDictionary, to: &scores)
+    }
+
+    // ステージ2: 派生候補(活用/ガル形/丁寧接頭辞/序数/数値/名詞接辞/postfix)を登録する。
+    // 戻り値は活用派生の集合(ランキング補正で正規活用形を優遇するために使う)。
+    private func collectDerivedCandidates(
+        _ context: CandidateGenerationContext,
+        into scores: inout [String: Int]
+    ) -> [String] {
+        let reading = context.reading
+        let limit = context.limit
+
+        let inflectionDerivedCandidates = inflectionCandidates(
+            for: reading,
+            userDictionary: context.userDictionary,
+            initialUserDictionary: context.initialUserDictionary,
+            systemCandidateMode: context.mode,
+            limit: limit * 3
+        )
+        addCandidates(inflectionDerivedCandidates, baseScore: CandidateScore.inflection, to: &scores)
+
+        addCandidates(
+            adjectiveGaruCandidates(
+                for: reading,
+                userDictionary: context.userDictionary,
+                initialUserDictionary: context.initialUserDictionary,
+                systemCandidateMode: context.mode,
+                limit: limit * 3
+            ),
+            baseScore: CandidateScore.adjectiveGaru,
+            to: &scores
+        )
+
+        addCandidates(
+            politePrefixPassthroughCandidates(
+                for: reading,
+                userDictionary: context.userDictionary,
+                initialUserDictionary: context.initialUserDictionary,
+                systemCandidateMode: context.mode,
+                limit: limit * 2
+            ),
+            baseScore: CandidateScore.politePrefix,
+            to: &scores
+        )
+
+        addCandidates(
+            ordinalMeFallbackCandidates(
+                for: reading,
+                hasDirectCandidates: context.hasDirectCandidates,
+                userDictionary: context.userDictionary,
+                initialUserDictionary: context.initialUserDictionary,
+                systemCandidateMode: context.mode,
+                limit: limit * 2
+            ),
+            baseScore: CandidateScore.ordinalMeFallback,
+            to: &scores
+        )
+
+        let numericUnitFallback = numericUnitFallbackCandidates(
+            for: reading,
+            limit: limit * 2
+        )
+        addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
+
+        addCandidates(
+            numericCounterCompoundCandidates(
+                for: reading,
+                userDictionary: context.userDictionary,
+                initialUserDictionary: context.initialUserDictionary,
+                systemCandidateMode: context.mode,
+                limit: limit * 2
+            ),
+            baseScore: CandidateScore.numericCounterCompound,
+            to: &scores
+        )
+
+        applyNumericUnitFallbackPriorityBoost(
+            for: reading,
+            fallbackCandidates: numericUnitFallback,
+            to: &scores
+        )
+
+        addCandidates(
+            nounKanjiAffixCandidates(
+                for: reading,
+                userDictionary: context.userDictionary,
+                initialUserDictionary: context.initialUserDictionary,
+                systemCandidateMode: context.mode,
+                limit: limit * 2
+            ),
+            baseScore: CandidateScore.nounKanjiAffix,
+            to: &scores
+        )
+
+        let quickPostfixCandidates = quickPostfixCandidatesUsingCachedStem(
+            for: reading,
+            limit: limit,
+            systemCandidateMode: context.mode
+        )
+
+        if !quickPostfixCandidates.isEmpty {
+            addCandidates(quickPostfixCandidates, baseScore: CandidateScore.quickPostfix, to: &scores)
+        } else {
+            addCandidates(
+                postfixPassthroughCandidates(
+                    for: reading,
+                    userDictionary: context.userDictionary,
+                    initialUserDictionary: context.initialUserDictionary,
+                    systemCandidateMode: context.mode,
+                    limit: limit * 3
+                ),
+                baseScore: CandidateScore.bfsPostfix,
+                to: &scores
+            )
+        }
+
+        return inflectionDerivedCandidates
+    }
+
+    // ステージ3: ランキング補正(活用/学習/スクリプト種/単漢字seed)。
+    private func applyRankingAdjustments(
+        _ context: CandidateGenerationContext,
+        inflectionDerivedCandidates: [String],
+        to scores: inout [String: Int]
+    ) {
+        applyInflectionRankingHeuristics(
+            for: context.reading,
+            userDictionary: context.userDictionary,
+            initialUserDictionary: context.initialUserDictionary,
+            systemCandidateMode: context.mode,
+            systemCandidates: context.systemCandidates,
+            inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
+            to: &scores
+        )
+        applyLearning(context.learningScoresForReading, to: &scores)
+        applySameReadingScriptPreference(
+            for: context.reading,
+            systemCandidates: context.systemCandidates,
+            to: &scores
+        )
+        applySeedSingleKanjiPriorityBoost(for: context.reading, to: &scores)
+    }
+
+    // ステージ4: 抑制語彙(直接+脱活用)と装飾表記の除去。
+    private func applySuppressionsAndDecorativeFilter(
+        _ context: CandidateGenerationContext,
+        to scores: inout [String: Int]
+    ) {
+        if let suppressedCandidates = context.suppressedCandidatesByReading[context.reading],
+            !suppressedCandidates.isEmpty {
+            for candidate in suppressedCandidates {
+                scores.removeValue(forKey: candidate)
+            }
+        }
+
+        for candidate in Array(scores.keys) where isDeinflectedSuppressed(
+            candidate: candidate,
+            reading: context.reading,
+            suppressedByReading: context.suppressedCandidatesByReading
+        ) {
+            scores.removeValue(forKey: candidate)
+        }
+
+        // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)はどの生成経路(学習含む)から入っても
+        // 最終段で除去する。ただしユーザ明示登録(追加語彙/手動)は尊重して残す
+        // (あ・うん/ぱ・る・る 等、実在固有名の復活経路)。
+        for candidate in Array(scores.keys)
+        where !context.userCandidateSet.contains(candidate)
+            && Self.isDecorativeVariantSurface(candidate, reading: context.reading) {
+            scores.removeValue(forKey: candidate)
+        }
+    }
+
+    // ステージ5: スコア降順に整列し、旧形容詞/旧仮名フィルタを通して確定する。
+    private func finalizeSortedCandidates(
+        _ context: CandidateGenerationContext,
+        scores: [String: Int]
+    ) -> [String] {
+        let sortedCandidates = scores.keys.sorted { lhs, rhs in
+            let lhsScore = scores[lhs, default: 0]
+            let rhsScore = scores[rhs, default: 0]
+
+            if lhsScore != rhsScore {
+                return lhsScore > rhsScore
+            }
+
+            if lhs.count != rhs.count {
+                return lhs.count < rhs.count
+            }
+
+            return lhs < rhs
+        }
+
+        let archaicAdjectiveFiltered = filterArchaicAdjectiveSurfaceCandidates(
+            for: context.reading,
+            candidates: sortedCandidates,
+            userDictionary: context.userDictionary,
+            learnedDictionary: context.learnedDictionary,
+            initialUserDictionary: context.initialUserDictionary
+        )
+
+        let filteredSortedCandidates = filterHistoricalKanaSurfaceCandidates(
+            for: context.reading,
+            candidates: archaicAdjectiveFiltered
+        )
+
+        return Array(filteredSortedCandidates.prefix(context.limit))
     }
 
     static func hiraganaToKatakana(_ text: String) -> String {
