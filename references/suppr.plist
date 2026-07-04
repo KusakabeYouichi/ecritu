@@ -54,5 +54,12 @@
 	<dict><key>phrase</key><string>泰輝</string><key>shortcut</key><string>たいて</string></dict>
 	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>
 	<dict><key>phrase</key><string>喪々</string><key>shortcut</key><string>もも</string></dict>
+	<dict><key>phrase</key><string>望茂</string><key>shortcut</key><string>もも</string></dict>
+	<dict><key>phrase</key><string>望萌</string><key>shortcut</key><string>もも</string></dict>
+	<dict><key>phrase</key><string>桃百</string><key>shortcut</key><string>もも</string></dict>
+	<dict><key>phrase</key><string>茂々</string><key>shortcut</key><string>もも</string></dict>
+	<dict><key>phrase</key><string>茂萌</string><key>shortcut</key><string>もも</string></dict>
+	<dict><key>phrase</key><string>萌百</string><key>shortcut</key><string>もも</string></dict>
+	<dict><key>phrase</key><string>萌茂</string><key>shortcut</key><string>もも</string></dict>
 </array>
 </plist>
