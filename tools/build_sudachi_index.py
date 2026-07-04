@@ -431,6 +431,19 @@ def build_index(
     include_normalized = candidate_policy in (CANDIDATE_POLICY_NORMALIZED, CANDIDATE_POLICY_BOTH)
     include_surface = candidate_policy in (CANDIDATE_POLICY_SURFACE, CANDIDATE_POLICY_BOTH)
 
+    # 事前パス: surface → 読み集合。normalized 候補の読み整合チェックに使う。
+    # SudachiDict は可能動詞の正規化形を基本形にしている(のめる/呑める→飲む)。
+    # 飲む(ノム)は読みノメルを持たないため、そのまま候補化すると「のめる→飲む」の
+    # ような誤変換が全可能動詞で発生する。normalized 形はその表層自身が同じ読みを
+    # 持つ場合(仝じ→同じ=オナジ 等)のみ候補にする。
+    surface_readings: Dict[str, Set[str]] = defaultdict(set)
+    if include_normalized:
+        for row in iter_csv_rows(paths):
+            r = extract_reading(row)
+            s = extract_surface_candidate(row)
+            if r and s:
+                surface_readings[s].add(r)
+
     for row in iter_csv_rows(paths):
         inflection_type = (
             row[SUDACHI_INFLECTION_TYPE_INDEX].strip()
@@ -465,7 +478,13 @@ def build_index(
         row_pos1 = row[SUDACHI_POS_INDEX].strip() if len(row) > SUDACHI_POS_INDEX else ""
         is_auxiliary_verb = (row_pos1 == "助動詞")
 
-        if include_normalized and normalized_candidate and not is_auxiliary_verb:
+        if (
+            include_normalized
+            and normalized_candidate
+            and not is_auxiliary_verb
+            # 読み整合: normalized 形自身がこの読みを持つ場合のみ(可能動詞→基本形の混入防止)
+            and reading in surface_readings.get(normalized_candidate, ())
+        ):
             candidates_with_sources[normalized_candidate].add(SOURCE_TAG_NORMALIZED)
 
         if include_surface and surface_candidate:
