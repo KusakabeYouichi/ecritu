@@ -313,9 +313,18 @@ extension KeyboardViewController {
             return candidates
         }
 
-        // かな識別(候補==入力かな)は末尾のかな候補チップに一本化して変換候補からは省く。
-        // ただしユーザがかなチップで明示確定して学習済みの語(ちゃんと/そして 等かなが正書
-        // の語)は「その読みの変換結果」として変換候補側にも出す(チップより前に来る)。
+        // かな識別(候補==入力かな)の扱い:
+        // - 変換エンジン自身がかなを首位に置く読み(ちゃんと/そして 等「かなが正書」の語。
+        //   辞書rank0+スクリプト優先の帰結)は、変換候補としても先頭に残す。「かなだから
+        //   末尾」と一律にしない(。自動確定の「先頭の変換候補」設定とも一貫する)。
+        // - ユーザがかなチップで明示確定して学習済みの読みも同様に残す(エンジンが知らない
+        //   読みへの上書き手段)。
+        // - それ以外は従来どおり末尾のかな候補チップに一本化し、変換候補からは省く。
+        if let first = candidates.first,
+            first == composingText,
+            isKanaOnlyText(first) {
+            return candidates
+        }
         if kanaKanjiConverter.hasLearnedKanaIdentity(for: composingReading) {
             return candidates
         }
