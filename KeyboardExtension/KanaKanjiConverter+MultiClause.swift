@@ -17,6 +17,19 @@ extension KanaKanjiConverter {
     static let multiClauseMaxSegmentReadingCount = 12
     static let multiClauseSupplementMaxLen = 8
     static let multiClauseTopK = 8                  // 1文節あたり列挙する変換候補数(sim: TOPK)
+    static let multiClauseInflectionTopK = 3        // 活用派生ノードの1文節あたり上限
+    // 活用派生ノードが LM 未収録(普通)のときの専用コスト。LM コーパスは Sudachi A単位で
+    // 活用形を「買っ+た」に分割するため、正しい活用表層(買った)は unigram に無い。
+    // 一律 dictUnknown(8700)だと LM 収録済みのかな断片チェーン(かっ7079+た2102)や
+    // word_costs ジャンク(カッタ7715/多部田7884)に負けるので、unigram 最大(8139)より
+    // 下に置き「文法的に検証済みの派生は既知のレア語より僅かに信頼する」とする。
+    static let multiClauseInflectionDerivedOOVCost = 7600
+    static let multiClauseInflectionMaxSegmentReadingCount = 8  // 活用派生を試みる span 長上限
+    // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
+    // (ルール全走査の回数を抑える事前フィルタ)。
+    static let inflectionRuleSuffixLastCharacters: Set<Character> = Set(
+        KanaKanjiConverter.allInflectionRules.compactMap { $0.readingSuffix.last }
+    )
     static let multiClauseBOSMarker = "<BOS>"
     static let multiClauseEOSMarker = "<EOS>"
     // LM コスト定数(cost = -logP × scale, scale=500 で学習)。sim_lm.py で検証した値と一致させる。
@@ -54,6 +67,7 @@ extension KanaKanjiConverter {
         let reading: String
         let isDictWord: Bool   // 辞書/変換で得た語(true) or かな素通り(false)
         let isCurated: Bool    // 追加語彙/学習語彙(void.plist 等の手動キュレーション or 学習)由来
+        let isInflectionDerived: Bool  // (b2) 活用エンジン供給ノード(買った/断線しやすい 等)
     }
 
     func multiClauseCandidates(
@@ -75,6 +89,7 @@ extension KanaKanjiConverter {
         // 追加語彙(void.plist 等の手動キュレーション)と学習語彙。どちらもユーザ意図なので優遇する。
         let initialUserDictionary = store.initialUserDictionary()
         let learnedDictionary = store.learnedDictionary()
+        let manualUserDictionary = store.userDictionary()
 
         // --- 1. ラティスのノード列挙 ---
         var nodes: [MultiClauseNode] = []
@@ -88,9 +103,15 @@ extension KanaKanjiConverter {
                 let segmentReading = String(chars[start..<end])
                 let suppressed = suppressedByReading[segmentReading]
 
-                var surfaces: [(surface: String, isDictWord: Bool, isCurated: Bool)] = []
+                var surfaces: [(surface: String, isDictWord: Bool, isCurated: Bool, isInflectionDerived: Bool)] = []
                 var seenSurfaces = Set<String>()
-                func add(_ surface: String, isDictWord: Bool, isCurated: Bool, exemptDecorative: Bool = false) {
+                func add(
+                    _ surface: String,
+                    isDictWord: Bool,
+                    isCurated: Bool,
+                    exemptDecorative: Bool = false,
+                    isInflectionDerived: Bool = false
+                ) {
                     if let suppressed, suppressed.contains(surface) {
                         return
                     }
@@ -98,7 +119,7 @@ extension KanaKanjiConverter {
                         return
                     }
                     if seenSurfaces.insert(surface).inserted {
-                        surfaces.append((surface, isDictWord, isCurated))
+                        surfaces.append((surface, isDictWord, isCurated, isInflectionDerived))
                     }
                 }
 
@@ -114,6 +135,10 @@ extension KanaKanjiConverter {
                 }
 
                 // (b) word_costs(Sudachi 由来)から top-K を列挙。抑制語彙は除外。
+                //     促音「っ」で終わる読みは日本語の語として自立しない断片(かっ/きっ 等)で、
+                //     Sudachi の複合語内読み(核=カッ 等)由来の漢字ノードがジャンク合成
+                //     (いきだけかったぜ→行きだけ核たぜ)を作るため、漢字含み表層は弾く。
+                let segmentEndsWithSokuon = segmentReading.hasSuffix("っ")
                 let costMap = store.wordCosts(for: segmentReading)
                 if !costMap.isEmpty {
                     let ordered = costMap.sorted { lhs, rhs in
@@ -121,6 +146,9 @@ extension KanaKanjiConverter {
                     }
                     var dictCount = 0
                     for (surface, _) in ordered {
+                        if segmentEndsWithSokuon, containsKanji(surface) {
+                            continue
+                        }
                         add(surface, isDictWord: true, isCurated: false)
                         dictCount += 1
                         if dictCount >= Self.multiClauseTopK {
@@ -129,10 +157,33 @@ extension KanaKanjiConverter {
                     }
                 }
 
+                // (b2) 活用派生ノード: 活用形(買った/行ける 等)は辞書に収穫しない設計のため、
+                //      活用エンジンから供給する。表層は LM 未収録が普通で dictUnknown(8700)が
+                //      付くが、断片合成(核+た)や素通りよりは安く、「いきだけかったぜ→
+                //      行きだけ買ったぜ」型の分割を可能にする。コスト抑制のため span 長 2〜8、
+                //      活用ルール末尾文字に一致する読みのみ、上位3件に限定。
+                if len >= 2,
+                    len <= Self.multiClauseInflectionMaxSegmentReadingCount,
+                    let lastChar = segmentReading.last,
+                    Self.inflectionRuleSuffixLastCharacters.contains(lastChar) {
+                    let inflected = inflectionCandidates(
+                        for: segmentReading,
+                        userDictionary: manualUserDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode,
+                        limit: Self.multiClauseInflectionTopK
+                    )
+                    for surface in inflected.prefix(Self.multiClauseInflectionTopK)
+                    where surface != segmentReading {
+                        add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                    }
+                }
+
                 // (c) word_costs にも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
                 //     ※以前は candidates() で補完していたが、多字 span に dictUnknown 一律コストの
                 //       blob(例: てんきです→天気です)を作り、正しい細分割(天気+です)を大域的に
-                //       上回って DP を歪めていた(はいい→配意 等)。活用形は word_costs 分解で拾う。
+                //       上回って DP を歪めていた(はいい→配意 等)。活用形は (b2) の活用エンジン
+                //       供給(限定的・8700)で拾う。
                 if surfaces.isEmpty {
                     let passthrough: String
                     if readingLooksLikeLoanword(segmentReading),
@@ -144,7 +195,7 @@ extension KanaKanjiConverter {
                     add(passthrough, isDictWord: false, isCurated: false)
                 }
 
-                for (surface, isDictWord, isCurated) in surfaces {
+                for (surface, isDictWord, isCurated, isInflectionDerived) in surfaces {
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
                         start: start,
@@ -152,7 +203,8 @@ extension KanaKanjiConverter {
                         surface: surface,
                         reading: segmentReading,
                         isDictWord: isDictWord,
-                        isCurated: isCurated
+                        isCurated: isCurated,
+                        isInflectionDerived: isInflectionDerived
                     ))
                     nodesEndingAt[end].append(index)
                     nodesStartingAt[start].append(index)
@@ -193,12 +245,21 @@ extension KanaKanjiConverter {
         let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
 
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
-        func transitionCost(prev: String, surface: String, reading: String, isDictWord: Bool, isCurated: Bool) -> Int {
+        func transitionCost(
+            prev: String,
+            surface: String,
+            reading: String,
+            isDictWord: Bool,
+            isCurated: Bool,
+            isInflectionDerived: Bool
+        ) -> Int {
             var base: Int
             if let bigram = bigramCosts["\(prev)\t\(surface)"] {
                 base = bigram
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
+            } else if isInflectionDerived {
+                base = Self.multiClauseInflectionDerivedOOVCost
             } else if isDictWord {
                 base = Self.multiClauseDictUnknownCost
             } else {
@@ -220,6 +281,13 @@ extension KanaKanjiConverter {
             if let first = reading.first, Self.multiClauseForbiddenInitials.contains(first) {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
+            // 促音「っ」で終わる読みの文節(かっ/カッ 等)は日本語の自立語として成立しない断片。
+            // LM コーパスが活用形を A単位(買っ+た)で分割する影響で断片チェーンが不当に安く
+            // なり、正しい活用ノード(買った 7600)を阻むため強く減点する。
+            // (あっ/えっ 等の感動詞の単独入力は単文節経路が扱うので影響しない)
+            if reading.count >= 2, reading.hasSuffix("っ"), !isCurated {
+                penalty += Self.multiClauseForbiddenPenaltyCost
+            }
             return base + penalty
         }
 
@@ -237,7 +305,8 @@ extension KanaKanjiConverter {
                         surface: node.surface,
                         reading: node.reading,
                         isDictWord: node.isDictWord,
-                        isCurated: node.isCurated
+                        isCurated: node.isCurated,
+                        isInflectionDerived: node.isInflectionDerived
                     )
                     if cost < best[idx] {
                         best[idx] = cost
@@ -254,7 +323,8 @@ extension KanaKanjiConverter {
                         surface: node.surface,
                         reading: node.reading,
                         isDictWord: node.isDictWord,
-                        isCurated: node.isCurated
+                        isCurated: node.isCurated,
+                        isInflectionDerived: node.isInflectionDerived
                     )
                     if cost < best[idx] {
                         best[idx] = cost
@@ -276,7 +346,8 @@ extension KanaKanjiConverter {
                 surface: Self.multiClauseEOSMarker,
                 reading: "",
                 isDictWord: true,
-                isCurated: false
+                isCurated: false,
+                isInflectionDerived: false
             )
             if total < bestTotal {
                 bestTotal = total
