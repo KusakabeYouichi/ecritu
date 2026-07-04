@@ -95,9 +95,16 @@ extension KeyboardViewController {
             systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
         ).candidates
 
-        // 自動確定候補: index0=未変換かな, index1=先頭の変換候補, ... 。設定 delimiterAutoCommitCandidate
-        // (既定=先頭の変換候補=index1)でどれを確定するか選ぶ。確定キーは別実装で常に未変換かな。
+        // 自動確定候補: index0=未変換かな, index1=表示中の先頭変換候補, ... 。設定
+        // delimiterAutoCommitCandidate(既定=先頭の変換候補=index1)でどれを確定するか選ぶ。
+        // 確定キーは別実装で常に未変換かな。
+        // かなが正書の読み(ちゃんと 等)や学習済みかな識別では表示先頭がかな自身になる。
+        // その場合は index1 にもかなを置く(重複除外で次の漢字候補が繰り上がると、
+        // ちゃんと。→喜屋武と のような不本意な自動確定になるため)。
         var autoCommitCandidates: [String] = [sourceText]
+        if let first = presentationCandidates.first, first == sourceText {
+            autoCommitCandidates.append(first)
+        }
         for candidate in presentationCandidates where !autoCommitCandidates.contains(candidate) {
             autoCommitCandidates.append(candidate)
         }
