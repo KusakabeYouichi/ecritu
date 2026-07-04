@@ -2173,6 +2173,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionNaaLongParticlePostfixIsDerived() {
+        // 「いきたいなあ」のような 長形の終助詞(なあ/ねえ)も postfix 素通りで導出する。
+        converter.learn(reading: "いく", candidate: "行く")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("いきたいなあ", "行きたいなあ"),
+            ("いきたいねえ", "行きたいねえ")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionYatsuPostfixIsDerivedFromVerbStem() {
         // 「入れるやつ」のような 動詞+やつ(口語の体言化)は postfix 素通りで導出する。
         converter.learn(reading: "いれる", candidate: "入れる")
