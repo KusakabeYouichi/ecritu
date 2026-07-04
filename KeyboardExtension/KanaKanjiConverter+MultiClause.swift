@@ -24,6 +24,10 @@ extension KanaKanjiConverter {
     // word_costs ジャンク(カッタ7715/多部田7884)に負けるので、unigram 最大(8139)より
     // 下に置き「文法的に検証済みの派生は既知のレア語より僅かに信頼する」とする。
     static let multiClauseInflectionDerivedOOVCost = 7600
+    // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
+    // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
+    static let multiClauseVariantLimit = 3
+    static let multiClauseVariantMaxDelta = 4000
     static let multiClauseInflectionMaxSegmentReadingCount = 8  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
     // (ルール全走査の回数を抑える事前フィルタ)。
@@ -358,23 +362,100 @@ extension KanaKanjiConverter {
             return []
         }
 
-        // --- 6. バックトラック ---
-        var segments: [String] = []
+        // --- 6. バックトラック(ノード列を保持) ---
+        var pathIndices: [Int] = []
         var idx = bestEndIndex
         while idx >= 0 {
-            segments.append(nodes[idx].surface)
+            pathIndices.append(idx)
             idx = backPointer[idx]
         }
-        segments.reverse()
-        guard segments.count >= 2 else {
+        pathIndices.reverse()
+        guard pathIndices.count >= 2 else {
             return []   // 単文節は既存の単文節経路に任せる
         }
 
+        let segments = pathIndices.map { nodes[$0].surface }
         let joined = segments.joined()
         if joined == normalized {
             return []
         }
-        return [joined]
+
+        // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
+        //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
+        //        視覚/資格/四角…)で第2候補以降を提示するため。1文字区間(助詞等)は対象外。
+        var variants: [(delta: Int, joined: String)] = []
+        for (pos, nodeIdx) in pathIndices.enumerated() {
+            let chosen = nodes[nodeIdx]
+            guard chosen.reading.count >= 2 else {
+                continue
+            }
+            let prevSurface = pos > 0 ? nodes[pathIndices[pos - 1]].surface : Self.multiClauseBOSMarker
+            let nextNode: MultiClauseNode? = pos + 1 < pathIndices.count ? nodes[pathIndices[pos + 1]] : nil
+
+            func pairCost(_ node: MultiClauseNode) -> Int {
+                let incoming = transitionCost(
+                    prev: prevSurface,
+                    surface: node.surface,
+                    reading: node.reading,
+                    isDictWord: node.isDictWord,
+                    isCurated: node.isCurated,
+                    isInflectionDerived: node.isInflectionDerived
+                )
+                let outgoing: Int
+                if let nextNode {
+                    outgoing = transitionCost(
+                        prev: node.surface,
+                        surface: nextNode.surface,
+                        reading: nextNode.reading,
+                        isDictWord: nextNode.isDictWord,
+                        isCurated: nextNode.isCurated,
+                        isInflectionDerived: nextNode.isInflectionDerived
+                    )
+                } else {
+                    outgoing = transitionCost(
+                        prev: node.surface,
+                        surface: Self.multiClauseEOSMarker,
+                        reading: "",
+                        isDictWord: true,
+                        isCurated: false,
+                        isInflectionDerived: false
+                    )
+                }
+                return incoming + outgoing
+            }
+
+            let baseCost = pairCost(chosen)
+            for altIdx in nodesStartingAt[chosen.start] {
+                let alt = nodes[altIdx]
+                guard alt.end == chosen.end,
+                    alt.surface != chosen.surface else {
+                    continue
+                }
+                let delta = pairCost(alt) - baseCost
+                guard delta <= Self.multiClauseVariantMaxDelta else {
+                    continue
+                }
+                var altSegments = segments
+                altSegments[pos] = alt.surface
+                let variantJoined = altSegments.joined()
+                if variantJoined == normalized || variantJoined == joined {
+                    continue
+                }
+                variants.append((delta, variantJoined))
+            }
+        }
+
+        variants.sort { lhs, rhs in
+            lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.joined < rhs.joined
+        }
+        var results = [joined]
+        for variant in variants where !results.contains(variant.joined) {
+            results.append(variant.joined)
+            if results.count >= 1 + Self.multiClauseVariantLimit {
+                break
+            }
+        }
+        return results
     }
 
     // 語形(かな・漢字・ラテン字を含む)か。絵文字/記号のみなら false。curated 優遇の対象判定に使う。
