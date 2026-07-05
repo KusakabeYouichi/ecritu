@@ -1029,7 +1029,8 @@ extension KeyboardRootView {
 
                     conversionCandidateChips
 
-                    if !composingText.isEmpty {
+                    // 変換チップ側に同一のかな候補が出ている場合は末尾チップを重複表示しない
+                    if !composingText.isEmpty, !conversionCandidates.contains(composingText) {
                         let kanaChipText = showsParenthesesWrapper ? "(\(composingText))" : composingText
                         if canTapComposingTextToCommit {
                             Button {
