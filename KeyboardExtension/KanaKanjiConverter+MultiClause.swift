@@ -132,10 +132,11 @@ extension KanaKanjiConverter {
                 }
 
                 // (a) 追加語彙/学習語彙(curated)を常に列挙する。分割・素通りに確実に勝たせるため。
-                //     ただし surface==読み(かな識別=変換でない)は優遇しない。過去にかな確定を
-                //     学習してしまった履歴が最安の単スパンになり変換をブロックするのを防ぐ。
+                //     追加語彙はかな識別(ございます/だが 等、かなが正書の登録)も含めて列挙する
+                //     — 手動キュレーションの単語であり、かな文丸ごとの学習汚染(ですね事件)とは
+                //     異なる。学習語彙側のかな識別スキップは維持。
                 //     追加語彙はユーザ明示登録なので装飾フィルタも免除(あ・うん 等の実在固有名)。
-                for surface in initialUserDictionary[segmentReading] ?? [] where surface != segmentReading {
+                for surface in initialUserDictionary[segmentReading] ?? [] {
                     add(surface, isDictWord: true, isCurated: true, exemptDecorative: true)
                 }
                 for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading {
