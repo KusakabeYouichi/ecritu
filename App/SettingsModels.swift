@@ -59,6 +59,7 @@ enum SettingsKeys {
     static let kanaKanjiInitialShortcutVocabularyMigrated = "kanaKanjiInitialShortcutVocabularyMigrated"
     static let kanaKanjiInitialSuppressionDictionaryMigrated = "kanaKanjiInitialSuppressionDictionaryMigrated"
     static let kanaKanjiInitialSuppressionDictionaryAppliedSignature = "kanaKanjiInitialSuppressionDictionaryAppliedSignature"
+    static let kanaKanjiInitialSuppressionDictionaryAppliedSeed = "kanaKanjiInitialSuppressionDictionaryAppliedSeed"
     static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
     static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
