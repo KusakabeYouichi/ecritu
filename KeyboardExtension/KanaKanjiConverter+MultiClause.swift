@@ -163,6 +163,11 @@ extension KanaKanjiConverter {
                 for surface in initialUserDictionary[segmentReading] ?? [] {
                     add(surface, isDictWord: true, isCurated: true, exemptDecorative: true)
                 }
+                // 手動追加語彙(アプリの語彙管理から登録)も同格の curated として列挙する
+                // (従来は連文節に載らない既存ギャップだった)。
+                for surface in manualUserDictionary[segmentReading] ?? [] {
+                    add(surface, isDictWord: true, isCurated: true, exemptDecorative: true)
+                }
                 for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading {
                     add(surface, isDictWord: true, isCurated: true)
                 }
