@@ -28,6 +28,10 @@ extension KanaKanjiConverter {
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
     static let multiClauseVariantMaxDelta = 4000
+    // 文末の終助詞クラスタ読み。文末セグメントがこれらの読みなのに表層が漢字(かな→仮名/哉、
+    // かも→鴨 等)になるのは不自然なので、EOS 遷移で強めに減点してかな表記を優先する。
+    static let multiClauseFinalParticleReadings: Set<String> = ["かな", "かも", "よね", "かしら", "よな"]
+    static let multiClauseFinalParticleKanjiPenalty = 3000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
     // (ルール全走査の回数を抑える事前フィルタ)。
@@ -345,7 +349,7 @@ extension KanaKanjiConverter {
             if best[idx] >= infinity {
                 continue
             }
-            let total = best[idx] + transitionCost(
+            var total = best[idx] + transitionCost(
                 prev: nodes[idx].surface,
                 surface: Self.multiClauseEOSMarker,
                 reading: "",
@@ -353,6 +357,12 @@ extension KanaKanjiConverter {
                 isCurated: false,
                 isInflectionDerived: false
             )
+            // 文末が終助詞クラスタ読み(かな/かも 等)なのに漢字表層(仮名/哉/鴨)なのは不自然。
+            if Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading),
+                nodes[idx].surface != nodes[idx].reading,
+                !nodes[idx].isCurated {
+                total += Self.multiClauseFinalParticleKanjiPenalty
+            }
             if total < bestTotal {
                 bestTotal = total
                 bestEndIndex = idx
