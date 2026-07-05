@@ -192,10 +192,11 @@ extension KanaKanjiConverter {
         }
 
         let metadata = inflectionMetadata(for: baseReading)
-        // resolvedInflectionClass の「user 候補は inference 許可」用には initialUserDictionary 等も含めるが、
-        // inferredSahenInflectionClass の「user 自身が追加したものだけ救済」用は
-        // initialUserDictionary(references plist 由来。migration で userDictionary にもマージされる)
-        // と一致する候補を除いた、本当の手動追加分のみに絞る。
+        // 追加語彙(void.plist 等=initialUserDictionary)も手動追加と同様にサ変推論の対象に
+        // 含める。以前は「本当の手動追加分のみ」に絞っていたが、まかいぞうしてる→魔改造してる
+        // のような void 由来サ変名詞の活用が導出できず、し→市 等の誤分割だけが残っていた。
+        // 暴発は inferredSahen 側のゲート(isLikelySahenPhraseStem 等)で抑えられており、
+        // そもそも該当読み(Xしてる)を打った時しか発動しない。
         let initialCandidatesForBase = Set(initialUserDictionary[baseReading] ?? [])
         let initialOrUserCandidateSet = Set(
             combinedUserCandidates(
@@ -203,12 +204,7 @@ extension KanaKanjiConverter {
                 userDictionary: userDictionary
             )
         ).union(initialCandidatesForBase)
-        let userOwnCandidateSet = Set(
-            combinedUserCandidates(
-                for: baseReading,
-                userDictionary: userDictionary
-            )
-        ).subtracting(initialCandidatesForBase)
+        let userOwnCandidateSet = initialOrUserCandidateSet
         var results: [String] = []
 
         for candidate in baseCandidates {
