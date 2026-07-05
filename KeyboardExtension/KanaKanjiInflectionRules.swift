@@ -533,6 +533,9 @@ extension KanaKanjiConverter {
 
         return [
             teForm + "みる",
+            teForm + "みよう",
+            teForm + "みましょう",
+            teForm + "みるか",
             teForm + "みた",
             teForm + "みて",
             teForm + "みない",
