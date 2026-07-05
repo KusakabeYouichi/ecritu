@@ -37,6 +37,9 @@
 	<dict><key>phrase</key><string>沈殿</string><key>shortcut</key><string>ちんでん</string></dict>
 	<dict><key>phrase</key><string>尚</string><key>shortcut</key><string>なお</string></dict>
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>
+	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>ヤる</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
 	<dict><key>phrase</key><string>発酵</string><key>shortcut</key><string>はっこう</string></dict>
 	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>
