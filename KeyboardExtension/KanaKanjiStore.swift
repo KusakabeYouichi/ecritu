@@ -425,18 +425,25 @@ final class KanaKanjiStore {
         self.defaults = UserDefaults(suiteName: appGroupID)
     }
 
+    // バンドル優先で辞書ファイルを解決する。以前は app-group 優先だったが、正当な更新経路の
+    // 無い遺物(旧仕組みで実機の app group に残った古い辞書)が半永久的に新しいバンドル辞書を
+    // 覆い隠し、鴣う 等の旧ハーベストのジャンクや修正済みの誤り(のめる→飲む)が実機だけで
+    // 再発し続けていた。バンドルは毎ビルド tmp から最新が入るため、実体があればバンドルを使い、
+    // その際 app-group 側の同名遺物は削除して容量も回収する。app-group はバンドルに実体が
+    // 無い場合のフォールバックとしてのみ残す。
     private func sharedOrBundledDictionaryURL(filename: String) -> URL? {
-        if let containerURL = fileManager.containerURL(
+        let sharedURL: URL? = fileManager.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
-        ) {
-            let sharedURL = containerURL.appendingPathComponent(filename)
+        ).map { $0.appendingPathComponent(filename) }
 
-            if let values = try? sharedURL.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
+        func isUsableFile(_ url: URL) -> Bool {
+            guard let values = try? url.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
                 values.isRegularFile == true,
                 let size = values.fileSize,
-                size > 0 {
-                return sharedURL
+                size > 0 else {
+                return false
             }
+            return true
         }
 
         let bundle = Bundle(for: KanaKanjiStore.self)
@@ -451,13 +458,15 @@ final class KanaKanjiStore {
                 : bundle.url(forResource: resourceName, withExtension: resourceExtension)
         ]
 
-        for resourceURL in resourceURLs.compactMap({ $0 }) {
-            if let values = try? resourceURL.resourceValues(forKeys: [.isRegularFileKey, .fileSizeKey]),
-                values.isRegularFile == true,
-                let size = values.fileSize,
-                size > 0 {
-                return resourceURL
+        for resourceURL in resourceURLs.compactMap({ $0 }) where isUsableFile(resourceURL) {
+            if let sharedURL, isUsableFile(sharedURL) {
+                try? fileManager.removeItem(at: sharedURL)
             }
+            return resourceURL
+        }
+
+        if let sharedURL, isUsableFile(sharedURL) {
+            return sharedURL
         }
 
         return nil
