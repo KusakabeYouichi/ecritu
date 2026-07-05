@@ -28,7 +28,7 @@ extension KanaKanjiConverter {
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
     static let multiClauseVariantMaxDelta = 4000
-    static let multiClauseInflectionMaxSegmentReadingCount = 8  // 活用派生を試みる span 長上限
+    static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
     // (ルール全走査の回数を抑える事前フィルタ)。
     static let inflectionRuleSuffixLastCharacters: Set<Character> = Set(
