@@ -425,7 +425,11 @@ extension KanaKanjiConverter {
 
         let segments = pathIndices.map { nodes[$0].surface }
         let joined = segments.joined()
-        if joined == normalized {
+        // 全かな結果は原則返さない(素通りの丸ごとエコー防止)。ただし経路に curated ノード
+        // (やって/にした 等、かなが正書として明示登録された語)を含む場合は、かな結果が
+        // 正規の変換なので返す(やってそうな が候補なしになるのを防ぐ)。
+        if joined == normalized,
+            !pathIndices.contains(where: { nodes[$0].isCurated }) {
             return []
         }
 
