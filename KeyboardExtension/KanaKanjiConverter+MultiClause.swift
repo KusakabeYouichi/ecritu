@@ -23,7 +23,7 @@ extension KanaKanjiConverter {
     // 一律 dictUnknown(8700)だと LM 収録済みのかな断片チェーン(かっ7079+た2102)や
     // word_costs ジャンク(カッタ7715/多部田7884)に負けるので、unigram 最大(8139)より
     // 下に置き「文法的に検証済みの派生は既知のレア語より僅かに信頼する」とする。
-    static let multiClauseInflectionDerivedOOVCost = 7600
+    static let multiClauseInflectionDerivedOOVCost = 7200
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -31,6 +31,13 @@ extension KanaKanjiConverter {
     // 文末の終助詞クラスタ読み。文末セグメントがこれらの読みなのに表層が漢字(かな→仮名/哉、
     // かも→鴨 等)になるのは不自然なので、EOS 遷移で強めに減点してかな表記を優先する。
     static let multiClauseFinalParticleReadings: Set<String> = ["かな", "かも", "よね", "かしら", "よな"]
+    // 活用派生ノードの末尾助動詞トークン(長い順)。コーパスは A単位で 買わ+ない に分割する
+    // ため、合成ノード「買わない」は出口 bigram(ない→よ/ない→EOS)を引けず、断片チェーン
+    // (川+ない)に出口コストで逆転される。末尾トークンで bigram を代用して整合させる。
+    static let multiClauseInflectionAuxTails: [String] = [
+        "ました", "ません", "なかった", "ないで", "ない", "ます", "です", "った", "んだ", "いた",
+        "えた", "した", "てる", "よう", "たい", "て", "た", "だ", "う"
+    ]
     static let multiClauseFinalParticleKanjiPenalty = 3000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
@@ -68,6 +75,13 @@ extension KanaKanjiConverter {
 
     // ラティスのノード(1 つの文節候補)。同じ span でも表層ごとに別ノードを立て、bigram の
     // 文脈(直前の表層)を DP でつなぐ。
+    static func inflectionAuxTail(of surface: String) -> String? {
+        for tail in multiClauseInflectionAuxTails where surface.hasSuffix(tail) {
+            return tail
+        }
+        return nil
+    }
+
     struct MultiClauseNode {
         let start: Int
         let end: Int
@@ -242,20 +256,32 @@ extension KanaKanjiConverter {
         if n >= 1 {
             for boundary in 1..<n {
                 for prevIdx in nodesEndingAt[boundary] {
+                    let prevNode = nodes[prevIdx]
+                    let auxTail = prevNode.isInflectionDerived
+                        ? Self.inflectionAuxTail(of: prevNode.surface)
+                        : nil
                     for curIdx in nodesStartingAt[boundary] {
-                        addPair(nodes[prevIdx].surface, nodes[curIdx].surface)
+                        addPair(prevNode.surface, nodes[curIdx].surface)
+                        if let auxTail {
+                            addPair(auxTail, nodes[curIdx].surface)
+                        }
                     }
                 }
             }
         }
         for idx in nodesEndingAt[n] {
             addPair(nodes[idx].surface, Self.multiClauseEOSMarker)
+            if nodes[idx].isInflectionDerived,
+                let auxTail = Self.inflectionAuxTail(of: nodes[idx].surface) {
+                addPair(auxTail, Self.multiClauseEOSMarker)
+            }
         }
         let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
 
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
         func transitionCost(
             prev: String,
+            prevAuxTail: String?,
             surface: String,
             reading: String,
             isDictWord: Bool,
@@ -265,6 +291,10 @@ extension KanaKanjiConverter {
             var base: Int
             if let bigram = bigramCosts["\(prev)\t\(surface)"] {
                 base = bigram
+            } else if let prevAuxTail,
+                let auxBigram = bigramCosts["\(prevAuxTail)\t\(surface)"] {
+                // 活用派生ノードの末尾助動詞トークンで bigram を代用(買わない→よ を ない→よ で評価)
+                base = auxBigram
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
             } else if isInflectionDerived {
@@ -292,7 +322,7 @@ extension KanaKanjiConverter {
             }
             // 促音「っ」で終わる読みの文節(かっ/カッ 等)は日本語の自立語として成立しない断片。
             // LM コーパスが活用形を A単位(買っ+た)で分割する影響で断片チェーンが不当に安く
-            // なり、正しい活用ノード(買った 7600)を阻むため強く減点する。
+            // なり、正しい活用ノード(買った 7200)を阻むため強く減点する。
             // (あっ/えっ 等の感動詞の単独入力は単文節経路が扱うので影響しない)
             if reading.count >= 2, reading.hasSuffix("っ"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
@@ -311,6 +341,7 @@ extension KanaKanjiConverter {
                 if node.start == 0 {
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
+                        prevAuxTail: nil,
                         surface: node.surface,
                         reading: node.reading,
                         isDictWord: node.isDictWord,
@@ -327,8 +358,12 @@ extension KanaKanjiConverter {
                     if prevCost >= infinity {
                         continue
                     }
+                    let prevNode = nodes[prevIdx]
                     let cost = prevCost + transitionCost(
-                        prev: nodes[prevIdx].surface,
+                        prev: prevNode.surface,
+                        prevAuxTail: prevNode.isInflectionDerived
+                            ? Self.inflectionAuxTail(of: prevNode.surface)
+                            : nil,
                         surface: node.surface,
                         reading: node.reading,
                         isDictWord: node.isDictWord,
@@ -352,6 +387,9 @@ extension KanaKanjiConverter {
             }
             var total = best[idx] + transitionCost(
                 prev: nodes[idx].surface,
+                prevAuxTail: nodes[idx].isInflectionDerived
+                    ? Self.inflectionAuxTail(of: nodes[idx].surface)
+                    : nil,
                 surface: Self.multiClauseEOSMarker,
                 reading: "",
                 isDictWord: true,
@@ -404,8 +442,16 @@ extension KanaKanjiConverter {
             let nextNode: MultiClauseNode? = pos + 1 < pathIndices.count ? nodes[pathIndices[pos + 1]] : nil
 
             func pairCost(_ node: MultiClauseNode) -> Int {
+                let prevAuxTail: String? = {
+                    guard pos > 0 else { return nil }
+                    let prevNode = nodes[pathIndices[pos - 1]]
+                    return prevNode.isInflectionDerived
+                        ? Self.inflectionAuxTail(of: prevNode.surface)
+                        : nil
+                }()
                 let incoming = transitionCost(
                     prev: prevSurface,
+                    prevAuxTail: prevAuxTail,
                     surface: node.surface,
                     reading: node.reading,
                     isDictWord: node.isDictWord,
@@ -416,6 +462,9 @@ extension KanaKanjiConverter {
                 if let nextNode {
                     outgoing = transitionCost(
                         prev: node.surface,
+                        prevAuxTail: node.isInflectionDerived
+                            ? Self.inflectionAuxTail(of: node.surface)
+                            : nil,
                         surface: nextNode.surface,
                         reading: nextNode.reading,
                         isDictWord: nextNode.isDictWord,
@@ -425,6 +474,9 @@ extension KanaKanjiConverter {
                 } else {
                     outgoing = transitionCost(
                         prev: node.surface,
+                        prevAuxTail: node.isInflectionDerived
+                            ? Self.inflectionAuxTail(of: node.surface)
+                            : nil,
                         surface: Self.multiClauseEOSMarker,
                         reading: "",
                         isDictWord: true,
