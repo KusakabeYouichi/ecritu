@@ -321,6 +321,7 @@
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>オウンゴール</string><key>shortcut</key><string>おうんごーる</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>魔改造</string><key>shortcut</key><string>まかいぞう</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- 活用なし (名詞など) -->
 	<dict><key>phrase</key><string>未変換</string><key>shortcut</key><string>みへんかん</string></dict>
@@ -523,9 +524,12 @@
 	<dict><key>phrase</key><string>ヴェルヴェッティーン</string><key>shortcut</key><string>ゔぇるゔぇってぃーん</string></dict>
 	<dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict>
 	<dict><key>phrase</key><string>超過死亡</string><key>shortcut</key><string>ちょうかしぼう</string></dict>
+	<dict><key>phrase</key><string>電気工事士</string><key>shortcut</key><string>でんきこうじし</string></dict>
 	<!-- 中黒装飾フィルタで既定候補から外れた実在固有名の復活(映画/ゆうちょ/出版社) -->
 	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>
 	<dict><key>phrase</key><string>ぱ・る・る</string><key>shortcut</key><string>ぱるる</string></dict>
 	<dict><key>phrase</key><string>さ・え・ら</string><key>shortcut</key><string>さえら</string></dict>
+	<!-- かなが正書の接続詞(Sudachi に単独エントリが無く人名等に負ける) -->
+	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
 </array>
 </plist>
