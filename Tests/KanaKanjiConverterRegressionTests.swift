@@ -2257,6 +2257,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(derived.contains("魔改造してる"), "derived=\(derived)")
     }
 
+    func testRegressionTeMiruVolitionalIsDerived() {
+        // 「買ってみようかな」= てみる系の意志形+終助詞。てみよう チェーンから導出する。
+        converter.learn(reading: "かう", candidate: "買う")
+
+        let candidates = converter.candidates(
+            for: "かってみようかな",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(candidates.contains("買ってみようかな"), "candidates=\(candidates)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
