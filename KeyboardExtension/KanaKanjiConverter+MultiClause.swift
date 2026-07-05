@@ -75,6 +75,16 @@ extension KanaKanjiConverter {
 
     // ラティスのノード(1 つの文節候補)。同じ span でも表層ごとに別ノードを立て、bigram の
     // 文脈(直前の表層)を DP でつなぐ。
+    // 借用可能な末尾トークンを返す。活用派生ノードに加え、かな識別ノード(curated の
+    // やって/にした や word_costs のかな語)も対象 — かな表層はコーパスのトークン列と
+    // 表記が一致するため、末尾トークンの bigram 代用が意味的に成立する。
+    static func auxTailForBigramBorrow(of node: MultiClauseNode) -> String? {
+        guard node.isInflectionDerived || node.surface == node.reading else {
+            return nil
+        }
+        return inflectionAuxTail(of: node.surface)
+    }
+
     static func inflectionAuxTail(of surface: String) -> String? {
         for tail in multiClauseInflectionAuxTails where surface.hasSuffix(tail) {
             return tail
@@ -257,9 +267,7 @@ extension KanaKanjiConverter {
             for boundary in 1..<n {
                 for prevIdx in nodesEndingAt[boundary] {
                     let prevNode = nodes[prevIdx]
-                    let auxTail = prevNode.isInflectionDerived
-                        ? Self.inflectionAuxTail(of: prevNode.surface)
-                        : nil
+                    let auxTail = Self.auxTailForBigramBorrow(of: prevNode)
                     for curIdx in nodesStartingAt[boundary] {
                         addPair(prevNode.surface, nodes[curIdx].surface)
                         if let auxTail {
@@ -271,8 +279,7 @@ extension KanaKanjiConverter {
         }
         for idx in nodesEndingAt[n] {
             addPair(nodes[idx].surface, Self.multiClauseEOSMarker)
-            if nodes[idx].isInflectionDerived,
-                let auxTail = Self.inflectionAuxTail(of: nodes[idx].surface) {
+            if let auxTail = Self.auxTailForBigramBorrow(of: nodes[idx]) {
                 addPair(auxTail, Self.multiClauseEOSMarker)
             }
         }
@@ -361,9 +368,7 @@ extension KanaKanjiConverter {
                     let prevNode = nodes[prevIdx]
                     let cost = prevCost + transitionCost(
                         prev: prevNode.surface,
-                        prevAuxTail: prevNode.isInflectionDerived
-                            ? Self.inflectionAuxTail(of: prevNode.surface)
-                            : nil,
+                        prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),
                         surface: node.surface,
                         reading: node.reading,
                         isDictWord: node.isDictWord,
@@ -387,9 +392,7 @@ extension KanaKanjiConverter {
             }
             var total = best[idx] + transitionCost(
                 prev: nodes[idx].surface,
-                prevAuxTail: nodes[idx].isInflectionDerived
-                    ? Self.inflectionAuxTail(of: nodes[idx].surface)
-                    : nil,
+                prevAuxTail: Self.auxTailForBigramBorrow(of: nodes[idx]),
                 surface: Self.multiClauseEOSMarker,
                 reading: "",
                 isDictWord: true,
@@ -446,13 +449,9 @@ extension KanaKanjiConverter {
             let nextNode: MultiClauseNode? = pos + 1 < pathIndices.count ? nodes[pathIndices[pos + 1]] : nil
 
             func pairCost(_ node: MultiClauseNode) -> Int {
-                let prevAuxTail: String? = {
-                    guard pos > 0 else { return nil }
-                    let prevNode = nodes[pathIndices[pos - 1]]
-                    return prevNode.isInflectionDerived
-                        ? Self.inflectionAuxTail(of: prevNode.surface)
-                        : nil
-                }()
+                let prevAuxTail: String? = pos > 0
+                    ? Self.auxTailForBigramBorrow(of: nodes[pathIndices[pos - 1]])
+                    : nil
                 let incoming = transitionCost(
                     prev: prevSurface,
                     prevAuxTail: prevAuxTail,
@@ -466,9 +465,7 @@ extension KanaKanjiConverter {
                 if let nextNode {
                     outgoing = transitionCost(
                         prev: node.surface,
-                        prevAuxTail: node.isInflectionDerived
-                            ? Self.inflectionAuxTail(of: node.surface)
-                            : nil,
+                        prevAuxTail: Self.auxTailForBigramBorrow(of: node),
                         surface: nextNode.surface,
                         reading: nextNode.reading,
                         isDictWord: nextNode.isDictWord,
@@ -478,9 +475,7 @@ extension KanaKanjiConverter {
                 } else {
                     outgoing = transitionCost(
                         prev: node.surface,
-                        prevAuxTail: node.isInflectionDerived
-                            ? Self.inflectionAuxTail(of: node.surface)
-                            : nil,
+                        prevAuxTail: Self.auxTailForBigramBorrow(of: node),
                         surface: Self.multiClauseEOSMarker,
                         reading: "",
                         isDictWord: true,
