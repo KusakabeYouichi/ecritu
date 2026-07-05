@@ -531,5 +531,6 @@
 	<dict><key>phrase</key><string>さ・え・ら</string><key>shortcut</key><string>さえら</string></dict>
 	<!-- かなが正書の接続詞(Sudachi に単独エントリが無く人名等に負ける) -->
 	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
+	<dict><key>phrase</key><string>なのに</string><key>shortcut</key><string>なのに</string></dict>
 </array>
 </plist>
