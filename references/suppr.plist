@@ -65,5 +65,7 @@
 	<dict><key>phrase</key><string>世</string><key>shortcut</key><string>ぜ</string></dict>
 	<dict><key>phrase</key><string>是</string><key>shortcut</key><string>ぜ</string></dict>
 	<dict><key>phrase</key><string>駄賀</string><key>shortcut</key><string>だが</string></dict>
+	<dict><key>phrase</key><string>種</string><key>shortcut</key><string>だね</string></dict>
+	<dict><key>phrase</key><string>棚</string><key>shortcut</key><string>だな</string></dict>
 </array>
 </plist>
