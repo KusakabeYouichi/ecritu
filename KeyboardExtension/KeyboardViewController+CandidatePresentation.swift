@@ -347,6 +347,14 @@ extension KeyboardViewController {
         // かなが正書とみなせる根拠(辞書に実在するかな語=ちゃんと、追加語彙=だが/なのに、
         // 学習済み)がある読みだけ変換候補側にも残す。活用+postfix の合成で組み上がった
         // かな全文一致(かってみようかな 等)は変換意図の入力なので末尾チップに一本化する。
+        // 合流済みリストの先頭がかな識別=エンジン(連文節curated経路等)が変換の最良として
+        // かなを選んだ場合。合流は連文節先頭(1884)なので、単文節の素通りかなが先頭に来る
+        // 誤発火(かってみようかな 型)は起きない。やってそうな 等はこれで先頭に残る。
+        if let first = candidates.first,
+            first == composingText,
+            isKanaOnlyText(first) {
+            return candidates
+        }
         if kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
             return candidates
         }
