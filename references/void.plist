@@ -525,6 +525,7 @@
 	<dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict>
 	<dict><key>phrase</key><string>超過死亡</string><key>shortcut</key><string>ちょうかしぼう</string></dict>
 	<dict><key>phrase</key><string>電気工事士</string><key>shortcut</key><string>でんきこうじし</string></dict>
+	<dict><key>phrase</key><string>カオソーイ</string><key>shortcut</key><string>かおそーい</string></dict>
 	<!-- 中黒装飾フィルタで既定候補から外れた実在固有名の復活(映画/ゆうちょ/出版社) -->
 	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>
 	<dict><key>phrase</key><string>ぱ・る・る</string><key>shortcut</key><string>ぱるる</string></dict>
@@ -532,5 +533,10 @@
 	<!-- かなが正書の接続詞(Sudachi に単独エントリが無く人名等に負ける) -->
 	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
 	<dict><key>phrase</key><string>なのに</string><key>shortcut</key><string>なのに</string></dict>
+	<!-- ございます系: 連用形+ます の活用形につき辞書ハーベスト除外&イ音便不規則でエンジン未対応 -->
+	<dict><key>phrase</key><string>ございます</string><key>shortcut</key><string>ございます</string></dict>
+	<dict><key>phrase</key><string>ございました</string><key>shortcut</key><string>ございました</string></dict>
+	<dict><key>phrase</key><string>ございません</string><key>shortcut</key><string>ございません</string></dict>
+	<dict><key>phrase</key><string>ございませんでした</string><key>shortcut</key><string>ございませんでした</string></dict>
 </array>
 </plist>
