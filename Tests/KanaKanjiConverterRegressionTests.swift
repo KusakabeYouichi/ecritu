@@ -2286,6 +2286,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(freshConverter.shouldKeepKanaIdentityLeading(for: "だが"))
     }
 
+    func testRegressionNiSuruFamilyPostfixIsDerived() {
+        // 「もやし炒めにした」= 名詞+にする 文法族。postfix 素通りで導出する
+        // (連文節では にし→西 の単漢字が に+した を押しのけるため、単一経路で正解を供給)。
+        converter.learn(reading: "もやしいため", candidate: "もやし炒め")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("もやしいためにした", "もやし炒めにした"),
+            ("もやしいためにしよう", "もやし炒めにしよう"),
+            ("もやしいためにします", "もやし炒めにします")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
