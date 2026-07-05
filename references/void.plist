@@ -538,5 +538,13 @@
 	<dict><key>phrase</key><string>ございました</string><key>shortcut</key><string>ございました</string></dict>
 	<dict><key>phrase</key><string>ございません</string><key>shortcut</key><string>ございません</string></dict>
 	<dict><key>phrase</key><string>ございませんでした</string><key>shortcut</key><string>ございませんでした</string></dict>
+	<!-- かな交じりの複合表記(Sudachiは萌やし炒め/モヤシ炒めのみ) -->
+	<dict><key>phrase</key><string>もやし炒め</string><key>shortcut</key><string>もやしいため</string></dict>
+	<!-- 「にする」文法クラスタ: コーパスA単位分割の影響で に+した が 西+た 等の単漢字断片に負けるため、
+	     かな識別のcuratedノードとしてラティスに供給する -->
+	<dict><key>phrase</key><string>にした</string><key>shortcut</key><string>にした</string></dict>
+	<dict><key>phrase</key><string>にして</string><key>shortcut</key><string>にして</string></dict>
+	<dict><key>phrase</key><string>にする</string><key>shortcut</key><string>にする</string></dict>
+	<dict><key>phrase</key><string>にしよう</string><key>shortcut</key><string>にしよう</string></dict>
 </array>
 </plist>
