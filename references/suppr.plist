@@ -40,6 +40,8 @@
 	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>ヤる</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>殺る</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>姦る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
 	<dict><key>phrase</key><string>発酵</string><key>shortcut</key><string>はっこう</string></dict>
 	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>
