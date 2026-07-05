@@ -302,7 +302,8 @@ extension KeyboardRootView {
                 )
                 .accessibilityLabel(conversionStateLabel)
 
-                if !showsWrapperOnly, canTapComposingTextToCommit {
+                if !showsWrapperOnly, canTapComposingTextToCommit,
+                    !conversionCandidates.contains(composingText) {
                     let showsKatakanaCommitFeedback = isShowingKatakanaCommitFeedback(for: composingText)
 
                     Button {
