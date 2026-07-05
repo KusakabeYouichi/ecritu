@@ -483,7 +483,27 @@ final class KanaKanjiConverter {
         if (store.userDictionary()[normalized] ?? []).contains(normalized) {
             return true
         }
-        return systemCandidates(for: normalized, mode: .lesDeux).contains(normalized)
+        if systemCandidates(for: normalized, mode: .lesDeux).contains(normalized) {
+            return true
+        }
+        // 活用形の読み(やってそうな 等)は、脱活用した基本形の辞書先頭(抑制適用後)が
+        // かな identity(やる 等「かなが正書」の動詞)なら根拠ありとする。
+        // かう→買う のように漢字が先頭の基本形は対象外(かってみようかな は末尾のまま)。
+        let suppressedByReading = store.suppressedCandidatesByReading()
+        for rule in Self.allInflectionRules where normalized.hasSuffix(rule.readingSuffix) {
+            guard !rule.readingSuffix.isEmpty else { continue }
+            let stem = String(normalized.dropLast(rule.readingSuffix.count))
+            guard !stem.isEmpty else { continue }
+            let baseReading = stem + rule.baseReadingSuffix
+            guard baseReading != normalized else { continue }
+            let suppressed = suppressedByReading[baseReading] ?? []
+            let first = systemCandidates(for: baseReading, mode: .lesDeux)
+                .first { !suppressed.contains($0) }
+            if first == baseReading {
+                return true
+            }
+        }
+        return false
     }
 
     // かな候補チップの明示タップでかな識別を学習済みか(candidatesForPresentation が
