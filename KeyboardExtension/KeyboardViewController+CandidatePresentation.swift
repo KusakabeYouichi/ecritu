@@ -147,12 +147,23 @@ extension KeyboardViewController {
                     systemCandidateMode: systemCandidateMode
                 )
                 if !multiClause.isEmpty {
-                    let existing = Set(converterCandidates)
-                    let fresh = multiClause.filter { !existing.contains($0) }
-                    if !fresh.isEmpty {
-                        let insertAt = min(1, converterCandidates.count)
-                        converterCandidates.insert(contentsOf: fresh, at: insertAt)
+                    // 連文節の並び(最良+変種)を崩さずに合流する。以前は「単文節側に既出の
+                    // 連文節候補」を落としてから挿入していたため、連文節の最良(買ってみようかな)
+                    // が単文節側と重複すると変種(買ってみよう仮名 等)だけが上位に挿入され、
+                    // 最良が4番目以降に沈む逆転が起きていた。重複は単文節側から除き、連文節の
+                    // 並びをそのまま先頭(単文節1位の次)へ入れる。
+                    let multiSet = Set(multiClause)
+                    var merged: [String] = []
+                    if let first = converterCandidates.first, !multiSet.contains(first) {
+                        merged.append(first)
                     }
+                    merged.append(contentsOf: multiClause)
+                    for candidate in converterCandidates where !multiSet.contains(candidate) && candidate != merged.first {
+                        if !merged.contains(candidate) {
+                            merged.append(candidate)
+                        }
+                    }
+                    converterCandidates = merged
                 }
             }
 
