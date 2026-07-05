@@ -602,16 +602,41 @@ extension ContentView {
             return
         }
 
-        let currentDictionary = normalizedDictionaryEntries(
+        var currentDictionary = normalizedDictionaryEntries(
             loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
         )
 
+        // 削除同期: 過去にバンドルから播種した抑制のうち、新しいバンドルに無くなったものは
+        // 端末からも取り除く(撤回が実機に届くように)。初回(播種記録なし)は「現状は全て
+        // 播種由来」とみなす — 抑制は plist→バンドル経由でのみ運用しており、アプリUIでの
+        // 手動抑制は使っていない前提。
+        let previouslySeeded = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSeed)
+        )
+        let removalBaseline = previouslySeeded.isEmpty ? currentDictionary : previouslySeeded
+        for (reading, candidates) in removalBaseline {
+            let retracted = Set(candidates).subtracting(Set(initialDictionary[reading] ?? []))
+            guard !retracted.isEmpty else { continue }
+            let kept = (currentDictionary[reading] ?? []).filter { !retracted.contains($0) }
+            if kept.isEmpty {
+                currentDictionary.removeValue(forKey: reading)
+            } else {
+                currentDictionary[reading] = kept
+            }
+        }
+
         let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
 
-        if merged != currentDictionary {
+        if merged != normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
+        ) {
             saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
         }
 
+        saveDictionaryEntries(
+            initialDictionary,
+            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSeed
+        )
         defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated)
         defaults.set(
             initialSignature,
