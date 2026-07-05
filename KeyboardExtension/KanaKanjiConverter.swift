@@ -465,6 +465,27 @@ final class KanaKanjiConverter {
         }
     }
 
+    // かな識別を変換候補の先頭に残すべき読みか。かなが正書とみなせる根拠(辞書に実在する
+    // かな語=ちゃんと/そして、追加語彙のかな語=だが/なのに、学習済み)がある場合のみ true。
+    // 活用+postfix の合成で組み上がったかな全文一致(かってみようかな 等)は変換意図の
+    // 入力なので対象外(末尾のかなチップに一本化する)。
+    func shouldKeepKanaIdentityLeading(for reading: String) -> Bool {
+        let normalized = KanaTextNormalizer.normalizedReading(reading)
+        guard !normalized.isEmpty else {
+            return false
+        }
+        if hasLearnedKanaIdentity(for: normalized) {
+            return true
+        }
+        if (store.initialUserDictionary()[normalized] ?? []).contains(normalized) {
+            return true
+        }
+        if (store.userDictionary()[normalized] ?? []).contains(normalized) {
+            return true
+        }
+        return systemCandidates(for: normalized, mode: .lesDeux).contains(normalized)
+    }
+
     // かな候補チップの明示タップでかな識別を学習済みか(candidatesForPresentation が
     // 変換候補側にもかな識別を表示するかの判定に使う)。
     func hasLearnedKanaIdentity(for reading: String) -> Bool {

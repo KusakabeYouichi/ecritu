@@ -2270,6 +2270,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(candidates.contains("買ってみようかな"), "candidates=\(candidates)")
     }
 
+    func testRegressionKanaIdentityLeadingRequiresLexicalEvidence() {
+        // かな識別を先頭に残すのは「かなが正書」の根拠がある読みだけ。
+        // 合成で組み上がるだけの読み(かってみようかな 等)は対象外。
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"))
+
+        // 学習済み(かなチップ明示タップ)は根拠になる。
+        converter.learn(reading: "ちゃんと", candidate: "ちゃんと", allowKanaIdentity: true)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ちゃんと"))
+
+        // 追加語彙(だが→だが 型)も根拠になる。converter の store は辞書をキャッシュする
+        // ため、書き込み後に生成したフレッシュな converter で確認する。
+        KanaKanjiStore(appGroupID: defaultsSuiteName).addUserEntry(reading: "だが", candidate: "だが")
+        let freshConverter = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        XCTAssertTrue(freshConverter.shouldKeepKanaIdentityLeading(for: "だが"))
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
