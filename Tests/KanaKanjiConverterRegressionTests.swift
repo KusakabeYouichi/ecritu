@@ -2242,6 +2242,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(reloaded.hasLearnedKanaIdentity(for: "ちゃんと"))
     }
 
+    func testRegressionInitialUserDictionarySahenNounDerivesConjugations() {
+        // 追加語彙(void.plist=initialUserDictionary)のサ変名詞も活用推論の対象になる
+        // (まかいぞうしてる→魔改造してる)。以前は手動追加分のみで、void 由来は
+        // し→市 等の誤分割だけが残っていた。
+        let derived = converter.inflectionCandidates(
+            for: "まかいぞうしてる",
+            userDictionary: [:],
+            initialUserDictionary: ["まかいぞう": ["魔改造"]],
+            systemCandidateMode: .surface,
+            limit: 5
+        )
+
+        XCTAssertTrue(derived.contains("魔改造してる"), "derived=\(derived)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
