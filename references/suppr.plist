@@ -90,6 +90,8 @@
 	<dict><key>phrase</key><string>加来野</string><key>shortcut</key><string>かくの</string></dict>
 	<dict><key>phrase</key><string>種</string><key>shortcut</key><string>だね</string></dict>
 	<dict><key>phrase</key><string>棚</string><key>shortcut</key><string>だな</string></dict>
+	<dict><key>phrase</key><string>一一</string><key>shortcut</key><string>いちいち</string></dict>
+	<dict><key>phrase</key><string>市市</string><key>shortcut</key><string>いちいち</string></dict>
 	<dict><key>phrase</key><string>哨吶</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>奏奈</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>惣名</string><key>shortcut</key><string>そうな</string></dict>
