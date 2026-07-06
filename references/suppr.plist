@@ -34,6 +34,8 @@
 	<dict><key>phrase</key><string>多數</string><key>shortcut</key><string>たすう</string></dict>
 	<dict><key>phrase</key><string>但し</string><key>shortcut</key><string>ただし</string></dict>
 	<dict><key>phrase</key><string>單位</string><key>shortcut</key><string>たんい</string></dict>
+	<dict><key>phrase</key><string>出來る</string><key>shortcut</key><string>できる</string></dict>
+	<dict><key>phrase</key><string>出きる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>沈殿</string><key>shortcut</key><string>ちんでん</string></dict>
 	<dict><key>phrase</key><string>尚</string><key>shortcut</key><string>なお</string></dict>
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>

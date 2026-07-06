@@ -549,5 +549,6 @@
 	<!-- やる はかなが正書(遣る/殺る等は抑制済み)。やって をかな識別で供給し、
 	     やってそうな 等の合成で先頭に来られるようにする -->
 	<dict><key>phrase</key><string>やって</string><key>shortcut</key><string>やって</string></dict>
+	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
 </array>
 </plist>
