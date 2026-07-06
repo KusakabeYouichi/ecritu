@@ -42,6 +42,8 @@
 	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>ヤる</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>為る</string><key>shortcut</key><string>する</string></dict>
+	<dict><key>phrase</key><string>仕る</string><key>shortcut</key><string>する</string></dict>
 	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
 	<dict><key>phrase</key><string>発酵</string><key>shortcut</key><string>はっこう</string></dict>
 	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>
@@ -79,5 +81,6 @@
 	<dict><key>phrase</key><string>デキル</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>デキる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>イタめる</string><key>shortcut</key><string>いためる</string></dict>
+	<dict><key>phrase</key><string>スる</string><key>shortcut</key><string>する</string></dict>
 </array>
 </plist>
