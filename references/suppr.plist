@@ -78,5 +78,6 @@
 	<!-- 現代的に流行っていない言い方 -->
 	<dict><key>phrase</key><string>デキル</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>デキる</string><key>shortcut</key><string>できる</string></dict>
+	<dict><key>phrase</key><string>イタめる</string><key>shortcut</key><string>いためる</string></dict>
 </array>
 </plist>
