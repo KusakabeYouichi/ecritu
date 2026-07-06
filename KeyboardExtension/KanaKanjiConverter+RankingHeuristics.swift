@@ -119,6 +119,33 @@ extension KanaKanjiConverter {
         return others.allSatisfy { (costs[$0] ?? Int.max) > kanaCost }
     }
 
+    // 派生(活用基底・postfix語幹)の候補並びを整える(かいてある対策の一般化):
+    // (1) seed の並び(書く/描く…)を先頭へ — 派生が正書から出るように。
+    // (2) かな識別(候補==読み)は LM 優位なら先頭へ(ある/やる 等)、劣位で先頭に居る
+    //     場合は末尾へ(かく 等)。生の辞書順は 書く rank15・有る先頭 等の歪みがある。
+    func orderedDerivationBaseCandidates(_ candidates: [String], reading: String) -> [String] {
+        var ordered = candidates
+        if let seedOrder = KanaKanjiSeedDictionary.seed[reading] {
+            let seedSet = Set(seedOrder)
+            let seeded = seedOrder.filter { ordered.contains($0) }
+            ordered = seeded + ordered.filter { !seedSet.contains($0) }
+        }
+        guard ordered.contains(reading) else {
+            return ordered
+        }
+        let others = ordered.filter { $0 != reading }
+        guard !others.isEmpty else {
+            return ordered
+        }
+        if isLMKanaPreferred(reading: reading, among: others) {
+            return [reading] + others
+        }
+        if ordered.first == reading {
+            return others + [reading]
+        }
+        return ordered
+    }
+
     func preferredLeadingKatakanaCandidates(
         fromSystemCandidates candidates: [String],
         reading: String
