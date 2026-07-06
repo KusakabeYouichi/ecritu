@@ -22,6 +22,11 @@
 	<dict><key>phrase</key><string>奇麗</string><key>shortcut</key><string>きれい</string></dict>
 	<dict><key>phrase</key><string>區別</string><key>shortcut</key><string>くべつ</string></dict>
 	<dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict>
+	<dict><key>phrase</key><string>此処</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>戸々</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>個個</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>箇箇</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>呱々</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>堺町</string><key>shortcut</key><string>さかえまち</string></dict>
 	<dict><key>phrase</key><string>流石</string><key>shortcut</key><string>さすが</string></dict>
 	<dict><key>phrase</key><string>早速</string><key>shortcut</key><string>さっそく</string></dict>
