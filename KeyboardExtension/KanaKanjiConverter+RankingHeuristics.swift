@@ -74,6 +74,21 @@ extension KanaKanjiConverter {
             reading: reading
         )
 
+        // かな識別が同読みグループ内で LM 優位(ここ4556 vs 個々/ココ…)なら、
+        // グループ首位へ引き上げる(此処/個々 等の辞書順よりかな正書を優先)。
+        // 今日(LM優位)vs きょう のような漢字正書の読みでは発火しない。
+        if let identityScore = scores[reading] {
+            let others = matchingCandidates.filter { $0 != reading }
+            if !others.isEmpty {
+                let costs = store.wordLMUnigramCosts(for: [reading] + others)
+                if let kanaCost = costs[reading],
+                    others.allSatisfy({ (costs[$0] ?? Int.max) > kanaCost }) {
+                    let maxOther = others.map { scores[$0, default: 0] }.max() ?? 0
+                    scores[reading] = max(identityScore, maxOther + 1)
+                }
+            }
+        }
+
         // かな識別(読みそのもの)が居る場合、非保護カタカナは「かなの直後」に置く
         // (やっぱり→ヤッパリ の順。従来の lowest-1 だと当て字群より下に沈みすぎる)。
         let kanaIdentityScore = scores[reading]
