@@ -91,9 +91,18 @@ extension KeyboardViewController {
         // (kanaKanjiCandidates)だけを見ており、連文節しか変換が無い長文では index1 が存在せず
         // 設定に関わらず常に未変換かなへ fallback していた。表示中候補なら「先頭の変換候補」設定が
         // 連文節にも効き、かつ主スレッドでの連文節DP再計算も避けられる。
-        let presentationCandidates = currentCandidatePresentationForRender(
-            systemCandidateMode: currentKanaKanjiCandidateSourceModeFromSharedDefaults()
-        ).candidates
+        // stale-while-revalidate 表示中(前回読みの候補)に句読点で自動確定されると、
+        // 古い候補を現在の読みへ確定してしまうため、鮮度が確認できない場合は同期の
+        // 単文節候補へフォールバックする(非同期化以前と同等の挙動)。
+        let mode = currentKanaKanjiCandidateSourceModeFromSharedDefaults()
+        let isPresentationFresh = settledCandidatePresentationKey?.reading == sourceReading
+        let presentationCandidates = isPresentationFresh
+            ? currentCandidatePresentationForRender(systemCandidateMode: mode).candidates
+            : kanaKanjiCandidates(
+                for: sourceReading,
+                limit: CandidateLimits.conversionDefault,
+                systemCandidateMode: mode
+            )
 
         // 自動確定候補: index0=未変換かな, index1=表示中の先頭変換候補, ... 。設定
         // delimiterAutoCommitCandidate(既定=先頭の変換候補=index1)でどれを確定するか選ぶ。
@@ -303,6 +312,15 @@ extension KeyboardViewController {
 
     func handleConversionCandidateSelection(_ index: Int) {
         clearRecentKanaPlainCommitUpgradeContext()
+
+        // stale-while-revalidate 表示中(前回読みの候補を暫定表示)にタップされた場合、
+        // 古い候補を現在の読みへ確定する事故を防ぐ(表示が確定していない間は無視)。
+        if currentInputMode == .kana,
+            activeConversion == nil,
+            !composingReading.isEmpty,
+            settledCandidatePresentationKey?.reading != composingReading {
+            return
+        }
 
         if currentInputMode == .latin {
             let token = currentLatinSuggestionQueryFromTextContext()
