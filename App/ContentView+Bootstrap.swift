@@ -598,7 +598,12 @@ extension ContentView {
             forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSignature
         )
 
-        guard appliedSignature != initialSignature else {
+        // 播種記録(AppliedSeed)が無い端末では、署名が一致していても一度だけ削除同期を
+        // 実行する(削除同期導入前に撤回済みエントリが残留しているのを回収するため)。
+        let hasAppliedSeed = defaults.object(
+            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSeed
+        ) != nil
+        guard appliedSignature != initialSignature || !hasAppliedSeed else {
             return
         }
 
