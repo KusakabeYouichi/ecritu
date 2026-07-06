@@ -82,13 +82,9 @@ extension KanaKanjiConverter {
             // 判定するかな/カタカナ限定だと、成る程 のような漢字表記が比較対象から漏れて
             // boost がタイ止まりになり、タイブレーク(短い方優先)で漢字が勝ってしまう。
             let others = uniqueCandidates(from: systemCandidates).filter { $0 != reading }
-            if !others.isEmpty {
-                let costs = store.wordLMUnigramCosts(for: [reading] + others)
-                if let kanaCost = costs[reading],
-                    others.allSatisfy({ (costs[$0] ?? Int.max) > kanaCost }) {
-                    let maxOther = others.map { scores[$0, default: 0] }.max() ?? 0
-                    scores[reading] = max(identityScore, maxOther + 1)
-                }
+            if !others.isEmpty, isLMKanaPreferred(reading: reading, among: others) {
+                let maxOther = others.map { scores[$0, default: 0] }.max() ?? 0
+                scores[reading] = max(identityScore, maxOther + 1)
             }
         }
 
@@ -108,6 +104,19 @@ extension KanaKanjiConverter {
                 scores[candidate] = min(penalizedScore, lowestNonKatakanaScore - 1)
             }
         }
+    }
+
+    // 同読みグループ内で「かな表記が LM 優位」か(ここ4556 vs 個々/ココ、やる vs 殺る 等)。
+    // LM 未収録は +∞ 扱い。かな首位化(1908)と活用基底の並び(かいてある対策)で共用する。
+    func isLMKanaPreferred(reading: String, among others: [String]) -> Bool {
+        guard !others.isEmpty else {
+            return true
+        }
+        let costs = store.wordLMUnigramCosts(for: [reading] + others)
+        guard let kanaCost = costs[reading] else {
+            return false
+        }
+        return others.allSatisfy { (costs[$0] ?? Int.max) > kanaCost }
     }
 
     func preferredLeadingKatakanaCandidates(
