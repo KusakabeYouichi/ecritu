@@ -184,19 +184,22 @@ extension KanaKanjiConverter {
                     || Self.isPredicateLikeStemReading(nextStem)
 
                 if allowAttachment {
-                    let stemCandidates = uniqueCandidates(
-                        from: candidatesForReading(
-                            nextStem,
-                            userDictionary: userDictionary,
-                            initialUserDictionary: initialUserDictionary,
-                            systemCandidateMode: systemCandidateMode
-                        ) + inflectionCandidates(
-                            for: nextStem,
-                            userDictionary: userDictionary,
-                            initialUserDictionary: initialUserDictionary,
-                            systemCandidateMode: systemCandidateMode,
-                            limit: limit
-                        )
+                    let stemCandidates = orderedDerivationBaseCandidates(
+                        uniqueCandidates(
+                            from: candidatesForReading(
+                                nextStem,
+                                userDictionary: userDictionary,
+                                initialUserDictionary: initialUserDictionary,
+                                systemCandidateMode: systemCandidateMode
+                            ) + inflectionCandidates(
+                                for: nextStem,
+                                userDictionary: userDictionary,
+                                initialUserDictionary: initialUserDictionary,
+                                systemCandidateMode: systemCandidateMode,
+                                limit: limit
+                            )
+                        ),
+                        reading: nextStem
                     )
 
                     let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
@@ -275,11 +278,14 @@ extension KanaKanjiConverter {
                 )
             )
 
-            let stemCandidates = candidatesForReading(
-                stem,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode
+            let stemCandidates = orderedDerivationBaseCandidates(
+                candidatesForReading(
+                    stem,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                ),
+                reading: stem
             )
 
             guard !stemCandidates.isEmpty else {
@@ -379,11 +385,14 @@ extension KanaKanjiConverter {
             return []
         }
 
-        let stemCandidates = candidatesForReading(
-            stemReading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
-            systemCandidateMode: systemCandidateMode
+        let stemCandidates = orderedDerivationBaseCandidates(
+            candidatesForReading(
+                stemReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            ),
+            reading: stemReading
         )
 
         guard !stemCandidates.isEmpty else {
@@ -528,11 +537,14 @@ extension KanaKanjiConverter {
             return []
         }
 
-        let baseCandidates = candidatesForReading(
-            baseReading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
-            systemCandidateMode: systemCandidateMode
+        let baseCandidates = orderedDerivationBaseCandidates(
+            candidatesForReading(
+                baseReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            ),
+            reading: baseReading
         )
 
         guard !baseCandidates.isEmpty else {
@@ -650,11 +662,14 @@ extension KanaKanjiConverter {
             return []
         }
 
-        let baseCandidates = candidatesForReading(
-            baseReading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
-            systemCandidateMode: systemCandidateMode
+        let baseCandidates = orderedDerivationBaseCandidates(
+            candidatesForReading(
+                baseReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            ),
+            reading: baseReading
         )
 
         guard !baseCandidates.isEmpty else {

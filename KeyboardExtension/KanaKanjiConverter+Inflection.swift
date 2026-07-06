@@ -191,22 +191,8 @@ extension KanaKanjiConverter {
             return []
         }
 
-        // 基底候補の並びを整える(生の辞書順は 書く が rank15 で かな/掻く より後ろ等の歪みがある):
-        // (1) seed の並び(書く/描く…)を先頭へ — 派生(書いてある 等)が正書動詞から出るように。
-        // (2) かな識別(基底==読み)は末尾へ — かいてある が 書いてある より先に出るのを防ぐ。
-        //     ただし LM でかなが優位な語(やる 等)は先頭のまま(やってそうな の首位を守る)。
-        if let seedOrder = KanaKanjiSeedDictionary.seed[baseReading] {
-            let seedSet = Set(seedOrder)
-            let seeded = seedOrder.filter { baseCandidates.contains($0) }
-            baseCandidates = seeded + baseCandidates.filter { !seedSet.contains($0) }
-        }
-        if baseCandidates.first == baseReading {
-            let others = baseCandidates.dropFirst()
-            if !others.isEmpty,
-                !isLMKanaPreferred(reading: baseReading, among: Array(others)) {
-                baseCandidates = Array(others) + [baseReading]
-            }
-        }
+        // 基底候補の並びを整える(seed順+かな識別のLM昇格/降格。postfix語幹と共通ヘルパ)。
+        baseCandidates = orderedDerivationBaseCandidates(baseCandidates, reading: baseReading)
 
         let metadata = inflectionMetadata(for: baseReading)
         // 追加語彙(void.plist 等=initialUserDictionary)も手動追加と同様にサ変推論の対象に
