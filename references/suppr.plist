@@ -97,6 +97,7 @@
 	<!-- 現代的に流行っていない言い方 -->
 	<dict><key>phrase</key><string>デキル</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>デキる</string><key>shortcut</key><string>できる</string></dict>
+	<dict><key>phrase</key><string>ソウ</string><key>shortcut</key><string>そう</string></dict>
 	<dict><key>phrase</key><string>イタめる</string><key>shortcut</key><string>いためる</string></dict>
 	<dict><key>phrase</key><string>スる</string><key>shortcut</key><string>する</string></dict>
 	<dict><key>phrase</key><string>やッぱり</string><key>shortcut</key><string>やっぱり</string></dict>
