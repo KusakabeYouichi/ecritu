@@ -90,8 +90,26 @@
 	<dict><key>phrase</key><string>加来野</string><key>shortcut</key><string>かくの</string></dict>
 	<dict><key>phrase</key><string>種</string><key>shortcut</key><string>だね</string></dict>
 	<dict><key>phrase</key><string>棚</string><key>shortcut</key><string>だな</string></dict>
+	<dict><key>phrase</key><string>哨吶</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>奏奈</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>惣名</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>想奈</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>聡奈</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>聡菜</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>蒼南</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>蒼那</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>霜奈</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>颯奈</string><key>shortcut</key><string>そうな</string></dict>
+	<dict><key>phrase</key><string>颯菜</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>七</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>奴</string><key>shortcut</key><string>なの</string></dict>
+	<dict><key>phrase</key><string>名野</string><key>shortcut</key><string>なの</string></dict>
+	<dict><key>phrase</key><string>奈乃</string><key>shortcut</key><string>なの</string></dict>
+	<dict><key>phrase</key><string>奈希</string><key>shortcut</key><string>なの</string></dict>
+	<dict><key>phrase</key><string>梛乃</string><key>shortcut</key><string>なの</string></dict>
+	<dict><key>phrase</key><string>楠乃</string><key>shortcut</key><string>なの</string></dict>
+	<dict><key>phrase</key><string>菜乃</string><key>shortcut</key><string>なの</string></dict>
+	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 
 	<!-- 現代的に流行っていない言い方 -->
