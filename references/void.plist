@@ -553,6 +553,7 @@
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
+	<dict><key>phrase</key><string>いらっと</string><key>shortcut</key><string>いらっと</string></dict>
 	<!-- やる はかなが正書(遣る/殺る等は抑制済み)。やって をかな識別で供給し、
 	     やってそうな 等の合成で先頭に来られるようにする -->
 	<dict><key>phrase</key><string>やって</string><key>shortcut</key><string>やって</string></dict>
