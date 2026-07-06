@@ -329,7 +329,12 @@ extension KanaKanjiConverter {
             if reading.count > 1, reading.contains("を") {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
-            if let first = reading.first, Self.multiClauseForbiddenInitials.contains(first) {
+            // 単独の「ん」は準体助詞(できる+ん+だ=のだ縮約)として正当な文節なので
+            // 語頭禁止の対象外にする(word_costs に んだ が無く、これを禁じると
+            // 〜るんだ/〜んです の文末クラスタが組めず ルン/キルン 等の分割に負ける)。
+            if let first = reading.first,
+                Self.multiClauseForbiddenInitials.contains(first),
+                reading != "ん" {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
             // 促音「っ」で終わる読みの文節(かっ/カッ 等)は日本語の自立語として成立しない断片。
