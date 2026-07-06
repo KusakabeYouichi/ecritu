@@ -78,7 +78,10 @@ extension KanaKanjiConverter {
         // グループ首位へ引き上げる(此処/個々 等の辞書順よりかな正書を優先)。
         // 今日(LM優位)vs きょう のような漢字正書の読みでは発火しない。
         if let identityScore = scores[reading] {
-            let others = matchingCandidates.filter { $0 != reading }
+            // グループは辞書の同読みリスト全体(systemCandidates)で組む。表層から読みを
+            // 判定するかな/カタカナ限定だと、成る程 のような漢字表記が比較対象から漏れて
+            // boost がタイ止まりになり、タイブレーク(短い方優先)で漢字が勝ってしまう。
+            let others = uniqueCandidates(from: systemCandidates).filter { $0 != reading }
             if !others.isEmpty {
                 let costs = store.wordLMUnigramCosts(for: [reading] + others)
                 if let kanaCost = costs[reading],

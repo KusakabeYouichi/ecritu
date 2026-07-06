@@ -102,5 +102,6 @@
 	<dict><key>phrase</key><string>矢ツぱり</string><key>shortcut</key><string>やっぱり</string></dict>
 	<dict><key>phrase</key><string>なァる程</string><key>shortcut</key><string>なるほど</string></dict>
 	<dict><key>phrase</key><string>なアるほど</string><key>shortcut</key><string>なるほど</string></dict>
+	<dict><key>phrase</key><string>ナルホド</string><key>shortcut</key><string>なるほど</string></dict>
 </array>
 </plist>
