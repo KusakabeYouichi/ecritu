@@ -353,9 +353,14 @@ final class KanaKanjiConverter {
             to: &scores
         )
         applyLearning(context.learningScoresForReading, to: &scores)
+        // 抑制語彙はステージ4で除去されるが、スクリプト種の比較グループ(LM首位化・
+        // カタカナ保護)には抑制前のジャンク(市市 等)が混ざると誤判定するため先に除く。
+        let suppressed = context.suppressedCandidatesByReading[context.reading] ?? []
         applySameReadingScriptPreference(
             for: context.reading,
-            systemCandidates: context.systemCandidates,
+            systemCandidates: suppressed.isEmpty
+                ? context.systemCandidates
+                : context.systemCandidates.filter { !suppressed.contains($0) },
             to: &scores
         )
         applySeedSingleKanjiPriorityBoost(for: context.reading, to: &scores)
