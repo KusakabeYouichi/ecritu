@@ -516,6 +516,10 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        // 起動計測: 初回起動が iOS の拡張起動デッドラインを超えると純正キーボードに
+        // 差し替えられるため、同期区間の実測を診断ログへ残す(遅い時のみ)。
+        let launchStartedAt = CFAbsoluteTimeGetCurrent()
+        keyboardLaunchViewDidLoadAt = launchStartedAt
         startKeyboardDiagnosticsSession()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         configureKeyboardContainerSizing()
@@ -524,7 +528,15 @@ final class KeyboardViewController: UIInputViewController {
         configureInputAssistantBar()
         startObservingSettingsDidChange()
         applyConverterFeatureFlagsFromSharedDefaults()
+        let setupStartedAt = CFAbsoluteTimeGetCurrent()
         setupKeyboardView()
+        let totalMs = Int((CFAbsoluteTimeGetCurrent() - launchStartedAt) * 1000)
+        let setupMs = Int((CFAbsoluteTimeGetCurrent() - setupStartedAt) * 1000)
+        if totalMs >= 80 {
+            appendKeyboardDiagnosticsLog(
+                "起動同期区間が遅い viewDidLoad=\(totalMs)ms (setupKeyboardView=\(setupMs)ms)"
+            )
+        }
     }
 
     deinit {
@@ -545,7 +557,9 @@ final class KeyboardViewController: UIInputViewController {
 
         configureKeyboardContainerSizing()
         ensureKeyboardViewIfNeeded()
-        beginKeyboardHeightLock(using: makeRenderConfiguration())
+        // viewDidLoad 直後の初回表示では setupKeyboardView が構築した設定をそのまま使い、
+        // 設定全読みの二重実行を避ける(設定変更は observer 経由で反映されるため安全)。
+        beginKeyboardHeightLock(using: lastRenderConfiguration ?? makeRenderConfiguration())
         configureInputAssistantBar()
         prepareKeyboardVisualForTransition()
         spaceToastTrigger += 1
@@ -629,9 +643,19 @@ final class KeyboardViewController: UIInputViewController {
         return dictionary
     }
 
+    var keyboardLaunchViewDidLoadAt: CFAbsoluteTime = 0
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
+
+        if keyboardLaunchViewDidLoadAt > 0 {
+            let toAppearMs = Int((CFAbsoluteTimeGetCurrent() - keyboardLaunchViewDidLoadAt) * 1000)
+            keyboardLaunchViewDidLoadAt = 0
+            if toAppearMs >= 250 {
+                appendKeyboardDiagnosticsLog("初回表示まで遅い viewDidLoad→viewDidAppear=\(toAppearMs)ms")
+            }
+        }
 
         scheduleKeyboardBootstrapIfNeeded()
 
