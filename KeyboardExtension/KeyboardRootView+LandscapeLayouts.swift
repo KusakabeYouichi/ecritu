@@ -284,23 +284,26 @@ extension KeyboardRootView {
 
             if !composingText.isEmpty || showsWrapperOnly {
                 // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
-                Group {
-                    if showsWrapperOnly {
-                        Text("()")
-                    } else {
-                        Image(systemName: conversionStateIconName)
+                // 候補なしのとき状態は必ず未確定なので、カプセルは冗長 — 出さずに上へ詰める。
+                if showsWrapperOnly || !conversionCandidates.isEmpty {
+                    Group {
+                        if showsWrapperOnly {
+                            Text("()")
+                        } else {
+                            Image(systemName: conversionStateIconName)
+                        }
                     }
+                    .font(.system(size: candidateStateFontSize, weight: .bold))
+                    .foregroundStyle(Color.white)
+                    .lineLimit(1)
+                    .padding(.horizontal, 7)
+                    .padding(.vertical, 3)
+                    .background(
+                        Capsule(style: .continuous)
+                            .fill(conversionStateColor.opacity(0.95))
+                    )
+                    .accessibilityLabel(conversionStateLabel)
                 }
-                .font(.system(size: candidateStateFontSize, weight: .bold))
-                .foregroundStyle(Color.white)
-                .lineLimit(1)
-                .padding(.horizontal, 7)
-                .padding(.vertical, 3)
-                .background(
-                    Capsule(style: .continuous)
-                        .fill(conversionStateColor.opacity(0.95))
-                )
-                .accessibilityLabel(conversionStateLabel)
 
                 if !showsWrapperOnly, canTapComposingTextToCommit,
                     !conversionCandidates.contains(composingText) {

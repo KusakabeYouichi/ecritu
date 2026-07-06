@@ -1006,7 +1006,8 @@ extension KeyboardRootView {
                 HStack(spacing: 6) {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
 
-                    if !composingText.isEmpty || showsWrapperOnly {
+                    // 候補なし(⊘)のとき状態は必ず未確定なので、カプセルは冗長 — 出さずに左へ詰める。
+                    if showsWrapperOnly || (!composingText.isEmpty && !conversionCandidates.isEmpty) {
                         // 状態はアイコンのミニカプセルで示す(鉛筆=未確定/循環矢印=変換中)。
                         Group {
                             if showsWrapperOnly {
