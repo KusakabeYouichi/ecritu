@@ -96,6 +96,17 @@ extension KeyboardViewController {
             systemCandidateMode: systemCandidateMode
         )
 
+        // stale-while-revalidate: 非同期変換が完了するまで前回の候補を表示したままにする。
+        // 空を返すと1打鍵ごとに [消去→変換→表示] のチラつきになる(連文節導入以降の体感悪化の原因)。
+        // 古い候補のタップ事故は handleConversionCandidateSelection 側の鮮度ガードで防ぐ。
+        if let cached = settledCandidatePresentation, !cached.candidates.isEmpty {
+            return CandidatePresentation(
+                composingText: composingRawText,
+                candidates: cached.candidates,
+                selectedIndex: nil
+            )
+        }
+
         return CandidatePresentation(
             composingText: composingRawText,
             candidates: [],
