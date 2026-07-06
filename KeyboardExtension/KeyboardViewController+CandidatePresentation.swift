@@ -318,6 +318,10 @@ extension KeyboardViewController {
         from candidates: [String],
         composingText: String
     ) -> [String] {
+        // どの経路から来ても表示リストに同一文字列が二度出ないようにする(先勝ち)。
+        var seen = Set<String>()
+        let candidates = candidates.filter { seen.insert($0).inserted }
+
         guard !composingText.isEmpty else {
             return candidates
         }
