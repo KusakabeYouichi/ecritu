@@ -322,6 +322,9 @@
     <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>オウンゴール</string><key>shortcut</key><string>おうんごーる</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>魔改造</string><key>shortcut</key><string>まかいぞう</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>マリネ</string><key>shortcut</key><string>まりね</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>メランジェ</string><key>shortcut</key><string>めらんじぇ</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>マリナード</string><key>shortcut</key><string>まりなーど</string><key>pos</key><string>サ変名詞</string></dict>
 
 	<!-- 活用なし (名詞など) -->
 	<dict><key>phrase</key><string>未変換</string><key>shortcut</key><string>みへんかん</string></dict>
@@ -533,6 +536,7 @@
 	<!-- かなが正書の接続詞(Sudachi に単独エントリが無く人名等に負ける) -->
 	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
 	<dict><key>phrase</key><string>なのに</string><key>shortcut</key><string>なのに</string></dict>
+	<dict><key>phrase</key><string>なので</string><key>shortcut</key><string>なので</string></dict>
 	<!-- ございます系: 連用形+ます の活用形につき辞書ハーベスト除外&イ音便不規則でエンジン未対応 -->
 	<dict><key>phrase</key><string>ございます</string><key>shortcut</key><string>ございます</string></dict>
 	<dict><key>phrase</key><string>ございました</string><key>shortcut</key><string>ございました</string></dict>
