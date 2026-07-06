@@ -92,6 +92,9 @@
 	<dict><key>phrase</key><string>棚</string><key>shortcut</key><string>だな</string></dict>
 	<dict><key>phrase</key><string>一一</string><key>shortcut</key><string>いちいち</string></dict>
 	<dict><key>phrase</key><string>市市</string><key>shortcut</key><string>いちいち</string></dict>
+	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
+	<dict><key>phrase</key><string>ほんもの</string><key>shortcut</key><string>ほんもの</string></dict>
+	<dict><key>phrase</key><string>ホンモノ</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>哨吶</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>奏奈</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>惣名</string><key>shortcut</key><string>そうな</string></dict>
