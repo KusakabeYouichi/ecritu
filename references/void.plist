@@ -550,6 +550,9 @@
 	<dict><key>phrase</key><string>にして</string><key>shortcut</key><string>にして</string></dict>
 	<dict><key>phrase</key><string>にする</string><key>shortcut</key><string>にする</string></dict>
 	<dict><key>phrase</key><string>にしよう</string><key>shortcut</key><string>にしよう</string></dict>
+	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
+	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
+	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
 	<!-- やる はかなが正書(遣る/殺る等は抑制済み)。やって をかな識別で供給し、
 	     やってそうな 等の合成で先頭に来られるようにする -->
 	<dict><key>phrase</key><string>やって</string><key>shortcut</key><string>やって</string></dict>
