@@ -453,7 +453,7 @@ extension KanaKanjiConverter {
             let prevSurface = pos > 0 ? nodes[pathIndices[pos - 1]].surface : Self.multiClauseBOSMarker
             let nextNode: MultiClauseNode? = pos + 1 < pathIndices.count ? nodes[pathIndices[pos + 1]] : nil
 
-            func pairCost(_ node: MultiClauseNode) -> Int {
+            func pairCost(_ node: MultiClauseNode, asCurated: Bool = true) -> Int {
                 let prevAuxTail: String? = pos > 0
                     ? Self.auxTailForBigramBorrow(of: nodes[pathIndices[pos - 1]])
                     : nil
@@ -463,7 +463,7 @@ extension KanaKanjiConverter {
                     surface: node.surface,
                     reading: node.reading,
                     isDictWord: node.isDictWord,
-                    isCurated: node.isCurated,
+                    isCurated: node.isCurated && asCurated,
                     isInflectionDerived: node.isInflectionDerived
                 )
                 let outgoing: Int
@@ -491,7 +491,10 @@ extension KanaKanjiConverter {
                 return incoming + outgoing
             }
 
-            let baseCost = pairCost(chosen)
+            // 基準コストは curated 床(1500)を外した自然コストで取る。curated の激安を
+            // 基準にすると同区間の代替(殺って 等)のコスト差が常に巨大になり、変種として
+            // 表示されなくなるため(経路選択には影響しない=表示順位のみの調整)。
+            let baseCost = pairCost(chosen, asCurated: false)
             for altIdx in nodesStartingAt[chosen.start] {
                 let alt = nodes[altIdx]
                 guard alt.end == chosen.end,
