@@ -73,6 +73,7 @@
 	<dict><key>phrase</key><string>世</string><key>shortcut</key><string>ぜ</string></dict>
 	<dict><key>phrase</key><string>是</string><key>shortcut</key><string>ぜ</string></dict>
 	<dict><key>phrase</key><string>駄賀</string><key>shortcut</key><string>だが</string></dict>
+	<dict><key>phrase</key><string>角野</string><key>shortcut</key><string>かくの</string></dict>
 	<dict><key>phrase</key><string>種</string><key>shortcut</key><string>だね</string></dict>
 	<dict><key>phrase</key><string>棚</string><key>shortcut</key><string>だな</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
@@ -82,5 +83,8 @@
 	<dict><key>phrase</key><string>デキる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>イタめる</string><key>shortcut</key><string>いためる</string></dict>
 	<dict><key>phrase</key><string>スる</string><key>shortcut</key><string>する</string></dict>
+	<dict><key>phrase</key><string>やッぱり</string><key>shortcut</key><string>やっぱり</string></dict>
+	<dict><key>phrase</key><string>矢ッ張り</string><key>shortcut</key><string>やっぱり</string></dict>
+	<dict><key>phrase</key><string>矢ツぱり</string><key>shortcut</key><string>やっぱり</string></dict>
 </array>
 </plist>

@@ -74,13 +74,21 @@ extension KanaKanjiConverter {
             reading: reading
         )
 
+        // かな識別(読みそのもの)が居る場合、非保護カタカナは「かなの直後」に置く
+        // (やっぱり→ヤッパリ の順。従来の lowest-1 だと当て字群より下に沈みすぎる)。
+        let kanaIdentityScore = scores[reading]
+
         for candidate in matchingCandidates where Self.isPureKatakanaCandidate(candidate) {
             if protectedKatakanaCandidates.contains(candidate) {
                 continue
             }
 
-            let penalizedScore = scores[candidate, default: 0] - Self.sameReadingPureKatakanaPenalty
-            scores[candidate] = min(penalizedScore, lowestNonKatakanaScore - 1)
+            if let kanaIdentityScore {
+                scores[candidate] = min(scores[candidate, default: 0], kanaIdentityScore - 1)
+            } else {
+                let penalizedScore = scores[candidate, default: 0] - Self.sameReadingPureKatakanaPenalty
+                scores[candidate] = min(penalizedScore, lowestNonKatakanaScore - 1)
+            }
         }
     }
 
@@ -108,6 +116,17 @@ extension KanaKanjiConverter {
                 break
             }
             protectedCandidates.insert(candidate)
+        }
+
+        // LM(コーパス)でかな表記が優位な語(やっぱり: かな6438/カタカナ未収録)は
+        // native のかなが正書なので、辞書先頭がカタカナでも保護しない。
+        // 外来語(パン/アンケート等)はカタカナ側が LM 優位なので保護が維持される。
+        if !protectedCandidates.isEmpty {
+            let costs = store.wordLMUnigramCosts(for: [reading] + Array(protectedCandidates))
+            if let kanaCost = costs[reading],
+                protectedCandidates.allSatisfy({ (costs[$0] ?? Int.max) > kanaCost }) {
+                return []
+            }
         }
 
         return protectedCandidates
