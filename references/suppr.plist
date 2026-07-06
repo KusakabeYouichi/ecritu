@@ -95,6 +95,9 @@
 	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>ほんもの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>ホンモノ</string><key>shortcut</key><string>ほんもの</string></dict>
+	<dict><key>phrase</key><string>アルン</string><key>shortcut</key><string>あるん</string></dict>
+	<dict><key>phrase</key><string>アルノ</string><key>shortcut</key><string>あるの</string></dict>
+	<dict><key>phrase</key><string>有乃</string><key>shortcut</key><string>あるの</string></dict>
 	<dict><key>phrase</key><string>哨吶</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>奏奈</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>惣名</string><key>shortcut</key><string>そうな</string></dict>
