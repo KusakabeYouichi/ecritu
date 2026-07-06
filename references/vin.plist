@@ -3933,7 +3933,6 @@
 	<dict><key>phrase</key><string>ロブスタ種</string><key>shortcut</key><string>ろぶすたしゅ</string></dict>
 	<dict><key>phrase</key><string>コーヒー</string><key>shortcut</key><string>こーひー</string></dict>
 	<dict><key>phrase</key><string>コーヒーベルト</string><key>shortcut</key><string>こーひーべると</string></dict>
-	<dict><key>phrase</key><string>コーヒーリキュール</string><key>shortcut</key><string>こーひーりきゅーる</string></dict>
 	<dict><key>phrase</key><string>カネフォラ種</string><key>shortcut</key><string>かねふぉらしゅ</string></dict>
 	<dict><key>phrase</key><string>アラビカ種</string><key>shortcut</key><string>あらびかしゅ</string></dict>
 	<dict><key>phrase</key><string>アカネ科</string><key>shortcut</key><string>あかねか</string></dict>
@@ -4157,6 +4156,13 @@
 	<dict><key>phrase</key><string>Kir</string><key>shortcut</key><string>きーる</string></dict>
 
 	<!-- リキュール・スピリッツ -->
+	<dict><key>phrase</key><string>カンパリ</string><key>shortcut</key><string>かんぱり</string></dict>
+	<dict><key>phrase</key><string>エッグ・リキュール</string><key>shortcut</key><string>えっぐりきゅーる</string></dict>
+	<dict><key>phrase</key><string>カカオ・リキュール</string><key>shortcut</key><string>かかおりきゅーる</string></dict>
+	<dict><key>phrase</key><string>カシスリキュール</string><key>shortcut</key><string>かしすりきゅーる</string></dict>
+	<dict><key>phrase</key><string>チェリー・リキュール</string><key>shortcut</key><string>ちぇりーりきゅーる</string></dict>
+	<dict><key>phrase</key><string>リキュール</string><key>shortcut</key><string>りきゅーる</string></dict>
+	<dict><key>phrase</key><string>コーヒーリキュール</string><key>shortcut</key><string>こーひーりきゅーる</string></dict>
 	<dict><key>phrase</key><string>Marc d'Alsace Gewürztraminer</string><key>shortcut</key><string>まーるだるざすげゔゅるつとらみねる</string></dict>
 	<dict><key>phrase</key><string>White agave</string><key>shortcut</key><string>ほわいとあがべ</string></dict>
 	<dict><key>phrase</key><string>テキーラ</string><key>shortcut</key><string>てきーら</string></dict>
@@ -4167,6 +4173,18 @@
 	<dict><key>phrase</key><string>Rum</string><key>shortcut</key><string>らむ</string></dict>
 	<dict><key>phrase</key><string>アネホ</string><key>shortcut</key><string>あねほ</string></dict>
 	<dict><key>phrase</key><string>Appletiser®</string><key>shortcut</key><string>あっぷるたいざー</string></dict>
+
+	<!-- デギュスタシオン、味わい、テイスティング -->
+	<dict><key>phrase</key><string>スワリング</string><key>shortcut</key><string>すわりんぐ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>テイスティング</string><key>shortcut</key><string>ていすてぃんぐ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>パリ・テイスティング</string><key>shortcut</key><string>ぱりていすてぃんぐ</string></dict>
+	<dict><key>phrase</key><string>ブラインド・テイスティング</string><key>shortcut</key><string>ぶらいんどていすてぃんぐ</string></dict>
+	<dict><key>phrase</key><string>ワインテイスティング</string><key>shortcut</key><string>わいんていすてぃんぐ</string></dict>
+	<dict><key>phrase</key><string>比較テイスティング</string><key>shortcut</key><string>ひかくていすてぃんぐ</string></dict>
+	<dict><key>phrase</key><string>官能チャート</string><key>shortcut</key><string>かんのうちゃーと</string></dict>
+	<dict><key>phrase</key><string>官能表現</string><key>shortcut</key><string>かんのうひょうげん</string></dict>
+	<dict><key>phrase</key><string>官能表現チャート</string><key>shortcut</key><string>かんのうひょうげんちゃーと</string></dict>
+	<dict><key>phrase</key><string>官能試験</string><key>shortcut</key><string>かんのうしけん</string></dict>
 
 	<!-- その他 -->
 	<dict><key>phrase</key><string>洞爺湖サミット</string><key>shortcut</key><string>とうやこさみっと</string></dict>
@@ -4479,7 +4497,6 @@
 	<dict><key>phrase</key><string>エスニック・スパイス</string><key>shortcut</key><string>えすにっくすぱいす</string></dict>
 	<dict><key>phrase</key><string>エタノール</string><key>shortcut</key><string>えたのーる</string></dict>
 	<dict><key>phrase</key><string>エチケット</string><key>shortcut</key><string>えちけっと</string></dict>
-	<dict><key>phrase</key><string>エッグ・リキュール</string><key>shortcut</key><string>えっぐりきゅーる</string></dict>
 	<dict><key>phrase</key><string>エッセンス</string><key>shortcut</key><string>えっせんす</string></dict>
 	<dict><key>phrase</key><string>エトナ</string><key>shortcut</key><string>えとな</string></dict>
 	<dict><key>phrase</key><string>エペルネ</string><key>shortcut</key><string>えぺるね</string></dict>
@@ -4569,10 +4586,8 @@
 	<dict><key>phrase</key><string>カイヨット</string><key>shortcut</key><string>かいよっと</string></dict>
 	<dict><key>phrase</key><string>カウンティ</string><key>shortcut</key><string>かうんてぃ</string></dict>
 	<dict><key>phrase</key><string>カオール</string><key>shortcut</key><string>かおーる</string></dict>
-	<dict><key>phrase</key><string>カカオ・リキュール</string><key>shortcut</key><string>かかおりきゅーる</string></dict>
 	<dict><key>phrase</key><string>カサブランカ・ヴァレー</string><key>shortcut</key><string>かさぶらんかゔぁれー</string></dict>
 	<dict><key>phrase</key><string>カシス</string><key>shortcut</key><string>かしす</string></dict>
-	<dict><key>phrase</key><string>カシスリキュール</string><key>shortcut</key><string>かしすりきゅーる</string></dict>
 	<dict><key>phrase</key><string>カスターニャ</string><key>shortcut</key><string>かすたーにゃ</string></dict>
 	<dict><key>phrase</key><string>カスティーリャ・イ・レオン</string><key>shortcut</key><string>かすてぃーりゃいれおん</string></dict>
 	<dict><key>phrase</key><string>カステルノダリー</string><key>shortcut</key><string>かすてるのだりー</string></dict>
@@ -5287,7 +5302,6 @@
 	<dict><key>phrase</key><string>チェコ</string><key>shortcut</key><string>ちぇこ</string></dict>
 	<dict><key>phrase</key><string>チェック</string><key>shortcut</key><string>ちぇっく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>チェリー</string><key>shortcut</key><string>ちぇりー</string></dict>
-	<dict><key>phrase</key><string>チェリー・リキュール</string><key>shortcut</key><string>ちぇりーりきゅーる</string></dict>
 	<dict><key>phrase</key><string>チャ</string><key>shortcut</key><string>ちゃ</string></dict>
 	<dict><key>phrase</key><string>チャイルス・ヴァレー</string><key>shortcut</key><string>ちゃいるすゔぁれー</string></dict>
 	<dict><key>phrase</key><string>チャコリ</string><key>shortcut</key><string>ちゃこり</string></dict>
@@ -5315,7 +5329,6 @@
 	<dict><key>phrase</key><string>ティレニア</string><key>shortcut</key><string>てぃれにあ</string></dict>
 	<dict><key>phrase</key><string>ティンティリア</string><key>shortcut</key><string>てぃんてぃりあ</string></dict>
 	<dict><key>phrase</key><string>ティーバッグ</string><key>shortcut</key><string>てぃーばっぐ</string></dict>
-	<dict><key>phrase</key><string>テイスティング</string><key>shortcut</key><string>ていすてぃんぐ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>テクスチャー</string><key>shortcut</key><string>てくすちゃー</string></dict>
 	<dict><key>phrase</key><string>テクスチュア</string><key>shortcut</key><string>てくすちゅあ</string></dict>
 	<dict><key>phrase</key><string>テクニック</string><key>shortcut</key><string>てくにっく</string></dict>
@@ -5590,7 +5603,6 @@
 	<dict><key>phrase</key><string>パラール</string><key>shortcut</key><string>ぱらーる</string></dict>
 	<dict><key>phrase</key><string>パリ</string><key>shortcut</key><string>ぱり</string></dict>
 	<dict><key>phrase</key><string>パリス</string><key>shortcut</key><string>ぱりす</string></dict>
-	<dict><key>phrase</key><string>パリ・テイスティング</string><key>shortcut</key><string>ぱりていすてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>パリージャ</string><key>shortcut</key><string>ぱりーじゃ</string></dict>
 	<dict><key>phrase</key><string>パリ万博</string><key>shortcut</key><string>ぱりーばんぱく</string></dict>
 	<dict><key>phrase</key><string>パリ万国博覧会</string><key>shortcut</key><string>ぱりーばんこくはくらんかい</string></dict>
@@ -5740,7 +5752,6 @@
 	<dict><key>phrase</key><string>ブドウ</string><key>shortcut</key><string>ぶどう</string></dict>
 	<dict><key>phrase</key><string>ブドウネアブラムシ</string><key>shortcut</key><string>ぶどうねあぶらむし</string></dict>
 	<dict><key>phrase</key><string>ブドウ糖</string><key>shortcut</key><string>ぶどうとう</string></dict>
-	<dict><key>phrase</key><string>ブラインド・テイスティング</string><key>shortcut</key><string>ぶらいんどていすてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>ブラウブルグンダー</string><key>shortcut</key><string>ぶらうぶるぐんだー</string></dict>
 	<dict><key>phrase</key><string>ブラケット</string><key>shortcut</key><string>ぶらけっと</string></dict>
 	<dict><key>phrase</key><string>ブラジル</string><key>shortcut</key><string>ぶらじる</string></dict>
@@ -6218,7 +6229,6 @@
 	<dict><key>phrase</key><string>リオハ・バハ</string><key>shortcut</key><string>りおはばは</string></dict>
 	<dict><key>phrase</key><string>リオ・オハ</string><key>shortcut</key><string>りおおは</string></dict>
 	<dict><key>phrase</key><string>リオ・ネグロ</string><key>shortcut</key><string>りおねぐろ</string></dict>
-	<dict><key>phrase</key><string>リキュール</string><key>shortcut</key><string>りきゅーる</string></dict>
 	<dict><key>phrase</key><string>リグニン</string><key>shortcut</key><string>りぐにん</string></dict>
 	<dict><key>phrase</key><string>リグーリア</string><key>shortcut</key><string>りぐーりあ</string></dict>
 	<dict><key>phrase</key><string>リコッタ</string><key>shortcut</key><string>りこった</string></dict>
@@ -6359,7 +6369,6 @@
 	<dict><key>phrase</key><string>ワインサービス</string><key>shortcut</key><string>わいんさーびす</string></dict>
 	<dict><key>phrase</key><string>ワインスピリッツ</string><key>shortcut</key><string>わいんすぴりっつ</string></dict>
 	<dict><key>phrase</key><string>ワインツーリズム</string><key>shortcut</key><string>わいんつーりずむ</string></dict>
-	<dict><key>phrase</key><string>ワインテイスティング</string><key>shortcut</key><string>わいんていすてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>ワインバレー</string><key>shortcut</key><string>わいんばれー</string></dict>
 	<dict><key>phrase</key><string>ワインバー</string><key>shortcut</key><string>わいんばー</string></dict>
 	<dict><key>phrase</key><string>ワインベルト</string><key>shortcut</key><string>わいんべると</string></dict>
@@ -7107,10 +7116,6 @@
 	<dict><key>phrase</key><string>宗教的迫害</string><key>shortcut</key><string>しゅうきょうてきはくがい</string></dict>
 	<dict><key>phrase</key><string>宗教迫害</string><key>shortcut</key><string>しゅうきょうはくがい</string></dict>
 	<dict><key>phrase</key><string>官民一体</string><key>shortcut</key><string>かんみんいったい</string></dict>
-	<dict><key>phrase</key><string>官能チャート</string><key>shortcut</key><string>かんのうちゃーと</string></dict>
-	<dict><key>phrase</key><string>官能表現</string><key>shortcut</key><string>かんのうひょうげん</string></dict>
-	<dict><key>phrase</key><string>官能表現チャート</string><key>shortcut</key><string>かんのうひょうげんちゃーと</string></dict>
-	<dict><key>phrase</key><string>官能試験</string><key>shortcut</key><string>かんのうしけん</string></dict>
 	<dict><key>phrase</key><string>定期的</string><key>shortcut</key><string>ていきてき</string></dict>
 	<dict><key>phrase</key><string>定番</string><key>shortcut</key><string>ていばん</string></dict>
 	<dict><key>phrase</key><string>定着</string><key>shortcut</key><string>ていちゃく</string><key>pos</key><string>サ変名詞</string></dict>
@@ -7889,7 +7894,6 @@
 	<dict><key>phrase</key><string>毎年</string><key>shortcut</key><string>まいとし</string></dict>
 	<dict><key>phrase</key><string>比率</string><key>shortcut</key><string>ひりつ</string></dict>
 	<dict><key>phrase</key><string>比較</string><key>shortcut</key><string>ひかく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>比較テイスティング</string><key>shortcut</key><string>ひかくていすてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>比較的アルコール</string><key>shortcut</key><string>ひかくてきあるこーる</string></dict>
 	<dict><key>phrase</key><string>比較的冷涼</string><key>shortcut</key><string>ひかくてきれいりょう</string></dict>
 	<dict><key>phrase</key><string>比較的北部</string><key>shortcut</key><string>ひかくてきばくほ</string></dict>
