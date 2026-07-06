@@ -537,6 +537,8 @@ extension KanaKanjiConverter {
             teForm + "みましょう",
             teForm + "みるか",
             teForm + "みた",
+            teForm + "みたら",
+            teForm + "みれば",
             teForm + "みて",
             teForm + "みない",
             teForm + "みなかった",

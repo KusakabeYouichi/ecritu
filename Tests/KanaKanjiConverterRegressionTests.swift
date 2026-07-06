@@ -2268,6 +2268,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
 
         XCTAssertTrue(candidates.contains("買ってみようかな"), "candidates=\(candidates)")
+
+        let tara = converter.candidates(for: "かってみたら", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(tara.contains("買ってみたら"), "candidates=\(tara)")
     }
 
     func testRegressionKanaIdentityLeadingRequiresLexicalEvidence() {
