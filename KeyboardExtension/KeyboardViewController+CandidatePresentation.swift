@@ -129,27 +129,6 @@ extension KeyboardViewController {
         )
 
         candidateGenerationQueue.async { [weak self] in
-            // 実機内部診断: 「でばぐ」入力で内部状態を候補チップとして表示する(暫定)。
-            if reading == "でばぐ" {
-                var d: [String] = []
-                d.append("v" + (Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "?"))
-                let multi = converter.multiClauseCandidates(for: "やってそうな", systemCandidateMode: systemCandidateMode)
-                d.append("多:" + (multi.first ?? "無") + "/" + String(multi.count))
-                d.append("や:" + (converter.store.initialUserDictionary()["やって"]?.joined(separator: "・") ?? "無"))
-                d.append("抑や:" + String(converter.store.suppressedCandidatesByReading()["やる"]?.count ?? 0))
-                let bg = converter.store.wordLMBigramCosts(for: [("そう", "な")])["そう\tな"]
-                d.append("bgそな:" + (bg.map(String.init) ?? "無"))
-                DispatchQueue.main.async {
-                    self?.applyAsyncCandidateGenerationResult(
-                        generation: generation,
-                        cacheKey: pendingKey,
-                        converterCandidates: d,
-                        presentationLimit: presentationLimit,
-                        systemCandidateMode: systemCandidateMode
-                    )
-                }
-                return
-            }
             let converterLimit = max(
                 presentationLimit * ExternalCandidateLimits.lookupMultiplier,
                 presentationLimit + 12
