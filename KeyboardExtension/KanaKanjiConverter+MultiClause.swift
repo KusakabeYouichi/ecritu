@@ -16,7 +16,11 @@ extension KanaKanjiConverter {
     static let multiClauseMaxReadingCount = 40      // これを超える長文は連文節DPを回さない(計算量抑制)
     static let multiClauseMaxSegmentReadingCount = 12
     static let multiClauseSupplementMaxLen = 8
-    static let multiClauseTopK = 8                  // 1文節あたり列挙する変換候補数(sim: TOPK)
+    // 1文節あたり列挙する変換候補数。Sudachi の語コストは動詞が単漢字名詞より高く付く
+    // 傾向があり、8 では かく の 書く(13位)のような頻出動詞がラティスから漏れて
+    // 各のが 等の名詞ジャンクしか組めなくなるため 14 に拡大(順位付けは LM bigram が行う
+    // ので、列挙が広がっても最良経路の質は落ちない)。
+    static let multiClauseTopK = 14
     static let multiClauseInflectionTopK = 3        // 活用派生ノードの1文節あたり上限
     // 活用派生ノードが LM 未収録(普通)のときの専用コスト。LM コーパスは Sudachi A単位で
     // 活用形を「買っ+た」に分割するため、正しい活用表層(買った)は unigram に無い。
@@ -301,7 +305,12 @@ extension KanaKanjiConverter {
             isInflectionDerived: Bool
         ) -> Int {
             var base: Int
-            if let bigram = bigramCosts["\(prev)\t\(surface)"] {
+            // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
+            // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
+            // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
+            // 文頭は unigram+バックオフで評価する。文中の bigram は従来どおり。
+            if prev != Self.multiClauseBOSMarker,
+                let bigram = bigramCosts["\(prev)\t\(surface)"] {
                 base = bigram
             } else if let prevAuxTail,
                 let auxBigram = bigramCosts["\(prevAuxTail)\t\(surface)"] {
