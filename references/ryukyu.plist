@@ -646,7 +646,7 @@
 	<dict><key>phrase</key><string>上儀保</string><key>shortcut</key><string>うぃーじーぶ</string></dict>
 	<dict><key>phrase</key><string>V.I.P</string><key>shortcut</key><string>ゔぃっぷ</string></dict>
 	<dict><key>phrase</key><string>上の河</string><key>shortcut</key><string>ういぬはー</string></dict>
-	<dict><key>phrase</key><string>ヴィラフサキ</string><key>shortcut</key><string>ゔぃらふらき</string></dict>
+	<dict><key>phrase</key><string>ヴィラフサキ</string><key>shortcut</key><string>ゔぃらふさき</string></dict>
 	<dict><key>phrase</key><string>ウィングタワー</string><key>shortcut</key><string>うぃんぐたわー</string></dict>
 	<dict><key>phrase</key><string>ウーグ浜</string><key>shortcut</key><string>うーぐはま</string></dict>
 	<dict><key>phrase</key><string>ウージー</string><key>shortcut</key><string>うーじー</string></dict>
@@ -1095,7 +1095,7 @@
 	<dict><key>phrase</key><string>大宮</string><key>shortcut</key><string>おおみや</string></dict>
 	<dict><key>phrase</key><string>大村</string><key>shortcut</key><string>おおむら</string></dict>
 	<dict><key>phrase</key><string>大本</string><key>shortcut</key><string>おおもと</string></dict>
-	<dict><key>phrase</key><string>オカヤドカリ</string><key>shortcut</key><string>おおやどかり</string></dict>
+	<dict><key>phrase</key><string>オカヤドカリ</string><key>shortcut</key><string>おかやどかり</string></dict>
 	<dict><key>phrase</key><string>大山</string><key>shortcut</key><string>おおやま</string></dict>
 	<dict><key>phrase</key><string>大山経由</string><key>shortcut</key><string>おおやまけいゆ</string></dict>
 	<dict><key>phrase</key><string>大米建設</string><key>shortcut</key><string>おおよねけんせつ</string></dict>
@@ -2531,7 +2531,7 @@
 	<dict><key>phrase</key><string>三献の料理</string><key>shortcut</key><string>さんこんのりょうり</string></dict>
 	<dict><key>phrase</key><string>三山</string><key>shortcut</key><string>さんざん</string></dict>
 	<dict><key>phrase</key><string>三山時代</string><key>shortcut</key><string>さんざんじだい</string></dict>
-	<dict><key>phrase</key><string>ホテルサンシー</string><key>shortcut</key><string>さんし</string></dict>
+	<dict><key>phrase</key><string>ホテルサンシー</string><key>shortcut</key><string>ほてるさんしー</string></dict>
 	<dict><key>phrase</key><string>三司官</string><key>shortcut</key><string>さんしかん</string></dict>
 	<dict><key>phrase</key><string>サンシャイン通り</string><key>shortcut</key><string>さんしゃいんどおり</string></dict>
 	<dict><key>phrase</key><string>三絃</string><key>shortcut</key><string>さんしん</string></dict>
@@ -2586,7 +2586,7 @@
 	<dict><key>phrase</key><string>儀間</string><key>shortcut</key><string>じーま</string></dict>
 	<dict><key>phrase</key><string>ジーマ</string><key>shortcut</key><string>じーま</string></dict>
 	<dict><key>phrase</key><string>じーまーみ</string><key>shortcut</key><string>じーまーみ</string></dict>
-	<dict><key>phrase</key><string>ジーマミー</string><key>shortcut</key><string>じーまーみー</string></dict>
+	<dict><key>phrase</key><string>ジーマミー</string><key>shortcut</key><string>じーまみー</string></dict>
 	<dict><key>phrase</key><string>ジーマックス</string><key>shortcut</key><string>じーまっくす</string></dict>
 	<dict><key>phrase</key><string>じーまみ</string><key>shortcut</key><string>じーまみ</string></dict>
 	<dict><key>phrase</key><string>ジーマミ豆腐</string><key>shortcut</key><string>じーまみどうふ</string></dict>
@@ -3061,7 +3061,7 @@
 	<dict><key>phrase</key><string>砂邊</string><key>shortcut</key><string>すなべ</string></dict>
 	<dict><key>phrase</key><string>砂辺</string><key>shortcut</key><string>すなべ</string></dict>
 	<dict><key>phrase</key><string>砂山ビーチ</string><key>shortcut</key><string>すなやまびーち</string></dict>
-	<dict><key>phrase</key><string>スニイ</string><key>shortcut</key><string>すぬい</string></dict>
+	<dict><key>phrase</key><string>スニイ</string><key>shortcut</key><string>すにい</string></dict>
 	<dict><key>phrase</key><string>スヌイ</string><key>shortcut</key><string>すぬい</string></dict>
 	<dict><key>phrase</key><string>スネー</string><key>shortcut</key><string>すねー</string></dict>
 	<dict><key>phrase</key><string>すねー</string><key>shortcut</key><string>すねー</string></dict>
@@ -3368,7 +3368,7 @@
 	<dict><key>phrase</key><string>田原</string><key>shortcut</key><string>たはら</string></dict>
 	<dict><key>phrase</key><string>田原</string><key>shortcut</key><string>たばる</string></dict>
 	<dict><key>phrase</key><string>タピック</string><key>shortcut</key><string>たぴっく</string></dict>
-	<dict><key>phrase</key><string>ダ・ヴィンチ</string><key>shortcut</key><string>だびんち</string></dict>
+	<dict><key>phrase</key><string>ダ・ヴィンチ</string><key>shortcut</key><string>だゔぃんち</string></dict>
 	<dict><key>phrase</key><string>タフナー</string><key>shortcut</key><string>たふなー</string></dict>
 	<dict><key>phrase</key><string>タマ</string><key>shortcut</key><string>たま</string></dict>
 	<dict><key>phrase</key><string>玉陵</string><key>shortcut</key><string>たまうどぅん</string></dict>
@@ -3444,7 +3444,7 @@
 	<dict><key>phrase</key><string>タンナファクルー</string><key>shortcut</key><string>たんなふぁくるー</string></dict>
 	<dict><key>phrase</key><string>たんぽぽ公園</string><key>shortcut</key><string>たんぽぽこうえん</string></dict>
 	<dict><key>phrase</key><string>たんぽぽ児童公園</string><key>shortcut</key><string>たんぽぽじどうこうえん</string></dict>
-	<dict><key>phrase</key><string>タンメータニクーヤー</string><key>shortcut</key><string>たんめーなにくーやー</string></dict>
+	<dict><key>phrase</key><string>タンメータニクーヤー</string><key>shortcut</key><string>たんめーたにくーやー</string></dict>
 	<dict><key>phrase</key><string>暖流</string><key>shortcut</key><string>だんりゅう</string></dict>
 	<dict><key>phrase</key><string>暖流琥珀伝説</string><key>shortcut</key><string>だんりゅうこはくでんせつ</string></dict>
 	<dict><key>phrase</key><string>血イリチー</string><key>shortcut</key><string>ちーいりちー</string></dict>
@@ -3663,7 +3663,7 @@
 	<dict><key>phrase</key><string>定食丸仲</string><key>shortcut</key><string>ていしょくまるなか</string></dict>
 	<dict><key>phrase</key><string>汀志良次</string><key>shortcut</key><string>てぃしらじ</string></dict>
 	<dict><key>phrase</key><string>鄭迴</string><key>shortcut</key><string>ていどう</string></dict>
-	<dict><key>phrase</key><string>ティヌクビ</string><key>shortcut</key><string>てぃぬくぶ</string></dict>
+	<dict><key>phrase</key><string>ティヌクビ</string><key>shortcut</key><string>てぃぬくび</string></dict>
 	<dict><key>phrase</key><string>手花織</string><key>shortcut</key><string>ていはなうい</string></dict>
 	<dict><key>phrase</key><string>てぃびち</string><key>shortcut</key><string>てぃびち</string></dict>
 	<dict><key>phrase</key><string>てぃびち汁</string><key>shortcut</key><string>てぃびちじる</string></dict>
@@ -4356,7 +4356,7 @@
 	<dict><key>phrase</key><string>西武門病院</string><key>shortcut</key><string>にしんじょうびょういん</string></dict>
 	<dict><key>phrase</key><string>西村捨三</string><key>shortcut</key><string>にすむらすてぞう</string></dict>
 	<dict><key>phrase</key><string>2001年</string><key>shortcut</key><string>にせんいちねん</string></dict>
-	<dict><key>phrase</key><string>ヌチマース</string><key>shortcut</key><string>にちまーす</string></dict>
+	<dict><key>phrase</key><string>ヌチマース</string><key>shortcut</key><string>ぬちまーす</string></dict>
 	<dict><key>phrase</key><string>二中前</string><key>shortcut</key><string>にちゅうまえ</string></dict>
 	<dict><key>phrase</key><string>日琉</string><key>shortcut</key><string>にちりゅう</string></dict>
 	<dict><key>phrase</key><string>日琉同祖論</string><key>shortcut</key><string>にちりゅうどうそろん</string></dict>
@@ -4721,8 +4721,10 @@
 	<dict><key>phrase</key><string>美東線</string><key>shortcut</key><string>びとうせん</string></dict>
 	<dict><key>phrase</key><string>ヒナクシビーチ</string><key>shortcut</key><string>ひなくしびーち</string></dict>
 	<dict><key>phrase</key><string>日野通り</string><key>shortcut</key><string>ひのどおり</string></dict>
-	<dict><key>phrase</key><string>ピバーチ</string><key>shortcut</key><string>ぴぱーち</string></dict>
-	<dict><key>phrase</key><string>ピバーツ</string><key>shortcut</key><string>ぴぱーつ</string></dict>
+	<dict><key>phrase</key><string>ピバーチ</string><key>shortcut</key><string>ぴばーち</string></dict>
+	<dict><key>phrase</key><string>ピパーチ</string><key>shortcut</key><string>ぴぱーち</string></dict>
+	<dict><key>phrase</key><string>ピバーツ</string><key>shortcut</key><string>ぴばーつ</string></dict>
+	<dict><key>phrase</key><string>ピパーツ</string><key>shortcut</key><string>ぴぱーつ</string></dict>
 	<dict><key>phrase</key><string>ヒハチ</string><key>shortcut</key><string>ひはち</string></dict>
 	<dict><key>phrase</key><string>ひはち</string><key>shortcut</key><string>ひはち</string></dict>
 	<dict><key>phrase</key><string>ヒハツ</string><key>shortcut</key><string>ひはつ</string></dict>
@@ -4921,7 +4923,7 @@
 	<dict><key>phrase</key><string>麓</string><key>shortcut</key><string>ふもと</string></dict>
 	<dict><key>phrase</key><string>プライベートリゾート</string><key>shortcut</key><string>ぷらいべーとりぞーと</string></dict>
 	<dict><key>phrase</key><string>プライベートリゾートオクマ</string><key>shortcut</key><string>ぷらいべーとりぞーとおくま</string></dict>
-	<dict><key>phrase</key><string>フサキリゾート</string><key>shortcut</key><string>ふらきりぞーと</string></dict>
+	<dict><key>phrase</key><string>フサキリゾート</string><key>shortcut</key><string>ふさきりぞーと</string></dict>
 	<dict><key>phrase</key><string>プラザハウス</string><key>shortcut</key><string>ぷらざはうす</string></dict>
 	<dict><key>phrase</key><string>ブリーズベイ</string><key>shortcut</key><string>ぶりーずべい</string></dict>
 	<dict><key>phrase</key><string>ブリーズベイマリーナ</string><key>shortcut</key><string>ぶりーずべいまりーな</string></dict>
@@ -4941,7 +4943,7 @@
 	<dict><key>phrase</key><string>布令</string><key>shortcut</key><string>ふれい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ブロッサム号</string><key>shortcut</key><string>ぶろっさむごう</string></dict>
 	<dict><key>phrase</key><string>ブロビラス</string><key>shortcut</key><string>ぶろびらす</string></dict>
-	<dict><key>phrase</key><string>フロンティアオキナワ</string><key>shortcut</key><string>ふろんでぃあおきなわ</string></dict>
+	<dict><key>phrase</key><string>フロンティアオキナワ</string><key>shortcut</key><string>ふろんてぃあおきなわ</string></dict>
 	<dict><key>phrase</key><string>普久川</string><key>shortcut</key><string>ふんがわ</string></dict>
 	<dict><key>phrase</key><string>文教堂</string><key>shortcut</key><string>ぶんきょうどう</string></dict>
 	<dict><key>phrase</key><string>文教図書</string><key>shortcut</key><string>ぶんきょうとしょ</string></dict>
@@ -6160,7 +6162,7 @@
 	<dict><key>phrase</key><string>レキオ</string><key>shortcut</key><string>れきお</string></dict>
 	<dict><key>phrase</key><string>レキオス</string><key>shortcut</key><string>れきおす</string></dict>
 	<dict><key>phrase</key><string>レケオグランデ</string><key>shortcut</key><string>れけおぐらんで</string></dict>
-	<dict><key>phrase</key><string>ゴールド</string><key>shortcut</key><string>れごーるど</string></dict>
+	<dict><key>phrase</key><string>ゴールド</string><key>shortcut</key><string>ごーるど</string></dict>
 	<dict><key>phrase</key><string>レスター</string><key>shortcut</key><string>れすたー</string></dict>
 	<dict><key>phrase</key><string>レッドビーチ</string><key>shortcut</key><string>れっどびーち</string></dict>
 	<dict><key>phrase</key><string>ロイヤルビュー</string><key>shortcut</key><string>ろいやるびゅー</string></dict>
@@ -6276,7 +6278,7 @@
 	<dict><key>phrase</key><string>上野村ドイツ文化村</string><key>shortcut</key><string>うえのむらどいつぶんかむら</string></dict>
 	<dict><key>phrase</key><string>崇元寺石門</string><key>shortcut</key><string>すうげんじいしもん</string></dict>
 	<dict><key>phrase</key><string>瀬長島ウミカジテラス</string><key>shortcut</key><string>せながじまうみかじてらす</string></dict>
-	<dict><key>phrase</key><string>ミカジテラス</string><key>shortcut</key><string>うみかじてらす</string></dict>
+	<dict><key>phrase</key><string>ウミカジテラス</string><key>shortcut</key><string>うみかじてらす</string></dict>
 	<dict><key>phrase</key><string>西表島マリュドゥの滝</string><key>shortcut</key><string>いりおもてじままりゅどぅのたき</string></dict>
 	<dict><key>phrase</key><string>青の洞窟</string><key>shortcut</key><string>あおのどうくつ</string></dict>
 	<dict><key>phrase</key><string>石垣島鍾乳洞</string><key>shortcut</key><string>いしがきじましょうにゅうどう</string></dict>

@@ -88,7 +88,6 @@
 	<dict><key>phrase</key><string>Tahoe</string><key>shortcut</key><string>たほ</string></dict>
 	<dict><key>phrase</key><string>Tiger</string><key>shortcut</key><string>たいがー</string></dict>
 	<dict><key>phrase</key><string>tvOS</string><key>shortcut</key><string>てぃーゔぃーおーえす</string></dict>
-	<dict><key>phrase</key><string>tvOS</string><key>shortcut</key><string>てぃーびーおーえす</string></dict>
 	<dict><key>phrase</key><string>Ventura</string><key>shortcut</key><string>べんちゅら</string></dict>
 	<dict><key>phrase</key><string>watchOS</string><key>shortcut</key><string>うぉっちおーえす</string></dict>
 	<dict><key>phrase</key><string>Yosemite</string><key>shortcut</key><string>よせみて</string></dict>
@@ -183,7 +182,7 @@
 	<dict><key>phrase</key><string>ネットミーム</string><key>shortcut</key><string>ねっとみーむ</string></dict>
 	<dict><key>phrase</key><string>SimCity™</string><key>shortcut</key><string>しむしてぃー</string></dict>
 	<dict><key>phrase</key><string>Wizardry</string><key>shortcut</key><string>うぃざどりー</string></dict>
-	<dict><key>phrase</key><string>Ultima</string><key>shortcut</key><string>うるてぃまー</string></dict>
+	<dict><key>phrase</key><string>Ultima</string><key>shortcut</key><string>うるてぃま</string></dict>
 	<dict><key>phrase</key><string>rogue</string><key>shortcut</key><string>ろーぐ</string></dict>
 	<dict><key>phrase</key><string>ニーモニック</string><key>shortcut</key><string>にーもにっく</string></dict>
 	<dict><key>phrase</key><string>PayPal</string><key>shortcut</key><string>ぺいぱる</string></dict>
