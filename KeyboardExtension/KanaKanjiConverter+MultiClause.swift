@@ -63,7 +63,7 @@ extension KanaKanjiConverter {
     static let multiClauseDictUnknownCost = 8700
     static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
-    // 追加語彙/学習語彙(void.plist 等のキュレーション or 学習)由来の語は強く優遇する。実コストは
+    // 追加語彙/学習語彙(sacoche/misc.plist 等のキュレーション or 学習)由来の語は強く優遇する。実コストは
     // min(通常コスト, この値)。強い bigram 並みに安くして分割・素通りに確実に勝たせる(=常に列挙も行う)。
     static let multiClauseCuratedWordCost = 1500
     // 語頭(文節頭)に来られない文字で始まる分割は日本語としてほぼあり得ないため強く減点。撥音ん・
@@ -104,7 +104,7 @@ extension KanaKanjiConverter {
         let surface: String
         let reading: String
         let isDictWord: Bool   // 辞書/変換で得た語(true) or かな素通り(false)
-        let isCurated: Bool    // 追加語彙/学習語彙(void.plist 等の手動キュレーション or 学習)由来
+        let isCurated: Bool    // 追加語彙/学習語彙(sacoche/misc.plist 等の手動キュレーション or 学習)由来
         let isInflectionDerived: Bool  // (b2) 活用エンジン供給ノード(買った/断線しやすい 等)
     }
 
@@ -124,7 +124,7 @@ extension KanaKanjiConverter {
         }
 
         let suppressedByReading = store.suppressedCandidatesByReading()
-        // 追加語彙(void.plist 等の手動キュレーション)と学習語彙。どちらもユーザ意図なので優遇する。
+        // 追加語彙(sacoche/misc.plist 等の手動キュレーション)と学習語彙。どちらもユーザ意図なので優遇する。
         let initialUserDictionary = store.initialUserDictionary()
         let learnedDictionary = store.learnedDictionary()
         let manualUserDictionary = store.userDictionary()
@@ -328,7 +328,7 @@ extension KanaKanjiConverter {
                 base = Self.multiClausePassthroughPerCharCost * reading.count
             }
             // 追加語彙/学習語彙は強い下限で優遇(自然な LM コストがより安ければそちらを尊重)。
-            // ただし絵文字/記号のみの表層(void の €/🇮🇳/₿ 等)は本文へ割り込ませないため優遇せず、
+            // ただし絵文字/記号のみの表層(sacoche の €/🇮🇳/₿ 等)は本文へ割り込ませないため優遇せず、
             // 列挙のみ(単文節候補としては到達可)。語形(かな/漢字/ラテン字を含む)だけ強化する。
             if isCurated, Self.isWordLikeSurface(surface) {
                 base = min(base, Self.multiClauseCuratedWordCost)

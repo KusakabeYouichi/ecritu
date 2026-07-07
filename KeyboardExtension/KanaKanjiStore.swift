@@ -969,19 +969,26 @@ final class KanaKanjiStore {
             return cachedInitialUserDictionary
         }
 
+        // 追加語彙(sacoche=InitialAjout)と変換対策語(misc=InitialMisc)を統合してラティスの
+        // curated 供給に使う。どちらも変換には効かせるが、コンテナアプリの「追加語彙」への
+        // 初期表示は sacoche(InitialAjout)側のみ(App 側のマイグレーションが分離管理)。
         let bundle = Bundle(for: KanaKanjiStore.self)
 
-        guard let initialDictionaryURL = bundle.url(
-            forResource: KanaKanjiStorageKeys.initialUserDictionaryResourceName,
-            withExtension: "json"
-        ),
-            let data = try? Data(contentsOf: initialDictionaryURL),
-            let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
-            cachedInitialUserDictionary = [:]
-            return [:]
+        func loadBundled(_ resourceName: String) -> [String: [String]] {
+            guard let url = bundle.url(forResource: resourceName, withExtension: "json"),
+                let data = try? Data(contentsOf: url),
+                let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+                return [:]
+            }
+            return decoded
         }
 
-        let normalized = normalizeDictionary(decoded)
+        var combined = loadBundled(KanaKanjiStorageKeys.initialUserDictionaryResourceName)
+        for (reading, candidates) in loadBundled(KanaKanjiStorageKeys.initialMiscDictionaryResourceName) {
+            combined[reading, default: []].append(contentsOf: candidates)
+        }
+
+        let normalized = normalizeDictionary(combined)
         cachedInitialUserDictionary = normalized
         return normalized
     }
