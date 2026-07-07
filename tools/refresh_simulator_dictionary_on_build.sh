@@ -17,9 +17,11 @@ cd "$ROOT_DIR"
 TMP_PREMIER="$ROOT_DIR/tmp/ÉcrituPremierVocab.json"
 TMP_SECOND="$ROOT_DIR/tmp/ÉcrituSecondVocab.json"
 TMP_INITIAL_AJOUT="$ROOT_DIR/tmp/InitialAjoutVocabMigration.json"
+TMP_INITIAL_MISC="$ROOT_DIR/tmp/InitialMiscVocabMigration.json"
 TMP_INITIAL_SUPPR="$ROOT_DIR/tmp/InitialSupprVocabMigration.json"
 TMP_SECOND_INFLECTIONS="$ROOT_DIR/tmp/references_second_inflections.json"
-TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_void_inflections.json"
+TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_sacoche_inflections.json"
+TMP_INITIAL_MISC_INFLECTIONS="$ROOT_DIR/tmp/references_misc_inflections.json"
 TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
@@ -30,7 +32,8 @@ TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
 REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
 REF_IT_PLIST="$ROOT_DIR/references/it.plist"
-REF_VOID_PLIST="$ROOT_DIR/references/void.plist"
+REF_SACOCHE_PLIST="$ROOT_DIR/references/sacoche.plist"
+REF_MISC_PLIST="$ROOT_DIR/references/misc.plist"
 REF_SUPPR_PLIST="$ROOT_DIR/references/suppr.plist"
 REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
@@ -158,10 +161,17 @@ python3 tools/build_second_vocab_from_references.py \
   --output "$TMP_SECOND" \
   --output-inflections "$TMP_SECOND_INFLECTIONS"
 
+# sacoche = コンテナアプリの「追加語彙」に初期表示される実語彙(従来の void の可視分)。
 python3 tools/build_second_vocab_from_references.py \
-  --input-plist "$REF_VOID_PLIST" \
+  --input-plist "$REF_SACOCHE_PLIST" \
   --output "$TMP_INITIAL_AJOUT" \
   --output-inflections "$TMP_INITIAL_AJOUT_INFLECTIONS"
+
+# misc = 変換対策の単語追加(初期投入されるが「追加語彙」には表示しない)。
+python3 tools/build_second_vocab_from_references.py \
+  --input-plist "$REF_MISC_PLIST" \
+  --output "$TMP_INITIAL_MISC" \
+  --output-inflections "$TMP_INITIAL_MISC_INFLECTIONS"
 
 # 抑制語彙(区切りコメント付き plist を源泉に JSON を生成)
 python3 tools/build_second_vocab_from_references.py \
@@ -288,9 +298,17 @@ regenerate_sqlite_if_possible() {
     sqlite_args+=(--inflections-json "$TMP_INITIAL_AJOUT_INFLECTIONS")
   fi
 
-  # 追加語彙(InitialAjout)は dictionary_entries には入れないが、活用クラスは保持する。
+  if [[ -f "$TMP_INITIAL_MISC_INFLECTIONS" ]]; then
+    sqlite_args+=(--inflections-json "$TMP_INITIAL_MISC_INFLECTIONS")
+  fi
+
+  # 追加語彙(sacoche/misc とも)は dictionary_entries には入れないが、活用クラスは保持する。
   if [[ -f "$TMP_INITIAL_AJOUT" ]]; then
     sqlite_args+=(--inflection-extra-vocab-json "$TMP_INITIAL_AJOUT")
+  fi
+
+  if [[ -f "$TMP_INITIAL_MISC" ]]; then
+    sqlite_args+=(--inflection-extra-vocab-json "$TMP_INITIAL_MISC")
   fi
 
   if "${sqlite_args[@]}"; then
@@ -371,6 +389,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
   copy_into_bundle_if_exists "$TMP_PREMIER" "ÉcrituPremierVocab.json"
   copy_into_bundle_if_exists "$TMP_SECOND" "ÉcrituSecondVocab.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_AJOUT" "InitialAjoutVocabMigration.json"
+  copy_into_bundle_if_exists "$TMP_INITIAL_MISC" "InitialMiscVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR" "InitialSupprVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_SOURCES" "kana_kanji_candidate_sources.json"
   copy_into_bundle_if_exists "$TMP_INFLECTIONS" "kana_kanji_inflection_dictionary.json"

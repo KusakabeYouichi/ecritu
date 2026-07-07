@@ -12,6 +12,8 @@ enum KanaKanjiStorageKeys {
     static let systemCandidateSourcesFilename = "kana_kanji_candidate_sources.json"
     static let inflectionDictionaryFilename = "kana_kanji_inflection_dictionary.json"
     static let initialUserDictionaryResourceName = "InitialAjoutVocabMigration"
+    // 変換対策の単語追加(misc)。変換には注入するが、コンテナアプリの「追加語彙」には表示しない。
+    static let initialMiscDictionaryResourceName = "InitialMiscVocabMigration"
     static let initialShortcutVocabularyResourceName = "InitialShortcutVocabMigration"
 }
 

@@ -195,9 +195,9 @@ extension KanaKanjiConverter {
         baseCandidates = orderedDerivationBaseCandidates(baseCandidates, reading: baseReading)
 
         let metadata = inflectionMetadata(for: baseReading)
-        // 追加語彙(void.plist 等=initialUserDictionary)も手動追加と同様にサ変推論の対象に
+        // 追加語彙(sacoche/misc.plist 等=initialUserDictionary)も手動追加と同様にサ変推論の対象に
         // 含める。以前は「本当の手動追加分のみ」に絞っていたが、まかいぞうしてる→魔改造してる
-        // のような void 由来サ変名詞の活用が導出できず、し→市 等の誤分割だけが残っていた。
+        // のような追加語彙由来サ変名詞の活用が導出できず、し→市 等の誤分割だけが残っていた。
         // 暴発は inferredSahen 側のゲート(isLikelySahenPhraseStem 等)で抑えられており、
         // そもそも該当読み(Xしてる)を打った時しか発動しない。
         let initialCandidatesForBase = Set(initialUserDictionary[baseReading] ?? [])
