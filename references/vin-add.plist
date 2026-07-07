@@ -309,8 +309,6 @@
 	<dict><key>phrase</key><string>Denominazione di Origine Controllata e Géographique</string><key>shortcut</key><string>でのみなつぃおーねでぃおりじねこんとろっらーたえじおぐらふぃーく</string></dict>
 	<dict><key>phrase</key><string>Denominação de Origem Controlada</string><key>shortcut</key><string>でのみなさうんでおりじぇんこんとろらだ</string></dict>
 	<dict><key>phrase</key><string>Denumire de Origine Controlată</string><key>shortcut</key><string>でぬみれでおりじねこんとろらた</string></dict>
-	<dict><key>phrase</key><string>Deutschland</string><key>shortcut</key><string>どいちゅらんと</string></dict>
-	<dict><key>phrase</key><string>Deutschschweiz</string><key>shortcut</key><string>どいちゅしゅばいつ</string></dict>
 	<dict><key>phrase</key><string>Deux-Montagnes</string><key>shortcut</key><string>どもんたーにゅ</string></dict>
 	<dict><key>phrase</key><string>Devon</string><key>shortcut</key><string>でぼん</string></dict>
 	<dict><key>phrase</key><string>Dimbula</string><key>shortcut</key><string>でぃんぶら</string></dict>
@@ -865,7 +863,6 @@
 	<dict><key>phrase</key><string>Steigerwald</string><key>shortcut</key><string>しゅたいがーばると</string></dict>
 	<dict><key>phrase</key><string>Steinberg</string><key>shortcut</key><string>しゅたいんべるく</string></dict>
 	<dict><key>phrase</key><string>Sud-Ouest</string><key>shortcut</key><string>すどぅえすと</string></dict>
-	<dict><key>phrase</key><string>Suisse Romande</string><key>shortcut</key><string>すいすろまんど</string></dict>
 	<dict><key>phrase</key><string>Summerland Bench</string><key>shortcut</key><string>さまーらんどべんち</string></dict>
 	<dict><key>phrase</key><string>Surrey</string><key>shortcut</key><string>さりー</string></dict>
 	<dict><key>phrase</key><string>Sussex</string><key>shortcut</key><string>させっくす</string></dict>
@@ -873,7 +870,6 @@
 	<dict><key>phrase</key><string>Sutherland-Karoo</string><key>shortcut</key><string>さざーらんどかるー</string></dict>
 	<dict><key>phrase</key><string>Suvereto</string><key>shortcut</key><string>すべれーと</string></dict>
 	<dict><key>phrase</key><string>Sviri</string><key>shortcut</key><string>すびり</string></dict>
-	<dict><key>phrase</key><string>Svizzera Italiana</string><key>shortcut</key><string>すびっつぇらいたりあーな</string></dict>
 	<dict><key>phrase</key><string>Swartland</string><key>shortcut</key><string>すばーとらんど</string></dict>
 	<dict><key>phrase</key><string>Switzerland</string><key>shortcut</key><string>すいすらんど</string></dict>
 	<dict><key>phrase</key><string>Szekszárd</string><key>shortcut</key><string>せくさーるど</string></dict>
@@ -1200,7 +1196,6 @@
 	<dict><key>phrase</key><string>ジロング</string><key>shortcut</key><string>じろんぐ</string></dict>
 	<dict><key>phrase</key><string>ジロング近郊</string><key>shortcut</key><string>じろんぐきんこう</string></dict>
 	<dict><key>phrase</key><string>スイス・アルモン</string><key>shortcut</key><string>すいすあるもん</string></dict>
-	<dict><key>phrase</key><string>スイス・ロマンド</string><key>shortcut</key><string>すいすろまんど</string></dict>
 	<dict><key>phrase</key><string>スキロガリー・ヴァレー</string><key>shortcut</key><string>すきろがりーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>スコットランド産</string><key>shortcut</key><string>すこっとらんどさん</string></dict>
 	<dict><key>phrase</key><string>ステレンボッシュ・ワインルート</string><key>shortcut</key><string>すてれんぼっしゅわいんるーと</string></dict>
@@ -1459,7 +1454,6 @@
 	<dict><key>phrase</key><string>コトー・デュ・トリカスタン</string><key>shortcut</key><string>ことーでゅとりかすたん</string></dict>
 	<dict><key>phrase</key><string>梅田産</string><key>shortcut</key><string>うめでんさん</string></dict>
 	<dict><key>phrase</key><string>灘五郷</string><key>shortcut</key><string>なだごさと</string></dict>
-	<dict><key>phrase</key><string>現ドイツ周辺</string><key>shortcut</key><string>げんどいつしゅうへん</string></dict>
 	<dict><key>phrase</key><string>Great Southern</string><key>shortcut</key><string>ぐれーとさざん</string></dict>
 	<dict><key>phrase</key><string>グレート・サザン</string><key>shortcut</key><string>ぐれーとさざん</string></dict>
 	<dict><key>phrase</key><string>西ケープ州・喜望峰周辺</string><key>shortcut</key><string>にしけーぷしゅうきもちみねしゅうへん</string></dict>
@@ -3316,7 +3310,6 @@
 	<dict><key>phrase</key><string>コナホマレ</string><key>shortcut</key><string>こなほまれ</string></dict>
 	<dict><key>phrase</key><string>ゴルバチョフ政権時</string><key>shortcut</key><string>ごるばちょふせいけんじ</string></dict>
 	<dict><key>phrase</key><string>サウザ</string><key>shortcut</key><string>さうざ</string></dict>
-	<dict><key>phrase</key><string>シュヴィツェーラ・イタリアーナ</string><key>shortcut</key><string>しゅゔぃつぇーらいたりあーな</string></dict>
 	<dict><key>phrase</key><string>シレジア人</string><key>shortcut</key><string>しれじあじん</string></dict>
 	<dict><key>phrase</key><string>シレックス</string><key>shortcut</key><string>しれっくす</string></dict>
 	<dict><key>phrase</key><string>シンボル的存在</string><key>shortcut</key><string>しんぼるてきそんざい</string></dict>

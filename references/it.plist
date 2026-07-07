@@ -192,6 +192,9 @@
 	<dict><key>phrase</key><string>コードポイント</string><key>shortcut</key><string>こーどぽいんと</string></dict>
 	<dict><key>phrase</key><string>Unicode</string><key>shortcut</key><string>ゆにこーど</string></dict>
 	<dict><key>phrase</key><string>Shift_JIS</string><key>shortcut</key><string>しふとじす</string></dict>
+	<dict><key>phrase</key><string>ロスレス</string><key>shortcut</key><string>ろすれす</string></dict>
+	<dict><key>phrase</key><string>ロッシー</string><key>shortcut</key><string>ろっしー</string></dict>
+
 	<dict><key>phrase</key><string>暗号化</string><key>shortcut</key><string>あんごうか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>テザリング</string><key>shortcut</key><string>てざりんぐ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>タップ</string><key>shortcut</key><string>たっぷ</string><key>pos</key><string>サ変名詞</string></dict>
