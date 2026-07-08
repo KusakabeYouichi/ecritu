@@ -334,7 +334,12 @@ extension KanaKanjiConverter {
                 base = min(base, Self.multiClauseCuratedWordCost)
             }
             var penalty = 0
-            if Self.isKatakanaString(surface), !readingLooksLikeLoanword(reading) {
+            // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
+            // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に
+            // 引っかからない語)なので対象外 — LM が既に価格付けしており二重減点は不当。
+            if Self.isKatakanaString(surface),
+                !readingLooksLikeLoanword(reading),
+                unigramCosts[surface] == nil {
                 penalty += Self.multiClauseKatakanaNativeCost
             }
             if reading.count > 1, reading.contains("を") {
