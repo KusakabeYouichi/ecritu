@@ -66,6 +66,7 @@
 	<dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string></dict>
 	<dict><key>phrase</key><string>スヰートポーヅ</string><key>shortcut</key><string>すいーとぽーづ</string></dict>
 	<dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
+	<dict><key>phrase</key><string>テイプ</string><key>shortcut</key><string>ていぷ</string></dict>
 	<dict><key>phrase</key><string>テット・ド・フロマージュ</string><key>shortcut</key><string>てっとどふろまーじゅ</string></dict>
 	<dict><key>phrase</key><string>テット・ド・モアンヌ</string><key>shortcut</key><string>てっとどもあんぬ</string></dict>
 	<dict><key>phrase</key><string>なか川</string><key>shortcut</key><string>なかがわ</string></dict>
@@ -361,6 +362,7 @@
     <dict><key>phrase</key><string>ヴェリー・ウェルダン</string><key>shortcut</key><string>ゔぇりーうぇるだん</string></dict>
     <dict><key>phrase</key><string>raw</string><key>shortcut</key><string>ろー</string></dict>
     <dict><key>phrase</key><string>ローマ</string><key>shortcut</key><string>ろーま</string></dict>
+    <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>
     <dict><key>phrase</key><string>blue</string><key>shortcut</key><string>ぶるー</string></dict>
     <dict><key>phrase</key><string>blue rare</string><key>shortcut</key><string>ぶるーれあ</string></dict>
     <dict><key>phrase</key><string>rare</string><key>shortcut</key><string>れあ</string></dict>
