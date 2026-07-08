@@ -20,6 +20,7 @@ extension KanaKanjiConverter {
     static let seedSingleKanjiPriorityBaseBoost = 220
 
     static let seedSingleKanjiPriorityStep = 12
+    static let seedOrderedKanjiCompoundStep = 40
 
     func addCandidates(
         _ candidates: [String],
@@ -201,15 +202,22 @@ extension KanaKanjiConverter {
                 scores[candidate, default: 0] += Self.seedLeadingKanjiCandidateBoost
             }
 
-            guard Self.isSingleKanjiCandidate(candidate) else {
-                continue
+            if Self.isSingleKanjiCandidate(candidate) {
+                let boost = max(
+                    24,
+                    Self.seedSingleKanjiPriorityBaseBoost - (index * Self.seedSingleKanjiPriorityStep)
+                )
+                scores[candidate, default: 0] += boost
+            } else if index > 0, Self.containsKanjiCandidate(candidate) {
+                // 複数字の熟語 seed(高校/孝行, 描く 等)を seed 順で辞書ベースの上へ。
+                // 先頭は上の leading ブーストで既に持ち上がるため index>0 のみ対象。
+                // SudachiDict の rank で「々」形容動詞群が頻出熟語を埋める歪みを是正する。
+                let boost = max(
+                    200,
+                    Self.seedLeadingKanjiCandidateBoost - (index * Self.seedOrderedKanjiCompoundStep)
+                )
+                scores[candidate, default: 0] += boost
             }
-
-            let boost = max(
-                24,
-                Self.seedSingleKanjiPriorityBaseBoost - (index * Self.seedSingleKanjiPriorityStep)
-            )
-            scores[candidate, default: 0] += boost
         }
     }
 
