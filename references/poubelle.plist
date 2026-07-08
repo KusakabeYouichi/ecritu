@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- 旧字体・正字・過剰な漢字化などの抑制 -->
+	<dict><key>phrase</key><string>至って</string><key>shortcut</key><string>いたって</string></dict>
+	<dict><key>phrase</key><string>撰ぶ</string><key>shortcut</key><string>えらぶ</string></dict>
+	<dict><key>phrase</key><string>択ぶ</string><key>shortcut</key><string>えらぶ</string></dict>
+	<dict><key>phrase</key><string>美味しい</string><key>shortcut</key><string>おいしい</string></dict>
+	<dict><key>phrase</key><string>大いに</string><key>shortcut</key><string>おおいに</string></dict>
+	<dict><key>phrase</key><string>沖繩</string><key>shortcut</key><string>おきなわ</string></dict>
+	<dict><key>phrase</key><string>恐らく</string><key>shortcut</key><string>おそらく</string></dict>
+	<dict><key>phrase</key><string>仝じ</string><key>shortcut</key><string>おなじ</string></dict>
+	<dict><key>phrase</key><string>ヶ月</string><key>shortcut</key><string>かげつ</string></dict>
+	<dict><key>phrase</key><string>ケ月</string><key>shortcut</key><string>かげつ</string></dict>
+	<dict><key>phrase</key><string>ヵ月</string><key>shortcut</key><string>かげつ</string></dict>
+	<dict><key>phrase</key><string>カ月</string><key>shortcut</key><string>かげつ</string></dict>
+	<dict><key>phrase</key><string>且つ</string><key>shortcut</key><string>かつ</string></dict>
+	<dict><key>phrase</key><string>可愛い</string><key>shortcut</key><string>かわいい</string></dict>
+	<dict><key>phrase</key><string>可愛いい</string><key>shortcut</key><string>かわいい</string></dict>
+	<dict><key>phrase</key><string>記臆</string><key>shortcut</key><string>きおく</string></dict>
+	<dict><key>phrase</key><string>奇麗</string><key>shortcut</key><string>きれい</string></dict>
+	<dict><key>phrase</key><string>區別</string><key>shortcut</key><string>くべつ</string></dict>
+	<dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict>
+	<dict><key>phrase</key><string>此処</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>戸々</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>個個</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>箇箇</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>呱々</string><key>shortcut</key><string>ここ</string></dict>
+	<dict><key>phrase</key><string>堺町</string><key>shortcut</key><string>さかえまち</string></dict>
+	<dict><key>phrase</key><string>流石</string><key>shortcut</key><string>さすが</string></dict>
+	<dict><key>phrase</key><string>早速</string><key>shortcut</key><string>さっそく</string></dict>
+	<dict><key>phrase</key><string>更に</string><key>shortcut</key><string>さらに</string></dict>
+	<dict><key>phrase</key><string>然し</string><key>shortcut</key><string>しかし</string></dict>
+	<dict><key>phrase</key><string>暫く</string><key>shortcut</key><string>しばらく</string></dict>
+	<dict><key>phrase</key><string>既に</string><key>shortcut</key><string>すでに</string></dict>
+	<dict><key>phrase</key><string>全て</string><key>shortcut</key><string>すべて</string></dict>
+	<dict><key>phrase</key><string>卆</string><key>shortcut</key><string>そつ</string></dict>
+	<dict><key>phrase</key><string>多數</string><key>shortcut</key><string>たすう</string></dict>
+	<dict><key>phrase</key><string>但し</string><key>shortcut</key><string>ただし</string></dict>
+	<dict><key>phrase</key><string>單位</string><key>shortcut</key><string>たんい</string></dict>
+	<dict><key>phrase</key><string>出來る</string><key>shortcut</key><string>できる</string></dict>
+	<dict><key>phrase</key><string>出きる</string><key>shortcut</key><string>できる</string></dict>
+	<dict><key>phrase</key><string>沈殿</string><key>shortcut</key><string>ちんでん</string></dict>
+	<dict><key>phrase</key><string>尚</string><key>shortcut</key><string>なお</string></dict>
+	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>
+	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>ヤる</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>為る</string><key>shortcut</key><string>する</string></dict>
+	<dict><key>phrase</key><string>仕る</string><key>shortcut</key><string>する</string></dict>
+	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
+	<dict><key>phrase</key><string>発酵</string><key>shortcut</key><string>はっこう</string></dict>
+	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>
+	<dict><key>phrase</key><string>反對</string><key>shortcut</key><string>はんたい</string></dict>
+	<dict><key>phrase</key><string>不味い</string><key>shortcut</key><string>まずい</string></dict>
+	<dict><key>phrase</key><string>又は</string><key>shortcut</key><string>または</string></dict>
+	<dict><key>phrase</key><string>全く</string><key>shortcut</key><string>まったく</string></dict>
+	<dict><key>phrase</key><string>摸型</string><key>shortcut</key><string>もけい</string></dict>
+	<dict><key>phrase</key><string>若しくは</string><key>shortcut</key><string>もしくは</string></dict>
+	<dict><key>phrase</key><string>最早</string><key>shortcut</key><string>もはや</string></dict>
+	<dict><key>phrase</key><string>故に</string><key>shortcut</key><string>ゆえに</string></dict>
+	<dict><key>phrase</key><string>聯合</string><key>shortcut</key><string>れんごう</string></dict>
+	<dict><key>phrase</key><string>聨合</string><key>shortcut</key><string>れんごう</string></dict>
+</array>
+</plist>

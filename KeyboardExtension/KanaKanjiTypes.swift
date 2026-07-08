@@ -15,6 +15,9 @@ enum KanaKanjiStorageKeys {
     // 変換対策の単語追加(misc)。変換には注入するが、コンテナアプリの「追加語彙」には表示しない。
     static let initialMiscDictionaryResourceName = "InitialMiscVocabMigration"
     static let initialShortcutVocabularyResourceName = "InitialShortcutVocabMigration"
+    // 変換対策の抑制(poubelle と対等に効くが、コンテナアプリの「抑制語彙」には表示しない)。
+    // アプリ移行(ÉcrituSuppr_Vocab)を経由せず、キーボードがバンドルから直接読む。
+    static let initialSuppressionHiddenResourceName = "InitialSupprHiddenVocabMigration"
 }
 
 enum KanaKanjiCandidateSourceTag {

@@ -19,6 +19,7 @@ TMP_SECOND="$ROOT_DIR/tmp/ÉcrituSecondVocab.json"
 TMP_INITIAL_AJOUT="$ROOT_DIR/tmp/InitialAjoutVocabMigration.json"
 TMP_INITIAL_MISC="$ROOT_DIR/tmp/InitialMiscVocabMigration.json"
 TMP_INITIAL_SUPPR="$ROOT_DIR/tmp/InitialSupprVocabMigration.json"
+TMP_INITIAL_SUPPR_HIDDEN="$ROOT_DIR/tmp/InitialSupprHiddenVocabMigration.json"
 TMP_SECOND_INFLECTIONS="$ROOT_DIR/tmp/references_second_inflections.json"
 TMP_INITIAL_AJOUT_INFLECTIONS="$ROOT_DIR/tmp/references_sacoche_inflections.json"
 TMP_INITIAL_MISC_INFLECTIONS="$ROOT_DIR/tmp/references_misc_inflections.json"
@@ -35,6 +36,7 @@ REF_IT_PLIST="$ROOT_DIR/references/it.plist"
 REF_SACOCHE_PLIST="$ROOT_DIR/references/sacoche.plist"
 REF_MISC_PLIST="$ROOT_DIR/references/misc.plist"
 REF_SUPPR_PLIST="$ROOT_DIR/references/suppr.plist"
+REF_POUBELLE_PLIST="$ROOT_DIR/references/poubelle.plist"
 REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
@@ -173,10 +175,16 @@ python3 tools/build_second_vocab_from_references.py \
   --output "$TMP_INITIAL_MISC" \
   --output-inflections "$TMP_INITIAL_MISC_INFLECTIONS"
 
-# 抑制語彙(区切りコメント付き plist を源泉に JSON を生成)
+# 抑制語彙(区切りコメント付き plist を源泉に JSON を生成)。2系統:
+#   poubelle → InitialSuppr(アプリ移行で ÉcrituSuppr_Vocab へ=抑制語彙UIに初期表示)
+#   suppr    → InitialSupprHidden(キーボードが直接読む=UI非表示。変換抑制は対等)
+python3 tools/build_second_vocab_from_references.py \
+  --input-plist "$REF_POUBELLE_PLIST" \
+  --output "$TMP_INITIAL_SUPPR"
+
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_SUPPR_PLIST" \
-  --output "$TMP_INITIAL_SUPPR"
+  --output "$TMP_INITIAL_SUPPR_HIDDEN"
 
 # 絵文字の読み(emoji.plist=CLDR由来を整備したもの)→ 読み→[絵文字] JSON。
 # 絵文字候補(emojiCandidateDisplayEnabled配下)専用で、通常のかな漢字変換(sqlite)には入れない。
@@ -391,6 +399,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
   copy_into_bundle_if_exists "$TMP_INITIAL_AJOUT" "InitialAjoutVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_MISC" "InitialMiscVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR" "InitialSupprVocabMigration.json"
+  copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR_HIDDEN" "InitialSupprHiddenVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_SOURCES" "kana_kanji_candidate_sources.json"
   copy_into_bundle_if_exists "$TMP_INFLECTIONS" "kana_kanji_inflection_dictionary.json"
   copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"
