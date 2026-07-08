@@ -417,6 +417,7 @@ final class KanaKanjiStore {
     private var cachedUserDictionary: [String: [String]]?
     private var cachedLearnedDictionary: [String: [String]]?
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
+    private var cachedBundledHiddenSuppression: [String: [String]]?
     private var cachedLearningScores: [String: Int]?
     private var cachedLearningScoresByReading: [String: [String: Int]]?
 
@@ -1054,14 +1055,41 @@ final class KanaKanjiStore {
         return []
     }
 
+    // suppr.plist 由来の抑制(バンドル同梱、UI非表示)。poubelle の UserDefaults 経路とは別に
+    // キーボードが直接読む。実機/バンドル解決は追加語彙(initialUserDictionary)と同じ仕組み。
+    private func bundledHiddenSuppressionDictionary() -> [String: [String]] {
+        if let cachedBundledHiddenSuppression {
+            return cachedBundledHiddenSuppression
+        }
+        let bundle = Bundle(for: KanaKanjiStore.self)
+        guard let url = bundle.url(
+            forResource: KanaKanjiStorageKeys.initialSuppressionHiddenResourceName,
+            withExtension: "json"
+        ),
+            let data = try? Data(contentsOf: url),
+            let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+            cachedBundledHiddenSuppression = [:]
+            return [:]
+        }
+        cachedBundledHiddenSuppression = decoded
+        return decoded
+    }
+
     func suppressedCandidatesByReading() -> [String: Set<String>] {
         if let cachedSuppressedCandidatesByReading {
             return cachedSuppressedCandidatesByReading
         }
 
-        guard let decodedDictionary = decodedStringArrayDictionary(
+        // UserDefaults(poubelle=アプリ移行分+アプリUIでの手動抑制)と、バンドル直読みの
+        // hidden(suppr.plist 由来=変換対策で非表示)を統合する。変換時は両者を対等に抑制。
+        var decodedDictionary = decodedStringArrayDictionary(
             forKey: KanaKanjiStorageKeys.suppressionVocabulary
-        ) else {
+        ) ?? [:]
+        for (reading, candidates) in bundledHiddenSuppressionDictionary() {
+            decodedDictionary[reading, default: []].append(contentsOf: candidates)
+        }
+
+        guard !decodedDictionary.isEmpty else {
             cachedSuppressedCandidatesByReading = [:]
             return [:]
         }
