@@ -158,6 +158,10 @@ extension KanaKanjiConverter {
         var derived: [String] = []
         var queue: [(stem: String, suffix: String, depth: Int)] = [(reading, "", 0)]
         var visited = Set<String>()
+        // 語幹に抑制対象(例: これ→凝れ/梱れ の動詞活用、之レ 等)が混じると 凝れは のように
+        // 合成されてしまう。合成前に語幹側の抑制を効かせる(candidates() のステージ4は
+        // 合成後の これは 表層しか見ないため、ここで別途フィルタする)。
+        let suppressedByReading = store.suppressedCandidatesByReading()
 
         while !queue.isEmpty {
             let current = queue.removeFirst()
@@ -184,6 +188,7 @@ extension KanaKanjiConverter {
                     || Self.isPredicateLikeStemReading(nextStem)
 
                 if allowAttachment {
+                    let suppressedStemSurfaces = suppressedByReading[nextStem] ?? []
                     let stemCandidates = orderedDerivationBaseCandidates(
                         uniqueCandidates(
                             from: candidatesForReading(
@@ -198,7 +203,7 @@ extension KanaKanjiConverter {
                                 systemCandidateMode: systemCandidateMode,
                                 limit: limit
                             )
-                        ),
+                        ).filter { !suppressedStemSurfaces.contains($0) },
                         reading: nextStem
                     )
 

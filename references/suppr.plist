@@ -74,5 +74,13 @@
 	<dict><key>phrase</key><string>ナルホド</string><key>shortcut</key><string>なるほど</string></dict>
 	<dict><key>phrase</key><string>ウマい</string><key>shortcut</key><string>うまい</string></dict>
 	<dict><key>phrase</key><string>ウマイ</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>之レ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>是レ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>此レ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>是</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>此</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>凝れ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>梱れ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>樵れ</string><key>shortcut</key><string>これ</string></dict>
 </array>
 </plist>

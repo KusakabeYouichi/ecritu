@@ -197,8 +197,10 @@ extension KanaKanjiConverter {
         }
 
         for (index, candidate) in uniqueCandidates(from: seedCandidates).enumerated() {
-            if index == 0,
-                Self.containsKanjiCandidate(candidate) {
+            // seed 先頭は最強ブースト。かな正書の seed(これ/それ/あなた 等、先頭がかな)でも
+            // 先頭を持ち上げる。以前は index0 が漢字の時だけで、先頭かな+2番目漢字の seed
+            // (これ:[これ,此れ])だと 2番目の熟語ブーストに先頭かなが逆転されていた。
+            if index == 0 {
                 scores[candidate, default: 0] += Self.seedLeadingKanjiCandidateBoost
             }
 
