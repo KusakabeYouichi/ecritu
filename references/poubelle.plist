@@ -43,6 +43,7 @@
 	<dict><key>phrase</key><string>出きる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>沈殿</string><key>shortcut</key><string>ちんでん</string></dict>
 	<dict><key>phrase</key><string>尚</string><key>shortcut</key><string>なお</string></dict>
+	<dict><key>phrase</key><string>女</string><key>shortcut</key><string>ひと</string></dict>
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>
 	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>
@@ -62,5 +63,6 @@
 	<dict><key>phrase</key><string>故に</string><key>shortcut</key><string>ゆえに</string></dict>
 	<dict><key>phrase</key><string>聯合</string><key>shortcut</key><string>れんごう</string></dict>
 	<dict><key>phrase</key><string>聨合</string><key>shortcut</key><string>れんごう</string></dict>
+	<dict><key>phrase</key><string>美味い</string><key>shortcut</key><string>うまい</string></dict>
 </array>
 </plist>

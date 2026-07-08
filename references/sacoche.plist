@@ -476,5 +476,9 @@
 	<dict><key>phrase</key><string>超過死亡</string><key>shortcut</key><string>ちょうかしぼう</string></dict>
 	<dict><key>phrase</key><string>電気工事士</string><key>shortcut</key><string>でんきこうじし</string></dict>
 	<dict><key>phrase</key><string>カオソーイ</string><key>shortcut</key><string>かおそーい</string></dict>
+	<dict><key>phrase</key><string>揖保乃糸</string><key>shortcut</key><string>いぼのいと</string></dict>
+	<dict><key>phrase</key><string>白湯</string><key>shortcut</key><string>ぱいたん</string></dict>
+	<dict><key>phrase</key><string>鶏白湯</string><key>shortcut</key><string>ちーぱいたん</string></dict>
+	<dict><key>phrase</key><string>鶏白湯</string><key>shortcut</key><string>とりぱいたん</string></dict>
 </array>
 </plist>
