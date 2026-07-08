@@ -72,5 +72,7 @@
 	<dict><key>phrase</key><string>なァる程</string><key>shortcut</key><string>なるほど</string></dict>
 	<dict><key>phrase</key><string>なアるほど</string><key>shortcut</key><string>なるほど</string></dict>
 	<dict><key>phrase</key><string>ナルホド</string><key>shortcut</key><string>なるほど</string></dict>
+	<dict><key>phrase</key><string>ウマい</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>ウマイ</string><key>shortcut</key><string>うまい</string></dict>
 </array>
 </plist>
