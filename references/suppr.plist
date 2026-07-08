@@ -83,5 +83,6 @@
 	<dict><key>phrase</key><string>梱れ</string><key>shortcut</key><string>これ</string></dict>
 	<dict><key>phrase</key><string>樵れ</string><key>shortcut</key><string>これ</string></dict>
 	<dict><key>phrase</key><string>一</string><key>shortcut</key><string>ひと</string></dict>
+	<dict><key>phrase</key><string>ダッケ</string><key>shortcut</key><string>だっけ</string></dict>
 </array>
 </plist>
