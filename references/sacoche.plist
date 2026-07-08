@@ -35,8 +35,6 @@
 	<dict><key>phrase</key><string>500円玉</string><key>shortcut</key><string>ごひゃくえんだま</string></dict>
 	<dict><key>phrase</key><string>50円玉</string><key>shortcut</key><string>ごじゅうえんだま</string></dict>
 	<dict><key>phrase</key><string>5円玉</string><key>shortcut</key><string>ごえんだま</string></dict>
-	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
-	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
 	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
 	<dict><key>phrase</key><string>Binance</string><key>shortcut</key><string>ばいなんす</string></dict>
 	<dict><key>phrase</key><string>Buy&amp;Ship</string><key>shortcut</key><string>ばいあんどしっぷ</string></dict>
@@ -65,7 +63,6 @@
 	<dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>
 	<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict>
 	<dict><key>phrase</key><string>しな乃</string><key>shortcut</key><string>しなの</string></dict>
-	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
 	<dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string></dict>
 	<dict><key>phrase</key><string>スヰートポーヅ</string><key>shortcut</key><string>すいーとぽーづ</string></dict>
 	<dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
@@ -174,8 +171,6 @@
 	<dict><key>phrase</key><string>美登利寿司</string><key>shortcut</key><string>みどりずし</string></dict>
 	<dict><key>phrase</key><string>富士酢</string><key>shortcut</key><string>ふじす</string></dict>
 	<dict><key>phrase</key><string>部分日蝕</string><key>shortcut</key><string>ぶぶんにっしょく</string></dict>
-	<dict><key>phrase</key><string>復号化</string><key>shortcut</key><string>ふくごうか</string></dict>
-	<dict><key>phrase</key><string>福州園</string><key>shortcut</key><string>ふくしゅうえん</string></dict>
 	<dict><key>phrase</key><string>宝隆軒</string><key>shortcut</key><string>ほうりゅうけん</string></dict>
 	<dict><key>phrase</key><string>防湿庫</string><key>shortcut</key><string>ぼうしつこ</string></dict>
 	<dict><key>phrase</key><string>柳月</string><key>shortcut</key><string>りゅうげつ</string></dict>
@@ -284,7 +279,6 @@
 	<dict><key>phrase</key><string>占守島</string><key>shortcut</key><string>しゅむしゅとう</string></dict>
 	<dict><key>phrase</key><string>人身事故</string><key>shortcut</key><string>じんしんじこ</string></dict>
 	<dict><key>phrase</key><string>ジャングリア</string><key>shortcut</key><string>じゃんぐりあ</string></dict>
-	<dict><key>phrase</key><string>山田</string><key>shortcut</key><string>やまだ</string></dict>
 	<dict><key>phrase</key><string>島豚</string><key>shortcut</key><string>しまぶた</string></dict>
 	<dict><key>phrase</key><string>発行権</string><key>shortcut</key><string>はっこうけん</string></dict>
 	<dict><key>phrase</key><string>ワイン検定</string><key>shortcut</key><string>わいんけんてい</string></dict>
@@ -422,7 +416,6 @@
 	<dict><key>phrase</key><string>刀削麺</string><key>shortcut</key><string>だおしゃおみえん</string></dict>
 	<dict><key>phrase</key><string>刀削麺</string><key>shortcut</key><string>とうしょうめん</string></dict>
 	<dict><key>phrase</key><string>杏仁羹</string><key>shortcut</key><string>きょうにんかん</string></dict>
-	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>あんにんどうふ</string></dict>
 	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>きょうにんどーふ</string></dict>
 	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>きょうにんどうふ</string></dict>
 	<dict><key>phrase</key><string>麻婆豆腐</string><key>shortcut</key><string>まーぼーどーふー</string></dict>
