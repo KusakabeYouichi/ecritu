@@ -360,6 +360,7 @@
     <dict><key>phrase</key><string>ウェルダン</string><key>shortcut</key><string>うぇるだん</string></dict>
     <dict><key>phrase</key><string>ヴェリー・ウェルダン</string><key>shortcut</key><string>ゔぇりーうぇるだん</string></dict>
     <dict><key>phrase</key><string>raw</string><key>shortcut</key><string>ろー</string></dict>
+    <dict><key>phrase</key><string>ローマ</string><key>shortcut</key><string>ろーま</string></dict>
     <dict><key>phrase</key><string>blue</string><key>shortcut</key><string>ぶるー</string></dict>
     <dict><key>phrase</key><string>blue rare</string><key>shortcut</key><string>ぶるーれあ</string></dict>
     <dict><key>phrase</key><string>rare</string><key>shortcut</key><string>れあ</string></dict>
