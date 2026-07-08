@@ -89,7 +89,6 @@
 	<dict><key>phrase</key><string>麻丘めぐみ</string><key>shortcut</key><string>あさおかめぐみ</string></dict>
 	<dict><key>phrase</key><string>浅田美代子</string><key>shortcut</key><string>あさだみよこ</string></dict>
 	<dict><key>phrase</key><string>山口百恵</string><key>shortcut</key><string>やまぐちももえ</string></dict>
-	<dict><key>phrase</key><string>森昌子</string><key>shortcut</key><string>もりまさこ</string></dict>
 	<dict><key>phrase</key><string>桜田淳子</string><key>shortcut</key><string>さくらだじゅんこ</string></dict>
 	<dict><key>phrase</key><string>伊藤蘭</string><key>shortcut</key><string>いとうらん</string></dict>
 	<dict><key>phrase</key><string>藤村美樹</string><key>shortcut</key><string>ふじむらみき</string></dict>
@@ -99,7 +98,6 @@
 	<dict><key>phrase</key><string>伊藤咲子</string><key>shortcut</key><string>いとうさきこ</string></dict>
 	<dict><key>phrase</key><string>片平なぎさ</string><key>shortcut</key><string>かたひらなぎさ</string></dict>
 	<dict><key>phrase</key><string>岡田奈々</string><key>shortcut</key><string>おかだなな</string></dict>
-	<dict><key>phrase</key><string>太田裕美</string><key>shortcut</key><string>おおたひろみ</string></dict>
 	<dict><key>phrase</key><string>林寛子</string><key>shortcut</key><string>はやしひろこ</string></dict>
 	<dict><key>phrase</key><string>大場久美子</string><key>shortcut</key><string>おおばくみこ</string></dict>
 	<dict><key>phrase</key><string>榊原郁恵</string><key>shortcut</key><string>さかきばらいくえ</string></dict>
@@ -112,7 +110,6 @@
 	<dict><key>phrase</key><string>河合奈保子</string><key>shortcut</key><string>かわいなおこ</string></dict>
 	<dict><key>phrase</key><string>松田聖子</string><key>shortcut</key><string>まつだせいこ</string></dict>
 	<dict><key>phrase</key><string>三原順子</string><key>shortcut</key><string>みはらじゅんこ</string></dict>
-	<dict><key>phrase</key><string>岩崎良美</string><key>shortcut</key><string>いわさきよしみ</string></dict>
 	<dict><key>phrase</key><string>浜田麻里</string><key>shortcut</key><string>はまだまり</string></dict>
 	<dict><key>phrase</key><string>中森明菜</string><key>shortcut</key><string>なかもりあきな</string></dict>
 	<dict><key>phrase</key><string>小泉今日子</string><key>shortcut</key><string>こいずみきょうこ</string></dict>
@@ -130,7 +127,6 @@
 	<dict><key>phrase</key><string>岡田有希子</string><key>shortcut</key><string>おかだゆきこ</string></dict>
 	<dict><key>phrase</key><string>荻野目洋子</string><key>shortcut</key><string>おぎのめようこ</string></dict>
 	<dict><key>phrase</key><string>長山洋子</string><key>shortcut</key><string>ながやまようこ</string></dict>
-	<dict><key>phrase</key><string>宇沙美ゆかり</string><key>shortcut</key><string>うさみゆかり</string></dict>
 	<dict><key>phrase</key><string>倉沢淳美</string><key>shortcut</key><string>くらさわあつみ</string></dict>
 	<dict><key>phrase</key><string>高橋美枝</string><key>shortcut</key><string>たかはしみえ</string></dict>
 	<dict><key>phrase</key><string>辻沢杏子</string><key>shortcut</key><string>つじさわきょうこ</string></dict>
@@ -163,22 +159,16 @@
 	<dict><key>phrase</key><string>つみきみほ</string><key>shortcut</key><string>つみきみほ</string></dict>
 	<dict><key>phrase</key><string>仙道敦子</string><key>shortcut</key><string>せんどうのぶこ</string></dict>
 	<dict><key>phrase</key><string>後藤久美子</string><key>shortcut</key><string>ごとうくみこ</string></dict>
-	<dict><key>phrase</key><string>浜田麻里</string><key>shortcut</key><string>はまだまり</string></dict>
 	<dict><key>phrase</key><string>本田美奈子</string><key>shortcut</key><string>ほんだみなこ</string></dict>
 	<dict><key>phrase</key><string>白井貴子</string><key>shortcut</key><string>しらいたかこ</string></dict>
 	<dict><key>phrase</key><string>渡辺美里</string><key>shortcut</key><string>わたなべみさと</string></dict>
 	<dict><key>phrase</key><string>中村あゆみ</string><key>shortcut</key><string>なかむらあゆみ</string></dict>
 	<dict><key>phrase</key><string>NOKKO</string><key>shortcut</key><string>のっこ</string></dict>
 	<dict><key>phrase</key><string>杏里</string><key>shortcut</key><string>あんり</string></dict>
-	<dict><key>phrase</key><string>泰葉</string><key>shortcut</key><string>やすは</string></dict>
 	<dict><key>phrase</key><string>寺田恵子</string><key>shortcut</key><string>てらだけいこ</string></dict>
-	<dict><key>phrase</key><string>カルメン・マキ</string><key>shortcut</key><string>かるめんまき</string></dict>
-	<dict><key>phrase</key><string>金子マリ</string><key>shortcut</key><string>かねこまり</string></dict>
 	<dict><key>phrase</key><string>シーナ</string><key>shortcut</key><string>しーな</string></dict>
-	<dict><key>phrase</key><string>戸川純</string><key>shortcut</key><string>とがわじゅん</string></dict>
 	<dict><key>phrase</key><string>鮎川麻弥</string><key>shortcut</key><string>あゆかわまみ</string></dict>
 	<dict><key>phrase</key><string>森口博子</string><key>shortcut</key><string>もりぐちひろこ</string></dict>
-	<dict><key>phrase</key><string>岩崎宏美</string><key>shortcut</key><string>いわさきひろみ</string></dict>
 	<dict><key>phrase</key><string>堀江美都子</string><key>shortcut</key><string>ほりえみつこ</string></dict>
 	<dict><key>phrase</key><string>大杉久美子</string><key>shortcut</key><string>おおすぎくみこ</string></dict>
 	<dict><key>phrase</key><string>前川陽子</string><key>shortcut</key><string>まえかわようこ</string></dict>
@@ -188,9 +178,6 @@
 	<dict><key>phrase</key><string>間嶋里美</string><key>shortcut</key><string>まじまさとり</string></dict>
 	<dict><key>phrase</key><string>横沢啓子</string><key>shortcut</key><string>よこざわけいこ</string></dict>
 	<dict><key>phrase</key><string>戸田恵子</string><key>shortcut</key><string>とだけいこ</string></dict>
-	<dict><key>phrase</key><string>イルカ</string><key>shortcut</key><string>いるか</string></dict>
-	<dict><key>phrase</key><string>森山良子</string><key>shortcut</key><string>もりやまりょうこ</string></dict>
-	<dict><key>phrase</key><string>加藤登紀子</string><key>shortcut</key><string>かとうときこ</string></dict>
 	<dict><key>phrase</key><string>沢田聖子</string><key>shortcut</key><string>さわだしょうこ</string></dict>
 	<dict><key>phrase</key><string>岡村孝子</string><key>shortcut</key><string>おかむらたかこ</string></dict>
 	<dict><key>phrase</key><string>加藤晴子</string><key>shortcut</key><string>かとうはるこ</string></dict>
@@ -199,20 +186,15 @@
 	<dict><key>phrase</key><string>峠恵子</string><key>shortcut</key><string>とうげけいこ</string></dict>
 	<dict><key>phrase</key><string>障子久美</string><key>shortcut</key><string>しょうじくみ</string></dict>
 	<dict><key>phrase</key><string>谷村有美</string><key>shortcut</key><string>たにむらゆみ</string></dict>
-	<dict><key>phrase</key><string>尾崎亜美</string><key>shortcut</key><string>おざきあみ</string></dict>
 	<dict><key>phrase</key><string>鈴木祥子</string><key>shortcut</key><string>すずきしょうこ</string></dict>
 	<dict><key>phrase</key><string>平松愛理</string><key>shortcut</key><string>ひらまつえり</string></dict>
 	<dict><key>phrase</key><string>古内東子</string><key>shortcut</key><string>ふるうちとうこ</string></dict>
 	<!-- 日本の女性歌手 2/5 (201〜400人め:1980年代後半〜1990年代前半) -->
-	<dict><key>phrase</key><string>中森明菜</string><key>shortcut</key><string>なかもりあきな</string></dict>
-	<dict><key>phrase</key><string>小泉今日子</string><key>shortcut</key><string>こいずみきょうこ</string></dict>
 	<dict><key>phrase</key><string>南野陽子</string><key>shortcut</key><string>みなみのようこ</string></dict>
 	<dict><key>phrase</key><string>浅香唯</string><key>shortcut</key><string>あさかゆい</string></dict>
 	<dict><key>phrase</key><string>中山美穂</string><key>shortcut</key><string>なかやまみほ</string></dict>
 	<dict><key>phrase</key><string>工藤静香</string><key>shortcut</key><string>くどうしずか</string></dict>
 	<dict><key>phrase</key><string>斉藤由貴</string><key>shortcut</key><string>さいとうゆき</string></dict>
-	<dict><key>phrase</key><string>本田美奈子</string><key>shortcut</key><string>ほんだみなこ</string></dict>
-	<dict><key>phrase</key><string>荻野目洋子</string><key>shortcut</key><string>おぎのめようこ</string></dict>
 	<dict><key>phrase</key><string>森高千里</string><key>shortcut</key><string>もりたかちさと</string></dict>
 	<dict><key>phrase</key><string>芳本美代子</string><key>shortcut</key><string>よしもとみよこ</string></dict>
 	<dict><key>phrase</key><string>大西結花</string><key>shortcut</key><string>おおにしゆか</string></dict>
@@ -272,58 +254,30 @@
 	<dict><key>phrase</key><string>三上千代</string><key>shortcut</key><string>みかみちよ</string></dict>
 	<dict><key>phrase</key><string>矢島裕紀子</string><key>shortcut</key><string>やじまゆきこ</string></dict>
 	<dict><key>phrase</key><string>坂上とし恵</string><key>shortcut</key><string>さかがみとしえ</string></dict>
-	<dict><key>phrase</key><string>太田貴子</string><key>shortcut</key><string>おおたたかこ</string></dict>
 	<dict><key>phrase</key><string>森沢優</string><key>shortcut</key><string>もりさわゆう</string></dict>
 	<dict><key>phrase</key><string>三原じゅん子</string><key>shortcut</key><string>みはらじゅんこ</string></dict>
 	<dict><key>phrase</key><string>松本伊代</string><key>shortcut</key><string>まつもといよ</string></dict>
-	<dict><key>phrase</key><string>早見優</string><key>shortcut</key><string>はやみゆう</string></dict>
-	<dict><key>phrase</key><string>石川秀美</string><key>shortcut</key><string>いしかわひでみ</string></dict>
-	<dict><key>phrase</key><string>堀ちえみ</string><key>shortcut</key><string>ほりちえみ</string></dict>
-	<dict><key>phrase</key><string>森口博子</string><key>shortcut</key><string>もりぐちひろこ</string></dict>
 	<dict><key>phrase</key><string>松本典子</string><key>shortcut</key><string>まつもとのりこ</string></dict>
 	<dict><key>phrase</key><string>網浜直子</string><key>shortcut</key><string>あみはまなおこ</string></dict>
 	<dict><key>phrase</key><string>森下恵理</string><key>shortcut</key><string>もりしたえり</string></dict>
 	<dict><key>phrase</key><string>青田典子</string><key>shortcut</key><string>あおたのりこ</string></dict>
-	<dict><key>phrase</key><string>渡辺美里</string><key>shortcut</key><string>わたなべみさと</string></dict>
-	<dict><key>phrase</key><string>岡村孝子</string><key>shortcut</key><string>おかむらたかこ</string></dict>
-	<dict><key>phrase</key><string>永井真理子</string><key>shortcut</key><string>ながいまりこ</string></dict>
-	<dict><key>phrase</key><string>谷村有美</string><key>shortcut</key><string>たにむらゆみ</string></dict>
 	<dict><key>phrase</key><string>野田幹子</string><key>shortcut</key><string>のだみきこ</string></dict>
-	<dict><key>phrase</key><string>平松愛理</string><key>shortcut</key><string>ひらまつえり</string></dict>
-	<dict><key>phrase</key><string>辛島美登里</string><key>shortcut</key><string>からしまみどり</string></dict>
 	<dict><key>phrase</key><string>沢田知可子</string><key>shortcut</key><string>さわだちかこ</string></dict>
 	<dict><key>phrase</key><string>久宝留理子</string><key>shortcut</key><string>くぼうるりこ</string></dict>
-	<dict><key>phrase</key><string>鈴木祥子</string><key>shortcut</key><string>すずきしょうこ</string></dict>
-	<dict><key>phrase</key><string>古内東子</string><key>shortcut</key><string>ふるうちとうこ</string></dict>
 	<dict><key>phrase</key><string>田村直美</string><key>shortcut</key><string>たむらなおみ</string></dict>
-	<dict><key>phrase</key><string>中村あゆみ</string><key>shortcut</key><string>なかむらあゆみ</string></dict>
-	<dict><key>phrase</key><string>白井貴子</string><key>shortcut</key><string>しらいたかこ</string></dict>
 	<dict><key>phrase</key><string>川本真琴</string><key>shortcut</key><string>かわもとまこと</string></dict>
 	<dict><key>phrase</key><string>相馬裕子</string><key>shortcut</key><string>そうまゆうこ</string></dict>
 	<dict><key>phrase</key><string>加藤いづみ</string><key>shortcut</key><string>かとういづみ</string></dict>
-	<dict><key>phrase</key><string>障子久美</string><key>shortcut</key><string>しょうじくみ</string></dict>
-	<dict><key>phrase</key><string>峠恵子</string><key>shortcut</key><string>とうげけいこ</string></dict>
 	<dict><key>phrase</key><string>橘いずみ</string><key>shortcut</key><string>たちばないずみ</string></dict>
 	<dict><key>phrase</key><string>金子美香</string><key>shortcut</key><string>かねこみか</string></dict>
 	<dict><key>phrase</key><string>詩織</string><key>shortcut</key><string>しおり</string></dict>
 	<dict><key>phrase</key><string>遊佐未森</string><key>shortcut</key><string>ゆさみもり</string></dict>
 	<dict><key>phrase</key><string>種ともこ</string><key>shortcut</key><string>たねともこ</string></dict>
-	<dict><key>phrase</key><string>尾崎亜美</string><key>shortcut</key><string>おざきあみ</string></dict>
-	<dict><key>phrase</key><string>杏里</string><key>shortcut</key><string>あんり</string></dict>
 	<dict><key>phrase</key><string>今井美樹</string><key>shortcut</key><string>いまいみき</string></dict>
-	<dict><key>phrase</key><string>竹内まりや</string><key>shortcut</key><string>たけうちまりや</string></dict>
 	<dict><key>phrase</key><string>松任谷由実</string><key>shortcut</key><string>まつとうやゆみ</string></dict>
-	<dict><key>phrase</key><string>中島みゆき</string><key>shortcut</key><string>なかじまみゆき</string></dict>
-	<dict><key>phrase</key><string>大貫妙子</string><key>shortcut</key><string>おおぬきたえこ</string></dict>
-	<dict><key>phrase</key><string>吉田美奈子</string><key>shortcut</key><string>よしだみなこ</string></dict>
-	<dict><key>phrase</key><string>八神純子</string><key>shortcut</key><string>やがみじゅんこ</string></dict>
-	<dict><key>phrase</key><string>岩崎宏美</string><key>shortcut</key><string>いわさきひろみ</string></dict>
-	<dict><key>phrase</key><string>高橋真梨子</string><key>shortcut</key><string>たかはしまりこ</string></dict>
-	<dict><key>phrase</key><string>研ナオコ</string><key>shortcut</key><string>けんなおこ</string></dict>
 	<dict><key>phrase</key><string>小林明子</string><key>shortcut</key><string>こばやしあきこ</string></dict>
 	<dict><key>phrase</key><string>椎名恵</string><key>shortcut</key><string>しいなめぐみ</string></dict>
 	<dict><key>phrase</key><string>麻倉未稀</string><key>shortcut</key><string>あさくらみき</string></dict>
-	<dict><key>phrase</key><string>障子久美</string><key>shortcut</key><string>しょうじくみ</string></dict>
 	<dict><key>phrase</key><string>坂井泉水</string><key>shortcut</key><string>さかいいずみ</string></dict>
 	<dict><key>phrase</key><string>大黒摩季</string><key>shortcut</key><string>おおぐろまき</string></dict>
 	<dict><key>phrase</key><string>川島だりあ</string><key>shortcut</key><string>かわしまだりあ</string></dict>
@@ -335,8 +289,6 @@
 	<dict><key>phrase</key><string>浜口司</string><key>shortcut</key><string>はまぐちつかさ</string></dict>
 	<dict><key>phrase</key><string>安宅美春</string><key>shortcut</key><string>あたかみはる</string></dict>
 	<dict><key>phrase</key><string>水原由貴</string><key>shortcut</key><string>みずはらゆき</string></dict>
-	<dict><key>phrase</key><string>NOKKO</string><key>shortcut</key><string>のっこ</string></dict>
-	<dict><key>phrase</key><string>寺田恵子</string><key>shortcut</key><string>てらだけいこ</string></dict>
 	<dict><key>phrase</key><string>中山加奈子</string><key>shortcut</key><string>なかやまかなこ</string></dict>
 	<dict><key>phrase</key><string>奥居香</string><key>shortcut</key><string>おくいかおり</string></dict>
 	<dict><key>phrase</key><string>今野登茂子</string><key>shortcut</key><string>こんのともこ</string></dict>
@@ -355,7 +307,6 @@
 	<dict><key>phrase</key><string>辺見えみり</string><key>shortcut</key><string>へんみえみり</string></dict>
 	<dict><key>phrase</key><string>ちはる</string><key>shortcut</key><string>ちはる</string></dict>
 	<dict><key>phrase</key><string>YOU</string><key>shortcut</key><string>ゆう</string></dict>
-	<dict><key>phrase</key><string>戸川純</string><key>shortcut</key><string>とがわじゅん</string></dict>
 	<dict><key>phrase</key><string>カヒミ・カリィ</string><key>shortcut</key><string>かひみかりぃ</string></dict>
 	<dict><key>phrase</key><string>嶺川貴子</string><key>shortcut</key><string>みねかわたかこ</string></dict>
 	<dict><key>phrase</key><string>野宮真貴</string><key>shortcut</key><string>のみやまき</string></dict>
@@ -363,7 +314,6 @@
 	<dict><key>phrase</key><string>チャラ</string><key>shortcut</key><string>ちゃら</string></dict>
 	<dict><key>phrase</key><string>UA</string><key>shortcut</key><string>うーあ</string></dict>
 	<dict><key>phrase</key><string>BONNIE PINK</string><key>shortcut</key><string>ぼにーぴんく</string></dict>
-	<dict><key>phrase</key><string>嶺川貴子</string><key>shortcut</key><string>みねかわたかこ</string></dict>
 	<dict><key>phrase</key><string>三浦理恵子</string><key>shortcut</key><string>みうらりえこ</string></dict>
 	<dict><key>phrase</key><string>瀬能あづさ</string><key>shortcut</key><string>せのうあづさ</string></dict>
 	<dict><key>phrase</key><string>羽田惠理香</string><key>shortcut</key><string>はねだえりか</string></dict>
@@ -377,7 +327,6 @@
 	<dict><key>phrase</key><string>香西かおり</string><key>shortcut</key><string>こうざいかおり</string></dict>
 	<dict><key>phrase</key><string>伍代夏子</string><key>shortcut</key><string>ごだいなつこ</string></dict>
 	<dict><key>phrase</key><string>藤あや子</string><key>shortcut</key><string>ふじあやこ</string></dict>
-	<dict><key>phrase</key><string>長山洋子</string><key>shortcut</key><string>ながやまようこ</string></dict>
 	<dict><key>phrase</key><string>田川寿美</string><key>shortcut</key><string>たがわとしみ</string></dict>
 	<dict><key>phrase</key><string>水森かおり</string><key>shortcut</key><string>みずもりかおり</string></dict>
 	<dict><key>phrase</key><string>石原詢子</string><key>shortcut</key><string>いしはらじゅんこ</string></dict>
@@ -411,7 +360,6 @@
 	<dict><key>phrase</key><string>KEIKO</string><key>shortcut</key><string>けいこ</string></dict>
 	<dict><key>phrase</key><string>Hime</string><key>shortcut</key><string>ひめ</string></dict>
 	<dict><key>phrase</key><string>鈴木亜美</string><key>shortcut</key><string>すずきあみ</string></dict>
-	<dict><key>phrase</key><string>篠原涼子</string><key>shortcut</key><string>しのはらりょうこ</string></dict>
 	<dict><key>phrase</key><string>YU-KI</string><key>shortcut</key><string>ゆうき</string></dict>
 	<dict><key>phrase</key><string>asami</string><key>shortcut</key><string>あさみ</string></dict>
 	<dict><key>phrase</key><string>H.A.N.D.</string><key>shortcut</key><string>はんど</string></dict>
@@ -436,15 +384,8 @@
 	<dict><key>phrase</key><string>YUKI</string><key>shortcut</key><string>ゆき</string></dict>
 	<dict><key>phrase</key><string>吉村由美</string><key>shortcut</key><string>よしむらゆみ</string></dict>
 	<dict><key>phrase</key><string>大貫亜美</string><key>shortcut</key><string>おおぬきあみ</string></dict>
-	<dict><key>phrase</key><string>川本真琴</string><key>shortcut</key><string>かわもとまこと</string></dict>
 	<dict><key>phrase</key><string>Chara</string><key>shortcut</key><string>ちゃら</string></dict>
-	<dict><key>phrase</key><string>UA</string><key>shortcut</key><string>うーあ</string></dict>
-	<dict><key>phrase</key><string>BONNIE PINK</string><key>shortcut</key><string>ぼにーぴんく</string></dict>
-	<dict><key>phrase</key><string>嶺川貴子</string><key>shortcut</key><string>みねかわたかこ</string></dict>
 	<dict><key>phrase</key><string>Cocco</string><key>shortcut</key><string>こっこ</string></dict>
-	<dict><key>phrase</key><string>椎名へきる</string><key>shortcut</key><string>しいなへきる</string></dict>
-	<dict><key>phrase</key><string>緒方恵美</string><key>shortcut</key><string>おがためぐみ</string></dict>
-	<dict><key>phrase</key><string>坂本真綾</string><key>shortcut</key><string>さかもとまあや</string></dict>
 	<dict><key>phrase</key><string>中澤裕子</string><key>shortcut</key><string>なかざわゆうこ</string></dict>
 	<dict><key>phrase</key><string>石黒彩</string><key>shortcut</key><string>いしぐろあや</string></dict>
 	<dict><key>phrase</key><string>飯田圭織</string><key>shortcut</key><string>いいだかおり</string></dict>
@@ -485,21 +426,8 @@
 	<dict><key>phrase</key><string>村田めぐみ</string><key>shortcut</key><string>むらためぐみ</string></dict>
 	<dict><key>phrase</key><string>松浦亜弥</string><key>shortcut</key><string>まつうらあや</string></dict>
 	<dict><key>phrase</key><string>前田有紀</string><key>shortcut</key><string>まえだゆき</string></dict>
-	<dict><key>phrase</key><string>YUKI</string><key>shortcut</key><string>ゆき</string></dict>
 	<dict><key>phrase</key><string>磯屋由佳</string><key>shortcut</key><string>いそやゆか</string></dict>
 	<dict><key>phrase</key><string>川瀬智子</string><key>shortcut</key><string>かわせともこ</string></dict>
-	<dict><key>phrase</key><string>伴都美子</string><key>shortcut</key><string>ばんとみこ</string></dict>
-	<dict><key>phrase</key><string>持田香織</string><key>shortcut</key><string>もちだかおり</string></dict>
-	<dict><key>phrase</key><string>吉村由美</string><key>shortcut</key><string>よしむらゆみ</string></dict>
-	<dict><key>phrase</key><string>大貫亜美</string><key>shortcut</key><string>おおぬきあみ</string></dict>
-	<dict><key>phrase</key><string>NOKKO</string><key>shortcut</key><string>のっこ</string></dict>
-	<dict><key>phrase</key><string>渡瀬マキ</string><key>shortcut</key><string>わたせまき</string></dict>
-	<dict><key>phrase</key><string>寺田恵子</string><key>shortcut</key><string>てらだけいこ</string></dict>
-	<dict><key>phrase</key><string>中山加奈子</string><key>shortcut</key><string>なかやまかなこ</string></dict>
-	<dict><key>phrase</key><string>奥居香</string><key>shortcut</key><string>おくいかおり</string></dict>
-	<dict><key>phrase</key><string>穴井夕子</string><key>shortcut</key><string>あないゆうこ</string></dict>
-	<dict><key>phrase</key><string>篠原涼子</string><key>shortcut</key><string>しのはらりょうこ</string></dict>
-	<dict><key>phrase</key><string>市井由理</string><key>shortcut</key><string>いちいゆり</string></dict>
 	<dict><key>phrase</key><string>Hekiru</string><key>shortcut</key><string>へきる</string></dict>
 	<dict><key>phrase</key><string>宝生舞</string><key>shortcut</key><string>ほうしょうまい</string></dict>
 	<dict><key>phrase</key><string>ともさかりえ</string><key>shortcut</key><string>ともさかりえ</string></dict>
@@ -510,9 +438,6 @@
 	<dict><key>phrase</key><string>江角マキコ</string><key>shortcut</key><string>えすみまきこ</string></dict>
 	<dict><key>phrase</key><string>稲森いずみ</string><key>shortcut</key><string>いなもりいずみ</string></dict>
 	<dict><key>phrase</key><string>藤原紀香</string><key>shortcut</key><string>ふじわらのりか</string></dict>
-	<dict><key>phrase</key><string>辺見えみり</string><key>shortcut</key><string>へんみえみり</string></dict>
-	<dict><key>phrase</key><string>ちはる</string><key>shortcut</key><string>ちはる</string></dict>
-	<dict><key>phrase</key><string>YOU</string><key>shortcut</key><string>ゆう</string></dict>
 	<dict><key>phrase</key><string>千秋</string><key>shortcut</key><string>ちあき</string></dict>
 	<dict><key>phrase</key><string>ビビアン・スー</string><key>shortcut</key><string>びびあんすー</string></dict>
 	<dict><key>phrase</key><string>遠藤久美子</string><key>shortcut</key><string>えんどうくみこ</string></dict>
@@ -555,50 +480,9 @@
 	<dict><key>phrase</key><string>元ちとせ</string><key>shortcut</key><string>はじめちとせ</string></dict>
 	<dict><key>phrase</key><string>城南海</string><key>shortcut</key><string>きずきみなみ</string></dict>
 	<dict><key>phrase</key><string>大納言</string><key>shortcut</key><string>だいなごん</string></dict>
-	<dict><key>phrase</key><string>椎名林檎</string><key>shortcut</key><string>しいなりんご</string></dict>
-	<dict><key>phrase</key><string>カヒミ・カリィ</string><key>shortcut</key><string>かひみかりぃ</string></dict>
-	<dict><key>phrase</key><string>嶺川貴子</string><key>shortcut</key><string>みねかわたかこ</string></dict>
-	<dict><key>phrase</key><string>野宮真貴</string><key>shortcut</key><string>のみやまき</string></dict>
-	<dict><key>phrase</key><string>戸川京子</string><key>shortcut</key><string>とがわきょうこ</string></dict>
-	<dict><key>phrase</key><string>チャラ</string><key>shortcut</key><string>ちゃら</string></dict>
-	<dict><key>phrase</key><string>UA</string><key>shortcut</key><string>うーあ</string></dict>
-	<dict><key>phrase</key><string>BONNIE PINK</string><key>shortcut</key><string>ぼにーぴんく</string></dict>
-	<dict><key>phrase</key><string>Cocco</string><key>shortcut</key><string>こっこ</string></dict>
-	<dict><key>phrase</key><string>矢野顕子</string><key>shortcut</key><string>やのあきこ</string></dict>
 	<dict><key>phrase</key><string>水樹奈々</string><key>shortcut</key><string>みずきなな</string></dict>
 	<dict><key>phrase</key><string>田村ゆかり</string><key>shortcut</key><string>たむらゆかり</string></dict>
 	<dict><key>phrase</key><string>堀江由衣</string><key>shortcut</key><string>ほりえゆい</string></dict>
-	<dict><key>phrase</key><string>林原めぐみ</string><key>shortcut</key><string>はやしばらめぐみ</string></dict>
-	<dict><key>phrase</key><string>三石琴乃</string><key>shortcut</key><string>みついしことの</string></dict>
-	<dict><key>phrase</key><string>久川綾</string><key>shortcut</key><string>ひさかわあや</string></dict>
-	<dict><key>phrase</key><string>椎名へきる</string><key>shortcut</key><string>しいなへきる</string></dict>
-	<dict><key>phrase</key><string>國府田マリ子</string><key>shortcut</key><string>こうだまりこ</string></dict>
-	<dict><key>phrase</key><string>緒方恵美</string><key>shortcut</key><string>おがためぐみ</string></dict>
-	<dict><key>phrase</key><string>横山智佐</string><key>shortcut</key><string>よこやまちさ</string></dict>
-	<dict><key>phrase</key><string>桜井智</string><key>shortcut</key><string>さくらいとも</string></dict>
-	<dict><key>phrase</key><string>水谷優子</string><key>shortcut</key><string>みずたにゆうこ</string></dict>
-	<dict><key>phrase</key><string>皆口裕子</string><key>shortcut</key><string>みなぐちゆうこ</string></dict>
-	<dict><key>phrase</key><string>井上喜久子</string><key>shortcut</key><string>いのうえきくこ</string></dict>
-	<dict><key>phrase</key><string>宮村優子</string><key>shortcut</key><string>みやむらゆうこ</string></dict>
-	<dict><key>phrase</key><string>岩男潤子</string><key>shortcut</key><string>いわおじゅんこ</string></dict>
-	<dict><key>phrase</key><string>金月真美</string><key>shortcut</key><string>きんげつまみ</string></dict>
-	<dict><key>phrase</key><string>丹下桜</string><key>shortcut</key><string>たんげさくら</string></dict>
-	<dict><key>phrase</key><string>氷上恭子</string><key>shortcut</key><string>ひかみきょうこ</string></dict>
-	<dict><key>phrase</key><string>飯塚雅弓</string><key>shortcut</key><string>いいづかまゆみ</string></dict>
-	<dict><key>phrase</key><string>坂本真綾</string><key>shortcut</key><string>さかもとまあや</string></dict>
-	<dict><key>phrase</key><string>三重野瞳</string><key>shortcut</key><string>みえのひとみ</string></dict>
-	<dict><key>phrase</key><string>笠原弘子</string><key>shortcut</key><string>かさはらひろこ</string></dict>
-	<dict><key>phrase</key><string>奥井雅美</string><key>shortcut</key><string>おくいまさみ</string></dict>
-	<dict><key>phrase</key><string>高橋洋子</string><key>shortcut</key><string>たかはしようこ</string></dict>
-	<dict><key>phrase</key><string>坂本冬美</string><key>shortcut</key><string>さかもとふゆみ</string></dict>
-	<dict><key>phrase</key><string>香西かおり</string><key>shortcut</key><string>こうざいかおり</string></dict>
-	<dict><key>phrase</key><string>伍代夏子</string><key>shortcut</key><string>ごだいなつこ</string></dict>
-	<dict><key>phrase</key><string>藤あや子</string><key>shortcut</key><string>ふじあやこ</string></dict>
-	<dict><key>phrase</key><string>長山洋子</string><key>shortcut</key><string>ながやまようこ</string></dict>
-	<dict><key>phrase</key><string>田川寿美</string><key>shortcut</key><string>たがわとしみ</string></dict>
-	<dict><key>phrase</key><string>水森かおり</string><key>shortcut</key><string>みずもりかおり</string></dict>
-	<dict><key>phrase</key><string>石原詢子</string><key>shortcut</key><string>いしはらじゅんこ</string></dict>
-	<dict><key>phrase</key><string>門倉有希</string><key>shortcut</key><string>かどくらゆき</string></dict>
 	<dict><key>phrase</key><string>市川由紀乃</string><key>shortcut</key><string>いちかわゆきの</string></dict>
 	<dict><key>phrase</key><string>大月みやこ</string><key>shortcut</key><string>おおつきみやこ</string></dict>
 	<dict><key>phrase</key><string>川野夏美</string><key>shortcut</key><string>かわのなつみ</string></dict>
@@ -686,21 +570,6 @@
 	<dict><key>phrase</key><string>竹内朱莉</string><key>shortcut</key><string>たけうちあかり</string></dict>
 	<dict><key>phrase</key><string>勝田里奈</string><key>shortcut</key><string>かつたりな</string></dict>
 	<dict><key>phrase</key><string>田村芽実</string><key>shortcut</key><string>たむらめいみ</string></dict>
-	<dict><key>phrase</key><string>絢香</string><key>shortcut</key><string>あやか</string></dict>
-	<dict><key>phrase</key><string>宇多田ヒカル</string><key>shortcut</key><string>うただひかる</string></dict>
-	<dict><key>phrase</key><string>椎名林檎</string><key>shortcut</key><string>しいなりんご</string></dict>
-	<dict><key>phrase</key><string>aiko</string><key>shortcut</key><string>あいこ</string></dict>
-	<dict><key>phrase</key><string>浜崎あゆみ</string><key>shortcut</key><string>はまさきあゆみ</string></dict>
-	<dict><key>phrase</key><string>安室奈美恵</string><key>shortcut</key><string>あむろなみえ</string></dict>
-	<dict><key>phrase</key><string>倖田來未</string><key>shortcut</key><string>こうだくみ</string></dict>
-	<dict><key>phrase</key><string>大塚愛</string><key>shortcut</key><string>おおつかあい</string></dict>
-	<dict><key>phrase</key><string>中島美嘉</string><key>shortcut</key><string>なかしまみか</string></dict>
-	<dict><key>phrase</key><string>平原綾香</string><key>shortcut</key><string>ひらはらあやか</string></dict>
-	<dict><key>phrase</key><string>一青窈</string><key>shortcut</key><string>ひととよう</string></dict>
-	<dict><key>phrase</key><string>青山テルマ</string><key>shortcut</key><string>あおやまてるま</string></dict>
-	<dict><key>phrase</key><string>木村カエラ</string><key>shortcut</key><string>きむらかえら</string></dict>
-	<dict><key>phrase</key><string>YUI</string><key>shortcut</key><string>ゆい</string></dict>
-	<dict><key>phrase</key><string>加藤ミリヤ</string><key>shortcut</key><string>かとうみりや</string></dict>
 	<dict><key>phrase</key><string>西野カナ</string><key>shortcut</key><string>にしのかな</string></dict>
 	<dict><key>phrase</key><string>JUJU</string><key>shortcut</key><string>じゅじゅ</string></dict>
 	<dict><key>phrase</key><string>越智志帆</string><key>shortcut</key><string>おちしほ</string></dict>
@@ -715,17 +584,8 @@
 	<dict><key>phrase</key><string>片平里菜</string><key>shortcut</key><string>かたひらりな</string></dict>
 	<dict><key>phrase</key><string>大原櫻子</string><key>shortcut</key><string>おおはらさくらこ</string></dict>
 	<dict><key>phrase</key><string>藤原さくら</string><key>shortcut</key><string>ふじわらさくら</string></dict>
-	<dict><key>phrase</key><string>つじあやの</string><key>shortcut</key><string>つじあやの</string></dict>
-	<dict><key>phrase</key><string>柴田淳</string><key>shortcut</key><string>しばたじゅん</string></dict>
-	<dict><key>phrase</key><string>奥華子</string><key>shortcut</key><string>おくはなこ</string></dict>
-	<dict><key>phrase</key><string>熊木杏里</string><key>shortcut</key><string>くまきあんり</string></dict>
 	<dict><key>phrase</key><string>植村花菜</string><key>shortcut</key><string>うえむらかな</string></dict>
 	<dict><key>phrase</key><string>手嶌葵</string><key>shortcut</key><string>てしまあおい</string></dict>
-	<dict><key>phrase</key><string>持田香織</string><key>shortcut</key><string>もちだかおり</string></dict>
-	<dict><key>phrase</key><string>伴都美子</string><key>shortcut</key><string>ばんとみこ</string></dict>
-	<dict><key>phrase</key><string>川瀬智子</string><key>shortcut</key><string>かわせともこ</string></dict>
-	<dict><key>phrase</key><string>YUKI</string><key>shortcut</key><string>ゆき</string></dict>
-	<dict><key>phrase</key><string>坂本真綾</string><key>shortcut</key><string>さかもとまあや</string></dict>
 	<dict><key>phrase</key><string>HARUNA</string><key>shortcut</key><string>はるな</string></dict>
 	<dict><key>phrase</key><string>MAMI</string><key>shortcut</key><string>まみ</string></dict>
 	<dict><key>phrase</key><string>TOMOMI</string><key>shortcut</key><string>ともみ</string></dict>
@@ -735,7 +595,6 @@
 	<dict><key>phrase</key><string>福岡晃子</string><key>shortcut</key><string>ふくおかあきこ</string></dict>
 	<dict><key>phrase</key><string>関根史織</string><key>shortcut</key><string>せきねしおり</string></dict>
 	<dict><key>phrase</key><string>岡崎英美</string><key>shortcut</key><string>おかざきえみ</string></dict>
-	<dict><key>phrase</key><string>新山詩織</string><key>shortcut</key><string>にいやましおり</string></dict>
 	<dict><key>phrase</key><string>吉岡聖恵</string><key>shortcut</key><string>よしおかきよえ</string></dict>
 	<dict><key>phrase</key><string>西脇綾香</string><key>shortcut</key><string>にしわきあやか</string></dict>
 	<dict><key>phrase</key><string>樫野有香</string><key>shortcut</key><string>かしのゆか</string></dict>
@@ -744,15 +603,9 @@
 	<dict><key>phrase</key><string>MEG</string><key>shortcut</key><string>めぐ</string></dict>
 	<dict><key>phrase</key><string>IMALU</string><key>shortcut</key><string>いまる</string></dict>
 	<dict><key>phrase</key><string>土屋アンナ</string><key>shortcut</key><string>つちやあんな</string></dict>
-	<dict><key>phrase</key><string>MINMI</string><key>shortcut</key><string>みんみ</string></dict>
-	<dict><key>phrase</key><string>BENI</string><key>shortcut</key><string>べに</string></dict>
-	<dict><key>phrase</key><string>Crystal Kay</string><key>shortcut</key><string>くりすたるけい</string></dict>
-	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>あい</string></dict>
-	<dict><key>phrase</key><string>青山テルマ</string><key>shortcut</key><string>あおやまてるま</string></dict>
 	<dict><key>phrase</key><string>傳田真央</string><key>shortcut</key><string>でんだまお</string></dict>
 	<dict><key>phrase</key><string>谷村奈南</string><key>shortcut</key><string>たにむらなな</string></dict>
 	<dict><key>phrase</key><string>ICONIQ</string><key>shortcut</key><string>あいこにっく</string></dict>
-	<dict><key>phrase</key><string>伊藤由奈</string><key>shortcut</key><string>いとうゆな</string></dict>
 	<dict><key>phrase</key><string>ステファニー</string><key>shortcut</key><string>すてふぁにー</string></dict>
 	<dict><key>phrase</key><string>玉置成実</string><key>shortcut</key><string>たまきなみ</string></dict>
 	<dict><key>phrase</key><string>北出菜奈</string><key>shortcut</key><string>きたでなな</string></dict>
@@ -766,9 +619,6 @@
 	<dict><key>phrase</key><string>nagi</string><key>shortcut</key><string>なぎ</string></dict>
 	<dict><key>phrase</key><string>chelly</string><key>shortcut</key><string>ちぇりー</string></dict>
 	<dict><key>phrase</key><string>鈴木このみ</string><key>shortcut</key><string>すずきこのみ</string></dict>
-	<dict><key>phrase</key><string>水樹奈々</string><key>shortcut</key><string>みずきなな</string></dict>
-	<dict><key>phrase</key><string>田村ゆかり</string><key>shortcut</key><string>たむらゆかり</string></dict>
-	<dict><key>phrase</key><string>堀江由衣</string><key>shortcut</key><string>ほりえゆい</string></dict>
 	<dict><key>phrase</key><string>茅原実里</string><key>shortcut</key><string>ちはらみのり</string></dict>
 	<dict><key>phrase</key><string>平野綾</string><key>shortcut</key><string>ひらのあや</string></dict>
 	<dict><key>phrase</key><string>加藤英美里</string><key>shortcut</key><string>かとうえみり</string></dict>
@@ -783,8 +633,6 @@
 	<dict><key>phrase</key><string>悠木碧</string><key>shortcut</key><string>ゆうきあおい</string></dict>
 	<dict><key>phrase</key><string>日笠陽子</string><key>shortcut</key><string>ひかさようこ</string></dict>
 	<dict><key>phrase</key><string>佐藤聡美</string><key>shortcut</key><string>さとうさとみ</string></dict>
-	<dict><key>phrase</key><string>寿美菜子</string><key>shortcut</key><string>ことぶきみなこ</string></dict>
-	<dict><key>phrase</key><string>豊崎愛生</string><key>shortcut</key><string>とよさきあき</string></dict>
 	<dict><key>phrase</key><string>新田恵海</string><key>shortcut</key><string>にったえみ</string></dict>
 	<dict><key>phrase</key><string>南條愛乃</string><key>shortcut</key><string>なんじょうよしの</string></dict>
 	<dict><key>phrase</key><string>内田彩</string><key>shortcut</key><string>うちだあや</string></dict>
@@ -805,7 +653,6 @@
 	<dict><key>phrase</key><string>麻倉もも</string><key>shortcut</key><string>あさくらもも</string></dict>
 	<dict><key>phrase</key><string>夏川椎菜</string><key>shortcut</key><string>なつかわしいな</string></dict>
 	<dict><key>phrase</key><string>水瀬いのり</string><key>shortcut</key><string>みなせいのり</string></dict>
-	<dict><key>phrase</key><string>坂本冬美</string><key>shortcut</key><string>さかもとふゆみ</string></dict>
 	<!-- 日本の女性歌手 5/5 (801〜1000人め:2010年代後半〜現代) -->
 	<dict><key>phrase</key><string>生駒里奈</string><key>shortcut</key><string>いこまりな</string></dict>
 	<dict><key>phrase</key><string>白石麻衣</string><key>shortcut</key><string>しらいしまい</string></dict>
@@ -852,7 +699,6 @@
 	<dict><key>phrase</key><string>上村ひなの</string><key>shortcut</key><string>かみむらひなの</string></dict>
 	<dict><key>phrase</key><string>松田好花</string><key>shortcut</key><string>まつだこのか</string></dict>
 	<dict><key>phrase</key><string>正源司陽子</string><key>shortcut</key><string>しょうげんじようこ</string></dict>
-	<dict><key>phrase</key><string>岡田奈々</string><key>shortcut</key><string>おかだなな</string></dict>
 	<dict><key>phrase</key><string>村山彩希</string><key>shortcut</key><string>むらやまゆいり</string></dict>
 	<dict><key>phrase</key><string>向井地美音</string><key>shortcut</key><string>むかいちみお</string></dict>
 	<dict><key>phrase</key><string>小栗有以</string><key>shortcut</key><string>おぐりゆい</string></dict>
@@ -862,7 +708,6 @@
 	<dict><key>phrase</key><string>荻野由佳</string><key>shortcut</key><string>おぎのゆか</string></dict>
 	<dict><key>phrase</key><string>中井りか</string><key>shortcut</key><string>なかいりか</string></dict>
 	<dict><key>phrase</key><string>本間日陽</string><key>shortcut</key><string>ほんまひなた</string></dict>
-	<dict><key>phrase</key><string>宮脇咲良</string><key>shortcut</key><string>みやわきさくら</string></dict>
 	<dict><key>phrase</key><string>チェウォン</string><key>shortcut</key><string>ちぇうぉん</string></dict>
 	<dict><key>phrase</key><string>カズハ</string><key>shortcut</key><string>かずは</string></dict>
 	<dict><key>phrase</key><string>サクラ</string><key>shortcut</key><string>さくら</string></dict>
@@ -876,13 +721,11 @@
 	<dict><key>phrase</key><string>マヤ</string><key>shortcut</key><string>まや</string></dict>
 	<dict><key>phrase</key><string>ミイヒ</string><key>shortcut</key><string>みいひ</string></dict>
 	<dict><key>phrase</key><string>マユカ</string><key>shortcut</key><string>まゆか</string></dict>
-	<dict><key>phrase</key><string>アヤカ</string><key>shortcut</key><string>あやか</string></dict>
 	<dict><key>phrase</key><string>ニナ</string><key>shortcut</key><string>にな</string></dict>
 	<dict><key>phrase</key><string>アイナ・ジ・エンド</string><key>shortcut</key><string>あいなじえんど</string></dict>
 	<dict><key>phrase</key><string>セントチヒロ・チッチ</string><key>shortcut</key><string>せんとちひろちっち</string></dict>
 	<dict><key>phrase</key><string>モモコグミカンパニー</string><key>shortcut</key><string>ももこぐみかんぱにー</string></dict>
 	<dict><key>phrase</key><string>ハシヤスメ・アツコ</string><key>shortcut</key><string>はしやすめあつこ</string></dict>
-	<dict><key>phrase</key><string>リンリン</string><key>shortcut</key><string>りんりん</string></dict>
 	<dict><key>phrase</key><string>アユニ・D</string><key>shortcut</key><string>あゆにでぃー</string></dict>
 	<dict><key>phrase</key><string>あの</string><key>shortcut</key><string>あの</string></dict>
 	<dict><key>phrase</key><string>金子理江</string><key>shortcut</key><string>かねこりえ</string></dict>
@@ -893,26 +736,10 @@
 	<dict><key>phrase</key><string>Aimer</string><key>shortcut</key><string>えめ</string></dict>
 	<dict><key>phrase</key><string>Ado</string><key>shortcut</key><string>あど</string></dict>
 	<dict><key>phrase</key><string>yama</string><key>shortcut</key><string>やま</string></dict>
-	<dict><key>phrase</key><string>絢香</string><key>shortcut</key><string>あやか</string></dict>
-	<dict><key>phrase</key><string>宇多田ヒカル</string><key>shortcut</key><string>うただひかる</string></dict>
-	<dict><key>phrase</key><string>椎名林檎</string><key>shortcut</key><string>しいなりんご</string></dict>
-	<dict><key>phrase</key><string>MISIA</string><key>shortcut</key><string>みーしゃ</string></dict>
-	<dict><key>phrase</key><string>LiSA</string><key>shortcut</key><string>りさ</string></dict>
 	<dict><key>phrase</key><string>Uru</string><key>shortcut</key><string>うる</string></dict>
 	<dict><key>phrase</key><string>eill</string><key>shortcut</key><string>えいる</string></dict>
 	<dict><key>phrase</key><string>由薫</string><key>shortcut</key><string>ゆうか</string></dict>
-	<dict><key>phrase</key><string>鈴木愛理</string><key>shortcut</key><string>すずきあいり</string></dict>
-	<dict><key>phrase</key><string>倖田來未</string><key>shortcut</key><string>こうだくみ</string></dict>
-	<dict><key>phrase</key><string>浜崎あゆみ</string><key>shortcut</key><string>はまさきあゆみ</string></dict>
-	<dict><key>phrase</key><string>安室奈美恵</string><key>shortcut</key><string>あむろなみえ</string></dict>
-	<dict><key>phrase</key><string>JUJU</string><key>shortcut</key><string>じゅじゅ</string></dict>
 	<dict><key>phrase</key><string>Superfly</string><key>shortcut</key><string>すーぱーふらい</string></dict>
-	<dict><key>phrase</key><string>西野カナ</string><key>shortcut</key><string>にしのかな</string></dict>
-	<dict><key>phrase</key><string>miwa</string><key>shortcut</key><string>みわ</string></dict>
-	<dict><key>phrase</key><string>家入レオ</string><key>shortcut</key><string>いえいりれお</string></dict>
-	<dict><key>phrase</key><string>阿部真央</string><key>shortcut</key><string>あべまお</string></dict>
-	<dict><key>phrase</key><string>大原櫻子</string><key>shortcut</key><string>おおはらさくらこ</string></dict>
-	<dict><key>phrase</key><string>藤原さくら</string><key>shortcut</key><string>ふじわらさくら</string></dict>
 	<dict><key>phrase</key><string>ちゃんみな</string><key>shortcut</key><string>ちゃんみな</string></dict>
 	<dict><key>phrase</key><string>DAOKO</string><key>shortcut</key><string>だをこ</string></dict>
 	<dict><key>phrase</key><string>泉まくら</string><key>shortcut</key><string>いずみまくら</string></dict>
@@ -938,8 +765,6 @@
 	<dict><key>phrase</key><string>美咲</string><key>shortcut</key><string>みさき</string></dict>
 	<dict><key>phrase</key><string>たかはしほのか</string><key>shortcut</key><string>たかはしほのか</string></dict>
 	<dict><key>phrase</key><string>海</string><key>shortcut</key><string>うみ</string></dict>
-	<dict><key>phrase</key><string>HARUNA</string><key>shortcut</key><string>はるな</string></dict>
-	<dict><key>phrase</key><string>吉岡聖恵</string><key>shortcut</key><string>よしおかきよえ</string></dict>
 	<dict><key>phrase</key><string>あ〜ちゃん</string><key>shortcut</key><string>あーちゃん</string></dict>
 	<dict><key>phrase</key><string>かしゆか</string><key>shortcut</key><string>かしゆか</string></dict>
 	<dict><key>phrase</key><string>のっち</string><key>shortcut</key><string>のっち</string></dict>
@@ -967,12 +792,6 @@
 	<dict><key>phrase</key><string>鹿乃</string><key>shortcut</key><string>かの</string></dict>
 	<dict><key>phrase</key><string>鎖那</string><key>shortcut</key><string>さな</string></dict>
 	<dict><key>phrase</key><string>鈴木愛奈</string><key>shortcut</key><string>すずきあいな</string></dict>
-	<dict><key>phrase</key><string>水樹奈々</string><key>shortcut</key><string>みずきなな</string></dict>
-	<dict><key>phrase</key><string>上坂すみれ</string><key>shortcut</key><string>うえさかすみれ</string></dict>
-	<dict><key>phrase</key><string>内田真礼</string><key>shortcut</key><string>うちだまあや</string></dict>
-	<dict><key>phrase</key><string>早見沙織</string><key>shortcut</key><string>はやみさおり</string></dict>
-	<dict><key>phrase</key><string>東山奈央</string><key>shortcut</key><string>とうやまなお</string></dict>
-	<dict><key>phrase</key><string>水瀬いのり</string><key>shortcut</key><string>みなせいのり</string></dict>
 	<dict><key>phrase</key><string>小倉唯</string><key>shortcut</key><string>おぐらゆい</string></dict>
 	<dict><key>phrase</key><string>石原夏織</string><key>shortcut</key><string>いしはらかおり</string></dict>
 	<dict><key>phrase</key><string>伊藤美来</string><key>shortcut</key><string>いとうみく</string></dict>
@@ -982,7 +801,6 @@
 	<dict><key>phrase</key><string>諏訪ななか</string><key>shortcut</key><string>すわななか</string></dict>
 	<dict><key>phrase</key><string>小宮有紗</string><key>shortcut</key><string>こみやありさ</string></dict>
 	<dict><key>phrase</key><string>高槻かなこ</string><key>shortcut</key><string>たかつきかなこ</string></dict>
-	<dict><key>phrase</key><string>鈴木愛奈</string><key>shortcut</key><string>すずきあいな</string></dict>
 	<dict><key>phrase</key><string>降幡愛</string><key>shortcut</key><string>ふりはたあい</string></dict>
 	<dict><key>phrase</key><string>伊波杏樹</string><key>shortcut</key><string>いなみあんじゅ</string></dict>
 	<dict><key>phrase</key><string>小林愛香</string><key>shortcut</key><string>こばやしあいか</string></dict>
@@ -995,7 +813,6 @@
 	<dict><key>phrase</key><string>諸星すみれ</string><key>shortcut</key><string>もろほしすみれ</string></dict>
 	<dict><key>phrase</key><string>千菅春香</string><key>shortcut</key><string>ちすがはるか</string></dict>
 	<dict><key>phrase</key><string>安野希世乃</string><key>shortcut</key><string>やすのきよこ</string></dict>
-	<dict><key>phrase</key><string>東山奈央</string><key>shortcut</key><string>とうやまなお</string></dict>
 	<dict><key>phrase</key><string>EXiNA</string><key>shortcut</key><string>えきしーな</string></dict>
 	<dict><key>phrase</key><string>ASCA</string><key>shortcut</key><string>あすか</string></dict>
 	<dict><key>phrase</key><string>ReoNa</string><key>shortcut</key><string>れおな</string></dict>
@@ -1005,8 +822,6 @@
 	<dict><key>phrase</key><string>杜このみ</string><key>shortcut</key><string>もりこのみ</string></dict>
 	<dict><key>phrase</key><string>朝倉さや</string><key>shortcut</key><string>あさくらさや</string></dict>
 	<dict><key>phrase</key><string>まるり</string><key>shortcut</key><string>まるり</string></dict>
-	<dict><key>phrase</key><string>坂本冬美</string><key>shortcut</key><string>さかもとふゆみ</string></dict>
-	<dict><key>phrase</key><string>水森かおり</string><key>shortcut</key><string>みずもりかおり</string></dict>
 
     <!-- 世界のミュージシャン100 (A) -->
     <dict><key>phrase</key><string>ザ・ビートルズ</string><key>shortcut</key><string>ざびーとるず</string></dict>
@@ -1240,7 +1055,6 @@
 	<dict><key>phrase</key><string>ウェイン・ショーター</string><key>shortcut</key><string>うぇいんしょーたー</string></dict>
 	<dict><key>phrase</key><string>ウェス・モンゴメリー</string><key>shortcut</key><string>うぇすもんごめりー</string></dict>
 	<dict><key>phrase</key><string>エスペランサ・スポルディング</string><key>shortcut</key><string>えすぺらんさすぽるでぃんぐ</string></dict>
-	<dict><key>phrase</key><string>エラ・フィッツジェラルド</string><key>shortcut</key><string>えらふぃっつじぇらるど</string></dict>
 	<dict><key>phrase</key><string>エリック・ドルフィー</string><key>shortcut</key><string>えりっくどるふぃー</string></dict>
 	<dict><key>phrase</key><string>エルヴィン・ジョーンズ</string><key>shortcut</key><string>えるゔぃんじょーんず</string></dict>
 	<dict><key>phrase</key><string>オーネット・コールマン</string><key>shortcut</key><string>おーねっとこーるまん</string></dict>
@@ -1272,7 +1086,6 @@
 	<dict><key>phrase</key><string>ジョージ・ラッセル</string><key>shortcut</key><string>じょーじらっせる</string></dict>
 	<dict><key>phrase</key><string>ジョー・ヘンダーソン</string><key>shortcut</key><string>じょーへんだーそん</string></dict>
 	<dict><key>phrase</key><string>ジョシュア・レッドマン</string><key>shortcut</key><string>じょしゅあれっどまん</string></dict>
-	<dict><key>phrase</key><string>ジョン・コルトレーン</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
 	<dict><key>phrase</key><string>ジョン・マクラフリン</string><key>shortcut</key><string>じょんまくらふりん</string></dict>
 	<dict><key>phrase</key><string>スコット・ラファロ</string><key>shortcut</key><string>すこっとらふぁろ</string></dict>
 	<dict><key>phrase</key><string>スタン・ゲッツ</string><key>shortcut</key><string>すたんげっつ</string></dict>
@@ -1298,12 +1111,10 @@
 	<dict><key>phrase</key><string>バド・パウエル</string><key>shortcut</key><string>ばどぱうえる</string></dict>
 	<dict><key>phrase</key><string>ハンク・モブレー</string><key>shortcut</key><string>はんくもぶれー</string></dict>
 	<dict><key>phrase</key><string>ビリー・ストレイホーン</string><key>shortcut</key><string>びりーすとれいほーん</string></dict>
-	<dict><key>phrase</key><string>ビリー・ホリデイ</string><key>shortcut</key><string>びりーほりでい</string></dict>
 	<dict><key>phrase</key><string>ビル・エヴァンス</string><key>shortcut</key><string>びるえゔぁんす</string></dict>
 	<dict><key>phrase</key><string>ファッツ・ウォーラー</string><key>shortcut</key><string>ふぁっつうぉーらー</string></dict>
 	<dict><key>phrase</key><string>フィリー・ジョー・ジョーンズ</string><key>shortcut</key><string>ふぃりーじょーじょーんず</string></dict>
 	<dict><key>phrase</key><string>ブラッド・メルドー</string><key>shortcut</key><string>ぶらっどめるどー</string></dict>
-	<dict><key>phrase</key><string>フランク・シナトラ</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
 	<dict><key>phrase</key><string>フレッチャー・ヘンダーソン</string><key>shortcut</key><string>ふれっちゃーへんだーそん</string></dict>
 	<dict><key>phrase</key><string>フレディ・ハバード</string><key>shortcut</key><string>ふれでぃはばーど</string></dict>
 	<dict><key>phrase</key><string>ベニー・グッドマン</string><key>shortcut</key><string>べにーぐっどまん</string></dict>
@@ -1322,7 +1133,6 @@
 	<dict><key>phrase</key><string>ラサーン・ローランド・カーク</string><key>shortcut</key><string>らさーんろーらんどかーく</string></dict>
 	<dict><key>phrase</key><string>リー・コニッツ</string><key>shortcut</key><string>りーこにっつ</string></dict>
 	<dict><key>phrase</key><string>リー・モーガン</string><key>shortcut</key><string>りーもーがん</string></dict>
-	<dict><key>phrase</key><string>ルイ・アームストロング</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
 	<dict><key>phrase</key><string>レスター・ヤング</string><key>shortcut</key><string>れすたーやんぐ</string></dict>
 	<dict><key>phrase</key><string>レニー・トリスターノ</string><key>shortcut</key><string>れにーとりすたーの</string></dict>
 	<dict><key>phrase</key><string>ロイ・エルドリッジ</string><key>shortcut</key><string>ろいえるどりっじ</string></dict>
@@ -1341,7 +1151,6 @@
 	<dict><key>phrase</key><string>Benny Golson</string><key>shortcut</key><string>べにーごるそん</string></dict>
 	<dict><key>phrase</key><string>Benny Goodman</string><key>shortcut</key><string>べにーぐっどまん</string></dict>
 	<dict><key>phrase</key><string>Bill Evans</string><key>shortcut</key><string>びるえゔぁんす</string></dict>
-	<dict><key>phrase</key><string>Billie Holiday</string><key>shortcut</key><string>びりーほりでい</string></dict>
 	<dict><key>phrase</key><string>Billy Strayhorn</string><key>shortcut</key><string>びりーすとれいほーん</string></dict>
 	<dict><key>phrase</key><string>Brad Mehldau</string><key>shortcut</key><string>ぶらっどめるどー</string></dict>
 	<dict><key>phrase</key><string>Bud Powell</string><key>shortcut</key><string>ばどぱうえる</string></dict>
@@ -1363,13 +1172,11 @@
 	<dict><key>phrase</key><string>Dizzy Gillespie</string><key>shortcut</key><string>でぃじーがれすぴー</string></dict>
 	<dict><key>phrase</key><string>Django Reinhardt</string><key>shortcut</key><string>じゃんごらいんはると</string></dict>
 	<dict><key>phrase</key><string>Duke Ellington</string><key>shortcut</key><string>でゅーくえりんとん</string></dict>
-	<dict><key>phrase</key><string>Ella Fitzgerald</string><key>shortcut</key><string>えらふぃっつじぇらるど</string></dict>
 	<dict><key>phrase</key><string>Elvin Jones</string><key>shortcut</key><string>えるゔぃんじょーんず</string></dict>
 	<dict><key>phrase</key><string>Eric Dolphy</string><key>shortcut</key><string>えりっくどるふぃー</string></dict>
 	<dict><key>phrase</key><string>Esperanza Spalding</string><key>shortcut</key><string>えすぺらんさすぽるでぃんぐ</string></dict>
 	<dict><key>phrase</key><string>Fats Waller</string><key>shortcut</key><string>ふぁっつうぉーらー</string></dict>
 	<dict><key>phrase</key><string>Fletcher Henderson</string><key>shortcut</key><string>ふれっちゃーへんだーそん</string></dict>
-	<dict><key>phrase</key><string>Frank Sinatra</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
 	<dict><key>phrase</key><string>Freddie Hubbard</string><key>shortcut</key><string>ふれでぃはばーど</string></dict>
 	<dict><key>phrase</key><string>George Gershwin</string><key>shortcut</key><string>じょーじがーしゅうぃん</string></dict>
 	<dict><key>phrase</key><string>George Russell</string><key>shortcut</key><string>じょーじらっせる</string></dict>
@@ -1386,7 +1193,6 @@
 	<dict><key>phrase</key><string>Jim Hall</string><key>shortcut</key><string>じむほーる</string></dict>
 	<dict><key>phrase</key><string>Joe Henderson</string><key>shortcut</key><string>じょーへんだーそん</string></dict>
 	<dict><key>phrase</key><string>Joe Zawinul</string><key>shortcut</key><string>じょーざゔぃぬる</string></dict>
-	<dict><key>phrase</key><string>John Coltrane</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
 	<dict><key>phrase</key><string>John McLaughlin</string><key>shortcut</key><string>じょんまくらふりん</string></dict>
 	<dict><key>phrase</key><string>João Gilberto</string><key>shortcut</key><string>じょあんじるべると</string></dict>
 	<dict><key>phrase</key><string>Joshua Redman</string><key>shortcut</key><string>じょしゅあれっどまん</string></dict>
@@ -1399,7 +1205,6 @@
 	<dict><key>phrase</key><string>Lennie Tristano</string><key>shortcut</key><string>れにーとりすたーの</string></dict>
 	<dict><key>phrase</key><string>Lester Young</string><key>shortcut</key><string>れすたーやんぐ</string></dict>
 	<dict><key>phrase</key><string>Lionel Hampton</string><key>shortcut</key><string>らいおねるはんぷとん</string></dict>
-	<dict><key>phrase</key><string>Louis Armstrong</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
 	<dict><key>phrase</key><string>Maria Schneider</string><key>shortcut</key><string>まりあしゅないだー</string></dict>
 	<dict><key>phrase</key><string>Mary Lou Williams</string><key>shortcut</key><string>めありーるーうぃりあむず</string></dict>
 	<dict><key>phrase</key><string>Max Roach</string><key>shortcut</key><string>まっくすろーち</string></dict>

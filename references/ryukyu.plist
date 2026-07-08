@@ -3368,7 +3368,6 @@
 	<dict><key>phrase</key><string>田原</string><key>shortcut</key><string>たはら</string></dict>
 	<dict><key>phrase</key><string>田原</string><key>shortcut</key><string>たばる</string></dict>
 	<dict><key>phrase</key><string>タピック</string><key>shortcut</key><string>たぴっく</string></dict>
-	<dict><key>phrase</key><string>ダ・ヴィンチ</string><key>shortcut</key><string>だゔぃんち</string></dict>
 	<dict><key>phrase</key><string>タフナー</string><key>shortcut</key><string>たふなー</string></dict>
 	<dict><key>phrase</key><string>タマ</string><key>shortcut</key><string>たま</string></dict>
 	<dict><key>phrase</key><string>玉陵</string><key>shortcut</key><string>たまうどぅん</string></dict>
@@ -6369,7 +6368,6 @@
 	<dict><key>phrase</key><string>refuge</string><key>shortcut</key><string>るふゅーじゅ</string></dict>
 	<dict><key>phrase</key><string>allure</string><key>shortcut</key><string>ありゅー</string></dict>
 	<dict><key>phrase</key><string>Vin Bang</string><key>shortcut</key><string>ゔぁんばん</string></dict>
-	<dict><key>phrase</key><string>榮東</string><key>shortcut</key><string>さかあがり</string></dict>
 	<dict><key>phrase</key><string>Boucher</string><key>shortcut</key><string>ぶーしぇ</string></dict>
 	<dict><key>phrase</key><string>生活の柄</string><key>shortcut</key><string>せいかつのがら</string></dict>
 	<dict><key>phrase</key><string>お昼の柄</string><key>shortcut</key><string>おひるのがら</string></dict>
@@ -6387,7 +6385,6 @@
 	<dict><key>phrase</key><string>那覇支店</string><key>shortcut</key><string>なはしてん</string></dict>
 	<dict><key>phrase</key><string>沖縄支店</string><key>shortcut</key><string>おきなわしてん</string></dict>
 	<dict><key>phrase</key><string>EIBUN</string><key>shortcut</key><string>えいぶん</string></dict>
-	<dict><key>phrase</key><string>cobb</string><key>shortcut</key><string>こぶ</string></dict>
 	<dict><key>phrase</key><string>大東ずし</string><key>shortcut</key><string>だいとうずし</string></dict>
 	<dict><key>phrase</key><string>大東寿司</string><key>shortcut</key><string>だいとうずし</string></dict>
 	<dict><key>phrase</key><string>大東鮨</string><key>shortcut</key><string>だいとうずし</string></dict>

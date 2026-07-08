@@ -22,10 +22,8 @@
     <dict><key>phrase</key><string>気にかける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気に食わない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
     <dict><key>phrase</key><string>気にくわない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
-    <dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気にとめる</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
-    <dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気に病む</string><key>shortcut</key><string>きにやむ</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を失う</string><key>shortcut</key><string>きをうしなう</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を利かせる</string><key>shortcut</key><string>きをきかせる</string><key>pos</key><string>一段</string></dict>
