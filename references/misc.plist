@@ -82,5 +82,6 @@
 	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>なっちゃう</string><key>shortcut</key><string>なっちゃう</string></dict>
 	<dict><key>phrase</key><string>のか</string><key>shortcut</key><string>のか</string></dict>
+	<dict><key>phrase</key><string>として</string><key>shortcut</key><string>として</string></dict>
 </array>
 </plist>
