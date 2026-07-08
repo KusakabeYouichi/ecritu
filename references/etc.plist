@@ -4,259 +4,260 @@
 <array>
 	<!-- 一般の語彙 -->
 	<dict><key>phrase</key><string>偶発的</string><key>shortcut</key><string>ぐうはつてき</string></dict>
-	<dict><key>phrase</key><string>勘違い</string><key>shortcut</key><string>かんちがい</string></dict>
 	<dict><key>phrase</key><string>第二次世界大戦中</string><key>shortcut</key><string>だいにじせかいたいせんんちゅう</string></dict>
 	<dict><key>phrase</key><string>興味深い</string><key>shortcut</key><string>きょうみぶかい</string></dict>
 	<dict><key>phrase</key><string>補助的</string><key>shortcut</key><string>ほじょてき</string></dict>
-	<dict><key>phrase</key><string>見極める</string><key>shortcut</key><string>みきわめる</string></dict>
 	<dict><key>phrase</key><string>認知度</string><key>shortcut</key><string>にんちど</string></dict>
 	<dict><key>phrase</key><string>アイデンティティ保持</string><key>shortcut</key><string>あいでんてぃてぃほじ</string></dict>
-	<dict><key>phrase</key><string>エネルギー</string><key>shortcut</key><string>えねるぎー</string></dict>
-	<dict><key>phrase</key><string>ガイドライン</string><key>shortcut</key><string>がいどらいん</string></dict>
-	<dict><key>phrase</key><string>カジュアル</string><key>shortcut</key><string>かじゅある</string></dict>
-	<dict><key>phrase</key><string>カタカナ</string><key>shortcut</key><string>かたかな</string></dict>
-	<dict><key>phrase</key><string>カテゴライズ</string><key>shortcut</key><string>かてごらいず</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>カテゴリー</string><key>shortcut</key><string>かてごりー</string></dict>
 	<dict><key>phrase</key><string>カテゴリー名称</string><key>shortcut</key><string>かてごりーめいしょう</string></dict>
-	<dict><key>phrase</key><string>キレ</string><key>shortcut</key><string>きれ</string></dict>
-	<dict><key>phrase</key><string>コンパクト</string><key>shortcut</key><string>こんぱくと</string></dict>
-	<dict><key>phrase</key><string>コンビネーション</string><key>shortcut</key><string>こんびねーしょん</string></dict>
-	<dict><key>phrase</key><string>スッキリ</string><key>shortcut</key><string>すっきり</string></dict>
-	<dict><key>phrase</key><string>スピード</string><key>shortcut</key><string>すぴーど</string></dict>
-	<dict><key>phrase</key><string>スポット</string><key>shortcut</key><string>すぽっと</string></dict>
-	<dict><key>phrase</key><string>セメント</string><key>shortcut</key><string>せめんと</string></dict>
-	<dict><key>phrase</key><string>メリハリ</string><key>shortcut</key><string>めりはり</string></dict>
-	<dict><key>phrase</key><string>リサイクル</string><key>shortcut</key><string>りさいくる</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>リスク</string><key>shortcut</key><string>りすく</string></dict>
-	<dict><key>phrase</key><string>ルール</string><key>shortcut</key><string>るーる</string></dict>
-	<dict><key>phrase</key><string>レシピ</string><key>shortcut</key><string>れしぴ</string></dict>
-	<dict><key>phrase</key><string>レストラン</string><key>shortcut</key><string>れすとらん</string></dict>
 	<dict><key>phrase</key><string>位置関係</string><key>shortcut</key><string>いちかんけい</string></dict>
-	<dict><key>phrase</key><string>偉業</string><key>shortcut</key><string>いぎょう</string></dict>
-	<dict><key>phrase</key><string>移行</string><key>shortcut</key><string>いこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>移行期間</string><key>shortcut</key><string>いこうきかん</string></dict>
-	<dict><key>phrase</key><string>移民</string><key>shortcut</key><string>いみん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>化学式</string><key>shortcut</key><string>かがくしき</string></dict>
-	<dict><key>phrase</key><string>化学者</string><key>shortcut</key><string>かがくしゃ</string></dict>
 	<dict><key>phrase</key><string>化学物質</string><key>shortcut</key><string>ばけがくぶっしつ</string></dict>
-	<dict><key>phrase</key><string>化合物</string><key>shortcut</key><string>かごうぶつ</string></dict>
-	<dict><key>phrase</key><string>加工</string><key>shortcut</key><string>かこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>加工食品</string><key>shortcut</key><string>かこうしょくひん</string></dict>
-	<dict><key>phrase</key><string>加熱</string><key>shortcut</key><string>かねつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>加熱殺菌</string><key>shortcut</key><string>かねつさっきん</string></dict>
 	<dict><key>phrase</key><string>加熱装置</string><key>shortcut</key><string>かねつそうち</string></dict>
 	<dict><key>phrase</key><string>加熱方法</string><key>shortcut</key><string>かねつほうほう</string></dict>
 	<dict><key>phrase</key><string>加熱・冷却</string><key>shortcut</key><string>かねつれいきゃく</string></dict>
-	<dict><key>phrase</key><string>加盟</string><key>shortcut</key><string>かめい</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>加盟生産者</string><key>shortcut</key><string>かめいせいさんしゃ</string></dict>
-	<dict><key>phrase</key><string>科学者</string><key>shortcut</key><string>かがくしゃ</string></dict>
-	<dict><key>phrase</key><string>稼働</string><key>shortcut</key><string>かどう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>課税数量</string><key>shortcut</key><string>かぜいすうりょう</string></dict>
-	<dict><key>phrase</key><string>確信</string><key>shortcut</key><string>かくしん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>確認</string><key>shortcut</key><string>かくにん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>確保</string><key>shortcut</key><string>かくほ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>確率</string><key>shortcut</key><string>かくりつ</string></dict>
-	<dict><key>phrase</key><string>確立</string><key>shortcut</key><string>かくりつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>割合</string><key>shortcut</key><string>わりあい</string></dict>
-	<dict><key>phrase</key><string>割譲</string><key>shortcut</key><string>かつじょう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>割水</string><key>shortcut</key><string>わりみず</string></dict>
-	<dict><key>phrase</key><string>乾燥</string><key>shortcut</key><string>かんそう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>企業</string><key>shortcut</key><string>きぎょう</string></dict>
-	<dict><key>phrase</key><string>企図</string><key>shortcut</key><string>きと</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>稀有</string><key>shortcut</key><string>けう</string></dict>
-	<dict><key>phrase</key><string>儀式</string><key>shortcut</key><string>ぎしき</string></dict>
-	<dict><key>phrase</key><string>逆転</string><key>shortcut</key><string>ぎゃくてん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>協定</string><key>shortcut</key><string>きょうてい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>協力</string><key>shortcut</key><string>きょうりょく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>傾向</string><key>shortcut</key><string>けいこう</string></dict>
-	<dict><key>phrase</key><string>健康</string><key>shortcut</key><string>けんこう</string></dict>
-	<dict><key>phrase</key><string>健全</string><key>shortcut</key><string>けんぜん</string></dict>
-	<dict><key>phrase</key><string>研究</string><key>shortcut</key><string>けんきゅう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>研究・開発</string><key>shortcut</key><string>けんきゅうかいはつ</string></dict>
 	<dict><key>phrase</key><string>研究機関</string><key>shortcut</key><string>けんきゅうきかん</string></dict>
-	<dict><key>phrase</key><string>研究者</string><key>shortcut</key><string>けんきゅうしゃ</string></dict>
 	<dict><key>phrase</key><string>研究所経由</string><key>shortcut</key><string>けんきゅうしょけいゆ</string></dict>
 	<dict><key>phrase</key><string>研究部門</string><key>shortcut</key><string>けんきゅうぶもん</string></dict>
-	<dict><key>phrase</key><string>研鑽</string><key>shortcut</key><string>けんさん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>元祖</string><key>shortcut</key><string>がんそ</string></dict>
-	<dict><key>phrase</key><string>個人的</string><key>shortcut</key><string>こじんてき</string></dict>
-	<dict><key>phrase</key><string>個性</string><key>shortcut</key><string>こせい</string></dict>
-	<dict><key>phrase</key><string>個性的</string><key>shortcut</key><string>こせいてき</string></dict>
-	<dict><key>phrase</key><string>語句</string><key>shortcut</key><string>ごく</string></dict>
-	<dict><key>phrase</key><string>語源</string><key>shortcut</key><string>ごげん</string></dict>
-	<dict><key>phrase</key><string>語尾</string><key>shortcut</key><string>ごび</string></dict>
-	<dict><key>phrase</key><string>誤差</string><key>shortcut</key><string>ごさ</string></dict>
-	<dict><key>phrase</key><string>誤答</string><key>shortcut</key><string>ごとう</string></dict>
-	<dict><key>phrase</key><string>光沢</string><key>shortcut</key><string>こうたく</string></dict>
-	<dict><key>phrase</key><string>功績</string><key>shortcut</key><string>こうせき</string></dict>
-	<dict><key>phrase</key><string>効果</string><key>shortcut</key><string>こうか</string></dict>
-	<dict><key>phrase</key><string>効果的</string><key>shortcut</key><string>こうかてき</string></dict>
-	<dict><key>phrase</key><string>効用</string><key>shortcut</key><string>こうよう</string></dict>
-	<dict><key>phrase</key><string>効力</string><key>shortcut</key><string>こうりょく</string></dict>
-	<dict><key>phrase</key><string>勾配</string><key>shortcut</key><string>こうばい</string></dict>
-	<dict><key>phrase</key><string>幸運</string><key>shortcut</key><string>こううん</string></dict>
-	<dict><key>phrase</key><string>高騰</string><key>shortcut</key><string>こうとう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>豪華</string><key>shortcut</key><string>ごうか</string></dict>
-	<dict><key>phrase</key><string>豪快</string><key>shortcut</key><string>ごうかい</string></dict>
-	<dict><key>phrase</key><string>祭典</string><key>shortcut</key><string>さいてん</string></dict>
-	<dict><key>phrase</key><string>作成</string><key>shortcut</key><string>さくせい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>刷新</string><key>shortcut</key><string>さっしん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>皿数</string><key>shortcut</key><string>さらかず</string></dict>
-	<dict><key>phrase</key><string>仕分</string><key>shortcut</key><string>しわけ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>刺激</string><key>shortcut</key><string>しげき</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>刺激的</string><key>shortcut</key><string>しげきてき</string></dict>
-	<dict><key>phrase</key><string>識別</string><key>shortcut</key><string>しきべつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>社会問題化</string><key>shortcut</key><string>しゃかいもんだいか</string></dict>
 	<dict><key>phrase</key><string>社交行事</string><key>shortcut</key><string>しゃこうぎょうじ</string></dict>
-	<dict><key>phrase</key><string>種子</string><key>shortcut</key><string>しゅし</string></dict>
-	<dict><key>phrase</key><string>種類</string><key>shortcut</key><string>しゅるい</string></dict>
-	<dict><key>phrase</key><string>秀逸</string><key>shortcut</key><string>しゅういつ</string></dict>
-	<dict><key>phrase</key><string>住所</string><key>shortcut</key><string>じゅうしょ</string></dict>
-	<dict><key>phrase</key><string>住民</string><key>shortcut</key><string>じゅうみん</string></dict>
-	<dict><key>phrase</key><string>充実</string><key>shortcut</key><string>じゅうじつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>充填</string><key>shortcut</key><string>じゅうてん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>充分</string><key>shortcut</key><string>じゅうぶん</string></dict>
-	<dict><key>phrase</key><string>充満</string><key>shortcut</key><string>じゅうまん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>諸説</string><key>shortcut</key><string>しょせつ</string></dict>
-	<dict><key>phrase</key><string>傷口</string><key>shortcut</key><string>きずぐち</string></dict>
-	<dict><key>phrase</key><string>勝者</string><key>shortcut</key><string>しょうしゃ</string></dict>
-	<dict><key>phrase</key><string>勝利</string><key>shortcut</key><string>かつとし</string></dict>
-	<dict><key>phrase</key><string>省略</string><key>shortcut</key><string>しょうりゃく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>称号</string><key>shortcut</key><string>しょうごう</string></dict>
-	<dict><key>phrase</key><string>象徴</string><key>shortcut</key><string>しょうちょう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>象徴的</string><key>shortcut</key><string>しょうちょうてき</string></dict>
-	<dict><key>phrase</key><string>信仰</string><key>shortcut</key><string>しんこう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>真横</string><key>shortcut</key><string>まよこ</string></dict>
-	<dict><key>phrase</key><string>真珠</string><key>shortcut</key><string>しんじゅ</string></dict>
-	<dict><key>phrase</key><string>真上</string><key>shortcut</key><string>まうえ</string></dict>
-	<dict><key>phrase</key><string>制限</string><key>shortcut</key><string>せいげん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>制定</string><key>shortcut</key><string>せいてい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>制度</string><key>shortcut</key><string>せいど</string></dict>
-	<dict><key>phrase</key><string>制約</string><key>shortcut</key><string>せいやく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>勢力</string><key>shortcut</key><string>せいりょく</string></dict>
 	<dict><key>phrase</key><string>税関職員</string><key>shortcut</key><string>ぜいかんしょくいん</string></dict>
-	<dict><key>phrase</key><string>税金</string><key>shortcut</key><string>ぜいきん</string></dict>
-	<dict><key>phrase</key><string>税務署</string><key>shortcut</key><string>ぜいむしょ</string></dict>
-	<dict><key>phrase</key><string>説明</string><key>shortcut</key><string>せつめい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>説明文</string><key>shortcut</key><string>せつめいぶん</string></dict>
-	<dict><key>phrase</key><string>先駆</string><key>shortcut</key><string>せんく</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>先駆者的地区</string><key>shortcut</key><string>せんくしゃまとじく</string></dict>
-	<dict><key>phrase</key><string>先住民</string><key>shortcut</key><string>せんじゅうみん</string></dict>
 	<dict><key>phrase</key><string>先住民族</string><key>shortcut</key><string>せんじゅうみんぞく</string></dict>
-	<dict><key>phrase</key><string>先祖</string><key>shortcut</key><string>せんぞ</string></dict>
-	<dict><key>phrase</key><string>先端</string><key>shortcut</key><string>せんたん</string></dict>
-	<dict><key>phrase</key><string>先入観</string><key>shortcut</key><string>せんにゅうかん</string></dict>
-	<dict><key>phrase</key><string>選択</string><key>shortcut</key><string>せんたく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>選択肢</string><key>shortcut</key><string>せんたくし</string></dict>
-	<dict><key>phrase</key><string>選抜</string><key>shortcut</key><string>せんばつ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>選抜方法</string><key>shortcut</key><string>せんばつほうほう</string></dict>
-	<dict><key>phrase</key><string>前回</string><key>shortcut</key><string>ぜんかい</string></dict>
-	<dict><key>phrase</key><string>前後</string><key>shortcut</key><string>ぜんご</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>前菜</string><key>shortcut</key><string>ぜんさい</string></dict>
-	<dict><key>phrase</key><string>前者</string><key>shortcut</key><string>ぜんしゃ</string></dict>
-	<dict><key>phrase</key><string>前身</string><key>shortcut</key><string>ぜんしん</string></dict>
-	<dict><key>phrase</key><string>前提</string><key>shortcut</key><string>ぜんてい</string></dict>
-	<dict><key>phrase</key><string>前年</string><key>shortcut</key><string>ぜんねん</string></dict>
-	<dict><key>phrase</key><string>前面</string><key>shortcut</key><string>ぜんめん</string></dict>
-	<dict><key>phrase</key><string>全国</string><key>shortcut</key><string>ぜんこく</string></dict>
-	<dict><key>phrase</key><string>全国初</string><key>shortcut</key><string>ぜんこくはつ</string></dict>
-	<dict><key>phrase</key><string>全国的</string><key>shortcut</key><string>ぜんこくてき</string></dict>
-	<dict><key>phrase</key><string>全体</string><key>shortcut</key><string>ぜんたい</string></dict>
-	<dict><key>phrase</key><string>全体的</string><key>shortcut</key><string>ぜんたいてき</string></dict>
-	<dict><key>phrase</key><string>祖先</string><key>shortcut</key><string>そせん</string></dict>
-	<dict><key>phrase</key><string>創刊</string><key>shortcut</key><string>そうかん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>創業</string><key>shortcut</key><string>そうぎょう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>創始者</string><key>shortcut</key><string>そうししゃ</string></dict>
-	<dict><key>phrase</key><string>創出</string><key>shortcut</key><string>そうしゅつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>創設</string><key>shortcut</key><string>そうせつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>創立</string><key>shortcut</key><string>そうりつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>相殺</string><key>shortcut</key><string>そうさい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>相次</string><key>shortcut</key><string>あいじ</string></dict>
-	<dict><key>phrase</key><string>相性</string><key>shortcut</key><string>あいしょう</string></dict>
-	<dict><key>phrase</key><string>相対的</string><key>shortcut</key><string>そうたいてき</string></dict>
-	<dict><key>phrase</key><string>相当</string><key>shortcut</key><string>そうとう</string></dict>
 	<dict><key>phrase</key><string>相当程度</string><key>shortcut</key><string>そうとうていど</string></dict>
-	<dict><key>phrase</key><string>相反</string><key>shortcut</key><string>そうはん</string></dict>
-	<dict><key>phrase</key><string>側部</string><key>shortcut</key><string>そくぶ</string></dict>
-	<dict><key>phrase</key><string>体外</string><key>shortcut</key><string>たいがい</string></dict>
-	<dict><key>phrase</key><string>体型</string><key>shortcut</key><string>たいけい</string></dict>
-	<dict><key>phrase</key><string>卓越</string><key>shortcut</key><string>たくえつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>単位</string><key>shortcut</key><string>たんい</string></dict>
-	<dict><key>phrase</key><string>単一</string><key>shortcut</key><string>たんいつ</string></dict>
-	<dict><key>phrase</key><string>短時間</string><key>shortcut</key><string>たんじかん</string></dict>
-	<dict><key>phrase</key><string>短縮</string><key>shortcut</key><string>たんしゅく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>短所</string><key>shortcut</key><string>たんしょ</string></dict>
-	<dict><key>phrase</key><string>誕生</string><key>shortcut</key><string>たんじょう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>値段</string><key>shortcut</key><string>ねだん</string></dict>
-	<dict><key>phrase</key><string>知識</string><key>shortcut</key><string>ちしき</string></dict>
-	<dict><key>phrase</key><string>知名度</string><key>shortcut</key><string>ちめいど</string></dict>
-	<dict><key>phrase</key><string>着目</string><key>shortcut</key><string>ちゃくもく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>直射日光</string><key>shortcut</key><string>ちょくしゃにっこう</string></dict>
 	<dict><key>phrase</key><string>直接グラス</string><key>shortcut</key><string>ちょくせつぐらす</string></dict>
 	<dict><key>phrase</key><string>直接材料</string><key>shortcut</key><string>ちょくせつざいりょう</string></dict>
 	<dict><key>phrase</key><string>直接日本酒</string><key>shortcut</key><string>ちょくせつにほんしゅ</string></dict>
 	<dict><key>phrase</key><string>直線距離</string><key>shortcut</key><string>ちょくせんきょり</string></dict>
-	<dict><key>phrase</key><string>直前</string><key>shortcut</key><string>ちょくぜん</string></dict>
-	<dict><key>phrase</key><string>直訳</string><key>shortcut</key><string>ちょくやく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>追加</string><key>shortcut</key><string>ついか</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>追求</string><key>shortcut</key><string>ついきゅう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>停止</string><key>shortcut</key><string>ちょうじ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>停滞</string><key>shortcut</key><string>ていたい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>程度</string><key>shortcut</key><string>ていど</string></dict>
-	<dict><key>phrase</key><string>伝説</string><key>shortcut</key><string>でんせつ</string></dict>
-	<dict><key>phrase</key><string>途上</string><key>shortcut</key><string>とじょう</string></dict>
-	<dict><key>phrase</key><string>途上国</string><key>shortcut</key><string>とじょうこく</string></dict>
-	<dict><key>phrase</key><string>途中</string><key>shortcut</key><string>とちゅう</string></dict>
-	<dict><key>phrase</key><string>到達</string><key>shortcut</key><string>とうたつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>到着</string><key>shortcut</key><string>とうちゃく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>到来</string><key>shortcut</key><string>とうらい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>動物</string><key>shortcut</key><string>どうぶつ</string></dict>
-	<dict><key>phrase</key><string>動物的</string><key>shortcut</key><string>どうぶつてき</string></dict>
-	<dict><key>phrase</key><string>入口</string><key>shortcut</key><string>いりくち</string></dict>
-	<dict><key>phrase</key><string>入手</string><key>shortcut</key><string>にゅうしゅ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>入植</string><key>shortcut</key><string>にゅうしょく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>入力</string><key>shortcut</key><string>にゅうりょく</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>任意</string><key>shortcut</key><string>にんい</string></dict>
-	<dict><key>phrase</key><string>破壊</string><key>shortcut</key><string>はかい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>破損</string><key>shortcut</key><string>はそん</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>白黒</string><key>shortcut</key><string>しろくろ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>皮切</string><key>shortcut</key><string>かわきり</string></dict>
-	<dict><key>phrase</key><string>非公式</string><key>shortcut</key><string>ひこうしき</string></dict>
-	<dict><key>phrase</key><string>非常</string><key>shortcut</key><string>ひじょう</string></dict>
 	<dict><key>phrase</key><string>風光明媚</string><key>shortcut</key><string>ふうこうめいび</string></dict>
-	<dict><key>phrase</key><string>返済</string><key>shortcut</key><string>へんさい</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>保管</string><key>shortcut</key><string>ほかん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>保管中</string><key>shortcut</key><string>ほかんあたり</string></dict>
-	<dict><key>phrase</key><string>保護</string><key>shortcut</key><string>ほご</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>保持</string><key>shortcut</key><string>ほじ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>保証</string><key>shortcut</key><string>ほしょう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>包括</string><key>shortcut</key><string>ほうかつ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>包括的</string><key>shortcut</key><string>ほうかつてき</string></dict>
-	<dict><key>phrase</key><string>包装</string><key>shortcut</key><string>ほうそう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>北側</string><key>shortcut</key><string>きたがわ</string></dict>
 	<dict><key>phrase</key><string>北側部分</string><key>shortcut</key><string>きたがわぶぶん</string></dict>
-	<dict><key>phrase</key><string>北半球</string><key>shortcut</key><string>きたはんきゅう</string></dict>
 	<dict><key>phrase</key><string>北半分</string><key>shortcut</key><string>きたはんぶん</string></dict>
-	<dict><key>phrase</key><string>魅了</string><key>shortcut</key><string>みりょう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>魅力</string><key>shortcut</key><string>みりょく</string></dict>
-	<dict><key>phrase</key><string>目安</string><key>shortcut</key><string>めやす</string></dict>
-	<dict><key>phrase</key><string>目覚</string><key>shortcut</key><string>めざまし</string></dict>
-	<dict><key>phrase</key><string>目的</string><key>shortcut</key><string>もくてき</string></dict>
-	<dict><key>phrase</key><string>優位性</string><key>shortcut</key><string>ゆういせい</string></dict>
-	<dict><key>phrase</key><string>優秀</string><key>shortcut</key><string>ゆうしゅう</string></dict>
-	<dict><key>phrase</key><string>優勝</string><key>shortcut</key><string>ゆうしょう</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>優劣</string><key>shortcut</key><string>ゆうれつ</string></dict>
-	<dict><key>phrase</key><string>幼少期</string><key>shortcut</key><string>ようしょうき</string></dict>
-	<dict><key>phrase</key><string>利点</string><key>shortcut</key><string>りてん</string></dict>
-	<dict><key>phrase</key><string>利用</string><key>shortcut</key><string>としもち</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>劣化</string><key>shortcut</key><string>れっか</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>労働</string><key>shortcut</key><string>ろうどう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>労働コスト</string><key>shortcut</key><string>ろうどうこすと</string></dict>
 	<dict><key>phrase</key><string>労働環境</string><key>shortcut</key><string>ろうどうかんきょう</string></dict>
 	<dict><key>phrase</key><string>労働環境改善</string><key>shortcut</key><string>ろうどうかんきょうかいぜん</string></dict>
-	<dict><key>phrase</key><string>労働者</string><key>shortcut</key><string>ろうどうしゃ</string></dict>
-	<dict><key>phrase</key><string>労働条件</string><key>shortcut</key><string>ろうどうじょうけん</string></dict>
-	<dict><key>phrase</key><string>謳歌</string><key>shortcut</key><string>おうか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>TGV</string><key>shortcut</key><string>てぃーじーゔい</string></dict>
+	<!-- SudachiDictにもある -->
+	<dict><key>phrase</key><string>勘違い</string><key>shortcut</key><string>かんちがい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>見極める</string><key>shortcut</key><string>みきわめる</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>エネルギー</string><key>shortcut</key><string>えねるぎー</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>ガイドライン</string><key>shortcut</key><string>がいどらいん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>カジュアル</string><key>shortcut</key><string>かじゅある</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>カタカナ</string><key>shortcut</key><string>かたかな</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>カテゴライズ</string><key>shortcut</key><string>かてごらいず</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>カテゴリー</string><key>shortcut</key><string>かてごりー</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>キレ</string><key>shortcut</key><string>きれ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>コンパクト</string><key>shortcut</key><string>こんぱくと</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>コンビネーション</string><key>shortcut</key><string>こんびねーしょん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>スッキリ</string><key>shortcut</key><string>すっきり</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>スピード</string><key>shortcut</key><string>すぴーど</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>スポット</string><key>shortcut</key><string>すぽっと</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>セメント</string><key>shortcut</key><string>せめんと</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>メリハリ</string><key>shortcut</key><string>めりはり</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>リサイクル</string><key>shortcut</key><string>りさいくる</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>リスク</string><key>shortcut</key><string>りすく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>ルール</string><key>shortcut</key><string>るーる</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>レシピ</string><key>shortcut</key><string>れしぴ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>レストラン</string><key>shortcut</key><string>れすとらん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>偉業</string><key>shortcut</key><string>いぎょう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>移行</string><key>shortcut</key><string>いこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>移民</string><key>shortcut</key><string>いみん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>化学式</string><key>shortcut</key><string>かがくしき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>化学者</string><key>shortcut</key><string>かがくしゃ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>化合物</string><key>shortcut</key><string>かごうぶつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>加工</string><key>shortcut</key><string>かこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>加熱</string><key>shortcut</key><string>かねつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>加盟</string><key>shortcut</key><string>かめい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>科学者</string><key>shortcut</key><string>かがくしゃ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>稼働</string><key>shortcut</key><string>かどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>確信</string><key>shortcut</key><string>かくしん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>確認</string><key>shortcut</key><string>かくにん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>確保</string><key>shortcut</key><string>かくほ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>確率</string><key>shortcut</key><string>かくりつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>確立</string><key>shortcut</key><string>かくりつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>割合</string><key>shortcut</key><string>わりあい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>割譲</string><key>shortcut</key><string>かつじょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>割水</string><key>shortcut</key><string>わりみず</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>乾燥</string><key>shortcut</key><string>かんそう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>企業</string><key>shortcut</key><string>きぎょう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>企図</string><key>shortcut</key><string>きと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>稀有</string><key>shortcut</key><string>けう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>儀式</string><key>shortcut</key><string>ぎしき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>逆転</string><key>shortcut</key><string>ぎゃくてん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>協定</string><key>shortcut</key><string>きょうてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>協力</string><key>shortcut</key><string>きょうりょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>傾向</string><key>shortcut</key><string>けいこう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>健康</string><key>shortcut</key><string>けんこう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>健全</string><key>shortcut</key><string>けんぜん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>研究</string><key>shortcut</key><string>けんきゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>研究者</string><key>shortcut</key><string>けんきゅうしゃ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>研鑽</string><key>shortcut</key><string>けんさん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>元祖</string><key>shortcut</key><string>がんそ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>個人的</string><key>shortcut</key><string>こじんてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>個性</string><key>shortcut</key><string>こせい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>個性的</string><key>shortcut</key><string>こせいてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>語句</string><key>shortcut</key><string>ごく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>語源</string><key>shortcut</key><string>ごげん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>語尾</string><key>shortcut</key><string>ごび</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>誤差</string><key>shortcut</key><string>ごさ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>誤答</string><key>shortcut</key><string>ごとう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>光沢</string><key>shortcut</key><string>こうたく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>功績</string><key>shortcut</key><string>こうせき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>効果</string><key>shortcut</key><string>こうか</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>効果的</string><key>shortcut</key><string>こうかてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>効用</string><key>shortcut</key><string>こうよう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>効力</string><key>shortcut</key><string>こうりょく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>勾配</string><key>shortcut</key><string>こうばい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>幸運</string><key>shortcut</key><string>こううん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>高騰</string><key>shortcut</key><string>こうとう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>豪華</string><key>shortcut</key><string>ごうか</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>豪快</string><key>shortcut</key><string>ごうかい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>祭典</string><key>shortcut</key><string>さいてん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>作成</string><key>shortcut</key><string>さくせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>刷新</string><key>shortcut</key><string>さっしん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>皿数</string><key>shortcut</key><string>さらかず</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>仕分</string><key>shortcut</key><string>しわけ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>刺激</string><key>shortcut</key><string>しげき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>刺激的</string><key>shortcut</key><string>しげきてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>識別</string><key>shortcut</key><string>しきべつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>種子</string><key>shortcut</key><string>しゅし</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>種類</string><key>shortcut</key><string>しゅるい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>秀逸</string><key>shortcut</key><string>しゅういつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>住所</string><key>shortcut</key><string>じゅうしょ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>住民</string><key>shortcut</key><string>じゅうみん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>充実</string><key>shortcut</key><string>じゅうじつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>充填</string><key>shortcut</key><string>じゅうてん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>充分</string><key>shortcut</key><string>じゅうぶん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>充満</string><key>shortcut</key><string>じゅうまん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>諸説</string><key>shortcut</key><string>しょせつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>傷口</string><key>shortcut</key><string>きずぐち</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>勝者</string><key>shortcut</key><string>しょうしゃ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>勝利</string><key>shortcut</key><string>かつとし</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>省略</string><key>shortcut</key><string>しょうりゃく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>称号</string><key>shortcut</key><string>しょうごう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>象徴</string><key>shortcut</key><string>しょうちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>象徴的</string><key>shortcut</key><string>しょうちょうてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>信仰</string><key>shortcut</key><string>しんこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>真横</string><key>shortcut</key><string>まよこ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>真珠</string><key>shortcut</key><string>しんじゅ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>真上</string><key>shortcut</key><string>まうえ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>制限</string><key>shortcut</key><string>せいげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>制定</string><key>shortcut</key><string>せいてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>制度</string><key>shortcut</key><string>せいど</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>制約</string><key>shortcut</key><string>せいやく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>勢力</string><key>shortcut</key><string>せいりょく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>税金</string><key>shortcut</key><string>ぜいきん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>税務署</string><key>shortcut</key><string>ぜいむしょ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>説明</string><key>shortcut</key><string>せつめい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>説明文</string><key>shortcut</key><string>せつめいぶん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>先駆</string><key>shortcut</key><string>せんく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>先住民</string><key>shortcut</key><string>せんじゅうみん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>先祖</string><key>shortcut</key><string>せんぞ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>先端</string><key>shortcut</key><string>せんたん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>先入観</string><key>shortcut</key><string>せんにゅうかん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>選択</string><key>shortcut</key><string>せんたく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>選択肢</string><key>shortcut</key><string>せんたくし</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>選抜</string><key>shortcut</key><string>せんばつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前回</string><key>shortcut</key><string>ぜんかい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前後</string><key>shortcut</key><string>ぜんご</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前菜</string><key>shortcut</key><string>ぜんさい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前者</string><key>shortcut</key><string>ぜんしゃ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前身</string><key>shortcut</key><string>ぜんしん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前提</string><key>shortcut</key><string>ぜんてい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前年</string><key>shortcut</key><string>ぜんねん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>前面</string><key>shortcut</key><string>ぜんめん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>全国</string><key>shortcut</key><string>ぜんこく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>全国初</string><key>shortcut</key><string>ぜんこくはつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>全国的</string><key>shortcut</key><string>ぜんこくてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>全体</string><key>shortcut</key><string>ぜんたい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>全体的</string><key>shortcut</key><string>ぜんたいてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>祖先</string><key>shortcut</key><string>そせん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>創刊</string><key>shortcut</key><string>そうかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>創業</string><key>shortcut</key><string>そうぎょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>創始者</string><key>shortcut</key><string>そうししゃ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>創出</string><key>shortcut</key><string>そうしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>創設</string><key>shortcut</key><string>そうせつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>創立</string><key>shortcut</key><string>そうりつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>相殺</string><key>shortcut</key><string>そうさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>相次</string><key>shortcut</key><string>あいじ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>相性</string><key>shortcut</key><string>あいしょう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>相対的</string><key>shortcut</key><string>そうたいてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>相当</string><key>shortcut</key><string>そうとう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>相反</string><key>shortcut</key><string>そうはん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>側部</string><key>shortcut</key><string>そくぶ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>体外</string><key>shortcut</key><string>たいがい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>体型</string><key>shortcut</key><string>たいけい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>卓越</string><key>shortcut</key><string>たくえつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>単位</string><key>shortcut</key><string>たんい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>単一</string><key>shortcut</key><string>たんいつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>短時間</string><key>shortcut</key><string>たんじかん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>短縮</string><key>shortcut</key><string>たんしゅく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>短所</string><key>shortcut</key><string>たんしょ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>誕生</string><key>shortcut</key><string>たんじょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>値段</string><key>shortcut</key><string>ねだん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>知識</string><key>shortcut</key><string>ちしき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>知名度</string><key>shortcut</key><string>ちめいど</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>着目</string><key>shortcut</key><string>ちゃくもく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>直射日光</string><key>shortcut</key><string>ちょくしゃにっこう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>直前</string><key>shortcut</key><string>ちょくぜん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>直訳</string><key>shortcut</key><string>ちょくやく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>追加</string><key>shortcut</key><string>ついか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>追求</string><key>shortcut</key><string>ついきゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>停止</string><key>shortcut</key><string>ちょうじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>停滞</string><key>shortcut</key><string>ていたい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>程度</string><key>shortcut</key><string>ていど</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>伝説</string><key>shortcut</key><string>でんせつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>途上</string><key>shortcut</key><string>とじょう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>途上国</string><key>shortcut</key><string>とじょうこく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>途中</string><key>shortcut</key><string>とちゅう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>到達</string><key>shortcut</key><string>とうたつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>到着</string><key>shortcut</key><string>とうちゃく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>到来</string><key>shortcut</key><string>とうらい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>動物</string><key>shortcut</key><string>どうぶつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>動物的</string><key>shortcut</key><string>どうぶつてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>入口</string><key>shortcut</key><string>いりくち</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>入手</string><key>shortcut</key><string>にゅうしゅ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>入植</string><key>shortcut</key><string>にゅうしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>入力</string><key>shortcut</key><string>にゅうりょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>任意</string><key>shortcut</key><string>にんい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>破壊</string><key>shortcut</key><string>はかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>破損</string><key>shortcut</key><string>はそん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>白黒</string><key>shortcut</key><string>しろくろ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>皮切</string><key>shortcut</key><string>かわきり</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>非公式</string><key>shortcut</key><string>ひこうしき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>非常</string><key>shortcut</key><string>ひじょう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>返済</string><key>shortcut</key><string>へんさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>保管</string><key>shortcut</key><string>ほかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>保護</string><key>shortcut</key><string>ほご</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>保持</string><key>shortcut</key><string>ほじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>保証</string><key>shortcut</key><string>ほしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>包括</string><key>shortcut</key><string>ほうかつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>包括的</string><key>shortcut</key><string>ほうかつてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>包装</string><key>shortcut</key><string>ほうそう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>北側</string><key>shortcut</key><string>きたがわ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>北半球</string><key>shortcut</key><string>きたはんきゅう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>魅了</string><key>shortcut</key><string>みりょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>魅力</string><key>shortcut</key><string>みりょく</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>目安</string><key>shortcut</key><string>めやす</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>目覚</string><key>shortcut</key><string>めざまし</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>目的</string><key>shortcut</key><string>もくてき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>優位性</string><key>shortcut</key><string>ゆういせい</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>優秀</string><key>shortcut</key><string>ゆうしゅう</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>優勝</string><key>shortcut</key><string>ゆうしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>優劣</string><key>shortcut</key><string>ゆうれつ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>幼少期</string><key>shortcut</key><string>ようしょうき</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>利点</string><key>shortcut</key><string>りてん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>利用</string><key>shortcut</key><string>としもち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>劣化</string><key>shortcut</key><string>れっか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>労働</string><key>shortcut</key><string>ろうどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>労働者</string><key>shortcut</key><string>ろうどうしゃ</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>労働条件</string><key>shortcut</key><string>ろうどうじょうけん</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>謳歌</string><key>shortcut</key><string>おうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
 </array>
 </plist>

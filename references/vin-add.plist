@@ -1516,8 +1516,6 @@
 	<dict><key>phrase</key><string>Vertical Shoot Position</string><key>shortcut</key><string>ばーてぃかるしゅーとぽじしょん</string></dict>
 	<dict><key>phrase</key><string>Vinha ao alto</string><key>shortcut</key><string>ゔぃーにゃあおあると</string></dict>
 	<dict><key>phrase</key><string>Véraison</string><key>shortcut</key><string>べれぞん</string></dict>
-	<dict><key>phrase</key><string>culture</string><key>shortcut</key><string>かるちゃー</string></dict>
-	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>えいちえー</string></dict>
 	<dict><key>phrase</key><string>Öchsle</string><key>shortcut</key><string>えくすれ</string></dict>
 	<dict><key>phrase</key><string>アンチ・グラニソ</string><key>shortcut</key><string>あんちぐらにそ</string></dict>
 	<dict><key>phrase</key><string>ウドンコ病</string><key>shortcut</key><string>うどんこびょう</string></dict>
@@ -1592,7 +1590,6 @@
 	<dict><key>phrase</key><string>果梗</string><key>shortcut</key><string>かこう</string></dict>
 	<dict><key>phrase</key><string>株仕立</string><key>shortcut</key><string>かぶしたて</string></dict>
 	<dict><key>phrase</key><string>根頭癌腫病</string><key>shortcut</key><string>ねかみがんしゅびょう</string></dict>
-	<dict><key>phrase</key><string>梗</string><key>shortcut</key><string>こう</string></dict>
 	<dict><key>phrase</key><string>棒仕立</string><key>shortcut</key><string>ぼうしたて</string></dict>
 	<dict><key>phrase</key><string>棚仕立</string><key>shortcut</key><string>たなしたて</string></dict>
 	<dict><key>phrase</key><string>気温差</string><key>shortcut</key><string>きおんさ</string></dict>
@@ -1642,7 +1639,6 @@
 	<dict><key>phrase</key><string>高樹齢</string><key>shortcut</key><string>こうじゅれい</string></dict>
 	<dict><key>phrase</key><string>高湿度</string><key>shortcut</key><string>こうしつど</string></dict>
 	<dict><key>phrase</key><string>高緯度・平野部</string><key>shortcut</key><string>こういどへいやぶ</string></dict>
-	<dict><key>phrase</key><string>火山灰</string><key>shortcut</key><string>かざんばい</string></dict>
 
 	<!-- ワイン醸造技術用語 -->
 	<dict><key>phrase</key><string>1次加工</string><key>shortcut</key><string>いちじかこう</string></dict>
@@ -1736,8 +1732,6 @@
 	<dict><key>phrase</key><string>Weingut</string><key>shortcut</key><string>ばいんぐーと</string></dict>
 	<dict><key>phrase</key><string>brassage</string><key>shortcut</key><string>ぶらさーじゅ</string></dict>
 	<dict><key>phrase</key><string>drying</string><key>shortcut</key><string>どらいいんぐ</string></dict>
-	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>まりあーじゅ</string></dict>
-	<dict><key>phrase</key><string>melting</string><key>shortcut</key><string>めるてぃんぐ</string></dict>
 	<dict><key>phrase</key><string>séchage naturel</string><key>shortcut</key><string>せしゃーじゅなちゅれる</string></dict>
 	<dict><key>phrase</key><string>tyloses</string><key>shortcut</key><string>たいろーしす</string></dict>
 	<dict><key>phrase</key><string>Égrappage</string><key>shortcut</key><string>えぐらぱーじゅ</string></dict>
@@ -1864,9 +1858,7 @@
 	<dict><key>phrase</key><string>短期間フロール</string><key>shortcut</key><string>たんきかんふろーる</string></dict>
 	<dict><key>phrase</key><string>空寸</string><key>shortcut</key><string>あきすん</string></dict>
 	<dict><key>phrase</key><string>粕部分</string><key>shortcut</key><string>かすぶぶん</string></dict>
-	<dict><key>phrase</key><string>糖</string><key>shortcut</key><string>とう</string></dict>
 	<dict><key>phrase</key><string>糖分量</string><key>shortcut</key><string>とうぶんりょう</string></dict>
-	<dict><key>phrase</key><string>糖化</string><key>shortcut</key><string>とうか</string></dict>
 	<dict><key>phrase</key><string>糖度測定法</string><key>shortcut</key><string>とうどそくていほう</string></dict>
 	<dict><key>phrase</key><string>純粋培養法</string><key>shortcut</key><string>じゅんすいばいようほう</string></dict>
 	<dict><key>phrase</key><string>調合剤</string><key>shortcut</key><string>ちょうごうざい</string></dict>
@@ -1967,12 +1959,9 @@
 	<dict><key>phrase</key><string>Vodka</string><key>shortcut</key><string>うぉっか</string></dict>
 	<dict><key>phrase</key><string>bière</string><key>shortcut</key><string>びえーる</string></dict>
 	<dict><key>phrase</key><string>boissons</string><key>shortcut</key><string>ぼわっそん</string></dict>
-	<dict><key>phrase</key><string>cocktail</string><key>shortcut</key><string>かくてる</string></dict>
 	<dict><key>phrase</key><string>eau-de-vie</string><key>shortcut</key><string>おーどびー</string></dict>
-	<dict><key>phrase</key><string>liqueur</string><key>shortcut</key><string>りきゅーる</string></dict>
 	<dict><key>phrase</key><string>saké</string><key>shortcut</key><string>さけ</string></dict>
 	<dict><key>phrase</key><string>spiritueux</string><key>shortcut</key><string>すぴりてゅー</string></dict>
-	<dict><key>phrase</key><string>whisky</string><key>shortcut</key><string>ういすきー</string></dict>
 	<dict><key>phrase</key><string>アニゼ</string><key>shortcut</key><string>あにぜ</string></dict>
 	<dict><key>phrase</key><string>ウイスキー+スイート・ベルモット</string><key>shortcut</key><string>ういすきーすいーとべるもっと</string></dict>
 	<dict><key>phrase</key><string>ウイスキー+炭酸</string><key>shortcut</key><string>ういすきーたんさん</string></dict>
@@ -2406,7 +2395,6 @@
 	<dict><key>phrase</key><string>Stag's Leap Wine Cellars</string><key>shortcut</key><string>すたっぐすりーぷわいんせらーず</string></dict>
 	<dict><key>phrase</key><string>Vin de Constance</string><key>shortcut</key><string>ばんどぅこんすたんす</string></dict>
 	<dict><key>phrase</key><string>Vin des Glaciers</string><key>shortcut</key><string>ばんでぐらしえ</string></dict>
-	<dict><key>phrase</key><string>drc</string><key>shortcut</key><string>でぃーあーるしー</string></dict>
 	<dict><key>phrase</key><string>キアンティワイン</string><key>shortcut</key><string>きあんてぃわいん</string></dict>
 	<dict><key>phrase</key><string>クラウディ・ベイ</string><key>shortcut</key><string>くらうでぃべい</string></dict>
 	<dict><key>phrase</key><string>シャトー・ド・ボーカステル</string><key>shortcut</key><string>しゃとーどぼーかすてる</string></dict>
@@ -2433,7 +2421,6 @@
 	<dict><key>phrase</key><string>現エーデルワイン</string><key>shortcut</key><string>げんえーでるわいん</string></dict>
 	<dict><key>phrase</key><string>現サントリー</string><key>shortcut</key><string>げんさんとりー</string></dict>
 	<dict><key>phrase</key><string>登美の丘ワイナリー</string><key>shortcut</key><string>とうびのおかわいなりー</string></dict>
-	<dict><key>phrase</key><string>真澄</string><key>shortcut</key><string>ますみ</string></dict>
 	<dict><key>phrase</key><string>辛口シェリーFino</string><key>shortcut</key><string>からくちしぇりーふぃの</string></dict>
 	<!-- 料理や食材 -->
 	<dict><key>phrase</key><string>白ワイン蒸し</string><key>shortcut</key><string>しろわいんむし</string></dict>
@@ -2561,7 +2548,6 @@
 	<dict><key>phrase</key><string>Wurstwaren</string><key>shortcut</key><string>ぶるすとばーれん</string></dict>
 	<dict><key>phrase</key><string>Zwiebelkuchen</string><key>shortcut</key><string>つびーべるくーへん</string></dict>
 	<dict><key>phrase</key><string>cibo</string><key>shortcut</key><string>ちーぼ</string></dict>
-	<dict><key>phrase</key><string>seasoning</string><key>shortcut</key><string>しーずにんぐ</string></dict>
 	<dict><key>phrase</key><string>à la Bordelaise</string><key>shortcut</key><string>あらぼるどれーず</string></dict>
 	<dict><key>phrase</key><string>à la Bourguignonne</string><key>shortcut</key><string>あらぶるぎにょんぬ</string></dict>
 	<dict><key>phrase</key><string>アサード</string><key>shortcut</key><string>あさーど</string></dict>
@@ -2622,10 +2608,8 @@
 	<dict><key>phrase</key><string>ワカピラウ</string><key>shortcut</key><string>わかぴらう</string></dict>
 	<dict><key>phrase</key><string>ヴォー州産ソーセージ</string><key>shortcut</key><string>ゔぉーしゅうさんそーせーじ</string></dict>
 	<dict><key>phrase</key><string>仔牛肉</string><key>shortcut</key><string>こうしにく</string></dict>
-	<dict><key>phrase</key><string>南蛮漬</string><key>shortcut</key><string>なんばんづけ</string></dict>
 	<dict><key>phrase</key><string>卵入</string><key>shortcut</key><string>たまごいれ</string></dict>
 	<dict><key>phrase</key><string>厚切</string><key>shortcut</key><string>あつきり</string></dict>
-	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽう</string></dict>
 	<dict><key>phrase</key><string>料理Zwiebelkuchen</string><key>shortcut</key><string>りょうりつびーべるくーへん</string></dict>
 	<dict><key>phrase</key><string>炭火焼</string><key>shortcut</key><string>すみびやけ</string></dict>
 	<dict><key>phrase</key><string>牛リブロース肉</string><key>shortcut</key><string>ぎゅうりぶろーすにく</string></dict>
@@ -2746,7 +2730,6 @@
 	<dict><key>phrase</key><string>lncolore</string><key>shortcut</key><string>あんころーる</string></dict>
 	<dict><key>phrase</key><string>pH</string><key>shortcut</key><string>ぴーえいち</string></dict>
 	<dict><key>phrase</key><string>phénolique</string><key>shortcut</key><string>ふぇのりっく</string></dict>
-	<dict><key>phrase</key><string>sec</string><key>shortcut</key><string>せっく</string></dict>
 	<dict><key>phrase</key><string>Édes</string><key>shortcut</key><string>えーでし</string></dict>
 	<dict><key>phrase</key><string>à fleurs</string><key>shortcut</key><string>あふるー</string></dict>
 	<dict><key>phrase</key><string>Œil de Perdrix</string><key>shortcut</key><string>うーいゆどぺるどり</string></dict>
@@ -3036,7 +3019,6 @@
 	<dict><key>phrase</key><string>聖餐用</string><key>shortcut</key><string>せいさんよう</string></dict>
 	<dict><key>phrase</key><string>舌全体</string><key>shortcut</key><string>したぜんたい</string></dict>
 	<dict><key>phrase</key><string>表ラベル</string><key>shortcut</key><string>ひょうらべる</string></dict>
-	<dict><key>phrase</key><string>解禁日</string><key>shortcut</key><string>かいきんび</string></dict>
 	<dict><key>phrase</key><string>販売時</string><key>shortcut</key><string>はんばいじ</string></dict>
 	<dict><key>phrase</key><string>販売解禁日</string><key>shortcut</key><string>はんばいかいきんび</string></dict>
 	<dict><key>phrase</key><string>酒用銀杯</string><key>shortcut</key><string>さけようぎんぱい</string></dict>
@@ -3219,7 +3201,6 @@
 	<dict><key>phrase</key><string>aperçu</string><key>shortcut</key><string>あぺるしゅ</string></dict>
 	<dict><key>phrase</key><string>aperçu</string><key>shortcut</key><string>あぺるしゅ</string></dict>
 	<dict><key>phrase</key><string>au bord de l’eu</string><key>shortcut</key><string>おーぼーるどぅるー</string></dict>
-	<dict><key>phrase</key><string>br</string><key>shortcut</key><string>びーあーる</string></dict>
 	<dict><key>phrase</key><string>chinoise</string><key>shortcut</key><string>しのわーず</string></dict>
 	<dict><key>phrase</key><string>choice_no</string><key>shortcut</key><string>ちょいすのー</string></dict>
 	<dict><key>phrase</key><string>dedaze</string><key>shortcut</key><string>でだぜ</string></dict>
@@ -3363,7 +3344,6 @@
 	<dict><key>phrase</key><string>国際ブドウ・ブドウ酒機構</string><key>shortcut</key><string>こくさいぶどうぶどうしゅきこう</string></dict>
 	<dict><key>phrase</key><string>国際的ワイン・シンポジウム</string><key>shortcut</key><string>こくさいてきわいんしんぽじうむ</string></dict>
 	<dict><key>phrase</key><string>報告後</string><key>shortcut</key><string>ほうこくこう</string></dict>
-	<dict><key>phrase</key><string>夏季</string><key>shortcut</key><string>かき</string></dict>
 	<dict><key>phrase</key><string>多孔質</string><key>shortcut</key><string>たこうじち</string></dict>
 	<dict><key>phrase</key><string>婚約式</string><key>shortcut</key><string>こんやくしき</string></dict>
 	<dict><key>phrase</key><string>対処策</string><key>shortcut</key><string>たいしょさく</string></dict>
@@ -3483,11 +3463,9 @@
 	<dict><key>phrase</key><string>英国領</string><key>shortcut</key><string>えいこくりょう</string></dict>
 	<dict><key>phrase</key><string>英語名</string><key>shortcut</key><string>えいごめい</string></dict>
 	<dict><key>phrase</key><string>行政・教育・研究機関</string><key>shortcut</key><string>ぎょうせいきょういくけんきゅうきかん</string></dict>
-	<dict><key>phrase</key><string>行程</string><key>shortcut</key><string>こうてい</string></dict>
 	<dict><key>phrase</key><string>補給地</string><key>shortcut</key><string>ほきゅうじ</string></dict>
 	<dict><key>phrase</key><string>複数残</string><key>shortcut</key><string>ふくすうざん</string></dict>
 	<dict><key>phrase</key><string>複数選</string><key>shortcut</key><string>ふくすうよる</string></dict>
-	<dict><key>phrase</key><string>記号</string><key>shortcut</key><string>きごう</string></dict>
 	<dict><key>phrase</key><string>許容範囲内</string><key>shortcut</key><string>きょようはんいうち</string></dict>
 	<dict><key>phrase</key><string>許容量範囲内</string><key>shortcut</key><string>きょようりょうはんいうち</string></dict>
 	<dict><key>phrase</key><string>農地総面積</string><key>shortcut</key><string>のうちそうめんせき</string></dict>
@@ -3508,5 +3486,28 @@
 	<dict><key>phrase</key><string>土踏</string><key>shortcut</key><string>つちふむ</string></dict>
 	<dict><key>phrase</key><string>Black agave</string><key>shortcut</key><string>ぶらっくあがゔぇ</string></dict>
 	<dict><key>phrase</key><string>Blue agave</string><key>shortcut</key><string>ぶるーあがゔぇ</string></dict>
+	<!-- SudachiDictにもある -->
+	<dict><key>phrase</key><string>culture</string><key>shortcut</key><string>かるちゃー</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
+	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>えいちえー</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
+	<dict><key>phrase</key><string>梗</string><key>shortcut</key><string>こう</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
+	<dict><key>phrase</key><string>火山灰</string><key>shortcut</key><string>かざんばい</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
+	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>まりあーじゅ</string></dict>	<!-- 元: ワイン醸造技術用語 -->
+	<dict><key>phrase</key><string>melting</string><key>shortcut</key><string>めるてぃんぐ</string></dict>	<!-- 元: ワイン醸造技術用語 -->
+	<dict><key>phrase</key><string>糖</string><key>shortcut</key><string>とう</string></dict>	<!-- 元: ワイン醸造技術用語 -->
+	<dict><key>phrase</key><string>糖化</string><key>shortcut</key><string>とうか</string></dict>	<!-- 元: ワイン醸造技術用語 -->
+	<dict><key>phrase</key><string>cocktail</string><key>shortcut</key><string>かくてる</string></dict>	<!-- 元: ワイン以外の飲料名 -->
+	<dict><key>phrase</key><string>liqueur</string><key>shortcut</key><string>りきゅーる</string></dict>	<!-- 元: ワイン以外の飲料名 -->
+	<dict><key>phrase</key><string>whisky</string><key>shortcut</key><string>ういすきー</string></dict>	<!-- 元: ワイン以外の飲料名 -->
+	<dict><key>phrase</key><string>drc</string><key>shortcut</key><string>でぃーあーるしー</string></dict>	<!-- 元: ワイン名 -->
+	<dict><key>phrase</key><string>真澄</string><key>shortcut</key><string>ますみ</string></dict>	<!-- 元: ワイン名 -->
+	<dict><key>phrase</key><string>seasoning</string><key>shortcut</key><string>しーずにんぐ</string></dict>	<!-- 元: 料理や食材 -->
+	<dict><key>phrase</key><string>南蛮漬</string><key>shortcut</key><string>なんばんづけ</string></dict>	<!-- 元: 料理や食材 -->
+	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽう</string></dict>	<!-- 元: 料理や食材 -->
+	<dict><key>phrase</key><string>sec</string><key>shortcut</key><string>せっく</string></dict>	<!-- 元: ワインの外観や味の評価の名前 -->
+	<dict><key>phrase</key><string>解禁日</string><key>shortcut</key><string>かいきんび</string></dict>	<!-- 元: サーヴィスの用語 -->
+	<dict><key>phrase</key><string>br</string><key>shortcut</key><string>びーあーる</string></dict>	<!-- 元: その他の不明なもの -->
+	<dict><key>phrase</key><string>夏季</string><key>shortcut</key><string>かき</string></dict>	<!-- 元: その他の不明なもの -->
+	<dict><key>phrase</key><string>行程</string><key>shortcut</key><string>こうてい</string></dict>	<!-- 元: その他の不明なもの -->
+	<dict><key>phrase</key><string>記号</string><key>shortcut</key><string>きごう</string></dict>	<!-- 元: その他の不明なもの -->
 </array>
 </plist>
