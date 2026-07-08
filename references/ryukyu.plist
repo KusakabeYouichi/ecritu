@@ -1333,7 +1333,6 @@
 	<dict><key>phrase</key><string>オリオン通り</string><key>shortcut</key><string>おりおんどおり</string></dict>
 	<dict><key>phrase</key><string>オリオンビール</string><key>shortcut</key><string>おりおんびーる</string></dict>
 	<dict><key>phrase</key><string>織り鶴</string><key>shortcut</key><string>おりづる</string></dict>
-	<dict><key>phrase</key><string>澱抜き</string><key>shortcut</key><string>おりぬき</string></dict>
 	<dict><key>phrase</key><string>俺の酒</string><key>shortcut</key><string>おれのさけ</string></dict>
 	<dict><key>phrase</key><string>小禄</string><key>shortcut</key><string>おろく</string></dict>
 	<dict><key>phrase</key><string>小禄石嶺線</string><key>shortcut</key><string>おろくいしみねせん</string></dict>
@@ -2768,7 +2767,6 @@
 	<dict><key>phrase</key><string>銃眼</string><key>shortcut</key><string>じゅうがん</string></dict>
 	<dict><key>phrase</key><string>ジューシー</string><key>shortcut</key><string>じゅーしー</string></dict>
 	<dict><key>phrase</key><string>じゅうしい</string><key>shortcut</key><string>じゅうしい</string></dict>
-	<dict><key>phrase</key><string>蜀郷香</string><key>shortcut</key><string>しゅうしゃんしゃん</string></dict>
 	<dict><key>phrase</key><string>執心鐘入</string><key>shortcut</key><string>しゅうしんかねいり</string></dict>
 	<dict><key>phrase</key><string>集団自決</string><key>shortcut</key><string>しゅうだんじけつ</string></dict>
 	<dict><key>phrase</key><string>十年の一滴</string><key>shortcut</key><string>じゅうねんのいってき</string></dict>
@@ -3563,7 +3561,6 @@
 	<dict><key>phrase</key><string>朝貢</string><key>shortcut</key><string>ちょうこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>長虹堤</string><key>shortcut</key><string>ちょうこうてい</string></dict>
 	<dict><key>phrase</key><string>朝拝御儀式</string><key>shortcut</key><string>ちょうはいおぎしき</string></dict>
-	<dict><key>phrase</key><string>趙楊</string><key>shortcut</key><string>ちょうよう</string></dict>
 	<dict><key>phrase</key><string>チョーデイ</string><key>shortcut</key><string>ちょーでい</string></dict>
 	<dict><key>phrase</key><string>兄弟小節</string><key>shortcut</key><string>ちょーでー</string></dict>
 	<dict><key>phrase</key><string>チョーデー</string><key>shortcut</key><string>ちょーでー</string></dict>
@@ -4327,8 +4324,6 @@
 	<dict><key>phrase</key><string>西の浜</string><key>shortcut</key><string>にしのはま</string></dict>
 	<dict><key>phrase</key><string>西之原</string><key>shortcut</key><string>にしのはら</string></dict>
 	<dict><key>phrase</key><string>西平等</string><key>shortcut</key><string>にしのひら</string></dict>
-	<dict><key>phrase</key><string>二次醗酵</string><key>shortcut</key><string>にじはっこう</string></dict>
-	<dict><key>phrase</key><string>2次醗酵</string><key>shortcut</key><string>にじはっこう</string></dict>
 	<dict><key>phrase</key><string>西浜</string><key>shortcut</key><string>にしはま</string></dict>
 	<dict><key>phrase</key><string>西浜崎の浜</string><key>shortcut</key><string>にしはまざきのはま</string></dict>
 	<dict><key>phrase</key><string>西浜ビーチ</string><key>shortcut</key><string>にしはまびーち</string></dict>
