@@ -93,6 +93,7 @@
 	<dict><key>phrase</key><string>一一</string><key>shortcut</key><string>いちいち</string></dict>
 	<dict><key>phrase</key><string>市市</string><key>shortcut</key><string>いちいち</string></dict>
 	<dict><key>phrase</key><string>綯う</string><key>shortcut</key><string>なう</string></dict>
+	<dict><key>phrase</key><string>ノカ</string><key>shortcut</key><string>のか</string></dict>
 	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>ほんもの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>ホンモノ</string><key>shortcut</key><string>ほんもの</string></dict>
