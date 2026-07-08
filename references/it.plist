@@ -41,7 +41,6 @@
 	<dict><key>phrase</key><string>iPhone Pro Max</string><key>shortcut</key><string>あいふぉんぷろまっくす</string></dict>
 	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
 	<dict><key>phrase</key><string>iPhone SE</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>iPhone</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>Mac</string><key>shortcut</key><string>まっく</string></dict>
@@ -94,7 +93,6 @@
 
 	<!-- サーヴィス -->
 	<dict><key>phrase</key><string>App Store</string><key>shortcut</key><string>あっぷすとあ</string></dict>
-	<dict><key>phrase</key><string>Apple Intelligence</string><key>shortcut</key><string>あっぷるいんてりじぇんす</string></dict>
 	<dict><key>phrase</key><string>Apple Music</string><key>shortcut</key><string>あっぷるみゅーじっく</string></dict>
 	<dict><key>phrase</key><string>Apple Pay</string><key>shortcut</key><string>あっぷるぺい</string></dict>
 	<dict><key>phrase</key><string>Apple Store</string><key>shortcut</key><string>あっぷるすとあ</string></dict>
