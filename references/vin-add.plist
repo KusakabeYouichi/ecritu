@@ -3488,7 +3488,7 @@
 	<dict><key>phrase</key><string>Blue agave</string><key>shortcut</key><string>ぶるーあがゔぇ</string></dict>
 	<!-- SudachiDictにもある -->
 	<dict><key>phrase</key><string>culture</string><key>shortcut</key><string>かるちゃー</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
-	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>えいちえー</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
+	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>へくたーる</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
 	<dict><key>phrase</key><string>梗</string><key>shortcut</key><string>こう</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
 	<dict><key>phrase</key><string>火山灰</string><key>shortcut</key><string>かざんばい</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
 	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>まりあーじゅ</string></dict>	<!-- 元: ワイン醸造技術用語 -->
