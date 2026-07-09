@@ -6,389 +6,9 @@ private struct KanaKanjiInflectionEntry: Codable {
     let inflectionClass: String
 }
 
-private let sqliteTransientDestructor = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
-
-private final class KanaKanjiSQLiteIndex {
-    private let queryQueue = DispatchQueue(label: "com.kusakabe.ecritu.kana-kanji.sqlite-index")
-    private var database: OpaquePointer?
-    private var selectCandidatesStatement: OpaquePointer?
-    private var selectCandidatesBySourceStatement: OpaquePointer?
-    private var selectCandidatesWithExactSourceStatement: OpaquePointer?
-    private var selectInflectionStatement: OpaquePointer?
-    private var selectWordCostStatement: OpaquePointer?
-    private var selectWordLMUnigramStatement: OpaquePointer?
-    private var selectWordLMBigramStatement: OpaquePointer?
-    private(set) var hasSourceMetadata = false
-    private(set) var hasInflectionMetadata = false
-    private(set) var hasWordCostMetadata = false
-    private(set) var hasWordLMMetadata = false
-    private(set) var hasAnyEntries = false
-
-    init?(databaseURL: URL) {
-        var openedDatabase: OpaquePointer?
-        let openResult = databaseURL.path.withCString { pathCString in
-            sqlite3_open_v2(
-                pathCString,
-                &openedDatabase,
-                SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX,
-                nil
-            )
-        }
-
-        guard openResult == SQLITE_OK,
-            let openedDatabase else {
-            if let openedDatabase {
-                sqlite3_close(openedDatabase)
-            }
-            return nil
-        }
-
-        database = openedDatabase
-
-        guard let candidateStatement = prepareStatement(
-            sql: "SELECT candidate FROM dictionary_entries WHERE reading = ? ORDER BY rank ASC"
-        ) else {
-            return nil
-        }
-        selectCandidatesStatement = candidateStatement
-
-        hasSourceMetadata = tableExists("candidate_sources")
-        if hasSourceMetadata {
-            selectCandidatesBySourceStatement = prepareStatement(
-                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?)) ORDER BY e.rank ASC"
-            )
-            selectCandidatesWithExactSourceStatement = prepareStatement(
-                sql: "SELECT e.candidate FROM dictionary_entries e INNER JOIN candidate_sources s ON s.reading = e.reading AND s.candidate = e.candidate WHERE e.reading = ? AND s.source = ? ORDER BY e.rank ASC"
-            )
-        }
-
-        hasInflectionMetadata = tableExists("inflection_classes")
-        if hasInflectionMetadata {
-            selectInflectionStatement = prepareStatement(
-                sql: "SELECT candidate, inflection_class FROM inflection_classes WHERE reading = ?"
-            )
-        }
-
-        hasWordCostMetadata = tableExists("word_costs")
-        if hasWordCostMetadata {
-            selectWordCostStatement = prepareStatement(
-                sql: "SELECT candidate, cost FROM word_costs WHERE reading = ?"
-            )
-        }
-
-        // 連文節変換(案1: 自前単語 n-gram LM)。unigram/bigram の両テーブルが揃って初めて有効。
-        hasWordLMMetadata = tableExists("word_lm_unigram") && tableExists("word_lm_bigram")
-        if hasWordLMMetadata {
-            selectWordLMUnigramStatement = prepareStatement(
-                sql: "SELECT cost FROM word_lm_unigram WHERE surface = ?"
-            )
-            selectWordLMBigramStatement = prepareStatement(
-                sql: "SELECT cost FROM word_lm_bigram WHERE prev = ? AND cur = ?"
-            )
-        }
-
-        if let probeStatement = prepareStatement(
-            sql: "SELECT 1 FROM dictionary_entries LIMIT 1"
-        ) {
-            hasAnyEntries = sqlite3_step(probeStatement) == SQLITE_ROW
-            sqlite3_finalize(probeStatement)
-        }
-    }
-
-    deinit {
-        if let selectCandidatesStatement {
-            sqlite3_finalize(selectCandidatesStatement)
-        }
-
-        if let selectCandidatesBySourceStatement {
-            sqlite3_finalize(selectCandidatesBySourceStatement)
-        }
-
-        if let selectCandidatesWithExactSourceStatement {
-            sqlite3_finalize(selectCandidatesWithExactSourceStatement)
-        }
-
-        if let selectInflectionStatement {
-            sqlite3_finalize(selectInflectionStatement)
-        }
-
-        if let selectWordCostStatement {
-            sqlite3_finalize(selectWordCostStatement)
-        }
-
-        if let selectWordLMUnigramStatement {
-            sqlite3_finalize(selectWordLMUnigramStatement)
-        }
-
-        if let selectWordLMBigramStatement {
-            sqlite3_finalize(selectWordLMBigramStatement)
-        }
-
-        if let database {
-            sqlite3_close(database)
-        }
-    }
-
-    func candidates(for reading: String, requiredSources: Set<String>?) -> [String] {
-        queryQueue.sync {
-            if let requiredSources,
-                requiredSources.count == 1,
-                hasSourceMetadata,
-                let source = requiredSources.first,
-                let statement = selectCandidatesBySourceStatement {
-                return fetchCandidates(reading: reading, source: source, statement: statement)
-            }
-
-            guard let statement = selectCandidatesStatement else {
-                return []
-            }
-
-            return fetchCandidates(reading: reading, source: nil, statement: statement)
-        }
-    }
-
-    func candidates(withExactSource source: String, for reading: String) -> [String] {
-        queryQueue.sync {
-            guard hasSourceMetadata,
-                let statement = selectCandidatesWithExactSourceStatement else {
-                return []
-            }
-
-            return fetchCandidates(reading: reading, source: source, statement: statement)
-        }
-    }
-
-    func inflectionClassMap(for reading: String) -> [String: String] {
-        queryQueue.sync {
-            guard hasInflectionMetadata,
-                let statement = selectInflectionStatement else {
-                return [:]
-            }
-
-            resetStatement(statement)
-
-            let bindResult = reading.withCString { readingCString in
-                sqlite3_bind_text(statement, 1, readingCString, -1, sqliteTransientDestructor)
-            }
-
-            guard bindResult == SQLITE_OK else {
-                return [:]
-            }
-
-            var result: [String: String] = [:]
-
-            while sqlite3_step(statement) == SQLITE_ROW {
-                guard let candidateCString = sqlite3_column_text(statement, 0),
-                    let inflectionClassCString = sqlite3_column_text(statement, 1) else {
-                    continue
-                }
-
-                let candidate = String(cString: candidateCString)
-                let inflectionClass = String(cString: inflectionClassCString)
-
-                guard !candidate.isEmpty,
-                    !inflectionClass.isEmpty else {
-                    continue
-                }
-
-                result[candidate] = inflectionClass
-            }
-
-            return result
-        }
-    }
-
-    func wordCostMap(for reading: String) -> [String: Int] {
-        queryQueue.sync {
-            guard hasWordCostMetadata,
-                let statement = selectWordCostStatement else {
-                return [:]
-            }
-
-            resetStatement(statement)
-
-            let bindResult = reading.withCString { readingCString in
-                sqlite3_bind_text(statement, 1, readingCString, -1, sqliteTransientDestructor)
-            }
-
-            guard bindResult == SQLITE_OK else {
-                return [:]
-            }
-
-            var result: [String: Int] = [:]
-
-            while sqlite3_step(statement) == SQLITE_ROW {
-                guard let candidateCString = sqlite3_column_text(statement, 0) else {
-                    continue
-                }
-
-                let candidate = String(cString: candidateCString)
-                guard !candidate.isEmpty else {
-                    continue
-                }
-
-                result[candidate] = Int(sqlite3_column_int(statement, 1))
-            }
-
-            return result
-        }
-    }
-
-    // 連文節 DP 用: 与えた表層集合の unigram コストをまとめて引く(1 回の sync 内で完結)。
-    func wordLMUnigramCosts(for surfaces: [String]) -> [String: Int] {
-        queryQueue.sync {
-            guard hasWordLMMetadata,
-                let statement = selectWordLMUnigramStatement else {
-                return [:]
-            }
-
-            var result: [String: Int] = [:]
-            result.reserveCapacity(surfaces.count)
-
-            for surface in surfaces where result[surface] == nil {
-                resetStatement(statement)
-                let bindResult = surface.withCString { surfaceCString in
-                    sqlite3_bind_text(statement, 1, surfaceCString, -1, sqliteTransientDestructor)
-                }
-                guard bindResult == SQLITE_OK else {
-                    continue
-                }
-                if sqlite3_step(statement) == SQLITE_ROW {
-                    result[surface] = Int(sqlite3_column_int(statement, 0))
-                }
-            }
-
-            return result
-        }
-    }
-
-    // 連文節 DP 用: 与えた (prev, cur) 対の bigram コストをまとめて引く。キーは "prev\tcur"。
-    func wordLMBigramCosts(for pairs: [(String, String)]) -> [String: Int] {
-        queryQueue.sync {
-            guard hasWordLMMetadata,
-                let statement = selectWordLMBigramStatement else {
-                return [:]
-            }
-
-            var result: [String: Int] = [:]
-            result.reserveCapacity(pairs.count)
-
-            for (prev, cur) in pairs {
-                let key = "\(prev)\t\(cur)"
-                if result[key] != nil {
-                    continue
-                }
-                resetStatement(statement)
-                let prevBind = prev.withCString { prevCString in
-                    sqlite3_bind_text(statement, 1, prevCString, -1, sqliteTransientDestructor)
-                }
-                let curBind = cur.withCString { curCString in
-                    sqlite3_bind_text(statement, 2, curCString, -1, sqliteTransientDestructor)
-                }
-                guard prevBind == SQLITE_OK, curBind == SQLITE_OK else {
-                    continue
-                }
-                if sqlite3_step(statement) == SQLITE_ROW {
-                    result[key] = Int(sqlite3_column_int(statement, 0))
-                }
-            }
-
-            return result
-        }
-    }
-
-    private func fetchCandidates(
-        reading: String,
-        source: String?,
-        statement: OpaquePointer
-    ) -> [String] {
-        resetStatement(statement)
-
-        let readingBindResult = reading.withCString { readingCString in
-            sqlite3_bind_text(statement, 1, readingCString, -1, sqliteTransientDestructor)
-        }
-
-        guard readingBindResult == SQLITE_OK else {
-            return []
-        }
-
-        if let source {
-            let sourceBindResult = source.withCString { sourceCString in
-                sqlite3_bind_text(statement, 2, sourceCString, -1, sqliteTransientDestructor)
-            }
-
-            guard sourceBindResult == SQLITE_OK else {
-                return []
-            }
-        }
-
-        var results: [String] = []
-
-        while sqlite3_step(statement) == SQLITE_ROW {
-            guard let candidateCString = sqlite3_column_text(statement, 0) else {
-                continue
-            }
-
-            let candidate = String(cString: candidateCString)
-
-            if !candidate.isEmpty {
-                results.append(candidate)
-            }
-        }
-
-        return results
-    }
-
-    private func resetStatement(_ statement: OpaquePointer) {
-        sqlite3_reset(statement)
-        sqlite3_clear_bindings(statement)
-    }
-
-    private func prepareStatement(sql: String) -> OpaquePointer? {
-        guard let database else {
-            return nil
-        }
-
-        var statement: OpaquePointer?
-        let prepareResult = sql.withCString { sqlCString in
-            sqlite3_prepare_v2(database, sqlCString, -1, &statement, nil)
-        }
-
-        guard prepareResult == SQLITE_OK,
-            let statement else {
-            return nil
-        }
-
-        return statement
-    }
-
-    private func tableExists(_ tableName: String) -> Bool {
-        guard database != nil,
-            let statement = prepareStatement(
-                sql: "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = ? LIMIT 1"
-            ) else {
-            return false
-        }
-
-        defer {
-            sqlite3_finalize(statement)
-        }
-
-        let bindResult = tableName.withCString { tableNameCString in
-            sqlite3_bind_text(statement, 1, tableNameCString, -1, sqliteTransientDestructor)
-        }
-
-        guard bindResult == SQLITE_OK else {
-            return false
-        }
-
-        return sqlite3_step(statement) == SQLITE_ROW
-    }
-}
-
 final class KanaKanjiStore {
     private let appGroupID: String
-    private let defaults: UserDefaults?
+    let defaults: UserDefaults?
     private let fileManager = FileManager.default
     private let systemDictionaryQueue = DispatchQueue(
         label: "com.kusakabe.ecritu.kana-kanji.system-dictionary"
@@ -397,11 +17,11 @@ final class KanaKanjiStore {
     // 単語相当は許可し、文丸ごと(きょうはいいてんきですね 等)は拒否して連文節の
     // 最安素通りブロック事故(かな確定学習の事故時代の汚染含む)を防ぐ。
     static let kanaIdentityLearnableMaxReadingCount = 6
-    private static let initialLearningScores: [String: Int] = [
+    static let initialLearningScores: [String: Int] = [
         "かった\t交った": -1_000_000_000,
         "かった\t支った": -1_000_000_000
     ]
-    private struct LatinSuggestionEntry {
+    struct LatinSuggestionEntry {
         let searchKey: String
         let candidate: String
     }
@@ -409,17 +29,17 @@ final class KanaKanjiStore {
     private var didAttemptSQLiteIndexLoad = false
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: [String: [String]]?
-    private var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
+    var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     private var cachedInitialUserDictionary: [String: [String]]?
     private var cachedInitialShortcutVocabulary: [String]?
-    private var cachedUserDictionary: [String: [String]]?
-    private var cachedLearnedDictionary: [String: [String]]?
+    var cachedUserDictionary: [String: [String]]?
+    var cachedLearnedDictionary: [String: [String]]?
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
     private var cachedBundledHiddenSuppression: [String: [String]]?
-    private var cachedLearningScores: [String: Int]?
-    private var cachedLearningScoresByReading: [String: [String: Int]]?
+    var cachedLearningScores: [String: Int]?
+    var cachedLearningScoresByReading: [String: [String: Int]]?
 
     init(appGroupID: String) {
         self.appGroupID = appGroupID
@@ -686,46 +306,6 @@ final class KanaKanjiStore {
         }
 
         return (candidates, hasMetadata)
-    }
-
-    func latinSuggestions(prefix: String, limit: Int) -> [String] {
-        guard limit > 0 else {
-            return []
-        }
-
-        let normalizedPrefix = latinSuggestionSearchKey(prefix, preservesSpaces: true)
-
-        guard !normalizedPrefix.isEmpty else {
-            return []
-        }
-
-        let entries = latinSuggestionEntries()
-
-        guard !entries.isEmpty else {
-            return []
-        }
-
-        let startIndex = lowerBoundLatinSuggestionEntryIndex(
-            entries: entries,
-            for: normalizedPrefix
-        )
-        var results: [String] = []
-        var seenCandidates = Set<String>()
-        var index = startIndex
-
-        while index < entries.count,
-            entries[index].searchKey.hasPrefix(normalizedPrefix),
-            results.count < limit {
-            let candidate = entries[index].candidate
-
-            if seenCandidates.insert(candidate).inserted {
-                results.append(candidate)
-            }
-
-            index += 1
-        }
-
-        return results
     }
 
     func loadSystemDictionary() -> [String: [String]] {
@@ -1124,151 +704,6 @@ final class KanaKanjiStore {
         return result
     }
 
-    func addUserEntry(reading: String, candidate: String) {
-        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
-        let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !normalizedReading.isEmpty,
-                !trimmedCandidate.isEmpty else {
-            return
-        }
-
-        var dictionary = userDictionary()
-        var candidates = dictionary[normalizedReading] ?? []
-
-        if let existingIndex = candidates.firstIndex(of: trimmedCandidate) {
-            candidates.remove(at: existingIndex)
-        }
-
-        candidates.insert(trimmedCandidate, at: 0)
-        dictionary[normalizedReading] = Array(candidates.prefix(32))
-        cachedUserDictionary = dictionary
-        saveUserDictionary(dictionary)
-    }
-
-    func addLearnedEntry(reading: String, candidate: String, allowKanaIdentity: Bool = false) {
-        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
-        let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !normalizedReading.isEmpty,
-                !trimmedCandidate.isEmpty else {
-            return
-        }
-
-        // かな識別(候補==読み)は原則学習しない(全経路での最終防波堤)。学習すると連文節DP
-        // で最安の素通り単スパンになり、その読みが変換不能になる。例外はかな候補チップの
-        // 明示タップ(allowKanaIdentity)かつ単語相当の短い読みのみ。
-        if trimmedCandidate == normalizedReading {
-            guard allowKanaIdentity,
-                normalizedReading.count <= Self.kanaIdentityLearnableMaxReadingCount else {
-                return
-            }
-        }
-
-        var dictionary = learnedDictionary()
-        var candidates = dictionary[normalizedReading] ?? []
-
-        if let existingIndex = candidates.firstIndex(of: trimmedCandidate) {
-            candidates.remove(at: existingIndex)
-        }
-
-        candidates.insert(trimmedCandidate, at: 0)
-        dictionary[normalizedReading] = Array(candidates.prefix(32))
-        cachedLearnedDictionary = dictionary
-        saveLearnedDictionary(dictionary)
-    }
-
-    func learningScores() -> [String: Int] {
-        if let cachedLearningScores {
-            return cachedLearningScores
-        }
-
-        guard let defaults,
-                let learningData = defaults.data(forKey: KanaKanjiStorageKeys.learningScores),
-                let decoded = try? JSONDecoder().decode([String: Int].self, from: learningData) else {
-            cachedLearningScores = Self.initialLearningScores
-            cachedLearningScoresByReading = nil
-            return Self.initialLearningScores
-        }
-
-        var scores = decoded
-
-        // Ensure rare candidates stay at the very bottom even when old learning data exists.
-        for (key, value) in Self.initialLearningScores {
-            if let existing = scores[key] {
-                scores[key] = min(existing, value)
-            } else {
-                scores[key] = value
-            }
-        }
-
-        cachedLearningScores = scores
-        cachedLearningScoresByReading = nil
-
-        if let encoded = try? JSONEncoder().encode(scores) {
-            defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
-        }
-
-        return scores
-    }
-
-    func learningScores(for reading: String) -> [String: Int] {
-        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
-
-        guard !normalizedReading.isEmpty else {
-            return [:]
-        }
-
-        return learningScoresByReading()[normalizedReading] ?? [:]
-    }
-
-    func incrementLearning(reading: String, candidate: String) {
-        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
-        let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !normalizedReading.isEmpty,
-                !trimmedCandidate.isEmpty else {
-            return
-        }
-
-        var scores = learningScores()
-        let key = learningKey(reading: normalizedReading, candidate: trimmedCandidate)
-        scores[key, default: 0] += 1
-        cachedLearningScores = scores
-
-        if var indexedScores = cachedLearningScoresByReading {
-            var candidateScores = indexedScores[normalizedReading] ?? [:]
-            candidateScores[trimmedCandidate] = scores[key, default: 0]
-            indexedScores[normalizedReading] = candidateScores
-            cachedLearningScoresByReading = indexedScores
-        }
-
-        guard let defaults,
-                let encoded = try? JSONEncoder().encode(scores) else {
-            return
-        }
-
-        defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
-    }
-
-    private func saveUserDictionary(_ dictionary: [String: [String]]) {
-        guard let defaults,
-                let encoded = try? JSONEncoder().encode(dictionary) else {
-            return
-        }
-
-        defaults.set(encoded, forKey: KanaKanjiStorageKeys.userDictionary)
-    }
-
-    private func saveLearnedDictionary(_ dictionary: [String: [String]]) {
-        guard let defaults,
-                let encoded = try? JSONEncoder().encode(dictionary) else {
-            return
-        }
-
-        defaults.set(encoded, forKey: KanaKanjiStorageKeys.learnedDictionary)
-    }
-
     private func decodedStringArray(forKey key: String) -> [String]? {
         guard let defaults else {
             return nil
@@ -1286,7 +721,7 @@ final class KanaKanjiStore {
         return nil
     }
 
-    private func decodedStringArrayDictionary(forKey key: String) -> [String: [String]]? {
+    func decodedStringArrayDictionary(forKey key: String) -> [String: [String]]? {
         guard let defaults else {
             return nil
         }
@@ -1313,7 +748,7 @@ final class KanaKanjiStore {
         return decoded
     }
 
-    private func normalizeDictionary(_ dictionary: [String: [String]]) -> [String: [String]] {
+    func normalizeDictionary(_ dictionary: [String: [String]]) -> [String: [String]] {
         var normalized: [String: [String]] = [:]
 
         for (reading, candidates) in dictionary {
@@ -1368,116 +803,6 @@ final class KanaKanjiStore {
         return result
     }
 
-    private func latinSuggestionEntries() -> [LatinSuggestionEntry] {
-        if let cachedLatinSuggestionEntries {
-            return cachedLatinSuggestionEntries
-        }
-
-        let supplementalDictionary = loadSupplementalSystemDictionary()
-
-        guard !supplementalDictionary.isEmpty else {
-            return []
-        }
-
-        var seenCandidates = Set<String>()
-        var entries: [LatinSuggestionEntry] = []
-
-        for candidates in supplementalDictionary.values {
-            for candidate in candidates {
-                let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-                guard !trimmedCandidate.isEmpty,
-                    seenCandidates.insert(trimmedCandidate).inserted,
-                    isLatinSuggestionCandidate(trimmedCandidate) else {
-                    continue
-                }
-
-                let searchKey = latinSuggestionSearchKey(trimmedCandidate)
-
-                guard !searchKey.isEmpty else {
-                    continue
-                }
-
-                entries.append(
-                    LatinSuggestionEntry(
-                        searchKey: searchKey,
-                        candidate: trimmedCandidate
-                    )
-                )
-            }
-        }
-
-        guard !entries.isEmpty else {
-            return []
-        }
-
-        entries.sort { lhs, rhs in
-            if lhs.searchKey == rhs.searchKey {
-                return lhs.candidate.localizedCaseInsensitiveCompare(rhs.candidate) == .orderedAscending
-            }
-
-            return lhs.searchKey < rhs.searchKey
-        }
-
-        cachedLatinSuggestionEntries = entries
-        return entries
-    }
-
-    private func latinSuggestionSearchKey(
-        _ text: String,
-        preservesSpaces: Bool = false
-    ) -> String {
-        let trimmed: String
-
-        if preservesSpaces {
-            trimmed = text.trimmingCharacters(in: .newlines)
-        } else {
-            trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-
-        guard !trimmed.isEmpty else {
-            return ""
-        }
-
-        return trimmed
-            .folding(
-                options: [.diacriticInsensitive, .caseInsensitive, .widthInsensitive],
-                locale: Locale(identifier: "fr_FR")
-            )
-            .lowercased()
-    }
-
-    private func isLatinSuggestionCandidate(_ candidate: String) -> Bool {
-        guard candidate.range(of: #"[\p{Latin}0-9]"#, options: .regularExpression) != nil else {
-            return false
-        }
-
-        return candidate.range(
-            of: #"^[\p{Latin}\p{M}0-9 \-\.&'’/,+:;()!?]+$"#,
-            options: .regularExpression
-        ) != nil
-    }
-
-    private func lowerBoundLatinSuggestionEntryIndex(
-        entries: [LatinSuggestionEntry],
-        for key: String
-    ) -> Int {
-        var low = 0
-        var high = entries.count
-
-        while low < high {
-            let mid = (low + high) / 2
-
-            if entries[mid].searchKey < key {
-                low = mid + 1
-            } else {
-                high = mid
-            }
-        }
-
-        return low
-    }
-
     private func mergedSystemCandidates(primary: [String], supplemental: [String]) -> [String] {
         guard !supplemental.isEmpty else {
             return primary
@@ -1486,45 +811,4 @@ final class KanaKanjiStore {
         return uniqueCandidates(from: primary + supplemental)
     }
 
-    private func learningKey(reading: String, candidate: String) -> String {
-        reading + "\t" + candidate
-    }
-
-    private func learningScoresByReading() -> [String: [String: Int]] {
-        if let cachedLearningScoresByReading {
-            return cachedLearningScoresByReading
-        }
-
-        var indexedScores: [String: [String: Int]] = [:]
-
-        for (key, score) in learningScores() {
-            guard let parsed = parseLearningKey(key) else {
-                continue
-            }
-
-            var candidateScores = indexedScores[parsed.reading] ?? [:]
-            candidateScores[parsed.candidate] = score
-            indexedScores[parsed.reading] = candidateScores
-        }
-
-        cachedLearningScoresByReading = indexedScores
-        return indexedScores
-    }
-
-    private func parseLearningKey(_ key: String) -> (reading: String, candidate: String)? {
-        guard let separatorIndex = key.firstIndex(of: "\t") else {
-            return nil
-        }
-
-        let reading = String(key[..<separatorIndex])
-        let candidateStartIndex = key.index(after: separatorIndex)
-        let candidate = String(key[candidateStartIndex...])
-
-        guard !reading.isEmpty,
-                !candidate.isEmpty else {
-            return nil
-        }
-
-        return (reading, candidate)
-    }
 }
