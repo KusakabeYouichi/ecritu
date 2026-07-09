@@ -185,7 +185,6 @@
 	<dict><key>phrase</key><string>Côtes du Roussillon Villages</string><key>shortcut</key><string>こーとでゅるーしょんゔぃらーじゅ</string></dict>
 	<dict><key>phrase</key><string>Côtes du Roussillon</string><key>shortcut</key><string>こーとでゅるーしょん</string></dict>
 	<dict><key>phrase</key><string>Côtes-de-l'Orbe</string><key>shortcut</key><string>こーとどるろべ</string></dict>
-	<dict><key>phrase</key><string>DO</string><key>shortcut</key><string>でぃーおー</string></dict>
 	<dict><key>phrase</key><string>Darnibole</string><key>shortcut</key><string>だーにぼーる</string></dict>
 	<dict><key>phrase</key><string>Deutschschweiz</string><key>shortcut</key><string>どいちゅしゅゔぁいつ</string></dict>
 	<dict><key>phrase</key><string>Deuxièmes Cru</string><key>shortcut</key><string>どぅじえむくりゅ</string></dict>
@@ -667,124 +666,6 @@
 
 	<dict><key>phrase</key><string>アー・ペー・ヌマー</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 	<dict><key>phrase</key><string>A.P. Nr.</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
-	<dict><key>phrase</key><string>B.O.B.</string><key>shortcut</key><string>びーおーびー</string></dict>
-	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>でぃーえいしー</string></dict>
-	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string>でぃーえいちしー</string></dict>
-	<dict><key>phrase</key><string>D.V.A.</string><key>shortcut</key><string>でぃーゔぃーえー</string></dict>
-	<dict><key>phrase</key><string>G.C.D.O.</string><key>shortcut</key><string>じーしーでぃーおー</string></dict>
-	<dict><key>phrase</key><string>G.D.O.</string><key>shortcut</key><string>じーでぃーおー</string></dict>
-	<dict><key>phrase</key><string>I.G.</string><key>shortcut</key><string>あいじー</string></dict>
-	<dict><key>phrase</key><string>I.G.P.</string><key>shortcut</key><string>あいじーぴー</string></dict>
-	<dict><key>phrase</key><string>I.G.T.</string><key>shortcut</key><string>あいじーてぃー</string></dict>
-	<dict><key>phrase</key><string>I.N.A.O.</string><key>shortcut</key><string>あいえぬえーおー</string></dict>
-	<dict><key>phrase</key><string>L.B.V</string><key>shortcut</key><string>えるびーゔぃー</string></dict>
-	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>えむぴーえふ</string></dict>
-	<dict><key>phrase</key><string>O.E.M.</string><key>shortcut</key><string>おーいーえむ</string></dict>
-	<dict><key>phrase</key><string>O.F.J.</string><key>shortcut</key><string>おーえふじぇー</string></dict>
-	<dict><key>phrase</key><string>O.I.V.</string><key>shortcut</key><string>おーあいゔぃー</string></dict>
-	<dict><key>phrase</key><string>P.D.O.</string><key>shortcut</key><string>ぴーでぃーおー</string></dict>
-	<dict><key>phrase</key><string>P.G.I.</string><key>shortcut</key><string>ぴーじーあい</string></dict>
-	<dict><key>phrase</key><string>T.S.G.</string><key>shortcut</key><string>てぃーえすじー</string></dict>
-	<dict><key>phrase</key><string>V.C.</string><key>shortcut</key><string>ぶいしー</string></dict>
-	<dict><key>phrase</key><string>V.C.P.</string><key>shortcut</key><string>ぶいしーぴー</string></dict>
-	<dict><key>phrase</key><string>V.D.L.</string><key>shortcut</key><string>ゔぃーでぃーえる</string></dict>
-	<dict><key>phrase</key><string>V.D.N.</string><key>shortcut</key><string>ゔぃーでぃーえぬ</string></dict>
-	<dict><key>phrase</key><string>V.O.</string><key>shortcut</key><string>ゔぃーおー</string></dict>
-	<dict><key>phrase</key><string>V.O.R.S.</string><key>shortcut</key><string>ゔぃーおーあーるえす</string></dict>
-	<dict><key>phrase</key><string>V.O.S.</string><key>shortcut</key><string>ゔぃーおーえす</string></dict>
-	<dict><key>phrase</key><string>V.P.</string><key>shortcut</key><string>ぶいぴー</string></dict>
-	<dict><key>phrase</key><string>V.Q.A.</string><key>shortcut</key><string>ゔぃーきゅーえー</string></dict>
-	<dict><key>phrase</key><string>V.R.</string><key>shortcut</key><string>ゔぃーあーる</string></dict>
-	<dict><key>phrase</key><string>V.S.I.G.</string><key>shortcut</key><string>ゔぃーえすあいじー</string></dict>
-	<dict><key>phrase</key><string>V.S.O.P.</string><key>shortcut</key><string>ゔぃーえすおーぴー</string></dict>
-	<dict><key>phrase</key><string>VDP.</string><key>shortcut</key><string>ゔぃーでぃーぴー</string></dict>
-	<dict><key>phrase</key><string>W.O.</string><key>shortcut</key><string>だぶりゅーおー</string></dict>
-	<dict><key>phrase</key><string>g.U.</string><key>shortcut</key><string>じーゆー</string></dict>
-	<dict><key>phrase</key><string>g.g.A.</string><key>shortcut</key><string>じーじーえー</string></dict>
-	<dict><key>phrase</key><string>TCA</string><key>shortcut</key><string>てぃーしーえい</string></dict>
-	<dict><key>phrase</key><string>TCP</string><key>shortcut</key><string>てぃーしーぴー</string></dict>
-	<dict><key>phrase</key><string>TPO</string><key>shortcut</key><string>てぃーぴーおー</string></dict>
-	<dict><key>phrase</key><string>TTB</string><key>shortcut</key><string>てぃーてぃーびー</string></dict>
-	<dict><key>phrase</key><string>WAC</string><key>shortcut</key><string>だぶりゅーえーしー</string></dict>
-	<dict><key>phrase</key><string>AVEC</string><key>shortcut</key><string>あゔぇっく★</string></dict>
-	<dict><key>phrase</key><string>BWI</string><key>shortcut</key><string>びーだぶりゅーあい★</string></dict>
-	<dict><key>phrase</key><string>BYO</string><key>shortcut</key><string>びーわいおー★</string></dict>
-	<dict><key>phrase</key><string>CBA</string><key>shortcut</key><string>しーびーえー★</string></dict>
-	<dict><key>phrase</key><string>CCOF</string><key>shortcut</key><string>しーしーおーえふ★</string></dict>
-	<dict><key>phrase</key><string>CCPA</string><key>shortcut</key><string>しーしーぴーえー★</string></dict>
-	<dict><key>phrase</key><string>CCSW</string><key>shortcut</key><string>しーしーえすだぶりゅー★</string></dict>
-	<dict><key>phrase</key><string>CFR</string><key>shortcut</key><string>しーえふあーる★</string></dict>
-	<dict><key>phrase</key><string>CIB</string><key>shortcut</key><string>しーあいびー★</string></dict>
-	<dict><key>phrase</key><string>CICV</string><key>shortcut</key><string>しーあいしーゔぃー★</string></dict>
-	<dict><key>phrase</key><string>CIF</string><key>shortcut</key><string>しーあいえふ★</string></dict>
-	<dict><key>phrase</key><string>CIVC</string><key>shortcut</key><string>しーあいゔぃーしー★</string></dict>
-	<dict><key>phrase</key><string>CM</string><key>shortcut</key><string>しーえむ★</string></dict>
-	<dict><key>phrase</key><string>CMD</string><key>shortcut</key><string>しーえむでぃー★</string></dict>
-	<dict><key>phrase</key><string>CNES</string><key>shortcut</key><string>しーえぬいーえす★</string></dict>
-	<dict><key>phrase</key><string>COPNC</string><key>shortcut</key><string>しーおーぴーえぬしー★</string></dict>
-	<dict><key>phrase</key><string>COPNL</string><key>shortcut</key><string>しーおーぴーえぬえる★</string></dict>
-	<dict><key>phrase</key><string>CT</string><key>shortcut</key><string>しーてぃー★</string></dict>
-	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>しーてぃーしー★</string></dict>
-	<dict><key>phrase</key><string>CTC製法</string><key>shortcut</key><string>しーてぃーしーせいほう★</string></dict>
-	<dict><key>phrase</key><string>CVCI</string><key>shortcut</key><string>しーゔぃーしーあい★</string></dict>
-	<dict><key>phrase</key><string>CVIC</string><key>shortcut</key><string>しーゔぃーあいしー★</string></dict>
-	<dict><key>phrase</key><string>CVRVV</string><key>shortcut</key><string>しーゔぃーあーるゔぃーゔぃー★</string></dict>
-	<dict><key>phrase</key><string>DAC</string><key>shortcut</key><string>でぃーえーしー★</string></dict>
-	<dict><key>phrase</key><string>DIAM</string><key>shortcut</key><string>でぃあむ★</string></dict>
-	<dict><key>phrase</key><string>DNA解析</string><key>shortcut</key><string>でぃーえぬえーかいせき★</string></dict>
-	<dict><key>phrase</key><string>DNA鑑定</string><key>shortcut</key><string>でぃーえぬえーかんてい★</string></dict>
-	<dict><key>phrase</key><string>DOPSTOP</string><key>shortcut</key><string>どっぷすとっぷ★</string></dict>
-	<dict><key>phrase</key><string>DRC</string><key>shortcut</key><string>でぃーあーるしー</string></dict>
-	<dict><key>phrase</key><string>DRCエイベル</string><key>shortcut</key><string>でぃーあーるしーえいべる★</string></dict>
-	<dict><key>phrase</key><string>EPA</string><key>shortcut</key><string>いーぴーえー★</string></dict>
-	<dict><key>phrase</key><string>ESCA</string><key>shortcut</key><string>いーえすしーえー★</string></dict>
-	<dict><key>phrase</key><string>EU</string><key>shortcut</key><string>いーゆー★</string></dict>
-	<dict><key>phrase</key><string>EUシンボルマーク</string><key>shortcut</key><string>いーゆーしんぼるまーく★</string></dict>
-	<dict><key>phrase</key><string>EUレベル</string><key>shortcut</key><string>いーゆーれべる★</string></dict>
-	<dict><key>phrase</key><string>EU圏内</string><key>shortcut</key><string>いーゆーけんない★</string></dict>
-	<dict><key>phrase</key><string>FCA</string><key>shortcut</key><string>えふしーえー★</string></dict>
-	<dict><key>phrase</key><string>FCL</string><key>shortcut</key><string>えふしーえる★</string></dict>
-	<dict><key>phrase</key><string>FOB</string><key>shortcut</key><string>えふおーびー★</string></dict>
-	<dict><key>phrase</key><string>GSM</string><key>shortcut</key><string>じーえすえむ★</string></dict>
-	<dict><key>phrase</key><string>GWRDC</string><key>shortcut</key><string>じーだぶりゅーあーるでぃーしー★</string></dict>
-	<dict><key>phrase</key><string>Grange Hermitage BIN1</string><key>shortcut</key><string>ぐらんじえるみたーじゅびんわん★</string></dict>
-	<dict><key>phrase</key><string>HPO</string><key>shortcut</key><string>えいちぴーおー★</string></dict>
-	<dict><key>phrase</key><string>HSO</string><key>shortcut</key><string>えいちえすおー★</string></dict>
-	<dict><key>phrase</key><string>HU CLASSIFICATION</string><key>shortcut</key><string>えいちゆーくらしふぃけーしょん★</string></dict>
-	<dict><key>phrase</key><string>IBMP</string><key>shortcut</key><string>あいびーえむぴー★</string></dict>
-	<dict><key>phrase</key><string>INV</string><key>shortcut</key><string>あいえぬぶい★</string></dict>
-	<dict><key>phrase</key><string>IPW</string><key>shortcut</key><string>あいぴーだぶりゅー★</string></dict>
-	<dict><key>phrase</key><string>ISO</string><key>shortcut</key><string>あいえすおー★</string></dict>
-	<dict><key>phrase</key><string>KMW</string><key>shortcut</key><string>かーえむゔぇー</string></dict>
-	<dict><key>phrase</key><string>KMW値</string><key>shortcut</key><string>かーえむゔぇーち</string></dict>
-	<dict><key>phrase</key><string>KMW糖度</string><key>shortcut</key><string>かーえむゔぇーとうど</string></dict>
-	<dict><key>phrase</key><string>KWV</string><key>shortcut</key><string>けーだぶりゅーゔぃー★</string></dict>
-	<dict><key>phrase</key><string>LCL</string><key>shortcut</key><string>えるしーえる★</string></dict>
-	<dict><key>phrase</key><string>LIVE</string><key>shortcut</key><string>らいぶ★</string></dict>
-	<dict><key>phrase</key><string>LODI RULES</string><key>shortcut</key><string>ろーだいるーるず★</string></dict>
-	<dict><key>phrase</key><string>MCC</string><key>shortcut</key><string>えむしーしー★</string></dict>
-	<dict><key>phrase</key><string>MC法</string><key>shortcut</key><string>えむしーほう★</string></dict>
-	<dict><key>phrase</key><string>MLF</string><key>shortcut</key><string>えむえるえふ</string></dict>
-	<dict><key>phrase</key><string>MV6</string><key>shortcut</key><string>えむゔぃーろく★</string></dict>
-	<dict><key>phrase</key><string>ND</string><key>shortcut</key><string>えぬでぃー★</string></dict>
-	<dict><key>phrase</key><string>NM</string><key>shortcut</key><string>えぬえむ★</string></dict>
-	<dict><key>phrase</key><string>OVP</string><key>shortcut</key><string>おーゔぃーぴー★</string></dict>
-	<dict><key>phrase</key><string>SIP</string><key>shortcut</key><string>えすあいぴー★</string></dict>
-	<dict><key>phrase</key><string>UK Quality Wine Schemes</string><key>shortcut</key><string>ゆーけーくおりてぃわいんすきーむず★</string></dict>
-	<dict><key>phrase</key><string>VDP. Die Prädikatsweingüter</string><key>shortcut</key><string>ゔぃーでぃーぴーでぃーぷれでぃかーつわいんぐゅーたー★</string></dict>
-	<dict><key>phrase</key><string>VDP. Erste Lage</string><key>shortcut</key><string>ゔぃーでぃーぴーえるすてらーげ★</string></dict>
-	<dict><key>phrase</key><string>VDP. Große Lage</string><key>shortcut</key><string>ゔぃーでぃーぴーぐろーせらーげ★</string></dict>
-	<dict><key>phrase</key><string>VDP. Großes Gewächs</string><key>shortcut</key><string>ゔぃーでぃーぴーぐろーせすげゔぇくす★</string></dict>
-	<dict><key>phrase</key><string>VDP. Gutswein</string><key>shortcut</key><string>ゔぃーでぃーぴーぐーつわいん★</string></dict>
-	<dict><key>phrase</key><string>VDP. Ortswein</string><key>shortcut</key><string>ゔぃーでぃーぴーおるつわいん★</string></dict>
-	<dict><key>phrase</key><string>VS</string><key>shortcut</key><string>ゔぃーえす★</string></dict>
-	<dict><key>phrase</key><string>VSP</string><key>shortcut</key><string>ゔぃーえすぴー★</string></dict>
-	<dict><key>phrase</key><string>VSP仕立</string><key>shortcut</key><string>ゔぃーえすぴーしたて★</string></dict>
-	<dict><key>phrase</key><string>XO</string><key>shortcut</key><string>えっくすおー★</string></dict>
-	<dict><key>phrase</key><string>登録業態MA</string><key>shortcut</key><string>とうろくぎょうたいえむえー★</string></dict>
-	<dict><key>phrase</key><string>貿易条件CIF</string><key>shortcut</key><string>ぼうえきじょうけんしーあいえふ★</string></dict>
-	<dict><key>phrase</key><string>EXW</string><key>shortcut</key><string>いーえっくすだぶりゅー★</string></dict>
-	<dict><key>phrase</key><string>EXW条件下</string><key>shortcut</key><string>いーえっくすだぶりゅーじょうけんか★</string></dict>
 
 	<!-- 地名(国名) -->
 	<dict><key>phrase</key><string>Argentina</string><key>shortcut</key><string>あるぜんちん</string></dict>
@@ -1305,7 +1186,7 @@
 	<dict><key>phrase</key><string>山形県</string><key>shortcut</key><string>やまがたけん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>山口県</string><key>shortcut</key><string>やまぐちけん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>山梨県</string><key>shortcut</key><string>やまなしけん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>鹿児島県</string><key>shortcut</key><string>かこしまけん</string></dict>
+	<dict><key>phrase</key><string>鹿児島県</string><key>shortcut</key><string>かごしまけん</string></dict>
 	<dict><key>phrase</key><string>秋田県</string><key>shortcut</key><string>あきたけん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>新潟県</string><key>shortcut</key><string>にいがたけん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>神奈川県</string><key>shortcut</key><string>かながわけん</string></dict>	<!-- Sudachiにもある -->
@@ -1343,7 +1224,7 @@
 	<dict><key>phrase</key><string>遠野市</string><key>shortcut</key><string>とおのし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>塩尻市</string><key>shortcut</key><string>しおじりし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>花巻市</string><key>shortcut</key><string>はなまきし</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>葛巻市</string><key>shortcut</key><string>くずまきし</string></dict>
+	<dict><key>phrase</key><string>葛巻町</string><key>shortcut</key><string>くずまきまち</string></dict>
 	<dict><key>phrase</key><string>茅野市</string><key>shortcut</key><string>ちのし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>岩見沢市</string><key>shortcut</key><string>いわみざわし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>甲州市</string><key>shortcut</key><string>こうしゅうし</string></dict>	<!-- Sudachiにもある -->
@@ -1360,7 +1241,7 @@
 	<dict><key>phrase</key><string>松本市</string><key>shortcut</key><string>まつもとし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>沼田市</string><key>shortcut</key><string>ぬまたし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>上越市</string><key>shortcut</key><string>じょうえつし</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>上山市</string><key>shortcut</key><string>うえやまし</string></dict>
+	<dict><key>phrase</key><string>上山市</string><key>shortcut</key><string>かみのやまし</string></dict>
 	<dict><key>phrase</key><string>上田市</string><key>shortcut</key><string>うえだし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>新潟市</string><key>shortcut</key><string>にいがたし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>新見市</string><key>shortcut</key><string>にいみし</string></dict>	<!-- Sudachiにもある -->
@@ -1369,7 +1250,7 @@
 	<dict><key>phrase</key><string>千曲市</string><key>shortcut</key><string>ちくまし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>帯広市</string><key>shortcut</key><string>おびひろし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>胎内市</string><key>shortcut</key><string>たいないし</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>竹田市</string><key>shortcut</key><string>たけだし</string></dict>
+	<dict><key>phrase</key><string>竹田市</string><key>shortcut</key><string>たけたし</string></dict>
 	<dict><key>phrase</key><string>中野市</string><key>shortcut</key><string>なかのし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>笛吹市</string><key>shortcut</key><string>ふえふきし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>天童市</string><key>shortcut</key><string>てんどうし</string></dict>	<!-- Sudachiにもある -->
@@ -1384,7 +1265,7 @@
 	<dict><key>phrase</key><string>北杜市</string><key>shortcut</key><string>ほくとし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>余市</string><key>shortcut</key><string>よいち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>陸前高田市</string><key>shortcut</key><string>りくぜんたかたし</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>釡石市</string><key>shortcut</key><string>かまいしし</string></dict>
+	<dict><key>phrase</key><string>釜石市</string><key>shortcut</key><string>かまいしし</string></dict>
 
 	<!-- 村 -->
 	<dict><key>phrase</key><string>チェダー村</string><key>shortcut</key><string>ちぇだーむら</string></dict>
@@ -1411,17 +1292,17 @@
 	<dict><key>phrase</key><string>リストラック・メドック村</string><key>shortcut</key><string>りすとらっくめどっくむら</string></dict>
 	<dict><key>phrase</key><string>レトワール村</string><key>shortcut</key><string>れとわーるむら</string></dict>
 	<dict><key>phrase</key><string>下條村</string><key>shortcut</key><string>しもじょうむら</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>堅下村</string><key>shortcut</key><string>けんしもむら</string></dict>
-	<dict><key>phrase</key><string>宮田村</string><key>shortcut</key><string>みやたむら</string></dict>
+	<dict><key>phrase</key><string>堅下村</string><key>shortcut</key><string>かたしもむら</string></dict>
+	<dict><key>phrase</key><string>宮田村</string><key>shortcut</key><string>みやだむら</string></dict>
 	<dict><key>phrase</key><string>富田林村</string><key>shortcut</key><string>とんだばやしむら</string></dict>
 	<dict><key>phrase</key><string>山形村</string><key>shortcut</key><string>やまがたむら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>川場村</string><key>shortcut</key><string>かわばむら</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>恩納村</string><key>shortcut</key><string>おんなむら</string></dict>
+	<dict><key>phrase</key><string>恩納村</string><key>shortcut</key><string>おんなそん</string></dict>
 	<dict><key>phrase</key><string>昭和村</string><key>shortcut</key><string>しょうわむら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>片品村</string><key>shortcut</key><string>かたしなむら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>祝村</string><key>shortcut</key><string>いわいむら</string></dict>
 	<dict><key>phrase</key><string>青木村</string><key>shortcut</key><string>あおきむら</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>高山村</string><key>shortcut</key><string>こうざんむら</string></dict>
+	<dict><key>phrase</key><string>高山村</string><key>shortcut</key><string>たかやまむら</string></dict>
 
 	<!-- 産地 -->
 	<!-- 渓谷 -->
@@ -1541,12 +1422,6 @@
 
 	<!-- 格付けや分類、ワインのタイプ、区分、種別、種類 -->
 	<dict><key>phrase</key><string>Primeur</string><key>shortcut</key><string>ぷりむーる</string></dict>
-	<dict><key>phrase</key><string>MA</string><key>shortcut</key><string>えむえい</string></dict>
-	<dict><key>phrase</key><string>RC</string><key>shortcut</key><string>あーるしー</string></dict>
-	<dict><key>phrase</key><string>RM</string><key>shortcut</key><string>あーるえむ</string></dict>
-	<dict><key>phrase</key><string>SR</string><key>shortcut</key><string>えすあーる</string></dict>
-	<dict><key>phrase</key><string>VDL</string><key>shortcut</key><string>ゔぃーでぃーえる</string></dict>
-	<dict><key>phrase</key><string>VDN</string><key>shortcut</key><string>ゔぃーでぃーえぬ</string></dict>
 	<dict><key>phrase</key><string>Rare</string><key>shortcut</key><string>れあ</string></dict>
 	<dict><key>phrase</key><string>Gentil</string><key>shortcut</key><string>じゃんてぃ</string></dict>
 	<dict><key>phrase</key><string>Malvasia Handakas-Candia</string><key>shortcut</key><string>まるゔぁじあはんだかすかんでぃあ</string></dict>
@@ -1564,8 +1439,6 @@
 	<dict><key>phrase</key><string>Vin biologique</string><key>shortcut</key><string>ゔぁんびおろじっく</string></dict>
 	<dict><key>phrase</key><string>Weißherbst</string><key>shortcut</key><string>ゔぁいすへるぷすと</string></dict>
 	<dict><key>phrase</key><string>エプモーソ</string><key>shortcut</key><string>えぷもーそ</string></dict>
-	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>じーあい</string></dict>
-	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>じーあいしー</string></dict>
 	<dict><key>phrase</key><string>G.I.制度</string><key>shortcut</key><string>じーあいせいど</string></dict>
 	<dict><key>phrase</key><string>G.I.指定</string><key>shortcut</key><string>じーあいしてい</string></dict>
 	<dict><key>phrase</key><string>G.I.未指定</string><key>shortcut</key><string>じーあいみしてい</string></dict>
@@ -1624,7 +1497,6 @@
 	<dict><key>phrase</key><string>PIWI品種</string><key>shortcut</key><string>ぴーゔぃーひんしゅ</string></dict>
 	<dict><key>phrase</key><string>busuioc</string><key>shortcut</key><string>ぶすいおく</string></dict>
 	<dict><key>phrase</key><string>5BB</string><key>shortcut</key><string>ごびーびー</string></dict>
-	<dict><key>phrase</key><string>AXR</string><key>shortcut</key><string>えいえっくすあーる</string></dict>
 	<dict><key>phrase</key><string>Agiorgitiko</string><key>shortcut</key><string>あぎおるぎてぃこ</string></dict>
 	<dict><key>phrase</key><string>Aglianico</string><key>shortcut</key><string>ありあにこ</string></dict>
 	<dict><key>phrase</key><string>Airén</string><key>shortcut</key><string>あいれん</string></dict>
@@ -3651,18 +3523,11 @@
 
 
 	<!-- 団体・組織 -->
-	<dict><key>phrase</key><string>MOVI</string><key>shortcut</key><string>えむおーぶいあい</string></dict>
 	<dict><key>phrase</key><string>PiPA</string><key>shortcut</key><string>ぴーあいぴーえい</string></dict>
 	<dict><key>phrase</key><string>VIGNO</string><key>shortcut</key><string>びーにょ</string></dict>
-	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>けいおーじぇい</string></dict>
-	<dict><key>phrase</key><string>BATF</string><key>shortcut</key><string>びーえいてぃーえふ</string></dict>
 	<dict><key>phrase</key><string>農業省農牧庁SAG</string><key>shortcut</key><string>のうぎょうしょうのうぼくちょうえすえーじー</string></dict>
 	<dict><key>phrase</key><string>生産者集団SIP</string><key>shortcut</key><string>せいさんしゃしゅうだんえすあいぴー</string></dict>
 	<dict><key>phrase</key><string>UCデイヴィス校</string><key>shortcut</key><string>ゆーしーでいゔぃす</string></dict>
-	<dict><key>phrase</key><string>WHO</string><key>shortcut</key><string>だぶりゅーえいちおー</string></dict>
-	<dict><key>phrase</key><string>WIETA</string><key>shortcut</key><string>うぃーた</string></dict>
-	<dict><key>phrase</key><string>WOSA</string><key>shortcut</key><string>うぉーさ</string></dict>
-	<dict><key>phrase</key><string>AGWA</string><key>shortcut</key><string>あぐわ</string></dict>
 	<dict><key>phrase</key><string>Alcohol and Tobacco Tax and Trade Bureau</string><key>shortcut</key><string>あるこーるあんどたばこたっくすあんどとれいどびゅーろー</string></dict>
 	<dict><key>phrase</key><string>ヴィーニョ・ヴェルデ地域生産委員会</string><key>shortcut</key><string>ゔぃーにょゔぇるでちいきせいさんいいんかい</string></dict>
 	<dict><key>phrase</key><string>キャップ・クラシック生産者協会</string><key>shortcut</key><string>きゃっぷくらしっくせいさんしゃきょうかい</string></dict>
