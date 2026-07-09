@@ -49,7 +49,7 @@ extension KanaKanjiConverter {
     // 実質名詞(時は金なり/時を刻む)は前が BOS や名詞で活用派生でないため発火せず区別できる。
     // LM は た→とき(2819<た→時2920)で僅かにかなを好むが、下流 時→の(903<とき→の1107)で
     // 僅差逆転するため、連体形直後のみ漢字表記へペナルティを課してかなを優先する。
-    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき"]
+    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため"]
     static let multiClauseFormalNounKanjiPenalty = 1000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
