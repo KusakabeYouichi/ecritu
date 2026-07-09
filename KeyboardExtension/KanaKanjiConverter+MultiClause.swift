@@ -45,6 +45,12 @@ extension KanaKanjiConverter {
         "えた", "した", "てる", "よう", "たい", "て", "た", "だ", "う"
     ]
     static let multiClauseFinalParticleKanjiPenalty = 3000
+    // 形式名詞: 連体形(活用派生ノード)の直後ではかな表記が正書(行ったとき/するとき)。
+    // 実質名詞(時は金なり/時を刻む)は前が BOS や名詞で活用派生でないため発火せず区別できる。
+    // LM は た→とき(2819<た→時2920)で僅かにかなを好むが、下流 時→の(903<とき→の1107)で
+    // 僅差逆転するため、連体形直後のみ漢字表記へペナルティを課してかなを優先する。
+    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき"]
+    static let multiClauseFormalNounKanjiPenalty = 1000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
     // (ルール全走査の回数を抑える事前フィルタ)。
@@ -392,7 +398,7 @@ extension KanaKanjiConverter {
                         continue
                     }
                     let prevNode = nodes[prevIdx]
-                    let cost = prevCost + transitionCost(
+                    var cost = prevCost + transitionCost(
                         prev: prevNode.surface,
                         prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),
                         surface: node.surface,
@@ -401,6 +407,12 @@ extension KanaKanjiConverter {
                         isCurated: node.isCurated,
                         isInflectionDerived: node.isInflectionDerived
                     )
+                    // 連体形直後の形式名詞はかな表記が正書(行ったとき等)。漢字表記に減点。
+                    if prevNode.isInflectionDerived,
+                        Self.multiClauseFormalNounKanaReadings.contains(node.reading),
+                        node.surface != node.reading {
+                        cost += Self.multiClauseFormalNounKanjiPenalty
+                    }
                     if cost < best[idx] {
                         best[idx] = cost
                         backPointer[idx] = prevIdx
