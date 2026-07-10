@@ -163,7 +163,13 @@ extension KeyboardViewController {
                     // 大域最適の方が単文節合成より信頼できるため。
                     let multiSet = Set(multiClause)
                     var merged: [String] = []
-                    if let first = converterCandidates.first, !multiSet.contains(first) {
+                    // 連文節の最良が読みそのもの(=curated かな正書の正規変換。全かなエコーは
+                    // multiClause 側で抑止済みなので、ここに来る全かなは意図されたかな)の場合、
+                    // 単文節#1 の前置はかな最良を潰す(ところもあるが→所もあるが 前置で、かなが
+                    // 「先頭でないかな識別」として候補から消える)ためスキップする。
+                    if let first = converterCandidates.first,
+                        !multiSet.contains(first),
+                        multiClause.first != reading {
                         merged.append(first)
                     }
                     merged.append(contentsOf: multiClause)
