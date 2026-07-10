@@ -93,5 +93,7 @@
 	<dict><key>phrase</key><string>加生野</string><key>shortcut</key><string>かようの</string></dict>
 	<!-- いい はひらがなのみ(良い は よい の読みでのみ出す。Sudachi表記ゆれ収穫で いい→良い が最安になるのを断つ) -->
 	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>
+	<!-- 単独読み み で 三 は出さない(みっか等の連濁断片由来)。LM unigram 三(数字頻出)が安く、み+れる が 見れる を僅差で破って 温度三れるかな 等の断片チェーンを作る -->
+	<dict><key>phrase</key><string>三</string><key>shortcut</key><string>み</string></dict>
 </array>
 </plist>
