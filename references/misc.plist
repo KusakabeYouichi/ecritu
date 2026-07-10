@@ -94,6 +94,8 @@
 	<dict><key>phrase</key><string>うまかった</string><key>shortcut</key><string>うまかった</string></dict>
 	<!-- 数年後: 単文節は ご→語(word_cost 語4401<後6845)で 数年語 を作る。LM連文節では 年→後 bigram で 数年後 が正しく勝つが、過去に 数年語 を学習(2280)してしまうと上書きできない。追加語彙(2400)で確実に先頭化する -->
 	<dict><key>phrase</key><string>数年後</string><key>shortcut</key><string>すうねんご</string></dict>
+	<!-- 形式名詞「ところ」はかなが正書(ところもあるが 等)。LMは全かなを最良にするが、全かなエコーガードは curated を含む経路しか返さないため、かな識別curatedで供給して先頭に残す -->
+	<dict><key>phrase</key><string>ところ</string><key>shortcut</key><string>ところ</string></dict>
 	<!-- 助詞相当「によって/により/による」はかなが正書。word_costs に よって/によって が無く、活用派生(寄って/似寄って=似寄る の て形)がノードを埋めて かな素通りが生成されないため、会社似寄って が最良になる。かな識別curatedで供給 -->
 	<dict><key>phrase</key><string>によって</string><key>shortcut</key><string>によって</string></dict>
 	<dict><key>phrase</key><string>により</string><key>shortcut</key><string>により</string></dict>
