@@ -469,10 +469,10 @@ extension KanaKanjiConverter {
         // 全かな結果は原則返さない(素通りの丸ごとエコー防止)。ただし経路に curated ノード
         // (やって/にした 等、かなが正書として明示登録された語)を含む場合は、かな結果が
         // 正規の変換なので返す(やってそうな が候補なしになるのを防ぐ)。
-        if joined == normalized,
-            !pathIndices.contains(where: { nodes[$0].isCurated }) {
-            return []
-        }
+        // 最良が全かなでも変種(そっちはつながる→そっちは繋がる 等の漢字混じり)は正当な
+        // 変換なので捨てない — ここで即 return [] すると候補なしになる。
+        let suppressAllKanaBest = joined == normalized
+            && !pathIndices.contains(where: { nodes[$0].isCurated })
 
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
@@ -551,7 +551,7 @@ extension KanaKanjiConverter {
         variants.sort { lhs, rhs in
             lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.joined < rhs.joined
         }
-        var results = [joined]
+        var results = suppressAllKanaBest ? [] : [joined]
         for variant in variants where !results.contains(variant.joined) {
             results.append(variant.joined)
             if results.count >= 1 + Self.multiClauseVariantLimit {
