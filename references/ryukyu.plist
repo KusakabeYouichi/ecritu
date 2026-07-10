@@ -6387,5 +6387,8 @@
 	<dict><key>phrase</key><string>佐平</string><key>shortcut</key><string>さひら</string></dict>
 	<dict><key>phrase</key><string>佐平建設</string><key>shortcut</key><string>さひらけんせつ</string></dict>
 	<dict><key>phrase</key><string>ANGE</string><key>shortcut</key><string>あんじゅ</string></dict>
+	<dict><key>phrase</key><string>ムカイヤ</string><key>shortcut</key><string>むかいや</string></dict>
+	<dict><key>phrase</key><string>NÜCHI</string><key>shortcut</key><string>ぬち</string></dict>
+	<dict><key>phrase</key><string>NÜCHI by WPÜ</string><key>shortcut</key><string>ぬちばいだぶりゅーぴーゆー</string></dict>
 </array>
 </plist>
