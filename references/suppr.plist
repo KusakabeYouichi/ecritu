@@ -91,5 +91,7 @@
 	<dict><key>phrase</key><string>斯樣</string><key>shortcut</key><string>かよう</string></dict>
 	<dict><key>phrase</key><string>火よう</string><key>shortcut</key><string>かよう</string></dict>
 	<dict><key>phrase</key><string>加生野</string><key>shortcut</key><string>かようの</string></dict>
+	<!-- いい はひらがなのみ(良い は よい の読みでのみ出す。Sudachi表記ゆれ収穫で いい→良い が最安になるのを断つ) -->
+	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>
 </array>
 </plist>
