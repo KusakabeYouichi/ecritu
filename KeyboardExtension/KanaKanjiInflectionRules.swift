@@ -118,6 +118,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 「〜なくなる」(状態変化の否定): 食べなくなった/食べなくなったら 等
+        InflectionRule(readingSuffix: "なくなる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なくなった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なくなったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なくなって", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         // 関西弁・口語の否定縮約形(食べない→食べん, 食べなかった→食べんかった 等)
         InflectionRule(readingSuffix: "ん", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "んかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -711,6 +716,11 @@ extension KanaKanjiConverter {
                 pattern.aForm + "ない",
                 pattern.aForm + "なかった",
                 pattern.aForm + "なかったら",
+                // 「〜なくなる」(状態変化の否定): 使わなくなった/使わなくなったら 等
+                pattern.aForm + "なくなる",
+                pattern.aForm + "なくなった",
+                pattern.aForm + "なくなったら",
+                pattern.aForm + "なくなって",
                 // 関西弁・口語の否定縮約形(知らない→知らん, 知らなかった→知らんかった 等)
                 pattern.aForm + "ん",
                 pattern.aForm + "んかった",
@@ -849,6 +859,11 @@ extension KanaKanjiConverter {
     static let suruInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 「〜なくなる」(状態変化の否定): 利用しなくなった 等
+        InflectionRule(readingSuffix: "しなくなる", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくなった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくなったら", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくなって", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         // 関西弁・口語の否定縮約形(しない→せん, しなかった→せんかった 等)
         InflectionRule(readingSuffix: "せん", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "せんかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -1260,6 +1275,11 @@ extension KanaKanjiConverter {
     static let kuruInflectionForms: [(readingSuffix: String, kanjiOutputSuffix: String)] = [
         ("こない", "来ない"),
         ("こなかった", "来なかった"),
+        // 「〜なくなる」(状態変化の否定): 来なくなった 等
+        ("こなくなる", "来なくなる"),
+        ("こなくなった", "来なくなった"),
+        ("こなくなったら", "来なくなったら"),
+        ("こなくなって", "来なくなって"),
         // 関西弁・口語の否定縮約形(来ない→来ん 等)
         ("こん", "来ん"),
         ("こんかった", "来んかった"),
@@ -1525,7 +1545,7 @@ extension KanaKanjiConverter {
         // (ひろこさん→5件、博子さん欠落 等)のを防ぐ。出力はかな(さん/くん/ちゃん/さま)。
         // 計算/生産 等の -さん 複合語は直接辞書(1200)が postfix(1120)より上位で正解維持。
         "ちゃん", "くん", "さま", "さん",
-        "ほうがいい", "ほうがよい", "ほうが", "ようになる", "ようにする", "ようにして", "ように", "よう", "ような", "ようだ", "ようです", "みたいでした", "みたいだった", "みたいです", "みたいだ", "みたいな", "みたいに", "みたい", "っぽくなかった", "っぽくないです", "っぽくなった", "っぽくなって", "っぽくなる", "っぽければ", "っぽかった", "っぽいですか", "っぽいです", "っぽくない", "っぽくて", "っぽく", "っぽい", "はずがない", "はずだった", "はずでした", "はずです", "はずだ", "はず", "です", "んですけれど", "んですけど", "んだけれど", "んだけど", "のだ", "んです", "んだ", "だろう", "だったら", "だった", "なければ", "なくても", "なくなりました", "なくなりません", "なくなります", "なくなりたい", "なくならなかった", "なくならない", "なくなった", "なくなって", "なくなれば", "なくなろう", "なくなり", "なくなる", "なくちゃいけない", "なきゃいけない", "なくちゃならない", "なきゃならない", "なくちゃ", "なきゃ", "なくて", "なかった", "なく", "ない", "だ", "けれど", "けど", "ください", "だけだ", "こと", "やつ", "ため", "など", "だけ", "のみ", "にしたいです", "にしましょう", "にしました", "にしません", "にしたら", "にしたい", "にします", "にしよう", "にしとく", "にしても", "にすれば", "にできる", "にしないで", "にしない", "にして", "にした", "にする", "にせず", "では", "には", "とは", "よりも", "より", "まで", "なら", "から", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "し", "なあ", "なぁ", "ねえ", "ねぇ", "かー", "ねー", "なー", "よー", "わー", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
+        "ほうがいい", "ほうがよい", "ほうが", "ようになる", "ようにする", "ようにして", "ように", "よう", "ような", "ようだ", "ようです", "みたいでした", "みたいだった", "みたいです", "みたいだ", "みたいな", "みたいに", "みたい", "っぽくなかった", "っぽくないです", "っぽくなった", "っぽくなって", "っぽくなる", "っぽければ", "っぽかった", "っぽいですか", "っぽいです", "っぽくない", "っぽくて", "っぽく", "っぽい", "はずがない", "はずだった", "はずでした", "はずです", "はずだ", "はず", "です", "んですけれど", "んですけど", "んだけれど", "んだけど", "のだ", "んです", "んだ", "だろう", "だったら", "だった", "なければ", "なくても", "なくなりました", "なくなりません", "なくなります", "なくなりたい", "なくならなかった", "なくならない", "なくなったら", "なくなった", "なくなって", "なくなれば", "なくなろう", "なくなり", "なくなる", "なくちゃいけない", "なきゃいけない", "なくちゃならない", "なきゃならない", "なくちゃ", "なきゃ", "なくて", "なかった", "なく", "ない", "だ", "けれど", "けど", "ください", "だけだ", "こと", "やつ", "ため", "など", "だけ", "のみ", "にしたいです", "にしましょう", "にしました", "にしません", "にしたら", "にしたい", "にします", "にしよう", "にしとく", "にしても", "にすれば", "にできる", "にしないで", "にしない", "にして", "にした", "にする", "にせず", "では", "には", "とは", "よりも", "より", "まで", "なら", "から", "へ", "は", "を", "に", "で", "と", "が", "も", "の", "し", "なあ", "なぁ", "ねえ", "ねぇ", "かー", "ねー", "なー", "よー", "わー", "ね", "よ", "な", "か", "や", "ぞ", "ぜ", "さ"
     ]
     static let postfixPassthroughPrefixReplacements: [(from: String, to: String)] = [
         ("ほう", "方")

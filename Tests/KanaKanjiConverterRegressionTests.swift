@@ -67,6 +67,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionNakunaruChainDerivesNegativeChangeForms() {
+        converter.learn(reading: "つかう", candidate: "使う")
+        converter.learn(reading: "たべる", candidate: "食べる")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("つかわなくなる", "使わなくなる"),
+            ("つかわなくなった", "使わなくなった"),
+            ("つかわなくなったら", "使わなくなったら"),
+            ("つかわなくなって", "使わなくなって"),
+            ("たべなくなった", "食べなくなった"),
+            ("たべなくなったら", "食べなくなったら")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionVerbKataFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "たべる", candidate: "食べる")
         converter.learn(reading: "くう", candidate: "食う")
