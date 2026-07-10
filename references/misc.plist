@@ -94,6 +94,11 @@
 	<dict><key>phrase</key><string>うまかった</string><key>shortcut</key><string>うまかった</string></dict>
 	<!-- 数年後: 単文節は ご→語(word_cost 語4401<後6845)で 数年語 を作る。LM連文節では 年→後 bigram で 数年後 が正しく勝つが、過去に 数年語 を学習(2280)してしまうと上書きできない。追加語彙(2400)で確実に先頭化する -->
 	<dict><key>phrase</key><string>数年後</string><key>shortcut</key><string>すうねんご</string></dict>
+	<!-- すき は word_costs で スキ/隙(3903)が 好き(5215)より安く、すきだった 等の合成語幹で 隙だった/スキだった が先頭に来る。頻度圧倒の 好き をcuratedで先頭化。同型: だいじ(大寺3719<大事4031)、きれい(奇麗3864が最安。1位かな/2位綺麗) -->
+	<dict><key>phrase</key><string>好き</string><key>shortcut</key><string>すき</string></dict>
+	<dict><key>phrase</key><string>大事</string><key>shortcut</key><string>だいじ</string></dict>
+	<dict><key>phrase</key><string>きれい</string><key>shortcut</key><string>きれい</string></dict>
+	<dict><key>phrase</key><string>綺麗</string><key>shortcut</key><string>きれい</string></dict>
 	<!-- 助動詞相当「かもしれない」はかな正書。辞書に1語で無く かも+知れません(知れる の活用派生)に割れるため、かな識別curatedで全長供給 -->
 	<dict><key>phrase</key><string>かもしれない</string><key>shortcut</key><string>かもしれない</string></dict>
 	<dict><key>phrase</key><string>かもしれません</string><key>shortcut</key><string>かもしれません</string></dict>
