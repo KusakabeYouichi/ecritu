@@ -94,6 +94,11 @@
 	<dict><key>phrase</key><string>うまかった</string><key>shortcut</key><string>うまかった</string></dict>
 	<!-- 数年後: 単文節は ご→語(word_cost 語4401<後6845)で 数年語 を作る。LM連文節では 年→後 bigram で 数年後 が正しく勝つが、過去に 数年語 を学習(2280)してしまうと上書きできない。追加語彙(2400)で確実に先頭化する -->
 	<dict><key>phrase</key><string>数年後</string><key>shortcut</key><string>すうねんご</string></dict>
+	<!-- 助動詞相当「かもしれない」はかな正書。辞書に1語で無く かも+知れません(知れる の活用派生)に割れるため、かな識別curatedで全長供給 -->
+	<dict><key>phrase</key><string>かもしれない</string><key>shortcut</key><string>かもしれない</string></dict>
+	<dict><key>phrase</key><string>かもしれません</string><key>shortcut</key><string>かもしれません</string></dict>
+	<dict><key>phrase</key><string>かもしれなかった</string><key>shortcut</key><string>かもしれなかった</string></dict>
+	<dict><key>phrase</key><string>かもしれず</string><key>shortcut</key><string>かもしれず</string></dict>
 	<!-- ほうが 終止(〜したほうが)で word_costs の 邦画/萌芽 等が勝つのを防ぐ。1位=かな、2位=方が の順(配列順が候補順に効く) -->
 	<dict><key>phrase</key><string>ほうが</string><key>shortcut</key><string>ほうが</string></dict>
 	<dict><key>phrase</key><string>方が</string><key>shortcut</key><string>ほうが</string></dict>
