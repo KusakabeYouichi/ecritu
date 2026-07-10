@@ -94,6 +94,13 @@
 	<dict><key>phrase</key><string>うまかった</string><key>shortcut</key><string>うまかった</string></dict>
 	<!-- 数年後: 単文節は ご→語(word_cost 語4401<後6845)で 数年語 を作る。LM連文節では 年→後 bigram で 数年後 が正しく勝つが、過去に 数年語 を学習(2280)してしまうと上書きできない。追加語彙(2400)で確実に先頭化する -->
 	<dict><key>phrase</key><string>数年後</string><key>shortcut</key><string>すうねんご</string></dict>
+	<!-- につめる の辞書基底は 煮詰める のみで、びんにつめて が 便煮詰めて 等に割れる(に+詰めて 3ノードは遷移1回分必ず高い)。に詰める 系をcuratedで供給 -->
+	<dict><key>phrase</key><string>に詰める</string><key>shortcut</key><string>につめる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>に詰めて</string><key>shortcut</key><string>につめて</string></dict>
+	<dict><key>phrase</key><string>に詰めた</string><key>shortcut</key><string>につめた</string></dict>
+	<!-- びん はLMで 便(5265)が最安のため 便に詰めて 等になる。容器の ビン/瓶 を優先(便 は2位以下でも その便で 等は文脈選択可) -->
+	<dict><key>phrase</key><string>ビン</string><key>shortcut</key><string>びん</string></dict>
+	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>
 	<!-- 来た は くる の活用形につき辞書に単独収穫されず(きた の辞書は 北/喜田 等のみ)、活用派生7200では 北(5217)やレア人名1ノードに負ける。超高頻度につきcuratedで供給(きゅうにきたよ→急に来たよ 等) -->
 	<dict><key>phrase</key><string>来た</string><key>shortcut</key><string>きた</string></dict>
 	<!-- すき は word_costs で スキ/隙(3903)が 好き(5215)より安く、すきだった 等の合成語幹で 隙だった/スキだった が先頭に来る。頻度圧倒の 好き をcuratedで先頭化。同型: だいじ(大寺3719<大事4031)、きれい(奇麗3864が最安。1位かな/2位綺麗) -->
