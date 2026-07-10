@@ -101,5 +101,7 @@
 	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>
 	<dict><key>phrase</key><string>建つ</string><key>shortcut</key><string>だつ</string></dict>
 	<dict><key>phrase</key><string>起つ</string><key>shortcut</key><string>だつ</string></dict>
+	<!-- 旧仮名カタカナ ヱル(える)。godan-ru扱いの活用派生で はらえって→原ヱって 等のゴミを作る -->
+	<dict><key>phrase</key><string>ヱル</string><key>shortcut</key><string>える</string></dict>
 </array>
 </plist>
