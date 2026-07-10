@@ -118,6 +118,8 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 命令形+引用「って」(食べろって 等の口語)
+        InflectionRule(readingSuffix: "ろって", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         // 「〜なくなる」(状態変化の否定): 食べなくなった/食べなくなったら 等
         InflectionRule(readingSuffix: "なくなる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なくなった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -716,6 +718,8 @@ extension KanaKanjiConverter {
                 pattern.aForm + "ない",
                 pattern.aForm + "なかった",
                 pattern.aForm + "なかったら",
+                // 命令形+引用「って」(払えって/待てって 等の口語)
+                pattern.eForm + "って",
                 // 「〜なくなる」(状態変化の否定): 使わなくなった/使わなくなったら 等
                 pattern.aForm + "なくなる",
                 pattern.aForm + "なくなった",
@@ -859,6 +863,8 @@ extension KanaKanjiConverter {
     static let suruInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 命令形+引用「って」(集中しろって 等の口語)
+        InflectionRule(readingSuffix: "しろって", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         // 「〜なくなる」(状態変化の否定): 利用しなくなった 等
         InflectionRule(readingSuffix: "しなくなる", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなくなった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -1309,6 +1315,7 @@ extension KanaKanjiConverter {
         ("きてもうた", "来てもうた"),
         ("きてもうて", "来てもうて"),
         ("こい", "来い"),
+        ("こいって", "来いって"),
         ("きます", "来ます"),
         ("きました", "来ました"),
         ("きません", "来ません"),

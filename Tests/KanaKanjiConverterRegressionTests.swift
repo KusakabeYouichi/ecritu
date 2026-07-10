@@ -94,6 +94,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionImperativeQuoteTteFormsAreDerived() {
+        converter.learn(reading: "はらう", candidate: "払う")
+        converter.learn(reading: "まつ", candidate: "待つ")
+        converter.learn(reading: "たべる", candidate: "食べる")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("はらえって", "払えって"),
+            ("まてって", "待てって"),
+            ("たべろって", "食べろって")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionVerbKataFormIsDerivedFromBaseVerbCandidate() {
         converter.learn(reading: "たべる", candidate: "食べる")
         converter.learn(reading: "くう", candidate: "食う")
