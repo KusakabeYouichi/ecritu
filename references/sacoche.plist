@@ -471,5 +471,7 @@
 	<dict><key>phrase</key><string>鶏白湯</string><key>shortcut</key><string>ちーぱいたん</string></dict>
 	<dict><key>phrase</key><string>鶏白湯</string><key>shortcut</key><string>とりぱいたん</string></dict>
 	<dict><key>phrase</key><string>除夜の鐘</string><key>shortcut</key><string>じょやのかね</string></dict>
+	<dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
+	<dict><key>phrase</key><string>プロフェショナル</string><key>shortcut</key><string>ぷろふぇしょなる</string></dict>
 </array>
 </plist>
