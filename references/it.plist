@@ -4,6 +4,7 @@
 <array>
 	<!-- カネゴリー1 -->
 	<dict><key>phrase</key><string></string><key>shortcut</key><string>あっぷる</string></dict>
+	<dict><key>phrase</key><string>AirMac</string><key>shortcut</key><string>えあまっく</string></dict>
 	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
 	<dict><key>phrase</key><string>AirMac Extreme</string><key>shortcut</key><string>えあまっくえくすとりーむ</string></dict>
 	<dict><key>phrase</key><string>AirPods Max</string><key>shortcut</key><string>えあぽっず</string></dict>
