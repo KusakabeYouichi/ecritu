@@ -95,5 +95,11 @@
 	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>
 	<!-- 単独読み み で 三 は出さない(みっか等の連濁断片由来)。LM unigram 三(数字頻出)が安く、み+れる が 見れる を僅差で破って 温度三れるかな 等の断片チェーンを作る -->
 	<dict><key>phrase</key><string>三</string><key>shortcut</key><string>み</string></dict>
+	<!-- だつ→立つ系はSudachiが 目立つ/旅立つ 等の連濁内部読みを単独収穫したもの。活用基底に化けて だった→立った を作るため抑制(単独 だつ の正解は 脱/奪) -->
+	<dict><key>phrase</key><string>立つ</string><key>shortcut</key><string>だつ</string></dict>
+	<dict><key>phrase</key><string>佇つ</string><key>shortcut</key><string>だつ</string></dict>
+	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>
+	<dict><key>phrase</key><string>建つ</string><key>shortcut</key><string>だつ</string></dict>
+	<dict><key>phrase</key><string>起つ</string><key>shortcut</key><string>だつ</string></dict>
 </array>
 </plist>
