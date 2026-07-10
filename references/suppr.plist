@@ -103,5 +103,8 @@
 	<dict><key>phrase</key><string>起つ</string><key>shortcut</key><string>だつ</string></dict>
 	<!-- 旧仮名カタカナ ヱル(える)。godan-ru扱いの活用派生で はらえって→原ヱって 等のゴミを作る -->
 	<dict><key>phrase</key><string>ヱル</string><key>shortcut</key><string>える</string></dict>
+	<!-- きたよ の超レア人名(cost10000)。1ノードで済むため 来た+よ 合成より安くなり 急に喜多代 等を作る -->
+	<dict><key>phrase</key><string>喜多代</string><key>shortcut</key><string>きたよ</string></dict>
+	<dict><key>phrase</key><string>鍛代</string><key>shortcut</key><string>きたよ</string></dict>
 </array>
 </plist>
