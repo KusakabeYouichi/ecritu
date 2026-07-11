@@ -114,6 +114,10 @@
 	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>
 	<!-- たつと は時間文脈の 経つと が優勢(bigram 経つ→と 355)だが、終止形+と の活用供給が無くかな1ノードに丸まる。curatedで直接供給(立つと は postfix合成で次点に残る) -->
 	<dict><key>phrase</key><string>経つと</string><key>shortcut</key><string>たつと</string></dict>
+	<!-- いきます は 生きる(一段)の派生が 行く(五段)より先に列挙され、連文節供給枠(上位3件)を 生き系 が占有して 今度生きますね 等になる。頻度圧倒の 行きます 系をcurated供給(ね/よ はpostfixが繋ぐ) -->
+	<dict><key>phrase</key><string>行きます</string><key>shortcut</key><string>いきます</string></dict>
+	<dict><key>phrase</key><string>行きました</string><key>shortcut</key><string>いきました</string></dict>
+	<dict><key>phrase</key><string>行きましょう</string><key>shortcut</key><string>いきましょう</string></dict>
 	<!-- へいき は Wikipedia LM で 兵器(5259)<平気(6911)の系統バイアスがあり、へいきなんだろう が 兵器何だろう になる。会話頻度優先で 平気 を先頭化 -->
 	<dict><key>phrase</key><string>平気</string><key>shortcut</key><string>へいき</string></dict>
 	<!-- つれる は word_costs で 釣れる(8201)が最安で 連れる(8837)が2位。つれてくる 等の複合で基底順が波及するため 連れて をcurated供給 -->
