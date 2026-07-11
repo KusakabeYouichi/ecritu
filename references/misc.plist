@@ -127,6 +127,9 @@
 	<dict><key>phrase</key><string>平気</string><key>shortcut</key><string>へいき</string></dict>
 	<!-- つれる は word_costs で 釣れる(8201)が最安で 連れる(8837)が2位。つれてくる 等の複合で基底順が波及するため 連れて をcurated供給 -->
 	<dict><key>phrase</key><string>連れて</string><key>shortcut</key><string>つれて</string></dict>
+	<!-- はって は基底列挙で はう(這う/匍う/匐う)が はる(貼る/張る)より先に並び、はってある が 這ってある 等になる(てある は他動詞専用で 這う に付かない)。貼って/張って をcurated供給 -->
+	<dict><key>phrase</key><string>貼って</string><key>shortcut</key><string>はって</string></dict>
+	<dict><key>phrase</key><string>張って</string><key>shortcut</key><string>はって</string></dict>
 	<!-- うって は word_costs が ウッテ/打っ手/討手 のみで、活用派生は うつ 系(打つ/撃つ/討つ/伐つ…)が先に並び 売って(うる系)が10番前後に沈む。頻度上位の 打って/売って をcuratedで供給(かな先頭の解消も兼ねる) -->
 	<dict><key>phrase</key><string>打って</string><key>shortcut</key><string>うって</string></dict>
 	<dict><key>phrase</key><string>売って</string><key>shortcut</key><string>うって</string></dict>
