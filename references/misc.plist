@@ -112,6 +112,11 @@
 	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>
 	<!-- たつと は時間文脈の 経つと が優勢(bigram 経つ→と 355)だが、終止形+と の活用供給が無くかな1ノードに丸まる。curatedで直接供給(立つと は postfix合成で次点に残る) -->
 	<dict><key>phrase</key><string>経つと</string><key>shortcut</key><string>たつと</string></dict>
+	<!-- 聞き(連用形名詞化)が Sudachi に無く(利き/効き は有る)、ききまちがい が 機器間違い/危機間違い 等になる。書き間違い は1語収録済みなのに 聞き間違い が無い収穫の穴 -->
+	<dict><key>phrase</key><string>聞き間違い</string><key>shortcut</key><string>ききまちがい</string></dict>
+	<dict><key>phrase</key><string>聞きまちがい</string><key>shortcut</key><string>ききまちがい</string></dict>
+	<dict><key>phrase</key><string>聞き間違える</string><key>shortcut</key><string>ききまちがえる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>聞き</string><key>shortcut</key><string>きき</string></dict>
 	<!-- 来た は くる の活用形につき辞書に単独収穫されず(きた の辞書は 北/喜田 等のみ)、活用派生7200では 北(5217)やレア人名1ノードに負ける。超高頻度につきcuratedで供給(きゅうにきたよ→急に来たよ 等) -->
 	<dict><key>phrase</key><string>来た</string><key>shortcut</key><string>きた</string></dict>
 	<!-- すき は word_costs で スキ/隙(3903)が 好き(5215)より安く、すきだった 等の合成語幹で 隙だった/スキだった が先頭に来る。頻度圧倒の 好き をcuratedで先頭化。同型: だいじ(大寺3719<大事4031)、きれい(奇麗3864が最安。1位かな/2位綺麗) -->
