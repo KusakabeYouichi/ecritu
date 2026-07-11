@@ -138,6 +138,10 @@
 	<!-- うって は word_costs が ウッテ/打っ手/討手 のみで、活用派生は うつ 系(打つ/撃つ/討つ/伐つ…)が先に並び 売って(うる系)が10番前後に沈む。頻度上位の 打って/売って をcuratedで供給(かな先頭の解消も兼ねる) -->
 	<dict><key>phrase</key><string>売って</string><key>shortcut</key><string>うって</string></dict>
 	<dict><key>phrase</key><string>打って</string><key>shortcut</key><string>うって</string></dict>
+	<!-- 全長も直接供給: 語幹curated順だけでは実機の学習(打って系2280)に負け 売ってしまって が6番に沈むため、2400で確実に先頭化 -->
+	<dict><key>phrase</key><string>売ってしまって</string><key>shortcut</key><string>うってしまって</string></dict>
+	<dict><key>phrase</key><string>売ってしまった</string><key>shortcut</key><string>うってしまった</string></dict>
+	<dict><key>phrase</key><string>売ってしまう</string><key>shortcut</key><string>うってしまう</string></dict>
 	<!-- 聞き(連用形名詞化)が Sudachi に無く(利き/効き は有る)、ききまちがい が 機器間違い/危機間違い 等になる。書き間違い は1語収録済みなのに 聞き間違い が無い収穫の穴 -->
 	<dict><key>phrase</key><string>聞き間違い</string><key>shortcut</key><string>ききまちがい</string></dict>
 	<dict><key>phrase</key><string>聞きまちがい</string><key>shortcut</key><string>ききまちがい</string></dict>
