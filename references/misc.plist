@@ -46,6 +46,8 @@
     <dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>全会一致</string><key>shortcut</key><string>ぜんかいいっち</string><key>pos</key><string>サ変名詞</string></dict>
+	<!-- 少ない: ランキング一般則(suffix一致+500)だけでは実機の すくないなあ で 酸くない 語幹合成が残るため、curatedで全経路先頭を保証 -->
+	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>
 	<!-- 描く は Sudachi に えがく 読みのみで かく 読みが未収録。かけば→描けば 等の活用に必要 -->
 	<dict><key>phrase</key><string>描く</string><key>shortcut</key><string>かく</string><key>pos</key><string>五段</string></dict>
 	<!-- 複合動詞「V連用+抜く」は Sudachi にほぼ収録が無く(たえぬく/やりぬく/かちぬく/いきぬく 全滅)、たえぬいた が た江縫た 等の断片になる。pos五段で活用一括網羅 -->
