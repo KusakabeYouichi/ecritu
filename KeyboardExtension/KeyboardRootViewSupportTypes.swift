@@ -972,6 +972,16 @@ extension KeyboardRootView {
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(candidate)
+                // かな識別(候補==入力かな)は末尾のかな確定チップと同様に
+                // ロングタップでカタカナ確定できるようにする(挙動の一貫性)。
+                .simultaneousGesture(
+                    LongPressGesture(minimumDuration: 0.4)
+                        .onEnded { _ in
+                            if candidate == composingText {
+                                onComposingTextCommitLongPress()
+                            }
+                        }
+                )
             }
         }
 
