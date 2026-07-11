@@ -367,7 +367,10 @@ extension KanaKanjiConverter {
                 unigramCosts[surface] == nil {
                 penalty += Self.multiClauseKatakanaNativeCost
             }
-            if reading.count > 1, reading.contains("を") {
+            // を 跨ぎ文節の防止。ただし curated(気をつけて/気が合う 等、を/が 含みで明示登録
+            // された慣用句)は正当な1文節なので免除する — でないと misc の 気を〜 慣用句群が
+            // 連文節に一切乗れず、きをつけて→機をつけて 等の分割に負ける。
+            if reading.count > 1, reading.contains("を"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
             // 単独の「ん」は準体助詞(できる+ん+だ=のだ縮約)として正当な文節なので
