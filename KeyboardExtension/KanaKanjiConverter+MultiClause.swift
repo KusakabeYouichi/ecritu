@@ -229,6 +229,25 @@ extension KanaKanjiConverter {
                     }
                 }
 
+                // (b3) 丁寧接頭辞派生ノード: お/ご+連用形(お渡し/お預かり/お届け 等)は
+                //      Sudachi に1語で収穫されないことが多く(お願い/お知らせ は例外的に有る)、
+                //      おわた+し のような断片合成に負ける。politePrefix 経路から上位を供給する。
+                if len >= 3,
+                    let firstChar = segmentReading.first,
+                    firstChar == "お" || firstChar == "ご" {
+                    let polite = politePrefixPassthroughCandidates(
+                        for: segmentReading,
+                        userDictionary: manualUserDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode,
+                        limit: Self.multiClauseInflectionTopK
+                    )
+                    for surface in polite.prefix(Self.multiClauseInflectionTopK)
+                    where surface != segmentReading {
+                        add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                    }
+                }
+
                 // (c) word_costs にも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
                 //     ※以前は candidates() で補完していたが、多字 span に dictUnknown 一律コストの
                 //       blob(例: てんきです→天気です)を作り、正しい細分割(天気+です)を大域的に
