@@ -79,6 +79,8 @@
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
+	<dict><key>phrase</key><string>なのだろう</string><key>shortcut</key><string>なのだろう</string></dict>
+	<dict><key>phrase</key><string>なんだろう</string><key>shortcut</key><string>なんだろう</string></dict>
 	<dict><key>phrase</key><string>いらっと</string><key>shortcut</key><string>いらっと</string></dict>
 	<dict><key>phrase</key><string>この辺</string><key>shortcut</key><string>このへん</string></dict>
 	<dict><key>phrase</key><string>その辺</string><key>shortcut</key><string>そのへん</string></dict>
@@ -112,6 +114,8 @@
 	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>
 	<!-- たつと は時間文脈の 経つと が優勢(bigram 経つ→と 355)だが、終止形+と の活用供給が無くかな1ノードに丸まる。curatedで直接供給(立つと は postfix合成で次点に残る) -->
 	<dict><key>phrase</key><string>経つと</string><key>shortcut</key><string>たつと</string></dict>
+	<!-- へいき は Wikipedia LM で 兵器(5259)<平気(6911)の系統バイアスがあり、へいきなんだろう が 兵器何だろう になる。会話頻度優先で 平気 を先頭化 -->
+	<dict><key>phrase</key><string>平気</string><key>shortcut</key><string>へいき</string></dict>
 	<!-- つれる は word_costs で 釣れる(8201)が最安で 連れる(8837)が2位。つれてくる 等の複合で基底順が波及するため 連れて をcurated供給 -->
 	<dict><key>phrase</key><string>連れて</string><key>shortcut</key><string>つれて</string></dict>
 	<!-- うって は word_costs が ウッテ/打っ手/討手 のみで、活用派生は うつ 系(打つ/撃つ/討つ/伐つ…)が先に並び 売って(うる系)が10番前後に沈む。頻度上位の 打って/売って をcuratedで供給(かな先頭の解消も兼ねる) -->
