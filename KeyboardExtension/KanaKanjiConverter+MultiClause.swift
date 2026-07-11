@@ -234,6 +234,9 @@ extension KanaKanjiConverter {
                 // (b3) 丁寧接頭辞派生ノード: お/ご+連用形(お渡し/お預かり/お届け 等)は
                 //      Sudachi に1語で収穫されないことが多く(お願い/お知らせ は例外的に有る)、
                 //      おわた+し のような断片合成に負ける。politePrefix 経路から上位を供給する。
+                //      コストは dictUnknown(8700)扱い(isInflectionDerived を付けない)。派生の
+                //      7200 だと Sudachi 実在の お店(unigram 7099+500)を お見せ が逆転してしまう。
+                //      断片合成(苧綿+視 ≈16000)には 8700 でも十分勝てる。
                 if len >= 3,
                     let firstChar = segmentReading.first,
                     firstChar == "お" || firstChar == "ご" {
@@ -246,7 +249,7 @@ extension KanaKanjiConverter {
                     )
                     for surface in polite.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
-                        add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        add(surface, isDictWord: true, isCurated: false)
                     }
                 }
 
