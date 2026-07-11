@@ -110,7 +110,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すぎました", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "すぎません", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
         InflectionRule(readingSuffix: "すぎれば", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
-        InflectionRule(readingSuffix: "さ", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI])
+        InflectionRule(readingSuffix: "さ", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        // 程度の「〜め」(新しめ/大きめ/早め/安め)。めの/めに 等は postfix の/に が繋ぐ
+        InflectionRule(readingSuffix: "め", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "めの", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI]),
+        InflectionRule(readingSuffix: "めに", baseReadingSuffix: "い", allowedClasses: [InflectionClass.adjectiveI])
     ]
 
     static let ichidanInflectionRules: [InflectionRule] = [

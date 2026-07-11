@@ -94,6 +94,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionAdjectiveMeDegreeFormsAreDerived() {
+        converter.learn(reading: "あたらしい", candidate: "新しい")
+        converter.learn(reading: "おおきい", candidate: "大きい")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("あたらしめ", "新しめ"),
+            ("あたらしめの", "新しめの"),
+            ("おおきめ", "大きめ"),
+            ("おおきめに", "大きめに")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionImperativeQuoteTteFormsAreDerived() {
         converter.learn(reading: "はらう", candidate: "払う")
         converter.learn(reading: "まつ", candidate: "待つ")
