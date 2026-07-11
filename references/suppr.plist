@@ -106,6 +106,8 @@
 	<!-- きたよ の超レア人名(cost10000)。1ノードで済むため 来た+よ 合成より安くなり 急に喜多代 等を作る -->
 	<dict><key>phrase</key><string>喜多代</string><key>shortcut</key><string>きたよ</string></dict>
 	<dict><key>phrase</key><string>鍛代</string><key>shortcut</key><string>きたよ</string></dict>
+	<!-- な 読みの 奴(奴国等の断片読み)。終助詞 な を あるといい奴 等に化けさせる。奴 は やつ で打てるため全面抑制 -->
+	<dict><key>phrase</key><string>奴</string><key>shortcut</key><string>な</string></dict>
 	<!-- きょうは のレア人名(cost10000)。1ノードで済むため 今日+は 合成より上に来る -->
 	<dict><key>phrase</key><string>恭芭</string><key>shortcut</key><string>きょうは</string></dict>
 	<dict><key>phrase</key><string>恭葉</string><key>shortcut</key><string>きょうは</string></dict>
