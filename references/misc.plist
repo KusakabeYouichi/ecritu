@@ -32,8 +32,8 @@
     <dict><key>phrase</key><string>気を遣う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を使う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気をつかう</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を付ける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気をつける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気を付ける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気を引く</string><key>shortcut</key><string>きをひく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を回す</string><key>shortcut</key><string>きをまわす</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を揉む</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
