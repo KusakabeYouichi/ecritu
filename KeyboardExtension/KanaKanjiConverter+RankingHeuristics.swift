@@ -260,7 +260,14 @@ extension KanaKanjiConverter {
                 // や辞書の別候補より確実に上位へ。postfix(1120)+語尾(220) を超える強めのブースト。
                 delta += 500
             } else if hasMatchingInflectionRankingSuffix(candidate, readingSuffix: matchedSuffix) {
-                delta += 220
+                // 読み全体が1語として辞書に実在する suffix 一致語(少ない/危ない 等)は、
+                // 派生の +500(酸くない/漉くない)に逆転されないよう同等のブーストを与える。
+                // かな識別(すくない 等)は 220 のままにして辞書順(漢字先頭)を保つ。
+                if candidate != reading, systemCandidates.contains(candidate) {
+                    delta += 500
+                } else {
+                    delta += 220
+                }
             } else if !containsHiragana(candidate),
                 !trustedDirectCandidates.contains(candidate) {
                 // Readings that look inflected should not prioritize pure-kanji name-like entries,
