@@ -12,19 +12,19 @@
     <dict><key>phrase</key><string>気の利く</string><key>shortcut</key><string>きのきく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気が付く</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気がつく</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
+    <dict><key>phrase</key><string>気が付く</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気が長い</string><key>shortcut</key><string>きがながい</string><key>pos</key><string>形容詞</string></dict>
     <dict><key>phrase</key><string>気が早い</string><key>shortcut</key><string>きがはやい</string><key>pos</key><string>形容詞</string></dict>
     <dict><key>phrase</key><string>気が向く</string><key>shortcut</key><string>きがむく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気に入る</string><key>shortcut</key><string>きにいる</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気にかかる</string><key>shortcut</key><string>きにかかる</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気に掛ける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気にかける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気に掛ける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気に食わない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
     <dict><key>phrase</key><string>気にくわない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
-    <dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気にとめる</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
+    <dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
     <dict><key>phrase</key><string>気に病む</string><key>shortcut</key><string>きにやむ</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を失う</string><key>shortcut</key><string>きをうしなう</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気を利かせる</string><key>shortcut</key><string>きをきかせる</string><key>pos</key><string>一段</string></dict>
