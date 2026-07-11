@@ -153,6 +153,8 @@
 	<!-- よい は 1位=かな、2位=良い(word_costs最安の 酔い を先頭から退ける)。いい→良い は suppr 側で抑制 -->
 	<dict><key>phrase</key><string>よい</string><key>shortcut</key><string>よい</string></dict>
 	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>よい</string></dict>
+	<!-- 口語の「やつ」(物・人を指す)はかなが正書(奴 は乱暴な字面、八つ は数詞複合派生)。やつだけあって 等の慣用にも効く -->
+	<dict><key>phrase</key><string>やつ</string><key>shortcut</key><string>やつ</string></dict>
 	<!-- 形式名詞「ところ」はかなが正書(ところもあるが 等)。LMは全かなを最良にするが、全かなエコーガードは curated を含む経路しか返さないため、かな識別curatedで供給して先頭に残す -->
 	<dict><key>phrase</key><string>ところ</string><key>shortcut</key><string>ところ</string></dict>
 	<!-- 助詞相当「によって/により/による」はかなが正書。word_costs に よって/によって が無く、活用派生(寄って/似寄って=似寄る の て形)がノードを埋めて かな素通りが生成されないため、会社似寄って が最良になる。かな識別curatedで供給 -->
