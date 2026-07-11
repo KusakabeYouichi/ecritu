@@ -64,5 +64,7 @@
 	<dict><key>phrase</key><string>聯合</string><key>shortcut</key><string>れんごう</string></dict>
 	<dict><key>phrase</key><string>聨合</string><key>shortcut</key><string>れんごう</string></dict>
 	<dict><key>phrase</key><string>美味い</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>甘い</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>栄恵町</string><key>shortcut</key><string>さかえまち</string></dict>
 </array>
 </plist>

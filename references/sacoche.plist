@@ -474,5 +474,27 @@
 	<dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
 	<dict><key>phrase</key><string>プロフェショナル</string><key>shortcut</key><string>ぷろふぇしょなる</string></dict>
 	<dict><key>phrase</key><string>那覇市内</string><key>shortcut</key><string>なはしない</string></dict>
+
+	<dict><key>phrase</key><string>ラザーニャ</string><key>shortcut</key><string>らざーにゃ</string></dict>
+	<dict><key>phrase</key><string>リングイネ</string><key>shortcut</key><string>りんぐいね</string></dict>
+	<dict><key>phrase</key><string>カペッリーニ</string><key>shortcut</key><string>かぺっりーに</string></dict>
+	<dict><key>phrase</key><string>フェデリーニ</string><key>shortcut</key><string>ふぇでりーに</string></dict>
+	<dict><key>phrase</key><string>スパゲッティ</string><key>shortcut</key><string>すぱげってぃ</string></dict>
+	<dict><key>phrase</key><string>ヴェルミチェッリ</string><key>shortcut</key><string>ゔぇるみちぇっり</string></dict>
+	<dict><key>phrase</key><string>キタッラ</string><key>shortcut</key><string>きたっら</string></dict>
+	<dict><key>phrase</key><string>ブカティーニ</string><key>shortcut</key><string>ぶかてぃーに</string></dict>
+	<dict><key>phrase</key><string>ミッレ</string><key>shortcut</key><string>みっれ</string></dict>
+	<dict><key>phrase</key><string>フジッリ</string><key>shortcut</key><string>ふじっり</string></dict>
+	<dict><key>phrase</key><string>Lasagna</string><key>shortcut</key><string>らざーにゃ</string></dict>
+	<dict><key>phrase</key><string>Linguine</string><key>shortcut</key><string>りんぐいね</string></dict>
+	<dict><key>phrase</key><string>Capellini</string><key>shortcut</key><string>かぺっりーに</string></dict>
+	<dict><key>phrase</key><string>Fedelini</string><key>shortcut</key><string>ふぇでりーに</string></dict>
+	<dict><key>phrase</key><string>Spaghettini</string><key>shortcut</key><string>すぱげってぃーに</string></dict>
+	<dict><key>phrase</key><string>Spaghetti</string><key>shortcut</key><string>すぱげってぃ</string></dict>
+	<dict><key>phrase</key><string>Vermicelli</string><key>shortcut</key><string>ゔぇるみちぇっり</string></dict>
+	<dict><key>phrase</key><string>Chitarra</string><key>shortcut</key><string>きたっら</string></dict>
+	<dict><key>phrase</key><string>Bucatini</string><key>shortcut</key><string>ぶかてぃーに</string></dict>
+	<dict><key>phrase</key><string>Mille</string><key>shortcut</key><string>みっれ</string></dict>
+	<dict><key>phrase</key><string>Fusilli</string><key>shortcut</key><string>ふじっり</string></dict>
 </array>
 </plist>
