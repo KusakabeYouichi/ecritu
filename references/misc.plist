@@ -124,6 +124,8 @@
 	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>
 	<!-- たつと は時間文脈の 経つと が優勢(bigram 経つ→と 355)だが、終止形+と の活用供給が無くかな1ノードに丸まる。curatedで直接供給(立つと は postfix合成で次点に残る) -->
 	<dict><key>phrase</key><string>経つと</string><key>shortcut</key><string>たつと</string></dict>
+	<!-- きょうは は直接辞書の 教派(7404)/レア人名 が postfix合成 今日+は(1120)より上に来る。今日は をcuratedで先頭化 -->
+	<dict><key>phrase</key><string>今日は</string><key>shortcut</key><string>きょうは</string></dict>
 	<!-- いきます は 生きる(一段)の派生が 行く(五段)より先に列挙され、連文節供給枠(上位3件)を 生き系 が占有して 今度生きますね 等になる。頻度圧倒の 行きます 系をcurated供給(ね/よ はpostfixが繋ぐ) -->
 	<dict><key>phrase</key><string>行きます</string><key>shortcut</key><string>いきます</string></dict>
 	<dict><key>phrase</key><string>行きました</string><key>shortcut</key><string>いきました</string></dict>
