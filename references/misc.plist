@@ -67,6 +67,15 @@
 	<dict><key>phrase</key><string>にして</string><key>shortcut</key><string>にして</string></dict>
 	<dict><key>phrase</key><string>にする</string><key>shortcut</key><string>にする</string></dict>
 	<dict><key>phrase</key><string>にしよう</string><key>shortcut</key><string>にしよう</string></dict>
+	<!-- 「になる」文法クラスタ: になって は 担う(になう)のて形 担って が1ノードで全長を取り、よるになって→よる担って 等を作る(にする と同型)。かな識別curatedで供給 -->
+	<dict><key>phrase</key><string>になる</string><key>shortcut</key><string>になる</string></dict>
+	<dict><key>phrase</key><string>になった</string><key>shortcut</key><string>になった</string></dict>
+	<dict><key>phrase</key><string>になって</string><key>shortcut</key><string>になって</string></dict>
+	<dict><key>phrase</key><string>になります</string><key>shortcut</key><string>になります</string></dict>
+	<dict><key>phrase</key><string>になりました</string><key>shortcut</key><string>になりました</string></dict>
+	<dict><key>phrase</key><string>になれば</string><key>shortcut</key><string>になれば</string></dict>
+	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->
+	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
