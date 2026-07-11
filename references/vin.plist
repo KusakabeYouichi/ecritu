@@ -3,6 +3,8 @@
 <plist version="1.0">
 <array>
 	<!-- AOC名や地名 -->
+	<dict><key>phrase</key><string>Pernand-Vergelesses</string><key>shortcut</key><string>ぺるなんゔぇるじゅれす</string></dict>
+	<dict><key>phrase</key><string>ペルナン・ヴェルジュレス</string><key>shortcut</key><string>ぺるなんゔぇるじゅれす</string></dict>
 	<dict><key>phrase</key><string>Aargau</string><key>shortcut</key><string>あーるがう</string></dict>
 	<dict><key>phrase</key><string>Abbaye de Mont</string><key>shortcut</key><string>あべいどぅもん</string></dict>
 	<dict><key>phrase</key><string>Abkhazia</string><key>shortcut</key><string>あぶはじあ</string></dict>
