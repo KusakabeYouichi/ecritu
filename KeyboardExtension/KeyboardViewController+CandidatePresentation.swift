@@ -162,18 +162,16 @@ extension KeyboardViewController {
                     // 続ける(重複は単文節側から除去)。連文節が返せる読み(4文字以上)では
                     // 大域最適の方が単文節合成より信頼できるため。
                     let multiSet = Set(multiClause)
-                    var merged: [String] = []
-                    // 連文節の最良が読みそのもの(=curated かな正書の正規変換。全かなエコーは
-                    // multiClause 側で抑止済みなので、ここに来る全かなは意図されたかな)の場合、
-                    // 単文節#1 の前置はかな最良を潰す(ところもあるが→所もあるが 前置で、かなが
-                    // 「先頭でないかな識別」として候補から消える)ためスキップする。
+                    var merged: [String] = multiClause
+                    // 単文節#1 は連文節最良の「直後(2位)」に挿入する(消えない保険は維持しつつ、
+                    // 先頭は常に連文節の大域最適)。以前は先頭に前置していたが、基底列挙順の悪い
+                    // 単文節#1(はってある→這ってある 等)が連文節の正解(貼ってある)を潰していた。
+                    // かな正書ケース(ところもあるが)もこの一般形に包含される。
                     if let first = converterCandidates.first,
-                        !multiSet.contains(first),
-                        multiClause.first != reading {
-                        merged.append(first)
+                        !multiSet.contains(first) {
+                        merged.insert(first, at: min(1, merged.count))
                     }
-                    merged.append(contentsOf: multiClause)
-                    for candidate in converterCandidates where !multiSet.contains(candidate) && candidate != merged.first {
+                    for candidate in converterCandidates where !multiSet.contains(candidate) {
                         if !merged.contains(candidate) {
                             merged.append(candidate)
                         }
