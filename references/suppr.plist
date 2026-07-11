@@ -106,5 +106,15 @@
 	<!-- きたよ の超レア人名(cost10000)。1ノードで済むため 来た+よ 合成より安くなり 急に喜多代 等を作る -->
 	<dict><key>phrase</key><string>喜多代</string><key>shortcut</key><string>きたよ</string></dict>
 	<dict><key>phrase</key><string>鍛代</string><key>shortcut</key><string>きたよ</string></dict>
+	<!-- たつと のレア人名(cost10000)。1ノードで済むため 経つ+と/立つ+と 合成より安く しばらく龍人 等を作る -->
+	<dict><key>phrase</key><string>辰斗</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>辰渡</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>辰登</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>辰都</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>達斗</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>達渡</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>達登</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>達都</string><key>shortcut</key><string>たつと</string></dict>
+	<dict><key>phrase</key><string>龍人</string><key>shortcut</key><string>たつと</string></dict>
 </array>
 </plist>
