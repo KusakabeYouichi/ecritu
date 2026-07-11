@@ -94,6 +94,8 @@
 	<dict><key>phrase</key><string>気が合う</string><key>shortcut</key><string>きがあう</string><key>pos</key><string>五段</string></dict>
 	<!-- やる はかなが正書(遣る/殺る等は抑制済み)。やって をかな識別で供給し、 やってそうな 等の合成で先頭に来られるようにする -->
 	<dict><key>phrase</key><string>やって</string><key>shortcut</key><string>やって</string></dict>
+	<dict><key>phrase</key><string>やってる</string><key>shortcut</key><string>やってる</string></dict>
+	<dict><key>phrase</key><string>やってた</string><key>shortcut</key><string>やってた</string></dict>
 	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>なっちゃう</string><key>shortcut</key><string>なっちゃう</string></dict>
 	<dict><key>phrase</key><string>のか</string><key>shortcut</key><string>のか</string></dict>
