@@ -354,7 +354,16 @@ extension KeyboardViewController {
             return candidates
         }
         if kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
-            return candidates
+            // かな正書の根拠がある読みでも、先頭でない(=エンジン最良でない)かな識別は
+            // 末尾へ回す。うってしまって 等で 売ってしまって(1位)の直後にかなが挟まる
+            // のを防ぎ、かな確定チップに近い位置に揃える(候補としては残す)。
+            var reordered = candidates.filter { candidate in
+                !(candidate == composingText && isKanaOnlyText(candidate))
+            }
+            if reordered.count != candidates.count, isKanaOnlyText(composingText) {
+                reordered.append(composingText)
+            }
+            return reordered
         }
 
         return candidates.filter { candidate in
