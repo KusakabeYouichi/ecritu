@@ -94,6 +94,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionShimauPostfixComposesFromTeFormStem() {
+        converter.learn(reading: "うって", candidate: "売って")
+
+        let candidates = converter.candidates(
+            for: "うってしまって",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+
+        XCTAssertTrue(
+            candidates.contains("売ってしまって"),
+            "candidates=\(candidates)"
+        )
+
+        if let kanaIndex = candidates.firstIndex(of: "うってしまって"),
+            let composedIndex = candidates.firstIndex(of: "売ってしまって") {
+            XCTAssertLessThan(
+                composedIndex,
+                kanaIndex,
+                "売ってしまって はかな識別より上位であるべき: \(candidates)"
+            )
+        }
+    }
+
     func testRegressionCompoundNukuVerbFormsAreDerived() {
         converter.learn(reading: "たえぬく", candidate: "耐え抜く")
 
