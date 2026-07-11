@@ -112,6 +112,9 @@
 	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>
 	<!-- たつと は時間文脈の 経つと が優勢(bigram 経つ→と 355)だが、終止形+と の活用供給が無くかな1ノードに丸まる。curatedで直接供給(立つと は postfix合成で次点に残る) -->
 	<dict><key>phrase</key><string>経つと</string><key>shortcut</key><string>たつと</string></dict>
+	<!-- うって は word_costs が ウッテ/打っ手/討手 のみで、活用派生は うつ 系(打つ/撃つ/討つ/伐つ…)が先に並び 売って(うる系)が10番前後に沈む。頻度上位の 打って/売って をcuratedで供給(かな先頭の解消も兼ねる) -->
+	<dict><key>phrase</key><string>打って</string><key>shortcut</key><string>うって</string></dict>
+	<dict><key>phrase</key><string>売って</string><key>shortcut</key><string>うって</string></dict>
 	<!-- 聞き(連用形名詞化)が Sudachi に無く(利き/効き は有る)、ききまちがい が 機器間違い/危機間違い 等になる。書き間違い は1語収録済みなのに 聞き間違い が無い収穫の穴 -->
 	<dict><key>phrase</key><string>聞き間違い</string><key>shortcut</key><string>ききまちがい</string></dict>
 	<dict><key>phrase</key><string>聞きまちがい</string><key>shortcut</key><string>ききまちがい</string></dict>
