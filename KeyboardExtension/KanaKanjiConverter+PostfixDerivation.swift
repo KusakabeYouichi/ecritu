@@ -93,8 +93,19 @@ extension KanaKanjiConverter {
                 modeRawValue: systemCandidateMode.rawValue
             )
 
-            guard let stemCandidates = stateQueue.sync(execute: { candidateCache[stemKey] }),
-                    !stemCandidates.isEmpty else {
+            guard let cachedStemCandidates = stateQueue.sync(execute: { candidateCache[stemKey] }),
+                    !cachedStemCandidates.isEmpty else {
+                continue
+            }
+
+            // 完全一致専用候補(踊り字 等)は語幹合成に載せない。candidates() の結果に
+            // 含まれてキャッシュされるため、除外しないと くりかえし+は → 々は 等が漏れる。
+            let exactOnly = Set(KanaKanjiSeedDictionary.exactReadingOnlySeed[stem] ?? [])
+            let stemCandidates = exactOnly.isEmpty
+                ? cachedStemCandidates
+                : cachedStemCandidates.filter { !exactOnly.contains($0) }
+
+            guard !stemCandidates.isEmpty else {
                 continue
             }
 
