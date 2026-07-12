@@ -496,5 +496,6 @@
 	<dict><key>phrase</key><string>Bucatini</string><key>shortcut</key><string>ぶかてぃーに</string></dict>
 	<dict><key>phrase</key><string>Mille</string><key>shortcut</key><string>みっれ</string></dict>
 	<dict><key>phrase</key><string>Fusilli</string><key>shortcut</key><string>ふじっり</string></dict>
+	<dict><key>phrase</key><string>蔵付き酵母</string><key>shortcut</key><string>くらつきこうぼ</string></dict>
 </array>
 </plist>
