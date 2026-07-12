@@ -175,6 +175,8 @@
 	<dict><key>phrase</key><string>だけあって</string><key>shortcut</key><string>だけあって</string></dict>
 	<!-- 写真: 実データDPでは 写真の解像度が が明確に最良だが、実機では 者芯 系(過去の検証の学習汚染)に負ける。超高頻度につき追加語彙(2400)で確実に先頭化 -->
 	<dict><key>phrase</key><string>写真</string><key>shortcut</key><string>しゃしん</string></dict>
+	<!-- すじょう は コーパスの 巣→城 bigram(1199=地名由来)で 巣城(す+城 2ノード)が 素性(1ノード7873)を連文節で逆転する。常用語 素性 をcuratedで先頭化 -->
+	<dict><key>phrase</key><string>素性</string><key>shortcut</key><string>すじょう</string></dict>
 	<!-- ときは は トキハ(大分の百貨店等の固有名、4379)が最安。1位かな/2位 時は の順に(トキハ は実在固有名につき抑制せず後方へ) -->
 	<dict><key>phrase</key><string>ときは</string><key>shortcut</key><string>ときは</string></dict>
 	<dict><key>phrase</key><string>時は</string><key>shortcut</key><string>ときは</string></dict>
