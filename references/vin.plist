@@ -2659,6 +2659,7 @@
 	<dict><key>phrase</key><string>剪定法</string><key>shortcut</key><string>んていほう</string></dict>
 
 	<!-- 醸造技術 -->
+	<dict><key>phrase</key><string>蔵付き酵母</string><key>shortcut</key><string>くらつきこうぼ</string></dict>
 	<dict><key>phrase</key><string>STELVIN</string><key>shortcut</key><string>すてるゔぁん</string></dict>
 	<dict><key>phrase</key><string>サツナヘリ</string><key>shortcut</key><string>さつなへり</string></dict>
 	<dict><key>phrase</key><string>デダゼ</string><key>shortcut</key><string>でだぜ</string></dict>
