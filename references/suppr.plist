@@ -113,6 +113,8 @@
 	<dict><key>phrase</key><string>さア</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>さアっ</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>サア</string><key>shortcut</key><string>さあ</string></dict>
+	<!-- のみ→耳(古語読み11090)。飲みに行けますよ 等で 耳に... の断片を作る -->
+	<dict><key>phrase</key><string>耳</string><key>shortcut</key><string>のみ</string></dict>
 	<!-- な 読みの 奴(奴国等の断片読み)。終助詞 な を あるといい奴 等に化けさせる。奴 は やつ で打てるため全面抑制 -->
 	<dict><key>phrase</key><string>奴</string><key>shortcut</key><string>な</string></dict>
 	<!-- きょうは のレア人名(cost10000)。1ノードで済むため 今日+は 合成より上に来る -->
