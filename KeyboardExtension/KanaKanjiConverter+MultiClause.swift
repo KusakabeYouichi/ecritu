@@ -254,6 +254,25 @@ extension KanaKanjiConverter {
                     }
                 }
 
+                // (b4) 数量詞複合ノード: 何件/何軒/何本/何枚/数台 等はロジック生成で
+                //      word_costs に無いため、連文節では 何県 分割や 軟堅 に負ける。
+                //      単文節と同じ numericCounterCompoundCandidates を供給する。
+                //      コストは活用派生と同じ(7200)= 分割ゴミには勝つが なんかい→難解
+                //      のような実在の非数量語には基本負ける穏当な強さ。
+                if len >= 2 {
+                    let numeric = numericCounterCompoundCandidates(
+                        for: segmentReading,
+                        userDictionary: manualUserDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode,
+                        limit: Self.multiClauseInflectionTopK
+                    )
+                    for surface in numeric.prefix(Self.multiClauseInflectionTopK)
+                    where surface != segmentReading {
+                        add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                    }
+                }
+
                 // (c) word_costs にも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
                 //     ※以前は candidates() で補完していたが、多字 span に dictUnknown 一律コストの
                 //       blob(例: てんきです→天気です)を作り、正しい細分割(天気+です)を大域的に
