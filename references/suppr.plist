@@ -117,6 +117,11 @@
 	<dict><key>phrase</key><string>ねェ</string><key>shortcut</key><string>ねえ</string></dict>
 	<dict><key>phrase</key><string>ネエ</string><key>shortcut</key><string>ねえ</string></dict>
 	<dict><key>phrase</key><string>失え</string><key>shortcut</key><string>ねえ</string></dict>
+	<!-- 引用/終助詞 って のカタカナ・カタカナ混じり表記(ッテ/ッて/ツて/っテ)。かな って が正書 -->
+	<dict><key>phrase</key><string>ッテ</string><key>shortcut</key><string>って</string></dict>
+	<dict><key>phrase</key><string>ッて</string><key>shortcut</key><string>って</string></dict>
+	<dict><key>phrase</key><string>ツて</string><key>shortcut</key><string>って</string></dict>
+	<dict><key>phrase</key><string>っテ</string><key>shortcut</key><string>って</string></dict>
 	<!-- ことは のレア人名(寿羽/寿葉/こと羽/古都羽)。ことはない で 寿羽ない 等の断片を作る -->
 	<dict><key>phrase</key><string>寿羽</string><key>shortcut</key><string>ことは</string></dict>
 	<dict><key>phrase</key><string>寿葉</string><key>shortcut</key><string>ことは</string></dict>
