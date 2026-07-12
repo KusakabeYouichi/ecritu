@@ -196,6 +196,10 @@
 	<dict><key>phrase</key><string>ある</string><key>shortcut</key><string>ある</string></dict>
 	<!-- 口語の「やつ」(物・人を指す)はかなが正書(奴 は乱暴な字面、八つ は数詞複合派生)。やつだけあって 等の慣用にも効く -->
 	<dict><key>phrase</key><string>やつ</string><key>shortcut</key><string>やつ</string></dict>
+	<!-- 終助詞クラスタ「だよねえ/だよね」はかな。ねえ→姉/姐、だ→打/駄 等の漢字化やカタカナ混じりに割れるため かな全長curatedで供給 -->
+	<dict><key>phrase</key><string>だよねえ</string><key>shortcut</key><string>だよねえ</string></dict>
+	<dict><key>phrase</key><string>だよね</string><key>shortcut</key><string>だよね</string></dict>
+	<dict><key>phrase</key><string>だよなあ</string><key>shortcut</key><string>だよなあ</string></dict>
 	<!-- 形式名詞「こと」の否定慣用(することはない/することない)はかなが正書。ことは の word_costs はレア人名(寿羽等)だけで 事は/ことは 単位が無く 事はない/寿羽ない に負ける -->
 	<dict><key>phrase</key><string>ことはない</string><key>shortcut</key><string>ことはない</string></dict>
 	<dict><key>phrase</key><string>ことない</string><key>shortcut</key><string>ことない</string></dict>
