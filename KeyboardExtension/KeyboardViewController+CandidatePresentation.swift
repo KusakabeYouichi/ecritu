@@ -335,7 +335,13 @@ extension KeyboardViewController {
     ) -> [String] {
         // どの経路から来ても表示リストに同一文字列が二度出ないようにする(先勝ち)。
         var seen = Set<String>()
-        let candidates = candidates.filter { seen.insert($0).inserted }
+        var candidates = candidates.filter { seen.insert($0).inserted }
+
+        // ユーザ方針: 「出来る」は候補に出してよいが、必ず「できる」より後ろ。
+        // 「出来」の直後がひらがな(できる活用の頭 る/た/て/ま/な/ち/れ)で、同一リストに
+        // 「でき」に置換した版が存在する場合のみ、漢字版をかな版の直後へ回す。
+        // 出来事/出来高/出来上がる 等(直後が漢字 or あ 等)は対象外。
+        candidates = SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(candidates)
 
         guard !composingText.isEmpty else {
             return candidates

@@ -69,4 +69,28 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         XCTAssertTrue(merged.contains("ヤマダ"), "merged=\(merged)")
         XCTAssertEqual(merged.filter { $0 == "ヤマダ" }.count, 1, "merged=\(merged)")
     }
+
+    // 「出来る」系は「できる」系より必ず後ろ。かな版が存在する時だけ漢字版を直後へ回す。
+    func testDekiKanjiIsDemotedBelowKanaCounterpart() {
+        let ordered = SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(
+            ["入力出来ちゃう", "入力できちゃう", "にゅうりょくできちゃう"]
+        )
+        let kanaIndex = ordered.firstIndex(of: "入力できちゃう")!
+        let kanjiIndex = ordered.firstIndex(of: "入力出来ちゃう")!
+        XCTAssertLessThan(kanaIndex, kanjiIndex, "ordered=\(ordered)")
+        // 漢字版はかな版の直後に置かれる。
+        XCTAssertEqual(kanjiIndex, kanaIndex + 1, "ordered=\(ordered)")
+    }
+
+    // かな版が候補に無い場合は漢字版を動かさない(欠落・順序破壊なし)。
+    func testDekiKanjiUntouchedWhenNoKanaCounterpart() {
+        let input = ["入力出来ちゃう", "その他候補"]
+        XCTAssertEqual(SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(input), input)
+    }
+
+    // 「出来事」「出来上がる」等(出来の直後が活用頭ひらがなでない)は誤発火しない。
+    func testDekiKanjiNounFormsAreNotDemoted() {
+        let input = ["出来事", "できごと", "出来上がる", "できあがる"]
+        XCTAssertEqual(SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(input), input)
+    }
 }

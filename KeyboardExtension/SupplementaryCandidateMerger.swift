@@ -160,6 +160,45 @@ enum SupplementaryCandidateMerger {
         return prioritizedCandidates
     }
 
+    // ユーザ方針: 「出来る」系は候補に出してよいが、必ず「できる」系より後ろ。
+    // 「出来」の直後がひらがな(できる活用の頭 る/た/て/ま/な/ち/れ)で、同一リストに
+    // 「でき」へ置換した版が存在する場合のみ、漢字版をかな版の直後へ回す。
+    // 出来事/出来高/出来上がる 等(直後が漢字 or 「あ」等)は対象外。
+    static func demotingDekiKanjiBelowKana(_ candidates: [String]) -> [String] {
+        let dekiInflectionHeads: Set<Character> = ["る", "た", "て", "ま", "な", "ち", "れ"]
+        let candidateSet = Set(candidates)
+
+        func kanaCounterpart(of candidate: String) -> String? {
+            guard let range = candidate.range(of: "出来") else { return nil }
+            guard range.upperBound < candidate.endIndex,
+                dekiInflectionHeads.contains(candidate[range.upperBound]) else {
+                return nil
+            }
+            let kana = candidate.replacingOccurrences(of: "出来", with: "でき")
+            return (kana != candidate && candidateSet.contains(kana)) ? kana : nil
+        }
+
+        var result: [String] = []
+        var deferred: [String: [String]] = [:]  // かな版 -> その直後に置く漢字版群
+
+        for candidate in candidates {
+            if let kana = kanaCounterpart(of: candidate), !result.contains(kana) {
+                deferred[kana, default: []].append(candidate)
+                continue
+            }
+            result.append(candidate)
+            if let pending = deferred.removeValue(forKey: candidate) {
+                result.append(contentsOf: pending)
+            }
+        }
+        // かな版は必ず候補集合に存在する(kanaCounterpart のガード)ため保留は全て解消される。
+        // 念のため未解消分があれば元順で末尾に戻し、候補欠落を防ぐ。
+        for pending in deferred.values.flatMap({ $0 }) where !result.contains(pending) {
+            result.append(pending)
+        }
+        return result
+    }
+
     private static func uniqueTrimmedCandidates(from candidates: [String]) -> [String] {
         var result: [String] = []
         var seen = Set<String>()
