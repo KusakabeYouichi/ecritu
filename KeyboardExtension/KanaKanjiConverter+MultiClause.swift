@@ -548,8 +548,15 @@ extension KanaKanjiConverter {
         // 正規の変換なので返す(やってそうな が候補なしになるのを防ぐ)。
         // 最良が全かなでも変種(そっちはつながる→そっちは繋がる 等の漢字混じり)は正当な
         // 変換なので捨てない — ここで即 return [] すると候補なしになる。
+        // 文末が終助詞クラスタのかな表層(いるなー/だなー 等)なら、全かなでも正当な変換
+        // (終助詞はかなが正書)なのでエコー抑制の対象外。抑制すると「なー→ナー にしただけ」の
+        // 変種(いるナー)が最小 delta で最良に繰り上がってしまう。
+        let lastNode = nodes[pathIndices[pathIndices.count - 1]]
+        let lastIsKanaFinalParticle = Self.multiClauseFinalParticleReadings.contains(lastNode.reading)
+            && lastNode.surface == lastNode.reading
         let suppressAllKanaBest = joined == normalized
             && !pathIndices.contains(where: { nodes[$0].isCurated })
+            && !lastIsKanaFinalParticle
 
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
@@ -609,6 +616,12 @@ extension KanaKanjiConverter {
                 let alt = nodes[altIdx]
                 guard alt.end == chosen.end,
                     alt.surface != chosen.surface else {
+                    continue
+                }
+                // 終助詞クラスタ区間の非かな表層(なー→ナー/名/菜 等)は変種として出さない
+                // (終助詞はかなが正書。カタカナ・漢字化は不自然)。
+                if Self.multiClauseFinalParticleReadings.contains(alt.reading),
+                    alt.surface != alt.reading {
                     continue
                 }
                 let delta = pairCost(alt) - baseCost
