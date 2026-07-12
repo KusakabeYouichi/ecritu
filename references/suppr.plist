@@ -106,6 +106,8 @@
 	<!-- きたよ の超レア人名(cost10000)。1ノードで済むため 来た+よ 合成より安くなり 急に喜多代 等を作る -->
 	<dict><key>phrase</key><string>喜多代</string><key>shortcut</key><string>きたよ</string></dict>
 	<dict><key>phrase</key><string>鍛代</string><key>shortcut</key><string>きたよ</string></dict>
+	<!-- おおきな→大な(Sudachiの妙な収穫。大きな が正書) -->
+	<dict><key>phrase</key><string>大な</string><key>shortcut</key><string>おおきな</string></dict>
 	<!-- さあ のカタカナ混じり表記(古風で今は使わない) -->
 	<dict><key>phrase</key><string>さァ</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>さア</string><key>shortcut</key><string>さあ</string></dict>
