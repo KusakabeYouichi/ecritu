@@ -95,6 +95,8 @@ final class KanaKanjiConverter {
         // 歴史的経緯: 数詞複合はブースト値(360)を基礎点として流用してきた。
         // 辞書語より大きく下に置く意図はそのまま名前だけ明示する。
         static let numericCounterCompound = 360
+        // 完全一致専用候補(踊り字 等)。辞書語より下位に置き、末尾寄りに出す。
+        static let exactReadingOnly = 300
     }
 
     // candidates() のステージ間で共有する読み・辞書・直接候補のスナップショット。
@@ -221,6 +223,11 @@ final class KanaKanjiConverter {
         addCandidates(context.systemCandidates, baseScore: CandidateScore.systemDictionary, to: &scores)
         addCandidates(context.userCandidates, baseScore: CandidateScore.userDictionary, to: &scores)
         addCandidates(context.learnedCandidates, baseScore: CandidateScore.learnedDictionary, to: &scores)
+        // 完全一致専用候補(踊り字 等)。入力全体がこの読みと一致した単文節でのみ供給する。
+        // systemCandidates には入れていないので、語幹合成・連文節には現れない。
+        if let exactOnly = KanaKanjiSeedDictionary.exactReadingOnlySeed[context.reading] {
+            addCandidates(exactOnly, baseScore: CandidateScore.exactReadingOnly, to: &scores)
+        }
     }
 
     // ステージ2: 派生候補(活用/ガル形/丁寧接頭辞/序数/数値/名詞接辞/postfix)を登録する。
