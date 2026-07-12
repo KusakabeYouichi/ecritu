@@ -57,8 +57,10 @@ final class KanaKanjiConverter {
         }
     }
 
+    // メモリ対策用の全キャッシュ破棄。sqlite インデックス(連文節LM)は保持する
+    // (close しても解放量はごく僅かなのに連文節が停止して劣化変換になるため)。
     func clearAllCaches() {
-        store.clearSystemDictionaryCaches()
+        store.clearSystemDictionaryJSONCaches()
         store.clearSharedDataCaches()
 
         stateQueue.sync {

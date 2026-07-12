@@ -481,12 +481,23 @@ final class KanaKanjiStore {
         return inflectionMap
     }
 
-    func clearSystemDictionaryCaches() {
+    // JSON フォールバック辞書のキャッシュのみ破棄する。sqlite インデックスは保持する。
+    // sqlite は mmap 未使用(PRAGMA mmap_size 未設定)で 400MB は常駐せず、close しても
+    // 解放されるのはごく小さいページキャッシュのみ。一方 close すると hasWordLMMetadata が
+    // false になり連文節が丸ごと停止して劣化変換(しゃしん→者芯 等)になるため、
+    // メモリ対策では sqlite を落とさない。
+    func clearSystemDictionaryJSONCaches() {
         cachedSystemDictionary = nil
         cachedSupplementalSystemDictionary = nil
         cachedLatinSuggestionEntries = nil
         cachedSystemCandidateSources = nil
         cachedInflectionDictionary = nil
+    }
+
+    // sqlite インデックスも含めて完全に閉じる(辞書ファイル差し替え時の再オープン用)。
+    // メモリ対策では使わない — clearSystemDictionaryJSONCaches を使うこと。
+    func clearSystemDictionaryCaches() {
+        clearSystemDictionaryJSONCaches()
 
         systemDictionaryQueue.sync {
             sqliteIndex = nil
