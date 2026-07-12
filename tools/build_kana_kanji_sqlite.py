@@ -23,6 +23,12 @@ from typing import Dict, Iterable, List, Set, Tuple
 
 ALLOWED_SOURCES = {"normalized", "surface", "adjective-garu"}
 
+# 追加語彙(Sudachi コスト無し)に付与する既定 word_cost。連文節ラティスで
+# 1 ノードとして戦える中程度の強さ(Sudachi は常用 2000〜/レア 10000)。
+DEFAULT_SUPPLEMENTAL_VOCAB_COST = 7500
+# 読み 3 文字以下は非常に弱く(レア固有名の 1 ノード hijack 再発防止)。
+DEFAULT_SUPPLEMENTAL_VOCAB_COST_SHORT = 11000
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build kana-kanji SQLite index")
@@ -361,6 +367,7 @@ def build_sqlite(
 
         # 語コスト(案A ビタビ用)。dictionary_entries に載る候補のみ保持。
         cost_rows: List[Tuple[str, str, int]] = []
+        seen_cost_keys: Set[Tuple[str, str]] = set()
         for reading, candidate_map in costs.items():
             allowed_candidates = dictionary_candidate_set.get(reading)
             if not allowed_candidates:
@@ -369,6 +376,25 @@ def build_sqlite(
                 if candidate not in allowed_candidates:
                     continue
                 cost_rows.append((reading, candidate, int(cost)))
+                seen_cost_keys.add((reading, candidate))
+
+        # 追加語彙(vin/it/ryukyu/personnalités 等)で Sudachi コストを持たない候補は、
+        # ここまでで word_costs に載らず連文節(multiClause)のラティスに現れない
+        # (=単文節では出るが「〜の解像度が」型の合成には参加できず 2ノード分割に負ける)。
+        # 既定コストを付与して連文節でも 1 ノードとして戦えるようにする。
+        # ただし読み 3 文字以下のレア固有名(喜多代/辰斗 型)は 2 ノード分割を破って
+        # 一般句を潰す hijack を再発させやすいため、あえて非常に弱いコストにする。
+        for reading, candidate_set in dictionary_candidate_set.items():
+            default_cost = (
+                DEFAULT_SUPPLEMENTAL_VOCAB_COST
+                if len(reading) >= 4
+                else DEFAULT_SUPPLEMENTAL_VOCAB_COST_SHORT
+            )
+            for candidate in candidate_set:
+                if (reading, candidate) in seen_cost_keys:
+                    continue
+                cost_rows.append((reading, candidate, default_cost))
+                seen_cost_keys.add((reading, candidate))
 
         if cost_rows:
             conn.executemany(
