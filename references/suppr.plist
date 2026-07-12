@@ -113,6 +113,11 @@
 	<dict><key>phrase</key><string>さア</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>さアっ</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>サア</string><key>shortcut</key><string>さあ</string></dict>
+	<!-- ことは のレア人名(寿羽/寿葉/こと羽/古都羽)。ことはない で 寿羽ない 等の断片を作る -->
+	<dict><key>phrase</key><string>寿羽</string><key>shortcut</key><string>ことは</string></dict>
+	<dict><key>phrase</key><string>寿葉</string><key>shortcut</key><string>ことは</string></dict>
+	<dict><key>phrase</key><string>こと羽</string><key>shortcut</key><string>ことは</string></dict>
+	<dict><key>phrase</key><string>古都羽</string><key>shortcut</key><string>ことは</string></dict>
 	<!-- もたせる の古語/使役。凭せる(凭れる の凭=寄りかからせる)は読めない古語で word_cost最安(10903)。以たせる は 以つ(古語もつ)の使役。持たせる を先頭化するため抑制(以て=もって は 以つ 由来で別途残す) -->
 	<dict><key>phrase</key><string>凭せる</string><key>shortcut</key><string>もたせる</string></dict>
 	<dict><key>phrase</key><string>以たせる</string><key>shortcut</key><string>もたせる</string></dict>
