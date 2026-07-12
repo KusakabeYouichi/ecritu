@@ -117,6 +117,11 @@
 	<dict><key>phrase</key><string>なさそうです</string><key>shortcut</key><string>なさそうです</string></dict>
 	<dict><key>phrase</key><string>として</string><key>shortcut</key><string>として</string></dict>
 	<dict><key>phrase</key><string>うまかった</string><key>shortcut</key><string>うまかった</string></dict>
+	<!-- うまい はLMかな最頻(6785)だが、活用派生は かな基底をスキップするため うまく/うまくなる が生成されない。かな識別curatedで供給(旨く より前へ) -->
+	<dict><key>phrase</key><string>うまく</string><key>shortcut</key><string>うまく</string></dict>
+	<dict><key>phrase</key><string>うまくなる</string><key>shortcut</key><string>うまくなる</string></dict>
+	<dict><key>phrase</key><string>うまくなった</string><key>shortcut</key><string>うまくなった</string></dict>
+	<dict><key>phrase</key><string>うまくなって</string><key>shortcut</key><string>うまくなって</string></dict>
 	<!-- 数年後: 単文節は ご→語(word_cost 語4401<後6845)で 数年語 を作る。LM連文節では 年→後 bigram で 数年後 が正しく勝つが、過去に 数年語 を学習(2280)してしまうと上書きできない。追加語彙(2400)で確実に先頭化する -->
 	<dict><key>phrase</key><string>数年後</string><key>shortcut</key><string>すうねんご</string></dict>
 	<!-- につめる の辞書基底は 煮詰める のみで、びんにつめて が 便煮詰めて 等に割れる(に+詰めて 3ノードは遷移1回分必ず高い)。に詰める 系をcuratedで供給 -->
