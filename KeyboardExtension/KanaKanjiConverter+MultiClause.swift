@@ -40,6 +40,29 @@ extension KanaKanjiConverter {
     // 安く出口で逆転するため(わかるだろう市)、ここで漢字表層に減点する。
     // な は終助詞の文末用法(〜だな/〜といいな)。奴/名/菜 等の文末漢字化に減点する。
     static let multiClauseFinalParticleReadings: Set<String> = ["かな", "かも", "よね", "かしら", "よな", "かー", "ねー", "なー", "よー", "わー", "し", "な"]
+
+    // 敬称の読み。数字の直後以外(=名詞/人名の後)では さん→山/三/桟 等の漢字化は
+    // 接尾語にならない(名前+さん=かな敬称 が正書)ので、漢字表層に減点する。
+    // 数字の後(十三/二十三 等)は正当な 三 なので免除する。
+    static let multiClauseHonorificSuffixReadings: Set<String> = ["さん", "さま"]
+    static let multiClauseHonorificKanjiPenalty = 3000
+    // 直前ノードが数量(十/二十/漢数字/アラビア数字)で終わるか。三 の免除判定に使う。
+    static let multiClauseNumericSurfaceTailCharacters: Set<Character> = [
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+        "〇", "一", "二", "三", "四", "五", "六", "七", "八", "九",
+        "十", "百", "千", "万", "億", "兆", "零"
+    ]
+    // 数字がかな表記のまま(にじゅう/ひゃく…)の場合の免除。桁読みは名前末尾になりにくい。
+    static let multiClauseNumericReadingTails: [String] = [
+        "じゅう", "ひゃく", "びゃく", "ぴゃく", "せん", "ぜん", "まん", "おく", "ちょう"
+    ]
+
+    static func isNumericContextForHonorific(prevSurface: String, prevReading: String) -> Bool {
+        if let last = prevSurface.last, multiClauseNumericSurfaceTailCharacters.contains(last) {
+            return true
+        }
+        return multiClauseNumericReadingTails.contains { prevReading.hasSuffix($0) }
+    }
     // 活用派生ノードの末尾助動詞トークン(長い順)。コーパスは A単位で 買わ+ない に分割する
     // ため、合成ノード「買わない」は出口 bigram(ない→よ/ない→EOS)を引けず、断片チェーン
     // (川+ない)に出口コストで逆転される。末尾トークンで bigram を代用して整合させる。
@@ -459,6 +482,13 @@ extension KanaKanjiConverter {
                         Self.multiClauseFormalNounKanaReadings.contains(node.reading),
                         node.surface != node.reading {
                         cost += Self.multiClauseFormalNounKanjiPenalty
+                    }
+                    // 敬称 さん/さま は数字の後以外では 山/三/桟 等の漢字接尾にならない。
+                    // 名前+さん(かな敬称)を優先するため漢字表層に減点(数字直後は免除)。
+                    if Self.multiClauseHonorificSuffixReadings.contains(node.reading),
+                        containsKanji(node.surface),
+                        !Self.isNumericContextForHonorific(prevSurface: prevNode.surface, prevReading: prevNode.reading) {
+                        cost += Self.multiClauseHonorificKanjiPenalty
                     }
                     if cost < best[idx] {
                         best[idx] = cost
