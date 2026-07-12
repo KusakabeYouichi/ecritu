@@ -196,6 +196,8 @@
 	<dict><key>phrase</key><string>ある</string><key>shortcut</key><string>ある</string></dict>
 	<!-- 口語の「やつ」(物・人を指す)はかなが正書(奴 は乱暴な字面、八つ は数詞複合派生)。やつだけあって 等の慣用にも効く -->
 	<dict><key>phrase</key><string>やつ</string><key>shortcut</key><string>やつ</string></dict>
+	<!-- 否定過去「なかった」はかなが正書(〜がなかった)。無かった の派生に負けるうえ、長文では変種枠(3件)から押し出されて かな が消える。かな全長curatedで最良化(無かった は2位に残る) -->
+	<dict><key>phrase</key><string>なかった</string><key>shortcut</key><string>なかった</string></dict>
 	<!-- 終助詞クラスタ「だよねえ/だよね」はかな。ねえ→姉/姐、だ→打/駄 等の漢字化やカタカナ混じりに割れるため かな全長curatedで供給 -->
 	<dict><key>phrase</key><string>だよねえ</string><key>shortcut</key><string>だよねえ</string></dict>
 	<dict><key>phrase</key><string>だよね</string><key>shortcut</key><string>だよね</string></dict>
