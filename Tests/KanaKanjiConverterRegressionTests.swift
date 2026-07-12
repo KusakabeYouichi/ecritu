@@ -94,6 +94,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    func testRegressionGodanCausativeImperativeIsDerived() {
+        converter.learn(reading: "のむ", candidate: "飲む")
+        converter.learn(reading: "かく", candidate: "書く")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("のませろ", "飲ませろ"),
+            ("のませよ", "飲ませよ"),
+            ("かかせろ", "書かせろ")
+        ]
+
+        for testCase in cases {
+            let candidates = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+
+            XCTAssertTrue(
+                candidates.contains(testCase.expected),
+                "reading=\(testCase.reading) candidates=\(candidates)"
+            )
+        }
+    }
+
     func testRegressionShimauPostfixComposesFromTeFormStem() {
         converter.learn(reading: "うって", candidate: "売って")
 
