@@ -113,9 +113,6 @@
 	<dict><key>phrase</key><string>さア</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>さアっ</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>サア</string><key>shortcut</key><string>さあ</string></dict>
-	<!-- なんけん のレア語。何軒/何件(数量詞複合)を前に出すため抑制 -->
-	<dict><key>phrase</key><string>軟堅</string><key>shortcut</key><string>なんけん</string></dict>
-	<dict><key>phrase</key><string>難件</string><key>shortcut</key><string>なんけん</string></dict>
 	<!-- な 読みの 奴(奴国等の断片読み)。終助詞 な を あるといい奴 等に化けさせる。奴 は やつ で打てるため全面抑制 -->
 	<dict><key>phrase</key><string>奴</string><key>shortcut</key><string>な</string></dict>
 	<!-- きょうは のレア人名(cost10000)。1ノードで済むため 今日+は 合成より上に来る -->
