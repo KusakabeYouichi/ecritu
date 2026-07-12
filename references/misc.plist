@@ -213,5 +213,8 @@
 	<dict><key>phrase</key><string>による</string><key>shortcut</key><string>による</string></dict>
 	<!-- 副詞「きっと」はかなが正書。word_cost/unigram とも キット(kit名詞)が安く既定で勝つが、主要IMEはいずれも きっと(ひらがな)既定。かな正書curatedで先頭化(スターターキット等 katakana複合の一部は#2に落ちるトレードオフ) -->
 	<dict><key>phrase</key><string>きっと</string><key>shortcut</key><string>きっと</string></dict>
+	<!-- 接続の慣用「だけでなく/だけではなく」はかなが正書。なく の word_cost は 泣く(9509)が かな なく(10363)より安く、だけで+泣く が最良になる。かな全長curatedで先頭化 -->
+	<dict><key>phrase</key><string>だけでなく</string><key>shortcut</key><string>だけでなく</string></dict>
+	<dict><key>phrase</key><string>だけではなく</string><key>shortcut</key><string>だけではなく</string></dict>
 </array>
 </plist>
