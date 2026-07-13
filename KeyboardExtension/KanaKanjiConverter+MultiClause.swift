@@ -71,6 +71,14 @@ extension KanaKanjiConverter {
         "えた", "した", "てる", "よう", "たい", "て", "た", "だ", "う"
     ]
     static let multiClauseFinalParticleKanjiPenalty = 3000
+    // 仮定の接続助詞「なら」は述語(動詞/形容詞の終止・連体形)直後ではかなが正書
+    // (買うなら/するなら/食べるなら)。奈良/楢/ナラ への漢字・カタカナ化を EOS で減点する。
+    // ただし体言+と直後(大阪と奈良)は正当な地名なので、直前が述語のときだけ発火させる。
+    static let multiClauseConditionalParticleReadings: Set<String> = ["なら"]
+    // 述語(動詞辞書形/形容詞/タ形)の末尾文字。なら の直前がこれで終わるか活用派生なら述語とみなす。
+    static let multiClausePredicateTailCharacters: Set<Character> = [
+        "う", "く", "ぐ", "す", "つ", "ぬ", "ぶ", "む", "る", "い", "た", "だ"
+    ]
     // 形式名詞: 連体形(活用派生ノード)の直後ではかな表記が正書(行ったとき/するとき)。
     // 実質名詞(時は金なり/時を刻む)は前が BOS や名詞で活用派生でないため発火せず区別できる。
     // LM は た→とき(2819<た→時2920)で僅かにかなを好むが、下流 時→の(903<とき→の1107)で
@@ -541,7 +549,24 @@ extension KanaKanjiConverter {
             return []   // 単文節は既存の単文節経路に任せる
         }
 
-        let segments = pathIndices.map { nodes[$0].surface }
+        var segments = pathIndices.map { nodes[$0].surface }
+
+        // 仮定の接続助詞「なら」が述語直後で 奈良/楢/ナラ に漢字・カタカナ化した場合は
+        // かな なら に是正する(買う奈良→買うなら)。連文節の best 分節は動詞を正しく取れて
+        // いる(買う+奈良)ので、助詞区間の表層だけ差し替える。元の漢字版は変種に温存する。
+        var conditionalNaraKanjiVariant: String? = nil
+        if pathIndices.count >= 2 {
+            let lastNode = nodes[pathIndices[pathIndices.count - 1]]
+            let prevNode = nodes[pathIndices[pathIndices.count - 2]]
+            if Self.multiClauseConditionalParticleReadings.contains(lastNode.reading),
+                lastNode.surface != lastNode.reading,
+                !lastNode.isCurated,
+                Self.isPredicateLikePrevForConditional(prevNode) {
+                conditionalNaraKanjiVariant = segments.joined()
+                segments[segments.count - 1] = lastNode.reading
+            }
+        }
+
         let joined = segments.joined()
         // 全かな結果は原則返さない(素通りの丸ごとエコー防止)。ただし経路に curated ノード
         // (やって/にした 等、かなが正書として明示登録された語)を含む場合は、かな結果が
@@ -552,8 +577,14 @@ extension KanaKanjiConverter {
         // (終助詞はかなが正書)なのでエコー抑制の対象外。抑制すると「なー→ナー にしただけ」の
         // 変種(いるナー)が最小 delta で最良に繰り上がってしまう。
         let lastNode = nodes[pathIndices[pathIndices.count - 1]]
-        let lastIsKanaFinalParticle = Self.multiClauseFinalParticleReadings.contains(lastNode.reading)
+        let lastPrevNode = pathIndices.count >= 2 ? nodes[pathIndices[pathIndices.count - 2]] : nil
+        // 述語直後のかな「なら」(仮定: 買うなら/するなら)も全かなエコー抑制の対象外。
+        let lastIsKanaConditionalNara = Self.multiClauseConditionalParticleReadings.contains(lastNode.reading)
             && lastNode.surface == lastNode.reading
+            && (lastPrevNode.map { Self.isPredicateLikePrevForConditional($0) } ?? false)
+        let lastIsKanaFinalParticle = (Self.multiClauseFinalParticleReadings.contains(lastNode.reading)
+            && lastNode.surface == lastNode.reading)
+            || lastIsKanaConditionalNara
         let suppressAllKanaBest = joined == normalized
             && !pathIndices.contains(where: { nodes[$0].isCurated })
             && !lastIsKanaFinalParticle
@@ -652,7 +683,20 @@ extension KanaKanjiConverter {
                 break
             }
         }
+        // かなに是正した「なら」の元の漢字版(買う奈良 等)は候補として温存する(#2以降)。
+        if let kanjiVariant = conditionalNaraKanjiVariant, !results.contains(kanjiVariant) {
+            results.append(kanjiVariant)
+        }
         return results
+    }
+
+    // 仮定「なら」の直前が述語(動詞辞書形/形容詞/タ形、または活用派生)か。
+    // 述語+なら=かな正書(買うなら)、体言+と+奈良=地名 の区別に使う。
+    static func isPredicateLikePrevForConditional(_ prev: MultiClauseNode) -> Bool {
+        if prev.isInflectionDerived {
+            return true
+        }
+        return prev.surface.last.map { multiClausePredicateTailCharacters.contains($0) } ?? false
     }
 
     // 語形(かな・漢字・ラテン字を含む)か。絵文字/記号のみなら false。curated 優遇の対象判定に使う。
