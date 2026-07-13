@@ -561,7 +561,8 @@ extension KanaKanjiConverter {
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
         //        視覚/資格/四角…)で第2候補以降を提示するため。1文字区間(助詞等)は対象外。
-        var variants: [(delta: Int, joined: String)] = []
+        var variants: [(delta: Int, order: Int, joined: String)] = []
+        var variantOrder = 0
         for (pos, nodeIdx) in pathIndices.enumerated() {
             let chosen = nodes[nodeIdx]
             guard chosen.reading.count >= 2 else {
@@ -634,12 +635,15 @@ extension KanaKanjiConverter {
                 if variantJoined == normalized || variantJoined == joined {
                     continue
                 }
-                variants.append((delta, variantJoined))
+                variants.append((delta, variantOrder, variantJoined))
+                variantOrder += 1
             }
         }
 
+        // 同 delta のタイブレークはノード列挙順(=seed/base優先順)。文字コード順だと
+        // 採<撮 で 採れてる が 撮れてる を不当に上回る(でとれてる→で採れてる が先)。
         variants.sort { lhs, rhs in
-            lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.joined < rhs.joined
+            lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
         }
         var results = suppressAllKanaBest ? [] : [joined]
         for variant in variants where !results.contains(variant.joined) {
