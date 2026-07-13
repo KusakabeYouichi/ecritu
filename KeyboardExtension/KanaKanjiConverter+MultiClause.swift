@@ -28,6 +28,14 @@ extension KanaKanjiConverter {
     // word_costs ジャンク(カッタ7715/多部田7884)に負けるので、unigram 最大(8139)より
     // 下に置き「文法的に検証済みの派生は既知のレア語より僅かに信頼する」とする。
     static let multiClauseInflectionDerivedOOVCost = 7200
+    // 格助詞の直後に来る活用派生ノード(に置かない/を書かない 等)の incoming OOV 割引。
+    // 格助詞の後は述語が続くのが文法的に自然だが、活用形は LM 未収録が多く bigram も無いため
+    // 7200 固定だと 高頻度語の断片チェーン(に+おか+ない+と 計~7538)に負ける。
+    // 格助詞直後に限り 5000 へ下げ、断片チェーンに勝てるようにする(名詞は影響なし)。
+    static let multiClauseInflectionAfterParticleCost = 5000
+    static let multiClauseCaseParticleSurfaces: Set<String> = [
+        "に", "を", "が", "へ", "と", "で", "は", "も", "から", "まで", "より"
+    ]
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -402,7 +410,9 @@ extension KanaKanjiConverter {
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
             } else if isInflectionDerived {
-                base = Self.multiClauseInflectionDerivedOOVCost
+                base = Self.multiClauseCaseParticleSurfaces.contains(prev)
+                    ? Self.multiClauseInflectionAfterParticleCost
+                    : Self.multiClauseInflectionDerivedOOVCost
             } else if isDictWord {
                 base = Self.multiClauseDictUnknownCost
             } else {
