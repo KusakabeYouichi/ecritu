@@ -119,6 +119,8 @@
 	<dict><key>phrase</key><string>失え</string><key>shortcut</key><string>ねえ</string></dict>
 	<!-- 俗語 すげー のカタカナ表記 スゲー(Sudachi word_cost 4280 で かな 7611 より安く先頭化)。あまり使わないため抑制 -->
 	<dict><key>phrase</key><string>スゲー</string><key>shortcut</key><string>すげー</string></dict>
+	<!-- 口語 ほんと に Sudachi が 本当(本来 ほんとう の表記)を割り当てている。ほんとう→本当、ほんと→ほんと に分けたいので ほんと 読みの 本当 を抑制 -->
+	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんと</string></dict>
 	<!-- 引用/終助詞 って のカタカナ・カタカナ混じり表記(ッテ/ッて/ツて/っテ)。かな って が正書 -->
 	<dict><key>phrase</key><string>ッテ</string><key>shortcut</key><string>って</string></dict>
 	<dict><key>phrase</key><string>ッて</string><key>shortcut</key><string>って</string></dict>
