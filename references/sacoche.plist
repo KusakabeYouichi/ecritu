@@ -498,5 +498,7 @@
 	<dict><key>phrase</key><string>Fusilli</string><key>shortcut</key><string>ふじっり</string></dict>
 	<dict><key>phrase</key><string>蔵付き酵母</string><key>shortcut</key><string>くらつきこうぼ</string></dict>
 	<dict><key>phrase</key><string>アヒージョ</string><key>shortcut</key><string>あひーじょ</string></dict>
+	<dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうよんとう</string></dict>
+	<dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうしとう</string></dict>
 </array>
 </plist>
