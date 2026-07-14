@@ -127,6 +127,17 @@ extension KanaKanjiConverter {
     // 起こしていた。候補バー(単一経路)には引き続き全辞書候補が並ぶため、レア語は手動選択
     // +学習(curated 1500)で救済される。
     static let multiClauseDictUnknownCost = 8700
+    // レア読み床上げ: LM unigram は表層のみで読みを見ないため、頻出表層×レア読み
+    // (見(み)8055/店(たな)11947/三田(みた)8247 等)が不当に安くなり断片連鎖を作る
+    // (むかしみたな→昔見店 等)。word_costs(読み+表層)がこの閾値以上=Sudachi 自身が
+    // レア読みと言っている語は、bigram 未観測時に word_costs まで床上げする。
+    // 正規読み(棚(たな)3793/店(みせ)6539 等)は閾値未満で無影響。bigram 観測時は
+    // 文脈の実証があるので免除。レア語自体は単文節経路+学習で引き続き選択可能。
+    // 読み1〜2文字に限定する: 長い読みで wc だけ高い語(解像度(かいぞうど)14076 等、
+    // 正読みなのに Sudachi コストが特異的に高いデータ)を巻き添えにしないため。
+    // 断片連鎖の部品は実質 1〜2文字 span なので短spanだけで目的は果たせる。
+    static let multiClauseRareReadingWordCostFloorMin = 8000
+    static let multiClauseRareReadingFloorMaxReadingCount = 2
     static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
     // 追加語彙/学習語彙(sacoche/misc.plist 等のキュレーション or 学習)由来の語は強く優遇する。実コストは
@@ -172,6 +183,7 @@ extension KanaKanjiConverter {
         let isDictWord: Bool   // 辞書/変換で得た語(true) or かな素通り(false)
         let isCurated: Bool    // 追加語彙/学習語彙(sacoche/misc.plist 等の手動キュレーション or 学習)由来
         let isInflectionDerived: Bool  // (b2) 活用エンジン供給ノード(買った/断線しやすい 等)
+        let wordCost: Int?     // word_costs(読み+表層)のコスト。(b) 由来のみ。レア読み床上げに使う
     }
 
     func multiClauseCandidates(
@@ -207,14 +219,15 @@ extension KanaKanjiConverter {
                 let segmentReading = String(chars[start..<end])
                 let suppressed = suppressedByReading[segmentReading]
 
-                var surfaces: [(surface: String, isDictWord: Bool, isCurated: Bool, isInflectionDerived: Bool)] = []
+                var surfaces: [(surface: String, isDictWord: Bool, isCurated: Bool, isInflectionDerived: Bool, wordCost: Int?)] = []
                 var seenSurfaces = Set<String>()
                 func add(
                     _ surface: String,
                     isDictWord: Bool,
                     isCurated: Bool,
                     exemptDecorative: Bool = false,
-                    isInflectionDerived: Bool = false
+                    isInflectionDerived: Bool = false,
+                    wordCost: Int? = nil
                 ) {
                     if let suppressed, suppressed.contains(surface) {
                         return
@@ -223,7 +236,7 @@ extension KanaKanjiConverter {
                         return
                     }
                     if seenSurfaces.insert(surface).inserted {
-                        surfaces.append((surface, isDictWord, isCurated, isInflectionDerived))
+                        surfaces.append((surface, isDictWord, isCurated, isInflectionDerived, wordCost))
                     }
                 }
 
@@ -255,11 +268,11 @@ extension KanaKanjiConverter {
                         lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key < rhs.key
                     }
                     var dictCount = 0
-                    for (surface, _) in ordered {
+                    for (surface, cost) in ordered {
                         if segmentEndsWithSokuon, containsKanji(surface) {
                             continue
                         }
-                        add(surface, isDictWord: true, isCurated: false)
+                        add(surface, isDictWord: true, isCurated: false, wordCost: cost)
                         dictCount += 1
                         if dictCount >= Self.multiClauseTopK {
                             break
@@ -352,7 +365,7 @@ extension KanaKanjiConverter {
                     add(passthrough, isDictWord: false, isCurated: false)
                 }
 
-                for (surface, isDictWord, isCurated, isInflectionDerived) in surfaces {
+                for (surface, isDictWord, isCurated, isInflectionDerived, wordCost) in surfaces {
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
                         start: start,
@@ -361,7 +374,8 @@ extension KanaKanjiConverter {
                         reading: segmentReading,
                         isDictWord: isDictWord,
                         isCurated: isCurated,
-                        isInflectionDerived: isInflectionDerived
+                        isInflectionDerived: isInflectionDerived,
+                        wordCost: wordCost
                     ))
                     nodesEndingAt[end].append(index)
                     nodesStartingAt[start].append(index)
@@ -417,7 +431,8 @@ extension KanaKanjiConverter {
             reading: String,
             isDictWord: Bool,
             isCurated: Bool,
-            isInflectionDerived: Bool
+            isInflectionDerived: Bool,
+            wordCost: Int? = nil
         ) -> Int {
             var base: Int
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
@@ -433,6 +448,14 @@ extension KanaKanjiConverter {
                 base = auxBigram
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
+                // レア読み床上げ(定数コメント参照): 表層 unigram はコーパスA単位分割の影響で
+                // 語幹断片(見=4181)や別読みの頻出表層(店=みせ用途)を過小評価する。
+                // Sudachi の読み+表層コストがレア級の短span語は、そこまで引き上げて断片連鎖を防ぐ。
+                if let wordCost,
+                    wordCost >= Self.multiClauseRareReadingWordCostFloorMin,
+                    reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount {
+                    base = max(base, wordCost)
+                }
             } else if isInflectionDerived {
                 // 格助詞・複合助詞(には/では 等)の直後は述語が続くのが自然なので割引する。
                 let prevAllowsInflectionDiscount =
@@ -513,7 +536,8 @@ extension KanaKanjiConverter {
                         reading: node.reading,
                         isDictWord: node.isDictWord,
                         isCurated: node.isCurated,
-                        isInflectionDerived: node.isInflectionDerived
+                        isInflectionDerived: node.isInflectionDerived,
+                        wordCost: node.wordCost
                     )
                     if cost < best[idx] {
                         best[idx] = cost
@@ -533,7 +557,8 @@ extension KanaKanjiConverter {
                         reading: node.reading,
                         isDictWord: node.isDictWord,
                         isCurated: node.isCurated,
-                        isInflectionDerived: node.isInflectionDerived
+                        isInflectionDerived: node.isInflectionDerived,
+                        wordCost: node.wordCost
                     )
                     // 連体形直後の形式名詞はかな表記が正書(行ったとき等)。漢字表記に減点。
                     if prevNode.isInflectionDerived,
@@ -670,7 +695,8 @@ extension KanaKanjiConverter {
                     reading: node.reading,
                     isDictWord: node.isDictWord,
                     isCurated: node.isCurated && asCurated,
-                    isInflectionDerived: node.isInflectionDerived
+                    isInflectionDerived: node.isInflectionDerived,
+                    wordCost: node.wordCost
                 )
                 let outgoing: Int
                 if let nextNode {
@@ -681,7 +707,8 @@ extension KanaKanjiConverter {
                         reading: nextNode.reading,
                         isDictWord: nextNode.isDictWord,
                         isCurated: nextNode.isCurated,
-                        isInflectionDerived: nextNode.isInflectionDerived
+                        isInflectionDerived: nextNode.isInflectionDerived,
+                        wordCost: nextNode.wordCost
                     )
                 } else {
                     outgoing = transitionCost(
