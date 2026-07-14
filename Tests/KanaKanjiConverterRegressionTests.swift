@@ -172,6 +172,36 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "ケイブルの断線", "multi=\(multi)")
     }
 
+    // 様態そう の長音カジュアル表記「そー」が そう と同格で活用導出されること
+    // (おいしそー→美味しそー 等。形容詞は inflection メタデータが要るため実LMで検証)。
+    func testRegressionRealLMSooLongVowelVariantDerivesLikeSou() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+
+        let adjective = converter.candidates(for: "おいしそー", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(adjective.contains("美味しそー"), "adjective=\(adjective)")
+        XCTAssertTrue(adjective.contains("おいしそー"), "adjective=\(adjective)")
+
+        let ichidan = converter.candidates(for: "たべそー", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(ichidan.contains("食べそー"), "ichidan=\(ichidan)")
+
+        let godan = converter.candidates(for: "いきそー", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(godan.contains("行きそー"), "godan=\(godan)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
