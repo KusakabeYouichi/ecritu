@@ -19,6 +19,35 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         super.tearDown()
     }
 
+    // 実LM回帰: 開発機の tmp sqlite(実辞書+連文節LM)を app group コンテナへ複製して
+    // multiClauseCandidates を直接検証する。tmp が無い環境では skip(実LM依存のため)。
+    // むかしみたな: かな断片チェーン(昔+み+た+な、み→た bigram 1010)や短spanレア読み
+    // (見店/実棚/三田な)に負けず 昔見たな が最良になること(短span床上げ+文末な減点)。
+    func testRegressionRealLMMukashiMitanaPrefersPredicateParse() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
+        let suppression: [String: [String]] = ["みたな": ["美多奈"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+
+        let multi = converter.multiClauseCandidates(for: "むかしみたな", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "昔見たな", "multi=\(multi)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
