@@ -500,5 +500,10 @@
 	<dict><key>phrase</key><string>アヒージョ</string><key>shortcut</key><string>あひーじょ</string></dict>
 	<dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうよんとう</string></dict>
 	<dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうしとう</string></dict>
+	<dict><key>phrase</key><string>蝶豆</string><key>shortcut</key><string>ちょうまめ</string></dict>
+	<dict><key>phrase</key><string>バタフライ・ピー</string><key>shortcut</key><string>ばたふらいぴー</string></dict>
+	<dict><key>phrase</key><string>Butterfly Pea</string><key>shortcut</key><string>ばたふらいぴー</string></dict>
+	<dict><key>phrase</key><string>タニタ</string><key>shortcut</key><string>たにた</string></dict>
+	<dict><key>phrase</key><string>TANITA</string><key>shortcut</key><string>たにた</string></dict>
 </array>
 </plist>
