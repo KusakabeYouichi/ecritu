@@ -80,6 +80,43 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // 実LM回帰: からだが — curated かな識別 だが(1500)が 空(から)+だが 分割を安くし、
+    // 体(からだ)+が(が→EOS 3831 が重い)を218差で逆転していた(空だが/殻だが が先頭、
+    // 体が が末尾)。misc の固定句 体が(からだが) と カラ/カラダ 抑制で 体が を最良にする。
+    // テストバンドルには misc/suppr が載らないため addUserEntry/defaults 注入で再現する。
+    func testRegressionRealLMKaradagaPrefersTaiga() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        converter.store.addUserEntry(reading: "だが", candidate: "だが")
+        converter.store.addUserEntry(reading: "からだが", candidate: "体が")
+        let suppression: [String: [String]] = ["から": ["カラ"], "からだ": ["カラダ"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        converter.clearAllCaches()
+
+        // 固定句 体が(からだが) が最良になると連文節は単一ノード経路として [] を返し
+        // 単文節経路(curated 2400)に委ねる仕様。表示は単文節リストがそのまま出る。
+        let multi = converter.multiClauseCandidates(for: "からだが", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty, "multi=\(multi)")
+
+        let single = converter.candidates(for: "からだが", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "体が", "single=\(single)")
+        XCTAssertFalse(single.contains("カラダが"), "カラダ抑制が効いていない single=\(single)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
