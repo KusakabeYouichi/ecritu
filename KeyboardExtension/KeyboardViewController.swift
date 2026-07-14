@@ -268,6 +268,11 @@ final class KeyboardViewController: UIInputViewController {
     }
     var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
     var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
+    // 診断: 押下表示残留(赤キー)を watchdog が強制解除した回数(セッション累計)。
+    var stuckTouchForceClearCount = 0
+    // 診断: このセッションで受けたメモリ警告の回数。2回目以降は最終手段として
+    // 連文節LM(sqlite)もアンロードする(初回は ef56d52 の方針どおり保持)。
+    var memoryWarningCountThisSession = 0
     var hasDeferredSharedSettingsCatchUp = false
     var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     var didApplyInactiveSessionMitigation = false
@@ -480,6 +485,10 @@ final class KeyboardViewController: UIInputViewController {
         keyboardLaunchViewDidLoadAt = launchStartedAt
         startKeyboardDiagnosticsSession()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
+        recordKeyboardDiagnosticsAppGroupHealth()
+        KeyboardStuckTouchDiagnostics.onForceClear = { [weak self] detail in
+            self?.recordStuckTouchForceClear(detail)
+        }
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
@@ -660,7 +669,11 @@ final class KeyboardViewController: UIInputViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        updateKeyboardDiagnosticsHeartbeat(event: "メモリ警告受信 キャッシュ解放開始", appendLog: true)
+        memoryWarningCountThisSession += 1
+        updateKeyboardDiagnosticsHeartbeat(
+            event: "メモリ警告受信(\(memoryWarningCountThisSession)回目) キャッシュ解放開始",
+            appendLog: true
+        )
 
         if memoryFailSafeProfile != .critical {
             memoryFailSafeProfile = .critical
@@ -674,6 +687,19 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         kanaKanjiConverter.clearAllCaches()
+
+        // 2回目以降の警告は圧迫が続いている証拠なので、最終手段として連文節LM(sqlite)も
+        // アンロードする(連文節は劣化するが jetsam で拡張ごと落ちるよりよい)。初回警告は
+        // ef56d52 の方針どおり保持して変換品質を守る。
+        if memoryWarningCountThisSession >= 2 {
+            kanaKanjiConverter.unloadSystemDictionarySQLiteForMemoryPressure()
+            appendKeyboardDiagnosticsLog(
+                "メモリ警告\(memoryWarningCountThisSession)回目のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
 
         if view.window == nil {
             performHiddenKeyboardMemoryTrim(

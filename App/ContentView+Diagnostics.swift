@@ -144,6 +144,11 @@ extension ContentView {
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFailSafeProfile)
+
+        if let flightFileURL = keyboardDiagnosticsFlightFileURL() {
+            try? FileManager.default.removeItem(at: flightFileURL)
+        }
+
         loadKeyboardDiagnosticsState()
     }
 
@@ -167,6 +172,28 @@ extension ContentView {
         return formatter.string(from: keyboardDiagnosticsLastHeartbeatDate)
     }
 
+    // キーボード拡張が書く「落ちても残る」フライトレコーダファイル。
+    // ファイル名は KeyboardViewController+Diagnostics.swift 側の定義と一致させること。
+    static let keyboardDiagnosticsFlightFileName = "keyboard_diagnostics_flight.log"
+
+    func keyboardDiagnosticsFlightFileURL() -> URL? {
+        FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: SettingsKeys.appGroupID
+        )?.appendingPathComponent(Self.keyboardDiagnosticsFlightFileName)
+    }
+
+    func keyboardDiagnosticsFlightFileTailLines(maxLines: Int = 200) -> [String] {
+        guard let url = keyboardDiagnosticsFlightFileURL(),
+            let data = try? Data(contentsOf: url),
+            !data.isEmpty,
+            let text = String(data: data, encoding: .utf8) else {
+            return []
+        }
+
+        let lines = text.split(separator: "\n", omittingEmptySubsequences: true)
+        return lines.suffix(maxLines).map(String.init)
+    }
+
     func keyboardDiagnosticsExportText() -> String {
         var sections: [String] = []
         sections.append("installMarker: \(keyboardDiagnosticsInstallMarker)")
@@ -177,6 +204,13 @@ extension ContentView {
         sections.append("lastEvent: \(keyboardDiagnosticsLastEvent)")
         sections.append("--- logs ---")
         sections.append(contentsOf: keyboardDiagnosticsLogLines)
+        sections.append("--- flight file (crash-safe) ---")
+        let flightLines = keyboardDiagnosticsFlightFileTailLines()
+        if flightLines.isEmpty {
+            sections.append("(記録なし)")
+        } else {
+            sections.append(contentsOf: flightLines)
+        }
         return sections.joined(separator: "\n")
     }
 

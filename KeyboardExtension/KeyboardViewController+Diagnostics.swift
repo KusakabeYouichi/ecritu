@@ -485,20 +485,119 @@ extension KeyboardViewController {
         )
     }
 
+    // ---- 落ちても残る診断(ファイル・フライトレコーダ) ----
+    // jetsam 死の直前は cfprefsd(UserDefaults)への書き込みが失われることがあり、
+    // 「診断が何も残らない」事態になる(iPhone 16 Pro の赤キー落ち事件)。
+    // App Group コンテナ内のファイルへ同期追記して確実に残す。
+    static let diagnosticsFlightFileName = "keyboard_diagnostics_flight.log"
+    private static let diagnosticsFlightFileMaxBytes: UInt64 = 262_144
+    private static let diagnosticsFlightFileKeepBytes = 131_072
+    private static var diagnosticsFlightFileLastHeartbeatWriteAt: CFAbsoluteTime = 0
+
+    func diagnosticsFlightFileURL() -> URL? {
+        FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: SharedDefaultsKeys.appGroupID
+        )?.appendingPathComponent(Self.diagnosticsFlightFileName)
+    }
+
+    func appendKeyboardDiagnosticsFlightFileLine(_ line: String) {
+        guard let url = diagnosticsFlightFileURL() else {
+            return
+        }
+
+        let data = Data((line + "\n").utf8)
+        let fileManager = FileManager.default
+
+        if !fileManager.fileExists(atPath: url.path) {
+            try? data.write(to: url, options: [.atomic])
+            return
+        }
+
+        guard let handle = try? FileHandle(forWritingTo: url) else {
+            return
+        }
+
+        let endOffset = (try? handle.seekToEnd()) ?? 0
+        try? handle.write(contentsOf: data)
+        try? handle.close()
+
+        if endOffset > Self.diagnosticsFlightFileMaxBytes {
+            trimDiagnosticsFlightFile(at: url)
+        }
+    }
+
+    private func trimDiagnosticsFlightFile(at url: URL) {
+        guard let contents = try? Data(contentsOf: url),
+            contents.count > Self.diagnosticsFlightFileKeepBytes else {
+            return
+        }
+
+        var tail = contents.suffix(Self.diagnosticsFlightFileKeepBytes)
+
+        // 行の途中で切れないよう、最初の改行までを捨てる。
+        if let newlineIndex = tail.firstIndex(of: 0x0A) {
+            tail = tail[tail.index(after: newlineIndex)...]
+        }
+
+        try? Data(tail).write(to: url, options: [.atomic])
+    }
+
+    // appendLog なしの高頻度ハートビート(textDidChange 等)向けの節流付きファイルミラー。
+    func mirrorKeyboardDiagnosticsHeartbeatToFlightFile(_ summary: String) {
+        let now = CFAbsoluteTimeGetCurrent()
+
+        guard now - Self.diagnosticsFlightFileLastHeartbeatWriteAt >= 5 else {
+            return
+        }
+
+        Self.diagnosticsFlightFileLastHeartbeatWriteAt = now
+        let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
+        appendKeyboardDiagnosticsFlightFileLine("\(timestamp) [\(diagnosticsSessionID)] HB \(summary)")
+    }
+
+    // App Group への書き込み健全性を起動時に1回記録する(コンテナURL到達性と
+    // defaults の書き戻し確認)。書けない環境では診断が空になるため、その事実自体を残す。
+    func recordKeyboardDiagnosticsAppGroupHealth() {
+        let containerReachable = diagnosticsFlightFileURL() != nil
+        var defaultsRoundTrip = "nil"
+
+        if let sharedDefaults {
+            let probeKey = "keyboardDiagnosticsWriteProbe"
+            let probeValue = "\(diagnosticsSessionID)-\(Int(Date().timeIntervalSince1970))"
+            sharedDefaults.set(probeValue, forKey: probeKey)
+            defaultsRoundTrip = sharedDefaults.string(forKey: probeKey) == probeValue ? "ok" : "mismatch"
+        }
+
+        appendKeyboardDiagnosticsLog(
+            "AppGroup健全性 group=\(SharedDefaultsKeys.appGroupID) containerURL=\(containerReachable ? "ok" : "nil") defaults=\(defaultsRoundTrip)"
+        )
+    }
+
+    // ---- 押下表示残留(赤キー)の証拠収集 ----
+    func recordStuckTouchForceClear(_ detail: String) {
+        stuckTouchForceClearCount += 1
+        appendKeyboardDiagnosticsLog(
+            "押下残留をwatchdogが強制解除 \(detail) 累計=\(stuckTouchForceClearCount)"
+        )
+    }
+
     func appendKeyboardDiagnosticsLog(
         _ event: String,
         file: String = #fileID,
         line: Int = #line,
         function: String = #function
     ) {
-        guard let sharedDefaults else {
-            return
-        }
-
         let sourceFile = (file as NSString).lastPathComponent
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
         let entry =
             "\(timestamp) [\(diagnosticsSessionID)] \(event) {\(diagnosticsRuntimeContext())} (\(sourceFile):\(line) \(function))"
+
+        // defaults が使えない環境でもファイル側には必ず残す。
+        appendKeyboardDiagnosticsFlightFileLine(entry)
+
+        guard let sharedDefaults else {
+            return
+        }
 
         var lines = diagnosticsLogLines(from: sharedDefaults)
         lines.append(entry)
@@ -537,6 +636,8 @@ extension KeyboardViewController {
 
         if appendLog {
             appendKeyboardDiagnosticsLog(event, file: file, line: line, function: function)
+        } else {
+            mirrorKeyboardDiagnosticsHeartbeatToFlightFile(summary)
         }
     }
 

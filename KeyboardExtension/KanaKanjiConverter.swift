@@ -68,6 +68,16 @@ final class KanaKanjiConverter {
         }
     }
 
+    // メモリ警告が繰り返されるときの最終手段。連文節は単文節フォールバックに劣化するが、
+    // jetsam で拡張ごと落ちるよりよい(初回警告では呼ばない = LM保持の方針を維持)。
+    func unloadSystemDictionarySQLiteForMemoryPressure() {
+        store.clearSystemDictionaryCaches()
+
+        stateQueue.sync {
+            invalidateCandidateCache()
+        }
+    }
+
     func preloadSharedDataCachesIfNeeded() {
         _ = store.userDictionary()
         _ = store.learnedDictionary()
