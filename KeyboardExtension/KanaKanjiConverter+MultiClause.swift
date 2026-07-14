@@ -447,11 +447,16 @@ extension KanaKanjiConverter {
             if isCurated, Self.isWordLikeSurface(surface) {
                 base = min(base, Self.multiClauseCuratedWordCost)
             }
-            // 複合助詞(かな表層)を単位ノードとして安価にクランプ。文頭(BOS 直後)は除外し、
-            // 「でも/では」等が文頭でカタカナ/漢字語を巻き添えにするのを防ぐ。
+            // 複合助詞(かな表層)を単位ノードとして安価にクランプ。ただし基底の格助詞
+            // (には→に/では→で)が直前語からの bigram で期待される時だけに限定する。
+            // 便利→に は強 bigram(1427)なので には をクランプして 便利にはなった を通す一方、
+            // たにた→で は bigram 未観測(unigram 2597)なので では はクランプせず、
+            // で+はかったら(計ったら)の は始まり動詞分割を潰さない(たにたではかったら対策)。
+            // 文頭(BOS 直後)も除外し でも→デモ/では→出は 等の巻き添えを防ぐ。
             if prev != Self.multiClauseBOSMarker,
                 surface == reading,
-                Self.multiClauseCompoundParticles.contains(surface) {
+                Self.multiClauseCompoundParticles.contains(surface),
+                bigramCosts["\(prev)\t\(String(surface.dropLast()))"] != nil {
                 base = min(base, Self.multiClauseCompoundParticleCost)
             }
             var penalty = 0
