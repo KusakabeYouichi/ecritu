@@ -92,6 +92,11 @@ extension KanaKanjiConverter {
         "えた", "した", "てる", "よう", "たい", "て", "た", "だ", "う"
     ]
     static let multiClauseFinalParticleKanjiPenalty = 3000
+    // 文末の終助詞「な」は述語(用言・タ形)に付くもの。非述語(地名/名詞、例: 三田)の
+    // 直後に文末「な」が来る区切りは不自然なので減点し、見た+な のような述語+終助詞の
+    // 区切りを優先する(むかしみたな→昔見たな 対策)。連体詞「な」(きれいな花 等、な の
+    // 後ろに語が続く)は node.end==n の文末限定で除外する。
+    static let multiClauseSentenceFinalNaAfterNounPenalty = 3000
     // 仮定の接続助詞「なら」は述語(動詞/形容詞の終止・連体形)直後ではかなが正書
     // (買うなら/するなら/食べるなら)。奈良/楢/ナラ への漢字・カタカナ化を EOS で減点する。
     // ただし体言+と直後(大阪と奈良)は正当な地名なので、直前が述語のときだけ発火させる。
@@ -542,6 +547,13 @@ extension KanaKanjiConverter {
                         containsKanji(node.surface),
                         !Self.isNumericContextForHonorific(prevSurface: prevNode.surface, prevReading: prevNode.reading) {
                         cost += Self.multiClauseHonorificKanjiPenalty
+                    }
+                    // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
+                    if node.end == n,
+                        node.reading == "な",
+                        node.surface == "な",
+                        !Self.isPredicateLikePrevForConditional(prevNode) {
+                        cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
                     }
                     if cost < best[idx] {
                         best[idx] = cost
