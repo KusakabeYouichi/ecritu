@@ -36,6 +36,19 @@ extension KanaKanjiConverter {
     static let multiClauseCaseParticleSurfaces: Set<String> = [
         "に", "を", "が", "へ", "と", "で", "は", "も", "から", "まで", "より"
     ]
+    // 複合助詞(格助詞+係助詞は/も)。Sudachi は「に+は」に分割するため word_costs に無く、
+    // 連文節では単位ノードを組めない。結果「べんりにはなったね」が「便利に放ったね」に化ける
+    // (はなった が動詞1ノードに吸われ、に→は の1遷移分だけ得をする)。素通り(7000/字)で
+    // 既にノード自体は列挙されるので、ここでは (1) 安価にクランプして単位ノードを競争させ、
+    // (2) 直後の述語に格助詞と同じ活用割引を効かせる。文頭(BOS 直後)はクランプせず、
+    // 「でも→デモ」「では→出は」等の文頭巻き添えを防ぐ。
+    static let multiClauseCompoundParticles: Set<String> = [
+        "には", "にも", "では", "でも", "とは", "とも",
+        "へは", "へも", "からは", "からも", "までは", "までも", "よりは"
+    ]
+    // 複合助詞ノードのクランプ後コスト。名詞→格助詞の実 bigram(便利→に=1427 等)より
+    // 安くして単位経路を勝たせる一方、極端に安くして別解を歪めない中庸値。
+    static let multiClauseCompoundParticleCost = 1200
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -410,7 +423,11 @@ extension KanaKanjiConverter {
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
             } else if isInflectionDerived {
-                base = Self.multiClauseCaseParticleSurfaces.contains(prev)
+                // 格助詞・複合助詞(には/では 等)の直後は述語が続くのが自然なので割引する。
+                let prevAllowsInflectionDiscount =
+                    Self.multiClauseCaseParticleSurfaces.contains(prev)
+                    || Self.multiClauseCompoundParticles.contains(prev)
+                base = prevAllowsInflectionDiscount
                     ? Self.multiClauseInflectionAfterParticleCost
                     : Self.multiClauseInflectionDerivedOOVCost
             } else if isDictWord {
@@ -423,6 +440,13 @@ extension KanaKanjiConverter {
             // 列挙のみ(単文節候補としては到達可)。語形(かな/漢字/ラテン字を含む)だけ強化する。
             if isCurated, Self.isWordLikeSurface(surface) {
                 base = min(base, Self.multiClauseCuratedWordCost)
+            }
+            // 複合助詞(かな表層)を単位ノードとして安価にクランプ。文頭(BOS 直後)は除外し、
+            // 「でも/では」等が文頭でカタカナ/漢字語を巻き添えにするのを防ぐ。
+            if prev != Self.multiClauseBOSMarker,
+                surface == reading,
+                Self.multiClauseCompoundParticles.contains(surface) {
+                base = min(base, Self.multiClauseCompoundParticleCost)
             }
             var penalty = 0
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
