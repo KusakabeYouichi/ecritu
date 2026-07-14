@@ -278,8 +278,14 @@ extension KanaKanjiConverter {
                         systemCandidateMode: systemCandidateMode,
                         limit: Self.multiClauseInflectionTopK
                     )
-                    for surface in inflected.prefix(Self.multiClauseInflectionTopK)
-                    where surface != segmentReading {
+                    // かな識別(surface==読み)は原則除外(かなエコー防止)。ただし活用エンジンが
+                    // かなを第1候補に据えた場合=基底並べ替えが isLMKanaPreferred でかな基底を
+                    // 先頭化した場合(なる 3405≪成る/ある/いる/できる 等、かなが LM 優位な動詞)は、
+                    // かなが正書なので活用形もかなを供給する。除外したままだと なった が捨てられ
+                    // 成った/為った だけが残る(べんりにはなったな→便利には成ったな)。LM 劣位の
+                    // 動詞(食べる/見る=たべる/みる が非優位)は依然として漢字が第1候補=かな除外。
+                    for (offset, surface) in inflected.prefix(Self.multiClauseInflectionTopK).enumerated()
+                    where surface != segmentReading || offset == 0 {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                     }
                 }
