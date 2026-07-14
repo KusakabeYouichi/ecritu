@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第2章 導入 — écritu 操作マニュアル</title>
+<link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">écritu 操作マニュアル</a>
+  <nav class="crumbs"><a href="index.html">目次</a> › 第2章 導入</nav>
+</header>
+<main>
+  <h1><span class="chapno">第2章</span>導入 — キーボードの有効化</h1>
+  <p class="lede">écritu のアプリが iPhone に入ったら、iOS にキーボードとして登録します。作業は iOS の設定アプリで 2〜3 分。あわせて「フルアクセス」の意味と、キーボードの切り替え方を説明します。</p>
+
+  <h2 id="add-keyboard">キーボードを追加する</h2>
+  <p>iOS では、他社製キーボードは追加しただけでは使えず、設定アプリでの登録が必要です。次の手順で écritu を登録してください。</p>
+  <ol class="steps">
+    <li>ホーム画面で<b>「設定」</b>を開きます。</li>
+    <li><b>一般 › キーボード › キーボード</b> と進みます。</li>
+    <li><b>「新しいキーボードを追加...」</b>をタップします。</li>
+    <li>「他社製キーボード」の一覧にある <b>écritu</b> をタップして追加します。</li>
+    <li>キーボード一覧に追加された <b>écritu</b> を<b>もう一度タップ</b>します。</li>
+    <li><b>「フルアクセスを許可」</b>を ON にします(確認ダイアログで「許可」)。</li>
+  </ol>
+  <figure>
+    <div style="border:2px dashed var(--line);border-radius:12px;padding:2.5rem 1rem;color:var(--ink-sub);font-size:.85rem">後日スクリーンショットを差し込み予定</div>
+    <figcaption>iOS 設定アプリ — 「新しいキーボードを追加...」から「フルアクセスを許可」まで</figcaption>
+  </figure>
+  <div class="note"><b>écritu が一覧に出ないときは:</b>écritu のアプリを一度起動してから設定アプリを開き直してください。それでも出ない場合は iPhone を再起動すると認識されることがあります。</div>
+
+  <h2 id="full-access">フルアクセスを許可するとできること</h2>
+  <p>「フルアクセス」は、キーボードが本体アプリとデータをやり取りするための iOS の許可です。écritu では次の 2 つに使います。</p>
+  <ul>
+    <li><b>変換辞書の共有</b> — écritu のアプリ側で管理する辞書データを、App Group(同じ開発元のアプリとキーボード拡張がデータを共有できる iOS の仕組み)を通じてキーボードから読み書きします。</li>
+    <li><b>学習語彙・学習スコアの保存</b> — あなたが確定した候補から自動登録される「学習語彙」と、候補の並び順を良くしていく学習スコアを保存します。</li>
+  </ul>
+  <div class="warn"><b>フルアクセスが OFF のままだと:</b>学習語彙と学習スコアが保存されません。入力するたびに学習がリセットされた状態になり、候補の並びが賢くなっていかないため、ON にしてお使いになることをおすすめします。</div>
+
+  <h2 id="switch-keyboard">キーボードの切り替え方</h2>
+  <p>登録が済んだら、メモなどどこかの入力欄をタップしてキーボードを表示し、iOS がキーボードの下(横画面では脇)に表示する<b>地球儀ボタン 🌐</b> で écritu に切り替えます。タップするたびに次のキーボードへ順番に切り替わり、長押しするとキーボードの一覧から選べます。</p>
+  <p>écritu のキーボード面の中には地球儀キーはありません。最近の iPhone では iOS 自身が地球儀ボタンをキーボードの外側に表示するため、écritu はその分をかなキーの広さに使っています。</p>
+
+  <h2 id="contacts-permission">連絡先を変換候補に使う場合</h2>
+  <p>écritu には、iOS の連絡先に登録された姓・名・会社名を変換候補として表示する機能があります(任意)。使う場合は écritu のアプリで機能を有効にしたうえで、iOS が表示する連絡先へのアクセス許可のダイアログで「許可」を選んでください。設定項目の詳細は第7章で説明します。</p>
+  <p>これで準備は完了です。次章では、フリック入力から変換・確定までの基本操作を説明します。</p>
+</main>
+<footer class="pager">
+  <a class="prev" href="concept.html">← 第1章 écritu とは</a>
+  <a href="index.html">目次</a>
+  <a class="next" href="basics.html">第3章 基本入力 →</a>
+</footer>
+</body>
+</html>

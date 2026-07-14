@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第4章 記号・数字・英字の入力 — écritu 操作マニュアル</title>
+<link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">écritu 操作マニュアル</a>
+  <nav class="crumbs"><a href="index.html">目次</a> › 第4章 記号・数字・英字の入力</nav>
+</header>
+<main>
+  <h1><span class="chapno">第4章</span>記号・数字・英字の入力</h1>
+  <p class="lede">「?」を打つためだけに記号モードへ入る — écritu は、その往復をなくすことを目指したキーボードです。この章では、かなのまま打てる記号たちと、数字・英字の各モードを説明します。</p>
+
+  <h2 id="punctuation-key">読点キーのなかまたち — 、。?!・</h2>
+  <p>かなモードの右下、改行キーの左にある <kbd>、</kbd> キーは、文章でいちばんよく使う約物(記号)を 1 キーに集めた、écritu の中心的なキーです。</p>
+  <div class="explain">
+    <div class="cross">
+      <div class="out u">?</div>
+      <div class="out l">。</div>
+      <div class="center">、</div>
+      <div class="out r">!</div>
+      <div class="out d">・</div>
+      <div class="arrow u">▲</div>
+      <div class="arrow d">▼</div>
+      <div class="arrow l">◀</div>
+      <div class="arrow r">▶</div>
+    </div>
+    <dl class="legend">
+      <dt>タップ</dt><dd>、(読点)</dd>
+      <dt>上フリック</dt><dd>?(疑問符)</dd>
+      <dt>右フリック</dt><dd>!(感嘆符)</dd>
+      <dt>下フリック</dt><dd>・(中黒)</dd>
+      <dt>左フリック</dt><dd>。(句点)</dd>
+    </dl>
+  </div>
+  <p>「元気?」「了解!」「東京・大阪」— こうした文を打つとき、iOS 標準キーボードでは数字/記号モードへの往復が必要でした。écritu ではかなを打つ指の流れのまま、この 1 キーで完結します。まずこのキーの 5 文字を指に覚えさせるのが、écritu 上達の近道です。</p>
+  <div class="note"><b>未確定中に押すと:</b>変換前の文字が残った状態で 、や 。を打つと、自動的に候補が確定されてから記号が入ります。どの候補で確定するかは設定で選べます(<a href="settings.html">第7章</a>)。</div>
+
+  <h2 id="kana-embedded-symbols">かなキーに埋め込まれた記号</h2>
+  <p>読点キーのほかに、かなキーの「あき部屋」にも記号が入っています。五十音のかなが 5 方向に満たないキーの空き方向を、よく使う記号に割り当てたものです。</p>
+  <div class="pair">
+    <figure>
+      <span class="kwrap"><span class="k">わ<span class="h u">を</span><span class="h r">ん</span><span class="h d">〜</span><span class="h l">ー</span></span></span>
+      <figcaption>わキー: 下=〜 左=ー</figcaption>
+    </figure>
+    <figure>
+      <span class="kwrap"><span class="k">や<span class="h u">『</span><span class="h r">ゆ</span><span class="h d">よ</span><span class="h l">』</span></span></span>
+      <figcaption>やキー: 上=『 左=』</figcaption>
+    </figure>
+  </div>
+  <ul>
+    <li><b>わキーの下フリック=〜(波ダッシュ)、左フリック=ー(長音)</b>。「10時〜12時」の〜も、カタカナ語の伸ばし棒も、かなのまま打てます。</li>
+    <li><b>やキーの上フリック=『、左フリック=』(二重かぎ括弧)</b>。書名や強調に使う『』が直接入ります。ゆ・よは右・下フリックです。</li>
+  </ul>
+
+  <h2 id="two-step-flick">2段フリック — 括弧の切り替え</h2>
+  <p>やキーの『』には続きがあります。<b>左右方向のフリック</b>で『または』を選んだあと、<b>指を離さずに</b>そのまま上下へ動かすと、別の括弧に切り替わります。écritu ではこれを「2段フリック」と呼びます。</p>
+  <ol class="steps">
+    <li>やキーに触れ、左(』)へフリックします。まだ指は離しません。</li>
+    <li>そのまま指を上または下へすべらせます。プレビューの文字が ) や 」 に変わります。</li>
+    <li>入れたい括弧が表示されたところで指を離すと、その文字が入力されます。</li>
+  </ol>
+  <div class="explain">
+    <div class="cross">
+      <div class="out u">)</div>
+      <div class="center">』</div>
+      <div class="out d">」</div>
+      <div class="arrow u">▲</div>
+      <div class="arrow d">▼</div>
+    </div>
+    <dl class="legend">
+      <dt>』のまま上へ</dt><dd>)(丸括弧・閉じ)</dd>
+      <dt>』のまま下へ</dt><dd>」(かぎ括弧・閉じ)</dd>
+      <dt>Apple 方向の場合</dt><dd>『が左・』が右になるため、『のまま上=(、下=「 も使えます</dd>
+    </dl>
+  </div>
+  <p>2 段目に入れるのは左右方向のフリックだけです。既定の écritu 方向では『は上フリックのため 2 段目がなく、「(」「「」はやキーからは入力できません。丸括弧は<a href="basics.html#parentheses-wrap">()ラップモード</a>や数字モード、かぎ括弧は数字モードの 7 キー(<a href="layouts-latin-number.html#number-calculette">第8章</a>)から入力できます。フリック方向の設定は<a href="settings.html#flick-direction">第7章</a>を参照してください。</p>
+
+  <h2 id="ellipsis-and-tab">三点リーダとタブ</h2>
+  <p>あと 2 つ、かなモードに埋め込まれた文字があります。</p>
+  <div class="pair">
+    <figure>
+      <span class="kwrap"><span class="k"><span style="font-size:17px">小</span><span class="h dk">゛</span><span class="h hd">゜</span><span class="h d">…</span><span class="h l">カ</span></span></span>
+      <figcaption>小キー: 下=…</figcaption>
+    </figure>
+    <figure>
+      <span class="kwrap"><span class="k" style="width:120px;font-size:16px;font-weight:600">空白<span class="h u">⇥</span></span></span>
+      <figcaption>空白キー: 上=タブ</figcaption>
+    </figure>
+  </div>
+  <ul>
+    <li><b>小(修飾)キーの下フリック=…(三点リーダ)</b>。「それは…」の … が 1 フリックで入ります。</li>
+    <li><b>空白キーの上フリック=タブ(⇥)</b>。メモアプリでの字下げや、表形式のテキストで役立ちます。フリック中はキーの上に ⇥ のプレビューが表示されます。</li>
+  </ul>
+
+  <h2 id="numbers">数字の入力</h2>
+
+  <h3 id="kana-number-row">かな 5×2 なら数字キーが常設</h3>
+  <p>かな配列が既定の 5×2 のときは、キーボード最上段に <kbd>1</kbd>〜<kbd>0</kbd> の数字キーが常に表示されています。日付や個数程度の数字なら、モードを切り替えずにそのままタップして入力できます。</p>
+
+  <h3 id="number-mode">数字モード(123 キー)と 3 つの配列</h3>
+  <p>左列の <kbd>123</kbd> キーをタップすると数字モードに切り替わります(かなに戻るには <kbd>あい</kbd> キー)。数字モードの配列は 3 種類から選べます(選び方は<a href="settings.html">第7章</a>、全キーの詳細配列は<a href="layouts-latin-number.html">第8章(続)</a>)。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>calculette(既定)</th><td>電卓式。上段が 7 8 9 で、右下に −()[] キーがあります。</td></tr>
+    <tr><th>téléphone</th><td>電話式。上段が 1 2 3 の、iOS 標準に近い並びです。</td></tr>
+    <tr><th>clavier</th><td>キーボード式(縦画面専用)。最上段に 1〜0、その下に記号が 2 段並びます。シフトキーで漢数字(一 二 三 … 〇)と別の記号セットに切り替わります。横画面では自動的に calculette になります。</td></tr>
+  </table></div>
+
+  <h3 id="number-flicks">数字キーのフリックに隠れた記号</h3>
+  <p>calculette / téléphone の数字キーは、それぞれの 4 方向に記号を持っています。通貨・数学記号・郵便記号など、代表的なものを挙げます。</p>
+  <div class="pair">
+    <figure>
+      <span class="kwrap"><span class="k" style="font-size:18px;font-weight:600">2<span class="h u">¥</span><span class="h r">$</span><span class="h d">₿</span><span class="h l">€</span></span></span>
+      <figcaption>通貨: ¥ $ € ₿</figcaption>
+    </figure>
+    <figure>
+      <span class="kwrap"><span class="k" style="font-size:18px;font-weight:600">5<span class="h u">+</span><span class="h r">×</span><span class="h d">±</span><span class="h l">÷</span></span></span>
+      <figcaption>数学: + × ÷ ±</figcaption>
+    </figure>
+    <figure>
+      <span class="kwrap"><span class="k" style="font-size:18px;font-weight:600">8<span class="h u">〒</span><span class="h r">々</span><span class="h d">...</span><span class="h l">〆</span></span></span>
+      <figcaption>和文記号: 〒 々 〆</figcaption>
+    </figure>
+  </div>
+  <p>ほかにも、<kbd>1</kbd> に矢印(← ↑ → ↓)、<kbd>6</kbd> に = &lt; &gt; ≠、<kbd>7</kbd> に「」: ;、<kbd>9</kbd> に | \ ` ^、最下段に () [] {} などの括弧類が割り当てられています。図の方向は既定のフリック方向(écritu 方向)のもので、Apple 方向設定では割り当てが変わります。全キー×全方向の一覧は<a href="layouts-latin-number.html">第8章(続)</a>を参照してください。</p>
+  <div class="note"><b>℃ と ℉:</b><kbd>3</kbd> キーのフリックには温度記号があり、iPhone の温度単位の設定(摂氏/華氏)に連動して ℃ または ℉ が表示されます。</div>
+
+  <h2 id="latin">英字の入力</h2>
+
+  <h3 id="latin-layouts">abc キーと 3 つの配列</h3>
+  <p>左列の <kbd>abc</kbd> キーをタップすると英字モードに切り替わります。配列は 3 種類です(選び方は<a href="settings.html">第7章</a>、詳細は<a href="layouts-latin-number.html">第8章(続)</a>)。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>AZERTY(既定)</th><td>フランス式のフルキーボード配列。1 キー= 1 文字でタップ入力します。</td></tr>
+    <tr><th>QWERTY</th><td>一般的な英語配列のフルキーボードです。</td></tr>
+    <tr><th>3×3 フリック</th><td>かなと同じ 3×3 のフリック型。a キーの上=b、右=c のように、1 キーに複数の文字が入っています。</td></tr>
+  </table></div>
+
+  <h3 id="latin-shift">シフトキー — 大文字の入力</h3>
+  <ul>
+    <li><b>タップ:</b>次に打つ 1 文字だけ大文字になります(1 文字打つと自動で解除)。もう一度タップすると解除です。</li>
+    <li><b>ダブルタップ、または長押し:</b>シフトロック(Caps Lock)。解除するまで大文字が続きます。ロック中にタップすると解除されます。</li>
+  </ul>
+
+  <h3 id="latin-accents">長押しでアクセント文字</h3>
+  <p>AZERTY / QWERTY では、文字キーを<b>長押し</b>するとアクセント付き文字のパネルが開きます。たとえば <kbd>a</kbd> の長押しで a à á â ä æ ã å ā ă ą が並び、指を離さず左右にスライドして選び、離すと入力されます。e(è é ê ë …)、c(ç …)、o(ö œ ø …)、u(ü ù …)、n(ñ …)、s(ß …)など、ヨーロッパ言語の文字を一とおりカバーしています。</p>
+  <div class="note"><b>3×3 フリック配列では:</b>長押しアクセントは使えません。アクセント文字が必要な場合は AZERTY / QWERTY を選んでください。</div>
+
+  <h3 id="latin-portrait-row">縦画面の AZERTY / QWERTY — ⌫ と記号の位置</h3>
+  <p>縦画面で AZERTY / QWERTY を使うときは、キーが小さくなりすぎないよう、最下段の配置が少し変わります。</p>
+  <ul>
+    <li>削除キー <kbd>⌫</kbd> は英字最下段の右端に移ります(AZERTY では右シフトの位置、QWERTY では行末に追加)。</li>
+    <li>空白キーの並びには、いつもの ⌫ の位置に <kbd>@</kbd>、空白の左に <kbd>/</kbd>、右に <kbd>.</kbd> と <kbd>-</kbd> の記号キーが入ります。メールアドレスや URL の入力がモード切り替えなしで進みます。</li>
+  </ul>
+  <p>横画面ではまた別のタイプライタ型レイアウトになります。<a href="layouts-landscape.html">第8章(続) 横画面</a>を参照してください。</p>
+
+  <h2 id="latin-suggestions">英字の候補 — 英単語サジェスト</h2>
+  <p>英字モードで文字を打っていくと、候補バーに入力中のつづりで始まる英単語のサジェストが表示されます。候補をタップすればつづりの残りを打たずに入力できます。長い単語や、つづりがあいまいな単語のときに便利です。</p>
+</main>
+<footer class="pager">
+  <a class="prev" href="basics.html">← 第3章 基本入力</a>
+  <a class="next" href="emoji.html">第5章 絵文字・顔文字・記号パネル →</a>
+</footer>
+</body>
+</html>

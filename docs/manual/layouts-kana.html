@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第8章 配列リファレンス(かな) — écritu 操作マニュアル</title>
+<link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <path id="duckOuter" d="M 658 35 L 704 36 L 755 46 L 799 62 L 837 83 L 914 143 L 949 182 L 971 215 L 992 258 L 1005 300 L 1013 343 L 1012 394 L 998 464 L 972 523 L 951 553 L 952 560 L 1063 608 L 1145 630 L 1180 631 L 1261 613 L 1302 617 L 1329 630 L 1347 649 L 1359 668 L 1357 672 L 1362 674 L 1378 734 L 1380 817 L 1372 873 L 1350 946 L 1331 996 L 1303 1047 L 1241 1135 L 1201 1182 L 1139 1244 L 1069 1293 L 983 1337 L 935 1353 L 856 1369 L 797 1374 L 712 1374 L 629 1367 L 560 1354 L 432 1317 L 354 1285 L 301 1256 L 198 1184 L 137 1128 L 89 1070 L 54 1009 L 32 953 L 12 848 L 12 787 L 16 765 L 30 715 L 47 674 L 80 612 L 122 562 L 198 504 L 302 451 L 285 423 L 248 383 L 216 338 L 172 256 L 169 236 L 163 226 L 160 179 L 165 226 L 178 268 L 185 276 L 173 244 L 164 199 L 164 171 L 177 134 L 200 103 L 240 79 L 293 76 L 329 85 L 299 74 L 249 73 L 215 87 L 202 97 L 224 81 L 247 73 L 298 73 L 403 105 L 433 106 L 488 90 L 512 72 L 556 54 L 626 38 L 657 36 L 658 35 Z"/>
+    <path id="duckBeak" d="M 253 76 L 301 77 L 408 108 L 447 106 L 472 95 L 490 91 L 479 108 L 455 135 L 448 139 L 443 151 L 433 156 L 418 173 L 413 185 L 406 190 L 410 193 L 391 209 L 389 216 L 383 218 L 383 234 L 373 239 L 365 270 L 360 273 L 354 319 L 355 372 L 357 389 L 363 402 L 370 433 L 371 448 L 369 478 L 363 481 L 362 487 L 353 490 L 344 498 L 337 495 L 324 476 L 315 470 L 314 464 L 300 447 L 287 423 L 265 400 L 227 346 L 218 338 L 218 333 L 193 295 L 173 244 L 164 199 L 164 171 L 174 139 L 200 103 L 223 87 L 240 79 L 252 77 L 253 76 Z"/>
+    <g id="duckBase">
+      <use href="#duckOuter" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
+      <use href="#duckBeak" fill="none" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="497.7" cy="322.1" r="25.2" fill="none" stroke="currentColor" stroke-width="1.1" vector-effect="non-scaling-stroke"/>
+      <circle cx="497.7" cy="322.1" r="13.9" fill="currentColor"/>
+    </g>
+    <g id="duckSweat" transform="translate(244,-40)">
+      <path d="M 852 96 C 904 94 946 154 942 228 C 938 292 900 347 852 357 C 817 363 793 335 794 293 C 796 230 821 160 852 96 Z" transform="rotate(-24 866 228)" fill="none" stroke="rgb(97,133,224)" stroke-width="1.1" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 1006 72 C 1062 72 1109 134 1104 213 C 1099 280 1061 337 1009 349 C 970 357 942 330 943 289 C 944 222 971 146 1006 72 Z" transform="rotate(-24 1028 206)" fill="none" stroke="rgb(97,133,224)" stroke-width="1.1" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 853 129 C 832 164 823 206 828 244" transform="rotate(-24 866 228)" fill="none" stroke="rgb(97,133,224)" stroke-width="0.8" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
+      <path d="M 1008 109 C 987 143 977 186 983 225" transform="rotate(-24 1028 206)" fill="none" stroke="rgb(97,133,224)" stroke-width="0.8" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
+    </g>
+    <g id="duckHalo" transform="rotate(24 860 200)">
+      <ellipse cx="860" cy="200" rx="325" ry="130" fill="none" stroke="rgb(97,133,224)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
+      <ellipse cx="860" cy="200" rx="217.5" ry="77.5" fill="none" stroke="rgb(97,133,224)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+    </g>
+  </defs>
+</svg>
+<header class="site">
+  <a class="brand" href="index.html">écritu 操作マニュアル</a>
+  <nav class="crumbs"><a href="index.html">目次</a> › 第8章 配列リファレンス(かな)</nav>
+</header>
+<main>
+  <h1><span class="chapno">第8章</span>配列リファレンス(かな)</h1>
+  <p class="lede">この章は、かなモードの全キー・全フリック方向を図で確認するためのリファレンスです。かな配列(5×2 / 3×3+わ)、フリック方向(écritu / Apple)、修飾キー(前置 / 後置)のすべての組み合わせを掲載しています。英字と数字は<a href="layouts-latin-number.html">次のページ</a>、横画面は<a href="layouts-landscape.html">その次のページ</a>にあります。</p>
+
+  <div class="note"><b>図の見かた:</b>キーボード全体図はソースコードの寸法・配色を HTML で描画したものです(iPhone 17・地球儀キーなし基準)。早見表は 1 マスが 1 キーで、<b>中央の大きい文字=タップ</b>、上下左右の緑の文字=その方向へのフリックで入る文字です。</div>
+
+  <!-- ================================================================ -->
+  <h2 id="direction-profiles">フリック方向 — écritu 方向と Apple 方向</h2>
+  <p>écritu には、フリックの方向割り当てが 2 方式あります(設定は<a href="settings.html#flick-direction">第7章「フリック方向」</a>)。既定の <b>écritu 方向</b>は「上→右→左→下」の順に 2 文字目〜5 文字目を割り当てる本キーボード独自の方式、<b>Apple 方向</b>は iOS 標準キーボードと同じ「左→上→右→下」の方式です。「あ」キーで比べると次のようになります。</p>
+
+  <div class="explain">
+    <div class="cross">
+      <div class="center">あ</div>
+      <div class="out u">い</div>
+      <div class="out r">う</div>
+      <div class="out l">え</div>
+      <div class="out d">お</div>
+      <div class="arrow u">▲</div>
+      <div class="arrow d">▼</div>
+      <div class="arrow l">◀</div>
+      <div class="arrow r">▶</div>
+    </div>
+    <dl class="legend">
+      <dt>écritu 方向(既定)</dt>
+      <dd>タップ=あ、上=い、右=う、左=え、下=お。2 文字目の「い」が上、3 文字目の「う」が右に来ます。</dd>
+    </dl>
+    <div class="cross">
+      <div class="center">あ</div>
+      <div class="out l">い</div>
+      <div class="out u">う</div>
+      <div class="out r">え</div>
+      <div class="out d">お</div>
+      <div class="arrow u">▲</div>
+      <div class="arrow d">▼</div>
+      <div class="arrow l">◀</div>
+      <div class="arrow r">▶</div>
+    </div>
+    <dl class="legend">
+      <dt>Apple 方向</dt>
+      <dd>タップ=あ、左=い、上=う、右=え、下=お。iOS 標準キーボードと同じ並びです。</dd>
+    </dl>
+  </div>
+
+  <p>両方式の対応は機械的で、どのキーでも次の規則で入れ替わります。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>五十音の順番(例: あ行)</th><th>écritu 方向</th><th>Apple 方向</th></tr>
+    <tr><td>1 文字目(あ)</td><td>タップ</td><td>タップ</td></tr>
+    <tr><td>2 文字目(い)</td><td>上</td><td>左</td></tr>
+    <tr><td>3 文字目(う)</td><td>右</td><td>上</td></tr>
+    <tr><td>4 文字目(え)</td><td>左</td><td>右</td></tr>
+    <tr><td>5 文字目(お)</td><td>下</td><td>下</td></tr>
+  </table></div>
+
+  <div class="note"><b>方向プロファイルが影響する範囲:</b>フリック方向の設定で変わるのは、<b>かなの文字キー(あ〜わ)と数字キーのフリック</b>だけです。<a href="#punctuation-key">、キー</a>・<a href="#modifier-key">修飾キー(小)</a>・<a href="#emoji-switcher-key">☺︎ キー</a>、そして英字 3×3 のフリック(<a href="layouts-latin-number.html#latin-flick">次ページ</a>)は、どちらの方式でも同じ方向割り当てです。</div>
+
+  <h3 id="direction-guide-order">ガイド文字の並び順も変わります</h3>
+  <p>フリックガイドを「4方向」で表示しているときは、ガイド文字が各方向の位置にそのまま出るので迷いません。ガイドを「下」(キー下部に 1 行でまとめて表示)にしているときは、並び順が方式に追従します — écritu 方向では「上・右・左・下」の順、Apple 方向では「左・上・右・下」の順に文字が並びます。かなキーはどちらの方式でも五十音順(い う え お)に見えるように設計されています。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="kana-five-by-two">かな 5×2(既定)</h2>
+  <p>既定のかな配列です。あ〜な行を上の段、は〜わ行を下の段に置いた 2 段構成で、最上段に数字ストリップ(1〜0 を直接入力)、左端にモード切り替え列、最下段にアクション行が付きます。</p>
+
+  <h3 id="kana-five-by-two-board">全体図</h3>
+  <div class="pair">
+    <figure>
+      <div class="kb">
+        <div class="cand"></div>
+        <div class="row">
+          <div class="k fn">123</div>
+          <div class="k num">1</div><div class="k num">2</div><div class="k num">3</div><div class="k num">4</div><div class="k num">5</div><div class="k num">6</div><div class="k num">7</div><div class="k num">8</div><div class="k num">9</div><div class="k num">0</div>
+        </div>
+        <div class="row">
+          <div class="k fn">abc</div>
+          <div class="k">あ<span class="h u">い</span><span class="h r">う</span><span class="h d">お</span><span class="h l">え</span></div>
+          <div class="k">か<span class="h u">き</span><span class="h r">く</span><span class="h d">こ</span><span class="h l">け</span></div>
+          <div class="k">さ<span class="h u">し</span><span class="h r">す</span><span class="h d">そ</span><span class="h l">せ</span></div>
+          <div class="k">た<span class="h u">ち</span><span class="h r">つ</span><span class="h d">と</span><span class="h l">て</span></div>
+          <div class="k">な<span class="h u">に</span><span class="h r">ぬ</span><span class="h d">の</span><span class="h l">ね</span></div>
+        </div>
+        <div class="row">
+          <div class="k fn dis">あい</div>
+          <div class="k">は<span class="h u">ひ</span><span class="h r">ふ</span><span class="h d">ほ</span><span class="h l">へ</span></div>
+          <div class="k">ま<span class="h u">み</span><span class="h r">む</span><span class="h d">も</span><span class="h l">め</span></div>
+          <div class="k">や<span class="h u">『</span><span class="h r">ゆ</span><span class="h d">よ</span><span class="h l">』</span></div>
+          <div class="k">ら<span class="h u">り</span><span class="h r">る</span><span class="h d">ろ</span><span class="h l">れ</span></div>
+          <div class="k">わ<span class="h u">を</span><span class="h r">ん</span><span class="h d">〜</span><span class="h l">ー</span></div>
+        </div>
+        <div class="row">
+          <div class="k fn" style="font-size:15px">☺︎</div>
+          <div class="k del">⌫</div>
+          <div class="k sp"></div>
+          <div class="k w54"><span class="mod">小</span><span class="h dk">゛</span><span class="h hd">゜</span><span class="h d">…</span><span class="h l">カ</span></div>
+          <div class="k w54">、<span class="h u">?</span><span class="h r">!</span><span class="h d">・</span><span class="h l">。</span></div>
+          <div class="k ret" style="font-size:22px">⏎</div>
+        </div>
+      </div>
+      <figcaption>かな 5×2・ライト(既定設定: écritu 方向・前置修飾・ガイド 4 方向)。未入力のため候補バーは空です。</figcaption>
+    </figure>
+    <figure>
+      <div class="kb dark">
+        <div class="cand"></div>
+        <div class="row">
+          <div class="k fn">123</div>
+          <div class="k num">1</div><div class="k num">2</div><div class="k num">3</div><div class="k num">4</div><div class="k num">5</div><div class="k num">6</div><div class="k num">7</div><div class="k num">8</div><div class="k num">9</div><div class="k num">0</div>
+        </div>
+        <div class="row">
+          <div class="k fn">abc</div>
+          <div class="k">あ<span class="h u">い</span><span class="h r">う</span><span class="h d">お</span><span class="h l">え</span></div>
+          <div class="k">か<span class="h u">き</span><span class="h r">く</span><span class="h d">こ</span><span class="h l">け</span></div>
+          <div class="k">さ<span class="h u">し</span><span class="h r">す</span><span class="h d">そ</span><span class="h l">せ</span></div>
+          <div class="k">た<span class="h u">ち</span><span class="h r">つ</span><span class="h d">と</span><span class="h l">て</span></div>
+          <div class="k">な<span class="h u">に</span><span class="h r">ぬ</span><span class="h d">の</span><span class="h l">ね</span></div>
+        </div>
+        <div class="row">
+          <div class="k fn dis">あい</div>
+          <div class="k">は<span class="h u">ひ</span><span class="h r">ふ</span><span class="h d">ほ</span><span class="h l">へ</span></div>
+          <div class="k">ま<span class="h u">み</span><span class="h r">む</span><span class="h d">も</span><span class="h l">め</span></div>
+          <div class="k">や<span class="h u">『</span><span class="h r">ゆ</span><span class="h d">よ</span><span class="h l">』</span></div>
+          <div class="k">ら<span class="h u">り</span><span class="h r">る</span><span class="h d">ろ</span><span class="h l">れ</span></div>
+          <div class="k">わ<span class="h u">を</span><span class="h r">ん</span><span class="h d">〜</span><span class="h l">ー</span></div>
+        </div>
+        <div class="row">
+          <div class="k fn" style="font-size:15px">☺︎</div>
+          <div class="k del">⌫</div>
+          <div class="k sp"></div>
+          <div class="k w54"><span class="mod">小</span><span class="h dk">゛</span><span class="h hd">゜</span><span class="h d">…</span><span class="h l">カ</span></div>
+          <div class="k w54">、<span class="h u">?</span><span class="h r">!</span><span class="h d">・</span><span class="h l">。</span></div>
+          <div class="k ret" style="font-size:22px">⏎</div>
+        </div>
+      </div>
+      <figcaption>同じ配列のダーク表示。配色以外は変わりません。</figcaption>
+    </figure>
+  </div>
+
+  <h3 id="kana-five-by-two-structure">段ごとの構成</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>段</th><th>内容</th></tr>
+    <tr><td>数字ストリップ</td><td>左端の <kbd>123</kbd>(数字モードへ切り替え、幅 32pt)+ <kbd>1</kbd>〜<kbd>0</kbd> の 10 キー。タップでそのまま数字が入ります(5×2 配列だけの段です)。</td></tr>
+    <tr><td>かな上段</td><td>左端の <kbd>abc</kbd>(英字モードへ)+ あ・か・さ・た・な の 5 キー。</td></tr>
+    <tr><td>かな下段</td><td>左端の <kbd>あい</kbd>(かなモード中はグレー表示)+ は・ま・や・ら・わ の 5 キー。</td></tr>
+    <tr><td>アクション行</td><td><kbd>☺︎</kbd>(32pt)→ <kbd>⌫</kbd>(64pt)→ 空白(可変幅)→ <kbd>小</kbd>(54pt)→ <kbd>、</kbd>(54pt)→ <kbd>⏎</kbd>(72pt)。iPhone 17 では地球儀キーはありません(キーボード切り替えは画面下端の地球儀を使います)。</td></tr>
+  </table></div>
+  <p>空白キーは、未確定の文字があるときは「変換」、⏎ キーは「確定」という表示に変わります(<a href="basics.html">第3章</a>)。また空白キーを<b>上にフリックするとタブ(⇥)</b>が入ります。地球儀キーがキーボード内に必要な機種では、アクション行の ☺︎ の右に 🌐 キーが加わります(画面幅の狭い機種では ☺︎ の役割が 🌐 キーのフリックに統合され、全体が少し詰まった配置になります)。</p>
+
+  <h3 id="kana-refgrid-ecritu">全キー早見 — écritu 方向(既定)</h3>
+  <div class="refgrid">
+    <div class="refkey"><span class="c">あ</span><span class="u">い</span><span class="r">う</span><span class="d">お</span><span class="l">え</span></div>
+    <div class="refkey"><span class="c">か</span><span class="u">き</span><span class="r">く</span><span class="d">こ</span><span class="l">け</span></div>
+    <div class="refkey"><span class="c">さ</span><span class="u">し</span><span class="r">す</span><span class="d">そ</span><span class="l">せ</span></div>
+    <div class="refkey"><span class="c">た</span><span class="u">ち</span><span class="r">つ</span><span class="d">と</span><span class="l">て</span></div>
+    <div class="refkey"><span class="c">な</span><span class="u">に</span><span class="r">ぬ</span><span class="d">の</span><span class="l">ね</span></div>
+    <div class="refkey"><span class="c">は</span><span class="u">ひ</span><span class="r">ふ</span><span class="d">ほ</span><span class="l">へ</span></div>
+    <div class="refkey"><span class="c">ま</span><span class="u">み</span><span class="r">む</span><span class="d">も</span><span class="l">め</span></div>
+    <div class="refkey"><span class="c">や</span><span class="u">『</span><span class="r">ゆ</span><span class="d">よ</span><span class="l">』</span></div>
+    <div class="refkey"><span class="c">ら</span><span class="u">り</span><span class="r">る</span><span class="d">ろ</span><span class="l">れ</span></div>
+    <div class="refkey"><span class="c">わ</span><span class="u">を</span><span class="r">ん</span><span class="d">〜</span><span class="l">ー</span></div>
+    <div class="refkey"><span class="c">、</span><span class="u">?</span><span class="r">!</span><span class="d">・</span><span class="l">。</span></div>
+  </div>
+  <p>わ キーには「を」「ん」に加えて長音「ー」と波ダッシュ「〜」、や キーには二重かぎ括弧「『」「』」が割り当てられています。、キーの詳細は<a href="#punctuation-key">後述</a>、『』からの 2 段フリックは<a href="#ya-bracket-flick">次項</a>を見てください。</p>
+
+  <h3 id="kana-refgrid-apple">全キー早見 — Apple 方向</h3>
+  <div class="refgrid">
+    <div class="refkey"><span class="c">あ</span><span class="u">う</span><span class="r">え</span><span class="d">お</span><span class="l">い</span></div>
+    <div class="refkey"><span class="c">か</span><span class="u">く</span><span class="r">け</span><span class="d">こ</span><span class="l">き</span></div>
+    <div class="refkey"><span class="c">さ</span><span class="u">す</span><span class="r">せ</span><span class="d">そ</span><span class="l">し</span></div>
+    <div class="refkey"><span class="c">た</span><span class="u">つ</span><span class="r">て</span><span class="d">と</span><span class="l">ち</span></div>
+    <div class="refkey"><span class="c">な</span><span class="u">ぬ</span><span class="r">ね</span><span class="d">の</span><span class="l">に</span></div>
+    <div class="refkey"><span class="c">は</span><span class="u">ふ</span><span class="r">へ</span><span class="d">ほ</span><span class="l">ひ</span></div>
+    <div class="refkey"><span class="c">ま</span><span class="u">む</span><span class="r">め</span><span class="d">も</span><span class="l">み</span></div>
+    <div class="refkey"><span class="c">や</span><span class="u">ゆ</span><span class="r">』</span><span class="d">よ</span><span class="l">『</span></div>
+    <div class="refkey"><span class="c">ら</span><span class="u">る</span><span class="r">れ</span><span class="d">ろ</span><span class="l">り</span></div>
+    <div class="refkey"><span class="c">わ</span><span class="u">ん</span><span class="r">ー</span><span class="d">〜</span><span class="l">を</span></div>
+    <div class="refkey"><span class="c">、</span><span class="u">?</span><span class="r">!</span><span class="d">・</span><span class="l">。</span></div>
+  </div>
+  <p>iOS 標準キーボードと同じ並びです(や キーの括弧が「」ではなく『』である点だけが異なります)。<b>、キーは方向プロファイルの対象外</b>なので、Apple 方向でも écritu 方向と同じ「上=?/右=!/下=・/左=。」のままです。</p>
+
+  <h3 id="ya-bracket-flick">や キーの 2 段フリック(括弧)</h3>
+  <p>や キーの『』は、フリックしたあと<b>指を離さずに上下へ動かす</b>と別の括弧に切り替わる「2 段フリック」に対応しています。2 段目が使えるのは<b>左右方向のフリックだけ</b>なので、方向プロファイルによって使える組み合わせが変わります。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>方向プロファイル</th><th>1 段目</th><th>そのまま上へ</th><th>そのまま下へ</th></tr>
+    <tr><td>écritu 方向(既定)</td><td>左フリック=』</td><td>)</td><td>」</td></tr>
+    <tr><td rowspan="2">Apple 方向</td><td>左フリック=『</td><td>(</td><td>「</td></tr>
+    <tr><td>右フリック=』</td><td>)</td><td>」</td></tr>
+  </table></div>
+  <p>écritu 方向では『は上フリックのため 2 段目がなく、「(」「「」は や キーからは入力できません。丸括弧は<a href="#modifier-key">修飾キーの長押し(括弧で囲む)</a>や数字モード(<a href="layouts-latin-number.html#number-calculette">次ページ</a>)、かぎ括弧は数字モードの 7 キーから入力できます。</p>
+
+  <h3 id="punctuation-key">、キー — モードを切り替えずに ?!・。</h3>
+  <p>読点キー 1 つに、よく使う文末記号がまとまっています。どちらの方向プロファイルでも同じ割り当てです。</p>
+  <div class="explain">
+    <div class="cross">
+      <div class="out u">?</div>
+      <div class="out l">。</div>
+      <div class="center">、</div>
+      <div class="out r">!</div>
+      <div class="out d">・</div>
+      <div class="arrow u">▲</div>
+      <div class="arrow d">▼</div>
+      <div class="arrow l">◀</div>
+      <div class="arrow r">▶</div>
+    </div>
+    <dl class="legend">
+      <dt>タップ</dt><dd>、(読点)</dd>
+      <dt>上フリック</dt><dd>?(疑問符)</dd>
+      <dt>右フリック</dt><dd>!(感嘆符)</dd>
+      <dt>下フリック</dt><dd>・(中黒)</dd>
+      <dt>左フリック</dt><dd>。(句点)</dd>
+    </dl>
+  </div>
+
+  <!-- ================================================================ -->
+  <h2 id="kana-three-by-three">かな 3×3+わ</h2>
+  <p>iOS 標準の 12 キー配列に近い縦型の配列です(設定は<a href="settings.html#kana-layout">第7章「かな配列」</a>)。かなキーは あかさ/たなは/まやら の 3×3 に並び、<b>わ キーは最下段の中央</b>、<b>、キーは最下段の右</b>、修飾キー(小)は最下段の左に置かれます。右端の列に ⌫・空白・⏎ が縦に並びます。</p>
+
+  <figure>
+    <div class="kb">
+      <div class="cand"></div>
+      <div class="row">
+        <div class="k fn">123</div>
+        <div class="k">あ<span class="h u">い</span><span class="h r">う</span><span class="h d">お</span><span class="h l">え</span></div>
+        <div class="k">か<span class="h u">き</span><span class="h r">く</span><span class="h d">こ</span><span class="h l">け</span></div>
+        <div class="k">さ<span class="h u">し</span><span class="h r">す</span><span class="h d">そ</span><span class="h l">せ</span></div>
+        <div class="k del" style="flex:0 0 84px">⌫</div>
+      </div>
+      <div class="row">
+        <div class="k fn">abc</div>
+        <div class="k">た<span class="h u">ち</span><span class="h r">つ</span><span class="h d">と</span><span class="h l">て</span></div>
+        <div class="k">な<span class="h u">に</span><span class="h r">ぬ</span><span class="h d">の</span><span class="h l">ね</span></div>
+        <div class="k">は<span class="h u">ひ</span><span class="h r">ふ</span><span class="h d">ほ</span><span class="h l">へ</span></div>
+        <div class="k sp" style="flex:0 0 84px"></div>
+      </div>
+      <div class="row">
+        <div class="k fn dis">あい</div>
+        <div class="k">ま<span class="h u">み</span><span class="h r">む</span><span class="h d">も</span><span class="h l">め</span></div>
+        <div class="k">や<span class="h u">『</span><span class="h r">ゆ</span><span class="h d">よ</span><span class="h l">』</span></div>
+        <div class="k">ら<span class="h u">り</span><span class="h r">る</span><span class="h d">ろ</span><span class="h l">れ</span></div>
+        <div class="k ret" style="flex:0 0 84px;height:98px;margin-bottom:-52px;font-size:22px;align-self:flex-start">⏎</div>
+      </div>
+      <div class="row">
+        <div class="k fn" style="font-size:15px">☺︎</div>
+        <div class="k"><span class="mod">小</span><span class="h dk">゛</span><span class="h hd">゜</span><span class="h d">…</span><span class="h l">カ</span></div>
+        <div class="k">わ<span class="h u">を</span><span class="h r">ん</span><span class="h d">〜</span><span class="h l">ー</span></div>
+        <div class="k">、<span class="h u">?</span><span class="h r">!</span><span class="h d">・</span><span class="h l">。</span></div>
+        <div style="flex:0 0 84px"></div>
+      </div>
+    </div>
+    <figcaption>かな 3×3+わ(écritu 方向・前置修飾)。図はラテン文字配列が既定(azerty)のときの幅で描いています — 左のモード切り替え列は 32pt、右の機能列は 84pt。ラテン文字配列も「3×3」にしている場合は左列が 58pt(表示は「あいう」)、右列が 58pt になります。</figcaption>
+  </figure>
+
+  <p>各かなキーのフリック割り当ては 5×2 とまったく同じです — <a href="#kana-refgrid-ecritu">écritu 方向の早見表</a>/<a href="#kana-refgrid-apple">Apple 方向の早見表</a>をそのまま読み替えてください。5×2 との違いは次の 3 点だけです。</p>
+  <ul>
+    <li>わ キーが最下段中央、、キーが最下段右、修飾キー(小)が最下段左に移ります。</li>
+    <li>数字ストリップ(1〜0 の段)はありません。数字は <kbd>123</kbd> で数字モードに切り替えて入力します。</li>
+    <li>左端のモード切り替え列は上から <kbd>123</kbd>・<kbd>abc</kbd>・<kbd>あい</kbd>・<kbd>☺︎</kbd> の 4 キー、右端の機能列は上から <kbd>⌫</kbd>・空白・<kbd>⏎</kbd>(2 段ぶんの高さ)です。</li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <h2 id="modifier-key">修飾キー — 濁点・半濁点・小文字</h2>
+  <p>濁点「゛」・半濁点「゜」・小文字(っ ゃ など)は<b>修飾キー</b>で入力します。手順の方式は設定「<a href="settings.html#kana-modifier">かな修飾</a>」で選べます: <b>前置修飾</b>(既定)は「修飾キーを押してから、かなを打つ」、<b>後置修飾</b>は iOS 標準と同じ「かなを打ってから修飾キーを押す」方式です。</p>
+
+  <h3 id="modifier-prefix">前置修飾(既定)</h3>
+  <div class="pair">
+    <figure>
+      <span class="kwrap"><span class="k"><span style="font-size:17px;font-weight:700">小</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 4px), calc(-50% - 6px))">゛</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 25px), calc(-50% + 5px))">゜</span><span class="h d">…</span><span class="h l">カ</span></span></span>
+      <figcaption>修飾キー(前置)。タップ=小、上=゛、右=゜、下=…、左=カ⇄ひ</figcaption>
+    </figure>
+  </div>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>操作</th><th>はたらき</th></tr>
+    <tr><td>タップ</td><td><b>小文字モード</b>に入ります。続けて打つ 1 文字が小文字になります(つ→っ)。もう一度タップすると解除。</td></tr>
+    <tr><td>上フリック(゛)</td><td><b>濁点モード</b>。続けて打つ 1 文字が濁音になります(か→が)。かなキーの表示も が行 に変わります。</td></tr>
+    <tr><td>右フリック(゜)</td><td><b>半濁点モード</b>。続けて打つ 1 文字が半濁音になります(は→ぱ)。</td></tr>
+    <tr><td>下フリック(…)</td><td>三点リーダー「…」をそのまま入力します(モードには入りません)。</td></tr>
+    <tr><td>左フリック(カ/ひ)</td><td><a href="#katakana-mode">ひらがな⇄カタカナモード</a>の切り替え。</td></tr>
+    <tr><td>長押し</td><td>「括弧で囲む」— 未確定の文字列を()で囲んで変換・確定できます。</td></tr>
+  </table></div>
+  <p>前置の各モードは<b>次の 1 文字だけ</b>に働き、1 文字打つと自動的に解除されます。モード中は修飾キーがアクセント色の枠で囲まれ、かなキーの表示も変換後の文字に変わるので、いま何が入るかを見てから打てます。</p>
+
+  <h3 id="modifier-map">変換対象の一覧</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>修飾</th><th>対象と結果</th></tr>
+    <tr><td>゛ 濁点</td><td>か行→が行/さ行→ざ行/た行→だ行/は行→ば行/う→ゔ</td></tr>
+    <tr><td>゜ 半濁点</td><td>は行→ぱ行(は ひ ふ へ ほ → ぱ ぴ ぷ ぺ ぽ)</td></tr>
+    <tr><td>小 小文字</td><td>あ い う え お → ぁ ぃ ぅ ぇ ぉ/つ→っ/や ゆ よ → ゃ ゅ ょ/わ→ゎ</td></tr>
+  </table></div>
+  <p>この表にない文字(な行・ま行・ら行など)は修飾モード中でもそのまま入力されます。カタカナモード中はカタカナに対しても同じ変換が働きます(カ→ガ など)。</p>
+
+  <h3 id="modifier-postfix">後置修飾</h3>
+  <p>「かな修飾」を後置修飾にすると、iOS 標準と同じく<b>文字を打ってから</b>修飾キーをタップして変化させる方式になります。キーの表示は<b>直前に打った文字に合わせて自動で変わり</b>、タップするといちばん自然な変換が 1 回で行われます。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>直前の文字</th><th>キー表示</th><th>タップの結果</th></tr>
+    <tr><td>あ い え お/や ゆ よ/わ</td><td>小</td><td>小文字化(あ→ぁ など)</td></tr>
+    <tr><td>う/つ</td><td>小</td><td>ぅ/っ(続けてもう一度押すと ゛ 表示になり、ゔ/づ)</td></tr>
+    <tr><td>か行・さ行・た行・は行</td><td>゛</td><td>濁点(か→が、は→ば)</td></tr>
+    <tr><td>ば び ぶ べ ぼ</td><td>゜</td><td>半濁点(ば→ぱ)</td></tr>
+    <tr><td>上記以外(な行・ま行・ん など)</td><td>^_^</td><td>変換対象なし。未確定の文字がないときにタップすると、設定「<a href="settings.html#postfix-empty-tap">タップ(後置修飾、未確定なし)</a>」で選んだモード(顔文字/絵文字/記号)に一時切り替えします。</td></tr>
+  </table></div>
+  <p>フリック操作は次のとおりです。設定「<a href="settings.html#postfix-flick-dakuten">後置修飾キーのフリックで濁点・半濁点</a>」(既定: オン)を有効にしていると、キー表示に関係なく<b>上フリック=゛、右フリック=゜</b>を直接かけられます。下フリック=…、左フリック=カ/ひ は前置と共通です。誤って濁点が付かないよう、後置修飾キーはフリックの判定距離が通常のキーより広めに取られています。</p>
+
+  <h3 id="modifier-duck">ガイド表示オフのときは「あひる」</h3>
+  <p>設定「<a href="settings.html#flick-guide">フリックガイド(修飾)</a>」をオフにすると、修飾キーには文字の代わりに<b>あひるのアイコン</b>が表示され、いまの状態を表情で示します。後置修飾ではキー表示(^_^/小/゛/゜)の代わりに、前置修飾ではモードに入っている間、次の 4 パターンで表示されます。</p>
+  <div class="pair">
+    <figure>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:32px;height:32px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/></svg></span></span>
+      <figcaption>通常(^_^ 状態)</figcaption>
+    </figure>
+    <figure>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:20px;height:20px;transform:translate(-3px,3px);color:rgb(97,133,224)"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/></svg></span></span>
+      <figcaption>小文字(青くなって縮む)</figcaption>
+    </figure>
+    <figure>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:32px;height:32px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckSweat"/></svg></span></span>
+      <figcaption>濁点(汗マーク)</figcaption>
+    </figure>
+    <figure>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:32px;height:32px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckHalo"/></svg></span></span>
+      <figcaption>半濁点(輪っか)</figcaption>
+    </figure>
+  </div>
+  <p>あわせて、かなのフリックガイドをオフにすると、、キーは「、。」「?!・」の 2 行表示に変わります。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="emoji-switcher-key">☺︎ キー(かな左下)</h2>
+  <p>かなモードの左下にある ☺︎ キーは、絵文字・顔文字・記号の各パネル(<a href="emoji.html">第5章</a>)への入口です。タップ・右フリック・上フリックの 3 操作に、それぞれ好きなパネルを割り当てられます(設定は<a href="settings.html#kana-mode-switcher">第7章</a>の「タップ(かな左下)」「右フリック(かな左下)」「上フリック(かな左下)」)。</p>
+  <div class="pair">
+    <figure>
+      <span class="kwrap"><span class="k"><span style="font-size:20px;font-weight:700">☺︎</span><span class="h u">⌘</span><span class="h r">^_^</span></span></span>
+      <figcaption>既定: タップ=☺︎ 絵文字、右=^_^ 顔文字、上=⌘ 記号</figcaption>
+    </figure>
+  </div>
+  <p>キーの中央には「タップに割り当てたパネル」のアイコン(☺︎/^_^/⌘)が表示され、上と右のガイドにも割り当てに応じたアイコンが出ます。3 操作 × 3 パネルで組み合わせは 27 通りありますが、仕組みはすべて同じ — アイコンのとおりのパネルが開くだけです。どのパネルからも <kbd>あい</kbd> キーでかなモードに戻れます。この ☺︎ キーの割り当ては方向プロファイル(écritu/Apple)の影響を受けません。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="katakana-mode">ひらがな⇄カタカナモード</h2>
+  <p>修飾キー(小)を<b>左にフリック</b>すると、かなモード全体がひらがな入力とカタカナ入力で切り替わります。ガイドの左に出ている文字が行き先です — ひらがな中は「カ」(カタカナへ)、カタカナ中は「ひ」(ひらがなへ)。</p>
+  <ul>
+    <li>カタカナモード中は、かなキーの表面がすべてカタカナ表示に変わります(ア イ ウ …)。</li>
+    <li>打った文字はカタカナのまま入力されます。読みの一部だけカタカナにしたいときに便利です。</li>
+    <li>変換候補からのカタカナ確定(⏎ 長押し・ダブルタップ)については<a href="basics.html">第3章</a>を見てください。</li>
+  </ul>
+</main>
+<footer class="pager">
+  <a class="prev" href="settings.html">← 第7章 設定リファレンス</a>
+  <a class="next" href="layouts-latin-number.html">第8章(続) 配列リファレンス(英字・数字) →</a>
+</footer>
+</body>
+</html>
