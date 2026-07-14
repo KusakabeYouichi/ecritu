@@ -100,6 +100,22 @@ table.spec th { background: var(--card); font-weight: 600; white-space: nowrap; 
 .tablewrap { overflow-x: auto; }
 figure { margin: 1.2rem 0; text-align: center; }
 figcaption { font-size: .8rem; color: var(--ink-sub); margin-top: .55rem; }
+/* iOS 設定画面などのスクリーンショット・ギャラリー */
+.shots {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.1rem; margin: 1.3rem 0; align-items: start;
+}
+.shots figure { margin: 0; }
+.shots img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, .12);
+}
+.shots figcaption { margin-top: .5rem; line-height: 1.5; }
+.shots .step-no {
+  display: inline-block; min-width: 1.5em; margin-right: .3em;
+  font-weight: 700; color: var(--accent-ink);
+}
 .pair { display: flex; flex-wrap: wrap; gap: 1.5rem; justify-content: center; }
 /* ---------- 目次(index) ---------- */
 ol.toc {
