@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第8章(続) 配列リファレンス(英字・数字) — écritu 操作マニュアル</title>
+<link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">écritu 操作マニュアル</a>
+  <nav class="crumbs"><a href="index.html">目次</a> › 第8章(続) 配列リファレンス(英字・数字)</nav>
+</header>
+<main>
+  <h1><span class="chapno">第8章(続)</span>配列リファレンス(英字・数字)</h1>
+  <p class="lede">英字モードの 3 配列(3×3 / QWERTY / AZERTY)と、数字モードの 3 配列(calculette / téléphone / clavier)の全キーを掲載します。配列の切り替えは<a href="settings.html#latin-layout">第7章「ラテン文字配列」</a>・<a href="settings.html#number-layout">「数字配列」</a>で行います。かな配列は<a href="layouts-kana.html">前のページ</a>です。</p>
+
+  <div class="note"><b>共通の枠組み:</b>英字・数字とも、かなモードと同じく左端にモード切り替え列(<kbd>123</kbd>/<kbd>abc</kbd>/<kbd>あい</kbd>+最下段 1 キー)が付きます。いま使っているモードのキーはグレー表示になります。早見表の見かたは前ページと同じで、中央=タップ、上下左右の緑の文字=フリックです。</div>
+
+  <!-- ================================================================ -->
+  <h2 id="latin-flick">英字 3×3(フリック)</h2>
+  <p>かなと同じフリック操作でアルファベットを打つ配列です。4 段 × 3 キーのグリッドに、左端のモード切り替え列(<kbd>123</kbd>/<kbd>abc</kbd>/<kbd>あい</kbd>/<kbd>☺︎</kbd>)と右端の機能列(<kbd>⌫</kbd>/空白/<kbd>⏎</kbd>)が付きます。</p>
+
+  <div class="note"><b>方向プロファイルの影響なし:</b>英字 3×3 のフリック割り当ては、フリック方向の設定(écritu / Apple)に<b>よらず同じ</b>です。下の早見表がそのまま両方式に当てはまります(異なるのは、ガイド表示「下」のときの文字の並び順だけです)。</div>
+
+  <div class="refgrid">
+    <div class="refkey"><span class="c">@</span><span class="u">#</span><span class="r">/</span><span class="d">&amp;</span><span class="l">_</span></div>
+    <div class="refkey"><span class="c">a</span><span class="u">b</span><span class="r">c</span></div>
+    <div class="refkey"><span class="c">d</span><span class="u">e</span><span class="r">f</span></div>
+    <div class="refkey"><span class="c">g</span><span class="u">h</span><span class="r">i</span></div>
+    <div class="refkey"><span class="c">j</span><span class="u">k</span><span class="r">l</span></div>
+    <div class="refkey"><span class="c">m</span><span class="u">n</span><span class="r">o</span></div>
+    <div class="refkey"><span class="c">p</span><span class="u">q</span><span class="r">r</span><span class="l">s</span></div>
+    <div class="refkey"><span class="c">t</span><span class="u">u</span><span class="r">v</span></div>
+    <div class="refkey"><span class="c">w</span><span class="u">x</span><span class="r">y</span><span class="l">z</span></div>
+    <div class="refkey"><span class="c">⇧</span></div>
+    <div class="refkey"><span class="c">'</span><span class="u">(</span><span class="r">)</span><span class="d">%</span><span class="l">"</span></div>
+    <div class="refkey"><span class="c">.</span><span class="u">?</span><span class="r">!</span><span class="d">-</span><span class="l">,</span></div>
+  </div>
+  <p>並びは上の表の順で、1 段目=@・a・d、2 段目=g・j・m、3 段目=p・t・w、4 段目=⇧(シフト)・'・. です。@ キーには # / &amp; _、' キーには括弧と引用符、. キーには ? ! - , と、記号もフリックにまとまっています。シフトの動作は<a href="#latin-shift">後述</a>のとおり 3 状態です。シフト中はアルファベットが大文字で入力されます。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="latin-qwerty">QWERTY</h2>
+  <p>一般的なローマ字圏の配列です。縦画面では次の行構成になります(フリックはなく、すべてタップ入力です)。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>段</th><th>キー</th></tr>
+    <tr><td>1 段目</td><td><kbd>123</kbd> q w e r t y u i o p</td></tr>
+    <tr><td>2 段目</td><td><kbd>abc</kbd> a s d f g h j k l</td></tr>
+    <tr><td>3 段目</td><td><kbd>あい</kbd> ⇧ z x c v b n m ⌫(⇧ と ⌫ は少し幅広)</td></tr>
+    <tr><td>アクション行</td><td><kbd>☺︎</kbd> @ / 空白 . - ⏎</td></tr>
+  </table></div>
+  <p>削除キー(⌫)は 3 段目の右端に入り、アクション行の ⌫ があった位置には <kbd>@</kbd> が入ります。空白の左に <kbd>/</kbd>、右に <kbd>.</kbd> <kbd>-</kbd> が並ぶのは AZERTY と共通です。アポストロフィ(')は 3×3 やアクセント長押しにあり、QWERTY の縦画面には専用キーがありません(横画面では 2 段目の右端に入ります — <a href="layouts-landscape.html#landscape-latin">横画面のページ</a>参照)。</p>
+
+  <h3 id="latin-long-press">長押しアクセント(QWERTY / AZERTY 共通)</h3>
+  <p>QWERTY・AZERTY では、文字キーを<b>長押し</b>するとアクセント付き文字の候補パネルが開きます(3×3 にはありません)。指を離さず左右に滑らせて選びます。シフト中は大文字の候補になります。対応キーと候補の全一覧です。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>キー</th><th>長押し候補(先頭は元の文字)</th></tr>
+    <tr><td>a</td><td>a à á â ä æ ã å ā ă ą</td></tr>
+    <tr><td>c</td><td>c ç ć č ĉ ċ</td></tr>
+    <tr><td>d</td><td>d ď đ</td></tr>
+    <tr><td>e</td><td>e è é ê ë ē ė ę ě</td></tr>
+    <tr><td>g</td><td>g ğ ĝ ģ ġ</td></tr>
+    <tr><td>h</td><td>h ĥ ħ</td></tr>
+    <tr><td>i</td><td>i ì í î ï ī į ı</td></tr>
+    <tr><td>j</td><td>j ĵ</td></tr>
+    <tr><td>k</td><td>k ķ</td></tr>
+    <tr><td>l</td><td>l ł ľ ĺ ļ</td></tr>
+    <tr><td>n</td><td>n ñ ń ň ņ</td></tr>
+    <tr><td>o</td><td>o ò ó ô ö œ ø ō õ ő</td></tr>
+    <tr><td>r</td><td>r ř ŕ ŗ</td></tr>
+    <tr><td>s</td><td>s ß ś š ŝ ş</td></tr>
+    <tr><td>t</td><td>t ť ţ ŧ</td></tr>
+    <tr><td>u</td><td>u ù ú û ü ū ů ű ų</td></tr>
+    <tr><td>w</td><td>w ŵ</td></tr>
+    <tr><td>y</td><td>y ÿ ý ŷ</td></tr>
+    <tr><td>z</td><td>z ž ź ż</td></tr>
+  </table></div>
+  <p>上の表にないキー(b f m q v x p など)には長押し候補はありません。</p>
+
+  <h3 id="latin-shift">シフトキーの 3 状態</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>状態</th><th>表示</th><th>入りかた/はたらき</th></tr>
+    <tr><td>オフ</td><td>白いキー</td><td>小文字で入力。</td></tr>
+    <tr><td>1 回だけ</td><td>青いキー</td><td>タップで入ります。次の 1 文字だけ大文字になり、自動でオフに戻ります。</td></tr>
+    <tr><td>ロック</td><td>アクセント色のキー</td><td>すばやく 2 回タップ、または長押しで入ります。もう一度タップするまで大文字が続きます。</td></tr>
+  </table></div>
+
+  <!-- ================================================================ -->
+  <h2 id="latin-azerty">AZERTY(既定)</h2>
+  <p>écritu の既定はフランス語圏の AZERTY です。縦画面の全体図です。</p>
+  <figure>
+    <div class="kb">
+      <div class="cand"></div>
+      <div class="row">
+        <div class="k fn">123</div>
+        <div class="k" style="font-size:22px;font-weight:600">a</div><div class="k" style="font-size:22px;font-weight:600">z</div><div class="k" style="font-size:22px;font-weight:600">e</div><div class="k" style="font-size:22px;font-weight:600">r</div><div class="k" style="font-size:22px;font-weight:600">t</div><div class="k" style="font-size:22px;font-weight:600">y</div><div class="k" style="font-size:22px;font-weight:600">u</div><div class="k" style="font-size:22px;font-weight:600">i</div><div class="k" style="font-size:22px;font-weight:600">o</div><div class="k" style="font-size:22px;font-weight:600">p</div>
+      </div>
+      <div class="row">
+        <div class="k fn dis">abc</div>
+        <div class="k" style="font-size:22px;font-weight:600">q</div><div class="k" style="font-size:22px;font-weight:600">s</div><div class="k" style="font-size:22px;font-weight:600">d</div><div class="k" style="font-size:22px;font-weight:600">f</div><div class="k" style="font-size:22px;font-weight:600">g</div><div class="k" style="font-size:22px;font-weight:600">h</div><div class="k" style="font-size:22px;font-weight:600">j</div><div class="k" style="font-size:22px;font-weight:600">k</div><div class="k" style="font-size:22px;font-weight:600">l</div><div class="k" style="font-size:22px;font-weight:600">m</div>
+      </div>
+      <div class="row">
+        <div class="k fn">あい</div>
+        <div class="k" style="font-size:20px">⇧</div>
+        <div class="k" style="font-size:22px;font-weight:600">w</div><div class="k" style="font-size:22px;font-weight:600">x</div><div class="k" style="font-size:22px;font-weight:600">c</div><div class="k" style="font-size:22px;font-weight:600">v</div><div class="k" style="font-size:22px;font-weight:600">b</div><div class="k" style="font-size:22px;font-weight:600">n</div>
+        <div class="k" style="font-size:24px;font-weight:600">⌫</div>
+      </div>
+      <div class="row">
+        <div class="k fn" style="font-size:15px">☺︎</div>
+        <div class="k" style="flex:0 0 44px;font-size:20px;font-weight:600">@</div>
+        <div class="k" style="flex:0 0 44px;font-size:20px;font-weight:600">/</div>
+        <div class="k sp"></div>
+        <div class="k" style="flex:0 0 44px;font-size:20px;font-weight:600">.</div>
+        <div class="k" style="flex:0 0 44px;font-size:20px;font-weight:600">-</div>
+        <div class="k" style="flex:0 0 66px;font-size:22px;font-weight:600">⏎</div>
+      </div>
+    </div>
+    <figcaption>AZERTY・縦画面(既定設定)。3 段目の右端は本来シフトの位置ですが、縦画面では ⌫ に置き換わります。</figcaption>
+  </figure>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>段</th><th>キー</th></tr>
+    <tr><td>1 段目</td><td><kbd>123</kbd> a z e r t y u i o p</td></tr>
+    <tr><td>2 段目</td><td><kbd>abc</kbd>(グレー) q s d f g h j k l m</td></tr>
+    <tr><td>3 段目</td><td><kbd>あい</kbd> ⇧ w x c v b n ⌫(右シフトの位置が縦画面では ⌫)</td></tr>
+    <tr><td>アクション行</td><td><kbd>☺︎</kbd> @ / 空白 . - ⏎</td></tr>
+  </table></div>
+  <p>QWERTY と同じく、アクション行には <kbd>@</kbd> <kbd>/</kbd> <kbd>.</kbd> <kbd>-</kbd> の記号キーが入ります。<a href="#latin-long-press">長押しアクセント</a>と<a href="#latin-shift">シフトの 3 状態</a>も QWERTY と共通です。横画面では右シフトが復活し、下段に <kbd>,</kbd> <kbd>/</kbd> <kbd>'</kbd> が入るタイプライタ配置になります(<a href="layouts-landscape.html#landscape-latin">横画面のページ</a>)。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="number-calculette">数字 calculette(既定)</h2>
+  <p>既定の数字配列です。電卓と同じく <b>7 8 9 が最上段</b>に並び、右下に <kbd>-</kbd>(マイナス)があります。数字キーのフリックには通貨・演算・括弧などの記号が割り当てられています。</p>
+  <figure>
+    <div class="kb">
+      <div class="cand"></div>
+      <div class="row">
+        <div class="k fn dis">123</div>
+        <div class="k">7<span class="h u">「</span><span class="h r">」</span><span class="h d">;</span><span class="h l">:</span></div>
+        <div class="k">8<span class="h u">〒</span><span class="h r">々</span><span class="h d">...</span><span class="h l">〆</span></div>
+        <div class="k">9<span class="h u">|</span><span class="h r">\</span><span class="h d">^</span><span class="h l">`</span></div>
+        <div class="k del" style="flex:0 0 84px">⌫</div>
+      </div>
+      <div class="row">
+        <div class="k fn">abc</div>
+        <div class="k">4<span class="h u">○</span><span class="h r">*</span><span class="h d">_</span><span class="h l">~</span></div>
+        <div class="k">5<span class="h u">+</span><span class="h r">×</span><span class="h d">±</span><span class="h l">÷</span></div>
+        <div class="k">6<span class="h u">=</span><span class="h r">&lt;</span><span class="h d">≠</span><span class="h l">&gt;</span></div>
+        <div class="k sp" style="flex:0 0 84px"></div>
+      </div>
+      <div class="row">
+        <div class="k fn">あい</div>
+        <div class="k">1<span class="h u">↑</span><span class="h r">→</span><span class="h d">↓</span><span class="h l">←</span></div>
+        <div class="k">2<span class="h u">¥</span><span class="h r">$</span><span class="h d">₿</span><span class="h l">€</span></div>
+        <div class="k">3<span class="h u">%</span><span class="h r">°</span><span class="h d">℃</span><span class="h l">#</span></div>
+        <div class="k ret" style="flex:0 0 84px;height:98px;margin-bottom:-52px;font-size:22px;align-self:flex-start">⏎</div>
+      </div>
+      <div class="row">
+        <div class="k fn" style="font-size:16px">⌘</div>
+        <div class="k">0<span class="h u">{</span><span class="h r">}</span><span class="h d">'</span><span class="h l">"</span></div>
+        <div class="k">.<span class="h u">,</span><span class="h r">&amp;</span><span class="h d">@</span><span class="h l">/</span></div>
+        <div class="k">-<span class="h u">[</span><span class="h r">)</span><span class="h d">]</span><span class="h l">(</span></div>
+        <div style="flex:0 0 84px"></div>
+      </div>
+    </div>
+    <figcaption>calculette・縦画面・écritu 方向(既定)。左下の <kbd>⌘</kbd> は記号パネルへの切り替えです。</figcaption>
+  </figure>
+
+  <h3 id="number-calculette-refgrid-ecritu">全キー早見 — écritu 方向(既定)</h3>
+  <div class="refgrid">
+    <div class="refkey"><span class="c">7</span><span class="u">「</span><span class="r">」</span><span class="d">;</span><span class="l">:</span></div>
+    <div class="refkey"><span class="c">8</span><span class="u">〒</span><span class="r">々</span><span class="d">...</span><span class="l">〆</span></div>
+    <div class="refkey"><span class="c">9</span><span class="u">|</span><span class="r">\</span><span class="d">^</span><span class="l">`</span></div>
+    <div class="refkey"><span class="c">4</span><span class="u">○</span><span class="r">*</span><span class="d">_</span><span class="l">~</span></div>
+    <div class="refkey"><span class="c">5</span><span class="u">+</span><span class="r">×</span><span class="d">±</span><span class="l">÷</span></div>
+    <div class="refkey"><span class="c">6</span><span class="u">=</span><span class="r">&lt;</span><span class="d">≠</span><span class="l">&gt;</span></div>
+    <div class="refkey"><span class="c">1</span><span class="u">↑</span><span class="r">→</span><span class="d">↓</span><span class="l">←</span></div>
+    <div class="refkey"><span class="c">2</span><span class="u">¥</span><span class="r">$</span><span class="d">₿</span><span class="l">€</span></div>
+    <div class="refkey"><span class="c">3</span><span class="u">%</span><span class="r">°</span><span class="d">℃</span><span class="l">#</span></div>
+    <div class="refkey"><span class="c">0</span><span class="u">{</span><span class="r">}</span><span class="d">'</span><span class="l">"</span></div>
+    <div class="refkey"><span class="c">.</span><span class="u">,</span><span class="r">&amp;</span><span class="d">@</span><span class="l">/</span></div>
+    <div class="refkey"><span class="c">-</span><span class="u">[</span><span class="r">)</span><span class="d">]</span><span class="l">(</span></div>
+  </div>
+
+  <h3 id="number-calculette-refgrid-apple">全キー早見 — Apple 方向</h3>
+  <div class="refgrid">
+    <div class="refkey"><span class="c">7</span><span class="u">」</span><span class="r">:</span><span class="d">;</span><span class="l">「</span></div>
+    <div class="refkey"><span class="c">8</span><span class="u">々</span><span class="r">〆</span><span class="d">...</span><span class="l">〒</span></div>
+    <div class="refkey"><span class="c">9</span><span class="u">\</span><span class="r">`</span><span class="d">^</span><span class="l">|</span></div>
+    <div class="refkey"><span class="c">4</span><span class="u">*</span><span class="r">~</span><span class="d">_</span><span class="l">○</span></div>
+    <div class="refkey"><span class="c">5</span><span class="u">×</span><span class="r">÷</span><span class="d">±</span><span class="l">+</span></div>
+    <div class="refkey"><span class="c">6</span><span class="u">&lt;</span><span class="r">&gt;</span><span class="d">≠</span><span class="l">=</span></div>
+    <div class="refkey"><span class="c">1</span><span class="u">↑</span><span class="r">→</span><span class="d">↓</span><span class="l">←</span></div>
+    <div class="refkey"><span class="c">2</span><span class="u">$</span><span class="r">€</span><span class="d">₿</span><span class="l">¥</span></div>
+    <div class="refkey"><span class="c">3</span><span class="u">°</span><span class="r">#</span><span class="d">℃</span><span class="l">%</span></div>
+    <div class="refkey"><span class="c">0</span><span class="u">}</span><span class="r">"</span><span class="d">'</span><span class="l">{</span></div>
+    <div class="refkey"><span class="c">.</span><span class="u">&amp;</span><span class="r">/</span><span class="d">@</span><span class="l">,</span></div>
+    <div class="refkey"><span class="c">-</span><span class="u">[</span><span class="r">)</span><span class="d">]</span><span class="l">(</span></div>
+  </div>
+  <div class="note"><b>例外が 2 キーだけあります:</b><kbd>1</kbd> キーの矢印(← ↑ → ↓)と <kbd>-</kbd> キーの括弧は、記号の見た目と方向が対応するように作られているため、<b>方向プロファイルによらず常に同じ割り当て</b>です(左=←/(、上=↑/[、右=→/)、下=↓/])。それ以外の数字キーは、かなと同じ規則で écritu 方向と Apple 方向が入れ替わります。</div>
+
+  <!-- ================================================================ -->
+  <h2 id="number-telephone">数字 téléphone</h2>
+  <p>電話機と同じく <b>1 2 3 が最上段</b>に並ぶ配列です。1〜9・0 の各キーのフリック割り当ては calculette と同一で、<b>段の並び順だけが上下逆</b>になります(1 段目= 1 2 3、2 段目= 4 5 6、3 段目= 7 8 9)。最下段だけキーが異なり、<kbd>(</kbd>・<kbd>0</kbd>・<kbd>.</kbd> の並びになります。</p>
+  <div class="pair">
+    <figure>
+      <div class="refgrid" style="grid-template-columns:repeat(3, minmax(96px, 1fr))">
+        <div class="refkey"><span class="c">(</span><span class="u">)</span><span class="r">[</span><span class="d">&amp;</span><span class="l">]</span></div>
+        <div class="refkey"><span class="c">0</span><span class="u">{</span><span class="r">}</span><span class="d">'</span><span class="l">"</span></div>
+        <div class="refkey"><span class="c">.</span><span class="u">,</span><span class="r">-</span><span class="d">@</span><span class="l">/</span></div>
+      </div>
+      <figcaption>téléphone 最下段・écritu 方向</figcaption>
+    </figure>
+    <figure>
+      <div class="refgrid" style="grid-template-columns:repeat(3, minmax(96px, 1fr))">
+        <div class="refkey"><span class="c">(</span><span class="u">[</span><span class="r">]</span><span class="d">&amp;</span><span class="l">)</span></div>
+        <div class="refkey"><span class="c">0</span><span class="u">}</span><span class="r">"</span><span class="d">'</span><span class="l">{</span></div>
+        <div class="refkey"><span class="c">.</span><span class="u">-</span><span class="r">/</span><span class="d">@</span><span class="l">,</span></div>
+      </div>
+      <figcaption>téléphone 最下段・Apple 方向</figcaption>
+    </figure>
+  </div>
+  <p><kbd>0</kbd> キーは calculette と同じです。<kbd>.</kbd> キーは calculette と少し違い、<kbd>-</kbd>(マイナス)がフリックに入ります(calculette では独立キーのため、代わりに <kbd>&amp;</kbd> が入っています)。マイナスの独立キーと <kbd>-</kbd> キーの括弧フリックは calculette だけにあります。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="number-clavier">数字 clavier(縦画面専用)</h2>
+  <p>数字と記号をタイプライタ風に 1 文字 1 キーで並べた配列です。<b>フリックはなく、すべてタップ入力</b>で、シフトキーで第 2 セットに切り替わります。3 段+アクション行の 4 段構成です。</p>
+  <figure>
+    <div class="kb">
+      <div class="cand"></div>
+      <div class="row">
+        <div class="k fn dis">123</div>
+        <div class="k" style="font-size:20px;font-weight:600">1</div><div class="k" style="font-size:20px;font-weight:600">2</div><div class="k" style="font-size:20px;font-weight:600">3</div><div class="k" style="font-size:20px;font-weight:600">4</div><div class="k" style="font-size:20px;font-weight:600">5</div><div class="k" style="font-size:20px;font-weight:600">6</div><div class="k" style="font-size:20px;font-weight:600">7</div><div class="k" style="font-size:20px;font-weight:600">8</div><div class="k" style="font-size:20px;font-weight:600">9</div><div class="k" style="font-size:20px;font-weight:600">0</div>
+      </div>
+      <div class="row">
+        <div class="k fn">abc</div>
+        <div class="k" style="font-size:20px;font-weight:600">#</div><div class="k" style="font-size:20px;font-weight:600">$</div><div class="k" style="font-size:20px;font-weight:600">%</div><div class="k" style="font-size:20px;font-weight:600">&amp;</div><div class="k" style="font-size:20px;font-weight:600">*</div><div class="k" style="font-size:20px;font-weight:600">+</div><div class="k" style="font-size:20px;font-weight:600">=</div><div class="k" style="font-size:20px;font-weight:600">:</div><div class="k" style="font-size:20px;font-weight:600">;</div><div class="k" style="font-size:20px;font-weight:600">,</div>
+      </div>
+      <div class="row">
+        <div class="k fn">あい</div>
+        <div class="k" style="font-size:18px">⇧</div>
+        <div class="k" style="font-size:20px;font-weight:600">(</div><div class="k" style="font-size:20px;font-weight:600">)</div><div class="k" style="font-size:20px;font-weight:600">[</div><div class="k" style="font-size:20px;font-weight:600">]</div><div class="k" style="font-size:20px;font-weight:600">{</div><div class="k" style="font-size:20px;font-weight:600">}</div>
+        <div class="k" style="font-size:22px;font-weight:600">⌫</div>
+      </div>
+      <div class="row">
+        <div class="k fn" style="font-size:16px">⌘</div>
+        <div class="k" style="flex:0 0 44px;font-size:22px;font-weight:600">@</div>
+        <div class="k" style="flex:0 0 44px;font-size:22px;font-weight:600">/</div>
+        <div class="k sp"></div>
+        <div class="k" style="flex:0 0 44px;font-size:22px;font-weight:600">.</div>
+        <div class="k" style="flex:0 0 44px;font-size:22px;font-weight:600">-</div>
+        <div class="k" style="flex:0 0 66px;font-size:22px;font-weight:600">⏎</div>
+      </div>
+    </div>
+    <figcaption>clavier・縦画面(シフトオフ)。3 段目の右端は AZERTY 縦画面と同じく ⌫ です。</figcaption>
+  </figure>
+  <p>シフト(タップ=1 回/2 回タップ・長押し=ロック)で全キーが第 2 セットに切り替わります。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>段</th><th>通常</th><th>シフト中</th></tr>
+    <tr><td>1 段目</td><td>1 2 3 4 5 6 7 8 9 0</td><td>一 二 三 四 五 六 七 八 九 〇(漢数字)</td></tr>
+    <tr><td>2 段目</td><td># $ % &amp; * + = : ; ,</td><td>! ? ' " ~ _ ^ ` \ |</td></tr>
+    <tr><td>3 段目</td><td>⇧ ( ) [ ] { } ⌫</td><td>⇧ &lt; &gt; 『 』 「 」 ⌫</td></tr>
+    <tr><td>アクション行の記号</td><td>@ / . -</td><td>・ 〜 … ±</td></tr>
+  </table></div>
+  <div class="warn"><b>縦画面専用です:</b>clavier を選んでいても、iPhone を横向きにすると自動的に calculette 配列に切り替わります(縦に戻すと clavier に戻ります)。</div>
+
+  <!-- ================================================================ -->
+  <h2 id="number-temperature">温度単位(℃/℉)</h2>
+  <p>calculette・téléphone の <kbd>3</kbd> キーの下フリックには温度単位の記号が割り当てられています。表示される単位は iOS の設定(「設定 &gt; 一般 &gt; 言語と地域」の温度単位、未設定なら地域の慣習)に連動し、摂氏なら <b>℃</b>、華氏なら <b>℉</b> になります。écritu 側に切り替え設定はありません。度記号「°」そのものは同じ <kbd>3</kbd> キーのフリック(écritu 方向=右、Apple 方向=上)にあります。</p>
+</main>
+<footer class="pager">
+  <a class="prev" href="layouts-kana.html">← 第8章 配列リファレンス(かな)</a>
+  <a class="next" href="layouts-landscape.html">第8章(続) 配列リファレンス(横画面) →</a>
+</footer>
+</body>
+</html>

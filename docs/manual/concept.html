@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第1章 écritu とは — écritu 操作マニュアル</title>
+<link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">écritu 操作マニュアル</a>
+  <nav class="crumbs"><a href="index.html">目次</a> › 第1章 écritu とは</nav>
+</header>
+<main>
+  <h1><span class="chapno">第1章</span>écritu とは — 設計コンセプト</h1>
+  <p class="lede">écritu(エクリチュ)は iPhone 用の日本語フリック入力キーボードです。合言葉は「モード切り替えを最小に」。よく使う記号のためにいちいち記号モードへ入らない — その考え方が、キーの 1 つひとつに表れています。</p>
+
+  <h2 id="minimal-mode-switching">モード切り替えを最小にする設計</h2>
+  <p>フリック入力とは、キーをタップするだけでなく上下左右に「払う(フリックする)」ことで、1 つのキーから最大 5 つの文字を打ち分ける入力方式です。「あ」のキーを上に払えば「い」、右なら「う」— iPhone をお使いの方にはおなじみの操作だと思います。</p>
+  <p>ところが多くのキーボードでは、「?」や「!」のようなよく使う記号を打つたびに、数字・記号モードへ切り替えて目当ての記号を探し、また かなモードに戻る、という往復が必要です。écritu はこの往復を徹底的に減らしました。句読点・疑問符・感嘆符・括弧・波ダッシュ・三点リーダ・タブ、そして数字まで、<b>かなのまま</b>入力できます。</p>
+  <div class="note"><b>この章の読み方:</b>ここでは「なぜそうなっているか」を紹介します。各キーの具体的な操作は第3章・第4章で、全キー×全方向の一覧は第8章で説明します。</div>
+
+  <h3 id="punctuation-key">、キー — 「?」も「!」もワンフリック</h3>
+  <p>キーボード右下の 、キーは、タップで読点「、」、そして 4 方向のフリックに「?」「!」「・」「。」が割り当てられています。文末に「?」を打つのに記号モードへ入る必要はありません。指を 1 回払うだけです。</p>
+  <figure>
+    <div class="explain">
+      <div class="cross">
+        <div class="out u">?</div>
+        <div class="out l">。</div>
+        <div class="center">、</div>
+        <div class="out r">!</div>
+        <div class="out d">・</div>
+        <div class="arrow u">▲</div>
+        <div class="arrow d">▼</div>
+        <div class="arrow l">◀</div>
+        <div class="arrow r">▶</div>
+      </div>
+      <dl class="legend">
+        <dt>タップ</dt><dd>、(読点)</dd>
+        <dt>上フリック</dt><dd>?(疑問符)</dd>
+        <dt>右フリック</dt><dd>!(感嘆符)</dd>
+        <dt>下フリック</dt><dd>・(中黒)</dd>
+        <dt>左フリック</dt><dd>。(句点)</dd>
+      </dl>
+    </div>
+    <figcaption>、キー — 句読点と ?!・ が 1 キーに集約</figcaption>
+  </figure>
+
+  <h3 id="wa-key">わキー — 「〜」と「ー」</h3>
+  <p>わキーには「を」「ん」に加えて、下フリックに「〜」(波ダッシュ)、左フリックに「ー」(長音)が入っています。「10時〜12時」のような表記も、かなモードのまま書けます。</p>
+  <figure>
+    <span class="kwrap"><span class="k">わ<span class="h u">を</span><span class="h r">ん</span><span class="h d">〜</span><span class="h l">ー</span></span></span>
+    <figcaption>わキー — 下フリックで 〜、左フリックで ー</figcaption>
+  </figure>
+
+  <h3 id="ya-key-two-step">やキーと 2 段フリック — 括弧もかなのまま</h3>
+  <p>やキーの上フリックは「『」、左フリックは「』」の二重かぎ括弧です。さらに écritu ならではの<b>2 段フリック</b>があります。左フリックで「』」を出したまま<b>指を離さず</b>、さらに上へ動かすと「)」、下へ動かすと「」」に変わります。2 段目に入れるのは左右方向のフリックだけなので、既定の écritu 方向では『(上フリック)はそのまま確定のみです。フリック方向を Apple 方向にすると『が左・』が右に並ぶため、( 「 ) 」 の 4 種すべてが 2 段フリックで打てます(詳しくは<a href="layouts-kana.html#ya-bracket-flick">第8章</a>)。</p>
+  <figure>
+    <div class="explain">
+      <div class="cross">
+        <div class="out u">『</div>
+        <div class="out l">』</div>
+        <div class="center">や</div>
+        <div class="out r">ゆ</div>
+        <div class="out d">よ</div>
+        <div class="arrow u">▲</div>
+        <div class="arrow d">▼</div>
+        <div class="arrow l">◀</div>
+        <div class="arrow r">▶</div>
+      </div>
+      <div style="align-self:center;font-size:22px;color:var(--ink-sub)">→</div>
+      <div class="cross">
+        <div class="out u small">)</div>
+        <div class="center small">』</div>
+        <div class="out d small">」</div>
+        <div class="arrow u">▲</div>
+        <div class="arrow d">▼</div>
+      </div>
+      <dl class="legend">
+        <dt>1. や を左へフリック</dt><dd>「』」のプレビューが出る(ここで離せば 』 が入力)</dd>
+        <dt>2. 指を離さず上へ</dt><dd>「)」に変わる — 離すと ) が入力</dd>
+        <dt>2'. 指を離さず下へ</dt><dd>「」」に変わる — 離すと 」 が入力</dd>
+        <dt>Apple 方向なら</dt><dd>『(左)からも同様に ( と 「 が打てる</dd>
+      </dl>
+    </div>
+    <figcaption>2 段フリック — 』 を出したまま指を動かすと ) と 」 に切り替わる</figcaption>
+  </figure>
+
+  <h3 id="ellipsis-flick">修飾キーの下フリック — 「…」</h3>
+  <p>キーボード下段の修飾キー(小・゛・゜ — 小文字や濁点・半濁点を入力するキー)は、下フリックに「…」(三点リーダ)を持っています。「それは…」のような余韻も、モード切り替えなしで打てます。</p>
+  <figure>
+    <span class="kwrap"><span class="k"><span style="font-size:17px">小</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 4px),calc(-50% - 6px))">゛</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 25px),calc(-50% + 5px))">゜</span><span class="h d">…</span><span class="h l">カ</span></span></span>
+    <figcaption>修飾キー(小゛゜)— 下フリックで …</figcaption>
+  </figure>
+
+  <h3 id="tab-flick">空白キーの上フリック — タブ</h3>
+  <p>空白キーを上へフリックするとタブ文字が入力できます。フリック中はキーの上に「⇥」のプレビューが表示されるので、意図せず入力してしまう心配もありません。表を整えたいときや、アプリのタブ補完を使いたいときに便利です。</p>
+  <figure>
+    <span class="kwrap"><span class="k" style="font-size:16px;font-weight:600">空白<span class="h u">⇥</span></span></span>
+    <figcaption>空白キー — 上フリックでタブ(⇥ プレビュー表示)</figcaption>
+  </figure>
+
+  <h2 id="number-row-always">数字は最上段に常設(かな 5×2)</h2>
+  <p>標準のかな配列「5×2」(かなキーを横 5 個×縦 2 段に並べた écritu 独自の配列)では、最上段に数字キー 1〜0 が常に表示されています。日付や時刻、金額を書くのに数字モードへ切り替える必要はありません。</p>
+  <figure>
+    <div class="kb">
+      <div class="row">
+        <div class="k fn">123</div>
+        <div class="k num">1</div><div class="k num">2</div><div class="k num">3</div><div class="k num">4</div><div class="k num">5</div><div class="k num">6</div><div class="k num">7</div><div class="k num">8</div><div class="k num">9</div><div class="k num">0</div>
+      </div>
+    </div>
+    <figcaption>かな 5×2 の最上段 — 数字 1〜0 が常設</figcaption>
+  </figure>
+  <p>かな配列にはもう 1 つ、Apple 標準に近い「3×3+わ」も用意されています(こちらは数字段なし)。配列の切り替えは第7章、それぞれの全キーは第8章をご覧ください。</p>
+
+  <h2 id="emoji-direct">絵文字・顔文字・記号へ直行</h2>
+  <p>キーボード左下の ☺︎ キーは、タップで絵文字パネルへ、右フリックで顔文字(^_^)パネルへ、上フリックで記号(⌘)パネルへ直行します。「絵文字を出すためにまず記号モードへ…」という遠回りはありません。</p>
+  <figure>
+    <span class="kwrap"><span class="k" style="font-size:20px">☺︎<span class="h u">⌘</span><span class="h r">^_^</span></span></span>
+    <figcaption>☺︎ キー — タップ=絵文字/右=顔文字/上=記号(既定の割り当て)</figcaption>
+  </figure>
+  <p>タップ・右フリック・上フリックにどのパネルを割り当てるかは設定で変更できます(第7章)。各パネルの使い方は第5章で説明します。</p>
+
+  <h2 id="french-names">フランス語風の名前たち</h2>
+  <p>écritu では、設定に登場する名前の多くがフランス語風です。ちょっとした遊び心ですが、覚えておくと設定画面で迷いません。</p>
+  <ul>
+    <li><b>écritu</b> — キーボード自身の名前。フランス語の「écriture(書くこと)」を思わせる造語です。</li>
+    <li><b>calculette / téléphone / clavier</b> — 数字配列の名前。順に「電卓」「電話」「キーボード」です。</li>
+    <li><b>bleu ciel brumeux / rose sakura poudré</b> — 背景テーマ。「霞んだ空の青」と「粉をはたいたような桜色」。</li>
+    <li><b>émeraude / tuilé</b> — アクセント色。「エメラルド」と「瓦色」です。</li>
+    <li><b>Drapeaux</b> — 絵文字パネルの国旗カテゴリ。「旗」の意味です。</li>
+  </ul>
+  <p>それでは、まずは écritu を iPhone に登録するところから始めましょう。</p>
+</main>
+<footer class="pager">
+  <a class="prev" href="index.html">← 目次</a>
+  <a class="next" href="setup.html">第2章 導入 →</a>
+</footer>
+</body>
+</html>

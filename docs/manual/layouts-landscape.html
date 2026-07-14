@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第8章(続) 配列リファレンス(横画面) — écritu 操作マニュアル</title>
+<link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">écritu 操作マニュアル</a>
+  <nav class="crumbs"><a href="index.html">目次</a> › 第8章(続) 配列リファレンス(横画面)</nav>
+</header>
+<main>
+  <h1><span class="chapno">第8章(続)</span>配列リファレンス(横画面)</h1>
+  <p class="lede">iPhone を横向きにすると、縦長の候補バーの代わりに<b>サイドバー</b>を使う横画面専用のレイアウトに切り替わります。このページでは横画面で何がどう変わるかを、モードごとに領域図と表で示します。キーの中身(フリック割り当て)は縦画面と同じなので、各キーの詳細は<a href="layouts-kana.html">かな</a>・<a href="layouts-latin-number.html">英字・数字</a>のページを参照してください。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="landscape-overview">横画面で変わること(概観)</h2>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>項目</th><th>縦画面</th><th>横画面</th></tr>
+    <tr><td>キーの高さ</td><td>46pt</td><td>40pt(アクションキーは 34pt)</td></tr>
+    <tr><td>候補の表示</td><td>キーボード上部の候補バー(横 1 列)</td><td>かな: 候補サイドバー(縦一覧)/英字: サジェストサイドバー(オン・オフ設定あり)</td></tr>
+    <tr><td>かな配列</td><td>5×2 / 3×3+わ</td><td>同じ配列のまま、横に候補サイドバーが付きます</td></tr>
+    <tr><td>数字配列</td><td>calculette / téléphone / clavier</td><td>幅の狭い数字グリッド+付属記号パネル(4×6)。clavier は使えず calculette に自動切り替え</td></tr>
+    <tr><td>英字 QWERTY / AZERTY</td><td>各行が左揃えの 3 段</td><td>タイプライタ風の段ずれ配置(右シフト復活・, / ' キー追加)</td></tr>
+    <tr><td>モード切り替え列</td><td>32pt 幅(あい 表示)が基本</td><td>常に 58pt 幅(あいう 表示)</td></tr>
+  </table></div>
+  <p>サイドバーやパネルを左右どちらに置くかは設定で選べます(かな・英字の候補側は「<a href="settings.html#landscape-latin-pane">候補ペイン</a>」、数字は「<a href="settings.html#landscape-number-pane">数字ペイン配列</a>」)。以下の図は既定(候補が左・数字が左)で描いています。</p>
+
+  <!-- ================================================================ -->
+  <h2 id="landscape-kana">かな(横画面)</h2>
+  <p>かなモードでは、上部の候補バーが消えて<b>候補サイドバー</b>になります。未確定の文字・鉛筆/循環矢印の状態カプセル・変換候補が縦に並び、タップで選択できます。</p>
+  <figure>
+    <div style="display:flex;gap:6px;max-width:660px;margin:0 auto;font-size:.78rem;text-align:center;align-items:stretch">
+      <div style="flex:0 0 64px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .2em;display:flex;flex-direction:column;justify-content:center;gap:.5em"><span>123</span><span>abc</span><span><b>あいう</b></span><span>☺︎</span></div>
+      <div style="flex:0 0 26%;border:1px dashed var(--accent-ink);border-radius:10px;background:var(--note-bg);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>候補サイドバー</b><span>未確定+候補の縦一覧</span><span>(幅は画面の約 1/3)</span></div>
+      <div style="flex:1;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>かなグリッド</b><span>5×2: 数字段+かな 2 段+下段</span><span>3×3+わ: 4 段クラスタ</span></div>
+    </div>
+    <figcaption>かな横画面の領域構成(既定: 候補が左)。設定「候補ペイン」で候補サイドバーとかなグリッドの左右を入れ替えられます。モード切り替え列は常に左端です。</figcaption>
+  </figure>
+  <ul>
+    <li><b>5×2 のかなグリッド:</b>縦画面と同じく、数字ストリップ(1〜0)+かな 2 段+下段〔<kbd>⌫</kbd>(64pt)・空白・<kbd>小</kbd>・<kbd>、</kbd>・<kbd>⏎</kbd>(72pt)〕。<kbd>☺︎</kbd> は左のモード切り替え列に入るため下段にはありません。</li>
+    <li><b>3×3+わ のかなグリッド:</b>縦画面と同じ 4 段クラスタ(右端に ⌫・空白・⏎ の機能列、最下段に 小・わ・、)。</li>
+    <li>サイドバーの幅は画面幅に応じて自動で決まります(5×2 で約 34%、3×3+わ で約 40%。最小 180pt・最大 320pt)。</li>
+    <li>フリック割り当て・修飾キー・カタカナ切り替えはすべて縦画面と同じです(<a href="layouts-kana.html">前々ページ</a>)。</li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <h2 id="landscape-number">数字(横画面)</h2>
+  <p>数字モードは、縦画面と同じ 4 段グリッド(calculette / téléphone)を<b>幅の狭いキー(58pt)</b>で左に寄せ、空いたスペースに<b>付属記号パネル(4 段 × 6 キー)</b>を並べます。単位や通貨をフリックなしの 1 タップで打てます。</p>
+  <figure>
+    <div style="display:flex;gap:6px;max-width:660px;margin:0 auto;font-size:.78rem;text-align:center;align-items:stretch">
+      <div style="flex:0 0 64px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .2em;display:flex;flex-direction:column;justify-content:center;gap:.5em"><span>123</span><span>abc</span><span>あいう</span><span>⌘</span></div>
+      <div style="flex:0 0 30%;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>数字グリッド</b><span>calculette / téléphone</span><span>(4 段 × 3 キー・フリックあり)</span></div>
+      <div style="flex:0 0 64px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .2em;display:flex;flex-direction:column;justify-content:center;gap:.5em"><span>⌫</span><span>空白</span><span>⏎</span></div>
+      <div style="flex:1;border:1px dashed var(--accent-ink);border-radius:10px;background:var(--note-bg);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>記号パネル</b><span>4 段 × 6 キー(タップのみ)</span></div>
+    </div>
+    <figcaption>数字横画面の領域構成(既定: 数字が左)。設定「数字ペイン配列」で数字グリッドと記号パネルの左右を入れ替えられます。</figcaption>
+  </figure>
+  <p>記号パネルの内容は固定で、次の 24 キーです。</p>
+  <div class="tablewrap"><table class="spec">
+    <tr><td>+</td><td>€</td><td>℃</td><td>mm</td><td>mg</td><td>ml</td></tr>
+    <tr><td>-</td><td>$</td><td>℉</td><td>cm</td><td>cg</td><td>cl</td></tr>
+    <tr><td>±</td><td>¥</td><td>°</td><td>m</td><td>g</td><td>l</td></tr>
+    <tr><td>(</td><td>)</td><td>/</td><td>km</td><td>kg</td><td>kl</td></tr>
+  </table></div>
+  <ul>
+    <li>数字キーのフリック割り当ては縦画面と同じです(<a href="layouts-latin-number.html#number-calculette">前ページの早見表</a>)。フリックガイドはわずかに縮小表示されます。</li>
+    <li><b>clavier は横画面では使えません。</b>選んでいても自動的に calculette として表示されます。</li>
+  </ul>
+
+  <!-- ================================================================ -->
+  <h2 id="landscape-latin">英字(横画面)</h2>
+  <p>QWERTY / AZERTY は、横画面では物理キーボード風の<b>タイプライタ配置</b>になります。2 段目が 1/4 キー、3 段目が 3/4 キーぶん右へずれ、3 段目には右シフトが復活し、<kbd>,</kbd> <kbd>/</kbd>(AZERTY はさらに <kbd>'</kbd>)が挿入されます。<kbd>⌫</kbd> は 1 段目の右端、<kbd>⏎</kbd> は 2 段目の右端に入ります。</p>
+  <figure>
+    <div style="display:flex;gap:6px;max-width:660px;margin:0 auto;font-size:.78rem;text-align:center;align-items:stretch">
+      <div style="flex:0 0 64px;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .2em;display:flex;flex-direction:column;justify-content:center;gap:.5em"><span>123</span><span>abc</span><span>あいう</span><span>☺︎</span></div>
+      <div style="flex:0 0 26%;border:1px dashed var(--accent-ink);border-radius:10px;background:var(--note-bg);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>サジェスト<br>サイドバー</b><span>入力中の単語の候補</span></div>
+      <div style="flex:1;border:1px solid var(--line);border-radius:10px;background:var(--card);padding:.6em .4em;display:flex;flex-direction:column;justify-content:center"><b>タイプライタ配置</b><span>3 段+下段(段ずれあり)</span></div>
+    </div>
+    <figcaption>英字横画面の領域構成(既定: 候補が左)。サイドバーは設定「候補ペイン」の「候補ペインを使う」をオフにすると消え、タイプライタ配置が全幅に広がります。</figcaption>
+  </figure>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>段</th><th>QWERTY(横)</th><th>AZERTY(横)</th></tr>
+    <tr><td>1 段目</td><td>q w e r t y u i o p ⌫</td><td>a z e r t y u i o p ⌫</td></tr>
+    <tr><td>2 段目(1/4 ずれ)</td><td>a s d f g h j k l ' ⏎</td><td>q s d f g h j k l m ⏎</td></tr>
+    <tr><td>3 段目(3/4 ずれ)</td><td>⇧ z x c v b n m , / ⇧</td><td>⇧ w x c v b n , / ' ⇧</td></tr>
+    <tr><td>下段</td><td colspan="2">@ _ 空白 . -</td></tr>
+  </table></div>
+  <ul>
+    <li>QWERTY では縦画面になかった <kbd>'</kbd> キーが 2 段目の右端に入ります。左右のシフトキーは他のキーより 1.5 倍幅です。</li>
+    <li>下段の記号は縦画面(@ / . -)と少し異なり、<b>@ _ 空白 . -</b> の並びです。</li>
+    <li>長押しアクセント・シフトの 3 状態は縦画面と共通です(<a href="layouts-latin-number.html#latin-long-press">前ページ</a>)。横画面では 1 段目のキーの長押しパネルだけ、画面からはみ出さないようにキーの下側へ開きます。</li>
+    <li>英字 3×3(フリック)を選んでいる場合は、横画面でも 3×3 グリッドのまま、右端に ⌫・空白・⏎ の機能列が付き、サイドバー(オンのとき)が横に並びます。</li>
+  </ul>
+</main>
+<footer class="pager">
+  <a class="prev" href="layouts-latin-number.html">← 第8章(続) 配列リファレンス(英字・数字)</a>
+  <a class="next" href="trouble.html">第9章 困ったとき →</a>
+</footer>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>第3章 基本入力 — écritu 操作マニュアル</title>
+<link rel="stylesheet" href="assets/manual.css">
+</head>
+<body>
+<header class="site">
+  <a class="brand" href="index.html">écritu 操作マニュアル</a>
+  <nav class="crumbs"><a href="index.html">目次</a> › 第3章 基本入力</nav>
+</header>
+<main>
+  <h1><span class="chapno">第3章</span>基本入力 — かな・変換・確定</h1>
+  <p class="lede">この章では、écritu での毎日の入力 — かなを打ち、漢字に変換し、確定するまで — をひととおり説明します。候補バーの「鉛筆」と「循環矢印」の意味が分かれば、écritu の画面はもう読めたも同然です。</p>
+
+  <h2 id="keyboard-overview">キーボードの全体像</h2>
+  <p>まずは標準のかな配列「5×2」の画面全体を眺めてみましょう。何も入力していない待機状態です。</p>
+  <figure>
+    <div class="kb">
+      <div class="cand"></div>
+      <div class="row">
+        <div class="k fn">123</div>
+        <div class="k num">1</div><div class="k num">2</div><div class="k num">3</div><div class="k num">4</div><div class="k num">5</div><div class="k num">6</div><div class="k num">7</div><div class="k num">8</div><div class="k num">9</div><div class="k num">0</div>
+      </div>
+      <div class="row">
+        <div class="k fn">abc</div>
+        <div class="k">あ<span class="h u">い</span><span class="h r">う</span><span class="h d">お</span><span class="h l">え</span></div>
+        <div class="k">か<span class="h u">き</span><span class="h r">く</span><span class="h d">こ</span><span class="h l">け</span></div>
+        <div class="k">さ<span class="h u">し</span><span class="h r">す</span><span class="h d">そ</span><span class="h l">せ</span></div>
+        <div class="k">た<span class="h u">ち</span><span class="h r">つ</span><span class="h d">と</span><span class="h l">て</span></div>
+        <div class="k">な<span class="h u">に</span><span class="h r">ぬ</span><span class="h d">の</span><span class="h l">ね</span></div>
+      </div>
+      <div class="row">
+        <div class="k fn dis">あい</div>
+        <div class="k">は<span class="h u">ひ</span><span class="h r">ふ</span><span class="h d">ほ</span><span class="h l">へ</span></div>
+        <div class="k">ま<span class="h u">み</span><span class="h r">む</span><span class="h d">も</span><span class="h l">め</span></div>
+        <div class="k">や<span class="h u">『</span><span class="h r">ゆ</span><span class="h d">よ</span><span class="h l">』</span></div>
+        <div class="k">ら<span class="h u">り</span><span class="h r">る</span><span class="h d">ろ</span><span class="h l">れ</span></div>
+        <div class="k">わ<span class="h u">を</span><span class="h r">ん</span><span class="h d">〜</span><span class="h l">ー</span></div>
+      </div>
+      <div class="row">
+        <div class="k fn" style="font-size:15px">☺︎</div>
+        <div class="k del">⌫</div>
+        <div class="k sp"></div>
+        <div class="k w54"><span class="mod">小</span><span class="h dk">゛</span><span class="h hd">゜</span><span class="h d">…</span><span class="h l">カ</span></div>
+        <div class="k w54">、<span class="h u">?</span><span class="h r">!</span><span class="h d">・</span><span class="h l">。</span></div>
+        <div class="k ret">⏎</div>
+      </div>
+    </div>
+    <figcaption>かな 5×2・待機状態 — 最上部の候補バーは空、空白キーは無表示、改行キーは ⏎</figcaption>
+  </figure>
+  <p>画面は大きく 4 つのゾーンに分かれています。</p>
+  <div class="tablewrap">
+  <table class="spec">
+    <tr><th>ゾーン</th><th>内容</th></tr>
+    <tr><td>候補バー(最上部)</td><td>入力中の状態と変換候補が並びます。待機中は空です。読み方は<a href="#candidate-bar">この章の後半</a>で。</td></tr>
+    <tr><td>左列</td><td>モード切り替えの縦 1 列。<kbd>123</kbd>=数字、<kbd>abc</kbd>=英字、<kbd>あい</kbd>=かな。今いるモードのキーは薄く表示されます(上の図ではかなモードなので「あい」が薄い)。</td></tr>
+    <tr><td>数字段+かな 10 キー</td><td>5×2 配列では最上段に数字 1〜0 が常設。その下にかなキーが横 5 個×2 段で並びます。</td></tr>
+    <tr><td>下段</td><td>左から <kbd>☺︎</kbd>(絵文字・顔文字・記号パネル → 第5章)、<kbd>⌫</kbd>(削除)、空白キー、<kbd>小</kbd>(修飾キー)、<kbd>、</kbd>(読点キー)、改行キー。</td></tr>
+  </table>
+  </div>
+  <p class="note"><b>空白キーと改行キーは「変身」します:</b>待機中の空白キーは無表示、改行キーは「⏎」(アプリによっては検索アイコンなど)です。かなを入力し始めると、空白キーは「変換」、改行キーは「確定」という表示に変わります。詳しくは<a href="#conversion-and-commit">「変換と確定」</a>で。</p>
+  <p>かな配列にはもう 1 つ「3×3+わ」(Apple 標準に近い配置・数字段なし)があります。切り替えは第7章、全キーの一覧は第8章をご覧ください。</p>
+
+  <h2 id="flick-basics">フリック入力のきほん</h2>
+  <p>1 つのかなキーには最大 5 つの文字が入っています。<b>タップすると中央の文字</b>、上下左右に<b>払う(フリックする)とガイド文字</b>が入力されます。あキーを例にすると次のとおりです。</p>
+  <figure>
+    <div class="explain">
+      <div class="cross">
+        <div class="out u">い</div>
+        <div class="out l">え</div>
+        <div class="center">あ</div>
+        <div class="out r">う</div>
+        <div class="out d">お</div>
+        <div class="arrow u">▲</div>
+        <div class="arrow d">▼</div>
+        <div class="arrow l">◀</div>
+        <div class="arrow r">▶</div>
+      </div>
+      <dl class="legend">
+        <dt>タップ</dt><dd>あ</dd>
+        <dt>上フリック</dt><dd>い</dd>
+        <dt>右フリック</dt><dd>う</dd>
+        <dt>下フリック</dt><dd>お</dd>
+        <dt>左フリック</dt><dd>え</dd>
+      </dl>
+    </div>
+    <figcaption>あキー(écritu 方向) — 上=い/右=う/下=お/左=え</figcaption>
+  </figure>
+  <p>キーに触れると、そのキーがアクセント色(既定はエメラルドグリーン)に変わります。指を払っている間は、いま離すと何が入力されるかを示す<b>緑のプレビューカプセル</b>がキーの近くに表示されるので、確認しながら入力できます。</p>
+  <p>キーの中央の文字のまわりに小さく書かれているのが<b>ガイド文字</b>で、それぞれの方向にフリックしたときの文字を示します。écritu の既定では「上→い、右→う、下→お、左→え」という écritu 独自の方向割り当てです。Apple 標準のキーボードと同じ方向(左→い、上→う、右→え、下→お)に変更することもできます(第8章)。ガイド文字の表示自体を減らす・消す設定もあります(第7章)。</p>
+
+  <h2 id="candidate-bar">候補バーの読み方</h2>
+  <p>かなを入力すると、キーボード最上部の候補バーに [<b>状態ミニカプセル</b> → <b>変換候補チップ</b> → <b>かなチップ</b>(末尾)] の順で表示が現れます。</p>
+  <div class="pair">
+    <figure>
+      <div class="kb" style="padding-bottom:8px">
+        <div class="cand">
+          <span class="state" role="img" aria-label="未確定">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M3.2 10.6 10 3.8a1.4 1.4 0 0 1 2 0l.2.2a1.4 1.4 0 0 1 0 2l-6.8 6.8-2.9.7.7-2.9Z" stroke="#fff" stroke-width="1.5" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="chip">今日は</span>
+          <span class="chip">京は</span>
+          <span class="chip">郷は</span>
+          <span class="chip">きょうは</span>
+        </div>
+      </div>
+      <figcaption>未確定(入力中) — オレンジの鉛筆カプセル。候補はまだ選択されていない</figcaption>
+    </figure>
+    <figure>
+      <div class="kb" style="padding-bottom:8px">
+        <div class="cand">
+          <span class="state conv" role="img" aria-label="変換中">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M13 8a5 5 0 0 1-8.7 3.4M3 8a5 5 0 0 1 8.7-3.4" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/><path d="M11 2.2l.9 2.5-2.6.8" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 13.8l-.9-2.5 2.6-.8" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </span>
+          <span class="chip sel">今日は</span>
+          <span class="chip">京は</span>
+          <span class="chip">郷は</span>
+          <span class="chip">きょうは</span>
+        </div>
+      </div>
+      <figcaption>変換中 — アクセント色の循環矢印カプセル。選択中の候補が緑にハイライト</figcaption>
+    </figure>
+  </div>
+  <p>先頭のミニカプセルは、いまの状態をアイコンで示します。</p>
+  <div class="tablewrap">
+  <table class="spec">
+    <tr><th>アイコン</th><th>状態</th><th>意味</th></tr>
+    <tr><td>鉛筆(オレンジ)</td><td>未確定</td><td>かなを入力している最中。候補は表示されていますが、まだどれも選ばれていません。</td></tr>
+    <tr><td>循環矢印(アクセント色)</td><td>変換中</td><td>空白(変換)キーで候補送りをしている間だけ表示されます。選択中の候補チップが緑にハイライトされます。</td></tr>
+    <tr><td>⊘(候補なし)</td><td>—</td><td>変換候補が見つからないとき、カプセルの代わりに空集合アイコンのチップだけが表示されます。</td></tr>
+  </table>
+  </div>
+  <p>チップは 2 種類あります。</p>
+  <ul>
+    <li><b>変換候補チップ</b> — タップすると<b>その場で確定</b>します。変換キーを押していなくても、目当ての候補が見えていれば直接タップするのが早道です。</li>
+    <li><b>かなチップ(末尾)</b> — 入力したかながそのまま出ています。タップすると<b>変換せずかなのまま確定</b>します。かなで書きたい語(「ありがとう」「ふわふわ」など)はこれで一発です。</li>
+  </ul>
+  <p class="note"><b>かなチップは学習にも効きます:</b>かなチップで確定した語(読み 6 文字まで)は「かなのまま使う語」として学習され、次からは変換候補にもかなが先頭で出るようになります(第6章)。</p>
+
+  <h2 id="conversion-and-commit">変換と確定</h2>
+  <p>かなを入力している間、空白キーは「<b>変換</b>」、改行キーは「<b>確定</b>」に変わります。</p>
+  <ol class="steps">
+    <li><b>変換キーを 1 回押す</b> — 変換が始まります。先頭の候補が選択され、状態カプセルが鉛筆から循環矢印に変わり、入力欄の文字も選択中の候補に置き換わります。</li>
+    <li><b>さらに変換キーを押す</b> — 候補が 1 つずつ送られます。末尾まで行くと先頭に戻ります。</li>
+    <li><b>確定キーを押す</b> — 選択中の候補で確定します。変換を始めていない(鉛筆の)状態で確定キーを押すと、かなのまま確定します。</li>
+  </ol>
+  <p>候補送りの途中でも、バーに見えている別の候補チップをタップすればそれで確定できます。</p>
+  <p>何も入力していないときは、空白キーはただの空白(スペース)、改行キーはただの改行(またはアプリの指定する検索などの動作)です。</p>
+
+  <h2 id="katakana-commit">カタカナで確定</h2>
+  <p>「サクサク」「モフモフ」のようにカタカナで書きたいときは、変換候補を探さなくても、確定の操作を少し変えるだけでカタカナにできます。方法は 3 つです。</p>
+  <div class="tablewrap">
+  <table class="spec">
+    <tr><th>操作</th><th>動き</th></tr>
+    <tr><td>入力中に<b>確定キーを長押し</b></td><td>入力したかなが<b>カタカナで確定</b>されます。確定の直前に、末尾のかなチップが一瞬ハイライトされます。</td></tr>
+    <tr><td>入力中に<b>確定キーを素早く 2 回タップ</b></td><td>1 回目のタップでいったんかなのまま確定し、素早い 2 回目のタップ(0.2 秒以内)で<b>いま確定した文字列がカタカナに置き換わります</b>。カタカナへの置き換えは学習にも反映されます。</td></tr>
+    <tr><td><b>かなチップ(または読みと同じ候補チップ)を長押し</b></td><td>候補バー末尾のかなチップを長押し(約 0.4 秒)すると、カタカナで確定します。</td></tr>
+  </table>
+  </div>
+  <p class="note"><b>ダブルタップの仕組み:</b>écritu は確定キーでかな確定した内容を短時間おぼえていて、直後のもう 1 タップを受けると、確定済みの文字列を削除してカタカナに置き換えます。ほかのキーを押すとこの記録は消えるので、誤爆の心配はありません。</p>
+
+  <h2 id="katakana-input-mode">ひらがな⇄カタカナ入力モード</h2>
+  <p>長いカタカナ語を打つなら、入力モードごとカタカナに切り替える方法もあります。<b>小キーを左にフリック</b>してください(ガイド文字に「カ」と出ている方向です)。</p>
+  <p>カタカナモード中は、かなキーで打った文字がそのままカタカナで入力されます。キーの表示もカタカナに変わるので、いまどちらのモードかは一目で分かります。小キーの左フリックのガイドは「ひ」に変わり、もう一度左フリックするとひらがなに戻ります。</p>
+
+  <h2 id="modifiers">濁点・半濁点・小文字 — 前置修飾が既定</h2>
+  <p>下段の<b>小キー(修飾キー)</b>で、濁点・半濁点・小文字を入力します。</p>
+  <figure>
+    <span class="kwrap"><span class="k"><span style="font-size:17px">小</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 4px),calc(-50% - 6px))">゛</span><span class="h" style="font-size:25px;font-weight:700;transform:translate(calc(-50% + 25px),calc(-50% + 5px))">゜</span><span class="h d">…</span><span class="h l">カ</span></span></span>
+    <figcaption>小キー — タップ=小文字/上=゛/右=゜/下=…/左=カタカナモード</figcaption>
+  </figure>
+  <div class="tablewrap">
+  <table class="spec">
+    <tr><th>操作</th><th>モード</th><th>例</th></tr>
+    <tr><td>タップ</td><td>小文字</td><td>小 →「や」で「ゃ」</td></tr>
+    <tr><td>上フリック</td><td>゛(濁点)</td><td>゛→「か」で「が」</td></tr>
+    <tr><td>右フリック</td><td>゜(半濁点)</td><td>゜→「は」で「ぱ」</td></tr>
+  </table>
+  </div>
+  <p>既定は<b>前置修飾</b>です。つまり「<b>先に小キーを操作してから、次のかなを打つ</b>」順番です。小キーを操作するとキーがアクセント色の枠でハイライトされ、かなキーの表示そのものが修飾後の文字(小文字・濁音・半濁音)に変わります。そのまま 1 文字打つとモードは自動で解除されます。間違えて入ったときは、もう一度同じ操作をすれば解除できます。</p>
+  <p>Apple 標準と同じ「打った後に修飾する」<b>後置修飾</b>に変更することもできます。修飾方式の詳細と設定は第7章・第8章をご覧ください。なお、下フリックの「…」(三点リーダ)はどちらの方式でも共通です(第1章)。</p>
+
+  <h2 id="parentheses-wrap">()ラップモード — 括弧ごと入力</h2>
+  <p><b>小キーを長押し</b>すると、()ラップモードのオン/オフが切り替わります。オンの間は候補バーのすべての候補が「(候補)」のように括弧付きで表示され、<b>確定すると括弧で包まれた形で入力</b>されます。「(笑)」「(仮)」のような挿入をよく使う方に便利です。</p>
+  <ul>
+    <li>何も入力せずにオンにすると、候補バーに「()」のカプセルとチップが表示されます。そのまま確定キーを押すと「()」だけが入力されます。</li>
+    <li>何も入力していない状態で <kbd>⌫</kbd> を押すか、もう一度小キーを長押しすると、ラップモードは解除されます。確定すると自動的に解除されます。</li>
+  </ul>
+
+  <h2 id="delete-and-repeat">削除と繰り返し</h2>
+  <p><kbd>⌫</kbd> はタップで 1 文字削除、<b>長押しで連続削除(リピート)</b>です。入力中(未確定)のかなは、確定済みの本文より先に、打った順の逆に 1 文字ずつ消えます。</p>
+  <p>リピートが始まるまでの時間と削除の速さは設定で調整できます(第7章)。</p>
+</main>
+<footer class="pager">
+  <a class="prev" href="setup.html">← 第2章 導入</a>
+  <a class="next" href="symbols.html">第4章 記号・数字・英字の入力 →</a>
+</footer>
+</body>
+</html>
