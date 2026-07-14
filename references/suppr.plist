@@ -166,5 +166,7 @@
 	<dict><key>phrase</key><string>龍人</string><key>shortcut</key><string>たつと</string></dict>
 	<dict><key>phrase</key><string>美多奈</string><key>shortcut</key><string>みたな</string></dict>
 	<dict><key>phrase</key><string>ムカシ</string><key>shortcut</key><string>むかし</string></dict>
+	<dict><key>phrase</key><string>カラ</string><key>shortcut</key><string>から</string></dict>
+	<dict><key>phrase</key><string>カラダ</string><key>shortcut</key><string>からだ</string></dict>
 </array>
 </plist>
