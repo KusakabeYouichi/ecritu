@@ -127,16 +127,19 @@ extension KanaKanjiConverter {
     // 起こしていた。候補バー(単一経路)には引き続き全辞書候補が並ぶため、レア語は手動選択
     // +学習(curated 1500)で救済される。
     static let multiClauseDictUnknownCost = 8700
-    // レア読み床上げ: LM unigram は表層のみで読みを見ないため、頻出表層×レア読み
+    // 短spanレア読み床上げ: LM unigram は表層のみで読みを見ないため、頻出表層×レア読み
     // (見(み)8055/店(たな)11947/三田(みた)8247 等)が不当に安くなり断片連鎖を作る
-    // (むかしみたな→昔見店 等)。word_costs(読み+表層)がこの閾値以上=Sudachi 自身が
-    // レア読みと言っている語は、bigram 未観測時に word_costs まで床上げする。
-    // 正規読み(棚(たな)3793/店(みせ)6539 等)は閾値未満で無影響。bigram 観測時は
-    // 文脈の実証があるので免除。レア語自体は単文節経路+学習で引き続き選択可能。
-    // 読み1〜2文字に限定する: 長い読みで wc だけ高い語(解像度(かいぞうど)14076 等、
-    // 正読みなのに Sudachi コストが特異的に高いデータ)を巻き添えにしないため。
-    // 断片連鎖の部品は実質 1〜2文字 span なので短spanだけで目的は果たせる。
-    static let multiClauseRareReadingWordCostFloorMin = 8000
+    // (むかしみたな→昔見店 等)。bigram 未観測時、短spanの漢字表層は
+    // max(unigram+バックオフ, word_costs) で評価する — Sudachi(読み別)と LM(表層のみ)の
+    // 高い方を採る。両者が食い違う(=表層が別読みや語幹断片として頻出なだけ)の時だけ
+    // 自動で効き、真に頻出の読み(目(め)wc4477<uni+bo 等)は max が no-op で無影響。
+    // 閾値方式(8000)は み一族(身6730/実7722/見8055…)の繰り上がりに勝てず廃止した。
+    // 条件の意図:
+    // - 読み1〜2文字限定: 長い読みで wc だけ特異的に高い正読み(解像度(かいぞうど)14076)を
+    //   巻き添えにしない。断片連鎖の部品は実質短spanのみ。
+    // - 漢字表層限定: 助詞(に/で 等)やかな表層の微妙なマージン(じょやのかね 71点差等)を
+    //   動かさない。カタカナ断片は既存のカタカナ化ペナルティが受け持つ。
+    // - bigram 観測時は文脈の実証があるので免除。レア語自体は単文節+学習で選択可能。
     static let multiClauseRareReadingFloorMaxReadingCount = 2
     static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
@@ -448,12 +451,12 @@ extension KanaKanjiConverter {
                 base = auxBigram
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
-                // レア読み床上げ(定数コメント参照): 表層 unigram はコーパスA単位分割の影響で
-                // 語幹断片(見=4181)や別読みの頻出表層(店=みせ用途)を過小評価する。
-                // Sudachi の読み+表層コストがレア級の短span語は、そこまで引き上げて断片連鎖を防ぐ。
+                // 短spanレア読み床上げ(定数コメント参照): 表層 unigram はコーパスA単位分割の
+                // 影響で語幹断片(見=4181)や別読みの頻出表層(店=みせ用途)を過小評価する。
+                // 短spanの漢字表層は Sudachi の読み別コストとの max で評価して断片連鎖を防ぐ。
                 if let wordCost,
-                    wordCost >= Self.multiClauseRareReadingWordCostFloorMin,
-                    reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount {
+                    reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount,
+                    containsKanji(surface) {
                     base = max(base, wordCost)
                 }
             } else if isInflectionDerived {
