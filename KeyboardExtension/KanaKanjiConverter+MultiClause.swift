@@ -97,6 +97,11 @@ extension KanaKanjiConverter {
     // 区切りを優先する(むかしみたな→昔見たな 対策)。連体詞「な」(きれいな花 等、な の
     // 後ろに語が続く)は node.end==n の文末限定で除外する。
     static let multiClauseSentenceFinalNaAfterNounPenalty = 3000
+    // 述語(動詞連体形・活用派生)の直後に漢音の 人(にん/じん)は接続しない(描く人 は
+    // かくひと のみ。にん/じん は 管理人/外国人 等の名詞接尾)。学習で かく→描く 等が
+    // curated 化すると 触って+描く+人(にん) が 触って確認 を逆転するため、文法として遮断する
+    // (さわってかくにん対策)。読み ひと は正当な接続なので対象外。
+    static let multiClausePersonSuffixSinoReadings: Set<String> = ["にん", "じん"]
     // 仮定の接続助詞「なら」は述語(動詞/形容詞の終止・連体形)直後ではかなが正書
     // (買うなら/するなら/食べるなら)。奈良/楢/ナラ への漢字・カタカナ化を EOS で減点する。
     // ただし体言+と直後(大阪と奈良)は正当な地名なので、直前が述語のときだけ発火させる。
@@ -599,6 +604,12 @@ extension KanaKanjiConverter {
                         node.surface == "な",
                         !Self.isPredicateLikePrevForConditional(prevNode) {
                         cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
+                    }
+                    // 述語直後の 人(にん/じん) は文法として接続しない(定数コメント参照)。
+                    if node.surface == "人",
+                        Self.multiClausePersonSuffixSinoReadings.contains(node.reading),
+                        Self.isPredicateLikePrevForConditional(prevNode) {
+                        cost += Self.multiClauseForbiddenPenaltyCost
                     }
                     if cost < best[idx] {
                         best[idx] = cost

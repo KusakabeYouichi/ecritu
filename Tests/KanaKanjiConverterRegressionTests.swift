@@ -48,6 +48,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "昔見たな", "multi=\(multi)")
     }
 
+    // 実LM回帰: 述語直後の 人(にん/じん) は接続しない文法遮断の検証。
+    // かく→描く の学習(curated 1500)が かく span を安くすると、遮断なしでは
+    // 触って+描く+人(にん) が 触って確認 を逆転していた(さわってかくにん事件)。
+    // 人(ひと) の正当な接続(絵を描く人)は影響を受けないことも同時に確認する。
+    func testRegressionRealLMPredicatePlusNinIsBlocked() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        converter.store.addLearnedEntry(reading: "かく", candidate: "描く")
+
+        let kakunin = converter.multiClauseCandidates(for: "さわってかくにん", systemCandidateMode: .surface)
+        XCTAssertEqual(kakunin.first, "触って確認", "multi=\(kakunin)")
+
+        let kakuhito = converter.multiClauseCandidates(for: "えをかくひと", systemCandidateMode: .surface)
+        XCTAssertTrue(
+            kakuhito.contains { $0.hasSuffix("描く人") || $0.hasSuffix("書く人") },
+            "人(ひと)の正当な接続が失われている multi=\(kakuhito)"
+        )
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
