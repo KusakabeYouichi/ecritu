@@ -137,10 +137,23 @@ extension KanaKanjiConverter {
     // 条件の意図:
     // - 読み1〜2文字限定: 長い読みで wc だけ特異的に高い正読み(解像度(かいぞうど)14076)を
     //   巻き添えにしない。断片連鎖の部品は実質短spanのみ。
-    // - 漢字表層限定: 助詞(に/で 等)やかな表層の微妙なマージン(じょやのかね 71点差等)を
-    //   動かさない。カタカナ断片は既存のカタカナ化ペナルティが受け持つ。
+    // - 漢字表層に加え、かな識別(surface==reading)にも適用する: コーパスのA単位分割は
+    //   補助動詞のかな(してみた→し/て/み/た)も断片化するため、み(み)wc9225 のような
+    //   かな識別が uni+bigram(み→た 1010)で激安チェーンを作る(むかしみたな→昔みたな)。
+    //   ただし助詞・助動詞類(下の除外リスト)は正当な高頻度かなであり、薄マージン経路
+    //   (じょやのかね 71点差等)を動かさないため除外する。
+    // - カタカナ断片は既存のカタカナ化ペナルティが受け持つ。
     // - bigram 観測時は文脈の実証があるので免除。レア語自体は単文節+学習で選択可能。
     static let multiClauseRareReadingFloorMaxReadingCount = 2
+    static let multiClauseKanaIdentityFloorExemptReadings: Set<String> = [
+        // 格助詞・係助詞(caseParticleSurfaces と同梱+複合の部品)
+        "に", "を", "が", "へ", "と", "で", "は", "も", "の",
+        "から", "まで", "より",
+        // 終助詞・間投助詞
+        "ね", "よ", "な", "か", "わ", "さ", "ぞ", "ぜ", "し", "や",
+        // 助動詞・接続の頻出かな(A単位分割で正当に頻出するもの)
+        "た", "て", "だ", "ん", "う", "ない", "ます", "です", "たい", "てる"
+    ]
     static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
     // 追加語彙/学習語彙(sacoche/misc.plist 等のキュレーション or 学習)由来の語は強く優遇する。実コストは
@@ -452,11 +465,15 @@ extension KanaKanjiConverter {
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
                 // 短spanレア読み床上げ(定数コメント参照): 表層 unigram はコーパスA単位分割の
-                // 影響で語幹断片(見=4181)や別読みの頻出表層(店=みせ用途)を過小評価する。
-                // 短spanの漢字表層は Sudachi の読み別コストとの max で評価して断片連鎖を防ぐ。
+                // 影響で語幹断片(見=4181)や別読みの頻出表層(店=みせ用途)、補助動詞由来の
+                // かな断片(み)を過小評価する。短spanの漢字表層とかな識別(助詞類は除外)は
+                // Sudachi の読み別コストとの max で評価して断片連鎖を防ぐ。
                 if let wordCost,
                     reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount,
-                    containsKanji(surface) {
+                    containsKanji(surface)
+                        || (surface == reading
+                            && !isCurated
+                            && !Self.multiClauseKanaIdentityFloorExemptReadings.contains(reading)) {
                     base = max(base, wordCost)
                 }
             } else if isInflectionDerived {
