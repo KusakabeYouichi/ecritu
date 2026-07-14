@@ -6,6 +6,12 @@ enum FlickGuideDisplayMode: String {
     case down
 }
 
+// 押下表示残留(赤キー)のフェイルセーフ発火を診断へ通知するフック。
+// KeyboardViewController が viewDidLoad で設定し、watchdog が強制解除した時に呼ぶ。
+enum KeyboardStuckTouchDiagnostics {
+    static var onForceClear: ((String) -> Void)?
+}
+
 enum LongPressCandidatePanelPlacement {
     case above
     case below
@@ -743,6 +749,7 @@ struct FlickKeyView: View {
 
         let workItem = DispatchWorkItem {
             if isTouching && !isGestureInProgress {
+                KeyboardStuckTouchDiagnostics.onForceClear?("FlickKeyView key=\(kana.label)")
                 finalizeTouchInteractionState()
             }
         }

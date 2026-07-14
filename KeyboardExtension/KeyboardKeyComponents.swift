@@ -409,6 +409,7 @@ struct SpaceFlickActionKeyButton: View {
 
         let workItem = DispatchWorkItem {
             if isTouching && !isGestureInProgress {
+                KeyboardStuckTouchDiagnostics.onForceClear?("SpaceFlickActionKeyButton key=空白")
                 finalizeTouchInteractionState()
             }
         }
