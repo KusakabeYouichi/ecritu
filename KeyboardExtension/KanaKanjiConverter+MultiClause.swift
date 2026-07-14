@@ -614,6 +614,15 @@ extension KanaKanjiConverter {
                     if cost < best[idx] {
                         best[idx] = cost
                         backPointer[idx] = prevIdx
+                    } else if cost == best[idx],
+                        backPointer[idx] >= 0,
+                        Self.isKatakanaString(nodes[backPointer[idx]].surface),
+                        !Self.isKatakanaString(prevNode.surface) {
+                        // 完全同コストのタイブレークは非カタカナ経路を優先する。かな入力に対して
+                        // 同じ証拠の強さならカタカナ化しない方が自然(法律かえるのは: 変える経路
+                        // 6024+1810 と カエル経路 6927+907 が 7834 で完全タイ → 変える を採る。
+                        // 従来はノード列挙順=word_costs順で カエル が先勝ちしていた)。
+                        backPointer[idx] = prevIdx
                     }
                 }
             }
