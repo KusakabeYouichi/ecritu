@@ -471,14 +471,22 @@ extension KanaKanjiConverter {
             wordCost: Int? = nil
         ) -> Int {
             var base: Int
+            // 人(にん/じん) は surface LM 統計が ひと 読みに支配されるため、bigram 借用
+            // (し→人 5902/氏→人: 〜し、人が… の ひと文脈由来)が漢語接尾 人 の断片連結を
+            // 過剰に安くする(しにんからも→し人/氏人からも)。bigram を使わず unigram+
+            // 短spanレア読み床(Sudachi の読み別コスト 8712)で評価する。
+            let deniesBigramBorrow = surface == "人"
+                && Self.multiClausePersonSuffixSinoReadings.contains(reading)
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
             // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
             // 文頭は unigram+バックオフで評価する。文中の bigram は従来どおり。
             if prev != Self.multiClauseBOSMarker,
+                !deniesBigramBorrow,
                 let bigram = bigramCosts["\(prev)\t\(surface)"] {
                 base = bigram
-            } else if let prevAuxTail,
+            } else if !deniesBigramBorrow,
+                let prevAuxTail,
                 let auxBigram = bigramCosts["\(prevAuxTail)\t\(surface)"] {
                 // 活用派生ノードの末尾助動詞トークンで bigram を代用(買わない→よ を ない→よ で評価)
                 base = auxBigram

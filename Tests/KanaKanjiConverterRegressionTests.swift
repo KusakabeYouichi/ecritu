@@ -3058,6 +3058,37 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 実LM回帰: かな素通し断片直後の 人(にん) 遮断と、ぜい金(かな漢字混じり収穫遺物)の抑制。
+    // し→人(bigram5902、ひと文脈からの読み跨ぎ借用)+人→から(2336)が複合助詞 からも の
+    // clamp(1200)を人側だけに発動させ、bigramを持たない 死人(7331)経路を逆転していた
+    // (しにんからもぜいきん→し人からも税金/し人からもぜい金)。
+    func testRegressionRealLMShininKaramoHasNoFragmentNin() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
+        let suppression: [String: [String]] = ["ぜいきん": ["ぜい金"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+
+        let multi = converter.multiClauseCandidates(for: "しにんからもぜいきん", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.contains("死人からも税金"), "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("し人") || $0.contains("氏人") }), "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("ぜい金") }), "multi=\(multi)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
