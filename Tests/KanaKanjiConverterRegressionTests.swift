@@ -585,6 +585,36 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains { $0.contains("石ユ") }, "multi=\(multi)")
     }
 
+    // 実LM回帰: いただきました — LMはかな優位(いただく6955<戴7334<頂7446)だが、単文節の
+    // かな識別LM判定が活用形読み(LM未収録)で行われ証明できず 頂きました が先頭だった。
+    // misc 頻出形直接登録(ございます同処方)+いたゞく(繰り返し記号の表記ゆれ)抑制。
+    func testRegressionRealLMItadakimashitaPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        let suppression: [String: [String]] = ["いただく": ["いたゞく"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        converter.store.addUserEntry(reading: "いただきました", candidate: "いただきました")
+
+        let single = converter.candidates(for: "いただきました", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "いただきました", "single=\(single)")
+        XCTAssertTrue(single.contains("頂きました"), "漢字版温存 single=\(single)")
+        XCTAssertFalse(single.contains("いたゞきました"), "single=\(single)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),

@@ -101,6 +101,16 @@
 	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->
 	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string></dict>
 	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>
+	<!-- いただく系: LMはかな優位(いただく6955<戴く7334<頂く7446)だが、単文節ランキングのかな識別LM判定が活用形の読み(LM未収録)で行われ証明できず、頂きました が先頭化していた。ございます と同じ頻出形直接登録 -->
+	<dict><key>phrase</key><string>いただく</string><key>shortcut</key><string>いただく</string></dict>
+	<dict><key>phrase</key><string>いただき</string><key>shortcut</key><string>いただき</string></dict>
+	<dict><key>phrase</key><string>いただきます</string><key>shortcut</key><string>いただきます</string></dict>
+	<dict><key>phrase</key><string>いただきました</string><key>shortcut</key><string>いただきました</string></dict>
+	<dict><key>phrase</key><string>いただいた</string><key>shortcut</key><string>いただいた</string></dict>
+	<dict><key>phrase</key><string>いただいて</string><key>shortcut</key><string>いただいて</string></dict>
+	<dict><key>phrase</key><string>いただける</string><key>shortcut</key><string>いただける</string></dict>
+	<dict><key>phrase</key><string>いただけます</string><key>shortcut</key><string>いただけます</string></dict>
+	<dict><key>phrase</key><string>いただければ</string><key>shortcut</key><string>いただければ</string></dict>
 	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
 	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>
 	<!-- としとる: wc は 年取る/年老る(共に10085ジャンク級)のみで 歳 系が欠落。賭し(uni7489)+とって 断片が最良化するため、五段curated+て/た形直接供給(気をつけて と同処方)。登録順=候補順(年取〜が先頭、歳とる が2番手) -->
