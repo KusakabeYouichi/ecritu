@@ -90,6 +90,8 @@
 	<dict><key>phrase</key><string>体が</string><key>shortcut</key><string>からだが</string></dict>
 	<!-- 断線: 実在語(wc6518)だが LM unigram 7369 が弱く、Wikipediaバイアスの断片連鎖 段+戦(段→戦=1716 将棋記事、の→段=4936 文楽記事)に1181差で負ける(けいぶるのだんせん→ケイブルの段戦) -->
 	<dict><key>phrase</key><string>断線</string><key>shortcut</key><string>だんせん</string></dict>
+	<!-- 彼ら: SudachiはA単位で彼+らに分割し word_costs(かれら) に彼らが無い。sacoche の カレラ/Carrera(curated 1500)に合成経路(彼+ら+は 9576)が勝てず かれらは→カレラは 一色になるため curated 供給。カレラは と同点になり非ネイティブ表層タイブレークで彼らが勝つ -->
+	<dict><key>phrase</key><string>彼ら</string><key>shortcut</key><string>かれら</string></dict>
 	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->
 	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
