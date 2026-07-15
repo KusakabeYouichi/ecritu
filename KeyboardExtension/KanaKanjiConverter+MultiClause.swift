@@ -110,6 +110,12 @@ extension KanaKanjiConverter {
     static let multiClausePredicateTailCharacters: Set<Character> = [
         "う", "く", "ぐ", "す", "つ", "ぬ", "ぶ", "む", "る", "い", "た", "だ"
     ]
+    // 連体詞(こんな/そんな/あんな/どんな)直後の かんじ は 感じ が自然(こんな感じ)。
+    // bigram 未観測で unigram の Wikipediaバイアス(漢字4805<感じ5118)により 漢字 が
+    // 313差で先頭化するため、漢字 表層にのみ小さく減点して 感じ を最良にする
+    // (こんな漢字 は変種#2 に残り、幹事/寛治 等も温存される)。
+    static let multiClauseDemonstrativeSurfaces: Set<String> = ["こんな", "そんな", "あんな", "どんな"]
+    static let multiClauseDemonstrativeKanjiPenalty = 500
     // 形式名詞: 連体形(活用派生ノード)の直後ではかな表記が正書(行ったとき/するとき)。
     // 実質名詞(時は金なり/時を刻む)は前が BOS や名詞で活用派生でないため発火せず区別できる。
     // LM は た→とき(2819<た→時2920)で僅かにかなを好むが、下流 時→の(903<とき→の1107)で
@@ -619,6 +625,12 @@ extension KanaKanjiConverter {
                         Self.multiClausePersonSuffixSinoReadings.contains(node.reading),
                         Self.isPredicateLikePrevForConditional(prevNode) {
                         cost += Self.multiClauseForbiddenPenaltyCost
+                    }
+                    // 連体詞直後の かんじ→漢字 に小減点(定数コメント参照。こんな感じ を最良に)。
+                    if node.reading == "かんじ",
+                        node.surface == "漢字",
+                        Self.multiClauseDemonstrativeSurfaces.contains(prevNode.surface) {
+                        cost += Self.multiClauseDemonstrativeKanjiPenalty
                     }
                     if cost < best[idx] {
                         best[idx] = cost
