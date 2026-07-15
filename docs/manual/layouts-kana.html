@@ -26,8 +26,9 @@
       <path d="M 853 129 C 832 164 823 206 828 244" transform="rotate(-24 866 228)" fill="none" stroke="rgb(97,133,224)" stroke-width="33" stroke-linecap="round"/>
       <path d="M 1008 109 C 987 143 977 186 983 225" transform="rotate(-24 1028 206)" fill="none" stroke="rgb(97,133,224)" stroke-width="33" stroke-linecap="round"/>
     </g>
-    <!-- 実機は外楕円と内楕円の間を塗り潰した帯(eoFill)+輪郭線 -->
-    <g id="duckHalo" transform="rotate(24 860 200)">
+    <!-- 実機は外楕円と内楕円の間を塗り潰した帯(eoFill)+輪郭線。
+         translate は実機の handakutenVisualOffset(右3pt・上4pt)の 36px 換算 -->
+    <g id="duckHalo" transform="translate(130,-174) rotate(24 860 200)">
       <path fill-rule="evenodd" fill="rgb(97,133,224)" d="M 535 200 A 325 130 0 1 0 1185 200 A 325 130 0 1 0 535 200 Z M 642.5 200 A 217.5 77.5 0 1 0 1077.5 200 A 217.5 77.5 0 1 0 642.5 200 Z"/>
       <ellipse cx="860" cy="200" rx="325" ry="130" fill="none" stroke="rgb(97,133,224)" stroke-width="39"/>
       <ellipse cx="860" cy="200" rx="217.5" ry="77.5" fill="none" stroke="rgb(97,133,224)" stroke-width="34"/>
@@ -386,7 +387,7 @@
       <figcaption>濁点(汗マーク)</figcaption>
     </figure>
     <figure>
-      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:36px;height:36px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckHalo"/></svg></span></span>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:36px;height:36px;color:#000;overflow:visible"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckHalo"/></svg></span></span>
       <figcaption>半濁点(輪っか)</figcaption>
     </figure>
   </div>
