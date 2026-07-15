@@ -206,7 +206,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 彼ら が無く、sacoche の カレラ/Carrera(curated 1500)が合成経路(彼+ら+は 9576)に
     // 圧勝して かれらは→カレラは 一色になっていた。misc curated 彼ら で同点(7270)を作り、
     // 非ネイティブ表層(カタカナ/ラテン字のみ)タイブレークで 彼らは を最良にする。
-    // カレラは/Carreraは は同点変種として温存される(ワイン用途は無傷)。
+    // カレラは/Carreraは は同点変種として温存される(ポルシェ用途は無傷)。
     func testRegressionRealLMKarerahaPrefersKarera() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
