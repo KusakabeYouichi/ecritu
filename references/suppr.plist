@@ -193,5 +193,7 @@
 	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
 	<!-- いたゞく: 繰り返し記号ゞの表記ゆれエントリ(wc9407)。いたゞきました 等を派生させる -->
 	<dict><key>phrase</key><string>いたゞく</string><key>shortcut</key><string>いただく</string></dict>
+	<!-- ぜい金: 税金(ぜいきん)のかな漢字混じり表記ゆれエントリ(wc8269、rank1収穫遺物)。連文節の同スパン変種に浮上する -->
+	<dict><key>phrase</key><string>ぜい金</string><key>shortcut</key><string>ぜいきん</string></dict>
 </array>
 </plist>
