@@ -494,6 +494,64 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi.prefix(2)), ["こんな感じ", "こんな漢字"], "multi=\(multi)")
     }
 
+    // 実LM回帰: としとってから — wc は 年取る/年老る(共に10085)のみで 歳 系欠落、
+    // 賭し(uni7489)+とって 断片が最良化していた。misc curated(五段+て/た形直接)で
+    // 年取ってから #1、歳とってから #2 を固定。
+    func testRegressionRealLMToshitotteKara() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        // addUserEntry は先頭挿入(新しい順)のため、実機の misc JSON 順
+        // (年取って が先頭)に合わせて逆順で注入する
+        converter.store.addUserEntry(reading: "としとって", candidate: "歳とって")
+        converter.store.addUserEntry(reading: "としとって", candidate: "年取って")
+
+        let multi = converter.multiClauseCandidates(for: "としとってから", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["年取ってから", "歳とってから"], "multi=\(multi)")
+    }
+
+    // 実LM回帰: おそいからな — 唐菜(からな 9770)等のジャンクと、文末な減点の助詞誤爆
+    // (から は述語末尾でないため 遅い+から+な に+3000が乗っていた)の二重原因。
+    // suppr(唐菜/晏い/遅そい/襲)+助詞直後の な 免除で 遅いからな を最良に。
+    func testRegressionRealLMOsoiKaranaPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        let suppression: [String: [String]] = [
+            "からな": ["唐菜"],
+            "おそい": ["晏い", "遅そい", "襲"]
+        ]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+
+        let multi = converter.multiClauseCandidates(for: "おそいからな", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "遅いからな", "multi=\(multi)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),

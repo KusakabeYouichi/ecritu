@@ -184,5 +184,10 @@
 	<dict><key>phrase</key><string>瑞葉</string><key>shortcut</key><string>みずは</string></dict>
 	<dict><key>phrase</key><string>美須羽</string><key>shortcut</key><string>みずは</string></dict>
 	<dict><key>phrase</key><string>美須葉</string><key>shortcut</key><string>みずは</string></dict>
+	<!-- おそいからな 対策: 唐菜(からな=野菜のレア語1ノード)、晏い/遅そい/襲(おそい のレア・誤送りがな表記) -->
+	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>
+	<dict><key>phrase</key><string>晏い</string><key>shortcut</key><string>おそい</string></dict>
+	<dict><key>phrase</key><string>遅そい</string><key>shortcut</key><string>おそい</string></dict>
+	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>
 </array>
 </plist>

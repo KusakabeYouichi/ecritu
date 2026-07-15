@@ -614,10 +614,12 @@ extension KanaKanjiConverter {
                         cost += Self.multiClauseHonorificKanjiPenalty
                     }
                     // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
+                    // 助詞(から/まで 等)直後の な は正当(遅いからな)なので免除する。
                     if node.end == n,
                         node.reading == "な",
                         node.surface == "な",
-                        !Self.isPredicateLikePrevForConditional(prevNode) {
+                        !Self.isPredicateLikePrevForConditional(prevNode),
+                        !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
                         cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
                     }
                     // 述語直後の 人(にん/じん) は文法として接続しない(定数コメント参照)。
