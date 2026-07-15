@@ -438,6 +438,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 実LM回帰: みずは — レア人名11件(水羽/水華/... 全て wc10000)が読み完全一致として
+    // 水+は 合成より前に並んでいた(たつと人名と同型)。suppr 11件+misc 固定句 水は で
+    // 先頭化。見ずは 等の動詞系は温存される。
+    func testRegressionRealLMMizuhaPrefersMizuWa() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        let suppression: [String: [String]] = [
+            "みずは": ["水羽", "水華", "水葉", "水葩", "泉羽", "泉葉", "瑞羽", "瑞芭", "瑞葉", "美須羽", "美須葉"]
+        ]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        converter.store.addUserEntry(reading: "みずは", candidate: "水は")
+
+        let single = converter.candidates(for: "みずは", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "水は", "single=\(single)")
+        XCTAssertFalse(single.contains("水羽"), "single=\(single)")
+        XCTAssertTrue(single.contains("見ずは"), "動詞系の温存 single=\(single)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
