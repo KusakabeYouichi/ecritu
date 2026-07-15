@@ -820,8 +820,20 @@ extension KanaKanjiConverter {
                 var altSegments = segments
                 altSegments[pos] = alt.surface
                 let variantJoined = altSegments.joined()
-                if variantJoined == normalized || variantJoined == joined {
+                if variantJoined == joined {
                     continue
+                }
+                // 入力そのままの全かな変種は原則捨てる(エコー防止)が、経路に curated ノード
+                // を含むならかな結果が正書の変換なので許す(best 経路の抑制ルールと同じ例外。
+                // やめるべし: 止める→やめる 差し替えで全かなになるが べし が curated)。
+                if variantJoined == normalized {
+                    let variantHasCurated = alt.isCurated
+                        || pathIndices.enumerated().contains(where: {
+                            $0.offset != pos && nodes[$0.element].isCurated
+                        })
+                    if !variantHasCurated {
+                        continue
+                    }
                 }
                 variants.append((delta, variantOrder, variantJoined))
                 variantOrder += 1
