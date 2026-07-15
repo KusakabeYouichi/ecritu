@@ -245,6 +245,36 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains("カレラは"), "カレラは が変種に残ること multi=\(multi)")
     }
 
+    // 実LM回帰: にうっかり — Sudachi の促音大書き表記ゆれエントリ うツかり(wc7730)が、
+    // 全かなエコー抑制で捨てられた最良(に+うっかり)の同コスト変種(dictUnknown 8700 で
+    // delta 0)として繰り上がっていた。suppr うツかり+misc かな識別 うっかり(エコー抑制
+    // 免除)で にうっかり を最良に。
+    func testRegressionRealLMNiUkkariPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        let suppression: [String: [String]] = ["うっかり": ["うツかり"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        converter.store.addUserEntry(reading: "うっかり", candidate: "うっかり")
+
+        let multi = converter.multiClauseCandidates(for: "にうっかり", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "にうっかり", "multi=\(multi)")
+        XCTAssertFalse(multi.contains("にうツかり"), "multi=\(multi)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),

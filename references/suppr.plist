@@ -171,5 +171,6 @@
 	<dict><key>phrase</key><string>者</string><key>shortcut</key><string>は</string></dict>
 	<dict><key>phrase</key><string>オイシイ</string><key>shortcut</key><string>おいしい</string></dict>
 	<dict><key>phrase</key><string>オイシい</string><key>shortcut</key><string>おいしい</string></dict>
+	<dict><key>phrase</key><string>うツかり</string><key>shortcut</key><string>うっかり</string></dict>
 </array>
 </plist>
