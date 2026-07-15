@@ -175,6 +175,11 @@ extension KanaKanjiConverter {
         "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
         "ゃ", "ゅ", "ょ", "ゎ", "ゕ", "ゖ", "ゝ", "ゞ", "・"
     ]
+    // 語頭禁止の正当な例外。ん は準体助詞(できる+ん+だ)、って/っていう は引用・話題の
+    // 助詞(アプリって 等、wc実在の正当語)。って を禁止したままだと 名詞+って が組めず、
+    // り を吸収して促音始まりを回避した活用合成ノード(りって)が滑り込む
+    // (ふくすうあぷりって→複数アプ+りって)。
+    static let multiClauseForbiddenInitialExemptReadings: Set<String> = ["ん", "って", "っていう"]
     // ローンワード的な読みの指標(長音・小書き母音)。これらを含む読みはカタカナ表記が
     // 妥当なので、カタカナ素通りを減点しない(例: らんてぃーゆ→ランティーユ は許容)。
     static let multiClauseLoanwordMarkers: Set<Character> = [
@@ -536,7 +541,7 @@ extension KanaKanjiConverter {
             // 〜るんだ/〜んです の文末クラスタが組めず ルン/キルン 等の分割に負ける)。
             if let first = reading.first,
                 Self.multiClauseForbiddenInitials.contains(first),
-                reading != "ん" {
+                !Self.multiClauseForbiddenInitialExemptReadings.contains(reading) {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
             // 促音「っ」で終わる読みの文節(かっ/カッ 等)は日本語の自立語として成立しない断片。

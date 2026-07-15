@@ -350,6 +350,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(2)), ["修正", "習性"], "single=\(single)")
     }
 
+    // 実LM回帰: ふくすうあぷりって — 語頭禁止(促音始まり100000)が引用助詞 って(wc5101)を
+    // 巻き添えにし、複数+アプリ+って が組めず、り を吸収した活用合成 りって(7200)による
+    // 複数アプ+りって が最良化していた。って/っていう を語頭禁止の例外(ん と同格)にして
+    // 是正。ッて/ツて 等の表記ゆれ変種は suppr で抑制(注入で再現)。
+    func testRegressionRealLMApuritteQuotative() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        let suppression: [String: [String]] = ["って": ["ッて", "ツて", "ッテ", "っテ"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+
+        let multi = converter.multiClauseCandidates(for: "ふくすうあぷりって", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "複数アプリって", "multi=\(multi)")
+        XCTAssertFalse(
+            multi.contains { $0.contains("アプり") || $0.contains("ッて") || $0.contains("ツて") },
+            "multi=\(multi)"
+        )
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
