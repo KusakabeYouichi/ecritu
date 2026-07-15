@@ -617,8 +617,11 @@ extension KanaKanjiConverter {
         var derived: [String] = []
 
         for suruSuffix in Self.honorificOSuruInflectionSuffixes() where stemReading.hasSuffix(suruSuffix) {
+            // 連用形1文字(い/み 等)の敬語o-suru合成は日本語に無い(お貸しする/お見せする は
+            // 連用2文字以上)。一段 居る/射る/鋳る の連用「い」が おいしそー→お射しそー 等の
+            // 暴発を作るため、2文字以上に限定する。
             guard let renyouReading = removingSuffix(stemReading, suffix: suruSuffix),
-                !renyouReading.isEmpty else {
+                renyouReading.count >= 2 else {
                 continue
             }
 
