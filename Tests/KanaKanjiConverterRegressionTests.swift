@@ -275,6 +275,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains("にうツかり"), "multi=\(multi)")
     }
 
+    // 実LM回帰: やこうせいのどうぶつ — 夜行性は Sudachi 実在(wc10555 ジャンク級、
+    // uni7792)だが、文頭 や(2998)+後世(や→後世 4885)+の(後世→の 413) の接着剤ジャンクに
+    // 1979差で負けていた。misc curated 夜行性+かな識別床上げ除外から や を削除で是正。
+    func testRegressionRealLMYakouseiPrefersNocturnal() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        converter.store.addUserEntry(reading: "やこうせい", candidate: "夜行性")
+
+        let multi = converter.multiClauseCandidates(for: "やこうせいのどうぶつ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "夜行性の動物", "multi=\(multi)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
