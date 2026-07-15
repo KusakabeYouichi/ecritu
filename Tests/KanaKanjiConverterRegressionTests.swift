@@ -300,6 +300,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "夜行性の動物", "multi=\(multi)")
     }
 
+    // 実LM回帰: それぞれを — かな正書語(uni4329≪其々7995)なのにかな識別curatedが無く、
+    // 最良の それぞれ+を が全かなエコー抑制で捨てられ 其々を が繰り上がっていた
+    // (にうっかり と同型)。misc かな識別 それぞれ で最良を通す。
+    func testRegressionRealLMSorezoreWoPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        converter.store.addUserEntry(reading: "それぞれ", candidate: "それぞれ")
+
+        let multi = converter.multiClauseCandidates(for: "それぞれを", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "それぞれを", "multi=\(multi)")
+        XCTAssertTrue(multi.contains("其々を"), "漢字変種の温存 multi=\(multi)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
