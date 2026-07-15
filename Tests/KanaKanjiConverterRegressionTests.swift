@@ -326,6 +326,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains("其々を"), "漢字変種の温存 multi=\(multi)")
     }
 
+    // 実LM回帰: しゅうせい — 熟語合成ブーストで 終生/醜声 が exact 辞書順(修正 wc6505 先頭)
+    // より前に繰り上がっていた。seed 最強ブースト(こうこう→高校 と同処方)で 修正/習性 を
+    // #1/#2 に固定する。
+    func testRegressionRealLMShuuseiPrefersShuseiAndShusei() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+
+        let single = converter.candidates(for: "しゅうせい", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["修正", "習性"], "single=\(single)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
