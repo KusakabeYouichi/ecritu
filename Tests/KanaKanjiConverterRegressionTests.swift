@@ -411,6 +411,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(ichidan.contains("食べられてきた"), "ichidan=\(ichidan)")
     }
 
+    // 実LM回帰: くわえよう — wc では 加える(9397)が基底先頭なのに並べ替え層で 銜えよう が
+    // 繰り上がっていた(しゅうせい と同型)。seed くわえる=[加える, 咥える, くわえる] で
+    // 加えよう を先頭固定、seed 非掲載の 銜える は後方へ沈む。
+    func testRegressionRealLMKuwaeyouPrefersKuwaeru() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+
+        let single = converter.candidates(for: "くわえよう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "加えよう", "single=\(single)")
+        if let ginIndex = single.firstIndex(of: "銜えよう") {
+            XCTAssertGreaterThanOrEqual(ginIndex, 3, "銜えよう は末尾寄りに sink=\(single)")
+        }
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
