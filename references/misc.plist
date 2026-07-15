@@ -100,6 +100,14 @@
 	<dict><key>phrase</key><string>それぞれ</string><key>shortcut</key><string>それぞれ</string></dict>
 	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
 	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>
+	<!-- としとる: wc は 年取る/年老る(共に10085ジャンク級)のみで 歳 系が欠落。賭し(uni7489)+とって 断片が最良化するため、五段curated+て/た形直接供給(気をつけて と同処方)。登録順=候補順(年取〜が先頭、歳とる が2番手) -->
+	<dict><key>phrase</key><string>年取る</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>歳とる</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>歳取る</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>年取って</string><key>shortcut</key><string>としとって</string></dict>
+	<dict><key>phrase</key><string>歳とって</string><key>shortcut</key><string>としとって</string></dict>
+	<dict><key>phrase</key><string>年取った</string><key>shortcut</key><string>としとった</string></dict>
+	<dict><key>phrase</key><string>歳とった</string><key>shortcut</key><string>としとった</string></dict>
 	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->
 	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
