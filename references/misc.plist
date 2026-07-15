@@ -98,6 +98,9 @@
 	<dict><key>phrase</key><string>夜行性</string><key>shortcut</key><string>やこうせい</string></dict>
 	<!-- それぞれ: かな正書語(uni4329≪其々7995)。かな識別curatedが無いと それぞれ+を(最良)が全かなエコー抑制で捨てられ 其々を が繰り上がる(うっかり と同型) -->
 	<dict><key>phrase</key><string>それぞれ</string><key>shortcut</key><string>それぞれ</string></dict>
+	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->
+	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string></dict>
+	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>
 	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
 	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>
 	<!-- としとる: wc は 年取る/年老る(共に10085ジャンク級)のみで 歳 系が欠落。賭し(uni7489)+とって 断片が最良化するため、五段curated+て/た形直接供給(気をつけて と同処方)。登録順=候補順(年取〜が先頭、歳とる が2番手) -->

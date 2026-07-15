@@ -552,6 +552,39 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "遅いからな", "multi=\(multi)")
     }
 
+    // 実LM回帰: どちらもおいしく — 最良の どちらも+おいしく(uni7143)が全かなエコー抑制で
+    // 捨てられ、同スパンの敬語合成 お石工/お石ユ(石ユ=石工のカタカナ混じり表記ゆれ、
+    // suppr済)が変種繰り上がりしていた(うっかり同型)。misc かな識別 おいしく で是正。
+    func testRegressionRealLMDochiramoOishiku() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        let suppression: [String: [String]] = [
+            "いしく": ["石ユ"],
+            "おいしい": ["美味しい", "オイシイ", "オイシい"]
+        ]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        converter.store.addUserEntry(reading: "おいしく", candidate: "おいしく")
+
+        let multi = converter.multiClauseCandidates(for: "どちらもおいしく", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "どちらもおいしく", "multi=\(multi)")
+        // お石工(実在語の敬語合成)は変種#2に残る。表記ゆれの 石ユ だけ不在を確認
+        XCTAssertFalse(multi.contains { $0.contains("石ユ") }, "multi=\(multi)")
+    }
+
     func testRegressionCorePhrasesRemainConvertibleOnSeedFallback() {
         let cases: [(reading: String, expected: String)] = [
             ("いきました", "行きました"),
