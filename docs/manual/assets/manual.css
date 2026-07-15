@@ -221,8 +221,8 @@ ul.idx a:hover { text-decoration: underline; }
   border-radius: 7px; padding: 4px 8px; flex: none; line-height: 1.2;
 }
 .kb .cand .chip.sel { background: rgba(15, 186, 143, .9); border-color: transparent; color: #fff; }
-.kb .k svg.duck { width: 32px; height: 32px; display: block; }
-.kb .k svg.duck.small { width: 20px; height: 20px; transform: translate(-3px, 3px); }
+.kb .k svg.duck { width: 36px; height: 36px; display: block; }
+.kb .k svg.duck.small { width: 24px; height: 24px; transform: translate(-3px, 3px); }
 .kb .k .two { display: flex; flex-direction: column; align-items: center; line-height: 1; }
 .kb .k .two .t { font-size: 21px; font-weight: 700; }
 .kb .k .two .b { font-size: 19px; font-weight: 600; margin-top: -3px; }

@@ -11,21 +11,26 @@
   <defs>
     <path id="duckOuter" d="M 658 35 L 704 36 L 755 46 L 799 62 L 837 83 L 914 143 L 949 182 L 971 215 L 992 258 L 1005 300 L 1013 343 L 1012 394 L 998 464 L 972 523 L 951 553 L 952 560 L 1063 608 L 1145 630 L 1180 631 L 1261 613 L 1302 617 L 1329 630 L 1347 649 L 1359 668 L 1357 672 L 1362 674 L 1378 734 L 1380 817 L 1372 873 L 1350 946 L 1331 996 L 1303 1047 L 1241 1135 L 1201 1182 L 1139 1244 L 1069 1293 L 983 1337 L 935 1353 L 856 1369 L 797 1374 L 712 1374 L 629 1367 L 560 1354 L 432 1317 L 354 1285 L 301 1256 L 198 1184 L 137 1128 L 89 1070 L 54 1009 L 32 953 L 12 848 L 12 787 L 16 765 L 30 715 L 47 674 L 80 612 L 122 562 L 198 504 L 302 451 L 285 423 L 248 383 L 216 338 L 172 256 L 169 236 L 163 226 L 160 179 L 165 226 L 178 268 L 185 276 L 173 244 L 164 199 L 164 171 L 177 134 L 200 103 L 240 79 L 293 76 L 329 85 L 299 74 L 249 73 L 215 87 L 202 97 L 224 81 L 247 73 L 298 73 L 403 105 L 433 106 L 488 90 L 512 72 L 556 54 L 626 38 L 657 36 L 658 35 Z"/>
     <path id="duckBeak" d="M 253 76 L 301 77 L 408 108 L 447 106 L 472 95 L 490 91 L 479 108 L 455 135 L 448 139 L 443 151 L 433 156 L 418 173 L 413 185 L 406 190 L 410 193 L 391 209 L 389 216 L 383 218 L 383 234 L 373 239 L 365 270 L 360 273 L 354 319 L 355 372 L 357 389 L 363 402 L 370 433 L 371 448 L 369 478 L 363 481 L 362 487 L 353 490 L 344 498 L 337 495 L 324 476 L 315 470 L 314 464 L 300 447 L 287 423 L 265 400 L 227 346 L 218 338 L 218 333 L 193 295 L 173 244 L 164 199 L 164 171 L 174 139 L 200 103 L 223 87 L 240 79 L 252 77 L 253 76 Z"/>
+    <!-- 線幅はビューボックス(1391)基準のユーザ単位。実機は 32pt 表示時に本体 1.2pt
+         (キー幅比 約3.5%)で描くため、36px 表示で同比率になる値にしている。
+         vector-effect="non-scaling-stroke" は WebKit で <use> 経由だと効かないので使わない -->
     <g id="duckBase">
-      <use href="#duckOuter" fill="none" stroke="currentColor" stroke-width="1.4" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
-      <use href="#duckBeak" fill="none" stroke="currentColor" stroke-width="1.2" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
-      <circle cx="497.7" cy="322.1" r="25.2" fill="none" stroke="currentColor" stroke-width="1.1" vector-effect="non-scaling-stroke"/>
+      <use href="#duckOuter" fill="none" stroke="currentColor" stroke-width="58" stroke-linecap="round" stroke-linejoin="round"/>
+      <use href="#duckBeak" fill="none" stroke="currentColor" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="497.7" cy="322.1" r="25.2" fill="none" stroke="currentColor" stroke-width="46"/>
       <circle cx="497.7" cy="322.1" r="13.9" fill="currentColor"/>
     </g>
     <g id="duckSweat" transform="translate(244,-40)">
-      <path d="M 852 96 C 904 94 946 154 942 228 C 938 292 900 347 852 357 C 817 363 793 335 794 293 C 796 230 821 160 852 96 Z" transform="rotate(-24 866 228)" fill="none" stroke="rgb(97,133,224)" stroke-width="1.1" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 1006 72 C 1062 72 1109 134 1104 213 C 1099 280 1061 337 1009 349 C 970 357 942 330 943 289 C 944 222 971 146 1006 72 Z" transform="rotate(-24 1028 206)" fill="none" stroke="rgb(97,133,224)" stroke-width="1.1" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M 853 129 C 832 164 823 206 828 244" transform="rotate(-24 866 228)" fill="none" stroke="rgb(97,133,224)" stroke-width="0.8" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
-      <path d="M 1008 109 C 987 143 977 186 983 225" transform="rotate(-24 1028 206)" fill="none" stroke="rgb(97,133,224)" stroke-width="0.8" vector-effect="non-scaling-stroke" stroke-linecap="round"/>
+      <path d="M 852 96 C 904 94 946 154 942 228 C 938 292 900 347 852 357 C 817 363 793 335 794 293 C 796 230 821 160 852 96 Z" transform="rotate(-24 866 228)" fill="none" stroke="rgb(97,133,224)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 1006 72 C 1062 72 1109 134 1104 213 C 1099 280 1061 337 1009 349 C 970 357 942 330 943 289 C 944 222 971 146 1006 72 Z" transform="rotate(-24 1028 206)" fill="none" stroke="rgb(97,133,224)" stroke-width="44" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 853 129 C 832 164 823 206 828 244" transform="rotate(-24 866 228)" fill="none" stroke="rgb(97,133,224)" stroke-width="33" stroke-linecap="round"/>
+      <path d="M 1008 109 C 987 143 977 186 983 225" transform="rotate(-24 1028 206)" fill="none" stroke="rgb(97,133,224)" stroke-width="33" stroke-linecap="round"/>
     </g>
+    <!-- 実機は外楕円と内楕円の間を塗り潰した帯(eoFill)+輪郭線 -->
     <g id="duckHalo" transform="rotate(24 860 200)">
-      <ellipse cx="860" cy="200" rx="325" ry="130" fill="none" stroke="rgb(97,133,224)" stroke-width="1.6" vector-effect="non-scaling-stroke"/>
-      <ellipse cx="860" cy="200" rx="217.5" ry="77.5" fill="none" stroke="rgb(97,133,224)" stroke-width="1.2" vector-effect="non-scaling-stroke"/>
+      <path fill-rule="evenodd" fill="rgb(97,133,224)" d="M 535 200 A 325 130 0 1 0 1185 200 A 325 130 0 1 0 535 200 Z M 642.5 200 A 217.5 77.5 0 1 0 1077.5 200 A 217.5 77.5 0 1 0 642.5 200 Z"/>
+      <ellipse cx="860" cy="200" rx="325" ry="130" fill="none" stroke="rgb(97,133,224)" stroke-width="39"/>
+      <ellipse cx="860" cy="200" rx="217.5" ry="77.5" fill="none" stroke="rgb(97,133,224)" stroke-width="34"/>
     </g>
   </defs>
 </svg>
@@ -164,6 +169,40 @@
         </div>
       </div>
       <figcaption>同じ配列のダーク表示。配色以外は変わりません。</figcaption>
+    </figure>
+    <figure>
+      <div class="kb sakura">
+        <div class="cand"></div>
+        <div class="row">
+          <div class="k fn">123</div>
+          <div class="k num">1</div><div class="k num">2</div><div class="k num">3</div><div class="k num">4</div><div class="k num">5</div><div class="k num">6</div><div class="k num">7</div><div class="k num">8</div><div class="k num">9</div><div class="k num">0</div>
+        </div>
+        <div class="row">
+          <div class="k fn">abc</div>
+          <div class="k">あ<span class="h u">う</span><span class="h r">え</span><span class="h d">お</span><span class="h l">い</span></div>
+          <div class="k">か<span class="h u">く</span><span class="h r">け</span><span class="h d">こ</span><span class="h l">き</span></div>
+          <div class="k">さ<span class="h u">す</span><span class="h r">せ</span><span class="h d">そ</span><span class="h l">し</span></div>
+          <div class="k">た<span class="h u">つ</span><span class="h r">て</span><span class="h d">と</span><span class="h l">ち</span></div>
+          <div class="k">な<span class="h u">ぬ</span><span class="h r">ね</span><span class="h d">の</span><span class="h l">に</span></div>
+        </div>
+        <div class="row">
+          <div class="k fn dis">あい</div>
+          <div class="k">は<span class="h u">ふ</span><span class="h r">へ</span><span class="h d">ほ</span><span class="h l">ひ</span></div>
+          <div class="k">ま<span class="h u">む</span><span class="h r">め</span><span class="h d">も</span><span class="h l">み</span></div>
+          <div class="k">や<span class="h u">ゆ</span><span class="h r">』</span><span class="h d">よ</span><span class="h l">『</span></div>
+          <div class="k">ら<span class="h u">る</span><span class="h r">れ</span><span class="h d">ろ</span><span class="h l">り</span></div>
+          <div class="k">わ<span class="h u">ん</span><span class="h r">ー</span><span class="h d">〜</span><span class="h l">を</span></div>
+        </div>
+        <div class="row">
+          <div class="k fn" style="font-size:15px">☺︎</div>
+          <div class="k del">⌫</div>
+          <div class="k sp"></div>
+          <div class="k w54"><span class="mod">小</span><span class="h dk">゛</span><span class="h hd">゜</span><span class="h d">…</span><span class="h l">カ</span></div>
+          <div class="k w54">、<span class="h u">?</span><span class="h r">!</span><span class="h d">・</span><span class="h l">。</span></div>
+          <div class="k ret" style="font-size:22px">⏎</div>
+        </div>
+      </div>
+      <figcaption>Apple 方向・テーマ rose sakura poudré の例。ガイド文字の配置が変わります(や キーは 『 が左・』 が右になり、2 段フリックで 4 種すべての括弧が使えます)。</figcaption>
     </figure>
   </div>
 
@@ -335,19 +374,19 @@
   <p>設定「<a href="settings.html#flick-guide">フリックガイド(修飾)</a>」をオフにすると、修飾キーには文字の代わりに<b>あひるのアイコン</b>が表示され、いまの状態を表情で示します。後置修飾ではキー表示(^_^/小/゛/゜)の代わりに、前置修飾ではモードに入っている間、次の 4 パターンで表示されます。</p>
   <div class="pair">
     <figure>
-      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:32px;height:32px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/></svg></span></span>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:36px;height:36px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/></svg></span></span>
       <figcaption>通常(^_^ 状態)</figcaption>
     </figure>
     <figure>
-      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:20px;height:20px;transform:translate(-3px,3px);color:rgb(97,133,224)"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/></svg></span></span>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:24px;height:24px;transform:translate(-3px,3px);color:rgb(97,133,224)"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/></svg></span></span>
       <figcaption>小文字(青くなって縮む)</figcaption>
     </figure>
     <figure>
-      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:32px;height:32px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckSweat"/></svg></span></span>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:36px;height:36px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckSweat"/></svg></span></span>
       <figcaption>濁点(汗マーク)</figcaption>
     </figure>
     <figure>
-      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:32px;height:32px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckHalo"/></svg></span></span>
+      <span class="kwrap"><span class="k"><svg viewBox="0 0 1391 1391" style="width:36px;height:36px;color:#000"><use href="#duckBase"/><circle cx="491.1" cy="315" r="4.5" fill="#fff"/><use href="#duckHalo"/></svg></span></span>
       <figcaption>半濁点(輪っか)</figcaption>
     </figure>
   </div>
