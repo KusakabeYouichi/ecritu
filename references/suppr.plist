@@ -191,5 +191,7 @@
 	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>
 	<!-- 石ユ: 石工(いしく)のカタカナ混じり表記ゆれエントリ(wc10000、うツかり族)。お+石ユ 敬語合成で どちらもお石ユ 等を作る -->
 	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
+	<!-- いたゞく: 繰り返し記号ゞの表記ゆれエントリ(wc9407)。いたゞきました 等を派生させる -->
+	<dict><key>phrase</key><string>いたゞく</string><key>shortcut</key><string>いただく</string></dict>
 </array>
 </plist>
