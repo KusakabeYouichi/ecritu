@@ -189,5 +189,7 @@
 	<dict><key>phrase</key><string>晏い</string><key>shortcut</key><string>おそい</string></dict>
 	<dict><key>phrase</key><string>遅そい</string><key>shortcut</key><string>おそい</string></dict>
 	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>
+	<!-- 石ユ: 石工(いしく)のカタカナ混じり表記ゆれエントリ(wc10000、うツかり族)。お+石ユ 敬語合成で どちらもお石ユ 等を作る -->
+	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
 </array>
 </plist>
