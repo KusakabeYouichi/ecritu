@@ -255,5 +255,7 @@
 	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんとう</string></dict>
 	<!-- にちご→日後(三日後/十日後 等の後半)。辞書には 日語(日本語の古表記=現代ほぼ不使用)しか無く 日後 は別読み ひご のみ。日後 を curated で供給して先頭化 -->
 	<dict><key>phrase</key><string>日後</string><key>shortcut</key><string>にちご</string></dict>
+	<!-- 文語助動詞「べし」はかなが正書(やめるべし/読むべし)。辞書の読み べし は 餅子(wc7404 レア語)のみで、かな同一ノードが供給されず 止める餅子 等になる。かな正書curatedで供給 -->
+	<dict><key>phrase</key><string>べし</string><key>shortcut</key><string>べし</string></dict>
 </array>
 </plist>

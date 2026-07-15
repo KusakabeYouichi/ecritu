@@ -3089,6 +3089,36 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("ぜい金") }), "multi=\(multi)")
     }
 
+    // 実LM回帰: 文語助動詞 べし のかな正書curated供給。辞書の読み べし は 餅子(wc7404
+    // レア語)のみで、かな同一ノードが供給されず やめるべし→止める餅子 等になっていた。
+    func testRegressionRealLMYameruBeshiPrefersKanaBeshi() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        // 実機の追加語彙(misc.plist 由来はテストバンドルに載らない)を store 側で再現
+        converter.store.addUserEntry(reading: "べし", candidate: "べし")
+
+        let multi = converter.multiClauseCandidates(for: "やめるべし", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "止めるべし", "multi=\(multi)")
+        XCTAssertTrue(multi.contains("やめるべし"), "multi=\(multi)")
+        if let kanaIndex = multi.firstIndex(of: "やめるべし"),
+            let mochikoIndex = multi.firstIndex(where: { $0.contains("餅子") }) {
+            XCTAssertLessThan(kanaIndex, mochikoIndex, "multi=\(multi)")
+        }
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
