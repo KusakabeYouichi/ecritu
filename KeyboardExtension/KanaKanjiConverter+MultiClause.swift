@@ -157,7 +157,9 @@ extension KanaKanjiConverter {
         // 終助詞・間投助詞
         "ね", "よ", "な", "か", "わ", "さ", "ぞ", "ぜ", "し", "や",
         // 助動詞・接続の頻出かな(A単位分割で正当に頻出するもの)
-        "た", "て", "だ", "ん", "う", "ない", "ます", "です", "たい", "てる"
+        "た", "て", "だ", "ん", "う", "ない", "ます", "です", "たい", "てる",
+        // 複数接尾辞(彼ら/子供ら 等。A単位分割で 彼+ら と割れる正当な頻出かな)
+        "ら"
     ]
     static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
@@ -616,12 +618,14 @@ extension KanaKanjiConverter {
                         backPointer[idx] = prevIdx
                     } else if cost == best[idx],
                         backPointer[idx] >= 0,
-                        Self.isKatakanaString(nodes[backPointer[idx]].surface),
-                        !Self.isKatakanaString(prevNode.surface) {
-                        // 完全同コストのタイブレークは非カタカナ経路を優先する。かな入力に対して
-                        // 同じ証拠の強さならカタカナ化しない方が自然(法律かえるのは: 変える経路
-                        // 6024+1810 と カエル経路 6927+907 が 7834 で完全タイ → 変える を採る。
-                        // 従来はノード列挙順=word_costs順で カエル が先勝ちしていた)。
+                        Self.isNonNativeScriptSurface(nodes[backPointer[idx]].surface),
+                        !Self.isNonNativeScriptSurface(prevNode.surface) {
+                        // 完全同コストのタイブレークは非ネイティブ表層(カタカナのみ/ラテン字のみ)
+                        // でない経路を優先する。かな入力に対して同じ証拠の強さならカタカナ・
+                        // ラテン字化しない方が自然(法律かえるのは: 変える経路 6024+1810 と
+                        // カエル経路 6927+907 が 7834 で完全タイ → 変える を採る。かれらは:
+                        // curated 彼ら/カレラ/Carrera が 1500 で完全タイ → 彼ら を採る。
+                        // 従来はノード列挙順で先に処理された方が勝っていた)。
                         backPointer[idx] = prevIdx
                     }
                 }
@@ -838,6 +842,21 @@ extension KanaKanjiConverter {
             }
         }
         return false
+    }
+
+    // タイブレーク用: カタカナのみ、またはラテン字のみの表層(かな入力に対する
+    // 非ネイティブ表記)。同コストならこれらでない表層(漢字/かな)を優先する。
+    static func isNonNativeScriptSurface(_ text: String) -> Bool {
+        if isKatakanaString(text) {
+            return true
+        }
+        guard !text.isEmpty else {
+            return false
+        }
+        return text.unicodeScalars.allSatisfy { scalar in
+            (0x0041...0x005A).contains(scalar.value)
+                || (0x0061...0x007A).contains(scalar.value)
+        }
     }
 
     static func isKatakanaString(_ text: String) -> Bool {
