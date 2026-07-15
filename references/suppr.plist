@@ -172,5 +172,17 @@
 	<dict><key>phrase</key><string>オイシイ</string><key>shortcut</key><string>おいしい</string></dict>
 	<dict><key>phrase</key><string>オイシい</string><key>shortcut</key><string>おいしい</string></dict>
 	<dict><key>phrase</key><string>うツかり</string><key>shortcut</key><string>うっかり</string></dict>
+	<!-- みずは のレア人名11件(全て wc10000 ジャンク級)。単文節で 水+は 合成より前に並ぶ(たつと 人名と同型) -->
+	<dict><key>phrase</key><string>水羽</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>水華</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>水葉</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>水葩</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>泉羽</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>泉葉</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>瑞羽</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>瑞芭</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>瑞葉</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>美須羽</string><key>shortcut</key><string>みずは</string></dict>
+	<dict><key>phrase</key><string>美須葉</string><key>shortcut</key><string>みずは</string></dict>
 </array>
 </plist>

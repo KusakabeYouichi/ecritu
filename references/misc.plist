@@ -98,6 +98,8 @@
 	<dict><key>phrase</key><string>夜行性</string><key>shortcut</key><string>やこうせい</string></dict>
 	<!-- それぞれ: かな正書語(uni4329≪其々7995)。かな識別curatedが無いと それぞれ+を(最良)が全かなエコー抑制で捨てられ 其々を が繰り上がる(うっかり と同型) -->
 	<dict><key>phrase</key><string>それぞれ</string><key>shortcut</key><string>それぞれ</string></dict>
+	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
+	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>
 	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->
 	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
