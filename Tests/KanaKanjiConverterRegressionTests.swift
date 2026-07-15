@@ -191,9 +191,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             try fileManager.copyItem(at: source, to: destination)
         }
 
+        // 実機の抑制状態を再現(オイシイ/オイシい=カタカナ書き抑制)
+        let suppression: [String: [String]] = ["おいしい": ["オイシイ", "オイシい"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+
         let adjective = converter.candidates(for: "おいしそー", limit: 24, systemCandidateMode: .surface)
         XCTAssertTrue(adjective.contains("美味しそー"), "adjective=\(adjective)")
         XCTAssertTrue(adjective.contains("おいしそー"), "adjective=\(adjective)")
+        // 敬語o-suru合成の連用1文字暴発(お居しそー/お射しそー/お鋳しそー)が居ないこと
+        XCTAssertFalse(
+            adjective.contains { $0.hasPrefix("お居し") || $0.hasPrefix("お射し") || $0.hasPrefix("お鋳し") },
+            "adjective=\(adjective)"
+        )
+        // オイシい 抑制で オイシそー が導出されないこと
+        XCTAssertFalse(adjective.contains("オイシそー"), "adjective=\(adjective)")
 
         let ichidan = converter.candidates(for: "たべそー", limit: 24, systemCandidateMode: .surface)
         XCTAssertTrue(ichidan.contains("食べそー"), "ichidan=\(ichidan)")
