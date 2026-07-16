@@ -3379,6 +3379,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "してるなあ", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "してるなあ", "multi=\(multi)")
         XCTAssertFalse(multi.contains(where: { $0.contains("菜亜") }), "multi=\(multi)")
+        // 機能語区間のカタカナ人名変種(しテルなあ)も出さない
+        XCTAssertFalse(multi.contains(where: { $0.contains("テル") }), "multi=\(multi)")
 
         let neeMulti = converter.multiClauseCandidates(for: "つかれたねえ", systemCandidateMode: .surface)
         XCTAssertEqual(neeMulti.first, "疲れたねえ", "multi=\(neeMulti)")

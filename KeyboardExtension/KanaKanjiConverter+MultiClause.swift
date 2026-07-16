@@ -898,6 +898,15 @@ extension KanaKanjiConverter {
                     alt.surface != alt.reading {
                     continue
                 }
+                // 機能語(かな識別免除リスト=助詞/助動詞類)の区間で best がかなを選んで
+                // いる場合、カタカナ/ラテン表層への差し替え変種は出さない。Sudachi の
+                // カタカナ人名収穫(テル wc3788 等)が安く、してるなあ→しテルなあ のような
+                // 人名が文中に割り込む変種を作るため。漢字表層(照る 等)は対象外のまま。
+                if Self.multiClauseKanaIdentityFloorExemptReadings.contains(alt.reading),
+                    chosen.surface == chosen.reading,
+                    Self.isNonNativeScriptSurface(alt.surface) {
+                    continue
+                }
                 let delta = pairCost(alt) - baseCost
                 guard delta <= Self.multiClauseVariantMaxDelta else {
                     continue
