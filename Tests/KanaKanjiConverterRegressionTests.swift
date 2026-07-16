@@ -3119,6 +3119,34 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 実LM回帰: かな正書の口語形容詞 でかい の curated 供給+curated EOS 上限。
+    // でかい→EOS bigram が無く(Wikipedia文語バイアス、EOS遷移は dictUnknown 8700)、
+    // 文末で 出(で)+会(かい) の断片連結(出口 会→EOS 1571)に負けていた
+    // (そんなにでかい→そんなに出会/出下位/出買い/出貝)。
+    func testRegressionRealLMSonnaniDekaiPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        // 実機の追加語彙(misc.plist 由来はテストバンドルに載らない)を store 側で再現
+        converter.store.addUserEntry(reading: "でかい", candidate: "でかい")
+
+        let multi = converter.multiClauseCandidates(for: "そんなにでかい", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "そんなにでかい", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("出会") || $0.contains("出貝") }), "multi=\(multi)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
