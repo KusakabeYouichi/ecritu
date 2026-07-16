@@ -32,6 +32,8 @@ final class KanaKanjiStore {
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
+    // 短い読みの inflection_classes ペア一括ロード(連文節の辞書形述語判定用)
+    private var cachedShortInflectionFormPairs: Set<String>?
     private var cachedInitialUserDictionary: [String: [String]]?
     private var cachedInitialShortcutVocabulary: [String]?
     var cachedUserDictionary: [String: [String]]?
@@ -225,6 +227,30 @@ final class KanaKanjiStore {
         let inflectionDictionary = loadInflectionDictionary()
         let classMap = inflectionDictionary[normalizedReading] ?? [:]
         return (classMap, !classMap.isEmpty)
+    }
+
+    // 連文節の辞書形述語判定(短spanレア読み床の免除)。短い読みのペア表を一括ロードして
+    // 参照する — spanごとの sqlite 個別クエリは毎キーストローク数十回になり高コスト。
+    func isShortReadingDictionaryFormPredicate(reading: String, candidate: String) -> Bool {
+        let key = reading + "\t" + candidate
+        if let cached = cachedShortInflectionFormPairs {
+            return cached.contains(key)
+        }
+        let maxLength = KanaKanjiConverter.multiClauseRareReadingFloorMaxReadingCount
+        let pairs: Set<String>
+        if let sqliteIndex = sqliteIndexIfAvailable() {
+            pairs = sqliteIndex.shortReadingInflectionFormPairs(maxReadingLength: maxLength)
+        } else {
+            var built: Set<String> = []
+            for (mapReading, classMap) in loadInflectionDictionary() where mapReading.count <= maxLength {
+                for mapCandidate in classMap.keys {
+                    built.insert(mapReading + "\t" + mapCandidate)
+                }
+            }
+            pairs = built
+        }
+        cachedShortInflectionFormPairs = pairs
+        return pairs.contains(key)
     }
 
     // 案A(連文節ビタビ)用: 読みに対する語コスト(Sudachi由来, 小さいほど高頻度)。
@@ -492,6 +518,7 @@ final class KanaKanjiStore {
         cachedLatinSuggestionEntries = nil
         cachedSystemCandidateSources = nil
         cachedInflectionDictionary = nil
+        cachedShortInflectionFormPairs = nil
     }
 
     // sqlite インデックスも含めて完全に閉じる(辞書ファイル差し替え時の再オープン用)。

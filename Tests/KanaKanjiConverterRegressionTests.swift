@@ -3250,6 +3250,45 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("南海揉") || $0.contains("乃佳") }), "multi=\(multi)")
     }
 
+    // 実LM回帰: 動詞終止形+のが(名詞化節)。Sudachi は の+が に分割し動詞→の の bigram も
+    // 未観測が多いため、名詞側だけ bigram(宅→の 1484/核→の)で安くなり 宅のが好き/
+    // 核のが好き 等へ逆転していた。修正: (1) 述語形直後の のが/のは/のを/のも/のに を
+    // 単位ノードとしてクランプ+かな単位ノードを常設(辞書にレア名前 野賀 しか無いと
+    // 素通り補完が走らずノード自体が立たない)、(2) 辞書形述語(inflection_classes 登録)は
+    // 短spanレア読み床を免除(Sudachi の動詞 word_cost は単漢字名詞より系統的に高い:
+    // 炊く9118/書く 等。読み跨ぎの頻出表層 良く(いく) はクラス未登録なので床の保護は維持)。
+    func testRegressionRealLMVerbNogaNominalizerPrefersVerb() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+
+        let cases: [(reading: String, expected: String)] = [
+            ("たくのがすき", "炊くのが好き"),
+            ("かくのがすき", "書くのが好き"),
+            ("いくのがすき", "行くのが好き"),
+            ("よむのがすき", "読むのが好き")
+        ]
+        for testCase in cases {
+            let multi = converter.multiClauseCandidates(for: testCase.reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, testCase.expected, "reading=\(testCase.reading) multi=\(multi)")
+        }
+        // 名詞ジャンク(宅/核)が経路から消えていること
+        let taku = converter.multiClauseCandidates(for: "たくのがすき", systemCandidateMode: .surface)
+        XCTAssertFalse(taku.contains(where: { $0.contains("宅") }), "multi=\(taku)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
