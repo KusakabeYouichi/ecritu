@@ -3174,6 +3174,41 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("木") }), "multi=\(multi)")
     }
 
+    // 実LM回帰: ですけどー のかな先頭化。けどー は uni/bigram 未収録で全かな best が
+    // エコー抑制に捨てられ デスけどー/ですゥけどー(装飾収穫遺物)が繰り上がっていた。
+    // けど/けどー を終助詞クラスタに追加+ですゥ族を suppr 抑制。
+    func testRegressionRealLMDesukedoLongVowelPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
+        let suppression: [String: [String]] = ["です": ["ですゥ", "です〜", "で〜す", "で〜〜す"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+
+        let multiLong = converter.multiClauseCandidates(for: "ですけどー", systemCandidateMode: .surface)
+        XCTAssertEqual(multiLong.first, "ですけどー", "multi=\(multiLong)")
+        XCTAssertFalse(multiLong.contains(where: { $0.contains("ゥ") }), "multi=\(multiLong)")
+
+        let multiShort = converter.multiClauseCandidates(for: "ですけど", systemCandidateMode: .surface)
+        XCTAssertEqual(multiShort.first, "ですけど", "multi=\(multiShort)")
+
+        let single = converter.candidates(for: "ですけど", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains(where: { $0.contains("ゥ") }), "single=\(single)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return

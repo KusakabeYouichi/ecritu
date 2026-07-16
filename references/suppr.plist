@@ -195,5 +195,10 @@
 	<dict><key>phrase</key><string>いたゞく</string><key>shortcut</key><string>いただく</string></dict>
 	<!-- ぜい金: 税金(ぜいきん)のかな漢字混じり表記ゆれエントリ(wc8269、rank1収穫遺物)。連文節の同スパン変種に浮上する -->
 	<dict><key>phrase</key><string>ぜい金</string><key>shortcut</key><string>ぜいきん</string></dict>
+	<!-- ですゥ/です〜/で〜す/で〜〜す: です の装飾表記ゆれエントリ(wc7118〜7125、うツかり族)。ですけど→ですゥけど 等の変種に浮上する -->
+	<dict><key>phrase</key><string>ですゥ</string><key>shortcut</key><string>です</string></dict>
+	<dict><key>phrase</key><string>です〜</string><key>shortcut</key><string>です</string></dict>
+	<dict><key>phrase</key><string>で〜す</string><key>shortcut</key><string>です</string></dict>
+	<dict><key>phrase</key><string>で〜〜す</string><key>shortcut</key><string>です</string></dict>
 </array>
 </plist>
