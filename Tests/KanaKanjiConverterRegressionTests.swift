@@ -3356,6 +3356,34 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 実LM回帰: 母音字伸ばしの終助詞 なあ/ねえ。してるなあ(全かな best)がエコー抑制に
+    // 捨てられ、名前収穫の変種(してる菜亜 wc10000/しテルなあ)が繰り上がっていた
+    // (いるなー/ですけどー と同族)。なあ 等を終助詞クラスタに追加して文末かなを正規扱い。
+    func testRegressionRealLMShiterunaaPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+
+        let multi = converter.multiClauseCandidates(for: "してるなあ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "してるなあ", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("菜亜") }), "multi=\(multi)")
+
+        let neeMulti = converter.multiClauseCandidates(for: "つかれたねえ", systemCandidateMode: .surface)
+        XCTAssertEqual(neeMulti.first, "疲れたねえ", "multi=\(neeMulti)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
