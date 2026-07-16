@@ -3386,6 +3386,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(neeMulti.first, "疲れたねえ", "multi=\(neeMulti)")
     }
 
+    // 実LM回帰: なかの の並び。辞書は人名のみ(中野/仲野/中埜/名香野…)で 中の が
+    // 合成経由の末尾に落ちていた。seed で 中の を供給し、交ぜ書き 中ノ(wc6000)と
+    // カタカナ人名 ナカノ(wc5652)は suppr 抑制。
+    func testRegressionRealLMNakanoOffersNakaNoEarly() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
+        let suppression: [String: [String]] = ["なかの": ["中ノ", "ナカノ"]]
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+
+        let candidates = converter.candidates(for: "なかの", limit: 12, systemCandidateMode: .surface)
+        guard let nakaNoIndex = candidates.firstIndex(of: "中の") else {
+            return XCTFail("中の not offered: \(candidates)")
+        }
+        XCTAssertLessThan(nakaNoIndex, 3, "candidates=\(candidates)")
+        XCTAssertTrue(candidates.contains("中野"), "candidates=\(candidates)")
+        XCTAssertFalse(candidates.contains("中ノ"), "candidates=\(candidates)")
+        XCTAssertFalse(candidates.contains("ナカノ"), "candidates=\(candidates)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
