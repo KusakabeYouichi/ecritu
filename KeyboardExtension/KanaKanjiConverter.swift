@@ -17,6 +17,12 @@ final class KanaKanjiConverter {
 
     let candidateCacheLimit = 96
 
+    // 連文節の span 別活用派生キャッシュ(キー "mode|読み")。前置き入力ではスパンの大半が
+    // 毎キーストロークで再出現し、活用派生はルール全走査×基底候補取得で最も高くつくため。
+    // 学習・抑制・設定変更時は invalidateCandidateCache で一緒に消える。
+    var multiClauseInflectionCache: [String: [String]] = [:]
+    let multiClauseInflectionCacheLimit = 1024
+
     var historicalKanaSurfaceAllowed: Bool = false
 
     init(store: KanaKanjiStore) {
@@ -543,6 +549,7 @@ final class KanaKanjiConverter {
     func invalidateCandidateCache() {
         candidateCache.removeAll(keepingCapacity: true)
         candidateCacheOrder.removeAll(keepingCapacity: true)
+        multiClauseInflectionCache.removeAll(keepingCapacity: true)
     }
 
     func systemCandidates(

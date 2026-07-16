@@ -119,6 +119,11 @@ extension KanaKanjiConverter {
     // (買うなら/するなら/食べるなら)。奈良/楢/ナラ への漢字・カタカナ化を EOS で減点する。
     // ただし体言+と直後(大阪と奈良)は正当な地名なので、直前が述語のときだけ発火させる。
     static let multiClauseConditionalParticleReadings: Set<String> = ["なら"]
+    // 辞書形述語(終止形動詞/形容詞)の末尾かな。短spanレア読み床の免除判定で、
+    // inflection_classes への問い合わせ対象を「漢字+この尾」の表層に絞る形状ゲート。
+    static let multiClauseDictionaryFormTailCharacters: Set<Character> = [
+        "う", "く", "ぐ", "す", "つ", "ぬ", "ぶ", "む", "る", "い"
+    ]
     // 述語(動詞辞書形/形容詞/タ形)の末尾文字。なら の直前がこれで終わるか活用派生なら述語とみなす。
     static let multiClausePredicateTailCharacters: Set<Character> = [
         "う", "く", "ぐ", "す", "つ", "ぬ", "ぶ", "む", "る", "い", "た", "だ"
@@ -333,9 +338,14 @@ extension KanaKanjiConverter {
                         if segmentEndsWithSokuon, containsKanji(surface) {
                             continue
                         }
-                        // 短spanレア読み床の免除判定(一括ロード表の参照。ノード定義コメント参照)。
+                        // 短spanレア読み床の免除判定(ノード定義コメント参照)。辞書形述語は
+                        // 「漢字+かな活用尾(炊く/書く/濃い)」の形状に限られるため、それ以外
+                        // (宅/核 等)は store への問い合わせ自体を省く。
                         var isDictionaryFormPredicate = false
-                        if needsClassLookup, containsKanji(surface) {
+                        if needsClassLookup,
+                            let lastChar = surface.last,
+                            Self.multiClauseDictionaryFormTailCharacters.contains(lastChar),
+                            containsKanji(surface) {
                             isDictionaryFormPredicate = store.isShortReadingDictionaryFormPredicate(
                                 reading: segmentReading,
                                 candidate: surface
@@ -364,13 +374,25 @@ extension KanaKanjiConverter {
                     len <= Self.multiClauseInflectionMaxSegmentReadingCount,
                     let lastChar = segmentReading.last,
                     Self.inflectionRuleSuffixLastCharacters.contains(lastChar) {
-                    let inflected = inflectionCandidates(
-                        for: segmentReading,
-                        userDictionary: manualUserDictionary,
-                        initialUserDictionary: initialUserDictionary,
-                        systemCandidateMode: systemCandidateMode,
-                        limit: Self.multiClauseInflectionTopK
-                    )
+                    let inflectionCacheKey = "\(systemCandidateMode)|\(segmentReading)"
+                    let inflected: [String]
+                    if let cached = stateQueue.sync(execute: { multiClauseInflectionCache[inflectionCacheKey] }) {
+                        inflected = cached
+                    } else {
+                        inflected = inflectionCandidates(
+                            for: segmentReading,
+                            userDictionary: manualUserDictionary,
+                            initialUserDictionary: initialUserDictionary,
+                            systemCandidateMode: systemCandidateMode,
+                            limit: Self.multiClauseInflectionTopK
+                        )
+                        stateQueue.sync {
+                            if multiClauseInflectionCache.count >= multiClauseInflectionCacheLimit {
+                                multiClauseInflectionCache.removeAll(keepingCapacity: true)
+                            }
+                            multiClauseInflectionCache[inflectionCacheKey] = inflected
+                        }
+                    }
                     // かな識別(surface==読み)は原則除外(かなエコー防止)。ただし活用エンジンが
                     // かなを第1候補に据えた場合=基底並べ替えが isLMKanaPreferred でかな基底を
                     // 先頭化した場合(なる 3405≪成る/ある/いる/できる 等、かなが LM 優位な動詞)は、

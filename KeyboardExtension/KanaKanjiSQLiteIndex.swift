@@ -156,32 +156,6 @@ final class KanaKanjiSQLiteIndex {
         }
     }
 
-    // 連文節の辞書形述語判定用: 短い読み(短spanレア読み床の対象長以下)の
-    // inflection_classes 全ペア(読み\t表層)を一括取得する。spanごとの個別クエリは
-    // 変換全体で数十回×毎キーストロークになり高コストなため、1回のロードで済ませる
-    // (2文字以下は約1200行)。
-    func shortReadingInflectionFormPairs(maxReadingLength: Int) -> Set<String> {
-        queryQueue.sync {
-            guard hasInflectionMetadata,
-                let statement = prepareStatement(
-                    sql: "SELECT reading, candidate FROM inflection_classes WHERE length(reading) <= ?"
-                ) else {
-                return []
-            }
-            defer { sqlite3_finalize(statement) }
-            sqlite3_bind_int(statement, 1, Int32(maxReadingLength))
-            var result: Set<String> = []
-            while sqlite3_step(statement) == SQLITE_ROW {
-                guard let readingCString = sqlite3_column_text(statement, 0),
-                    let candidateCString = sqlite3_column_text(statement, 1) else {
-                    continue
-                }
-                result.insert(String(cString: readingCString) + "\t" + String(cString: candidateCString))
-            }
-            return result
-        }
-    }
-
     func inflectionClassMap(for reading: String) -> [String: String] {
         queryQueue.sync {
             guard hasInflectionMetadata,
