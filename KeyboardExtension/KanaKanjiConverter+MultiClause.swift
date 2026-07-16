@@ -138,6 +138,11 @@ extension KanaKanjiConverter {
     // 起こしていた。候補バー(単一経路)には引き続き全辞書候補が並ぶため、レア語は手動選択
     // +学習(curated 1500)で救済される。
     static let multiClauseDictUnknownCost = 8700
+    // curated ノードの EOS 遷移上限。かな正書の口語語彙(でかい 等)は X→EOS bigram が
+    // Wikipedia文語コーパスに無く、出口で dictUnknown(8700)を払わされて断片連結
+    // (出+会: 会→EOS 1571)に逆転される。人手で正書登録した curated は文末利用も
+    // 信頼できるため、EOS 遷移を接続コスト級に抑える。
+    static let multiClauseCuratedEOSCost = 3000
     // 短spanレア読み床上げ: LM unigram は表層のみで読みを見ないため、頻出表層×レア読み
     // (見(み)8055/店(たな)11947/三田(みた)8247 等)が不当に安くなり断片連鎖を作る
     // (むかしみたな→昔見店 等)。bigram 未観測時、短spanの漢字表層は
@@ -668,7 +673,7 @@ extension KanaKanjiConverter {
             if best[idx] >= infinity {
                 continue
             }
-            var total = best[idx] + transitionCost(
+            var eosCost = transitionCost(
                 prev: nodes[idx].surface,
                 prevAuxTail: Self.auxTailForBigramBorrow(of: nodes[idx]),
                 surface: Self.multiClauseEOSMarker,
@@ -677,6 +682,11 @@ extension KanaKanjiConverter {
                 isCurated: false,
                 isInflectionDerived: false
             )
+            // curated ノードは EOS 遷移を上限クランプ(定数コメント参照)。
+            if nodes[idx].isCurated {
+                eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
+            }
+            var total = best[idx] + eosCost
             // 文末が終助詞クラスタ読み(かな/かも 等)なのに漢字表層(仮名/哉/鴨)なのは不自然。
             if Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading),
                 nodes[idx].surface != nodes[idx].reading,
@@ -784,7 +794,7 @@ extension KanaKanjiConverter {
                         wordCost: nextNode.wordCost
                     )
                 } else {
-                    outgoing = transitionCost(
+                    var eosCost = transitionCost(
                         prev: node.surface,
                         prevAuxTail: Self.auxTailForBigramBorrow(of: node),
                         surface: Self.multiClauseEOSMarker,
@@ -793,6 +803,11 @@ extension KanaKanjiConverter {
                         isCurated: false,
                         isInflectionDerived: false
                     )
+                    // curated ノードは EOS 遷移を上限クランプ(定数コメント参照)。
+                    if node.isCurated {
+                        eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
+                    }
+                    outgoing = eosCost
                 }
                 return incoming + outgoing
             }

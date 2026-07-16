@@ -257,5 +257,7 @@
 	<dict><key>phrase</key><string>日後</string><key>shortcut</key><string>にちご</string></dict>
 	<!-- 文語助動詞「べし」はかなが正書(やめるべし/読むべし)。辞書の読み べし は 餅子(wc7404 レア語)のみで、かな同一ノードが供給されず 止める餅子 等になる。かな正書curatedで供給 -->
 	<dict><key>phrase</key><string>べし</string><key>shortcut</key><string>べし</string></dict>
+	<!-- でかい: かな正書の口語形容詞(dict rank0 かな、uni7715)。でかい→EOS bigram が無く(Wikipedia文語バイアス)、文末で 出(で)+会(かい) の断片連結(出口 会→EOS 1571)に負ける(そんなにでかい→そんなに出会)。かな正書curatedで供給 -->
+	<dict><key>phrase</key><string>でかい</string><key>shortcut</key><string>でかい</string></dict>
 </array>
 </plist>
