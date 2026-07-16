@@ -5,6 +5,15 @@
 	<!-- 活用あり (用言): 辞書形を登録 -->
 	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
+	<!-- 気がする: 単独では供給経路が無い(気が+する はサ変名詞と見なされず、逆に 帰臥/起臥 の2字漢語がサ変推論で 帰臥した 等を作る)。きがした→帰臥した 対策。気が 単独の curated は 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため句で登録する -->
+	<dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>
+	<!-- 頻出形の直接登録(いただきました と同じ方式)。派生供給だけだとサ変推論の 帰臥した/起臥した がルール順で先に立つ -->
+	<dict><key>phrase</key><string>気がした</string><key>shortcut</key><string>きがした</string></dict>
+	<dict><key>phrase</key><string>気がして</string><key>shortcut</key><string>きがして</string></dict>
+	<dict><key>phrase</key><string>気がします</string><key>shortcut</key><string>きがします</string></dict>
+	<dict><key>phrase</key><string>気がしました</string><key>shortcut</key><string>きがしました</string></dict>
+	<dict><key>phrase</key><string>気がしない</string><key>shortcut</key><string>きがしない</string></dict>
+	<dict><key>phrase</key><string>気がしません</string><key>shortcut</key><string>きがしません</string></dict>
 	<dict><key>phrase</key><string>手に入る</string><key>shortcut</key><string>てにはいる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>役に立つ</string><key>shortcut</key><string>やくにたつ</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string><key>pos</key><string>五段</string></dict>

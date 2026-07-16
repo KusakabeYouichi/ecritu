@@ -3483,6 +3483,43 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.contains("何故"), "single=\(single)")
     }
 
+    // 実LM回帰: きがした→気がした。気が+する はサ変名詞と見なされず供給経路が無い一方、
+    // 帰臥/起臥(2字漢語)はサ変推論で 帰臥した 等を作り先頭化していた。気が 単独の curated は
+    // 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため、気がする+頻出形の
+    // 句登録(いただきました方式)で供給する。
+    func testRegressionRealLMKigashitaPrefersKiga() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        converter.store.addUserEntry(reading: "きがする", candidate: "気がする")
+        converter.store.addUserEntry(reading: "きがした", candidate: "気がした")
+        converter.store.addUserEntry(reading: "きがして", candidate: "気がして")
+
+        let shita = converter.candidates(for: "きがした", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(shita.first, "気がした", "single=\(shita)")
+        let suru = converter.candidates(for: "きがする", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(suru.first, "気がする", "single=\(suru)")
+        let node = converter.multiClauseCandidates(for: "きがしたので", systemCandidateMode: .surface)
+        XCTAssertEqual(node.first, "気がしたので", "multi=\(node)")
+        // 気が を丸ごと curated にしていないことの防波堤: 着替え/気軽 の分断が起きない
+        let kigae = converter.multiClauseCandidates(for: "きがえをもって", systemCandidateMode: .surface)
+        XCTAssertEqual(kigae.first, "着替えをもって", "multi=\(kigae)")
+        let kigaru = converter.multiClauseCandidates(for: "きがるにどうぞ", systemCandidateMode: .surface)
+        XCTAssertEqual(kigaru.first, "気軽にどうぞ", "multi=\(kigaru)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
