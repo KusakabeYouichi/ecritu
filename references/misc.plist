@@ -251,6 +251,9 @@
 	<!-- 接続の慣用「だけでなく/だけではなく」はかなが正書。なく の word_cost は 泣く(9509)が かな なく(10363)より安く、だけで+泣く が最良になる。かな全長curatedで先頭化 -->
 	<dict><key>phrase</key><string>だけでなく</string><key>shortcut</key><string>だけでなく</string></dict>
 	<dict><key>phrase</key><string>だけではなく</string><key>shortcut</key><string>だけではなく</string></dict>
+	<!-- 汎用の「ではなく/でなく」もかなが正書(とかではなく→とかでは無く 対策)。かな なく は wc10363 の床上げで沈み、全かなbestはエコー抑制に捨てられるため、curated句で供給して echo 例外を効かせる -->
+	<dict><key>phrase</key><string>ではなく</string><key>shortcut</key><string>ではなく</string></dict>
+	<dict><key>phrase</key><string>でなく</string><key>shortcut</key><string>でなく</string></dict>
 	<!-- ほんとう→本当 を先頭化。ryukyu.plist の 本島(ほんとう=沖縄本島)が curated 上位で 本当(systemDictionary)を潰すため、本当 も curated で供給して先頭に戻す -->
 	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんとう</string></dict>
 	<!-- にちご→日後(三日後/十日後 等の後半)。辞書には 日語(日本語の古表記=現代ほぼ不使用)しか無く 日後 は別読み ひご のみ。日後 を curated で供給して先頭化 -->
