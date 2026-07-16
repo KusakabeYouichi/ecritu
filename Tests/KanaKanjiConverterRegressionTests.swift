@@ -3420,6 +3420,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(candidates.contains("ナカノ"), "candidates=\(candidates)")
     }
 
+    // 約物の読み変換(exactReadingOnlySeed): よく使う記号は読みの完全一致でのみ候補末尾に
+    // 供給する。合成(ばつが 等)や連文節には漏らさない(踊り字と同じ仕組み)。
+    func testYakumonoExactReadingOnlySupply() {
+        let exactCases: [(reading: String, symbol: String)] = [
+            ("ばつ", "×"),
+            ("まる", "○"),
+            ("こめじるし", "※"),
+            ("やじるし", "→"),
+            ("ちぇっく", "✓"),
+            ("なかぐろ", "・")
+        ]
+        for testCase in exactCases {
+            let candidates = converter.candidates(for: testCase.reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertTrue(candidates.contains(testCase.symbol), "reading=\(testCase.reading) candidates=\(candidates)")
+        }
+        // 完全一致でない読みには混ざらない
+        let composed = converter.candidates(for: "ばつが", limit: 30, systemCandidateMode: .surface)
+        XCTAssertFalse(composed.contains(where: { $0.contains("×") }), "candidates=\(composed)")
+        let shita = converter.candidates(for: "したの", limit: 30, systemCandidateMode: .surface)
+        XCTAssertFalse(shita.contains(where: { $0.contains("↓") }), "candidates=\(shita)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
