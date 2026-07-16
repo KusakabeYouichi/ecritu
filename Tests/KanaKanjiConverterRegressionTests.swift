@@ -3327,6 +3327,35 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains(where: { $0.contains("ニす") }), "single=\(single)")
     }
 
+    // 実LM回帰: 汎用の ではなく/でなく のかな正書curated供給。かな なく は wc10363 の
+    // 短span床上げで沈み(無く/莫く/鳴く/泣く は ない基底の活用派生や辞書語で先行)、
+    // 全かな best はエコー抑制に捨てられて とかでは無く が最良になっていた。
+    // curated 句にすることで echo 例外(経路に curated)が効き、かなが先頭に出る。
+    func testRegressionRealLMDehanakuPrefersKana() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        converter.store.addUserEntry(reading: "ではなく", candidate: "ではなく")
+        converter.store.addUserEntry(reading: "でなく", candidate: "でなく")
+        for input in ["とかではなく", "とかでなく", "それではなく"] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, input, "multi=\(multi)")
+            XCTAssertFalse(multi.contains(where: { $0.contains("無く") || $0.contains("莫") }), "multi=\(multi)")
+        }
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
