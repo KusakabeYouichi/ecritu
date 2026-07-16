@@ -261,5 +261,7 @@
 	<dict><key>phrase</key><string>気を</string><key>shortcut</key><string>きを</string></dict>
 	<!-- でかい: かな正書の口語形容詞(dict rank0 かな、uni7715)。でかい→EOS bigram が無く(Wikipedia文語バイアス)、文末で 出(で)+会(かい) の断片連結(出口 会→EOS 1571)に負ける(そんなにでかい→そんなに出会)。かな正書curatedで供給 -->
 	<dict><key>phrase</key><string>でかい</string><key>shortcut</key><string>でかい</string></dict>
+	<!-- 顔: curated のか(疑問形)が 〜のかお を のか+お に分断し 顔 のスパンが消える(あんたのかおなんかいもみたい→あんたのかお南海揉みたい、変種に 乃佳お 等)。ろーまにいたる事件の処方箋どおり、分断される側の 顔 も curated 化して同床で文節数の少ない区切りを勝たせる -->
+	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>
 </array>
 </plist>
