@@ -3289,6 +3289,44 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(taku.contains(where: { $0.contains("宅") }), "multi=\(taku)")
     }
 
+    // 実LM回帰: 追加語彙(すくえあ→Square)+格助詞+活用の合成で、に が ニ に化けない
+    // こと(Squareニすれば 報告のロック)。現行エンジンはクリーン状態で正解するため、
+    // 実機相当の追加語彙全注入で固定する。
+    func testRegressionRealLMSquareNiSurebaKeepsKanaParticle() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let dict = try JSONDecoder().decode([String: [String]].self, from: data)
+            for (reading, candidates) in dict {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let freshConverter = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let multi = freshConverter.multiClauseCandidates(for: "すくえあにすれば", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "Squareにすれば", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("ニ") }), "multi=\(multi)")
+        let single = freshConverter.candidates(for: "すくえあにすれば", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains(where: { $0.contains("ニす") }), "single=\(single)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
