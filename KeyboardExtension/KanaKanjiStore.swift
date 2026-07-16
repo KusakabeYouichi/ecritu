@@ -32,8 +32,19 @@ final class KanaKanjiStore {
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
-    // 短い読みの inflection_classes ペア一括ロード(連文節の辞書形述語判定用)
-    private var cachedShortInflectionFormPairs: Set<String>?
+    // 読み別の inflection_classes キャッシュ(連文節の辞書形述語判定用)
+    private var cachedInflectionClassMapsByReading: [String: [String: String]] = [:]
+    // 連文節 DP の LM 点引きキャッシュ。前置き入力ではスパン/ペアの大半が毎キーストロークで
+    // 再出現するため、点クエリ(1変換あたり unigram 数百+bigram 千超)を初出のみに抑える。
+    // 「未観測」も番兵(-1)で覚える — LM のヒット率は低く、negative キャッシュが本体。
+    // 上限超過時は全消去(まれな一括再クエリで済ませ、LRU 管理のオーバーヘッドを避ける)。
+    private var cachedWordLMUnigram: [String: Int] = [:]
+    private var cachedWordLMBigram: [String: Int] = [:]
+    private static let wordLMCacheLimit = 32768
+    private static let wordLMMissingSentinel = -1
+    // 読み別 word_costs キャッシュ(連文節のノード列挙が span ごとに引く)
+    private var cachedWordCostsByReading: [String: [String: Int]] = [:]
+    private static let wordCostsCacheLimit = 4096
     private var cachedInitialUserDictionary: [String: [String]]?
     private var cachedInitialShortcutVocabulary: [String]?
     var cachedUserDictionary: [String: [String]]?
@@ -229,28 +240,23 @@ final class KanaKanjiStore {
         return (classMap, !classMap.isEmpty)
     }
 
-    // 連文節の辞書形述語判定(短spanレア読み床の免除)。短い読みのペア表を一括ロードして
-    // 参照する — spanごとの sqlite 個別クエリは毎キーストローク数十回になり高コスト。
+    // 連文節の辞書形述語判定(短spanレア読み床の免除)。読み単位のインデックス付きクエリ+
+    // キャッシュで引く。以前の「length(reading)<=2 の一括ロード」はインデックスが効かず
+    // inflection_classes 全行スキャンになり、キーボード起動ごと(=アプリ切替ごと)の
+    // 初回変換を遅くしていた。呼び出し側の形状ゲート(かな終止形尾+漢字)でクエリ回数
+    // 自体も span あたり高々1回に抑えている。
     func isShortReadingDictionaryFormPredicate(reading: String, candidate: String) -> Bool {
-        let key = reading + "\t" + candidate
-        if let cached = cachedShortInflectionFormPairs {
-            return cached.contains(key)
+        if let cached = cachedInflectionClassMapsByReading[reading] {
+            return cached[candidate] != nil
         }
-        let maxLength = KanaKanjiConverter.multiClauseRareReadingFloorMaxReadingCount
-        let pairs: Set<String>
+        let classMap: [String: String]
         if let sqliteIndex = sqliteIndexIfAvailable() {
-            pairs = sqliteIndex.shortReadingInflectionFormPairs(maxReadingLength: maxLength)
+            classMap = sqliteIndex.inflectionClassMap(for: reading)
         } else {
-            var built: Set<String> = []
-            for (mapReading, classMap) in loadInflectionDictionary() where mapReading.count <= maxLength {
-                for mapCandidate in classMap.keys {
-                    built.insert(mapReading + "\t" + mapCandidate)
-                }
-            }
-            pairs = built
+            classMap = loadInflectionDictionary()[reading] ?? [:]
         }
-        cachedShortInflectionFormPairs = pairs
-        return pairs.contains(key)
+        cachedInflectionClassMapsByReading[reading] = classMap
+        return classMap[candidate] != nil
     }
 
     // 案A(連文節ビタビ)用: 読みに対する語コスト(Sudachi由来, 小さいほど高頻度)。
@@ -261,7 +267,15 @@ final class KanaKanjiStore {
             let sqliteIndex = sqliteIndexIfAvailable() else {
             return [:]
         }
-        return sqliteIndex.wordCostMap(for: normalizedReading)
+        if let cached = cachedWordCostsByReading[normalizedReading] {
+            return cached
+        }
+        let costMap = sqliteIndex.wordCostMap(for: normalizedReading)
+        if cachedWordCostsByReading.count >= Self.wordCostsCacheLimit {
+            cachedWordCostsByReading.removeAll(keepingCapacity: true)
+        }
+        cachedWordCostsByReading[normalizedReading] = costMap
+        return costMap
     }
 
     // 連文節 DP(案1: 自前単語 n-gram LM)が利用可能か。
@@ -269,20 +283,74 @@ final class KanaKanjiStore {
         sqliteIndexIfAvailable()?.hasWordLMMetadata ?? false
     }
 
-    // 連文節 DP 用: 表層集合の unigram コストをまとめて取得。
+    // 連文節 DP 用: 表層集合の unigram コストをまとめて取得(点引きキャッシュ経由)。
     func wordLMUnigramCosts(for surfaces: [String]) -> [String: Int] {
         guard let sqliteIndex = sqliteIndexIfAvailable() else {
             return [:]
         }
-        return sqliteIndex.wordLMUnigramCosts(for: surfaces)
+        var result: [String: Int] = [:]
+        var uncached: [String] = []
+        for surface in surfaces {
+            if let cached = cachedWordLMUnigram[surface] {
+                if cached != Self.wordLMMissingSentinel {
+                    result[surface] = cached
+                }
+            } else {
+                uncached.append(surface)
+            }
+        }
+        guard !uncached.isEmpty else {
+            return result
+        }
+        let fetched = sqliteIndex.wordLMUnigramCosts(for: uncached)
+        if cachedWordLMUnigram.count + uncached.count > Self.wordLMCacheLimit {
+            cachedWordLMUnigram.removeAll(keepingCapacity: true)
+        }
+        for surface in uncached {
+            if let cost = fetched[surface] {
+                cachedWordLMUnigram[surface] = cost
+                result[surface] = cost
+            } else {
+                cachedWordLMUnigram[surface] = Self.wordLMMissingSentinel
+            }
+        }
+        return result
     }
 
-    // 連文節 DP 用: (prev, cur) 対の bigram コストをまとめて取得(キー "prev\tcur")。
+    // 連文節 DP 用: (prev, cur) 対の bigram コストをまとめて取得(キー "prev\tcur"、点引きキャッシュ経由)。
     func wordLMBigramCosts(for pairs: [(String, String)]) -> [String: Int] {
         guard let sqliteIndex = sqliteIndexIfAvailable() else {
             return [:]
         }
-        return sqliteIndex.wordLMBigramCosts(for: pairs)
+        var result: [String: Int] = [:]
+        var uncached: [(String, String)] = []
+        for (prev, cur) in pairs {
+            let key = prev + "\t" + cur
+            if let cached = cachedWordLMBigram[key] {
+                if cached != Self.wordLMMissingSentinel {
+                    result[key] = cached
+                }
+            } else {
+                uncached.append((prev, cur))
+            }
+        }
+        guard !uncached.isEmpty else {
+            return result
+        }
+        let fetched = sqliteIndex.wordLMBigramCosts(for: uncached)
+        if cachedWordLMBigram.count + uncached.count > Self.wordLMCacheLimit {
+            cachedWordLMBigram.removeAll(keepingCapacity: true)
+        }
+        for (prev, cur) in uncached {
+            let key = prev + "\t" + cur
+            if let cost = fetched[key] {
+                cachedWordLMBigram[key] = cost
+                result[key] = cost
+            } else {
+                cachedWordLMBigram[key] = Self.wordLMMissingSentinel
+            }
+        }
+        return result
     }
 
     func systemCandidates(
@@ -518,7 +586,10 @@ final class KanaKanjiStore {
         cachedLatinSuggestionEntries = nil
         cachedSystemCandidateSources = nil
         cachedInflectionDictionary = nil
-        cachedShortInflectionFormPairs = nil
+        cachedInflectionClassMapsByReading = [:]
+        cachedWordLMUnigram = [:]
+        cachedWordLMBigram = [:]
+        cachedWordCostsByReading = [:]
     }
 
     // sqlite インデックスも含めて完全に閉じる(辞書ファイル差し替え時の再オープン用)。
