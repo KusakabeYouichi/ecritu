@@ -3440,6 +3440,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(composed.contains(where: { $0.contains("×") }), "candidates=\(composed)")
         let shita = converter.candidates(for: "したの", limit: 30, systemCandidateMode: .surface)
         XCTAssertFalse(shita.contains(where: { $0.contains("↓") }), "candidates=\(shita)")
+        // 連文節のラティスにも載らない(まる/した 等のスパンは word_costs 由来のみ)
+        for reading in ["まるをかいた", "やじるしをかく", "したのほうにある"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertFalse(
+                multi.contains(where: { candidate in
+                    candidate.contains("○") || candidate.contains("→") || candidate.contains("↓")
+                }),
+                "reading=\(reading) multi=\(multi)"
+            )
+        }
     }
 
     private func clearSuite(_ suiteName: String) {
