@@ -522,6 +522,20 @@ extension KanaKanjiConverter {
             } else {
                 base = Self.multiClausePassthroughPerCharCost * reading.count
             }
+            // 活用派生ノードは OOV 信頼水準を上限にする。LM unigram に「実在するが高い」表層
+            // (付けよう=7743)が、未収録の同族(着けよう=OOV 7200)より高く付いて基底順が
+            // 逆転するのを防ぐ(きをつけよう→気を着けよう対策)。bigram が安ければそちらを尊重。
+            if isInflectionDerived {
+                let prevAllowsInflectionDiscount =
+                    Self.multiClauseCaseParticleSurfaces.contains(prev)
+                    || Self.multiClauseCompoundParticles.contains(prev)
+                base = min(
+                    base,
+                    prevAllowsInflectionDiscount
+                        ? Self.multiClauseInflectionAfterParticleCost
+                        : Self.multiClauseInflectionDerivedOOVCost
+                )
+            }
             // 追加語彙/学習語彙は強い下限で優遇(自然な LM コストがより安ければそちらを尊重)。
             // ただし絵文字/記号のみの表層(sacoche の €/🇮🇳/₿ 等)は本文へ割り込ませないため優遇せず、
             // 列挙のみ(単文節候補としては到達可)。語形(かな/漢字/ラテン字を含む)だけ強化する。

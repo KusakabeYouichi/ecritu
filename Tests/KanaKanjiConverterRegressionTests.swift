@@ -3147,6 +3147,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("出会") || $0.contains("出貝") }), "multi=\(multi)")
     }
 
+    // 実LM回帰: きをつけよう→気を付けよう。単字 き は短spanレア読み床で 気(wc6164)が
+    // 木(wc4548)に負けるため 気を を curated 供給。さらに活用派生の OOV 上限
+    // (LM 実在で高い 付けよう 7743 が未収録の 着けよう OOV 7200 に逆転される)と
+    // seed つける=[付ける,着ける] の基底順で 付けよう を最良にする。
+    func testRegressionRealLMKiwoTsukeyouPrefersKiwo() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+        converter.store.addUserEntry(reading: "きを", candidate: "気を")
+
+        let multi = converter.multiClauseCandidates(for: "きをつけよう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "気を付けよう", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("木") }), "multi=\(multi)")
+    }
+
     private func clearSuite(_ suiteName: String) {
         guard !suiteName.isEmpty else {
             return
