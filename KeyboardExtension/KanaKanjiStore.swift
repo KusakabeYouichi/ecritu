@@ -38,6 +38,11 @@ final class KanaKanjiStore {
     }
     private var sqliteIndex: KanaKanjiSQLiteIndex?
     private var didAttemptSQLiteIndexLoad = false
+    // メモリ圧迫でのアンロード後は再オープンを禁止する(スティッキー)。以前は
+    // clearSystemDictionaryCaches が didAttemptSQLiteIndexLoad をリセットするため
+    // 次の変換で即再オープンされ、最終手段のアンロードが close→reopen の空回りに
+    // なっていた。辞書ファイル差し替え(reopenSystemDictionary)では解除する。
+    private var isSQLiteReopenSuppressed = false
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: [String: [String]]?
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
@@ -117,8 +122,17 @@ final class KanaKanjiStore {
         return nil
     }
 
+    // JSONフォールバックのサイズ上限。キーボード拡張の footprint 予算(60〜80MB)に対し、
+    // JSON時代(edition 1829以前)の App Group に残った巨大辞書JSON(30〜54MB、デコード後
+    // 実メモリ3〜5倍)を丸ごとデコードすると jetsam 確実なため、デコード自体を拒否して
+    // seed フォールバックに劣化させる。現行のバンドル同梱はプレースホルダ(数バイト)。
+    private static let dictionaryDataMaxByteCount = 4 * 1024 * 1024
+
     private func sharedOrBundledDictionaryData(filename: String) -> Data? {
         guard let resourceURL = sharedOrBundledDictionaryURL(filename: filename),
+            let values = try? resourceURL.resourceValues(forKeys: [.fileSizeKey]),
+            let size = values.fileSize,
+            size <= Self.dictionaryDataMaxByteCount,
             let data = try? Data(contentsOf: resourceURL),
             !data.isEmpty else {
             return nil
@@ -131,6 +145,10 @@ final class KanaKanjiStore {
         systemDictionaryQueue.sync {
             if let sqliteIndex {
                 return sqliteIndex
+            }
+
+            guard !isSQLiteReopenSuppressed else {
+                return nil
             }
 
             guard let databaseURL = sharedOrBundledDictionaryURL(
@@ -616,13 +634,27 @@ final class KanaKanjiStore {
     }
 
     // sqlite インデックスも含めて完全に閉じる(辞書ファイル差し替え時の再オープン用)。
-    // メモリ対策では使わない — clearSystemDictionaryJSONCaches を使うこと。
+    // メモリ対策では使わない — unloadSQLiteIndexForMemoryPressure を使うこと。
     func clearSystemDictionaryCaches() {
         clearSystemDictionaryJSONCaches()
 
         systemDictionaryQueue.sync {
             sqliteIndex = nil
             didAttemptSQLiteIndexLoad = false
+            isSQLiteReopenSuppressed = false
+        }
+    }
+
+    // メモリ圧迫の最終手段: sqlite を閉じ、再オープンをセッション中スティッキーに禁止する
+    // (連文節は単文節フォールバックへ劣化)。JSONフォールバックへ落ちないよう、JSON側の
+    // キャッシュも合わせて破棄+サイズゲートで巨大JSONのデコードは常時拒否済み。
+    func unloadSQLiteIndexForMemoryPressure() {
+        clearSystemDictionaryJSONCaches()
+
+        systemDictionaryQueue.sync {
+            sqliteIndex = nil
+            didAttemptSQLiteIndexLoad = false
+            isSQLiteReopenSuppressed = true
         }
     }
 
