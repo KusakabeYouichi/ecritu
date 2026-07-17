@@ -322,12 +322,42 @@ extension KanaKanjiConverter {
                     add(surface, isDictWord: true, isCurated: true)
                 }
 
+                let segmentEndsWithSokuon = segmentReading.hasSuffix("っ")
+                let costMap = store.wordCosts(for: segmentReading)
+
+                // (a2) seed(人手の並び矯正/供給)もラティスに載せる。辞書に無い正書
+                //      (中の/柚花 等)を連文節でも組めるようにし、コスト同値帯
+                //      (名前群は一律 dictUnknown/wc10000 等)のタイブレークを seed 順で
+                //      押さえる(ノード列挙順が同 delta 変種の表示順になるため)。
+                for surface in KanaKanjiSeedDictionary.seed[segmentReading] ?? [] {
+                    if segmentEndsWithSokuon, containsKanji(surface) {
+                        continue
+                    }
+                    // (b) と同じ辞書形述語判定を付ける。無いと seed 掲載の動詞(書く 等)が
+                    // 床免除を失って床上げされ、同読みの別動詞(描く)に逆転される。
+                    var seedIsDictionaryFormPredicate = false
+                    if len <= Self.multiClauseRareReadingFloorMaxReadingCount,
+                        let lastChar = surface.last,
+                        Self.multiClauseDictionaryFormTailCharacters.contains(lastChar),
+                        containsKanji(surface) {
+                        seedIsDictionaryFormPredicate = store.isShortReadingDictionaryFormPredicate(
+                            reading: segmentReading,
+                            candidate: surface
+                        )
+                    }
+                    add(
+                        surface,
+                        isDictWord: true,
+                        isCurated: false,
+                        wordCost: costMap[surface],
+                        isDictionaryFormPredicate: seedIsDictionaryFormPredicate
+                    )
+                }
+
                 // (b) word_costs(Sudachi 由来)から top-K を列挙。抑制語彙は除外。
                 //     促音「っ」で終わる読みは日本語の語として自立しない断片(かっ/きっ 等)で、
                 //     Sudachi の複合語内読み(核=カッ 等)由来の漢字ノードがジャンク合成
                 //     (いきだけかったぜ→行きだけ核たぜ)を作るため、漢字含み表層は弾く。
-                let segmentEndsWithSokuon = segmentReading.hasSuffix("っ")
-                let costMap = store.wordCosts(for: segmentReading)
                 if !costMap.isEmpty {
                     let ordered = costMap.sorted { lhs, rhs in
                         lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key < rhs.key

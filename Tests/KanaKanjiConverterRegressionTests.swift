@@ -2873,7 +2873,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let cases: [(reading: String, expected: String)] = [
             ("たくのがすき", "炊くのが好き"),
-            ("かくのがすき", "書くのが好き"),
             ("いくのがすき", "行くのが好き"),
             ("よむのがすき", "読むのが好き")
         ]
@@ -2881,6 +2880,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             let multi = converter.multiClauseCandidates(for: testCase.reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, testCase.expected, "reading=\(testCase.reading) multi=\(multi)")
         }
+        // かくのがすき は 書く/描く とも正当(絵を描くのが好き)。seed の連文節供給(2079)で
+        // 描く ノードが常時ラティスに載り、LM(uni は 描く が頻出)どおり 描く が最良になる。
+        // 両方が上位2位以内に入ることを固定する(核のが好き 等のジャンク排除が本旨)。
+        let kaku = converter.multiClauseCandidates(for: "かくのがすき", systemCandidateMode: .surface)
+        XCTAssertEqual(Set(kaku.prefix(2)), Set(["書くのが好き", "描くのが好き"]), "multi=\(kaku)")
         // 名詞ジャンク(宅/核)が経路から消えていること
         let taku = converter.multiClauseCandidates(for: "たくのがすき", systemCandidateMode: .surface)
         XCTAssertFalse(taku.contains(where: { $0.contains("宅") }), "multi=\(taku)")
@@ -3066,6 +3070,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "夏は", "single=\(single)")
         // 名前群は消さず後方(合成群の後ろ)に残る
         XCTAssertTrue(single.contains("夏羽"), "single=\(single)")
+    }
+
+    // 実LM回帰: ゆずか→柚花/柚香。柚花 は辞書に無く合成経由のみ、柚香(rank0)は wc11000 で
+    // 名前収穫群に埋もれていた。seed 供給+seed の連文節ラティス搭載+seed の収穫底値降格
+    // 免除の3点で、単独・敬称合成(さん)とも 柚花→柚香 を先頭に固定する。
+    func testRegressionRealLMYuzukaPrefersYuzuka() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "ゆずか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["柚花", "柚香"], "single=\(single)")
+
+        let multi = converter.multiClauseCandidates(for: "ゆずかさん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "柚花さん", "multi=\(multi)")
+        XCTAssertEqual(multi.dropFirst().first, "柚香さん", "multi=\(multi)")
     }
 
     private func prepareRealLMDictionary() throws {
