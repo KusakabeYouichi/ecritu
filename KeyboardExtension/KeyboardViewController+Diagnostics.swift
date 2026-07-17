@@ -4,6 +4,28 @@ import CoreFoundation
 import Darwin
 import Contacts
 
+// 診断まわりの帳簿状態。VC本体の状態肥大を防ぐため分離(挙動不変の移動)。
+extension KeyboardViewController {
+    final class DiagnosticsState {
+        var diagnosticsSessionID = UUID().uuidString
+        var diagnosticsSessionStartedAt = Date()
+        let diagnosticsControllerID = UUID().uuidString
+        var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
+        // 診断のメモリ内バッファ(毎打鍵の UserDefaults JSON ラウンドトリップ回避)。
+        // nil=未ロード。永続化は2秒スロットル+重要イベント即時+ライフサイクルでフラッシュ。
+        var diagnosticsFlightRecorderBuffer: [DiagnosticsFlightRecorderEvent]?
+        var diagnosticsFlightRecorderLastPersistedAt: TimeInterval = 0
+        var diagnosticsLogLinesBuffer: [String]?
+        var diagnosticsHeartbeatLastPersistedAt: TimeInterval = 0
+        var diagnosticsLastPersistedFailSafeProfile: MemoryFailSafeProfile?
+        // 診断: 押下表示残留(赤キー)を watchdog が強制解除した回数(セッション累計)。
+        var stuckTouchForceClearCount = 0
+        // 診断: このセッションで受けたメモリ警告の回数。2回目以降は最終手段として
+        // 連文節LM(sqlite)もアンロードする(初回は ef56d52 の方針どおり保持)。
+        var memoryWarningCountThisSession = 0
+    }
+}
+
 extension KeyboardViewController {
     func physicalMemoryGBText() -> String {
         let physicalMemoryGB = Double(ProcessInfo.processInfo.physicalMemory) / 1_073_741_824
@@ -21,7 +43,7 @@ extension KeyboardViewController {
     }
 
     func diagnosticsSessionOwnerToken() -> String {
-        "\(diagnosticsProcessID()):\(diagnosticsControllerID)"
+        "\(diagnosticsProcessID()):\(diagnosticsState.diagnosticsControllerID)"
     }
 
     func currentResidentMemoryBytes() -> UInt64? {
@@ -293,12 +315,12 @@ extension KeyboardViewController {
     }
 
     func diagnosticsRuntimeContext() -> String {
-        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText()) footprintMB=\(diagnosticsFootprintMBText()) failSafe=\(memoryFailSafeProfile.rawValue)"
+        "process=\(diagnosticsProcessLabel()) pid=\(diagnosticsProcessID()) controllerID=\(diagnosticsState.diagnosticsControllerID) rssMB=\(diagnosticsResidentMemoryMBText()) footprintMB=\(diagnosticsFootprintMBText()) failSafe=\(memoryFailSafeProfile.rawValue)"
     }
 
     func persistKeyboardDiagnosticsFailSafeProfile(in defaults: UserDefaults? = nil) {
         // 毎ハートビートで同値を書き直さない(変化時のみ)。
-        guard memoryFailSafeProfile != diagnosticsLastPersistedFailSafeProfile else {
+        guard memoryFailSafeProfile != diagnosticsState.diagnosticsLastPersistedFailSafeProfile else {
             return
         }
         let targetDefaults = defaults ?? sharedDefaults
@@ -306,7 +328,7 @@ extension KeyboardViewController {
             memoryFailSafeProfile.rawValue,
             forKey: SharedDefaultsKeys.keyboardDiagnosticsFailSafeProfile
         )
-        diagnosticsLastPersistedFailSafeProfile = memoryFailSafeProfile
+        diagnosticsState.diagnosticsLastPersistedFailSafeProfile = memoryFailSafeProfile
     }
 
     func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
@@ -371,8 +393,8 @@ extension KeyboardViewController {
 
     func clearFlightRecorderEvents(in defaults: UserDefaults) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
-        diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
-        diagnosticsFlightRecorderBuffer = nil
+        diagnosticsState.diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
+        diagnosticsState.diagnosticsFlightRecorderBuffer = nil
     }
 
     func observeKeyboardDiagnosticsEvent(
@@ -392,12 +414,12 @@ extension KeyboardViewController {
         let dedupeKey = "\(event)|\(source)"
 
         if !forceRecord,
-            let previous = diagnosticsFlightRecorderLastObservedAt[dedupeKey],
+            let previous = diagnosticsState.diagnosticsFlightRecorderLastObservedAt[dedupeKey],
             now - previous < Self.diagnosticsFlightRecorderMinRecordIntervalSec {
             return
         }
 
-        var events = diagnosticsFlightRecorderBuffer ?? flightRecorderEvents(from: sharedDefaults)
+        var events = diagnosticsState.diagnosticsFlightRecorderBuffer ?? flightRecorderEvents(from: sharedDefaults)
         events.append(
             DiagnosticsFlightRecorderEvent(
                 timestamp: now,
@@ -408,13 +430,13 @@ extension KeyboardViewController {
 
         let anchorTimestamp = events.last?.timestamp ?? now
         events = trimmedFlightRecorderEvents(events, anchorTimestamp: anchorTimestamp)
-        diagnosticsFlightRecorderBuffer = events
-        diagnosticsFlightRecorderLastObservedAt[dedupeKey] = now
+        diagnosticsState.diagnosticsFlightRecorderBuffer = events
+        diagnosticsState.diagnosticsFlightRecorderLastObservedAt[dedupeKey] = now
         // 毎打鍵の JSON エンコード+defaults 書き込みを避け、スロットル付きで永続化する。
         // forceRecord(メモリ警告等)は即時。クラッシュ時の欠損は最大2秒分。
-        if forceRecord || now - diagnosticsFlightRecorderLastPersistedAt >= Self.diagnosticsBufferPersistIntervalSec {
+        if forceRecord || now - diagnosticsState.diagnosticsFlightRecorderLastPersistedAt >= Self.diagnosticsBufferPersistIntervalSec {
             saveFlightRecorderEvents(events, to: sharedDefaults)
-            diagnosticsFlightRecorderLastPersistedAt = now
+            diagnosticsState.diagnosticsFlightRecorderLastPersistedAt = now
         }
     }
 
@@ -423,9 +445,9 @@ extension KeyboardViewController {
         guard let sharedDefaults else {
             return
         }
-        if let buffer = diagnosticsFlightRecorderBuffer {
+        if let buffer = diagnosticsState.diagnosticsFlightRecorderBuffer {
             saveFlightRecorderEvents(buffer, to: sharedDefaults)
-            diagnosticsFlightRecorderLastPersistedAt = Date().timeIntervalSince1970
+            diagnosticsState.diagnosticsFlightRecorderLastPersistedAt = Date().timeIntervalSince1970
         }
     }
 
@@ -477,8 +499,8 @@ extension KeyboardViewController {
     ) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
-        diagnosticsLogLinesBuffer = nil
-        diagnosticsFlightRecorderBuffer = nil
+        diagnosticsState.diagnosticsLogLinesBuffer = nil
+        diagnosticsState.diagnosticsFlightRecorderBuffer = nil
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
@@ -581,7 +603,7 @@ extension KeyboardViewController {
 
         Self.diagnosticsFlightFileLastHeartbeatWriteAt = now
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
-        appendKeyboardDiagnosticsFlightFileLine("\(timestamp) [\(diagnosticsSessionID)] HB \(summary)")
+        appendKeyboardDiagnosticsFlightFileLine("\(timestamp) [\(diagnosticsState.diagnosticsSessionID)] HB \(summary)")
     }
 
     // App Group への書き込み健全性を起動時に1回記録する(コンテナURL到達性と
@@ -592,7 +614,7 @@ extension KeyboardViewController {
 
         if let sharedDefaults {
             let probeKey = "keyboardDiagnosticsWriteProbe"
-            let probeValue = "\(diagnosticsSessionID)-\(Int(Date().timeIntervalSince1970))"
+            let probeValue = "\(diagnosticsState.diagnosticsSessionID)-\(Int(Date().timeIntervalSince1970))"
             sharedDefaults.set(probeValue, forKey: probeKey)
             defaultsRoundTrip = sharedDefaults.string(forKey: probeKey) == probeValue ? "ok" : "mismatch"
         }
@@ -604,9 +626,9 @@ extension KeyboardViewController {
 
     // ---- 押下表示残留(赤キー)の証拠収集 ----
     func recordStuckTouchForceClear(_ detail: String) {
-        stuckTouchForceClearCount += 1
+        diagnosticsState.stuckTouchForceClearCount += 1
         appendKeyboardDiagnosticsLog(
-            "押下残留をwatchdogが強制解除 \(detail) 累計=\(stuckTouchForceClearCount)"
+            "押下残留をwatchdogが強制解除 \(detail) 累計=\(diagnosticsState.stuckTouchForceClearCount)"
         )
     }
 
@@ -619,7 +641,7 @@ extension KeyboardViewController {
         let sourceFile = (file as NSString).lastPathComponent
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
         let entry =
-            "\(timestamp) [\(diagnosticsSessionID)] \(event) {\(diagnosticsRuntimeContext())} (\(sourceFile):\(line) \(function))"
+            "\(timestamp) [\(diagnosticsState.diagnosticsSessionID)] \(event) {\(diagnosticsRuntimeContext())} (\(sourceFile):\(line) \(function))"
 
         // defaults が使えない環境でもファイル側には必ず残す。
         appendKeyboardDiagnosticsFlightFileLine(entry)
@@ -630,7 +652,7 @@ extension KeyboardViewController {
 
         // 320行の JSON デコードを毎回やり直さない(メモリ内バッファ)。保存自体は
         // まれなイベントかつクラッシュ保全のため即時のまま。
-        var lines = diagnosticsLogLinesBuffer ?? diagnosticsLogLines(from: sharedDefaults)
+        var lines = diagnosticsState.diagnosticsLogLinesBuffer ?? diagnosticsLogLines(from: sharedDefaults)
         lines.append(entry)
 
         let maxLineCount = 320
@@ -638,11 +660,11 @@ extension KeyboardViewController {
             lines.removeFirst(lines.count - maxLineCount)
         }
 
-        diagnosticsLogLinesBuffer = lines
+        diagnosticsState.diagnosticsLogLinesBuffer = lines
         saveDiagnosticsLogLines(lines, to: sharedDefaults)
         sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
         sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
-        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
     }
 
     func updateKeyboardDiagnosticsHeartbeat(
@@ -665,11 +687,11 @@ extension KeyboardViewController {
         // ハートビートのスカラー書き込みもスロットル(粒度2秒で生存確認には十分)。
         // appendLog 付き(メモリ警告/ライフサイクル等の重要イベント)は即時。
         let now = Date().timeIntervalSince1970
-        if appendLog || now - diagnosticsHeartbeatLastPersistedAt >= Self.diagnosticsBufferPersistIntervalSec {
+        if appendLog || now - diagnosticsState.diagnosticsHeartbeatLastPersistedAt >= Self.diagnosticsBufferPersistIntervalSec {
             sharedDefaults.set(now, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
             sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
-            sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
-            diagnosticsHeartbeatLastPersistedAt = now
+            sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+            diagnosticsState.diagnosticsHeartbeatLastPersistedAt = now
         }
 
         if appendLog {
@@ -686,7 +708,7 @@ extension KeyboardViewController {
             return
         }
 
-        diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
+        diagnosticsState.diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
 
         let previousSessionWasActive = sharedDefaults.bool(
             forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive
@@ -732,14 +754,14 @@ extension KeyboardViewController {
             clearFlightRecorderEvents(in: sharedDefaults)
         }
 
-        diagnosticsSessionID = UUID().uuidString
-        diagnosticsSessionStartedAt = Date()
+        diagnosticsState.diagnosticsSessionID = UUID().uuidString
+        diagnosticsState.diagnosticsSessionStartedAt = Date()
         sharedDefaults.set(true, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
         sharedDefaults.set(
             diagnosticsSessionOwnerToken(),
             forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
         )
-        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
         persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
         appendKeyboardDiagnosticsLog(
             "キーボード拡張セッション開始",
@@ -759,7 +781,7 @@ extension KeyboardViewController {
             return
         }
 
-        let elapsedSec = max(0, Date().timeIntervalSince(diagnosticsSessionStartedAt))
+        let elapsedSec = max(0, Date().timeIntervalSince(diagnosticsState.diagnosticsSessionStartedAt))
 
         appendKeyboardDiagnosticsLog(
             "キーボード拡張セッション終了 reason=\(reason) elapsedSec=\(String(format: "%.1f", elapsedSec))",
