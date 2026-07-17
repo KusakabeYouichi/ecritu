@@ -2982,6 +2982,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.hasLearnedKanaIdentity(for: "きょうはいいてんきですね"))
 
         // 保存→再読込(learnedDictionary の読み込みフィルタ)でも単語相当の識別は残る。
+        // 学習の永続化は非同期のため、フレッシュな store で読む前にフラッシュする。
+        converter.store.waitForPendingLearningPersists()
         let reloaded = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
         XCTAssertTrue(reloaded.hasLearnedKanaIdentity(for: "ちゃんと"))
     }

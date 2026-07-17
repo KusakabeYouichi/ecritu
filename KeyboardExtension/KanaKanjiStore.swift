@@ -19,6 +19,16 @@ final class KanaKanjiStore {
     // デコード等の重い処理はロックの外で行うこと(二重計算は無害、競合変異は未定義)。
     private let cacheLock = NSLock()
 
+    // 学習データ永続化用のバックグラウンドキュー。確定(learn)のたびに学習辞書・学習スコア
+    // 全体を JSONEncoder で再エンコードして UserDefaults へ書くのは、学習データの成長に
+    // 比例して確定タップを重くするため、メモリ内キャッシュだけ同期更新し永続化は非同期で
+    // 行う(直列キューなので最終書き込みが必ず勝つ)。手動の追加語彙(addUserEntry)は
+    // 頻度が低くテストが直後にフレッシュな store で読むため同期のまま。
+    let learningPersistQueue = DispatchQueue(
+        label: "com.kusakabe.ecritu.kana-kanji.learning-persist",
+        qos: .utility
+    )
+
     func withCacheLock<T>(_ body: () -> T) -> T {
         cacheLock.lock()
         defer { cacheLock.unlock() }

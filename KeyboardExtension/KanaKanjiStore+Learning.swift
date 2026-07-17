@@ -54,7 +54,16 @@ extension KanaKanjiStore {
         candidates.insert(trimmedCandidate, at: 0)
         dictionary[normalizedReading] = Array(candidates.prefix(32))
         withCacheLock { cachedLearnedDictionary = dictionary }
-        saveLearnedDictionary(dictionary)
+        // 永続化は非同期(確定タップを学習データ量に比例して重くしない)。変換は
+        // メモリ内キャッシュを見るため即時に反映される。
+        learningPersistQueue.async { [weak self] in
+            self?.saveLearnedDictionary(dictionary)
+        }
+    }
+
+    // テスト用: 学習永続化キューの完了を待つ(フレッシュな store で defaults を読む前に呼ぶ)。
+    func waitForPendingLearningPersists() {
+        learningPersistQueue.sync {}
     }
 
     func learningScores() -> [String: Int] {
@@ -88,8 +97,11 @@ extension KanaKanjiStore {
             cachedLearningScoresByReading = nil
         }
 
-        if let encoded = try? JSONEncoder().encode(scores) {
-            defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
+        // 正規化後の書き戻しは初回変換経路でも走るため非同期にする。
+        learningPersistQueue.async {
+            if let encoded = try? JSONEncoder().encode(scores) {
+                defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
+            }
         }
 
         return scores
@@ -128,12 +140,16 @@ extension KanaKanjiStore {
             }
         }
 
-        guard let defaults,
-                let encoded = try? JSONEncoder().encode(scores) else {
+        guard let defaults else {
             return
         }
 
-        defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
+        // スコア全体の再エンコードも確定のたびに main でやらない(学習データ量に比例)。
+        learningPersistQueue.async {
+            if let encoded = try? JSONEncoder().encode(scores) {
+                defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
+            }
+        }
     }
 
     func saveUserDictionary(_ dictionary: [String: [String]]) {

@@ -493,6 +493,10 @@ final class KanaKanjiConverter {
         store.incrementLearning(reading: normalizedReading, candidate: trimmedCandidate)
 
         stateQueue.sync {
+            // 学習は派生基底(かう→かった 等)経由で任意の読みに波及するため、読みで絞る
+            // 部分無効化は stale 候補(学習が効かない)の温床になる。全無効化のままとし、
+            // 再計算コストは store 層の LM/wordCosts キャッシュ(learn では無効化されない)
+            // が吸収する。
             invalidateCandidateCache()
         }
     }
