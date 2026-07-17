@@ -242,7 +242,7 @@ final class KeyboardViewController: UIInputViewController {
     let diagnosticsControllerID = UUID().uuidString
     var pendingRefreshKeyboardStateRequests = 0
     var isRefreshKeyboardStateAsyncScheduled = false
-    var candidateGenerationCounter: UInt64 = 0
+    let candidateGenerationSequencer = CandidateGenerationSequencer()
     var settledCandidatePresentation: CandidatePresentation?
     var settledCandidatePresentationKey: CandidatePresentationCacheKey?
     let candidateGenerationQueue = DispatchQueue(
