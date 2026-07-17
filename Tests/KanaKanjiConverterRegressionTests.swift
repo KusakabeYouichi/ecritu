@@ -2982,7 +2982,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(composed.contains(where: { $0.contains("×") }), "candidates=\(composed)")
         let shita = converter.candidates(for: "したの", limit: 30, systemCandidateMode: .surface)
         XCTAssertFalse(shita.contains(where: { $0.contains("↓") }), "candidates=\(shita)")
-        // 連文節のラティスにも載らない(まる/した 等のスパンは word_costs 由来のみ)
+        // 連文節のラティスにも載らない(まる/した 等のスパンは word_costs 由来のみ。
+        // seed の連文節供給(a2)は通常 seed だけを参照し、exactReadingOnlySeed は対象外)
         for reading in ["まるをかいた", "やじるしをかく", "したのほうにある"] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertFalse(
@@ -2992,6 +2993,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                 "reading=\(reading) multi=\(multi)"
             )
         }
+        // 踊り字も同様(どう スパンに 々 が立たない)
+        let odoriji = converter.multiClauseCandidates(for: "どうしてもいく", systemCandidateMode: .surface)
+        XCTAssertFalse(odoriji.contains(where: { $0.contains("々") }), "multi=\(odoriji)")
     }
 
     // 実LM回帰: なぜ のかな正書curated供給。LM はかな優位(なぜ5289<何故6391)だが、
