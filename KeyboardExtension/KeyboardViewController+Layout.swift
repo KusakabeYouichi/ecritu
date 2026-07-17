@@ -79,7 +79,7 @@ extension KeyboardViewController {
             return mode
         }
 
-        let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        let sharedDefaults = self.sharedDefaults
         return sharedEnumValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.kanaLayoutMode,
@@ -92,7 +92,7 @@ extension KeyboardViewController {
             return mode
         }
 
-        let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        let sharedDefaults = self.sharedDefaults
         return sharedEnumValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.latinLayoutMode,

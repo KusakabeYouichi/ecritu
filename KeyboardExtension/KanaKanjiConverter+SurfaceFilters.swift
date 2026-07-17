@@ -88,6 +88,33 @@ extension KanaKanjiConverter {
         return mappings
     }()
 
+    // isDeinflectedSuppressed 用の事前バケット: readingSuffix 末尾文字→ルール群。
+    // 全ルール(約1000件)の線形走査が candidatesForReading の候補ごとに乗算的に呼ばれる
+    // ため、読み末尾が一致し得るルールだけ照合する。readingSuffix が空のルールは
+    // どの読みにもマッチし得るので別枠で常に照合する。
+    static let deinflectionRulesByReadingLastCharacter: [Character: [InflectionRule]] = {
+        var buckets: [Character: [InflectionRule]] = [:]
+        for rule in allInflectionRules {
+            guard let last = rule.readingSuffix.last else {
+                continue
+            }
+            buckets[last, default: []].append(rule)
+        }
+        return buckets
+    }()
+    static let deinflectionRulesWithEmptyReadingSuffix: [InflectionRule] =
+        allInflectionRules.filter { $0.readingSuffix.isEmpty }
+    static let godanPotentialDeinflectionMappingsByReadingLastCharacter: [Character: [(readingSuffix: String, baseReadingSuffix: String)]] = {
+        var buckets: [Character: [(readingSuffix: String, baseReadingSuffix: String)]] = [:]
+        for mapping in godanPotentialDeinflectionMappings {
+            guard let last = mapping.readingSuffix.last else {
+                continue
+            }
+            buckets[last, default: []].append(mapping)
+        }
+        return buckets
+    }()
+
     func isDeinflectedSuppressed(
         candidate: String,
         reading: String,
@@ -97,7 +124,12 @@ extension KanaKanjiConverter {
             return false
         }
 
-        for rule in Self.allInflectionRules {
+        guard let readingLastCharacter = reading.last else {
+            return false
+        }
+        let bucketedRules = Self.deinflectionRulesByReadingLastCharacter[readingLastCharacter] ?? []
+
+        for rule in bucketedRules + Self.deinflectionRulesWithEmptyReadingSuffix {
             guard reading.hasSuffix(rule.readingSuffix),
                 candidate.hasSuffix(rule.outputCandidateSuffix) else {
                 continue
@@ -127,7 +159,9 @@ extension KanaKanjiConverter {
             }
         }
 
-        for mapping in Self.godanPotentialDeinflectionMappings {
+        let bucketedMappings = Self.godanPotentialDeinflectionMappingsByReadingLastCharacter[readingLastCharacter] ?? []
+
+        for mapping in bucketedMappings {
             guard reading.hasSuffix(mapping.readingSuffix),
                 candidate.hasSuffix(mapping.readingSuffix) else {
                 continue
