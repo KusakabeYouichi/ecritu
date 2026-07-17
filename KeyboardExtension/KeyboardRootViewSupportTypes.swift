@@ -2,6 +2,16 @@ import Foundation
 import SwiftUI
 import UIKit
 
+// 候補バー系の状態(未確定文字列/変換候補/選択位置/英字サジェスト)。毎打鍵で変わるのは
+// ここだけなので、rootView 差し替えではなく publish で更新して SwiftUI に差分再評価させる。
+final class KeyboardCandidateBarModel: ObservableObject {
+    @Published var composingText: String = ""
+    @Published var conversionCandidates: [String] = []
+    @Published var selectedConversionCandidateIndex: Int? = nil
+    @Published var latinSuggestionQuery: String = ""
+    @Published var latinSuggestions: [String] = []
+}
+
 enum KeyboardThemePalette {
     static let keyLabel = Color(uiColor: .label)
     static let keyLabelSecondary = Color(uiColor: .secondaryLabel)

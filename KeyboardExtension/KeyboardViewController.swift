@@ -243,6 +243,7 @@ final class KeyboardViewController: UIInputViewController {
     var pendingRefreshKeyboardStateRequests = 0
     var isRefreshKeyboardStateAsyncScheduled = false
     let candidateGenerationSequencer = CandidateGenerationSequencer()
+    let candidateBarModel = KeyboardCandidateBarModel()
     var settledCandidatePresentation: CandidatePresentation?
     var settledCandidatePresentationKey: CandidatePresentationCacheKey?
     let candidateGenerationQueue = DispatchQueue(
@@ -1141,7 +1142,19 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
+        // 候補バー系(未確定/変換候補/英字サジェスト)だけの変化なら、rootView を差し替えず
+        // モデルの publish だけで更新する。差し替えは view ツリー全体の再構築+同期
+        // layoutIfNeeded を伴い、毎打鍵では最も高くつく(キー盤面は不変のまま)。
+        let previousConfiguration = lastRenderConfiguration
         lastRenderConfiguration = configuration
+        updateCandidateBarModel(from: configuration)
+
+        if let previousConfiguration,
+            configuration.equalIgnoringCandidateBar(previousConfiguration),
+            hostingController != nil {
+            return
+        }
+
         UIView.performWithoutAnimation {
             hostingController?.rootView = makeRootView(from: configuration)
             hostingController?.view.layoutIfNeeded()
