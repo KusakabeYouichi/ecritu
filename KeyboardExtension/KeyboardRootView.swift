@@ -48,11 +48,16 @@ struct KeyboardRootView: View {
     let landscapeNumberPaneSideRawValue: String
     let landscapeLatinSuggestionModeRawValue: String
     let shortcutVocabulary: [String]
-    let composingText: String
-    let conversionCandidates: [String]
-    let selectedConversionCandidateIndex: Int?
-    let latinSuggestionQuery: String
-    let latinSuggestions: [String]
+    // 候補バー系の状態は ObservableObject 経由で受ける。候補だけが変わる打鍵では
+    // rootView を差し替えず(=UIHostingController の同期 layoutIfNeeded も走らせず)、
+    // モデルの publish だけで SwiftUI に再評価させるため。既存の消費箇所は
+    // computed プロパティで無改修のまま互換にする。
+    @ObservedObject var candidateBarModel: KeyboardCandidateBarModel
+    var composingText: String { candidateBarModel.composingText }
+    var conversionCandidates: [String] { candidateBarModel.conversionCandidates }
+    var selectedConversionCandidateIndex: Int? { candidateBarModel.selectedConversionCandidateIndex }
+    var latinSuggestionQuery: String { candidateBarModel.latinSuggestionQuery }
+    var latinSuggestions: [String] { candidateBarModel.latinSuggestions }
     let showsParenthesesWrapper: Bool
     let initialSpaceToastText: String?
 
@@ -1077,11 +1082,15 @@ struct KeyboardRootView: View {
             landscapeNumberPaneSideRawValue: "left",
         landscapeLatinSuggestionModeRawValue: "sidebar",
         shortcutVocabulary: [],
-        composingText: "かな",
-        conversionCandidates: ["仮名", "かな"],
-        selectedConversionCandidateIndex: 0,
-        latinSuggestionQuery: "caf",
-        latinSuggestions: ["cafe", "café"],
+        candidateBarModel: {
+            let model = KeyboardCandidateBarModel()
+            model.composingText = "かな"
+            model.conversionCandidates = ["仮名", "かな"]
+            model.selectedConversionCandidateIndex = 0
+            model.latinSuggestionQuery = "caf"
+            model.latinSuggestions = ["cafe", "café"]
+            return model
+        }(),
         showsParenthesesWrapper: false,
         initialSpaceToastText: nil
     )

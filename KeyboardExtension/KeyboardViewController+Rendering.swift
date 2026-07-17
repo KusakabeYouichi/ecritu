@@ -45,6 +45,97 @@ extension KeyboardViewController {
         let latinSuggestionQuery: String
         let latinSuggestions: [String]
         let showsParenthesesWrapper: Bool
+
+        // 候補バー系(composing/変換候補/選択位置/英字サジェスト)を除いた等価判定。
+        // これが等しい打鍵ではキー盤面に影響がなく、rootView 差し替えを省略できる。
+        func equalIgnoringCandidateBar(_ other: RenderConfiguration) -> Bool {
+            var normalizedSelf = self
+            var normalizedOther = other
+            normalizedSelf = normalizedSelf.replacingCandidateBarFields(with: RenderConfiguration.candidateBarFieldPlaceholder)
+            normalizedOther = normalizedOther.replacingCandidateBarFields(with: RenderConfiguration.candidateBarFieldPlaceholder)
+            return normalizedSelf == normalizedOther
+        }
+
+        private static let candidateBarFieldPlaceholder = (
+            composingText: "",
+            conversionCandidates: [String](),
+            selectedConversionCandidateIndex: Int?.none,
+            latinSuggestionQuery: "",
+            latinSuggestions: [String]()
+        )
+
+        private func replacingCandidateBarFields(
+            with fields: (
+                composingText: String,
+                conversionCandidates: [String],
+                selectedConversionCandidateIndex: Int?,
+                latinSuggestionQuery: String,
+                latinSuggestions: [String]
+            )
+        ) -> RenderConfiguration {
+            RenderConfiguration(
+                directionProfile: directionProfile,
+                kanaLayoutMode: kanaLayoutMode,
+                kanaModifierPlacementMode: kanaModifierPlacementMode,
+                kanaPostModifierButtonState: kanaPostModifierButtonState,
+                numberLayoutMode: numberLayoutMode,
+                latinLayoutMode: latinLayoutMode,
+                accentPaletteRawValue: accentPaletteRawValue,
+                isSystemDictionaryFallback: isSystemDictionaryFallback,
+                keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
+                basicSymbolOrderRawValue: basicSymbolOrderRawValue,
+                temperatureUnitRawValue: temperatureUnitRawValue,
+                spaceToastTrigger: spaceToastTrigger,
+                returnKeySystemImageName: returnKeySystemImageName,
+                isReturnKeyEnabled: isReturnKeyEnabled,
+                kanaFlickGuideDisplayMode: kanaFlickGuideDisplayMode,
+                latinFlickGuideDisplayMode: latinFlickGuideDisplayMode,
+                numberFlickGuideDisplayMode: numberFlickGuideDisplayMode,
+                modifierFlickGuideDisplayMode: modifierFlickGuideDisplayMode,
+                keyRepeatInitialDelay: keyRepeatInitialDelay,
+                keyRepeatInterval: keyRepeatInterval,
+                kanaModeSwitcherTapActionRawValue: kanaModeSwitcherTapActionRawValue,
+                kanaModeSwitcherRightFlickActionRawValue: kanaModeSwitcherRightFlickActionRawValue,
+                kanaModeSwitcherUpFlickActionRawValue: kanaModeSwitcherUpFlickActionRawValue,
+                kanaPostModifierEmptyTapActionRawValue: kanaPostModifierEmptyTapActionRawValue,
+                kanaPostModifierEmptyTapKaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryID,
+                kanaPostModifierEmptyTapEmojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryID,
+                kanaPostModifierEmptyTapSymbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryID,
+                kanaPostModifierFlickDakutenEnabled: kanaPostModifierFlickDakutenEnabled,
+                landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
+                landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
+                landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
+                showsNextKeyboardKey: showsNextKeyboardKey,
+                shortcutVocabulary: shortcutVocabulary,
+                composingText: fields.composingText,
+                conversionCandidates: fields.conversionCandidates,
+                selectedConversionCandidateIndex: fields.selectedConversionCandidateIndex,
+                latinSuggestionQuery: fields.latinSuggestionQuery,
+                latinSuggestions: fields.latinSuggestions,
+                showsParenthesesWrapper: showsParenthesesWrapper
+            )
+        }
+    }
+
+    // 候補バー系の状態を publish する(値が同じなら publish しない — SwiftUI の無駄な
+    // 再評価を避ける)。
+    func updateCandidateBarModel(from configuration: RenderConfiguration) {
+        let model = candidateBarModel
+        if model.composingText != configuration.composingText {
+            model.composingText = configuration.composingText
+        }
+        if model.conversionCandidates != configuration.conversionCandidates {
+            model.conversionCandidates = configuration.conversionCandidates
+        }
+        if model.selectedConversionCandidateIndex != configuration.selectedConversionCandidateIndex {
+            model.selectedConversionCandidateIndex = configuration.selectedConversionCandidateIndex
+        }
+        if model.latinSuggestionQuery != configuration.latinSuggestionQuery {
+            model.latinSuggestionQuery = configuration.latinSuggestionQuery
+        }
+        if model.latinSuggestions != configuration.latinSuggestions {
+            model.latinSuggestions = configuration.latinSuggestions
+        }
     }
 
     // 後置修飾(濁点/小書き等)の判定に使う「直前文脈」。未確定入力→変換確定文脈→
@@ -371,11 +462,7 @@ extension KeyboardViewController {
             landscapeNumberPaneSideRawValue: configuration.landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: configuration.landscapeLatinSuggestionModeRawValue,
             shortcutVocabulary: configuration.shortcutVocabulary,
-            composingText: configuration.composingText,
-            conversionCandidates: configuration.conversionCandidates,
-            selectedConversionCandidateIndex: configuration.selectedConversionCandidateIndex,
-            latinSuggestionQuery: configuration.latinSuggestionQuery,
-            latinSuggestions: configuration.latinSuggestions,
+            candidateBarModel: candidateBarModel,
             showsParenthesesWrapper: configuration.showsParenthesesWrapper,
             initialSpaceToastText: "écritu"
         )
