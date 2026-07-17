@@ -3058,12 +3058,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
+    // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
     func testRegressionRealLMNatsuhaPrefersNatsuWa() throws {
         try prepareRealLMDictionary()
-        converter.store.addUserEntry(reading: "なつは", candidate: "夏は")
 
-        let single = converter.candidates(for: "なつは", limit: 12, systemCandidateMode: .surface)
+        let single = converter.candidates(for: "なつは", limit: 24, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "夏は", "single=\(single)")
+        // 名前群は消さず後方(合成群の後ろ)に残る
+        XCTAssertTrue(single.contains("夏羽"), "single=\(single)")
     }
 
     private func prepareRealLMDictionary() throws {

@@ -118,6 +118,11 @@ final class KanaKanjiConverter {
         // 歴史的経緯: 数詞複合はブースト値(360)を基礎点として流用してきた。
         // 辞書語より大きく下に置く意図はそのまま名前だけ明示する。
         static let numericCounterCompound = 360
+        // 収穫底値(word_cost>=10000)の辞書丸ごとエントリ。Sudachi のレア名前・表記ゆれ
+        // 収穫がほぼ全てで、高頻度語の合成(夏+は/水+は 等)より下に置く。合成チャネル
+        // (postfix 1040〜/活用派生 980)より低く、数詞複合(360)よりは上。
+        static let harvestTierDictionary = 950
+        static let harvestTierWordCostFloor = 10000
         // 完全一致専用候補(踊り字 等)。辞書語より下位に置き、末尾寄りに出す。
         static let exactReadingOnly = 300
     }
@@ -243,7 +248,23 @@ final class KanaKanjiConverter {
         _ context: CandidateGenerationContext,
         into scores: inout [String: Int]
     ) {
-        addCandidates(context.systemCandidates, baseScore: CandidateScore.systemDictionary, to: &scores)
+        // 収穫底値(wc>=10000)の丸ごとエントリはレア名前・表記ゆれ収穫がほとんどで、
+        // 放置すると 夏羽/捺葉…(なつは)のような名前群が 夏+は の合成より先に並ぶ
+        // (なつは/みずは/からだが 型)。合成チャネルより下の帯へ一般降格する。
+        // 読みに正規の語(wc<10000)しか無い通常ケースや、全候補が収穫底値の読み
+        // (相対順維持)は無影響。
+        let wordCosts = store.wordCosts(for: context.reading)
+        var normalSystemCandidates: [String] = []
+        var harvestTierCandidates: [String] = []
+        for candidate in context.systemCandidates {
+            if let cost = wordCosts[candidate], cost >= CandidateScore.harvestTierWordCostFloor {
+                harvestTierCandidates.append(candidate)
+            } else {
+                normalSystemCandidates.append(candidate)
+            }
+        }
+        addCandidates(normalSystemCandidates, baseScore: CandidateScore.systemDictionary, to: &scores)
+        addCandidates(harvestTierCandidates, baseScore: CandidateScore.harvestTierDictionary, to: &scores)
         addCandidates(context.userCandidates, baseScore: CandidateScore.userDictionary, to: &scores)
         addCandidates(context.learnedCandidates, baseScore: CandidateScore.learnedDictionary, to: &scores)
         // 完全一致専用候補(踊り字 等)。入力全体がこの読みと一致した単文節でのみ供給する。
