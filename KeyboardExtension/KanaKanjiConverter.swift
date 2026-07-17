@@ -119,9 +119,10 @@ final class KanaKanjiConverter {
         // 辞書語より大きく下に置く意図はそのまま名前だけ明示する。
         static let numericCounterCompound = 360
         // 収穫底値(word_cost>=10000)の辞書丸ごとエントリ。Sudachi のレア名前・表記ゆれ
-        // 収穫がほぼ全てで、高頻度語の合成(夏+は/水+は 等)より下に置く。合成チャネル
-        // (postfix 1040〜/活用派生 980)より低く、数詞複合(360)よりは上。
-        static let harvestTierDictionary = 950
+        // 収穫がほぼ全てで、高頻度語の合成(夏+は/水+は 等)より下に置く。ただし bfs 合成
+        // (1040)の直下に留め、深いジャンク合成(侑瞳か 等の名前+かな断片)よりは上に
+        // 残す(ゆずか の 柚佳 等、名前入力の受け皿として選択可能な位置を保つ)。
+        static let harvestTierDictionary = 1030
         static let harvestTierWordCostFloor = 10000
         // 完全一致専用候補(踊り字 等)。辞書語より下位に置き、末尾寄りに出す。
         static let exactReadingOnly = 300
@@ -254,10 +255,15 @@ final class KanaKanjiConverter {
         // 読みに正規の語(wc<10000)しか無い通常ケースや、全候補が収穫底値の読み
         // (相対順維持)は無影響。
         let wordCosts = store.wordCosts(for: context.reading)
+        // seed 掲載語は人手の選別済みなので降格しない(柚香 等、wc が収穫底値でも
+        // 正規の代表候補として seed に載せた語を守る)。
+        let seedExempt = Set(KanaKanjiSeedDictionary.seed[context.reading] ?? [])
         var normalSystemCandidates: [String] = []
         var harvestTierCandidates: [String] = []
         for candidate in context.systemCandidates {
-            if let cost = wordCosts[candidate], cost >= CandidateScore.harvestTierWordCostFloor {
+            if let cost = wordCosts[candidate],
+                cost >= CandidateScore.harvestTierWordCostFloor,
+                !seedExempt.contains(candidate) {
                 harvestTierCandidates.append(candidate)
             } else {
                 normalSystemCandidates.append(candidate)
