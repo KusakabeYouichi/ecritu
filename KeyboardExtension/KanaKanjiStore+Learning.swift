@@ -21,7 +21,7 @@ extension KanaKanjiStore {
 
         candidates.insert(trimmedCandidate, at: 0)
         dictionary[normalizedReading] = Array(candidates.prefix(32))
-        cachedUserDictionary = dictionary
+        withCacheLock { cachedUserDictionary = dictionary }
         saveUserDictionary(dictionary)
     }
 
@@ -53,20 +53,22 @@ extension KanaKanjiStore {
 
         candidates.insert(trimmedCandidate, at: 0)
         dictionary[normalizedReading] = Array(candidates.prefix(32))
-        cachedLearnedDictionary = dictionary
+        withCacheLock { cachedLearnedDictionary = dictionary }
         saveLearnedDictionary(dictionary)
     }
 
     func learningScores() -> [String: Int] {
-        if let cachedLearningScores {
-            return cachedLearningScores
+        if let cached = withCacheLock({ cachedLearningScores }) {
+            return cached
         }
 
         guard let defaults,
                 let learningData = defaults.data(forKey: KanaKanjiStorageKeys.learningScores),
                 let decoded = try? JSONDecoder().decode([String: Int].self, from: learningData) else {
-            cachedLearningScores = Self.initialLearningScores
-            cachedLearningScoresByReading = nil
+            withCacheLock {
+                cachedLearningScores = Self.initialLearningScores
+                cachedLearningScoresByReading = nil
+            }
             return Self.initialLearningScores
         }
 
@@ -81,8 +83,10 @@ extension KanaKanjiStore {
             }
         }
 
-        cachedLearningScores = scores
-        cachedLearningScoresByReading = nil
+        withCacheLock {
+            cachedLearningScores = scores
+            cachedLearningScoresByReading = nil
+        }
 
         if let encoded = try? JSONEncoder().encode(scores) {
             defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
@@ -113,13 +117,15 @@ extension KanaKanjiStore {
         var scores = learningScores()
         let key = learningKey(reading: normalizedReading, candidate: trimmedCandidate)
         scores[key, default: 0] += 1
-        cachedLearningScores = scores
+        withCacheLock {
+            cachedLearningScores = scores
 
-        if var indexedScores = cachedLearningScoresByReading {
-            var candidateScores = indexedScores[normalizedReading] ?? [:]
-            candidateScores[trimmedCandidate] = scores[key, default: 0]
-            indexedScores[normalizedReading] = candidateScores
-            cachedLearningScoresByReading = indexedScores
+            if var indexedScores = cachedLearningScoresByReading {
+                var candidateScores = indexedScores[normalizedReading] ?? [:]
+                candidateScores[trimmedCandidate] = scores[key, default: 0]
+                indexedScores[normalizedReading] = candidateScores
+                cachedLearningScoresByReading = indexedScores
+            }
         }
 
         guard let defaults,
@@ -153,13 +159,15 @@ extension KanaKanjiStore {
     }
 
     func learningScoresByReading() -> [String: [String: Int]] {
-        if let cachedLearningScoresByReading {
-            return cachedLearningScoresByReading
+        if let cached = withCacheLock({ cachedLearningScoresByReading }) {
+            return cached
         }
 
+        // learningScores() 自身が cacheLock を取る(非再帰ロック)ため、ロックの外で呼ぶ。
+        let scores = learningScores()
         var indexedScores: [String: [String: Int]] = [:]
 
-        for (key, score) in learningScores() {
+        for (key, score) in scores {
             guard let parsed = parseLearningKey(key) else {
                 continue
             }
@@ -169,7 +177,7 @@ extension KanaKanjiStore {
             indexedScores[parsed.reading] = candidateScores
         }
 
-        cachedLearningScoresByReading = indexedScores
+        withCacheLock { cachedLearningScoresByReading = indexedScores }
         return indexedScores
     }
 

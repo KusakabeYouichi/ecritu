@@ -44,10 +44,11 @@ extension KanaKanjiStore {
     }
 
     func latinSuggestionEntries() -> [LatinSuggestionEntry] {
-        if let cachedLatinSuggestionEntries {
-            return cachedLatinSuggestionEntries
+        if let cached = withCacheLock({ cachedLatinSuggestionEntries }) {
+            return cached
         }
 
+        // loadSupplementalSystemDictionary() 自身が cacheLock を取るため、ロックの外で呼ぶ。
         let supplementalDictionary = loadSupplementalSystemDictionary()
 
         guard !supplementalDictionary.isEmpty else {
@@ -94,7 +95,7 @@ extension KanaKanjiStore {
             return lhs.searchKey < rhs.searchKey
         }
 
-        cachedLatinSuggestionEntries = entries
+        withCacheLock { cachedLatinSuggestionEntries = entries }
         return entries
     }
 

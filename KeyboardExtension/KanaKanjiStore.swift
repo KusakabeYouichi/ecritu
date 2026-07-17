@@ -13,6 +13,17 @@ final class KanaKanjiStore {
     private let systemDictionaryQueue = DispatchQueue(
         label: "com.kusakabe.ecritu.kana-kanji.system-dictionary"
     )
+    // キャッシュ保護ロック。変換は通常 candidateGenerationQueue(直列)で走るが、
+    // 変換キーの同期変換(main)とメモリ警告時のキャッシュ解放(main)が並行し得るため、
+    // 可変キャッシュへのアクセスはすべてこのロック越しに行う。sqlite クエリや JSON
+    // デコード等の重い処理はロックの外で行うこと(二重計算は無害、競合変異は未定義)。
+    private let cacheLock = NSLock()
+
+    func withCacheLock<T>(_ body: () -> T) -> T {
+        cacheLock.lock()
+        defer { cacheLock.unlock() }
+        return body()
+    }
     // かな識別(候補==読み)の学習を許可する読みの最大長。ちゃんと/そして/ありがとう 等の
     // 単語相当は許可し、文丸ごと(きょうはいいてんきですね 等)は拒否して連文節の
     // 最安素通りブロック事故(かな確定学習の事故時代の汚染含む)を防ぐ。
@@ -246,7 +257,7 @@ final class KanaKanjiStore {
     // 初回変換を遅くしていた。呼び出し側の形状ゲート(かな終止形尾+漢字)でクエリ回数
     // 自体も span あたり高々1回に抑えている。
     func isShortReadingDictionaryFormPredicate(reading: String, candidate: String) -> Bool {
-        if let cached = cachedInflectionClassMapsByReading[reading] {
+        if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
             return cached[candidate] != nil
         }
         let classMap: [String: String]
@@ -255,7 +266,7 @@ final class KanaKanjiStore {
         } else {
             classMap = loadInflectionDictionary()[reading] ?? [:]
         }
-        cachedInflectionClassMapsByReading[reading] = classMap
+        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
         return classMap[candidate] != nil
     }
 
@@ -267,14 +278,16 @@ final class KanaKanjiStore {
             let sqliteIndex = sqliteIndexIfAvailable() else {
             return [:]
         }
-        if let cached = cachedWordCostsByReading[normalizedReading] {
+        if let cached = withCacheLock({ cachedWordCostsByReading[normalizedReading] }) {
             return cached
         }
         let costMap = sqliteIndex.wordCostMap(for: normalizedReading)
-        if cachedWordCostsByReading.count >= Self.wordCostsCacheLimit {
-            cachedWordCostsByReading.removeAll(keepingCapacity: true)
+        withCacheLock {
+            if cachedWordCostsByReading.count >= Self.wordCostsCacheLimit {
+                cachedWordCostsByReading.removeAll(keepingCapacity: true)
+            }
+            cachedWordCostsByReading[normalizedReading] = costMap
         }
-        cachedWordCostsByReading[normalizedReading] = costMap
         return costMap
     }
 
@@ -290,28 +303,32 @@ final class KanaKanjiStore {
         }
         var result: [String: Int] = [:]
         var uncached: [String] = []
-        for surface in surfaces {
-            if let cached = cachedWordLMUnigram[surface] {
-                if cached != Self.wordLMMissingSentinel {
-                    result[surface] = cached
+        withCacheLock {
+            for surface in surfaces {
+                if let cached = cachedWordLMUnigram[surface] {
+                    if cached != Self.wordLMMissingSentinel {
+                        result[surface] = cached
+                    }
+                } else {
+                    uncached.append(surface)
                 }
-            } else {
-                uncached.append(surface)
             }
         }
         guard !uncached.isEmpty else {
             return result
         }
         let fetched = sqliteIndex.wordLMUnigramCosts(for: uncached)
-        if cachedWordLMUnigram.count + uncached.count > Self.wordLMCacheLimit {
-            cachedWordLMUnigram.removeAll(keepingCapacity: true)
-        }
-        for surface in uncached {
-            if let cost = fetched[surface] {
-                cachedWordLMUnigram[surface] = cost
-                result[surface] = cost
-            } else {
-                cachedWordLMUnigram[surface] = Self.wordLMMissingSentinel
+        withCacheLock {
+            if cachedWordLMUnigram.count + uncached.count > Self.wordLMCacheLimit {
+                cachedWordLMUnigram.removeAll(keepingCapacity: true)
+            }
+            for surface in uncached {
+                if let cost = fetched[surface] {
+                    cachedWordLMUnigram[surface] = cost
+                    result[surface] = cost
+                } else {
+                    cachedWordLMUnigram[surface] = Self.wordLMMissingSentinel
+                }
             }
         }
         return result
@@ -324,30 +341,34 @@ final class KanaKanjiStore {
         }
         var result: [String: Int] = [:]
         var uncached: [(String, String)] = []
-        for (prev, cur) in pairs {
-            let key = prev + "\t" + cur
-            if let cached = cachedWordLMBigram[key] {
-                if cached != Self.wordLMMissingSentinel {
-                    result[key] = cached
+        withCacheLock {
+            for (prev, cur) in pairs {
+                let key = prev + "\t" + cur
+                if let cached = cachedWordLMBigram[key] {
+                    if cached != Self.wordLMMissingSentinel {
+                        result[key] = cached
+                    }
+                } else {
+                    uncached.append((prev, cur))
                 }
-            } else {
-                uncached.append((prev, cur))
             }
         }
         guard !uncached.isEmpty else {
             return result
         }
         let fetched = sqliteIndex.wordLMBigramCosts(for: uncached)
-        if cachedWordLMBigram.count + uncached.count > Self.wordLMCacheLimit {
-            cachedWordLMBigram.removeAll(keepingCapacity: true)
-        }
-        for (prev, cur) in uncached {
-            let key = prev + "\t" + cur
-            if let cost = fetched[key] {
-                cachedWordLMBigram[key] = cost
-                result[key] = cost
-            } else {
-                cachedWordLMBigram[key] = Self.wordLMMissingSentinel
+        withCacheLock {
+            if cachedWordLMBigram.count + uncached.count > Self.wordLMCacheLimit {
+                cachedWordLMBigram.removeAll(keepingCapacity: true)
+            }
+            for (prev, cur) in uncached {
+                let key = prev + "\t" + cur
+                if let cost = fetched[key] {
+                    cachedWordLMBigram[key] = cost
+                    result[key] = cost
+                } else {
+                    cachedWordLMBigram[key] = Self.wordLMMissingSentinel
+                }
             }
         }
         return result
@@ -403,8 +424,8 @@ final class KanaKanjiStore {
     }
 
     func loadSystemDictionary() -> [String: [String]] {
-        if let cachedSystemDictionary {
-            return cachedSystemDictionary
+        if let cached = withCacheLock({ cachedSystemDictionary }) {
+            return cached
         }
 
         guard let data = sharedOrBundledDictionaryData(
@@ -420,13 +441,13 @@ final class KanaKanjiStore {
         }
 
         // The generated Sudachi index is already normalized to hiragana readings.
-        cachedSystemDictionary = decoded
+        withCacheLock { cachedSystemDictionary = decoded }
         return decoded
     }
 
     func loadSupplementalSystemDictionary() -> [String: [String]] {
-        if let cachedSupplementalSystemDictionary {
-            return cachedSupplementalSystemDictionary
+        if let cached = withCacheLock({ cachedSupplementalSystemDictionary }) {
+            return cached
         }
 
         guard let data = sharedOrBundledDictionaryData(
@@ -443,13 +464,13 @@ final class KanaKanjiStore {
             return [:]
         }
 
-        cachedSupplementalSystemDictionary = normalized
+        withCacheLock { cachedSupplementalSystemDictionary = normalized }
         return normalized
     }
 
     func loadSystemCandidateSources() -> [String: [String: Set<String>]] {
-        if let cachedSystemCandidateSources {
-            return cachedSystemCandidateSources
+        if let cached = withCacheLock({ cachedSystemCandidateSources }) {
+            return cached
         }
 
         guard let data = sharedOrBundledDictionaryData(
@@ -490,13 +511,13 @@ final class KanaKanjiStore {
             return [:]
         }
 
-        cachedSystemCandidateSources = normalized
+        withCacheLock { cachedSystemCandidateSources = normalized }
         return normalized
     }
 
     func loadInflectionDictionary() -> [String: [String: String]] {
-        if let cachedInflectionDictionary {
-            return cachedInflectionDictionary
+        if let cached = withCacheLock({ cachedInflectionDictionary }) {
+            return cached
         }
 
         guard let data = sharedOrBundledDictionaryData(
@@ -538,7 +559,7 @@ final class KanaKanjiStore {
                 return [:]
             }
 
-            cachedInflectionDictionary = normalizedMap
+            withCacheLock { cachedInflectionDictionary = normalizedMap }
             return normalizedMap
         }
 
@@ -571,7 +592,7 @@ final class KanaKanjiStore {
             return [:]
         }
 
-        cachedInflectionDictionary = inflectionMap
+        withCacheLock { cachedInflectionDictionary = inflectionMap }
         return inflectionMap
     }
 
@@ -581,15 +602,17 @@ final class KanaKanjiStore {
     // false になり連文節が丸ごと停止して劣化変換(しゃしん→者芯 等)になるため、
     // メモリ対策では sqlite を落とさない。
     func clearSystemDictionaryJSONCaches() {
-        cachedSystemDictionary = nil
-        cachedSupplementalSystemDictionary = nil
-        cachedLatinSuggestionEntries = nil
-        cachedSystemCandidateSources = nil
-        cachedInflectionDictionary = nil
-        cachedInflectionClassMapsByReading = [:]
-        cachedWordLMUnigram = [:]
-        cachedWordLMBigram = [:]
-        cachedWordCostsByReading = [:]
+        withCacheLock {
+            cachedSystemDictionary = nil
+            cachedSupplementalSystemDictionary = nil
+            cachedLatinSuggestionEntries = nil
+            cachedSystemCandidateSources = nil
+            cachedInflectionDictionary = nil
+            cachedInflectionClassMapsByReading = [:]
+            cachedWordLMUnigram = [:]
+            cachedWordLMBigram = [:]
+            cachedWordCostsByReading = [:]
+        }
     }
 
     // sqlite インデックスも含めて完全に閉じる(辞書ファイル差し替え時の再オープン用)。
@@ -604,35 +627,37 @@ final class KanaKanjiStore {
     }
 
     func clearSharedDataCaches() {
-        cachedUserDictionary = nil
-        cachedLearnedDictionary = nil
-        cachedSuppressedCandidatesByReading = nil
-        cachedLearningScores = nil
-        cachedLearningScoresByReading = nil
+        withCacheLock {
+            cachedUserDictionary = nil
+            cachedLearnedDictionary = nil
+            cachedSuppressedCandidatesByReading = nil
+            cachedLearningScores = nil
+            cachedLearningScoresByReading = nil
+        }
     }
 
     func userDictionary() -> [String: [String]] {
-        if let cachedUserDictionary {
-            return cachedUserDictionary
+        if let cached = withCacheLock({ cachedUserDictionary }) {
+            return cached
         }
 
         guard let decoded = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.userDictionary) else {
-            cachedUserDictionary = [:]
+            withCacheLock { cachedUserDictionary = [:] }
             return [:]
         }
 
         let normalized = normalizeDictionary(decoded)
-        cachedUserDictionary = normalized
+        withCacheLock { cachedUserDictionary = normalized }
         return normalized
     }
 
     func learnedDictionary() -> [String: [String]] {
-        if let cachedLearnedDictionary {
-            return cachedLearnedDictionary
+        if let cached = withCacheLock({ cachedLearnedDictionary }) {
+            return cached
         }
 
         guard let decoded = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.learnedDictionary) else {
-            cachedLearnedDictionary = [:]
+            withCacheLock { cachedLearnedDictionary = [:] }
             return [:]
         }
 
@@ -650,13 +675,13 @@ final class KanaKanjiStore {
                 cleaned[reading] = filtered
             }
         }
-        cachedLearnedDictionary = cleaned
+        withCacheLock { cachedLearnedDictionary = cleaned }
         return cleaned
     }
 
     func initialUserDictionary() -> [String: [String]] {
-        if let cachedInitialUserDictionary {
-            return cachedInitialUserDictionary
+        if let cached = withCacheLock({ cachedInitialUserDictionary }) {
+            return cached
         }
 
         // 追加語彙(sacoche=InitialAjout)と変換対策語(misc=InitialMisc)を統合してラティスの
@@ -679,7 +704,7 @@ final class KanaKanjiStore {
         }
 
         let normalized = normalizeDictionary(combined)
-        cachedInitialUserDictionary = normalized
+        withCacheLock { cachedInitialUserDictionary = normalized }
         return normalized
     }
 
@@ -709,8 +734,8 @@ final class KanaKanjiStore {
     }
 
     func initialShortcutVocabulary() -> [String] {
-        if let cachedInitialShortcutVocabulary {
-            return cachedInitialShortcutVocabulary
+        if let cached = withCacheLock({ cachedInitialShortcutVocabulary }) {
+            return cached
         }
 
         let bundle = Bundle(for: KanaKanjiStore.self)
@@ -720,13 +745,13 @@ final class KanaKanjiStore {
             withExtension: "json"
         ),
             let data = try? Data(contentsOf: initialDictionaryURL) else {
-            cachedInitialShortcutVocabulary = []
+            withCacheLock { cachedInitialShortcutVocabulary = [] }
             return []
         }
 
         if let decodedArray = try? JSONDecoder().decode([String].self, from: data) {
             let normalized = uniqueShortcutCandidates(from: decodedArray)
-            cachedInitialShortcutVocabulary = normalized
+            withCacheLock { cachedInitialShortcutVocabulary = normalized }
             return normalized
         }
 
@@ -736,19 +761,19 @@ final class KanaKanjiStore {
                 .sorted()
                 .flatMap { decodedDictionary[$0] ?? [] }
             let normalized = uniqueShortcutCandidates(from: candidates)
-            cachedInitialShortcutVocabulary = normalized
+            withCacheLock { cachedInitialShortcutVocabulary = normalized }
             return normalized
         }
 
-        cachedInitialShortcutVocabulary = []
+        withCacheLock { cachedInitialShortcutVocabulary = [] }
         return []
     }
 
     // suppr.plist 由来の抑制(バンドル同梱、UI非表示)。poubelle の UserDefaults 経路とは別に
     // キーボードが直接読む。実機/バンドル解決は追加語彙(initialUserDictionary)と同じ仕組み。
     private func bundledHiddenSuppressionDictionary() -> [String: [String]] {
-        if let cachedBundledHiddenSuppression {
-            return cachedBundledHiddenSuppression
+        if let cached = withCacheLock({ cachedBundledHiddenSuppression }) {
+            return cached
         }
         let bundle = Bundle(for: KanaKanjiStore.self)
         guard let url = bundle.url(
@@ -757,16 +782,16 @@ final class KanaKanjiStore {
         ),
             let data = try? Data(contentsOf: url),
             let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
-            cachedBundledHiddenSuppression = [:]
+            withCacheLock { cachedBundledHiddenSuppression = [:] }
             return [:]
         }
-        cachedBundledHiddenSuppression = decoded
+        withCacheLock { cachedBundledHiddenSuppression = decoded }
         return decoded
     }
 
     func suppressedCandidatesByReading() -> [String: Set<String>] {
-        if let cachedSuppressedCandidatesByReading {
-            return cachedSuppressedCandidatesByReading
+        if let cached = withCacheLock({ cachedSuppressedCandidatesByReading }) {
+            return cached
         }
 
         // UserDefaults(poubelle=アプリ移行分+アプリUIでの手動抑制)と、バンドル直読みの
@@ -779,7 +804,7 @@ final class KanaKanjiStore {
         }
 
         guard !decodedDictionary.isEmpty else {
-            cachedSuppressedCandidatesByReading = [:]
+            withCacheLock { cachedSuppressedCandidatesByReading = [:] }
             return [:]
         }
 
@@ -809,7 +834,7 @@ final class KanaKanjiStore {
             }
         }
 
-        cachedSuppressedCandidatesByReading = result
+        withCacheLock { cachedSuppressedCandidatesByReading = result }
         return result
     }
 
