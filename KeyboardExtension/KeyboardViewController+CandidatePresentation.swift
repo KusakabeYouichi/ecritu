@@ -50,7 +50,6 @@ extension KeyboardViewController {
 
     enum DiagnosticsThresholds {
         static let latinSuggestionSlowMs = 18
-        static let candidatePresentationSlowMs = 18
     }
 
     func currentLatinSuggestionQueryFromTextContext() -> String {
@@ -297,61 +296,6 @@ extension KeyboardViewController {
         refreshKeyboardStateAsync()
     }
 
-    func makeCandidatePresentation(
-        systemCandidateMode: KanaKanjiCandidateSourceMode
-    ) -> CandidatePresentation {
-        let startedAt = CFAbsoluteTimeGetCurrent()
-
-        guard currentInputMode == .kana else {
-            return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
-        }
-
-        if let activeConversion {
-            return CandidatePresentation(
-                composingText: activeConversion.sourceText,
-                candidates: activeConversion.candidates,
-                selectedIndex: activeConversion.selectedIndex
-            )
-        }
-
-        guard !composingReading.isEmpty else {
-            return CandidatePresentation(composingText: "", candidates: [], selectedIndex: nil)
-        }
-
-        let presentationLimit = effectiveKanaPresentationCandidateLimit()
-
-        guard presentationLimit > 0 else {
-            return CandidatePresentation(
-                composingText: composingRawText,
-                candidates: [],
-                selectedIndex: nil
-            )
-        }
-
-        let rawCandidates = kanaKanjiCandidates(
-            for: composingReading,
-            limit: presentationLimit,
-            systemCandidateMode: systemCandidateMode
-        )
-        let presentationCandidates = candidatesForPresentation(
-            from: rawCandidates,
-            composingText: composingRawText
-        )
-
-        let elapsedMs = performanceElapsedMilliseconds(since: startedAt)
-        if elapsedMs >= DiagnosticsThresholds.candidatePresentationSlowMs {
-            appendKeyboardDiagnosticsLogFromInputHandling(
-                "候補提示生成遅延 elapsedMs=\(elapsedMs) readingLen=\(composingReading.count) raw=\(rawCandidates.count) presented=\(presentationCandidates.count)"
-            )
-        }
-
-        return CandidatePresentation(
-            composingText: composingRawText,
-            candidates: presentationCandidates,
-            selectedIndex: nil
-        )
-    }
-
     func kanaKanjiCandidates(
         for reading: String,
         limit: Int,
@@ -362,11 +306,17 @@ extension KeyboardViewController {
         }
 
         let converterLimit = max(limit * ExternalCandidateLimits.lookupMultiplier, limit + 12)
-        let converterCandidates = kanaKanjiConverter.candidates(
-            for: reading,
-            limit: converterLimit,
-            systemCandidateMode: systemCandidateMode
-        )
+        let converter = kanaKanjiConverter
+        // 変換の実行系を candidateGenerationQueue に一本化する(呼び出し元は main のみ)。
+        // main 直呼びだと非同期経路と並行してエンジンが2系統で走っていた。直前まで表示
+        // していた読みなら converter 側キャッシュにヒットするため、sync でも実質即時。
+        let converterCandidates = candidateGenerationQueue.sync {
+            converter.candidates(
+                for: reading,
+                limit: converterLimit,
+                systemCandidateMode: systemCandidateMode
+            )
+        }
         let supplementaryCandidates = supplementaryLexiconCandidates(for: reading)
 
         if supplementaryCandidates.isEmpty {
