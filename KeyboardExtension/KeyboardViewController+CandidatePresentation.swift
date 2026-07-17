@@ -1,5 +1,44 @@
 import UIKit
 
+// 変換ジョブの世代管理。kickoff の重複抑止(同一キーの in-flight 再投入禁止)と、直列
+// キュー上の旧世代ジョブの早期スキップ判定を、main/変換キューの両方から行うためロックで
+// 守る。1打鍵で refreshKeyboardState が複数トリガ(入力処理/ホスト通知/レイアウト)から
+// 重複発火するため、抑止が無いと同じ読みのフル変換が2〜4回直列に完走していた。
+final class CandidateGenerationSequencer {
+    private let lock = NSLock()
+    private var latestGeneration: UInt64 = 0
+    private var pendingKey: KeyboardViewController.CandidatePresentationCacheKey?
+
+    // 同一キーが in-flight なら nil(再投入不要)。それ以外は新世代を発行する。
+    func requestGeneration(
+        for key: KeyboardViewController.CandidatePresentationCacheKey
+    ) -> UInt64? {
+        lock.lock()
+        defer { lock.unlock() }
+        if pendingKey == key {
+            return nil
+        }
+        latestGeneration &+= 1
+        pendingKey = key
+        return latestGeneration
+    }
+
+    func isCurrent(_ generation: UInt64) -> Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return generation == latestGeneration
+    }
+
+    // ジョブ終了(適用・破棄とも)。自分が最新のときだけ in-flight 印を解除する。
+    func finish(_ generation: UInt64) {
+        lock.lock()
+        defer { lock.unlock() }
+        if generation == latestGeneration {
+            pendingKey = nil
+        }
+    }
+}
+
 // 候補提示: 変換候補プレゼンテーションの生成(同期/非同期)・連文節候補の合流・
 // 表示用フィルタ(かな識別の扱い)・Latin サジェストのクエリ/トークン判定。
 extension KeyboardViewController {
@@ -124,8 +163,6 @@ extension KeyboardViewController {
         composingRawText: String,
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) {
-        candidateGenerationCounter &+= 1
-        let generation = candidateGenerationCounter
         let presentationLimit = effectiveKanaPresentationCandidateLimit()
 
         guard presentationLimit > 0 else {
@@ -139,7 +176,19 @@ extension KeyboardViewController {
             modeRawValue: systemCandidateMode.rawValue
         )
 
+        // 同一キーの変換が既に走行中なら再投入しない(重複kickoff抑止)。
+        guard let generation = candidateGenerationSequencer.requestGeneration(for: pendingKey) else {
+            return
+        }
+        let sequencer = candidateGenerationSequencer
+
         candidateGenerationQueue.async { [weak self] in
+            // 旧世代ジョブの早期スキップ: 直列キューで自分の番が来た時点で新しい打鍵が
+            // 来ていたら、フル変換を完走せず即座に譲る(連打バーストでN件の変換が
+            // 直列に積み上がるのを防ぐ)。
+            guard sequencer.isCurrent(generation) else {
+                return
+            }
             let converterLimit = max(
                 presentationLimit * ExternalCandidateLimits.lookupMultiplier,
                 presentationLimit + 12
@@ -181,6 +230,9 @@ extension KeyboardViewController {
             }
 
             DispatchQueue.main.async {
+                defer {
+                    sequencer.finish(generation)
+                }
                 guard let self else {
                     return
                 }
@@ -203,7 +255,7 @@ extension KeyboardViewController {
         presentationLimit: Int,
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) {
-        guard generation == candidateGenerationCounter else {
+        guard candidateGenerationSequencer.isCurrent(generation) else {
             return
         }
 
