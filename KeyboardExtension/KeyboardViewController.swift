@@ -267,6 +267,13 @@ final class KeyboardViewController: UIInputViewController {
         let modeRawValue: String
     }
     var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
+    // 診断のメモリ内バッファ(毎打鍵の UserDefaults JSON ラウンドトリップ回避)。
+    // nil=未ロード。永続化は2秒スロットル+重要イベント即時+ライフサイクルでフラッシュ。
+    var diagnosticsFlightRecorderBuffer: [DiagnosticsFlightRecorderEvent]?
+    var diagnosticsFlightRecorderLastPersistedAt: TimeInterval = 0
+    var diagnosticsLogLinesBuffer: [String]?
+    var diagnosticsHeartbeatLastPersistedAt: TimeInterval = 0
+    var diagnosticsLastPersistedFailSafeProfile: MemoryFailSafeProfile?
     var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
     // 診断: 押下表示残留(赤キー)を watchdog が強制解除した回数(セッション累計)。
     var stuckTouchForceClearCount = 0
@@ -636,6 +643,7 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
+        persistBufferedKeyboardDiagnostics()
 
         stopMarkedTextWatchdog()
         cancelIdleCommit()
@@ -670,6 +678,7 @@ final class KeyboardViewController: UIInputViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         memoryWarningCountThisSession += 1
+        persistBufferedKeyboardDiagnostics()
         updateKeyboardDiagnosticsHeartbeat(
             event: "メモリ警告受信(\(memoryWarningCountThisSession)回目) キャッシュ解放開始",
             appendLog: true

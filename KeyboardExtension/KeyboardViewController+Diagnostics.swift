@@ -297,11 +297,16 @@ extension KeyboardViewController {
     }
 
     func persistKeyboardDiagnosticsFailSafeProfile(in defaults: UserDefaults? = nil) {
+        // 毎ハートビートで同値を書き直さない(変化時のみ)。
+        guard memoryFailSafeProfile != diagnosticsLastPersistedFailSafeProfile else {
+            return
+        }
         let targetDefaults = defaults ?? sharedDefaults
         targetDefaults?.set(
             memoryFailSafeProfile.rawValue,
             forKey: SharedDefaultsKeys.keyboardDiagnosticsFailSafeProfile
         )
+        diagnosticsLastPersistedFailSafeProfile = memoryFailSafeProfile
     }
 
     func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
@@ -325,6 +330,10 @@ extension KeyboardViewController {
 
         defaults.set(lines, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
     }
+
+    // メモリ内バッファの永続化スロットル。クラッシュ時に失われ得るのは最大この秒数分だが、
+    // メモリ警告等の重要イベント(forceRecord/appendLog)は即時永続化される。
+    static let diagnosticsBufferPersistIntervalSec: TimeInterval = 2
 
     func flightRecorderEvents(from defaults: UserDefaults) -> [DiagnosticsFlightRecorderEvent] {
         guard
@@ -363,6 +372,7 @@ extension KeyboardViewController {
     func clearFlightRecorderEvents(in defaults: UserDefaults) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
         diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
+        diagnosticsFlightRecorderBuffer = nil
     }
 
     func observeKeyboardDiagnosticsEvent(
@@ -387,7 +397,7 @@ extension KeyboardViewController {
             return
         }
 
-        var events = flightRecorderEvents(from: sharedDefaults)
+        var events = diagnosticsFlightRecorderBuffer ?? flightRecorderEvents(from: sharedDefaults)
         events.append(
             DiagnosticsFlightRecorderEvent(
                 timestamp: now,
@@ -398,8 +408,25 @@ extension KeyboardViewController {
 
         let anchorTimestamp = events.last?.timestamp ?? now
         events = trimmedFlightRecorderEvents(events, anchorTimestamp: anchorTimestamp)
-        saveFlightRecorderEvents(events, to: sharedDefaults)
+        diagnosticsFlightRecorderBuffer = events
         diagnosticsFlightRecorderLastObservedAt[dedupeKey] = now
+        // 毎打鍵の JSON エンコード+defaults 書き込みを避け、スロットル付きで永続化する。
+        // forceRecord(メモリ警告等)は即時。クラッシュ時の欠損は最大2秒分。
+        if forceRecord || now - diagnosticsFlightRecorderLastPersistedAt >= Self.diagnosticsBufferPersistIntervalSec {
+            saveFlightRecorderEvents(events, to: sharedDefaults)
+            diagnosticsFlightRecorderLastPersistedAt = now
+        }
+    }
+
+    // メモリ内バッファを defaults へ確定させる(終了・警告・バックグラウンド遷移時)。
+    func persistBufferedKeyboardDiagnostics() {
+        guard let sharedDefaults else {
+            return
+        }
+        if let buffer = diagnosticsFlightRecorderBuffer {
+            saveFlightRecorderEvents(buffer, to: sharedDefaults)
+            diagnosticsFlightRecorderLastPersistedAt = Date().timeIntervalSince1970
+        }
     }
 
     func flushFlightRecorderEventsIfPresent(reason: String) {
@@ -450,6 +477,8 @@ extension KeyboardViewController {
     ) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
+        diagnosticsLogLinesBuffer = nil
+        diagnosticsFlightRecorderBuffer = nil
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
@@ -599,7 +628,9 @@ extension KeyboardViewController {
             return
         }
 
-        var lines = diagnosticsLogLines(from: sharedDefaults)
+        // 320行の JSON デコードを毎回やり直さない(メモリ内バッファ)。保存自体は
+        // まれなイベントかつクラッシュ保全のため即時のまま。
+        var lines = diagnosticsLogLinesBuffer ?? diagnosticsLogLines(from: sharedDefaults)
         lines.append(entry)
 
         let maxLineCount = 320
@@ -607,6 +638,7 @@ extension KeyboardViewController {
             lines.removeFirst(lines.count - maxLineCount)
         }
 
+        diagnosticsLogLinesBuffer = lines
         saveDiagnosticsLogLines(lines, to: sharedDefaults)
         sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
         sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
@@ -630,9 +662,15 @@ extension KeyboardViewController {
         let sourceFile = (file as NSString).lastPathComponent
         let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
 
-        sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
-        sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
-        sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        // ハートビートのスカラー書き込みもスロットル(粒度2秒で生存確認には十分)。
+        // appendLog 付き(メモリ警告/ライフサイクル等の重要イベント)は即時。
+        let now = Date().timeIntervalSince1970
+        if appendLog || now - diagnosticsHeartbeatLastPersistedAt >= Self.diagnosticsBufferPersistIntervalSec {
+            sharedDefaults.set(now, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
+            sharedDefaults.set(summary, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
+            sharedDefaults.set(diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+            diagnosticsHeartbeatLastPersistedAt = now
+        }
 
         if appendLog {
             appendKeyboardDiagnosticsLog(event, file: file, line: line, function: function)
