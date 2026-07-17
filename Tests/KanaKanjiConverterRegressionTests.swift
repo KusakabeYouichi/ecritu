@@ -3032,6 +3032,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // 実LM回帰テストの共通セットアップ: 開発機の tmp sqlite(実辞書+連文節LM)を
     // app group コンテナへ複製する。tmp が無い環境では XCTSkip(実LM依存のため)。
+    // 実LM回帰: 受身+たい 願望連鎖(られたくない/れたくない/されたくない)。プレーン語幹の
+    // たい系はあったが受身を挟む形が未定義で、おくられたくないね→置くられたくないね/
+    // 奥られたくないね(かな断片合成)等に全長を取られていた(供給欠落型)。
+    func testRegressionRealLMPassiveTaiChainsDerive() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "おくられたくないね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "送られたくないね", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("置く") || $0.contains("奥") }), "multi=\(multi)")
+
+        let cases: [(reading: String, expected: String)] = [
+            ("おくられたくない", "送られたくない"),
+            ("みられたくない", "見られたくない")
+        ]
+        for testCase in cases {
+            let single = converter.candidates(for: testCase.reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, testCase.expected, "reading=\(testCase.reading) single=\(single)")
+        }
+
+        // 長い読みは単文節経路が空になり連文節が担当する(され連鎖の検証)。
+        let sareta = converter.multiClauseCandidates(for: "そうしんされたくない", systemCandidateMode: .surface)
+        XCTAssertEqual(sareta.first, "送信されたくない", "multi=\(sareta)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
