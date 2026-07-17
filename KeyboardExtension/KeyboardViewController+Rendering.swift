@@ -79,7 +79,7 @@ extension KeyboardViewController {
     func makeRenderConfiguration() -> RenderConfiguration {
         updateMemoryFailSafeProfile(trigger: "makeRenderConfiguration")
 
-        let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
+        let sharedDefaults = self.sharedDefaults
         let candidateSourceMode = currentKanaKanjiCandidateSourceMode(from: sharedDefaults)
         let candidatePresentation = currentCandidatePresentationForRender(
             systemCandidateMode: candidateSourceMode

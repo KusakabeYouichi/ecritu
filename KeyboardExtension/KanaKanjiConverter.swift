@@ -23,6 +23,11 @@ final class KanaKanjiConverter {
     var multiClauseInflectionCache: [String: [String]] = [:]
     let multiClauseInflectionCacheLimit = 1024
 
+    // shouldKeepKanaIdentityLeading のメモ(結果適用のたび main で全ルール走査+sqlite点
+    // クエリが走っていた)。学習・抑制・設定変更で invalidateCandidateCache と一緒に消える。
+    var kanaIdentityLeadingCache: [String: Bool] = [:]
+    let kanaIdentityLeadingCacheLimit = 256
+
     var historicalKanaSurfaceAllowed: Bool = false
 
     init(store: KanaKanjiStore) {
@@ -510,6 +515,20 @@ final class KanaKanjiConverter {
         guard !normalized.isEmpty else {
             return false
         }
+        if let cached = stateQueue.sync(execute: { kanaIdentityLeadingCache[normalized] }) {
+            return cached
+        }
+        let result = computeShouldKeepKanaIdentityLeading(normalized: normalized)
+        stateQueue.sync {
+            if kanaIdentityLeadingCache.count >= kanaIdentityLeadingCacheLimit {
+                kanaIdentityLeadingCache.removeAll(keepingCapacity: true)
+            }
+            kanaIdentityLeadingCache[normalized] = result
+        }
+        return result
+    }
+
+    private func computeShouldKeepKanaIdentityLeading(normalized: String) -> Bool {
         if hasLearnedKanaIdentity(for: normalized) {
             return true
         }
@@ -526,7 +545,9 @@ final class KanaKanjiConverter {
         // かな identity(やる 等「かなが正書」の動詞)なら根拠ありとする。
         // かう→買う のように漢字が先頭の基本形は対象外(かってみようかな は末尾のまま)。
         let suppressedByReading = store.suppressedCandidatesByReading()
-        for rule in Self.allInflectionRules where normalized.hasSuffix(rule.readingSuffix) {
+        let candidateRules = normalized.last
+            .flatMap { Self.deinflectionRulesByReadingLastCharacter[$0] } ?? []
+        for rule in candidateRules where normalized.hasSuffix(rule.readingSuffix) {
             guard !rule.readingSuffix.isEmpty else { continue }
             let stem = String(normalized.dropLast(rule.readingSuffix.count))
             guard !stem.isEmpty else { continue }
@@ -556,6 +577,7 @@ final class KanaKanjiConverter {
         candidateCache.removeAll(keepingCapacity: true)
         candidateCacheOrder.removeAll(keepingCapacity: true)
         multiClauseInflectionCache.removeAll(keepingCapacity: true)
+        kanaIdentityLeadingCache.removeAll(keepingCapacity: true)
     }
 
     func systemCandidates(

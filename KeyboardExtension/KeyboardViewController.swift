@@ -724,7 +724,10 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        let configuration = makeRenderConfiguration()
+        // レイアウトパスはアニメーション中に毎フレーム走る。高さの設置/更新に必要なのは
+        // 設定系フィールドだけなので、直近の描画設定を再利用し、フル構築(defaults約25キー
+        // 読み+候補提示の再evaluate)は初回のみに抑える。
+        let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded(using: configuration)
         updateKeyboardHeightIfNeeded(using: configuration)
     }
@@ -732,7 +735,7 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        let configuration = makeRenderConfiguration()
+        let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded(using: configuration)
         updateKeyboardHeightIfNeeded(using: configuration)
 

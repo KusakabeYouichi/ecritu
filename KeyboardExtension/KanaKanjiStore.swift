@@ -76,6 +76,7 @@ final class KanaKanjiStore {
     var cachedUserDictionary: [String: [String]]?
     var cachedLearnedDictionary: [String: [String]]?
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
+    private var cachedShortcutVocabulary: [String]?
     private var cachedBundledHiddenSuppression: [String: [String]]?
     var cachedLearningScores: [String: Int]?
     var cachedLearningScoresByReading: [String: [String: Int]]?
@@ -675,6 +676,7 @@ final class KanaKanjiStore {
             cachedSuppressedCandidatesByReading = nil
             cachedLearningScores = nil
             cachedLearningScoresByReading = nil
+            cachedShortcutVocabulary = nil
         }
     }
 
@@ -751,6 +753,17 @@ final class KanaKanjiStore {
     }
 
     func shortcutVocabulary() -> [String] {
+        if let cached = withCacheLock({ cachedShortcutVocabulary }) {
+            return cached
+        }
+        let resolved = resolveShortcutVocabulary()
+        withCacheLock { cachedShortcutVocabulary = resolved }
+        return resolved
+    }
+
+    // makeRenderConfiguration が打鍵ごとに呼ぶため、JSON デコードは初回のみにする
+    // (設定変更時は clearSharedDataCaches で破棄)。
+    private func resolveShortcutVocabulary() -> [String] {
         let userCandidates = decodedStringArray(forKey: KanaKanjiStorageKeys.shortcutVocabulary) ?? []
 
         if !userCandidates.isEmpty {
