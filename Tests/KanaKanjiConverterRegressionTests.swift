@@ -3090,6 +3090,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.dropFirst().first, "柚香さん", "multi=\(multi)")
     }
 
+    // 実LM回帰: なんじ→何時。何時 は Sudachi 正規化で いつ 読みのみ登録され、なんじ 読みは
+    // 汝/南寺/名前収穫だけだった(供給欠落型)。seed で供給(連文節ラティスにも a2 で載る)。
+    func testRegressionRealLMNanjiPrefersNanji() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "なんじ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "何時", "single=\(single)")
+
+        // いま/今 はどちらも正当なので 何時 の部分だけ固定する
+        let multi = converter.multiClauseCandidates(for: "いまなんじですか", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.contains("何時ですか") == true, "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
