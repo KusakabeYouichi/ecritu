@@ -124,6 +124,8 @@
 	<dict><key>phrase</key><string>いただければ</string><key>shortcut</key><string>いただければ</string></dict>
 	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
 	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>
+	<!-- 夏は: 読み なつは の辞書は全てレア名前収穫(夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈む(水は と同型)。かな正書curatedで先頭化 -->
+	<dict><key>phrase</key><string>夏は</string><key>shortcut</key><string>なつは</string></dict>
 	<!-- としとる: wc は 年取る/年老る(共に10085ジャンク級)のみで 歳 系が欠落。賭し(uni7489)+とって 断片が最良化するため、五段curated+て/た形直接供給(気をつけて と同処方)。登録順=候補順(年取〜が先頭、歳とる が2番手) -->
 	<dict><key>phrase</key><string>年取る</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>歳とる</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>

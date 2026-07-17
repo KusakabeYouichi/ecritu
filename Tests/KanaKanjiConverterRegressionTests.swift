@@ -3056,6 +3056,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(sareta.first, "送信されたくない", "multi=\(sareta)")
     }
 
+    // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
+    // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
+    func testRegressionRealLMNatsuhaPrefersNatsuWa() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "なつは", candidate: "夏は")
+
+        let single = converter.candidates(for: "なつは", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "夏は", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
