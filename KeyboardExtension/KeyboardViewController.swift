@@ -237,9 +237,7 @@ final class KeyboardViewController: UIInputViewController {
     var kanaKanjiStore: KanaKanjiStore { Self.sharedKanaKanjiStore }
     var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
     lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
-    var diagnosticsSessionID = UUID().uuidString
-    var diagnosticsSessionStartedAt = Date()
-    let diagnosticsControllerID = UUID().uuidString
+    let diagnosticsState = DiagnosticsState()
     var pendingRefreshKeyboardStateRequests = 0
     var isRefreshKeyboardStateAsyncScheduled = false
     let candidateGenerationSequencer = CandidateGenerationSequencer()
@@ -267,20 +265,7 @@ final class KeyboardViewController: UIInputViewController {
         let composingRawText: String
         let modeRawValue: String
     }
-    var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
-    // 診断のメモリ内バッファ(毎打鍵の UserDefaults JSON ラウンドトリップ回避)。
-    // nil=未ロード。永続化は2秒スロットル+重要イベント即時+ライフサイクルでフラッシュ。
-    var diagnosticsFlightRecorderBuffer: [DiagnosticsFlightRecorderEvent]?
-    var diagnosticsFlightRecorderLastPersistedAt: TimeInterval = 0
-    var diagnosticsLogLinesBuffer: [String]?
-    var diagnosticsHeartbeatLastPersistedAt: TimeInterval = 0
-    var diagnosticsLastPersistedFailSafeProfile: MemoryFailSafeProfile?
     var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
-    // 診断: 押下表示残留(赤キー)を watchdog が強制解除した回数(セッション累計)。
-    var stuckTouchForceClearCount = 0
-    // 診断: このセッションで受けたメモリ警告の回数。2回目以降は最終手段として
-    // 連文節LM(sqlite)もアンロードする(初回は ef56d52 の方針どおり保持)。
-    var memoryWarningCountThisSession = 0
     var hasDeferredSharedSettingsCatchUp = false
     var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     var didApplyInactiveSessionMitigation = false
@@ -678,10 +663,10 @@ final class KeyboardViewController: UIInputViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        memoryWarningCountThisSession += 1
+        diagnosticsState.memoryWarningCountThisSession += 1
         persistBufferedKeyboardDiagnostics()
         updateKeyboardDiagnosticsHeartbeat(
-            event: "メモリ警告受信(\(memoryWarningCountThisSession)回目) キャッシュ解放開始",
+            event: "メモリ警告受信(\(diagnosticsState.memoryWarningCountThisSession)回目) キャッシュ解放開始",
             appendLog: true
         )
 
@@ -701,10 +686,10 @@ final class KeyboardViewController: UIInputViewController {
         // 2回目以降の警告は圧迫が続いている証拠なので、最終手段として連文節LM(sqlite)も
         // アンロードする(連文節は劣化するが jetsam で拡張ごと落ちるよりよい)。初回警告は
         // ef56d52 の方針どおり保持して変換品質を守る。
-        if memoryWarningCountThisSession >= 2 {
+        if diagnosticsState.memoryWarningCountThisSession >= 2 {
             kanaKanjiConverter.unloadSystemDictionarySQLiteForMemoryPressure()
             appendKeyboardDiagnosticsLog(
-                "メモリ警告\(memoryWarningCountThisSession)回目のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
+                "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
                 file: #fileID,
                 line: #line,
                 function: #function
