@@ -24,25 +24,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // むかしみたな: かな断片チェーン(昔+み+た+な、み→た bigram 1010)や短spanレア読み
     // (見店/実棚/三田な)に負けず 昔見たな が最良になること(短span床上げ+文末な減点)。
     func testRegressionRealLMMukashiMitanaPrefersPredicateParse() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
-        let suppression: [String: [String]] = ["みたな": ["美多奈"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["みたな": ["美多奈"]])
 
         let multi = converter.multiClauseCandidates(for: "むかしみたな", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "昔見たな", "multi=\(multi)")
@@ -53,21 +36,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 触って+描く+人(にん) が 触って確認 を逆転していた(さわってかくにん事件)。
     // 人(ひと) の正当な接続(絵を描く人)は影響を受けないことも同時に確認する。
     func testRegressionRealLMPredicatePlusNinIsBlocked() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addLearnedEntry(reading: "かく", candidate: "描く")
 
         let kakunin = converter.multiClauseCandidates(for: "さわってかくにん", systemCandidateMode: .surface)
@@ -85,26 +54,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 体が が末尾)。misc の固定句 体が(からだが) と カラ/カラダ 抑制で 体が を最良にする。
     // テストバンドルには misc/suppr が載らないため addUserEntry/defaults 注入で再現する。
     func testRegressionRealLMKaradagaPrefersTaiga() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "だが", candidate: "だが")
         converter.store.addUserEntry(reading: "からだが", candidate: "体が")
-        let suppression: [String: [String]] = ["から": ["カラ"], "からだ": ["カラダ"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try injectSuppression(["から": ["カラ"], "からだ": ["カラダ"]])
         converter.clearAllCaches()
 
         // 固定句 体が(からだが) が最良になると連文節は単一ノード経路として [] を返し
@@ -122,24 +75,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // さらに 変える経路(6024+1810)と カエル経路(6927+907)が 7834 で完全タイとなり、
     // ノード列挙順で カエル が先勝ちしていた(同コストは非カタカナ優先のタイブレークで是正)。
     func testRegressionRealLMHouritsuKaeruNohaPrefersKaeru() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        let suppression: [String: [String]] = ["は": ["者"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["は": ["者"]])
 
         let multi = converter.multiClauseCandidates(for: "ほうりつかえるのは", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "法律変えるのは", "multi=\(multi)")
@@ -150,21 +87,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 1181差で負けていた。misc curated 断線(だんせん) で先頭化(LMバイアス型の定番処方)。
     // ケイブル は学習語彙を注入して実機状態(けいぶる→ケイブル)を再現する。
     func testRegressionRealLMKeiburuNoDansenPrefersDansen() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addLearnedEntry(reading: "けいぶる", candidate: "ケイブル")
         converter.store.addUserEntry(reading: "だんせん", candidate: "断線")
 
@@ -175,26 +98,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 様態そう の長音カジュアル表記「そー」が そう と同格で活用導出されること
     // (おいしそー→美味しそー 等。形容詞は inflection メタデータが要るため実LMで検証)。
     func testRegressionRealLMSooLongVowelVariantDerivesLikeSou() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
 
         // 実機の抑制状態を再現(オイシイ/オイシい=カタカナ書き抑制)
-        let suppression: [String: [String]] = ["おいしい": ["オイシイ", "オイシい"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try injectSuppression(["おいしい": ["オイシイ", "オイシい"]])
 
         let adjective = converter.candidates(for: "おいしそー", limit: 24, systemCandidateMode: .surface)
         XCTAssertTrue(adjective.contains("美味しそー"), "adjective=\(adjective)")
@@ -220,21 +127,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 非ネイティブ表層(カタカナ/ラテン字のみ)タイブレークで 彼らは を最良にする。
     // カレラは/Carreraは は同点変種として温存される(ポルシェ用途は無傷)。
     func testRegressionRealLMKarerahaPrefersKarera() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         // 実機状態を再現: sacoche(カレラ/Carrera)+misc(彼ら)相当を curated 注入
         converter.store.addUserEntry(reading: "かれら", candidate: "カレラ")
         converter.store.addUserEntry(reading: "かれら", candidate: "Carrera")
@@ -250,24 +143,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // delta 0)として繰り上がっていた。suppr うツかり+misc かな識別 うっかり(エコー抑制
     // 免除)で にうっかり を最良に。
     func testRegressionRealLMNiUkkariPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        let suppression: [String: [String]] = ["うっかり": ["うツかり"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["うっかり": ["うツかり"]])
         converter.store.addUserEntry(reading: "うっかり", candidate: "うっかり")
 
         let multi = converter.multiClauseCandidates(for: "にうっかり", systemCandidateMode: .surface)
@@ -279,21 +156,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // uni7792)だが、文頭 や(2998)+後世(や→後世 4885)+の(後世→の 413) の接着剤ジャンクに
     // 1979差で負けていた。misc curated 夜行性+かな識別床上げ除外から や を削除で是正。
     func testRegressionRealLMYakouseiPrefersNocturnal() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "やこうせい", candidate: "夜行性")
 
         let multi = converter.multiClauseCandidates(for: "やこうせいのどうぶつ", systemCandidateMode: .surface)
@@ -304,21 +167,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 最良の それぞれ+を が全かなエコー抑制で捨てられ 其々を が繰り上がっていた
     // (にうっかり と同型)。misc かな識別 それぞれ で最良を通す。
     func testRegressionRealLMSorezoreWoPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "それぞれ", candidate: "それぞれ")
 
         let multi = converter.multiClauseCandidates(for: "それぞれを", systemCandidateMode: .surface)
@@ -330,21 +179,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // より前に繰り上がっていた。seed 最強ブースト(こうこう→高校 と同処方)で 修正/習性 を
     // #1/#2 に固定する。
     func testRegressionRealLMShuuseiPrefersShuseiAndShusei() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
 
         let single = converter.candidates(for: "しゅうせい", limit: 12, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(2)), ["修正", "習性"], "single=\(single)")
@@ -355,24 +190,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 複数アプ+りって が最良化していた。って/っていう を語頭禁止の例外(ん と同格)にして
     // 是正。ッて/ツて 等の表記ゆれ変種は suppr で抑制(注入で再現)。
     func testRegressionRealLMApuritteQuotative() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        let suppression: [String: [String]] = ["って": ["ッて", "ツて", "ッテ", "っテ"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["って": ["ッて", "ツて", "ッテ", "っテ"]])
 
         let multi = converter.multiClauseCandidates(for: "ふくすうあぷりって", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "複数アプリって", "multi=\(multi)")
@@ -387,21 +206,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 活用合成)/奥ラれてきます(基底 ラれる=Sudachi混在表記)/老くられてきます(形容詞く
     // ルールが 老い を誤って活用)等の断片が最良化していた(供給欠落型)。
     func testRegressionRealLMOkurareteKimasuDerives() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
 
         let single = converter.candidates(for: "おくられてきます", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "送られてきます", "single=\(single)")
@@ -415,21 +220,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 繰り上がっていた(しゅうせい と同型)。seed くわえる=[加える, 咥える, くわえる] で
     // 加えよう を先頭固定、seed 非掲載の 銜える は後方へ沈む。
     func testRegressionRealLMKuwaeyouPrefersKuwaeru() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
 
         let single = converter.candidates(for: "くわえよう", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "加えよう", "single=\(single)")
@@ -442,26 +233,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 水+は 合成より前に並んでいた(たつと人名と同型)。suppr 11件+misc 固定句 水は で
     // 先頭化。見ずは 等の動詞系は温存される。
     func testRegressionRealLMMizuhaPrefersMizuWa() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        let suppression: [String: [String]] = [
+        try prepareRealLMDictionary()
+        try injectSuppression([
             "みずは": ["水羽", "水華", "水葉", "水葩", "泉羽", "泉葉", "瑞羽", "瑞芭", "瑞葉", "美須羽", "美須葉"]
-        ]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        ])
         converter.store.addUserEntry(reading: "みずは", candidate: "水は")
 
         let single = converter.candidates(for: "みずは", limit: 12, systemCandidateMode: .surface)
@@ -474,21 +249,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // バイアスにより こんな漢字 が先頭だった。連体詞(こんな/そんな 等)直後の 漢字 に
     // 小減点(500)して こんな感じ を最良に。漢字/幹事/寛治 は変種として温存される。
     func testRegressionRealLMKonnaKanjiPrefersFeeling() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
 
         let multi = converter.multiClauseCandidates(for: "こんなかんじ", systemCandidateMode: .surface)
         XCTAssertEqual(Array(multi.prefix(2)), ["こんな感じ", "こんな漢字"], "multi=\(multi)")
@@ -498,21 +259,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 賭し(uni7489)+とって 断片が最良化していた。misc curated(五段+て/た形直接)で
     // 年取ってから #1、歳とってから #2 を固定。
     func testRegressionRealLMToshitotteKara() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         // addUserEntry は先頭挿入(新しい順)のため、実機の misc JSON 順
         // (年取って が先頭)に合わせて逆順で注入する
         converter.store.addUserEntry(reading: "としとって", candidate: "歳とって")
@@ -526,27 +273,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // (から は述語末尾でないため 遅い+から+な に+3000が乗っていた)の二重原因。
     // suppr(唐菜/晏い/遅そい/襲)+助詞直後の な 免除で 遅いからな を最良に。
     func testRegressionRealLMOsoiKaranaPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        let suppression: [String: [String]] = [
+        try prepareRealLMDictionary()
+        try injectSuppression([
             "からな": ["唐菜"],
             "おそい": ["晏い", "遅そい", "襲"]
-        ]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        ])
 
         let multi = converter.multiClauseCandidates(for: "おそいからな", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "遅いからな", "multi=\(multi)")
@@ -556,27 +287,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 捨てられ、同スパンの敬語合成 お石工/お石ユ(石ユ=石工のカタカナ混じり表記ゆれ、
     // suppr済)が変種繰り上がりしていた(うっかり同型)。misc かな識別 おいしく で是正。
     func testRegressionRealLMDochiramoOishiku() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        let suppression: [String: [String]] = [
+        try prepareRealLMDictionary()
+        try injectSuppression([
             "いしく": ["石ユ"],
             "おいしい": ["美味しい", "オイシイ", "オイシい"]
-        ]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        ])
         converter.store.addUserEntry(reading: "おいしく", candidate: "おいしく")
 
         let multi = converter.multiClauseCandidates(for: "どちらもおいしく", systemCandidateMode: .surface)
@@ -589,24 +304,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // かな識別LM判定が活用形読み(LM未収録)で行われ証明できず 頂きました が先頭だった。
     // misc 頻出形直接登録(ございます同処方)+いたゞく(繰り返し記号の表記ゆれ)抑制。
     func testRegressionRealLMItadakimashitaPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        let suppression: [String: [String]] = ["いただく": ["いたゞく"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["いただく": ["いたゞく"]])
         converter.store.addUserEntry(reading: "いただきました", candidate: "いただきました")
 
         let single = converter.candidates(for: "いただきました", limit: 8, systemCandidateMode: .surface)
@@ -3065,25 +2764,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // clamp(1200)を人側だけに発動させ、bigramを持たない 死人(7331)経路を逆転していた
     // (しにんからもぜいきん→し人からも税金/し人からもぜい金)。
     func testRegressionRealLMShininKaramoHasNoFragmentNin() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
-        let suppression: [String: [String]] = ["ぜいきん": ["ぜい金"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["ぜいきん": ["ぜい金"]])
 
         let multi = converter.multiClauseCandidates(for: "しにんからもぜいきん", systemCandidateMode: .surface)
         XCTAssertTrue(multi.contains("死人からも税金"), "multi=\(multi)")
@@ -3094,21 +2776,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 実LM回帰: 文語助動詞 べし のかな正書curated供給。辞書の読み べし は 餅子(wc7404
     // レア語)のみで、かな同一ノードが供給されず やめるべし→止める餅子 等になっていた。
     func testRegressionRealLMYameruBeshiPrefersKanaBeshi() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         // 実機の追加語彙(misc.plist 由来はテストバンドルに載らない)を store 側で再現
         converter.store.addUserEntry(reading: "べし", candidate: "べし")
 
@@ -3126,21 +2794,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 文末で 出(で)+会(かい) の断片連結(出口 会→EOS 1571)に負けていた
     // (そんなにでかい→そんなに出会/出下位/出買い/出貝)。
     func testRegressionRealLMSonnaniDekaiPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         // 実機の追加語彙(misc.plist 由来はテストバンドルに載らない)を store 側で再現
         converter.store.addUserEntry(reading: "でかい", candidate: "でかい")
 
@@ -3154,21 +2808,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // (LM 実在で高い 付けよう 7743 が未収録の 着けよう OOV 7200 に逆転される)と
     // seed つける=[付ける,着ける] の基底順で 付けよう を最良にする。
     func testRegressionRealLMKiwoTsukeyouPrefersKiwo() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "きを", candidate: "気を")
 
         let multi = converter.multiClauseCandidates(for: "きをつけよう", systemCandidateMode: .surface)
@@ -3180,25 +2820,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // エコー抑制に捨てられ デスけどー/ですゥけどー(装飾収穫遺物)が繰り上がっていた。
     // けど/けどー を終助詞クラスタに追加+ですゥ族を suppr 抑制。
     func testRegressionRealLMDesukedoLongVowelPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
-        let suppression: [String: [String]] = ["です": ["ですゥ", "です〜", "で〜す", "で〜〜す"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["です": ["ですゥ", "です〜", "で〜す", "で〜〜す"]])
 
         let multiLong = converter.multiClauseCandidates(for: "ですけどー", systemCandidateMode: .surface)
         XCTAssertEqual(multiLong.first, "ですけどー", "multi=\(multiLong)")
@@ -3217,21 +2840,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // のか+お に分断して 顔 のスパンが消えていた(あんたのかお南海揉みたい/乃佳お 等)。
     // 分断される側の 顔 も curated 化して救済(同床なら文節数の少ない区切りが勝つ)。
     func testRegressionRealLMKaoNankaimoWithFullVocab() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         // 実機相当の抑制を注入(1912確立の手順)
         let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
@@ -3260,21 +2869,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 短spanレア読み床を免除(Sudachi の動詞 word_cost は単漢字名詞より系統的に高い:
     // 炊く9118/書く 等。読み跨ぎの頻出表層 良く(いく) はクラス未登録なので床の保護は維持)。
     func testRegressionRealLMVerbNogaNominalizerPrefersVerb() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
 
         let cases: [(reading: String, expected: String)] = [
             ("たくのがすき", "炊くのが好き"),
@@ -3295,21 +2890,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // こと(Squareニすれば 報告のロック)。現行エンジンはクリーン状態で正解するため、
     // 実機相当の追加語彙全注入で固定する。
     func testRegressionRealLMSquareNiSurebaKeepsKanaParticle() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
@@ -3334,21 +2915,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 全かな best はエコー抑制に捨てられて とかでは無く が最良になっていた。
     // curated 句にすることで echo 例外(経路に curated)が効き、かなが先頭に出る。
     func testRegressionRealLMDehanakuPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "ではなく", candidate: "ではなく")
         converter.store.addUserEntry(reading: "でなく", candidate: "でなく")
         for input in ["とかではなく", "とかでなく", "それではなく"] {
@@ -3362,21 +2929,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 捨てられ、名前収穫の変種(してる菜亜 wc10000/しテルなあ)が繰り上がっていた
     // (いるなー/ですけどー と同族)。なあ 等を終助詞クラスタに追加して文末かなを正規扱い。
     func testRegressionRealLMShiterunaaPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
 
         let multi = converter.multiClauseCandidates(for: "してるなあ", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "してるなあ", "multi=\(multi)")
@@ -3392,25 +2945,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 合成経由の末尾に落ちていた。seed で 中の を供給し、交ぜ書き 中ノ(wc6000)と
     // カタカナ人名 ナカノ(wc5652)は suppr 抑制。
     func testRegressionRealLMNakanoOffersNakaNoEarly() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
-        // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現
-        let suppression: [String: [String]] = ["なかの": ["中ノ", "ナカノ"]]
-        let suppressionData = try JSONEncoder().encode(suppression)
-        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+        try prepareRealLMDictionary()
+        try injectSuppression(["なかの": ["中ノ", "ナカノ"]])
 
         let candidates = converter.candidates(for: "なかの", limit: 12, systemCandidateMode: .surface)
         guard let nakaNoIndex = candidates.firstIndex(of: "中の") else {
@@ -3458,21 +2994,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 最良の なぜ+それ+が(全かな)がエコー抑制に捨てられ 何故それが が先頭化していた
     // (それぞれ/うっかり と同型)。
     func testRegressionRealLMNazeSoregaPrefersKana() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         // 実機の追加語彙(misc.plist 由来はテストバンドルに載らない)を store 側で再現
         converter.store.addUserEntry(reading: "なぜ", candidate: "なぜ")
 
@@ -3490,21 +3012,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため、気がする+頻出形の
     // 句登録(いただきました方式)で供給する。
     func testRegressionRealLMKigashitaPrefersKiga() throws {
-        let fileManager = FileManager.default
-        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
-        guard fileManager.fileExists(atPath: source.path) else {
-            throw XCTSkip("real LM sqlite not available on this machine")
-        }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
-        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
-        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
-        if !fileManager.fileExists(atPath: destination.path) {
-            try fileManager.copyItem(at: source, to: destination)
-        }
+        try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "きがする", candidate: "気がする")
         converter.store.addUserEntry(reading: "きがした", candidate: "気がした")
         converter.store.addUserEntry(reading: "きがして", candidate: "気がして")
@@ -3520,6 +3028,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kigae.first, "着替えをもって", "multi=\(kigae)")
         let kigaru = converter.multiClauseCandidates(for: "きがるにどうぞ", systemCandidateMode: .surface)
         XCTAssertEqual(kigaru.first, "気軽にどうぞ", "multi=\(kigaru)")
+    }
+
+    // 実LM回帰テストの共通セットアップ: 開発機の tmp sqlite(実辞書+連文節LM)を
+    // app group コンテナへ複製する。tmp が無い環境では XCTSkip(実LM依存のため)。
+    private func prepareRealLMDictionary() throws {
+        let fileManager = FileManager.default
+        let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
+        guard fileManager.fileExists(atPath: source.path) else {
+            throw XCTSkip("real LM sqlite not available on this machine")
+        }
+        guard let container = fileManager.containerURL(
+            forSecurityApplicationGroupIdentifier: defaultsSuiteName
+        ) else {
+            throw XCTSkip("no app group container in this environment")
+        }
+        try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
+        let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
+        if !fileManager.fileExists(atPath: destination.path) {
+            try fileManager.copyItem(at: source, to: destination)
+        }
+    }
+
+    // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現する。
+    private func injectSuppression(_ suppression: [String: [String]]) throws {
+        let suppressionData = try JSONEncoder().encode(suppression)
+        UserDefaults(suiteName: defaultsSuiteName)?.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
     }
 
     private func clearSuite(_ suiteName: String) {
