@@ -115,6 +115,14 @@ extension KanaKanjiConverter {
     // curated 化すると 触って+描く+人(にん) が 触って確認 を逆転するため、文法として遮断する
     // (さわってかくにん対策)。読み ひと は正当な接続なので対象外。
     static let multiClausePersonSuffixSinoReadings: Set<String> = ["にん", "じん"]
+    // 読み跨ぎ bigram 借用の遮断対象。surface の LM 統計が別の主読みに支配される単漢字は、
+    // bigram 借用(し→人 5902=ひと文脈、は→頭 4675=あたま文脈)が床上げを素通りして
+    // 断片連結を過剰に安くするため、bigram を使わず unigram+短span床で評価する。
+    // 人(にん/じん)=さわってかくにん/しにんからも対策、頭(ず)=にくいはず→にくいは頭対策。
+    static let multiClauseBigramBorrowDeniedReadingsBySurface: [String: Set<String>] = [
+        "人": ["にん", "じん"],
+        "頭": ["ず"]
+    ]
     // 仮定の接続助詞「なら」は述語(動詞/形容詞の終止・連体形)直後ではかなが正書
     // (買うなら/するなら/食べるなら)。奈良/楢/ナラ への漢字・カタカナ化を EOS で減点する。
     // ただし体言+と直後(大阪と奈良)は正当な地名なので、直前が述語のときだけ発火させる。
@@ -189,6 +197,8 @@ extension KanaKanjiConverter {
         "ね", "よ", "な", "か", "わ", "さ", "ぞ", "ぜ", "し",
         // 助動詞・接続の頻出かな(A単位分割で正当に頻出するもの)
         "た", "て", "だ", "ん", "う", "ない", "ます", "です", "たい", "てる",
+        // 形式名詞(かなが正書。wc はず=6777 の床上げで は+頭(ず) 等の断片に負けていた)
+        "はず",
         // 複数接尾辞(彼ら/子供ら 等。A単位分割で 彼+ら と割れる正当な頻出かな)
         "ら"
     ]
@@ -571,12 +581,9 @@ extension KanaKanjiConverter {
             isDictionaryFormPredicate: Bool = false
         ) -> Int {
             var base: Int
-            // 人(にん/じん) は surface LM 統計が ひと 読みに支配されるため、bigram 借用
-            // (し→人 5902/氏→人: 〜し、人が… の ひと文脈由来)が漢語接尾 人 の断片連結を
-            // 過剰に安くする(しにんからも→し人/氏人からも)。bigram を使わず unigram+
-            // 短spanレア読み床(Sudachi の読み別コスト 8712)で評価する。
-            let deniesBigramBorrow = surface == "人"
-                && Self.multiClausePersonSuffixSinoReadings.contains(reading)
+            // 読み跨ぎ bigram 借用の遮断(定数コメント参照。人(にん/じん)/頭(ず) 等)。
+            let deniesBigramBorrow = Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
+                .contains(reading) ?? false
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
             // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
