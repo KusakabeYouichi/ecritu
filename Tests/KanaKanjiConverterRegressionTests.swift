@@ -3186,7 +3186,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try injectSuppression(["かいしゃ": ["會社"]])
 
         let kabu = converter.candidates(for: "かぶしきがいしゃ", limit: 8, systemCandidateMode: .surface)
-        XCTAssertTrue(kabu.contains("(株)"), "single=\(kabu)")
+        XCTAssertEqual(Array(kabu.prefix(2)), ["株式会社", "(株)"], "single=\(kabu)")
         XCTAssertFalse(kabu.contains(where: { $0.contains("\\u00") }), "single=\(kabu)")
 
         let kaisha = converter.candidates(for: "かぶしきかいしゃ", limit: 8, systemCandidateMode: .surface)
