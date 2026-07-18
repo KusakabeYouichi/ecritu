@@ -32,8 +32,14 @@ extension KanaKanjiConverter {
         "よう"
     ]
 
-    static func postfixSuffixRequiresVerbalStem(_ suffix: String) -> Bool {
+    static func postfixSuffixRequiresVerbalStem(_ suffix: String, stemReading: String) -> Bool {
         for required in verbalStemRequiredPostfixPrefixes where suffix.hasPrefix(required) {
+            return true
+        }
+        // 否定テ形は用言にしか付かない(名詞は じゃなくて)。ただし ない形容詞
+        // (勿体ない/仕方ない/申し訳ない 等)は辞書に基底が無く 名詞+なくて 合成が唯一の
+        // 供給のため、短い語幹(イカ/凧 等の読み2文字以下)だけを動詞要求の対象にする。
+        if suffix.hasPrefix("なくて"), stemReading.count <= 2 {
             return true
         }
         return false
@@ -191,7 +197,7 @@ extension KanaKanjiConverter {
         stemReading: String,
         nextSuffix: String
     ) -> [String] {
-        guard Self.postfixSuffixRequiresVerbalStem(nextSuffix) else {
+        guard Self.postfixSuffixRequiresVerbalStem(nextSuffix, stemReading: stemReading) else {
             return candidates
         }
 
