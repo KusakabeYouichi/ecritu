@@ -3203,6 +3203,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.contains("継ぎ歯"), "継ぎ歯は温存 single=\(single)")
     }
 
+    // 実LM回帰: さっきのは/さっきは/さっき のかな先頭化。さっき はかな正書の口語で、
+    // かな識別curatedが無いと全かな best がエコー抑制に捨てられ 殺気のは/削器のは/箚記のは
+    // (レア語)が繰り上がっていた(それぞれ/うっかり と同型)。
+    func testRegressionRealLMSakkiPrefersKana() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "さっき", candidate: "さっき")
+        // 実機の抑制状態を再現(者(は) は suppr.plist で抑制済み)
+        try injectSuppression(["は": ["者"]])
+
+        for input in ["さっきのは", "さっきは"] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, input, "multi=\(multi)")
+        }
+
+        let single = converter.candidates(for: "さっき", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "さっき", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
