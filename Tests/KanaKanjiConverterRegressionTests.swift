@@ -3278,6 +3278,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(hoka.first, "思いの外", "single=\(hoka)")
     }
 
+    // 実LM回帰: りょうが→量が/凌駕。合成の 量+が が丸ごと語(凌駕/リョウガ/楞加)より後ろに
+    // 沈んでいた。seed で 量が→凌駕 を固定。りょうがする はサ変推論が 凌駕 からのみ成立する
+    // ため 凌駕する が先頭のまま。リョウガ/リョウ(カタカナ人名収穫)は suppr。
+    func testRegressionRealLMRyougaOrdering() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["りょうが": ["リョウガ"], "りょう": ["リョウ"]])
+
+        let single = converter.candidates(for: "りょうが", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["量が", "凌駕"], "single=\(single)")
+        XCTAssertFalse(single.contains("リョウガ"), "single=\(single)")
+
+        let suru = converter.candidates(for: "りょうがする", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(suru.first, "凌駕する", "single=\(suru)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

@@ -198,6 +198,9 @@
 	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>
 	<dict><key>phrase</key><string>ナカノ</string><key>shortcut</key><string>なかの</string></dict>
+	<!-- リョウガ/リョウ: りょうが/りょう のカタカナ人名収穫(レア)。量が/凌駕 等の正規候補の前に並ぶ -->
+	<dict><key>phrase</key><string>リョウガ</string><key>shortcut</key><string>りょうが</string></dict>
+	<dict><key>phrase</key><string>リョウ</string><key>shortcut</key><string>りょう</string></dict>
 	<!-- イく/イク: いく のカタカナ交ぜ書き・カタカナ表記(デキる/イタめる/ヤる 族)。godan-ku の活用クラス付きで収穫されており、イかなくて/イきます 等のジャンク派生を正規活用として作る -->
 	<dict><key>phrase</key><string>イく</string><key>shortcut</key><string>いく</string></dict>
 	<dict><key>phrase</key><string>イク</string><key>shortcut</key><string>いく</string></dict>
