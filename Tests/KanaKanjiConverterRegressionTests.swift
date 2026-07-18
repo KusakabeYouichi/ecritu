@@ -3245,6 +3245,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(moushiwake.first, "申し訳なくて", "single=\(moushiwake)")
     }
 
+    // 実LM回帰: おおいとはげるよ→多いと禿げるよ。禿げる(dict rank0)は uni 未収録で
+    // 連文節ノードが 8700 になり、は+ゲル(uni6785)の断片連結に負けていた。curated で供給。
+    func testRegressionRealLMHageruPrefersHageru() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "はげる", candidate: "禿げる")
+
+        let multi = converter.multiClauseCandidates(for: "おおいとはげるよ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "多いと禿げるよ", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("ゲル") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

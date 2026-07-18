@@ -267,6 +267,8 @@
 	<!-- 汎用の「ではなく/でなく」もかなが正書(とかではなく→とかでは無く 対策)。かな なく は wc10363 の床上げで沈み、全かなbestはエコー抑制に捨てられるため、curated句で供給して echo 例外を効かせる -->
 	<dict><key>phrase</key><string>ではなく</string><key>shortcut</key><string>ではなく</string></dict>
 	<dict><key>phrase</key><string>でなく</string><key>shortcut</key><string>でなく</string></dict>
+	<!-- 禿げる: dict rank0 だが uni 未収録(=連文節ノード8700)で、は+ゲル(uni6785)の断片連結に負ける(おおいとはげるよ→多いとはゲルよ)。curated で供給 -->
+	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>
 	<!-- うまく: かな正書の口語副詞(うまくいく が定型)。かな識別curatedが無いと うまく+いかなくて(最良・全かな)がエコー抑制で捨てられ 旨くいかなくて が繰り上がる -->
 	<dict><key>phrase</key><string>うまく</string><key>shortcut</key><string>うまく</string></dict>
 	<!-- さっき: かな正書の口語(uni さっき が 殺気 等より優位)。かな識別curatedが無いと さっき+のは(最良・全かな)がエコー抑制で捨てられ 殺気のは/削器のは/箚記のは が繰り上がる(それぞれ/うっかり と同型) -->
