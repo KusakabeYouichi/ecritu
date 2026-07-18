@@ -3193,6 +3193,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(kaisha.contains(where: { $0.contains("會") }), "single=\(kaisha)")
     }
 
+    // 実LM回帰: つぎは→次は。丸ごと語の 継ぎ歯/継ぎ端(歯科用語、wc7864 の正規語で
+    // 収穫底値降格の対象外)が合成の 次+は より先に並んでいた(なかの/夏は の正規語版)。
+    func testRegressionRealLMTsugihaPrefersTsugiWa() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "つぎは", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "次は", "single=\(single)")
+        XCTAssertTrue(single.contains("継ぎ歯"), "継ぎ歯は温存 single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
