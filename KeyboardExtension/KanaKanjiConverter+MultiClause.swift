@@ -810,6 +810,11 @@ extension KanaKanjiConverter {
         // --- 5. EOS 込みで最良の終端ノードを選ぶ ---
         var bestTotal = infinity
         var bestEndIndex = -1
+        // 同点タイブレーク: 文末が助詞(かな)の経路を優先する。EOS は unigram を持つため
+        // 文末実績のない名詞も uni+バックオフで文を終えられ、助詞終わりと完全同点になる
+        // ことがある(あめのひも: 紐+EOS と 日+も+EOS が同点で、列挙順により名詞側が
+        // 勝っていた)。同点時のみの介入なので他の均衡には影響しない。
+        var bestIsParticleFinal = false
         for idx in nodesEndingAt[n] {
             if best[idx] >= infinity {
                 continue
@@ -834,15 +839,33 @@ extension KanaKanjiConverter {
                 !nodes[idx].isCurated {
                 total += Self.multiClauseFinalParticleKanjiPenalty
             }
-            if total < bestTotal {
+            let isParticleFinal = nodes[idx].surface == nodes[idx].reading
+                && (Self.multiClauseCaseParticleSurfaces.contains(nodes[idx].surface)
+                    || Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading))
+            if total < bestTotal || (total == bestTotal && isParticleFinal && !bestIsParticleFinal) {
                 bestTotal = total
                 bestEndIndex = idx
+                bestIsParticleFinal = isParticleFinal
             }
         }
         guard bestEndIndex >= 0 else {
             return []
         }
 
+        // DIAGDEBUG: temporary DP dump (removed before commit)
+        if ProcessInfo.processInfo.environment["ECRITU_DIAG_MULTICLAUSE"] != nil {
+            print("DIAG input=\(normalized) bestTotal=\(bestTotal)")
+            for (i, node) in nodes.enumerated() where best[i] < infinity {
+                print("DIAG node[\(i)] [\(node.start),\(node.end)) r=\(node.reading) s=\(node.surface) wc=\(String(describing: node.wordCost)) best=\(best[i]) bp=\(backPointer[i])")
+            }
+            var diagIdx = bestEndIndex
+            var diagChain: [String] = []
+            while diagIdx >= 0 {
+                diagChain.append("\(nodes[diagIdx].surface)(\(nodes[diagIdx].reading))#\(diagIdx)@\(best[diagIdx])")
+                diagIdx = backPointer[diagIdx]
+            }
+            print("DIAG best path: " + diagChain.reversed().joined(separator: " | "))
+        }
         // --- 6. バックトラック(ノード列を保持) ---
         var pathIndices: [Int] = []
         var idx = bestEndIndex

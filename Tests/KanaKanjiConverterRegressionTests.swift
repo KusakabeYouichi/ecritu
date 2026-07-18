@@ -3293,6 +3293,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(suru.first, "凌駕する", "single=\(suru)")
     }
 
+    // 実LM回帰: あめのひも→雨の日も。EOS unigram(1619)による フォールバック(2119)が
+    // 観測済みの も→EOS(3052)より安い逆転構造で 雨の紐 が僅差勝ちしていた。EOS床の
+    // 一般化は 感じ 等のカジュアル語彙(Wikipedia文末に出ない)を痛めるため不成立と検証
+    // 済みで、句 seed で対応。文中(あめのひもある)は LM で正しく 雨の日も が勝つ。
+    func testRegressionRealLMAmenohimoPrefersHimo() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "あめのひも", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "雨の日も", "single=\(single)")
+        XCTAssertTrue(single.contains("雨の紐"), "雨の紐は次点で温存 single=\(single)")
+
+        let multi = converter.multiClauseCandidates(for: "あめのひもある", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "雨の日もある", "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
