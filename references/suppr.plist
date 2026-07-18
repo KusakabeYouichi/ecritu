@@ -198,6 +198,9 @@
 	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>
 	<dict><key>phrase</key><string>ナカノ</string><key>shortcut</key><string>なかの</string></dict>
+	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
+	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>
+	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
 	<!-- イイね/いゝね: 今どき流行らない書き方(イイ=カタカナ強調、いゝ=踊り字)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存) -->
 	<dict><key>phrase</key><string>イイね</string><key>shortcut</key><string>いいね</string></dict>
 	<dict><key>phrase</key><string>いゝね</string><key>shortcut</key><string>いいね</string></dict>

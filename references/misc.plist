@@ -7,6 +7,8 @@
 	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- 気がする: 単独では供給経路が無い(気が+する はサ変名詞と見なされず、逆に 帰臥/起臥 の2字漢語がサ変推論で 帰臥した 等を作る)。きがした→帰臥した 対策。気が 単独の curated は 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため句で登録する -->
 	<dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>
+	<!-- 心配する: Sudachi収穫の inflection_classes が しんぱい に 親拝/進拝 だけを suru 登録し 心配 が未登録(メタデータ穴)。エンジンの推論防御により 心配しなくて 等が導出されず 親拝しなくて が先頭化する。句登録で活用供給 -->
+	<dict><key>phrase</key><string>心配する</string><key>shortcut</key><string>しんぱいする</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- 頻出形の直接登録(いただきました と同じ方式)。派生供給だけだとサ変推論の 帰臥した/起臥した がルール順で先に立つ -->
 	<dict><key>phrase</key><string>気がした</string><key>shortcut</key><string>きがした</string></dict>
 	<dict><key>phrase</key><string>気がして</string><key>shortcut</key><string>きがして</string></dict>

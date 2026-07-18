@@ -133,6 +133,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 否定テ形(食べなくて/食べなくても)。願望否定テ(たくなくて)だけあって素の形が
+        // 無かった(いかなくて→いか+なくて/凧なくて 等の断片合成に全長を取られる)
+        InflectionRule(readingSuffix: "なくて", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なくても", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         // 命令形+引用「って」(食べろって 等の口語)
         InflectionRule(readingSuffix: "ろって", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         // 「〜なくなる」(状態変化の否定): 食べなくなった/食べなくなったら 等
@@ -763,6 +767,9 @@ extension KanaKanjiConverter {
                 pattern.aForm + "ない",
                 pattern.aForm + "なかった",
                 pattern.aForm + "なかったら",
+                // 否定テ形(行かなくて/行かなくても)
+                pattern.aForm + "なくて",
+                pattern.aForm + "なくても",
                 // 命令形+引用「って」(払えって/待てって 等の口語)
                 pattern.eForm + "って",
                 // 「〜なくなる」(状態変化の否定): 使わなくなった/使わなくなったら 等
@@ -934,6 +941,9 @@ extension KanaKanjiConverter {
     static let suruInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 否定テ形(しなくて/しなくても)
+        InflectionRule(readingSuffix: "しなくて", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくても", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         // 命令形+引用「って」(集中しろって 等の口語)
         InflectionRule(readingSuffix: "しろって", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         // 「〜なくなる」(状態変化の否定): 利用しなくなった 等
@@ -1204,6 +1214,8 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "できちゃいました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しなくても", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "します", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
@@ -1382,6 +1394,9 @@ extension KanaKanjiConverter {
     static let kuruInflectionForms: [(readingSuffix: String, kanjiOutputSuffix: String)] = [
         ("こない", "来ない"),
         ("こなかった", "来なかった"),
+        // 否定テ形(来なくて/来なくても)
+        ("こなくて", "来なくて"),
+        ("こなくても", "来なくても"),
         // 「〜なくなる」(状態変化の否定): 来なくなった 等
         ("こなくなる", "来なくなる"),
         ("こなくなった", "来なくなった"),
