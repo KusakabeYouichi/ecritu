@@ -3125,6 +3125,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ashitaba.first, "明日葉", "single=\(ashitaba)")
     }
 
+    // 実LM回帰: いいね→いいね が先頭、言い値 が2番目。dict の読み いいね は 言い値 のみで、
+    // かな いいね は uni 未収録の供給欠落。イイ/唯々/いゝ/易々+ね の合成が先行していた。
+    // イイね/いゝね(今どき流行らない書き方)は読み直接ペアで抑制。
+    func testRegressionRealLMIinePrefersKana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["いいね": ["イイね", "いゝね"]])
+        converter.store.addUserEntry(reading: "いいね", candidate: "いいね")
+
+        let single = converter.candidates(for: "いいね", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["いいね", "言い値"], "single=\(single)")
+        XCTAssertFalse(single.contains("イイね"), "single=\(single)")
+        XCTAssertFalse(single.contains("いゝね"), "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

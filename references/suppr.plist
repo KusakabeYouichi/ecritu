@@ -198,6 +198,9 @@
 	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>
 	<dict><key>phrase</key><string>ナカノ</string><key>shortcut</key><string>なかの</string></dict>
+	<!-- イイね/いゝね: 今どき流行らない書き方(イイ=カタカナ強調、いゝ=踊り字)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存) -->
+	<dict><key>phrase</key><string>イイね</string><key>shortcut</key><string>いいね</string></dict>
+	<dict><key>phrase</key><string>いゝね</string><key>shortcut</key><string>いいね</string></dict>
 	<!-- あした の古語読み・カタカナ収穫のうち不要分: 晨(古語)、アシタ(カタカナ収穫 wc5527)。
 	     朝(あした)は候補として残す(先頭対策は misc の 明日 curated 側で行う) -->
 	<dict><key>phrase</key><string>晨</string><key>shortcut</key><string>あした</string></dict>
