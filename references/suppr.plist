@@ -198,6 +198,10 @@
 	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>
 	<dict><key>phrase</key><string>ナカノ</string><key>shortcut</key><string>なかの</string></dict>
+	<!-- あした の古語読み・カタカナ収穫のうち不要分: 晨(古語)、アシタ(カタカナ収穫 wc5527)。
+	     朝(あした)は候補として残す(先頭対策は misc の 明日 curated 側で行う) -->
+	<dict><key>phrase</key><string>晨</string><key>shortcut</key><string>あした</string></dict>
+	<dict><key>phrase</key><string>アシタ</string><key>shortcut</key><string>あした</string></dict>
 	<!-- ですゥ/です〜/で〜す/で〜〜す: です の装飾表記ゆれエントリ(wc7118〜7125、うツかり族)。ですけど→ですゥけど 等の変種に浮上する -->
 	<dict><key>phrase</key><string>ですゥ</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>です〜</string><key>shortcut</key><string>です</string></dict>

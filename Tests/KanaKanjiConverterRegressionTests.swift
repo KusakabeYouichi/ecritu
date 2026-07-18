@@ -3103,6 +3103,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.first?.contains("何時ですか") == true, "multi=\(multi)")
     }
 
+    // 実LM回帰: あしたは→明日は。朝(あした=古語読み)の表層が あさ 読みの uni(4453)を
+    // 借用して 明日(5910)に連文節で勝っていた(読み跨ぎ)。朝 は候補として温存(ユーザ意向)
+    // したいので抑制せず、明日 を curated で先頭固定。晨(古語)/アシタ(カタカナ収穫)は抑制。
+    func testRegressionRealLMAshitahaPrefersAshita() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["あした": ["晨", "アシタ"]])
+        converter.store.addUserEntry(reading: "あした", candidate: "明日")
+
+        let multi = converter.multiClauseCandidates(for: "あしたは", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "明日は", "multi=\(multi)")
+        // 朝は は変種として残ってよい(先頭でなければ問題ない)
+        XCTAssertFalse(multi.contains(where: { $0.contains("晨") || $0.contains("アシタ") }), "multi=\(multi)")
+
+        let single = converter.candidates(for: "あした", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "明日", "single=\(single)")
+        XCTAssertTrue(single.contains("朝"), "朝は候補として温存 single=\(single)")
+
+        // 巻き添え確認: あしたば(明日葉)が 明日+ば に分断されない
+        let ashitaba = converter.candidates(for: "あしたば", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(ashitaba.first, "明日葉", "single=\(ashitaba)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
