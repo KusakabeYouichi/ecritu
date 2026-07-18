@@ -3256,6 +3256,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("ゲル") }), "multi=\(multi)")
     }
 
+    // 実LM回帰: おもいのね→重いのね。説明の のね は用言直後が主用途だが、表層末尾の い では
+    // 名詞 思い と形容詞 重い を区別できないため、辞書形述語フラグ(inflection_classes)で
+    // ゲートした単位ノードクランプを使う。名詞+の(思いの外)は従来経路のまま。
+    func testRegressionRealLMOmoinonePrefersOmoi() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "おもいのね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "重いのね", "multi=\(multi)")
+
+        let takai = converter.multiClauseCandidates(for: "たかいのよ", systemCandidateMode: .surface)
+        XCTAssertEqual(takai.first, "高いのよ", "multi=\(takai)")
+
+        // 名詞+の の慣用は歪めない(丸ごと辞書語のため連文節は単一経路へ委譲=[]が正常)
+        let hokaMulti = converter.multiClauseCandidates(for: "おもいのほか", systemCandidateMode: .surface)
+        XCTAssertFalse(hokaMulti.contains(where: { $0.contains("重い") }), "multi=\(hokaMulti)")
+        let hoka = converter.candidates(for: "おもいのほか", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(hoka.first, "思いの外", "single=\(hoka)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

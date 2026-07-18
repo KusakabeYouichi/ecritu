@@ -57,6 +57,11 @@ extension KanaKanjiConverter {
     // クランプする(名詞直後はクランプせず通常経路のまま)。
     static let multiClauseNominalizerSurfaces: Set<String> = ["のが", "のは", "のを", "のも", "のに"]
     static let multiClauseNominalizerAfterPredicateCost = 1200
+    // 説明・詠嘆の終助詞連結「のね/のよ」。用言の辞書形述語(重い 等、inflection_classes
+    // 登録)直後に限り単位ノードとして安価にする(おもいのね→重いのね)。名詞(思い)は
+    // 表層末尾が い でも辞書形述語ではないため対象外 — の+ね 分割の従来経路のまま
+    // (思いの外/思いのまま 等の名詞+の を歪めない)。
+    static let multiClauseExplanatoryFinalSurfaces: Set<String> = ["のね", "のよ"]
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -346,8 +351,7 @@ extension KanaKanjiConverter {
                     // (b) と同じ辞書形述語判定を付ける。無いと seed 掲載の動詞(書く 等)が
                     // 床免除を失って床上げされ、同読みの別動詞(描く)に逆転される。
                     var seedIsDictionaryFormPredicate = false
-                    if len <= Self.multiClauseRareReadingFloorMaxReadingCount,
-                        let lastChar = surface.last,
+                    if let lastChar = surface.last,
                         Self.multiClauseDictionaryFormTailCharacters.contains(lastChar),
                         containsKanji(surface) {
                         seedIsDictionaryFormPredicate = store.isShortReadingDictionaryFormPredicate(
@@ -372,18 +376,17 @@ extension KanaKanjiConverter {
                     let ordered = costMap.sorted { lhs, rhs in
                         lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key < rhs.key
                     }
-                    let needsClassLookup = len <= Self.multiClauseRareReadingFloorMaxReadingCount
                     var dictCount = 0
                     for (surface, cost) in ordered {
                         if segmentEndsWithSokuon, containsKanji(surface) {
                             continue
                         }
-                        // 短spanレア読み床の免除判定(ノード定義コメント参照)。辞書形述語は
-                        // 「漢字+かな活用尾(炊く/書く/濃い)」の形状に限られるため、それ以外
-                        // (宅/核 等)は store への問い合わせ自体を省く。
+                        // 辞書形述語判定(ノード定義コメント参照)。床免除(読み≤2)に加えて
+                        // のね/のよ の述語直後クランプでも使うため、長さゲートは置かず
+                        // 「漢字+かな活用尾(炊く/書く/重い)」の形状だけで問い合わせを絞る
+                        // (読み別キャッシュ済み)。
                         var isDictionaryFormPredicate = false
-                        if needsClassLookup,
-                            let lastChar = surface.last,
+                        if let lastChar = surface.last,
                             Self.multiClauseDictionaryFormTailCharacters.contains(lastChar),
                             containsKanji(surface) {
                             isDictionaryFormPredicate = store.isShortReadingDictionaryFormPredicate(
@@ -486,10 +489,11 @@ extension KanaKanjiConverter {
                     }
                 }
 
-                // (b4) 名詞化節(のが/のは 等)のかな単位ノードを常設する。辞書にレア名前
-                //      (野賀 wc10000 等)だけがあると (c) の素通り補完が走らず、述語直後
-                //      クランプの対象ノード自体が立たない(たくのがすき→宅のが好き)。
-                if Self.multiClauseNominalizerSurfaces.contains(segmentReading) {
+                // (b4) 名詞化節(のが/のは 等)と説明の のね/のよ のかな単位ノードを常設する。
+                //      辞書にレア名前(野賀 wc10000 等)だけがあると (c) の素通り補完が走らず、
+                //      述語直後クランプの対象ノード自体が立たない(たくのがすき→宅のが好き)。
+                if Self.multiClauseNominalizerSurfaces.contains(segmentReading)
+                    || Self.multiClauseExplanatoryFinalSurfaces.contains(segmentReading) {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -578,7 +582,8 @@ extension KanaKanjiConverter {
             isCurated: Bool,
             isInflectionDerived: Bool,
             wordCost: Int? = nil,
-            isDictionaryFormPredicate: Bool = false
+            isDictionaryFormPredicate: Bool = false,
+            prevIsDictionaryFormPredicate: Bool = false
         ) -> Int {
             var base: Int
             // 読み跨ぎ bigram 借用の遮断(定数コメント参照。人(にん/じん)/頭(ず) 等)。
@@ -665,6 +670,14 @@ extension KanaKanjiConverter {
                 prev.last.map({ Self.multiClausePredicateTailCharacters.contains($0) }) ?? false {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
+            // 説明・詠嘆の のね/のよ は辞書形述語(ノードフラグ)直後のみ安価にクランプ
+            // (定数コメント参照)。表層末尾文字では名詞 思い と形容詞 重い を区別できない
+            // ため、こちらは inflection_classes 由来のフラグでゲートする。
+            if surface == reading,
+                Self.multiClauseExplanatoryFinalSurfaces.contains(surface),
+                prevIsDictionaryFormPredicate {
+                base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
+            }
             var penalty = 0
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
             // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に
@@ -738,7 +751,8 @@ extension KanaKanjiConverter {
                         isCurated: node.isCurated,
                         isInflectionDerived: node.isInflectionDerived,
                         wordCost: node.wordCost,
-                        isDictionaryFormPredicate: node.isDictionaryFormPredicate
+                        isDictionaryFormPredicate: node.isDictionaryFormPredicate,
+                        prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate
                     )
                     // 連体形直後の形式名詞はかな表記が正書(行ったとき等)。漢字表記に減点。
                     if prevNode.isInflectionDerived,
@@ -898,6 +912,9 @@ extension KanaKanjiConverter {
                 let prevAuxTail: String? = pos > 0
                     ? Self.auxTailForBigramBorrow(of: nodes[pathIndices[pos - 1]])
                     : nil
+                let prevIsDictionaryFormPredicate = pos > 0
+                    ? nodes[pathIndices[pos - 1]].isDictionaryFormPredicate
+                    : false
                 let incoming = transitionCost(
                     prev: prevSurface,
                     prevAuxTail: prevAuxTail,
@@ -907,7 +924,8 @@ extension KanaKanjiConverter {
                     isCurated: node.isCurated && asCurated,
                     isInflectionDerived: node.isInflectionDerived,
                     wordCost: node.wordCost,
-                    isDictionaryFormPredicate: node.isDictionaryFormPredicate
+                    isDictionaryFormPredicate: node.isDictionaryFormPredicate,
+                    prevIsDictionaryFormPredicate: prevIsDictionaryFormPredicate
                 )
                 let outgoing: Int
                 if let nextNode {
@@ -920,7 +938,8 @@ extension KanaKanjiConverter {
                         isCurated: nextNode.isCurated,
                         isInflectionDerived: nextNode.isInflectionDerived,
                         wordCost: nextNode.wordCost,
-                        isDictionaryFormPredicate: nextNode.isDictionaryFormPredicate
+                        isDictionaryFormPredicate: nextNode.isDictionaryFormPredicate,
+                        prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate
                     )
                 } else {
                     var eosCost = transitionCost(
