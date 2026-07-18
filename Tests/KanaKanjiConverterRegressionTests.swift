@@ -3139,6 +3139,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("いゝね"), "single=\(single)")
     }
 
+    // 実LM回帰: 否定テ形 なくて/なくても の供給。願望否定テ(たくなくて)だけあって素の形が
+    // 全クラス未定義で、いかなくて→いか+なくて/凧なくて 等の断片合成に全長を取られ、
+    // いかなくていいのかな はかなエコー1つだけになっていた(供給欠落型)。
+    // しんぱい は inflection_classes のメタデータ穴(親拝/進拝 のみ suru 登録で 心配 が
+    // 未登録)のため、心配する の句登録+親拝/進拝 の抑制も併せて検証する。
+    func testRegressionRealLMNegativeTeFormsDerive() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "しんぱいする", candidate: "心配する")
+        try injectSuppression(["しんぱい": ["親拝", "進拝"]])
+
+        let ikanakute = converter.candidates(for: "いかなくて", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(ikanakute.prefix(3).contains("行かなくて"), "single=\(ikanakute)")
+        XCTAssertEqual(ikanakute.first, "いかなくて", "single=\(ikanakute)")
+
+        let multi = converter.multiClauseCandidates(for: "いかなくていいのかな", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.contains("行かなくていいのかな"), "multi=\(multi)")
+        XCTAssertTrue(multi.count >= 2, "かなエコー1つだけに戻らないこと multi=\(multi)")
+
+        let tabe = converter.candidates(for: "たべなくても", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(tabe.first, "食べなくても", "single=\(tabe)")
+
+        let shinpai = converter.candidates(for: "しんぱいしなくても", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(shinpai.first, "心配しなくても", "single=\(shinpai)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
