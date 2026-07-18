@@ -3179,6 +3179,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "はず", "single=\(single)")
     }
 
+    // 実LM回帰: Sudachi 生エスケープのデコード(かぶしきがいしゃ→\u0028株\u0029 が
+    // (株) と表示される)と、會社(旧字体)の抑制(かぶしきかいしゃ→株式會社 合成の是正)。
+    func testRegressionRealLMSudachiEscapesDecoded() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かいしゃ": ["會社"]])
+
+        let kabu = converter.candidates(for: "かぶしきがいしゃ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(kabu.contains("(株)"), "single=\(kabu)")
+        XCTAssertFalse(kabu.contains(where: { $0.contains("\\u00") }), "single=\(kabu)")
+
+        let kaisha = converter.candidates(for: "かぶしきかいしゃ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(kaisha.contains(where: { $0.contains("會") }), "single=\(kaisha)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

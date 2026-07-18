@@ -220,7 +220,7 @@ final class KanaKanjiSQLiteIndex {
                     continue
                 }
 
-                let candidate = String(cString: candidateCString)
+                let candidate = Self.decodedSudachiEscapes(String(cString: candidateCString))
                 guard !candidate.isEmpty else {
                     continue
                 }
@@ -327,7 +327,7 @@ final class KanaKanjiSQLiteIndex {
                 continue
             }
 
-            let candidate = String(cString: candidateCString)
+            let candidate = Self.decodedSudachiEscapes(String(cString: candidateCString))
 
             if !candidate.isEmpty {
                 results.append(candidate)
@@ -335,6 +335,33 @@ final class KanaKanjiSQLiteIndex {
         }
 
         return results
+    }
+
+    // Sudachi 由来の生エスケープ(\u0028( /\u0029) /\u002C, /\u002F/)のデコード。
+    // 辞書ビルドが未デコードのまま収録した29件(\u0028株\u0029 等)への実行時対処。
+    // 根本対処はビルド側(build_kana_kanji_sqlite.py)でのデコード+辞書再ビルド。
+    static func decodedSudachiEscapes(_ text: String) -> String {
+        guard text.contains("\\u") else {
+            return text
+        }
+        var result = ""
+        result.reserveCapacity(text.count)
+        var index = text.startIndex
+        while index < text.endIndex {
+            if text[index] == "\\",
+                let hexStart = text.index(index, offsetBy: 2, limitedBy: text.endIndex),
+                let hexEnd = text.index(index, offsetBy: 6, limitedBy: text.endIndex),
+                text[text.index(after: index)] == "u",
+                let value = UInt32(text[hexStart..<hexEnd], radix: 16),
+                let scalar = Unicode.Scalar(value) {
+                result.append(Character(scalar))
+                index = hexEnd
+                continue
+            }
+            result.append(text[index])
+            index = text.index(after: index)
+        }
+        return result
     }
 
     private func resetStatement(_ statement: OpaquePointer) {
