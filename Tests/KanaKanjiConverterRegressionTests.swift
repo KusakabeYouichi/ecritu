@@ -3308,6 +3308,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "雨の日もある", "multi=\(multi)")
     }
 
+    // 実LM回帰: かな正書の代名詞(こいつ/そいつ/あいつ)の連文節変種抑止。単文節の候補列
+    // には 此奴/コイツ を残しつつ、連文節では旧表記・カタカナの差し替え変種を出さない。
+    func testRegressionRealLMKoitsuVariantsStayKanaInMultiClause() throws {
+        try prepareRealLMDictionary()
+
+        for input in ["こいつはすごい", "あいつがきた"] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertFalse(
+                multi.contains(where: { $0.contains("奴") || $0.contains("コイツ") || $0.contains("アイツ") }),
+                "multi=\(multi)"
+            )
+        }
+
+        // 単文節の候補列は無傷(単独入力では選択可能)
+        let single = converter.candidates(for: "こいつ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(single.contains("此奴"), "single=\(single)")
+        XCTAssertTrue(single.contains("コイツ"), "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

@@ -141,6 +141,10 @@ extension KanaKanjiConverter {
     static let multiClausePredicateTailCharacters: Set<Character> = [
         "う", "く", "ぐ", "す", "つ", "ぬ", "ぶ", "む", "る", "い", "た", "だ"
     ]
+    // かな正書の代名詞(こいつ/そいつ/あいつ)。此奴/其奴/彼奴(旧表記)や コイツ 等の
+    // カタカナは単文節の候補列には残す(単独入力では選択可)が、連文節の変種としては
+    // 出さない(文中に旧表記が混じるのを防ぐ)。どいつ は ドイツ と正当に競合するため対象外。
+    static let multiClauseKanaOrthodoxPronounReadings: Set<String> = ["こいつ", "そいつ", "あいつ"]
     // 連体詞(こんな/そんな/あんな/どんな)直後の かんじ は 感じ が自然(こんな感じ)。
     // bigram 未観測で unigram の Wikipediaバイアス(漢字4805<感じ5118)により 漢字 が
     // 313差で先頭化するため、漢字 表層にのみ小さく減点して 感じ を最良にする
@@ -996,6 +1000,13 @@ extension KanaKanjiConverter {
                 // 終助詞クラスタ区間の非かな表層(なー→ナー/名/菜 等)は変種として出さない
                 // (終助詞はかなが正書。カタカナ・漢字化は不自然)。
                 if Self.multiClauseFinalParticleReadings.contains(alt.reading),
+                    alt.surface != alt.reading {
+                    continue
+                }
+                // かな正書の代名詞区間で best がかなを選んでいる場合、旧表記・カタカナへの
+                // 差し替え変種は出さない(定数コメント参照)。
+                if Self.multiClauseKanaOrthodoxPronounReadings.contains(alt.reading),
+                    chosen.surface == chosen.reading,
                     alt.surface != alt.reading {
                     continue
                 }
