@@ -198,6 +198,9 @@
 	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>
 	<dict><key>phrase</key><string>ナカノ</string><key>shortcut</key><string>なかの</string></dict>
+	<!-- イく/イク: いく のカタカナ交ぜ書き・カタカナ表記(デキる/イタめる/ヤる 族)。godan-ku の活用クラス付きで収穫されており、イかなくて/イきます 等のジャンク派生を正規活用として作る -->
+	<dict><key>phrase</key><string>イく</string><key>shortcut</key><string>いく</string></dict>
+	<dict><key>phrase</key><string>イク</string><key>shortcut</key><string>いく</string></dict>
 	<!-- 會社: 会社 の旧字体(かぶしきかいしゃ→株式會社 等の合成に混入)。現代表記は 会社 -->
 	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>
 	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->

@@ -3230,9 +3230,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "うまく", candidate: "うまく")
 
+        // イく/イク(カタカナ交ぜ書き族、suppr済)の派生 イかなくて が出ないことも固定
+        try injectSuppression(["いく": ["イく", "イク"]])
         let single = converter.candidates(for: "いかなくて", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "行かなくて", "single=\(single)")
         XCTAssertFalse(single.contains("イカなくて"), "single=\(single)")
+        XCTAssertFalse(single.contains("イかなくて"), "single=\(single)")
 
         // 文脈があるときは かな いかなくて が勝つ(うまくいく はかなが正書)
         let umaku = converter.multiClauseCandidates(for: "うまくいかなくて", systemCandidateMode: .surface)
