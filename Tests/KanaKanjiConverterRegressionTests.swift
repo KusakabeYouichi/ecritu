@@ -3164,6 +3164,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(shinpai.first, "心配しなくても", "single=\(shinpai)")
     }
 
+    // 実LM回帰: あかくなりにくいはず→赤くなりにくいはず。はず(かな正書の形式名詞)が
+    // 床上げ免除リスト外で wc6777 に床上げされ、bigram は→頭(4675、あたま文脈の読み跨ぎ
+    // 借用が床を素通り)の は+頭(ず) に負けていた。はず を免除+頭(ず) を bigram 借用遮断へ。
+    func testRegressionRealLMHazuPrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "あかくなりにくいはず", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "赤くなりにくいはず", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("頭") }), "multi=\(multi)")
+
+        // はず 単独もかな先頭を確認
+        let single = converter.candidates(for: "はず", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "はず", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
