@@ -3150,8 +3150,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try injectSuppression(["しんぱい": ["親拝", "進拝"]])
 
         let ikanakute = converter.candidates(for: "いかなくて", limit: 8, systemCandidateMode: .surface)
-        XCTAssertTrue(ikanakute.prefix(3).contains("行かなくて"), "single=\(ikanakute)")
-        XCTAssertEqual(ikanakute.first, "いかなくて", "single=\(ikanakute)")
+        // 2089: 単独の いかなくて は本動詞用途が主のため 行かなくて を先頭(seed)、かな は2番目
+        XCTAssertEqual(Array(ikanakute.prefix(2)), ["行かなくて", "いかなくて"], "single=\(ikanakute)")
 
         let multi = converter.multiClauseCandidates(for: "いかなくていいのかな", systemCandidateMode: .surface)
         XCTAssertTrue(multi.contains("行かなくていいのかな"), "multi=\(multi)")
@@ -3219,6 +3219,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let single = converter.candidates(for: "さっき", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "さっき", "single=\(single)")
+    }
+
+    // 実LM回帰: いかなくて の並び(行かなくて 先頭)。基底 いく のかなLM優遇(〜ていく 由来)で
+    // かな が先頭化し、名詞+なくて 合成(イカなくて、bfs帯1040>派生980)が2位に居た。
+    // seed いかなくて=[行かなくて]+読み2文字以下の名詞語幹への なくて 合成を動詞要求で遮断。
+    // ない形容詞(勿体ない/申し訳ない=辞書に基底が無く名詞+なくて合成が唯一の供給)は
+    // 語幹3文字以上なので影響しないことも固定する。
+    func testRegressionRealLMIkanakuteOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "うまく", candidate: "うまく")
+
+        let single = converter.candidates(for: "いかなくて", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "行かなくて", "single=\(single)")
+        XCTAssertFalse(single.contains("イカなくて"), "single=\(single)")
+
+        // 文脈があるときは かな いかなくて が勝つ(うまくいく はかなが正書)
+        let umaku = converter.multiClauseCandidates(for: "うまくいかなくて", systemCandidateMode: .surface)
+        XCTAssertEqual(umaku.first, "うまくいかなくて", "multi=\(umaku)")
+
+        // ない形容詞の合成供給は温存
+        let mottainai = converter.candidates(for: "もったいなくて", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(mottainai.first, "もったいなくて", "single=\(mottainai)")
+        let moushiwake = converter.candidates(for: "もうしわけなくて", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(moushiwake.first, "申し訳なくて", "single=\(moushiwake)")
     }
 
     private func prepareRealLMDictionary() throws {
