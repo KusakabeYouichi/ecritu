@@ -3327,6 +3327,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.contains("コイツ"), "single=\(single)")
     }
 
+    // 実LM回帰: いかの の並び。dict いか は イカ0/凧1/いか2/… の順で、頻出の 以下 が沈み、
+    // 方言読みの 凧(いかのぼり)とかな いか が上位に居た。seed いか の列挙(6件)で
+    // 以下 を先頭、凧/かな を後方へ(凧 は正規の方言読みなので抑制しない)。
+    func testRegressionRealLMIkanoOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "いかの", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "以下の", "single=\(single)")
+        if let takoIndex = single.firstIndex(of: "凧の") {
+            XCTAssertGreaterThanOrEqual(takoIndex, 6, "single=\(single)")
+        }
+        if let kanaIndex = single.firstIndex(of: "いかの") {
+            XCTAssertGreaterThanOrEqual(kanaIndex, 6, "single=\(single)")
+        }
+
+        // いかが(如何)は自前の辞書エントリが先行し無傷
+        let ikaga = converter.candidates(for: "いかが", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(ikaga.first, "いかが", "single=\(ikaga)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
