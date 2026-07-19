@@ -3520,6 +3520,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 連濁収穫フィルタ: 墓(ばか)/蓋・二(ぶた)/口(ぐち)等、Sudachi が複合語内の連濁読みで
+    // 収穫した単漢字は単独・合成に出さない(連濁は複合語境界の現象)。判定は「清音化した
+    // 読みに同じ表層がより安く実在」— 濁側が主の音読ペア(分=ぶん、台=だい)は誤爆しない。
+    func testRegressionRealLMRendakuHarvestFiltered() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "ばかすぎる", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains(where: { $0.contains("墓") }), "multi=\(multi)")
+        XCTAssertEqual(multi.first, "バカすぎる", "multi=\(multi)")
+        let buta = converter.candidates(for: "ぶた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(buta.contains("蓋"), "buta=\(buta)")
+        XCTAssertFalse(buta.contains("二"), "buta=\(buta)")
+        XCTAssertTrue(buta.contains("豚"), "buta=\(buta)")
+        // 濁音始まりでも正当な読み(音読で濁側が主/清音側に同表層なし)は温存
+        let zou = converter.candidates(for: "ぞう", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(zou.contains("象"), "zou=\(zou)")
+        XCTAssertTrue(zou.contains("蔵"), "zou=\(zou)")
+        let bun = converter.candidates(for: "ぶん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(bun.contains("分"), "bun=\(bun)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

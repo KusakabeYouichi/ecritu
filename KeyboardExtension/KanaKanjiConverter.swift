@@ -445,12 +445,13 @@ final class KanaKanjiConverter {
             scores.removeValue(forKey: candidate)
         }
 
-        // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)はどの生成経路(学習含む)から入っても
-        // 最終段で除去する。ただしユーザ明示登録(追加語彙/手動)は尊重して残す
-        // (あ・うん/ぱ・る・る 等、実在固有名の復活経路)。
+        // 装飾表記(ちゃ〜んと/ち・ゃ・んと 等)と連濁収穫(墓(ばか)等)はどの生成経路
+        // (学習含む)から入っても最終段で除去する。ただしユーザ明示登録(追加語彙/手動)は
+        // 尊重して残す(あ・うん/ぱ・る・る 等、実在固有名の復活経路)。
         for candidate in Array(scores.keys)
         where !context.userCandidateSet.contains(candidate)
-            && Self.isDecorativeVariantSurface(candidate, reading: context.reading) {
+            && (Self.isDecorativeVariantSurface(candidate, reading: context.reading)
+                || isRendakuHarvestSurface(candidate, reading: context.reading)) {
             scores.removeValue(forKey: candidate)
         }
     }
@@ -629,13 +630,16 @@ final class KanaKanjiConverter {
             candidates: mergedCandidates
         )
 
-        // 装飾表記(〜水増し・中黒散らし)はここで一括除去する。candidates() の直接列挙の
-        // ほか、postfix 語幹・活用基底(candidatesForReading)も本関数を通るため、
-        // ち・ゃ・ん+と→ち・ゃ・んと のような合成前に断てる。
+        // 装飾表記(〜水増し・中黒散らし)と連濁収穫(墓(ばか)等)はここで一括除去する。
+        // candidates() の直接列挙のほか、postfix 語幹・活用基底(candidatesForReading)も
+        // 本関数を通るため、ち・ゃ・ん+と→ち・ゃ・んと/墓+すぎる のような合成前に断てる。
         return filterHistoricalKanaSurfaceCandidates(
             for: reading,
             candidates: archaicAdjectiveFiltered
-        ).filter { !Self.isDecorativeVariantSurface($0, reading: reading) }
+        ).filter {
+            !Self.isDecorativeVariantSurface($0, reading: reading)
+                && !isRendakuHarvestSurface($0, reading: reading)
+        }
     }
 
     func candidatesForReading(

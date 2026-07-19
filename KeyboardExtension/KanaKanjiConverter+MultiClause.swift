@@ -331,6 +331,10 @@ extension KanaKanjiConverter {
                     if !exemptDecorative, Self.isDecorativeVariantSurface(surface, reading: segmentReading) {
                         return
                     }
+                    // 連濁収穫(墓(ばか)等)もラティスに載せない(ばかすぎる→墓すぎる 対策)
+                    if !exemptDecorative, isRendakuHarvestSurface(surface, reading: segmentReading) {
+                        return
+                    }
                     if seenSurfaces.insert(surface).inserted {
                         surfaces.append((surface, isDictWord, isCurated, isInflectionDerived, wordCost, isDictionaryFormPredicate))
                     } else if isInflectionDerived,
