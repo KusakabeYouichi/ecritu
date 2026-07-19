@@ -78,7 +78,9 @@ extension KanaKanjiConverter {
     // 終助詞クラスタと同じ「文末かなは正規の変換」扱いにする。
     // なあ/ねえ/よお/わあ は長音符でなく母音字で伸ばした終助詞(してるなあ)。ー形と同じ扱い
     // にしないと全かな best が捨てられ、名前収穫の変種(菜亜 wc10000)が繰り上がる。
-    static let multiClauseFinalParticleReadings: Set<String> = ["かな", "かも", "よね", "かしら", "よな", "かー", "ねー", "なー", "よー", "わー", "し", "な", "ね", "よ", "けど", "けどー", "なあ", "ねえ", "よお", "わあ"]
+    // だけ は副助詞(かなが正書)。非かな変種(抱け/竹/丈/岳)は文中でも不要で、
+    // これだけ 等の全かな best のエコー例外にも効かせる。
+    static let multiClauseFinalParticleReadings: Set<String> = ["かな", "かも", "よね", "かしら", "よな", "かー", "ねー", "なー", "よー", "わー", "し", "な", "ね", "よ", "けど", "けどー", "なあ", "ねえ", "よお", "わあ", "だけ"]
 
     // 敬称の読み。数字の直後以外(=名詞/人名の後)では さん→山/三/桟 等の漢字化は
     // 接尾語にならない(名前+さん=かな敬称 が正書)ので、漢字表層に減点する。
@@ -151,11 +153,14 @@ extension KanaKanjiConverter {
     // (こんな漢字 は変種#2 に残り、幹事/寛治 等も温存される)。
     static let multiClauseDemonstrativeSurfaces: Set<String> = ["こんな", "そんな", "あんな", "どんな"]
     static let multiClauseDemonstrativeKanjiPenalty = 500
-    // 形式名詞: 連体形(活用派生ノード)の直後ではかな表記が正書(行ったとき/するとき)。
-    // 実質名詞(時は金なり/時を刻む)は前が BOS や名詞で活用派生でないため発火せず区別できる。
-    // LM は た→とき(2819<た→時2920)で僅かにかなを好むが、下流 時→の(903<とき→の1107)で
-    // 僅差逆転するため、連体形直後のみ漢字表記へペナルティを課してかなを優先する。
-    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため"]
+    // 形式名詞・副助詞: 連体形(活用派生ノード)や辞書形述語の直後ではかな表記が正書
+    // (行ったとき/するとき/貸し出すだけ)。実質名詞(時は金なり/時を刻む)は前が BOS や
+    // 名詞のため発火せず区別できる。LM は た→とき(2819<た→時2920)で僅かにかなを好むが、
+    // 下流 時→の(903<とき→の1107)で僅差逆転するため、述語直後のみ漢字表記へペナルティを
+    // 課してかなを優先する。だけ は 抱け(命令形は述語に接続しない)/竹(連濁だけ は複合語
+    // 内でのみ生じ、連体修飾の後では連濁しない)の排除(かしだすだけ対策。EOS 未観測語の
+    // フォールバックが観測済み だけ→EOS より安い逆転で僅差負けしていた)。
+    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため", "だけ"]
     static let multiClauseFormalNounKanjiPenalty = 1000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
@@ -206,8 +211,8 @@ extension KanaKanjiConverter {
         "ね", "よ", "な", "か", "わ", "さ", "ぞ", "ぜ", "し",
         // 助動詞・接続の頻出かな(A単位分割で正当に頻出するもの)
         "た", "て", "だ", "ん", "う", "ない", "ます", "です", "たい", "てる",
-        // 形式名詞(かなが正書。wc はず=6777 の床上げで は+頭(ず) 等の断片に負けていた)
-        "はず",
+        // 形式名詞・副助詞(かなが正書。wc はず=6777/だけ=5947 の床上げで断片に負けていた)
+        "はず", "だけ",
         // 複数接尾辞(彼ら/子供ら 等。A単位分割で 彼+ら と割れる正当な頻出かな)
         "ら"
     ]
@@ -758,8 +763,9 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate
                     )
-                    // 連体形直後の形式名詞はかな表記が正書(行ったとき等)。漢字表記に減点。
-                    if prevNode.isInflectionDerived,
+                    // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
+                    // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
+                    if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
                         Self.multiClauseFormalNounKanaReadings.contains(node.reading),
                         node.surface != node.reading {
                         cost += Self.multiClauseFormalNounKanjiPenalty
