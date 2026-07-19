@@ -3388,6 +3388,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.first?.hasPrefix("久しぶりに") == true, "multi=\(multi)")
     }
 
+    // 実LM回帰: してるな→してるな。して が LM 未収録で弱く、してるな だけが して+ルナ
+    // (uni6239+EOS未観測フォールバック逆転)に区切りを取られていた(やってるな/みてるな は
+    // 従来から正常)。してる をかな正書 curated(misc.plist)で供給。
+    func testRegressionRealLMShiterunaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "してる", candidate: "してる")
+
+        let multi = converter.multiClauseCandidates(for: "してるな", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "してるな", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("ルナ") || $0.contains("月") || $0.contains("流南") }), "multi=\(multi)")
+
+        // 同族の既存正常形が壊れないこと
+        let yatteru = converter.multiClauseCandidates(for: "やってるな", systemCandidateMode: .surface)
+        XCTAssertEqual(yatteru.first, "やってるな", "multi=\(yatteru)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
