@@ -174,6 +174,14 @@ extension KanaKanjiConverter {
     static let multiClauseEOSMarker = "<EOS>"
     // LM コスト定数(cost = -logP × scale, scale=500 で学習)。sim_lm.py で検証した値と一致させる。
     static let multiClauseBackoffCost = 500         // bigram 未観測・unigram 既知
+    // 会話的時相名詞の unigram キャップ。Wikipedia コーパスは 昨日(uni 6869)を
+    // 機能(4237)より大幅に過小評価し、昨日→は1126/の846 の実 bigram 優位(機能→は1371/
+    // の1296 との差245〜450)すら uni 差2632が飲み込む(きのうは→機能は 等)。会話で
+    // 頻出の時相名詞は 機能+backoff(4737)よりわずかに安い水準へ底上げする。観測 bigram
+    // (機能→が1112。昨日→が は未観測)より弱いので きのうが→機能が は保たれ、
+    // 検索機能 等の複合も bigram 分岐が勝つ。unigram 分岐限定のキャップ。
+    static let multiClauseConversationalTemporalNounSurfaces: Set<String> = ["昨日"]
+    static let multiClauseTemporalNounUnigramCap = 4300
     // 辞書/変換にはあるがコーパス(LM)未収録の語。unigram 最大(8139)+バックオフ(500)より
     // 上に置き「どの既知語よりレア」として扱う。以前の 6000 は LM 中央値(7649)より安く、
     // 八津(OOV)が 奴(unigram 5963)に勝つ・ちゃ〜んと が ちゃんと に勝つ等の OOV 逆転を
@@ -681,6 +689,11 @@ extension KanaKanjiConverter {
                             && !isCurated
                             && !Self.multiClauseKanaIdentityFloorExemptReadings.contains(reading)) {
                     base = max(base, wordCost)
+                }
+                // 会話的時相名詞の unigram キャップ(定数コメント参照)。観測 bigram
+                // (機能→が 1112 等)には及ばない水準なので、きのうが→機能が は保たれる。
+                if Self.multiClauseConversationalTemporalNounSurfaces.contains(surface) {
+                    base = min(base, Self.multiClauseTemporalNounUnigramCap)
                 }
             } else if isInflectionDerived {
                 // 格助詞・複合助詞(には/では 等)の直後は述語が続くのが自然なので割引する。
