@@ -3560,6 +3560,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(koko.first, "ここ", "koko=\(koko)")
     }
 
+    // ただの(連体の 唯の)はかなが正書だが、dict はレア姓収穫のみ(只野/タダノ/但野/
+    // 哆唾乃 等)でかな ただの が無く、姓群が先頭を占めていた。かな正書維持型 seed で是正。
+    func testRegressionRealLMTadanoPrefersKana() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ただの", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ただの", "只野"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ただのかぜ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first?.hasPrefix("ただの"), true, "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
