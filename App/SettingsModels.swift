@@ -71,6 +71,9 @@ enum SettingsKeys {
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
     static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
+    // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ。
+    // 拡張側の320行ローテーションとinstall変更リセットの対象外
+    static let keyboardDiagnosticsCriticalLogLines = "keyboardDiagnosticsCriticalLogLines"
     static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
     static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
     static let keyboardDiagnosticsSessionOwnerToken = "keyboardDiagnosticsSessionOwnerToken"

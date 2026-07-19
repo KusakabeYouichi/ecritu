@@ -74,6 +74,7 @@ extension ContentView {
         let savedMarker = defaults.string(forKey: SettingsKeys.keyboardDiagnosticsInstallMarker)
 
         if savedMarker != currentMarker {
+            // criticalLogLines は消さない(installをまたいで重大イベントの証拠を残す)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFlightRecorderEvents)
             defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
@@ -91,6 +92,7 @@ extension ContentView {
     func loadKeyboardDiagnosticsState() {
         guard let defaults = Self.sharedDefaults else {
             keyboardDiagnosticsLogLines = []
+            keyboardDiagnosticsCriticalLogLines = []
             keyboardDiagnosticsInstallMarker = ""
             keyboardDiagnosticsSessionActive = false
             keyboardDiagnosticsLastHeartbeatDate = nil
@@ -102,6 +104,10 @@ extension ContentView {
 
         keyboardDiagnosticsLogLines = decodeStringArray(
             forKey: SettingsKeys.keyboardDiagnosticsLogLines,
+            defaults: defaults
+        )
+        keyboardDiagnosticsCriticalLogLines = decodeStringArray(
+            forKey: SettingsKeys.keyboardDiagnosticsCriticalLogLines,
             defaults: defaults
         )
         keyboardDiagnosticsInstallMarker = defaults.string(
@@ -137,6 +143,7 @@ extension ContentView {
         }
 
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLogLines)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsCriticalLogLines)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFlightRecorderEvents)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionActive)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsSessionOwnerToken)
@@ -202,6 +209,12 @@ extension ContentView {
         sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
         sections.append("lastSessionID: \(keyboardDiagnosticsLastSessionID)")
         sections.append("lastEvent: \(keyboardDiagnosticsLastEvent)")
+        sections.append("--- critical events (ローテ保護) ---")
+        if keyboardDiagnosticsCriticalLogLines.isEmpty {
+            sections.append("(記録なし)")
+        } else {
+            sections.append(contentsOf: keyboardDiagnosticsCriticalLogLines)
+        }
         sections.append("--- logs ---")
         sections.append(contentsOf: keyboardDiagnosticsLogLines)
         sections.append("--- flight file (crash-safe) ---")
