@@ -210,18 +210,45 @@ extension KanaKanjiConverter {
                     Self.seedSingleKanjiPriorityBaseBoost - (index * Self.seedSingleKanjiPriorityStep)
                 )
                 scores[candidate, default: 0] += boost
-            } else if index > 0, Self.containsKanjiCandidate(candidate) {
+            } else if index > 0, Self.containsKanjiCandidate(candidate) || candidate == reading {
                 // 複数字の熟語 seed(高校/孝行, 描く 等)を seed 順で辞書ベースの上へ。
                 // 先頭は上の leading ブーストで既に持ち上がるため index>0 のみ対象。
                 // SudachiDict の rank で「々」形容動詞群が頻出熟語を埋める歪みを是正する。
-                // 非漢字(カタカナ/かな)への拡張は 山田>やまだ 等の序列を崩すため不採用
-                // (2098で検証済み)。
+                // 非漢字(カタカナ/かな語)への一般拡張は 山田>やまだ 等の序列を崩すため
+                // 不採用(2098で検証済み)だが、かな識別(候補==読み)だけは対象にする —
+                // ひらがな=[平仮名, ひらがな] のように「かなを2番手に固定」する seed が
+                // ブースト対象外だと合成の二重加点(平がな=辞書+postfix)に必ず負ける。
                 let boost = max(
                     200,
                     Self.seedLeadingKanjiCandidateBoost - (index * Self.seedOrderedKanjiCompoundStep)
                 )
                 scores[candidate, default: 0] += boost
             }
+        }
+    }
+
+    // seed 掲載語同士の相対順を seed 順に固定する(スコア値の集合はそのままに再割当)。
+    // ブースト絶対量の調整では、かな識別が別経路の加点(識別ボーナス等)を拾って seed
+    // 先頭(平仮名)を追い越したり、合成の二重加点(平がな=辞書+postfix)に届かなかったり、
+    // 読みごとに過不足が変わって安定しない。順序だけを保証すれば非 seed 候補との相対
+    // 位置は保たれる。学習済み候補は除外(学習 > seed の序列を維持)。
+    func applySeedOrderNormalization(
+        for reading: String,
+        learningScoresForReading: [String: Int],
+        to scores: inout [String: Int]
+    ) {
+        guard let seedCandidates = KanaKanjiSeedDictionary.seed[reading] else {
+            return
+        }
+        let present = uniqueCandidates(from: seedCandidates).filter {
+            scores[$0] != nil && learningScoresForReading[$0] == nil
+        }
+        guard present.count >= 2 else {
+            return
+        }
+        let values = present.compactMap { scores[$0] }.sorted(by: >)
+        for (index, candidate) in present.enumerated() {
+            scores[candidate] = values[index]
         }
     }
 
