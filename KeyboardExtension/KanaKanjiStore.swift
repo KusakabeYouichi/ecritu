@@ -66,7 +66,10 @@ final class KanaKanjiStore {
     // 上限超過時は全消去(まれな一括再クエリで済ませ、LRU 管理のオーバーヘッドを避ける)。
     private var cachedWordLMUnigram: [String: Int] = [:]
     private var cachedWordLMBigram: [String: Int] = [:]
-    private static let wordLMCacheLimit = 32768
+    // 8192 で通常の入力セッションには十分(1変換あたりの点クエリは数百〜千件強で、
+    // negative キャッシュのヒット率は上限縮小の影響をほぼ受けない)。32768 時代は
+    // 最悪ケースで両テーブル合計 ~8MB 級に育ち得た(メモリ監査 2026-07 の残項目)。
+    private static let wordLMCacheLimit = 8192
     private static let wordLMCacheLimitConstrained = 2048
     private static let wordLMMissingSentinel = -1
     // 読み別 word_costs キャッシュ(連文節のノード列挙が span ごとに引く)
