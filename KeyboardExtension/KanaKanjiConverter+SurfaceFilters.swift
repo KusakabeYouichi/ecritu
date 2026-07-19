@@ -264,10 +264,18 @@ extension KanaKanjiConverter {
             && stripped == Self.hiraganaToKatakana(reading)
     }
 
-    // 装飾表記(〜水増し・中黒散らし)の総合判定。候補列挙の各段で共通に使う。
+    // SudachiDict の三点リーダ水増し表記(な…ん/シャ…ァァン の2件)を弾く。台詞の
+    // 溜め表記の収穫で、合成の種になると な…ん+の→な…んの 等のジャンクを作る。
+    // 読み自体に…を含む場合(ユーザが…を打った)は除外しない。
+    static func hasEllipsisElongation(_ surface: String, reading: String) -> Bool {
+        surface.contains("…") && !reading.contains("…")
+    }
+
+    // 装飾表記(〜水増し・中黒散らし・…溜め)の総合判定。候補列挙の各段で共通に使う。
     static func isDecorativeVariantSurface(_ surface: String, reading: String) -> Bool {
         hasWaveDashElongation(surface, reading: reading)
             || hasNakaguroDecorationSpelling(surface, reading: reading)
+            || hasEllipsisElongation(surface, reading: reading)
     }
 
     static func isSingleKanjiCandidate(_ candidate: String) -> Bool {

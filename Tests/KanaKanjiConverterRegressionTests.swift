@@ -3478,6 +3478,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "本を読んだ", "multi=\(multi)")
     }
 
+    // なんの の dict は固有名収穫のみ(ナンノ=南野陽子等の愛称/南埜=レア姓)で、頻出の
+    // 何の が沈んでいた。さらに読み なん の dict rank5 に三点リーダ装飾の な…ん が居て
+    // な…んの 等のジャンク合成を作っていた(装飾フィルタに…ルールを追加して一般に遮断)。
+    func testRegressionRealLMNannoPrefersNanNo() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["なんの": ["ナンノ"]])
+        let single = converter.candidates(for: "なんの", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["何の", "南の", "難の"], "single=\(single)")
+        XCTAssertFalse(single.contains(where: { $0.contains("…") }), "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "なんのはなし", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "何の話", "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
