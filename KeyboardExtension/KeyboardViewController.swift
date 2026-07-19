@@ -511,6 +511,13 @@ final class KeyboardViewController: UIInputViewController {
         super.viewWillAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
 
+        // メモリ警告カウントと sqlite 再オープン抑止は「表示セッション」単位でリセットする。
+        // 拡張プロセスはアプリ切替をまたいで長生きするため、プロセス生涯で累積させると
+        // どこかで警告2回に達した時点で辞書が永久停止し、「みまん→候補なし」の辞書なし
+        // キーボードに退化したまま戻らない(いじょう→異常 だけ残るのは学習語彙経路)。
+        diagnosticsState.memoryWarningCountThisSession = 0
+        kanaKanjiConverter.store.allowSQLiteReopenAfterMemoryPressure()
+
         guard !shouldSuppressHeavyOperations(reason: "viewWillAppear") else {
             return
         }
