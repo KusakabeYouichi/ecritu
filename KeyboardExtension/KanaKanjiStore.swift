@@ -656,9 +656,10 @@ final class KanaKanjiStore {
         }
     }
 
-    // メモリ圧迫の最終手段: sqlite を閉じ、再オープンをセッション中スティッキーに禁止する
+    // メモリ圧迫の最終手段: sqlite を閉じ、再オープンをスティッキーに禁止する
     // (連文節は単文節フォールバックへ劣化)。JSONフォールバックへ落ちないよう、JSON側の
     // キャッシュも合わせて破棄+サイズゲートで巨大JSONのデコードは常時拒否済み。
+    // 抑止の解除は次のキーボード表示(viewWillAppear→allowSQLiteReopenAfterMemoryPressure)。
     func unloadSQLiteIndexForMemoryPressure() {
         clearSystemDictionaryJSONCaches()
 
@@ -666,6 +667,15 @@ final class KanaKanjiStore {
             sqliteIndex = nil
             didAttemptSQLiteIndexLoad = false
             isSQLiteReopenSuppressed = true
+        }
+    }
+
+    // キーボードの新しい表示セッションで sqlite 再オープン抑止を解除する。抑止を
+    // プロセス生涯スティッキーにすると、警告2回で辞書が永久停止する(拡張プロセスは
+    // アプリ切替をまたいで長生きする)。同一表示中の close→reopen 空回り防止は維持される。
+    func allowSQLiteReopenAfterMemoryPressure() {
+        systemDictionaryQueue.sync {
+            isSQLiteReopenSuppressed = false
         }
     }
 
