@@ -981,9 +981,14 @@ extension KanaKanjiConverter {
         let lastIsKanaFinalParticle = (Self.multiClauseFinalParticleReadings.contains(lastNode.reading)
             && lastNode.surface == lastNode.reading)
             || lastIsKanaConditionalNara
+        // 経路の全ノードが辞書語(素通り無し)の全かな=LM が変換候補の中から かな表記を
+        // 選んだ結果(の+こと+です 等、かなが正書の機能語句)。素通りエコーではないので
+        // 抑制しない(のことです が の事です に負けて最良を失うのを防ぐ)。
+        let allNodesAreDictWords = !pathIndices.contains(where: { !nodes[$0].isDictWord })
         let suppressAllKanaBest = joined == normalized
             && !pathIndices.contains(where: { nodes[$0].isCurated })
             && !lastIsKanaFinalParticle
+            && !allNodesAreDictWords
 
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→

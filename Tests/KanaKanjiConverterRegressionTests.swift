@@ -3491,6 +3491,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "何の話", "multi=\(multi)")
     }
 
+    // こと(形式名詞)はかなが正書で LM も かな を選ぶ(uni こと2879 vs 事4381)が、
+    // 全かなエコー抑制が最良経路(の+こと+です)を捨てて の事です が繰り上がっていた。
+    // 経路の全ノードが辞書語(素通り無し)の全かなは LM の選択なので抑制しない。
+    func testRegressionRealLMNokotodesuPrefersKanaKoto() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "のことです", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["のことです", "の事です"], "multi=\(multi)")
+        let kare = converter.multiClauseCandidates(for: "かれのことです", systemCandidateMode: .surface)
+        XCTAssertEqual(kare.first, "彼のことです", "multi=\(kare)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
