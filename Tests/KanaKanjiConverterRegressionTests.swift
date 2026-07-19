@@ -3418,6 +3418,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(shiranna.first, "知らんな", "multi=\(shiranna)")
     }
 
+    // 実LM回帰: かってほしい に 勝ってほしい が出る。かって の派生で 酤う/支う/交う
+    // (古語・レア)が 勝って(かつ由来、う規則の後に列挙される)を語幹上限の外へ押し出して
+    // いた。3語を suppr して 勝って を上限内(4位)へ。
+    func testRegressionRealLMKattehoshiiIncludesKatte() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かう": ["酤う", "支う", "交う"]])
+
+        let multi = converter.multiClauseCandidates(for: "かってほしい", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "買ってほしい", "multi=\(multi)")
+        XCTAssertTrue(multi.contains("勝ってほしい"), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
