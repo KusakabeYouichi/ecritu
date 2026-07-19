@@ -3404,6 +3404,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(yatteru.first, "やってるな", "multi=\(yatteru)")
     }
 
+    // 実LM回帰: じつようかされんな→実用化されんな。受身+ん(口語否定縮約)ルールが未定義で
+    // されん ノード自体が無く、さ+廉梛(名前収穫 wc10000)の断片に全長を取られていた
+    // (実用化されん が動いて見えたのは さ+れん 断片の見かけ上の正解)。ルール追加+
+    // 収穫底値(wc>=10000)ノードの連文節降格(8700→9500、seed 掲載語は免除)で是正。
+    func testRegressionRealLMSarennaPrefersSaren() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "じつようかされんな", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "実用化されんな", "multi=\(multi)")
+
+        let shiranna = converter.multiClauseCandidates(for: "しらんな", systemCandidateMode: .surface)
+        XCTAssertEqual(shiranna.first, "知らんな", "multi=\(shiranna)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
