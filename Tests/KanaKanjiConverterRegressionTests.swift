@@ -3430,6 +3430,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains("勝ってほしい"), "multi=\(multi)")
     }
 
+    // 実LM回帰: ぎんこう から ギンコウ(銀行のカタカナ表記ゆれ収穫、wc同値3295)を抑制。
+    func testRegressionRealLMGinkouSuppressesKatakana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["ぎんこう": ["ギンコウ"]])
+
+        let single = converter.candidates(for: "ぎんこう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "銀行", "single=\(single)")
+        XCTAssertFalse(single.contains("ギンコウ"), "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
