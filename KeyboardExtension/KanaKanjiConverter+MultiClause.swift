@@ -356,6 +356,35 @@ extension KanaKanjiConverter {
                 let segmentEndsWithSokuon = segmentReading.hasSuffix("っ")
                 let costMap = store.wordCosts(for: segmentReading)
 
+                // (b2) の供給ゲートと同条件。a2 の派生形判定でも使うため先に評価する。
+                let inflectionSupplyGateSatisfied = len >= 2
+                    && len <= Self.multiClauseInflectionMaxSegmentReadingCount
+                    && segmentReading.last.map { Self.inflectionRuleSuffixLastCharacters.contains($0) } == true
+                // 活用エンジン供給の候補(b2 と a2 で共有。キャッシュは systemCandidateMode 込み)
+                func cachedInflectedCandidates() -> [String] {
+                    let inflectionCacheKey = "\(systemCandidateMode)|\(segmentReading)"
+                    if let cached = stateQueue.sync(execute: { multiClauseInflectionCache[inflectionCacheKey] }) {
+                        return cached
+                    }
+                    // かな識別の除外(b2 の where 相当)後に topK 件を確保できるよう、
+                    // 取得は topK の2倍にする(limit ちょうどだと かな が枠を潰し、
+                    // かって の 勝って(4番目)が入れない)。
+                    let inflected = inflectionCandidates(
+                        for: segmentReading,
+                        userDictionary: manualUserDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode,
+                        limit: Self.multiClauseInflectionTopK * 2
+                    )
+                    stateQueue.sync {
+                        if multiClauseInflectionCache.count >= multiClauseInflectionCacheLimit {
+                            multiClauseInflectionCache.removeAll(keepingCapacity: true)
+                        }
+                        multiClauseInflectionCache[inflectionCacheKey] = inflected
+                    }
+                    return inflected
+                }
+
                 // (a2) seed(人手の並び矯正/供給)もラティスに載せる。辞書に無い正書
                 //      (中の/柚花 等)を連文節でも組めるようにし、コスト同値帯
                 //      (名前群は一律 dictUnknown/wc10000 等)のタイブレークを seed 順で
@@ -375,10 +404,21 @@ extension KanaKanjiConverter {
                             candidate: surface
                         )
                     }
+                    // 辞書に無い活用派生形の seed(読んだ/呼んだ 等の並び矯正)は b2 と同じ
+                    // 活用派生フラグを付ける。付けないと dictUnknown(8700)の seed ノードが
+                    // 先着 dedupe で b2 の安い活用OOVコピーを潰し、seed 外の同活用
+                    // (喚んだ)だけが安く残って逆転する(ほんをよんだ→本を喚んだ)。
+                    var seedIsInflectionDerived = false
+                    if costMap[surface] == nil,
+                        inflectionSupplyGateSatisfied,
+                        cachedInflectedCandidates().contains(surface) {
+                        seedIsInflectionDerived = true
+                    }
                     add(
                         surface,
                         isDictWord: true,
                         isCurated: false,
+                        isInflectionDerived: seedIsInflectionDerived,
                         wordCost: costMap[surface],
                         isDictionaryFormPredicate: seedIsDictionaryFormPredicate
                     )
@@ -429,32 +469,8 @@ extension KanaKanjiConverter {
                 //      付くが、断片合成(核+た)や素通りよりは安く、「いきだけかったぜ→
                 //      行きだけ買ったぜ」型の分割を可能にする。コスト抑制のため span 長 2〜8、
                 //      活用ルール末尾文字に一致する読みのみ、上位3件に限定。
-                if len >= 2,
-                    len <= Self.multiClauseInflectionMaxSegmentReadingCount,
-                    let lastChar = segmentReading.last,
-                    Self.inflectionRuleSuffixLastCharacters.contains(lastChar) {
-                    let inflectionCacheKey = "\(systemCandidateMode)|\(segmentReading)"
-                    let inflected: [String]
-                    if let cached = stateQueue.sync(execute: { multiClauseInflectionCache[inflectionCacheKey] }) {
-                        inflected = cached
-                    } else {
-                        // かな識別の除外(下の where 相当)後に topK 件を確保できるよう、
-                        // 取得は topK の2倍にする(limit ちょうどだと かな が枠を潰し、
-                        // かって の 勝って(4番目)が入れない)。
-                        inflected = inflectionCandidates(
-                            for: segmentReading,
-                            userDictionary: manualUserDictionary,
-                            initialUserDictionary: initialUserDictionary,
-                            systemCandidateMode: systemCandidateMode,
-                            limit: Self.multiClauseInflectionTopK * 2
-                        )
-                        stateQueue.sync {
-                            if multiClauseInflectionCache.count >= multiClauseInflectionCacheLimit {
-                                multiClauseInflectionCache.removeAll(keepingCapacity: true)
-                            }
-                            multiClauseInflectionCache[inflectionCacheKey] = inflected
-                        }
-                    }
+                if inflectionSupplyGateSatisfied {
+                    let inflected = cachedInflectedCandidates()
                     // かな識別(surface==読み)は原則除外(かなエコー防止)。ただし活用エンジンが
                     // かなを第1候補に据えた場合=基底並べ替えが isLMKanaPreferred でかな基底を
                     // 先頭化した場合(なる 3405≪成る/ある/いる/できる 等、かなが LM 優位な動詞)は、

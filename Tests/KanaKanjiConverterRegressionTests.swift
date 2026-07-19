@@ -3463,6 +3463,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("セ") }), "multi=\(multi)")
     }
 
+    // よん系の活用派生は基底の辞書順が 呼ぶ族→読む族 で固定され、代表の 読んだ/読んでない
+    // が6番手に沈んでいた(+連文節は a2 seed ノードの先着 dedupe が b2 の安い活用OOV
+    // コピーを潰し 本を喚んだ が先頭化)。seed の先頭2固定と a2 の派生フラグで是正。
+    func testRegressionRealLMYondaFamilyPrefersYomuThenYobu() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["よん": ["霊"]])
+        for input in ["よんだ", "よんでる", "よんでない"] {
+            let tail = input.dropFirst()
+            let single = converter.candidates(for: input, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(single.prefix(2)), ["読" + tail, "呼" + tail], "single=\(single)")
+        }
+        let multi = converter.multiClauseCandidates(for: "ほんをよんだ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "本を読んだ", "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
