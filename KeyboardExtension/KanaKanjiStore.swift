@@ -67,10 +67,21 @@ final class KanaKanjiStore {
     private var cachedWordLMUnigram: [String: Int] = [:]
     private var cachedWordLMBigram: [String: Int] = [:]
     private static let wordLMCacheLimit = 32768
+    private static let wordLMCacheLimitConstrained = 2048
     private static let wordLMMissingSentinel = -1
     // 読み別 word_costs キャッシュ(連文節のノード列挙が span ごとに引く)
     private var cachedWordCostsByReading: [String: [String: Int]] = [:]
     private static let wordCostsCacheLimit = 4096
+    private static let wordCostsCacheLimitConstrained = 1024
+    // メモリ警告が続くときの縮小モード(cacheLock 保護)。キャッシュ上限を下げて再成長を
+    // 抑える — sqlite クローズ(節約約2MB・変換品質全損)より割の良い中間手段。
+    private var isConstrainedMemoryCacheMode = false
+    private var activeWordLMCacheLimit: Int {
+        isConstrainedMemoryCacheMode ? Self.wordLMCacheLimitConstrained : Self.wordLMCacheLimit
+    }
+    private var activeWordCostsCacheLimit: Int {
+        isConstrainedMemoryCacheMode ? Self.wordCostsCacheLimitConstrained : Self.wordCostsCacheLimit
+    }
     private var cachedInitialUserDictionary: [String: [String]]?
     private var cachedInitialShortcutVocabulary: [String]?
     var cachedUserDictionary: [String: [String]]?
@@ -312,7 +323,7 @@ final class KanaKanjiStore {
         }
         let costMap = sqliteIndex.wordCostMap(for: normalizedReading)
         withCacheLock {
-            if cachedWordCostsByReading.count >= Self.wordCostsCacheLimit {
+            if cachedWordCostsByReading.count >= activeWordCostsCacheLimit {
                 cachedWordCostsByReading.removeAll(keepingCapacity: true)
             }
             cachedWordCostsByReading[normalizedReading] = costMap
@@ -348,7 +359,7 @@ final class KanaKanjiStore {
         }
         let fetched = sqliteIndex.wordLMUnigramCosts(for: uncached)
         withCacheLock {
-            if cachedWordLMUnigram.count + uncached.count > Self.wordLMCacheLimit {
+            if cachedWordLMUnigram.count + uncached.count > activeWordLMCacheLimit {
                 cachedWordLMUnigram.removeAll(keepingCapacity: true)
             }
             for surface in uncached {
@@ -387,7 +398,7 @@ final class KanaKanjiStore {
         }
         let fetched = sqliteIndex.wordLMBigramCosts(for: uncached)
         withCacheLock {
-            if cachedWordLMBigram.count + uncached.count > Self.wordLMCacheLimit {
+            if cachedWordLMBigram.count + uncached.count > activeWordLMCacheLimit {
                 cachedWordLMBigram.removeAll(keepingCapacity: true)
             }
             for (prev, cur) in uncached {
@@ -677,6 +688,22 @@ final class KanaKanjiStore {
         systemDictionaryQueue.sync {
             isSQLiteReopenSuppressed = false
         }
+    }
+
+    // メモリ警告が続くときの縮小モード: LM/word_costs キャッシュを破棄した上で上限を
+    // 下げ、再成長を抑える(sqlite クローズと違い変換品質は維持される)。
+    func enterConstrainedMemoryCacheMode() {
+        withCacheLock {
+            isConstrainedMemoryCacheMode = true
+            cachedWordLMUnigram.removeAll(keepingCapacity: false)
+            cachedWordLMBigram.removeAll(keepingCapacity: false)
+            cachedWordCostsByReading.removeAll(keepingCapacity: false)
+        }
+    }
+
+    // 新しい表示セッションで縮小モードを解除する(圧迫エピソードは表示単位で区切る)。
+    func exitConstrainedMemoryCacheMode() {
+        withCacheLock { isConstrainedMemoryCacheMode = false }
     }
 
     func clearSharedDataCaches() {
