@@ -278,6 +278,36 @@ extension KanaKanjiConverter {
             || hasEllipsisElongation(surface, reading: reading)
     }
 
+    // 連濁の清音化マップ(濁音/半濁音→清音)。連濁収穫フィルタ用。
+    static let rendakuDevoicedKanaCharacter: [Character: Character] = [
+        "が": "か", "ぎ": "き", "ぐ": "く", "げ": "け", "ご": "こ",
+        "ざ": "さ", "じ": "し", "ず": "す", "ぜ": "せ", "ぞ": "そ",
+        "だ": "た", "ぢ": "ち", "づ": "つ", "で": "て", "ど": "と",
+        "ば": "は", "び": "ひ", "ぶ": "ふ", "べ": "へ", "ぼ": "ほ",
+        "ぱ": "は", "ぴ": "ひ", "ぷ": "ふ", "ぺ": "へ", "ぽ": "ほ"
+    ]
+
+    // 連濁収穫フィルタ: 墓(ばか)/蓋(ぶた)/口(ぐち) 等、Sudachi が複合語内の連濁読み
+    // (新墓=にいばか、入り口=いりぐち 等)で収穫した単漢字表層を弾く。連濁は複合語
+    // 境界でしか起きない現象で、単独入力・合成の読みとしては使わない。
+    // 判定: 単漢字+濁音始まりの読み(2文字以上)で、清音化した読みに同じ表層が
+    // より安く実在する場合。音読で濁側が主の語(分=ぶん5285/ふん10220、台=だい のみ)
+    // は濁側が安い/清音側に無いので誤爆しない。読み別 word_costs は store がキャッシュ。
+    func isRendakuHarvestSurface(_ surface: String, reading: String) -> Bool {
+        guard reading.count >= 2,
+            Self.isSingleKanjiCandidate(surface),
+            let firstChar = reading.first,
+            let devoicedFirst = Self.rendakuDevoicedKanaCharacter[firstChar] else {
+            return false
+        }
+        let devoicedReading = String(devoicedFirst) + reading.dropFirst()
+        guard let devoicedCost = store.wordCosts(for: devoicedReading)[surface] else {
+            return false
+        }
+        let voicedCost = store.wordCosts(for: reading)[surface] ?? Int.max
+        return voicedCost > devoicedCost
+    }
+
     static func isSingleKanjiCandidate(_ candidate: String) -> Bool {
         guard candidate.count == 1,
             let scalar = candidate.unicodeScalars.first else {
