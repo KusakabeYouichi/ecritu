@@ -151,6 +151,8 @@
 	<dict><key>phrase</key><string>やって</string><key>shortcut</key><string>やって</string></dict>
 	<dict><key>phrase</key><string>やってる</string><key>shortcut</key><string>やってる</string></dict>
 	<dict><key>phrase</key><string>やってた</string><key>shortcut</key><string>やってた</string></dict>
+	<!-- 背中側: sacoche の なか川(店名)が curated 1500 で せ+なか川 の分断を作り、背中+側(bigram 1828 実在)が106差で負ける(せなかがわ→セなか川)。ろーま事件の処方箋どおり分断される側も curated 化 -->
+	<dict><key>phrase</key><string>背中側</string><key>shortcut</key><string>せなかがわ</string></dict>
 	<!-- してる: 進行形のかな正書。して が LM 未収録で弱く、してるな→して+ルナ(uni6239)に区切りを取られる -->
 	<dict><key>phrase</key><string>してる</string><key>shortcut</key><string>してる</string></dict>
 	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
