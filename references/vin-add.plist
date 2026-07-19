@@ -322,7 +322,6 @@
 	<dict><key>phrase</key><string>Dézaley内</string><key>shortcut</key><string>でざれない</string></dict>
 	<dict><key>phrase</key><string>East Kelowna Slopes</string><key>shortcut</key><string>いーすとけろうなすろーぷす</string></dict>
 	<dict><key>phrase</key><string>East Sussex</string><key>shortcut</key><string>いーすとさせっくす</string></dict>
-	<dict><key>phrase</key><string>Echezeaux</string><key>shortcut</key><string>えしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Eger</string><key>shortcut</key><string>えげる</string></dict>
 	<dict><key>phrase</key><string>Egri Bikavér</string><key>shortcut</key><string>えぐりびかべーる</string></dict>
 	<dict><key>phrase</key><string>Einstufung</string><key>shortcut</key><string>あいんしゅとぅーふんぐ</string></dict>
@@ -353,8 +352,7 @@
 	<dict><key>phrase</key><string>Fins Bois</string><key>shortcut</key><string>ふぁんぼわ</string></dict>
 	<dict><key>phrase</key><string>Fitou</string><key>shortcut</key><string>ふぃとぅー</string></dict>
 	<dict><key>phrase</key><string>Fixin</string><key>shortcut</key><string>ふぃきさん</string></dict>
-	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇーえしぇぞー</string></dict>
-	<dict><key>phrase</key><string>Fleurie</string><key>shortcut</key><string>ふるーり</string></dict>
+	<dict><key>phrase</key><string>Echezeaux</string><key>shortcut</key><string>えしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Fondillón</string><key>shortcut</key><string>ふぉんでぃよん</string></dict>
 	<dict><key>phrase</key><string>Fourchaume</string><key>shortcut</key><string>ふーるしょーむ</string></dict>
 	<dict><key>phrase</key><string>Franche-Comté</string><key>shortcut</key><string>ふらんしゅこんて</string></dict>

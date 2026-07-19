@@ -3502,6 +3502,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kare.first, "彼のことです", "multi=\(kare)")
     }
 
+    // います はかなが正書(そこにいます 等)だが、①かな いる が inflection_classes で
+    // godan-ru のみ登録(要る/入る の巻き添え)で います が導出されず、②連文節では
+    // (b) word_costs の高コスト収穫かな(います wc13367→底値9500)が先着 dedupe で
+    // (b2) の安い活用コピー(7200)を潰し、居ます が系統的に勝っていた。
+    // 補助クラス表(いる=一段追加)+かな識別の派生フラグ合流で是正。
+    // 坐す/在す(古語の敬語動詞)は suppr+exactReadingOnlySeed の末尾供給へ移動。
+    func testRegressionRealLMImasuPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["います": ["坐す", "在す"]])
+        let single = converter.candidates(for: "います", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["います", "居ます"], "single=\(single)")
+        for input in ["いますよね", "そこにいます"] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, input, "multi=\(multi)")
+            XCTAssertEqual(multi.dropFirst().first?.contains("居ます"), true, "multi=\(multi)")
+        }
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

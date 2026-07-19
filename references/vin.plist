@@ -3,6 +3,12 @@
 <plist version="1.0">
 <array>
 	<!-- AOC名や地名 -->
+	<dict><key>phrase</key><string>Echezeaux</string><key>shortcut</key><string>えしぇぞー</string></dict>
+	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇいえしぇぞー</string></dict>
+	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇえしぇぞー</string></dict>
+	<dict><key>phrase</key><string>エシェゾー</string><key>shortcut</key><string>えしぇぞー</string></dict>
+	<dict><key>phrase</key><string>フラジェ・エシェゾー</string><key>shortcut</key><string>ふらじぇえしぇぞー</string></dict>
+	<dict><key>phrase</key><string>フラジェイ・エシェゾー</string><key>shortcut</key><string>ふらじぇいえしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Pernand-Vergelesses</string><key>shortcut</key><string>ぺるなんゔぇるじゅれす</string></dict>
 	<dict><key>phrase</key><string>ペルナン・ヴェルジュレス</string><key>shortcut</key><string>ぺるなんゔぇるじゅれす</string></dict>
 	<dict><key>phrase</key><string>Aargau</string><key>shortcut</key><string>あーるがう</string></dict>
@@ -1270,6 +1276,8 @@
 	<dict><key>phrase</key><string>釜石市</string><key>shortcut</key><string>かまいしし</string></dict>
 
 	<!-- 村 -->
+	<dict><key>phrase</key><string>フラジェ・エシェゾー村</string><key>shortcut</key><string>ふらじぇえしぇぞーむら</string></dict>
+	<dict><key>phrase</key><string>フラジェイ・エシェゾー村</string><key>shortcut</key><string>ふらじぇいえしぇぞーむら</string></dict>
 	<dict><key>phrase</key><string>チェダー村</string><key>shortcut</key><string>ちぇだーむら</string></dict>
 	<dict><key>phrase</key><string>サン・ジュリアン村</string><key>shortcut</key><string>さんじゅりあんむら</string></dict>
 	<dict><key>phrase</key><string>サン・テステフ村</string><key>shortcut</key><string>さんてすてふむら</string></dict>
@@ -1279,7 +1287,6 @@
 	<dict><key>phrase</key><string>ジュヴレ・シャンベルタン村</string><key>shortcut</key><string>じゅゔれしゃんべるたんむら</string></dict>
 	<dict><key>phrase</key><string>ソーテルヌ村</string><key>shortcut</key><string>そーてるぬむら</string></dict>
 	<dict><key>phrase</key><string>バルサック村</string><key>shortcut</key><string>ばるさっくむら</string></dict>
-	<dict><key>phrase</key><string>フラジェイ・エシェゾー村</string><key>shortcut</key><string>ふらじぇいえしぇぞーむら</string></dict>
 	<dict><key>phrase</key><string>ブリネ村</string><key>shortcut</key><string>ぶりねむら</string></dict>
 	<dict><key>phrase</key><string>ペルナン・ヴェルジュレス村</string><key>shortcut</key><string>ぺるなんゔぇるじゅれすむら</string></dict>
 	<dict><key>phrase</key><string>モンテファルコ村</string><key>shortcut</key><string>もんてふぁるこむら</string></dict>
