@@ -214,6 +214,8 @@ extension KanaKanjiConverter {
                 // 複数字の熟語 seed(高校/孝行, 描く 等)を seed 順で辞書ベースの上へ。
                 // 先頭は上の leading ブーストで既に持ち上がるため index>0 のみ対象。
                 // SudachiDict の rank で「々」形容動詞群が頻出熟語を埋める歪みを是正する。
+                // 非漢字(カタカナ/かな)への拡張は 山田>やまだ 等の序列を崩すため不採用
+                // (2098で検証済み)。
                 let boost = max(
                     200,
                     Self.seedLeadingKanjiCandidateBoost - (index * Self.seedOrderedKanjiCompoundStep)
