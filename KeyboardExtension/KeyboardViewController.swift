@@ -517,6 +517,7 @@ final class KeyboardViewController: UIInputViewController {
         // キーボードに退化したまま戻らない(いじょう→異常 だけ残るのは学習語彙経路)。
         diagnosticsState.memoryWarningCountThisSession = 0
         kanaKanjiConverter.store.allowSQLiteReopenAfterMemoryPressure()
+        kanaKanjiConverter.store.exitConstrainedMemoryCacheMode()
 
         guard !shouldSuppressHeavyOperations(reason: "viewWillAppear") else {
             return
@@ -690,17 +691,32 @@ final class KeyboardViewController: UIInputViewController {
 
         kanaKanjiConverter.clearAllCaches()
 
-        // 2回目以降の警告は圧迫が続いている証拠なので、最終手段として連文節LM(sqlite)も
-        // アンロードする(連文節は劣化するが jetsam で拡張ごと落ちるよりよい)。初回警告は
-        // ef56d52 の方針どおり保持して変換品質を守る。
+        // 2回目以降の警告は圧迫が続いている証拠なので、LMキャッシュを縮小モードへ
+        // (上限を下げて再成長を抑える。変換品質は維持)。初回警告は ef56d52 の方針
+        // どおり通常キャッシュ破棄のみで変換品質を守る。
         if diagnosticsState.memoryWarningCountThisSession >= 2 {
-            kanaKanjiConverter.unloadSystemDictionarySQLiteForMemoryPressure()
+            kanaKanjiConverter.store.enterConstrainedMemoryCacheMode()
             appendKeyboardDiagnosticsLog(
-                "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
+                "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目のためLMキャッシュを縮小モードへ footprintMB=\(diagnosticsFootprintMBText())",
                 file: #fileID,
                 line: #line,
                 function: #function
             )
+            // sqlite アンロードは「自分の footprint が critical 以上」のときだけの真の
+            // 最終手段にする。メモリ警告は周囲(ホストアプリ)由来でも飛んでくるが、
+            // sqlite クローズの実節約は約2MB(read-only・mmapなし=ページキャッシュのみ)
+            // で、footprint が小さいときに辞書を殺しても系全体は救われず UX 全損だけが
+            // 残る。critical 超えは jetsam が現実味を帯びた状態なので閉じて延命する。
+            let footprintMB = currentFootprintMB() ?? 0
+            if footprintMB >= Self.memoryFailSafeCriticalStartMB {
+                kanaKanjiConverter.unloadSystemDictionarySQLiteForMemoryPressure()
+                appendKeyboardDiagnosticsLog(
+                    "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目+footprint臨界のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+            }
         }
 
         if view.window == nil {
