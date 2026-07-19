@@ -3570,6 +3570,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first?.hasPrefix("ただの"), true, "multi=\(multi)")
     }
 
+    // ひらがな: dict は 平仮名0/平がな1/ひらがな2 で交ぜ書きが かな に先行し、合成の
+    // 二重加点(平がな=辞書+postfix)が 平仮名 をも脅かす。seed=[平仮名, ひらがな]+
+    // seed内相対順の正規化(スコア再割当)で 平仮名→ひらがな の順に固定。合成にも効く。
+    // 者(は)は複合語内読みの収穫で、連文節の の+者 が のは を食うため suppr。
+    func testRegressionRealLMHiraganaKanaSecond() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["は": ["者"]])
+        let single = converter.candidates(for: "ひらがな", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["平仮名", "ひらがな", "平がな"], "single=\(single)")
+        let composed = converter.candidates(for: "ひらがなのは", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(composed.prefix(2)), ["平仮名のは", "ひらがなのは"], "composed=\(composed)")
+        let multi = converter.multiClauseCandidates(for: "ひらがなのは", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "平仮名のは", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("者") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

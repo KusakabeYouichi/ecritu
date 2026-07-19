@@ -423,6 +423,11 @@ final class KanaKanjiConverter {
             to: &scores
         )
         applySeedSingleKanjiPriorityBoost(for: context.reading, to: &scores)
+        applySeedOrderNormalization(
+            for: context.reading,
+            learningScoresForReading: context.learningScoresForReading,
+            to: &scores
+        )
     }
 
     // ステージ4: 抑制語彙(直接+脱活用)と装飾表記の除去。
