@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260719195813"
+    private static let editionUpdatedAtRaw: String = "20260719210609"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -270,6 +270,7 @@ struct ContentView: View {
     @State var didLoadSecondVocabularyEntries = false
     @State var isLoadingSecondVocabularyEntries = false
     @State var keyboardDiagnosticsLogLines: [String] = []
+    @State var keyboardDiagnosticsCriticalLogLines: [String] = []
     @State var keyboardDiagnosticsInstallMarker = ""
     @State var keyboardDiagnosticsSessionActive = false
     @State var keyboardDiagnosticsLastHeartbeatDate: Date?

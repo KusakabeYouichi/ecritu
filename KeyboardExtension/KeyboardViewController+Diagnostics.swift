@@ -231,6 +231,7 @@ extension KeyboardViewController {
 
         appendKeyboardDiagnosticsLog(
             "メモリフェイルセーフ遷移 \(previousProfile.rawValue) -> \(nextProfile.rawValue) trigger=\(trigger) footprintMB=\(String(format: "%.1f", footprintMB))",
+            critical: true,
             file: #fileID,
             line: #line,
             function: #function
@@ -331,26 +332,54 @@ extension KeyboardViewController {
         diagnosticsState.diagnosticsLastPersistedFailSafeProfile = memoryFailSafeProfile
     }
 
-    func diagnosticsLogLines(from defaults: UserDefaults) -> [String] {
-        if let data = defaults.data(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines),
+    func diagnosticsLogLines(
+        from defaults: UserDefaults,
+        key: String = SharedDefaultsKeys.keyboardDiagnosticsLogLines
+    ) -> [String] {
+        if let data = defaults.data(forKey: key),
             let decoded = try? JSONDecoder().decode([String].self, from: data) {
             return decoded
         }
 
-        if let raw = defaults.array(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines) {
+        if let raw = defaults.array(forKey: key) {
             return raw.compactMap { $0 as? String }
         }
 
         return []
     }
 
-    func saveDiagnosticsLogLines(_ lines: [String], to defaults: UserDefaults) {
+    func saveDiagnosticsLogLines(
+        _ lines: [String],
+        to defaults: UserDefaults,
+        key: String = SharedDefaultsKeys.keyboardDiagnosticsLogLines
+    ) {
         if let encoded = try? JSONEncoder().encode(lines) {
-            defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+            defaults.set(encoded, forKey: key)
             return
         }
 
-        defaults.set(lines, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
+        defaults.set(lines, forKey: key)
+    }
+
+    // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ追記。
+    // 通常ログの320行ローテーションと install 変更リセットの対象外に別キーで残す
+    // (2026-07: 辞書永久停止事件の証拠行がローテで流れて検証不能だった対策)。
+    // 発生はまれなので都度デコード/エンコードでよい。
+    static let diagnosticsCriticalLogMaxLineCount = 60
+    func appendKeyboardDiagnosticsCriticalLog(_ entry: String, to defaults: UserDefaults) {
+        var lines = diagnosticsLogLines(
+            from: defaults,
+            key: SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
+        )
+        lines.append(entry)
+        if lines.count > Self.diagnosticsCriticalLogMaxLineCount {
+            lines.removeFirst(lines.count - Self.diagnosticsCriticalLogMaxLineCount)
+        }
+        saveDiagnosticsLogLines(
+            lines,
+            to: defaults,
+            key: SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
+        )
     }
 
     // メモリ内バッファの永続化スロットル。クラッシュ時に失われ得るのは最大この秒数分だが、
@@ -499,6 +528,8 @@ extension KeyboardViewController {
     ) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
+        // criticalLogLines は意図的に消さない(install 変更をまたいで重大イベントの
+        // 証拠を残す。明示クリアはコンテナアプリの診断クリア操作から行う)
         diagnosticsState.diagnosticsLogLinesBuffer = nil
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
@@ -634,6 +665,7 @@ extension KeyboardViewController {
 
     func appendKeyboardDiagnosticsLog(
         _ event: String,
+        critical: Bool = false,
         file: String = #fileID,
         line: Int = #line,
         function: String = #function
@@ -662,6 +694,9 @@ extension KeyboardViewController {
 
         diagnosticsState.diagnosticsLogLinesBuffer = lines
         saveDiagnosticsLogLines(lines, to: sharedDefaults)
+        if critical {
+            appendKeyboardDiagnosticsCriticalLog(entry, to: sharedDefaults)
+        }
         sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
         sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
         sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
@@ -672,7 +707,8 @@ extension KeyboardViewController {
         file: String = #fileID,
         line: Int = #line,
         function: String = #function,
-        appendLog: Bool = false
+        appendLog: Bool = false,
+        criticalLog: Bool = false
     ) {
         guard let sharedDefaults else {
             return
@@ -695,7 +731,7 @@ extension KeyboardViewController {
         }
 
         if appendLog {
-            appendKeyboardDiagnosticsLog(event, file: file, line: line, function: function)
+            appendKeyboardDiagnosticsLog(event, critical: criticalLog, file: file, line: line, function: function)
         } else {
             mirrorKeyboardDiagnosticsHeartbeatToFlightFile(summary)
         }

@@ -365,6 +365,9 @@ final class KeyboardViewController: UIInputViewController {
         static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
         static let supplementaryLexiconIndexSignature = "supplementaryLexiconIndexSignature"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
+        // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ。
+        // 320行ローテーションとinstall変更リセットの対象外(事後検証の証拠を残す)。
+        static let keyboardDiagnosticsCriticalLogLines = "keyboardDiagnosticsCriticalLogLines"
         static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
         static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
         static let keyboardDiagnosticsSessionOwnerToken = "keyboardDiagnosticsSessionOwnerToken"
@@ -675,7 +678,8 @@ final class KeyboardViewController: UIInputViewController {
         persistBufferedKeyboardDiagnostics()
         updateKeyboardDiagnosticsHeartbeat(
             event: "メモリ警告受信(\(diagnosticsState.memoryWarningCountThisSession)回目) キャッシュ解放開始",
-            appendLog: true
+            appendLog: true,
+            criticalLog: true
         )
 
         if memoryFailSafeProfile != .critical {
@@ -683,6 +687,7 @@ final class KeyboardViewController: UIInputViewController {
             persistKeyboardDiagnosticsFailSafeProfile()
             appendKeyboardDiagnosticsLog(
                 "メモリ警告を受けてフェイルセーフをcriticalへ昇格 rssMB=\(diagnosticsResidentMemoryMBText())",
+                critical: true,
                 file: #fileID,
                 line: #line,
                 function: #function
@@ -698,6 +703,7 @@ final class KeyboardViewController: UIInputViewController {
             kanaKanjiConverter.store.enterConstrainedMemoryCacheMode()
             appendKeyboardDiagnosticsLog(
                 "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目のためLMキャッシュを縮小モードへ footprintMB=\(diagnosticsFootprintMBText())",
+                critical: true,
                 file: #fileID,
                 line: #line,
                 function: #function
@@ -712,6 +718,7 @@ final class KeyboardViewController: UIInputViewController {
                 kanaKanjiConverter.unloadSystemDictionarySQLiteForMemoryPressure()
                 appendKeyboardDiagnosticsLog(
                     "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目+footprint臨界のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
+                    critical: true,
                     file: #fileID,
                     line: #line,
                     function: #function
