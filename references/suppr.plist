@@ -205,6 +205,10 @@
 	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>
 	<!-- ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 -->
 	<dict><key>phrase</key><string>ナンノ</string><key>shortcut</key><string>なんの</string></dict>
+	<!-- 坐す/在す(います): 古語の敬語動詞(御座います の語源)で読みは正当だが、現代入力では
+	     居ます/います の前に出る雑音。exactReadingOnlySeed で完全一致時のみ末尾供給に移す -->
+	<dict><key>phrase</key><string>坐す</string><key>shortcut</key><string>います</string></dict>
+	<dict><key>phrase</key><string>在す</string><key>shortcut</key><string>います</string></dict>
 	<!-- 酤う/支う/交う: かう の古語・レア表記(酤う=酒を売る古語、支う=つっかえ棒の方言、交う=飛び交う等の複合専用)。買って/飼って の派生に混じり、勝って(かつ由来)を語幹上限の外へ押し出す(かってほしい→勝ってほしい欠落) -->
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>
 	<dict><key>phrase</key><string>支う</string><key>shortcut</key><string>かう</string></dict>

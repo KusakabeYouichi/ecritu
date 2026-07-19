@@ -333,6 +333,19 @@ extension KanaKanjiConverter {
                     }
                     if seenSurfaces.insert(surface).inserted {
                         surfaces.append((surface, isDictWord, isCurated, isInflectionDerived, wordCost, isDictionaryFormPredicate))
+                    } else if isInflectionDerived,
+                        surface == segmentReading,
+                        let index = surfaces.firstIndex(where: { $0.surface == surface }),
+                        !surfaces[index].isInflectionDerived,
+                        let existingWordCost = surfaces[index].wordCost,
+                        existingWordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor {
+                        // かな識別の活用形(います 等)は (b) word_costs の収穫底値
+                        // (います wc13367→一律9500)が先着し、(b2) の安い活用派生コピー
+                        // (7200)が dedupe で死ぬと、かな正書の活用形が漢字派生(居ます)に
+                        // 系統的に負ける。派生フラグだけ合流させる(a2 seed の先着 dedupe
+                        // 対策と同族)。unigram/wc が実勢の表層(たく 等)は正直な値付けを
+                        // 尊重するため対象外(底値帯のみ)。漢字表層も対象外。
+                        surfaces[index].isInflectionDerived = true
                     }
                 }
 
@@ -919,20 +932,6 @@ extension KanaKanjiConverter {
             return []
         }
 
-        // DIAGDEBUG: temporary DP dump (removed before commit)
-        if ProcessInfo.processInfo.environment["ECRITU_DIAG_MULTICLAUSE"] != nil {
-            print("DIAG input=\(normalized) bestTotal=\(bestTotal)")
-            for (i, node) in nodes.enumerated() where best[i] < infinity {
-                print("DIAG node[\(i)] [\(node.start),\(node.end)) r=\(node.reading) s=\(node.surface) wc=\(String(describing: node.wordCost)) best=\(best[i]) bp=\(backPointer[i])")
-            }
-            var diagIdx = bestEndIndex
-            var diagChain: [String] = []
-            while diagIdx >= 0 {
-                diagChain.append("\(nodes[diagIdx].surface)(\(nodes[diagIdx].reading))#\(diagIdx)@\(best[diagIdx])")
-                diagIdx = backPointer[diagIdx]
-            }
-            print("DIAG best path: " + diagChain.reversed().joined(separator: " | "))
-        }
         // --- 6. バックトラック(ノード列を保持) ---
         var pathIndices: [Int] = []
         var idx = bestEndIndex

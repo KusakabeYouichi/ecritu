@@ -21,6 +21,14 @@ extension KanaKanjiConverter {
         static let kuru = "kuru"
     }
 
+    // sqlite の inflection_classes は (読み, 表層) につき1クラスしか持てず、同表記に
+    // 一段と五段が同居する語で片方が失われる(いる: かな表記が 要る/入る 系の五段に
+    // 巻き添えで godan-ru のみ登録され、居る系一段の います/いた/いて が導出できない)。
+    // 辞書再ビルドで複数クラス化するまでのコード側補完(既存クラスに追加。置換しない)。
+    static let supplementaryInflectionClassesByReading: [String: [String: Set<String>]] = [
+        "いる": ["いる": [InflectionClass.ichidan]]
+    ]
+
     struct InflectionRule {
         let readingSuffix: String
         let baseReadingSuffix: String

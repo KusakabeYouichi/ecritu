@@ -235,8 +235,12 @@ extension KanaKanjiConverter {
                     rule: rule
                 )
 
+            // 補助クラス(いる=一段 等、sqlite が1クラスしか持てない同表記多クラス語の補完)
+            // も許可判定に含める。
+            let supplementaryClasses = Self.supplementaryInflectionClassesByReading[baseReading]?[candidate] ?? []
             guard let inflectionClass,
-                rule.allowedClasses.contains(inflectionClass) else {
+                rule.allowedClasses.contains(inflectionClass)
+                    || !rule.allowedClasses.isDisjoint(with: supplementaryClasses) else {
                 continue
             }
 
