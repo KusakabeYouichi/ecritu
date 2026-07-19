@@ -435,6 +435,15 @@ final class KanaKanjiConverter {
             for candidate in suppressedCandidates {
                 scores.removeValue(forKey: candidate)
             }
+            // suppr+exactReadingOnlySeed の二段構え(坐す/在す(います)、ここ のレア人名 等):
+            // 辞書からは抑制して合成・連文節を守りつつ、完全一致の単文節でのみ末尾
+            // (exactReadingOnly 級)に再供給する。除去後に入れ直すことで、辞書スコアと
+            // 合流して上位に残ることも防ぐ。
+            let resupplied = (KanaKanjiSeedDictionary.exactReadingOnlySeed[context.reading] ?? [])
+                .filter { suppressedCandidates.contains($0) }
+            if !resupplied.isEmpty {
+                addCandidates(resupplied, baseScore: CandidateScore.exactReadingOnly, to: &scores)
+            }
         }
 
         for candidate in Array(scores.keys) where isDeinflectedSuppressed(

@@ -981,9 +981,16 @@ extension KanaKanjiConverter {
         let lastIsKanaConditionalNara = Self.multiClauseConditionalParticleReadings.contains(lastNode.reading)
             && lastNode.surface == lastNode.reading
             && (lastPrevNode.map { Self.isPredicateLikePrevForConditional($0) } ?? false)
+        // 文末がかなの格助詞/複合助詞(ここでは/そこには 等の話題断片)も対象外 —
+        // 格助詞はかなが唯一の正書で、これを抑制すると変種の漢字化(個々では)が
+        // 最良に繰り上がってしまう。
+        let lastIsKanaCaseParticle = lastNode.surface == lastNode.reading
+            && (Self.multiClauseCaseParticleSurfaces.contains(lastNode.surface)
+                || Self.multiClauseCompoundParticles.contains(lastNode.surface))
         let lastIsKanaFinalParticle = (Self.multiClauseFinalParticleReadings.contains(lastNode.reading)
             && lastNode.surface == lastNode.reading)
             || lastIsKanaConditionalNara
+            || lastIsKanaCaseParticle
         // 経路の全ノードが辞書語(素通り無し)の全かな=LM が変換候補の中から かな表記を
         // 選んだ結果(の+こと+です 等、かなが正書の機能語句)。素通りエコーではないので
         // 抑制しない(のことです が の事です に負けて最良を失うのを防ぐ)。

@@ -3540,6 +3540,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(bun.contains("分"), "bun=\(bun)")
     }
 
+    // ここでは: 連文節の最良経路(ここ+では)が全かな=入力一致でエコー抑制され、変種の
+    // 個々では が繰り上がっていた。格助詞/複合助詞はかなが唯一の正書なので、文末がかな
+    // 助詞の全かなは抑制しない(免除枠組みへ追加)。踊り字 こゝ とレア人名収穫(小恋 等
+    // rank13-23)は suppr+exactReadingOnlySeed(ここ 完全一致時のみ末尾)へ。
+    func testRegressionRealLMKokodewaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression([
+            "ここ": ["こゝ", "小恋", "小瑚", "小虹", "小香", "幸呼", "幸恋", "心湖", "湖々", "湖紅", "琥々", "瑚々"]
+        ])
+        let multi = converter.multiClauseCandidates(for: "ここでは", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ここでは", "multi=\(multi)")
+        let single = converter.candidates(for: "ここでは", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "ここでは", "single=\(single)")
+        XCTAssertFalse(single.contains(where: { $0.contains("こゝ") || $0.contains("小恋") }), "single=\(single)")
+        // レア人名は ここ 完全一致時のみ末尾に残る(exactReadingOnlySeed)
+        let koko = converter.candidates(for: "ここ", limit: 40, systemCandidateMode: .surface)
+        XCTAssertTrue(koko.contains("小恋"), "koko=\(koko)")
+        XCTAssertEqual(koko.first, "ここ", "koko=\(koko)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
