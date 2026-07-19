@@ -3440,6 +3440,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("ギンコウ"), "single=\(single)")
     }
 
+    // 実LM回帰: せなかがわ→背中側。sacoche の なか川(店名、curated 1500)が せ+なか川 の
+    // 分断を作り、背中+側(bigram 1828 実在)が106差で負けていた(実機相当の全語彙注入で
+    // のみ再現)。分断される側の 背中側 も curated 化(ろーま事件の処方箋)。
+    func testRegressionRealLMSenakagawaPrefersSenakaGawa() throws {
+        try prepareRealLMDictionary()
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let dict = try JSONDecoder().decode([String: [String]].self, from: data)
+            for (reading, candidates) in dict {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let freshConverter = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let single = freshConverter.candidates(for: "せなかがわ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "背中側", "single=\(single)")
+        let multi = freshConverter.multiClauseCandidates(for: "せなかがわ", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains(where: { $0.contains("セ") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
