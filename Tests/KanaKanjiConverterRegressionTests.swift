@@ -3347,6 +3347,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ikaga.first, "いかが", "single=\(ikaga)")
     }
 
+    // 実LM回帰: かしだすだけ→貸し出すだけ。述語直後の だけ に 抱け(命令形は述語に接続
+    // しない)/竹(連体修飾の後では連濁しない)が並んでいた。形式名詞かな優先ルールに だけ を
+    // 追加し、ゲートを辞書形述語ノードにも拡張。
+    func testRegressionRealLMKashidasuDakePrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "かしだすだけ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "貸し出すだけ", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("抱け") || $0.contains("竹") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
