@@ -3586,6 +3586,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("者") }), "multi=\(multi)")
     }
 
+    // Wikipedia LM は 昨日(uni 6869)を 機能(4237)より大幅に過小評価し、昨日→は/の の
+    // 実 bigram 優位すら飲み込む(きのうは→機能は)。会話的時相名詞の unigram キャップ
+    // (4300)で底上げ。観測 bigram(機能→が1112)より弱いので きのうが→機能が は保たれる。
+    func testRegressionRealLMKinouPrefersYesterdayInContext() throws {
+        try prepareRealLMDictionary()
+        for (input, expectedFirst) in [
+            ("きのうねあがりしたが", "昨日値上がりしたが"),
+            ("きのうは", "昨日は"),
+            ("きのうの", "昨日の"),
+            ("きのうから", "昨日から"),
+            ("きのうが", "機能が")
+        ] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expectedFirst, "input=\(input) multi=\(multi)")
+        }
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
