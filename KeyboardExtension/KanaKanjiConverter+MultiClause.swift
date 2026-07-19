@@ -162,6 +162,8 @@ extension KanaKanjiConverter {
     // フォールバックが観測済み だけ→EOS より安い逆転で僅差負けしていた)。
     static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため", "だけ"]
     static let multiClauseFormalNounKanjiPenalty = 1000
+    // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
+    static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
     // 活用ルールの readingSuffix 末尾文字。span がこのどれかで終わる時だけ活用派生を試みる
     // (ルール全走査の回数を抑える事前フィルタ)。
@@ -436,12 +438,15 @@ extension KanaKanjiConverter {
                     if let cached = stateQueue.sync(execute: { multiClauseInflectionCache[inflectionCacheKey] }) {
                         inflected = cached
                     } else {
+                        // かな識別の除外(下の where 相当)後に topK 件を確保できるよう、
+                        // 取得は topK の2倍にする(limit ちょうどだと かな が枠を潰し、
+                        // かって の 勝って(4番目)が入れない)。
                         inflected = inflectionCandidates(
                             for: segmentReading,
                             userDictionary: manualUserDictionary,
                             initialUserDictionary: initialUserDictionary,
                             systemCandidateMode: systemCandidateMode,
-                            limit: Self.multiClauseInflectionTopK
+                            limit: Self.multiClauseInflectionTopK * 2
                         )
                         stateQueue.sync {
                             if multiClauseInflectionCache.count >= multiClauseInflectionCacheLimit {
@@ -456,9 +461,19 @@ extension KanaKanjiConverter {
                     // かなが正書なので活用形もかなを供給する。除外したままだと なった が捨てられ
                     // 成った/為った だけが残る(べんりにはなったな→便利には成ったな)。LM 劣位の
                     // 動詞(食べる/見る=たべる/みる が非優位)は依然として漢字が第1候補=かな除外。
-                    for (offset, surface) in inflected.prefix(Self.multiClauseInflectionTopK).enumerated()
-                    where surface != segmentReading || offset == 0 {
+                    // かな識別の除外(下記 where 条件)を prefix の後にやると、除外された
+                    // かなが枠を潰して次点(かって の 勝って 等)が入れない。先に除外してから
+                    // topK 件を採る。
+                    var suppliedInflectionCount = 0
+                    for (offset, surface) in inflected.enumerated() {
+                        if surface == segmentReading, offset != 0 {
+                            continue
+                        }
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        suppliedInflectionCount += 1
+                        if suppliedInflectionCount >= Self.multiClauseInflectionTopK {
+                            break
+                        }
                     }
                 }
 
@@ -597,9 +612,11 @@ extension KanaKanjiConverter {
             isInflectionDerived: Bool,
             wordCost: Int? = nil,
             isDictionaryFormPredicate: Bool = false,
-            prevIsDictionaryFormPredicate: Bool = false
+            prevIsDictionaryFormPredicate: Bool = false,
+            prevIsInflectionDerived: Bool = false
         ) -> Int {
             var base: Int
+            var penaltyForNounHoshii = 0
             // 読み跨ぎ bigram 借用の遮断(定数コメント参照。人(にん/じん)/頭(ず) 等)。
             let deniesBigramBorrow = Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
                 .contains(reading) ?? false
@@ -691,6 +708,16 @@ extension KanaKanjiConverter {
                 prev.last.map({ Self.multiClausePredicateTailCharacters.contains($0) }) ?? false {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
+            // 願望の ほしい/欲しい は て形等の述語直後が正書(買ってほしい)。名詞直後
+            // (勝手ほしい)は「が」の脱落形でしか成立せず不自然なので減点する
+            // (かってほしい の変種枠を 勝手ほしい が潰し、勝ってほしい が入れない対策)。
+            if reading == "ほしい",
+                prev != Self.multiClauseBOSMarker,
+                !prevIsInflectionDerived,
+                !prevIsDictionaryFormPredicate,
+                !(prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false) {
+                penaltyForNounHoshii = Self.multiClauseNounHoshiiPenalty
+            }
             // 説明・詠嘆の のね/のよ は辞書形述語(ノードフラグ)直後のみ安価にクランプ
             // (定数コメント参照)。表層末尾文字では名詞 思い と形容詞 重い を区別できない
             // ため、こちらは inflection_classes 由来のフラグでゲートする。
@@ -700,6 +727,7 @@ extension KanaKanjiConverter {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
             var penalty = 0
+            penalty += penaltyForNounHoshii
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
             // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に
             // 引っかからない語)なので対象外 — LM が既に価格付けしており二重減点は不当。
@@ -773,7 +801,8 @@ extension KanaKanjiConverter {
                         isInflectionDerived: node.isInflectionDerived,
                         wordCost: node.wordCost,
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
-                        prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate
+                        prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
+                        prevIsInflectionDerived: prevNode.isInflectionDerived
                     )
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
@@ -970,7 +999,10 @@ extension KanaKanjiConverter {
                     isInflectionDerived: node.isInflectionDerived,
                     wordCost: node.wordCost,
                     isDictionaryFormPredicate: node.isDictionaryFormPredicate,
-                    prevIsDictionaryFormPredicate: prevIsDictionaryFormPredicate
+                    prevIsDictionaryFormPredicate: prevIsDictionaryFormPredicate,
+                    prevIsInflectionDerived: pos > 0
+                        ? nodes[pathIndices[pos - 1]].isInflectionDerived
+                        : false
                 )
                 let outgoing: Int
                 if let nextNode {
@@ -984,7 +1016,8 @@ extension KanaKanjiConverter {
                         isInflectionDerived: nextNode.isInflectionDerived,
                         wordCost: nextNode.wordCost,
                         isDictionaryFormPredicate: nextNode.isDictionaryFormPredicate,
-                        prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate
+                        prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate,
+                        prevIsInflectionDerived: node.isInflectionDerived
                     )
                 } else {
                     var eosCost = transitionCost(
