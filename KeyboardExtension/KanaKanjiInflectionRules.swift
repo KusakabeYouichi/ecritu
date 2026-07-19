@@ -334,6 +334,8 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "られ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "られる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "られない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 受身+ん(口語の否定縮約: 食べられん/見られん)
+        InflectionRule(readingSuffix: "られん", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         // 受身+てくる アスペクト連鎖(見られてくる/食べられてきます 等)。
         InflectionRule(readingSuffix: "られてくる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "られてきた", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -827,6 +829,8 @@ extension KanaKanjiConverter {
                 pattern.aForm + "れたくなかった",
                 pattern.aForm + "れたかった",
                 pattern.aForm + "れたければ",
+                // 受身+ん(口語の否定縮約: 送られん/言われん)
+                pattern.aForm + "れん",
                 pattern.iForm + "ます",
                 pattern.iForm + "ました",
                 pattern.iForm + "ません",
@@ -1141,6 +1145,8 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "されたくなかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されたかった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されたければ", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 受身+ん(口語の否定縮約: 実用化されん)
+        InflectionRule(readingSuffix: "されん", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "された", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されて", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されてる", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -1216,6 +1222,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなくて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しなくても", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "されん", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "します", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),

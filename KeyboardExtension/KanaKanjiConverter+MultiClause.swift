@@ -178,6 +178,11 @@ extension KanaKanjiConverter {
     // 起こしていた。候補バー(単一経路)には引き続き全辞書候補が並ぶため、レア語は手動選択
     // +学習(curated 1500)で救済される。
     static let multiClauseDictUnknownCost = 8700
+    // 収穫底値(wc>=10000)の丸ごとエントリの連文節コスト。単文節の harvestTier 降格
+    // (CandidateScore.harvestTierDictionary)の連文節版。レア名前収穫(廉梛/月叶 等)は
+    // 正規の未知語(8700)や活用派生(7200)より信頼が低く、放置すると されんな→
+    // 実用化さ+廉梛 のような名前断片が正規の派生+助詞を逆転する。
+    static let multiClauseHarvestTierUnknownCost = 9500
     // curated ノードの EOS 遷移上限。かな正書の口語語彙(でかい 等)は X→EOS bigram が
     // Wikipedia文語コーパスに無く、出口で dictUnknown(8700)を払わされて断片連結
     // (出+会: 会→EOS 1571)に逆転される。人手で正書登録した curated は文末利用も
@@ -637,6 +642,13 @@ extension KanaKanjiConverter {
                     : Self.multiClauseInflectionDerivedOOVCost
             } else if isDictWord {
                 base = Self.multiClauseDictUnknownCost
+                // 収穫底値ノードはさらに重く(定数コメント参照)。seed 掲載語(柚香 等、
+                // wc が底値でも人手で代表に選んだ語)は単文節の降格と同様に免除する。
+                if let wordCost,
+                    wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    base = Self.multiClauseHarvestTierUnknownCost
+                }
             } else {
                 base = Self.multiClausePassthroughPerCharCost * reading.count
             }
