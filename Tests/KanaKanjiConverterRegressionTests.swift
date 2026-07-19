@@ -3376,6 +3376,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("瑠求") || $0.contains("留求") || $0.contains("流求") }), "multi=\(multi)")
     }
 
+    // 実LM回帰: ひさしぶり→久しぶり。dict は 久し振り rank0 だが LM は 久しぶり のみ収録
+    // (現代の主流表記)。seed で先頭固定(連文節 ひさしぶりに にも効く)。
+    func testRegressionRealLMHisashiburiPrefersBuri() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "ひさしぶり", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "久しぶり", "single=\(single)")
+
+        let multi = converter.multiClauseCandidates(for: "ひさしぶりにあった", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.hasPrefix("久しぶりに") == true, "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
