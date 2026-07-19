@@ -3358,6 +3358,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("抱け") || $0.contains("竹") }), "multi=\(multi)")
     }
 
+    // 実LM回帰: りゅうきゅう→琉球。ryukyu.plist がビルド時に辞書へマージされ、plist の並び
+    // (瑠求→留求→流求→琉球)がそのまま rank 0-3 になっていた。seed の列挙で 琉球 を先頭、
+    // 歴史文書表記(瑠求/留求/流求)を末尾へ(抑制はしない)。
+    func testRegressionRealLMRyukyuPrefersRyukyu() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "りゅうきゅう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "琉球", "single=\(single)")
+        XCTAssertTrue(single.contains("瑠求"), "歴史表記は末尾に温存 single=\(single)")
+        if let ruIndex = single.firstIndex(of: "瑠求"),
+            let kanaIndex = single.firstIndex(of: "りゅうきゅう") {
+            XCTAssertGreaterThan(ruIndex, kanaIndex, "歴史表記はかなより後ろ single=\(single)")
+        }
+        // 合成・連文節には混じらない(exactReadingOnly)
+        let multi = converter.multiClauseCandidates(for: "りゅうきゅうの", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains(where: { $0.contains("瑠求") || $0.contains("留求") || $0.contains("流求") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
