@@ -66,6 +66,51 @@ extension KanaKanjiConverter {
     // 判定が false になるが、のね/のよ クランプ・床免除の対象として辞書形述語扱いにする
     // (あるのね→有るのね 逆転の防止)。漢字が主の動詞(買う/見る 等)は含めない。
     static let multiClauseKanaPredicateIdentities: Set<String> = ["ある"]
+
+    // 同音異義 あう の出し分け(best-effort): 前の名詞が人物なら 会う、それ以外は 合う を優先。
+    // 辞書に動物性タグが無く助詞跨ぎ bigram も無いため、名詞の人物性を語彙+敬称接尾で近似する。
+    // あう の活用読み(会う/合う が競合する形)。この読みのノードのみ調整対象。
+    static let multiClauseAuVerbReadings: Set<String> = [
+        "あう", "あった", "あって", "あい", "あいたい", "あいました", "あいます",
+        "あわない", "あえる", "あえば", "あおう", "あわ", "あえ", "あいそう", "あってる"
+    ]
+    // 人物・役柄の名詞(会う を取りやすい)。網羅は不可能なので高頻度語を近似列挙。
+    static let multiClausePersonNounSurfaces: Set<String> = [
+        "人", "友達", "友人", "彼", "彼女", "彼氏", "皆", "みんな", "皆さん", "家族",
+        "先生", "父", "母", "親", "兄", "姉", "弟", "妹", "息子", "娘", "子", "子供",
+        "客", "お客", "自分", "僕", "私", "俺", "君", "あなた", "誰", "仲間", "恋人",
+        "上司", "部下", "同僚", "先輩", "後輩", "夫", "妻", "社長", "部長", "課長",
+        "祖父", "祖母", "叔父", "叔母", "医者", "店員", "神", "人々", "みな"
+    ]
+    // 人物を示す敬称・呼称の接尾(名前+これ で人物と判断)。
+    static let multiClausePersonHonorificSuffixes: [String] = [
+        "さん", "くん", "君", "ちゃん", "様", "さま", "氏", "先生", "せんせい", "殿"
+    ]
+    // 会う/合う のどちらの活用形かの判定(表層の先頭漢字で見る)。
+    static func auVerbLeadingKanji(of surface: String) -> Character? {
+        guard let first = surface.first, first == "会" || first == "合" else {
+            return nil
+        }
+        return first
+    }
+    // 名詞表層が人物らしいか(語彙一致 or 敬称接尾 or 敬称単独ノード)。
+    // 田中さん が 田中+さん に分割されると直前ノードが「さん」単独になるため、敬称そのものも
+    // 人物シグナルとして扱う(名前は無限で網羅できないが 敬称付きは高確度で人物)。
+    static func isPersonLikeNounSurface(_ surface: String) -> Bool {
+        if multiClausePersonNounSurfaces.contains(surface) {
+            return true
+        }
+        if multiClausePersonHonorificSuffixes.contains(surface) {
+            return true
+        }
+        for suffix in multiClausePersonHonorificSuffixes where surface.count > suffix.count && surface.hasSuffix(suffix) {
+            return true
+        }
+        return false
+    }
+    // あう の出し分けペナルティ。LM 差(に→会っ/合っ が約90)を確実に超え、かつ他の
+    // 構造(床/クランプ)を乱さない中庸値。非優先側の 会/合 表層にだけ課す。
+    static let multiClauseAuPersonMismatchPenalty = 900
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -952,6 +997,25 @@ extension KanaKanjiConverter {
                         Self.multiClauseFormalNounKanaReadings.contains(node.reading),
                         node.surface != node.reading {
                         cost += Self.multiClauseFormalNounKanjiPenalty
+                    }
+                    // 同音異義 あう の出し分け(best-effort): 現ノードが あう活用(会う/合う)で
+                    // 直前が「に」なら、その前の名詞の人物性で優先を決める。人物→会う、
+                    // それ以外→合う。非優先側の表層に減点(前の名詞は backPointer で辿る)。
+                    if let auKanji = Self.auVerbLeadingKanji(of: node.surface),
+                        Self.multiClauseAuVerbReadings.contains(node.reading),
+                        prevNode.reading == "に" || prevNode.reading == "が" {
+                        let nounIsPerson: Bool
+                        if backPointer[prevIdx] >= 0 {
+                            nounIsPerson = Self.isPersonLikeNounSurface(nodes[backPointer[prevIdx]].surface)
+                        } else {
+                            nounIsPerson = false
+                        }
+                        // 人物なら 合(=非会)に減点、非人物なら 会 に減点。
+                        if nounIsPerson, auKanji == "合" {
+                            cost += Self.multiClauseAuPersonMismatchPenalty
+                        } else if !nounIsPerson, auKanji == "会" {
+                            cost += Self.multiClauseAuPersonMismatchPenalty
+                        }
                     }
                     // 敬称 さん/さま は数字の後以外では 山/三/桟 等の漢字接尾にならない。
                     // 名前+さん(かな敬称)を優先するため漢字表層に減点(数字直後は免除)。

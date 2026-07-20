@@ -3907,6 +3907,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(mitani.contains("三谷"), "mitani=\(mitani)")
     }
 
+    // 同音異義 あう の best-effort 出し分け: 前の名詞(に/が の前)が人物なら 会う、
+    // それ以外は 合う を優先。辞書に動物性タグが無いため人物語彙+敬称接尾で近似する
+    // (人名は網羅不可だが 〜さん 等の敬称付きは高確度で人物)。
+    func testRegressionRealLMAuPersonHeuristic() throws {
+        try prepareRealLMDictionary()
+        let meets: [(String, String)] = [
+            ("ひとにあった", "人に会った"), ("ともだちにあった", "友達に会った"),
+            ("たなかさんにあった", "田中さんに会った"), ("せんせいにあった", "先生に会った"),
+            ("かれにあった", "彼に会った")
+        ]
+        for (r, e) in meets {
+            XCTAssertEqual(converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first, e, "input=\(r)")
+        }
+        let matches: [(String, String)] = [
+            ("とちにあった", "土地に合った"), ("じょうけんにあった", "条件に合った"),
+            ("サイズがあった", "サイズが合った"), ("きがあった", "気が合った"), ("めがあった", "目が合った")
+        ]
+        for (r, e) in matches {
+            XCTAssertEqual(converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).first, e, "input=\(r)")
+        }
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
