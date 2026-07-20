@@ -119,6 +119,9 @@ extension KanaKanjiConverter {
     // 連文節でも seed 順を勝たせたい活用の基底読み(オプトイン)。span を脱活用して
     // ここに含まれる基底になる場合のみ、スパン先頭活用形にボーナスを与える。
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
+    // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
+    // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
+    static let multiClauseNaAdjectiveBigramThreshold = 2000
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -922,14 +925,16 @@ extension KanaKanjiConverter {
                 penaltyForNounHoshii = Self.multiClauseNounHoshiiPenalty
             }
             // 様態の そう(かな)は形容動詞語幹の直後が正書(便利そう/元気そう/静かそう)。
-            // 形容動詞かどうかは LM の分布で判定する: prev→な の bigram 実績(便利→な 491/
-            // 静か→な 425 等)が「な が続く語=形容動詞語幹」の証拠。学生層 のように な が
-            // 続かない名詞の後は対象外(層/僧 等の実語彙を守る)。な はラティスの隣接ペア
-            // 先読み(bigramCosts)に載らないため store の点クエリ(キャッシュ済み)で引く。
+            // 形容動詞かどうかは LM の分布で判定する: prev→な の bigram コストが十分低い
+            // (便利→な491/静か→な425/元気→な1129 等、強い連体接続)ことが「形容動詞語幹」の
+            // 証拠。単なる名詞の偶発的 →な(馬→な2944 等)は閾値で除外する — でないと
+            // 馬+そう が誤クランプされ 旨そう(い形容詞派生)を潰す(うまそうではある→馬そう…)。
+            // な はラティスの隣接ペア先読みに載らないため store の点クエリ(キャッシュ済み)で引く。
             if surface == reading,
                 reading == "そう",
                 prev != Self.multiClauseBOSMarker,
-                store.wordLMBigramCosts(for: [(prev, "な")])["\(prev)\tな"] != nil {
+                let naCost = store.wordLMBigramCosts(for: [(prev, "な")])["\(prev)\tな"],
+                naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
             // 説明・詠嘆の のね/のよ は辞書形述語(ノードフラグ)直後のみ安価にクランプ
