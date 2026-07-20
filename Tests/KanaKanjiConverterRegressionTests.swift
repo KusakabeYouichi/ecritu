@@ -4032,6 +4032,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんで"))
     }
 
+    // うまそう: ユーザ好みで かな うまそう→旨そう→上手そう の順(様態そう。casual は かな)。
+    // 2143 で 旨そう 先頭にしたが、かな優先の希望に更新。seed で単文節の並びを固定。
+    func testRegressionRealLMUmasouKanaOrder() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "うまそう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["うまそう", "旨そう", "上手そう"], "single=\(single)")
+        // 馬そう(名詞+そう)は出さない(2143の閾値クランプ維持)
+        let multi = converter.multiClauseCandidates(for: "うまそうではある", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains(where: { $0.hasPrefix("馬そう") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
