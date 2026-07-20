@@ -269,6 +269,8 @@ final class KeyboardViewController: UIInputViewController {
     var hasDeferredSharedSettingsCatchUp = false
     var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     var didApplyInactiveSessionMitigation = false
+    // 最後に反映済みの設定変更世代。-1 は未初期化(初回表示で現在値に合わせるだけで破棄しない)。
+    var lastSeenSettingsChangeGeneration = -1
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -376,6 +378,10 @@ final class KeyboardViewController: UIInputViewController {
         static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
         static let keyboardDiagnosticsFailSafeProfile = "keyboardDiagnosticsFailSafeProfile"
         static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
+        // 設定変更の世代カウンタ(コンテナ app が変更のたび +1)。サスペンド中のキーボードが
+        // Darwin 通知を取りこぼしても、次のキーボード表示でこの値の変化を見て共有キャッシュを
+        // 破棄し、学習リセット等を確実に反映する。App 側 SettingsKeys と同一キー文字列。
+        static let settingsChangeGeneration = "settingsChangeGeneration"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
         }
@@ -521,6 +527,9 @@ final class KeyboardViewController: UIInputViewController {
         diagnosticsState.memoryWarningCountThisSession = 0
         kanaKanjiConverter.store.allowSQLiteReopenAfterMemoryPressure()
         kanaKanjiConverter.store.exitConstrainedMemoryCacheMode()
+        // サスペンド中に取りこぼした設定変更(学習リセット等)を、世代カウンタの変化で検知して
+        // 反映する。Darwin 通知を受け損ねても表示のたびに保険が効く。
+        applyMissedSharedSettingsChangeIfNeeded(trigger: "viewWillAppear")
 
         guard !shouldSuppressHeavyOperations(reason: "viewWillAppear") else {
             return
