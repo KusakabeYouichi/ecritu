@@ -82,6 +82,10 @@ enum SettingsKeys {
     static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
     static let keyboardDiagnosticsFailSafeProfile = "keyboardDiagnosticsFailSafeProfile"
     static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
+    // 設定変更の世代カウンタ。postSettingsDidChange のたびに +1 され、キーボード拡張が
+    // 通知取りこぼし後も次回表示で共有キャッシュを破棄・再読込するのに使う(学習リセット等の
+    // 確実な反映)。KeyboardExtension 側 SharedDefaultsKeys と同一キー文字列。
+    static let settingsChangeGeneration = "settingsChangeGeneration"
 }
 
 enum RepeatSettings {
@@ -510,6 +514,14 @@ enum SettingsSyncNotification {
     }
 
     static func postSettingsDidChange() {
+        // 世代カウンタを進める(コンテナ app が唯一の書き手なので単純 read+1+write で安全)。
+        // サスペンド中のキーボードが下の Darwin 通知を取りこぼしても、次回表示でこの変化を
+        // 検知して共有キャッシュを破棄する保険になる。
+        if let defaults = UserDefaults(suiteName: SettingsKeys.appGroupID) {
+            let next = defaults.integer(forKey: SettingsKeys.settingsChangeGeneration) &+ 1
+            defaults.set(next, forKey: SettingsKeys.settingsChangeGeneration)
+        }
+
         let notificationName = CFNotificationName(darwinNotificationName as CFString)
 
         CFNotificationCenterPostNotification(

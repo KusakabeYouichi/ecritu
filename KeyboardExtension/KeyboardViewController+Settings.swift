@@ -116,9 +116,51 @@ extension KeyboardViewController {
             }
 
             self.hasDeferredSharedSettingsCatchUp = false
+            // 通知を正常処理できた時点でキャッシュは破棄済み。世代カウンタを現在値に
+            // 合わせ、次の viewWillAppear で二重破棄しないようにする。
+            self.syncLastSeenSettingsChangeGeneration()
             self.refreshContactCandidatesIfNeeded(force: true)
             self.refreshKeyboardState(trigger: "settingsChanged")
         }
+    }
+
+    // 設定変更世代カウンタの現在値を「反映済み」として記録する。
+    func syncLastSeenSettingsChangeGeneration() {
+        guard let sharedDefaults else {
+            return
+        }
+        lastSeenSettingsChangeGeneration = sharedDefaults.integer(
+            forKey: SharedDefaultsKeys.settingsChangeGeneration
+        )
+    }
+
+    // サスペンド等で Darwin 通知を取りこぼした設定変更(学習リセット/追加語彙編集等)を、
+    // 世代カウンタの変化で検知して共有データキャッシュを破棄する。変化が無ければ無コスト。
+    // 高価な LM 点キャッシュ(wordLM/wordCosts)は clearSharedDataCaches の対象外なので、
+    // コールド化(初回変換の大幅遅延)は起きない — 破棄されるのは学習/追加語彙と候補結果のみ。
+    func applyMissedSharedSettingsChangeIfNeeded(trigger: String) {
+        guard let sharedDefaults else {
+            return
+        }
+        let generation = sharedDefaults.integer(
+            forKey: SharedDefaultsKeys.settingsChangeGeneration
+        )
+        // 未初期化(セッション開始直後)は、フレッシュに defaults を読むため破棄不要。現在値に合わせる。
+        guard lastSeenSettingsChangeGeneration >= 0 else {
+            lastSeenSettingsChangeGeneration = generation
+            return
+        }
+        guard generation != lastSeenSettingsChangeGeneration else {
+            return
+        }
+        lastSeenSettingsChangeGeneration = generation
+        kanaKanjiConverter.clearSharedDataCaches()
+        appendKeyboardDiagnosticsLog(
+            "取りこぼした設定変更を表示時に反映(世代=\(generation)) trigger=\(trigger)",
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
     }
 
     func sharedStringValue(
