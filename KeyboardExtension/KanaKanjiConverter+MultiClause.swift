@@ -370,8 +370,22 @@ extension KanaKanjiConverter {
                     if !exemptDecorative, isRendakuHarvestSurface(surface, reading: segmentReading) {
                         return
                     }
+                    // かな正書の述語(ある 等)はどの供給経路(curated/seed/word_costs)でも
+                    // 辞書形述語として扱う。curated(追加語彙 ある→ある)が先着すると dfp=false で
+                    // 入り、後続 a2 seed の dfp=true が dedup で失われ、のね/のよ クランプが
+                    // 効かず 有るのね に負ける(あるのね 事件)。供給元に依らず確定させる。
+                    var resolvedDFP = isDictionaryFormPredicate
+                    if surface == segmentReading,
+                        Self.multiClauseKanaPredicateIdentities.contains(segmentReading) {
+                        resolvedDFP = true
+                    }
                     if seenSurfaces.insert(surface).inserted {
-                        surfaces.append((surface, isDictWord, isCurated, isInflectionDerived, wordCost, isDictionaryFormPredicate))
+                        surfaces.append((surface, isDictWord, isCurated, isInflectionDerived, wordCost, resolvedDFP))
+                    } else if resolvedDFP,
+                        let index = surfaces.firstIndex(where: { $0.surface == surface }),
+                        !surfaces[index].isDictionaryFormPredicate {
+                        // 既に dfp=false で入っている かな述語を後続供給で dfp=true に格上げ。
+                        surfaces[index].isDictionaryFormPredicate = true
                     } else if isInflectionDerived,
                         surface == segmentReading,
                         let index = surfaces.firstIndex(where: { $0.surface == surface }),

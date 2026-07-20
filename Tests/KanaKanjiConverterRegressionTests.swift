@@ -3837,6 +3837,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 除去され末尾の かな確定チップに一本化されていた。のね/のよ を根拠判定に追加。
     func testRegressionRealLMArunoneKeepsKanaCandidate() throws {
         try prepareRealLMDictionary()
+        // 実機同等の全語彙注入(curated ある→ある が dfp=false で先着し のね クランプを
+        // 失わせる回帰の再現。エンジン直呼びだけでは検出できない=ろーま事件の教訓)
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let dict = try JSONDecoder().decode([String: [String]].self, from: data)
+            for (reading, candidates) in dict {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let converter = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
         let multi = converter.multiClauseCandidates(for: "あるのね", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "あるのね", "multi=\(multi)")
         // 提示層がかな候補を除去せず残す根拠(のね を剥がした ある が辞書かな語)
@@ -3865,6 +3879,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "なはではこれです", systemCandidateMode: .surface).first, "那覇ではこれです")
         XCTAssertEqual(converter.multiClauseCandidates(for: "おおきなはこ", systemCandidateMode: .surface).first, "大きな箱")
     }
+
 
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
