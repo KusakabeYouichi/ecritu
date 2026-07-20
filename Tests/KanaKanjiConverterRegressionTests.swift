@@ -3832,6 +3832,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi.prefix(2)), ["あるのね", "有るのね"], "multi=\(multi)")
     }
 
+    // あるのね: エンジン multi は あるのね を先頭にできる(2132)が、提示層の
+    // shouldKeepKanaIdentityLeading が のね/のよ(説明終助詞)未対応で、かな候補が
+    // 除去され末尾の かな確定チップに一本化されていた。のね/のよ を根拠判定に追加。
+    func testRegressionRealLMArunoneKeepsKanaCandidate() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "あるのね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "あるのね", "multi=\(multi)")
+        // 提示層がかな候補を除去せず残す根拠(のね を剥がした ある が辞書かな語)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるのね"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひらがなのは"))
+        // 語幹が2字未満(のね だけ)は対象外(空語幹で誤発火しない)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "のね"))
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

@@ -583,10 +583,11 @@ final class KanaKanjiConverter {
         if systemCandidates(for: normalized, mode: .lesDeux).contains(normalized) {
             return true
         }
-        // 名詞化節(のは/のが 等)付きの読みは、剥がした語幹が辞書のかな語(ひらがな 等)
-        // なら根拠ありとする(ひらがなのは: 合成でかな全文一致になるが、かなが正書の語幹
-        // +かなが唯一の正書の名詞化節、なので変換としてのかなを候補に残す)。
-        for suffix in ["のは", "のが", "のも", "のを", "のに"] where normalized.hasSuffix(suffix) {
+        // 名詞化節(のは/のが 等)・説明の のね/のよ 付きの読みは、剥がした語幹が辞書の
+        // かな語(ひらがな/ある 等)なら根拠ありとする(ひらがなのは/あるのね: 合成でかな
+        // 全文一致になるが、かなが正書の語幹+かなが唯一の正書の節、なので変換としてのかなを
+        // 候補に残す。提示層は 2122 の位置維持で上位2件ならその位置を保つ)。
+        for suffix in ["のは", "のが", "のも", "のを", "のに", "のね", "のよ"] where normalized.hasSuffix(suffix) {
             let stem = String(normalized.dropLast(suffix.count))
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
                 return true
