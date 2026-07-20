@@ -185,6 +185,14 @@ extension KanaKanjiConverter {
     // 検索機能 等の複合も bigram 分岐が勝つ。unigram 分岐限定のキャップ。
     static let multiClauseConversationalTemporalNounSurfaces: Set<String> = ["昨日"]
     static let multiClauseTemporalNounUnigramCap = 4300
+    // 単漢字名詞→動詞の無助詞接続の減点。日本語で名詞が動詞に直接続くには助詞が要る
+    // (どうみせる→同見せる/道見せる の 同/道 は音読み接辞で、主語・目的語として裸で
+    // 動詞の前に立たない)。A単位分割由来で接辞断片の unigram は安く(同4323 ≪ どう4771)、
+    // 床上げ(wc)後も どう(かな識別の床 5271)を279差で下回るため、文法側から減点する。
+    // 減点は「単漢字+動詞」の候補同士では等しく掛かり相対順を変えない(花咲く/腹減った 等の
+    // 助詞落ち口語は競合もかな識別=床上げ済みのため逆転しない)。かな識別を wc で安くする
+    // 案(どう=4200)は そうしん→そう+しん 等の語中分断を生むため不採用(2118検証)。
+    static let multiClauseSingleKanjiNounBeforeVerbPenalty = 600
     // 辞書/変換にはあるがコーパス(LM)未収録の語。unigram 最大(8139)+バックオフ(500)より
     // 上に置き「どの既知語よりレア」として扱う。以前の 6000 は LM 中央値(7649)より安く、
     // 八津(OOV)が 奴(unigram 5963)に勝つ・ちゃ〜んと が ちゃんと に勝つ等の OOV 逆転を
@@ -780,6 +788,14 @@ extension KanaKanjiConverter {
             }
             var penalty = 0
             penalty += penaltyForNounHoshii
+            // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
+            // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
+            if prev.count == 1,
+                containsKanji(prev),
+                !prevIsInflectionDerived,
+                isInflectionDerived || isDictionaryFormPredicate {
+                penalty += Self.multiClauseSingleKanjiNounBeforeVerbPenalty
+            }
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
             // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に
             // 引っかからない語)なので対象外 — LM が既に価格付けしており二重減点は不当。

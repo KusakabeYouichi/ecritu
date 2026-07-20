@@ -3633,6 +3633,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 単漢字名詞→動詞の無助詞接続の減点: 同/道(どう)等の音読み接辞単漢字は裸で動詞の
+    // 前に立たないが、A単位分割で unigram が安く(同4323 ≪ どう4771)、床上げ後も かな
+    // 副詞 どう を279差で下回っていた(どうみせる→同見せる)。文法減点(600)で是正。
+    // かな識別を wc で安くする案は そうしん→そう+しん の語中分断を生むため不採用。
+    func testRegressionRealLMDoumiseruPrefersAdverb() throws {
+        try prepareRealLMDictionary()
+        for (input, expectedFirst) in [
+            ("どうみせる", "どう見せる"),
+            ("こうみせる", "こう見せる"),
+            ("そうみせる", "そう見せる")
+        ] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expectedFirst, "input=\(input) multi=\(multi)")
+        }
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
