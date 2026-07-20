@@ -3995,6 +3995,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi.prefix(3)), ["会ったが", "合ったが", "あったが"], "multi=\(multi)")
     }
 
+    // おととし: dict は 一昨年0/おととし1 のみ。一昨年 wc9096 が高く、単文節は かな識別先頭化、
+    // 連文節は 弟(おとと)+誌(し) 等の断片合成に負けていた(弟誌の)。seed で単文節先頭化+
+    // curated で連文節の区切りを勝たせる。弟誌/弟し/音とし は実語でなく合成。
+    func testRegressionRealLMOtotoshiPrefersYear() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "おととし", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "一昨年", "single=\(single)")
+        converter.store.addUserEntry(reading: "おととし", candidate: "一昨年")
+        let multi = converter.multiClauseCandidates(for: "おととしの", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "一昨年の", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("弟誌") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
