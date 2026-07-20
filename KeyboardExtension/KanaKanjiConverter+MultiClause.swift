@@ -177,14 +177,19 @@ extension KanaKanjiConverter {
     static let multiClauseEOSMarker = "<EOS>"
     // LM コスト定数(cost = -logP × scale, scale=500 で学習)。sim_lm.py で検証した値と一致させる。
     static let multiClauseBackoffCost = 500         // bigram 未観測・unigram 既知
-    // 会話的時相名詞の unigram キャップ。Wikipedia コーパスは 昨日(uni 6869)を
-    // 機能(4237)より大幅に過小評価し、昨日→は1126/の846 の実 bigram 優位(機能→は1371/
-    // の1296 との差245〜450)すら uni 差2632が飲み込む(きのうは→機能は 等)。会話で
-    // 頻出の時相名詞は 機能+backoff(4737)よりわずかに安い水準へ底上げする。観測 bigram
-    // (機能→が1112。昨日→が は未観測)より弱いので きのうが→機能が は保たれ、
-    // 検索機能 等の複合も bigram 分岐が勝つ。unigram 分岐限定のキャップ。
-    static let multiClauseConversationalTemporalNounSurfaces: Set<String> = ["昨日"]
-    static let multiClauseTemporalNounUnigramCap = 4300
+    // 会話的時相名詞の unigram キャップ(表層→キャップ値)。Wikipedia コーパスは
+    // 昨日(uni 6869)を 機能(4237)より、最近(5294)を 細菌(5259)より過小評価し、
+    // 昨日→は1126/最近→は1138 の実 bigram 優位すら uni 差が飲み込む(きのうは→機能は、
+    // さいきんは→細菌は)。値は同音競合との均衡で表層ごとに調整する:
+    // - 昨日 4300: 機能+backoff(4737)より安く、機能→が1112(昨日→が未観測)よりは弱い
+    //   → きのうが→機能が は保たれる
+    // - 最近 5000: 細菌→は1097 には勝ち(cap+1138 < 5759+1097 ⇔ cap<5718)、
+    //   細菌→が1334 には負ける(cap+2533 > 7093 ⇔ cap>4560)→ さいきんが→細菌が 維持
+    // 検索機能 等の複合は bigram 分岐が勝つ。unigram 分岐限定のキャップ。
+    static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
+        "昨日": 4300,
+        "最近": 5000
+    ]
     // 単漢字名詞→動詞の無助詞接続の減点。日本語で名詞が動詞に直接続くには助詞が要る
     // (どうみせる→同見せる/道見せる の 同/道 は音読み接辞で、主語・目的語として裸で
     // 動詞の前に立たない)。A単位分割由来で接辞断片の unigram は安く(同4323 ≪ どう4771)、
@@ -705,9 +710,9 @@ extension KanaKanjiConverter {
                     base = max(base, wordCost)
                 }
                 // 会話的時相名詞の unigram キャップ(定数コメント参照)。観測 bigram
-                // (機能→が 1112 等)には及ばない水準なので、きのうが→機能が は保たれる。
-                if Self.multiClauseConversationalTemporalNounSurfaces.contains(surface) {
-                    base = min(base, Self.multiClauseTemporalNounUnigramCap)
+                // (機能→が/細菌→が 等)には及ばない水準なので が 文脈は同音側が保たれる。
+                if let temporalCap = Self.multiClauseConversationalTemporalNounUnigramCaps[surface] {
+                    base = min(base, temporalCap)
                 }
             } else if isInflectionDerived {
                 // 格助詞・複合助詞(には/では 等)の直後は述語が続くのが自然なので割引する。

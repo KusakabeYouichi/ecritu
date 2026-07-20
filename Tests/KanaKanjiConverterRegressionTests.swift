@@ -3681,6 +3681,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(gakusei.first, "学生層", "multi=\(gakusei)")
     }
 
+    // Wikipedia LM は 細菌(uni 5259/は1097)を 最近(5294/は1138)より僅かに安く見て
+    // さいきんは→細菌は になる(きのう/機能 と同族)。時相名詞キャップを表層別の値に
+    // 拡張し 最近=5000 を追加(細菌→が1334 には勝たない水準で が 文脈は細菌を維持)。
+    // 細きん(交ぜ書き収穫)は suppr。細瑾(古語: わずかな傷)は正当な収録として末尾残存。
+    func testRegressionRealLMSaikinPrefersRecentInContext() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["さいきん": ["細きん"]])
+        for (input, expectedFirst) in [
+            ("さいきんは", "最近は"),
+            ("さいきんの", "最近の"),
+            ("さいきんも", "最近も"),
+            ("さいきんが", "細菌が")
+        ] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expectedFirst, "input=\(input) multi=\(multi)")
+        }
+        let single = converter.candidates(for: "さいきん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "最近", "single=\(single)")
+        XCTAssertFalse(single.contains("細きん"), "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
