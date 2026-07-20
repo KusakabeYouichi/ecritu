@@ -227,6 +227,8 @@
 	<!-- 甲虫(かぶとむし): 主読みは こうちゅう。かぶとむし では exactReadingOnlySeed の
 	     完全一致末尾供給へ移す(かぶとむしも 等の合成で先頭を取るため) -->
 	<dict><key>phrase</key><string>甲虫</string><key>shortcut</key><string>かぶとむし</string></dict>
+	<!-- 細きん(さいきん): 細菌 の交ぜ書き収穫(菌 だけかな)。意味のない表記ゆれなので抑制 -->
+	<dict><key>phrase</key><string>細きん</string><key>shortcut</key><string>さいきん</string></dict>
 	<!-- 酤う/支う/交う: かう の古語・レア表記(酤う=酒を売る古語、支う=つっかえ棒の方言、交う=飛び交う等の複合専用)。買って/飼って の派生に混じり、勝って(かつ由来)を語幹上限の外へ押し出す(かってほしい→勝ってほしい欠落) -->
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>
 	<dict><key>phrase</key><string>支う</string><key>shortcut</key><string>かう</string></dict>
