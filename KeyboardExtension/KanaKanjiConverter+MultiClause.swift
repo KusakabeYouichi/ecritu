@@ -1032,12 +1032,13 @@ extension KanaKanjiConverter {
         let lastIsKanaConditionalNara = Self.multiClauseConditionalParticleReadings.contains(lastNode.reading)
             && lastNode.surface == lastNode.reading
             && (lastPrevNode.map { Self.isPredicateLikePrevForConditional($0) } ?? false)
-        // 文末がかなの格助詞/複合助詞(ここでは/そこには 等の話題断片)も対象外 —
-        // 格助詞はかなが唯一の正書で、これを抑制すると変種の漢字化(個々では)が
-        // 最良に繰り上がってしまう。
+        // 文末がかなの格助詞/複合助詞(ここでは/そこには 等の話題断片)や名詞化節
+        // (ひらがなのは 等)も対象外 — これらはかなが唯一の正書で、抑制すると変種の
+        // 漢字化(個々では)が最良に繰り上がってしまう。
         let lastIsKanaCaseParticle = lastNode.surface == lastNode.reading
             && (Self.multiClauseCaseParticleSurfaces.contains(lastNode.surface)
-                || Self.multiClauseCompoundParticles.contains(lastNode.surface))
+                || Self.multiClauseCompoundParticles.contains(lastNode.surface)
+                || Self.multiClauseNominalizerSurfaces.contains(lastNode.surface))
         let lastIsKanaFinalParticle = (Self.multiClauseFinalParticleReadings.contains(lastNode.reading)
             && lastNode.surface == lastNode.reading)
             || lastIsKanaConditionalNara
@@ -1163,14 +1164,23 @@ extension KanaKanjiConverter {
                     continue
                 }
                 // 入力そのままの全かな変種は原則捨てる(エコー防止)が、経路に curated ノード
-                // を含むならかな結果が正書の変換なので許す(best 経路の抑制ルールと同じ例外。
-                // やめるべし: 止める→やめる 差し替えで全かなになるが べし が curated)。
+                // を含む(やめるべし: べし が curated)か、末尾がかなの助詞/名詞化節
+                // (ひらがなのは: 語幹かな差し替え+のは)なら、かな結果が正書の変換なので
+                // 許す(best 経路の抑制ルールと同じ例外)。
                 if variantJoined == normalized {
                     let variantHasCurated = alt.isCurated
                         || pathIndices.enumerated().contains(where: {
                             $0.offset != pos && nodes[$0.element].isCurated
                         })
-                    if !variantHasCurated {
+                    let lastVariantNode = pos == pathIndices.count - 1
+                        ? alt
+                        : nodes[pathIndices[pathIndices.count - 1]]
+                    let variantEndsWithKanaParticle = lastVariantNode.surface == lastVariantNode.reading
+                        && (Self.multiClauseFinalParticleReadings.contains(lastVariantNode.reading)
+                            || Self.multiClauseCaseParticleSurfaces.contains(lastVariantNode.surface)
+                            || Self.multiClauseCompoundParticles.contains(lastVariantNode.surface)
+                            || Self.multiClauseNominalizerSurfaces.contains(lastVariantNode.surface))
+                    if !variantHasCurated && !variantEndsWithKanaParticle {
                         continue
                     }
                 }

@@ -3702,6 +3702,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("細きん"), "single=\(single)")
     }
 
+    // ひらがなのは のかな全文一致を候補2位に: ①変種エコー免除に「末尾がかなの助詞/
+    // 名詞化節」を追加(bestの免除と同期)→連文節が ひらがなのは を変種2位に出せる。
+    // ②かな正書根拠に「名詞化節(のは等)を剥がした語幹が辞書かな語」を追加。
+    // ③提示層は根拠あり+2位以内のかな識別を位置維持(かってみようかな 型の防護は継続)。
+    func testRegressionRealLMHiraganaNohaKanaSecond() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["は": ["者"]])
+        let multi = converter.multiClauseCandidates(for: "ひらがなのは", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["平仮名のは", "ひらがなのは"], "multi=\(multi)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひらがなのは"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"))
+        // 既存の名詞化節挙動は不変
+        let kaku = converter.multiClauseCandidates(for: "かくのがすき", systemCandidateMode: .surface)
+        XCTAssertEqual(kaku.first, "描くのが好き", "multi=\(kaku)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
