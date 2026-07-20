@@ -3616,6 +3616,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(friday.first, "金曜日に", "multi=\(friday)")
     }
 
+    // 終助詞の長音形 のー/かなー/よねー が終助詞クラスタから漏れ、外来語 ノー(wc2627)等の
+    // カタカナ化が文末を取っていた(いったのー→行ったノー)。クラスタ追加+のー の床免除
+    // (wc10379 の床上げが ノー+EOS減点3000 を116差で下回る)で、かな長音形を文末正書に。
+    func testRegressionRealLMIttanoElongatedFinalParticle() throws {
+        try prepareRealLMDictionary()
+        for (input, expectedFirst) in [
+            ("いったのー", "行ったのー"),
+            ("たべたのー", "食べたのー"),
+            ("いったかなー", "行ったかなー"),
+            ("いったよねー", "行ったよねー")
+        ] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expectedFirst, "input=\(input) multi=\(multi)")
+            XCTAssertFalse(multi.contains(where: { $0.contains("ノー") || $0.contains("カナー") }), "multi=\(multi)")
+        }
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
