@@ -238,6 +238,8 @@
 	<!-- 永穂(なんごう): 沖縄読谷村の地名 永穂 の読みは なんご(なんご 側は収録済み)。
 	     なんごう は SudachiDict の異読/誤り疑いのため抑制 -->
 	<dict><key>phrase</key><string>永穂</string><key>shortcut</key><string>なんごう</string></dict>
+	<!-- カ申(かみ): 神 の分解ノイズ収穫(カ+申)。意味のある語ではないので抑制 -->
+	<dict><key>phrase</key><string>カ申</string><key>shortcut</key><string>かみ</string></dict>
 	<!-- 酤う/支う/交う: かう の古語・レア表記(酤う=酒を売る古語、支う=つっかえ棒の方言、交う=飛び交う等の複合専用)。買って/飼って の派生に混じり、勝って(かつ由来)を語幹上限の外へ押し出す(かってほしい→勝ってほしい欠落) -->
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>
 	<dict><key>phrase</key><string>支う</string><key>shortcut</key><string>かう</string></dict>
