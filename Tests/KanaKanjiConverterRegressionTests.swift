@@ -3662,6 +3662,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains("甲虫も"), "multi=\(multi)")
     }
 
+    // 様態の そう は形容動詞語幹の直後がかな正書(便利そう)だが、層/僧/草 等の単漢字が
+    // 先行していた(げんきそう→弦競う、たいへんそう→対変装 まで)。形容動詞判定は LM 分布
+    // (prev→な の bigram 実績)で行い、な が続かない名詞の後(学生層=実在語)は触らない。
+    func testRegressionRealLMNaAdjectiveSouPrefersKana() throws {
+        try prepareRealLMDictionary()
+        for (input, expectedFirst) in [
+            ("べんりそう", "便利そう"),
+            ("げんきそう", "元気そう"),
+            ("しずかそう", "静かそう"),
+            ("たいへんそう", "大変そう")
+        ] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expectedFirst, "input=\(input) multi=\(multi)")
+        }
+        // な が続かない名詞+そう は対象外(学生層 は実在語)
+        let gakusei = converter.multiClauseCandidates(for: "がくせいそう", systemCandidateMode: .surface)
+        XCTAssertEqual(gakusei.first, "学生層", "multi=\(gakusei)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
