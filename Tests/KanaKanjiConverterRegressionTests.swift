@@ -3807,6 +3807,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("二本円") || $0.contains("2本円") }), "multi=\(multi)")
     }
 
+    // かみ: 日常頻度順(紙/髪/神/上)。カ申(神 の分解ノイズ)は suppr。
+    func testRegressionRealLMKamiDailyOrder() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かみ": ["カ申"]])
+        let single = converter.candidates(for: "かみ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["紙", "髪", "神", "上"], "single=\(single)")
+        XCTAssertFalse(single.contains("カ申"), "single=\(single)")
+    }
+
+    // なはし→那覇市(dict rank0 だが 那覇+し 等の合成分割に沈む)。seed で先頭固定。
+    func testRegressionRealLMNahashiPrefersNahaCity() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "なはし", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "那覇市", "single=\(single)")
+    }
+
+    // あるのね: 存在動詞 ある はかなが正書だが、床上げ(wc6465)+のね クランプが辞書形述語
+    // 直後限定で かな ある が述語フラグを持たず 有るのね に負けていた。床免除+かな述語識別
+    // +のね/のよ の全かなエコー免除で あるのね を先頭に。
+    func testRegressionRealLMArunoneKanaFirst() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "あるのね", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["あるのね", "有るのね"], "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
