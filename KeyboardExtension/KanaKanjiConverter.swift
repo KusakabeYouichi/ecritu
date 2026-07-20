@@ -588,7 +588,14 @@ final class KanaKanjiConverter {
         // 全文一致になるが、かなが正書の語幹+かなが唯一の正書の節、なので変換としてのかなを
         // 候補に残す。提示層は 2122 の位置維持で上位2件ならその位置を保つ)。
         for suffix in ["のは", "のが", "のも", "のを", "のに", "のね", "のよ"] where normalized.hasSuffix(suffix) {
-            let stem = String(normalized.dropLast(suffix.count))
+            var stem = String(normalized.dropLast(suffix.count))
+            // コピュラ「な」を挟む形(ひらがなな+のは=ひらがな+な+のは)は な も剥がす。
+            if stem.count >= 3, stem.hasSuffix("な") {
+                let withoutCopula = String(stem.dropLast())
+                if systemCandidates(for: withoutCopula, mode: .lesDeux).contains(withoutCopula) {
+                    return true
+                }
+            }
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
                 return true
             }
