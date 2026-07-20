@@ -3794,6 +3794,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "何号車と何番線", "multi=\(multi)")
     }
 
+    // にほん→二本/2本 の学習があると にほんえん が [二本][円] に割れ、第1文節の変種
+    // (2本円/二本円/にほん円)が 勝ち の変種枠を潰す(実機報告)。日本円 を curated 供給
+    // して1ノードで区切りを勝たせ、日本円 先頭固定+勝ち の温存を両立する。
+    func testRegressionRealLMNihonenNoKachiKeepsBoth() throws {
+        try prepareRealLMDictionary()
+        converter.store.incrementLearning(reading: "にほん", candidate: "二本")
+        converter.store.incrementLearning(reading: "にほん", candidate: "2本")
+        converter.store.addUserEntry(reading: "にほんえん", candidate: "日本円")
+        let multi = converter.multiClauseCandidates(for: "にほんえんのかち", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["日本円の価値", "日本円の勝ち"], "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("二本円") || $0.contains("2本円") }), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
