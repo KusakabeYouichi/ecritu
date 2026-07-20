@@ -3718,6 +3718,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaku.first, "描くのが好き", "multi=\(kaku)")
     }
 
+    // てかず: かな識別が既定で先頭化し 手数 が2番手だった。どちらも実用のため seed で
+    // 手数→てかず の順に固定(かなは2位維持=提示層の位置維持(2122)で候補に残る)。
+    func testRegressionRealLMTekazuPrefersKanji() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "てかず", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["手数", "てかず"], "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
