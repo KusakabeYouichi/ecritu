@@ -3945,6 +3945,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
 
+    // 様態そう: 旨そう/上手そう(い形容詞語幹+そう)が 馬(名詞)+そう の分割に負けていた。
+    // 真因は 馬→な bigram(2944)の存在で 2120 の形容動詞クランプが誤発火し 馬+そう を激安化。
+    // →な コスト閾値(2000)で形容動詞(便利491/元気1129)と偶発名詞(馬2944)を分離。
+    func testRegressionRealLMUmasouPrefersAdjective() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "うまそうではある", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "旨そうではある", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.hasPrefix("馬そう") }), "multi=\(multi)")
+        // 形容動詞+そう(便利そう)は閾値内なのでクランプ維持
+        let benri = converter.multiClauseCandidates(for: "べんりそうだ", systemCandidateMode: .surface)
+        XCTAssertEqual(benri.first, "便利そうだ", "benri=\(benri)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
