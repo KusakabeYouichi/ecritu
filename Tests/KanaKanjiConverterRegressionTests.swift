@@ -3893,6 +3893,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(hito.first, "人に会った", "multi=\(hito)")
     }
 
+    // みたにある: みたに→三谷(姓グロブ 3char単ノード)が [三田][に][ある] locative を
+    // preempt して 〜にある が一切出なかった。姓グロブを suppr+exactReadingOnlySeed へ移し、
+    // みたにある→三田にある を通す。映画を見た/昨日見た(見た は 三田 に化けない)は維持。
+    func testRegressionRealLMMitaniAruLocative() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["みたに": ["三谷", "三渓", "水谷", "三谿", "参谷", "味谷", "己谷", "巳谷", "未谷", "美歎", "美谷", "見谷"]])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みたにある", systemCandidateMode: .surface).first, "三田にある")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "えいがをみた", systemCandidateMode: .surface).first, "映画を見た")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きのうみた", systemCandidateMode: .surface).first, "昨日見た")
+        // 三谷 は みたに 完全一致でのみ供給(合成には出さない)
+        let mitani = converter.candidates(for: "みたに", limit: 30, systemCandidateMode: .surface)
+        XCTAssertTrue(mitani.contains("三谷"), "mitani=\(mitani)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
