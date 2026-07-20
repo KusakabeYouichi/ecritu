@@ -111,6 +111,14 @@ extension KanaKanjiConverter {
     // あう の出し分けペナルティ。LM 差(に→会っ/合っ が約90)を確実に超え、かつ他の
     // 構造(床/クランプ)を乱さない中庸値。非優先側の 会/合 表層にだけ課す。
     static let multiClauseAuPersonMismatchPenalty = 900
+    // b2 活用供給のスパン先頭(seed/辞書順で最優先)の活用形に与える連文節ボーナス。
+    // 同音活用(使えた/仕えた/支えた)が僅差 LM で沈むのを人手の並びで是正。汎用適用は
+    // 見た/呼んだ 等の別動詞を潰すため、下記 allowlist の基底読みに限定する。
+    // 分割経路([支え][た] の 支え→た bigram)まで覆すため大きめの値が要る。
+    static let multiClausePreferredInflectionBonus = 800
+    // 連文節でも seed 順を勝たせたい活用の基底読み(オプトイン)。span を脱活用して
+    // ここに含まれる基底になる場合のみ、スパン先頭活用形にボーナスを与える。
+    static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -384,6 +392,11 @@ extension KanaKanjiConverter {
 
         // --- 1. ラティスのノード列挙 ---
         var nodes: [MultiClauseNode] = []
+        // b2 活用供給の各スパン先頭(orderedDerivationBaseCandidates=seed/辞書順で最優先)の
+        // 活用形ノードのキー("start-end-surface")。連文節でも seed の並び意図を効かせるため、
+        // DP でこのノードに軽いボーナスを与える(単文節の seed leading boost の連文節版)。
+        // 同音の活用(使えた/仕えた/支えた)が僅差 LM で沈むのを、人手の並びで是正する。
+        var preferredInflectedNodeKeys = Set<String>()
         var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
         var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
@@ -589,6 +602,22 @@ extension KanaKanjiConverter {
                 //      活用ルール末尾文字に一致する読みのみ、上位3件に限定。
                 if inflectionSupplyGateSatisfied {
                     let inflected = cachedInflectedCandidates()
+                    // このスパンを脱活用した基底読みが seed順ボーナス allowlist に含まれるか。
+                    // (つかえた/つかえ→つかえる 等。含まれる時だけ先頭活用形にボーナス)
+                    let spanBaseInSeedOrderAllowlist: Bool = {
+                        guard let lastChar = segmentReading.last,
+                            let rules = Self.deinflectionRulesByReadingLastCharacter[lastChar] else {
+                            return false
+                        }
+                        for rule in rules where !rule.readingSuffix.isEmpty && segmentReading.hasSuffix(rule.readingSuffix) {
+                            let stem = segmentReading.dropLast(rule.readingSuffix.count)
+                            guard !stem.isEmpty else { continue }
+                            if Self.multiClauseSeedOrderInflectionBaseReadings.contains(stem + rule.baseReadingSuffix) {
+                                return true
+                            }
+                        }
+                        return false
+                    }()
                     // かな識別(surface==読み)は原則除外(かなエコー防止)。ただし活用エンジンが
                     // かなを第1候補に据えた場合=基底並べ替えが isLMKanaPreferred でかな基底を
                     // 先頭化した場合(なる 3405≪成る/ある/いる/できる 等、かなが LM 優位な動詞)は、
@@ -604,6 +633,12 @@ extension KanaKanjiConverter {
                             continue
                         }
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        // スパン先頭(seed/辞書順で最優先)の漢字活用形を連文節ボーナス対象に
+                        // 記録。ただし基底読みが allowlist の時のみ(見た/呼んだ 等への波及回避)。
+                        if suppliedInflectionCount == 0, surface != segmentReading,
+                            spanBaseInSeedOrderAllowlist {
+                            preferredInflectedNodeKeys.insert("\(start)-\(end)-\(surface)")
+                        }
                         suppliedInflectionCount += 1
                         if suppliedInflectionCount >= Self.multiClauseInflectionTopK {
                             break
@@ -955,6 +990,10 @@ extension KanaKanjiConverter {
         for boundary in 1...n {
             for idx in nodesEndingAt[boundary] {
                 let node = nodes[idx]
+                // スパン先頭(seed/辞書順で最優先)の活用形へのボーナス(定数コメント参照)。
+                let preferredInflectionBonus = preferredInflectedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                    ? Self.multiClausePreferredInflectionBonus
+                    : 0
                 if node.start == 0 {
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
@@ -966,7 +1005,7 @@ extension KanaKanjiConverter {
                         isInflectionDerived: node.isInflectionDerived,
                         wordCost: node.wordCost,
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate
-                    )
+                    ) - preferredInflectionBonus
                     if cost < best[idx] {
                         best[idx] = cost
                         backPointer[idx] = -1
@@ -990,7 +1029,7 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
                         prevIsInflectionDerived: prevNode.isInflectionDerived
-                    )
+                    ) - preferredInflectionBonus
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
                     if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,

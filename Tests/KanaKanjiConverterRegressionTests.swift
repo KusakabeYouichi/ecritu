@@ -3938,7 +3938,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "使えた", "single=\(single)")
         let single2 = converter.candidates(for: "つかえたのだが", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(single2.first, "使えたのだが", "single2=\(single2)")
+        // 連文節でも seed 順(使える/仕える/支える)。基底 つかえる の allowlist 限定ボーナスで
+        // 分割経路 [支え][た] を上回らせる。
+        let multi = converter.multiClauseCandidates(for: "つかえたのだが", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(3)), ["使えたのだが", "仕えたのだが", "支えたのだが"], "multi=\(multi)")
     }
+
 
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
