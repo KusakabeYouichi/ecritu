@@ -3772,6 +3772,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.dropFirst().first, "日本円の勝ち", "multi=\(multi)")
     }
 
+    // いるが: dict は イルガ(SudachiDict の外国人名収穫、wc3897)/入賀(レア姓)のみで、
+    // カタカナ名が先頭を取っていた。いる+が のかなが正書なので seed で先頭化。
+    func testRegressionRealLMIrugaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "いるが", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "いるが", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
