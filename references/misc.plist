@@ -255,7 +255,6 @@
 	<dict><key>phrase</key><string>ときは</string><key>shortcut</key><string>ときは</string></dict>
 	<dict><key>phrase</key><string>時は</string><key>shortcut</key><string>ときは</string></dict>
 	<!-- ある(動詞)はかなが正書(公用文基準)。全かな あるといいな 等がエコーガードで捨てられ 有る系変種が繰り上がるのを防ぐ -->
-	<dict><key>phrase</key><string>ある</string><key>shortcut</key><string>ある</string></dict>
 	<!-- 口語の「やつ」(物・人を指す)はかなが正書(奴 は乱暴な字面、八つ は数詞複合派生)。やつだけあって 等の慣用にも効く -->
 	<dict><key>phrase</key><string>やつ</string><key>shortcut</key><string>やつ</string></dict>
 	<!-- 否定過去「なかった」はかなが正書(〜がなかった)。無かった の派生に負けるうえ、長文では変種枠(3件)から押し出されて かな が消える。かな全長curatedで最良化(無かった は2位に残る) -->
