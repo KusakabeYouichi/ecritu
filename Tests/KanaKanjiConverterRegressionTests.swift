@@ -3750,6 +3750,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(3)), ["年", "念", "ねん"], "single=\(single)")
     }
 
+    // 田中(でんちゅう、wc12670=収穫底値)が表層 unigram(たなか 用途の4821)にタダ乗り
+    // して 電柱(6667)から区切りを奪っていた(方面(かたも)と同族の読み跨ぎ)。一般修正:
+    // wc>=10000 の表層は unigram があっても信頼せず harvest tier(9500)へ床上げ。
+    func testRegressionRealLMDenchuuPrefersDenchu() throws {
+        try prepareRealLMDictionary()
+        for input in ["でんちゅうから", "でんちゅうが", "でんちゅうまで"] {
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first?.hasPrefix("電柱"), true, "input=\(input) multi=\(multi)")
+        }
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
