@@ -165,6 +165,9 @@
 	<!-- 那覇(なは): 沖縄県都。unigram 6411 が高めで な+波 断片や全かなに負ける
 	     (なはでは→なはでは、なはではこれです→な波では)。curated で区切りを勝たせる -->
 	<dict><key>phrase</key><string>那覇</string><key>shortcut</key><string>なは</string></dict>
+	<!-- 一昨年(おととし): dict wc9096 が高く 弟(おとと)+誌(し) の断片合成に連文節で負ける。
+	     実語なので curated で区切りを勝たせる(おととしの→一昨年の) -->
+	<dict><key>phrase</key><string>一昨年</string><key>shortcut</key><string>おととし</string></dict>
 	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>なっちゃう</string><key>shortcut</key><string>なっちゃう</string></dict>
 	<dict><key>phrase</key><string>のか</string><key>shortcut</key><string>のか</string></dict>
