@@ -484,6 +484,106 @@ extension KanaKanjiConverter {
         return uniqueCandidates(from: derived)
     }
 
+    // 動詞の連用形(漢字)+ 指定接尾を生成する。丁寧接頭辞を伴わない素の連用形派生で、
+    // 「連用形+に(目的: 食べに来る/飲みに行く)」や「連用形+ながら」等の供給に使う。
+    // politePrefixRenyouCandidates の接頭辞なし版(空 prefix は shouldApplyPolitePrefix を
+    // 通らないため別関数にする)。renyouReading=たべ → 食べ+suffix、のみ → 飲み+suffix。
+    func verbRenyouPlusSuffixCandidates(
+        renyouReading: String,
+        trailingSuffix: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard !renyouReading.isEmpty else {
+            return []
+        }
+        var derived: [String] = []
+        // 一段: 基本形 = 連用形読み + る(食べ→食べる)
+        derived.append(contentsOf: verbRenyouStemsWithSuffix(
+            baseReading: renyouReading + "る",
+            expectedInflectionClass: InflectionClass.ichidan,
+            dictionaryEnding: "る",
+            renyouEnding: "",
+            trailingSuffix: trailingSuffix,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode
+        ))
+        // 五段: 連用形(i段)→ 基本形(u段)。飲み→飲む、書き→書く
+        for pattern in Self.godanPatterns where renyouReading.hasSuffix(pattern.iForm) {
+            guard let readingStem = removingSuffix(renyouReading, suffix: pattern.iForm) else {
+                continue
+            }
+            derived.append(contentsOf: verbRenyouStemsWithSuffix(
+                baseReading: readingStem + pattern.dictionaryEnding,
+                expectedInflectionClass: pattern.inflectionClass,
+                dictionaryEnding: pattern.dictionaryEnding,
+                renyouEnding: pattern.iForm,
+                trailingSuffix: trailingSuffix,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            ))
+        }
+        return uniqueCandidates(from: derived)
+    }
+
+    func verbRenyouStemsWithSuffix(
+        baseReading: String,
+        expectedInflectionClass: String,
+        dictionaryEnding: String,
+        renyouEnding: String,
+        trailingSuffix: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode
+    ) -> [String] {
+        guard !baseReading.isEmpty, !dictionaryEnding.isEmpty else {
+            return []
+        }
+        let baseCandidates = orderedDerivationBaseCandidates(
+            candidatesForReading(
+                baseReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            ),
+            reading: baseReading
+        )
+        guard !baseCandidates.isEmpty else {
+            return []
+        }
+        let metadata = inflectionMetadata(for: baseReading)
+        let userCandidateSet = Set(
+            combinedUserCandidates(for: baseReading, userDictionary: userDictionary)
+                + (initialUserDictionary[baseReading] ?? [])
+        )
+        var derived: [String] = []
+        for candidate in baseCandidates {
+            let resolvedClass = resolvedInflectionClass(
+                for: candidate,
+                baseReading: baseReading,
+                systemClassMap: metadata.classMap,
+                hasSystemMetadata: metadata.hasMetadata,
+                userCandidateSet: userCandidateSet
+            )
+            guard resolvedClass == expectedInflectionClass,
+                candidate.hasSuffix(dictionaryEnding) else {
+                continue
+            }
+            // かな基本形(食べる が かな のまま=辞書に漢字が無い)は連用形もかなになり
+            // 素通りと変わらないので除外(漢字連用形のみ供給)。
+            let stem = String(candidate.dropLast(dictionaryEnding.count))
+            let renyouSurface = stem + renyouEnding
+            guard renyouSurface != String(baseReading.dropLast(dictionaryEnding.count)) + renyouEnding else {
+                continue
+            }
+            derived.append(renyouSurface + trailingSuffix)
+        }
+        return uniqueCandidates(from: derived)
+    }
+
     func politePrefixRenyouCandidates(
         prefix: String,
         trailingSuffix: String,

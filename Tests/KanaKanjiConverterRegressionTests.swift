@@ -4008,6 +4008,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.contains("弟誌") }), "multi=\(multi)")
     }
 
+    // たべにきたとり→た紅来た鳥 等(食べに来た鳥 が出ない)。動詞連用形は活用エンジンの終点で
+    // 供給されず 食べ 単独ノードが立たない構造欠落。(b5)連用形+に を1単位供給+(b4c)カ変来る
+    // 供給+連用形+に直後の移動動詞ボーナスで 食べに来た鳥 を成立させる。机に置く/北風 は無影響。
+    func testRegressionRealLMRenyouNiMotion() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たべにきたとり", systemCandidateMode: .surface).first, "食べに来た鳥")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "のみにきた", systemCandidateMode: .surface).first, "飲みに来た")
+        // 名詞+に(机に置く)や 北風 は連用形が導出できず/移動動詞でないので無影響
+        XCTAssertEqual(converter.multiClauseCandidates(for: "つくえにおく", systemCandidateMode: .surface).first, "机に置く")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きたかぜがつよい", systemCandidateMode: .surface).first, "北風が強い")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

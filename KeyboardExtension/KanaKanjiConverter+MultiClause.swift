@@ -122,6 +122,19 @@ extension KanaKanjiConverter {
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
     static let multiClauseNaAdjectiveBigramThreshold = 2000
+    // カ変「来る」の活用形(読み→漢字表層)。活用供給順で一段動詞の後に沈むため連文節に
+    // 明示供給する。北/着た 等の同音とは競合し LM が文脈で選ぶ(単独 きた→北 は不変)。
+    static let multiClauseKuruFormSurfaces: [String: String] = [
+        "きた": "来た", "きて": "来て", "くる": "来る", "くれ": "来れ",
+        "こない": "来ない", "これる": "来れる", "これた": "来れた"
+    ]
+    // 連用形+に(目的)直後の移動動詞ボーナス。北(名詞)5190+に→北4818 級を、来た(活用OOV
+    // 7200)が上回れる水準に。移動動詞は 来/行/帰/戻 始まりの漢字表層で判定する。
+    static let multiClauseRenyouNiMotionVerbBonus = 3500
+    static func isMotionVerbSurface(_ surface: String) -> Bool {
+        guard let first = surface.first else { return false }
+        return first == "来" || first == "行" || first == "帰" || first == "戻"
+    }
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -400,6 +413,8 @@ extension KanaKanjiConverter {
         // DP でこのノードに軽いボーナスを与える(単文節の seed leading boost の連文節版)。
         // 同音の活用(使えた/仕えた/支えた)が僅差 LM で沈むのを、人手の並びで是正する。
         var preferredInflectedNodeKeys = Set<String>()
+        // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
+        var renyouNiNodeKeys = Set<String>()
         var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
         var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
@@ -696,6 +711,33 @@ extension KanaKanjiConverter {
                 if Self.multiClauseNominalizerSurfaces.contains(segmentReading)
                     || Self.multiClauseExplanatoryFinalSurfaces.contains(segmentReading) {
                     add(segmentReading, isDictWord: false, isCurated: false)
+                }
+
+                // (b4c) カ変「来る」の活用形。活用供給順で 着る/衣る/著る(一段)の後に回り
+                //      来た/来て 等が topK から漏れて連文節に載らず、食べに来た鳥→食べに北鳥 等の
+                //      名詞化(北)に負ける。来〜 を明示ノードで供給(北 とは競合させ LM に委ねる)。
+                if let kuruSurface = Self.multiClauseKuruFormSurfaces[segmentReading] {
+                    add(kuruSurface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                }
+
+                // (b5) 連用形+に(目的: 食べに来る/飲みに行く)ノード。動詞の連用形は活用
+                //      エンジンの終点でないため 食べ 単独ノードが立たず、たべにきたとり→た部に…
+                //      のような断片合成に落ちる。連用形+に を1単位で供給する(食べに/飲みに)。
+                //      名詞+に(机に 等)は連用形が導出できず空になるので誤爆しない。
+                if len >= 3, segmentReading.hasSuffix("に") {
+                    let renyouReading = String(segmentReading.dropLast())
+                    let renyouNi = verbRenyouPlusSuffixCandidates(
+                        renyouReading: renyouReading,
+                        trailingSuffix: "に",
+                        userDictionary: manualUserDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode
+                    )
+                    for surface in renyouNi.prefix(Self.multiClauseInflectionTopK)
+                    where surface != segmentReading {
+                        add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        renyouNiNodeKeys.insert("\(start)-\(end)-\(surface)")
+                    }
                 }
 
                 // (c) word_costs にも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
@@ -1041,6 +1083,12 @@ extension KanaKanjiConverter {
                         Self.multiClauseFormalNounKanaReadings.contains(node.reading),
                         node.surface != node.reading {
                         cost += Self.multiClauseFormalNounKanjiPenalty
+                    }
+                    // 連用形+に(目的)の直後は移動動詞(来る/行く 系)が来る(食べに来た/飲みに行く)。
+                    // 前ノードが b5 の 連用形+に なら、移動動詞にボーナスを与え 北 等の名詞化を退ける。
+                    if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                        Self.isMotionVerbSurface(node.surface) {
+                        cost -= Self.multiClauseRenyouNiMotionVerbBonus
                     }
                     // 同音異義 あう の出し分け(best-effort): 現ノードが あう活用(会う/合う)で
                     // 直前が「に」なら、その前の名詞の人物性で優先を決める。人物→会う、
