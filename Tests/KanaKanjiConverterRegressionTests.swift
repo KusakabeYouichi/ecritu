@@ -3968,6 +3968,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "とりがきます", systemCandidateMode: .surface).first, "鳥が来ます")
     }
 
+    // ずかん: dict rank4 の かな エントリ由来で かな ずかん/ずかんで がエンジンで先頭化して
+    // いた(ずかん unigram 8139 > 図鑑 5790 で本来 図鑑 が上)。seed で 図鑑 先頭化。
+    // ずかんで はかな正書の根拠が無い(keepLeading=false)ので提示層で末尾寄せ/除去される
+    // (提示層の早期returnを keepLeading でゲート)。
+    func testRegressionRealLMZukanPrefersKanji() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ずかん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "図鑑", "single=\(single)")
+        // ずかんで はかな正書の根拠なし=提示層でかな先頭を保持しない
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんで"))
+        // 図鑑で は候補に存在する(単文節合成)
+        let de = converter.candidates(for: "ずかんで", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(de.contains("図鑑で"), "de=\(de)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
