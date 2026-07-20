@@ -3880,6 +3880,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "おおきなはこ", systemCandidateMode: .surface).first, "大きな箱")
     }
 
+    // あう は同音異義(会う/合う/逢う/遭う)。dict の 合う rank7 が rare な 晤う/遇う より
+    // 下で連文節 topK3 から漏れ 合った が候補に出なかった。seed で 会う 先頭維持+合う 2番手、
+    // rare 形は列挙外。合った/会った の #1/#2 は文脈依存(人に会った/条件に合った)で学習補正。
+    func testRegressionRealLMAuSuppliesGou() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "とちにあった", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.contains("土地に合った"), "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("晤") || $0.contains("遇") }), "multi=\(multi)")
+        // 人に会った は維持(合う先頭にすると壊れるケース)
+        let hito = converter.multiClauseCandidates(for: "ひとにあった", systemCandidateMode: .surface)
+        XCTAssertEqual(hito.first, "人に会った", "multi=\(hito)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
