@@ -3742,6 +3742,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(exact.contains("方面"), "exact=\(exact)")
     }
 
+    // ねん: dict は ねん0/念1/ネン2/年3 で頻出の 年 が4番手に沈んでいた。
+    // seed=[年, 念, ねん] の宣言順固定(2114の正規化がかな識別も含めて保証)。
+    func testRegressionRealLMNenPrefersYear() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ねん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["年", "念", "ねん"], "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
