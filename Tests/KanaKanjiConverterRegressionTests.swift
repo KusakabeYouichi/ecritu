@@ -3649,6 +3649,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // かぶとむし: dict rank0 の 甲虫(主読み こうちゅう)が先頭を取り、学名カタカナが沈む。
+    // seed=[カブトムシ, カブト虫, かぶと虫, 兜虫(辞書に無く供給)]+甲虫 は suppr+
+    // exactReadingOnlySeed で完全一致時のみ末尾(かぶとむしも 等の合成には出さない)。
+    func testRegressionRealLMKabutomushiPrefersKatakana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かぶとむし": ["甲虫"]])
+        let single = converter.candidates(for: "かぶとむし", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single, ["カブトムシ", "カブト虫", "かぶと虫", "兜虫", "甲虫"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "かぶとむしも", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "カブトムシも", "multi=\(multi)")
+        XCTAssertFalse(multi.contains("甲虫も"), "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
