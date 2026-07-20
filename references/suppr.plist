@@ -233,6 +233,11 @@
 	     4792)にタダ乗りして連文節の区切りを奪う(そんなつくりかたも→そんな作り方面)。
 	     exactReadingOnlySeed で かたも 完全一致時のみ末尾供給へ -->
 	<dict><key>phrase</key><string>方面</string><key>shortcut</key><string>かたも</string></dict>
+	<!-- 南鄕(なんごう): 南郷 の旧字体異体字収穫。見た目が同一で重複に見えるだけなので抑制 -->
+	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>
+	<!-- 永穂(なんごう): 沖縄読谷村の地名 永穂 の読みは なんご(なんご 側は収録済み)。
+	     なんごう は SudachiDict の異読/誤り疑いのため抑制 -->
+	<dict><key>phrase</key><string>永穂</string><key>shortcut</key><string>なんごう</string></dict>
 	<!-- 酤う/支う/交う: かう の古語・レア表記(酤う=酒を売る古語、支う=つっかえ棒の方言、交う=飛び交う等の複合専用)。買って/飼って の派生に混じり、勝って(かつ由来)を語幹上限の外へ押し出す(かってほしい→勝ってほしい欠落) -->
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>
 	<dict><key>phrase</key><string>支う</string><key>shortcut</key><string>かう</string></dict>

@@ -3780,6 +3780,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "いるが", "single=\(single)")
     }
 
+    // なんごう: 数量詞複合の許可リストに ごう(号)/ごうしゃ(号車) が漏れており 何号 が
+    // 出なかった。南鄕(旧字体異体字=見た目重複)と 永穂(読谷村の地名、正読は なんご で
+    // なんごう は SudachiDict の異読疑い)は suppr。seed で 南郷→南濠→何号→かな の順。
+    func testRegressionRealLMNangouSuppliesNangou() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["なんごう": ["南鄕", "永穂"]])
+        let single = converter.candidates(for: "なんごう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["南郷", "南濠", "何号"], "single=\(single)")
+        XCTAssertFalse(single.contains("南鄕"), "single=\(single)")
+        XCTAssertFalse(single.contains("永穂"), "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "なんごうしゃとなんばんせん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "何号車と何番線", "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
