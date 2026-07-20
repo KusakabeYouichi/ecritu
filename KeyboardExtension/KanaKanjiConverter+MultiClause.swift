@@ -62,6 +62,10 @@ extension KanaKanjiConverter {
     // 表層末尾が い でも辞書形述語ではないため対象外 — の+ね 分割の従来経路のまま
     // (思いの外/思いのまま 等の名詞+の を歪めない)。
     static let multiClauseExplanatoryFinalSurfaces: Set<String> = ["のね", "のよ"]
+    // かな表記が主の述語動詞の識別。inflection_classes に (かな, かな) 登録が無く辞書形述語
+    // 判定が false になるが、のね/のよ クランプ・床免除の対象として辞書形述語扱いにする
+    // (あるのね→有るのね 逆転の防止)。漢字が主の動詞(買う/見る 等)は含めない。
+    static let multiClauseKanaPredicateIdentities: Set<String> = ["ある"]
     // Nベスト風バリアント: 最良経路の1文節を同区間の次点表層に差し替えて提示する件数と、
     // 採用するコスト差の上限(bigram拮抗の第2候補: しかく→視覚/資格 等を拾う)。
     static let multiClauseVariantLimit = 3
@@ -244,6 +248,10 @@ extension KanaKanjiConverter {
         "た", "て", "だ", "ん", "う", "ない", "ます", "です", "たい", "てる",
         // 形式名詞・副助詞(かなが正書。wc はず=6777/だけ=5947 の床上げで断片に負けていた)
         "はず", "だけ",
+        // 存在動詞 ある はかなが正書(uni ある2698≪有る6303)だが wc6465 の床上げで
+        // 有る(bigram 有る→の1692)に負けていた(あるのね→有るのね)。頻出の自立語で
+        // 断片ではないので床免除(なる/いる は LM 優劣が異なるため個別のまま)
+        "ある",
         // 終助詞の長音形(のー は wc10379 の床上げで、外来語 ノー(wc2627)+EOS減点3000
         // を116差で下回れなかった。uni 6925 は実勢なので床免除で ノー に勝つ)
         "のー",
@@ -447,6 +455,13 @@ extension KanaKanjiConverter {
                             reading: segmentReading,
                             candidate: surface
                         )
+                    }
+                    // かな正書の述語(ある/いる 等、かな表記が主の動詞)は inflection_classes に
+                    // (かな, かな)で登録が無く上の判定が false になるが、辞書形述語として扱う
+                    // (のね/のよ クランプや床免除の対象=あるのね→有るのね 逆転の防止)。
+                    if surface == segmentReading,
+                        Self.multiClauseKanaPredicateIdentities.contains(segmentReading) {
+                        seedIsDictionaryFormPredicate = true
                     }
                     // 辞書に無い活用派生形の seed(読んだ/呼んだ 等の並び矯正)は b2 と同じ
                     // 活用派生フラグを付ける。付けないと dictUnknown(8700)の seed ノードが
@@ -1067,7 +1082,8 @@ extension KanaKanjiConverter {
         let lastIsKanaCaseParticle = lastNode.surface == lastNode.reading
             && (Self.multiClauseCaseParticleSurfaces.contains(lastNode.surface)
                 || Self.multiClauseCompoundParticles.contains(lastNode.surface)
-                || Self.multiClauseNominalizerSurfaces.contains(lastNode.surface))
+                || Self.multiClauseNominalizerSurfaces.contains(lastNode.surface)
+                || Self.multiClauseExplanatoryFinalSurfaces.contains(lastNode.surface))
         let lastIsKanaFinalParticle = (Self.multiClauseFinalParticleReadings.contains(lastNode.reading)
             && lastNode.surface == lastNode.reading)
             || lastIsKanaConditionalNara
@@ -1208,7 +1224,8 @@ extension KanaKanjiConverter {
                         && (Self.multiClauseFinalParticleReadings.contains(lastVariantNode.reading)
                             || Self.multiClauseCaseParticleSurfaces.contains(lastVariantNode.surface)
                             || Self.multiClauseCompoundParticles.contains(lastVariantNode.surface)
-                            || Self.multiClauseNominalizerSurfaces.contains(lastVariantNode.surface))
+                            || Self.multiClauseNominalizerSurfaces.contains(lastVariantNode.surface)
+                            || Self.multiClauseExplanatoryFinalSurfaces.contains(lastVariantNode.surface))
                     if !variantHasCurated && !variantEndsWithKanaParticle {
                         continue
                     }
