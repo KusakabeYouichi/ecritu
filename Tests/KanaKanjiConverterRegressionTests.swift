@@ -4020,6 +4020,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "きたかぜがつよい", systemCandidateMode: .surface).first, "北風が強い")
     }
 
+    // そうじゃないか: 連文節は かな そうじゃないか を正しく最良にする(全語彙経路)が、2145 で
+    // 提示層の早期returnを keepLeading でゲートした際、口語否定(じゃない)語尾が keepLeading
+    // 非対応で かな が除去される回帰が出た。口語否定・断定語尾(じゃない/じゃん/だろう/でしょ)を
+    // keepLeading の根拠に追加。名詞+助詞(ずかんで)は非該当で false 維持。
+    func testRegressionRealLMSoujanaiKanaKept() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そうじゃないか", systemCandidateMode: .surface).first, "そうじゃないか")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そうじゃないか"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "きれいじゃないか"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんで"))
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

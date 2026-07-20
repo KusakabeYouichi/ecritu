@@ -574,6 +574,14 @@ final class KanaKanjiConverter {
         if hasLearnedKanaIdentity(for: normalized) {
             return true
         }
+        // 口語の否定コピュラ・断定(じゃない/じゃん/だろう/でしょ 等)で終わる読みは、かなが
+        // 正書の話し言葉(そうじゃないか/きれいじゃない 等)。連文節は全語彙経路として これらを
+        // 最良に選べる(allNodesAreDictWords 非抑制)ので、提示層でも先頭かなを保持する根拠とする。
+        // 名詞+助詞(ずかんで 等)はこの語尾を持たないので影響しない。
+        for suffix in ["じゃない", "じゃないか", "じゃん", "だろう", "でしょう", "でしょ", "じゃないの"]
+        where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
+            return true
+        }
         if (store.initialUserDictionary()[normalized] ?? []).contains(normalized) {
             return true
         }
