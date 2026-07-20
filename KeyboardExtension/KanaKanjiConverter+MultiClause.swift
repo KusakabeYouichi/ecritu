@@ -684,15 +684,34 @@ extension KanaKanjiConverter {
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
             // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
             // 文頭は unigram+バックオフで評価する。文中の bigram は従来どおり。
+            // EOS bigram は半分に圧縮して使う: 「文末に来やすい語」統計は断片入力と
+            // 系統的に食い違う(記事は 〜の勝ち。で終わるが 〜の価値 は文中に続く:
+            // 勝ち→EOS 1253 vs 価値→EOS 2399 の差1146が、の→価値 4234 ≪ の→勝ち 5150
+            // の正しい優位916を逆転)。ただし全面無効はやり過ぎで、観測 EOS の正しい信号
+            // (層2489<そう2945 が 学生層 を守る、さん2020<三3455 が 柚香さん を守る)まで
+            // 消える(2094/2101/今回の全面無効で三度検証済み)。フォールバック(2119)との
+            // 中間へ圧縮することで、過大な文末選好だけを弱める。
             if prev != Self.multiClauseBOSMarker,
                 !deniesBigramBorrow,
                 let bigram = bigramCosts["\(prev)\t\(surface)"] {
-                base = bigram
+                if surface == Self.multiClauseEOSMarker {
+                    let fallback = (unigramCosts[Self.multiClauseEOSMarker] ?? 1619)
+                        + Self.multiClauseBackoffCost
+                    base = fallback + (bigram - fallback) / 2
+                } else {
+                    base = bigram
+                }
             } else if !deniesBigramBorrow,
                 let prevAuxTail,
                 let auxBigram = bigramCosts["\(prevAuxTail)\t\(surface)"] {
                 // 活用派生ノードの末尾助動詞トークンで bigram を代用(買わない→よ を ない→よ で評価)
-                base = auxBigram
+                if surface == Self.multiClauseEOSMarker {
+                    let fallback = (unigramCosts[Self.multiClauseEOSMarker] ?? 1619)
+                        + Self.multiClauseBackoffCost
+                    base = fallback + (auxBigram - fallback) / 2
+                } else {
+                    base = auxBigram
+                }
             } else if let unigram = unigramCosts[surface] {
                 base = unigram + Self.multiClauseBackoffCost
                 // 短spanレア読み床上げ(定数コメント参照): 表層 unigram はコーパスA単位分割の

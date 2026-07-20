@@ -3761,6 +3761,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // EOS bigram の過大な文末選好: 勝ち→EOS 1253 vs 価値→EOS 2399 の差1146が、
+    // の→価値 4234 ≪ の→勝ち 5150 の正しい優位916を逆転(にほんえんのかち→〜の勝ち)。
+    // EOS bigram をフォールバック(2119)との中間へ半圧縮して是正(全面無効は 学生層/
+    // 柚香さん の正しい EOS 信号まで消し不成立=検証済み)。
+    func testRegressionRealLMNihonenNoKachiPrefersValue() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "にほんえんのかち", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "日本円の価値", "multi=\(multi)")
+        XCTAssertEqual(multi.dropFirst().first, "日本円の勝ち", "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
