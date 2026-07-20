@@ -365,11 +365,11 @@ extension KeyboardViewController {
             return candidates
         }
         if kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
-            // かな正書の根拠があり、かつ合流後の上位(2位以内=連文節が LM 根拠で高く
-            // 置いた ひらがなのは 等)に居るかな識別は、その位置を維持する。
+            // かな正書の根拠があり、かつ合流後の上位(3位以内=ひらがなのは/あったが 等、
+            // 会った/合った 等の妥当な漢字候補の直後に置きたいかな)に居るかな識別は位置維持。
             if let kanaIndex = candidates.firstIndex(where: {
                 $0 == composingText && isKanaOnlyText($0)
-            }), kanaIndex <= 1 {
+            }), kanaIndex <= 2 {
                 return candidates
             }
             // それより下位のかな識別は末尾へ回す。うってしまって 等で 売ってしまって

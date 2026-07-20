@@ -600,6 +600,16 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 格助詞・係助詞を1つ剥がした語幹がかな正書の識別なら根拠ありとする
+        // (あったが→あった→ある: ある過去のかな あった を候補に残す)。買ったが→かった→
+        // 買う(漢字先頭)は false のまま。剥がしは1回のみ(語幹に助詞は残らない)。
+        for particle in ["が", "は", "も", "を", "に", "へ", "と"]
+        where normalized.count > particle.count && normalized.hasSuffix(particle) {
+            let stem = String(normalized.dropLast(particle.count))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // 活用形の読み(やってそうな 等)は、脱活用した基本形の辞書先頭(抑制適用後)が
         // かな identity(やる 等「かなが正書」の動詞)なら根拠ありとする。
         // かう→買う のように漢字が先頭の基本形は対象外(かってみようかな は末尾のまま)。
