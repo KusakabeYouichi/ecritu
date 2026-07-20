@@ -162,6 +162,9 @@
 	<!-- 日本円(にほんえん): 二本+円 の数量詞分割(にほん→二本/2本 の学習で顕在化)に
 	     割れて 日本円 が沈むのを防ぐ。curated で1ノードとして区切りを勝たせる -->
 	<dict><key>phrase</key><string>日本円</string><key>shortcut</key><string>にほんえん</string></dict>
+	<!-- 那覇(なは): 沖縄県都。unigram 6411 が高めで な+波 断片や全かなに負ける
+	     (なはでは→なはでは、なはではこれです→な波では)。curated で区切りを勝たせる -->
+	<dict><key>phrase</key><string>那覇</string><key>shortcut</key><string>なは</string></dict>
 	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>なっちゃう</string><key>shortcut</key><string>なっちゃう</string></dict>
 	<dict><key>phrase</key><string>のか</string><key>shortcut</key><string>のか</string></dict>

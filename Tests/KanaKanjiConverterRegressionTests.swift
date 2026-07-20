@@ -3846,6 +3846,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "のね"))
     }
 
+    // ひらがななのは: コピュラ な を挟む名詞化(ひらがな+な+のは)。stem 剥がしが のは のみで
+    // な を残すと keepLeading が false になり かな候補が提示層で除去されていた。な も剥がす。
+    func testRegressionRealLMHiraganaNanoheKeepsKana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["は": ["者"]])
+        let multi = converter.multiClauseCandidates(for: "ひらがななのは", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["平仮名なのは", "ひらがななのは"], "multi=\(multi)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひらがななのは"))
+    }
+
+    // なは→那覇(沖縄県都)。unigram 6411 が高めで な+波 断片・全かなに負けていた。
+    // curated で区切りを勝たせる。大きな箱/きれいな花 等 なは 部分列への巻き込みは無い。
+    func testRegressionRealLMNahaPrefersNaha() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "なは", candidate: "那覇")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なはでは", systemCandidateMode: .surface).first, "那覇では")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なはではこれです", systemCandidateMode: .surface).first, "那覇ではこれです")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おおきなはこ", systemCandidateMode: .surface).first, "大きな箱")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
