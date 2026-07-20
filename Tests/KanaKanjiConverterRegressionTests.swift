@@ -3929,6 +3929,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 使える(可能=使う、日常最頻)が dict つかえる0/仕える1/支える2/使える3 で3番手に沈み、
+    // 活用 使えた 等も下位化。seed で 使える を先頭に(単文節)。連文節は 支え uni が僅かに
+    // 安く 支えた が先頭になりうるが、その場合は単文節#1挿入+学習で補正される。
+    func testRegressionRealLMTsukaeruPrefersCanUse() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "つかえた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "使えた", "single=\(single)")
+        let single2 = converter.candidates(for: "つかえたのだが", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single2.first, "使えたのだが", "single2=\(single2)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
