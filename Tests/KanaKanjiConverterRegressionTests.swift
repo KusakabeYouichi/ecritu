@@ -3603,6 +3603,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 日(び)ノード(曜日の連濁読み収穫)が surface 単位 LM の あの→日 1272(あの日=
+    // あのひ の実績)を読み跨ぎ借用し、あの+日+神野(じんの=EOSフォールバック逸得)が
+    // あの+美人+の を逆転していた。日(び) を bigram 借用遮断リストへ(し人/頭(ず) と同族)。
+    func testRegressionRealLMAnobijinPrefersBijin() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "あのびじんの", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "あの美人の", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("あの日") }), "multi=\(multi)")
+        // 曜日系(日=び を正当に含む語)は丸ごと辞書語のため無影響
+        let friday = converter.multiClauseCandidates(for: "きんようびに", systemCandidateMode: .surface)
+        XCTAssertEqual(friday.first, "金曜日に", "multi=\(friday)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
