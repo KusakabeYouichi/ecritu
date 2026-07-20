@@ -362,9 +362,16 @@ extension KeyboardViewController {
             return candidates
         }
         if kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
-            // かな正書の根拠がある読みでも、先頭でない(=エンジン最良でない)かな識別は
-            // 末尾へ回す。うってしまって 等で 売ってしまって(1位)の直後にかなが挟まる
-            // のを防ぎ、かな確定チップに近い位置に揃える(候補としては残す)。
+            // かな正書の根拠があり、かつ合流後の上位(2位以内=連文節が LM 根拠で高く
+            // 置いた ひらがなのは 等)に居るかな識別は、その位置を維持する。
+            if let kanaIndex = candidates.firstIndex(where: {
+                $0 == composingText && isKanaOnlyText($0)
+            }), kanaIndex <= 1 {
+                return candidates
+            }
+            // それより下位のかな識別は末尾へ回す。うってしまって 等で 売ってしまって
+            // (1位)の直後にかなが挟まるのを防ぎ、かな確定チップに近い位置に揃える
+            // (候補としては残す)。
             var reordered = candidates.filter { candidate in
                 !(candidate == composingText && isKanaOnlyText(candidate))
             }

@@ -583,6 +583,15 @@ final class KanaKanjiConverter {
         if systemCandidates(for: normalized, mode: .lesDeux).contains(normalized) {
             return true
         }
+        // 名詞化節(のは/のが 等)付きの読みは、剥がした語幹が辞書のかな語(ひらがな 等)
+        // なら根拠ありとする(ひらがなのは: 合成でかな全文一致になるが、かなが正書の語幹
+        // +かなが唯一の正書の名詞化節、なので変換としてのかなを候補に残す)。
+        for suffix in ["のは", "のが", "のも", "のを", "のに"] where normalized.hasSuffix(suffix) {
+            let stem = String(normalized.dropLast(suffix.count))
+            if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
+                return true
+            }
+        }
         // 活用形の読み(やってそうな 等)は、脱活用した基本形の辞書先頭(抑制適用後)が
         // かな identity(やる 等「かなが正書」の動詞)なら根拠ありとする。
         // かう→買う のように漢字が先頭の基本形は対象外(かってみようかな は末尾のまま)。
