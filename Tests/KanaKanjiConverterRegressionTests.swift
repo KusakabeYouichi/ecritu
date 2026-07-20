@@ -3958,6 +3958,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(benri.first, "便利そうだ", "benri=\(benri)")
     }
 
+    // カ変 来る の き活用(来ません/来ます)は活用供給順で 着る/衣る/著る(一段)より後になり、
+    // 連文節の上位3供給から漏れて 鳥がきません→鳥が着ません になっていた(単文節は 来ません
+    // 先頭で正)。seed きません/きます=[来〜, 着〜] で 来〜 を先頭供給。回帰ではなく既存の
+    // 活用順の穴(EOS圧縮 前でも同挙動を確認済み)。
+    func testRegressionRealLMKimasenPrefersKuru() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とりがきません", systemCandidateMode: .surface).first, "鳥が来ません")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とりがきます", systemCandidateMode: .surface).first, "鳥が来ます")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
