@@ -3983,6 +3983,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(de.contains("図鑑で"), "de=\(de)")
     }
 
+    // あったが: あう(会/合/逢/遭)と ある(存在、かな正書 あった)が同居。会/合 は妥当だが
+    // かな あったが(=有った の口語)も3位以内に。seed あった=[会った,合った,あった] で
+    // エンジン3位、keepLeading(格助詞1つ剥がし あったが→あった→ある)で提示層が3位維持。
+    func testRegressionRealLMAttagaKanaInTop3() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "あったが", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["会ったが", "合ったが", "あったが"], "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あったが"))
+        let multi = converter.multiClauseCandidates(for: "あったが", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(3)), ["会ったが", "合ったが", "あったが"], "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
