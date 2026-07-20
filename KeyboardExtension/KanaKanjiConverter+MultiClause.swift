@@ -714,6 +714,16 @@ extension KanaKanjiConverter {
                 if let temporalCap = Self.multiClauseConversationalTemporalNounUnigramCaps[surface] {
                     base = min(base, temporalCap)
                 }
+                // 収穫底値(wc>=10000)の表層は unigram があっても信頼しない — その unigram
+                // は別の主読みの統計で、レア読みがタダ乗りする(田中(でんちゅう12670)が
+                // たなか 用途の4821、方面(かたも11000)が ほうめん 用途の4792 に乗って
+                // 正解の区切りを奪う)。dictUnknown 分岐の底値降格と同じ水準へ床上げする。
+                // seed 掲載語は人手選別のため免除(他の降格と同条件)。
+                if let wordCost,
+                    wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    base = max(base, Self.multiClauseHarvestTierUnknownCost)
+                }
             } else if isInflectionDerived {
                 // 格助詞・複合助詞(には/では 等)の直後は述語が続くのが自然なので割引する。
                 let prevAllowsInflectionDiscount =
