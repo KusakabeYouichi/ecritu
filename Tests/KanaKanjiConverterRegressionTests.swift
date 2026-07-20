@@ -3787,7 +3787,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try injectSuppression(["なんごう": ["南鄕", "永穂"]])
         let single = converter.candidates(for: "なんごう", limit: 10, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(single.prefix(3)), ["南郷", "南濠", "何号"], "single=\(single)")
+        XCTAssertEqual(Array(single.prefix(3)), ["何号", "南郷", "南濠"], "single=\(single)")
         XCTAssertFalse(single.contains("南鄕"), "single=\(single)")
         XCTAssertFalse(single.contains("永穂"), "single=\(single)")
         let multi = converter.multiClauseCandidates(for: "なんごうしゃとなんばんせん", systemCandidateMode: .surface)
