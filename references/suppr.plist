@@ -233,6 +233,21 @@
 	     4792)にタダ乗りして連文節の区切りを奪う(そんなつくりかたも→そんな作り方面)。
 	     exactReadingOnlySeed で かたも 完全一致時のみ末尾供給へ -->
 	<dict><key>phrase</key><string>方面</string><key>shortcut</key><string>かたも</string></dict>
+	<!-- みたに の姓グロブ(三谷/水谷 等)。3char単ノードが みたにある→三田にある 等の
+	     [地名][に][ある] locative 合成を preempt する。exactReadingOnlySeed で みたに 完全一致
+	     時のみ供給(著名姓は残す)。せなかがわ/かたも と同じ分断対策 -->
+	<dict><key>phrase</key><string>三谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>三渓</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>水谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>三谿</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>参谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>味谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>己谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>巳谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>未谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>美歎</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>美谷</string><key>shortcut</key><string>みたに</string></dict>
+	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 	<!-- 南鄕(なんごう): 南郷 の旧字体異体字収穫。見た目が同一で重複に見えるだけなので抑制 -->
 	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>
 	<!-- 永穂(なんごう): 沖縄読谷村の地名 永穂 の読みは なんご(なんご 側は収録済み)。
