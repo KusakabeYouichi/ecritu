@@ -3726,6 +3726,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(2)), ["手数", "てかず"], "single=\(single)")
     }
 
+    // 方面(かたも)=鳥取県湯梨浜町の地名のレア読み収穫(wc11000)が、表層 unigram
+    // (ほうめん用途 4792)にタダ乗りして連文節の区切りを奪っていた(そんなつくりかたも→
+    // そんな作り方面。読み3文字は短span床の対象外)。suppr+exactReadingOnlySeed の
+    // 二段構えで、かたも 完全一致時のみ末尾供給に移す。
+    func testRegressionRealLMKatamoPlaceNameExactOnly() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かたも": ["方面"]])
+        converter.store.addUserEntry(reading: "つくりかた", candidate: "作り方")
+        let multi = converter.multiClauseCandidates(for: "そんなつくりかたも", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "そんな作り方も", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("方面") }), "multi=\(multi)")
+        // 完全一致では末尾に残る
+        let exact = converter.candidates(for: "かたも", limit: 20, systemCandidateMode: .surface)
+        XCTAssertTrue(exact.contains("方面"), "exact=\(exact)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

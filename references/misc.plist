@@ -155,6 +155,10 @@
 	<dict><key>phrase</key><string>背中側</string><key>shortcut</key><string>せなかがわ</string></dict>
 	<!-- してる: 進行形のかな正書。して が LM 未収録で弱く、してるな→して+ルナ(uni6239)に区切りを取られる -->
 	<dict><key>phrase</key><string>してる</string><key>shortcut</key><string>してる</string></dict>
+	<!-- 作り方(つくりかた): wc2812 と Sudachi は激安なのに表層unigram(6329)が過大で、
+	     つくり+方 の断片連鎖(bigram つくり→方1147+方→も1944)に67差で負ける
+	     (そんなつくりかたも→そんなつくり方も)。curated で区切りを勝たせる -->
+	<dict><key>phrase</key><string>作り方</string><key>shortcut</key><string>つくりかた</string></dict>
 	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>なっちゃう</string><key>shortcut</key><string>なっちゃう</string></dict>
 	<dict><key>phrase</key><string>のか</string><key>shortcut</key><string>のか</string></dict>
