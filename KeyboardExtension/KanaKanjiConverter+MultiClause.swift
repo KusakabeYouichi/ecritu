@@ -778,6 +778,17 @@ extension KanaKanjiConverter {
                 !(prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false) {
                 penaltyForNounHoshii = Self.multiClauseNounHoshiiPenalty
             }
+            // 様態の そう(かな)は形容動詞語幹の直後が正書(便利そう/元気そう/静かそう)。
+            // 形容動詞かどうかは LM の分布で判定する: prev→な の bigram 実績(便利→な 491/
+            // 静か→な 425 等)が「な が続く語=形容動詞語幹」の証拠。学生層 のように な が
+            // 続かない名詞の後は対象外(層/僧 等の実語彙を守る)。な はラティスの隣接ペア
+            // 先読み(bigramCosts)に載らないため store の点クエリ(キャッシュ済み)で引く。
+            if surface == reading,
+                reading == "そう",
+                prev != Self.multiClauseBOSMarker,
+                store.wordLMBigramCosts(for: [(prev, "な")])["\(prev)\tな"] != nil {
+                base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
+            }
             // 説明・詠嘆の のね/のよ は辞書形述語(ノードフラグ)直後のみ安価にクランプ
             // (定数コメント参照)。表層末尾文字では名詞 思い と形容詞 重い を区別できない
             // ため、こちらは inflection_classes 由来のフラグでゲートする。
