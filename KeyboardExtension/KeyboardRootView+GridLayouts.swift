@@ -175,6 +175,7 @@ extension KeyboardRootView {
                 mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                 showsDirectionalHints: showsFlickGuideCharacters,
                 showsGuideText: false,
+                onLongPress: enterFormattedNumberMode,
                 activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                 activeMainLabelFontSizeProvider: { direction, mainText in
                     kanaModeSwitcherMainLabelFontSizeForDirection(
