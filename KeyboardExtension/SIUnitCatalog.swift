@@ -122,7 +122,10 @@ enum SIUnitCatalog {
         SIUnit(symbol: "sr", reading: "ステラジアン", quantity: "立体角", group: "角度・時間・その他"),
         SIUnit(symbol: "Hz", reading: "ヘルツ", quantity: "周波数", group: "角度・時間・その他"),
         SIUnit(symbol: "℃", reading: "セルシウス度", quantity: "セルシウス温度", group: "角度・時間・その他"),
-        SIUnit(symbol: "kat", reading: "カタール", quantity: "酵素活性", group: "角度・時間・その他")
+        SIUnit(symbol: "kat", reading: "カタール", quantity: "酵素活性", group: "角度・時間・その他"),
+        // t(トン)は SI併用の非SI単位。接頭辞2連ドラムに馴染まないため固有側に暫定収録。
+        // 将来「非SI併用単位」カテゴリーを設けたら移す。
+        SIUnit(symbol: "t", reading: "トン", quantity: "質量(SI併用単位)", group: "非SI併用単位")
     ]
 
     // カテゴリー別の単位一覧。SI基本はユーザ確認後に拡充する(現状は空=占位表示)。
