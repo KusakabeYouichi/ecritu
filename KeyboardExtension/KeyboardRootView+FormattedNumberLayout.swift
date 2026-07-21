@@ -45,11 +45,12 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
 extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
         VStack(spacing: keyboardRowSpacing) {
-            HStack(spacing: keyboardRowSpacing) {
-                formattedNumberTenkey
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                formattedNumberRightArea
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            Group {
+                if selectedFormattedNumberCategory == .calendar {
+                    formattedNumberCalendarTopArea
+                } else {
+                    formattedNumberUnitTopArea
+                }
             }
             .frame(height: fourRowAlignedTopContentHeight)
 
@@ -57,6 +58,70 @@ extension KeyboardRootView {
                 .frame(height: mainFlickKeyHeight)
         }
         .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+    }
+
+    // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
+    private var formattedNumberUnitTopArea: some View {
+        HStack(spacing: keyboardRowSpacing) {
+            formattedNumberTenkey
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            formattedNumberRightArea
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    // カレンダーカテゴリー: 日付ホイール + 右エリア(プレビュー+書式ドラム+確定)。
+    private var formattedNumberCalendarTopArea: some View {
+        HStack(spacing: keyboardRowSpacing) {
+            DatePicker("", selection: $formattedNumberDate, displayedComponents: .date)
+                .datePickerStyle(.wheel)
+                .labelsHidden()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+
+            VStack(spacing: keyboardRowSpacing) {
+                formattedNumberPreview
+                    .frame(height: mainFlickKeyHeight)
+                formattedNumberDateFormatDrum
+                    .frame(maxHeight: .infinity)
+                formattedNumberConfirmKey
+                    .frame(height: mainFlickKeyHeight)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        }
+    }
+
+    // 書式ドラム: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
+    private var formattedNumberDateFormatDrum: some View {
+        Picker("", selection: $formattedNumberDateFormatTemplate) {
+            ForEach(DateFormatCatalog.variants(for: formattedNumberDateStyle), id: \.self) { template in
+                Text(DateFormatCatalog.sampleRendered(template: template, style: formattedNumberDateStyle))
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .tag(template)
+            }
+        }
+        .pickerStyle(.wheel)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
+    }
+
+    // 方式(日本/仏/英/米)はコンテナー設定(P4)で切替。現状は日本式固定。
+    private var formattedNumberDateStyle: DateFormatStyle { .japanese }
+
+    // 選択中のカレンダー日付を選択書式でレンダリングした文字列。
+    func formattedNumberRenderedDate() -> String {
+        let calendar = Calendar.current
+        let components = calendar.dateComponents([.year, .month, .day, .weekday], from: formattedNumberDate)
+        let weekdayIndex = (components.weekday ?? 1) - 1
+        return DateFormatCatalog.render(
+            template: formattedNumberDateFormatTemplate,
+            style: formattedNumberDateStyle,
+            year: components.year ?? 2026,
+            month: components.month ?? 1,
+            day: components.day ?? 1,
+            weekdayIndex: weekdayIndex
+        )
     }
 
     // MARK: - テンキー(左側)
@@ -193,8 +258,12 @@ extension KeyboardRootView {
         )
     }
 
-    // 確定/プレビューに使う最終文字列(数値+単位)。単位との間隔は当面なし(P4で設定化)。
+    // 確定/プレビューに使う最終文字列。カレンダーはレンダリング日付、単位系は数値+単位。
+    // 単位との間隔は当面なし(P4で設定化)。
     func formattedNumberOutputString() -> String {
+        if selectedFormattedNumberCategory == .calendar {
+            return formattedNumberRenderedDate()
+        }
         let number = formattedNumberDisplayString()
         let unit = formattedNumberCurrentUnitSymbol
         return unit.isEmpty ? number : number + unit
@@ -203,6 +272,9 @@ extension KeyboardRootView {
     // MARK: - 右エリア(プレビュー+単位ドラム+区切りチェック+確定)
 
     private var formattedNumberPreviewText: String {
+        if selectedFormattedNumberCategory == .calendar {
+            return formattedNumberRenderedDate()
+        }
         let number = formattedNumberBuffer.isEmpty ? "0" : formattedNumberDisplayString()
         let unit = formattedNumberCurrentUnitSymbol
         return unit.isEmpty ? number : number + unit
