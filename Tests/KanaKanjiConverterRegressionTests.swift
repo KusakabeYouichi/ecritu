@@ -4142,6 +4142,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "そうなのかー", systemCandidateMode: .surface).first, "そうなのかー")
     }
 
+    // いる/いるので: ゐる(旧かな)は完全抑制、イル(カタカナ源)/入ル(京都地名)は
+    // suppr+exactReadingOnlySeed で いる 完全一致時のみ末尾供給し合成・連文節から排除。
+    // base いる は かな/居る を先頭に(入る は主読み はいる の副次で wordCost10054 の収穫底値
+    // ゆえ seed には入れず=連文節で 入るので が先頭化するのを防ぐ)。
+    func testRegressionRealLMIruNoiseAndOrder() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["いる": ["ゐる", "イル", "入ル"]])
+        let base = converter.candidates(for: "いる", limit: 14, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(base.prefix(2)), ["いる", "居る"], "base=\(base)")
+        XCTAssertFalse(base.contains("ゐる"), "ゐる should be fully suppressed")
+        // イル/入ル は完全一致 いる の末尾でのみ再供給される
+        XCTAssertTrue(base.contains("イル") && base.contains("入ル"), "base=\(base)")
+        let multi = converter.multiClauseCandidates(for: "いるので", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "居るので", "multi=\(multi.prefix(6))")
+        XCTAssertFalse(multi.contains("ゐるので"), "multi=\(multi.prefix(6))")
+        XCTAssertNotEqual(multi.first, "入るので")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
