@@ -39,45 +39,27 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
     }
 }
 
-// P1: モードの外枠(プレビュー / テンキー / 右エリア占位 / 下段バー)。
-// 単位ドラム・書式化・カレンダーは後続フェーズで実装する。
+// P1: モードの外枠(テンキー / 右エリア=プレビュー+単位ドラム占位+確定 / 下段バー)。
+// キーボードは横長で縦の余白が乏しいため、上段は高さいっぱいに可変分割し、下段バーだけ
+// 固定1段にする(絵文字画面と同じ縦配分)。単位ドラム・書式化・カレンダーは後続フェーズ。
 extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
         VStack(spacing: keyboardRowSpacing) {
-            formattedNumberPreviewRow
             HStack(spacing: keyboardRowSpacing) {
                 formattedNumberTenkey
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 formattedNumberRightArea
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
+            .frame(height: fourRowAlignedTopContentHeight)
+
             formattedNumberBottomBar
                 .frame(height: mainFlickKeyHeight)
         }
         .frame(height: fourRowAlignedClusterHeight, alignment: .top)
     }
 
-    private var formattedNumberPreviewText: String {
-        formattedNumberBuffer.isEmpty ? "0" : formattedNumberBuffer
-    }
-
-    private var formattedNumberPreviewRow: some View {
-        HStack {
-            Text(formattedNumberPreviewText)
-                .font(.system(size: 26, weight: .semibold))
-                .foregroundColor(KeyboardThemePalette.keyLabel)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-            Spacer()
-        }
-        .padding(.horizontal, 12)
-        .frame(height: mainFlickKeyHeight)
-        .frame(maxWidth: .infinity)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(KeyboardThemePalette.keyBackground)
-        )
-    }
+    // MARK: - テンキー(左側)
 
     private var formattedNumberTenkeyRows: [[String]] {
         [["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"], ["±", "0", "."]]
@@ -93,19 +75,30 @@ extension KeyboardRootView {
                             fontSize: 20,
                             action: { appendFormattedNumberToken(token) }
                         )
-                        .frame(maxWidth: .infinity)
-                        .frame(height: mainFlickKeyHeight)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
                     }
                 }
+                .frame(maxHeight: .infinity)
             }
         }
     }
+
+    // 桁数は当面8桁で足りるため、数字は8桁で頭打ちにする(符号/小数点は別カウント)。
+    private var formattedNumberMaxDigits: Int { 8 }
 
     private func appendFormattedNumberToken(_ token: String) {
         switch token {
         case "±":
             toggleFormattedNumberSign()
+        case ".":
+            if !formattedNumberBuffer.contains(".") {
+                appendFormattedNumber(token)
+            }
         default:
+            let digitCount = formattedNumberBuffer.filter { $0.isNumber }.count
+            guard digitCount < formattedNumberMaxDigits else {
+                return
+            }
             appendFormattedNumber(token)
         }
     }
@@ -118,18 +111,40 @@ extension KeyboardRootView {
         }
     }
 
-    @ViewBuilder
+    // MARK: - 右エリア(プレビュー+単位ドラム占位+確定)
+
+    private var formattedNumberPreviewText: String {
+        formattedNumberBuffer.isEmpty ? "0" : formattedNumberBuffer
+    }
+
+    private var formattedNumberPreview: some View {
+        HStack {
+            Text(formattedNumberPreviewText)
+                .font(.system(size: 22, weight: .semibold))
+                .foregroundColor(KeyboardThemePalette.keyLabel)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(KeyboardThemePalette.keyBackground)
+        )
+    }
+
     private var formattedNumberRightArea: some View {
-        if selectedFormattedNumberCategory == .calendar {
-            VStack(spacing: keyboardRowSpacing) {
-                placeholderCard("カレンダー(P3)")
-                formattedNumberConfirmKey
-            }
-        } else {
-            VStack(spacing: keyboardRowSpacing) {
-                placeholderCard("単位ドラム(P2)")
-                formattedNumberConfirmKey
-            }
+        VStack(spacing: keyboardRowSpacing) {
+            // 入力欄は単位ドラムの上に置く(ユーザ指定)。
+            formattedNumberPreview
+                .frame(height: mainFlickKeyHeight)
+
+            placeholderCard(selectedFormattedNumberCategory == .calendar ? "カレンダー(P3)" : "単位ドラム(P2)")
+                .frame(maxHeight: .infinity)
+
+            formattedNumberConfirmKey
+                .frame(height: mainFlickKeyHeight)
         }
     }
 
@@ -149,8 +164,7 @@ extension KeyboardRootView {
             Text("確定")
                 .font(.system(size: 17, weight: .bold))
                 .foregroundColor(.white)
-                .frame(maxWidth: .infinity)
-                .frame(height: mainFlickKeyHeight)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(Color.accentColor)
@@ -158,6 +172,8 @@ extension KeyboardRootView {
         }
         .buttonStyle(.plain)
     }
+
+    // MARK: - 下段バー([あい] / カテゴリー / ⌫)
 
     private var formattedNumberBottomBar: some View {
         HStack(spacing: keyboardRowSpacing) {
