@@ -111,20 +111,61 @@ extension KeyboardRootView {
         }
     }
 
-    // MARK: - 右エリア(プレビュー+単位ドラム占位+確定)
+    // MARK: - 書式化(暫定: 小数点="." / 桁区切り="," 固定。記号割当はP4設定)
+
+    // バッファ(素の数字文字列)を表示用に整形する。3桁区切りは formattedNumberGroupingEnabled 連動。
+    func formattedNumberDisplayString() -> String {
+        var body = formattedNumberBuffer
+        let isNegative = body.hasPrefix("-")
+        if isNegative {
+            body.removeFirst()
+        }
+
+        let parts = body.split(separator: ".", maxSplits: 1, omittingEmptySubsequences: false)
+        let integerText = parts.isEmpty ? "" : String(parts[0])
+        let hasDecimalPoint = body.contains(".")
+        let fractionText = parts.count > 1 ? String(parts[1]) : ""
+
+        let groupedInteger = formattedNumberGroupingEnabled
+            ? groupedIntegerString(integerText)
+            : integerText
+
+        var result = groupedInteger
+        if hasDecimalPoint {
+            result += "." + fractionText
+        }
+        return (isNegative ? "-" : "") + result
+    }
+
+    // 整数部に3桁ごとのカンマを挿入する。
+    private func groupedIntegerString(_ digits: String) -> String {
+        guard digits.count > 3 else {
+            return digits
+        }
+        var grouped = ""
+        for (offset, character) in digits.reversed().enumerated() {
+            if offset > 0, offset % 3 == 0 {
+                grouped.append(",")
+            }
+            grouped.append(character)
+        }
+        return String(grouped.reversed())
+    }
+
+    // MARK: - 右エリア(プレビュー+単位ドラム占位+区切りチェック+確定)
 
     private var formattedNumberPreviewText: String {
-        formattedNumberBuffer.isEmpty ? "0" : formattedNumberBuffer
+        formattedNumberBuffer.isEmpty ? "0" : formattedNumberDisplayString()
     }
 
     private var formattedNumberPreview: some View {
         HStack {
+            Spacer(minLength: 0)
             Text(formattedNumberPreviewText)
                 .font(.system(size: 22, weight: .semibold))
                 .foregroundColor(KeyboardThemePalette.keyLabel)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-            Spacer(minLength: 0)
         }
         .padding(.horizontal, 10)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -136,16 +177,41 @@ extension KeyboardRootView {
 
     private var formattedNumberRightArea: some View {
         VStack(spacing: keyboardRowSpacing) {
-            // 入力欄は単位ドラムの上に置く(ユーザ指定)。
+            // 入力欄は単位ドラムの上に置く(ユーザ指定)。右寄せ表示。
             formattedNumberPreview
                 .frame(height: mainFlickKeyHeight)
 
             placeholderCard(selectedFormattedNumberCategory == .calendar ? "カレンダー(P3)" : "単位ドラム(P2)")
                 .frame(maxHeight: .infinity)
 
-            formattedNumberConfirmKey
-                .frame(height: mainFlickKeyHeight)
+            HStack(spacing: keyboardRowSpacing) {
+                formattedNumberGroupingToggle
+                formattedNumberConfirmKey
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(height: mainFlickKeyHeight)
         }
+    }
+
+    // 3桁区切りON/OFFのチェック。確定ボタンの左に置く。
+    private var formattedNumberGroupingToggle: some View {
+        Button(action: { formattedNumberGroupingEnabled.toggle() }) {
+            HStack(spacing: 3) {
+                Image(systemName: formattedNumberGroupingEnabled ? "checkmark.square.fill" : "square")
+                    .font(.system(size: 15))
+                Text("3桁")
+                    .font(.system(size: 12))
+            }
+            .foregroundColor(KeyboardThemePalette.keyLabel)
+            .frame(width: 64)
+            .frame(maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(KeyboardThemePalette.keyBackground)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("3桁区切り")
     }
 
     private func placeholderCard(_ text: String) -> some View {

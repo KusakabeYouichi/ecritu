@@ -81,6 +81,7 @@ struct KeyboardRootView: View {
     @State var returnToKanaAfterNextCommit: Bool = false
     @State var formattedNumberBuffer: String = ""
     @State var selectedFormattedNumberCategory: FormattedNumberCategory = .siBase
+    @State var formattedNumberGroupingEnabled: Bool = true
     @State var didTriggerComposingCommitLongPress = false
     @State var katakanaCommitFeedbackText: String? = nil
     @State var pendingKatakanaCommitWorkItem: DispatchWorkItem?
