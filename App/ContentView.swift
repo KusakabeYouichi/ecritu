@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260721194323"
+    private static let editionUpdatedAtRaw: String = "20260721194937"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -84,6 +84,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var numberLayoutModeRawValue: String = NumberLayoutOption.calculette.rawValue
+
+    @AppStorage(
+        SettingsKeys.dateFormatStyle,
+        store: Self.sharedDefaults
+    )
+    private var dateFormatStyleRawValue: String = DateFormatStyleOption.japanese.rawValue
 
     @AppStorage(
         SettingsKeys.basicSymbolOrder,
@@ -305,6 +311,7 @@ struct ContentView: View {
             kanaModifierPlacementRawValue,
             latinLayoutModeRawValue,
             numberLayoutModeRawValue,
+            dateFormatStyleRawValue,
             basicSymbolOrderRawValue,
             accentPaletteRawValue,
             keyboardBackgroundThemeRawValue,
@@ -384,6 +391,12 @@ struct ContentView: View {
     private var numberLayoutSelection: Binding<NumberLayoutOption> {
         rawValueSelection(from: numberLayoutModeRawValue, default: .calculette) {
             numberLayoutModeRawValue = $0
+        }
+    }
+
+    private var dateFormatStyleSelection: Binding<DateFormatStyleOption> {
+        rawValueSelection(from: dateFormatStyleRawValue, default: .japanese) {
+            dateFormatStyleRawValue = $0
         }
     }
 
@@ -689,6 +702,8 @@ struct ContentView: View {
                         LatinLayoutSettingsSection(selection: latinLayoutSelection)
 
                         NumberLayoutSettingsSection(selection: numberLayoutSelection)
+
+                        DateFormatStyleSettingsSection(selection: dateFormatStyleSelection)
 
                         BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
 

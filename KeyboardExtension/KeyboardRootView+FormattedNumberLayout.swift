@@ -144,7 +144,7 @@ extension KeyboardRootView {
 
     // 書式ドラム: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
     private var formattedNumberDateFormatDrum: some View {
-        Picker("", selection: $formattedNumberDateFormatTemplate) {
+        Picker("", selection: formattedNumberDateTemplateBinding) {
             ForEach(DateFormatCatalog.variants(for: formattedNumberDateStyle), id: \.self) { template in
                 Text(DateFormatCatalog.sampleRendered(template: template, style: formattedNumberDateStyle))
                     .lineLimit(1)
@@ -157,8 +157,28 @@ extension KeyboardRootView {
         .clipped()
     }
 
-    // 方式(日本/仏/英/米)はコンテナー設定(P4)で切替。現状は日本式固定。
-    private var formattedNumberDateStyle: DateFormatStyle { .japanese }
+    // 方式(日本/仏/英/米)はコンテナー設定で選ぶ。共有 UserDefaults から直接読む。
+    private var formattedNumberDateStyle: DateFormatStyle {
+        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+            .string(forKey: "dateFormatStyle") ?? ""
+        return DateFormatStyle(rawValue: raw) ?? .japanese
+    }
+
+    // 選択中の書式が現方式のバリアントに無ければ先頭にフォールバックする。
+    private var formattedNumberEffectiveDateTemplate: String {
+        let variants = DateFormatCatalog.variants(for: formattedNumberDateStyle)
+        if variants.contains(formattedNumberDateFormatTemplate) {
+            return formattedNumberDateFormatTemplate
+        }
+        return variants.first ?? formattedNumberDateFormatTemplate
+    }
+
+    private var formattedNumberDateTemplateBinding: Binding<String> {
+        Binding(
+            get: { formattedNumberEffectiveDateTemplate },
+            set: { formattedNumberDateFormatTemplate = $0 }
+        )
+    }
 
     // 選択中のカレンダー日付を選択書式でレンダリングした文字列。
     func formattedNumberRenderedDate() -> String {
@@ -166,7 +186,7 @@ extension KeyboardRootView {
         let components = calendar.dateComponents([.year, .month, .day, .weekday], from: formattedNumberDate)
         let weekdayIndex = (components.weekday ?? 1) - 1
         return DateFormatCatalog.render(
-            template: formattedNumberDateFormatTemplate,
+            template: formattedNumberEffectiveDateTemplate,
             style: formattedNumberDateStyle,
             year: components.year ?? 2026,
             month: components.month ?? 1,
