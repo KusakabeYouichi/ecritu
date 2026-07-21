@@ -243,6 +243,20 @@ extension KeyboardRootView {
         }
     }
 
+    // ドラム行ラベル: 記号は固定サイズ、読みは小さい固定サイズ。幅が足りないときは
+    // 縮小せず読みの末尾を「…」で切り詰める(truncationMode(.tail))。
+    private func formattedNumberDrumLabel(symbol: String, reading: String) -> Text {
+        var symbolPart = AttributedString(symbol)
+        symbolPart.font = .system(size: 18, weight: .semibold)
+        guard !reading.isEmpty else {
+            return Text(symbolPart)
+        }
+        var readingPart = AttributedString((symbol.isEmpty ? "" : " ") + reading)
+        readingPart.font = .system(size: 11)
+        readingPart.foregroundColor = KeyboardThemePalette.keyLabel.opacity(0.6)
+        return Text(symbolPart + readingPart)
+    }
+
     // 単位ドラム。SI基本のみ「接頭辞ドラム+基本単位ドラム」の2連。カレンダー/空は占位。
     @ViewBuilder
     private var formattedNumberUnitSelector: some View {
@@ -252,9 +266,9 @@ extension KeyboardRootView {
             HStack(spacing: keyboardRowSpacing) {
                 Picker("", selection: formattedNumberPrefixBinding) {
                     ForEach(SIUnitCatalog.prefixes) { prefix in
-                        Text(prefix.symbol.isEmpty ? prefix.reading : "\(prefix.symbol) \(prefix.reading)")
+                        formattedNumberDrumLabel(symbol: prefix.symbol, reading: prefix.reading)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.6)
+                            .truncationMode(.tail)
                             .tag(prefix.symbol)
                     }
                 }
@@ -264,9 +278,9 @@ extension KeyboardRootView {
 
                 Picker("", selection: formattedNumberUnitBinding) {
                     ForEach(SIUnitCatalog.siBase) { unit in
-                        Text("\(unit.symbol) \(unit.reading)")
+                        formattedNumberDrumLabel(symbol: unit.symbol, reading: unit.reading)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.6)
+                            .truncationMode(.tail)
                             .tag(unit.symbol)
                     }
                 }
@@ -281,9 +295,9 @@ extension KeyboardRootView {
             } else {
                 Picker("", selection: formattedNumberUnitBinding) {
                     ForEach(units) { unit in
-                        Text("\(unit.symbol)  \(unit.reading)")
+                        formattedNumberDrumLabel(symbol: unit.symbol, reading: unit.reading)
                             .lineLimit(1)
-                            .minimumScaleFactor(0.6)
+                            .truncationMode(.tail)
                             .tag(unit.symbol)
                     }
                 }
