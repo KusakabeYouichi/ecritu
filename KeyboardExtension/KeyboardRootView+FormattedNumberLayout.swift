@@ -125,7 +125,7 @@ extension KeyboardRootView {
     private var formattedNumberCalendarTopArea: some View {
         HStack(spacing: keyboardRowSpacing) {
             DatePicker("", selection: $formattedNumberDate, displayedComponents: .date)
-                .datePickerStyle(.wheel)
+                .datePickerStyle(.graphical)
                 .labelsHidden()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .clipped()
