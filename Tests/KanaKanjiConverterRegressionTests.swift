@@ -4091,6 +4091,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "なりそう", limit: 3, systemCandidateMode: .surface).first, "成りそう")
     }
 
+    // ねろめさんが→根路銘サンガ: さんが rank0 の サンガ(京都サンガ/僧伽)が 敬称「さん」+「が」の
+    // 分割を preempt。敬称 X さんが が圧倒的頻出なので サンガ を suppr+exactReadingOnlySeed
+    // (さんが 完全一致時のみ末尾)へ。根路銘/田中/京都 さんが すべて敬称が先頭に。
+    func testRegressionRealLMSangaHonorific() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["さんが": ["サンガ"]])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ねろめさんが", systemCandidateMode: .surface).first, "根路銘さんが")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たなかさんが", systemCandidateMode: .surface).first, "田中さんが")
+        // サンガ は さんが 完全一致(単文節)でのみ末尾に残る(合成・連文節からは排除)
+        let exact = converter.candidates(for: "さんが", limit: 200, systemCandidateMode: .surface)
+        XCTAssertTrue(exact.contains("サンガ"), "exact tail should keep サンガ")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
