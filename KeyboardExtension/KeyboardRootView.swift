@@ -84,6 +84,8 @@ struct KeyboardRootView: View {
     @State var formattedNumberGroupingEnabled: Bool = true
     @State var formattedNumberUnitSelection: [Int: String] = [:]
     @State var formattedNumberPrefixSymbol: String = ""
+    @State var formattedNumberDate: Date = Date()
+    @State var formattedNumberDateFormatTemplate: String = DateFormatCatalog.japaneseVariants.first ?? "m月j日"
     @State var didTriggerComposingCommitLongPress = false
     @State var katakanaCommitFeedbackText: String? = nil
     @State var pendingKatakanaCommitWorkItem: DispatchWorkItem?

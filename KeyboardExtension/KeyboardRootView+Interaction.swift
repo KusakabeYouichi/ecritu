@@ -134,8 +134,8 @@ extension KeyboardRootView {
     // 確定: 現在のバッファを整形(3桁区切り/小数点)してホストへ挿入し、かな入力へ戻す。
     // 単位記号の付与・間隔設定は後続フェーズ。
     func commitFormattedNumber() {
-        guard !formattedNumberBuffer.isEmpty else {
-            formattedNumberBuffer = ""
+        // カレンダーは日付ホイールから常に確定できる。単位系は数値未入力なら何もせず戻す。
+        if selectedFormattedNumberCategory != .calendar, formattedNumberBuffer.isEmpty {
             switchInputMode(.kana)
             return
         }
