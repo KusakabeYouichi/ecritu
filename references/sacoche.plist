@@ -505,5 +505,6 @@
 	<dict><key>phrase</key><string>Butterfly Pea</string><key>shortcut</key><string>ばたふらいぴー</string></dict>
 	<dict><key>phrase</key><string>タニタ</string><key>shortcut</key><string>たにた</string></dict>
 	<dict><key>phrase</key><string>TANITA</string><key>shortcut</key><string>たにた</string></dict>
+	<dict><key>phrase</key><string>ウリハムシ</string><key>shortcut</key><string>うりはむし</string></dict>
 </array>
 </plist>
