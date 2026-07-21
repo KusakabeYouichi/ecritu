@@ -160,6 +160,10 @@ extension KanaKanjiConverter {
     // 数字の後(十三/二十三 等)は正当な 三 なので免除する。
     static let multiClauseHonorificSuffixReadings: Set<String> = ["さん", "さま"]
     static let multiClauseHonorificKanjiPenalty = 3000
+    // 係助詞「は」直後の「ある」はかなが正書(ではある/にはある/とはある 等の概言・提題)。
+    // 有る/在る/或る への漢字化は不自然なので減点し、N-best 変種(maxDelta4000)から落とす
+    // (うまそうでは有る 対策)。ある はかな正書動詞(seed ある=[ある,有る,在る] のかな先頭)。
+    static let multiClauseAruKanjiAfterWaPenalty = 4200
     // 直前ノードが数量(十/二十/漢数字/アラビア数字)で終わるか。三 の免除判定に使う。
     static let multiClauseNumericSurfaceTailCharacters: Set<Character> = [
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
@@ -989,6 +993,16 @@ extension KanaKanjiConverter {
             }
             var penalty = 0
             penalty += penaltyForNounHoshii
+            // 係助詞「は」(では/には/とは 等の複合助詞末尾含む)直後の ある は漢字化しない=
+            // かな正書(定数コメント参照)。変種生成(pairCost)も本関数を通るため 有る/在る/或る を
+            // 変種枠から落とす(うまそうでは有る 対策)。格助詞 が/を の後(在庫がある 等)は対象外。
+            if reading == "ある",
+                surface != "ある",
+                containsKanji(surface),
+                prev != Self.multiClauseBOSMarker,
+                prev.hasSuffix("は") {
+                penalty += Self.multiClauseAruKanjiAfterWaPenalty
+            }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
             if prev.count == 1,

@@ -4185,6 +4185,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(exact.contains("蚕糸"), "exact tail should keep 蚕糸")
     }
 
+    // ではある: 係助詞「は」直後の ある は漢字化しない=かな正書(では有る/では在る/では或る は
+    // N-best 変種から除外)。うまそうでは有る 対策。格助詞 が の後(在庫が有る)は 有る を保持。
+    // ※うまそうではある(かな全文)を #1 にするのは passthrough コストの構造的限界で不可(旨そう… が #1)。
+    func testRegressionRealLMDewaAruKanaOnly() throws {
+        try prepareRealLMDictionary()
+        let dewa = converter.multiClauseCandidates(for: "ではある", systemCandidateMode: .surface)
+        XCTAssertEqual(dewa.first, "ではある")
+        XCTAssertFalse(dewa.contains("では有る"), "dewa=\(dewa)")
+        let umasou = converter.multiClauseCandidates(for: "うまそうではある", systemCandidateMode: .surface)
+        XCTAssertFalse(umasou.contains(where: { $0.hasSuffix("では有る") }), "umasou=\(umasou.prefix(8))")
+        // 格助詞 が の後は 有る を保持(存在の 在庫が有る は正当)
+        let zaiko = converter.multiClauseCandidates(for: "ざいこがある", systemCandidateMode: .surface)
+        XCTAssertTrue(zaiko.contains("在庫が有る"), "zaiko=\(zaiko.prefix(4))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
