@@ -4043,6 +4043,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("馬そう") }), "multi=\(multi)")
     }
 
+    // うまそうだ→{馬そうだ, 馬操舵, 馬左右田, …}(全語彙)の是正。真因は misc の
+    // そうだ→そうだ curated(1500)で 馬+そうだ が激安化(ある→ある と同型)。misc から外し
+    // seed へ(順序のみ)。そうだ/そうだね の かな先頭(f5afe34 の目的)は seed で維持。
+    func testRegressionRealLMUmasoudaNoUma() throws {
+        try prepareRealLMDictionary()
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let dict = try JSONDecoder().decode([String: [String]].self, from: data)
+            for (r, cs) in dict { for c in cs.reversed() { converter.store.addUserEntry(reading: r, candidate: c) } }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let single = fresh.candidates(for: "うまそうだ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "旨そうだ", "single=\(single)")
+        XCTAssertFalse(single.contains(where: { $0.hasPrefix("馬") }), "single=\(single)")
+        // そうだ/そうだね は かな先頭を維持
+        XCTAssertEqual(fresh.candidates(for: "そうだ", limit: 4, systemCandidateMode: .surface).first, "そうだ")
+        XCTAssertEqual(fresh.multiClauseCandidates(for: "そうだね", systemCandidateMode: .surface).first, "そうだね")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
