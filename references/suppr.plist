@@ -209,6 +209,14 @@
 	     居ます/います の前に出る雑音。exactReadingOnlySeed で完全一致時のみ末尾供給に移す -->
 	<dict><key>phrase</key><string>坐す</string><key>shortcut</key><string>います</string></dict>
 	<dict><key>phrase</key><string>在す</string><key>shortcut</key><string>います</string></dict>
+	<!-- ゐる(いる): 歴史的仮名遣いの居る。dict rank4 だが現代入力では雑音で、いるので→
+	     ゐるので 等 活用派生でも先頭化する。脱活用伝播で ゐる系の派生も抑制される -->
+	<dict><key>phrase</key><string>ゐる</string><key>shortcut</key><string>いる</string></dict>
+	<!-- イル/入ル(いる): カタカナ表記(イル=SudachiDict のカタカナ源 wc5000/入ル=京都の地名
+	     表記「東入ル」等 wc9679)。読みは正当だが いるので→イルので/入ルので と活用派生で
+	     先頭化する雑音。exactReadingOnlySeed で いる 完全一致時のみ末尾供給し、合成・連文節から排除 -->
+	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>
+	<dict><key>phrase</key><string>入ル</string><key>shortcut</key><string>いる</string></dict>
 	<!-- こゝ: 踊り字の旧表記。今どきの入力には不要 -->
 	<dict><key>phrase</key><string>こゝ</string><key>shortcut</key><string>ここ</string></dict>
 	<!-- ここ のレア人名収穫(rank13-23)。ここでは/ここに 等の合成・連文節を汚すため辞書からは
