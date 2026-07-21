@@ -103,12 +103,12 @@ extension KeyboardRootView {
                     formattedNumberUnitTopArea
                 }
             }
-            .frame(height: fourRowAlignedTopContentHeight)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             formattedNumberBottomBar
                 .frame(height: mainFlickKeyHeight)
         }
-        .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
