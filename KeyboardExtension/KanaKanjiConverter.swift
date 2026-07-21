@@ -582,6 +582,12 @@ final class KanaKanjiConverter {
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return true
         }
+        // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
+        // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
+        // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。
+        if normalized.count > 3, normalized.hasSuffix("のかー") {
+            return true
+        }
         if (store.initialUserDictionary()[normalized] ?? []).contains(normalized) {
             return true
         }

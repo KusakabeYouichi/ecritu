@@ -4130,6 +4130,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(3)), ["行きたい", "生きたい", "活きたい"], "single=\(single)")
     }
 
+    // なのかー/そうなのかー: 末尾ー付き(辞書語なし)は 名/菜+のかー 等の無意味分割に。
+    // 疑問・説明の のか+長音ー は口語終端でかなが正書。keepLeading=true + multiClause が
+    // かな全文を先頭に返し、提示層 case(A) で かな #1 を維持する。長音なし なのか(=七日)は
+    // 対象外(ー 付きに限定)。
+    func testRegressionRealLMNanokaLongVowelKanaLeads() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なのかー"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そうなのかー"))
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なのかー", systemCandidateMode: .surface), ["なのかー"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "そうなのかー", systemCandidateMode: .surface).first, "そうなのかー")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
