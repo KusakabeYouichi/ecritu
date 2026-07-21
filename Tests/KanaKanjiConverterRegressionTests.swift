@@ -4172,6 +4172,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "みるので"))
     }
 
+    // ねろめさんしか→根路銘さんしか: 蚕糸(さんし, unigram7216)+か が 敬称「さん」+副助詞「しか」の
+    // 分割を preempt(レア名は →さん bigram が無く負ける)。蚕糸 を suppr+exactReadingOnlySeed で
+    // さんし 完全一致時のみ末尾供給し合成・連文節から排除。田中さんしか(bigram成立)は不変。
+    func testRegressionRealLMSanshikaHonorific() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["さんし": ["蚕糸"]])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ねろめさんしか", systemCandidateMode: .surface).first, "根路銘さんしか")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たなかさんしか", systemCandidateMode: .surface).first, "田中さんしか")
+        // 蚕糸 は さんし 完全一致でのみ末尾に残る
+        let exact = converter.candidates(for: "さんし", limit: 250, systemCandidateMode: .surface)
+        XCTAssertTrue(exact.contains("蚕糸"), "exact tail should keep 蚕糸")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

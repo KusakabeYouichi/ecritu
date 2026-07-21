@@ -217,6 +217,11 @@
 	     先頭化する雑音。exactReadingOnlySeed で いる 完全一致時のみ末尾供給し、合成・連文節から排除 -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>
 	<dict><key>phrase</key><string>入ル</string><key>shortcut</key><string>いる</string></dict>
+	<!-- 蚕糸(さんし): 絹糸の意の実語だが unigram7216 を持ち、ねろめさんしか→根路銘蚕糸か の
+	     ように 敬称「さん」+副助詞「しか」の分割を preempt する(レア名は →さん bigram が無く
+	     蚕糸+か に負ける)。exactReadingOnlySeed で さんし 完全一致時のみ末尾供給し合成・連文節から排除。
+	     他の さんし 名詞(参仕/散仕/三思 等)は unigram を持たずOOVで さん+しか に負けるため対象外 -->
+	<dict><key>phrase</key><string>蚕糸</string><key>shortcut</key><string>さんし</string></dict>
 	<!-- こゝ: 踊り字の旧表記。今どきの入力には不要 -->
 	<dict><key>phrase</key><string>こゝ</string><key>shortcut</key><string>ここ</string></dict>
 	<!-- ここ のレア人名収穫(rank13-23)。ここでは/ここに 等の合成・連文節を汚すため辞書からは
