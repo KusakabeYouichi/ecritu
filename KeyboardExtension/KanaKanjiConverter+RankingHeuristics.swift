@@ -438,11 +438,32 @@ extension KanaKanjiConverter {
                 continue
             }
 
+            // サ変名詞の五段化(解す=解する/会す=会する 等)の意向形はまれ。真正五段(話す→
+            // 話そう)だけを優先したいので、基底の語幹がサ変名詞(〜する が成立)の時は
+            // 意向ブーストを外す(かいそう→解そう/会そう/介そう が名詞・様態を押しのける対策)。
+            let stemIsSahenNoun: Bool = {
+                guard pattern.dictionaryEnding == "す" else { return false }
+                let suruReading = stem + "する"
+                let suruCandidates = candidatesForReading(
+                    suruReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+                return !suruCandidates.isEmpty
+            }()
+
             for candidate in Array(scores.keys) where candidate.hasSuffix(volitionalEnding) {
                 let candidateStem = String(candidate.dropLast(volitionalEnding.count))
                 let baseCandidate = candidateStem + pattern.dictionaryEnding
 
                 guard baseCandidates.contains(baseCandidate) else {
+                    continue
+                }
+                // サ変名詞語幹(解/会/介)+する が成立し、その漢字語幹の場合は五段化意向の
+                // ブーストを外す(解そう 等)。真正五段(話す)の 話そう は suruReading=はなする が
+                // 成立しないので従来どおりブーストされる。
+                if stemIsSahenNoun, containsKanji(candidateStem) {
                     continue
                 }
 
