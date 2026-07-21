@@ -227,6 +227,8 @@
 	<!-- 甲虫(かぶとむし): 主読みは こうちゅう。かぶとむし では exactReadingOnlySeed の
 	     完全一致末尾供給へ移す(かぶとむしも 等の合成で先頭を取るため) -->
 	<dict><key>phrase</key><string>甲虫</string><key>shortcut</key><string>かぶとむし</string></dict>
+	<!-- カイソウ: 海藻 のカタカナ表記ゆれ収穫(かいそう rank6)。単独カタカナ需要は無く候補を汚すため抑制 -->
+	<dict><key>phrase</key><string>カイソウ</string><key>shortcut</key><string>かいそう</string></dict>
 	<!-- 細きん(さいきん): 細菌 の交ぜ書き収穫(菌 だけかな)。意味のない表記ゆれなので抑制 -->
 	<dict><key>phrase</key><string>細きん</string><key>shortcut</key><string>さいきん</string></dict>
 	<!-- 方面(かたも): 鳥取県湯梨浜町の地名のレア読み収穫(wc11000)。表層unigram(ほうめん用途
