@@ -37,13 +37,65 @@ enum DateFormatCatalog {
         "文月", "葉月", "長月", "神無月", "霜月", "師走"
     ]
 
+    // 英語(英国/米国共通)の名称。
+    static let englishWeekdayShort = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+    static let englishWeekdayFull = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+    static let englishMonthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+    ]
+
+    // フランス語の名称。
+    static let frenchWeekdayShort = ["dim.", "lun.", "mar.", "mer.", "jeu.", "ven.", "sam."]
+    static let frenchWeekdayFull = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"]
+    static let frenchMonthNames = [
+        "janvier", "février", "mars", "avril", "mai", "juin",
+        "juillet", "août", "septembre", "octobre", "novembre", "décembre"
+    ]
+
+    // 英国式(日→月→年 / 区切り「/」/ 月頭大文字 / 年前カンマなし / 序数 jo=4th)。
+    static let britishVariants: [String] = [
+        "j/m/aaaa",
+        "jj/mm/aaaa",
+        "j mmm aaaa",
+        "jo mmm aaaa",
+        "jjjj, j mmm aaaa",
+        "j mmm",
+        "jo mmm"
+    ]
+
+    // 米国式(月→日→年 / 区切り「/」/ 月頭大文字 / 年前カンマあり / 序数 jo=4th)。
+    static let americanVariants: [String] = [
+        "m/j/aaaa",
+        "mm/jj/aaaa",
+        "mmm j, aaaa",
+        "mmm jo, aaaa",
+        "jjjj, mmm j, aaaa",
+        "mmm j",
+        "mmm jo"
+    ]
+
+    // フランス式(日→月→年 / 区切り「/」または「.」/ 月頭小文字 / 年前カンマなし / 序数 jo=1のみ1er)。
+    static let frenchVariants: [String] = [
+        "j/mm/aaaa",
+        "jj/mm/aaaa",
+        "jj.mm.aaaa",
+        "j mmm aaaa",
+        "jo mmm aaaa",
+        "jjjj j mmm aaaa",
+        "j mmm"
+    ]
+
     static func variants(for style: DateFormatStyle) -> [String] {
         switch style {
         case .japanese:
             return japaneseVariants
-        case .french, .british, .american:
-            // 他方式は後続で実装。暫定で日本式を返す。
-            return japaneseVariants
+        case .french:
+            return frenchVariants
+        case .british:
+            return britishVariants
+        case .american:
+            return americanVariants
         }
     }
 
@@ -89,6 +141,9 @@ enum DateFormatCatalog {
             } else if matches(characters, at: index, token: "jj") {
                 output += String(format: "%02d", day)
                 index += 2
+            } else if matches(characters, at: index, token: "jo") {
+                output += ordinalDay(day, style: style)
+                index += 2
             } else if characters[index] == "m" {
                 output += String(month)
                 index += 1
@@ -116,23 +171,58 @@ enum DateFormatCatalog {
 
     private static func weekdayShort(for style: DateFormatStyle) -> [String] {
         switch style {
-        case .japanese, .french, .british, .american:
+        case .japanese:
             return japaneseWeekdayShort
+        case .british, .american:
+            return englishWeekdayShort
+        case .french:
+            return frenchWeekdayShort
         }
     }
 
     private static func weekdayFull(for style: DateFormatStyle) -> [String] {
         switch style {
-        case .japanese, .french, .british, .american:
+        case .japanese:
             return japaneseWeekdayFull
+        case .british, .american:
+            return englishWeekdayFull
+        case .french:
+            return frenchWeekdayFull
         }
     }
 
-    // 月名(mmm 用)。仏/英は各方式実装時に janvier/July 等へ差し替える。
     private static func monthNames(for style: DateFormatStyle) -> [String] {
         switch style {
-        case .japanese, .french, .british, .american:
+        case .japanese:
             return japaneseMonthNames
+        case .british, .american:
+            return englishMonthNames
+        case .french:
+            return frenchMonthNames
+        }
+    }
+
+    // jo(序数付きの日)。英語=1st/2nd/3rd/4th…(11-13はth)、フランス語=1のみ「1er」他は数字、
+    // 日本語=数字のまま。
+    private static func ordinalDay(_ day: Int, style: DateFormatStyle) -> String {
+        switch style {
+        case .british, .american:
+            let suffix: String
+            if (11...13).contains(day % 100) {
+                suffix = "th"
+            } else {
+                switch day % 10 {
+                case 1: suffix = "st"
+                case 2: suffix = "nd"
+                case 3: suffix = "rd"
+                default: suffix = "th"
+                }
+            }
+            return "\(day)\(suffix)"
+        case .french:
+            return day == 1 ? "1er" : String(day)
+        case .japanese:
+            return String(day)
         }
     }
 }

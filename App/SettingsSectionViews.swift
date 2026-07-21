@@ -835,6 +835,21 @@ struct NumberLayoutSettingsSection: View {
     }
 }
 
+struct DateFormatStyleSettingsSection: View {
+    @Binding var selection: DateFormatStyleOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "日付の書式",
+            pickerTitle: "日付の書式",
+            selection: $selection,
+            options: Array(DateFormatStyleOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "書式化数値モードのカレンダーで挿入する日付の方式です。米国式は 月→日→年(July 4th, 2026)、英国式は 日→月→年(4th July 2026)、フランス式は 日→月→年(1er juillet 2026)。方式に応じてドラムの書式候補と月名・曜日名が変わります。"
+        )
+    }
+}
+
 struct BasicSymbolOrderSettingsSection: View {
     @Binding var selection: BasicSymbolOrderOption
 

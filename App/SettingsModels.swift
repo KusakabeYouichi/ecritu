@@ -26,6 +26,7 @@ enum SettingsKeys {
     static let kanaModifierPlacement = "kanaModifierPlacement"
     static let latinLayoutMode = "latinLayoutMode"
     static let numberLayoutMode = "numberLayoutMode"
+    static let dateFormatStyle = "dateFormatStyle"
     static let basicSymbolOrder = "basicSymbolOrder"
     static let accentPalette = "accentPalette"
     static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
@@ -173,6 +174,25 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
         case .calculette: return "calculette"
         case .telephone: return "téléphone"
         case .clavier: return "clavier"
+        }
+    }
+}
+
+// 書式化数値モードのカレンダー日付書式の方式。rawValue は拡張側 DateFormatStyle と一致させる。
+enum DateFormatStyleOption: String, CaseIterable, Identifiable {
+    case japanese
+    case american
+    case british
+    case french
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .japanese: return "日本式"
+        case .american: return "米国式"
+        case .british: return "英国式"
+        case .french: return "フランス式"
         }
     }
 }
