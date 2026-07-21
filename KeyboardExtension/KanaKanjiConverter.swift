@@ -597,6 +597,18 @@ final class KanaKanjiConverter {
         if systemCandidates(for: normalized, mode: .lesDeux).contains(normalized) {
             return true
         }
+        // 理由の ので 付きの読みは、剥がした語幹が seed でかな先頭に固定された正書のかな語
+        // (ある/いる 等)のときだけ根拠ありとする(いるので/あるので: かなを #2 位置維持で残す)。
+        // たべる/みる 等は dict rank2 に かな harvest があり systemCandidates.contains では拾えて
+        // しまうため、より厳しい「seed かな先頭 or 学習済みかな識別」で判定する(食べるので/見るので
+        // にかなが混ざるのを防ぐ)。
+        if normalized.count > 2, normalized.hasSuffix("ので") {
+            let stem = String(normalized.dropLast(2))
+            if stem.count >= 2,
+                (KanaKanjiSeedDictionary.seed[stem]?.first == stem || hasLearnedKanaIdentity(for: stem)) {
+                return true
+            }
+        }
         // 名詞化節(のは/のが 等)・説明の のね/のよ 付きの読みは、剥がした語幹が辞書の
         // かな語(ひらがな/ある 等)なら根拠ありとする(ひらがなのは/あるのね: 合成でかな
         // 全文一致になるが、かなが正書の語幹+かなが唯一の正書の節、なので変換としてのかなを
