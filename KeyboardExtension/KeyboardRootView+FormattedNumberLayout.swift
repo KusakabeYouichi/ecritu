@@ -124,20 +124,20 @@ extension KeyboardRootView {
     // カレンダーカテゴリー: 上に細い操作帯(プレビュー+書式プルダウン+確定)、下に全幅カレンダー。
     // graphical DatePicker は本来大きいので、下の領域に収まるよう縮小スケールして見切れを防ぐ。
     private var formattedNumberCalendarTopArea: some View {
-        VStack(spacing: keyboardRowSpacing) {
+        // 縦に積むとカレンダーが潰れるため、操作は右の細い列に横並びで置く。
+        HStack(spacing: keyboardRowSpacing) {
             formattedNumberScaledCalendar
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // 操作帯はカレンダーの下(上に重ねない)。
-            HStack(spacing: keyboardRowSpacing) {
+            VStack(spacing: keyboardRowSpacing) {
                 formattedNumberPreview
-                    .frame(maxWidth: .infinity)
+                    .frame(maxHeight: .infinity)
                 formattedNumberDateFormatMenu
-                    .frame(width: 116)
+                    .frame(maxHeight: .infinity)
                 formattedNumberConfirmKey
-                    .frame(width: 76)
+                    .frame(maxHeight: .infinity)
             }
-            .frame(height: mainFlickKeyHeight)
+            .frame(width: 120)
         }
     }
 
