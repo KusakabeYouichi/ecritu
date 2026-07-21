@@ -4064,6 +4064,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(fresh.multiClauseCandidates(for: "そうだね", systemCandidateMode: .surface).first, "そうだね")
     }
 
+    // かいそう→{解そう, 会そう, 介そう, …}(サ変名詞 解/会/介 の五段化 解す/会す/介す の意向形)が
+    // godanVolitional ブースト(+320)で辞書名詞・様態を押しのけていた。サ変名詞語幹(〜する成立)
+    // +漢字の五段化意向はブースト対象外に。真正五段(話す→話そう/書く→書こう)は維持。
+    func testRegressionRealLMKaisouNoSahenVolitional() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "かいそう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains(where: { ["解そう", "会そう", "介そう"].contains($0) }), "single=\(single)")
+        XCTAssertEqual(single.first, "海藻", "single=\(single)")
+        // 真正五段の意向形は維持
+        XCTAssertEqual(converter.candidates(for: "はなそう", limit: 4, systemCandidateMode: .surface).first, "話そう")
+        XCTAssertTrue(converter.candidates(for: "かこう", limit: 6, systemCandidateMode: .surface).contains("書こう"))
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
