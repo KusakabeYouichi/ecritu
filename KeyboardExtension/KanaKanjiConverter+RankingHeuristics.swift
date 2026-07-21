@@ -276,6 +276,11 @@ extension KanaKanjiConverter {
                 systemCandidateMode: systemCandidateMode,
                 to: &scores
             )
+            applyStativeSouBoost(
+                for: reading,
+                inflectionDerivedCandidates: inflectionDerivedCandidates,
+                to: &scores
+            )
             return
         }
 
@@ -324,6 +329,30 @@ extension KanaKanjiConverter {
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
+    }
+
+    // 様態そう(連用形+そう=「買いそう/降りそう/来そう」looks like ~ing)は活用派生スコア
+    // (980)のまま辞書名詞群に沈み候補に出ない。控えめなブーストで top 圏へ出す(名詞を
+    // 完全に押しのけない中庸値。#1 独占ではなく「出てくる」ことを狙う)。読み末尾が
+    // 様態そう系のときだけ、そう系で終わる活用派生候補に加点する。
+    static let stativeSouBoost = 220
+    static let multiClauseStativeSouReadingSuffixes = ["そうです", "そうだ", "そうな", "そうに", "そうで", "そう"]
+    func applyStativeSouBoost(
+        for reading: String,
+        inflectionDerivedCandidates: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        guard let suffix = Self.multiClauseStativeSouReadingSuffixes.first(where: { reading.hasSuffix($0) }),
+            reading.count > suffix.count else {
+            return
+        }
+        for candidate in inflectionDerivedCandidates where candidate.hasSuffix(suffix) {
+            // かな識別(買いそう が かな のまま=かいそう)は素通りと同じなので対象外。
+            guard candidate != reading, containsKanji(candidate) else {
+                continue
+            }
+            scores[candidate, default: 0] += Self.stativeSouBoost
+        }
     }
 
     func hasMatchingInflectionRankingSuffix(

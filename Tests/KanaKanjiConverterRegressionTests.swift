@@ -4077,6 +4077,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.candidates(for: "かこう", limit: 6, systemCandidateMode: .surface).contains("書こう"))
     }
 
+    // 様態そう(買いそう/飼いそう=五段連用+そう)が活用スコア(980)のまま辞書名詞群に沈み
+    // 候補に出なかった。読み末尾が様態そう系のとき、そうで終わる漢字活用派生に控えめブースト
+    // (220)を与え top 圏へ(名詞は残す)。おいしそう/なりそう(既存の様態)は不変。
+    func testRegressionRealLMKaisouBuyAppears() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "かいそう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(single.contains("買いそう"), "single=\(single)")
+        XCTAssertTrue(single.prefix(8).contains("飼いそう"), "single=\(single)")
+        // 解そう系は出ない(2153)/海藻は上位維持
+        XCTAssertFalse(single.contains(where: { ["解そう", "会そう", "介そう"].contains($0) }), "single=\(single)")
+        XCTAssertEqual(converter.candidates(for: "おいしそう", limit: 3, systemCandidateMode: .surface).first, "美味しそう")
+        XCTAssertEqual(converter.candidates(for: "なりそう", limit: 3, systemCandidateMode: .surface).first, "成りそう")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
