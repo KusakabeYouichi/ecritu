@@ -12,7 +12,40 @@ struct SIUnit: Identifiable, Hashable {
     var id: String { symbol }
 }
 
+// SI接頭辞(基本単位ドラムと組み合わせる)。symbol は単位記号に前置する文字(なしは "")。
+struct SIPrefix: Identifiable, Hashable {
+    let symbol: String
+    let reading: String
+
+    var id: String { symbol.isEmpty ? "_none" : symbol }
+}
+
 enum SIUnitCatalog {
+    // 接頭辞ドラムの選択肢(大→小、中央に「なし」)。µ は micro sign(U+00B5)。
+    static let prefixes: [SIPrefix] = [
+        SIPrefix(symbol: "T", reading: "テラ"),
+        SIPrefix(symbol: "G", reading: "ギガ"),
+        SIPrefix(symbol: "M", reading: "メガ"),
+        SIPrefix(symbol: "k", reading: "キロ"),
+        SIPrefix(symbol: "", reading: "(なし)"),
+        SIPrefix(symbol: "c", reading: "センチ"),
+        SIPrefix(symbol: "m", reading: "ミリ"),
+        SIPrefix(symbol: "µ", reading: "マイクロ"),
+        SIPrefix(symbol: "n", reading: "ナノ"),
+        SIPrefix(symbol: "p", reading: "ピコ")
+    ]
+
+    // SI基本単位。質量は接頭辞が付く g(グラム)を基本にする(k で kg)。t は接頭辞で作れず別途。
+    static let siBase: [SIUnit] = [
+        SIUnit(symbol: "m", reading: "メートル", quantity: "長さ", group: "SI基本単位"),
+        SIUnit(symbol: "g", reading: "グラム", quantity: "質量", group: "SI基本単位"),
+        SIUnit(symbol: "s", reading: "秒", quantity: "時間", group: "SI基本単位"),
+        SIUnit(symbol: "A", reading: "アンペア", quantity: "電流", group: "SI基本単位"),
+        SIUnit(symbol: "K", reading: "ケルビン", quantity: "熱力学温度", group: "SI基本単位"),
+        SIUnit(symbol: "mol", reading: "モル", quantity: "物質量", group: "SI基本単位"),
+        SIUnit(symbol: "cd", reading: "カンデラ", quantity: "光度", group: "SI基本単位")
+    ]
+
     // SI組立単位(固有の名称を持たないもの)。ユーザ提供の一覧を機械/熱/電磁/化学の順で収録。
     static let siDerived: [SIUnit] = [
         // 機械・運動・力学
@@ -99,7 +132,9 @@ enum SIUnitCatalog {
             return siDerived
         case .siNamed:
             return siNamed
-        case .siBase, .calendar:
+        case .siBase:
+            return siBase
+        case .calendar:
             return []
         }
     }

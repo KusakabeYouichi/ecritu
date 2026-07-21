@@ -154,8 +154,8 @@ extension KeyboardRootView {
 
     // MARK: - 単位選択
 
-    // 現在カテゴリーで選択中の単位記号(未選択時は先頭)。単位なしカテゴリーは空文字。
-    var formattedNumberCurrentUnitSymbol: String {
+    // 現在カテゴリーで選択中の基本記号(接頭辞なし)。未選択時は先頭。単位なしは空文字。
+    private var formattedNumberSelectedBaseSymbol: String {
         let units = SIUnitCatalog.units(for: selectedFormattedNumberCategory)
         guard !units.isEmpty else {
             return ""
@@ -167,10 +167,29 @@ extension KeyboardRootView {
         return units.first?.symbol ?? ""
     }
 
+    // 出力用の単位記号。SI基本のみ接頭辞ドラムの選択を前置する(k+g=kg 等)。
+    var formattedNumberCurrentUnitSymbol: String {
+        let base = formattedNumberSelectedBaseSymbol
+        guard !base.isEmpty else {
+            return ""
+        }
+        if selectedFormattedNumberCategory == .siBase {
+            return formattedNumberPrefixSymbol + base
+        }
+        return base
+    }
+
     private var formattedNumberUnitBinding: Binding<String> {
         Binding(
-            get: { formattedNumberCurrentUnitSymbol },
+            get: { formattedNumberSelectedBaseSymbol },
             set: { formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue] = $0 }
+        )
+    }
+
+    private var formattedNumberPrefixBinding: Binding<String> {
+        Binding(
+            get: { formattedNumberPrefixSymbol },
+            set: { formattedNumberPrefixSymbol = $0 }
         )
     }
 
@@ -224,15 +243,41 @@ extension KeyboardRootView {
         }
     }
 
-    // 単位ドラム(記号+読みを表示)。単位なしカテゴリー/カレンダーは占位カード。
+    // 単位ドラム。SI基本のみ「接頭辞ドラム+基本単位ドラム」の2連。カレンダー/空は占位。
     @ViewBuilder
     private var formattedNumberUnitSelector: some View {
         if selectedFormattedNumberCategory == .calendar {
             placeholderCard("カレンダー(P3)")
+        } else if selectedFormattedNumberCategory == .siBase {
+            HStack(spacing: keyboardRowSpacing) {
+                Picker("", selection: formattedNumberPrefixBinding) {
+                    ForEach(SIUnitCatalog.prefixes) { prefix in
+                        Text(prefix.symbol.isEmpty ? prefix.reading : "\(prefix.symbol) \(prefix.reading)")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .tag(prefix.symbol)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+
+                Picker("", selection: formattedNumberUnitBinding) {
+                    ForEach(SIUnitCatalog.siBase) { unit in
+                        Text("\(unit.symbol) \(unit.reading)")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .tag(unit.symbol)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+            }
         } else {
             let units = SIUnitCatalog.units(for: selectedFormattedNumberCategory)
             if units.isEmpty {
-                placeholderCard("単位(P2b)")
+                placeholderCard("単位")
             } else {
                 Picker("", selection: formattedNumberUnitBinding) {
                     ForEach(units) { unit in
