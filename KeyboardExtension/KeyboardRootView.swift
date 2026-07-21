@@ -80,10 +80,10 @@ struct KeyboardRootView: View {
     @State var emojiInputSubmode: EmojiInputSubmode = .emoji
     @State var returnToKanaAfterNextCommit: Bool = false
     @State var formattedNumberBuffer: String = ""
-    @State var selectedFormattedNumberCategory: FormattedNumberCategory = .siBase
+    @State var selectedFormattedNumberCategory: FormattedNumberCategory = FormattedNumberPreferences.lastCategory()
     @State var formattedNumberGroupingEnabled: Bool = true
-    @State var formattedNumberUnitSelection: [Int: String] = [:]
-    @State var formattedNumberPrefixSymbol: String = ""
+    @State var formattedNumberUnitSelection: [Int: String] = FormattedNumberPreferences.loadUnitSelection()
+    @State var formattedNumberPrefixSymbol: String = FormattedNumberPreferences.lastPrefixSymbol()
     @State var formattedNumberDate: Date = Date()
     @State var formattedNumberDateFormatTemplate: String = DateFormatCatalog.japaneseVariants.first ?? "m月j日"
     @State var didTriggerComposingCommitLongPress = false

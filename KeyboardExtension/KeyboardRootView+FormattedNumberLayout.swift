@@ -39,6 +39,57 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
     }
 }
 
+// 書式化数値モードの「前回の選択」を App Group の共有 UserDefaults に保存/復元する。
+// 次回モードを開いたとき、前回のカテゴリー・単位(カテゴリー別)・接頭辞が選択済みで開く。
+enum FormattedNumberPreferences {
+    private static var defaults: UserDefaults? {
+        UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)
+    }
+
+    private static let categoryKey = "formattedNumber.lastCategory"
+    private static let prefixKey = "formattedNumber.lastPrefix"
+    private static func unitKey(_ categoryRawValue: Int) -> String {
+        "formattedNumber.lastUnit.\(categoryRawValue)"
+    }
+
+    static func lastCategory() -> FormattedNumberCategory {
+        guard let defaults,
+            let category = FormattedNumberCategory(rawValue: defaults.integer(forKey: categoryKey)) else {
+            return .siBase
+        }
+        return category
+    }
+
+    static func saveCategory(_ category: FormattedNumberCategory) {
+        defaults?.set(category.rawValue, forKey: categoryKey)
+    }
+
+    static func lastPrefixSymbol() -> String {
+        defaults?.string(forKey: prefixKey) ?? ""
+    }
+
+    static func savePrefixSymbol(_ symbol: String) {
+        defaults?.set(symbol, forKey: prefixKey)
+    }
+
+    static func loadUnitSelection() -> [Int: String] {
+        guard let defaults else {
+            return [:]
+        }
+        var selection: [Int: String] = [:]
+        for category in FormattedNumberCategory.allCases {
+            if let symbol = defaults.string(forKey: unitKey(category.rawValue)) {
+                selection[category.rawValue] = symbol
+            }
+        }
+        return selection
+    }
+
+    static func saveUnit(_ symbol: String, for category: FormattedNumberCategory) {
+        defaults?.set(symbol, forKey: unitKey(category.rawValue))
+    }
+}
+
 // P1: モードの外枠(テンキー / 右エリア=プレビュー+単位ドラム占位+確定 / 下段バー)。
 // キーボードは横長で縦の余白が乏しいため、上段は高さいっぱいに可変分割し、下段バーだけ
 // 固定1段にする(絵文字画面と同じ縦配分)。単位ドラム・書式化・カレンダーは後続フェーズ。
@@ -247,15 +298,27 @@ extension KeyboardRootView {
     private var formattedNumberUnitBinding: Binding<String> {
         Binding(
             get: { formattedNumberSelectedBaseSymbol },
-            set: { formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue] = $0 }
+            set: {
+                formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue] = $0
+                FormattedNumberPreferences.saveUnit($0, for: selectedFormattedNumberCategory)
+            }
         )
     }
 
     private var formattedNumberPrefixBinding: Binding<String> {
         Binding(
             get: { formattedNumberPrefixSymbol },
-            set: { formattedNumberPrefixSymbol = $0 }
+            set: {
+                formattedNumberPrefixSymbol = $0
+                FormattedNumberPreferences.savePrefixSymbol($0)
+            }
         )
+    }
+
+    // カテゴリー選択(前回値を保存)。
+    private func selectFormattedNumberCategory(_ category: FormattedNumberCategory) {
+        selectedFormattedNumberCategory = category
+        FormattedNumberPreferences.saveCategory(category)
     }
 
     // 確定/プレビューに使う最終文字列。カレンダーはレンダリング日付、単位系は数値+単位。
@@ -441,7 +504,7 @@ extension KeyboardRootView {
                 EmojiCategoryKeyButton(
                     icon: category.shortLabel,
                     isSelected: selectedFormattedNumberCategory == category,
-                    action: { selectedFormattedNumberCategory = category }
+                    action: { selectFormattedNumberCategory(category) }
                 )
                 .frame(maxWidth: .infinity)
                 .frame(height: mainFlickKeyHeight)
