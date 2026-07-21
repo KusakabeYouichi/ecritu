@@ -4104,6 +4104,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(exact.contains("サンガ"), "exact tail should keep サンガ")
     }
 
+    // しまもよう→縞模様: dict rank0 に在るが word_cost=15347(収穫底値10000超)で
+    // harvestTier 降格され、しま+もよう合成(島もよう 等)の下に沈んでいた。seed 登録で
+    // seedExempt(降格免除)となり systemDictionary 級で先頭化する。
+    func testRegressionRealLMShimamoyou() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "しまもよう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "縞模様", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
