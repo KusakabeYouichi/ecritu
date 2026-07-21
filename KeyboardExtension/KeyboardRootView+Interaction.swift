@@ -112,6 +112,37 @@ extension KeyboardRootView {
         consumeReturnToKanaAfterNextCommitIfNeeded()
     }
 
+    // 書式化数値入力モード: 左端モード列 最下段キーの長押しで起動。1件確定でかなへ戻す。
+    func enterFormattedNumberMode() {
+        formattedNumberBuffer = ""
+        transitionState = KeyboardModeTransition.enterFormattedNumberMode(from: transitionState)
+        returnToKanaAfterNextCommit = true
+    }
+
+    // テンキーからの数字/記号入力はホストへ流さず、ローカルバッファに溜めてプレビューする。
+    func appendFormattedNumber(_ token: String) {
+        formattedNumberBuffer.append(token)
+    }
+
+    func deleteFormattedNumberBackward() {
+        guard !formattedNumberBuffer.isEmpty else {
+            return
+        }
+        formattedNumberBuffer.removeLast()
+    }
+
+    // 確定: 現在のバッファ(P1では素の数値)をホストへ挿入し、かな入力へ戻す。
+    func commitFormattedNumber() {
+        let text = formattedNumberBuffer
+        formattedNumberBuffer = ""
+        guard !text.isEmpty else {
+            switchInputMode(.kana)
+            return
+        }
+        onTextInput(text)
+        consumeReturnToKanaAfterNextCommitIfNeeded()
+    }
+
     func postModifierButtonState(forModifierOutput output: String) -> KanaPostModifierButtonState? {
         switch output {
         case "^_^":
@@ -132,7 +163,7 @@ extension KeyboardRootView {
             cancelLatinModeSwitchSecondTapWindow()
         }
 
-        if mode != .emoji {
+        if mode != .emoji, mode != .formattedNumber {
             returnToKanaAfterNextCommit = false
         }
 

@@ -103,7 +103,7 @@ extension KeyboardViewController {
     func hasExpandedHeaderForHeight(using configuration: RenderConfiguration? = nil) -> Bool {
         // 候補表示の有無でボタン群が上下しないよう、テキスト系モードでは常に候補ヘッダー領域を確保する。
         switch currentInputMode {
-        case .emoji, .kana, .number, .latin:
+        case .emoji, .kana, .number, .latin, .formattedNumber:
             return true
         }
     }
@@ -111,6 +111,9 @@ extension KeyboardViewController {
     func portraitHeightProfile() -> PortraitHeightProfile {
         switch currentInputMode {
         case .emoji:
+            return .emoji
+        case .formattedNumber:
+            // 書式化数値パネルは絵文字と同様の4段相当クラスタなので同じ高さ枠を使う。
             return .emoji
         case .kana:
             return effectiveKanaLayoutModeForHeight() == .fiveByTwo

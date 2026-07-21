@@ -79,6 +79,8 @@ struct KeyboardRootView: View {
     @State var selectedKaomojiReading: String? = nil
     @State var emojiInputSubmode: EmojiInputSubmode = .emoji
     @State var returnToKanaAfterNextCommit: Bool = false
+    @State var formattedNumberBuffer: String = ""
+    @State var selectedFormattedNumberCategory: FormattedNumberCategory = .siBase
     @State var didTriggerComposingCommitLongPress = false
     @State var katakanaCommitFeedbackText: String? = nil
     @State var pendingKatakanaCommitWorkItem: DispatchWorkItem?
@@ -441,6 +443,8 @@ struct KeyboardRootView: View {
             return numberFlickGuideDisplayMode
         case .emoji:
             return .off
+        case .formattedNumber:
+            return .off
         }
     }
 
@@ -523,6 +527,9 @@ struct KeyboardRootView: View {
         case .latin:
             return FlickKanaLayout.latinRows(for: directionProfile, layoutMode: latinLayoutMode)
         case .emoji:
+            return []
+        case .formattedNumber:
+            // 独自テンキーを formattedNumberKeyboardView で構築するため FlickKanaSet 行は不要。
             return []
         }
     }

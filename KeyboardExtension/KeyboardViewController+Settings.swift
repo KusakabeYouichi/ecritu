@@ -64,6 +64,8 @@ extension KeyboardViewController {
             return "latin"
         case .emoji:
             return "emoji"
+        case .formattedNumber:
+            return "formattedNumber"
         }
     }
 
