@@ -4113,6 +4113,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "縞模様", "single=\(single)")
     }
 
+    // きると→キルト後退: dict は キルト(rank0, wc541 と異常低=最強)のみで、動詞+と 条件形
+    // 切ると/着ると(活用派生980)を押さえ先頭化。seed 順正規化で 切ると→着ると→キルト に。
+    func testRegressionRealLMKirutoVerbFirst() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "きると", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["切ると", "着ると", "キルト"], "single=\(single)")
+    }
+
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
