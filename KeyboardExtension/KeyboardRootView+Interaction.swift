@@ -131,14 +131,16 @@ extension KeyboardRootView {
         formattedNumberBuffer.removeLast()
     }
 
-    // 確定: 現在のバッファ(P1では素の数値)をホストへ挿入し、かな入力へ戻す。
+    // 確定: 現在のバッファを整形(3桁区切り/小数点)してホストへ挿入し、かな入力へ戻す。
+    // 単位記号の付与・間隔設定は後続フェーズ。
     func commitFormattedNumber() {
-        let text = formattedNumberBuffer
-        formattedNumberBuffer = ""
-        guard !text.isEmpty else {
+        guard !formattedNumberBuffer.isEmpty else {
+            formattedNumberBuffer = ""
             switchInputMode(.kana)
             return
         }
+        let text = formattedNumberDisplayString()
+        formattedNumberBuffer = ""
         onTextInput(text)
         consumeReturnToKanaAfterNextCommitIfNeeded()
     }
