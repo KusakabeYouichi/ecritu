@@ -121,40 +121,60 @@ extension KeyboardRootView {
         }
     }
 
-    // カレンダーカテゴリー: 日付ホイール + 右エリア(プレビュー+書式ドラム+確定)。
+    // カレンダーカテゴリー: 上に細い操作帯(プレビュー+書式プルダウン+確定)、下に全幅カレンダー。
+    // graphical DatePicker は本来大きいので、下の領域に収まるよう縮小スケールして見切れを防ぐ。
     private var formattedNumberCalendarTopArea: some View {
-        HStack(spacing: keyboardRowSpacing) {
-            DatePicker("", selection: $formattedNumberDate, displayedComponents: .date)
-                .datePickerStyle(.graphical)
-                .labelsHidden()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-
-            VStack(spacing: keyboardRowSpacing) {
+        VStack(spacing: keyboardRowSpacing) {
+            HStack(spacing: keyboardRowSpacing) {
                 formattedNumberPreview
-                    .frame(height: mainFlickKeyHeight)
-                formattedNumberDateFormatDrum
-                    .frame(maxHeight: .infinity)
+                    .frame(maxWidth: .infinity)
+                formattedNumberDateFormatMenu
+                    .frame(width: 116)
                 formattedNumberConfirmKey
-                    .frame(height: mainFlickKeyHeight)
+                    .frame(width: 76)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .frame(height: mainFlickKeyHeight)
+
+            formattedNumberScaledCalendar
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
-    // 書式ドラム: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
-    private var formattedNumberDateFormatDrum: some View {
+    // 全幅で領域に収まるようスケールしたグラフィカルカレンダー(縮小しても全体が見える)。
+    private var formattedNumberScaledCalendar: some View {
+        GeometryReader { geometry in
+            let naturalWidth: CGFloat = 330
+            let naturalHeight: CGFloat = 300
+            let scale = max(
+                0.1,
+                min(geometry.size.width / naturalWidth, geometry.size.height / naturalHeight)
+            )
+            DatePicker("", selection: $formattedNumberDate, displayedComponents: .date)
+                .datePickerStyle(.graphical)
+                .labelsHidden()
+                .frame(width: naturalWidth, height: naturalHeight)
+                .scaleEffect(scale)
+                .frame(width: naturalWidth * scale, height: naturalHeight * scale)
+                .frame(width: geometry.size.width, height: geometry.size.height)
+        }
+    }
+
+    // 書式プルダウン: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
+    private var formattedNumberDateFormatMenu: some View {
         Picker("", selection: formattedNumberDateTemplateBinding) {
             ForEach(DateFormatCatalog.variants(for: formattedNumberDateStyle), id: \.self) { template in
                 Text(DateFormatCatalog.sampleRendered(template: template, style: formattedNumberDateStyle))
-                    .lineLimit(1)
-                    .truncationMode(.tail)
                     .tag(template)
             }
         }
-        .pickerStyle(.wheel)
+        .pickerStyle(.menu)
+        .labelsHidden()
+        .font(.system(size: 13))
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .clipped()
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(KeyboardThemePalette.keyBackground)
+        )
     }
 
     // 方式(日本/仏/英/米)はコンテナー設定で選ぶ。共有 UserDefaults から直接読む。
