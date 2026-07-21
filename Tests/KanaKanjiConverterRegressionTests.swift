@@ -4122,6 +4122,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
 
+    // いきたい: たい形は活用派生(980同点)で基底列挙 いきる(一段)先行のため 生き/活き が先。
+    // 会話頻度は 行く>生きる。seed 順正規化で 行きたい→生きたい→活きたい に是正。
+    func testRegressionRealLMIkitaiFrequencyOrder() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "いきたい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["行きたい", "生きたい", "活きたい"], "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
