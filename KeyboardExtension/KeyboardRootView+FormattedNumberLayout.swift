@@ -152,10 +152,41 @@ extension KeyboardRootView {
         return String(grouped.reversed())
     }
 
-    // MARK: - 右エリア(プレビュー+単位ドラム占位+区切りチェック+確定)
+    // MARK: - 単位選択
+
+    // 現在カテゴリーで選択中の単位記号(未選択時は先頭)。単位なしカテゴリーは空文字。
+    var formattedNumberCurrentUnitSymbol: String {
+        let units = SIUnitCatalog.units(for: selectedFormattedNumberCategory)
+        guard !units.isEmpty else {
+            return ""
+        }
+        if let selected = formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue],
+            units.contains(where: { $0.symbol == selected }) {
+            return selected
+        }
+        return units.first?.symbol ?? ""
+    }
+
+    private var formattedNumberUnitBinding: Binding<String> {
+        Binding(
+            get: { formattedNumberCurrentUnitSymbol },
+            set: { formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue] = $0 }
+        )
+    }
+
+    // 確定/プレビューに使う最終文字列(数値+単位)。単位との間隔は当面なし(P4で設定化)。
+    func formattedNumberOutputString() -> String {
+        let number = formattedNumberDisplayString()
+        let unit = formattedNumberCurrentUnitSymbol
+        return unit.isEmpty ? number : number + unit
+    }
+
+    // MARK: - 右エリア(プレビュー+単位ドラム+区切りチェック+確定)
 
     private var formattedNumberPreviewText: String {
-        formattedNumberBuffer.isEmpty ? "0" : formattedNumberDisplayString()
+        let number = formattedNumberBuffer.isEmpty ? "0" : formattedNumberDisplayString()
+        let unit = formattedNumberCurrentUnitSymbol
+        return unit.isEmpty ? number : number + unit
     }
 
     private var formattedNumberPreview: some View {
@@ -181,7 +212,7 @@ extension KeyboardRootView {
             formattedNumberPreview
                 .frame(height: mainFlickKeyHeight)
 
-            placeholderCard(selectedFormattedNumberCategory == .calendar ? "カレンダー(P3)" : "単位ドラム(P2)")
+            formattedNumberUnitSelector
                 .frame(maxHeight: .infinity)
 
             HStack(spacing: keyboardRowSpacing) {
@@ -190,6 +221,31 @@ extension KeyboardRootView {
                     .frame(maxWidth: .infinity)
             }
             .frame(height: mainFlickKeyHeight)
+        }
+    }
+
+    // 単位ドラム(記号+読みを表示)。単位なしカテゴリー/カレンダーは占位カード。
+    @ViewBuilder
+    private var formattedNumberUnitSelector: some View {
+        if selectedFormattedNumberCategory == .calendar {
+            placeholderCard("カレンダー(P3)")
+        } else {
+            let units = SIUnitCatalog.units(for: selectedFormattedNumberCategory)
+            if units.isEmpty {
+                placeholderCard("単位(P2b)")
+            } else {
+                Picker("", selection: formattedNumberUnitBinding) {
+                    ForEach(units) { unit in
+                        Text("\(unit.symbol)  \(unit.reading)")
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.6)
+                            .tag(unit.symbol)
+                    }
+                }
+                .pickerStyle(.wheel)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .clipped()
+            }
         }
     }
 

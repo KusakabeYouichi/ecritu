@@ -139,7 +139,7 @@ extension KeyboardRootView {
             switchInputMode(.kana)
             return
         }
-        let text = formattedNumberDisplayString()
+        let text = formattedNumberOutputString()
         formattedNumberBuffer = ""
         onTextInput(text)
         consumeReturnToKanaAfterNextCommitIfNeeded()
