@@ -4160,6 +4160,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertNotEqual(multi.first, "入るので")
     }
 
+    // 理由の ので: 基底が seed かな先頭の正書かな語(いる/ある)なら かな識別を先頭側に残す
+    // (いるので→居るので #1 の直後にかな #2 を位置維持)。たべる/みる 等は dict rank2 の
+    // かな harvest があるが seed 非掲載なので false=かなは末尾チップのみ(食べるので/見るので)。
+    func testRegressionRealLMNodeKanaLeadingSeedGate() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["いる": ["ゐる", "イル", "入ル"]])
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いるので"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるので"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "たべるので"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "みるので"))
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
