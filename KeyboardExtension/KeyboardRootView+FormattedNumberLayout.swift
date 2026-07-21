@@ -125,6 +125,10 @@ extension KeyboardRootView {
     // graphical DatePicker は本来大きいので、下の領域に収まるよう縮小スケールして見切れを防ぐ。
     private var formattedNumberCalendarTopArea: some View {
         VStack(spacing: keyboardRowSpacing) {
+            formattedNumberScaledCalendar
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            // 操作帯はカレンダーの下(上に重ねない)。
             HStack(spacing: keyboardRowSpacing) {
                 formattedNumberPreview
                     .frame(maxWidth: .infinity)
@@ -134,9 +138,6 @@ extension KeyboardRootView {
                     .frame(width: 76)
             }
             .frame(height: mainFlickKeyHeight)
-
-            formattedNumberScaledCalendar
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 

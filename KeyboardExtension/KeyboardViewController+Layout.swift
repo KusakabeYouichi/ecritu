@@ -113,8 +113,7 @@ extension KeyboardViewController {
         case .emoji:
             return .emoji
         case .formattedNumber:
-            // 書式化数値パネルは絵文字と同様の4段相当クラスタなので同じ高さ枠を使う。
-            return .emoji
+            return .formattedNumber
         case .kana:
             return effectiveKanaLayoutModeForHeight() == .fiveByTwo
                 ? .kanaFiveByTwo
@@ -138,6 +137,8 @@ extension KeyboardViewController {
             return Self.minimumKanaFiveByTwoHeight...Self.maximumKanaFiveByTwoHeight
         case .emoji:
             return Self.minimumEmojiHeight...Self.maximumEmojiHeight
+        case .formattedNumber:
+            return Self.minimumFormattedNumberHeight...Self.maximumFormattedNumberHeight
         }
     }
 
@@ -157,6 +158,8 @@ extension KeyboardViewController {
             return 162...194
         case .emoji:
             return 170...204
+        case .formattedNumber:
+            return 200...260
         }
     }
 
@@ -176,6 +179,8 @@ extension KeyboardViewController {
             return 176
         case .emoji:
             return 188
+        case .formattedNumber:
+            return 230
         }
     }
 
@@ -208,6 +213,8 @@ extension KeyboardViewController {
         case .emoji:
             // 絵文字/記号入力もテキスト系モードと同等の見た目高さに揃える。
             return 46
+        case .formattedNumber:
+            return 46
         }
     }
 
@@ -231,6 +238,8 @@ extension KeyboardViewController {
         case .kanaFiveByTwo:
             return headerDelta
         case .emoji:
+            return headerDelta
+        case .formattedNumber:
             return headerDelta
         }
     }
@@ -282,6 +291,14 @@ extension KeyboardViewController {
                 + Self.mainKeyRowHeight * 4
                 + rowSpacing * 3
                 + Self.keyboardVerticalPadding
+        case .formattedNumber:
+            // graphical カレンダーを収めるため、テキスト系より高い基準高さにする。
+            return headerHeight
+                + rowSpacing
+                + Self.mainKeyRowHeight * 4
+                + rowSpacing * 3
+                + Self.keyboardVerticalPadding
+                + 110
         }
     }
 

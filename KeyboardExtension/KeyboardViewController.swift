@@ -424,6 +424,9 @@ final class KeyboardViewController: UIInputViewController {
     static let maximumKanaFiveByTwoHeight: CGFloat = 280
     static let minimumEmojiHeight: CGFloat = 228
     static let maximumEmojiHeight: CGFloat = 290
+    // 書式化数値モードは graphical カレンダーを収めるため専用に高くする。
+    static let minimumFormattedNumberHeight: CGFloat = 300
+    static let maximumFormattedNumberHeight: CGFloat = 380
     static let portraitSystemAccessoryOffset: CGFloat = 6
     static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
     private static let deviceSystemDictionaryPreloadDelay: TimeInterval = 1.2
@@ -465,6 +468,7 @@ final class KeyboardViewController: UIInputViewController {
         case compactActionRow
         case kanaFiveByTwo
         case emoji
+        case formattedNumber
     }
 
     struct DiagnosticsFlightRecorderEvent: Codable {
