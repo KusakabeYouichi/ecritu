@@ -31,6 +31,11 @@ enum DateFormatCatalog {
     // 曜日は Calendar の weekday(1=日曜)を 0 起点に直した index で引く。
     static let japaneseWeekdayShort = ["日", "月", "火", "水", "木", "金", "土"]
     static let japaneseWeekdayFull = ["日曜日", "月曜日", "火曜日", "水曜日", "木曜日", "金曜日", "土曜日"]
+    // mmm(月名を名前で表記)用。日本式は和風月名(index=月-1)。
+    static let japaneseMonthNames = [
+        "睦月", "如月", "弥生", "卯月", "皐月", "水無月",
+        "文月", "葉月", "長月", "神無月", "霜月", "師走"
+    ]
 
     static func variants(for style: DateFormatStyle) -> [String] {
         switch style {
@@ -58,7 +63,9 @@ enum DateFormatCatalog {
     ) -> String {
         let short = weekdayShort(for: style)
         let full = weekdayFull(for: style)
+        let monthNames = monthNames(for: style)
         let safeIndex = max(0, min(6, weekdayIndex))
+        let safeMonthIndex = max(0, min(11, month - 1))
 
         let characters = Array(template)
         var output = ""
@@ -72,6 +79,9 @@ enum DateFormatCatalog {
                 index += 4
             } else if matches(characters, at: index, token: "jjj") {
                 output += short[safeIndex]
+                index += 3
+            } else if matches(characters, at: index, token: "mmm") {
+                output += monthNames[safeMonthIndex]
                 index += 3
             } else if matches(characters, at: index, token: "mm") {
                 output += String(format: "%02d", month)
@@ -115,6 +125,14 @@ enum DateFormatCatalog {
         switch style {
         case .japanese, .french, .british, .american:
             return japaneseWeekdayFull
+        }
+    }
+
+    // 月名(mmm 用)。仏/英は各方式実装時に janvier/July 等へ差し替える。
+    private static func monthNames(for style: DateFormatStyle) -> [String] {
+        switch style {
+        case .japanese, .french, .british, .american:
+            return japaneseMonthNames
         }
     }
 }
