@@ -141,23 +141,14 @@ extension KeyboardRootView {
         }
     }
 
-    // 全幅で領域に収まるようスケールしたグラフィカルカレンダー(縮小しても全体が見える)。
+    // コンパクトな日付ピッカー(余白最小のテキストベース。タップで暦ポップオーバーが開く)。
+    // dynamicTypeSize を .large 上限にしてフォント拡大時の無駄な余白の広がりを抑える。
     private var formattedNumberScaledCalendar: some View {
-        GeometryReader { geometry in
-            let naturalWidth: CGFloat = 330
-            let naturalHeight: CGFloat = 300
-            let scale = max(
-                0.1,
-                min(geometry.size.width / naturalWidth, geometry.size.height / naturalHeight)
-            )
-            DatePicker("", selection: $formattedNumberDate, displayedComponents: .date)
-                .datePickerStyle(.graphical)
-                .labelsHidden()
-                .frame(width: naturalWidth, height: naturalHeight)
-                .scaleEffect(scale)
-                .frame(width: naturalWidth * scale, height: naturalHeight * scale)
-                .frame(width: geometry.size.width, height: geometry.size.height)
-        }
+        DatePicker("", selection: $formattedNumberDate, displayedComponents: .date)
+            .datePickerStyle(.compact)
+            .labelsHidden()
+            .environment(\.dynamicTypeSize, .large)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     // 書式プルダウン: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
