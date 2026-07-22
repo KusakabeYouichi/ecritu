@@ -835,86 +835,26 @@ struct NumberLayoutSettingsSection: View {
     }
 }
 
-struct DateFormatStyleSettingsSection: View {
-    @Binding var selection: DateFormatStyleOption
-
-    var body: some View {
-        SegmentedSettingsCard(
-            title: "日付の書式",
-            pickerTitle: "日付の書式",
-            selection: $selection,
-            options: Array(DateFormatStyleOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "書式化数値モードのカレンダーで挿入する日付の方式です。米国式は 月→日→年(July 4th, 2026)、英国式は 日→月→年(4th July 2026)、フランス式は 日→月→年(1er juillet 2026)。方式に応じてドラムの書式候補と月名・曜日名が変わります。"
-        )
-    }
-}
-
-// カレンダー関連設定を1つの塊にまとめる(週開始→曜日表記→日曜列の色→日付書式)。
+// カレンダー関連設定を1囲みにまとめる(週開始→曜日表記→日曜列の色→日付書式)。
 struct CalendarSettingsGroupSection: View {
     @Binding var weekStart: CalendarWeekStartOption
     @Binding var weekdayLanguage: CalendarWeekdayLanguageOption
     @Binding var sundayColor: CalendarSundayColorOption
     @Binding var dateFormatStyle: DateFormatStyleOption
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text("カレンダー")
-                .font(.title3.bold())
+    private static let sundayColorChoices: [CalendarSundayColorOption] = [.bordeaux, .bourgogne, .dic156, .dicF101]
 
-            CalendarWeekStartSettingsSection(selection: $weekStart)
-            CalendarWeekdayLanguageSettingsSection(selection: $weekdayLanguage)
-            CalendarSundayColorSettingsSection(selection: $sundayColor)
-            DateFormatStyleSettingsSection(selection: $dateFormatStyle)
-        }
-    }
-}
-
-struct CalendarWeekStartSettingsSection: View {
-    @Binding var selection: CalendarWeekStartOption
-
-    var body: some View {
-        SegmentedSettingsCard(
-            title: "カレンダーの週開始",
-            pickerTitle: "週開始",
-            selection: $selection,
-            options: Array(CalendarWeekStartOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "書式化数値モードのカレンダーの週の始まりの曜日です。"
-        )
-    }
-}
-
-struct CalendarWeekdayLanguageSettingsSection: View {
-    @Binding var selection: CalendarWeekdayLanguageOption
-
-    var body: some View {
-        SegmentedSettingsCard(
-            title: "カレンダーの曜日表記",
-            pickerTitle: "曜日表記",
-            selection: $selection,
-            options: Array(CalendarWeekdayLanguageOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "書式化数値モードのカレンダーの曜日ヘッダーと月見出しの言語です。"
-        )
-    }
-}
-
-struct CalendarSundayColorSettingsSection: View {
-    @Binding var selection: CalendarSundayColorOption
-
-    // 選択肢(オフを除く4色)。表示は実際の色の文字色でプレビューする。
-    private static let colorChoices: [CalendarSundayColorOption] = [.bordeaux, .bourgogne, .dic156, .dicF101]
-
-    // App 側の表示用色(キーボード側 formattedNumberCalendarSundayColor と同値・近似)。
-    private func displayColor(_ option: CalendarSundayColorOption) -> Color {
+    // App 側の表示用色(キーボード側 formattedNumberCalendarSundayColor と同値)。
+    private func sundayDisplayColor(_ option: CalendarSundayColorOption) -> Color {
         switch option {
         case .off:
             return .primary
         case .bordeaux:
-            return Color(red: 0.42, green: 0.16, blue: 0.20)
+            // bordeaux = rgb(141,17,74)
+            return Color(red: 141.0 / 255.0, green: 17.0 / 255.0, blue: 74.0 / 255.0)
         case .bourgogne:
-            return Color(red: 0.50, green: 0.0, blue: 0.13)
+            // bourgogne = rgb(112,23,64)
+            return Color(red: 112.0 / 255.0, green: 23.0 / 255.0, blue: 64.0 / 255.0)
         case .dic156:
             // DIC-156 = #A9242E
             return Color(red: 169.0 / 255.0, green: 36.0 / 255.0, blue: 46.0 / 255.0)
@@ -924,53 +864,90 @@ struct CalendarSundayColorSettingsSection: View {
         }
     }
 
-    private var isOnBinding: Binding<Bool> {
+    private var sundayColorOnBinding: Binding<Bool> {
         Binding(
-            get: { selection != .off },
+            get: { sundayColor != .off },
             set: { isOn in
-                selection = isOn ? (selection == .off ? .bordeaux : selection) : .off
+                sundayColor = isOn ? (sundayColor == .off ? .bordeaux : sundayColor) : .off
             }
         )
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("日曜列の色")
+        VStack(alignment: .leading, spacing: 16) {
+            Text("カレンダー")
                 .font(.headline)
 
-            Toggle("日曜列に色を付ける", isOn: isOnBinding)
+            subItem("週開始") {
+                Picker("週開始", selection: $weekStart) {
+                    ForEach(CalendarWeekStartOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
 
-            if selection != .off {
-                HStack(spacing: 8) {
-                    ForEach(Self.colorChoices) { option in
-                        Button {
-                            selection = option
-                        } label: {
-                            Text(option.title)
-                                .font(.subheadline.weight(selection == option ? .bold : .regular))
-                                .foregroundColor(displayColor(option))
-                                .lineLimit(1)
-                                .minimumScaleFactor(0.6)
-                                .frame(maxWidth: .infinity)
-                                .padding(.vertical, 8)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                        .stroke(
-                                            selection == option ? displayColor(option) : Color.secondary.opacity(0.3),
-                                            lineWidth: selection == option ? 2 : 1
-                                        )
-                                )
+            subItem("曜日表記") {
+                Picker("曜日表記", selection: $weekdayLanguage) {
+                    ForEach(CalendarWeekdayLanguageOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            subItem("日曜列の色") {
+                Toggle("色を付ける", isOn: sundayColorOnBinding)
+                if sundayColor != .off {
+                    HStack(spacing: 8) {
+                        ForEach(Self.sundayColorChoices) { option in
+                            Button {
+                                sundayColor = option
+                            } label: {
+                                Text(option.title)
+                                    .font(.subheadline.weight(sundayColor == option ? .bold : .regular))
+                                    .foregroundColor(sundayDisplayColor(option))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.6)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .stroke(
+                                                sundayColor == option ? sundayDisplayColor(option) : Color.secondary.opacity(0.3),
+                                                lineWidth: sundayColor == option ? 2 : 1
+                                            )
+                                    )
+                            }
+                            .buttonStyle(.plain)
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
 
-            Text("書式化数値モードのカレンダーで日曜の列(ヘッダーと日付)に付ける色です。オフのときは他の曜日と同じ色になります。")
+            subItem("日付書式") {
+                Picker("日付書式", selection: $dateFormatStyle) {
+                    ForEach(DateFormatStyleOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            Text("書式化数値モードのカレンダーの設定です。方式に応じてドラムの書式候補と月名・曜日名が変わります。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+
+    @ViewBuilder
+    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            content()
+        }
     }
 }
 

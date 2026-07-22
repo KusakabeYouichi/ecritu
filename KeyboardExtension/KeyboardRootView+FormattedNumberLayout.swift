@@ -174,9 +174,11 @@ extension KeyboardRootView {
             .string(forKey: "calendarSundayColor") ?? "off"
         switch raw {
         case "bordeaux":
-            return Color(red: 0.42, green: 0.16, blue: 0.20)
+            // bordeaux = rgb(141,17,74)
+            return Color(red: 141.0 / 255.0, green: 17.0 / 255.0, blue: 74.0 / 255.0)
         case "bourgogne":
-            return Color(red: 0.50, green: 0.0, blue: 0.13)
+            // bourgogne = rgb(112,23,64)
+            return Color(red: 112.0 / 255.0, green: 23.0 / 255.0, blue: 64.0 / 255.0)
         case "dic156":
             // DIC-156 = #A9242E
             return Color(red: 169.0 / 255.0, green: 36.0 / 255.0, blue: 46.0 / 255.0)
