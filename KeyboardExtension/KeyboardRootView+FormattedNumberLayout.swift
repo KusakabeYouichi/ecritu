@@ -267,11 +267,17 @@ extension KeyboardRootView {
                             action: { appendFormattedNumberToken(token) }
                         )
                         .frame(maxWidth: .infinity)
-                        .frame(height: mainFlickKeyHeight)
+                        .frame(height: formattedNumberTenkeyRowHeight)
                     }
                 }
             }
         }
+    }
+
+    // テンキー4行の合計高さをカレンダー上部エリア(約183pt)以内に収める行高さ。上位 Group が
+    // フィルするので、上部エリアが利用可能高さ以内であれば下段バーは常に最下部に落ちる。
+    private var formattedNumberTenkeyRowHeight: CGFloat {
+        41
     }
 
     // 桁数は当面8桁で足りるため、数字は8桁で頭打ちにする(符号/小数点は別カウント)。
@@ -487,7 +493,7 @@ extension KeyboardRootView {
             // せり上がる)。Color.clear を固定高さのベースにして overlay で重ね .clipped() し、
             // サイズ決定をベース基準に固定して wheel の伝播を完全に断つ(はみ出しは clip)。
             Color.clear
-                .frame(height: 110)
+                .frame(height: 92)
                 .overlay(formattedNumberUnitSelector)
                 .clipped()
 
