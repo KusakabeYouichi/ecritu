@@ -103,8 +103,9 @@ extension KeyboardRootView {
                     formattedNumberCalendarTopArea
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, -6)
+                    // 下段バーは高さ-3pt(上端はそのまま、下にわずかな余白を残す)。
                     formattedNumberBottomBar
-                        .frame(height: mainFlickKeyHeight)
+                        .frame(height: mainFlickKeyHeight - 3)
                     Spacer(minLength: 0)
                 }
             } else {
