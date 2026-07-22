@@ -97,15 +97,13 @@ extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
         Group {
             if selectedFormattedNumberCategory == .calendar {
-                // カレンダーは固定セルの自然高さ+下段バーを直下に上詰め(余白は最下部へ)。
-                // 行間0+負のボトムパディングで、最終行セル下半分の内部余白ぶんバーを引き上げる。
+                // カレンダーは上に寄せ、下段バーは他モード(記号/絵文字/顔文字)と同じく
+                // 最下部・高さ mainFlickKeyHeight に固定(位置・高さを完全一致させる)。
                 VStack(spacing: 0) {
                     formattedNumberCalendarTopArea
                         .frame(maxWidth: .infinity)
-                        .padding(.bottom, -6)
-                    // 下段バーは高さ-3pt(内部ボタンごと低く=上端不変、下にわずかな余白)。
-                    formattedNumberBottomBar(height: mainFlickKeyHeight - 3)
                     Spacer(minLength: 0)
+                    formattedNumberBottomBar(height: mainFlickKeyHeight)
                 }
             } else {
                 VStack(spacing: keyboardRowSpacing) {
