@@ -957,7 +957,6 @@
 	<dict><key>phrase</key><string>Vougeot</string><key>shortcut</key><string>ぶーじょ</string></dict>
 	<dict><key>phrase</key><string>Vouvray</string><key>shortcut</key><string>ぶーぶれ</string></dict>
 	<dict><key>phrase</key><string>Vouvray Mousseux</string><key>shortcut</key><string>ぶーぶれむーすー</string></dict>
-	<dict><key>phrase</key><string>Vouvray Pétillant</string><key>shortcut</key><string>ぶーぶれぺてぃやん</string></dict>
 	<dict><key>phrase</key><string>Vully</string><key>shortcut</key><string>びゅりー</string></dict>
 	<dict><key>phrase</key><string>Vétroz</string><key>shortcut</key><string>べとろ</string></dict>
 	<dict><key>phrase</key><string>Vézelay</string><key>shortcut</key><string>べづれ</string></dict>
@@ -2078,7 +2077,6 @@
 	<dict><key>phrase</key><string>Fortified</string><key>shortcut</key><string>ふぉーてぃふぁいど</string></dict>
 	<dict><key>phrase</key><string>Fortified wine</string><key>shortcut</key><string>ふぉーてぃふぁいどわいん</string></dict>
 	<dict><key>phrase</key><string>Fortifiedタイプ</string><key>shortcut</key><string>ふぉーてぃふぁいどたいぷ</string></dict>
-	<dict><key>phrase</key><string>Frizzante</string><key>shortcut</key><string>ふりっつぁんて</string></dict>
 	<dict><key>phrase</key><string>F級</string><key>shortcut</key><string>えふきゅう</string></dict>
 	<dict><key>phrase</key><string>Gran Añada</string><key>shortcut</key><string>ぐらんあにゃーだ</string></dict>
 	<dict><key>phrase</key><string>Gran Reserva</string><key>shortcut</key><string>ぐらんれせるば</string></dict>
@@ -2115,14 +2113,12 @@
 	<dict><key>phrase</key><string>Pale Dry</string><key>shortcut</key><string>ぺーるどらい</string></dict>
 	<dict><key>phrase</key><string>Palo Cortado</string><key>shortcut</key><string>ぱろこるたーど</string></dict>
 	<dict><key>phrase</key><string>Passito</string><key>shortcut</key><string>ぱっしーと</string></dict>
-	<dict><key>phrase</key><string>Perlwein</string><key>shortcut</key><string>ぺあるばいん</string></dict>
 	<dict><key>phrase</key><string>Pezsgő</string><key>shortcut</key><string>ぺじゅげー</string></dict>
 	<dict><key>phrase</key><string>Port</string><key>shortcut</key><string>ぽーと</string></dict>
 	<dict><key>phrase</key><string>Port wine</string><key>shortcut</key><string>ぽーとわいん</string></dict>
 	<dict><key>phrase</key><string>Prädikatswein</string><key>shortcut</key><string>ぷれでぃかーつばいん</string></dict>
 	<dict><key>phrase</key><string>Pét-Nat</string><key>shortcut</key><string>ぺっとなっと</string></dict>
 	<dict><key>phrase</key><string>Pét-Natタイプ</string><key>shortcut</key><string>ぺっとなっとたいぷ</string></dict>
-	<dict><key>phrase</key><string>Pétillant</string><key>shortcut</key><string>ぺてぃやん</string></dict>
 	<dict><key>phrase</key><string>Qualitätsschaumwein</string><key>shortcut</key><string>くばりてーつしゃうむばいん</string></dict>
 	<dict><key>phrase</key><string>Qualitätswein</string><key>shortcut</key><string>くばりてーつばいん</string></dict>
 	<dict><key>phrase</key><string>Qualitätswein以上</string><key>shortcut</key><string>くばりてーつばいんいじょう</string></dict>
