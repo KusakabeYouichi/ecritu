@@ -10,15 +10,15 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
 
     var id: Int { rawValue }
 
-    // 下段カテゴリーバーの短ラベル。
+    // 下段カテゴリーバーの短ラベル(代表単位記号でカテゴリーを示唆)。
     var shortLabel: String {
         switch self {
         case .siBase:
-            return "基"
+            return "m"
         case .siDerived:
-            return "組"
+            return "m/s"
         case .siNamed:
-            return "固"
+            return "N"
         case .calendar:
             return "📅"
         }
@@ -388,6 +388,43 @@ extension KeyboardRootView {
         )
     }
 
+    // 下段カテゴリーキー(単位記号は Avenir Next、カレンダーは絵文字)。選択で背景/枠を強調。
+    private func formattedNumberCategoryKey(_ category: FormattedNumberCategory) -> some View {
+        let selected = selectedFormattedNumberCategory == category
+        let labelFont: Font = category == .calendar
+            ? .system(size: 18)
+            : .custom("Avenir Next", size: 18).weight(.medium)
+        return Button {
+            selectFormattedNumberCategory(category)
+        } label: {
+            Text(category.shortLabel)
+                .font(labelFont)
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .foregroundColor(KeyboardThemePalette.keyLabel)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(
+                            selected
+                                ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                                : KeyboardThemePalette.categoryButtonBackground
+                        )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(
+                            selected
+                                ? KeyboardThemePalette.keyBorderEmphasis
+                                : KeyboardThemePalette.keyBorder,
+                            lineWidth: selected ? 1.4 : 1
+                        )
+                )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(category.displayName)
+    }
+
     // カテゴリー選択(前回値を保存し、カレンダー↔単位の高さ差を反映させる)。
     private func selectFormattedNumberCategory(_ category: FormattedNumberCategory) {
         let previous = selectedFormattedNumberCategory
@@ -579,13 +616,9 @@ extension KeyboardRootView {
             .frame(height: mainFlickKeyHeight)
 
             ForEach(FormattedNumberCategory.allCases) { category in
-                EmojiCategoryKeyButton(
-                    icon: category.shortLabel,
-                    isSelected: selectedFormattedNumberCategory == category,
-                    action: { selectFormattedNumberCategory(category) }
-                )
-                .frame(maxWidth: .infinity)
-                .frame(height: mainFlickKeyHeight)
+                formattedNumberCategoryKey(category)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: mainFlickKeyHeight)
             }
 
             ActionKeyButton(
