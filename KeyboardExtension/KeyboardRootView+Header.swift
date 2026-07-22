@@ -17,19 +17,6 @@ extension KeyboardRootView {
                     .padding(.top, emojiHeaderTopPadding)
                     .allowsHitTesting(false)
                     .accessibilityHidden(true)
-            } else if inputMode == .formattedNumber {
-                // 絵文字と同様、上部ヘッダーに現在のカテゴリー名を表題表示する
-                // (下段キーは m/m/s/N 等の記号なので、正式名称をここで補う)。
-                Text(selectedFormattedNumberCategory.displayName)
-                    .font(.system(size: 14, weight: .semibold, design: .rounded))
-                    .foregroundStyle(keyLabelColor.opacity(0.82))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                    .padding(.leading, 2)
-                    .padding(.top, emojiHeaderTopPadding)
-                    .allowsHitTesting(false)
-                    .accessibilityHidden(true)
             } else if showsKanaConversionCandidates {
                 kanaConversionCandidateHeaderView
             } else if showsLatinSuggestionCandidates {
