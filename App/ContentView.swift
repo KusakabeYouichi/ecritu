@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260722102613"
+    private static let editionUpdatedAtRaw: String = "20260722103430"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -90,6 +90,18 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var dateFormatStyleRawValue: String = DateFormatStyleOption.japanese.rawValue
+
+    @AppStorage(
+        SettingsKeys.calendarWeekStart,
+        store: Self.sharedDefaults
+    )
+    private var calendarWeekStartRawValue: String = CalendarWeekStartOption.sunday.rawValue
+
+    @AppStorage(
+        SettingsKeys.calendarWeekdayLanguage,
+        store: Self.sharedDefaults
+    )
+    private var calendarWeekdayLanguageRawValue: String = CalendarWeekdayLanguageOption.japanese.rawValue
 
     @AppStorage(
         SettingsKeys.basicSymbolOrder,
@@ -312,6 +324,8 @@ struct ContentView: View {
             latinLayoutModeRawValue,
             numberLayoutModeRawValue,
             dateFormatStyleRawValue,
+            calendarWeekStartRawValue,
+            calendarWeekdayLanguageRawValue,
             basicSymbolOrderRawValue,
             accentPaletteRawValue,
             keyboardBackgroundThemeRawValue,
@@ -397,6 +411,18 @@ struct ContentView: View {
     private var dateFormatStyleSelection: Binding<DateFormatStyleOption> {
         rawValueSelection(from: dateFormatStyleRawValue, default: .japanese) {
             dateFormatStyleRawValue = $0
+        }
+    }
+
+    private var calendarWeekStartSelection: Binding<CalendarWeekStartOption> {
+        rawValueSelection(from: calendarWeekStartRawValue, default: .sunday) {
+            calendarWeekStartRawValue = $0
+        }
+    }
+
+    private var calendarWeekdayLanguageSelection: Binding<CalendarWeekdayLanguageOption> {
+        rawValueSelection(from: calendarWeekdayLanguageRawValue, default: .japanese) {
+            calendarWeekdayLanguageRawValue = $0
         }
     }
 
@@ -704,6 +730,10 @@ struct ContentView: View {
                         NumberLayoutSettingsSection(selection: numberLayoutSelection)
 
                         DateFormatStyleSettingsSection(selection: dateFormatStyleSelection)
+
+                        CalendarWeekStartSettingsSection(selection: calendarWeekStartSelection)
+
+                        CalendarWeekdayLanguageSettingsSection(selection: calendarWeekdayLanguageSelection)
 
                         BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
 

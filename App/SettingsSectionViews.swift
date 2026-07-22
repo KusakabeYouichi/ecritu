@@ -850,6 +850,36 @@ struct DateFormatStyleSettingsSection: View {
     }
 }
 
+struct CalendarWeekStartSettingsSection: View {
+    @Binding var selection: CalendarWeekStartOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "カレンダーの週開始",
+            pickerTitle: "週開始",
+            selection: $selection,
+            options: Array(CalendarWeekStartOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "書式化数値モードのカレンダーの週の始まりの曜日です。"
+        )
+    }
+}
+
+struct CalendarWeekdayLanguageSettingsSection: View {
+    @Binding var selection: CalendarWeekdayLanguageOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "カレンダーの曜日表記",
+            pickerTitle: "曜日表記",
+            selection: $selection,
+            options: Array(CalendarWeekdayLanguageOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "書式化数値モードのカレンダーの曜日ヘッダーと月見出しの言語です。"
+        )
+    }
+}
+
 struct BasicSymbolOrderSettingsSection: View {
     @Binding var selection: BasicSymbolOrderOption
 

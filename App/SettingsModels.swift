@@ -27,6 +27,8 @@ enum SettingsKeys {
     static let latinLayoutMode = "latinLayoutMode"
     static let numberLayoutMode = "numberLayoutMode"
     static let dateFormatStyle = "dateFormatStyle"
+    static let calendarWeekStart = "calendarWeekStart"
+    static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
     static let basicSymbolOrder = "basicSymbolOrder"
     static let accentPalette = "accentPalette"
     static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
@@ -193,6 +195,38 @@ enum DateFormatStyleOption: String, CaseIterable, Identifiable {
         case .american: return "米国式"
         case .british: return "英国式"
         case .french: return "フランス式"
+        }
+    }
+}
+
+// 自前カレンダーの週開始曜日。
+enum CalendarWeekStartOption: String, CaseIterable, Identifiable {
+    case sunday
+    case monday
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .sunday: return "日曜始まり"
+        case .monday: return "月曜始まり"
+        }
+    }
+}
+
+// 自前カレンダーの曜日表記の言語。rawValue は拡張側 CalendarWeekdayLanguage と一致させる。
+enum CalendarWeekdayLanguageOption: String, CaseIterable, Identifiable {
+    case japanese
+    case english
+    case french
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .japanese: return "日本語(日月火)"
+        case .english: return "英語(Sun Mon)"
+        case .french: return "フランス語(dim. lun.)"
         }
     }
 }

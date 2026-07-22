@@ -141,14 +141,26 @@ extension KeyboardRootView {
         }
     }
 
-    // コンパクトな日付ピッカー(余白最小のテキストベース。タップで暦ポップオーバーが開く)。
-    // dynamicTypeSize を .large 上限にしてフォント拡大時の無駄な余白の広がりを抑える。
+    // 自前の月グリッド(常時表示・コンパクト)。週開始・曜日表記はコンテナー設定から読む。
     private var formattedNumberScaledCalendar: some View {
-        DatePicker("", selection: $formattedNumberDate, displayedComponents: .date)
-            .datePickerStyle(.compact)
-            .labelsHidden()
-            .environment(\.dynamicTypeSize, .large)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        FormattedNumberCalendarGridView(
+            selectedDate: $formattedNumberDate,
+            weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
+            language: formattedNumberCalendarLanguage
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    // カレンダー設定(共有 UserDefaults から直接読む)。
+    private var formattedNumberCalendarWeekStartsMonday: Bool {
+        UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+            .string(forKey: "calendarWeekStart") == "monday"
+    }
+
+    private var formattedNumberCalendarLanguage: DateFormatCatalog.CalendarWeekdayLanguage {
+        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+            .string(forKey: "calendarWeekdayLanguage") ?? ""
+        return DateFormatCatalog.CalendarWeekdayLanguage(rawValue: raw) ?? .japanese
     }
 
     // 書式プルダウン: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
