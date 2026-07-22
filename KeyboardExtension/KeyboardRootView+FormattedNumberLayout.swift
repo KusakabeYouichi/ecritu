@@ -95,22 +95,26 @@ enum FormattedNumberPreferences {
 // 固定1段にする(絵文字画面と同じ縦配分)。単位ドラム・書式化・カレンダーは後続フェーズ。
 extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
-        // 下段バーは全カテゴリー共通で最下部・高さ mainFlickKeyHeight に固定(記号/絵文字/
-        // 顔文字モードと位置・高さを一致)。カレンダーは上寄せ。単位はドラム(UIKitホイール)が
-        // 高さ伝播を乱しフィルし切れないため、コンテナをボトム揃えにしてバーを確実に最下部へ。
-        VStack(spacing: 0) {
-            Group {
-                if selectedFormattedNumberCategory == .calendar {
-                    formattedNumberCalendarTopArea
-                } else {
-                    formattedNumberUnitTopArea
+        // ドラム(UIKitホイール)の固有高さがフィルを乱すため、GeometryReader で実測し、上部エリアに
+        // 「全高−バー高」を明示的に割り当て、下段バーを常に最下部へ固定する(記号/絵文字/顔文字/
+        // カレンダーと位置・高さを一致)。
+        GeometryReader { geometry in
+            let barHeight = mainFlickKeyHeight
+            let topHeight = max(0, geometry.size.height - barHeight)
+            VStack(spacing: 0) {
+                Group {
+                    if selectedFormattedNumberCategory == .calendar {
+                        formattedNumberCalendarTopArea
+                    } else {
+                        formattedNumberUnitTopArea
+                    }
                 }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .frame(width: geometry.size.width, height: topHeight, alignment: .top)
 
-            formattedNumberBottomBar(height: mainFlickKeyHeight)
+                formattedNumberBottomBar(height: barHeight)
+                    .frame(width: geometry.size.width)
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
