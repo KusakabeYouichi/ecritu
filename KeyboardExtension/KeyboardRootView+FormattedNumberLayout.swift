@@ -129,13 +129,15 @@ extension KeyboardRootView {
             formattedNumberScaledCalendar
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
 
+            // 試し: 3ボタンを上から5ポイントずつ低くし、上に詰める(下に余白)。
             VStack(spacing: keyboardRowSpacing) {
                 formattedNumberPreview
-                    .frame(maxHeight: .infinity)
+                    .frame(height: 50)
                 formattedNumberDateFormatMenu
-                    .frame(maxHeight: .infinity)
+                    .frame(height: 45)
                 formattedNumberConfirmKey
-                    .frame(maxHeight: .infinity)
+                    .frame(height: 40)
+                Spacer(minLength: 0)
             }
             // 横画面は幅に余裕があるのでドラム/日付欄を広く、縦画面は控えめに。
             .frame(width: isLandscapeLayout ? 300 : 150)
