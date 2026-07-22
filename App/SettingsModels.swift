@@ -184,18 +184,18 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
 // 書式化数値モードのカレンダー日付書式の方式。rawValue は拡張側 DateFormatStyle と一致させる。
 enum DateFormatStyleOption: String, CaseIterable, Identifiable {
     case japanese
-    case american
-    case british
     case french
+    case british
+    case american
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
         case .japanese: return "日本式"
-        case .american: return "米国式"
-        case .british: return "英国式"
         case .french: return "フランス式"
+        case .british: return "英国式"
+        case .american: return "米国式"
         }
     }
 }

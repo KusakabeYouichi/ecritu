@@ -850,6 +850,26 @@ struct DateFormatStyleSettingsSection: View {
     }
 }
 
+// カレンダー関連設定を1つの塊にまとめる(週開始→曜日表記→日曜列の色→日付書式)。
+struct CalendarSettingsGroupSection: View {
+    @Binding var weekStart: CalendarWeekStartOption
+    @Binding var weekdayLanguage: CalendarWeekdayLanguageOption
+    @Binding var sundayColor: CalendarSundayColorOption
+    @Binding var dateFormatStyle: DateFormatStyleOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Text("カレンダー")
+                .font(.title3.bold())
+
+            CalendarWeekStartSettingsSection(selection: $weekStart)
+            CalendarWeekdayLanguageSettingsSection(selection: $weekdayLanguage)
+            CalendarSundayColorSettingsSection(selection: $sundayColor)
+            DateFormatStyleSettingsSection(selection: $dateFormatStyle)
+        }
+    }
+}
+
 struct CalendarWeekStartSettingsSection: View {
     @Binding var selection: CalendarWeekStartOption
 
@@ -883,15 +903,72 @@ struct CalendarWeekdayLanguageSettingsSection: View {
 struct CalendarSundayColorSettingsSection: View {
     @Binding var selection: CalendarSundayColorOption
 
-    var body: some View {
-        SegmentedSettingsCard(
-            title: "カレンダーの日曜列の色",
-            pickerTitle: "日曜列の色",
-            selection: $selection,
-            options: Array(CalendarSundayColorOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "書式化数値モードのカレンダーで日曜の列(ヘッダーと日付)に付ける色です。オフのときは他の曜日と同じ色になります。"
+    // 選択肢(オフを除く4色)。表示は実際の色の文字色でプレビューする。
+    private static let colorChoices: [CalendarSundayColorOption] = [.bordeaux, .bourgogne, .dic156, .dicF101]
+
+    // App 側の表示用色(キーボード側 formattedNumberCalendarSundayColor と同値・近似)。
+    private func displayColor(_ option: CalendarSundayColorOption) -> Color {
+        switch option {
+        case .off:
+            return .primary
+        case .bordeaux:
+            return Color(red: 0.42, green: 0.16, blue: 0.20)
+        case .bourgogne:
+            return Color(red: 0.50, green: 0.0, blue: 0.13)
+        case .dic156:
+            return Color(red: 0.72, green: 0.11, blue: 0.20)
+        case .dicF101:
+            return Color(red: 0.60, green: 0.24, blue: 0.36)
+        }
+    }
+
+    private var isOnBinding: Binding<Bool> {
+        Binding(
+            get: { selection != .off },
+            set: { isOn in
+                selection = isOn ? (selection == .off ? .bordeaux : selection) : .off
+            }
         )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("日曜列の色")
+                .font(.headline)
+
+            Toggle("日曜列に色を付ける", isOn: isOnBinding)
+
+            if selection != .off {
+                HStack(spacing: 8) {
+                    ForEach(Self.colorChoices) { option in
+                        Button {
+                            selection = option
+                        } label: {
+                            Text(option.title)
+                                .font(.subheadline.weight(selection == option ? .bold : .regular))
+                                .foregroundColor(displayColor(option))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .stroke(
+                                            selection == option ? displayColor(option) : Color.secondary.opacity(0.3),
+                                            lineWidth: selection == option ? 2 : 1
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+
+            Text("書式化数値モードのカレンダーで日曜の列(ヘッダーと日付)に付ける色です。オフのときは他の曜日と同じ色になります。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
     }
 }
 
