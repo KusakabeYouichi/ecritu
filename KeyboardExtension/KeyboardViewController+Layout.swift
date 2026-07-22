@@ -113,8 +113,8 @@ extension KeyboardViewController {
         case .emoji:
             return .emoji
         case .formattedNumber:
-            // compact 日付ピッカーにしたためカレンダーも含め通常(絵文字相当)の高さで足りる。
-            return .emoji
+            // 単位ドラム(ホイール)/カレンダーグリッドに縦の余裕が要るため専用の中高さ。
+            return .formattedNumber
         case .kana:
             return effectiveKanaLayoutModeForHeight() == .fiveByTwo
                 ? .kanaFiveByTwo
@@ -293,13 +293,13 @@ extension KeyboardViewController {
                 + rowSpacing * 3
                 + Self.keyboardVerticalPadding
         case .formattedNumber:
-            // graphical カレンダーを収めるため、テキスト系より高い基準高さにする。
+            // 単位ドラム/カレンダーに縦の余裕を持たせるため、テキスト系より高い基準にする。
             return headerHeight
                 + rowSpacing
                 + Self.mainKeyRowHeight * 4
                 + rowSpacing * 3
                 + Self.keyboardVerticalPadding
-                + 110
+                + 90
         }
     }
 
