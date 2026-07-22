@@ -880,6 +880,21 @@ struct CalendarWeekdayLanguageSettingsSection: View {
     }
 }
 
+struct CalendarSundayColorSettingsSection: View {
+    @Binding var selection: CalendarSundayColorOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "カレンダーの日曜列の色",
+            pickerTitle: "日曜列の色",
+            selection: $selection,
+            options: Array(CalendarSundayColorOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "書式化数値モードのカレンダーで日曜の列(ヘッダーと日付)に付ける色です。オフのときは他の曜日と同じ色になります。"
+        )
+    }
+}
+
 struct BasicSymbolOrderSettingsSection: View {
     @Binding var selection: BasicSymbolOrderOption
 

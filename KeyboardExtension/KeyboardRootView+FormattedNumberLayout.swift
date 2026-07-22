@@ -147,23 +147,43 @@ extension KeyboardRootView {
         FormattedNumberCalendarGridView(
             selectedDate: $formattedNumberDate,
             weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
-            language: formattedNumberCalendarLanguage
+            language: formattedNumberCalendarLanguage,
+            sundayColor: formattedNumberCalendarSundayColor
         )
         // 横画面は幅が広すぎてセルが間延びするので上限を設けて縦横比を保ち中央寄せ。
         .frame(maxWidth: isLandscapeLayout ? 430 : .infinity, maxHeight: .infinity, alignment: .top)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
-    // カレンダー設定(共有 UserDefaults から直接読む)。
+    // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。
     private var formattedNumberCalendarWeekStartsMonday: Bool {
-        UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
-            .string(forKey: "calendarWeekStart") == "monday"
+        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+            .string(forKey: "calendarWeekStart") ?? "monday"
+        return raw != "sunday"
     }
 
     private var formattedNumberCalendarLanguage: DateFormatCatalog.CalendarWeekdayLanguage {
         let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
             .string(forKey: "calendarWeekdayLanguage") ?? ""
         return DateFormatCatalog.CalendarWeekdayLanguage(rawValue: raw) ?? .japanese
+    }
+
+    // 日曜列の色(オフ=nil)。DIC は近似値(正確値は要確認)。
+    private var formattedNumberCalendarSundayColor: Color? {
+        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+            .string(forKey: "calendarSundayColor") ?? "off"
+        switch raw {
+        case "bordeaux":
+            return Color(red: 0.42, green: 0.16, blue: 0.20)
+        case "bourgogne":
+            return Color(red: 0.50, green: 0.0, blue: 0.13)
+        case "dic156":
+            return Color(red: 0.72, green: 0.11, blue: 0.20)
+        case "dicF101":
+            return Color(red: 0.60, green: 0.24, blue: 0.36)
+        default:
+            return nil
+        }
     }
 
     // 書式プルダウン: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。

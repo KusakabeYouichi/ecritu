@@ -7,18 +7,35 @@ struct FormattedNumberCalendarGridView: View {
     @Binding var selectedDate: Date
     let weekStartsMonday: Bool
     let language: DateFormatCatalog.CalendarWeekdayLanguage
+    // 日曜列の色(nil=他曜日と同じ)。
+    let sundayColor: Color?
 
     @State private var monthAnchor: Date
 
     init(
         selectedDate: Binding<Date>,
         weekStartsMonday: Bool,
-        language: DateFormatCatalog.CalendarWeekdayLanguage
+        language: DateFormatCatalog.CalendarWeekdayLanguage,
+        sundayColor: Color?
     ) {
         _selectedDate = selectedDate
         self.weekStartsMonday = weekStartsMonday
         self.language = language
+        self.sundayColor = sundayColor
         _monthAnchor = State(initialValue: selectedDate.wrappedValue)
+    }
+
+    // 週開始に合わせた日曜の列インデックス(0起点)。
+    private var sundayColumnIndex: Int {
+        weekStartsMonday ? 6 : 0
+    }
+
+    // その日が日曜か(weekday 1=日曜)。
+    private func isSunday(_ day: Int) -> Bool {
+        guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day)) else {
+            return false
+        }
+        return calendar.component(.weekday, from: date) == 1
     }
 
     private var calendar: Calendar {
@@ -117,10 +134,13 @@ struct FormattedNumberCalendarGridView: View {
 
     private var weekdayHeaderRow: some View {
         LazyVGrid(columns: columns, spacing: 0) {
-            ForEach(Array(orderedWeekdayLabels.enumerated()), id: \.offset) { _, label in
+            ForEach(Array(orderedWeekdayLabels.enumerated()), id: \.offset) { index, label in
+                let isSundayColumn = index == sundayColumnIndex
                 Text(label)
                     .font(calendarFont(size: 10))
-                    .foregroundColor(KeyboardThemePalette.keyLabel.opacity(0.5))
+                    .foregroundColor(
+                        (isSundayColumn ? sundayColor : nil) ?? KeyboardThemePalette.keyLabel.opacity(0.5)
+                    )
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
             }
@@ -142,11 +162,14 @@ struct FormattedNumberCalendarGridView: View {
 
     private func dayCell(_ day: Int) -> some View {
         let selected = isSelected(day)
+        let dayColor: Color = selected
+            ? Color.white
+            : ((isSunday(day) ? sundayColor : nil) ?? KeyboardThemePalette.keyLabel)
         return Button(action: { selectDay(day) }) {
             Text("\(day)")
                 .font(calendarFont(size: 15, weight: selected ? .bold : .regular))
                 .monospacedDigit()
-                .foregroundColor(selected ? Color.white : KeyboardThemePalette.keyLabel)
+                .foregroundColor(dayColor)
                 .frame(maxWidth: .infinity)
                 .frame(height: 24)
                 .background(
