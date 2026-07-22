@@ -106,7 +106,11 @@ extension KeyboardRootView {
                     formattedNumberUnitTopArea
                 }
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .frame(maxWidth: .infinity, alignment: .top)
+
+            // 上部エリアを必ず最上部・バーを必ず最下部に置く(Spacer が余白を吸収)。上部エリアが
+            // 利用可能高さ以内なら上端は見切れず、バーは最下部に落ちる(カレンダーと同挙動)。
+            Spacer(minLength: 0)
 
             formattedNumberBottomBar(height: mainFlickKeyHeight)
         }
