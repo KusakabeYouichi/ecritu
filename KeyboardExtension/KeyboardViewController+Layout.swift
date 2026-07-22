@@ -113,8 +113,9 @@ extension KeyboardViewController {
         case .emoji:
             return .emoji
         case .formattedNumber:
-            // 全体高さは「かな入力より高くしない」。かなと同一プロファイルにして同じ高さにする。
-            return effectiveKanaLayoutModeForHeight() == .fiveByTwo ? .kanaFiveByTwo : .kanaThreeByThree
+            // 記号/絵文字/顔文字と下段バー位置・高さを完全一致させるため emoji プロファイルにする
+            // (これらは全て emoji プロファイルでバーが揃う。kana だと約8pt高くバーがずれる)。
+            return .emoji
         case .kana:
             return effectiveKanaLayoutModeForHeight() == .fiveByTwo
                 ? .kanaFiveByTwo
