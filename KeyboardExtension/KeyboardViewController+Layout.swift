@@ -113,8 +113,8 @@ extension KeyboardViewController {
         case .emoji:
             return .emoji
         case .formattedNumber:
-            // 単位ドラム(ホイール)/カレンダーグリッドに縦の余裕が要るため専用の中高さ。
-            return .formattedNumber
+            // 全体高さは「かな入力より高くしない」。かなと同一プロファイルにして同じ高さにする。
+            return effectiveKanaLayoutModeForHeight() == .fiveByTwo ? .kanaFiveByTwo : .kanaThreeByThree
         case .kana:
             return effectiveKanaLayoutModeForHeight() == .fiveByTwo
                 ? .kanaFiveByTwo
