@@ -137,7 +137,8 @@ extension KeyboardRootView {
                 formattedNumberConfirmKey
                     .frame(maxHeight: .infinity)
             }
-            .frame(width: 150)
+            // 横画面は幅に余裕があるのでドラム/日付欄を広く、縦画面は控えめに。
+            .frame(width: isLandscapeLayout ? 300 : 150)
         }
     }
 
@@ -148,6 +149,8 @@ extension KeyboardRootView {
             weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
             language: formattedNumberCalendarLanguage
         )
+        // 横画面は幅が広すぎてセルが間延びするので上限を設けて縦横比を保ち中央寄せ。
+        .frame(maxWidth: isLandscapeLayout ? 430 : .infinity, maxHeight: .infinity, alignment: .top)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
