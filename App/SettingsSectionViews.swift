@@ -916,9 +916,11 @@ struct CalendarSundayColorSettingsSection: View {
         case .bourgogne:
             return Color(red: 0.50, green: 0.0, blue: 0.13)
         case .dic156:
-            return Color(red: 0.72, green: 0.11, blue: 0.20)
+            // DIC-156 = #A9242E
+            return Color(red: 169.0 / 255.0, green: 36.0 / 255.0, blue: 46.0 / 255.0)
         case .dicF101:
-            return Color(red: 0.60, green: 0.24, blue: 0.36)
+            // DIC-F101 = #D31C30
+            return Color(red: 211.0 / 255.0, green: 28.0 / 255.0, blue: 48.0 / 255.0)
         }
     }
 
