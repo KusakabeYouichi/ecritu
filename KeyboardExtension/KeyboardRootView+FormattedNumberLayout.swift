@@ -96,17 +96,19 @@ enum FormattedNumberPreferences {
 extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
         VStack(spacing: keyboardRowSpacing) {
-            Group {
-                if selectedFormattedNumberCategory == .calendar {
-                    formattedNumberCalendarTopArea
-                } else {
-                    formattedNumberUnitTopArea
-                }
+            if selectedFormattedNumberCategory == .calendar {
+                // カレンダーは自然な高さ+下段バーを直下に上詰め(余白は最下部へ)。
+                formattedNumberCalendarTopArea
+                    .frame(maxWidth: .infinity)
+                formattedNumberBottomBar
+                    .frame(height: mainFlickKeyHeight)
+                Spacer(minLength: 0)
+            } else {
+                formattedNumberUnitTopArea
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                formattedNumberBottomBar
+                    .frame(height: mainFlickKeyHeight)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-            formattedNumberBottomBar
-                .frame(height: mainFlickKeyHeight)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
@@ -124,20 +126,18 @@ extension KeyboardRootView {
     // カレンダーカテゴリー: 上に細い操作帯(プレビュー+書式プルダウン+確定)、下に全幅カレンダー。
     // graphical DatePicker は本来大きいので、下の領域に収まるよう縮小スケールして見切れを防ぐ。
     private var formattedNumberCalendarTopArea: some View {
-        // 縦に積むとカレンダーが潰れるため、操作は右の細い列に横並びで置く。
-        HStack(spacing: keyboardRowSpacing) {
+        // 縦に積むとカレンダーが潰れるため、操作は右の細い列に横並びで置く。上端揃え。
+        HStack(alignment: .top, spacing: keyboardRowSpacing) {
             formattedNumberScaledCalendar
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
 
-            // 試し: 3ボタンを上から5ポイントずつ低くし、上に詰める(下に余白)。
+            // 3ボタンは上から3ポイントずつ低くして上詰め。
             VStack(spacing: keyboardRowSpacing) {
                 formattedNumberPreview
                     .frame(height: 50)
                 formattedNumberDateFormatMenu
-                    .frame(height: 45)
+                    .frame(height: 47)
                 formattedNumberConfirmKey
-                    .frame(height: 40)
-                Spacer(minLength: 0)
+                    .frame(height: 44)
             }
             // 横画面は幅に余裕があるのでドラム/日付欄を広く、縦画面は控えめに。
             .frame(width: isLandscapeLayout ? 300 : 150)
@@ -152,9 +152,9 @@ extension KeyboardRootView {
             language: formattedNumberCalendarLanguage,
             sundayColor: formattedNumberCalendarSundayColor
         )
-        // 横画面は幅が広すぎてセルが間延びするので上限を設けて縦横比を保ち中央寄せ。
-        .frame(maxWidth: isLandscapeLayout ? 430 : .infinity, maxHeight: .infinity, alignment: .top)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        // 自然な高さ(6週固定)。横画面は幅上限を設けて縦横比を保ち中央寄せ。
+        .frame(maxWidth: isLandscapeLayout ? 430 : .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, alignment: .top)
     }
 
     // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。
