@@ -86,6 +86,38 @@ enum DateFormatCatalog {
         "j mmm"
     ]
 
+    // 自前カレンダーグリッドの曜日表記の言語(コンテナー設定)。
+    enum CalendarWeekdayLanguage: String {
+        case japanese
+        case english
+        case french
+    }
+
+    // 日曜始まりの並びの曜日略称(週開始が月曜のときは呼び出し側で並べ替える)。
+    static func calendarWeekdayLabels(_ language: CalendarWeekdayLanguage) -> [String] {
+        switch language {
+        case .japanese:
+            return japaneseWeekdayShort
+        case .english:
+            return englishWeekdayShort
+        case .french:
+            return frenchWeekdayShort
+        }
+    }
+
+    // カレンダー見出し(年月)。
+    static func calendarMonthTitle(_ language: CalendarWeekdayLanguage, year: Int, month: Int) -> String {
+        let monthIndex = max(1, min(12, month)) - 1
+        switch language {
+        case .japanese:
+            return "\(year)年\(monthIndex + 1)月"
+        case .english:
+            return "\(englishMonthNames[monthIndex]) \(year)"
+        case .french:
+            return "\(frenchMonthNames[monthIndex]) \(year)"
+        }
+    }
+
     static func variants(for style: DateFormatStyle) -> [String] {
         switch style {
         case .japanese:

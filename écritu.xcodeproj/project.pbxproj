@@ -19,6 +19,7 @@
 		A1B2C3D4E5F600000000FF03 /* KeyboardRootView+FormattedNumberLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF04 /* KeyboardRootView+FormattedNumberLayout.swift */; };
 		A1B2C3D4E5F600000000FF05 /* SIUnitCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF06 /* SIUnitCatalog.swift */; };
 		A1B2C3D4E5F600000000FF07 /* DateFormatCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */; };
+		A1B2C3D4E5F600000000FF09 /* FormattedNumberCalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */; };
 		A1B2C3D4E5F600000000DD01 /* KeyboardRootView+Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */; };
 		1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
 		1C452267470AD5017D0E2C4B /* KeyboardExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -175,6 +176,7 @@
 		A1B2C3D4E5F600000000FF04 /* KeyboardRootView+FormattedNumberLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+FormattedNumberLayout.swift"; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000FF06 /* SIUnitCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SIUnitCatalog.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DateFormatCatalog.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FormattedNumberCalendarGridView.swift; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+Header.swift"; sourceTree = "<group>"; };
 		B2F1069200465BA796649E29 /* KeyboardExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = KeyboardExtension.entitlements; sourceTree = "<group>"; };
 		B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverterRegressionTests.swift; sourceTree = "<group>"; };
@@ -332,6 +334,7 @@
 				A1B2C3D4E5F600000000FF04 /* KeyboardRootView+FormattedNumberLayout.swift */,
 				A1B2C3D4E5F600000000FF06 /* SIUnitCatalog.swift */,
 				A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */,
+				A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */,
 				A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */,
 				66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */,
 			);
@@ -670,6 +673,7 @@
 				A1B2C3D4E5F600000000FF03 /* KeyboardRootView+FormattedNumberLayout.swift in Sources */,
 				A1B2C3D4E5F600000000FF05 /* SIUnitCatalog.swift in Sources */,
 				A1B2C3D4E5F600000000FF07 /* DateFormatCatalog.swift in Sources */,
+				A1B2C3D4E5F600000000FF09 /* FormattedNumberCalendarGridView.swift in Sources */,
 				A1B2C3D4E5F600000000DD01 /* KeyboardRootView+Header.swift in Sources */,
 				DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */,
 			);
