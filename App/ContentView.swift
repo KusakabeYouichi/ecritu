@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260722104338"
+    private static let editionUpdatedAtRaw: String = "20260722105545"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -95,13 +95,19 @@ struct ContentView: View {
         SettingsKeys.calendarWeekStart,
         store: Self.sharedDefaults
     )
-    private var calendarWeekStartRawValue: String = CalendarWeekStartOption.sunday.rawValue
+    private var calendarWeekStartRawValue: String = CalendarWeekStartOption.monday.rawValue
 
     @AppStorage(
         SettingsKeys.calendarWeekdayLanguage,
         store: Self.sharedDefaults
     )
     private var calendarWeekdayLanguageRawValue: String = CalendarWeekdayLanguageOption.japanese.rawValue
+
+    @AppStorage(
+        SettingsKeys.calendarSundayColor,
+        store: Self.sharedDefaults
+    )
+    private var calendarSundayColorRawValue: String = CalendarSundayColorOption.off.rawValue
 
     @AppStorage(
         SettingsKeys.basicSymbolOrder,
@@ -326,6 +332,7 @@ struct ContentView: View {
             dateFormatStyleRawValue,
             calendarWeekStartRawValue,
             calendarWeekdayLanguageRawValue,
+            calendarSundayColorRawValue,
             basicSymbolOrderRawValue,
             accentPaletteRawValue,
             keyboardBackgroundThemeRawValue,
@@ -415,8 +422,14 @@ struct ContentView: View {
     }
 
     private var calendarWeekStartSelection: Binding<CalendarWeekStartOption> {
-        rawValueSelection(from: calendarWeekStartRawValue, default: .sunday) {
+        rawValueSelection(from: calendarWeekStartRawValue, default: .monday) {
             calendarWeekStartRawValue = $0
+        }
+    }
+
+    private var calendarSundayColorSelection: Binding<CalendarSundayColorOption> {
+        rawValueSelection(from: calendarSundayColorRawValue, default: .off) {
+            calendarSundayColorRawValue = $0
         }
     }
 
@@ -734,6 +747,8 @@ struct ContentView: View {
                         CalendarWeekStartSettingsSection(selection: calendarWeekStartSelection)
 
                         CalendarWeekdayLanguageSettingsSection(selection: calendarWeekdayLanguageSelection)
+
+                        CalendarSundayColorSettingsSection(selection: calendarSundayColorSelection)
 
                         BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
 
