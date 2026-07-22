@@ -103,17 +103,15 @@ extension KeyboardRootView {
                     formattedNumberCalendarTopArea
                         .frame(maxWidth: .infinity)
                         .padding(.bottom, -6)
-                    // 下段バーは高さ-3pt(上端はそのまま、下にわずかな余白を残す)。
-                    formattedNumberBottomBar
-                        .frame(height: mainFlickKeyHeight - 3)
+                    // 下段バーは高さ-3pt(内部ボタンごと低く=上端不変、下にわずかな余白)。
+                    formattedNumberBottomBar(height: mainFlickKeyHeight - 3)
                     Spacer(minLength: 0)
                 }
             } else {
                 VStack(spacing: keyboardRowSpacing) {
                     formattedNumberUnitTopArea
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    formattedNumberBottomBar
-                        .frame(height: mainFlickKeyHeight)
+                    formattedNumberBottomBar(height: mainFlickKeyHeight)
                 }
             }
         }
@@ -613,19 +611,20 @@ extension KeyboardRootView {
 
     // MARK: - 下段バー([あい] / カテゴリー / ⌫)
 
-    private var formattedNumberBottomBar: some View {
+    // 下段バー。内部ボタンも指定高さで作る(外枠だけ縮めるとボタンがはみ出して上にずれるため)。
+    private func formattedNumberBottomBar(height: CGFloat) -> some View {
         HStack(spacing: keyboardRowSpacing) {
             ActionKeyButton(
                 title: "あい",
                 fixedWidth: 56,
                 action: { switchInputMode(.kana) }
             )
-            .frame(height: mainFlickKeyHeight)
+            .frame(height: height)
 
             ForEach(FormattedNumberCategory.allCases) { category in
                 formattedNumberCategoryKey(category)
                     .frame(maxWidth: .infinity)
-                    .frame(height: mainFlickKeyHeight)
+                    .frame(height: height)
             }
 
             ActionKeyButton(
@@ -638,7 +637,7 @@ extension KeyboardRootView {
                 repeatInterval: keyRepeatInterval,
                 action: deleteFormattedNumberBackward
             )
-            .frame(height: mainFlickKeyHeight)
+            .frame(height: height)
         }
     }
 }
