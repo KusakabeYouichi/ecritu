@@ -225,9 +225,9 @@ enum CalendarWeekdayLanguageOption: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .japanese: return "日本語(日月火)"
-        case .english: return "英語(Sun Mon)"
-        case .french: return "フランス語(dim. lun.)"
+        case .japanese: return "日 月 火"
+        case .english: return "Sun Mon Tue"
+        case .french: return "dim lun mar"
         }
     }
 }
