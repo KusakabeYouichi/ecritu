@@ -433,9 +433,10 @@ extension KeyboardRootView {
 
     private var formattedNumberRightArea: some View {
         VStack(spacing: keyboardRowSpacing) {
-            // 入力欄は単位ドラムの上に置く(ユーザ指定)。右寄せ表示。
+            // 入力欄は単位ドラムの上に置く(ユーザ指定)。右寄せ表示。プレビュー/確定は
+            // ドラムに縦を回すため控えめの高さにする(全体高さはかな入力と同一で頭打ち)。
             formattedNumberPreview
-                .frame(height: mainFlickKeyHeight)
+                .frame(height: 38)
 
             formattedNumberUnitSelector
                 .frame(maxHeight: .infinity)
@@ -445,7 +446,7 @@ extension KeyboardRootView {
                 formattedNumberConfirmKey
                     .frame(maxWidth: .infinity)
             }
-            .frame(height: mainFlickKeyHeight)
+            .frame(height: 40)
         }
     }
 
