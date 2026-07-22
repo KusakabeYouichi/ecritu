@@ -137,7 +137,7 @@ extension KeyboardRootView {
                 formattedNumberConfirmKey
                     .frame(maxHeight: .infinity)
             }
-            .frame(width: 120)
+            .frame(width: 150)
         }
     }
 
