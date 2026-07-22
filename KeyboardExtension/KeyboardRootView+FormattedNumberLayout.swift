@@ -114,15 +114,15 @@ extension KeyboardRootView {
     }
 
     // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
-    // 上部エリアは固定高さ枠(fourRowAlignedTopContentHeight)の中でフィルさせる。
+    // カレンダーと同様に「自然高さ」にする(テンキー行・ドラムを固定高さにして wheel の固有高さが
+    // 上位へ伝播しないようにする)。上位 Group の maxHeight:.infinity がフィルしバーが最下部へ。
     private var formattedNumberUnitTopArea: some View {
-        HStack(spacing: keyboardRowSpacing) {
+        HStack(alignment: .top, spacing: keyboardRowSpacing) {
             formattedNumberTenkey
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity)
             formattedNumberRightArea
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     // カレンダーカテゴリー: 上に細い操作帯(プレビュー+書式プルダウン+確定)、下に全幅カレンダー。
@@ -266,10 +266,10 @@ extension KeyboardRootView {
                             fontSize: 20,
                             action: { appendFormattedNumberToken(token) }
                         )
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: mainFlickKeyHeight)
                     }
                 }
-                .frame(maxHeight: .infinity)
             }
         }
     }
@@ -483,11 +483,11 @@ extension KeyboardRootView {
             formattedNumberPreview
                 .frame(height: 38)
 
-            // ドラム(Picker wheel)は固有高さ(約200pt)が上位に伝播してフィルを乱す。Color.clear を
-            // ベースにして overlay で重ね .clipped() することで、サイズ決定をベース(=フィルする余白)
-            // 基準にし wheel の固有高さの伝播を断つ(はみ出しは clip)。
+            // ドラム(Picker wheel)は固有高さ(約200pt)が上位に伝播しレイアウトを乱す(遅延して
+            // せり上がる)。Color.clear を固定高さのベースにして overlay で重ね .clipped() し、
+            // サイズ決定をベース基準に固定して wheel の伝播を完全に断つ(はみ出しは clip)。
             Color.clear
-                .frame(maxHeight: .infinity)
+                .frame(height: 110)
                 .overlay(formattedNumberUnitSelector)
                 .clipped()
 
