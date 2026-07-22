@@ -15,6 +15,7 @@ struct KeyboardRootView: View {
     let onCommitComposingTextAsKatakana: () -> Void
     let onUpgradeRecentKanaCommitToKatakana: () -> Bool
     let onInputModeChanged: (KeyboardInputMode) -> Void
+    var onFormattedNumberCategoryChanged: () -> Void = {}
     let showsNextKeyboardKey: Bool
     let directionProfile: FlickDirectionProfile
     let kanaLayoutMode: KanaLayoutMode

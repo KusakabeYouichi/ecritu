@@ -113,7 +113,8 @@ extension KeyboardViewController {
         case .emoji:
             return .emoji
         case .formattedNumber:
-            return .formattedNumber
+            // カレンダーだけ graphical を収めるため高い。単位系は通常(絵文字相当)の高さ。
+            return FormattedNumberPreferences.lastCategory() == .calendar ? .formattedNumber : .emoji
         case .kana:
             return effectiveKanaLayoutModeForHeight() == .fiveByTwo
                 ? .kanaFiveByTwo
