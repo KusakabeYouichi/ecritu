@@ -96,10 +96,10 @@ struct FormattedNumberCalendarGridView: View {
         }
     }
 
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
-    // 週数(4/5/6)で高さ・位置が変わらないよう常に6週=42セルを確保する。6週基準で詰める。
+    // 週数(4/5/6)で高さ・位置が変わらないよう常に6週=42セルを描画し、6行を高さいっぱいに
+    // 均等フィルする(月に依らず行間・高さ一定、最終行が下段バー直上、4/5週は末尾が空行)。
     private let totalCells = 42
-    private let cellHeight: CGFloat = 22
+    private let columnSpacing: CGFloat = 2
     private let rowSpacing: CGFloat = 2
 
     var body: some View {
@@ -107,6 +107,7 @@ struct FormattedNumberCalendarGridView: View {
             header
             weekdayHeaderRow
             daysGrid
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
@@ -137,7 +138,7 @@ struct FormattedNumberCalendarGridView: View {
     }
 
     private var weekdayHeaderRow: some View {
-        LazyVGrid(columns: columns, spacing: 0) {
+        HStack(spacing: columnSpacing) {
             ForEach(Array(orderedWeekdayLabels.enumerated()), id: \.offset) { index, label in
                 let isSundayColumn = index == sundayColumnIndex
                 Text(label)
@@ -147,31 +148,42 @@ struct FormattedNumberCalendarGridView: View {
                     )
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
+                    .frame(maxWidth: .infinity)
             }
         }
     }
 
-    // 末尾を空セルで 42(6週)まで埋め、月ごとに高さ・位置がずれないようにする。
-    private var trailingBlanks: Int {
-        max(0, totalCells - leadingBlanks - daysInMonth)
+    // 常に6週=42セル(nil=空セル)。先頭に月初までの空白、末尾を空で42まで埋める。
+    private var allCells: [Int?] {
+        var cells: [Int?] = Array(repeating: nil, count: leadingBlanks)
+        cells.append(contentsOf: (1...daysInMonth).map { Optional($0) })
+        while cells.count < totalCells {
+            cells.append(nil)
+        }
+        return Array(cells.prefix(totalCells))
     }
 
     private var daysGrid: some View {
-        LazyVGrid(columns: columns, spacing: rowSpacing) {
-            ForEach(0..<leadingBlanks, id: \.self) { index in
-                blankCell.id("lead-\(index)")
-            }
-            ForEach(1...daysInMonth, id: \.self) { day in
-                dayCell(day)
-            }
-            ForEach(0..<trailingBlanks, id: \.self) { index in
-                blankCell.id("trail-\(index)")
+        VStack(spacing: rowSpacing) {
+            ForEach(0..<6, id: \.self) { row in
+                HStack(spacing: columnSpacing) {
+                    ForEach(0..<7, id: \.self) { column in
+                        cellView(allCells[row * 7 + column])
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    }
+                }
+                .frame(maxHeight: .infinity)
             }
         }
     }
 
-    private var blankCell: some View {
-        Color.clear.frame(height: cellHeight)
+    @ViewBuilder
+    private func cellView(_ day: Int?) -> some View {
+        if let day {
+            dayCell(day)
+        } else {
+            Color.clear
+        }
     }
 
     private func dayCell(_ day: Int) -> some View {
@@ -184,8 +196,7 @@ struct FormattedNumberCalendarGridView: View {
                 .font(calendarFont(size: 15, weight: selected ? .bold : .regular))
                 .monospacedDigit()
                 .foregroundColor(dayColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: cellHeight)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
                     Circle()
                         .fill(selected ? Color.accentColor : Color.clear)
