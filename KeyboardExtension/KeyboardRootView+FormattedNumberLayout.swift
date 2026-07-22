@@ -180,8 +180,8 @@ extension KeyboardRootView {
             // bourgogne = rgb(112,23,64)
             return Color(red: 112.0 / 255.0, green: 23.0 / 255.0, blue: 64.0 / 255.0)
         case "dic156":
-            // DIC-156 = #A9242E
-            return Color(red: 169.0 / 255.0, green: 36.0 / 255.0, blue: 46.0 / 255.0)
+            // DIC-156 = rgb(241,0,46)
+            return Color(red: 241.0 / 255.0, green: 0.0 / 255.0, blue: 46.0 / 255.0)
         case "dicF101":
             // DIC-F101 = #D31C30
             return Color(red: 211.0 / 255.0, green: 28.0 / 255.0, blue: 48.0 / 255.0)
