@@ -98,10 +98,11 @@ extension KeyboardRootView {
         Group {
             if selectedFormattedNumberCategory == .calendar {
                 // カレンダーは固定セルの自然高さ+下段バーを直下に上詰め(余白は最下部へ)。
-                // カレンダー↔バーの行間は詰める(2pt)。
-                VStack(spacing: 2) {
+                // 行間0+負のボトムパディングで、最終行セル下半分の内部余白ぶんバーを引き上げる。
+                VStack(spacing: 0) {
                     formattedNumberCalendarTopArea
                         .frame(maxWidth: .infinity)
+                        .padding(.bottom, -6)
                     formattedNumberBottomBar
                         .frame(height: mainFlickKeyHeight)
                     Spacer(minLength: 0)
