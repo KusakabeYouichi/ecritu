@@ -96,18 +96,18 @@ struct FormattedNumberCalendarGridView: View {
         }
     }
 
-    // 週数(4/5/6)で高さ・位置が変わらないよう常に6週=42セルを描画し、6行を高さいっぱいに
-    // 均等フィルする(月に依らず行間・高さ一定、最終行が下段バー直上、4/5週は末尾が空行)。
+    // 週数(4/5/6)で高さ・位置が変わらないよう常に6週=42セルを固定セル高さで描画する
+    // (行間・高さ一定。4/5週は末尾が空セルの行になり下が空く)。
     private let totalCells = 42
     private let columnSpacing: CGFloat = 2
     private let rowSpacing: CGFloat = 2
+    private let cellHeight: CGFloat = 22
 
     var body: some View {
         VStack(spacing: 3) {
             header
             weekdayHeaderRow
             daysGrid
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
 
@@ -169,10 +169,10 @@ struct FormattedNumberCalendarGridView: View {
                 HStack(spacing: columnSpacing) {
                     ForEach(0..<7, id: \.self) { column in
                         cellView(allCells[row * 7 + column])
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .frame(maxWidth: .infinity)
                     }
                 }
-                .frame(maxHeight: .infinity)
+                .frame(height: cellHeight)
             }
         }
     }
