@@ -97,12 +97,11 @@ extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
         VStack(spacing: keyboardRowSpacing) {
             if selectedFormattedNumberCategory == .calendar {
-                // カレンダーは自然な高さ+下段バーを直下に上詰め(余白は最下部へ)。
+                // カレンダーは高さいっぱいにフィルし、下段バーを最終行(6行目)の直下に置く。
                 formattedNumberCalendarTopArea
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 formattedNumberBottomBar
                     .frame(height: mainFlickKeyHeight)
-                Spacer(minLength: 0)
             } else {
                 formattedNumberUnitTopArea
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -152,9 +151,9 @@ extension KeyboardRootView {
             language: formattedNumberCalendarLanguage,
             sundayColor: formattedNumberCalendarSundayColor
         )
-        // 自然な高さ(6週固定)。横画面は幅上限を設けて縦横比を保ち中央寄せ。
-        .frame(maxWidth: isLandscapeLayout ? 430 : .infinity, alignment: .top)
-        .frame(maxWidth: .infinity, alignment: .top)
+        // 高さいっぱいにフィル(6行均等)。横画面は幅上限を設けて中央寄せ。
+        .frame(maxWidth: isLandscapeLayout ? 430 : .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。
