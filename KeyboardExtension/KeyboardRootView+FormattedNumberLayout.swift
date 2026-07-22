@@ -95,23 +95,19 @@ enum FormattedNumberPreferences {
 // 固定1段にする(絵文字画面と同じ縦配分)。単位ドラム・書式化・カレンダーは後続フェーズ。
 extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
-        Group {
-            if selectedFormattedNumberCategory == .calendar {
-                // カレンダーは上に寄せ、下段バーは他モード(記号/絵文字/顔文字)と同じく
-                // 最下部・高さ mainFlickKeyHeight に固定(位置・高さを完全一致させる)。
-                VStack(spacing: 0) {
+        // 上部エリア(カレンダー/単位)を高さいっぱいに広げ、下段バーは全カテゴリー共通で
+        // 最下部・高さ mainFlickKeyHeight に固定(記号/絵文字/顔文字モードと位置・高さを一致)。
+        VStack(spacing: 0) {
+            Group {
+                if selectedFormattedNumberCategory == .calendar {
                     formattedNumberCalendarTopArea
-                        .frame(maxWidth: .infinity)
-                    Spacer(minLength: 0)
-                    formattedNumberBottomBar(height: mainFlickKeyHeight)
-                }
-            } else {
-                VStack(spacing: keyboardRowSpacing) {
+                } else {
                     formattedNumberUnitTopArea
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                    formattedNumberBottomBar(height: mainFlickKeyHeight)
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            formattedNumberBottomBar(height: mainFlickKeyHeight)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
