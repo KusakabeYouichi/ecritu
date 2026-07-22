@@ -356,10 +356,14 @@ extension KeyboardRootView {
         )
     }
 
-    // カテゴリー選択(前回値を保存)。
+    // カテゴリー選択(前回値を保存し、カレンダー↔単位の高さ差を反映させる)。
     private func selectFormattedNumberCategory(_ category: FormattedNumberCategory) {
+        let previous = selectedFormattedNumberCategory
         selectedFormattedNumberCategory = category
         FormattedNumberPreferences.saveCategory(category)
+        if (previous == .calendar) != (category == .calendar) {
+            onFormattedNumberCategoryChanged()
+        }
     }
 
     // 確定/プレビューに使う最終文字列。カレンダーはレンダリング日付、単位系は数値+単位。
