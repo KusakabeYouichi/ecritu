@@ -95,11 +95,10 @@ enum FormattedNumberPreferences {
 // 固定1段にする(絵文字画面と同じ縦配分)。単位ドラム・書式化・カレンダーは後続フェーズ。
 extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
-        // 絵文字/記号/顔文字画面と同じ「固定高さのクラスタ」構造。上部エリアを
-        // fourRowAlignedTopContentHeight に固定し .clipped() で内側(特にドラムの Picker wheel が
-        // frame を無視して広がるの)を封じる。下段バーは mainFlickKeyHeight。クラスタ全体は
-        // fourRowAlignedClusterHeight に固定して最下部揃え → バー位置・高さが全モードで一致する。
-        VStack(spacing: keyboardRowSpacing) {
+        // 上部エリアを maxHeight:.infinity でキーボード高さ一杯にフィルし、下段バーを最下部へ。
+        // カレンダーは上寄せ・バー最下部で正しく動く。単位はドラム(Picker wheel)の固有高さが
+        // 上位へ伝播してフィルを乱すため、ドラム側を Color.clear.overlay(...).clipped() で封じる。
+        VStack(spacing: 0) {
             Group {
                 if selectedFormattedNumberCategory == .calendar {
                     formattedNumberCalendarTopArea
@@ -107,14 +106,11 @@ extension KeyboardRootView {
                     formattedNumberUnitTopArea
                 }
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: fourRowAlignedTopContentHeight, alignment: .top)
-            .clipped()
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
 
             formattedNumberBottomBar(height: mainFlickKeyHeight)
-                .frame(height: mainFlickKeyHeight)
         }
-        .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
@@ -487,10 +483,13 @@ extension KeyboardRootView {
             formattedNumberPreview
                 .frame(height: 38)
 
-            // ドラム(Picker wheel)は frame 高さを無視して広がるが、上位の固定高さ枠+.clipped()
-            // で視覚・レイアウトともに封じ込める。ここではフィル指定にして枠内を占める。
-            formattedNumberUnitSelector
+            // ドラム(Picker wheel)は固有高さ(約200pt)が上位に伝播してフィルを乱す。Color.clear を
+            // ベースにして overlay で重ね .clipped() することで、サイズ決定をベース(=フィルする余白)
+            // 基準にし wheel の固有高さの伝播を断つ(はみ出しは clip)。
+            Color.clear
                 .frame(maxHeight: .infinity)
+                .overlay(formattedNumberUnitSelector)
+                .clipped()
 
             HStack(spacing: keyboardRowSpacing) {
                 formattedNumberGroupingToggle
