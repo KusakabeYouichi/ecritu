@@ -97,6 +97,10 @@ struct FormattedNumberCalendarGridView: View {
     }
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
+    // 週数(4/5/6)で高さ・位置が変わらないよう常に6週=42セルを確保する。6週基準で詰める。
+    private let totalCells = 42
+    private let cellHeight: CGFloat = 22
+    private let rowSpacing: CGFloat = 2
 
     var body: some View {
         VStack(spacing: 3) {
@@ -147,17 +151,27 @@ struct FormattedNumberCalendarGridView: View {
         }
     }
 
+    // 末尾を空セルで 42(6週)まで埋め、月ごとに高さ・位置がずれないようにする。
+    private var trailingBlanks: Int {
+        max(0, totalCells - leadingBlanks - daysInMonth)
+    }
+
     private var daysGrid: some View {
-        LazyVGrid(columns: columns, spacing: 2) {
+        LazyVGrid(columns: columns, spacing: rowSpacing) {
             ForEach(0..<leadingBlanks, id: \.self) { index in
-                Color.clear
-                    .frame(height: 1)
-                    .id("blank-\(index)")
+                blankCell.id("lead-\(index)")
             }
             ForEach(1...daysInMonth, id: \.self) { day in
                 dayCell(day)
             }
+            ForEach(0..<trailingBlanks, id: \.self) { index in
+                blankCell.id("trail-\(index)")
+            }
         }
+    }
+
+    private var blankCell: some View {
+        Color.clear.frame(height: cellHeight)
     }
 
     private func dayCell(_ day: Int) -> some View {
@@ -171,7 +185,7 @@ struct FormattedNumberCalendarGridView: View {
                 .monospacedDigit()
                 .foregroundColor(dayColor)
                 .frame(maxWidth: .infinity)
-                .frame(height: 24)
+                .frame(height: cellHeight)
                 .background(
                     Circle()
                         .fill(selected ? Color.accentColor : Color.clear)
