@@ -110,11 +110,7 @@ extension KeyboardRootView {
 
             formattedNumberBottomBar(height: mainFlickKeyHeight)
         }
-        .frame(
-            maxWidth: .infinity,
-            maxHeight: .infinity,
-            alignment: selectedFormattedNumberCategory == .calendar ? .top : .bottom
-        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
@@ -486,8 +482,12 @@ extension KeyboardRootView {
             formattedNumberPreview
                 .frame(height: 38)
 
+            // ドラムは UIKit ホイールで固有高さが大きく、maxHeight:.infinity だとフィルを乱す。
+            // 上限を設け、余りは Spacer で吸収して確定を下端に揃える(=右エリアが確実にフィル)。
             formattedNumberUnitSelector
-                .frame(maxHeight: .infinity)
+                .frame(maxHeight: 132)
+
+            Spacer(minLength: 0)
 
             HStack(spacing: keyboardRowSpacing) {
                 formattedNumberGroupingToggle
