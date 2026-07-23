@@ -237,7 +237,7 @@ enum ThousandsSeparatorOption: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .space: return "␣（空白）"
+        case .space: return "espace"
         case .comma: return ","
         case .dot: return "."
         }

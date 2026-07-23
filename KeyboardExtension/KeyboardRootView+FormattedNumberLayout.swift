@@ -830,12 +830,12 @@ extension KeyboardRootView {
     }
 
     // 3桁区切りON/OFFのチェック。確定ボタンの左に置く。
-    // sep_mil: 千区切りの ON/OFF。チェックボックスではなく CapsLock 風のトグルボタン
-    // (オン=アクセント背景+白文字、オフ=通常キー色)。
+    // sep mil: 千区切りの ON/OFF。チェックボックスではなく CapsLock 風のトグルボタン。
+    // ロック(オン)色はラテン文字 Shift ロックと同じパレット accent(システム青だと分かりにくいため)。
     private var formattedNumberGroupingToggle: some View {
         let isOn = formattedNumberGroupingEnabled
         return Button(action: { formattedNumberGroupingEnabled.toggle() }) {
-            Text("sep_mil")
+            Text("sep mil")
                 .font(.system(size: 13, weight: .semibold))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
@@ -844,11 +844,11 @@ extension KeyboardRootView {
                 .frame(maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(isOn ? Color.accentColor : KeyboardThemePalette.keyBackground)
+                        .fill(isOn ? accentColor : KeyboardThemePalette.keyBackground)
                 )
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("千区切り(sep_mil)")
+        .accessibilityLabel("千区切り(sep mil)")
         .accessibilityValue(isOn ? "オン" : "オフ")
     }
 
