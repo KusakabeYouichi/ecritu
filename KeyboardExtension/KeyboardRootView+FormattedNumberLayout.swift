@@ -21,9 +21,9 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
         case .siDerived:
             return "m/s²"
         case .siNamed:
-            return "N"
+            return "hPa"
         case .currency:
-            return "¥"
+            return "€"
         case .calendar:
             return "📅"
         }
@@ -887,7 +887,7 @@ extension KeyboardRootView {
                     }
                 }
                 .pickerStyle(.wheel)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: 66, maxHeight: .infinity)
                 .clipped()
 
                 Picker("", selection: formattedNumberUnitBinding) {

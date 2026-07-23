@@ -30,6 +30,7 @@ enum SIUnitCatalog {
         SIPrefix(symbol: "G", reading: "ギガ"),
         SIPrefix(symbol: "M", reading: "メガ"),
         SIPrefix(symbol: "k", reading: "キロ"),
+        SIPrefix(symbol: "h", reading: "ヘクト"),
         SIPrefix(symbol: "", reading: "(なし)"),
         SIPrefix(symbol: "c", reading: "センチ"),
         SIPrefix(symbol: "m", reading: "ミリ"),
