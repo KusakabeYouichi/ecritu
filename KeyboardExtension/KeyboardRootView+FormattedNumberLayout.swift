@@ -3,14 +3,17 @@ import SwiftUI
 // 書式化数値入力モードのカテゴリー(当面4種)。単位ドラム/カレンダーの切替に使う。
 // rawValue は設定永続化に備えて歴史的値を明示する(絵文字カテゴリーと同方針)。
 enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
+    // 宣言順が下段バーの並び順。rawValue は永続化用の歴史的値(calendar=3 を保持しつつ
+    // currency を siNamed とカレンダーの間に差し込むため 4 を採番)。
     case siBase = 0
     case siDerived = 1
     case siNamed = 2
+    case currency = 4
     case calendar = 3
 
     var id: Int { rawValue }
 
-    // 下段カテゴリーバーの短ラベル(代表単位記号でカテゴリーを示唆)。
+    // 下段カテゴリーバーの短ラベル(代表記号でカテゴリーを示唆)。
     var shortLabel: String {
         switch self {
         case .siBase:
@@ -19,6 +22,8 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
             return "m/s"
         case .siNamed:
             return "N"
+        case .currency:
+            return "¥"
         case .calendar:
             return "📅"
         }
@@ -33,9 +38,16 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
             return "SI組立単位"
         case .siNamed:
             return "固有の名称を持つSI組立単位"
+        case .currency:
+            return "金額"
         case .calendar:
             return "カレンダー"
         }
+    }
+
+    // 通貨記号は数値の前に付ける(¥1,000)。他カテゴリーの単位は後置。
+    var placesSymbolBeforeNumber: Bool {
+        self == .currency
     }
 }
 
@@ -505,7 +517,17 @@ extension KeyboardRootView {
         }
         let number = formattedNumberDisplayString()
         let unit = formattedNumberCurrentUnitSymbol
-        return unit.isEmpty ? number : number + unit
+        return formattedNumberJoin(number: number, unit: unit)
+    }
+
+    // 数値と単位/記号の連結。通貨は前置(¥1,000)、他は後置(1,000N)。単位なしは数値のみ。
+    private func formattedNumberJoin(number: String, unit: String) -> String {
+        guard !unit.isEmpty else {
+            return number
+        }
+        return selectedFormattedNumberCategory.placesSymbolBeforeNumber
+            ? unit + number
+            : number + unit
     }
 
     // MARK: - 右エリア(プレビュー+単位ドラム+区切りチェック+確定)
@@ -516,7 +538,7 @@ extension KeyboardRootView {
         }
         let number = formattedNumberBuffer.isEmpty ? "0" : formattedNumberDisplayString()
         let unit = formattedNumberCurrentUnitSymbol
-        return unit.isEmpty ? number : number + unit
+        return formattedNumberJoin(number: number, unit: unit)
     }
 
     private var formattedNumberPreview: some View {
