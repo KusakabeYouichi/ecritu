@@ -57,6 +57,7 @@ enum KeyboardInputMode {
     case number
     case latin
     case emoji
+    case formattedNumber
 }
 
 enum KanaLayoutMode: String {

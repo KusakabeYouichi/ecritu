@@ -429,6 +429,10 @@ extension KeyboardViewController {
 
                 self.refreshKeyboardStateAsync()
             },
+            onFormattedNumberCategoryChanged: { [weak self] in
+                // カレンダー↔単位でキーボード高さが変わるため、カテゴリー変更で高さを再計算する。
+                self?.updateKeyboardHeightIfNeeded()
+            },
             showsNextKeyboardKey: configuration.showsNextKeyboardKey,
             directionProfile: configuration.directionProfile,
             kanaLayoutMode: configuration.kanaLayoutMode,

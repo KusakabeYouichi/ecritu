@@ -70,11 +70,12 @@ extension KeyboardRootView {
     }
 
     func leftModeSwitchEmojiButton(height: CGFloat) -> some View {
+        // 長押しは書式化数値入力モードを起動(顔文字は切替キーのフリック割当から到達)。
         ActionKeyButton(
             title: "☺︎",
             accessibilityLabel: "絵文字",
             fontSize: kanaModeSwitcherFaceEmojiIconFontSize,
-            onLongPress: enterKaomojiMode,
+            onLongPress: enterFormattedNumberMode,
             action: enterEmojiMode
         )
             .frame(width: leftModeSwitchButtonWidth, height: height)
@@ -111,6 +112,7 @@ extension KeyboardRootView {
                     mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                     showsDirectionalHints: showsFlickGuideCharacters,
                     showsGuideText: false,
+                    onLongPress: enterFormattedNumberMode,
                     activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                     activeMainLabelFontSizeProvider: { direction, mainText in
                         kanaModeSwitcherMainLabelFontSizeForDirection(
@@ -173,6 +175,7 @@ extension KeyboardRootView {
                 mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                 showsDirectionalHints: showsFlickGuideCharacters,
                 showsGuideText: false,
+                onLongPress: enterFormattedNumberMode,
                 activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                 activeMainLabelFontSizeProvider: { direction, mainText in
                     kanaModeSwitcherMainLabelFontSizeForDirection(

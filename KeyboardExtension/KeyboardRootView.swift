@@ -15,6 +15,7 @@ struct KeyboardRootView: View {
     let onCommitComposingTextAsKatakana: () -> Void
     let onUpgradeRecentKanaCommitToKatakana: () -> Bool
     let onInputModeChanged: (KeyboardInputMode) -> Void
+    var onFormattedNumberCategoryChanged: () -> Void = {}
     let showsNextKeyboardKey: Bool
     let directionProfile: FlickDirectionProfile
     let kanaLayoutMode: KanaLayoutMode
@@ -79,6 +80,17 @@ struct KeyboardRootView: View {
     @State var selectedKaomojiReading: String? = nil
     @State var emojiInputSubmode: EmojiInputSubmode = .emoji
     @State var returnToKanaAfterNextCommit: Bool = false
+    @State var formattedNumberBuffer: String = ""
+    @State var selectedFormattedNumberCategory: FormattedNumberCategory = FormattedNumberPreferences.lastCategory()
+    @State var formattedNumberGroupingEnabled: Bool = true
+    @State var formattedNumberUnitSelection: [Int: String] = FormattedNumberPreferences.loadUnitSelection()
+    @State var formattedNumberPrefixSymbol: String = FormattedNumberPreferences.lastPrefixSymbol()
+    // 金額カテゴリー: 通貨記号を数値の前に付けるか(既定は選択通貨の慣習に追従、スイッチで反転可)。
+    @State var formattedNumberCurrencySymbolBefore: Bool = FormattedNumberPreferences.lastCurrencySymbolBefore()
+    // 単位3カテゴリー: 数値と単位の間に空白を入れるか(既定なし)。
+    @State var formattedNumberUnitSpacing: Bool = FormattedNumberPreferences.lastUnitSpacing()
+    @State var formattedNumberDate: Date = Date()
+    @State var formattedNumberDateFormatTemplate: String = DateFormatCatalog.japaneseVariants.first ?? "m月j日"
     @State var didTriggerComposingCommitLongPress = false
     @State var katakanaCommitFeedbackText: String? = nil
     @State var pendingKatakanaCommitWorkItem: DispatchWorkItem?
@@ -441,6 +453,8 @@ struct KeyboardRootView: View {
             return numberFlickGuideDisplayMode
         case .emoji:
             return .off
+        case .formattedNumber:
+            return .off
         }
     }
 
@@ -523,6 +537,9 @@ struct KeyboardRootView: View {
         case .latin:
             return FlickKanaLayout.latinRows(for: directionProfile, layoutMode: latinLayoutMode)
         case .emoji:
+            return []
+        case .formattedNumber:
+            // 独自テンキーを formattedNumberKeyboardView で構築するため FlickKanaSet 行は不要。
             return []
         }
     }

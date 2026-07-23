@@ -26,6 +26,13 @@ enum SettingsKeys {
     static let kanaModifierPlacement = "kanaModifierPlacement"
     static let latinLayoutMode = "latinLayoutMode"
     static let numberLayoutMode = "numberLayoutMode"
+    static let dateFormatStyle = "dateFormatStyle"
+    static let numberThousandsSeparator = "numberThousandsSeparator"
+    static let numberDecimalSeparator = "numberDecimalSeparator"
+    static let numberGroupFourDigits = "numberGroupFourDigits"
+    static let calendarWeekStart = "calendarWeekStart"
+    static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
+    static let calendarSundayColor = "calendarSundayColor"
     static let basicSymbolOrder = "basicSymbolOrder"
     static let accentPalette = "accentPalette"
     static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
@@ -173,6 +180,126 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
         case .calculette: return "calculette"
         case .telephone: return "téléphone"
         case .clavier: return "clavier"
+        }
+    }
+}
+
+// 書式化数値モードのカレンダー日付書式の方式。rawValue は拡張側 DateFormatStyle と一致させる。
+enum DateFormatStyleOption: String, CaseIterable, Identifiable {
+    case japanese
+    case french
+    case british
+    case american
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .japanese: return "日本式"
+        case .french: return "フランス式"
+        case .british: return "英国式"
+        case .american: return "米国式"
+        }
+    }
+}
+
+// 自前カレンダーの週開始曜日。
+enum CalendarWeekStartOption: String, CaseIterable, Identifiable {
+    case sunday
+    case monday
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .sunday: return "日曜始まり"
+        case .monday: return "月曜始まり"
+        }
+    }
+}
+
+// 書式化数値の千の位区切り文字(sep_mil オン時に3桁ごとに挿入)。
+enum ThousandsSeparatorOption: String, CaseIterable, Identifiable {
+    case space
+    case comma
+    case dot
+
+    var id: String { rawValue }
+
+    // 実際に挿入する文字。space はノーブレークスペース(U+00A0)ではなく通常空白。
+    var character: String {
+        switch self {
+        case .space: return " "
+        case .comma: return ","
+        case .dot: return "."
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .space: return "espace"
+        case .comma: return ","
+        case .dot: return "."
+        }
+    }
+}
+
+// 書式化数値の小数点区切り文字。キーボードの小数点キーの表示/挿入文字に反映する。
+enum DecimalSeparatorOption: String, CaseIterable, Identifiable {
+    case dot
+    case comma
+
+    var id: String { rawValue }
+
+    var character: String {
+        switch self {
+        case .dot: return "."
+        case .comma: return ","
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .dot: return "."
+        case .comma: return ","
+        }
+    }
+}
+
+// 自前カレンダーの曜日表記の言語。rawValue は拡張側 CalendarWeekdayLanguage と一致させる。
+enum CalendarWeekdayLanguageOption: String, CaseIterable, Identifiable {
+    case japanese
+    case english
+    case french
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .japanese: return "日 月 火"
+        case .english: return "Sun Mon Tue"
+        case .french: return "dim lun mar"
+        }
+    }
+}
+
+// 自前カレンダーの日曜列の色。off=他曜日と同じ。rawValue は拡張側の色マップと一致させる。
+enum CalendarSundayColorOption: String, CaseIterable, Identifiable {
+    case off
+    case bordeaux
+    case bourgogne
+    case dic156
+    case dicF101
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .off: return "オフ"
+        case .bordeaux: return "bordeaux"
+        case .bourgogne: return "bourgogne"
+        case .dic156: return "DIC-156"
+        case .dicF101: return "DIC-F101"
         }
     }
 }
