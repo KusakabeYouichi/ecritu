@@ -58,6 +58,12 @@ struct FormattedNumberCalendarGridView: View {
         return calendar.component(.weekday, from: date) == 1
     }
 
+    // その日が「今日」か(表示中の年月と実日付を比較)。
+    private func isToday(_ day: Int) -> Bool {
+        let today = calendar.dateComponents([.year, .month, .day], from: Date())
+        return today.year == year && today.month == month && today.day == day
+    }
+
     private var calendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
         calendar.firstWeekday = weekStartsMonday ? 2 : 1
@@ -289,8 +295,16 @@ struct FormattedNumberCalendarGridView: View {
             .frame(maxWidth: .infinity)
             .frame(height: cellHeight)
             .background(
-                Circle()
-                    .fill(selected ? Color.accentColor : Color.clear)
+                ZStack {
+                    // 選択日は塗りの青丸。今日は(選択されていなくても)細いリングで示す。
+                    Circle()
+                        .fill(selected ? Color.accentColor : Color.clear)
+                    if isToday(day) && !selected {
+                        Circle()
+                            .stroke(Color.accentColor.opacity(0.8), lineWidth: 1.5)
+                            .frame(width: cellHeight, height: cellHeight)
+                    }
+                }
             )
             .contentShape(Rectangle())
             .background(
