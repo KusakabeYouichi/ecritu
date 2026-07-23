@@ -84,7 +84,8 @@ struct KeyboardRootView: View {
     @State var selectedFormattedNumberCategory: FormattedNumberCategory = FormattedNumberPreferences.lastCategory()
     @State var formattedNumberGroupingEnabled: Bool = true
     @State var formattedNumberUnitSelection: [Int: String] = FormattedNumberPreferences.loadUnitSelection()
-    @State var formattedNumberPrefixSymbol: String = FormattedNumberPreferences.lastPrefixSymbol()
+    // 接頭辞(補助単位)はSI単位系カテゴリーごとに独立保持。
+    @State var formattedNumberPrefixSelection: [Int: String] = FormattedNumberPreferences.loadPrefixSelection()
     // 金額カテゴリー: 通貨記号を数値の前に付けるか(既定は選択通貨の慣習に追従、スイッチで反転可)。
     @State var formattedNumberCurrencySymbolBefore: Bool = FormattedNumberPreferences.lastCurrencySymbolBefore()
     // 単位3カテゴリー: 数値と単位の間に空白を入れるか(既定なし)。
