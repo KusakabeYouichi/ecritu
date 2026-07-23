@@ -118,6 +118,19 @@ enum DateFormatCatalog {
         }
     }
 
+    // 横画面カレンダー用: 月名のみ(年と分離して縦積み表示するため)。
+    static func calendarMonthName(_ language: CalendarWeekdayLanguage, month: Int) -> String {
+        let monthIndex = max(1, min(12, month)) - 1
+        switch language {
+        case .japanese:
+            return "\(monthIndex + 1)月"
+        case .english:
+            return englishMonthNames[monthIndex]
+        case .french:
+            return frenchMonthNames[monthIndex]
+        }
+    }
+
     static func variants(for style: DateFormatStyle) -> [String] {
         switch style {
         case .japanese:

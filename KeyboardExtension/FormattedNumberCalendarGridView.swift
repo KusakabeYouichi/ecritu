@@ -4,11 +4,20 @@ import SwiftUI
 // グレゴリオ暦の Calendar で算出する。週開始(日/月)と曜日表記(日/英/仏)は設定で切替。
 // フォントはカレンダー向きの Avenir Next。
 struct FormattedNumberCalendarGridView: View {
+    // ナビ(年月と前後移動)の配置。縦画面はグリッド上のヘッダー、横画面は縦の余裕が乏しいので
+    // グリッドの右に縦積み(月名/年/前後)にして縦を節約する。
+    enum NavigationPlacement {
+        case top
+        case trailing
+    }
+
     @Binding var selectedDate: Date
     let weekStartsMonday: Bool
     let language: DateFormatCatalog.CalendarWeekdayLanguage
     // 日曜列の色(nil=他曜日と同じ)。
     let sundayColor: Color?
+    let navigationPlacement: NavigationPlacement
+    private let cellHeight: CGFloat
 
     @State private var monthAnchor: Date
 
@@ -16,12 +25,16 @@ struct FormattedNumberCalendarGridView: View {
         selectedDate: Binding<Date>,
         weekStartsMonday: Bool,
         language: DateFormatCatalog.CalendarWeekdayLanguage,
-        sundayColor: Color?
+        sundayColor: Color?,
+        navigationPlacement: NavigationPlacement = .top,
+        cellHeight: CGFloat = 22
     ) {
         _selectedDate = selectedDate
         self.weekStartsMonday = weekStartsMonday
         self.language = language
         self.sundayColor = sundayColor
+        self.navigationPlacement = navigationPlacement
+        self.cellHeight = cellHeight
         _monthAnchor = State(initialValue: selectedDate.wrappedValue)
     }
 
@@ -100,14 +113,25 @@ struct FormattedNumberCalendarGridView: View {
     // (空セルも明示的に cellHeight を確保するので6行分の高さが常に一定。位置がずれない)。
     private let totalCells = 42
     private let rowSpacing: CGFloat = 2
-    private let cellHeight: CGFloat = 22
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
 
     var body: some View {
-        VStack(spacing: 3) {
-            header
-            weekdayHeaderRow
-            daysGrid
+        switch navigationPlacement {
+        case .top:
+            VStack(spacing: 3) {
+                header
+                weekdayHeaderRow
+                daysGrid
+            }
+        case .trailing:
+            // 横画面: ヘッダーを上に置かず、ナビを右に縦積みして縦を節約。
+            HStack(alignment: .top, spacing: 8) {
+                VStack(spacing: 3) {
+                    weekdayHeaderRow
+                    daysGrid
+                }
+                trailingNavigationColumn
+            }
         }
     }
 
@@ -135,6 +159,36 @@ struct FormattedNumberCalendarGridView: View {
         }
         .foregroundColor(Color.accentColor)
         .padding(.horizontal, 6)
+    }
+
+    // 横画面用: グリッド右に「前(<)/月名/年/次(>)」を縦積み。
+    private var trailingNavigationColumn: some View {
+        VStack(spacing: 6) {
+            Button(action: { changeMonth(-1) }) {
+                Image(systemName: "chevron.left")
+                    .font(calendarFont(size: 16, weight: .semibold))
+            }
+            .buttonStyle(.plain)
+
+            VStack(spacing: 1) {
+                Text(DateFormatCatalog.calendarMonthName(language, month: month))
+                    .font(calendarFont(size: 15, weight: .semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                Text(String(year))
+                    .font(calendarFont(size: 13))
+                    .monospacedDigit()
+            }
+            .foregroundColor(KeyboardThemePalette.keyLabel)
+
+            Button(action: { changeMonth(1) }) {
+                Image(systemName: "chevron.right")
+                    .font(calendarFont(size: 16, weight: .semibold))
+            }
+            .buttonStyle(.plain)
+        }
+        .foregroundColor(Color.accentColor)
+        .frame(width: 66)
     }
 
     private var weekdayHeaderRow: some View {
