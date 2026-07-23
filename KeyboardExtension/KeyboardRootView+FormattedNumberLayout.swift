@@ -95,10 +95,11 @@ enum FormattedNumberPreferences {
 // 固定1段にする(絵文字画面と同じ縦配分)。単位ドラム・書式化・カレンダーは後続フェーズ。
 extension KeyboardRootView {
     var formattedNumberKeyboardView: some View {
-        // 上部エリアを maxHeight:.infinity でキーボード高さ一杯にフィルし、下段バーを最下部へ。
-        // カレンダーは上寄せ・バー最下部で正しく動く。単位はドラム(Picker wheel)の固有高さが
-        // 上位へ伝播してフィルを乱すため、ドラム側を Color.clear.overlay(...).clipped() で封じる。
-        VStack(spacing: 0) {
+        // 記号/絵文字/顔文字と同じ「固定高さクラスタ」構造にして下段バーの位置・高さを完全一致させる
+        // (filling+Spacer だと実機でバーが約8pt上にずれる)。書式化数値はヘッダーを畳んでいる分
+        // (candidateHeaderHeight)を上部エリアに回してカレンダー/テンキーの縦余裕を確保する。
+        // rootView が下端寄せするので、クラスタ末尾のバーは基準モードと同じ最下部に落ちる。
+        VStack(spacing: keyboardRowSpacing) {
             Group {
                 if selectedFormattedNumberCategory == .calendar {
                     formattedNumberCalendarTopArea
@@ -106,15 +107,23 @@ extension KeyboardRootView {
                     formattedNumberUnitTopArea
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .top)
-
-            // 上部エリアを必ず最上部・バーを必ず最下部に置く(Spacer が余白を吸収)。上部エリアが
-            // 利用可能高さ以内なら上端は見切れず、バーは最下部に落ちる(カレンダーと同挙動)。
-            Spacer(minLength: 0)
+            .frame(maxWidth: .infinity)
+            .frame(height: formattedNumberTopContentHeight, alignment: .top)
+            .clipped()
 
             formattedNumberBottomBar(height: mainFlickKeyHeight)
+                .frame(height: mainFlickKeyHeight)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .frame(height: formattedNumberClusterHeight, alignment: .top)
+    }
+
+    // 記号/絵文字と同じ基準クラスタ高さ+畳んだヘッダー分の余白(上部エリアに回す)。
+    private var formattedNumberClusterHeight: CGFloat {
+        fourRowAlignedClusterHeight + candidateHeaderHeight
+    }
+
+    private var formattedNumberTopContentHeight: CGFloat {
+        formattedNumberClusterHeight - mainFlickKeyHeight - keyboardRowSpacing
     }
 
     // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
