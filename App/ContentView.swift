@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260723150744"
+    private static let editionUpdatedAtRaw: String = "20260723153248"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -90,6 +90,24 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var dateFormatStyleRawValue: String = DateFormatStyleOption.japanese.rawValue
+
+    @AppStorage(
+        SettingsKeys.numberThousandsSeparator,
+        store: Self.sharedDefaults
+    )
+    private var numberThousandsSeparatorRawValue: String = ThousandsSeparatorOption.space.rawValue
+
+    @AppStorage(
+        SettingsKeys.numberDecimalSeparator,
+        store: Self.sharedDefaults
+    )
+    private var numberDecimalSeparatorRawValue: String = DecimalSeparatorOption.dot.rawValue
+
+    @AppStorage(
+        SettingsKeys.numberGroupFourDigits,
+        store: Self.sharedDefaults
+    )
+    private var numberGroupFourDigits: Bool = false
 
     @AppStorage(
         SettingsKeys.calendarWeekStart,
@@ -330,6 +348,9 @@ struct ContentView: View {
             latinLayoutModeRawValue,
             numberLayoutModeRawValue,
             dateFormatStyleRawValue,
+            numberThousandsSeparatorRawValue,
+            numberDecimalSeparatorRawValue,
+            String(numberGroupFourDigits),
             calendarWeekStartRawValue,
             calendarWeekdayLanguageRawValue,
             calendarSundayColorRawValue,
@@ -418,6 +439,18 @@ struct ContentView: View {
     private var dateFormatStyleSelection: Binding<DateFormatStyleOption> {
         rawValueSelection(from: dateFormatStyleRawValue, default: .japanese) {
             dateFormatStyleRawValue = $0
+        }
+    }
+
+    private var numberThousandsSeparatorSelection: Binding<ThousandsSeparatorOption> {
+        rawValueSelection(from: numberThousandsSeparatorRawValue, default: .space) {
+            numberThousandsSeparatorRawValue = $0
+        }
+    }
+
+    private var numberDecimalSeparatorSelection: Binding<DecimalSeparatorOption> {
+        rawValueSelection(from: numberDecimalSeparatorRawValue, default: .dot) {
+            numberDecimalSeparatorRawValue = $0
         }
     }
 
@@ -741,6 +774,12 @@ struct ContentView: View {
                         LatinLayoutSettingsSection(selection: latinLayoutSelection)
 
                         NumberLayoutSettingsSection(selection: numberLayoutSelection)
+
+                        FormatNumeriqueSettingsSection(
+                            thousandsSeparator: numberThousandsSeparatorSelection,
+                            groupFourDigits: $numberGroupFourDigits,
+                            decimalSeparator: numberDecimalSeparatorSelection
+                        )
 
                         CalendarSettingsGroupSection(
                             weekStart: calendarWeekStartSelection,

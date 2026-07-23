@@ -951,6 +951,53 @@ struct CalendarSettingsGroupSection: View {
     }
 }
 
+struct FormatNumeriqueSettingsSection: View {
+    @Binding var thousandsSeparator: ThousandsSeparatorOption
+    @Binding var groupFourDigits: Bool
+    @Binding var decimalSeparator: DecimalSeparatorOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("format numérique")
+                .font(.headline)
+
+            subItem("Séparateur de milliers") {
+                Picker("Séparateur de milliers", selection: $thousandsSeparator) {
+                    ForEach(ThousandsSeparatorOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Toggle("que quatre", isOn: $groupFourDigits)
+            }
+
+            subItem("Séparateur décimal") {
+                Picker("Séparateur décimal", selection: $decimalSeparator) {
+                    ForEach(DecimalSeparatorOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            Text("書式化数値モードの区切りです。千の位は sep_mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+
+    @ViewBuilder
+    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            content()
+        }
+    }
+}
+
 struct BasicSymbolOrderSettingsSection: View {
     @Binding var selection: BasicSymbolOrderOption
 

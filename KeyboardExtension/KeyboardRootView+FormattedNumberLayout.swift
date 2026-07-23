@@ -187,7 +187,7 @@ extension KeyboardRootView {
 
     private func formattedNumberLandscapeKey(_ token: String) -> some View {
         ActionKeyButton(
-            title: token,
+            title: formattedNumberKeyTitle(token),
             fontSize: 20,
             action: { appendFormattedNumberToken(token) }
         )
@@ -335,6 +335,30 @@ extension KeyboardRootView {
         .frame(maxWidth: .infinity, alignment: .top)
     }
 
+    // 数値書式設定(共有 UserDefaults から直接読む)。
+    private var formattedNumberSharedDefaults: UserDefaults? {
+        UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)
+    }
+
+    // 千の位区切り文字(既定=空白)。sep_mil オン時に3桁ごとに挿入。
+    var formattedNumberThousandsSeparator: String {
+        switch formattedNumberSharedDefaults?.string(forKey: "numberThousandsSeparator") {
+        case "comma": return ","
+        case "dot": return "."
+        default: return " "
+        }
+    }
+
+    // 小数点区切り文字(既定=".")。小数点キーの表示/挿入に反映。
+    var formattedNumberDecimalSeparator: String {
+        formattedNumberSharedDefaults?.string(forKey: "numberDecimalSeparator") == "comma" ? "," : "."
+    }
+
+    // que quatre: オンなら4桁の数値にも千区切りを付ける(オフは4桁を例外にする)。
+    private var formattedNumberGroupsFourDigits: Bool {
+        formattedNumberSharedDefaults?.bool(forKey: "numberGroupFourDigits") ?? false
+    }
+
     // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。
     private var formattedNumberCalendarWeekStartsMonday: Bool {
         let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
@@ -432,13 +456,18 @@ extension KeyboardRootView {
         [["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"], ["±", "0", "."]]
     }
 
+    // キーの表示文字。小数点キー(内部トークン ".")は設定の小数区切り(. か ,)を表示する。
+    private func formattedNumberKeyTitle(_ token: String) -> String {
+        token == "." ? formattedNumberDecimalSeparator : token
+    }
+
     private var formattedNumberTenkey: some View {
         VStack(spacing: keyboardRowSpacing) {
             ForEach(Array(formattedNumberTenkeyRows.enumerated()), id: \.offset) { _, row in
                 HStack(spacing: keyboardRowSpacing) {
                     ForEach(row, id: \.self) { token in
                         ActionKeyButton(
-                            title: token,
+                            title: formattedNumberKeyTitle(token),
                             fontSize: 20,
                             action: { appendFormattedNumberToken(token) }
                         )
@@ -484,9 +513,10 @@ extension KeyboardRootView {
         }
     }
 
-    // MARK: - 書式化(暫定: 小数点="." / 桁区切り="," 固定。記号割当はP4設定)
+    // MARK: - 書式化(内部バッファは小数点="."。表示/出力で設定の区切り文字に変換)
 
-    // バッファ(素の数字文字列)を表示用に整形する。3桁区切りは formattedNumberGroupingEnabled 連動。
+    // バッファ(素の数字文字列)を表示用に整形する。3桁区切りは sep_mil(formattedNumberGroupingEnabled)
+    // 連動、区切り文字と小数点はコンテナー設定に従う。
     func formattedNumberDisplayString() -> String {
         var body = formattedNumberBuffer
         let isNegative = body.hasPrefix("-")
@@ -505,20 +535,22 @@ extension KeyboardRootView {
 
         var result = groupedInteger
         if hasDecimalPoint {
-            result += "." + fractionText
+            result += formattedNumberDecimalSeparator + fractionText
         }
         return (isNegative ? "-" : "") + result
     }
 
-    // 整数部に3桁ごとのカンマを挿入する。
+    // 整数部に3桁ごとの区切り文字を挿入する。que quatre オフのときは4桁を例外(5桁以上のみ区切る)。
     private func groupedIntegerString(_ digits: String) -> String {
-        guard digits.count > 3 else {
+        let threshold = formattedNumberGroupsFourDigits ? 3 : 4
+        guard digits.count > threshold else {
             return digits
         }
+        let separator = formattedNumberThousandsSeparator
         var grouped = ""
         for (offset, character) in digits.reversed().enumerated() {
             if offset > 0, offset % 3 == 0 {
-                grouped.append(",")
+                grouped.append(separator)
             }
             grouped.append(character)
         }
@@ -798,24 +830,26 @@ extension KeyboardRootView {
     }
 
     // 3桁区切りON/OFFのチェック。確定ボタンの左に置く。
+    // sep_mil: 千区切りの ON/OFF。チェックボックスではなく CapsLock 風のトグルボタン
+    // (オン=アクセント背景+白文字、オフ=通常キー色)。
     private var formattedNumberGroupingToggle: some View {
-        Button(action: { formattedNumberGroupingEnabled.toggle() }) {
-            HStack(spacing: 3) {
-                Image(systemName: formattedNumberGroupingEnabled ? "checkmark.square.fill" : "square")
-                    .font(.system(size: 15))
-                Text("3桁")
-                    .font(.system(size: 12))
-            }
-            .foregroundColor(KeyboardThemePalette.keyLabel)
-            .frame(width: 64)
-            .frame(maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(KeyboardThemePalette.keyBackground)
-            )
+        let isOn = formattedNumberGroupingEnabled
+        return Button(action: { formattedNumberGroupingEnabled.toggle() }) {
+            Text("sep_mil")
+                .font(.system(size: 13, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .foregroundColor(isOn ? .white : KeyboardThemePalette.keyLabel)
+                .frame(width: 64)
+                .frame(maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(isOn ? Color.accentColor : KeyboardThemePalette.keyBackground)
+                )
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("3桁区切り")
+        .accessibilityLabel("千区切り(sep_mil)")
+        .accessibilityValue(isOn ? "オン" : "オフ")
     }
 
     private func placeholderCard(_ text: String) -> some View {
