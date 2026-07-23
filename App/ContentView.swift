@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260723153248"
+    private static let editionUpdatedAtRaw: String = "20260723155327"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -442,16 +442,34 @@ struct ContentView: View {
         }
     }
 
+    // 桁区切りと小数点は同じ記号(, または .)にできない。衝突する変更をしたら、もう一方を
+    // 自動で反対の記号に切り替える(espace は記号ではないので衝突しない)。
     private var numberThousandsSeparatorSelection: Binding<ThousandsSeparatorOption> {
-        rawValueSelection(from: numberThousandsSeparatorRawValue, default: .space) {
-            numberThousandsSeparatorRawValue = $0
-        }
+        Binding(
+            get: { ThousandsSeparatorOption(rawValue: numberThousandsSeparatorRawValue) ?? .space },
+            set: { newValue in
+                if newValue == .comma, numberDecimalSeparatorRawValue == DecimalSeparatorOption.comma.rawValue {
+                    numberDecimalSeparatorRawValue = DecimalSeparatorOption.dot.rawValue
+                } else if newValue == .dot, numberDecimalSeparatorRawValue == DecimalSeparatorOption.dot.rawValue {
+                    numberDecimalSeparatorRawValue = DecimalSeparatorOption.comma.rawValue
+                }
+                numberThousandsSeparatorRawValue = newValue.rawValue
+            }
+        )
     }
 
     private var numberDecimalSeparatorSelection: Binding<DecimalSeparatorOption> {
-        rawValueSelection(from: numberDecimalSeparatorRawValue, default: .dot) {
-            numberDecimalSeparatorRawValue = $0
-        }
+        Binding(
+            get: { DecimalSeparatorOption(rawValue: numberDecimalSeparatorRawValue) ?? .dot },
+            set: { newValue in
+                if newValue == .comma, numberThousandsSeparatorRawValue == ThousandsSeparatorOption.comma.rawValue {
+                    numberThousandsSeparatorRawValue = ThousandsSeparatorOption.dot.rawValue
+                } else if newValue == .dot, numberThousandsSeparatorRawValue == ThousandsSeparatorOption.dot.rawValue {
+                    numberThousandsSeparatorRawValue = ThousandsSeparatorOption.comma.rawValue
+                }
+                numberDecimalSeparatorRawValue = newValue.rawValue
+            }
+        )
     }
 
     private var calendarWeekStartSelection: Binding<CalendarWeekStartOption> {
