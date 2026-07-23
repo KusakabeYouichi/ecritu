@@ -143,33 +143,40 @@ extension KeyboardRootView {
         }
     }
 
-    // 縦画面: テンキー(4段)+右エリア(プレビュー/ドラム/区切り・確定)。従来どおり。
+    // 縦画面: テンキー(4段)+右エリア(プレビュー/ドラム/区切り・確定)。
+    // 左右どちらをテンキーにするかは landscapeNumberPaneSide 設定に従う(縦画面でも有効)。
     private var formattedNumberUnitTopAreaPortrait: some View {
         HStack(alignment: .top, spacing: keyboardRowSpacing) {
-            formattedNumberTenkey
-                .frame(maxWidth: .infinity)
-            formattedNumberRightArea
-                .frame(maxWidth: .infinity)
+            if landscapeNumberPaneSide == .left {
+                formattedNumberTenkey
+                    .frame(maxWidth: .infinity)
+                formattedNumberRightArea
+                    .frame(maxWidth: .infinity)
+            } else {
+                formattedNumberRightArea
+                    .frame(maxWidth: .infinity)
+                formattedNumberTenkey
+                    .frame(maxWidth: .infinity)
+            }
         }
     }
 
-    // 横画面: 縦の余裕が乏しいので3段に収める。テンキーは 1〜9(3×3・幅狭)+ ±/0/. の右縦列。
-    // 続いて 3桁/(前後)/確定 の縦列、その右に プレビュー+ドラム(幅を狭める)。
+    // 横画面: 左右2ペイン(50:50)。テンキーペイン=1〜9+±/0/. の4列等幅×3段。
+    // 表示ペイン=プレビュー+ドラム+(3桁/前後/確定)。左右どちらをテンキーにするかは
+    // landscapeNumberPaneSide 設定(数字モードと共通)に従う。
     private var formattedNumberUnitTopAreaLandscape: some View {
         HStack(alignment: .top, spacing: keyboardRowSpacing) {
-            HStack(alignment: .top, spacing: keyboardRowSpacing) {
-                formattedNumberDigitGridLandscape
+            if landscapeNumberPaneSide == .left {
+                formattedNumberTenkeyPaneLandscape
                     .frame(maxWidth: .infinity)
-                formattedNumberSideKeysColumnLandscape
-                    .frame(width: 56)
+                formattedNumberDisplayPaneLandscape
+                    .frame(maxWidth: .infinity)
+            } else {
+                formattedNumberDisplayPaneLandscape
+                    .frame(maxWidth: .infinity)
+                formattedNumberTenkeyPaneLandscape
+                    .frame(maxWidth: .infinity)
             }
-            .frame(maxWidth: .infinity)
-
-            formattedNumberLandscapeControlColumn
-                .frame(width: 66)
-
-            formattedNumberLandscapeDisplayColumn
-                .frame(maxWidth: .infinity)
         }
     }
 
@@ -188,10 +195,10 @@ extension KeyboardRootView {
         .frame(height: formattedNumberLandscapeKeyRowHeight)
     }
 
-    // 1〜9 の 3×3(幅は maxWidth で埋め、右の ±/0/. 列を空けるぶん狭くなる)。
-    private var formattedNumberDigitGridLandscape: some View {
+    // テンキーペイン: 4列(1〜9 + ±/0/.)を等幅で3段。0/./± は 1〜9 と同じ幅(ペイン4等分)。
+    private var formattedNumberTenkeyPaneLandscape: some View {
         VStack(spacing: keyboardRowSpacing) {
-            ForEach([["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"]], id: \.self) { row in
+            ForEach([["7", "8", "9", "±"], ["4", "5", "6", "0"], ["1", "2", "3", "."]], id: \.self) { row in
                 HStack(spacing: keyboardRowSpacing) {
                     ForEach(row, id: \.self) { token in
                         formattedNumberLandscapeKey(token)
@@ -201,38 +208,27 @@ extension KeyboardRootView {
         }
     }
 
-    // ±/0/. を縦1列に(横画面では 1〜9 の右)。
-    private var formattedNumberSideKeysColumnLandscape: some View {
-        VStack(spacing: keyboardRowSpacing) {
-            ForEach(["±", "0", "."], id: \.self) { token in
-                formattedNumberLandscapeKey(token)
-            }
-        }
-    }
-
-    // 3桁区切り/(金額のみ前後スイッチ)/確定 を縦積み(表示・ドラムの左)。
-    private var formattedNumberLandscapeControlColumn: some View {
-        VStack(spacing: keyboardRowSpacing) {
-            formattedNumberGroupingToggle
-                .frame(maxHeight: .infinity)
-            if selectedFormattedNumberCategory == .currency {
-                formattedNumberCurrencyPlacementToggle
-                    .frame(maxHeight: .infinity)
-            }
-            formattedNumberConfirmKey
-                .frame(maxHeight: .infinity)
-        }
-    }
-
-    // プレビュー(上)+ ドラム(下)。ドラムは Color.clear ベースで wheel の高さ伝播を封じる。
-    private var formattedNumberLandscapeDisplayColumn: some View {
+    // 表示ペイン: プレビュー(上)+ドラム(中)+(3桁/前後/確定)(下)。確定はこのペインに同居。
+    // ドラムは Color.clear ベースで wheel の高さ伝播を封じ、固定高さで収める。
+    private var formattedNumberDisplayPaneLandscape: some View {
         VStack(spacing: keyboardRowSpacing) {
             formattedNumberPreview
-                .frame(height: 40)
+                .frame(height: 34)
+
             Color.clear
-                .frame(height: max(60, formattedNumberTopContentHeight - 40 - keyboardRowSpacing))
+                .frame(height: max(46, formattedNumberTopContentHeight - 34 - 36 - keyboardRowSpacing * 2))
                 .overlay(formattedNumberUnitSelector)
                 .clipped()
+
+            HStack(spacing: keyboardRowSpacing) {
+                formattedNumberGroupingToggle
+                if selectedFormattedNumberCategory == .currency {
+                    formattedNumberCurrencyPlacementToggle
+                }
+                formattedNumberConfirmKey
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(height: 36)
         }
     }
 
