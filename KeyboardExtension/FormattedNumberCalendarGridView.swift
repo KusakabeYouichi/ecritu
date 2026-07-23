@@ -173,33 +173,36 @@ struct FormattedNumberCalendarGridView: View {
     // 横画面用: グリッド右に「前(∧)/月名/年/次(∨)」を縦積み。縦並びなので上下向きの矢印にする。
     // 月名/年は上下矢印の中間(縦センター)に置く(Spacer で挟む)。列はグリッド高さいっぱいに伸ばす。
     private var trailingNavigationColumn: some View {
-        VStack(spacing: 6) {
-            Button(action: { changeMonth(-1) }) {
-                Image(systemName: "chevron.up")
-                    .font(calendarFont(size: 16, weight: .semibold))
-            }
-            .buttonStyle(.plain)
-
+        // 上下矢印を年月に近づけた密な塊にし、上下の Spacer で塊ごと縦センターに置く。
+        VStack(spacing: 0) {
             Spacer(minLength: 0)
 
-            VStack(spacing: 1) {
-                Text(DateFormatCatalog.calendarMonthName(language, month: month))
-                    .font(calendarFont(size: 15, weight: .semibold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
-                Text(String(year))
-                    .font(calendarFont(size: 13))
-                    .monospacedDigit()
+            VStack(spacing: 3) {
+                Button(action: { changeMonth(-1) }) {
+                    Image(systemName: "chevron.up")
+                        .font(calendarFont(size: 16, weight: .semibold))
+                }
+                .buttonStyle(.plain)
+
+                VStack(spacing: 1) {
+                    Text(DateFormatCatalog.calendarMonthName(language, month: month))
+                        .font(calendarFont(size: 15, weight: .semibold))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                    Text(String(year))
+                        .font(calendarFont(size: 13))
+                        .monospacedDigit()
+                }
+                .foregroundColor(KeyboardThemePalette.keyLabel)
+
+                Button(action: { changeMonth(1) }) {
+                    Image(systemName: "chevron.down")
+                        .font(calendarFont(size: 16, weight: .semibold))
+                }
+                .buttonStyle(.plain)
             }
-            .foregroundColor(KeyboardThemePalette.keyLabel)
 
             Spacer(minLength: 0)
-
-            Button(action: { changeMonth(1) }) {
-                Image(systemName: "chevron.down")
-                    .font(calendarFont(size: 16, weight: .semibold))
-            }
-            .buttonStyle(.plain)
         }
         .foregroundColor(Color.accentColor)
         .frame(width: 66)
