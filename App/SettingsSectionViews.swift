@@ -829,8 +829,8 @@ struct NumberLayoutSettingsSection: View {
             Text("数字配列")
                 .font(.headline)
 
-            subItem("123モード") {
-                Picker("123モード", selection: $selection) {
+            subItem("数字入力") {
+                Picker("数字入力", selection: $selection) {
                     ForEach(NumberLayoutOption.allCases) { option in
                         Text(option.title).tag(option)
                     }
