@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260724070818"
+    private static let editionUpdatedAtRaw: String = "20260724071406"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -84,6 +84,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var numberLayoutModeRawValue: String = NumberLayoutOption.calculette.rawValue
+
+    @AppStorage(
+        SettingsKeys.formattedNumberKeypadLayout,
+        store: Self.sharedDefaults
+    )
+    private var formattedNumberKeypadLayoutRawValue: String = FormattedNumberKeypadOption.calculette.rawValue
 
     @AppStorage(
         SettingsKeys.dateFormatStyle,
@@ -347,6 +353,7 @@ struct ContentView: View {
             kanaModifierPlacementRawValue,
             latinLayoutModeRawValue,
             numberLayoutModeRawValue,
+            formattedNumberKeypadLayoutRawValue,
             dateFormatStyleRawValue,
             numberThousandsSeparatorRawValue,
             numberDecimalSeparatorRawValue,
@@ -433,6 +440,12 @@ struct ContentView: View {
     private var numberLayoutSelection: Binding<NumberLayoutOption> {
         rawValueSelection(from: numberLayoutModeRawValue, default: .calculette) {
             numberLayoutModeRawValue = $0
+        }
+    }
+
+    private var formattedNumberKeypadSelection: Binding<FormattedNumberKeypadOption> {
+        rawValueSelection(from: formattedNumberKeypadLayoutRawValue, default: .calculette) {
+            formattedNumberKeypadLayoutRawValue = $0
         }
     }
 
@@ -791,7 +804,10 @@ struct ContentView: View {
 
                         LatinLayoutSettingsSection(selection: latinLayoutSelection)
 
-                        NumberLayoutSettingsSection(selection: numberLayoutSelection)
+                        NumberLayoutSettingsSection(
+                            selection: numberLayoutSelection,
+                            formattedNumberKeypad: formattedNumberKeypadSelection
+                        )
 
                         FormatNumeriqueSettingsSection(
                             thousandsSeparator: numberThousandsSeparatorSelection,

@@ -243,8 +243,13 @@ extension KeyboardRootView {
 
     // テンキーペイン: 4列(1〜9 + ±/0/.)を等幅で3段。0/./± は 1〜9 と同じ幅(ペイン4等分)。
     private var formattedNumberTenkeyPaneLandscape: some View {
-        VStack(spacing: keyboardRowSpacing) {
-            ForEach([["7", "8", "9", "±"], ["4", "5", "6", "0"], ["1", "2", "3", "."]], id: \.self) { row in
+        // 4列目(±/0/.)は固定。数字3行だけ配列設定で並べ替える。
+        let sideKeys = ["±", "0", "."]
+        let rows = formattedNumberDigitRows.enumerated().map { index, row in
+            row + [sideKeys[index]]
+        }
+        return VStack(spacing: keyboardRowSpacing) {
+            ForEach(rows, id: \.self) { row in
                 HStack(spacing: keyboardRowSpacing) {
                     ForEach(row, id: \.self) { token in
                         formattedNumberLandscapeKey(token)
@@ -408,6 +413,18 @@ extension KeyboardRootView {
         formattedNumberSharedDefaults?.bool(forKey: "numberGroupFourDigits") ?? false
     }
 
+    // テンキー配列: téléphone(上段123)か calculette(上段789、既定)か。
+    private var formattedNumberKeypadIsTelephone: Bool {
+        formattedNumberSharedDefaults?.string(forKey: "formattedNumberKeypadLayout") == "telephone"
+    }
+
+    // 数字3行の並び(電話=昇順123始まり / 電卓=降順789始まり)。
+    private var formattedNumberDigitRows: [[String]] {
+        formattedNumberKeypadIsTelephone
+            ? [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"]]
+            : [["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"]]
+    }
+
     // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。
     private var formattedNumberCalendarWeekStartsMonday: Bool {
         let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
@@ -502,7 +519,7 @@ extension KeyboardRootView {
     // MARK: - テンキー(左側)
 
     private var formattedNumberTenkeyRows: [[String]] {
-        [["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"], ["±", "0", "."]]
+        formattedNumberDigitRows + [["±", "0", "."]]
     }
 
     // キーの表示文字。小数点キー(内部トークン ".")は設定の小数区切り(. か ,)を表示する。

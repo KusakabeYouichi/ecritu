@@ -26,6 +26,7 @@ enum SettingsKeys {
     static let kanaModifierPlacement = "kanaModifierPlacement"
     static let latinLayoutMode = "latinLayoutMode"
     static let numberLayoutMode = "numberLayoutMode"
+    static let formattedNumberKeypadLayout = "formattedNumberKeypadLayout"
     static let dateFormatStyle = "dateFormatStyle"
     static let numberThousandsSeparator = "numberThousandsSeparator"
     static let numberDecimalSeparator = "numberDecimalSeparator"
@@ -180,6 +181,21 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
         case .calculette: return "calculette"
         case .telephone: return "téléphone"
         case .clavier: return "clavier"
+        }
+    }
+}
+
+// 書式化数値入力のテンキー配列。calculette=上段789、téléphone=上段123。
+enum FormattedNumberKeypadOption: String, CaseIterable, Identifiable {
+    case calculette
+    case telephone
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .calculette: return "calculette"
+        case .telephone: return "téléphone"
         }
     }
 }
