@@ -1051,6 +1051,8 @@ extension KeyboardRootView {
                     .frame(height: height)
             }
 
+            // カレンダーは数値バッファを使わないので削除キーは無効(淡色+操作不可で明示)。
+            let deleteDisabled = selectedFormattedNumberCategory == .calendar
             ActionKeyButton(
                 title: "⌫",
                 accessibilityLabel: "削除",
@@ -1062,6 +1064,8 @@ extension KeyboardRootView {
                 action: deleteFormattedNumberBackward
             )
             .frame(height: height)
+            .disabled(deleteDisabled)
+            .opacity(deleteDisabled ? 0.35 : 1)
         }
     }
 }
