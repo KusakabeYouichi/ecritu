@@ -799,9 +799,17 @@ extension KeyboardRootView {
             isOn: formattedNumberUnitSpacing,
             accessibilityLabel: formattedNumberUnitSpacing ? "数値と単位の間に空白を入れる" : "数値と単位を詰める"
         ) {
-            formattedNumberUnitSpacing.toggle()
+            formattedNumberInstant { formattedNumberUnitSpacing.toggle() }
             FormattedNumberPreferences.saveUnitSpacing(formattedNumberUnitSpacing)
         }
+    }
+
+    // スイッチの状態変更を暗黙アニメーション無効で即時反映する(ホスト側のレイアウトアニメが
+    // 乗ると切り替わりが緩慢に見えるため)。
+    private func formattedNumberInstant(_ body: () -> Void) {
+        var transaction = Transaction()
+        transaction.disablesAnimations = true
+        withTransaction(transaction, body)
     }
 
     // sep mil / espace 共通の CapsLock 風トグルボタン。オン=accent背景+白文字で「押し込んだ」
@@ -859,7 +867,7 @@ extension KeyboardRootView {
     // avant=左・après=右で、選択側が「点灯して手前に出る」・非選択側が「沈む」視覚効果にする。
     private var formattedNumberCurrencyPlacementToggle: some View {
         let before = formattedNumberCurrencySymbolBefore
-        return Button(action: { formattedNumberCurrencySymbolBefore.toggle() }) {
+        return Button(action: { formattedNumberInstant { formattedNumberCurrencySymbolBefore.toggle() } }) {
             HStack(spacing: 0) {
                 placementTumblerFace(title: "avant", active: before)
                 Rectangle()
@@ -982,7 +990,7 @@ extension KeyboardRootView {
             isOn: formattedNumberGroupingEnabled,
             accessibilityLabel: "千区切り(sep mil)"
         ) {
-            formattedNumberGroupingEnabled.toggle()
+            formattedNumberInstant { formattedNumberGroupingEnabled.toggle() }
         }
     }
 
