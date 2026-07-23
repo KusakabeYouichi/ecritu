@@ -86,7 +86,7 @@ struct KeyboardRootView: View {
     @State var formattedNumberUnitSelection: [Int: String] = FormattedNumberPreferences.loadUnitSelection()
     @State var formattedNumberPrefixSymbol: String = FormattedNumberPreferences.lastPrefixSymbol()
     // 金額カテゴリー: 通貨記号を数値の前に付けるか(既定は選択通貨の慣習に追従、スイッチで反転可)。
-    @State var formattedNumberCurrencySymbolBefore: Bool = true
+    @State var formattedNumberCurrencySymbolBefore: Bool = FormattedNumberPreferences.lastCurrencySymbolBefore()
     @State var formattedNumberDate: Date = Date()
     @State var formattedNumberDateFormatTemplate: String = DateFormatCatalog.japaneseVariants.first ?? "m月j日"
     @State var didTriggerComposingCommitLongPress = false
