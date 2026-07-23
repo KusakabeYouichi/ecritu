@@ -855,19 +855,19 @@ extension KeyboardRootView {
         .accessibilityValue(isOn ? "オン" : "オフ")
     }
 
-    // 金額の通貨記号を前(avant)/後(après)どちらに付けるかのスイッチ。壁のタンブラースイッチ風に、
-    // 上下2面のロッカーで、選択側が「点灯して手前に出る」・非選択側が「沈む」視覚効果にする。
+    // 金額の通貨記号を前(avant)/後(après)どちらに付けるかのスイッチ。左右2面のロッカースイッチ風に、
+    // avant=左・après=右で、選択側が「点灯して手前に出る」・非選択側が「沈む」視覚効果にする。
     private var formattedNumberCurrencyPlacementToggle: some View {
         let before = formattedNumberCurrencySymbolBefore
         return Button(action: { formattedNumberCurrencySymbolBefore.toggle() }) {
-            VStack(spacing: 0) {
+            HStack(spacing: 0) {
                 placementTumblerFace(title: "avant", active: before)
                 Rectangle()
                     .fill(Color.black.opacity(0.25))
-                    .frame(height: 1)
+                    .frame(width: 1)
                 placementTumblerFace(title: "après", active: !before)
             }
-            .frame(width: 56)
+            .frame(width: 84)
             .frame(maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -884,7 +884,7 @@ extension KeyboardRootView {
         .accessibilityValue(before ? "前(avant)" : "後(après)")
     }
 
-    // タンブラースイッチの片面。active=手前に出て点灯(accent+ハイライト)、非active=沈む(暗い凹み)。
+    // 左右ロッカーの片面。active=手前に出て点灯(accent+上辺ハイライト)、非active=沈む(暗い凹み)。
     private func placementTumblerFace(title: String, active: Bool) -> some View {
         Text(title)
             .font(.system(size: 11, weight: active ? .bold : .semibold))
