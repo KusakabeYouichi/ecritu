@@ -970,17 +970,18 @@ extension KeyboardRootView {
         if selectedFormattedNumberCategory == .calendar {
             placeholderCard("カレンダー(P3)")
         } else if selectedFormattedNumberCategory.usesSIPrefix {
-            HStack(spacing: keyboardRowSpacing) {
+            HStack(spacing: 2) {
+                // 接頭辞ドラムは読みを出さず記号のみ(なしは「—」)。幅をぐっと狭めて単位ドラムを広く。
                 Picker("", selection: formattedNumberPrefixBinding) {
                     ForEach(SIUnitCatalog.prefixes) { prefix in
-                        formattedNumberDrumLabel(symbol: prefix.symbol, reading: prefix.reading)
+                        Text(prefix.symbol.isEmpty ? "—" : prefix.symbol)
+                            .font(.system(size: 18, weight: .semibold))
                             .lineLimit(1)
-                            .truncationMode(.tail)
                             .tag(prefix.symbol)
                     }
                 }
                 .pickerStyle(.wheel)
-                .frame(maxWidth: 66, maxHeight: .infinity)
+                .frame(maxWidth: 38, maxHeight: .infinity)
                 .clipped()
 
                 Picker("", selection: formattedNumberUnitBinding) {
