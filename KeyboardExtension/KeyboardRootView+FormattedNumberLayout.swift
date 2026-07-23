@@ -175,7 +175,8 @@ extension KeyboardRootView {
                 language: formattedNumberCalendarLanguage,
                 sundayColor: formattedNumberCalendarSundayColor,
                 navigationPlacement: .trailing,
-                cellHeight: formattedNumberLandscapeCalendarCellHeight
+                cellHeight: formattedNumberLandscapeCalendarCellHeight,
+                columnSpacing: 6
             )
             .frame(maxWidth: .infinity, alignment: .top)
 
