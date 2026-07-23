@@ -208,27 +208,32 @@ extension KeyboardRootView {
         }
     }
 
-    // 表示ペイン: プレビュー(上)+ドラム(中)+(3桁/前後/確定)(下)。確定はこのペインに同居。
+    // 表示ペイン: 左に操作列(3桁/前後/確定)を縦積みし、右にプレビュー+ドラム(幅を狭める)。
+    // 操作列はペインが左右どちらに来ても常に表示欄・ドラムの「左」に置く。
     // ドラムは Color.clear ベースで wheel の高さ伝播を封じ、固定高さで収める。
     private var formattedNumberDisplayPaneLandscape: some View {
-        VStack(spacing: keyboardRowSpacing) {
-            formattedNumberPreview
-                .frame(height: 34)
-
-            Color.clear
-                .frame(height: max(46, formattedNumberTopContentHeight - 34 - 36 - keyboardRowSpacing * 2))
-                .overlay(formattedNumberUnitSelector)
-                .clipped()
-
-            HStack(spacing: keyboardRowSpacing) {
+        HStack(alignment: .top, spacing: keyboardRowSpacing) {
+            VStack(spacing: keyboardRowSpacing) {
                 formattedNumberGroupingToggle
+                    .frame(maxHeight: .infinity)
                 if selectedFormattedNumberCategory == .currency {
                     formattedNumberCurrencyPlacementToggle
+                        .frame(maxHeight: .infinity)
                 }
                 formattedNumberConfirmKey
-                    .frame(maxWidth: .infinity)
+                    .frame(maxHeight: .infinity)
             }
-            .frame(height: 36)
+            .frame(width: 66)
+
+            VStack(spacing: keyboardRowSpacing) {
+                formattedNumberPreview
+                    .frame(height: 34)
+                Color.clear
+                    .frame(height: max(46, formattedNumberTopContentHeight - 34 - keyboardRowSpacing))
+                    .overlay(formattedNumberUnitSelector)
+                    .clipped()
+            }
+            .frame(maxWidth: .infinity)
         }
     }
 
