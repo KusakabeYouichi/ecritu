@@ -272,7 +272,7 @@ extension KeyboardRootView {
                 formattedNumberConfirmKey
                     .frame(maxHeight: .infinity)
             }
-            .frame(width: 66)
+            .frame(width: 84)
 
             VStack(spacing: keyboardRowSpacing) {
                 formattedNumberPreview
@@ -833,7 +833,7 @@ extension KeyboardRootView {
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
                 .foregroundColor(isOn ? .white : KeyboardThemePalette.keyLabel.opacity(0.45))
-                .frame(width: 64)
+                .frame(width: isLandscapeLayout ? 84 : 64)
                 .frame(maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
