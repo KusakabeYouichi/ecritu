@@ -1008,7 +1008,7 @@ struct FormatNumeriqueSettingsSection: View {
                 } label: {
                     separatorLabel(title(option))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 56)
+                        .frame(height: 40)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(selected ? Color.accentColor.opacity(0.16) : AppTheme.cardInnerBackground)
@@ -1026,12 +1026,15 @@ struct FormatNumeriqueSettingsSection: View {
         }
     }
 
-    // 区切り記号(. や ,)は小さく見づらいので特大表示(espace は語なので通常サイズ)。
+    // 区切り記号(. や ,)は大きめ+太字で表示し、コントロール高さ(40)に収める。太字で , と . の
+    // 区別を付けやすくする(espace は語なので通常サイズ)。
     @ViewBuilder
     private func separatorLabel(_ title: String) -> some View {
         if title == "." || title == "," {
             Text(title)
-                .font(.system(size: 44, weight: .bold))
+                .font(.system(size: 34, weight: .heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .foregroundStyle(.primary)
         } else {
             Text(title)
