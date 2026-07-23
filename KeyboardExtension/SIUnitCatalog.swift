@@ -8,6 +8,9 @@ struct SIUnit: Identifiable, Hashable {
     let reading: String
     let quantity: String
     let group: String
+    // 金額カテゴリー用: 記号を数値の前に付けるのが既定か(ユーロ等は後ろが既定なので false)。
+    // 単位系では未使用。
+    var symbolBeforeAmount: Bool = true
 
     var id: String { symbol }
 }
@@ -128,17 +131,39 @@ enum SIUnitCatalog {
         SIUnit(symbol: "t", reading: "トン", quantity: "質量(SI併用単位)", group: "非SI併用単位")
     ]
 
-    // 金額カテゴリーの通貨記号。記号は数値の前に付ける(¥1,000)。group はドラム見出し用。
+    // 金額カテゴリーの通貨記号。記号モード(KeyboardRootViewSupportTypes.currencySymbols)の全24種に
+    // 対応。symbolBeforeAmount=false は記号が後ろに来るのが慣習の通貨(ユーロ等)。読みは日本語名称。
     static let currencies: [SIUnit] = [
         SIUnit(symbol: "¥", reading: "円", quantity: "通貨", group: "金額"),
         SIUnit(symbol: "$", reading: "ドル", quantity: "通貨", group: "金額"),
-        SIUnit(symbol: "€", reading: "ユーロ", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "€", reading: "ユーロ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
         SIUnit(symbol: "£", reading: "ポンド", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "¢", reading: "セント", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
         SIUnit(symbol: "₩", reading: "ウォン", quantity: "通貨", group: "金額"),
-        SIUnit(symbol: "元", reading: "元", quantity: "通貨", group: "金額"),
         SIUnit(symbol: "₹", reading: "ルピー", quantity: "通貨", group: "金額"),
-        SIUnit(symbol: "CHF", reading: "スイスフラン", quantity: "通貨", group: "金額")
+        SIUnit(symbol: "₽", reading: "ルーブル", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₺", reading: "トルコリラ", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "฿", reading: "バーツ", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₫", reading: "ドン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₴", reading: "フリヴニャ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₦", reading: "ナイラ", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₱", reading: "ペソ", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₡", reading: "コロン", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₲", reading: "グアラニー", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₵", reading: "セディ", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₭", reading: "キープ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₸", reading: "テンゲ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₮", reading: "トゥグルグ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₰", reading: "ペニヒ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "₪", reading: "シェケル", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₾", reading: "ラリ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "﷼", reading: "リヤル", quantity: "通貨", group: "金額")
     ]
+
+    // 通貨記号の既定位置(前=true)。未知の記号は前置扱い。
+    static func currencySymbolBeforeAmount(_ symbol: String) -> Bool {
+        currencies.first(where: { $0.symbol == symbol })?.symbolBeforeAmount ?? true
+    }
 
     // カテゴリー別の単位一覧。SI基本はユーザ確認後に拡充する(現状は空=占位表示)。
     static func units(for category: FormattedNumberCategory) -> [SIUnit] {

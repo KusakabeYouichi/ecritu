@@ -44,11 +44,6 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
             return "カレンダー"
         }
     }
-
-    // 通貨記号は数値の前に付ける(¥1,000)。他カテゴリーの単位は後置。
-    var placesSymbolBeforeNumber: Bool {
-        self == .currency
-    }
 }
 
 // 書式化数値モードの「前回の選択」を App Group の共有 UserDefaults に保存/復元する。
@@ -448,6 +443,10 @@ extension KeyboardRootView {
             set: {
                 formattedNumberUnitSelection[selectedFormattedNumberCategory.rawValue] = $0
                 FormattedNumberPreferences.saveUnit($0, for: selectedFormattedNumberCategory)
+                // 通貨を変えたら、その通貨の慣習(前/後)に前後スイッチを合わせる。
+                if selectedFormattedNumberCategory == .currency {
+                    formattedNumberCurrencySymbolBefore = SIUnitCatalog.currencySymbolBeforeAmount($0)
+                }
             }
         )
     }
@@ -504,6 +503,11 @@ extension KeyboardRootView {
         let previous = selectedFormattedNumberCategory
         selectedFormattedNumberCategory = category
         FormattedNumberPreferences.saveCategory(category)
+        // 金額に切り替えたら、選択中通貨の慣習に前後スイッチを合わせる。
+        if category == .currency {
+            formattedNumberCurrencySymbolBefore =
+                SIUnitCatalog.currencySymbolBeforeAmount(formattedNumberSelectedBaseSymbol)
+        }
         if (previous == .calendar) != (category == .calendar) {
             onFormattedNumberCategoryChanged()
         }
@@ -520,14 +524,16 @@ extension KeyboardRootView {
         return formattedNumberJoin(number: number, unit: unit)
     }
 
-    // 数値と単位/記号の連結。通貨は前置(¥1,000)、他は後置(1,000N)。単位なしは数値のみ。
+    // 数値と単位/記号の連結。金額は前後スイッチ(formattedNumberCurrencySymbolBefore)に従う。
+    // 他カテゴリーの単位は後置(1,000N)。単位なしは数値のみ。
     private func formattedNumberJoin(number: String, unit: String) -> String {
         guard !unit.isEmpty else {
             return number
         }
-        return selectedFormattedNumberCategory.placesSymbolBeforeNumber
-            ? unit + number
-            : number + unit
+        if selectedFormattedNumberCategory == .currency {
+            return formattedNumberCurrencySymbolBefore ? unit + number : number + unit
+        }
+        return number + unit
     }
 
     // MARK: - 右エリア(プレビュー+単位ドラム+区切りチェック+確定)
@@ -575,11 +581,40 @@ extension KeyboardRootView {
 
             HStack(spacing: keyboardRowSpacing) {
                 formattedNumberGroupingToggle
+                if selectedFormattedNumberCategory == .currency {
+                    formattedNumberCurrencyPlacementToggle
+                }
                 formattedNumberConfirmKey
                     .frame(maxWidth: .infinity)
             }
             .frame(height: 40)
         }
+    }
+
+    // 金額の通貨記号を数値の前/後どちらに付けるかのスイッチ。選択中通貨で実例表示(例: ¥1 / 1¥)。
+    private var formattedNumberCurrencyPlacementToggle: some View {
+        let symbol = formattedNumberSelectedBaseSymbol
+        let sample = formattedNumberCurrencySymbolBefore ? "\(symbol)1" : "1\(symbol)"
+        return Button(action: { formattedNumberCurrencySymbolBefore.toggle() }) {
+            VStack(spacing: 1) {
+                Text(sample)
+                    .font(.system(size: 14, weight: .semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                Text(formattedNumberCurrencySymbolBefore ? "前" : "後")
+                    .font(.system(size: 9))
+                    .opacity(0.7)
+            }
+            .foregroundColor(KeyboardThemePalette.keyLabel)
+            .frame(width: 50)
+            .frame(maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(KeyboardThemePalette.keyBackground)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(formattedNumberCurrencySymbolBefore ? "通貨記号を前に付ける" : "通貨記号を後ろに付ける")
     }
 
     // ドラム行ラベル: 記号は固定サイズ、読みは小さい固定サイズ。幅が足りないときは
