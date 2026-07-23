@@ -44,6 +44,22 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
             return "カレンダー"
         }
     }
+
+    // 下段カテゴリーキーの色(記号入力と同様にカテゴリーごとに別色)。暖色→寒色の並び。
+    var tintColor: Color {
+        switch self {
+        case .siBase:
+            return Color(red: 0.86, green: 0.24, blue: 0.20)
+        case .siDerived:
+            return Color(red: 0.93, green: 0.52, blue: 0.13)
+        case .siNamed:
+            return Color(red: 0.80, green: 0.62, blue: 0.08)
+        case .currency:
+            return Color(red: 0.10, green: 0.62, blue: 0.34)
+        case .calendar:
+            return Color(red: 0.18, green: 0.45, blue: 0.86)
+        }
+    }
 }
 
 // 書式化数値モードの「前回の選択」を App Group の共有 UserDefaults に保存/復元する。
@@ -636,9 +652,9 @@ extension KeyboardRootView {
     private func formattedNumberCategoryKey(_ category: FormattedNumberCategory) -> some View {
         let selected = selectedFormattedNumberCategory == category
         let isCalendar = category == .calendar
-        let tint = accentColor
+        let tint = category.tintColor
         let labelFont: Font = isCalendar
-            ? .system(size: 18)
+            ? .system(size: 23)
             : .custom("Times New Roman", size: 19)
         return Button {
             selectFormattedNumberCategory(category)
