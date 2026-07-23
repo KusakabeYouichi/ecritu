@@ -138,14 +138,21 @@ extension KeyboardRootView {
         }
     }
 
-    // カレンダーカテゴリー: 上に細い操作帯(プレビュー+書式プルダウン+確定)、下に全幅カレンダー。
-    // graphical DatePicker は本来大きいので、下の領域に収まるよう縮小スケールして見切れを防ぐ。
+    // カレンダーカテゴリー: 縦画面と横画面でレイアウトを明確に分岐する(横の変更が縦に影響しない)。
+    @ViewBuilder
     private var formattedNumberCalendarTopArea: some View {
-        // 縦に積むとカレンダーが潰れるため、操作は右の細い列に横並びで置く。上端揃え。
+        if isLandscapeLayout {
+            formattedNumberCalendarTopAreaLandscape
+        } else {
+            formattedNumberCalendarTopAreaPortrait
+        }
+    }
+
+    // 縦画面: カレンダー(ヘッダー上)+右に操作列(プレビュー/書式/確定)。従来どおり。
+    private var formattedNumberCalendarTopAreaPortrait: some View {
         HStack(alignment: .top, spacing: keyboardRowSpacing) {
             formattedNumberScaledCalendar
 
-            // 3ボタンは上から3ポイントずつ低くして上詰め。
             VStack(spacing: keyboardRowSpacing) {
                 formattedNumberPreview
                     .frame(height: 50)
@@ -154,9 +161,42 @@ extension KeyboardRootView {
                 formattedNumberConfirmKey
                     .frame(height: 44)
             }
-            // 横画面は幅に余裕があるのでドラム/日付欄を広く、縦画面は控えめに。
-            .frame(width: isLandscapeLayout ? 300 : 150)
+            .frame(width: 150)
         }
+    }
+
+    // 横画面: 縦の余裕が乏しいので、カレンダーのナビを右縦積みにしセルを低くして見切れを防ぐ。
+    // 右端に操作列(プレビュー/書式/確定)。横幅は充分あるので広めに取る。
+    private var formattedNumberCalendarTopAreaLandscape: some View {
+        HStack(alignment: .top, spacing: keyboardRowSpacing) {
+            FormattedNumberCalendarGridView(
+                selectedDate: $formattedNumberDate,
+                weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
+                language: formattedNumberCalendarLanguage,
+                sundayColor: formattedNumberCalendarSundayColor,
+                navigationPlacement: .trailing,
+                cellHeight: formattedNumberLandscapeCalendarCellHeight
+            )
+            .frame(maxWidth: .infinity, alignment: .top)
+
+            VStack(spacing: keyboardRowSpacing) {
+                formattedNumberPreview
+                    .frame(height: 40)
+                formattedNumberDateFormatMenu
+                    .frame(height: 40)
+                formattedNumberConfirmKey
+                    .frame(height: 40)
+            }
+            .frame(width: 300)
+        }
+    }
+
+    // 横画面カレンダーのセル高さ。上部エリア高さ(クラスタ−バー)に6行+曜日行が収まる値。
+    private var formattedNumberLandscapeCalendarCellHeight: CGFloat {
+        let available = formattedNumberTopContentHeight
+        // 曜日行(約13)+VStack spacing(3)+6行分の行間(5×2=10)を差し引いた残りを6等分。
+        let usable = available - 13 - 3 - 10
+        return max(15, min(22, usable / 6))
     }
 
     // 自前の月グリッド(常時表示・コンパクト)。週開始・曜日表記はコンテナー設定から読む。
