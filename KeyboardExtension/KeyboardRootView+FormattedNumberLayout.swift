@@ -80,9 +80,11 @@ enum FormattedNumberPreferences {
     }
 
     private static let categoryKey = "formattedNumber.lastCategory"
-    private static let prefixKey = "formattedNumber.lastPrefix"
     private static func unitKey(_ categoryRawValue: Int) -> String {
         "formattedNumber.lastUnit.\(categoryRawValue)"
+    }
+    private static func prefixKey(_ categoryRawValue: Int) -> String {
+        "formattedNumber.lastPrefix.\(categoryRawValue)"
     }
 
     static func lastCategory() -> FormattedNumberCategory {
@@ -97,12 +99,22 @@ enum FormattedNumberPreferences {
         defaults?.set(category.rawValue, forKey: categoryKey)
     }
 
-    static func lastPrefixSymbol() -> String {
-        defaults?.string(forKey: prefixKey) ?? ""
+    // 接頭辞(補助単位)はSI単位系カテゴリーごとに独立に保持する。
+    static func loadPrefixSelection() -> [Int: String] {
+        guard let defaults else {
+            return [:]
+        }
+        var selection: [Int: String] = [:]
+        for category in FormattedNumberCategory.allCases {
+            if let symbol = defaults.string(forKey: prefixKey(category.rawValue)) {
+                selection[category.rawValue] = symbol
+            }
+        }
+        return selection
     }
 
-    static func savePrefixSymbol(_ symbol: String) {
-        defaults?.set(symbol, forKey: prefixKey)
+    static func savePrefix(_ symbol: String, for category: FormattedNumberCategory) {
+        defaults?.set(symbol, forKey: prefixKey(category.rawValue))
     }
 
     static func loadUnitSelection() -> [Int: String] {
@@ -648,7 +660,8 @@ extension KeyboardRootView {
             return ""
         }
         if selectedFormattedNumberCategory.usesSIPrefix {
-            return formattedNumberPrefixSymbol + base
+            let prefix = formattedNumberPrefixSelection[selectedFormattedNumberCategory.rawValue] ?? ""
+            return prefix + base
         }
         return base
     }
@@ -669,10 +682,10 @@ extension KeyboardRootView {
 
     private var formattedNumberPrefixBinding: Binding<String> {
         Binding(
-            get: { formattedNumberPrefixSymbol },
+            get: { formattedNumberPrefixSelection[selectedFormattedNumberCategory.rawValue] ?? "" },
             set: {
-                formattedNumberPrefixSymbol = $0
-                FormattedNumberPreferences.savePrefixSymbol($0)
+                formattedNumberPrefixSelection[selectedFormattedNumberCategory.rawValue] = $0
+                FormattedNumberPreferences.savePrefix($0, for: selectedFormattedNumberCategory)
             }
         )
     }
