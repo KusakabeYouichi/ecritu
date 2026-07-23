@@ -997,10 +997,11 @@ extension KeyboardRootView {
             )
     }
 
+    // 確定=値を挿入してかな入力へ戻る。改行キー風の ↵ アイコンで示す。
     private var formattedNumberConfirmKey: some View {
         Button(action: commitFormattedNumber) {
-            Text("確定")
-                .font(.system(size: 17, weight: .bold))
+            Image(systemName: "arrow.turn.down.left")
+                .font(.system(size: 20, weight: .bold))
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
@@ -1009,6 +1010,7 @@ extension KeyboardRootView {
                 )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("確定")
     }
 
     // MARK: - 下段バー([あい] / カテゴリー / ⌫)
