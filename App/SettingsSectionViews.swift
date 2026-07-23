@@ -822,16 +822,49 @@ struct LatinLayoutSettingsSection: View {
 
 struct NumberLayoutSettingsSection: View {
     @Binding var selection: NumberLayoutOption
+    @Binding var formattedNumberKeypad: FormattedNumberKeypadOption
 
     var body: some View {
-        SegmentedSettingsCard(
-            title: "数字配列",
-            pickerTitle: "数字配列",
-            selection: $selection,
-            options: Array(NumberLayoutOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "123モードの数字キー配列を切り替えます。téléphone は上段が 1-2-3、calculette は上段が 7-8-9、clavier は AZERTY 風の数字+記号配列(shift で 2 種類の記号セットを切替)です。\nclavier は縦画面のみ対応。横画面では自動的に calculette が使われます。"
-        )
+        VStack(alignment: .leading, spacing: 16) {
+            Text("数字配列")
+                .font(.headline)
+
+            subItem("123モード") {
+                Picker("123モード", selection: $selection) {
+                    ForEach(NumberLayoutOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text("téléphone は上段が 1-2-3、calculette は上段が 7-8-9、clavier は AZERTY 風の数字+記号配列(shift で 2 種類の記号セットを切替)です。clavier は縦画面のみ対応。横画面では自動的に calculette が使われます。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+
+            subItem("書式化数値入力") {
+                Picker("書式化数値入力", selection: $formattedNumberKeypad) {
+                    ForEach(FormattedNumberKeypadOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text("書式化数値入力のテンキー配列です。téléphone は上段が 1-2-3、calculette は上段が 7-8-9。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .settingsCardStyle()
+    }
+
+    @ViewBuilder
+    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            content()
+        }
     }
 }
 
