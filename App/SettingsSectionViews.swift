@@ -1008,7 +1008,7 @@ struct FormatNumeriqueSettingsSection: View {
                 } label: {
                     separatorLabel(title(option))
                         .frame(maxWidth: .infinity)
-                        .frame(height: 40)
+                        .frame(height: 32)
                         .background(
                             RoundedRectangle(cornerRadius: 8, style: .continuous)
                                 .fill(selected ? Color.accentColor.opacity(0.16) : AppTheme.cardInnerBackground)
@@ -1032,7 +1032,7 @@ struct FormatNumeriqueSettingsSection: View {
     private func separatorLabel(_ title: String) -> some View {
         if title == "." || title == "," {
             Text(title)
-                .font(.system(size: 34, weight: .heavy))
+                .font(.system(size: 26, weight: .heavy))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.primary)
