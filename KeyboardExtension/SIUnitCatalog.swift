@@ -128,6 +128,18 @@ enum SIUnitCatalog {
         SIUnit(symbol: "t", reading: "トン", quantity: "質量(SI併用単位)", group: "非SI併用単位")
     ]
 
+    // 金額カテゴリーの通貨記号。記号は数値の前に付ける(¥1,000)。group はドラム見出し用。
+    static let currencies: [SIUnit] = [
+        SIUnit(symbol: "¥", reading: "円", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "$", reading: "ドル", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "€", reading: "ユーロ", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "£", reading: "ポンド", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₩", reading: "ウォン", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "元", reading: "元", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "₹", reading: "ルピー", quantity: "通貨", group: "金額"),
+        SIUnit(symbol: "CHF", reading: "スイスフラン", quantity: "通貨", group: "金額")
+    ]
+
     // カテゴリー別の単位一覧。SI基本はユーザ確認後に拡充する(現状は空=占位表示)。
     static func units(for category: FormattedNumberCategory) -> [SIUnit] {
         switch category {
@@ -137,6 +149,8 @@ enum SIUnitCatalog {
             return siNamed
         case .siBase:
             return siBase
+        case .currency:
+            return currencies
         case .calendar:
             return []
         }
