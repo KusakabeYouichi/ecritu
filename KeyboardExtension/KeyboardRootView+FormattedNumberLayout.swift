@@ -17,9 +17,9 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
     var shortLabel: String {
         switch self {
         case .siBase:
-            return "m"
+            return "kg"
         case .siDerived:
-            return "m/s"
+            return "m/s²"
         case .siNamed:
             return "N"
         case .currency:
@@ -631,12 +631,15 @@ extension KeyboardRootView {
         )
     }
 
-    // 下段カテゴリーキー(単位記号は Avenir Next、カレンダーは絵文字)。選択で背景/枠を強調。
+    // 下段カテゴリーキー。記号入力のカテゴリー選択と同じく accent の tint で選択を強調し、
+    // 入力キー(暗め)と見分けやすくする。SI単位は正式なローマン体(Times New Roman)で表記。
     private func formattedNumberCategoryKey(_ category: FormattedNumberCategory) -> some View {
         let selected = selectedFormattedNumberCategory == category
-        let labelFont: Font = category == .calendar
+        let isCalendar = category == .calendar
+        let tint = accentColor
+        let labelFont: Font = isCalendar
             ? .system(size: 18)
-            : .custom("Avenir Next", size: 18).weight(.medium)
+            : .custom("Times New Roman", size: 19)
         return Button {
             selectFormattedNumberCategory(category)
         } label: {
@@ -644,22 +647,20 @@ extension KeyboardRootView {
                 .font(labelFont)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
-                .foregroundColor(KeyboardThemePalette.keyLabel)
+                .foregroundColor(isCalendar ? KeyboardThemePalette.keyLabel : (selected ? tint : tint.opacity(0.8)))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(
                             selected
-                                ? KeyboardThemePalette.categoryButtonBackgroundSelected
+                                ? tint.opacity(0.22)
                                 : KeyboardThemePalette.categoryButtonBackground
                         )
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .stroke(
-                            selected
-                                ? KeyboardThemePalette.keyBorderEmphasis
-                                : KeyboardThemePalette.keyBorder,
+                            selected ? tint.opacity(0.75) : KeyboardThemePalette.keyBorder,
                             lineWidth: selected ? 1.4 : 1
                         )
                 )
