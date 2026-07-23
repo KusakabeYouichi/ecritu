@@ -104,6 +104,17 @@ enum FormattedNumberPreferences {
             ?? ""
         return SIUnitCatalog.currencySymbolBeforeAmount(symbol)
     }
+
+    private static let unitSpacingKey = "formattedNumber.unitSpacing"
+
+    // 数値と単位の間の空白の有無(単位3カテゴリー用)。既定は空白なし。
+    static func lastUnitSpacing() -> Bool {
+        defaults?.bool(forKey: unitSpacingKey) ?? false
+    }
+
+    static func saveUnitSpacing(_ enabled: Bool) {
+        defaults?.set(enabled, forKey: unitSpacingKey)
+    }
 }
 
 // P1: モードの外枠(テンキー / 右エリア=プレビュー+単位ドラム占位+確定 / 下段バー)。
@@ -227,6 +238,9 @@ extension KeyboardRootView {
                     .frame(maxHeight: .infinity)
                 if selectedFormattedNumberCategory == .currency {
                     formattedNumberCurrencyPlacementToggle
+                        .frame(maxHeight: .infinity)
+                } else {
+                    formattedNumberUnitSpacingToggle
                         .frame(maxHeight: .infinity)
                 }
                 formattedNumberConfirmKey
@@ -689,7 +703,8 @@ extension KeyboardRootView {
         if selectedFormattedNumberCategory == .currency {
             return formattedNumberCurrencySymbolBefore ? unit + number : number + unit
         }
-        return number + unit
+        // 単位3カテゴリー: 空白スイッチが入っていれば数値と単位の間に空白を入れる。
+        return formattedNumberUnitSpacing ? number + " " + unit : number + unit
     }
 
     // MARK: - 右エリア(プレビュー+単位ドラム+区切りチェック+確定)
@@ -739,12 +754,44 @@ extension KeyboardRootView {
                 formattedNumberGroupingToggle
                 if selectedFormattedNumberCategory == .currency {
                     formattedNumberCurrencyPlacementToggle
+                } else {
+                    formattedNumberUnitSpacingToggle
                 }
                 formattedNumberConfirmKey
                     .frame(maxWidth: .infinity)
             }
             .frame(height: 40)
         }
+    }
+
+    // 数値と単位の間に空白を入れるかのスイッチ(単位3カテゴリーのみ。金額は前後スイッチ側)。
+    // 選択中単位で実例表示(例: 1 m / 1m)。
+    private var formattedNumberUnitSpacingToggle: some View {
+        let symbol = formattedNumberSelectedBaseSymbol
+        let sample = formattedNumberUnitSpacing ? "1 \(symbol)" : "1\(symbol)"
+        return Button(action: {
+            formattedNumberUnitSpacing.toggle()
+            FormattedNumberPreferences.saveUnitSpacing(formattedNumberUnitSpacing)
+        }) {
+            VStack(spacing: 1) {
+                Text(sample)
+                    .font(.system(size: 14, weight: .semibold))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                Text(formattedNumberUnitSpacing ? "空白" : "詰")
+                    .font(.system(size: 9))
+                    .opacity(0.7)
+            }
+            .foregroundColor(KeyboardThemePalette.keyLabel)
+            .frame(width: 50)
+            .frame(maxHeight: .infinity)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(KeyboardThemePalette.keyBackground)
+            )
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(formattedNumberUnitSpacing ? "数値と単位の間に空白を入れる" : "数値と単位を詰める")
     }
 
     // 金額の通貨記号を数値の前/後どちらに付けるかのスイッチ。選択中通貨で実例表示(例: ¥1 / 1¥)。
