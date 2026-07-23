@@ -804,8 +804,8 @@ extension KeyboardRootView {
         }
     }
 
-    // sep mil / espace 共通の CapsLock 風トグルボタン。オン=accent背景+白文字、
-    // オフ=通常キー色+文字を少し薄く。幅は共通(64)。
+    // sep mil / espace 共通の CapsLock 風トグルボタン。オン=accent背景+白文字で「押し込んだ」
+    // 視覚効果(上辺に内側の影+下辺に薄い光+わずかに縮小)。オフ=通常キー色+文字を少し薄く。
     private func formattedNumberLockToggle(
         title: String,
         isOn: Bool,
@@ -823,37 +823,90 @@ extension KeyboardRootView {
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
                         .fill(isOn ? accentColor : KeyboardThemePalette.keyBackground)
+                        .overlay {
+                            if isOn {
+                                // 上辺=内側の影、下辺=薄い光。押し込まれて凹んだように見せる。
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [Color.black.opacity(0.30), Color.clear],
+                                            startPoint: .top,
+                                            endPoint: .center
+                                        )
+                                    )
+                                VStack(spacing: 0) {
+                                    Spacer()
+                                    Rectangle()
+                                        .fill(Color.white.opacity(0.20))
+                                        .frame(height: 1)
+                                }
+                            }
+                        }
+                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(isOn ? Color.black.opacity(0.28) : Color.clear, lineWidth: 1)
+                )
+                .scaleEffect(isOn ? 0.95 : 1)
         }
         .buttonStyle(.plain)
         .accessibilityLabel(accessibilityLabel)
         .accessibilityValue(isOn ? "オン" : "オフ")
     }
 
-    // 金額の通貨記号を数値の前/後どちらに付けるかのスイッチ。選択中通貨で実例表示(例: ¥1 / 1¥)。
+    // 金額の通貨記号を前(avant)/後(après)どちらに付けるかのスイッチ。壁のタンブラースイッチ風に、
+    // 上下2面のロッカーで、選択側が「点灯して手前に出る」・非選択側が「沈む」視覚効果にする。
     private var formattedNumberCurrencyPlacementToggle: some View {
-        let symbol = formattedNumberSelectedBaseSymbol
-        let sample = formattedNumberCurrencySymbolBefore ? "\(symbol)1" : "1\(symbol)"
+        let before = formattedNumberCurrencySymbolBefore
         return Button(action: { formattedNumberCurrencySymbolBefore.toggle() }) {
-            VStack(spacing: 1) {
-                Text(sample)
-                    .font(.system(size: 14, weight: .semibold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-                Text(formattedNumberCurrencySymbolBefore ? "前" : "後")
-                    .font(.system(size: 9))
-                    .opacity(0.7)
+            VStack(spacing: 0) {
+                placementTumblerFace(title: "avant", active: before)
+                Rectangle()
+                    .fill(Color.black.opacity(0.25))
+                    .frame(height: 1)
+                placementTumblerFace(title: "après", active: !before)
             }
-            .foregroundColor(KeyboardThemePalette.keyLabel)
-            .frame(width: 50)
+            .frame(width: 56)
             .frame(maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .fill(KeyboardThemePalette.keyBackground)
             )
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(Color.black.opacity(0.28), lineWidth: 1)
+            )
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(formattedNumberCurrencySymbolBefore ? "通貨記号を前に付ける" : "通貨記号を後ろに付ける")
+        .accessibilityLabel("通貨記号の位置")
+        .accessibilityValue(before ? "前(avant)" : "後(après)")
+    }
+
+    // タンブラースイッチの片面。active=手前に出て点灯(accent+ハイライト)、非active=沈む(暗い凹み)。
+    private func placementTumblerFace(title: String, active: Bool) -> some View {
+        Text(title)
+            .font(.system(size: 11, weight: active ? .bold : .semibold))
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .foregroundColor(active ? .white : KeyboardThemePalette.keyLabel.opacity(0.4))
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(
+                LinearGradient(
+                    colors: active
+                        ? [accentColor, accentColor.opacity(0.82)]
+                        : [Color.black.opacity(0.16), Color.black.opacity(0.06)],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
+            .overlay(alignment: .top) {
+                // 手前に出た面の上辺だけ白いハイライト、沈んだ面は上辺に影を落とす。
+                Rectangle()
+                    .fill(active ? Color.white.opacity(0.35) : Color.black.opacity(0.18))
+                    .frame(height: 1)
+            }
     }
 
     // ドラム行ラベル: 記号は固定サイズ、読みは小さい固定サイズ。幅が足りないときは
