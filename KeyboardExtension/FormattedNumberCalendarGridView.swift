@@ -21,6 +21,10 @@ struct FormattedNumberCalendarGridView: View {
     private let columnSpacing: CGFloat
 
     @State private var monthAnchor: Date
+    // 押したままなぞって選択するための、各日セルの矩形(グリッド座標系)。
+    @State private var dayCellFrames: [Int: CGRect] = [:]
+    @State private var lastDraggedDay: Int?
+    private let gridCoordinateSpace = "formattedNumberCalendarDaysGrid"
 
     init(
         selectedDate: Binding<Date>,
@@ -234,6 +238,29 @@ struct FormattedNumberCalendarGridView: View {
                 blankCell.id("trail-\(index)")
             }
         }
+        .coordinateSpace(name: gridCoordinateSpace)
+        .onPreferenceChange(DayCellFramePreferenceKey.self) { frames in
+            dayCellFrames = frames
+        }
+        // iPhone 標準カレンダー風: 押したまま指を動かすと、指の下の日付が連続選択される。
+        // minimumDistance:0 なので単純タップ(触れた瞬間)でも選択される。
+        .gesture(
+            DragGesture(minimumDistance: 0, coordinateSpace: .named(gridCoordinateSpace))
+                .onChanged { value in selectDay(atGridLocation: value.location) }
+                .onEnded { _ in lastDraggedDay = nil }
+        )
+    }
+
+    // グリッド座標系の指位置から、その位置にある日を選ぶ(なぞり中の連続選択用)。
+    private func selectDay(atGridLocation location: CGPoint) {
+        guard let day = dayCellFrames.first(where: { $0.value.contains(location) })?.key else {
+            return
+        }
+        guard day != lastDraggedDay else {
+            return
+        }
+        lastDraggedDay = day
+        selectDay(day)
     }
 
     // 空セルも明示的に cellHeight を確保して6行分の高さを一定に保つ(潰れさせない)。
@@ -241,23 +268,40 @@ struct FormattedNumberCalendarGridView: View {
         Color.clear.frame(height: cellHeight)
     }
 
+    // 選択はグリッド全体の DragGesture で行うため、各日セルは視覚+矩形記録のみ(Button にしない)。
     private func dayCell(_ day: Int) -> some View {
         let selected = isSelected(day)
         let dayColor: Color = selected
             ? Color.white
             : ((isSunday(day) ? sundayColor : nil) ?? KeyboardThemePalette.keyLabel)
-        return Button(action: { selectDay(day) }) {
-            Text("\(day)")
-                .font(calendarFont(size: 15, weight: selected ? .bold : .regular))
-                .monospacedDigit()
-                .foregroundColor(dayColor)
-                .frame(maxWidth: .infinity)
-                .frame(height: cellHeight)
-                .background(
-                    Circle()
-                        .fill(selected ? Color.accentColor : Color.clear)
-                )
-        }
-        .buttonStyle(.plain)
+        return Text("\(day)")
+            .font(calendarFont(size: 15, weight: selected ? .bold : .regular))
+            .monospacedDigit()
+            .foregroundColor(dayColor)
+            .frame(maxWidth: .infinity)
+            .frame(height: cellHeight)
+            .background(
+                Circle()
+                    .fill(selected ? Color.accentColor : Color.clear)
+            )
+            .contentShape(Rectangle())
+            .background(
+                GeometryReader { geometry in
+                    Color.clear.preference(
+                        key: DayCellFramePreferenceKey.self,
+                        value: [day: geometry.frame(in: .named(gridCoordinateSpace))]
+                    )
+                }
+            )
+            .accessibilityLabel("\(day)")
+            .accessibilityAddTraits(selected ? [.isSelected, .isButton] : .isButton)
+    }
+}
+
+// 各日セルの矩形(グリッド座標系)を集約するための PreferenceKey。
+private struct DayCellFramePreferenceKey: PreferenceKey {
+    static var defaultValue: [Int: CGRect] = [:]
+    static func reduce(value: inout [Int: CGRect], nextValue: () -> [Int: CGRect]) {
+        value.merge(nextValue(), uniquingKeysWith: { $1 })
     }
 }
