@@ -161,11 +161,11 @@ struct FormattedNumberCalendarGridView: View {
         .padding(.horizontal, 6)
     }
 
-    // 横画面用: グリッド右に「前(<)/月名/年/次(>)」を縦積み。
+    // 横画面用: グリッド右に「前(∧)/月名/年/次(∨)」を縦積み。縦並びなので上下向きの矢印にする。
     private var trailingNavigationColumn: some View {
         VStack(spacing: 6) {
             Button(action: { changeMonth(-1) }) {
-                Image(systemName: "chevron.left")
+                Image(systemName: "chevron.up")
                     .font(calendarFont(size: 16, weight: .semibold))
             }
             .buttonStyle(.plain)
@@ -182,7 +182,7 @@ struct FormattedNumberCalendarGridView: View {
             .foregroundColor(KeyboardThemePalette.keyLabel)
 
             Button(action: { changeMonth(1) }) {
-                Image(systemName: "chevron.right")
+                Image(systemName: "chevron.down")
                     .font(calendarFont(size: 16, weight: .semibold))
             }
             .buttonStyle(.plain)
