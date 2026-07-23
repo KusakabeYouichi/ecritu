@@ -728,7 +728,14 @@ extension KeyboardRootView {
             return number
         }
         if selectedFormattedNumberCategory == .currency {
-            return formattedNumberCurrencySymbolBefore ? unit + number : number + unit
+            if formattedNumberCurrencySymbolBefore {
+                // 通貨記号が前のときは負号を記号の前に出す(¥-100 ではなく -¥100)。
+                if number.hasPrefix("-") {
+                    return "-" + unit + String(number.dropFirst())
+                }
+                return unit + number
+            }
+            return number + unit
         }
         // 単位3カテゴリー: 空白スイッチが入っていれば数値と単位の間に空白を入れる。
         return formattedNumberUnitSpacing ? number + " " + unit : number + unit
