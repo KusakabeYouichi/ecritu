@@ -133,15 +133,106 @@ extension KeyboardRootView {
         formattedNumberClusterHeight - mainFlickKeyHeight - keyboardRowSpacing
     }
 
-    // 単位カテゴリー: テンキー + 右エリア(プレビュー+単位ドラム+区切り/確定)。
-    // カレンダーと同様に「自然高さ」にする(テンキー行・ドラムを固定高さにして wheel の固有高さが
-    // 上位へ伝播しないようにする)。上位 Group の maxHeight:.infinity がフィルしバーが最下部へ。
+    // 単位/金額カテゴリー: 縦画面と横画面でレイアウトを明確に分岐(横の変更が縦に影響しない)。
+    @ViewBuilder
     private var formattedNumberUnitTopArea: some View {
+        if isLandscapeLayout {
+            formattedNumberUnitTopAreaLandscape
+        } else {
+            formattedNumberUnitTopAreaPortrait
+        }
+    }
+
+    // 縦画面: テンキー(4段)+右エリア(プレビュー/ドラム/区切り・確定)。従来どおり。
+    private var formattedNumberUnitTopAreaPortrait: some View {
         HStack(alignment: .top, spacing: keyboardRowSpacing) {
             formattedNumberTenkey
                 .frame(maxWidth: .infinity)
             formattedNumberRightArea
                 .frame(maxWidth: .infinity)
+        }
+    }
+
+    // 横画面: 縦の余裕が乏しいので3段に収める。テンキーは 1〜9(3×3・幅狭)+ ±/0/. の右縦列。
+    // 続いて 3桁/(前後)/確定 の縦列、その右に プレビュー+ドラム(幅を狭める)。
+    private var formattedNumberUnitTopAreaLandscape: some View {
+        HStack(alignment: .top, spacing: keyboardRowSpacing) {
+            HStack(alignment: .top, spacing: keyboardRowSpacing) {
+                formattedNumberDigitGridLandscape
+                    .frame(maxWidth: .infinity)
+                formattedNumberSideKeysColumnLandscape
+                    .frame(width: 56)
+            }
+            .frame(maxWidth: .infinity)
+
+            formattedNumberLandscapeControlColumn
+                .frame(width: 66)
+
+            formattedNumberLandscapeDisplayColumn
+                .frame(maxWidth: .infinity)
+        }
+    }
+
+    // 横画面テンキーの1行高さ(3段が上部エリアに収まる値)。
+    private var formattedNumberLandscapeKeyRowHeight: CGFloat {
+        max(34, (formattedNumberTopContentHeight - keyboardRowSpacing * 2) / 3)
+    }
+
+    private func formattedNumberLandscapeKey(_ token: String) -> some View {
+        ActionKeyButton(
+            title: token,
+            fontSize: 20,
+            action: { appendFormattedNumberToken(token) }
+        )
+        .frame(maxWidth: .infinity)
+        .frame(height: formattedNumberLandscapeKeyRowHeight)
+    }
+
+    // 1〜9 の 3×3(幅は maxWidth で埋め、右の ±/0/. 列を空けるぶん狭くなる)。
+    private var formattedNumberDigitGridLandscape: some View {
+        VStack(spacing: keyboardRowSpacing) {
+            ForEach([["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"]], id: \.self) { row in
+                HStack(spacing: keyboardRowSpacing) {
+                    ForEach(row, id: \.self) { token in
+                        formattedNumberLandscapeKey(token)
+                    }
+                }
+            }
+        }
+    }
+
+    // ±/0/. を縦1列に(横画面では 1〜9 の右)。
+    private var formattedNumberSideKeysColumnLandscape: some View {
+        VStack(spacing: keyboardRowSpacing) {
+            ForEach(["±", "0", "."], id: \.self) { token in
+                formattedNumberLandscapeKey(token)
+            }
+        }
+    }
+
+    // 3桁区切り/(金額のみ前後スイッチ)/確定 を縦積み(表示・ドラムの左)。
+    private var formattedNumberLandscapeControlColumn: some View {
+        VStack(spacing: keyboardRowSpacing) {
+            formattedNumberGroupingToggle
+                .frame(maxHeight: .infinity)
+            if selectedFormattedNumberCategory == .currency {
+                formattedNumberCurrencyPlacementToggle
+                    .frame(maxHeight: .infinity)
+            }
+            formattedNumberConfirmKey
+                .frame(maxHeight: .infinity)
+        }
+    }
+
+    // プレビュー(上)+ ドラム(下)。ドラムは Color.clear ベースで wheel の高さ伝播を封じる。
+    private var formattedNumberLandscapeDisplayColumn: some View {
+        VStack(spacing: keyboardRowSpacing) {
+            formattedNumberPreview
+                .frame(height: 40)
+            Color.clear
+                .frame(height: max(60, formattedNumberTopContentHeight - 40 - keyboardRowSpacing))
+                .overlay(formattedNumberUnitSelector)
+                .clipped()
         }
     }
 
