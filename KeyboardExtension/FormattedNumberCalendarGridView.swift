@@ -18,6 +18,7 @@ struct FormattedNumberCalendarGridView: View {
     let sundayColor: Color?
     let navigationPlacement: NavigationPlacement
     private let cellHeight: CGFloat
+    private let columnSpacing: CGFloat
 
     @State private var monthAnchor: Date
 
@@ -27,7 +28,8 @@ struct FormattedNumberCalendarGridView: View {
         language: DateFormatCatalog.CalendarWeekdayLanguage,
         sundayColor: Color?,
         navigationPlacement: NavigationPlacement = .top,
-        cellHeight: CGFloat = 22
+        cellHeight: CGFloat = 22,
+        columnSpacing: CGFloat = 2
     ) {
         _selectedDate = selectedDate
         self.weekStartsMonday = weekStartsMonday
@@ -35,6 +37,7 @@ struct FormattedNumberCalendarGridView: View {
         self.sundayColor = sundayColor
         self.navigationPlacement = navigationPlacement
         self.cellHeight = cellHeight
+        self.columnSpacing = columnSpacing
         _monthAnchor = State(initialValue: selectedDate.wrappedValue)
     }
 
@@ -113,7 +116,9 @@ struct FormattedNumberCalendarGridView: View {
     // (空セルも明示的に cellHeight を確保するので6行分の高さが常に一定。位置がずれない)。
     private let totalCells = 42
     private let rowSpacing: CGFloat = 2
-    private let columns = Array(repeating: GridItem(.flexible(), spacing: 2), count: 7)
+    private var columns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: 7)
+    }
 
     var body: some View {
         switch navigationPlacement {
@@ -162,6 +167,7 @@ struct FormattedNumberCalendarGridView: View {
     }
 
     // 横画面用: グリッド右に「前(∧)/月名/年/次(∨)」を縦積み。縦並びなので上下向きの矢印にする。
+    // 月名/年は上下矢印の中間(縦センター)に置く(Spacer で挟む)。列はグリッド高さいっぱいに伸ばす。
     private var trailingNavigationColumn: some View {
         VStack(spacing: 6) {
             Button(action: { changeMonth(-1) }) {
@@ -169,6 +175,8 @@ struct FormattedNumberCalendarGridView: View {
                     .font(calendarFont(size: 16, weight: .semibold))
             }
             .buttonStyle(.plain)
+
+            Spacer(minLength: 0)
 
             VStack(spacing: 1) {
                 Text(DateFormatCatalog.calendarMonthName(language, month: month))
@@ -181,6 +189,8 @@ struct FormattedNumberCalendarGridView: View {
             }
             .foregroundColor(KeyboardThemePalette.keyLabel)
 
+            Spacer(minLength: 0)
+
             Button(action: { changeMonth(1) }) {
                 Image(systemName: "chevron.down")
                     .font(calendarFont(size: 16, weight: .semibold))
@@ -189,6 +199,7 @@ struct FormattedNumberCalendarGridView: View {
         }
         .foregroundColor(Color.accentColor)
         .frame(width: 66)
+        .frame(maxHeight: .infinity)
     }
 
     private var weekdayHeaderRow: some View {
