@@ -165,7 +165,7 @@ enum SIUnitCatalog {
         SIUnit(symbol: "円", reading: "エン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
         SIUnit(symbol: "圓", reading: "エン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
         SIUnit(symbol: "원", reading: "ウォン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
-        SIUnit(symbol: "銅", reading: "ドウ", quantity: "通貨", group: "金額", symbolBeforeAmount: false)
+        SIUnit(symbol: "銅", reading: "ドン", quantity: "通貨", group: "金額", symbolBeforeAmount: false)
     ]
 
     // 通貨記号の既定位置(前=true)。未知の記号は前置扱い。
