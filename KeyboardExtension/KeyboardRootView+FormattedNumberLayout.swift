@@ -347,7 +347,7 @@ extension KeyboardRootView {
     ) -> some View {
         FormattedNumberCalendarGridView(
             selectedDate: $formattedNumberDate,
-            weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
+            firstWeekday: formattedNumberCalendarFirstWeekday,
             language: formattedNumberCalendarLanguage,
             sundayColor: formattedNumberCalendarSundayColor,
             navigationPlacement: navigation,
@@ -380,7 +380,7 @@ extension KeyboardRootView {
     private var formattedNumberScaledCalendar: some View {
         FormattedNumberCalendarGridView(
             selectedDate: $formattedNumberDate,
-            weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
+            firstWeekday: formattedNumberCalendarFirstWeekday,
             language: formattedNumberCalendarLanguage,
             sundayColor: formattedNumberCalendarSundayColor
         )
@@ -425,11 +425,14 @@ extension KeyboardRootView {
             : [["7", "8", "9"], ["4", "5", "6"], ["1", "2", "3"]]
     }
 
-    // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。
-    private var formattedNumberCalendarWeekStartsMonday: Bool {
-        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
-            .string(forKey: "calendarWeekStart") ?? "monday"
-        return raw != "sunday"
+    // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。1=日/2=月/7=土。
+    private var formattedNumberCalendarFirstWeekday: Int {
+        switch UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+            .string(forKey: "calendarWeekStart") {
+        case "sunday": return 1
+        case "saturday": return 7
+        default: return 2
+        }
     }
 
     private var formattedNumberCalendarLanguage: DateFormatCatalog.CalendarWeekdayLanguage {

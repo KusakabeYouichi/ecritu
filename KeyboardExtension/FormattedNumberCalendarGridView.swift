@@ -13,7 +13,8 @@ struct FormattedNumberCalendarGridView: View {
     }
 
     @Binding var selectedDate: Date
-    let weekStartsMonday: Bool
+    // 週の開始曜日(1=日, 2=月, 7=土)。
+    let firstWeekday: Int
     let language: DateFormatCatalog.CalendarWeekdayLanguage
     // 日曜列の色(nil=他曜日と同じ)。
     let sundayColor: Color?
@@ -29,7 +30,7 @@ struct FormattedNumberCalendarGridView: View {
 
     init(
         selectedDate: Binding<Date>,
-        weekStartsMonday: Bool,
+        firstWeekday: Int,
         language: DateFormatCatalog.CalendarWeekdayLanguage,
         sundayColor: Color?,
         navigationPlacement: NavigationPlacement = .top,
@@ -37,7 +38,7 @@ struct FormattedNumberCalendarGridView: View {
         columnSpacing: CGFloat = 2
     ) {
         _selectedDate = selectedDate
-        self.weekStartsMonday = weekStartsMonday
+        self.firstWeekday = firstWeekday
         self.language = language
         self.sundayColor = sundayColor
         self.navigationPlacement = navigationPlacement
@@ -46,9 +47,9 @@ struct FormattedNumberCalendarGridView: View {
         _monthAnchor = State(initialValue: selectedDate.wrappedValue)
     }
 
-    // 週開始に合わせた日曜の列インデックス(0起点)。
+    // 週開始に合わせた日曜の列インデックス(0起点)。日曜(weekday=1)が先頭から何列目か。
     private var sundayColumnIndex: Int {
-        weekStartsMonday ? 6 : 0
+        (1 - firstWeekday + 7) % 7
     }
 
     // その日が日曜か(weekday 1=日曜)。
@@ -67,7 +68,7 @@ struct FormattedNumberCalendarGridView: View {
 
     private var calendar: Calendar {
         var calendar = Calendar(identifier: .gregorian)
-        calendar.firstWeekday = weekStartsMonday ? 2 : 1
+        calendar.firstWeekday = firstWeekday
         return calendar
     }
 
@@ -93,13 +94,14 @@ struct FormattedNumberCalendarGridView: View {
         return (weekday - calendar.firstWeekday + 7) % 7
     }
 
-    // 週開始に合わせて並べ替えた曜日ラベル。
+    // 週開始に合わせて並べ替えた曜日ラベル(base は日曜始まり)。firstWeekday の位置から回転。
     private var orderedWeekdayLabels: [String] {
         let base = DateFormatCatalog.calendarWeekdayLabels(language)
-        guard weekStartsMonday else {
+        let offset = (firstWeekday - 1) % base.count
+        guard offset != 0 else {
             return base
         }
-        return Array(base[1...]) + [base[0]]
+        return Array(base[offset...]) + Array(base[..<offset])
     }
 
     private func calendarFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {

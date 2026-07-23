@@ -1025,47 +1025,47 @@ struct FormatNumeriqueSettingsSection: View {
         .settingsCardStyle()
     }
 
-    // 記号を大きく見せたいのでセグメントではなく自前の大きめボタン行にする。. / , は特大表示。
-    @ViewBuilder
+    // 標準のセグメントピッカー風(グレーのトラック+白い選択サム+標準文字色)。他の設定と色・高さを
+    // 揃えつつ、記号(. ,)だけ大きめに表示できるよう自前で描く。
     private func separatorPicker<Option: Identifiable>(
         options: [Option],
         isSelected: @escaping (Option) -> Bool,
         title: @escaping (Option) -> String,
         onSelect: @escaping (Option) -> Void
     ) -> some View {
-        HStack(spacing: 6) {
+        HStack(spacing: 2) {
             ForEach(options) { option in
                 let selected = isSelected(option)
                 Button {
                     onSelect(option)
                 } label: {
                     separatorLabel(title(option))
+                        .foregroundStyle(.primary)
                         .frame(maxWidth: .infinity)
-                        .frame(height: 32)
+                        .frame(height: 28)
                         .background(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .fill(selected ? Color.accentColor.opacity(0.16) : AppTheme.cardInnerBackground)
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                .stroke(
-                                    selected ? Color.accentColor : Color.secondary.opacity(0.3),
-                                    lineWidth: selected ? 2 : 1
-                                )
+                            RoundedRectangle(cornerRadius: 7, style: .continuous)
+                                .fill(selected ? Color(.systemBackground) : Color.clear)
+                                .shadow(color: selected ? Color.black.opacity(0.14) : .clear, radius: 1, y: 0.5)
                         )
                 }
                 .buttonStyle(.plain)
             }
         }
+        .padding(2)
+        .background(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .fill(Color(.secondarySystemFill))
+        )
     }
 
-    // 区切り記号(. や ,)は大きめ+太字で表示し、コントロール高さ(40)に収める。太字で , と . の
-    // 区別を付けやすくする(espace は語なので通常サイズ)。
+    // 区切り記号(. や ,)はセグメント高さ(28)に収まる大きめ太字で、, と . の区別を付けやすく
+    // する(espace は語なので通常サイズ)。
     @ViewBuilder
     private func separatorLabel(_ title: String) -> some View {
         if title == "." || title == "," {
             Text(title)
-                .font(.system(size: 26, weight: .heavy))
+                .font(.system(size: 22, weight: .heavy))
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.primary)

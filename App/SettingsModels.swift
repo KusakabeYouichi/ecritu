@@ -223,6 +223,7 @@ enum DateFormatStyleOption: String, CaseIterable, Identifiable {
 enum CalendarWeekStartOption: String, CaseIterable, Identifiable {
     case sunday
     case monday
+    case saturday
 
     var id: String { rawValue }
 
@@ -230,6 +231,7 @@ enum CalendarWeekStartOption: String, CaseIterable, Identifiable {
         switch self {
         case .sunday: return "日曜始まり"
         case .monday: return "月曜始まり"
+        case .saturday: return "土曜始まり"
         }
     }
 }
