@@ -103,7 +103,7 @@ extension KeyboardViewController {
     func hasExpandedHeaderForHeight(using configuration: RenderConfiguration? = nil) -> Bool {
         // 候補表示の有無でボタン群が上下しないよう、テキスト系モードでは常に候補ヘッダー領域を確保する。
         switch currentInputMode {
-        case .emoji, .kana, .number, .latin:
+        case .emoji, .kana, .number, .latin, .formattedNumber:
             return true
         }
     }
@@ -111,6 +111,10 @@ extension KeyboardViewController {
     func portraitHeightProfile() -> PortraitHeightProfile {
         switch currentInputMode {
         case .emoji:
+            return .emoji
+        case .formattedNumber:
+            // 記号/絵文字/顔文字と下段バー位置・高さを完全一致させるため emoji プロファイルにする
+            // (これらは全て emoji プロファイルでバーが揃う。kana だと約8pt高くバーがずれる)。
             return .emoji
         case .kana:
             return effectiveKanaLayoutModeForHeight() == .fiveByTwo
@@ -135,6 +139,8 @@ extension KeyboardViewController {
             return Self.minimumKanaFiveByTwoHeight...Self.maximumKanaFiveByTwoHeight
         case .emoji:
             return Self.minimumEmojiHeight...Self.maximumEmojiHeight
+        case .formattedNumber:
+            return Self.minimumFormattedNumberHeight...Self.maximumFormattedNumberHeight
         }
     }
 
@@ -154,6 +160,8 @@ extension KeyboardViewController {
             return 162...194
         case .emoji:
             return 170...204
+        case .formattedNumber:
+            return 200...260
         }
     }
 
@@ -173,6 +181,8 @@ extension KeyboardViewController {
             return 176
         case .emoji:
             return 188
+        case .formattedNumber:
+            return 230
         }
     }
 
@@ -205,6 +215,8 @@ extension KeyboardViewController {
         case .emoji:
             // 絵文字/記号入力もテキスト系モードと同等の見た目高さに揃える。
             return 46
+        case .formattedNumber:
+            return 46
         }
     }
 
@@ -228,6 +240,8 @@ extension KeyboardViewController {
         case .kanaFiveByTwo:
             return headerDelta
         case .emoji:
+            return headerDelta
+        case .formattedNumber:
             return headerDelta
         }
     }
@@ -279,6 +293,14 @@ extension KeyboardViewController {
                 + Self.mainKeyRowHeight * 4
                 + rowSpacing * 3
                 + Self.keyboardVerticalPadding
+        case .formattedNumber:
+            // 単位ドラム/カレンダーに縦の余裕を持たせるため、テキスト系より高い基準にする。
+            return headerHeight
+                + rowSpacing
+                + Self.mainKeyRowHeight * 4
+                + rowSpacing * 3
+                + Self.keyboardVerticalPadding
+                + 90
         }
     }
 

@@ -3,6 +3,7 @@
 <plist version="1.0">
 <array>
 	<!-- AOC名や地名 -->
+	<dict><key>phrase</key><string>Vouvray Pétillant</string><key>shortcut</key><string>ぶーぶれぺてぃやん</string></dict>
 	<dict><key>phrase</key><string>Echezeaux</string><key>shortcut</key><string>えしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇいえしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇえしぇぞー</string></dict>
@@ -1430,6 +1431,9 @@
 	<dict><key>phrase</key><string>黒海</string><key>shortcut</key><string>こっかい</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- 格付けや分類、ワインのタイプ、区分、種別、種類 -->
+	<dict><key>phrase</key><string>Pétillant</string><key>shortcut</key><string>ぺてぃやん</string></dict>
+	<dict><key>phrase</key><string>Frizzante</string><key>shortcut</key><string>ふりっつぁんて</string></dict>
+	<dict><key>phrase</key><string>Perlwein</string><key>shortcut</key><string>ぱーるゔぁいん</string></dict>
 	<dict><key>phrase</key><string>Primeur</string><key>shortcut</key><string>ぷりむーる</string></dict>
 	<dict><key>phrase</key><string>Rare</string><key>shortcut</key><string>れあ</string></dict>
 	<dict><key>phrase</key><string>Gentil</string><key>shortcut</key><string>じゃんてぃ</string></dict>

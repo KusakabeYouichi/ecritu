@@ -27,7 +27,8 @@ extension KeyboardRootView {
                     .accessibilityHidden(true)
             }
         }
-        .frame(height: candidateHeaderHeight)
+        // 書式化数値モードは候補ヘッダーを使わないので畳み、カレンダー等を上に寄せる。
+        .frame(height: inputMode == .formattedNumber ? 0 : candidateHeaderHeight)
     }
 
     private var kanaConversionCandidateHeaderView: some View {

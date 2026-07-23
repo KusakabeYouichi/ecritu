@@ -78,6 +78,10 @@ enum KeyboardModeTransition {
         return next
     }
 
+    static func enterFormattedNumberMode(from state: KeyboardModeTransitionState) -> KeyboardModeTransitionState {
+        return switchInputMode(state, to: .formattedNumber)
+    }
+
     static func selectModifier(
         _ output: String,
         state: KeyboardModeTransitionState

@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260721143710"
+    private static let editionUpdatedAtRaw: String = "20260723230519"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -84,6 +84,48 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var numberLayoutModeRawValue: String = NumberLayoutOption.calculette.rawValue
+
+    @AppStorage(
+        SettingsKeys.dateFormatStyle,
+        store: Self.sharedDefaults
+    )
+    private var dateFormatStyleRawValue: String = DateFormatStyleOption.japanese.rawValue
+
+    @AppStorage(
+        SettingsKeys.numberThousandsSeparator,
+        store: Self.sharedDefaults
+    )
+    private var numberThousandsSeparatorRawValue: String = ThousandsSeparatorOption.space.rawValue
+
+    @AppStorage(
+        SettingsKeys.numberDecimalSeparator,
+        store: Self.sharedDefaults
+    )
+    private var numberDecimalSeparatorRawValue: String = DecimalSeparatorOption.dot.rawValue
+
+    @AppStorage(
+        SettingsKeys.numberGroupFourDigits,
+        store: Self.sharedDefaults
+    )
+    private var numberGroupFourDigits: Bool = false
+
+    @AppStorage(
+        SettingsKeys.calendarWeekStart,
+        store: Self.sharedDefaults
+    )
+    private var calendarWeekStartRawValue: String = CalendarWeekStartOption.monday.rawValue
+
+    @AppStorage(
+        SettingsKeys.calendarWeekdayLanguage,
+        store: Self.sharedDefaults
+    )
+    private var calendarWeekdayLanguageRawValue: String = CalendarWeekdayLanguageOption.japanese.rawValue
+
+    @AppStorage(
+        SettingsKeys.calendarSundayColor,
+        store: Self.sharedDefaults
+    )
+    private var calendarSundayColorRawValue: String = CalendarSundayColorOption.off.rawValue
 
     @AppStorage(
         SettingsKeys.basicSymbolOrder,
@@ -305,6 +347,13 @@ struct ContentView: View {
             kanaModifierPlacementRawValue,
             latinLayoutModeRawValue,
             numberLayoutModeRawValue,
+            dateFormatStyleRawValue,
+            numberThousandsSeparatorRawValue,
+            numberDecimalSeparatorRawValue,
+            String(numberGroupFourDigits),
+            calendarWeekStartRawValue,
+            calendarWeekdayLanguageRawValue,
+            calendarSundayColorRawValue,
             basicSymbolOrderRawValue,
             accentPaletteRawValue,
             keyboardBackgroundThemeRawValue,
@@ -384,6 +433,60 @@ struct ContentView: View {
     private var numberLayoutSelection: Binding<NumberLayoutOption> {
         rawValueSelection(from: numberLayoutModeRawValue, default: .calculette) {
             numberLayoutModeRawValue = $0
+        }
+    }
+
+    private var dateFormatStyleSelection: Binding<DateFormatStyleOption> {
+        rawValueSelection(from: dateFormatStyleRawValue, default: .japanese) {
+            dateFormatStyleRawValue = $0
+        }
+    }
+
+    // 桁区切りと小数点は同じ記号(, または .)にできない。衝突する変更をしたら、もう一方を
+    // 自動で反対の記号に切り替える(espace は記号ではないので衝突しない)。
+    private var numberThousandsSeparatorSelection: Binding<ThousandsSeparatorOption> {
+        Binding(
+            get: { ThousandsSeparatorOption(rawValue: numberThousandsSeparatorRawValue) ?? .space },
+            set: { newValue in
+                if newValue == .comma, numberDecimalSeparatorRawValue == DecimalSeparatorOption.comma.rawValue {
+                    numberDecimalSeparatorRawValue = DecimalSeparatorOption.dot.rawValue
+                } else if newValue == .dot, numberDecimalSeparatorRawValue == DecimalSeparatorOption.dot.rawValue {
+                    numberDecimalSeparatorRawValue = DecimalSeparatorOption.comma.rawValue
+                }
+                numberThousandsSeparatorRawValue = newValue.rawValue
+            }
+        )
+    }
+
+    private var numberDecimalSeparatorSelection: Binding<DecimalSeparatorOption> {
+        Binding(
+            get: { DecimalSeparatorOption(rawValue: numberDecimalSeparatorRawValue) ?? .dot },
+            set: { newValue in
+                if newValue == .comma, numberThousandsSeparatorRawValue == ThousandsSeparatorOption.comma.rawValue {
+                    numberThousandsSeparatorRawValue = ThousandsSeparatorOption.dot.rawValue
+                } else if newValue == .dot, numberThousandsSeparatorRawValue == ThousandsSeparatorOption.dot.rawValue {
+                    numberThousandsSeparatorRawValue = ThousandsSeparatorOption.comma.rawValue
+                }
+                numberDecimalSeparatorRawValue = newValue.rawValue
+            }
+        )
+    }
+
+    private var calendarWeekStartSelection: Binding<CalendarWeekStartOption> {
+        rawValueSelection(from: calendarWeekStartRawValue, default: .monday) {
+            calendarWeekStartRawValue = $0
+        }
+    }
+
+    private var calendarSundayColorSelection: Binding<CalendarSundayColorOption> {
+        rawValueSelection(from: calendarSundayColorRawValue, default: .off) {
+            calendarSundayColorRawValue = $0
+        }
+    }
+
+    private var calendarWeekdayLanguageSelection: Binding<CalendarWeekdayLanguageOption> {
+        rawValueSelection(from: calendarWeekdayLanguageRawValue, default: .japanese) {
+            calendarWeekdayLanguageRawValue = $0
         }
     }
 
@@ -689,6 +792,19 @@ struct ContentView: View {
                         LatinLayoutSettingsSection(selection: latinLayoutSelection)
 
                         NumberLayoutSettingsSection(selection: numberLayoutSelection)
+
+                        FormatNumeriqueSettingsSection(
+                            thousandsSeparator: numberThousandsSeparatorSelection,
+                            groupFourDigits: $numberGroupFourDigits,
+                            decimalSeparator: numberDecimalSeparatorSelection
+                        )
+
+                        CalendarSettingsGroupSection(
+                            weekStart: calendarWeekStartSelection,
+                            weekdayLanguage: calendarWeekdayLanguageSelection,
+                            sundayColor: calendarSundayColorSelection,
+                            dateFormatStyle: dateFormatStyleSelection
+                        )
 
                         BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
 

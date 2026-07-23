@@ -6,7 +6,9 @@ import SwiftUI
 extension KeyboardRootView {
     @ViewBuilder
     var keyboardMainContent: some View {
-        if inputMode == .emoji {
+        if inputMode == .formattedNumber {
+            formattedNumberKeyboardView
+        } else if inputMode == .emoji {
             switch emojiInputSubmode {
             case .emoji:
                 emojiKeyboardView

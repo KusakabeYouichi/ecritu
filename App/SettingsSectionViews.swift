@@ -835,6 +835,224 @@ struct NumberLayoutSettingsSection: View {
     }
 }
 
+// カレンダー関連設定を1囲みにまとめる(週開始→曜日表記→日曜列の色→日付書式)。
+struct CalendarSettingsGroupSection: View {
+    @Binding var weekStart: CalendarWeekStartOption
+    @Binding var weekdayLanguage: CalendarWeekdayLanguageOption
+    @Binding var sundayColor: CalendarSundayColorOption
+    @Binding var dateFormatStyle: DateFormatStyleOption
+
+    private static let sundayColorChoices: [CalendarSundayColorOption] = [.bordeaux, .bourgogne, .dic156, .dicF101]
+
+    // App 側の表示用色(キーボード側 formattedNumberCalendarSundayColor と同値)。
+    private func sundayDisplayColor(_ option: CalendarSundayColorOption) -> Color {
+        switch option {
+        case .off:
+            return .primary
+        case .bordeaux:
+            // bordeaux = rgb(141,17,74)
+            return Color(red: 141.0 / 255.0, green: 17.0 / 255.0, blue: 74.0 / 255.0)
+        case .bourgogne:
+            // bourgogne = rgb(112,23,64)
+            return Color(red: 112.0 / 255.0, green: 23.0 / 255.0, blue: 64.0 / 255.0)
+        case .dic156:
+            // DIC-156 = rgb(241,0,46)
+            return Color(red: 241.0 / 255.0, green: 0.0 / 255.0, blue: 46.0 / 255.0)
+        case .dicF101:
+            // DIC-F101 = #D31C30
+            return Color(red: 211.0 / 255.0, green: 28.0 / 255.0, blue: 48.0 / 255.0)
+        }
+    }
+
+    private var sundayColorOnBinding: Binding<Bool> {
+        Binding(
+            get: { sundayColor != .off },
+            set: { isOn in
+                sundayColor = isOn ? (sundayColor == .off ? .bordeaux : sundayColor) : .off
+            }
+        )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("カレンダー")
+                .font(.headline)
+
+            subItem("週開始") {
+                Picker("週開始", selection: $weekStart) {
+                    ForEach(CalendarWeekStartOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            subItem("曜日表記") {
+                Picker("曜日表記", selection: $weekdayLanguage) {
+                    ForEach(CalendarWeekdayLanguageOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            subItem("日曜列の色") {
+                Toggle("色を付ける", isOn: sundayColorOnBinding)
+                if sundayColor != .off {
+                    HStack(spacing: 8) {
+                        ForEach(Self.sundayColorChoices) { option in
+                            Button {
+                                sundayColor = option
+                            } label: {
+                                Text(option.title)
+                                    .font(.subheadline.weight(sundayColor == option ? .bold : .regular))
+                                    .foregroundColor(sundayDisplayColor(option))
+                                    .lineLimit(1)
+                                    .minimumScaleFactor(0.6)
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .stroke(
+                                                sundayColor == option ? sundayDisplayColor(option) : Color.secondary.opacity(0.3),
+                                                lineWidth: sundayColor == option ? 2 : 1
+                                            )
+                                    )
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            }
+
+            subItem("日付書式") {
+                Picker("日付書式", selection: $dateFormatStyle) {
+                    ForEach(DateFormatStyleOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+            }
+
+            Text("書式化数値モードのカレンダーの設定です。方式に応じてドラムの書式候補と月名・曜日名が変わります。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+
+    @ViewBuilder
+    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            content()
+        }
+    }
+}
+
+struct FormatNumeriqueSettingsSection: View {
+    @Binding var thousandsSeparator: ThousandsSeparatorOption
+    @Binding var groupFourDigits: Bool
+    @Binding var decimalSeparator: DecimalSeparatorOption
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text("format numérique")
+                .font(.headline)
+
+            subItem("Séparateur de milliers") {
+                separatorPicker(
+                    options: Array(ThousandsSeparatorOption.allCases),
+                    isSelected: { $0 == thousandsSeparator },
+                    title: { $0.title },
+                    onSelect: { thousandsSeparator = $0 }
+                )
+
+                HStack {
+                    Spacer()
+                    Toggle("que quatre", isOn: $groupFourDigits)
+                        .fixedSize()
+                }
+            }
+
+            subItem("Séparateur décimal") {
+                separatorPicker(
+                    options: Array(DecimalSeparatorOption.allCases),
+                    isSelected: { $0 == decimalSeparator },
+                    title: { $0.title },
+                    onSelect: { decimalSeparator = $0 }
+                )
+            }
+
+            Text("書式化数値モードの区切りです。千の位は sep mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+
+    // 記号を大きく見せたいのでセグメントではなく自前の大きめボタン行にする。. / , は特大表示。
+    @ViewBuilder
+    private func separatorPicker<Option: Identifiable>(
+        options: [Option],
+        isSelected: @escaping (Option) -> Bool,
+        title: @escaping (Option) -> String,
+        onSelect: @escaping (Option) -> Void
+    ) -> some View {
+        HStack(spacing: 6) {
+            ForEach(options) { option in
+                let selected = isSelected(option)
+                Button {
+                    onSelect(option)
+                } label: {
+                    separatorLabel(title(option))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 32)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(selected ? Color.accentColor.opacity(0.16) : AppTheme.cardInnerBackground)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(
+                                    selected ? Color.accentColor : Color.secondary.opacity(0.3),
+                                    lineWidth: selected ? 2 : 1
+                                )
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    // 区切り記号(. や ,)は大きめ+太字で表示し、コントロール高さ(40)に収める。太字で , と . の
+    // 区別を付けやすくする(espace は語なので通常サイズ)。
+    @ViewBuilder
+    private func separatorLabel(_ title: String) -> some View {
+        if title == "." || title == "," {
+            Text(title)
+                .font(.system(size: 26, weight: .heavy))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.primary)
+        } else {
+            Text(title)
+                .font(.body)
+                .foregroundStyle(.primary)
+        }
+    }
+
+    @ViewBuilder
+    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title)
+                .font(.subheadline.weight(.semibold))
+            content()
+        }
+    }
+}
+
 struct BasicSymbolOrderSettingsSection: View {
     @Binding var selection: BasicSymbolOrderOption
 
