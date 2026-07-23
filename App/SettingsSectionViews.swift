@@ -964,18 +964,22 @@ struct FormatNumeriqueSettingsSection: View {
             subItem("Séparateur de milliers") {
                 Picker("Séparateur de milliers", selection: $thousandsSeparator) {
                     ForEach(ThousandsSeparatorOption.allCases) { option in
-                        Text(option.title).tag(option)
+                        separatorLabel(option.title).tag(option)
                     }
                 }
                 .pickerStyle(.segmented)
 
-                Toggle("que quatre", isOn: $groupFourDigits)
+                HStack {
+                    Spacer()
+                    Toggle("que quatre", isOn: $groupFourDigits)
+                        .fixedSize()
+                }
             }
 
             subItem("Séparateur décimal") {
                 Picker("Séparateur décimal", selection: $decimalSeparator) {
                     ForEach(DecimalSeparatorOption.allCases) { option in
-                        Text(option.title).tag(option)
+                        separatorLabel(option.title).tag(option)
                     }
                 }
                 .pickerStyle(.segmented)
@@ -986,6 +990,18 @@ struct FormatNumeriqueSettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+
+    // 区切り記号(. や ,)は小さく見づらいので拡大し、少し上に寄せて見やすくする。espace は語なので通常サイズ。
+    @ViewBuilder
+    private func separatorLabel(_ title: String) -> some View {
+        if title == "." || title == "," {
+            Text(title)
+                .font(.system(size: 22, weight: .bold))
+                .baselineOffset(4)
+        } else {
+            Text(title)
+        }
     }
 
     @ViewBuilder
