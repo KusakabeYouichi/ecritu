@@ -811,6 +811,11 @@ extension KeyboardRootView {
         }
     }
 
+    // トグル類(sep mil / espace / avant・après)のオン色。落ち着いたティール(青緑)。
+    private var formattedNumberToggleOnColor: Color {
+        Color(red: 47.0 / 255.0, green: 109.0 / 255.0, blue: 106.0 / 255.0)
+    }
+
     // スイッチの状態変更を暗黙アニメーション無効で即時反映する(ホスト側のレイアウトアニメが
     // 乗ると切り替わりが緩慢に見えるため)。
     private func formattedNumberInstant(_ body: () -> Void) {
@@ -837,7 +842,7 @@ extension KeyboardRootView {
                 .frame(maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(isOn ? accentColor : KeyboardThemePalette.keyBackground)
+                        .fill(isOn ? formattedNumberToggleOnColor : KeyboardThemePalette.keyBackground)
                         .overlay {
                             if isOn {
                                 // 上辺=内側の影、下辺=薄い光。押し込まれて凹んだように見せる。
@@ -910,7 +915,7 @@ extension KeyboardRootView {
             .background(
                 LinearGradient(
                     colors: active
-                        ? [accentColor, accentColor.opacity(0.82)]
+                        ? [formattedNumberToggleOnColor, formattedNumberToggleOnColor.opacity(0.82)]
                         : [Color.black.opacity(0.16), Color.black.opacity(0.06)],
                     startPoint: .top,
                     endPoint: .bottom
