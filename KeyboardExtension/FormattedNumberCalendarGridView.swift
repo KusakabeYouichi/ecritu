@@ -134,11 +134,14 @@ struct FormattedNumberCalendarGridView: View {
             }
         case .trailing:
             // 横画面: ヘッダーを上に置かず、ナビを右に縦積みして縦を節約。
+            // グリッド側を maxWidth:.infinity で幅いっぱいに広げる(縦画面はヘッダーの Spacer が
+            // 幅を張るが、横画面はヘッダーが無いため明示しないとグリッドが痩せて日付が詰まる)。
             HStack(alignment: .top, spacing: 8) {
                 VStack(spacing: 3) {
                     weekdayHeaderRow
                     daysGrid
                 }
+                .frame(maxWidth: .infinity)
                 trailingNavigationColumn
             }
         }
@@ -177,7 +180,7 @@ struct FormattedNumberCalendarGridView: View {
         VStack(spacing: 0) {
             Spacer(minLength: 0)
 
-            VStack(spacing: 3) {
+            VStack(spacing: 13) {
                 Button(action: { changeMonth(-1) }) {
                     Image(systemName: "chevron.up")
                         .font(calendarFont(size: 16, weight: .semibold))
@@ -280,6 +283,8 @@ struct FormattedNumberCalendarGridView: View {
         return Text("\(day)")
             .font(calendarFont(size: 15, weight: selected ? .bold : .regular))
             .monospacedDigit()
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
             .foregroundColor(dayColor)
             .frame(maxWidth: .infinity)
             .frame(height: cellHeight)
