@@ -95,6 +95,15 @@ enum FormattedNumberPreferences {
     static func saveUnit(_ symbol: String, for category: FormattedNumberCategory) {
         defaults?.set(symbol, forKey: unitKey(category.rawValue))
     }
+
+    // 起動時の通貨記号前後位置の初期値。前回選択した通貨(なければ先頭)の既定に従う。
+    // これをしないと再読込時に @State 既定(前)のままになり、ユーロ等(後ろが既定)がずれる。
+    static func lastCurrencySymbolBefore() -> Bool {
+        let symbol = loadUnitSelection()[FormattedNumberCategory.currency.rawValue]
+            ?? SIUnitCatalog.currencies.first?.symbol
+            ?? ""
+        return SIUnitCatalog.currencySymbolBeforeAmount(symbol)
+    }
 }
 
 // P1: モードの外枠(テンキー / 右エリア=プレビュー+単位ドラム占位+確定 / 下段バー)。

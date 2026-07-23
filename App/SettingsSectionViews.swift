@@ -962,12 +962,12 @@ struct FormatNumeriqueSettingsSection: View {
                 .font(.headline)
 
             subItem("Séparateur de milliers") {
-                Picker("Séparateur de milliers", selection: $thousandsSeparator) {
-                    ForEach(ThousandsSeparatorOption.allCases) { option in
-                        separatorLabel(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
+                separatorPicker(
+                    options: Array(ThousandsSeparatorOption.allCases),
+                    isSelected: { $0 == thousandsSeparator },
+                    title: { $0.title },
+                    onSelect: { thousandsSeparator = $0 }
+                )
 
                 HStack {
                     Spacer()
@@ -977,30 +977,66 @@ struct FormatNumeriqueSettingsSection: View {
             }
 
             subItem("Séparateur décimal") {
-                Picker("Séparateur décimal", selection: $decimalSeparator) {
-                    ForEach(DecimalSeparatorOption.allCases) { option in
-                        separatorLabel(option.title).tag(option)
-                    }
-                }
-                .pickerStyle(.segmented)
+                separatorPicker(
+                    options: Array(DecimalSeparatorOption.allCases),
+                    isSelected: { $0 == decimalSeparator },
+                    title: { $0.title },
+                    onSelect: { decimalSeparator = $0 }
+                )
             }
 
-            Text("書式化数値モードの区切りです。千の位は sep_mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。")
+            Text("書式化数値モードの区切りです。千の位は sep mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
     }
 
-    // 区切り記号(. や ,)は小さく見づらいので拡大し、少し上に寄せて見やすくする。espace は語なので通常サイズ。
+    // 記号を大きく見せたいのでセグメントではなく自前の大きめボタン行にする。. / , は特大表示。
+    @ViewBuilder
+    private func separatorPicker<Option: Identifiable>(
+        options: [Option],
+        isSelected: @escaping (Option) -> Bool,
+        title: @escaping (Option) -> String,
+        onSelect: @escaping (Option) -> Void
+    ) -> some View {
+        HStack(spacing: 6) {
+            ForEach(options) { option in
+                let selected = isSelected(option)
+                Button {
+                    onSelect(option)
+                } label: {
+                    separatorLabel(title(option))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 56)
+                        .background(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(selected ? Color.accentColor.opacity(0.16) : AppTheme.cardInnerBackground)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .stroke(
+                                    selected ? Color.accentColor : Color.secondary.opacity(0.3),
+                                    lineWidth: selected ? 2 : 1
+                                )
+                        )
+                }
+                .buttonStyle(.plain)
+            }
+        }
+    }
+
+    // 区切り記号(. や ,)は小さく見づらいので特大表示(espace は語なので通常サイズ)。
     @ViewBuilder
     private func separatorLabel(_ title: String) -> some View {
         if title == "." || title == "," {
             Text(title)
-                .font(.system(size: 22, weight: .bold))
-                .baselineOffset(4)
+                .font(.system(size: 44, weight: .bold))
+                .foregroundStyle(.primary)
         } else {
             Text(title)
+                .font(.body)
+                .foregroundStyle(.primary)
         }
     }
 
