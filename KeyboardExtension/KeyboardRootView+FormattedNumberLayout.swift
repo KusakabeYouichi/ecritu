@@ -45,6 +45,16 @@ enum FormattedNumberCategory: Int, CaseIterable, Identifiable {
         }
     }
 
+    // SI接頭辞(k/M 等)ドラムを併用するカテゴリー(SI単位系のみ。金額/カレンダーは対象外)。
+    var usesSIPrefix: Bool {
+        switch self {
+        case .siBase, .siDerived, .siNamed:
+            return true
+        case .currency, .calendar:
+            return false
+        }
+    }
+
     // 下段カテゴリーキーの色(記号入力と同様にカテゴリーごとに別色)。暖色→寒色の並び。
     var tintColor: Color {
         switch self {
@@ -611,13 +621,13 @@ extension KeyboardRootView {
         return units.first?.symbol ?? ""
     }
 
-    // 出力用の単位記号。SI基本のみ接頭辞ドラムの選択を前置する(k+g=kg 等)。
+    // 出力用の単位記号。SI単位系(基本/組立/固有)は接頭辞ドラムの選択を前置する(k+g=kg, k+N=kN 等)。
     var formattedNumberCurrentUnitSymbol: String {
         let base = formattedNumberSelectedBaseSymbol
         guard !base.isEmpty else {
             return ""
         }
-        if selectedFormattedNumberCategory == .siBase {
+        if selectedFormattedNumberCategory.usesSIPrefix {
             return formattedNumberPrefixSymbol + base
         }
         return base
@@ -782,33 +792,42 @@ extension KeyboardRootView {
     }
 
     // 数値と単位の間に空白を入れるかのスイッチ(単位3カテゴリーのみ。金額は前後スイッチ側)。
-    // 選択中単位で実例表示(例: 1 m / 1m)。
+    // sep mil と同じ CapsLock 風トグル・同じ幅。
     private var formattedNumberUnitSpacingToggle: some View {
-        let symbol = formattedNumberSelectedBaseSymbol
-        let sample = formattedNumberUnitSpacing ? "1 \(symbol)" : "1\(symbol)"
-        return Button(action: {
+        formattedNumberLockToggle(
+            title: "espace",
+            isOn: formattedNumberUnitSpacing,
+            accessibilityLabel: formattedNumberUnitSpacing ? "数値と単位の間に空白を入れる" : "数値と単位を詰める"
+        ) {
             formattedNumberUnitSpacing.toggle()
             FormattedNumberPreferences.saveUnitSpacing(formattedNumberUnitSpacing)
-        }) {
-            VStack(spacing: 1) {
-                Text(sample)
-                    .font(.system(size: 14, weight: .semibold))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.6)
-                Text(formattedNumberUnitSpacing ? "空白" : "詰")
-                    .font(.system(size: 9))
-                    .opacity(0.7)
-            }
-            .foregroundColor(KeyboardThemePalette.keyLabel)
-            .frame(width: 50)
-            .frame(maxHeight: .infinity)
-            .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(KeyboardThemePalette.keyBackground)
-            )
+        }
+    }
+
+    // sep mil / espace 共通の CapsLock 風トグルボタン。オン=accent背景+白文字、
+    // オフ=通常キー色+文字を少し薄く。幅は共通(64)。
+    private func formattedNumberLockToggle(
+        title: String,
+        isOn: Bool,
+        accessibilityLabel: String,
+        action: @escaping () -> Void
+    ) -> some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 13, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
+                .foregroundColor(isOn ? .white : KeyboardThemePalette.keyLabel.opacity(0.45))
+                .frame(width: 64)
+                .frame(maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(isOn ? accentColor : KeyboardThemePalette.keyBackground)
+                )
         }
         .buttonStyle(.plain)
-        .accessibilityLabel(formattedNumberUnitSpacing ? "数値と単位の間に空白を入れる" : "数値と単位を詰める")
+        .accessibilityLabel(accessibilityLabel)
+        .accessibilityValue(isOn ? "オン" : "オフ")
     }
 
     // 金額の通貨記号を数値の前/後どちらに付けるかのスイッチ。選択中通貨で実例表示(例: ¥1 / 1¥)。
@@ -851,12 +870,13 @@ extension KeyboardRootView {
         return Text(symbolPart + readingPart)
     }
 
-    // 単位ドラム。SI基本のみ「接頭辞ドラム+基本単位ドラム」の2連。カレンダー/空は占位。
+    // 単位ドラム。SI単位系(基本/組立/固有)は「接頭辞ドラム+単位ドラム」の2連。金額は単ドラム、
+    // カレンダーは占位。
     @ViewBuilder
     private var formattedNumberUnitSelector: some View {
         if selectedFormattedNumberCategory == .calendar {
             placeholderCard("カレンダー(P3)")
-        } else if selectedFormattedNumberCategory == .siBase {
+        } else if selectedFormattedNumberCategory.usesSIPrefix {
             HStack(spacing: keyboardRowSpacing) {
                 Picker("", selection: formattedNumberPrefixBinding) {
                     ForEach(SIUnitCatalog.prefixes) { prefix in
@@ -871,7 +891,7 @@ extension KeyboardRootView {
                 .clipped()
 
                 Picker("", selection: formattedNumberUnitBinding) {
-                    ForEach(SIUnitCatalog.siBase) { unit in
+                    ForEach(SIUnitCatalog.units(for: selectedFormattedNumberCategory)) { unit in
                         formattedNumberDrumLabel(symbol: unit.symbol, reading: unit.reading)
                             .lineLimit(1)
                             .truncationMode(.tail)
@@ -902,27 +922,15 @@ extension KeyboardRootView {
         }
     }
 
-    // 3桁区切りON/OFFのチェック。確定ボタンの左に置く。
-    // sep mil: 千区切りの ON/OFF。チェックボックスではなく CapsLock 風のトグルボタン。
-    // ロック(オン)色はラテン文字 Shift ロックと同じパレット accent(システム青だと分かりにくいため)。
+    // sep mil: 千区切りの ON/OFF。CapsLock 風トグル(共通ヘルパー)。
     private var formattedNumberGroupingToggle: some View {
-        let isOn = formattedNumberGroupingEnabled
-        return Button(action: { formattedNumberGroupingEnabled.toggle() }) {
-            Text("sep mil")
-                .font(.system(size: 13, weight: .semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-                .foregroundColor(isOn ? .white : KeyboardThemePalette.keyLabel)
-                .frame(width: 64)
-                .frame(maxHeight: .infinity)
-                .background(
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(isOn ? accentColor : KeyboardThemePalette.keyBackground)
-                )
+        formattedNumberLockToggle(
+            title: "sep mil",
+            isOn: formattedNumberGroupingEnabled,
+            accessibilityLabel: "千区切り(sep mil)"
+        ) {
+            formattedNumberGroupingEnabled.toggle()
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("千区切り(sep mil)")
-        .accessibilityValue(isOn ? "オン" : "オフ")
     }
 
     private func placeholderCard(_ text: String) -> some View {
