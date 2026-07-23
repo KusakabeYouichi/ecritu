@@ -242,48 +242,71 @@ extension KeyboardRootView {
         }
     }
 
-    // 縦画面: カレンダー(ヘッダー上)+右に操作列(プレビュー/書式/確定)。従来どおり。
+    // 縦画面: カレンダー(ヘッダー上)+操作列(プレビュー/書式/確定)。左右はペイン設定に追従。
     private var formattedNumberCalendarTopAreaPortrait: some View {
         HStack(alignment: .top, spacing: keyboardRowSpacing) {
-            formattedNumberScaledCalendar
-
-            VStack(spacing: keyboardRowSpacing) {
-                formattedNumberPreview
-                    .frame(height: 50)
-                formattedNumberDateFormatMenu
-                    .frame(height: 47)
-                formattedNumberConfirmKey
-                    .frame(height: 44)
+            if landscapeNumberPaneSide == .left {
+                formattedNumberScaledCalendar
+                formattedNumberCalendarControlColumnPortrait
+            } else {
+                formattedNumberCalendarControlColumnPortrait
+                formattedNumberScaledCalendar
             }
-            .frame(width: 150)
         }
     }
 
-    // 横画面: 縦の余裕が乏しいので、カレンダーのナビを右縦積みにしセルを低くして見切れを防ぐ。
-    // 右端に操作列(プレビュー/書式/確定)。横幅は充分あるので広めに取る。
+    private var formattedNumberCalendarControlColumnPortrait: some View {
+        VStack(spacing: keyboardRowSpacing) {
+            formattedNumberPreview
+                .frame(height: 50)
+            formattedNumberDateFormatMenu
+                .frame(height: 47)
+            formattedNumberConfirmKey
+                .frame(height: 44)
+        }
+        .frame(width: 150)
+    }
+
+    // 横画面: カレンダーのナビを内側に縦積みしセルを低くして見切れを防ぐ。操作列は反対側。
+    // 左右はペイン設定に追従(カレンダーが右ペインならナビは左=内側へ反転)。
     private var formattedNumberCalendarTopAreaLandscape: some View {
         HStack(alignment: .top, spacing: keyboardRowSpacing) {
-            FormattedNumberCalendarGridView(
-                selectedDate: $formattedNumberDate,
-                weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
-                language: formattedNumberCalendarLanguage,
-                sundayColor: formattedNumberCalendarSundayColor,
-                navigationPlacement: .trailing,
-                cellHeight: formattedNumberLandscapeCalendarCellHeight,
-                columnSpacing: 10
-            )
-            .frame(maxWidth: .infinity, alignment: .top)
-
-            VStack(spacing: keyboardRowSpacing) {
-                formattedNumberPreview
-                    .frame(height: 40)
-                formattedNumberDateFormatMenu
-                    .frame(height: 40)
-                formattedNumberConfirmKey
-                    .frame(height: 40)
+            if landscapeNumberPaneSide == .left {
+                formattedNumberLandscapeCalendarGrid(navigation: .trailing)
+                    .frame(maxWidth: .infinity, alignment: .top)
+                formattedNumberCalendarControlColumnLandscape
+            } else {
+                formattedNumberCalendarControlColumnLandscape
+                formattedNumberLandscapeCalendarGrid(navigation: .leading)
+                    .frame(maxWidth: .infinity, alignment: .top)
             }
-            .frame(width: 300)
         }
+    }
+
+    private func formattedNumberLandscapeCalendarGrid(
+        navigation: FormattedNumberCalendarGridView.NavigationPlacement
+    ) -> some View {
+        FormattedNumberCalendarGridView(
+            selectedDate: $formattedNumberDate,
+            weekStartsMonday: formattedNumberCalendarWeekStartsMonday,
+            language: formattedNumberCalendarLanguage,
+            sundayColor: formattedNumberCalendarSundayColor,
+            navigationPlacement: navigation,
+            cellHeight: formattedNumberLandscapeCalendarCellHeight,
+            columnSpacing: 10
+        )
+    }
+
+    private var formattedNumberCalendarControlColumnLandscape: some View {
+        VStack(spacing: keyboardRowSpacing) {
+            formattedNumberPreview
+                .frame(height: 40)
+            formattedNumberDateFormatMenu
+                .frame(height: 40)
+            formattedNumberConfirmKey
+                .frame(height: 40)
+        }
+        .frame(width: 300)
     }
 
     // 横画面カレンダーのセル高さ。上部エリア高さ(クラスタ−バー)に6行+曜日行が収まる値。
