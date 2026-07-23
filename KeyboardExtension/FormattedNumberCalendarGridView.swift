@@ -5,10 +5,11 @@ import SwiftUI
 // フォントはカレンダー向きの Avenir Next。
 struct FormattedNumberCalendarGridView: View {
     // ナビ(年月と前後移動)の配置。縦画面はグリッド上のヘッダー、横画面は縦の余裕が乏しいので
-    // グリッドの右に縦積み(月名/年/前後)にして縦を節約する。
+    // グリッドの横に縦積み(月名/年/前後)にして縦を節約する。左右どちらに置くかはペイン位置に追従。
     enum NavigationPlacement {
         case top
         case trailing
+        case leading
     }
 
     @Binding var selectedDate: Date
@@ -139,17 +140,28 @@ struct FormattedNumberCalendarGridView: View {
                 daysGrid
             }
         case .trailing:
-            // 横画面: ヘッダーを上に置かず、ナビを右に縦積みして縦を節約。
+            // 横画面(カレンダーが左ペイン): ナビをグリッドの右(内側)に縦積み。
             // グリッド側を maxWidth:.infinity で幅いっぱいに広げる(縦画面はヘッダーの Spacer が
             // 幅を張るが、横画面はヘッダーが無いため明示しないとグリッドが痩せて日付が詰まる)。
             HStack(alignment: .top, spacing: 8) {
-                VStack(spacing: 3) {
-                    weekdayHeaderRow
-                    daysGrid
-                }
-                .frame(maxWidth: .infinity)
-                trailingNavigationColumn
+                calendarGridColumn
+                    .frame(maxWidth: .infinity)
+                verticalNavigationColumn
             }
+        case .leading:
+            // 横画面(カレンダーが右ペイン): ナビをグリッドの左(内側)に縦積み。
+            HStack(alignment: .top, spacing: 8) {
+                verticalNavigationColumn
+                calendarGridColumn
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+
+    private var calendarGridColumn: some View {
+        VStack(spacing: 3) {
+            weekdayHeaderRow
+            daysGrid
         }
     }
 
@@ -181,7 +193,7 @@ struct FormattedNumberCalendarGridView: View {
 
     // 横画面用: グリッド右に「前(∧)/月名/年/次(∨)」を縦積み。縦並びなので上下向きの矢印にする。
     // 月名/年は上下矢印の中間(縦センター)に置く(Spacer で挟む)。列はグリッド高さいっぱいに伸ばす。
-    private var trailingNavigationColumn: some View {
+    private var verticalNavigationColumn: some View {
         // 上下矢印を年月に近づけた密な塊にし、上下の Spacer で塊ごと縦センターに置く。
         VStack(spacing: 0) {
             Spacer(minLength: 0)
