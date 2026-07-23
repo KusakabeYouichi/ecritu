@@ -158,7 +158,14 @@ enum SIUnitCatalog {
         SIUnit(symbol: "₰", reading: "ペニヒ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
         SIUnit(symbol: "₪", reading: "シェケル", quantity: "通貨", group: "金額"),
         SIUnit(symbol: "₾", reading: "ラリ", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
-        SIUnit(symbol: "﷼", reading: "リヤル", quantity: "通貨", group: "金額")
+        SIUnit(symbol: "﷼", reading: "リヤル", quantity: "通貨", group: "金額"),
+        // 漢字・ハングルの通貨単位語(いずれも後置)。
+        SIUnit(symbol: "元", reading: "ゲン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "圆", reading: "ユアン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "円", reading: "エン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "圓", reading: "エン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "원", reading: "ウォン", quantity: "通貨", group: "金額", symbolBeforeAmount: false),
+        SIUnit(symbol: "銅", reading: "ドウ", quantity: "通貨", group: "金額", symbolBeforeAmount: false)
     ]
 
     // 通貨記号の既定位置(前=true)。未知の記号は前置扱い。
