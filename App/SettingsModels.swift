@@ -27,6 +27,9 @@ enum SettingsKeys {
     static let latinLayoutMode = "latinLayoutMode"
     static let numberLayoutMode = "numberLayoutMode"
     static let dateFormatStyle = "dateFormatStyle"
+    static let numberThousandsSeparator = "numberThousandsSeparator"
+    static let numberDecimalSeparator = "numberDecimalSeparator"
+    static let numberGroupFourDigits = "numberGroupFourDigits"
     static let calendarWeekStart = "calendarWeekStart"
     static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
     static let calendarSundayColor = "calendarSundayColor"
@@ -211,6 +214,54 @@ enum CalendarWeekStartOption: String, CaseIterable, Identifiable {
         switch self {
         case .sunday: return "日曜始まり"
         case .monday: return "月曜始まり"
+        }
+    }
+}
+
+// 書式化数値の千の位区切り文字(sep_mil オン時に3桁ごとに挿入)。
+enum ThousandsSeparatorOption: String, CaseIterable, Identifiable {
+    case space
+    case comma
+    case dot
+
+    var id: String { rawValue }
+
+    // 実際に挿入する文字。space はノーブレークスペース(U+00A0)ではなく通常空白。
+    var character: String {
+        switch self {
+        case .space: return " "
+        case .comma: return ","
+        case .dot: return "."
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .space: return "␣（空白）"
+        case .comma: return ","
+        case .dot: return "."
+        }
+    }
+}
+
+// 書式化数値の小数点区切り文字。キーボードの小数点キーの表示/挿入文字に反映する。
+enum DecimalSeparatorOption: String, CaseIterable, Identifiable {
+    case dot
+    case comma
+
+    var id: String { rawValue }
+
+    var character: String {
+        switch self {
+        case .dot: return "."
+        case .comma: return ","
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .dot: return "."
+        case .comma: return ","
         }
     }
 }
