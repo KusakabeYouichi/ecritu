@@ -996,16 +996,63 @@ extension KeyboardRootView {
 
     // 単位ドラム。SI単位系(基本/組立/固有)は「接頭辞ドラム+単位ドラム」の2連。金額は単ドラム、
     // カレンダーは占位。
+    // プレス中は選択中単位のフル表記(…で切れない)をカードで重ねて見せる。
     @ViewBuilder
     private var formattedNumberUnitSelector: some View {
+        if selectedFormattedNumberCategory == .calendar {
+            formattedNumberUnitSelectorContent
+        } else {
+            formattedNumberUnitSelectorContent
+                .overlay(alignment: .center) {
+                    if formattedNumberDrumFullNameVisible {
+                        formattedNumberSelectedUnitFullNameCard
+                    }
+                }
+                // ドラム自身のスクロールと同時に動く(minimumDistance:0 で触れた瞬間に表示、離すと消す)。
+                .simultaneousGesture(
+                    DragGesture(minimumDistance: 0)
+                        .onChanged { _ in formattedNumberDrumFullNameVisible = true }
+                        .onEnded { _ in formattedNumberDrumFullNameVisible = false }
+                )
+        }
+    }
+
+    // 選択中単位のフル表記カード(記号+読み)。プレス中のみ表示。
+    private var formattedNumberSelectedUnitFullNameCard: some View {
+        let base = formattedNumberSelectedBaseSymbol
+        let unit = SIUnitCatalog.units(for: selectedFormattedNumberCategory).first { $0.symbol == base }
+        let symbolText = formattedNumberDisplayUnitSymbol(base)
+        let reading = unit?.reading ?? ""
+        return Text(reading.isEmpty ? symbolText : "\(symbolText)  \(reading)")
+            .font(.system(size: 15, weight: .semibold))
+            .lineLimit(1)
+            .minimumScaleFactor(0.5)
+            .foregroundColor(KeyboardThemePalette.keyLabel)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 7)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(KeyboardThemePalette.keyBackground)
+                    .shadow(color: Color.black.opacity(0.25), radius: 4, y: 1)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
+            )
+            .padding(.horizontal, 4)
+            .allowsHitTesting(false)
+    }
+
+    @ViewBuilder
+    private var formattedNumberUnitSelectorContent: some View {
         if selectedFormattedNumberCategory == .calendar {
             placeholderCard("カレンダー(P3)")
         } else if selectedFormattedNumberCategory.usesSIPrefix {
             HStack(spacing: 0) {
-                // 接頭辞ドラムは読みを出さず記号のみ(なしは「—」)。幅をぐっと狭めて単位ドラムを広く。
+                // 接頭辞ドラムは読みを出さず記号のみ(なしは空欄)。幅をぐっと狭めて単位ドラムを広く。
                 Picker("", selection: formattedNumberPrefixBinding) {
                     ForEach(SIUnitCatalog.prefixes) { prefix in
-                        Text(prefix.symbol.isEmpty ? "—" : prefix.symbol)
+                        Text(prefix.symbol)
                             .font(.system(size: 18, weight: .semibold))
                             .lineLimit(1)
                             .tag(prefix.symbol)
