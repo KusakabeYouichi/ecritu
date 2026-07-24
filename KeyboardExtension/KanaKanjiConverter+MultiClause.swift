@@ -36,6 +36,10 @@ extension KanaKanjiConverter {
     static let multiClauseCaseParticleSurfaces: Set<String> = [
         "に", "を", "が", "へ", "と", "で", "は", "も", "から", "まで", "より"
     ]
+    // 単独のバラ母音(あいうえお)。学習した接頭語(酒造所=しゅぞうじょ)より1モーラ長い入力
+    // (しゅぞうじょう)で、末尾に余る母音がこれ。漢字語直後の単独バラ母音ノードは余りモーラの
+    // 誤分割なので落とす。助詞(が/を/か/わ/の…)や助動詞(た/て/だ)は母音でないため保護される。
+    static let multiClauseDanglingVowelKana: Set<String> = ["あ", "い", "う", "え", "お"]
     // 複合助詞(格助詞+係助詞は/も)。Sudachi は「に+は」に分割するため word_costs に無く、
     // 連文節では単位ノードを組めない。結果「べんりにはなったね」が「便利に放ったね」に化ける
     // (はなった が動詞1ノードに吸われ、に→は の1遷移分だけ得をする)。素通り(7000/字)で
@@ -1316,6 +1320,20 @@ extension KanaKanjiConverter {
             && lastNode.surface == lastNode.reading)
             || lastIsKanaConditionalNara
             || lastIsKanaCaseParticle
+        // 末尾が「漢字語 + 単独の素通りかな1字(非助詞・非辞書・非活用)」は誤分割の余りモーラ
+        // (学習した 酒造所(しゅぞうじょ)+ う → 酒造所う が しゅぞうじょう で最良化する等)。
+        // このゴミ経路を返さず単文節(seed の 酒造場 等 丸ごと候補)に委ねる。
+        // 末尾が「漢字語 + 単独バラ母音1字(あいうえお)」は余りモーラの誤分割(学習した
+        // 酒造所(しゅぞうじょ)+ う → 酒造所う が しゅぞうじょう で最良化する等。う は辞書語でも
+        // あるため isDictWord では弾けない)。単文節(seed の 酒造場 等 丸ごと候補)に委ねる。
+        // 助詞(か/わ/の…)・助動詞(た/て/だ)は母音でないため対象外。
+        if lastNode.surface == lastNode.reading,
+            !lastNode.isCurated,
+            Self.multiClauseDanglingVowelKana.contains(lastNode.reading),
+            let prevNode = lastPrevNode,
+            containsKanji(prevNode.surface) {
+            return []
+        }
         // 経路の全ノードが辞書語(素通り無し)の全かな=LM が変換候補の中から かな表記を
         // 選んだ結果(の+こと+です 等、かなが正書の機能語句)。素通りエコーではないので
         // 抑制しない(のことです が の事です に負けて最良を失うのを防ぐ)。
