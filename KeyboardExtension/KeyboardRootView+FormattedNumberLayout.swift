@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // 書式化数値入力モードのカテゴリー(当面4種)。単位ドラム/カレンダーの切替に使う。
 // rawValue は設定永続化に備えて歴史的値を明示する(絵文字カテゴリーと同方針)。
@@ -1027,19 +1028,28 @@ extension KeyboardRootView {
         }
     }
 
-    // 単位ドラム(左寄せ)。プレス中は選択中単位のフル表記カードを重ねて見せる(接頭辞ドラムには付けない)。
-    // プレス中に上下へずらすと裏でドラムが動き、選択が変わればカードの表記も追従する。
+    // 単位ドラム(自前ホイール)。スクロール中も中央行をリアルタイム通知し、プレス中は選択中単位の
+    // フル表記カードを重ねて見せる(接頭辞ドラムには付けない)。裏で動けばカード表記も随時追従。
     private func formattedNumberUnitDrum(_ units: [SIUnit]) -> some View {
-        Picker("", selection: formattedNumberUnitBinding) {
-            ForEach(units) { unit in
-                formattedNumberDrumLabel(symbol: formattedNumberDisplayUnitSymbol(unit.symbol), reading: unit.reading)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-                    .tag(unit.symbol)
+        FormattedNumberUnitWheel(
+            items: units.map {
+                UnitWheelScrollView.Item(
+                    tag: $0.symbol,
+                    symbol: formattedNumberDisplayUnitSymbol($0.symbol),
+                    reading: $0.reading
+                )
+            },
+            selectedTag: formattedNumberSelectedBaseSymbol,
+            rowHeight: 30,
+            onLive: { tag in formattedNumberDrumLiveTag = tag },
+            onCommit: { tag in formattedNumberUnitBinding.wrappedValue = tag },
+            onInteractionChange: { active in
+                formattedNumberDrumFullNameVisible = active
+                if !active {
+                    formattedNumberDrumLiveTag = ""
+                }
             }
-        }
-        .pickerStyle(.wheel)
+        )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .clipped()
         .overlay(alignment: .center) {
@@ -1047,16 +1057,11 @@ extension KeyboardRootView {
                 formattedNumberSelectedUnitFullNameCard(units)
             }
         }
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onChanged { _ in formattedNumberDrumFullNameVisible = true }
-                .onEnded { _ in formattedNumberDrumFullNameVisible = false }
-        )
     }
 
-    // 選択中単位のフル表記カード(記号+読み)。選択に追従(スクロールで変われば随時更新)。
+    // 選択中単位のフル表記カード(記号+読み)。プレス中はライブ通知(formattedNumberDrumLiveTag)を優先。
     private func formattedNumberSelectedUnitFullNameCard(_ units: [SIUnit]) -> some View {
-        let base = formattedNumberSelectedBaseSymbol
+        let base = formattedNumberDrumLiveTag.isEmpty ? formattedNumberSelectedBaseSymbol : formattedNumberDrumLiveTag
         let unit = units.first { $0.symbol == base }
         let symbolText = formattedNumberDisplayUnitSymbol(base)
         let reading = unit?.reading ?? ""
@@ -1152,5 +1157,243 @@ extension KeyboardRootView {
             .disabled(deleteDisabled)
             .opacity(deleteDisabled ? 0.35 : 1)
         }
+    }
+}
+
+// 単位ドラム用の自前ホイール(UIScrollView ベース)。標準の UIPickerView と違い、スクロール中も
+// 中央行をリアルタイムに通知できる(プレス中フル表記カードの追従に使う)。iOS16 対応。
+struct FormattedNumberUnitWheel: UIViewRepresentable {
+    let items: [UnitWheelScrollView.Item]
+    let selectedTag: String
+    let rowHeight: CGFloat
+    let onLive: (String) -> Void
+    let onCommit: (String) -> Void
+    let onInteractionChange: (Bool) -> Void
+
+    func makeUIView(context: Context) -> UnitWheelScrollView {
+        let view = UnitWheelScrollView()
+        view.symbolColor = UIColor(KeyboardThemePalette.keyLabel)
+        view.readingColor = UIColor(KeyboardThemePalette.keyLabel).withAlphaComponent(0.6)
+        view.onLiveChange = onLive
+        view.onCommit = onCommit
+        view.onInteractionChange = onInteractionChange
+        view.rowHeight = rowHeight
+        view.setItems(items, selectedTag: selectedTag)
+        return view
+    }
+
+    func updateUIView(_ view: UnitWheelScrollView, context: Context) {
+        view.onLiveChange = onLive
+        view.onCommit = onCommit
+        view.onInteractionChange = onInteractionChange
+        view.rowHeight = rowHeight
+        view.syncItems(items, selectedTag: selectedTag)
+    }
+}
+
+final class UnitWheelScrollView: UIScrollView, UIScrollViewDelegate {
+    struct Item: Equatable {
+        let tag: String
+        let symbol: String
+        let reading: String
+    }
+
+    var symbolColor: UIColor = .label
+    var readingColor: UIColor = .secondaryLabel
+    var rowHeight: CGFloat = 44 {
+        didSet { if rowHeight != oldValue { setNeedsLayout() } }
+    }
+    var onLiveChange: ((String) -> Void)?
+    var onCommit: ((String) -> Void)?
+    var onInteractionChange: ((Bool) -> Void)?
+
+    private var items: [Item] = []
+    private var labels: [UILabel] = []
+    private var lastReportedIndex = -1
+    private var isUserInteracting = false
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        delegate = self
+        showsVerticalScrollIndicator = false
+        decelerationRate = .fast
+        backgroundColor = .clear
+        clipsToBounds = true
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    // プレス開始で即カード表示、指を離してスクロールも止まったら消す。
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesBegan(touches, with: event)
+        setInteracting(true)
+        onLiveChange?(items.isEmpty ? "" : items[centeredIndex].tag)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        if !isDragging, !isDecelerating {
+            finishInteraction()
+        }
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesCancelled(touches, with: event)
+        if !isDragging, !isDecelerating {
+            finishInteraction()
+        }
+    }
+
+    private func setInteracting(_ value: Bool) {
+        guard value != isUserInteracting else { return }
+        isUserInteracting = value
+        onInteractionChange?(value)
+    }
+
+    func setItems(_ newItems: [Item], selectedTag: String) {
+        items = newItems
+        rebuildLabels()
+        setNeedsLayout()
+        layoutIfNeeded()
+        scrollToTag(selectedTag, animated: false)
+    }
+
+    func syncItems(_ newItems: [Item], selectedTag: String) {
+        if newItems != items {
+            items = newItems
+            rebuildLabels()
+            setNeedsLayout()
+            layoutIfNeeded()
+            scrollToTag(selectedTag, animated: false)
+            return
+        }
+        // 利用者がスクロール中でなければ、外部からの選択変更に追従。
+        if !isUserInteracting, centeredIndex != indexOf(tag: selectedTag) {
+            scrollToTag(selectedTag, animated: false)
+        }
+    }
+
+    private func rebuildLabels() {
+        labels.forEach { $0.removeFromSuperview() }
+        labels = items.map { item in
+            let label = UILabel()
+            label.attributedText = attributedText(item)
+            label.lineBreakMode = .byTruncatingTail
+            label.textAlignment = .left
+            addSubview(label)
+            return label
+        }
+        lastReportedIndex = -1
+    }
+
+    private func attributedText(_ item: Item) -> NSAttributedString {
+        let result = NSMutableAttributedString(
+            string: item.symbol,
+            attributes: [
+                .font: UIFont.systemFont(ofSize: 18, weight: .semibold),
+                .foregroundColor: symbolColor
+            ]
+        )
+        if !item.reading.isEmpty {
+            result.append(NSAttributedString(
+                string: " " + item.reading,
+                attributes: [
+                    .font: UIFont.systemFont(ofSize: 11),
+                    .foregroundColor: readingColor
+                ]
+            ))
+        }
+        return result
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let width = bounds.width
+        let height = bounds.height
+        guard height > 0, !labels.isEmpty else { return }
+
+        let inset = max(0, (height - rowHeight) / 2)
+        if abs(contentInset.top - inset) > 0.5 {
+            contentInset = UIEdgeInsets(top: inset, left: 0, bottom: inset, right: 0)
+        }
+        for (index, label) in labels.enumerated() {
+            label.frame = CGRect(x: 8, y: CGFloat(index) * rowHeight, width: max(0, width - 12), height: rowHeight)
+        }
+        contentSize = CGSize(width: width, height: CGFloat(labels.count) * rowHeight)
+        updateRowAppearance()
+    }
+
+    private func indexOf(tag: String) -> Int {
+        items.firstIndex { $0.tag == tag } ?? 0
+    }
+
+    private var centeredIndex: Int {
+        guard rowHeight > 0, !items.isEmpty else { return 0 }
+        let raw = Int(((contentOffset.y + contentInset.top) / rowHeight).rounded())
+        return min(max(raw, 0), items.count - 1)
+    }
+
+    private func scrollToTag(_ tag: String, animated: Bool) {
+        let index = indexOf(tag: tag)
+        let target = CGFloat(index) * rowHeight - contentInset.top
+        setContentOffset(CGPoint(x: 0, y: target), animated: animated)
+        lastReportedIndex = index
+        updateRowAppearance()
+    }
+
+    // 中央からの距離で薄くしてホイールらしさを出す。
+    private func updateRowAppearance() {
+        let centerY = contentOffset.y + bounds.height / 2
+        for (index, label) in labels.enumerated() {
+            let rowCenter = CGFloat(index) * rowHeight + rowHeight / 2
+            let distance = abs(rowCenter - centerY)
+            let alpha = max(0.25, 1 - (distance / (rowHeight * 2.2)))
+            label.alpha = alpha
+        }
+    }
+
+    // MARK: - UIScrollViewDelegate
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateRowAppearance()
+        let index = centeredIndex
+        if index != lastReportedIndex, index < items.count {
+            lastReportedIndex = index
+            onLiveChange?(items[index].tag)
+        }
+    }
+
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        setInteracting(true)
+    }
+
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        guard rowHeight > 0 else { return }
+        let proposed = targetContentOffset.pointee.y + contentInset.top
+        let snappedIndex = min(max(Int((proposed / rowHeight).rounded()), 0), max(0, items.count - 1))
+        targetContentOffset.pointee.y = CGFloat(snappedIndex) * rowHeight - contentInset.top
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            finishInteraction()
+        }
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        finishInteraction()
+    }
+
+    private func finishInteraction() {
+        setInteracting(false)
+        let index = centeredIndex
+        guard index < items.count else { return }
+        onCommit?(items[index].tag)
     }
 }

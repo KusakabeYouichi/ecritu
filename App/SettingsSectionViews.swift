@@ -1008,6 +1008,10 @@ struct FormatNumeriqueSettingsSection: View {
                     Toggle("que quatre", isOn: $groupFourDigits)
                         .fixedSize()
                 }
+
+                Text("千の位の区切りです(キーボードの sep mil がオンのとき挿入)。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
 
             subItem("Séparateur décimal") {
@@ -1017,24 +1021,24 @@ struct FormatNumeriqueSettingsSection: View {
                     title: { $0.title },
                     onSelect: { decimalSeparator = $0 }
                 )
+
+                Text("小数点の記号です。入力キーの表示/機能に反映されます。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
 
             subItem("単位の積の記号") {
-                separatorPicker(
-                    options: Array(UnitProductSeparatorOption.allCases),
-                    isSelected: { $0 == unitProductSeparator },
-                    title: { $0.title },
-                    onSelect: { unitProductSeparator = $0 }
-                )
+                Picker("単位の積の記号", selection: $unitProductSeparator) {
+                    ForEach(UnitProductSeparatorOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
 
                 Text("N·m のような組立単位の積の記号です(内部は U+00B7 で保持)。\n・U+00B7 (MIDDLE DOT): 一般テキストや化学式・単位の積を表す中黒\n・U+22C5 (DOT OPERATOR): 数学的なドット演算子\n・U+0020: 1文字分のスペース")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
-
-            Text("書式化数値モードの区切りです。千の位は sep mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
     }
