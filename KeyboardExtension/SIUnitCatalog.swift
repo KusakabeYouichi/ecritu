@@ -1,7 +1,7 @@
 import Foundation
 
 // 書式化数値入力モードで使う単位カタログ。記号(symbol)は指数を上付き文字
-// (² U+00B2 / ³ U+00B3 / ⁻¹ U+207B+U+00B9)、積を中黒(・ U+30FB)で表記する。
+// (² U+00B2 / ³ U+00B3 / ⁻¹ U+207B+U+00B9)、積を中点(· U+00B7)で内部保持する(表示/確定時は設定で ·/⋅/空白 に切替)。
 // reading=名称、quantity=用途。group=サブグループ(ドラムは group 順の平坦リスト)。
 struct SIUnit: Identifiable, Hashable {
     let symbol: String
@@ -62,18 +62,18 @@ enum SIUnitCatalog {
         SIUnit(symbol: "rad/s²", reading: "ラジアン毎秒毎秒", quantity: "角加速度", group: "機械・運動・力学"),
         SIUnit(symbol: "kg/m³", reading: "キログラム毎立方メートル", quantity: "密度、質量密度", group: "機械・運動・力学"),
         SIUnit(symbol: "m³/kg", reading: "立方メートル毎キログラム", quantity: "比体積", group: "機械・運動・力学"),
-        SIUnit(symbol: "kg・m/s", reading: "キログラムメートル毎秒", quantity: "運動量", group: "機械・運動・力学"),
-        SIUnit(symbol: "N・s", reading: "ニュートン秒", quantity: "力積", group: "機械・運動・力学"),
-        SIUnit(symbol: "N・m", reading: "ニュートンメートル", quantity: "力のモーメント、トルク", group: "機械・運動・力学"),
-        SIUnit(symbol: "Pa・s", reading: "パスカル秒", quantity: "粘度、粘性係数", group: "機械・運動・力学"),
+        SIUnit(symbol: "kg·m/s", reading: "キログラムメートル毎秒", quantity: "運動量", group: "機械・運動・力学"),
+        SIUnit(symbol: "N·s", reading: "ニュートン秒", quantity: "力積", group: "機械・運動・力学"),
+        SIUnit(symbol: "N·m", reading: "ニュートンメートル", quantity: "力のモーメント、トルク", group: "機械・運動・力学"),
+        SIUnit(symbol: "Pa·s", reading: "パスカル秒", quantity: "粘度、粘性係数", group: "機械・運動・力学"),
         SIUnit(symbol: "m²/s", reading: "平方メートル毎秒", quantity: "動粘度、動粘性係数", group: "機械・運動・力学"),
         SIUnit(symbol: "N/m", reading: "ニュートン毎メートル", quantity: "表面張力、ばね定数", group: "機械・運動・力学"),
         // 熱力学
         SIUnit(symbol: "J/K", reading: "ジュール毎ケルビン", quantity: "熱容量、エントロピー", group: "熱力学"),
-        SIUnit(symbol: "J/(kg・K)", reading: "ジュール毎キログラムケルビン", quantity: "比熱容量、比エントロピー", group: "熱力学"),
+        SIUnit(symbol: "J/(kg·K)", reading: "ジュール毎キログラムケルビン", quantity: "比熱容量、比エントロピー", group: "熱力学"),
         SIUnit(symbol: "J/kg", reading: "ジュール毎キログラム", quantity: "比エネルギー、比エンタルピー、潜熱", group: "熱力学"),
-        SIUnit(symbol: "W/(m・K)", reading: "ワット毎メートルケルビン", quantity: "熱伝導率", group: "熱力学"),
-        SIUnit(symbol: "W/(m²・K)", reading: "ワット毎平方メートルケルビン", quantity: "熱伝達率、熱貫流率(U値)", group: "熱力学"),
+        SIUnit(symbol: "W/(m·K)", reading: "ワット毎メートルケルビン", quantity: "熱伝導率", group: "熱力学"),
+        SIUnit(symbol: "W/(m²·K)", reading: "ワット毎平方メートルケルビン", quantity: "熱伝達率、熱貫流率(U値)", group: "熱力学"),
         SIUnit(symbol: "J/m³", reading: "ジュール毎立方メートル", quantity: "エネルギー密度、発熱量", group: "熱力学"),
         SIUnit(symbol: "K⁻¹", reading: "毎ケルビン", quantity: "線膨張率、体膨張率", group: "熱力学"),
         // 電磁気学
@@ -85,13 +85,13 @@ enum SIUnitCatalog {
         SIUnit(symbol: "V/m", reading: "ボルト毎メートル", quantity: "電界の強さ(電界強度)", group: "電磁気学"),
         SIUnit(symbol: "A/m²", reading: "アンペア毎平方メートル", quantity: "電流密度", group: "電磁気学"),
         SIUnit(symbol: "S/m", reading: "ジーメンス毎メートル", quantity: "導電率", group: "電磁気学"),
-        SIUnit(symbol: "Ω・m", reading: "オームメートル", quantity: "電気抵抗率(比抵抗)", group: "電磁気学"),
+        SIUnit(symbol: "Ω·m", reading: "オームメートル", quantity: "電気抵抗率(比抵抗)", group: "電磁気学"),
         SIUnit(symbol: "C/kg", reading: "クーロン毎キログラム", quantity: "照射線量", group: "電磁気学"),
         // 化学・分子物理学・光
         SIUnit(symbol: "mol/m³", reading: "モル毎立方メートル", quantity: "物質量濃度(モル濃度)", group: "化学・分子物理学・光"),
         SIUnit(symbol: "m³/mol", reading: "立方メートル毎モル", quantity: "モル体積", group: "化学・分子物理学・光"),
         SIUnit(symbol: "J/mol", reading: "ジュール毎モル", quantity: "モルエネルギー", group: "化学・分子物理学・光"),
-        SIUnit(symbol: "J/(mol・K)", reading: "ジュール毎モルケルビン", quantity: "モル熱容量、モルエントロピー", group: "化学・分子物理学・光"),
+        SIUnit(symbol: "J/(mol·K)", reading: "ジュール毎モルケルビン", quantity: "モル熱容量、モルエントロピー", group: "化学・分子物理学・光"),
         SIUnit(symbol: "kg/mol", reading: "キログラム毎モル", quantity: "モル質量", group: "化学・分子物理学・光"),
         SIUnit(symbol: "cd/m²", reading: "カンデラ毎平方メートル", quantity: "輝度", group: "化学・分子物理学・光"),
         SIUnit(symbol: "W/sr", reading: "ワット毎ステラジアン", quantity: "放射強度", group: "化学・分子物理学・光"),

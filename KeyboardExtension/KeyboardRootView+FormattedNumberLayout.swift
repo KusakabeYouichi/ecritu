@@ -425,6 +425,24 @@ extension KeyboardRootView {
         formattedNumberSharedDefaults?.bool(forKey: "numberGroupFourDigits") ?? false
     }
 
+    // 単位の積の記号。内部は U+00B7(中点)で保持し、表示/確定時にこの設定へ変換する。
+    private var formattedNumberUnitProductSeparator: String {
+        switch formattedNumberSharedDefaults?.string(forKey: "numberUnitProductSeparator") {
+        case "dotOperator": return "\u{22C5}"
+        case "space": return " "
+        default: return "\u{00B7}"
+        }
+    }
+
+    // 内部保持の中点(U+00B7)を、設定の積記号に置換した表示/確定用の記号にする。
+    private func formattedNumberDisplayUnitSymbol(_ symbol: String) -> String {
+        let separator = formattedNumberUnitProductSeparator
+        guard separator != "\u{00B7}" else {
+            return symbol
+        }
+        return symbol.replacingOccurrences(of: "\u{00B7}", with: separator)
+    }
+
     // テンキー配列: téléphone(上段123)か calculette(上段789、既定)か。
     private var formattedNumberKeypadIsTelephone: Bool {
         formattedNumberSharedDefaults?.string(forKey: "formattedNumberKeypadLayout") == "telephone"
@@ -661,7 +679,7 @@ extension KeyboardRootView {
         }
         if selectedFormattedNumberCategory.usesSIPrefix {
             let prefix = formattedNumberPrefixSelection[selectedFormattedNumberCategory.rawValue] ?? ""
-            return prefix + base
+            return formattedNumberDisplayUnitSymbol(prefix + base)
         }
         return base
     }
@@ -999,7 +1017,7 @@ extension KeyboardRootView {
 
                 Picker("", selection: formattedNumberUnitBinding) {
                     ForEach(SIUnitCatalog.units(for: selectedFormattedNumberCategory)) { unit in
-                        formattedNumberDrumLabel(symbol: unit.symbol, reading: unit.reading)
+                        formattedNumberDrumLabel(symbol: formattedNumberDisplayUnitSymbol(unit.symbol), reading: unit.reading)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .lineLimit(1)
                             .truncationMode(.tail)
