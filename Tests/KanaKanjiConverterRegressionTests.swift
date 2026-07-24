@@ -4200,6 +4200,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(zaiko.contains("在庫が有る"), "zaiko=\(zaiko.prefix(4))")
     }
 
+    // 実LM回帰: したんだが は連文節では単一ノード扱いで multi=[](単文節に委譲)。単文節トップが
+    // 四反田が(レア地名読み)/湑んだが になるため、seed で口語終止のかな正書を先頭供給する。
+    func testRegressionRealLMShitandagaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "したんだが", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "したんだが", "single=\(single)")
+    }
+
+    // 実LM回帰: おそいよねえ の お添い/お沿い(お接頭+添う/沿う連用の誤合成)を落とし 遅いよねえ を
+    // 最良にする。お始まりの漢字表層(reading=おそい)を減点する。
+    func testRegressionRealLMOsoiYoneeDropsHonorificMisparse() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "おそいよねえ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "遅いよねえ", "multi=\(multi)")
+        XCTAssertFalse(
+            multi.contains { $0.hasPrefix("お添い") || $0.hasPrefix("お沿い") },
+            "お添い/お沿い の誤合成が残っている multi=\(multi)"
+        )
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
