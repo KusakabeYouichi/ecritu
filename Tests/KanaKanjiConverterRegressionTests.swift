@@ -4238,6 +4238,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // 実LM回帰: しゅぞうじょ→酒造所 を学習した後、しゅぞうじょう が 酒造所(しゅぞうじょ)+う の
+    // 余りモーラ分割 酒造所う を multi 最良にしていた(候補バーが multi 優先で先頭表示)。末尾が
+    // 漢字語+単独素通りかな1字なら multi を返さず単文節(seed の 酒造場)に委ねる。
+    func testRegressionRealLMShuzouLearnedNoDanglingKana() throws {
+        try prepareRealLMDictionary()
+        converter.store.addLearnedEntry(reading: "しゅぞうじょ", candidate: "酒造所")
+        converter.store.addLearnedEntry(reading: "しゅぞうしょ", candidate: "酒造所")
+        converter.store.waitForPendingLearningPersists()
+        converter.clearAllCaches()
+        let multi = converter.multiClauseCandidates(for: "しゅぞうじょう", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains("酒造所う"), "余りモーラ分割が残っている multi=\(multi)")
+        let single = converter.candidates(for: "しゅぞうじょう", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "酒造場", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
