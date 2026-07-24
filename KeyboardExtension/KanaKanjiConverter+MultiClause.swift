@@ -164,6 +164,10 @@ extension KanaKanjiConverter {
     // 有る/在る/或る への漢字化は不自然なので減点し、N-best 変種(maxDelta4000)から落とす
     // (うまそうでは有る 対策)。ある はかな正書動詞(seed ある=[ある,有る,在る] のかな先頭)。
     static let multiClauseAruKanjiAfterWaPenalty = 4200
+    // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
+    // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
+    // (prev≠お)や お茶/お金(reading≠そい)は無傷。
+    static let multiClauseHonorificOsoiSplitPenalty = 4200
     // 直前ノードが数量(十/二十/漢数字/アラビア数字)で終わるか。三 の免除判定に使う。
     static let multiClauseNumericSurfaceTailCharacters: Set<Character> = [
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
@@ -1002,6 +1006,10 @@ extension KanaKanjiConverter {
                 prev != Self.multiClauseBOSMarker,
                 prev.hasSuffix("は") {
                 penalty += Self.multiClauseAruKanjiAfterWaPenalty
+            }
+            // 接頭辞「お」(かな)+ そい は おそい(遅い)の誤分割。お添い/お沿い を変種から落とす。
+            if reading == "そい", prev == "お" {
+                penalty += Self.multiClauseHonorificOsoiSplitPenalty
             }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
