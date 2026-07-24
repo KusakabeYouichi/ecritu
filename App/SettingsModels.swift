@@ -202,11 +202,12 @@ enum UnitProductSeparatorOption: String, CaseIterable, Identifiable {
         }
     }
 
+    // コンテナーアプリの表示はグリフでなくユニコードのコードで示す。
     var title: String {
         switch self {
-        case .middleDot: return "\u{00B7}"
-        case .dotOperator: return "\u{22C5}"
-        case .space: return "\u{2423}"
+        case .middleDot: return "U+00B7"
+        case .dotOperator: return "U+22C5"
+        case .space: return "U+0020"
         }
     }
 }

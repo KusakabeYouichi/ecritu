@@ -1026,9 +1026,13 @@ struct FormatNumeriqueSettingsSection: View {
                     title: { $0.title },
                     onSelect: { unitProductSeparator = $0 }
                 )
+
+                Text("N·m のような組立単位の積の記号です(内部は U+00B7 で保持)。\n・U+00B7 (MIDDLE DOT): 一般テキストや化学式・単位の積を表す中黒\n・U+22C5 (DOT OPERATOR): 数学的なドット演算子\n・U+0020: 1文字分のスペース")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
             }
 
-            Text("書式化数値モードの区切りです。千の位は sep mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。単位の積の記号は N·m のような組立単位の中点で、·(中点)/⋅(演算子)/␣(空白)から選べます(内部は中点で保持)。")
+            Text("書式化数値モードの区切りです。千の位は sep mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -1083,6 +1087,8 @@ struct FormatNumeriqueSettingsSection: View {
         } else {
             Text(title)
                 .font(.body)
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
                 .foregroundStyle(.primary)
         }
     }
