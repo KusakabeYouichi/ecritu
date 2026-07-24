@@ -92,6 +92,8 @@ struct KeyboardRootView: View {
     @State var formattedNumberUnitSpacing: Bool = FormattedNumberPreferences.lastUnitSpacing()
     // 単位ドラムをプレス中、選択中単位のフル表記カードを表示するか。
     @State var formattedNumberDrumFullNameVisible: Bool = false
+    // プレス中に自前ホイールから随時通知される中央行のタグ(空=非プレス)。
+    @State var formattedNumberDrumLiveTag: String = ""
     @State var formattedNumberDate: Date = Date()
     @State var formattedNumberDateFormatTemplate: String = DateFormatCatalog.japaneseVariants.first ?? "m月j日"
     @State var didTriggerComposingCommitLongPress = false
