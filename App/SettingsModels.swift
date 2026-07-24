@@ -31,6 +31,7 @@ enum SettingsKeys {
     static let numberThousandsSeparator = "numberThousandsSeparator"
     static let numberDecimalSeparator = "numberDecimalSeparator"
     static let numberGroupFourDigits = "numberGroupFourDigits"
+    static let numberUnitProductSeparator = "numberUnitProductSeparator"
     static let calendarWeekStart = "calendarWeekStart"
     static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
     static let calendarSundayColor = "calendarSundayColor"
@@ -181,6 +182,31 @@ enum NumberLayoutOption: String, CaseIterable, Identifiable {
         case .calculette: return "calculette"
         case .telephone: return "téléphone"
         case .clavier: return "clavier"
+        }
+    }
+}
+
+// SI単位の積の区切り記号(内部は U+00B7 で保持し、表示/確定時にこの設定へ変換)。
+enum UnitProductSeparatorOption: String, CaseIterable, Identifiable {
+    case middleDot    // · U+00B7(中点)
+    case dotOperator  // ⋅ U+22C5(ドット演算子)
+    case space        // 半角スペース U+0020
+
+    var id: String { rawValue }
+
+    var character: String {
+        switch self {
+        case .middleDot: return "\u{00B7}"
+        case .dotOperator: return "\u{22C5}"
+        case .space: return " "
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .middleDot: return "\u{00B7}"
+        case .dotOperator: return "\u{22C5}"
+        case .space: return "\u{2423}"
         }
     }
 }

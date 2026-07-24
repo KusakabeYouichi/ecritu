@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260724103651"
+    private static let editionUpdatedAtRaw: String = "20260724113952"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -114,6 +114,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var numberGroupFourDigits: Bool = false
+
+    @AppStorage(
+        SettingsKeys.numberUnitProductSeparator,
+        store: Self.sharedDefaults
+    )
+    private var numberUnitProductSeparatorRawValue: String = UnitProductSeparatorOption.middleDot.rawValue
 
     @AppStorage(
         SettingsKeys.calendarWeekStart,
@@ -358,6 +364,7 @@ struct ContentView: View {
             numberThousandsSeparatorRawValue,
             numberDecimalSeparatorRawValue,
             String(numberGroupFourDigits),
+            numberUnitProductSeparatorRawValue,
             calendarWeekStartRawValue,
             calendarWeekdayLanguageRawValue,
             calendarSundayColorRawValue,
@@ -469,6 +476,12 @@ struct ContentView: View {
                 numberThousandsSeparatorRawValue = newValue.rawValue
             }
         )
+    }
+
+    private var numberUnitProductSeparatorSelection: Binding<UnitProductSeparatorOption> {
+        rawValueSelection(from: numberUnitProductSeparatorRawValue, default: .middleDot) {
+            numberUnitProductSeparatorRawValue = $0
+        }
     }
 
     private var numberDecimalSeparatorSelection: Binding<DecimalSeparatorOption> {
@@ -812,7 +825,8 @@ struct ContentView: View {
                         FormatNumeriqueSettingsSection(
                             thousandsSeparator: numberThousandsSeparatorSelection,
                             groupFourDigits: $numberGroupFourDigits,
-                            decimalSeparator: numberDecimalSeparatorSelection
+                            decimalSeparator: numberDecimalSeparatorSelection,
+                            unitProductSeparator: numberUnitProductSeparatorSelection
                         )
 
                         CalendarSettingsGroupSection(

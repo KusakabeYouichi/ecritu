@@ -988,6 +988,7 @@ struct FormatNumeriqueSettingsSection: View {
     @Binding var thousandsSeparator: ThousandsSeparatorOption
     @Binding var groupFourDigits: Bool
     @Binding var decimalSeparator: DecimalSeparatorOption
+    @Binding var unitProductSeparator: UnitProductSeparatorOption
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -1018,7 +1019,16 @@ struct FormatNumeriqueSettingsSection: View {
                 )
             }
 
-            Text("書式化数値モードの区切りです。千の位は sep mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。")
+            subItem("単位の積の記号") {
+                separatorPicker(
+                    options: Array(UnitProductSeparatorOption.allCases),
+                    isSelected: { $0 == unitProductSeparator },
+                    title: { $0.title },
+                    onSelect: { unitProductSeparator = $0 }
+                )
+            }
+
+            Text("書式化数値モードの区切りです。千の位は sep mil がオンのとき挿入。que quatre をオンにすると4桁の数値にも区切りを付けます(オフなら4桁は例外)。小数点は入力キーの表示/機能に反映されます。単位の積の記号は N·m のような組立単位の中点で、·(中点)/⋅(演算子)/␣(空白)から選べます(内部は中点で保持)。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -1063,7 +1073,7 @@ struct FormatNumeriqueSettingsSection: View {
     // する(espace は語なので通常サイズ)。
     @ViewBuilder
     private func separatorLabel(_ title: String) -> some View {
-        if title == "." || title == "," {
+        if ["·", "⋅", "␣", ".", ","].contains(title) {
             Text(title)
                 .font(.system(size: 22, weight: .heavy))
                 .lineLimit(1)
