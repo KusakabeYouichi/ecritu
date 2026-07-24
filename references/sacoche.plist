@@ -4,7 +4,7 @@
 <array>
 	<dict><key>phrase</key><string>고추</string><key>shortcut</key><string>こちゅ</string></dict>
 	<dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>さき</string></dict>
-	<dict><key>phrase</key><string>µ</string><key>shortcut</key><string>まいくろ</string></dict>
+	<dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
 	<dict><key>phrase</key><string>100円玉</string><key>shortcut</key><string>ひゃくえんだま</string></dict>
 	<dict><key>phrase</key><string>10円玉</string><key>shortcut</key><string>じゅうえんだま</string></dict>
 	<dict><key>phrase</key><string>1か月</string><key>shortcut</key><string>いっかげつ</string></dict>
