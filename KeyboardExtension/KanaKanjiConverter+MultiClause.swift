@@ -176,6 +176,16 @@ extension KanaKanjiConverter {
     // にクランプして最上位に来られるようにする。
     static let multiClauseKanaAdverbReadings: Set<String> = ["いまだに", "したんだが"]
     static let multiClauseKanaAdverbCost = 4000
+    // 口語の説明終止クラスタ(のだ縮約 ん + だ/です + 逆接/終助詞)。述語に付く正書かなで、
+    // レア語・分割に負けやすい。全体1スパンのかな識別を安価にして 〜んだが/んだけど/んです…を
+    // 通す(行ったんだが/食べたんです 等の一般ケース。名詞衝突する読みは個別 seed/clamp で補完)。
+    static let multiClauseColloquialExplanatoryTailReadings: Set<String> = [
+        "んだが", "んだけど", "んだけれど", "んだけれども",
+        "んですが", "んですけど", "んですけれど", "んですけれども",
+        "んだよ", "んだね", "んだよね", "んだな",
+        "んですよ", "んですね", "んですよね",
+        "んだもん", "んだもの", "んだっけ"
+    ]
     // 直前ノードが数量(十/二十/漢数字/アラビア数字)で終わるか。三 の免除判定に使う。
     static let multiClauseNumericSurfaceTailCharacters: Set<Character> = [
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
@@ -1025,8 +1035,11 @@ extension KanaKanjiConverter {
             if reading == "そい", prev == "お" {
                 penalty += Self.multiClauseHonorificOsoiSplitPenalty
             }
-            // かな正書の副詞(いまだに 等)はかな識別を安価にして漢字(未だに)より上位にする。
-            if surface == reading, Self.multiClauseKanaAdverbReadings.contains(reading) {
+            // かな正書の副詞(いまだに 等)・口語終止クラスタ(んだが/んです…)はかな識別を安価にして
+            // 漢字/レア語/分割より上位にする。
+            if surface == reading,
+                Self.multiClauseKanaAdverbReadings.contains(reading)
+                    || Self.multiClauseColloquialExplanatoryTailReadings.contains(reading) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
