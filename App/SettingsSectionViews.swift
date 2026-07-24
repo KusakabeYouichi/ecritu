@@ -1058,6 +1058,7 @@ struct FormatNumeriqueSettingsSection: View {
                                 .fill(selected ? Color(.systemBackground) : Color.clear)
                                 .shadow(color: selected ? Color.black.opacity(0.14) : .clear, radius: 1, y: 0.5)
                         )
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
