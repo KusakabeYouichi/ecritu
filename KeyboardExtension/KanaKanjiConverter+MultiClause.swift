@@ -168,6 +168,10 @@ extension KanaKanjiConverter {
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
     static let multiClauseHonorificOsoiSplitPenalty = 4200
+    // かな正書の副詞(いまだに 等)。連文節でも漢字(未だに)に負けないよう、かな識別ノードを
+    // 安価(< 辞書未知コスト)にクランプして最上位に来られるようにする。
+    static let multiClauseKanaAdverbReadings: Set<String> = ["いまだに"]
+    static let multiClauseKanaAdverbCost = 4000
     // 直前ノードが数量(十/二十/漢数字/アラビア数字)で終わるか。三 の免除判定に使う。
     static let multiClauseNumericSurfaceTailCharacters: Set<Character> = [
         "0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
@@ -1010,6 +1014,10 @@ extension KanaKanjiConverter {
             // 接頭辞「お」(かな)+ そい は おそい(遅い)の誤分割。お添い/お沿い を変種から落とす。
             if reading == "そい", prev == "お" {
                 penalty += Self.multiClauseHonorificOsoiSplitPenalty
+            }
+            // かな正書の副詞(いまだに 等)はかな識別を安価にして漢字(未だに)より上位にする。
+            if surface == reading, Self.multiClauseKanaAdverbReadings.contains(reading) {
+                base = min(base, Self.multiClauseKanaAdverbCost)
             }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
