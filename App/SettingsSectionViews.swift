@@ -872,13 +872,17 @@ struct NumberLayoutSettingsSection: View {
 struct CalendarSettingsGroupSection: View {
     @Binding var weekStart: CalendarWeekStartOption
     @Binding var weekdayLanguage: CalendarWeekdayLanguageOption
-    @Binding var sundayColor: CalendarSundayColorOption
+    @Binding var sundayColor: CalendarDayColorOption
+    @Binding var fridayColor: CalendarDayColorOption
+    @Binding var saturdayColor: CalendarDayColorOption
     @Binding var dateFormatStyle: DateFormatStyleOption
 
-    private static let sundayColorChoices: [CalendarSundayColorOption] = [.bordeaux, .bourgogne, .dic156, .dicF101]
+    // 日曜/金曜は赤系、土曜は青系の4択。
+    private static let redChoices: [CalendarDayColorOption] = [.bordeaux, .bourgogne, .dic156, .dicF101]
+    private static let blueChoices: [CalendarDayColorOption] = [.dic641, .dicF46, .dic156, .dicF101]
 
-    // App 側の表示用色(キーボード側 formattedNumberCalendarSundayColor と同値)。
-    private func sundayDisplayColor(_ option: CalendarSundayColorOption) -> Color {
+    // App 側の表示用色(キーボード側 formattedNumberCalendar*Color と同値)。
+    private func dayDisplayColor(_ option: CalendarDayColorOption) -> Color {
         switch option {
         case .off:
             return .primary
@@ -894,14 +898,20 @@ struct CalendarSettingsGroupSection: View {
         case .dicF101:
             // DIC-F101 = #D31C30
             return Color(red: 211.0 / 255.0, green: 28.0 / 255.0, blue: 48.0 / 255.0)
+        case .dic641:
+            // DIC 641(鮮やかな青)= 近似 rgb(0,111,191)。正確値は要確認。
+            return Color(red: 0.0 / 255.0, green: 111.0 / 255.0, blue: 191.0 / 255.0)
+        case .dicF46:
+            // DIC-F46(ロイヤルブルー系)= 近似 rgb(38,62,138)。正確値は要確認。
+            return Color(red: 38.0 / 255.0, green: 62.0 / 255.0, blue: 138.0 / 255.0)
         }
     }
 
-    private var sundayColorOnBinding: Binding<Bool> {
+    private func colorOnBinding(_ binding: Binding<CalendarDayColorOption>, defaultOn: CalendarDayColorOption) -> Binding<Bool> {
         Binding(
-            get: { sundayColor != .off },
+            get: { binding.wrappedValue != .off },
             set: { isOn in
-                sundayColor = isOn ? (sundayColor == .off ? .bordeaux : sundayColor) : .off
+                binding.wrappedValue = isOn ? (binding.wrappedValue == .off ? defaultOn : binding.wrappedValue) : .off
             }
         )
     }
@@ -929,34 +939,9 @@ struct CalendarSettingsGroupSection: View {
                 .pickerStyle(.segmented)
             }
 
-            subItem("日曜列の色") {
-                Toggle("色を付ける", isOn: sundayColorOnBinding)
-                if sundayColor != .off {
-                    HStack(spacing: 8) {
-                        ForEach(Self.sundayColorChoices) { option in
-                            Button {
-                                sundayColor = option
-                            } label: {
-                                Text(option.title)
-                                    .font(.subheadline.weight(sundayColor == option ? .bold : .regular))
-                                    .foregroundColor(sundayDisplayColor(option))
-                                    .lineLimit(1)
-                                    .minimumScaleFactor(0.6)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 8)
-                                    .background(
-                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                            .stroke(
-                                                sundayColor == option ? sundayDisplayColor(option) : Color.secondary.opacity(0.3),
-                                                lineWidth: sundayColor == option ? 2 : 1
-                                            )
-                                    )
-                            }
-                            .buttonStyle(.plain)
-                        }
-                    }
-                }
-            }
+            dayColorSubItem("日曜列の色", binding: $sundayColor, choices: Self.redChoices)
+            dayColorSubItem("金曜列の色", binding: $fridayColor, choices: Self.redChoices)
+            dayColorSubItem("土曜列の色", binding: $saturdayColor, choices: Self.blueChoices)
 
             subItem("日付書式") {
                 Picker("日付書式", selection: $dateFormatStyle) {
@@ -972,6 +957,43 @@ struct CalendarSettingsGroupSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+
+    // 曜日列の色サブ項目(オン/オフ + 4色チューザー)。
+    @ViewBuilder
+    private func dayColorSubItem(
+        _ title: String,
+        binding: Binding<CalendarDayColorOption>,
+        choices: [CalendarDayColorOption]
+    ) -> some View {
+        subItem(title) {
+            Toggle("色を付ける", isOn: colorOnBinding(binding, defaultOn: choices.first ?? .off))
+            if binding.wrappedValue != .off {
+                HStack(spacing: 8) {
+                    ForEach(choices) { option in
+                        Button {
+                            binding.wrappedValue = option
+                        } label: {
+                            Text(option.title)
+                                .font(.subheadline.weight(binding.wrappedValue == option ? .bold : .regular))
+                                .foregroundColor(dayDisplayColor(option))
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.6)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                        .stroke(
+                                            binding.wrappedValue == option ? dayDisplayColor(option) : Color.secondary.opacity(0.3),
+                                            lineWidth: binding.wrappedValue == option ? 2 : 1
+                                        )
+                                )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+        }
     }
 
     @ViewBuilder

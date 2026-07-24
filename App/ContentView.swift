@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260724133228"
+    private static let editionUpdatedAtRaw: String = "20260724135152"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -137,7 +137,19 @@ struct ContentView: View {
         SettingsKeys.calendarSundayColor,
         store: Self.sharedDefaults
     )
-    private var calendarSundayColorRawValue: String = CalendarSundayColorOption.off.rawValue
+    private var calendarSundayColorRawValue: String = CalendarDayColorOption.off.rawValue
+
+    @AppStorage(
+        SettingsKeys.calendarFridayColor,
+        store: Self.sharedDefaults
+    )
+    private var calendarFridayColorRawValue: String = CalendarDayColorOption.off.rawValue
+
+    @AppStorage(
+        SettingsKeys.calendarSaturdayColor,
+        store: Self.sharedDefaults
+    )
+    private var calendarSaturdayColorRawValue: String = CalendarDayColorOption.off.rawValue
 
     @AppStorage(
         SettingsKeys.basicSymbolOrder,
@@ -368,6 +380,8 @@ struct ContentView: View {
             calendarWeekStartRawValue,
             calendarWeekdayLanguageRawValue,
             calendarSundayColorRawValue,
+            calendarFridayColorRawValue,
+            calendarSaturdayColorRawValue,
             basicSymbolOrderRawValue,
             accentPaletteRawValue,
             keyboardBackgroundThemeRawValue,
@@ -504,9 +518,21 @@ struct ContentView: View {
         }
     }
 
-    private var calendarSundayColorSelection: Binding<CalendarSundayColorOption> {
+    private var calendarSundayColorSelection: Binding<CalendarDayColorOption> {
         rawValueSelection(from: calendarSundayColorRawValue, default: .off) {
             calendarSundayColorRawValue = $0
+        }
+    }
+
+    private var calendarFridayColorSelection: Binding<CalendarDayColorOption> {
+        rawValueSelection(from: calendarFridayColorRawValue, default: .off) {
+            calendarFridayColorRawValue = $0
+        }
+    }
+
+    private var calendarSaturdayColorSelection: Binding<CalendarDayColorOption> {
+        rawValueSelection(from: calendarSaturdayColorRawValue, default: .off) {
+            calendarSaturdayColorRawValue = $0
         }
     }
 
@@ -833,6 +859,8 @@ struct ContentView: View {
                             weekStart: calendarWeekStartSelection,
                             weekdayLanguage: calendarWeekdayLanguageSelection,
                             sundayColor: calendarSundayColorSelection,
+                            fridayColor: calendarFridayColorSelection,
+                            saturdayColor: calendarSaturdayColorSelection,
                             dateFormatStyle: dateFormatStyleSelection
                         )
 

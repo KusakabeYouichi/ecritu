@@ -35,6 +35,8 @@ enum SettingsKeys {
     static let calendarWeekStart = "calendarWeekStart"
     static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
     static let calendarSundayColor = "calendarSundayColor"
+    static let calendarFridayColor = "calendarFridayColor"
+    static let calendarSaturdayColor = "calendarSaturdayColor"
     static let basicSymbolOrder = "basicSymbolOrder"
     static let accentPalette = "accentPalette"
     static let keyboardBackgroundTheme = "keyboardBackgroundTheme"
@@ -329,12 +331,15 @@ enum CalendarWeekdayLanguageOption: String, CaseIterable, Identifiable {
 }
 
 // 自前カレンダーの日曜列の色。off=他曜日と同じ。rawValue は拡張側の色マップと一致させる。
-enum CalendarSundayColorOption: String, CaseIterable, Identifiable {
+// 曜日列の色(日曜/金曜/土曜で共用)。曜日ごとに提示する4択は SettingsSectionViews 側で選ぶ。
+enum CalendarDayColorOption: String, CaseIterable, Identifiable {
     case off
     case bordeaux
     case bourgogne
     case dic156
     case dicF101
+    case dic641
+    case dicF46
 
     var id: String { rawValue }
 
@@ -345,6 +350,8 @@ enum CalendarSundayColorOption: String, CaseIterable, Identifiable {
         case .bourgogne: return "bourgogne"
         case .dic156: return "DIC-156"
         case .dicF101: return "DIC-F101"
+        case .dic641: return "DIC 641"
+        case .dicF46: return "DIC-F46"
         }
     }
 }

@@ -363,6 +363,8 @@ extension KeyboardRootView {
             firstWeekday: formattedNumberCalendarFirstWeekday,
             language: formattedNumberCalendarLanguage,
             sundayColor: formattedNumberCalendarSundayColor,
+            fridayColor: formattedNumberCalendarFridayColor,
+            saturdayColor: formattedNumberCalendarSaturdayColor,
             navigationPlacement: navigation,
             cellHeight: formattedNumberLandscapeCalendarCellHeight,
             columnSpacing: 10
@@ -395,7 +397,9 @@ extension KeyboardRootView {
             selectedDate: $formattedNumberDate,
             firstWeekday: formattedNumberCalendarFirstWeekday,
             language: formattedNumberCalendarLanguage,
-            sundayColor: formattedNumberCalendarSundayColor
+            sundayColor: formattedNumberCalendarSundayColor,
+            fridayColor: formattedNumberCalendarFridayColor,
+            saturdayColor: formattedNumberCalendarSaturdayColor
         )
         // 固定セルの自然高さ(常時6行)。横画面は幅上限を設けて中央寄せ。
         .frame(maxWidth: isLandscapeLayout ? 430 : .infinity, alignment: .top)
@@ -472,10 +476,10 @@ extension KeyboardRootView {
         return DateFormatCatalog.CalendarWeekdayLanguage(rawValue: raw) ?? .japanese
     }
 
-    // 日曜列の色(オフ=nil)。DIC は近似値(正確値は要確認)。
-    private var formattedNumberCalendarSundayColor: Color? {
+    // 曜日列の色(オフ=nil)。DIC は近似値(正確値は要確認)。共有キーから読む。
+    private func formattedNumberCalendarDayColor(forKey key: String) -> Color? {
         let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
-            .string(forKey: "calendarSundayColor") ?? "off"
+            .string(forKey: key) ?? "off"
         switch raw {
         case "bordeaux":
             // bordeaux = rgb(141,17,74)
@@ -489,10 +493,20 @@ extension KeyboardRootView {
         case "dicF101":
             // DIC-F101 = #D31C30
             return Color(red: 211.0 / 255.0, green: 28.0 / 255.0, blue: 48.0 / 255.0)
+        case "dic641":
+            // DIC 641(鮮やかな青)= 近似 rgb(0,111,191)。正確値は要確認。
+            return Color(red: 0.0 / 255.0, green: 111.0 / 255.0, blue: 191.0 / 255.0)
+        case "dicF46":
+            // DIC-F46(ロイヤルブルー系)= 近似 rgb(38,62,138)。正確値は要確認。
+            return Color(red: 38.0 / 255.0, green: 62.0 / 255.0, blue: 138.0 / 255.0)
         default:
             return nil
         }
     }
+
+    private var formattedNumberCalendarSundayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSundayColor") }
+    private var formattedNumberCalendarFridayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarFridayColor") }
+    private var formattedNumberCalendarSaturdayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSaturdayColor") }
 
     // 書式プルダウン: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
     private var formattedNumberDateFormatMenu: some View {
