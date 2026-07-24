@@ -940,8 +940,8 @@ struct CalendarSettingsGroupSection: View {
             }
 
             dayColorSubItem("日曜列の色", binding: $sundayColor, choices: Self.redChoices)
-            dayColorSubItem("金曜列の色", binding: $fridayColor, choices: Self.redChoices)
             dayColorSubItem("土曜列の色", binding: $saturdayColor, choices: Self.blueChoices)
+            dayColorSubItem("金曜列の色", binding: $fridayColor, choices: Self.redChoices)
 
             subItem("日付書式") {
                 Picker("日付書式", selection: $dateFormatStyle) {
@@ -1057,7 +1057,7 @@ struct FormatNumeriqueSettingsSection: View {
                 }
                 .pickerStyle(.segmented)
 
-                Text("N·m のような組立単位の積の記号です(内部は U+00B7 で保持)。\n・U+00B7 (MIDDLE DOT): 一般テキストや化学式・単位の積を表す中黒\n・U+22C5 (DOT OPERATOR): 数学的なドット演算子\n・U+0020: 1文字分のスペース")
+                Text("N·m のような組立単位の積の記号です。\n・U+00B7: 一般テキストや化学式・単位の積を表す中黒\n・U+22C5: 数学的なドット演算子\n・U+0020: 1文字分のスペース")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
