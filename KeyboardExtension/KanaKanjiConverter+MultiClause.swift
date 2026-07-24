@@ -171,9 +171,10 @@ extension KanaKanjiConverter {
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
     static let multiClauseHonorificOsoiSplitPenalty = 4200
-    // かな正書の副詞(いまだに 等)。連文節でも漢字(未だに)に負けないよう、かな識別ノードを
-    // 安価(< 辞書未知コスト)にクランプして最上位に来られるようにする。
-    static let multiClauseKanaAdverbReadings: Set<String> = ["いまだに"]
+    // かな正書として優先したい読み(副詞 いまだに、口語終止 したんだが 等)。連文節でも漢字
+    // (未だに/紫檀…)や分割・レア動詞(湑む)に負けないよう、かな識別ノードを安価(< 辞書未知コスト)
+    // にクランプして最上位に来られるようにする。
+    static let multiClauseKanaAdverbReadings: Set<String> = ["いまだに", "したんだが"]
     static let multiClauseKanaAdverbCost = 4000
     // 直前ノードが数量(十/二十/漢数字/アラビア数字)で終わるか。三 の免除判定に使う。
     static let multiClauseNumericSurfaceTailCharacters: Set<Character> = [
