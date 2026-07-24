@@ -996,31 +996,68 @@ extension KeyboardRootView {
 
     // 単位ドラム。SI単位系(基本/組立/固有)は「接頭辞ドラム+単位ドラム」の2連。金額は単ドラム、
     // カレンダーは占位。
-    // プレス中は選択中単位のフル表記(…で切れない)をカードで重ねて見せる。
     @ViewBuilder
     private var formattedNumberUnitSelector: some View {
         if selectedFormattedNumberCategory == .calendar {
-            formattedNumberUnitSelectorContent
-        } else {
-            formattedNumberUnitSelectorContent
-                .overlay(alignment: .center) {
-                    if formattedNumberDrumFullNameVisible {
-                        formattedNumberSelectedUnitFullNameCard
+            placeholderCard("カレンダー(P3)")
+        } else if selectedFormattedNumberCategory.usesSIPrefix {
+            HStack(spacing: 0) {
+                // 接頭辞ドラムは読みを出さず記号のみ(なしは空欄)。プレス反応はさせない。
+                Picker("", selection: formattedNumberPrefixBinding) {
+                    ForEach(SIUnitCatalog.prefixes) { prefix in
+                        Text(prefix.symbol)
+                            .font(.system(size: 18, weight: .semibold))
+                            .lineLimit(1)
+                            .tag(prefix.symbol)
                     }
                 }
-                // ドラム自身のスクロールと同時に動く(minimumDistance:0 で触れた瞬間に表示、離すと消す)。
-                .simultaneousGesture(
-                    DragGesture(minimumDistance: 0)
-                        .onChanged { _ in formattedNumberDrumFullNameVisible = true }
-                        .onEnded { _ in formattedNumberDrumFullNameVisible = false }
-                )
+                .pickerStyle(.wheel)
+                .frame(maxWidth: 38, maxHeight: .infinity)
+                .clipped()
+
+                formattedNumberUnitDrum(SIUnitCatalog.units(for: selectedFormattedNumberCategory))
+            }
+        } else {
+            let units = SIUnitCatalog.units(for: selectedFormattedNumberCategory)
+            if units.isEmpty {
+                placeholderCard("単位")
+            } else {
+                formattedNumberUnitDrum(units)
+            }
         }
     }
 
-    // 選択中単位のフル表記カード(記号+読み)。プレス中のみ表示。
-    private var formattedNumberSelectedUnitFullNameCard: some View {
+    // 単位ドラム(左寄せ)。プレス中は選択中単位のフル表記カードを重ねて見せる(接頭辞ドラムには付けない)。
+    // プレス中に上下へずらすと裏でドラムが動き、選択が変わればカードの表記も追従する。
+    private func formattedNumberUnitDrum(_ units: [SIUnit]) -> some View {
+        Picker("", selection: formattedNumberUnitBinding) {
+            ForEach(units) { unit in
+                formattedNumberDrumLabel(symbol: formattedNumberDisplayUnitSymbol(unit.symbol), reading: unit.reading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+                    .tag(unit.symbol)
+            }
+        }
+        .pickerStyle(.wheel)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .clipped()
+        .overlay(alignment: .center) {
+            if formattedNumberDrumFullNameVisible {
+                formattedNumberSelectedUnitFullNameCard(units)
+            }
+        }
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { _ in formattedNumberDrumFullNameVisible = true }
+                .onEnded { _ in formattedNumberDrumFullNameVisible = false }
+        )
+    }
+
+    // 選択中単位のフル表記カード(記号+読み)。選択に追従(スクロールで変われば随時更新)。
+    private func formattedNumberSelectedUnitFullNameCard(_ units: [SIUnit]) -> some View {
         let base = formattedNumberSelectedBaseSymbol
-        let unit = SIUnitCatalog.units(for: selectedFormattedNumberCategory).first { $0.symbol == base }
+        let unit = units.first { $0.symbol == base }
         let symbolText = formattedNumberDisplayUnitSymbol(base)
         let reading = unit?.reading ?? ""
         return Text(reading.isEmpty ? symbolText : "\(symbolText)  \(reading)")
@@ -1041,58 +1078,6 @@ extension KeyboardRootView {
             )
             .padding(.horizontal, 4)
             .allowsHitTesting(false)
-    }
-
-    @ViewBuilder
-    private var formattedNumberUnitSelectorContent: some View {
-        if selectedFormattedNumberCategory == .calendar {
-            placeholderCard("カレンダー(P3)")
-        } else if selectedFormattedNumberCategory.usesSIPrefix {
-            HStack(spacing: 0) {
-                // 接頭辞ドラムは読みを出さず記号のみ(なしは空欄)。幅をぐっと狭めて単位ドラムを広く。
-                Picker("", selection: formattedNumberPrefixBinding) {
-                    ForEach(SIUnitCatalog.prefixes) { prefix in
-                        Text(prefix.symbol)
-                            .font(.system(size: 18, weight: .semibold))
-                            .lineLimit(1)
-                            .tag(prefix.symbol)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(maxWidth: 38, maxHeight: .infinity)
-                .clipped()
-
-                Picker("", selection: formattedNumberUnitBinding) {
-                    ForEach(SIUnitCatalog.units(for: selectedFormattedNumberCategory)) { unit in
-                        formattedNumberDrumLabel(symbol: formattedNumberDisplayUnitSymbol(unit.symbol), reading: unit.reading)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .tag(unit.symbol)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-            }
-        } else {
-            let units = SIUnitCatalog.units(for: selectedFormattedNumberCategory)
-            if units.isEmpty {
-                placeholderCard("単位")
-            } else {
-                Picker("", selection: formattedNumberUnitBinding) {
-                    ForEach(units) { unit in
-                        formattedNumberDrumLabel(symbol: unit.symbol, reading: unit.reading)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .tag(unit.symbol)
-                    }
-                }
-                .pickerStyle(.wheel)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .clipped()
-            }
-        }
     }
 
     // sep mil: 千区切りの ON/OFF。CapsLock 風トグル(共通ヘルパー)。
