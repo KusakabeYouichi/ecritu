@@ -24,7 +24,8 @@ struct SIPrefix: Identifiable, Hashable {
 }
 
 enum SIUnitCatalog {
-    // 接頭辞ドラムの選択肢(大→小、中央に「なし」)。µ は micro sign(U+00B5)。
+    // 接頭辞ドラムの選択肢(大→小、中央に「なし」)。マイクロは SI/ISO 80000-1 準拠の
+    // μ = GREEK SMALL LETTER MU(U+03BC)。互換用の MICRO SIGN(U+00B5)は使わない。
     static let prefixes: [SIPrefix] = [
         SIPrefix(symbol: "T", reading: "テラ"),
         SIPrefix(symbol: "G", reading: "ギガ"),
@@ -34,7 +35,7 @@ enum SIUnitCatalog {
         SIPrefix(symbol: "", reading: "(なし)"),
         SIPrefix(symbol: "c", reading: "センチ"),
         SIPrefix(symbol: "m", reading: "ミリ"),
-        SIPrefix(symbol: "µ", reading: "マイクロ"),
+        SIPrefix(symbol: "μ", reading: "マイクロ"),
         SIPrefix(symbol: "n", reading: "ナノ"),
         SIPrefix(symbol: "p", reading: "ピコ")
     ]
