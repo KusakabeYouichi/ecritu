@@ -16,8 +16,10 @@ struct FormattedNumberCalendarGridView: View {
     // 週の開始曜日(1=日, 2=月, 7=土)。
     let firstWeekday: Int
     let language: DateFormatCatalog.CalendarWeekdayLanguage
-    // 日曜列の色(nil=他曜日と同じ)。
+    // 曜日列の色(nil=他曜日と同じ)。日曜/金曜/土曜に個別指定。
     let sundayColor: Color?
+    let fridayColor: Color?
+    let saturdayColor: Color?
     let navigationPlacement: NavigationPlacement
     private let cellHeight: CGFloat
     private let columnSpacing: CGFloat
@@ -33,6 +35,8 @@ struct FormattedNumberCalendarGridView: View {
         firstWeekday: Int,
         language: DateFormatCatalog.CalendarWeekdayLanguage,
         sundayColor: Color?,
+        fridayColor: Color? = nil,
+        saturdayColor: Color? = nil,
         navigationPlacement: NavigationPlacement = .top,
         cellHeight: CGFloat = 22,
         columnSpacing: CGFloat = 2
@@ -41,23 +45,35 @@ struct FormattedNumberCalendarGridView: View {
         self.firstWeekday = firstWeekday
         self.language = language
         self.sundayColor = sundayColor
+        self.fridayColor = fridayColor
+        self.saturdayColor = saturdayColor
         self.navigationPlacement = navigationPlacement
         self.cellHeight = cellHeight
         self.columnSpacing = columnSpacing
         _monthAnchor = State(initialValue: selectedDate.wrappedValue)
     }
 
-    // 週開始に合わせた日曜の列インデックス(0起点)。日曜(weekday=1)が先頭から何列目か。
-    private var sundayColumnIndex: Int {
-        (1 - firstWeekday + 7) % 7
+    // 曜日(1=日〜7=土)に対応する色(なければ nil)。
+    private func color(forWeekday weekday: Int) -> Color? {
+        switch weekday {
+        case 1: return sundayColor
+        case 6: return fridayColor
+        case 7: return saturdayColor
+        default: return nil
+        }
     }
 
-    // その日が日曜か(weekday 1=日曜)。
-    private func isSunday(_ day: Int) -> Bool {
+    // 先頭から index 列目(0起点)の曜日(1=日〜7=土)。
+    private func weekday(forColumn index: Int) -> Int {
+        ((firstWeekday - 1 + index) % 7) + 1
+    }
+
+    // その日の曜日(1=日〜7=土)。
+    private func weekday(forDay day: Int) -> Int {
         guard let date = calendar.date(from: DateComponents(year: year, month: month, day: day)) else {
-            return false
+            return 0
         }
-        return calendar.component(.weekday, from: date) == 1
+        return calendar.component(.weekday, from: date)
     }
 
     // その日が「今日」か(表示中の年月と実日付を比較)。
@@ -235,11 +251,11 @@ struct FormattedNumberCalendarGridView: View {
     private var weekdayHeaderRow: some View {
         LazyVGrid(columns: columns, spacing: 0) {
             ForEach(Array(orderedWeekdayLabels.enumerated()), id: \.offset) { index, label in
-                let isSundayColumn = index == sundayColumnIndex
+                let dayColor = color(forWeekday: weekday(forColumn: index))
                 Text(label)
                     .font(calendarFont(size: 10))
                     .foregroundColor(
-                        (isSundayColumn ? sundayColor : nil) ?? KeyboardThemePalette.keyLabel.opacity(0.5)
+                        dayColor?.opacity(0.6) ?? KeyboardThemePalette.keyLabel.opacity(0.5)
                     )
                     .lineLimit(1)
                     .minimumScaleFactor(0.6)
@@ -299,7 +315,7 @@ struct FormattedNumberCalendarGridView: View {
         let selected = isSelected(day)
         let dayColor: Color = selected
             ? Color.white
-            : ((isSunday(day) ? sundayColor : nil) ?? KeyboardThemePalette.keyLabel)
+            : (color(forWeekday: weekday(forDay: day)) ?? KeyboardThemePalette.keyLabel)
         return Text("\(day)")
             .font(calendarFont(size: 15, weight: selected ? .bold : .regular))
             .monospacedDigit()
