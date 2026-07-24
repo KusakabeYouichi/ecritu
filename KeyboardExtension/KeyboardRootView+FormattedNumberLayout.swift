@@ -1051,6 +1051,13 @@ extension KeyboardRootView {
             }
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        // 標準ドラム同様、中央(選択中)の行に選択バンドの背景を敷く。
+        .background(alignment: .center) {
+            RoundedRectangle(cornerRadius: 6, style: .continuous)
+                .fill(KeyboardThemePalette.keyLabel.opacity(0.12))
+                .frame(height: 30)
+                .padding(.horizontal, 2)
+        }
         .clipped()
         .overlay(alignment: .center) {
             if formattedNumberDrumFullNameVisible {
