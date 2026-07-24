@@ -1044,7 +1044,7 @@ struct FormatNumeriqueSettingsSection: View {
                     onSelect: { decimalSeparator = $0 }
                 )
 
-                Text("小数点の記号です。入力キーの表示/機能に反映されます。")
+                Text("小数点の記号です。入力キーの表示/機能に反映されます。国際単位系(SI)における小数点は、ピリオドまたはカンマのいずれか、と規定されています。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
