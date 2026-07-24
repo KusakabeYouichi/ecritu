@@ -4220,6 +4220,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // 実LM回帰: 酒造所/酒造場 は複合語が辞書・Sudachi基底・LM いずれにも未登録(構成要素は在るが
+    // 単漢字接尾の連文節を抑止しているため合成もされない)。seed 供給で候補化されることを検証する。
+    func testRegressionRealLMShuzouCompoundsSupplied() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(
+            converter.candidates(for: "しゅぞうしょ", limit: 12, systemCandidateMode: .surface).contains("酒造所"),
+            "しゅぞうしょ→酒造所 が供給されていない"
+        )
+        XCTAssertTrue(
+            converter.candidates(for: "しゅぞうじょ", limit: 12, systemCandidateMode: .surface).contains("酒造所"),
+            "しゅぞうじょ→酒造所 が供給されていない"
+        )
+        XCTAssertTrue(
+            converter.candidates(for: "しゅぞうじょう", limit: 12, systemCandidateMode: .surface).contains("酒造場"),
+            "しゅぞうじょう→酒造場 が供給されていない"
+        )
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
