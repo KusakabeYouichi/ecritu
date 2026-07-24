@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260724141307"
+    private static let editionUpdatedAtRaw: String = "20260724145810"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -131,13 +131,13 @@ struct ContentView: View {
         SettingsKeys.calendarWeekdayLanguage,
         store: Self.sharedDefaults
     )
-    private var calendarWeekdayLanguageRawValue: String = CalendarWeekdayLanguageOption.japanese.rawValue
+    private var calendarWeekdayLanguageRawValue: String = CalendarWeekdayLanguageOption.french.rawValue
 
     @AppStorage(
         SettingsKeys.calendarSundayColor,
         store: Self.sharedDefaults
     )
-    private var calendarSundayColorRawValue: String = CalendarDayColorOption.off.rawValue
+    private var calendarSundayColorRawValue: String = CalendarDayColorOption.dic156.rawValue
 
     @AppStorage(
         SettingsKeys.calendarFridayColor,

@@ -939,9 +939,9 @@ struct CalendarSettingsGroupSection: View {
                 .pickerStyle(.segmented)
             }
 
-            dayColorSubItem("日曜列の色", binding: $sundayColor, choices: Self.redChoices)
-            dayColorSubItem("土曜列の色", binding: $saturdayColor, choices: Self.blueChoices)
-            dayColorSubItem("金曜列の色", binding: $fridayColor, choices: Self.redChoices)
+            dayColorSubItem("日曜列の色", binding: $sundayColor, choices: Self.redChoices, defaultOn: .dic156)
+            dayColorSubItem("土曜列の色", binding: $saturdayColor, choices: Self.blueChoices, defaultOn: .dic641)
+            dayColorSubItem("金曜列の色", binding: $fridayColor, choices: Self.redChoices, defaultOn: .bourgogne)
 
             subItem("日付書式") {
                 Picker("日付書式", selection: $dateFormatStyle) {
@@ -964,10 +964,11 @@ struct CalendarSettingsGroupSection: View {
     private func dayColorSubItem(
         _ title: String,
         binding: Binding<CalendarDayColorOption>,
-        choices: [CalendarDayColorOption]
+        choices: [CalendarDayColorOption],
+        defaultOn: CalendarDayColorOption
     ) -> some View {
         subItem(title) {
-            Toggle("色を付ける", isOn: colorOnBinding(binding, defaultOn: choices.first ?? .off))
+            Toggle("色を付ける", isOn: colorOnBinding(binding, defaultOn: defaultOn))
             if binding.wrappedValue != .off {
                 HStack(spacing: 8) {
                     ForEach(choices) { option in

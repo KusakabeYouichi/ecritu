@@ -473,13 +473,14 @@ extension KeyboardRootView {
     private var formattedNumberCalendarLanguage: DateFormatCatalog.CalendarWeekdayLanguage {
         let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
             .string(forKey: "calendarWeekdayLanguage") ?? ""
-        return DateFormatCatalog.CalendarWeekdayLanguage(rawValue: raw) ?? .japanese
+        // 既定は仏語(dim lun mar)。
+        return DateFormatCatalog.CalendarWeekdayLanguage(rawValue: raw) ?? .french
     }
 
     // 曜日列の色(オフ=nil)。DIC は近似値(正確値は要確認)。共有キーから読む。
-    private func formattedNumberCalendarDayColor(forKey key: String) -> Color? {
+    private func formattedNumberCalendarDayColor(forKey key: String, fallback: String) -> Color? {
         let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
-            .string(forKey: key) ?? "off"
+            .string(forKey: key) ?? fallback
         switch raw {
         case "bordeaux":
             // bordeaux = rgb(141,17,74)
@@ -504,9 +505,10 @@ extension KeyboardRootView {
         }
     }
 
-    private var formattedNumberCalendarSundayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSundayColor") }
-    private var formattedNumberCalendarFridayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarFridayColor") }
-    private var formattedNumberCalendarSaturdayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSaturdayColor") }
+    // 既定: 日曜=DIC-156(色あり)、金曜/土曜=オフ。
+    private var formattedNumberCalendarSundayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSundayColor", fallback: "dic156") }
+    private var formattedNumberCalendarFridayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarFridayColor", fallback: "off") }
+    private var formattedNumberCalendarSaturdayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSaturdayColor", fallback: "off") }
 
     // 書式プルダウン: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
     private var formattedNumberDateFormatMenu: some View {
