@@ -90,6 +90,8 @@ struct KeyboardRootView: View {
     @State var formattedNumberCurrencySymbolBefore: Bool = FormattedNumberPreferences.lastCurrencySymbolBefore()
     // 単位3カテゴリー: 数値と単位の間に空白を入れるか(既定なし)。
     @State var formattedNumberUnitSpacing: Bool = FormattedNumberPreferences.lastUnitSpacing()
+    // 単位ドラムをプレス中、選択中単位のフル表記カードを表示するか。
+    @State var formattedNumberDrumFullNameVisible: Bool = false
     @State var formattedNumberDate: Date = Date()
     @State var formattedNumberDateFormatTemplate: String = DateFormatCatalog.japaneseVariants.first ?? "m月j日"
     @State var didTriggerComposingCommitLongPress = false
