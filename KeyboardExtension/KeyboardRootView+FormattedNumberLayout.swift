@@ -983,7 +983,7 @@ extension KeyboardRootView {
         if selectedFormattedNumberCategory == .calendar {
             placeholderCard("カレンダー(P3)")
         } else if selectedFormattedNumberCategory.usesSIPrefix {
-            HStack(spacing: 2) {
+            HStack(spacing: 0) {
                 // 接頭辞ドラムは読みを出さず記号のみ(なしは「—」)。幅をぐっと狭めて単位ドラムを広く。
                 Picker("", selection: formattedNumberPrefixBinding) {
                     ForEach(SIUnitCatalog.prefixes) { prefix in
@@ -1000,6 +1000,7 @@ extension KeyboardRootView {
                 Picker("", selection: formattedNumberUnitBinding) {
                     ForEach(SIUnitCatalog.units(for: selectedFormattedNumberCategory)) { unit in
                         formattedNumberDrumLabel(symbol: unit.symbol, reading: unit.reading)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                             .lineLimit(1)
                             .truncationMode(.tail)
                             .tag(unit.symbol)
