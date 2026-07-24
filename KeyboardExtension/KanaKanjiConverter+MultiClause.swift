@@ -119,6 +119,9 @@ extension KanaKanjiConverter {
     // 連文節でも seed 順を勝たせたい活用の基底読み(オプトイン)。span を脱活用して
     // ここに含まれる基底になる場合のみ、スパン先頭活用形にボーナスを与える。
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
+    // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)。数量詞複合(2本/二本)や
+    // 分割に押されて seed 既定(日本)が沈むのを是正する。a2 seed の先頭候補ノードにボーナス。
+    static let multiClauseSeedOrderNounReadings: Set<String> = ["にほん"]
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
     static let multiClauseNaAdjectiveBigramThreshold = 2000
@@ -583,6 +586,12 @@ extension KanaKanjiConverter {
                         wordCost: costMap[surface],
                         isDictionaryFormPredicate: seedIsDictionaryFormPredicate
                     )
+                    // 名詞 seed 順の opt-in(にほん→日本 等)は先頭候補ノードにボーナスを与え、
+                    // 数量詞複合(2本/二本)や分割に連文節でも勝たせる。
+                    if Self.multiClauseSeedOrderNounReadings.contains(segmentReading),
+                        surface == KanaKanjiSeedDictionary.seed[segmentReading]?.first {
+                        preferredInflectedNodeKeys.insert("\(start)-\(end)-\(surface)")
+                    }
                 }
 
                 // (b) word_costs(Sudachi 由来)から top-K を列挙。抑制語彙は除外。
