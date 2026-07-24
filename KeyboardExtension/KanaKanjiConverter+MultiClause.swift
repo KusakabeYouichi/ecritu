@@ -170,7 +170,7 @@ extension KanaKanjiConverter {
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
-    static let multiClauseHonorificOsoiSplitPenalty = 4200
+    static let multiClauseHonorificOsoiSplitPenalty = 8000
     // かな正書として優先したい読み(副詞 いまだに、口語終止 したんだが 等)。連文節でも漢字
     // (未だに/紫檀…)や分割・レア動詞(湑む)に負けないよう、かな識別ノードを安価(< 辞書未知コスト)
     // にクランプして最上位に来られるようにする。
@@ -1033,6 +1033,11 @@ extension KanaKanjiConverter {
             }
             // 接頭辞「お」(かな)+ そい は おそい(遅い)の誤分割。お添い/お沿い を変種から落とす。
             if reading == "そい", prev == "お" {
+                penalty += Self.multiClauseHonorificOsoiSplitPenalty
+            }
+            // おそい の お接頭漢字表層(お添い/お沿い=お+添う/沿う連用の誤合成)も同様に減点する。
+            // 遅い/おそい 以外で お始まりの漢字表層はこの読みでは不要。
+            if reading == "おそい", surface != "おそい", surface.hasPrefix("お"), containsKanji(surface) {
                 penalty += Self.multiClauseHonorificOsoiSplitPenalty
             }
             // かな正書の副詞(いまだに 等)・口語終止クラスタ(んだが/んです…)はかな識別を安価にして
