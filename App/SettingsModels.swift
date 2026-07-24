@@ -350,7 +350,7 @@ enum CalendarDayColorOption: String, CaseIterable, Identifiable {
         case .bourgogne: return "bourgogne"
         case .dic156: return "DIC-156"
         case .dicF101: return "DIC-F101"
-        case .dic641: return "DIC 641"
+        case .dic641: return "DIC-641"
         case .dicF46: return "DIC-F46"
         }
     }
