@@ -4253,6 +4253,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "酒造場", "single=\(single)")
     }
 
+    // 実LM回帰: お添い/お沿い(お接頭+添う/沿う連用=おそい の誤分割)は独立語として文法的に
+    // 存在せず常に誤変換。学習(おそい→お添い)しても hidden 抑制で消えることを検証する。
+    func testRegressionRealLMOsoiHonorificMisparseSuppressedOverLearning() throws {
+        try prepareRealLMDictionary()
+        converter.store.addLearnedEntry(reading: "おそい", candidate: "お添い")
+        converter.store.waitForPendingLearningPersists()
+        try injectSuppression(["おそい": ["お添い", "お沿い"]])
+        converter.clearAllCaches()
+        let single = converter.candidates(for: "おそいよねえ", limit: 8, systemCandidateMode: .surface)
+        let multi = converter.multiClauseCandidates(for: "おそいよねえ", systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains { $0.hasPrefix("お添い") || $0.hasPrefix("お沿い") }, "single=\(single)")
+        XCTAssertFalse(multi.contains { $0.hasPrefix("お添い") || $0.hasPrefix("お沿い") }, "multi=\(multi)")
+        XCTAssertEqual(multi.first, "遅いよねえ", "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

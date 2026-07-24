@@ -301,5 +301,8 @@
 	<dict><key>phrase</key><string>です〜</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>で〜す</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>で〜〜す</string><key>shortcut</key><string>です</string></dict>
+	<!-- お添い/お沿い: おそい(遅い)の誤分割(お接頭+添う/沿う連用)。お+5段連用形は独立語として存在せず(尊敬語 お〜になる の一部のみ)、常に誤変換。学習しても抑制で消す -->
+	<dict><key>phrase</key><string>お添い</string><key>shortcut</key><string>おそい</string></dict>
+	<dict><key>phrase</key><string>お沿い</string><key>shortcut</key><string>おそい</string></dict>
 </array>
 </plist>
