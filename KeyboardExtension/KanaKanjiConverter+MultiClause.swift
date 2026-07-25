@@ -183,6 +183,13 @@ extension KanaKanjiConverter {
     // 口語の説明終止クラスタ(のだ縮約 ん + だ/です + 逆接/終助詞)。述語に付く正書かなで、
     // レア語・分割に負けやすい。全体1スパンのかな識別を安価にして 〜んだが/んだけど/んです…を
     // 通す(行ったんだが/食べたんです 等の一般ケース。名詞衝突する読みは個別 seed/clamp で補完)。
+    // て形直後の くれる補助動詞(〜てくれる/てくれない)はかなが正書(使ってくれない)。
+    // くれない 読みは 紅(名詞 LM5908)が最安の1ノードで居座り 使って紅 を作るため、て形直後の
+    // かな識別を安価にして 使ってくれない を最上位にする。名詞直後(BOS/体言)は対象外。
+    static let multiClauseTeKureAuxiliaryReadings: Set<String> = [
+        "くれ", "くれる", "くれない", "くれた", "くれて", "くれます", "くれました",
+        "くれれば", "くれよ", "くれるの", "くれないの", "くれなかった"
+    ]
     static let multiClauseColloquialExplanatoryTailReadings: Set<String> = [
         "んだが", "んだけど", "んだけれど", "んだけれども",
         "んですが", "んですけど", "んですけれど", "んですけれども",
@@ -1001,6 +1008,14 @@ extension KanaKanjiConverter {
                 !prevIsDictionaryFormPredicate,
                 !(prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false) {
                 penaltyForNounHoshii = Self.multiClauseNounHoshiiPenalty
+            }
+            // て形直後の くれる補助動詞(使ってくれない 等)はかなが正書。紅(名詞くれない)や
+            // 暮れない が繰り上がるのを、かな識別を安価にして防ぐ。prev が て/で 終わり(て形)限定。
+            if surface == reading,
+                Self.multiClauseTeKureAuxiliaryReadings.contains(reading),
+                prev != Self.multiClauseBOSMarker,
+                (prev.hasSuffix("て") || prev.hasSuffix("で")) {
+                base = min(base, Self.multiClauseKanaAdverbCost)
             }
             // 様態の そう(かな)は形容動詞語幹の直後が正書(便利そう/元気そう/静かそう)。
             // 形容動詞かどうかは LM の分布で判定する: prev→な の bigram コストが十分低い
