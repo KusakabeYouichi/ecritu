@@ -4344,6 +4344,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "だけど", limit: 6, systemCandidateMode: .surface).first, "だけど")
     }
 
+    // 実LM回帰: 複合語 殻付き(からつき)が辞書に無く単文節で出なかった。seed で供給する。
+    // ※連文節 からつきのほうが は から(助詞・激安)+付き 分割が強く 殻付き は未達(別途 curated 化が必要)。
+    func testRegressionRealLMKaratsukiSupplied() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.candidates(for: "からつき", limit: 6, systemCandidateMode: .surface).first, "殻付き")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
