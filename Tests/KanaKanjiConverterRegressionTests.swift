@@ -4327,6 +4327,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains { $0.hasPrefix("暗い") || $0.hasPrefix("昏い") }, "くらい形容詞が残存 multi=\(multi)")
     }
 
+    // 実LM回帰: 俗語 やばい/口語断定 じゃん はカタカナ形が Wikipedia LM で安く(ヤバイ/ジャン)、
+    // ヤバイジャン が連文節最良になっていた。かな識別を安価化し やばいじゃん を最上位に。
+    func testRegressionRealLMYabaiJan() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "やばいじゃん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "やばいじゃん", "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
