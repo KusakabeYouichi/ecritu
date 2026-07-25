@@ -1497,7 +1497,8 @@ extension KanaKanjiConverter {
         if let kanjiVariant = conditionalNaraKanjiVariant, !results.contains(kanjiVariant) {
             results.append(kanjiVariant)
         }
-        return results
+        // 旧仮名遣い(ゐゑヰヱ 等)の抑制は単文節と同じく連文節にも適用する(ぐらゐかなー 等)。
+        return filterHistoricalKanaSurfaceCandidates(for: normalized, candidates: results)
     }
 
     // 仮定「なら」の直前が述語(動詞辞書形/形容詞/タ形、または活用派生)か。
