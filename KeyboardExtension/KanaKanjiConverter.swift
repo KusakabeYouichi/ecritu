@@ -548,6 +548,12 @@ final class KanaKanjiConverter {
         }
     }
 
+    // かな正書の副詞の末尾(いまだ/まだ)。これで終わる読みは提示層でかな識別を先頭維持する
+    // 根拠にする(これはいまだ/これはまだ)。連濁・同音の漢字(未だ)が繰り上がるのを防ぐ。
+    static let kanaOrthographyAdverbTails: [String] = ["いまだ", "まだ"]
+    // 上記副詞の直前に来て「副詞」と判定できる助詞(しまだ→島田 の誤爆回避のためのゲート)。
+    static let kanaOrthographyAdverbBoundaryParticles: Set<Character> = ["は", "も", "が", "で", "に"]
+
     // かな識別を変換候補の先頭に残すべき読みか。かなが正書とみなせる根拠(辞書に実在する
     // かな語=ちゃんと/そして、追加語彙のかな語=だが/なのに、学習済み)がある場合のみ true。
     // 活用+postfix の合成で組み上がったかな全文一致(かってみようかな 等)は変換意図の
@@ -633,6 +639,30 @@ final class KanaKanjiConverter {
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
+        // 文末のかな終助詞クラスタのうち長音化(ー付き=話し言葉)のもの(かなー/よねー/なー 等)を
+        // 剥がした語幹がかな正書の識別なら根拠ありとする(ぐらいかなー→ぐらい: 副助詞 ぐらい は
+        // かなが正書。連濁でしか ぐらい と読まない 暗い が繰り上がるのを防ぐ)。ー無しの素の かな
+        // (かってみようかな 等の活用連鎖)は対象外=従来どおり末尾チップへ退避する。
+        for suffix in Self.multiClauseFinalParticleReadings
+        where suffix.hasSuffix("ー") && normalized.count > suffix.count && normalized.hasSuffix(suffix) {
+            let stem = String(normalized.dropLast(suffix.count))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
+        // かな正書の副詞(いまだ/まだ)で終わる読みは、末尾クラスタがかな正書(これはいまだ/
+        // これはまだ: 未だ は漢字だが会話ではかな)。ただし しまだ→島田 の誤爆を避けるため、
+        // 読み全体が副詞そのものか、直前が助詞(は/も/が/で/に)の時だけ根拠とする。
+        for tail in Self.kanaOrthographyAdverbTails
+        where normalized.hasSuffix(tail) {
+            if normalized == tail {
+                return true
+            }
+            let before = normalized.dropLast(tail.count).last
+            if let before, Self.kanaOrthographyAdverbBoundaryParticles.contains(before) {
                 return true
             }
         }
