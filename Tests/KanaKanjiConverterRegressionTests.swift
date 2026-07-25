@@ -4307,6 +4307,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "これはまだ"), "これはまだ")
     }
 
+    // 実LM回帰: て形+くれる補助動詞(使ってくれない)。くれない読みは 紅(名詞LM5908)が最安1ノードで
+    // 使って紅 を作っていた。て形直後のかな識別を安価化し 使ってくれない を最上位にする。
+    func testRegressionRealLMTeKureAuxiliary() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "つかってくれない", systemCandidateMode: .surface).first, "使ってくれない")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みてくれない", systemCandidateMode: .surface).first, "見てくれない")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たべてくれた", systemCandidateMode: .surface).first, "食べてくれた")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
