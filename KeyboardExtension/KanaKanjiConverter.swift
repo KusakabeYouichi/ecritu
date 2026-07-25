@@ -588,6 +588,13 @@ final class KanaKanjiConverter {
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return true
         }
+        // 逆接の接続助詞・接続詞(だけど/けど/けれど/けれども)で終わる読みは、かなが正書
+        // (だけど 単独/行くけど 等)。ダけど/打けど 等の漢字混じり誤変換が繰り上がるのを防ぐ。
+        // 単独(==suffix)も対象にするため hasSuffix のみで判定する。
+        for suffix in ["だけど", "だけれど", "けれども", "けれど", "けど"]
+        where normalized.hasSuffix(suffix) {
+            return true
+        }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
         // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。

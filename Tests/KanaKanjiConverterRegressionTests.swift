@@ -4335,6 +4335,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "やばいじゃん", "multi=\(multi)")
     }
 
+    // 実LM回帰: 逆接の接続詞 だけど はかなが正書。提示層のかな識別維持根拠が無く ダけど/打けど が
+    // 繰り上がっていた(単文節#1は だけど)。だけど/けど/けれど… を根拠に追加。
+    func testRegressionRealLMDakedoKanaLeading() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "だけど"), "だけど")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いくけど"), "いくけど")
+        XCTAssertEqual(converter.candidates(for: "だけど", limit: 6, systemCandidateMode: .surface).first, "だけど")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
