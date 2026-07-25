@@ -899,3 +899,10 @@ Henschke=へんちき / DAOKO=だをこ / Xérès=けれす / STELVIN=すてる�
   消えないため、実機のみ毎回 2本 が先頭・私の環境(テストは追加語彙JSON非搭載)では再現せずだった。
   日本 と衝突する にほん→2本 のみ削除(2週間/2台/2枚 等は同音衝突なしで温存)。InitialAjoutVocabMigration.json 同期。
   ※教訓: 「実機のみ・リセットで消えない」候補は 追加語彙(sacoche/Ajout)を最初に疑う。
+
+- [x] 算用数字+助数詞をロジック生成(2本/500円玉/第1回) (2307)
+  漢数字読み→算用数字パーサ(japaneseNumberReadingValue、桁 十/百/千+連濁対応)+助数詞マップで
+  arabicNumericCompoundCandidates を新設。第(だい)接頭・和語つ(ひとつ→1つ)も対応。CandidateScore
+  numericArabicCompound=400(漢数字複合360より上・辞書1200より下)で 2本>二本、日本(非数値辞書語)は上位維持。
+  連文節b4にも供給。sacoche の算用29件+第N世代3件を撤去しロジック一本化(InitialAjout同期)。
+  ※いっぽん/ひとつ は辞書語 一本/一つ が先頭(算用は候補として下位に在り=非数値でなく数値辞書語との順序は別課題)。

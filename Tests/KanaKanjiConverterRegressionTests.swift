@@ -4400,6 +4400,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains { $0 != "だけど" && $0.hasSuffix("けど") }, "だ変種+けど が残存 single=\(single)")
     }
 
+    // 実LM回帰: 算用数字+助数詞をロジック生成(arabicNumericCompoundCandidates)。追加語彙に個別登録
+    // せず任意の数×助数詞+第N回を出す。算用は漢数字複合より前(2本>二本)、辞書の非数値語(日本)は上のまま。
+    func testRegressionRealLMArabicNumericCompound() throws {
+        try prepareRealLMDictionary()
+        // パーサ単体。
+        XCTAssertEqual(KanaKanjiConverter.japaneseNumberReadingValue("ごひゃく"), 500)
+        XCTAssertEqual(KanaKanjiConverter.japaneseNumberReadingValue("にじゅう"), 20)
+        XCTAssertEqual(KanaKanjiConverter.japaneseNumberReadingValue("さん"), 3)
+        // 生成。
+        XCTAssertEqual(converter.arabicNumericCompoundCandidates(for: "にしゅうかん"), ["2週間"])
+        XCTAssertEqual(converter.arabicNumericCompoundCandidates(for: "だいいっかい"), ["第1回"])
+        // にほん: 日本(非数値辞書語)が先頭、2本 は候補にあり漢数字 二本 より前。
+        let nihon = converter.candidates(for: "にほん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(nihon.first, "日本", "nihon=\(nihon)")
+        guard let iAra = nihon.firstIndex(of: "2本"), let iKan = nihon.firstIndex(of: "二本") else {
+            return XCTFail("2本/二本 が無い nihon=\(nihon)")
+        }
+        XCTAssertLessThan(iAra, iKan, "2本 が 二本 より前 nihon=\(nihon)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

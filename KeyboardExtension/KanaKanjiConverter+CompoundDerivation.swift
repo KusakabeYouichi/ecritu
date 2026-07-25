@@ -28,9 +28,12 @@ extension KanaKanjiConverter {
     static let numericCounterSuffixCandidatesByReading: [String: [String]] = [
         "こ": ["個"],
         "えん": ["円"],
+        "えんだま": ["円玉"],
         "かい": ["回"],
         "ごう": ["号"],
         "ごうしゃ": ["号車"],
+        "せだい": ["世代"],
+        "じ": ["次"],
         "かげつ": ["か月", "カ月", "ヶ月", "ヵ月", "箇月"],
         "かしょ": ["か所", "箇所", "カ所", "ヶ所", "ヵ所"],
         "けん": ["軒", "件"],
@@ -111,6 +114,110 @@ extension KanaKanjiConverter {
     static let nounKanjiPrefixAffixCandidatesByReading: [(reading: String, candidate: String)] = [
         ("べつ", "別")
     ]
+
+    // 桁の前に来る数字(1..9)の読み。促音形(いっ/はっ/ろっ)含む。長い順に並べる(貪欲一致)。
+    static let arabicPlaceDigitReadings: [(reading: String, value: Int)] = [
+        ("きゅう", 9), ("はっ", 8), ("はち", 8), ("なな", 7), ("ろっ", 6), ("ろく", 6),
+        ("ご", 5), ("よん", 4), ("さん", 3), ("に", 2), ("いっ", 1), ("いち", 1)
+    ]
+    // 一の位(1..9)の読み。し/しち/く や 助数詞前の促音形(いっ/ろっ/はっ=1本/6本/8本)も含む。
+    static let arabicUnitDigitReadings: [(reading: String, value: Int)] = [
+        ("きゅう", 9), ("く", 9), ("はち", 8), ("はっ", 8), ("なな", 7), ("しち", 7),
+        ("ろく", 6), ("ろっ", 6), ("ご", 5), ("よん", 4), ("し", 4), ("さん", 3),
+        ("に", 2), ("いち", 1), ("いっ", 1)
+    ]
+    // 桁(降順)。連濁マーカ(ぜん/びゃく/ぴゃく)含む。
+    static let arabicPlaceMarkers: [(markers: [String], value: Int)] = [
+        (["せん", "ぜん"], 1000),
+        (["ひゃく", "びゃく", "ぴゃく"], 100),
+        (["じゅう", "じゅっ", "じっ"], 10)
+    ]
+    // 和語数詞(〜つ)。ひとつ→1つ 等。
+    static let arabicWagoTsuReadings: [String: Int] = [
+        "ひとつ": 1, "ふたつ": 2, "みっつ": 3, "よっつ": 4, "いつつ": 5,
+        "むっつ": 6, "ななつ": 7, "やっつ": 8, "ここのつ": 9
+    ]
+
+    // 漢数字の読み(いち/にじゅう/ごひゃく/さんぜん…)を算用数字値へ。1..9999。純粋な数の読みで
+    // なければ nil(末尾に余りが残る=助数詞等が混じる読みは呼び出し側で分離済みが前提)。
+    static func japaneseNumberReadingValue(_ reading: String) -> Int? {
+        guard !reading.isEmpty else {
+            return nil
+        }
+        var rest = Substring(reading)
+        var total = 0
+        var matchedAnything = false
+        for place in arabicPlaceMarkers {
+            var digit = 1
+            for (dr, dv) in arabicPlaceDigitReadings where rest.hasPrefix(dr) {
+                let after = rest.dropFirst(dr.count)
+                if place.markers.contains(where: { after.hasPrefix($0) }) {
+                    digit = dv
+                    rest = after
+                    break
+                }
+            }
+            for marker in place.markers where rest.hasPrefix(marker) {
+                total += digit * place.value
+                matchedAnything = true
+                rest = rest.dropFirst(marker.count)
+                break
+            }
+        }
+        if !rest.isEmpty {
+            for (dr, dv) in arabicUnitDigitReadings where rest == dr {
+                total += dv
+                matchedAnything = true
+                rest = ""
+                break
+            }
+        }
+        guard matchedAnything, rest.isEmpty, total > 0 else {
+            return nil
+        }
+        return total
+    }
+
+    // 算用数字+助数詞(2本/3週間/500円玉)と、序数(第1回/第2世代)をロジックで生成する。
+    // 追加語彙に個別登録せずに任意の数×助数詞を出せる。算用は漢数字より前に置きたいので
+    // 呼び出し側で漢数字複合より先に挿入する。
+    func arabicNumericCompoundCandidates(for reading: String) -> [String] {
+        guard reading.count >= 2 else {
+            return []
+        }
+        var results: [String] = []
+        var seen = Set<String>()
+        func emit(_ s: String) {
+            if seen.insert(s).inserted {
+                results.append(s)
+            }
+        }
+        // 序数接頭「第」(だい)。付き/無し両方を試す。
+        let bodies: [(prefix: String, body: String)]
+        if reading.hasPrefix("だい"), reading.count >= 4 {
+            bodies = [("第", String(reading.dropFirst(2))), ("", reading)]
+        } else {
+            bodies = [("", reading)]
+        }
+        for (ordinalPrefix, body) in bodies {
+            // 和語数詞+つ(ひとつ→1つ 等)。第 は付かない。
+            if ordinalPrefix.isEmpty, let value = Self.arabicWagoTsuReadings[body] {
+                emit("\(value)つ")
+                continue
+            }
+            for (counterReading, counterSurfaces) in Self.numericCounterSuffixCandidatesByReading
+            where body.count > counterReading.count && body.hasSuffix(counterReading) {
+                let numberReading = String(body.dropLast(counterReading.count))
+                guard let value = Self.japaneseNumberReadingValue(numberReading) else {
+                    continue
+                }
+                for surface in counterSurfaces {
+                    emit("\(ordinalPrefix)\(value)\(surface)")
+                }
+            }
+        }
+        return results
+    }
 
     func ordinalMeFallbackCandidates(
         for reading: String,

@@ -738,6 +738,11 @@ extension KanaKanjiConverter {
                 //      コストは活用派生と同じ(7200)= 分割ゴミには勝つが なんかい→難解
                 //      のような実在の非数量語には基本負ける穏当な強さ。
                 if len >= 2 {
+                    // 算用数字+助数詞(2本/第1回)を漢数字より先に供給(ユーザ方針: 算用優先)。
+                    for surface in arabicNumericCompoundCandidates(for: segmentReading)
+                    where surface != segmentReading {
+                        add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                    }
                     let numeric = numericCounterCompoundCandidates(
                         for: segmentReading,
                         userDictionary: manualUserDictionary,
