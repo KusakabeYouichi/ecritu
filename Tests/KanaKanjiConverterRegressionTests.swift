@@ -4420,6 +4420,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertLessThan(iAra, iKan, "2本 が 二本 より前 nihon=\(nihon)")
     }
 
+    // 実LM回帰: 連文節 ここにもうつってます の 現ってます を除去。基底抑制が活用に波及しないため、
+    // 現る/現って に加え活用形(現ってます/現ってる/現ってた/現った)を誤エントリ登録して各スパンで消す。
+    func testRegressionRealLMGensuruMultiSuppressed() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["うつる": ["現る"], "うつって": ["現って"], "うつってます": ["現ってます"], "うつってる": ["現ってる"], "うつってた": ["現ってた"], "うつった": ["現った"]])
+        converter.clearAllCaches()
+        let multi = converter.multiClauseCandidates(for: "ここにもうつってます", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains { $0.contains("現って") }, "現ってます 残存 multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
