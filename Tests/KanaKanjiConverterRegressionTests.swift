@@ -4316,6 +4316,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "たべてくれた", systemCandidateMode: .surface).first, "食べてくれた")
     }
 
+    // 実LM回帰: 副助詞ぐらい(連濁)はかなが正書。暗い/昏い等はくらい読みの誤エントリなので
+    // 読みぐらいで抑制(suppr)。ぐらいかなー→暗いかなー が2位に出るのを消す。
+    func testRegressionRealLMGuraiSuppressesKuraiAdjectives() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["ぐらい": ["暗い", "昏い", "冥い", "瞑い", "黯い", "闇い", "蒙い", "溟い"]])
+        converter.clearAllCaches()
+        let multi = converter.multiClauseCandidates(for: "ぐらいかなー", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ぐらいかなー", "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.hasPrefix("暗い") || $0.hasPrefix("昏い") }, "くらい形容詞が残存 multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
