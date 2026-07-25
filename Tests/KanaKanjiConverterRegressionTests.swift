@@ -4295,6 +4295,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(allowedSingle.contains { $0.contains("ゐ") }, "設定ONで旧仮名が含まれない single=\(allowedSingle)")
     }
 
+    // 実LM回帰: 提示層のかな識別先頭維持(shouldKeepKanaIdentityLeading)。エンジンがかなを最良に
+    // 選んでも根拠が無いと提示層が末尾へ退避し漢字(暗いかなー/これは未だ)が繰り上がっていた
+    // (Mac正解・実機ジャンクの真因)。かな終助詞クラスタ剥がし+かな副詞末尾で根拠を認める。
+    func testRegressionRealLMKanaIdentityLeadingEvidence() throws {
+        try prepareRealLMDictionary()
+        // ぐらいかなー: 終助詞 かなー を剥がすと ぐらい(副助詞・かな正書)。
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ぐらいかなー"), "ぐらいかなー")
+        // これはいまだ / これはまだ: 末尾がかな副詞(直前が助詞 は)。
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "これはいまだ"), "これはいまだ")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "これはまだ"), "これはまだ")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
