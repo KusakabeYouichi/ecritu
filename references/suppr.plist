@@ -313,5 +313,8 @@
 	<dict><key>phrase</key><string>溟い</string><key>shortcut</key><string>ぐらい</string></dict>
 	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
 	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>
+	<!-- 現る(うつる): うつる とは読まない。現れる=あらわれる、古語 現る=あらわる。Sudachiの誤った読み割り当て。基底+て形を登録(現ってます/現ってる/現ってた を包含) -->
+	<dict><key>phrase</key><string>現る</string><key>shortcut</key><string>うつる</string></dict>
+	<dict><key>phrase</key><string>現って</string><key>shortcut</key><string>うつって</string></dict>
 </array>
 </plist>

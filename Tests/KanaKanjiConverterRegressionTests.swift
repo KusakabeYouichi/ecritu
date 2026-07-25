@@ -4362,6 +4362,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.first?.hasPrefix("殻付き") ?? false, "multi=\(multi)")
     }
 
+    // 実LM回帰: 現る(うつる)は非標準の誤読み割り当て。基底+て形を suppr 登録し 現って/現ってます を
+    // 単文節・連文節とも除去(テストバンドルは hidden JSON 非搭載のため injectSuppression で再現)。
+    func testRegressionRealLMUtsuruGensuruSuppressed() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["うつる": ["現る"], "うつって": ["現って"]])
+        converter.clearAllCaches()
+        let single = converter.candidates(for: "うつって", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains { $0.hasPrefix("現") }, "単文節に現って残存 single=\(single)")
+        // ※連文節 ここにもうつってます の 現ってます は別の脱活用経路で残る(既知の未解決課題)。
+    }
+
     // 実LM回帰: うつる の常用表記(写る/移る/映る/感染る)を seed で上位順に固定。活用派生(うつって)
     // にも波及し、連文節の活用供給 top3 にも 写る系が入る。※現る(非標準・基底索引由来)は seed 非経由の
     // ため demote しきれず上位に残る(構造課題)。ここでは 写/移/映 が 感染/憑 より前であることを確認。
