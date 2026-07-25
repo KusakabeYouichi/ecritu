@@ -4389,6 +4389,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertLessThan(iUtsu, iKan, "写って が 感染って より前 single=\(single)")
     }
 
+    // 実LM回帰: だけど の誤生成(だ の漢字/カタカナ表層+けど=ダけど/打けど…)を誤エントリ抑制。
+    // だ はコピュラで常にかな。テストバンドルは hidden JSON 非搭載のため injectSuppression で再現。
+    func testRegressionRealLMDakedoVariantsSuppressed() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["だけど": ["ダけど", "堕けど", "大けど", "娜けど", "惰けど", "打けど", "田けど", "舵けど", "駄けど", "拿けど"]])
+        converter.clearAllCaches()
+        let single = converter.candidates(for: "だけど", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "だけど", "single=\(single)")
+        XCTAssertFalse(single.contains { $0 != "だけど" && $0.hasSuffix("けど") }, "だ変種+けど が残存 single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

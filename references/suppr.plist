@@ -316,5 +316,16 @@
 	<!-- 現る(うつる): うつる とは読まない。現れる=あらわれる、古語 現る=あらわる。Sudachiの誤った読み割り当て。基底+て形を登録(現ってます/現ってる/現ってた を包含) -->
 	<dict><key>phrase</key><string>現る</string><key>shortcut</key><string>うつる</string></dict>
 	<dict><key>phrase</key><string>現って</string><key>shortcut</key><string>うつって</string></dict>
+	<!-- だけど の誤生成: だ(コピュラ=常にかな)の漢字/カタカナ表層(ダ/打/駄/堕/大/娜/惰/田/舵/拿)+けど の合成。だけど はかなが正書 -->
+	<dict><key>phrase</key><string>ダけど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>打けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>駄けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>堕けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>大けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>娜けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>惰けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>田けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>舵けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>拿けど</string><key>shortcut</key><string>だけど</string></dict>
 </array>
 </plist>
