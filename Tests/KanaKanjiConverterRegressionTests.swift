@@ -4362,6 +4362,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.first?.hasPrefix("殻付き") ?? false, "multi=\(multi)")
     }
 
+    // 実LM回帰: うつる の常用表記(写る/移る/映る/感染る)を seed で上位順に固定。活用派生(うつって)
+    // にも波及し、連文節の活用供給 top3 にも 写る系が入る。※現る(非標準・基底索引由来)は seed 非経由の
+    // ため demote しきれず上位に残る(構造課題)。ここでは 写/移/映 が 感染/憑 より前であることを確認。
+    func testRegressionRealLMUtsuruCommonWritingsOrder() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "うつって", limit: 10, systemCandidateMode: .surface)
+        for w in ["写って", "移って", "映って"] {
+            XCTAssertTrue(single.contains(w), "\(w) が候補に無い single=\(single)")
+        }
+        guard let iUtsu = single.firstIndex(of: "写って"),
+            let iKan = single.firstIndex(of: "感染って") else {
+            return XCTFail("single=\(single)")
+        }
+        XCTAssertLessThan(iUtsu, iKan, "写って が 感染って より前 single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
