@@ -4351,6 +4351,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "からつき", limit: 6, systemCandidateMode: .surface).first, "殻付き")
     }
 
+    // 実LM回帰: 殻付き を curated(misc, コスト1500)化すると連文節でも から(助詞)+付き 分割に勝つ。
+    // テストバンドルは misc JSON を読まないため addUserEntry で curated を再現する。
+    func testRegressionRealLMKaratsukiCuratedWinsMultiClause() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "からつき", candidate: "殻付き")
+        converter.store.waitForPendingLearningPersists()
+        converter.clearAllCaches()
+        let multi = converter.multiClauseCandidates(for: "からつきのほうが", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.hasPrefix("殻付き") ?? false, "multi=\(multi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
