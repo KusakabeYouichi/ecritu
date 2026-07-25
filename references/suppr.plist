@@ -311,5 +311,7 @@
 	<dict><key>phrase</key><string>闇い</string><key>shortcut</key><string>ぐらい</string></dict>
 	<dict><key>phrase</key><string>蒙い</string><key>shortcut</key><string>ぐらい</string></dict>
 	<dict><key>phrase</key><string>溟い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
+	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>
 </array>
 </plist>
