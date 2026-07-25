@@ -5,35 +5,7 @@
 	<dict><key>phrase</key><string>고추</string><key>shortcut</key><string>こちゅ</string></dict>
 	<dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>さき</string></dict>
 	<dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
-	<dict><key>phrase</key><string>100円玉</string><key>shortcut</key><string>ひゃくえんだま</string></dict>
-	<dict><key>phrase</key><string>10円玉</string><key>shortcut</key><string>じゅうえんだま</string></dict>
-	<dict><key>phrase</key><string>1か月</string><key>shortcut</key><string>いっかげつ</string></dict>
-	<dict><key>phrase</key><string>1つ</string><key>shortcut</key><string>ひとつ</string></dict>
-	<dict><key>phrase</key><string>1円玉</string><key>shortcut</key><string>いちえんだま</string></dict>
-	<dict><key>phrase</key><string>1軒</string><key>shortcut</key><string>いっけん</string></dict>
-	<dict><key>phrase</key><string>1次</string><key>shortcut</key><string>いちじ</string></dict>
-	<dict><key>phrase</key><string>1週間</string><key>shortcut</key><string>いっしゅうかん</string></dict>
-	<dict><key>phrase</key><string>1台</string><key>shortcut</key><string>いちだい</string></dict>
-	<dict><key>phrase</key><string>1本</string><key>shortcut</key><string>いっぽん</string></dict>
-	<dict><key>phrase</key><string>1枚</string><key>shortcut</key><string>いちまい</string></dict>
-	<dict><key>phrase</key><string>2か月</string><key>shortcut</key><string>にかげつ</string></dict>
-	<dict><key>phrase</key><string>2つ</string><key>shortcut</key><string>ふたつ</string></dict>
-	<dict><key>phrase</key><string>2軒</string><key>shortcut</key><string>にけん</string></dict>
-	<dict><key>phrase</key><string>2次</string><key>shortcut</key><string>にじ</string></dict>
-	<dict><key>phrase</key><string>2週間</string><key>shortcut</key><string>にしゅうかん</string></dict>
-	<dict><key>phrase</key><string>2台</string><key>shortcut</key><string>にだい</string></dict>
-	<dict><key>phrase</key><string>2枚</string><key>shortcut</key><string>にまい</string></dict>
-	<dict><key>phrase</key><string>3か月</string><key>shortcut</key><string>さんかげつ</string></dict>
-	<dict><key>phrase</key><string>3つ</string><key>shortcut</key><string>みっつ</string></dict>
-	<dict><key>phrase</key><string>3軒</string><key>shortcut</key><string>さんけん</string></dict>
-	<dict><key>phrase</key><string>3週間</string><key>shortcut</key><string>さんしゅうかん</string></dict>
-	<dict><key>phrase</key><string>3台</string><key>shortcut</key><string>さんだい</string></dict>
-	<dict><key>phrase</key><string>3本</string><key>shortcut</key><string>さんぼん</string></dict>
-	<dict><key>phrase</key><string>3枚</string><key>shortcut</key><string>さんまい</string></dict>
-	<dict><key>phrase</key><string>4週間</string><key>shortcut</key><string>よんしゅうかん</string></dict>
-	<dict><key>phrase</key><string>500円玉</string><key>shortcut</key><string>ごひゃくえんだま</string></dict>
-	<dict><key>phrase</key><string>50円玉</string><key>shortcut</key><string>ごじゅうえんだま</string></dict>
-	<dict><key>phrase</key><string>5円玉</string><key>shortcut</key><string>ごえんだま</string></dict>
+	<!-- 算用数字+助数詞(1本/2週間/500円玉/第1回…)は arabicNumericCompoundCandidates でロジック生成する(旧: ここに個別登録していた)。 -->
 	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
 	<dict><key>phrase</key><string>Binance</string><key>shortcut</key><string>ばいなんす</string></dict>
 	<dict><key>phrase</key><string>Buy&amp;Ship</string><key>shortcut</key><string>ばいあんどしっぷ</string></dict>
@@ -144,9 +116,6 @@
 	<dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>
 	<dict><key>phrase</key><string>多頭飼い</string><key>shortcut</key><string>たとうがい</string></dict>
 	<dict><key>phrase</key><string>台南担仔麺</string><key>shortcut</key><string>たいなんたーみー</string></dict>
-	<dict><key>phrase</key><string>第1世代</string><key>shortcut</key><string>だいいちせだい</string></dict>
-	<dict><key>phrase</key><string>第2世代</string><key>shortcut</key><string>だいにせだい</string></dict>
-	<dict><key>phrase</key><string>第3世代</string><key>shortcut</key><string>だいさんせだい</string></dict>
 	<dict><key>phrase</key><string>担仔麺</string><key>shortcut</key><string>たーみー</string></dict>
 	<dict><key>phrase</key><string>短焦点</string><key>shortcut</key><string>たんしょうてん</string></dict>
 	<dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>

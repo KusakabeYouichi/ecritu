@@ -118,6 +118,9 @@ final class KanaKanjiConverter {
         // 歴史的経緯: 数詞複合はブースト値(360)を基礎点として流用してきた。
         // 辞書語より大きく下に置く意図はそのまま名前だけ明示する。
         static let numericCounterCompound = 360
+        // 算用数字+助数詞(2本/第1回)。漢数字複合(360)より上・辞書(1200)より下=にほんは日本が
+        // 勝つが 2本 も候補に出し、漢数字 二本 より前に置く(ユーザ方針: 算用優先)。
+        static let numericArabicCompound = 400
         // 収穫底値(word_cost>=10000)の辞書丸ごとエントリ。Sudachi のレア名前・表記ゆれ
         // 収穫がほぼ全てで、高頻度語の合成(夏+は/水+は 等)より下に置く。ただし bfs 合成
         // (1040)の直下に留め、深いジャンク合成(侑瞳か 等の名前+かな断片)よりは上に
@@ -340,6 +343,12 @@ final class KanaKanjiConverter {
             limit: limit * 2
         )
         addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
+
+        addCandidates(
+            arabicNumericCompoundCandidates(for: reading),
+            baseScore: CandidateScore.numericArabicCompound,
+            to: &scores
+        )
 
         addCandidates(
             numericCounterCompoundCandidates(
