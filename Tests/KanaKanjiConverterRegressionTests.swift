@@ -4279,6 +4279,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertLessThan(kanaIdx, kanjiIdx, "未だに が いまだに より前 single=\(single)")
     }
 
+    // 実LM回帰: 旧仮名遣い(ゐゑヰヱ)は既定(historicalKanaSurfaceAllowed=false)で単文節・連文節とも
+    // 抑制。設定ONで含める。ぐらいかなー→ぐらゐかなー 等。
+    func testRegressionRealLMHistoricalKanaSuppressedByDefault() throws {
+        try prepareRealLMDictionary()
+        converter.setHistoricalKanaSurfaceAllowed(false)
+        let multi = converter.multiClauseCandidates(for: "ぐらいかなー", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains { $0.contains("ゐ") || $0.contains("ゑ") }, "旧仮名が連文節に残存 multi=\(multi)")
+        let single = converter.candidates(for: "ぐらい", limit: 24, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains { $0.contains("ゐ") || $0.contains("ゑ") }, "旧仮名が単文節に残存 single=\(single)")
+        // 設定ONなら含める。
+        converter.setHistoricalKanaSurfaceAllowed(true)
+        converter.clearAllCaches()
+        let allowedSingle = converter.candidates(for: "ぐらい", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(allowedSingle.contains { $0.contains("ゐ") }, "設定ONで旧仮名が含まれない single=\(allowedSingle)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

@@ -386,24 +386,30 @@ extension KanaKanjiConverter {
         return false
     }
 
+    // 旧仮名遣い専用の仮名(合拗音以外の歴史的仮名)。これらを含む表層は旧仮名遣いとみなす。
+    // ゐ/ゑ(ひらがな)・ヰ/ヱ(カタカナ)。設定「旧仮名遣いの候補を含める」OFF(既定)で抑制。
+    static let historicalKanaScalars: Set<Character> = ["ゐ", "ゑ", "ヰ", "ヱ"]
+
     func filterHistoricalKanaSurfaceCandidates(
         for reading: String,
         candidates: [String]
     ) -> [String] {
         let allowed = stateQueue.sync { historicalKanaSurfaceAllowed }
 
-        guard !allowed,
-            reading.hasSuffix("える") else {
+        guard !allowed else {
             return candidates
         }
 
         return candidates.filter { candidate in
-            guard candidate.count >= 2,
-                candidate.hasSuffix("へる") else {
-                return true
+            // 旧仮名文字(ゐゑヰヱ)を含む表層(ぐらゐ/ゐる/ウヰスキー 等)は旧仮名遣い。
+            if candidate.contains(where: { Self.historicalKanaScalars.contains($0) }) {
+                return false
             }
-
-            return false
+            // える動詞の へる 旧仮名活用(給へる/覚へる 等)。読みが える 終わりの時のみ。
+            if reading.hasSuffix("える"), candidate.count >= 2, candidate.hasSuffix("へる") {
+                return false
+            }
+            return true
         }
     }
 
