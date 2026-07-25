@@ -257,6 +257,27 @@ extension KanaKanjiConverter {
 
         var derived: [String] = []
 
+        // フル読み自体が「お/ご/御 始まりでない漢字語」(おそい→遅い、おもい→重い 等)を辞書に
+        // 持つなら、それは丁寧接頭辞ではなく1語。お+[語幹候補]の総なめ合成(お添い/お沿い/お初位…
+        // =おそい の誤分割)を止める。お名前/お仕事(フル語なし)や お金/お店(丸ごと辞書語)は
+        // この判定に該当しないため温存される。
+        let fullReadingHasStandaloneWord = candidatesForReading(
+            reading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode
+        ).contains { candidate in
+            guard let firstScalar = candidate.unicodeScalars.first else {
+                return false
+            }
+            if candidate.hasPrefix("お") || candidate.hasPrefix("ご") || candidate.hasPrefix("御") {
+                return false
+            }
+            return (0x4E00...0x9FFF).contains(firstScalar.value)
+                || (0x3400...0x4DBF).contains(firstScalar.value)
+                || firstScalar.value == 0x3005
+        }
+
         for prefix in Self.politePrefixPassthroughPrefixes where reading.hasPrefix(prefix) {
             let stem = String(reading.dropFirst(prefix.count))
 
@@ -280,7 +301,8 @@ extension KanaKanjiConverter {
                     stemReading: stem,
                     userDictionary: userDictionary,
                     initialUserDictionary: initialUserDictionary,
-                    systemCandidateMode: systemCandidateMode
+                    systemCandidateMode: systemCandidateMode,
+                    allowBareRenyou: !fullReadingHasStandaloneWord
                 )
             )
 
@@ -293,6 +315,13 @@ extension KanaKanjiConverter {
                     systemCandidateMode: systemCandidateMode
                 )
             )
+
+            // お+名詞の素通り合成はフル読みが1語でない時だけ(お名前/お仕事)。おそい→遅い の
+            // ように1語なら お+[そい候補]の誤合成を作らない。※お〜する/お〜になる/お〜ください
+            // (上の3ブランチ)は接尾辞でゲート済みなので影響しない。
+            guard !fullReadingHasStandaloneWord else {
+                continue
+            }
 
             let stemCandidates = orderedDerivationBaseCandidates(
                 candidatesForReading(
@@ -444,7 +473,8 @@ extension KanaKanjiConverter {
         stemReading: String,
         userDictionary: [String: [String]],
         initialUserDictionary: [String: [String]],
-        systemCandidateMode: KanaKanjiCandidateSourceMode
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        allowBareRenyou: Bool = true
     ) -> [String] {
         guard prefix == "お" else {
             return []
@@ -452,16 +482,21 @@ extension KanaKanjiConverter {
 
         var derived: [String] = []
 
-        derived.append(
-            contentsOf: politePrefixRenyouCandidates(
-                prefix: prefix,
-                trailingSuffix: "",
-                renyouReading: stemReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode
+        // バラの お+連用形(接尾辞なし)は お願い/お知らせ 等の名詞化連用のみ有効で、フル読みが
+        // 1語(おそい→遅い)の場合は お添い/お沿い の誤合成になる。allowBareRenyou で抑止する。
+        // お〜になる(下の naruSuffix ループ)は接尾辞でゲート済みなので常に許可。
+        if allowBareRenyou {
+            derived.append(
+                contentsOf: politePrefixRenyouCandidates(
+                    prefix: prefix,
+                    trailingSuffix: "",
+                    renyouReading: stemReading,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
             )
-        )
+        }
 
         for naruSuffix in Self.honorificONaruInflectionSuffixes where stemReading.hasSuffix(naruSuffix) {
             guard let renyouReading = removingSuffix(stemReading, suffix: naruSuffix),

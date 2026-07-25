@@ -4253,19 +4253,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "酒造場", "single=\(single)")
     }
 
-    // 実LM回帰: お添い/お沿い(お接頭+添う/沿う連用=おそい の誤分割)は独立語として文法的に
-    // 存在せず常に誤変換。学習(おそい→お添い)しても hidden 抑制で消えることを検証する。
-    func testRegressionRealLMOsoiHonorificMisparseSuppressedOverLearning() throws {
+    // 実LM回帰: おそい は 遅い という1語なので、丁寧接頭辞の お+[そい候補](お添い/お沿い/お副い/
+    // お初位…)を単文節合成で作らない(根本修正=そもそも候補に出さない→学習もされない)。
+    // フル読みが1語でない お名前 は温存する。
+    func testRegressionRealLMOsoiNoHonorificMisparseCandidates() throws {
         try prepareRealLMDictionary()
-        converter.store.addLearnedEntry(reading: "おそい", candidate: "お添い")
-        converter.store.waitForPendingLearningPersists()
-        try injectSuppression(["おそい": ["お添い", "お沿い"]])
-        converter.clearAllCaches()
-        let single = converter.candidates(for: "おそいよねえ", limit: 8, systemCandidateMode: .surface)
-        let multi = converter.multiClauseCandidates(for: "おそいよねえ", systemCandidateMode: .surface)
-        XCTAssertFalse(single.contains { $0.hasPrefix("お添い") || $0.hasPrefix("お沿い") }, "single=\(single)")
-        XCTAssertFalse(multi.contains { $0.hasPrefix("お添い") || $0.hasPrefix("お沿い") }, "multi=\(multi)")
-        XCTAssertEqual(multi.first, "遅いよねえ", "multi=\(multi)")
+        let osoi = converter.candidates(for: "おそい", limit: 24, systemCandidateMode: .surface)
+        XCTAssertFalse(osoi.contains { $0.hasPrefix("お") && $0 != "おそい" }, "お+誤合成が残っている osoi=\(osoi)")
+        XCTAssertEqual(osoi.first, "遅い", "osoi=\(osoi)")
+        // フル読みが1語でない honorific 名詞は温存(お名前)。
+        let oname = converter.candidates(for: "おなまえ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(oname.contains("お名前"), "お名前 が失われた oname=\(oname)")
+    }
+
+    // 実LM回帰: いまだに は かな(いまだに)が先頭、合成語 未だに(辞書に無く 未だ+に)を seed 2番手で
+    // 供給して候補に残す。順序は いまだに → 未だに。
+    func testRegressionRealLMImadaniKeepsMidaAfterKana() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "いまだに", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "いまだに", "single=\(single)")
+        guard let kanaIdx = single.firstIndex(of: "いまだに"),
+            let kanjiIdx = single.firstIndex(of: "未だに") else {
+            return XCTFail("未だに が候補に無い single=\(single)")
+        }
+        XCTAssertLessThan(kanaIdx, kanjiIdx, "未だに が いまだに より前 single=\(single)")
     }
 
     private func prepareRealLMDictionary() throws {
