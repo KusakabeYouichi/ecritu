@@ -4581,6 +4581,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "いったのにー", systemCandidateMode: .surface).first, "行ったのにー")
     }
 
+    // 実LM回帰: ろーぬげんさん→ローヌ原産(ローヌ/原産 とも辞書語。連文節が正しく分割することの確認)。
+    func testRegressionRealLMRhoneGensan() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ろーぬげんさん", systemCandidateMode: .surface).first, "ローヌ原産")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
