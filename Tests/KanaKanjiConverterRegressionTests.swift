@@ -4444,6 +4444,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "では"), "では keepKana")
     }
 
+    // 実LM回帰: 長音終助詞(かなー)・丁寧ます+終助詞(ますね/ますよ/ました)はエンジンがかなを1位に
+    // 返すが提示層 keepKana=false で末尾退避し カなー/マスね が繰り上がっていた。keepKana=true に。
+    // すます(澄ます が正)はエンジンが漢字1位なので keepKana=true でも澄ますは不変(誤爆なし)。
+    func testRegressionRealLMKanaaMasuneKanaLeading() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "かなー"), "かなー")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ますね"), "ますね")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ました"), "ました")
+        XCTAssertEqual(converter.candidates(for: "ますね", limit: 3, systemCandidateMode: .surface).first, "ますね")
+        // 誤爆防止: すます は 澄ます が先頭のまま(kana識別は先頭でないので keepKana は影響しない)。
+        XCTAssertNotEqual(converter.candidates(for: "すます", limit: 3, systemCandidateMode: .surface).first, "すます")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

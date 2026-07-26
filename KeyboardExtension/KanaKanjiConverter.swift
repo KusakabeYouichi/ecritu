@@ -609,6 +609,18 @@ final class KanaKanjiConverter {
         if Self.multiClauseCompoundParticles.contains(normalized) {
             return true
         }
+        // 長音化した終助詞クラスタそのもの(かなー/よねー/なー 等、会話の詠嘆・疑問)はかなが正書。
+        // か(過/花/夏…)+なー 等の1字漢字合成が提示層で繰り上がるのを防ぐ。
+        if normalized.hasSuffix("ー"), Self.multiClauseFinalParticleReadings.contains(normalized) {
+            return true
+        }
+        // 丁寧の ます(常にかな。マス/升/増す 等の漢字・カタカナ化は不自然)+終助詞/助動詞
+        // (ね/よ/か/ました…)で終わる読み。ますね→マスね 等の繰り上がりを防ぐ。
+        for suffix in ["ますね", "ますよ", "ますか", "ますが", "ますし", "ますよね", "ますねー", "ますよー",
+                       "ました", "まして", "ませんか", "ません", "ましょう", "ましょ", "ます"]
+        where normalized.hasSuffix(suffix) {
+            return true
+        }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
         // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。
