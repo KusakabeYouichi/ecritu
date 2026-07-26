@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260726192328"
+    private static let editionUpdatedAtRaw: String = "20260726205749"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -767,8 +767,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var initialLoadingToast: some View {
-        if isContainerBusy,
-            didCompleteInitialDataSnapshot {
+        if isContainerBusy || !didCompleteInitialDataSnapshot {
             VStack {
                 loadingToastLabel
             }
@@ -784,14 +783,10 @@ struct ContentView: View {
                 AppTheme.screenBackground
                     .ignoresSafeArea()
 
-                if !didCompleteInitialDataSnapshot {
-                    VStack {
-                        loadingToastLabel
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .padding(.horizontal, 24)
-                } else {
-                    ScrollView {
+                // UI は初期化(snapshot/migration)完了を待たず即表示する。初期化中は下の
+                // initialLoadingToast(小さいトースト)を重ね、.disabled で操作だけ止める
+                // (白背景の全画面 Loading で待たせない。ユーザ方針)。
+                ScrollView {
                         VStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 Spacer(minLength: 0)
@@ -1063,7 +1058,6 @@ struct ContentView: View {
                         .padding(20)
                     }
                     .disabled(isBootstrappingInitialData)
-                }
             }
             .onAppear {
                 handleContainerAppAppear()
