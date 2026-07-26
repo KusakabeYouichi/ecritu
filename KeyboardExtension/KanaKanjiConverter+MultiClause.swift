@@ -311,6 +311,9 @@ extension KanaKanjiConverter {
     // 助詞落ち口語は競合もかな識別=床上げ済みのため逆転しない)。かな識別を wc で安くする
     // 案(どう=4200)は そうしん→そう+しん 等の語中分断を生むため不採用(2118検証)。
     static let multiClauseSingleKanjiNounBeforeVerbPenalty = 600
+    // 辞書形動詞(終止形。描く/走る/見る 等)の直後に して/する/した は非文法(正しくは て形 描いて)。
+    // 描くして/走るして のような誤合成を強く減点し、隠して(かくす て形)等の正しい経路に譲る。
+    static let multiClauseDictionaryFormPlusSuruPenalty = 5000
     // 辞書/変換にはあるがコーパス(LM)未収録の語。unigram 最大(8139)+バックオフ(500)より
     // 上に置き「どの既知語よりレア」として扱う。以前の 6000 は LM 中央値(7649)より安く、
     // 八津(OOV)が 奴(unigram 5963)に勝つ・ちゃ〜んと が ちゃんと に勝つ等の OOV 逆転を
@@ -1081,6 +1084,11 @@ extension KanaKanjiConverter {
                 !prevIsInflectionDerived,
                 isInflectionDerived || isDictionaryFormPredicate {
                 penalty += Self.multiClauseSingleKanjiNounBeforeVerbPenalty
+            }
+            // 辞書形動詞(終止形。描く/走る 等)+ して/する/した は非文法(正しくは て形)。誤合成を減点。
+            if prevIsDictionaryFormPredicate,
+                reading == "して" || reading == "する" || reading == "した" || reading == "します" {
+                penalty += Self.multiClauseDictionaryFormPlusSuruPenalty
             }
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
             // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に

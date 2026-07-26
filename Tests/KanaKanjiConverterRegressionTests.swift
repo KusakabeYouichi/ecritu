@@ -4499,6 +4499,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // 実LM回帰: びょう の 眇(見間違えやすい)を seed 末尾で降格(秒先頭・眇は廟/渺の後)。
+    func testRegressionRealLMByouGensuruDemoted() throws {
+        try prepareRealLMDictionary()
+        let byou = converter.candidates(for: "びょう", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(byou.first, "秒", "byou=\(byou)")
+        guard let iByou = byou.firstIndex(of: "廟"), let iGen = byou.firstIndex(of: "眇") else {
+            return XCTFail("廟/眇 が無い byou=\(byou)")
+        }
+        XCTAssertLessThan(iByou, iGen, "眇 が 廟 より後 byou=\(byou)")
+    }
+
+    // 実LM回帰: 長押し/隠して/こぞって を curated(misc)化で連文節・単文節に供給(seedは連文節に入らない)。
+    // 辞書形動詞+して 誤合成(描くして)は一般ペナルティで抑止。テストは addUserEntry で curated 再現。
+    func testRegressionRealLMBatch4Curated() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "ながおし", candidate: "長押し")
+        converter.store.addUserEntry(reading: "こぞって", candidate: "こぞって")
+        converter.store.addUserEntry(reading: "かくして", candidate: "隠して")
+        converter.store.waitForPendingLearningPersists()
+        converter.clearAllCaches()
+        XCTAssertTrue(converter.multiClauseCandidates(for: "ながおしで", systemCandidateMode: .surface).first?.hasPrefix("長押し") ?? false)
+        XCTAssertEqual(converter.candidates(for: "こぞって", limit: 4, systemCandidateMode: .surface).first, "こぞって")
+        let umaku = converter.multiClauseCandidates(for: "うまくかくして", systemCandidateMode: .surface)
+        XCTAssertTrue(umaku.first?.hasSuffix("隠して") ?? false, "umaku=\(umaku)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
