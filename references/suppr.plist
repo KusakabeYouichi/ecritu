@@ -192,8 +192,6 @@
 	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>
 	<!-- 石ユ: 石工(いしく)のカタカナ混じり表記ゆれエントリ(wc10000、うツかり族)。お+石ユ 敬語合成で どちらもお石ユ 等を作る -->
 	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
-	<!-- いたゞく: 繰り返し記号ゞの表記ゆれエントリ(wc9407)。いたゞきました 等を派生させる -->
-	<dict><key>phrase</key><string>いたゞく</string><key>shortcut</key><string>いただく</string></dict>
 	<!-- ぜい金: 税金(ぜいきん)のかな漢字混じり表記ゆれエントリ(wc8269、rank1収穫遺物)。連文節の同スパン変種に浮上する -->
 	<dict><key>phrase</key><string>ぜい金</string><key>shortcut</key><string>ぜいきん</string></dict>
 	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
@@ -223,8 +221,6 @@
 	     蚕糸+か に負ける)。exactReadingOnlySeed で さんし 完全一致時のみ末尾供給し合成・連文節から排除。
 	     他の さんし 名詞(参仕/散仕/三思 等)は unigram を持たずOOVで さん+しか に負けるため対象外 -->
 	<dict><key>phrase</key><string>蚕糸</string><key>shortcut</key><string>さんし</string></dict>
-	<!-- こゝ: 踊り字の旧表記。今どきの入力には不要 -->
-	<dict><key>phrase</key><string>こゝ</string><key>shortcut</key><string>ここ</string></dict>
 	<!-- ここ のレア人名収穫(rank13-23)。ここでは/ここに 等の合成・連文節を汚すため辞書からは
 	     抑制し、exactReadingOnlySeed で ここ 完全一致時のみ末尾供給に移す -->
 	<dict><key>phrase</key><string>小恋</string><key>shortcut</key><string>ここ</string></dict>
@@ -289,9 +285,8 @@
 	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
 	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>
 	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
-	<!-- イイね/いゝね: 今どき流行らない書き方(イイ=カタカナ強調、いゝ=踊り字)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存) -->
+	<!-- イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 	<dict><key>phrase</key><string>イイね</string><key>shortcut</key><string>いいね</string></dict>
-	<dict><key>phrase</key><string>いゝね</string><key>shortcut</key><string>いいね</string></dict>
 	<!-- あした の古語読み・カタカナ収穫のうち不要分: 晨(古語)、アシタ(カタカナ収穫 wc5527)。
 	     朝(あした)は候補として残す(先頭対策は misc の 明日 curated 側で行う) -->
 	<dict><key>phrase</key><string>晨</string><key>shortcut</key><string>あした</string></dict>
