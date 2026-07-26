@@ -4469,6 +4469,36 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertLessThan(iByou, iByou2, "秒 が 眇 より前 byou=\(byou)")
     }
 
+    // 回帰: 直前確定が数字(半角/全角)なら助数詞を先頭へ前置する純粋関数(90確定→びょう→秒)。
+    func testRegressionDigitContextCounterBoost() throws {
+        let cands = ["鋲", "秒", "病", "眇"]
+        // 直前が数字(半角) → 秒 が先頭。
+        XCTAssertEqual(
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "びょう", precedingCharacter: "9").first,
+            "秒"
+        )
+        // 全角数字も対象。
+        XCTAssertEqual(
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "びょう", precedingCharacter: "０").first,
+            "秒"
+        )
+        // 直前が数字でなければ不変。
+        XCTAssertEqual(
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "びょう", precedingCharacter: "あ"),
+            cands
+        )
+        // 助数詞でない読みは不変。
+        XCTAssertEqual(
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(["日本", "二本"], reading: "にほん", precedingCharacter: "9"),
+            ["日本", "二本"]
+        )
+        // ほん→本 も数字直後で先頭に。
+        XCTAssertEqual(
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(["盆", "本", "翻"], reading: "ほん", precedingCharacter: "3").first,
+            "本"
+        )
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
