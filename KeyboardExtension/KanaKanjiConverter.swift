@@ -29,6 +29,8 @@ final class KanaKanjiConverter {
     let kanaIdentityLeadingCacheLimit = 256
 
     var historicalKanaSurfaceAllowed: Bool = false
+    // 仮名踊り字(ゝ/ゞ/ヽ/ヾ)。旧仮名遣い(ゐゑヰヱ)とは独立に制御する。
+    var iterationMarkSurfaceAllowed: Bool = false
 
     init(store: KanaKanjiStore) {
         self.store = store
@@ -41,6 +43,17 @@ final class KanaKanjiConverter {
             }
 
             historicalKanaSurfaceAllowed = allowed
+            invalidateCandidateCache()
+        }
+    }
+
+    func setIterationMarkSurfaceAllowed(_ allowed: Bool) {
+        stateQueue.sync {
+            guard iterationMarkSurfaceAllowed != allowed else {
+                return
+            }
+
+            iterationMarkSurfaceAllowed = allowed
             invalidateCandidateCache()
         }
     }

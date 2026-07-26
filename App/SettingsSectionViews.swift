@@ -646,13 +646,32 @@ struct HistoricalKanaCandidatesSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("旧仮名遣い・踊り字の候補")
+            Text("旧仮名遣い候補")
                 .font(.headline)
 
-            Toggle("旧仮名遣い・踊り字の候補を含める", isOn: $isEnabled)
+            Toggle("旧仮名遣いの候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
 
-            Text("「かえる→変へる」のような歴史的仮名遣いや、かな踊り字(ゝ/ゞ/ヽ/ヾ=繰り返し記号。いゝ/こゝ 等)の表記を変換結果に含めるかを切り替えます。既定はオフ(現代表記のみ)。※漢字の々(人々/時々 等)は常に有効です。")
+            Text("「かえる→変へる」のような歴史的仮名遣い(ゐ/ゑ/ヰ/ヱ を含む表記)を変換結果に含めるかを切り替えます。既定はオフ(現代仮名遣いのみ)。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
+struct IterationMarkCandidatesSettingsSection: View {
+    @Binding var isEnabled: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("仮名の踊り字候補")
+                .font(.headline)
+
+            Toggle("仮名の踊り字の候補を含める", isOn: $isEnabled)
+                .toggleStyle(.switch)
+
+            Text("かな踊り字(繰り返し記号 ゝ/ゞ/ヽ/ヾ。いゝ/こゝ/バナヽ 等)を含む表記を変換結果に含めるかを切り替えます。既定はオフ。※漢字の々(人々/時々 等)は常に有効です。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
