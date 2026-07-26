@@ -4430,6 +4430,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains { $0.contains("現って") }, "現ってます 残存 multi=\(multi)")
     }
 
+    // 実LM回帰: しちにん→7人/七人(arabic+kanji)、はいすいこう→排水溝(seed供給・排水坑より前)、
+    // しゅちょう→主張(LM最頻・seed先頭化)、では→かな先頭(複合助詞・提示層維持)。
+    func testRegressionRealLMBatch3() throws {
+        try prepareRealLMDictionary()
+        let shichinin = converter.candidates(for: "しちにん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(shichinin.contains("7人"), "しちにん=\(shichinin)")
+        XCTAssertTrue(shichinin.contains("七人"), "しちにん=\(shichinin)")
+        let haisui = converter.candidates(for: "はいすいこう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(haisui.first, "排水溝", "はいすいこう=\(haisui)")
+        let shuchou = converter.candidates(for: "しゅちょう", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(shuchou.first, "主張", "しゅちょう=\(shuchou)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "では"), "では keepKana")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

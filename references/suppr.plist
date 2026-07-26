@@ -320,6 +320,10 @@
 	<dict><key>phrase</key><string>現ってる</string><key>shortcut</key><string>うつってる</string></dict>
 	<dict><key>phrase</key><string>現ってた</string><key>shortcut</key><string>うつってた</string></dict>
 	<dict><key>phrase</key><string>現った</string><key>shortcut</key><string>うつった</string></dict>
+	<!-- では の誤生成: で(格助詞/接続=かな)の漢字/カタカナ表層(デ/出/手)+は の合成。では はかなが正書。手 は連濁でしか で と読まない -->
+	<dict><key>phrase</key><string>デは</string><key>shortcut</key><string>では</string></dict>
+	<dict><key>phrase</key><string>出は</string><key>shortcut</key><string>では</string></dict>
+	<dict><key>phrase</key><string>手は</string><key>shortcut</key><string>では</string></dict>
 	<!-- だけど の誤生成: だ(コピュラ=常にかな)の漢字/カタカナ表層(ダ/打/駄/堕/大/娜/惰/田/舵/拿)+けど の合成。だけど はかなが正書 -->
 	<dict><key>phrase</key><string>ダけど</string><key>shortcut</key><string>だけど</string></dict>
 	<dict><key>phrase</key><string>打けど</string><key>shortcut</key><string>だけど</string></dict>

@@ -604,6 +604,11 @@ final class KanaKanjiConverter {
         where normalized.hasSuffix(suffix) {
             return true
         }
+        // 複合助詞(では/には/とは/でも 等)そのものはかなが正書。デは/出は/手は 等の漢字混じり
+        // 誤変換が提示層で繰り上がるのを防ぐ(単独入力=複合助詞の話題断片)。
+        if Self.multiClauseCompoundParticles.contains(normalized) {
+            return true
+        }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
         // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。
