@@ -4587,6 +4587,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ろーぬげんさん", systemCandidateMode: .surface).first, "ローヌ原産")
     }
 
+    // 実LM回帰: かな正書語+助詞+ある/いる の全かな句(やつにはある)を提示層で先頭維持。ある/いる を
+    // 剥がして再帰し語幹(やつ)がかな正書なら keepKana=true(奴にはある への繰り上がりを防ぐ)。
+    // ろーぬげんさん→ローヌ原産 も現行コードで先頭(退行防止)。
+    func testRegressionRealLMYatsuNihaAruAndRhone() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やつにはある"), "やつにはある keepKana")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ろーぬげんさん", systemCandidateMode: .surface).first, "ローヌ原産")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
