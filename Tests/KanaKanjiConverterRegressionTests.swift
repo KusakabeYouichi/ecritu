@@ -4525,6 +4525,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(umaku.first?.hasSuffix("隠して") ?? false, "umaku=\(umaku)")
     }
 
+    // 実LM回帰: いいよ はエンジンがかな1位に返すが keepKana=false で 良いよ/イイよ/唯々よ が繰り上がって
+    // いた。終助詞よ剥がし+語幹いいが辞書かな語で keepKana=true に。かってみようかな(活用連鎖)は不変。
+    // 踊り字(ゝゞ)は既定(historicalKanaSurfaceAllowed=false)でフィルタ、設定ONで含める。
+    func testRegressionRealLMIiyoAndOdoriji() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いいよ"), "いいよ")
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"), "かってみようかな は不変")
+        // 踊り字(ゝ)は既定で抑制。
+        converter.setHistoricalKanaSurfaceAllowed(false)
+        converter.clearAllCaches()
+        let iiyo = converter.candidates(for: "いいよ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertFalse(iiyo.contains { $0.contains("ゝ") || $0.contains("ゞ") }, "踊り字が残存 iiyo=\(iiyo)")
+        // 設定ONで含める。
+        converter.setHistoricalKanaSurfaceAllowed(true)
+        converter.clearAllCaches()
+        XCTAssertTrue(converter.candidates(for: "いいよ", limit: 12, systemCandidateMode: .surface).contains { $0.contains("ゝ") }, "設定ONで踊り字が出ない")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

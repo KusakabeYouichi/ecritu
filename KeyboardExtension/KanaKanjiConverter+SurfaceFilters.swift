@@ -386,9 +386,10 @@ extension KanaKanjiConverter {
         return false
     }
 
-    // 旧仮名遣い専用の仮名(合拗音以外の歴史的仮名)。これらを含む表層は旧仮名遣いとみなす。
-    // ゐ/ゑ(ひらがな)・ヰ/ヱ(カタカナ)。設定「旧仮名遣いの候補を含める」OFF(既定)で抑制。
-    static let historicalKanaScalars: Set<Character> = ["ゐ", "ゑ", "ヰ", "ヱ"]
+    // 旧仮名遣い専用の仮名+かな踊り字(繰り返し記号)。これらを含む表層は旧表記とみなす。
+    // ゐ/ゑ(ひらがな)・ヰ/ヱ(カタカナ)+ ゝ/ゞ(ひらがな踊り字)・ヽ/ヾ(カタカナ踊り字)。
+    // 設定「旧仮名遣い・踊り字の候補を含める」OFF(既定)で抑制。※漢字の 々(人々/時々 等で正当)は除外。
+    static let historicalKanaScalars: Set<Character> = ["ゐ", "ゑ", "ヰ", "ヱ", "ゝ", "ゞ", "ヽ", "ヾ"]
 
     func filterHistoricalKanaSurfaceCandidates(
         for reading: String,
