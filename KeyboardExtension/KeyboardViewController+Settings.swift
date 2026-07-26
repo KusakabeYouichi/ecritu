@@ -12,6 +12,13 @@ extension KeyboardViewController {
             fallback: false
         )
         kanaKanjiConverter.setHistoricalKanaSurfaceAllowed(historicalKanaAllowed)
+
+        let iterationMarkAllowed = sharedBoolValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.iterationMarkCandidatesEnabled,
+            fallback: false
+        )
+        kanaKanjiConverter.setIterationMarkSurfaceAllowed(iterationMarkAllowed)
     }
 
     func startObservingSettingsDidChange() {

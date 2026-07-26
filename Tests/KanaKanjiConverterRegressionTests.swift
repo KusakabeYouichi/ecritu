@@ -4543,20 +4543,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // 実LM回帰: いいよ はエンジンがかな1位に返すが keepKana=false で 良いよ/イイよ/唯々よ が繰り上がって
     // いた。終助詞よ剥がし+語幹いいが辞書かな語で keepKana=true に。かってみようかな(活用連鎖)は不変。
-    // 踊り字(ゝゞ)は既定(historicalKanaSurfaceAllowed=false)でフィルタ、設定ONで含める。
+    // 踊り字(ゝゞ)は独立トグル iterationMarkSurfaceAllowed で制御(既定OFFで抑制、ONで含める)。
     func testRegressionRealLMIiyoAndOdoriji() throws {
         try prepareRealLMDictionary()
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いいよ"), "いいよ")
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"), "かってみようかな は不変")
-        // 踊り字(ゝ)は既定で抑制。
+        // 踊り字(ゝ)は踊り字トグル既定OFFで抑制(旧仮名トグルとは独立)。
         converter.setHistoricalKanaSurfaceAllowed(false)
+        converter.setIterationMarkSurfaceAllowed(false)
         converter.clearAllCaches()
         let iiyo = converter.candidates(for: "いいよ", limit: 12, systemCandidateMode: .surface)
         XCTAssertFalse(iiyo.contains { $0.contains("ゝ") || $0.contains("ゞ") }, "踊り字が残存 iiyo=\(iiyo)")
-        // 設定ONで含める。
-        converter.setHistoricalKanaSurfaceAllowed(true)
+        // 踊り字トグルONで含める(旧仮名はOFFのまま=独立確認)。
+        converter.setIterationMarkSurfaceAllowed(true)
         converter.clearAllCaches()
-        XCTAssertTrue(converter.candidates(for: "いいよ", limit: 12, systemCandidateMode: .surface).contains { $0.contains("ゝ") }, "設定ONで踊り字が出ない")
+        XCTAssertTrue(converter.candidates(for: "いいよ", limit: 12, systemCandidateMode: .surface).contains { $0.contains("ゝ") }, "踊り字トグルONで踊り字が出ない")
     }
 
     // 実LM回帰: ひび は 皹(稀字)が先頭・かな ひび が圏外だった。日々(daily・最頻)先頭を保ちつつ

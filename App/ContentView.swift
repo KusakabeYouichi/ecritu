@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260727020836"
+    private static let editionUpdatedAtRaw: String = "20260727022115"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -307,6 +307,12 @@ struct ContentView: View {
     )
     private var historicalKanaCandidatesEnabled = false
 
+    @AppStorage(
+        SettingsKeys.iterationMarkCandidatesEnabled,
+        store: Self.sharedDefaults
+    )
+    private var iterationMarkCandidatesEnabled = false
+
     @State var userDictionaryEntries: [VocabularyEntry] = []
     @State var userDictionaryReadingInput = ""
     @State var userDictionaryCandidateInput = ""
@@ -400,7 +406,8 @@ struct ContentView: View {
             contactCandidateDisplayModeRawValue,
             String(emojiCandidateDisplayEnabled),
             String(kaomojiCandidateDisplayEnabled),
-            String(historicalKanaCandidatesEnabled)
+            String(historicalKanaCandidatesEnabled),
+            String(iterationMarkCandidatesEnabled)
         ]
             .joined(separator: "|")
     }
@@ -923,6 +930,10 @@ struct ContentView: View {
 
                         HistoricalKanaCandidatesSettingsSection(
                             isEnabled: $historicalKanaCandidatesEnabled
+                        )
+
+                        IterationMarkCandidatesSettingsSection(
+                            isEnabled: $iterationMarkCandidatesEnabled
                         )
 
                         EmojiKaomojiCandidateSettingsSection(

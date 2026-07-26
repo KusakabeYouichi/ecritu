@@ -386,28 +386,35 @@ extension KanaKanjiConverter {
         return false
     }
 
-    // 旧仮名遣い専用の仮名+かな踊り字(繰り返し記号)。これらを含む表層は旧表記とみなす。
-    // ゐ/ゑ(ひらがな)・ヰ/ヱ(カタカナ)+ ゝ/ゞ(ひらがな踊り字)・ヽ/ヾ(カタカナ踊り字)。
-    // 設定「旧仮名遣い・踊り字の候補を含める」OFF(既定)で抑制。※漢字の 々(人々/時々 等で正当)は除外。
-    static let historicalKanaScalars: Set<Character> = ["ゐ", "ゑ", "ヰ", "ヱ", "ゝ", "ゞ", "ヽ", "ヾ"]
+    // 旧仮名遣い専用の仮名。ゐ/ゑ(ひらがな)・ヰ/ヱ(カタカナ)。設定「旧仮名遣いの候補を含める」で制御。
+    static let historicalKanaScalars: Set<Character> = ["ゐ", "ゑ", "ヰ", "ヱ"]
+    // かな踊り字(繰り返し記号)。ゝ/ゞ(ひらがな)・ヽ/ヾ(カタカナ)。設定「仮名の踊り字の候補を含める」で
+    // 制御(旧仮名遣いとは独立)。※漢字の 々(人々/時々 等で正当)は除外。
+    static let iterationMarkScalars: Set<Character> = ["ゝ", "ゞ", "ヽ", "ヾ"]
 
     func filterHistoricalKanaSurfaceCandidates(
         for reading: String,
         candidates: [String]
     ) -> [String] {
-        let allowed = stateQueue.sync { historicalKanaSurfaceAllowed }
+        let (historicalAllowed, iterationAllowed) = stateQueue.sync {
+            (historicalKanaSurfaceAllowed, iterationMarkSurfaceAllowed)
+        }
 
-        guard !allowed else {
+        guard !historicalAllowed || !iterationAllowed else {
             return candidates
         }
 
         return candidates.filter { candidate in
             // 旧仮名文字(ゐゑヰヱ)を含む表層(ぐらゐ/ゐる/ウヰスキー 等)は旧仮名遣い。
-            if candidate.contains(where: { Self.historicalKanaScalars.contains($0) }) {
+            if !historicalAllowed, candidate.contains(where: { Self.historicalKanaScalars.contains($0) }) {
                 return false
             }
-            // える動詞の へる 旧仮名活用(給へる/覚へる 等)。読みが える 終わりの時のみ。
-            if reading.hasSuffix("える"), candidate.count >= 2, candidate.hasSuffix("へる") {
+            // かな踊り字(ゝゞヽヾ)を含む表層(いゝ/こゝ 等)。
+            if !iterationAllowed, candidate.contains(where: { Self.iterationMarkScalars.contains($0) }) {
+                return false
+            }
+            // える動詞の へる 旧仮名活用(給へる/覚へる 等)。読みが える 終わりの時のみ(旧仮名側)。
+            if !historicalAllowed, reading.hasSuffix("える"), candidate.count >= 2, candidate.hasSuffix("へる") {
                 return false
             }
             return true
