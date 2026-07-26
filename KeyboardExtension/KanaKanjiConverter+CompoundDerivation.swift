@@ -221,6 +221,34 @@ extension KanaKanjiConverter {
         return results
     }
 
+    // 直前確定が数字(半角0-9/全角０-９)のとき、現在の読みが助数詞そのものなら、その助数詞表層を
+    // 候補の先頭へ前置する(90確定→びょう→秒 を先頭)。数量詞マップ(全助数詞)を対象にする。
+    static func isCounterBoostDigit(_ character: Character) -> Bool {
+        let scalars = Array(character.unicodeScalars)
+        guard scalars.count == 1, let value = scalars.first?.value else {
+            return false
+        }
+        return (0x30...0x39).contains(value) || (0xFF10...0xFF19).contains(value)
+    }
+
+    static func digitContextCounterBoostedCandidates(
+        _ candidates: [String],
+        reading: String,
+        precedingCharacter: Character?
+    ) -> [String] {
+        guard let precedingCharacter,
+            isCounterBoostDigit(precedingCharacter),
+            let counterSurfaces = numericCounterSuffixCandidatesByReading[reading] else {
+            return candidates
+        }
+        let boostSet = Set(counterSurfaces)
+        let boosted = candidates.filter { boostSet.contains($0) }
+        guard !boosted.isEmpty else {
+            return candidates
+        }
+        return boosted + candidates.filter { !boostSet.contains($0) }
+    }
+
     func ordinalMeFallbackCandidates(
         for reading: String,
         hasDirectCandidates: Bool,
