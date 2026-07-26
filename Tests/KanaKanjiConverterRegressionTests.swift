@@ -4469,6 +4469,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertLessThan(iByou, iByou2, "秒 が 眇 より前 byou=\(byou)")
     }
 
+    // 回帰: かこく(助数詞 か国/ヶ国)は数字直後で か国→箇国→カ国… の順(マップ順)に前置。カコク抑制。
+    func testRegressionRealLMKakokuCounter() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かこく": ["カコク"]])
+        converter.clearAllCaches()
+        let cands = converter.candidates(for: "かこく", limit: 16, systemCandidateMode: .surface)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "かこく", precedingCharacter: "3")
+        XCTAssertEqual(Array(boosted.prefix(2)), ["か国", "箇国"], "boosted=\(boosted.prefix(6))")
+        // 過酷/苛酷 は counter の後ろ。
+        guard let iKa = boosted.firstIndex(of: "か国"), let iKakoku = boosted.firstIndex(of: "過酷") else {
+            return XCTFail("boosted=\(boosted)")
+        }
+        XCTAssertLessThan(iKa, iKakoku, "か国 が 過酷 より前")
+        XCTAssertFalse(cands.contains("カコク"), "カコク残存 cands=\(cands)")
+    }
+
     // 回帰: 直前確定が数字(半角/全角)なら助数詞を先頭へ前置する純粋関数(90確定→びょう→秒)。
     func testRegressionDigitContextCounterBoost() throws {
         let cands = ["鋲", "秒", "病", "眇"]

@@ -36,6 +36,7 @@ extension KanaKanjiConverter {
         "せだい": ["世代"],
         "じ": ["次"],
         "かげつ": ["か月", "カ月", "ヶ月", "ヵ月", "箇月"],
+        "かこく": ["か国", "箇国", "カ国", "ヶ国", "ヵ国", "ケ国"],
         "かしょ": ["か所", "箇所", "カ所", "ヶ所", "ヵ所"],
         "けん": ["軒", "件"],
         "しゅうかん": ["週間"],
@@ -242,7 +243,9 @@ extension KanaKanjiConverter {
             return candidates
         }
         let boostSet = Set(counterSurfaces)
-        let boosted = candidates.filter { boostSet.contains($0) }
+        let present = Set(candidates)
+        // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
+        let boosted = counterSurfaces.filter { present.contains($0) }
         guard !boosted.isEmpty else {
             return candidates
         }
