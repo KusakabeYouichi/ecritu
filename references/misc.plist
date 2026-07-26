@@ -306,5 +306,11 @@
 	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>
 	<!-- 殻付き: 複合語が辞書に無く、連文節で から(助詞・激安)+付き 分割に負けて 殻付き が出ない(からつきのほうが→から付きの方が)。curated 化(コスト1500)で連文節でも 殻付き を勝たせる。単文節は seed でも供給 -->
 	<dict><key>phrase</key><string>殻付き</string><key>shortcut</key><string>からつき</string><key>pos</key><string>名詞</string></dict>
+	<!-- 長押し(ながおし=long press。実在辞書語だが連文節で 長尾氏 等の名前合成に埋没)。curated で 長押しで を先頭に -->
+	<dict><key>phrase</key><string>長押し</string><key>shortcut</key><string>ながおし</string><key>pos</key><string>名詞</string></dict>
+	<!-- 隠して(かくして): 連文節で 描く/区画+して の誤合成に負けて出ない。curated で うまくかくして→隠して を通す -->
+	<dict><key>phrase</key><string>隠して</string><key>shortcut</key><string>かくして</string></dict>
+	<!-- こぞって(挙って。かなが正書の副詞): 連文節/単文節で 小+ぞって の誤合成が先頭に来る。curated で こぞって を先頭に -->
+	<dict><key>phrase</key><string>こぞって</string><key>shortcut</key><string>こぞって</string></dict>
 </array>
 </plist>
