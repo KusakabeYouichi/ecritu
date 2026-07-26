@@ -4543,6 +4543,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.candidates(for: "いいよ", limit: 12, systemCandidateMode: .surface).contains { $0.contains("ゝ") }, "設定ONで踊り字が出ない")
     }
 
+    // 実LM回帰: ひび は 皹(稀字)が先頭・かな ひび が圏外だった。日々(daily・最頻)先頭を保ちつつ
+    // かな ひび を2番手に、皹/皸/罅(稀字)を降格(罅割れの意味で ひび を選べるように)。
+    func testRegressionRealLMHibiKanaSecond() throws {
+        try prepareRealLMDictionary()
+        let hibi = converter.candidates(for: "ひび", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(hibi.first, "日々", "hibi=\(hibi)")
+        XCTAssertEqual(hibi.dropFirst().first, "ひび", "hibi=\(hibi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
