@@ -75,6 +75,7 @@
 	<dict><key>phrase</key><string>ウマい</string><key>shortcut</key><string>うまい</string></dict>
 	<dict><key>phrase</key><string>ウマイ</string><key>shortcut</key><string>うまい</string></dict>
 	<dict><key>phrase</key><string>ハヤる</string><key>shortcut</key><string>はやる</string></dict>
+	<dict><key>phrase</key><string>ヤツ</string><key>shortcut</key><string>やつ</string></dict>
 	<dict><key>phrase</key><string>之レ</string><key>shortcut</key><string>これ</string></dict>
 	<dict><key>phrase</key><string>是レ</string><key>shortcut</key><string>これ</string></dict>
 	<dict><key>phrase</key><string>此レ</string><key>shortcut</key><string>これ</string></dict>
@@ -311,6 +312,9 @@
 	<!-- 現る(うつる): うつる とは読まない。現れる=あらわれる、古語 現る=あらわる。Sudachiの誤った読み割り当て。基底+て形を登録(現ってます/現ってる/現ってた を包含) -->
 	<dict><key>phrase</key><string>現る</string><key>shortcut</key><string>うつる</string></dict>
 	<dict><key>phrase</key><string>現って</string><key>shortcut</key><string>うつって</string></dict>
+	<!-- ニー(にー): の+にー(のにー=接続助詞のに+長音)の にー を カタカナ化した誤り(行ったのにー→行ったのニー)。にー は native でカタカナにしない -->
+	<dict><key>phrase</key><string>ニー</string><key>shortcut</key><string>にー</string></dict>
+	<dict><key>phrase</key><string>のニー</string><key>shortcut</key><string>のにー</string></dict>
 	<dict><key>phrase</key><string>現ってます</string><key>shortcut</key><string>うつってます</string></dict>
 	<dict><key>phrase</key><string>現ってる</string><key>shortcut</key><string>うつってる</string></dict>
 	<dict><key>phrase</key><string>現ってた</string><key>shortcut</key><string>うつってた</string></dict>

@@ -4552,6 +4552,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(hibi.dropFirst().first, "ひび", "hibi=\(hibi)")
     }
 
+    // 実LM回帰: やつ(かな優先=既存misc curated)+ヤツ抑制、のにー(にー→ニー のカタカナ化を抑制)。
+    // テストバンドルは misc/hidden JSON 非搭載のため addUserEntry / injectSuppression で再現。
+    func testRegressionRealLMYatsuAndNonii() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "やつ", candidate: "やつ")
+        converter.store.waitForPendingLearningPersists()
+        try injectSuppression(["やつ": ["ヤツ"], "にー": ["ニー"], "のにー": ["のニー"]])
+        converter.clearAllCaches()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "やつにはある", systemCandidateMode: .surface).first, "やつにはある")
+        XCTAssertFalse(converter.candidates(for: "やつ", limit: 6, systemCandidateMode: .surface).contains("ヤツ"), "ヤツ残存")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いったのにー", systemCandidateMode: .surface).first, "行ったのにー")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
