@@ -4457,6 +4457,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertNotEqual(converter.candidates(for: "すます", limit: 3, systemCandidateMode: .surface).first, "すます")
     }
 
+    // 実LM回帰: びょう は 秒(LM最頻・助数詞)が辞書word_cost順で 鋲/眇 に沈んでいた。seedで 秒 先頭・
+    // 鋲/病 続き、眇 は後方へ。
+    func testRegressionRealLMByouOrder() throws {
+        try prepareRealLMDictionary()
+        let byou = converter.candidates(for: "びょう", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(byou.first, "秒", "びょう=\(byou)")
+        guard let iByou = byou.firstIndex(of: "秒"), let iByou2 = byou.firstIndex(of: "眇") else {
+            return XCTFail("秒/眇 が無い byou=\(byou)")
+        }
+        XCTAssertLessThan(iByou, iByou2, "秒 が 眇 より前 byou=\(byou)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
