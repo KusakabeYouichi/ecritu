@@ -621,6 +621,16 @@ final class KanaKanjiConverter {
         where normalized.hasSuffix(suffix) {
             return true
         }
+        // 終助詞(よ/ね/な/わ/ぞ/さ)を1つ剥がした語幹が「辞書のかな語そのもの」(いい/だめ/やだ/むり 等)
+        // なら根拠あり(いいよ→いい: 良いよ/イイよ/唯々よ の繰り上がりを防ぐ)。※systemCandidates 直接判定に
+        // 限定し、活用連鎖(かってみよう 等=辞書かな語でない)では誤発火しない。
+        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ"]
+        where normalized.count > particle.count && normalized.hasSuffix(particle) {
+            let stem = String(normalized.dropLast(particle.count))
+            if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
+                return true
+            }
+        }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
         // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。
