@@ -995,3 +995,11 @@ Henschke=へんちき / DAOKO=だをこ / Xérès=けれす / STELVIN=すてる�
   keepKana(computeShouldKeepKanaIdentityLeading)に「こと/とき/もの/ため/だけ で終わり前に述語相当
   (2文字以上)がある全かな句はかな正書」ルール追加。することがある→ある/が剥がし→すること で発火し、
   提示層で する事がある への繰り上がりを防ぐ(エンジンは元々 することがある が最良)。
+
+- [x] あったんで/ひび+入る/ほうだい の文脈限定ランキング是正 (2328)
+  ①あったんで: 文節先頭(prev==BOS)の存在動詞過去 あった/いた のみ かな優先(multiClauseClauseInitial
+  KanaExistentialPasts)。気が/目が/サイズが/条件に+あった(prev≠BOS)は 合った 維持。あったが もかな先頭に。
+  ②ひび: 直後(助詞任意)が はいる 活用の時だけ ひび を 日々 より優先(multiClauseKanaNounBeforeVerb
+  Collocations, collocationPreferredKanaNodeKeys→transitionCost isCollocationPreferredKana でクランプ)。
+  日々を大切に/日々の暮らし は無影響。③ほうだい: 誤合成 法第 がマージ先頭を奪うのを、放題 を seed+
+  seedOrderNoun ボーナスで最良化して排除。表示は 放題/邦題/砲台/法大。

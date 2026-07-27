@@ -125,7 +125,7 @@ extension KanaKanjiConverter {
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)。数量詞複合(2本/二本)や
     // 分割に押されて seed 既定(日本)が沈むのを是正する。a2 seed の先頭候補ノードにボーナス。
-    static let multiClauseSeedOrderNounReadings: Set<String> = ["にほん"]
+    static let multiClauseSeedOrderNounReadings: Set<String> = ["にほん", "ほうだい"]
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
     static let multiClauseNaAdjectiveBigramThreshold = 2000
@@ -182,6 +182,14 @@ extension KanaKanjiConverter {
     // カタカナ形が Wikipedia LM で安い(ヤバイ7649/ジャン5025)ため放置すると ヤバイジャン に
     // なる。かな識別を安価にして やばいじゃん を最上位にする(かなが現代口語の正書)。
     static let multiClauseKanaAdverbReadings: Set<String> = ["いまだに", "したんだが", "やばい", "じゃん"]
+    // 文節先頭(直前=BOS)でのみ かな を優先する存在動詞の過去(あった=ある過去、いた=いる過去)。
+    // あったんで→かな先頭にしつつ、気が/目が/サイズが+あった(prev≠BOS)は漢字 合った を守る。
+    static let multiClauseClauseInitialKanaExistentialPasts: Set<String> = ["あった", "いた"]
+    // 直後に特定動詞が続く連語でだけ かな名詞を優先する(同音語の文脈限定是正)。
+    // ひび は 直後(助詞任意)が はいる 活用のとき ひび(罅)を 日々 より優先(ひびが入る)。
+    static let multiClauseKanaNounBeforeVerbCollocations: [String: [String]] = [
+        "ひび": ["はいっ", "はいら", "はいり", "はいる", "はいれ"]
+    ]
     static let multiClauseKanaAdverbCost = 4000
     // 口語の説明終止クラスタ(のだ縮約 ん + だ/です + 逆接/終助詞)。述語に付く正書かなで、
     // レア語・分割に負けやすい。全体1スパンのかな識別を安価にして 〜んだが/んだけど/んです…を
@@ -461,6 +469,8 @@ extension KanaKanjiConverter {
         // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
         // 実在するものは「長語を分断する断片」とみなし、conn/床(1500)を与えないノードのキー。
         var shortCuratedFragmentNodeKeys = Set<String>()
+        // 連語文脈でかなを優先するノードのキー(ひび+入る=ひびが入る 等)。日々 でなく ひび を勝たせる。
+        var collocationPreferredKanaNodeKeys = Set<String>()
         var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
         var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
@@ -566,6 +576,22 @@ extension KanaKanjiConverter {
                     if hasLongerCommonWord {
                         for entry in surfaces where entry.isCurated && Self.isWordLikeSurface(entry.surface) {
                             shortCuratedFragmentNodeKeys.insert("\(start)-\(end)-\(entry.surface)")
+                        }
+                    }
+                }
+
+                // 連語 ひび+入る(ひびが入る/ひびは入ってない 等)ではかな ひび を優先する(日々 でなく)。
+                // 文脈限定=この区間の直後(助詞 は/が 任意)が はいる 活用のときだけ。ユーザ指定
+                // 「入るのときだけ」を満たし、日々を大切に 等の 日々 は無影響。
+                if let collocation = Self.multiClauseKanaNounBeforeVerbCollocations[segmentReading] {
+                    var afterIdx = end
+                    if afterIdx < n, chars[afterIdx] == "は" || chars[afterIdx] == "が" {
+                        afterIdx += 1
+                    }
+                    if afterIdx < n {
+                        let rest = String(chars[afterIdx..<n])
+                        if collocation.contains(where: { rest.hasPrefix($0) }) {
+                            collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(segmentReading)")
                         }
                     }
                 }
@@ -914,7 +940,8 @@ extension KanaKanjiConverter {
             isDictionaryFormPredicate: Bool = false,
             prevIsDictionaryFormPredicate: Bool = false,
             prevIsInflectionDerived: Bool = false,
-            isShortCuratedFragment: Bool = false
+            isShortCuratedFragment: Bool = false,
+            isCollocationPreferredKana: Bool = false
         ) -> Int {
             var base: Int
             var penaltyForNounHoshii = 0
@@ -1115,6 +1142,18 @@ extension KanaKanjiConverter {
                     || Self.multiClauseColloquialExplanatoryTailReadings.contains(reading) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
+            // 文節先頭(直前=BOS)の存在動詞かな過去(あった/いた)はかな正書を優先(あったんで→
+            // かな先頭)。文節先頭に限定するので 気があった/目があった/サイズが合った 等(あった の
+            // 直前が が/に で prev≠BOS)は無影響=「連文節でないときだけ」というユーザ指定を満たす。
+            if surface == reading,
+                prev == Self.multiClauseBOSMarker,
+                Self.multiClauseClauseInitialKanaExistentialPasts.contains(reading) {
+                base = min(base, Self.multiClauseKanaAdverbCost)
+            }
+            // 連語文脈でかな名詞を優先(ひび+入る=罅が入る)。かな ひび を 日々(LM5616)より安くする。
+            if isCollocationPreferredKana {
+                base = min(base, Self.multiClauseKanaAdverbCost)
+            }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
             if prev.count == 1,
@@ -1184,6 +1223,7 @@ extension KanaKanjiConverter {
                     ? Self.multiClausePreferredInflectionBonus
                     : 0
                 let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 if node.start == 0 {
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
@@ -1195,7 +1235,8 @@ extension KanaKanjiConverter {
                         isInflectionDerived: node.isInflectionDerived,
                         wordCost: node.wordCost,
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
-                        isShortCuratedFragment: nodeIsShortCuratedFragment
+                        isShortCuratedFragment: nodeIsShortCuratedFragment,
+                        isCollocationPreferredKana: nodeIsCollocationPreferredKana
                     ) - preferredInflectionBonus
                     if cost < best[idx] {
                         best[idx] = cost
@@ -1220,7 +1261,8 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
                         prevIsInflectionDerived: prevNode.isInflectionDerived,
-                        isShortCuratedFragment: nodeIsShortCuratedFragment
+                        isShortCuratedFragment: nodeIsShortCuratedFragment,
+                        isCollocationPreferredKana: nodeIsCollocationPreferredKana
                     ) - preferredInflectionBonus
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
@@ -1460,7 +1502,8 @@ extension KanaKanjiConverter {
                     prevIsInflectionDerived: pos > 0
                         ? nodes[pathIndices[pos - 1]].isInflectionDerived
                         : false,
-                    isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                    isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
+                    isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 )
                 let outgoing: Int
                 if let nextNode {
@@ -1476,7 +1519,8 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: nextNode.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsInflectionDerived: node.isInflectionDerived,
-                        isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)")
+                        isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
+                        isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)")
                     )
                 } else {
                     var eosCost = transitionCost(

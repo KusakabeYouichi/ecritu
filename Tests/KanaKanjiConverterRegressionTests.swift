@@ -3991,8 +3991,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let single = converter.candidates(for: "あったが", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(3)), ["会ったが", "合ったが", "あったが"], "single=\(single)")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あったが"))
+        // 連文節は文節先頭(直前=BOS)の あった をかな優先するため かな あったが が先頭
+        // (あった、が…=ある過去。誰かにあったが 等は に が前にあり無影響)。かな が top3 の意図は維持。
         let multi = converter.multiClauseCandidates(for: "あったが", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(multi.prefix(3)), ["会ったが", "合ったが", "あったが"], "multi=\(multi)")
+        XCTAssertEqual(Array(multi.prefix(3)), ["あったが", "会ったが", "合ったが"], "multi=\(multi)")
     }
 
     // おととし: dict は 一昨年0/おととし1 のみ。一昨年 wc9096 が高く、単文節は かな識別先頭化、
@@ -4685,6 +4687,57 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             converter.shouldKeepKanaIdentityLeading(for: "することがある"),
             "形式名詞 こと 終わりの名詞化節は提示層でかな先頭維持すべき"
         )
+    }
+
+    // あったんで(文節先頭のあった=ある過去+んで)はかな先頭。ただし 気が/目が/サイズが/条件に+
+    // あった(あったが文節先頭でない=連文節)は 合う の漢字 合った を維持する(文脈限定の切り分け)。
+    func testRegressionRealLMAttandeKanaLeadingClauseInitialOnly() throws {
+        try prepareRealLMDictionary()
+        let attande = converter.multiClauseCandidates(for: "あったんで", systemCandidateMode: .surface)
+        XCTAssertEqual(attande.first, "あったんで", "文節先頭 あったんで はかな先頭: \(attande.prefix(3))")
+        for (reading, expected) in [
+            ("きがあった", "気が合った"),
+            ("めがあった", "目が合った"),
+            ("さいずがあった", "サイズが合った"),
+            ("じょうけんにあった", "条件に合った")
+        ] {
+            let m = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(m.first, expected, "\(reading) は 合う 慣用句(あったが文節先頭でない): \(m.prefix(3))")
+        }
+    }
+
+    // ひび+入る の連語(ひびが入る/ひびは入ってない)ではかな ひび(罅)を優先。ただし 入る 以外
+    // (ひびを大切に/ひびの暮らし=日々)は 日々 を維持する(文脈限定=直後が はいる 活用のときだけ)。
+    func testRegressionRealLMHibiPrefersKanaBeforeHairu() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "ひびははいってなかった", systemCandidateMode: .surface).first,
+            "ひびは入ってなかった"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "ひびがはいった", systemCandidateMode: .surface).first,
+            "ひびが入った"
+        )
+        // 入る 以外は 日々 のまま
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "ひびをたいせつに", systemCandidateMode: .surface).first,
+            "日々を大切に"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "ひびのくらし", systemCandidateMode: .surface).first,
+            "日々の暮らし"
+        )
+    }
+
+    // ほうだい: 連文節が 法第(法+第 の誤合成)を単独で返しマージ先頭を奪っていた。seed+seedOrder
+    // ボーナスで 放題 を最良化(→multi は単語なので委譲=[])し、表示は単文節順 放題/邦題/砲台/法大 に。
+    func testRegressionRealLMHoudaiPrefersHoudai() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ほうだい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["放題", "邦題", "砲台", "法大"], "single=\(single.prefix(6))")
+        // 連文節が 法第 を先頭に出さない(委譲=[] か、放題 が先頭)。
+        let multi = converter.multiClauseCandidates(for: "ほうだい", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.first == "法第", "連文節が 法第 を先頭に出すべきでない: \(multi.prefix(3))")
     }
 
     private func prepareRealLMDictionary() throws {
