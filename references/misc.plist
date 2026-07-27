@@ -312,7 +312,5 @@
 	<dict><key>phrase</key><string>隠して</string><key>shortcut</key><string>かくして</string></dict>
 	<!-- こぞって(挙って。かなが正書の副詞): 連文節/単文節で 小+ぞって の誤合成が先頭に来る。curated で こぞって を先頭に -->
 	<dict><key>phrase</key><string>こぞって</string><key>shortcut</key><string>こぞって</string></dict>
-	<!-- ローヌ(ろーぬ=ワイン産地。辞書語だが実機の連文節で ロー+脱げ 分割に負ける)。curated で ローヌ を確実に勝たせ ローヌ原産 に。 -->
-	<dict><key>phrase</key><string>ローヌ</string><key>shortcut</key><string>ろーぬ</string><key>pos</key><string>名詞</string></dict>
 </array>
 </plist>
