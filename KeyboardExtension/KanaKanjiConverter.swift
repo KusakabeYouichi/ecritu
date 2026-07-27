@@ -701,6 +701,18 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 理由のコピュラ だから を剥がした語幹が辞書のかな語(ばかり=副助詞 等)なら根拠あり
+        // (ばかりだから→ばかり)。ばかり は candidate_sources のモードタグで systemCandidates に
+        // かな識別が出ないため、word_costs のかな識別(ばかり=5598 実在)でも根拠と認める。
+        // 名詞+だから(学生だから=漢字正書)に発火しても keepKana は維持のみで実害なし。
+        if normalized.count > 3, normalized.hasSuffix("だから") {
+            let stem = String(normalized.dropLast(3))
+            if stem.count >= 2,
+                systemCandidates(for: stem, mode: .lesDeux).contains(stem)
+                    || store.wordCosts(for: stem)[stem] != nil {
+                return true
+            }
+        }
         // コピュラ否定(じゃない/じゃなくて/じゃなかった)で終わる全かな句はかなが正書
         // (じゃ+無かった 等の分割漢字化より かな全文)。keepKana は維持のみで昇格しないため、
         // 名詞部が漢字正書の句(嘘じゃない=エンジンが漢字先頭)に発火しても実害はない。
