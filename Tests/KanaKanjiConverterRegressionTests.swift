@@ -4812,6 +4812,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(rainichi.contains("来日"), "来日(らいにち)は無傷のはず: \(rainichi)")
     }
 
+    // じゃなかった(コピュラ否定=かな正書): エンジンはかな最良だが keepKana=false で実機バーだけ
+    // じゃ無かった が先頭に繰り上がっていた(提示層かな降格)。コピュラ否定末尾規則で維持。
+    func testRegressionRealLMJanakattaKeepsKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "じゃなかった", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "じゃなかった", "multi=\(multi.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "じゃなかった"))
+        // じゃなくて は multi の単一かな結果が唯一の候補供給。退行しないこと
+        let janakute = converter.multiClauseCandidates(for: "じゃなくて", systemCandidateMode: .surface)
+        XCTAssertEqual(janakute.first, "じゃなくて", "multi=\(janakute.prefix(3))")
+    }
+
+    // かわいいね: カタカナ強調 カワイイ/交ぜ書き カワイい(Sudachi収穫)を suppr すると、
+    // 川+いいね 分割にも自然に勝って かな かわいいね が先頭になる(可愛い はユーザ手動抑制を注入)。
+    func testRegressionRealLMKawaiineKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かわいい": ["可愛い", "カワイイ", "カワイい"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "かわいいね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "かわいいね", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "かわいいね"))
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
