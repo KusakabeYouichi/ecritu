@@ -61,6 +61,9 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- カタカナ強調のカワイイ/交ぜ書きカワイい(Sudachi収穫)。かわいい のかな正書を勝たせる -->
+	<dict><key>phrase</key><string>カワイイ</string><key>shortcut</key><string>かわいい</string></dict>
+	<dict><key>phrase</key><string>カワイい</string><key>shortcut</key><string>かわいい</string></dict>
 	<!-- 来日(くるひ)は文語のレア読み収穫。現代では らいにち のみ。くるひ は 来る日 が正 -->
 	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>
 	<!-- 単独の当(あたり)表記は現代では使わない(当たり は残す)。来週当 型の単漢字合成の是正 -->
