@@ -4907,6 +4907,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(ni.contains("2親等") && ni.contains("二親等"), "single=\(ni)")
     }
 
+    // ばかりだから: エンジンはかな最良だが keepKana=false で実機バーだけ交ぜ書き収穫 ばかリだから が
+    // 先頭だった(提示層かな降格)。だから 剥がし規則+交ぜ書き ばかリ/カタカナ バカリ の suppr。
+    func testRegressionRealLMBakariDakaraKeepsKana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["ばかり": ["ばかリ", "バカリ"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "ばかりだから", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ばかりだから", "multi=\(multi.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ばかりだから"))
+    }
+
+    // うらないしかしらないが: 頭(かしら=組の頭のレア用法、wc3305)+ないが の誤区切りが
+    // 占い師頭ないが を作っていた。頭/カシラ(かしら)を suppr、慣用連語 しか知らない を curated 化して
+    // 占いしか知らないが を勝たせる(実機忠実に追加語彙+抑制をロード)。
+    func testRegressionRealLMUranaiShikaShiranai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "うらないしかしらないが", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "占いしか知らないが", "multi=\(multi.prefix(4))")
+        let shika = converter.multiClauseCandidates(for: "しかしらないが", systemCandidateMode: .surface)
+        XCTAssertEqual(shika.first, "しか知らないが", "multi=\(shika.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
