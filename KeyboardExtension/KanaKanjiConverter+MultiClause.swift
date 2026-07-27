@@ -458,6 +458,9 @@ extension KanaKanjiConverter {
         var preferredInflectedNodeKeys = Set<String>()
         // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
         var renyouNiNodeKeys = Set<String>()
+        // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
+        // 実在するものは「長語を分断する断片」とみなし、conn/床(1500)を与えないノードのキー。
+        var shortCuratedFragmentNodeKeys = Set<String>()
         var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
         var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
@@ -536,6 +539,35 @@ extension KanaKanjiConverter {
                 }
                 for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading {
                     add(surface, isDictWord: true, isCurated: true)
+                }
+
+                // 短い追加語彙断片が同じ開始位置のより長い辞書語を分断するのを防ぐ。読み≤2モーラで
+                // curated を含み、[start, start+longer] (longer>len) に辞書語が実在する時だけ、その
+                // curated ノードを「断片」と印付けし、後段の transitionCost で床(1500)を外す。
+                // ろー(ロー/raw)は ろーぬ→ローヌ が実在=断片印。やつ/気を は長い辞書語が無く床維持。
+                if segmentReading.count <= 2,
+                    surfaces.contains(where: { $0.isCurated && Self.isWordLikeSurface($0.surface) }) {
+                    // 「より長い語」は常用語(word_cost が harvest 底値=レア人名 未満)に限る。
+                    // ろーぬ→ローヌ(4577)は常用で断片印を付けるが、かおな→華音樹(10000=底値)の
+                    // ようなレア人名では 顔(かお)を誤って断片扱いしない。
+                    var hasLongerCommonWord = false
+                    var probeLen = len + 1
+                    while probeLen <= maxLen {
+                        let longerReading = String(chars[start..<start + probeLen])
+                        let longerCosts = store.wordCosts(for: longerReading)
+                        if longerCosts.values.contains(where: {
+                            $0 < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                        }) {
+                            hasLongerCommonWord = true
+                            break
+                        }
+                        probeLen += 1
+                    }
+                    if hasLongerCommonWord {
+                        for entry in surfaces where entry.isCurated && Self.isWordLikeSurface(entry.surface) {
+                            shortCuratedFragmentNodeKeys.insert("\(start)-\(end)-\(entry.surface)")
+                        }
+                    }
                 }
 
                 let segmentEndsWithSokuon = segmentReading.hasSuffix("っ")
@@ -881,7 +913,8 @@ extension KanaKanjiConverter {
             wordCost: Int? = nil,
             isDictionaryFormPredicate: Bool = false,
             prevIsDictionaryFormPredicate: Bool = false,
-            prevIsInflectionDerived: Bool = false
+            prevIsInflectionDerived: Bool = false,
+            isShortCuratedFragment: Bool = false
         ) -> Int {
             var base: Int
             var penaltyForNounHoshii = 0
@@ -988,18 +1021,13 @@ extension KanaKanjiConverter {
             // 追加語彙/学習語彙は強い下限で優遇(自然な LM コストがより安ければそちらを尊重)。
             // ただし絵文字/記号のみの表層(sacoche の €/🇮🇳/₿ 等)は本文へ割り込ませないため優遇せず、
             // 列挙のみ(単文節候補としては到達可)。語形(かな/漢字/ラテン字を含む)だけ強化する。
-            if isCurated, Self.isWordLikeSurface(surface) {
-                // 1〜2モーラのラテン文字断片(ろー→raw 等の追加語彙)は、連文節で長語
-                // (ろーぬ→ローヌ)を分断する床コストを与えず自然コスト(未収録=高コスト)に
-                // する。断片が ろー(raw)+脱げ+んさん を ローヌ+原産 より安くする一般的な誤分割
-                // (ろーまにいたる事件と同型)を、個別語ではなく断片の性質で抑止する。単文節
-                // (ろー だけ入力→raw)は別経路なので従来どおり先頭に出る。
-                let isShortLatinFragment = reading.count <= 2
-                    && !surface.isEmpty
-                    && surface.allSatisfy { $0.isASCII && $0.isLetter }
-                if !isShortLatinFragment {
-                    base = min(base, Self.multiClauseCuratedWordCost)
-                }
+            // 追加語彙は床(1500)で優遇するが、「短い断片が同じ開始位置のより長い辞書語を分断する」
+            // ノード(ろー→ロー/raw。ろーぬ→ローヌ を分断)は床を与えず自然コスト(辞書/LM実勢、
+            // 未収録=高コスト)にする。個別語ではなく断片の性質(供給側で判定)で ろーぬげんさん→
+            // ロー脱げんさん 等の誤分割を抑止する。長い辞書語が無い正当な短語(やつ/気を)は床維持。
+            // 単文節(ろー だけ入力→ロー/raw)は別経路なので従来どおり先頭に出る。
+            if isCurated, Self.isWordLikeSurface(surface), !isShortCuratedFragment {
+                base = min(base, Self.multiClauseCuratedWordCost)
             }
             // 複合助詞(かな表層)を単位ノードとして安価にクランプ。ただし基底の格助詞
             // (には→に/では→で)が直前語からの bigram で期待される時だけに限定する。
@@ -1155,6 +1183,7 @@ extension KanaKanjiConverter {
                 let preferredInflectionBonus = preferredInflectedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                     ? Self.multiClausePreferredInflectionBonus
                     : 0
+                let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 if node.start == 0 {
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
@@ -1165,7 +1194,8 @@ extension KanaKanjiConverter {
                         isCurated: node.isCurated,
                         isInflectionDerived: node.isInflectionDerived,
                         wordCost: node.wordCost,
-                        isDictionaryFormPredicate: node.isDictionaryFormPredicate
+                        isDictionaryFormPredicate: node.isDictionaryFormPredicate,
+                        isShortCuratedFragment: nodeIsShortCuratedFragment
                     ) - preferredInflectionBonus
                     if cost < best[idx] {
                         best[idx] = cost
@@ -1189,7 +1219,8 @@ extension KanaKanjiConverter {
                         wordCost: node.wordCost,
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
-                        prevIsInflectionDerived: prevNode.isInflectionDerived
+                        prevIsInflectionDerived: prevNode.isInflectionDerived,
+                        isShortCuratedFragment: nodeIsShortCuratedFragment
                     ) - preferredInflectionBonus
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
@@ -1428,7 +1459,8 @@ extension KanaKanjiConverter {
                     prevIsDictionaryFormPredicate: prevIsDictionaryFormPredicate,
                     prevIsInflectionDerived: pos > 0
                         ? nodes[pathIndices[pos - 1]].isInflectionDerived
-                        : false
+                        : false,
+                    isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 )
                 let outgoing: Int
                 if let nextNode {
@@ -1443,7 +1475,8 @@ extension KanaKanjiConverter {
                         wordCost: nextNode.wordCost,
                         isDictionaryFormPredicate: nextNode.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate,
-                        prevIsInflectionDerived: node.isInflectionDerived
+                        prevIsInflectionDerived: node.isInflectionDerived,
+                        isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)")
                     )
                 } else {
                     var eosCost = transitionCost(
