@@ -4863,6 +4863,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.prefix(3).contains(where: { $0.contains("コミ") || $0.contains("祭祀") }), "multi=\(multi.prefix(3))")
     }
 
+    // とれたて: dict は 取れ立て(rank0。丸ごとエントリで合成ではない)が先頭で、常用の 採れたて が
+    // 2番手だった。seed で 採れたて→獲れたて(未登録を供給)の順に。取れ立て は後方に残る。
+    func testRegressionRealLMToretatePrefersToretate() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "とれたて", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["採れたて", "獲れたて"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "とれたてを", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "採れたてを", "multi=\(multi.prefix(4))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
