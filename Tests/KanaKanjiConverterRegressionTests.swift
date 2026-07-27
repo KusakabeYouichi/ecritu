@@ -4610,6 +4610,71 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.contains("raw"), "単文節 ろー では raw が候補に残るべき: \(single.prefix(6))")
     }
 
+    // 実機同様に追加語彙(sacoche=InitialAjout + 変換対策 misc=InitialMisc)と抑制
+    // (InitialSupprHidden)をテストの store へ投入する。ストアの initialUserDictionary() は
+    // Bundle(for: KanaKanjiStore.self) のバンドル同梱JSONを読むが、テストバンドルには
+    // これらが同梱されない(=追加語彙が空になり、実機のみ再現するバグがMacで再現しない根本原因)。
+    // ここではリポジトリの生成済みJSONを直接読み、manual追加語彙(ÉcrituAjoutVocab)へ一括投入して
+    // 実機の initialUserDictionary 相当を再現する(multi では同格の curated 供給として扱われる)。
+    // 追加語彙由来の「実機のみ」誤変換(ろーぬげんさん→raw脱げんさん 等)の回帰検知に使う。
+    private func loadDeviceAddedVocabulary(
+        includeMisc: Bool = true,
+        includeSuppression: Bool = true
+    ) throws {
+        let root = "/Users/kusakabe/Git/ecritu/KeyboardExtension"
+
+        func loadJSON(_ name: String) -> [String: [String]] {
+            let url = URL(fileURLWithPath: "\(root)/\(name).json")
+            guard let data = try? Data(contentsOf: url),
+                let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+                return [:]
+            }
+            return decoded
+        }
+
+        var combined = loadJSON("InitialAjoutVocabMigration")
+        if includeMisc {
+            for (reading, candidates) in loadJSON("InitialMiscVocabMigration") {
+                combined[reading, default: []].append(contentsOf: candidates)
+            }
+        }
+
+        guard let defaults = UserDefaults(suiteName: defaultsSuiteName) else {
+            throw XCTSkip("no defaults suite in this environment")
+        }
+        // 実機の userDictionary() が読む形式(JSON Data の [String:[String]])で一括書き込みする
+        // (addUserEntry の1件ずつ保存だと数百件で低速なため)。
+        let combinedData = try JSONEncoder().encode(combined)
+        defaults.set(combinedData, forKey: "ÉcrituAjoutVocab")
+
+        if includeSuppression {
+            let suppression = loadJSON("InitialSupprHiddenVocabMigration")
+            if !suppression.isEmpty {
+                let suppressionData = try JSONEncoder().encode(suppression)
+                defaults.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
+            }
+        }
+
+        converter.invalidateCandidateCache()
+    }
+
+    // 実機同様に追加語彙をロードした状態で、追加語彙断片(ろー→raw)が長語を分断しないこと。
+    // 実データ(sacoche.plist→InitialAjout)由来で ろーぬげんさん→ローヌ原産 を固定し、
+    // 「テストが追加語彙を読まないため実機のみ再現していた」ギャップを回帰で塞ぐ。
+    func testRegressionRealLMDeviceVocabularyRhoneNotFragmented() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        // sacoche に ろー→raw が実在することを前提にした回帰(存在しなければ前提が崩れるので確認)。
+        XCTAssertTrue(
+            converter.store.userDictionary()["ろー"]?.contains("raw") ?? false,
+            "前提: sacoche 由来の ろー→raw が追加語彙にロードされていること"
+        )
+
+        let multi = converter.multiClauseCandidates(for: "ろーぬげんさん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ローヌ原産", "実機同様の追加語彙下でも ローヌ原産 が先頭: \(multi.prefix(4))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
