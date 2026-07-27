@@ -643,6 +643,16 @@ final class KanaKanjiConverter {
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
                 return true
             }
+            // い形容詞のかな過去(よかった/すごかった 等)は活用形なので辞書エントリでは拾えない。
+            // Xかった→基底 X+い に脱活用して基底が辞書のかな語なら根拠あり(よかったな→よかった→
+            // よい)。keepKana は「既にかな先頭の候補を維持するだけ」で昇格はしないため、漢字正書の
+            // 形容詞(高かったな 等=エンジンが漢字先頭)に発火しても実害はない。
+            if stem.count >= 4, stem.hasSuffix("かった") {
+                let adjectiveBase = String(stem.dropLast(3)) + "い"
+                if systemCandidates(for: adjectiveBase, mode: .lesDeux).contains(adjectiveBase) {
+                    return true
+                }
+            }
         }
         // 存在・進行の かな動詞(ある/いる)を剥がして再帰(やつにはある→やつには→(は/に 剥がし)→やつ)。
         // かな正書の語(やつ/ひび 等)+ 助詞 + ある/いる の全かな句が提示層で漢字化(奴にはある)に
