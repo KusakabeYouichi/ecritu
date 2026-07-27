@@ -4675,6 +4675,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "ローヌ原産", "実機同様の追加語彙下でも ローヌ原産 が先頭: \(multi.prefix(4))")
     }
 
+    // することがある: 形式名詞 こと で終わる名詞化節はかなが正書。提示層で先頭かな
+    // することがある が する事がある に繰り上がらないよう keepKana を true にする。
+    func testRegressionRealLMSuruKotoGaAruKeepsKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "することがある", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "することがある", "エンジン最良がかな: \(multi.prefix(3))")
+        XCTAssertTrue(
+            converter.shouldKeepKanaIdentityLeading(for: "することがある"),
+            "形式名詞 こと 終わりの名詞化節は提示層でかな先頭維持すべき"
+        )
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

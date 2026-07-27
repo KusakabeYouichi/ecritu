@@ -654,6 +654,16 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 形式名詞(こと/とき/もの/ため/だけ)で終わる名詞化節は かな が正書(することがある→
+        // ある/が を剥がした することが→すること、見るとき 等)。前に述語相当(2文字以上)がある
+        // 全かな句は提示層で先頭かなを維持する(することがある→する事がある への繰り上がりを防ぐ)。
+        for noun in KanaKanjiConverter.multiClauseFormalNounKanaReadings
+        where normalized.count > noun.count && normalized.hasSuffix(noun) {
+            let stem = String(normalized.dropLast(noun.count))
+            if stem.count >= 2 {
+                return true
+            }
+        }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
         // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。
