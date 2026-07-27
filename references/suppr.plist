@@ -61,6 +61,8 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- クスリ(薬のカタカナ書き、wc3228=薬と同値)。かな/漢字を優先 -->
+	<dict><key>phrase</key><string>クスリ</string><key>shortcut</key><string>くすり</string></dict>
 	<!-- ダ(コピュラだ のカタカナ収穫、rank0/wc4406=かな だ5733より安)。ダよ/ダけど 一族の根本 -->
 	<dict><key>phrase</key><string>ダ</string><key>shortcut</key><string>だ</string></dict>
 	<!-- なった(なる過去、かな正書)のカタカナ収穫。なった の辞書エントリはこれのみで、ナッタのは 等の先頭化を作る -->

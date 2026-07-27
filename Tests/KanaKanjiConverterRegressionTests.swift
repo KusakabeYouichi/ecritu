@@ -5012,6 +5012,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "ぱしゃっと", "single=\(single)")
     }
 
+    // くすりやさん: 連文節の 薬+や(並列助詞)+さん 分割が 薬屋さん(単文節は正)を奪っていた。
+    // や→さん の直接遷移は 〜屋さん の誤分割でしか起きない(田中や佐藤さん は間に名詞)ため
+    // 汎用ペナルティで排除。花屋さん も同時に改善。
+    func testRegressionRealLMKusuriyasanPrefersYasan() throws {
+        try prepareRealLMDictionary()
+        let kusuri = converter.multiClauseCandidates(for: "くすりやさん", systemCandidateMode: .surface)
+        XCTAssertEqual(kusuri.first, "薬屋さん", "multi=\(kusuri.prefix(4))")
+        let hana = converter.multiClauseCandidates(for: "はなやさん", systemCandidateMode: .surface)
+        XCTAssertEqual(hana.first, "花屋さん", "multi=\(hana.prefix(4))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
