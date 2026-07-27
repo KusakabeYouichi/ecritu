@@ -4824,15 +4824,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(janakute.first, "じゃなくて", "multi=\(janakute.prefix(3))")
     }
 
-    // かわいいね: カタカナ強調 カワイイ/交ぜ書き カワイい(Sudachi収穫)を suppr すると、
-    // 川+いいね 分割にも自然に勝って かな かわいいね が先頭になる(可愛い はユーザ手動抑制を注入)。
+    // かわいいね: カタカナ強調 カワイイ/交ぜ書き カワイい(Sudachi収穫)は suppr 済みだが、実機では
+    // curated いいね(床1500)が 川+いいね 分割を作り かな かわいいね に勝っていた(ろーま事件と同型。
+    // 追加語彙を読まない素のテストでは再現しない)。処方箋どおり かわいいね も curated 化して
+    // 文節数の少ない方を勝たせる。実機忠実に追加語彙+抑制(可愛い=手動分を追加)をロードして検証。
     func testRegressionRealLMKawaiineKanaLeads() throws {
         try prepareRealLMDictionary()
-        try injectSuppression(["かわいい": ["可愛い", "カワイイ", "カワイい"]])
+        try loadDeviceAddedVocabulary(includeSuppression: false)
+        var suppression = try JSONDecoder().decode(
+            [String: [String]].self,
+            from: Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        )
+        suppression["かわいい", default: []].append("可愛い")
+        try injectSuppression(suppression)
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
+        // curated かわいいね が1ノード最良になると multi は単文節委譲([]。したんだが型)。
+        // 表示は single 先頭=かわいいね になり、川いいね は multi から消える。
         let multi = converter.multiClauseCandidates(for: "かわいいね", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "かわいいね", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(multi.isEmpty || multi.first == "かわいいね", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(2).contains("川いいね"), "multi=\(multi.prefix(3))")
+        let single = converter.candidates(for: "かわいいね", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "かわいいね", "single=\(single)")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "かわいいね"))
     }
 
