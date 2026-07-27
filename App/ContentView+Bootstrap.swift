@@ -545,6 +545,25 @@ extension ContentView {
         DispatchQueue.main.asyncAfter(deadline: .now() + timeoutSeconds, execute: workItem)
     }
 
+    // 削除同期導入(2338)以前に sacoche から撤回済みの播種エントリ。播種はマージ専用だったため
+    // 撤回が実機に届かず残留していた(にほん→2本 が 2本ビール を作り続けた事件)。播種記録
+    // (AppliedSeed)が無い端末の初回削除同期でのみ使う既知リスト(手動追加語彙は対象外)。
+    // 抑制側と違い「現状=全て播種由来」とは見なせない(ユーザはUIで手動追加語彙を使う)ため、
+    // 撤回済みと確定しているペアだけを列挙する。
+    static let legacyRetractedInitialUserDictionaryEntries: [String: [String]] = [
+        "にほん": ["2本"],
+        "まいくろ": ["µ"],
+        "いちえんだま": ["1円玉"], "いちじ": ["1次"], "いちだい": ["1台"], "いちまい": ["1枚"],
+        "いっかげつ": ["1か月"], "いっけん": ["1軒"], "いっしゅうかん": ["1週間"], "いっぽん": ["1本"],
+        "ごえんだま": ["5円玉"], "ごじゅうえんだま": ["50円玉"], "ごひゃくえんだま": ["500円玉"],
+        "さんかげつ": ["3か月"], "さんけん": ["3軒"], "さんしゅうかん": ["3週間"], "さんだい": ["3台"],
+        "さんぼん": ["3本"], "さんまい": ["3枚"], "じゅうえんだま": ["10円玉"],
+        "だいいちせだい": ["第1世代"], "だいさんせだい": ["第3世代"], "だいにせだい": ["第2世代"],
+        "にかげつ": ["2か月"], "にけん": ["2軒"], "にじ": ["2次"], "にしゅうかん": ["2週間"],
+        "にだい": ["2台"], "にまい": ["2枚"], "ひとつ": ["1つ"], "ひゃくえんだま": ["100円玉"],
+        "ふたつ": ["2つ"], "みっつ": ["3つ"], "よんしゅうかん": ["4週間"]
+    ]
+
     func migrateInitialUserDictionaryIfNeeded() {
         guard let defaults = Self.sharedDefaults else {
             return
@@ -561,20 +580,51 @@ extension ContentView {
             forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSignature
         )
 
-        guard appliedSignature != initialSignature else {
+        // 播種記録(AppliedSeed)が無い端末では、署名が一致していても一度だけ削除同期を実行する
+        // (削除同期導入前に撤回済みエントリが残留しているのを回収するため。抑制側 1889 と同機構)。
+        let hasAppliedSeed = defaults.object(
+            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSeed
+        ) != nil
+        guard appliedSignature != initialSignature || !hasAppliedSeed else {
             return
         }
 
-        let currentDictionary = normalizedDictionaryEntries(
+        var currentDictionary = normalizedDictionaryEntries(
             loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
         )
 
+        // 削除同期: 過去に播種したもののうち新バンドルに無いペアを端末からも除去する。
+        // 初回(播種記録なし)は手動追加語彙と区別できないため、撤回済みと確定している
+        // 既知リスト(legacyRetracted…)だけをベースラインにする。
+        let previouslySeeded = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSeed)
+        )
+        let removalBaseline = previouslySeeded.isEmpty
+            ? Self.legacyRetractedInitialUserDictionaryEntries
+            : previouslySeeded
+        for (reading, candidates) in removalBaseline {
+            let retracted = Set(candidates).subtracting(Set(initialDictionary[reading] ?? []))
+            guard !retracted.isEmpty else { continue }
+            let kept = (currentDictionary[reading] ?? []).filter { !retracted.contains($0) }
+            if kept.isEmpty {
+                currentDictionary.removeValue(forKey: reading)
+            } else {
+                currentDictionary[reading] = kept
+            }
+        }
+
         let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
 
-        if merged != currentDictionary {
+        if merged != normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        ) {
             saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
         }
 
+        saveDictionaryEntries(
+            initialDictionary,
+            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSeed
+        )
         defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
         defaults.set(
             initialSignature,

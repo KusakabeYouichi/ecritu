@@ -64,6 +64,8 @@ enum SettingsKeys {
     static let kanaKanjiAjoutVocabulary = "ÉcrituAjoutVocab"
     static let kanaKanjiInitialUserDictionaryMigrated = "kanaKanjiInitialUserDictionaryMigrated"
     static let kanaKanjiInitialUserDictionaryAppliedSignature = "kanaKanjiInitialUserDictionaryAppliedSignature"
+    // 追加語彙播種の記録(削除同期用)。抑制側 AppliedSeed と同機構
+    static let kanaKanjiInitialUserDictionaryAppliedSeed = "kanaKanjiInitialUserDictionaryAppliedSeed"
     static let kanaKanjiLearnedVocabulary = "kanaKanjiLearnedVocabulary"
     static let kanaKanjiLearningVocabularyMigrationCompleted = "kanaKanjiLearningVocabularyMigrationCompleted"
     static let kanaKanjiShortcutVocabulary = "ÉcrituShortcutVocab"
