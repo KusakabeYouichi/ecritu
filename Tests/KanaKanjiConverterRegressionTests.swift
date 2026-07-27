@@ -4773,6 +4773,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // わからなく: 否定連用形 なく の活用規則欠落で 分からなく 系が出ず、単漢字わ+から+なく の
+    // 合成(わから無く/ワからなく)だけが並んでいた。なく 規則補充+seed でかな→分から→解ら の順。
+    func testRegressionRealLMWakaranakuSupplied() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "わからなく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["わからなく", "分からなく", "解らなく"], "single=\(single)")
+        // godan なく の一般供給確認(名詞合成の干渉が無い動詞で導出を確認)
+        let naku = converter.candidates(for: "うごかなく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(naku.contains("動かなく"), "godan なく 一般: \(naku)")
+    }
+
+    // らいしゅうあたり: Wikipedia バイアスで 来襲(unigram6869)が 来週(7792)に勝ち 来襲当 が先頭
+    // だった。来週 を時相名詞キャップ(6000)+単独の 当(あたり)を suppr で 来週あたり を先頭に。
+    // 敵が来襲(文脈で来襲が正)と くじが当たり(当たり)は無傷。
+    func testRegressionRealLMRaishuuAtari() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["あたり": ["当", "當", "中"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let raishuu = converter.multiClauseCandidates(for: "らいしゅうあたり", systemCandidateMode: .surface)
+        XCTAssertEqual(raishuu.first, "来週あたり", "multi=\(raishuu.prefix(4))")
+        let teki = converter.multiClauseCandidates(for: "てきがらいしゅう", systemCandidateMode: .surface)
+        XCTAssertEqual(teki.first, "敵が来襲", "multi=\(teki.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

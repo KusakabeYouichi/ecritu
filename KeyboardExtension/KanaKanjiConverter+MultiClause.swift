@@ -309,7 +309,10 @@ extension KanaKanjiConverter {
     // 検索機能 等の複合は bigram 分岐が勝つ。unigram 分岐限定のキャップ。
     static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
         "昨日": 4300,
-        "最近": 5000
+        "最近": 5000,
+        // 来週(会話最頻)が Wikipedia バイアスの 来襲(6869)に unigram(7792)で負ける
+        // (らいしゅうあたり→来襲当)。来襲 を下回る水準へキャップ
+        "来週": 6000
     ]
     // 単漢字名詞→動詞の無助詞接続の減点。日本語で名詞が動詞に直接続くには助詞が要る
     // (どうみせる→同見せる/道見せる の 同/道 は音読み接辞で、主語・目的語として裸で
