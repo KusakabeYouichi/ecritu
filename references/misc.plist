@@ -66,6 +66,9 @@
 	<dict><key>phrase</key><string>やり抜く</string><key>shortcut</key><string>やりぬく</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>勝ち抜く</string><key>shortcut</key><string>かちぬく</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>生き抜く</string><key>shortcut</key><string>いきぬく</string><key>pos</key><string>五段</string></dict>
+	<!-- 複合動詞「V連用+出す」の収録穴。思い出す/飛び出す等は在るが 言い出す/動き出す が無く、いいだした→飯田した 等の地名+した合成になる -->
+	<dict><key>phrase</key><string>言い出す</string><key>shortcut</key><string>いいだす</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>動き出す</string><key>shortcut</key><string>うごきだす</string><key>pos</key><string>五段</string></dict>
 	<!-- サ変動詞化する名詞 -->
 	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
