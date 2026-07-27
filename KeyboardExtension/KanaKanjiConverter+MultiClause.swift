@@ -989,7 +989,17 @@ extension KanaKanjiConverter {
             // ただし絵文字/記号のみの表層(sacoche の €/🇮🇳/₿ 等)は本文へ割り込ませないため優遇せず、
             // 列挙のみ(単文節候補としては到達可)。語形(かな/漢字/ラテン字を含む)だけ強化する。
             if isCurated, Self.isWordLikeSurface(surface) {
-                base = min(base, Self.multiClauseCuratedWordCost)
+                // 1〜2モーラのラテン文字断片(ろー→raw 等の追加語彙)は、連文節で長語
+                // (ろーぬ→ローヌ)を分断する床コストを与えず自然コスト(未収録=高コスト)に
+                // する。断片が ろー(raw)+脱げ+んさん を ローヌ+原産 より安くする一般的な誤分割
+                // (ろーまにいたる事件と同型)を、個別語ではなく断片の性質で抑止する。単文節
+                // (ろー だけ入力→raw)は別経路なので従来どおり先頭に出る。
+                let isShortLatinFragment = reading.count <= 2
+                    && !surface.isEmpty
+                    && surface.allSatisfy { $0.isASCII && $0.isLetter }
+                if !isShortLatinFragment {
+                    base = min(base, Self.multiClauseCuratedWordCost)
+                }
             }
             // 複合助詞(かな表層)を単位ノードとして安価にクランプ。ただし基底の格助詞
             // (には→に/では→で)が直前語からの bigram で期待される時だけに限定する。
