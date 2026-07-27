@@ -4975,6 +4975,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(2)), ["従量制", "重量制"], "single=\(single)")
     }
 
+    // だよ/でしょ: コピュラ だ のカタカナ収穫 ダ(rank0/wc4406=かな だ5733より安)が ダよ/ダけど
+    // 一族の根本 → suppr。でしょ(でしょう縮約)は で+初/ショ/諸 の単漢字分割に負けていた →
+    // 口語終止クラスタへ。両方 keepKana のコピュラ終助詞末尾規則で提示層でもかな維持。
+    func testRegressionRealLMDayoDeshoKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let dayo = converter.candidates(for: "だよ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(dayo.first, "だよ", "single=\(dayo)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "だよ"))
+        let imin = converter.multiClauseCandidates(for: "いみんでしょ", systemCandidateMode: .surface)
+        XCTAssertEqual(imin.first, "移民でしょ", "multi=\(imin.prefix(4))")
+        let sou = converter.multiClauseCandidates(for: "そうでしょ", systemCandidateMode: .surface)
+        XCTAssertEqual(sou.first, "そうでしょ", "multi=\(sou.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
