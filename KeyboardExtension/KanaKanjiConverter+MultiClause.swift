@@ -1157,6 +1157,14 @@ extension KanaKanjiConverter {
                     || Self.multiClauseColloquialExplanatoryTailReadings.contains(reading) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
+            // オノマトペ「〜っと」(4文字以上の全かな。ぱしゃっと/ばたっと/ふわっと 等)はかなが正書。
+            // ぱ+シャット のような かな断片+カタカナ語 の合成に勝たせる。きっと/ずっと/もっと(3文字)
+            // は文字数条件で対象外(既存の価格付けを尊重)。
+            if surface == reading,
+                reading.count >= 4,
+                reading.hasSuffix("っと") {
+                base = min(base, Self.multiClauseKanaAdverbCost)
+            }
             // 文節先頭(直前=BOS)の存在動詞かな過去(あった/いた)はかな正書を優先(あったんで→
             // かな先頭)。文節先頭に限定するので 気があった/目があった/サイズが合った 等(あった の
             // 直前が が/に で prev≠BOS)は無影響=「連文節でないときだけ」というユーザ指定を満たす。

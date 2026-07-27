@@ -4992,6 +4992,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(sou.first, "そうでしょ", "multi=\(sou.prefix(3))")
     }
 
+    // どうだ(副詞どう+コピュラだ、かな正書): 合成は 道だ/同だ が先行しかな識別が末尾に沈んでいた。
+    // seed 供給+keepKana(だ剥がしで語幹のかな識別が辞書先頭=どう)で先頭維持。
+    func testRegressionRealLMDoudaKanaLeads() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "どうだ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "どうだ", "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "どうだ"))
+    }
+
+    // ぱしゃっと: 連文節の ぱ+シャット(カタカナ語)合成が先頭を奪っていた。オノマトペ
+    // 〜っと(4文字以上の全かな)のかな正書クランプで排除(きっと/ずっと=3文字は対象外)。
+    func testRegressionRealLMPashattoKanaLeads() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "ぱしゃっと", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "ぱしゃっと", "multi=\(multi.prefix(3))")
+        XCTAssertFalse(multi.contains("ぱシャット"), "multi=\(multi.prefix(3))")
+        let single = converter.candidates(for: "ぱしゃっと", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "ぱしゃっと", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
