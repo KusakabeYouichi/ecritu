@@ -724,6 +724,14 @@ final class KanaKanjiConverter {
         for tail in ["だよ", "だね", "だな", "だわ", "だぞ", "だぜ", "だっけ", "でしょ"] where normalized.hasSuffix(tail) {
             return true
         }
+        // コピュラ だ を剥がした語幹のかな識別が辞書先頭(どう 等のかな正書語)なら根拠あり
+        // (どうだ→どう=rank0かな)。学生だ 等は語幹の辞書先頭が漢字なので発火しない。
+        if normalized.count > 1, normalized.hasSuffix("だ") {
+            let stem = String(normalized.dropLast())
+            if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).first == stem {
+                return true
+            }
+        }
         // 説明の んで(=ので 縮約)付きで、語幹が存在動詞のかな過去(あった/いた)の読みはかなが正書
         // (あったんで/いたんで)。エンジン側(2328)は文節先頭の あった をかな最良にするが、提示層の
         // かな降格が false のままだと先頭かなが末尾チップへ退避され実機だけ 会ったんで 先頭になる。
