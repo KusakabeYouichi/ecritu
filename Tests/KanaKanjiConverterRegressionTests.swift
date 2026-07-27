@@ -4959,6 +4959,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なったのは"))
     }
 
+    // さいやくだけおとして: だ|けおとして の誤分割(災厄だ+蹴落として)が だけ+落として に勝っていた。
+    // コピュラ終止 だ 直後の動詞は文中非文法なのでペナルティ(汎用)。だけ(副助詞)側が勝つ。
+    func testRegressionRealLMSaiyakuDakeOtoshite() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "さいやくだけおとして", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "災厄だけ落として", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(3).contains(where: { $0.contains("蹴") }), "multi=\(multi.prefix(3))")
+    }
+
+    // じゅうりょうせい: dict 順で 重量制(rank0、LM無し)が 従量制(LM7369=課金方式で頻出)より先だった。
+    func testRegressionRealLMJuuryouseiPrefersJuuryousei() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "じゅうりょうせい", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["従量制", "重量制"], "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
