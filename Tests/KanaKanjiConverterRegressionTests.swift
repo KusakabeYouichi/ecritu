@@ -4836,6 +4836,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "かわいいね"))
     }
 
+    // さいしこみ(再仕込み。醤油の製法): 複合語が Sudachi 未収録で 祭祀+コミ の分割が勝っていた。
+    // seed 供給で 再仕込み醤油/再仕込醤油 を組めるように(酒造所と同じ未収録パターン)。
+    func testRegressionRealLMSaishikomiShouyu() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "さいしこみ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "再仕込み", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "さいしこみしょうゆ", systemCandidateMode: .surface)
+        XCTAssertTrue(
+            multi.first == "再仕込み醤油" || multi.first == "再仕込醤油",
+            "multi=\(multi.prefix(4))"
+        )
+        XCTAssertFalse(multi.prefix(3).contains(where: { $0.contains("コミ") || $0.contains("祭祀") }), "multi=\(multi.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
