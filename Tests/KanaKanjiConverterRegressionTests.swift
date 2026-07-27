@@ -4597,6 +4597,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ろーぬげんさん", systemCandidateMode: .surface).first, "ローヌ原産")
     }
 
+    // 追加語彙 ろー→raw(1〜2モーラのラテン断片)が連文節で ローヌ を分断しないこと。
+    // 実機のみ再現していた ろーぬげんさん→raw脱げんさん の一般対処(短ラテン断片の床除外)。
+    func testRegressionRealLMRhoneShortLatinFragmentDoesNotFragment() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "ろー", candidate: "raw")
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "ろーぬげんさん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ローヌ原産", "ろー→raw 断片下でも ローヌ原産 が先頭であるべき: \(multi.prefix(4))")
+        // 単文節では ろー→raw が従来どおり供給されること(床除外は連文節限定)。
+        let single = converter.candidates(for: "ろー", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(single.contains("raw"), "単文節 ろー では raw が候補に残るべき: \(single.prefix(6))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
