@@ -337,6 +337,9 @@ extension KanaKanjiConverter {
     // コピュラ終止「だ」(単独ノード)の直後に動詞(活用派生/辞書形述語)が続くのは文中では
     // 非文法(災厄だ+蹴落として 等。正しくは だけ+落として)。引用(だと言った)は と を挟むので無傷。
     static let multiClauseCopulaDaBeforeVerbPenalty = 4000
+    // 並列助詞「や」(単独かなノード)の直後に敬称「さん」(読み)が続くのは 〜屋さん の誤分割
+    // (くすりやさん→薬や+さん)。正当な並列(田中や佐藤さん)は間に名詞が挟まり直接遷移しない。
+    static let multiClauseParallelYaBeforeSanPenalty = 4000
     // 辞書/変換にはあるがコーパス(LM)未収録の語。unigram 最大(8139)+バックオフ(500)より
     // 上に置き「どの既知語よりレア」として扱う。以前の 6000 は LM 中央値(7649)より安く、
     // 八津(OOV)が 奴(unigram 5963)に勝つ・ちゃ〜んと が ちゃんと に勝つ等の OOV 逆転を
@@ -1195,6 +1198,10 @@ extension KanaKanjiConverter {
             if prev == "だ",
                 isInflectionDerived || isDictionaryFormPredicate {
                 penalty += Self.multiClauseCopulaDaBeforeVerbPenalty
+            }
+            // 並列助詞「や」直後の敬称さん(定数コメント参照)。薬屋さん/花屋さん の 屋 分断を排除。
+            if prev == "や", reading == "さん" {
+                penalty += Self.multiClauseParallelYaBeforeSanPenalty
             }
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
             // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に
