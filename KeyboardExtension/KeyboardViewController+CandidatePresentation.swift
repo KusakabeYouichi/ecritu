@@ -197,6 +197,7 @@ extension KeyboardViewController {
                 limit: converterLimit,
                 systemCandidateMode: systemCandidateMode
             )
+            let singleForTrace = Array(converterCandidates.prefix(4))
 
             // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
             // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
@@ -204,6 +205,12 @@ extension KeyboardViewController {
                 let multiClause = converter.multiClauseCandidates(
                     for: reading,
                     systemCandidateMode: systemCandidateMode
+                )
+                self?.recordConversionTrace(
+                    reading: reading,
+                    multi: multiClause,
+                    single: singleForTrace,
+                    mode: systemCandidateMode
                 )
                 if !multiClause.isEmpty {
                     // 連文節の並び(最良+変種)を先頭にそのまま置き、単文節候補を後ろに
@@ -301,6 +308,27 @@ extension KeyboardViewController {
         settledCandidatePresentationKey = cacheKey
 
         refreshKeyboardStateAsync()
+    }
+
+    // デバッグ: 実機のみ再現する誤変換の層特定用。直近1回の変換の生の連文節/単文節結果と
+    // LM・フェイルセーフ・モードを上書き記録する(候補バーには出さない)。コンテナ診断で確認する。
+    // 背景キュー(candidateGenerationQueue)から呼ばれるため UserDefaults 直書きのみ行う。
+    func recordConversionTrace(
+        reading: String,
+        multi: [String],
+        single: [String],
+        mode: KanaKanjiCandidateSourceMode
+    ) {
+        guard let sharedDefaults else {
+            return
+        }
+        let edition = (Bundle.main.infoDictionary?["CFBundleVersion"] as? String) ?? "?"
+        let multiText = multi.prefix(4).joined(separator: "/")
+        let singleText = single.prefix(3).joined(separator: "/")
+        let wordLM = kanaKanjiStore.hasWordLMMetadata ? "1" : "0"
+        let fallback = kanaKanjiStore.isSystemDictionaryFallback() ? "1" : "0"
+        let trace = "[\(edition)] \(reading)\n連文節: \(multiText.isEmpty ? "(空)" : multiText)\n単文節: \(singleText.isEmpty ? "(空)" : singleText)\nwLM=\(wordLM) fallback=\(fallback) fs=\(memoryFailSafeProfile.rawValue) mode=\(mode.rawValue)"
+        sharedDefaults.set(trace, forKey: SharedDefaultsKeys.keyboardConversionLastTrace)
     }
 
     func kanaKanjiCandidates(
