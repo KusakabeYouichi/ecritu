@@ -4695,6 +4695,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         let attande = converter.multiClauseCandidates(for: "あったんで", systemCandidateMode: .surface)
         XCTAssertEqual(attande.first, "あったんで", "文節先頭 あったんで はかな先頭: \(attande.prefix(3))")
+        // 提示層のかな降格を受けないこと(false だと実機バーだけ 会ったんで が先頭に繰り上がる)
+        XCTAssertTrue(
+            converter.shouldKeepKanaIdentityLeading(for: "あったんで"),
+            "あったんで(=あった+んで)は提示層でかな先頭維持すべき"
+        )
         for (reading, expected) in [
             ("きがあった", "気が合った"),
             ("めがあった", "目が合った"),

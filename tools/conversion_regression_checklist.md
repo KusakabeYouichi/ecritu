@@ -1003,3 +1003,8 @@ Henschke=へんちき / DAOKO=だをこ / Xérès=けれす / STELVIN=すてる�
   Collocations, collocationPreferredKanaNodeKeys→transitionCost isCollocationPreferredKana でクランプ)。
   日々を大切に/日々の暮らし は無影響。③ほうだい: 誤合成 法第 がマージ先頭を奪うのを、放題 を seed+
   seedOrderNoun ボーナスで最良化して排除。表示は 放題/邦題/砲台/法大。
+
+- [x] あったんで: 提示層のかな降格を解除(keepKana に んで+あった/いた 規則) (2329)
+  2328でエンジンは あったんで を最良化したが、keepKana=false のため実機バーだけ先頭かなが末尾へ
+  退避され 会ったんで 先頭のままだった(することがある と同パターン)。んで(ので縮約)+存在動詞
+  かな過去(multiClauseClauseInitialKanaExistentialPasts)の規則を追加し提示層でもかな先頭を維持。

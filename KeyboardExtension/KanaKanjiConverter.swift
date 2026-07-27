@@ -691,6 +691,13 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 説明の んで(=ので 縮約)付きで、語幹が存在動詞のかな過去(あった/いた)の読みはかなが正書
+        // (あったんで/いたんで)。エンジン側(2328)は文節先頭の あった をかな最良にするが、提示層の
+        // かな降格が false のままだと先頭かなが末尾チップへ退避され実機だけ 会ったんで 先頭になる。
+        if normalized.hasSuffix("んで"),
+            KanaKanjiConverter.multiClauseClauseInitialKanaExistentialPasts.contains(String(normalized.dropLast(2))) {
+            return true
+        }
         // 名詞化節(のは/のが 等)・説明の のね/のよ 付きの読みは、剥がした語幹が辞書の
         // かな語(ひらがな/ある 等)なら根拠ありとする(ひらがなのは/あるのね: 合成でかな
         // 全文一致になるが、かなが正書の語幹+かなが唯一の正書の節、なので変換としてのかなを
