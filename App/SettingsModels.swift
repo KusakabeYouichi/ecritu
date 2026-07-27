@@ -94,6 +94,8 @@ enum SettingsKeys {
     static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
     static let keyboardDiagnosticsFailSafeProfile = "keyboardDiagnosticsFailSafeProfile"
     static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
+    // デバッグ: 直近1回の変換トレース(上書き式)。KeyboardExtension 側 SharedDefaultsKeys と同一。
+    static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
     // 設定変更の世代カウンタ。postSettingsDidChange のたびに +1 され、キーボード拡張が
     // 通知取りこぼし後も次回表示で共有キャッシュを破棄・再読込するのに使う(学習リセット等の
     // 確実な反映)。KeyboardExtension 側 SharedDefaultsKeys と同一キー文字列。

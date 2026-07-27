@@ -99,6 +99,7 @@ extension ContentView {
             keyboardDiagnosticsLastEvent = ""
             keyboardDiagnosticsLastSessionID = ""
             keyboardDiagnosticsFailSafeProfile = "normal"
+            keyboardConversionLastTrace = ""
             return
         }
 
@@ -127,6 +128,9 @@ extension ContentView {
         ) ?? ""
         keyboardDiagnosticsLastSessionID = defaults.string(
             forKey: SettingsKeys.keyboardDiagnosticsLastSessionID
+        ) ?? ""
+        keyboardConversionLastTrace = defaults.string(
+            forKey: SettingsKeys.keyboardConversionLastTrace
         ) ?? ""
 
         let failSafeRawValue = defaults.string(
@@ -209,6 +213,8 @@ extension ContentView {
         sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
         sections.append("lastSessionID: \(keyboardDiagnosticsLastSessionID)")
         sections.append("lastEvent: \(keyboardDiagnosticsLastEvent)")
+        sections.append("--- 最終変換トレース(デバッグ) ---")
+        sections.append(keyboardConversionLastTrace.isEmpty ? "(記録なし)" : keyboardConversionLastTrace)
         sections.append("--- critical events (ローテ保護) ---")
         if keyboardDiagnosticsCriticalLogLines.isEmpty {
             sections.append("(記録なし)")

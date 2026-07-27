@@ -379,6 +379,9 @@ final class KeyboardViewController: UIInputViewController {
         static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
         static let keyboardDiagnosticsFailSafeProfile = "keyboardDiagnosticsFailSafeProfile"
         static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
+        // デバッグ用: 直近1回の変換トレース(上書き式)。実機のみ再現する誤変換の層特定に使う。
+        // reading→連文節上位|単文節上位|LM/フェイルセーフ/モード を記録。ローテなし・単一値。
+        static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
         // 設定変更の世代カウンタ(コンテナ app が変更のたび +1)。サスペンド中のキーボードが
         // Darwin 通知を取りこぼしても、次のキーボード表示でこの値の変化を見て共有キャッシュを
         // 破棄し、学習リセット等を確実に反映する。App 側 SettingsKeys と同一キー文字列。
