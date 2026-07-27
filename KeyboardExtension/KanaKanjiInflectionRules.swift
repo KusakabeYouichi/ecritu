@@ -138,6 +138,7 @@ extension KanaKanjiConverter {
 
     static let ichidanInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "なく", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -789,6 +790,8 @@ extension KanaKanjiConverter {
 
             var suffixes = [
                 pattern.aForm + "ない",
+                // 否定の連用形(わからなく/行かなく。〜なくなる 系はあるが素の なく が欠けていた)
+                pattern.aForm + "なく",
                 pattern.aForm + "なかった",
                 pattern.aForm + "なかったら",
                 // 否定テ形(行かなくて/行かなくても)
