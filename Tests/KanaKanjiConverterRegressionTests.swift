@@ -4745,6 +4745,34 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.first == "法第", "連文節が 法第 を先頭に出すべきでない: \(multi.prefix(3))")
     }
 
+    // ておく/てしまう 縮約の欠落活用形(とけば=仮定形、ちゃおう/じゃおう=意向形)の供給。
+    // いっとけば→一途毛羽、つかっちゃおう→使っちゃ王 等の誤合成しか出なかった。
+    func testRegressionRealLMTokebaChaouSupplied() throws {
+        try prepareRealLMDictionary()
+        let ittokeba = converter.candidates(for: "いっとけば", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(ittokeba.contains("言っとけば"), "言っとけば が候補にあるべき: \(ittokeba.prefix(6))")
+        XCTAssertTrue(ittokeba.contains("行っとけば"), "行っとけば が候補にあるべき: \(ittokeba.prefix(6))")
+        let chaou = converter.candidates(for: "つかっちゃおう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(chaou.first, "使っちゃおう", "single=\(chaou.prefix(4))")
+        let jaou = converter.candidates(for: "よんじゃおう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(jaou.contains("呼んじゃおう"), "single=\(jaou.prefix(4))")
+        let tabetokeba = converter.candidates(for: "たべとけば", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(tabetokeba.first, "食べとけば", "single=\(tabetokeba.prefix(3))")
+    }
+
+    // よかったな: エンジン(連文節)はかな最良だが、keepKana=false だと提示層が先頭かなを末尾へ
+    // 退避し実機だけ 良かったな 先頭になる。い形容詞かな過去(Xかった→基底X+い が辞書かな語)の
+    // 終助詞剥がし規則で提示層でもかな先頭を維持。
+    func testRegressionRealLMYokattanaKeepsKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "よかったな", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "よかったな", "multi=\(multi.prefix(3))")
+        XCTAssertTrue(
+            converter.shouldKeepKanaIdentityLeading(for: "よかったな"),
+            "よかったな は提示層でかな先頭維持すべき"
+        )
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
