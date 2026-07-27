@@ -61,6 +61,12 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- ばかり(副助詞、かな正書)の交ぜ書き/カタカナ収穫。計り/許り/秤り 等の漢字は残す -->
+	<dict><key>phrase</key><string>ばかリ</string><key>shortcut</key><string>ばかり</string></dict>
+	<dict><key>phrase</key><string>バカリ</string><key>shortcut</key><string>ばかり</string></dict>
+	<!-- かしら(疑問終助詞、かな正書)への 頭(組の頭=レア用法)/カタカナ化。占い師頭ないが 等の誤区切りの温床 -->
+	<dict><key>phrase</key><string>頭</string><key>shortcut</key><string>かしら</string></dict>
+	<dict><key>phrase</key><string>カシラ</string><key>shortcut</key><string>かしら</string></dict>
 	<!-- カタカナ強調のウマイ/ウマい(wc5415=旨いと同値で激安)。かな うまい を勝たせる -->
 	<dict><key>phrase</key><string>ウマイ</string><key>shortcut</key><string>うまい</string></dict>
 	<dict><key>phrase</key><string>ウマい</string><key>shortcut</key><string>うまい</string></dict>
