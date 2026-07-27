@@ -4933,6 +4933,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(shika.first, "しか知らないが", "multi=\(shika.prefix(3))")
     }
 
+    // いいだした: 言い出す が Sudachi 未収録(思い出す/飛び出す等は在る)で 飯田した 等の
+    // 地名+した合成になっていた。misc pos五段(耐え抜く と同処方)で活用一括供給。動き出す も同穴。
+    func testRegressionRealLMIidashitaSupplied() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let iida = converter.candidates(for: "いいだした", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(iida.first, "言い出した", "single=\(iida)")
+        let ugoki = converter.candidates(for: "うごきだした", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(ugoki.first, "動き出した", "single=\(ugoki)")
+    }
+
+    // なったのは: なった の辞書エントリはカタカナ収穫 ナッタ のみで ナッタのは が先頭だった。
+    // ナッタ を suppr、keepKana の のは剥がしに った→る 脱活用(なった→なる=rank0かな)を追加。
+    func testRegressionRealLMNattanohaKanaLeads() throws {
+        try prepareRealLMDictionary()
+        // 実機忠実(追加語彙+抑制。素の環境では 綯ったのは=レア漢字が浮上して実機と一致しない)
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "なったのは", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "なったのは", "multi=\(multi.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なったのは"))
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

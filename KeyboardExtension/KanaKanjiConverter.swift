@@ -742,6 +742,15 @@ final class KanaKanjiConverter {
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
                 return true
             }
+            // 五段る動詞の過去(なった 等)は活用形なので辞書エントリでは拾えない。った→基底 る に
+            // 脱活用して基底が辞書のかな語なら根拠あり(なったのは→なった→なる=rank0かな)。
+            // 買った(かう基底)等で かる に誤マッチしても keepKana は維持のみで実害なし。
+            if stem.count >= 3, stem.hasSuffix("った") {
+                let ruBase = String(stem.dropLast(2)) + "る"
+                if systemCandidates(for: ruBase, mode: .lesDeux).first == ruBase {
+                    return true
+                }
+            }
         }
         // 格助詞・係助詞を1つ剥がした語幹がかな正書の識別なら根拠ありとする
         // (あったが→あった→ある: ある過去のかな あった を候補に残す)。買ったが→かった→

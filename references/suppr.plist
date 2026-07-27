@@ -61,6 +61,8 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- なった(なる過去、かな正書)のカタカナ収穫。なった の辞書エントリはこれのみで、ナッタのは 等の先頭化を作る -->
+	<dict><key>phrase</key><string>ナッタ</string><key>shortcut</key><string>なった</string></dict>
 	<!-- ばかり(副助詞、かな正書)のカタカナ強調。計り/許り/秤り 等の漢字は残す。交ぜ書き ばかリ は誤エントリ群へ -->
 	<dict><key>phrase</key><string>バカリ</string><key>shortcut</key><string>ばかり</string></dict>
 	<!-- かしら(疑問終助詞、かな正書)への 頭(組の頭=レア用法)/カタカナ化。占い師頭ないが 等の誤区切りの温床 -->
