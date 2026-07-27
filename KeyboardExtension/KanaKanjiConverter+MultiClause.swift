@@ -382,11 +382,11 @@ extension KanaKanjiConverter {
         "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
         "ゃ", "ゅ", "ょ", "ゎ", "ゕ", "ゖ", "ゝ", "ゞ", "・"
     ]
-    // 語頭禁止の正当な例外。ん は準体助詞(できる+ん+だ)、って/っていう は引用・話題の
-    // 助詞(アプリって 等、wc実在の正当語)。って を禁止したままだと 名詞+って が組めず、
-    // り を吸収して促音始まりを回避した活用合成ノード(りって)が滑り込む
-    // (ふくすうあぷりって→複数アプ+りって)。
-    static let multiClauseForbiddenInitialExemptReadings: Set<String> = ["ん", "って", "っていう"]
+    // 語頭禁止の正当な例外。って/っていう は引用・話題の助詞(アプリって 等、wc実在の正当語)。
+    // って を禁止したままだと 名詞+って が組めず、り を吸収して促音始まりを回避した活用合成ノード
+    // (りって)が滑り込む(ふくすうあぷりって→複数アプ+りって)。
+    // ※単独「ん」(準体助詞)は無条件ではなく「述語末尾直後のみ」条件付き免除に変更(transitionCost参照)。
+    static let multiClauseForbiddenInitialExemptReadings: Set<String> = ["って", "っていう"]
     // ローンワード的な読みの指標(長音・小書き母音)。これらを含む読みはカタカナ表記が
     // 妥当なので、カタカナ素通りを減点しない(例: らんてぃーゆ→ランティーユ は許容)。
     static let multiClauseLoanwordMarkers: Set<Character> = [
@@ -1104,13 +1104,24 @@ extension KanaKanjiConverter {
             if reading.count > 1, reading.contains("を"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
-            // 単独の「ん」は準体助詞(できる+ん+だ=のだ縮約)として正当な文節なので
-            // 語頭禁止の対象外にする(word_costs に んだ が無く、これを禁じると
-            // 〜るんだ/〜んです の文末クラスタが組めず ルン/キルン 等の分割に負ける)。
+            // 撥音「ん」等の語頭禁止。単独「ん」は準体助詞(切る+ん+だ/行った+ん=のだ縮約)だが、
+            // これは述語の連体形直後にのみ立てる。直前文節の末尾が述語末尾文字
+            // (multiClausePredicateTailCharacters=う/く/…/る/い/た/だ)のときだけ免除し、
+            // 脱げ+ん のような非述語直後の偽準体助詞は禁止する — ろーぬげんさん→ロー脱げんさん の
+            // ような「ん始まり文節」の誤分割を個別語ではなく汎用ルールで排除する。
+            // って/っていう(引用・話題)は従来どおり無条件免除。
             if let first = reading.first,
-                Self.multiClauseForbiddenInitials.contains(first),
-                !Self.multiClauseForbiddenInitialExemptReadings.contains(reading) {
-                penalty += Self.multiClauseForbiddenPenaltyCost
+                Self.multiClauseForbiddenInitials.contains(first) {
+                let isForbiddenInitialExempt: Bool
+                if reading == "ん" {
+                    isForbiddenInitialExempt = prev != Self.multiClauseBOSMarker
+                        && (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
+                } else {
+                    isForbiddenInitialExempt = Self.multiClauseForbiddenInitialExemptReadings.contains(reading)
+                }
+                if !isForbiddenInitialExempt {
+                    penalty += Self.multiClauseForbiddenPenaltyCost
+                }
             }
             // 促音「っ」で終わる読みの文節(かっ/カッ 等)は日本語の自立語として成立しない断片。
             // LM コーパスが活用形を A単位(買っ+た)で分割する影響で断片チェーンが不当に安く
