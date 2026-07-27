@@ -724,6 +724,10 @@ final class KanaKanjiConverter {
         for tail in ["だよ", "だね", "だな", "だわ", "だぞ", "だぜ", "だっけ", "でしょ"] where normalized.hasSuffix(tail) {
             return true
         }
+        // 〜でいい(これでいい/それでいい/ままでいい)の いい はかなが正書(良い は suppr 済みの方針)。
+        if normalized.count > 3, normalized.hasSuffix("でいい") {
+            return true
+        }
         // コピュラ だ を剥がした語幹のかな識別が辞書先頭(どう 等のかな正書語)なら根拠あり
         // (どうだ→どう=rank0かな)。学生だ 等は語幹の辞書先頭が漢字なので発火しない。
         if normalized.count > 1, normalized.hasSuffix("だ") {

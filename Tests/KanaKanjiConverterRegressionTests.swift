@@ -5023,6 +5023,46 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(hana.first, "花屋さん", "multi=\(hana.prefix(4))")
     }
 
+    // これでいい: コレ(これ rank1)/イイ(いい rank2)のカタカナ収穫と 謂(いい=単独では使わない読み、
+    // rank17)を suppr、keepKana に 〜でいい 末尾規則。これでいい がかな先頭に。
+    func testRegressionRealLMKoredeiiKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        // single は供給なし(表示は multi のみ)。multi のかな先頭と keepKana を確認する。
+        let multi = converter.multiClauseCandidates(for: "これでいい", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "これでいい", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(3).contains(where: { $0.contains("コレ") || $0.contains("イイ") || $0.contains("謂") }), "multi=\(multi.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "これでいい"))
+    }
+
+    // きょうはなして: 経(お経4660)/教派(6278)が 今日(5041)に unigram で競り勝っていた。
+    // 今日 を時相名詞キャップ(4300=昨日と同値)へ。
+    func testRegressionRealLMKyouHanashite() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "きょうはなして", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "今日話して", "multi=\(multi.prefix(4))")
+    }
+
+    // くいかた: 未収録の合成で基底 くい の辞書順(杭/悔い/…/食い)がそのまま出ていた。
+    // 食い方 を seed 供給(杭 の基底並び替えは 杭を打つ に波及するため per-form)。
+    func testRegressionRealLMKuikataPrefersKuikata() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "くいかた", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "食い方", "single=\(single)")
+    }
+
+    // せんを: dict が セン/せん/先/千… の順で頻出の 線 が top8 圏外だった。seed 線→千→先+
+    // セン suppr。かな せんを は 線を が最良になれば提示層が自然に末尾チップ化する。
+    func testRegressionRealLMSenwoPrefersSen() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "せんを", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "線を", "single=\(single)")
+        let hiku = converter.multiClauseCandidates(for: "せんをひく", systemCandidateMode: .surface)
+        XCTAssertEqual(hiku.first, "線を引く", "multi=\(hiku.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
