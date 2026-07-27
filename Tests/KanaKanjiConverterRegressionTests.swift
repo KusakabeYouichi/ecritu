@@ -4873,6 +4873,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "採れたてを", "multi=\(multi.prefix(4))")
     }
 
+    // うまいね: 熟寝ね/熟睡ね=文語レア読み 熟寝/熟睡(うまい)+ね、ウマイネ=ウマ+イネ、馬イネ=
+    // 馬+イネ の合成だった。カタカナ強調 ウマイ/ウマい と文語 熟寝/熟睡(うまい)を suppr、seed で
+    // うまい→旨い→巧い、うまいね を curated 化(いいね/かわいいね と同処方)で分割に勝たせる。
+    func testRegressionRealLMUmaineKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "うまいね", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["うまいね", "旨いね", "巧いね"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "うまいね", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.prefix(2).contains(where: { $0.contains("イネ") || $0.contains("稲") }), "multi=\(multi.prefix(3))")
+        // 熟睡(じゅくすい)は無傷
+        XCTAssertEqual(converter.candidates(for: "じゅくすい", limit: 2, systemCandidateMode: .surface).first, "熟睡")
+    }
+
+    // にほんびーる: 歴史企業名の bigram 日本→麦酒(3904)が 日本ビール(未観測、ビール uni5354<
+    // 麦酒6571)を逆転していた。麦酒(びーる)を bigram 借用遮断に追加し unigram 評価で ビール を勝たせる。
+    func testRegressionRealLMNihonBeerPrefersBeer() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "にほんびーる", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["日本ビール", "日本麦酒"], "multi=\(multi.prefix(4))")
+    }
+
+    // なんしんとう: 親等 が辞書未収録(しんとう は浸透/新党/神道 のみ)で 何親等 が組めなかった。
+    // 助数詞マップに しんとう→親等 を追加(なん/数字文脈: 2親等 も)。
+    func testRegressionRealLMNanShintouSupplied() throws {
+        try prepareRealLMDictionary()
+        let nan = converter.candidates(for: "なんしんとう", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(nan.first, "何親等", "single=\(nan)")
+        let ni = converter.candidates(for: "にしんとう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(ni.contains("2親等") && ni.contains("二親等"), "single=\(ni)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
