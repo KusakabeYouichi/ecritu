@@ -61,6 +61,10 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- 単独の当(あたり)表記は現代では使わない(当たり は残す)。来週当 型の単漢字合成の是正 -->
+	<dict><key>phrase</key><string>当</string><key>shortcut</key><string>あたり</string></dict>
+	<dict><key>phrase</key><string>當</string><key>shortcut</key><string>あたり</string></dict>
+	<dict><key>phrase</key><string>中</string><key>shortcut</key><string>あたり</string></dict>
 	<dict><key>phrase</key><string>デキル</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>デキる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>ソウ</string><key>shortcut</key><string>そう</string></dict>
