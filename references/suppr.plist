@@ -61,6 +61,13 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- セン(せん のカタカナ収穫、dict rank0)。線/千/先 等の実語を優先 -->
+	<dict><key>phrase</key><string>セン</string><key>shortcut</key><string>せん</string></dict>
+	<!-- コレ/イイ(これ/いい のカタカナ書き)。かなを優先(イイね は既存抑制) -->
+	<dict><key>phrase</key><string>コレ</string><key>shortcut</key><string>これ</string></dict>
+	<dict><key>phrase</key><string>イイ</string><key>shortcut</key><string>いい</string></dict>
+	<!-- 謂(いい)は単独では使わない読み(謂う/謂れ のみ)。これで謂 等の合成の温床 -->
+	<dict><key>phrase</key><string>謂</string><key>shortcut</key><string>いい</string></dict>
 	<!-- クスリ(薬のカタカナ書き、wc3228=薬と同値)。かな/漢字を優先 -->
 	<dict><key>phrase</key><string>クスリ</string><key>shortcut</key><string>くすり</string></dict>
 	<!-- ダ(コピュラだ のカタカナ収穫、rank0/wc4406=かな だ5733より安)。ダよ/ダけど 一族の根本 -->
