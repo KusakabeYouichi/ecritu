@@ -331,6 +331,9 @@ extension KanaKanjiConverter {
     // 辞書形動詞(終止形。描く/走る/見る 等)の直後に して/する/した は非文法(正しくは て形 描いて)。
     // 描くして/走るして のような誤合成を強く減点し、隠して(かくす て形)等の正しい経路に譲る。
     static let multiClauseDictionaryFormPlusSuruPenalty = 5000
+    // コピュラ終止「だ」(単独ノード)の直後に動詞(活用派生/辞書形述語)が続くのは文中では
+    // 非文法(災厄だ+蹴落として 等。正しくは だけ+落として)。引用(だと言った)は と を挟むので無傷。
+    static let multiClauseCopulaDaBeforeVerbPenalty = 4000
     // 辞書/変換にはあるがコーパス(LM)未収録の語。unigram 最大(8139)+バックオフ(500)より
     // 上に置き「どの既知語よりレア」として扱う。以前の 6000 は LM 中央値(7649)より安く、
     // 八津(OOV)が 奴(unigram 5963)に勝つ・ちゃ〜んと が ちゃんと に勝つ等の OOV 逆転を
@@ -1175,6 +1178,12 @@ extension KanaKanjiConverter {
             if prevIsDictionaryFormPredicate,
                 reading == "して" || reading == "する" || reading == "した" || reading == "します" {
                 penalty += Self.multiClauseDictionaryFormPlusSuruPenalty
+            }
+            // コピュラ終止「だ」直後の動詞(定数コメント参照)。さいやくだけおとして→災厄だ蹴落として
+            // のような だ|け 誤分割を、だけ(副助詞)+動詞 の正しい区切りに負けさせる。
+            if prev == "だ",
+                isInflectionDerived || isDictionaryFormPredicate {
+                penalty += Self.multiClauseCopulaDaBeforeVerbPenalty
             }
             // カタカナ化ペナルティ(何でもカタカナ化の抑止)。ただし LM unigram を持つ表層は
             // コーパス実在の外来語(サイズ/ゲスト 等、長音なしで readingLooksLikeLoanword に
