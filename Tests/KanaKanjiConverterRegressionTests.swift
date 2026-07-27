@@ -4798,6 +4798,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(teki.first, "敵が来襲", "multi=\(teki.prefix(3))")
     }
 
+    // くるひ: 辞書は文語レア読みの 来日(wc11000)のみで {来日, くるひ} になっていた。
+    // 来日(くるひ)を suppr、来る日 を seed 供給して 来る日 を先頭に。来日(らいにち)は無傷。
+    func testRegressionRealLMKuruhiPrefersKuruHi() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["くるひ": ["来日"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "くるひ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "来る日", "single=\(single)")
+        XCTAssertFalse(single.contains("来日"), "来日(くるひ)は抑制済みのはず: \(single)")
+        let rainichi = converter.candidates(for: "らいにち", limit: 3, systemCandidateMode: .surface)
+        XCTAssertTrue(rainichi.contains("来日"), "来日(らいにち)は無傷のはず: \(rainichi)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
