@@ -318,6 +318,9 @@ extension KanaKanjiConverter {
     // 検索機能 等の複合は bigram 分岐が勝つ。unigram 分岐限定のキャップ。
     static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
         "昨日": 4300,
+        // 今日(会話最頻)が 経(お経4660)/教派(6278)等に unigram(5041)で競り負ける
+        // (きょうはなして→経話して/教派なして)。昨日と同水準へ
+        "今日": 4300,
         "最近": 5000,
         // 来週(会話最頻)が Wikipedia バイアスの 来襲(6869)に unigram(7792)で負ける
         // (らいしゅうあたり→来襲当)。来襲 を下回る水準へキャップ
