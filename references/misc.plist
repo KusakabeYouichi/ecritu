@@ -292,6 +292,8 @@
 	<dict><key>phrase</key><string>いいね</string><key>shortcut</key><string>いいね</string></dict>
 	<!-- かわいいね: curated いいね(床1500)が 川+いいね 分割を作り かな かわいいね に勝つ(ろーま事件と同型)。分断される側も curated 化して文節数の少ない方を勝たせる -->
 	<dict><key>phrase</key><string>かわいいね</string><key>shortcut</key><string>かわいいね</string></dict>
+	<!-- うまいね: うま|いね 分割(馬+イネ/ウマ+イネ=ウマイネ)が勝つ。いいね/かわいいね と同処方 -->
+	<dict><key>phrase</key><string>うまいね</string><key>shortcut</key><string>うまいね</string></dict>
 	<!-- あした→明日 を先頭化。朝(あした=古語読み)の表層が あさ 読みの uni(4453)を借用して 明日(5910)に連文節で勝つ(あしたは→朝は)。朝 は候補として温存したいので抑制せず、明日 を curated で先頭固定 -->
 	<dict><key>phrase</key><string>明日</string><key>shortcut</key><string>あした</string></dict>
 	<!-- ほんとう→本当 を先頭化。ryukyu.plist の 本島(ほんとう=沖縄本島)が curated 上位で 本当(systemDictionary)を潰すため、本当 も curated で供給して先頭に戻す -->

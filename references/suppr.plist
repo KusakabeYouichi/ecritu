@@ -61,6 +61,12 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- カタカナ強調のウマイ/ウマい(wc5415=旨いと同値で激安)。かな うまい を勝たせる -->
+	<dict><key>phrase</key><string>ウマイ</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>ウマい</string><key>shortcut</key><string>うまい</string></dict>
+	<!-- 熟寝/熟睡(うまい)は文語のレア読み(万葉集級)。現代では出ない方がよい(熟睡=じゅくすい は無傷) -->
+	<dict><key>phrase</key><string>熟寝</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>熟睡</string><key>shortcut</key><string>うまい</string></dict>
 	<!-- カタカナ強調のカワイイ/交ぜ書きカワイい(Sudachi収穫)。かわいい のかな正書を勝たせる -->
 	<dict><key>phrase</key><string>カワイイ</string><key>shortcut</key><string>かわいい</string></dict>
 	<dict><key>phrase</key><string>カワイい</string><key>shortcut</key><string>かわいい</string></dict>
