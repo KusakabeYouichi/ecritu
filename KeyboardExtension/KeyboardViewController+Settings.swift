@@ -19,6 +19,24 @@ extension KeyboardViewController {
             fallback: false
         )
         kanaKanjiConverter.setIterationMarkSurfaceAllowed(iterationMarkAllowed)
+
+        let katakanaEmphasisMode = ScriptVariantCandidateMode(
+            rawValue: sharedStringValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.katakanaEmphasisCandidateMode,
+                fallback: ScriptVariantCandidateMode.suppress.rawValue
+            )
+        ) ?? .suppress
+        kanaKanjiConverter.setKatakanaEmphasisCandidateMode(katakanaEmphasisMode)
+
+        let mazegakiMode = ScriptVariantCandidateMode(
+            rawValue: sharedStringValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.mazegakiCandidateMode,
+                fallback: ScriptVariantCandidateMode.suppress.rawValue
+            )
+        ) ?? .suppress
+        kanaKanjiConverter.setMazegakiCandidateMode(mazegakiMode)
     }
 
     func startObservingSettingsDidChange() {

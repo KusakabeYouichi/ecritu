@@ -28,9 +28,15 @@ final class KanaKanjiConverter {
     var kanaIdentityLeadingCache: [String: Bool] = [:]
     let kanaIdentityLeadingCacheLimit = 256
 
+    // applyScriptVariantCandidateModes へ活用派生集合を渡すための一時置き場(candidates() 内のみ使用)
+    var inflectionDerivedCandidatesForScriptVariant: Set<String> = []
     var historicalKanaSurfaceAllowed: Bool = false
     // 仮名踊り字(ゝ/ゞ/ヽ/ヾ)。旧仮名遣い(ゐゑヰヱ)とは独立に制御する。
     var iterationMarkSurfaceAllowed: Bool = false
+    // カタカナ強調表記(ウマイ/ばかリ 等=表層のひらがな化が読みと一致)と
+    // 交ぜ書き(まん延/作ひん 等=常用漢字外を嫌ったかな開き)の扱い。既定は抑制。
+    var katakanaEmphasisCandidateMode: ScriptVariantCandidateMode = .suppress
+    var mazegakiCandidateMode: ScriptVariantCandidateMode = .suppress
 
     init(store: KanaKanjiStore) {
         self.store = store
@@ -54,6 +60,26 @@ final class KanaKanjiConverter {
             }
 
             iterationMarkSurfaceAllowed = allowed
+            invalidateCandidateCache()
+        }
+    }
+
+    func setKatakanaEmphasisCandidateMode(_ mode: ScriptVariantCandidateMode) {
+        stateQueue.sync {
+            guard katakanaEmphasisCandidateMode != mode else {
+                return
+            }
+            katakanaEmphasisCandidateMode = mode
+            invalidateCandidateCache()
+        }
+    }
+
+    func setMazegakiCandidateMode(_ mode: ScriptVariantCandidateMode) {
+        stateQueue.sync {
+            guard mazegakiCandidateMode != mode else {
+                return
+            }
+            mazegakiCandidateMode = mode
             invalidateCandidateCache()
         }
     }
@@ -197,7 +223,9 @@ final class KanaKanjiConverter {
             inflectionDerivedCandidates: inflectionDerivedCandidates,
             to: &scores
         )
+        inflectionDerivedCandidatesForScriptVariant = Set(inflectionDerivedCandidates)
         applySuppressionsAndDecorativeFilter(context, to: &scores)
+        inflectionDerivedCandidatesForScriptVariant = []
 
         var finalCandidates = finalizeSortedCandidates(context, scores: scores)
         // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で
@@ -498,6 +526,112 @@ final class KanaKanjiConverter {
             && (Self.isDecorativeVariantSurface(candidate, reading: context.reading)
                 || isRendakuHarvestSurface(candidate, reading: context.reading)) {
             scores.removeValue(forKey: candidate)
+        }
+
+        applyScriptVariantCandidateModes(
+            context,
+            inflectionDerivedCandidates: inflectionDerivedCandidatesForScriptVariant,
+            to: &scores
+        )
+    }
+
+    // カタカナ強調表記(ウマイ/ばかリ 等)と交ぜ書き(まん延/作ひん 等)へ、コンテナ設定の
+    // [抑制/候補リスト後方/同列] を適用する。ユーザ明示登録(追加語彙/手動)は常に尊重して対象外。
+    // 外来語(パン/アンケート 等)は LM 基準で保護する — カタカナ側が unigram 優位なら強調ではない。
+    private func applyScriptVariantCandidateModes(
+        _ context: CandidateGenerationContext,
+        inflectionDerivedCandidates: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        let katakanaMode = katakanaEmphasisCandidateMode
+        let mazegakiMode = mazegakiCandidateMode
+        guard katakanaMode != .normal || mazegakiMode != .normal else {
+            return
+        }
+
+        let reading = context.reading
+        // ユーザ明示(追加語彙)・学習(明示タップ)・完全一致専用seed(抑制→末尾再供給の二段構え)
+        // は対象外
+        var exemptCandidates = context.userCandidateSet.union(context.learnedCandidates)
+        exemptCandidates.formUnion(KanaKanjiSeedDictionary.exactReadingOnlySeed[reading] ?? [])
+        var katakanaTargets: [String] = []
+        var mazegakiTargets: [String] = []
+        var kanjiAlternatives: [String] = []
+        var allKanjiSameReading: [String] = []
+
+        for candidate in scores.keys where !exemptCandidates.contains(candidate) {
+            if katakanaMode != .normal,
+                candidate != reading,
+                let hira = Self.hiraganizedKanaOnlySurface(candidate),
+                hira == reading,
+                // seed 掲載(イカ 等の人手選別)と、seed 掲載カタカナ連のみの混在(イカの 等)は
+                // 正当なカタカナ語として対象外
+                !(KanaKanjiSeedDictionary.seed[reading]?.contains(candidate) ?? false),
+                !Self.katakanaRunsAreSeedProtected(candidate) {
+                katakanaTargets.append(candidate)
+            }
+            if Self.isAllKanjiSurface(candidate) {
+                allKanjiSameReading.append(candidate)
+            }
+        }
+        for candidate in context.systemCandidates where Self.isAllKanjiSurface(candidate) {
+            if !allKanjiSameReading.contains(candidate) {
+                allKanjiSameReading.append(candidate)
+            }
+        }
+        kanjiAlternatives = allKanjiSameReading
+
+        if mazegakiMode != .normal {
+            // 全漢字側は LM unigram 実在(蔓延/作品 等の常用語)を要求 — 名前収穫(中野/夏羽 等)を
+            // 「開かれた元」と誤認して正当な合成を巻き込まない
+            let fullKanjiUni = store.wordLMUnigramCosts(for: allKanjiSameReading)
+            // 活用派生(勝って/切って 等のて形)は 勝手/切手 と構造衝突するため対象外
+            for candidate in scores.keys
+            where !exemptCandidates.contains(candidate)
+                && !inflectionDerivedCandidates.contains(candidate) {
+                guard let kanjiPart = Self.mazegakiKanjiPart(candidate, reading: reading) else { continue }
+                if allKanjiSameReading.contains(where: { full in
+                    full != candidate
+                        && fullKanjiUni[full] != nil
+                        && kanjiPart.count < full.count
+                        && Self.isSubsequence(kanjiPart, of: full)
+                }) {
+                    mazegakiTargets.append(candidate)
+                }
+            }
+        }
+
+        guard !katakanaTargets.isEmpty || !mazegakiTargets.isEmpty else {
+            return
+        }
+
+        // 外来語保護: カタカナ表層に unigram があり、かな識別・漢字側のどれよりも安ければ
+        // 正当な外来語表記(パン/アンケート)とみなして対象から外す。
+        if !katakanaTargets.isEmpty {
+            let probes = katakanaTargets + kanjiAlternatives + [reading]
+            let uni = store.wordLMUnigramCosts(for: probes)
+            let altBest = (kanjiAlternatives.compactMap { uni[$0] } + [uni[reading]].compactMap { $0 }).min()
+            katakanaTargets = katakanaTargets.filter { candidate in
+                guard let kataUni = uni[candidate] else {
+                    // LM未収録のカタカナ化は、かな/漢字の代替が存在する限り強調とみなす
+                    return altBest != nil || !kanjiAlternatives.isEmpty
+                }
+                if let altBest { return altBest < kataUni }
+                return false
+            }
+        }
+
+        for candidate in katakanaTargets + mazegakiTargets {
+            let mode = katakanaTargets.contains(candidate) ? katakanaMode : mazegakiMode
+            switch mode {
+            case .suppress:
+                scores.removeValue(forKey: candidate)
+            case .demote:
+                // 完全一致専用(300)よりさらに下=リスト末尾へ
+                scores[candidate] = min(scores[candidate] ?? 0, CandidateScore.exactReadingOnly - 50)
+            case .normal:
+                break
+            }
         }
     }
 

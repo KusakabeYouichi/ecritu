@@ -3321,10 +3321,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             )
         }
 
-        // 単文節の候補列は無傷(単独入力では選択可能)
+        // 単文節: コイツ は既定(抑制)で消える(2350〜)。リスト後方モードでは復帰する
         let single = converter.candidates(for: "こいつ", limit: 6, systemCandidateMode: .surface)
         XCTAssertTrue(single.contains("此奴"), "single=\(single)")
-        XCTAssertTrue(single.contains("コイツ"), "single=\(single)")
+        XCTAssertFalse(single.contains("コイツ"), "single=\(single)")
+        converter.setKatakanaEmphasisCandidateMode(.demote)
+        let demoted = converter.candidates(for: "こいつ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(demoted.contains("コイツ"), "demoted=\(demoted)")
+        converter.setKatakanaEmphasisCandidateMode(.suppress)
     }
 
     // 実LM回帰: いかの の並び。dict いか は イカ0/凧1/いか2/… の順で、頻出の 以下 が沈み、
@@ -3578,7 +3582,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try injectSuppression(["は": ["者"]])
         let single = converter.candidates(for: "ひらがな", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(single.prefix(3)), ["平仮名", "ひらがな", "平がな"], "single=\(single)")
+        // 平がな は交ぜ書きクラス抑制(既定)で候補から消える(2350〜)
+        XCTAssertEqual(Array(single.prefix(2)), ["平仮名", "ひらがな"], "single=\(single)")
         let composed = converter.candidates(for: "ひらがなのは", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(Array(composed.prefix(2)), ["平仮名のは", "ひらがなのは"], "composed=\(composed)")
         let multi = converter.multiClauseCandidates(for: "ひらがなのは", systemCandidateMode: .surface)
@@ -3656,7 +3661,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try injectSuppression(["かぶとむし": ["甲虫"]])
         let single = converter.candidates(for: "かぶとむし", limit: 10, systemCandidateMode: .surface)
-        XCTAssertEqual(single, ["カブトムシ", "カブト虫", "かぶと虫", "兜虫", "甲虫"], "single=\(single)")
+        // かぶと虫 は交ぜ書きクラス抑制(既定)で消える(2350〜)
+        XCTAssertEqual(single, ["カブトムシ", "カブト虫", "兜虫", "甲虫"], "single=\(single)")
         let multi = converter.multiClauseCandidates(for: "かぶとむしも", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "カブトムシも", "multi=\(multi)")
         XCTAssertFalse(multi.contains("甲虫も"), "multi=\(multi)")
@@ -5101,6 +5107,42 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 文脈なしでも 万円 は 蔓延 に次ぐ2番手(seed)
         let single = converter.candidates(for: "まんえん", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(2)), ["蔓延", "万円"], "single=\(single)")
+    }
+
+    // カタカナ強調表記/交ぜ書きの3値モード([抑制/リスト後方/同列]、既定=抑制)。
+    // 抑制: ウマイ/まん延 が候補から消える。後方: 末尾に残る。同列: 従来順位。
+    // 外来語(パン)と seed 掲載カタカナ(イカ)は常に対象外。
+    func testRegressionRealLMScriptVariantModes() throws {
+        try prepareRealLMDictionary()
+        // 既定(抑制)
+        let umaiSuppressed = converter.candidates(for: "うまい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(umaiSuppressed.contains("ウマイ") || umaiSuppressed.contains("ウマい"), "\(umaiSuppressed)")
+        let manenSuppressed = converter.candidates(for: "まんえん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(manenSuppressed.contains("まん延"), "\(manenSuppressed)")
+        // 外来語/seed掲載は残る
+        let pan = converter.candidates(for: "ぱん", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(pan.contains("パン"), "\(pan)")
+        let ika = converter.candidates(for: "いか", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(ika.contains("イカ"), "\(ika)")
+        // 後方
+        converter.setKatakanaEmphasisCandidateMode(.demote)
+        converter.setMazegakiCandidateMode(.demote)
+        let umaiDemoted = converter.candidates(for: "うまい", limit: 20, systemCandidateMode: .surface)
+        XCTAssertTrue(umaiDemoted.contains("ウマイ"), "\(umaiDemoted)")
+        XCTAssertTrue(umaiDemoted.firstIndex(of: "ウマイ")! > umaiDemoted.firstIndex(of: "旨い")!, "\(umaiDemoted)")
+        let manenDemoted = converter.candidates(for: "まんえん", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(manenDemoted.contains("まん延"), "\(manenDemoted)")
+        XCTAssertTrue(manenDemoted.firstIndex(of: "まん延")! > manenDemoted.firstIndex(of: "蔓延")!, "\(manenDemoted)")
+        // 同列
+        converter.setKatakanaEmphasisCandidateMode(.normal)
+        converter.setMazegakiCandidateMode(.normal)
+        let umaiNormal = converter.candidates(for: "うまい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(umaiNormal.contains("ウマイ"), "\(umaiNormal)")
+        // 連文節: 抑制時に交ぜ書き/強調ノードが最良経路に出ない
+        converter.setKatakanaEmphasisCandidateMode(.suppress)
+        converter.setMazegakiCandidateMode(.suppress)
+        let panyasan = converter.multiClauseCandidates(for: "ぱんやさん", systemCandidateMode: .surface)
+        XCTAssertEqual(panyasan.first, "パン屋さん", "外来語パンは連文節でも無傷: \(panyasan.prefix(3))")
     }
 
     private func prepareRealLMDictionary() throws {

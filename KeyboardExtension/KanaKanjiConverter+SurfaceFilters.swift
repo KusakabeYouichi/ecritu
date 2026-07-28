@@ -500,3 +500,88 @@ extension KanaKanjiConverter {
         return filtered
     }
 }
+
+// MARK: - カタカナ強調表記/交ぜ書きの分類(コンテナ設定 [抑制/後方/同列] の対象判定)
+extension KanaKanjiConverter {
+    // 定着した交ぜ書き(常用漢字外回避ではなく主流表記になっているもの)。分類から除外する。
+    static let mazegakiAllowlistedSurfaces: Set<String> = ["子ども", "子どもたち", "子どもの日"]
+
+    // 表層をひらがな化する。かな(ひらがな/カタカナ/ー)以外を含む場合は nil。
+    static func hiraganizedKanaOnlySurface(_ surface: String) -> String? {
+        var result = ""
+        for scalar in surface.unicodeScalars {
+            switch scalar.value {
+            case 0x3041...0x3096, 0x30FC: // ひらがな・長音
+                result.unicodeScalars.append(scalar)
+            case 0x30A1...0x30F6: // カタカナ→ひらがな
+                guard let mapped = Unicode.Scalar(scalar.value - 0x60) else { return nil }
+                result.unicodeScalars.append(mapped)
+            default:
+                return nil
+            }
+        }
+        return result.isEmpty ? nil : result
+    }
+
+    static func isAllKanjiSurface(_ surface: String) -> Bool {
+        !surface.isEmpty && surface.unicodeScalars.allSatisfy {
+            (0x4E00...0x9FFF).contains($0.value) || $0.value == 0x3005 // 々
+        }
+    }
+
+    // 交ぜ書き判定(LM文脈なしの構造部分): 漢字+ひらがな混在で、かな部分が読みの一部、
+    // 漢字部分がより漢字数の多い同読み全漢字候補の部分列(まん延←蔓延/作ひん←作品)。
+    // 申し込み(漢字部分==申込 で同数)や送り仮名違いは対象外。
+    static func mazegakiKanjiPart(_ surface: String, reading: String) -> String? {
+        guard !mazegakiAllowlistedSurfaces.contains(surface) else { return nil }
+        var kanji = ""
+        var kana = ""
+        for scalar in surface.unicodeScalars {
+            switch scalar.value {
+            case 0x4E00...0x9FFF, 0x3005:
+                kanji.unicodeScalars.append(scalar)
+            case 0x3041...0x3096, 0x30FC:
+                kana.unicodeScalars.append(scalar)
+            default:
+                return nil // カタカナ・記号混在は対象外
+            }
+        }
+        // かな部分1文字は 中の/夏は/何の 等の正当な 漢字+助詞・送り仮名 合成と区別できないため対象外
+        guard !kanji.isEmpty, kana.count >= 2, reading.contains(kana) else { return nil }
+        return kanji
+    }
+
+    // 混在表層のカタカナ連が seed 掲載の正当カタカナ語(イカ 等)なら強調ではない(イカの 保護)。
+    static func katakanaRunsAreSeedProtected(_ surface: String) -> Bool {
+        var run = ""
+        var sawRun = false
+        func flush() -> Bool {
+            guard !run.isEmpty else { return true }
+            sawRun = true
+            guard let hira = hiraganizedKanaOnlySurface(run) else { return false }
+            let protected_ = KanaKanjiSeedDictionary.seed[hira]?.contains(run) ?? false
+            run = ""
+            return protected_
+        }
+        for scalar in surface.unicodeScalars {
+            if (0x30A1...0x30F6).contains(scalar.value) {
+                run.unicodeScalars.append(scalar)
+            } else {
+                if !flush() { return false }
+            }
+        }
+        if !flush() { return false }
+        return sawRun
+    }
+
+    static func isSubsequence(_ needle: String, of haystack: String) -> Bool {
+        var it = haystack.unicodeScalars.makeIterator()
+        outer: for n in needle.unicodeScalars {
+            while let h = it.next() {
+                if h == n { continue outer }
+            }
+            return false
+        }
+        return true
+    }
+}

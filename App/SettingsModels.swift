@@ -76,6 +76,9 @@ enum SettingsKeys {
     static let kanaKanjiSuppressionVocabulary = "ÉcrituSuppr_Vocab"
     static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
     static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
+    // カタカナ強調表記/交ぜ書きの扱い(suppress/demote/normal)。KeyboardExtension 側と同一キー
+    static let katakanaEmphasisCandidateMode = "katakanaEmphasisCandidateMode"
+    static let mazegakiCandidateMode = "mazegakiCandidateMode"
     static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
     static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
     static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
@@ -739,5 +742,22 @@ extension View {
                 RoundedRectangle(cornerRadius: 14, style: .continuous)
                     .fill(AppTheme.cardBackground)
             )
+    }
+}
+
+// カタカナ強調表記/交ぜ書きの扱い(コンテナ設定)。KeyboardExtension 側 ScriptVariantCandidateMode と同 rawValue。
+enum ScriptVariantModeOption: String, CaseIterable, Identifiable {
+    case suppress
+    case demote
+    case normal
+
+    var id: String { rawValue }
+
+    var label: String {
+        switch self {
+        case .suppress: return "抑制"
+        case .demote: return "リスト後方"
+        case .normal: return "同列に使う"
+        }
     }
 }
