@@ -63,9 +63,9 @@ final class KanaKanjiStore {
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: [String: [String]]?
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
-    // 汎用Latinサジェスト語彙のキャッシュと有効言語(既定は全言語ON。設定で言語別に切る)。
+    // 汎用Latinサジェスト語彙のキャッシュと有効言語(既定は全言語OFF。設定で言語別にON)。
     var cachedGenericLatinLexiconEntries: [GenericLatinLexiconEntry]?
-    var genericLatinLexiconEnabledLanguages: Set<String> = ["en", "fr", "de", "it"]
+    var genericLatinLexiconEnabledLanguages: Set<String> = []
     // テスト用: bundle 未同梱の環境(unit test)でリポジトリのJSONを直接読ませる
     var genericLatinLexiconFileURLOverride: URL?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
