@@ -5145,6 +5145,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(panyasan.first, "パン屋さん", "外来語パンは連文節でも無傷: \(panyasan.prefix(3))")
     }
 
+    // しきいき: 色域(カラーマネジメント)が Sudachi/LM とも未収録で 識閾 しか出なかった。seed 供給。
+    func testRegressionRealLMShikiikiSupplied() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "しきいき", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["色域", "識閾"], "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
