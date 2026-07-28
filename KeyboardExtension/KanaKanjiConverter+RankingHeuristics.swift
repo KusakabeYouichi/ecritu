@@ -120,6 +120,11 @@ extension KanaKanjiConverter {
         }
     }
 
+    // コピュラ だ の活用尾。keepKana(だ剥がし)で使う。長い方を先にマッチさせる
+    // (だった を だ+った と誤剥がししない)。エンジン側は合成経由で既にかな最良を
+    // 選べている(そうだった 等)ため昇格はせず、提示層の先頭維持だけを担う。
+    static let copulaDaTails: [String] = ["だったら", "だった", "だって", "だし", "だ"]
+
     // 同読みグループ内で「かな表記が LM 優位」か(ここ4556 vs 個々/ココ、やる vs 殺る 等)。
     // LM 未収録は +∞ 扱い。かな首位化(1908)と活用基底の並び(かいてある対策)で共用する。
     func isLMKanaPreferred(reading: String, among others: [String]) -> Bool {

@@ -5007,6 +5007,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "どうだ"))
     }
 
+    // そうだった(副詞そう+コピュラだ過去、かな正書): エンジンはかな最良を選ぶが提示層の
+    // かな降格で 層だった/僧だった 等が先行していた。コピュラ活用尾剥がし(だった/だし…)で
+    // 語幹の辞書先頭(純カタカナ除く)がかな(そう)なら keepKana で先頭維持。
+    func testRegressionRealLMSoudattaKanaLeads() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "そうだった", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "そうだった", "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そうだった"))
+    }
+
     // ぱしゃっと: 連文節の ぱ+シャット(カタカナ語)合成が先頭を奪っていた。オノマトペ
     // 〜っと(4文字以上の全かな)のかな正書クランプで排除(きっと/ずっと=3文字は対象外)。
     func testRegressionRealLMPashattoKanaLeads() throws {

@@ -899,11 +899,16 @@ final class KanaKanjiConverter {
         if normalized.count > 3, normalized.hasSuffix("でいい") {
             return true
         }
-        // コピュラ だ を剥がした語幹のかな識別が辞書先頭(どう 等のかな正書語)なら根拠あり
-        // (どうだ→どう=rank0かな)。学生だ 等は語幹の辞書先頭が漢字なので発火しない。
-        if normalized.count > 1, normalized.hasSuffix("だ") {
-            let stem = String(normalized.dropLast())
-            if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).first == stem {
+        // コピュラ だ(+活用尾 だった/だったら/だし/だって)を剥がした語幹のかな識別が辞書先頭
+        // (どう/そう 等のかな正書語)なら根拠あり(どうだ→どう=rank0かな、そうだった→そう)。
+        // 純カタカナ識別(ソウ 等)は漢字正書の根拠ではないので除いて先頭判定する。
+        // 学生だ/学生だった 等は語幹の辞書先頭が漢字なので発火しない。
+        for tail in KanaKanjiConverter.copulaDaTails
+        where normalized.count > tail.count && normalized.hasSuffix(tail) {
+            let stem = String(normalized.dropLast(tail.count))
+            if stem.count >= 2,
+                systemCandidates(for: stem, mode: .lesDeux)
+                    .first(where: { !KanaKanjiConverter.isPureKatakanaCandidate($0) }) == stem {
                 return true
             }
         }
