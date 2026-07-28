@@ -875,10 +875,19 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 言いさし終止の から を剥がして再帰(じゃないから→じゃない: コピュラ否定末尾で true)。
+        // ので は既存の厳格ゲート(seedかな先頭/学習のみ。たべるので を素通りさせない)を迂回
+        // しないよう汎用剥がしにせず、じゃない系の複合末尾だけ下で明示する。
+        if normalized.count > 3, normalized.hasSuffix("から") {
+            let stem = String(normalized.dropLast(2))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // コピュラ否定(じゃない/じゃなくて/じゃなかった)で終わる全かな句はかなが正書
         // (じゃ+無かった 等の分割漢字化より かな全文)。keepKana は維持のみで昇格しないため、
         // 名詞部が漢字正書の句(嘘じゃない=エンジンが漢字先頭)に発火しても実害はない。
-        for tail in ["じゃなかった", "じゃなくて", "じゃない"] where normalized.hasSuffix(tail) {
+        for tail in ["じゃなかった", "じゃなくて", "じゃない", "じゃないので", "じゃないんで"] where normalized.hasSuffix(tail) {
             return true
         }
         // コピュラ だ+終助詞(だよ/だね…)と でしょ(でしょう縮約)もかなが正書。終助詞剥がし規則は
