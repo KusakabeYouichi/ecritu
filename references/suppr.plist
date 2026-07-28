@@ -279,6 +279,8 @@
 	<dict><key>phrase</key><string>で〜す</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>で〜〜す</string><key>shortcut</key><string>です</string></dict>
 	<!-- ▼誤エントリ(辞書の誤った読み): Sudachi等が生成した本来しない読みの表層。学習でも古語でもなく明確な誤り。 -->
+	<!-- 報る(しる): 報 に しる の読みは無い(報せる=しらせる/報いる=むくいる のみ)。報って(しって)等の温床 -->
+	<dict><key>phrase</key><string>報る</string><key>shortcut</key><string>しる</string></dict>
 	<!-- 這んな(こんな): 現代語に存在しない表記の収穫(這う とは無関係) -->
 	<dict><key>phrase</key><string>這んな</string><key>shortcut</key><string>こんな</string></dict>
 	<!-- ばかリ(ひらがな+カタカナ混在): 正書として存在しない交ぜ書きの収穫ミス -->
