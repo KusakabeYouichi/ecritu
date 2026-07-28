@@ -5017,6 +5017,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そうだった"))
     }
 
+    // よね(終助詞クラスタ、かな正書): かな は辞書/LM未収録で末尾に沈み 与根/人名合成が
+    // 先行していた。seed(かな掲載)で先頭供給、keepKana は systemCandidates の seed 合流で成立。
+    func testRegressionRealLMYoneKanaLeads() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "よね", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "よね", "single=\(single)")
+        XCTAssertEqual(single.dropFirst().first, "米", "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "よね"))
+    }
+
     // ぱしゃっと: 連文節の ぱ+シャット(カタカナ語)合成が先頭を奪っていた。オノマトペ
     // 〜っと(4文字以上の全かな)のかな正書クランプで排除(きっと/ずっと=3文字は対象外)。
     func testRegressionRealLMPashattoKanaLeads() throws {
