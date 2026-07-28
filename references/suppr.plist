@@ -279,6 +279,8 @@
 	<dict><key>phrase</key><string>で〜す</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>で〜〜す</string><key>shortcut</key><string>です</string></dict>
 	<!-- ▼誤エントリ(辞書の誤った読み): Sudachi等が生成した本来しない読みの表層。学習でも古語でもなく明確な誤り。 -->
+	<!-- 這んな(こんな): 現代語に存在しない表記の収穫(這う とは無関係) -->
+	<dict><key>phrase</key><string>這んな</string><key>shortcut</key><string>こんな</string></dict>
 	<!-- ばかリ(ひらがな+カタカナ混在): 正書として存在しない交ぜ書きの収穫ミス -->
 	<!-- ぐらい(連濁した副助詞・かな正書): 暗い/昏い/冥い等はくらい読みのい形容詞で「ぐらい」とは読まない。読みぐらいでのみ抑制(くらい→暗い は温存) -->
 	<dict><key>phrase</key><string>暗い</string><key>shortcut</key><string>ぐらい</string></dict>
