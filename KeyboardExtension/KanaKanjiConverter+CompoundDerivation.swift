@@ -62,7 +62,10 @@ extension KanaKanjiConverter {
         "ぱつ": ["発"],
         // 親等(親族の距離)。しんとう は辞書に 親等 が未収録(浸透/新党/神道 のみ)で、
         // 何親等/2親等 が組めなかった
-        "しんとう": ["親等"]
+        "しんとう": ["親等"],
+        // 万円(金額)。直前が数字のとき 万円 を先頭へ(5確定→まんえん→万円)。
+        // 何万円/数万円 は大数位(まん=万)+えん の複合で既に対応済み
+        "まんえん": ["万円"]
     ]
 
     static let numericCounterAllowedSuffixReadingsByPrefixReading: [String: Set<String>] = [

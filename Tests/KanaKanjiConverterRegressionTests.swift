@@ -5079,6 +5079,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(samui.first, "今日は寒い", "multi=\(samui.prefix(3))")
     }
 
+    // まんえん: 直前が数字確定のとき 万円 を先頭へ(まんえん を助数詞マップに追加)。
+    // 何万円/数万円 は大数位複合で既対応。文脈なしの まんえん は 蔓延 先頭のまま(妥当)。
+    func testRegressionRealLMManenDigitContext() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.candidates(for: "なんまんえん", limit: 2, systemCandidateMode: .surface).first, "何万円")
+        XCTAssertEqual(converter.candidates(for: "すうまんえん", limit: 2, systemCandidateMode: .surface).first, "数万円")
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["蔓延", "万延", "万円", "まんえん"],
+            reading: "まんえん",
+            precedingCharacter: "5"
+        )
+        XCTAssertEqual(boosted.first, "万円", "digit文脈で万円が先頭: \(boosted)")
+        // 数字文脈なしは並び不変
+        let plain = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["蔓延", "万延", "万円"],
+            reading: "まんえん",
+            precedingCharacter: "。"
+        )
+        XCTAssertEqual(plain.first, "蔓延", "非数字文脈は不変: \(plain)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
