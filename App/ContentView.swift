@@ -317,25 +317,25 @@ struct ContentView: View {
         SettingsKeys.latinLexiconEnglishEnabled,
         store: Self.sharedDefaults
     )
-    private var latinLexiconEnglishEnabled = true
+    private var latinLexiconEnglishEnabled = false
 
     @AppStorage(
         SettingsKeys.latinLexiconFrenchEnabled,
         store: Self.sharedDefaults
     )
-    private var latinLexiconFrenchEnabled = true
+    private var latinLexiconFrenchEnabled = false
 
     @AppStorage(
         SettingsKeys.latinLexiconGermanEnabled,
         store: Self.sharedDefaults
     )
-    private var latinLexiconGermanEnabled = true
+    private var latinLexiconGermanEnabled = false
 
     @AppStorage(
         SettingsKeys.latinLexiconItalianEnabled,
         store: Self.sharedDefaults
     )
-    private var latinLexiconItalianEnabled = true
+    private var latinLexiconItalianEnabled = false
 
     @AppStorage(
         SettingsKeys.katakanaEmphasisCandidateMode,

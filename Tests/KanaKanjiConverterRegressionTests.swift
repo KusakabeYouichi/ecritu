@@ -5325,6 +5325,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         store.genericLatinLexiconFileURLOverride = URL(
             fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/LatinSuggestionLexicon.json"
         )
+        // 既定は全言語OFF(サジェストに汎用語が混ざらない)
+        XCTAssertFalse(store.latinSuggestions(prefix: "informa", limit: 8).contains("information"))
+        store.setGenericLatinLexiconEnabledLanguages(["en", "fr", "de", "it"])
         let english = store.latinSuggestions(prefix: "informa", limit: 8)
         XCTAssertTrue(english.contains("information"), "suggestions=\(english)")
         let french = store.latinSuggestions(prefix: "voil", limit: 8)
