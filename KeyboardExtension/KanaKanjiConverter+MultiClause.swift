@@ -211,7 +211,10 @@ extension KanaKanjiConverter {
         "んだもん", "んだもの", "んだっけ",
         // でしょ(でしょう縮約)。で+初/諸 等の単漢字分割に勝たせる(単文節は dict rank0 かな が
         // 受け皿にあるため、エコー抑制で multi=[] になっても候補は全滅しない)
-        "でしょ"
+        "でしょ",
+        // かなー(詠嘆の終助詞クラスタ+長音)。素通り21000では 色香+なー 等の辞書語吸収に勝てない。
+        // 単文節に かなー 受け皿あり
+        "かなー"
         // ※コピュラ否定(じゃない/じゃなくて/じゃなかった)の追加は不可 — かな識別が単一ノード最良に
         // なると入力エコー抑制で multi=[] になり、single が空の じゃなくて は候補全滅する。
         // エンジンは元々かな最良を返しており、必要なのは提示層 keepKana のみ(2333)。
@@ -261,6 +264,9 @@ extension KanaKanjiConverter {
         // 日(び)=曜日の連濁読み収穫(wc6052、主読み ひ=5549)。あの→日 1272(あの日=
         // あのひ の実績)を借用して あのびじんの→あの日神野 の分断を作る
         "日": ["び"],
+        // 化(か)は接辞用法のA単位分割(変化/文化 等)の bigram(色→化 3023 等)を借用して
+        // 色化なー のような裸の接辞断片を作る。単独の 化(か)は文中に立たない
+        "化": ["か"],
         // 麦酒(びーる)は歴史企業名(大日本麦酒 等)の bigram 日本→麦酒(3904)を借用して
         // 日本ビール(bigram未観測、ビール uni5354<麦酒6571)を逆転させる。unigram 評価なら ビール が勝つ
         "麦酒": ["びーる"]
@@ -851,7 +857,10 @@ extension KanaKanjiConverter {
                 //      辞書にレア名前(野賀 wc10000 等)だけがあると (c) の素通り補完が走らず、
                 //      述語直後クランプの対象ノード自体が立たない(たくのがすき→宅のが好き)。
                 if Self.multiClauseNominalizerSurfaces.contains(segmentReading)
-                    || Self.multiClauseExplanatoryFinalSurfaces.contains(segmentReading) {
+                    || Self.multiClauseExplanatoryFinalSurfaces.contains(segmentReading)
+                    // 口語終止クラスタ(かなー 等)も常設 — 辞書/wc に無い読みはノード自体が立たず、
+                    // クランプ(4000)が適用できない(こんないろかなー→色香なー 対策)
+                    || Self.multiClauseColloquialExplanatoryTailReadings.contains(segmentReading) {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -1477,6 +1486,13 @@ extension KanaKanjiConverter {
                 eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
             }
             var total = best[idx] + eosCost
+            // 文末終助詞クラスタの最長一致ボーナス: かなー(3字) を なー(2字) より優先する
+            // (こんないろかなー→色香+なー でなく 色+かなー。文末クラスタは最長で切るのが自然)。
+            // 長さ×400 の差分なので、辞書語が明確に安い場合(ばか+なー 等)は逆転しない。
+            if nodes[idx].surface == nodes[idx].reading,
+                Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading) {
+                total -= nodes[idx].reading.count * 400
+            }
             // 文末が終助詞クラスタ読み(かな/かも 等)なのに漢字表層(仮名/哉/鴨)なのは不自然。
             if Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading),
                 nodes[idx].surface != nodes[idx].reading,

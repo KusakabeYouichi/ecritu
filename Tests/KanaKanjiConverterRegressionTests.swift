@@ -5167,6 +5167,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(kakunin.prefix(2).contains("再度確認") || kakunin.prefix(2).contains("サイド確認"), "multi=\(kakunin.prefix(3))")
     }
 
+    // こんないろかなー: 色化(色+化=A単位bigram借用3023)と 色香+なー が こんな色かなー を消していた。
+    // 化(か)の借用遮断+かなー を口語終止クラスタ常設ノード化+文末終助詞の最長一致ボーナスで是正。
+    func testRegressionRealLMKonnaIroKanaa() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "こんないろかなー", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "こんな色かなー", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(3).contains(where: { $0.contains("色化") || $0.contains("色香") }), "multi=\(multi.prefix(3))")
+    }
+
+    func testDiagnosticYattemiru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        for r in ["とにかくやってみる", "やってみる", "やって"] {
+            let multi = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            let single = converter.candidates(for: r, limit: 5, systemCandidateMode: .surface)
+            print("DY \(r): multi=\(multi.prefix(4)) single=\(single.prefix(4))")
+        }
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
