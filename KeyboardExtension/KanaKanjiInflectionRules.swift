@@ -1158,6 +1158,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "され", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "される", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 受身+ちゃう縮約(規定されちゃった 等。てしまう系の受身版)
+        InflectionRule(readingSuffix: "されちゃう", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "されちゃった", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "されちゃって", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         // 受身+てくる アスペクト連鎖(送信されてくる/されてきます 等)。
         InflectionRule(readingSuffix: "されてくる", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されてきた", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
@@ -1389,6 +1393,9 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "され", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "される", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "されちゃう", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "されちゃった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "されちゃって", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "された", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "されてる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: [InflectionClass.suru]),

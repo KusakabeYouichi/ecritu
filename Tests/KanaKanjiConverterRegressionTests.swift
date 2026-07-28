@@ -5188,6 +5188,35 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // しって: 報る(しる)は Sudachi の疑義読み収穫(報せる=しらせる/報いる=むくいる のみが正)。
+    // 基底を suppr し活用 報って にも伝播させる。じゃないから: 文末の接続助詞 から が終助詞集合に
+    // 無く EOS で 空(から) に負けていた(じゃない空)。から/ので を言いさし終止として集合へ。
+    func testRegressionRealLMShitteJanaikara() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["しる": ["報る"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let shitte = converter.candidates(for: "しって", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(shitte.contains("報って"), "single=\(shitte)")
+        // 先頭のかな識別 しって は提示層で末尾チップ化されるため、変換としては 知って が先頭
+        XCTAssertEqual(Array(shitte.prefix(2)), ["しって", "知って"], "single=\(shitte)")
+        let janai = converter.multiClauseCandidates(for: "じゃないから", systemCandidateMode: .surface)
+        XCTAssertEqual(janai.first, "じゃないから", "multi=\(janai.prefix(4))")
+        XCTAssertFalse(janai.prefix(3).contains("じゃない空"), "multi=\(janai.prefix(3))")
+    }
+
+    // きていされちゃった: 受身+ちゃう縮約(されちゃう/されちゃった/されちゃって)のサ変規則が欠落し、
+    // 規定(suru登録済み)なのに 規定去れちゃった 等の合成しか出なかった(とけば/ちゃおう と同族)。
+    func testRegressionRealLMSarechattaSupplied() throws {
+        try prepareRealLMDictionary()
+        // 規則追加で全読みが1ノード導出可能になり multi は単文節委譲([])。表示は single 先頭
+        let multi = converter.multiClauseCandidates(for: "きていされちゃった", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "規定されちゃった", "multi=\(multi.prefix(4))")
+        let single = converter.candidates(for: "きていされちゃった", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "規定されちゃった", "single=\(single)")
+        XCTAssertFalse(single.contains(where: { $0.contains("去れ") }), "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
