@@ -359,6 +359,8 @@ final class KeyboardViewController: UIInputViewController {
         static let landscapeLatinSuggestionMode = "landscapeLatinSuggestionMode"
         static let kanaKanjiCandidateSourceMode = "kanaKanjiCandidateSourceMode"
         static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
+        static let katakanaEmphasisCandidateMode = "katakanaEmphasisCandidateMode"
+        static let mazegakiCandidateMode = "mazegakiCandidateMode"
         static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
         static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
         static let contactCandidateDisplayMode = "contactCandidateDisplayMode"

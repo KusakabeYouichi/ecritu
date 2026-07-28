@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260728104606"
+    private static let editionUpdatedAtRaw: String = "20260728112941"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -313,6 +313,18 @@ struct ContentView: View {
     )
     private var iterationMarkCandidatesEnabled = false
 
+    @AppStorage(
+        SettingsKeys.katakanaEmphasisCandidateMode,
+        store: Self.sharedDefaults
+    )
+    private var katakanaEmphasisCandidateModeRawValue: String = ScriptVariantModeOption.suppress.rawValue
+
+    @AppStorage(
+        SettingsKeys.mazegakiCandidateMode,
+        store: Self.sharedDefaults
+    )
+    private var mazegakiCandidateModeRawValue: String = ScriptVariantModeOption.suppress.rawValue
+
     @State var userDictionaryEntries: [VocabularyEntry] = []
     @State var userDictionaryReadingInput = ""
     @State var userDictionaryCandidateInput = ""
@@ -408,7 +420,9 @@ struct ContentView: View {
             String(emojiCandidateDisplayEnabled),
             String(kaomojiCandidateDisplayEnabled),
             String(historicalKanaCandidatesEnabled),
-            String(iterationMarkCandidatesEnabled)
+            String(iterationMarkCandidatesEnabled),
+            katakanaEmphasisCandidateModeRawValue,
+            mazegakiCandidateModeRawValue
         ]
             .joined(separator: "|")
     }
@@ -935,6 +949,18 @@ struct ContentView: View {
 
                         IterationMarkCandidatesSettingsSection(
                             isEnabled: $iterationMarkCandidatesEnabled
+                        )
+
+                        ScriptVariantModeSettingsSection(
+                            title: "カタカナ強調表記の候補",
+                            selectionRawValue: $katakanaEmphasisCandidateModeRawValue,
+                            footnote: "辞書が収穫した「ウマイ/コレ/ばかリ」のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(既定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
+                        )
+
+                        ScriptVariantModeSettingsSection(
+                            title: "交ぜ書きの候補",
+                            selectionRawValue: $mazegakiCandidateModeRawValue,
+                            footnote: "「まん延(蔓延)」「作ひん(作品)」のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(既定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。「子ども」など定着した表記は対象外です。"
                         )
 
                         EmojiKaomojiCandidateSettingsSection(

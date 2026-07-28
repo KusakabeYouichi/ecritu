@@ -679,6 +679,38 @@ struct IterationMarkCandidatesSettingsSection: View {
     }
 }
 
+struct ScriptVariantModeSettingsSection: View {
+    let title: String
+    @Binding var selectionRawValue: String
+    let footnote: String
+
+    private var selection: Binding<ScriptVariantModeOption> {
+        Binding(
+            get: { ScriptVariantModeOption(rawValue: selectionRawValue) ?? .suppress },
+            set: { selectionRawValue = $0.rawValue }
+        )
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(title)
+                .font(.headline)
+
+            Picker(title, selection: selection) {
+                ForEach(ScriptVariantModeOption.allCases) { option in
+                    Text(option.label).tag(option)
+                }
+            }
+            .pickerStyle(.segmented)
+
+            Text(footnote)
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct DirectionSettingsSection: View {
     @Binding var selection: DirectionOption
 

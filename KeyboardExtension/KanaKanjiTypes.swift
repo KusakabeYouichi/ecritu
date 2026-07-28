@@ -20,6 +20,14 @@ enum KanaKanjiStorageKeys {
     static let initialSuppressionHiddenResourceName = "InitialSupprHiddenVocabMigration"
 }
 
+// カタカナ強調表記/交ぜ書きの扱い(コンテナ設定)。suppress=候補から除去(既定)、
+// demote=候補リスト後方、normal=同列(従来どおり)。
+enum ScriptVariantCandidateMode: String {
+    case suppress
+    case demote
+    case normal
+}
+
 enum KanaKanjiCandidateSourceTag {
     static let normalized = "normalized"
     static let surface = "surface"

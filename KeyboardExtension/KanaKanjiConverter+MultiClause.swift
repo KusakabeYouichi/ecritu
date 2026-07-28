@@ -492,6 +492,10 @@ extension KanaKanjiConverter {
         var shortCuratedFragmentNodeKeys = Set<String>()
         // 連語文脈でかなを優先するノードのキー(ひび+入る=ひびが入る 等)。日々 でなく ひび を勝たせる。
         var collocationPreferredKanaNodeKeys = Set<String>()
+        // カタカナ強調/交ぜ書きの対象ノード(供給後の一括分類パスで印付け)。
+        // suppressed=+100000(事実上不採用)、demoted=+6000(後方)。
+        var scriptVariantSuppressedNodeKeys = Set<String>()
+        var scriptVariantDemotedNodeKeys = Set<String>()
         var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
         var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
@@ -916,6 +920,58 @@ extension KanaKanjiConverter {
         }
         let unigramCosts = store.wordLMUnigramCosts(for: Array(unigramSurfaces))
 
+        // カタカナ強調表記/交ぜ書きのモード適用(供給後の一括分類。単文節側と同じ述語)。
+        // curated(ユーザ明示)は対象外。外来語(パン 等)は「カタカナ側が unigram 優位」で保護。
+        // suppress は +100000(事実上不採用)、demote は +6000(後方)を transitionCost で加える。
+        if katakanaEmphasisCandidateMode != .normal || mazegakiCandidateMode != .normal {
+            for node in nodes where !node.isCurated {
+                let key = "\(node.start)-\(node.end)-\(node.surface)"
+                if katakanaEmphasisCandidateMode != .normal,
+                    node.surface != node.reading,
+                    let hira = KanaKanjiConverter.hiraganizedKanaOnlySurface(node.surface),
+                    hira == node.reading,
+                    !(KanaKanjiSeedDictionary.seed[node.reading]?.contains(node.surface) ?? false),
+                    !(KanaKanjiSeedDictionary.exactReadingOnlySeed[node.reading]?.contains(node.surface) ?? false),
+                    !KanaKanjiConverter.katakanaRunsAreSeedProtected(node.surface) {
+                    let kataUni = unigramCosts[node.surface]
+                    let altUni = unigramCosts[node.reading]
+                    let isEmphasis: Bool
+                    if let kataUni {
+                        isEmphasis = (altUni != nil && altUni! < kataUni)
+                    } else {
+                        isEmphasis = true
+                    }
+                    if isEmphasis {
+                        if katakanaEmphasisCandidateMode == .suppress {
+                            scriptVariantSuppressedNodeKeys.insert(key)
+                        } else {
+                            scriptVariantDemotedNodeKeys.insert(key)
+                        }
+                        continue
+                    }
+                }
+                if mazegakiCandidateMode != .normal,
+                    !node.isInflectionDerived,
+                    let kanjiPart = KanaKanjiConverter.mazegakiKanjiPart(node.surface, reading: node.reading) {
+                    let sameReadingCosts = store.wordCosts(for: node.reading)
+                    let fullKanjiExists = sameReadingCosts.keys.contains { full in
+                        full != node.surface
+                            && KanaKanjiConverter.isAllKanjiSurface(full)
+                            && unigramCosts[full] != nil
+                            && kanjiPart.count < full.count
+                            && KanaKanjiConverter.isSubsequence(kanjiPart, of: full)
+                    }
+                    if fullKanjiExists {
+                        if mazegakiCandidateMode == .suppress {
+                            scriptVariantSuppressedNodeKeys.insert(key)
+                        } else {
+                            scriptVariantDemotedNodeKeys.insert(key)
+                        }
+                    }
+                }
+            }
+        }
+
         var bigramPairs: [(String, String)] = []
         var seenPairs = Set<String>()
         func addPair(_ prev: String, _ cur: String) {
@@ -962,7 +1018,8 @@ extension KanaKanjiConverter {
             prevIsDictionaryFormPredicate: Bool = false,
             prevIsInflectionDerived: Bool = false,
             isShortCuratedFragment: Bool = false,
-            isCollocationPreferredKana: Bool = false
+            isCollocationPreferredKana: Bool = false,
+            scriptVariantPenalty: Int = 0
         ) -> Int {
             var base: Int
             var penaltyForNounHoshii = 0
@@ -1246,6 +1303,8 @@ extension KanaKanjiConverter {
             if reading.count >= 2, reading.hasSuffix("っ"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
+            // カタカナ強調/交ぜ書きモードのノード別ペナルティ(suppress=100000/demote=6000)
+            penalty += scriptVariantPenalty
             return base + penalty
         }
 
@@ -1263,6 +1322,9 @@ extension KanaKanjiConverter {
                     : 0
                 let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
+                let nodeScriptVariantPenalty = scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
+                    : (scriptVariantDemotedNodeKeys.contains(nodeKeySV) ? 6000 : 0)
                 if node.start == 0 {
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
@@ -1275,7 +1337,8 @@ extension KanaKanjiConverter {
                         wordCost: node.wordCost,
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
-                        isCollocationPreferredKana: nodeIsCollocationPreferredKana
+                        isCollocationPreferredKana: nodeIsCollocationPreferredKana,
+                        scriptVariantPenalty: nodeScriptVariantPenalty
                     ) - preferredInflectionBonus
                     if cost < best[idx] {
                         best[idx] = cost
@@ -1301,7 +1364,8 @@ extension KanaKanjiConverter {
                         prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
                         prevIsInflectionDerived: prevNode.isInflectionDerived,
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
-                        isCollocationPreferredKana: nodeIsCollocationPreferredKana
+                        isCollocationPreferredKana: nodeIsCollocationPreferredKana,
+                        scriptVariantPenalty: nodeScriptVariantPenalty
                     ) - preferredInflectionBonus
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
@@ -1542,7 +1606,9 @@ extension KanaKanjiConverter {
                         ? nodes[pathIndices[pos - 1]].isInflectionDerived
                         : false,
                     isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
-                    isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                    isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
+                    scriptVariantPenalty: scriptVariantSuppressedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 100000
+                        : (scriptVariantDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 6000 : 0)
                 )
                 let outgoing: Int
                 if let nextNode {
@@ -1559,7 +1625,9 @@ extension KanaKanjiConverter {
                         prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsInflectionDerived: node.isInflectionDerived,
                         isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
-                        isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)")
+                        isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
+                        scriptVariantPenalty: scriptVariantSuppressedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 100000
+                            : (scriptVariantDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 6000 : 0)
                     )
                 } else {
                     var eosCost = transitionCost(
