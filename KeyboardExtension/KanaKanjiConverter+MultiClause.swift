@@ -131,13 +131,27 @@ extension KanaKanjiConverter {
     static let multiClauseNaAdjectiveBigramThreshold = 2000
     // カ変「来る」の活用形(読み→漢字表層)。活用供給順で一段動詞の後に沈むため連文節に
     // 明示供給する。北/着た 等の同音とは競合し LM が文脈で選ぶ(単独 きた→北 は不変)。
-    static let multiClauseKuruFormSurfaces: [String: String] = [
-        "きた": "来た", "きて": "来て", "くる": "来る", "くれ": "来れ",
-        "こない": "来ない", "これる": "来れる", "これた": "来れた"
-    ]
+    // 単文節の kuruInflectionForms(きてしまいました→来てしまいました 等の複合尾を含む)から
+    // 自動生成する — 手書き7形だけだと きてしまいました 丸ごとspanにカ変が立たず、
+    // 一段派生(着て/衣て/著て+しまいました)しか経路に無くなる(もうしょくばに… 対策)。
+    static let multiClauseKuruFormSurfaces: [String: String] = {
+        var map = Dictionary(
+            KanaKanjiConverter.kuruInflectionForms.map { ($0.readingSuffix, $0.kanjiOutputSuffix) },
+            uniquingKeysWith: { (first: String, _: String) in first }
+        )
+        // 終止/可能系はリスト外(単文節では辞書語・活用エンジンが賄う)なので旧map分を補完
+        for (reading, surface) in ["くる": "来る", "くれ": "来れ", "これる": "来れる", "これた": "来れた"]
+        where map[reading] == nil {
+            map[reading] = surface
+        }
+        return map
+    }()
     // 連用形+に(目的)直後の移動動詞ボーナス。北(名詞)5190+に→北4818 級を、来た(活用OOV
     // 7200)が上回れる水準に。移動動詞は 来/行/帰/戻 始まりの漢字表層で判定する。
     static let multiClauseRenyouNiMotionVerbBonus = 3500
+    // 格助詞 に 直後のカ変(来る)到着点ボーナス。一段 着る 派生(着て+しまいました)との
+    // 同コスト帯を確実に逆転できる控えめな値(に を伴わない文脈の 着て は不変)。
+    static let multiClauseNiKuruArrivalBonus = 1500
     static func isMotionVerbSurface(_ surface: String) -> Bool {
         guard let first = surface.first else { return false }
         return first == "来" || first == "行" || first == "帰" || first == "戻"
@@ -1426,6 +1440,17 @@ extension KanaKanjiConverter {
                     if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
                         Self.isMotionVerbSurface(node.surface) {
                         cost -= Self.multiClauseRenyouNiMotionVerbBonus
+                    }
+                    // 格助詞 に 直後のカ変(来る)活用は移動の到着点用法で最頻(職場に来て/こっちに来た)。
+                    // 同読みの一段 着る はを格が普通(服を着て)なので、に 直後に限り来る側を押し上げる。
+                    // カ変明示供給ノード(kuru map 一致)に限定し、来手 等の辞書同音や 行/言(いって)には
+                    // 触れない。上に着て(重ね着)は稀用法として許容する。連用形+に(飲みに)の直後にも
+                    // 等しく与え、のみ+に+来た が 飲みに+来た を新ボーナス差で逆転しないようにする。
+                    if (prevNode.surface == "に" && prevNode.reading == "に")
+                        || renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                        node.isInflectionDerived,
+                        Self.multiClauseKuruFormSurfaces[node.reading] == node.surface {
+                        cost -= Self.multiClauseNiKuruArrivalBonus
                     }
                     // 同音異義 あう の出し分け(best-effort): 現ノードが あう活用(会う/合う)で
                     // 直前が「に」なら、その前の名詞の人物性で優先を決める。人物→会う、
