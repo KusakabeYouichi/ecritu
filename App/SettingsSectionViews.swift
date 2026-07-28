@@ -660,7 +660,7 @@ struct LatinLexiconSettingsSection: View {
             }
             .toggleStyle(.switch)
 
-            Text("欧文入力中のサジェスチョンに、同梱の頻度順語彙(各言語約5000語)を使うかを言語別に切り替えます。追加語彙・学習した語は常に優先して表示されます。既定はすべてオフ。")
+            Text("欧文入力中のサジェスチョンに、同梱の頻度順語彙(英・仏・伊 各約15,000語、独 約60,000語)を使うかを言語別に切り替えます。追加語彙・学習した語は常に優先して表示されます。既定はすべてオフ。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }

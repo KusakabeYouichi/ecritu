@@ -26,8 +26,8 @@ Attribution (アプリの謝辞に記載):
 from __future__ import annotations
 
 import argparse
-import json
 import re
+import subprocess
 import unicodedata
 from collections import defaultdict
 from pathlib import Path
@@ -64,7 +64,7 @@ def is_clean_word(word: str, lang: str) -> bool:
     return True
 
 
-def load_leipzig(path: Path, lang: str) -> list[str]:
+def load_leipzig(path: Path, lang: str, min_count: int = 3) -> list[str]:
     freq: dict[str, int] = defaultdict(int)
     for line in path.read_text(encoding="utf-8").splitlines():
         parts = line.split("\t")
@@ -77,6 +77,8 @@ def load_leipzig(path: Path, lang: str) -> list[str]:
             continue
         if is_clean_word(word, lang):
             freq[word] += n
+    # 出現が僅少の語(タイポ・OCRごみの温床)は深いランクを取るときの品質床として落とす
+    freq = {w: n for w, n in freq.items() if n >= min_count}
     if lang == "de":
         # 文頭大文字の重複(Die vs die)を解消: 小文字キーごとに支配的な表記だけ残し
         # 頻度は合算する(冠詞類→小文字、名詞→大文字が自然に残る)。
@@ -131,25 +133,55 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--leipzig-it", required=True, type=Path)
     parser.add_argument("--lexique", required=True, type=Path)
     parser.add_argument("--top", type=int, default=5000)
-    parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument("--top-en", type=int, help="英語の語数(未指定は--top)")
+    parser.add_argument("--top-fr", type=int, help="フランス語の語数(未指定は--top)")
+    parser.add_argument("--top-de", type=int, help="ドイツ語の語数(未指定は--top)")
+    parser.add_argument("--top-it", type=int, help="イタリア語の語数(未指定は--top)")
+    parser.add_argument("--min-count", type=int, default=3, help="Leipzig語の最低出現数")
+    parser.add_argument(
+        "--output-dir", required=True, type=Path,
+        help="LatinSuggestionLexicon_{lang}.txt の出力先ディレクトリ")
     parser.add_argument("--review-dir", type=Path, help="言語別レビュー用リストの出力先")
     return parser.parse_args()
+
+
+def fold_search_keys(words: list[str]) -> list[str]:
+    """実行時(Swift)と同一の折り畳みで検索キーを計算する。Python側で近似実装せず、
+    tools/fold_latin_keys.swift に委譲して完全一致を保証する。"""
+    script = Path(__file__).parent / "fold_latin_keys.swift"
+    result = subprocess.run(
+        ["swift", str(script)],
+        input="\n".join(words) + "\n",
+        capture_output=True, text=True, check=True,
+    )
+    keys = result.stdout.splitlines()
+    if len(keys) != len(words):
+        raise RuntimeError(f"fold key count mismatch: {len(keys)} != {len(words)}")
+    return keys
 
 
 def main() -> None:
     args = parse_args()
     lists = {
-        "en": load_leipzig(args.leipzig_en, "en")[: args.top],
-        "de": load_leipzig(args.leipzig_de, "de")[: args.top],
-        "it": load_leipzig(args.leipzig_it, "it")[: args.top],
-        "fr": load_lexique(args.lexique)[: args.top],
+        "en": load_leipzig(args.leipzig_en, "en", args.min_count)[: args.top_en or args.top],
+        "de": load_leipzig(args.leipzig_de, "de", args.min_count)[: args.top_de or args.top],
+        "it": load_leipzig(args.leipzig_it, "it", args.min_count)[: args.top_it or args.top],
+        "fr": load_lexique(args.lexique)[: args.top_fr or args.top],
     }
+    args.output_dir.mkdir(parents=True, exist_ok=True)
     for lang, words in lists.items():
-        print(f"{lang}: {len(words)} words")
-    args.output.write_text(
-        json.dumps(lists, ensure_ascii=False, separators=(",", ":")) + "\n",
-        encoding="utf-8",
-    )
+        keys = fold_search_keys(words)
+        # 実行時は読むだけで検索できるよう、キー順にソートして key\tword\trank で出力
+        rows = sorted(
+            ((keys[i], words[i], i) for i in range(len(words))),
+            key=lambda row: (row[0], row[2]),
+        )
+        out = args.output_dir / f"LatinSuggestionLexicon_{lang}.txt"
+        out.write_text(
+            "\n".join(f"{k}\t{w}\t{r}" for k, w, r in rows) + "\n",
+            encoding="utf-8",
+        )
+        print(f"{lang}: {len(words)} words -> {out}")
     if args.review_dir:
         args.review_dir.mkdir(parents=True, exist_ok=True)
         for lang, words in lists.items():
