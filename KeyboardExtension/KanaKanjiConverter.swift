@@ -826,6 +826,25 @@ final class KanaKanjiConverter {
         if (store.initialUserDictionary()[normalized] ?? []).contains(normalized) {
             return true
         }
+        // curated かな識別(やって/やってみる 等の misc 登録)で終わり、前半が辞書のかな語
+        // (とにかく 等)なら根拠あり(とにかくやってみる)。前半+curated末尾 の全かな句は
+        // かなが正書とみなす。
+        if normalized.count >= 5 {
+            let initialDictionary = store.initialUserDictionary()
+            let manualDictionary = store.userDictionary()
+            let maxSuffix = min(8, normalized.count - 2)
+            for suffixLength in 3...maxSuffix {
+                let suffix = String(normalized.suffix(suffixLength))
+                guard (initialDictionary[suffix] ?? []).contains(suffix)
+                    || (manualDictionary[suffix] ?? []).contains(suffix) else { continue }
+                let prefix = String(normalized.dropLast(suffixLength))
+                if prefix.count >= 2,
+                    systemCandidates(for: prefix, mode: .lesDeux).contains(prefix)
+                        || store.wordCosts(for: prefix)[prefix] != nil {
+                    return true
+                }
+            }
+        }
         if (store.userDictionary()[normalized] ?? []).contains(normalized) {
             return true
         }
