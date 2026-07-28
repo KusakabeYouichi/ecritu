@@ -1083,6 +1083,14 @@ extension KanaKanjiConverter {
                     let fallback = (unigramCosts[Self.multiClauseEOSMarker] ?? 1619)
                         + Self.multiClauseBackoffCost
                     base = fallback + (bigram - fallback) / 2
+                    // 言いさし・話題断片のかな助詞終わり(〜出すと、/〜だから 等)は Wikipedia の
+                    // 「この語は文末に来ない」統計(と→EOS 3879 等)が断片入力と系統的に食い違い、
+                    // 半減圧縮でも 出すと が ダスト(EOS1648)に負ける。かな助詞 prev の観測 EOS は
+                    // fallback より重くしない(よ→EOS 等、安い側の観測信号は保つ)。
+                    if Self.multiClauseCaseParticleSurfaces.contains(prev)
+                        || Self.multiClauseFinalParticleReadings.contains(prev) {
+                        base = min(base, fallback)
+                    }
                 } else {
                     base = bigram
                 }

@@ -5288,6 +5288,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(nanonii.contains("なのニー"), "multi=\(nanonii.prefix(3))")
     }
 
+    // もじでだすと: 文字でダスト が先頭だった。と→EOS 3879(Wikipediaで と は文末に来ない)の
+    // 半減圧縮でも 出すと+EOS が ダスト(EOS1648)に負ける系統的食い違い。かな助詞 prev の
+    // 観測EOSを fallback で上限して 文字で出すと を最良に。
+    func testRegressionRealLMMojideDasuto() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "もじでだすと", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "文字で出すと", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains("文字でダスト"), "multi=\(multi.prefix(4))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
