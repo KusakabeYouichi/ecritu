@@ -61,6 +61,8 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- マンエン(蔓延/万円系のカタカナ収穫、rank1)。かな/漢字を優先 -->
+	<dict><key>phrase</key><string>マンエン</string><key>shortcut</key><string>まんえん</string></dict>
 	<!-- セン(せん のカタカナ収穫、dict rank0)。線/千/先 等の実語を優先 -->
 	<dict><key>phrase</key><string>セン</string><key>shortcut</key><string>せん</string></dict>
 	<!-- コレ/イイ(これ/いい のカタカナ書き)。かなを優先(イイね は既存抑制) -->
