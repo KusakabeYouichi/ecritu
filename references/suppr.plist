@@ -57,6 +57,9 @@
 	<!-- 現代的に流行っていない言い方 -->
 	<!-- 厭きの(あきの): 厭きる は現代では 飽きる が主。飽きの(飽きのこない)は残す -->
 	<dict><key>phrase</key><string>厭きの</string><key>shortcut</key><string>あきの</string></dict>
+	<!-- ニー(にー のカタカナ)。knee等のLM実在でクラス保護されるため個別suppr(なのニー/行ったのニー) -->
+	<dict><key>phrase</key><string>ニー</string><key>shortcut</key><string>にー</string></dict>
+	<dict><key>phrase</key><string>のニー</string><key>shortcut</key><string>のにー</string></dict>
 	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>
 	<dict><key>phrase</key><string>サンガ</string><key>shortcut</key><string>さんが</string></dict>
