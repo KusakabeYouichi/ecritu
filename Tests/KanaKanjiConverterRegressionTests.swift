@@ -5249,6 +5249,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kouko.first, "香茹を食べた", "multi=\(kouko.prefix(3))")
     }
 
+    // あきの: seed 秋の→空きの→秋野。秋(あきの=正規化ミス)/厭きの suppr、飽きの は後方に残す。
+    // なのにー: ニー(knee等のLM実在でクラス保護される)を個別 suppr 復元。
+    func testRegressionRealLMAkinoNanonii() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["あきの": ["秋", "厭きの"], "にー": ["ニー"], "のにー": ["のニー"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let akino = converter.candidates(for: "あきの", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(akino.prefix(3)), ["秋の", "空きの", "秋野"], "single=\(akino)")
+        XCTAssertFalse(akino.contains("秋") || akino.contains("厭きの"), "single=\(akino)")
+        XCTAssertTrue(akino.contains("飽きの"), "飽きの(飽きのこない)は残す: \(akino)")
+        if let kanaIdx = akino.firstIndex(of: "あきの"), let top = akino.firstIndex(of: "秋の") {
+            XCTAssertGreaterThan(kanaIdx, top + 5, "かな識別は後方: \(akino)")
+        }
+        let nanonii = converter.multiClauseCandidates(for: "なのにー", systemCandidateMode: .surface)
+        XCTAssertTrue(nanonii.isEmpty || nanonii.first == "なのにー", "multi=\(nanonii.prefix(3))")
+        XCTAssertFalse(nanonii.contains("なのニー"), "multi=\(nanonii.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

@@ -84,8 +84,19 @@ extension KanaKanjiConverter {
             // グループは辞書の同読みリスト全体(systemCandidates)で組む。表層から読みを
             // 判定するかな/カタカナ限定だと、成る程 のような漢字表記が比較対象から漏れて
             // boost がタイ止まりになり、タイブレーク(短い方優先)で漢字が勝ってしまう。
+            // seed 宣言のある読みで かな が seed 非掲載なら、人手の並び宣言を尊重して
+            // かな識別を同読みグループ末尾へ降格する(あきの: 辞書にかな人名収穫があり
+            // 識別供給と二重加算されて#4へ浮上していた。しない/ただの/どうだ 等かなを
+            // 出したい読みは seed にかなを掲載済みなので発火しない)。
+            let seedDeclared = KanaKanjiSeedDictionary.seed[reading]
+            let kanaSkippedBySeed = seedDeclared != nil && !(seedDeclared?.contains(reading) ?? false)
             let others = uniqueCandidates(from: systemCandidates).filter { $0 != reading }
-            if !others.isEmpty, isLMKanaPreferred(reading: reading, among: others) {
+            if kanaSkippedBySeed {
+                let otherScores = others.compactMap { scores[$0] }
+                if let lowest = otherScores.min() {
+                    scores[reading] = min(identityScore, lowest - 1)
+                }
+            } else if !others.isEmpty, isLMKanaPreferred(reading: reading, among: others) {
                 let maxOther = others.map { scores[$0, default: 0] }.max() ?? 0
                 scores[reading] = max(identityScore, maxOther + 1)
             }
