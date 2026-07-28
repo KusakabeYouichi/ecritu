@@ -5176,16 +5176,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.prefix(3).contains(where: { $0.contains("色化") || $0.contains("色香") }), "multi=\(multi.prefix(3))")
     }
 
-    func testDiagnosticYattemiru() throws {
+    // とにかくやってみる: エンジンはかな最良だが keepKana=false で実機バーだけ先頭かなが末尾へ
+    // 退避(手動抑制で 遣って が消えた実機では 演って/犯って が繰り上がる)。curated かな識別
+    // (やってみる 等)末尾+辞書かな語前半 の一般規則で提示層かな維持。
+    func testRegressionRealLMTonikakuYattemiru() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
-        for r in ["とにかくやってみる", "やってみる", "やって"] {
-            let multi = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
-            let single = converter.candidates(for: r, limit: 5, systemCandidateMode: .surface)
-            print("DY \(r): multi=\(multi.prefix(4)) single=\(single.prefix(4))")
-        }
+        let multi = converter.multiClauseCandidates(for: "とにかくやってみる", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "とにかくやってみる", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(
+            converter.shouldKeepKanaIdentityLeading(for: "とにかくやってみる"),
+            "curated末尾+かな語前半で提示層かな維持すべき"
+        )
     }
 
     // しって: 報る(しる)は Sudachi の疑義読み収穫(報せる=しらせる/報いる=むくいる のみが正)。
