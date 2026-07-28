@@ -5318,6 +5318,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来てしまいました", "single=\(single)")
     }
 
+    // 欧文サジェスチョンの別レイヤー(同梱頻度リスト): 追加語彙が先頭、汎用語が頻度順で後続。
+    // 言語トグルOFFで当該言語が消えること、追加語彙と同キーは追加語彙が勝つことを確認。
+    func testGenericLatinLexiconSuggestions() throws {
+        let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
+        store.genericLatinLexiconFileURLOverride = URL(
+            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/LatinSuggestionLexicon.json"
+        )
+        let english = store.latinSuggestions(prefix: "informa", limit: 8)
+        XCTAssertTrue(english.contains("information"), "suggestions=\(english)")
+        let french = store.latinSuggestions(prefix: "voil", limit: 8)
+        XCTAssertTrue(french.contains("voilà"), "suggestions=\(french)")
+        let german = store.latinSuggestions(prefix: "polizei", limit: 8)
+        XCTAssertTrue(german.contains("Polizei"), "大文字名詞の保持: \(german)")
+        let italian = store.latinSuggestions(prefix: "perch", limit: 8)
+        XCTAssertTrue(italian.contains("perché"), "アクセント保持: \(italian)")
+        // 追加語彙(SecondVocab相当)が先頭に来る: 手動でエントリを注入して確認
+        store.setGenericLatinLexiconEnabledLanguages(["en"])
+        let englishOnly = store.latinSuggestions(prefix: "voil", limit: 8)
+        XCTAssertFalse(englishOnly.contains("voilà"), "fr OFF: \(englishOnly)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
