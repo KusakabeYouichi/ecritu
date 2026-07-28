@@ -5152,6 +5152,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(2)), ["色域", "識閾"], "single=\(single)")
     }
 
+    // さいどあげる: 彩度(uni7143)が サイド/再度(5500級=正当な頻出語)に負け 彩度上げる が候補に
+    // 出なかった。連語機構(ひび+入る と同じ)を特定表層優先に一般化し、あげ/さげ 直前の さいど を
+    // 彩度 に。再度確認/サイドを固める 等の非連語文脈は無影響。
+    func testRegressionRealLMSaidoAgeru() throws {
+        try prepareRealLMDictionary()
+        let ageru = converter.multiClauseCandidates(for: "さいどあげる", systemCandidateMode: .surface)
+        XCTAssertEqual(ageru.first, "彩度上げる", "multi=\(ageru.prefix(4))")
+        let wo = converter.multiClauseCandidates(for: "さいどをさげて", systemCandidateMode: .surface)
+        XCTAssertEqual(wo.first, "彩度を下げて", "multi=\(wo.prefix(4))")
+        // 非連語文脈は不変(元々の サイド/再度 が上位、彩度 は先頭化しない)
+        let kakunin = converter.multiClauseCandidates(for: "さいどかくにん", systemCandidateMode: .surface)
+        XCTAssertNotEqual(kakunin.first, "彩度確認", "multi=\(kakunin.prefix(3))")
+        XCTAssertTrue(kakunin.prefix(2).contains("再度確認") || kakunin.prefix(2).contains("サイド確認"), "multi=\(kakunin.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
