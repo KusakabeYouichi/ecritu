@@ -5234,6 +5234,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // ぐーぐるはこうこたえる: 追加語彙 香茹(こうこ、curated床1500)が こう+答える の区切りを
+    // 分断していた(ろーま型)。2326のde-floorゲートを「断片内部から始まり末尾を跨ぐ常用語
+    // (こうこ の中の こたえる)」条件で拡張(読み≤3字に拡大)。香茹を食べた 等の助詞ありは無傷。
+    func testRegressionRealLMKouKotaeru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "ぐーぐるはこうこたえるんだけど", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "Googleはこう答えるんだけど", "multi=\(multi.prefix(4))")
+        // curated 香茹 の正当用法(助詞あり)は維持
+        let kouko = converter.multiClauseCandidates(for: "こうこをたべた", systemCandidateMode: .surface)
+        XCTAssertEqual(kouko.first, "香茹を食べた", "multi=\(kouko.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

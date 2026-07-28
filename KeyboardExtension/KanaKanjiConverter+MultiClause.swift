@@ -594,7 +594,7 @@ extension KanaKanjiConverter {
                 // curated を含み、[start, start+longer] (longer>len) に辞書語が実在する時だけ、その
                 // curated ノードを「断片」と印付けし、後段の transitionCost で床(1500)を外す。
                 // ろー(ロー/raw)は ろーぬ→ローヌ が実在=断片印。やつ/気を は長い辞書語が無く床維持。
-                if segmentReading.count <= 2,
+                if segmentReading.count <= 3,
                     surfaces.contains(where: { $0.isCurated && Self.isWordLikeSurface($0.surface) }) {
                     // 「より長い語」は常用語(word_cost が harvest 底値=レア人名 未満)に限る。
                     // ろーぬ→ローヌ(4577)は常用で断片印を付けるが、かおな→華音樹(10000=底値)の
@@ -611,6 +611,28 @@ extension KanaKanjiConverter {
                             break
                         }
                         probeLen += 1
+                    }
+                    // 跨ぎ常用語: 断片の接頭部が指示副詞(こう/そう/どう/ああ)で、その直後から
+                    // 断片の末尾を跨ぐ常用語がある(香茹(こうこ)の中の こう+こたえる=答える 等)
+                    // ときも分断とみなす。指示副詞に限定するのは、してる(ルナ跨ぎ)/明日(あした)等の
+                    // 正当な curated かな識別・名詞を巻き込まないため。
+                    if !hasLongerCommonWord, len >= 2 {
+                        outer: for adverb in ["こう", "そう", "どう", "ああ"] {
+                            guard segmentReading.hasPrefix(adverb), adverb.count < len else { continue }
+                            let crossStart = start + adverb.count
+                            var crossLen = (end - crossStart) + 1
+                            while crossStart + crossLen <= min(n, crossStart + 6) {
+                                let crossReading = String(chars[crossStart..<crossStart + crossLen])
+                                let crossCosts = store.wordCosts(for: crossReading)
+                                if crossCosts.values.contains(where: {
+                                    $0 < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                                }) {
+                                    hasLongerCommonWord = true
+                                    break outer
+                                }
+                                crossLen += 1
+                            }
+                        }
                     }
                     if hasLongerCommonWord {
                         for entry in surfaces where entry.isCurated && Self.isWordLikeSurface(entry.surface) {
