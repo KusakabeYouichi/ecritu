@@ -5223,6 +5223,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains(where: { $0.contains("去れ") }), "single=\(single)")
     }
 
+    // ていしょく: ユーザ指定順(定食→定職→停職→抵触→牴触→牴觸→觝触)。底触/低触 は誤エントリsuppr。
+    func testRegressionRealLMTeishokuOrdering() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["ていしょく": ["底触", "低触"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ていしょく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(7)), ["定食", "定職", "停職", "抵触", "牴触", "牴觸", "觝触"], "single=\(single)")
+        XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
