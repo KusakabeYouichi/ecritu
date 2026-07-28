@@ -185,10 +185,12 @@ extension KanaKanjiConverter {
     // 文節先頭(直前=BOS)でのみ かな を優先する存在動詞の過去(あった=ある過去、いた=いる過去)。
     // あったんで→かな先頭にしつつ、気が/目が/サイズが+あった(prev≠BOS)は漢字 合った を守る。
     static let multiClauseClauseInitialKanaExistentialPasts: Set<String> = ["あった", "いた"]
-    // 直後に特定動詞が続く連語でだけ かな名詞を優先する(同音語の文脈限定是正)。
-    // ひび は 直後(助詞任意)が はいる 活用のとき ひび(罅)を 日々 より優先(ひびが入る)。
-    static let multiClauseKanaNounBeforeVerbCollocations: [String: [String]] = [
-        "ひび": ["はいっ", "はいら", "はいり", "はいる", "はいれ"]
+    // 直後に特定動詞が続く連語でだけ特定表層を優先する(同音語の文脈限定是正)。
+    // ひび: 直後(助詞任意)が はいる 活用のとき ひび(罅)を 日々 より優先(ひびが入る)。
+    // さいど: 直後が あげる/さげる 系のとき 彩度 を サイド/再度 より優先(彩度上げる。写真編集)。
+    static let multiClauseNounBeforeVerbCollocations: [String: (surface: String, verbPrefixes: [String])] = [
+        "ひび": (surface: "ひび", verbPrefixes: ["はいっ", "はいら", "はいり", "はいる", "はいれ"]),
+        "さいど": (surface: "彩度", verbPrefixes: ["あげ", "あが", "さげ", "さが"])
     ]
     static let multiClauseKanaAdverbCost = 4000
     // 口語の説明終止クラスタ(のだ縮約 ん + だ/です + 逆接/終助詞)。述語に付く正書かなで、
@@ -324,7 +326,10 @@ extension KanaKanjiConverter {
         "最近": 5000,
         // 来週(会話最頻)が Wikipedia バイアスの 来襲(6869)に unigram(7792)で負ける
         // (らいしゅうあたり→来襲当)。来襲 を下回る水準へキャップ
-        "来週": 6000
+        "来週": 6000,
+        // 上げる(会話最頻)が 挙げる(5399=例を挙げる のWikipediaバイアス)に unigram(5806)で
+        // 負ける(彩度挙げる 等)。bigram実績のある 例を挙げる 等は bigram 優先で無傷
+        "上げる": 5300
     ]
     // 単漢字名詞→動詞の無助詞接続の減点。日本語で名詞が動詞に直接続くには助詞が要る
     // (どうみせる→同見せる/道見せる の 同/道 は音読み接辞で、主語・目的語として裸で
@@ -605,18 +610,18 @@ extension KanaKanjiConverter {
                     }
                 }
 
-                // 連語 ひび+入る(ひびが入る/ひびは入ってない 等)ではかな ひび を優先する(日々 でなく)。
-                // 文脈限定=この区間の直後(助詞 は/が 任意)が はいる 活用のときだけ。ユーザ指定
-                // 「入るのときだけ」を満たし、日々を大切に 等の 日々 は無影響。
-                if let collocation = Self.multiClauseKanaNounBeforeVerbCollocations[segmentReading] {
+                // 連語で特定表層を優先(ひび+入る=ひびが入る、さいど+あげる=彩度上げる 等)。
+                // 文脈限定=この区間の直後(助詞 は/が/を 任意)が指定動詞の活用のときだけ。
+                // 日々を大切に/再度確認 等の非連語文脈は無影響。
+                if let collocation = Self.multiClauseNounBeforeVerbCollocations[segmentReading] {
                     var afterIdx = end
-                    if afterIdx < n, chars[afterIdx] == "は" || chars[afterIdx] == "が" {
+                    if afterIdx < n, chars[afterIdx] == "は" || chars[afterIdx] == "が" || chars[afterIdx] == "を" {
                         afterIdx += 1
                     }
                     if afterIdx < n {
                         let rest = String(chars[afterIdx..<n])
-                        if collocation.contains(where: { rest.hasPrefix($0) }) {
-                            collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(segmentReading)")
+                        if collocation.verbPrefixes.contains(where: { rest.hasPrefix($0) }) {
+                            collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(collocation.surface)")
                         }
                     }
                 }
