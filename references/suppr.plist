@@ -55,6 +55,8 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- 厭きの(あきの): 厭きる は現代では 飽きる が主。飽きの(飽きのこない)は残す -->
+	<dict><key>phrase</key><string>厭きの</string><key>shortcut</key><string>あきの</string></dict>
 	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>
 	<dict><key>phrase</key><string>サンガ</string><key>shortcut</key><string>さんが</string></dict>
@@ -279,6 +281,8 @@
 	<dict><key>phrase</key><string>で〜す</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>で〜〜す</string><key>shortcut</key><string>です</string></dict>
 	<!-- ▼誤エントリ(辞書の誤った読み): Sudachi等が生成した本来しない読みの表層。学習でも古語でもなく明確な誤り。 -->
+	<!-- 秋(あきの): 秋 に あきの の読みは無い(秋乃系の正規化ミス収穫)。word_costsにも無くdictのみ -->
+	<dict><key>phrase</key><string>秋</string><key>shortcut</key><string>あきの</string></dict>
 	<!-- 底触/低触(ていしょく): 存在しない表記(抵触 の収穫ミス) -->
 	<dict><key>phrase</key><string>底触</string><key>shortcut</key><string>ていしょく</string></dict>
 	<dict><key>phrase</key><string>低触</string><key>shortcut</key><string>ていしょく</string></dict>
