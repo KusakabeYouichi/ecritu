@@ -5063,6 +5063,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(hiku.first, "線を引く", "multi=\(hiku.prefix(3))")
     }
 
+    // きょうはなして(実機忠実): misc curated きょうは→今日は(床1500)が きょうは|なして の分割を
+    // 固定し 今日話して を消していた(ろーま事件型。素の環境では再現しない)。今日 の時相キャップ
+    // (2345)で curated の元目的(教派 対策)が不要になったため撤去。今日は/今日は寒い は維持。
+    func testRegressionRealLMKyouHanashiteDeviceFidelity() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "きょうはなして", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "今日話して", "multi=\(multi.prefix(4))")
+        let kyouha = converter.multiClauseCandidates(for: "きょうは", systemCandidateMode: .surface)
+        XCTAssertEqual(kyouha.first, "今日は", "multi=\(kyouha.prefix(3))")
+        let samui = converter.multiClauseCandidates(for: "きょうはさむい", systemCandidateMode: .surface)
+        XCTAssertEqual(samui.first, "今日は寒い", "multi=\(samui.prefix(3))")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")
