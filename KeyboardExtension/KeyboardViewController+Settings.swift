@@ -37,6 +37,20 @@ extension KeyboardViewController {
             )
         ) ?? .suppress
         kanaKanjiConverter.setMazegakiCandidateMode(mazegakiMode)
+
+        // 汎用Latinサジェスト語彙(同梱頻度リスト)の言語別トグル。既定は全言語ON。
+        var latinLexiconLanguages: Set<String> = []
+        let latinLexiconKeysByLanguage: [(String, String)] = [
+            ("en", SharedDefaultsKeys.latinLexiconEnglishEnabled),
+            ("fr", SharedDefaultsKeys.latinLexiconFrenchEnabled),
+            ("de", SharedDefaultsKeys.latinLexiconGermanEnabled),
+            ("it", SharedDefaultsKeys.latinLexiconItalianEnabled)
+        ]
+        for (language, key) in latinLexiconKeysByLanguage
+        where sharedBoolValue(from: sharedDefaults, key: key, fallback: true) {
+            latinLexiconLanguages.insert(language)
+        }
+        kanaKanjiStore.setGenericLatinLexiconEnabledLanguages(latinLexiconLanguages)
     }
 
     func startObservingSettingsDidChange() {

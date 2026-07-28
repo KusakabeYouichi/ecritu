@@ -641,6 +641,33 @@ struct EmojiKaomojiCandidateSettingsSection: View {
     }
 }
 
+struct LatinLexiconSettingsSection: View {
+    @Binding var enablesEnglish: Bool
+    @Binding var enablesFrench: Bool
+    @Binding var enablesGerman: Bool
+    @Binding var enablesItalian: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("欧文サジェスチョンの言語")
+                .font(.headline)
+
+            VStack(spacing: 10) {
+                Toggle("anglais(英語)", isOn: $enablesEnglish)
+                Toggle("français(フランス語)", isOn: $enablesFrench)
+                Toggle("Deutsch(ドイツ語)", isOn: $enablesGerman)
+                Toggle("italiano(イタリア語)", isOn: $enablesItalian)
+            }
+            .toggleStyle(.switch)
+
+            Text("欧文入力中のサジェスチョンに、同梱の頻度順語彙(各言語約5000語)を使うかを言語別に切り替えます。追加語彙・学習した語は常に優先して表示されます。既定はすべてオン。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct HistoricalKanaCandidatesSettingsSection: View {
     @Binding var isEnabled: Bool
 

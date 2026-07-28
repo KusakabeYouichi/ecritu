@@ -314,6 +314,30 @@ struct ContentView: View {
     private var iterationMarkCandidatesEnabled = false
 
     @AppStorage(
+        SettingsKeys.latinLexiconEnglishEnabled,
+        store: Self.sharedDefaults
+    )
+    private var latinLexiconEnglishEnabled = true
+
+    @AppStorage(
+        SettingsKeys.latinLexiconFrenchEnabled,
+        store: Self.sharedDefaults
+    )
+    private var latinLexiconFrenchEnabled = true
+
+    @AppStorage(
+        SettingsKeys.latinLexiconGermanEnabled,
+        store: Self.sharedDefaults
+    )
+    private var latinLexiconGermanEnabled = true
+
+    @AppStorage(
+        SettingsKeys.latinLexiconItalianEnabled,
+        store: Self.sharedDefaults
+    )
+    private var latinLexiconItalianEnabled = true
+
+    @AppStorage(
         SettingsKeys.katakanaEmphasisCandidateMode,
         store: Self.sharedDefaults
     )
@@ -422,7 +446,11 @@ struct ContentView: View {
             String(historicalKanaCandidatesEnabled),
             String(iterationMarkCandidatesEnabled),
             katakanaEmphasisCandidateModeRawValue,
-            mazegakiCandidateModeRawValue
+            mazegakiCandidateModeRawValue,
+            String(latinLexiconEnglishEnabled),
+            String(latinLexiconFrenchEnabled),
+            String(latinLexiconGermanEnabled),
+            String(latinLexiconItalianEnabled)
         ]
             .joined(separator: "|")
     }
@@ -961,6 +989,13 @@ struct ContentView: View {
                             title: "交ぜ書きの候補",
                             selectionRawValue: $mazegakiCandidateModeRawValue,
                             footnote: "「まん延(蔓延)」「作ひん(作品)」のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(既定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。「子ども」など定着した表記は対象外です。"
+                        )
+
+                        LatinLexiconSettingsSection(
+                            enablesEnglish: $latinLexiconEnglishEnabled,
+                            enablesFrench: $latinLexiconFrenchEnabled,
+                            enablesGerman: $latinLexiconGermanEnabled,
+                            enablesItalian: $latinLexiconItalianEnabled
                         )
 
                         EmojiKaomojiCandidateSettingsSection(

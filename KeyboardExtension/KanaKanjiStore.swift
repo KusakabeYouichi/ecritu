@@ -46,6 +46,13 @@ final class KanaKanjiStore {
         let searchKey: String
         let candidate: String
     }
+    // 汎用Latinサジェスト語彙(同梱の頻度リスト。追加語彙とは別レイヤー)のエントリ。
+    // rank はリスト内の頻度順位(小さいほど高頻度)。
+    struct GenericLatinLexiconEntry {
+        let searchKey: String
+        let candidate: String
+        let rank: Int
+    }
     private var sqliteIndex: KanaKanjiSQLiteIndex?
     private var didAttemptSQLiteIndexLoad = false
     // メモリ圧迫でのアンロード後は再オープンを禁止する(スティッキー)。以前は
@@ -56,6 +63,11 @@ final class KanaKanjiStore {
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: [String: [String]]?
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
+    // 汎用Latinサジェスト語彙のキャッシュと有効言語(既定は全言語ON。設定で言語別に切る)。
+    var cachedGenericLatinLexiconEntries: [GenericLatinLexiconEntry]?
+    var genericLatinLexiconEnabledLanguages: Set<String> = ["en", "fr", "de", "it"]
+    // テスト用: bundle 未同梱の環境(unit test)でリポジトリのJSONを直接読ませる
+    var genericLatinLexiconFileURLOverride: URL?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     // 読み別の inflection_classes キャッシュ(連文節の辞書形述語判定用)
@@ -649,6 +661,7 @@ final class KanaKanjiStore {
             cachedSystemDictionary = nil
             cachedSupplementalSystemDictionary = nil
             cachedLatinSuggestionEntries = nil
+            cachedGenericLatinLexiconEntries = nil
             cachedSystemCandidateSources = nil
             cachedInflectionDictionary = nil
             cachedInflectionClassMapsByReading = [:]
