@@ -5207,6 +5207,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let janai = converter.multiClauseCandidates(for: "じゃないから", systemCandidateMode: .surface)
         XCTAssertEqual(janai.first, "じゃないから", "multi=\(janai.prefix(4))")
         XCTAssertFalse(janai.prefix(3).contains("じゃない空"), "multi=\(janai.prefix(3))")
+        // 提示層でもかな先頭維持(から剥がし→じゃない 再帰)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "じゃないから"))
     }
 
     // きていされちゃった: 受身+ちゃう縮約(されちゃう/されちゃった/されちゃって)のサ変規則が欠落し、
