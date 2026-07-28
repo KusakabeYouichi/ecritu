@@ -199,7 +199,16 @@ final class KanaKanjiConverter {
         )
         applySuppressionsAndDecorativeFilter(context, to: &scores)
 
-        let finalCandidates = finalizeSortedCandidates(context, scores: scores)
+        var finalCandidates = finalizeSortedCandidates(context, scores: scores)
+        // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で
+        // 判定)なら、確定済み数字直後と同じ助数詞ブーストを適用して 万円/本 等を先頭へ。
+        if let digit = reading.first, ("0"..."9").contains(String(digit)) || ("０"..."９").contains(String(digit)) {
+            finalCandidates = Self.digitContextCounterBoostedCandidates(
+                finalCandidates,
+                reading: normalizedReading,
+                precedingCharacter: digit
+            )
+        }
 
         if !finalCandidates.isEmpty {
             stateQueue.sync {

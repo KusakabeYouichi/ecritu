@@ -5098,6 +5098,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             precedingCharacter: "。"
         )
         XCTAssertEqual(plain.first, "蔓延", "非数字文脈は不変: \(plain)")
+        // 文脈なしでも 万円 は 蔓延 に次ぐ2番手(seed)
+        let single = converter.candidates(for: "まんえん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["蔓延", "万円"], "single=\(single)")
     }
 
     private func prepareRealLMDictionary() throws {

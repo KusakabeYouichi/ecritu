@@ -9,6 +9,8 @@ extension KanaKanjiConverter {
 
     static let godanVolitionalCandidateBoost = 320
 
+    // 注意: normalizedReading が数字を除去するため、この関数の hasLeadingNumberPrefix 判定は
+    // candidates() 経由では発火しない(実効は candidates() 最終段の digitContext ブースト側)。
     static let numericUnitFallbackCandidateBoost = 320
 
     static let numericCounterCompoundCandidateBoost = 360
