@@ -5298,6 +5298,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains("文字でダスト"), "multi=\(multi.prefix(4))")
     }
 
+    // もうしょくばにきてしまいました: 来て が経路に無く、着て/衣て/著て(一段きる派生)のみだった。
+    // (1) カ変連文節供給を kuruInflectionForms 全形から自動生成(きてしまいました 丸ごとspan対応)
+    // (2) 著る/衣る(着る の古語表記)を基底suppr (3) 格助詞に直後のカ変到着点ボーナスで 来て を先頭に。
+    func testRegressionRealLMShokubaNiKite() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["きる": ["著る", "衣る"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "もうしょくばにきてしまいました", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "もう職場に来てしまいました", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(multi.contains("もう職場に着てしまいました"), "着て は次点に残す: \(multi.prefix(4))")
+        XCTAssertFalse(multi.contains(where: { $0.contains("衣て") || $0.contains("著て") }), "multi=\(multi.prefix(4))")
+        // を格の 着て は不変(に 直後限定ボーナスの誤爆防止)
+        let fuku = converter.multiClauseCandidates(for: "ふくをきていました", systemCandidateMode: .surface)
+        XCTAssertEqual(fuku.first, "服を着ていました", "multi=\(fuku.prefix(3))")
+        // 単文節の きてしまいました は 来て が先頭(既存挙動の固定)
+        let single = converter.candidates(for: "きてしまいました", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "来てしまいました", "single=\(single)")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

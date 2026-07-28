@@ -55,6 +55,9 @@
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
 	<!-- 現代的に流行っていない言い方 -->
+	<!-- 著る/衣る(きる): 着る の古語・異表記(著物)。派生(著て/衣てしまいました 等)にも波及するため基底で抑制 -->
+	<dict><key>phrase</key><string>著る</string><key>shortcut</key><string>きる</string></dict>
+	<dict><key>phrase</key><string>衣る</string><key>shortcut</key><string>きる</string></dict>
 	<!-- 厭きの(あきの): 厭きる は現代では 飽きる が主。飽きの(飽きのこない)は残す -->
 	<dict><key>phrase</key><string>厭きの</string><key>shortcut</key><string>あきの</string></dict>
 	<!-- ニー(にー のカタカナ)。knee等のLM実在でクラス保護されるため個別suppr(なのニー/行ったのニー) -->
