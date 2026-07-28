@@ -52,7 +52,8 @@ extension KanaKanjiStore {
         return results
     }
 
-    // 汎用Latinサジェスト語彙(同梱 LatinSuggestionLexicon.json)から接頭辞一致を頻度順で返す。
+    // 汎用Latinサジェスト語彙(同梱 LatinSuggestionLexicon_{lang}.txt)から接頭辞一致を
+    // 頻度順で返す。言語別のキー順ソート済みリストをそれぞれ二分探索し、rank で合流する。
     func genericLatinLexiconSuggestions(
         normalizedPrefix: String,
         limit: Int,
@@ -62,45 +63,65 @@ extension KanaKanjiStore {
             return []
         }
 
-        let entries = genericLatinLexiconEntries()
+        let enabledLanguages = withCacheLock { genericLatinLexiconEnabledLanguages }
 
-        guard !entries.isEmpty else {
+        guard !enabledLanguages.isEmpty else {
             return []
         }
 
-        var low = 0
-        var high = entries.count
-
-        while low < high {
-            let mid = (low + high) / 2
-
-            if entries[mid].searchKey < normalizedPrefix {
-                low = mid + 1
-            } else {
-                high = mid
-            }
-        }
-
         var matched: [GenericLatinLexiconEntry] = []
-        var index = low
 
-        while index < entries.count, entries[index].searchKey.hasPrefix(normalizedPrefix) {
-            // 追加語彙が既に出したキーは出さない(rouge 等は追加語彙側が勝つ)。入力と同じ
-            // 表記そのものの除外は提示層が行う(polizei→Polizei の大文字矯正は残したい)。
-            if !excludedSearchKeys.contains(entries[index].searchKey) {
-                matched.append(entries[index])
+        for language in enabledLanguages.sorted() {
+            let entries = genericLatinLexiconEntries(language: language)
+
+            guard !entries.isEmpty else {
+                continue
             }
-            index += 1
+
+            var low = 0
+            var high = entries.count
+
+            while low < high {
+                let mid = (low + high) / 2
+
+                if entries[mid].searchKey < normalizedPrefix {
+                    low = mid + 1
+                } else {
+                    high = mid
+                }
+            }
+
+            var index = low
+
+            while index < entries.count, entries[index].searchKey.hasPrefix(normalizedPrefix) {
+                // 追加語彙が既に出したキーは出さない(rouge 等は追加語彙側が勝つ)。入力と同じ
+                // 表記そのものの除外は提示層が行う(polizei→Polizei の大文字矯正は残したい)。
+                if !excludedSearchKeys.contains(entries[index].searchKey) {
+                    matched.append(entries[index])
+                }
+                index += 1
+            }
         }
 
-        matched.sort { lhs, rhs in
-            if lhs.rank == rhs.rank {
-                return lhs.candidate < rhs.candidate
+        // 言語間で同綴りの語(en/fr/de 共通の information 等)は最良 rank の1件に畳む
+        var bestRankByCandidate: [String: Int] = [:]
+
+        for entry in matched {
+            if let existing = bestRankByCandidate[entry.candidate], existing <= entry.rank {
+                continue
             }
-            return lhs.rank < rhs.rank
+            bestRankByCandidate[entry.candidate] = entry.rank
         }
 
-        return matched.prefix(limit).map(\.candidate)
+        return bestRankByCandidate
+            .sorted { lhs, rhs in
+                if lhs.value == rhs.value {
+                    return lhs.key < rhs.key
+                }
+                return lhs.value < rhs.value
+            }
+            .prefix(limit)
+            .map(\.key)
     }
 
     func setGenericLatinLexiconEnabledLanguages(_ languages: Set<String>) {
@@ -109,63 +130,54 @@ extension KanaKanjiStore {
                 return
             }
             genericLatinLexiconEnabledLanguages = languages
-            cachedGenericLatinLexiconEntries = nil
+            // OFF→ONの反映は遅延ロードが担う。ONで積んだ言語のOFF時は解放する。
+            cachedGenericLatinLexiconEntriesByLanguage = cachedGenericLatinLexiconEntriesByLanguage
+                .filter { languages.contains($0.key) }
         }
     }
 
-    // 同梱の頻度リストから有効言語分のソート済み索引を構築してキャッシュする。
-    // 言語間で同綴りの語(en/fr/de 共通の information 等)は最良 rank の1件に畳む。
-    func genericLatinLexiconEntries() -> [GenericLatinLexiconEntry] {
-        if let cached = withCacheLock({ cachedGenericLatinLexiconEntries }) {
+    // 言語別の同梱頻度リストを読み込んでキャッシュする。ファイルはビルド時に
+    // 検索キー(実行時と同一のSwift折り畳み)順へソート済み(key\tword\trank)なので、
+    // 実行時は行分割だけで索引になる(折り畳み・ソートの実行時コストゼロ)。
+    func genericLatinLexiconEntries(language: String) -> [GenericLatinLexiconEntry] {
+        if let cached = withCacheLock({ cachedGenericLatinLexiconEntriesByLanguage[language] }) {
             return cached
         }
 
-        let enabledLanguages = withCacheLock { genericLatinLexiconEnabledLanguages }
+        let filename = "LatinSuggestionLexicon_\(language)"
+        let url = genericLatinLexiconDirectoryURLOverride?
+            .appendingPathComponent("\(filename).txt")
+            ?? Bundle(for: KanaKanjiStore.self).url(forResource: filename, withExtension: "txt")
 
-        let url = genericLatinLexiconFileURLOverride
-            ?? Bundle(for: KanaKanjiStore.self).url(
-                forResource: "LatinSuggestionLexicon", withExtension: "json"
-            )
-
-        guard !enabledLanguages.isEmpty,
-            let url,
-            let data = try? Data(contentsOf: url),
-            let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
-            withCacheLock { cachedGenericLatinLexiconEntries = [] }
+        guard let url,
+            let content = try? String(contentsOf: url, encoding: .utf8) else {
+            withCacheLock { cachedGenericLatinLexiconEntriesByLanguage[language] = [] }
             return []
         }
 
-        var bestByCandidate: [String: GenericLatinLexiconEntry] = [:]
+        // String.split(grapheme単位)や自前バイト走査は Debug ビルド(⌘R実機)でMB級に
+        // 秒単位かかる。NSString.components(ObjC実装)は Debug でも C 速度で走る。
+        var entries: [GenericLatinLexiconEntry] = []
+        let lines = (content as NSString).components(separatedBy: "\n")
+        entries.reserveCapacity(lines.count)
 
-        for (language, words) in decoded where enabledLanguages.contains(language) {
-            for (rank, word) in words.enumerated() {
-                let searchKey = latinSuggestionSearchKey(word)
+        for line in lines {
+            let fields = (line as NSString).components(separatedBy: "\t")
 
-                guard !searchKey.isEmpty else {
-                    continue
-                }
+            guard fields.count == 3, let rank = Int(fields[2]) else {
+                continue
+            }
 
-                if let existing = bestByCandidate[word], existing.rank <= rank {
-                    continue
-                }
-
-                bestByCandidate[word] = GenericLatinLexiconEntry(
-                    searchKey: searchKey,
-                    candidate: word,
+            entries.append(
+                GenericLatinLexiconEntry(
+                    searchKey: fields[0],
+                    candidate: fields[1],
                     rank: rank
                 )
-            }
+            )
         }
 
-        var entries = Array(bestByCandidate.values)
-        entries.sort { lhs, rhs in
-            if lhs.searchKey == rhs.searchKey {
-                return lhs.rank < rhs.rank
-            }
-            return lhs.searchKey < rhs.searchKey
-        }
-
-        withCacheLock { cachedGenericLatinLexiconEntries = entries }
+        withCacheLock { cachedGenericLatinLexiconEntriesByLanguage[language] = entries }
         return entries
     }
 

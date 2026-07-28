@@ -5322,18 +5322,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 言語トグルOFFで当該言語が消えること、追加語彙と同キーは追加語彙が勝つことを確認。
     func testGenericLatinLexiconSuggestions() throws {
         let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
-        store.genericLatinLexiconFileURLOverride = URL(
-            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/LatinSuggestionLexicon.json"
+        store.genericLatinLexiconDirectoryURLOverride = URL(
+            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension", isDirectory: true
         )
         // 既定は全言語OFF(サジェストに汎用語が混ざらない)
         XCTAssertFalse(store.latinSuggestions(prefix: "informa", limit: 8).contains("information"))
         store.setGenericLatinLexiconEnabledLanguages(["en", "fr", "de", "it"])
+        // 索引ロード(全言語=10万語超。ビルド時ソート済みなので行分割のみ)の所要時間を確認
+        let builtAt = CFAbsoluteTimeGetCurrent()
+        let loadedCounts = ["en", "fr", "de", "it"].map {
+            store.genericLatinLexiconEntries(language: $0).count
+        }
+        let buildMs = (CFAbsoluteTimeGetCurrent() - builtAt) * 1000
+        // 実測目安: Debug/4言語で1-2秒(マシン負荷で振れるので閾値assertはしない)。
+        // 実運用は設定適用時のバックグラウンド先読みでタイピング経路から外している。
+        print("PROBE lexicon load: \(Int(buildMs))ms, entries=\(loadedCounts)")
+        XCTAssertEqual(loadedCounts, [15000, 15000, 60000, 15000])
         let english = store.latinSuggestions(prefix: "informa", limit: 8)
         XCTAssertTrue(english.contains("information"), "suggestions=\(english)")
         let french = store.latinSuggestions(prefix: "voil", limit: 8)
         XCTAssertTrue(french.contains("voilà"), "suggestions=\(french)")
         let german = store.latinSuggestions(prefix: "polizei", limit: 8)
         XCTAssertTrue(german.contains("Polizei"), "大文字名詞の保持: \(german)")
+        let compound = store.latinSuggestions(prefix: "Schlussfolg", limit: 8)
+        XCTAssertTrue(compound.contains("Schlussfolgerung"), "複合語の深いランク: \(compound)")
+        let gegen = store.latinSuggestions(prefix: "Gegenübers", limit: 8)
+        XCTAssertTrue(gegen.contains("Gegenüberstellung"), "複合語の深いランク: \(gegen)")
         let italian = store.latinSuggestions(prefix: "perch", limit: 8)
         XCTAssertTrue(italian.contains("perché"), "アクセント保持: \(italian)")
         // 追加語彙(SecondVocab相当)が先頭に来る: 手動でエントリを注入して確認

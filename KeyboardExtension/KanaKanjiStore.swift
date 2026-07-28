@@ -63,11 +63,12 @@ final class KanaKanjiStore {
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: [String: [String]]?
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
-    // 汎用Latinサジェスト語彙のキャッシュと有効言語(既定は全言語OFF。設定で言語別にON)。
-    var cachedGenericLatinLexiconEntries: [GenericLatinLexiconEntry]?
+    // 汎用Latinサジェスト語彙のキャッシュ(言語別、キー順ソート済み)と有効言語
+    // (既定は全言語OFF。設定で言語別にON)。
+    var cachedGenericLatinLexiconEntriesByLanguage: [String: [GenericLatinLexiconEntry]] = [:]
     var genericLatinLexiconEnabledLanguages: Set<String> = []
-    // テスト用: bundle 未同梱の環境(unit test)でリポジトリのJSONを直接読ませる
-    var genericLatinLexiconFileURLOverride: URL?
+    // テスト用: bundle 未同梱の環境(unit test)でリポジトリのtxtを直接読ませるディレクトリ
+    var genericLatinLexiconDirectoryURLOverride: URL?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     // 読み別の inflection_classes キャッシュ(連文節の辞書形述語判定用)
@@ -661,7 +662,7 @@ final class KanaKanjiStore {
             cachedSystemDictionary = nil
             cachedSupplementalSystemDictionary = nil
             cachedLatinSuggestionEntries = nil
-            cachedGenericLatinLexiconEntries = nil
+            cachedGenericLatinLexiconEntriesByLanguage = [:]
             cachedSystemCandidateSources = nil
             cachedInflectionDictionary = nil
             cachedInflectionClassMapsByReading = [:]

@@ -51,6 +51,16 @@ extension KeyboardViewController {
             latinLexiconLanguages.insert(language)
         }
         kanaKanjiStore.setGenericLatinLexiconEnabledLanguages(latinLexiconLanguages)
+        // 有効言語の索引を先読みしておく(初回の欧文キーストロークでロード待ちが
+        // 出ないように。ロードはロック外・再入無害なので競合しても二重計算どまり)。
+        if !latinLexiconLanguages.isEmpty {
+            let store = kanaKanjiStore
+            DispatchQueue.global(qos: .utility).async {
+                for language in latinLexiconLanguages {
+                    _ = store.genericLatinLexiconEntries(language: language)
+                }
+            }
+        }
     }
 
     func startObservingSettingsDidChange() {
