@@ -6387,5 +6387,7 @@
 	<dict><key>phrase</key><string>ムカイヤ</string><key>shortcut</key><string>むかいや</string></dict>
 	<dict><key>phrase</key><string>NÜCHI</string><key>shortcut</key><string>ぬち</string></dict>
 	<dict><key>phrase</key><string>NÜCHI by WPÜ</string><key>shortcut</key><string>ぬちばいだぶりゅーぴーゆー</string></dict>
+	<dict><key>phrase</key><string>中華中毒</string><key>shortcut</key><string>ちゅうかちゅうどく</string></dict>
+	<dict><key>phrase</key><string>サンキュー</string><key>shortcut</key><string>さんきゅー</string></dict>
 </array>
 </plist>
