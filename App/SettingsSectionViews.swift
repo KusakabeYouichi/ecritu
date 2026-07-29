@@ -1218,7 +1218,7 @@ struct BasicSymbolOrderSettingsSection: View {
             selection: $selection,
             options: Array(BasicSymbolOrderOption.allCases),
             optionTitle: { $0.title },
-            footnote: "記号モードの『基本記号』カテゴリの並び順を切り替えます。既定は ASCII 順です。"
+            footnote: "記号モードの『基本記号』カテゴリーの並び順を切り替えます。既定は ASCII 順です。"
         )
     }
 }
