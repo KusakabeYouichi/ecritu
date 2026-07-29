@@ -5283,6 +5283,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のだろうか"))
     }
 
+    // かこに: 賀古(人名収穫、dict rank0)が語幹先頭で 賀古に が先行。過去(wc5860/LM4741=最頻)を
+    // seed 先頭に。舟子/水主/水手/水夫(かこ=船漕ぎの古語)は実在読みのため後続維持。
+    func testRegressionRealLMKakoniOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let kako = converter.candidates(for: "かこ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(kako.first, "過去", "kako=\(kako)")
+        let single = converter.candidates(for: "かこに", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "過去に", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "かこにもどる", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "過去に戻る", "multi=\(multi.prefix(4))")
+    }
+
     // してくれて: エンジンはかな最良(既存の て形+くれ クランプ)だが keepKana=false で
     // 提示層がかな退避し して暮れて が繰り上がっていた。授受補助動詞末尾+て/で形の
     // keepKana 根拠を追加。単独 くれて は クレテ(収穫)先頭化を seed かな掲載で是正。
