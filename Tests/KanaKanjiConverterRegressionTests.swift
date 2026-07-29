@@ -5255,6 +5255,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // えあこんをおん: を→御(5399)が を→オン(5530)より僅差で安く エアコンを御 が先頭化
+    // (Wikipediaバイアス)。seed おん=オン先頭+連文節 opt-in ボーナスで是正。ON/On/on は
+    // LM 実在なのに辞書未登録だった供給欠落を seed で補う。
+    func testRegressionRealLMAirconOn() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "えあこんをおん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "エアコンをオン", "multi=\(multi.prefix(4))")
+        let single = converter.candidates(for: "おん", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "オン", "single=\(single)")
+        XCTAssertTrue(["ON", "On", "on"].allSatisfy(single.contains), "single=\(single)")
+        // おん を含む複合語の区切りは不変
+        let onsen = converter.candidates(for: "おんせん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(onsen.first, "温泉", "onsen=\(onsen)")
+        let ongaku = converter.multiClauseCandidates(for: "おんがくをきく", systemCandidateMode: .surface)
+        XCTAssertEqual(ongaku.first, "音楽を聴く", "ongaku=\(ongaku.prefix(4))")
+    }
+
     // さじぇすちょん: LM未収録・代替ゼロの外来語(サジェスチョン、辞書唯一 wc2148)が
     // 連文節側のカタカナ強調クラス抑制(+100000)で不採用になり、LM実在の断片
     // さ+ジェス+チョン(人名収穫)がジャンク最良→表示先頭になっていた。単文節側と同義の
