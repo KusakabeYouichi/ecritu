@@ -5255,6 +5255,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // おおい: 辞書 rank 順で 覆い が先頭だったが、word_cost/LM とも 多い が最頻。
+    // seed で 多い→覆い→大井→蓋。かな おおい は seed 非掲載の自動末尾降格、大炊 は後続。
+    // ※おおいた の 多いた 先頭は seed 導入前からの既存問題(合成が辞書 大分 に勝つ)で本修正とは独立。
+    func testRegressionRealLMOoiOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "おおい", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["多い", "覆い", "大井"], "single=\(single)")
+        XCTAssertFalse(single.prefix(6).contains("おおい"), "single=\(single)")
+        XCTAssertFalse(single.prefix(4).contains("大炊"), "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ひとがおおい", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "人が多い", "multi=\(multi.prefix(4))")
+        let oita = converter.candidates(for: "おおいた", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(oita.prefix(4).contains("大分"), "oita=\(oita)")
+    }
+
     // してくれて: エンジンはかな最良(既存の て形+くれ クランプ)だが keepKana=false で
     // 提示層がかな退避し して暮れて が繰り上がっていた。授受補助動詞末尾+て/で形の
     // keepKana 根拠を追加。単独 くれて は クレテ(収穫)先頭化を seed かな掲載で是正。
