@@ -825,6 +825,16 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // て形+授受補助動詞(してくれて/教えてあげて 等)はかなが正書 — エンジンの
+        // 授受クランプ(multiClauseTeBenefactiveAuxiliaryReadings)と同条件。かな最良が
+        // 提示層で退避され して暮れて 等が繰り上がるのを防ぐ(keepKana は維持のみで昇格しない)。
+        for aux in KanaKanjiConverter.multiClauseTeBenefactiveAuxiliaryReadings
+        where normalized.count > aux.count && normalized.hasSuffix(aux) {
+            let stem = String(normalized.dropLast(aux.count))
+            if stem.hasSuffix("て") || stem.hasSuffix("で") {
+                return true
+            }
+        }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
         // 長音なしの なのか(=七日)は辞書語を守るため対象外(ー 付きに限定)。

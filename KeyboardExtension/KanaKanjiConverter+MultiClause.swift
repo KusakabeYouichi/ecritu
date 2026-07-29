@@ -216,9 +216,14 @@ extension KanaKanjiConverter {
     // て形直後の くれる補助動詞(〜てくれる/てくれない)はかなが正書(使ってくれない)。
     // くれない 読みは 紅(名詞 LM5908)が最安の1ノードで居座り 使って紅 を作るため、て形直後の
     // かな識別を安価にして 使ってくれない を最上位にする。名詞直後(BOS/体言)は対象外。
-    static let multiClauseTeKureAuxiliaryReadings: Set<String> = [
+    // て形直後の授受補助動詞(〜てくれる/〜てあげる)。かなが正書。あげ族は Wikipedia LM の
+    // 基底頻度(挙げる5399<上げる5806<あげる6120=例を挙げる 等の百科事典バイアス)で
+    // 挙げて が供給先頭になる(教えてあげて→教えて挙げて)のを是正する。
+    static let multiClauseTeBenefactiveAuxiliaryReadings: Set<String> = [
         "くれ", "くれる", "くれない", "くれた", "くれて", "くれます", "くれました",
-        "くれれば", "くれよ", "くれるの", "くれないの", "くれなかった"
+        "くれれば", "くれよ", "くれるの", "くれないの", "くれなかった",
+        "あげ", "あげる", "あげない", "あげた", "あげて", "あげます", "あげました",
+        "あげれば", "あげよう", "あげるの", "あげないの", "あげなかった"
     ]
     static let multiClauseColloquialExplanatoryTailReadings: Set<String> = [
         "んだが", "んだけど", "んだけれど", "んだけれども",
@@ -899,7 +904,11 @@ extension KanaKanjiConverter {
                     || Self.multiClauseExplanatoryFinalSurfaces.contains(segmentReading)
                     // 口語終止クラスタ(かなー 等)も常設 — 辞書/wc に無い読みはノード自体が立たず、
                     // クランプ(4000)が適用できない(こんないろかなー→色香なー 対策)
-                    || Self.multiClauseColloquialExplanatoryTailReadings.contains(segmentReading) {
+                    || Self.multiClauseColloquialExplanatoryTailReadings.contains(segmentReading)
+                    // 授受補助動詞(あげて 等)も常設 — 基底LM順(挙げる5399<上げる<あげる)で
+                    // b2 のかな供給が落ち、て形直後クランプの対象ノード自体が立たない
+                    // (教えてあげて→教えて挙げて 対策。て/で 直後以外では素通りコストのまま)
+                    || Self.multiClauseTeBenefactiveAuxiliaryReadings.contains(segmentReading) {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -1236,7 +1245,7 @@ extension KanaKanjiConverter {
             // て形直後の くれる補助動詞(使ってくれない 等)はかなが正書。紅(名詞くれない)や
             // 暮れない が繰り上がるのを、かな識別を安価にして防ぐ。prev が て/で 終わり(て形)限定。
             if surface == reading,
-                Self.multiClauseTeKureAuxiliaryReadings.contains(reading),
+                Self.multiClauseTeBenefactiveAuxiliaryReadings.contains(reading),
                 prev != Self.multiClauseBOSMarker,
                 (prev.hasSuffix("て") || prev.hasSuffix("で")) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
