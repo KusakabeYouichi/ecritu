@@ -141,6 +141,11 @@ extension KanaKanjiConverter {
         (["ひゃく", "びゃく", "ぴゃく"], 100),
         (["じゅう", "じゅっ", "じっ"], 10)
     ]
+    // 連濁・半濁の桁読みは先行数字が固定(さんぜん/さんびゃく/ろっぴゃく/はっぴゃく)。
+    // 単独や他の数字では成立しない(ぜんかい→1000回/びゃくにん→100人 等の誤生成を防ぐ)。
+    static let rendakuPlaceMarkerAllowedDigits: [String: Set<Int>] = [
+        "ぜん": [3], "びゃく": [3], "ぴゃく": [6, 8]
+    ]
     // 和語数詞(〜つ)。ひとつ→1つ 等。
     static let arabicWagoTsuReadings: [String: Int] = [
         "ひとつ": 1, "ふたつ": 2, "みっつ": 3, "よっつ": 4, "いつつ": 5,
@@ -158,15 +163,21 @@ extension KanaKanjiConverter {
         var matchedAnything = false
         for place in arabicPlaceMarkers {
             var digit = 1
+            var digitMatched = false
             for (dr, dv) in arabicPlaceDigitReadings where rest.hasPrefix(dr) {
                 let after = rest.dropFirst(dr.count)
                 if place.markers.contains(where: { after.hasPrefix($0) }) {
                     digit = dv
+                    digitMatched = true
                     rest = after
                     break
                 }
             }
             for marker in place.markers where rest.hasPrefix(marker) {
+                if let allowed = rendakuPlaceMarkerAllowedDigits[marker],
+                    !digitMatched || !allowed.contains(digit) {
+                    continue
+                }
                 total += digit * place.value
                 matchedAnything = true
                 rest = rest.dropFirst(marker.count)

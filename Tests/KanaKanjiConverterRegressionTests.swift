@@ -5255,6 +5255,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // ぜんかい: ユーザ指定順(前回→全開→全快→全壊→全潰→全会)。あわせて 1000回 の誤生成
+    // (連濁 ぜん が単独で桁成立していた)を是正。さんぜんかい→3000回/せんかい→1000回 は正当。
+    func testRegressionRealLMZenkaiOrderingAndRendakuDigit() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ぜんかい", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(6)), ["前回", "全開", "全快", "全壊", "全潰", "全会"], "single=\(single.prefix(8))")
+        XCTAssertFalse(single.contains("1000回"), "single=\(single)")
+        // 正当な連濁・非連濁の数値生成は無傷
+        let sanzen = converter.candidates(for: "さんぜんかい", limit: 20, systemCandidateMode: .surface)
+        XCTAssertTrue(sanzen.contains("3000回"), "sanzen=\(sanzen.prefix(8))")
+        let sen = converter.candidates(for: "せんかい", limit: 20, systemCandidateMode: .surface)
+        XCTAssertTrue(sen.contains("1000回"), "sen=\(sen.prefix(8))")
+        let nizen = converter.candidates(for: "にぜんかい", limit: 20, systemCandidateMode: .surface)
+        XCTAssertFalse(nizen.contains("2000回"), "nizen=\(nizen.prefix(8))")
+    }
+
     // とかじゃなかったか: 冠者(かじゃ、wc5886)が と+冠者 分割で とか+じゃ を乗っ取っていた。
     // 冠者/カジャ を suppr し、かじゃ 完全一致時のみ 冠者 を末尾再供給(二段構え)。
     func testRegressionRealLMTokajaKanjaTakeover() throws {
