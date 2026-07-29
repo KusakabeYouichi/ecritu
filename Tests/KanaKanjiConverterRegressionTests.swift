@@ -5295,6 +5295,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "いくつあるかも", "multi=\(multi.prefix(4))")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いくつあるかも"))
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いくつか"))
+        // 活用連鎖の防護ケースは不変(全面再帰にしない根拠)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"))
         // 単独・類似パターンもかな先頭(一般機構の確認)
         let single = converter.candidates(for: "いくつ", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "いくつ", "single=\(single)")
@@ -5394,16 +5396,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // えあこんをおん: を→御(5399)が を→オン(5530)より僅差で安く エアコンを御 が先頭化
     // (Wikipediaバイアス)。seed おん=オン先頭+連文節 opt-in ボーナスで是正。ON/On/on は
-    // LM 実在なのに辞書未登録だった供給欠落を seed で補う。
+    // LM 実在なのに辞書未登録だった供給欠落を seed で補う。御(接頭辞)/音(単独名詞でない読み)は
+    // suppr+完全一致時のみ末尾再供給の二段構え(変種枠3から ON/On/on を押し出さないため)。
     func testRegressionRealLMAirconOn() throws {
         try prepareRealLMDictionary()
+        try injectSuppression(["おん": ["御", "音"]])
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
         let multi = converter.multiClauseCandidates(for: "えあこんをおん", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "エアコンをオン", "multi=\(multi.prefix(4))")
+        XCTAssertEqual(multi.first, "エアコンをオン", "multi=\(multi.prefix(5))")
+        XCTAssertFalse(multi.contains(where: { $0.contains("を御") || $0.contains("を音") }), "multi=\(multi.prefix(5))")
+        XCTAssertTrue(multi.contains(where: { $0.hasSuffix("ON") || $0.hasSuffix("On") || $0.hasSuffix("on") }), "multi=\(multi.prefix(5))")
         let single = converter.candidates(for: "おん", limit: 12, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "オン", "single=\(single)")
         XCTAssertTrue(["ON", "On", "on"].allSatisfy(single.contains), "single=\(single)")
+        // 完全一致時のみ 音/御 を末尾再供給。複合読み(御社)は無傷
+        XCTAssertTrue(single.contains("音") && single.contains("御"), "single=\(single)")
+        // (おんしゃ の既存並び 音写/恩赦/御社 はこの suppr の影響を受けない)
+        let onsha = converter.candidates(for: "おんしゃ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(onsha.contains("御社"), "onsha=\(onsha)")
         // おん を含む複合語の区切りは不変
         let onsen = converter.candidates(for: "おんせん", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(onsen.first, "温泉", "onsen=\(onsen)")
