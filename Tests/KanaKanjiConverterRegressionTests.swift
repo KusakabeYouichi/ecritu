@@ -5276,6 +5276,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(kanja.contains("冠者"), "kanja=\(kanja.prefix(15))")
     }
 
+    // だっけな: ダッケ(だっけ の辞書エントリはこれのみのカタカナ収穫)が先頭化していた。
+    // だっけ はLM未収録+漢字代替ゼロでクラス抑制が素通りするため個別suppr。かな だっけ を勝たせる。
+    func testRegressionRealLMDakkeKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["だっけ": ["ダッケ"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "だっけな", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "だっけな", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains(where: { $0.contains("ダッケ") }), "multi=\(multi.prefix(6))")
+        let single = converter.candidates(for: "だっけな", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(single.isEmpty || single.first == "だっけな", "single=\(single)")
+        XCTAssertFalse(single.contains(where: { $0.contains("ダッケ") }), "single=\(single)")
+        // suppr 後は だっけ の辞書エントリが空になり、単独入力はかなチップが供給する(なった と同型)
+        let exact = converter.candidates(for: "だっけ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(exact.isEmpty || exact.first == "だっけ", "exact=\(exact)")
+        XCTAssertFalse(exact.contains("ダッケ"), "exact=\(exact)")
+    }
+
     // じょせい: ユーザ指定順(女性→助勢→女声→助成)。基底 word_cost 順では 助成 が先頭だった。
     func testRegressionRealLMJoseiOrdering() throws {
         try prepareRealLMDictionary()
