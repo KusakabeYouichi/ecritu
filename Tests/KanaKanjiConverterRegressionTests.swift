@@ -5351,6 +5351,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(gegen.contains("Gegenüberstellung"), "複合語の深いランク: \(gegen)")
         let italian = store.latinSuggestions(prefix: "perch", limit: 8)
         XCTAssertTrue(italian.contains("perché"), "アクセント保持: \(italian)")
+        // 空白後のフォールバック: 語句全体(hello wor)で一致ゼロ→空白直後(wor)から再検索
+        let afterSpace = store.latinSuggestions(prefix: "hello wor", limit: 8)
+        XCTAssertTrue(afterSpace.contains(where: { $0.hasPrefix("wor") }), "suggestions=\(afterSpace)")
+        let multiSpace = store.latinSuggestions(prefix: "je pense que natur", limit: 8)
+        XCTAssertTrue(multiSpace.contains("natürlich"), "3語以上でも段階的に縮む: \(multiSpace)")
         // 追加語彙(SecondVocab相当)が先頭に来る: 手動でエントリを注入して確認
         store.setGenericLatinLexiconEnabledLanguages(["en"])
         let englishOnly = store.latinSuggestions(prefix: "voil", limit: 8)

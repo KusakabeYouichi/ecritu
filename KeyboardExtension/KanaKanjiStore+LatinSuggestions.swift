@@ -3,7 +3,33 @@ import Foundation
 // ラテン(英字)入力のサジェスト。読み検索キーの正規化・二分探索・候補判定を担う。
 // 索引 latinSuggestionEntries は起動時に一度構築してキャッシュする。
 extension KanaKanjiStore {
+    // 語句全体(空白込みトークン)で一致ゼロのときは、空白/改行の直後から検索を
+    // やり直して段階的に縮める(grand ch→ch)。空白入りentry(追加語彙のワイン語句等)の
+    // 最長一致補完を優先しつつ、1語entryしか無い汎用リストも2語目以降で効くようにする。
     func latinSuggestions(prefix: String, limit: Int) -> [String] {
+        var query = prefix
+
+        while true {
+            let results = latinSuggestionsForToken(prefix: query, limit: limit)
+
+            if !results.isEmpty {
+                return results
+            }
+
+            guard let boundary = query.rangeOfCharacter(from: .whitespacesAndNewlines) else {
+                return []
+            }
+
+            query = String(query[boundary.upperBound...])
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+
+            guard !query.isEmpty else {
+                return []
+            }
+        }
+    }
+
+    private func latinSuggestionsForToken(prefix: String, limit: Int) -> [String] {
         guard limit > 0 else {
             return []
         }
