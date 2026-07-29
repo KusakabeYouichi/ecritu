@@ -911,15 +911,24 @@ final class KanaKanjiConverter {
                 return true
             }
         }
-        // 疑問・推量の終端(かも/かな/かと/か)を剥がして再帰(から と同型)。いくつあるかも→
-        // いくつある(ある 剥がし→いくつ=辞書かな語)、いくつか→いくつ。エンジンがかな最良の
-        // 疑問句が提示層で退避され 幾つあるかも 等が繰り上がるのを防ぐ。keepKana は維持のみで
-        // 昇格しないため、漢字正書の句(学生かも 等=エンジンが漢字先頭)に発火しても実害なし。
+        // 疑問・推量の終端(かも/かな/かと/か)を剥がした語幹が「辞書のかな語そのもの」
+        // (いくつか→いくつ)か「かな語+ある/いる」(いくつあるかも→いくつある→いくつ)なら
+        // 根拠あり。エンジンがかな最良の疑問句が提示層で退避され 幾つあるかも 等が繰り上がるのを
+        // 防ぐ。全面再帰にはしない — かってみようかな(活用連鎖の防護ケース)へ かってみよう の
+        // 別根拠が伝播して退行した(2375)ため、辞書かな語ベースの狭い根拠に限定する。
         for tail in ["かも", "かな", "かと", "か"]
         where normalized.count > tail.count && normalized.hasSuffix(tail) {
             let stem = String(normalized.dropLast(tail.count))
-            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+            guard stem.count >= 2 else { continue }
+            if systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
                 return true
+            }
+            for verb in ["ある", "いる"]
+            where stem.count > verb.count && stem.hasSuffix(verb) {
+                let subStem = String(stem.dropLast(verb.count))
+                if subStem.count >= 2, systemCandidates(for: subStem, mode: .lesDeux).contains(subStem) {
+                    return true
+                }
             }
         }
         // コピュラ否定(じゃない/じゃなくて/じゃなかった)で終わる全かな句はかなが正書
