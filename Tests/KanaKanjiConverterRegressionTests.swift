@@ -5332,6 +5332,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "とかじゃなかったか", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "とかじゃなかったか", "multi=\(multi.prefix(4))")
         XCTAssertFalse(multi.contains(where: { $0.contains("冠者") }), "multi=\(multi.prefix(6))")
+        // keepKana が false だと提示層が先頭かなを末尾チップへ退避し、変種(とかじゃ無かったか)が
+        // 実機バー先頭に繰り上がる(2329-2330 と同型)。じゃなかったか 末尾で根拠成立を固定。
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "とかじゃなかったか"))
         // 単文節経路は内容語ゼロのこの読みを組み立てない(実機バーは連文節経路)。出る場合も 冠者 は不可
         let single = converter.candidates(for: "とかじゃなかったか", limit: 30, systemCandidateMode: .surface)
         XCTAssertTrue(single.isEmpty || single.first == "とかじゃなかったか", "single=\(single.prefix(8))")
