@@ -66,6 +66,9 @@
 	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>
 	<dict><key>phrase</key><string>サンガ</string><key>shortcut</key><string>さんが</string></dict>
+	<!-- 冠者(かじゃ、狂言用語wc5886)が と+冠者 分割で とかじゃ〜 を乗っ取る。カジャ(wc2148)も冠者suppr後は同穴で浮上。冠者 は完全一致時のみ再供給(かんじゃ 読みは無傷) -->
+	<dict><key>phrase</key><string>冠者</string><key>shortcut</key><string>かじゃ</string></dict>
+	<dict><key>phrase</key><string>カジャ</string><key>shortcut</key><string>かじゃ</string></dict>
 	<!-- マンエン(蔓延/万円系のカタカナ収穫、rank1)。かな/漢字を優先 -->
 	<!-- セン(せん のカタカナ収穫、dict rank0)。線/千/先 等の実語を優先 -->
 	<!-- コレ/イイ(これ/いい のカタカナ書き)。かなを優先(イイね は既存抑制) -->
