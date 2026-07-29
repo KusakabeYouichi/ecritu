@@ -69,6 +69,9 @@
 	<!-- 冠者(かじゃ、狂言用語wc5886)が と+冠者 分割で とかじゃ〜 を乗っ取る。カジャ(wc2148)も冠者suppr後は同穴で浮上。冠者 は完全一致時のみ再供給(かんじゃ 読みは無傷) -->
 	<dict><key>phrase</key><string>冠者</string><key>shortcut</key><string>かじゃ</string></dict>
 	<dict><key>phrase</key><string>カジャ</string><key>shortcut</key><string>かじゃ</string></dict>
+	<!-- 御(接頭辞)/音(単独名詞でない読み)。を→御(5399)等のbigramで えあこんをおん の変種枠を占有し ON/On/on を圏外に押し出す。完全一致時のみ末尾再供給(おんしゃ→御社 等の複合読みは無傷) -->
+	<dict><key>phrase</key><string>御</string><key>shortcut</key><string>おん</string></dict>
+	<dict><key>phrase</key><string>音</string><key>shortcut</key><string>おん</string></dict>
 	<!-- マンエン(蔓延/万円系のカタカナ収穫、rank1)。かな/漢字を優先 -->
 	<!-- セン(せん のカタカナ収穫、dict rank0)。線/千/先 等の実語を優先 -->
 	<!-- コレ/イイ(これ/いい のカタカナ書き)。かなを優先(イイね は既存抑制) -->
