@@ -5255,6 +5255,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // まけたからしかたない: から+仕方ない の区切りが 枯らし+方+ない 分割に負けていた
+    // (→負けた枯らし方ない)。仕方ない(辞書wc7696)を curated(misc, 連文節1500)化して
+    // 区切りを勝たせる(殻付き と同型)。テストバンドルは misc JSON を読まないため addUserEntry で再現。
+    func testRegressionRealLMMaketakaraShikatanai() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "しかたない", candidate: "仕方ない")
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "まけたからしかたない", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "負けたから仕方ない", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains(where: { $0.contains("枯らし方") }), "multi=\(multi.prefix(6))")
+        let sub = converter.multiClauseCandidates(for: "からしかたない", systemCandidateMode: .surface)
+        XCTAssertEqual(sub.first, "から仕方ない", "sub=\(sub.prefix(4))")
+        let single = converter.candidates(for: "しかたない", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "仕方ない", "single=\(single)")
+    }
+
     // ぜんかい: ユーザ指定順(前回→全開→全快→全壊→全潰→全会)。あわせて 1000回 の誤生成
     // (連濁 ぜん が単独で桁成立していた)を是正。さんぜんかい→3000回/せんかい→1000回 は正当。
     func testRegressionRealLMZenkaiOrderingAndRendakuDigit() throws {
