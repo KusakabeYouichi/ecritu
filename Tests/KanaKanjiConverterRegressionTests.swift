@@ -5272,6 +5272,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(oita.prefix(4).contains("大分"), "oita=\(oita)")
     }
 
+    // のだろうか: 単漢字合成(乃だろうか/幅だろうか 等)がかな識別より先行していた。
+    // したんだが と同型の seed かな供給。keepKana は seed 掲載で自動成立。
+    func testRegressionRealLMNodaroukaKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "のだろうか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "のだろうか", "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のだろうか"))
+    }
+
     // してくれて: エンジンはかな最良(既存の て形+くれ クランプ)だが keepKana=false で
     // 提示層がかな退避し して暮れて が繰り上がっていた。授受補助動詞末尾+て/で形の
     // keepKana 根拠を追加。単独 くれて は クレテ(収穫)先頭化を seed かな掲載で是正。
