@@ -5348,14 +5348,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // だっけな: ダッケ(だっけ の辞書エントリはこれのみのカタカナ収穫)が先頭化していた。
     // だっけ はLM未収録+漢字代替ゼロでクラス抑制が素通りするため個別suppr。かな だっけ を勝たせる。
+    // suppr 後は keepKana が成立しないと提示層がかな最良(だっけな)を退避して候補なしになる
+    // (実機で発生)— curated だっけ(misc 既存)を語幹根拠に keepKana を固定する。
     func testRegressionRealLMDakkeKanaFirst() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["だっけ": ["ダッケ"]])
+        converter.store.addUserEntry(reading: "だっけ", candidate: "だっけ") // misc curated 相当
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
         let multi = converter.multiClauseCandidates(for: "だっけな", systemCandidateMode: .surface)
-        XCTAssertTrue(multi.isEmpty || multi.first == "だっけな", "multi=\(multi.prefix(4))")
+        XCTAssertEqual(multi.first, "だっけな", "multi=\(multi.prefix(4))")
         XCTAssertFalse(multi.contains(where: { $0.contains("ダッケ") }), "multi=\(multi.prefix(6))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "だっけな"))
         let single = converter.candidates(for: "だっけな", limit: 6, systemCandidateMode: .surface)
         XCTAssertTrue(single.isEmpty || single.first == "だっけな", "single=\(single)")
         XCTAssertFalse(single.contains(where: { $0.contains("ダッケ") }), "single=\(single)")

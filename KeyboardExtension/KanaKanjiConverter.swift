@@ -786,6 +786,14 @@ final class KanaKanjiConverter {
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
                 return true
             }
+            // curated かな識別(misc の だっけ 等=かな正書の明示登録)も語幹の根拠と認める。
+            // ダッケ suppr 後の だっけ は辞書エントリが空で systemCandidates では拾えず、
+            // keepKana=false → 提示層がかな最良(だっけな)を退避して候補なしになる。
+            if stem.count >= 2,
+                (store.initialUserDictionary()[stem] ?? []).contains(stem)
+                    || (store.userDictionary()[stem] ?? []).contains(stem) {
+                return true
+            }
             // い形容詞のかな過去(よかった/すごかった 等)は活用形なので辞書エントリでは拾えない。
             // Xかった→基底 X+い に脱活用して基底が辞書のかな語なら根拠あり(よかったな→よかった→
             // よい)。keepKana は「既にかな先頭の候補を維持するだけ」で昇格はしないため、漢字正書の
