@@ -5428,6 +5428,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         print("PROBE screenshot: \(image.size)")
     }
 
+    // 欧文サジェスチョンの大小適応: 打った先頭が大文字なら候補の先頭も大文字化(付与のみ)。
+    // 独名詞など元から大文字のentryは不変、小文字入力での小文字化もしない。
+    func testLatinSuggestionCaseAdaptation() throws {
+        typealias VC = KeyboardViewController
+        XCTAssertEqual(VC.adaptedLatinSuggestionCase("natural", toQuery: "Natur"), "Natural")
+        XCTAssertEqual(VC.adaptedLatinSuggestionCase("natürlich", toQuery: "Natür"), "Natürlich")
+        XCTAssertEqual(VC.adaptedLatinSuggestionCase("natural", toQuery: "NATUR"), "NATURAL")
+        XCTAssertEqual(VC.adaptedLatinSuggestionCase("natural", toQuery: "natur"), "natural")
+        XCTAssertEqual(VC.adaptedLatinSuggestionCase("Natur", toQuery: "natur"), "Natur")
+        XCTAssertEqual(VC.adaptedLatinSuggestionCase("NÜCHI by WPÜ", toQuery: "Nüchi"), "NÜCHI by WPÜ")
+        XCTAssertEqual(VC.adaptedLatinSuggestionCase("it’s", toQuery: "It"), "It’s")
+    }
+
     private func prepareRealLMDictionary() throws {
         let fileManager = FileManager.default
         let source = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/kana_kanji_dictionary.sqlite")

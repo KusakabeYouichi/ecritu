@@ -80,9 +80,15 @@ extension KeyboardViewController {
 
         let lookupLimit = max(effectiveLimit + 12, effectiveLimit * 2)
         let suggestions = latinSuggestions(prefix: query, limit: lookupLimit)
-        let filteredSuggestions = suggestions.filter { suggestion in
-            !isCurrentLatinSuggestionQuery(suggestion, query: query)
-        }
+        // 打った先頭が大文字なら候補の表記も大文字へ適応(Natur→Natural)。表示と確定の
+        // 両方に効くようここで変換し、変換後の重複(natural と Natural 等)は先勝ちで畳む。
+        var seenAdapted = Set<String>()
+        let filteredSuggestions = suggestions
+            .map { Self.adaptedLatinSuggestionCase($0, toQuery: query) }
+            .filter { suggestion in
+                !isCurrentLatinSuggestionQuery(suggestion, query: query)
+                    && seenAdapted.insert(suggestion).inserted
+            }
         let results = Array(filteredSuggestions.prefix(effectiveLimit))
 
         let elapsedMs = performanceElapsedMilliseconds(since: startedAt)
@@ -530,5 +536,28 @@ extension KeyboardViewController {
 
     func isCurrentLatinSuggestionQuery(_ suggestion: String, query: String) -> Bool {
         suggestion.trimmingCharacters(in: .whitespacesAndNewlines) == query
+    }
+
+    // 打った文字の大小に候補の表記を適応させる(付与のみ、除去はしない):
+    // - 全大文字入力(2文字以上)なら候補全体を大文字化(NATUR→NATURAL)
+    // - 先頭だけ大文字入力なら候補の先頭を大文字化(Natur→Natural)
+    // - 候補が既に大文字を含む(独名詞 Natur、NÜCHI 等)場合はそのまま。
+    //   小文字入力で独名詞を小文字化することもしない(正書の大文字を壊さない)。
+    static func adaptedLatinSuggestionCase(_ suggestion: String, toQuery query: String) -> String {
+        guard let queryFirst = query.first, queryFirst.isUppercase else {
+            return suggestion
+        }
+
+        let queryLetters = query.filter(\.isLetter)
+
+        if queryLetters.count >= 2, queryLetters.allSatisfy(\.isUppercase) {
+            return suggestion.uppercased()
+        }
+
+        guard let suggestionFirst = suggestion.first, suggestionFirst.isLowercase else {
+            return suggestion
+        }
+
+        return suggestionFirst.uppercased() + suggestion.dropFirst()
     }
 }
