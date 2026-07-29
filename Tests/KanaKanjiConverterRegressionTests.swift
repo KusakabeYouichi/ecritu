@@ -5255,6 +5255,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // さじぇすちょん: LM未収録・代替ゼロの外来語(サジェスチョン、辞書唯一 wc2148)が
+    // 連文節側のカタカナ強調クラス抑制(+100000)で不採用になり、LM実在の断片
+    // さ+ジェス+チョン(人名収穫)がジャンク最良→表示先頭になっていた。単文節側と同義の
+    // 「代替(同スパン漢字ノード/かな側LM)が存在する限り強調」判定を multi 側にも導入。
+    func testRegressionRealLMSuggestionLoanwordNotFragmented() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "さじぇすちょん", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "サジェスチョン", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains("さジェスチョン"), "multi=\(multi.prefix(4))")
+        let single = converter.candidates(for: "さじぇすちょん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "サジェスチョン", "single=\(single)")
+        // 同スパンに漢字ノード(成った 等)があるカタカナ収穫(ナッタ)の連文節抑制は維持
+        let natta = converter.multiClauseCandidates(for: "なったのは", systemCandidateMode: .surface)
+        XCTAssertFalse(natta.contains(where: { $0.contains("ナッタ") }), "natta=\(natta.prefix(4))")
+    }
+
     // まけたからしかたない: から+仕方ない の区切りが 枯らし+方+ない 分割に負けていた
     // (→負けた枯らし方ない)。仕方ない(辞書wc7696)を curated(misc, 連文節1500)化して
     // 区切りを勝たせる(殻付き と同型)。テストバンドルは misc JSON を読まないため addUserEntry で再現。

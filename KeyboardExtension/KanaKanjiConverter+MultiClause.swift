@@ -977,6 +977,14 @@ extension KanaKanjiConverter {
         // curated(ユーザ明示)は対象外。外来語(パン 等)は「カタカナ側が unigram 優位」で保護。
         // suppress は +100000(事実上不採用)、demote は +6000(後方)を transitionCost で加える。
         if katakanaEmphasisCandidateMode != .normal || mazegakiCandidateMode != .normal {
+            // LM未収録カタカナの「代替が存在する限り強調」判定(単文節側と同義)用: 同スパンに
+            // 漢字ノード(辞書/活用派生。成った 等)が居るか。代替ゼロの外来語(サジェスチョン=
+            // 辞書唯一・LM未収録)まで抑制すると、LM実在の断片(さ+ジェス+チョン)がジャンク
+            // 最良になるため、そこだけ保護する。
+            var spanHasKanjiSurface = Set<String>()
+            for node in nodes where containsKanji(node.surface) {
+                spanHasKanjiSurface.insert("\(node.start)-\(node.end)")
+            }
             for node in nodes where !node.isCurated {
                 let key = "\(node.start)-\(node.end)-\(node.surface)"
                 if katakanaEmphasisCandidateMode != .normal,
@@ -992,7 +1000,8 @@ extension KanaKanjiConverter {
                     if let kataUni {
                         isEmphasis = (altUni != nil && altUni! < kataUni)
                     } else {
-                        isEmphasis = true
+                        isEmphasis = altUni != nil
+                            || spanHasKanjiSurface.contains("\(node.start)-\(node.end)")
                     }
                     if isEmphasis {
                         if katakanaEmphasisCandidateMode == .suppress {
