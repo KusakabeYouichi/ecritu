@@ -5255,6 +5255,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // してくれて: エンジンはかな最良(既存の て形+くれ クランプ)だが keepKana=false で
+    // 提示層がかな退避し して暮れて が繰り上がっていた。授受補助動詞末尾+て/で形の
+    // keepKana 根拠を追加。単独 くれて は クレテ(収穫)先頭化を seed かな掲載で是正。
+    func testRegressionRealLMShiteKureteKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "してくれて", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "してくれて", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "してくれて"))
+        let kurete = converter.candidates(for: "くれて", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kurete.first, "くれて", "kurete=\(kurete)")
+    }
+
+    // おしえてあげて: Wikipedia LM の基底頻度(挙げる5399<上げる5806<あげる6120=例を挙げる
+    // 等の百科事典バイアス)で 教えて挙げて が先頭化。授受クランプを あげ族 に拡張。
+    func testRegressionRealLMOshieteAgeteKanaAuxiliary() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "おしえてあげて", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "教えてあげて", "multi=\(multi.prefix(4))")
+        let agata = converter.multiClauseCandidates(for: "てをあげて", systemCandidateMode: .surface)
+        // を 直後(て形でない)の あげて はクランプ対象外 — 手を挙げて/上げて の漢字は維持
+        XCTAssertTrue(agata.contains(where: { $0.contains("挙げて") || $0.contains("上げて") }), "agata=\(agata.prefix(4))")
+    }
+
     // えあこんをおん: を→御(5399)が を→オン(5530)より僅差で安く エアコンを御 が先頭化
     // (Wikipediaバイアス)。seed おん=オン先頭+連文節 opt-in ボーナスで是正。ON/On/on は
     // LM 実在なのに辞書未登録だった供給欠落を seed で補う。
