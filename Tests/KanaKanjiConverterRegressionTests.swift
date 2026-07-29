@@ -5255,6 +5255,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // とかじゃなかったか: 冠者(かじゃ、wc5886)が と+冠者 分割で とか+じゃ を乗っ取っていた。
+    // 冠者/カジャ を suppr し、かじゃ 完全一致時のみ 冠者 を末尾再供給(二段構え)。
+    func testRegressionRealLMTokajaKanjaTakeover() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["かじゃ": ["冠者", "カジャ"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "とかじゃなかったか", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "とかじゃなかったか", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains(where: { $0.contains("冠者") }), "multi=\(multi.prefix(6))")
+        // 単文節経路は内容語ゼロのこの読みを組み立てない(実機バーは連文節経路)。出る場合も 冠者 は不可
+        let single = converter.candidates(for: "とかじゃなかったか", limit: 30, systemCandidateMode: .surface)
+        XCTAssertTrue(single.isEmpty || single.first == "とかじゃなかったか", "single=\(single.prefix(8))")
+        XCTAssertFalse(single.contains(where: { $0.contains("冠者") }), "single=\(single.prefix(8))")
+        // 完全一致時は 冠者 を末尾供給(かんじゃ 読みは辞書に残るため無傷)
+        let exact = converter.candidates(for: "かじゃ", limit: 30, systemCandidateMode: .surface)
+        XCTAssertTrue(exact.contains("冠者"), "exact=\(exact)")
+        let kanja = converter.candidates(for: "かんじゃ", limit: 30, systemCandidateMode: .surface)
+        XCTAssertTrue(kanja.contains("冠者"), "kanja=\(kanja.prefix(15))")
+    }
+
     // じょせい: ユーザ指定順(女性→助勢→女声→助成)。基底 word_cost 順では 助成 が先頭だった。
     func testRegressionRealLMJoseiOrdering() throws {
         try prepareRealLMDictionary()
