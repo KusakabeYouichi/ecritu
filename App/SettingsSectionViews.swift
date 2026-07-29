@@ -653,10 +653,10 @@ struct LatinLexiconSettingsSection: View {
                 .font(.headline)
 
             VStack(spacing: 10) {
-                Toggle("français(フランス語・15,000語)", isOn: $enablesFrench)
-                Toggle("italiano(イタリア語・15,000語)", isOn: $enablesItalian)
-                Toggle("Deutsch(ドイツ語・60,000語)", isOn: $enablesGerman)
-                Toggle("anglais(英語・15,000語)", isOn: $enablesEnglish)
+                Toggle("français (フランス語・15,000語)", isOn: $enablesFrench)
+                Toggle("italiano (イタリア語・15,000語)", isOn: $enablesItalian)
+                Toggle("Deutsch (ドイツ語・60,000語)", isOn: $enablesGerman)
+                Toggle("anglais (英語・15,000語)", isOn: $enablesEnglish)
             }
             .toggleStyle(.switch)
 
