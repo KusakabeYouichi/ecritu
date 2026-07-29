@@ -5283,6 +5283,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のだろうか"))
     }
 
+    // おおいた: 多く(い形容詞連用形の収穫、クラス無し)が語尾く推論で五段動詞と誤判定され、
+    // 書く→書いた 式に 多いた(非文法)が導出されて辞書語 大分 に勝っていた。同語幹のい形
+    // (多い=adjective-i)実在時は五段く推論を止める一般ゲートを追加(近く/早く 等も同時に防護)。
+    func testRegressionRealLMOoitaNoUngrammaticalAita() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let oita = converter.candidates(for: "おおいた", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(oita.first, "大分", "oita=\(oita)")
+        XCTAssertFalse(oita.contains("多いた"), "oita=\(oita)")
+        let chikaita = converter.candidates(for: "ちかいた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(chikaita.contains("近いた"), "chikaita=\(chikaita)")
+        // 正当な五段く動詞の活用と い形容詞の正書活用は不変
+        let kaita = converter.candidates(for: "かいた", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kaita.first, "書いた", "kaita=\(kaita)")
+        let ookatta = converter.candidates(for: "おおかった", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(ookatta.first, "多かった", "ookatta=\(ookatta)")
+        let ookunatta = converter.candidates(for: "おおくなった", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(ookunatta.first, "多くなった", "ookunatta=\(ookunatta)")
+    }
+
     // いくつあるかも: エンジンはかな最良(LM: いくつ4779<幾つ5884+いくつ→ある観測済みで
     // 一般機構は全文脈機能。いくつある/いくつか/いくつも 全てかな先頭)だが、keepKana が
     // かも/か 末尾で不成立→提示層退避で 幾つあるかも が実機先頭。疑問終端(かも/かな/かと/か)

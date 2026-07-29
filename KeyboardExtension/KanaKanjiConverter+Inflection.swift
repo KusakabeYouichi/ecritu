@@ -379,6 +379,17 @@ extension KanaKanjiConverter {
 
         for pattern in Self.godanPatterns where baseReading.hasSuffix(pattern.dictionaryEnding) {
             if candidate.hasSuffix(pattern.dictionaryEnding) {
+                // く 終わりは い形容詞の連用形収穫(多く/近く/早く 等、クラス無しエントリ)と
+                // 衝突する。同語幹の い形(おおい→多い)が adjective-i で実在するなら連用形と
+                // みなし、五段く動詞の推論をしない(多く→多いた 型の非文法合成の温床)。
+                if pattern.dictionaryEnding == "く" {
+                    let adjectiveReading = String(baseReading.dropLast()) + "い"
+                    let adjectiveCandidate = String(candidate.dropLast()) + "い"
+                    let adjectiveClassMap = store.systemInflectionMetadata(for: adjectiveReading).classMap
+                    if adjectiveClassMap[adjectiveCandidate] == InflectionClass.adjectiveI {
+                        return nil
+                    }
+                }
                 return pattern.inflectionClass
             }
         }
