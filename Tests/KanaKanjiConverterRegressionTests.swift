@@ -5273,6 +5273,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(natta.contains(where: { $0.contains("ナッタ") }), "natta=\(natta.prefix(4))")
     }
 
+    // できた: かなが正書(基底 できる 3767 ≪ 出来る 5254)。単独入力は かな→出来た→人名収穫
+    // (出來田/出木田/出来田)の順に。keepKana も併記(提示層のかな退避防止、2329-2330 の教訓)。
+    func testRegressionRealLMDekitaKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "できた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["できた", "出来た"], "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できた"))
+        // 合成は連文節側の選択を維持(かな/漢字とも上位)
+        let multi = converter.multiClauseCandidates(for: "しゅくだいができた", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["宿題ができた", "宿題が出来た"], "multi=\(multi.prefix(4))")
+    }
+
     // まけたからしかたない: から+仕方ない の区切りが 枯らし+方+ない 分割に負けていた
     // (→負けた枯らし方ない)。仕方ない(辞書wc7696)を curated(misc, 連文節1500)化して
     // 区切りを勝たせる(殻付き と同型)。テストバンドルは misc JSON を読まないため addUserEntry で再現。
