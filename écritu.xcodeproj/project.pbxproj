@@ -7,6 +7,34 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
+		A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
+		A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */; };
+		A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */; };
+		A1B2C3D4E5F600000T000004 /* FormattedNumberCalendarGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF0A /* FormattedNumberCalendarGridView.swift */; };
+		A1B2C3D4E5F600000T000005 /* KaomojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */; };
+		A1B2C3D4E5F600000T000006 /* KeyboardKeyComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */; };
+		A1B2C3D4E5F600000T000007 /* KeyboardLayerZIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */; };
+		A1B2C3D4E5F600000T000008 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */; };
+		A1B2C3D4E5F600000T000009 /* KeyboardRootView+FontSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FCBC2AEE4D692642405836F /* KeyboardRootView+FontSizes.swift */; };
+		A1B2C3D4E5F600000T00000A /* KeyboardRootView+FormattedNumberLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF04 /* KeyboardRootView+FormattedNumberLayout.swift */; };
+		A1B2C3D4E5F600000T00000B /* KeyboardRootView+GridLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = A884772319A4160D03A970D9 /* KeyboardRootView+GridLayouts.swift */; };
+		A1B2C3D4E5F600000T00000C /* KeyboardRootView+Header.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000DD02 /* KeyboardRootView+Header.swift */; };
+		A1B2C3D4E5F600000T00000D /* KeyboardRootView+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D58332DA6C2CA250CEDAD /* KeyboardRootView+Interaction.swift */; };
+		A1B2C3D4E5F600000T00000E /* KeyboardRootView+LandscapeLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1D8903DCA2E8999598CB053 /* KeyboardRootView+LandscapeLayouts.swift */; };
+		A1B2C3D4E5F600000T00000F /* KeyboardRootView+MainContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF02 /* KeyboardRootView+MainContent.swift */; };
+		A1B2C3D4E5F600000T000010 /* KeyboardRootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E86F6C5D01B42067D46B922 /* KeyboardRootView.swift */; };
+		A1B2C3D4E5F600000T000011 /* KeyboardRootViewSupportTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */; };
+		A1B2C3D4E5F600000T000012 /* KeyboardViewController+CandidatePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6337D42D6140E18CCA1AD5 /* KeyboardViewController+CandidatePresentation.swift */; };
+		A1B2C3D4E5F600000T000013 /* KeyboardViewController+Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */; };
+		A1B2C3D4E5F600000T000014 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */; };
+		A1B2C3D4E5F600000T000015 /* KeyboardViewController+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */; };
+		A1B2C3D4E5F600000T000016 /* KeyboardViewController+MarkedTextCommit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC195B623C4F8B8493F505 /* KeyboardViewController+MarkedTextCommit.swift */; };
+		A1B2C3D4E5F600000T000017 /* KeyboardViewController+Rendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000CC02 /* KeyboardViewController+Rendering.swift */; };
+		A1B2C3D4E5F600000T000018 /* KeyboardViewController+Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */; };
+		A1B2C3D4E5F600000T000019 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */; };
+		A1B2C3D4E5F600000T00001A /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */; };
+		A1B2C3D4E5F600000T00001B /* SIUnitCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF06 /* SIUnitCatalog.swift */; };
 		04AB9BFCE6B8D05C0BCFBE4F /* kana_kanji_inflection_dictionary.json in Resources */ = {isa = PBXBuildFile; fileRef = 3E243E0E4A8BE9229D7694DE /* kana_kanji_inflection_dictionary.json */; };
 		0AF6674FC22E71B601C7EDC4 /* KeyboardRootViewSupportTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */; };
 		0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
@@ -597,6 +625,34 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */,
+				A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */,
+				A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */,
+				A1B2C3D4E5F600000T000003 /* FlickKeyView.swift in Sources */,
+				A1B2C3D4E5F600000T000004 /* FormattedNumberCalendarGridView.swift in Sources */,
+				A1B2C3D4E5F600000T000005 /* KaomojiCatalog.swift in Sources */,
+				A1B2C3D4E5F600000T000006 /* KeyboardKeyComponents.swift in Sources */,
+				A1B2C3D4E5F600000T000007 /* KeyboardLayerZIndex.swift in Sources */,
+				A1B2C3D4E5F600000T000008 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */,
+				A1B2C3D4E5F600000T000009 /* KeyboardRootView+FontSizes.swift in Sources */,
+				A1B2C3D4E5F600000T00000A /* KeyboardRootView+FormattedNumberLayout.swift in Sources */,
+				A1B2C3D4E5F600000T00000B /* KeyboardRootView+GridLayouts.swift in Sources */,
+				A1B2C3D4E5F600000T00000C /* KeyboardRootView+Header.swift in Sources */,
+				A1B2C3D4E5F600000T00000D /* KeyboardRootView+Interaction.swift in Sources */,
+				A1B2C3D4E5F600000T00000E /* KeyboardRootView+LandscapeLayouts.swift in Sources */,
+				A1B2C3D4E5F600000T00000F /* KeyboardRootView+MainContent.swift in Sources */,
+				A1B2C3D4E5F600000T000010 /* KeyboardRootView.swift in Sources */,
+				A1B2C3D4E5F600000T000011 /* KeyboardRootViewSupportTypes.swift in Sources */,
+				A1B2C3D4E5F600000T000012 /* KeyboardViewController+CandidatePresentation.swift in Sources */,
+				A1B2C3D4E5F600000T000013 /* KeyboardViewController+Diagnostics.swift in Sources */,
+				A1B2C3D4E5F600000T000014 /* KeyboardViewController+InputHandling.swift in Sources */,
+				A1B2C3D4E5F600000T000015 /* KeyboardViewController+Layout.swift in Sources */,
+				A1B2C3D4E5F600000T000016 /* KeyboardViewController+MarkedTextCommit.swift in Sources */,
+				A1B2C3D4E5F600000T000017 /* KeyboardViewController+Rendering.swift in Sources */,
+				A1B2C3D4E5F600000T000018 /* KeyboardViewController+Settings.swift in Sources */,
+				A1B2C3D4E5F600000T000019 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */,
+				A1B2C3D4E5F600000T00001A /* KeyboardViewController.swift in Sources */,
+				A1B2C3D4E5F600000T00001B /* SIUnitCatalog.swift in Sources */,
 				2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */,
 				449ECACEDBC8A2BBA1DEF8E5 /* FlickKanaMap.swift in Sources */,
 				37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */,
