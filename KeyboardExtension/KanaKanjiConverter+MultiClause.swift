@@ -125,7 +125,7 @@ extension KanaKanjiConverter {
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)。数量詞複合(2本/二本)や
     // 分割に押されて seed 既定(日本)が沈むのを是正する。a2 seed の先頭候補ノードにボーナス。
-    static let multiClauseSeedOrderNounReadings: Set<String> = ["にほん", "ほうだい", "おん"]
+    static let multiClauseSeedOrderNounReadings: Set<String> = ["にほん", "ほうだい", "おん", "うち"]
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
     static let multiClauseNaAdjectiveBigramThreshold = 2000

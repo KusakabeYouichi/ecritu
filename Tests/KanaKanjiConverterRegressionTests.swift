@@ -5283,6 +5283,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のだろうか"))
     }
 
+    // うち: かなが正書(ユーザ方針: うち>家 全般)。家(うち)は正当な読みだが LM
+    // (家4250/家→で1685)がかな(4319/2148)を上回り 家で水を使う 等が全文脈で先頭化していた。
+    // seed かな先頭+連文節 opt-in(にほん/おん と同機構)。
+    func testRegressionRealLMUchiKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "うち", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["うち", "家"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "うちでみずをつかう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "うちで水を使う", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(multi.contains("家で水を使う"), "multi=\(multi.prefix(4))")
+        // 別読みは不変: 打ち合わせ(うちあわせ)/内側(うちがわ)/家(いえ)
+        let uchiawase = converter.candidates(for: "うちあわせ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(uchiawase.first, "打ち合わせ", "uchiawase=\(uchiawase)")
+        let uchigawa = converter.candidates(for: "うちがわ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(uchigawa.first, "内側", "uchigawa=\(uchigawa)")
+        let ie = converter.candidates(for: "いえ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(ie.first, "家", "ie=\(ie)")
+    }
+
     // ってことかと: エンジンはかな最良(こと 優先の一般機構=LM+述語直後ペナルティは機能済み)
     // だが、keepKana の形式名詞照合が終助詞付き(〜かと/かな/か)で不成立→提示層がかな退避し
     // って事かと が実機バー先頭になっていた。疑問終端を剥がしてから形式名詞照合する。
