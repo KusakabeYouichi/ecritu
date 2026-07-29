@@ -5255,6 +5255,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("底触") || single.contains("低触"), "single=\(single)")
     }
 
+    // じょせい: ユーザ指定順(女性→助勢→女声→助成)。基底 word_cost 順では 助成 が先頭だった。
+    func testRegressionRealLMJoseiOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "じょせい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["女性", "助勢", "女声", "助成"], "single=\(single)")
+    }
+
     // ぐーぐるはこうこたえる: 追加語彙 香茹(こうこ、curated床1500)が こう+答える の区切りを
     // 分断していた(ろーま型)。2326のde-floorゲートを「断片内部から始まり末尾を跨ぐ常用語
     // (こうこ の中の こたえる)」条件で拡張(読み≤3字に拡大)。香茹を食べた 等の助詞ありは無傷。
