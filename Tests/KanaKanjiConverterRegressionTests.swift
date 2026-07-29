@@ -5283,6 +5283,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のだろうか"))
     }
 
+    // ってことかと: エンジンはかな最良(こと 優先の一般機構=LM+述語直後ペナルティは機能済み)
+    // だが、keepKana の形式名詞照合が終助詞付き(〜かと/かな/か)で不成立→提示層がかな退避し
+    // って事かと が実機バー先頭になっていた。疑問終端を剥がしてから形式名詞照合する。
+    func testRegressionRealLMTteKotoKatoKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "ってことかと", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ってことかと", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ってことかと"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ってこと"))
+        // こと 優先の既存一般機構の確認(名詞直後=仕事のこと でも かな が先頭)
+        let multi2 = converter.multiClauseCandidates(for: "しごとのこと", systemCandidateMode: .surface)
+        XCTAssertEqual(multi2.first, "仕事のこと", "multi2=\(multi2.prefix(4))")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {

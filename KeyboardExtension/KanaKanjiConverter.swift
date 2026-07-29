@@ -818,9 +818,18 @@ final class KanaKanjiConverter {
         // 形式名詞(こと/とき/もの/ため/だけ)で終わる名詞化節は かな が正書(することがある→
         // ある/が を剥がした することが→すること、見るとき 等)。前に述語相当(2文字以上)がある
         // 全かな句は提示層で先頭かなを維持する(することがある→する事がある への繰り上がりを防ぐ)。
+        // 疑問・引用の終端(かと/かな/か 等)は剥がしてから照合する(ってことかと→ってこと。
+        // エンジンはかな最良なのに keepKana 不成立で って事かと が繰り上がるのを防ぐ)。
+        var formalNounProbe = normalized
+        for interrogativeTail in ["かと", "かな", "か"]
+        where formalNounProbe.count > interrogativeTail.count
+            && formalNounProbe.hasSuffix(interrogativeTail) {
+            formalNounProbe = String(formalNounProbe.dropLast(interrogativeTail.count))
+            break
+        }
         for noun in KanaKanjiConverter.multiClauseFormalNounKanaReadings
-        where normalized.count > noun.count && normalized.hasSuffix(noun) {
-            let stem = String(normalized.dropLast(noun.count))
+        where formalNounProbe.count > noun.count && formalNounProbe.hasSuffix(noun) {
+            let stem = String(formalNounProbe.dropLast(noun.count))
             if stem.count >= 2 {
                 return true
             }
