@@ -911,6 +911,17 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 疑問・推量の終端(かも/かな/かと/か)を剥がして再帰(から と同型)。いくつあるかも→
+        // いくつある(ある 剥がし→いくつ=辞書かな語)、いくつか→いくつ。エンジンがかな最良の
+        // 疑問句が提示層で退避され 幾つあるかも 等が繰り上がるのを防ぐ。keepKana は維持のみで
+        // 昇格しないため、漢字正書の句(学生かも 等=エンジンが漢字先頭)に発火しても実害なし。
+        for tail in ["かも", "かな", "かと", "か"]
+        where normalized.count > tail.count && normalized.hasSuffix(tail) {
+            let stem = String(normalized.dropLast(tail.count))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // コピュラ否定(じゃない/じゃなくて/じゃなかった)で終わる全かな句はかなが正書
         // (じゃ+無かった 等の分割漢字化より かな全文)。keepKana は維持のみで昇格しないため、
         // 名詞部が漢字正書の句(嘘じゃない=エンジンが漢字先頭)に発火しても実害はない。
