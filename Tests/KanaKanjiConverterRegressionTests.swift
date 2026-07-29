@@ -1,3 +1,4 @@
+import SwiftUI
 import XCTest
 
 final class KanaKanjiConverterRegressionTests: XCTestCase {
@@ -5354,6 +5355,72 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         store.setGenericLatinLexiconEnabledLanguages(["en"])
         let englishOnly = store.latinSuggestions(prefix: "voil", limit: 8)
         XCTAssertFalse(englishOnly.contains("voilà"), "fr OFF: \(englishOnly)")
+    }
+
+    // マニュアル目次のかな入力モード画面例(assets/hero-kana.png)を再生成する。
+    // 設定: フリック方向Apple/3×3+わ/後置修飾/émeraude/rose sakura poudré/かなガイド4方向/
+    // 修飾キーガイドoff/左下タップ=記号(⌘)。出力は tmp/ — 変更時に docs/manual/assets/ へコピーする。
+    @MainActor
+    func testRenderManualHeroScreenshotKanaMode() throws {
+        let view = KeyboardRootView(
+            onTextInput: { _ in },
+            onDeleteBackward: {},
+            onSpace: {},
+            onReturn: {},
+            onAdvanceKeyboard: {},
+            onApplyKanaPostModifier: { _, _ in .ignored },
+            onToggleParenthesesWrapper: {},
+            onSelectConversionCandidate: { _ in },
+            onCommitComposingText: {},
+            onCommitComposingTextAsKatakana: {},
+            onUpgradeRecentKanaCommitToKatakana: { false },
+            onInputModeChanged: { _ in },
+            showsNextKeyboardKey: false,
+            directionProfile: .apple,
+            kanaLayoutMode: .threeByThreePlusWa,
+            kanaModifierPlacementMode: .postfix,
+            kanaPostModifierButtonState: .kaomoji,
+            numberLayoutMode: .calculette,
+            latinLayoutMode: .flick,
+            accentPaletteRawValue: "emeraude",
+            isSystemDictionaryFallback: false,
+            keyboardBackgroundThemeRawValue: "sakura",
+            basicSymbolOrderRawValue: "ascii",
+            temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
+            spaceToastTrigger: 0,
+            returnKeySystemImageName: nil,
+            isReturnKeyEnabled: true,
+            kanaFlickGuideDisplayMode: .fourDirections,
+            latinFlickGuideDisplayMode: .fourDirections,
+            numberFlickGuideDisplayMode: .fourDirections,
+            modifierFlickGuideDisplayMode: .off,
+            keyRepeatInitialDelay: 0.5,
+            keyRepeatInterval: 0.1,
+            kanaModeSwitcherTapActionRawValue: "symbols",
+            kanaModeSwitcherRightFlickActionRawValue: "kaomoji",
+            kanaModeSwitcherUpFlickActionRawValue: "emoji",
+            kanaPostModifierEmptyTapActionRawValue: "kaomoji",
+            kanaPostModifierEmptyTapKaomojiCategoryID: "existing",
+            kanaPostModifierEmptyTapEmojiCategoryID: "0",
+            kanaPostModifierEmptyTapSymbolCategoryID: "0",
+            kanaPostModifierFlickDakutenEnabled: true,
+            landscapeCandidateSideRawValue: "left",
+            landscapeNumberPaneSideRawValue: "left",
+            landscapeLatinSuggestionModeRawValue: "sidebar",
+            shortcutVocabulary: [],
+            candidateBarModel: KeyboardCandidateBarModel(),
+            showsParenthesesWrapper: false,
+            initialSpaceToastText: nil
+        )
+        .frame(width: 402, height: 272)
+        let renderer = ImageRenderer(content: view)
+        renderer.scale = 3
+        guard let image = renderer.uiImage, let data = image.pngData() else {
+            XCTFail("render failed")
+            return
+        }
+        try data.write(to: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/manual_hero_kana.png"))
+        print("PROBE screenshot: \(image.size)")
     }
 
     private func prepareRealLMDictionary() throws {
