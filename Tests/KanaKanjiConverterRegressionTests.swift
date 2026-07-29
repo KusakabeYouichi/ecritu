@@ -5283,6 +5283,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のだろうか"))
     }
 
+    // いくつあるかも: エンジンはかな最良(LM: いくつ4779<幾つ5884+いくつ→ある観測済みで
+    // 一般機構は全文脈機能。いくつある/いくつか/いくつも 全てかな先頭)だが、keepKana が
+    // かも/か 末尾で不成立→提示層退避で 幾つあるかも が実機先頭。疑問終端(かも/かな/かと/か)
+    // 剥がし→再帰の一般則を追加(から と同型)。
+    func testRegressionRealLMIkutsuArukamoKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "いくつあるかも", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "いくつあるかも", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いくつあるかも"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いくつか"))
+        // 単独・類似パターンもかな先頭(一般機構の確認)
+        let single = converter.candidates(for: "いくつ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "いくつ", "single=\(single)")
+        let ikutsumo = converter.multiClauseCandidates(for: "いくつも", systemCandidateMode: .surface)
+        XCTAssertEqual(ikutsumo.first, "いくつも", "ikutsumo=\(ikutsumo.prefix(3))")
+    }
+
     // うち: かなが正書(ユーザ方針: うち>家 全般)。家(うち)は正当な読みだが LM
     // (家4250/家→で1685)がかな(4319/2148)を上回り 家で水を使う 等が全文脈で先頭化していた。
     // seed かな先頭+連文節 opt-in(にほん/おん と同機構)。
