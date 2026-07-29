@@ -5283,6 +5283,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のだろうか"))
     }
 
+    // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
+    // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
+    func testRegressionRealLMSonotaSupply() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let sonota = converter.candidates(for: "そのた", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(sonota.first, "その他", "sonota=\(sonota)")
+        let sonohoka = converter.candidates(for: "そのほか", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(sonohoka.first, "その他", "sonohoka=\(sonohoka)")
+    }
+
     // かこに: 賀古(人名収穫、dict rank0)が語幹先頭で 賀古に が先行。過去(wc5860/LM4741=最頻)を
     // seed 先頭に。舟子/水主/水手/水夫(かこ=船漕ぎの古語)は実在読みのため後続維持。
     func testRegressionRealLMKakoniOrdering() throws {
