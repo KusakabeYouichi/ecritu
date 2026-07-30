@@ -3656,6 +3656,7 @@
 	<dict><key>phrase</key><string>除葉</string><key>shortcut</key><string>じょよう</string></dict>
 	<dict><key>phrase</key><string>新樽</string><key>shortcut</key><string>しんだる</string></dict>
 	<dict><key>phrase</key><string>全房</string><key>shortcut</key><string>ぜんぼう</string></dict>
+	<dict><key>phrase</key><string>全房醗酵</string><key>shortcut</key><string>ぜんぼうはっこう</string></dict>
 	<dict><key>phrase</key><string>泥灰質</string><key>shortcut</key><string>でいかいしつ</string></dict>
 	<dict><key>phrase</key><string>泥灰土</string><key>shortcut</key><string>でいかいど</string></dict>
 	<dict><key>phrase</key><string>登熟期</string><key>shortcut</key><string>とうじゅくき</string></dict>
