@@ -5648,6 +5648,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "被差別部落", "multi=\(multi.prefix(4))")
     }
 
+    // かげつ: 数量詞合成(何か月/3か月/数か月)の助数詞表層は辞書順を使うため、
+    // 箇月(rank0。か月 は rank7)が先頭化していた。seed で公用文主流の か月 を先頭に。
+    func testRegressionRealLMKagetsuKagakiFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let nan = converter.candidates(for: "なんかげつ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(nan.first, "何か月", "nan=\(nan)")
+        let san = converter.candidates(for: "さんかげつ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(san.first, "3か月", "san=\(san)")
+        let suu = converter.candidates(for: "すうかげつ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(suu.first, "数か月", "suu=\(suu)")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
