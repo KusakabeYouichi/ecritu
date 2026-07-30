@@ -118,6 +118,8 @@
 	<dict><key>phrase</key><string>Safari</string><key>shortcut</key><string>さふぁり</string></dict>
 	<dict><key>phrase</key><string>TestFlight</string><key>shortcut</key><string>てすとふらいと</string></dict>
 	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
+	<dict><key>phrase</key><string>Photoshop</string><key>shortcut</key><string>ふぉとしょっぷ</string></dict>
+	<dict><key>phrase</key><string>Inkscape</string><key>shortcut</key><string>いんくすけいぷ</string></dict>
 
 	<!-- AI -->
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
