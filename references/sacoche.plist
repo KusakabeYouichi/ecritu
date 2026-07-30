@@ -474,5 +474,19 @@
 	<dict><key>phrase</key><string>タニタ</string><key>shortcut</key><string>たにた</string></dict>
 	<dict><key>phrase</key><string>TANITA</string><key>shortcut</key><string>たにた</string></dict>
 	<dict><key>phrase</key><string>ウリハムシ</string><key>shortcut</key><string>うりはむし</string></dict>
+	<!-- 実機の手動追加語彙からのフィードバック(2026-07-30、seed外13件の正式seed化) -->
+	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>あんにんどうふ</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
+	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
+	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>
+	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
+	<dict><key>phrase</key><string>タバチェ</string><key>shortcut</key><string>たぱちぇ</string></dict>
+	<dict><key>phrase</key><string>tabatière</string><key>shortcut</key><string>たぱちぇ</string></dict>
+	<dict><key>phrase</key><string>ピヤン・キュイ</string><key>shortcut</key><string>びやんきゅい</string></dict>
+	<dict><key>phrase</key><string>復号化</string><key>shortcut</key><string>ふくごうか</string></dict>
+	<dict><key>phrase</key><string>福州園</string><key>shortcut</key><string>ふくしゅうえん</string></dict>
+	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string></dict>
+	<dict><key>phrase</key><string>山田</string><key>shortcut</key><string>やまだ</string></dict>
+	<dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるべっと</string></dict>
 </array>
 </plist>
