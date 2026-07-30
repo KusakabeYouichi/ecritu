@@ -5708,6 +5708,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(suru.first, "調整する", "suru=\(suru)")
     }
 
+    // ていかいにゅう: 低介入 が未収録で 低下+移入 の誤分割が先頭だった。seed 供給。
+    func testRegressionRealLMTeikainyuSupply() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ていかいにゅう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "低介入", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ていかいにゅう", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "低介入", "multi=\(multi.prefix(4))")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
