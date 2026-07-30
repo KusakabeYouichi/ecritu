@@ -1358,8 +1358,10 @@ extension KanaKanjiConverter {
             // 文節先頭(直前=BOS)の存在動詞かな過去(あった/いた)はかな正書を優先(あったんで→
             // かな先頭)。文節先頭に限定するので 気があった/目があった/サイズが合った 等(あった の
             // 直前が が/に で prev≠BOS)は無影響=「連文節でないときだけ」というユーザ指定を満たす。
+            // かな副詞(もう/まだ)直後も文節先頭同等に扱う(もうあった/まだいた のかな正書。
+            // 気があった 等の が/に 直後は従来どおり対象外)
             if surface == reading,
-                prev == Self.multiClauseBOSMarker,
+                prev == Self.multiClauseBOSMarker || prev == "もう" || prev == "まだ",
                 Self.multiClauseClauseInitialKanaExistentialPasts.contains(reading) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }

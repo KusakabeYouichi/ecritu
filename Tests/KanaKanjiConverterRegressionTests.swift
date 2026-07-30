@@ -5763,6 +5763,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "しないことになってる"))
     }
 
+    // もうあった: かな副詞(もう/まだ)直後の存在動詞かな過去も文節先頭同等にクランプ+
+    // keepKana の ある/いる 剥がしに あった/いた を追加。気があった 等の が 直後は不変。
+    func testRegressionRealLMMouattaKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "もうあった", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "もうあった", "multi=\(multi.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "もうあった"))
+        let kigaatta = converter.multiClauseCandidates(for: "きがあった", systemCandidateMode: .surface)
+        XCTAssertFalse(kigaatta.first == "きがあった", "kigaatta=\(kigaatta.prefix(3))")
+    }
+
     // しまった: 感動詞・補助動詞のかなが正書だが、基底 しまう の辞書順(仕舞う 先行)が
     // 派生に波及し 仕舞った が先頭だった。ユーザ指定順の seed(してしまった は不変)。
     func testRegressionRealLMShimattaOrdering() throws {
