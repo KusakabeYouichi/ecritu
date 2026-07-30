@@ -5424,6 +5424,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(mesu.prefix(3)), ["メス", "雌", "召す"], "mesu=\(mesu)")
     }
 
+    // このどうがだと: 道(どう)が主読み みち の bigram(この→道/道→が)を借用して
+    // この道がだと の分断を作っていた(どうがだと 単独は 動画だと で正常=文頭 bigram なし)。
+    // bigram 借用遮断リストに 道(どう)/同(どう) を追加(銅(どう)=正当な単独名詞は不変)。
+    func testRegressionRealLMKonoDougaBigramBorrow() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "このどうがだと", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "この動画だと", "multi=\(multi.prefix(4))")
+        // 主読み側(このみち)は不変
+        let michi = converter.multiClauseCandidates(for: "このみちをいく", systemCandidateMode: .surface)
+        XCTAssertEqual(michi.first, "この道を行く", "michi=\(michi.prefix(4))")
+    }
+
     // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
     // 助数詞マップに せき=[席,隻] 追加(6確定→せき で 席 先頭、ろくせき→6席 複合も有効化)。
     func testRegressionRealLMSekiOrderingAndCounter() throws {
