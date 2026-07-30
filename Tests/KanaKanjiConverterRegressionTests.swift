@@ -5406,6 +5406,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.invalidateCandidateCache()
         let single = converter.candidates(for: "そうりょう", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(7)), ["送料", "総量", "総領", "惣領", "爽涼", "蒼龍", "蒼竜"], "single=\(single)")
+        // 助詞付きの連文節は seedOrderNounReadings opt-in(-800)で 送料が を先頭に。
+        // そうりょうの/は は 総量→の(875)/総量→は の強い観測 bigram が -800 を超えるため
+        // 総量 先頭のまま(単文節側は seed 順=送料の 先頭。総量の は技術文脈で正当のため
+        // これ以上は強制せず、選択学習に委ねる)
+        let ga = converter.multiClauseCandidates(for: "そうりょうが", systemCandidateMode: .surface)
+        XCTAssertEqual(ga.first, "送料が", "ga=\(ga.prefix(4))")
+        let no = converter.candidates(for: "そうりょうの", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(no.first, "送料の", "no=\(no)")
     }
 
     // とんかつや: とんかつ屋 は Sudachi 未収録の複合。トン+勝谷(かつや の名前収穫 wc9770)の
