@@ -32,7 +32,7 @@
 	<dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
 	<dict><key>phrase</key><string>カルナローリ</string><key>shortcut</key><string>かるなろーり</string></dict>
 	<dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>
-	<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
 	<dict><key>phrase</key><string>しな乃</string><key>shortcut</key><string>しなの</string></dict>
 	<dict><key>phrase</key><string>スパゲッティーニ</string><key>shortcut</key><string>すぱげってぃーに</string></dict>
 	<dict><key>phrase</key><string>スヰートポーヅ</string><key>shortcut</key><string>すいーとぽーづ</string></dict>
@@ -75,7 +75,7 @@
 	<dict><key>phrase</key><string>玉荷包</string><key>shortcut</key><string>ぎょっかほう</string></dict>
 	<dict><key>phrase</key><string>金環蝕</string><key>shortcut</key><string>きんかんしょく</string></dict>
 	<dict><key>phrase</key><string>金環日蝕</string><key>shortcut</key><string>きんかんにっしょく</string></dict>
-	<dict><key>phrase</key><string>空芯菜</string><key>shortcut</key><string>くうしんさい</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>空芯菜</string><key>shortcut</key><string>くうしんさい</string></dict> -->
 	<dict><key>phrase</key><string>桑田佳祐</string><key>shortcut</key><string>くわたけいすけ</string></dict>
 	<dict><key>phrase</key><string>群林堂</string><key>shortcut</key><string>ぐんりんどう</string></dict>
 	<dict><key>phrase</key><string>経世会</string><key>shortcut</key><string>けいせいかい</string></dict>
@@ -99,35 +99,35 @@
 	<dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すさき</string></dict>
 	<dict><key>phrase</key><string>醇良</string><key>shortcut</key><string>じゅんりょう</string></dict>
 	<dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>
-	<dict><key>phrase</key><string>上一之町</string><key>shortcut</key><string>かみいちのまち</string></dict>
-	<dict><key>phrase</key><string>上三之町</string><key>shortcut</key><string>かみさんのまち</string></dict>
-	<dict><key>phrase</key><string>上二之町</string><key>shortcut</key><string>かみにのまち</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>上一之町</string><key>shortcut</key><string>かみいちのまち</string></dict> -->
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>上三之町</string><key>shortcut</key><string>かみさんのまち</string></dict> -->
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>上二之町</string><key>shortcut</key><string>かみにのまち</string></dict> -->
 	<dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
 	<dict><key>phrase</key><string>正式版</string><key>shortcut</key><string>せいしきばん</string></dict>
 	<dict><key>phrase</key><string>清和会</string><key>shortcut</key><string>せいわかい</string></dict>
 	<dict><key>phrase</key><string>生香園</string><key>shortcut</key><string>せいこうえん</string></dict>
-	<dict><key>phrase</key><string>生醤油</string><key>shortcut</key><string>きじょうゆ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>生醤油</string><key>shortcut</key><string>きじょうゆ</string></dict> -->
 	<dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>
-	<dict><key>phrase</key><string>西之一色町</string><key>shortcut</key><string>にしのいっしきまち</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>西之一色町</string><key>shortcut</key><string>にしのいっしきまち</string></dict> -->
 	<dict><key>phrase</key><string>青マンゴー</string><key>shortcut</key><string>あおまんごー</string></dict>
 	<dict><key>phrase</key><string>千円札</string><key>shortcut</key><string>せんえんさつ</string></dict>
 	<dict><key>phrase</key><string>千鳥酢</string><key>shortcut</key><string>ちどりす</string></dict>
 	<dict><key>phrase</key><string>線量</string><key>shortcut</key><string>せんりょう</string></dict>
-	<dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict> -->
 	<dict><key>phrase</key><string>多頭飼い</string><key>shortcut</key><string>たとうがい</string></dict>
 	<dict><key>phrase</key><string>台南担仔麺</string><key>shortcut</key><string>たいなんたーみー</string></dict>
 	<dict><key>phrase</key><string>担仔麺</string><key>shortcut</key><string>たーみー</string></dict>
 	<dict><key>phrase</key><string>短焦点</string><key>shortcut</key><string>たんしょうてん</string></dict>
 	<dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
 	<dict><key>phrase</key><string>中山七里</string><key>shortcut</key><string>なかやましちり</string></dict>
-	<dict><key>phrase</key><string>昼光色</string><key>shortcut</key><string>ちゅうこうしょく</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>昼光色</string><key>shortcut</key><string>ちゅうこうしょく</string></dict> -->
 	<dict><key>phrase</key><string>昼白色</string><key>shortcut</key><string>ちゅうはくしょく</string></dict>
 	<dict><key>phrase</key><string>調光器</string><key>shortcut</key><string>ちょうこうき</string></dict>
 	<dict><key>phrase</key><string>超短焦点</string><key>shortcut</key><string>ちょうたんしょうてん</string></dict>
 	<dict><key>phrase</key><string>低確率</string><key>shortcut</key><string>ていかくりつ</string></dict>
 	<dict><key>phrase</key><string>電界強度</string><key>shortcut</key><string>でんかいきょうど</string></dict>
 	<dict><key>phrase</key><string>陶柿園</string><key>shortcut</key><string>とうしえん</string></dict>
-	<dict><key>phrase</key><string>独標</string><key>shortcut</key><string>どっぴょう</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>独標</string><key>shortcut</key><string>どっぴょう</string></dict> -->
 	<dict><key>phrase</key><string>南極老人星</string><key>shortcut</key><string>なんきょくろうじんせい</string></dict>
 	<dict><key>phrase</key><string>二千円札</string><key>shortcut</key><string>にせんえんさつ</string></dict>
 	<dict><key>phrase</key><string>乃が美</string><key>shortcut</key><string>のがみ</string></dict>
@@ -143,10 +143,10 @@
 	<dict><key>phrase</key><string>宝隆軒</string><key>shortcut</key><string>ほうりゅうけん</string></dict>
 	<dict><key>phrase</key><string>防湿庫</string><key>shortcut</key><string>ぼうしつこ</string></dict>
 	<dict><key>phrase</key><string>柳月</string><key>shortcut</key><string>りゅうげつ</string></dict>
-	<dict><key>phrase</key><string>油淋鶏</string><key>shortcut</key><string>ゆーりんちー</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>油淋鶏</string><key>shortcut</key><string>ゆーりんちー</string></dict> -->
 	<dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いておん</string></dict>
 	<dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
-	<dict><key>phrase</key><string>魯肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>魯肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict> -->
 	<dict><key>phrase</key><string>滷肉飯</string><key>shortcut</key><string>るーろーふぁん</string></dict>
 	<dict><key>phrase</key><string>蜀郷香</string><key>shortcut</key><string>しゅうしゃんしゃん</string></dict>
 	<dict><key>phrase</key><string>趙楊</string><key>shortcut</key><string>ちょうよう</string></dict>
@@ -157,10 +157,10 @@
 	<dict><key>phrase</key><string>イナミ</string><key>shortcut</key><string>いなみ</string></dict>
 	<dict><key>phrase</key><string>登録番号</string><key>shortcut</key><string>とうろくばんごう</string></dict>
 	<dict><key>phrase</key><string>オニョン</string><key>shortcut</key><string>おにょん</string></dict>
-	<dict><key>phrase</key><string>オリヴ</string><key>shortcut</key><string>おりゔ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>オリヴ</string><key>shortcut</key><string>おりゔ</string></dict> -->
 	<dict><key>phrase</key><string>苦椒醤</string><key>shortcut</key><string>こちゅじゃん</string></dict>
 	<dict><key>phrase</key><string>고추장</string><key>shortcut</key><string>こちゅじゃん</string></dict>
-	<dict><key>phrase</key><string>モクテル</string><key>shortcut</key><string>もくてる</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>モクテル</string><key>shortcut</key><string>もくてる</string></dict> -->
 	<dict><key>phrase</key><string>ノンアル</string><key>shortcut</key><string>のんある</string></dict>
 	<dict><key>phrase</key><string>何箇所</string><key>shortcut</key><string>なんかしょ</string></dict>
 	<dict><key>phrase</key><string>扁桃体</string><key>shortcut</key><string>へんとうたい</string></dict>
@@ -169,23 +169,23 @@
 	<dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
 	<!-- パン -->
     <dict><key>phrase</key><string>ベイグル</string><key>shortcut</key><string>べいぐる</string></dict>
-    <dict><key>phrase</key><string>クロワッサン</string><key>shortcut</key><string>くろわっさん</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>クロワッサン</string><key>shortcut</key><string>くろわっさん</string></dict> -->
     <dict><key>phrase</key><string>パン・ド・ミー</string><key>shortcut</key><string>ぱんどみー</string></dict>
-    <dict><key>phrase</key><string>バゲット</string><key>shortcut</key><string>ばげっと</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>バゲット</string><key>shortcut</key><string>ばげっと</string></dict> -->
     <dict><key>phrase</key><string>バタール</string><key>shortcut</key><string>ばたーる</string></dict>
-    <dict><key>phrase</key><string>パリジャン</string><key>shortcut</key><string>ぱりじゃん</string></dict>
-    <dict><key>phrase</key><string>フィセル</string><key>shortcut</key><string>ふぃせる</string></dict>
-    <dict><key>phrase</key><string>エピ</string><key>shortcut</key><string>えぴ</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>パリジャン</string><key>shortcut</key><string>ぱりじゃん</string></dict> -->
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>フィセル</string><key>shortcut</key><string>ふぃせる</string></dict> -->
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>エピ</string><key>shortcut</key><string>えぴ</string></dict> -->
     <dict><key>phrase</key><string>クッペ</string><key>shortcut</key><string>くっぺ</string></dict>
-    <dict><key>phrase</key><string>シャンピニオン</string><key>shortcut</key><string>しゃんぴにおん</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>シャンピニオン</string><key>shortcut</key><string>しゃんぴにおん</string></dict> -->
     <dict><key>phrase</key><string>タバチェ</string><key>shortcut</key><string>たばちぇ</string></dict>
     <dict><key>phrase</key><string>ファンデュ</string><key>shortcut</key><string>ふぁんでゅ</string></dict>
     <dict><key>phrase</key><string>パン・ド・カンパーニュ</string><key>shortcut</key><string>ぱんどかんぱーにゅ</string></dict>
     <dict><key>phrase</key><string>パン・コンプレ</string><key>shortcut</key><string>ぱんこんぷれ</string></dict>
     <dict><key>phrase</key><string>パン・オ・ルヴァン</string><key>shortcut</key><string>ぱんおるゔぁん</string></dict>
-    <dict><key>phrase</key><string>ブール</string><key>shortcut</key><string>ぶーる</string></dict>
-    <dict><key>phrase</key><string>クラスト</string><key>shortcut</key><string>くらすと</string></dict>
-    <dict><key>phrase</key><string>クープ</string><key>shortcut</key><string>くーぷ</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ブール</string><key>shortcut</key><string>ぶーる</string></dict> -->
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>クラスト</string><key>shortcut</key><string>くらすと</string></dict> -->
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>クープ</string><key>shortcut</key><string>くーぷ</string></dict> -->
     <dict><key>phrase</key><string>ルヴァン</string><key>shortcut</key><string>るゔぁん</string></dict>
     <dict><key>phrase</key><string>bagel</string><key>shortcut</key><string>べいぐる</string></dict>
     <dict><key>phrase</key><string>croissant</string><key>shortcut</key><string>くろわっさん</string></dict>
@@ -210,13 +210,13 @@
     <dict><key>phrase</key><string>エシレ</string><key>shortcut</key><string>えしれ</string></dict>
     <dict><key>phrase</key><string>イズニー</string><key>shortcut</key><string>いずにー</string></dict>
     <dict><key>phrase</key><string>レスキュール</string><key>shortcut</key><string>れすきゅーる</string></dict>
-    <dict><key>phrase</key><string>ブレス</string><key>shortcut</key><string>ぶれす</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ブレス</string><key>shortcut</key><string>ぶれす</string></dict> -->
     <dict><key>phrase</key><string>Échiré</string><key>shortcut</key><string>えしれ</string></dict>
     <dict><key>phrase</key><string>Isigny</string><key>shortcut</key><string>いずにー</string></dict>
     <dict><key>phrase</key><string>Lescure</string><key>shortcut</key><string>れすきゅーる</string></dict>
     <dict><key>phrase</key><string>Bresse</string><key>shortcut</key><string>ぶれす</string></dict>
-    <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>
-    <dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict> -->
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict> -->
     <dict><key>phrase</key><string>ケイマン</string><key>shortcut</key><string>けいまん</string></dict>
     <dict><key>phrase</key><string>ボクスター</string><key>shortcut</key><string>ぼくすたー</string></dict>
     <dict><key>phrase</key><string>カイエン</string><key>shortcut</key><string>かいえん</string></dict>
@@ -270,7 +270,7 @@
 	<dict><key>phrase</key><string>ナチュラル・ワイン</string><key>shortcut</key><string>なちゅらるわいん</string></dict>
 	<dict><key>phrase</key><string>コンヴェンショナル</string><key>shortcut</key><string>こんゔぇんしょなる</string></dict>
 	<dict><key>phrase</key><string>戦死者</string><key>shortcut</key><string>せんししゃ</string></dict>
-	<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict> -->
 	<dict><key>phrase</key><string>ランティーユ</string><key>shortcut</key><string>らんてぃーゆ</string></dict>
 	<dict><key>phrase</key><string>コインチェック</string><key>shortcut</key><string>こいんちぇっく</string></dict>
 	<dict><key>phrase</key><string>Coincheck</string><key>shortcut</key><string>こいんちぇっく</string></dict>
@@ -282,12 +282,12 @@
 	<dict><key>phrase</key><string>椿山荘</string><key>shortcut</key><string>ちんざんそう</string></dict>
 	<dict><key>phrase</key><string>南高梅</string><key>shortcut</key><string>なんこうばい</string></dict>
 	<dict><key>phrase</key><string>一定数</string><key>shortcut</key><string>いっていすう</string></dict>
-	<dict><key>phrase</key><string>一定時間</string><key>shortcut</key><string>いっていじかん</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>一定時間</string><key>shortcut</key><string>いっていじかん</string></dict> -->
 	<dict><key>phrase</key><string>明治維新</string><key>shortcut</key><string>めいじいしん</string></dict>
 	<dict><key>phrase</key><string>明治時代</string><key>shortcut</key><string>めいじじだい</string></dict>
 	<dict><key>phrase</key><string>江戸時代</string><key>shortcut</key><string>えどじだい</string></dict>
 	<dict><key>phrase</key><string>鎌倉時代</string><key>shortcut</key><string>かまくらじだい</string></dict>
-	<dict><key>phrase</key><string>室町時代</string><key>shortcut</key><string>むろまちじだい</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>室町時代</string><key>shortcut</key><string>むろまちじだい</string></dict> -->
 	<dict><key>phrase</key><string>平安時代</string><key>shortcut</key><string>へいあんじだい</string></dict>
 	<dict><key>phrase</key><string>電球光</string><key>shortcut</key><string>でんきゅうこう</string></dict>
 	<dict><key>phrase</key><string>赤とうがらし</string><key>shortcut</key><string>あかとうがらし</string></dict>
@@ -301,7 +301,7 @@
 	<dict><key>phrase</key><string>空冷式</string><key>shortcut</key><string>くうれいしき</string></dict>
 	<dict><key>phrase</key><string>製造機</string><key>shortcut</key><string>せいぞうき</string></dict>
     <dict><key>phrase</key><string>デヴァイス</string><key>shortcut</key><string>でゔぁいす</string></dict>
-    <dict><key>phrase</key><string>ナンプラー</string><key>shortcut</key><string>なんぷらー</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ナンプラー</string><key>shortcut</key><string>なんぷらー</string></dict> -->
     <dict><key>phrase</key><string>グランメゾン</string><key>shortcut</key><string>ぐらんめぞん</string></dict>
     <dict><key>phrase</key><string>ガウレ</string><key>shortcut</key><string>がうれ</string></dict>
     <dict><key>phrase</key><string>秘密結社</string><key>shortcut</key><string>ひみつけっしゃ</string></dict>
@@ -319,17 +319,17 @@
     <dict><key>phrase</key><string>cous cous</string><key>shortcut</key><string>くすくす</string></dict>
     <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict>
     <dict><key>phrase</key><string>父方</string><key>shortcut</key><string>ちちがた</string></dict>
-    <dict><key>phrase</key><string>ロー</string><key>shortcut</key><string>ろー</string></dict>
-    <dict><key>phrase</key><string>ブルー</string><key>shortcut</key><string>ぶるー</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ロー</string><key>shortcut</key><string>ろー</string></dict> -->
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ブルー</string><key>shortcut</key><string>ぶるー</string></dict> -->
     <dict><key>phrase</key><string>ブルー・レア</string><key>shortcut</key><string>ぶるーれあ</string></dict>
-    <dict><key>phrase</key><string>レア</string><key>shortcut</key><string>れあ</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>レア</string><key>shortcut</key><string>れあ</string></dict> -->
     <dict><key>phrase</key><string>ミディアム・レア</string><key>shortcut</key><string>みでぃあむれあ</string></dict>
-    <dict><key>phrase</key><string>ミディアム</string><key>shortcut</key><string>みでぃあむ</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ミディアム</string><key>shortcut</key><string>みでぃあむ</string></dict> -->
     <dict><key>phrase</key><string>ミディアム・ウェル</string><key>shortcut</key><string>みでぃあむうぇる</string></dict>
-    <dict><key>phrase</key><string>ウェルダン</string><key>shortcut</key><string>うぇるだん</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ウェルダン</string><key>shortcut</key><string>うぇるだん</string></dict> -->
     <dict><key>phrase</key><string>ヴェリー・ウェルダン</string><key>shortcut</key><string>ゔぇりーうぇるだん</string></dict>
     <dict><key>phrase</key><string>raw</string><key>shortcut</key><string>ろー</string></dict>
-    <dict><key>phrase</key><string>ローマ</string><key>shortcut</key><string>ろーま</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ローマ</string><key>shortcut</key><string>ろーま</string></dict> -->
     <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>
     <dict><key>phrase</key><string>blue</string><key>shortcut</key><string>ぶるー</string></dict>
     <dict><key>phrase</key><string>blue rare</string><key>shortcut</key><string>ぶるーれあ</string></dict>
@@ -367,7 +367,7 @@
     <dict><key>phrase</key><string>高音域</string><key>shortcut</key><string>こうおんいき</string></dict>
     <dict><key>phrase</key><string>中音域</string><key>shortcut</key><string>ちゅうおんいき</string></dict>
     <dict><key>phrase</key><string>低音域</string><key>shortcut</key><string>ていおんいき</string></dict>
-    <dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるゔぇっと</string></dict>
+    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるゔぇっと</string></dict> -->
     <dict><key>phrase</key><string>オランダ語</string><key>shortcut</key><string>おらんだご</string></dict>
     <dict><key>phrase</key><string>作業台</string><key>shortcut</key><string>さぎょうだい</string></dict>
     <dict><key>phrase</key><string>一粒万倍日</string><key>shortcut</key><string>いちりゅうまんばいび</string></dict>
@@ -380,12 +380,12 @@
 	<dict><key>phrase</key><string>酸辣湯麺</string><key>shortcut</key><string>さんらーたんめん</string></dict>
 	<dict><key>phrase</key><string>酸辣湯麺</string><key>shortcut</key><string>すーらーたんめん</string></dict>
 	<dict><key>phrase</key><string>饅頭</string><key>shortcut</key><string>まんとう</string></dict>
-	<dict><key>phrase</key><string>包子</string><key>shortcut</key><string>ぱおず</string></dict>
-	<dict><key>phrase</key><string>餃子</string><key>shortcut</key><string>ぎょーざ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>包子</string><key>shortcut</key><string>ぱおず</string></dict> -->
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>餃子</string><key>shortcut</key><string>ぎょーざ</string></dict> -->
 	<dict><key>phrase</key><string>餃子</string><key>shortcut</key><string>ぎょうざ</string></dict>
 	<dict><key>phrase</key><string>餃子</string><key>shortcut</key><string>ちゃおず</string></dict>
 	<dict><key>phrase</key><string>刀削麺</string><key>shortcut</key><string>だおしゃおみえん</string></dict>
-	<dict><key>phrase</key><string>刀削麺</string><key>shortcut</key><string>とうしょうめん</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>刀削麺</string><key>shortcut</key><string>とうしょうめん</string></dict> -->
 	<dict><key>phrase</key><string>杏仁羹</string><key>shortcut</key><string>きょうにんかん</string></dict>
 	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>きょうにんどーふ</string></dict>
 	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>きょうにんどうふ</string></dict>
@@ -410,10 +410,10 @@
 	<dict><key>phrase</key><string>烧卖</string><key>shortcut</key><string>しゃおまい</string></dict>
 	<dict><key>phrase</key><string>焼売</string><key>shortcut</key><string>しゅうまい</string></dict>
 	<dict><key>phrase</key><string>八宝菜</string><key>shortcut</key><string>ぱーぱおつぁい</string></dict>
-	<dict><key>phrase</key><string>八宝菜</string><key>shortcut</key><string>はっぽうさい</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>八宝菜</string><key>shortcut</key><string>はっぽうさい</string></dict> -->
 	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しゃおろんばお</string></dict>
 	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽー</string></dict>
-	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽう</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽう</string></dict> -->
 	<dict><key>phrase</key><string>上海炒麺</string><key>shortcut</key><string>しゃんはいちゃうみん</string></dict>
 	<dict><key>phrase</key><string>揚州炒飯</string><key>shortcut</key><string>やんじょうちゃおふぁん</string></dict>
 	<dict><key>phrase</key><string>清蒸大闸蟹</string><key>shortcut</key><string>ちんじょんだじゃしぇ</string></dict>
@@ -426,8 +426,8 @@
 	<dict><key>phrase</key><string>袱紗仕立て</string><key>shortcut</key><string>ふくさじたて</string></dict>
 	<dict><key>phrase</key><string>ブルグル</string><key>shortcut</key><string>ぶるぐる</string></dict>
 	<dict><key>phrase</key><string>ブルグア</string><key>shortcut</key><string>ぶるぐあ</string></dict>
-	<dict><key>phrase</key><string>チャパティー</string><key>shortcut</key><string>ちゃぱてぃー</string></dict>
-	<dict><key>phrase</key><string>コーデュロイ</string><key>shortcut</key><string>こーでゅろい</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>チャパティー</string><key>shortcut</key><string>ちゃぱてぃー</string></dict> -->
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>コーデュロイ</string><key>shortcut</key><string>こーでゅろい</string></dict> -->
 	<dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
 	<dict><key>phrase</key><string>ヴェルヴェッティーン</string><key>shortcut</key><string>ゔぇるゔぇってぃーん</string></dict>
 	<dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict>
@@ -443,15 +443,15 @@
 	<dict><key>phrase</key><string>プロフェショナル</string><key>shortcut</key><string>ぷろふぇしょなる</string></dict>
 	<dict><key>phrase</key><string>那覇市内</string><key>shortcut</key><string>なはしない</string></dict>
 
-	<dict><key>phrase</key><string>ラザーニャ</string><key>shortcut</key><string>らざーにゃ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ラザーニャ</string><key>shortcut</key><string>らざーにゃ</string></dict> -->
 	<dict><key>phrase</key><string>リングイネ</string><key>shortcut</key><string>りんぐいね</string></dict>
 	<dict><key>phrase</key><string>カペッリーニ</string><key>shortcut</key><string>かぺっりーに</string></dict>
 	<dict><key>phrase</key><string>フェデリーニ</string><key>shortcut</key><string>ふぇでりーに</string></dict>
-	<dict><key>phrase</key><string>スパゲッティ</string><key>shortcut</key><string>すぱげってぃ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>スパゲッティ</string><key>shortcut</key><string>すぱげってぃ</string></dict> -->
 	<dict><key>phrase</key><string>ヴェルミチェッリ</string><key>shortcut</key><string>ゔぇるみちぇっり</string></dict>
 	<dict><key>phrase</key><string>キタッラ</string><key>shortcut</key><string>きたっら</string></dict>
-	<dict><key>phrase</key><string>ブカティーニ</string><key>shortcut</key><string>ぶかてぃーに</string></dict>
-	<dict><key>phrase</key><string>ミッレ</string><key>shortcut</key><string>みっれ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ブカティーニ</string><key>shortcut</key><string>ぶかてぃーに</string></dict> -->
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ミッレ</string><key>shortcut</key><string>みっれ</string></dict> -->
 	<dict><key>phrase</key><string>フジッリ</string><key>shortcut</key><string>ふじっり</string></dict>
 	<dict><key>phrase</key><string>Lasagna</string><key>shortcut</key><string>らざーにゃ</string></dict>
 	<dict><key>phrase</key><string>Linguine</string><key>shortcut</key><string>りんぐいね</string></dict>
@@ -475,16 +475,16 @@
 	<dict><key>phrase</key><string>TANITA</string><key>shortcut</key><string>たにた</string></dict>
 	<dict><key>phrase</key><string>ウリハムシ</string><key>shortcut</key><string>うりはむし</string></dict>
 	<!-- 実機の手動追加語彙からのフィードバック(2026-07-30、seed外13件の正式seed化) -->
-	<dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>あんにんどうふ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>杏仁豆腐</string><key>shortcut</key><string>あんにんどうふ</string></dict> -->
 	<dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>
-	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict> -->
 	<dict><key>phrase</key><string>タバチェ</string><key>shortcut</key><string>たぱちぇ</string></dict>
 	<dict><key>phrase</key><string>tabatière</string><key>shortcut</key><string>たぱちぇ</string></dict>
 	<dict><key>phrase</key><string>ピヤン・キュイ</string><key>shortcut</key><string>びやんきゅい</string></dict>
 	<dict><key>phrase</key><string>復号化</string><key>shortcut</key><string>ふくごうか</string></dict>
-	<dict><key>phrase</key><string>福州園</string><key>shortcut</key><string>ふくしゅうえん</string></dict>
-	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string></dict>
-	<dict><key>phrase</key><string>山田</string><key>shortcut</key><string>やまだ</string></dict>
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>福州園</string><key>shortcut</key><string>ふくしゅうえん</string></dict> -->
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string></dict> -->
+	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>山田</string><key>shortcut</key><string>やまだ</string></dict> -->
 	<dict><key>phrase</key><string>ヴェルヴェット</string><key>shortcut</key><string>ゔぇるべっと</string></dict>
 </array>
 </plist>
