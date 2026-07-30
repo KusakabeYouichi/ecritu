@@ -113,7 +113,7 @@
 	<dict><key>phrase</key><string>千円札</string><key>shortcut</key><string>せんえんさつ</string></dict>
 	<dict><key>phrase</key><string>千鳥酢</string><key>shortcut</key><string>ちどりす</string></dict>
 	<dict><key>phrase</key><string>線量</string><key>shortcut</key><string>せんりょう</string></dict>
-	<!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict> -->
+	<dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>
 	<dict><key>phrase</key><string>多頭飼い</string><key>shortcut</key><string>たとうがい</string></dict>
 	<dict><key>phrase</key><string>台南担仔麺</string><key>shortcut</key><string>たいなんたーみー</string></dict>
 	<dict><key>phrase</key><string>担仔麺</string><key>shortcut</key><string>たーみー</string></dict>
@@ -184,7 +184,7 @@
     <dict><key>phrase</key><string>パン・コンプレ</string><key>shortcut</key><string>ぱんこんぷれ</string></dict>
     <dict><key>phrase</key><string>パン・オ・ルヴァン</string><key>shortcut</key><string>ぱんおるゔぁん</string></dict>
     <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>ブール</string><key>shortcut</key><string>ぶーる</string></dict> -->
-    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>クラスト</string><key>shortcut</key><string>くらすと</string></dict> -->
+    <dict><key>phrase</key><string>クラスト</string><key>shortcut</key><string>くらすと</string></dict>
     <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>クープ</string><key>shortcut</key><string>くーぷ</string></dict> -->
     <dict><key>phrase</key><string>ルヴァン</string><key>shortcut</key><string>るゔぁん</string></dict>
     <dict><key>phrase</key><string>bagel</string><key>shortcut</key><string>べいぐる</string></dict>
