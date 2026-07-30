@@ -5466,15 +5466,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるはず"))
     }
 
-    // さかえまちのかいじょう: 栄町のか以上(のか+以上 分割)が の+会場 に勝っていた報告。
-    // 読み跨ぎ unigram 借用の一般遮断(2386)で解消済み — 回帰テストとして固定。
+    // さかえまちのかいじょう: 栄町のか以上(のか+以上 分割)が の+会場 に勝っていた。
+    // clean 状態は 2386(読み跨ぎ遮断)で解消済みだが、実機は misc curated のか(床1500)が
+    // の+か を激安化して再現(ろー/こうこ と同じ短curated断片型)。跨ぎ常用語判定の接頭に
+    // の を追加し、のか の中の の+かいじょう(会場)を検出して床外し。文末の のか(行くのか)は
+    // 跨ぐ先が無く床維持。
     func testRegressionRealLMSakaemachiKaijou() throws {
         try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "のか", candidate: "のか") // misc curated 相当
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
         let multi = converter.multiClauseCandidates(for: "さかえまちのかいじょう", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "栄町の会場", "multi=\(multi.prefix(4))")
         XCTAssertFalse(multi.contains(where: { $0.contains("か以上") }), "multi=\(multi.prefix(4))")
+        // 文末の のか(curated の正当用途)は不変
+        let ikunoka = converter.multiClauseCandidates(for: "なんでいくのか", systemCandidateMode: .surface)
+        XCTAssertTrue(ikunoka.first?.hasSuffix("のか") ?? false, "ikunoka=\(ikunoka.prefix(4))")
     }
 
     // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
