@@ -5450,6 +5450,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるはず"))
     }
 
+    // さかえまちのかいじょう: 栄町のか以上(のか+以上 分割)が の+会場 に勝っていた報告。
+    // 読み跨ぎ unigram 借用の一般遮断(2386)で解消済み — 回帰テストとして固定。
+    func testRegressionRealLMSakaemachiKaijou() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "さかえまちのかいじょう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "栄町の会場", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.contains(where: { $0.contains("か以上") }), "multi=\(multi.prefix(4))")
+    }
+
     // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
     // 助数詞マップに せき=[席,隻] 追加(6確定→せき で 席 先頭、ろくせき→6席 複合も有効化)。
     func testRegressionRealLMSekiOrderingAndCounter() throws {
