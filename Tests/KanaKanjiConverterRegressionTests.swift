@@ -5732,6 +5732,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "これに対し", "multi=\(multi.prefix(4))")
     }
 
+    // はやってる: 流行ってる を文節先頭の第一候補に(かな識別/実機の は+やる系 分割より前)。
+    func testRegressionRealLMHayatteruOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "はやってる", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "流行ってる", "single=\(single)")
+    }
+
     // しまった: 感動詞・補助動詞のかなが正書だが、基底 しまう の辞書順(仕舞う 先行)が
     // 派生に波及し 仕舞った が先頭だった。ユーザ指定順の seed(してしまった は不変)。
     func testRegressionRealLMShimattaOrdering() throws {
