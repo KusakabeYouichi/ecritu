@@ -5662,6 +5662,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(suu.first, "数か月", "suu=\(suu)")
     }
 
+    // えんさつ: 辞書未収録。助数詞マップに えんさつ=[円札] を追加(なんえんさつ→何円札/
+    // 数字文脈ブースト/算用合成)し、紙幣の通称(漢数字)は seed で先頭固定。
+    // sacoche の個別4件(千円札/二千円札/五千円札/一万円札)は撤去。
+    func testRegressionRealLMEnsatsuCounter() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        for (r, expected) in [("せんえんさつ", "千円札"), ("にせんえんさつ", "二千円札"),
+                              ("ごせんえんさつ", "五千円札"), ("いちまんえんさつ", "一万円札")] {
+            let single = converter.candidates(for: r, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "r=\(r) single=\(single)")
+        }
+        let nan = converter.multiClauseCandidates(for: "なんえんさつ", systemCandidateMode: .surface)
+        XCTAssertEqual(nan.first, "何円札", "nan=\(nan.prefix(3))")
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["猿さつ", "円札"], reading: "えんさつ", precedingCharacter: "0")
+        XCTAssertEqual(boosted.first, "円札")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
