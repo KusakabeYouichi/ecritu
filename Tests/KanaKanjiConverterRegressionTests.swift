@@ -5396,6 +5396,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ときどき"))
     }
 
+    // それぞれの: 其々/其其/夫夫(基底 word_cost 6684 同値)がかな(7654/LM4329=最頻)より
+    // 先頭だった。seed かな先頭、合成(それぞれの)にも語幹順で波及。
+    func testRegressionRealLMSorezoreKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "それぞれ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["それぞれ", "其々"], "single=\(single)")
+        let sorezoreNo = converter.candidates(for: "それぞれの", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(sorezoreNo.first, "それぞれの", "sorezoreNo=\(sorezoreNo)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "それぞれの"))
+        let multi = converter.multiClauseCandidates(for: "それぞれのいけん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "それぞれの意見", "multi=\(multi.prefix(4))")
+    }
+
     // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
     // 助数詞マップに せき=[席,隻] 追加(6確定→せき で 席 先頭、ろくせき→6席 複合も有効化)。
     func testRegressionRealLMSekiOrderingAndCounter() throws {
