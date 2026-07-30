@@ -5438,6 +5438,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(michi.first, "この道を行く", "michi=\(michi.prefix(4))")
     }
 
+    // もっとあるはず: エンジンはかな最良だが keepKana=false で もっとある筈 が実機先頭。
+    // はず を形式名詞リストへ(筈 は現代ではほぼかな正書。述語直後の漢字ペナルティも効く)。
+    func testRegressionRealLMAruhazuKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "もっとあるはず", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "もっとあるはず", "multi=\(multi.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "もっとあるはず"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるはず"))
+    }
+
     // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
     // 助数詞マップに せき=[席,隻] 追加(6確定→せき で 席 先頭、ろくせき→6席 複合も有効化)。
     func testRegressionRealLMSekiOrderingAndCounter() throws {
