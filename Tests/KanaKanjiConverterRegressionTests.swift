@@ -5380,6 +5380,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+
+
+
+
+
+
+    // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
+    // 助数詞マップに せき=[席,隻] 追加(6確定→せき で 席 先頭、ろくせき→6席 複合も有効化)。
+    func testRegressionRealLMSekiOrderingAndCounter() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "せき", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(6)), ["席", "関", "咳", "堰", "責", "籍"], "single=\(single)")
+        XCTAssertFalse(single.prefix(8).contains("せき"), "single=\(single)")
+        // 直前確定が数字 → 席 が先頭(隻=船舶の助数詞は2番手)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            single, reading: "せき", precedingCharacter: "6")
+        XCTAssertEqual(boosted.first, "席", "boosted=\(boosted.prefix(4))")
+        // 数字+せき の複合(ろくせき→6席)
+        let rokuseki = converter.candidates(for: "ろくせき", limit: 10, systemCandidateMode: .surface)
+        XCTAssertTrue(rokuseki.contains("6席"), "rokuseki=\(rokuseki)")
+    }
+
     // 読み跨ぎ unigram 借用の一般遮断: LM unigram は表層キーで読みを持たず、レア読みが
     // 主読みの実績にタダ乗りしていた。この読みの word_cost − 全読み最安 ≥2500 なら
     // unigram を信用せず word_cost を下限に(読み3字以上=既存短span床の免除穴)。
