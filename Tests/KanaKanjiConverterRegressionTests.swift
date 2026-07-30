@@ -5732,6 +5732,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "これに対し", "multi=\(multi.prefix(4))")
     }
 
+    // しまった: 感動詞・補助動詞のかなが正書だが、基底 しまう の辞書順(仕舞う 先行)が
+    // 派生に波及し 仕舞った が先頭だった。ユーザ指定順の seed(してしまった は不変)。
+    func testRegressionRealLMShimattaOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "しまった", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["しまった", "閉まった", "締った"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "してしまった", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "してしまった", "multi=\(multi.prefix(3))")
+    }
+
+
+
+
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
