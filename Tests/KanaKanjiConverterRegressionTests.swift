@@ -5380,6 +5380,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+    // みて: かな識別先頭+文語命令形(充て/満て=満つ/充つ の五段つ命令形。充て は あて 用途の
+    // LM6266 を読み跨ぎ借用)が 見て より前に浮上していた。seed で 見-族をユーザ指定順に固定。
+    func testRegressionRealLMMiteOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "みて", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(5)), ["見て", "観て", "診て", "看て", "視て"], "single=\(single)")
+        XCTAssertFalse(single.prefix(8).contains("充て"), "single=\(single)")
+        XCTAssertFalse(single.prefix(8).contains("満て"), "single=\(single)")
+        XCTAssertFalse(single.prefix(8).contains("みて"), "single=\(single)")
+        // 合成(みてくれ 等)にも基底順で波及
+        let multi = converter.multiClauseCandidates(for: "しゃしんをみて", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "写真を見て", "multi=\(multi.prefix(4))")
+    }
+
     // これやすい: 活用合成(ら抜き基底 これる)の最安が旧字体 來れる(wc9641)で
     // 來れやすい が先頭だった。來れる は suppr(來 の人名は別読みで無傷)、seed
     // これる=[これる, 来れる] で これ 系を強く、ユーザ第一希望の これ安い(指示詞+形容詞)は
