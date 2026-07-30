@@ -5424,6 +5424,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(mesu.prefix(3)), ["メス", "雌", "召す"], "mesu=\(mesu)")
     }
 
+    // ちがうくに: ジャンク辞書エントリ 違うい(ちがうい、adjective-i収穫ミス)の く形派生
+    // 違うく(ちがうく)+に が 違う+国(11659<12505)を逆転し、別分節のため変種にも 国 が
+    // 出なかった。違うい を誤エントリ suppr(危うい/ものうい は正当な Xうい 形容詞で無傷)。
+    func testRegressionRealLMChigauKuniOrdering() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["ちがうい": ["違うい"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "ちがうくに", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "違う国", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(multi.contains("違う国"), "multi=\(multi.prefix(4))")
+        // 正当な Xうい 形容詞は無傷
+        let ayaui = converter.candidates(for: "あやうく", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(ayaui.first, "危うく", "ayaui=\(ayaui)")
+    }
+
     // このどうがだと: 道(どう)が主読み みち の bigram(この→道/道→が)を借用して
     // この道がだと の分断を作っていた(どうがだと 単独は 動画だと で正常=文頭 bigram なし)。
     // bigram 借用遮断リストに 道(どう)/同(どう) を追加(銅(どう)=正当な単独名詞は不変)。
