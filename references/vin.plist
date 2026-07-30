@@ -3,6 +3,9 @@
 <plist version="1.0">
 <array>
 	<!-- AOC名や地名 -->
+	<dict><key>phrase</key><string>La Romanée</string><key>shortcut</key><string>らろまね</string></dict>
+	<dict><key>phrase</key><string>La Tâche</string><key>shortcut</key><string>らたーしゅ</string></dict>
+	<dict><key>phrase</key><string>Ladoix</string><key>shortcut</key><string>らどわ</string></dict>
 	<dict><key>phrase</key><string>Vouvray Pétillant</string><key>shortcut</key><string>ぶーぶれぺてぃやん</string></dict>
 	<dict><key>phrase</key><string>Echezeaux</string><key>shortcut</key><string>えしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇいえしぇぞー</string></dict>
