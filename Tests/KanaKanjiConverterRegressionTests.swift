@@ -5386,6 +5386,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+    // ときどき: 副詞のかな正書(ユーザ方針)。時々 が基底 word_cost 順で先頭だった。
+    func testRegressionRealLMTokidokiKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ときどき", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ときどき", "時々"], "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ときどき"))
+    }
+
     // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
     // 助数詞マップに せき=[席,隻] 追加(6確定→せき で 席 先頭、ろくせき→6席 複合も有効化)。
     func testRegressionRealLMSekiOrderingAndCounter() throws {
