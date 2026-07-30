@@ -63,6 +63,8 @@
 	<dict><key>phrase</key><string>仕方ない</string><key>shortcut</key><string>しかたない</string><key>pos</key><string>形容詞</string></dict>
 	<!-- 被差別: Sudachi core/LM とも無い完全供給欠落(単文節は seed)。連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため curated 化(被差別部落 等) -->
 	<dict><key>phrase</key><string>被差別</string><key>shortcut</key><string>ひさべつ</string><key>pos</key><string>名詞</string></dict>
+	<!-- とんかつ屋: Sudachi 未収録の複合。連文節で トン+勝谷(かつや の名前収穫)の分割に負けるため curated 化(単文節は seed でも供給) -->
+	<dict><key>phrase</key><string>とんかつ屋</string><key>shortcut</key><string>とんかつや</string><key>pos</key><string>名詞</string></dict>
 	<!-- 描く は Sudachi に えがく 読みのみで かく 読みが未収録。かけば→描けば 等の活用に必要 -->
 	<dict><key>phrase</key><string>描く</string><key>shortcut</key><string>かく</string><key>pos</key><string>五段</string></dict>
 	<!-- 複合動詞「V連用+抜く」は Sudachi にほぼ収録が無く(たえぬく/やりぬく/かちぬく/いきぬく 全滅)、たえぬいた が た江縫た 等の断片になる。pos五段で活用一括網羅 -->
