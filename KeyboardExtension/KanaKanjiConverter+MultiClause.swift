@@ -179,6 +179,12 @@ extension KanaKanjiConverter {
         // 空(から=Wikipediaで文末頻出)に負ける じゃない空 対策
         "から", "ので"]
 
+    // 文末の そう(推量・指示: ほとんどそう/たぶんそう)はかなが正書。層/僧/草(全漢字)が
+    // EOS で勝つのを防ぐ。multiClauseFinalParticleReadings に入れると最長一致ボーナスや
+    // 変種の漢字ブロックまで付いてきて に沿う(動詞)が変種からも消えるため、EOS の
+    // 全漢字表層減点だけを per-reading で適用する(沿う/添う は う 含みで対象外)。
+    static let multiClauseSentenceFinalAllKanjiPenaltyReadings: Set<String> = ["そう"]
+
     // 敬称の読み。数字の直後以外(=名詞/人名の後)では さん→山/三/桟 等の漢字化は
     // 接尾語にならない(名前+さん=かな敬称 が正書)ので、漢字表層に減点する。
     // 数字の後(十三/二十三 等)は正当な 三 なので免除する。
@@ -219,12 +225,16 @@ extension KanaKanjiConverter {
     // て形直後の授受補助動詞(〜てくれる/〜てあげる)。かなが正書。あげ族は Wikipedia LM の
     // 基底頻度(挙げる5399<上げる5806<あげる6120=例を挙げる 等の百科事典バイアス)で
     // 挙げて が供給先頭になる(教えてあげて→教えて挙げて)のを是正する。
-    static let multiClauseTeBenefactiveAuxiliaryReadings: Set<String> = [
-        "くれ", "くれる", "くれない", "くれた", "くれて", "くれます", "くれました",
-        "くれれば", "くれよ", "くれるの", "くれないの", "くれなかった",
-        "あげ", "あげる", "あげない", "あげた", "あげて", "あげます", "あげました",
-        "あげれば", "あげよう", "あげるの", "あげないの", "あげなかった"
-    ]
+    // 活用列挙リストは くれてる(ている縮約)等の漏れが続いたため廃止し、
+    // 「くれ/あげ 始まりの全ひらがな連鎖(≤8字)」の述語で一般判定する
+    // (くれてた/くれてます/あげちゃう 等も自動で入る)。て/で 直後限定は各適用箇所が課す。
+    static func isTeBenefactiveAuxiliaryReading(_ reading: String) -> Bool {
+        guard reading.count >= 2, reading.count <= 8,
+            reading.hasPrefix("くれ") || reading.hasPrefix("あげ") else {
+            return false
+        }
+        return reading.unicodeScalars.allSatisfy { (0x3041...0x3096).contains($0.value) }
+    }
     static let multiClauseColloquialExplanatoryTailReadings: Set<String> = [
         "んだが", "んだけど", "んだけれど", "んだけれども",
         "んですが", "んですけど", "んですけれど", "んですけれども",
@@ -905,10 +915,10 @@ extension KanaKanjiConverter {
                     // 口語終止クラスタ(かなー 等)も常設 — 辞書/wc に無い読みはノード自体が立たず、
                     // クランプ(4000)が適用できない(こんないろかなー→色香なー 対策)
                     || Self.multiClauseColloquialExplanatoryTailReadings.contains(segmentReading)
-                    // 授受補助動詞(あげて 等)も常設 — 基底LM順(挙げる5399<上げる<あげる)で
-                    // b2 のかな供給が落ち、て形直後クランプの対象ノード自体が立たない
+                    // 授受補助動詞(あげて/くれてる 等)も常設 — 基底LM順(挙げる5399<上げる<
+                    // あげる)で b2 のかな供給が落ち、て形直後クランプの対象ノード自体が立たない
                     // (教えてあげて→教えて挙げて 対策。て/で 直後以外では素通りコストのまま)
-                    || Self.multiClauseTeBenefactiveAuxiliaryReadings.contains(segmentReading) {
+                    || Self.isTeBenefactiveAuxiliaryReading(segmentReading) {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -1242,10 +1252,11 @@ extension KanaKanjiConverter {
                 !(prev.last.map { Self.multiClausePredicateTailCharacters.contains($0) } ?? false) {
                 penaltyForNounHoshii = Self.multiClauseNounHoshiiPenalty
             }
-            // て形直後の くれる補助動詞(使ってくれない 等)はかなが正書。紅(名詞くれない)や
-            // 暮れない が繰り上がるのを、かな識別を安価にして防ぐ。prev が て/で 終わり(て形)限定。
+            // て形直後の授受補助動詞(使ってくれない/してくれてる 等)はかなが正書。紅(名詞
+            // くれない)や 暮れてる が繰り上がるのを、かな識別を安価にして防ぐ。prev が て/で
+            // 終わり(て形)限定。
             if surface == reading,
-                Self.multiClauseTeBenefactiveAuxiliaryReadings.contains(reading),
+                Self.isTeBenefactiveAuxiliaryReading(reading),
                 prev != Self.multiClauseBOSMarker,
                 (prev.hasSuffix("て") || prev.hasSuffix("で")) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
@@ -1575,6 +1586,17 @@ extension KanaKanjiConverter {
                 !nodes[idx].isCurated {
                 total += Self.multiClauseFinalParticleKanjiPenalty
             }
+            // 文末 そう の全漢字表層(層/僧/草)への減点(定数コメント参照)。直前ノードの
+            // 表層がひらがな終わり(ほとんど/たぶん/これも 等)に限定 — 漢字名詞直後は
+            // 学生層/富裕層 等の生産的な複合なので減点しない(がくせいそう の防護)。
+            if Self.multiClauseSentenceFinalAllKanjiPenaltyReadings.contains(nodes[idx].reading),
+                KanaKanjiConverter.isAllKanjiSurface(nodes[idx].surface),
+                !nodes[idx].isCurated,
+                backPointer[idx] >= 0,
+                let prevLast = nodes[backPointer[idx]].surface.unicodeScalars.last,
+                (0x3041...0x3096).contains(prevLast.value) {
+                total += Self.multiClauseFinalParticleKanjiPenalty
+            }
             let isParticleFinal = nodes[idx].surface == nodes[idx].reading
                 && (Self.multiClauseCaseParticleSurfaces.contains(nodes[idx].surface)
                     || Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading))
@@ -1667,6 +1689,10 @@ extension KanaKanjiConverter {
             && !pathIndices.contains(where: { nodes[$0].isCurated })
             && !lastIsKanaFinalParticle
             && !allNodesAreDictWords
+            // て/で+授受補助動詞のかな連鎖で終わる全かな(してくれないかな 等)はかなが正書。
+            // b4 常設ノードが くれないかな を1スパン化すると末尾ノードの終助詞免除が
+            // 外れるため、joined 全体の一般判定で免除する(keepKana 側と同じ述語)
+            && !KanaKanjiConverter.hasTeBenefactiveKanaTail(normalized)
 
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
