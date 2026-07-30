@@ -5681,6 +5681,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(boosted.first, "円札")
     }
 
+    // さいこうほう: 最高峰(唯一の辞書エントリ)が wc10759 の harvest 降格で合成
+    // (最高法/最高方)に負けて先頭陥落していた(縞模様 2156 と同型)。seed で指定順に固定。
+    func testRegressionRealLMSaikouhouOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "さいこうほう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["最高峰", "再興法", "最高法", "最高方"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "せかいさいこうほう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "世界最高峰", "multi=\(multi.prefix(4))")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
