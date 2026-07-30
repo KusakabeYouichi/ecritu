@@ -664,12 +664,13 @@ extension KanaKanjiConverter {
                         }
                         probeLen += 1
                     }
-                    // 跨ぎ常用語: 断片の接頭部が指示副詞(こう/そう/どう/ああ)で、その直後から
-                    // 断片の末尾を跨ぐ常用語がある(香茹(こうこ)の中の こう+こたえる=答える 等)
-                    // ときも分断とみなす。指示副詞に限定するのは、してる(ルナ跨ぎ)/明日(あした)等の
-                    // 正当な curated かな識別・名詞を巻き込まないため。
+                    // 跨ぎ常用語: 断片の接頭部が指示副詞(こう/そう/どう/ああ)か準体助詞の の で、
+                    // その直後から断片の末尾を跨ぐ常用語がある(香茹(こうこ)の中の こう+こたえる、
+                    // のか(curated)の中の の+かいじょう=会場 等)ときも分断とみなす。
+                    // 接頭を限定するのは、してる(ルナ跨ぎ)/明日(あした)等の正当な curated
+                    // かな識別・名詞を巻き込まないため。文末の のか(行くのか)は跨ぐ先が無く床維持。
                     if !hasLongerCommonWord, len >= 2 {
-                        outer: for adverb in ["こう", "そう", "どう", "ああ"] {
+                        outer: for adverb in ["こう", "そう", "どう", "ああ", "の"] {
                             guard segmentReading.hasPrefix(adverb), adverb.count < len else { continue }
                             let crossStart = start + adverb.count
                             var crossLen = (end - crossStart) + 1
