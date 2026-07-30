@@ -826,7 +826,7 @@ final class KanaKanjiConverter {
         // 存在・進行の かな動詞(ある/いる)を剥がして再帰(やつにはある→やつには→(は/に 剥がし)→やつ)。
         // かな正書の語(やつ/ひび 等)+ 助詞 + ある/いる の全かな句が提示層で漢字化(奴にはある)に
         // 繰り上がるのを防ぐ。剥がした語幹が最終的にかな正書の識別に落ちる時だけ true。
-        for verb in ["ある", "いる"]
+        for verb in ["ある", "いる", "あった", "いた"]
         where normalized.count > verb.count && normalized.hasSuffix(verb) {
             let stem = String(normalized.dropLast(verb.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
