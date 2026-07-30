@@ -5380,6 +5380,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+    // これやすい: 活用合成(ら抜き基底 これる)の最安が旧字体 來れる(wc9641)で
+    // 來れやすい が先頭だった。來れる は suppr(來 の人名は別読みで無傷)、seed
+    // これる=[これる, 来れる] で これ 系を強く、ユーザ第一希望の これ安い(指示詞+形容詞)は
+    // misc curated 供給。テストは注入で misc 相当を再現。
+    func testRegressionRealLMKoreyasuiOrdering() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["これる": ["來れる"]])
+        converter.store.addUserEntry(reading: "これやすい", candidate: "これ安い")
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "これやすい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["これ安い", "これやすい"], "single=\(single)")
+        XCTAssertFalse(single.contains(where: { $0.contains("來") }), "single=\(single)")
+        // 連文節の これ+形容詞 は不変
+        let kai = converter.multiClauseCandidates(for: "これかいやすい", systemCandidateMode: .surface)
+        XCTAssertEqual(kai.first, "これ買いやすい", "kai=\(kai.prefix(4))")
+    }
+
     // そうりょう: ユーザ指定順(送料→総量→総領→惣領→爽涼→蒼龍→蒼竜)。
     // 送料(EC頻出)が word_cost 7404 で沈んでいた。
     func testRegressionRealLMSouryouOrdering() throws {

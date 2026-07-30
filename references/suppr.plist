@@ -60,6 +60,8 @@
 	<dict><key>phrase</key><string>衣る</string><key>shortcut</key><string>きる</string></dict>
 	<!-- 厭きの(あきの): 厭きる は現代では 飽きる が主。飽きの(飽きのこない)は残す -->
 	<dict><key>phrase</key><string>厭きの</string><key>shortcut</key><string>あきの</string></dict>
+	<!-- 來れる(これる): 旧字体の ら抜き可能形(wc9641=来れる より安く基底先頭)。活用派生(來れやすい/來れ 等)の温床。來 の人名(來島/來田 等)は別読みで無傷 -->
+	<dict><key>phrase</key><string>來れる</string><key>shortcut</key><string>これる</string></dict>
 	<!-- ニー(にー のカタカナ)。knee等のLM実在でクラス保護されるため個別suppr(なのニー/行ったのニー) -->
 	<dict><key>phrase</key><string>ニー</string><key>shortcut</key><string>にー</string></dict>
 	<dict><key>phrase</key><string>のニー</string><key>shortcut</key><string>のにー</string></dict>
