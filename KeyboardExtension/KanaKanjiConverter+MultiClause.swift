@@ -123,9 +123,15 @@ extension KanaKanjiConverter {
     // 連文節でも seed 順を勝たせたい活用の基底読み(オプトイン)。span を脱活用して
     // ここに含まれる基底になる場合のみ、スパン先頭活用形にボーナスを与える。
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
-    // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)。数量詞複合(2本/二本)や
-    // 分割に押されて seed 既定(日本)が沈むのを是正する。a2 seed の先頭候補ノードにボーナス。
-    static let multiClauseSeedOrderNounReadings: Set<String> = ["にほん", "ほうだい", "おん", "うち", "そうりょう"]
+    // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)と読み別ボーナス値。
+    // 数量詞複合(2本/二本)や分割に押されて seed 既定(日本)が沈むのを是正する。
+    // a2 seed の先頭候補ノードにボーナス。既定は 800(multiClausePreferredInflectionBonus と同値)。
+    // そうりょう は Wikipedia の観測 bigram(総量→は700/の875/が・を1424)が日常頻度(送料)と
+    // 系統的に食い違う語で、最大不利 ≈3950(uni差966+の差2985)を超える 4200 で全助詞文脈を反転
+    // (ユーザ要望: 学習なしで 送料の が一発)。
+    static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
+        "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200
+    ]
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
     static let multiClauseNaAdjectiveBigramThreshold = 2000
@@ -528,6 +534,8 @@ extension KanaKanjiConverter {
         // DP でこのノードに軽いボーナスを与える(単文節の seed leading boost の連文節版)。
         // 同音の活用(使えた/仕えた/支えた)が僅差 LM で沈むのを、人手の並びで是正する。
         var preferredInflectedNodeKeys = Set<String>()
+        // 名詞 seed 順 opt-in の読み別ボーナス(multiClauseSeedOrderNounBonusesByReading)
+        var seedOrderNounNodeBonuses: [String: Int] = [:]
         // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
         var renyouNiNodeKeys = Set<String>()
         // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
@@ -763,10 +771,10 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: seedIsDictionaryFormPredicate
                     )
                     // 名詞 seed 順の opt-in(にほん→日本 等)は先頭候補ノードにボーナスを与え、
-                    // 数量詞複合(2本/二本)や分割に連文節でも勝たせる。
-                    if Self.multiClauseSeedOrderNounReadings.contains(segmentReading),
+                    // 数量詞複合(2本/二本)や分割に連文節でも勝たせる(値は読み別)。
+                    if let bonus = Self.multiClauseSeedOrderNounBonusesByReading[segmentReading],
                         surface == KanaKanjiSeedDictionary.seed[segmentReading]?.first {
-                        preferredInflectedNodeKeys.insert("\(start)-\(end)-\(surface)")
+                        seedOrderNounNodeBonuses["\(start)-\(end)-\(surface)"] = bonus
                     }
                 }
 
@@ -1407,9 +1415,10 @@ extension KanaKanjiConverter {
             for idx in nodesEndingAt[boundary] {
                 let node = nodes[idx]
                 // スパン先頭(seed/辞書順で最優先)の活用形へのボーナス(定数コメント参照)。
-                let preferredInflectionBonus = preferredInflectedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                let preferredInflectionBonus = (preferredInflectedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                     ? Self.multiClausePreferredInflectionBonus
-                    : 0
+                    : 0)
+                    + (seedOrderNounNodeBonuses["\(node.start)-\(node.end)-\(node.surface)"] ?? 0)
                 let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
