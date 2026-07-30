@@ -796,8 +796,9 @@ final class KanaKanjiConverter {
         // 終助詞(よ/ね/な/わ/ぞ/さ)を1つ剥がした語幹が「辞書のかな語そのもの」(いい/だめ/やだ/むり 等)
         // なら根拠あり(いいよ→いい: 良いよ/イイよ/唯々よ の繰り上がりを防ぐ)。※systemCandidates 直接判定に
         // 限定し、活用連鎖(かってみよう 等=辞書かな語でない)では誤発火しない。
-        // そう は文末の推量・指示(ほとんどそう/たぶんそう)。かな語幹+そう はかなが正書
-        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ", "そう"]
+        // そう は文末の推量・指示(ほとんどそう/たぶんそう)。の は連体の言いさし
+        // (それぞれの/ひとりひとりの)。いずれもかな語幹+終端はかなが正書
+        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ", "そう", "の"]
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
