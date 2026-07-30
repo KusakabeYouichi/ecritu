@@ -5719,6 +5719,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.isEmpty || multi.first == "低介入", "multi=\(multi.prefix(4))")
     }
 
+    // たいし: 対し(対する連用形、LM4011=最頻)が辞書エントリに無く 太史/対支 等が
+    // 先頭だった。seed 対し→大使→太子。
+    func testRegressionRealLMTaishiOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "たいし", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["対し", "大使", "太子"], "single=\(single)")
+        // に対し の連文節は不変
+        let multi = converter.multiClauseCandidates(for: "これにたいし", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "これに対し", "multi=\(multi.prefix(4))")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
