@@ -302,6 +302,8 @@
 	<!-- 底触/低触(ていしょく): 存在しない表記(抵触 の収穫ミス) -->
 	<dict><key>phrase</key><string>底触</string><key>shortcut</key><string>ていしょく</string></dict>
 	<dict><key>phrase</key><string>低触</string><key>shortcut</key><string>ていしょく</string></dict>
+	<!-- 違うい(ちがうい): 存在しない語の収穫(adjective-i クラス付き)。く形派生 違うく(ちがうく)を作り、ちがうくに→違うく+に が 違う+国 を逆転する温床(危うい/ものうい は正当なので残す) -->
+	<dict><key>phrase</key><string>違うい</string><key>shortcut</key><string>ちがうい</string></dict>
 	<!-- 報る(しる): 報 に しる の読みは無い(報せる=しらせる/報いる=むくいる のみ)。報って(しって)等の温床 -->
 	<dict><key>phrase</key><string>報る</string><key>shortcut</key><string>しる</string></dict>
 	<!-- 這んな(こんな): 現代語に存在しない表記の収穫(這う とは無関係) -->
