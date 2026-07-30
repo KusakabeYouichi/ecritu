@@ -215,7 +215,7 @@
     <dict><key>phrase</key><string>Isigny</string><key>shortcut</key><string>いずにー</string></dict>
     <dict><key>phrase</key><string>Lescure</string><key>shortcut</key><string>れすきゅーる</string></dict>
     <dict><key>phrase</key><string>Bresse</string><key>shortcut</key><string>ぶれす</string></dict>
-    <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict> -->
+    <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>
     <!-- 辞書に既存(2390検査で先頭確認済み) <dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict> -->
     <dict><key>phrase</key><string>ケイマン</string><key>shortcut</key><string>けいまん</string></dict>
     <dict><key>phrase</key><string>ボクスター</string><key>shortcut</key><string>ぼくすたー</string></dict>
