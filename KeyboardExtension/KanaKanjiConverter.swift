@@ -965,6 +965,11 @@ final class KanaKanjiConverter {
         for tail in ["だよ", "だね", "だな", "だわ", "だぞ", "だぜ", "だっけ", "でしょ"] where normalized.hasSuffix(tail) {
             return true
         }
+        // なる系縮約(〜なってる/〜なっちゃう)で終わる読みはかなが正書(成ってる/為ってる/
+        // 綯ってる の漢字化は不自然)。misc curated なってる/なっちゃう と対の提示層維持。
+        for tail in ["なってる", "なっちゃう"] where normalized.count > tail.count && normalized.hasSuffix(tail) {
+            return true
+        }
         // 〜でいい(これでいい/それでいい/ままでいい)の いい はかなが正書(良い は suppr 済みの方針)。
         if normalized.count > 3, normalized.hasSuffix("でいい") {
             return true
