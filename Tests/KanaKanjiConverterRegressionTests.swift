@@ -5741,6 +5741,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "流行ってる", "single=\(single)")
     }
 
+    // しぼうさん: 脂肪酸 が wc13906 の harvest 降格で 名前+さん 合成に負けて8番手だった
+    // (最高峰 と同型)。seed 掲載=降格免除で先頭復帰。
+    func testRegressionRealLMShibousanOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "しぼうさん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "脂肪酸", "single=\(single)")
+    }
+
     // しまった: 感動詞・補助動詞のかなが正書だが、基底 しまう の辞書順(仕舞う 先行)が
     // 派生に波及し 仕舞った が先頭だった。ユーザ指定順の seed(してしまった は不変)。
     func testRegressionRealLMShimattaOrdering() throws {
