@@ -5693,6 +5693,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "世界最高峰", "multi=\(multi.prefix(4))")
     }
 
+    // ちょうせい: 調整(LM5147=最頻)が word_cost 順で 調製 に、dict rank で 長生(地名収穫)
+    // にも沈んでいた。ユーザ指定順の seed 固定。
+    func testRegressionRealLMChouseiOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ちょうせい", limit: 14, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(12)),
+            ["調整", "調製", "町制", "調性", "長征", "町政", "町勢", "長逝", "朝政", "潮声", "長生", "聴政"],
+            "single=\(single)")
+        // サ変派生にも基底順で波及
+        let suru = converter.candidates(for: "ちょうせいする", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(suru.first, "調整する", "suru=\(suru)")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
