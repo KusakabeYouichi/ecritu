@@ -294,6 +294,7 @@ extension ContentView {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
                 migrateInitialUserDictionaryIfNeeded()
+                cleanupLegacyMiscEraAjoutResidueIfNeeded()
                 migrateInitialShortcutVocabularyIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
                 migrateLearningVocabularySeparationIfNeeded()
@@ -563,6 +564,118 @@ extension ContentView {
         "にだい": ["2台"], "にまい": ["2枚"], "ひとつ": ["1つ"], "ひゃくえんだま": ["100円玉"],
         "ふたつ": ["2つ"], "みっつ": ["3つ"], "よんしゅうかん": ["4週間"]
     ]
+
+    // misc 分離以前に Ajout(追加語彙)として播種され、削除同期(2338)導入時の既知リスト
+    // (34ペア)に含まれず実機に残留していた残骸。現在は misc(68件=現行 misc と同一ペア)や
+    // エンジン生成(すう+助数詞)に置き換わっており、除去しても変換は変わらない。誤植
+    // (カ行変格活用変/サ行変格活用変)と誤登録(きょうにんかん→杏仁豆腐)も同梱。
+    // 実機の seed外診断(2389)で特定した確定ペアのみ列挙(手動追加語彙13件は sacoche へ
+    // フィードバック済みで対象外)。
+    static let legacyMiscEraAjoutResidueEntries: [String: [String]] = [
+        "あうん": ["あ・うん"],
+        "あのへん": ["あの辺"],
+        "いらっと": ["いらっと"],
+        "うつりこむ": ["写り込む", "写りこむ"],
+        "かぎょうへんかくかつよう": ["カ行変格活用変"],
+        "きがあう": ["気が合う"],
+        "きがある": ["気がある"],
+        "きがきく": ["気が利く"],
+        "きがする": ["気がする"],
+        "きがちる": ["気が散る"],
+        "きがつく": ["気が付く", "気がつく"],
+        "きがながい": ["気が長い"],
+        "きがはやい": ["気が早い"],
+        "きがむく": ["気が向く"],
+        "きにいる": ["気に入る"],
+        "きにかかる": ["気にかかる"],
+        "きにかける": ["気に掛ける", "気にかける"],
+        "きにくわない": ["気に食わない", "気にくわない"],
+        "きにする": ["気にする"],
+        "きにとめる": ["気に留める", "気にとめる"],
+        "きになる": ["気になる"],
+        "きにやむ": ["気に病む"],
+        "きょうにんかん": ["杏仁豆腐"],
+        "きをうしなう": ["気を失う"],
+        "きをきかせる": ["気を利かせる"],
+        "きをくばる": ["気を配る"],
+        "きをつかう": ["気を遣う", "気を使う", "気をつかう"],
+        "きをつける": ["気を付ける", "気をつける"],
+        "きをひく": ["気を引く"],
+        "きをまわす": ["気を回す"],
+        "きをもむ": ["気を揉む", "気をもむ"],
+        "きをよくする": ["気を良くする", "気をよくする"],
+        "このへん": ["この辺"],
+        "ございました": ["ございました"],
+        "ございます": ["ございます"],
+        "ございません": ["ございません"],
+        "ございませんでした": ["ございませんでした"],
+        "さえら": ["さ・え・ら"],
+        "さぎょうへんかくかつよう": ["サ行変格活用変"],
+        "じがじさん": ["自画自賛"],
+        "すうかい": ["数回"],
+        "すうかげつ": ["数か月"],
+        "すうかしょ": ["数か所"],
+        "すうけん": ["数件"],
+        "すうこ": ["数個"],
+        "すうしゅうかん": ["数週間"],
+        "すうじかん": ["数時間"],
+        "すうじつ": ["数日"],
+        "すうだい": ["数台"],
+        "すうにん": ["数人"],
+        "すうねん": ["数年"],
+        "すうびょう": ["数秒"],
+        "すうふん": ["数分"],
+        "すうほん": ["数本"],
+        "すうまい": ["数枚"],
+        "ぜんかいいっち": ["全会一致"],
+        "そのへん": ["その辺"],
+        "だが": ["だが"],
+        "てにはいる": ["手に入る"],
+        "できる": ["できる"],
+        "どのへん": ["どの辺"],
+        "なのだ": ["なのだ"],
+        "なので": ["なので"],
+        "なのです": ["なのです"],
+        "なのに": ["なのに"],
+        "なのよね": ["なのよね"],
+        "にした": ["にした"],
+        "にして": ["にして"],
+        "にしよう": ["にしよう"],
+        "にする": ["にする"],
+        "ねおち": ["寝落ち"],
+        "ぱるる": ["ぱ・る・る"],
+        "まかいぞう": ["魔改造"],
+        "もやしいため": ["もやし炒め"],
+        "やくにたつ": ["役に立つ"],
+        "やって": ["やって"]
+    ]
+
+    // misc 分離残骸の one-shot 清掃。AppliedSeed 記録済みの端末には通常の削除同期が
+    // 届かない(現行 seed 基準の差分しか見ない)ため、確定リストで一度だけ除去する。
+    func cleanupLegacyMiscEraAjoutResidueIfNeeded() {
+        guard let defaults = Self.sharedDefaults,
+            !defaults.bool(forKey: SettingsKeys.kanaKanjiMiscEraAjoutResidueCleanupCompleted) else {
+            return
+        }
+        var currentDictionary = normalizedDictionaryEntries(
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        )
+        var removedCount = 0
+        for (reading, candidates) in Self.legacyMiscEraAjoutResidueEntries {
+            let retracted = Set(candidates)
+            let kept = (currentDictionary[reading] ?? []).filter { !retracted.contains($0) }
+            removedCount += (currentDictionary[reading]?.count ?? 0) - kept.count
+            if kept.isEmpty {
+                currentDictionary.removeValue(forKey: reading)
+            } else {
+                currentDictionary[reading] = kept
+            }
+        }
+        if removedCount > 0 {
+            saveDictionaryEntries(currentDictionary, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        }
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiMiscEraAjoutResidueCleanupCompleted)
+    }
 
     func migrateInitialUserDictionaryIfNeeded() {
         guard let defaults = Self.sharedDefaults else {

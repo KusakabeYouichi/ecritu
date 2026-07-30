@@ -66,6 +66,8 @@ enum SettingsKeys {
     static let kanaKanjiInitialUserDictionaryAppliedSignature = "kanaKanjiInitialUserDictionaryAppliedSignature"
     // 追加語彙播種の記録(削除同期用)。抑制側 AppliedSeed と同機構
     static let kanaKanjiInitialUserDictionaryAppliedSeed = "kanaKanjiInitialUserDictionaryAppliedSeed"
+    // misc 分離以前の Ajout 播種残骸の one-shot 清掃(2390)実行済みフラグ
+    static let kanaKanjiMiscEraAjoutResidueCleanupCompleted = "kanaKanjiMiscEraAjoutResidueCleanupCompleted"
     static let kanaKanjiLearnedVocabulary = "kanaKanjiLearnedVocabulary"
     static let kanaKanjiLearningVocabularyMigrationCompleted = "kanaKanjiLearningVocabularyMigrationCompleted"
     static let kanaKanjiShortcutVocabulary = "ÉcrituShortcutVocab"
