@@ -5362,6 +5362,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi2.first, "仕事のこと", "multi2=\(multi2.prefix(4))")
     }
 
+    // ひさべつ: 被差別 は Sudachi core/LM とも無し(被・差別 は単独実在)の完全供給欠落。
+    // 単文節は seed、連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため
+    // misc curated 化(殻付き/仕方ない と同型)。テストは addUserEntry で misc 相当を注入。
+    func testRegressionRealLMHisabetsuSupply() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "ひさべつ", candidate: "被差別")
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ひさべつ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "被差別", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ひさべつぶらく", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "被差別部落", "multi=\(multi.prefix(4))")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
