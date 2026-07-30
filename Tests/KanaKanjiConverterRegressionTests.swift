@@ -5362,6 +5362,49 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi2.first, "仕事のこと", "multi2=\(multi2.prefix(4))")
     }
 
+    // ほとんどそう: 文末の そう(推量・指示)はかなが正書だが、層/僧/草 の単漢字が EOS で
+    // 勝っていた。終助詞クラスタに そう を追加(漢字減点は全漢字表層のみ=沿う/添う 免除)+
+    // keepKana の終助詞剥がしに そう(語幹 ほとんど=辞書かな語)。
+    func testRegressionRealLMHotondoSouKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "ほとんどそう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ほとんどそう", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ほとんどそう"))
+        // に沿う(動詞、う含み=全漢字でない)は減点対象外。best は にそう(に→そう4769<
+        // に→沿う4785 の既存LM選好、変種枠に 沿う が入らないのも既存挙動)
+        let sou = converter.multiClauseCandidates(for: "きやくにそう", systemCandidateMode: .surface)
+        XCTAssertEqual(sou.first, "規約にそう", "sou=\(sou.prefix(4))")
+    }
+
+
+
+    // してくれないかな(あ): エンジンはかな最良(授受クランプ機能済み)だが keepKana が
+    // かな/かなあ 付きで不成立→提示層退避で して紅かな/して暮れないかなあ が実機先頭。
+    // 疑問終端剥がし(かなあ 追加)後の語幹への授受照合を追加。
+    func testRegressionRealLMShiteKurenaikanaKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let kana = converter.multiClauseCandidates(for: "してくれないかな", systemCandidateMode: .surface)
+        XCTAssertEqual(kana.first, "してくれないかな", "kana=\(kana.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "してくれないかな"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "してくれないかなあ"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "おしえてあげようかな"))
+        // ている縮約(くれてる)等の未列挙活用も一般判定(prefix述語)で通る
+        let kureteru = converter.multiClauseCandidates(for: "してくれてるのね", systemCandidateMode: .surface)
+        XCTAssertEqual(kureteru.first, "してくれてるのね", "kureteru=\(kureteru.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "してくれてるのね"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "まってくれてた"))
+        // コピュラ推量+か(どこだろうか)も同じ穴 — 剥がし後のコピュラ末尾照合で成立
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "どこだろうか"))
+        let doko = converter.multiClauseCandidates(for: "どこだろうか", systemCandidateMode: .surface)
+        XCTAssertTrue(doko.isEmpty || doko.first == "どこだろうか", "doko=\(doko.prefix(4))")
+        // 活用連鎖の防護は不変
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"))
+    }
+
     // いわれたがわ: 基底 いう のかな LM 優先(という 分割由来で いう3293≪言う4804)が
     // 受身形に波及し、連文節で かな いわれた が 言われた と OOV 7200 タイ+列挙順先勝ち
     // (→いわれた側)。受身形は 言われ* が正書のため per-form seed で矯正。

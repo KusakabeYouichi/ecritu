@@ -723,6 +723,22 @@ final class KanaKanjiConverter {
     // かな語=ちゃんと/そして、追加語彙のかな語=だが/なのに、学習済み)がある場合のみ true。
     // 活用+postfix の合成で組み上がったかな全文一致(かってみようかな 等)は変換意図の
     // 入力なので対象外(末尾のかなチップに一本化する)。
+    // て/で 形+授受補助動詞(くれ/あげ)+任意のひらがな連鎖で終わる読みか。
+    // してくれて/してくれないかな/してくれてるのね 等を列挙なしで一般判定する。
+    static func hasTeBenefactiveKanaTail(_ reading: String) -> Bool {
+        for marker in ["てくれ", "でくれ", "てあげ", "であげ"] {
+            guard let range = reading.range(of: marker, options: .backwards),
+                range.lowerBound != reading.startIndex else {
+                continue
+            }
+            let tail = reading[range.upperBound...]
+            if tail.unicodeScalars.allSatisfy({ (0x3041...0x3096).contains($0.value) }) {
+                return true
+            }
+        }
+        return false
+    }
+
     func shouldKeepKanaIdentityLeading(for reading: String) -> Bool {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         guard !normalized.isEmpty else {
@@ -780,7 +796,8 @@ final class KanaKanjiConverter {
         // 終助詞(よ/ね/な/わ/ぞ/さ)を1つ剥がした語幹が「辞書のかな語そのもの」(いい/だめ/やだ/むり 等)
         // なら根拠あり(いいよ→いい: 良いよ/イイよ/唯々よ の繰り上がりを防ぐ)。※systemCandidates 直接判定に
         // 限定し、活用連鎖(かってみよう 等=辞書かな語でない)では誤発火しない。
-        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ"]
+        // そう は文末の推量・指示(ほとんどそう/たぶんそう)。かな語幹+そう はかなが正書
+        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ", "そう"]
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
@@ -834,15 +851,13 @@ final class KanaKanjiConverter {
                 return true
             }
         }
-        // て形+授受補助動詞(してくれて/教えてあげて 等)はかなが正書 — エンジンの
-        // 授受クランプ(multiClauseTeBenefactiveAuxiliaryReadings)と同条件。かな最良が
-        // 提示層で退避され して暮れて 等が繰り上がるのを防ぐ(keepKana は維持のみで昇格しない)。
-        for aux in KanaKanjiConverter.multiClauseTeBenefactiveAuxiliaryReadings
-        where normalized.count > aux.count && normalized.hasSuffix(aux) {
-            let stem = String(normalized.dropLast(aux.count))
-            if stem.hasSuffix("て") || stem.hasSuffix("で") {
-                return true
-            }
+        // て形+授受補助動詞で終わる読み(してくれて/教えてあげて/してくれてるのね 等)は
+        // かなが正書 — エンジンの授受クランプ(isTeBenefactiveAuxiliaryReading)と同じ発想の
+        // 一般判定。マーカ(て/で+くれ/あげ)以降が全ひらがなで文末まで続けば、活用形や
+        // 終助詞クラスタが何であっても根拠あり(列挙リストは くれてる 等の漏れが続いたため廃止)。
+        // かな最良が提示層で退避され して暮れてるのね 等が繰り上がるのを防ぐ(維持のみで昇格しない)。
+        if Self.hasTeBenefactiveKanaTail(normalized) {
+            return true
         }
         // 疑問・説明の のか に長音 ー が付く読み(なのかー/そうなのかー 等)は口語終端で
         // かなが正書。名詞漢字+のかー(名/菜+のかー 等)の無意味分割より かな全文を先頭へ。
@@ -911,12 +926,13 @@ final class KanaKanjiConverter {
                 return true
             }
         }
-        // 疑問・推量の終端(かも/かな/かと/か)を剥がした語幹が「辞書のかな語そのもの」
-        // (いくつか→いくつ)か「かな語+ある/いる」(いくつあるかも→いくつある→いくつ)なら
-        // 根拠あり。エンジンがかな最良の疑問句が提示層で退避され 幾つあるかも 等が繰り上がるのを
+        // 疑問・推量の終端(かなあ/かも/かな/かと/か)を剥がした語幹が「辞書のかな語そのもの」
+        // (いくつか→いくつ)か「かな語+ある/いる」(いくつあるかも→いくつある→いくつ)か
+        // 「て/で形+授受補助動詞」(してくれないかな→してくれない)なら根拠あり。エンジンが
+        // かな最良の疑問句が提示層で退避され 幾つあるかも/して暮れないかな 等が繰り上がるのを
         // 防ぐ。全面再帰にはしない — かってみようかな(活用連鎖の防護ケース)へ かってみよう の
-        // 別根拠が伝播して退行した(2375)ため、辞書かな語ベースの狭い根拠に限定する。
-        for tail in ["かも", "かな", "かと", "か"]
+        // 別根拠が伝播して退行した(2375)ため、限定列挙の狭い根拠にとどめる。
+        for tail in ["かなあ", "かも", "かな", "かと", "か"]
         where normalized.count > tail.count && normalized.hasSuffix(tail) {
             let stem = String(normalized.dropLast(tail.count))
             guard stem.count >= 2 else { continue }
@@ -929,6 +945,12 @@ final class KanaKanjiConverter {
                 if subStem.count >= 2, systemCandidates(for: subStem, mode: .lesDeux).contains(subStem) {
                     return true
                 }
+            }
+            // コピュラ推量末尾(どこだろうか→どこだろう、そうでしょうかも 等)も根拠あり
+            // (先頭のコピュラ末尾規則と同じ語彙。か 等が付くと届かないのをここで補う)
+            for cop in ["だろう", "でしょう", "でしょ", "じゃない", "じゃん"]
+            where stem.count > cop.count && stem.hasSuffix(cop) {
+                return true
             }
         }
         // コピュラ否定(じゃない/じゃなくて/じゃなかった)で終わる全かな句はかなが正書
