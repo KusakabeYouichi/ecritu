@@ -5362,6 +5362,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi2.first, "仕事のこと", "multi2=\(multi2.prefix(4))")
     }
 
+    // いわれたがわ: 基底 いう のかな LM 優先(という 分割由来で いう3293≪言う4804)が
+    // 受身形に波及し、連文節で かな いわれた が 言われた と OOV 7200 タイ+列挙順先勝ち
+    // (→いわれた側)。受身形は 言われ* が正書のため per-form seed で矯正。
+    func testRegressionRealLMIwaretagawaKanjiFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "いわれたがわ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "言われた側", "multi=\(multi.prefix(4))")
+        let single = converter.candidates(for: "いわれた", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["言われた", "云われた", "謂われた"], "single=\(single)")
+        let iwarete = converter.multiClauseCandidates(for: "いわれてみれば", systemCandidateMode: .surface)
+        XCTAssertEqual(iwarete.first, "言われてみれば", "iwarete=\(iwarete.prefix(4))")
+        // 能動形のかな優先は不変(という 等)
+        let toiu = converter.multiClauseCandidates(for: "そういうこと", systemCandidateMode: .surface)
+        XCTAssertEqual(toiu.first, "そういうこと", "toiu=\(toiu.prefix(4))")
+    }
+
     // ひさべつ: 被差別 は Sudachi core/LM とも無し(被・差別 は単独実在)の完全供給欠落。
     // 単文節は seed、連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため
     // misc curated 化(殻付き/仕方ない と同型)。テストは addUserEntry で misc 相当を注入。
