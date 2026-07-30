@@ -1,0 +1,25 @@
+# --- 手動で追加削除してよい
+sacoche.plist			# 『追加語彙』の初期設定
+poubelle.plist			# 『抑制語彙』の初期設定
+
+vin.plist				# [ワイン]
+vin-acronyme.plist		# 読み込まれない
+vin-add.plist			# 読み込まれない
+etc.plist				# 読み込まれない
+
+ryukyu.plist			# [沖縄辞書]
+it.plist				# [IT]
+drapeaux.plist			# [国旗]
+monnaies.plist			# [通貨]
+emoji.plist				# [絵文字]
+personnalités.plist	# [人名]
+
+# ---AIが使う
+misc.plist						# 変換対策の curated 語彙。初期投入されるがアプリの『追加語彙』一覧には表示しない(連文節の区切りを勝たせる用途: 殻付き/仕方ない/とんかつ屋 等)
+suppr.plist						# 変換対策の隠し抑制。SudachiDict の誤エントリ・旧字体・カタカナ収穫等を理由別グループで抑制(アプリの『抑制語彙』一覧には出ない。見える側は poubelle.plist)
+
+apple_missing_examples.md		# (再生成可)「Apple の変換では出るが écritu 辞書に無い語」の点検レポート。generate_missing_apple_examples.pyで再生成可能
+adjective_garu_allowlist.json	# (必須)ガル形派生(悲しがる/怖がる 等)を許可する形容詞の allowlist。build_sudachi_index が読む
+compteur						# (資料)助数詞の頻度順一覧資料(compteur=仏語で「カウンター」)。numericCounterSuffixCandidatesByReading(せき=[席,隻]を足したあの表)を整備するときの参考資料
+word_lm.json.gz					# (必須)連文節変換の単語 n-gram LM 本体(11MB)。ビルド時に tmp へ展開→sqlite に焼き込まれる
+emoji_extract_apple.m			# (再整備)Apple 内部の絵文字読みデータを ObjCランタイム経由で抽出するツール。emoji.plist(絵文字の読み変換)を整備したときの生成元
