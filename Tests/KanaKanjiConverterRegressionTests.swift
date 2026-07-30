@@ -5380,6 +5380,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+    // そうりょう: ユーザ指定順(送料→総量→総領→惣領→爽涼→蒼龍→蒼竜)。
+    // 送料(EC頻出)が word_cost 7404 で沈んでいた。
+    func testRegressionRealLMSouryouOrdering() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "そうりょう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(7)), ["送料", "総量", "総領", "惣領", "爽涼", "蒼龍", "蒼竜"], "single=\(single)")
+    }
+
     // とんかつや: とんかつ屋 は Sudachi 未収録の複合。トン+勝谷(かつや の名前収穫 wc9770)の
     // 分割が とんかつ+屋 に勝っていた。seed(単文節)+misc curated(連文節)で供給。
     func testRegressionRealLMTonkatsuyaSupply() throws {
