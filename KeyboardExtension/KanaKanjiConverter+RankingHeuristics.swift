@@ -228,14 +228,17 @@ extension KanaKanjiConverter {
                     Self.seedSingleKanjiPriorityBaseBoost - (index * Self.seedSingleKanjiPriorityStep)
                 )
                 scores[candidate, default: 0] += boost
-            } else if index > 0, Self.containsKanjiCandidate(candidate) || candidate == reading {
+            } else if index > 0,
+                Self.containsKanjiCandidate(candidate) || candidate == reading
+                    || KanaKanjiConverter.hiraganizedKanaOnlySurface(candidate) == reading {
                 // 複数字の熟語 seed(高校/孝行, 描く 等)を seed 順で辞書ベースの上へ。
                 // 先頭は上の leading ブーストで既に持ち上がるため index>0 のみ対象。
                 // SudachiDict の rank で「々」形容動詞群が頻出熟語を埋める歪みを是正する。
                 // 非漢字(カタカナ/かな語)への一般拡張は 山田>やまだ 等の序列を崩すため
-                // 不採用(2098で検証済み)だが、かな識別(候補==読み)だけは対象にする —
-                // ひらがな=[平仮名, ひらがな] のように「かなを2番手に固定」する seed が
-                // ブースト対象外だと合成の二重加点(平がな=辞書+postfix)に必ず負ける。
+                // 不採用(2098で検証済み)だが、かな識別(候補==読み)と seed 掲載の
+                // カタカナ識別(オス/メス 等=ひらがな化が読みと一致する人手選別)は対象 —
+                // 元クラス抑制対象のカタカナは素点が最下位級で、seed 再割当(持ち点の
+                // 並べ替え)だけでは浮上できない。
                 let boost = max(
                     200,
                     Self.seedLeadingKanjiCandidateBoost - (index * Self.seedOrderedKanjiCompoundStep)

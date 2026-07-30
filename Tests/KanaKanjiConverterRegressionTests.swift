@@ -5411,6 +5411,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "それぞれの意見", "multi=\(multi.prefix(4))")
     }
 
+    // おす/めす: 例外的に使うカタカナ(オス/メス)が、雄5712/雌6247 の LM 僅差で
+    // 「代替あり=強調」とクラス抑制され候補から消えていた。seed 掲載で保護。
+    func testRegressionRealLMOsuMesuKatakanaProtected() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let osu = converter.candidates(for: "おす", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(osu.prefix(3)), ["押す", "推す", "オス"], "osu=\(osu)")
+        XCTAssertTrue(osu.prefix(6).contains("雄"), "osu=\(osu)")
+        let mesu = converter.candidates(for: "めす", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mesu.prefix(3)), ["メス", "雌", "召す"], "mesu=\(mesu)")
+    }
+
     // せき: かな識別が先頭・席(LM5494=最頻)が7番手だった。seed 席→関→咳→堰→責→籍。
     // 助数詞マップに せき=[席,隻] 追加(6確定→せき で 席 先頭、ろくせき→6席 複合も有効化)。
     func testRegressionRealLMSekiOrderingAndCounter() throws {
