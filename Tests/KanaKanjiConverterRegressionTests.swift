@@ -5751,6 +5751,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "脂肪酸", "single=\(single)")
     }
 
+    // しないことになってる: 基底列挙で 綯う(レア)経由の 綯ってる が先行していた。
+    // misc curated なってる+keepKana(なってる/なっちゃう 末尾)で かな先頭を固定。
+    func testRegressionRealLMNatteruKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "なってる", candidate: "なってる") // misc 相当
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "しないことになってる", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "しないことになってる", "multi=\(multi.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "しないことになってる"))
+    }
+
     // しまった: 感動詞・補助動詞のかなが正書だが、基底 しまう の辞書順(仕舞う 先行)が
     // 派生に波及し 仕舞った が先頭だった。ユーザ指定順の seed(してしまった は不変)。
     func testRegressionRealLMShimattaOrdering() throws {
