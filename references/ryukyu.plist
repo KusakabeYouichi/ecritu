@@ -6389,5 +6389,14 @@
 	<dict><key>phrase</key><string>NÜCHI by WPÜ</string><key>shortcut</key><string>ぬちばいだぶりゅーぴーゆー</string></dict>
 	<dict><key>phrase</key><string>中華中毒</string><key>shortcut</key><string>ちゅうかちゅうどく</string></dict>
 	<dict><key>phrase</key><string>サンキュー</string><key>shortcut</key><string>さんきゅー</string></dict>
+	<dict><key>phrase</key><string>Big 1</string><key>shortcut</key><string>びっぐわん</string></dict>
+	<dict><key>phrase</key><string>St. Vincent</string><key>shortcut</key><string>さんゔぁんさん</string></dict>
+	<dict><key>phrase</key><string>イナミ</string><key>shortcut</key><string>いなみ</string></dict>
+	<dict><key>phrase</key><string>サン・ヴァンサン</string><key>shortcut</key><string>さんゔぁんさん</string></dict>
+	<dict><key>phrase</key><string>ジャングリア</string><key>shortcut</key><string>じゃんぐりあ</string></dict>
+	<dict><key>phrase</key><string>ビッグワン</string><key>shortcut</key><string>びっぐわん</string></dict>
+	<dict><key>phrase</key><string>宝隆軒</string><key>shortcut</key><string>ほうりゅうけん</string></dict>
+	<dict><key>phrase</key><string>島豚</string><key>shortcut</key><string>しまぶた</string></dict>
+	<dict><key>phrase</key><string>海色</string><key>shortcut</key><string>みいろ</string></dict>
 </array>
 </plist>
