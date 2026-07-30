@@ -221,6 +221,8 @@ extension ContentView {
         } else {
             sections.append(contentsOf: keyboardDiagnosticsCriticalLogLines)
         }
+        sections.append("--- 追加語彙のseed外エントリ(手動追加+過去播種の残骸) ---")
+        sections.append(contentsOf: ajoutVocabularyNonSeedDiagnosticsLines())
         sections.append("--- logs ---")
         sections.append(contentsOf: keyboardDiagnosticsLogLines)
         sections.append("--- flight file (crash-safe) ---")
@@ -231,6 +233,36 @@ extension ContentView {
             sections.append(contentsOf: flightLines)
         }
         return sections.joined(separator: "\n")
+    }
+
+    // 追加語彙のうち現行 seed(appex バンドルの InitialAjoutVocabMigration.json)に無い
+    // (読み, 候補) ペアを列挙する。手動追加分と、播種の削除同期(2338)導入以前に
+    // plist から撤回されて実機に残った残骸の切り分け用。
+    func ajoutVocabularyNonSeedDiagnosticsLines() -> [String] {
+        let current = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        guard let bundle = keyboardExtensionBundleForDiagnostics(),
+            let seedURL = bundle.url(forResource: "InitialAjoutVocabMigration", withExtension: "json"),
+            let seedData = try? Data(contentsOf: seedURL),
+            let decodedSeed = try? JSONDecoder().decode([String: [String]].self, from: seedData) else {
+            return ["(seed JSON をバンドルから読めませんでした)"]
+        }
+        var seed: [String: Set<String>] = [:]
+        for (reading, candidates) in decodedSeed {
+            seed[reading] = Set(candidates)
+        }
+        var nonSeedLines: [String] = []
+        var totalCount = 0
+        for reading in current.keys.sorted() {
+            for candidate in current[reading] ?? [] {
+                totalCount += 1
+                if !(seed[reading]?.contains(candidate) ?? false) {
+                    nonSeedLines.append("\(reading) → \(candidate)")
+                }
+            }
+        }
+        var lines = ["総数 \(totalCount) 件 / seed \(totalCount - nonSeedLines.count) 件 / seed外 \(nonSeedLines.count) 件"]
+        lines.append(contentsOf: nonSeedLines.isEmpty ? ["(seed外なし)"] : nonSeedLines)
+        return lines
     }
 
     func copyKeyboardDiagnosticsToPasteboard() {
