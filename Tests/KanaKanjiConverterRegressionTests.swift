@@ -5422,12 +5422,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.invalidateCandidateCache()
         let single = converter.candidates(for: "そうりょう", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(7)), ["送料", "総量", "総領", "惣領", "爽涼", "蒼龍", "蒼竜"], "single=\(single)")
-        // 助詞付きの連文節は seedOrderNounReadings opt-in(-800)で 送料が を先頭に。
-        // そうりょうの/は は 総量→の(875)/総量→は の強い観測 bigram が -800 を超えるため
-        // 総量 先頭のまま(単文節側は seed 順=送料の 先頭。総量の は技術文脈で正当のため
-        // これ以上は強制せず、選択学習に委ねる)
-        let ga = converter.multiClauseCandidates(for: "そうりょうが", systemCandidateMode: .surface)
-        XCTAssertEqual(ga.first, "送料が", "ga=\(ga.prefix(4))")
+        // 助詞付きの連文節も読み別ボーナス(そうりょう=4200。Wikipedia の観測 bigram
+        // 総量→は700/の875 等の最大不利 ≈3950 を超える値)で 送料 を全文脈先頭に
+        // (ユーザ要望: 学習なしで一発。総量/総領 等は後続候補に残る)
+        for particle in ["が", "の", "は", "を"] {
+            let multi = converter.multiClauseCandidates(for: "そうりょう" + particle, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, "送料" + particle, "particle=\(particle) multi=\(multi.prefix(4))")
+        }
         let no = converter.candidates(for: "そうりょうの", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(no.first, "送料の", "no=\(no)")
     }
