@@ -79,6 +79,8 @@ final class KanaKanjiStore {
     // 上限超過時は全消去(まれな一括再クエリで済ませ、LRU 管理のオーバーヘッドを避ける)。
     private var cachedWordLMUnigram: [String: Int] = [:]
     private var cachedWordLMBigram: [String: Int] = [:]
+    // 表層→全読み最安 word_cost(読み跨ぎ unigram 借用の遮断用。未収録は番兵)
+    private var cachedCandidateMinWordCosts: [String: Int] = [:]
     // 8192 で通常の入力セッションには十分(1変換あたりの点クエリは数百〜千件強で、
     // negative キャッシュのヒット率は上限縮小の影響をほぼ受けない)。32768 時代は
     // 最悪ケースで両テーブル合計 ~8MB 級に育ち得た(メモリ監査 2026-07 の残項目)。
@@ -384,6 +386,46 @@ final class KanaKanjiStore {
                     result[surface] = cost
                 } else {
                     cachedWordLMUnigram[surface] = Self.wordLMMissingSentinel
+                }
+            }
+        }
+        return result
+    }
+
+    // 読み跨ぎ借用遮断用: 表層集合の全読み最安 word_cost をまとめて取得(点引きキャッシュ経由)。
+    // 旧形式 DB(表なし)では常に空=機能オフ。
+    func candidateMinWordCosts(for candidates: [String]) -> [String: Int] {
+        guard let sqliteIndex = sqliteIndexIfAvailable(),
+            sqliteIndex.hasCandidateMinWordCostMetadata else {
+            return [:]
+        }
+        var result: [String: Int] = [:]
+        var uncached: [String] = []
+        withCacheLock {
+            for candidate in candidates {
+                if let cached = cachedCandidateMinWordCosts[candidate] {
+                    if cached != Self.wordLMMissingSentinel {
+                        result[candidate] = cached
+                    }
+                } else {
+                    uncached.append(candidate)
+                }
+            }
+        }
+        guard !uncached.isEmpty else {
+            return result
+        }
+        let fetched = sqliteIndex.candidateMinWordCosts(for: uncached)
+        withCacheLock {
+            if cachedCandidateMinWordCosts.count + uncached.count > activeWordLMCacheLimit {
+                cachedCandidateMinWordCosts.removeAll(keepingCapacity: true)
+            }
+            for candidate in uncached {
+                if let cost = fetched[candidate] {
+                    cachedCandidateMinWordCosts[candidate] = cost
+                    result[candidate] = cost
+                } else {
+                    cachedCandidateMinWordCosts[candidate] = Self.wordLMMissingSentinel
                 }
             }
         }
@@ -714,6 +756,7 @@ final class KanaKanjiStore {
             isConstrainedMemoryCacheMode = true
             cachedWordLMUnigram.removeAll(keepingCapacity: false)
             cachedWordLMBigram.removeAll(keepingCapacity: false)
+            cachedCandidateMinWordCosts.removeAll(keepingCapacity: false)
             cachedWordCostsByReading.removeAll(keepingCapacity: false)
         }
     }

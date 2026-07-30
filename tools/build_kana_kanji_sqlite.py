@@ -294,6 +294,11 @@ def build_sqlite(
             CREATE INDEX idx_word_costs_lookup
                 ON word_costs (reading, candidate);
 
+            CREATE TABLE candidate_min_word_costs (
+                candidate TEXT PRIMARY KEY,
+                min_cost INTEGER NOT NULL
+            );
+
             CREATE TABLE word_lm_unigram (
                 surface TEXT PRIMARY KEY,
                 cost INTEGER NOT NULL
@@ -400,6 +405,21 @@ def build_sqlite(
             conn.executemany(
                 "INSERT INTO word_costs(reading, candidate, cost) VALUES (?, ?, ?)",
                 cost_rows,
+            )
+
+            # 表層ごとの全読み最安 word_cost。読み跨ぎコスト借用の遮断
+            # (表層キーの LM unigram が主読みの実績なのに、レア読みの同表層が
+            # タダ乗りして浮上する: 充て(みて)←あて、田中(でんちゅう)←たなか 等)
+            # に使う。エンジン側は「この読みの word_cost が min_cost より大きく
+            # 乖離していたら unigram を信用しない」で判定する。
+            min_cost_by_candidate: Dict[str, int] = {}
+            for _, candidate, cost in cost_rows:
+                current = min_cost_by_candidate.get(candidate)
+                if current is None or cost < current:
+                    min_cost_by_candidate[candidate] = cost
+            conn.executemany(
+                "INSERT INTO candidate_min_word_costs(candidate, min_cost) VALUES (?, ?)",
+                sorted(min_cost_by_candidate.items()),
             )
 
         # 単語 n-gram LM(案1・連文節)

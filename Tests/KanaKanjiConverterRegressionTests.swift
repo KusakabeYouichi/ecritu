@@ -5380,6 +5380,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+    // 読み跨ぎ unigram 借用の一般遮断: LM unigram は表層キーで読みを持たず、レア読みが
+    // 主読みの実績にタダ乗りしていた。この読みの word_cost − 全読み最安 ≥2500 なら
+    // unigram を信用せず word_cost を下限に(読み3字以上=既存短span床の免除穴)。
+    // 後(うしろ、wc8932/min3995)が uni3529 を借用して 後ろ(uni5677)に勝つのが実例。
+    func testRegressionRealLMCrossReadingUnigramBorrowBlocked() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "うしろにならぶ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "後ろに並ぶ", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(3).contains(where: { $0.hasPrefix("後に") }), "multi=\(multi.prefix(4))")
+        // 単一読みの正直な高コスト語(解像度=乖離0)は無傷
+        let kaizoudo = converter.multiClauseCandidates(for: "かいぞうどがたかい", systemCandidateMode: .surface)
+        XCTAssertEqual(kaizoudo.first, "解像度が高い", "kaizoudo=\(kaizoudo.prefix(4))")
+        // あと 読み(主読み側)の 後 は無傷
+        let ato = converter.multiClauseCandidates(for: "あとでいく", systemCandidateMode: .surface)
+        XCTAssertTrue(ato.first?.hasPrefix("後で") ?? false, "ato=\(ato.prefix(4))")
+    }
+
     // みて: かな識別先頭+文語命令形(充て/満て=満つ/充つ の五段つ命令形。充て は あて 用途の
     // LM6266 を読み跨ぎ借用)が 見て より前に浮上していた。seed で 見-族をユーザ指定順に固定。
     func testRegressionRealLMMiteOrdering() throws {

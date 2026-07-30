@@ -403,6 +403,14 @@ extension KanaKanjiConverter {
     // 正規の未知語(8700)や活用派生(7200)より信頼が低く、放置すると されんな→
     // 実用化さ+廉梛 のような名前断片が正規の派生+助詞を逆転する。
     static let multiClauseHarvestTierUnknownCost = 9500
+    // 読み跨ぎ unigram 借用の一般遮断(2386): LM unigram は表層キーで読みを持たず、
+    // レア読みが主読みの実績にタダ乗りする(後(うしろ)8932 が 後(あと系 min3995)の
+    // uni3529 を借用、充て(みて)←あて 等)。「この読みの word_cost − 表層の全読み最安
+    // word_cost ≥ 本閾値」なら unigram を信用せず word_cost を下限にする。読み≤2字は
+    // 短span床(multiClauseRareReadingFloorMaxReadingCount)が既に適用済みのため、
+    // 本規則は従来「解像度 保護」で床を免除していた読み3字以上の穴を埋める
+    // (解像度 は単一読みで乖離0=無傷)。seed 掲載語は人手選別のため免除。
+    static let multiClauseCrossReadingUnigramGapThreshold = 2500
     // curated ノードの EOS 遷移上限。かな正書の口語語彙(でかい 等)は X→EOS bigram が
     // Wikipedia文語コーパスに無く、出口で dictUnknown(8700)を払わされて断片連結
     // (出+会: 会→EOS 1571)に逆転される。人手で正書登録した curated は文末利用も
@@ -999,6 +1007,8 @@ extension KanaKanjiConverter {
             unigramSurfaces.insert(node.surface)
         }
         let unigramCosts = store.wordLMUnigramCosts(for: Array(unigramSurfaces))
+        // 読み跨ぎ unigram 借用の遮断用(定数コメント参照)。旧形式 DB では空=機能オフ。
+        let candidateMinWordCosts = store.candidateMinWordCosts(for: Array(unigramSurfaces))
 
         // カタカナ強調表記/交ぜ書きのモード適用(供給後の一括分類。単文節側と同じ述語)。
         // curated(ユーザ明示)は対象外。外来語(パン 等)は「カタカナ側が unigram 優位」で保護。
@@ -1185,6 +1195,17 @@ extension KanaKanjiConverter {
                     wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
                     !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
                     base = max(base, Self.multiClauseHarvestTierUnknownCost)
+                }
+                // 読み跨ぎ unigram 借用の一般遮断(定数コメント参照): この読みの word_cost が
+                // 表層の全読み最安より大きく乖離していたら unigram は主読みの実績とみなし、
+                // word_cost を下限にする(後(うしろ)→後ろ 等。読み3字以上のみ=≤2は短span床
+                // 適用済み。単一読みの正直な高コスト語(解像度)は乖離0で無傷)。
+                if let wordCost,
+                    reading.count >= 3,
+                    let minWordCost = candidateMinWordCosts[surface],
+                    wordCost - minWordCost >= Self.multiClauseCrossReadingUnigramGapThreshold,
+                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    base = max(base, wordCost)
                 }
             } else if isInflectionDerived {
                 // 格助詞・複合助詞(には/では 等)の直後は述語が続くのが自然なので割引する。

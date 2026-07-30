@@ -16,10 +16,12 @@ final class KanaKanjiSQLiteIndex {
     private var selectWordCostStatement: OpaquePointer?
     private var selectWordLMUnigramStatement: OpaquePointer?
     private var selectWordLMBigramStatement: OpaquePointer?
+    private var selectCandidateMinWordCostStatement: OpaquePointer?
     private(set) var hasSourceMetadata = false
     private(set) var hasInflectionMetadata = false
     private(set) var hasWordCostMetadata = false
     private(set) var hasWordLMMetadata = false
+    private(set) var hasCandidateMinWordCostMetadata = false
     private(set) var hasAnyEntries = false
 
     init?(databaseURL: URL) {
@@ -85,6 +87,15 @@ final class KanaKanjiSQLiteIndex {
             )
         }
 
+        // 表層→全読み最安 word_cost(読み跨ぎ unigram 借用の遮断用)。
+        // 旧形式の DB には表が無い=機能オフで従来挙動のまま。
+        hasCandidateMinWordCostMetadata = tableExists("candidate_min_word_costs")
+        if hasCandidateMinWordCostMetadata {
+            selectCandidateMinWordCostStatement = prepareStatement(
+                sql: "SELECT min_cost FROM candidate_min_word_costs WHERE candidate = ?"
+            )
+        }
+
         if let probeStatement = prepareStatement(
             sql: "SELECT 1 FROM dictionary_entries LIMIT 1"
         ) {
@@ -120,6 +131,10 @@ final class KanaKanjiSQLiteIndex {
 
         if let selectWordLMBigramStatement {
             sqlite3_finalize(selectWordLMBigramStatement)
+        }
+
+        if let selectCandidateMinWordCostStatement {
+            sqlite3_finalize(selectCandidateMinWordCostStatement)
         }
 
         if let database {
@@ -253,6 +268,34 @@ final class KanaKanjiSQLiteIndex {
                 }
                 if sqlite3_step(statement) == SQLITE_ROW {
                     result[surface] = Int(sqlite3_column_int(statement, 0))
+                }
+            }
+
+            return result
+        }
+    }
+
+    // 読み跨ぎ借用遮断用: 表層集合の全読み最安 word_cost をまとめて引く。
+    func candidateMinWordCosts(for candidates: [String]) -> [String: Int] {
+        queryQueue.sync {
+            guard hasCandidateMinWordCostMetadata,
+                let statement = selectCandidateMinWordCostStatement else {
+                return [:]
+            }
+
+            var result: [String: Int] = [:]
+            result.reserveCapacity(candidates.count)
+
+            for candidate in candidates where result[candidate] == nil {
+                resetStatement(statement)
+                let bindResult = candidate.withCString { candidateCString in
+                    sqlite3_bind_text(statement, 1, candidateCString, -1, sqliteTransientDestructor)
+                }
+                guard bindResult == SQLITE_OK else {
+                    continue
+                }
+                if sqlite3_step(statement) == SQLITE_ROW {
+                    result[candidate] = Int(sqlite3_column_int(statement, 0))
                 }
             }
 
