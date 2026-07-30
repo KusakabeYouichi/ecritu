@@ -431,14 +431,19 @@ extension KanaKanjiConverter {
                 ? allowedPrefixes
                 : prefixCandidates
 
-            let suffixCandidates = uniqueCandidates(
-                from: candidatesForReading(
-                    suffixReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
-                    systemCandidateMode: systemCandidateMode
-                )
-            ).filter { allowedSuffixes.contains($0) }
+            // 助数詞表層は辞書順のままだと 箇月(rank0)が か月(rank7)に先行する。
+            // seed の並び矯正(かげつ=[か月,…] 等)を反映するため seed 順整列を通す。
+            let suffixCandidates = orderedDerivationBaseCandidates(
+                uniqueCandidates(
+                    from: candidatesForReading(
+                        suffixReading,
+                        userDictionary: userDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode
+                    )
+                ).filter { allowedSuffixes.contains($0) },
+                reading: suffixReading
+            )
 
             let resolvedSuffixCandidates = suffixCandidates.isEmpty
                 ? allowedSuffixes
