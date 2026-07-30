@@ -5380,6 +5380,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+    // とんかつや: とんかつ屋 は Sudachi 未収録の複合。トン+勝谷(かつや の名前収穫 wc9770)の
+    // 分割が とんかつ+屋 に勝っていた。seed(単文節)+misc curated(連文節)で供給。
+    func testRegressionRealLMTonkatsuyaSupply() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "とんかつや", candidate: "とんかつ屋")
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "とんかつや", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "とんかつ屋", "single=\(single)")
+        XCTAssertFalse(single.prefix(4).contains(where: { $0.contains("勝谷") || $0.contains("勝矢") }), "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "とんかつやにいく", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "とんかつ屋に行く", "multi=\(multi.prefix(4))")
+        // とんかつ 単独は不変
+        let tonkatsu = converter.candidates(for: "とんかつ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(tonkatsu.first, "とんかつ", "tonkatsu=\(tonkatsu)")
+    }
+
     // してくれないかな(あ): エンジンはかな最良(授受クランプ機能済み)だが keepKana が
     // かな/かなあ 付きで不成立→提示層退避で して紅かな/して暮れないかなあ が実機先頭。
     // 疑問終端剥がし(かなあ 追加)後の語幹への授受照合を追加。
