@@ -130,7 +130,12 @@ extension KanaKanjiConverter {
     // 系統的に食い違う語で、最大不利 ≈3950(uni差966+の差2985)を超える 4200 で全助詞文脈を反転
     // (ユーザ要望: 学習なしで 送料の が一発)。
     static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
-        "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200
+        "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200,
+        // みな はかなが主流(LM みな5809≈皆5748)だが wc 皆4233≪みな7460 で連文節は漢字が勝つ。
+        // 短span床(かな識別=wc7460 床上げ)ぶんを跨いで反転する値
+        "みな": 3300,
+        // にた は 似た が辞書に無く seed 供給(dictUnknown 8700)。かな にた(wc8000 床)との差を反転
+        "にた": 2000
     ]
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
@@ -346,7 +351,7 @@ extension KanaKanjiConverter {
     // フォールバックが観測済み だけ→EOS より安い逆転で僅差負けしていた)。
     // はず(筈 は現代ではほぼかな正書。弓の筈 は文語的レア用法)も形式名詞扱い —
     // もっとあるはず が提示層のかな退避で もっとある筈 に繰り上がるのを防ぐ
-    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため", "だけ", "はず"]
+    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため", "だけ", "はず", "やつ"]
     static let multiClauseFormalNounKanjiPenalty = 1000
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
@@ -1432,6 +1437,13 @@ extension KanaKanjiConverter {
             if reading.count >= 2, reading.hasSuffix("っ"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
+            // 助動詞「た」の単独ノードは格助詞直後に立てない(非文法)。同じく A単位分割由来の
+            // bigram(に→た 等)が断片チェーン(に+た+やつ=にたやつ 等)を不当に安くし、
+            // 正しい活用ノード(似た)を阻むため遮断する(2404)。
+            if reading == "た", surface == "た",
+                Self.multiClauseCaseParticleSurfaces.contains(prev) {
+                penalty += Self.multiClauseForbiddenPenaltyCost
+            }
             // カタカナ強調/交ぜ書きモードのノード別ペナルティ(suppress=100000/demote=6000)
             penalty += scriptVariantPenalty
             return base + penalty
@@ -1815,6 +1827,13 @@ extension KanaKanjiConverter {
             // 基準にすると同区間の代替(殺って 等)のコスト差が常に巨大になり、変種として
             // 表示されなくなるため(経路選択には影響しない=表示順位のみの調整)。
             let baseCost = pairCost(chosen, asCurated: false)
+            // ただし curated かな識別(やってる 等、かなが正書の明示登録)の区間では、活用派生の
+            // 漢字化(遣ってる/演ってる/犯ってる 等の俗字)だけ curated 床込みの実コスト差で
+            // 評価する。natural 基準だと delta≈0 で他区間の正当な変種(皆やってる 等)より
+            // 常に上位を占拠してしまう(2404)。単文節経路では従来どおり列挙される。
+            let baseCostCurated = (chosen.isCurated && chosen.surface == chosen.reading)
+                ? pairCost(chosen, asCurated: true)
+                : baseCost
             for altIdx in nodesStartingAt[chosen.start] {
                 let alt = nodes[altIdx]
                 guard alt.end == chosen.end,
@@ -1843,7 +1862,10 @@ extension KanaKanjiConverter {
                     Self.isNonNativeScriptSurface(alt.surface) {
                     continue
                 }
-                let delta = pairCost(alt) - baseCost
+                let effectiveBase = (alt.isInflectionDerived && containsKanji(alt.surface))
+                    ? baseCostCurated
+                    : baseCost
+                let delta = pairCost(alt) - effectiveBase
                 guard delta <= Self.multiClauseVariantMaxDelta else {
                     continue
                 }
