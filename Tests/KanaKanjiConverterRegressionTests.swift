@@ -5955,6 +5955,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // あいちけんさん: 様(さん)は読みとして誤り(旧 fallback seed 由来。様=さま/よう)で
+    // 撤去。産 を名詞漢字接辞に追加し 愛知県産/フランス産 を供給(カタカナ語幹も許可)(2409)
+    func testRegressionRealLMKensanProduce() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let aichi = converter.candidates(for: "あいちけんさん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(aichi.contains("愛知県産"), "aichi=\(aichi)")
+        XCTAssertFalse(aichi.contains("愛知県様"), "aichi=\(aichi)")
+        let france = converter.candidates(for: "ふらんすさん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(france.contains("フランス産"), "france=\(france)")
+    }
+
     // 品詞横断調査(2398): かな正書の閉クラス語(助詞・助動詞)でかなが先頭に出ない/
     // 候補に無いものを是正。ごとく/ごとき/いえども はかなが候補に無かった。
     // ばかり は 計り が先頭だった(漢字は方針どおり2番手残置)。
