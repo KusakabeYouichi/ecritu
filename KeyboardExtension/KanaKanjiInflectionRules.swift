@@ -772,7 +772,11 @@ extension KanaKanjiConverter {
             teForm + "ました",
             teForm + "いました",
             teForm + "ません",
-            teForm + "いません"
+            teForm + "いません",
+            // 仮定の縮約(使ってれば=使っていれば)。無いと れば 単独区間が word_costs の
+            // レバ(肝)しか持たず、使って+レバ の誤合成が先頭化する(2406)
+            teForm + "れば",
+            teForm + "いれば"
         ]
         suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: teForm + "い"))
         suffixes.append(contentsOf: taiAdjectiveFamilyInflectionSuffixes(for: teForm))
