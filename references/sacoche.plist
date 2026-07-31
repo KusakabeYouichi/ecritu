@@ -49,6 +49,7 @@
 	        <dict><key>phrase</key><string>柳月</string><key>shortcut</key><string>りゅうげつ</string></dict>
 	        <dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いておん</string></dict>
 	        <dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
+	        <dict><key>phrase</key><string>木川屋</string><key>shortcut</key><string>ちかえ</string></dict>
 	<!-- 服飾 -->
 	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
@@ -433,6 +434,8 @@
 	<!-- 単漢字 -->
 	        <dict><key>phrase</key><string>髙</string><key>shortcut</key><string>はしごだか</string></dict>
 	        <dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>たつさき</string></dict>
+	        <dict><key>phrase</key><string>嶋</string><key>shortcut</key><string>やまどりのしま</string></dict>
+	        <dict><key>phrase</key><string>濵</string><key>shortcut</key><string>まゆはま</string></dict>
 	        <dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
 </array>
 </plist>
