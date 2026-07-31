@@ -3958,7 +3958,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMUmasouPrefersAdjective() throws {
         try prepareRealLMDictionary()
         let multi = converter.multiClauseCandidates(for: "うまそうではある", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "旨そうではある", "multi=\(multi)")
+        // 2402: seed 先頭かな(うまそう)が派生にも効くようになり かな が先頭(旨そう は2番手)
+        XCTAssertEqual(Array(multi.prefix(2)), ["うまそうではある", "旨そうではある"], "multi=\(multi)")
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("馬そう") }), "multi=\(multi)")
         // 形容動詞+そう(便利そう)は閾値内なのでクランプ維持
         let benri = converter.multiClauseCandidates(for: "べんりそうだ", systemCandidateMode: .surface)
@@ -4066,7 +4067,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
         let single = fresh.candidates(for: "うまそうだ", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(single.first, "旨そうだ", "single=\(single)")
+        // 2402: seed 先頭かな(うまそう)が派生にも効くようになり かな が先頭(旨そう は2番手)
+        XCTAssertEqual(Array(single.prefix(2)), ["うまそうだ", "旨そうだ"], "single=\(single)")
         XCTAssertFalse(single.contains(where: { $0.hasPrefix("馬") }), "single=\(single)")
         // そうだ/そうだね は かな先頭を維持
         XCTAssertEqual(fresh.candidates(for: "そうだ", limit: 4, systemCandidateMode: .surface).first, "そうだ")
@@ -5791,6 +5793,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+
+    // うまいのだ: 説明のコピュラ のだ 付きでかなが末尾落ちしていた(keepKana のだ系未対応+
+    // 派生基底のLM降格が seed かな先頭を覆す+カタカナ強調語幹 ウマい の合成素通りの三重奏)。
+    // 2402 で一般対応: keepKana に のだ/んだ/のです/んです、seed 先頭かな読みは LM 降格免除、
+    // postfix/活用派生の基底に isKatakanaEmphasisBaseCandidate フィルタ。
+    func testRegressionRealLMUmainodaKanaLeading() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "うまいのだ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "うまいのだ", "single=\(single)")
+        XCTAssertTrue(single.contains("旨いのだ"), "single=\(single)")
+        XCTAssertFalse(single.contains("ウマいのだ"), "single=\(single)")
+        XCTAssertFalse(single.contains("ウマイのだ"), "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "うまいのだ"))
+    }
+
+    // すごい: かな正書が主流(LM かな6214<凄い6883)なのに dict は 凄い0 が先頭だった。seed 供給
+    func testRegressionRealLMSugoiKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "すごい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["すごい", "凄い"], "single=\(single)")
+    }
 
     // 品詞横断調査(2398): かな正書の閉クラス語(助詞・助動詞)でかなが先頭に出ない/
     // 候補に無いものを是正。ごとく/ごとき/いえども はかなが候補に無かった。
