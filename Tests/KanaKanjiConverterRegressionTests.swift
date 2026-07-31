@@ -5936,8 +5936,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.contains("経ってたら"), "single=\(single)")
         XCTAssertFalse(single.contains(where: { $0.hasSuffix("等") }), "single=\(single)")
         let multi = converter.multiClauseCandidates(for: "じかんがたってたら", systemCandidateMode: .surface)
-        XCTAssertTrue(multi.contains("時間が経ってたら"), "multi=\(multi)")
+        // 2408: 時間経過の名詞直後は 経つ を最良に(立つ/建つ に減点)
+        XCTAssertEqual(multi.first, "時間が経ってたら", "multi=\(multi)")
         XCTAssertFalse(multi.contains(where: { $0.contains("等") }), "multi=\(multi)")
+        let noParticle = converter.multiClauseCandidates(for: "じかんたってたら", systemCandidateMode: .surface)
+        XCTAssertEqual(noParticle.first, "時間経ってたら", "noParticle=\(noParticle)")
     }
 
     // たぶんさいしょは: BOS 直後の単独助動詞た 断片(た+分+最初は)が A単位 unigram の
@@ -5947,7 +5950,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
         let multi = converter.multiClauseCandidates(for: "たぶんさいしょは", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "多分最初は", "multi=\(multi)")
+        // 2408: たぶん はかな先頭(ユーザー指定。seed+連文節ボーナス)
+        XCTAssertEqual(Array(multi.prefix(2)), ["たぶん最初は", "多分最初は"], "multi=\(multi)")
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
