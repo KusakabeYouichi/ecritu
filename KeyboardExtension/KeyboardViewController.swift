@@ -539,6 +539,8 @@ final class KeyboardViewController: UIInputViewController {
         // どこかで警告2回に達した時点で辞書が永久停止し、「みまん→候補なし」の辞書なし
         // キーボードに退化したまま戻らない(いじょう→異常 だけ残るのは学習語彙経路)。
         diagnosticsState.memoryWarningCountThisSession = 0
+        candidateBarModel.memoryWarningCountForDebugDisplay = 0
+        candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
         kanaKanjiConverter.store.allowSQLiteReopenAfterMemoryPressure()
         kanaKanjiConverter.store.exitConstrainedMemoryCacheMode()
         // サスペンド中に取りこぼした設定変更(学習リセット等)を、世代カウンタの変化で検知して
@@ -698,6 +700,8 @@ final class KeyboardViewController: UIInputViewController {
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         diagnosticsState.memoryWarningCountThisSession += 1
+        // メモリ切迫の可視化(でばぐ表示): かな削除キーの背景色に反映する。
+        candidateBarModel.memoryWarningCountForDebugDisplay = diagnosticsState.memoryWarningCountThisSession
         persistBufferedKeyboardDiagnostics()
         updateKeyboardDiagnosticsHeartbeat(
             event: "メモリ警告受信(\(diagnosticsState.memoryWarningCountThisSession)回目) キャッシュ解放開始",
@@ -739,6 +743,7 @@ final class KeyboardViewController: UIInputViewController {
             let footprintMB = currentFootprintMB() ?? 0
             if footprintMB >= Self.memoryFailSafeCriticalStartMB {
                 kanaKanjiConverter.unloadSystemDictionarySQLiteForMemoryPressure()
+                candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = true
                 appendKeyboardDiagnosticsLog(
                     "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目+footprint臨界のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
                     critical: true,
