@@ -215,6 +215,8 @@ extension KanaKanjiConverter {
     // 数字の後(十三/二十三 等)は正当な 三 なので免除する。
     static let multiClauseHonorificSuffixReadings: Set<String> = ["さん", "さま"]
     static let multiClauseHonorificKanjiPenalty = 3000
+    // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
+    static let multiClauseRegionalProduceBonus = 3000
     // 係助詞「は」直後の「ある」はかなが正書(ではある/にはある/とはある 等の概言・提題)。
     // 有る/在る/或る への漢字化は不自然なので減点し、N-best 変種(maxDelta4000)から落とす
     // (うまそうでは有る 対策)。ある はかな正書動詞(seed ある=[ある,有る,在る] のかな先頭)。
@@ -1574,10 +1576,18 @@ extension KanaKanjiConverter {
                     }
                     // 敬称 さん/さま は数字の後以外では 山/三/桟 等の漢字接尾にならない。
                     // 名前+さん(かな敬称)を優先するため漢字表層に減点(数字直後は免除)。
+                    // 例外: 地域接尾(県/道/府/都 等)直後の 産 は産地表記(愛知県産)なので
+                    // 減点せず、逆に かな敬称(愛知県さん)より優先するボーナスを与える(2410)。
                     if Self.multiClauseHonorificSuffixReadings.contains(node.reading),
                         containsKanji(node.surface),
                         !Self.isNumericContextForHonorific(prevSurface: prevNode.surface, prevReading: prevNode.reading) {
-                        cost += Self.multiClauseHonorificKanjiPenalty
+                        if node.surface == "産",
+                            let prevLast = prevNode.surface.last,
+                            KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLast) {
+                            cost -= Self.multiClauseRegionalProduceBonus
+                        } else {
+                            cost += Self.multiClauseHonorificKanjiPenalty
+                        }
                     }
                     // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
                     // 助詞(から/まで 等)直後の な は正当(遅いからな)なので免除する。
@@ -1880,6 +1890,18 @@ extension KanaKanjiConverter {
                 // (終助詞はかなが正書。カタカナ・漢字化は不自然)。
                 if Self.multiClauseFinalParticleReadings.contains(alt.reading),
                     alt.surface != alt.reading {
+                    continue
+                }
+                // 敬称区間(さん/さま)の漢字表層(三/讃/様 等)も変種として出さない。
+                // 数字直後(だい3 等)と地域接尾直後の 産(愛知県産)は従来どおり許す(2410)。
+                if Self.multiClauseHonorificSuffixReadings.contains(alt.reading),
+                    containsKanji(alt.surface),
+                    !(alt.surface == "産"
+                        && prevSurface.last.map(KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains) == true),
+                    !Self.isNumericContextForHonorific(
+                        prevSurface: prevSurface,
+                        prevReading: pos > 0 ? nodes[pathIndices[pos - 1]].reading : ""
+                    ) {
                     continue
                 }
                 // かな正書の代名詞区間で best がかなを選んでいる場合、旧表記・カタカナへの

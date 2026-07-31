@@ -5962,8 +5962,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.clearSharedDataCaches()
         converter.invalidateCandidateCache()
         let aichi = converter.candidates(for: "あいちけんさん", limit: 6, systemCandidateMode: .surface)
-        XCTAssertTrue(aichi.contains("愛知県産"), "aichi=\(aichi)")
+        // 2410: 地域接尾+産 は敬称さん合成より優先(単文節ブースト+連文節ボーナス)
+        XCTAssertEqual(aichi.first, "愛知県産", "aichi=\(aichi)")
         XCTAssertFalse(aichi.contains("愛知県様"), "aichi=\(aichi)")
+        let aichiMulti = converter.multiClauseCandidates(for: "あいちけんさん", systemCandidateMode: .surface)
+        XCTAssertEqual(aichiMulti.first, "愛知県産", "aichiMulti=\(aichiMulti)")
+        XCTAssertFalse(aichiMulti.contains("愛知県三"), "aichiMulti=\(aichiMulti)")
+        XCTAssertFalse(aichiMulti.contains("愛知県讃"), "aichiMulti=\(aichiMulti)")
+        // 人名+さん(かな敬称)は従来どおり
+        let tanaka = converter.multiClauseCandidates(for: "たなかさん", systemCandidateMode: .surface)
+        XCTAssertEqual(tanaka.first, "田中さん", "tanaka=\(tanaka)")
         let france = converter.candidates(for: "ふらんすさん", limit: 8, systemCandidateMode: .surface)
         XCTAssertTrue(france.contains("フランス産"), "france=\(france)")
     }

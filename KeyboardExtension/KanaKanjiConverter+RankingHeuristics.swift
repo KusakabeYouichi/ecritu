@@ -211,6 +211,30 @@ extension KanaKanjiConverter {
         return protectedCandidates
     }
 
+    // 地域接尾(県/道/府/都/市/町/村/州/郡/国)で終わる語幹+産(産地表記)は、敬称さん
+    // 合成(愛知県さん=bfsPostfix 1040)より優先する(愛知県産/北海道産 等。2410)。
+    // 人名(田中さん)は語幹末尾が地域接尾でないため対象外。
+    static let regionalSuffixCharactersBeforeSan: Set<Character> = [
+        "県", "道", "府", "都", "市", "町", "村", "州", "郡", "国"
+    ]
+    static let regionalProduceBoost = 200
+
+    func applyRegionalProduceBoost(
+        for reading: String,
+        to scores: inout [String: Int]
+    ) {
+        guard reading.hasSuffix("さん") else {
+            return
+        }
+        for candidate in scores.keys
+        where candidate.count >= 3 && candidate.hasSuffix("産") {
+            let beforeSan = candidate[candidate.index(candidate.endIndex, offsetBy: -2)]
+            if Self.regionalSuffixCharactersBeforeSan.contains(beforeSan) {
+                scores[candidate, default: 0] += Self.regionalProduceBoost
+            }
+        }
+    }
+
     func applySeedSingleKanjiPriorityBoost(
         for reading: String,
         to scores: inout [String: Int]
