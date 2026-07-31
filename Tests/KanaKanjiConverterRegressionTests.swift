@@ -5792,6 +5792,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
 
 
+    // 品詞横断調査(2398): かな正書の閉クラス語(助詞・助動詞)でかなが先頭に出ない/
+    // 候補に無いものを是正。ごとく/ごとき/いえども はかなが候補に無かった。
+    // ばかり は 計り が先頭だった(漢字は方針どおり2番手残置)。
+    func testRegressionRealLMClosedClassKanaFirst() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        for (r, expectedPrefix) in [
+            ("ごとく", ["ごとく", "五徳"]),
+            ("ごとき", ["ごとき"]),
+            ("いえども", ["いえども", "雖も"]),
+            ("ばかり", ["ばかり", "計り"]),
+        ] {
+            let single = converter.candidates(for: r, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(single.prefix(expectedPrefix.count)), expectedPrefix, "r=\(r) single=\(single)")
+        }
+        // 比況の連文節(やまのごとく)も かな が出る
+        let multi = converter.multiClauseCandidates(for: "やまのごとく", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.first?.hasSuffix("ごとく") ?? false, "multi=\(multi.prefix(4))")
+    }
+
     // そのた: その他 は Sudachi に単独語が無く(その他の所得 等の複合のみ)、LM unigram も
     // 無い完全な供給欠落=候補なしになっていた。そのた/そのほか とも seed で供給。
     func testRegressionRealLMSonotaSupply() throws {
