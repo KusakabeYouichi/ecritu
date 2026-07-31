@@ -269,6 +269,14 @@ final class KeyboardViewController: UIInputViewController {
     var hasDeferredSharedSettingsCatchUp = false
     var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     var didApplyInactiveSessionMitigation = false
+    // ──── 多重生存の原因特定用センサス(でばぐ計測。後で外す可能性あり)────
+    // 全インスタンスの弱参照レジストリ。セッション開始・非アクティブ降格・メモリ警告時に
+    // 生存一覧とアンカー(window/superview/parent/CF参照数)をログし、「誰が保持しているか」の
+    // 手がかりを残す。弱参照なので保持自体には影響しない。
+    static let liveControllerCensus = NSHashTable<KeyboardViewController>.weakObjects()
+    let controllerCreatedAt: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
+    // 非アクティブ降格を検知した時刻(deinit までのゾンビ滞留時間の計測に使う)
+    var lostActiveOwnershipAt: CFAbsoluteTime = 0
     // 最後に反映済みの設定変更世代。-1 は未初期化(初回表示で現在値に合わせるだけで破棄しない)。
     var lastSeenSettingsChangeGeneration = -1
 
@@ -509,6 +517,7 @@ final class KeyboardViewController: UIInputViewController {
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
         configureInputAssistantBar()
+        Self.liveControllerCensus.add(self)
         startObservingSettingsDidChange()
         applyConverterFeatureFlagsFromSharedDefaults()
         let setupStartedAt = CFAbsoluteTimeGetCurrent()
@@ -523,6 +532,16 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     deinit {
+        if lostActiveOwnershipAt > 0 {
+            let zombieSec = String(format: "%.1f", CFAbsoluteTimeGetCurrent() - lostActiveOwnershipAt)
+            appendKeyboardDiagnosticsLog(
+                "ゾンビ滞留 アクティブ喪失→deinit=\(zombieSec)s controllerID=\(diagnosticsState.diagnosticsControllerID)",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
         finishKeyboardDiagnosticsSession(reason: "deinit")
         keyboardBootstrapWorkItem?.cancel()
         dictionaryPreloadWorkItem?.cancel()
@@ -543,6 +562,7 @@ final class KeyboardViewController: UIInputViewController {
         candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
+        lostActiveOwnershipAt = 0
         kanaKanjiConverter.store.allowSQLiteReopenAfterMemoryPressure()
         kanaKanjiConverter.store.exitConstrainedMemoryCacheMode()
         // サスペンド中に取りこぼした設定変更(学習リセット等)を、世代カウンタの変化で検知して
@@ -709,6 +729,7 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
         diagnosticsState.memoryWarningCountThisSession += 1
+        logLiveControllerCensus(trigger: "memoryWarning")
         // メモリ切迫の可視化(でばぐ表示): かな削除キーの背景色に反映する。
         candidateBarModel.memoryWarningCountForDebugDisplay = diagnosticsState.memoryWarningCountThisSession
         persistBufferedKeyboardDiagnostics()
