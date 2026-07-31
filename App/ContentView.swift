@@ -393,6 +393,8 @@ struct ContentView: View {
     @State var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
     @State private var showsSettingsYAMLCopiedToast = false
+    // 初回フレーム軽量化: 設定カード群は最初の描画後に構築する(起動直後の白背景 Loading 対策)。
+    @State private var didRenderInitialFrame = false
     @Environment(\.scenePhase) private var scenePhase
 
     private let setupSteps: [String] = [
@@ -1004,6 +1006,11 @@ struct ContentView: View {
                             .font(.body)
                             .foregroundStyle(.secondary)
 
+                        // 設定カード群は初回フレーム描画後に遅延構築する(下の .task が1フレーム後に
+                        // フラグを立てる)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
+                        // Loading 表示が長引かないようにする。
+                        if didRenderInitialFrame {
+
                         // ──── キー配列 ────
 
                         KanaLayoutSettingsSection(selection: kanaLayoutSelection)
@@ -1261,10 +1268,20 @@ struct ContentView: View {
                         Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+
+                        } // didRenderInitialFrame
                         }
                         .padding(20)
                     }
                     .disabled(isBootstrappingInitialData)
+            }
+            .task {
+                guard !didRenderInitialFrame else {
+                    return
+                }
+                // 1フレーム分だけ譲ってヘッダーを先に描画してから、カード群を構築する。
+                await Task.yield()
+                didRenderInitialFrame = true
             }
             .onAppear {
                 handleContainerAppAppear()
