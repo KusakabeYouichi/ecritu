@@ -847,6 +847,11 @@ final class KanaKanjiConverter {
             formalNounProbe = String(formalNounProbe.dropLast(interrogativeTail.count))
             break
         }
+        // 格助詞 で は1字だけ剥がしてから照合(ってやつで→ってやつ)。で の一般再帰剥がしは
+        // 名詞+で(ずかんで)や ので の厳格ゲート(たべるので)を迂回してしまうため行わない(2404)。
+        if formalNounProbe.count > 1, formalNounProbe.hasSuffix("で") {
+            formalNounProbe = String(formalNounProbe.dropLast())
+        }
         for noun in KanaKanjiConverter.multiClauseFormalNounKanaReadings
         where formalNounProbe.count > noun.count && formalNounProbe.hasSuffix(noun) {
             let stem = String(formalNounProbe.dropLast(noun.count))
@@ -1029,6 +1034,16 @@ final class KanaKanjiConverter {
         for particle in ["が", "は", "も", "を", "に", "へ", "と"]
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
+        // 指示連体詞(この/その/あの/どの)で終わる読みは、剥がした語幹がかな正書の識別なら
+        // 根拠あり(みんなこの→みんな: エンジンはかな最良なのに keepKana 不成立で 皆この が
+        // 繰り上がるのを防ぐ。2404)。
+        for demonstrative in ["この", "その", "あの", "どの"]
+        where normalized.count > demonstrative.count && normalized.hasSuffix(demonstrative) {
+            let stem = String(normalized.dropLast(demonstrative.count))
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
                 return true
             }
