@@ -2486,6 +2486,8 @@
 	<dict><key>phrase</key><string>座覇</string><key>shortcut</key><string>ざは</string></dict>
 	<dict><key>phrase</key><string>座波</string><key>shortcut</key><string>ざは</string></dict>
 	<dict><key>phrase</key><string>サバクイ</string><key>shortcut</key><string>さばくい</string></dict>
+	<dict><key>phrase</key><string>䚮理</string><key>shortcut</key><string>さばくい</string></dict>
+	<dict><key>phrase</key><string>䚮理</string><key>shortcut</key><string>さばくり</string></dict>
 	<dict><key>phrase</key><string>サバニ</string><key>shortcut</key><string>さばに</string></dict>
 	<dict><key>phrase</key><string>ザ・ブセナテラスビーチ</string><key>shortcut</key><string>ざぶせなてらすびーち</string></dict>
 	<dict><key>phrase</key><string>サプライ号</string><key>shortcut</key><string>さぷらいごう</string></dict>
