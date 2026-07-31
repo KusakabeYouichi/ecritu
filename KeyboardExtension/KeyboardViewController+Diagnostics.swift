@@ -161,10 +161,66 @@ extension KeyboardViewController {
             // observer を再登録する(2411)。
             stopObservingSettingsDidChange()
             stopMarkedTextWatchdog()
+            if lostActiveOwnershipAt == 0 {
+                lostActiveOwnershipAt = CFAbsoluteTimeGetCurrent()
+                logLiveControllerCensus(trigger: "inactive-\(reason)")
+                scheduleZombieSurvivalCanary()
+            }
             didApplyInactiveSessionMitigation = true
         }
 
         return true
+    }
+
+    // ──── 多重生存センサス(原因特定用のでばぐ計測)────
+    // 生存インスタンス一覧を UIKit アンカー付きでログする。window/superview/parent が全て無く
+    // 当方保持(hosting/observer/watchdog)も無いのに CF参照数が残っていれば、保持者は
+    // プロセス外=UIKit/システム側と確定できる。
+    func instanceAnchorSummary() -> String {
+        let v = viewIfLoaded
+        let age = String(format: "%.1f", CFAbsoluteTimeGetCurrent() - controllerCreatedAt)
+        let zombieSec = lostActiveOwnershipAt > 0
+            ? String(format: "%.1f", CFAbsoluteTimeGetCurrent() - lostActiveOwnershipAt)
+            : "-"
+        return "id=\(diagnosticsState.diagnosticsControllerID.prefix(8)) age=\(age)s zombie=\(zombieSec)s"
+            + " window=\(v?.window != nil) superview=\(v?.superview != nil)"
+            + " parentVC=\(parent != nil) hosting=\(hostingController != nil)"
+            + " observing=\(isObservingSettingsDidChange)"
+            + " retain=\(CFGetRetainCount(self))"
+    }
+
+    func logLiveControllerCensus(trigger: String) {
+        let controllers = KeyboardViewController.liveControllerCensus.allObjects
+        guard controllers.count >= 2 else {
+            return
+        }
+        let summaries = controllers.map { $0.instanceAnchorSummary() }.joined(separator: " | ")
+        appendKeyboardDiagnosticsLog(
+            "多重生存センサス alive=\(controllers.count) trigger=\(trigger) [\(summaries)]",
+            critical: true,
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+    }
+
+    // ゾンビ・カナリア: 降格から一定時間後に弱参照で生存確認し、まだ生きていれば
+    // アンカーを再ダンプする(何も強参照しないので延命はしない)。
+    func scheduleZombieSurvivalCanary() {
+        for delay in [30.0, 120.0] {
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self, self.lostActiveOwnershipAt > 0 else {
+                    return
+                }
+                self.appendKeyboardDiagnosticsLog(
+                    "ゾンビ生存確認 +\(Int(delay))s \(self.instanceAnchorSummary())",
+                    critical: true,
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+            }
+        }
     }
 
     func performHiddenKeyboardMemoryTrim(
