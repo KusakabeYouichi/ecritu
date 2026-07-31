@@ -251,6 +251,8 @@ extension KeyboardRootView {
                     repeatsWhileHolding: true,
                     repeatInitialDelay: keyRepeatInitialDelay,
                     repeatInterval: keyRepeatInterval,
+                    backgroundColorOverride: memoryPressureDeleteKeyColor,
+                    cornerBadgeText: memoryPressureDeleteKeyBadge,
                     action: onDeleteBackward
                 )
                     .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)
@@ -522,6 +524,8 @@ extension KeyboardRootView {
                 repeatsWhileHolding: true,
                 repeatInitialDelay: keyRepeatInitialDelay,
                 repeatInterval: keyRepeatInterval,
+                backgroundColorOverride: memoryPressureDeleteKeyColor,
+                cornerBadgeText: memoryPressureDeleteKeyBadge,
                 action: onDeleteBackward
             )
                 .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)

@@ -10,6 +10,10 @@ final class KeyboardCandidateBarModel: ObservableObject {
     @Published var selectedConversionCandidateIndex: Int? = nil
     @Published var latinSuggestionQuery: String = ""
     @Published var latinSuggestions: [String] = []
+    // メモリ切迫の可視化(でばぐ用途。後で取り除く可能性あり)。かな削除キーの背景色に反映:
+    // 1回目=黄 / 2回目以降=橙+回数 / 2回目以降+footprint臨界(sqliteアンロード)=えんじ。
+    @Published var memoryWarningCountForDebugDisplay: Int = 0
+    @Published var memoryPressureSQLiteUnloadedForDebugDisplay: Bool = false
 }
 
 enum KeyboardThemePalette {

@@ -105,6 +105,10 @@ struct ActionKeyButton: View {
     var repeatsWhileHolding = false
     var repeatInitialDelay: TimeInterval = 0.5
     var repeatInterval: TimeInterval = 0.1
+    // メモリ切迫の可視化(でばぐ表示)等、キー背景を状態色で塗り替えたいときに使う。
+    var backgroundColorOverride: Color? = nil
+    // キー左下隅の小さな注記(メモリ警告回数 等)。
+    var cornerBadgeText: String? = nil
     let action: () -> Void
     @State private var didTriggerLongPress = false
     @State private var pendingSingleTapWorkItem: DispatchWorkItem?
@@ -136,12 +140,22 @@ struct ActionKeyButton: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .fill(isEnabled ? KeyboardThemePalette.keyBackground : KeyboardThemePalette.keyBackgroundDisabled)
+                    .fill(backgroundColorOverride
+                        ?? (isEnabled ? KeyboardThemePalette.keyBackground : KeyboardThemePalette.keyBackgroundDisabled))
             )
             .overlay(
                 RoundedRectangle(cornerRadius: 10, style: .continuous)
                     .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
             )
+            .overlay(alignment: .bottomLeading) {
+                if let cornerBadgeText {
+                    Text(cornerBadgeText)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(keyLabelColor)
+                        .padding(.leading, 4)
+                        .padding(.bottom, 2)
+                }
+            }
         }
         .disabled(!isEnabled)
         .accessibilityLabel(accessibilityLabel ?? title)

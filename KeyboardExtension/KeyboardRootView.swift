@@ -946,6 +946,29 @@ struct KeyboardRootView: View {
     let landscapeLatinTypewriterMiddleRowOffsetFactor: CGFloat = 0.25
     let landscapeLatinTypewriterBottomRowOffsetFromMiddleFactor: CGFloat = 0.5
 
+    // メモリ切迫の可視化(でばぐ表示。後で取り除く可能性あり)。かな削除キーの背景色:
+    // 警告1回目=黄 / 2回目以降=橙+左下に回数 / 2回目以降+footprint臨界(sqliteアンロード)=えんじ。
+    var memoryPressureDeleteKeyColor: Color? {
+        if candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay {
+            // えんじ(臙脂)#A22041
+            return Color(red: 162.0 / 255.0, green: 32.0 / 255.0, blue: 65.0 / 255.0).opacity(0.92)
+        }
+        switch candidateBarModel.memoryWarningCountForDebugDisplay {
+        case 0:
+            return nil
+        case 1:
+            return Color.yellow.opacity(0.85)
+        default:
+            return Color.orange.opacity(0.9)
+        }
+    }
+
+    var memoryPressureDeleteKeyBadge: String? {
+        candidateBarModel.memoryWarningCountForDebugDisplay >= 2
+            ? String(candidateBarModel.memoryWarningCountForDebugDisplay)
+            : nil
+    }
+
     @ViewBuilder
     func inlineLatinDeleteKey(fixedWidth: CGFloat? = nil) -> some View {
         let deleteKey = ActionKeyButton(
