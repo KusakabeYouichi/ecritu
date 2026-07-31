@@ -97,6 +97,18 @@ extension KanaKanjiConverter {
         }
         return first
     }
+    // 時間経過の名詞(直後の たつ 活用は 経つ が正書。立つ/建つ は不自然)。
+    static let multiClauseTemporalElapseNounSurfaces: Set<String> = [
+        "時間", "時", "月日", "年月", "歳月", "日にち", "日数", "とき", "日"
+    ]
+    // たつ 活用の表層先頭漢字(経 以外の たつ 族への減点判定に使う)。
+    static func tatsuVerbLeadingKanji(of surface: String) -> Character? {
+        guard let first = surface.first,
+            "立建経断絶発起勃佇".contains(first) else {
+            return nil
+        }
+        return first
+    }
     // 名詞表層が人物らしいか(語彙一致 or 敬称接尾 or 敬称単独ノード)。
     // 田中さん が 田中+さん に分割されると直前ノードが「さん」単独になるため、敬称そのものも
     // 人物シグナルとして扱う(名前は無限で網羅できないが 敬称付きは高確度で人物)。
@@ -135,7 +147,9 @@ extension KanaKanjiConverter {
         // 短span床(かな識別=wc7460 床上げ)ぶんを跨いで反転する値
         "みな": 3300,
         // にた は 似た が辞書に無く seed 供給(dictUnknown 8700)。かな にた(wc8000 床)との差を反転
-        "にた": 2000
+        "にた": 2000,
+        // たぶん はかな先頭(ユーザー指定)。LM 多分6808<たぶん7079 の僅差を反転
+        "たぶん": 800
     ]
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
@@ -1585,6 +1599,22 @@ extension KanaKanjiConverter {
                         node.surface == "漢字",
                         Self.multiClauseDemonstrativeSurfaces.contains(prevNode.surface) {
                         cost += Self.multiClauseDemonstrativeKanjiPenalty
+                    }
+                    // 時間経過の名詞(時間/月日 等。助詞 が/も/は 任意)直後の たつ 活用は
+                    // 経つ が正書。経 以外の たつ 族表層(立/建 等)に減点(あう の人物性
+                    // 判定と同型。時間が経ってたら を最良に)(2408)。
+                    if let tatsuKanji = Self.tatsuVerbLeadingKanji(of: node.surface),
+                        tatsuKanji != "経",
+                        node.reading.hasPrefix("たっ") || node.reading.hasPrefix("たつ") || node.reading.hasPrefix("たち") {
+                        let nounSurface: String?
+                        if prevNode.surface == "が" || prevNode.surface == "も" || prevNode.surface == "は" {
+                            nounSurface = backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil
+                        } else {
+                            nounSurface = prevNode.surface
+                        }
+                        if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface) {
+                            cost += Self.multiClauseAuPersonMismatchPenalty
+                        }
                     }
                     if cost < best[idx] {
                         best[idx] = cost
