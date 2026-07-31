@@ -39,10 +39,11 @@
 
   <h3 id="number-layout">数字配列</h3>
   <div class="tablewrap"><table class="spec">
-    <tr><th>選択肢</th><td>calculette / téléphone / clavier</td></tr>
-    <tr><th>既定</th><td>calculette</td></tr>
+    <tr><th>数字入力</th><td>calculette / téléphone / clavier(既定: calculette)</td></tr>
+    <tr><th>書式化数値入力</th><td>calculette / téléphone(既定: calculette)</td></tr>
   </table></div>
-  <p>123 モードの数字キー配列を切り替えます。calculette(電卓)は上段が 7-8-9、téléphone(電話)は上段が 1-2-3 です。clavier は AZERTY 風の数字+記号配列で、shift で 2 種類の記号セットを切り替えられます。ただし clavier は縦画面のみの対応で、横画面では自動的に calculette が使われます。詳細は<a href="layouts-latin-number.html">第8章(続) 英字・数字</a>へ。</p>
+  <p><b>数字入力</b>は 123 モードの数字キー配列を切り替えます。calculette(電卓)は上段が 7-8-9、téléphone(電話)は上段が 1-2-3 です。clavier は AZERTY 風の数字+記号配列で、shift で 2 種類の記号セットを切り替えられます。ただし clavier は縦画面のみの対応で、横画面では自動的に calculette が使われます。詳細は<a href="layouts-latin-number.html">第8章(続) 英字・数字</a>へ。</p>
+  <p><b>書式化数値入力</b>は<a href="symbols.html#formatted-numbers">書式化数値の入力モード</a>のテンキー配列です(こちらは calculette と téléphone の 2 択)。</p>
 
   <h3 id="basic-symbol-order">基本記号の並び順</h3>
   <div class="tablewrap"><table class="spec">
@@ -110,7 +111,7 @@
     <tr><th>Séparateur décimal</th><td>. / ,(既定: .)</td></tr>
     <tr><th>単位の積の記号</th><td>U+00B7 / U+22C5 / U+0020(既定: U+00B7)</td></tr>
   </table></div>
-  <p>書式化数値入力モード(<a href="layouts-kana.html#emoji-switcher-key">かな左下キー</a>の<b>長押し</b>で開く、数値・単位・通貨・カレンダーの入力モード)で使う記号の設定です。3 つのサブ項目があります。</p>
+  <p><a href="symbols.html#formatted-numbers">書式化数値の入力モード</a>(かな左下キーの<b>長押し</b>で開く、数値・単位・金額・日付の入力モード)で使う記号の設定です。3 つのサブ項目があります。</p>
   <p><b>Séparateur de milliers(千位区切り)</b>は、キーボード側の <kbd>sep mil</kbd> トグルがオンのときに 3 桁ごとに挿入される区切り記号です。espace(スペース)・カンマ・ピリオドから選べます。「que quatre」をオンにすると 4 桁の数値(1234 など)にも区切りを付けます(オフの場合、4 桁だけは例外として区切りません)。</p>
   <p><b>Séparateur décimal(小数点)</b>はピリオドとカンマの 2 択で、入力キーの表示と機能に反映されます。国際単位系(SI)では小数点はピリオドまたはカンマのいずれか、と規定されています。</p>
   <p><b>単位の積の記号</b>は N·m のような組立単位の積に使う記号です。U+00B7 は一般のテキストや単位の積を表す中黒、U+22C5 は数学的なドット演算子、U+0020 は 1 文字分のスペースです。</p>
@@ -122,7 +123,7 @@
     <tr><th>日曜列・土曜列・金曜列の色</th><td>各列オン / オフ(既定: すべてオフ)+ 4 色から選択</td></tr>
     <tr><th>日付書式</th><td>日本式 / フランス式 / 英国式 / 米国式(既定: 日本式)</td></tr>
   </table></div>
-  <p>書式化数値入力モードのカレンダーカテゴリー(📅)の設定です。カレンダーグリッドの週の開始曜日、曜日行の言語(日本語・英語・フランス語)、曜日列の色付けを選べます。色は日曜・金曜が赤系 4 色(bordeaux / bourgogne / DIC-156 / DIC-F101)、土曜が青系 4 色(DIC-641 / DIC-F46 / DIC-156 / DIC-F101)からのチューザーです。</p>
+  <p><a href="symbols.html#formatted-numbers-calendar">書式化数値の入力モードのカレンダーカテゴリー(📅)</a>の設定です。カレンダーグリッドの週の開始曜日、曜日行の言語(日本語・英語・フランス語)、曜日列の色付けを選べます。色は日曜・金曜が赤系 4 色(bordeaux / bourgogne / DIC-156 / DIC-F101)、土曜が青系 4 色(DIC-641 / DIC-F46 / DIC-156 / DIC-F101)からのチューザーです。</p>
   <p><b>日付書式</b>は、カレンダーで日を選んで確定するときの書式ドラムの候補一覧を切り替えます。日本式は「3月4日」「2026年3月4日 (水)」のような年月日表記、フランス式は「4/03/2026」「4 mars 2026」、英国式は「4/3/2026」「4 March 2026」、米国式は「3/4/2026」「March 4, 2026」の系統で、月名・曜日名もその方式の言語に切り替わります。</p>
 
   <h3 id="latin-lexicon">欧文サジェスチョンの言語</h3>
