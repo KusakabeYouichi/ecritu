@@ -510,6 +510,37 @@ extension KanaKanjiConverter {
 
 // MARK: - カタカナ強調表記/交ぜ書きの分類(コンテナ設定 [抑制/後方/同列] の対象判定)
 extension KanaKanjiConverter {
+    // 語幹単位のカタカナ強調判定(postfix 合成前フィルタ用)。単語単位の
+    // applyScriptVariantCandidateModes は合成後の全長読み(うまいのだ 等)に対して働くが、
+    // 合成読みには全漢字の代替候補が存在し得ないため外来語保護が誤作動し、ウマい+のだ の
+    // ようなカタカナ化語幹の合成が素通りしていた(2402)。語幹の段階で単語単位と同じ
+    // 判定(seed/学習/追加語彙は対象外、LM でカタカナ側が最安なら外来語として保護)を行う。
+    func isKatakanaEmphasisBaseCandidate(_ candidate: String, reading: String) -> Bool {
+        guard katakanaEmphasisCandidateMode == .suppress,
+            candidate != reading,
+            let hira = Self.hiraganizedKanaOnlySurface(candidate),
+            hira == reading,
+            !(KanaKanjiSeedDictionary.seed[reading]?.contains(candidate) ?? false),
+            !(KanaKanjiSeedDictionary.exactReadingOnlySeed[reading]?.contains(candidate) ?? false),
+            !Self.katakanaRunsAreSeedProtected(candidate) else {
+            return false
+        }
+        if (store.userDictionary()[reading] ?? []).contains(candidate)
+            || (store.learnedDictionary()[reading] ?? []).contains(candidate) {
+            return false
+        }
+        let uni = store.wordLMUnigramCosts(for: [candidate, reading])
+        if let kataUni = uni[candidate] {
+            // カタカナ側が LM 収録: かな識別より安ければ正当な外来語表記(パン 等)
+            guard let kanaUni = uni[reading] else {
+                return false
+            }
+            return kanaUni < kataUni
+        }
+        // LM 未収録のカタカナ化は、かな/漢字の代替が実在する限り強調(単語単位と同基準)
+        return uni[reading] != nil
+            || store.wordCosts(for: reading).keys.contains { Self.containsKanjiCandidate($0) }
+    }
     // 定着した交ぜ書き(常用漢字外回避ではなく主流表記になっているもの)。分類から除外する。
     static let mazegakiAllowlistedSurfaces: Set<String> = ["子ども", "子どもたち", "子どもの日"]
 
