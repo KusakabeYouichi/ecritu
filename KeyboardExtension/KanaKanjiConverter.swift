@@ -901,6 +901,28 @@ final class KanaKanjiConverter {
         if systemCandidates(for: normalized, mode: .lesDeux).contains(normalized) {
             return true
         }
+        // 形容詞化の ない 系を剥がした語幹が「辞書のかな語」かつ「LM でかな優位」なら
+        // かなが正書(もったいない: もったい 7272<勿体 7715。読み全体は辞書/LM に無い)。
+        // 知らない 等は語幹の漢字(白/知ら…)が LM 優位なので発火しない(2406)。
+        for tail in ["なかった", "なくて", "ない"]
+        where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
+            let stem = String(normalized.dropLast(tail.count))
+            let stemCandidates = systemCandidates(for: stem, mode: .lesDeux)
+            guard stemCandidates.contains(stem) else { continue }
+            let kanjiOthers = stemCandidates.filter { $0 != stem && Self.containsKanjiCandidate($0) }
+            if !kanjiOthers.isEmpty, isLMKanaPreferred(reading: stem, among: kanjiOthers) {
+                return true
+            }
+        }
+        // 辞書に読みエントリが無い派生専用のかな語(もったいない 等=勿体+ない の合成のみ)は、
+        // LM unigram にかな表層が実在すれば かなが正書の証拠とする。Wikipedia は漢字寄りの
+        // コーパスなので、かな表層が収録されている時点で強いシグナル。辞書エントリがある読み
+        // (ばあい=場合 等)は対象外(2406)。
+        if normalized.count >= 4,
+            store.wordCosts(for: normalized).isEmpty,
+            store.wordLMUnigramCosts(for: [normalized])[normalized] != nil {
+            return true
+        }
         // 理由の ので 付きの読みは、剥がした語幹が seed でかな先頭に固定された正書のかな語
         // (ある/いる 等)のときだけ根拠ありとする(いるので/あるので: かなを #2 位置維持で残す)。
         // たべる/みる 等は dict rank2 に かな harvest があり systemCandidates.contains では拾えて
@@ -1037,6 +1059,12 @@ final class KanaKanjiConverter {
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
                 return true
             }
+        }
+        // 指示代名詞+で(これで/それで/ここで 等)はかなが正書。で の一般剥がしは
+        // 名詞+で(ずかんで)を巻き込むため、かな正書の指示代名詞語幹に限定する(2406)。
+        if normalized.count > 1, normalized.hasSuffix("で"),
+            KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems.contains(String(normalized.dropLast())) {
+            return true
         }
         // 指示連体詞(この/その/あの/どの)で終わる読みは、剥がした語幹がかな正書の識別なら
         // 根拠あり(みんなこの→みんな: エンジンはかな最良なのに keepKana 不成立で 皆この が
