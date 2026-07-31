@@ -1442,11 +1442,12 @@ extension KanaKanjiConverter {
             if reading.count >= 2, reading.hasSuffix("っ"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
-            // 助動詞「た」の単独ノードは格助詞直後に立てない(非文法)。同じく A単位分割由来の
-            // bigram(に→た 等)が断片チェーン(に+た+やつ=にたやつ 等)を不当に安くし、
-            // 正しい活用ノード(似た)を阻むため遮断する(2404)。
+            // 助動詞「た」の単独ノードは格助詞直後・文頭に立てない(非文法)。A単位分割由来の
+            // 安い unigram/bigram(に→た 等)が断片チェーン(に+た+やつ=にたやつ、
+            // た+分+最初=たぶん最初 等)を不当に安くし、正しいノード(似た/たぶん)を
+            // 阻むため遮断する(2404/2407)。
             if reading == "た", surface == "た",
-                Self.multiClauseCaseParticleSurfaces.contains(prev) {
+                prev == Self.multiClauseBOSMarker || Self.multiClauseCaseParticleSurfaces.contains(prev) {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
             // カタカナ強調/交ぜ書きモードのノード別ペナルティ(suppress=100000/demote=6000)
