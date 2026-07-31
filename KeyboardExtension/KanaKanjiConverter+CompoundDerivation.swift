@@ -119,7 +119,9 @@ extension KanaKanjiConverter {
         ("か", "可"),
         ("か", "化"),
         ("か", "科"),
-        ("か", "下")
+        ("か", "下"),
+        // 産地表記(愛知県産/フランス産 等)。地名に限らず名詞+産 は生産的(2409)
+        ("さん", "産")
     ]
 
     // 名詞に付く生産的な漢字接頭辞(別会社・別人物・別商品…)。接頭辞漢字+語幹(名詞)。
@@ -567,7 +569,7 @@ extension KanaKanjiConverter {
                     initialUserDictionary: initialUserDictionary,
                     systemCandidateMode: systemCandidateMode
                 )
-            ).filter { containsKanji($0) }
+            ).filter { containsKanjiOrKatakana($0) }
         }
 
         var derived: [String] = []
