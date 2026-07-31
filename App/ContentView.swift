@@ -971,22 +971,9 @@ struct ContentView: View {
                             selection: delimiterAutoCommitCandidateSelection
                         )
 
-                        VStack(alignment: .leading, spacing: 10) {
-                            Text("かな漢字候補モード")
-                                .font(.headline)
-
-                            Picker("かな漢字候補モード", selection: kanaKanjiCandidateSourceModeSelection) {
-                                ForEach(KanaKanjiCandidateSourceModeOption.allCases) { option in
-                                    Text(option.title).tag(option)
-                                }
-                            }
-                            .pickerStyle(.segmented)
-
-                            Text("システム辞書候補の採用基準を切り替えます。surface(既定) / normalisé / les deux を選べます。")
-                                .font(.footnote)
-                                .foregroundStyle(.secondary)
-                        }
-                        .settingsCardStyle()
+                        KanaKanjiCandidateSourceModeSettingsSection(
+                            selection: kanaKanjiCandidateSourceModeSelection
+                        )
 
                         HistoricalKanaCandidatesSettingsSection(
                             isEnabled: $historicalKanaCandidatesEnabled

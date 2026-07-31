@@ -532,6 +532,21 @@ struct DelimiterAutoCommitCandidateSettingsSection: View {
     }
 }
 
+struct KanaKanjiCandidateSourceModeSettingsSection: View {
+    @Binding var selection: KanaKanjiCandidateSourceModeOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "かな漢字候補モード",
+            pickerTitle: "かな漢字候補モード",
+            selection: $selection,
+            options: Array(KanaKanjiCandidateSourceModeOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "システム辞書候補の採用基準を切り替えます。surface(既定) / normalisé / les deux を選べます。"
+        )
+    }
+}
+
 struct ContactCandidateDisplaySettingsSection: View {
     @Binding var selection: ContactCandidateDisplayModeOption
 
