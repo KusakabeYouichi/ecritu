@@ -5880,6 +5880,52 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にたやつがある"))
     }
 
+    // これで/それで 等の指示代名詞+で はかなが正書(keepKana)。学習済みのかな識別が
+    // 学習リセットで消えると素の穴が露出していた(2406)。で の一般剥がしは名詞+で
+    // (ずかんで)を巻き込むため、かな正書の指示代名詞語幹に限定。
+    func testRegressionRealLMKoredeKanaLeading() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "これで"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "それで"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ここで"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんで"))
+        let single = converter.candidates(for: "これで", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "これで", "single=\(single)")
+    }
+
+    // もったいない: 辞書に読みエントリが無い合成専用のかな形容詞。ない 系剥がし語幹の
+    // 辞書かな×LM優位(もったい7272<勿体7715)を keepKana の根拠に追加(2406)
+    func testRegressionRealLMMottainaiKanaLeading() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "もったいない"))
+        let single = converter.candidates(for: "もったいない", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "もったいない", "single=\(single)")
+    }
+
+    // ちかい: 誓(レア名詞収穫)が dict rank0 で 近い より先頭だった。seed 供給(2406)
+    func testRegressionRealLMChikaiOrder() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ちかい", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["近い", "誓い"], "single=\(single)")
+    }
+
+    // つかってれば: て形+れば(ている已然縮約)が活用供給に無く、れば 単独区間が
+    // word_costs の レバ(肝)しか持たないため 使って+レバ が先頭化していた(2406)
+    func testRegressionRealLMTsukattereba() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "つかってれば", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "使ってれば", "single=\(single)")
+        XCTAssertFalse(single.contains("使ってレバ"), "single=\(single)")
+    }
+
     // 品詞横断調査(2398): かな正書の閉クラス語(助詞・助動詞)でかなが先頭に出ない/
     // 候補に無いものを是正。ごとく/ごとき/いえども はかなが候補に無かった。
     // ばかり は 計り が先頭だった(漢字は方針どおり2番手残置)。
