@@ -152,6 +152,12 @@ extension KanaKanjiConverter {
         guard ordered.contains(reading) else {
             return ordered
         }
+        // seed がかな識別を明示先頭にしている読み(うまい 等)は LM 比較で降格しない。
+        // 同表記レア読み(甘い=うまい 等)の安い unigram が比較を汚し、seed の並びを
+        // 覆してしまう(うまいのだ の派生でかなが末尾落ち。2402)。
+        if KanaKanjiSeedDictionary.seed[reading]?.first == reading {
+            return ordered
+        }
         let others = ordered.filter { $0 != reading }
         guard !others.isEmpty else {
             return ordered
