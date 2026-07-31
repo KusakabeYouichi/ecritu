@@ -487,6 +487,13 @@ extension KanaKanjiConverter {
                 continue
             }
 
+            // 純ひらがな表層は文語形容詞の表記ゆらぎではないので対象外。
+            // ばかり(副助詞)が 基底ばい(倍)経由で誤って全滅していた(2398)。
+            guard containsKanjiOrKatakana(candidate) else {
+                filtered.append(candidate)
+                continue
+            }
+
             let stem = String(candidate.dropLast(2))
             let modernIAdjective = stem + "い"
 
