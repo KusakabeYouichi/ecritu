@@ -541,6 +541,8 @@ final class KeyboardViewController: UIInputViewController {
         diagnosticsState.memoryWarningCountThisSession = 0
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
+        // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
+        startObservingSettingsDidChange()
         kanaKanjiConverter.store.allowSQLiteReopenAfterMemoryPressure()
         kanaKanjiConverter.store.exitConstrainedMemoryCacheMode()
         // サスペンド中に取りこぼした設定変更(学習リセット等)を、世代カウンタの変化で検知して
@@ -699,6 +701,13 @@ final class KeyboardViewController: UIInputViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        // 多重生存中の非アクティブ(ゾンビ)側は軽量対応のみ: キャッシュを解放して終わる。
+        // フェイルセーフ昇格・LM縮小・警告回数のカウントはアクティブ側に任せる(ゾンビの
+        // 重複反応で回数が水増しされ、削除キーの可視化も実態とずれるため。2411)。
+        if shouldSuppressHeavyOperations(reason: "didReceiveMemoryWarning") {
+            kanaKanjiConverter.clearAllCaches()
+            return
+        }
         diagnosticsState.memoryWarningCountThisSession += 1
         // メモリ切迫の可視化(でばぐ表示): かな削除キーの背景色に反映する。
         candidateBarModel.memoryWarningCountForDebugDisplay = diagnosticsState.memoryWarningCountThisSession
