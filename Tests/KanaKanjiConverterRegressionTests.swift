@@ -5955,6 +5955,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // ばいぐらいに: 倍(助数詞)が dict rank6 で 杯ぐらいに が先頭だった。seed {倍、杯}(2414)
+    func testRegressionRealLMBaiGurainiOrder() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "ばいぐらいに", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "倍ぐらいに", "multi=\(multi)")
+        let bai = converter.candidates(for: "ばい", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(bai.prefix(2)), ["倍", "杯"], "bai=\(bai)")
+    }
+
     // あいちけんさん: 様(さん)は読みとして誤り(旧 fallback seed 由来。様=さま/よう)で
     // 撤去。産 を名詞漢字接辞に追加し 愛知県産/フランス産 を供給(カタカナ語幹も許可)(2409)
     func testRegressionRealLMKensanProduce() throws {
