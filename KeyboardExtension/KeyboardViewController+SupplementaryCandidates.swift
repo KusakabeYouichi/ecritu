@@ -113,7 +113,7 @@ extension KeyboardViewController {
         // 旧スキームで生成された「候補側カナ抽出キー」混入キャッシュが
         // 起動毎に in-memory へ復活し続けてしまう。
         let storedSignature = defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) ?? ""
-        guard storedSignature.hasPrefix("v2:") else {
+        guard storedSignature.hasPrefix("v3:") else {
             defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
             defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
             return
@@ -187,14 +187,17 @@ extension KeyboardViewController {
             }
 
             let pairHash = stableSupplementaryHash(userInput) ^ (stableSupplementaryHash(candidate) &* 1099511628211)
-            aggregateHash ^= pairHash
-            aggregateHash = aggregateHash &* 1099511628211
+            // 順序非依存の合成(XOR のみ)。UILexicon のエントリ順は取得ごとに保証されず、
+            // 旧実装(XOR→乗算の順序依存)では同一内容でも署名が毎回変わり、永続
+            // インデックスキャッシュが常に miss →毎セッション再構築(+8〜16MB のスパイク)
+            // でメモリ警告の主因になっていた(2413)。
+            aggregateHash ^= pairHash &* 1099511628211
             entryCount += 1
         }
 
-        // v2: 補助語彙のインデックスから候補側カナ抽出キーを除外したバージョン。
-        // インデックス化ロジックを変更したら必ずバージョンを上げてキャッシュ無効化する。
-        return "v2:\(entryCount):\(String(aggregateHash, radix: 16))"
+        // v3: 署名を順序非依存化。インデックス化ロジックを変更したら必ずバージョンを上げて
+        // キャッシュ無効化する。
+        return "v3:\(entryCount):\(String(aggregateHash, radix: 16))"
     }
 
     func stableSupplementaryHash(_ value: String) -> UInt64 {
