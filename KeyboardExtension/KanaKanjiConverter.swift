@@ -998,7 +998,8 @@ final class KanaKanjiConverter {
         // かな語(ひらがな/ある 等)なら根拠ありとする(ひらがなのは/あるのね: 合成でかな
         // 全文一致になるが、かなが正書の語幹+かなが唯一の正書の節、なので変換としてのかなを
         // 候補に残す。提示層は 2122 の位置維持で上位2件ならその位置を保つ)。
-        for suffix in ["のは", "のが", "のも", "のを", "のに", "のね", "のよ"] where normalized.hasSuffix(suffix) {
+        // のだ/んだ/のです/んです(説明のコピュラ)も同型: うまいのだ→うまい(辞書のかな語)。
+        for suffix in ["のは", "のが", "のも", "のを", "のに", "のね", "のよ", "のです", "んです", "のだ", "んだ"] where normalized.hasSuffix(suffix) {
             var stem = String(normalized.dropLast(suffix.count))
             // コピュラ「な」を挟む形(ひらがなな+のは=ひらがな+な+のは)は な も剥がす。
             if stem.count >= 3, stem.hasSuffix("な") {
