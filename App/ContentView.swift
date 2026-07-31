@@ -873,18 +873,9 @@ struct ContentView: View {
                             .font(.body)
                             .foregroundStyle(.secondary)
 
-                        DirectionSettingsSection(selection: directionSelection)
-
-                        KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
+                        // ──── キー配列 ────
 
                         KanaLayoutSettingsSection(selection: kanaLayoutSelection)
-
-                        LandscapeCandidateSideSettingsSection(
-                            selection: landscapeCandidateSideSelection,
-                            latinSuggestionMode: landscapeLatinSuggestionModeSelection
-                        )
-
-                        LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
 
                         LatinLayoutSettingsSection(selection: latinLayoutSelection)
 
@@ -893,35 +884,13 @@ struct ContentView: View {
                             formattedNumberKeypad: formattedNumberKeypadSelection
                         )
 
-                        FormatNumeriqueSettingsSection(
-                            thousandsSeparator: numberThousandsSeparatorSelection,
-                            groupFourDigits: $numberGroupFourDigits,
-                            decimalSeparator: numberDecimalSeparatorSelection,
-                            unitProductSeparator: numberUnitProductSeparatorSelection
-                        )
-
-                        CalendarSettingsGroupSection(
-                            weekStart: calendarWeekStartSelection,
-                            weekdayLanguage: calendarWeekdayLanguageSelection,
-                            sundayColor: calendarSundayColorSelection,
-                            fridayColor: calendarFridayColorSelection,
-                            saturdayColor: calendarSaturdayColorSelection,
-                            dateFormatStyle: dateFormatStyleSelection
-                        )
-
                         BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
 
-                        AccentColorSettingsSection(selection: accentPaletteSelection)
+                        KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
 
-                        ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
+                        // ──── 入力 ────
 
-                        FlickGuideDisplaySettingsSection(
-                            kanaSelection: kanaFlickGuideDisplayModeSelection,
-                            latinSelection: latinFlickGuideDisplayModeSelection,
-                            numberSelection: numberFlickGuideDisplayModeSelection,
-                            modifierSelection: modifierFlickGuideDisplayModeSelection,
-                            isLatinGuideAvailable: isLatinFlickLayoutSelected
-                        )
+                        DirectionSettingsSection(selection: directionSelection)
 
                         KeyRepeatSettingsSection(
                             keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
@@ -949,6 +918,54 @@ struct ContentView: View {
                         KanaPostModifierFlickDakutenSettingsSection(
                             isEnabled: $kanaPostModifierFlickDakutenEnabled
                         )
+
+                        FormatNumeriqueSettingsSection(
+                            thousandsSeparator: numberThousandsSeparatorSelection,
+                            groupFourDigits: $numberGroupFourDigits,
+                            decimalSeparator: numberDecimalSeparatorSelection,
+                            unitProductSeparator: numberUnitProductSeparatorSelection
+                        )
+
+                        CalendarSettingsGroupSection(
+                            weekStart: calendarWeekStartSelection,
+                            weekdayLanguage: calendarWeekdayLanguageSelection,
+                            sundayColor: calendarSundayColorSelection,
+                            fridayColor: calendarFridayColorSelection,
+                            saturdayColor: calendarSaturdayColorSelection,
+                            dateFormatStyle: dateFormatStyleSelection
+                        )
+
+                        LatinLexiconSettingsSection(
+                            enablesEnglish: $latinLexiconEnglishEnabled,
+                            enablesFrench: $latinLexiconFrenchEnabled,
+                            enablesGerman: $latinLexiconGermanEnabled,
+                            enablesItalian: $latinLexiconItalianEnabled
+                        )
+
+                        // ──── キー表示 ────
+
+                        FlickGuideDisplaySettingsSection(
+                            kanaSelection: kanaFlickGuideDisplayModeSelection,
+                            latinSelection: latinFlickGuideDisplayModeSelection,
+                            numberSelection: numberFlickGuideDisplayModeSelection,
+                            modifierSelection: modifierFlickGuideDisplayModeSelection,
+                            isLatinGuideAvailable: isLatinFlickLayoutSelected
+                        )
+
+                        // ──── 表示 ────
+
+                        LandscapeCandidateSideSettingsSection(
+                            selection: landscapeCandidateSideSelection,
+                            latinSuggestionMode: landscapeLatinSuggestionModeSelection
+                        )
+
+                        LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
+
+                        AccentColorSettingsSection(selection: accentPaletteSelection)
+
+                        ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
+
+                        // ──── 変換 ────
 
                         DelimiterAutoCommitCandidateSettingsSection(
                             selection: delimiterAutoCommitCandidateSelection
@@ -991,13 +1008,6 @@ struct ContentView: View {
                             footnote: "「まん延(蔓延)」「作ひん(作品)」のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(既定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。「子ども」など定着した表記は対象外です。"
                         )
 
-                        LatinLexiconSettingsSection(
-                            enablesEnglish: $latinLexiconEnglishEnabled,
-                            enablesFrench: $latinLexiconFrenchEnabled,
-                            enablesGerman: $latinLexiconGermanEnabled,
-                            enablesItalian: $latinLexiconItalianEnabled
-                        )
-
                         EmojiKaomojiCandidateSettingsSection(
                             enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
                             enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
@@ -1010,6 +1020,8 @@ struct ContentView: View {
                         UserDictionaryCandidateDisplaySettingsSection(
                             selection: userDictionaryCandidateDisplayModeSelection
                         )
+
+                        // ──── 語彙管理 ────
 
                         UserDictionarySettingsSection(
                             entries: $userDictionaryEntries,
@@ -1104,9 +1116,13 @@ struct ContentView: View {
                             }
                         )
 
+                        // ──── アプリ情報 ────
+
                         SetupStepsSection(steps: setupSteps)
 
                         ThirdPartyLicensesSection()
+
+                        // ──── 診断 ────
 
                         KeyboardDiagnosticsSection(
                             isSessionActive: keyboardDiagnosticsSessionActive,

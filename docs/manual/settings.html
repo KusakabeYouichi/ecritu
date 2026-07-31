@@ -21,21 +21,7 @@
   <p>アプリを開くと、アイコンの下に <kbd>édition n°〜</kbd> という小さな番号が表示されています。これは écritu のバージョン(エディション)番号で、ごく小さく表示されていますが、<b>長押しすると拡大表示</b>されて読み取れます。不具合の報告などでバージョンを尋ねられたときはここを確認してください。</p>
   <p>その下に設定カードが 1 列に並びます。以降の節は、このカードの並び順そのままです。</p>
 
-  <h2 id="layout-settings">配列と入力方式</h2>
-
-  <h3 id="flick-direction">フリック方向</h3>
-  <div class="tablewrap"><table class="spec">
-    <tr><th>選択肢</th><td>Apple / écritu</td></tr>
-    <tr><th>既定</th><td>écritu</td></tr>
-  </table></div>
-  <p>フリックしたときにどの方向でどの文字が入るか(方向の割り当て方式)を切り替えます。écritu 方向は本キーボード独自の割り当て、Apple 方向は iOS 標準キーボードと同じ割り当てです。iOS 標準に慣れた指をそのまま使いたい方は Apple を選んでください。切り替えは<b>次回のキーボード表示時</b>に反映されます。両方式の全キー対照は<a href="layouts-kana.html">第8章 配列リファレンス(かな)</a>を参照してください。</p>
-
-  <h3 id="kana-modifier">かな修飾</h3>
-  <div class="tablewrap"><table class="spec">
-    <tr><th>選択肢</th><td>前置修飾 / 後置修飾</td></tr>
-    <tr><th>既定</th><td>前置修飾</td></tr>
-  </table></div>
-  <p>濁点・半濁点・拗音/促音(小文字)の入力方式を切り替えます。前置修飾は「修飾キーを先に選んでから文字を打つ」方式、後置修飾は iOS 標準と同じく「文字を打ってから修飾キーで変化させる」方式です。それぞれの操作手順は<a href="layouts-kana.html">第8章</a>で図解しています。後置修飾を選んだ場合は、後述の「<a href="#postfix-empty-tap">タップ(後置修飾、未確定なし)</a>」「<a href="#postfix-flick-dakuten">後置修飾キーのフリックで濁点・半濁点</a>」の 2 項目も関係します。</p>
+  <h2 id="key-layout">キー配列</h2>
 
   <h3 id="kana-layout">かな配列</h3>
   <div class="tablewrap"><table class="spec">
@@ -43,19 +29,6 @@
     <tr><th>既定</th><td>5×2</td></tr>
   </table></div>
   <p>かなモードのキー配列を切り替えます。5×2 は écritu 標準の配列(あ〜な行とは〜わ行の 2 段構成)、3×3+わ は Apple 標準の日本語配列に合わせて各段 5 ボタン(かな 3 + 機能 2)で表示する配列です。両配列の全体図は<a href="layouts-kana.html">第8章</a>にあります。</p>
-
-  <h3 id="landscape-latin-pane">ラテン文字候補ペイン (horizontal)</h3>
-  <div class="tablewrap"><table class="spec">
-    <tr><th>候補ペインを使う</th><td>チェックボックス(既定: オン)</td></tr>
-    <tr><th>並び順</th><td>『候補』『ラテン文字』をドラグで左右入替(既定: 候補が左)</td></tr>
-  </table></div>
-  <p>iPhone を<b>横向き</b>にしてラテン文字(英字)を入力するときに、キーの横へ候補ペイン(候補一覧の縦領域)を表示するかどうかの設定です。オンのときは『ラテン文字』『候補』の 2 枚のカードをドラグして、どちらを左に置くかを入れ替えられます。チェックを外している間は左右配置を変更できません。横画面のレイアウト全体は<a href="layouts-landscape.html">第8章(続) 配列リファレンス(横画面)</a>を参照してください。</p>
-
-  <h3 id="landscape-number-pane">数字ペイン配列 (horizontal)</h3>
-  <div class="tablewrap"><table class="spec">
-    <tr><th>並び順</th><td>『数字』『記号』をドラグで左右入替(既定: 数字が左)</td></tr>
-  </table></div>
-  <p><b>横向き</b>で数字 3×3 入力を使うときの、数字パッドと記号パネルの左右配置です。かな入力モードの候補配置には影響しません。詳細は<a href="layouts-landscape.html">第8章(続) 横画面</a>へ。</p>
 
   <h3 id="latin-layout">ラテン文字配列</h3>
   <div class="tablewrap"><table class="spec">
@@ -78,31 +51,21 @@
   </table></div>
   <p>記号モードの『基本記号』カテゴリーに並ぶ記号の順序を、文字コード規格の順に切り替えます。通常は既定の ASCII 順のままで問題ありません。記号パネルの使いかたは<a href="emoji.html">第5章</a>を参照してください。</p>
 
-  <h2 id="appearance">色とガイド表示</h2>
-
-  <h3 id="accent-color">アクセントカラー</h3>
+  <h3 id="kana-modifier">かな修飾</h3>
   <div class="tablewrap"><table class="spec">
-    <tr><th>選択肢</th><td>tuilé(チュイレ) / émeraude(エメロード)</td></tr>
-    <tr><th>既定</th><td>émeraude</td></tr>
+    <tr><th>選択肢</th><td>前置修飾 / 後置修飾</td></tr>
+    <tr><th>既定</th><td>前置修飾</td></tr>
   </table></div>
-  <p>キーを押したときのハイライトなど、アクセント色を切り替えます。tuilé は瓦の色(赤茶)、émeraude は宝石の色(緑)です。</p>
+  <p>濁点・半濁点・拗音/促音(小文字)の入力方式を切り替えます。前置修飾は「修飾キーを先に選んでから文字を打つ」方式、後置修飾は iOS 標準と同じく「文字を打ってから修飾キーで変化させる」方式です。それぞれの操作手順は<a href="layouts-kana.html">第8章</a>で図解しています。後置修飾を選んだ場合は、後述の「<a href="#postfix-empty-tap">タップ(後置修飾、未確定なし)</a>」「<a href="#postfix-flick-dakuten">後置修飾キーのフリックで濁点・半濁点</a>」の 2 項目も関係します。</p>
 
-  <h3 id="theme-color">テーマカラー</h3>
+  <h2 id="input">入力</h2>
+
+  <h3 id="flick-direction">フリック方向</h3>
   <div class="tablewrap"><table class="spec">
-    <tr><th>選択肢</th><td>bleu ciel brumeux(かすみがかった空の青) / rose sakura poudré(桜の淡い桃色)</td></tr>
-    <tr><th>既定</th><td>bleu ciel brumeux</td></tr>
+    <tr><th>選択肢</th><td>Apple / écritu</td></tr>
+    <tr><th>既定</th><td>écritu</td></tr>
   </table></div>
-  <p>キーボード背景のグラデーションを切り替えます。設定画面の左に表示される色見本が、そのまま実際の背景色です。ライト/ダークモードにはどちらのテーマも自動で追従します。</p>
-
-  <h3 id="flick-guide">ガイド文字表示</h3>
-  <div class="tablewrap"><table class="spec">
-    <tr><th>対象</th><td>かな入力 / ラテン文字入力 / 数字入力 / 濁点・半濁点・小文字キー(それぞれ個別に設定)</td></tr>
-    <tr><th>選択肢</th><td>オフ / 4方向 / 下</td></tr>
-    <tr><th>既定</th><td>すべて 4方向</td></tr>
-  </table></div>
-  <p>各キーのまわりに小さく表示される「フリックすると何が入るか」のガイド文字の表示方法を、入力モードごとに選べます。<b>4方向</b>はキーの上下左右にガイドを配置、<b>下</b>はメイン文字の下にガイド文字を横並びで表示、<b>オフ</b>は非表示です。濁点・半濁点・小文字キー(修飾キー)のガイドは、入力モードの設定とは独立して適用されます。なお、ラテン文字配列が 3×3 以外(qwerty / azerty)のときは、ラテン文字入力のガイドは表示されず、この欄は選択できません。</p>
-
-  <h2 id="timing">キーの反応と自動確定</h2>
+  <p>フリックしたときにどの方向でどの文字が入るか(方向の割り当て方式)を切り替えます。écritu 方向は本キーボード独自の割り当て、Apple 方向は iOS 標準キーボードと同じ割り当てです。iOS 標準に慣れた指をそのまま使いたい方は Apple を選んでください。切り替えは<b>次回のキーボード表示時</b>に反映されます。両方式の全キー対照は<a href="layouts-kana.html">第8章 配列リファレンス(かな)</a>を参照してください。</p>
 
   <h3 id="key-repeat">削除キーリピート</h3>
   <div class="tablewrap"><table class="spec">
@@ -117,8 +80,6 @@
     <tr><th>確定までの待ち時間</th><td>0.3〜5.0 秒(既定: 1.2 秒。トグルがオンのとき表示)</td></tr>
   </table></div>
   <p>先行する確定文字があると、未確定(下線付き)の文字はメッセージ送信時に切り捨てられます。これは iOS の拡張キーボード共通の制約です(<a href="trouble.html">第9章 困ったとき</a>参照)。この設定をオンにすると、入力が設定した時間だけ止まったときに未確定部分を自動で確定し、送信に乗るようにします。行頭から全部が未確定のときは元々送信に乗るため、自動確定の対象外です。</p>
-
-  <h2 id="key-assignment">キー割り当て</h2>
 
   <h3 id="kana-mode-switcher">かな左下キー割り当て</h3>
   <div class="tablewrap"><table class="spec">
@@ -143,7 +104,55 @@
   </table></div>
   <p>こちらも後置修飾のときの設定です。オンの場合、後置修飾キーを上フリックで濁点(゛)、右フリックで半濁点(゜)を強制入力します。オフにすると上/右フリックは中央タップと同じ扱いになり、フリックのつもりがなかったのに「つ→づ」になってしまう誤操作を抑止できます(オフでも、タップ 2 回で「つ→っ→づ」の順に変化させることは引き続き可能です)。</p>
 
-  <h2 id="conversion">変換候補のふるまい</h2>
+  <h3 id="latin-lexicon">欧文サジェスチョンの言語</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>français (フランス語・15,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
+    <tr><th>italiano (イタリア語・15,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
+    <tr><th>Deutsch (ドイツ語・60,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
+    <tr><th>anglais (英語・15,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
+  </table></div>
+  <p>欧文入力中のサジェスチョン(<a href="symbols.html#latin-suggestions">第4章</a>)に使う、同梱の頻度順語彙を言語別に切り替えます(語数は各トグルに表示)。ドイツ語は複合語が多いため深く収録しています。追加語彙や学習した語は、この設定に関わらず常に優先して表示されます。</p>
+
+  <h2 id="key-guide">キー表示</h2>
+
+  <h3 id="flick-guide">ガイド文字表示</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>対象</th><td>かな入力 / ラテン文字入力 / 数字入力 / 濁点・半濁点・小文字キー(それぞれ個別に設定)</td></tr>
+    <tr><th>選択肢</th><td>オフ / 4方向 / 下</td></tr>
+    <tr><th>既定</th><td>すべて 4方向</td></tr>
+  </table></div>
+  <p>各キーのまわりに小さく表示される「フリックすると何が入るか」のガイド文字の表示方法を、入力モードごとに選べます。<b>4方向</b>はキーの上下左右にガイドを配置、<b>下</b>はメイン文字の下にガイド文字を横並びで表示、<b>オフ</b>は非表示です。濁点・半濁点・小文字キー(修飾キー)のガイドは、入力モードの設定とは独立して適用されます。なお、ラテン文字配列が 3×3 以外(qwerty / azerty)のときは、ラテン文字入力のガイドは表示されず、この欄は選択できません。</p>
+
+  <h2 id="appearance">表示</h2>
+
+  <h3 id="landscape-latin-pane">ラテン文字候補ペイン (horizontal)</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>候補ペインを使う</th><td>チェックボックス(既定: オン)</td></tr>
+    <tr><th>並び順</th><td>『候補』『ラテン文字』をドラグで左右入替(既定: 候補が左)</td></tr>
+  </table></div>
+  <p>iPhone を<b>横向き</b>にしてラテン文字(英字)を入力するときに、キーの横へ候補ペイン(候補一覧の縦領域)を表示するかどうかの設定です。オンのときは『ラテン文字』『候補』の 2 枚のカードをドラグして、どちらを左に置くかを入れ替えられます。チェックを外している間は左右配置を変更できません。横画面のレイアウト全体は<a href="layouts-landscape.html">第8章(続) 配列リファレンス(横画面)</a>を参照してください。</p>
+
+  <h3 id="landscape-number-pane">数字ペイン配列 (horizontal)</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>並び順</th><td>『数字』『記号』をドラグで左右入替(既定: 数字が左)</td></tr>
+  </table></div>
+  <p><b>横向き</b>で数字 3×3 入力を使うときの、数字パッドと記号パネルの左右配置です。かな入力モードの候補配置には影響しません。詳細は<a href="layouts-landscape.html">第8章(続) 横画面</a>へ。</p>
+
+  <h3 id="accent-color">アクセントカラー</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>選択肢</th><td>tuilé(チュイレ) / émeraude(エメロード)</td></tr>
+    <tr><th>既定</th><td>émeraude</td></tr>
+  </table></div>
+  <p>キーを押したときのハイライトなど、アクセント色を切り替えます。tuilé は瓦の色(赤茶)、émeraude は宝石の色(緑)です。</p>
+
+  <h3 id="theme-color">テーマカラー</h3>
+  <div class="tablewrap"><table class="spec">
+    <tr><th>選択肢</th><td>bleu ciel brumeux(かすみがかった空の青) / rose sakura poudré(桜の淡い桃色)</td></tr>
+    <tr><th>既定</th><td>bleu ciel brumeux</td></tr>
+  </table></div>
+  <p>キーボード背景のグラデーションを切り替えます。設定画面の左に表示される色見本が、そのまま実際の背景色です。ライト/ダークモードにはどちらのテーマも自動で追従します。</p>
+
+  <h2 id="conversion">変換</h2>
 
   <h3 id="delimiter-auto-commit">句読点入力時の自動確定候補</h3>
   <div class="tablewrap"><table class="spec">
@@ -187,15 +196,6 @@
   </table></div>
   <p>「まん延(蔓延)」「作ひん(作品)」のような、漢字の一部をかなに開いた交ぜ書き表記の扱いを切り替えます。「子ども」など定着した表記は対象外です。</p>
 
-  <h3 id="latin-lexicon">欧文サジェスチョンの言語</h3>
-  <div class="tablewrap"><table class="spec">
-    <tr><th>français (フランス語・15,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
-    <tr><th>italiano (イタリア語・15,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
-    <tr><th>Deutsch (ドイツ語・60,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
-    <tr><th>anglais (英語・15,000語)</th><td>オン / オフ(既定: オフ)</td></tr>
-  </table></div>
-  <p>欧文入力中のサジェスチョン(<a href="symbols.html#latin-suggestions">第4章</a>)に使う、同梱の頻度順語彙を言語別に切り替えます(語数は各トグルに表示)。ドイツ語は複合語が多いため深く収録しています。追加語彙や学習した語は、この設定に関わらず常に優先して表示されます。</p>
-
   <h3 id="emoji-kaomoji-candidates">emojis &amp; les émoticônes(絵文字・顔文字候補)</h3>
   <div class="tablewrap"><table class="spec">
     <tr><th>emoji 😀</th><td>オン / オフ(既定: オン)</td></tr>
@@ -217,7 +217,7 @@
   </table></div>
   <p>iOS 本体の [設定] &gt; [一般] &gt; [キーボード] &gt; [ユーザ辞書] に登録された単語を、écritu の変換候補として使うかどうかを切り替えます。écritu 自身に単語を登録したい場合は、次節の追加語彙を使ってください(<a href="vocab.html">第6章</a>)。</p>
 
-  <h2 id="vocabularies">語彙の管理(概要)</h2>
+  <h2 id="vocabularies">語彙管理</h2>
   <p>ここからの 6 つのカードは écritu の語彙(単語リスト)の管理です。使いかたの詳細は<a href="vocab.html">第6章 語彙と学習</a>で説明しているため、ここでは各カードの役割だけまとめます。</p>
 
   <h3 id="additional-vocab">追加語彙</h3>
@@ -235,13 +235,15 @@
   <h3 id="system-vocab">第1語彙・第2語彙(読み取り専用)</h3>
   <p>écritu に内蔵されたシステム辞書(Dictionnaire système premier / secondaire)の中身を閲覧するカードです。件数が多いため最初は読み込まれておらず、「第1語彙を読み込む」「第2語彙を読み込む」ボタンで一覧を表示します。読み取り専用のため、追加や削除はできません。</p>
 
-  <h2 id="misc">その他</h2>
+  <h2 id="app-info">アプリ情報</h2>
 
   <h3 id="setup-steps">有効化手順</h3>
   <p>キーボードを有効化する 3 ステップ(新しいキーボードを追加 → 有効化 → 地球儀キーで切り替え)のメモが表示されます。画面つきの詳しい手順は<a href="setup.html">第2章 導入</a>を参照してください。</p>
 
   <h3 id="licenses">オープンソースライセンス</h3>
   <p>「ライセンス表示を開く」から、écritu が利用している SudachiDict 関連などのオープンソースライセンス文書を確認できます。</p>
+
+  <h2 id="diagnostics-group">診断</h2>
 
   <h3 id="diagnostics">キーボード診断ログ</h3>
   <p>キーボード拡張の動作記録(診断ログ)を確認するカードです。稼働中/停止の状態、fail-safe プロファイル、最終ハートビート、最終セッション ID、最終イベント、インストール識別子が表示され、ボタンで操作します。</p>
