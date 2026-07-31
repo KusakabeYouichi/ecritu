@@ -107,6 +107,9 @@
 	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
 	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましーん</string></dict>
 	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましん</string></dict>
+	<dict><key>phrase</key><string>Apple ID</string><key>shortcut</key><string>あっぷるあいでぃー</string></dict>
+	<dict><key>phrase</key><string>App Group</string><key>shortcut</key><string>あっぷぐるーぷ</string></dict>
+	<dict><key>phrase</key><string>Apple Card</string><key>shortcut</key><string>あっぷるかーど</string></dict>
 
 	<!-- アプリ -->
 	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
