@@ -392,6 +392,7 @@ struct ContentView: View {
     @State var isBootstrappingInitialData = true
     @State var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
+    @State private var showsSettingsYAMLCopiedToast = false
     @Environment(\.scenePhase) private var scenePhase
 
     private let setupSteps: [String] = [
@@ -453,6 +454,130 @@ struct ContentView: View {
             String(latinLexiconItalianEnabled)
         ]
             .joined(separator: "|")
+    }
+
+    // 設定内容の YAML エクスポート(ロゴ長押しでクリップボードへ)。項目は設定画面の
+    // グループ・表示順に合わせ、コメントにアプリ内のタイトルを付ける。
+    private func settingsYAMLExportText() -> String {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+
+        var lines: [String] = [
+            "# écritu 設定 (YAML エクスポート)",
+            "# \(Self.editionNumberText)",
+            "# \(formatter.string(from: Date()))"
+        ]
+
+        func group(_ title: String) {
+            lines.append("")
+            lines.append("# ──── \(title) ────")
+        }
+        func str(_ key: String, _ raw: String, _ comment: String) {
+            lines.append("\(key): \"\(raw)\" # \(comment)")
+        }
+        func bool(_ key: String, _ value: Bool, _ comment: String) {
+            lines.append("\(key): \(value) # \(comment)")
+        }
+        func num(_ key: String, _ value: Double, _ comment: String) {
+            lines.append("\(key): \(String(format: "%g", value)) # \(comment)")
+        }
+
+        group("キー配列")
+        str(SettingsKeys.kanaLayoutMode, kanaLayoutModeRawValue, "かな配列")
+        str(SettingsKeys.latinLayoutMode, latinLayoutModeRawValue, "ラテン文字配列")
+        str(SettingsKeys.numberLayoutMode, numberLayoutModeRawValue, "数字配列: 数字入力")
+        str(SettingsKeys.formattedNumberKeypadLayout, formattedNumberKeypadLayoutRawValue, "数字配列: 書式化数値入力")
+        str(SettingsKeys.basicSymbolOrder, basicSymbolOrderRawValue, "基本記号の並び順")
+        str(SettingsKeys.kanaModifierPlacement, kanaModifierPlacementRawValue, "かな修飾")
+
+        group("入力")
+        str(SettingsKeys.directionProfile, directionProfileRawValue, "フリック方向")
+        num(SettingsKeys.keyRepeatInitialDelay, keyRepeatInitialDelay, "削除キーリピート: リピート開始までの時間(秒)")
+        num(SettingsKeys.keyRepeatInterval, keyRepeatInterval, "削除キーリピート: リピート速度(間隔)(秒)")
+        bool(SettingsKeys.idleCommitEnabled, idleCommitEnabled, "自動確定(アイドル): 入力が止まったら未確定を自動確定")
+        num(SettingsKeys.idleCommitInterval, idleCommitInterval, "自動確定(アイドル): 確定までの待ち時間(秒)")
+        str(SettingsKeys.kanaModeSwitcherTapAction, kanaModeSwitcherTapActionRawValue, "かな左下キー割り当て: タップ")
+        str(SettingsKeys.kanaModeSwitcherRightFlickAction, kanaModeSwitcherRightFlickActionRawValue, "かな左下キー割り当て: 右フリック")
+        str(SettingsKeys.kanaModeSwitcherUpFlickAction, kanaModeSwitcherUpFlickActionRawValue, "かな左下キー割り当て: 上フリック")
+        str(SettingsKeys.kanaPostModifierEmptyTapAction, kanaPostModifierEmptyTapActionRawValue, "タップ (後置修飾、未確定なし)")
+        str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, kanaPostModifierEmptyTapKaomojiCategoryID, "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, kanaPostModifierEmptyTapEmojiCategoryID, "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, kanaPostModifierEmptyTapSymbolCategoryID, "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
+        bool(SettingsKeys.kanaPostModifierFlickDakutenEnabled, kanaPostModifierFlickDakutenEnabled, "後置修飾キーのフリックで濁点・半濁点")
+        str(SettingsKeys.numberThousandsSeparator, numberThousandsSeparatorRawValue, "format numérique: Séparateur de milliers")
+        bool(SettingsKeys.numberGroupFourDigits, numberGroupFourDigits, "format numérique: que quatre")
+        str(SettingsKeys.numberDecimalSeparator, numberDecimalSeparatorRawValue, "format numérique: Séparateur décimal")
+        str(SettingsKeys.numberUnitProductSeparator, numberUnitProductSeparatorRawValue, "format numérique: 単位の積の記号")
+        str(SettingsKeys.calendarWeekStart, calendarWeekStartRawValue, "カレンダー: 週開始")
+        str(SettingsKeys.calendarWeekdayLanguage, calendarWeekdayLanguageRawValue, "カレンダー: 曜日表記")
+        str(SettingsKeys.calendarSundayColor, calendarSundayColorRawValue, "カレンダー: 日曜列の色")
+        str(SettingsKeys.calendarSaturdayColor, calendarSaturdayColorRawValue, "カレンダー: 土曜列の色")
+        str(SettingsKeys.calendarFridayColor, calendarFridayColorRawValue, "カレンダー: 金曜列の色")
+        str(SettingsKeys.dateFormatStyle, dateFormatStyleRawValue, "カレンダー: 日付書式")
+        bool(SettingsKeys.latinLexiconFrenchEnabled, latinLexiconFrenchEnabled, "欧文サジェスチョンの言語: français (フランス語)")
+        bool(SettingsKeys.latinLexiconItalianEnabled, latinLexiconItalianEnabled, "欧文サジェスチョンの言語: italiano (イタリア語)")
+        bool(SettingsKeys.latinLexiconGermanEnabled, latinLexiconGermanEnabled, "欧文サジェスチョンの言語: Deutsch (ドイツ語)")
+        bool(SettingsKeys.latinLexiconEnglishEnabled, latinLexiconEnglishEnabled, "欧文サジェスチョンの言語: anglais (英語)")
+
+        group("キー表示")
+        str(SettingsKeys.kanaFlickGuideDisplayMode, kanaFlickGuideDisplayModeRawValue, "ガイド文字表示: かな入力")
+        str(SettingsKeys.latinFlickGuideDisplayMode, latinFlickGuideDisplayModeRawValue, "ガイド文字表示: ラテン文字入力")
+        str(SettingsKeys.numberFlickGuideDisplayMode, numberFlickGuideDisplayModeRawValue, "ガイド文字表示: 数字入力")
+        str(SettingsKeys.modifierFlickGuideDisplayMode, modifierFlickGuideDisplayModeRawValue, "ガイド文字表示: 濁点・半濁点・小文字キー")
+
+        group("表示")
+        str(SettingsKeys.landscapeLatinSuggestionMode, landscapeLatinSuggestionModeRawValue, "ラテン文字候補ペイン (horizontal): 横向きラテン文字入力で候補ペインを使う")
+        str(SettingsKeys.landscapeCandidateSide, landscapeCandidateSideRawValue, "ラテン文字候補ペイン (horizontal): 並び順")
+        str(SettingsKeys.landscapeNumberPaneSide, landscapeNumberPaneSideRawValue, "数字ペイン配列 (horizontal)")
+        str(SettingsKeys.accentPalette, accentPaletteRawValue, "アクセントカラー")
+        str(SettingsKeys.keyboardBackgroundTheme, keyboardBackgroundThemeRawValue, "テーマカラー")
+
+        group("変換")
+        str(SettingsKeys.delimiterAutoCommitCandidate, delimiterAutoCommitCandidateRawValue, "句読点入力時の自動確定候補")
+        str(SettingsKeys.kanaKanjiCandidateSourceMode, kanaKanjiCandidateSourceModeRawValue, "かな漢字候補モード")
+        bool(SettingsKeys.historicalKanaCandidatesEnabled, historicalKanaCandidatesEnabled, "旧仮名遣い候補")
+        bool(SettingsKeys.iterationMarkCandidatesEnabled, iterationMarkCandidatesEnabled, "仮名の踊り字候補")
+        str(SettingsKeys.katakanaEmphasisCandidateMode, katakanaEmphasisCandidateModeRawValue, "カタカナ強調表記の候補")
+        str(SettingsKeys.mazegakiCandidateMode, mazegakiCandidateModeRawValue, "交ぜ書きの候補")
+        bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
+        bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
+        str(SettingsKeys.contactCandidateDisplayMode, contactCandidateDisplayModeRawValue, "iOSの連絡先の姓、名、会社名")
+        str(SettingsKeys.userDictionaryCandidateDisplayMode, userDictionaryCandidateDisplayModeRawValue, "iOSのユーザ辞書の単語")
+
+        return lines.joined(separator: "\n") + "\n"
+    }
+
+    private func copySettingsYAMLToPasteboard() {
+#if os(iOS)
+        UIPasteboard.general.string = settingsYAMLExportText()
+#endif
+        withAnimation(.easeOut(duration: 0.15)) {
+            showsSettingsYAMLCopiedToast = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
+            withAnimation(.easeIn(duration: 0.3)) {
+                showsSettingsYAMLCopiedToast = false
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var settingsYAMLCopiedToast: some View {
+        if showsSettingsYAMLCopiedToast {
+            VStack {
+                Text("設定を YAML 形式でコピーしました")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.primary)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .background(.ultraThinMaterial, in: Capsule())
+                    .shadow(color: .black.opacity(0.12), radius: 8, y: 3)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            .allowsHitTesting(false)
+            .transition(.opacity)
+        }
     }
 
     private func rawValueSelection<Option: RawRepresentable>(
@@ -848,6 +973,12 @@ struct ContentView: View {
                                         .frame(width: 92, height: 92)
                                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                                         .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
+                                        // ロゴ長押し=設定内容を YAML でクリップボードへコピー。
+                                        .onLongPressGesture(minimumDuration: 0.5) {
+                                            copySettingsYAMLToPasteboard()
+                                        }
+                                        .accessibilityLabel("アプリロゴ")
+                                        .accessibilityHint("長押しで設定内容を YAML 形式でコピーします")
 
                                     Text(Self.editionNumberText)
                                         .font(.system(size: 4, weight: .regular, design: .monospaced))
@@ -1182,6 +1313,9 @@ struct ContentView: View {
         // 起動時の他のローディング表示と縦位置を揃える。
         .overlay {
             initialLoadingToast
+        }
+        .overlay {
+            settingsYAMLCopiedToast
         }
     }
 }
