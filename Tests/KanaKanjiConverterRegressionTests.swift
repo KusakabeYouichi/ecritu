@@ -5829,6 +5829,57 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(2)), ["すごい", "凄い"], "single=\(single)")
     }
 
+    // 2404 バッチ(9件報告)の単文節側: おおきく(供給+大い/大く suppr)、より(寄り>縒り)、
+    // かかせれば(per-form seed)、おりたたんで(基底読み間順序を seed 供給)、なんて(何て供給)、
+    // やつ(かな先頭)
+    func testRegressionRealLMBatch2404Single() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["おおきい": ["大い"], "おおきく": ["大く"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let ookiku = converter.candidates(for: "おおきく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(ookiku.first, "大きく", "ookiku=\(ookiku)")
+        XCTAssertFalse(ookiku.contains("大く"), "ookiku=\(ookiku)")
+        let yori = converter.candidates(for: "より", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(yori.prefix(3)), ["より", "寄り", "縒り"], "yori=\(yori)")
+        let kakasereba = converter.candidates(for: "かかせれば", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kakasereba.prefix(3)), ["書かせれば", "描かせれば", "欠かせれば"], "kakasereba=\(kakasereba)")
+        let oritatande = converter.candidates(for: "おりたたんで", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(oritatande.prefix(3)), ["折り畳んで", "折畳んで", "折りたたんで"], "oritatande=\(oritatande)")
+        let nante = converter.candidates(for: "なんて", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nante.prefix(2)), ["なんて", "何て"], "nante=\(nante)")
+        let yatsu = converter.candidates(for: "やつ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(yatsu.prefix(2)), ["やつ", "奴"], "yatsu=\(yatsu)")
+    }
+
+    // 2404 バッチの連文節側(実機相当: misc/ajout/suppr 読み込み): ってやつで/みんなこの/
+    // みなやってる のかな先頭、にたやつがある の 似た(た断片チェーン遮断+seed 供給)。
+    // 変種の curated かな識別区間 delta 補正で 皆やってる が2番手に入る。
+    func testRegressionRealLMBatch2404Multi() throws {
+        try prepareRealLMDictionary()
+        let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
+        UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let dict = try JSONDecoder().decode([String: [String]].self, from: data)
+            for (r, cs) in dict { for c in cs.reversed() { converter.store.addUserEntry(reading: r, candidate: c) } }
+        }
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let tteyatsude = converter.multiClauseCandidates(for: "ってやつで", systemCandidateMode: .surface)
+        XCTAssertEqual(tteyatsude.first, "ってやつで", "tteyatsude=\(tteyatsude)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ってやつで"))
+        let minnakono = converter.multiClauseCandidates(for: "みんなこの", systemCandidateMode: .surface)
+        XCTAssertEqual(minnakono.first, "みんなこの", "minnakono=\(minnakono)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "みんなこの"))
+        let minayatteru = converter.multiClauseCandidates(for: "みなやってる", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(minayatteru.prefix(2)), ["みなやってる", "皆やってる"], "minayatteru=\(minayatteru)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "みなやってる"))
+        let nitayatsu = converter.multiClauseCandidates(for: "にたやつがある", systemCandidateMode: .surface)
+        XCTAssertEqual(nitayatsu.first, "似たやつがある", "nitayatsu=\(nitayatsu)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "にたやつがある"))
+    }
+
     // 品詞横断調査(2398): かな正書の閉クラス語(助詞・助動詞)でかなが先頭に出ない/
     // 候補に無いものを是正。ごとく/ごとき/いえども はかなが候補に無かった。
     // ばかり は 計り が先頭だった(漢字は方針どおり2番手残置)。

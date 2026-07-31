@@ -133,6 +133,10 @@
 	<dict><key>phrase</key><string>鍛代</string><key>shortcut</key><string>きたよ</string></dict>
 	<!-- おおきな→大な(Sudachiの妙な収穫。大きな が正書) -->
 	<dict><key>phrase</key><string>大な</string><key>shortcut</key><string>おおきな</string></dict>
+	<!-- おおきい→大い(送り仮名欠落の収穫。大な と同根で、連用形 大く 等の派生源にもなる) -->
+	<dict><key>phrase</key><string>大い</string><key>shortcut</key><string>おおきい</string></dict>
+	<!-- おおきく→大く(大い の連用形派生。基底抑制だけでは活用列挙に残るため表層も抑制) -->
+	<dict><key>phrase</key><string>大く</string><key>shortcut</key><string>おおきく</string></dict>
 	<!-- さあ のカタカナ混じり表記(古風で今は使わない) -->
 	<dict><key>phrase</key><string>さァ</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>さアっ</string><key>shortcut</key><string>さあ</string></dict>
