@@ -336,6 +336,11 @@ extension KanaKanjiConverter {
     // カタカナは単文節の候補列には残す(単独入力では選択可)が、連文節の変種としては
     // 出さない(文中に旧表記が混じるのを防ぐ)。どいつ は ドイツ と正当に競合するため対象外。
     static let multiClauseKanaOrthodoxPronounReadings: Set<String> = ["こいつ", "そいつ", "あいつ"]
+    // かな正書の指示代名詞語幹(これで/ここで 等の keepKana 判定に使う)。
+    static let kanaOrthographyDemonstrativePronounStems: Set<String> = [
+        "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ",
+        "こっち", "そっち", "あっち", "どっち", "こちら", "そちら", "あちら", "どちら"
+    ]
     // 連体詞(こんな/そんな/あんな/どんな)直後の かんじ は 感じ が自然(こんな感じ)。
     // bigram 未観測で unigram の Wikipediaバイアス(漢字4805<感じ5118)により 漢字 が
     // 313差で先頭化するため、漢字 表層にのみ小さく減点して 感じ を最良にする
