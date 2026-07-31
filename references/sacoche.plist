@@ -50,6 +50,7 @@
 	        <dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いておん</string></dict>
 	        <dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
 	        <dict><key>phrase</key><string>木川屋</string><key>shortcut</key><string>きがわや</string></dict>
+	        <dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>
 	<!-- 服飾 -->
 	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
@@ -78,10 +79,6 @@
 	        <dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
 	        <dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
 	        <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>
-	<!-- 人名 -->
-	        <dict><key>phrase</key><string>桑田佳祐</string><key>shortcut</key><string>くわたけいすけ</string></dict>
-	        <dict><key>phrase</key><string>具志堅用高</string><key>shortcut</key><string>ぐしけんようこう</string></dict>
-	        <dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>
 	<!-- 照明 -->
 	        <dict><key>phrase</key><string>演色</string><key>shortcut</key><string>えんしょく</string></dict>
 	        <dict><key>phrase</key><string>演色性能</string><key>shortcut</key><string>えんしょくせいのう</string></dict>

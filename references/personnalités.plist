@@ -823,6 +823,9 @@
 	<dict><key>phrase</key><string>朝倉さや</string><key>shortcut</key><string>あさくらさや</string></dict>
 	<dict><key>phrase</key><string>まるり</string><key>shortcut</key><string>まるり</string></dict>
 
+	<!-- 日本の男性歌手 -->
+	<dict><key>phrase</key><string>桑田佳祐</string><key>shortcut</key><string>くわたけいすけ</string></dict>
+
     <!-- 世界のミュージシャン100 (A) -->
     <dict><key>phrase</key><string>ザ・ビートルズ</string><key>shortcut</key><string>ざびーとるず</string></dict>
     <dict><key>phrase</key><string>ビートルズ</string><key>shortcut</key><string>びーとるず</string></dict>
