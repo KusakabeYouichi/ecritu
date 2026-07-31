@@ -155,6 +155,12 @@ extension KeyboardViewController {
                 releaseHostingView: view.window == nil,
                 includeSystemCaches: true
             )
+            // 非アクティブ(ゾンビ)側は通知の受信そのものを止めて不活性化する。iOS が旧
+            // インスタンスを保持し続ける間(数分に及ぶことがある)、共有設定変更通知や
+            // watchdog で無駄に起こされないように。再アクティブ化時は viewWillAppear が
+            // observer を再登録する(2411)。
+            stopObservingSettingsDidChange()
+            stopMarkedTextWatchdog()
             didApplyInactiveSessionMitigation = true
         }
 
