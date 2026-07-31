@@ -214,7 +214,10 @@ extension KanaKanjiConverter {
                                 systemCandidateMode: systemCandidateMode,
                                 limit: limit
                             )
-                        ).filter { !suppressedStemSurfaces.contains($0) },
+                        ).filter {
+                            !suppressedStemSurfaces.contains($0)
+                                && !isKatakanaEmphasisBaseCandidate($0, reading: nextStem)
+                        },
                         reading: nextStem
                     )
 

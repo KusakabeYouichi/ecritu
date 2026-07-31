@@ -185,7 +185,10 @@ extension KanaKanjiConverter {
             userDictionary: userDictionary,
             initialUserDictionary: initialUserDictionary,
             systemCandidateMode: systemCandidateMode
-        )
+        ).filter {
+            // カタカナ強調の語幹(ウマい 等)は合成前に弾く(postfix 語幹と同じ判定。2402)
+            !isKatakanaEmphasisBaseCandidate($0, reading: baseReading)
+        }
 
         guard !baseCandidates.isEmpty else {
             return []
