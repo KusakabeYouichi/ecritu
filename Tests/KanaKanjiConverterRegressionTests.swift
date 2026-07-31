@@ -5810,6 +5810,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "うまいのだ"))
     }
 
+    // すごいなあ: keepKana の終助詞剥がしに なあ 系長形が無く、かなが末尾退避していた(2403)
+    func testRegressionRealLMSugoinaaKanaLeading() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "すごいなあ"))
+        let single = converter.candidates(for: "すごいなあ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "すごいなあ", "single=\(single)")
+    }
+
     // すごい: かな正書が主流(LM かな6214<凄い6883)なのに dict は 凄い0 が先頭だった。seed 供給
     func testRegressionRealLMSugoiKanaFirst() throws {
         try prepareRealLMDictionary()

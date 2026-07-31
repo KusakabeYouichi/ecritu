@@ -798,7 +798,9 @@ final class KanaKanjiConverter {
         // 限定し、活用連鎖(かってみよう 等=辞書かな語でない)では誤発火しない。
         // そう は文末の推量・指示(ほとんどそう/たぶんそう)。の は連体の言いさし
         // (それぞれの/ひとりひとりの)。いずれもかな語幹+終端はかなが正書
-        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ", "そう", "の"]
+        // なあ/ねえ 系(詠嘆の長形。すごいなあ 等)も同型 — な の1字剥がしでは語幹が
+        // すごいな になり不成立のため、長形を明示する(2403)。
+        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ", "そう", "の", "なあ", "なぁ", "ねえ", "ねぇ"]
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
