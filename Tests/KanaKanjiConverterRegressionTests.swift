@@ -5926,6 +5926,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("使ってレバ"), "single=\(single)")
     }
 
+    // たってたら/じかんがたってたら: て形+たら(ていた已然縮約)が活用供給に無く、
+    // ら 単独区間が 等(ら)に化けて 経ってた+等 が先頭化していた(2407)
+    func testRegressionRealLMTattetara() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "たってたら", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(single.contains("経ってたら"), "single=\(single)")
+        XCTAssertFalse(single.contains(where: { $0.hasSuffix("等") }), "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "じかんがたってたら", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.contains("時間が経ってたら"), "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("等") }), "multi=\(multi)")
+    }
+
+    // たぶんさいしょは: BOS 直後の単独助動詞た 断片(た+分+最初は)が A単位 unigram の
+    // 安さで たぶん(1語)を阻んでいた。格助詞直後と同様に文頭の た も遮断(2407)
+    func testRegressionRealLMTabunSaishoha() throws {
+        try prepareRealLMDictionary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "たぶんさいしょは", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "多分最初は", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
+    }
+
     // 品詞横断調査(2398): かな正書の閉クラス語(助詞・助動詞)でかなが先頭に出ない/
     // 候補に無いものを是正。ごとく/ごとき/いえども はかなが候補に無かった。
     // ばかり は 計り が先頭だった(漢字は方針どおり2番手残置)。
