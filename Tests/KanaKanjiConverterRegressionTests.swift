@@ -5955,6 +5955,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // えんやすによるねあがり: 地名 根上(旧根上町)の LM unigram が 値上がり より安く、
+    // 円安による根上 が先頭になっていた。seed+連文節ボーナスで 値上がり を先頭に(2418)
+    func testRegressionRealLMNeagariPrefersPriceRise() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "えんやすによるねあがり", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "円安による値上がり", "multi=\(multi.prefix(5))")
+        let tanni = converter.multiClauseCandidates(for: "たんにえんやすによるねあがり", systemCandidateMode: .surface)
+        XCTAssertEqual(tanni.first, "単に円安による値上がり", "multi=\(tanni.prefix(5))")
+    }
+
     // まったくありません: 全くありません が文語形容詞 全い(まったい)の活用として生成され、
     // poubelle の まったく→全く 抑制(基底読みが異なる)をすり抜けて先頭に出ていた。
     // 抑制の同一かな末尾合成(r+t→s+t)フィルタで除去(2418)
