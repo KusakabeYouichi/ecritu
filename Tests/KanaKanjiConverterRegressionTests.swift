@@ -6022,11 +6022,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTFail("狭め/狭目(補生成)が両方あるべき: \(semame)")
         }
         converter.setAdjectiveMeKanjiCandidatesEnabled(false)
-        // 序数・既定(目先): 辞書丸ごと語(三番目)が先頭のまま
-        XCTAssertEqual(
-            converter.candidates(for: "さんばんめ", limit: 10, systemCandidateMode: .surface).first,
-            "三番目"
-        )
+        // 序数・既定(目先): 辞書丸ごと語(三番目)が先頭のまま、め形も補生成されて後続
+        // (両形とも常に出す — スイッチは順序のみ。2430)
+        let sanbanKanji = converter.candidates(for: "さんばんめ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(sanbanKanji.first, "三番目", "sanbanKanji=\(sanbanKanji)")
+        if let kanji = sanbanKanji.firstIndex(of: "三番目"), let me = sanbanKanji.firstIndex(of: "三番め") {
+            XCTAssertTrue(kanji < me, "sanbanKanji=\(sanbanKanji)")
+        } else {
+            XCTFail("目先モードでも 三番め が出るべき: \(sanbanKanji)")
+        }
+        let banmeKanji = converter.candidates(for: "ばんめ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertTrue(banmeKanji.contains("番め"), "目先モードでも 番め が出るべき: \(banmeKanji)")
         // 序数・め先モード: 辞書に無い 三番め/番め を補生成して 目形より先に
         converter.setOrdinalMeKanjiPreferred(false)
         let sanban = converter.candidates(for: "さんばんめ", limit: 10, systemCandidateMode: .surface)

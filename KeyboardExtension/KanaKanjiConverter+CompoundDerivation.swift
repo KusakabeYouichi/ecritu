@@ -440,6 +440,8 @@ extension KanaKanjiConverter {
                     || stem.contains(where: \.isNumber) else {
                 continue
             }
+            // 両形とも常に出す(スイッチは順序のみ)。辞書に片方しか無い語
+            // (番目/丁目/本目/代目/分目 等)でも欠け側を補生成する。
             let meIndex = result.firstIndex(of: meForm)
             let kanjiIndex = result.firstIndex(of: kanjiForm)
             if ordinalMeKanjiPreferred {
@@ -449,6 +451,8 @@ extension KanaKanjiConverter {
                     result.insert(kanjiForm, at: me)
                 case let (me?, nil):
                     result.insert(kanjiForm, at: me)
+                case let (nil, kanji?):
+                    result.insert(meForm, at: min(kanji + 1, result.count))
                 default:
                     break
                 }
@@ -459,6 +463,8 @@ extension KanaKanjiConverter {
                     result.insert(meForm, at: kanji)
                 case let (nil, kanji?):
                     result.insert(meForm, at: kanji)
+                case let (me?, nil):
+                    result.insert(kanjiForm, at: min(me + 1, result.count))
                 default:
                     break
                 }
