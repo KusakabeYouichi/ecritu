@@ -135,6 +135,11 @@ extension KanaKanjiConverter {
     // 連文節でも seed 順を勝たせたい活用の基底読み(オプトイン)。span を脱活用して
     // ここに含まれる基底になる場合のみ、スパン先頭活用形にボーナスを与える。
     static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
+    // (b2b) 未代表族の追加供給に先行ボーナス(800)を与える基底読みのopt-in。
+    // 上の seed順allowlist と分離する — 共用すると主ループのspan判定(脱活用先が一致)が
+    // 既存族の先頭(這ったら)にも同じボーナスを与えて同点に戻る(2424の検証で確認)。
+    // 無差別に与えると 有った/要った/足って 等22件が退行するため、必ずopt-inで運用する。
+    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)と読み別ボーナス値。
     // 数量詞複合(2本/二本)や分割に押されて seed 既定(日本)が沈むのを是正する。
     // a2 seed の先頭候補ノードにボーナス。既定は 800(multiClausePreferredInflectionBonus と同値)。
@@ -968,8 +973,18 @@ extension KanaKanjiConverter {
                         for family in families
                         where !family.items.contains(where: { suppliedInflectionSurfaces.contains($0) })
                             && family.familyKey < representedBestKey {
-                            for surface in family.items where surface != segmentReading {
+                            for (offset, surface) in family.items.enumerated() where surface != segmentReading {
                                 add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                                // 追加は後着列挙のため、OOV同点(全候補LM未収録=7200)の
+                                // タイブレーク(列挙順)で既存族に必ず負ける。先行ボーナス(800)は
+                                // 無差別に与えると22件退行(2424検証)するため、既存の
+                                // seed順allowlist(opt-in)に掲載された基底読みの族に限定する
+                                // (はる → ろぐはったら=ログ貼ったら)。
+                                if offset == 0,
+                                    Self.multiClauseInflectionFamilyPreferenceBaseReadings
+                                        .contains(family.baseReading) {
+                                    preferredInflectedNodeKeys.insert("\(start)-\(end)-\(surface)")
+                                }
                             }
                         }
                     }

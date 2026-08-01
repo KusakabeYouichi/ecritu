@@ -5986,10 +5986,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionHattaraSuppliesHaruFamily() throws {
         try prepareRealLMDictionary()
         let multi = converter.multiClauseCandidates(for: "ろぐはったら", systemCandidateMode: .surface)
-        XCTAssertTrue(
-            multi.contains(where: { $0.contains("貼ったら") || $0.contains("張ったら") }),
-            "はる系が供給される: \(multi.prefix(6))"
-        )
+        // OOV同点のタイブレークは優勢族代表の先行ボーナスが破る(seed はる で 貼>張)
+        XCTAssertEqual(multi.first, "ログ貼ったら", "multi=\(multi.prefix(6))")
+        XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
     // おやどりの: 丁寧接頭辞合成(お+宿り→御宿り)が実辞書語 親鳥/親鶏 と同点(共に
