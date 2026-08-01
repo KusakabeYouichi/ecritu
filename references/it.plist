@@ -32,24 +32,41 @@
 	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっどぷろ</string></dict>
 	<dict><key>phrase</key><string>iPad</string><key>shortcut</key><string>あいぱっど</string></dict>
-	<dict><key>phrase</key><string>iPhone 12 mini</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone 13 mini</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone 15</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone 16</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone 17</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone 18</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro Max</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro Max</string><key>shortcut</key><string>あいふぉんぷろまっくす</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉん</string></dict>
-	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
-	<dict><key>phrase</key><string>iPhone SE</string><key>shortcut</key><string>あいふぉん</string></dict>
+	<dict><key>phrase</key><string>iPhone 12 Pro</string><key>shortcut</key><string>あいふぉんじゅうにぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 12 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうにぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 12 mini</string><key>shortcut</key><string>あいふぉんじゅうにみに</string></dict>
+	<dict><key>phrase</key><string>iPhone 12</string><key>shortcut</key><string>あいふぉんじゅうに</string></dict>
+	<dict><key>phrase</key><string>iPhone 13 Pro</string><key>shortcut</key><string>あいふぉんじゅうさんぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 13 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうさんぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 13 mini</string><key>shortcut</key><string>あいふぉんじゅうさんみに</string></dict>
+	<dict><key>phrase</key><string>iPhone 13</string><key>shortcut</key><string>あいふぉんじゅうさん</string></dict>
+	<dict><key>phrase</key><string>iPhone 14 Pro</string><key>shortcut</key><string>あいふぉんじゅうよんぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 14 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうよんぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 14</string><key>shortcut</key><string>あいふぉんじゅうよん</string></dict>
+	<dict><key>phrase</key><string>iPhone 15 Pro</string><key>shortcut</key><string>あいふぉんじゅうごぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 15 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうごぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 15</string><key>shortcut</key><string>あいふぉんじゅうご</string></dict>
+	<dict><key>phrase</key><string>iPhone 16 Pro</string><key>shortcut</key><string>あいふぉんじゅうろくぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 16 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうろくぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 16e</string><key>shortcut</key><string>あいふぉんじゅうろくいー</string></dict>
+	<dict><key>phrase</key><string>iPhone 16</string><key>shortcut</key><string>あいふぉんじゅうろく</string></dict>
+	<dict><key>phrase</key><string>iPhone 17 Pro</string><key>shortcut</key><string>あいふぉんじゅうしちぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 17 Pro</string><key>shortcut</key><string>あいふぉんじゅうななぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 17 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうしちぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 17 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうななぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 17e</string><key>shortcut</key><string>あいふぉんじゅうしちいー</string></dict>
+	<dict><key>phrase</key><string>iPhone 17e</string><key>shortcut</key><string>あいふぉんじゅうなないー</string></dict>
+	<dict><key>phrase</key><string>iPhone 17</string><key>shortcut</key><string>あいふぉんじゅうしち</string></dict>
+	<dict><key>phrase</key><string>iPhone 17</string><key>shortcut</key><string>あいふぉんじゅうなな</string></dict>
+	<dict><key>phrase</key><string>iPhone 18 Pro</string><key>shortcut</key><string>あいふぉんじゅうはちぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone 18 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうはちぷろまっくす</string></dict>
+	<dict><key>phrase</key><string>iPhone 18</string><key>shortcut</key><string>あいふぉんじゅうはち</string></dict>
+	<dict><key>phrase</key><string>iPhone Air</string><key>shortcut</key><string>あいふぉんえあ</string></dict>
+	<dict><key>phrase</key><string>iPhone SE</string><key>shortcut</key><string>あいふぉんえすいー</string></dict>
 	<dict><key>phrase</key><string>iPhone</string><key>shortcut</key><string>あいふぉん</string></dict>
 	<dict><key>phrase</key><string>Mac</string><key>shortcut</key><string>まっく</string></dict>
-	<dict><key>phrase</key><string>MacBook Air</string><key>shortcut</key><string>まっくぶっく</string></dict>
 	<dict><key>phrase</key><string>MacBook Air</string><key>shortcut</key><string>まっくぶっくえあ</string></dict>
-	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっく</string></dict>
 	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっくねお</string></dict>
-	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっく</string></dict>
 	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっくぷろ</string></dict>
 	<dict><key>phrase</key><string>MacBook</string><key>shortcut</key><string>まっくぶっく</string></dict>
 	<dict><key>phrase</key><string>Macintosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
