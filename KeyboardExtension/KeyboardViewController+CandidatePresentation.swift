@@ -297,9 +297,14 @@ extension KeyboardViewController {
             composingText: cacheKey.composingRawText
         )
 
-        // 直前確定が数字なら助数詞(秒/本/個…)を先頭へ(90確定→びょう→秒)。main 実行なので proxy 可。
-        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+        // 助数詞+付属語(回しか 等)を先頭候補の直後へ。直前確定が数字ならさらに先頭へ
+        // (90確定→びょう→秒、1確定→かいしか→回しか)。main 実行なので proxy 可。
+        let promoted = KanaKanjiConverter.counterKanaTailPromotedCandidates(
             filtered,
+            reading: cacheKey.reading
+        )
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            promoted,
             reading: cacheKey.reading,
             precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last
         )

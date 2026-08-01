@@ -228,6 +228,8 @@ final class KanaKanjiConverter {
         inflectionDerivedCandidatesForScriptVariant = []
 
         var finalCandidates = finalizeSortedCandidates(context, scores: scores)
+        // 助数詞+付属語(かい+しか 等)の合成をレア語合成(芥子か 等)より前へ(先頭候補の直後)。
+        finalCandidates = Self.counterKanaTailPromotedCandidates(finalCandidates, reading: normalizedReading)
         // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で
         // 判定)なら、確定済み数字直後と同じ助数詞ブーストを適用して 万円/本 等を先頭へ。
         if let digit = reading.first, ("0"..."9").contains(String(digit)) || ("０"..."９").contains(String(digit)) {

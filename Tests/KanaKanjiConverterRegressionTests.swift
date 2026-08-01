@@ -5955,6 +5955,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // かいしか: かいし+か のレア語合成(芥子か/怪死か/甲斐市か…)が20件以上並び、
+    // 助数詞合成の 回しか が25位に埋もれていた。助数詞+付属語末尾の合成を先頭候補の
+    // 直後へ一般繰り上げ(先頭の最良解は保持。2417)
+    func testRegressionCounterParticleTailPromotion() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "かいしか", limit: 30, systemCandidateMode: .surface)
+        XCTAssertEqual(single.dropFirst().first, "回しか", "single=\(single.prefix(5))")
+    }
+
     // 1確定→かいしか: 数字文脈ブーストが「読み=助数詞そのもの」限定で、助数詞+かな末尾
     // (かい+しか)の合成(回しか)が雑多な合成(開始か/芥子か 等)に埋もれていた。
     // 助数詞読み+かな末尾への一般拡張で 回しか を先頭に(2416)
