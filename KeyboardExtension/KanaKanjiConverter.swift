@@ -37,6 +37,11 @@ final class KanaKanjiConverter {
     // 交ぜ書き(まん延/作ひん 等=常用漢字外を嫌ったかな開き)の扱い。既定は抑制。
     var katakanaEmphasisCandidateMode: ScriptVariantCandidateMode = .suppress
     var mazegakiCandidateMode: ScriptVariantCandidateMode = .suppress
+    // め終わり読みの『め/目』選好(コンテナー設定。applyMeSuffixPreferences 参照)。
+    // 序数(première…): true=漢字『目』を先に(既定。1973年内閣告示第2号 通則4 の表記)。
+    // 形容詞語幹(un peu…): true=『目』形も出す(かな『め』が先)。既定はオフ(告示 付表の語1)。
+    var ordinalMeKanjiPreferred: Bool = true
+    var adjectiveMeKanjiCandidatesEnabled: Bool = false
 
     init(store: KanaKanjiStore) {
         self.store = store
@@ -60,6 +65,26 @@ final class KanaKanjiConverter {
             }
 
             iterationMarkSurfaceAllowed = allowed
+            invalidateCandidateCache()
+        }
+    }
+
+    func setOrdinalMeKanjiPreferred(_ enabled: Bool) {
+        stateQueue.sync {
+            guard ordinalMeKanjiPreferred != enabled else {
+                return
+            }
+            ordinalMeKanjiPreferred = enabled
+            invalidateCandidateCache()
+        }
+    }
+
+    func setAdjectiveMeKanjiCandidatesEnabled(_ enabled: Bool) {
+        stateQueue.sync {
+            guard adjectiveMeKanjiCandidatesEnabled != enabled else {
+                return
+            }
+            adjectiveMeKanjiCandidatesEnabled = enabled
             invalidateCandidateCache()
         }
     }
@@ -228,6 +253,8 @@ final class KanaKanjiConverter {
         inflectionDerivedCandidatesForScriptVariant = []
 
         var finalCandidates = finalizeSortedCandidates(context, scores: scores)
+        // め終わり読みの『め/目』選好(序数/形容詞語幹。設定に応じたペア整列・補生成・除去)。
+        finalCandidates = applyMeSuffixPreferences(reading: normalizedReading, to: finalCandidates)
         // 助数詞+付属語(かい+しか 等)の合成をレア語合成(芥子か 等)より前へ(先頭候補の直後)。
         finalCandidates = Self.counterKanaTailPromotedCandidates(finalCandidates, reading: normalizedReading)
         // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で

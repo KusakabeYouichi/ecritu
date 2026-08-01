@@ -296,6 +296,18 @@ struct ContentView: View {
     private var emojiCandidateDisplayEnabled = true
 
     @AppStorage(
+        SettingsKeys.ordinalMeKanjiPreferred,
+        store: Self.sharedDefaults
+    )
+    private var ordinalMeKanjiPreferred = true
+
+    @AppStorage(
+        SettingsKeys.adjectiveMeKanjiCandidatesEnabled,
+        store: Self.sharedDefaults
+    )
+    private var adjectiveMeKanjiCandidatesEnabled = false
+
+    @AppStorage(
         SettingsKeys.kaomojiCandidateDisplayEnabled,
         store: Self.sharedDefaults
     )
@@ -445,6 +457,8 @@ struct ContentView: View {
             userDictionaryCandidateDisplayModeRawValue,
             contactCandidateDisplayModeRawValue,
             String(emojiCandidateDisplayEnabled),
+            String(ordinalMeKanjiPreferred),
+            String(adjectiveMeKanjiCandidatesEnabled),
             String(kaomojiCandidateDisplayEnabled),
             String(historicalKanaCandidatesEnabled),
             String(iterationMarkCandidatesEnabled),
@@ -543,6 +557,8 @@ struct ContentView: View {
         str(SettingsKeys.katakanaEmphasisCandidateMode, katakanaEmphasisCandidateModeRawValue, "カタカナ強調表記の候補")
         str(SettingsKeys.mazegakiCandidateMode, mazegakiCandidateModeRawValue, "交ぜ書きの候補")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
+        bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "première…: 順序の『目』を漢字で先に")
+        bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "un peu …: 形容詞語幹の『目』候補も出す")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
         str(SettingsKeys.contactCandidateDisplayMode, contactCandidateDisplayModeRawValue, "iOSの連絡先の姓、名、会社名")
         str(SettingsKeys.userDictionaryCandidateDisplayMode, userDictionaryCandidateDisplayModeRawValue, "iOSのユーザ辞書の単語")
@@ -1131,6 +1147,11 @@ struct ContentView: View {
                             title: "交ぜ書きの候補",
                             selectionRawValue: $mazegakiCandidateModeRawValue,
                             footnote: "「まん延(蔓延)」「作ひん(作品)」のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(既定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。「子ども」など定着した表記は対象外です。"
+                        )
+
+                        MeSuffixCandidateSettingsSection(
+                            ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
+                            adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
                         )
 
                         EmojiKaomojiCandidateSettingsSection(

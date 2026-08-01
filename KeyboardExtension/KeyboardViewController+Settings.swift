@@ -38,6 +38,21 @@ extension KeyboardViewController {
         ) ?? .suppress
         kanaKanjiConverter.setMazegakiCandidateMode(mazegakiMode)
 
+        kanaKanjiConverter.setOrdinalMeKanjiPreferred(
+            sharedBoolValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.ordinalMeKanjiPreferred,
+                fallback: true
+            )
+        )
+        kanaKanjiConverter.setAdjectiveMeKanjiCandidatesEnabled(
+            sharedBoolValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.adjectiveMeKanjiCandidatesEnabled,
+                fallback: false
+            )
+        )
+
         // 汎用Latinサジェスト語彙(同梱頻度リスト)の言語別トグル。既定は全言語OFF。
         var latinLexiconLanguages: Set<String> = []
         let latinLexiconKeysByLanguage: [(String, String)] = [

@@ -2500,19 +2500,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(candidates.contains("架空ちする"), "candidates=\(candidates)")
     }
 
-    func testRegressionOrdinalMeFallbackPrefersKanjiMeAfterCommittedNumberInput() {
-        let candidates = converter.candidates(
+    // 旧仕様(行め 固定先頭)は première…設定(2428)に置き換え。既定=漢字『目』先、
+    // オフ=ひらがな『め』先。
+    func testRegressionOrdinalMeFallbackFollowsOrdinalSetting() {
+        let kanjiFirst = converter.candidates(
             for: "10ぎょうめ",
             limit: 24,
             systemCandidateMode: .surface
         )
+        XCTAssertEqual(kanjiFirst.first, "行目", "candidates=\(kanjiFirst)")
 
-        XCTAssertEqual(candidates.first, "行め", "candidates=\(candidates)")
-
-        if let meIndex = candidates.firstIndex(of: "行め"),
-            let mokuIndex = candidates.firstIndex(of: "行目") {
-            XCTAssertGreaterThan(mokuIndex, meIndex, "candidates=\(candidates)")
-        }
+        converter.setOrdinalMeKanjiPreferred(false)
+        let meFirst = converter.candidates(
+            for: "10ぎょうめ",
+            limit: 24,
+            systemCandidateMode: .surface
+        )
+        XCTAssertEqual(meFirst.first, "行め", "candidates=\(meFirst)")
+        converter.setOrdinalMeKanjiPreferred(true)
     }
 
     func testRegressionHairuCompoundVerbFormsAreDerivedFromDictionaryForm() {
@@ -5989,6 +5994,54 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // OOV同点のタイブレークは優勢族代表の先行ボーナスが破る(seed はる で 貼>張)
         XCTAssertEqual(multi.first, "ログ貼ったら", "multi=\(multi.prefix(6))")
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
+    }
+
+    // め/目 選好(コンテナー設定 première…/un peu …)。既定: 序数=漢字『目』先
+    // (告示 通則4)、形容詞語幹=『目』を出さない(かな『め』のみ。付表の語1)(2428)
+    func testRegressionMeSuffixPreferences() throws {
+        try prepareRealLMDictionary()
+        // 形容詞・既定(OFF): 目形(薄目/多目)を出さない。名詞の 大目 は無傷
+        let usumeOff = converter.candidates(for: "うすめ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(usumeOff.contains("薄目"), "usumeOff=\(usumeOff)")
+        XCTAssertTrue(usumeOff.contains("薄め"), "usumeOff=\(usumeOff)")
+        let oomeOff = converter.candidates(for: "おおめ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(oomeOff.contains("多目"), "oomeOff=\(oomeOff)")
+        XCTAssertTrue(oomeOff.contains("大目"), "大目(名詞)は無傷: \(oomeOff)")
+        // 形容詞・ON: かな め が先(薄目 rank0 でも)、辞書に目形が無い組(狭め)は補生成
+        converter.setAdjectiveMeKanjiCandidatesEnabled(true)
+        let usume = converter.candidates(for: "うすめ", limit: 10, systemCandidateMode: .surface)
+        if let me = usume.firstIndex(of: "薄め"), let kanji = usume.firstIndex(of: "薄目") {
+            XCTAssertTrue(me < kanji, "usume=\(usume)")
+        } else {
+            XCTFail("薄め/薄目 が両方あるべき: \(usume)")
+        }
+        let semame = converter.candidates(for: "せまめ", limit: 10, systemCandidateMode: .surface)
+        if let me = semame.firstIndex(of: "狭め"), let kanji = semame.firstIndex(of: "狭目") {
+            XCTAssertTrue(me < kanji, "semame=\(semame)")
+        } else {
+            XCTFail("狭め/狭目(補生成)が両方あるべき: \(semame)")
+        }
+        converter.setAdjectiveMeKanjiCandidatesEnabled(false)
+        // 序数・既定(目先): 辞書丸ごと語(三番目)が先頭のまま
+        XCTAssertEqual(
+            converter.candidates(for: "さんばんめ", limit: 10, systemCandidateMode: .surface).first,
+            "三番目"
+        )
+        // 序数・め先モード: 辞書に無い 三番め/番め を補生成して 目形より先に
+        converter.setOrdinalMeKanjiPreferred(false)
+        let sanban = converter.candidates(for: "さんばんめ", limit: 10, systemCandidateMode: .surface)
+        if let me = sanban.firstIndex(of: "三番め"), let kanji = sanban.firstIndex(of: "三番目") {
+            XCTAssertTrue(me < kanji, "sanban=\(sanban)")
+        } else {
+            XCTFail("三番め(補生成)/三番目 が両方あるべき: \(sanban)")
+        }
+        let banme = converter.candidates(for: "ばんめ", limit: 10, systemCandidateMode: .surface)
+        if let me = banme.firstIndex(of: "番め"), let kanji = banme.firstIndex(of: "番目") {
+            XCTAssertTrue(me < kanji, "banme=\(banme)")
+        } else {
+            XCTFail("番め(補生成)/番目 が両方あるべき: \(banme)")
+        }
+        converter.setOrdinalMeKanjiPreferred(true)
     }
 
     // 3かいほど: ほど が素通り接尾辞に無く かい+ほど の単文節合成が存在しないため、

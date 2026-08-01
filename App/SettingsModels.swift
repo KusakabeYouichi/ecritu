@@ -80,6 +80,8 @@ enum SettingsKeys {
     static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
     // カタカナ強調表記/交ぜ書きの扱い(suppress/demote/normal)。KeyboardExtension 側と同一キー
     static let katakanaEmphasisCandidateMode = "katakanaEmphasisCandidateMode"
+    static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
+    static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
     static let mazegakiCandidateMode = "mazegakiCandidateMode"
     static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
     static let latinLexiconEnglishEnabled = "latinLexiconEnglishEnabled"
