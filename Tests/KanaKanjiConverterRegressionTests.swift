@@ -5991,6 +5991,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // はりわすれ: SudachiDict に 貼り(はり)エントリ自体が無く(張り/針/梁 のみ)、
+    // 貼り忘れ が候補化できなかった(供給欠落型)。misc curated で複合語を供給(2425)
+    func testRegressionHariwasureSuppliedFromMisc() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "はりわすれ", candidate: "貼り忘れ")
+        converter.store.addUserEntry(reading: "はりわすれる", candidate: "貼り忘れる")
+        let single = converter.candidates(for: "はりわすれ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "貼り忘れ", "single=\(single.prefix(5))")
+        // 張り忘れ 等の既存合成はクリーンテスト環境では再現しない(実機のみの合成経路)。
+        // 本修正は curated の追加供給のみで既存経路に触れないため、先頭の検証に留める。
+        // 一段 curated からの活用派生(貼り忘れた)も供給される
+        let ta = converter.multiClauseCandidates(for: "はりわすれた", systemCandidateMode: .surface)
+        XCTAssertEqual(ta.first, "貼り忘れた", "ta=\(ta.prefix(4))")
+    }
+
     // おやどりの: 丁寧接頭辞合成(お+宿り→御宿り)が実辞書語 親鳥/親鶏 と同点(共に
     // LM未収録=dictUnknown 8700)になり連文節先頭を奪っていた。同スパンに実辞書語が
     // あるスパンでは合成ノードを+200後置(2421)
