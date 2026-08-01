@@ -31,7 +31,7 @@ extension KanaKanjiConverter {
         "えん": ["円"],
         "えんだま": ["円玉"],
         "えんさつ": ["円札"],
-        "かい": ["回", "階"],
+        "かい": ["回"],
         "ごう": ["号"],
         "ごうしゃ": ["号車"],
         "せだい": ["世代"],
@@ -286,6 +286,27 @@ extension KanaKanjiConverter {
         return candidates
     }
 
+    // 数字直後ブースト専用の追加助数詞表層。numericCounterSuffixCandidatesByReading に
+    // 足すと複合生成(第N/何N)にも波及して 第1階 等の誤生成が出るため分離する(2426)。
+    static let digitContextAdditionalCounterSurfacesByReading: [String: [String]] = [
+        "かい": ["階"]
+    ]
+
+    static func digitBoostCounterSurfaces(for reading: String) -> [String]? {
+        let base = numericCounterSuffixCandidatesByReading[reading]
+        let extra = digitContextAdditionalCounterSurfacesByReading[reading]
+        switch (base, extra) {
+        case (nil, nil):
+            return nil
+        case let (base?, nil):
+            return base
+        case let (nil, extra?):
+            return extra
+        case let (base?, extra?):
+            return base + extra
+        }
+    }
+
     static func digitContextCounterBoostedCandidates(
         _ candidates: [String],
         reading: String,
@@ -297,7 +318,7 @@ extension KanaKanjiConverter {
         }
         let present = Set(candidates)
         var boosted: [String] = []
-        if let counterSurfaces = numericCounterSuffixCandidatesByReading[reading] {
+        if let counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
             boosted = counterSurfaces.filter { present.contains($0) }
         } else {
@@ -305,9 +326,11 @@ extension KanaKanjiConverter {
             // 始まる合成候補(回しか/枚中。末尾はかな素通りでも変換済みでも可)を前置する
             // (1確定→かいしか→1回しか、17確定→まいちゅう→17枚中。2416/2421)。複数の
             // 助数詞読みが前方一致する場合は最長を優先し、末尾は短いかなに限定する。
-            for (counterReading, surfaces) in numericCounterSuffixCandidatesByReading
-                .sorted(by: { $0.key.count > $1.key.count })
+            for counterReading in Set(numericCounterSuffixCandidatesByReading.keys)
+                .union(digitContextAdditionalCounterSurfacesByReading.keys)
+                .sorted(by: { $0.count != $1.count ? $0.count > $1.count : $0 < $1 })
             where reading.count > counterReading.count && reading.hasPrefix(counterReading) {
+                let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
                 let tail = String(reading.dropFirst(counterReading.count))
                 guard tail.count <= 4,
                     tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
