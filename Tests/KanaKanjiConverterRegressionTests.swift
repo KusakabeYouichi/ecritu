@@ -5977,6 +5977,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.contains("家に") && single.contains("内に"), "single=\(single)")
     }
 
+    // ろぐはったら: 辞書に はった の動詞形が無く全て活用派生供給で、ルール定義順の連結だと
+    // はう系(這った/匍った/匐った)がTopK3を占有し はる系(貼った/張った)が圏外だった。
+    // 基底読み族をunigram最小値で整列する構造対応(基底読み間順序の5例目。2423)
+    func testRegressionHattaraSuppliesHaruFamily() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "ろぐはったら", systemCandidateMode: .surface)
+        XCTAssertTrue(
+            multi.contains(where: { $0.contains("貼ったら") || $0.contains("張ったら") }),
+            "はる系が供給される: \(multi.prefix(6))"
+        )
+    }
+
     // おやどりの: 丁寧接頭辞合成(お+宿り→御宿り)が実辞書語 親鳥/親鶏 と同点(共に
     // LM未収録=dictUnknown 8700)になり連文節先頭を奪っていた。同スパンに実辞書語が
     // あるスパンでは合成ノードを+200後置(2421)
