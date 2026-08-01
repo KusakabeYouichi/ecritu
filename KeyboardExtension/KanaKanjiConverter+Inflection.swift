@@ -75,11 +75,11 @@ extension KanaKanjiConverter {
         initialUserDictionary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         perFamilyLimit: Int
-    ) -> [(items: [String], familyKey: Int)] {
+    ) -> [(items: [String], familyKey: Int, baseReading: String)] {
         guard reading.count >= 2, perFamilyLimit > 0 else {
             return []
         }
-        var families: [(items: [String], familyKey: Int)] = []
+        var families: [(items: [String], familyKey: Int, baseReading: String)] = []
         var seen = Set<String>()
 
         let iku = deriveIkuIrregularCandidates(
@@ -91,7 +91,7 @@ extension KanaKanjiConverter {
         if !iku.isEmpty {
             // 行く不規則は LM 代表値を 行く の unigram で測る
             let ikuKey = store.wordLMUnigramCosts(for: ["行く"])["行く"] ?? Int.max
-            families.append((items: Array(iku.prefix(perFamilyLimit)), familyKey: ikuKey))
+            families.append((items: Array(iku.prefix(perFamilyLimit)), familyKey: ikuKey, baseReading: "いく"))
         }
 
         for rule in Self.allInflectionRules {
@@ -102,9 +102,17 @@ extension KanaKanjiConverter {
                 initialUserDictionary: initialUserDictionary,
                 systemCandidateMode: systemCandidateMode
             )
-            let items = rawItems.filter { seen.insert($0).inserted }
+            // かな識別は除外(b2b の追加供給はかなを扱わないため、枠(perFamilyLimit)を
+            // かなが潰して 貼ったら が切られるのを防ぐ)
+            let items = rawItems.filter { $0 != reading && seen.insert($0).inserted }
             if !items.isEmpty {
-                families.append((items: Array(items.prefix(perFamilyLimit)), familyKey: familyKey))
+                let baseReading = removingSuffix(reading, suffix: rule.readingSuffix)
+                    .map { $0 + rule.baseReadingSuffix } ?? ""
+                families.append((
+                    items: Array(items.prefix(perFamilyLimit)),
+                    familyKey: familyKey,
+                    baseReading: baseReading
+                ))
             }
         }
         return families
