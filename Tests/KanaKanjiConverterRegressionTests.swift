@@ -5991,6 +5991,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // 3かいほど: ほど が素通り接尾辞に無く かい+ほど の単文節合成が存在しないため、
+    // 数字直後ブースト(回ほど を前置)の対象候補が供給されていなかった。ほど を
+    // postfixPassthroughSuffixes へ追加(2425)
+    func testRegressionKaihodoComposesCounter() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "かいほど", limit: 20, systemCandidateMode: .surface)
+        XCTAssertTrue(single.contains("回ほど"), "single=\(single.prefix(8))")
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            single,
+            reading: "かいほど",
+            precedingCharacter: "3"
+        )
+        XCTAssertEqual(boosted.first, "回ほど", "boosted=\(boosted.prefix(4))")
+    }
+
     // はりわすれ: SudachiDict に 貼り(はり)エントリ自体が無く(張り/針/梁 のみ)、
     // 貼り忘れ が候補化できなかった(供給欠落型)。misc curated で複合語を供給(2425)
     func testRegressionHariwasureSuppliedFromMisc() throws {
