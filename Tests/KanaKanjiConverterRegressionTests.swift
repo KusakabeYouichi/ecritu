@@ -6399,15 +6399,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 既定は全言語OFF(サジェストに汎用語が混ざらない)
         XCTAssertFalse(store.latinSuggestions(prefix: "informa", limit: 8).contains("information"))
         store.setGenericLatinLexiconEnabledLanguages(["en", "fr", "de", "it"])
-        // 索引ロード(全言語=10万語超。ビルド時ソート済みなので行分割のみ)の所要時間を確認
+        // 索引ロード(全言語=10万語超。mmap+改行カウントのみでパース無し)の所要時間を確認
         let builtAt = CFAbsoluteTimeGetCurrent()
         let loadedCounts = ["en", "fr", "de", "it"].map {
-            store.genericLatinLexiconEntries(language: $0).count
+            store.genericLatinLexiconIndex(language: $0)?.entryCount ?? 0
         }
         let buildMs = (CFAbsoluteTimeGetCurrent() - builtAt) * 1000
-        // 実測目安: Debug/4言語で1-2秒(マシン負荷で振れるので閾値assertはしない)。
-        // 実運用は設定適用時のバックグラウンド先読みでタイピング経路から外している。
-        print("PROBE lexicon load: \(Int(buildMs))ms, entries=\(loadedCounts)")
+        print("PROBE lexicon mmap: \(Int(buildMs))ms, entries=\(loadedCounts)")
         XCTAssertEqual(loadedCounts, [15000, 15000, 60000, 15000])
         let english = store.latinSuggestions(prefix: "informa", limit: 8)
         XCTAssertTrue(english.contains("information"), "suggestions=\(english)")

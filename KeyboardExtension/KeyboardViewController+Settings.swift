@@ -57,7 +57,7 @@ extension KeyboardViewController {
             let store = kanaKanjiStore
             DispatchQueue.global(qos: .utility).async {
                 for language in latinLexiconLanguages {
-                    _ = store.genericLatinLexiconEntries(language: language)
+                    _ = store.genericLatinLexiconIndex(language: language)
                 }
             }
         }

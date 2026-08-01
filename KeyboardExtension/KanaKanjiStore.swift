@@ -63,9 +63,10 @@ final class KanaKanjiStore {
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: [String: [String]]?
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
-    // 汎用Latinサジェスト語彙のキャッシュ(言語別、キー順ソート済み)と有効言語
-    // (既定は全言語OFF。設定で言語別にON)。
-    var cachedGenericLatinLexiconEntriesByLanguage: [String: [GenericLatinLexiconEntry]] = [:]
+    // 汎用Latinサジェスト語彙のmmap索引キャッシュ(言語別)と有効言語
+    // (既定は全言語OFF。設定で言語別にON)。索引は Data(mappedIfSafe) 保持のみで
+    // 常駐フットプリントを持たない(GenericLatinLexiconFileIndex 定義コメント参照)。
+    var cachedGenericLatinLexiconIndexByLanguage: [String: GenericLatinLexiconFileIndex] = [:]
     var genericLatinLexiconEnabledLanguages: Set<String> = []
     // テスト用: bundle 未同梱の環境(unit test)でリポジトリのtxtを直接読ませるディレクトリ
     var genericLatinLexiconDirectoryURLOverride: URL?
@@ -704,7 +705,7 @@ final class KanaKanjiStore {
             cachedSystemDictionary = nil
             cachedSupplementalSystemDictionary = nil
             cachedLatinSuggestionEntries = nil
-            cachedGenericLatinLexiconEntriesByLanguage = [:]
+            cachedGenericLatinLexiconIndexByLanguage = [:]
             cachedSystemCandidateSources = nil
             cachedInflectionDictionary = nil
             cachedInflectionClassMapsByReading = [:]
