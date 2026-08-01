@@ -57,11 +57,57 @@ extension KanaKanjiConverter {
                     userDictionary: userDictionary,
                     initialUserDictionary: initialUserDictionary,
                     systemCandidateMode: systemCandidateMode
-                )
+                ).items
             )
         }
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
+    }
+
+    // 基底読み族(=活用ルール)単位のグループ列。並びは inflectionCandidates と同一
+    // (行く不規則→ルール定義順、族内は orderedDerivationBaseCandidates の seed/辞書順)で、
+    // 族をまたぐ重複は先着に寄せる。連文節 b2 の「未代表族の追加供給」(はったら=はう系が
+    // TopK を占有して はる系(貼った/張った)が供給されない、基底読み間順序の5例目)にだけ
+    // 使う — 単文節の並び(既存の語別調整が乗っている)には影響させない(2423)。
+    func inflectionCandidateFamilies(
+        for reading: String,
+        userDictionary: [String: [String]],
+        initialUserDictionary: [String: [String]],
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        perFamilyLimit: Int
+    ) -> [(items: [String], familyKey: Int)] {
+        guard reading.count >= 2, perFamilyLimit > 0 else {
+            return []
+        }
+        var families: [(items: [String], familyKey: Int)] = []
+        var seen = Set<String>()
+
+        let iku = deriveIkuIrregularCandidates(
+            for: reading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: systemCandidateMode
+        ).filter { seen.insert($0).inserted }
+        if !iku.isEmpty {
+            // 行く不規則は LM 代表値を 行く の unigram で測る
+            let ikuKey = store.wordLMUnigramCosts(for: ["行く"])["行く"] ?? Int.max
+            families.append((items: Array(iku.prefix(perFamilyLimit)), familyKey: ikuKey))
+        }
+
+        for rule in Self.allInflectionRules {
+            let (rawItems, familyKey) = derivedCandidates(
+                for: reading,
+                rule: rule,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            )
+            let items = rawItems.filter { seen.insert($0).inserted }
+            if !items.isEmpty {
+                families.append((items: Array(items.prefix(perFamilyLimit)), familyKey: familyKey))
+            }
+        }
+        return families
     }
 
     func adjectiveGaruCandidates(
@@ -162,20 +208,22 @@ extension KanaKanjiConverter {
         return results
     }
 
+    // 戻り値の familyKey = 実際に派生へ寄与した基底表層の LM unigram 最小値(かな識別も
+    // 寄与すれば含む)。連文節 b2b の「未代表族の追加供給」の優劣ゲートにだけ使う。
     func derivedCandidates(
         for reading: String,
         rule: InflectionRule,
         userDictionary: [String: [String]],
         initialUserDictionary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
-    ) -> [String] {
+    ) -> (items: [String], familyKey: Int) {
         guard let readingStem = removingSuffix(reading, suffix: rule.readingSuffix) else {
-            return []
+            return ([], Int.max)
         }
 
         if readingStem.isEmpty,
             !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
-            return []
+            return ([], Int.max)
         }
 
         let baseReading = readingStem + rule.baseReadingSuffix
@@ -193,7 +241,7 @@ extension KanaKanjiConverter {
         }
 
         guard !baseCandidates.isEmpty else {
-            return []
+            return ([], Int.max)
         }
 
         // 基底候補の並びを整える(seed順+かな識別のLM昇格/降格。postfix語幹と共通ヘルパ)。
@@ -214,6 +262,7 @@ extension KanaKanjiConverter {
         ).union(initialCandidatesForBase)
         let userOwnCandidateSet = initialOrUserCandidateSet
         var results: [String] = []
+        var contributingBases: [String] = []
 
         for candidate in baseCandidates {
             guard let matchedSuffix = rule.baseCandidateSuffixes.first(where: { candidate.hasSuffix($0) }) else {
@@ -251,9 +300,13 @@ extension KanaKanjiConverter {
 
             let stem = String(candidate.dropLast(matchedSuffix.count))
             results.append(stem + rule.outputCandidateSuffix)
+            contributingBases.append(candidate)
         }
 
-        return results
+        let familyKey = contributingBases.isEmpty
+            ? Int.max
+            : (store.wordLMUnigramCosts(for: contributingBases).values.min() ?? Int.max)
+        return (results, familyKey)
     }
 
     func inflectionMetadata(for reading: String) -> (classMap: [String: String], hasMetadata: Bool) {

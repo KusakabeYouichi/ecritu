@@ -925,11 +925,13 @@ extension KanaKanjiConverter {
                     // かなが枠を潰して次点(かって の 勝って 等)が入れない。先に除外してから
                     // topK 件を採る。
                     var suppliedInflectionCount = 0
+                    var suppliedInflectionSurfaces = Set<String>()
                     for (offset, surface) in inflected.enumerated() {
                         if surface == segmentReading, offset != 0 {
                             continue
                         }
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        suppliedInflectionSurfaces.insert(surface)
                         // スパン先頭(seed/辞書順で最優先)の漢字活用形を連文節ボーナス対象に
                         // 記録。ただし基底読みが allowlist の時のみ(見た/呼んだ 等への波及回避)。
                         if suppliedInflectionCount == 0, surface != segmentReading,
@@ -939,6 +941,34 @@ extension KanaKanjiConverter {
                         suppliedInflectionCount += 1
                         if suppliedInflectionCount >= Self.multiClauseInflectionTopK {
                             break
+                        }
+                    }
+                    // (b2b) 未代表族の追加供給: 同じ活用形が複数の基底読みから導出できるとき
+                    // (はったら=はう系/はる系 等)、先行族が topK を占有すると後続族
+                    // (貼ったら/張ったら)はノード自体が立たず LM 競争にすら参加できない
+                    // (基底読み間順序の5例目)。topK に代表がいない族のうち、寄与基底の
+                    // unigram 最小値が既代表族より明確に優勢(小さい)なものだけ先頭2件を
+                    // 追加供給する — 供給の追加のみで既存の並び・ボーナスには触れない。
+                    // 優劣ゲートが無いと、借用統計に乗るジャンク族(充て(みて)←あて 等、
+                    // 基底が LM 未収録の文語)まで入って既存の最良を壊す。
+                    if suppliedInflectionCount >= Self.multiClauseInflectionTopK {
+                        let families = inflectionCandidateFamilies(
+                            for: segmentReading,
+                            userDictionary: manualUserDictionary,
+                            initialUserDictionary: initialUserDictionary,
+                            systemCandidateMode: systemCandidateMode,
+                            perFamilyLimit: 2
+                        )
+                        let representedBestKey = families
+                            .filter { $0.items.contains(where: { suppliedInflectionSurfaces.contains($0) }) }
+                            .map(\.familyKey)
+                            .min() ?? Int.max
+                        for family in families
+                        where !family.items.contains(where: { suppliedInflectionSurfaces.contains($0) })
+                            && family.familyKey < representedBestKey {
+                            for surface in family.items where surface != segmentReading {
+                                add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                            }
                         }
                     }
                 }
