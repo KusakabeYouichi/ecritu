@@ -5955,6 +5955,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // やらないくせに: 曲(くせ wc10067=収穫底値、最安読み きょく4472)が きょく用途の
+    // bigram(ない→曲 4185)を借用して やらない曲に が先頭化。bigram分岐だけが
+    // 収穫底値降格/最安読み乖離ガードを素通りしていた穴を一般則で遮断(2423)
+    func testRegressionKuseniNotHijackedByKyokuBigram() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "やらないくせに", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "やらないくせに", "multi=\(multi.prefix(5))")
+        XCTAssertFalse(multi.prefix(4).contains("やらない曲に"), "multi=\(multi.prefix(5))")
+        XCTAssertTrue(multi.contains("やらない癖に"), "癖 は温存: \(multi.prefix(5))")
+    }
+
     // おやどりの: 丁寧接頭辞合成(お+宿り→御宿り)が実辞書語 親鳥/親鶏 と同点(共に
     // LM未収録=dictUnknown 8700)になり連文節先頭を奪っていた。同スパンに実辞書語が
     // あるスパンでは合成ノードを+200後置(2421)

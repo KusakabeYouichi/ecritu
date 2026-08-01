@@ -1197,8 +1197,31 @@ extension KanaKanjiConverter {
             var base: Int
             var penaltyForNounHoshii = 0
             // 読み跨ぎ bigram 借用の遮断(定数コメント参照。人(にん/じん)/頭(ず) 等)。
+            // 一般則(2423): bigram は表層単位の統計なので、この読みの word_cost が
+            // 収穫底値(>=10000)または表層の最安読みから大きく乖離(>=2500)している場合は
+            // 主読みの実績とみなして信用しない(ない→曲 4185(きょく用途)を 曲(くせ wc10067)が
+            // 借用して やらない曲に を作る穴 — unigram側の底値降格/乖離床(2078/2126/2386)を
+            // bigram分岐だけが素通りしていた)。seed 掲載語は人手選別のため免除。
+            let crossReadingBigramDenied: Bool = {
+                // かな識別(表層==読み)は表層統計がそのまま自分の統計なので借用があり得ない
+                // (かな識別の wc は収穫底値(>=10000)が多く、除外しないと できた/してる 等の
+                // かな bigram を没収して漢字側に負ける)。seed 掲載語も人手選別のため免除。
+                guard let wordCost,
+                    surface != reading,
+                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) else {
+                    return false
+                }
+                if wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor {
+                    return true
+                }
+                if let minWordCost = candidateMinWordCosts[surface],
+                    wordCost - minWordCost >= Self.multiClauseCrossReadingUnigramGapThreshold {
+                    return true
+                }
+                return false
+            }()
             let deniesBigramBorrow = (Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
-                .contains(reading) ?? false) || prevDeniesOutgoingBigram
+                .contains(reading) ?? false) || prevDeniesOutgoingBigram || crossReadingBigramDenied
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
             // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
