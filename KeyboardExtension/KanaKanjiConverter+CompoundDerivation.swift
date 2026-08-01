@@ -254,6 +254,38 @@ extension KanaKanjiConverter {
         return (0x30...0x39).contains(value) || (0xFF10...0xFF19).contains(value)
     }
 
+    // 助数詞+付属語かな末尾(かい+しか 等)の合成は、数字文脈が無くても 芥子か/怪死か の
+    // ようなレア語合成より前に置きたい。先頭候補(開始か 等の最良解)は保ち、その直後へ
+    // 繰り上げる(2417)。末尾は付属語の許可リストに限定して誤発火を防ぐ。
+    static let counterPromotableKanaTails: Set<String> = [
+        "しか", "だけ", "ずつ", "ごと", "ごとに", "ぐらい", "くらい", "ほど", "など",
+        "まで", "でも", "かも", "こそ", "さえ", "すら", "ばかり",
+    ]
+
+    static func counterKanaTailPromotedCandidates(
+        _ candidates: [String],
+        reading: String
+    ) -> [String] {
+        guard candidates.count > 2 else { return candidates }
+        for (counterReading, surfaces) in numericCounterSuffixCandidatesByReading
+            .sorted(by: { $0.key.count > $1.key.count })
+        where reading.count > counterReading.count && reading.hasPrefix(counterReading) {
+            let tail = String(reading.dropFirst(counterReading.count))
+            guard counterPromotableKanaTails.contains(tail) else { continue }
+            let present = Set(candidates)
+            let promoted = surfaces.map { $0 + tail }.filter { present.contains($0) }
+            guard !promoted.isEmpty else { continue }
+            let promotedSet = Set(promoted)
+            if let firstIndex = candidates.firstIndex(where: { promotedSet.contains($0) }),
+                firstIndex <= promoted.count {
+                return candidates
+            }
+            let rest = candidates.filter { !promotedSet.contains($0) }
+            return [rest[0]] + promoted + Array(rest.dropFirst())
+        }
+        return candidates
+    }
+
     static func digitContextCounterBoostedCandidates(
         _ candidates: [String],
         reading: String,
