@@ -898,7 +898,16 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         keyboardBootstrapWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: workItem)
+        // 双子起動(iOSが数百msの間に2インスタンスを連続生成)では、双方の起動処理が重なり
+        // 単独なら~35MBの起動時footprintが2倍化して60MB枠に接触する(2026-08-01 15:35の
+        // 警告3連打の実測)。多重生存中は bootstrap(補助語彙+共有プリウォーム+辞書
+        // プリロード予約)を追加遅延し、敗者インスタンスのdeinit(実測~2秒)とピークをずらす。
+        var delay = 0.2
+        if KeyboardViewController.liveControllerCensus.allObjects.count >= 2 {
+            delay = 2.0
+            appendKeyboardDiagnosticsLog("多重生存のためbootstrapを遅延 delaySec=\(delay)")
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay, execute: workItem)
     }
 
     private func requestSharedDataPrewarmIfNeeded() {
