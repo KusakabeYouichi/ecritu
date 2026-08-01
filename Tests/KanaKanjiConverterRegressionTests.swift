@@ -6125,6 +6125,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             precedingCharacter: "0"
         )
         XCTAssertEqual(exact.first, "秒", "exact=\(exact)")
+        // 数字直後の かい は 回, 階 の順(3かい→3回/3階。2426)
+        let kai = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["会", "回", "海", "階"],
+            reading: "かい",
+            precedingCharacter: "3"
+        )
+        XCTAssertEqual(Array(kai.prefix(2)), ["回", "階"], "kai=\(kai)")
         // 末尾が変換済みの合成(まい+ちゅう→枚中)も助数詞表層の前方一致で先頭へ(2421)
         let converted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
             ["米中", "マイ中", "枚中", "毎中"],
