@@ -5966,6 +5966,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains("やらない癖に"), "癖 は温存: \(multi.prefix(5))")
     }
 
+    // うちに: 海事レア語 打ち荷/打荷(wc7864=底値未満で降格対象外・LM未収録)が
+    // 家に/内に の合成より先頭に来ていた。suppr(非表示)で恒久除去(2423)
+    func testRegressionUchiniRareCargoSuppressed() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["うちに": ["打ち荷", "打荷"]])
+        let single = converter.candidates(for: "うちに", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("打ち荷"), "single=\(single)")
+        XCTAssertFalse(single.contains("打荷"), "single=\(single)")
+        XCTAssertTrue(single.contains("家に") && single.contains("内に"), "single=\(single)")
+    }
+
     // おやどりの: 丁寧接頭辞合成(お+宿り→御宿り)が実辞書語 親鳥/親鶏 と同点(共に
     // LM未収録=dictUnknown 8700)になり連文節先頭を奪っていた。同スパンに実辞書語が
     // あるスパンでは合成ノードを+200後置(2421)
