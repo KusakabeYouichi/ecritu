@@ -5965,6 +5965,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(tanni.first, "単に円安による値上がり", "multi=\(tanni.prefix(5))")
     }
 
+    // こうきじてん: 康熙字典 が SudachiDict/LM に無く候補に出なかった。misc curated で供給(2418)
+    func testRegressionKoukiJitenSuppliedFromMisc() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "こうきじてん", candidate: "康熙字典")
+        let single = converter.candidates(for: "こうきじてん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "康熙字典", "single=\(single)")
+    }
+
     // まったくありません: 全くありません が文語形容詞 全い(まったい)の活用として生成され、
     // poubelle の まったく→全く 抑制(基底読みが異なる)をすり抜けて先頭に出ていた。
     // 抑制の同一かな末尾合成(r+t→s+t)フィルタで除去(2418)
