@@ -388,7 +388,9 @@ extension KanaKanjiConverter {
     // フォールバックが観測済み だけ→EOS より安い逆転で僅差負けしていた)。
     // はず(筈 は現代ではほぼかな正書。弓の筈 は文語的レア用法)も形式名詞扱い —
     // もっとあるはず が提示層のかな退避で もっとある筈 に繰り上がるのを防ぐ
-    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため", "だけ", "はず", "やつ"]
+    // くせ(癖 は逆接の形式名詞用法(やらないくせに)ではかなが正書)も対象 — keepKana の
+    // 助詞剥がし(に)+形式名詞照合で やらないくせに の提示層かな退避を防ぐ(2424)
+    static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため", "だけ", "はず", "やつ", "くせ"]
     static let multiClauseFormalNounKanjiPenalty = 1000
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
