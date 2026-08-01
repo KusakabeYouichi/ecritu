@@ -615,6 +615,15 @@ extension KanaKanjiConverter {
                     if let suppressed, suppressed.contains(surface) {
                         return
                     }
+                    // 抑制の同一かな末尾合成(まったく→全く なら 全くありません も)を
+                    // ラティスにも載せない(単文節ステージ4と同じ規則)。
+                    if isComposedSuppressed(
+                        candidate: surface,
+                        reading: segmentReading,
+                        suppressedByReading: suppressedByReading
+                    ) {
+                        return
+                    }
                     if !exemptDecorative, Self.isDecorativeVariantSurface(surface, reading: segmentReading) {
                         return
                     }
