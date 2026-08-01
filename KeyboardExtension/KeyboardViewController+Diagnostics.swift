@@ -161,6 +161,13 @@ extension KeyboardViewController {
             // observer を再登録する(2411)。
             stopObservingSettingsDidChange()
             stopMarkedTextWatchdog()
+            // オーナー権を得ていた間に予約した起動処理(bootstrap/辞書プリロード)も取り消す。
+            // 双子起動の敗者が遅延実行で重い処理を走らせない(オーナー復帰時は viewWillAppear→
+            // viewDidAppear が bootstrap を再予約する)。
+            keyboardBootstrapWorkItem?.cancel()
+            keyboardBootstrapWorkItem = nil
+            dictionaryPreloadWorkItem?.cancel()
+            dictionaryPreloadWorkItem = nil
             if lostActiveOwnershipAt == 0 {
                 lostActiveOwnershipAt = CFAbsoluteTimeGetCurrent()
                 logLiveControllerCensus(trigger: "inactive-\(reason)")
