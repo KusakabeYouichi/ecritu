@@ -339,6 +339,8 @@
 	<!-- 貼り忘れ(はりわすれ): SudachiDict に 貼り(はり)エントリ自体が無く(張り のみ)、
 	     はりわすれ が 針忘れ/張り忘れ だけになる。複合語を curated で供給(一段は活用派生用) -->
 	<dict><key>phrase</key><string>貼り忘れ</string><key>shortcut</key><string>はりわすれ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>張り忘れ</string><key>shortcut</key><string>はりわすれ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>貼り忘れる</string><key>shortcut</key><string>はりわすれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>張り忘れる</string><key>shortcut</key><string>はりわすれる</string><key>pos</key><string>一段</string></dict>
 </array>
 </plist>
