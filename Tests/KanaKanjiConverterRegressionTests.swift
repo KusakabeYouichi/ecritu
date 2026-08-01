@@ -5964,6 +5964,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "やらないくせに", "multi=\(multi.prefix(5))")
         XCTAssertFalse(multi.prefix(4).contains("やらない曲に"), "multi=\(multi.prefix(5))")
         XCTAssertTrue(multi.contains("やらない癖に"), "癖 は温存: \(multi.prefix(5))")
+        // 提示層のかな識別退避を防ぐ(false だと実機バーで 演らないくせに が繰り上がり
+        // かなが末尾に落ちる。2424)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やらないくせに"))
     }
 
     // うちに: 海事レア語 打ち荷/打荷(wc7864=底値未満で降格対象外・LM未収録)が
