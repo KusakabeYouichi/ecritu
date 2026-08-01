@@ -5969,6 +5969,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(deta.contains("出た"), "deta=\(deta)")
     }
 
+    // それはいくつ: かな主流の いくつ(uni 4779≪幾つ5884)が、かな識別の床上げで
+    // それは幾つ に負けていた。seed+連文節ボーナス(みな と同型)でかな先頭に(2419)
+    func testRegressionIkutsuPrefersKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "それはいくつ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "それはいくつ", "multi=\(multi.prefix(5))")
+        XCTAssertTrue(multi.contains("それは幾つ"), "multi=\(multi.prefix(5))")
+        let solo = converter.candidates(for: "いくつ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(solo.first, "いくつ", "solo=\(solo)")
+    }
+
     // えんやすによるねあがり: 地名 根上(旧根上町)の LM unigram が 値上がり より安く、
     // 円安による根上 が先頭になっていた。seed+連文節ボーナスで 値上がり を先頭に(2418)
     func testRegressionRealLMNeagariPrefersPriceRise() throws {
