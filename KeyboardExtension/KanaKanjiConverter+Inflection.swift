@@ -188,6 +188,8 @@ extension KanaKanjiConverter {
         ).filter {
             // カタカナ強調の語幹(ウマい 等)は合成前に弾く(postfix 語幹と同じ判定。2402)
             !isKatakanaEmphasisBaseCandidate($0, reading: baseReading)
+                // 連濁収穫の動詞基底(どる→取る 等)も派生させない(定義コメント参照。2419)
+                && !isRendakuHarvestVerbBase($0, baseReading: baseReading)
         }
 
         guard !baseCandidates.isEmpty else {

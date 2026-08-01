@@ -5955,6 +5955,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // おおいのはどれ: 辞書の連濁収穫動詞読み(どる→取る/捕る/獲る…)から活用エンジンが
+    // どれ→取れ を派生し、多いのは取れ/獲れ/捕れ が どれ より先頭に出ていた。連濁は
+    // 複合語内でのみ生じ文節頭に立たないため、連濁収穫基底からの活用派生を除去(2419)
+    func testRegressionRendakuVerbBaseNotInflected() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "おおいのはどれ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "多いのはどれ", "multi=\(multi.prefix(5))")
+        let solo = converter.candidates(for: "どれ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(solo.contains("取れ"), "solo=\(solo)")
+        // 正当な濁音動詞(出る: 清音読みエントリ自体が無い)の活用は温存
+        let deta = converter.candidates(for: "でた", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(deta.contains("出た"), "deta=\(deta)")
+    }
+
     // えんやすによるねあがり: 地名 根上(旧根上町)の LM unigram が 値上がり より安く、
     // 円安による根上 が先頭になっていた。seed+連文節ボーナスで 値上がり を先頭に(2418)
     func testRegressionRealLMNeagariPrefersPriceRise() throws {
