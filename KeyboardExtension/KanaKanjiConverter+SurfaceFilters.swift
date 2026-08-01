@@ -121,6 +121,37 @@ extension KanaKanjiConverter {
         return buckets
     }()
 
+    // 抑制(読みr→表層s)を「同じかな末尾tを伴う r+t → s+t」の形にも適用する。
+    // 全くありません は文語形容詞 全い(まったい)の活用として生成されるため、
+    // まったく→全く の抑制(基底読みが異なる)を脱活用照合がすり抜ける。
+    // 読みの前方一致+同一末尾なら表層先頭を抑制表層と照合して除去する(2418)。
+    func isComposedSuppressed(
+        candidate: String,
+        reading: String,
+        suppressedByReading: [String: Set<String>]
+    ) -> Bool {
+        guard !suppressedByReading.isEmpty else {
+            return false
+        }
+        let readingChars = Array(reading)
+        guard readingChars.count >= 2 else {
+            return false
+        }
+        for prefixLength in 1..<readingChars.count {
+            let tail = String(readingChars[prefixLength...])
+            guard candidate.count > tail.count, candidate.hasSuffix(tail) else {
+                continue
+            }
+            guard let suppressedSet = suppressedByReading[String(readingChars[0..<prefixLength])] else {
+                continue
+            }
+            if suppressedSet.contains(String(candidate.dropLast(tail.count))) {
+                return true
+            }
+        }
+        return false
+    }
+
     func isDeinflectedSuppressed(
         candidate: String,
         reading: String,

@@ -517,6 +517,10 @@ final class KanaKanjiConverter {
             candidate: candidate,
             reading: context.reading,
             suppressedByReading: context.suppressedCandidatesByReading
+        ) || isComposedSuppressed(
+            candidate: candidate,
+            reading: context.reading,
+            suppressedByReading: context.suppressedCandidatesByReading
         ) {
             scores.removeValue(forKey: candidate)
         }
