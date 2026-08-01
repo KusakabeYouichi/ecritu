@@ -377,6 +377,8 @@ final class KeyboardViewController: UIInputViewController {
         static let userDictionaryCandidateDisplayMode = "userDictionaryCandidateDisplayMode"
         static let contactCandidateDisplayMode = "contactCandidateDisplayMode"
         static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
+        static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
+        static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
         static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
         static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
         static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"

@@ -633,6 +633,39 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
     }
 }
 
+struct MeSuffixCandidateSettingsSection: View {
+    @Binding var ordinalKanjiPreferred: Bool
+    @Binding var adjectiveKanjiEnabled: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("première、deuxième、troisième、…")
+                .font(.headline)
+
+            Toggle("順序の『目』は漢字を先に", isOn: $ordinalKanjiPreferred)
+                .toggleStyle(.switch)
+
+            Text("助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』をひらがなの『め』より先に出します。オフにすると『め』が先になります。既定はオンです。1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+
+        VStack(alignment: .leading, spacing: 10) {
+            Text("un peu …")
+                .font(.headline)
+
+            Toggle("程度の『め』に漢字『目』の候補も出す", isOn: $adjectiveKanjiEnabled)
+                .toggleStyle(.switch)
+
+            Text("形容詞の語幹に付いて程度や傾向を表す『〜め』(多め/少なめ/固め など)で、漢字の『目』の候補(多目 など)も出します。その場合もひらがなの候補のほうが先です。オフにすると『目』の候補は出しません。既定はオフです。1973年の内閣告示第2号『送り仮名の付け方』の【付表の語1(送り仮名を付ける語に関するもの)】の中に、形容詞の語幹に付いて程度や傾向を表す場合の『多め』、『少なめ』という言葉の例があげられ、そこでは『め』とひらがなになっています。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct EmojiKaomojiCandidateSettingsSection: View {
     @Binding var enablesEmojiCandidates: Bool
     @Binding var enablesKaomojiCandidates: Bool

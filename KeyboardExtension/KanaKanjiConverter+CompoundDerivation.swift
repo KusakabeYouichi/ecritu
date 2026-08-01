@@ -355,6 +355,118 @@ extension KanaKanjiConverter {
         return boosted + candidates.filter { !boostSet.contains($0) }
     }
 
+    // 順序の『目』が付く語幹の末尾文字(助数詞表層の末字+番/代/丁/つ/行 等)。
+    // め/目 選好の序数判定に使う — 跡目/片目 等の一般名詞を巻き込まないためのゲート。
+    static let ordinalMeStemTailCharacters: Set<Character> = {
+        var characters = Set<Character>()
+        for surfaces in numericCounterSuffixCandidatesByReading.values {
+            for surface in surfaces {
+                if let last = surface.last {
+                    characters.insert(last)
+                }
+            }
+        }
+        for surfaces in digitContextAdditionalCounterSurfacesByReading.values {
+            for surface in surfaces {
+                if let last = surface.last {
+                    characters.insert(last)
+                }
+            }
+        }
+        for extra in "番代丁つ行駅" {
+            characters.insert(extra)
+        }
+        return characters
+    }()
+
+    // め終わり読みの『め/目』選好(コンテナー設定 première…/un peu …)。
+    // - 形容詞語幹+め(多め/少なめ): 語幹+い が同読みのい形容詞に実在する組が対象。
+    //   OFF: 漢字『目』形(多目/薄目 等の Sudachi 収穫)を候補から除く。
+    //   ON: かな『め』形を先に(無ければ 目形の位置へ補生成)、め形しか無い先頭組(狭め)には
+    //   目形を直後に補生成する(1973年内閣告示第2号 付表の語1 は『め』)。
+    // - 序数(N回目/二日目 等): 語幹末尾が助数詞的な組が対象。スイッチで め/目 の先後を決め、
+    //   欠けている側は補生成する(番目⇄番め。同 通則4 は『目』)。
+    // 供給源(辞書/フォールバック/活用)を問わず最終列で整えるので、辞書側の並び
+    // (薄目 rank0<薄め rank1 等)にも一様に効く。
+    func applyMeSuffixPreferences(reading: String, to candidates: [String]) -> [String] {
+        guard reading.count >= 2, reading.hasSuffix("め"), !candidates.isEmpty else {
+            return candidates
+        }
+        let stemReading = String(reading.dropLast())
+        let adjectiveSurfaces = Set(systemCandidates(for: stemReading + "い", mode: .lesDeux))
+        var result = candidates
+        var stems: [String] = []
+        var seenStems = Set<String>()
+        for candidate in result where candidate.count >= 2 && candidate != reading {
+            guard let last = candidate.last, last == "め" || last == "目" else {
+                continue
+            }
+            let stem = String(candidate.dropLast())
+            // かなだけの語幹(かな識別 等)は対象外
+            guard stem.contains(where: { !("ぁ"..."ゖ").contains($0) && $0 != "ー" }) else {
+                continue
+            }
+            if seenStems.insert(stem).inserted {
+                stems.append(stem)
+            }
+        }
+        var appendedAdjectiveKanji = false
+        for stem in stems {
+            let meForm = stem + "め"
+            let kanjiForm = stem + "目"
+            if adjectiveSurfaces.contains(stem + "い") {
+                if !adjectiveMeKanjiCandidatesEnabled {
+                    result.removeAll { $0 == kanjiForm }
+                    continue
+                }
+                let meIndex = result.firstIndex(of: meForm)
+                let kanjiIndex = result.firstIndex(of: kanjiForm)
+                switch (meIndex, kanjiIndex) {
+                case let (me?, kanji?) where kanji < me:
+                    result.remove(at: me)
+                    result.insert(meForm, at: kanji)
+                case let (nil, kanji?):
+                    result.insert(meForm, at: kanji)
+                case let (me?, nil) where !appendedAdjectiveKanji:
+                    result.insert(kanjiForm, at: min(me + 1, result.count))
+                    appendedAdjectiveKanji = true
+                default:
+                    break
+                }
+                continue
+            }
+            guard let tail = stem.last,
+                Self.ordinalMeStemTailCharacters.contains(tail)
+                    || stem.contains(where: \.isNumber) else {
+                continue
+            }
+            let meIndex = result.firstIndex(of: meForm)
+            let kanjiIndex = result.firstIndex(of: kanjiForm)
+            if ordinalMeKanjiPreferred {
+                switch (meIndex, kanjiIndex) {
+                case let (me?, kanji?) where me < kanji:
+                    result.remove(at: kanji)
+                    result.insert(kanjiForm, at: me)
+                case let (me?, nil):
+                    result.insert(kanjiForm, at: me)
+                default:
+                    break
+                }
+            } else {
+                switch (meIndex, kanjiIndex) {
+                case let (me?, kanji?) where kanji < me:
+                    result.remove(at: me)
+                    result.insert(meForm, at: kanji)
+                case let (nil, kanji?):
+                    result.insert(meForm, at: kanji)
+                default:
+                    break
+                }
+            }
+        }
+        return result
+    }
+
     func ordinalMeFallbackCandidates(
         for reading: String,
         hasDirectCandidates: Bool,
