@@ -45,7 +45,14 @@ extension KeyboardViewController {
                 let mergedCandidates: [String: [String]]
                 let usedPersistentIndex: Bool
 
-                if let cachedCandidates = self.cachedSupplementaryLexiconIndex(signature: signature) {
+                // 署名が一致するなら hydrate 済みの in-memory 辞書をそのまま使う
+                // (defaults からの辞書デコードを毎セッション2回→hit時0回に。2415)。
+                // in-memory が空のとき(メモリ解放直後 等)だけ永続キャッシュを読む。
+                if self.persistedSupplementaryLexiconIndexSignature() == signature,
+                    let hydrated = self.hydratedSupplementaryLexiconCandidatesIfAvailable() {
+                    mergedCandidates = hydrated
+                    usedPersistentIndex = true
+                } else if let cachedCandidates = self.cachedSupplementaryLexiconIndex(signature: signature) {
                     mergedCandidates = cachedCandidates
                     usedPersistentIndex = true
                 } else {
@@ -209,6 +216,23 @@ extension KeyboardViewController {
         }
 
         return hash
+    }
+
+    // 永続キャッシュの署名だけを読む(辞書本体のデコードなし)。
+    func persistedSupplementaryLexiconIndexSignature() -> String? {
+        UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)?
+            .string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
+    }
+
+    // hydrate 済みの in-memory 辞書(空なら nil)。utility キューから読むため main 経由で取る。
+    func hydratedSupplementaryLexiconCandidatesIfAvailable() -> [String: [String]]? {
+        var result: [String: [String]]?
+        DispatchQueue.main.sync {
+            result = self.supplementaryLexiconCandidatesByReading.isEmpty
+                ? nil
+                : self.supplementaryLexiconCandidatesByReading
+        }
+        return result
     }
 
     func cachedSupplementaryLexiconIndex(signature: String) -> [String: [String]]? {
