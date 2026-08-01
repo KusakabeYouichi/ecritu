@@ -633,23 +633,38 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
     }
 }
 
+enum OrdinalMePreferenceOption: String, CaseIterable {
+    case kanji
+    case kana
+
+    var title: String {
+        switch self {
+        case .kanji: return "目(漢字)が先"
+        case .kana: return "め(ひらがな)が先"
+        }
+    }
+}
+
 struct MeSuffixCandidateSettingsSection: View {
     @Binding var ordinalKanjiPreferred: Bool
     @Binding var adjectiveKanjiEnabled: Bool
 
+    private var ordinalSelection: Binding<OrdinalMePreferenceOption> {
+        Binding(
+            get: { ordinalKanjiPreferred ? .kanji : .kana },
+            set: { ordinalKanjiPreferred = ($0 == .kanji) }
+        )
+    }
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("première、deuxième、troisième、…")
-                .font(.headline)
-
-            Toggle("順序の『目』は漢字を先に", isOn: $ordinalKanjiPreferred)
-                .toggleStyle(.switch)
-
-            Text("助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』をひらがなの『め』より先に出します。オフにすると『め』が先になります。既定はオンです。1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
+        SegmentedSettingsCard(
+            title: "première、deuxième、troisième、…",
+            pickerTitle: "順序の『め/目』",
+            selection: ordinalSelection,
+            options: Array(OrdinalMePreferenceOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』とひらがなの『め』のどちらを先に出すかを選びます。既定は『目(漢字)が先』です。1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。"
+        )
 
         VStack(alignment: .leading, spacing: 10) {
             Text("un peu …")
