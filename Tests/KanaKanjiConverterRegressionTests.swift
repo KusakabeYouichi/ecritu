@@ -5955,6 +5955,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // おやどりの: 丁寧接頭辞合成(お+宿り→御宿り)が実辞書語 親鳥/親鶏 と同点(共に
+    // LM未収録=dictUnknown 8700)になり連文節先頭を奪っていた。同スパンに実辞書語が
+    // あるスパンでは合成ノードを+200後置(2421)
+    func testRegressionOyadoriPrefersDictWordOverPoliteComposition() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "おやどりの", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["親鳥の", "親鶏の"], "multi=\(multi.prefix(5))")
+        // 合成の 御宿りの は変種として残ってよい(先頭でなければ可)
+        let solo = converter.candidates(for: "おやどり", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(solo.prefix(2)), ["親鳥", "親鶏"], "solo=\(solo)")
+    }
+
     // おおいのはどれ: 辞書の連濁収穫動詞読み(どる→取る/捕る/獲る…)から活用エンジンが
     // どれ→取れ を派生し、多いのは取れ/獲れ/捕れ が どれ より先頭に出ていた。連濁は
     // 複合語内でのみ生じ文節頭に立たないため、連濁収穫基底からの活用派生を除去(2419)

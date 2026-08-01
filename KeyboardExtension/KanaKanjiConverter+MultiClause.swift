@@ -344,6 +344,13 @@ extension KanaKanjiConverter {
         "道": ["どう"],
         "同": ["どう"]
     ]
+    // 出側(prev)の読み跨ぎ bigram 借用の遮断。御(お)は文語・敬語コーパスの
+    // 御(おん/ご/み)接頭 bigram(御→宿り2793/御→三2052 等)を借用して
+    // 御宿り(おやどり)のような分断を実辞書語(親鳥)より安くしてしまう。
+    // 該当ノードからの出遷移は bigram を引かず unigram+バックオフで評価する(2421)。
+    static let multiClauseOutgoingBigramBorrowDeniedReadingsBySurface: [String: Set<String>] = [
+        "御": ["お"]
+    ]
     // 仮定の接続助詞「なら」は述語(動詞/形容詞の終止・連体形)直後ではかなが正書
     // (買うなら/するなら/食べるなら)。奈良/楢/ナラ への漢字・カタカナ化を EOS で減点する。
     // ただし体言+と直後(大阪と奈良)は正当な地名なので、直前が述語のときだけ発火させる。
@@ -440,6 +447,11 @@ extension KanaKanjiConverter {
     // 起こしていた。候補バー(単一経路)には引き続き全辞書候補が並ぶため、レア語は手動選択
     // +学習(curated 1500)で救済される。
     static let multiClauseDictUnknownCost = 8700
+    // 丁寧接頭辞合成(b3: お+宿り→御宿り 等)のノードは、同スパンに実辞書語(収穫底値未満)が
+    // ある場合に小さく後置する。LM未収録同士だと双方 dictUnknown(8700)の同点になり、合成の
+    // 御宿り が実辞書語 親鳥(おやどり)と先頭を争ってしまう(2421)。お店/お見せ のような
+    // 「辞書語も合成も正当」なスパンでは、この差は bigram 実勢があれば覆る水準に留める。
+    static let multiClausePoliteSupplementDemotion = 200
     // 収穫底値(wc>=10000)の丸ごとエントリの連文節コスト。単文節の harvestTier 降格
     // (CandidateScore.harvestTierDictionary)の連文節版。レア名前収穫(廉梛/月叶 等)は
     // 正規の未知語(8700)や活用派生(7200)より信頼が低く、放置すると されんな→
@@ -597,6 +609,8 @@ extension KanaKanjiConverter {
         // suppressed=+100000(事実上不採用)、demoted=+6000(後方)。
         var scriptVariantSuppressedNodeKeys = Set<String>()
         var scriptVariantDemotedNodeKeys = Set<String>()
+        // 丁寧接頭辞合成ノードの後置対象(同スパンに実辞書語があるもの。定数コメント参照)
+        var politeSupplementDemotedNodeKeys = Set<String>()
         var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
         var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
@@ -945,9 +959,16 @@ extension KanaKanjiConverter {
                         systemCandidateMode: systemCandidateMode,
                         limit: Self.multiClauseInflectionTopK
                     )
+                    // 同スパンに実辞書語(収穫底値未満)があれば合成ノードを後置(定数コメント参照)
+                    let spanHasRealDictWord = costMap.values.contains {
+                        $0 < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                    }
                     for surface in polite.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false)
+                        if spanHasRealDictWord {
+                            politeSupplementDemotedNodeKeys.insert("\(start)-\(end)-\(surface)")
+                        }
                     }
                 }
 
@@ -1170,13 +1191,14 @@ extension KanaKanjiConverter {
             prevIsInflectionDerived: Bool = false,
             isShortCuratedFragment: Bool = false,
             isCollocationPreferredKana: Bool = false,
-            scriptVariantPenalty: Int = 0
+            scriptVariantPenalty: Int = 0,
+            prevDeniesOutgoingBigram: Bool = false
         ) -> Int {
             var base: Int
             var penaltyForNounHoshii = 0
             // 読み跨ぎ bigram 借用の遮断(定数コメント参照。人(にん/じん)/頭(ず) 等)。
-            let deniesBigramBorrow = Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
-                .contains(reading) ?? false
+            let deniesBigramBorrow = (Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
+                .contains(reading) ?? false) || prevDeniesOutgoingBigram
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
             // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
@@ -1505,8 +1527,11 @@ extension KanaKanjiConverter {
                 let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
-                let nodeScriptVariantPenalty = scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
-                    : (scriptVariantDemotedNodeKeys.contains(nodeKeySV) ? 6000 : 0)
+                let nodeScriptVariantPenalty = (scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
+                    : (scriptVariantDemotedNodeKeys.contains(nodeKeySV) ? 6000 : 0))
+                    + (politeSupplementDemotedNodeKeys.contains(nodeKeySV)
+                        ? Self.multiClausePoliteSupplementDemotion
+                        : 0)
                 if node.start == 0 {
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
@@ -1533,6 +1558,8 @@ extension KanaKanjiConverter {
                         continue
                     }
                     let prevNode = nodes[prevIdx]
+                    let prevDeniesOutgoingBigram = Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
+                        .contains(prevNode.reading) ?? false
                     var cost = prevCost + transitionCost(
                         prev: prevNode.surface,
                         prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),
@@ -1547,7 +1574,8 @@ extension KanaKanjiConverter {
                         prevIsInflectionDerived: prevNode.isInflectionDerived,
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
-                        scriptVariantPenalty: nodeScriptVariantPenalty
+                        scriptVariantPenalty: nodeScriptVariantPenalty,
+                        prevDeniesOutgoingBigram: prevDeniesOutgoingBigram
                     ) - preferredInflectionBonus
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
