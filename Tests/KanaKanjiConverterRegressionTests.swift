@@ -6059,6 +6059,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             precedingCharacter: "0"
         )
         XCTAssertEqual(exact.first, "秒", "exact=\(exact)")
+        // 末尾が変換済みの合成(まい+ちゅう→枚中)も助数詞表層の前方一致で先頭へ(2421)
+        let converted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["米中", "マイ中", "枚中", "毎中"],
+            reading: "まいちゅう",
+            precedingCharacter: "7"
+        )
+        XCTAssertEqual(converted.first, "枚中", "converted=\(converted)")
     }
 
     // ばいぐらいに: 倍(助数詞)が dict rank6 で 杯ぐらいに が先頭だった。seed {倍、杯}(2414)

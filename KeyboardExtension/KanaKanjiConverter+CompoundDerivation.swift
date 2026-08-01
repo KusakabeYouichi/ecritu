@@ -301,9 +301,10 @@ extension KanaKanjiConverter {
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
             boosted = counterSurfaces.filter { present.contains($0) }
         } else {
-            // 読みが「助数詞読み+かな末尾」(かい+しか 等)なら、助数詞表層+同末尾の候補
-            // (回しか)を前置する(1確定→かいしか→1回しか。2416)。複数の助数詞読みが
-            // 前方一致する場合は最長を優先し、末尾は短いかな(助詞相当)に限定する。
+            // 読みが「助数詞読み+かな末尾」(かい+しか/まい+ちゅう 等)なら、助数詞表層で
+            // 始まる合成候補(回しか/枚中。末尾はかな素通りでも変換済みでも可)を前置する
+            // (1確定→かいしか→1回しか、17確定→まいちゅう→17枚中。2416/2421)。複数の
+            // 助数詞読みが前方一致する場合は最長を優先し、末尾は短いかなに限定する。
             for (counterReading, surfaces) in numericCounterSuffixCandidatesByReading
                 .sorted(by: { $0.key.count > $1.key.count })
             where reading.count > counterReading.count && reading.hasPrefix(counterReading) {
@@ -312,9 +313,14 @@ extension KanaKanjiConverter {
                     tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
                     continue
                 }
-                let composed = surfaces.map { $0 + tail }.filter { present.contains($0) }
-                if !composed.isEmpty {
-                    boosted = composed
+                var matched: [String] = []
+                for surface in surfaces {
+                    matched.append(contentsOf: candidates.filter {
+                        $0.count > surface.count && $0.hasPrefix(surface) && !matched.contains($0)
+                    })
+                }
+                if !matched.isEmpty {
+                    boosted = matched
                     break
                 }
             }
