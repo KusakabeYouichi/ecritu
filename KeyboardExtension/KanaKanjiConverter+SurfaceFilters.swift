@@ -324,6 +324,25 @@ extension KanaKanjiConverter {
     // 判定: 単漢字+濁音始まりの読み(2文字以上)で、清音化した読みに同じ表層が
     // より安く実在する場合。音読で濁側が主の語(分=ぶん5285/ふん10220、台=だい のみ)
     // は濁側が安い/清音側に無いので誤爆しない。読み別 word_costs は store がキャッシュ。
+    // 連濁収穫の動詞基底(どる→取る/づく→付く 等)。複合語後部の連濁読みが Sudachi 収穫で
+    // 独立エントリ化したもので、連濁は複合語内でのみ生じ文節頭には立たない。活用派生
+    // (どれ→取れ/どれば→取れば)の基底から除く(おおいのはどれ→多いのは取れ 対策)。
+    // 判定は単漢字連濁(墓/ばか)と同じ「清音読みに同表層がより安く実在する」コスト比較 —
+    // 出る/出す 等の正当な濁音動詞は清音読みエントリ自体が無いため対象外。
+    func isRendakuHarvestVerbBase(_ surface: String, baseReading: String) -> Bool {
+        guard surface != baseReading,
+            let firstChar = baseReading.first,
+            let devoicedFirst = Self.rendakuDevoicedKanaCharacter[firstChar] else {
+            return false
+        }
+        let devoicedReading = String(devoicedFirst) + baseReading.dropFirst()
+        guard let devoicedCost = store.wordCosts(for: devoicedReading)[surface] else {
+            return false
+        }
+        let voicedCost = store.wordCosts(for: baseReading)[surface] ?? Int.max
+        return voicedCost > devoicedCost
+    }
+
     func isRendakuHarvestSurface(_ surface: String, reading: String) -> Bool {
         guard reading.count >= 2,
             Self.isSingleKanjiCandidate(surface),
