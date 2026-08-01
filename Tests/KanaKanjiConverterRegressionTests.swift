@@ -5955,6 +5955,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(multi.contains(where: { $0.hasPrefix("た分") || $0.hasPrefix("た文") }), "multi=\(multi)")
     }
 
+    // 1確定→かいしか: 数字文脈ブーストが「読み=助数詞そのもの」限定で、助数詞+かな末尾
+    // (かい+しか)の合成(回しか)が雑多な合成(開始か/芥子か 等)に埋もれていた。
+    // 助数詞読み+かな末尾への一般拡張で 回しか を先頭に(2416)
+    func testRegressionDigitContextCounterWithKanaTail() throws {
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["開始か", "会しか", "芥子か", "回しか", "階しか"],
+            reading: "かいしか",
+            precedingCharacter: "1"
+        )
+        XCTAssertEqual(boosted.first, "回しか", "boosted=\(boosted)")
+        // 数字直後でなければ従来どおり不変
+        let plain = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["開始か", "回しか"],
+            reading: "かいしか",
+            precedingCharacter: nil
+        )
+        XCTAssertEqual(plain.first, "開始か", "plain=\(plain)")
+        // 従来の 読み=助数詞そのもの も不変(90確定→びょう→秒)
+        let exact = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["病", "秒"],
+            reading: "びょう",
+            precedingCharacter: "0"
+        )
+        XCTAssertEqual(exact.first, "秒", "exact=\(exact)")
+    }
+
     // ばいぐらいに: 倍(助数詞)が dict rank6 で 杯ぐらいに が先頭だった。seed {倍、杯}(2414)
     func testRegressionRealLMBaiGurainiOrder() throws {
         try prepareRealLMDictionary()
