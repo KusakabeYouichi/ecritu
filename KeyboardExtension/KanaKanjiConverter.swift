@@ -1073,6 +1073,22 @@ final class KanaKanjiConverter {
             KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems.contains(String(normalized.dropLast())) {
             return true
         }
+        // 指示代名詞+助詞 を「先頭から」剥がした残り(それは+いくつ 等)がかな正書の識別なら
+        // 根拠あり(既存規則は末尾剥がしのみで、かな正書語が読みの後半にある形を拾えず、
+        // エンジンかな最良の それはいくつ が提示層退避で それは幾つ に繰り上がっていた。2420)。
+        // 剥がしは先頭1回のみ・語幹はかな正書の指示代名詞に限定する(名詞+助詞の巻き込み防止)。
+        for stem in KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems
+        where normalized.count > stem.count + 2 && normalized.hasPrefix(stem) {
+            let afterStem = normalized.dropFirst(stem.count)
+            for particle in ["は", "が", "も", "で", "に", "を", "と", "へ"]
+            where afterStem.hasPrefix(particle) {
+                let remainder = String(afterStem.dropFirst(particle.count))
+                if remainder.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: remainder) {
+                    return true
+                }
+            }
+            break
+        }
         // 指示連体詞(この/その/あの/どの)で終わる読みは、剥がした語幹がかな正書の識別なら
         // 根拠あり(みんなこの→みんな: エンジンはかな最良なのに keepKana 不成立で 皆この が
         // 繰り上がるのを防ぐ。2404)。

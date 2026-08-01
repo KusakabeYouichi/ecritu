@@ -5978,6 +5978,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains("それは幾つ"), "multi=\(multi.prefix(5))")
         let solo = converter.candidates(for: "いくつ", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(solo.first, "いくつ", "solo=\(solo)")
+        // 提示層のかな識別退避を防ぐ(false だと実機バーで それは幾つ が繰り上がる。2420)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "それはいくつ"))
     }
 
     // えんやすによるねあがり: 地名 根上(旧根上町)の LM unigram が 値上がり より安く、
