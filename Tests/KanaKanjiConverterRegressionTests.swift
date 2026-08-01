@@ -6011,9 +6011,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionHariwasureSuppliedFromMisc() throws {
         try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "はりわすれ", candidate: "貼り忘れ")
+        converter.store.addUserEntry(reading: "はりわすれ", candidate: "張り忘れ")
         converter.store.addUserEntry(reading: "はりわすれる", candidate: "貼り忘れる")
+        converter.store.addUserEntry(reading: "はりわすれる", candidate: "張り忘れる")
         let single = converter.candidates(for: "はりわすれ", limit: 10, systemCandidateMode: .surface)
-        XCTAssertEqual(single.first, "貼り忘れ", "single=\(single.prefix(5))")
+        XCTAssertEqual(Array(single.prefix(2)), ["貼り忘れ", "張り忘れ"], "single=\(single.prefix(5))")
         // 張り忘れ 等の既存合成はクリーンテスト環境では再現しない(実機のみの合成経路)。
         // 本修正は curated の追加供給のみで既存経路に触れないため、先頭の検証に留める。
         // 一段 curated からの活用派生(貼り忘れた)も供給される
