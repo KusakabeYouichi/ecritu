@@ -527,7 +527,7 @@ struct DelimiterAutoCommitCandidateSettingsSection: View {
             selection: $selection,
             options: Array(DelimiterAutoCommitCandidateOption.allCases),
             optionTitle: { $0.title },
-            footnote: "未確定状態で句読点・記号を入力して自動確定するときに、どの候補を確定するかです。既定は「先頭の変換候補」。「未変換かな」は入力したひらがなをそのまま確定します(確定キーは設定に関わらず常に未変換かなを確定します)。"
+            footnote: "未確定状態で句読点・記号を入力して自動確定するときに、どの候補を確定するかです。初期設定は「先頭の変換候補」です。「未変換かな」は入力したひらがなをそのまま確定します(確定キーは設定に関わらず常に未変換かなを確定します)。"
         )
     }
 }
@@ -542,7 +542,7 @@ struct KanaKanjiCandidateSourceModeSettingsSection: View {
             selection: $selection,
             options: Array(KanaKanjiCandidateSourceModeOption.allCases),
             optionTitle: { $0.title },
-            footnote: "システム辞書候補の採用基準を切り替えます。surface(既定) / normalisé / les deux を選べます。"
+            footnote: "システム辞書候補の採用基準を切り替えます。surface(初期設定) / normalisé / les deux を選べます。"
         )
     }
 }
@@ -663,7 +663,7 @@ struct MeSuffixCandidateSettingsSection: View {
             selection: ordinalSelection,
             options: Array(OrdinalMePreferenceOption.allCases),
             optionTitle: { $0.title },
-            footnote: "助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』とひらがなの『め』のどちらを先に出すかを選びます。既定は『目(漢字)が先』です。1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。"
+            footnote: "助数詞の後に付いて順序を表す『〜目』(二日目/三番目/7回目 など)で、漢字の『目』とひらがなの『め』のどちらを先に出すかを選びます。初期設定は『目(漢字)が先』です。1973年の内閣告示第2号『送り仮名の付け方』の【通則4】の中に、助数詞の後に付いて順序を表す『二日目』、『三番目』などの言葉の例が挙げられ、『目』と漢字で書かれています。"
         )
 
         VStack(alignment: .leading, spacing: 10) {
@@ -673,7 +673,7 @@ struct MeSuffixCandidateSettingsSection: View {
             Toggle("程度の『め』に漢字『目』の候補も出す", isOn: $adjectiveKanjiEnabled)
                 .toggleStyle(.switch)
 
-            Text("形容詞の語幹に付いて程度や傾向を表す『〜め』(多め/少なめ/固め など)で、漢字の『目』の候補(多目 など)も出します。その場合もひらがなの候補のほうが先です。オフにすると『目』の候補は出しません。既定はオフです。1973年の内閣告示第2号『送り仮名の付け方』の【付表の語1(送り仮名を付ける語に関するもの)】の中に、形容詞の語幹に付いて程度や傾向を表す場合の『多め』、『少なめ』という言葉の例があげられ、そこでは『め』とひらがなになっています。")
+            Text("形容詞の語幹に付いて程度や傾向を表す『〜め』(多め/少なめ/固め など)で、漢字の『目』の候補(多目 など)も出します。その場合もひらがなの候補のほうが先です。オフにすると『目』の候補は出しません。初期設定はオフです。1973年の内閣告示第2号『送り仮名の付け方』の【付表の語1(送り仮名を付ける語に関するもの)】の中に、形容詞の語幹に付いて程度や傾向を表す場合の『多め』、『少なめ』という言葉の例があげられ、そこでは『め』とひらがなになっています。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -723,7 +723,7 @@ struct LatinLexiconSettingsSection: View {
             }
             .toggleStyle(.switch)
 
-            Text("欧文入力中のサジェスチョンに、同梱の頻度順語彙を使うかを言語別に切り替えます。ドイツ語は複合語が多いため深く収録しています。追加語彙・学習した語は常に優先して表示されます。既定はすべてオフ。")
+            Text("欧文入力中のサジェスチョンに、同梱の頻度順語彙を使うかを言語別に切り替えます。ドイツ語は複合語が多いため深く収録しています。追加語彙・学習した語は常に優先して表示されます。初期設定はすべてオフです。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -742,7 +742,7 @@ struct HistoricalKanaCandidatesSettingsSection: View {
             Toggle("旧仮名遣いの候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
 
-            Text("「かえる→変へる」のような歴史的仮名遣い(ゐ/ゑ/ヰ/ヱ を含む表記)を変換結果に含めるかを切り替えます。既定はオフ(現代仮名遣いのみ)。")
+            Text("「かえる→変へる」のような歴史的仮名遣い(ゐ/ゑ/ヰ/ヱ を含む表記)を変換結果に含めるかを切り替えます。初期設定はオフ(現代仮名遣いのみ)です。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -761,7 +761,7 @@ struct IterationMarkCandidatesSettingsSection: View {
             Toggle("仮名の踊り字の候補を含める", isOn: $isEnabled)
                 .toggleStyle(.switch)
 
-            Text("かな踊り字(繰り返し記号 ゝ/ゞ/ヽ/ヾ。いゝ/こゝ/バナヽ 等)を含む表記を変換結果に含めるかを切り替えます。既定はオフ。※漢字の々(人々/時々 等)は常に有効です。")
+            Text("かな踊り字(繰り返し記号 ゝ/ゞ/ヽ/ヾ。いゝ/こゝ/バナヽ 等)を含む表記を変換結果に含めるかを切り替えます。初期設定はオフです。※漢字の々(人々/時々 等)は常に有効です。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
@@ -1281,7 +1281,7 @@ struct BasicSymbolOrderSettingsSection: View {
             selection: $selection,
             options: Array(BasicSymbolOrderOption.allCases),
             optionTitle: { $0.title },
-            footnote: "記号モードの『基本記号』カテゴリーの並び順を切り替えます。既定は ASCII 順です。"
+            footnote: "記号モードの『基本記号』カテゴリーの並び順を切り替えます。初期設定は ASCII 順です。"
         )
     }
 }
