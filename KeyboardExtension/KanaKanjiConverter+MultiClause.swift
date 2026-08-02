@@ -134,12 +134,12 @@ extension KanaKanjiConverter {
     static let multiClausePreferredInflectionBonus = 800
     // 連文節でも seed 順を勝たせたい活用の基底読み(オプトイン)。span を脱活用して
     // ここに含まれる基底になる場合のみ、スパン先頭活用形にボーナスを与える。
-    static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる"]
+    static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる", "おく"]
     // (b2b) 未代表族の追加供給に先行ボーナス(800)を与える基底読みのopt-in。
     // 上の seed順allowlist と分離する — 共用すると主ループのspan判定(脱活用先が一致)が
     // 既存族の先頭(這ったら)にも同じボーナスを与えて同点に戻る(2424の検証で確認)。
     // 無差別に与えると 有った/要った/足って 等22件が退行するため、必ずopt-inで運用する。
-    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる"]
+    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)と読み別ボーナス値。
     // 数量詞複合(2本/二本)や分割に押されて seed 既定(日本)が沈むのを是正する。
     // a2 seed の先頭候補ノードにボーナス。既定は 800(multiClausePreferredInflectionBonus と同値)。
@@ -235,7 +235,6 @@ extension KanaKanjiConverter {
     // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
     static let multiClauseRegionalProduceBonus = 3000
     // 述語直後の かち→価値 ボーナス(定義箇所のコメント参照)。床差396+マージン
-    // (800では不足を実測、1500で反転)
     static let multiClausePredicateKachiValueBonus = 1500
     // 係助詞「は」直後の「ある」はかなが正書(ではある/にはある/とはある 等の概言・提題)。
     // 有る/在る/或る への漢字化は不自然なので減点し、N-best 変種(maxDelta4000)から落とす
@@ -1473,7 +1472,9 @@ extension KanaKanjiConverter {
             // ため、こちらは inflection_classes 由来のフラグでゲートする。
             if surface == reading,
                 Self.multiClauseExplanatoryFinalSurfaces.contains(surface),
-                prevIsDictionaryFormPredicate {
+                prevIsDictionaryFormPredicate || prevIsInflectionDerived {
+                // 活用派生(た形/て形: 置いたのよ/食べたのね)直後も説明・詠嘆の正書。
+                // 名詞(思い 等)は活用派生ノードにならないため誤爆しない(2434)
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
             var penalty = 0
