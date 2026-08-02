@@ -49,17 +49,37 @@ extension KanaKanjiConverter {
             )
         )
 
+        // 基底読み族のopt-in昇格(おく/はる 等 multiClauseInflectionFamilyPreferenceBaseReadings)。
+        // ルール定義順だと同形の別族(おいた=老いる系>置く系)が先行するため、指定族の
+        // ブロックを行く不規則の直後・他ルールの前へ(族内の並びは維持)。
+        // おいた/おいてある 等の単文節順に効く(2434)
+        var preferredDerived: [String] = []
+        var otherDerived: [String] = []
         for rule in Self.allInflectionRules {
-            derived.append(
-                contentsOf: derivedCandidates(
-                    for: reading,
-                    rule: rule,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
-                    systemCandidateMode: systemCandidateMode
-                ).items
-            )
+            let items = derivedCandidates(
+                for: reading,
+                rule: rule,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: systemCandidateMode
+            ).items
+            guard !items.isEmpty else {
+                continue
+            }
+            let baseReading = removingSuffix(reading, suffix: rule.readingSuffix)
+                .map { $0 + rule.baseReadingSuffix } ?? ""
+            if KanaKanjiConverter.multiClauseInflectionFamilyPreferenceBaseReadings.contains(baseReading) {
+                // かな識別は昇格させない(先頭に乗ると b2 の「かなは先頭のときだけ供給」を
+                // 誤発動させ、はったら のかなが 貼ったら を抑えてしまう)。かなの扱いは
+                // 従来位置(other側)のまま既存規則に委ねる
+                preferredDerived.append(contentsOf: items.filter { $0 != reading })
+                otherDerived.append(contentsOf: items.filter { $0 == reading })
+            } else {
+                otherDerived.append(contentsOf: items)
+            }
         }
+        derived.append(contentsOf: preferredDerived)
+        derived.append(contentsOf: otherDerived)
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
     }

@@ -6049,6 +6049,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "のよねー", "multi=\(multi.prefix(4))")
     }
 
+    // おいた/おいたのよ/おいてある: (1) のね/のよ クランプが辞書形述語限定で、た形
+    // (置いた=活用派生)後に効かず お+板野+よ が先頭化。活用派生直後も対象に。
+    // (2) 活用派生順が 老いる系>置く系 で 置いた が沈む — 族昇格opt-in(おく)+seed。
+    // ユーザー指定順: おいた={置いた, 老いた, おいた}(2434)
+    func testRegressionOitaFamilyAndExplanatoryClamp() throws {
+        try prepareRealLMDictionary()
+        let solo = converter.candidates(for: "おいた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(solo.prefix(3)), ["置いた", "老いた", "おいた"], "solo=\(solo)")
+        let noyo = converter.multiClauseCandidates(for: "おいたのよ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(noyo.prefix(2)), ["置いたのよ", "老いたのよ"], "noyo=\(noyo.prefix(4))")
+        let tearu = converter.candidates(for: "おいてある", limit: 8, systemCandidateMode: .surface)
+        if let oku = tearu.firstIndex(of: "置いてある"), let oi = tearu.firstIndex(of: "老いてある") {
+            XCTAssertTrue(oku < oi, "tearu=\(tearu)")
+        } else {
+            XCTFail("置いてある/老いてある が両方あるべき: \(tearu)")
+        }
+    }
+
     // じゃんぐりあ: 補助語彙(ryukyu)供給の ジャングリア(wc7500)が、LM未収録カタカナへの
     // カタカナ化ペナルティ(3000)に巻き込まれ、じゃん+グリア(神経膠細胞、LM収録)の分割に
     // 負けていた。手選別の補助語彙由来カタカナはペナルティ免除(2433)
