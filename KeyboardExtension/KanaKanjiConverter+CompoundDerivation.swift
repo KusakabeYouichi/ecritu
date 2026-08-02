@@ -494,6 +494,10 @@ extension KanaKanjiConverter {
             return []
         }
 
+        // 語幹側の抑制を合成前に効かせる(postfix 合成と同じ規則。にち→日圧 を抑制しても
+        // 日圧目 は読み末尾(め)と表層末尾(目)が異なり合成後フィルタで拾えないため必須)
+        let suppressedStemSurfaces = store.suppressedCandidatesByReading()
+
         var stemCandidates = uniqueCandidates(
             from: candidatesForReading(
                 stem,
@@ -507,7 +511,7 @@ extension KanaKanjiConverter {
                 systemCandidateMode: systemCandidateMode,
                 limit: limit
             )
-        )
+        ).filter { !(suppressedStemSurfaces[stem]?.contains($0) ?? false) }
 
         if stemCandidates.isEmpty {
             let trimmedStem = trimmingLeadingNumberPrefix(from: stem)
@@ -527,7 +531,7 @@ extension KanaKanjiConverter {
                         systemCandidateMode: systemCandidateMode,
                         limit: limit
                     )
-                )
+                ).filter { !(suppressedStemSurfaces[trimmedStem]?.contains($0) ?? false) }
             }
         }
 

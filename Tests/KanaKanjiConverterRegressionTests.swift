@@ -5996,6 +5996,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // にちめ: Sudachi core の 日圧(にち、企業略称の固有名詞収穫 wc10000)が序数
+    // フォールバックの語幹に混ざり 日圧め/日圧目 を合成していた。suppr(にち→日圧)+
+    // フォールバックの語幹抑制フィルタ(日圧目 は読み末尾め≠表層末尾目で合成後フィルタが
+    // 効かないため語幹側で遮断)(2430)
+    func testRegressionNichimeSuppressedStemNotComposed() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["にち": ["日圧"]])
+        let single = converter.candidates(for: "にちめ", limit: 15, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("日圧め") || single.contains("日圧目"), "single=\(single)")
+        XCTAssertTrue(single.contains("日目"), "日目 は健在: \(single)")
+    }
+
     // め/目 選好(コンテナー設定 première…/un peu …)。既定: 序数=漢字『目』先
     // (告示 通則4)、形容詞語幹=『目』を出さない(かな『め』のみ。付表の語1)(2428)
     func testRegressionMeSuffixPreferences() throws {
