@@ -5996,6 +5996,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // みつかる: dict rank が 見付かる0<見つかる1 で旧表記が先頭だった。seed で
+    // 現代の主表記 見つかる を先頭に(2439)
+    func testRegressionMitsukaruOrdering() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "みつかる", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["見つかる", "見付かる"], "single=\(single)")
+    }
+
     // うつった: 基底並べ替えのLMかな昇格が seed(うつる)の漢字先頭を上書きし、かなが
     // 先頭化していた。語形seedでユーザー指定順 {写った, 移った, 映った, 感染った,
     // うつった, 憑った} に固定(2438)
