@@ -6002,6 +6002,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         let single = converter.candidates(for: "みつかる", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(2)), ["見つかる", "見付かる"], "single=\(single)")
+        let tsukeru = converter.candidates(for: "みつける", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
     // ふじわらの/みなもとの/たいらの: 古代氏姓の の込み読み(藤原=フジワラノ 等、Sudachi
