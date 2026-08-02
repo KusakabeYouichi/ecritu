@@ -859,6 +859,23 @@ final class KanaKanjiConverter {
                 }
             }
         }
+        // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
+        // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
+        if normalized.count > 2, normalized.hasSuffix("なく") {
+            let stem = String(normalized.dropLast(2))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
+        // 複合助詞(でも/では/には 等)を1つ剥がして再帰(ことでも→こと)。
+        // 単字助詞の剥がしと同様、維持のみで昇格しないため巻き込みは無害。
+        for particle in KanaKanjiConverter.multiClauseCompoundParticles
+        where normalized.count > particle.count && normalized.hasSuffix(particle) {
+            let stem = String(normalized.dropLast(particle.count))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // 存在・進行の かな動詞(ある/いる)を剥がして再帰(やつにはある→やつには→(は/に 剥がし)→やつ)。
         // かな正書の語(やつ/ひび 等)+ 助詞 + ある/いる の全かな句が提示層で漢字化(奴にはある)に
         // 繰り上がるのを防ぐ。剥がした語幹が最終的にかな正書の識別に落ちる時だけ true。
