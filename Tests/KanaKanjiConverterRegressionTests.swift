@@ -5996,6 +5996,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // じゃんぐりあ: 補助語彙(ryukyu)供給の ジャングリア(wc7500)が、LM未収録カタカナへの
+    // カタカナ化ペナルティ(3000)に巻き込まれ、じゃん+グリア(神経膠細胞、LM収録)の分割に
+    // 負けていた。手選別の補助語彙由来カタカナはペナルティ免除(2433)
+    func testRegressionJungriaSupplementalKatakanaExempt() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "じゃんぐりあ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "ジャングリア", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "じゃんぐりあ", systemCandidateMode: .surface)
+        XCTAssertNotEqual(multi.first, "じゃんグリア", "multi=\(multi.prefix(4))")
+    }
+
     // にちめ: Sudachi core の 日圧(にち、企業略称の固有名詞収穫 wc10000)が序数
     // フォールバックの語幹に混ざり 日圧め/日圧目 を合成していた。suppr(にち→日圧)+
     // フォールバックの語幹抑制フィルタ(日圧目 は読み末尾め≠表層末尾目で合成後フィルタが
@@ -6670,6 +6681,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
         if !fileManager.fileExists(atPath: destination.path) {
             try fileManager.copyItem(at: source, to: destination)
+        }
+        // 補助語彙(SecondVocab)も実機同等に配備する(テストバンドルには載らないため、
+        // 生成物 tmp/ÉcrituSecondVocab.json を共有コンテナへ。ジャングリア の
+        // 補助語彙カタカナ免除などの検証に必要)
+        let secondVocabSource = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/ÉcrituSecondVocab.json")
+        if fileManager.fileExists(atPath: secondVocabSource.path) {
+            let secondVocabDestination = container.appendingPathComponent("ÉcrituSecondVocab.json")
+            if !fileManager.fileExists(atPath: secondVocabDestination.path) {
+                try fileManager.copyItem(at: secondVocabSource, to: secondVocabDestination)
+            }
         }
     }
 

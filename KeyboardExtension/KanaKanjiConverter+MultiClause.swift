@@ -594,6 +594,9 @@ extension KanaKanjiConverter {
         }
 
         let suppressedByReading = store.suppressedCandidatesByReading()
+        // 補助語彙(ryukyu/vin/it 等の手選別リスト=SecondVocab)。LM未収録カタカナへの
+        // 「何でもカタカナ化抑止」ペナルティから免除するために引く(ジャングリア 対策)。
+        let supplementalSystemDictionary = store.loadSupplementalSystemDictionary()
         // 追加語彙(sacoche/misc.plist 等の手動キュレーション)と学習語彙。どちらもユーザ意図なので優遇する。
         let initialUserDictionary = store.initialUserDictionary()
         let learnedDictionary = store.learnedDictionary()
@@ -621,6 +624,9 @@ extension KanaKanjiConverter {
         var scriptVariantDemotedNodeKeys = Set<String>()
         // 丁寧接頭辞合成ノードの後置対象(同スパンに実辞書語があるもの。定数コメント参照)
         var politeSupplementDemotedNodeKeys = Set<String>()
+        // 補助語彙由来のカタカナ語ノード(ジャングリア 等)。手選別語なので
+        // カタカナ化ペナルティ(multiClauseKatakanaNativeCost)を免除する
+        var supplementalKatakanaExemptNodeKeys = Set<String>()
         var nodesEndingAt: [[Int]] = Array(repeating: [], count: n + 1)
         var nodesStartingAt: [[Int]] = Array(repeating: [], count: n)
 
@@ -895,6 +901,10 @@ extension KanaKanjiConverter {
                             wordCost: cost,
                             isDictionaryFormPredicate: isDictionaryFormPredicate
                         )
+                        if Self.isKatakanaString(surface),
+                            supplementalSystemDictionary[segmentReading]?.contains(surface) == true {
+                            supplementalKatakanaExemptNodeKeys.insert("\(start)-\(end)-\(surface)")
+                        }
                         dictCount += 1
                         if dictCount >= Self.multiClauseTopK {
                             break
@@ -1242,7 +1252,8 @@ extension KanaKanjiConverter {
             isShortCuratedFragment: Bool = false,
             isCollocationPreferredKana: Bool = false,
             scriptVariantPenalty: Int = 0,
-            prevDeniesOutgoingBigram: Bool = false
+            prevDeniesOutgoingBigram: Bool = false,
+            isSupplementalKatakanaExempt: Bool = false
         ) -> Int {
             var base: Int
             var penaltyForNounHoshii = 0
@@ -1536,7 +1547,8 @@ extension KanaKanjiConverter {
             // 引っかからない語)なので対象外 — LM が既に価格付けしており二重減点は不当。
             if Self.isKatakanaString(surface),
                 !readingLooksLikeLoanword(reading),
-                unigramCosts[surface] == nil {
+                unigramCosts[surface] == nil,
+                !isSupplementalKatakanaExempt {
                 penalty += Self.multiClauseKatakanaNativeCost
             }
             // を 跨ぎ文節の防止。ただし curated(気をつけて/気が合う 等、を/が 含みで明示登録
@@ -1605,6 +1617,7 @@ extension KanaKanjiConverter {
                     + (politeSupplementDemotedNodeKeys.contains(nodeKeySV)
                         ? Self.multiClausePoliteSupplementDemotion
                         : 0)
+                let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
                 if node.start == 0 {
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
@@ -1618,7 +1631,8 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
-                        scriptVariantPenalty: nodeScriptVariantPenalty
+                        scriptVariantPenalty: nodeScriptVariantPenalty,
+                        isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
                     ) - preferredInflectionBonus
                     if cost < best[idx] {
                         best[idx] = cost
@@ -1648,7 +1662,8 @@ extension KanaKanjiConverter {
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
                         scriptVariantPenalty: nodeScriptVariantPenalty,
-                        prevDeniesOutgoingBigram: prevDeniesOutgoingBigram
+                        prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
+                        isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
                     ) - preferredInflectionBonus
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
