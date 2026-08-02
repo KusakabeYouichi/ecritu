@@ -6017,6 +6017,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "行く価値ないね", "multi=\(multi.prefix(4))")
     }
 
+    // きょうとじん: 人(にん/じん)は読み跨ぎ借用の遮断で unigram+床評価になり、同音の
+    // 陣/尽/腎 に負けて 京都人 が出なかった。名詞接辞 じん→人 の供給+地域接尾直後の
+    // 人(じん) ボーナス(産 と同機構)(2434)
+    func testRegressionKyotoJinSuffix() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "きょうとじん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "京都人", "multi=\(multi.prefix(4))")
+    }
+
     // じゃんぐりあ: 補助語彙(ryukyu)供給の ジャングリア(wc7500)が、LM未収録カタカナへの
     // カタカナ化ペナルティ(3000)に巻き込まれ、じゃん+グリア(神経膠細胞、LM収録)の分割に
     // 負けていた。手選別の補助語彙由来カタカナはペナルティ免除(2433)
