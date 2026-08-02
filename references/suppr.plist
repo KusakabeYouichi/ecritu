@@ -4,7 +4,9 @@
 <array>
 	<!-- SudachiDictの誤りや超レア語による迷惑に対処 -->
 	<dict><key>phrase</key><string>泰輝</string><key>shortcut</key><string>たいて</string></dict>
-	<!-- 日圧(にち、Sudachi固有名詞=企業略称の収穫 wc10000): にちめ→日圧め/日圧目 等の合成の温床 -->
+	<!-- 日圧: Sudachi core に実在するエントリ(固有名詞・一般、読み=ニチ、wc10000。
+	     日本圧着端子製造の通称の収穫とみられる)。誤合成ではなく辞書由来だが、単独読み
+	     にち で立つと にちめ→日圧め/日圧目 等の合成の温床になるため抑制(2430) -->
 	<dict><key>phrase</key><string>日圧</string><key>shortcut</key><string>にち</string></dict>
 	<!-- 打ち荷/打荷(うちに、海事のレア語 wc7864): 家に/内に の合成より先頭に来て迷惑 -->
 	<dict><key>phrase</key><string>打ち荷</string><key>shortcut</key><string>うちに</string></dict>
