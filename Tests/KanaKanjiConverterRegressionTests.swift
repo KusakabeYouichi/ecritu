@@ -5996,6 +5996,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // とうきょうじゅう: 中(じゅう wc9550、最安読み6173から3377乖離)が読み跨ぎ借用ガード
+    // (2386/2423)の巻き添えで bigram(東京→中4120)/unigram を没収され、重/銃/十 に
+    // 負けていた。正当な生産的接尾なので seed 掲載で免除+名詞接辞 じゅう→中 を供給(2435)
+    func testRegressionTokyoJuuRangeSuffix() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "とうきょうじゅう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "東京中", "multi=\(multi.prefix(4))")
+        // 単独 じゅう は 十 が先頭のまま
+        let solo = converter.candidates(for: "じゅう", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(solo.first, "十", "solo=\(solo)")
+    }
+
     // いくない 等: い形容詞「いい」は語幹活用しない(連用・過去は よ- 系)のに、
     // いい 基底から 良く/善く(いく)/良くない(いくない) 等の非標準形が派生されていた。
     // いい 基底の adjectiveI 派生を一般ブロック(2434)
