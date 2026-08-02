@@ -6004,6 +6004,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(2)), ["見つかる", "見付かる"], "single=\(single)")
     }
 
+    // ふじわらの/みなもとの/たいらの: 古代氏姓の の込み読み(藤原=フジワラノ 等、Sudachi
+    // 実在)が rank0 に居座り、藤原の/源の/平の の合成を抑えていた。阿刀 と同型の
+    // suppr+完全一致時のみ末尾再供給。平野(たいらの) の怪しい収穫も同時に抑制(2440)
+    func testRegressionClassicalClanGenitiveReadings() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression([
+            "ふじわらの": ["藤原"],
+            "みなもとの": ["源"],
+            "たいらの": ["平", "平野"]
+        ])
+        let fujiwara = converter.candidates(for: "ふじわらの", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(fujiwara.first, "藤原の", "fujiwara=\(fujiwara.prefix(5))")
+        XCTAssertTrue(fujiwara.contains("藤原"), "藤原 は完全一致時のみ末尾: \(fujiwara)")
+        let minamoto = converter.candidates(for: "みなもとの", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(minamoto.first, "源の", "minamoto=\(minamoto.prefix(5))")
+        let taira = converter.candidates(for: "たいらの", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(taira.first, "平の", "taira=\(taira.prefix(5))")
+        XCTAssertFalse(taira.prefix(3).contains("平野"), "taira=\(taira.prefix(5))")
+    }
+
     // うつった: 基底並べ替えのLMかな昇格が seed(うつる)の漢字先頭を上書きし、かなが
     // 先頭化していた。語形seedでユーザー指定順 {写った, 移った, 映った, 感染った,
     // うつった, 憑った} に固定(2438)
