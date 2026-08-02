@@ -5996,6 +5996,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // いくない 等: い形容詞「いい」は語幹活用しない(連用・過去は よ- 系)のに、
+    // いい 基底から 良く/善く(いく)/良くない(いくない) 等の非標準形が派生されていた。
+    // いい 基底の adjectiveI 派生を一般ブロック(2434)
+    func testRegressionIiBaseAdjectiveNotInflected() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "いくない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("良くない") || single.contains("善くない"), "single=\(single)")
+        // よくない(正書経路)は無傷
+        let yoku = converter.candidates(for: "よくない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(yoku.contains("良くない"), "yoku=\(yoku)")
+    }
+
     // じゃんぐりあ: 補助語彙(ryukyu)供給の ジャングリア(wc7500)が、LM未収録カタカナへの
     // カタカナ化ペナルティ(3000)に巻き込まれ、じゃん+グリア(神経膠細胞、LM収録)の分割に
     // 負けていた。手選別の補助語彙由来カタカナはペナルティ免除(2433)
