@@ -5996,6 +5996,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // あとの: レア姓 阿刀(あとの、wc9770=底値降格の閾値未満)が rank0 で先頭に居座り、
+    // 合成順も 跡>後 だった。suppr+完全一致時のみ末尾再供給(二段構え)+seed あと で
+    // ユーザー指定順 {後の, 跡の, あとの, 痕の, 趾の} に(2437)
+    func testRegressionAtonoOrdering() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["あとの": ["阿刀"]])
+        let single = converter.candidates(for: "あとの", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(5)), ["後の", "跡の", "あとの", "痕の", "趾の"], "single=\(single)")
+        // 二段構え: 完全一致の単文節では 阿刀 が末尾側に残る
+        XCTAssertTrue(single.contains("阿刀"), "阿刀 は完全一致時のみ末尾: \(single)")
+    }
+
     // きあげ: 生揚げ は辞書に なまあげ 読みのみ(醤油の 生揚げ=きあげ が未登録)。
     // misc curated で 生揚げ/生揚げ醤油 を供給(2436)
     func testRegressionKiageSuppliedFromMisc() throws {

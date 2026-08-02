@@ -224,6 +224,9 @@
 	     ゴミ合成の種になる。よん で 霊 を出したい場面は無いので抑制 -->
 	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>
 	<!-- ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 -->
+	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。
+	     あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
+	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>
 	<!-- 坐す/在す(います): 古語の敬語動詞(御座います の語源)で読みは正当だが、現代入力では
 	     居ます/います の前に出る雑音。exactReadingOnlySeed で完全一致時のみ末尾供給に移す -->
 	<dict><key>phrase</key><string>坐す</string><key>shortcut</key><string>います</string></dict>
