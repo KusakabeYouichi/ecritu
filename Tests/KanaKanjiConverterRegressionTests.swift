@@ -5996,6 +5996,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // うつった: 基底並べ替えのLMかな昇格が seed(うつる)の漢字先頭を上書きし、かなが
+    // 先頭化していた。語形seedでユーザー指定順 {写った, 移った, 映った, 感染った,
+    // うつった, 憑った} に固定(2438)
+    func testRegressionUtsuttaOrdering() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "うつった", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(single.prefix(6)),
+            ["写った", "移った", "映った", "感染った", "うつった", "憑った"],
+            "single=\(single)"
+        )
+    }
+
     // あとの: レア姓 阿刀(あとの、wc9770=底値降格の閾値未満)が rank0 で先頭に居座り、
     // 合成順も 跡>後 だった。suppr+完全一致時のみ末尾再供給(二段構え)+seed あと で
     // ユーザー指定順 {後の, 跡の, あとの, 痕の, 趾の} に(2437)
