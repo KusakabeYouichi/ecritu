@@ -459,7 +459,7 @@ enum ContactCandidateDisplayModeOption: String, CaseIterable, Identifiable {
         case .off:
             return "連絡先由来の候補を表示しません。"
         case .namesOnly:
-            return "姓・名・ニックネームなど、一致した項目のみ表示します。(既定)"
+            return "姓・名・ニックネームなど、一致した項目のみ表示します。(初期設定)"
         case .namesPlusFullName:
             return "姓または名が一致したときにフルネームも表示します。"
         }
