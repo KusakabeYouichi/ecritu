@@ -6026,6 +6026,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "京都人", "multi=\(multi.prefix(4))")
     }
 
+    // 3さつめ: 冊 が助数詞マップに無く、序数フォールバックも直接ヒット(佐津目 wc9219)で
+    // 走らないため 冊目 が出なかった。さつ→冊 をマップへ追加し、め選好パスで助数詞語幹の
+    // 目/め を補生成(こめ=米/だいめ=代目 は誤爆ガードで無傷)(2434)
+    func testRegressionSatsumeCounterOrdinal() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "さつめ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["冊目", "冊め"], "single=\(single)")
+        XCTAssertTrue(single.contains("佐津目"), "佐津目 は温存: \(single)")
+        let kome = converter.candidates(for: "こめ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertFalse(kome.contains("個目"), "kome=\(kome)")
+        let daime = converter.candidates(for: "だいめ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(daime.first, "代目", "daime=\(daime)")
+    }
+
     // じゃんぐりあ: 補助語彙(ryukyu)供給の ジャングリア(wc7500)が、LM未収録カタカナへの
     // カタカナ化ペナルティ(3000)に巻き込まれ、じゃん+グリア(神経膠細胞、LM収録)の分割に
     // 負けていた。手選別の補助語彙由来カタカナはペナルティ免除(2433)

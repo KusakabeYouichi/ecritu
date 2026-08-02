@@ -55,6 +55,7 @@ extension KanaKanjiConverter {
         "ぼん": ["本"],
         "びき": ["匹"],
         "まい": ["枚"],
+        "さつ": ["冊"],
         "ぽん": ["本"],
         "ぴき": ["匹"],
         "はい": ["倍", "杯"],
@@ -397,6 +398,29 @@ extension KanaKanjiConverter {
         let stemReading = String(reading.dropLast())
         let adjectiveSurfaces = Set(systemCandidates(for: stemReading + "い", mode: .lesDeux))
         var result = candidates
+        // 語幹読みが助数詞そのもの(さつめ=さつ+め 等)なら、助数詞+目/め を先頭へ補生成
+        // する。辞書に地名等の直接ヒット(佐津目)しか無く、序数フォールバックが走らない
+        // 読みでも 冊目/冊め を供給する(3さつめ 対策。数字直後はさらに digit boost が前置)。
+        // 誤爆ガード: 1字の助数詞読み(こ=米/じ=字 等の実語と衝突)は対象外。既に序数らしい
+        // 候補(語幹末尾が助数詞文字の 〜目/〜め: 代目/本目/回目 等)が居るなら供給済みとみなす
+        if stemReading.count >= 2,
+            let counterSurfaces = Self.numericCounterSuffixCandidatesByReading[stemReading],
+            let counter = counterSurfaces.first,
+            !result.contains(where: { candidate in
+                guard candidate.count >= 2,
+                    let last = candidate.last, last == "目" || last == "め",
+                    let stemTail = candidate.dropLast().last else {
+                    return false
+                }
+                return Self.ordinalMeStemTailCharacters.contains(stemTail)
+            }) {
+            let pair = ordinalMeKanjiPreferred
+                ? [counter + "目", counter + "め"]
+                : [counter + "め", counter + "目"]
+            for (offset, form) in pair.enumerated() where !result.contains(form) {
+                result.insert(form, at: min(offset, result.count))
+            }
+        }
         var stems: [String] = []
         var seenStems = Set<String>()
         for candidate in result where candidate.count >= 2 && candidate != reading {
