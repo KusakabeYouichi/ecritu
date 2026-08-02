@@ -5996,6 +5996,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.contains(where: { $0.contains("這ったら") }), "這う系も温存: \(multi.prefix(6))")
     }
 
+    // きあげ: 生揚げ は辞書に なまあげ 読みのみ(醤油の 生揚げ=きあげ が未登録)。
+    // misc curated で 生揚げ/生揚げ醤油 を供給(2436)
+    func testRegressionKiageSuppliedFromMisc() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "きあげ", candidate: "生揚げ")
+        converter.store.addUserEntry(reading: "きあげしょうゆ", candidate: "生揚げ醤油")
+        XCTAssertEqual(
+            converter.candidates(for: "きあげ", limit: 8, systemCandidateMode: .surface).first,
+            "生揚げ"
+        )
+        XCTAssertEqual(
+            converter.candidates(for: "きあげしょうゆ", limit: 8, systemCandidateMode: .surface).first,
+            "生揚げ醤油"
+        )
+    }
+
     // とうきょうじゅう: 中(じゅう wc9550、最安読み6173から3377乖離)が読み跨ぎ借用ガード
     // (2386/2423)の巻き添えで bigram(東京→中4120)/unigram を没収され、重/銃/十 に
     // 負けていた。正当な生産的接尾なので seed 掲載で免除+名詞接辞 じゅう→中 を供給(2435)
