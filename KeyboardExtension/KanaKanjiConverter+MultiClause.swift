@@ -1726,6 +1726,14 @@ extension KanaKanjiConverter {
                             cost += Self.multiClauseHonorificKanjiPenalty
                         }
                     }
+                    // 地域接尾(県/道/府/都/市 等)直後の 人(じん) は住人表記(京都人/大阪人)。
+                    // 人(にん/じん) は読み跨ぎ借用の遮断で unigram+床評価になり、同音の
+                    // 陣/尽/腎 等に負けるため、産 と同じボーナスで是正する(2434)
+                    if node.reading == "じん", node.surface == "人",
+                        let prevLastForJin = prevNode.surface.last,
+                        KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLastForJin) {
+                        cost -= Self.multiClauseRegionalProduceBonus
+                    }
                     // 述語(活用派生/辞書形)直後の かち は「〜する価値ない」等の形式名詞的
                     // 用法が主。短span床の僅差(価値7191 vs 勝6795)で 勝/勝ち に負けるため
                     // 価値 にボーナス(行く価値ないね 対策。2434)
