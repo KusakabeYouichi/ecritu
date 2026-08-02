@@ -6006,6 +6006,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // ことでもなく: かな なく の識別wc10363(収穫底値)が短spanかな床+底値unigram不信
+    // (2126)に踏まれ、無く(活用派生7200)に負けていた。ない と同類の頻出かなとして
+    // seed 掲載で両ガードを免除(2442)
+    func testRegressionKotodemonakuPrefersKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "ことでもなく", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ことでもなく", "multi=\(multi.prefix(4))")
+        // 提示層のかな退避も防ぐ
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ことでもなく"))
+        // 泣く/鳴く は単独 なく の候補に温存
+        let solo = converter.candidates(for: "なく", limit: 10, systemCandidateMode: .surface)
+        XCTAssertTrue(solo.contains("泣く") && solo.contains("鳴く"), "solo=\(solo)")
+    }
+
     // ふじわらの/みなもとの/たいらの: 古代氏姓の の込み読み(藤原=フジワラノ 等、Sudachi
     // 実在)が rank0 に居座り、藤原の/源の/平の の合成を抑えていた。阿刀 と同型の
     // suppr+完全一致時のみ末尾再供給。平野(たいらの) の怪しい収穫も同時に抑制(2440)
