@@ -6008,6 +6008,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(yoku.contains("良くない"), "yoku=\(yoku)")
     }
 
+    // いくかちないね: 述語直後の かち は形式名詞的な 価値(〜する価値ない)が主だが、
+    // 短span床の僅差で 勝(6795)<価値(7191) となり 行く勝ないね が先頭だった。
+    // 述語直後の 価値 にボーナス(1500。800では不足を実測)(2434)
+    func testRegressionPredicateKachiPrefersValue() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "いくかちないね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "行く価値ないね", "multi=\(multi.prefix(4))")
+    }
+
     // じゃんぐりあ: 補助語彙(ryukyu)供給の ジャングリア(wc7500)が、LM未収録カタカナへの
     // カタカナ化ペナルティ(3000)に巻き込まれ、じゃん+グリア(神経膠細胞、LM収録)の分割に
     // 負けていた。手選別の補助語彙由来カタカナはペナルティ免除(2433)

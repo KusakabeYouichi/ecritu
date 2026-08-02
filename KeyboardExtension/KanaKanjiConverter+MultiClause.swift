@@ -234,6 +234,9 @@ extension KanaKanjiConverter {
     static let multiClauseHonorificKanjiPenalty = 3000
     // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
     static let multiClauseRegionalProduceBonus = 3000
+    // 述語直後の かち→価値 ボーナス(定義箇所のコメント参照)。床差396+マージン
+    // (800では不足を実測、1500で反転)
+    static let multiClausePredicateKachiValueBonus = 1500
     // 係助詞「は」直後の「ある」はかなが正書(ではある/にはある/とはある 等の概言・提題)。
     // 有る/在る/或る への漢字化は不自然なので減点し、N-best 変種(maxDelta4000)から落とす
     // (うまそうでは有る 対策)。ある はかな正書動詞(seed ある=[ある,有る,在る] のかな先頭)。
@@ -1722,6 +1725,13 @@ extension KanaKanjiConverter {
                         } else {
                             cost += Self.multiClauseHonorificKanjiPenalty
                         }
+                    }
+                    // 述語(活用派生/辞書形)直後の かち は「〜する価値ない」等の形式名詞的
+                    // 用法が主。短span床の僅差(価値7191 vs 勝6795)で 勝/勝ち に負けるため
+                    // 価値 にボーナス(行く価値ないね 対策。2434)
+                    if node.reading == "かち", node.surface == "価値",
+                        prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
+                        cost -= Self.multiClausePredicateKachiValueBonus
                     }
                     // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
                     // 助詞(から/まで 等)直後の な は正当(遅いからな)なので免除する。
