@@ -336,6 +336,9 @@
 	<dict><key>phrase</key><string>こぞって</string><key>shortcut</key><string>こぞって</string></dict>
 	<!-- 康熙字典(こうきじてん): SudachiDict/LM に無い(じてん→字典 のみ)。curated で供給 -->
 	<dict><key>phrase</key><string>康熙字典</string><key>shortcut</key><string>こうきじてん</string><key>pos</key><string>名詞</string></dict>
+	<!-- 生揚げ(きあげ、醤油の生揚げ): 辞書は なまあげ 読みのみで きあげ が未登録 -->
+	<dict><key>phrase</key><string>生揚げ</string><key>shortcut</key><string>きあげ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>生揚げ醤油</string><key>shortcut</key><string>きあげしょうゆ</string><key>pos</key><string>名詞</string></dict>
 	<!-- 貼り忘れ(はりわすれ): SudachiDict に 貼り(はり)エントリ自体が無く(張り のみ)、
 	     はりわすれ が 針忘れ/張り忘れ だけになる。複合語を curated で供給(一段は活用派生用) -->
 	<dict><key>phrase</key><string>貼り忘れ</string><key>shortcut</key><string>はりわすれ</string><key>pos</key><string>名詞</string></dict>
