@@ -428,6 +428,7 @@
 	        <dict><key>phrase</key><string>皇室典範</string><key>shortcut</key><string>こうしつてんぱん</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>陰謀論</string><key>shortcut</key><string>いんぼうろん</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>オウンゴール</string><key>shortcut</key><string>おうんごーる</string><key>pos</key><string>サ変名詞</string></dict><!-- 複合語が薄くて -->
+	        <dict><key>phrase</key><string>交叉点</string><key>shortcut</key><string>こうさてん</string></dict>
 	<!-- 単漢字 -->
 	        <dict><key>phrase</key><string>髙</string><key>shortcut</key><string>はしごだか</string></dict>
 	        <dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>たつさき</string></dict>
