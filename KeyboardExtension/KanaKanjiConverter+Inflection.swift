@@ -306,6 +306,13 @@ extension KanaKanjiConverter {
                 continue
             }
 
+            // い形容詞「いい」は語幹活用しない(連用・過去は よ- 系: よく/よかった)。
+            // いい 基底からの派生(良く/善く(いく)、良かった(いかった) 等の非標準形)は
+            // 作らない — いくかちないね に 善く勝ないね が混ざる誤供給の一般対策(2434)
+            if baseReading == "いい", inflectionClass == InflectionClass.adjectiveI {
+                continue
+            }
+
             let stem = String(candidate.dropLast(matchedSuffix.count))
             results.append(stem + rule.outputCandidateSuffix)
             contributingBases.append(candidate)
