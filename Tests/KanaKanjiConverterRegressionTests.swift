@@ -6040,6 +6040,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(daime.first, "代目", "daime=\(daime)")
     }
 
+    // のよねー: 四(よ)が数詞複合のA単位bigram(の→四)を借用し の四ねー が先頭だった。
+    // 入側デニー(人/頭/日/化 と同機構)に 四(よ) を追加、終助詞クラスタへ のよね/のよねー
+    // も追加(2434)
+    func testRegressionNoyoneFinalParticleCluster() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "のよねー", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "のよねー", "multi=\(multi.prefix(4))")
+    }
+
     // じゃんぐりあ: 補助語彙(ryukyu)供給の ジャングリア(wc7500)が、LM未収録カタカナへの
     // カタカナ化ペナルティ(3000)に巻き込まれ、じゃん+グリア(神経膠細胞、LM収録)の分割に
     // 負けていた。手選別の補助語彙由来カタカナはペナルティ免除(2433)
