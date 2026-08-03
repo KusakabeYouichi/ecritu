@@ -507,6 +507,9 @@ extension KeyboardRootView {
         case .symbols:
             return selectedSymbolCategory.frenchName
         case .kanjiRadical:
+            if let form = selectedRadicalForm {
+                return "\(selectedRadicalCategory.title) › \(form.form)(\(form.name))"
+            }
             return "\(selectedRadicalCategory.title)(\(selectedRadicalCategory.reading))"
         }
     }

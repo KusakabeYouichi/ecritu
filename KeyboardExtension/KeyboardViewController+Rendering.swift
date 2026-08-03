@@ -361,6 +361,9 @@ extension KeyboardViewController {
             onDeleteBackward: { [weak self] in
                 self?.handleDeleteBackward()
             },
+            onLookupRadicalEntries: { [weak self] radical in
+                self?.kanaKanjiConverter.store.kanjiRadicalIndex().entries(radical: radical) ?? []
+            },
             onSpace: { [weak self] in
                 self?.handleSpaceInput()
             },

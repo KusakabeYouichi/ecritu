@@ -15,9 +15,48 @@ extension KeyboardRootView {
             fourRowAlignedClusterHeight: fourRowAlignedClusterHeight,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
+            onLookupEntries: onLookupRadicalEntries,
+            onCommitCharacter: { character in
+                // タップ=確定してかなモードへ戻る
+                onTextInput(character)
+                switchInputMode(.kana)
+            },
             onSwitchToKana: { switchInputMode(.kana) },
             onDeleteBackward: onDeleteBackward
         )
+    }
+}
+
+// 字キー。ヒラギノ明朝にグリフが無い字(実機では PingFang 等で描かれる)は色を変えて
+// 区別する。判定は表示中のセルぶんだけ実行するのでデータに印は持たせない(2445)。
+struct KanjiCharacterKeyButton: View {
+    let entry: KanjiRadicalFileIndex.Entry
+    let height: CGFloat
+    let onCommit: (String) -> Void
+
+    private var hasMincho: Bool {
+        KanaKanjiStore.hasMinchoGlyph(for: entry.character)
+    }
+
+    var body: some View {
+        Button {
+            onCommit(entry.character)
+        } label: {
+            Text(entry.character)
+                .font(.custom("HiraMinProN-W3", size: 22))
+                .foregroundStyle(hasMincho ? Color(.label) : Color(.secondaryLabel))
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity)
+                .frame(height: height)
+                .background(
+                    RoundedRectangle(cornerRadius: 6, style: .continuous)
+                        .fill(Color(.systemBackground))
+                )
+                .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("\(entry.character) \(entry.readings)")
     }
 }
 
@@ -92,6 +131,8 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let fourRowAlignedClusterHeight: CGFloat
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
+    let onLookupEntries: (Int) -> [KanjiRadicalFileIndex.Entry]
+    let onCommitCharacter: (String) -> Void
     let onSwitchToKana: () -> Void
     let onDeleteBackward: () -> Void
 
@@ -99,27 +140,70 @@ struct KeyboardRootKanjiRadicalSectionView: View {
         KanjiRadicalCatalog.forms(in: selectedCategory)
     }
 
-    private var columns: [GridItem] {
+    private var radicalColumns: [GridItem] {
         Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 7)
     }
 
+    private var characterColumns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 9)
+    }
+
+    private var backRowHeight: CGFloat { 20 }
+
     var body: some View {
         VStack(spacing: keyboardRowSpacing) {
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: columns, spacing: emojiGridSpacing) {
-                    ForEach(forms) { form in
-                        RadicalFormKeyButton(
-                            form: form,
-                            isSelected: selectedForm == form,
-                            height: compactEmojiKeyHeight
-                        ) {
-                            selectedForm = form
+            if let form = selectedForm {
+                VStack(spacing: 2) {
+                    HStack(spacing: 6) {
+                        Button {
+                            selectedForm = nil
+                        } label: {
+                            Text("◀ 部首")
+                                .font(.system(size: 11))
+                                .foregroundStyle(Color.accentColor)
                         }
+                        .buttonStyle(.plain)
+
+                        Text("\(form.form) \(form.name)")
+                            .font(.system(size: 11))
+                            .foregroundStyle(Color(.secondaryLabel))
+                            .lineLimit(1)
+
+                        Spacer(minLength: 0)
+                    }
+                    .frame(height: backRowHeight)
+
+                    ScrollView(.vertical, showsIndicators: false) {
+                        LazyVGrid(columns: characterColumns, spacing: emojiGridSpacing) {
+                            ForEach(onLookupEntries(form.radical), id: \.character) { entry in
+                                KanjiCharacterKeyButton(
+                                    entry: entry,
+                                    height: compactEmojiKeyHeight,
+                                    onCommit: onCommitCharacter
+                                )
+                            }
+                        }
+                        .padding(.vertical, 2)
                     }
                 }
-                .padding(.vertical, 2)
+                .frame(height: fourRowAlignedTopContentHeight)
+            } else {
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVGrid(columns: radicalColumns, spacing: emojiGridSpacing) {
+                        ForEach(forms) { form in
+                            RadicalFormKeyButton(
+                                form: form,
+                                isSelected: false,
+                                height: compactEmojiKeyHeight
+                            ) {
+                                selectedForm = form
+                            }
+                        }
+                    }
+                    .padding(.vertical, 2)
+                }
+                .frame(height: fourRowAlignedTopContentHeight)
             }
-            .frame(height: fourRowAlignedTopContentHeight)
 
             HStack(spacing: keyboardRowSpacing) {
                 ActionKeyButton(

@@ -63,7 +63,8 @@ struct RadicalPositionIcon: Shape {
         case .hen:
             path.addRect(band(3, 3, third, 29))
         case .tsukuri:
-            path.addRect(band(far, 3, 29, 29))
+            // 旁は偏より広いのが通例なので右1/2(偏は1/3)
+            path.addRect(band(16, 3, 29, 29))
         case .kanmuri:
             path.addRect(band(3, 3, 29, third))
         case .ashi:
@@ -77,9 +78,10 @@ struct RadicalPositionIcon: Shape {
             path.addRect(band(3, 3, third, 29))
             path.addRect(band(third, far, 29, 29))
         case .kamae:
-            // 四方を囲む(囗)
-            path.addRect(band(3, 3, 29, 29))
-            path.addRect(band(third, third, far, far))
+            // 門の形。左右の柱+上の帯で、下の真ん中1/3は開ける(間/開)
+            path.addRect(band(3, 3, 29, third))
+            path.addRect(band(3, third, third, 29))
+            path.addRect(band(far, third, 29, 29))
         case .independent:
             // 位置を持たない = 中央の小さな塊
             path.addRect(band(11, 11, 21, 21))

@@ -6844,6 +6844,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let view = KeyboardRootView(
             onTextInput: { _ in },
             onDeleteBackward: {},
+            onLookupRadicalEntries: { _ in [] },
             onSpace: {},
             onReturn: {},
             onAdvanceKeyboard: {},
