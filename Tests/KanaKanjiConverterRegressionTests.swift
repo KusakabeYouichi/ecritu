@@ -6021,6 +6021,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // ための交ぜ書きエントリ)を、読み かわう に活用クラス行が無いことから五段う動詞と推論して
     // 河って/河ってきて を生成し、スパン全体の 変わってきてる を逆転していた。システム辞書候補への
     // クラス推論を止めた(音の借用による誤活用の一般対策。2465)
+    // 促音を含むカタカナ語(リッター/ヘット/ネット/チケット 等)が候補から丸ごと消えていた。
+    // 2450 の「読みに無い っ/ー の水増し表記」フィルタが、表層のカタカナ促音「ッ」を読みの
+    // ひらがな「っ」と突き合わせられず、促音カタカナ 13,348 エントリを装飾表記と誤判定していた。
+    // かなの種を揃えて比較する(2466)
+    func testRegressionKatakanaSokuonIsNotDecorativePadding() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [
+            ("りったー", "リッター"), ("へっと", "ヘット"),
+            ("ねっと", "ネット"), ("ちけっと", "チケット")
+        ] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertTrue(single.contains(expected), "\(reading)=\(single)")
+        }
+    }
+
     func testRegressionInferredInflectionClassNotAppliedToSystemCandidates() throws {
         try prepareRealLMDictionary()
         let kawatte = converter.candidates(for: "かわって", limit: 6, systemCandidateMode: .surface)

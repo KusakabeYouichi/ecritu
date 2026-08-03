@@ -306,9 +306,13 @@ extension KanaKanjiConverter {
     // 溜め表記の収穫で、読みに無い「っ」「ー」が表層に足されている。読み側にその文字が
     // あるユーザ入力(いやっ/いやー を打った場合)は対象外。合成の種になると
     // いやで→イヤっで/嫌ーで のようなジャンクを作る(2450)。
+    // 表層がカタカナ語のとき促音は「ッ」だが読みは「っ」なので、かなの種を揃えて突き合わせる。
+    // 素朴な文字一致にしていたため、リッター/ヘット/ネット/チケット のような促音カタカナ語
+    // (辞書に13,348エントリ)を一律で水増し表記と誤判定して候補から消していた(2466)。
     static func hasSokuonOrChoonPadding(_ surface: String, reading: String) -> Bool {
-        for character in ["っ", "ッ", "ー"] where surface.contains(character) {
-            if !reading.contains(character) {
+        for (surfaceCharacter, readingCharacter) in [("っ", "っ"), ("ッ", "っ"), ("ー", "ー")]
+        where surface.contains(surfaceCharacter) {
+            if !reading.contains(readingCharacter) {
                 return true
             }
         }
