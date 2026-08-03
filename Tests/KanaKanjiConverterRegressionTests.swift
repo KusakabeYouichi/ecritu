@@ -6045,6 +6045,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Set(atoR.map(\.radical)), [163, 170])
         // 複数所属(日=偏・冠・脚)
         XCTAssertEqual(forms.first { $0.form == "日" }?.categories, ["偏", "冠", "脚"])
+
+        // 画数: 字形ごとに持つ(氵=3画 / 水=4画、艹=3画 / 艸=6画)。1〜17画に収まる
+        XCTAssertEqual(water.first { $0.form == "氵" }?.strokes, 3)
+        XCTAssertEqual(water.first { $0.form == "水" }?.strokes, 4)
+        XCTAssertEqual(forms.first { $0.form == "艹" }?.strokes, 3)
+        XCTAssertEqual(forms.first { $0.form == "艸" }?.strokes, 6)
+        for form in forms {
+            XCTAssertTrue(1...17 ~= form.strokes, "\(form.form) の画数=\(form.strokes)")
+        }
+
+        // カテゴリー内は画数順(同画数は部首番号順)= 画数区切りを挟める並び
+        for category in RadicalPositionCategory.allCases {
+            let ordered = KanjiRadicalCatalog.forms(in: category)
+            let keys = ordered.map { [$0.strokes, $0.radical] }
+            XCTAssertEqual(keys, keys.sorted { lhs, rhs in
+                lhs[0] != rhs[0] ? lhs[0] < rhs[0] : lhs[1] < rhs[1]
+            }, "\(category.title) の並びが画数順でない")
+        }
     }
 
     // 漢字1文字ピッカーの索引(mmap+バイナリサーチ)。部首ブロックが部首内画数順で

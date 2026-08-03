@@ -205,6 +205,27 @@ struct RadicalFormKeyButton: View {
     }
 }
 
+// 画数の区切り(タップできない)。「3画」のように示す。
+struct RadicalStrokeMarkerCell: View {
+    let strokes: Int
+    let height: CGFloat
+
+    var body: some View {
+        Text("\(strokes)画")
+            .font(.system(size: 11, weight: .semibold, design: .rounded))
+            .foregroundStyle(Color(.secondaryLabel))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .background(
+                RoundedRectangle(cornerRadius: 6, style: .continuous)
+                    .fill(Color(.tertiarySystemFill))
+            )
+            .accessibilityLabel("\(strokes)画の部首")
+    }
+}
+
 struct KeyboardRootKanjiRadicalSectionView: View {
     @Binding var selectedCategory: RadicalPositionCategory
     @Binding var selectedForm: RadicalForm?
@@ -233,57 +254,62 @@ struct KeyboardRootKanjiRadicalSectionView: View {
         Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 9)
     }
 
-    private var backRowHeight: CGFloat { 20 }
+    // 部首一覧に画数の区切り(タップ不可)を挟む。部首を探す手掛かりは画数のため(2447)
+    enum RadicalListItem {
+        case strokeMarker(Int)
+        case form(RadicalForm)
+    }
+
+    private var radicalListItems: [(id: String, kind: RadicalListItem)] {
+        var items: [(id: String, kind: RadicalListItem)] = []
+        var lastStrokes = -1
+        for form in forms {
+            if form.strokes != lastStrokes {
+                items.append((id: "marker-\(form.strokes)", kind: .strokeMarker(form.strokes)))
+                lastStrokes = form.strokes
+            }
+            items.append((id: form.id, kind: .form(form)))
+        }
+        return items
+    }
 
     var body: some View {
         VStack(spacing: keyboardRowSpacing) {
             if let form = selectedForm {
-                VStack(spacing: 2) {
-                    HStack(spacing: 6) {
-                        Button {
-                            selectedForm = nil
-                        } label: {
-                            Text("◀ 部首")
-                                .font(.system(size: 11))
-                                .foregroundStyle(Color.accentColor)
+                // 戻るはヘッダー(◀ 偏 › 氵(さんずい))が担う。行内にパンくずは置かない
+                ScrollView(.vertical, showsIndicators: false) {
+                    LazyVGrid(columns: characterColumns, spacing: emojiGridSpacing) {
+                        ForEach(onLookupEntries(form.radical), id: \.character) { entry in
+                            KanjiCharacterKeyButton(
+                                entry: entry,
+                                height: compactEmojiKeyHeight,
+                                onCommit: onCommitCharacter
+                            )
                         }
-                        .buttonStyle(.plain)
-
-                        Text("\(form.form) \(form.name)")
-                            .font(.system(size: 11))
-                            .foregroundStyle(Color(.secondaryLabel))
-                            .lineLimit(1)
-
-                        Spacer(minLength: 0)
                     }
-                    .frame(height: backRowHeight)
-
-                    ScrollView(.vertical, showsIndicators: false) {
-                        LazyVGrid(columns: characterColumns, spacing: emojiGridSpacing) {
-                            ForEach(onLookupEntries(form.radical), id: \.character) { entry in
-                                KanjiCharacterKeyButton(
-                                    entry: entry,
-                                    height: compactEmojiKeyHeight,
-                                    onCommit: onCommitCharacter
-                                )
-                            }
-                        }
-                        .padding(.vertical, 2)
-                    }
-                    // ロングタップの吹き出しが最上段で見切れないようクリップを解除(iOS17+)
-                    .modifier(KanjiRadicalScrollClipDisabledModifier())
+                    .padding(.vertical, 2)
                 }
                 .frame(height: fourRowAlignedTopContentHeight)
+                // ロングタップの吹き出しが最上段で見切れないようクリップを解除(iOS17+)
+                .modifier(KanjiRadicalScrollClipDisabledModifier())
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVGrid(columns: radicalColumns, spacing: emojiGridSpacing) {
-                        ForEach(forms) { form in
-                            RadicalFormKeyButton(
-                                form: form,
-                                isSelected: false,
-                                height: compactEmojiKeyHeight
-                            ) {
-                                selectedForm = form
+                        ForEach(radicalListItems, id: \.id) { item in
+                            switch item.kind {
+                            case .strokeMarker(let strokes):
+                                RadicalStrokeMarkerCell(
+                                    strokes: strokes,
+                                    height: compactEmojiKeyHeight
+                                )
+                            case .form(let form):
+                                RadicalFormKeyButton(
+                                    form: form,
+                                    isSelected: false,
+                                    height: compactEmojiKeyHeight
+                                ) {
+                                    selectedForm = form
+                                }
                             }
                         }
                     }
