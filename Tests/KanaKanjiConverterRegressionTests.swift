@@ -6006,6 +6006,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    func testTEMPDEBUGItsudattan() throws {
+        try prepareRealLMDictionary()
+        for reading in ["いつだったんだろう", "いつだったんだろ", "だったんそば", "なんだろう"] {
+            print("TEMPDEBUG \(reading):", Array(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).prefix(4)))
+        }
+    }
+
     // とき/こと の使い分け(ユーザー方針): 「時間という概念そのもの」「事柄」を指す実質名詞は
     // 漢字(時は金なり/事の起こり/事あるごとに)、接尾辞的な形式名詞はかな(〜したとき/
     // 〜すること)。前者は文頭のかな側に減点(seed順ボーナス800を上回る1500)、後者は既存の
