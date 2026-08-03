@@ -6006,6 +6006,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // やっぱり: 辞書rank0がカタカナ(ヤッパリ)で、さらに やっぱ+李(李 uni5116)の合成が
+    // 先頭を取っていた。seed でかな先頭を固定(2449)
+    func testRegressionYappariKanaLeading() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "やっぱり", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "やっぱり", "single=\(single.prefix(6))")
+        XCTAssertFalse(single.contains("やっぱ李"), "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やっぱり"))
+    }
+
     // 部首カテゴリー分類表(bushu.plist)の読み込みと、8カテゴリーへの割り振り(2444)
     func testKanjiRadicalCatalogCategories() throws {
         KanjiRadicalCatalog.resourceDirectoryURLOverride = URL(
