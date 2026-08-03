@@ -818,11 +818,6 @@ extension KanaKanjiConverter {
                 pattern.aForm + "なくなりませんでした",
                 pattern.aForm + "なくなれば",
                 pattern.aForm + "なくなり",
-                // 関西弁・口語の否定縮約形(知らない→知らん, 知らなかった→知らんかった 等)
-                pattern.aForm + "ん",
-                pattern.aForm + "んかった",
-                pattern.aForm + "んかったら",
-                pattern.aForm + "んで",
                 // 「〜なくては/〜なければ」の口語縮約(知らなくちゃ, 知らなきゃ 等)
                 pattern.aForm + "なくちゃ",
                 pattern.aForm + "なきゃ",
@@ -915,6 +910,18 @@ extension KanaKanjiConverter {
                 pattern.taForm,
                 pattern.taForm + "ら"
             ]
+
+            // 関西弁・口語の否定縮約形(知らない→知らん, 知らなかった→知らんかった 等)。
+            // 五段す(aForm=さ)だけは除外 — 託さん/托さん/話さん が敬称「さん」と衝突し、
+            // たくさん→託さん のように日常入力を邪魔する(方言形の損失より害が大きい。2462)
+            if pattern.inflectionClass != InflectionClass.godanSu {
+                suffixes.append(contentsOf: [
+                    pattern.aForm + "ん",
+                    pattern.aForm + "んかった",
+                    pattern.aForm + "んかったら",
+                    pattern.aForm + "んで"
+                ])
+            }
 
             suffixes.append(contentsOf: KanaKanjiConverter.taRiSuruInflectionSuffixes(for: pattern.taForm))
             suffixes.append(contentsOf: KanaKanjiConverter.taiGaruInflectionSuffixes(for: pattern.iForm))
