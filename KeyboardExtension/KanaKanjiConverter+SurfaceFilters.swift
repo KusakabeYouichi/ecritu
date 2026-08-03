@@ -302,11 +302,25 @@ extension KanaKanjiConverter {
         surface.contains("…") && !reading.contains("…")
     }
 
-    // 装飾表記(〜水増し・中黒散らし・…溜め)の総合判定。候補列挙の各段で共通に使う。
+    // SudachiDict の促音/長音の水増し表記(イヤっ/嫌ー/あーっ 等)を弾く。台詞・感動詞の
+    // 溜め表記の収穫で、読みに無い「っ」「ー」が表層に足されている。読み側にその文字が
+    // あるユーザ入力(いやっ/いやー を打った場合)は対象外。合成の種になると
+    // いやで→イヤっで/嫌ーで のようなジャンクを作る(2450)。
+    static func hasSokuonOrChoonPadding(_ surface: String, reading: String) -> Bool {
+        for character in ["っ", "ッ", "ー"] where surface.contains(character) {
+            if !reading.contains(character) {
+                return true
+            }
+        }
+        return false
+    }
+
+    // 装飾表記(〜水増し・中黒散らし・…溜め・っ/ー水増し)の総合判定。候補列挙の各段で共通に使う。
     static func isDecorativeVariantSurface(_ surface: String, reading: String) -> Bool {
         hasWaveDashElongation(surface, reading: reading)
             || hasNakaguroDecorationSpelling(surface, reading: reading)
             || hasEllipsisElongation(surface, reading: reading)
+            || hasSokuonOrChoonPadding(surface, reading: reading)
     }
 
     // 連濁の清音化マップ(濁音/半濁音→清音)。連濁収穫フィルタ用。
