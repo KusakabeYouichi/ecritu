@@ -34,12 +34,21 @@ struct KanjiCharacterKeyButton: View {
     let height: CGFloat
     let onCommit: (String) -> Void
 
+    // ロングタップ中だけ字典風のポップアップを出す。押し込みで確定してしまわないよう、
+    // シフトキーと同じ didTriggerLongPress ガードでタップ動作を抑止する(モードも維持)。
+    @State private var didTriggerLongPress = false
+    @State private var isShowingInfo = false
+
     private var hasMincho: Bool {
         KanaKanjiStore.hasMinchoGlyph(for: entry.character)
     }
 
     var body: some View {
         Button {
+            if didTriggerLongPress {
+                didTriggerLongPress = false
+                return
+            }
             onCommit(entry.character)
         } label: {
             Text(entry.character)
@@ -56,7 +65,83 @@ struct KanjiCharacterKeyButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .simultaneousGesture(
+            LongPressGesture(minimumDuration: 0.35)
+                .onEnded { _ in
+                    didTriggerLongPress = true
+                    isShowingInfo = true
+                }
+        )
+        // 指を離した(またはキー外へ動かした)時点でポップアップを消す
+        .simultaneousGesture(
+            DragGesture(minimumDistance: 0)
+                .onEnded { _ in
+                    isShowingInfo = false
+                }
+        )
+        .overlay {
+            if isShowingInfo {
+                KanjiInspectBubble(entry: entry)
+                    .allowsHitTesting(false)
+                    .transition(.opacity)
+            }
+        }
+        .zIndex(isShowingInfo ? 1 : 0)
+        .animation(.easeOut(duration: 0.08), value: isShowingInfo)
         .accessibilityLabel("\(entry.character) \(entry.readings)")
+    }
+}
+
+// 字のロングタップで出す字典風ポップアップ(読み / U+XXXX / JIS X 0208区点)。
+// 記号モードの長押し吹き出しと同じ見え方に揃え、画面端では内側へずらす。
+struct KanjiInspectBubble: View {
+    let entry: KanjiRadicalFileIndex.Entry
+
+    private let bubbleWidth: CGFloat = 176
+    private let screenMargin: CGFloat = 6
+    private let verticalOffset: CGFloat = -46
+
+    private var codePointText: String {
+        guard let scalar = entry.character.unicodeScalars.first else {
+            return "—"
+        }
+        return String(format: "U+%04X", scalar.value)
+    }
+
+    var body: some View {
+        GeometryReader { proxy in
+            let keyFrame = proxy.frame(in: .global)
+            let screenWidth = UIScreen.main.bounds.width
+            let half = bubbleWidth / 2
+            let clampedCenterX = min(
+                max(keyFrame.midX, screenMargin + half),
+                max(screenMargin + half, screenWidth - screenMargin - half)
+            )
+            let dx = clampedCenterX - keyFrame.midX
+
+            VStack(spacing: 2) {
+                Text(entry.readings)
+                    .font(.system(size: 12, weight: .bold, design: .rounded))
+                    .lineLimit(2)
+                    .minimumScaleFactor(0.7)
+                Text("\(codePointText)  区点 \(entry.kuten)")
+                    .font(.system(size: 10.5, weight: .medium, design: .rounded))
+                    .foregroundStyle(.white.opacity(0.82))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            .foregroundStyle(.white)
+            .multilineTextAlignment(.center)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .frame(width: bubbleWidth)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(Color.black.opacity(0.86))
+            )
+            .frame(width: proxy.size.width, alignment: .center)
+            .offset(x: dx, y: verticalOffset)
+        }
     }
 }
 
@@ -185,6 +270,8 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                         }
                         .padding(.vertical, 2)
                     }
+                    // ロングタップの吹き出しが最上段で見切れないようクリップを解除(iOS17+)
+                    .modifier(KanjiRadicalScrollClipDisabledModifier())
                 }
                 .frame(height: fourRowAlignedTopContentHeight)
             } else {
@@ -236,5 +323,15 @@ struct KeyboardRootKanjiRadicalSectionView: View {
             }
         }
         .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+    }
+}
+
+struct KanjiRadicalScrollClipDisabledModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17.0, *) {
+            content.scrollClipDisabled()
+        } else {
+            content
+        }
     }
 }
