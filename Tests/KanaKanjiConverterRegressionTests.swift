@@ -6010,6 +6010,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 五段す だけは aForm=さ のため 託さん/托さん/話さん が敬称「さん」と衝突し、
     // たくさん の日常入力を邪魔していた。五段す のみ ん系派生を作らない一般対策(2462)。
     // あわせて読み うまい のレア語(熟寝/熟睡/右舞)を抑制してジャンク合成を除去
+    // いやで: エンジンは {イヤで, いやで, 嫌で, ...} と2位にかなを返していたが、keepKana が
+    // 不成立で提示層がかな識別を候補から落としていた(実機は イヤで/嫌で/否で/厭で)。
+    // かな正書の形容動詞語幹(いや/むら)+活用語尾 を keepKana の根拠に加える(2464)
+    func testRegressionNaAdjectiveKanaOrthographyInflection() throws {
+        try prepareRealLMDictionary()
+        let iyade = converter.candidates(for: "いやで", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(iyade.prefix(3)), ["イヤで", "いやで", "嫌で"], "iyade=\(iyade)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いやで"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "むらで"))
+        // 名詞+で の巻き込みが無いこと(2406 の判断を維持)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんで"))
+    }
+
     func testRegressionGodanSuNegativeContractionExcluded() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["うまい": ["熟寝", "熟睡", "右舞"]])
