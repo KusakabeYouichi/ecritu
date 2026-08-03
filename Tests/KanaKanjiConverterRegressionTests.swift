@@ -6006,6 +6006,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // ていしえき: 未登録の複合語で、連文節が 停止+駅(駅 uni4050 < 液 uni6008)を選んでいた。
+    // misc curated で 停止液 を供給(単独の えき は 駅 先頭のまま)(2454)
+    func testRegressionTeishiekiPrefersLiquid() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "ていしえき", candidate: "停止液")
+        // curated が丸ごと1ノードになる読みは連文節が空を返し単文節に委ねる(設計どおり)
+        let single = converter.candidates(for: "ていしえき", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "停止液", "single=\(single)")
+        // 単独の えき は 駅 が先頭のまま
+        let eki = converter.candidates(for: "えき", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(eki.first, "駅", "eki=\(eki)")
+
+        // 氷酢酸(ひょうさくさん): 辞書は さくさん→酢酸 のみで未登録だった(2454)
+        converter.store.addUserEntry(reading: "ひょうさくさん", candidate: "氷酢酸")
+        XCTAssertEqual(
+            converter.candidates(for: "ひょうさくさん", limit: 6, systemCandidateMode: .surface).first,
+            "氷酢酸"
+        )
+    }
+
     // できやすいので: 辞書rank0が 出来る(wc4362)でかなは rank3。ユーザー方針で「出来る」は
     // 後ろに回したいので seed でかな先頭に。さらに提示層の退避を防ぐため、補助形容詞
     // やすい/にくい/づらい(+任意のので)を剥がした基底動詞が seed かな先頭なら

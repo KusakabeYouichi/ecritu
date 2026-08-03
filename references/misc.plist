@@ -336,6 +336,11 @@
 	<dict><key>phrase</key><string>こぞって</string><key>shortcut</key><string>こぞって</string></dict>
 	<!-- 康熙字典(こうきじてん): SudachiDict/LM に無い(じてん→字典 のみ)。curated で供給 -->
 	<dict><key>phrase</key><string>康熙字典</string><key>shortcut</key><string>こうきじてん</string><key>pos</key><string>名詞</string></dict>
+	<!-- 氷酢酸(ひょうさくさん、高純度の酢酸): 辞書は さくさん→酢酸 のみで未登録 -->
+	<dict><key>phrase</key><string>氷酢酸</string><key>shortcut</key><string>ひょうさくさん</string><key>pos</key><string>名詞</string></dict>
+	<!-- 停止液(ていしえき、写真現像/化学): 未登録の複合語で、連文節が 停止+駅(駅 uni4050 <
+	     液 uni6008)を選んでいた。単独の えき は 駅 先頭のままにしたいので curated で複合語を供給 -->
+	<dict><key>phrase</key><string>停止液</string><key>shortcut</key><string>ていしえき</string><key>pos</key><string>名詞</string></dict>
 	<!-- 生揚げ(きあげ、醤油の生揚げ): 辞書は なまあげ 読みのみで きあげ が未登録 -->
 	<dict><key>phrase</key><string>生揚げ</string><key>shortcut</key><string>きあげ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>生揚げ醤油</string><key>shortcut</key><string>きあげしょうゆ</string><key>pos</key><string>名詞</string></dict>
