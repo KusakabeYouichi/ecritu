@@ -6006,6 +6006,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // えだ: 辞書に 枝(wc4351/rank0)があるのに、1文字読み え の合成15件が全部その前に
+    // 並んでいた。seed で 枝 を先頭へ。さらに読み え の名前・旧字・レア読み
+    // (江/衣/枝/穢/畫/重/慧/会)は単独でも使わず合成の温床なので抑制。コストでは
+    // 分離できない(衣6606 < 柄7731)ので語義判断による suppr で対応(2452)
+    func testRegressionEdaOrderingAndRareEReadings() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["え": ["江", "衣", "枝", "穢", "畫", "重", "慧", "会"]])
+        let single = converter.candidates(for: "えだ", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "枝", "single=\(single.prefix(6))")
+        for unwanted in ["江だ", "衣だ", "枝だ", "穢だ", "畫だ", "重だ", "慧だ", "会だ"] {
+            XCTAssertFalse(single.contains(unwanted), "\(unwanted) が残っている: \(single)")
+        }
+        // 常用の1字語からの合成は温存
+        XCTAssertTrue(single.contains("絵だ"), "single=\(single)")
+        XCTAssertTrue(single.contains("餌だ"), "single=\(single)")
+        // 単独の え も整理される(絵/画/柄/荏/榎/餌 は残る)
+        let e = converter.candidates(for: "え", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(e.first, "え", "e=\(e)")
+        XCTAssertTrue(e.contains("絵"), "e=\(e)")
+        XCTAssertFalse(e.contains("穢"), "e=\(e)")
+    }
+
     // カタカナ正書の例外枠(ユーザー方針): 原則カタカナ化は抑制だが「ひらがなだと紛れる+
     // 漢字が馴染みない」語はカタカナが読みやすい。seed 掲載でカタカナ強調抑制から免除
     // (katakanaRunsAreSeedProtected)。いや は指定順、むら は 斑 の意味の ムラ を追加(2451)

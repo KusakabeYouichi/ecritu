@@ -224,6 +224,17 @@
 	     ゴミ合成の種になる。よん で 霊 を出したい場面は無いので抑制 -->
 	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>
 	<!-- ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 -->
+	<!-- 読み「え」の名前・旧字・レア読み。単独の え としても使わず、え+だ の合成
+	     (江だ/衣だ/穢だ/重だ/慧だ/会だ/枝だ/畫だ)を作る温床になる。畫 は画の旧字で
+	     読み え は正当だが現代入力では不要(ユーザー指摘)。絵/画/餌/柄 等は温存 -->
+	<dict><key>phrase</key><string>江</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>衣</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>枝</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>穢</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>畫</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>重</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>慧</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>会</string><key>shortcut</key><string>え</string></dict>
 	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。
 	     あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
 	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>
