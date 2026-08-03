@@ -17,6 +17,7 @@ extension KeyboardViewController {
         let keyboardBackgroundThemeRawValue: String
         let basicSymbolOrderRawValue: String
         let temperatureUnitRawValue: String
+        let radicalStrokeCountStyleRawValue: String
         let spaceToastTrigger: Int
         let returnKeySystemImageName: String?
         let isReturnKeyEnabled: Bool
@@ -85,6 +86,7 @@ extension KeyboardViewController {
                 keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
                 basicSymbolOrderRawValue: basicSymbolOrderRawValue,
                 temperatureUnitRawValue: temperatureUnitRawValue,
+                radicalStrokeCountStyleRawValue: radicalStrokeCountStyleRawValue,
                 spaceToastTrigger: spaceToastTrigger,
                 returnKeySystemImageName: returnKeySystemImageName,
                 isReturnKeyEnabled: isReturnKeyEnabled,
@@ -219,6 +221,11 @@ extension KeyboardViewController {
             fallback: "ascii"
         )
         let temperatureUnitRawValue = currentTemperatureUnit().rawValue
+        let radicalStrokeCountStyleRawValue = sharedStringValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.radicalStrokeCountStyle,
+            fallback: RadicalStrokeCountStyle.modern.rawValue
+        )
         let returnKeyType = textDocumentProxy.returnKeyType
         let hasAnyText = textDocumentProxy.hasText
         let hasPendingComposingText = !candidatePresentation.composingText.isEmpty
@@ -322,6 +329,7 @@ extension KeyboardViewController {
             keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
             basicSymbolOrderRawValue: basicSymbolOrderRawValue,
             temperatureUnitRawValue: temperatureUnitRawValue,
+            radicalStrokeCountStyleRawValue: radicalStrokeCountStyleRawValue,
             spaceToastTrigger: spaceToastTrigger,
             returnKeySystemImageName: returnKeySystemImageName,
             isReturnKeyEnabled: isReturnKeyEnabled,
@@ -448,6 +456,7 @@ extension KeyboardViewController {
             keyboardBackgroundThemeRawValue: configuration.keyboardBackgroundThemeRawValue,
             basicSymbolOrderRawValue: configuration.basicSymbolOrderRawValue,
             temperatureUnitRawValue: configuration.temperatureUnitRawValue,
+            radicalStrokeCountStyleRawValue: configuration.radicalStrokeCountStyleRawValue,
             spaceToastTrigger: configuration.spaceToastTrigger,
             returnKeySystemImageName: configuration.returnKeySystemImageName,
             isReturnKeyEnabled: configuration.isReturnKeyEnabled,

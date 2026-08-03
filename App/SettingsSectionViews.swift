@@ -633,6 +633,21 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
     }
 }
 
+struct RadicalStrokeCountSettingsSection: View {
+    @Binding var selection: RadicalStrokeCountStyleOption
+
+    var body: some View {
+        SegmentedSettingsCard(
+            title: "部首の画数の数え方",
+            pickerTitle: "部首の画数の数え方",
+            selection: $selection,
+            options: Array(RadicalStrokeCountStyleOption.allCases),
+            optionTitle: { $0.title },
+            footnote: "漢字1文字ピッカー(モード切替キーの下フリック)の部首一覧を並べる画数の基準です。辞書によって流儀が分かれる字形の扱いが変わります(くさかんむり 艹 = 3画/4画、しんにょう 辶 = 3画/4画、しめすへん 礻 = 4画/5画、しょくへん 飠 = 7画/8画)。初期設定は「新字体で数える」です。"
+        )
+    }
+}
+
 enum OrdinalMePreferenceOption: String, CaseIterable {
     case kanji
     case kana

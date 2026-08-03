@@ -9,7 +9,10 @@
      ・位置を持たない部首(一/二/乙/龍 等)は「独立」。
      ・radical は康熙部首番号(1〜214)。Unihan kRSKangxi と突き合わせて字を集める。
      ・strokes はその字形自体の画数(部首一覧の画数区切りに使う)。位置別字形は親部首と
-       画数が違う(氵=3画/水=4画、艹=3画/艸=6画)ため字形ごとに持つ。
+       画数が違う(氵=3画/水=4画、艹=3画/艸=6画)ため字形ごとに持つ。新字体で数えた値。
+     ・strokesTraditional は旧字体(伝統)で数えた画数。流儀が分かれる字形にだけ持たせ、
+       無い場合は strokes と同じ扱い。コンテナーアプリの設定で新字体/旧字体を切り替える
+       (艹 3/4、辶 3/4、礻 4/5、飠 7/8)。
      ※語彙plist(sacoche/misc 等)とはスキーマが別。build_second_vocab_from_references.py の対象外。 -->
 <array>
 	<dict>
@@ -2085,6 +2088,8 @@
 		<key>radical</key>
 		<integer>113</integer>
 		<key>strokes</key>
+		<integer>4</integer>
+		<key>strokesTraditional</key>
 		<integer>5</integer>
 		<key>name</key>
 		<string>しめすへん</string>
@@ -2579,6 +2584,8 @@
 		<integer>140</integer>
 		<key>strokes</key>
 		<integer>3</integer>
+		<key>strokesTraditional</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>くさかんむり</string>
 		<key>categories</key>
@@ -2981,6 +2988,8 @@
 		<integer>162</integer>
 		<key>strokes</key>
 		<integer>3</integer>
+		<key>strokesTraditional</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>しんにょう</string>
 		<key>categories</key>
@@ -3372,6 +3381,8 @@
 		<key>radical</key>
 		<integer>184</integer>
 		<key>strokes</key>
+		<integer>7</integer>
+		<key>strokesTraditional</key>
 		<integer>8</integer>
 		<key>name</key>
 		<string>しょくへん</string>
