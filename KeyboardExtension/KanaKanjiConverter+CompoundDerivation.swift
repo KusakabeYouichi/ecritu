@@ -300,7 +300,17 @@ extension KanaKanjiConverter {
     // ため連濁収穫フィルタで落ち、数字を打っても候補に現れなかった(2469)。へん 側は 片 が
     // 候補に居るので供給不要(present に有る表層はここでは足さない)。
     static let digitContextSuppliedCounterSurfacesByReading: [String: [String]] = [
-        "ぺん": ["片"]
+        "ぺん": ["片"],
+        // 同じ構造で落ちていた助数詞の促音便・連濁読み(6ぽん/3ぼん/6ぴき/3びき/6ぷん/
+        // 6ぱつ/6ぱい)。数詞込みの読み(ろっぽん/いっぴき)は数詞合成の別経路で出るが、
+        // 数字を確定してから助数詞だけ打つ形では供給が無かった(2471)
+        "ぽん": ["本"],
+        "ぼん": ["本"],
+        "ぴき": ["匹"],
+        "びき": ["匹"],
+        "ぷん": ["分"],
+        "ぱつ": ["発"],
+        "ぱい": ["杯"]
     ]
 
     static func digitBoostCounterSurfaces(for reading: String) -> [String]? {

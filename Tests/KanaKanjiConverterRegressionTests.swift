@@ -6059,6 +6059,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             precedingCharacter: "6"
         )
         XCTAssertEqual(boosted.first, "片", "boosted=\(boosted)")
+        // 同じ構造で落ちていた他の助数詞(本/匹/分/発/杯)も数字文脈で供給する(2471)
+        for (reading, expected) in [
+            ("ぽん", "本"), ("ぼん", "本"), ("ぴき", "匹"),
+            ("びき", "匹"), ("ぷん", "分"), ("ぱつ", "発"), ("ぱい", "杯")
+        ] {
+            let candidates = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            let boostedCounter = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                candidates,
+                reading: reading,
+                precedingCharacter: "6"
+            )
+            XCTAssertEqual(boostedCounter.first, expected, "\(reading)=\(boostedCounter)")
+        }
         // 抑制済みなら復活させない
         let suppressed = KanaKanjiConverter.digitContextCounterBoostedCandidates(
             single,
