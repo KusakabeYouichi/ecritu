@@ -6047,6 +6047,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "パレット", "single=\(single)")
     }
 
+    // さんぼん→3本/三本: 3本 が 三盆/山本/上鳳(レア辞書語)の後ろで4番目だった。連濁形の
+    // 助数詞(ぼん)は数詞に付いたときしか現れないので数詞複合を辞書級へ引き上げる(2472)。
+    // 清音形(ほん)は対象外 = にほん→日本 の方針は不変
+    func testRegressionVoicedCounterNumericCompoundOutranksRareDictionary() throws {
+        try prepareRealLMDictionary()
+        let sanbon = converter.candidates(for: "さんぼん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sanbon.prefix(2)), ["3本", "三本"], "sanbon=\(sanbon)")
+        let ippiki = converter.candidates(for: "さんびき", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ippiki.prefix(2)), ["3匹", "三匹"], "sanbiki=\(ippiki)")
+        // 清音形の助数詞は従来どおり辞書語が先頭(にほん→日本)
+        let nihon = converter.candidates(for: "にほん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(nihon.first, "日本", "nihon=\(nihon)")
+    }
+
     // 1ぺん/6ぺん→1片/6片: ぺん は へん の促音便読みのため 片(ぺん wc10155)が連濁収穫
     // フィルタで落ち、数字を打っても助数詞 片 が候補に出なかった。数字文脈限定で供給する(2469)
     func testRegressionDigitContextSuppliesPenCounterKanji() throws {

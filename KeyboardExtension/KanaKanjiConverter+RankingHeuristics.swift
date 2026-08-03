@@ -13,6 +13,10 @@ extension KanaKanjiConverter {
     // candidates() 経由では発火しない(実効は candidates() 最終段の digitContext ブースト側)。
     static let numericUnitFallbackCandidateBoost = 320
 
+    // 連濁助数詞複合の昇格幅。算用(400)→1300、漢数字(360)→1260 で辞書(1200)を超え、
+    // 追加語彙(2400)/学習語彙(2280)には届かない = ユーザ意図は常に優先される。
+    static let voicedCounterNumericCompoundBoost = 900
+
     static let numericCounterCompoundCandidateBoost = 360
 
     static let sameReadingPureKatakanaPenalty = 128
@@ -438,6 +442,44 @@ extension KanaKanjiConverter {
         for candidate in fallbackCandidates {
             scores[candidate, default: 0] += Self.numericUnitFallbackCandidateBoost
         }
+    }
+
+    // 連濁・促音便形の助数詞読み(ぼん/ぽん/びき/ぴき/ぷん/ぱつ/ぱい)+数詞 の複合を辞書級へ。
+    // 連濁形は数詞に付いた時にしか現れない(単独で ぼん と読む助数詞は無い)ので、同読みの
+    // レア辞書語(さんぼん の 三盆/山本/上鳳)より 3本/三本 を上に置ける。清音形(ほん/ひき)は
+    // にほん→日本 のような一般語と衝突するため対象にしない(算用優先の並びは基礎点差で維持)。
+    func applyVoicedCounterNumericCompoundBoost(
+        for reading: String,
+        candidates: [String],
+        to scores: inout [String: Int]
+    ) {
+        guard !candidates.isEmpty, Self.hasVoicedCounterSuffixReading(reading) else {
+            return
+        }
+        for candidate in candidates {
+            scores[candidate, default: 0] += Self.voicedCounterNumericCompoundBoost
+        }
+    }
+
+    // 読みが「数詞+連濁/促音便形の助数詞」か。清音形も助数詞マップに在ることを条件にして、
+    // 濁点付きの一般語(ぶん=分 等、清音側に助数詞が無い読み)を巻き込まない。
+    static func hasVoicedCounterSuffixReading(_ reading: String) -> Bool {
+        for counterReading in numericCounterSuffixCandidatesByReading.keys
+        where reading.count > counterReading.count && reading.hasSuffix(counterReading) {
+            guard let first = counterReading.first,
+                let devoiced = rendakuDevoicedKanaCharacter[first] else {
+                continue
+            }
+            let devoicedReading = String(devoiced) + counterReading.dropFirst()
+            guard numericCounterSuffixCandidatesByReading[devoicedReading] != nil else {
+                continue
+            }
+            let numberReading = String(reading.dropLast(counterReading.count))
+            if japaneseNumberReadingValue(numberReading) != nil {
+                return true
+            }
+        }
+        return false
     }
 
     func hasLeadingNumberPrefix(in text: String) -> Bool {
