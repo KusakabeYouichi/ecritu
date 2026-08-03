@@ -506,6 +506,8 @@ extension KeyboardRootView {
             return selectedKaomojiCategory.title
         case .symbols:
             return selectedSymbolCategory.frenchName
+        case .kanjiRadical:
+            return "\(selectedRadicalCategory.title)(\(selectedRadicalCategory.reading))"
         }
     }
 }

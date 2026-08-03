@@ -75,6 +75,8 @@ struct KeyboardRootView: View {
     @State var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     @State var selectedEmojiCategory: EmojiCategory = .people
     @State var selectedSymbolCategory: SymbolCategory = .basic
+    @State var selectedRadicalCategory: RadicalPositionCategory = .hen
+    @State var selectedRadicalForm: RadicalForm?
     @State var selectedKaomojiCategoryID = "existing"
     @State var selectedKaomojiReadingPrefix: String? = nil
     @State var selectedKaomojiReading: String? = nil
@@ -621,7 +623,7 @@ struct KeyboardRootView: View {
             center: kanaModeSwitcherTapAction.keyLabel,
             up: kanaModeSwitcherUpFlickAction.keyLabel,
             right: kanaModeSwitcherRightFlickAction.keyLabel,
-            down: "",
+            down: "部",
             left: "",
             usesProfileDependentGuideOrder: false
         )
@@ -633,7 +635,7 @@ struct KeyboardRootView: View {
             center: "🌐",
             up: kanaModeSwitcherUpFlickAction.keyLabel,
             right: kanaModeSwitcherRightFlickAction.keyLabel,
-            down: "",
+            down: "部",
             left: "",
             usesProfileDependentGuideOrder: false
         )
