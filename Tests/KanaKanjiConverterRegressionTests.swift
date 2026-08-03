@@ -6006,6 +6006,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // 変わってきてる: 読み「る」の唯一の候補が ル(rank0/wc4335)で、合成末尾が
+    // 変わってきてル のようなカタカナ混じりになっていた。漢字を含む合成表層は既存の
+    // カタカナ強調判定(表層全体をかな化して読みと比較)の対象外で抜けていたため、
+    // seed でかな識別を先頭にして合成の種を かな に固定(単独の ル は#2で選べる)(2458)
+    func testRegressionRuKanaNotKatakanaInComposition() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "かわってきてる", systemCandidateMode: .surface)
+        for candidate in multi.prefix(4) {
+            XCTAssertFalse(candidate.hasSuffix("ル"), "カタカナのル が残っている: \(multi.prefix(4))")
+        }
+        XCTAssertTrue(multi.contains("変わってきてる"), "multi=\(multi.prefix(4))")
+        // 単独の る はかな先頭、ル は#2
+        XCTAssertEqual(
+            Array(converter.candidates(for: "る", limit: 3, systemCandidateMode: .surface).prefix(2)),
+            ["る", "ル"]
+        )
+    }
+
     // きかんし: 機関誌(wc10093)/機関紙(10121)/機関士(10648)/季刊誌(13053)/気管支(15536)が
     // すべて収穫底値(>=10000)で harvest tier へ降格され、帰還し/期間し 等の合成の下に
     // 沈んで候補に出てこなかった(2156 と同型の逆症状)。seed 登録で降格免除+並び指定、
