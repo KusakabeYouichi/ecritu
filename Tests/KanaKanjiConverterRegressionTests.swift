@@ -6036,6 +6036,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 学習語彙に入れた促音カタカナ語(パレット)も、装飾表記フィルタが最終段で
+    // どの経路からの候補も落とすため「長押し確定しても学習されない」ように見えていた。
+    // 2466 の促音判定修正の学習経路側の防波堤
+    func testRegressionLearnedKatakanaSokuonSurvivesDecorativeFilter() throws {
+        try prepareRealLMDictionary()
+        converter.store.addLearnedEntry(reading: "ぱれっと", candidate: "パレット")
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "ぱれっと", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "パレット", "single=\(single)")
+    }
+
     // りょうてい: 料亭(wc7399)より 竜蹄(馬の美称)/量定 が先に並んでいた。seed で 料亭 を先頭へ
     func testRegressionRyouteiPrefersRyoutei() throws {
         try prepareRealLMDictionary()
