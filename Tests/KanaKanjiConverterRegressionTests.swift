@@ -6021,6 +6021,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let multi = converter.multiClauseCandidates(for: "うまいものがたくさん", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "うまいものがたくさん", "multi=\(multi.prefix(4))")
+        // 提示層のかな退避を防ぐ(false だと実機バーで 上手い が繰り上がる)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "うまいものがたくさん"))
         for junk in ["うまいものが托さん", "うまいものが託さん", "熟睡ものがたくさん"] {
             XCTAssertFalse(multi.contains(junk), "\(junk) が残っている: \(multi.prefix(4))")
         }
