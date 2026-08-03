@@ -6090,6 +6090,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(presented.prefix(2)), ["できれば", "出来れば"], "presented=\(presented)")
     }
 
+    // でさいきどう→で再軌道: 単文節は 再起動 を返すのに連文節が 再+軌道 に割れていた。
+    // 再起動 は LM unigram 6609 を持つが word_cost が収穫底値(11219)のため、レア読みの
+    // unigram タダ乗りを防ぐ床上げに掛かって信用されていなかった。seed 掲載で免除(2470)
+    func testRegressionSaikidouNotSplitInMultiClause() throws {
+        try prepareRealLMDictionary()
+        let de = converter.multiClauseCandidates(for: "でさいきどう", systemCandidateMode: .surface)
+        XCTAssertEqual(de.first, "で再起動", "multi=\(de.prefix(4))")
+        let wo = converter.multiClauseCandidates(for: "をさいきどう", systemCandidateMode: .surface)
+        XCTAssertEqual(wo.first, "を再起動", "multi=\(wo.prefix(4))")
+        let single = converter.candidates(for: "さいきどう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "再起動", "single=\(single)")
+    }
+
     func testRegressionInferredInflectionClassNotAppliedToSystemCandidates() throws {
         try prepareRealLMDictionary()
         let kawatte = converter.candidates(for: "かわって", limit: 6, systemCandidateMode: .surface)
