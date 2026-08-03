@@ -6036,6 +6036,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // できれば: 提示層は 出来れば を かな版の直後へ回す(出来る は使いたくないというユーザ方針)が、
+    // かな識別 できれば に keepKana の根拠が無く除去されるため 出来れば が先頭に残っていた。
+    // 活用形の基底読みが seed でかな先頭に固定された用言(できる)なら活用形もかな正書とみなす(2467)
+    func testRegressionSeedKanaLeadingBaseInflectionKeepsKana() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できれば"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できたら"))
+        let single = converter.candidates(for: "できれば", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(single.contains("できれば"), "single=\(single)")
+        // 提示層(かな版の直後へ漢字版を回す)まで通した並び
+        let presented = SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(single)
+        XCTAssertEqual(Array(presented.prefix(2)), ["できれば", "出来れば"], "presented=\(presented)")
+    }
+
     func testRegressionInferredInflectionClassNotAppliedToSystemCandidates() throws {
         try prepareRealLMDictionary()
         let kawatte = converter.candidates(for: "かわって", limit: 6, systemCandidateMode: .surface)

@@ -901,6 +901,20 @@ final class KanaKanjiConverter {
                 }
             }
         }
+        // 活用形の基底読みが seed でかな先頭に固定された用言(できる/なる 等)なら、その活用形も
+        // かなが正書。できれば は提示層が 出来れば をかな版の下へ回す(demotingDekiKanjiBelowKana)
+        // 一方で、かな識別に根拠が無いと除去してしまい 出来れば が先頭に残っていた(2467)。
+        if let lastCharacter = normalized.last,
+            let rules = Self.deinflectionRulesByReadingLastCharacter[lastCharacter] {
+            for rule in rules where !rule.readingSuffix.isEmpty && normalized.hasSuffix(rule.readingSuffix) {
+                let stem = normalized.dropLast(rule.readingSuffix.count)
+                guard !stem.isEmpty else { continue }
+                let baseReading = String(stem) + rule.baseReadingSuffix
+                if KanaKanjiSeedDictionary.seed[baseReading]?.first == baseReading {
+                    return true
+                }
+            }
+        }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {
