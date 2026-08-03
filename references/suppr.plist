@@ -224,6 +224,11 @@
 	     ゴミ合成の種になる。よん で 霊 を出したい場面は無いので抑制 -->
 	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>
 	<!-- ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 -->
+	<!-- 読み「うまい」のレア語(熟寝/熟睡=よく眠る意の古語、右舞=雅楽、馬井/馬居=姓)。
+	     合成に混ざって 熟睡ものがたくさん のようなジャンクを作る。旨い/美味い/上手い/巧い は温存 -->
+	<dict><key>phrase</key><string>熟寝</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>熟睡</string><key>shortcut</key><string>うまい</string></dict>
+	<dict><key>phrase</key><string>右舞</string><key>shortcut</key><string>うまい</string></dict>
 	<!-- 読み「え」の名前・旧字・レア読み。単独の え としても使わず、え+だ の合成
 	     (江だ/衣だ/穢だ/重だ/慧だ/会だ/枝だ/畫だ)を作る温床になる。畫 は画の旧字で
 	     読み え は正当だが現代入力では不要(ユーザー指摘)。絵/画/餌/柄 等は温存 -->

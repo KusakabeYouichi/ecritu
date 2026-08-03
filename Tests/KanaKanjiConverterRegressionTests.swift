@@ -6006,6 +6006,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // たくさん→託さん/托さん: 五段活用の口語否定縮約(aForm+ん。知らん/やらん)は有用だが、
+    // 五段す だけは aForm=さ のため 託さん/托さん/話さん が敬称「さん」と衝突し、
+    // たくさん の日常入力を邪魔していた。五段す のみ ん系派生を作らない一般対策(2462)。
+    // あわせて読み うまい のレア語(熟寝/熟睡/右舞)を抑制してジャンク合成を除去
+    func testRegressionGodanSuNegativeContractionExcluded() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["うまい": ["熟寝", "熟睡", "右舞"]])
+
+        let takusan = converter.candidates(for: "たくさん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(takusan.prefix(2)), ["たくさん", "沢山"], "takusan=\(takusan)")
+        XCTAssertFalse(takusan.contains("託さん"), "takusan=\(takusan)")
+        XCTAssertFalse(takusan.contains("托さん"), "takusan=\(takusan)")
+
+        let multi = converter.multiClauseCandidates(for: "うまいものがたくさん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "うまいものがたくさん", "multi=\(multi.prefix(4))")
+        for junk in ["うまいものが托さん", "うまいものが託さん", "熟睡ものがたくさん"] {
+            XCTAssertFalse(multi.contains(junk), "\(junk) が残っている: \(multi.prefix(4))")
+        }
+        // 五段す 以外の口語否定縮約は温存(知らん/やらん)
+        XCTAssertTrue(
+            converter.candidates(for: "しらん", limit: 8, systemCandidateMode: .surface).contains("知らん"),
+            "五段ら の ん形は温存"
+        )
+    }
+
     // いつだったんだろう: 〜ったん を丸ごと1語とする名詞(脱炭/韃靼/達陀)がコピュラ過去+
     // 準体助詞の分割(だった+ん)より安く、いつ脱炭だろう が先頭になっていた。直後が
     // だろう/だろ/でしょう のときだけ丸ごと語に減点する文脈条件付きの規則で是正。
