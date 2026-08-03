@@ -70,6 +70,9 @@ final class KanaKanjiStore {
     var genericLatinLexiconEnabledLanguages: Set<String> = []
     // テスト用: bundle 未同梱の環境(unit test)でリポジトリのtxtを直接読ませるディレクトリ
     var genericLatinLexiconDirectoryURLOverride: URL?
+    // 漢字1文字ピッカーの索引(mmap)。テスト用に読み込み元を差し替えられるようにする。
+    var cachedKanjiRadicalIndex: KanjiRadicalFileIndex?
+    var kanjiRadicalIndexDirectoryURLOverride: URL?
     private var cachedSystemCandidateSources: [String: [String: Set<String>]]?
     private var cachedInflectionDictionary: [String: [String: String]]?
     // 読み別の inflection_classes キャッシュ(連文節の辞書形述語判定用)
@@ -706,6 +709,7 @@ final class KanaKanjiStore {
             cachedSupplementalSystemDictionary = nil
             cachedLatinSuggestionEntries = nil
             cachedGenericLatinLexiconIndexByLanguage = [:]
+            cachedKanjiRadicalIndex = nil
             cachedSystemCandidateSources = nil
             cachedInflectionDictionary = nil
             cachedInflectionClassMapsByReading = [:]

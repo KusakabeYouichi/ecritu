@@ -6006,6 +6006,46 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // 漢字1文字ピッカーの索引(mmap+バイナリサーチ)。部首ブロックが部首内画数順で
+    // 切り出せること、区点・読みが引けること、フォント差の判定が効くことを確認(2443)
+    func testKanjiRadicalIndexLookup() throws {
+        let store = KanaKanjiStore(appGroupID: defaultsSuiteName)
+        store.kanjiRadicalIndexDirectoryURLOverride = URL(
+            fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension", isDirectory: true
+        )
+        let index = store.kanjiRadicalIndex()
+        XCTAssertFalse(index.isEmpty, "索引が読めていない")
+
+        // 部首85(水)は 氵 系の字を大量に含む
+        let water = index.entries(radical: 85)
+        XCTAssertGreaterThan(water.count, 300, "water=\(water.count)")
+        XCTAssertTrue(water.contains { $0.character == "漢" }, "漢 が部首85にあるべき")
+        // 部首内画数の昇順
+        let strokes = water.map(\.residualStrokes)
+        XCTAssertEqual(strokes, strokes.sorted(), "部首内画数が昇順でない")
+
+        // 区点と読み(漢 = 区20点33)
+        let kan = try XCTUnwrap(water.first { $0.character == "漢" })
+        XCTAssertEqual(kan.kuten, "20-33", "kuten=\(kan.kuten)")
+        XCTAssertTrue(kan.readings.contains("カン"), "readings=\(kan.readings)")
+        XCTAssertEqual(kan.residualStrokes, 11)
+
+        // 区点の無い字は「—」
+        let noKuten = index.entries(radical: 1).first { $0.character == "丂" }
+        XCTAssertEqual(noKuten?.kuten, "—", "区点なしは — を返す")
+
+        // 範囲外・境界
+        XCTAssertTrue(index.entries(radical: 0).isEmpty)
+        XCTAssertTrue(index.entries(radical: 215).isEmpty)
+        XCTAssertFalse(index.entries(radical: 1).isEmpty)
+        XCTAssertFalse(index.entries(radical: 214).isEmpty)
+
+        // ヒラギノ明朝のグリフ有無(色分けの判定)
+        XCTAssertTrue(KanaKanjiStore.hasMinchoGlyph(for: "漢"))
+        // 东(U+4E1C、簡体字)はヒラギノ明朝に無く、実機では PingFang 等で描かれる=色分け対象
+        XCTAssertFalse(KanaKanjiStore.hasMinchoGlyph(for: "东"), "簡体字は明朝に無い")
+    }
+
     // ことでもなく: かな なく の識別wc10363(収穫底値)が短spanかな床+底値unigram不信
     // (2126)に踏まれ、無く(活用派生7200)に負けていた。ない と同類の頻出かなとして
     // seed 掲載で両ガードを免除(2442)
