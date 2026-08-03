@@ -859,6 +859,24 @@ final class KanaKanjiConverter {
                 }
             }
         }
+        // 補助形容詞 やすい/にくい/づらい(+任意の ので)を剥がし、連用形の基底動詞が
+        // seed かな先頭なら根拠あり(できやすいので→できやすい→でき→できる=seedかな先頭)。
+        // ので の一般再帰は たべるので を巻き込むため、この経路に限定する(2453)。
+        do {
+            var probe = normalized
+            if probe.count > 2, probe.hasSuffix("ので") {
+                probe = String(probe.dropLast(2))
+            }
+            for auxiliary in ["やすい", "にくい", "づらい"]
+            where probe.count > auxiliary.count && probe.hasSuffix(auxiliary) {
+                let renyou = String(probe.dropLast(auxiliary.count))
+                guard renyou.count >= 2 else { continue }
+                for base in [renyou + "る", renyou + "う", renyou + "く"]
+                where KanaKanjiSeedDictionary.seed[base]?.first == base {
+                    return true
+                }
+            }
+        }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {

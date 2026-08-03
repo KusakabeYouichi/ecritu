@@ -6006,6 +6006,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // できやすいので: 辞書rank0が 出来る(wc4362)でかなは rank3。ユーザー方針で「出来る」は
+    // 後ろに回したいので seed でかな先頭に。さらに提示層の退避を防ぐため、補助形容詞
+    // やすい/にくい/づらい(+任意のので)を剥がした基底動詞が seed かな先頭なら
+    // keepKana を成立させる(2453)
+    func testRegressionDekiyasuiKanaLeading() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "できやすいので", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "できやすいので", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できやすいので"))
+        // 単独 できる もかな先頭(出来る は#2温存)
+        let dekiru = converter.candidates(for: "できる", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(dekiru.prefix(2)), ["できる", "出来る"], "dekiru=\(dekiru)")
+        // ので の一般再帰は入れていない(たべるので は漢字先頭のまま)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "たべるので"))
+    }
+
     // えだ: 辞書に 枝(wc4351/rank0)があるのに、1文字読み え の合成15件が全部その前に
     // 並んでいた。seed で 枝 を先頭へ。さらに読み え の名前・旧字・レア読み
     // (江/衣/枝/穢/畫/重/慧/会)は単独でも使わず合成の温床なので抑制。コストでは
