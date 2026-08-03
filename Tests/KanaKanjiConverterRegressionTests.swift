@@ -3039,7 +3039,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(node.first, "気がしたので", "multi=\(node)")
         // 気が を丸ごと curated にしていないことの防波堤: 着替え/気軽 の分断が起きない
         let kigae = converter.multiClauseCandidates(for: "きがえをもって", systemCandidateMode: .surface)
-        XCTAssertEqual(kigae.first, "着替えをもって", "multi=\(kigae)")
+        // 本旨は 気が の curated が 着替え を分断しないこと。もって の表記は かな/持って いずれも
+        // 正当なので先頭語だけを見る(かな もって の先頭化は 誤推論基底 もう 由来だった。2465)
+        XCTAssertEqual(kigae.first?.hasPrefix("着替え"), true, "multi=\(kigae)")
         let kigaru = converter.multiClauseCandidates(for: "きがるにどうぞ", systemCandidateMode: .surface)
         XCTAssertEqual(kigaru.first, "気軽にどうぞ", "multi=\(kigaru)")
     }
@@ -5230,8 +5232,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.invalidateCandidateCache()
         let shitte = converter.candidates(for: "しって", limit: 8, systemCandidateMode: .surface)
         XCTAssertFalse(shitte.contains("報って"), "single=\(shitte)")
-        // 先頭のかな識別 しって は提示層で末尾チップ化されるため、変換としては 知って が先頭
-        XCTAssertEqual(Array(shitte.prefix(2)), ["しって", "知って"], "single=\(shitte)")
+        // かな識別 しって の先頭化は誤推論基底 しつ(かな。読み しつ に活用クラス行が無いのに
+        // 五段つと推論)由来だったため、システム候補への推論停止(2465)で 知って が先頭になった。
+        // かな しって は次点に残る(提示層では末尾チップ化される)
+        XCTAssertEqual(Array(shitte.prefix(2)), ["知って", "しって"], "single=\(shitte)")
         let janai = converter.multiClauseCandidates(for: "じゃないから", systemCandidateMode: .surface)
         XCTAssertEqual(janai.first, "じゃないから", "multi=\(janai.prefix(4))")
         XCTAssertFalse(janai.prefix(3).contains("じゃない空"), "multi=\(janai.prefix(3))")
@@ -6013,6 +6017,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // いやで: エンジンは {イヤで, いやで, 嫌で, ...} と2位にかなを返していたが、keepKana が
     // 不成立で提示層がかな識別を候補から落としていた(実機は イヤで/嫌で/否で/厭で)。
     // かな正書の形容動詞語幹(いや/むら)+活用語尾 を keepKana の根拠に加える(2464)
+    // かわってきてる→河ってきてる: 辞書の交ぜ書き名詞「河う」(鳥のカワウ=河鵜。鵜が常用外の
+    // ための交ぜ書きエントリ)を、読み かわう に活用クラス行が無いことから五段う動詞と推論して
+    // 河って/河ってきて を生成し、スパン全体の 変わってきてる を逆転していた。システム辞書候補への
+    // クラス推論を止めた(音の借用による誤活用の一般対策。2465)
+    func testRegressionInferredInflectionClassNotAppliedToSystemCandidates() throws {
+        try prepareRealLMDictionary()
+        let kawatte = converter.candidates(for: "かわって", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kawatte.first, "変わって", "kawatte=\(kawatte)")
+        XCTAssertFalse(kawatte.contains("河って"), "kawatte=\(kawatte)")
+        let multi = converter.multiClauseCandidates(for: "かわってきてる", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "変わってきてる", "multi=\(multi.prefix(4))")
+    }
+
     func testRegressionNaAdjectiveKanaOrthographyInflection() throws {
         try prepareRealLMDictionary()
         let iyade = converter.candidates(for: "いやで", limit: 8, systemCandidateMode: .surface)

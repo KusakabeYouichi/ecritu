@@ -373,8 +373,13 @@ extension KanaKanjiConverter {
             return inflectionClass
         }
 
-        // Keep inference only as fallback for user dictionary entries.
-        guard !hasSystemMetadata || userCandidateSet.contains(candidate) else {
+        // クラス推論はユーザ追加/追加語彙の救済用に留める。システム辞書候補に推論を許すと
+        // 「その読みの用言が実在しない」読みで誤活用が生まれる — かわう(カワウ/河鵜/河う)の
+        // 河う を五段う動詞と推論して 河って/河ってきて を作り、変わってきてる を逆転していた
+        // (音の借用による誤活用の温床)。inflection_classes テーブルを持つ辞書では、読みに行が
+        // 無いこと自体が「この読みの用言は無い」証拠なので推論しない(2465)。
+        _ = hasSystemMetadata
+        guard userCandidateSet.contains(candidate) || !store.hasSystemInflectionMetadataTable else {
             return nil
         }
 

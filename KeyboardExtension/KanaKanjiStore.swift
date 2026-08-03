@@ -296,6 +296,16 @@ final class KanaKanjiStore {
         )
     }
 
+    // inflection_classes(活用クラス表)自体を持っているか。読み単位の有無ではない点が
+    // systemInflectionMetadata との違いで、「表はあるのにこの読みには行が無い」=用言ではない、
+    // という判断に使う(クラス推論の暴発防止)。
+    var hasSystemInflectionMetadataTable: Bool {
+        if let sqliteIndex = sqliteIndexIfAvailable() {
+            return sqliteIndex.hasInflectionMetadata
+        }
+        return !loadInflectionDictionary().isEmpty
+    }
+
     func systemInflectionMetadata(for reading: String) -> (classMap: [String: String], hasMetadata: Bool) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
 
