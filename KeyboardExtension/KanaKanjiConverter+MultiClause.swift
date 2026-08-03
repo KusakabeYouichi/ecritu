@@ -294,6 +294,9 @@ extension KanaKanjiConverter {
         "んだよ", "んだね", "んだよね", "んだな",
         "んですよ", "んですね", "んですよね",
         "んだもん", "んだもの", "んだっけ",
+        // んだろう/んだろ(のだろう の縮約)。だったん(達陀/脱炭/韃靼)の丸ごと語に
+        // 区切りを奪われるのを防ぐ(いつだったんだろう→いつ脱炭だろう 対策。2460)
+        "んだろう", "んだろ",
         // でしょ(でしょう縮約)。で+初/諸 等の単漢字分割に勝たせる(単文節は dict rank0 かな が
         // 受け皿にあるため、エコー抑制で multi=[] になっても候補は全滅しない)
         "でしょ",
@@ -419,6 +422,11 @@ extension KanaKanjiConverter {
     // 文頭限定なので衝突しない。値は seed 順ボーナス(とき800)を上回る必要がある(2459)
     static let multiClauseSubstantiveNounReadings: Set<String> = ["とき", "こと"]
     static let multiClauseSubstantiveNounKanaPenalty = 1500
+    // 〜ったん を丸ごと1語とする名詞(脱炭/韃靼/達陀 等)は、直後が だろう/だろ/でしょう の
+    // ときはコピュラ過去+準体助詞の分割(だった+ん)に道を譲る。「いつだったんだろう」が
+    // いつ脱炭だろう に化けるのを防ぐ。文脈条件があるので 一旦(いったん)等の正当な語は無傷。
+    // 脱炭 の読み だったん 自体 Sudachi の疑わしい収穫(通常は だつたん)(2461)
+    static let multiClauseTanContractionSplitPenalty = 8000
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
@@ -1639,6 +1647,20 @@ extension KanaKanjiConverter {
                         ? Self.multiClausePoliteSupplementDemotion
                         : 0)
                 let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
+                // 〜ったん の丸ごと語 vs コピュラ過去+準体助詞(定数コメント参照)
+                let nodeTanContractionPenalty: Int = {
+                    guard node.reading.hasSuffix("ったん"),
+                        node.surface != node.reading,
+                        !node.isInflectionDerived,
+                        node.end < n else {
+                        return 0
+                    }
+                    let rest = String(chars[node.end...])
+                    for follower in ["だろう", "だろ", "でしょう", "でしょ"] where rest.hasPrefix(follower) {
+                        return Self.multiClauseTanContractionSplitPenalty
+                    }
+                    return 0
+                }()
                 if node.start == 0 {
                     // 文頭の形式名詞読みは実質名詞(定数コメント参照)。かな側に減点して漢字を優先
                     // こと は直後に格助詞・係助詞が続く形(ことがある/ことでもなく/ことになる)が
@@ -1675,7 +1697,7 @@ extension KanaKanjiConverter {
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
                         scriptVariantPenalty: nodeScriptVariantPenalty,
                         isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
-                    ) - preferredInflectionBonus + substantivePenalty
+                    ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
                     if cost < best[idx] {
                         best[idx] = cost
                         backPointer[idx] = -1
@@ -1706,7 +1728,7 @@ extension KanaKanjiConverter {
                         scriptVariantPenalty: nodeScriptVariantPenalty,
                         prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
                         isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
-                    ) - preferredInflectionBonus
+                    ) - preferredInflectionBonus + nodeTanContractionPenalty
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
                     if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,

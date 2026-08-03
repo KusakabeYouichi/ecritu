@@ -6006,11 +6006,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
-    func testTEMPDEBUGItsudattan() throws {
+    // いつだったんだろう: 〜ったん を丸ごと1語とする名詞(脱炭/韃靼/達陀)がコピュラ過去+
+    // 準体助詞の分割(だった+ん)より安く、いつ脱炭だろう が先頭になっていた。直後が
+    // だろう/だろ/でしょう のときだけ丸ごと語に減点する文脈条件付きの規則で是正。
+    // 一旦(いったん)等の正当な語や、だったんそば(韃靼そば)は文脈条件外なので無傷。
+    // なお 陀 に「たん」の読みは無く、辞書にあるのは達陀(だったん)という語全体(2461)
+    func testRegressionTanContractionPrefersCopulaSplit() throws {
         try prepareRealLMDictionary()
-        for reading in ["いつだったんだろう", "いつだったんだろ", "だったんそば", "なんだろう"] {
-            print("TEMPDEBUG \(reading):", Array(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).prefix(4)))
+        for reading in ["いつだったんだろう", "いつだったんだろ"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, reading, "\(reading)=\(multi.prefix(3))")
         }
+        // 文脈条件外は無傷(一旦停止/韃靼そば系/なんだろう)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "いったんていし", systemCandidateMode: .surface).first,
+            "一旦停止"
+        )
+        XCTAssertTrue(
+            converter.multiClauseCandidates(for: "だったんそば", systemCandidateMode: .surface)
+                .contains { $0.hasPrefix("韃靼") || $0.hasPrefix("脱炭") },
+            "だったん の丸ごと語は文脈条件外では温存"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "なんだろう", systemCandidateMode: .surface).first,
+            "何だろう"
+        )
     }
 
     // とき/こと の使い分け(ユーザー方針): 「時間という概念そのもの」「事柄」を指す実質名詞は
