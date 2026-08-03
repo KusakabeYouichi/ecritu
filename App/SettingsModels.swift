@@ -80,6 +80,7 @@ enum SettingsKeys {
     static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
     // カタカナ強調表記/交ぜ書きの扱い(suppress/demote/normal)。KeyboardExtension 側と同一キー
     static let katakanaEmphasisCandidateMode = "katakanaEmphasisCandidateMode"
+    static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
     static let mazegakiCandidateMode = "mazegakiCandidateMode"
@@ -766,6 +767,23 @@ enum ScriptVariantModeOption: String, CaseIterable, Identifiable {
         case .suppress: return "抑制"
         case .demote: return "リスト後方"
         case .normal: return "同列に使う"
+        }
+    }
+}
+
+
+// 部首の画数の数え方(漢字1文字ピッカーの部首一覧の並びと画数区切りに効く)。
+// 辞書によって流儀が分かれる字形(艹 3/4、辶 3/4、礻 4/5、飠 7/8)の扱いを決める。
+enum RadicalStrokeCountStyleOption: String, CaseIterable, Identifiable {
+    case modern
+    case traditional
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .modern: return "新字体で数える"
+        case .traditional: return "旧字体で数える"
         }
     }
 }

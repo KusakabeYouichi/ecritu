@@ -31,6 +31,7 @@ struct KeyboardRootView: View {
     let keyboardBackgroundThemeRawValue: String
     let basicSymbolOrderRawValue: String
     let temperatureUnitRawValue: String
+    let radicalStrokeCountStyleRawValue: String
     let spaceToastTrigger: Int
     let returnKeySystemImageName: String?
     let isReturnKeyEnabled: Bool
@@ -443,6 +444,10 @@ struct KeyboardRootView: View {
 
     var temperatureUnit: TemperatureUnitPreference {
         TemperatureUnitPreference(rawValue: temperatureUnitRawValue) ?? .celsius
+    }
+
+    var radicalStrokeCountStyle: RadicalStrokeCountStyle {
+        RadicalStrokeCountStyle(rawValue: radicalStrokeCountStyleRawValue) ?? .modern
     }
 
     var currentFlickGuideDisplayMode: FlickGuideDisplayMode {
@@ -1112,6 +1117,7 @@ struct KeyboardRootView: View {
         keyboardBackgroundThemeRawValue: "bleu",
         basicSymbolOrderRawValue: "ascii",
         temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
+        radicalStrokeCountStyleRawValue: RadicalStrokeCountStyle.modern.rawValue,
         spaceToastTrigger: 1,
         returnKeySystemImageName: nil,
         isReturnKeyEnabled: true,

@@ -15,6 +15,7 @@ extension KeyboardRootView {
             fourRowAlignedClusterHeight: fourRowAlignedClusterHeight,
             keyRepeatInitialDelay: keyRepeatInitialDelay,
             keyRepeatInterval: keyRepeatInterval,
+            strokeCountStyle: radicalStrokeCountStyle,
             onLookupEntries: onLookupRadicalEntries,
             onCommitCharacter: { character in
                 // タップ=確定してかなモードへ戻る
@@ -237,13 +238,14 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let fourRowAlignedClusterHeight: CGFloat
     let keyRepeatInitialDelay: TimeInterval
     let keyRepeatInterval: TimeInterval
+    let strokeCountStyle: RadicalStrokeCountStyle
     let onLookupEntries: (Int) -> [KanjiRadicalFileIndex.Entry]
     let onCommitCharacter: (String) -> Void
     let onSwitchToKana: () -> Void
     let onDeleteBackward: () -> Void
 
     private var forms: [RadicalForm] {
-        KanjiRadicalCatalog.forms(in: selectedCategory)
+        KanjiRadicalCatalog.forms(in: selectedCategory, style: strokeCountStyle)
     }
 
     private var radicalColumns: [GridItem] {
@@ -264,9 +266,10 @@ struct KeyboardRootKanjiRadicalSectionView: View {
         var items: [(id: String, kind: RadicalListItem)] = []
         var lastStrokes = -1
         for form in forms {
-            if form.strokes != lastStrokes {
-                items.append((id: "marker-\(form.strokes)", kind: .strokeMarker(form.strokes)))
-                lastStrokes = form.strokes
+            let strokes = form.strokes(style: strokeCountStyle)
+            if strokes != lastStrokes {
+                items.append((id: "marker-\(strokes)", kind: .strokeMarker(strokes)))
+                lastStrokes = strokes
             }
             items.append((id: form.id, kind: .form(form)))
         }

@@ -6055,14 +6055,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertTrue(1...17 ~= form.strokes, "\(form.form) の画数=\(form.strokes)")
         }
 
-        // カテゴリー内は画数順(同画数は部首番号順)= 画数区切りを挟める並び
-        for category in RadicalPositionCategory.allCases {
-            let ordered = KanjiRadicalCatalog.forms(in: category)
-            let keys = ordered.map { [$0.strokes, $0.radical] }
-            XCTAssertEqual(keys, keys.sorted { lhs, rhs in
-                lhs[0] != rhs[0] ? lhs[0] < rhs[0] : lhs[1] < rhs[1]
-            }, "\(category.title) の並びが画数順でない")
+        // カテゴリー内は画数順(同画数は部首番号順)= 画数区切りを挟める並び。両流儀で成立する
+        for style in RadicalStrokeCountStyle.allCases {
+            for category in RadicalPositionCategory.allCases {
+                let ordered = KanjiRadicalCatalog.forms(in: category, style: style)
+                let keys = ordered.map { [$0.strokes(style: style), $0.radical] }
+                XCTAssertEqual(keys, keys.sorted { lhs, rhs in
+                    lhs[0] != rhs[0] ? lhs[0] < rhs[0] : lhs[1] < rhs[1]
+                }, "\(category.title)/\(style.rawValue) の並びが画数順でない")
+            }
         }
+
+        // 画数の流儀切替(設定)。艹=3/4、辶=3/4、礻=4/5、飠=7/8 が変わり、他は不変
+        let kusa = try XCTUnwrap(forms.first { $0.form == "艹" })
+        XCTAssertEqual(kusa.strokes(style: .modern), 3)
+        XCTAssertEqual(kusa.strokes(style: .traditional), 4)
+        let shinnyou = try XCTUnwrap(forms.first { $0.form == "辶" })
+        XCTAssertEqual(shinnyou.strokes(style: .modern), 3)
+        XCTAssertEqual(shinnyou.strokes(style: .traditional), 4)
+        let shimesu = try XCTUnwrap(forms.first { $0.form == "礻" })
+        XCTAssertEqual(shimesu.strokes(style: .modern), 4)
+        XCTAssertEqual(shimesu.strokes(style: .traditional), 5)
+        // 流儀を持たない字形はどちらでも同じ
+        XCTAssertEqual(
+            water.first { $0.form == "氵" }?.strokes(style: .traditional),
+            water.first { $0.form == "氵" }?.strokes(style: .modern)
+        )
     }
 
     // 漢字1文字ピッカーの索引(mmap+バイナリサーチ)。部首ブロックが部首内画数順で
@@ -6885,6 +6903,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             keyboardBackgroundThemeRawValue: "sakura",
             basicSymbolOrderRawValue: "ascii",
             temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
+            radicalStrokeCountStyleRawValue: RadicalStrokeCountStyle.modern.rawValue,
             spaceToastTrigger: 0,
             returnKeySystemImageName: nil,
             isReturnKeyEnabled: true,

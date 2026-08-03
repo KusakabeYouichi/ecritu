@@ -90,16 +90,36 @@ struct RadicalPositionIcon: Shape {
     }
 }
 
+// 部首の画数の数え方。辞書によって流儀が分かれる字形(艹 3/4、辶 3/4、礻 4/5、飠 7/8)の
+// 扱いをコンテナーアプリの設定で切り替える(2448)。
+enum RadicalStrokeCountStyle: String, CaseIterable, Identifiable {
+    case modern
+    case traditional
+
+    var id: String { rawValue }
+}
+
 struct RadicalForm: Identifiable, Equatable {
     let form: String
     let radical: Int
-    // その字形自体の画数(氵=3画/水=4画)。部首一覧の画数区切りに使う
+    // その字形自体の画数(氵=3画/水=4画)。部首一覧の画数区切りに使う。新字体で数えた値
     let strokes: Int
+    // 旧字体(伝統)で数えた画数。流儀が分かれる字形だけ持つ(無ければ strokes と同じ)
+    let strokesTraditional: Int?
     let name: String
     let categories: [String]
     let examples: String
 
     var id: String { "\(radical)-\(form)" }
+
+    func strokes(style: RadicalStrokeCountStyle) -> Int {
+        switch style {
+        case .modern:
+            return strokes
+        case .traditional:
+            return strokesTraditional ?? strokes
+        }
+    }
 }
 
 enum KanjiRadicalCatalog {
@@ -131,14 +151,17 @@ enum KanjiRadicalCatalog {
     }
 
     // カテゴリー内は画数順(同画数は部首番号順)。部首を探すときの手掛かりが画数のため、
-    // 一覧もその順に並べ、画数の区切りを挟めるようにする(2447)。
-    static func forms(in category: RadicalPositionCategory) -> [RadicalForm] {
+    // 一覧もその順に並べ、画数の区切りを挟めるようにする(2447)。画数の流儀は設定で切替(2448)。
+    static func forms(
+        in category: RadicalPositionCategory,
+        style: RadicalStrokeCountStyle = .modern
+    ) -> [RadicalForm] {
         allForms
             .filter { $0.categories.contains(category.rawValue) }
             .sorted { lhs, rhs in
-                lhs.strokes != rhs.strokes
-                    ? lhs.strokes < rhs.strokes
-                    : lhs.radical < rhs.radical
+                let left = lhs.strokes(style: style)
+                let right = rhs.strokes(style: style)
+                return left != right ? left < right : lhs.radical < rhs.radical
             }
     }
 
@@ -162,6 +185,7 @@ enum KanjiRadicalCatalog {
                 form: form,
                 radical: radical,
                 strokes: strokes,
+                strokesTraditional: entry["strokesTraditional"] as? Int,
                 name: name,
                 categories: categories,
                 examples: entry["examples"] as? String ?? ""
