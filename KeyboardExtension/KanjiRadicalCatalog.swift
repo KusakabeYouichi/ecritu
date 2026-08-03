@@ -93,6 +93,8 @@ struct RadicalPositionIcon: Shape {
 struct RadicalForm: Identifiable, Equatable {
     let form: String
     let radical: Int
+    // その字形自体の画数(氵=3画/水=4画)。部首一覧の画数区切りに使う
+    let strokes: Int
     let name: String
     let categories: [String]
     let examples: String
@@ -128,8 +130,16 @@ enum KanjiRadicalCatalog {
         return loaded
     }
 
+    // カテゴリー内は画数順(同画数は部首番号順)。部首を探すときの手掛かりが画数のため、
+    // 一覧もその順に並べ、画数の区切りを挟めるようにする(2447)。
     static func forms(in category: RadicalPositionCategory) -> [RadicalForm] {
-        allForms.filter { $0.categories.contains(category.rawValue) }
+        allForms
+            .filter { $0.categories.contains(category.rawValue) }
+            .sorted { lhs, rhs in
+                lhs.strokes != rhs.strokes
+                    ? lhs.strokes < rhs.strokes
+                    : lhs.radical < rhs.radical
+            }
     }
 
     private static func load() -> [RadicalForm] {
@@ -143,6 +153,7 @@ enum KanjiRadicalCatalog {
         return raw.compactMap { entry in
             guard let form = entry["form"] as? String,
                 let radical = entry["radical"] as? Int,
+                let strokes = entry["strokes"] as? Int,
                 let name = entry["name"] as? String,
                 let categories = entry["categories"] as? [String] else {
                 return nil
@@ -150,6 +161,7 @@ enum KanjiRadicalCatalog {
             return RadicalForm(
                 form: form,
                 radical: radical,
+                strokes: strokes,
                 name: name,
                 categories: categories,
                 examples: entry["examples"] as? String ?? ""

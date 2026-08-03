@@ -6,7 +6,27 @@ import SwiftUI
 extension KeyboardRootView {
     var topHeaderView: some View {
         Group {
-            if inputMode == .emoji {
+            if inputMode == .emoji,
+                emojiInputSubmode == .kanjiRadical,
+                selectedRadicalForm != nil {
+                // 部首ピッカーの字グリッド中はヘッダー自体を戻るボタンにする
+                // (行内にもう1段パンくずを置くと二重になるため。2447)
+                Button {
+                    selectedRadicalForm = nil
+                } label: {
+                    Text("◀ \(emojiHeaderTitle)")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .foregroundStyle(Color.accentColor)
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.8)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        .padding(.leading, 2)
+                        .padding(.top, emojiHeaderTopPadding)
+                        .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("部首一覧へ戻る")
+            } else if inputMode == .emoji {
                 Text(emojiHeaderTitle)
                     .font(.system(size: 14, weight: .semibold, design: .rounded))
                     .foregroundStyle(keyLabelColor.opacity(0.82))

@@ -8,12 +8,16 @@
      ・1つの字形が複数カテゴリーに属してよい(日=偏・冠・脚 等)。
      ・位置を持たない部首(一/二/乙/龍 等)は「独立」。
      ・radical は康熙部首番号(1〜214)。Unihan kRSKangxi と突き合わせて字を集める。
+     ・strokes はその字形自体の画数(部首一覧の画数区切りに使う)。位置別字形は親部首と
+       画数が違う(氵=3画/水=4画、艹=3画/艸=6画)ため字形ごとに持つ。
      ※語彙plist(sacoche/misc 等)とはスキーマが別。build_second_vocab_from_references.py の対象外。 -->
 <array>
 	<dict>
 		<key>form</key>
 		<string>一</string>
 		<key>radical</key>
+		<integer>1</integer>
+		<key>strokes</key>
 		<integer>1</integer>
 		<key>name</key>
 		<string>いち</string>
@@ -27,6 +31,8 @@
 		<string>丨</string>
 		<key>radical</key>
 		<integer>2</integer>
+		<key>strokes</key>
+		<integer>1</integer>
 		<key>name</key>
 		<string>たてぼう</string>
 		<key>categories</key>
@@ -39,6 +45,8 @@
 		<string>丶</string>
 		<key>radical</key>
 		<integer>3</integer>
+		<key>strokes</key>
+		<integer>1</integer>
 		<key>name</key>
 		<string>てん</string>
 		<key>categories</key>
@@ -51,6 +59,8 @@
 		<string>丿</string>
 		<key>radical</key>
 		<integer>4</integer>
+		<key>strokes</key>
+		<integer>1</integer>
 		<key>name</key>
 		<string>の</string>
 		<key>categories</key>
@@ -63,6 +73,8 @@
 		<string>乙</string>
 		<key>radical</key>
 		<integer>5</integer>
+		<key>strokes</key>
+		<integer>1</integer>
 		<key>name</key>
 		<string>おつ</string>
 		<key>categories</key>
@@ -75,6 +87,8 @@
 		<string>乚</string>
 		<key>radical</key>
 		<integer>5</integer>
+		<key>strokes</key>
+		<integer>1</integer>
 		<key>name</key>
 		<string>おつにょう</string>
 		<key>categories</key>
@@ -89,6 +103,8 @@
 		<string>亅</string>
 		<key>radical</key>
 		<integer>6</integer>
+		<key>strokes</key>
+		<integer>1</integer>
 		<key>name</key>
 		<string>はねぼう</string>
 		<key>categories</key>
@@ -101,6 +117,8 @@
 		<string>二</string>
 		<key>radical</key>
 		<integer>7</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>に</string>
 		<key>categories</key>
@@ -113,6 +131,8 @@
 		<string>亠</string>
 		<key>radical</key>
 		<integer>8</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>なべぶた</string>
 		<key>categories</key>
@@ -127,6 +147,8 @@
 		<string>人</string>
 		<key>radical</key>
 		<integer>9</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>ひと</string>
 		<key>categories</key>
@@ -139,6 +161,8 @@
 		<string>亻</string>
 		<key>radical</key>
 		<integer>9</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>にんべん</string>
 		<key>categories</key>
@@ -153,6 +177,8 @@
 		<string>𠆢</string>
 		<key>radical</key>
 		<integer>9</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>ひとやね</string>
 		<key>categories</key>
@@ -167,6 +193,8 @@
 		<string>儿</string>
 		<key>radical</key>
 		<integer>10</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>にんにょう</string>
 		<key>categories</key>
@@ -181,6 +209,8 @@
 		<string>入</string>
 		<key>radical</key>
 		<integer>11</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>いる</string>
 		<key>categories</key>
@@ -193,6 +223,8 @@
 		<string>八</string>
 		<key>radical</key>
 		<integer>12</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>はち</string>
 		<key>categories</key>
@@ -208,6 +240,8 @@
 		<string>冂</string>
 		<key>radical</key>
 		<integer>13</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>まきがまえ</string>
 		<key>categories</key>
@@ -222,6 +256,8 @@
 		<string>冖</string>
 		<key>radical</key>
 		<integer>14</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>わかんむり</string>
 		<key>categories</key>
@@ -236,6 +272,8 @@
 		<string>冫</string>
 		<key>radical</key>
 		<integer>15</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>にすい</string>
 		<key>categories</key>
@@ -250,6 +288,8 @@
 		<string>几</string>
 		<key>radical</key>
 		<integer>16</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>つくえ</string>
 		<key>categories</key>
@@ -265,6 +305,8 @@
 		<string>凵</string>
 		<key>radical</key>
 		<integer>17</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>うけばこ</string>
 		<key>categories</key>
@@ -279,6 +321,8 @@
 		<string>刀</string>
 		<key>radical</key>
 		<integer>18</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>かたな</string>
 		<key>categories</key>
@@ -294,6 +338,8 @@
 		<string>刂</string>
 		<key>radical</key>
 		<integer>18</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>りっとう</string>
 		<key>categories</key>
@@ -308,6 +354,8 @@
 		<string>力</string>
 		<key>radical</key>
 		<integer>19</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>ちから</string>
 		<key>categories</key>
@@ -323,6 +371,8 @@
 		<string>勹</string>
 		<key>radical</key>
 		<integer>20</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>つつみがまえ</string>
 		<key>categories</key>
@@ -337,6 +387,8 @@
 		<string>匕</string>
 		<key>radical</key>
 		<integer>21</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>ひ</string>
 		<key>categories</key>
@@ -352,6 +404,8 @@
 		<string>匚</string>
 		<key>radical</key>
 		<integer>22</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>はこがまえ</string>
 		<key>categories</key>
@@ -366,6 +420,8 @@
 		<string>匸</string>
 		<key>radical</key>
 		<integer>23</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>かくしがまえ</string>
 		<key>categories</key>
@@ -380,6 +436,8 @@
 		<string>十</string>
 		<key>radical</key>
 		<integer>24</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>じゅう</string>
 		<key>categories</key>
@@ -395,6 +453,8 @@
 		<string>卜</string>
 		<key>radical</key>
 		<integer>25</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>ぼく</string>
 		<key>categories</key>
@@ -410,6 +470,8 @@
 		<string>卩</string>
 		<key>radical</key>
 		<integer>26</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>ふしづくり</string>
 		<key>categories</key>
@@ -424,6 +486,8 @@
 		<string>厂</string>
 		<key>radical</key>
 		<integer>27</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>がんだれ</string>
 		<key>categories</key>
@@ -438,6 +502,8 @@
 		<string>厶</string>
 		<key>radical</key>
 		<integer>28</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>わたくし</string>
 		<key>categories</key>
@@ -452,6 +518,8 @@
 		<string>又</string>
 		<key>radical</key>
 		<integer>29</integer>
+		<key>strokes</key>
+		<integer>2</integer>
 		<key>name</key>
 		<string>また</string>
 		<key>categories</key>
@@ -467,6 +535,8 @@
 		<string>口</string>
 		<key>radical</key>
 		<integer>30</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>くち</string>
 		<key>categories</key>
@@ -482,6 +552,8 @@
 		<string>囗</string>
 		<key>radical</key>
 		<integer>31</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>くにがまえ</string>
 		<key>categories</key>
@@ -496,6 +568,8 @@
 		<string>土</string>
 		<key>radical</key>
 		<integer>32</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>つち</string>
 		<key>categories</key>
@@ -511,6 +585,8 @@
 		<string>士</string>
 		<key>radical</key>
 		<integer>33</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>さむらい</string>
 		<key>categories</key>
@@ -525,6 +601,8 @@
 		<string>夂</string>
 		<key>radical</key>
 		<integer>34</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>ふゆがしら</string>
 		<key>categories</key>
@@ -539,6 +617,8 @@
 		<string>夊</string>
 		<key>radical</key>
 		<integer>35</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>すいにょう</string>
 		<key>categories</key>
@@ -553,6 +633,8 @@
 		<string>夕</string>
 		<key>radical</key>
 		<integer>36</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>ゆうべ</string>
 		<key>categories</key>
@@ -568,6 +650,8 @@
 		<string>大</string>
 		<key>radical</key>
 		<integer>37</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>だい</string>
 		<key>categories</key>
@@ -583,6 +667,8 @@
 		<string>女</string>
 		<key>radical</key>
 		<integer>38</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>おんな</string>
 		<key>categories</key>
@@ -598,6 +684,8 @@
 		<string>子</string>
 		<key>radical</key>
 		<integer>39</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>こ</string>
 		<key>categories</key>
@@ -613,6 +701,8 @@
 		<string>宀</string>
 		<key>radical</key>
 		<integer>40</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>うかんむり</string>
 		<key>categories</key>
@@ -627,6 +717,8 @@
 		<string>寸</string>
 		<key>radical</key>
 		<integer>41</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>すん</string>
 		<key>categories</key>
@@ -642,6 +734,8 @@
 		<string>小</string>
 		<key>radical</key>
 		<integer>42</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>しょう</string>
 		<key>categories</key>
@@ -656,6 +750,8 @@
 		<string>⺌</string>
 		<key>radical</key>
 		<integer>42</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>しょうがしら</string>
 		<key>categories</key>
@@ -670,6 +766,8 @@
 		<string>尢</string>
 		<key>radical</key>
 		<integer>43</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>だいのまげあし</string>
 		<key>categories</key>
@@ -684,6 +782,8 @@
 		<string>尸</string>
 		<key>radical</key>
 		<integer>44</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>しかばね</string>
 		<key>categories</key>
@@ -698,6 +798,8 @@
 		<string>屮</string>
 		<key>radical</key>
 		<integer>45</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>てつ</string>
 		<key>categories</key>
@@ -710,6 +812,8 @@
 		<string>山</string>
 		<key>radical</key>
 		<integer>46</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>やま</string>
 		<key>categories</key>
@@ -725,6 +829,8 @@
 		<string>巛</string>
 		<key>radical</key>
 		<integer>47</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>まがりがわ</string>
 		<key>categories</key>
@@ -739,6 +845,8 @@
 		<string>川</string>
 		<key>radical</key>
 		<integer>47</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>かわ</string>
 		<key>categories</key>
@@ -751,6 +859,8 @@
 		<string>工</string>
 		<key>radical</key>
 		<integer>48</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>たくみ</string>
 		<key>categories</key>
@@ -766,6 +876,8 @@
 		<string>己</string>
 		<key>radical</key>
 		<integer>49</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>おのれ</string>
 		<key>categories</key>
@@ -780,6 +892,8 @@
 		<string>巾</string>
 		<key>radical</key>
 		<integer>50</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>はば</string>
 		<key>categories</key>
@@ -795,6 +909,8 @@
 		<string>干</string>
 		<key>radical</key>
 		<integer>51</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>かん</string>
 		<key>categories</key>
@@ -809,6 +925,8 @@
 		<string>幺</string>
 		<key>radical</key>
 		<integer>52</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>いとがしら</string>
 		<key>categories</key>
@@ -824,6 +942,8 @@
 		<string>广</string>
 		<key>radical</key>
 		<integer>53</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>まだれ</string>
 		<key>categories</key>
@@ -838,6 +958,8 @@
 		<string>廴</string>
 		<key>radical</key>
 		<integer>54</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>えんにょう</string>
 		<key>categories</key>
@@ -852,6 +974,8 @@
 		<string>廾</string>
 		<key>radical</key>
 		<integer>55</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>にじゅうあし</string>
 		<key>categories</key>
@@ -866,6 +990,8 @@
 		<string>弋</string>
 		<key>radical</key>
 		<integer>56</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>しきがまえ</string>
 		<key>categories</key>
@@ -880,6 +1006,8 @@
 		<string>弓</string>
 		<key>radical</key>
 		<integer>57</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>ゆみ</string>
 		<key>categories</key>
@@ -894,6 +1022,8 @@
 		<string>彐</string>
 		<key>radical</key>
 		<integer>58</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>けいがしら</string>
 		<key>categories</key>
@@ -909,6 +1039,8 @@
 		<string>彡</string>
 		<key>radical</key>
 		<integer>59</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>さんづくり</string>
 		<key>categories</key>
@@ -923,6 +1055,8 @@
 		<string>彳</string>
 		<key>radical</key>
 		<integer>60</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>ぎょうにんべん</string>
 		<key>categories</key>
@@ -937,6 +1071,8 @@
 		<string>心</string>
 		<key>radical</key>
 		<integer>61</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>こころ</string>
 		<key>categories</key>
@@ -951,6 +1087,8 @@
 		<string>忄</string>
 		<key>radical</key>
 		<integer>61</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>りっしんべん</string>
 		<key>categories</key>
@@ -965,6 +1103,8 @@
 		<string>⺗</string>
 		<key>radical</key>
 		<integer>61</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>したごころ</string>
 		<key>categories</key>
@@ -979,6 +1119,8 @@
 		<string>戈</string>
 		<key>radical</key>
 		<integer>62</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>ほこづくり</string>
 		<key>categories</key>
@@ -993,6 +1135,8 @@
 		<string>戸</string>
 		<key>radical</key>
 		<integer>63</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>と</string>
 		<key>categories</key>
@@ -1007,6 +1151,8 @@
 		<string>手</string>
 		<key>radical</key>
 		<integer>64</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>て</string>
 		<key>categories</key>
@@ -1022,6 +1168,8 @@
 		<string>扌</string>
 		<key>radical</key>
 		<integer>64</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>てへん</string>
 		<key>categories</key>
@@ -1036,6 +1184,8 @@
 		<string>支</string>
 		<key>radical</key>
 		<integer>65</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>しにょう</string>
 		<key>categories</key>
@@ -1048,6 +1198,8 @@
 		<string>攴</string>
 		<key>radical</key>
 		<integer>66</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>ぼくづくり</string>
 		<key>categories</key>
@@ -1060,6 +1212,8 @@
 		<string>攵</string>
 		<key>radical</key>
 		<integer>66</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>のぶん</string>
 		<key>categories</key>
@@ -1074,6 +1228,8 @@
 		<string>文</string>
 		<key>radical</key>
 		<integer>67</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>ぶん</string>
 		<key>categories</key>
@@ -1087,6 +1243,8 @@
 		<string>斗</string>
 		<key>radical</key>
 		<integer>68</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>とます</string>
 		<key>categories</key>
@@ -1101,6 +1259,8 @@
 		<string>斤</string>
 		<key>radical</key>
 		<integer>69</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>おのづくり</string>
 		<key>categories</key>
@@ -1115,6 +1275,8 @@
 		<string>方</string>
 		<key>radical</key>
 		<integer>70</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>かた</string>
 		<key>categories</key>
@@ -1130,6 +1292,8 @@
 		<string>无</string>
 		<key>radical</key>
 		<integer>71</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>なし</string>
 		<key>categories</key>
@@ -1142,6 +1306,8 @@
 		<string>日</string>
 		<key>radical</key>
 		<integer>72</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>ひ</string>
 		<key>categories</key>
@@ -1158,6 +1324,8 @@
 		<string>曰</string>
 		<key>radical</key>
 		<integer>73</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>ひらび</string>
 		<key>categories</key>
@@ -1172,6 +1340,8 @@
 		<string>月</string>
 		<key>radical</key>
 		<integer>74</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>つき</string>
 		<key>categories</key>
@@ -1188,6 +1358,8 @@
 		<string>木</string>
 		<key>radical</key>
 		<integer>75</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>き</string>
 		<key>categories</key>
@@ -1203,6 +1375,8 @@
 		<string>欠</string>
 		<key>radical</key>
 		<integer>76</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>あくび</string>
 		<key>categories</key>
@@ -1217,6 +1391,8 @@
 		<string>止</string>
 		<key>radical</key>
 		<integer>77</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>とめる</string>
 		<key>categories</key>
@@ -1233,6 +1409,8 @@
 		<string>歹</string>
 		<key>radical</key>
 		<integer>78</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>がつへん</string>
 		<key>categories</key>
@@ -1247,6 +1425,8 @@
 		<string>殳</string>
 		<key>radical</key>
 		<integer>79</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>るまた</string>
 		<key>categories</key>
@@ -1261,6 +1441,8 @@
 		<string>毋</string>
 		<key>radical</key>
 		<integer>80</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>なかれ</string>
 		<key>categories</key>
@@ -1273,6 +1455,8 @@
 		<string>比</string>
 		<key>radical</key>
 		<integer>81</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>くらべる</string>
 		<key>categories</key>
@@ -1288,6 +1472,8 @@
 		<string>毛</string>
 		<key>radical</key>
 		<integer>82</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>け</string>
 		<key>categories</key>
@@ -1303,6 +1489,8 @@
 		<string>氏</string>
 		<key>radical</key>
 		<integer>83</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>うじ</string>
 		<key>categories</key>
@@ -1315,6 +1503,8 @@
 		<string>气</string>
 		<key>radical</key>
 		<integer>84</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>きがまえ</string>
 		<key>categories</key>
@@ -1329,6 +1519,8 @@
 		<string>水</string>
 		<key>radical</key>
 		<integer>85</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>みず</string>
 		<key>categories</key>
@@ -1344,6 +1536,8 @@
 		<string>氵</string>
 		<key>radical</key>
 		<integer>85</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>さんずい</string>
 		<key>categories</key>
@@ -1358,6 +1552,8 @@
 		<string>氺</string>
 		<key>radical</key>
 		<integer>85</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>したみず</string>
 		<key>categories</key>
@@ -1372,6 +1568,8 @@
 		<string>火</string>
 		<key>radical</key>
 		<integer>86</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>ひ</string>
 		<key>categories</key>
@@ -1387,6 +1585,8 @@
 		<string>灬</string>
 		<key>radical</key>
 		<integer>86</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>れっか</string>
 		<key>categories</key>
@@ -1401,6 +1601,8 @@
 		<string>爪</string>
 		<key>radical</key>
 		<integer>87</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>つめ</string>
 		<key>categories</key>
@@ -1413,6 +1615,8 @@
 		<string>爫</string>
 		<key>radical</key>
 		<integer>87</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>つめかんむり</string>
 		<key>categories</key>
@@ -1427,6 +1631,8 @@
 		<string>父</string>
 		<key>radical</key>
 		<integer>88</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>ちち</string>
 		<key>categories</key>
@@ -1441,6 +1647,8 @@
 		<string>爻</string>
 		<key>radical</key>
 		<integer>89</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>こう</string>
 		<key>categories</key>
@@ -1453,6 +1661,8 @@
 		<string>爿</string>
 		<key>radical</key>
 		<integer>90</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>しょうへん</string>
 		<key>categories</key>
@@ -1467,6 +1677,8 @@
 		<string>片</string>
 		<key>radical</key>
 		<integer>91</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>かた</string>
 		<key>categories</key>
@@ -1481,6 +1693,8 @@
 		<string>牙</string>
 		<key>radical</key>
 		<integer>92</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>きば</string>
 		<key>categories</key>
@@ -1493,6 +1707,8 @@
 		<string>牛</string>
 		<key>radical</key>
 		<integer>93</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>うし</string>
 		<key>categories</key>
@@ -1508,6 +1724,8 @@
 		<string>牜</string>
 		<key>radical</key>
 		<integer>93</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>うしへん</string>
 		<key>categories</key>
@@ -1522,6 +1740,8 @@
 		<string>犬</string>
 		<key>radical</key>
 		<integer>94</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>いぬ</string>
 		<key>categories</key>
@@ -1537,6 +1757,8 @@
 		<string>犭</string>
 		<key>radical</key>
 		<integer>94</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>けものへん</string>
 		<key>categories</key>
@@ -1551,6 +1773,8 @@
 		<string>玄</string>
 		<key>radical</key>
 		<integer>95</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>げん</string>
 		<key>categories</key>
@@ -1563,6 +1787,8 @@
 		<string>玉</string>
 		<key>radical</key>
 		<integer>96</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>たま</string>
 		<key>categories</key>
@@ -1575,6 +1801,8 @@
 		<string>王</string>
 		<key>radical</key>
 		<integer>96</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>おうへん</string>
 		<key>categories</key>
@@ -1589,6 +1817,8 @@
 		<string>瓜</string>
 		<key>radical</key>
 		<integer>97</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>うり</string>
 		<key>categories</key>
@@ -1601,6 +1831,8 @@
 		<string>瓦</string>
 		<key>radical</key>
 		<integer>98</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>かわら</string>
 		<key>categories</key>
@@ -1614,6 +1846,8 @@
 		<string>甘</string>
 		<key>radical</key>
 		<integer>99</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>あまい</string>
 		<key>categories</key>
@@ -1626,6 +1860,8 @@
 		<string>生</string>
 		<key>radical</key>
 		<integer>100</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>うまれる</string>
 		<key>categories</key>
@@ -1641,6 +1877,8 @@
 		<string>用</string>
 		<key>radical</key>
 		<integer>101</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>もちいる</string>
 		<key>categories</key>
@@ -1653,6 +1891,8 @@
 		<string>田</string>
 		<key>radical</key>
 		<integer>102</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>た</string>
 		<key>categories</key>
@@ -1669,6 +1909,8 @@
 		<string>疋</string>
 		<key>radical</key>
 		<integer>103</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>ひき</string>
 		<key>categories</key>
@@ -1683,6 +1925,8 @@
 		<string>疒</string>
 		<key>radical</key>
 		<integer>104</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>やまいだれ</string>
 		<key>categories</key>
@@ -1697,6 +1941,8 @@
 		<string>癶</string>
 		<key>radical</key>
 		<integer>105</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>はつがしら</string>
 		<key>categories</key>
@@ -1711,6 +1957,8 @@
 		<string>白</string>
 		<key>radical</key>
 		<integer>106</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>しろ</string>
 		<key>categories</key>
@@ -1726,6 +1974,8 @@
 		<string>皮</string>
 		<key>radical</key>
 		<integer>107</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>けがわ</string>
 		<key>categories</key>
@@ -1738,6 +1988,8 @@
 		<string>皿</string>
 		<key>radical</key>
 		<integer>108</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>さら</string>
 		<key>categories</key>
@@ -1752,6 +2004,8 @@
 		<string>目</string>
 		<key>radical</key>
 		<integer>109</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>め</string>
 		<key>categories</key>
@@ -1767,6 +2021,8 @@
 		<string>矛</string>
 		<key>radical</key>
 		<integer>110</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>ほこ</string>
 		<key>categories</key>
@@ -1779,6 +2035,8 @@
 		<string>矢</string>
 		<key>radical</key>
 		<integer>111</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>や</string>
 		<key>categories</key>
@@ -1793,6 +2051,8 @@
 		<string>石</string>
 		<key>radical</key>
 		<integer>112</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>いし</string>
 		<key>categories</key>
@@ -1808,6 +2068,8 @@
 		<string>示</string>
 		<key>radical</key>
 		<integer>113</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>しめす</string>
 		<key>categories</key>
@@ -1822,6 +2084,8 @@
 		<string>礻</string>
 		<key>radical</key>
 		<integer>113</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>しめすへん</string>
 		<key>categories</key>
@@ -1836,6 +2100,8 @@
 		<string>禸</string>
 		<key>radical</key>
 		<integer>114</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>じゅうのあし</string>
 		<key>categories</key>
@@ -1848,6 +2114,8 @@
 		<string>禾</string>
 		<key>radical</key>
 		<integer>115</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>のぎへん</string>
 		<key>categories</key>
@@ -1862,6 +2130,8 @@
 		<string>穴</string>
 		<key>radical</key>
 		<integer>116</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>あなかんむり</string>
 		<key>categories</key>
@@ -1876,6 +2146,8 @@
 		<string>立</string>
 		<key>radical</key>
 		<integer>117</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>たつ</string>
 		<key>categories</key>
@@ -1891,6 +2163,8 @@
 		<string>竹</string>
 		<key>radical</key>
 		<integer>118</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>たけ</string>
 		<key>categories</key>
@@ -1903,6 +2177,8 @@
 		<string>⺮</string>
 		<key>radical</key>
 		<integer>118</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>たけかんむり</string>
 		<key>categories</key>
@@ -1917,6 +2193,8 @@
 		<string>米</string>
 		<key>radical</key>
 		<integer>119</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>こめ</string>
 		<key>categories</key>
@@ -1932,6 +2210,8 @@
 		<string>糸</string>
 		<key>radical</key>
 		<integer>120</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>いと</string>
 		<key>categories</key>
@@ -1947,6 +2227,8 @@
 		<string>缶</string>
 		<key>radical</key>
 		<integer>121</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ほとぎ</string>
 		<key>categories</key>
@@ -1959,6 +2241,8 @@
 		<string>网</string>
 		<key>radical</key>
 		<integer>122</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>あみ</string>
 		<key>categories</key>
@@ -1971,6 +2255,8 @@
 		<string>罒</string>
 		<key>radical</key>
 		<integer>122</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>よこめ</string>
 		<key>categories</key>
@@ -1985,6 +2271,8 @@
 		<string>羊</string>
 		<key>radical</key>
 		<integer>123</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ひつじ</string>
 		<key>categories</key>
@@ -2001,6 +2289,8 @@
 		<string>羽</string>
 		<key>radical</key>
 		<integer>124</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>はね</string>
 		<key>categories</key>
@@ -2016,6 +2306,8 @@
 		<string>老</string>
 		<key>radical</key>
 		<integer>125</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>おい</string>
 		<key>categories</key>
@@ -2028,6 +2320,8 @@
 		<string>耂</string>
 		<key>radical</key>
 		<integer>125</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>おいがしら</string>
 		<key>categories</key>
@@ -2042,6 +2336,8 @@
 		<string>而</string>
 		<key>radical</key>
 		<integer>126</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>しこうして</string>
 		<key>categories</key>
@@ -2054,6 +2350,8 @@
 		<string>耒</string>
 		<key>radical</key>
 		<integer>127</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>らいすき</string>
 		<key>categories</key>
@@ -2066,6 +2364,8 @@
 		<string>耳</string>
 		<key>radical</key>
 		<integer>128</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>みみ</string>
 		<key>categories</key>
@@ -2080,6 +2380,8 @@
 		<string>聿</string>
 		<key>radical</key>
 		<integer>129</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ふでづくり</string>
 		<key>categories</key>
@@ -2095,6 +2397,8 @@
 		<string>肉</string>
 		<key>radical</key>
 		<integer>130</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>にく</string>
 		<key>categories</key>
@@ -2107,6 +2411,8 @@
 		<string>⺼</string>
 		<key>radical</key>
 		<integer>130</integer>
+		<key>strokes</key>
+		<integer>4</integer>
 		<key>name</key>
 		<string>にくづき</string>
 		<key>categories</key>
@@ -2122,6 +2428,8 @@
 		<string>臣</string>
 		<key>radical</key>
 		<integer>131</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>しん</string>
 		<key>categories</key>
@@ -2135,6 +2443,8 @@
 		<string>自</string>
 		<key>radical</key>
 		<integer>132</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>みずから</string>
 		<key>categories</key>
@@ -2149,6 +2459,8 @@
 		<string>至</string>
 		<key>radical</key>
 		<integer>133</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>いたる</string>
 		<key>categories</key>
@@ -2162,6 +2474,8 @@
 		<string>臼</string>
 		<key>radical</key>
 		<integer>134</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>うす</string>
 		<key>categories</key>
@@ -2177,6 +2491,8 @@
 		<string>舌</string>
 		<key>radical</key>
 		<integer>135</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>した</string>
 		<key>categories</key>
@@ -2189,6 +2505,8 @@
 		<string>舛</string>
 		<key>radical</key>
 		<integer>136</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ます</string>
 		<key>categories</key>
@@ -2201,6 +2519,8 @@
 		<string>舟</string>
 		<key>radical</key>
 		<integer>137</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ふねへん</string>
 		<key>categories</key>
@@ -2215,6 +2535,8 @@
 		<string>艮</string>
 		<key>radical</key>
 		<integer>138</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>こん</string>
 		<key>categories</key>
@@ -2227,6 +2549,8 @@
 		<string>色</string>
 		<key>radical</key>
 		<integer>139</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>いろ</string>
 		<key>categories</key>
@@ -2239,6 +2563,8 @@
 		<string>艸</string>
 		<key>radical</key>
 		<integer>140</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>くさ</string>
 		<key>categories</key>
@@ -2251,6 +2577,8 @@
 		<string>艹</string>
 		<key>radical</key>
 		<integer>140</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>くさかんむり</string>
 		<key>categories</key>
@@ -2265,6 +2593,8 @@
 		<string>虍</string>
 		<key>radical</key>
 		<integer>141</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>とらがしら</string>
 		<key>categories</key>
@@ -2279,6 +2609,8 @@
 		<string>虫</string>
 		<key>radical</key>
 		<integer>142</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>むし</string>
 		<key>categories</key>
@@ -2294,6 +2626,8 @@
 		<string>血</string>
 		<key>radical</key>
 		<integer>143</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ち</string>
 		<key>categories</key>
@@ -2306,6 +2640,8 @@
 		<string>行</string>
 		<key>radical</key>
 		<integer>144</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ぎょうがまえ</string>
 		<key>categories</key>
@@ -2320,6 +2656,8 @@
 		<string>衣</string>
 		<key>radical</key>
 		<integer>145</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>ころも</string>
 		<key>categories</key>
@@ -2334,6 +2672,8 @@
 		<string>衤</string>
 		<key>radical</key>
 		<integer>145</integer>
+		<key>strokes</key>
+		<integer>5</integer>
 		<key>name</key>
 		<string>ころもへん</string>
 		<key>categories</key>
@@ -2348,6 +2688,8 @@
 		<string>襾</string>
 		<key>radical</key>
 		<integer>146</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>おおいかんむり</string>
 		<key>categories</key>
@@ -2360,6 +2702,8 @@
 		<string>覀</string>
 		<key>radical</key>
 		<integer>146</integer>
+		<key>strokes</key>
+		<integer>6</integer>
 		<key>name</key>
 		<string>にし</string>
 		<key>categories</key>
@@ -2374,6 +2718,8 @@
 		<string>見</string>
 		<key>radical</key>
 		<integer>147</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>みる</string>
 		<key>categories</key>
@@ -2389,6 +2735,8 @@
 		<string>角</string>
 		<key>radical</key>
 		<integer>148</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>つのへん</string>
 		<key>categories</key>
@@ -2403,6 +2751,8 @@
 		<string>言</string>
 		<key>radical</key>
 		<integer>149</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>ごんべん</string>
 		<key>categories</key>
@@ -2418,6 +2768,8 @@
 		<string>谷</string>
 		<key>radical</key>
 		<integer>150</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>たに</string>
 		<key>categories</key>
@@ -2431,6 +2783,8 @@
 		<string>豆</string>
 		<key>radical</key>
 		<integer>151</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>まめ</string>
 		<key>categories</key>
@@ -2444,6 +2798,8 @@
 		<string>豕</string>
 		<key>radical</key>
 		<integer>152</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>いのこ</string>
 		<key>categories</key>
@@ -2457,6 +2813,8 @@
 		<string>豸</string>
 		<key>radical</key>
 		<integer>153</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>むじなへん</string>
 		<key>categories</key>
@@ -2469,6 +2827,8 @@
 		<string>貝</string>
 		<key>radical</key>
 		<integer>154</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>かい</string>
 		<key>categories</key>
@@ -2484,6 +2844,8 @@
 		<string>赤</string>
 		<key>radical</key>
 		<integer>155</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>あか</string>
 		<key>categories</key>
@@ -2496,6 +2858,8 @@
 		<string>走</string>
 		<key>radical</key>
 		<integer>156</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>そうにょう</string>
 		<key>categories</key>
@@ -2510,6 +2874,8 @@
 		<string>足</string>
 		<key>radical</key>
 		<integer>157</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>あし</string>
 		<key>categories</key>
@@ -2522,6 +2888,8 @@
 		<string>⻊</string>
 		<key>radical</key>
 		<integer>157</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>あしへん</string>
 		<key>categories</key>
@@ -2536,6 +2904,8 @@
 		<string>身</string>
 		<key>radical</key>
 		<integer>158</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>みへん</string>
 		<key>categories</key>
@@ -2548,6 +2918,8 @@
 		<string>車</string>
 		<key>radical</key>
 		<integer>159</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>くるまへん</string>
 		<key>categories</key>
@@ -2562,6 +2934,8 @@
 		<string>辛</string>
 		<key>radical</key>
 		<integer>160</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>からい</string>
 		<key>categories</key>
@@ -2575,6 +2949,8 @@
 		<string>辰</string>
 		<key>radical</key>
 		<integer>161</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>しんのたつ</string>
 		<key>categories</key>
@@ -2589,6 +2965,8 @@
 		<string>辵</string>
 		<key>radical</key>
 		<integer>162</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>しんにょう</string>
 		<key>categories</key>
@@ -2601,6 +2979,8 @@
 		<string>辶</string>
 		<key>radical</key>
 		<integer>162</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>しんにょう</string>
 		<key>categories</key>
@@ -2615,6 +2995,8 @@
 		<string>邑</string>
 		<key>radical</key>
 		<integer>163</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>むら</string>
 		<key>categories</key>
@@ -2627,6 +3009,8 @@
 		<string>阝</string>
 		<key>radical</key>
 		<integer>163</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>おおざと</string>
 		<key>categories</key>
@@ -2641,6 +3025,8 @@
 		<string>酉</string>
 		<key>radical</key>
 		<integer>164</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>とりへん</string>
 		<key>categories</key>
@@ -2655,6 +3041,8 @@
 		<string>釆</string>
 		<key>radical</key>
 		<integer>165</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>さい</string>
 		<key>categories</key>
@@ -2667,6 +3055,8 @@
 		<string>里</string>
 		<key>radical</key>
 		<integer>166</integer>
+		<key>strokes</key>
+		<integer>7</integer>
 		<key>name</key>
 		<string>さと</string>
 		<key>categories</key>
@@ -2682,6 +3072,8 @@
 		<string>金</string>
 		<key>radical</key>
 		<integer>167</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>かね</string>
 		<key>categories</key>
@@ -2695,6 +3087,8 @@
 		<string>釒</string>
 		<key>radical</key>
 		<integer>167</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>かねへん</string>
 		<key>categories</key>
@@ -2709,6 +3103,8 @@
 		<string>長</string>
 		<key>radical</key>
 		<integer>168</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>ながい</string>
 		<key>categories</key>
@@ -2722,6 +3118,8 @@
 		<string>門</string>
 		<key>radical</key>
 		<integer>169</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>もんがまえ</string>
 		<key>categories</key>
@@ -2736,6 +3134,8 @@
 		<string>阜</string>
 		<key>radical</key>
 		<integer>170</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>おか</string>
 		<key>categories</key>
@@ -2748,6 +3148,8 @@
 		<string>阝</string>
 		<key>radical</key>
 		<integer>170</integer>
+		<key>strokes</key>
+		<integer>3</integer>
 		<key>name</key>
 		<string>こざとへん</string>
 		<key>categories</key>
@@ -2762,6 +3164,8 @@
 		<string>隶</string>
 		<key>radical</key>
 		<integer>171</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>れいづくり</string>
 		<key>categories</key>
@@ -2774,6 +3178,8 @@
 		<string>隹</string>
 		<key>radical</key>
 		<integer>172</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>ふるとり</string>
 		<key>categories</key>
@@ -2788,6 +3194,8 @@
 		<string>雨</string>
 		<key>radical</key>
 		<integer>173</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>あめかんむり</string>
 		<key>categories</key>
@@ -2802,6 +3210,8 @@
 		<string>青</string>
 		<key>radical</key>
 		<integer>174</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>あお</string>
 		<key>categories</key>
@@ -2815,6 +3225,8 @@
 		<string>非</string>
 		<key>radical</key>
 		<integer>175</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>あらず</string>
 		<key>categories</key>
@@ -2828,6 +3240,8 @@
 		<string>面</string>
 		<key>radical</key>
 		<integer>176</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>めん</string>
 		<key>categories</key>
@@ -2840,6 +3254,8 @@
 		<string>革</string>
 		<key>radical</key>
 		<integer>177</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>かわへん</string>
 		<key>categories</key>
@@ -2852,6 +3268,8 @@
 		<string>韋</string>
 		<key>radical</key>
 		<integer>178</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>なめしがわ</string>
 		<key>categories</key>
@@ -2864,6 +3282,8 @@
 		<string>韭</string>
 		<key>radical</key>
 		<integer>179</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>にら</string>
 		<key>categories</key>
@@ -2876,6 +3296,8 @@
 		<string>音</string>
 		<key>radical</key>
 		<integer>180</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>おと</string>
 		<key>categories</key>
@@ -2889,6 +3311,8 @@
 		<string>頁</string>
 		<key>radical</key>
 		<integer>181</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>おおがい</string>
 		<key>categories</key>
@@ -2903,6 +3327,8 @@
 		<string>風</string>
 		<key>radical</key>
 		<integer>182</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>かぜ</string>
 		<key>categories</key>
@@ -2916,6 +3342,8 @@
 		<string>飛</string>
 		<key>radical</key>
 		<integer>183</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>とぶ</string>
 		<key>categories</key>
@@ -2929,6 +3357,8 @@
 		<string>食</string>
 		<key>radical</key>
 		<integer>184</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>しょく</string>
 		<key>categories</key>
@@ -2941,6 +3371,8 @@
 		<string>飠</string>
 		<key>radical</key>
 		<integer>184</integer>
+		<key>strokes</key>
+		<integer>8</integer>
 		<key>name</key>
 		<string>しょくへん</string>
 		<key>categories</key>
@@ -2955,6 +3387,8 @@
 		<string>首</string>
 		<key>radical</key>
 		<integer>185</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>くび</string>
 		<key>categories</key>
@@ -2968,6 +3402,8 @@
 		<string>香</string>
 		<key>radical</key>
 		<integer>186</integer>
+		<key>strokes</key>
+		<integer>9</integer>
 		<key>name</key>
 		<string>かおり</string>
 		<key>categories</key>
@@ -2981,6 +3417,8 @@
 		<string>馬</string>
 		<key>radical</key>
 		<integer>187</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>うまへん</string>
 		<key>categories</key>
@@ -2996,6 +3434,8 @@
 		<string>骨</string>
 		<key>radical</key>
 		<integer>188</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>ほねへん</string>
 		<key>categories</key>
@@ -3008,6 +3448,8 @@
 		<string>高</string>
 		<key>radical</key>
 		<integer>189</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>たかい</string>
 		<key>categories</key>
@@ -3021,6 +3463,8 @@
 		<string>髟</string>
 		<key>radical</key>
 		<integer>190</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>かみがしら</string>
 		<key>categories</key>
@@ -3035,6 +3479,8 @@
 		<string>鬥</string>
 		<key>radical</key>
 		<integer>191</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>とうがまえ</string>
 		<key>categories</key>
@@ -3047,6 +3493,8 @@
 		<string>鬯</string>
 		<key>radical</key>
 		<integer>192</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>ちょう</string>
 		<key>categories</key>
@@ -3059,6 +3507,8 @@
 		<string>鬲</string>
 		<key>radical</key>
 		<integer>193</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>かなえ</string>
 		<key>categories</key>
@@ -3071,6 +3521,8 @@
 		<string>鬼</string>
 		<key>radical</key>
 		<integer>194</integer>
+		<key>strokes</key>
+		<integer>10</integer>
 		<key>name</key>
 		<string>きにょう</string>
 		<key>categories</key>
@@ -3086,6 +3538,8 @@
 		<string>魚</string>
 		<key>radical</key>
 		<integer>195</integer>
+		<key>strokes</key>
+		<integer>11</integer>
 		<key>name</key>
 		<string>うおへん</string>
 		<key>categories</key>
@@ -3101,6 +3555,8 @@
 		<string>鳥</string>
 		<key>radical</key>
 		<integer>196</integer>
+		<key>strokes</key>
+		<integer>11</integer>
 		<key>name</key>
 		<string>とり</string>
 		<key>categories</key>
@@ -3117,6 +3573,8 @@
 		<string>鹵</string>
 		<key>radical</key>
 		<integer>197</integer>
+		<key>strokes</key>
+		<integer>11</integer>
 		<key>name</key>
 		<string>ろ</string>
 		<key>categories</key>
@@ -3129,6 +3587,8 @@
 		<string>鹿</string>
 		<key>radical</key>
 		<integer>198</integer>
+		<key>strokes</key>
+		<integer>11</integer>
 		<key>name</key>
 		<string>しか</string>
 		<key>categories</key>
@@ -3142,6 +3602,8 @@
 		<string>麥</string>
 		<key>radical</key>
 		<integer>199</integer>
+		<key>strokes</key>
+		<integer>11</integer>
 		<key>name</key>
 		<string>ばく</string>
 		<key>categories</key>
@@ -3154,6 +3616,8 @@
 		<string>麻</string>
 		<key>radical</key>
 		<integer>200</integer>
+		<key>strokes</key>
+		<integer>11</integer>
 		<key>name</key>
 		<string>あさ</string>
 		<key>categories</key>
@@ -3169,6 +3633,8 @@
 		<string>黄</string>
 		<key>radical</key>
 		<integer>201</integer>
+		<key>strokes</key>
+		<integer>12</integer>
 		<key>name</key>
 		<string>き</string>
 		<key>categories</key>
@@ -3181,6 +3647,8 @@
 		<string>黍</string>
 		<key>radical</key>
 		<integer>202</integer>
+		<key>strokes</key>
+		<integer>12</integer>
 		<key>name</key>
 		<string>きび</string>
 		<key>categories</key>
@@ -3193,6 +3661,8 @@
 		<string>黒</string>
 		<key>radical</key>
 		<integer>203</integer>
+		<key>strokes</key>
+		<integer>12</integer>
 		<key>name</key>
 		<string>くろ</string>
 		<key>categories</key>
@@ -3208,6 +3678,8 @@
 		<string>黹</string>
 		<key>radical</key>
 		<integer>204</integer>
+		<key>strokes</key>
+		<integer>12</integer>
 		<key>name</key>
 		<string>ち</string>
 		<key>categories</key>
@@ -3220,6 +3692,8 @@
 		<string>黽</string>
 		<key>radical</key>
 		<integer>205</integer>
+		<key>strokes</key>
+		<integer>13</integer>
 		<key>name</key>
 		<string>べん</string>
 		<key>categories</key>
@@ -3232,6 +3706,8 @@
 		<string>鼎</string>
 		<key>radical</key>
 		<integer>206</integer>
+		<key>strokes</key>
+		<integer>13</integer>
 		<key>name</key>
 		<string>かなえ</string>
 		<key>categories</key>
@@ -3244,6 +3720,8 @@
 		<string>鼓</string>
 		<key>radical</key>
 		<integer>207</integer>
+		<key>strokes</key>
+		<integer>13</integer>
 		<key>name</key>
 		<string>つづみ</string>
 		<key>categories</key>
@@ -3256,6 +3734,8 @@
 		<string>鼠</string>
 		<key>radical</key>
 		<integer>208</integer>
+		<key>strokes</key>
+		<integer>13</integer>
 		<key>name</key>
 		<string>ねずみ</string>
 		<key>categories</key>
@@ -3268,6 +3748,8 @@
 		<string>鼻</string>
 		<key>radical</key>
 		<integer>209</integer>
+		<key>strokes</key>
+		<integer>14</integer>
 		<key>name</key>
 		<string>はな</string>
 		<key>categories</key>
@@ -3280,6 +3762,8 @@
 		<string>齊</string>
 		<key>radical</key>
 		<integer>210</integer>
+		<key>strokes</key>
+		<integer>14</integer>
 		<key>name</key>
 		<string>せい</string>
 		<key>categories</key>
@@ -3292,6 +3776,8 @@
 		<string>齒</string>
 		<key>radical</key>
 		<integer>211</integer>
+		<key>strokes</key>
+		<integer>15</integer>
 		<key>name</key>
 		<string>は</string>
 		<key>categories</key>
@@ -3305,6 +3791,8 @@
 		<string>龍</string>
 		<key>radical</key>
 		<integer>212</integer>
+		<key>strokes</key>
+		<integer>16</integer>
 		<key>name</key>
 		<string>りゅう</string>
 		<key>categories</key>
@@ -3318,6 +3806,8 @@
 		<string>龜</string>
 		<key>radical</key>
 		<integer>213</integer>
+		<key>strokes</key>
+		<integer>16</integer>
 		<key>name</key>
 		<string>かめ</string>
 		<key>categories</key>
@@ -3330,6 +3820,8 @@
 		<string>龠</string>
 		<key>radical</key>
 		<integer>214</integer>
+		<key>strokes</key>
+		<integer>17</integer>
 		<key>name</key>
 		<string>やく</string>
 		<key>categories</key>
