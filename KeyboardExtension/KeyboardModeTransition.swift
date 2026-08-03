@@ -24,6 +24,9 @@ enum EmojiInputSubmode: Equatable {
     case emoji
     case kaomoji
     case symbols
+    // 部首から漢字1文字を選ぶピッカー。絵文字/記号と同じ「選んで入れる」モード群の一員
+    // として emoji モードのサブモードに載せる(2444)
+    case kanjiRadical
 }
 
 struct KeyboardModeTransitionState: Equatable {
@@ -57,6 +60,12 @@ enum KeyboardModeTransition {
             next.spaceToastOpacity = 0
         }
 
+        return next
+    }
+
+    static func enterKanjiRadicalMode(from state: KeyboardModeTransitionState) -> KeyboardModeTransitionState {
+        var next = switchInputMode(state, to: .emoji)
+        next.emojiInputSubmode = .kanjiRadical
         return next
     }
 

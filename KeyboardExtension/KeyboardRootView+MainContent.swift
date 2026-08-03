@@ -16,6 +16,8 @@ extension KeyboardRootView {
                 kaomojiKeyboardView
             case .symbols:
                 symbolKeyboardView
+            case .kanjiRadical:
+                kanjiRadicalKeyboardView
             }
         } else if usesLandscapeLatinTypewriterLayout {
             HStack(spacing: keyboardRowSpacing) {

@@ -6006,6 +6006,47 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // 部首カテゴリー分類表(bushu.plist)の読み込みと、8カテゴリーへの割り振り(2444)
+    func testKanjiRadicalCatalogCategories() throws {
+        KanjiRadicalCatalog.resourceDirectoryURLOverride = URL(
+            fileURLWithPath: "/Users/kusakabe/Git/ecritu/references", isDirectory: true
+        )
+        defer { KanjiRadicalCatalog.resourceDirectoryURLOverride = nil }
+        let forms = KanjiRadicalCatalog.allForms
+        XCTAssertEqual(forms.count, 245, "字形数 = 214部首 + 位置別字形31")
+
+        // 214部首すべてが1つ以上の字形で表現されている
+        let radicals = Set(forms.map(\.radical))
+        XCTAssertEqual(radicals.count, 214, "部首番号の網羅数=\(radicals.count)")
+        XCTAssertEqual(radicals.min(), 1)
+        XCTAssertEqual(radicals.max(), 214)
+
+        // どの字形も8カテゴリーのいずれかに属する(未分類なし)
+        let known = Set(RadicalPositionCategory.allCases.map(\.rawValue))
+        for form in forms {
+            XCTAssertFalse(form.categories.isEmpty, "\(form.form) が未分類")
+            XCTAssertTrue(known.isSuperset(of: form.categories), "\(form.form) に未知カテゴリー")
+        }
+
+        // 8カテゴリーすべてに字形がある
+        for category in RadicalPositionCategory.allCases {
+            XCTAssertFalse(
+                KanjiRadicalCatalog.forms(in: category).isEmpty,
+                "\(category.title) が空"
+            )
+        }
+
+        // 字形単位の分類: 氵=偏 / 氺=脚(同じ部首85でも位置別)
+        let water = forms.filter { $0.radical == 85 }
+        XCTAssertEqual(water.first { $0.form == "氵" }?.categories, ["偏"])
+        XCTAssertEqual(water.first { $0.form == "氺" }?.categories, ["脚"])
+        // 阝 は こざと(偏・部首170)と おおざと(旁・部首163)で別エントリー
+        let atoR = forms.filter { $0.form == "阝" }
+        XCTAssertEqual(Set(atoR.map(\.radical)), [163, 170])
+        // 複数所属(日=偏・冠・脚)
+        XCTAssertEqual(forms.first { $0.form == "日" }?.categories, ["偏", "冠", "脚"])
+    }
+
     // 漢字1文字ピッカーの索引(mmap+バイナリサーチ)。部首ブロックが部首内画数順で
     // 切り出せること、区点・読みが引けること、フォント差の判定が効くことを確認(2443)
     func testKanjiRadicalIndexLookup() throws {

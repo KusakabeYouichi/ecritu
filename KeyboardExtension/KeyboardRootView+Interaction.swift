@@ -321,6 +321,12 @@ extension KeyboardRootView {
     }
 
     func selectKanaModeSwitcher(_ output: String, direction: FlickDirection) {
+        // 下フリックは部首ピッカー固定(タップ/右/上の3スロットは設定で割り当て可)
+        if direction == .bas {
+            enterKanjiRadicalMode()
+            return
+        }
+
         let action: KanaModeSwitcherAction
 
         switch direction {
@@ -342,6 +348,12 @@ extension KeyboardRootView {
         case .symbols:
             enterSymbolsMode()
         }
+    }
+
+    func enterKanjiRadicalMode() {
+        transitionState = KeyboardModeTransition.enterKanjiRadicalMode(
+            from: transitionState
+        )
     }
 
     func enterEmojiMode() {
