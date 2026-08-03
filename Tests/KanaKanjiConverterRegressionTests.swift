@@ -6006,6 +6006,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // カタカナ正書の例外枠(ユーザー方針): 原則カタカナ化は抑制だが「ひらがなだと紛れる+
+    // 漢字が馴染みない」語はカタカナが読みやすい。seed 掲載でカタカナ強調抑制から免除
+    // (katakanaRunsAreSeedProtected)。いや は指定順、むら は 斑 の意味の ムラ を追加(2451)
+    func testRegressionKatakanaOrthographyExceptions() throws {
+        try prepareRealLMDictionary()
+        let iya = converter.candidates(for: "いや", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(iya.prefix(5)), ["いや", "イヤ", "嫌", "否", "厭"], "iya=\(iya)")
+        // 合成(いや+で)にも seed 順が伝わる
+        let iyade = converter.candidates(for: "いやで", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(iyade.prefix(5)),
+            ["いやで", "イヤで", "嫌で", "否で", "厭で"],
+            "iyade=\(iyade)"
+        )
+        // むら は 村 の位置を保ったまま ムラ を供給
+        let mura = converter.candidates(for: "むら", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mura.prefix(3)), ["むら", "村", "ムラ"], "mura=\(mura)")
+    }
+
     // いやで: SudachiDict の促音/長音の水増し表記(イヤっ rank6 / 嫌ー rank12)が合成の種に
     // なり イヤっで/嫌ーで を作っていた。読みに無い っ/ッ/ー が表層にある候補を装飾表記
     // として一般に除去(読み側にある入力=いやー/やっぱ/こーひー は無傷)(2450)
