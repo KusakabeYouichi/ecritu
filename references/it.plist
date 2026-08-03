@@ -127,6 +127,8 @@
 	<dict><key>phrase</key><string>Apple ID</string><key>shortcut</key><string>あっぷるあいでぃー</string></dict>
 	<dict><key>phrase</key><string>App Group</string><key>shortcut</key><string>あっぷぐるーぷ</string></dict>
 	<dict><key>phrase</key><string>Apple Card</string><key>shortcut</key><string>あっぷるかーど</string></dict>
+	<dict><key>phrase</key><string>Spotify</string><key>shortcut</key><string>すぽてぃふぁい</string></dict>
+	<dict><key>phrase</key><string>Spotify Premium</string><key>shortcut</key><string>すぽてぃふぁいぷれみあむ</string></dict>
 
 	<!-- アプリ -->
 	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
