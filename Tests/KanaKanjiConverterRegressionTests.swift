@@ -6036,6 +6036,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // りょうてい: 料亭(wc7399)より 竜蹄(馬の美称)/量定 が先に並んでいた。seed で 料亭 を先頭へ
+    func testRegressionRyouteiPrefersRyoutei() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "りょうてい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "料亭", "single=\(single)")
+    }
+
     // できれば: 提示層は 出来れば を かな版の直後へ回す(出来る は使いたくないというユーザ方針)が、
     // かな識別 できれば に keepKana の根拠が無く除去されるため 出来れば が先頭に残っていた。
     // 活用形の基底読みが seed でかな先頭に固定された用言(できる)なら活用形もかな正書とみなす(2467)
