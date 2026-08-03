@@ -263,7 +263,8 @@ final class KanaKanjiConverter {
             finalCandidates = Self.digitContextCounterBoostedCandidates(
                 finalCandidates,
                 reading: normalizedReading,
-                precedingCharacter: digit
+                precedingCharacter: digit,
+                suppressedCandidates: context.suppressedCandidatesByReading[normalizedReading] ?? []
             )
         }
 
