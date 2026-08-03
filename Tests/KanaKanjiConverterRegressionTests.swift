@@ -6006,6 +6006,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // こうかいされて/されてる で 公開⇄後悔 が入れ替わっていた。前者は連文節が効き
+    // (公開→さ bigram582 < 後悔→さ1660)、後者は連文節が空(さ変+てる縮約のノードが
+    // 組めない)で単文節の辞書順(紅海0/後悔1/公会2/公開3)に落ちるため。seed で単文節の
+    // 並びを 公開先頭に固定し両方を揃える(2456)
+    func testRegressionKoukaiPrefersPublic() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(
+            converter.candidates(for: "こうかい", limit: 6, systemCandidateMode: .surface).first,
+            "公開"
+        )
+        XCTAssertEqual(
+            converter.candidates(for: "こうかいされてる", limit: 5, systemCandidateMode: .surface).first,
+            "公開されてる"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "こうかいされて", systemCandidateMode: .surface).first,
+            "公開されて"
+        )
+    }
+
     // 2026-08-03 の一括報告(ユーザー指定の並び)。読みキーごとに独立した seed 指定+
     // 交ぜ書き許可(今まで)+連文節ボーナス(とき)+keepKana(のだろ/先頭の の)(2455)
     func testRegressionUserSpecifiedOrderingBatch() throws {
