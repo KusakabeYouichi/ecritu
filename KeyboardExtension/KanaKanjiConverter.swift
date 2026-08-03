@@ -859,6 +859,30 @@ final class KanaKanjiConverter {
                 }
             }
         }
+        // 説明・推量の のだろ/んだろ(のだろう の言いさし)で終わる読みは、剥がした語幹が
+        // かな正書の識別なら根拠あり(いつだったのだろ→いつだった→いつ=seedかな先頭)。
+        // 長形の のだろう は下の のは 群が拾うが、短形は末尾が の で終わらないため別途扱う(2455)
+        for tail in ["のだろ", "んだろ"]
+        where normalized.count > tail.count && normalized.hasSuffix(tail) {
+            var stem = String(normalized.dropLast(tail.count))
+            // コピュラ(だった/でした/だ/です)も続けて剥がす(いつだったのだろ→いつ)
+            for copula in ["だった", "でした", "です", "だ"]
+            where stem.count > copula.count && stem.hasSuffix(copula) {
+                stem = String(stem.dropLast(copula.count))
+                break
+            }
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
+        // 連体の「の」で始まる断片(のときは/のときのは 等、文中から打ち始めた形)は、
+        // 先頭の の を剥がした残りがかな正書の識別なら根拠あり(2455)。
+        if normalized.count > 3, normalized.hasPrefix("の") {
+            let remainder = String(normalized.dropFirst())
+            if computeShouldKeepKanaIdentityLeading(normalized: remainder) {
+                return true
+            }
+        }
         // 補助形容詞 やすい/にくい/づらい(+任意の ので)を剥がし、連用形の基底動詞が
         // seed かな先頭なら根拠あり(できやすいので→できやすい→でき→できる=seedかな先頭)。
         // ので の一般再帰は たべるので を巻き込むため、この経路に限定する(2453)。
