@@ -413,6 +413,12 @@ extension KanaKanjiConverter {
     // 助詞剥がし(に)+形式名詞照合で やらないくせに の提示層かな退避を防ぐ(2424)
     static let multiClauseFormalNounKanaReadings: Set<String> = ["とき", "こと", "もの", "ため", "だけ", "はず", "やつ", "くせ"]
     static let multiClauseFormalNounKanjiPenalty = 1000
+    // 形式名詞と同形の実質名詞(時は金なり/事の起こり/事あるごとに)。文頭に立つ とき/こと は
+    // 「時間という概念」「事柄」そのものを指す実質名詞なので漢字が正書(ユーザー方針)。
+    // 述語直後(〜したとき/〜すること)は上の逆向きペナルティでかなを優先しており、
+    // 文頭限定なので衝突しない。値は seed 順ボーナス(とき800)を上回る必要がある(2459)
+    static let multiClauseSubstantiveNounReadings: Set<String> = ["とき", "こと"]
+    static let multiClauseSubstantiveNounKanaPenalty = 1500
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
@@ -1634,6 +1640,27 @@ extension KanaKanjiConverter {
                         : 0)
                 let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
                 if node.start == 0 {
+                    // 文頭の形式名詞読みは実質名詞(定数コメント参照)。かな側に減点して漢字を優先
+                    // こと は直後に格助詞・係助詞が続く形(ことがある/ことでもなく/ことになる)が
+                    // 形式名詞用法でかなが正書。実質名詞は「事の起こり」(の+名詞)や
+                    // 「事あるごとに」(助詞なしで述語が続く)なので、直後が の または
+                    // 助詞以外なら実質名詞として扱う。とき は文頭で接尾辞用法になることが
+                    // 稀なので無条件に漢字を優先する(2459)
+                    let isFormalKotoUsage: Bool = {
+                        guard node.reading == "こと", node.end < n else {
+                            return false
+                        }
+                        let next = chars[node.end]
+                        if next == "の" {
+                            return false
+                        }
+                        return Self.multiClauseCaseParticleSurfaces.contains(String(next))
+                    }()
+                    let substantivePenalty = (
+                        Self.multiClauseSubstantiveNounReadings.contains(node.reading)
+                            && node.surface == node.reading
+                            && !isFormalKotoUsage
+                    ) ? Self.multiClauseSubstantiveNounKanaPenalty : 0
                     let cost = transitionCost(
                         prev: Self.multiClauseBOSMarker,
                         prevAuxTail: nil,
@@ -1648,7 +1675,7 @@ extension KanaKanjiConverter {
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
                         scriptVariantPenalty: nodeScriptVariantPenalty,
                         isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
-                    ) - preferredInflectionBonus
+                    ) - preferredInflectionBonus + substantivePenalty
                     if cost < best[idx] {
                         best[idx] = cost
                         backPointer[idx] = -1

@@ -6006,6 +6006,42 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // とき/こと の使い分け(ユーザー方針): 「時間という概念そのもの」「事柄」を指す実質名詞は
+    // 漢字(時は金なり/事の起こり/事あるごとに)、接尾辞的な形式名詞はかな(〜したとき/
+    // 〜すること)。前者は文頭のかな側に減点(seed順ボーナス800を上回る1500)、後者は既存の
+    // 述語直後の漢字ペナルティ(1000)が担当する。例外として ことが〜(経験・可能性の
+    // 形式名詞用法)は文頭でもかなを維持(2459)
+    func testRegressionTokiKotoSubstantiveVsFormal() throws {
+        try prepareRealLMDictionary()
+
+        // 実質名詞(文頭)= 漢字
+        for (reading, expected) in [
+            ("ときはかねなり", "時"), ("ことのおこり", "事の起こり"), ("ことあるごとに", "事あるごとに"),
+            ("ときがきた", "時")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(
+                multi.first?.hasPrefix(expected) ?? false,
+                "\(reading)=\(multi.prefix(3))"
+            )
+        }
+
+        // 接尾辞的な形式名詞 = かな(述語直後/連体詞直後)
+        for (reading, expected) in [
+            ("みたとき", "見たとき"), ("たべるとき", "食べるとき"), ("することは", "することは"),
+            ("したことがある", "したことがある"), ("そのとき", "そのとき"), ("このこと", "このこと")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading)=\(multi.prefix(3))")
+        }
+
+        // 例外: 直後に助詞が続く形(経験・可能性・変化)は文頭でもかな
+        for reading in ["ことがある", "ことがない", "ことでもなく", "ことになる"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, reading, "\(reading)=\(multi.prefix(3))")
+        }
+    }
+
     // 変わってきてる: 読み「る」の唯一の候補が ル(rank0/wc4335)で、合成末尾が
     // 変わってきてル のようなカタカナ混じりになっていた。漢字を含む合成表層は既存の
     // カタカナ強調判定(表層全体をかな化して読みと比較)の対象外で抜けていたため、
