@@ -424,21 +424,31 @@ final class KanaKanjiConverter {
         )
         addCandidates(numericUnitFallback, baseScore: CandidateScore.numericUnitFallback, to: &scores)
 
+        let arabicNumericCompound = arabicNumericCompoundCandidates(for: reading)
         addCandidates(
-            arabicNumericCompoundCandidates(for: reading),
+            arabicNumericCompound,
             baseScore: CandidateScore.numericArabicCompound,
             to: &scores
         )
 
+        let numericCounterCompound = numericCounterCompoundCandidates(
+            for: reading,
+            userDictionary: context.userDictionary,
+            initialUserDictionary: context.initialUserDictionary,
+            systemCandidateMode: context.mode,
+            limit: limit * 2
+        )
         addCandidates(
-            numericCounterCompoundCandidates(
-                for: reading,
-                userDictionary: context.userDictionary,
-                initialUserDictionary: context.initialUserDictionary,
-                systemCandidateMode: context.mode,
-                limit: limit * 2
-            ),
+            numericCounterCompound,
             baseScore: CandidateScore.numericCounterCompound,
+            to: &scores
+        )
+
+        // 連濁・促音便形の助数詞(3ぼん/6ぽん/3びき)は数詞に付いたときにしか現れないため、
+        // 数詞複合を辞書級へ引き上げる(さんぼん→三盆/山本 に負けていた)。
+        applyVoicedCounterNumericCompoundBoost(
+            for: reading,
+            candidates: arabicNumericCompound + numericCounterCompound,
             to: &scores
         )
 
