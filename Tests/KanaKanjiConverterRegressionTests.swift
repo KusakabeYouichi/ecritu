@@ -6047,6 +6047,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "パレット", "single=\(single)")
     }
 
+    // 1ぺん/6ぺん→1片/6片: ぺん は へん の促音便読みのため 片(ぺん wc10155)が連濁収穫
+    // フィルタで落ち、数字を打っても助数詞 片 が候補に出なかった。数字文脈限定で供給する(2469)
+    func testRegressionDigitContextSuppliesPenCounterKanji() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ぺん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("片"), "単独入力では従来どおり出さない single=\(single)")
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            single,
+            reading: "ぺん",
+            precedingCharacter: "6"
+        )
+        XCTAssertEqual(boosted.first, "片", "boosted=\(boosted)")
+        // 抑制済みなら復活させない
+        let suppressed = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            single,
+            reading: "ぺん",
+            precedingCharacter: "6",
+            suppressedCandidates: ["片"]
+        )
+        XCTAssertFalse(suppressed.contains("片"), "suppressed=\(suppressed)")
+    }
+
     // りょうてい: 料亭(wc7399)より 竜蹄(馬の美称)/量定 が先に並んでいた。seed で 料亭 を先頭へ
     func testRegressionRyouteiPrefersRyoutei() throws {
         try prepareRealLMDictionary()

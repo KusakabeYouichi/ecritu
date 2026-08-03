@@ -295,6 +295,14 @@ extension KanaKanjiConverter {
         "かい": ["階"]
     ]
 
+    // 数字直後だけ供給する助数詞表層。単独入力では別のフィルタに落ちるが、数字が付くと
+    // 助数詞として実在する読み。片(1片=いっぺん/6片=ろっぺん)は ぺん が へん の促音便読みの
+    // ため連濁収穫フィルタで落ち、数字を打っても候補に現れなかった(2469)。へん 側は 片 が
+    // 候補に居るので供給不要(present に有る表層はここでは足さない)。
+    static let digitContextSuppliedCounterSurfacesByReading: [String: [String]] = [
+        "ぺん": ["片"]
+    ]
+
     static func digitBoostCounterSurfaces(for reading: String) -> [String]? {
         let base = numericCounterSuffixCandidatesByReading[reading]
         let extra = digitContextAdditionalCounterSurfacesByReading[reading]
@@ -313,17 +321,20 @@ extension KanaKanjiConverter {
     static func digitContextCounterBoostedCandidates(
         _ candidates: [String],
         reading: String,
-        precedingCharacter: Character?
+        precedingCharacter: Character?,
+        suppressedCandidates: Set<String> = []
     ) -> [String] {
         guard let precedingCharacter,
             isCounterBoostDigit(precedingCharacter) else {
             return candidates
         }
         let present = Set(candidates)
-        var boosted: [String] = []
+        // 数字文脈限定の助数詞供給(定数コメント参照)。抑制済み表層は復活させない。
+        var boosted: [String] = (Self.digitContextSuppliedCounterSurfacesByReading[reading] ?? [])
+            .filter { !present.contains($0) && !suppressedCandidates.contains($0) }
         if let counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
-            boosted = counterSurfaces.filter { present.contains($0) }
+            boosted += counterSurfaces.filter { present.contains($0) }
         } else {
             // 読みが「助数詞読み+かな末尾」(かい+しか/まい+ちゅう 等)なら、助数詞表層で
             // 始まる合成候補(回しか/枚中。末尾はかな素通りでも変換済みでも可)を前置する
@@ -346,7 +357,7 @@ extension KanaKanjiConverter {
                     })
                 }
                 if !matched.isEmpty {
-                    boosted = matched
+                    boosted += matched
                     break
                 }
             }
