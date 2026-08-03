@@ -5,6 +5,9 @@ import UIKit
 struct KeyboardRootView: View {
     let onTextInput: (String) -> Void
     let onDeleteBackward: () -> Void
+    // 部首ピッカーの字一覧(部首番号→字・部首内画数・区点・読み)。索引は mmap 保持なので
+    // 呼ぶたびに引いても常駐コストは無い。ストアはコントローラ側が持つためクロージャで注入する。
+    let onLookupRadicalEntries: (Int) -> [KanjiRadicalFileIndex.Entry]
     let onSpace: () -> Void
     let onReturn: () -> Void
     let onAdvanceKeyboard: () -> Void
@@ -1086,6 +1089,7 @@ struct KeyboardRootView: View {
     KeyboardRootView(
         onTextInput: { _ in },
         onDeleteBackward: {},
+        onLookupRadicalEntries: { _ in [] },
         onSpace: {},
         onReturn: {},
         onAdvanceKeyboard: {},
