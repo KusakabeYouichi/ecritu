@@ -6006,6 +6006,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // きかんし: 機関誌(wc10093)/機関紙(10121)/機関士(10648)/季刊誌(13053)/気管支(15536)が
+    // すべて収穫底値(>=10000)で harvest tier へ降格され、帰還し/期間し 等の合成の下に
+    // 沈んで候補に出てこなかった(2156 と同型の逆症状)。seed 登録で降格免除+並び指定、
+    // 連文節側も seed 順ボーナスで揃える(2457)
+    func testRegressionKikanshiHarvestFloorExempted() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "きかんし", limit: 14, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(single.prefix(5)),
+            ["機関誌", "機関紙", "気管支", "機関士", "季刊誌"],
+            "single=\(single.prefix(8))"
+        )
+        // 動詞連用形の合成は後続
+        let kikanshiIndex = try XCTUnwrap(single.firstIndex(of: "機関誌"))
+        let kikanIndex = try XCTUnwrap(single.firstIndex(of: "帰還し"))
+        XCTAssertTrue(kikanshiIndex < kikanIndex, "single=\(single.prefix(8))")
+    }
+
     // こうかいされて/されてる で 公開⇄後悔 が入れ替わっていた。前者は連文節が効き
     // (公開→さ bigram582 < 後悔→さ1660)、後者は連文節が空(さ変+てる縮約のノードが
     // 組めない)で単文節の辞書順(紅海0/後悔1/公会2/公開3)に落ちるため。seed で単文節の
