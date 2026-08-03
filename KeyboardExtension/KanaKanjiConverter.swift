@@ -1172,6 +1172,17 @@ final class KanaKanjiConverter {
             KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems.contains(String(normalized.dropLast())) {
             return true
         }
+        // かな/カタカナ正書を持つ形容動詞語幹(いや 等)+ 活用語尾。で の一般剥がしは上と同じ
+        // 理由で危険なので語幹を明示集合に限定する。エンジンは いやで を2位(イヤで の直後)に
+        // 返しているが keepKana 不成立だと提示層が候補から落としてしまう(2464)。
+        for stem in KanaKanjiConverter.kanaOrthographyNaAdjectiveStems
+        where normalized.count > stem.count && normalized.hasPrefix(stem) {
+            let tail = String(normalized.dropFirst(stem.count))
+            if KanaKanjiConverter.naAdjectiveInflectionTails.contains(tail),
+                computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // 指示代名詞+助詞 を「先頭から」剥がした残り(それは+いくつ 等)がかな正書の識別なら
         // 根拠あり(既存規則は末尾剥がしのみで、かな正書語が読みの後半にある形を拾えず、
         // エンジンかな最良の それはいくつ が提示層退避で それは幾つ に繰り上がっていた。2420)。

@@ -393,6 +393,16 @@ extension KanaKanjiConverter {
     // 出さない(文中に旧表記が混じるのを防ぐ)。どいつ は ドイツ と正当に競合するため対象外。
     static let multiClauseKanaOrthodoxPronounReadings: Set<String> = ["こいつ", "そいつ", "あいつ"]
     // かな正書の指示代名詞語幹(これで/ここで 等の keepKana 判定に使う)。
+    // かな/カタカナ表記が正書として使われる形容動詞語幹(ひらがなだと紛れるが漢字が馴染まない語)。
+    // seed 側の並び指定と対で運用する(seed["いや"]=[イヤ,いや,嫌,否,厭])。
+    static let kanaOrthographyNaAdjectiveStems: Set<String> = ["いや", "むら"]
+
+    // 上の語幹に付く活用語尾・断定/丁寧の連なり。助詞の は/が 等は既存の剥がし規則が担当する。
+    static let naAdjectiveInflectionTails: Set<String> = [
+        "で", "だ", "な", "に", "なら", "だし", "だと", "だから",
+        "だった", "だったら", "です", "でした", "じゃない", "ではない"
+    ]
+
     static let kanaOrthographyDemonstrativePronounStems: Set<String> = [
         "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ",
         "こっち", "そっち", "あっち", "どっち", "こちら", "そちら", "あちら", "どちら"
