@@ -374,6 +374,9 @@
 	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
 	<!--既存<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict> -->
 	<!-- 一般用語 -->
+	        <!-- アイユ: 辞書に実在(あいゆ wc2148)だが、同読みの漢字収穫(愛由/藍結=収穫底値10000)が
+	             あるためカタカナ強調抑止で候補から消える。追加語彙登録で復活させる -->
+	        <dict><key>phrase</key><string>アイユ</string><key>shortcut</key><string>あいゆ</string></dict>
 	        <dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict><!-- [そのあと]ならある -->
 	        <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict><!-- [ははかた]ならある -->
 	        <dict><key>phrase</key><string>父方</string><key>shortcut</key><string>ちちがた</string></dict><!-- [ちちかた]ならある -->

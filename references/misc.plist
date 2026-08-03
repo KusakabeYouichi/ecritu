@@ -350,5 +350,11 @@
 	<dict><key>phrase</key><string>張り忘れ</string><key>shortcut</key><string>はりわすれ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>貼り忘れる</string><key>shortcut</key><string>はりわすれる</string><key>pos</key><string>一段</string></dict>
 	<dict><key>phrase</key><string>張り忘れる</string><key>shortcut</key><string>はりわすれる</string><key>pos</key><string>一段</string></dict>
+	<!-- リットル/ℓ(りったー・りっとる): 辞書は りったー→リッター、りっとる→リットル と
+	     音写ごとに別読みで持つため、りったー では リットル が出ない。単位記号 ℓ はどちらの
+	     読みにも無い。日常入力では リッター と打って リットル/ℓ を得たい場面が多いので補う -->
+	<dict><key>phrase</key><string>リットル</string><key>shortcut</key><string>りったー</string></dict>
+	<dict><key>phrase</key><string>ℓ</string><key>shortcut</key><string>りったー</string></dict>
+	<dict><key>phrase</key><string>ℓ</string><key>shortcut</key><string>りっとる</string></dict>
 </array>
 </plist>
