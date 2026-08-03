@@ -6006,6 +6006,43 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // 2026-08-03 の一括報告(ユーザー指定の並び)。読みキーごとに独立した seed 指定+
+    // 交ぜ書き許可(今まで)+連文節ボーナス(とき)+keepKana(のだろ/先頭の の)(2455)
+    func testRegressionUserSpecifiedOrderingBatch() throws {
+        try prepareRealLMDictionary()
+
+        // 単文節の並び
+        let expectations: [(String, [String])] = [
+            ("いままで", ["今まで", "いままで", "今迄"]),
+            ("とき", ["とき", "時"]),
+            ("いつ", ["いつ", "何時"]),
+            ("あって", ["あって", "会って", "合って", "有って"]),
+            ("しじょう", ["市場", "私情"]),
+            ("きょうかい", ["協会", "教会", "境界"])
+        ]
+        for (reading, expected) in expectations {
+            let candidates = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(
+                Array(candidates.prefix(expected.count)),
+                expected,
+                "\(reading)=\(candidates.prefix(6))"
+            )
+        }
+
+        // 連文節でかな先頭+提示層でも退避しない(keepKana)
+        let kanaLeading = [
+            "いつだったのだろう", "いつだったのだろ", "のときのは", "のときは", "あってな"
+        ]
+        for reading in kanaLeading {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, reading, "multi(\(reading))=\(multi.prefix(3))")
+            XCTAssertTrue(
+                converter.shouldKeepKanaIdentityLeading(for: reading),
+                "keepKana(\(reading)) が false"
+            )
+        }
+    }
+
     // ていしえき: 未登録の複合語で、連文節が 停止+駅(駅 uni4050 < 液 uni6008)を選んでいた。
     // misc curated で 停止液 を供給(単独の えき は 駅 先頭のまま)(2454)
     func testRegressionTeishiekiPrefersLiquid() throws {

@@ -606,7 +606,11 @@ extension KanaKanjiConverter {
             || store.wordCosts(for: reading).keys.contains { Self.containsKanjiCandidate($0) }
     }
     // 定着した交ぜ書き(常用漢字外回避ではなく主流表記になっているもの)。分類から除外する。
-    static let mazegakiAllowlistedSurfaces: Set<String> = ["子ども", "子どもたち", "子どもの日"]
+    // 交ぜ書き判定の許可リスト。漢字+かな混在だが現代の標準表記であるもの。
+    // 今まで は 今迄(旧表記・全漢字)が辞書にあるため交ぜ書き扱いで抑制されていた(2455)。
+    static let mazegakiAllowlistedSurfaces: Set<String> = [
+        "子ども", "子どもたち", "子どもの日", "今まで"
+    ]
 
     // 表層をひらがな化する。かな(ひらがな/カタカナ/ー)以外を含む場合は nil。
     static func hiraganizedKanaOnlySurface(_ surface: String) -> String? {
