@@ -6006,6 +6006,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(tsukeru.prefix(2)), ["見つける", "見付ける"], "tsukeru=\(tsukeru)")
     }
 
+    // いやで: SudachiDict の促音/長音の水増し表記(イヤっ rank6 / 嫌ー rank12)が合成の種に
+    // なり イヤっで/嫌ーで を作っていた。読みに無い っ/ッ/ー が表層にある候補を装飾表記
+    // として一般に除去(読み側にある入力=いやー/やっぱ/こーひー は無傷)(2450)
+    func testRegressionSokuonChoonPaddingFiltered() throws {
+        try prepareRealLMDictionary()
+        let iyade = converter.candidates(for: "いやで", limit: 24, systemCandidateMode: .surface)
+        XCTAssertFalse(iyade.contains("イヤっで"), "iyade=\(iyade.prefix(8))")
+        XCTAssertFalse(iyade.contains("嫌ーで"), "iyade=\(iyade.prefix(8))")
+        XCTAssertTrue(iyade.contains("嫌で"), "iyade=\(iyade.prefix(8))")
+        let iya = converter.candidates(for: "いや", limit: 24, systemCandidateMode: .surface)
+        XCTAssertFalse(iya.contains("イヤっ"), "iya=\(iya.prefix(8))")
+        XCTAssertFalse(iya.contains("嫌ー"), "iya=\(iya.prefix(8))")
+        // 読みに っ/ー を含む入力は温存(誤爆しない)
+        XCTAssertTrue(
+            converter.candidates(for: "いやー", limit: 6, systemCandidateMode: .surface).contains("イヤー")
+        )
+        XCTAssertTrue(
+            converter.candidates(for: "やっぱ", limit: 6, systemCandidateMode: .surface).contains("やっぱ")
+        )
+        XCTAssertTrue(
+            converter.candidates(for: "こーひー", limit: 6, systemCandidateMode: .surface).contains("コーヒー")
+        )
+    }
+
     // やっぱり: 辞書rank0がカタカナ(ヤッパリ)で、さらに やっぱ+李(李 uni5116)の合成が
     // 先頭を取っていた。seed でかな先頭を固定(2449)
     func testRegressionYappariKanaLeading() throws {
