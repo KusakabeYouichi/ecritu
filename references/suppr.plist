@@ -339,6 +339,11 @@
 	<!-- 底触/低触(ていしょく): 存在しない表記(抵触 の収穫ミス) -->
 	<dict><key>phrase</key><string>底触</string><key>shortcut</key><string>ていしょく</string></dict>
 	<dict><key>phrase</key><string>低触</string><key>shortcut</key><string>ていしょく</string></dict>
+	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が
+	     無いため五段う動詞と推論され、河って/河ってきて を生成して 変わってきてる を逆転していた。
+	     交ぜ書き判定はかな部分1文字を対象外(漢字+助詞と区別不能)なので構造的にすり抜ける。
+	     クラス推論側は 2465 で塞いだが、交ぜ書きエントリ自体も残す価値が無いので抑制する -->
+	<dict><key>phrase</key><string>河う</string><key>shortcut</key><string>かわう</string></dict>
 	<!-- 違うい(ちがうい): 存在しない語の収穫(adjective-i クラス付き)。く形派生 違うく(ちがうく)を作り、ちがうくに→違うく+に が 違う+国 を逆転する温床(危うい/ものうい は正当なので残す) -->
 	<dict><key>phrase</key><string>違うい</string><key>shortcut</key><string>ちがうい</string></dict>
 	<!-- 報る(しる): 報 に しる の読みは無い(報せる=しらせる/報いる=むくいる のみ)。報って(しって)等の温床 -->
