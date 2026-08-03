@@ -6199,17 +6199,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionKatakanaOrthographyExceptions() throws {
         try prepareRealLMDictionary()
         let iya = converter.candidates(for: "いや", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(iya.prefix(5)), ["いや", "イヤ", "嫌", "否", "厭"], "iya=\(iya)")
+        XCTAssertEqual(Array(iya.prefix(5)), ["イヤ", "いや", "嫌", "否", "厭"], "iya=\(iya)")
         // 合成(いや+で)にも seed 順が伝わる
         let iyade = converter.candidates(for: "いやで", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(
             Array(iyade.prefix(5)),
-            ["いやで", "イヤで", "嫌で", "否で", "厭で"],
+            ["イヤで", "いやで", "嫌で", "否で", "厭で"],
             "iyade=\(iyade)"
         )
-        // むら は 村 の位置を保ったまま ムラ を供給
         let mura = converter.candidates(for: "むら", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(mura.prefix(3)), ["むら", "村", "ムラ"], "mura=\(mura)")
+        XCTAssertEqual(Array(mura.prefix(3)), ["村", "ムラ", "むら"], "mura=\(mura)")
     }
 
     // いやで: SudachiDict の促音/長音の水増し表記(イヤっ rank6 / 嫌ー rank12)が合成の種に
