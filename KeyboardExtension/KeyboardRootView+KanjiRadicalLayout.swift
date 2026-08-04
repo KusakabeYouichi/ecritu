@@ -34,11 +34,14 @@ struct KanjiCharacterKeyButton: View {
     let entry: KanjiRadicalFileIndex.Entry
     let height: CGFloat
     let onCommit: (String) -> Void
+    // ロングタップの吹き出しはセクション側のオーバーレイが描く(キー内に描くと隣のキーが
+    // 上に載って潜り、スクロール領域の端で見切れる。2481)。接触点をそのまま渡す。
+    let onInspect: (KanjiRadicalFileIndex.Entry?, CGPoint) -> Void
 
     // ロングタップ中だけ字典風のポップアップを出す。押し込みで確定してしまわないよう、
     // シフトキーと同じ didTriggerLongPress ガードでタップ動作を抑止する(モードも維持)。
     @State private var didTriggerLongPress = false
-    @State private var isShowingInfo = false
+    @State private var touchPoint: CGPoint = .zero
 
     private var hasMincho: Bool {
         KanaKanjiStore.hasMinchoGlyph(for: entry.character)
@@ -66,46 +69,46 @@ struct KanjiCharacterKeyButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        // 接触点をセクション座標で拾う(minimumDistance 0 なので触れた瞬間に届く)
+        .simultaneousGesture(
+            DragGesture(
+                minimumDistance: 0,
+                coordinateSpace: .named(KanjiInspectBubble.coordinateSpaceName)
+            )
+            .onChanged { value in
+                touchPoint = value.location
+            }
+            // 指を離した(またはキー外へ動かした)時点でポップアップを消す
+            .onEnded { _ in
+                onInspect(nil, .zero)
+            }
+        )
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.35)
                 .onEnded { _ in
                     didTriggerLongPress = true
-                    isShowingInfo = true
+                    onInspect(entry, touchPoint)
                 }
         )
-        // 指を離した(またはキー外へ動かした)時点でポップアップを消す
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onEnded { _ in
-                    isShowingInfo = false
-                }
-        )
-        .overlay {
-            if isShowingInfo {
-                KanjiInspectBubble(entry: entry)
-                    .allowsHitTesting(false)
-                    .transition(.opacity)
-            }
-        }
-        .zIndex(isShowingInfo ? 1 : 0)
-        .animation(.easeOut(duration: 0.08), value: isShowingInfo)
         .accessibilityLabel("\(entry.character) \(entry.readings)")
     }
 }
 
 // 字のロングタップで出す字典風ポップアップ(読み / U+XXXX / JIS X 0208区点)。
-// 記号モードの長押し吹き出しと同じ見え方に揃え、画面端では内側へずらす。
-// 最上段は上に出すとキーボードの上端を越えて見切れるため、指に隠れない「横」へ出す(2479)。
+// セクション側のオーバーレイが描く(キー内に描くと隣のキーの下に潜る)。位置は接触点基準で
+// 決め、指の上に出す余地が無い最上段では指の横へ逃がす。左右上下ともスクロール領域内に
+// クランプするので見切れない(2481)。
 struct KanjiInspectBubble: View {
     static let coordinateSpaceName = "kanjiCharacterGrid"
 
-    let entry: KanjiRadicalFileIndex.Entry
+    static let bubbleWidth: CGFloat = 176
+    // 2行(読み+コード)+上下パディングの見込み。配置計算にだけ使う
+    static let bubbleHeight: CGFloat = 46
+    // 指の当たり半径ぶんの逃げ。吹き出しが指に隠れないための最小距離
+    private static let fingerClearance: CGFloat = 34
+    private static let margin: CGFloat = 4
 
-    private let bubbleWidth: CGFloat = 176
-    // 2行(読み+コード)+上下パディングの実測見込み。上に出す余地の判定にも使う
-    private let bubbleHeight: CGFloat = 48
-    private let screenMargin: CGFloat = 6
-    private let gap: CGFloat = 6
+    let entry: KanjiRadicalFileIndex.Entry
 
     private var codePointText: String {
         guard let scalar = entry.character.unicodeScalars.first else {
@@ -114,52 +117,47 @@ struct KanjiInspectBubble: View {
         return String(format: "U+%04X", scalar.value)
     }
 
-    var body: some View {
-        GeometryReader { proxy in
-            let keyFrame = proxy.frame(in: .global)
-            let keyInGrid = proxy.frame(in: .named(Self.coordinateSpaceName))
-            let screenWidth = UIScreen.main.bounds.width
-            let half = bubbleWidth / 2
-            // 可視領域の上端に吹き出しぶんの余地があるか(最上段では無い)
-            let hasRoomAbove = keyInGrid.minY >= bubbleHeight + gap
-            // 横出しは画面の広い側へ(左半分のキーなら右、右半分なら左)。指はキーの上にあるので
-            // 横に出せば隠れない。
-            let sideOffsetX = (keyFrame.width / 2 + gap + half)
-                * (keyFrame.midX <= screenWidth / 2 ? 1 : -1)
-            let rawCenterX = keyFrame.midX + (hasRoomAbove ? 0 : sideOffsetX)
-            let clampedCenterX = min(
-                max(rawCenterX, screenMargin + half),
-                max(screenMargin + half, screenWidth - screenMargin - half)
-            )
-            let dx = clampedCenterX - keyFrame.midX
-            // 上に出す場合はキーの上へ、横出しはキーの上端に揃える(可視領域外へはみ出さない)
-            let dy = hasRoomAbove
-                ? -(keyFrame.height / 2 + gap + bubbleHeight / 2)
-                : max(0, (bubbleHeight - keyFrame.height) / 2)
-
-            VStack(spacing: 2) {
-                Text(entry.readings)
-                    .font(.system(size: 12, weight: .bold, design: .rounded))
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.7)
-                Text("\(codePointText)  区点 \(entry.kuten)")
-                    .font(.system(size: 10.5, weight: .medium, design: .rounded))
-                    .foregroundStyle(.white.opacity(0.82))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-            .foregroundStyle(.white)
-            .multilineTextAlignment(.center)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 6)
-            .frame(width: bubbleWidth)
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(Color.black.opacity(0.86))
-            )
-            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
-            .offset(x: dx, y: dy)
+    // 吹き出し左上の位置(セクション座標)。上に出せなければ指の横、はみ出しはクランプ。
+    static func placement(forTouchAt touch: CGPoint, in size: CGSize) -> CGPoint {
+        func clampedX(_ x: CGFloat) -> CGFloat {
+            min(max(x, margin), max(margin, size.width - bubbleWidth - margin))
         }
+        func clampedY(_ y: CGFloat) -> CGFloat {
+            min(max(y, margin), max(margin, size.height - bubbleHeight - margin))
+        }
+        let above = touch.y - fingerClearance - bubbleHeight
+        if above >= margin {
+            return CGPoint(x: clampedX(touch.x - bubbleWidth / 2), y: above)
+        }
+        // 最上段: 画面の広い側(接触点が左半分なら右、右半分なら左)へ出す
+        let sideX = touch.x <= size.width / 2
+            ? touch.x + fingerClearance
+            : touch.x - fingerClearance - bubbleWidth
+        return CGPoint(x: clampedX(sideX), y: clampedY(touch.y - bubbleHeight / 2))
+    }
+
+    var body: some View {
+        VStack(spacing: 2) {
+            Text(entry.readings)
+                .font(.system(size: 12, weight: .bold, design: .rounded))
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+            Text("\(codePointText)  区点 \(entry.kuten)")
+                .font(.system(size: 10.5, weight: .medium, design: .rounded))
+                .foregroundStyle(.white.opacity(0.82))
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.center)
+        .padding(.horizontal, 10)
+        .padding(.vertical, 6)
+        .frame(width: Self.bubbleWidth)
+        .background(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .fill(Color.black.opacity(0.86))
+        )
+        .shadow(color: .black.opacity(0.25), radius: 6, y: 2)
     }
 }
 
@@ -261,6 +259,11 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let onSwitchToKana: () -> Void
     let onDeleteBackward: () -> Void
 
+    // ロングタップ中の字と接触点(セクション座標)。オーバーレイはキーより後に描かれるので
+    // 隣のキーの下に潜らない(2481)
+    @State private var inspectedEntry: KanjiRadicalFileIndex.Entry?
+    @State private var inspectTouchPoint: CGPoint = .zero
+
     private var forms: [RadicalForm] {
         KanjiRadicalCatalog.forms(in: selectedCategory, style: strokeCountStyle)
     }
@@ -303,17 +306,32 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                             KanjiCharacterKeyButton(
                                 entry: entry,
                                 height: compactEmojiKeyHeight,
-                                onCommit: onCommitCharacter
+                                onCommit: onCommitCharacter,
+                                onInspect: { inspected, point in
+                                    inspectedEntry = inspected
+                                    inspectTouchPoint = point
+                                }
                             )
                         }
                     }
                     .padding(.vertical, 2)
                 }
                 .frame(height: fourRowAlignedTopContentHeight)
-                // ロングタップの吹き出しが最上段で見切れないようクリップを解除(iOS17+)
-                .modifier(KanjiRadicalScrollClipDisabledModifier())
-                // 吹き出しの出す向きを決めるための基準(可視領域の上端からの距離を測る)
+                // 接触点とクランプ範囲の基準(この矩形の中に吹き出しを収める)
                 .coordinateSpace(name: KanjiInspectBubble.coordinateSpaceName)
+                .overlay(alignment: .topLeading) {
+                    GeometryReader { proxy in
+                        if let inspectedEntry {
+                            let origin = KanjiInspectBubble.placement(
+                                forTouchAt: inspectTouchPoint,
+                                in: proxy.size
+                            )
+                            KanjiInspectBubble(entry: inspectedEntry)
+                                .offset(x: origin.x, y: origin.y)
+                        }
+                    }
+                    .allowsHitTesting(false)
+                }
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVGrid(columns: radicalColumns, spacing: emojiGridSpacing) {
@@ -371,15 +389,5 @@ struct KeyboardRootKanjiRadicalSectionView: View {
             }
         }
         .frame(height: fourRowAlignedClusterHeight, alignment: .top)
-    }
-}
-
-struct KanjiRadicalScrollClipDisabledModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        if #available(iOS 17.0, *) {
-            content.scrollClipDisabled()
-        } else {
-            content
-        }
     }
 }
