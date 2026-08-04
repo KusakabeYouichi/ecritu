@@ -6174,6 +6174,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // とりわすれてる が学習後に {取り忘れてる, とりわすれてる} だけになる件: 全長読みが
+    // 学習/追加語彙の1ノードで賄えると連文節は単文節に委ねて空を返し、単文節には
+    // 「連用形+活用形」を合成する経路が無いため変種が全部消える。貼り忘れる と同じく
+    // 複合動詞を curated 供給して 撮り/摂り/録り/採り忘れてる を常に選べるようにする(2478)
+    func testRegressionToriWasureruCompoundSuppliedFromMisc() throws {
+        try prepareRealLMDictionary()
+        for candidate in ["取り忘れる", "撮り忘れる", "摂り忘れる", "録り忘れる", "採り忘れる"] {
+            converter.store.addUserEntry(reading: "とりわすれる", candidate: candidate)
+        }
+        converter.store.addLearnedEntry(reading: "とりわすれてる", candidate: "取り忘れてる")
+        converter.store.waitForPendingLearningPersists()
+        converter.invalidateCandidateCache()
+
+        let teru = converter.candidates(for: "とりわすれてる", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(teru.first, "取り忘れてる", "teru=\(teru)")
+        for expected in ["撮り忘れてる", "摂り忘れてる", "録り忘れてる", "採り忘れてる"] {
+            XCTAssertTrue(teru.contains(expected), "teru=\(teru)")
+        }
+        let ta = converter.candidates(for: "とりわすれた", limit: 10, systemCandidateMode: .surface)
+        XCTAssertTrue(ta.contains("撮り忘れた"), "ta=\(ta)")
+    }
+
     // ここまで: エンジンは単文節/連文節ともかな先頭を返していたが keepKana 不成立で提示層が
     // かな識別を除去し、小駒で/個々まで が繰り上がっていた(LM に ここまで の unigram が無く
     // 個々5547/小駒7884 の合成が組める)。指示代名詞+助詞の照合を まで/から 等へ拡張(2476)

@@ -350,6 +350,17 @@
 	<dict><key>phrase</key><string>張り忘れ</string><key>shortcut</key><string>はりわすれ</string><key>pos</key><string>名詞</string></dict>
 	<dict><key>phrase</key><string>貼り忘れる</string><key>shortcut</key><string>はりわすれる</string><key>pos</key><string>一段</string></dict>
 	<dict><key>phrase</key><string>張り忘れる</string><key>shortcut</key><string>はりわすれる</string><key>pos</key><string>一段</string></dict>
+	<!-- 取り/撮り/摂り/録り/採り忘れる(とりわすれる): 貼り忘れ と同じ構造。単文節には
+	     「連用形+活用形」を合成する経路が無く、全長読みが学習/追加語彙で1ノードになると
+	     連文節が単文節に委ねる(空を返す)ため、学習後に変種が全部消えていた。
+	     複合動詞を curated で供給して 撮り忘れてる/摂り忘れてる/録り忘れてる を常に選べるようにする -->
+	<dict><key>phrase</key><string>取り忘れる</string><key>shortcut</key><string>とりわすれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>撮り忘れる</string><key>shortcut</key><string>とりわすれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>摂り忘れる</string><key>shortcut</key><string>とりわすれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>録り忘れる</string><key>shortcut</key><string>とりわすれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>採り忘れる</string><key>shortcut</key><string>とりわすれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>取り忘れ</string><key>shortcut</key><string>とりわすれ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>撮り忘れ</string><key>shortcut</key><string>とりわすれ</string><key>pos</key><string>名詞</string></dict>
 	<!-- 単位記号 ℓ(りったー・りっとる): 辞書は りったー→リッター、りっとる→リットル を持つが
 	     記号 ℓ はどちらの読みにも無いので補う。音写の読み替え(りったー→リットル)はユーザー方針で
 	     不要(2473で撤回) -->
