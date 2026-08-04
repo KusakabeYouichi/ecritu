@@ -636,15 +636,54 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
 struct RadicalStrokeCountSettingsSection: View {
     @Binding var selection: RadicalStrokeCountStyleOption
 
+    // 流儀が分かれる字形。選んでいない方の画数は消し線で示す
+    private static let divergentForms: [(form: String, name: String, modern: Int, traditional: Int)] = [
+        ("艹", "くさかんむり", 3, 4),
+        ("辶", "しんにょう", 3, 4),
+        ("礻", "しめすへん", 4, 5),
+        ("飠", "しょくへん", 7, 8)
+    ]
+
     var body: some View {
-        SegmentedSettingsCard(
-            title: "部首の画数の数え方",
-            pickerTitle: "部首の画数の数え方",
+        SegmentedSettingsCardWithFootnoteContent(
+            title: "画数の数え方",
+            pickerTitle: "画数の数え方",
             selection: $selection,
             options: Array(RadicalStrokeCountStyleOption.allCases),
-            optionTitle: { $0.title },
-            footnote: "漢字1文字ピッカー(モード切替キーの下フリック)の部首一覧を並べる画数の基準です。辞書によって流儀が分かれる字形の扱いが変わります(くさかんむり 艹 = 3画/4画、しんにょう 辶 = 3画/4画、しめすへん 礻 = 4画/5画、しょくへん 飠 = 7画/8画)。初期設定は「新字体で数える」です。"
-        )
+            optionTitle: { $0.title }
+        ) {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("漢字1文字ピッカー(モード切替キーの下フリック)の部首一覧の並びと、字の一覧に挟む総画数の区切りに効きます。辞書によって流儀が分かれる字形は次のように数えます。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    ForEach(Self.divergentForms, id: \.form) { item in
+                        HStack(spacing: 6) {
+                            Text("・\(item.form)(\(item.name))")
+                            Spacer(minLength: 8)
+                            strokeCountLabel(item.modern, isActive: selection == .modern)
+                            Text("/")
+                                .foregroundStyle(.tertiary)
+                            strokeCountLabel(item.traditional, isActive: selection == .traditional)
+                        }
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    }
+                }
+
+                Text("初期設定は「新字体で数える」です。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+
+    private func strokeCountLabel(_ strokes: Int, isActive: Bool) -> some View {
+        Text("\(strokes)画")
+            .strikethrough(!isActive)
+            .foregroundStyle(isActive ? Color.primary : Color.secondary)
+            .fontWeight(isActive ? .semibold : .regular)
     }
 }
 

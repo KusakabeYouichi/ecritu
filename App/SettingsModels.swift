@@ -772,7 +772,7 @@ enum ScriptVariantModeOption: String, CaseIterable, Identifiable {
 }
 
 
-// 部首の画数の数え方(漢字1文字ピッカーの部首一覧の並びと画数区切りに効く)。
+// 画数の数え方(漢字1文字ピッカーの部首一覧の並びと、字の一覧の総画数区切りに効く)。
 // 辞書によって流儀が分かれる字形(艹 3/4、辶 3/4、礻 4/5、飠 7/8)の扱いを決める。
 enum RadicalStrokeCountStyleOption: String, CaseIterable, Identifiable {
     case modern

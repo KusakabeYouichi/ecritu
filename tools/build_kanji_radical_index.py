@@ -2,8 +2,9 @@
 """漢字1文字ピッカー用の索引を Unihan から生成する。
 
 出力: KeyboardExtension/KanjiRadicalIndex.txt
-  1行 = 1字: radical(3桁) TAB 部首内画数(2桁) TAB 字 TAB 区点 TAB 読み
-  並び順 = 部首番号 → 部首内画数 → コードポイント(= 康熙字典順)
+  1行 = 1字: radical(3桁) TAB 部首内画数(2桁) TAB 字 TAB 区点 TAB 読み TAB 総画数(2桁)
+  並び順 = 部首番号 → 総画数 → 部首内画数 → コードポイント
+  (字グリッドに総画数の区切りを挟むため、ファイル順をそのまま総画数順にしている)
   行頭が "NNN\t" で始まるバイト順ソートなので、実行時は mmap したまま
   バイト単位のバイナリサーチで部首ブロックを切り出せる(常駐フットプリント ≒ 0)。
 
@@ -44,6 +45,7 @@ def is_katakana(text):
 
 def main():
     rs = read_field("Unihan_IRGSources.txt", "kRSUnicode")
+    total_strokes = read_field("Unihan_IRGSources.txt", "kTotalStrokes")
     jis = read_field("Unihan_OtherMappings.txt", "kJis0")
     readings = read_field("Unihan_Readings.txt", "kJapanese")
 
@@ -75,21 +77,29 @@ def main():
         kun = [f for f in forms if not is_katakana(f)][:MAX_KUN]
         reading_text = " ".join(on + kun) or "—"
 
-        rows.append((radical, strokes, cp, kuten, reading_text))
+        # 総画数(kTotalStrokes)。複数指定は先頭を採用。欠けている字は部首形の画数が
+        # 分からないので 0 とし、実行時は区切りを出さない。
+        total_text = total_strokes.get(cp, "").split()
+        try:
+            total = max(0, min(int(total_text[0]), 99)) if total_text else 0
+        except ValueError:
+            total = 0
+        rows.append((radical, total, strokes, cp, kuten, reading_text))
 
     rows.sort()
     lines = [
-        f"{radical:03d}\t{strokes:02d}\t{chr(cp)}\t{kuten}\t{reading}"
-        for radical, strokes, cp, kuten, reading in rows
+        f"{radical:03d}\t{strokes:02d}\t{chr(cp)}\t{kuten}\t{reading}\t{total:02d}"
+        for radical, total, strokes, cp, kuten, reading in rows
     ]
     OUT.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
     total = len(rows)
-    with_kuten = sum(1 for r in rows if r[3] != "—")
-    with_reading = sum(1 for r in rows if r[4] != "—")
+    with_kuten = sum(1 for r in rows if r[4] != "—")
+    with_reading = sum(1 for r in rows if r[5] != "—")
+    with_total = sum(1 for r in rows if r[1] > 0)
     print(f"wrote: {OUT}")
     print(f"  字数: {total} (URO {len(URO)} 中) / kRSUnicode 無しで除外: {len(URO) - total}")
-    print(f"  区点あり: {with_kuten} / 読みあり: {with_reading}")
+    print(f"  区点あり: {with_kuten} / 読みあり: {with_reading} / 総画数あり: {with_total}")
     print(f"  サイズ: {OUT.stat().st_size / 1024:.0f}KB")
     if skipped:
         print(f"  部首番号が解釈できず除外: {skipped}")
