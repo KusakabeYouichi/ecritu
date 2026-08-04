@@ -6203,6 +6203,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // でま→デマ: 実在の外来語なのに候補に出なかった。カタカナ強調抑止は LM unigram で
+    // 「カタカナが同音の漢字より安い」ことを保護条件にしていたが、手間(6037)が デマ(6955)より
+    // 安いため強調表記と誤判定していた。SudachiDict のカタカナ強調収穫は元の語と同一コストで
+    // 入る(ウマイ=旨い5415/バカリ=秤5401)一方、外来語は その読みの主語彙として明確に安い
+    // (デマ2137 ≪ 手間9327)ので、辞書コスト差2500以上を外来語の保護条件に加えた(2485)
+    func testRegressionLoanwordKatakanaProtectedByWordCostGap() throws {
+        try prepareRealLMDictionary()
+        let dema = converter.candidates(for: "でま", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(dema.first, "デマ", "dema=\(dema)")
+        // 手間/手ま は てま の連濁収穫。単独入力の候補列では多字表層も弾く(2485)
+        XCTAssertFalse(dema.contains("手間"), "dema=\(dema)")
+        XCTAssertFalse(dema.contains("手ま"), "dema=\(dema)")
+        // 複合語内の連濁はラティス側に残す(人込み が作れること)
+        let hitogomi = converter.candidates(for: "ひとごみ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(
+            hitogomi.contains("人混み") || hitogomi.contains("人込み"),
+            "hitogomi=\(hitogomi)"
+        )
+        // 強調表記の抑止は維持(同一コストの収穫は保護しない)
+        let umai = converter.candidates(for: "うまい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(umai.contains("ウマイ"), "umai=\(umai)")
+        let bakari = converter.candidates(for: "ばかり", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(bakari.contains("バカリ"), "bakari=\(bakari)")
+        // 出ました/出ます の妨害が無いこと(2文字ノードが活用形を崩さない)
+        XCTAssertEqual(
+            converter.candidates(for: "でました", limit: 4, systemCandidateMode: .surface).first,
+            "出ました"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "でまがひろまる", systemCandidateMode: .surface).first,
+            "デマが広まる"
+        )
+    }
+
     // うえてあって→上てあって: 裸の接続助詞「て」が名詞(上=unigram3799)の直後に立ち、
     // 断片チェーン 上+て+あって が全span活用形 植えてあって(LM未収録=OOV)を逆転していた。
     // て は用言の連用形にしか付かないので、準体助詞 ん の「述語の直後にしか立てない」規則と
@@ -7149,7 +7183,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("ごとく", ["ごとく", "五徳"]),
             ("ごとき", ["ごとき"]),
             ("いえども", ["いえども", "雖も"]),
-            ("ばかり", ["ばかり", "計り"]),
+            // 計り は はかり の連濁収穫なので単文節では出さない(2485)。本旨は かな が先頭
+            ("ばかり", ["ばかり"]),
         ] {
             let single = converter.candidates(for: r, limit: 6, systemCandidateMode: .surface)
             XCTAssertEqual(Array(single.prefix(expectedPrefix.count)), expectedPrefix, "r=\(r) single=\(single)")
