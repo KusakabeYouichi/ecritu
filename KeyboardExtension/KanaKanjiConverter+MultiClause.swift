@@ -581,6 +581,21 @@ extension KanaKanjiConverter {
     static let multiClauseCuratedWordCost = 1500
     // 語頭(文節頭)に来られない文字で始まる分割は日本語としてほぼあり得ないため強く減点。撥音ん・
     // 長音ー・促音っ・小書きかな等。「を」も現代仮名遣いでは目的格助詞専用なので語中に含めない。
+    // 接続助詞・補助動詞の て(かな表層)は用言の連用形にしか付かない。名詞の直後に裸の て が
+    // 立つと 上+て+あって のような断片チェーンが全span活用形(植えてあって)を逆転する
+    // (植えて は LM 未収録=OOV 7200級、上 は unigram 3799 で激安)。
+    // 連用形かどうかは「直前ノードの表層+て が、その1文字長いスパンの活用派生に在るか」で判定する
+    // (話し→話して 在り=連用形、上→上て 無し=名詞)。述語末尾文字だけの判定では サ変の し・
+    // 連用形の 話し・受身の され が漏れて5件退行した(検証済み)。
+    // 判定は「直前ノードの表層+て」が派生集合に在るかで行い、漢字を含む表層に限って減点する。
+    // 全かな表層(し=サ変連用形、され=受身、この=連体詞 等)は fail-open —
+    // かなの連用形は派生集合に現れない(語幹なしの して/されて は導出できず集合が空になる)ため
+    // 「集合が空なら連用形でない」とは判定できず、無理に減点すると して/公開されて を壊す
+    // (検証で5件退行→ かな側の判定は諦めた)。派生集合が未計算のスパンも減点しない。
+    // 対象ノードは surface==reading のかな表層に限る — 手/邸 のような名詞(reading て)は無関係。
+    // で は格助詞(上で/東京で)として名詞に付くので対象外(2480)。
+    static let multiClauseKanaTeAfterNonPredicatePenalty = 6000
+
     static let multiClauseForbiddenPenaltyCost = 100000
     static let multiClauseForbiddenInitials: Set<Character> = [
         "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
@@ -667,6 +682,8 @@ extension KanaKanjiConverter {
         var seedOrderNounNodeBonuses: [String: Int] = [:]
         // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
         var renyouNiNodeKeys = Set<String>()
+        // スパン別の活用派生表層(キー "start-end")。かな て の連用形接続判定に使う。
+        var inflectedSurfacesBySpan: [String: Set<String>] = [:]
         // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
         // 実在するものは「長語を分断する断片」とみなし、conn/床(1500)を与えないノードのキー。
         var shortCuratedFragmentNodeKeys = Set<String>()
@@ -973,6 +990,8 @@ extension KanaKanjiConverter {
                 //      活用ルール末尾文字に一致する読みのみ、上位3件に限定。
                 if inflectionSupplyGateSatisfied {
                     let inflected = cachedInflectedCandidates()
+                    // 「直前ノード+て」が連用形接続かの判定に使う(定数コメント参照)
+                    inflectedSurfacesBySpan["\(start)-\(end)"] = Set(inflected)
                     // このスパンを脱活用した基底読みが seed順ボーナス allowlist に含まれるか。
                     // (つかえた/つかえ→つかえる 等。含まれる時だけ先頭活用形にボーナス)
                     let spanBaseInSeedOrderAllowlist: Bool = {
@@ -1778,6 +1797,17 @@ extension KanaKanjiConverter {
                         Self.isMotionVerbSurface(node.surface) {
                         cost -= Self.multiClauseRenyouNiMotionVerbBonus
                     }
+                    // かな て(接続助詞・補助動詞)は連用形接続(定数コメント参照)。
+                    if node.reading.first == "て", node.surface == node.reading,
+                        !node.isInflectionDerived,
+                        !prevNode.isInflectionDerived,
+                        !prevNode.isDictionaryFormPredicate,
+                        let derivedForExtendedSpan =
+                            inflectedSurfacesBySpan["\(prevNode.start)-\(prevNode.end + 1)"],
+                        containsKanji(prevNode.surface),
+                        !derivedForExtendedSpan.contains(prevNode.surface + "て") {
+                        cost += Self.multiClauseKanaTeAfterNonPredicatePenalty
+                    }
                     // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
                     // 鳥忘れている に勝たせる。
                     if compoundVerbRenyouNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
@@ -1976,6 +2006,11 @@ extension KanaKanjiConverter {
         }
 
         var segments = pathIndices.map { nodes[$0].surface }
+        if true {
+            print("TEMPDEBUGPATH \(normalized) -> " + pathIndices.map {
+                "[\(nodes[$0].surface)/\(nodes[$0].reading)/d=\(nodes[$0].isInflectionDerived)/p=\(nodes[$0].isDictionaryFormPredicate)/c=\(nodes[$0].isCurated)]"
+            }.joined())
+        }
 
         // 仮定の接続助詞「なら」が述語直後で 奈良/楢/ナラ に漢字・カタカナ化した場合は
         // かな なら に是正する(買う奈良→買うなら)。連文節の best 分節は動詞を正しく取れて
