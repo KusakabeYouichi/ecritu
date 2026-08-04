@@ -221,6 +221,28 @@ struct RadicalFormKeyButton: View {
     }
 }
 
+// 字グリッドの総画数の区切り(タップできない)。部首一覧の区切り(塗りの角丸)とは見栄えを
+// 変えて、塗り無しの輪郭カプセル+「総N画」にする(部首の画数と総画数の混同を防ぐ。2483)。
+struct KanjiTotalStrokeMarkerCell: View {
+    let strokes: Int
+    let height: CGFloat
+
+    var body: some View {
+        Text("総\(strokes)画")
+            .font(.system(size: 10, weight: .semibold, design: .rounded))
+            .foregroundStyle(Color(.tertiaryLabel))
+            .lineLimit(1)
+            .minimumScaleFactor(0.6)
+            .frame(maxWidth: .infinity)
+            .frame(height: height)
+            .background(
+                Capsule(style: .continuous)
+                    .strokeBorder(Color(.separator), lineWidth: 1)
+            )
+            .accessibilityLabel("総画数\(strokes)画")
+    }
+}
+
 // 画数の区切り(タップできない)。「3画」のように示す。
 struct RadicalStrokeMarkerCell: View {
     let strokes: Int
@@ -276,6 +298,36 @@ struct KeyboardRootKanjiRadicalSectionView: View {
         Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 9)
     }
 
+    // 字グリッドに総画数の区切り(タップ不可)を挟む。索引は総画数順に並んでいるので
+    // 値が変わった位置に入れるだけでよい(2483)
+    enum CharacterListItem {
+        case totalStrokeMarker(Int)
+        case character(KanjiRadicalFileIndex.Entry)
+    }
+
+    // 総画数は Unihan の値(字ごとに正確)を土台に、部首の数え方の設定ぶんの差を足す
+    // ——「草冠を何画で数えるか」の設定を総画数にも効かせるため(艹3画→花7画 /
+    // 艸6画→花10画=康熙字典の総画)。字ごとにどちらの字形を使うかは索引に無いので、
+    // 表示中の部首字形の差分を一律で適用する(2483)。
+    private func totalStrokeOffset(for form: RadicalForm) -> Int {
+        form.strokes(style: strokeCountStyle) - form.strokes(style: .modern)
+    }
+
+    private func characterListItems(for form: RadicalForm) -> [(id: String, kind: CharacterListItem)] {
+        let offset = totalStrokeOffset(for: form)
+        var items: [(id: String, kind: CharacterListItem)] = []
+        var lastTotal = -1
+        for entry in onLookupEntries(form.radical) {
+            let total = entry.totalStrokes > 0 ? entry.totalStrokes + offset : 0
+            if total > 0, total != lastTotal {
+                items.append((id: "total-\(total)", kind: .totalStrokeMarker(total)))
+                lastTotal = total
+            }
+            items.append((id: "char-\(entry.character)", kind: .character(entry)))
+        }
+        return items
+    }
+
     // 部首一覧に画数の区切り(タップ不可)を挟む。部首を探す手掛かりは画数のため(2447)
     enum RadicalListItem {
         case strokeMarker(Int)
@@ -302,16 +354,24 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                 // 戻るはヘッダー(◀ 偏 › 氵(さんずい))が担う。行内にパンくずは置かない
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVGrid(columns: characterColumns, spacing: emojiGridSpacing) {
-                        ForEach(onLookupEntries(form.radical), id: \.character) { entry in
-                            KanjiCharacterKeyButton(
-                                entry: entry,
-                                height: compactEmojiKeyHeight,
-                                onCommit: onCommitCharacter,
-                                onInspect: { inspected, point in
-                                    inspectedEntry = inspected
-                                    inspectTouchPoint = point
-                                }
-                            )
+                        ForEach(characterListItems(for: form), id: \.id) { item in
+                            switch item.kind {
+                            case .totalStrokeMarker(let strokes):
+                                KanjiTotalStrokeMarkerCell(
+                                    strokes: strokes,
+                                    height: compactEmojiKeyHeight
+                                )
+                            case .character(let entry):
+                                KanjiCharacterKeyButton(
+                                    entry: entry,
+                                    height: compactEmojiKeyHeight,
+                                    onCommit: onCommitCharacter,
+                                    onInspect: { inspected, point in
+                                        inspectedEntry = inspected
+                                        inspectTouchPoint = point
+                                    }
+                                )
+                            }
                         }
                     }
                     .padding(.vertical, 2)

@@ -1,8 +1,8 @@
 import CoreText
 import Foundation
 
-// 漢字1文字ピッカーの索引。KanjiRadicalIndex.txt(部首番号→部首内画数→コードポイント順に
-// バイト順ソート済み。1行 = "NNN\tSS\t字\t区点\t読み")を Data(mappedIfSafe) のまま保持し、
+// 漢字1文字ピッカーの索引。KanjiRadicalIndex.txt(部首番号→総画数→部首内画数→コードポイント順に
+// バイト順ソート済み。1行 = "NNN\tSS\t字\t区点\t読み\tTT"、TT=総画数)を Data(mappedIfSafe) のまま保持し、
 // 行頭 "NNN\t" のバイナリサーチで部首ブロックだけを切り出す。欧文語彙
 // (GenericLatinLexiconFileIndex)と同じ方式で、常駐フットプリントを持たない。
 struct KanjiRadicalFileIndex {
@@ -11,6 +11,8 @@ struct KanjiRadicalFileIndex {
         let residualStrokes: Int
         let kuten: String
         let readings: String
+        // 総画数(Unihan kTotalStrokes)。字グリッドの画数区切りに使う。0 は不明(区切りを出さない)
+        let totalStrokes: Int
     }
 
     let data: Data
@@ -21,7 +23,7 @@ struct KanjiRadicalFileIndex {
 
     var isEmpty: Bool { data.isEmpty }
 
-    // 部首番号(1〜214)に属する字を、部首内画数→コードポイント順で返す。
+    // 部首番号(1〜214)に属する字を、ファイル順(総画数→部首内画数→コードポイント)で返す。
     func entries(radical: Int) -> [Entry] {
         guard 1...214 ~= radical, !data.isEmpty else {
             return []
@@ -90,7 +92,7 @@ struct KanjiRadicalFileIndex {
                 while lineEnd < n, bytes[lineEnd] != 0x0A {
                     lineEnd += 1
                 }
-                // フィールド分解: radical \t strokes \t 字 \t 区点 \t 読み
+                // フィールド分解: radical \t strokes \t 字 \t 区点 \t 読み \t 総画数
                 var fieldStarts: [Int] = [cursor]
                 var scan = cursor
                 while scan < lineEnd {
@@ -99,7 +101,7 @@ struct KanjiRadicalFileIndex {
                     }
                     scan += 1
                 }
-                if fieldStarts.count == 5 {
+                if fieldStarts.count >= 5 {
                     func field(_ index: Int) -> String {
                         let start = fieldStarts[index]
                         let end = index + 1 < fieldStarts.count ? fieldStarts[index + 1] - 1 : lineEnd
@@ -112,7 +114,8 @@ struct KanjiRadicalFileIndex {
                                 character: character,
                                 residualStrokes: Int(field(1)) ?? 0,
                                 kuten: field(3),
-                                readings: field(4)
+                                readings: field(4),
+                                totalStrokes: fieldStarts.count >= 6 ? (Int(field(5)) ?? 0) : 0
                             )
                         )
                     }

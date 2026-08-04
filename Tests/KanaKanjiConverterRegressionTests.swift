@@ -6665,15 +6665,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let water = index.entries(radical: 85)
         XCTAssertGreaterThan(water.count, 300, "water=\(water.count)")
         XCTAssertTrue(water.contains { $0.character == "漢" }, "漢 が部首85にあるべき")
-        // 部首内画数の昇順
-        let strokes = water.map(\.residualStrokes)
-        XCTAssertEqual(strokes, strokes.sorted(), "部首内画数が昇順でない")
+        // ファイル順 = 総画数 → 部首内画数 → コードポイント(字グリッドの総画数区切り用。2483)
+        let totals = water.map(\.totalStrokes)
+        XCTAssertEqual(totals, totals.sorted(), "総画数が昇順でない")
+        for (former, latter) in zip(water, water.dropFirst())
+        where former.totalStrokes == latter.totalStrokes {
+            XCTAssertLessThanOrEqual(
+                former.residualStrokes,
+                latter.residualStrokes,
+                "同じ総画数の中は部首内画数の昇順であるべき"
+            )
+        }
 
         // 区点と読み(漢 = 区20点33)
         let kan = try XCTUnwrap(water.first { $0.character == "漢" })
         XCTAssertEqual(kan.kuten, "20-33", "kuten=\(kan.kuten)")
         XCTAssertTrue(kan.readings.contains("カン"), "readings=\(kan.readings)")
         XCTAssertEqual(kan.residualStrokes, 11)
+        // 総画数は Unihan kTotalStrokes(伝統寄りの数え方。日本の辞典の13画とは1画ずれる)
+        XCTAssertEqual(kan.totalStrokes, 14)
 
         // 区点の無い字は「—」
         let noKuten = index.entries(radical: 1).first { $0.character == "丂" }
