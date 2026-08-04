@@ -361,9 +361,19 @@ extension KanaKanjiConverter {
         return voicedCost > devoicedCost
     }
 
-    func isRendakuHarvestSurface(_ surface: String, reading: String) -> Bool {
+    // includingMultiCharacterSurfaces: 単漢字以外(手間/手本/聞き 等の2文字以上)も対象にする。
+    // 連濁形は複合語の内部でしか現れないので、単独入力の候補(単文節の最終段)では多字表層も
+    // 弾くのが正しい(でま→手間 は誤り)。一方ラティス/合成の供給では 人+込み(ひとごみ)の
+    // ような複合語内の連濁が要るため、既定は従来どおり単漢字だけに絞る(2485)。
+    func isRendakuHarvestSurface(
+        _ surface: String,
+        reading: String,
+        includingMultiCharacterSurfaces: Bool = false
+    ) -> Bool {
         guard reading.count >= 2,
-            Self.isSingleKanjiCandidate(surface),
+            includingMultiCharacterSurfaces
+                ? Self.containsKanjiCandidate(surface)
+                : Self.isSingleKanjiCandidate(surface),
             let firstChar = reading.first,
             let devoicedFirst = Self.rendakuDevoicedKanaCharacter[firstChar] else {
             return false
@@ -595,6 +605,17 @@ extension KanaKanjiConverter {
         }
         if (store.userDictionary()[reading] ?? []).contains(candidate)
             || (store.learnedDictionary()[reading] ?? []).contains(candidate) {
+            return false
+        }
+        // 辞書コストによる外来語保護(単語単位と同基準。CandidateScore のコメント参照)
+        let readingWordCosts = store.wordCosts(for: reading)
+        if let katakanaWordCost = readingWordCosts[candidate],
+            let nonKatakanaBestWordCost = readingWordCosts
+                .filter({ !Self.isKatakanaString($0.key) })
+                .values
+                .min(),
+            nonKatakanaBestWordCost - katakanaWordCost
+                >= KanaKanjiConverter.CandidateScore.loanwordKatakanaWordCostGap {
             return false
         }
         let uni = store.wordLMUnigramCosts(for: [candidate, reading])

@@ -193,6 +193,13 @@ final class KanaKanjiConverter {
         static let harvestTierWordCostFloor = 10000
         // 完全一致専用候補(踊り字 等)。辞書語より下位に置き、末尾寄りに出す。
         static let exactReadingOnly = 300
+        // 外来語のカタカナ保護(辞書コスト基準)。SudachiDict のカタカナ強調収穫は元の語と
+        // 同一コストで入る(ウマイ=旨い5415/シテ=仕手4212/バカリ=秤5401/イヤ=嫌3673)一方、
+        // 実在の外来語はその読みの主語彙として明確に安い(デマ2137 ≪ 手間9327)。同読みの
+        // 非カタカナ候補の最安より この幅以上安いカタカナは外来語とみなし、強調抑止から外す。
+        // LM unigram 基準の保護(同音の漢字が安いと外来語でも落ちる。手間6037 < デマ6955)を
+        // 補う二段目の判定(2485)。
+        static let loanwordKatakanaWordCostGap = 2500
     }
 
     // candidates() のステージ間で共有する読み・辞書・直接候補のスナップショット。
@@ -569,7 +576,12 @@ final class KanaKanjiConverter {
         for candidate in Array(scores.keys)
         where !context.userCandidateSet.contains(candidate)
             && (Self.isDecorativeVariantSurface(candidate, reading: context.reading)
-                || isRendakuHarvestSurface(candidate, reading: context.reading)) {
+                // 単独入力の候補列では多字表層の連濁収穫(でま→手間/手ま)も弾く
+                || isRendakuHarvestSurface(
+                    candidate,
+                    reading: context.reading,
+                    includingMultiCharacterSurfaces: true
+                )) {
             scores.removeValue(forKey: candidate)
         }
 
@@ -656,7 +668,18 @@ final class KanaKanjiConverter {
             let probes = katakanaTargets + kanjiAlternatives + [reading]
             let uni = store.wordLMUnigramCosts(for: probes)
             let altBest = (kanjiAlternatives.compactMap { uni[$0] } + [uni[reading]].compactMap { $0 }).min()
+            // 辞書コストによる外来語保護(定数コメント参照)。同読みの非カタカナ候補の最安と比べる。
+            let readingWordCosts = store.wordCosts(for: reading)
+            let nonKatakanaBestWordCost = readingWordCosts
+                .filter { !Self.isKatakanaString($0.key) }
+                .values
+                .min()
             katakanaTargets = katakanaTargets.filter { candidate in
+                if let katakanaWordCost = readingWordCosts[candidate],
+                    let nonKatakanaBestWordCost,
+                    nonKatakanaBestWordCost - katakanaWordCost >= CandidateScore.loanwordKatakanaWordCostGap {
+                    return false
+                }
                 guard let kataUni = uni[candidate] else {
                     // LM未収録のカタカナ化は、かな/漢字の代替が存在する限り強調とみなす
                     return altBest != nil || !kanjiAlternatives.isEmpty
