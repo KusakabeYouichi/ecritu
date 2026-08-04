@@ -6215,6 +6215,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("大睦"), "single=\(single)")
     }
 
+    // おいやって: 追いやる と 追い遣る が同コスト(9426)で辞書順が 追い遣る 先行だったため
+    // 追い遣って が先頭だった。「やる」はかな書きが普通なので seed で 追いやる を先頭に(2486)
+    func testRegressionOiyaruPrefersKanaOkurigana() throws {
+        try prepareRealLMDictionary()
+        for reading in ["おいやって", "おいやった", "おいやられた", "おいやる"] {
+            let single = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first?.contains("遣"), false, "\(reading)=\(single)")
+        }
+        let te = converter.candidates(for: "おいやって", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(te.prefix(2)), ["追いやって", "追い遣って"], "te=\(te)")
+    }
+
     // でま→デマ: 実在の外来語なのに候補に出なかった。カタカナ強調抑止は LM unigram で
     // 「カタカナが同音の漢字より安い」ことを保護条件にしていたが、手間(6037)が デマ(6955)より
     // 安いため強調表記と誤判定していた。SudachiDict のカタカナ強調収穫は元の語と同一コストで
