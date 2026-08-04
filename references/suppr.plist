@@ -339,6 +339,10 @@
 	<!-- 底触/低触(ていしょく): 存在しない表記(抵触 の収穫ミス) -->
 	<dict><key>phrase</key><string>底触</string><key>shortcut</key><string>ていしょく</string></dict>
 	<dict><key>phrase</key><string>低触</string><key>shortcut</key><string>ていしょく</string></dict>
+	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、
+	     語幹「忘」から 忘て/忘てる/忘た のような送り仮名を欠いた活用形を派生させていた
+	     (とりわすれてる→取り忘てる)。現代語は 忘れる(一段)のみなので基底ごと抑制する -->
+	<dict><key>phrase</key><string>忘る</string><key>shortcut</key><string>わすれる</string></dict>
 	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が
 	     無いため五段う動詞と推論され、河って/河ってきて を生成して 変わってきてる を逆転していた。
 	     交ぜ書き判定はかな部分1文字を対象外(漢字+助詞と区別不能)なので構造的にすり抜ける。
