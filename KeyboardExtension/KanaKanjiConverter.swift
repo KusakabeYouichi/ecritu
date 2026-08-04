@@ -1191,11 +1191,16 @@ final class KanaKanjiConverter {
                 return true
             }
         }
-        // 指示代名詞+で(これで/それで/ここで 等)はかなが正書。で の一般剥がしは
-        // 名詞+で(ずかんで)を巻き込むため、かな正書の指示代名詞語幹に限定する(2406)。
-        if normalized.count > 1, normalized.hasSuffix("で"),
-            KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems.contains(String(normalized.dropLast())) {
-            return true
+        // 指示代名詞+助詞(これで/ここまで/そこから 等)はかなが正書。助詞の一般剥がしは
+        // 名詞+助詞(ずかんで)を巻き込むため、かな正書の指示代名詞語幹に限定する(2406、
+        // 2476 で助詞を まで/から/より/だけ 等に拡張 — ここまで が 小駒で/個々まで に
+        // 繰り上げられていた)。
+        for particle in KanaKanjiConverter.kanaOrthographyDemonstrativeFollowingParticles
+        where normalized.count > particle.count && normalized.hasSuffix(particle) {
+            if KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems
+                .contains(String(normalized.dropLast(particle.count))) {
+                return true
+            }
         }
         // かな/カタカナ正書を持つ形容動詞語幹(いや 等)+ 活用語尾。で の一般剥がしは上と同じ
         // 理由で危険なので語幹を明示集合に限定する。エンジンは いやで を2位(イヤで の直後)に
