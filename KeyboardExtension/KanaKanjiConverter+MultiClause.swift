@@ -403,6 +403,13 @@ extension KanaKanjiConverter {
         "だった", "だったら", "です", "でした", "じゃない", "ではない"
     ]
 
+    // 上の指示代名詞に付く助詞。ここまで/そこから 等はかなが正書だが、助詞の一般剥がしは
+    // 名詞+助詞(ずかんで)を巻き込むため語幹を指示代名詞に限定して照合する(2476)。
+    static let kanaOrthographyDemonstrativeFollowingParticles: [String] = [
+        "で", "まで", "から", "へ", "に", "は", "も", "と", "を", "より",
+        "だけ", "でも", "では", "にも", "までは", "からは", "までに"
+    ]
+
     static let kanaOrthographyDemonstrativePronounStems: Set<String> = [
         "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ",
         "こっち", "そっち", "あっち", "どっち", "こちら", "そちら", "あちら", "どちら"

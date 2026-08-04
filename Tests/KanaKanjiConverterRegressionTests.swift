@@ -6150,6 +6150,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "再起動", "single=\(single)")
     }
 
+    // ここまで: エンジンは単文節/連文節ともかな先頭を返していたが keepKana 不成立で提示層が
+    // かな識別を除去し、小駒で/個々まで が繰り上がっていた(LM に ここまで の unigram が無く
+    // 個々5547/小駒7884 の合成が組める)。指示代名詞+助詞の照合を まで/から 等へ拡張(2476)
+    func testRegressionDemonstrativePronounWithParticleKeepsKana() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ここまで", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "ここまで", "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ここまで"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そこから"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "これだけ"))
+        // 名詞+助詞は巻き込まない(2406 の判断を維持)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんまで"))
+    }
+
     // 忘てる: 文語「忘る」が inflection_classes で一段活用登録されており、語幹「忘」から
     // 送り仮名を欠いた 忘て/忘てる を派生していた(とりわすれてる→取り忘てる)。基底を抑制
     func testRegressionWasuruArchaicBaseSuppressed() throws {
