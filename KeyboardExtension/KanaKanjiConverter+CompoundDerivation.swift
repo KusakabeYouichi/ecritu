@@ -73,22 +73,23 @@ extension KanaKanjiConverter {
     ]
 
     static let numericCounterAllowedSuffixReadingsByPrefixReading: [String: Set<String>] = [
-        "いっ": ["ぽん", "ぴき"],
-        "きゅう": ["ほん", "ひき"],
-        "ご": ["ほん", "ひき"],
-        "さん": ["ぼん", "びき"],
+        // 片(1片=いっぺん/2片=にへん/3片=さんぺん/6片=ろっぺん)も 本/匹 と同じ音便系列
+        "いっ": ["ぽん", "ぴき", "ぺん"],
+        "きゅう": ["ほん", "ひき", "へん"],
+        "ご": ["ほん", "ひき", "へん"],
+        "さん": ["ぼん", "びき", "ぺん"],
         "しち": ["にん"],
-        "じっ": ["ぽん", "ぴき"],
-        "じゅっ": ["ぽん", "ぴき"],
-        "に": ["ほん", "ひき"],
-        "なな": ["ほん", "ひき"],
+        "じっ": ["ぽん", "ぴき", "ぺん"],
+        "じゅっ": ["ぽん", "ぴき", "ぺん"],
+        "に": ["ほん", "ひき", "へん"],
+        "なな": ["ほん", "ひき", "へん"],
         "なん": [
             "こ", "かい", "かげつ", "かしょ", "けん", "ごう", "ごうしゃ", "しゅうかん", "じかん", "にち", "だい", "にん", "ねん",
-            "はい", "ばい", "はつ", "ぱつ", "びょう", "ぷん", "ぼん", "びき", "まい", "しんとう"
+            "はい", "ばい", "はつ", "ぱつ", "びょう", "ぷん", "ぼん", "びき", "まい", "しんとう", "ぺん"
         ],
-        "はっ": ["ぽん", "ぴき"],
-        "よん": ["ほん", "ひき"],
-        "ろっ": ["ぽん", "ぴき"],
+        "はっ": ["ぽん", "ぴき", "ぺん"],
+        "よん": ["ほん", "ひき", "へん"],
+        "ろっ": ["ぽん", "ぴき", "ぺん"],
         "すう": [
             "こ", "かい", "かげつ", "かしょ", "けん", "しゅうかん", "じかん", "じつ", "だい", "にん", "ねん",
             "はい", "ばい", "はつ", "ぱつ", "びょう", "ふん", "ひき", "ほん", "まい"
@@ -233,8 +234,9 @@ extension KanaKanjiConverter {
                 emit("\(value)つ")
                 continue
             }
-            for (counterReading, counterSurfaces) in Self.numericCounterSuffixCandidatesByReading
+            for counterReading in Self.numericCompoundCounterReadings
             where body.count > counterReading.count && body.hasSuffix(counterReading) {
+                let counterSurfaces = Self.numericCompoundCounterSurfaces(for: counterReading) ?? []
                 let numberReading = String(body.dropLast(counterReading.count))
                 guard let value = Self.japaneseNumberReadingValue(numberReading) else {
                     continue
@@ -295,12 +297,14 @@ extension KanaKanjiConverter {
         "かい": ["階"]
     ]
 
-    // 数字直後だけ供給する助数詞表層。単独入力では別のフィルタに落ちるが、数字が付くと
-    // 助数詞として実在する読み。片(1片=いっぺん/6片=ろっぺん)は ぺん が へん の促音便読みの
-    // ため連濁収穫フィルタで落ち、数字を打っても候補に現れなかった(2469)。へん 側は 片 が
-    // 候補に居るので供給不要(present に有る表層はここでは足さない)。
-    static let digitContextSuppliedCounterSurfacesByReading: [String: [String]] = [
+    // 助数詞として使うが numericCounterSuffixCandidatesByReading には入れられない表層。
+    // あの表は ordinalMeStemTailCharacters(『〜め/〜目』の序数判定ゲート)にも流れるため、
+    // 片 を入れると 片目/跡目 等の一般名詞を序数と誤判定してしまう(定義コメント参照)。
+    // 使いどころは2つ: (a) 数字確定後に助数詞だけを打つ形の供給(6+ぺん→片。連濁収穫
+    // フィルタで落ちる分の復活。2469)、(b) 数詞複合の照合(ろっぺん→6片/六片。2474)。
+    static let supplementalCounterSurfacesByReading: [String: [String]] = [
         "ぺん": ["片"],
+        "へん": ["片"],
         // 同じ構造で落ちていた助数詞の促音便・連濁読み(6ぽん/3ぼん/6ぴき/3びき/6ぷん/
         // 6ぱつ/6ぱい)。数詞込みの読み(ろっぽん/いっぴき)は数詞合成の別経路で出るが、
         // 数字を確定してから助数詞だけ打つ形では供給が無かった(2471)
@@ -312,6 +316,27 @@ extension KanaKanjiConverter {
         "ぱつ": ["発"],
         "ぱい": ["杯"]
     ]
+
+    // 数詞複合の照合に使う助数詞表層(本表 + 上の補助表)。
+    static func numericCompoundCounterSurfaces(for reading: String) -> [String]? {
+        let base = numericCounterSuffixCandidatesByReading[reading]
+        let supplemental = supplementalCounterSurfacesByReading[reading]
+        switch (base, supplemental) {
+        case (nil, nil):
+            return nil
+        case let (base?, nil):
+            return base
+        case let (nil, supplemental?):
+            return supplemental
+        case let (base?, supplemental?):
+            return base + supplemental.filter { !base.contains($0) }
+        }
+    }
+
+    static var numericCompoundCounterReadings: Set<String> {
+        Set(numericCounterSuffixCandidatesByReading.keys)
+            .union(supplementalCounterSurfacesByReading.keys)
+    }
 
     static func digitBoostCounterSurfaces(for reading: String) -> [String]? {
         let base = numericCounterSuffixCandidatesByReading[reading]
@@ -340,7 +365,7 @@ extension KanaKanjiConverter {
         }
         let present = Set(candidates)
         // 数字文脈限定の助数詞供給(定数コメント参照)。抑制済み表層は復活させない。
-        var boosted: [String] = (Self.digitContextSuppliedCounterSurfacesByReading[reading] ?? [])
+        var boosted: [String] = (Self.supplementalCounterSurfacesByReading[reading] ?? [])
             .filter { !present.contains($0) && !suppressedCandidates.contains($0) }
         if let counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
@@ -667,7 +692,7 @@ extension KanaKanjiConverter {
                 continue
             }
 
-            guard let allowedSuffixes = Self.numericCounterSuffixCandidatesByReading[suffixReading] else {
+            guard let allowedSuffixes = Self.numericCompoundCounterSurfaces(for: suffixReading) else {
                 continue
             }
 
