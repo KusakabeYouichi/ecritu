@@ -6150,6 +6150,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "再起動", "single=\(single)")
     }
 
+    // とりわすれている→鳥忘れている: 動詞連用形+動詞(取り忘れる/撮り忘れる)は生産的な複合動詞
+    // だが、同音の単漢字名詞 鳥 が1ノードで安いため無助詞連結が勝っていた(名詞→動詞の減点600では
+    // 届かない)。seed 供給した連用形読みに限り、直後が動詞のときだけ優遇する(2477)
+    func testRegressionCompoundVerbRenyouOutranksHomophoneNoun() throws {
+        try prepareRealLMDictionary()
+        let teiru = converter.multiClauseCandidates(for: "とりわすれている", systemCandidateMode: .surface)
+        XCTAssertEqual(teiru.first, "取り忘れている", "multi=\(teiru.prefix(4))")
+        XCTAssertTrue(teiru.contains("撮り忘れている"), "multi=\(teiru.prefix(4))")
+        let teru = converter.multiClauseCandidates(for: "とりわすれてる", systemCandidateMode: .surface)
+        XCTAssertEqual(teru.first, "取り忘れてる", "multi=\(teru.prefix(4))")
+        XCTAssertTrue(teru.contains("撮り忘れてる"), "multi=\(teru.prefix(4))")
+        let hari = converter.multiClauseCandidates(for: "はりわすれている", systemCandidateMode: .surface)
+        XCTAssertEqual(hari.first, "貼り忘れている", "multi=\(hari.prefix(4))")
+        // 助詞のある文脈は無傷(ボーナスは連用形ノードの直後が動詞のときだけ)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "とりのこえ", systemCandidateMode: .surface).first,
+            "鳥の声"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "とりをみた", systemCandidateMode: .surface).first,
+            "鳥を見た"
+        )
+    }
+
     // ここまで: エンジンは単文節/連文節ともかな先頭を返していたが keepKana 不成立で提示層が
     // かな識別を除去し、小駒で/個々まで が繰り上がっていた(LM に ここまで の unigram が無く
     // 個々5547/小駒7884 の合成が組める)。指示代名詞+助詞の照合を まで/から 等へ拡張(2476)
