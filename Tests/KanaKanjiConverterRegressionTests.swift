@@ -6150,6 +6150,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "再起動", "single=\(single)")
     }
 
+    // とり→撮り / はり→貼り: 辞書の連用形収穫に 撮り(取り/執り/捕り/採り のみ)と
+    // 貼り(張り のみ。貼り は連濁読み ばり でだけ実在)が無く、撮り忘れ/貼り忘れ が作れなかった。
+    // 撮る/貼る は inflection_classes に在るので活用形は出るが裸の連用形は供給されない(2475)
+    func testRegressionRenyoukeiSuppliedFromSeed() throws {
+        try prepareRealLMDictionary()
+        let tori = converter.candidates(for: "とり", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tori.prefix(4)), ["取り", "とり", "鳥", "撮り"], "tori=\(tori)")
+        let hari = converter.candidates(for: "はり", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(hari.prefix(4)), ["はり", "針", "張り", "貼り"], "hari=\(hari)")
+        // 連文節の合成にも seed 経由で届く
+        let multi = converter.multiClauseCandidates(for: "とりわすれてる", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.contains("撮り忘れてる"), "multi=\(multi.prefix(5))")
+    }
+
     func testRegressionInferredInflectionClassNotAppliedToSystemCandidates() throws {
         try prepareRealLMDictionary()
         let kawatte = converter.candidates(for: "かわって", limit: 6, systemCandidateMode: .surface)
