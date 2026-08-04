@@ -6047,6 +6047,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "パレット", "single=\(single)")
     }
 
+    // ろっぺん→6片/六片: 片 は 2469 で数字文脈供給マップにしか入れていなかったため、
+    // 数詞込みの読み(ろっぽん→6本 と同じ形)では候補が空だった。数詞複合の照合にも
+    // 補助表を合流させ、音便系列(いっぺん/にへん/さんぺん/ろっぺん)を許可する(2474)
+    func testRegressionPenCounterNumericCompound() throws {
+        try prepareRealLMDictionary()
+        let roppen = converter.candidates(for: "ろっぺん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(roppen.prefix(2)), ["6片", "六片"], "roppen=\(roppen)")
+        let sanpen = converter.candidates(for: "さんぺん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sanpen.prefix(2)), ["3片", "三片"], "sanpen=\(sanpen)")
+        let nihen = converter.candidates(for: "にへん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(nihen.contains("2片"), "nihen=\(nihen)")
+        // 一遍(辞書 wc4500)は 1片 より上のまま(数詞複合は辞書より下位)
+        let ippen = converter.candidates(for: "いっぺん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(ippen.first, "一遍", "ippen=\(ippen)")
+        XCTAssertTrue(ippen.contains("1片"), "ippen=\(ippen)")
+        // 片目/跡目 を序数と誤判定しないこと(補助表を助数詞本表に入れない理由)
+        let katame = converter.candidates(for: "かため", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(katame.contains("片め"), "katame=\(katame)")
+    }
+
     // さんぼん→3本/三本: 3本 が 三盆/山本/上鳳(レア辞書語)の後ろで4番目だった。連濁形の
     // 助数詞(ぼん)は数詞に付いたときしか現れないので数詞複合を辞書級へ引き上げる(2472)。
     // 清音形(ほん)は対象外 = にほん→日本 の方針は不変
