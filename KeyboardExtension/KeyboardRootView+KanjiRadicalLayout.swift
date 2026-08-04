@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // 漢字1文字ピッカー: 8カテゴリー(偏/旁/冠/脚/垂/繞/構/独立)→ 部首一覧 → 字グリッド。
 // 絵文字・記号モードと同じ「上=内容スクロール / 下=カテゴリーバー」の骨格に合わせる(2444)。
@@ -31,6 +32,16 @@ extension KeyboardRootView {
 // 字キー。ヒラギノ明朝にグリフが無い字(実機では PingFang 等で描かれる)は色を変えて
 // 区別する。判定は表示中のセルぶんだけ実行するのでデータに印は持たせない(2445)。
 struct KanjiCharacterKeyButton: View {
+    // 別フォントで描かれる字の色。薄いブルー系。ライト/ダークで明度を入れ替えて、
+    // どちらの背景でも読める濃さにする(2485)
+    static let fallbackGlyphColor = Color(
+        UIColor { traits in
+            traits.userInterfaceStyle == .dark
+                ? UIColor(red: 0.58, green: 0.76, blue: 1.0, alpha: 1.0)
+                : UIColor(red: 0.32, green: 0.52, blue: 0.88, alpha: 1.0)
+        }
+    )
+
     let entry: KanjiRadicalFileIndex.Entry
     let height: CGFloat
     let onCommit: (String) -> Void
@@ -57,7 +68,7 @@ struct KanjiCharacterKeyButton: View {
         } label: {
             Text(entry.character)
                 .font(.custom("HiraMinProN-W3", size: 22))
-                .foregroundStyle(hasMincho ? Color(.label) : Color(.secondaryLabel))
+                .foregroundStyle(hasMincho ? Color(.label) : Self.fallbackGlyphColor)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .frame(maxWidth: .infinity)
