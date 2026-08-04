@@ -6150,6 +6150,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "再起動", "single=\(single)")
     }
 
+    // 忘てる: 文語「忘る」が inflection_classes で一段活用登録されており、語幹「忘」から
+    // 送り仮名を欠いた 忘て/忘てる を派生していた(とりわすれてる→取り忘てる)。基底を抑制
+    func testRegressionWasuruArchaicBaseSuppressed() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["わすれる": ["忘る"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let teru = converter.candidates(for: "わすれてる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(teru.contains("忘てる"), "teru=\(teru)")
+        XCTAssertEqual(teru.first, "忘れてる", "teru=\(teru)")
+        let multi = converter.multiClauseCandidates(for: "とりわすれてる", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains("取り忘てる"), "multi=\(multi.prefix(5))")
+    }
+
     // とり→撮り / はり→貼り: 辞書の連用形収穫に 撮り(取り/執り/捕り/採り のみ)と
     // 貼り(張り のみ。貼り は連濁読み ばり でだけ実在)が無く、撮り忘れ/貼り忘れ が作れなかった。
     // 撮る/貼る は inflection_classes に在るので活用形は出るが裸の連用形は供給されない(2475)
