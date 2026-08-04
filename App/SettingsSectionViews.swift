@@ -672,6 +672,10 @@ struct RadicalStrokeCountSettingsSection: View {
                     }
                 }
 
+                Text("字の一覧に挟む総画数は、部首の画数(上の選択)と部首以外の画数(康熙字典の数え方)の合計です。新字体で画数が減った字は日本の辞典より1画多くなることがあります(海=10画、漢=14画)。")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+
                 Text("初期設定は「新字体で数える」です。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
