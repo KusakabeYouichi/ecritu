@@ -395,6 +395,16 @@ extension KanaKanjiConverter {
     // かな正書の指示代名詞語幹(これで/ここで 等の keepKana 判定に使う)。
     // かな/カタカナ表記が正書として使われる形容動詞語幹(ひらがなだと紛れるが漢字が馴染まない語)。
     // seed 側の並び指定と対で運用する(seed["いや"]=[イヤ,いや,嫌,否,厭])。
+    // 動詞連用形+動詞 の複合動詞(取り忘れる/撮り忘れる/貼り忘れる)は生産的な語形成だが、
+    // 同音の単漢字名詞(鳥)が1ノードで安いため 鳥忘れている のような非文法の無助詞連結が
+    // 勝つことがある(単漢字名詞→動詞の減点600では届かない)。seed で連用形を供給した読みに
+    // 限り、直後が動詞のときだけ連用形ノードを優遇する(2477)。
+    // 対象ノードは「読みが下の集合 かつ 表層が送り仮名 り で終わる漢字表記」=連用形。
+    // 同一スパンの連用形どうしには等しく効くので相対順(取り→撮り→捕り→採り)は変わらない。
+    static let multiClauseCompoundVerbRenyouStemReadings: Set<String> = ["とり", "はり"]
+
+    static let multiClauseCompoundVerbRenyouBonus = 3000
+
     static let kanaOrthographyNaAdjectiveStems: Set<String> = ["いや", "むら"]
 
     // 上の語幹に付く活用語尾・断定/丁寧の連なり。助詞の は/が 等は既存の剥がし規則が担当する。
@@ -1280,6 +1290,15 @@ extension KanaKanjiConverter {
         }
         let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
 
+        // 複合動詞の前部要素になる連用形ノード(定数コメント参照)。列挙後に一度だけ走査する。
+        var compoundVerbRenyouNodeKeys = Set<String>()
+        for node in nodes
+        where Self.multiClauseCompoundVerbRenyouStemReadings.contains(node.reading)
+            && node.surface != node.reading
+            && node.surface.hasSuffix("り") {
+            compoundVerbRenyouNodeKeys.insert("\(node.start)-\(node.end)-\(node.surface)")
+        }
+
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
         func transitionCost(
             prev: String,
@@ -1758,6 +1777,12 @@ extension KanaKanjiConverter {
                     if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
                         Self.isMotionVerbSurface(node.surface) {
                         cost -= Self.multiClauseRenyouNiMotionVerbBonus
+                    }
+                    // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
+                    // 鳥忘れている に勝たせる。
+                    if compoundVerbRenyouNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                        node.isInflectionDerived || node.isDictionaryFormPredicate {
+                        cost -= Self.multiClauseCompoundVerbRenyouBonus
                     }
                     // 格助詞 に 直後のカ変(来る)活用は移動の到着点用法で最頻(職場に来て/こっちに来た)。
                     // 同読みの一段 着る はを格が普通(服を着て)なので、に 直後に限り来る側を押し上げる。
