@@ -6203,6 +6203,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // たいりく→大睦: 収穫底値(wc10000)のレア人名収穫。睦 の読みは むつみ/ぼく/まこと だけで
+    // 辞書に りく が無く、たい+りく の分解でも説明できない誤エントリなので抑制した
+    func testRegressionTairikuRareNameSuppressed() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["たいりく": ["大睦"]])
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "たいりく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "大陸", "single=\(single)")
+        XCTAssertFalse(single.contains("大睦"), "single=\(single)")
+    }
+
     // でま→デマ: 実在の外来語なのに候補に出なかった。カタカナ強調抑止は LM unigram で
     // 「カタカナが同音の漢字より安い」ことを保護条件にしていたが、手間(6037)が デマ(6955)より
     // 安いため強調表記と誤判定していた。SudachiDict のカタカナ強調収穫は元の語と同一コストで

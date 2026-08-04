@@ -339,6 +339,10 @@
 	<!-- 底触/低触(ていしょく): 存在しない表記(抵触 の収穫ミス) -->
 	<dict><key>phrase</key><string>底触</string><key>shortcut</key><string>ていしょく</string></dict>
 	<dict><key>phrase</key><string>低触</string><key>shortcut</key><string>ていしょく</string></dict>
+	<!-- 大睦(たいりく): 収穫底値(wc10000)のレア人名収穫。睦 自体の読みは むつみ/ぼく/まこと だけで
+	     辞書に りく が無く、たい+りく の分解でも説明できない。人名で無理やりそう読ませている例が
+	     ないとは言えないが、大陸 と字形が似ていて選び間違えやすいので抑制する -->
+	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>
 	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、
 	     語幹「忘」から 忘て/忘てる/忘た のような送り仮名を欠いた活用形を派生させていた
 	     (とりわすれてる→取り忘てる)。現代語は 忘れる(一段)のみなので基底ごと抑制する -->
