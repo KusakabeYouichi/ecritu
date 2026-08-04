@@ -95,12 +95,17 @@ struct KanjiCharacterKeyButton: View {
 
 // 字のロングタップで出す字典風ポップアップ(読み / U+XXXX / JIS X 0208区点)。
 // 記号モードの長押し吹き出しと同じ見え方に揃え、画面端では内側へずらす。
+// 最上段は上に出すとキーボードの上端を越えて見切れるため、指に隠れない「横」へ出す(2479)。
 struct KanjiInspectBubble: View {
+    static let coordinateSpaceName = "kanjiCharacterGrid"
+
     let entry: KanjiRadicalFileIndex.Entry
 
     private let bubbleWidth: CGFloat = 176
+    // 2行(読み+コード)+上下パディングの実測見込み。上に出す余地の判定にも使う
+    private let bubbleHeight: CGFloat = 48
     private let screenMargin: CGFloat = 6
-    private let verticalOffset: CGFloat = -46
+    private let gap: CGFloat = 6
 
     private var codePointText: String {
         guard let scalar = entry.character.unicodeScalars.first else {
@@ -112,13 +117,25 @@ struct KanjiInspectBubble: View {
     var body: some View {
         GeometryReader { proxy in
             let keyFrame = proxy.frame(in: .global)
+            let keyInGrid = proxy.frame(in: .named(Self.coordinateSpaceName))
             let screenWidth = UIScreen.main.bounds.width
             let half = bubbleWidth / 2
+            // 可視領域の上端に吹き出しぶんの余地があるか(最上段では無い)
+            let hasRoomAbove = keyInGrid.minY >= bubbleHeight + gap
+            // 横出しは画面の広い側へ(左半分のキーなら右、右半分なら左)。指はキーの上にあるので
+            // 横に出せば隠れない。
+            let sideOffsetX = (keyFrame.width / 2 + gap + half)
+                * (keyFrame.midX <= screenWidth / 2 ? 1 : -1)
+            let rawCenterX = keyFrame.midX + (hasRoomAbove ? 0 : sideOffsetX)
             let clampedCenterX = min(
-                max(keyFrame.midX, screenMargin + half),
+                max(rawCenterX, screenMargin + half),
                 max(screenMargin + half, screenWidth - screenMargin - half)
             )
             let dx = clampedCenterX - keyFrame.midX
+            // 上に出す場合はキーの上へ、横出しはキーの上端に揃える(可視領域外へはみ出さない)
+            let dy = hasRoomAbove
+                ? -(keyFrame.height / 2 + gap + bubbleHeight / 2)
+                : max(0, (bubbleHeight - keyFrame.height) / 2)
 
             VStack(spacing: 2) {
                 Text(entry.readings)
@@ -140,8 +157,8 @@ struct KanjiInspectBubble: View {
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill(Color.black.opacity(0.86))
             )
-            .frame(width: proxy.size.width, alignment: .center)
-            .offset(x: dx, y: verticalOffset)
+            .frame(width: proxy.size.width, height: proxy.size.height, alignment: .center)
+            .offset(x: dx, y: dy)
         }
     }
 }
@@ -295,6 +312,8 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                 .frame(height: fourRowAlignedTopContentHeight)
                 // ロングタップの吹き出しが最上段で見切れないようクリップを解除(iOS17+)
                 .modifier(KanjiRadicalScrollClipDisabledModifier())
+                // 吹き出しの出す向きを決めるための基準(可視領域の上端からの距離を測る)
+                .coordinateSpace(name: KanjiInspectBubble.coordinateSpaceName)
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVGrid(columns: radicalColumns, spacing: emojiGridSpacing) {
