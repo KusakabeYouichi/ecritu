@@ -6196,6 +6196,34 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(ta.contains("撮り忘れた"), "ta=\(ta)")
     }
 
+    func testTEMPDEBUGPaths() throws {
+        try prepareRealLMDictionary()
+        for r in ["してるなあ", "こうかいされて"] {
+            print("TEMPDEBUG \(r): multi=\(converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).prefix(3))")
+        }
+    }
+
+    // うえてあって→上てあって: 裸の接続助詞「て」が名詞(上=unigram3799)の直後に立ち、
+    // 断片チェーン 上+て+あって が全span活用形 植えてあって(LM未収録=OOV)を逆転していた。
+    // て は用言の連用形にしか付かないので、準体助詞 ん の「述語の直後にしか立てない」規則と
+    // 同型に、直前が述語末尾文字でなければ減点する一般規則を入れた(2480)
+    func testRegressionKanaTeRequiresPredicateBefore() throws {
+        try prepareRealLMDictionary()
+        let uete = converter.multiClauseCandidates(for: "うえてあって", systemCandidateMode: .surface)
+        XCTAssertEqual(uete.first, "植えてあって", "multi=\(uete.prefix(4))")
+        XCTAssertFalse(uete.contains("上てあって"), "multi=\(uete.prefix(4))")
+        // 格助詞 で は名詞に付くので対象外(上で〜)
+        let uede = converter.multiClauseCandidates(for: "うえでまってる", systemCandidateMode: .surface)
+        XCTAssertEqual(uede.first?.hasPrefix("上で"), true, "multi=\(uede.prefix(4))")
+        // 名詞の 手(reading て、表層≠読み)は無傷。なお かな指示詞+かな て(このての話)は
+        // 減点対象外 — かな表層の直前は連用形かを判定できないため fail-open にしている
+        let kono = converter.multiClauseCandidates(for: "このてのはなし", systemCandidateMode: .surface)
+        XCTAssertEqual(kono.first?.hasSuffix("の話"), true, "multi=\(kono.prefix(4))")
+        // 述語直後の て形+補助動詞も無傷
+        let oite = converter.multiClauseCandidates(for: "おいてあって", systemCandidateMode: .surface)
+        XCTAssertEqual(oite.first, "置いてあって", "multi=\(oite.prefix(4))")
+    }
+
     // ここまで: エンジンは単文節/連文節ともかな先頭を返していたが keepKana 不成立で提示層が
     // かな識別を除去し、小駒で/個々まで が繰り上がっていた(LM に ここまで の unigram が無く
     // 個々5547/小駒7884 の合成が組める)。指示代名詞+助詞の照合を まで/から 等へ拡張(2476)
