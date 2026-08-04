@@ -6873,20 +6873,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // あいゆ→アイユ: 辞書に実在(wc2148)だが同読みの漢字収穫(愛由/藍結=収穫底値)があるため
     // カタカナ強調抑止で消えていた。追加語彙登録は抑止の対象外という前提の防波堤。
-    // りったー→リットル/ℓ: 辞書は音写ごとに別読み(りったー→リッター、りっとる→リットル)で
-    // 持ち、単位記号 ℓ はどちらにも無いので misc で補う(2466)
+    // りったー→ℓ: 辞書は音写ごとに別読み(りったー→リッター、りっとる→リットル)で持ち、
+    // 単位記号 ℓ はどちらにも無いので misc で補う。読み替え(りったー→リットル)は不要(2473)
     func testRegressionCuratedKatakanaAndUnitSymbolSupplied() throws {
         try prepareRealLMDictionary()
         converter.store.addUserEntry(reading: "あいゆ", candidate: "アイユ")
         let aiyu = converter.candidates(for: "あいゆ", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(aiyu.first, "アイユ", "aiyu=\(aiyu)")
 
-        converter.store.addUserEntry(reading: "りったー", candidate: "リットル")
         converter.store.addUserEntry(reading: "りったー", candidate: "ℓ")
         let litre = converter.candidates(for: "りったー", limit: 8, systemCandidateMode: .surface)
-        XCTAssertTrue(litre.contains("リットル"), "litre=\(litre)")
         XCTAssertTrue(litre.contains("ℓ"), "litre=\(litre)")
         XCTAssertTrue(litre.contains("リッター"), "litre=\(litre)")
+        // 音写の読み替え(りったー→リットル)は出さない(ユーザー方針)
+        XCTAssertFalse(litre.contains("リットル"), "litre=\(litre)")
     }
 
     // こうきじてん: 康熙字典 が SudachiDict/LM に無く候補に出なかった。misc curated で供給(2418)
