@@ -170,6 +170,13 @@ final class KanaKanjiConverter {
     enum CandidateScore {
         static let userDictionary = 2400        // 追加語彙(手動+初期)
         static let learnedDictionary = 2280     // 学習語彙
+        // 補助語彙(ryukyu/vin/it.plist=SecondVocab)。人手で足した語なので辞書より上に置く。
+        // 既定 word_cost が高め(3字11000/4字7500)なので、そのままだと同読みの収穫語より後ろに
+        // 沈む(いちまん の 糸満 が 一満 の後)。学習(2280)/追加語彙(2400)より下=ユーザーの
+        // 直接の意思表示は依然として優先。**同じ読みに語LM実在の一般語がある場合は昇格しない**
+        // (び→美 が 日 を、にほん→🇯🇵 が 日本 を押し下げる事故を防ぐ。実測で先頭が入れ替わる
+        // 読みは2331件・うち頻出語衝突525件だった。2497)
+        static let supplementalVocabulary = 1500
         static let systemDictionary = 1200      // 辞書(sqlite/seed)
         static let quickPostfix = 1120          // postfix(語幹キャッシュ利用)
         static let politePrefix = 1100          // お/ご 丁寧接頭辞派生
@@ -348,10 +355,27 @@ final class KanaKanjiConverter {
         // seed 掲載語は人手の選別済みなので降格しない(柚香 等、wc が収穫底値でも
         // 正規の代表候補として seed に載せた語を守る)。
         let seedExempt = Set(KanaKanjiSeedDictionary.seed[context.reading] ?? [])
+        // 補助語彙の昇格判定(定数コメント参照)。同読みに語LM実在の一般語があれば昇格しない。
+        let supplementalCandidates = Set(
+            store.loadSupplementalSystemDictionary()[context.reading] ?? []
+        )
+        let promotesSupplemental: Bool = {
+            guard !supplementalCandidates.isEmpty else {
+                return false
+            }
+            let others = context.systemCandidates.filter { !supplementalCandidates.contains($0) }
+            guard !others.isEmpty else {
+                return true
+            }
+            return store.wordLMUnigramCosts(for: others).isEmpty
+        }()
         var normalSystemCandidates: [String] = []
         var harvestTierCandidates: [String] = []
+        var supplementalSystemCandidates: [String] = []
         for candidate in context.systemCandidates {
-            if let cost = wordCosts[candidate],
+            if promotesSupplemental, supplementalCandidates.contains(candidate) {
+                supplementalSystemCandidates.append(candidate)
+            } else if let cost = wordCosts[candidate],
                 cost >= CandidateScore.harvestTierWordCostFloor,
                 !seedExempt.contains(candidate) {
                 harvestTierCandidates.append(candidate)
@@ -359,6 +383,11 @@ final class KanaKanjiConverter {
                 normalSystemCandidates.append(candidate)
             }
         }
+        addCandidates(
+            supplementalSystemCandidates,
+            baseScore: CandidateScore.supplementalVocabulary,
+            to: &scores
+        )
         addCandidates(normalSystemCandidates, baseScore: CandidateScore.systemDictionary, to: &scores)
         addCandidates(harvestTierCandidates, baseScore: CandidateScore.harvestTierDictionary, to: &scores)
         addCandidates(context.userCandidates, baseScore: CandidateScore.userDictionary, to: &scores)
