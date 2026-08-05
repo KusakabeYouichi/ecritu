@@ -332,6 +332,13 @@ extension KanaKanjiConverter {
             if baseReading == "いい", inflectionClass == InflectionClass.adjectiveI {
                 continue
             }
+            // 得る/獲る の うる 読みは文語(現代語は える)。一段として登録されているため語幹「う」
+            // から 得てる/獲てる/得て のような現代語では使わない活用が作られ、うてる→打てる を
+            // 押し下げていた(いい 基底の除外と同型の一般対策。2494)。
+            // える 読みの 得る/獲る は無傷なので 得られる/得ています 等は従来どおり作れる。
+            if baseReading == "うる", inflectionClass == InflectionClass.ichidan {
+                continue
+            }
 
             let stem = String(candidate.dropLast(matchedSuffix.count))
             results.append(stem + rule.outputCandidateSuffix)
