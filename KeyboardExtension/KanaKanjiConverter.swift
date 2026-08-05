@@ -999,6 +999,12 @@ final class KanaKanjiConverter {
             formalNounProbe = String(formalNounProbe.dropLast(interrogativeTail.count))
             break
         }
+        // 連体修飾の の も剥がしてから形式名詞を照合する(そのための→そのため。そのため は
+        // keep 成立なのに ための だと形式名詞の末尾照合に当たらず、実機で その為の が
+        // 繰り上がっていた。名詞+の(図鑑の)は下の形式名詞照合に落ちないので無害。2489)
+        if formalNounProbe.count > 3, formalNounProbe.hasSuffix("の") {
+            formalNounProbe = String(formalNounProbe.dropLast())
+        }
         // 格助詞 で は1字だけ剥がしてから照合(ってやつで→ってやつ)。で の一般再帰剥がしは
         // 名詞+で(ずかんで)や ので の厳格ゲート(たべるので)を迂回してしまうため行わない(2404)。
         if formalNounProbe.count > 1, formalNounProbe.hasSuffix("で") {
