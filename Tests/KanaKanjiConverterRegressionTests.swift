@@ -6291,6 +6291,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(te.contains("舞って"), "te=\(te)")
     }
 
+    // 補助語彙(ryukyu/vin/it.plist)は同じ読みに語LM実在の一般語が無いときだけ辞書より上へ
+    // 昇格する。いちまん→糸満(7500)は 一満(6324)の後ろに沈んでいた。一律昇格は頻出語を
+    // 押し下げるため不可(び→美/にほん→🇯🇵/じん→ジン。実測2331読み・頻出衝突525件。2497)
+    func testRegressionSupplementalVocabularyPromotedOnlyWithoutCommonWord() throws {
+        try prepareRealLMDictionary()
+        let itoman = converter.candidates(for: "いちまん", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(itoman.first, "糸満", "itoman=\(itoman)")
+        let akasaki = converter.candidates(for: "あかさき", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(akasaki.first, "赤崎", "akasaki=\(akasaki)")
+        // 語LM実在の一般語がある読みは従来どおり(昇格しない)
+        for (reading, expected) in [
+            ("にほん", "日本"), ("じん", "人"), ("なか", "なか"),
+            ("ぎんこう", "銀行"), ("よね", "よね"), ("から", "から")
+        ] {
+            let single = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "\(reading)=\(single)")
+        }
+    }
+
     // きへい: 補助語彙(ryukyu.plist の 㐂平)は既定 word_cost(3字11000)で5番目に沈んでいた。
     // 補助語彙を一律で辞書より上に昇格させる案は 銀行→吟香/米→与根/遅い→襲 の3件を壊したため
     // 撤回し、語別に seed で昇格する(2496)
