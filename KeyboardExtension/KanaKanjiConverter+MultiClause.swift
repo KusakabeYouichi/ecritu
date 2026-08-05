@@ -139,7 +139,10 @@ extension KanaKanjiConverter {
     // 上の seed順allowlist と分離する — 共用すると主ループのspan判定(脱活用先が一致)が
     // 既存族の先頭(這ったら)にも同じボーナスを与えて同点に戻る(2424の検証で確認)。
     // 無差別に与えると 有った/要った/足って 等22件が退行するため、必ずopt-inで運用する。
-    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく"]
+    // まつ: まって/まっている/まった が 舞う(まう)族に先を越されていた。ルール定義順が
+    // う→…→つ のため 舞って が先に立つが、LM は 待つ(6049)/待ち(5928)が 舞う(6578)/
+    // 舞い(7446)より優勢で、日常頻度も 待つ が上(2495)
+    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく", "まつ"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)と読み別ボーナス値。
     // 数量詞複合(2本/二本)や分割に押されて seed 既定(日本)が沈むのを是正する。
     // a2 seed の先頭候補ノードにボーナス。既定は 800(multiClausePreferredInflectionBonus と同値)。
