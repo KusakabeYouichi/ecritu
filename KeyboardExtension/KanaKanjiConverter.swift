@@ -949,6 +949,17 @@ final class KanaKanjiConverter {
                 }
             }
         }
+        // 引用の という/といって 等はかなが正書(などという/とかというのは)。前に立つのがかな正書の
+        // 副助詞・並立助詞のときだけ維持する — 語幹を再帰判定にすると 図鑑(ずかん、辞書にかな
+        // エントリがある)まで巻き込むため、語幹は明示集合に限定する(2487)。
+        for quotation in Self.kanaOrthographyQuotationTails
+        where normalized.count > quotation.count && normalized.hasSuffix(quotation) {
+            let stem = String(normalized.dropLast(quotation.count))
+            if Self.kanaOrthographyQuotationStems.contains(stem)
+                || Self.kanaOrthographyQuotationStems.contains(where: { stem.hasSuffix($0) }) {
+                return true
+            }
+        }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {
