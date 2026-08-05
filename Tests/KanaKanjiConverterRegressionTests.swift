@@ -6291,6 +6291,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(te.contains("舞って"), "te=\(te)")
     }
 
+    // きへい: 補助語彙(ryukyu.plist の 㐂平)は既定 word_cost(3字11000)で5番目に沈んでいた。
+    // 補助語彙を一律で辞書より上に昇格させる案は 銀行→吟香/米→与根/遅い→襲 の3件を壊したため
+    // 撤回し、語別に seed で昇格する(2496)
+    func testRegressionKiheiSupplementalWordPromotedBySeed() throws {
+        try prepareRealLMDictionary()
+        let kihei = converter.candidates(for: "きへい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(kihei.prefix(4)),
+            ["㐂平", "奇兵", "起兵", "騎兵"],
+            "kihei=\(kihei)"
+        )
+        // 一律昇格で壊れた読みは無傷であること(撤回の根拠。ぎんこう→吟香、よね→与根 になっていた。
+        // 3件目の おそい→襲 は suppr.plist で抑制済みで、テストバンドルが hidden 抑制JSONを
+        // 読まないために現れていただけ=実機では無関係)
+        XCTAssertEqual(
+            converter.candidates(for: "ぎんこう", limit: 3, systemCandidateMode: .surface).first,
+            "銀行"
+        )
+        XCTAssertEqual(
+            converter.candidates(for: "よね", limit: 3, systemCandidateMode: .surface).first,
+            "よね"
+        )
+    }
+
     // ほっきょくぐま: 語LMに ホッキョクグマ の unigram はあるが辞書エントリが無く変換できない。
     // 北極熊 も辞書に無いので両方 misc で供給する
     func testRegressionHokkyokugumaSuppliedFromMisc() throws {
