@@ -6291,6 +6291,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(te.contains("舞って"), "te=\(te)")
     }
 
+    // こっちむきに→こっち剥きに / こっちむき→こっち無機: 向き は unigram 5555 で
+    // 無機(6037)/無期(7143)/剥き(7216)より安いのに、読み2字の短spanレア読み床上げ
+    // (読み別 wc 7924)で沈んでいた。この床だけ seed 免除が無かったので、隣の収穫底値床・
+    // 読み跨ぎ遮断と同条件(seed 掲載語は人手選別なので免除)に揃えた(2499)。
+    // うえの は 上の が候補に無く かな先頭だったので seed で 上の→上野→うえの に
+    func testRegressionMukiFloorExemptAndUenoOrdering() throws {
+        try prepareRealLMDictionary()
+        let ni = converter.multiClauseCandidates(for: "こっちむきに", systemCandidateMode: .surface)
+        XCTAssertEqual(ni.first, "こっち向きに", "ni=\(ni.prefix(4))")
+        let muki = converter.multiClauseCandidates(for: "こっちむき", systemCandidateMode: .surface)
+        XCTAssertEqual(muki.first, "こっち向き", "muki=\(muki.prefix(4))")
+        // 後ろ向きに 等の既存の並びは不変
+        let ushiro = converter.multiClauseCandidates(for: "うしろむきに", systemCandidateMode: .surface)
+        XCTAssertEqual(ushiro.first, "後ろ向きに", "ushiro=\(ushiro.prefix(4))")
+        // むき 単独はかな先頭のまま(seed の宣言順)
+        let mukiAlone = converter.candidates(for: "むき", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mukiAlone.prefix(2)), ["むき", "向き"], "mukiAlone=\(mukiAlone)")
+        let ueno = converter.candidates(for: "うえの", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ueno.prefix(3)), ["上の", "上野", "うえの"], "ueno=\(ueno)")
+    }
+
     // かいし: 芥子(wc3727=カイシ と同値の収穫)と 会し が先頭を占め 開始/会誌 が後ろだった。
     // seed で指定順に固定(2498)
     func testRegressionKaishiOrdering() throws {
