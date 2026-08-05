@@ -6254,6 +6254,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // かな維持は「維持のみで昇格しない」ので、漢字が最良の読みには影響しない
     }
 
+    // きんせい: 金青(wc3727=キンセイ と同値の収穫)が先頭で 金星/近世 が7000台に沈んでいた。
+    // そばを: かな そば(2517)が先頭で 蕎麦(5892)が3番目だった。どちらも seed で並びを指定(2493)
+    func testRegressionKinseiAndSobaOrdering() throws {
+        try prepareRealLMDictionary()
+        let kinsei = converter.candidates(for: "きんせい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(kinsei.prefix(5)),
+            ["金星", "近世", "謹製", "禁制", "均整"],
+            "kinsei=\(kinsei)"
+        )
+        let soba = converter.candidates(for: "そばを", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(soba.prefix(4)), ["蕎麦を", "そばを", "側を", "傍を"], "soba=\(soba)")
+        // そば 単独の並びは変えていない(かな正書のまま)
+        let sobaAlone = converter.candidates(for: "そば", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(sobaAlone.first, "そば", "sobaAlone=\(sobaAlone)")
+    }
+
     // でま→デマ: 実在の外来語なのに候補に出なかった。カタカナ強調抑止は LM unigram で
     // 「カタカナが同音の漢字より安い」ことを保護条件にしていたが、手間(6037)が デマ(6955)より
     // 安いため強調表記と誤判定していた。SudachiDict のカタカナ強調収穫は元の語と同一コストで
