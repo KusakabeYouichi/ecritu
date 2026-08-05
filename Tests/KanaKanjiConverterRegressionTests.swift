@@ -6254,6 +6254,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // かな維持は「維持のみで昇格しない」ので、漢字が最良の読みには影響しない
     }
 
+    // にほんごがうてる→日本語が得てる: 得る/獲る は読み うる で一段登録されているため語幹「う」から
+    // 得てる/獲てる/得て のような現代語では使わない活用が作られ、打てる を押し下げていた。
+    // うる(文語)基底からの一段派生を作らない(いい 基底の除外と同型。2494)
+    func testRegressionArchaicUruBaseNotInflected() throws {
+        try prepareRealLMDictionary()
+        let uteru = converter.candidates(for: "うてる", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(uteru.first, "打てる", "uteru=\(uteru)")
+        XCTAssertFalse(uteru.contains("得てる"), "uteru=\(uteru)")
+        let multi = converter.multiClauseCandidates(for: "にほんごがうてる", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "日本語が打てる", "multi=\(multi.prefix(4))")
+        // える 読みの派生は無傷(得てる/得られる)
+        let eteru = converter.candidates(for: "えてる", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(eteru.first, "得てる", "eteru=\(eteru)")
+        let erareru = converter.candidates(for: "えられる", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(erareru.first, "得られる", "erareru=\(erareru)")
+        // あり得る(複合)も無傷
+        let ariuru = converter.multiClauseCandidates(for: "ありうる", systemCandidateMode: .surface)
+        XCTAssertEqual(ariuru.first?.hasSuffix("得る"), true, "ariuru=\(ariuru.prefix(3))")
+    }
+
     // ほっきょくぐま: 語LMに ホッキョクグマ の unigram はあるが辞書エントリが無く変換できない。
     // 北極熊 も辞書に無いので両方 misc で供給する
     func testRegressionHokkyokugumaSuppliedFromMisc() throws {
