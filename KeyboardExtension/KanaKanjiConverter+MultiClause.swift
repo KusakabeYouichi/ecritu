@@ -149,6 +149,15 @@ extension KanaKanjiConverter {
     // そうりょう は Wikipedia の観測 bigram(総量→は700/の875/が・を1424)が日常頻度(送料)と
     // 系統的に食い違う語で、最大不利 ≈3950(uni差966+の差2985)を超える 4200 で全助詞文脈を反転
     // (ユーザ要望: 学習なしで 送料の が一発)。
+    // 短spanレア読み床上げの免除(読み→表層)。Sudachi の読み別 word_cost が実勢と大きく乖離して
+    // いる語だけ opt-in で外す。向き は unigram 5555 で 無機(6037)/無期(7143)/剥き(7216)より
+    // 安いのに読み別 wc 7924 で床上げされ、こっちむき→こっち無機/こっちむきに→こっち剥きに に
+    // なっていた。seed 掲載語を一律免除する案は いくのが好き/いるので/うちで水を使う/
+    // とり忘れてる 等7件が退行したため不可(2499)。
+    static let multiClauseRareReadingFloorExemptSurfacesByReading: [String: Set<String>] = [
+        "むき": ["向き"]
+    ]
+
     static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
         "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200,
         // みな はかなが主流(LM みな5809≈皆5748)だが wc 皆4233≪みな7460 で連文節は漢字が勝つ。
@@ -1427,8 +1436,11 @@ extension KanaKanjiConverter {
                 // かな断片(み)を過小評価する。短spanの漢字表層とかな識別(助詞類は除外)は
                 // Sudachi の読み別コストとの max で評価して断片連鎖を防ぐ。
                 // 辞書形述語(inflection_classes 登録)は床上げを免除(ノード定義コメント参照)。
+                // 床上げの opt-in 免除(定数コメント参照)。seed 全体の免除は退行するため語別。
                 if let wordCost,
                     !isDictionaryFormPredicate,
+                    !(Self.multiClauseRareReadingFloorExemptSurfacesByReading[reading]?
+                        .contains(surface) ?? false),
                     reading.count <= Self.multiClauseRareReadingFloorMaxReadingCount,
                     containsKanji(surface)
                         || (surface == reading
