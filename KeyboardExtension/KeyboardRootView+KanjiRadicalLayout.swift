@@ -46,13 +46,13 @@ struct KanjiCharacterKeyButton: View {
     let height: CGFloat
     let onCommit: (String) -> Void
     // ロングタップの吹き出しはセクション側のオーバーレイが描く(キー内に描くと隣のキーが
-    // 上に載って潜り、スクロール領域の端で見切れる。2481)。接触点をそのまま渡す。
-    let onInspect: (KanjiRadicalFileIndex.Entry?, CGPoint) -> Void
+    // 上に載って潜り、スクロール領域の端で見切れる。2481)。キーの矩形を渡して位置を決める。
+    let onInspect: (KanjiRadicalFileIndex.Entry?, CGRect) -> Void
 
     // ロングタップ中だけ字典風のポップアップを出す。押し込みで確定してしまわないよう、
     // シフトキーと同じ didTriggerLongPress ガードでタップ動作を抑止する(モードも維持)。
     @State private var didTriggerLongPress = false
-    @State private var touchPoint: CGPoint = .zero
+    @State private var isInspecting = false
 
     private var hasMincho: Bool {
         KanaKanjiStore.hasMinchoGlyph(for: entry.character)
@@ -80,25 +80,34 @@ struct KanjiCharacterKeyButton: View {
                 .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        // 接触点をセクション座標で拾う(minimumDistance 0 なので触れた瞬間に届く)
+        // キーの矩形は長押しが成立した瞬間にだけ読む。DragGesture の onChanged で接触点を
+        // 追跡すると ScrollView のスクロールを奪ってしまう(2490の退行)。
+        .background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onChange(of: isInspecting) { inspecting in
+                        onInspect(
+                            inspecting ? entry : nil,
+                            inspecting
+                                ? proxy.frame(in: .named(KanjiInspectBubble.coordinateSpaceName))
+                                : .zero
+                        )
+                    }
+            }
+        )
+        // 指を離した(またはキー外へ動かした)時点でポップアップを消す。onEnded だけなので
+        // スクロールは妨げない
         .simultaneousGesture(
-            DragGesture(
-                minimumDistance: 0,
-                coordinateSpace: .named(KanjiInspectBubble.coordinateSpaceName)
-            )
-            .onChanged { value in
-                touchPoint = value.location
-            }
-            // 指を離した(またはキー外へ動かした)時点でポップアップを消す
-            .onEnded { _ in
-                onInspect(nil, .zero)
-            }
+            DragGesture(minimumDistance: 0)
+                .onEnded { _ in
+                    isInspecting = false
+                }
         )
         .simultaneousGesture(
             LongPressGesture(minimumDuration: 0.35)
                 .onEnded { _ in
                     didTriggerLongPress = true
-                    onInspect(entry, touchPoint)
+                    isInspecting = true
                 }
         )
         .accessibilityLabel("\(entry.character) \(entry.readings)")
@@ -106,17 +115,16 @@ struct KanjiCharacterKeyButton: View {
 }
 
 // 字のロングタップで出す字典風ポップアップ(読み / U+XXXX / JIS X 0208区点)。
-// セクション側のオーバーレイが描く(キー内に描くと隣のキーの下に潜る)。位置は接触点基準で
-// 決め、指の上に出す余地が無い最上段では指の横へ逃がす。左右上下ともスクロール領域内に
-// クランプするので見切れない(2481)。
+// セクション側のオーバーレイが描く(キー内に描くと隣のキーの下に潜る)。位置はキーの矩形から
+// 決め、上に出す余地が無い最上段では指に隠れないよう横へ逃がす。左右上下ともスクロール領域内に
+// クランプするので見切れない(2481、2490でキー矩形基準に変更)。
 struct KanjiInspectBubble: View {
     static let coordinateSpaceName = "kanjiCharacterGrid"
 
     static let bubbleWidth: CGFloat = 176
     // 2行(読み+コード)+上下パディングの見込み。配置計算にだけ使う
     static let bubbleHeight: CGFloat = 46
-    // 指の当たり半径ぶんの逃げ。吹き出しが指に隠れないための最小距離
-    private static let fingerClearance: CGFloat = 34
+    private static let gap: CGFloat = 6
     private static let margin: CGFloat = 4
 
     let entry: KanjiRadicalFileIndex.Entry
@@ -128,23 +136,23 @@ struct KanjiInspectBubble: View {
         return String(format: "U+%04X", scalar.value)
     }
 
-    // 吹き出し左上の位置(セクション座標)。上に出せなければ指の横、はみ出しはクランプ。
-    static func placement(forTouchAt touch: CGPoint, in size: CGSize) -> CGPoint {
+    // 吹き出し左上の位置(セクション座標)。キーの上に出せなければ横、はみ出しはクランプ。
+    static func placement(forKey keyFrame: CGRect, in size: CGSize) -> CGPoint {
         func clampedX(_ x: CGFloat) -> CGFloat {
             min(max(x, margin), max(margin, size.width - bubbleWidth - margin))
         }
         func clampedY(_ y: CGFloat) -> CGFloat {
             min(max(y, margin), max(margin, size.height - bubbleHeight - margin))
         }
-        let above = touch.y - fingerClearance - bubbleHeight
+        let above = keyFrame.minY - gap - bubbleHeight
         if above >= margin {
-            return CGPoint(x: clampedX(touch.x - bubbleWidth / 2), y: above)
+            return CGPoint(x: clampedX(keyFrame.midX - bubbleWidth / 2), y: above)
         }
-        // 最上段: 画面の広い側(接触点が左半分なら右、右半分なら左)へ出す
-        let sideX = touch.x <= size.width / 2
-            ? touch.x + fingerClearance
-            : touch.x - fingerClearance - bubbleWidth
-        return CGPoint(x: clampedX(sideX), y: clampedY(touch.y - bubbleHeight / 2))
+        // 最上段: 指はキーの上にあるので、広い側(キーが左半分なら右、右半分なら左)へ逃がす
+        let sideX = keyFrame.midX <= size.width / 2
+            ? keyFrame.maxX + gap
+            : keyFrame.minX - gap - bubbleWidth
+        return CGPoint(x: clampedX(sideX), y: clampedY(keyFrame.minY))
     }
 
     var body: some View {
@@ -300,7 +308,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     // ロングタップ中の字と接触点(セクション座標)。オーバーレイはキーより後に描かれるので
     // 隣のキーの下に潜らない(2481)
     @State private var inspectedEntry: KanjiRadicalFileIndex.Entry?
-    @State private var inspectTouchPoint: CGPoint = .zero
+    @State private var inspectedKeyFrame: CGRect = .zero
 
     private var forms: [RadicalForm] {
         KanjiRadicalCatalog.forms(in: selectedCategory, style: strokeCountStyle)
@@ -382,9 +390,9 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                                     entry: entry,
                                     height: compactEmojiKeyHeight,
                                     onCommit: onCommitCharacter,
-                                    onInspect: { inspected, point in
+                                    onInspect: { inspected, keyFrame in
                                         inspectedEntry = inspected
-                                        inspectTouchPoint = point
+                                        inspectedKeyFrame = keyFrame
                                     }
                                 )
                             }
@@ -399,7 +407,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                     GeometryReader { proxy in
                         if let inspectedEntry {
                             let origin = KanjiInspectBubble.placement(
-                                forTouchAt: inspectTouchPoint,
+                                forKey: inspectedKeyFrame,
                                 in: proxy.size
                             )
                             KanjiInspectBubble(entry: inspectedEntry)
