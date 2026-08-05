@@ -653,7 +653,7 @@ struct RadicalStrokeCountSettingsSection: View {
             optionTitle: { $0.title }
         ) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("漢字1文字ピッカー(モード切替キーの下フリック)の部首一覧の並びと、字の一覧に挟む総画数の区切りに効きます。辞書によって流儀が分かれる字形は次のように数えます。")
+                Text("漢字1文字ピッカー(モード切替キーの下フリック)の部首一覧の並びに効きます。辞書によって流儀が分かれる字形は次のように数えます。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 
@@ -672,7 +672,7 @@ struct RadicalStrokeCountSettingsSection: View {
                     }
                 }
 
-                Text("字の一覧に挟む総画数は、部首の画数(上の選択)と部首以外の画数(康熙字典の数え方)の合計です。新字体で画数が減った字は日本の辞典より1画多くなることがあります(海=10画、漢=14画)。")
+                Text("字の一覧に挟む総画数は Unicode(Unihan)の値をそのまま表示します。部首以外の部分は康熙字典の数え方なので、新字体で画数が減った字は日本の辞典より1画多くなることがあります(海=10画、漢=14画)。上の4字形を選んだときは、部首名の横に「4画に数えてください」のように数え方を添えます。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
 

@@ -508,7 +508,12 @@ extension KeyboardRootView {
             return selectedSymbolCategory.frenchName
         case .kanjiRadical:
             if let form = selectedRadicalForm {
-                return "\(selectedRadicalCategory.title) › \(form.form)(\(form.name))"
+                // 総画数は Unicode の値そのままなので、数え方が分かれる字形(艹/辶/礻/飠)では
+                // 設定に沿った画数を添えて読み替えの手掛かりにする(2492)
+                let note = form.strokesTraditional == nil
+                    ? ""
+                    : " (\(form.strokes(style: radicalStrokeCountStyle))画に数えてください)"
+                return "\(selectedRadicalCategory.title) › \(form.form)(\(form.name))\(note)"
             }
             return "\(selectedRadicalCategory.title)(\(selectedRadicalCategory.reading))"
         }

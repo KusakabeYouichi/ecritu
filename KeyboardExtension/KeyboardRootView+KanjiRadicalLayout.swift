@@ -350,20 +350,14 @@ struct KeyboardRootKanjiRadicalSectionView: View {
         case character(KanjiRadicalFileIndex.Entry)
     }
 
-    // 総画数は Unihan の値(字ごとに正確)を土台に、部首の数え方の設定ぶんの差を足す
-    // ——「草冠を何画で数えるか」の設定を総画数にも効かせるため(艹3画→花7画 /
-    // 艸6画→花10画=康熙字典の総画)。字ごとにどちらの字形を使うかは索引に無いので、
-    // 表示中の部首字形の差分を一律で適用する(2483)。
-    private func totalStrokeOffset(for form: RadicalForm) -> Int {
-        form.strokes(style: strokeCountStyle) - form.strokes(style: .modern)
-    }
-
+    // 総画数は Unicode(Unihan kTotalStrokes)の値をそのまま使う。部首の数え方の設定ぶんを
+    // 足し引きする方式(2483)は、字ごとにどの字形を使うか索引に無いため一律加算になり不正確
+    // だった。数え方が分かれる字形はヘッダーに「N画に数えてください」と添えて読み替えを促す(2492)。
     private func characterListItems(for form: RadicalForm) -> [(id: String, kind: CharacterListItem)] {
-        let offset = totalStrokeOffset(for: form)
         var items: [(id: String, kind: CharacterListItem)] = []
         var lastTotal = -1
         for entry in onLookupEntries(form.radical) {
-            let total = entry.totalStrokes > 0 ? entry.totalStrokes + offset : 0
+            let total = entry.totalStrokes
             if total > 0, total != lastTotal {
                 items.append((id: "total-\(total)", kind: .totalStrokeMarker(total)))
                 lastTotal = total
