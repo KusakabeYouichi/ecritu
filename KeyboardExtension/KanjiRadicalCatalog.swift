@@ -92,11 +92,106 @@ struct RadicalPositionIcon: Shape {
 
 // 部首の画数の数え方。辞書によって流儀が分かれる字形(艹 3/4、辶 3/4、礻 4/5、飠 7/8)の
 // 扱いをコンテナーアプリの設定で切り替える(2448)。
-enum RadicalStrokeCountStyle: String, CaseIterable, Identifiable {
-    case modern
-    case traditional
+// 流儀が分かれる部首の画数の選択肢(字形と画数)。部首ごとに個別に選べる(2502)。
+// 先頭の画数が Unihan の総画数の計算基準で、字グリッドの総画数はどの選択でも変わらない。
+struct RadicalStrokeOption: Equatable, Hashable, Identifiable {
+    let form: String
+    let strokes: Int
 
-    var id: String { rawValue }
+    var id: String { "\(form)-\(strokes)" }
+    var title: String { "\(form) \(strokes)画" }
+}
+
+enum RadicalStrokeChoiceCatalog {
+    // 部首番号 → 選択肢。しめすへんは 礻(4)/⺭(5)/示(5) で画数が重複するが3択で並べる(ユーザー指定)
+    static let optionsByRadical: [Int: [RadicalStrokeOption]] = [
+        140: [.init(form: "⺾", strokes: 3), .init(form: "⺿", strokes: 4), .init(form: "艸", strokes: 6)],
+        162: [.init(form: "⻌", strokes: 3), .init(form: "⻍", strokes: 4), .init(form: "辵", strokes: 7)],
+        113: [.init(form: "礻", strokes: 4), .init(form: "⺭", strokes: 5), .init(form: "示", strokes: 5)],
+        184: [.init(form: "飠", strokes: 7), .init(form: "⻟", strokes: 8), .init(form: "食", strokes: 9)]
+    ]
+
+    // 設定画面の並び順(部首番号順ではなく画数の小さい部首から)
+    static let orderedRadicals: [Int] = [140, 162, 113, 184]
+
+    static func options(forRadical radical: Int) -> [RadicalStrokeOption] {
+        optionsByRadical[radical] ?? []
+    }
+
+    // 総画数(Unihan kTotalStrokes)の計算基準になる画数 = 選択肢の先頭
+    static func totalBasisStrokes(forRadical radical: Int) -> Int? {
+        optionsByRadical[radical]?.first?.strokes
+    }
+}
+
+// 部首ごとの画数選択。共有 defaults には "140:4,162:3" のような1本の文字列で持つ
+// (キーボードへの受け渡し経路を増やさないため)。旧設定 modern/traditional も受け取る。
+struct RadicalStrokeChoices: Equatable {
+    private var strokesByRadical: [Int: Int]
+
+    init(strokesByRadical: [Int: Int] = [:]) {
+        self.strokesByRadical = strokesByRadical
+    }
+
+    init(rawValue: String) {
+        // 旧設定(単一の流儀)からの移行: traditional は各部首の2番目の選択肢に対応する
+        switch rawValue {
+        case "traditional":
+            var mapped: [Int: Int] = [:]
+            for radical in RadicalStrokeChoiceCatalog.orderedRadicals {
+                let options = RadicalStrokeChoiceCatalog.options(forRadical: radical)
+                if options.count >= 2 {
+                    mapped[radical] = options[1].strokes
+                }
+            }
+            self.init(strokesByRadical: mapped)
+            return
+        case "", "modern":
+            self.init(strokesByRadical: [:])
+            return
+        default:
+            break
+        }
+        var parsed: [Int: Int] = [:]
+        for pair in rawValue.split(separator: ",") {
+            let fields = pair.split(separator: ":")
+            guard fields.count == 2,
+                let radical = Int(fields[0]),
+                let strokes = Int(fields[1]) else {
+                continue
+            }
+            parsed[radical] = strokes
+        }
+        self.init(strokesByRadical: parsed)
+    }
+
+    var rawValue: String {
+        RadicalStrokeChoiceCatalog.orderedRadicals
+            .compactMap { radical in
+                strokesByRadical[radical].map { "\(radical):\($0)" }
+            }
+            .joined(separator: ",")
+    }
+
+    // 未指定なら選択肢の先頭(=Unihan 基準)
+    func selectedOption(forRadical radical: Int) -> RadicalStrokeOption? {
+        let options = RadicalStrokeChoiceCatalog.options(forRadical: radical)
+        guard !options.isEmpty else {
+            return nil
+        }
+        guard let strokes = strokesByRadical[radical] else {
+            return options.first
+        }
+        return options.first { $0.strokes == strokes } ?? options.first
+    }
+
+    func strokes(forRadical radical: Int) -> Int? {
+        selectedOption(forRadical: radical)?.strokes
+    }
+
+    mutating func setStrokes(_ strokes: Int, forRadical radical: Int) {
+        strokesByRadical[radical] = strokes
+    }
 }
 
 struct RadicalForm: Identifiable, Equatable {
@@ -112,13 +207,13 @@ struct RadicalForm: Identifiable, Equatable {
 
     var id: String { "\(radical)-\(form)" }
 
-    func strokes(style: RadicalStrokeCountStyle) -> Int {
-        switch style {
-        case .modern:
+    // 部首ごとの選択(設定)を反映した画数。選択肢を持たない字形は plist の値そのまま。
+    func strokes(choices: RadicalStrokeChoices) -> Int {
+        guard strokesTraditional != nil,
+            let selected = choices.strokes(forRadical: radical) else {
             return strokes
-        case .traditional:
-            return strokesTraditional ?? strokes
         }
+        return selected
     }
 }
 
@@ -154,13 +249,13 @@ enum KanjiRadicalCatalog {
     // 一覧もその順に並べ、画数の区切りを挟めるようにする(2447)。画数の流儀は設定で切替(2448)。
     static func forms(
         in category: RadicalPositionCategory,
-        style: RadicalStrokeCountStyle = .modern
+        choices: RadicalStrokeChoices = RadicalStrokeChoices()
     ) -> [RadicalForm] {
         allForms
             .filter { $0.categories.contains(category.rawValue) }
             .sorted { lhs, rhs in
-                let left = lhs.strokes(style: style)
-                let right = rhs.strokes(style: style)
+                let left = lhs.strokes(choices: choices)
+                let right = rhs.strokes(choices: choices)
                 return left != right ? left < right : lhs.radical < rhs.radical
             }
     }

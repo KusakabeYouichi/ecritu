@@ -299,7 +299,7 @@ struct ContentView: View {
         SettingsKeys.radicalStrokeCountStyle,
         store: Self.sharedDefaults
     )
-    private var radicalStrokeCountStyleRawValue: String = RadicalStrokeCountStyleOption.modern.rawValue
+    private var radicalStrokeCountStyleRawValue: String = ""
 
     @AppStorage(
         SettingsKeys.ordinalMeKanjiPreferred,
@@ -564,7 +564,7 @@ struct ContentView: View {
         str(SettingsKeys.katakanaEmphasisCandidateMode, katakanaEmphasisCandidateModeRawValue, "カタカナ強調表記の候補")
         str(SettingsKeys.mazegakiCandidateMode, mazegakiCandidateModeRawValue, "交ぜ書きの候補")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
-        str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "画数の数え方")
+        str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "première…: 順序の『目』を漢字で先に")
         bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "un peu …: 形容詞語幹の『目』候補も出す")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
@@ -1158,13 +1158,7 @@ struct ContentView: View {
                         )
 
                         RadicalStrokeCountSettingsSection(
-                            selection: Binding(
-                                get: {
-                                    RadicalStrokeCountStyleOption(rawValue: radicalStrokeCountStyleRawValue)
-                                        ?? .modern
-                                },
-                                set: { radicalStrokeCountStyleRawValue = $0.rawValue }
-                            )
+                            rawValue: $radicalStrokeCountStyleRawValue
                         )
 
                         MeSuffixCandidateSettingsSection(

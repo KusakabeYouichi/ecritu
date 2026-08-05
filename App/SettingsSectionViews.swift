@@ -634,60 +634,56 @@ struct UserDictionaryCandidateDisplaySettingsSection: View {
 }
 
 struct RadicalStrokeCountSettingsSection: View {
-    @Binding var selection: RadicalStrokeCountStyleOption
-
-    // 流儀が分かれる字形。選んでいない方の画数は消し線で示す
-    private static let divergentForms: [(form: String, name: String, modern: Int, traditional: Int)] = [
-        ("艹", "くさかんむり", 3, 4),
-        ("辶", "しんにょう", 3, 4),
-        ("礻", "しめすへん", 4, 5),
-        ("飠", "しょくへん", 7, 8)
-    ]
+    // 共有 defaults に入る1本の文字列("140:4,162:3" 形式)。旧設定 modern/traditional も読める
+    @Binding var rawValue: String
 
     var body: some View {
-        SegmentedSettingsCardWithFootnoteContent(
-            title: "画数の数え方",
-            pickerTitle: "画数の数え方",
-            selection: $selection,
-            options: Array(RadicalStrokeCountStyleOption.allCases),
-            optionTitle: { $0.title }
-        ) {
-            VStack(alignment: .leading, spacing: 8) {
-                Text("漢字1文字ピッカー(モード切替キーの下フリック)の部首一覧の並びに効きます。辞書によって流儀が分かれる字形は次のように数えます。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: 12) {
+            Text("部首の画数の数え方")
+                .font(.headline)
 
+            Text("漢字1文字ピッカー(モード切替キーの下フリック)の部首一覧を並べる画数です。流儀が分かれる部首だけ個別に選べます(艸/辵/食 は単独では6画/7画/9画で、ここの数字はその部首として数えるときの画数です)。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            ForEach(AppRadicalStrokeChoices.orderedRadicals, id: \.self) { radical in
                 VStack(alignment: .leading, spacing: 4) {
-                    ForEach(Self.divergentForms, id: \.form) { item in
-                        HStack(spacing: 6) {
-                            Text("・\(item.form)(\(item.name))")
-                            Spacer(minLength: 8)
-                            strokeCountLabel(item.modern, isActive: selection == .modern)
-                            Text("/")
-                                .foregroundStyle(.tertiary)
-                            strokeCountLabel(item.traditional, isActive: selection == .traditional)
+                    Text(AppRadicalStrokeChoices.name(forRadical: radical))
+                        .font(.subheadline)
+                    Picker(
+                        AppRadicalStrokeChoices.name(forRadical: radical),
+                        selection: strokeBinding(forRadical: radical)
+                    ) {
+                        ForEach(AppRadicalStrokeChoices.options(forRadical: radical)) { option in
+                            Text(option.title).tag(option.strokes)
                         }
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
                     }
+                    .pickerStyle(.segmented)
                 }
-
-                Text("字の一覧に挟む総画数は Unicode(Unihan)の値をそのまま表示します。Unicode は上の4字形を新字体の画数(艹3画/辶3画/礻4画/飠7画)で数えるため、旧字体を選んでも総画数は変わりません。字の一覧の見出しには「部首4画 / 総画数は3画基準」のように両方を示します。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-
-                Text("初期設定は「新字体で数える」です。")
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
             }
+
+            Text("字の一覧に挟む総画数は Unihan の値をそのまま表示するので、ここの選択では変わりません(部首名の横に「総画数は3画で計算」のように基準を示します)。部首以外の部分は康熙字典の数え方なので、新字体で画数が減った字は日本の辞典より1画多くなることがあります(海=10画、漢=14画)。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Text("初期設定はいずれも左端(Unihan と同じ数え方)です。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
+        .settingsCardStyle()
     }
 
-    private func strokeCountLabel(_ strokes: Int, isActive: Bool) -> some View {
-        Text("\(strokes)画")
-            .strikethrough(!isActive)
-            .foregroundStyle(isActive ? Color.primary : Color.secondary)
-            .fontWeight(isActive ? .semibold : .regular)
+    private func strokeBinding(forRadical radical: Int) -> Binding<Int> {
+        Binding(
+            get: { AppRadicalStrokeChoices.strokes(forRadical: radical, in: rawValue) },
+            set: { newValue in
+                rawValue = AppRadicalStrokeChoices.updating(
+                    rawValue,
+                    radical: radical,
+                    strokes: newValue
+                )
+            }
+        )
     }
 }
 
