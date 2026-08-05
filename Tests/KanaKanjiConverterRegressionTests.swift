@@ -6227,6 +6227,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(te.prefix(2)), ["追いやって", "追い遣って"], "te=\(te)")
     }
 
+    // などという: エンジンは かな先頭(などという)を返していたが keepKana 不成立で提示層が
+    // かな識別を落とし、などと言う が先頭になっていた。引用の という を剥がして語幹(など)が
+    // かな正書なら維持する規則を追加(2487)
+    func testRegressionQuotationToiuKeepsKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "などという", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["などという", "などと言う"], "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "などという"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "などというのは"))
+        // 名詞+という(図鑑という)は語幹がかな正書でないので巻き込まない
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんという"))
+    }
+
     // でま→デマ: 実在の外来語なのに候補に出なかった。カタカナ強調抑止は LM unigram で
     // 「カタカナが同音の漢字より安い」ことを保護条件にしていたが、手間(6037)が デマ(6955)より
     // 安いため強調表記と誤判定していた。SudachiDict のカタカナ強調収穫は元の語と同一コストで
