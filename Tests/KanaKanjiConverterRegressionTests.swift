@@ -6291,6 +6291,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(te.contains("舞って"), "te=\(te)")
     }
 
+    // かいし: 芥子(wc3727=カイシ と同値の収穫)と 会し が先頭を占め 開始/会誌 が後ろだった。
+    // seed で指定順に固定(2498)
+    func testRegressionKaishiOrdering() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "かいし", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(single.prefix(6)),
+            ["開始", "会誌", "怪死", "会し", "芥子", "会試"],
+            "single=\(single)"
+        )
+    }
+
     // 補助語彙(ryukyu/vin/it.plist)は同じ読みに語LM実在の一般語が無いときだけ辞書より上へ
     // 昇格する。いちまん→糸満(7500)は 一満(6324)の後ろに沈んでいた。一律昇格は頻出語を
     // 押し下げるため不可(び→美/にほん→🇯🇵/じん→ジン。実測2331読み・頻出衝突525件。2497)
