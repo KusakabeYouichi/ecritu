@@ -6254,6 +6254,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // かな維持は「維持のみで昇格しない」ので、漢字が最良の読みには影響しない
     }
 
+    // ほっきょくぐま: 語LMに ホッキョクグマ の unigram はあるが辞書エントリが無く変換できない。
+    // 北極熊 も辞書に無いので両方 misc で供給する
+    func testRegressionHokkyokugumaSuppliedFromMisc() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "ほっきょくぐま", candidate: "北極熊")
+        converter.store.addUserEntry(reading: "ほっきょくぐま", candidate: "ホッキョクグマ")
+        let single = converter.candidates(for: "ほっきょくぐま", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "ホッキョクグマ", "single=\(single)")
+        XCTAssertTrue(single.contains("北極熊"), "single=\(single)")
+    }
+
     // きんせい: 金青(wc3727=キンセイ と同値の収穫)が先頭で 金星/近世 が7000台に沈んでいた。
     // そばを: かな そば(2517)が先頭で 蕎麦(5892)が3番目だった。どちらも seed で並びを指定(2493)
     func testRegressionKinseiAndSobaOrdering() throws {

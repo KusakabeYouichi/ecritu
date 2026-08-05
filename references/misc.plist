@@ -366,5 +366,9 @@
 	     不要(2473で撤回) -->
 	<dict><key>phrase</key><string>ℓ</string><key>shortcut</key><string>りったー</string></dict>
 	<dict><key>phrase</key><string>ℓ</string><key>shortcut</key><string>りっとる</string></dict>
+	<!-- ホッキョクグマ(ほっきょくぐま): 辞書・語LMに 北極熊 も無く変換できない(LMに
+	     ホッキョクグマ の unigram はあるが辞書エントリが無いため候補にならない) -->
+	<dict><key>phrase</key><string>ホッキョクグマ</string><key>shortcut</key><string>ほっきょくぐま</string></dict>
+	<dict><key>phrase</key><string>北極熊</string><key>shortcut</key><string>ほっきょくぐま</string></dict>
 </array>
 </plist>
