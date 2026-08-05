@@ -6882,6 +6882,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         custom.setStrokes(6, forRadical: 140)
         XCTAssertEqual(kusa.strokes(choices: custom), 6)
         XCTAssertEqual(custom.rawValue, "140:6")
+        // 一覧・見出しの字形も選択に追随する(2503)
+        XCTAssertEqual(kusa.displayForm(choices: custom), "艸")
+        XCTAssertEqual(kusa.displayForm(choices: RadicalStrokeChoices()), "⺾")
+        XCTAssertEqual(
+            water.first { $0.form == "氵" }?.displayForm(choices: custom),
+            "氵"
+        )
         // 旧設定(traditional)からの移行=各部首の2番目の選択肢
         let migrated = RadicalStrokeChoices(rawValue: "traditional")
         XCTAssertEqual(kusa.strokes(choices: migrated), 4)

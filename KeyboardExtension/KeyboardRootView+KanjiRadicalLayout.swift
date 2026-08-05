@@ -53,6 +53,7 @@ struct KanjiCharacterKeyButton: View {
     // シフトキーと同じ didTriggerLongPress ガードでタップ動作を抑止する(モードも維持)。
     @State private var didTriggerLongPress = false
     @State private var isInspecting = false
+    @State private var pendingInspect: DispatchWorkItem?
 
     private var hasMincho: Bool {
         KanaKanjiStore.hasMinchoGlyph(for: entry.character)
@@ -79,9 +80,20 @@ struct KanjiCharacterKeyButton: View {
                 )
                 .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
-        // キーの矩形は長押しが成立した瞬間にだけ読む。DragGesture の onChanged で接触点を
-        // 追跡すると ScrollView のスクロールを奪ってしまう(2490の退行)。
+        // 押下は ButtonStyle の isPressed だけで見る。DragGesture/LongPressGesture を足すと
+        // ScrollView のスクロールを奪う(2490/2503の退行)。記号キーの吹き出しと同じ作法で、
+        // スクロールが始まるとボタン押下がキャンセルされ isPressed=false になるので吹き出しも消える。
+        .buttonStyle(
+            KanjiCharacterKeyPressStyle { isPressing in
+                if isPressing {
+                    scheduleInspect()
+                } else {
+                    cancelInspect()
+                    isInspecting = false
+                }
+            }
+        )
+        // キーの矩形は長押しが成立した瞬間にだけ読む。
         .background(
             GeometryReader { proxy in
                 Color.clear
@@ -95,22 +107,37 @@ struct KanjiCharacterKeyButton: View {
                     }
             }
         )
-        // 指を離した(またはキー外へ動かした)時点でポップアップを消す。onEnded だけなので
-        // スクロールは妨げない
-        .simultaneousGesture(
-            DragGesture(minimumDistance: 0)
-                .onEnded { _ in
-                    isInspecting = false
-                }
-        )
-        .simultaneousGesture(
-            LongPressGesture(minimumDuration: 0.35)
-                .onEnded { _ in
-                    didTriggerLongPress = true
-                    isInspecting = true
-                }
-        )
         .accessibilityLabel("\(entry.character) \(entry.readings)")
+    }
+
+    // 押しっぱなし 0.35秒でロングタップ成立(タップ確定は didTriggerLongPress で抑止)
+    private func scheduleInspect() {
+        cancelInspect()
+        let work = DispatchWorkItem {
+            didTriggerLongPress = true
+            isInspecting = true
+        }
+        pendingInspect = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
+    }
+
+    private func cancelInspect() {
+        pendingInspect?.cancel()
+        pendingInspect = nil
+    }
+}
+
+// 押下状態だけを親へ知らせる ButtonStyle。ジェスチャーを追加しないので ScrollView と共存する。
+private struct KanjiCharacterKeyPressStyle: ButtonStyle {
+    let onPressingChanged: (Bool) -> Void
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.94 : 1)
+            .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
+            .onChange(of: configuration.isPressed) { isPressed in
+                onPressingChanged(isPressed)
+            }
     }
 }
 
@@ -231,6 +258,8 @@ struct RadicalCategoryKeyButton: View {
 // 部首キー。字形と読み(さんずい 等)を並べる。
 struct RadicalFormKeyButton: View {
     let form: RadicalForm
+    // 設定で選んだ字形(艸 等)。選択肢を持たない部首は plist の字形そのまま(2503)
+    let displayForm: String
     let isSelected: Bool
     let height: CGFloat
     let action: () -> Void
@@ -238,7 +267,7 @@ struct RadicalFormKeyButton: View {
     var body: some View {
         Button(action: action) {
             VStack(spacing: 0) {
-                Text(form.form)
+                Text(displayForm)
                     .font(.custom("HiraMinProN-W3", size: 22))
                     .minimumScaleFactor(0.6)
                     .lineLimit(1)
@@ -257,7 +286,7 @@ struct RadicalFormKeyButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("\(form.form) \(form.name)")
+        .accessibilityLabel("\(displayForm) \(form.name)")
     }
 }
 
@@ -444,6 +473,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                             case .form(let form):
                                 RadicalFormKeyButton(
                                     form: form,
+                                    displayForm: form.displayForm(choices: strokeChoices),
                                     isSelected: false,
                                     height: compactEmojiKeyHeight
                                 ) {

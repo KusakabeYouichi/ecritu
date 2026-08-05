@@ -513,7 +513,8 @@ extension KeyboardRootView {
                 // 「総画数は3画で計算」と事実を示す(2502)
                 let note = RadicalStrokeChoiceCatalog.totalBasisStrokes(forRadical: form.radical)
                     .map { " (総画数は\($0)画で計算)" } ?? ""
-                return "\(selectedRadicalCategory.title) › \(form.form)(\(form.name))\(note)"
+                let displayForm = form.displayForm(choices: radicalStrokeChoices)
+                return "\(selectedRadicalCategory.title) › \(displayForm)(\(form.name))\(note)"
             }
             return "\(selectedRadicalCategory.title)(\(selectedRadicalCategory.reading))"
         }
