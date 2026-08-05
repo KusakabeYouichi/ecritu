@@ -6736,6 +6736,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // 吹き出しの読み表示: 音読み(カタカナ)と訓読み(ひらがな)の境目に / を入れる。
+    // 片方しか無い字はスラッシュ無し(2491)
+    func testKanjiInspectBubbleReadingsDisplayText() {
+        XCTAssertEqual(
+            KanjiInspectBubble.readingsDisplayText(for: "ヒョウ ギョウ こおり ひ こおる"),
+            "ヒョウ ギョウ / こおり ひ こおる"
+        )
+        XCTAssertEqual(KanjiInspectBubble.readingsDisplayText(for: "コウ"), "コウ")
+        XCTAssertEqual(KanjiInspectBubble.readingsDisplayText(for: "さんずい"), "さんずい")
+        XCTAssertEqual(KanjiInspectBubble.readingsDisplayText(for: "—"), "—")
+    }
+
     // 漢字1文字ピッカーの索引(mmap+バイナリサーチ)。部首ブロックが部首内画数順で
     // 切り出せること、区点・読みが引けること、フォント差の判定が効くことを確認(2443)
     func testKanjiRadicalIndexLookup() throws {

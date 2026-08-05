@@ -129,6 +129,27 @@ struct KanjiInspectBubble: View {
 
     let entry: KanjiRadicalFileIndex.Entry
 
+    // 音読み(カタカナ)と訓読み(ひらがな)の境目に / を入れる。索引は音→訓の順で並ぶ。
+    // 片方しか無い字(コウ だけ/さんずい だけ)はスラッシュを付けない(2491)。
+    static func readingsDisplayText(for readings: String) -> String {
+        var onReadings: [String] = []
+        var kunReadings: [String] = []
+        for token in readings.split(separator: " ").map(String.init) {
+            let isKatakana = token.unicodeScalars.allSatisfy {
+                (0x30A1...0x30F6).contains($0.value) || $0.value == 0x30FC
+            }
+            if isKatakana {
+                onReadings.append(token)
+            } else {
+                kunReadings.append(token)
+            }
+        }
+        guard !onReadings.isEmpty, !kunReadings.isEmpty else {
+            return readings
+        }
+        return onReadings.joined(separator: " ") + " / " + kunReadings.joined(separator: " ")
+    }
+
     private var codePointText: String {
         guard let scalar = entry.character.unicodeScalars.first else {
             return "—"
@@ -157,7 +178,7 @@ struct KanjiInspectBubble: View {
 
     var body: some View {
         VStack(spacing: 2) {
-            Text(entry.readings)
+            Text(Self.readingsDisplayText(for: entry.readings))
                 .font(.system(size: 12, weight: .bold, design: .rounded))
                 .lineLimit(2)
                 .minimumScaleFactor(0.7)
