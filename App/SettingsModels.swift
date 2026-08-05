@@ -772,18 +772,81 @@ enum ScriptVariantModeOption: String, CaseIterable, Identifiable {
 }
 
 
-// 画数の数え方(漢字1文字ピッカーの部首一覧の並びと、字の一覧の総画数区切りに効く)。
-// 辞書によって流儀が分かれる字形(艹 3/4、辶 3/4、礻 4/5、飠 7/8)の扱いを決める。
-enum RadicalStrokeCountStyleOption: String, CaseIterable, Identifiable {
-    case modern
-    case traditional
+// 部首の画数の選択肢(キーボード側 RadicalStrokeChoiceCatalog と同じ内容。ターゲットが別なので
+// アプリ側にも小さな表を持つ)。共有 defaults の値は "140:4,162:3" 形式の1本の文字列で、
+// 旧設定 modern/traditional も受け取れる(移行はキーボード側 RadicalStrokeChoices が行う)。
+// 艸/辵/食 は単独では6画/7画/9画で、ここの数字は「その部首として数えるときの画数」(2502)。
+struct AppRadicalStrokeOption: Identifiable {
+    let form: String
+    let strokes: Int
 
-    var id: String { rawValue }
+    var id: String { "\(form)-\(strokes)" }
+    var title: String { "\(form) \(strokes)画" }
+}
 
-    var title: String {
-        switch self {
-        case .modern: return "新字体で数える"
-        case .traditional: return "旧字体で数える"
+enum AppRadicalStrokeChoices {
+    static let orderedRadicals: [Int] = [140, 162, 113, 184]
+
+    static let namesByRadical: [Int: String] = [
+        140: "くさかんむり",
+        162: "しんにょう",
+        113: "しめすへん",
+        184: "しょくへん"
+    ]
+
+    static let optionsByRadical: [Int: [AppRadicalStrokeOption]] = [
+        140: [.init(form: "⺾", strokes: 3), .init(form: "⺿", strokes: 4), .init(form: "艸", strokes: 6)],
+        162: [.init(form: "⻌", strokes: 3), .init(form: "⻍", strokes: 4), .init(form: "辵", strokes: 7)],
+        113: [.init(form: "礻", strokes: 4), .init(form: "⺭", strokes: 5), .init(form: "示", strokes: 5)],
+        184: [.init(form: "飠", strokes: 7), .init(form: "⻟", strokes: 8), .init(form: "食", strokes: 9)]
+    ]
+
+    static func options(forRadical radical: Int) -> [AppRadicalStrokeOption] {
+        optionsByRadical[radical] ?? []
+    }
+
+    static func name(forRadical radical: Int) -> String {
+        namesByRadical[radical] ?? "部首\(radical)"
+    }
+
+    // 総画数(Unihan)の計算基準 = 選択肢の先頭
+    static func defaultStrokes(forRadical radical: Int) -> Int {
+        options(forRadical: radical).first?.strokes ?? 0
+    }
+
+    static func parsed(_ rawValue: String) -> [Int: Int] {
+        if rawValue == "traditional" {
+            var mapped: [Int: Int] = [:]
+            for radical in orderedRadicals {
+                let radicalOptions = options(forRadical: radical)
+                if radicalOptions.count >= 2 {
+                    mapped[radical] = radicalOptions[1].strokes
+                }
+            }
+            return mapped
         }
+        guard rawValue != "modern" else {
+            return [:]
+        }
+        var values: [Int: Int] = [:]
+        for pair in rawValue.split(separator: ",") {
+            let fields = pair.split(separator: ":")
+            if fields.count == 2, let radical = Int(fields[0]), let strokes = Int(fields[1]) {
+                values[radical] = strokes
+            }
+        }
+        return values
+    }
+
+    static func strokes(forRadical radical: Int, in rawValue: String) -> Int {
+        parsed(rawValue)[radical] ?? defaultStrokes(forRadical: radical)
+    }
+
+    static func updating(_ rawValue: String, radical: Int, strokes: Int) -> String {
+        var values = parsed(rawValue)
+        values[radical] = strokes
+        return orderedRadicals
+            .compactMap { key in values[key].map { "\(key):\($0)" } }
+            .joined(separator: ",")
     }
 }

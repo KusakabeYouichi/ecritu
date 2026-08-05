@@ -6849,31 +6849,50 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertTrue(1...17 ~= form.strokes, "\(form.form) の画数=\(form.strokes)")
         }
 
-        // カテゴリー内は画数順(同画数は部首番号順)= 画数区切りを挟める並び。両流儀で成立する
-        for style in RadicalStrokeCountStyle.allCases {
+        // カテゴリー内は画数順(同画数は部首番号順)= 画数区切りを挟める並び。どの選択でも成立する
+        let choiceSets: [RadicalStrokeChoices] = [
+            RadicalStrokeChoices(),
+            RadicalStrokeChoices(rawValue: "traditional"),
+            RadicalStrokeChoices(rawValue: "140:6,162:7,113:5,184:9")
+        ]
+        for choices in choiceSets {
             for category in RadicalPositionCategory.allCases {
-                let ordered = KanjiRadicalCatalog.forms(in: category, style: style)
-                let keys = ordered.map { [$0.strokes(style: style), $0.radical] }
+                let ordered = KanjiRadicalCatalog.forms(in: category, choices: choices)
+                let keys = ordered.map { [$0.strokes(choices: choices), $0.radical] }
                 XCTAssertEqual(keys, keys.sorted { lhs, rhs in
                     lhs[0] != rhs[0] ? lhs[0] < rhs[0] : lhs[1] < rhs[1]
-                }, "\(category.title)/\(style.rawValue) の並びが画数順でない")
+                }, "\(category.title)/\(choices.rawValue) の並びが画数順でない")
             }
         }
 
-        // 画数の流儀切替(設定)。艹=3/4、辶=3/4、礻=4/5、飠=7/8 が変わり、他は不変
-        let kusa = try XCTUnwrap(forms.first { $0.form == "艹" })
-        XCTAssertEqual(kusa.strokes(style: .modern), 3)
-        XCTAssertEqual(kusa.strokes(style: .traditional), 4)
-        let shinnyou = try XCTUnwrap(forms.first { $0.form == "辶" })
-        XCTAssertEqual(shinnyou.strokes(style: .modern), 3)
-        XCTAssertEqual(shinnyou.strokes(style: .traditional), 4)
-        let shimesu = try XCTUnwrap(forms.first { $0.form == "礻" })
-        XCTAssertEqual(shimesu.strokes(style: .modern), 4)
-        XCTAssertEqual(shimesu.strokes(style: .traditional), 5)
-        // 流儀を持たない字形はどちらでも同じ
+        // 部首ごとの画数選択(2502)。選択肢は 艹=3/4/6、辶=3/4/7、礻=4/5/5、飠=7/8/9
         XCTAssertEqual(
-            water.first { $0.form == "氵" }?.strokes(style: .traditional),
-            water.first { $0.form == "氵" }?.strokes(style: .modern)
+            RadicalStrokeChoiceCatalog.options(forRadical: 140).map(\.strokes),
+            [3, 4, 6]
+        )
+        XCTAssertEqual(
+            RadicalStrokeChoiceCatalog.options(forRadical: 113).map(\.form),
+            ["礻", "⺭", "示"]
+        )
+        XCTAssertEqual(RadicalStrokeChoiceCatalog.totalBasisStrokes(forRadical: 140), 3)
+
+        let kusa = try XCTUnwrap(forms.first { $0.form == "艹" })
+        XCTAssertEqual(kusa.strokes(choices: RadicalStrokeChoices()), 3)
+        var custom = RadicalStrokeChoices()
+        custom.setStrokes(6, forRadical: 140)
+        XCTAssertEqual(kusa.strokes(choices: custom), 6)
+        XCTAssertEqual(custom.rawValue, "140:6")
+        // 旧設定(traditional)からの移行=各部首の2番目の選択肢
+        let migrated = RadicalStrokeChoices(rawValue: "traditional")
+        XCTAssertEqual(kusa.strokes(choices: migrated), 4)
+        let shinnyou = try XCTUnwrap(forms.first { $0.form == "辶" })
+        XCTAssertEqual(shinnyou.strokes(choices: migrated), 4)
+        let shimesu = try XCTUnwrap(forms.first { $0.form == "礻" })
+        XCTAssertEqual(shimesu.strokes(choices: migrated), 5)
+        // 選択肢を持たない字形はどの選択でも同じ
+        XCTAssertEqual(
+            water.first { $0.form == "氵" }?.strokes(choices: migrated),
+            water.first { $0.form == "氵" }?.strokes(choices: RadicalStrokeChoices())
         )
     }
 
@@ -7738,7 +7757,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             keyboardBackgroundThemeRawValue: "sakura",
             basicSymbolOrderRawValue: "ascii",
             temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
-            radicalStrokeCountStyleRawValue: RadicalStrokeCountStyle.modern.rawValue,
+            radicalStrokeCountStyleRawValue: "",
             spaceToastTrigger: 0,
             returnKeySystemImageName: nil,
             isReturnKeyEnabled: true,

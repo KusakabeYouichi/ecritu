@@ -224,7 +224,7 @@ extension KeyboardViewController {
         let radicalStrokeCountStyleRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.radicalStrokeCountStyle,
-            fallback: RadicalStrokeCountStyle.modern.rawValue
+            fallback: ""
         )
         let returnKeyType = textDocumentProxy.returnKeyType
         let hasAnyText = textDocumentProxy.hasText

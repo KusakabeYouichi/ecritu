@@ -446,8 +446,8 @@ struct KeyboardRootView: View {
         TemperatureUnitPreference(rawValue: temperatureUnitRawValue) ?? .celsius
     }
 
-    var radicalStrokeCountStyle: RadicalStrokeCountStyle {
-        RadicalStrokeCountStyle(rawValue: radicalStrokeCountStyleRawValue) ?? .modern
+    var radicalStrokeChoices: RadicalStrokeChoices {
+        RadicalStrokeChoices(rawValue: radicalStrokeCountStyleRawValue)
     }
 
     var currentFlickGuideDisplayMode: FlickGuideDisplayMode {
@@ -1117,7 +1117,7 @@ struct KeyboardRootView: View {
         keyboardBackgroundThemeRawValue: "bleu",
         basicSymbolOrderRawValue: "ascii",
         temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
-        radicalStrokeCountStyleRawValue: RadicalStrokeCountStyle.modern.rawValue,
+        radicalStrokeCountStyleRawValue: "",
         spaceToastTrigger: 1,
         returnKeySystemImageName: nil,
         isReturnKeyEnabled: true,

@@ -508,15 +508,11 @@ extension KeyboardRootView {
             return selectedSymbolCategory.frenchName
         case .kanjiRadical:
             if let form = selectedRadicalForm {
-                // 数え方が分かれる字形(艹/辶/礻/飠)では、部首一覧の並びに使う画数(設定)と
-                // 総画数の計算基準(Unicode=新字体の画数。艹3/辶3/礻4/飠7)が食い違うので、
-                // 事実として両方を示す。「N画に数えてください」という指示だと総画数の表示と
-                // 足し算が合わなかった(艹4画と言いつつ 芒 は総6画=艹3画基準。2500)
-                let listStrokes = form.strokes(style: radicalStrokeCountStyle)
-                let totalBasisStrokes = form.strokes(style: .modern)
-                let note = listStrokes == totalBasisStrokes
-                    ? ""
-                    : " (部首\(listStrokes)画 / 総画数は\(totalBasisStrokes)画基準)"
+                // 数え方が分かれる字形(艹/辶/礻/飠)は総画数の計算基準を添える。部首一覧の並びに
+                // 使う画数は設定で変えられるが、総画数(Unihan)はどの設定でも変わらないため、
+                // 「総画数は3画で計算」と事実を示す(2502)
+                let note = RadicalStrokeChoiceCatalog.totalBasisStrokes(forRadical: form.radical)
+                    .map { " (総画数は\($0)画で計算)" } ?? ""
                 return "\(selectedRadicalCategory.title) › \(form.form)(\(form.name))\(note)"
             }
             return "\(selectedRadicalCategory.title)(\(selectedRadicalCategory.reading))"
