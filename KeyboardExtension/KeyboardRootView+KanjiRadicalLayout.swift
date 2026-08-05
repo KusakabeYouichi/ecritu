@@ -232,23 +232,28 @@ struct RadicalFormKeyButton: View {
     }
 }
 
-// 字グリッドの総画数の区切り(タップできない)。部首一覧の区切り(塗りの角丸)とは見栄えを
-// 変えて、塗り無しの輪郭カプセル+「総N画」にする(部首の画数と総画数の混同を防ぐ。2483)。
+// 字グリッドの総画数の区切り(タップできない)。部首一覧の区切り(塗りの角丸)とは形で
+// 区別し、カプセル+輪郭線+「総N画」にする(部首の画数と総画数の混同を防ぐ。2483)。
+// 枠だけ+淡色だと読みづらかったので、枠の中に塗りを入れ、文字も少し大きく濃くした(2488)。
 struct KanjiTotalStrokeMarkerCell: View {
     let strokes: Int
     let height: CGFloat
 
     var body: some View {
         Text("総\(strokes)画")
-            .font(.system(size: 10, weight: .semibold, design: .rounded))
-            .foregroundStyle(Color(.tertiaryLabel))
+            .font(.system(size: 12, weight: .semibold, design: .rounded))
+            .foregroundStyle(Color(.label).opacity(0.7))
             .lineLimit(1)
             .minimumScaleFactor(0.6)
             .frame(maxWidth: .infinity)
             .frame(height: height)
             .background(
                 Capsule(style: .continuous)
-                    .strokeBorder(Color(.separator), lineWidth: 1)
+                    .fill(Color(.tertiarySystemFill))
+                    .overlay(
+                        Capsule(style: .continuous)
+                            .strokeBorder(Color(.separator), lineWidth: 1)
+                    )
             )
             .accessibilityLabel("総画数\(strokes)画")
     }
@@ -261,8 +266,8 @@ struct RadicalStrokeMarkerCell: View {
 
     var body: some View {
         Text("\(strokes)画")
-            .font(.system(size: 11, weight: .semibold, design: .rounded))
-            .foregroundStyle(Color(.secondaryLabel))
+            .font(.system(size: 13, weight: .semibold, design: .rounded))
+            .foregroundStyle(Color(.label).opacity(0.75))
             .lineLimit(1)
             .minimumScaleFactor(0.7)
             .frame(maxWidth: .infinity)
