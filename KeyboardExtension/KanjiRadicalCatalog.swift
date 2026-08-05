@@ -207,6 +207,15 @@ struct RadicalForm: Identifiable, Equatable {
 
     var id: String { "\(radical)-\(form)" }
 
+    // 部首ごとの選択(設定)を反映した字形。艸(6画)を選べば一覧・見出しも 艸 で表示する(2503)。
+    func displayForm(choices: RadicalStrokeChoices) -> String {
+        guard strokesTraditional != nil,
+            let option = choices.selectedOption(forRadical: radical) else {
+            return form
+        }
+        return option.form
+    }
+
     // 部首ごとの選択(設定)を反映した画数。選択肢を持たない字形は plist の値そのまま。
     func strokes(choices: RadicalStrokeChoices) -> Int {
         guard strokesTraditional != nil,
