@@ -6240,6 +6240,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ずかんという"))
     }
 
+    // そのための: エンジンは かな先頭(そのための)を返していたが keepKana 不成立で提示層が
+    // かな識別を落とし その為の が先頭になっていた。そのため は成立するのに ための だと
+    // 形式名詞(ため)の末尾照合に当たらないため、連体修飾の の を剥がしてから照合する(2489)
+    func testRegressionFormalNounWithAttributiveNoKeepsKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "そのための", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "そのための", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そのための"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "このための"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そのため"))
+        // 名詞+の(ずかんの)は既存の単字助詞剥がし規則(の を含む)の対象で、この変更とは無関係。
+        // かな維持は「維持のみで昇格しない」ので、漢字が最良の読みには影響しない
+    }
+
     // でま→デマ: 実在の外来語なのに候補に出なかった。カタカナ強調抑止は LM unigram で
     // 「カタカナが同音の漢字より安い」ことを保護条件にしていたが、手間(6037)が デマ(6955)より
     // 安いため強調表記と誤判定していた。SudachiDict のカタカナ強調収穫は元の語と同一コストで
