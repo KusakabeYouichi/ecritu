@@ -6274,6 +6274,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ariuru.first?.hasSuffix("得る"), true, "ariuru=\(ariuru.prefix(3))")
     }
 
+    // まっている→舞っている: 活用ルール定義順(う→…→つ)のため 舞う 族が先に立っていた。
+    // LM は 待つ(6049)/待ち(5928)が 舞う(6578)/舞い(7446)より優勢で日常頻度も 待つ が上なので、
+    // 基底読み族のopt-in昇格(はる/おく と同じ機構)に まつ を追加(2495)
+    func testRegressionMatsuFamilyPreferredOverMau() throws {
+        try prepareRealLMDictionary()
+        let teiru = converter.candidates(for: "まっている", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(teiru.first, "待っている", "teiru=\(teiru)")
+        let multi = converter.multiClauseCandidates(for: "まっている", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "待っている", "multi=\(multi.prefix(3))")
+        let te = converter.candidates(for: "まって", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(te.first, "待って", "te=\(te)")
+        let teru = converter.candidates(for: "まってる", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(teru.first, "待ってる", "teru=\(teru)")
+        // 舞う 族は候補として残る
+        XCTAssertTrue(te.contains("舞って"), "te=\(te)")
+    }
+
     // ほっきょくぐま: 語LMに ホッキョクグマ の unigram はあるが辞書エントリが無く変換できない。
     // 北極熊 も辞書に無いので両方 misc で供給する
     func testRegressionHokkyokugumaSuppliedFromMisc() throws {
