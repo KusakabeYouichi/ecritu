@@ -6343,6 +6343,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // きたんだが が実機だけ 奇譚だが になっていた: 逐次入力で各前置き(き→きた→きたん→きたんだ)が
+    // 候補キャッシュに載り、キャッシュ利用の quick postfix 経路(スコア1120=BFS 1040より上)が
+    // 「長い語幹優先」だけで並べるため きたん(奇譚/忌憚)+だ が伝播していた。BFS 側(2506)と同じ
+    // 「述語+説明の んだ を最優先」をこの経路にも入れる(2509)
+    func testRegressionKitandagaWithWarmStemCache() throws {
+        try prepareRealLMDictionary()
+        // 実機と同じ順で前置きを変換してキャッシュを温める
+        for reading in ["き", "きた", "きたん", "きたんだ"] {
+            _ = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+        }
+        let kitanda = converter.candidates(for: "きたんだ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(kitanda.first, "来たんだ", "kitanda=\(kitanda)")
+        let single = converter.candidates(for: "きたんだが", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
+    }
+
+    // けいしすべき→ケイしすべき: 当然・義務の べき(文語 す+べき)のサ変規則が無く、断片合成に
+    // なっていた(けいしする は規則があるので動いていた)。すべき/すべきだ/すべきです/
+    // すべきだった/すべきでない/すべきではない を追加(2509)
+    func testRegressionSahenSubekiInflection() throws {
+        try prepareRealLMDictionary()
+        let keishi = converter.candidates(for: "けいしすべき", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(keishi.contains("軽視すべき"), "keishi=\(keishi)")
+        XCTAssertFalse(keishi.contains("ケイしすべき"), "keishi=\(keishi)")
+        XCTAssertEqual(
+            converter.candidates(for: "けんとうすべき", limit: 3, systemCandidateMode: .surface).first,
+            "検討すべき"
+        )
+        XCTAssertEqual(
+            converter.candidates(for: "ちゅういすべきだ", limit: 3, systemCandidateMode: .surface).first,
+            "注意すべきだ"
+        )
+    }
+
     // など: 等 は読み など を辞書に持たない(等の読みは とう/ら/ひとし/たち)ため候補に出なかった。
     // seed で供給して2番目に置く(1番目はかな)。ただし 等 の unigram(4051)は安く、連文節で
     // これなど→これ等/などという→等という を作るので、連文節だけ床上げする(2508)
