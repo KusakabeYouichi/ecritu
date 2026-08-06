@@ -6196,13 +6196,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(ta.contains("撮り忘れた"), "ta=\(ta)")
     }
 
-    func testTEMPDEBUGPaths() throws {
-        try prepareRealLMDictionary()
-        for r in ["してるなあ", "こうかいされて"] {
-            print("TEMPDEBUG \(r): multi=\(converter.multiClauseCandidates(for: r, systemCandidateMode: .surface).prefix(3))")
-        }
-    }
-
     // たいりく→大睦: 収穫底値(wc10000)のレア人名収穫。睦 の読みは むつみ/ぼく/まこと だけで
     // 辞書に りく が無く、たい+りく の分解でも説明できない誤エントリなので抑制した
     func testRegressionTairikuRareNameSuppressed() throws {

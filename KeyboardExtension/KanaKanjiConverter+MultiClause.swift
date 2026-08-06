@@ -2051,12 +2051,6 @@ extension KanaKanjiConverter {
         }
 
         var segments = pathIndices.map { nodes[$0].surface }
-        if true {
-            print("TEMPDEBUGPATH \(normalized) -> " + pathIndices.map {
-                "[\(nodes[$0].surface)/\(nodes[$0].reading)/d=\(nodes[$0].isInflectionDerived)/p=\(nodes[$0].isDictionaryFormPredicate)/c=\(nodes[$0].isCurated)]"
-            }.joined())
-        }
-
         // 仮定の接続助詞「なら」が述語直後で 奈良/楢/ナラ に漢字・カタカナ化した場合は
         // かな なら に是正する(買う奈良→買うなら)。連文節の best 分節は動詞を正しく取れて
         // いる(買う+奈良)ので、助詞区間の表層だけ差し替える。元の漢字版は変種に温存する。
