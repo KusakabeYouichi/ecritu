@@ -6343,6 +6343,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // など: 等 は読み など を辞書に持たない(等の読みは とう/ら/ひとし/たち)ため候補に出なかった。
+    // seed で供給して2番目に置く(1番目はかな)。ただし 等 の unigram(4051)は安く、連文節で
+    // これなど→これ等/などという→等という を作るので、連文節だけ床上げする(2508)
+    func testRegressionNadoSuppliesTouSingleClauseOnly() throws {
+        try prepareRealLMDictionary()
+        let nado = converter.candidates(for: "など", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nado.prefix(2)), ["など", "等"], "nado=\(nado)")
+        // 連文節ではかなのまま(2487 の などという も維持)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "ほんなどをよむ", systemCandidateMode: .surface).first,
+            "本などを読む"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "などという", systemCandidateMode: .surface).first,
+            "などという"
+        )
+    }
+
+    // あとおき: 辞書に丸ごとのエントリが無く単文節は空、連文節は 沖(wc5165)が 置き(7714)より
+    // 安いため 後沖/後起き になっていた。未登録の複合語なので misc curated で供給する
+    func testRegressionAtookiSuppliedFromMisc() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "あとおき", candidate: "後置き")
+        converter.invalidateCandidateCache()
+        let single = converter.candidates(for: "あとおき", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "後置き", "single=\(single)")
+        // 全長読みが curated の時は連文節は単文節に委ねる(空を返す)=提示層は単文節の並びを使う
+        XCTAssertTrue(
+            converter.multiClauseCandidates(for: "あとおき", systemCandidateMode: .surface).isEmpty
+        )
+    }
+
     // か: 蚊 は読み か のエントリが辞書に無く(語LMには 6955 で在る)候補にすら出なかった。
     // 名詞として唯一自立する 蚊 を先頭に、接頭辞・接尾辞の 科/下/過/加、古語的な 彼/鹿 と続ける。
     // ので: 辞書には 能出/野出/野手(収穫底値)しか無く、かなの接続助詞が候補に無かった(2507)
