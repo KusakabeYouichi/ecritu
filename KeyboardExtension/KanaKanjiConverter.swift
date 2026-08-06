@@ -854,6 +854,28 @@ final class KanaKanjiConverter {
         return result
     }
 
+    // 語幹のかなが正書か: 辞書にかなエントリが在り、かつ 語LM でかなが同読みの漢字代替の最安に
+    // 迫っている(マージン800: 表記揺れの僅差は許容)。ある(2698≪有る6303)/ひらがな(6258 vs
+    // 平仮名6089=僅差)は true、きた(7792 vs 北≈4300=大差)は false(2512)。
+    private func isKanaOrthographyStem(_ stem: String) -> Bool {
+        let candidates = systemCandidates(for: stem, mode: .lesDeux)
+        guard candidates.contains(stem) else {
+            return false
+        }
+        let kanjiAlternatives = candidates.filter { Self.containsKanjiCandidate($0) }
+        guard !kanjiAlternatives.isEmpty else {
+            return true
+        }
+        let uni = store.wordLMUnigramCosts(for: [stem] + kanjiAlternatives)
+        guard let kanaUni = uni[stem] else {
+            return kanjiAlternatives.compactMap { uni[$0] }.isEmpty
+        }
+        guard let altBest = kanjiAlternatives.compactMap({ uni[$0] }).min() else {
+            return true
+        }
+        return kanaUni < altBest + 800
+    }
+
     private func computeShouldKeepKanaIdentityLeading(normalized: String) -> Bool {
         if hasLearnedKanaIdentity(for: normalized) {
             return true
@@ -1237,16 +1259,19 @@ final class KanaKanjiConverter {
         // 全文一致になるが、かなが正書の語幹+かなが唯一の正書の節、なので変換としてのかなを
         // 候補に残す。提示層は 2122 の位置維持で上位2件ならその位置を保つ)。
         // のだ/んだ/のです/んです(説明のコピュラ)も同型: うまいのだ→うまい(辞書のかな語)。
+        // 語幹の条件は「かなが正書(LM でかな優位、または漢字代替なし)」。単に辞書にかなエントリが
+        // 在るだけだと きたんだ(語幹 きた=正書は 来た)まで通り、かな きたんだが が候補上位に残る。
+        // 辞書先頭で判定する案は ある/ひらがな(辞書先頭は漢字)を巻き添えにした(2512)
         for suffix in ["のは", "のが", "のも", "のを", "のに", "のね", "のよ", "のです", "んです", "のだ", "んだ"] where normalized.hasSuffix(suffix) {
             var stem = String(normalized.dropLast(suffix.count))
             // コピュラ「な」を挟む形(ひらがなな+のは=ひらがな+な+のは)は な も剥がす。
             if stem.count >= 3, stem.hasSuffix("な") {
                 let withoutCopula = String(stem.dropLast())
-                if systemCandidates(for: withoutCopula, mode: .lesDeux).contains(withoutCopula) {
+                if isKanaOrthographyStem(withoutCopula) {
                     return true
                 }
             }
-            if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
+            if stem.count >= 2, isKanaOrthographyStem(stem) {
                 return true
             }
             // 五段る動詞の過去(なった 等)は活用形なので辞書エントリでは拾えない。った→基底 る に
