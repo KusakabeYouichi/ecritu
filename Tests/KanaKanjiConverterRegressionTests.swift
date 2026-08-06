@@ -6316,6 +6316,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         let single = converter.candidates(for: "きたんだが", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
+        // きたん(奇譚/忌憚)+だが は長い語幹だが、のだ縮約(来た+んだが)を優先する(2506)
+        XCTAssertFalse(single.prefix(4).contains { $0.hasSuffix("譚だが") }, "single=\(single)")
         let multi = converter.multiClauseCandidates(for: "きたんだが", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "来たんだが", "multi=\(multi.prefix(4))")
         XCTAssertEqual(

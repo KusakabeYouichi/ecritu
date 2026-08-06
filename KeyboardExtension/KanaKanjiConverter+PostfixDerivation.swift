@@ -167,6 +167,10 @@ extension KanaKanjiConverter {
         }
 
         var derived: [String] = []
+        // 説明の んだ 系(のだ縮約)を用言に付けた合成は最優先で前へ。BFS は長い語幹から処理する
+        // ため、放置すると きたん(奇譚/忌憚)+だが が きた(来た)+んだが より前に出る。
+        // 話し言葉では のだ縮約の方が圧倒的に頻出なので、述語語幹+説明の んだ を先頭群にする(2506)
+        var predicateExplanatoryDerived: [String] = []
         // 収穫底値(wc>=10000)のレア語(木反田/三反田 等の名前収穫)を語幹にした合成は後方へ。
         // BFS は長い語幹から処理するため、放置すると 木反田+が が 来た+んだが より前に出る。
         // 候補としては残す(名前+ちゃん 等の正当な合成を失わない。2504)
@@ -258,11 +262,17 @@ extension KanaKanjiConverter {
                     )
 
                     let stemWordCosts = store.wordCosts(for: nextStem)
+                    let isExplanatorySuffix = Self.explanatorySuffixRequiresPredicateStem(nextSuffix)
+                    let inflectedSurfaces = Set(inflectedStemCandidates.filter { $0 != nextStem })
                     for candidate in filteredStemCandidates {
                         let isHarvestTierStem = (stemWordCosts[candidate] ?? 0)
                             >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
+                        let isPredicateExplanatory = isExplanatorySuffix
+                            && inflectedSurfaces.contains(candidate)
                         for outputSuffix in Self.postfixOutputSuffixVariants(for: nextSuffix) {
-                            if isHarvestTierStem {
+                            if isPredicateExplanatory {
+                                predicateExplanatoryDerived.append(candidate + outputSuffix)
+                            } else if isHarvestTierStem {
                                 harvestTierDerived.append(candidate + outputSuffix)
                             } else {
                                 derived.append(candidate + outputSuffix)
@@ -275,7 +285,10 @@ extension KanaKanjiConverter {
             }
         }
 
-        return Array(uniqueCandidates(from: derived + harvestTierDerived).prefix(limit))
+        return Array(
+            uniqueCandidates(from: predicateExplanatoryDerived + derived + harvestTierDerived)
+                .prefix(limit)
+        )
     }
 
     func politePrefixPassthroughCandidates(
