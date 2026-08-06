@@ -478,6 +478,14 @@ extension KanaKanjiConverter {
     // いつ脱炭だろう に化けるのを防ぐ。文脈条件があるので 一旦(いったん)等の正当な語は無傷。
     // 脱炭 の読み だったん 自体 Sudachi の疑わしい収穫(通常は だつたん)(2461)
     static let multiClauseTanContractionSplitPenalty = 8000
+    // 文頭のカ変(来た/来て)は同形の一段(着た/着て)より頻度が高い。どちらも LM 未収録の活用派生
+    // (同点)で、活用ルールの定義順ではカ変が最後なので タイブレークで 着た が勝っていた
+    // (きたんだが→着たんだが)。文頭限定なので 服を着て(を の直後)には影響しない(2504)
+    static let multiClauseSentenceInitialKuruBonus = 800
+    // のだ縮約の準体助詞「ん」は述語直後で極めて頻出(来たんだが/見たんだけど)。丸ごと語の名詞
+    // (奇譚/忌憚=きたん、三反田=みたんだ 等の収穫)+だが/だけど に負けるため、活用派生の直後に
+    // 限ってボーナスを与える。名詞を減点する方式は 簡単だが(形容動詞+だ)を壊すので採らない(2504)
+    static let multiClauseNominalizerNContractionBonus = 3000
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
@@ -1668,6 +1676,12 @@ extension KanaKanjiConverter {
             if reading.count > 1, reading.contains("を"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
+            // 文頭のカ変(来た/来て)を同形の一段(着た/着て)より優先(定数コメント参照)。
+            if prev == Self.multiClauseBOSMarker,
+                isInflectionDerived,
+                Self.multiClauseKuruFormSurfaces[reading] == surface {
+                penalty -= Self.multiClauseSentenceInitialKuruBonus
+            }
             // 撥音「ん」等の語頭禁止。単独「ん」は準体助詞(切る+ん+だ/行った+ん=のだ縮約)だが、
             // これは述語の連体形直後にのみ立てる。直前文節の末尾が述語末尾文字
             // (multiClausePredicateTailCharacters=う/く/…/る/い/た/だ)のときだけ免除し、
@@ -1823,6 +1837,10 @@ extension KanaKanjiConverter {
                     if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
                         Self.isMotionVerbSurface(node.surface) {
                         cost -= Self.multiClauseRenyouNiMotionVerbBonus
+                    }
+                    // のだ縮約の準体助詞 ん(定数コメント参照)。述語(活用派生)の直後に限る。
+                    if node.reading == "ん", node.surface == "ん", prevNode.isInflectionDerived {
+                        cost -= Self.multiClauseNominalizerNContractionBonus
                     }
                     // かな て(接続助詞・補助動詞)は連用形接続(定数コメント参照)。
                     if node.reading.first == "て", node.surface == node.reading,

@@ -6312,6 +6312,42 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(ueno.prefix(3)), ["上の", "上野", "うえの"], "ueno=\(ueno)")
     }
 
+    // きたんだが→来たんだが: 3つの原因を直した(2504)。
+    // (1) postfix 合成の語幹順が辞書の名詞(北/喜多)を先に並べていた。説明の んだ 系は用言の
+    //     連体形に付く(名詞なら なんだ)ので活用派生の語幹を前に出す(かな識別は昇格させない)。
+    // (2) 収穫底値(wc10000)のレア名前を語幹にした合成(木反田+が)が長語幹優先で先に出ていた
+    //     ので後方へ回す(候補としては残す)。
+    // (3) 連文節が 奇譚(uni6523)+だが を選んでいた。のだ縮約の準体助詞 ん は述語直後で頻出なので、
+    //     活用派生の直後に限りボーナスを与える(名詞側の減点は 簡単だが を壊すので採らない)。
+    func testRegressionKitandagaPrefersKuruContraction() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "きたんだが", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "きたんだが", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "来たんだが", "multi=\(multi.prefix(4))")
+        XCTAssertEqual(
+            converter.candidates(for: "きたんだ", limit: 4, systemCandidateMode: .surface).first,
+            "来たんだ"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "みたんだが", systemCandidateMode: .surface).first,
+            "見たんだが"
+        )
+        // 形容動詞+だが、丸ごと語、コピュラ過去+準体助詞(2461)は無傷
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "かんたんだが", systemCandidateMode: .surface).first,
+            "簡単だが"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "いったんていし", systemCandidateMode: .surface).first,
+            "一旦停止"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "いつだったんだろう", systemCandidateMode: .surface).first,
+            "いつだったんだろう"
+        )
+    }
+
     // かいし: 芥子(wc3727=カイシ と同値の収穫)と 会し が先頭を占め 開始/会誌 が後ろだった。
     // seed で指定順に固定(2498)
     func testRegressionKaishiOrdering() throws {
