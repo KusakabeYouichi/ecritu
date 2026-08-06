@@ -482,6 +482,13 @@ extension KanaKanjiConverter {
     // (同点)で、活用ルールの定義順ではカ変が最後なので タイブレークで 着た が勝っていた
     // (きたんだが→着たんだが)。文頭限定なので 服を着て(を の直後)には影響しない(2504)
     static let multiClauseSentenceInitialKuruBonus = 800
+    // seed で供給した表層のうち、語LM unigram が安すぎて連文節を歪めるものの床(読み→表層→コスト)。
+    // 等 は読み など の word_cost が無いため床上げが効かず、unigram 4051 で これなど→これ等 /
+    // などという→等という を作っていた。単文節では2番目に出したいので供給は残し、連文節だけ
+    // 重くする(2508)
+    static let multiClauseSeedSupplyCostFloors: [String: [String: Int]] = [
+        "など": ["等": 9000]
+    ]
     // 格助詞の直後の でも は副助詞(人に+でも/東京に+でも)。辞書には デモ(wc2537/uni5547)しか
     // 無いためカタカナ語が選ばれていた(ひとにでも→人にデモ)。この文脈のカタカナ/漢字表層に減点。
     // 名詞直後(反対+でも)は対象外なので 反対デモ は無傷。かな側を seed で供給する案は
@@ -1680,6 +1687,10 @@ extension KanaKanjiConverter {
             // 連文節に一切乗れず、きをつけて→機をつけて 等の分割に負ける。
             if reading.count > 1, reading.contains("を"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
+            }
+            // seed 供給表層の連文節床(定数コメント参照)。
+            if let floor = Self.multiClauseSeedSupplyCostFloors[reading]?[surface] {
+                base = max(base, floor)
             }
             // 格助詞直後の でも は副助詞(定数コメント参照)。
             if reading == "でも",
