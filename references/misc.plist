@@ -370,5 +370,9 @@
 	     ホッキョクグマ の unigram はあるが辞書エントリが無いため候補にならない) -->
 	<dict><key>phrase</key><string>ホッキョクグマ</string><key>shortcut</key><string>ほっきょくぐま</string></dict>
 	<dict><key>phrase</key><string>北極熊</string><key>shortcut</key><string>ほっきょくぐま</string></dict>
+	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも
+	     本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を
+	     curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
+	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>
 </array>
 </plist>
