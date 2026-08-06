@@ -167,6 +167,10 @@ extension KanaKanjiConverter {
         }
 
         var derived: [String] = []
+        // 収穫底値(wc>=10000)のレア語(木反田/三反田 等の名前収穫)を語幹にした合成は後方へ。
+        // BFS は長い語幹から処理するため、放置すると 木反田+が が 来た+んだが より前に出る。
+        // 候補としては残す(名前+ちゃん 等の正当な合成を失わない。2504)
+        var harvestTierDerived: [String] = []
         var queue: [(stem: String, suffix: String, depth: Int)] = [(reading, "", 0)]
         var visited = Set<String>()
         // 語幹に抑制対象(例: これ→凝れ/梱れ の動詞活用、之レ 等)が混じると 凝れは のように
@@ -200,26 +204,47 @@ extension KanaKanjiConverter {
 
                 if allowAttachment {
                     let suppressedStemSurfaces = suppressedByReading[nextStem] ?? []
-                    let stemCandidates = orderedDerivationBaseCandidates(
+                    let inflectedStemCandidates = inflectionCandidates(
+                        for: nextStem,
+                        userDictionary: userDictionary,
+                        initialUserDictionary: initialUserDictionary,
+                        systemCandidateMode: systemCandidateMode,
+                        limit: limit
+                    )
+                    var stemCandidates = orderedDerivationBaseCandidates(
                         uniqueCandidates(
                             from: candidatesForReading(
                                 nextStem,
                                 userDictionary: userDictionary,
                                 initialUserDictionary: initialUserDictionary,
                                 systemCandidateMode: systemCandidateMode
-                            ) + inflectionCandidates(
-                                for: nextStem,
-                                userDictionary: userDictionary,
-                                initialUserDictionary: initialUserDictionary,
-                                systemCandidateMode: systemCandidateMode,
-                                limit: limit
-                            )
+                            ) + inflectedStemCandidates
                         ).filter {
                             !suppressedStemSurfaces.contains($0)
                                 && !isKatakanaEmphasisBaseCandidate($0, reading: nextStem)
                         },
                         reading: nextStem
                     )
+                    // 説明の んだ/んです は用言の連体形に付く(名詞なら なんだ が必要)。読みが述語形
+                    // (きた)でも辞書側は名詞(北/喜多)が先に並ぶため、活用派生の表層(来た/着た)を
+                    // 前に出す。名詞側は候補として残す(北んだ 等は後方。2504)
+                    if Self.explanatorySuffixRequiresPredicateStem(nextSuffix),
+                        !inflectedStemCandidates.isEmpty {
+                        // かな識別(語幹==読み)は昇格させない — b2 供給と同じ原則。昇格すると
+                        // きたんだが のかな全文一致が 来たんだが を抑えてしまう
+                        let promoted = Set(inflectedStemCandidates.filter { $0 != nextStem })
+                        stemCandidates = stemCandidates.filter { promoted.contains($0) }
+                            + stemCandidates.filter { !promoted.contains($0) }
+                        // カ変(きた→来た/きて→来て)は同形の一段(着た/着て)より頻度が高い。
+                        // 活用ルールの定義順ではカ変が最後なので、この表層だけ先頭へ寄せる
+                        // (族ごと昇格させる案は 服を着ていました を壊した。2504)
+                        if let kuruSurface = KanaKanjiConverter.multiClauseKuruFormSurfaces[nextStem],
+                            let index = stemCandidates.firstIndex(of: kuruSurface),
+                            index > 0 {
+                            stemCandidates.remove(at: index)
+                            stemCandidates.insert(kuruSurface, at: 0)
+                        }
+                    }
 
                     let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
                         stemCandidates,
@@ -232,9 +257,16 @@ extension KanaKanjiConverter {
                         nextSuffix: nextSuffix
                     )
 
+                    let stemWordCosts = store.wordCosts(for: nextStem)
                     for candidate in filteredStemCandidates {
+                        let isHarvestTierStem = (stemWordCosts[candidate] ?? 0)
+                            >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
                         for outputSuffix in Self.postfixOutputSuffixVariants(for: nextSuffix) {
-                            derived.append(candidate + outputSuffix)
+                            if isHarvestTierStem {
+                                harvestTierDerived.append(candidate + outputSuffix)
+                            } else {
+                                derived.append(candidate + outputSuffix)
+                            }
                         }
                     }
                 }
@@ -243,7 +275,7 @@ extension KanaKanjiConverter {
             }
         }
 
-        return Array(uniqueCandidates(from: derived).prefix(limit))
+        return Array(uniqueCandidates(from: derived + harvestTierDerived).prefix(limit))
     }
 
     func politePrefixPassthroughCandidates(
