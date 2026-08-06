@@ -269,7 +269,14 @@ extension KanaKanjiConverter {
     // 口語のかな正書語(副詞 いまだに、口語終止 したんだが、俗語 やばい、口語断定 じゃん)。
     // カタカナ形が Wikipedia LM で安い(ヤバイ7649/ジャン5025)ため放置すると ヤバイジャン に
     // なる。かな識別を安価にして やばいじゃん を最上位にする(かなが現代口語の正書)。
-    static let multiClauseKanaAdverbReadings: Set<String> = ["いまだに", "したんだが", "やばい", "じゃん"]
+    static let multiClauseKanaAdverbReadings: Set<String> = [
+        "いまだに", "したんだが", "やばい", "じゃん",
+        // せめて(副詞、かな正書): 攻めて/責めて(活用派生)に負けて せめてこれぐらい→
+        // 攻めてこれぐらい になっていた(2513)
+        "せめて",
+        // なぜ(疑問副詞、かな正書): 何故 に負けて 暗いのはなぜだろう が 何故 表記になっていた
+        "なぜ"
+    ]
     // 文節先頭(直前=BOS)でのみ かな を優先する存在動詞の過去(あった=ある過去、いた=いる過去)。
     // あったんで→かな先頭にしつつ、気が/目が/サイズが+あった(prev≠BOS)は漢字 合った を守る。
     static let multiClauseClauseInitialKanaExistentialPasts: Set<String> = ["あった", "いた"]
@@ -489,6 +496,10 @@ extension KanaKanjiConverter {
     static let multiClauseSeedSupplyCostFloors: [String: [String: Int]] = [
         "など": ["等": 9000]
     ]
+    // 副助詞 くらい/ぐらい は体言・用言に付き文頭には立たない。文頭のかな識別 くらい は
+    // 形容詞 暗い(uni6012)より安い(5614)ため くらいのはなぜだろう が 暗いのは… に勝っていた。
+    // BOS 直後のかな くらい/ぐらい に減点して文頭では形容詞を優先する(2513)
+    static let multiClauseSentenceInitialKuraiPenalty = 3000
     // 格助詞の直後の でも は副助詞(人に+でも/東京に+でも)。辞書には デモ(wc2537/uni5547)しか
     // 無いためカタカナ語が選ばれていた(ひとにでも→人にデモ)。この文脈のカタカナ/漢字表層に減点。
     // 名詞直後(反対+でも)は対象外なので 反対デモ は無傷。かな側を seed で供給する案は
@@ -1702,6 +1713,12 @@ extension KanaKanjiConverter {
                 surface != reading,
                 Self.multiClauseCaseParticleSurfaces.contains(prev) {
                 penalty += Self.multiClauseParticleContextDemoPenalty
+            }
+            // 文頭のかな くらい/ぐらい(副助詞は文頭に立たない。定数コメント参照)。
+            if prev == Self.multiClauseBOSMarker,
+                surface == reading,
+                reading == "くらい" || reading == "ぐらい" {
+                penalty += Self.multiClauseSentenceInitialKuraiPenalty
             }
             // 文頭のカ変(来た/来て)を同形の一段(着た/着て)より優先(定数コメント参照)。
             if prev == Self.multiClauseBOSMarker,

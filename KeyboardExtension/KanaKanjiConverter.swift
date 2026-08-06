@@ -1018,6 +1018,18 @@ final class KanaKanjiConverter {
         where normalized.count > auxiliary.count && normalized.hasSuffix(auxiliary) {
             return true
         }
+        // かな正書の副詞(せめて 等=multiClauseKanaAdverbReadings)で始まる全かな句は、残りが
+        // かな維持の根拠を持つか指示代名詞始まりなら維持(せめてこれぐらい。2513)。
+        for adverb in KanaKanjiConverter.multiClauseKanaAdverbReadings
+        where normalized.count > adverb.count && normalized.hasPrefix(adverb) {
+            let remainder = String(normalized.dropFirst(adverb.count))
+            if remainder.count >= 2,
+                computeShouldKeepKanaIdentityLeading(normalized: remainder)
+                    || KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems
+                        .contains(where: { remainder.hasPrefix($0) }) {
+                return true
+            }
+        }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {

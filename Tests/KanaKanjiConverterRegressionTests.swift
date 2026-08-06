@@ -6359,6 +6359,43 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // かたほうが→方ほうが: quick postfix(キャッシュ語幹)の 方+ほうが が BFS の長語幹 片方+が に
+    // 勝っていた。seed で 片方が を辞書チャネル(1200>postfix 1120)から直接供給(2513)。
+    // くらいのはなぜだろう→くらいのは…: 副助詞 くらい/ぐらい は文頭に立たないので BOS 直後の
+    // かな識別に減点(かな くらい 5614 < 暗い 6012 で形容詞が負けていた)。なぜ は 何故 より
+    // かなが正書なのでかな副詞クランプへ。
+    // せめてこれぐらい→攻めて…: せめて(副詞、かな正書)をかな副詞クランプに追加し、
+    // かな副詞で始まる全かな句の keepKana 規則も追加
+    func testRegressionKatahouKuraiSemete() throws {
+        try prepareRealLMDictionary()
+        let katahou = converter.candidates(for: "かたほうが", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(katahou.first, "片方が", "katahou=\(katahou)")
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "かたほうが", systemCandidateMode: .surface).first,
+            "片方が"
+        )
+        for reading in ["くらいのはなぜだ", "くらいのはなぜだろう"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first?.hasPrefix("暗いのはなぜだ"), true, "\(reading)=\(multi.prefix(3))")
+        }
+        let semete = converter.multiClauseCandidates(for: "せめてこれぐらい", systemCandidateMode: .surface)
+        XCTAssertEqual(semete.first, "せめてこれぐらい", "semete=\(semete.prefix(3))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "せめてこれぐらい"))
+        // ぐらい/くらい の文中・文頭形容詞は無傷
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "せんえんぐらい", systemCandidateMode: .surface).first,
+            "千円ぐらい"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "くらいくらい", systemCandidateMode: .surface).first,
+            "暗いくらい"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "これぐらいのおおきさ", systemCandidateMode: .surface).first,
+            "これぐらいの大きさ"
+        )
+    }
+
     // きたんだが が実機で 奇譚だが のまま残った件(3例目): 実機は misc/Ajout の追加語彙を読み、
     // かな識別 curated の だが(連文節床1500)が存在する。すると 奇譚+だが(2ノード)が
     // 来た+ん+だが(3ノード)より安くなる — テストバンドルは追加語彙を読まないため再現しなかった。
