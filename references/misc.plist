@@ -374,5 +374,8 @@
 	     本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を
 	     curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>
+	<!-- 後置き(あとおき): 辞書に丸ごとのエントリが無く単文節は空、連文節は 沖(wc5165)が
+	     置き(7714)より安いため 後沖/後起き になる。未登録の複合語なので curated で供給する -->
+	<dict><key>phrase</key><string>後置き</string><key>shortcut</key><string>あとおき</string></dict>
 </array>
 </plist>
