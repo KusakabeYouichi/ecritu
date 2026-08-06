@@ -6359,6 +6359,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // きたんだが が実機で 奇譚だが のまま残った件(3例目): 実機は misc/Ajout の追加語彙を読み、
+    // かな識別 curated の だが(連文節床1500)が存在する。すると 奇譚+だが(2ノード)が
+    // 来た+ん+だが(3ノード)より安くなる — テストバンドルは追加語彙を読まないため再現しなかった。
+    // curated だが を注入して再現し、準体助詞 ん のボーナスを 3000→5000 に調整(2511)
+    func testRegressionKitandagaWithCuratedDaga() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "だが", candidate: "だが")
+        converter.invalidateCandidateCache()
+        let multi = converter.multiClauseCandidates(for: "きたんだが", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "来たんだが", "multi=\(multi.prefix(4))")
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "みたんだが", systemCandidateMode: .surface).first,
+            "見たんだが"
+        )
+        // 形容動詞+だが は無傷
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "かんたんだが", systemCandidateMode: .surface).first,
+            "簡単だが"
+        )
+    }
+
     // けいし: 単語レベルで 軽視 を 刑死 より優先(ユーザー指定)。サ変派生にも基底順が伝わる(2510)
     func testRegressionKeishiPrefersKeishiVerb() throws {
         try prepareRealLMDictionary()

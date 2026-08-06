@@ -498,6 +498,11 @@ extension KanaKanjiConverter {
     // (奇譚/忌憚=きたん、三反田=みたんだ 等の収穫)+だが/だけど に負けるため、活用派生の直後に
     // 限ってボーナスを与える。名詞を減点する方式は 簡単だが(形容動詞+だ)を壊すので採らない(2504)
     static let multiClauseNominalizerNContractionBonus = 3000
+    // ん→だ系(んだ/んだが/んだけど)の継続ボーナス。3000 だけでは実機で負けた: 追加語彙 だが
+    // (かな識別 curated=床1500)があると 奇譚+だが(2ノード)が 来た+ん+だが(3ノード)より安い。
+    // ん を一律 5000 にすると だったん+そば(韃靼そば)まで割れるため、のだ縮約の継続
+    // (ん の直後の だ 始まりかな)に限って上乗せする(2511)
+    static let multiClauseNominalizerNDaContinuationBonus = 2000
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
@@ -1863,6 +1868,13 @@ extension KanaKanjiConverter {
                     // のだ縮約の準体助詞 ん(定数コメント参照)。述語(活用派生)の直後に限る。
                     if node.reading == "ん", node.surface == "ん", prevNode.isInflectionDerived {
                         cost -= Self.multiClauseNominalizerNContractionBonus
+                    }
+                    // のだ縮約の継続(ん の直後の だ 始まりかな: だ/だが/だけど。定数コメント参照)。
+                    // 単独 ん ノードは語頭禁止の免除条件により述語直後にしか生き残らない
+                    if prevNode.surface == "ん", prevNode.reading == "ん",
+                        node.surface == node.reading,
+                        node.reading.first == "だ" {
+                        cost -= Self.multiClauseNominalizerNDaContinuationBonus
                     }
                     // かな て(接続助詞・補助動詞)は連用形接続(定数コメント参照)。
                     if node.reading.first == "て", node.surface == node.reading,
