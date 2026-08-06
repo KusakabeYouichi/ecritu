@@ -989,6 +989,13 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 接尾の補助動詞 まくり/まくる(〜しまくり/読みまくる)はかなが正書。辞書の まくり は
+        // 海人草(まくり=生薬)/捲り が主で、かな まくり は wc11137 と重いため提示層で
+        // し捲り に繰り上げられていた(2505)。
+        for auxiliary in ["まくり", "まくる", "まくった", "まくって", "まくれ"]
+        where normalized.count > auxiliary.count && normalized.hasSuffix(auxiliary) {
+            return true
+        }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {

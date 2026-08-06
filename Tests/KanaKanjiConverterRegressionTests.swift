@@ -6341,6 +6341,50 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // ひとにでも→人にデモ: でも は辞書に デモ(wc2537/uni5547)しか無いため連文節がカタカナ語を
+    // 選んでいた。格助詞の直後の でも は副助詞なので、その文脈のカタカナ/漢字表層に減点する。
+    // 名詞直後(反対+でも)は対象外なので 反対デモ は無傷。かなを seed で供給する案は
+    // ことでもなく→ことでも無く を壊したため採らない(2505)
+    func testRegressionCaseParticlePlusDemoClampsKana() throws {
+        try prepareRealLMDictionary()
+        let multi = converter.multiClauseCandidates(for: "ひとにでも", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "人にでも", "multi=\(multi.prefix(4))")
+        let single = converter.candidates(for: "ひとにでも", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["人にでも", "ひとにでも"], "single=\(single)")
+        // 名詞+でも は対象外(反対デモ が先頭のまま)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "はんたいでも", systemCandidateMode: .surface).first,
+            "反対デモ"
+        )
+        // ことでもなく(こと は格助詞ではない)は かな先頭のまま
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "ことでもなく", systemCandidateMode: .surface).first,
+            "ことでもなく"
+        )
+    }
+
+    // しまくり: 接尾の補助動詞 まくり はかなが正書だが、かな まくり(wc11137)が 捲り(9561)より
+    // 重いため提示層で し捲り に繰り上げられていた。まくり/まくる で終わる読みを keepKana の
+    // 根拠に加える。ほんとだ は かな ほんと(4550)が 本当(2581)に負けるので curated で供給(2505)
+    func testRegressionMakuriAndHontodaKanaLeading() throws {
+        try prepareRealLMDictionary()
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "しまくり"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やりまくる"))
+        let multi = converter.multiClauseCandidates(for: "しまくり", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "しまくり", "multi=\(multi.prefix(4))")
+        // 勉強しまくり(漢字+かな)は従来どおり先頭
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "べんきょうしまくり", systemCandidateMode: .surface).first,
+            "勉強しまくり"
+        )
+        // ほんとだ: curated のかな識別が先頭に来る
+        converter.store.addUserEntry(reading: "ほんとだ", candidate: "ほんとだ")
+        converter.invalidateCandidateCache()
+        let honto = converter.candidates(for: "ほんとだ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(honto.prefix(2)), ["ほんとだ", "本当だ"], "honto=\(honto)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ほんとだ"))
+    }
+
     // かいし: 芥子(wc3727=カイシ と同値の収穫)と 会し が先頭を占め 開始/会誌 が後ろだった。
     // seed で指定順に固定(2498)
     func testRegressionKaishiOrdering() throws {

@@ -482,6 +482,11 @@ extension KanaKanjiConverter {
     // (同点)で、活用ルールの定義順ではカ変が最後なので タイブレークで 着た が勝っていた
     // (きたんだが→着たんだが)。文頭限定なので 服を着て(を の直後)には影響しない(2504)
     static let multiClauseSentenceInitialKuruBonus = 800
+    // 格助詞の直後の でも は副助詞(人に+でも/東京に+でも)。辞書には デモ(wc2537/uni5547)しか
+    // 無いためカタカナ語が選ばれていた(ひとにでも→人にデモ)。この文脈のカタカナ/漢字表層に減点。
+    // 名詞直後(反対+でも)は対象外なので 反対デモ は無傷。かな側を seed で供給する案は
+    // ことでもなく→ことでも無く を壊したため採らない(2505)
+    static let multiClauseParticleContextDemoPenalty = 4000
     // のだ縮約の準体助詞「ん」は述語直後で極めて頻出(来たんだが/見たんだけど)。丸ごと語の名詞
     // (奇譚/忌憚=きたん、三反田=みたんだ 等の収穫)+だが/だけど に負けるため、活用派生の直後に
     // 限ってボーナスを与える。名詞を減点する方式は 簡単だが(形容動詞+だ)を壊すので採らない(2504)
@@ -1675,6 +1680,12 @@ extension KanaKanjiConverter {
             // 連文節に一切乗れず、きをつけて→機をつけて 等の分割に負ける。
             if reading.count > 1, reading.contains("を"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
+            }
+            // 格助詞直後の でも は副助詞(定数コメント参照)。
+            if reading == "でも",
+                surface != reading,
+                Self.multiClauseCaseParticleSurfaces.contains(prev) {
+                penalty += Self.multiClauseParticleContextDemoPenalty
             }
             // 文頭のカ変(来た/来て)を同形の一段(着た/着て)より優先(定数コメント参照)。
             if prev == Self.multiClauseBOSMarker,
