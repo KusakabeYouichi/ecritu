@@ -6359,6 +6359,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // けいし: 単語レベルで 軽視 を 刑死 より優先(ユーザー指定)。サ変派生にも基底順が伝わる(2510)
+    func testRegressionKeishiPrefersKeishiVerb() throws {
+        try prepareRealLMDictionary()
+        let keishi = converter.candidates(for: "けいし", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(keishi.prefix(5)),
+            ["けいし", "警視", "軽視", "罫紙", "刑死"],
+            "keishi=\(keishi)"
+        )
+        let suru = converter.candidates(for: "けいしする", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(suru.first, "軽視する", "suru=\(suru)")
+        let subeki = converter.candidates(for: "けいしすべき", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(subeki.first, "軽視すべき", "subeki=\(subeki)")
+    }
+
     // けいしすべき→ケイしすべき: 当然・義務の べき(文語 す+べき)のサ変規則が無く、断片合成に
     // なっていた(けいしする は規則があるので動いていた)。すべき/すべきだ/すべきです/
     // すべきだった/すべきでない/すべきではない を追加(2509)
