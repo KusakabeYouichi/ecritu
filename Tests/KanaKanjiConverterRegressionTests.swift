@@ -6373,6 +6373,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             converter.multiClauseCandidates(for: "みたんだが", systemCandidateMode: .surface).first,
             "見たんだが"
         )
+        // かな きたんだが は使わない(ユーザー指定)= keepKana 不成立で提示層が末尾チップへ回す。
+        // 従来は のは/んだ 剥がしの語幹条件が「辞書にかなエントリが在る」だけで きた が通っていた。
+        // かな正書の語幹(ある/ひらがな)は isKanaOrthographyStem(LM 優位+マージン800)で維持(2512)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "きたんだが"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "きたんだ"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるんだ"))
         // 形容動詞+だが は無傷
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "かんたんだが", systemCandidateMode: .surface).first,
