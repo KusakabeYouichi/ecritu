@@ -6359,6 +6359,41 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // 実機のみの2件(学習リセット・キャッシュクリアでも消えない=追加語彙が原因のパターン)。
+    // どちらも misc の curated 登録が別読みのラティスを歪めていた(loadDeviceAddedVocabulary で再現)。
+    // (1) きたんだが→着たんだが: misc の きた→来た(curated)が先着 dedupe で b2 活用コピーを
+    //     潰し、来た ノードが isInflectionDerived を失って準体助詞 ん のボーナスが効かなかった。
+    //     curated 先着ノードへの派生フラグ合流を追加(2105/2108 の同族)。
+    // (2) かたほうが→方ほうが: misc の ほうが(curated 床1500)が名詞 方(かた)の直後にも立てた。
+    //     比較の ほうが は連体形・の・な にしか付かないので文法ゲートを追加(2514)
+    func testRegressionDeviceVocabularyKitandagaAndKatahouga() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        converter.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let kitanda = converter.multiClauseCandidates(for: "きたんだが", systemCandidateMode: .surface)
+        XCTAssertEqual(kitanda.first, "来たんだが", "kitanda=\(kitanda.prefix(3))")
+        let katahou = converter.multiClauseCandidates(for: "かたほうが", systemCandidateMode: .surface)
+        XCTAssertEqual(katahou.first, "片方が", "katahou=\(katahou.prefix(3))")
+        // 比較の ほうが の正当な文脈(連体形/の/な)は無傷
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "かったほうがいい", systemCandidateMode: .surface).first,
+            "買った方がいい"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "はやいほうが", systemCandidateMode: .surface).first,
+            "早いほうが"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "こっちのほうが", systemCandidateMode: .surface).first,
+            "こっちのほうが"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "しずかなほうが", systemCandidateMode: .surface).first,
+            "静かなほうが"
+        )
+    }
+
     // かたほうが→方ほうが: quick postfix(キャッシュ語幹)の 方+ほうが が BFS の長語幹 片方+が に
     // 勝っていた。seed で 片方が を辞書チャネル(1200>postfix 1120)から直接供給(2513)。
     // くらいのはなぜだろう→くらいのは…: 副助詞 くらい/ぐらい は文頭に立たないので BOS 直後の

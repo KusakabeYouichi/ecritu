@@ -496,6 +496,10 @@ extension KanaKanjiConverter {
     static let multiClauseSeedSupplyCostFloors: [String: [String: Int]] = [
         "など": ["等": 9000]
     ]
+    // 比較の ほうが(方が)は連体形(買った/早い/する)・の・な の直後にしか立たない。curated の
+    // ほうが(床1500)が名詞の直後にも立てると、方(かた)+ほうが が 片方+が に勝つ
+    // (かたほうが→方ほうが。実機のみ=テストは misc を読まない。2514)
+    static let multiClauseHougaAfterNonPredicatePenalty = 4000
     // 副助詞 くらい/ぐらい は体言・用言に付き文頭には立たない。文頭のかな識別 くらい は
     // 形容詞 暗い(uni6012)より安い(5614)ため くらいのはなぜだろう が 暗いのは… に勝っていた。
     // BOS 直後のかな くらい/ぐらい に減点して文頭では形容詞を優先する(2513)
@@ -826,6 +830,15 @@ extension KanaKanjiConverter {
                         // 系統的に負ける。派生フラグだけ合流させる(a2 seed の先着 dedupe
                         // 対策と同族)。unigram/wc が実勢の表層(たく 等)は正直な値付けを
                         // 尊重するため対象外(底値帯のみ)。漢字表層も対象外。
+                        surfaces[index].isInflectionDerived = true
+                    } else if isInflectionDerived,
+                        let index = surfaces.firstIndex(where: { $0.surface == surface }),
+                        surfaces[index].isCurated,
+                        !surfaces[index].isInflectionDerived {
+                        // curated(misc の きた→来た 等)が先着すると b2 活用コピーが dedupe で
+                        // 死に、後続の述語直後ボーナス(準体助詞 ん 等)が効かない。実機だけ
+                        // きたんだが→着たんだが になった真因(テストは misc を読まないため
+                        // 再現しなかった)。派生フラグを合流させる(2514)
                         surfaces[index].isInflectionDerived = true
                     }
                 }
@@ -1713,6 +1726,15 @@ extension KanaKanjiConverter {
                 surface != reading,
                 Self.multiClauseCaseParticleSurfaces.contains(prev) {
                 penalty += Self.multiClauseParticleContextDemoPenalty
+            }
+            // 比較の ほうが は連体形接続(定数コメント参照)。
+            if reading == "ほうが" || reading == "ほうがいい",
+                !prevIsInflectionDerived,
+                !prevIsDictionaryFormPredicate,
+                prev != "の", prev != "な",
+                !(prev != Self.multiClauseBOSMarker
+                    && (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)) {
+                penalty += Self.multiClauseHougaAfterNonPredicatePenalty
             }
             // 文頭のかな くらい/ぐらい(副助詞は文頭に立たない。定数コメント参照)。
             if prev == Self.multiClauseBOSMarker,
