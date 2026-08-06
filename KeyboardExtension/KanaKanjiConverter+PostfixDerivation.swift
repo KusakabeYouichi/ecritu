@@ -73,7 +73,10 @@ extension KanaKanjiConverter {
             return []
         }
 
-        var weightedDerivedCandidates: [(stemLength: Int, derived: [String])] = []
+        // priority: 説明の んだ 系(のだ縮約)を述語らしい語幹に付けた合成は最優先。長語幹優先だけで
+        // 並べると きたん(奇譚/忌憚)+だ が きた(来た)+んだ より前に出て、逐次入力でキャッシュに
+        // 載った並びがそのまま伝播する(きたんだ→きたんだが)。BFS 側と同じ優先付けにする(2509)
+        var weightedDerivedCandidates: [(priority: Int, stemLength: Int, derived: [String])] = []
 
         for passthrough in Self.postfixPassthroughSuffixes where reading.hasSuffix(passthrough) {
             let stem = String(reading.dropLast(passthrough.count))
@@ -133,7 +136,13 @@ extension KanaKanjiConverter {
                 continue
             }
 
-            weightedDerivedCandidates.append((stemLength: stem.count, derived: derived))
+            let isPredicateExplanatory = Self.explanatorySuffixRequiresPredicateStem(passthrough)
+                && Self.isPredicateLikeStemReading(stem)
+            weightedDerivedCandidates.append((
+                priority: isPredicateExplanatory ? 1 : 0,
+                stemLength: stem.count,
+                derived: derived
+            ))
         }
 
         guard !weightedDerivedCandidates.isEmpty else {
@@ -141,6 +150,9 @@ extension KanaKanjiConverter {
         }
 
         let prioritized = weightedDerivedCandidates.sorted { lhs, rhs in
+            if lhs.priority != rhs.priority {
+                return lhs.priority > rhs.priority
+            }
             if lhs.stemLength != rhs.stemLength {
                 return lhs.stemLength > rhs.stemLength
             }
