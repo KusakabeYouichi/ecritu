@@ -206,6 +206,43 @@ struct SetupStepsSection: View {
     }
 }
 
+// 変換キャッシュのクリア。キーボード拡張はプロセス内に読みごとの候補キャッシュ(96件)を持ち、
+// quick postfix 経路がそれを語幹の候補列として読むため内容が並びに影響する。設定変更の世代
+// カウンタを +1 すると、キーボード側が次の表示または Darwin 通知で clearSharedDataCaches() を
+// 呼んで候補キャッシュ・学習/追加語彙キャッシュを破棄する(語彙自体は消えない。2510)
+struct ConversionCacheSettingsSection: View {
+    @State private var isClearedBadgeVisible = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("変換キャッシュ")
+                .font(.headline)
+
+            Text("キーボードが持っている変換結果のキャッシュを破棄します。学習語彙や追加語彙は消えません。誤変換を直したのに「前の並びが残っている」ときに使ってください(キーボードを閉じて開き直すか、他のアプリに切り替えても破棄されます)。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            HStack(spacing: 12) {
+                Button("変換キャッシュをクリア") {
+                    SettingsSyncNotification.postSettingsDidChange()
+                    isClearedBadgeVisible = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+                        isClearedBadgeVisible = false
+                    }
+                }
+                .buttonStyle(.bordered)
+
+                if isClearedBadgeVisible {
+                    Text("クリアしました")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct KeyboardDiagnosticsSection: View {
     let isSessionActive: Bool
     let failSafeProfile: String

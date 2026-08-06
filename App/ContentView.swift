@@ -1282,6 +1282,8 @@ struct ContentView: View {
 
                         // ──── 診断 ────
 
+                        ConversionCacheSettingsSection()
+
                         KeyboardDiagnosticsSection(
                             isSessionActive: keyboardDiagnosticsSessionActive,
                             failSafeProfile: keyboardDiagnosticsFailSafeProfile,
