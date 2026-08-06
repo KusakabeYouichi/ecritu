@@ -6343,6 +6343,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // か: 蚊 は読み か のエントリが辞書に無く(語LMには 6955 で在る)候補にすら出なかった。
+    // 名詞として唯一自立する 蚊 を先頭に、接頭辞・接尾辞の 科/下/過/加、古語的な 彼/鹿 と続ける。
+    // ので: 辞書には 能出/野出/野手(収穫底値)しか無く、かなの接続助詞が候補に無かった(2507)
+    func testRegressionKaAndNodeKanaSeeded() throws {
+        try prepareRealLMDictionary()
+        let ka = converter.candidates(for: "か", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(ka.prefix(7)),
+            ["蚊", "科", "下", "過", "加", "彼", "鹿"],
+            "ka=\(ka)"
+        )
+        let node = converter.candidates(for: "ので", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(node.first, "ので", "node=\(node)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ので"))
+        // 助詞としての用法(連文節)は無傷
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "さむいのででかけない", systemCandidateMode: .surface).first,
+            "寒いので出掛けない"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "そうですか", systemCandidateMode: .surface).first,
+            "そうですか"
+        )
+    }
+
     // ひとにでも→人にデモ: でも は辞書に デモ(wc2537/uni5547)しか無いため連文節がカタカナ語を
     // 選んでいた。格助詞の直後の でも は副助詞なので、その文脈のカタカナ/漢字表層に減点する。
     // 名詞直後(反対+でも)は対象外なので 反対デモ は無傷。かなを seed で供給する案は

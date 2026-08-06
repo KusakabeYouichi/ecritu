@@ -1092,9 +1092,11 @@ final class KanaKanjiConverter {
         // seed でかな先頭に固定された語(たくさん/やっぱり/いつ/とき 等)で終わり、前半が
         // 2文字以上ある全かな句は、末尾語がかな正書なので先頭かなを維持する
         // (うまいものがたくさん→末尾 たくさん。curated 版の下の規則を seed へ広げたもの。2463)
-        if normalized.count >= 4 {
+        // 語長3文字以上に限る — 2文字の助詞相当(ので/とき 等)まで拾うと たべるので/みるので の
+        // ような「述語+助詞」で漢字先頭を維持したいケースを壊す(2507の検証で3件退行)
+        if normalized.count >= 5 {
             let maxSuffix = min(8, normalized.count - 2)
-            for suffixLength in 2...max(2, maxSuffix) where suffixLength <= normalized.count - 2 {
+            for suffixLength in 3...max(3, maxSuffix) where suffixLength <= normalized.count - 2 {
                 let suffix = String(normalized.suffix(suffixLength))
                 guard KanaKanjiSeedDictionary.seed[suffix]?.first == suffix else {
                     continue
