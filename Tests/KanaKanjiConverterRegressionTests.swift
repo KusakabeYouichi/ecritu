@@ -6375,6 +6375,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // ながら(同時進行): 連用形+ながら の活用規則がどのクラスにも無く、みながら→みな柄/
+    // かきながら→火器ながら のような断片合成しか出なかった(未対応だった)。一段/五段/サ変/
+    // カ変に追加(2518)。あるきながら だけ動いていたのは 歩き が辞書の連用形収穫にあったため
+    func testRegressionNagaraInflection() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [
+            ("みながら", "見ながら"), ("かきながら", "書きながら"),
+            ("たべながら", "食べながら"), ("ききながら", "聞きながら"),
+            ("べんきょうしながら", "勉強しながら")
+        ] {
+            let single = converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "\(reading)=\(single)")
+        }
+        // 連文節の文脈でも組める
+        let multi = converter.multiClauseCandidates(for: "おんがくをききながら", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "音楽を聞きながら", "multi=\(multi.prefix(3))")
+        let terebi = converter.multiClauseCandidates(for: "てれびをみながらたべる", systemCandidateMode: .surface)
+        XCTAssertEqual(terebi.first, "テレビを見ながら食べる", "terebi=\(terebi.prefix(3))")
+    }
+
     // なおす: 治す(wc7184)が辞書順先頭だが 直す と同程度に頻出(ユーザー指定で 直す 先頭)。
     // てもある: エンジンはかな先頭だが keepKana 不成立で提示層が ても有る に繰り上げていた。
     // ある/いる 剥がしの語幹に接続助詞のて形+係助詞(ても/でも 等)を明示許可(2517)
