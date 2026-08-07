@@ -1030,6 +1030,15 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 形式名詞(こと/とき/もの/ため)+格助詞1字はかなが正書(ことで/ときに/ものを。
+        // ユーザー方針: 接尾辞的な こと/とき はかな)。語幹を明示集合に限るので
+        // 名詞+で(ずかんで/しごとで)は巻き込まない(2516)。
+        if normalized.count >= 3,
+            let last = normalized.last,
+            "でにをがはもとへ".contains(last),
+            ["こと", "とき", "もの", "ため"].contains(String(normalized.dropLast())) {
+            return true
+        }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {
