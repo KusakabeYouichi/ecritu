@@ -333,6 +333,11 @@ extension ContentView {
 
     func copyKeyboardDiagnosticsToPasteboard(detail: Bool = false) {
 #if os(iOS)
+        // 表示用stateは最後のload時点のスナップショットで、その後に拡張が書いた
+        // カウント/ログが反映されない(2528: 実カウント53/10に対し2.5h前の18/2を
+        // エクスポートした事故)。コピーはflight fileと同時点の値を出すべきなので
+        // 直前に必ず再読込する。
+        loadKeyboardDiagnosticsState()
         UIPasteboard.general.string = keyboardDiagnosticsExportText(detail: detail)
 #endif
     }

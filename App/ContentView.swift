@@ -1345,6 +1345,12 @@ struct ContentView: View {
                     return
                 }
 
+                // バックグラウンド滞在中に拡張が書いた診断(起動/未到達カウント・
+                // ログ行)を表示へ反映する。onAppearは復帰では再発火しないため、
+                // ここで再読込しないと診断セクションが古いスナップショットのまま残る。
+                clearKeyboardDiagnosticsIfInstallChanged()
+                loadKeyboardDiagnosticsState()
+
                 if shouldUseContactCandidates {
                     syncContactCandidatesCacheFromContainerApp()
                     SettingsSyncNotification.postSettingsDidChange()
