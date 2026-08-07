@@ -125,9 +125,14 @@ final class KanaKanjiStore {
     // 再発し続けていた。バンドルは毎ビルド tmp から最新が入るため、実体があればバンドルを使い、
     // その際 app-group 側の同名遺物は削除して容量も回収する。app-group はバンドルに実体が
     // 無い場合のフォールバックとしてのみ残す。
+    // テスト用: App Group コンテナの代わりに使うディレクトリー。テスト環境の偽 group ID での
+    // containerURL(forSecurityApplicationGroupIdentifier:) はプロセス初回に約40秒かかる
+    // (containermanagerd の解決/作成)ため、テストはローカルディレクトリーで代替する(2515)。
+    static var sharedContainerURLOverride: URL?
+
     private func sharedOrBundledDictionaryURL(filename: String) -> URL? {
-        let sharedURL: URL? = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: appGroupID
+        let sharedURL: URL? = (Self.sharedContainerURLOverride
+            ?? fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)
         ).map { $0.appendingPathComponent(filename) }
 
         func isUsableFile(_ url: URL) -> Bool {
@@ -566,16 +571,15 @@ final class KanaKanjiStore {
             filename: KanaKanjiStorageKeys.supplementalSystemDictionaryFilename
         ),
             let decoded = try? JSONDecoder().decode([String: [String]].self, from: data) else {
+            // 失敗もキャッシュする。以前は「後からのデプロイを拾うため」毎回リトライしていたが、
+            // candidates() 毎回の呼び出し(2497)でファイル探索+デコード試行が変換ごとに走り、
+            // テストスイートを数十秒遅くしていた(実機でも無駄)。後からのデプロイは
+            // 設定変更世代カウンタ→clearSharedDataCaches 経由でこのキャッシュも破棄して拾う(2515)
+            withCacheLock { cachedSupplementalSystemDictionary = [:] }
             return [:]
         }
 
         let normalized = normalizeDictionary(decoded)
-
-        guard !normalized.isEmpty else {
-            // Keep retry enabled for late dictionary deployment.
-            return [:]
-        }
-
         withCacheLock { cachedSupplementalSystemDictionary = normalized }
         return normalized
     }
@@ -789,6 +793,8 @@ final class KanaKanjiStore {
             cachedLearningScores = nil
             cachedLearningScoresByReading = nil
             cachedShortcutVocabulary = nil
+            // 補助語彙は失敗(未デプロイ)もキャッシュするため、後からのデプロイはここで拾う
+            cachedSupplementalSystemDictionary = nil
         }
     }
 
