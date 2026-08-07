@@ -261,6 +261,10 @@ extension KanaKanjiConverter {
     static let multiClauseRegionalProduceBonus = 3000
     // 述語直後の かち→価値 ボーナス(定義箇所のコメント参照)。床差396+マージン
     static let multiClausePredicateKachiValueBonus = 1500
+    // 連体の の 直後の いち→位置 ボーナス(地図上の位置 等。ユーザー指定で seed も位置先頭)。
+    // 数詞 一(wc3961)+の→一(2779) に wc差2162+bigram差660=2822 で負けるため、差を跨ぐ値。
+    // 一から/一について 等、の以外の文脈の 一 は変えない(2525)
+    static let multiClauseNoIchiPositionBonus = 3300
     // 係助詞「は」直後の「ある」はかなが正書(ではある/にはある/とはある 等の概言・提題)。
     // 有る/在る/或る への漢字化は不自然なので減点し、N-best 変種(maxDelta4000)から落とす
     // (うまそうでは有る 対策)。ある はかな正書動詞(seed ある=[ある,有る,在る] のかな先頭)。
@@ -1998,6 +2002,11 @@ extension KanaKanjiConverter {
                     // 述語(活用派生/辞書形)直後の かち は「〜する価値ない」等の形式名詞的
                     // 用法が主。短span床の僅差(価値7191 vs 勝6795)で 勝/勝ち に負けるため
                     // 価値 にボーナス(行く価値ないね 対策。2434)
+                    // 連体の の 直後の いち は 位置 が主(定数コメント参照。2525)
+                    if node.reading == "いち", node.surface == "位置",
+                        prevNode.surface == "の" {
+                        cost -= Self.multiClauseNoIchiPositionBonus
+                    }
                     if node.reading == "かち", node.surface == "価値",
                         prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
                         cost -= Self.multiClausePredicateKachiValueBonus

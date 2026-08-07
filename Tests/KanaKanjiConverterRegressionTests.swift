@@ -6389,6 +6389,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "お得です", "multi=\(multi)")
     }
 
+    // いち→位置 を先頭に(ユーザー指定): 基底は 伊地/一/…/位置(6位)。seed で単文節を
+    // 矯正し、連文節は 連体の の 直後限定の遷移ボーナスで 地図上の位置 等を最良に。
+    // 一から(やり直す)等の慣用句は の以外の文脈なので不変(2525)
+    func testRegressionRealLMIchiPrefersPosition() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "いち", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["位置", "一", "市"], "single=\(single)")
+        let map = converter.multiClauseCandidates(for: "ちずじょうのいち", systemCandidateMode: .surface)
+        XCTAssertEqual(map.first, "地図上の位置", "multi=\(map)")
+        // ガード: 慣用句/辞書語は不変
+        let idiom = converter.multiClauseCandidates(for: "いちからやりなおす", systemCandidateMode: .surface)
+        XCTAssertTrue(idiom.first?.hasPrefix("一から") == true, "multi=\(idiom)")
+        XCTAssertEqual(converter.candidates(for: "いちば", limit: 3, systemCandidateMode: .surface).first, "市場")
+        XCTAssertEqual(converter.candidates(for: "だいいち", limit: 3, systemCandidateMode: .surface).first, "第一")
+    }
+
     // れふぉーる→レフォール(西洋わさび): 辞書に れふぉ〜 が皆無で single 空、
     // multi は れ+フォール(れフォール)に化けていた。sacoche curated で救済(2523)
     func testRegressionRealLMRefooruPrefersCurated() throws {
