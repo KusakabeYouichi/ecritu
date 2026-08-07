@@ -3101,6 +3101,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "飛行機", "single=\(single)")
     }
 
+    // 実LM回帰: とよむ→と読む。辞書は 響動む(古語)のみで 引用と+読む が出なかった。
+    // 読み3文字は連文節対象外のため seed の単文節供給で是正(2529)
+    func testRegressionRealLMToyomuSuppliesToYomu() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "とよむ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "と読む", "single=\(single)")
+        XCTAssertTrue(single.contains("響動む"), "single=\(single)")
+    }
+
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
     // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
