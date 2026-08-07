@@ -299,6 +299,11 @@ extension KanaKanjiConverter {
         "さいど": (surface: "彩度", verbPrefixes: ["あげ", "あが", "さげ", "さが"])
     ]
     static let multiClauseKanaAdverbCost = 4000
+    // オノマトペ「〜っと」クランプの誤爆除外: かな副詞(もっと/ちょっと 等)が別語の後ろに
+    // 続く区間(ふらんすはもっと/どいつはもっと 等)も「4文字以上の全かな+っと終わり」に
+    // 合致して丸ごと4000化し、フランスは+もっと の正しい分割を潰していた(2529)。
+    // 副詞そのもの(reading==副詞)は従来どおりクランプ対象のまま
+    static let multiClauseSokuonToAdverbTails: [String] = ["もっと", "ちょっと", "きっと", "ずっと", "やっと"]
     // 口語の説明終止クラスタ(のだ縮約 ん + だ/です + 逆接/終助詞)。述語に付く正書かなで、
     // レア語・分割に負けやすい。全体1スパンのかな識別を安価にして 〜んだが/んだけど/んです…を
     // 通す(行ったんだが/食べたんです 等の一般ケース。名詞衝突する読みは個別 seed/clamp で補完)。
@@ -1676,10 +1681,14 @@ extension KanaKanjiConverter {
             }
             // オノマトペ「〜っと」(4文字以上の全かな。ぱしゃっと/ばたっと/ふわっと 等)はかなが正書。
             // ぱ+シャット のような かな断片+カタカナ語 の合成に勝たせる。きっと/ずっと/もっと(3文字)
-            // は文字数条件で対象外(既存の価格付けを尊重)。
+            // は文字数条件で対象外(既存の価格付けを尊重)。かな副詞が末尾に埋まった区間
+            // (〜はもっと 等)はオノマトペではないので除外(定数コメント参照)。
             if surface == reading,
                 reading.count >= 4,
-                reading.hasSuffix("っと") {
+                reading.hasSuffix("っと"),
+                !Self.multiClauseSokuonToAdverbTails.contains(where: {
+                    reading != $0 && reading.hasSuffix($0)
+                }) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
             // 文節先頭(直前=BOS)の存在動詞かな過去(あった/いた)はかな正書を優先(あったんで→

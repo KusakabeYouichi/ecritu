@@ -3141,6 +3141,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(shikamo.first, "しかも雨だ", "multi=\(shikamo)")
     }
 
+    // 実LM回帰: ふらんすはもっとだよ が全かなエコー1件になるのを是正。オノマトペ「〜っと」
+    // クランプ(4文字以上全かな)が 〜はもっと 区間に誤爆して丸ごと4000化し、
+    // フランスは+もっと の正しい分割を潰していた(2529)
+    func testRegressionRealLMFuransuWaMottoSplitsLoanword() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "ふらんすはもっとだよ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "フランスはもっとだよ", "multi=\(multi)")
+
+        let motto = converter.multiClauseCandidates(for: "ふらんすはもっと", systemCandidateMode: .surface)
+        XCTAssertEqual(motto.first, "フランスはもっと", "multi=\(motto)")
+
+        // ガード: 真のオノマトペ(ぱしゃっと)はかなクランプ維持、もっとだよ 単体の全かなも維持
+        let pasha = converter.multiClauseCandidates(for: "ぱしゃっととった", systemCandidateMode: .surface)
+        XCTAssertEqual(pasha.first?.hasPrefix("ぱしゃっと"), true, "multi=\(pasha)")
+        let mottodayo = converter.multiClauseCandidates(for: "もっとだよ", systemCandidateMode: .surface)
+        XCTAssertEqual(mottodayo.first, "もっとだよ", "multi=\(mottodayo)")
+    }
+
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
     // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
