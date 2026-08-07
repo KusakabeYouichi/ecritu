@@ -230,7 +230,13 @@ extension KeyboardViewController {
                     // かな正書ケース(ところもあるが)もこの一般形に包含される。
                     if let first = converterCandidates.first,
                         !multiSet.contains(first) {
-                        merged.insert(first, at: min(1, merged.count))
+                        // 例外: 〜しゃ/〜車 の全読み接辞複合(フランス車)は連文節の
+                        // LM合成(フランス社)より先頭に置く(2522)。
+                        let insertionIndex = converter.shouldPromoteSingleBestAboveMultiClause(
+                            reading: reading,
+                            singleBest: first
+                        ) ? 0 : min(1, merged.count)
+                        merged.insert(first, at: insertionIndex)
                     }
                     for candidate in converterCandidates where !multiSet.contains(candidate) {
                         if !merged.contains(candidate) {

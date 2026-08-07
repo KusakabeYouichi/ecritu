@@ -6375,6 +6375,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // ふらんすしゃ: 候補バーでは単文節#1(フランス車)を連文節合成(フランス社)より
+    // 先頭に置く(2522)。判定は 読み末尾しゃ+単文節#1末尾車 のスコープ限定
+    func testWholeReadingShaAffixPromotesAboveMultiClause() throws {
+        try prepareRealLMDictionary()
+        // 単文節#1がフランス車のままであること(2520の供給)
+        XCTAssertEqual(converter.candidates(for: "ふらんすしゃ", limit: 5, systemCandidateMode: .surface).first, "フランス車")
+        // 昇格判定: しゃ/車 のみ true。敬称さん(田中産)や 社 辞書語(新聞社)は対象外
+        XCTAssertTrue(converter.shouldPromoteSingleBestAboveMultiClause(reading: "ふらんすしゃ", singleBest: "フランス車"))
+        XCTAssertTrue(converter.shouldPromoteSingleBestAboveMultiClause(reading: "にほんしゃ", singleBest: "日本車"))
+        XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "しんぶんしゃ", singleBest: "新聞社"))
+        XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "たなかさん", singleBest: "田中産"))
+        XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "きしゃ", singleBest: "汽車"))
+    }
+
     // ふらんすしゃ→フランス車: 名詞+車(産地・所属)の接辞合成(2520)。
     // reading>=4ガードで いしゃ/きしゃ 等の短い読みには影響しない
     func testFuransushaProducesFuransusha() throws {
