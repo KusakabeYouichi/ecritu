@@ -3128,6 +3128,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(reihai.first, "礼拝します", "single=\(reihai)")
     }
 
+    // 実LM回帰: おおやさんしかもうからない→大家さんしか儲からない。副助詞 しか のかな識別が
+    // 床上げ(wc6838)されて しかも(uni5660)分割に負け、しかも+受からない 区切りに固執して
+    // いた。免除リスト追加で しか+儲からない を通す(2529)
+    func testRegressionRealLMShikaMoukaranaiSplit() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "おおやさんしかもうからない", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "大家さんしか儲からない", "multi=\(multi)")
+        // ガード: 接続詞 しかも の正当な用途は無傷(しかも+雨)
+        let shikamo = converter.multiClauseCandidates(for: "しかもあめだ", systemCandidateMode: .surface)
+        XCTAssertEqual(shikamo.first, "しかも雨だ", "multi=\(shikamo)")
+    }
+
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
     // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
