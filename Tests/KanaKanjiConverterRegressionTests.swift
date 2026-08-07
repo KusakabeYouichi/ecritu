@@ -10,11 +10,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         defaultsSuiteName = "com.kusakabe.ecritu.tests.kana-kanji.\(UUID().uuidString)"
         clearSuite(defaultsSuiteName)
+        // 偽 group ID での containerURL はプロセス初回に約40秒かかるため、テストは
+        // ローカルディレクトリーを共有コンテナとして使う(store 側の override と対)。
+        // 従来の containerURL は UUID group ごとに別コンテナ=テスト間隔離だったので、
+        // テストごとのサブディレクトリーで同じ隔離を保つ(共有にすると2件が挙動変化)
+        testContainerURL = URL(
+            fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/test_app_group/\(defaultsSuiteName)",
+            isDirectory: true
+        )
+        KanaKanjiStore.sharedContainerURLOverride = testContainerURL
         converter = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
     }
 
+    var testContainerURL: URL!
+
     override func tearDown() {
         clearSuite(defaultsSuiteName)
+        if let testContainerURL {
+            try? FileManager.default.removeItem(at: testContainerURL)
+        }
+        testContainerURL = nil
+        KanaKanjiStore.sharedContainerURLOverride = nil
         converter = nil
         defaultsSuiteName = ""
         super.tearDown()
@@ -8100,11 +8116,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         guard fileManager.fileExists(atPath: source.path) else {
             throw XCTSkip("real LM sqlite not available on this machine")
         }
-        guard let container = fileManager.containerURL(
-            forSecurityApplicationGroupIdentifier: defaultsSuiteName
-        ) else {
-            throw XCTSkip("no app group container in this environment")
-        }
+        let container: URL = testContainerURL
         try fileManager.createDirectory(at: container, withIntermediateDirectories: true)
         let destination = container.appendingPathComponent("kana_kanji_dictionary.sqlite")
         if !fileManager.fileExists(atPath: destination.path) {
