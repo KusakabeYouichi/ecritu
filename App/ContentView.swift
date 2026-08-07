@@ -1294,6 +1294,8 @@ struct ContentView: View {
                             lastSessionID: keyboardDiagnosticsLastSessionID,
                             installMarker: keyboardDiagnosticsInstallMarker,
                             logLines: keyboardDiagnosticsLogLines,
+                            launchCount: keyboardDiagnosticsLaunchCount,
+                            attachFailureCount: keyboardDiagnosticsAttachFailureCount,
                             onReload: {
                                 clearKeyboardDiagnosticsIfInstallChanged()
                                 loadKeyboardDiagnosticsState()
