@@ -6375,6 +6375,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // なおす: 治す(wc7184)が辞書順先頭だが 直す と同程度に頻出(ユーザー指定で 直す 先頭)。
+    // てもある: エンジンはかな先頭だが keepKana 不成立で提示層が ても有る に繰り上げていた。
+    // ある/いる 剥がしの語幹に接続助詞のて形+係助詞(ても/でも 等)を明示許可(2517)
+    func testRegressionNaosuAndTemoaru() throws {
+        try prepareRealLMDictionary()
+        let naosu = converter.candidates(for: "なおす", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(naosu.prefix(2)), ["直す", "治す"], "naosu=\(naosu)")
+        let naoshite = converter.candidates(for: "なおして", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(naoshite.prefix(2)), ["直して", "治して"], "naoshite=\(naoshite)")
+        // 病気の文脈は 治った が先頭のまま(意味的に正しい側を維持)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "びょうきがなおった", systemCandidateMode: .surface).first,
+            "病気が治った"
+        )
+        let temoaru = converter.multiClauseCandidates(for: "てもある", systemCandidateMode: .surface)
+        XCTAssertEqual(temoaru.first, "てもある", "temoaru=\(temoaru)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "てもある"))
+    }
+
     // ことで: エンジンは かな先頭(ことで→事で)を返していたが keepKana 不成立で提示層が
     // かなを末尾チップへ回し、事で が先頭になっていた。形式名詞(こと/とき/もの/ため)+
     // 格助詞1字を keepKana の根拠に追加(語幹は明示集合=しごとで/ずかんで は巻き込まない。2516)
