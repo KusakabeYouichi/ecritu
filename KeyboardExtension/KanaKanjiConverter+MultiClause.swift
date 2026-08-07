@@ -294,9 +294,26 @@ extension KanaKanjiConverter {
     // 直後に特定動詞が続く連語でだけ特定表層を優先する(同音語の文脈限定是正)。
     // ひび: 直後(助詞任意)が はいる 活用のとき ひび(罅)を 日々 より優先(ひびが入る)。
     // さいど: 直後が あげる/さげる 系のとき 彩度 を サイド/再度 より優先(彩度上げる。写真編集)。
-    static let multiClauseNounBeforeVerbCollocations: [String: (surface: String, verbPrefixes: [String])] = [
-        "ひび": (surface: "ひび", verbPrefixes: ["はいっ", "はいら", "はいり", "はいる", "はいれ"]),
-        "さいど": (surface: "彩度", verbPrefixes: ["あげ", "あが", "さげ", "さが"])
+    // むし: 直後が なく 活用のとき 虫 を 無視 より優先(は→無視 bigram 4383 < は→虫 5607 の
+    //       Wikipediaバイアスで こっちは無視がないてる になる)。あわせて動詞表層は 鳴 系を優先
+    //       (が→ない bigram 2654 のかなエコーが 鳴いてる 5000 に勝つため。虫が鳴く の連語限定)。
+    static let multiClauseNounBeforeVerbCollocations:
+        [String: (surface: String, verbPrefixes: [String], preferredVerbSurfacePrefix: String?)] = [
+        "ひび": (
+            surface: "ひび",
+            verbPrefixes: ["はいっ", "はいら", "はいり", "はいる", "はいれ"],
+            preferredVerbSurfacePrefix: nil
+        ),
+        "さいど": (
+            surface: "彩度",
+            verbPrefixes: ["あげ", "あが", "さげ", "さが"],
+            preferredVerbSurfacePrefix: nil
+        ),
+        "むし": (
+            surface: "虫",
+            verbPrefixes: ["ない", "なき", "なく", "なけ"],
+            preferredVerbSurfacePrefix: "鳴"
+        )
     ]
     static let multiClauseKanaAdverbCost = 4000
     // オノマトペ「〜っと」クランプの誤爆除外: かな副詞(もっと/ちょっと 等)が別語の後ろに
@@ -771,6 +788,9 @@ extension KanaKanjiConverter {
         var shortCuratedFragmentNodeKeys = Set<String>()
         // 連語文脈でかなを優先するノードのキー(ひび+入る=ひびが入る 等)。日々 でなく ひび を勝たせる。
         var collocationPreferredKanaNodeKeys = Set<String>()
+        // 連語の動詞側表層選好(虫がないてる→鳴いてる 等)。連語検出時に動詞区間の開始位置と
+        // 優先表層プレフィクスを記録し、その位置から始まる合致表層に連語クランプを与える。
+        var collocationPreferredVerbSurfacePrefixesByStart = [Int: String]()
         // カタカナ強調/交ぜ書きの対象ノード(供給後の一括分類パスで印付け)。
         // suppressed=+100000(事実上不採用)、demoted=+6000(後方)。
         var scriptVariantSuppressedNodeKeys = Set<String>()
@@ -942,6 +962,9 @@ extension KanaKanjiConverter {
                         let rest = String(chars[afterIdx..<n])
                         if collocation.verbPrefixes.contains(where: { rest.hasPrefix($0) }) {
                             collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(collocation.surface)")
+                            if let verbPrefix = collocation.preferredVerbSurfacePrefix {
+                                collocationPreferredVerbSurfacePrefixesByStart[afterIdx] = verbPrefix
+                            }
                         }
                     }
                 }
@@ -1283,6 +1306,12 @@ extension KanaKanjiConverter {
                 }
 
                 for (surface, isDictWord, isCurated, isInflectionDerived, wordCost, isDictionaryFormPredicate) in surfaces {
+                    // 連語の動詞側表層選好(虫がないてる→鳴いてる)。外側ループは start 昇順なので、
+                    // 名詞区間の検出(連語キー登録)は動詞区間のノード生成より必ず先に済んでいる。
+                    if let preferredVerbPrefix = collocationPreferredVerbSurfacePrefixesByStart[start],
+                        surface.hasPrefix(preferredVerbPrefix) {
+                        collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(surface)")
+                    }
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
                         start: start,
