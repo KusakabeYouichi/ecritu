@@ -253,6 +253,7 @@ struct KeyboardDiagnosticsSection: View {
     let logLines: [String]
     let onReload: () -> Void
     let onCopy: () -> Void
+    let onCopyDetail: () -> Void
     let onClear: () -> Void
 
     @State private var isClearConfirmationPresented = false
@@ -303,6 +304,22 @@ struct KeyboardDiagnosticsSection: View {
 
                 Button("コピー") {
                     onCopy()
+                    withAnimation(.easeOut(duration: 0.16)) {
+                        isCopiedBadgeVisible = true
+                    }
+
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            isCopiedBadgeVisible = false
+                        }
+                    }
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.small)
+
+                // 定型行を省かない全文コピー(コンパクト版で欠けた文脈が要るとき用)
+                Button("詳細コピー") {
+                    onCopyDetail()
                     withAnimation(.easeOut(duration: 0.16)) {
                         isCopiedBadgeVisible = true
                     }

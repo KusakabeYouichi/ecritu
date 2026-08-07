@@ -215,7 +215,44 @@ extension ContentView {
         return lines.suffix(maxLines).map(String.init)
     }
 
-    func keyboardDiagnosticsExportText() -> String {
+    // コンパクトコピーで省く定型行(解決済み調査の常設ログ: メモリ解放/プリロード/
+    // 補助語彙更新 等)。記録自体は従来どおり全部残す — 問題が起きてから採れない情報を
+    // 失わないため、間引くのはエクスポート時のみ。全文は「詳細コピー」で取得できる。
+    static func isRoutineKeyboardDiagnosticsLine(_ line: String) -> Bool {
+        // ライフサイクルの定型(セッション開始/終了・viewDidLoad・viewWillAppear は
+        // attach失敗調査に必要なので残す)
+        if line.contains(" viewDidAppear {") || line.contains(" viewWillDisappear {")
+            || line.contains(" viewDidDisappear {") {
+            return true
+        }
+        // 非表示時の定型メモリ解放(failSafe が normal 以外の解放は異常系なので残す)
+        if line.contains("キーボード非表示でメモリ解放"), line.contains("profile=normal") {
+            return true
+        }
+        if line.contains("システム辞書プリロードを遅延予定")
+            || line.contains("システム辞書プリロード開始")
+            || line.contains("システム辞書プリロード完了")
+            || line.contains("キーボード非表示のため辞書プリロード予約をキャンセル") {
+            return true
+        }
+        // 補助語彙の定常更新(indexCache=miss は再構築=要調査なので残す)
+        if line.contains("補助語彙を更新"), line.contains("indexCache=hit") {
+            return true
+        }
+        if line.contains("共有データプリウォーム遅延") || line.contains("HB textDidChange") {
+            return true
+        }
+        // refreshKeyboardState は恒常的に 28-45ms 出る。80ms 以上だけ異常として残す
+        if line.contains("refreshKeyboardState遅延"),
+            let range = line.range(of: #"elapsedMs=(\d+)"#, options: .regularExpression),
+            let elapsedMs = Int(line[range].dropFirst("elapsedMs=".count)),
+            elapsedMs < 80 {
+            return true
+        }
+        return false
+    }
+
+    func keyboardDiagnosticsExportText(detail: Bool = false) -> String {
         var sections: [String] = []
         sections.append("installMarker: \(keyboardDiagnosticsInstallMarker)")
         sections.append("sessionActive: \(keyboardDiagnosticsSessionActive ? "true" : "false")")
@@ -237,11 +274,27 @@ extension ContentView {
         sections.append("--- 追加語彙のseed外エントリ(手動追加+過去播種の残骸) ---")
         sections.append(contentsOf: ajoutVocabularyNonSeedDiagnosticsLines())
         sections.append("--- logs ---")
-        sections.append(contentsOf: keyboardDiagnosticsLogLines)
+        if detail {
+            sections.append(contentsOf: keyboardDiagnosticsLogLines)
+        } else {
+            let filtered = keyboardDiagnosticsLogLines.filter { !Self.isRoutineKeyboardDiagnosticsLine($0) }
+            sections.append(contentsOf: filtered)
+            let omitted = keyboardDiagnosticsLogLines.count - filtered.count
+            if omitted > 0 {
+                sections.append("(定型行\(omitted)件を省略 — 全文は詳細コピー)")
+            }
+        }
         sections.append("--- flight file (crash-safe) ---")
-        let flightLines = keyboardDiagnosticsFlightFileTailLines()
+        var flightLines = keyboardDiagnosticsFlightFileTailLines()
+        if !detail {
+            // logs と重複する行と定型行を除き、クラッシュ時にしか意味を持たない差分だけ残す
+            let knownLines = Set(keyboardDiagnosticsLogLines)
+            flightLines = flightLines.filter {
+                !knownLines.contains($0) && !Self.isRoutineKeyboardDiagnosticsLine($0)
+            }
+        }
         if flightLines.isEmpty {
-            sections.append("(記録なし)")
+            sections.append(detail ? "(記録なし)" : "(logsとの差分なし)")
         } else {
             sections.append(contentsOf: flightLines)
         }
@@ -278,9 +331,9 @@ extension ContentView {
         return lines
     }
 
-    func copyKeyboardDiagnosticsToPasteboard() {
+    func copyKeyboardDiagnosticsToPasteboard(detail: Bool = false) {
 #if os(iOS)
-        UIPasteboard.general.string = keyboardDiagnosticsExportText()
+        UIPasteboard.general.string = keyboardDiagnosticsExportText(detail: detail)
 #endif
     }
 

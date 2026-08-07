@@ -1298,7 +1298,8 @@ struct ContentView: View {
                                 clearKeyboardDiagnosticsIfInstallChanged()
                                 loadKeyboardDiagnosticsState()
                             },
-                            onCopy: copyKeyboardDiagnosticsToPasteboard,
+                            onCopy: { copyKeyboardDiagnosticsToPasteboard() },
+                            onCopyDetail: { copyKeyboardDiagnosticsToPasteboard(detail: true) },
                             onClear: clearKeyboardDiagnosticsState
                         )
 
