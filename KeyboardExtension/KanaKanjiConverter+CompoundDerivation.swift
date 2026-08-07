@@ -823,6 +823,23 @@ extension KanaKanjiConverter {
         return results
     }
 
+    // 単文節#1を連文節より前に出す全読み接辞(2522): 読み末尾がreadingSuffixかつ
+    // 単文節#1がsurfaceSuffixで終わるとき、連文節のLM合成(フランス+社 等)より
+    // 接辞複合/辞書語(フランス車)を優先する。さん→産 は敬称さん(田中さん)と
+    // 衝突するため入れない。
+    static let multiClausePromotedWholeReadingAffixes: [(readingSuffix: String, surfaceSuffix: String)] = [
+        ("しゃ", "車")
+    ]
+
+    func shouldPromoteSingleBestAboveMultiClause(reading: String, singleBest: String) -> Bool {
+        guard reading.count >= 4 else {
+            return false
+        }
+        return Self.multiClausePromotedWholeReadingAffixes.contains { affix in
+            reading.hasSuffix(affix.readingSuffix) && singleBest.hasSuffix(affix.surfaceSuffix)
+        }
+    }
+
     // 名詞に付く生産的な漢字接辞を組み合わせる: 語幹(名詞)+別(種類別)、別+語幹(別会社)。
     // 語幹は漢字を含む候補に限り、1モーラ語幹(区別/差別等の誤分割)は除外する。
     // 辞書語(餞別等)は system 候補が上位に来るため、補完として低めのスコアで併置する。
