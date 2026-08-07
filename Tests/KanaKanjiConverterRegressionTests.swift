@@ -6387,6 +6387,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "おとくです", limit: 5, systemCandidateMode: .surface).first, "お得です")
         let multi = converter.multiClauseCandidates(for: "おとくです", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "お得です", "multi=\(multi)")
+        // おとくだった が 音+下った(おと|くだった 跨ぎ合成)に負けないこと(2526でボーナス3300へ)
+        let datta = converter.multiClauseCandidates(for: "おとくだった", systemCandidateMode: .surface)
+        XCTAssertEqual(datta.first, "お得だった", "multi=\(datta)")
+        // ガード: ボーナス過大だと侵食される実在語(4200で お得伊佐間 が出た)
+        let isama = converter.multiClauseCandidates(for: "おとくいさま", systemCandidateMode: .surface)
+        XCTAssertEqual(isama.first, "お得意さま", "multi=\(isama)")
+        XCTAssertEqual(converter.candidates(for: "おとくにぐん", limit: 3, systemCandidateMode: .surface).first, "乙訓郡")
+        let kurabe = converter.multiClauseCandidates(for: "おとくらべ", systemCandidateMode: .surface)
+        XCTAssertEqual(kurabe.first, "音比べ", "multi=\(kurabe)")
     }
 
     // いち→位置 を先頭に(ユーザー指定): 基底は 伊地/一/…/位置(6位)。seed で単文節を
