@@ -6375,6 +6375,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // れふぉーる→レフォール(西洋わさび): 辞書に れふぉ〜 が皆無で single 空、
+    // multi は れ+フォール(れフォール)に化けていた。sacoche curated で救済(2523)
+    func testRegressionRealLMRefooruPrefersCurated() throws {
+        try prepareRealLMDictionary()
+        converter.store.addUserEntry(reading: "れふぉーる", candidate: "レフォール")
+
+        XCTAssertEqual(converter.candidates(for: "れふぉーる", limit: 5, systemCandidateMode: .surface).first, "レフォール")
+        // 連文節は単語1個で全読みを覆うとき空を返す(ふぉーる 等と同じ)。
+        // curated 導入前の れフォール(れ+フォール 合成)が最良に残らないことだけ確認
+        let multi = converter.multiClauseCandidates(for: "れふぉーる", systemCandidateMode: .surface)
+        XCTAssertNotEqual(multi.first, "れフォール", "multi=\(multi)")
+    }
+
     // ふらんすしゃ: 候補バーでは単文節#1(フランス車)を連文節合成(フランス社)より
     // 先頭に置く(2522)。判定は 読み末尾しゃ+単文節#1末尾車 のスコープ限定
     func testWholeReadingShaAffixPromotesAboveMultiClause() throws {
