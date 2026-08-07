@@ -3181,6 +3181,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(nai.first, "虫がない部屋", "multi=\(nai)")
     }
 
+    // 実LM回帰: たいわん から タイワン を抑制(suppr.plist 2529、ユーザ指定)。テストバンドルは
+    // suppr JSON を含まないため injectSuppression で実機相当を再現する
+    func testRegressionRealLMTaiwanSuppressesKatakana() throws {
+        try prepareRealLMDictionary()
+        try injectSuppression(["たいわん": ["タイワン"]])
+
+        let single = converter.candidates(for: "たいわん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.contains("タイワン"), "single=\(single)")
+        XCTAssertEqual(single.first, "🇹🇼", "single=\(single)")
+        XCTAssertTrue(single.contains("台湾"), "single=\(single)")
+        XCTAssertTrue(single.contains("台灣"), "single=\(single)")
+    }
+
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
     // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
