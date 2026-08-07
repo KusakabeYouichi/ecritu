@@ -1062,6 +1062,11 @@ final class KanaKanjiConverter {
         for verb in ["ある", "いる", "あった", "いた"]
         where normalized.count > verb.count && normalized.hasSuffix(verb) {
             let stem = String(normalized.dropLast(verb.count))
+            // 接続助詞のて形+係助詞(ても/でも/ては/では)は用言に続く純かな語幹なので明示許可
+            // (てもある→ても有る の退避対策。2517)
+            if ["ても", "でも", "ては", "では", "とも"].contains(stem) {
+                return true
+            }
             if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
                 return true
             }
