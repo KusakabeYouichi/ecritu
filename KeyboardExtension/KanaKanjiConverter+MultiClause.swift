@@ -165,6 +165,9 @@ extension KanaKanjiConverter {
         "みな": 3300,
         // にた は 似た が辞書に無く seed 供給(dictUnknown 8700)。かな にた(wc8000 床)との差を反転
         "にた": 2000,
+        // ならせる系: seed 先頭の 鳴らせる(a2 供給)を なる族の使役(成らせる=b2 供給)より前へ。
+        // どちらも LM 未収録の OOV なので僅差、seed の並び意図で反転する(2519)
+        "ならせる": 2000, "ならせて": 2000, "ならせた": 2000,
         // たぶん はかな先頭(ユーザー指定)。LM 多分6808<たぶん7079 の僅差を反転
         "たぶん": 800,
         // ばい は助数詞 倍 の読み別 wc(8195)が 杯6866/枚7290 より重く、短span床で
@@ -990,8 +993,12 @@ extension KanaKanjiConverter {
                     // 活用派生フラグを付ける。付けないと dictUnknown(8700)の seed ノードが
                     // 先着 dedupe で b2 の安い活用OOVコピーを潰し、seed 外の同活用
                     // (喚んだ)だけが安く残って逆転する(ほんをよんだ→本を喚んだ)。
+                    // 収穫底値(wc>=10000)の表層も対象に含める — 鳴らせる は word_costs に
+                    // 底値10302で実在するため costMap==nil 条件を外れ、素の辞書ノード(8700・
+                    // 助詞後割引なし)になって 成らせる(活用OOV=助詞後5000)に負けていた(2519)
                     var seedIsInflectionDerived = false
-                    if costMap[surface] == nil,
+                    if costMap[surface] == nil
+                        || (costMap[surface] ?? 0) >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
                         inflectionSupplyGateSatisfied,
                         cachedInflectedCandidates().contains(surface) {
                         seedIsInflectionDerived = true
