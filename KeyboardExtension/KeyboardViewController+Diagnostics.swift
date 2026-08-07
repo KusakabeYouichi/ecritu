@@ -436,6 +436,11 @@ extension KeyboardViewController {
     // ホスト側の接続失敗を数えるのが目的(2518事象: viewDidLoad 4ms完了後29秒未表示)。
     // 正常時のviewDidLoad→viewWillAppearは数百ms以内なので5秒は誤検知しない余裕。
     static let keyboardAttachWatchdogDelaySec: TimeInterval = 5
+    // 遅延発火の許容幅。asyncAfterのタイマーはプロセスsuspend中は進まないため、
+    // キーボード退場直後にiOSが投機生成した未表示VCの分が、次回resume時にまとめて
+    // 遅延発火する(2528実測: viewDidLoad後21.6秒)。真性のattach失敗はほぼ定刻
+    // (実測5.0〜5.3秒)に発火するので、これを超える遅れは失敗として数えない。
+    static let keyboardAttachWatchdogLateFireToleranceSec: TimeInterval = 5
 
     func startKeyboardAttachWatchdog() {
         guard let sharedDefaults else {
@@ -445,11 +450,20 @@ extension KeyboardViewController {
             sharedDefaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount) + 1
         sharedDefaults.set(launchCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount)
 
+        let scheduledAt = CFAbsoluteTimeGetCurrent()
         let workItem = DispatchWorkItem { [weak self] in
             guard let self else {
                 return
             }
             self.keyboardAttachWatchdogWorkItem = nil
+            let elapsedSec = CFAbsoluteTimeGetCurrent() - scheduledAt
+            if elapsedSec > Self.keyboardAttachWatchdogDelaySec + Self.keyboardAttachWatchdogLateFireToleranceSec {
+                self.appendKeyboardDiagnosticsLog(
+                    "表示未到達watchdogの遅延発火を偽陽性として除外(suspend跨ぎ・投機生成VCの疑い) 実経過\(String(format: "%.1f", elapsedSec))秒",
+                    critical: true
+                )
+                return
+            }
             guard let defaults = self.sharedDefaults else {
                 return
             }
