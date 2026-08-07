@@ -6375,6 +6375,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // ことで: エンジンは かな先頭(ことで→事で)を返していたが keepKana 不成立で提示層が
+    // かなを末尾チップへ回し、事で が先頭になっていた。形式名詞(こと/とき/もの/ため)+
+    // 格助詞1字を keepKana の根拠に追加(語幹は明示集合=しごとで/ずかんで は巻き込まない。2516)
+    func testRegressionKotodeKeepsKana() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ことで", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ことで", "事で"], "single=\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ことで"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ときに"))
+        // 名詞+で は巻き込まない(仕事で が先頭のまま)
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "しごとで"))
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "しごとで", systemCandidateMode: .surface).first,
+            "仕事で"
+        )
+    }
+
     // 実機のみの2件(学習リセット・キャッシュクリアでも消えない=追加語彙が原因のパターン)。
     // どちらも misc の curated 登録が別読みのラティスを歪めていた(loadDeviceAddedVocabulary で再現)。
     // (1) きたんだが→着たんだが: misc の きた→来た(curated)が先着 dedupe で b2 活用コピーを
