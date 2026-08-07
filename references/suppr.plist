@@ -220,6 +220,9 @@
 	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>
 	<!-- ギンコウ: 銀行 のカタカナ表記ゆれ収穫(wc が 銀行 と同値3295=同一語彙の別表記)。ナカノ/アシタ 族 -->
+	<!-- タイワン: 台湾 のカタカナ表記ゆれ収穫(たいわん rank1)。カタカナ需要は無く候補を汚すため
+	     抑制(ユーザ指定 2529)。🇹🇼/台湾/台灣 は温存 -->
+	<dict><key>phrase</key><string>タイワン</string><key>shortcut</key><string>たいわん</string></dict>
 	<!-- 霊(よん): Sudachi 収穫の異体字扱い(よん→{よん,ヨン,四,霊})。霊ん+でない 等の
 	     ゴミ合成の種になる。よん で 霊 を出したい場面は無いので抑制 -->
 	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>
