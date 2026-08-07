@@ -3111,6 +3111,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.contains("響動む"), "single=\(single)")
     }
 
+    // 実LM回帰: れいは のかな識別先頭化を是正。あきの と同型(かな人名収穫 wc10000 +
+    // 識別供給の二重加算)で、ひらがな れいは が 例は/零は 合成より先頭に居座っていた。
+    // seed 宣言(かな非掲載)で末尾へ降格(2529)
+    func testRegressionRealLMReihaDemotesKanaIdentity() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "れいは", limit: 15, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "例は", "single=\(single)")
+        // かな識別は先頭群から退く(末尾寄り)。完全削除はしない
+        if let kanaIndex = single.firstIndex(of: "れいは") {
+            XCTAssertGreaterThanOrEqual(kanaIndex, 5, "single=\(single)")
+        }
+        // ガード: れいはい(礼拝)の複合読みは無傷
+        let reihai = converter.candidates(for: "れいはいします", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(reihai.first, "礼拝します", "single=\(reihai)")
+    }
+
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
     // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
