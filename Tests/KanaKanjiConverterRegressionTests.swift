@@ -3088,6 +3088,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(sareta.first, "送信されたくない", "multi=\(sareta)")
     }
 
+    // 実LM回帰: かえりのひこうき→帰りの飛行機。飛行機 は読み別 wc が 11443(unigram 5406 の
+    // 一般語なのに収穫底値超え)で、連文節の bigram 借用拒否+9500 床上げを受けて
+    // 帰りの日+後期/皇紀 の分割に負けていた(コスト異常型)。seed 掲載の免除で是正(2529)
+    func testRegressionRealLMKaerinoHikoukiPrefersAirplane() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "かえりのひこうき", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "帰りの飛行機", "multi=\(multi)")
+
+        let single = converter.candidates(for: "ひこうき", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "飛行機", "single=\(single)")
+    }
+
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
     // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
