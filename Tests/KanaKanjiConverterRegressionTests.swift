@@ -6375,6 +6375,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // おとく: Sudachi は 汚涜/お徳/おとく のみで お得/おトク 皆無。seed 供給+指定順
+    // {お得, お徳, おトク, おとく, 汚涜}。連文節は全かなエコー(おとくです)が最良に
+    // 出ていたため seed 順ボーナス(2000)で お得+です を優先(2524)
+    func testRegressionRealLMOtokuPrefersOtoku() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(
+            Array(converter.candidates(for: "おとく", limit: 5, systemCandidateMode: .surface)),
+            ["お得", "お徳", "おトク", "おとく", "汚涜"]
+        )
+        XCTAssertEqual(converter.candidates(for: "おとくです", limit: 5, systemCandidateMode: .surface).first, "お得です")
+        let multi = converter.multiClauseCandidates(for: "おとくです", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "お得です", "multi=\(multi)")
+    }
+
     // れふぉーる→レフォール(西洋わさび): 辞書に れふぉ〜 が皆無で single 空、
     // multi は れ+フォール(れフォール)に化けていた。sacoche curated で救済(2523)
     func testRegressionRealLMRefooruPrefersCurated() throws {
