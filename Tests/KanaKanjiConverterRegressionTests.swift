@@ -3160,6 +3160,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(mottodayo.first, "もっとだよ", "multi=\(mottodayo)")
     }
 
+    // 実LM回帰: こっちはむしがないてる→こっちは虫が鳴いてる。は→無視(4383)< は→虫(5607)の
+    // Wikipediaバイアスで 無視 が勝ち、が→ない(2654)のかなエコーが 鳴いてる に勝っていた。
+    // 連語テーブル(むし+なく活用→虫、動詞表層は 鳴 系優先)で文脈限定是正(2529)
+    func testRegressionRealLMMushiGaNaiteruPrefersNaku() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "こっちはむしがないてる", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "こっちは虫が鳴いてる", "multi=\(multi)")
+
+        let bos = converter.multiClauseCandidates(for: "むしがないてる", systemCandidateMode: .surface)
+        XCTAssertEqual(bos.first, "虫が鳴いてる", "multi=\(bos)")
+
+        // ガード: 無視 の正当な用途は無傷(むしする/むしされた/をむしして)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "むしする", systemCandidateMode: .surface).first, "無視する")
+        XCTAssertEqual(converter.candidates(for: "むしされた", limit: 5, systemCandidateMode: .surface).first, "無視された")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "をむしして", systemCandidateMode: .surface).first, "を無視して")
+        // ガード: むしがない(〜虫がない)は 鳴い に化けない
+        let nai = converter.multiClauseCandidates(for: "むしがないへや", systemCandidateMode: .surface)
+        XCTAssertEqual(nai.first, "虫がない部屋", "multi=\(nai)")
+    }
+
     // 実LM回帰: なつは→夏は。読み なつは の辞書エントリは全てレア名前収穫
     // (夏羽/捺葉/奈津羽…wc10000)で、合成の 夏は が9番目に沈んでいた(水は と同型)。
     // per-word curated ではなく収穫底値帯(wc>=10000)の一般降格で直す(構造対応)。
