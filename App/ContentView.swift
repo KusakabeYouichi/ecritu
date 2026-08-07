@@ -403,6 +403,8 @@ struct ContentView: View {
     @State var keyboardDiagnosticsLastEvent = ""
     @State var keyboardDiagnosticsLastSessionID = ""
     @State var keyboardDiagnosticsFailSafeProfile = "normal"
+    @State var keyboardDiagnosticsLaunchCount = 0
+    @State var keyboardDiagnosticsAttachFailureCount = 0
     @State var keyboardConversionLastTrace = ""
     @State var containerDiagnosticsSessionID = UUID().uuidString
     @State var didRunFirstAppearanceBootstrap = false

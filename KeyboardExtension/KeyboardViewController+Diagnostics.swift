@@ -430,6 +430,51 @@ extension KeyboardViewController {
         defaults.set(lines, forKey: key)
     }
 
+    // 表示未到達の監視: viewDidLoad後この秒数以内にviewWillAppearが来なければ、
+    // 「iOSがリモートビューを取り付けずシステムキーボードへフォールバックした疑い」として
+    // critical logへ累積カウント付きで記録する(2521)。プロセス内の遅延ではなく
+    // ホスト側の接続失敗を数えるのが目的(2518事象: viewDidLoad 4ms完了後29秒未表示)。
+    // 正常時のviewDidLoad→viewWillAppearは数百ms以内なので5秒は誤検知しない余裕。
+    static let keyboardAttachWatchdogDelaySec: TimeInterval = 5
+
+    func startKeyboardAttachWatchdog() {
+        guard let sharedDefaults else {
+            return
+        }
+        let launchCount =
+            sharedDefaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount) + 1
+        sharedDefaults.set(launchCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount)
+
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else {
+                return
+            }
+            self.keyboardAttachWatchdogWorkItem = nil
+            guard let defaults = self.sharedDefaults else {
+                return
+            }
+            let failureCount =
+                defaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsAttachFailureCount) + 1
+            defaults.set(failureCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsAttachFailureCount)
+            let totalLaunchCount =
+                defaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsLaunchCount)
+            self.appendKeyboardDiagnosticsLog(
+                "表示未到達(attach失敗の疑い) viewDidLoad後\(Int(Self.keyboardAttachWatchdogDelaySec))秒viewWillAppear未到達 累計\(failureCount)回/起動\(totalLaunchCount)回",
+                critical: true
+            )
+        }
+        keyboardAttachWatchdogWorkItem = workItem
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + Self.keyboardAttachWatchdogDelaySec,
+            execute: workItem
+        )
+    }
+
+    func cancelKeyboardAttachWatchdog() {
+        keyboardAttachWatchdogWorkItem?.cancel()
+        keyboardAttachWatchdogWorkItem = nil
+    }
+
     // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ追記。
     // 通常ログの320行ローテーションと install 変更リセットの対象外に別キーで残す
     // (2026-07: 辞書永久停止事件の証拠行がローテで流れて検証不能だった対策)。

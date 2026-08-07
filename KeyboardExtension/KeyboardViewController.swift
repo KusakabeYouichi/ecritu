@@ -207,6 +207,7 @@ final class KeyboardViewController: UIInputViewController {
     var dictionaryPreloadWorkItem: DispatchWorkItem?
     var keyboardBootstrapWorkItem: DispatchWorkItem?
     var sharedDataPrewarmWorkItem: DispatchWorkItem?
+    var keyboardAttachWatchdogWorkItem: DispatchWorkItem?
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     var contactCandidatesByReading: [String: [String]] = [:]
@@ -396,6 +397,10 @@ final class KeyboardViewController: UIInputViewController {
         static let keyboardDiagnosticsLastSessionID = "keyboardDiagnosticsLastSessionID"
         static let keyboardDiagnosticsFailSafeProfile = "keyboardDiagnosticsFailSafeProfile"
         static let keyboardDiagnosticsFlightRecorderEvents = "keyboardDiagnosticsFlightRecorderEvents"
+        // 起動回数と表示未到達(viewDidLoad後にviewWillAppearが来ない=attach失敗の疑い)回数。
+        // critical logと同様にinstall変更リセットの対象外(「何回中何回」を累積で観測する)。
+        static let keyboardDiagnosticsLaunchCount = "keyboardDiagnosticsLaunchCount"
+        static let keyboardDiagnosticsAttachFailureCount = "keyboardDiagnosticsAttachFailureCount"
         // デバッグ用: 直近1回の変換トレース(上書き式)。実機のみ再現する誤変換の層特定に使う。
         // reading→連文節上位|単文節上位|LM/フェイルセーフ/モード を記録。ローテなし・単一値。
         static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
@@ -513,6 +518,7 @@ final class KeyboardViewController: UIInputViewController {
         startKeyboardDiagnosticsSession()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
+        startKeyboardAttachWatchdog()
         KeyboardStuckTouchDiagnostics.onForceClear = { [weak self] detail in
             self?.recordStuckTouchForceClear(detail)
         }
@@ -546,6 +552,7 @@ final class KeyboardViewController: UIInputViewController {
             )
         }
         finishKeyboardDiagnosticsSession(reason: "deinit")
+        keyboardAttachWatchdogWorkItem?.cancel()
         keyboardBootstrapWorkItem?.cancel()
         dictionaryPreloadWorkItem?.cancel()
         keyboardHeightLockReleaseWorkItem?.cancel()
@@ -554,6 +561,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        cancelKeyboardAttachWatchdog()
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
 
         // メモリ警告カウントと sqlite 再オープン抑止は「表示セッション」単位でリセットする。

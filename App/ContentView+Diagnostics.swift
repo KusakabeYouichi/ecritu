@@ -99,6 +99,8 @@ extension ContentView {
             keyboardDiagnosticsLastEvent = ""
             keyboardDiagnosticsLastSessionID = ""
             keyboardDiagnosticsFailSafeProfile = "normal"
+            keyboardDiagnosticsLaunchCount = 0
+            keyboardDiagnosticsAttachFailureCount = 0
             keyboardConversionLastTrace = ""
             return
         }
@@ -139,6 +141,12 @@ extension ContentView {
         keyboardDiagnosticsFailSafeProfile = normalizedKeyboardDiagnosticsFailSafeProfile(
             failSafeRawValue
         )
+        keyboardDiagnosticsLaunchCount = defaults.integer(
+            forKey: SettingsKeys.keyboardDiagnosticsLaunchCount
+        )
+        keyboardDiagnosticsAttachFailureCount = defaults.integer(
+            forKey: SettingsKeys.keyboardDiagnosticsAttachFailureCount
+        )
     }
 
     func clearKeyboardDiagnosticsState() {
@@ -155,6 +163,8 @@ extension ContentView {
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastEvent)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLastSessionID)
         defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsFailSafeProfile)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsLaunchCount)
+        defaults.removeObject(forKey: SettingsKeys.keyboardDiagnosticsAttachFailureCount)
 
         if let flightFileURL = keyboardDiagnosticsFlightFileURL() {
             try? FileManager.default.removeItem(at: flightFileURL)
@@ -213,6 +223,9 @@ extension ContentView {
         sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
         sections.append("lastSessionID: \(keyboardDiagnosticsLastSessionID)")
         sections.append("lastEvent: \(keyboardDiagnosticsLastEvent)")
+        sections.append(
+            "起動\(keyboardDiagnosticsLaunchCount)回 / 表示未到達(attach失敗の疑い)\(keyboardDiagnosticsAttachFailureCount)回"
+        )
         sections.append("--- 最終変換トレース(デバッグ) ---")
         sections.append(keyboardConversionLastTrace.isEmpty ? "(記録なし)" : keyboardConversionLastTrace)
         sections.append("--- critical events (ローテ保護) ---")
