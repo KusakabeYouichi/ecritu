@@ -6375,6 +6375,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // ふらんすしゃ→フランス車: 名詞+車(産地・所属)の接辞合成(2520)。
+    // reading>=4ガードで いしゃ/きしゃ 等の短い読みには影響しない
+    func testFuransushaProducesFuransusha() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.candidates(for: "ふらんすしゃ", limit: 5, systemCandidateMode: .surface).first, "フランス車")
+        XCTAssertEqual(converter.candidates(for: "にほんしゃ", limit: 5, systemCandidateMode: .surface).first, "日本車")
+        XCTAssertEqual(converter.candidates(for: "えいこくしゃ", limit: 5, systemCandidateMode: .surface).first, "英国車")
+        // 既存語のガード: 会社/医者/汽車系が崩れないこと
+        XCTAssertEqual(converter.candidates(for: "かいしゃ", limit: 5, systemCandidateMode: .surface).first, "会社")
+        XCTAssertEqual(converter.candidates(for: "いしゃ", limit: 5, systemCandidateMode: .surface).first, "医者")
+        XCTAssertEqual(converter.candidates(for: "きしゃ", limit: 5, systemCandidateMode: .surface).first, "記者")
+    }
+
     // おんがくをならせる→音楽を成らせる: 鳴らせる は 鳴る(なる族)の使役だが、なる族の基底順は
     // かな なる(LM3405)が先頭のため連文節の活用供給 TopK3 から漏れていた(基底読み間順序型)。
     // seed(a2)で供給+先頭ノードボーナス。鳴らせる は word_costs に収穫底値10302で実在するため
