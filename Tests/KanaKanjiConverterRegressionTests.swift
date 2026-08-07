@@ -6375,6 +6375,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "来たんだが", "single=\(single)")
     }
 
+    // おんがくをならせる→音楽を成らせる: 鳴らせる は 鳴る(なる族)の使役だが、なる族の基底順は
+    // かな なる(LM3405)が先頭のため連文節の活用供給 TopK3 から漏れていた(基底読み間順序型)。
+    // seed(a2)で供給+先頭ノードボーナス。鳴らせる は word_costs に収穫底値10302で実在するため
+    // a2 の派生フラグ条件(costMap==nil)を底値帯まで広げた — 素の辞書ノード(8700・助詞後
+    // 割引なし)のままだと 成らせる(活用OOV=助詞後5000)に勝てない(2519)
+    func testRegressionNaraseruPrefersNarasu() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "ならせる", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "鳴らせる", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "おんがくをならせる", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "音楽を鳴らせる", "multi=\(multi.prefix(4))")
+        // ならす(辞書の丸ごとエントリ)は従来どおり
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "おんがくをならす", systemCandidateMode: .surface).first,
+            "音楽を鳴らす"
+        )
+    }
+
     // ながら(同時進行): 連用形+ながら の活用規則がどのクラスにも無く、みながら→みな柄/
     // かきながら→火器ながら のような断片合成しか出なかった(未対応だった)。一段/五段/サ変/
     // カ変に追加(2518)。あるきながら だけ動いていたのは 歩き が辞書の連用形収穫にあったため
