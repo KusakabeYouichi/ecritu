@@ -3189,8 +3189,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let single = converter.candidates(for: "たいわん", limit: 8, systemCandidateMode: .surface)
         XCTAssertFalse(single.contains("タイワン"), "single=\(single)")
-        XCTAssertEqual(single.first, "🇹🇼", "single=\(single)")
-        XCTAssertTrue(single.contains("台湾"), "single=\(single)")
+        // 台湾 が先頭(seed 並び矯正 2531)、🇹🇼/台灣 は後続に残る
+        XCTAssertEqual(single.first, "台湾", "single=\(single)")
+        XCTAssertTrue(single.contains("🇹🇼"), "single=\(single)")
         XCTAssertTrue(single.contains("台灣"), "single=\(single)")
     }
 
