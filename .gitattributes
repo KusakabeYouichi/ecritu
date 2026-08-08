@@ -1,0 +1,6 @@
+# Xcode はスキーム保存時に é を XML 実体参照(e&#x301; / &#xe9; 等)へ書き換え、
+# 実害のない差分ノイズを作る。clean フィルタで git から見える内容を常に NFC の
+# é へ正規化する(tools/normalize_unicode_project_names.sh と同じ変換)。
+# フィルタ実体はローカル設定が必要(クローン後に1回):
+#   git config filter.xcscheme-nfc.clean "perl -CSD -pe 's/(?:e&#x301;|e&#769;|&#x[eE]9;|&#233;|e\\x{301}|\xC3\xA9|\xE9)critu/\\x{E9}critu/g'"
+*.xcscheme filter=xcscheme-nfc
