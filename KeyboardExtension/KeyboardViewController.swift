@@ -275,6 +275,10 @@ final class KeyboardViewController: UIInputViewController {
     // 生存一覧とアンカー(window/superview/parent/CF参照数)をログし、「誰が保持しているか」の
     // 手がかりを残す。弱参照なので保持自体には影響しない。
     static let liveControllerCensus = NSHashTable<KeyboardViewController>.weakObjects()
+    // プロセス内で最後に viewWillAppear が到達した時刻。attach 監視 watchdog の偽陽性判定に使う
+    // (自分の監視開始より後に別インスタンスが表示されていれば、ユーザーは écritu を見ている=
+    // iOS の投機生成VCであって attach 失敗ではない。2532)。
+    static var lastAttachedViewWillAppearAt: CFAbsoluteTime = 0
     let controllerCreatedAt: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
     // 非アクティブ降格を検知した時刻(deinit までのゾンビ滞留時間の計測に使う)
     var lostActiveOwnershipAt: CFAbsoluteTime = 0
@@ -562,6 +566,7 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         cancelKeyboardAttachWatchdog()
+        Self.lastAttachedViewWillAppearAt = CFAbsoluteTimeGetCurrent()
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
 
         // メモリ警告カウントと sqlite 再オープン抑止は「表示セッション」単位でリセットする。
