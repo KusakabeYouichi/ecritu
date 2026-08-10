@@ -523,9 +523,6 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
-        KeyboardStuckTouchDiagnostics.onForceClear = { [weak self] detail in
-            self?.recordStuckTouchForceClear(detail)
-        }
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
@@ -567,6 +564,16 @@ final class KeyboardViewController: UIInputViewController {
         super.viewWillAppear(animated)
         cancelKeyboardAttachWatchdog()
         Self.lastAttachedViewWillAppearAt = CFAbsoluteTimeGetCurrent()
+        // 表示された時点でオーナー権を主張する(未表示の投機生成VCに奪われた状態からの復帰も
+        // ここで行う)。この後の shouldSuppressHeavyOperations が誤って抑止に落ちないよう、
+        // ビュー構築より前に済ませる必要がある。
+        claimKeyboardSessionOwnership()
+        // 押下残留(赤キー)フックは単一グローバルで最後の代入が勝つ。viewDidLoad で張ると
+        // 未表示の投機生成VCが計測を横取りし(カウンタがそのゾンビ側に溜まる)、そのVCが
+        // 解放された後は weak self=nil で計測が黙って落ちる。表示インスタンスが持つ(2532)。
+        KeyboardStuckTouchDiagnostics.onForceClear = { [weak self] detail in
+            self?.recordStuckTouchForceClear(detail)
+        }
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
 
         // メモリ警告カウントと sqlite 再オープン抑止は「表示セッション」単位でリセットする。

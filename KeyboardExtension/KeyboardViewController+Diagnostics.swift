@@ -503,6 +503,42 @@ extension KeyboardViewController {
         keyboardAttachWatchdogWorkItem = nil
     }
 
+    // 表示されたインスタンスがオーナー権(重い処理を担う権利)を主張する。viewWillAppear から
+    // 呼ぶ。オーナー権を viewDidLoad で主張しないのは startKeyboardDiagnosticsSession の
+    // コメント参照(投機生成VCによる横取りを防ぐ)。
+    func claimKeyboardSessionOwnership() {
+        guard let sharedDefaults else {
+            return
+        }
+        let token = diagnosticsSessionOwnerToken()
+        let storedToken = sharedDefaults.string(
+            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+        )
+        guard storedToken != token else {
+            return
+        }
+        sharedDefaults.set(token, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
+        didApplyInactiveSessionMitigation = false
+        appendKeyboardDiagnosticsLog(
+            "表示インスタンスがオーナー権を取得 previousOwner=\(storedToken ?? "none") currentOwner=\(token)"
+        )
+    }
+
+    // オーナー権を手放す(未表示のまま解放されるインスタンス用)。保持したままだと
+    // 表示中のインスタンスが抑止分岐に落ち続ける。
+    func releaseKeyboardSessionOwnershipIfHeld() {
+        guard let sharedDefaults else {
+            return
+        }
+        let token = diagnosticsSessionOwnerToken()
+        guard sharedDefaults.string(
+            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+        ) == token else {
+            return
+        }
+        sharedDefaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
+    }
+
     // 表示に至らなかったインスタンスの保持物を解放する(2532)。
     // iOS が取り付けなかった VC は自分がセッションのオーナーだと思っているため、
     // 非アクティブ降格経路(shouldSuppressHeavyOperations)の trim が発動せず、
@@ -516,6 +552,7 @@ extension KeyboardViewController {
             return
         }
 
+        releaseKeyboardSessionOwnershipIfHeld()
         performHiddenKeyboardMemoryTrim(
             reason: "neverDisplayed-\(reason)",
             releaseHostingView: true,
@@ -962,10 +999,11 @@ extension KeyboardViewController {
         diagnosticsState.diagnosticsSessionID = UUID().uuidString
         diagnosticsState.diagnosticsSessionStartedAt = Date()
         sharedDefaults.set(true, forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
-        sharedDefaults.set(
-            diagnosticsSessionOwnerToken(),
-            forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
-        )
+        // オーナー権(=重い処理を担う権利)はここでは主張しない。viewDidLoad 時点で主張すると
+        // 「最後にロードされたインスタンス」がオーナーになり、iOS が表示中キーボードの後に
+        // 投機生成した未表示VCがオーナー権を奪ってしまう。奪われた表示中インスタンスは
+        // textDidChange/viewWillAppear で抑止分岐に落ち、observer 解除・bootstrap 取消まで
+        // 受けるため、固まる/空白になる。オーナー権は viewWillAppear で主張する(2532)。
         sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
         persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
         appendKeyboardDiagnosticsLog(
