@@ -462,9 +462,22 @@ extension KeyboardViewController {
                     "表示未到達watchdogの遅延発火を偽陽性として除外(suspend跨ぎ・投機生成VCの疑い) 実経過\(String(format: "%.1f", elapsedSec))秒",
                     critical: true
                 )
+                self.releaseNeverDisplayedKeyboardResources(reason: "lateFire")
+                return
+            }
+            // 監視開始より後に別インスタンスが表示されていれば、ユーザーは écritu を見ている
+            // (2531実測: 同一プロセスで2秒差の連続発火)。iOS の投機生成VCであって attach
+            // 失敗ではないので数えない。
+            if KeyboardViewController.lastAttachedViewWillAppearAt > scheduledAt {
+                self.appendKeyboardDiagnosticsLog(
+                    "表示未到達watchdogを偽陽性として除外(同一プロセスで別インスタンスが表示済み=投機生成VC) 実経過\(String(format: "%.1f", elapsedSec))秒",
+                    critical: true
+                )
+                self.releaseNeverDisplayedKeyboardResources(reason: "otherInstanceAttached")
                 return
             }
             guard let defaults = self.sharedDefaults else {
+                self.releaseNeverDisplayedKeyboardResources(reason: "noDefaults")
                 return
             }
             let failureCount =
@@ -476,6 +489,7 @@ extension KeyboardViewController {
                 "表示未到達(attach失敗の疑い) viewDidLoad後\(Int(Self.keyboardAttachWatchdogDelaySec))秒viewWillAppear未到達 累計\(failureCount)回/起動\(totalLaunchCount)回",
                 critical: true
             )
+            self.releaseNeverDisplayedKeyboardResources(reason: "attachFailure")
         }
         keyboardAttachWatchdogWorkItem = workItem
         DispatchQueue.main.asyncAfter(
@@ -487,6 +501,33 @@ extension KeyboardViewController {
     func cancelKeyboardAttachWatchdog() {
         keyboardAttachWatchdogWorkItem?.cancel()
         keyboardAttachWatchdogWorkItem = nil
+    }
+
+    // 表示に至らなかったインスタンスの保持物を解放する(2532)。
+    // iOS が取り付けなかった VC は自分がセッションのオーナーだと思っているため、
+    // 非アクティブ降格経路(shouldSuppressHeavyOperations)の trim が発動せず、
+    // hostingController(SwiftUIビュー階層)と Darwin observer を抱えたまま滞留する
+    // (2531実測: 未表示のまま683秒/655秒生存、同時4インスタンスでメモリ警告5回・
+    // フェイルセーフcritical昇格2回・LMキャッシュ縮小に至っていた)。
+    // 後から iOS が同じ VC を表示する可能性は残るため、破棄ではなく解放に留める
+    // (viewWillAppear が observer を再登録し、hostingController は setupKeyboardView が再生成)。
+    func releaseNeverDisplayedKeyboardResources(reason: String) {
+        guard viewIfLoaded?.window == nil else {
+            return
+        }
+
+        performHiddenKeyboardMemoryTrim(
+            reason: "neverDisplayed-\(reason)",
+            releaseHostingView: true,
+            includeSystemCaches: true
+        )
+        stopObservingSettingsDidChange()
+        stopMarkedTextWatchdog()
+
+        appendKeyboardDiagnosticsLog(
+            "表示未到達インスタンスの保持物を解放 reason=\(reason) \(instanceAnchorSummary())",
+            critical: true
+        )
     }
 
     // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ追記。
