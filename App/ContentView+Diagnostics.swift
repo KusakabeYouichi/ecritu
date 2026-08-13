@@ -89,6 +89,63 @@ extension ContentView {
         keyboardDiagnosticsInstallMarker = currentMarker
     }
 
+    // 設定>一般>キーボード の登録状態を毎回記録する。
+    // 「écritu 以外のキーボードが出る」事象には3種類あり、うち2つは拡張側にログが残らない。
+    // ①attach失敗=viewDidLoadは走るので未到達としてcriticalに残る。②署名失効=拡張が起動不可。
+    // ③iOSが登録一覧から外す=痕跡なし。実測(2026-08-13)では地球儀キーすら出ておらず、
+    // iOSが「有効キーボードは1つだけ」と認識していた=écritu が一覧から外れていた。
+    // Personal Team のプロファイルは7日で失効し、失効すると登録が外れるため③が起きる。
+    // 事後に設定を見ても手遅れなので、アプリ起動ごとに登録の有無を残す。
+    static let keyboardRegistrationHistoryLimit = 24
+
+    func keyboardExtensionBundleIdentifierForDiagnostics() -> String {
+        if let identifier = keyboardExtensionBundleForDiagnostics()?.bundleIdentifier {
+            return identifier
+        }
+        let base = Bundle.main.bundleIdentifier ?? "unknown"
+        return "\(base).keyboard"
+    }
+
+    func isKeyboardExtensionRegistered() -> Bool? {
+        // AppleKeyboards はアプリ自身の defaults ドメインに現れる有効キーボード一覧。
+        // 非公開キーだが読み取りのみで、取得できない場合は nil(判定不能)を返す。
+        guard let enabled = UserDefaults.standard.object(forKey: "AppleKeyboards") as? [String] else {
+            return nil
+        }
+        let identifier = keyboardExtensionBundleIdentifierForDiagnostics()
+        return enabled.contains { $0 == identifier || $0.hasPrefix("\(identifier).") }
+    }
+
+    func recordKeyboardExtensionRegistrationState() {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let state: String
+        switch isKeyboardExtensionRegistered() {
+        case .some(true): state = "registered"
+        case .some(false): state = "MISSING"
+        case .none: state = "unknown"
+        }
+
+        var history = decodeStringArray(
+            forKey: SettingsKeys.keyboardDiagnosticsRegistrationHistory,
+            defaults: defaults
+        )
+        // 状態が変わったときだけ積む(毎起動で埋まって履歴が流れるのを防ぐ)。
+        if let last = history.last, last.hasSuffix(" \(state)") {
+            return
+        }
+        let stamp = ISO8601DateFormatter().string(from: Date())
+        history.append("\(stamp) \(state)")
+        if history.count > Self.keyboardRegistrationHistoryLimit {
+            history.removeFirst(history.count - Self.keyboardRegistrationHistoryLimit)
+        }
+        if let data = try? JSONEncoder().encode(history) {
+            defaults.set(data, forKey: SettingsKeys.keyboardDiagnosticsRegistrationHistory)
+        }
+    }
+
     func loadKeyboardDiagnosticsState() {
         guard let defaults = Self.sharedDefaults else {
             keyboardDiagnosticsLogLines = []
@@ -263,6 +320,17 @@ extension ContentView {
         sections.append(
             "起動\(keyboardDiagnosticsLaunchCount)回 / 表示未到達(attach失敗の疑い)\(keyboardDiagnosticsAttachFailureCount)回"
         )
+        let registrationState: String
+        switch isKeyboardExtensionRegistered() {
+        case .some(true): registrationState = "登録あり"
+        case .some(false): registrationState = "登録なし(iOSの有効キーボード一覧に不在)"
+        case .none: registrationState = "判定不能"
+        }
+        sections.append("キーボード登録: \(registrationState)")
+        let registrationHistory = Self.sharedDefaults.map {
+            decodeStringArray(forKey: SettingsKeys.keyboardDiagnosticsRegistrationHistory, defaults: $0)
+        } ?? []
+        sections.append("登録状態の履歴(変化時のみ): \(registrationHistory.isEmpty ? "(記録なし)" : registrationHistory.joined(separator: ", "))")
         sections.append("--- 最終変換トレース(デバッグ) ---")
         sections.append(keyboardConversionLastTrace.isEmpty ? "(記録なし)" : keyboardConversionLastTrace)
         sections.append("--- critical events (ローテ保護) ---")

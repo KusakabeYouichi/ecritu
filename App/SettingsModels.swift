@@ -111,6 +111,7 @@ enum SettingsKeys {
     // 起動回数/表示未到達回数(キーボード側と同一キー文字列)。install変更リセット対象外
     static let keyboardDiagnosticsLaunchCount = "keyboardDiagnosticsLaunchCount"
     static let keyboardDiagnosticsAttachFailureCount = "keyboardDiagnosticsAttachFailureCount"
+    static let keyboardDiagnosticsRegistrationHistory = "keyboardDiagnosticsRegistrationHistory"
     // デバッグ: 直近1回の変換トレース(上書き式)。KeyboardExtension 側 SharedDefaultsKeys と同一。
     static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
     // 設定変更の世代カウンタ。postSettingsDidChange のたびに +1 され、キーボード拡張が
