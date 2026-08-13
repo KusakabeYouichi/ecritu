@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """vin-add.plist の全エントリを、分類結果に従って vin.plist / etc.plist の該当節末尾へ移す。
 
+**実行済み(2026-08-13, 85f45e6)。references/vin-add.plist は移行完了後に削除したため、
+このスクリプトはもう動かない。移行時の判定基準と手順の記録として残している。**
+
 plistlib で書き直すとコメント(節見出し・行内注記)が全て失われるため、**行単位**で移動する。
 
 入力: tmp/vinadd_results/b*.tsv  (phrase<TAB>category)
