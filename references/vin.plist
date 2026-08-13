@@ -1867,7 +1867,7 @@
 	<dict><key>phrase</key><string>最上川</string><key>shortcut</key><string>もがみがわ</string></dict>
 	<dict><key>phrase</key><string>北上川</string><key>shortcut</key><string>きたかみがわ</string></dict>
 	<dict><key>phrase</key><string>Elbe</string><key>shortcut</key><string>えるべ</string></dict>
-	<dict><key>phrase</key><string>Havel</string><key>shortcut</key><string>はーべる</string></dict>
+	<dict><key>phrase</key><string>Havel</string><key>shortcut</key><string>はーふぇる</string></dict>
 	<dict><key>phrase</key><string>Rhin</string><key>shortcut</key><string>らん</string></dict>
 	<dict><key>phrase</key><string>Rio Oja</string><key>shortcut</key><string>りおおは</string></dict>
 	<dict><key>phrase</key><string>Río Oja</string><key>shortcut</key><string>りおおは</string></dict>
@@ -4069,7 +4069,6 @@
 	<dict><key>phrase</key><string>James Busby</string><key>shortcut</key><string>じぇーむずばずびー</string></dict>
 	<dict><key>phrase</key><string>Jan van Riebeeck</string><key>shortcut</key><string>やんふぁんりーべっく</string></dict>
 	<dict><key>phrase</key><string>Johann</string><key>shortcut</key><string>よはん</string></dict>
-	<dict><key>phrase</key><string>Johann Sciller</string><key>shortcut</key><string>よはんしらー</string></dict>
 	<dict><key>phrase</key><string>John</string><key>shortcut</key><string>じょん</string></dict>
 	<dict><key>phrase</key><string>Jules</string><key>shortcut</key><string>じゅーる</string></dict>
 	<dict><key>phrase</key><string>Lenz Moser</string><key>shortcut</key><string>れんつもーざー</string></dict>
