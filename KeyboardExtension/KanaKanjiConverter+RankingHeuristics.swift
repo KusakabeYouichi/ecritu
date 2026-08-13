@@ -336,6 +336,11 @@ extension KanaKanjiConverter {
                 inflectionDerivedCandidates: inflectionDerivedCandidates,
                 to: &scores
             )
+            applyAdjectiveSaBoost(
+                for: reading,
+                inflectionDerivedCandidates: inflectionDerivedCandidates,
+                to: &scores
+            )
             return
         }
 
@@ -407,6 +412,56 @@ extension KanaKanjiConverter {
                 continue
             }
             scores[candidate, default: 0] += Self.stativeSouBoost
+        }
+    }
+
+    // 形容詞の さ 名詞化(辛い→辛さ)。Sudachi は「形容詞+さ」を生産的な派生として扱い、
+    // core_lex 86万行のうち さ で終わる名詞は40件しかない(寒さ/暑さ/高さ/長さ 等の慣用形のみ)。
+    // そのため 辛さ/甘さ/苦さ/弱さ/優しさ は辞書に存在せず活用派生(980)でしか出ない一方、
+    // 終助詞さ の postfix 素通り(1120)が から+さ を全候補に付けるため、レア人名(嘉良さ/迦羅さ/
+    // 佳羅さ…)が20件並んで 辛さ を押し下げる。読み末尾が さ で、語幹+い が adjective-i と
+    // して実在するときだけ、その派生候補を辞書語と同じ 1200 相当まで持ち上げる。
+    // ゲートを「候補の語幹+い が adjective-i」に置くことで、五段サ行の未然形(話す→話さ)や
+    // 単なる名詞は対象外になる。
+    static let adjectiveSaBoost = 220
+    func applyAdjectiveSaBoost(
+        for reading: String,
+        inflectionDerivedCandidates: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 3, reading.hasSuffix("さ") else {
+            return
+        }
+
+        let adjectiveReading = String(reading.dropLast()) + "い"
+        let adjectiveClassMap = store.systemInflectionMetadata(for: adjectiveReading).classMap
+        guard !adjectiveClassMap.isEmpty else {
+            return
+        }
+
+        var boosted = false
+        for candidate in inflectionDerivedCandidates where candidate.hasSuffix("さ") {
+            // かな識別(からさ のまま)は素通りと同じなので対象外。
+            guard candidate != reading, containsKanji(candidate) else {
+                continue
+            }
+            let adjectiveCandidate = String(candidate.dropLast()) + "い"
+            guard adjectiveClassMap[adjectiveCandidate] == InflectionClass.adjectiveI else {
+                continue
+            }
+            scores[candidate, default: 0] += Self.adjectiveSaBoost
+            boosted = true
+        }
+
+        // かな識別(からさ)は末尾へ。から は LM で 嘉良/唐 等より低コスト(2848)なため派生の
+        // 基底として最優先され、からさ が先頭に居座る。さ 名詞化が成立する読みでは かな は
+        // 求められないので、他候補の最小点より下へ落として末尾に置く(消さずに残す)。
+        guard boosted, scores[reading] != nil else {
+            return
+        }
+        let otherScores = scores.filter { $0.key != reading }.values
+        if let minimum = otherScores.min() {
+            scores[reading] = minimum - 1
         }
     }
 
