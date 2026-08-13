@@ -103,6 +103,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(list.first, "限界", "list=\(list)")
     }
 
+    // 意志形+口語の引用促音(〜よっと/〜ようっと)。語彙が無く候補ゼロになっていた。
+    // てみる複合(teMiruInflectionSuffixes)と一段/サ変の活用ルールで供給する。
+    func testRegressionRealLMVolitionalQuotativeTto() throws {
+        try prepareRealLMDictionary()
+
+        for (reading, expected) in [
+            ("かってみよっと", "買ってみよっと"),
+            ("かってみようっと", "買ってみようっと"),
+            ("たべよっと", "食べよっと")
+        ] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "reading=\(reading) single=\(single)")
+        }
+    }
+
     // こういしょう: 後遺症 の読み別 wc 13100(unigram 6676 の一般語なのに収穫底値超え)で
     // 連文節の床上げ+bigram借用拒否を受け、へんな+こういしょう が 3分割(変な行為章)に
     // 負けていた。ひこうき と同型。seed 免除で 変な後遺症 が最良になること。
