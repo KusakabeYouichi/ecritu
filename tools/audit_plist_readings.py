@@ -87,9 +87,19 @@ def load_allowlist(path: Path) -> set[tuple[str, str]]:
     return allowed
 
 
-def load_entries(paths: list[Path]) -> tuple[list[tuple[str, str, str]], list[str]]:
+def load_entries(
+    paths: list[Path],
+    allowed: set[tuple[str, str]] | None = None,
+) -> tuple[list[tuple[str, str, str]], list[str]]:
+    """allowed の (phrase, reading) は xml 検査(かな種・カタカナ一致)の指摘からも除外する。
+
+    従来は entries の絞り込みにしか使っておらず、許容登録済みの スヰートポーヅ が
+    カタカナ表記と読みの不一致として毎回フラグされていた(2026-08-14)。
+    構造破損(パース不能・空 phrase・完全重複)は許容対象でも指摘する。
+    """
     entries: list[tuple[str, str, str]] = []
     problems: list[str] = []
+    allowed = allowed or set()
 
     for path in paths:
         try:
@@ -108,6 +118,8 @@ def load_entries(paths: list[Path]) -> tuple[list[tuple[str, str, str]], list[st
             if (phrase, reading) in seen:
                 problems.append(f"{path.name}: 完全重複: {phrase} / {reading}")
             seen.add((phrase, reading))
+            if (phrase, reading) in allowed:
+                continue
             if not KANA_RE.match(reading):
                 problems.append(f"{path.name}: 読みにかな以外: {phrase} / {reading!r}")
             if KATAKANA_ONLY_RE.match(phrase):
@@ -213,7 +225,7 @@ def main() -> int:
     checks = {name.strip() for name in arguments.checks.split(",") if name.strip()}
 
     allowed = load_allowlist(root / "references" / "reading_audit_allowlist.tsv")
-    entries, problems = load_entries(paths)
+    entries, problems = load_entries(paths, allowed=allowed)
     entries = [entry for entry in entries if (entry[1], entry[2]) not in allowed]
     print(
         f"対象 {len(entries)} エントリ ({', '.join(path.name for path in paths)})"
