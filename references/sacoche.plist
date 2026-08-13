@@ -261,14 +261,13 @@
 	        <dict><key>phrase</key><string>セニャン</string><key>shortcut</key><string>せにゃん</string></dict>
 	        <dict><key>phrase</key><string>ア・ポワン</string><key>shortcut</key><string>あぽわん</string></dict>
 	        <dict><key>phrase</key><string>ビアン・キュイ</string><key>shortcut</key><string>びあんきゅい</string></dict>
-	        <dict><key>phrase</key><string>ピヤン・キュイ</string><key>shortcut</key><string>びやんきゅい</string></dict>
+	        <dict><key>phrase</key><string>ビヤン・キュイ</string><key>shortcut</key><string>びやんきゅい</string></dict>
 	        <dict><key>phrase</key><string>bleu</string><key>shortcut</key><string>ぶる</string></dict>
 	        <dict><key>phrase</key><string>saignant</string><key>shortcut</key><string>せにゃん</string></dict>
 	        <dict><key>phrase</key><string>a point</string><key>shortcut</key><string>あぽわん</string></dict>
 	        <dict><key>phrase</key><string>bien cuit</string><key>shortcut</key><string>びやんきゅい</string></dict>
 	<!-- パン -->
-	        <dict><key>phrase</key><string>タバチェ</string><key>shortcut</key><string>たぱちぇ</string></dict>
-	        <dict><key>phrase</key><string>tabatière</string><key>shortcut</key><string>たぱちぇ</string></dict>
+	        <dict><key>phrase</key><string>tabatière</string><key>shortcut</key><string>たばちぇ</string></dict>
 	        <dict><key>phrase</key><string>ベイグル</string><key>shortcut</key><string>べいぐる</string></dict>
 	        <dict><key>phrase</key><string>パン・ド・ミー</string><key>shortcut</key><string>ぱんどみー</string></dict>
 	        <dict><key>phrase</key><string>バタール</string><key>shortcut</key><string>ばたーる</string></dict>
@@ -368,7 +367,6 @@
 	<!-- 表記 -->
 	        <dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>
 	        <dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
-	        <dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんびに</string></dict>
 	        <dict><key>phrase</key><string>テイプ</string><key>shortcut</key><string>ていぷ</string></dict>
 	        <dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
 	        <dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
