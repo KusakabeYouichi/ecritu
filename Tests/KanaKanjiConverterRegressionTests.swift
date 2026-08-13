@@ -40,6 +40,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // multiClauseCandidates を直接検証する。tmp が無い環境では skip(実LM依存のため)。
     // むかしみたな: かな断片チェーン(昔+み+た+な、み→た bigram 1010)や短spanレア読み
     // (見店/実棚/三田な)に負けず 昔見たな が最良になること(短span床上げ+文末な減点)。
+    // からさ: 辞書に からさ が無く(Sudachi は「形容詞+さ」を生産的派生として扱い、core_lex の
+    // さ 終わり名詞は40件のみ)、終助詞さ の postfix 素通りが から の全候補に さ を付けるため
+    // 嘉良さ/唐さ/迦羅さ… が20件並び 辛さ が20番目に沈んでいた。形容詞さ名詞化ブーストで
+    // 辛さ を先頭に、辣さ/鹹さ をそれに続かせる。
+    func testRegressionRealLMKarasaPrefersAdjectiveNominalization() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "からさ", limit: 30, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "辛さ", "list=\(list)")
+        let kanjiSaForms = list.filter { ["辛さ", "辣さ", "鹹さ"].contains($0) }
+        XCTAssertEqual(kanjiSaForms, ["辛さ", "辣さ", "鹹さ"], "list=\(list)")
+        if let karasaIndex = list.firstIndex(of: "からさ") {
+            XCTAssertEqual(karasaIndex, list.count - 1, "かな候補は末尾 list=\(list)")
+        }
+    }
+
+    // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
+    func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
+        try prepareRealLMDictionary()
+
+        for (reading, expected) in [("よわさ", "弱さ"), ("しろさ", "白さ"), ("ふるさ", "古さ")] {
+            let list = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list)")
+        }
+    }
+
+    // 五段サ行の未然形(話す→話さ)は形容詞さ名詞化ではないので、ブーストの対象外であること。
+    func testRegressionRealLMGodanMizenSaIsNotBoostedAsNominalization() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "はなさ", limit: 30, systemCandidateMode: .surface)
+        XCTAssertNotEqual(list.first, "話さ", "list=\(list)")
+    }
+
     func testRegressionRealLMMukashiMitanaPrefersPredicateParse() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["みたな": ["美多奈"]])
