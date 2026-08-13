@@ -88,7 +88,10 @@
 	        <dict><key>phrase</key><string>nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
 	        <dict><key>phrase</key><string>電球光</string><key>shortcut</key><string>でんきゅうこう</string></dict>
 	        <dict><key>phrase</key><string>高演色</string><key>shortcut</key><string>こうえんしょく</string></dict>
+	        <dict><key>phrase</key><string>超高演色</string><key>shortcut</key><string>ちょうこうえんしょく</string></dict>
 	        <dict><key>phrase</key><string>昼白色</string><key>shortcut</key><string>ちゅうはくしょく</string></dict>
+	        <dict><key>phrase</key><string>昼光色</string><key>shortcut</key><string>ちゅうこうしょく</string></dict>
+	        <dict><key>phrase</key><string>電球色</string><key>shortcut</key><string>でんきゅうしょく</string></dict>
 	<!-- 文法 -->
 	        <dict><key>phrase</key><string>未変換</string><key>shortcut</key><string>みへんかん</string></dict>
 	        <dict><key>phrase</key><string>サ変動詞</string><key>shortcut</key><string>さへんどうし</string></dict>
