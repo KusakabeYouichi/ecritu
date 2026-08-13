@@ -15,12 +15,16 @@ vin-add.plist	Duna-Tisza közi	どぅなてぃさくずぃ	教本準拠
 vin-add.plist	Flaschengärung	ふらしぇんげーるんぐ	教本準拠
 vin-add.plist	Geelong	じろんぐ	教本準拠
 vin-add.plist	Givry	じぶり	教本準拠
+vin-add.plist	Iode	いおど	仏語読み。ヨードではなくイオド
+vin-add.plist	Kvalitetno vino s kontroliranim podrijetlom	くゔぁりててぅのゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ	教本準拠(2026-08-12その2)
 vin-add.plist	Pfingstberg	ぷふぃんぐすべるく	教本準拠
 vin-add.plist	Pourriture grise	ぷりちゅーるぐりーす	教本準拠
 vin-add.plist	Quetsche	けっちゅ	教本準拠
 vin-add.plist	Rose Port	ろぜぽると	教本準拠
 vin-add.plist	Seyssel	せいせる	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
+vin-add.plist	Srednja I Južna Dalmacija	すれでぃにゃいゆじゅなだるまちあ	教本準拠(2026-08-13)
 vin-add.plist	Stolno vino s kontroliranim podrijetlom	すとるのゔぃーのさこんとろりらにむぽどりえとろむ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin-add.plist	Sud-Ouest	しゅっどうえすと	教本準拠(2026-08-12その2)
 vin-add.plist	Tokaj-hegyalja	とかいへじゃいや	教本準拠
 vin-add.plist	Treiso	とれいーぞ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
 vin-add.plist	Vrhunsko vino s kontroliranim podrijetlom	ゔるふんすこゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
@@ -29,44 +33,67 @@ vin-add.plist	Österreich	えすたらいひ	教本準拠
 vin-add.plist	粉状	こなじょう	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
 vin-add.plist	紅酒	ほんちゅう	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
 vin-add.plist	黄金色	おうごんいろ	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
+vin.plist	Abbacchio allo Scottadito	あばっきおあっろすこったでぃーと	教本準拠(2026-08-12その2)
 vin.plist	Abbaye de Mont	あべいどぅもん	教本準拠
 vin.plist	Assmannshausen	あすまんずはうぜん	vin、教本準拠。独語無声s理論より教本表記を優先
+vin.plist	Bereich Werder	べらいひゔぇあだー	教本準拠(2026-08-13)
 vin.plist	COURMAYEUR	くーるまいよーる	教本準拠
 vin.plist	Carmine	かるみん	vin、語源説明に出てくる語のため仏語風読みのまま維持
 vin.plist	Château Marquis d'Alesme-Becker	しゃとーまるきだれーむべっかー	vin、教本表記準拠。言語学的に正しい読みへ直さない
+vin.plist	Château Montelena	しゃとーもんてれーな	教本準拠(2026-08-12その2)
 vin.plist	Château Soutard	しゃとーすたーる	いずれもvin、教本表記準拠。言語学的に正しい読みへ直さない
+vin.plist	Château Suau	しゃとーすお	教本準拠(2026-08-12その2)
 vin.plist	Climens	くりまんす	教本準拠
 vin.plist	Crljenak Kastelanski	つぇりになっくかしゅてらんすき	いずれもvin、教本表記準拠。言語学的に正しい読みへ直さない
 vin.plist	Cviček	ちゔぃちぇっく	vin、スロベニア語だがユーザがあえて現状維持
 vin.plist	Dehilling	でぃひりんぐ	教本準拠
 vin.plist	Deželno vino	でじぇうのゔぃの	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin.plist	Ferrarelle	ふぇられっれ	教本準拠(2026-08-12その2)
 vin.plist	Flagey-Echézeaux	ふらじぇいえしぇぞー	教本準拠
+vin.plist	Gutedel	ぐーとえーでる	教本準拠(2026-08-13)
 vin.plist	Harmo Noir	あるものわーる	vin、日本のブドウ品種アルモ・ノワール。H脱落ではない
 vin.plist	Henschke	へんちき	vin、豪ワイナリー姓。Web・教本で「ヘンチキ」が一般的でそれを採用。ヘンシュケではない
 vin.plist	Humagne Blanc	うまーにゅぶらん	vin、教本準拠。ユマーニュではなくウマーニュ
 vin.plist	Humagne Rouge	うまーにゅるーじゅ	vin、教本準拠。ユマーニュではなくウマーニュ
 vin.plist	Kövérszőlő	くゔぇーるすーるー	いずれもvin、教本表記準拠。言語学的に正しい読みへ直さない
 vin.plist	Laurenz Moser III	ろーれんつもーざー	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin.plist	Liatiko	りゃてぃこ	教本準拠(2026-08-13)
+vin.plist	Limnio	りむにょ	教本準拠(2026-08-13)
 vin.plist	Madrid	まどりっど	単独は まどりっど。複合語の まどりーど と併存が正
+vin.plist	Marc d'Alsace Gewürztraminer	まーるだるざすげゔゅるつとらみねる	教本準拠(2026-08-12その2)
 vin.plist	Marquis d'Alesme-Becker	まるきだれーむべっかー	vin、教本表記準拠。言語学的に正しい読みへ直さない
 vin.plist	Montelena	もんてれーな	教本準拠
+vin.plist	Moscatel Roxo	もすかてるろっしょ	教本準拠(2026-08-12その2)
 vin.plist	Moutere Hills	むーてれひるず	教本準拠
 vin.plist	Muscat	みゅすか	仏語読み。英語読み ますかっと の複合語(Muscat Bailey A 等)と併存が正
 vin.plist	Orange	おらんじゅ	仏の産地。英語の紅茶等級 Orange Pekoe=おれんじ と併存が正
 vin.plist	Pedernã	ぺでるなぁ	教本準拠
 vin.plist	Perlwein	ぺるるゔぁいん	教本準拠
 vin.plist	Pinot Bijeli	ぴのびえり	教本準拠
+vin.plist	Polish Hill River	ぽりっしゅひるりゔぁー	教本準拠(2026-08-13)
 vin.plist	Pouligny-Saint-Pierre	ぷーりにぃさんぴえーる	教本準拠
+vin.plist	Quercus Alba	けるかすあるば	vin、オーク学名。教本準拠で けるかす。くえるくす に直さない
+vin.plist	Quercus petraea	けるかすぺとらえあ	vin、オーク学名。教本準拠で けるかす。くえるくす に直さない
+vin.plist	Quercus robur	けるかすろぶーる	vin、オーク学名。教本準拠で けるかす。くえるくす に直さない
+vin.plist	Quercus suber	けるかすすべーる	vin、オーク学名。教本準拠で けるかす。くえるくす に直さない
+vin.plist	Queso Tetilla	けそててぃーじゃ	教本準拠(2026-08-13)
 vin.plist	STELVIN	すてるゔぁん	vin、栓ブランド。開発元が仏社→仏語読み「ステルヴァン」が日本の主流。英語圏権利化で「ステルヴィン」表記も少数あるが すてるゔぁん が正
 vin.plist	Silvaner	じるゔぁーなー	vin、独墺語読み。語頭Sを有声「ジ」で。しるゔぁーなー=英語寄りと両読み併記
 vin.plist	Soutard	すたーる	いずれもvin、教本表記準拠。言語学的に正しい読みへ直さない
 vin.plist	Steven Spurrier	すてぃーゔんすぱりゅあ	教本準拠
+vin.plist	Suau	すお	教本準拠(2026-08-12その2)
 vin.plist	Tualatin Hills	ちゅあらてぃんひるず	教本準拠
 vin.plist	Tămâioasă Românească	たまよあさろまねあすか	教本準拠
 vin.plist	VIGNO	びーにょ	教本準拠
+vin.plist	Vitis davidii	ゔぃてぃすだゔぃでぃ	教本準拠(2026-08-13)
 vin.plist	Xérès	けれす	教本準拠
 vin.plist	Zametovka	つぁめとふか	いずれもvin、教本表記準拠。言語学的に正しい読みへ直さない
 vin.plist	Zotzenberg	ぞっつぇんべるく	教本準拠
 vin.plist	Žlahtina	ずらふてぃな	vin、教本準拠。ジュではなくズ
 vin.plist	水色	すいしょく	vin、紅茶・お茶の水色=浸出液の色。みずいろ ではない
 vin.plist	白雲母	しろうんも	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin.plist	村名	そんめい	vin、ユーザ確定(2026-08-13)。むらめい ではなく そんめい。4件すべてこの読みで統一
+vin.plist	村名A.O.C.	そんめいえいおーしー	vin、ユーザ確定(2026-08-13)。むらめい ではなく そんめい
+vin.plist	村名アペラシオン	そんめいあぺらしおん	vin、ユーザ確定(2026-08-13)。むらめい ではなく そんめい
+vin.plist	村名ワイン	そんめいわいん	vin、ユーザ確定(2026-08-13)。むらめい ではなく そんめい
+vin-add.plist	Stelvin	すてるゔぃん	vin-add、ユーザ確定(2026-08-13)。STELVIN=すてるゔぁん(仏語系開発元の読み)との2読み併存は意図的。買収先の国の読みでステルヴィンも通用するため、同綴り異読みとしてフラグしない
