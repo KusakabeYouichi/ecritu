@@ -118,6 +118,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // ちしま/からふと: カタカナ表記ゆれの word_cost が異常に低くカタカナが先頭だった(貽貝と
+    // 同亜型)。seed で漢字先頭に。ちしまと はさらに 的(まと)の surface LM 借用で
+    // 致死+的 が連文節を乗っ取っていた(bigram 借用遮断で対処)。
+    func testRegressionRealLMChishimaKarafutoOrdering() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertEqual(converter.candidates(for: "ちしま", limit: 8, systemCandidateMode: .surface).first, "千島")
+        XCTAssertEqual(converter.candidates(for: "からふと", limit: 8, systemCandidateMode: .surface).first, "樺太")
+        let chishimato = converter.multiClauseCandidates(for: "ちしまと", systemCandidateMode: .surface)
+        XCTAssertEqual(chishimato.first, "千島と", "multi=\(chishimato)")
+        XCTAssertFalse(chishimato.contains("致死的"), "multi=\(chishimato)")
+    }
+
     // こういしょう: 後遺症 の読み別 wc 13100(unigram 6676 の一般語なのに収穫底値超え)で
     // 連文節の床上げ+bigram借用拒否を受け、へんな+こういしょう が 3分割(変な行為章)に
     // 負けていた。ひこうき と同型。seed 免除で 変な後遺症 が最良になること。
