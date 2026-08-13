@@ -133,6 +133,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // してもらった は6文字=単文節候補なし(連文節のみ)。表示トップ=連文節最良。
         let multi = converter.multiClauseCandidates(for: "してもらった", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "してもらった", "multi=\(multi)")
+        // 提示層の退避を受けないこと(かな正書の根拠)。実機では converter=かな先頭 でも
+        // この根拠が無いと提示層が退避して して貰った が繰り上がっていた(2534)。
+        for reading in ["してもらった", "かいてもらう", "よんでもらった"] {
+            XCTAssertTrue(
+                converter.shouldKeepKanaIdentityLeading(for: reading),
+                "keepKana should hold for \(reading)"
+            )
+        }
     }
 
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、

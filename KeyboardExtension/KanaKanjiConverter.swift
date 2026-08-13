@@ -905,6 +905,17 @@ final class KanaKanjiConverter {
         if normalized.hasSuffix("ー"), Self.multiClauseFinalParticleReadings.contains(normalized) {
             return true
         }
+        // 補助動詞 〜て/でもらう(してもらった/よんでもらう 等)はかなが正書。converter は
+        // seed(もらう=かな先頭)により かな最良を返すが、この根拠が無いと提示層が退避して
+        // して貰った が繰り上がっていた(実機トレースで converter=かな先頭・表示=貰った先頭の
+        // 食い違いを確認、2534)。て/で+もらう の形は補助動詞構文に限られるため誤発火しない。
+        for suffix in ["てもらう", "てもらった", "てもらって", "てもらい", "てもらいます", "てもらいました",
+                       "てもらえる", "てもらえば", "てもらえ", "てもらおう",
+                       "でもらう", "でもらった", "でもらって", "でもらい", "でもらいます", "でもらいました",
+                       "でもらえる", "でもらえば", "でもらえ", "でもらおう"]
+        where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
+            return true
+        }
         // 丁寧の ます(常にかな。マス/升/増す 等の漢字・カタカナ化は不自然)+終助詞/助動詞
         // (ね/よ/か/ました…)で終わる読み。ますね→マスね 等の繰り上がりを防ぐ。
         for suffix in ["ますね", "ますよ", "ますか", "ますが", "ますし", "ますよね", "ますねー", "ますよー",
