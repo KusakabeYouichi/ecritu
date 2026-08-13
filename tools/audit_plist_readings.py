@@ -197,7 +197,7 @@ def main() -> int:
         "--plist",
         action="append",
         default=None,
-        help="検査する plist。既定は references/vin.plist と references/vin-add.plist",
+        help="検査する plist。既定は references/vin.plist",
     )
     parser.add_argument(
         "--checks",
@@ -209,7 +209,6 @@ def main() -> int:
     root = Path(__file__).resolve().parent.parent
     paths = [Path(item) for item in arguments.plist] if arguments.plist else [
         root / "references" / "vin.plist",
-        root / "references" / "vin-add.plist",
     ]
     checks = {name.strip() for name in arguments.checks.split(",") if name.strip()}
 
