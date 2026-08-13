@@ -961,7 +961,7 @@
 	<dict><key>phrase</key><string>Ward</string><key>shortcut</key><string>わーど</string></dict>
 	<dict><key>phrase</key><string>Washington</string><key>shortcut</key><string>わしんとん</string></dict>
 	<dict><key>phrase</key><string>Wasserbillig</string><key>shortcut</key><string>ばっさーびりっひ</string></dict>
-	<dict><key>phrase</key><string>Weinviertel</string><key>shortcut</key><string>ゔぁいんふぃーあてる</string></dict>
+	<dict><key>phrase</key><string>Weinviertel</string><key>shortcut</key><string>ゔぁいんふぃあてる</string></dict>
 	<dict><key>phrase</key><string>Wellington</string><key>shortcut</key><string>うぇりんとん</string></dict>
 	<dict><key>phrase</key><string>West Sussex</string><key>shortcut</key><string>うぇすとさせっくす</string></dict>
 	<dict><key>phrase</key><string>Western Australia</string><key>shortcut</key><string>うぇすたんおーすとらりあ</string></dict>
