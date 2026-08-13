@@ -103,6 +103,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(list.first, "限界", "list=\(list)")
     }
 
+    // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
+    // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
+    func testRegressionRealLMIgaiPrefersCommonWords() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "いがい", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["以外", "意外", "遺骸"], "list=\(list)")
+    }
+
+    // こうげん: 光源 が word_costs に無く rank14 まで沈んでいた。seed で LM 実勢順の
+    // 先頭5件を固定し、かな こうげん は末尾側へ降格すること。
+    func testRegressionRealLMKougenOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "こうげん", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(5)), ["高原", "光源", "抗原", "公言", "膠原"], "list=\(list)")
+        if let kanaIndex = list.firstIndex(of: "こうげん") {
+            XCTAssertGreaterThan(kanaIndex, 9, "かな候補は後方 list=\(list)")
+        }
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
