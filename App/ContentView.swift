@@ -1349,6 +1349,7 @@ struct ContentView: View {
                 // ログ行)を表示へ反映する。onAppearは復帰では再発火しないため、
                 // ここで再読込しないと診断セクションが古いスナップショットのまま残る。
                 clearKeyboardDiagnosticsIfInstallChanged()
+                recordKeyboardExtensionRegistrationState()
                 loadKeyboardDiagnosticsState()
 
                 if shouldUseContactCandidates {

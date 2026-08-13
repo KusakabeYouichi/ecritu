@@ -894,6 +894,7 @@ extension ContentView {
                 let refreshStartedAt = CFAbsoluteTimeGetCurrent()
                 requestContactsAccessIfNeededInBackground()
                 clearKeyboardDiagnosticsIfInstallChanged()
+                recordKeyboardExtensionRegistrationState()
                 loadKeyboardDiagnosticsState()
                 appendContainerDiagnosticsLog("コンテナ再表示 refresh開始")
                 startInitialSnapshotLoadInBackground(logEventPrefix: "コンテナ再表示") {
@@ -936,6 +937,7 @@ extension ContentView {
             clearLegacyKeyboardDebugLogKeysIfNeeded()
             migrateLegacyFlickGuideSettingIfNeeded()
             clearKeyboardDiagnosticsIfInstallChanged()
+            recordKeyboardExtensionRegistrationState()
             loadKeyboardDiagnosticsState()
             appendContainerDiagnosticsLog("コンテナ初回表示 bootstrap開始")
             startInitialSnapshotLoadInBackground(logEventPrefix: "コンテナ初回表示") {
