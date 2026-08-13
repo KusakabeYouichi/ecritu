@@ -343,6 +343,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "たりしませんか", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "たりするのですか", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "よう", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 意志形+口語の引用促音(買ってみよっと/たべようっと)。よっと/ようっと で終わる読みは
+        // 語彙が無く候補ゼロになっていた(かってみよっと、2534)。よう と同じ基底(る)から生成する
+        InflectionRule(readingSuffix: "よっと", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "ようっと", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "れば", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "られ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "られる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -620,6 +624,9 @@ extension KanaKanjiConverter {
         return [
             teForm + "みる",
             teForm + "みよう",
+            // 意志形+口語の引用促音(買ってみよっと/やってみようっと。2534)
+            teForm + "みよっと",
+            teForm + "みようっと",
             teForm + "みましょう",
             teForm + "みるか",
             teForm + "みた",
@@ -1175,6 +1182,9 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "したりしませんか", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "したりするのですか", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "しよう", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        // 意志形+口語の引用促音(掃除しよっと 等。ichidan 側の よっと/ようっと と対)
+        InflectionRule(readingSuffix: "しよっと", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
+        InflectionRule(readingSuffix: "しようっと", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "すれば", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "され", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
         InflectionRule(readingSuffix: "される", baseReadingSuffix: "する", allowedClasses: [InflectionClass.suru]),
