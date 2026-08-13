@@ -8,6 +8,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     override func setUp() {
         super.setUp()
 
+        Self.purgeStaleTestContainersIfNeeded()
         defaultsSuiteName = "com.kusakabe.ecritu.tests.kana-kanji.\(UUID().uuidString)"
         clearSuite(defaultsSuiteName)
         // 偽 group ID での containerURL はプロセス初回に約40秒かかるため、テストは
@@ -24,10 +25,47 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     var testContainerURL: URL!
 
+    // テスト用コンテナの親。1テストあたり実辞書(約417MB)を複製するため、後始末が漏れると
+    // 静かに積み上がる。実際に旧実装(UUID group ID で実コンテナを作る方式)では
+    // シミュレータ内に AppGroup コンテナが13万件・辞書コピー8.2万件まで蓄積し、
+    // ディスクを埋めて全体スイートが73件失敗した(2026-08-13)。現方式は tearDown で
+    // 消えるが、クラッシュや強制終了では残るため、起動時に残骸を掃除して再発を防ぐ。
+    static let testAppGroupRootPath = "/Users/kusakabe/Git/ecritu/tmp/test_app_group"
+    private static var didPurgeStaleTestContainers = false
+
+    static func purgeStaleTestContainersIfNeeded() {
+        guard !didPurgeStaleTestContainers else {
+            return
+        }
+        didPurgeStaleTestContainers = true
+
+        let root = URL(fileURLWithPath: testAppGroupRootPath, isDirectory: true)
+        let fileManager = FileManager.default
+        guard let leftovers = try? fileManager.contentsOfDirectory(
+            at: root,
+            includingPropertiesForKeys: nil,
+            options: [.skipsHiddenFiles]
+        ), !leftovers.isEmpty else {
+            return
+        }
+        for leftover in leftovers {
+            try? fileManager.removeItem(at: leftover)
+        }
+        print("前回実行の残骸テストコンテナを削除: \(leftovers.count)件")
+    }
+
     override func tearDown() {
         clearSuite(defaultsSuiteName)
         if let testContainerURL {
-            try? FileManager.default.removeItem(at: testContainerURL)
+            do {
+                try FileManager.default.removeItem(at: testContainerURL)
+            } catch CocoaError.fileNoSuchFile {
+                // 辞書を複製しないテストではディレクトリー自体が作られない。正常。
+            } catch {
+                // 削除失敗を黙って捨てると蓄積に気付けない。テストは落とさず警告に留める
+                // (1件の後始末失敗で無関係な検証結果を覆い隠さないため)。
+                print("警告: テストコンテナの削除に失敗 path=\(testContainerURL.path) error=\(error)")
+            }
         }
         testContainerURL = nil
         KanaKanjiStore.sharedContainerURLOverride = nil
