@@ -7,32 +7,32 @@ ryukyu.plist	アヲリ	あおり	ryukyu、現代かな読み
 ryukyu.plist	古酒	くーす	vin+ryukyu、泡盛の沖縄読み。こしゅ 読みはryukyu側に併記済みの意図的両読み構成
 ryukyu.plist	新城	しんじょう	vin、Châteauneuf-du-Pape=法王の新しい城 の説明語彙。地名しんしろ/沖縄姓あらぐすくではない
 sacoche.plist	スヰートポーヅ	すいーとぽーづ	sacoche、ヰ=い の現代読み
-vin-add.plist	Boerewors	ぷるゔぉす	教本準拠
-vin-add.plist	Cules târziu	くれすたるぜぃう	教本準拠
-vin-add.plist	Darling	だーりん	vin、南アフリカの産地。教本準拠でグ無し。豪Murray Darlingは だーりんぐ のままで別扱い
-vin-add.plist	Diacetyl	だいあせちる	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
-vin-add.plist	Duna-Tisza közi	どぅなてぃさくずぃ	教本準拠
-vin-add.plist	Flaschengärung	ふらしぇんげーるんぐ	教本準拠
-vin-add.plist	Geelong	じろんぐ	教本準拠
-vin-add.plist	Givry	じぶり	教本準拠
-vin-add.plist	Iode	いおど	仏語読み。ヨードではなくイオド
-vin-add.plist	Kvalitetno vino s kontroliranim podrijetlom	くゔぁりててぅのゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ	教本準拠(2026-08-12その2)
-vin-add.plist	Pfingstberg	ぷふぃんぐすべるく	教本準拠
-vin-add.plist	Pourriture grise	ぷりちゅーるぐりーす	教本準拠
-vin-add.plist	Quetsche	けっちゅ	教本準拠
-vin-add.plist	Rose Port	ろぜぽると	教本準拠
-vin-add.plist	Seyssel	せいせる	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
-vin-add.plist	Srednja I Južna Dalmacija	すれでぃにゃいゆじゅなだるまちあ	教本準拠(2026-08-13)
-vin-add.plist	Stolno vino s kontroliranim podrijetlom	すとるのゔぃーのさこんとろりらにむぽどりえとろむ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
-vin-add.plist	Sud-Ouest	しゅっどうえすと	教本準拠(2026-08-12その2)
-vin-add.plist	Tokaj-hegyalja	とかいへじゃいや	教本準拠
-vin-add.plist	Treiso	とれいーぞ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
-vin-add.plist	Vrhunsko vino s kontroliranim podrijetlom	ゔるふんすこゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
-vin-add.plist	Zagorje-Medimurje	ざごりえむじむりえ	教本準拠
-vin-add.plist	Österreich	えすたらいひ	教本準拠
-vin-add.plist	粉状	こなじょう	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
-vin-add.plist	紅酒	ほんちゅう	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
-vin-add.plist	黄金色	おうごんいろ	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
+vin.plist	Boerewors	ぷるゔぉす	教本準拠
+vin.plist	Cules târziu	くれすたるぜぃう	教本準拠
+vin.plist	Darling	だーりん	vin、南アフリカの産地。教本準拠でグ無し。豪Murray Darlingは だーりんぐ のままで別扱い
+vin.plist	Diacetyl	だいあせちる	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
+vin.plist	Duna-Tisza közi	どぅなてぃさくずぃ	教本準拠
+vin.plist	Flaschengärung	ふらしぇんげーるんぐ	教本準拠
+vin.plist	Geelong	じろんぐ	教本準拠
+vin.plist	Givry	じぶり	教本準拠
+vin.plist	Iode	いおど	仏語読み。ヨードではなくイオド
+vin.plist	Kvalitetno vino s kontroliranim podrijetlom	くゔぁりててぅのゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ	教本準拠(2026-08-12その2)
+vin.plist	Pfingstberg	ぷふぃんぐすべるく	教本準拠
+vin.plist	Pourriture grise	ぷりちゅーるぐりーす	教本準拠
+vin.plist	Quetsche	けっちゅ	教本準拠
+vin.plist	Rose Port	ろぜぽると	教本準拠
+vin.plist	Seyssel	せいせる	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
+vin.plist	Srednja I Južna Dalmacija	すれでぃにゃいゆじゅなだるまちあ	教本準拠(2026-08-13)
+vin.plist	Stolno vino s kontroliranim podrijetlom	すとるのゔぃーのさこんとろりらにむぽどりえとろむ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin.plist	Sud-Ouest	しゅっどうえすと	教本準拠(2026-08-12その2)
+vin.plist	Tokaj-hegyalja	とかいへじゃいや	教本準拠
+vin.plist	Treiso	とれいーぞ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin.plist	Vrhunsko vino s kontroliranim podrijetlom	ゔるふんすこゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin.plist	Zagorje-Medimurje	ざごりえむじむりえ	教本準拠
+vin.plist	Österreich	えすたらいひ	教本準拠
+vin.plist	粉状	こなじょう	いずれもvin、教本準拠。はくうんも/ふんじょう/とれいぞ/でじぇるの/らうれんつ/前置詞s=す へ直さない
+vin.plist	紅酒	ほんちゅう	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
+vin.plist	黄金色	おうごんいろ	いずれもvin、教本準拠。せせる/こがねいろ/こうしゅ/じあせちる へ直さない
 vin.plist	Abbacchio allo Scottadito	あばっきおあっろすこったでぃーと	教本準拠(2026-08-12その2)
 vin.plist	Abbaye de Mont	あべいどぅもん	教本準拠
 vin.plist	Assmannshausen	あすまんずはうぜん	vin、教本準拠。独語無声s理論より教本表記を優先
@@ -96,5 +96,6 @@ vin.plist	村名	そんめい	vin、ユーザ確定(2026-08-13)。むらめい �
 vin.plist	村名A.O.C.	そんめいえいおーしー	vin、ユーザ確定(2026-08-13)。むらめい ではなく そんめい
 vin.plist	村名アペラシオン	そんめいあぺらしおん	vin、ユーザ確定(2026-08-13)。むらめい ではなく そんめい
 vin.plist	村名ワイン	そんめいわいん	vin、ユーザ確定(2026-08-13)。むらめい ではなく そんめい
-vin-add.plist	Stelvin	すてるゔぃん	vin-add、ユーザ確定(2026-08-13)。STELVIN=すてるゔぁん(仏語系開発元の読み)との2読み併存は意図的。買収先の国の読みでステルヴィンも通用するため、同綴り異読みとしてフラグしない
-vin-add.plist	Weinviertel	ゔぁいんふぃあてる	vin-add、教本準拠(2026-08-13)。ゔぁいんふぃーあてる の長音を外す。独語W=[v]→ゔぁ、v=[f]→ふぃ は規則どおり
+vin.plist	Stelvin	すてるゔぃん	vin、ユーザ確定(2026-08-13)。STELVIN=すてるゔぁん(仏語系開発元の読み)との2読み併存は意図的。買収先の国の読みでステルヴィンも通用するため、同綴り異読みとしてフラグしない
+vin.plist	Weinviertel	ゔぁいんふぃあてる	vin、教本準拠(2026-08-13)。ゔぁいんふぃーあてる の長音を外す。独語W=[v]→ゔぁ、v=[f]→ふぃ は規則どおり
+vin.plist	Vorbourg	ふぉるぶーる	vin、教本準拠(2026-08-13)。アルザスの特級畑だが独語系の読みフォルブールを採用。仏語読みの ゔぉるぶーる へ直さない
