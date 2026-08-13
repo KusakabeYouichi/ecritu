@@ -56,6 +56,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // げんかい: 基底辞書順と word_cost が LM 実勢と逆(厳戒 rank0/cost6518 だが LM では
+    // 限界5422 << 厳戒7649)。seed で 限界 を先頭に矯正する。
+    func testRegressionRealLMGenkaiPrefersGenkai() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "げんかい", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "限界", "list=\(list)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
