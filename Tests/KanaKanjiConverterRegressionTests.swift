@@ -103,6 +103,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(list.first, "限界", "list=\(list)")
     }
 
+    // こういしょう: 後遺症 の読み別 wc 13100(unigram 6676 の一般語なのに収穫底値超え)で
+    // 連文節の床上げ+bigram借用拒否を受け、へんな+こういしょう が 3分割(変な行為章)に
+    // 負けていた。ひこうき と同型。seed 免除で 変な後遺症 が最良になること。
+    func testRegressionRealLMHennaKouishou() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "へんなこういしょう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "変な後遺症", "multi=\(multi)")
+        let single = converter.candidates(for: "こういしょう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "後遺症", "single=\(single)")
+    }
+
     // もらう: かな正書を先頭に(ユーザー方針)。基底辞書は 貰う rank0 で LM 実勢
     // (もらう5669 < 貰う6722)と逆だった。seed のかな先頭が基底・活用派生・合成の
     // 全経路に波及することを検証する。
