@@ -16,6 +16,19 @@ LLM レビューは巡回ごとに見落としが変わる(8巡目の24件中19�
 シエラ=しえら のような正当な語を大量に誤検知する(実測415件中ほぼ全てが誤検知)ため、
 この観点は LLM レビュー側に任せる。
 
+2026-08-13 に試して却下した検査(同じ轍を踏まないための記録):
+  5. 多数決トークン: 単独エントリが無いトークンでも、それを含む複合語の読みから
+     n-gram多数決で「トークンの読み」を推定し外れを検出する案。Centre Loire=さんとる
+     「るわーる」(他8件はろわーる)を実際に拾えたが、12件中真陽性1件(精度8%)。
+     n-gram多数決は隣接語まで巻き込み、読みのどの部分がどのトークンに対応するかを
+     分離できないのが原理的な限界。kanji検査(0/47)と同じ失敗の仕方。
+  6. カタカナ対照: カタカナ表記エントリの読みはカタカナ→ひらがなで決定的に定まるので、
+     それを正解とみなし近い読みのラテン表記エントリを突合する案。Hessische Bergstraße=
+     へっしっしゅ(カタカナ側は へっしっしぇ)を拾えたが62件中真陽性2〜3件。
+     ラテン表記とカタカナ表記は**意図的に別の音訳**であることが多く
+     (Château Mouton Rothschild=ろーとしると と ローシルト=ろしると は両方正しい併記)、
+     正解として使えない。村/種/系/地区/産 等の接尾差も大量に混じる。
+
 ポリシー許容差(ゔ↔ば行、長音の有無)は正規化して無視する。読みの ゔ は
 FlickKanaLayout の「う」+濁点で入力できるため誤りではない。
 
@@ -39,6 +52,10 @@ WORD_SEPARATOR_RE = re.compile(r"[ \-・]")
 BROKEN_READING_PATTERNS = {
     "にぽん": "にほん/にっぽん",
 }
+# 日本語に存在しない拗音の組み合わせ。この読みは打鍵できず候補に出ない
+# (2026-08-12 に Embouteillage=あんぶていゃーじゅ 等7件を実測。過去8巡の
+# LLMレビューは「ファイル内で一貫しているから意図的」と判断して見送っていた)。
+INVALID_YOON_SEQUENCES = ["いゃ", "いゅ", "いょ", "てぅ", "ぶゅ", "ぷゅ", "むゅ", "るゃ", "るゅ"]
 
 
 def normalize_for_comparison(reading: str) -> str:
@@ -109,7 +126,12 @@ def load_entries(paths: list[Path]) -> tuple[list[tuple[str, str, str]], list[st
 
 
 def check_word_boundary(entries: list[tuple[str, str, str]]) -> list[str]:
-    """空白/ハイフン区切りの部分語の読みが、複合語の読みに現れるか。"""
+    """空白/ハイフン区切りの部分語の読みが、複合語の読みに現れるか。
+
+    許容リストの行は指摘対象からも「比較の基準」からも外す。許容の理由が
+    「Muscat=仏みゅすか/英ますかっと のような言語差」なので、基準にすると
+    Muscat of X 系9件・Madrid 2件・Orange 2件を無意味に誤検知する(2026-08-13実測)。
+    """
     readings_by_phrase: dict[str, set[str]] = {}
     for _, phrase, reading in entries:
         readings_by_phrase.setdefault(phrase, set()).add(reading)
@@ -153,12 +175,18 @@ def check_kanji_substring(entries: list[tuple[str, str, str]]) -> list[str]:
 
 
 def check_kana_shape(entries: list[tuple[str, str, str]]) -> list[str]:
-    """日本語として成立しない壊れ読みパターン。"""
+    """日本語として成立しない壊れ読み・打鍵できない拗音。"""
     findings: list[str] = []
     for _, phrase, reading in entries:
         for pattern, expected in BROKEN_READING_PATTERNS.items():
             if pattern in reading:
                 findings.append(f"{phrase}={reading}  ({pattern} → {expected})")
+                break
+        for sequence in INVALID_YOON_SEQUENCES:
+            if sequence in reading:
+                findings.append(
+                    f"{phrase}={reading}  (「{sequence}」は打鍵できない拗音結合)"
+                )
                 break
     return findings
 
