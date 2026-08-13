@@ -103,6 +103,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(list.first, "限界", "list=\(list)")
     }
 
+    // もらう: かな正書を先頭に(ユーザー方針)。基底辞書は 貰う rank0 で LM 実勢
+    // (もらう5669 < 貰う6722)と逆だった。seed のかな先頭が基底・活用派生・合成の
+    // 全経路に波及することを検証する。
+    func testRegressionRealLMMorauPrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        for reading in ["もらう", "もらった"] {
+            let single = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            let kanjiIndex = single.firstIndex { $0.contains("貰") }
+            let kanaIndex = single.firstIndex(of: reading)
+            XCTAssertNotNil(kanaIndex, "reading=\(reading) single=\(single)")
+            if let kanaIndex, let kanjiIndex {
+                XCTAssertLessThan(kanaIndex, kanjiIndex, "reading=\(reading) single=\(single)")
+            }
+        }
+        // してもらった は6文字=単文節候補なし(連文節のみ)。表示トップ=連文節最良。
+        let multi = converter.multiClauseCandidates(for: "してもらった", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "してもらった", "multi=\(multi)")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {
