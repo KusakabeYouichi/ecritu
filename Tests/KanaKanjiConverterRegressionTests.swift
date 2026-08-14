@@ -349,6 +349,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(list.first, "補糖", "list=\(list)")
     }
 
+    // ため: dict rank0 が 為 だが wc も LM もかなが優位で、形式名詞はかな正書(とき と
+    // 同方針、ユーザー指定 2538)。単独・合成(ためではない)・連文節文脈で ため が先頭、
+    // 為 は2番目に残ること。溜め系(溜めた 等)の活用は影響を受けないこと。
+    func testRegressionRealLMTamePrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        let tame = converter.candidates(for: "ため", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tame.prefix(2)), ["ため", "為"], "list=\(tame)")
+        let dewanai = converter.candidates(for: "ためではない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(dewanai.first, "ためではない", "list=\(dewanai)")
+        let multi = converter.multiClauseCandidates(for: "ためではない", systemCandidateMode: .surface)
+        if let first = multi.first {
+            XCTAssertEqual(first, "ためではない", "multi=\(multi)")
+        }
+        let tameta = converter.candidates(for: "ためた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(
+            tameta.contains { $0.hasPrefix("溜め") || $0.hasPrefix("貯め") },
+            "溜めた/貯めた が残ること list=\(tameta)"
+        )
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
