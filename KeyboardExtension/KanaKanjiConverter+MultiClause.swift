@@ -297,24 +297,49 @@ extension KanaKanjiConverter {
     // むし: 直後が なく 活用のとき 虫 を 無視 より優先(は→無視 bigram 4383 < は→虫 5607 の
     //       Wikipediaバイアスで こっちは無視がないてる になる)。あわせて動詞表層は 鳴 系を優先
     //       (が→ない bigram 2654 のかなエコーが 鳴いてる 5000 に勝つため。虫が鳴く の連語限定)。
+    // み: 直後(助詞任意)が いく 活用のとき 見 を 身 より優先(見に行きたい)。身→に bigram 541 ≪
+    //     見→に 2304 のコーパス分割バイアス+見(み)の短spanレア読み床上げで 身に が独占するため。
+    //     動詞表層は 行 系を優先(生きたい/活きたい でなく 行きたい)。
+    // じしん: 直後(助詞任意)が ない 活用のとき 自信 を優先(自信ない/自信なさそう)。bigram 皆無で
+    //     unigram 順(自身4428<地震4803<自信6075)になるが、会話では 自信(が)ない が最頻。
+    //     自身+ない は文法的に不自然(自身 は 私自身 等の照応用法)なので demote し、地震ない を
+    //     2番目に残す(ユーザ指定 2535)。
     static let multiClauseNounBeforeVerbCollocations:
-        [String: (surface: String, verbPrefixes: [String], preferredVerbSurfacePrefix: String?)] = [
+        [String: (surface: String, verbPrefixes: [String], preferredVerbSurfacePrefix: String?, demotedSurfaces: [String])] = [
         "ひび": (
             surface: "ひび",
             verbPrefixes: ["はいっ", "はいら", "はいり", "はいる", "はいれ"],
-            preferredVerbSurfacePrefix: nil
+            preferredVerbSurfacePrefix: nil,
+            demotedSurfaces: []
         ),
         "さいど": (
             surface: "彩度",
             verbPrefixes: ["あげ", "あが", "さげ", "さが"],
-            preferredVerbSurfacePrefix: nil
+            preferredVerbSurfacePrefix: nil,
+            demotedSurfaces: []
         ),
         "むし": (
             surface: "虫",
             verbPrefixes: ["ない", "なき", "なく", "なけ"],
-            preferredVerbSurfacePrefix: "鳴"
+            preferredVerbSurfacePrefix: "鳴",
+            demotedSurfaces: []
+        ),
+        "み": (
+            surface: "見",
+            verbPrefixes: ["いき", "いく", "いっ", "いけ", "いこ"],
+            preferredVerbSurfacePrefix: "行",
+            demotedSurfaces: []
+        ),
+        "じしん": (
+            surface: "自信",
+            verbPrefixes: ["ない", "なく", "なさ", "なかっ"],
+            preferredVerbSurfacePrefix: nil,
+            demotedSurfaces: ["自身"]
         )
     ]
+    // 連語の demotedSurfaces に課すペナルティ。自身(4428)を 地震(4803)の後ろへ送るのに
+    // 十分で、候補から消すほどではない中庸値。
+    static let multiClauseCollocationDemotionPenalty = 800
     static let multiClauseKanaAdverbCost = 4000
     // オノマトペ「〜っと」クランプの誤爆除外: かな副詞(もっと/ちょっと 等)が別語の後ろに
     // 続く区間(ふらんすはもっと/どいつはもっと 等)も「4文字以上の全かな+っと終わり」に
@@ -792,6 +817,8 @@ extension KanaKanjiConverter {
         var shortCuratedFragmentNodeKeys = Set<String>()
         // 連語文脈でかなを優先するノードのキー(ひび+入る=ひびが入る 等)。日々 でなく ひび を勝たせる。
         var collocationPreferredKanaNodeKeys = Set<String>()
+        var collocationPreferredVerbNodeKeys = Set<String>()
+        var collocationDemotedNodeKeys = Set<String>()
         // 連語の動詞側表層選好(虫がないてる→鳴いてる 等)。連語検出時に動詞区間の開始位置と
         // 優先表層プレフィクスを記録し、その位置から始まる合致表層に連語クランプを与える。
         var collocationPreferredVerbSurfacePrefixesByStart = [Int: String]()
@@ -959,13 +986,17 @@ extension KanaKanjiConverter {
                 // 日々を大切に/再度確認 等の非連語文脈は無影響。
                 if let collocation = Self.multiClauseNounBeforeVerbCollocations[segmentReading] {
                     var afterIdx = end
-                    if afterIdx < n, chars[afterIdx] == "は" || chars[afterIdx] == "が" || chars[afterIdx] == "を" {
+                    if afterIdx < n, chars[afterIdx] == "は" || chars[afterIdx] == "が" || chars[afterIdx] == "を"
+                        || chars[afterIdx] == "に" {
                         afterIdx += 1
                     }
                     if afterIdx < n {
                         let rest = String(chars[afterIdx..<n])
                         if collocation.verbPrefixes.contains(where: { rest.hasPrefix($0) }) {
                             collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(collocation.surface)")
+                            for demoted in collocation.demotedSurfaces {
+                                collocationDemotedNodeKeys.insert("\(start)-\(end)-\(demoted)")
+                            }
                             if let verbPrefix = collocation.preferredVerbSurfacePrefix {
                                 collocationPreferredVerbSurfacePrefixesByStart[afterIdx] = verbPrefix
                             }
@@ -1103,6 +1134,19 @@ extension KanaKanjiConverter {
                             break
                         }
                     }
+                }
+
+                // 連語の優先表層(見/自信 等)が word_cost 順の TopK から漏れると、クランプ対象
+                // ノード自体が立たない(みにいきたい→ミニ行きたい)。明示供給する(先着 dedupe
+                // により (b) が既に足していれば no-op)。
+                if let collocation = Self.multiClauseNounBeforeVerbCollocations[segmentReading],
+                    collocationPreferredKanaNodeKeys.contains("\(start)-\(end)-\(collocation.surface)") {
+                    add(
+                        collocation.surface,
+                        isDictWord: true,
+                        isCurated: false,
+                        wordCost: costMap[collocation.surface]
+                    )
                 }
 
                 // (b2) 活用派生ノード: 活用形(買った/行ける 等)は辞書に収穫しない設計のため、
@@ -1314,7 +1358,7 @@ extension KanaKanjiConverter {
                     // 名詞区間の検出(連語キー登録)は動詞区間のノード生成より必ず先に済んでいる。
                     if let preferredVerbPrefix = collocationPreferredVerbSurfacePrefixesByStart[start],
                         surface.hasPrefix(preferredVerbPrefix) {
-                        collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(surface)")
+                        collocationPreferredVerbNodeKeys.insert("\(start)-\(end)-\(surface)")
                     }
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
@@ -1461,6 +1505,7 @@ extension KanaKanjiConverter {
             prevIsInflectionDerived: Bool = false,
             isShortCuratedFragment: Bool = false,
             isCollocationPreferredKana: Bool = false,
+            isCollocationPreferredVerb: Bool = false,
             scriptVariantPenalty: Int = 0,
             prevDeniesOutgoingBigram: Bool = false,
             isSupplementalKatakanaExempt: Bool = false
@@ -1738,6 +1783,14 @@ extension KanaKanjiConverter {
             if isCollocationPreferredKana {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
+            // 連語の動詞側表層選好(見に行きたい の 行きたい、虫が鳴く の 鳴いてる 等)。
+            // 直前がひらがなノード(助詞/かな名詞)の時だけ安価化する — 無条件だと同じ開始
+            // 位置の別分割(ミニ+行きたい)まで恩恵を受け、連語側が149差で負けていた(2535)。
+            if isCollocationPreferredVerb,
+                prev != Self.multiClauseBOSMarker,
+                prev.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) {
+                base = min(base, Self.multiClauseKanaAdverbCost)
+            }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
             if prev.count == 1,
@@ -1861,11 +1914,15 @@ extension KanaKanjiConverter {
                     + (seedOrderNounNodeBonuses["\(node.start)-\(node.end)-\(node.surface)"] ?? 0)
                 let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
                 let nodeScriptVariantPenalty = (scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
                     : (scriptVariantDemotedNodeKeys.contains(nodeKeySV) ? 6000 : 0))
                     + (politeSupplementDemotedNodeKeys.contains(nodeKeySV)
                         ? Self.multiClausePoliteSupplementDemotion
+                        : 0)
+                    + (collocationDemotedNodeKeys.contains(nodeKeySV)
+                        ? Self.multiClauseCollocationDemotionPenalty
                         : 0)
                 let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
                 // 〜ったん の丸ごと語 vs コピュラ過去+準体助詞(定数コメント参照)
@@ -1916,6 +1973,7 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
+                        isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
                         scriptVariantPenalty: nodeScriptVariantPenalty,
                         isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
                     ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
@@ -1946,6 +2004,7 @@ extension KanaKanjiConverter {
                         prevIsInflectionDerived: prevNode.isInflectionDerived,
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
+                        isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
                         scriptVariantPenalty: nodeScriptVariantPenalty,
                         prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
                         isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
@@ -2294,8 +2353,12 @@ extension KanaKanjiConverter {
                         : false,
                     isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
                     isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
-                    scriptVariantPenalty: scriptVariantSuppressedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 100000
-                        : (scriptVariantDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 6000 : 0)
+                    isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
+                    scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 100000
+                        : (scriptVariantDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 6000 : 0))
+                        + (collocationDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                            ? Self.multiClauseCollocationDemotionPenalty
+                            : 0)
                 )
                 let outgoing: Int
                 if let nextNode {
@@ -2313,8 +2376,12 @@ extension KanaKanjiConverter {
                         prevIsInflectionDerived: node.isInflectionDerived,
                         isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
                         isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
-                        scriptVariantPenalty: scriptVariantSuppressedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 100000
-                            : (scriptVariantDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 6000 : 0)
+                        isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
+                        scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 100000
+                            : (scriptVariantDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 6000 : 0))
+                            + (collocationDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)")
+                                ? Self.multiClauseCollocationDemotionPenalty
+                                : 0)
                     )
                 } else {
                     var eosCost = transitionCost(
