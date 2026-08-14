@@ -712,6 +712,22 @@ final class KanaKanjiStore {
         return inflectionMap
     }
 
+    // メモリ内訳census用: 主要キャッシュの件数を1行で返す(メモリ警告時の診断ログ向け)。
+    // footprint 高止まりの正体切り分け(自前キャッシュ vs malloc外の常駐)に使う。
+    func diagnosticsCacheCountsSummary() -> String {
+        withCacheLock {
+            "sysDict=\(cachedSystemDictionary?.count ?? -1)"
+                + " suppl=\(cachedSupplementalSystemDictionary?.count ?? -1)"
+                + " latin=\(cachedLatinSuggestionEntries?.count ?? -1)"
+                + " latinIdx=\(cachedGenericLatinLexiconIndexByLanguage.count)"
+                + " lmUni=\(cachedWordLMUnigram.count)"
+                + " lmBi=\(cachedWordLMBigram.count)"
+                + " wc=\(cachedWordCostsByReading.count)"
+                + " infl=\(cachedInflectionDictionary?.count ?? -1)"
+                + " inflMap=\(cachedInflectionClassMapsByReading.count)"
+        }
+    }
+
     // JSON フォールバック辞書のキャッシュのみ破棄する。sqlite インデックスは保持する。
     // sqlite は mmap 未使用(PRAGMA mmap_size 未設定)で 400MB は常駐せず、close しても
     // 解放されるのはごく小さいページキャッシュのみ。一方 close すると hasWordLMMetadata が

@@ -1012,6 +1012,21 @@ extension KeyboardViewController {
             line: #line,
             function: #function
         )
+        // footprint 高止まり調査(2541): 誕生→50MB級への登り区間が320行ローテで消えて
+        // 観測できなかったため、セッション開始ごとに malloc ヒープと自前キャッシュ件数を
+        // 1行記録する(どのセッションで何が積んだかの標本化)。
+        do {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            let usedMB = Double(stats.size_in_use) / 1_048_576
+            appendKeyboardDiagnosticsLog(
+                "メモリ内訳census mallocUsedMB=\(String(format: "%.1f", usedMB))"
+                    + " \(kanaKanjiConverter.diagnosticsCacheCountsSummary())",
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
     }
 
     func finishKeyboardDiagnosticsSession(
