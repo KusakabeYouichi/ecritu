@@ -296,7 +296,10 @@ extension KanaKanjiConverter {
     // 数字直後ブースト専用の追加助数詞表層。numericCounterSuffixCandidatesByReading に
     // 足すと複合生成(第N/何N)にも波及して 第1階 等の誤生成が出るため分離する(2426)。
     static let digitContextAdditionalCounterSurfacesByReading: [String: [String]] = [
-        "かい": ["階"]
+        "かい": ["階"],
+        // 歳/才(年齢)と 菜(品数: 一汁三菜)。本表(numericCounter…)に足すと 第2歳 等の
+        // 序数誤生成に波及するため数字直後ブースト専用にする(2さい→2歳。2535)
+        "さい": ["歳", "才", "菜"]
     ]
 
     // 助数詞として使うが numericCounterSuffixCandidatesByReading には入れられない表層。
@@ -371,7 +374,10 @@ extension KanaKanjiConverter {
             .filter { !present.contains($0) && !suppressedCandidates.contains($0) }
         if let counterSurfaces = Self.digitBoostCounterSurfaces(for: reading) {
             // 助数詞マップの順(か国,箇国,…)で前置する(候補列の順ではなく人手の優先順を採用)。
-            boosted += counterSurfaces.filter { present.contains($0) }
+            // 候補列に無い助数詞も数字文脈なら供給する(抑制済みは復活させない)。
+            boosted += counterSurfaces.filter {
+                !boosted.contains($0) && (present.contains($0) || !suppressedCandidates.contains($0))
+            }
         } else {
             // 読みが「助数詞読み+かな末尾」(かい+しか/まい+ちゅう 等)なら、助数詞表層で
             // 始まる合成候補(回しか/枚中。末尾はかな素通りでも変換済みでも可)を前置する
@@ -389,9 +395,21 @@ extension KanaKanjiConverter {
                 }
                 var matched: [String] = []
                 for surface in surfaces {
-                    matched.append(contentsOf: candidates.filter {
+                    let existing = candidates.filter {
                         $0.count > surface.count && $0.hasPrefix(surface) && !matched.contains($0)
-                    })
+                    }
+                    if existing.isEmpty {
+                        // 助数詞が辞書 rank 圏外だと合成候補自体が立たない(回ぐらい 等)。
+                        // 数字文脈なら 助数詞+かな末尾 を合成供給する(抑制済みは復活させない)
+                        let synthesized = surface + tail
+                        if !candidates.contains(synthesized),
+                            !suppressedCandidates.contains(synthesized),
+                            !matched.contains(synthesized) {
+                            matched.append(synthesized)
+                        }
+                    } else {
+                        matched.append(contentsOf: existing)
+                    }
                 }
                 if !matched.isEmpty {
                     boosted += matched
@@ -403,7 +421,14 @@ extension KanaKanjiConverter {
             return candidates
         }
         let boostSet = Set(boosted)
-        return boosted + candidates.filter { !boostSet.contains($0) }
+        var rest = candidates.filter { !boostSet.contains($0) }
+        // 数字直後で助数詞が立つ文脈では、読みそのもの(かなエコー)を助数詞より前に
+        // 出したい状況が無い(2さい で さい が先頭に居座る対策)。末尾へ送る。
+        if let echoIndex = rest.firstIndex(of: reading) {
+            rest.remove(at: echoIndex)
+            rest.append(reading)
+        }
+        return boosted + rest
     }
 
     // 順序の『目』が付く語幹の末尾文字(助数詞表層の末字+番/代/丁/つ/行 等)。

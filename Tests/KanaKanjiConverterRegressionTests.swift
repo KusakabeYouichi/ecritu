@@ -220,6 +220,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ishokusuru.first, "移植する", "list=\(ishokusuru)")
     }
 
+    // 数字直後の助数詞: さい(歳/才/菜)は digitContextAdditional で供給し、かなエコーは末尾へ。
+    // 助数詞+かな末尾(かいぐらい)は合成候補が辞書 rank 圏外でも合成供給する(回ぐらい。2535)。
+    func testRegressionRealLMDigitContextCounterSupply() throws {
+        try prepareRealLMDictionary()
+
+        let sai = converter.candidates(for: "2さい", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sai.prefix(3)), ["歳", "才", "菜"], "list=\(sai)")
+        XCTAssertEqual(sai.last, "さい", "かなエコーは末尾 list=\(sai)")
+        let kaigurai = converter.candidates(for: "1かいぐらい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kaigurai.prefix(2)), ["回ぐらい", "階ぐらい"], "list=\(kaigurai)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
