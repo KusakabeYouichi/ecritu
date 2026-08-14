@@ -19,6 +19,7 @@ set -uo pipefail
 
 # Xcode pre-action 経由(ビルド設定あり)でシミュレータ向けのときは何もしない。
 if [[ -n "${PLATFORM_NAME:-}" && "${PLATFORM_NAME}" != iphoneos* ]]; then
+  echo "[keyboard-hosts] skip (PLATFORM_NAME=${PLATFORM_NAME})"
   exit 0
 fi
 
@@ -38,18 +39,30 @@ if [[ -z "${DEVICE}" ]]; then
       }')
 fi
 if [[ -z "${DEVICE}" ]]; then
+  echo "[keyboard-hosts] skip (no connected device found via devicectl)"
   exit 0
 fi
 
-PROCESSES=$(xcrun devicectl device info processes --device "${DEVICE}" 2>/dev/null) || exit 0
+if ! PROCESSES=$(xcrun devicectl device info processes --device "${DEVICE}" 2>&1); then
+  echo "[keyboard-hosts] skip (process listing failed for ${DEVICE}: ${PROCESSES:0:120})"
+  exit 0
+fi
 
+echo "[keyboard-hosts] device=${DEVICE}"
 for pattern in "${HOST_PATTERNS[@]}"; do
+  found=0
   while IFS= read -r pid; do
     [[ -n "${pid}" ]] || continue
+    found=1
     if xcrun devicectl device process terminate --device "${DEVICE}" --pid "${pid}" >/dev/null 2>&1; then
       echo "[keyboard-hosts] terminated ${pattern##*/} (pid ${pid})"
+    else
+      echo "[keyboard-hosts] terminate failed ${pattern##*/} (pid ${pid})"
     fi
   done < <(printf '%s\n' "${PROCESSES}" | awk -v p="${pattern}" '$2 ~ (p "$") { print $1 }')
+  if [[ "${found}" == "0" ]]; then
+    echo "[keyboard-hosts] ${pattern##*/} not running"
+  fi
 done
 
 exit 0
