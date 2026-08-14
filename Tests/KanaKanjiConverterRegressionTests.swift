@@ -232,6 +232,32 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(kaigurai.prefix(2)), ["回ぐらい", "階ぐらい"], "list=\(kaigurai)")
     }
 
+    // みにいきたい: 身→に bigram(541)のコーパスバイアスで 身に が独占していた。連語
+    // (み+に+いく活用)で 見 を優先し、動詞クランプは prev ひらがな限定(無条件だと
+    // ミニ+行きたい が同じ開始位置で恩恵を受けて逆転する。2535)。
+    func testRegressionRealLMMiniIkitaiPrefersMiru() throws {
+        try prepareRealLMDictionary()
+
+        let ikitai = converter.multiClauseCandidates(for: "みにいきたい", systemCandidateMode: .surface)
+        XCTAssertEqual(ikitai.first, "見に行きたい", "multi=\(ikitai)")
+        let iku = converter.multiClauseCandidates(for: "みにいく", systemCandidateMode: .surface)
+        XCTAssertEqual(iku.first, "見に行く", "multi=\(iku)")
+    }
+
+    // じしんない: bigram 皆無で unigram 順(自身4428<地震4803<自信6075)だった。連語で 自信 を
+    // 先頭に、文法的に不自然な 自身+ない は demote して 地震ない を2番目に(ユーザ指定 2535)。
+    func testRegressionRealLMJishinNaiPrefersJishin() throws {
+        try prepareRealLMDictionary()
+        // なさそう のかな表記は misc curated 由来のため実機相当の追加語彙で検証する
+        // (素の辞書だと 無さそう 表記になり表記ゆれで落ちる)。
+        try loadDeviceAddedVocabulary()
+
+        let nai = converter.multiClauseCandidates(for: "じしんない", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nai.prefix(2)), ["自信ない", "地震ない"], "multi=\(nai)")
+        let nasasou = converter.multiClauseCandidates(for: "じしんなさそう", systemCandidateMode: .surface)
+        XCTAssertEqual(nasasou.first, "自信なさそう", "multi=\(nasasou)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
