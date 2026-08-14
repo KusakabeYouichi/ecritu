@@ -457,6 +457,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // じょうず: 上図(rank0/wc7388)が 上手 に僅差で勝ち 上図にやると になっていた。
+    // seed+連文節ボーナスで LM 実勢どおり 上手 を先頭に(2543)。
+    func testRegressionRealLMJouzuPrefersJouzu() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "じょうず", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "上手", "list=\(single)")
+        let multi = converter.multiClauseCandidates(for: "じょうずにやると", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "上手にやると", "multi=\(multi)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
@@ -473,6 +484,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let list = converter.candidates(for: "はなさ", limit: 30, systemCandidateMode: .surface)
         XCTAssertNotEqual(list.first, "話さ", "list=\(list)")
+    }
+
+    // 一時DIAG(2026-08-14 バッチ3調査用。完了後に削除)
+    func testDiagnosticBatch3() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        for input in ["じょうずにやると", "けんきょさ", "おいてかれてる", "そんなんじゃ",
+                      "やってないけど", "やってないけどね", "おいてかれた", "もってかれた"] {
+            let single = converter.candidates(for: input, limit: 10, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
+            let keep = converter.shouldKeepKanaIdentityLeading(for: input)
+            print("DIAG3[\(input)] keep=\(keep) multi=\(multi.prefix(5)) single=\(single.prefix(6))")
+        }
     }
 
     func testRegressionRealLMMukashiMitanaPrefersPredicateParse() throws {
