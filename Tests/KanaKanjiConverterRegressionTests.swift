@@ -402,6 +402,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(long.contains { $0.contains("飯野") }, "multi=\(long)")
     }
 
+    // ありえない: Sudachi に あり得る が無く {アリエない, 有りえない, 有家ない, 有江ない}
+    // だった(2538)。misc の あり得る(一段)で活用を供給し、seed で並びを
+    // {あり得ない, ありえない, 有りえない} に固定。派生形(ありえなかった)も出ること。
+    func testRegressionRealLMArienaiPrefersArieru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let arienai = converter.candidates(for: "ありえない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(arienai.prefix(3)), ["あり得ない", "ありえない", "有りえない"], "list=\(arienai)")
+        let arienakatta = converter.candidates(for: "ありえなかった", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(arienakatta.first, "あり得なかった", "list=\(arienakatta)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
