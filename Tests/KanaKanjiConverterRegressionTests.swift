@@ -370,6 +370,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // かな副詞群のかな先頭化(ユーザー方針 2538)。せっかく の報告を受けた一括調査で
+    // かなが先頭でなかった16語を seed で矯正。漢字主形が2番目に残ることも代表語で確認。
+    func testRegressionRealLMKanaAdverbsPreferKana() throws {
+        try prepareRealLMDictionary()
+
+        for reading in ["せっかく", "さっそく", "いよいよ", "いったん", "きわめて", "おおむね",
+                        "つくづく", "いまさら", "めったに", "とっくに", "なにしろ", "たびたび",
+                        "のちほど", "ふだん", "たいてい", "あらためて"] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, reading, "reading=\(reading) list=\(list)")
+        }
+        let sekkaku = converter.candidates(for: "せっかく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(sekkaku.dropFirst().first, "折角", "list=\(sekkaku)")
+        let fudan = converter.candidates(for: "ふだん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(fudan.dropFirst().first, "普段", "list=\(fudan)")
+    }
+
+    // のにー(詠嘆の長音形): のに だけだと ー が余り、いいの→飯野(人名収穫)+に+ー の
+    // 分割に負けて よめればいいのにー→読めれば飯野にー になっていた(2538)。
+    // 長音なしの形が退行しないことも同時に確認する。
+    func testRegressionRealLMYomerebaIinoniLongVowel() throws {
+        try prepareRealLMDictionary()
+        // いい のかな正書は実機相当の追加語彙(curated)前提(素の辞書は 良い 表記になる)
+        try loadDeviceAddedVocabulary()
+
+        let plain = converter.multiClauseCandidates(for: "よめればいいのに", systemCandidateMode: .surface)
+        XCTAssertEqual(plain.first, "読めればいいのに", "multi=\(plain)")
+        let long = converter.multiClauseCandidates(for: "よめればいいのにー", systemCandidateMode: .surface)
+        XCTAssertEqual(long.first, "読めればいいのにー", "multi=\(long)")
+        XCTAssertFalse(long.contains { $0.contains("飯野") }, "multi=\(long)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()

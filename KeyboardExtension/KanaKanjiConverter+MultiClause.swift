@@ -59,7 +59,9 @@ extension KanaKanjiConverter {
     // (Wikipedia は名詞文体)ため、名詞側だけ bigram(宅→の 1484)で安くなり
     // 宅のが好き/核のが好き 等へ逆転する。述語形の直後に限り単位ノードを安価に
     // クランプする(名詞直後はクランプせず通常経路のまま)。
-    static let multiClauseNominalizerSurfaces: Set<String> = ["のが", "のは", "のを", "のも", "のに"]
+    // のにー は詠嘆の長音形(よめればいいのにー)。のに だけだと ー が余って
+    // いいの→飯野(人名収穫 wc9141)+に+ー の分割に負ける(2538)。
+    static let multiClauseNominalizerSurfaces: Set<String> = ["のが", "のは", "のを", "のも", "のに", "のにー"]
     static let multiClauseNominalizerAfterPredicateCost = 1200
     // 説明・詠嘆の終助詞連結「のね/のよ」。用言の辞書形述語(重い 等、inflection_classes
     // 登録)直後に限り単位ノードとして安価にする(おもいのね→重いのね)。名詞(思い)は
