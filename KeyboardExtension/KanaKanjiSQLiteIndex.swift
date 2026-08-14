@@ -26,11 +26,23 @@ final class KanaKanjiSQLiteIndex {
 
     init?(databaseURL: URL) {
         var openedDatabase: OpaquePointer?
-        let openResult = databaseURL.path.withCString { pathCString in
+        // immutable=1: 辞書はビルド生成物の読み取り専用ファイル(実機は署名済みバンドル内)で
+        // 実行中に変化しないため、SQLite にロック取得と journal/WAL 検査を一切させない。
+        // 通常の READONLY オープンだと読み取り中に SHARED ロックを取り、キーボード拡張が
+        // クエリ途中や未リセットのステートメントを抱えたままサスペンドされると、iOS が
+        // 「suspended while holding a shared file lock」= 0xDEAD10CC で強制終了する。
+        // 殺された旧インスタンスへの接続をホストアプリ(メッセージ/メモ)が再利用しようとして
+        // launch failed → Apple 純正キーボードへ silent フォールバック、が実機ログで確定した
+        // 「別キーボードが出る」事象の正体だった(2026-08-14 の統合ログで 2 時間に 3 回の
+        // 0xDEAD10CC を確認)。URI 形式は非 ASCII パス(écritu.app)があるため percent-encode する。
+        let encodedPath = databaseURL.path.addingPercentEncoding(
+            withAllowedCharacters: .urlPathAllowed
+        ) ?? databaseURL.path
+        let openResult = "file:\(encodedPath)?immutable=1".withCString { uriCString in
             sqlite3_open_v2(
-                pathCString,
+                uriCString,
                 &openedDatabase,
-                SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX,
+                SQLITE_OPEN_READONLY | SQLITE_OPEN_NOMUTEX | SQLITE_OPEN_URI,
                 nil
             )
         }
