@@ -303,6 +303,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(multi.prefix(3)), ["申し込み時", "申込時", "申込み時"], "multi=\(multi)")
     }
 
+    // すくなかった(ので): ルール定義順で 酸い族(LM未収録のレア語)が 少ない族(unigram 4804)に
+    // 先行していた。族の opt-in 昇格(はる/おく/まつ と同型)で是正(2535)。
+    func testRegressionRealLMSukunakattaPrefersSukunai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let sukunakatta = converter.candidates(for: "すくなかった", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(sukunakatta.first, "少なかった", "single=\(sukunakatta)")
+        let node = converter.multiClauseCandidates(for: "すくなかったので", systemCandidateMode: .surface)
+        XCTAssertEqual(node.first, "少なかったので", "multi=\(node)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()

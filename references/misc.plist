@@ -59,6 +59,8 @@
 	<dict><key>phrase</key><string>全会一致</string><key>shortcut</key><string>ぜんかいいっち</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- 少ない: ランキング一般則(suffix一致+500)だけでは実機の すくないなあ で 酸くない 語幹合成が残るため、curatedで全経路先頭を保証 -->
 	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>
+	<!-- 少なかった: bfs postfix が派生語幹 酸く(酸い連用形)+なかった を再合成して二重加算(+1031)し、活用族昇格だけでは届かない。頻出形の直接登録で先頭を保証 -->
+	<dict><key>phrase</key><string>少なかった</string><key>shortcut</key><string>すくなかった</string></dict>
 	<!-- 仕方ない: 辞書に在る(wc7696)が連文節で から+仕方ない の区切りが 枯らし+方+ない 分割に負ける(まけたからしかたない→負けた枯らし方ない)。curated化(連文節1500)で区切りを勝たせる -->
 	<dict><key>phrase</key><string>仕方ない</string><key>shortcut</key><string>しかたない</string><key>pos</key><string>形容詞</string></dict>
 	<!-- 被差別: Sudachi core/LM とも無い完全供給欠落(単文節は seed)。連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため curated 化(被差別部落 等) -->
