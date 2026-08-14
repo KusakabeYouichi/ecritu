@@ -4888,7 +4888,7 @@
 	<dict><key>phrase</key><string>蒸溜酒類</string><key>shortcut</key><string>じょうりゅうしゅるい</string></dict>
 	<dict><key>phrase</key><string>蒸溜釡</string><key>shortcut</key><string>じょうりゅうがま</string></dict>
 	<dict><key>phrase</key><string>蒸留</string><key>shortcut</key><string>じょうりゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>補糖</string><key>shortcut</key><string>ほとう</string></dict>
+	<dict><key>phrase</key><string>補糖</string><key>shortcut</key><string>ほとう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>補糖不可</string><key>shortcut</key><string>ほとうふか</string></dict>
 	<dict><key>phrase</key><string>補糖可</string><key>shortcut</key><string>ほとうか</string></dict>
 	<dict><key>phrase</key><string>補糖後</string><key>shortcut</key><string>ほとうご</string></dict>
