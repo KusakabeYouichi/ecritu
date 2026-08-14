@@ -198,6 +198,8 @@
 	<dict><key>phrase</key><string>なってる</string><key>shortcut</key><string>なってる</string></dict>
 	<dict><key>phrase</key><string>のか</string><key>shortcut</key><string>のか</string></dict>
 	<dict><key>phrase</key><string>だっけ</string><key>shortcut</key><string>だっけ</string></dict>
+	<!-- そんなん(「そんなの」の口語縮約): 辞書に無く 村ナンジャ/損なんじゃ 等の分割ジャンクだけになる(そんなんじゃ)。かな識別curatedで供給 -->
+	<dict><key>phrase</key><string>そんなん</string><key>shortcut</key><string>そんなん</string></dict>
 	<!-- 様態「〜なさそう」は補助形容詞「ない」でかなが正書。過剰漢字化(無さそう/莫さそう)と、だ付与時に なさ+そうだ→莫さ操舵 等へ誤分割されるのを かな全長curatedで抑える -->
 	<dict><key>phrase</key><string>なさそう</string><key>shortcut</key><string>なさそう</string></dict>
 	<dict><key>phrase</key><string>なさそうだ</string><key>shortcut</key><string>なさそうだ</string></dict>

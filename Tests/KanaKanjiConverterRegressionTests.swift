@@ -506,18 +506,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertNotEqual(list.first, "話さ", "list=\(list)")
     }
 
-    // 一時DIAG(2026-08-14 バッチ3調査用。完了後に削除)
-    func testDiagnosticBatch3() throws {
+    // やってないけどね/おいてかれてる: 連文節はかな最良を返すのに keepKana の根拠
+    // (けど+終助詞/ていかれ縮約の受身)が無く、提示層が退避して 演ってないけどね/
+    // 甥てかれてる が繰り上がっていた(2543)。
+    // そんなんじゃ: そんなん(「そんなの」の口語縮約)が辞書に無く 村ナンジャ 等の
+    // 分割ジャンクだけだった。misc curated のかな識別で供給する。
+    func testRegressionRealLMKedoneTekareSonnan() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        for input in ["じょうずにやると", "けんきょさ", "おいてかれてる", "そんなんじゃ",
-                      "やってないけど", "やってないけどね", "おいてかれた", "もってかれた"] {
-            let single = converter.candidates(for: input, limit: 10, systemCandidateMode: .surface)
-            let multi = converter.multiClauseCandidates(for: input, systemCandidateMode: .surface)
-            let keep = converter.shouldKeepKanaIdentityLeading(for: input)
-            print("DIAG3[\(input)] keep=\(keep) multi=\(multi.prefix(5)) single=\(single.prefix(6))")
-        }
+        let kedone = converter.multiClauseCandidates(for: "やってないけどね", systemCandidateMode: .surface)
+        XCTAssertEqual(kedone.first, "やってないけどね", "multi=\(kedone)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やってないけどね"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やってないけど"))
+
+        let tekare = converter.multiClauseCandidates(for: "おいてかれてる", systemCandidateMode: .surface)
+        XCTAssertEqual(tekare.first, "おいてかれてる", "multi=\(tekare)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "おいてかれてる"))
+
+        let sonnan = converter.multiClauseCandidates(for: "そんなんじゃ", systemCandidateMode: .surface)
+        XCTAssertEqual(sonnan.first, "そんなんじゃ", "multi=\(sonnan)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そんなんじゃ"))
     }
 
     func testRegressionRealLMMukashiMitanaPrefersPredicateParse() throws {
