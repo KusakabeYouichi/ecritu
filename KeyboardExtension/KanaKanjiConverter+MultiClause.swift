@@ -142,7 +142,10 @@ extension KanaKanjiConverter {
     // まつ: まって/まっている/まった が 舞う(まう)族に先を越されていた。ルール定義順が
     // う→…→つ のため 舞って が先に立つが、LM は 待つ(6049)/待ち(5928)が 舞う(6578)/
     // 舞い(7446)より優勢で、日常頻度も 待つ が上(2495)
-    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく", "まつ"]
+    // すくない: すくなかった/すくなかったので が ルール定義順で 酸い族(酸くなかった)に
+    // 先を越されていた(酸い は LM 未収録のレア語、少ない は unigram 4804 の最頻出語)。
+    // 少ない族を昇格(単文節の列挙順と連文節 b2 の両方に効く。2535)
+    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく", "まつ", "すくない"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)と読み別ボーナス値。
     // 数量詞複合(2本/二本)や分割に押されて seed 既定(日本)が沈むのを是正する。
     // a2 seed の先頭候補ノードにボーナス。既定は 800(multiClausePreferredInflectionBonus と同値)。
