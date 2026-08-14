@@ -281,6 +281,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(nanisuru.first, "何する", "list=\(nanisuru)")
     }
 
+    // 合格圏内/網脂: 実在語/複合語が連文節の分割(合格圏ない/網+油)に負ける供給欠落。
+    // misc curated で区切りを勝たせる(2535)。テストは実機相当の追加語彙をロードして検証。
+    func testRegressionRealLMDeviceVocabGoukakuKennaiAmiabura() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let kennai = converter.candidates(for: "ごうかくけんない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(kennai.first, "合格圏内", "single=\(kennai)")
+        let amiabura = converter.candidates(for: "あみあぶら", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(amiabura.first, "網脂", "single=\(amiabura)")
+        XCTAssertFalse(amiabura.contains("阿弥脂"), "single=\(amiabura)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()

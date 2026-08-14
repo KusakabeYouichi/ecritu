@@ -65,6 +65,10 @@
 	<dict><key>phrase</key><string>被差別</string><key>shortcut</key><string>ひさべつ</string><key>pos</key><string>名詞</string></dict>
 	<!-- とんかつ屋: Sudachi 未収録の複合。連文節で トン+勝谷(かつや の名前収穫)の分割に負けるため curated 化(単文節は seed でも供給) -->
 	<dict><key>phrase</key><string>とんかつ屋</string><key>shortcut</key><string>とんかつや</string><key>pos</key><string>名詞</string></dict>
+	<!-- 合格圏内: 辞書に在る(圏内 wc8004)が連文節で 合格+圏+ない 分割(合格圏ない)に負ける。curated化で区切りを勝たせる -->
+	<dict><key>phrase</key><string>合格圏内</string><key>shortcut</key><string>ごうかくけんない</string><key>pos</key><string>名詞</string></dict>
+	<!-- 網脂: Sudachi 未収録の複合(調理用語)。網+油/阿弥+油/編み+油 の合成しか出ないため curated 供給 -->
+	<dict><key>phrase</key><string>網脂</string><key>shortcut</key><string>あみあぶら</string><key>pos</key><string>名詞</string></dict>
 	<!-- これ安い: 口語の 指示詞+形容詞(これ、安い)。活用合成(来れやすい 等)しか出ず、ユーザ第一希望の これ安い が組めないため curated 供給 -->
 	<dict><key>phrase</key><string>これ安い</string><key>shortcut</key><string>これやすい</string></dict>
 	<!-- 描く は Sudachi に えがく 読みのみで かく 読みが未収録。かけば→描けば 等の活用に必要 -->
