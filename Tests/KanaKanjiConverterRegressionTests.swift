@@ -294,6 +294,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(amiabura.contains("阿弥脂"), "single=\(amiabura)")
     }
 
+    // もうしこみじ: 時(じ)は unigram 3807 の最頻出語なのに読み別 wc 6156 の床上げで
+    // 字(wc4066)に一律負けていた。短spanレア読み床の免除(むき と同型)で是正(2535)。
+    func testRegressionRealLMMoushikomiJiPrefersToki() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "もうしこみじ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(3)), ["申し込み時", "申込時", "申込み時"], "multi=\(multi)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
