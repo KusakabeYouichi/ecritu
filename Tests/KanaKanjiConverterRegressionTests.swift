@@ -468,6 +468,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "上手にやると", "multi=\(multi)")
     }
 
+    // けんきょさ: 検挙(wc6498/uni6325=Wikipediaバイアス)が 謙虚 に勝ち 検挙さ が先頭
+    // だった。さ名詞化は形容詞/形容動詞語幹にのみ成立し 検挙さ は非文法。形容動詞性を
+    // prev→な の bigram 実績(謙虚→な441、検挙→な無し)で判定して 謙虚さ を先頭に(2543)。
+    // 単文節(ブースト)と連文節(さクランプ)の両経路を検証する。
+    func testRegressionRealLMKenkyosaPrefersNaAdjective() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "けんきょさ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "謙虚さ", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "けんきょさ", systemCandidateMode: .surface)
+        if let first = multi.first {
+            XCTAssertEqual(first, "謙虚さ", "multi=\(multi)")
+        }
+        // い形容詞さ名詞化(辛さ)と サ変名詞単独(検挙)の既存挙動が退行しないこと
+        let karasa = converter.candidates(for: "からさ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(karasa.first, "辛さ", "list=\(karasa)")
+        let kenkyo = converter.candidates(for: "けんきょ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(kenkyo.first, "検挙", "list=\(kenkyo)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()

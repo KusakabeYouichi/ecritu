@@ -424,6 +424,9 @@ extension KanaKanjiConverter {
     // ゲートを「候補の語幹+い が adjective-i」に置くことで、五段サ行の未然形(話す→話さ)や
     // 単なる名詞は対象外になる。
     static let adjectiveSaBoost = 220
+    // 形容動詞さ名詞化のブースト。語幹の word_cost 差(検挙6498 vs 謙虚7798 等)を
+    // 跨いで非文法のサ変名詞+さ を確実に下へ送る(い形の220は同族間の並び用で小さい)。
+    static let naAdjectiveSaBoost = 600
     func applyAdjectiveSaBoost(
         for reading: String,
         inflectionDerivedCandidates: Set<String>,
@@ -433,24 +436,44 @@ extension KanaKanjiConverter {
             return
         }
 
+        var boosted = false
+
+        // い形容詞の連用さ名詞化(辛さ/弱さ 等)。
         let adjectiveReading = String(reading.dropLast()) + "い"
         let adjectiveClassMap = store.systemInflectionMetadata(for: adjectiveReading).classMap
-        guard !adjectiveClassMap.isEmpty else {
-            return
+        if !adjectiveClassMap.isEmpty {
+            for candidate in inflectionDerivedCandidates where candidate.hasSuffix("さ") {
+                // かな識別(からさ のまま)は素通りと同じなので対象外。
+                guard candidate != reading, containsKanji(candidate) else {
+                    continue
+                }
+                let adjectiveCandidate = String(candidate.dropLast()) + "い"
+                guard adjectiveClassMap[adjectiveCandidate] == InflectionClass.adjectiveI else {
+                    continue
+                }
+                scores[candidate, default: 0] += Self.adjectiveSaBoost
+                boosted = true
+            }
         }
 
-        var boosted = false
-        for candidate in inflectionDerivedCandidates where candidate.hasSuffix("さ") {
-            // かな識別(からさ のまま)は素通りと同じなので対象外。
-            guard candidate != reading, containsKanji(candidate) else {
-                continue
+        // 形容動詞語幹+さ(謙虚さ/便利さ)。い形容詞と違い活用メタデータでは判定できない
+        // ため、連文節の様態そうクランプと同じ prev→な の bigram 実績ゲート(2120)で
+        // 形容動詞性を判定する。サ変名詞+さ(検挙さ 等の非文法)は な が続かないので
+        // 昇格せず沈む(けんきょさ→検挙さ 対策。2543)。
+        let stemReading = String(reading.dropLast())
+        let kanjiStems = systemCandidates(for: stemReading, mode: .lesDeux).filter { containsKanji($0) }
+        if !kanjiStems.isEmpty {
+            let naCosts = store.wordLMBigramCosts(for: kanjiStems.map { ($0, "な") })
+            for stem in kanjiStems {
+                let candidate = stem + "さ"
+                guard let naCost = naCosts["\(stem)\tな"],
+                    naCost <= KanaKanjiConverter.multiClauseNaAdjectiveBigramThreshold,
+                    scores[candidate] != nil else {
+                    continue
+                }
+                scores[candidate, default: 0] += Self.naAdjectiveSaBoost
+                boosted = true
             }
-            let adjectiveCandidate = String(candidate.dropLast()) + "い"
-            guard adjectiveClassMap[adjectiveCandidate] == InflectionClass.adjectiveI else {
-                continue
-            }
-            scores[candidate, default: 0] += Self.adjectiveSaBoost
-            boosted = true
         }
 
         // かな識別(からさ)は末尾へ。から は LM で 嘉良/唐 等より低コスト(2848)なため派生の
