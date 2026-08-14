@@ -204,6 +204,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(magsafe.first, "MagSafe", "single=\(magsafe)")
     }
 
+    // はつえんとう/じゅうよう/いしょく: word_cost タイ(または LM 実勢との逆転)を辞書 rank 順が
+    // 決めていた3件を seed で矯正(2535)。いしょくする は合成時に LM が効くため元から正しい
+    // 順だったこと(経路差)も回帰で固定する。
+    func testRegressionRealLMWordCostTieSeedOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let hatsuentou = converter.candidates(for: "はつえんとう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(hatsuentou.prefix(2)), ["発煙筒", "発炎筒"], "list=\(hatsuentou)")
+        let juuyou = converter.candidates(for: "じゅうよう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(juuyou.prefix(2)), ["重要", "重用"], "list=\(juuyou)")
+        let ishoku = converter.candidates(for: "いしょく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(ishoku.first, "移植", "list=\(ishoku)")
+        let ishokusuru = converter.candidates(for: "いしょくする", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(ishokusuru.first, "移植する", "list=\(ishokusuru)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
