@@ -192,6 +192,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // ものれいる→モノレイル(sacoche)/まぐせいふ→MagSafe(it)の語彙追加(2535)。
+    // モノレイル は追加語彙ロード、MagSafe は補助語彙(SecondVocab)経由で出ること。
+    func testRegressionRealLMVocabMonoreiluMagSafe() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let monoreilu = converter.candidates(for: "ものれいる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(monoreilu.first, "モノレイル", "single=\(monoreilu)")
+        let magsafe = converter.candidates(for: "まぐせいふ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(magsafe.first, "MagSafe", "single=\(magsafe)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()

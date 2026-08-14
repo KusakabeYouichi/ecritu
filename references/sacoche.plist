@@ -372,6 +372,7 @@
 	        <dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
 	        <dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
 	        <dict><key>phrase</key><string>デヴァイス</string><key>shortcut</key><string>でゔぁいす</string></dict>
+	        <dict><key>phrase</key><string>モノレイル</string><key>shortcut</key><string>ものれいる</string></dict>
 	        <dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
 	<!--既存<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict> -->
 	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
