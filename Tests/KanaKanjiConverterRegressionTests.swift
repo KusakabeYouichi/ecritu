@@ -418,6 +418,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(arienakatta.first, "あり得なかった", "list=\(arienakatta)")
     }
 
+    // たまには: 玉+には に負けていた(2540)。たまに をかな副詞集合+seed かな先頭にし、
+    // keepKana(かな副詞+助詞1字)で提示層の退避も防ぐ。
+    // こめは: postfix 基底順が dict rank(コメ rank0)のままで {こめは, 混めは, 込めは, コメは,
+    // 米は} だった。seed こめ=[米, コメ] で {米は, コメは} を先頭群に。
+    // りょうりうまい: 上手い が bigram 料理→上手(じょうず読みの統計)を読み跨ぎ借用して
+    // 料理上手い が先頭だった。seed 順 opt-in ボーナスで かな うまい を勝たせる。
+    func testRegressionRealLMTamanihaKomehaRyouriumai() throws {
+        try prepareRealLMDictionary()
+
+        let tamaniha = converter.multiClauseCandidates(for: "たまには", systemCandidateMode: .surface)
+        XCTAssertEqual(tamaniha.first, "たまには", "multi=\(tamaniha)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "たまには"))
+        let tamani = converter.candidates(for: "たまに", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(tamani.first, "たまに", "list=\(tamani)")
+
+        let komeha = converter.candidates(for: "こめは", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(komeha.prefix(2)), ["米は", "コメは"], "list=\(komeha)")
+
+        let umai = converter.multiClauseCandidates(for: "りょうりうまい", systemCandidateMode: .surface)
+        XCTAssertEqual(umai.first, "料理うまい", "multi=\(umai)")
+        let umaiSingle = converter.candidates(for: "うまい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(umaiSingle.first, "うまい", "list=\(umaiSingle)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()

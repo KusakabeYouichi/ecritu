@@ -1073,6 +1073,14 @@ final class KanaKanjiConverter {
             ["こと", "とき", "もの", "ため"].contains(String(normalized.dropLast())) {
             return true
         }
+        // かな正書の副詞(たまに 等=multiClauseKanaAdverbReadings)+助詞1字も同型
+        // (たまには→玉には の繰り上がり対策。2540)。語幹は明示集合限定なので巻き込みなし。
+        if normalized.count >= 3,
+            let last = normalized.last,
+            "でにをがはもとへ".contains(last),
+            KanaKanjiConverter.multiClauseKanaAdverbReadings.contains(String(normalized.dropLast())) {
+            return true
+        }
         // 否定の連用 なく を剥がして再帰(ことでもなく→ことでも)。なく は seed かな先頭の
         // 頻出かな(2442)。漢字正書の語幹に発火しても keepKana は維持のみで実害なし。
         if normalized.count > 2, normalized.hasSuffix("なく") {
