@@ -330,6 +330,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "それぐらいやるよ"))
     }
 
+    // こういうのみかけたら: のみ(飲み)始まりの丸ごと活用(飲み掛けたら)が bigram で先行し、
+    // こういうの+見かけたら の名詞化が出なかった。連体詞直後の準体助詞 の クランプ+
+    // の直後の活用派生の連語選好で是正(2535)。
+    func testRegressionRealLMKouiuNoMikaketara() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "こういうのみかけたら", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "こういうの見かけたら", "multi=\(multi)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
