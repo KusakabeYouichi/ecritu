@@ -944,6 +944,11 @@ final class KanaKanjiConverter {
                     || (store.userDictionary()[stem] ?? []).contains(stem) {
                 return true
             }
+            // かな機能語クラスタ(のに/のは 等の準体助詞+助詞)も語幹の根拠(のになあ→のに。
+            // 辞書にエントリが無く systemCandidates では拾えない。2535)
+            if Self.multiClauseNominalizerSurfaces.contains(stem) {
+                return true
+            }
             // い形容詞のかな過去(よかった/すごかった 等)は活用形なので辞書エントリでは拾えない。
             // Xかった→基底 X+い に脱活用して基底が辞書のかな語なら根拠あり(よかったな→よかった→
             // よい)。keepKana は「既にかな先頭の候補を維持するだけ」で昇格はしないため、漢字正書の
@@ -1028,6 +1033,21 @@ final class KanaKanjiConverter {
         for auxiliary in ["まくり", "まくる", "まくった", "まくって", "まくれ"]
         where normalized.count > auxiliary.count && normalized.hasSuffix(auxiliary) {
             return true
+        }
+        // 指示代名詞(それ/これ 等)始まりの句は、続く副助詞(ぐらい/だけ 等、任意)を剥がした
+        // 残りがかな維持の根拠を持つなら維持(それぐらいやるよ→やるよ→やる=辞書かな語。
+        // 反れ/剃れ の活用が提示層で繰り上がるのを防ぐ。2535)。
+        for pronoun in KanaKanjiConverter.kanaOrthographyDemonstrativePronounStems
+        where normalized.count > pronoun.count && normalized.hasPrefix(pronoun) {
+            var remainder = String(normalized.dropFirst(pronoun.count))
+            for particle in ["ぐらい", "くらい", "だけ", "まで", "でも", "なら", "こそ", "ばかり", "ほど"]
+            where remainder.count > particle.count && remainder.hasPrefix(particle) {
+                remainder = String(remainder.dropFirst(particle.count))
+                break
+            }
+            if remainder.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: remainder) {
+                return true
+            }
         }
         // かな正書の副詞(せめて 等=multiClauseKanaAdverbReadings)で始まる全かな句は、残りが
         // かな維持の根拠を持つか指示代名詞始まりなら維持(せめてこれぐらい。2513)。

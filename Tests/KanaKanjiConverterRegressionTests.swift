@@ -315,6 +315,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(node.first, "少なかったので", "multi=\(node)")
     }
 
+    // のになあ/それぐらいやるよ: エンジンはかな最良を返すのに keepKana の根拠が無く、提示層が
+    // 先頭かなを退避して 乃になあ/反れぐらいやるよ が繰り上がっていた(2535)。
+    // かな先頭化の修正には keepKana assert を必ず併記する(定番の再発点)。
+    func testRegressionRealLMKanaIdentityNoniNaaSoreguraiYaruyo() throws {
+        try prepareRealLMDictionary()
+
+        let noninaa = converter.candidates(for: "のになあ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(noninaa.first, "のになあ", "single=\(noninaa)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "のになあ"))
+
+        let yaruyo = converter.multiClauseCandidates(for: "それぐらいやるよ", systemCandidateMode: .surface)
+        XCTAssertEqual(yaruyo.first, "それぐらいやるよ", "multi=\(yaruyo)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "それぐらいやるよ"))
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
