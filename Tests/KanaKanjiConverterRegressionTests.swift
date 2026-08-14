@@ -258,6 +258,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(nasasou.first, "自信なさそう", "multi=\(nasasou)")
     }
 
+    // かたん: 下端 を先頭に(ユーザ指定 2535。設計/工作で頻用)。単文節は seed 順、連文節
+    // (かたんぐらい)は seed 順 opt-in ボーナスで 勝たん(活用OOV)/加担 を逆転する。
+    func testRegressionRealLMKatanPrefersKatan() throws {
+        try prepareRealLMDictionary()
+
+        let katan = converter.candidates(for: "かたん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(katan.prefix(2)), ["下端", "加担"], "list=\(katan)")
+        let gurai = converter.multiClauseCandidates(for: "かたんぐらい", systemCandidateMode: .surface)
+        XCTAssertEqual(gurai.first, "下端ぐらい", "multi=\(gurai)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
