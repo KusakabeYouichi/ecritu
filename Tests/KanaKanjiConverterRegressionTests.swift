@@ -269,6 +269,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(gurai.first, "下端ぐらい", "multi=\(gurai)")
     }
 
+    // うめの(読み3文字=連文節対象外): 梅の(合成)が postfix 派生の活用群に埋もれていた。
+    // seed 供給で 梅の/梅野 を先頭群に、かな うめの は後方へ自然降格(2535)。
+    // なにする: 何する が供給されず な+にする の postfix 分割だけだった。seed 供給(2535)。
+    func testRegressionRealLMUmenoNanisuruSeedSupply() throws {
+        try prepareRealLMDictionary()
+
+        let umeno = converter.candidates(for: "うめの", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(umeno.prefix(2)), ["梅の", "梅野"], "list=\(umeno)")
+        let nanisuru = converter.candidates(for: "なにする", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(nanisuru.first, "何する", "list=\(nanisuru)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
