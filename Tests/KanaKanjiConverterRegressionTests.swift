@@ -340,6 +340,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "こういうの見かけたら", "multi=\(multi)")
     }
 
+    // ほとう: vin 由来の 補糖(既定 wc11000)が、補助語彙昇格の LM 実在語ゲート(浦東)と
+    // 収穫底値降格の二重で7番目に沈んでいた。seed 掲載で免除+先頭化(2537)。
+    func testRegressionRealLMHotouPrefersHotou() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "ほとう", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "補糖", "list=\(list)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
