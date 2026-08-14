@@ -349,6 +349,10 @@ extension KanaKanjiConverter {
     // 連語の demotedSurfaces に課すペナルティ。自身(4428)を 地震(4803)の後ろへ送るのに
     // 十分で、候補から消すほどではない中庸値。
     static let multiClauseCollocationDemotionPenalty = 800
+    // 準体助詞 の のクランプ対象になる連体詞表層(こういうの/そういうの 等の名詞化)。
+    static let multiClausePrenominalAdjectivalSurfaces: Set<String> = [
+        "こういう", "そういう", "ああいう", "どういう"
+    ]
     static let multiClauseKanaAdverbCost = 4000
     // オノマトペ「〜っと」クランプの誤爆除外: かな副詞(もっと/ちょっと 等)が別語の後ろに
     // 続く区間(ふらんすはもっと/どいつはもっと 等)も「4文字以上の全かな+っと終わり」に
@@ -828,6 +832,8 @@ extension KanaKanjiConverter {
         var collocationPreferredKanaNodeKeys = Set<String>()
         var collocationPreferredVerbNodeKeys = Set<String>()
         var collocationDemotedNodeKeys = Set<String>()
+        // 連体詞(こういう 等)+準体助詞 の の直後(=活用派生が述語として自然な位置)。
+        var prenominalNoInflectionStarts = Set<Int>()
         // 連語の動詞側表層選好(虫がないてる→鳴いてる 等)。連語検出時に動詞区間の開始位置と
         // 優先表層プレフィクスを記録し、その位置から始まる合致表層に連語クランプを与える。
         var collocationPreferredVerbSurfacePrefixesByStart = [Int: String]()
@@ -1011,6 +1017,14 @@ extension KanaKanjiConverter {
                             }
                         }
                     }
+                }
+
+                // 連体詞+の の直後を記録(こういうのみかけたら)。の のクランプだけでは、
+                // 丸ごと活用(飲み掛けたら=のみかけたら)との OOV 同点で の のノード代分だけ
+                // 構造的に負けるため、直後の活用派生も連語選好(prevひらがな限定クランプ)にする。
+                if segmentReading == "の", start >= 4,
+                    Self.multiClausePrenominalAdjectivalSurfaces.contains(String(chars[(start - 4)..<start])) {
+                    prenominalNoInflectionStarts.insert(end)
                 }
 
                 let segmentEndsWithSokuon = segmentReading.hasSuffix("っ")
@@ -1369,6 +1383,9 @@ extension KanaKanjiConverter {
                         surface.hasPrefix(preferredVerbPrefix) {
                         collocationPreferredVerbNodeKeys.insert("\(start)-\(end)-\(surface)")
                     }
+                    if isInflectionDerived, prenominalNoInflectionStarts.contains(start) {
+                        collocationPreferredVerbNodeKeys.insert("\(start)-\(end)-\(surface)")
+                    }
                     let index = nodes.count
                     nodes.append(MultiClauseNode(
                         start: start,
@@ -1694,6 +1711,17 @@ extension KanaKanjiConverter {
                 surface == reading,
                 Self.multiClauseNominalizerSurfaces.contains(surface),
                 prev.last.map({ Self.multiClausePredicateTailCharacters.contains($0) }) ?? false {
+                base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
+            }
+            // 連体詞(こういう/そういう 等)直後の準体助詞 の(こういうの+見かけたら)。
+            // のみ(飲み)始まりの別分割が bigram で先行するため、の を名詞化節と同じ水準に
+            // クランプして正しい区切りを通す(こういうのみかけたら 対策。2535)。
+            // こういう は単一ノードでなく こう+いう の2ノードで来るため、prev は いう も対象
+            // (X+いう+の の言い回し「〜というの」も同じ名詞化で正当)。
+            if prev != Self.multiClauseBOSMarker,
+                surface == "の",
+                reading == "の",
+                prev == "いう" || Self.multiClausePrenominalAdjectivalSurfaces.contains(prev) {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
             // 願望の ほしい/欲しい は て形等の述語直後が正書(買ってほしい)。名詞直後
