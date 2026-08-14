@@ -363,6 +363,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         if let first = multi.first {
             XCTAssertEqual(first, "ためではない", "multi=\(multi)")
         }
+        // エンジンがかな最良でも keepKana が無いと提示層が退避して 為ではない が繰り上がる
+        // (実機で再発した定番。かな先頭化には keepKana assert を必ず併記する)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ためではない"))
         let tameta = converter.candidates(for: "ためた", limit: 8, systemCandidateMode: .surface)
         XCTAssertTrue(
             tameta.contains { $0.hasPrefix("溜め") || $0.hasPrefix("貯め") },
