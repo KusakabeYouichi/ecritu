@@ -155,7 +155,10 @@ extension KanaKanjiConverter {
     // なっていた。seed 掲載語を一律免除する案は いくのが好き/いるので/うちで水を使う/
     // とり忘れてる 等7件が退行したため不可(2499)。
     static let multiClauseRareReadingFloorExemptSurfacesByReading: [String: Set<String>] = [
-        "むき": ["向き"]
+        "むき": ["向き"],
+        // 時(じ) は unigram 3807 の最頻出語なのに読み別 wc 6156 で床上げされ、字(wc4066)に
+        // 一律負けて 申し込み時 が 申し込み字 になっていた(名詞+時 接尾の一般対策。2535)
+        "じ": ["時"]
     ]
 
     static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
