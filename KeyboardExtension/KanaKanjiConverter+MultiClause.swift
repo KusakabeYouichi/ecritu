@@ -218,6 +218,12 @@ extension KanaKanjiConverter {
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
     static let multiClauseNaAdjectiveBigramThreshold = 2000
+    // 形容動詞語幹直後の名詞化 さ のクランプ。語幹の unigram 差(検挙6325 vs 謙虚7005 等)を
+    // 確実に跨ぐ強い値(さ は元から安く 1200 では差が出ない)。
+    static let multiClauseNaAdjectiveSaCost = 400
+    // 読み末尾 さ のときの形容動詞語幹ノードへのボーナス。語幹 unigram 差(680)+
+    // される分割由来 bigram(検挙→さ532)を、さクランプ(400)込みで確実に跨ぐ値。
+    static let multiClauseNaAdjectiveSaStemBonus = 1200
     // カ変「来る」の活用形(読み→漢字表層)。活用供給順で一段動詞の後に沈むため連文節に
     // 明示供給する。北/着た 等の同音とは競合し LM が文脈で選ぶ(単独 きた→北 は不変)。
     // 単文節の kuruInflectionForms(きてしまいました→来てしまいました 等の複合尾を含む)から
@@ -1770,6 +1776,18 @@ extension KanaKanjiConverter {
                 naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
+            // 名詞化の さ も同じゲート(謙虚さ/便利さ)。形容動詞語幹+さ は正書だが、
+            // サ変名詞+さ(検挙さ 等)は非文法。prev→な の実績がある語幹の直後だけ
+            // さ を安価化して、けんきょさ→検挙さ の乗っ取りを防ぐ(2543)。
+            // さ は元から安い(1200のクランプでは語幹の unigram 差 検挙6325 vs 謙虚7005 を
+            // 跨げない)ため専用の強い値を使う。
+            if surface == "さ",
+                reading == "さ",
+                prev != Self.multiClauseBOSMarker,
+                let naCost = store.wordLMBigramCosts(for: [(prev, "な")])["\(prev)\tな"],
+                naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
+                base = min(base, Self.multiClauseNaAdjectiveSaCost)
+            }
             // 説明・詠嘆の のね/のよ は辞書形述語(ノードフラグ)直後のみ安価にクランプ
             // (定数コメント参照)。表層末尾文字では名詞 思い と形容詞 重い を区別できない
             // ため、こちらは inflection_classes 由来のフラグでゲートする。
@@ -1959,10 +1977,25 @@ extension KanaKanjiConverter {
             for idx in nodesEndingAt[boundary] {
                 let node = nodes[idx]
                 // スパン先頭(seed/辞書順で最優先)の活用形へのボーナス(定数コメント参照)。
+                // 読み末尾が名詞化の さ のとき、形容動詞語幹(語幹→な の bigram 実績)ノードへ
+                // ボーナス。される 分割由来の安い bigram(検挙→さ532 等)を持つサ変名詞は
+                // さ側のクランプだけでは勝てない(語幹差+bigram差 > クランプ余地)ための補完。
+                // 読み途中の さ(けんきょされた 等の受身)は末尾条件で対象外(2543)。
+                let naAdjectiveSaStemBonus: Int
+                if normalized.hasSuffix("さ"),
+                    node.end == n - 1,
+                    containsKanji(node.surface),
+                    let naCost = store.wordLMBigramCosts(for: [(node.surface, "な")])["\(node.surface)\tな"],
+                    naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
+                    naAdjectiveSaStemBonus = Self.multiClauseNaAdjectiveSaStemBonus
+                } else {
+                    naAdjectiveSaStemBonus = 0
+                }
                 let preferredInflectionBonus = (preferredInflectedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                     ? Self.multiClausePreferredInflectionBonus
                     : 0)
                     + (seedOrderNounNodeBonuses["\(node.start)-\(node.end)-\(node.surface)"] ?? 0)
+                    + naAdjectiveSaStemBonus
                 let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                 let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
