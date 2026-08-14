@@ -155,6 +155,16 @@ final class KanaKanjiConverter {
         }
     }
 
+    // メモリ内訳census用: converter 側キャッシュの件数+store 側の要約を1行で返す。
+    func diagnosticsCacheCountsSummary() -> String {
+        let converterPart = stateQueue.sync {
+            "cand=\(candidateCache.count)"
+                + " kanaLead=\(kanaIdentityLeadingCache.count)"
+                + " multiInfl=\(multiClauseInflectionCache.count)"
+        }
+        return converterPart + " " + store.diagnosticsCacheCountsSummary()
+    }
+
     func preloadSharedDataCachesIfNeeded() {
         _ = store.userDictionary()
         _ = store.learnedDictionary()

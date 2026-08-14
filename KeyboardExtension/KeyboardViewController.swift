@@ -753,6 +753,24 @@ final class KeyboardViewController: UIInputViewController {
         }
         diagnosticsState.memoryWarningCountThisSession += 1
         logLiveControllerCensus(trigger: "memoryWarning")
+        // footprint 高止まり(安静時51MB級)の正体切り分け: malloc ヒープの実使用量と
+        // 自前キャッシュの件数を記録する。mallocUsed が小さいのに footprint が大きければ
+        // ヒープ外(描画層/IOSurface/圧縮メモリ 等)、大きければ自前かライブラリの蓄積。
+        do {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            let usedMB = Double(stats.size_in_use) / 1_048_576
+            let allocatedMB = Double(stats.size_allocated) / 1_048_576
+            appendKeyboardDiagnosticsLog(
+                "メモリ内訳census mallocUsedMB=\(String(format: "%.1f", usedMB))"
+                    + " mallocAllocMB=\(String(format: "%.1f", allocatedMB))"
+                    + " \(kanaKanjiConverter.diagnosticsCacheCountsSummary())",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
         // メモリ切迫の可視化(でばぐ表示): かな削除キーの背景色に反映する。
         candidateBarModel.memoryWarningCountForDebugDisplay = diagnosticsState.memoryWarningCountThisSession
         persistBufferedKeyboardDiagnostics()
