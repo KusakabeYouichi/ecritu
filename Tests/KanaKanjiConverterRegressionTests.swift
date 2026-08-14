@@ -442,6 +442,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(umaiSingle.first, "うまい", "list=\(umaiSingle)")
     }
 
+    // しめで: 派生基底順で 沁めで/浸目で/染めで が先行していた。seed で
+    // {締めで, しめで, 〆で} に固定(2543)。単独 しめ の 〆 は exactReadingOnly の
+    // 末尾供給のまま変わらないことも確認する。
+    func testRegressionRealLMShimedeOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let shimede = converter.candidates(for: "しめで", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(shimede.prefix(3)), ["締めで", "しめで", "〆で"], "list=\(shimede)")
+        let shime = converter.candidates(for: "しめ", limit: 24, systemCandidateMode: .surface)
+        XCTAssertTrue(shime.contains("〆"), "list=\(shime)")
+        if let mark = shime.firstIndex(of: "〆") {
+            XCTAssertGreaterThan(mark, shime.count / 2, "〆 は後方のまま list=\(shime)")
+        }
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
