@@ -434,6 +434,24 @@ extension KeyboardViewController {
                     appendLog: true
                 )
 
+                // 絵文字モードはピッカー構築で footprint が跳ねる。長寿命プロセスが高水位の
+                // まま切り替えると per-process limit の jetsam で即死する(2026-08-14 17:01
+                // 実測: footprint 63MB 圏で latin→emoji 切替直後に jetsam(1)
+                // per-process-limit(7)。この kill は iOS がレポートを non-actionable として
+                // 破棄するため .ips も残らない)。高水位なら先に再構築可能な dirty キャッシュ
+                // (LM/word_costs/JSON辞書系。欧文辞書本体は mmap でfootprint非寄与)を落として
+                // 余白を作る。sqlite は保持されるので変換は劣化せず、キャッシュは次の利用時に
+                // 遅延再構築される。
+                if mode == .emoji,
+                    let footprintMB = self.currentFootprintMB(),
+                    footprintMB >= 50 {
+                    self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
+                    self.updateKeyboardDiagnosticsHeartbeat(
+                        event: "絵文字モード切替前にキャッシュ解放 footprintMB=\(String(format: "%.1f", footprintMB))",
+                        appendLog: true
+                    )
+                }
+
                 if mode != .kana {
                     self.clearComposingState()
                 }
