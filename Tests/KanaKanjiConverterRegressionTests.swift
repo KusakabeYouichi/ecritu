@@ -529,6 +529,60 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そんなんじゃ"))
     }
 
+    // LM優位辞書候補の一般昇格(applyLMDominantDictCandidateBoost、2545): 一括スイープで
+    // 常用語1218読みがレア語の辞書rank順に埋もれていた構造問題の対応。ゲート
+    // (常用語uni≦6800/差≧1200/主読み判定)と、seed・curated・かな首位化の各レイヤーが
+    // 上位に残ることを代表例で固定する。
+    func testRegressionRealLMDominantDictCandidateBoost() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        // 埋もれていた常用語が先頭へ
+        XCTAssertEqual(converter.candidates(for: "こうどう", limit: 8, systemCandidateMode: .surface).first, "行動")
+        XCTAssertEqual(converter.candidates(for: "せいゆう", limit: 8, systemCandidateMode: .surface).first, "声優")
+        XCTAssertEqual(converter.candidates(for: "かいほう", limit: 8, systemCandidateMode: .surface).first, "解放")
+        // 読み跨ぎの誤昇格ガード: 宇宙(たかおき=人名読みハーベスト)は主読み判定で昇格しない
+        let takaoki = converter.candidates(for: "たかおき", limit: 8, systemCandidateMode: .surface)
+        XCTAssertNotEqual(takaoki.first, "宇宙", "list=\(takaoki)")
+        // curated レイヤーはこの機構より上位のまま(へいき→平気 のユーザー矯正が勝つ)
+        let heiki = converter.candidates(for: "へいき", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(heiki.first, "平気", "list=\(heiki)")
+    }
+
+    // LM順乖離スイープ第2段(常設ハーネス): tools/audit_lm_rank_mismatch.py の出力を
+    // 実変換に通し、LM最良候補が上位2位に出ない読みだけを SWEEPNG 行で報告する。
+    // 4千変換で数十秒〜2分かかるため通常のスイートではスキップし、
+    // TEST_RUNNER_SWEEP=1 のときだけ実行する(機械的チェックの定期実行用)。
+    func testDiagnosticLMRankMismatchSweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP"] != nil else {
+            throw XCTSkip("SWEEP=1(xcodebuild には TEST_RUNNER_SWEEP=1)のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/lm_rank_mismatch.tsv")
+        guard FileManager.default.fileExists(atPath: tsvURL.path) else {
+            throw XCTSkip("先に tools/audit_lm_rank_mismatch.py を実行して TSV を生成すること")
+        }
+        let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        var checked = 0
+        var ngCount = 0
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 6 else { continue }
+            let reading = String(cols[0])
+            let expected = String(cols[1])
+            let gap = String(cols[5])
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            checked += 1
+            if !list.prefix(2).contains(expected) {
+                ngCount += 1
+                print("SWEEPNG\t\(reading)\t\(expected)\tgap=\(gap)\ttop=\(list.prefix(4))")
+            }
+        }
+        print("SWEEP done checked=\(checked) ng=\(ngCount)")
+    }
+
     func testRegressionRealLMMukashiMitanaPrefersPredicateParse() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["みたな": ["美多奈"]])
@@ -4701,7 +4755,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         let single = converter.candidates(for: "かいそう", limit: 8, systemCandidateMode: .surface)
         XCTAssertFalse(single.contains(where: { ["解そう", "会そう", "介そう"].contains($0) }), "single=\(single)")
-        XCTAssertEqual(single.first, "海藻", "single=\(single)")
+        // LM優位辞書候補の一般昇格(2545)で 階層(LM 4787級)が 海藻 の上に来た。
+        // どちらも妥当な常用語なので先頭2件に両方が居ることを固定する。
+        XCTAssertEqual(Set(single.prefix(2)), Set(["海藻", "階層"]), "single=\(single)")
         // 真正五段の意向形は維持
         XCTAssertEqual(converter.candidates(for: "はなそう", limit: 4, systemCandidateMode: .surface).first, "話そう")
         XCTAssertTrue(converter.candidates(for: "かこう", limit: 6, systemCandidateMode: .surface).contains("書こう"))
@@ -7379,8 +7435,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let akasaki = converter.candidates(for: "あかさき", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(akasaki.first, "赤崎", "akasaki=\(akasaki)")
         // 語LM実在の一般語がある読みは従来どおり(昇格しない)
+        // なか は LM優位辞書候補の一般昇格(2545)で 中(uni3674)が先頭になった。
+        // 名詞 中 が先頭は標準的な期待値なので改善として固定する
         for (reading, expected) in [
-            ("にほん", "日本"), ("じん", "人"), ("なか", "なか"),
+            ("にほん", "日本"), ("じん", "人"), ("なか", "中"),
             ("ぎんこう", "銀行"), ("よね", "よね"), ("から", "から")
         ] {
             let single = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)

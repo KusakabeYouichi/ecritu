@@ -560,6 +560,19 @@ final class KanaKanjiConverter {
         // 抑制語彙はステージ4で除去されるが、スクリプト種の比較グループ(LM首位化・
         // カタカナ保護)には抑制前のジャンク(市市 等)が混ざると誤判定するため先に除く。
         let suppressed = context.suppressedCandidatesByReading[context.reading] ?? []
+        // LM 圧倒的最良の辞書候補を rank0 の上へ(一般機構 2545。ゲートは定数コメント参照)。
+        // 追加語彙/学習語彙がある読みはユーザーの矯正済み(へいき→平気 等)なので触らない —
+        // 昇格目標が rank0 の現スコア(curated 2400 込み)基準のため、ここで弾かないと
+        // LM 優位の同音語(兵器)が curated を跨いで先頭化してしまう。
+        if context.userCandidates.isEmpty, context.learnedCandidates.isEmpty {
+            applyLMDominantDictCandidateBoost(
+                for: context.reading,
+                systemCandidates: suppressed.isEmpty
+                    ? context.systemCandidates
+                    : context.systemCandidates.filter { !suppressed.contains($0) },
+                to: &scores
+            )
+        }
         applySameReadingScriptPreference(
             for: context.reading,
             systemCandidates: suppressed.isEmpty
