@@ -423,10 +423,72 @@ extension KanaKanjiConverter {
     // して実在するときだけ、その派生候補を辞書語と同じ 1200 相当まで持ち上げる。
     // ゲートを「候補の語幹+い が adjective-i」に置くことで、五段サ行の未然形(話す→話さ)や
     // 単なる名詞は対象外になる。
+    // LM 圧倒的最良の辞書候補を rank0 の上へ出す一般機構(2544)のゲート値。
+    // 一括スイープ(tools/audit_lm_rank_mismatch.py)で、常用語(行動/思想/更新/解放 等
+    // 1218読み)がレア語の辞書 rank 順に埋もれたままと判明した。従来は げんかい/いがい/
+    // いしょく 等を1件ずつ seed 矯正していた氷山の一角問題の構造対応。
+    // - 最良候補の unigram がこの値以下(=会話でも使う常用語)
+    static let lmDominantDictBoostMaxBestUnigram = 6800
+    // - rank0 の unigram との差がこの値以上(または rank0 が LM 未収録)
+    static let lmDominantDictBoostMinGap = 1200
+    // - 読み跨ぎの誤昇格(宇宙=たかおき 等)を防ぐ: この読みの word_cost が
+    //   表層の全読み最安からこの値以内(=主読み)であること
+    static let lmDominantDictBoostMaxReadingGap = 500
     static let adjectiveSaBoost = 220
     // 形容動詞さ名詞化のブースト。語幹の word_cost 差(検挙6498 vs 謙虚7798 等)を
     // 跨いで非文法のサ変名詞+さ を確実に下へ送る(い形の220は同族間の並び用で小さい)。
     static let naAdjectiveSaBoost = 600
+    // LM 圧倒的最良の辞書候補を rank0 の上へ(ゲート定数のコメント参照)。
+    // 辞書層(1200)内での並び替えなので、curated(2400)/学習(2280)のユーザー明示矯正には
+    // 勝たない。seed 掲載読みは人手の並び指定を尊重して対象外。かな識別は既存の
+    // かな首位化(applySameReadingScriptPreference)が担当するため対象外。
+    func applyLMDominantDictCandidateBoost(
+        for reading: String,
+        systemCandidates: [String],
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 2,
+            systemCandidates.count >= 2,
+            KanaKanjiSeedDictionary.seed[reading] == nil else {
+            return
+        }
+
+        let rank0 = systemCandidates[0]
+        let unigrams = store.wordLMUnigramCosts(for: systemCandidates)
+        var best: (surface: String, uni: Int)?
+        for candidate in systemCandidates where candidate != reading {
+            guard let uni = unigrams[candidate] else { continue }
+            if best == nil || uni < best!.uni {
+                best = (candidate, uni)
+            }
+        }
+        guard let best,
+            best.surface != rank0,
+            best.uni <= Self.lmDominantDictBoostMaxBestUnigram else {
+            return
+        }
+        if let rank0Uni = unigrams[rank0],
+            rank0Uni - best.uni < Self.lmDominantDictBoostMinGap {
+            return
+        }
+        // 読み跨ぎの誤昇格(宇宙=たかおき 等、別読みの主表層が LM を持ち込む)を防ぐ:
+        // この読みの word_cost が表層の全読み最安に近い(=主読み)場合だけ昇格する。
+        // word_cost 記録なし(こうげん の 光源 型=データ欠落)は主読みとみなす。
+        if let wc = store.wordCosts(for: reading)[best.surface],
+            let minWc = store.candidateMinWordCosts(for: [best.surface])[best.surface],
+            wc - minWc > Self.lmDominantDictBoostMaxReadingGap {
+            return
+        }
+
+        // アンカーは rank0 でなく辞書候補群の現最高スコア(rank0 が調整で2位以下に居る
+        // 読み=こうしん の 香信 等でも、確実に辞書層の先頭へ出すため)。
+        let dictTop = systemCandidates.compactMap { scores[$0] }.max() ?? 0
+        let target = dictTop + 40
+        if scores[best.surface, default: 0] < target {
+            scores[best.surface] = target
+        }
+    }
+
     func applyAdjectiveSaBoost(
         for reading: String,
         inflectionDerivedCandidates: Set<String>,
