@@ -446,8 +446,12 @@ extension KeyboardViewController {
                     let footprintMB = self.currentFootprintMB(),
                     footprintMB >= 50 {
                     self.kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
+                    // free 済み dirty ページも OS へ返す(census 実測でアリーナ保持が
+                    // footprint の主成分だったため。メモリ警告時と同じ処方)
+                    malloc_zone_pressure_relief(nil, 0)
                     self.updateKeyboardDiagnosticsHeartbeat(
-                        event: "絵文字モード切替前にキャッシュ解放 footprintMB=\(String(format: "%.1f", footprintMB))",
+                        event: "絵文字モード切替前にキャッシュ解放 footprintMB=\(String(format: "%.1f", footprintMB))"
+                            + "→\(self.diagnosticsFootprintMBText())",
                         appendLog: true
                     )
                 }

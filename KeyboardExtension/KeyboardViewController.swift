@@ -794,6 +794,28 @@ final class KeyboardViewController: UIInputViewController {
 
         kanaKanjiConverter.clearAllCaches()
 
+        // 解放済みヒープを OS へ返す。census 実測(2545)で、警告時の footprint 60MB のうち
+        // malloc アリーナが 68MB(実使用 38.7MB)=約29MB が「free 済みだが dirty なまま
+        // footprint に残るページ」だった。変換ラティス等の一時ピークで育ったアリーナは
+        // 放っておくと返らないため、警告時に明示的に返却して jetsam 圧を下げる。
+        do {
+            var before = malloc_statistics_t()
+            malloc_zone_statistics(nil, &before)
+            malloc_zone_pressure_relief(nil, 0)
+            var after = malloc_statistics_t()
+            malloc_zone_statistics(nil, &after)
+            appendKeyboardDiagnosticsLog(
+                "malloc圧力解放 allocMB=\(String(format: "%.1f", Double(before.size_allocated) / 1_048_576))"
+                    + "→\(String(format: "%.1f", Double(after.size_allocated) / 1_048_576))"
+                    + " usedMB=\(String(format: "%.1f", Double(after.size_in_use) / 1_048_576))"
+                    + " footprintMB=\(diagnosticsFootprintMBText())",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
+
         // 2回目以降の警告は圧迫が続いている証拠なので、LMキャッシュを縮小モードへ
         // (上限を下げて再成長を抑える。変換品質は維持)。初回警告は ef56d52 の方針
         // どおり通常キャッシュ破棄のみで変換品質を守る。
