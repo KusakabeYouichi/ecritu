@@ -260,6 +260,9 @@ struct KeyboardDiagnosticsSection: View {
 
     @State private var isClearConfirmationPresented = false
     @State private var isCopiedBadgeVisible = false
+    // 更新の成否可視化: 内容が変わらない(たまたま最新だった)場合でも取得完了が
+    // わかるよう、取得時刻付きのバッジを一時表示する
+    @State private var reloadedBadgeText: String?
 
     private var logText: String {
         logLines.joined(separator: "\n")
@@ -302,6 +305,17 @@ struct KeyboardDiagnosticsSection: View {
             HStack(spacing: 10) {
                 Button("更新") {
                     onReload()
+                    let formatter = DateFormatter()
+                    formatter.dateFormat = "HH:mm:ss"
+                    let timeText = formatter.string(from: Date())
+                    withAnimation(.easeOut(duration: 0.16)) {
+                        reloadedBadgeText = "更新しました(\(timeText)時点)"
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        withAnimation(.easeOut(duration: 0.2)) {
+                            reloadedBadgeText = nil
+                        }
+                    }
                 }
                 .buttonStyle(.bordered)
                 .controlSize(.small)
@@ -357,7 +371,11 @@ struct KeyboardDiagnosticsSection: View {
                     Text("保存済みの診断ログが削除されます。")
                 }
 
-                if isCopiedBadgeVisible {
+                if let reloadedBadgeText {
+                    Text(reloadedBadgeText)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                } else if isCopiedBadgeVisible {
                     Text("コピーしました")
                         .font(.caption)
                         .foregroundStyle(.secondary)
