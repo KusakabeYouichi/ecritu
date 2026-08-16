@@ -81,6 +81,7 @@
 	<dict><key>phrase</key><string>Catalina</string><key>shortcut</key><string>かたりな</string></dict>
 	<dict><key>phrase</key><string>Cheetah</string><key>shortcut</key><string>ちーたー</string></dict>
 	<dict><key>phrase</key><string>El Capitan</string><key>shortcut</key><string>えるきゃぴたん</string></dict>
+	<dict><key>phrase</key><string>eSIM</string><key>shortcut</key><string>いーしむ</string></dict>
 	<dict><key>phrase</key><string>High Sierra</string><key>shortcut</key><string>はいしえら</string></dict>
 	<dict><key>phrase</key><string>iCloud</string><key>shortcut</key><string>あいくらうど</string></dict>
 	<dict><key>phrase</key><string>iOS</string><key>shortcut</key><string>あいおーえす</string></dict>

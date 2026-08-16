@@ -204,6 +204,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(magsafe.first, "MagSafe", "single=\(magsafe)")
     }
 
+    // いーしむ→eSIM(it.plist=SecondVocab 経由。ユーザ追加 2552)。
+    func testRegressionRealLMVocabESIM() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let esim = converter.candidates(for: "いーしむ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(esim.first, "eSIM", "single=\(esim)")
+    }
+
     // はつえんとう/じゅうよう/いしょく: word_cost タイ(または LM 実勢との逆転)を辞書 rank 順が
     // 決めていた3件を seed で矯正(2535)。いしょくする は合成時に LM が効くため元から正しい
     // 順だったこと(経路差)も回帰で固定する。
