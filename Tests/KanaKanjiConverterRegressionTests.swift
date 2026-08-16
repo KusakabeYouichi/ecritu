@@ -214,6 +214,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // おーえす→OS(2553)
         let os = converter.candidates(for: "おーえす", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(os.first, "OS", "single=\(os)")
+        // たいまそう→大麻草: etc.plist がビルド未配線で440語が届いていなかった配線修正
+        // +追加の代表例(2554)。偶発的 は既存 etc 語の配線確認
+        let taimasou = converter.candidates(for: "たいまそう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(taimasou.first, "大麻草", "single=\(taimasou)")
+        let guuhatsu = converter.candidates(for: "ぐうはつてき", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(guuhatsu.first, "偶発的", "single=\(guuhatsu)")
     }
 
     // はつえんとう/じゅうよう/いしょく: word_cost タイ(または LM 実勢との逆転)を辞書 rank 順が
