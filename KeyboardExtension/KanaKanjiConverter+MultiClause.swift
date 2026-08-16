@@ -372,6 +372,13 @@ extension KanaKanjiConverter {
     // 連語の demotedSurfaces に課すペナルティ。自身(4428)を 地震(4803)の後ろへ送るのに
     // 十分で、候補から消すほどではない中庸値。
     static let multiClauseCollocationDemotionPenalty = 800
+    // 特定ペアの bigram を信用しない(prev\tcur)。表層/読み単位の遮断リストでは巻き添えが
+    // 大きい、コーパス分割由来のピンポイント異常値に使う。
+    // 飼う→か(896): Wikipedia の疑問形分割由来で、しんぴんかうか→新品飼うか が
+    // 新品買うか(買う→か 未観測)に勝ってしまう。ペア無効で unigram 比較に戻す(2547)
+    static let multiClauseBigramPairDenied: Set<String> = [
+        "飼う\tか"
+    ]
     // 準体助詞 の のクランプ対象になる連体詞表層(こういうの/そういうの 等の名詞化)。
     static let multiClausePrenominalAdjectivalSurfaces: Set<String> = [
         "こういう", "そういう", "ああいう", "どういう"
@@ -1600,6 +1607,7 @@ extension KanaKanjiConverter {
             // 中間へ圧縮することで、過大な文末選好だけを弱める。
             if prev != Self.multiClauseBOSMarker,
                 !deniesBigramBorrow,
+                !Self.multiClauseBigramPairDenied.contains("\(prev)\t\(surface)"),
                 let bigram = bigramCosts["\(prev)\t\(surface)"] {
                 if surface == Self.multiClauseEOSMarker {
                     let fallback = (unigramCosts[Self.multiClauseEOSMarker] ?? 1619)

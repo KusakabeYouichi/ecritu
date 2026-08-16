@@ -8,6 +8,8 @@
 	     日本圧着端子製造の通称の収穫とみられる)。誤合成ではなく辞書由来だが、単独読み
 	     にち で立つと にちめ→日圧め/日圧目 等の合成の温床になるため抑制(2430) -->
 	<dict><key>phrase</key><string>日圧</string><key>shortcut</key><string>にち</string></dict>
+	<!-- カウカ(かうか、カタカナ固有名の収穫 wc4576=異常低): 買う+か の合成に1ノードで勝ち しんぴんかうか→新品カウカ を作る -->
+	<dict><key>phrase</key><string>カウカ</string><key>shortcut</key><string>かうか</string></dict>
 	<!-- 打ち荷/打荷(うちに、海事のレア語 wc7864): 家に/内に の合成より先頭に来て迷惑 -->
 	<dict><key>phrase</key><string>打ち荷</string><key>shortcut</key><string>うちに</string></dict>
 	<dict><key>phrase</key><string>打荷</string><key>shortcut</key><string>うちに</string></dict>
