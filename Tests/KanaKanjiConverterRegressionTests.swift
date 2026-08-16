@@ -619,6 +619,46 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 実変換に通し、LM最良候補が上位2位に出ない読みだけを SWEEPNG 行で報告する。
     // 4千変換で数十秒〜2分かかるため通常のスイートではスキップし、
     // TEST_RUNNER_SWEEP=1 のときだけ実行する(機械的チェックの定期実行用)。
+    // LM順乖離スイープの残渣一括是正(ユーザ承認117読み、2548)の固定。
+    // seed 供給+並び指定で、LM最良候補が上位2位以内(かな識別先頭を許容)に出ること。
+    func testRegressionRealLMSweepApprovedResiduePairs() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let pairs: [(String, String)] = [
+            ("あいこ", "愛子"), ("あかし", "証"), ("あきら", "晶"), ("あこう", "赤穂"), ("あすか", "飛鳥"), ("あず", "按司"),
+            ("あたえ", "与"), ("あまの", "天野"), ("あめ", "雨"), ("あんだ", "安打"), ("いこう", "以降"), ("いたい", "遺体"),
+            ("うただ", "宇多田"), ("うら", "裏"), ("えんじゃ", "演者"), ("おおはら", "小原"), ("おくない", "屋内"),
+            ("おた", "尾田"), ("おちかた", "遠方"), ("かえ", "変え"), ("かき", "下記"), ("かぐら", "神楽"), ("かごう", "化合"),
+            ("かずき", "和樹"), ("かずみ", "和美"), ("かずや", "和也"), ("かずよし", "知良"), ("かせい", "火星"),
+            ("かた", "型"), ("かとう", "加藤"), ("かぶ", "下部"), ("かみすぎ", "上杉"), ("きい", "紀伊"), ("きっと", "キット"),
+            ("きょうだ", "強打"), ("くだ", "管"), ("くどく", "功徳"), ("くにお", "邦男"), ("くるめ", "久留米"),
+            ("こうが", "黄河"), ("こうき", "後期"), ("こうず", "構図"), ("こうない", "構内"), ("こうよう", "高揚"),
+            ("こし", "腰"), ("こた", "古田"), ("こな", "粉"), ("さい", "再"), ("さけ", "酒"), ("さし", "指し"),
+            ("さつ", "冊"), ("さとこ", "敏子"), ("さわだ", "沢田"), ("しだ", "志田"), ("しゅういち", "修一"), ("しゅん", "駿"),
+            ("しんし", "紳士"), ("しんど", "震度"), ("じゅり", "受理"), ("すおう", "周防"), ("せい", "性"),
+            ("せんない", "線内"), ("そうけい", "総計"), ("そうだ", "操舵"), ("そだ", "曽田"), ("たい", "対"),
+            ("たいない", "体内"), ("たかこ", "貴子"), ("たから", "宝"), ("たくろう", "拓郎"), ("たけもと", "竹本"),
+            ("たける", "健"), ("つげ", "告げ"), ("つむ", "積む"), ("つよし", "剛"), ("つる", "鶴"), ("とう", "等"),
+            ("としろう", "俊郎"), ("なおや", "直也"), ("なおゆき", "尚之"), ("なかみ", "中身"), ("のせ", "乗せ"),
+            ("のぶお", "信雄"), ("のぶただ", "信忠"), ("はえ", "栄え"), ("はた", "羽田"), ("はたの", "波多野"), ("はる", "春"),
+            ("はるお", "春夫"), ("はるだ", "原田"), ("ひだ", "飛騨"), ("ひでお", "英夫"), ("ひでこ", "秀子"),
+            ("ひろう", "披露"), ("ふくそう", "服装"), ("ふくよう", "服用"), ("ふこう", "不幸"), ("へき", "碧"),
+            ("ほうろう", "放浪"), ("ほや", "ホヤ"), ("まいる", "マイル"), ("まおう", "魔王"), ("まさこ", "雅子"),
+            ("まちこ", "町子"), ("みえ", "見え"), ("みかえる", "ミカエル"), ("みたて", "見立て"), ("もくし", "目視"),
+            ("もん", "門"), ("やすこ", "靖子"), ("ゆうや", "裕也"), ("ゆき", "雪"), ("よしさだ", "義貞"), ("よしただ", "義理"),
+            ("よしだ", "吉田"), ("よそう", "予想"), ("りょうこ", "良子")
+        ]
+        var failures: [String] = []
+        for (reading, expected) in pairs {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            if !list.prefix(2).contains(expected) {
+                failures.append("\(reading)→\(expected) top=\(list.prefix(4))")
+            }
+        }
+        XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
+    }
+
     func testDiagnosticLMRankMismatchSweep() throws {
         guard ProcessInfo.processInfo.environment["SWEEP"] != nil else {
             throw XCTSkip("SWEEP=1(xcodebuild には TEST_RUNNER_SWEEP=1)のときだけ実行")
@@ -631,12 +671,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             throw XCTSkip("先に tools/audit_lm_rank_mismatch.py を実行して TSV を生成すること")
         }
         let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        // ユーザレビュー済みの許容読み(現状の並びが正、以後NG報告しない。2548)
+        let acceptedReadings: Set<String> = [
+            "かの", "そく", "そる", "いよいよ", "よぎ", "ふくしま", "きへい", "へいき",
+            "たいら", "あだち", "ばい", "あたり", "さら", "きが", "きおう", "こむ",
+            "こうがんざい", "しょうのう", "せき", "へい", "やすい", "しろう",
+            "しんそん", "やぎ"
+        ]
         var checked = 0
         var ngCount = 0
         for line in tsv.split(separator: "\n") {
             let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
             guard cols.count >= 6 else { continue }
             let reading = String(cols[0])
+            if acceptedReadings.contains(reading) { continue }
             let expected = String(cols[1])
             let gap = String(cols[5])
             let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
