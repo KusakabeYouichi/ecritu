@@ -211,6 +211,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let esim = converter.candidates(for: "いーしむ", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(esim.first, "eSIM", "single=\(esim)")
+        // おーえす→OS(2553)
+        let os = converter.candidates(for: "おーえす", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(os.first, "OS", "single=\(os)")
     }
 
     // はつえんとう/じゅうよう/いしょく: word_cost タイ(または LM 実勢との逆転)を辞書 rank 順が
