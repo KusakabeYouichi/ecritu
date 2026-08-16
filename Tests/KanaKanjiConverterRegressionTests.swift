@@ -683,6 +683,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // かな版を上へ)。ここでは ですもんね 部分がかなで保たれることだけ固定する
         let dekinai = converter.multiClauseCandidates(for: "できないですもんね", systemCandidateMode: .surface)
         XCTAssertTrue(dekinai.first?.hasSuffix("ですもんね") == true, "multi=\(dekinai)")
+        // 全かな版が変種として残ること(エコー抑制の seed かな句例外。これが無いと
+        // 実機バーに 出来ないですもんね しか出ず、表示層の でき昇格も効かない。2561)
+        XCTAssertTrue(dekinai.contains("できないですもんね"), "multi=\(dekinai)")
         // 表示層のかな識別根拠(無いと全かなの できないですもんね が除去され
         // 出来ないですもんね だけが残る。2560)
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できないですもんね"))
