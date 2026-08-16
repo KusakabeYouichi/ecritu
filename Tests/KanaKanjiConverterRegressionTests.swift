@@ -703,13 +703,39 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(tsukeru.first, "付ける", "list=\(tsukeru)")
         XCTAssertFalse(tsukeru.prefix(5).contains("跟ける"), "list=\(tsukeru)")
     }
+
+    // 助数詞監査で検出した数字直後の供給漏れ10種(そく/はく/こう/てき/そう/き/
+    // きゅう/い/だんめ/こめ。2563)。代表を固定する。
+    func testRegressionRealLMDigitCounterAuditAdditions() throws {
+        try prepareRealLMDictionary()
+
+        let expectations: [(String, String)] = [
+            ("3そく", "足"), ("3はく", "泊"), ("3こう", "校"), ("3てき", "滴"),
+            ("3そう", "艘"), ("3き", "機"), ("3きゅう", "球"), ("3い", "位"),
+            ("3だんめ", "段目"), ("3こめ", "個目")
+        ]
+        var failures: [String] = []
+        for (input, expected) in expectations {
+            let list = converter.candidates(for: input, limit: 16, systemCandidateMode: .surface)
+            if !list.prefix(5).contains(expected) {
+                failures.append("\(input)→\(expected) top=\(list.prefix(5))")
+            }
+        }
+        XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
+    }
+
     // ひとばん: 辞書・LM未収録の供給欠落({人版, 人蛮} 等の合成ジャンクのみ)。
     // 一晩 を seed 供給。1ばん は 番/晩 を数字直後の助数詞として供給(ユーザ指定 2562)。
     func testRegressionRealLMHitobanAndBanCounter() throws {
         try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
 
         let hitoban = converter.candidates(for: "ひとばん", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(hitoban.first, "一晩", "list=\(hitoban)")
+        // 実機バーは連文節先頭が上に来るため、連文節が空でなければ 一晩 が先頭であること
+        // (実機で 人+版 の分割が先頭だった。シミュレータは空=単文節に委譲。2563)
+        let hitobanMulti = converter.multiClauseCandidates(for: "ひとばん", systemCandidateMode: .surface)
+        XCTAssertTrue(hitobanMulti.isEmpty || hitobanMulti.first == "一晩", "multi=\(hitobanMulti)")
         let ban = converter.candidates(for: "1ばん", limit: 16, systemCandidateMode: .surface)
         XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
     }
@@ -848,6 +874,101 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
         XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
+    }
+
+    // 助数詞監査(常設ハーネス): 数字直後(3+読み)で主要助数詞が上位5位に出るかを一括検査し、
+    // 出ないものを COUNTERNG 行で報告する(1ばん→版 のような供給漏れの機械的検出。
+    // びょういん は数字+非助数詞の対照群)。TEST_RUNNER_COUNTERAUDIT=1 のときだけ実行。
+    func testDiagnosticNumericCounterAudit() throws {
+        guard ProcessInfo.processInfo.environment["COUNTERAUDIT"] != nil else {
+            throw XCTSkip("COUNTERAUDIT=1(xcodebuild には TEST_RUNNER_COUNTERAUDIT=1)のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let counters: [(String, [String])] = [
+            ("かい", ["回", "階"]),
+            ("ほん", ["本"]),
+            ("まい", ["枚"]),
+            ("さつ", ["冊", "札"]),
+            ("だい", ["台"]),
+            ("けん", ["件", "軒"]),
+            ("こ", ["個"]),
+            ("にん", ["人"]),
+            ("めい", ["名"]),
+            ("ひき", ["匹"]),
+            ("とう", ["頭", "等"]),
+            ("わ", ["羽", "話"]),
+            ("そく", ["足"]),
+            ("ちゃく", ["着"]),
+            ("つう", ["通"]),
+            ("きゃく", ["脚", "客"]),
+            ("ばい", ["倍", "杯"]),
+            ("はい", ["杯", "敗"]),
+            ("はつ", ["発"]),
+            ("しょう", ["勝", "章"]),
+            ("ど", ["度"]),
+            ("てん", ["点"]),
+            ("えん", ["円"]),
+            ("さい", ["歳"]),
+            ("ばん", ["番", "晩"]),
+            ("はく", ["泊"]),
+            ("にち", ["日"]),
+            ("しゅう", ["週", "周"]),
+            ("ねん", ["年"]),
+            ("びょう", ["秒"]),
+            ("ふん", ["分"]),
+            ("じ", ["時"]),
+            ("かげつ", ["ヶ月", "カ月", "か月"]),
+            ("きょく", ["曲"]),
+            ("えき", ["駅"]),
+            ("しゃ", ["社", "車"]),
+            ("こう", ["校"]),
+            ("かん", ["巻", "缶"]),
+            ("じょう", ["畳", "錠"]),
+            ("ちょうめ", ["丁目"]),
+            ("つぼ", ["坪"]),
+            ("くみ", ["組"]),
+            ("さら", ["皿"]),
+            ("ぜん", ["膳"]),
+            ("つぶ", ["粒"]),
+            ("てき", ["滴"]),
+            ("たば", ["束"]),
+            ("ふくろ", ["袋"]),
+            ("はこ", ["箱"]),
+            ("せき", ["隻", "席"]),
+            ("そう", ["艘", "槽"]),
+            ("き", ["機", "基"]),
+            ("もん", ["問", "門"]),
+            ("だん", ["段"]),
+            ("きゅう", ["球", "級"]),
+            ("い", ["位"]),
+            ("ごう", ["号"]),
+            ("がつ", ["月"]),
+            ("けた", ["桁"]),
+            ("わり", ["割"]),
+            ("ぶ", ["部"]),
+            ("ぎょう", ["行"]),
+            ("れつ", ["列"]),
+            ("もじ", ["文字"]),
+            ("だんめ", ["段目"]),
+            ("ばんめ", ["番目"]),
+            ("こめ", ["個目"]),
+            ("かいめ", ["回目"]),
+            ("にんめ", ["人目"]),
+            ("びょういん", ["病院"])
+        ]
+        var ngCount = 0
+        for (reading, expectedList) in counters {
+            let list = converter.candidates(for: "3" + reading, limit: 16, systemCandidateMode: .surface)
+            let top = Array(list.prefix(5))
+            if !expectedList.contains(where: { top.contains($0) }) {
+                ngCount += 1
+                print("COUNTERNG\t\(reading)\t期待=\(expectedList)\ttop=\(top)")
+            }
+        }
+        print("COUNTERAUDIT done checked=\(counters.count) ng=\(ngCount)")
+        XCTAssertEqual(ngCount, 0, "助数詞の供給漏れあり(COUNTERNG 行参照)")
     }
 
     // 連文節ラティスのアロケーション計測(常設ハーネス)。実タイプを模して文の全プレフィクスを
