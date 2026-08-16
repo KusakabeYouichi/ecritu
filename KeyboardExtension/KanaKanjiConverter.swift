@@ -694,10 +694,13 @@ final class KanaKanjiConverter {
             // 全漢字側は LM unigram 実在(蔓延/作品 等の常用語)を要求 — 名前収穫(中野/夏羽 等)を
             // 「開かれた元」と誤認して正当な合成を巻き込まない
             let fullKanjiUni = store.wordLMUnigramCosts(for: allKanjiSameReading)
-            // 活用派生(勝って/切って 等のて形)は 勝手/切手 と構造衝突するため対象外
+            // 活用派生(勝って/切って 等のて形)は 勝手/切手 と構造衝突するため対象外。
+            // seed 先頭指定(うつ病 等、交ぜ書きが現代の主表記として人手選別された語)も
+            // 対象外。先頭以外の seed 掲載(かぶと虫 等の並び指定のみ)は従来どおり抑制対象
             for candidate in scores.keys
             where !exemptCandidates.contains(candidate)
-                && !inflectionDerivedCandidates.contains(candidate) {
+                && !inflectionDerivedCandidates.contains(candidate)
+                && KanaKanjiSeedDictionary.seed[reading]?.first != candidate {
                 guard let kanjiPart = Self.mazegakiKanjiPart(candidate, reading: reading) else { continue }
                 if allKanjiSameReading.contains(where: { full in
                     full != candidate
