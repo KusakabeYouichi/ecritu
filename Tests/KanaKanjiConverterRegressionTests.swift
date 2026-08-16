@@ -528,6 +528,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(muryou.prefix(2)), ["無料", "無量"], "list=\(muryou)")
     }
 
+    // がめんけい: 系(uni3925)/計(uni5171)が短spanレア読み床で床上げされ、
+    // 画面ケイ(ケイ wc5959)に負けていた。床免除(むき/じ と同型)で
+    // {画面系, 画面計} を先頭群に(2547)。
+    func testRegressionRealLMGamenkeiPrefersKei() throws {
+        try prepareRealLMDictionary()
+
+        let gamenkei = converter.multiClauseCandidates(for: "がめんけい", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(gamenkei.prefix(2)), ["画面系", "画面計"], "multi=\(gamenkei)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
