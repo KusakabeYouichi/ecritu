@@ -1090,6 +1090,19 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // seed かな先頭の語+末尾助詞(おもろまちなら/おもろまちならば 等)はかなが正書。
+        // 連文節エンジンはかな先頭を返すのに、表示層のかな識別根拠が無く除去されて
+        // お諸町なら が繰り上がっていた(実機トレースで確定。2557)。剥がす助詞は明示集合、
+        // 残り語幹は seed のかな先頭指定(人手選別)に限るので、名詞+助詞一般は巻き込まない。
+        if normalized.count >= 3 {
+            for particle in Self.kanaIdentityTrailingParticles
+            where normalized.count > particle.count && normalized.hasSuffix(particle) {
+                let stem = String(normalized.dropLast(particle.count))
+                if KanaKanjiSeedDictionary.seed[stem]?.first == stem {
+                    return true
+                }
+            }
+        }
         // かな正書の副詞(せめて 等=multiClauseKanaAdverbReadings)で始まる全かな句は、残りが
         // かな維持の根拠を持つか指示代名詞始まりなら維持(せめてこれぐらい。2513)。
         for adverb in KanaKanjiConverter.multiClauseKanaAdverbReadings

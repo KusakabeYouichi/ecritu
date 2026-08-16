@@ -569,6 +569,12 @@ extension KanaKanjiConverter {
         "こそ", "しか", "まで", "でも", "かも", "のみ"
     ]
 
+    // seed かな先頭語の直後に付いてもかな正書を保つ末尾助詞(keepKana の剥がし用。2557)。
+    static let kanaIdentityTrailingParticles: [String] = [
+        "ならば", "なら", "には", "では", "とは", "から", "まで",
+        "は", "が", "も", "に", "で", "と", "へ", "の", "を"
+    ]
+
     static let kanaOrthographyDemonstrativePronounStems: Set<String> = [
         "これ", "それ", "あれ", "どれ", "ここ", "そこ", "あそこ", "どこ",
         "こっち", "そっち", "あっち", "どっち", "こちら", "そちら", "あちら", "どちら"
