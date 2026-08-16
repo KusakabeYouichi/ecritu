@@ -3,7 +3,6 @@
 <plist version="1.0">
 <array>
 	<!-- 一般の語彙 -->
-	<dict><key>phrase</key><string>大麻草</string><key>shortcut</key><string>たいまそう</string></dict>
 	<dict><key>phrase</key><string>偶発的</string><key>shortcut</key><string>ぐうはつてき</string></dict>
 	<dict><key>phrase</key><string>第二次世界大戦中</string><key>shortcut</key><string>だいにじせかいたいせんちゅう</string></dict>
 	<dict><key>phrase</key><string>興味深い</string><key>shortcut</key><string>きょうみぶかい</string></dict>
@@ -442,7 +441,6 @@
 	<dict><key>phrase</key><string>土踏まず</string><key>shortcut</key><string>つちふまず</string></dict>
 	<dict><key>phrase</key><string>culture</string><key>shortcut</key><string>かるちゃー</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
 	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>へくたーる</string></dict>	<!-- 元: ワイン用ぶどう栽培技術用語 -->
-	<dict><key>phrase</key><string>br</string><key>shortcut</key><string>びーあーる</string></dict>	<!-- 元: その他の不明なもの -->
 	<dict><key>phrase</key><string>夏季</string><key>shortcut</key><string>かき</string></dict>	<!-- 元: その他の不明なもの -->
 	<dict><key>phrase</key><string>行程</string><key>shortcut</key><string>こうてい</string></dict>	<!-- 元: その他の不明なもの -->
 	<dict><key>phrase</key><string>記号</string><key>shortcut</key><string>きごう</string></dict>	<!-- 元: その他の不明なもの -->
