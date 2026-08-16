@@ -645,6 +645,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(matsuda.prefix(3).contains("まつだ"), "list=\(matsuda)")
     }
 
+    // たえきれる/堪えきれる: Sudachi に無く、たえきれなくなって が 栲切れ/多恵きれ 等の
+    // 名前合成に落ちていた。misc 一段登録(あり得る と同型)で活用ごと供給(2554)。
+    func testRegressionRealLMTaekirePrefersTaeru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let nakunatte = converter.candidates(for: "たえきれなくなって", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nakunatte.prefix(2)), ["耐えきれなくなって", "堪えきれなくなって"], "list=\(nakunatte)")
+        let nai = converter.candidates(for: "たえきれない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(nai.first, "耐えきれない", "list=\(nai)")
+    }
+
     // さす: 動詞4種 {指す, 刺す, 挿す, 差す} を先頭群に、かな さす は末尾へ。
     // さしなおす: 辞書エントリ無しの供給欠落(挿し直す/刺し直す が出ない)を seed 供給
     // (ユーザ指定 2552)。
