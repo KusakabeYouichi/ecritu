@@ -624,6 +624,39 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(heiki.first, "平気", "list=\(heiki)")
     }
 
+    // まつだ: dict rank0 は 松田 だが、かな首位化・カタカナ識別(マツダ)・合成
+    // (待つだ/松だ)に沈められていた。seed 先頭化+かな非掲載でかな識別は末尾へ
+    // (ユーザ指定 2552)。
+    func testRegressionRealLMMatsudaPrefersMatsuda() throws {
+        try prepareRealLMDictionary()
+
+        let matsuda = converter.candidates(for: "まつだ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(matsuda.first, "松田", "list=\(matsuda)")
+        // かな識別は先頭群に残らないこと(末尾寄りでOK)
+        XCTAssertFalse(matsuda.prefix(3).contains("まつだ"), "list=\(matsuda)")
+    }
+
+    // さす: 動詞4種 {指す, 刺す, 挿す, 差す} を先頭群に、かな さす は末尾へ。
+    // さしなおす: 辞書エントリ無しの供給欠落(挿し直す/刺し直す が出ない)を seed 供給
+    // (ユーザ指定 2552)。
+    func testRegressionRealLMSasuSashinaosuOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let sasu = converter.candidates(for: "さす", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sasu.prefix(7)), ["指す", "刺す", "挿す", "差す", "サス", "砂州", "鎖す"], "list=\(sasu)")
+        let naosu = converter.candidates(for: "さしなおす", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(naosu.prefix(4)), ["指し直す", "挿し直す", "差し直す", "刺し直す"], "list=\(naosu)")
+    }
+
+    // しもん: カタカナ識別 シモン が先頭だった。{指紋, 諮問, 試問} を先頭群に、
+    // シモン は後方へ(ユーザ指定 2552)。
+    func testRegressionRealLMShimonPrefersShimon() throws {
+        try prepareRealLMDictionary()
+
+        let shimon = converter.candidates(for: "しもん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(shimon.prefix(3)), ["指紋", "諮問", "試問"], "list=\(shimon)")
+    }
+
     // スイープ残渣のうちユーザが並びを明示指定した読み(2550)。seed の複数掲載
     // (順序正規化)で指定順を先頭に固定する。LM最良が3位以下になる読み
     // (だん/ねぎ/こんだ/こうし/みこ/あらい/あわ/するっ)はスイープの許容リスト側に登録済み。
