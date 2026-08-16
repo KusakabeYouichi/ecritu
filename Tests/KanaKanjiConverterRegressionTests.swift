@@ -538,6 +538,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(gamenkei.prefix(2)), ["画面系", "画面計"], "multi=\(gamenkei)")
     }
 
+    // しんぴんかうか: カウカ(カタカナ固有名の収穫、wc4576=異常低)が 買う+か の合成に
+    // 1ノードで勝っていた(suppr で除去)。除去後は 飼う→か(896、Wikipedia の疑問形
+    // 分割由来)の bigram で 新品飼うか が繰り上がるため、ペア単位の bigram 遮断で
+    // 新品買うか を先頭に(2547)。
+    func testRegressionRealLMShinpinkaukaPrefersKau() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let kauka = converter.multiClauseCandidates(for: "しんぴんかうか", systemCandidateMode: .surface)
+        XCTAssertEqual(kauka.first, "新品買うか", "multi=\(kauka)")
+        XCTAssertFalse(kauka.contains { $0.contains("カウカ") }, "multi=\(kauka)")
+        // 飼う 本体の文脈は無傷(ねこをかう が 飼う を保てること)
+        let neko = converter.multiClauseCandidates(for: "ねこをかう", systemCandidateMode: .surface)
+        XCTAssertTrue(neko.contains { $0.contains("飼う") }, "multi=\(neko)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
