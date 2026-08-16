@@ -133,6 +133,7 @@
 	        <dict><key>phrase</key><string>ランティーユ</string><key>shortcut</key><string>らんてぃーゆ</string></dict>
 	        <dict><key>phrase</key><string>レフォール</string><key>shortcut</key><string>れふぉーる</string></dict><!-- 西洋わさび(仏 raifort)。辞書に れふぉ〜 皆無 -->
 	        <dict><key>phrase</key><string>レホール</string><key>shortcut</key><string>れほーる</string></dict><!-- レフォールの別表記 -->
+	        <dict><key>phrase</key><string>デジュネ</string><key>shortcut</key><string>でじゅね</string></dict><!-- 昼食(仏 déjeuner) -->
 	        <dict><key>phrase</key><string>赤とうがらし</string><key>shortcut</key><string>あかとうがらし</string></dict>
 	        <dict><key>phrase</key><string>赤唐辛子</string><key>shortcut</key><string>あかとうがらし</string></dict>
 	        <dict><key>phrase</key><string>青とうがらし</string><key>shortcut</key><string>あおとうがらし</string></dict>

@@ -488,6 +488,46 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kenkyo.first, "検挙", "list=\(kenkyo)")
     }
 
+    // おきやすい: おく族の opt-in 昇格(2434)が おきやすい にも効き 置きやすい が先頭
+    // だった。やすい 文脈は 起きる が主(bigram 起き→やすい2136 vs 置き→やすい無し)
+    // なので seed 句で固定(2547)。置く系の文脈(おきっぱなし)は不変であること。
+    func testRegressionRealLMOkiyasuiPrefersOkiru() throws {
+        try prepareRealLMDictionary()
+
+        let okiyasui = converter.candidates(for: "おきやすい", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(okiyasui.first, "起きやすい", "list=\(okiyasui)")
+        // 置く系の文脈は不変(起きっぱなし に化けないこと)
+        let okippanashi = converter.multiClauseCandidates(for: "おきっぱなし", systemCandidateMode: .surface)
+        if let first = okippanashi.first {
+            XCTAssertFalse(first.hasPrefix("起き"), "multi=\(okippanashi)")
+        }
+    }
+
+    // たえうる: 耐え+うる(得る)の合成が供給されず {拷得る, 多恵得る, ...} の名前ジャンク
+    // だけだった(2547)。でじゅね: sacoche 追加(仏 déjeuner)。
+    func testRegressionRealLMTaeuruDejeune() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let taeuru = converter.candidates(for: "たえうる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(taeuru.prefix(2)), ["耐えうる", "耐え得る"], "list=\(taeuru)")
+        let dejeune = converter.candidates(for: "でじゅね", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(dejeune.first, "デジュネ", "list=\(dejeune)")
+    }
+
+    // なくす: {なくす, 無くす, 喪くす, 亡くす, 失くす} だった。失くす/亡くす を先頭群に
+    // (ユーザ指定 2547)。
+    func testRegressionRealLMNakusuPrefersNakusu() throws {
+        try prepareRealLMDictionary()
+
+        let nakusu = converter.candidates(for: "なくす", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nakusu.prefix(2)), ["失くす", "亡くす"], "list=\(nakusu)")
+        // むりょう: 無量(uni6386)vs 無料(uni5279)の差1107が一般昇格ゲート(1200)を
+        // 僅かに下回るニアミス。seed で 無料 を先頭に(2547)
+        let muryou = converter.candidates(for: "むりょう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(muryou.prefix(2)), ["無料", "無量"], "list=\(muryou)")
+    }
+
     // 同じ経路の他の形容詞さ名詞化(辞書に無い語)も先頭に出ること。
     func testRegressionRealLMAdjectiveSaNominalizationsRankFirst() throws {
         try prepareRealLMDictionary()
