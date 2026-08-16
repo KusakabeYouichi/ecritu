@@ -642,6 +642,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(matsuda.prefix(3).contains("まつだ"), "list=\(matsuda)")
     }
 
+    // なるので/ですかね: かな正書の機能語句が連文節で 鳴るので/出須賀ね に乗っ取られて
+    // いた。句スパンのかな識別を seed 供給+ボーナスで先頭に(ユーザ指定 2556)。
+    func testRegressionRealLMNarunodeDesukaneKanaLeading() throws {
+        try prepareRealLMDictionary()
+
+        let narunode = converter.candidates(for: "なるので", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(narunode.first, "なるので", "list=\(narunode)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なるので"))
+        let desukane = converter.candidates(for: "ですかね", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(desukane.first, "ですかね", "list=\(desukane)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ですかね"))
+        // 別スパンの なる(音が鳴る)と 気になるので は不変であること
+        let naru = converter.multiClauseCandidates(for: "おとがなる", systemCandidateMode: .surface)
+        XCTAssertTrue(naru.contains { $0.contains("鳴る") }, "multi=\(naru)")
+        let kininaru = converter.multiClauseCandidates(for: "きになるのでしょう", systemCandidateMode: .surface)
+        XCTAssertEqual(kininaru.first, "気になるのでしょう", "multi=\(kininaru)")
+    }
+
     // ごはん: ご飯 が dictionary_entries に無く、連文節で 語+版 の分割が勝って
     // 炊き込んだ語版 になっていた。おもろまち: 収穫底値+LM未収録で お諸町 等の分割に
     // 負けていた。どちらも a2 seed供給+名詞seed順ボーナスで是正(2554)。
@@ -652,6 +670,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(gohan.first, "炊き込んだご飯", "multi=\(gohan)")
         let omoro = converter.multiClauseCandidates(for: "おもろまちならば", systemCandidateMode: .surface)
         XCTAssertEqual(omoro.first, "おもろまちならば", "multi=\(omoro)")
+        let omoroNara = converter.multiClauseCandidates(for: "おもろまちなら", systemCandidateMode: .surface)
+        XCTAssertEqual(omoroNara.first, "おもろまちなら", "multi=\(omoroNara)")
         // 単文節の ごはん は seed 既定のまま
         let single = converter.candidates(for: "ごはん", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(2)), ["ご飯", "御飯"], "single=\(single)")
