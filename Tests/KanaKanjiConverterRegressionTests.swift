@@ -657,6 +657,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(nai.first, "耐えきれない", "list=\(nai)")
     }
 
+    // いきませんか: 一段 生きる/活きる 連用が五段 行く 連用より先に出ていた。
+    // 勧誘の主用途 行きませんか を先頭に(ユーザ指定 2554)。
+    func testRegressionRealLMIkimasenkaPrefersIku() throws {
+        try prepareRealLMDictionary()
+
+        let iki = converter.candidates(for: "いきませんか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(iki.first, "行きませんか", "list=\(iki)")
+    }
+
     // さす: 動詞4種 {指す, 刺す, 挿す, 差す} を先頭群に、かな さす は末尾へ。
     // さしなおす: 辞書エントリ無しの供給欠落(挿し直す/刺し直す が出ない)を seed 供給
     // (ユーザ指定 2552)。
