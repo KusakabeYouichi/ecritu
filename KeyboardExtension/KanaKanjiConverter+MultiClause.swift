@@ -2609,13 +2609,18 @@ extension KanaKanjiConverter {
                 let variantMaxDelta = isCollocationNounScriptVariant
                     ? Self.multiClauseVariantMaxDelta * 2
                     : Self.multiClauseVariantMaxDelta
-                guard delta <= variantMaxDelta else {
-                    continue
-                }
                 var altSegments = segments
                 altSegments[pos] = alt.surface
                 let variantJoined = altSegments.joined()
                 if variantJoined == joined {
+                    continue
+                }
+                // 入力全体にかな正書の根拠(keepKana)がある全かな変種は delta 上限を免除
+                // (かな素通りノードは意図的に高コストで、上限内に入らない。2561)
+                let isSanctionedFullKanaVariant = variantJoined == normalized
+                    && alt.surface == alt.reading
+                    && shouldKeepKanaIdentityLeading(for: normalized)
+                guard delta <= variantMaxDelta || isSanctionedFullKanaVariant else {
                     continue
                 }
                 // 入力そのままの全かな変種は原則捨てる(エコー防止)が、経路に curated ノード
@@ -2635,8 +2640,15 @@ extension KanaKanjiConverter {
                             || Self.multiClauseCaseParticleSurfaces.contains(lastVariantNode.surface)
                             || Self.multiClauseCompoundParticles.contains(lastVariantNode.surface)
                             || Self.multiClauseNominalizerSurfaces.contains(lastVariantNode.surface)
-                            || Self.multiClauseExplanatoryFinalSurfaces.contains(lastVariantNode.surface))
-                    if !variantHasCurated && !variantEndsWithKanaParticle {
+                            || Self.multiClauseExplanatoryFinalSurfaces.contains(lastVariantNode.surface)
+                            // seed でかな先頭指定した句(ですもんね/ですかね 等)もかなが正書
+                            || KanaKanjiSeedDictionary.seed[lastVariantNode.reading]?.first == lastVariantNode.reading)
+                    // 入力全体にかな正書の根拠(keepKana=表示層と同じ述語)があるなら全かな
+                    // 変種は正規の変換。できないですもんね は経路が丸ごと1ノードで、末尾
+                    // ノード基準の例外に掛からず落ちていた(実機バーに 出来ない〜 しか
+                    // 出ない。2561)
+                    if !variantHasCurated && !variantEndsWithKanaParticle,
+                        !shouldKeepKanaIdentityLeading(for: normalized) {
                         continue
                     }
                 }
