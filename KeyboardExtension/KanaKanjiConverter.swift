@@ -1090,6 +1090,17 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 丁寧のです系末尾(ですもんね/ですかね 等)を剥がした残りがかな正書の根拠を
+        // 持つなら維持(できないですもんね→できない=活用剥がしで できる seed かな先頭。
+        // 表示層で 出来ないですもんね が先頭に残っていた。2560)。
+        for tail in ["ですもんね", "ですかね", "ですよね", "ですね", "ですもん", "ですよ", "です"]
+        where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
+            let remainder = String(normalized.dropLast(tail.count))
+            if computeShouldKeepKanaIdentityLeading(normalized: remainder) {
+                return true
+            }
+            break
+        }
         // seed かな先頭の語+末尾助詞(おもろまちなら/おもろまちならば 等)はかなが正書。
         // 連文節エンジンはかな先頭を返すのに、表示層のかな識別根拠が無く除去されて
         // お諸町なら が繰り上がっていた(実機トレースで確定。2557)。剥がす助詞は明示集合、
