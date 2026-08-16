@@ -691,6 +691,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できないですもんね"))
     }
 
+    // みずにつけてた: 水(+助詞)直後の つけ活用は 浸/漬 が主({水に付けてた, 水に着けてた}
+    // が先頭だった)。連語の複数プレフィクス選好+seed つける 並び拡充(ユーザ指定 2563)。
+    func testRegressionRealLMMizuniTsuketetaPrefersTsukeru() throws {
+        try prepareRealLMDictionary()
+
+        let mizu = converter.multiClauseCandidates(for: "みずにつけてた", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mizu.prefix(2)), ["水に浸けてた", "水に漬けてた"], "multi=\(mizu)")
+        // 一般文脈の つける は 付ける 先頭のまま(跟ける は先頭群から沈む)
+        let tsukeru = converter.candidates(for: "つける", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(tsukeru.first, "付ける", "list=\(tsukeru)")
+        XCTAssertFalse(tsukeru.prefix(5).contains("跟ける"), "list=\(tsukeru)")
+    }
     // ひとばん: 辞書・LM未収録の供給欠落({人版, 人蛮} 等の合成ジャンクのみ)。
     // 一晩 を seed 供給。1ばん は 番/晩 を数字直後の助数詞として供給(ユーザ指定 2562)。
     func testRegressionRealLMHitobanAndBanCounter() throws {
