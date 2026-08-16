@@ -75,6 +75,9 @@
 	<dict><key>phrase</key><string>これ安い</string><key>shortcut</key><string>これやすい</string></dict>
 	<!-- あり得る: Sudachi に無く(ありえる はアリエルのみ)、ありえない が 有江ない 等の名前合成に落ちる。一段登録で あり得ない/あり得なかった 等の活用を供給 -->
 	<dict><key>phrase</key><string>あり得る</string><key>shortcut</key><string>ありえる</string><key>pos</key><string>一段</string></dict>
+	<!-- 耐えきれる/堪えきれる: Sudachi に無く、たえきれなくなって が 栲切れ/多恵きれ 等の名前合成に落ちる。一段登録で活用を供給 -->
+	<dict><key>phrase</key><string>耐えきれる</string><key>shortcut</key><string>たえきれる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>堪えきれる</string><key>shortcut</key><string>たえきれる</string><key>pos</key><string>一段</string></dict>
 	<!-- 描く は Sudachi に えがく 読みのみで かく 読みが未収録。かけば→描けば 等の活用に必要 -->
 	<dict><key>phrase</key><string>描く</string><key>shortcut</key><string>かく</string><key>pos</key><string>五段</string></dict>
 	<!-- 複合動詞「V連用+抜く」は Sudachi にほぼ収録が無く(たえぬく/やりぬく/かちぬく/いきぬく 全滅)、たえぬいた が た江縫た 等の断片になる。pos五段で活用一括網羅 -->
