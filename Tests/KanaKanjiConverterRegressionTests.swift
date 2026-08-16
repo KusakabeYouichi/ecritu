@@ -642,6 +642,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(matsuda.prefix(3).contains("まつだ"), "list=\(matsuda)")
     }
 
+    // あるのになあ: アルノ(伊アルノ川等の収穫、wc4576=異常低)が ある+の の合成に
+    // 1ノードで勝ち アルノになあ が先頭だった(カウカ と同型、suppr で除去)。
+    // かな あるのになあ が先頭に出ること(2559)。
+    func testRegressionRealLMArunoninaaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let arunoninaa = converter.candidates(for: "あるのになあ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(arunoninaa.first, "あるのになあ", "list=\(arunoninaa)")
+        XCTAssertFalse(arunoninaa.contains { $0.contains("アルノ") }, "list=\(arunoninaa)")
+    }
+
     // なるので/ですかね: かな正書の機能語句が連文節で 鳴るので/出須賀ね に乗っ取られて
     // いた。句スパンのかな識別を seed 供給+ボーナスで先頭に(ユーザ指定 2556)。
     func testRegressionRealLMNarunodeDesukaneKanaLeading() throws {
