@@ -96,6 +96,7 @@
 	<dict><key>phrase</key><string>Mojave</string><key>shortcut</key><string>もはべ</string></dict>
 	<dict><key>phrase</key><string>Monterey</string><key>shortcut</key><string>もんとれー</string></dict>
 	<dict><key>phrase</key><string>Mountain Lion</string><key>shortcut</key><string>まうんてんらいおん</string></dict>
+	<dict><key>phrase</key><string>OS</string><key>shortcut</key><string>おーえす</string></dict>
 	<dict><key>phrase</key><string>OS X</string><key>shortcut</key><string>おーえすてん</string></dict>
 	<dict><key>phrase</key><string>Panther</string><key>shortcut</key><string>ぱんさー</string></dict>
 	<dict><key>phrase</key><string>Puma</string><key>shortcut</key><string>ぴゅーま</string></dict>
