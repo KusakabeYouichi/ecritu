@@ -654,6 +654,45 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(arunoninaa.contains { $0.contains("アルノ") }, "list=\(arunoninaa)")
     }
 
+    // めどがたったら: 変種が たったら 側(経った/建った/足った=連語では無用)に振られて
+    // いた。連語クランプで動詞を 立 に固定し、変種枠を めど/メド の名詞表記側に譲る
+    // (ユーザ指定 2559)。
+    func testRegressionRealLMMedogaTattaraVariants() throws {
+        try prepareRealLMDictionary()
+
+        let medo = converter.multiClauseCandidates(for: "めどがたったら", systemCandidateMode: .surface)
+        XCTAssertEqual(medo.first, "目処が立ったら", "multi=\(medo)")
+        XCTAssertFalse(
+            medo.prefix(5).contains { $0.contains("経った") || $0.contains("建った") || $0.contains("足った") },
+            "multi=\(medo)"
+        )
+        XCTAssertTrue(medo.prefix(5).contains("めどが立ったら"), "multi=\(medo)")
+    }
+
+    // ですもんね: です+門/物/紋+ね の合成が かな より先だった(ですかね と同型。
+    // ユーザ指定 2559)。
+    func testRegressionRealLMDesumonneKanaLeading() throws {
+        try prepareRealLMDictionary()
+
+        let desumonne = converter.candidates(for: "ですもんね", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(desumonne.first, "ですもんね", "list=\(desumonne)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ですもんね"))
+        // できない部分の 出来/でき はエンジン非関知(表示層 demotingDekiKanjiBelowKana が
+        // かな版を上へ)。ここでは ですもんね 部分がかなで保たれることだけ固定する
+        let dekinai = converter.multiClauseCandidates(for: "できないですもんね", systemCandidateMode: .surface)
+        XCTAssertTrue(dekinai.first?.hasSuffix("ですもんね") == true, "multi=\(dekinai)")
+    }
+
+    // はなしか: {噺家, 咄家, はなしか, 話か} だった。話か を先頭に、かな は末尾へ
+    // (ユーザ指定 2559)。
+    func testRegressionRealLMHanashikaPrefersHanashika() throws {
+        try prepareRealLMDictionary()
+
+        let hanashika = converter.candidates(for: "はなしか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(hanashika.first, "話か", "list=\(hanashika)")
+        XCTAssertFalse(hanashika.prefix(3).contains("はなしか"), "list=\(hanashika)")
+    }
+
     // なるので/ですかね: かな正書の機能語句が連文節で 鳴るので/出須賀ね に乗っ取られて
     // いた。句スパンのかな識別を seed 供給+ボーナスで先頭に(ユーザ指定 2556)。
     func testRegressionRealLMNarunodeDesukaneKanaLeading() throws {
