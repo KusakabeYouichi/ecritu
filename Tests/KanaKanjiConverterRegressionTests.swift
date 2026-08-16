@@ -645,6 +645,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(matsuda.prefix(3).contains("まつだ"), "list=\(matsuda)")
     }
 
+    // ごはん: ご飯 が dictionary_entries に無く、連文節で 語+版 の分割が勝って
+    // 炊き込んだ語版 になっていた。おもろまち: 収穫底値+LM未収録で お諸町 等の分割に
+    // 負けていた。どちらも a2 seed供給+名詞seed順ボーナスで是正(2554)。
+    func testRegressionRealLMGohanOmoromachiMultiClause() throws {
+        try prepareRealLMDictionary()
+
+        let gohan = converter.multiClauseCandidates(for: "たきこんだごはん", systemCandidateMode: .surface)
+        XCTAssertEqual(gohan.first, "炊き込んだご飯", "multi=\(gohan)")
+        let omoro = converter.multiClauseCandidates(for: "おもろまちならば", systemCandidateMode: .surface)
+        XCTAssertEqual(omoro.first, "おもろまちならば", "multi=\(omoro)")
+        // 単文節の ごはん は seed 既定のまま
+        let single = converter.candidates(for: "ごはん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ご飯", "御飯"], "single=\(single)")
+    }
+
     // たえきれる/堪えきれる: Sudachi に無く、たえきれなくなって が 栲切れ/多恵きれ 等の
     // 名前合成に落ちていた。misc 一段登録(あり得る と同型)で活用ごと供給(2554)。
     func testRegressionRealLMTaekirePrefersTaeru() throws {
