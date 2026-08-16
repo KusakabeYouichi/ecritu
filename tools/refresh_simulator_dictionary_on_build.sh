@@ -33,7 +33,6 @@ TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
 REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
 REF_IT_PLIST="$ROOT_DIR/references/it.plist"
-REF_ETC_PLIST="$ROOT_DIR/references/etc.plist"
 REF_SACOCHE_PLIST="$ROOT_DIR/references/sacoche.plist"
 REF_MISC_PLIST="$ROOT_DIR/references/misc.plist"
 REF_SUPPR_PLIST="$ROOT_DIR/references/suppr.plist"
@@ -158,7 +157,6 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_RYUKYU_PLIST" \
   --input-plist "$REF_VIN_PLIST" \
   --input-plist "$REF_IT_PLIST" \
-  --input-plist "$REF_ETC_PLIST" \
   --input-plist "$REF_PERSONNALITES_PLIST" \
   --input-plist "$REF_DRAPEAUX_PLIST" \
   --input-plist "$REF_MONNAIES_PLIST" \
