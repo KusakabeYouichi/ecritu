@@ -665,6 +665,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // 負けていた。どちらも a2 seed供給+名詞seed順ボーナスで是正(2554)。
     func testRegressionRealLMGohanOmoromachiMultiClause() throws {
         try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
 
         let gohan = converter.multiClauseCandidates(for: "たきこんだごはん", systemCandidateMode: .surface)
         XCTAssertEqual(gohan.first, "炊き込んだご飯", "multi=\(gohan)")
@@ -672,6 +673,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(omoro.first, "おもろまちならば", "multi=\(omoro)")
         let omoroNara = converter.multiClauseCandidates(for: "おもろまちなら", systemCandidateMode: .surface)
         XCTAssertEqual(omoroNara.first, "おもろまちなら", "multi=\(omoroNara)")
+        // 表示層のかな識別根拠(これが無いと実機バーでかな先頭が除去され お諸町 が
+        // 繰り上がる — 実機トレースで確定した実バグ。2557)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "おもろまちなら"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "おもろまちならば"))
         // 単文節の ごはん は seed 既定のまま
         let single = converter.candidates(for: "ごはん", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(single.prefix(2)), ["ご飯", "御飯"], "single=\(single)")
@@ -761,6 +766,51 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
         XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
+    }
+
+    // 連文節ラティスのアロケーション計測(常設ハーネス)。実タイプを模して文の全プレフィクスを
+    // 変換し、malloc ゾーン統計(確保集計/使用中/ピーク)の増分を出力する。アリーナ肥大
+    // (実機で alloc 68〜72MB)対策の効果測定用。TEST_RUNNER_ALLOCPROF=1 のときだけ実行。
+    func testDiagnosticMultiClauseAllocationProfile() throws {
+        guard ProcessInfo.processInfo.environment["ALLOCPROF"] != nil else {
+            throw XCTSkip("ALLOCPROF=1(xcodebuild には TEST_RUNNER_ALLOCPROF=1)のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let sentences = [
+            "きょうはあめがふりそうなのでかさをもっていきます",
+            "たきこんだごはんをたべてからでかけるつもりです",
+            "しんぴんをかうかどうかはねだんをみてからきめたい",
+            "らいしゅうのかいぎのしりょうをじゅんびしておいてください",
+            "このあたりはよるになるとひとどおりがすくなくなる"
+        ]
+        // ウォームアップ(キャッシュ初期化ぶんを計測から外す)
+        for s in sentences {
+            _ = converter.multiClauseCandidates(for: s, systemCandidateMode: .surface)
+        }
+
+        var before = malloc_statistics_t()
+        malloc_zone_statistics(nil, &before)
+        let repeats = 20
+        for _ in 0..<repeats {
+            for sentence in sentences {
+                let chars = Array(sentence)
+                for end in 4...chars.count {
+                    _ = converter.multiClauseCandidates(
+                        for: String(chars[0..<end]), systemCandidateMode: .surface)
+                }
+            }
+        }
+        var after = malloc_statistics_t()
+        malloc_zone_statistics(nil, &after)
+        func mb(_ v: Int) -> String { String(format: "%.1f", Double(v) / 1048576.0) }
+        let useB = Int(before.size_in_use), useA = Int(after.size_in_use)
+        let maxB = Int(before.max_size_in_use), maxA = Int(after.max_size_in_use)
+        print("ALLOCPROF conversions=\(repeats * sentences.map { $0.count - 3 }.reduce(0, +))")
+        print("ALLOCPROF size_in_use \(mb(useB))MB -> \(mb(useA))MB (Δ\(mb(useA - useB))MB)")
+        print("ALLOCPROF max_size_in_use \(mb(maxB))MB -> \(mb(maxA))MB (Δ\(mb(maxA - maxB))MB)")
+        print("ALLOCPROF blocks_in_use \(before.blocks_in_use) -> \(after.blocks_in_use)")
     }
 
     // LM順乖離スイープ第2段(常設ハーネス): tools/audit_lm_rank_mismatch.py の出力を
