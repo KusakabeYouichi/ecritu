@@ -229,7 +229,9 @@ extension KanaKanjiConverter {
         "なるので": 2000,
         // ですかね は ですか の辞書が 出須賀(収穫wc10000)のみで 出須賀ね になる。
         // かな句スパンを供給+ボーナスで先頭に(2556)
-        "ですかね": 2000
+        "ですかね": 2000,
+        // ですもんね も同型(です+門/物/紋+ね の合成が勝つ)。かな句スパンを先頭に(2559)
+        "ですもんね": 2000
     ]
     // 形容動詞語幹の判定閾値: prev→な の bigram コストがこの値以下なら形容動詞とみなす
     // (便利491/静か425/元気1129 は形容動詞、馬2944 は偶発的な名詞→な なので除外)。
@@ -380,6 +382,14 @@ extension KanaKanjiConverter {
             verbPrefixes: ["ない", "なく", "なさ", "なかっ"],
             preferredVerbSurfacePrefix: nil,
             demotedSurfaces: ["自身"]
+        ),
+        // めどが立つ: たつ の変種(経った/建った/足った)は連語では使いものにならない。
+        // 動詞を 立 に固定し、変種枠を めど/メド 等の名詞表記側に譲る(ユーザ指定 2559)
+        "めど": (
+            surface: "目処",
+            verbPrefixes: ["たつ", "たち", "たっ", "たた", "たて", "たと"],
+            preferredVerbSurfacePrefix: "立",
+            demotedSurfaces: []
         )
     ]
     // 連語の demotedSurfaces に課すペナルティ。自身(4428)を 地震(4803)の後ろへ送るのに
@@ -886,6 +896,9 @@ extension KanaKanjiConverter {
         // 連語の動詞側表層選好(虫がないてる→鳴いてる 等)。連語検出時に動詞区間の開始位置と
         // 優先表層プレフィクスを記録し、その位置から始まる合致表層に連語クランプを与える。
         var collocationPreferredVerbSurfacePrefixesByStart = [Int: String]()
+        // 連語の名詞スパン("start-end")。変種列挙で名詞表記の変種(めど/メド)の
+        // delta 上限を緩和するのに使う(2559)
+        var collocationNounSpans = Set<String>()
         // カタカナ強調/交ぜ書きの対象ノード(供給後の一括分類パスで印付け)。
         // suppressed=+100000(事実上不採用)、demoted=+6000(後方)。
         var scriptVariantSuppressedNodeKeys = Set<String>()
@@ -1058,6 +1071,7 @@ extension KanaKanjiConverter {
                         let rest = String(chars[afterIdx..<n])
                         if collocation.verbPrefixes.contains(where: { rest.hasPrefix($0) }) {
                             collocationPreferredKanaNodeKeys.insert("\(start)-\(end)-\(collocation.surface)")
+                            collocationNounSpans.insert("\(start)-\(end)")
                             for demoted in collocation.demotedSurfaces {
                                 collocationDemotedNodeKeys.insert("\(start)-\(end)-\(demoted)")
                             }
@@ -2567,11 +2581,27 @@ extension KanaKanjiConverter {
                     Self.isNonNativeScriptSurface(alt.surface) {
                     continue
                 }
+                // 連語クランプ区間(めどが立つ 等)では、非選好の漢字動詞変種
+                // (経った/建った/足った)は使いものにならないので出さない。
+                // かな変種(たったら)は残す(2559)。
+                if collocationPreferredVerbNodeKeys.contains("\(chosen.start)-\(chosen.end)-\(chosen.surface)"),
+                    !collocationPreferredVerbNodeKeys.contains("\(alt.start)-\(alt.end)-\(alt.surface)"),
+                    containsKanji(alt.surface) {
+                    continue
+                }
                 let effectiveBase = (alt.isInflectionDerived && containsKanji(alt.surface))
                     ? baseCostCurated
                     : baseCost
                 let delta = pairCost(alt) - effectiveBase
-                guard delta <= Self.multiClauseVariantMaxDelta else {
+                // 連語の名詞スパンの表記変種(めど/メド 等、かな識別か seed 掲載)は
+                // 変種枠の主役なので delta 上限を緩和する(2559)
+                let isCollocationNounScriptVariant = collocationNounSpans.contains("\(chosen.start)-\(chosen.end)")
+                    && (alt.surface == alt.reading
+                        || KanaKanjiSeedDictionary.seed[alt.reading]?.contains(alt.surface) == true)
+                let variantMaxDelta = isCollocationNounScriptVariant
+                    ? Self.multiClauseVariantMaxDelta * 2
+                    : Self.multiClauseVariantMaxDelta
+                guard delta <= variantMaxDelta else {
                     continue
                 }
                 var altSegments = segments
