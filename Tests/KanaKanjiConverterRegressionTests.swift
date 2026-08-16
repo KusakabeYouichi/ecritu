@@ -691,6 +691,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できないですもんね"))
     }
 
+    // ひとばん: 辞書・LM未収録の供給欠落({人版, 人蛮} 等の合成ジャンクのみ)。
+    // 一晩 を seed 供給。1ばん は 番/晩 を数字直後の助数詞として供給(ユーザ指定 2562)。
+    func testRegressionRealLMHitobanAndBanCounter() throws {
+        try prepareRealLMDictionary()
+
+        let hitoban = converter.candidates(for: "ひとばん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(hitoban.first, "一晩", "list=\(hitoban)")
+        let ban = converter.candidates(for: "1ばん", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
+    }
+
     // はなしか: {噺家, 咄家, はなしか, 話か} だった。話か を先頭に、かな は末尾へ
     // (ユーザ指定 2559)。
     func testRegressionRealLMHanashikaPrefersHanashika() throws {
