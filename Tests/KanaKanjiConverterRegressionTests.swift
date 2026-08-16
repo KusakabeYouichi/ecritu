@@ -652,6 +652,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let arunoninaa = converter.candidates(for: "あるのになあ", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(arunoninaa.first, "あるのになあ", "list=\(arunoninaa)")
         XCTAssertFalse(arunoninaa.contains { $0.contains("アルノ") }, "list=\(arunoninaa)")
+        // 表示層のかな識別根拠(無いと実機バーでかなが末尾へ落ちる。2560)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あるのになあ"))
     }
 
     // めどがたったら: 変種が たったら 側(経った/建った/足った=連語では無用)に振られて
@@ -661,12 +663,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
 
         let medo = converter.multiClauseCandidates(for: "めどがたったら", systemCandidateMode: .surface)
-        XCTAssertEqual(medo.first, "目処が立ったら", "multi=\(medo)")
+        XCTAssertEqual(medo.first, "めどが立ったら", "multi=\(medo)")
         XCTAssertFalse(
             medo.prefix(5).contains { $0.contains("経った") || $0.contains("建った") || $0.contains("足った") },
             "multi=\(medo)"
         )
-        XCTAssertTrue(medo.prefix(5).contains("めどが立ったら"), "multi=\(medo)")
+        XCTAssertTrue(medo.prefix(5).contains("目処が立ったら"), "multi=\(medo)")
     }
 
     // ですもんね: です+門/物/紋+ね の合成が かな より先だった(ですかね と同型。
@@ -681,6 +683,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // かな版を上へ)。ここでは ですもんね 部分がかなで保たれることだけ固定する
         let dekinai = converter.multiClauseCandidates(for: "できないですもんね", systemCandidateMode: .surface)
         XCTAssertTrue(dekinai.first?.hasSuffix("ですもんね") == true, "multi=\(dekinai)")
+        // 表示層のかな識別根拠(無いと全かなの できないですもんね が除去され
+        // 出来ないですもんね だけが残る。2560)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できないですもんね"))
     }
 
     // はなしか: {噺家, 咄家, はなしか, 話か} だった。話か を先頭に、かな は末尾へ
@@ -857,10 +862,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         malloc_zone_statistics(nil, &after)
         func mb(_ v: Int) -> String { String(format: "%.1f", Double(v) / 1048576.0) }
         let useB = Int(before.size_in_use), useA = Int(after.size_in_use)
-        let maxB = Int(before.max_size_in_use), maxA = Int(after.max_size_in_use)
+        let allocB = Int(before.size_allocated), allocA = Int(after.size_allocated)
         print("ALLOCPROF conversions=\(repeats * sentences.map { $0.count - 3 }.reduce(0, +))")
         print("ALLOCPROF size_in_use \(mb(useB))MB -> \(mb(useA))MB (Δ\(mb(useA - useB))MB)")
-        print("ALLOCPROF max_size_in_use \(mb(maxB))MB -> \(mb(maxA))MB (Δ\(mb(maxA - maxB))MB)")
+        print("ALLOCPROF size_allocated(アリーナ) \(mb(allocB))MB -> \(mb(allocA))MB (Δ\(mb(allocA - allocB))MB)")
         print("ALLOCPROF blocks_in_use \(before.blocks_in_use) -> \(after.blocks_in_use)")
     }
 
