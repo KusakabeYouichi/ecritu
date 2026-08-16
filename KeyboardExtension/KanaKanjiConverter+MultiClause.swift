@@ -1641,10 +1641,13 @@ extension KanaKanjiConverter {
             // (層2489<そう2945 が 学生層 を守る、さん2020<三3455 が 柚香さん を守る)まで
             // 消える(2094/2101/今回の全面無効で三度検証済み)。フォールバック(2119)との
             // 中間へ圧縮することで、過大な文末選好だけを弱める。
+            // ペアキーは1回だけ連結して両判定で使い回す(エッジ毎に呼ばれるため、
+            // 二重連結は DP 全体で数千個の一時 String になる。アリーナ肥大対策 2560)
+            let bigramPairKey = prev + "\t" + surface
             if prev != Self.multiClauseBOSMarker,
                 !deniesBigramBorrow,
-                !Self.multiClauseBigramPairDenied.contains("\(prev)\t\(surface)"),
-                let bigram = bigramCosts["\(prev)\t\(surface)"] {
+                !Self.multiClauseBigramPairDenied.contains(bigramPairKey),
+                let bigram = bigramCosts[bigramPairKey] {
                 if surface == Self.multiClauseEOSMarker {
                     let fallback = (unigramCosts[Self.multiClauseEOSMarker] ?? 1619)
                         + Self.multiClauseBackoffCost
@@ -2038,15 +2041,17 @@ extension KanaKanjiConverter {
                 } else {
                     naAdjectiveSaStemBonus = 0
                 }
-                let preferredInflectionBonus = (preferredInflectedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                // ノードキーは1回だけ生成して使い回す(以前は判定ごとに再生成しており、
+                // DP 全体で数千個の一時 String を作っていた。アリーナ肥大対策 2560)
+                let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
+                let preferredInflectionBonus = (preferredInflectedNodeKeys.contains(nodeKeySV)
                     ? Self.multiClausePreferredInflectionBonus
                     : 0)
-                    + (seedOrderNounNodeBonuses["\(node.start)-\(node.end)-\(node.surface)"] ?? 0)
+                    + (seedOrderNounNodeBonuses[nodeKeySV] ?? 0)
                     + naAdjectiveSaStemBonus
-                let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
-                let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
-                let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
-                let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
+                let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains(nodeKeySV)
+                let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains(nodeKeySV)
+                let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains(nodeKeySV)
                 let nodeScriptVariantPenalty = (scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
                     : (scriptVariantDemotedNodeKeys.contains(nodeKeySV) ? 6000 : 0))
                     + (politeSupplementDemotedNodeKeys.contains(nodeKeySV)
