@@ -805,7 +805,7 @@ final class KeyboardViewController: UIInputViewController {
             var after = malloc_statistics_t()
             malloc_zone_statistics(nil, &after)
             appendKeyboardDiagnosticsLog(
-                "malloc圧力解放 allocMB=\(String(format: "%.1f", Double(before.size_allocated) / 1_048_576))"
+                "mallocアリーナ返却 allocMB=\(String(format: "%.1f", Double(before.size_allocated) / 1_048_576))"
                     + "→\(String(format: "%.1f", Double(after.size_allocated) / 1_048_576))"
                     + " usedMB=\(String(format: "%.1f", Double(after.size_in_use) / 1_048_576))"
                     + " footprintMB=\(diagnosticsFootprintMBText())",
