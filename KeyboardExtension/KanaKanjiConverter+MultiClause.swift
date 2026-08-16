@@ -352,36 +352,44 @@ extension KanaKanjiConverter {
     //     自身+ない は文法的に不自然(自身 は 私自身 等の照応用法)なので demote し、地震ない を
     //     2番目に残す(ユーザ指定 2535)。
     static let multiClauseNounBeforeVerbCollocations:
-        [String: (surface: String, verbPrefixes: [String], preferredVerbSurfacePrefix: String?, demotedSurfaces: [String])] = [
+        [String: (surface: String, verbPrefixes: [String], preferredVerbSurfacePrefixes: [String], demotedSurfaces: [String])] = [
         "ひび": (
             surface: "ひび",
             verbPrefixes: ["はいっ", "はいら", "はいり", "はいる", "はいれ"],
-            preferredVerbSurfacePrefix: nil,
+            preferredVerbSurfacePrefixes: [],
             demotedSurfaces: []
         ),
         "さいど": (
             surface: "彩度",
             verbPrefixes: ["あげ", "あが", "さげ", "さが"],
-            preferredVerbSurfacePrefix: nil,
+            preferredVerbSurfacePrefixes: [],
             demotedSurfaces: []
         ),
         "むし": (
             surface: "虫",
             verbPrefixes: ["ない", "なき", "なく", "なけ"],
-            preferredVerbSurfacePrefix: "鳴",
+            preferredVerbSurfacePrefixes: ["鳴"],
             demotedSurfaces: []
         ),
         "み": (
             surface: "見",
             verbPrefixes: ["いき", "いく", "いっ", "いけ", "いこ"],
-            preferredVerbSurfacePrefix: "行",
+            preferredVerbSurfacePrefixes: ["行"],
             demotedSurfaces: []
         ),
         "じしん": (
             surface: "自信",
             verbPrefixes: ["ない", "なく", "なさ", "なかっ"],
-            preferredVerbSurfacePrefix: nil,
+            preferredVerbSurfacePrefixes: [],
             demotedSurfaces: ["自身"]
+        ),
+        // 水に浸ける/漬ける: みず(+助詞)直後の つけ活用は 浸/漬 が主(付けてた/着けてた
+        // が先頭だった)。浸→漬 の順は seed つける の並びが決める(ユーザ指定 2563)
+        "みず": (
+            surface: "水",
+            verbPrefixes: ["つけ", "つか", "つく", "つこ"],
+            preferredVerbSurfacePrefixes: ["浸", "漬"],
+            demotedSurfaces: []
         ),
         // めどが立つ: たつ の変種(経った/建った/足った)は連語では使いものにならない。
         // 動詞を 立 に固定し、変種枠を 目処/メド 等の名詞表記側に譲る。名詞はかな めど を
@@ -389,7 +397,7 @@ extension KanaKanjiConverter {
         "めど": (
             surface: "めど",
             verbPrefixes: ["たつ", "たち", "たっ", "たた", "たて", "たと"],
-            preferredVerbSurfacePrefix: "立",
+            preferredVerbSurfacePrefixes: ["立"],
             demotedSurfaces: []
         )
     ]
@@ -898,7 +906,7 @@ extension KanaKanjiConverter {
         var prenominalNoInflectionStarts = Set<Int>()
         // 連語の動詞側表層選好(虫がないてる→鳴いてる 等)。連語検出時に動詞区間の開始位置と
         // 優先表層プレフィクスを記録し、その位置から始まる合致表層に連語クランプを与える。
-        var collocationPreferredVerbSurfacePrefixesByStart = [Int: String]()
+        var collocationPreferredVerbSurfacePrefixesByStart = [Int: [String]]()
         // 連語の名詞スパン("start-end")。変種列挙で名詞表記の変種(めど/メド)の
         // delta 上限を緩和するのに使う(2559)
         var collocationNounSpans = Set<String>()
@@ -1078,8 +1086,8 @@ extension KanaKanjiConverter {
                             for demoted in collocation.demotedSurfaces {
                                 collocationDemotedNodeKeys.insert("\(start)-\(end)-\(demoted)")
                             }
-                            if let verbPrefix = collocation.preferredVerbSurfacePrefix {
-                                collocationPreferredVerbSurfacePrefixesByStart[afterIdx] = verbPrefix
+                            if !collocation.preferredVerbSurfacePrefixes.isEmpty {
+                                collocationPreferredVerbSurfacePrefixesByStart[afterIdx] = collocation.preferredVerbSurfacePrefixes
                             }
                         }
                     }
@@ -1445,8 +1453,8 @@ extension KanaKanjiConverter {
                 for (surface, isDictWord, isCurated, isInflectionDerived, wordCost, isDictionaryFormPredicate) in surfaces {
                     // 連語の動詞側表層選好(虫がないてる→鳴いてる)。外側ループは start 昇順なので、
                     // 名詞区間の検出(連語キー登録)は動詞区間のノード生成より必ず先に済んでいる。
-                    if let preferredVerbPrefix = collocationPreferredVerbSurfacePrefixesByStart[start],
-                        surface.hasPrefix(preferredVerbPrefix) {
+                    if let preferredVerbPrefixes = collocationPreferredVerbSurfacePrefixesByStart[start],
+                        preferredVerbPrefixes.contains(where: { surface.hasPrefix($0) }) {
                         collocationPreferredVerbNodeKeys.insert("\(start)-\(end)-\(surface)")
                     }
                     if isInflectionDerived, prenominalNoInflectionStarts.contains(start) {
