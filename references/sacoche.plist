@@ -27,7 +27,7 @@
 	        <dict><key>phrase</key><string>三番叟</string><key>shortcut</key><string>さんばそう</string></dict>
 	        <dict><key>phrase</key><string>中山七里</string><key>shortcut</key><string>なかやましちり</string></dict>
 	        <dict><key>phrase</key><string>久寿玉</string><key>shortcut</key><string>くすだま</string></dict>
-	        <dict><key>phrase</key><string>井之下</string><key>shortcut</key><string>いのした</string></dict>
+	        <dict><key>phrase</key><string>井之下</string><key>shortcut</key><string>いのした</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>宗和好み</string><key>shortcut</key><string>そうわごのみ</string></dict>
 	        <dict><key>phrase</key><string>寿美久</string><key>shortcut</key><string>すみきゅう</string></dict>
 	        <dict><key>phrase</key><string>椿山荘</string><key>shortcut</key><string>ちんざんそう</string></dict>
@@ -35,7 +35,7 @@
 	        <dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
 	        <dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
 	        <dict><key>phrase</key><string>群林堂</string><key>shortcut</key><string>ぐんりんどう</string></dict>
-	        <dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>
+	        <dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>	<!-- Sudachiにもある -->
 	<!-- その他の地方 -->
 	        <dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
 	        <dict><key>phrase</key><string>占守</string><key>shortcut</key><string>しゅむしゅ</string></dict>
@@ -50,9 +50,9 @@
 	        <dict><key>phrase</key><string>梨泰院</string><key>shortcut</key><string>いておん</string></dict>
 	        <dict><key>phrase</key><string>稚加栄</string><key>shortcut</key><string>ちかえ</string></dict>
 	        <dict><key>phrase</key><string>木川屋</string><key>shortcut</key><string>きがわや</string></dict>
-	        <dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>
+	        <dict><key>phrase</key><string>小金澤</string><key>shortcut</key><string>こがねざわ</string></dict>	<!-- Sudachiにもある -->
 	<!-- 服飾 -->
-	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>
+	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
 	        <dict><key>phrase</key><string>ヴェルヴェッティーン</string><key>shortcut</key><string>ゔぇるゔぇってぃーん</string></dict>
 	<!-- 医療 -->
@@ -78,9 +78,9 @@
 	        <dict><key>phrase</key><string>iReal Pro</string><key>shortcut</key><string>あいりあるぷろ</string></dict>
 	        <dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
 	        <dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
-	        <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>
+	        <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>	<!-- Sudachiにもある -->
 	<!-- 照明 -->
-	        <dict><key>phrase</key><string>演色</string><key>shortcut</key><string>えんしょく</string></dict>
+	        <dict><key>phrase</key><string>演色</string><key>shortcut</key><string>えんしょく</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>演色性能</string><key>shortcut</key><string>えんしょくせいのう</string></dict>
 	        <dict><key>phrase</key><string>調光器</string><key>shortcut</key><string>ちょうこうき</string></dict>
 	        <dict><key>phrase</key><string>Philips Hue</string><key>shortcut</key><string>ふぃりっぷすひゅー</string></dict>
@@ -90,7 +90,7 @@
 	        <dict><key>phrase</key><string>高演色</string><key>shortcut</key><string>こうえんしょく</string></dict>
 	        <dict><key>phrase</key><string>超高演色</string><key>shortcut</key><string>ちょうこうえんしょく</string></dict>
 	        <dict><key>phrase</key><string>昼白色</string><key>shortcut</key><string>ちゅうはくしょく</string></dict>
-	        <dict><key>phrase</key><string>昼光色</string><key>shortcut</key><string>ちゅうこうしょく</string></dict>
+	        <dict><key>phrase</key><string>昼光色</string><key>shortcut</key><string>ちゅうこうしょく</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>電球色</string><key>shortcut</key><string>でんきゅうしょく</string></dict>
 	<!-- 文法 -->
 	        <dict><key>phrase</key><string>未変換</string><key>shortcut</key><string>みへんかん</string></dict>
@@ -112,19 +112,19 @@
 	        <dict><key>phrase</key><string>低音域</string><key>shortcut</key><string>ていおんいき</string></dict>
 	        <dict><key>phrase</key><string>過放電</string><key>shortcut</key><string>かほうでん</string></dict>
 	        <dict><key>phrase</key><string>拡大率</string><key>shortcut</key><string>かくだいりつ</string></dict>
-	        <dict><key>phrase</key><string>核種</string><key>shortcut</key><string>かくしゅ</string></dict>
+	        <dict><key>phrase</key><string>核種</string><key>shortcut</key><string>かくしゅ</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>丸環</string><key>shortcut</key><string>まるかん</string></dict>
 	        <dict><key>phrase</key><string>超短焦点</string><key>shortcut</key><string>ちょうたんしょうてん</string></dict>
 	        <dict><key>phrase</key><string>電界強度</string><key>shortcut</key><string>でんかいきょうど</string></dict>
 	        <dict><key>phrase</key><string>三角環</string><key>shortcut</key><string>さんかくかん</string></dict>
 	        <dict><key>phrase</key><string>防湿庫</string><key>shortcut</key><string>ぼうしつこ</string></dict>
-	        <dict><key>phrase</key><string>線量</string><key>shortcut</key><string>せんりょう</string></dict>
-	        <dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>
+	        <dict><key>phrase</key><string>線量</string><key>shortcut</key><string>せんりょう</string></dict>	<!-- Sudachiにもある -->
+	        <dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>高確率</string><key>shortcut</key><string>こうかくりつ</string></dict>
 	        <dict><key>phrase</key><string>短焦点</string><key>shortcut</key><string>たんしょうてん</string></dict>
 	<!-- 料理・食材 -->
-	        <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>
-	        <dict><key>phrase</key><string>マリネ</string><key>shortcut</key><string>まりね</string><key>pos</key><string>サ変名詞</string></dict>
+	        <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	        <dict><key>phrase</key><string>マリネ</string><key>shortcut</key><string>まりね</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>メランジェ</string><key>shortcut</key><string>めらんじぇ</string><key>pos</key><string>サ変名詞</string></dict>
 	        <dict><key>phrase</key><string>マリナード</string><key>shortcut</key><string>まりなーど</string><key>pos</key><string>サ変名詞</string></dict>
 	        <dict><key>phrase</key><string>シナモンロール</string><key>shortcut</key><string>しなもんろーる</string></dict>
@@ -132,7 +132,7 @@
 	        <dict><key>phrase</key><string>カップヌードル</string><key>shortcut</key><string>かっぷぬーどる</string></dict>
 	        <dict><key>phrase</key><string>ランティーユ</string><key>shortcut</key><string>らんてぃーゆ</string></dict>
 	        <dict><key>phrase</key><string>レフォール</string><key>shortcut</key><string>れふぉーる</string></dict><!-- 西洋わさび(仏 raifort)。辞書に れふぉ〜 皆無 -->
-	        <dict><key>phrase</key><string>レホール</string><key>shortcut</key><string>れほーる</string></dict><!-- レフォールの別表記 -->
+	        <dict><key>phrase</key><string>レホール</string><key>shortcut</key><string>れほーる</string></dict>	<!-- Sudachiにもある --><!-- レフォールの別表記 -->
 	        <dict><key>phrase</key><string>デジュネ</string><key>shortcut</key><string>でじゅね</string></dict><!-- 昼食(仏 déjeuner) -->
 	        <dict><key>phrase</key><string>赤とうがらし</string><key>shortcut</key><string>あかとうがらし</string></dict>
 	        <dict><key>phrase</key><string>赤唐辛子</string><key>shortcut</key><string>あかとうがらし</string></dict>
@@ -221,7 +221,7 @@
 	        <dict><key>phrase</key><string>青椒肉絲</string><key>shortcut</key><string>ちんじゃおろーすー</string></dict>
 	        <dict><key>phrase</key><string>干烧虾仁</string><key>shortcut</key><string>かんしゃおしゃーれん</string></dict>
 	        <dict><key>phrase</key><string>干焼蝦仁</string><key>shortcut</key><string>かんしゃおしゃーれん</string></dict>
-	        <dict><key>phrase</key><string>棒棒鶏</string><key>shortcut</key><string>ばんばんじー</string></dict>
+	        <dict><key>phrase</key><string>棒棒鶏</string><key>shortcut</key><string>ばんばんじー</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>口水鶏</string><key>shortcut</key><string>こうしゅいじー</string></dict>
 	        <dict><key>phrase</key><string>咕咾肉</string><key>shortcut</key><string>ぐーらおろー</string></dict>
 	        <dict><key>phrase</key><string>魚翅湯</string><key>shortcut</key><string>ゆいちいたん</string></dict>
@@ -258,7 +258,7 @@
 	        <dict><key>phrase</key><string>medium well</string><key>shortcut</key><string>みでぃあむうぇる</string></dict>
 	        <dict><key>phrase</key><string>woell-done</string><key>shortcut</key><string>うぇるだん</string></dict>
 	        <dict><key>phrase</key><string>very well-done</string><key>shortcut</key><string>ゔぇりーうぇるだん</string></dict>
-	        <dict><key>phrase</key><string>ブル</string><key>shortcut</key><string>ぶる</string></dict>
+	        <dict><key>phrase</key><string>ブル</string><key>shortcut</key><string>ぶる</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>セニャン</string><key>shortcut</key><string>せにゃん</string></dict>
 	        <dict><key>phrase</key><string>ア・ポワン</string><key>shortcut</key><string>あぽわん</string></dict>
 	        <dict><key>phrase</key><string>ビアン・キュイ</string><key>shortcut</key><string>びあんきゅい</string></dict>
@@ -278,7 +278,7 @@
 	        <dict><key>phrase</key><string>パン・ド・カンパーニュ</string><key>shortcut</key><string>ぱんどかんぱーにゅ</string></dict>
 	        <dict><key>phrase</key><string>パン・コンプレ</string><key>shortcut</key><string>ぱんこんぷれ</string></dict>
 	        <dict><key>phrase</key><string>パン・オ・ルヴァン</string><key>shortcut</key><string>ぱんおるゔぁん</string></dict>
-	        <dict><key>phrase</key><string>クラスト</string><key>shortcut</key><string>くらすと</string></dict>
+	        <dict><key>phrase</key><string>クラスト</string><key>shortcut</key><string>くらすと</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>ルヴァン</string><key>shortcut</key><string>るゔぁん</string></dict>
 	        <dict><key>phrase</key><string>bagel</string><key>shortcut</key><string>べいぐる</string></dict>
 	        <dict><key>phrase</key><string>croissant</string><key>shortcut</key><string>くろわっさん</string></dict>
@@ -313,11 +313,11 @@
 	        <dict><key>phrase</key><string>Lescure</string><key>shortcut</key><string>れすきゅーる</string></dict>
 	        <dict><key>phrase</key><string>Bresse</string><key>shortcut</key><string>ぶれす</string></dict>
 	<!-- ポルシェ -->
-	        <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>
+	        <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>	<!-- Sudachiにもある -->
 	<!--既存<dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict> -->
-	        <dict><key>phrase</key><string>ケイマン</string><key>shortcut</key><string>けいまん</string></dict>
+	        <dict><key>phrase</key><string>ケイマン</string><key>shortcut</key><string>けいまん</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>ボクスター</string><key>shortcut</key><string>ぼくすたー</string></dict>
-	        <dict><key>phrase</key><string>カイエン</string><key>shortcut</key><string>かいえん</string></dict>
+	        <dict><key>phrase</key><string>カイエン</string><key>shortcut</key><string>かいえん</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>マカン</string><key>shortcut</key><string>まかん</string></dict>
 	        <dict><key>phrase</key><string>パナメーラ</string><key>shortcut</key><string>ぱなめーら</string></dict>
 	        <dict><key>phrase</key><string>タイカン</string><key>shortcut</key><string>たいかん</string></dict>
@@ -366,7 +366,7 @@
 	        <dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうよんとう</string></dict>
 	        <dict><key>phrase</key><string>北方四島</string><key>shortcut</key><string>ほっぽうしとう</string></dict>
 	<!-- 表記 -->
-	        <dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>
+	        <dict><key>phrase</key><string>ケイス</string><key>shortcut</key><string>けいす</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>コンヴィニ</string><key>shortcut</key><string>こんゔぃに</string></dict>
 	        <dict><key>phrase</key><string>テイプ</string><key>shortcut</key><string>ていぷ</string></dict>
 	        <dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
@@ -384,11 +384,11 @@
 	        <dict><key>phrase</key><string>ト音記号</string><key>shortcut</key><string>とおんきごう</string></dict>
 	        <dict><key>phrase</key><string>ヘ音記号</string><key>shortcut</key><string>へおんきごう</string></dict>
 	        <dict><key>phrase</key><string>ハ音記号</string><key>shortcut</key><string>はおんきごう</string></dict>
-	        <dict><key>phrase</key><string>アイユ</string><key>shortcut</key><string>あいゆ</string></dict>
+	        <dict><key>phrase</key><string>アイユ</string><key>shortcut</key><string>あいゆ</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict><!-- [そのあと]ならある -->
 	        <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict><!-- [ははかた]ならある -->
 	        <dict><key>phrase</key><string>父方</string><key>shortcut</key><string>ちちがた</string></dict><!-- [ちちかた]ならある -->
-	        <dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict><!-- 先頭に出すため -->
+	        <dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>	<!-- Sudachiにもある --><!-- 先頭に出すため -->
 	        <dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>プロフェショナル</string><key>shortcut</key><string>ぷろふぇしょなる</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>ラバーダッキー</string><key>shortcut</key><string>らばーだっきー</string></dict><!-- 単独でもない!! -->

@@ -58,11 +58,11 @@
     <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>全会一致</string><key>shortcut</key><string>ぜんかいいっち</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- 少ない: ランキング一般則(suffix一致+500)だけでは実機の すくないなあ で 酸くない 語幹合成が残るため、curatedで全経路先頭を保証 -->
-	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>
+	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>	<!-- Sudachiにもある -->
 	<!-- 少なかった: bfs postfix が派生語幹 酸く(酸い連用形)+なかった を再合成して二重加算(+1031)し、活用族昇格だけでは届かない。頻出形の直接登録で先頭を保証 -->
 	<dict><key>phrase</key><string>少なかった</string><key>shortcut</key><string>すくなかった</string></dict>
 	<!-- 仕方ない: 辞書に在る(wc7696)が連文節で から+仕方ない の区切りが 枯らし+方+ない 分割に負ける(まけたからしかたない→負けた枯らし方ない)。curated化(連文節1500)で区切りを勝たせる -->
-	<dict><key>phrase</key><string>仕方ない</string><key>shortcut</key><string>しかたない</string><key>pos</key><string>形容詞</string></dict>
+	<dict><key>phrase</key><string>仕方ない</string><key>shortcut</key><string>しかたない</string><key>pos</key><string>形容詞</string></dict>	<!-- Sudachiにもある -->
 	<!-- 被差別: Sudachi core/LM とも無い完全供給欠落(単文節は seed)。連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため curated 化(被差別部落 等) -->
 	<dict><key>phrase</key><string>被差別</string><key>shortcut</key><string>ひさべつ</string><key>pos</key><string>名詞</string></dict>
 	<!-- とんかつ屋: Sudachi 未収録の複合。連文節で トン+勝谷(かつや の名前収穫)の分割に負けるため curated 化(単文節は seed でも供給) -->
@@ -95,9 +95,9 @@
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>魔改造</string><key>shortcut</key><string>まかいぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- 中黒装飾フィルタで既定候補から外れた実在固有名の復活(映画/ゆうちょ/出版社) -->
-	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>
-	<dict><key>phrase</key><string>ぱ・る・る</string><key>shortcut</key><string>ぱるる</string></dict>
-	<dict><key>phrase</key><string>さ・え・ら</string><key>shortcut</key><string>さえら</string></dict>
+	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ぱ・る・る</string><key>shortcut</key><string>ぱるる</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>さ・え・ら</string><key>shortcut</key><string>さえら</string></dict>	<!-- Sudachiにもある -->
 	<!-- かなが正書の接続詞(Sudachi に単独エントリが無く人名等に負ける) -->
 	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
 	<dict><key>phrase</key><string>なのに</string><key>shortcut</key><string>なのに</string></dict>
@@ -124,34 +124,34 @@
 	<!-- からだが: curated かな識別 だが(1500)が 空(から)+だが 分割を安くし、体(からだ)+が(が→EOS 3831が重い)を218差で逆転するため固定句化。空だが/殻だが は単文節側に温存される -->
 	<dict><key>phrase</key><string>体が</string><key>shortcut</key><string>からだが</string></dict>
 	<!-- 断線: 実在語(wc6518)だが LM unigram 7369 が弱く、Wikipediaバイアスの断片連鎖 段+戦(段→戦=1716 将棋記事、の→段=4936 文楽記事)に1181差で負ける(けいぶるのだんせん→ケイブルの段戦) -->
-	<dict><key>phrase</key><string>断線</string><key>shortcut</key><string>だんせん</string></dict>
+	<dict><key>phrase</key><string>断線</string><key>shortcut</key><string>だんせん</string></dict>	<!-- Sudachiにもある -->
 	<!-- 彼ら: SudachiはA単位で彼+らに分割し word_costs(かれら) に彼らが無い。sacoche の カレラ/Carrera(curated 1500)に合成経路(彼+ら+は 9576)が勝てず かれらは→カレラは 一色になるため curated 供給。カレラは と同点になり非ネイティブ表層タイブレークで彼らが勝つ -->
 	<dict><key>phrase</key><string>彼ら</string><key>shortcut</key><string>かれら</string></dict>
 	<!-- うっかり: かな正書語。かな識別curatedが無いと に+うっかり(最良)が全かなエコー抑制で捨てられ、同コスト(dictUnknown8700)変種の うツかり(Sudachiの促音大書き表記ゆれエントリ、supprで抑制済み)等が繰り上がる -->
-	<dict><key>phrase</key><string>うっかり</string><key>shortcut</key><string>うっかり</string></dict>
+	<dict><key>phrase</key><string>うっかり</string><key>shortcut</key><string>うっかり</string></dict>	<!-- Sudachiにもある -->
 	<!-- 夜行性: Sudachi実在だが wc10555 のジャンク級+LM unigram 7792 で、や(2998)+後世(bigram4885)+の(413) の接着剤ジャンクに1979差で負ける(やこうせいのどうぶつ→や後世の動物) -->
-	<dict><key>phrase</key><string>夜行性</string><key>shortcut</key><string>やこうせい</string></dict>
+	<dict><key>phrase</key><string>夜行性</string><key>shortcut</key><string>やこうせい</string></dict>	<!-- Sudachiにもある -->
 	<!-- それぞれ: かな正書語(uni4329≪其々7995)。かな識別curatedが無いと それぞれ+を(最良)が全かなエコー抑制で捨てられ 其々を が繰り上がる(うっかり と同型) -->
-	<dict><key>phrase</key><string>それぞれ</string><key>shortcut</key><string>それぞれ</string></dict>
+	<dict><key>phrase</key><string>それぞれ</string><key>shortcut</key><string>それぞれ</string></dict>	<!-- Sudachiにもある -->
 	<!-- なぜ: かな正書語(uni5289<何故6391)。かな識別curatedが無いと なぜそれが(最良・全かな)がエコー抑制で捨てられ 何故それが が先頭化する(それぞれ と同型) -->
-	<dict><key>phrase</key><string>なぜ</string><key>shortcut</key><string>なぜ</string></dict>
+	<dict><key>phrase</key><string>なぜ</string><key>shortcut</key><string>なぜ</string></dict>	<!-- Sudachiにもある -->
 	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->
-	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string></dict>
+	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>
 	<!-- いただく系: LMはかな優位(いただく6955<戴く7334<頂く7446)だが、単文節ランキングのかな識別LM判定が活用形の読み(LM未収録)で行われ証明できず、頂きました が先頭化していた。ございます と同じ頻出形直接登録 -->
-	<dict><key>phrase</key><string>いただく</string><key>shortcut</key><string>いただく</string></dict>
+	<dict><key>phrase</key><string>いただく</string><key>shortcut</key><string>いただく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>いただき</string><key>shortcut</key><string>いただき</string></dict>
 	<dict><key>phrase</key><string>いただきます</string><key>shortcut</key><string>いただきます</string></dict>
 	<dict><key>phrase</key><string>いただきました</string><key>shortcut</key><string>いただきました</string></dict>
 	<dict><key>phrase</key><string>いただいた</string><key>shortcut</key><string>いただいた</string></dict>
 	<dict><key>phrase</key><string>いただいて</string><key>shortcut</key><string>いただいて</string></dict>
-	<dict><key>phrase</key><string>いただける</string><key>shortcut</key><string>いただける</string></dict>
+	<dict><key>phrase</key><string>いただける</string><key>shortcut</key><string>いただける</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>いただけます</string><key>shortcut</key><string>いただけます</string></dict>
 	<dict><key>phrase</key><string>いただければ</string><key>shortcut</key><string>いただければ</string></dict>
 	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
 	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>
 	<!-- としとる: wc は 年取る/年老る(共に10085ジャンク級)のみで 歳 系が欠落。賭し(uni7489)+とって 断片が最良化するため、五段curated+て/た形直接供給(気をつけて と同処方)。登録順=候補順(年取〜が先頭、歳とる が2番手) -->
-	<dict><key>phrase</key><string>年取る</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>年取る</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>歳とる</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>歳取る</string><key>shortcut</key><string>としとる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>年取って</string><key>shortcut</key><string>としとって</string></dict>
@@ -159,7 +159,7 @@
 	<dict><key>phrase</key><string>年取った</string><key>shortcut</key><string>としとった</string></dict>
 	<dict><key>phrase</key><string>歳とった</string><key>shortcut</key><string>としとった</string></dict>
 	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->
-	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>
+	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
@@ -187,17 +187,17 @@
 	<!-- 作り方(つくりかた): wc2812 と Sudachi は激安なのに表層unigram(6329)が過大で、
 	     つくり+方 の断片連鎖(bigram つくり→方1147+方→も1944)に67差で負ける
 	     (そんなつくりかたも→そんなつくり方も)。curated で区切りを勝たせる -->
-	<dict><key>phrase</key><string>作り方</string><key>shortcut</key><string>つくりかた</string></dict>
+	<dict><key>phrase</key><string>作り方</string><key>shortcut</key><string>つくりかた</string></dict>	<!-- Sudachiにもある -->
 	<!-- 日本円(にほんえん): 二本+円 の数量詞分割(にほん→二本/2本 の学習で顕在化)に
 	     割れて 日本円 が沈むのを防ぐ。curated で1ノードとして区切りを勝たせる -->
-	<dict><key>phrase</key><string>日本円</string><key>shortcut</key><string>にほんえん</string></dict>
+	<dict><key>phrase</key><string>日本円</string><key>shortcut</key><string>にほんえん</string></dict>	<!-- Sudachiにもある -->
 	<!-- 那覇(なは): 沖縄県都。unigram 6411 が高めで な+波 断片や全かなに負ける
 	     (なはでは→なはでは、なはではこれです→な波では)。curated で区切りを勝たせる -->
-	<dict><key>phrase</key><string>那覇</string><key>shortcut</key><string>なは</string></dict>
+	<dict><key>phrase</key><string>那覇</string><key>shortcut</key><string>なは</string></dict>	<!-- Sudachiにもある -->
 	<!-- 一昨年(おととし): dict wc9096 が高く 弟(おとと)+誌(し) の断片合成に連文節で負ける。
 	     実語なので curated で区切りを勝たせる(おととしの→一昨年の) -->
-	<dict><key>phrase</key><string>一昨年</string><key>shortcut</key><string>おととし</string></dict>
-	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>
+	<dict><key>phrase</key><string>一昨年</string><key>shortcut</key><string>おととし</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>できる</string><key>shortcut</key><string>できる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>なっちゃう</string><key>shortcut</key><string>なっちゃう</string></dict>
 	<!-- なってる(なる+てる縮約、かな正書): 基底列挙で 綯う(レア)経由の 綯ってる が先行し、ことになってる→ことに綯ってる/成ってる が先頭化するため curated 供給 -->
 	<dict><key>phrase</key><string>なってる</string><key>shortcut</key><string>なってる</string></dict>
@@ -226,8 +226,8 @@
 	<dict><key>phrase</key><string>に詰めて</string><key>shortcut</key><string>につめて</string></dict>
 	<dict><key>phrase</key><string>に詰めた</string><key>shortcut</key><string>につめた</string></dict>
 	<!-- びん はLMで 便(5265)が最安のため 便に詰めて 等になる。容器の ビン/瓶 を優先(便 は2位以下でも その便で 等は文脈選択可) -->
-	<dict><key>phrase</key><string>ビン</string><key>shortcut</key><string>びん</string></dict>
-	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>
+	<dict><key>phrase</key><string>ビン</string><key>shortcut</key><string>びん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>瓶</string><key>shortcut</key><string>びん</string></dict>	<!-- Sudachiにもある -->
 	<!-- たつと は時間文脈の 経つと が優勢(bigram 経つ→と 355)だが、終止形+と の活用供給が無くかな1ノードに丸まる。curatedで直接供給(立つと は postfix合成で次点に残る) -->
 	<dict><key>phrase</key><string>経つと</string><key>shortcut</key><string>たつと</string></dict>
 	<!-- いきます は 生きる(一段)の派生が 行く(五段)より先に列挙され、連文節供給枠(上位3件)を 生き系 が占有して 今度生きますね 等になる。頻度圧倒の 行きます 系をcurated供給(ね/よ はpostfixが繋ぐ) -->
@@ -235,7 +235,7 @@
 	<dict><key>phrase</key><string>行きました</string><key>shortcut</key><string>いきました</string></dict>
 	<dict><key>phrase</key><string>行きましょう</string><key>shortcut</key><string>いきましょう</string></dict>
 	<!-- へいき は Wikipedia LM で 兵器(5259)<平気(6911)の系統バイアスがあり、へいきなんだろう が 兵器何だろう になる。会話頻度優先で 平気 を先頭化 -->
-	<dict><key>phrase</key><string>平気</string><key>shortcut</key><string>へいき</string></dict>
+	<dict><key>phrase</key><string>平気</string><key>shortcut</key><string>へいき</string></dict>	<!-- Sudachiにもある -->
 	<!-- つれる は word_costs で 釣れる(8201)が最安で 連れる(8837)が2位。つれてくる 等の複合で基底順が波及するため 連れて をcurated供給 -->
 	<dict><key>phrase</key><string>連れて</string><key>shortcut</key><string>つれて</string></dict>
 	<!-- はって は基底列挙で はう(這う/匍う/匐う)が はる(貼る/張る)より先に並び、はってある が 這ってある 等になる(てある は他動詞専用で 這う に付かない)。貼って/張って をcurated供給 -->
@@ -252,14 +252,14 @@
 	<dict><key>phrase</key><string>聞き間違い</string><key>shortcut</key><string>ききまちがい</string></dict>
 	<dict><key>phrase</key><string>聞きまちがい</string><key>shortcut</key><string>ききまちがい</string></dict>
 	<dict><key>phrase</key><string>聞き間違える</string><key>shortcut</key><string>ききまちがえる</string><key>pos</key><string>一段</string></dict>
-	<dict><key>phrase</key><string>聞き</string><key>shortcut</key><string>きき</string></dict>
+	<dict><key>phrase</key><string>聞き</string><key>shortcut</key><string>きき</string></dict>	<!-- Sudachiにもある -->
 	<!-- 来た は くる の活用形につき辞書に単独収穫されず(きた の辞書は 北/喜田 等のみ)、活用派生7200では 北(5217)やレア人名1ノードに負ける。超高頻度につきcuratedで供給(きゅうにきたよ→急に来たよ 等) -->
 	<dict><key>phrase</key><string>来た</string><key>shortcut</key><string>きた</string></dict>
 	<!-- すき は word_costs で スキ/隙(3903)が 好き(5215)より安く、すきだった 等の合成語幹で 隙だった/スキだった が先頭に来る。頻度圧倒の 好き をcuratedで先頭化。同型: だいじ(大寺3719<大事4031)、きれい(奇麗3864が最安。1位かな/2位綺麗) -->
-	<dict><key>phrase</key><string>好き</string><key>shortcut</key><string>すき</string></dict>
-	<dict><key>phrase</key><string>大事</string><key>shortcut</key><string>だいじ</string></dict>
-	<dict><key>phrase</key><string>きれい</string><key>shortcut</key><string>きれい</string></dict>
-	<dict><key>phrase</key><string>綺麗</string><key>shortcut</key><string>きれい</string></dict>
+	<dict><key>phrase</key><string>好き</string><key>shortcut</key><string>すき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大事</string><key>shortcut</key><string>だいじ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>きれい</string><key>shortcut</key><string>きれい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>綺麗</string><key>shortcut</key><string>きれい</string></dict>	<!-- Sudachiにもある -->
 	<!-- 助動詞相当「かもしれない」はかな正書。辞書に1語で無く かも+知れません(知れる の活用派生)に割れるため、かな識別curatedで全長供給 -->
 	<dict><key>phrase</key><string>かもしれない</string><key>shortcut</key><string>かもしれない</string></dict>
 	<dict><key>phrase</key><string>かもしれません</string><key>shortcut</key><string>かもしれません</string></dict>
@@ -269,12 +269,12 @@
 	<dict><key>phrase</key><string>ほうが</string><key>shortcut</key><string>ほうが</string></dict>
 	<dict><key>phrase</key><string>方が</string><key>shortcut</key><string>ほうが</string></dict>
 	<!-- よい は 1位=かな、2位=良い(word_costs最安の 酔い を先頭から退ける)。いい→良い は suppr 側で抑制 -->
-	<dict><key>phrase</key><string>よい</string><key>shortcut</key><string>よい</string></dict>
-	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>よい</string></dict>
+	<dict><key>phrase</key><string>よい</string><key>shortcut</key><string>よい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>よい</string></dict>	<!-- Sudachiにもある -->
 	<!-- 慣用「〜だけあって」(だけのことはある)はかな正書。あって 区間は派生(会って/逢って)が埋めてかな素通りが生成されず、やつだけ会って 等になる。※「1回だけ会って」等は変種/学習で選択可のトレードオフ -->
 	<dict><key>phrase</key><string>だけあって</string><key>shortcut</key><string>だけあって</string></dict>
 	<!-- 写真: 実データDPでは 写真の解像度が が明確に最良だが、実機では 者芯 系(過去の検証の学習汚染)に負ける。超高頻度につき追加語彙(2400)で確実に先頭化 -->
-	<dict><key>phrase</key><string>写真</string><key>shortcut</key><string>しゃしん</string></dict>
+	<dict><key>phrase</key><string>写真</string><key>shortcut</key><string>しゃしん</string></dict>	<!-- Sudachiにもある -->
 	<!-- 「飲みに行く」慣用: のみ→飲み が高コスト(8469)で かな のみ に沈み、いけます も 生けます が優勢。慣用形を curated で供給 -->
 	<dict><key>phrase</key><string>飲みに行く</string><key>shortcut</key><string>のみにいく</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>飲みに行けます</string><key>shortcut</key><string>のみにいけます</string></dict>
@@ -283,13 +283,13 @@
 	<dict><key>phrase</key><string>飲みに行って</string><key>shortcut</key><string>のみにいって</string></dict>
 	<dict><key>phrase</key><string>飲みに行こう</string><key>shortcut</key><string>のみにいこう</string></dict>
 	<!-- すじょう は コーパスの 巣→城 bigram(1199=地名由来)で 巣城(す+城 2ノード)が 素性(1ノード7873)を連文節で逆転する。常用語 素性 をcuratedで先頭化 -->
-	<dict><key>phrase</key><string>素性</string><key>shortcut</key><string>すじょう</string></dict>
+	<dict><key>phrase</key><string>素性</string><key>shortcut</key><string>すじょう</string></dict>	<!-- Sudachiにもある -->
 	<!-- ときは は トキハ(大分の百貨店等の固有名、4379)が最安。1位かな/2位 時は の順に(トキハ は実在固有名につき抑制せず後方へ) -->
 	<dict><key>phrase</key><string>ときは</string><key>shortcut</key><string>ときは</string></dict>
 	<dict><key>phrase</key><string>時は</string><key>shortcut</key><string>ときは</string></dict>
 	<!-- ある(動詞)はかなが正書(公用文基準)。全かな あるといいな 等がエコーガードで捨てられ 有る系変種が繰り上がるのを防ぐ -->
 	<!-- 口語の「やつ」(物・人を指す)はかなが正書(奴 は乱暴な字面、八つ は数詞複合派生)。やつだけあって 等の慣用にも効く -->
-	<dict><key>phrase</key><string>やつ</string><key>shortcut</key><string>やつ</string></dict>
+	<dict><key>phrase</key><string>やつ</string><key>shortcut</key><string>やつ</string></dict>	<!-- Sudachiにもある -->
 	<!-- 否定過去「なかった」はかなが正書(〜がなかった)。無かった の派生に負けるうえ、長文では変種枠(3件)から押し出されて かな が消える。かな全長curatedで最良化(無かった は2位に残る) -->
 	<dict><key>phrase</key><string>なかった</string><key>shortcut</key><string>なかった</string></dict>
 	<!-- 終助詞クラスタ「だよねえ/だよね」はかな。ねえ→姉/姐、だ→打/駄 等の漢字化やカタカナ混じりに割れるため かな全長curatedで供給 -->
@@ -300,13 +300,13 @@
 	<dict><key>phrase</key><string>ことはない</string><key>shortcut</key><string>ことはない</string></dict>
 	<dict><key>phrase</key><string>ことない</string><key>shortcut</key><string>ことない</string></dict>
 	<!-- 形式名詞「ところ」はかなが正書(ところもあるが 等)。LMは全かなを最良にするが、全かなエコーガードは curated を含む経路しか返さないため、かな識別curatedで供給して先頭に残す -->
-	<dict><key>phrase</key><string>ところ</string><key>shortcut</key><string>ところ</string></dict>
+	<dict><key>phrase</key><string>ところ</string><key>shortcut</key><string>ところ</string></dict>	<!-- Sudachiにもある -->
 	<!-- 助詞相当「によって/により/による」はかなが正書。word_costs に よって/によって が無く、活用派生(寄って/似寄って=似寄る の て形)がノードを埋めて かな素通りが生成されないため、会社似寄って が最良になる。かな識別curatedで供給 -->
 	<dict><key>phrase</key><string>によって</string><key>shortcut</key><string>によって</string></dict>
 	<dict><key>phrase</key><string>により</string><key>shortcut</key><string>により</string></dict>
 	<dict><key>phrase</key><string>による</string><key>shortcut</key><string>による</string></dict>
 	<!-- 副詞「きっと」はかなが正書。word_cost/unigram とも キット(kit名詞)が安く既定で勝つが、主要IMEはいずれも きっと(ひらがな)既定。かな正書curatedで先頭化(スターターキット等 katakana複合の一部は#2に落ちるトレードオフ) -->
-	<dict><key>phrase</key><string>きっと</string><key>shortcut</key><string>きっと</string></dict>
+	<dict><key>phrase</key><string>きっと</string><key>shortcut</key><string>きっと</string></dict>	<!-- Sudachiにもある -->
 	<!-- 接続の慣用「だけでなく/だけではなく」はかなが正書。なく の word_cost は 泣く(9509)が かな なく(10363)より安く、だけで+泣く が最良になる。かな全長curatedで先頭化 -->
 	<dict><key>phrase</key><string>だけでなく</string><key>shortcut</key><string>だけでなく</string></dict>
 	<dict><key>phrase</key><string>だけではなく</string><key>shortcut</key><string>だけではなく</string></dict>
@@ -314,11 +314,11 @@
 	<dict><key>phrase</key><string>ではなく</string><key>shortcut</key><string>ではなく</string></dict>
 	<dict><key>phrase</key><string>でなく</string><key>shortcut</key><string>でなく</string></dict>
 	<!-- 禿げる: dict rank0 だが uni 未収録(=連文節ノード8700)で、は+ゲル(uni6785)の断片連結に負ける(おおいとはげるよ→多いとはゲルよ)。curated で供給 -->
-	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>
+	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>	<!-- Sudachiにもある -->
 	<!-- うまく: かな正書の口語副詞(うまくいく が定型)。かな識別curatedが無いと うまく+いかなくて(最良・全かな)がエコー抑制で捨てられ 旨くいかなくて が繰り上がる -->
 	<dict><key>phrase</key><string>うまく</string><key>shortcut</key><string>うまく</string></dict>
 	<!-- さっき: かな正書の口語(uni さっき が 殺気 等より優位)。かな識別curatedが無いと さっき+のは(最良・全かな)がエコー抑制で捨てられ 殺気のは/削器のは/箚記のは が繰り上がる(それぞれ/うっかり と同型) -->
-	<dict><key>phrase</key><string>さっき</string><key>shortcut</key><string>さっき</string></dict>
+	<dict><key>phrase</key><string>さっき</string><key>shortcut</key><string>さっき</string></dict>	<!-- Sudachiにもある -->
 	<!-- いいね: かな正書の口語(dict の読み いいね は 言い値 のみ、かな は uni 未収録)。イイ/唯々/いゝ/易々+ね の合成が先行し、かな いいね が末尾に沈む。curated で先頭化(言い値 は辞書rank0で2番目に残る) -->
 	<dict><key>phrase</key><string>いいね</string><key>shortcut</key><string>いいね</string></dict>
 	<!-- かわいいね: curated いいね(床1500)が 川+いいね 分割を作り かな かわいいね に勝つ(ろーま事件と同型)。分断される側も curated 化して文節数の少ない方を勝たせる -->
@@ -328,9 +328,9 @@
 	<!-- しか知らない(副助詞しか+知らない の慣用連語): 占い師+かしら+ないが 等の誤区切りに勝たせる -->
 	<dict><key>phrase</key><string>しか知らない</string><key>shortcut</key><string>しかしらない</string></dict>
 	<!-- あした→明日 を先頭化。朝(あした=古語読み)の表層が あさ 読みの uni(4453)を借用して 明日(5910)に連文節で勝つ(あしたは→朝は)。朝 は候補として温存したいので抑制せず、明日 を curated で先頭固定 -->
-	<dict><key>phrase</key><string>明日</string><key>shortcut</key><string>あした</string></dict>
+	<dict><key>phrase</key><string>明日</string><key>shortcut</key><string>あした</string></dict>	<!-- Sudachiにもある -->
 	<!-- ほんとう→本当 を先頭化。ryukyu.plist の 本島(ほんとう=沖縄本島)が curated 上位で 本当(systemDictionary)を潰すため、本当 も curated で供給して先頭に戻す -->
-	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんとう</string></dict>
+	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんとう</string></dict>	<!-- Sudachiにもある -->
 	<!-- にちご→日後(三日後/十日後 等の後半)。辞書には 日語(日本語の古表記=現代ほぼ不使用)しか無く 日後 は別読み ひご のみ。日後 を curated で供給して先頭化 -->
 	<dict><key>phrase</key><string>日後</string><key>shortcut</key><string>にちご</string></dict>
 	<!-- 文語助動詞「べし」はかなが正書(やめるべし/読むべし)。辞書の読み べし は 餅子(wc7404 レア語)のみで、かな同一ノードが供給されず 止める餅子 等になる。かな正書curatedで供給 -->
@@ -338,13 +338,13 @@
 	<!-- 気を: 単字 き は Sudachi 読み別コストが 木4548<気6164 で、短spanレア読み床が 気 を6164に引き上げ 木 に負ける(きをつけよう→木を着けよう)。bigram 気→を(982)も unigram 床には効かないため、慣用句の頭 気を を curated で供給(気になる/気にする と同族) -->
 	<dict><key>phrase</key><string>気を</string><key>shortcut</key><string>きを</string></dict>
 	<!-- でかい: かな正書の口語形容詞(dict rank0 かな、uni7715)。でかい→EOS bigram が無く(Wikipedia文語バイアス)、文末で 出(で)+会(かい) の断片連結(出口 会→EOS 1571)に負ける(そんなにでかい→そんなに出会)。かな正書curatedで供給 -->
-	<dict><key>phrase</key><string>でかい</string><key>shortcut</key><string>でかい</string></dict>
+	<dict><key>phrase</key><string>でかい</string><key>shortcut</key><string>でかい</string></dict>	<!-- Sudachiにもある -->
 	<!-- 顔: curated のか(疑問形)が 〜のかお を のか+お に分断し 顔 のスパンが消える(あんたのかおなんかいもみたい→あんたのかお南海揉みたい、変種に 乃佳お 等)。ろーまにいたる事件の処方箋どおり、分断される側の 顔 も curated 化して同床で文節数の少ない区切りを勝たせる -->
-	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>
+	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>	<!-- Sudachiにもある -->
 	<!-- 殻付き: 複合語が辞書に無く、連文節で から(助詞・激安)+付き 分割に負けて 殻付き が出ない(からつきのほうが→から付きの方が)。curated 化(コスト1500)で連文節でも 殻付き を勝たせる。単文節は seed でも供給 -->
 	<dict><key>phrase</key><string>殻付き</string><key>shortcut</key><string>からつき</string><key>pos</key><string>名詞</string></dict>
 	<!-- 長押し(ながおし=long press。実在辞書語だが連文節で 長尾氏 等の名前合成に埋没)。curated で 長押しで を先頭に -->
-	<dict><key>phrase</key><string>長押し</string><key>shortcut</key><string>ながおし</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>長押し</string><key>shortcut</key><string>ながおし</string><key>pos</key><string>名詞</string></dict>	<!-- Sudachiにもある -->
 	<!-- 隠して(かくして): 連文節で 描く/区画+して の誤合成に負けて出ない。curated で うまくかくして→隠して を通す -->
 	<dict><key>phrase</key><string>隠して</string><key>shortcut</key><string>かくして</string></dict>
 	<!-- こぞって(挙って。かなが正書の副詞): 連文節/単文節で 小+ぞって の誤合成が先頭に来る。curated で こぞって を先頭に -->

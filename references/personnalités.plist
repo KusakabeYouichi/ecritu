@@ -32,7 +32,7 @@
 	<dict><key>phrase</key><string>大橋純子</string><key>shortcut</key><string>おおはしじゅんこ</string></dict>
 	<dict><key>phrase</key><string>庄野真代</string><key>shortcut</key><string>しょうのまよ</string></dict>
 	<dict><key>phrase</key><string>渡辺真知子</string><key>shortcut</key><string>わたなべまちこ</string></dict>
-	<dict><key>phrase</key><string>サーカス</string><key>shortcut</key><string>さーかす</string></dict>
+	<dict><key>phrase</key><string>サーカス</string><key>shortcut</key><string>さーかす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ジュディ・アントン</string><key>shortcut</key><string>じゅでぃあんとん</string></dict>
 	<dict><key>phrase</key><string>朝倉理恵</string><key>shortcut</key><string>あさくらりえ</string></dict>
 	<dict><key>phrase</key><string>夏木マリ</string><key>shortcut</key><string>なつきまり</string></dict>
@@ -51,7 +51,7 @@
 	<dict><key>phrase</key><string>五輪真弓</string><key>shortcut</key><string>いつわまゆみ</string></dict>
 	<dict><key>phrase</key><string>森山良子</string><key>shortcut</key><string>もりやまりょうこ</string></dict>
 	<dict><key>phrase</key><string>加藤登紀子</string><key>shortcut</key><string>かとうときこ</string></dict>
-	<dict><key>phrase</key><string>イルカ</string><key>shortcut</key><string>いるか</string></dict>
+	<dict><key>phrase</key><string>イルカ</string><key>shortcut</key><string>いるか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>太田裕美</string><key>shortcut</key><string>おおたひろみ</string></dict>
 	<dict><key>phrase</key><string>尾崎亜美</string><key>shortcut</key><string>おざきあみ</string></dict>
 	<dict><key>phrase</key><string>谷山浩子</string><key>shortcut</key><string>たにやまひろこ</string></dict>
@@ -71,8 +71,8 @@
 	<dict><key>phrase</key><string>高田みづえ</string><key>shortcut</key><string>たかだみづえ</string></dict>
 	<dict><key>phrase</key><string>桑名晴子</string><key>shortcut</key><string>くわなはるこ</string></dict>
 	<dict><key>phrase</key><string>惣領智子</string><key>shortcut</key><string>そうりょうともこ</string></dict>
-	<dict><key>phrase</key><string>泰葉</string><key>shortcut</key><string>やすは</string></dict>
-	<dict><key>phrase</key><string>麗美</string><key>shortcut</key><string>れいみ</string></dict>
+	<dict><key>phrase</key><string>泰葉</string><key>shortcut</key><string>やすは</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>麗美</string><key>shortcut</key><string>れいみ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>桐原聡子</string><key>shortcut</key><string>きりはらさとこ</string></dict>
 	<dict><key>phrase</key><string>楠瀬誠志郎</string><key>shortcut</key><string>くすのせせいしろう</string></dict>
 	<dict><key>phrase</key><string>飯島真理</string><key>shortcut</key><string>いいじままり</string></dict>
@@ -93,8 +93,8 @@
 	<dict><key>phrase</key><string>伊藤蘭</string><key>shortcut</key><string>いとうらん</string></dict>
 	<dict><key>phrase</key><string>藤村美樹</string><key>shortcut</key><string>ふじむらみき</string></dict>
 	<dict><key>phrase</key><string>田中好子</string><key>shortcut</key><string>たなかよしこ</string></dict>
-	<dict><key>phrase</key><string>ミー</string><key>shortcut</key><string>みー</string></dict>
-	<dict><key>phrase</key><string>ケイ</string><key>shortcut</key><string>けい</string></dict>
+	<dict><key>phrase</key><string>ミー</string><key>shortcut</key><string>みー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ケイ</string><key>shortcut</key><string>けい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>伊藤咲子</string><key>shortcut</key><string>いとうさきこ</string></dict>
 	<dict><key>phrase</key><string>片平なぎさ</string><key>shortcut</key><string>かたひらなぎさ</string></dict>
 	<dict><key>phrase</key><string>岡田奈々</string><key>shortcut</key><string>おかだなな</string></dict>
@@ -164,9 +164,9 @@
 	<dict><key>phrase</key><string>渡辺美里</string><key>shortcut</key><string>わたなべみさと</string></dict>
 	<dict><key>phrase</key><string>中村あゆみ</string><key>shortcut</key><string>なかむらあゆみ</string></dict>
 	<dict><key>phrase</key><string>NOKKO</string><key>shortcut</key><string>のっこ</string></dict>
-	<dict><key>phrase</key><string>杏里</string><key>shortcut</key><string>あんり</string></dict>
+	<dict><key>phrase</key><string>杏里</string><key>shortcut</key><string>あんり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>寺田恵子</string><key>shortcut</key><string>てらだけいこ</string></dict>
-	<dict><key>phrase</key><string>シーナ</string><key>shortcut</key><string>しーな</string></dict>
+	<dict><key>phrase</key><string>シーナ</string><key>shortcut</key><string>しーな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>鮎川麻弥</string><key>shortcut</key><string>あゆかわまみ</string></dict>
 	<dict><key>phrase</key><string>森口博子</string><key>shortcut</key><string>もりぐちひろこ</string></dict>
 	<dict><key>phrase</key><string>堀江美都子</string><key>shortcut</key><string>ほりえみつこ</string></dict>
@@ -270,7 +270,7 @@
 	<dict><key>phrase</key><string>加藤いづみ</string><key>shortcut</key><string>かとういづみ</string></dict>
 	<dict><key>phrase</key><string>橘いずみ</string><key>shortcut</key><string>たちばないずみ</string></dict>
 	<dict><key>phrase</key><string>金子美香</string><key>shortcut</key><string>かねこみか</string></dict>
-	<dict><key>phrase</key><string>詩織</string><key>shortcut</key><string>しおり</string></dict>
+	<dict><key>phrase</key><string>詩織</string><key>shortcut</key><string>しおり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>遊佐未森</string><key>shortcut</key><string>ゆさみもり</string></dict>
 	<dict><key>phrase</key><string>種ともこ</string><key>shortcut</key><string>たねともこ</string></dict>
 	<dict><key>phrase</key><string>今井美樹</string><key>shortcut</key><string>いまいみき</string></dict>
@@ -305,13 +305,13 @@
 	<dict><key>phrase</key><string>市井由理</string><key>shortcut</key><string>いちいゆり</string></dict>
 	<dict><key>phrase</key><string>八木田麻衣</string><key>shortcut</key><string>やぎたまい</string></dict>
 	<dict><key>phrase</key><string>辺見えみり</string><key>shortcut</key><string>へんみえみり</string></dict>
-	<dict><key>phrase</key><string>ちはる</string><key>shortcut</key><string>ちはる</string></dict>
+	<dict><key>phrase</key><string>ちはる</string><key>shortcut</key><string>ちはる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>YOU</string><key>shortcut</key><string>ゆう</string></dict>
 	<dict><key>phrase</key><string>カヒミ・カリィ</string><key>shortcut</key><string>かひみかりぃ</string></dict>
 	<dict><key>phrase</key><string>嶺川貴子</string><key>shortcut</key><string>みねかわたかこ</string></dict>
 	<dict><key>phrase</key><string>野宮真貴</string><key>shortcut</key><string>のみやまき</string></dict>
 	<dict><key>phrase</key><string>戸川京子</string><key>shortcut</key><string>とがわきょうこ</string></dict>
-	<dict><key>phrase</key><string>チャラ</string><key>shortcut</key><string>ちゃら</string></dict>
+	<dict><key>phrase</key><string>チャラ</string><key>shortcut</key><string>ちゃら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>UA</string><key>shortcut</key><string>うーあ</string></dict>
 	<dict><key>phrase</key><string>BONNIE PINK</string><key>shortcut</key><string>ぼにーぴんく</string></dict>
 	<dict><key>phrase</key><string>三浦理恵子</string><key>shortcut</key><string>みうらりえこ</string></dict>
@@ -411,13 +411,13 @@
 	<dict><key>phrase</key><string>信田美帆</string><key>shortcut</key><string>しのだみほ</string></dict>
 	<dict><key>phrase</key><string>本多RuRu</string><key>shortcut</key><string>ほんだるる</string></dict>
 	<dict><key>phrase</key><string>アヤカ</string><key>shortcut</key><string>あやか</string></dict>
-	<dict><key>phrase</key><string>ミカ</string><key>shortcut</key><string>みか</string></dict>
-	<dict><key>phrase</key><string>ダニエル</string><key>shortcut</key><string>だにえる</string></dict>
+	<dict><key>phrase</key><string>ミカ</string><key>shortcut</key><string>みか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ダニエル</string><key>shortcut</key><string>だにえる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レフア</string><key>shortcut</key><string>れふあ</string></dict>
 	<dict><key>phrase</key><string>戸田鈴音</string><key>shortcut</key><string>とだりんね</string></dict>
 	<dict><key>phrase</key><string>柳原尋美</string><key>shortcut</key><string>やなぎはらひろみ</string></dict>
 	<dict><key>phrase</key><string>小林梓</string><key>shortcut</key><string>こばやしあずさ</string></dict>
-	<dict><key>phrase</key><string>あさみ</string><key>shortcut</key><string>あさみ</string></dict>
+	<dict><key>phrase</key><string>あさみ</string><key>shortcut</key><string>あさみ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>里田まい</string><key>shortcut</key><string>さとだまい</string></dict>
 	<dict><key>phrase</key><string>みうな</string><key>shortcut</key><string>みうな</string></dict>
 	<dict><key>phrase</key><string>斉藤瞳</string><key>shortcut</key><string>さいとうひとみ</string></dict>
@@ -434,18 +434,18 @@
 	<dict><key>phrase</key><string>広末涼子</string><key>shortcut</key><string>ひろすえりょうこ</string></dict>
 	<dict><key>phrase</key><string>松たか子</string><key>shortcut</key><string>まつたかこ</string></dict>
 	<dict><key>phrase</key><string>松雪泰子</string><key>shortcut</key><string>まつゆきやすこ</string></dict>
-	<dict><key>phrase</key><string>りょう</string><key>shortcut</key><string>りょう</string></dict>
+	<dict><key>phrase</key><string>りょう</string><key>shortcut</key><string>りょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>江角マキコ</string><key>shortcut</key><string>えすみまきこ</string></dict>
 	<dict><key>phrase</key><string>稲森いずみ</string><key>shortcut</key><string>いなもりいずみ</string></dict>
 	<dict><key>phrase</key><string>藤原紀香</string><key>shortcut</key><string>ふじわらのりか</string></dict>
-	<dict><key>phrase</key><string>千秋</string><key>shortcut</key><string>ちあき</string></dict>
+	<dict><key>phrase</key><string>千秋</string><key>shortcut</key><string>ちあき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ビビアン・スー</string><key>shortcut</key><string>びびあんすー</string></dict>
 	<dict><key>phrase</key><string>遠藤久美子</string><key>shortcut</key><string>えんどうくみこ</string></dict>
 	<dict><key>phrase</key><string>吉野紗香</string><key>shortcut</key><string>よしのさやか</string></dict>
 	<dict><key>phrase</key><string>奥菜恵</string><key>shortcut</key><string>おきなめぐみ</string></dict>
 	<dict><key>phrase</key><string>加藤あい</string><key>shortcut</key><string>かとうあい</string></dict>
 	<dict><key>phrase</key><string>深田恭子</string><key>shortcut</key><string>ふかだきょうこ</string></dict>
-	<dict><key>phrase</key><string>優香</string><key>shortcut</key><string>ゆうか</string></dict>
+	<dict><key>phrase</key><string>優香</string><key>shortcut</key><string>ゆうか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>酒井美紀</string><key>shortcut</key><string>さかいみき</string></dict>
 	<dict><key>phrase</key><string>水野美紀</string><key>shortcut</key><string>みずのみき</string></dict>
 	<dict><key>phrase</key><string>菅野美穂</string><key>shortcut</key><string>かんのみほ</string></dict>
@@ -468,7 +468,7 @@
 	<dict><key>phrase</key><string>木村カエラ</string><key>shortcut</key><string>きむらかえら</string></dict>
 	<dict><key>phrase</key><string>YUI</string><key>shortcut</key><string>ゆい</string></dict>
 	<dict><key>phrase</key><string>伊藤由奈</string><key>shortcut</key><string>いとうゆな</string></dict>
-	<dict><key>phrase</key><string>絢香</string><key>shortcut</key><string>あやか</string></dict>
+	<dict><key>phrase</key><string>絢香</string><key>shortcut</key><string>あやか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>加藤ミリヤ</string><key>shortcut</key><string>かとうみりや</string></dict>
 	<dict><key>phrase</key><string>星村麻衣</string><key>shortcut</key><string>ほしむらまい</string></dict>
 	<dict><key>phrase</key><string>奥華子</string><key>shortcut</key><string>おくはなこ</string></dict>
@@ -479,7 +479,7 @@
 	<dict><key>phrase</key><string>柴田淳</string><key>shortcut</key><string>しばたじゅん</string></dict>
 	<dict><key>phrase</key><string>元ちとせ</string><key>shortcut</key><string>はじめちとせ</string></dict>
 	<dict><key>phrase</key><string>城南海</string><key>shortcut</key><string>きずきみなみ</string></dict>
-	<dict><key>phrase</key><string>大納言</string><key>shortcut</key><string>だいなごん</string></dict>
+	<dict><key>phrase</key><string>大納言</string><key>shortcut</key><string>だいなごん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>水樹奈々</string><key>shortcut</key><string>みずきなな</string></dict>
 	<dict><key>phrase</key><string>田村ゆかり</string><key>shortcut</key><string>たむらゆかり</string></dict>
 	<dict><key>phrase</key><string>堀江由衣</string><key>shortcut</key><string>ほりえゆい</string></dict>
@@ -541,7 +541,7 @@
 	<dict><key>phrase</key><string>久住小春</string><key>shortcut</key><string>くすみこはる</string></dict>
 	<dict><key>phrase</key><string>光井愛佳</string><key>shortcut</key><string>みついあいか</string></dict>
 	<dict><key>phrase</key><string>ジュンジュン</string><key>shortcut</key><string>じゅんじゅん</string></dict>
-	<dict><key>phrase</key><string>リンリン</string><key>shortcut</key><string>りんりん</string></dict>
+	<dict><key>phrase</key><string>リンリン</string><key>shortcut</key><string>りんりん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>譜久村聖</string><key>shortcut</key><string>ふくむらみずき</string></dict>
 	<dict><key>phrase</key><string>生田衣梨奈</string><key>shortcut</key><string>いくたえりな</string></dict>
 	<dict><key>phrase</key><string>鞘師里保</string><key>shortcut</key><string>さやしりほ</string></dict>
@@ -606,7 +606,7 @@
 	<dict><key>phrase</key><string>傳田真央</string><key>shortcut</key><string>でんだまお</string></dict>
 	<dict><key>phrase</key><string>谷村奈南</string><key>shortcut</key><string>たにむらなな</string></dict>
 	<dict><key>phrase</key><string>ICONIQ</string><key>shortcut</key><string>あいこにっく</string></dict>
-	<dict><key>phrase</key><string>ステファニー</string><key>shortcut</key><string>すてふぁにー</string></dict>
+	<dict><key>phrase</key><string>ステファニー</string><key>shortcut</key><string>すてふぁにー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>玉置成実</string><key>shortcut</key><string>たまきなみ</string></dict>
 	<dict><key>phrase</key><string>北出菜奈</string><key>shortcut</key><string>きたでなな</string></dict>
 	<dict><key>phrase</key><string>高橋瞳</string><key>shortcut</key><string>たかはしひとみ</string></dict>
@@ -710,24 +710,24 @@
 	<dict><key>phrase</key><string>本間日陽</string><key>shortcut</key><string>ほんまひなた</string></dict>
 	<dict><key>phrase</key><string>チェウォン</string><key>shortcut</key><string>ちぇうぉん</string></dict>
 	<dict><key>phrase</key><string>カズハ</string><key>shortcut</key><string>かずは</string></dict>
-	<dict><key>phrase</key><string>サクラ</string><key>shortcut</key><string>さくら</string></dict>
-	<dict><key>phrase</key><string>モモ</string><key>shortcut</key><string>もも</string></dict>
-	<dict><key>phrase</key><string>サナ</string><key>shortcut</key><string>さな</string></dict>
-	<dict><key>phrase</key><string>ミナ</string><key>shortcut</key><string>みな</string></dict>
-	<dict><key>phrase</key><string>マコ</string><key>shortcut</key><string>まこ</string></dict>
-	<dict><key>phrase</key><string>リク</string><key>shortcut</key><string>りく</string></dict>
-	<dict><key>phrase</key><string>リマ</string><key>shortcut</key><string>りま</string></dict>
-	<dict><key>phrase</key><string>リオ</string><key>shortcut</key><string>りお</string></dict>
-	<dict><key>phrase</key><string>マヤ</string><key>shortcut</key><string>まや</string></dict>
+	<dict><key>phrase</key><string>サクラ</string><key>shortcut</key><string>さくら</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>モモ</string><key>shortcut</key><string>もも</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>サナ</string><key>shortcut</key><string>さな</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ミナ</string><key>shortcut</key><string>みな</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>マコ</string><key>shortcut</key><string>まこ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>リク</string><key>shortcut</key><string>りく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>リマ</string><key>shortcut</key><string>りま</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>リオ</string><key>shortcut</key><string>りお</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>マヤ</string><key>shortcut</key><string>まや</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ミイヒ</string><key>shortcut</key><string>みいひ</string></dict>
 	<dict><key>phrase</key><string>マユカ</string><key>shortcut</key><string>まゆか</string></dict>
-	<dict><key>phrase</key><string>ニナ</string><key>shortcut</key><string>にな</string></dict>
+	<dict><key>phrase</key><string>ニナ</string><key>shortcut</key><string>にな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アイナ・ジ・エンド</string><key>shortcut</key><string>あいなじえんど</string></dict>
 	<dict><key>phrase</key><string>セントチヒロ・チッチ</string><key>shortcut</key><string>せんとちひろちっち</string></dict>
 	<dict><key>phrase</key><string>モモコグミカンパニー</string><key>shortcut</key><string>ももこぐみかんぱにー</string></dict>
 	<dict><key>phrase</key><string>ハシヤスメ・アツコ</string><key>shortcut</key><string>はしやすめあつこ</string></dict>
 	<dict><key>phrase</key><string>アユニ・D</string><key>shortcut</key><string>あゆにでぃー</string></dict>
-	<dict><key>phrase</key><string>あの</string><key>shortcut</key><string>あの</string></dict>
+	<dict><key>phrase</key><string>あの</string><key>shortcut</key><string>あの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>金子理江</string><key>shortcut</key><string>かねこりえ</string></dict>
 	<dict><key>phrase</key><string>黒宮れい</string><key>shortcut</key><string>くろみやれい</string></dict>
 	<dict><key>phrase</key><string>あいみょん</string><key>shortcut</key><string>あいみょん</string></dict>
@@ -752,8 +752,8 @@
 	<dict><key>phrase</key><string>青葉市子</string><key>shortcut</key><string>あおばいちこ</string></dict>
 	<dict><key>phrase</key><string>中村佳穂</string><key>shortcut</key><string>なかむらかほ</string></dict>
 	<dict><key>phrase</key><string>あっこりんりん</string><key>shortcut</key><string>あっこりんりん</string></dict>
-	<dict><key>phrase</key><string>マナ</string><key>shortcut</key><string>まな</string></dict>
-	<dict><key>phrase</key><string>カナ</string><key>shortcut</key><string>かな</string></dict>
+	<dict><key>phrase</key><string>マナ</string><key>shortcut</key><string>まな</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>カナ</string><key>shortcut</key><string>かな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>長屋晴子</string><key>shortcut</key><string>ながやはるこ</string></dict>
 	<dict><key>phrase</key><string>宮崎朝子</string><key>shortcut</key><string>みやざきあさこ</string></dict>
 	<dict><key>phrase</key><string>松岡彩</string><key>shortcut</key><string>まつおかあや</string></dict>
@@ -761,14 +761,14 @@
 	<dict><key>phrase</key><string>牛丸ありさ</string><key>shortcut</key><string>うしまるありさ</string></dict>
 	<dict><key>phrase</key><string>ごっきん</string><key>shortcut</key><string>ごっきん</string></dict>
 	<dict><key>phrase</key><string>林萌々子</string><key>shortcut</key><string>はやしももこ</string></dict>
-	<dict><key>phrase</key><string>ぴか</string><key>shortcut</key><string>ぴか</string></dict>
-	<dict><key>phrase</key><string>美咲</string><key>shortcut</key><string>みさき</string></dict>
+	<dict><key>phrase</key><string>ぴか</string><key>shortcut</key><string>ぴか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>美咲</string><key>shortcut</key><string>みさき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>たかはしほのか</string><key>shortcut</key><string>たかはしほのか</string></dict>
-	<dict><key>phrase</key><string>海</string><key>shortcut</key><string>うみ</string></dict>
+	<dict><key>phrase</key><string>海</string><key>shortcut</key><string>うみ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>あ〜ちゃん</string><key>shortcut</key><string>あーちゃん</string></dict>
 	<dict><key>phrase</key><string>かしゆか</string><key>shortcut</key><string>かしゆか</string></dict>
 	<dict><key>phrase</key><string>のっち</string><key>shortcut</key><string>のっち</string></dict>
-	<dict><key>phrase</key><string>雫</string><key>shortcut</key><string>しずく</string></dict>
+	<dict><key>phrase</key><string>雫</string><key>shortcut</key><string>しずく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ACAね</string><key>shortcut</key><string>あかね</string></dict>
 	<dict><key>phrase</key><string>suis</string><key>shortcut</key><string>すい</string></dict>
 	<dict><key>phrase</key><string>礼衣</string><key>shortcut</key><string>れい</string></dict>
@@ -828,31 +828,31 @@
 
     <!-- 世界のミュージシャン100 (A) -->
     <dict><key>phrase</key><string>ザ・ビートルズ</string><key>shortcut</key><string>ざびーとるず</string></dict>
-    <dict><key>phrase</key><string>ビートルズ</string><key>shortcut</key><string>びーとるず</string></dict>
+    <dict><key>phrase</key><string>ビートルズ</string><key>shortcut</key><string>びーとるず</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>マイケル・ジャクソン</string><key>shortcut</key><string>まいけるじゃくそん</string></dict>
     <dict><key>phrase</key><string>エルヴィス・プレスリー</string><key>shortcut</key><string>えるゔぃすぷれすりー</string></dict>
     <dict><key>phrase</key><string>ボブ・ディラン</string><key>shortcut</key><string>ぼぶでぃらん</string></dict>
     <dict><key>phrase</key><string>ザ・ローリング・ストーンズ</string><key>shortcut</key><string>ざろーりんぐすとーんず</string></dict>
     <dict><key>phrase</key><string>ローリング・ストーンズ</string><key>shortcut</key><string>ろーりんぐすとーんず</string></dict>
-    <dict><key>phrase</key><string>クイーン</string><key>shortcut</key><string>くいーん</string></dict>
-    <dict><key>phrase</key><string>マドンナ</string><key>shortcut</key><string>まどんな</string></dict>
+    <dict><key>phrase</key><string>クイーン</string><key>shortcut</key><string>くいーん</string></dict>	<!-- Sudachiにもある -->
+    <dict><key>phrase</key><string>マドンナ</string><key>shortcut</key><string>まどんな</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>レッド・ツェッペリン</string><key>shortcut</key><string>れっどつぇっぺりん</string></dict>
     <dict><key>phrase</key><string>デヴィッド・ボウイ</string><key>shortcut</key><string>でゔぃっどぼうい</string></dict>
-    <dict><key>phrase</key><string>プリンス</string><key>shortcut</key><string>ぷりんす</string></dict>
+    <dict><key>phrase</key><string>プリンス</string><key>shortcut</key><string>ぷりんす</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>スティーヴィー・ワンダー</string><key>shortcut</key><string>すてぃーゔぃーわんだー</string></dict>
     <dict><key>phrase</key><string>ジミ・ヘンドリックス</string><key>shortcut</key><string>じみへんどりっくす</string></dict>
     <dict><key>phrase</key><string>ボブ・マーリー</string><key>shortcut</key><string>ぼぶまーりー</string></dict>
     <dict><key>phrase</key><string>アレサ・フランクリン</string><key>shortcut</key><string>あれさふらんくりん</string></dict>
     <dict><key>phrase</key><string>ピンク・フロイド</string><key>shortcut</key><string>ぴんくふろいど</string></dict>
-    <dict><key>phrase</key><string>ニルヴァーナ</string><key>shortcut</key><string>にるゔぁーな</string></dict>
+    <dict><key>phrase</key><string>ニルヴァーナ</string><key>shortcut</key><string>にるゔぁーな</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>エルトン・ジョン</string><key>shortcut</key><string>えるとんじょん</string></dict>
     <dict><key>phrase</key><string>ポール・マッカートニー</string><key>shortcut</key><string>ぽーるまっかーとにー</string></dict>
     <dict><key>phrase</key><string>ジョン・レノン</string><key>shortcut</key><string>じょんれのん</string></dict>
     <dict><key>phrase</key><string>ジェームス・ブラウン</string><key>shortcut</key><string>じぇーむすぶらうん</string></dict>
     <dict><key>phrase</key><string>エリック・クラプトン</string><key>shortcut</key><string>えりっくくらぷとん</string></dict>
     <dict><key>phrase</key><string>テイラー・スウィフト</string><key>shortcut</key><string>ていらーすうぃふと</string></dict>
-    <dict><key>phrase</key><string>ビヨンセ</string><key>shortcut</key><string>びよんせ</string></dict>
-    <dict><key>phrase</key><string>エミネム</string><key>shortcut</key><string>えみねむ</string></dict>
+    <dict><key>phrase</key><string>ビヨンセ</string><key>shortcut</key><string>びよんせ</string></dict>	<!-- Sudachiにもある -->
+    <dict><key>phrase</key><string>エミネム</string><key>shortcut</key><string>えみねむ</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>マイルズ・デイヴィス</string><key>shortcut</key><string>まいるずでいゔぃす</string></dict>
     <dict><key>phrase</key><string>ルイ・アームストロング</string><key>shortcut</key><string>るいあーむすとろんぐ</string></dict>
     <dict><key>phrase</key><string>フランク・シナトラ</string><key>shortcut</key><string>ふらんくしなとら</string></dict>
@@ -861,59 +861,59 @@
     <dict><key>phrase</key><string>セリーヌ・ディオン</string><key>shortcut</key><string>せりーぬでぃおん</string></dict>
     <dict><key>phrase</key><string>ユーツー</string><key>shortcut</key><string>ゆーつー</string></dict>
     <dict><key>phrase</key><string>エーシーディーシー</string><key>shortcut</key><string>えーしーでぃーしー</string></dict>
-    <dict><key>phrase</key><string>メタリカ</string><key>shortcut</key><string>めたりか</string></dict>
+    <dict><key>phrase</key><string>メタリカ</string><key>shortcut</key><string>めたりか</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>ガンズ・アンド・ローゼズ</string><key>shortcut</key><string>がんずあんどろーぜず</string></dict>
-    <dict><key>phrase</key><string>ボン・ジョヴィ</string><key>shortcut</key><string>ぼんじょゔぃ</string></dict>
-    <dict><key>phrase</key><string>エアロスミス</string><key>shortcut</key><string>えあろすみす</string></dict>
+    <dict><key>phrase</key><string>ボン・ジョヴィ</string><key>shortcut</key><string>ぼんじょゔぃ</string></dict>	<!-- Sudachiにもある -->
+    <dict><key>phrase</key><string>エアロスミス</string><key>shortcut</key><string>えあろすみす</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>レッド・ホット・チリ・ペッパーズ</string><key>shortcut</key><string>れっどほっとちりぺっぱーず</string></dict>
-    <dict><key>phrase</key><string>オアシス</string><key>shortcut</key><string>おあしす</string></dict>
+    <dict><key>phrase</key><string>オアシス</string><key>shortcut</key><string>おあしす</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>レディオヘッド</string><key>shortcut</key><string>れでぃおへっど</string></dict>
     <dict><key>phrase</key><string>コールドプレイ</string><key>shortcut</key><string>こーるどぷれい</string></dict>
     <dict><key>phrase</key><string>ブルーノ・マーズ</string><key>shortcut</key><string>ぶるーのまーず</string></dict>
     <dict><key>phrase</key><string>エド・シーラン</string><key>shortcut</key><string>えどしーらん</string></dict>
     <dict><key>phrase</key><string>レディー・ガガ</string><key>shortcut</key><string>れでぃーがが</string></dict>
-    <dict><key>phrase</key><string>アデル</string><key>shortcut</key><string>あでる</string></dict>
+    <dict><key>phrase</key><string>アデル</string><key>shortcut</key><string>あでる</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>リアーナ</string><key>shortcut</key><string>りあーな</string></dict>
     <dict><key>phrase</key><string>ジャスティン・ビーバー</string><key>shortcut</key><string>じゃすてぃんびーばー</string></dict>
     <dict><key>phrase</key><string>アリアナ・グランデ</string><key>shortcut</key><string>ありあなぐらんで</string></dict>
     <dict><key>phrase</key><string>ビリー・アイリッシュ</string><key>shortcut</key><string>びりーあいりっしゅ</string></dict>
     <dict><key>phrase</key><string>ザ・ウィークエンド</string><key>shortcut</key><string>ざうぃーくえんど</string></dict>
-    <dict><key>phrase</key><string>ウィークエンド</string><key>shortcut</key><string>うぃーくえんど</string></dict>
+    <dict><key>phrase</key><string>ウィークエンド</string><key>shortcut</key><string>うぃーくえんど</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>2パック</string><key>shortcut</key><string>つーぱっく</string></dict>
     <dict><key>phrase</key><string>ジェイ・Z</string><key>shortcut</key><string>じぇいずぃー</string></dict>
     <dict><key>phrase</key><string>カニエ・ウェスト</string><key>shortcut</key><string>かにえうぇすと</string></dict>
     <dict><key>phrase</key><string>ケンドリック・ラマー</string><key>shortcut</key><string>けんどりっくらまー</string></dict>
     <dict><key>phrase</key><string>ドクター・ドレー</string><key>shortcut</key><string>どくたーどれー</string></dict>
     <dict><key>phrase</key><string>ノトーリアス・B.I.G.</string><key>shortcut</key><string>のとーりあすびーあいじー</string></dict>
-    <dict><key>phrase</key><string>ドレイク</string><key>shortcut</key><string>どれいく</string></dict>
+    <dict><key>phrase</key><string>ドレイク</string><key>shortcut</key><string>どれいく</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>デュア・リパ</string><key>shortcut</key><string>でゅありぱ</string></dict>
     <dict><key>phrase</key><string>ブリトニー・スピアーズ</string><key>shortcut</key><string>ぶりとにーすぴあーず</string></dict>
     <dict><key>phrase</key><string>ジャネット・ジャクソン</string><key>shortcut</key><string>じゃねっとじゃくそん</string></dict>
-    <dict><key>phrase</key><string>アバ</string><key>shortcut</key><string>あば</string></dict>
+    <dict><key>phrase</key><string>アバ</string><key>shortcut</key><string>あば</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>ビーチ・ボーイズ</string><key>shortcut</key><string>びーちぼーいず</string></dict>
-    <dict><key>phrase</key><string>ビー・ジーズ</string><key>shortcut</key><string>びーじーず</string></dict>
+    <dict><key>phrase</key><string>ビー・ジーズ</string><key>shortcut</key><string>びーじーず</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>バックストリート・ボーイズ</string><key>shortcut</key><string>ばっくすとりーとぼーいず</string></dict>
     <dict><key>phrase</key><string>マーヴィン・ゲイ</string><key>shortcut</key><string>まーゔぃんげい</string></dict>
     <dict><key>phrase</key><string>サム・クック</string><key>shortcut</key><string>さむくっく</string></dict>
     <dict><key>phrase</key><string>レイ・チャールズ</string><key>shortcut</key><string>れいちゃーるず</string></dict>
     <dict><key>phrase</key><string>ダイアナ・ロス</string><key>shortcut</key><string>だいあなろす</string></dict>
     <dict><key>phrase</key><string>ザ・フー</string><key>shortcut</key><string>ざふー</string></dict>
-    <dict><key>phrase</key><string>フー</string><key>shortcut</key><string>ふー</string></dict>
+    <dict><key>phrase</key><string>フー</string><key>shortcut</key><string>ふー</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>ディープ・パープル</string><key>shortcut</key><string>でぃーぷぱーぷる</string></dict>
     <dict><key>phrase</key><string>ブラック・サバス</string><key>shortcut</key><string>ぶらっくさばす</string></dict>
     <dict><key>phrase</key><string>オジー・オズボーン</string><key>shortcut</key><string>おじーおずぼーん</string></dict>
     <dict><key>phrase</key><string>ヴァン・ヘイレン</string><key>shortcut</key><string>ゔぁんへいれん</string></dict>
     <dict><key>phrase</key><string>グリーン・デイ</string><key>shortcut</key><string>ぐりーんでい</string></dict>
     <dict><key>phrase</key><string>リンキン・パーク</string><key>shortcut</key><string>りんきんぱーく</string></dict>
-    <dict><key>phrase</key><string>ミューズ</string><key>shortcut</key><string>みゅーず</string></dict>
+    <dict><key>phrase</key><string>ミューズ</string><key>shortcut</key><string>みゅーず</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>フー・ファイターズ</string><key>shortcut</key><string>ふーふぁいたーず</string></dict>
     <dict><key>phrase</key><string>ブルース・スプリングスティーン</string><key>shortcut</key><string>ぶるーすすぷりんぐすてぃーん</string></dict>
     <dict><key>phrase</key><string>ニール・ヤング</string><key>shortcut</key><string>にーるやんぐ</string></dict>
     <dict><key>phrase</key><string>ザ・クラッシュ</string><key>shortcut</key><string>ざくらっしゅ</string></dict>
-    <dict><key>phrase</key><string>クラッシュ</string><key>shortcut</key><string>くらっしゅ</string><key>pos</key><string>サ変名詞</string></dict>
+    <dict><key>phrase</key><string>クラッシュ</string><key>shortcut</key><string>くらっしゅ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>セックス・ピストルズ</string><key>shortcut</key><string>せっくすぴすとるず</string></dict>
     <dict><key>phrase</key><string>ザ・ドアーズ</string><key>shortcut</key><string>ざどあーず</string></dict>
-    <dict><key>phrase</key><string>ドアーズ</string><key>shortcut</key><string>どあーず</string></dict>
+    <dict><key>phrase</key><string>ドアーズ</string><key>shortcut</key><string>どあーず</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>ジョン・コルトレーン</string><key>shortcut</key><string>じょんこるとれーん</string></dict>
     <dict><key>phrase</key><string>B.B.キング</string><key>shortcut</key><string>びーびーきんぐ</string></dict>
     <dict><key>phrase</key><string>ロバート・ジョンソン</string><key>shortcut</key><string>ろばーとじょんそん</string></dict>
@@ -927,10 +927,10 @@
     <dict><key>phrase</key><string>ニーナ・シモン</string><key>shortcut</key><string>にーなしもん</string></dict>
     <dict><key>phrase</key><string>ビリー・ホリデイ</string><key>shortcut</key><string>びりーほりでい</string></dict>
     <dict><key>phrase</key><string>ダフト・パンク</string><key>shortcut</key><string>だふとぱんく</string></dict>
-    <dict><key>phrase</key><string>クラフトワーク</string><key>shortcut</key><string>くらふとわーく</string></dict>
+    <dict><key>phrase</key><string>クラフトワーク</string><key>shortcut</key><string>くらふとわーく</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>カルロス・サンタナ</string><key>shortcut</key><string>かるろすさんたな</string></dict>
     <dict><key>phrase</key><string>エンニオ・モリコーネ</string><key>shortcut</key><string>えんにおもりこーね</string></dict>
-    <dict><key>phrase</key><string>ビョーク</string><key>shortcut</key><string>びょーく</string></dict>
+    <dict><key>phrase</key><string>ビョーク</string><key>shortcut</key><string>びょーく</string></dict>	<!-- Sudachiにもある -->
     <dict><key>phrase</key><string>セルジオ・メンデス</string><key>shortcut</key><string>せるじおめんです</string></dict>
     <dict><key>phrase</key><string>アストル・ピアソラ</string><key>shortcut</key><string>あすとるぴあそら</string></dict>
     <!-- 世界のミュージシャン100 (B) -->
@@ -1120,7 +1120,7 @@
 	<dict><key>phrase</key><string>ブラッド・メルドー</string><key>shortcut</key><string>ぶらっどめるどー</string></dict>
 	<dict><key>phrase</key><string>フレッチャー・ヘンダーソン</string><key>shortcut</key><string>ふれっちゃーへんだーそん</string></dict>
 	<dict><key>phrase</key><string>フレディ・ハバード</string><key>shortcut</key><string>ふれでぃはばーど</string></dict>
-	<dict><key>phrase</key><string>ベニー・グッドマン</string><key>shortcut</key><string>べにーぐっどまん</string></dict>
+	<dict><key>phrase</key><string>ベニー・グッドマン</string><key>shortcut</key><string>べにーぐっどまん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ベニー・ゴルソン</string><key>shortcut</key><string>べにーごるそん</string></dict>
 	<dict><key>phrase</key><string>ポール・チェンバース</string><key>shortcut</key><string>ぽーるちぇんばーす</string></dict>
 	<dict><key>phrase</key><string>ポール・デスモンド</string><key>shortcut</key><string>ぽーるですもんど</string></dict>
