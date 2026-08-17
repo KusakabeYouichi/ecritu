@@ -343,6 +343,10 @@ extension KeyboardViewController {
         single: [String],
         mode: KanaKanjiCandidateSourceMode
     ) {
+        // 打鍵内容そのものを記録するため開発ビルド専用(App Store ガイドライン4.4.2)。
+        #if !DEBUG
+        return
+        #endif
         guard let sharedDefaults else {
             return
         }

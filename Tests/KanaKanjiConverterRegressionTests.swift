@@ -9458,7 +9458,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             shortcutVocabulary: [],
             candidateBarModel: KeyboardCandidateBarModel(),
             showsParenthesesWrapper: false,
-            initialSpaceToastText: nil
+            initialSpaceToastText: nil,
+            initialInputMode: .kana
         )
         .frame(width: 402, height: 272)
         let renderer = ImageRenderer(content: view)

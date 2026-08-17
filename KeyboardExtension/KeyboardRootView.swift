@@ -65,6 +65,9 @@ struct KeyboardRootView: View {
     var latinSuggestions: [String] { candidateBarModel.latinSuggestions }
     let showsParenthesesWrapper: Bool
     let initialSpaceToastText: String?
+    // フィールドの keyboardType(数字入力欄等)に合わせた初期入力モード(4.4.1 準拠)。
+    // onAppear で @State inputMode に反映する
+    let initialInputMode: KeyboardInputMode
 
     @State var inputMode: KeyboardInputMode = .kana
     @State var diacriticMode: DiacriticMode = .none
@@ -959,6 +962,10 @@ struct KeyboardRootView: View {
     // メモリ切迫の可視化(でばぐ表示。後で取り除く可能性あり)。かな削除キーの背景色:
     // 警告1回目=黄 / 2回目以降=橙+左下に回数 / 2回目以降+footprint臨界(sqliteアンロード)=えんじ。
     var memoryPressureDeleteKeyColor: Color? {
+        // でばぐ可視化は開発ビルド専用(リリースでは通常キー色のまま)
+        #if !DEBUG
+        return nil
+        #endif
         if candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay {
             // えんじ(臙脂)#A22041
             return Color(red: 162.0 / 255.0, green: 32.0 / 255.0, blue: 65.0 / 255.0).opacity(0.92)
@@ -974,7 +981,10 @@ struct KeyboardRootView: View {
     }
 
     var memoryPressureDeleteKeyBadge: String? {
-        candidateBarModel.memoryWarningCountForDebugDisplay >= 2
+        #if !DEBUG
+        return nil
+        #endif
+        return candidateBarModel.memoryWarningCountForDebugDisplay >= 2
             ? String(candidateBarModel.memoryWarningCountForDebugDisplay)
             : nil
     }
@@ -1069,6 +1079,9 @@ struct KeyboardRootView: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         .onAppear {
+            if inputMode != initialInputMode {
+                inputMode = initialInputMode
+            }
             onInputModeChanged(inputMode)
             showInitialSpaceToastIfNeeded()
         }
@@ -1149,6 +1162,7 @@ struct KeyboardRootView: View {
             return model
         }(),
         showsParenthesesWrapper: false,
-        initialSpaceToastText: nil
+        initialSpaceToastText: nil,
+        initialInputMode: .kana
     )
 }
