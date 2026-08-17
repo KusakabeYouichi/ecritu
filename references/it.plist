@@ -182,7 +182,6 @@
 	<dict><key>phrase</key><string>Type-C</string><key>shortcut</key><string>たいぷしー</string></dict>
 	<dict><key>phrase</key><string>VScode</string><key>shortcut</key><string>ゔいえすこーど</string></dict>
 	<dict><key>phrase</key><string>エミュレイター</string><key>shortcut</key><string>えみゅれいたー</string></dict>
-	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
 	<dict><key>phrase</key><string>フルアクセス</string><key>shortcut</key><string>ふるあくせす</string></dict>
 	<dict><key>phrase</key><string>テンキー</string><key>shortcut</key><string>てんきー</string></dict>
 	<dict><key>phrase</key><string>Excel</string><key>shortcut</key><string>えくせる</string></dict>

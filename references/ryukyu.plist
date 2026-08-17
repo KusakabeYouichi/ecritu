@@ -273,7 +273,6 @@
 	<dict><key>phrase</key><string>安室</string><key>shortcut</key><string>あむる</string></dict>
 	<dict><key>phrase</key><string>安室島</string><key>shortcut</key><string>あむるじま</string></dict>
 	<dict><key>phrase</key><string>安室</string><key>shortcut</key><string>あむろ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>安室奈美恵</string><key>shortcut</key><string>あむろなみえ</string></dict>
 	<dict><key>phrase</key><string>天久</string><key>shortcut</key><string>あめく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>天久北公園</string><key>shortcut</key><string>あめくきたこうえん</string></dict>
 	<dict><key>phrase</key><string>天久宮</string><key>shortcut</key><string>あめくぐう</string></dict>
@@ -751,7 +750,6 @@
 	<dict><key>phrase</key><string>うさち</string><key>shortcut</key><string>うさち</string></dict>
 	<dict><key>phrase</key><string>宇佐浜</string><key>shortcut</key><string>うさはま</string></dict>
 	<dict><key>phrase</key><string>宇佐美</string><key>shortcut</key><string>うさみ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>宇沙美ゆかり</string><key>shortcut</key><string>うさみゆかり</string></dict>
 	<dict><key>phrase</key><string>ウサムル</string><key>shortcut</key><string>うさむる</string></dict>
 	<dict><key>phrase</key><string>うさんでー</string><key>shortcut</key><string>うさんでー</string></dict>
 	<dict><key>phrase</key><string>御三味</string><key>shortcut</key><string>うさんみ</string></dict>
@@ -4150,7 +4148,6 @@
 	<dict><key>phrase</key><string>七御嶽</string><key>shortcut</key><string>ななうたき</string></dict>
 	<dict><key>phrase</key><string>七つ墓</string><key>shortcut</key><string>ななつばか</string></dict>
 	<dict><key>phrase</key><string>那根</string><key>shortcut</key><string>なね</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>那覇</string><key>shortcut</key><string>なは</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>那覇大橋</string><key>shortcut</key><string>なはおおはし</string></dict>
 	<dict><key>phrase</key><string>那覇大橋通り</string><key>shortcut</key><string>なはおおはしどおり</string></dict>
 	<dict><key>phrase</key><string>那覇おもろまち線</string><key>shortcut</key><string>なはおもろまちせん</string></dict>
@@ -4598,7 +4595,6 @@
 	<dict><key>phrase</key><string>浜元</string><key>shortcut</key><string>はまもと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>早</string><key>shortcut</key><string>はや</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>パヤオ</string><key>shortcut</key><string>ぱやお</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>早坂好恵</string><key>shortcut</key><string>はやさかよしえ</string></dict>
 	<dict><key>phrase</key><string>原国</string><key>shortcut</key><string>はらぐに</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>パラダイス通り</string><key>shortcut</key><string>ぱらだいすどおり</string></dict>
 	<dict><key>phrase</key><string>原道原</string><key>shortcut</key><string>はらみちばる</string></dict>
@@ -4807,7 +4803,6 @@
 	<dict><key>phrase</key><string>フィシハラガー</string><key>shortcut</key><string>ふぃしはらがー</string></dict>
 	<dict><key>phrase</key><string>比嘉</string><key>shortcut</key><string>ふぃじゃ</string></dict>
 	<dict><key>phrase</key><string>ふぃふぁち</string><key>shortcut</key><string>ふぃふぁち</string></dict>
-	<dict><key>phrase</key><string>フー</string><key>shortcut</key><string>ふー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フーイリチー</string><key>shortcut</key><string>ふーいりちー</string></dict>
 	<dict><key>phrase</key><string>フーチバー</string><key>shortcut</key><string>ふーちばー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フーチバー酒</string><key>shortcut</key><string>ふーちばーしゅ</string></dict>
@@ -5338,7 +5333,6 @@
 	<dict><key>phrase</key><string>満名</string><key>shortcut</key><string>まんな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マンビカー</string><key>shortcut</key><string>まんびかー</string></dict>
 	<dict><key>phrase</key><string>マンビキ</string><key>shortcut</key><string>まんびき</string></dict>
-	<dict><key>phrase</key><string>ミー</string><key>shortcut</key><string>みー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ミーグスク</string><key>shortcut</key><string>みーぐすく</string></dict>
 	<dict><key>phrase</key><string>三重城</string><key>shortcut</key><string>みーぐすく</string></dict>
 	<dict><key>phrase</key><string>新島</string><key>shortcut</key><string>みーじま</string></dict>
