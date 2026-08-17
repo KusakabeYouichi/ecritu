@@ -422,11 +422,3 @@ else
   echo "[dict] Skip App Group sync (PLATFORM_NAME=${PLATFORM_NAME:-unknown})."
 fi
 
-# 実機ビルド時: 再インストール後のstaleプラグイン参照(直前までécrituをホストしていた
-# 常駐アプリが旧拡張プロセスへの接続を持ち残し、初回キーボード要求が launch failed →
-# 純正キーボードが1回出る)を防ぐため、ホストアプリを畳む。スキームのpre-actionにも
-# 同じ仕掛けがあるが、スキーム変更が読み込まれていない環境でも効くようビルドフェーズ
-# からも呼ぶ(実測: pre-action未実行のまま⌘Rされ再発した 2026-08-14 18:19)。
-if [[ "${PLATFORM_NAME:-}" == iphoneos* ]]; then
-  bash tools/refresh_keyboard_hosts_after_install.sh || true
-fi
