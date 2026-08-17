@@ -860,7 +860,12 @@ struct KeyboardRootView: View {
     }
 
     // clavier 配列は縦画面専用。横画面の場合は calculette にフォールバックする。
+    // 数値系フィールド(keyboardType追従で数字モード起動=initialInputMode が number)では、
+    // clavier 設定でもテンキー(téléphone)で開く(ユーザ指定 2568)。
     var effectiveNumberLayoutMode: NumberLayoutMode {
+        if numberLayoutMode == .clavier && initialInputMode == .number {
+            return .telephone
+        }
         if numberLayoutMode == .clavier && isLandscapeLayout {
             return .calculette
         }
