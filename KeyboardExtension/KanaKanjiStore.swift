@@ -81,8 +81,24 @@ final class KanaKanjiStore {
     // 再出現するため、点クエリ(1変換あたり unigram 数百+bigram 千超)を初出のみに抑える。
     // 「未観測」も番兵(-1)で覚える — LM のヒット率は低く、negative キャッシュが本体。
     // 上限超過時は全消去(まれな一括再クエリで済ませ、LRU 管理のオーバーヘッドを避ける)。
-    private var cachedWordLMUnigram: [String: Int] = [:]
-    private var cachedWordLMBigram: [String: Int] = [:]
+    // LM 点引きキャッシュは長寿命のためキーを64bitハッシュ化し、POD 辞書
+    // ([UInt64: Int]=キー・値とも単一連続バッファに内蔵)へ集約する。エントリ毎の
+    // String がヒープに散在して malloc アリーナを断片化させるのを防ぐ(2566)。
+    // Hasher はプロセス内で安定(キャッシュはプロセス内限り)。64bit 衝突(〜10^-10)は
+    // コスト近似として許容。
+    private var cachedWordLMUnigram: [UInt64: Int] = [:]
+    private var cachedWordLMBigram: [UInt64: Int] = [:]
+    private static func lmCacheKey(_ a: String) -> UInt64 {
+        var hasher = Hasher()
+        hasher.combine(a)
+        return UInt64(bitPattern: Int64(hasher.finalize()))
+    }
+    private static func lmCacheKey(_ a: String, _ b: String) -> UInt64 {
+        var hasher = Hasher()
+        hasher.combine(a)
+        hasher.combine(b)
+        return UInt64(bitPattern: Int64(hasher.finalize()))
+    }
     // 表層→全読み最安 word_cost(読み跨ぎ unigram 借用の遮断用。未収録は番兵)
     private var cachedCandidateMinWordCosts: [String: Int] = [:]
     // 8192 で通常の入力セッションには十分(1変換あたりの点クエリは数百〜千件強で、
@@ -382,7 +398,7 @@ final class KanaKanjiStore {
         var uncached: [String] = []
         withCacheLock {
             for surface in surfaces {
-                if let cached = cachedWordLMUnigram[surface] {
+                if let cached = cachedWordLMUnigram[Self.lmCacheKey(surface)] {
                     if cached != Self.wordLMMissingSentinel {
                         result[surface] = cached
                     }
@@ -401,10 +417,10 @@ final class KanaKanjiStore {
             }
             for surface in uncached {
                 if let cost = fetched[surface] {
-                    cachedWordLMUnigram[surface] = cost
+                    cachedWordLMUnigram[Self.lmCacheKey(surface)] = cost
                     result[surface] = cost
                 } else {
-                    cachedWordLMUnigram[surface] = Self.wordLMMissingSentinel
+                    cachedWordLMUnigram[Self.lmCacheKey(surface)] = Self.wordLMMissingSentinel
                 }
             }
         }
@@ -460,10 +476,9 @@ final class KanaKanjiStore {
         var uncached: [(String, String)] = []
         withCacheLock {
             for (prev, cur) in pairs {
-                let key = prev + "\t" + cur
-                if let cached = cachedWordLMBigram[key] {
+                if let cached = cachedWordLMBigram[Self.lmCacheKey(prev, cur)] {
                     if cached != Self.wordLMMissingSentinel {
-                        result[key] = cached
+                        result[prev + "\t" + cur] = cached
                     }
                 } else {
                     uncached.append((prev, cur))
@@ -480,11 +495,12 @@ final class KanaKanjiStore {
             }
             for (prev, cur) in uncached {
                 let key = prev + "\t" + cur
+                let hashedKey = Self.lmCacheKey(prev, cur)
                 if let cost = fetched[key] {
-                    cachedWordLMBigram[key] = cost
+                    cachedWordLMBigram[hashedKey] = cost
                     result[key] = cost
                 } else {
-                    cachedWordLMBigram[key] = Self.wordLMMissingSentinel
+                    cachedWordLMBigram[hashedKey] = Self.wordLMMissingSentinel
                 }
             }
         }
