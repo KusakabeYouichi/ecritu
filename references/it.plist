@@ -203,8 +203,8 @@
 	<dict><key>phrase</key><string>BSD</string><key>shortcut</key><string>びーえすでぃー</string></dict>
 	<dict><key>phrase</key><string>アナログ方式</string><key>shortcut</key><string>あなろぐほうしき</string></dict>
 	<dict><key>phrase</key><string>デジタル方式</string><key>shortcut</key><string>でじたるほうしき</string></dict>
-	<dict><key>phrase</key><string>サイト</string><key>shortcut</key><string>さいと</string></dict>
-	<dict><key>phrase</key><string>ミーム</string><key>shortcut</key><string>みーむ</string></dict>
+	<dict><key>phrase</key><string>サイト</string><key>shortcut</key><string>さいと</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ミーム</string><key>shortcut</key><string>みーむ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ネットミーム</string><key>shortcut</key><string>ねっとみーむ</string></dict>
 	<dict><key>phrase</key><string>SimCity™</string><key>shortcut</key><string>しむしてぃー</string></dict>
 	<dict><key>phrase</key><string>Wizardry</string><key>shortcut</key><string>うぃざどりー</string></dict>
@@ -228,20 +228,20 @@
 	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>ういんどうず</string></dict>
 	<dict><key>phrase</key><string>Raspberry Pi</string><key>shortcut</key><string>らずべりーぱい</string></dict>
 	<dict><key>phrase</key><string>復号化</string><key>shortcut</key><string>ふくごうか</string></dict>
-	<dict><key>phrase</key><string>暗号化</string><key>shortcut</key><string>あんごうか</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>暗号化</string><key>shortcut</key><string>あんごうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>復号</string><key>shortcut</key><string>ふくごうか</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>テザリング</string><key>shortcut</key><string>てざりんぐ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>スヌーピング</string><key>shortcut</key><string>すぬーぴんぐ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>タップ</string><key>shortcut</key><string>たっぷ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>タップ</string><key>shortcut</key><string>たっぷ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ダブルタップ</string><key>shortcut</key><string>だぶるたっぷ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ロングタップ</string><key>shortcut</key><string>ろんぐたっぷ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>ペースト</string><key>shortcut</key><string>ぺーすと</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ペースト</string><key>shortcut</key><string>ぺーすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>アップデイト</string><key>shortcut</key><string>あっぷでいと</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>デグレ</string><key>shortcut</key><string>でぐれ</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>デグレ</string><key>shortcut</key><string>でぐれ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>再設計</string><key>shortcut</key><string>さいせっけい</string><key>pos</key><string>サ変名詞</string></dict>
 </array>
 </plist>
