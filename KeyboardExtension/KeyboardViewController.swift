@@ -742,6 +742,24 @@ final class KeyboardViewController: UIInputViewController {
         )
     }
 
+    // 静的カタログ(顔文字/絵文字)の概算バイト(census v3、2575)。キャッシュ空でも残る
+    // ベースライン(mallocUsed 約40MB)の内訳特定用。測定自体が materialize を誘発するが、
+    // メモリ警告時にしか呼ばないので通常動作には影響しない。
+    static func diagnosticsStaticCatalogBytesSummary() -> String {
+        func listBytes(_ list: [String]) -> Int {
+            list.reduce(0) { $0 + $1.utf8.count + 32 }
+        }
+        func dictBytes(_ dict: [String: [String]]) -> Int {
+            dict.reduce(0) { $0 + $1.key.utf8.count + 32 + listBytes($1.value) + 16 }
+        }
+        func kb(_ value: Int) -> String { String(value / 1024) }
+        let kaomoji = listBytes(KaomojiCatalog.entries)
+            + dictBytes(KaomojiCatalog.importedEntriesByCategory)
+            + dictBytes(KaomojiCatalog.importedEntriesByReading)
+        let emoji = listBytes(AppleEmojiCatalog.people) + listBytes(AppleEmojiCatalog.nature)
+        return "staticKB: kaomoji=\(kb(kaomoji)) emojiPartial=\(kb(emoji))"
+    }
+
     // 全 malloc ゾーンの used/alloc を列挙する(census v2、2570)。
     // malloc_zone_statistics(nil) はデフォルトゾーンのみで、Nano ゾーン(≤256Bの小粒)が
     // 見えないため、スラックの居場所(小粒か中粒か)を特定できるようにする。
@@ -804,6 +822,13 @@ final class KeyboardViewController: UIInputViewController {
             appendKeyboardDiagnosticsLog(
                 "メモリ内訳census2 \(Self.diagnosticsAllMallocZonesSummary())"
                     + " | \(kanaKanjiConverter.store.diagnosticsStructureBytesSummary())",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+            appendKeyboardDiagnosticsLog(
+                "メモリ内訳census3 \(Self.diagnosticsStaticCatalogBytesSummary())",
                 critical: true,
                 file: #fileID,
                 line: #line,
