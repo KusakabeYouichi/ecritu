@@ -102,9 +102,6 @@
 	<!-- かしら(疑問終助詞、かな正書)への 頭(組の頭=レア用法)/カタカナ化。占い師頭ないが 等の誤区切りの温床 -->
 	<dict><key>phrase</key><string>頭</string><key>shortcut</key><string>かしら</string></dict>
 	<!-- カタカナ強調のウマイ/ウマい(wc5415=旨いと同値で激安)。かな うまい を勝たせる -->
-	<!-- 熟寝/熟睡(うまい)は文語のレア読み(万葉集級)。現代では出ない方がよい(熟睡=じゅくすい は無傷) -->
-	<dict><key>phrase</key><string>熟寝</string><key>shortcut</key><string>うまい</string></dict>
-	<dict><key>phrase</key><string>熟睡</string><key>shortcut</key><string>うまい</string></dict>
 	<!-- カタカナ強調のカワイイ/交ぜ書きカワイい(Sudachi収穫)。かわいい のかな正書を勝たせる -->
 	<!-- 来日(くるひ)は文語のレア読み収穫。現代では らいにち のみ。くるひ は 来る日 が正 -->
 	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>

@@ -128,12 +128,6 @@
 	<dict><key>phrase</key><string>SR</string><key>shortcut</key><string>えすあーる</string></dict>
 	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>じーあい</string></dict>
 	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>じーあいしー</string></dict>
-	<dict><key>phrase</key><string>A.O.P.</string><key>shortcut</key><string>えいおーぴー</string></dict>
-	<dict><key>phrase</key><string>A.V.A.</string><key>shortcut</key><string>えいゔいえい</string></dict>
-	<dict><key>phrase</key><string>D.O.</string><key>shortcut</key><string>でぃーおー</string></dict>
-	<dict><key>phrase</key><string>D.O.C.</string><key>shortcut</key><string>でぃーおーしー</string></dict>
-	<dict><key>phrase</key><string>D.O.C.G.</string><key>shortcut</key><string>でぃーおーしーじー</string></dict>
-	<dict><key>phrase</key><string>D.O.P.</string><key>shortcut</key><string>でぃーおーぴー</string></dict>
 	<dict><key>phrase</key><string>AXR</string><key>shortcut</key><string>えいえっくすあーる</string></dict>
 	<dict><key>phrase</key><string>MOVI</string><key>shortcut</key><string>えむおーぶいあい</string></dict>
 	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>けいおーじぇい</string></dict>
@@ -142,9 +136,5 @@
 	<dict><key>phrase</key><string>WIETA</string><key>shortcut</key><string>うぃーた</string></dict>
 	<dict><key>phrase</key><string>WOSA</string><key>shortcut</key><string>うぉーさ</string></dict>
 	<dict><key>phrase</key><string>AGWA</string><key>shortcut</key><string>あぐわ</string></dict>
-	<dict><key>phrase</key><string>ALDH</string><key>shortcut</key><string>えーえるでぃーえいち</string></dict>
-	<dict><key>phrase</key><string>ADH</string><key>shortcut</key><string>えーでぃーえいち</string></dict>
-	<dict><key>phrase</key><string>IBMP</string><key>shortcut</key><string>あいびーえむぴー</string></dict>
-	<dict><key>phrase</key><string>B.O.P.</string><key>shortcut</key><string>ぶろーくんおれんじぺこー</string></dict>
 </array>
 </plist>

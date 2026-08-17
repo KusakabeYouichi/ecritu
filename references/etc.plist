@@ -259,7 +259,6 @@
 	<dict><key>phrase</key><string>労働条件</string><key>shortcut</key><string>ろうどうじょうけん</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>謳歌</string><key>shortcut</key><string>おうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<!-- 一般用語(vin-addより移動) -->
-	<dict><key>phrase</key><string>ℓ</string><key>shortcut</key><string>りっとる</string></dict>
 	<dict><key>phrase</key><string>第2次世界大戦後</string><key>shortcut</key><string>だいにじせかいたいせんご</string></dict>
 	<dict><key>phrase</key><string>South</string><key>shortcut</key><string>さうす</string></dict>
 	<dict><key>phrase</key><string>States</string><key>shortcut</key><string>すていつ</string></dict>
@@ -273,7 +272,6 @@
 	<dict><key>phrase</key><string>gestion</string><key>shortcut</key><string>じぇすてぃおん</string></dict>
 	<dict><key>phrase</key><string>展示品</string><key>shortcut</key><string>てんじひん</string></dict>
 	<dict><key>phrase</key><string>平均化</string><key>shortcut</key><string>へいきんか</string></dict>
-	<dict><key>phrase</key><string>必要</string><key>shortcut</key><string>ひつよう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>普及活動者</string><key>shortcut</key><string>ふきゅうかつどうしゃ</string></dict>
 	<dict><key>phrase</key><string>第2次世界大戦中</string><key>shortcut</key><string>だいにじせかいたいせんちゅう</string></dict>
 	<dict><key>phrase</key><string>規定通</string><key>shortcut</key><string>きていどおり</string></dict>
@@ -294,7 +292,6 @@
 	<dict><key>phrase</key><string>Überblick</string><key>shortcut</key><string>ゆーばーぶりっく</string></dict>
 	<dict><key>phrase</key><string>アルツハイマー病</string><key>shortcut</key><string>あるつはいまーびょう</string></dict>
 	<dict><key>phrase</key><string>イスラム人</string><key>shortcut</key><string>いすらむじん</string></dict>
-	<dict><key>phrase</key><string>オランダ語</string><key>shortcut</key><string>おらんだご</string></dict>
 	<dict><key>phrase</key><string>カタルーニャ語</string><key>shortcut</key><string>かたるーにゃご</string></dict>
 	<dict><key>phrase</key><string>カテゴリー名</string><key>shortcut</key><string>かてごりーめい</string></dict>
 	<dict><key>phrase</key><string>カルヴァン派</string><key>shortcut</key><string>かるゔぁんは</string></dict>
@@ -412,10 +409,7 @@
 	<dict><key>phrase</key><string>秋以降</string><key>shortcut</key><string>あきいこう</string></dict>
 	<dict><key>phrase</key><string>穀物庫</string><key>shortcut</key><string>こくもつこ</string></dict>
 	<dict><key>phrase</key><string>第何位</string><key>shortcut</key><string>だいなんい</string></dict>
-	<dict><key>phrase</key><string>範囲内</string><key>shortcut</key><string>はんいない</string></dict>
-	<dict><key>phrase</key><string>範囲外</string><key>shortcut</key><string>はんいがい</string></dict>
 	<dict><key>phrase</key><string>簡略化</string><key>shortcut</key><string>かんりゃくか</string></dict>
-	<dict><key>phrase</key><string>粉状</string><key>shortcut</key><string>こなじょう</string></dict>
 	<dict><key>phrase</key><string>総面積</string><key>shortcut</key><string>そうめんせき</string></dict>
 	<dict><key>phrase</key><string>義務付け</string><key>shortcut</key><string>ぎむづけ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>自然豊か</string><key>shortcut</key><string>しぜんゆたか</string></dict>

@@ -21,7 +21,6 @@
     <dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気の利く</string><key>shortcut</key><string>きのきく</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>
     <dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気がつく</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
     <dict><key>phrase</key><string>気が付く</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
@@ -214,8 +213,7 @@
 	<dict><key>phrase</key><string>なさそうです</string><key>shortcut</key><string>なさそうです</string></dict>
 	<dict><key>phrase</key><string>として</string><key>shortcut</key><string>として</string></dict>
 	<dict><key>phrase</key><string>うまかった</string><key>shortcut</key><string>うまかった</string></dict>
-	<!-- うまい はLMかな最頻(6785)だが、活用派生は かな基底をスキップするため うまく/うまくなる が生成されない。かな識別curatedで供給(旨く より前へ) -->
-	<dict><key>phrase</key><string>うまく</string><key>shortcut</key><string>うまく</string></dict>
+	<!-- うまい はLMかな最頻(6785)だが、活用派生は かな基底をスキップするため うまくなる が生成されない。かな識別curatedで供給(うまく 本体は後方の口語副詞の節に登録) -->
 	<dict><key>phrase</key><string>うまくなる</string><key>shortcut</key><string>うまくなる</string></dict>
 	<dict><key>phrase</key><string>うまくなった</string><key>shortcut</key><string>うまくなった</string></dict>
 	<dict><key>phrase</key><string>うまくなって</string><key>shortcut</key><string>うまくなって</string></dict>
