@@ -5,7 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
-	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>
+	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形が似ており、Sudachiの収穫にも混入(wc10000)。候補に並ぶと選び間違えるため抑制 -->
 	<dict><key>phrase</key><string>立つ</string><key>shortcut</key><string>だつ</string></dict>	<!-- だつ→立つ系はSudachiが 目立つ/旅立つ 等の連濁内部読みを単独収穫したもの。活用基底に化けて だった→立った を作るため抑制(単独 だつ の正解は 脱/奪) -->
 	<dict><key>phrase</key><string>佇つ</string><key>shortcut</key><string>だつ</string></dict>
 	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>
