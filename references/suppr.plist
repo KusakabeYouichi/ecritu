@@ -343,6 +343,8 @@
 	<!-- ▼誤エントリ(辞書の誤った読み): Sudachi等が生成した本来しない読みの表層。学習でも古語でもなく明確な誤り。 -->
 	<!-- 秋(あきの): 秋 に あきの の読みは無い(秋乃系の正規化ミス収穫)。word_costsにも無くdictのみ -->
 	<dict><key>phrase</key><string>秋</string><key>shortcut</key><string>あきの</string></dict>
+	<dict><key>phrase</key><string>可愛いい</string><key>shortcut</key><string>かわいい</string></dict>
+	<dict><key>phrase</key><string>出きる</string><key>shortcut</key><string>できる</string></dict>
 	<!-- 底触/低触(ていしょく): 存在しない表記(抵触 の収穫ミス) -->
 	<dict><key>phrase</key><string>底触</string><key>shortcut</key><string>ていしょく</string></dict>
 	<dict><key>phrase</key><string>低触</string><key>shortcut</key><string>ていしょく</string></dict>
@@ -398,5 +400,8 @@
 	<dict><key>phrase</key><string>田けど</string><key>shortcut</key><string>だけど</string></dict>
 	<dict><key>phrase</key><string>舵けど</string><key>shortcut</key><string>だけど</string></dict>
 	<dict><key>phrase</key><string>拿けど</string><key>shortcut</key><string>だけど</string></dict>
+	<!-- レア読み -->
+	<dict><key>phrase</key><string>堺町</string><key>shortcut</key><string>さかえまち</string></dict>
+	<dict><key>phrase</key><string>栄恵町</string><key>shortcut</key><string>さかえまち</string></dict>
 </array>
 </plist>

@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- カネゴリー1 -->
+	<!-- Apple製品 -->
 	<dict><key>phrase</key><string></string><key>shortcut</key><string>あっぷる</string></dict>
 	<dict><key>phrase</key><string>AirMac</string><key>shortcut</key><string>えあまっく</string></dict>
 	<dict><key>phrase</key><string>AirMac Express</string><key>shortcut</key><string>えあまっくえくすぷれす</string></dict>
