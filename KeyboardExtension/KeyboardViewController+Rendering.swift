@@ -361,6 +361,18 @@ extension KeyboardViewController {
         )
     }
 
+    // フィールドの keyboardType に初期入力モードを追従させる(App Store ガイドライン
+    // 4.4.1: 数字・小数用のキーボードタイプへの対応)。数値系フィールドでは数字モードで
+    // 開く。それ以外は従来どおり かな。ユーザの手動切替は上書きしない(初期値のみ)。
+    func preferredInitialInputMode() -> KeyboardInputMode {
+        switch textDocumentProxy.keyboardType {
+        case .numberPad, .decimalPad, .asciiCapableNumberPad, .phonePad, .numbersAndPunctuation:
+            return .number
+        default:
+            return .kana
+        }
+    }
+
     func makeRootView(from configuration: RenderConfiguration) -> KeyboardRootView {
         return KeyboardRootView(
             onTextInput: { [weak self] text in
@@ -502,7 +514,8 @@ extension KeyboardViewController {
             shortcutVocabulary: configuration.shortcutVocabulary,
             candidateBarModel: candidateBarModel,
             showsParenthesesWrapper: configuration.showsParenthesesWrapper,
-            initialSpaceToastText: "écritu"
+            initialSpaceToastText: "écritu",
+            initialInputMode: preferredInitialInputMode()
         )
     }
 }

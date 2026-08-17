@@ -573,6 +573,10 @@ extension KeyboardViewController {
     // 発生はまれなので都度デコード/エンコードでよい。
     static let diagnosticsCriticalLogMaxLineCount = 60
     func appendKeyboardDiagnosticsCriticalLog(_ entry: String, to defaults: UserDefaults) {
+        // 開発ビルド専用(appendKeyboardDiagnosticsLog と同方針)
+        #if !DEBUG
+        return
+        #endif
         var lines = diagnosticsLogLines(
             from: defaults,
             key: SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
@@ -789,6 +793,10 @@ extension KeyboardViewController {
     }
 
     func appendKeyboardDiagnosticsFlightFileLine(_ line: String) {
+        // 開発ビルド専用(appendKeyboardDiagnosticsLog と同方針)
+        #if !DEBUG
+        return
+        #endif
         guard let url = diagnosticsFlightFileURL() else {
             return
         }
@@ -876,6 +884,11 @@ extension KeyboardViewController {
         line: Int = #line,
         function: String = #function
     ) {
+        // 診断ログは開発ビルド専用(App Store ガイドライン4.4.2: キーボードの
+        // 入力周辺情報を保存しない)。リリースでは一切書き込まない。
+        #if !DEBUG
+        return
+        #endif
         let sourceFile = (file as NSString).lastPathComponent
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
         let entry =
@@ -923,6 +936,10 @@ extension KeyboardViewController {
         observeKeyboardDiagnosticsEvent(event, file: file, line: line, function: function)
         persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
 
+        // ここから先はログ書き込み(開発ビルド専用)。failSafe の永続化は機能なので残す。
+        #if !DEBUG
+        return
+        #endif
         let sourceFile = (file as NSString).lastPathComponent
         let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
 
