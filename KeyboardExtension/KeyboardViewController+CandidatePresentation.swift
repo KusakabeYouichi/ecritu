@@ -198,20 +198,26 @@ extension KeyboardViewController {
                 presentationLimit * ExternalCandidateLimits.lookupMultiplier,
                 presentationLimit + 12
             )
-            var converterCandidates = converter.candidates(
-                for: reading,
-                limit: converterLimit,
-                systemCandidateMode: systemCandidateMode
-            )
+            // autoreleasepool: 変換バースト中の ObjC ブリッジ一時オブジェクト(NSString等)を
+            // runloop のプール排出を待たず即解放し、malloc アリーナを押し広げるピークを抑える(2570)
+            var converterCandidates = autoreleasepool {
+                converter.candidates(
+                    for: reading,
+                    limit: converterLimit,
+                    systemCandidateMode: systemCandidateMode
+                )
+            }
             let singleForTrace = Array(converterCandidates.prefix(4))
 
             // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
             // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
             if Self.isMultiClauseConversionEnabled {
-                let multiClause = converter.multiClauseCandidates(
-                    for: reading,
-                    systemCandidateMode: systemCandidateMode
-                )
+                let multiClause = autoreleasepool {
+                    converter.multiClauseCandidates(
+                        for: reading,
+                        systemCandidateMode: systemCandidateMode
+                    )
+                }
                 self?.recordConversionTrace(
                     reading: reading,
                     multi: multiClause,

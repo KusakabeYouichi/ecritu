@@ -742,6 +742,32 @@ final class KeyboardViewController: UIInputViewController {
         )
     }
 
+    // 全 malloc ゾーンの used/alloc を列挙する(census v2、2570)。
+    // malloc_zone_statistics(nil) はデフォルトゾーンのみで、Nano ゾーン(≤256Bの小粒)が
+    // 見えないため、スラックの居場所(小粒か中粒か)を特定できるようにする。
+    static func diagnosticsAllMallocZonesSummary() -> String {
+        var zoneAddresses: UnsafeMutablePointer<vm_address_t>?
+        var zoneCount: UInt32 = 0
+        guard malloc_get_all_zones(mach_task_self_, nil, &zoneAddresses, &zoneCount) == KERN_SUCCESS,
+            let zoneAddresses else {
+            return "zones=?"
+        }
+        var parts: [String] = []
+        for index in 0..<Int(zoneCount) {
+            guard let rawZone = UnsafeMutableRawPointer(bitPattern: UInt(zoneAddresses[index])) else {
+                continue
+            }
+            let zone = rawZone.assumingMemoryBound(to: malloc_zone_t.self)
+            let name = malloc_get_zone_name(zone).map { String(cString: $0) } ?? "?"
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(zone, &stats)
+            let usedMB = Double(stats.size_in_use) / 1_048_576
+            let allocMB = Double(stats.size_allocated) / 1_048_576
+            parts.append("\(name)=\(String(format: "%.1f", usedMB))/\(String(format: "%.1f", allocMB))")
+        }
+        return "zones(used/allocMB)[\(parts.joined(separator: " "))]"
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // 多重生存中の非アクティブ(ゾンビ)側は軽量対応のみ: キャッシュを解放して終わる。
@@ -765,6 +791,17 @@ final class KeyboardViewController: UIInputViewController {
                 "メモリ内訳census mallocUsedMB=\(String(format: "%.1f", usedMB))"
                     + " mallocAllocMB=\(String(format: "%.1f", allocatedMB))"
                     + " \(kanaKanjiConverter.diagnosticsCacheCountsSummary())",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+            // census v2(2570): (a) 全 malloc ゾーンの内訳 — malloc_zone_statistics(nil) は
+            // デフォルトゾーンだけで、Nano ゾーン(≤256B の小粒確保)が見えていなかった。
+            // (b) 常駐辞書構造の概算バイト — ベースライン固定費(約35MB)の正体特定用。
+            appendKeyboardDiagnosticsLog(
+                "メモリ内訳census2 \(Self.diagnosticsAllMallocZonesSummary())"
+                    + " | \(kanaKanjiConverter.store.diagnosticsStructureBytesSummary())",
                 critical: true,
                 file: #fileID,
                 line: #line,
