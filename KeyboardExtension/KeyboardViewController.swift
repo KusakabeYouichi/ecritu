@@ -775,6 +775,8 @@ final class KeyboardViewController: UIInputViewController {
         // 重複反応で回数が水増しされ、削除キーの可視化も実態とずれるため。2411)。
         if shouldSuppressHeavyOperations(reason: "didReceiveMemoryWarning") {
             kanaKanjiConverter.clearAllCaches()
+            // 圧迫時こそ非表示ゾンビのビュー階層を手放す(降格時の一度きり判定を補う。2574)
+            releaseHostingViewIfZombie(reason: "memoryWarning")
             return
         }
         diagnosticsState.memoryWarningCountThisSession += 1
