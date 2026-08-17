@@ -57,6 +57,13 @@ final class KanaKanjiSQLiteIndex {
 
         database = openedDatabase
 
+        // メモリ対策(2570): mmap_size 未設定だと全ページ読みが malloc のページキャッシュ
+        // (既定約2MB、dirty=footprint寄与)を経由する。辞書は読み取り専用+immutable なので
+        // mmap 読みに切り替える(mmap ページは clean で jetsam 圧にならず、OSが自由に回収
+        // できる)。ページキャッシュは mmap が効くぶん 512KB まで絞る。
+        _ = sqlite3_exec(openedDatabase, "PRAGMA mmap_size=536870912;", nil, nil, nil)
+        _ = sqlite3_exec(openedDatabase, "PRAGMA cache_size=-512;", nil, nil, nil)
+
         guard let candidateStatement = prepareStatement(
             sql: "SELECT candidate FROM dictionary_entries WHERE reading = ? ORDER BY rank ASC"
         ) else {

@@ -728,6 +728,49 @@ final class KanaKanjiStore {
         return inflectionMap
     }
 
+    // メモリ内訳census用: 常駐辞書構造の概算バイト数(文字実体のみ、下限値)を1行で返す。
+    // ベースライン固定費(キャッシュ空でも残る mallocUsed 約35MB)の正体特定に使う(2570)。
+    // 読み込み済みの構造だけ集計する(census がロードを誘発しないよう nil はスキップ)。
+    func diagnosticsStructureBytesSummary() -> String {
+        func dictBytes(_ dict: [String: [String]]?) -> Int {
+            guard let dict else { return -1 }
+            var total = 0
+            for (key, values) in dict {
+                total += key.utf8.count + 32
+                for value in values {
+                    total += value.utf8.count + 32
+                }
+                total += 16
+            }
+            return total
+        }
+        // 活用辞書([String: [String: String]])はコピーせずその場で集計する
+        // (警告時に22k件の一時辞書を作らないため)
+        func inflectionBytes(_ dict: [String: [String: String]]?) -> Int {
+            guard let dict else { return -1 }
+            var total = 0
+            for (key, inner) in dict {
+                total += key.utf8.count + 32
+                for (surface, className) in inner {
+                    total += surface.utf8.count + className.utf8.count + 64
+                }
+                total += 16
+            }
+            return total
+        }
+        func kb(_ bytes: Int) -> String {
+            bytes < 0 ? "-" : String(bytes / 1024)
+        }
+        return withCacheLock {
+            "structKB: suppl=\(kb(dictBytes(cachedSupplementalSystemDictionary)))"
+                + " sysDict=\(kb(dictBytes(cachedSystemDictionary)))"
+                + " initialUser=\(kb(dictBytes(cachedInitialUserDictionary)))"
+                + " user=\(kb(dictBytes(cachedUserDictionary)))"
+                + " learned=\(kb(dictBytes(cachedLearnedDictionary)))"
+                + " infl=\(kb(inflectionBytes(cachedInflectionDictionary)))"
+        }
+    }
+
     // メモリ内訳census用: 主要キャッシュの件数を1行で返す(メモリ警告時の診断ログ向け)。
     // footprint 高止まりの正体切り分け(自前キャッシュ vs malloc外の常駐)に使う。
     func diagnosticsCacheCountsSummary() -> String {
