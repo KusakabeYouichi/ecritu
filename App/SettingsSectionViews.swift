@@ -201,6 +201,14 @@ struct SetupStepsSection: View {
                         .font(.subheadline)
                 }
             }
+
+            Text(
+                "「フルアクセスを許可」がOFFでも文字入力と変換は使えますが、一部の機能が働きません: "
+                    + "学習語彙・学習スコアの保存、追加語彙・抑制語彙のキーボードへの反映、"
+                    + "このアプリで変えた設定の反映。ONにしてお使いになることをおすすめします。"
+            )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
     }
