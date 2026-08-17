@@ -220,7 +220,7 @@
 	<dict><key>phrase</key><string>到来</string><key>shortcut</key><string>とうらい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>動物</string><key>shortcut</key><string>どうぶつ</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>動物的</string><key>shortcut</key><string>どうぶつてき</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
-	<dict><key>phrase</key><string>入口</string><key>shortcut</key><string>いりくち</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>入口</string><key>shortcut</key><string>いりぐち</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>入手</string><key>shortcut</key><string>にゅうしゅ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>入植</string><key>shortcut</key><string>にゅうしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>入力</string><key>shortcut</key><string>にゅうりょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
@@ -252,7 +252,7 @@
 	<dict><key>phrase</key><string>優劣</string><key>shortcut</key><string>ゆうれつ</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>幼少期</string><key>shortcut</key><string>ようしょうき</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>利点</string><key>shortcut</key><string>りてん</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
-	<dict><key>phrase</key><string>利用</string><key>shortcut</key><string>としもち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 元: 一般の語彙 -->
+	<dict><key>phrase</key><string>利用</string><key>shortcut</key><string>りよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>劣化</string><key>shortcut</key><string>れっか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>労働</string><key>shortcut</key><string>ろうどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
 	<dict><key>phrase</key><string>労働者</string><key>shortcut</key><string>ろうどうしゃ</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 一般の語彙 -->
