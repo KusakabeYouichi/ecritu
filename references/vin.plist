@@ -2,7 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- AOC名や地名 -->
+	<!-- AOC名、DOC名、GI名や地名 -->
+	<dict><key>phrase</key><string>和歌山梅酒</string><key>shortcut</key><string>わかやまうめしゅ</string></dict>
+	<dict><key>phrase</key><string>ガッティナーラ</string><key>shortcut</key><string>がってぃなーら</string></dict>
+	<dict><key>phrase</key><string>ヴァルポリチェッラ</string><key>shortcut</key><string>ゔぁるぽりちぇっら</string></dict>
+	<dict><key>phrase</key><string>モスカート・ダスティ</string><key>shortcut</key><string>もすかーとだすてぃ</string></dict>
+	<dict><key>phrase</key><string>ブルネッロ・ディ・モンタルチーノ</string><key>shortcut</key><string>ぶるねっろでぃもんたるちーの</string></dict>
+	<dict><key>phrase</key><string>Muscadet Côtes de Grandlieu</string><key>shortcut</key><string>みゅすかでこーとどぐらんりゅー</string></dict>
 	<dict><key>phrase</key><string>La Romanée</string><key>shortcut</key><string>らろまね</string></dict>
 	<dict><key>phrase</key><string>La Tâche</string><key>shortcut</key><string>らたーしゅ</string></dict>
 	<dict><key>phrase</key><string>Ladoix</string><key>shortcut</key><string>らどわ</string></dict>
@@ -38,7 +44,6 @@
 	<dict><key>phrase</key><string>Anjou Brissac</string><key>shortcut</key><string>あんじゅーぶりさっく</string></dict>
 	<dict><key>phrase</key><string>Anjou Villages</string><key>shortcut</key><string>あんじゅーゔぃらーじゅ</string></dict>
 	<dict><key>phrase</key><string>Appalachian Foothills</string><key>shortcut</key><string>あぱらちあんふっとひるず</string></dict>
-	<dict><key>phrase</key><string>Appellation d'Origine Contrôlée</string><key>shortcut</key><string>あぺらしおんどりじーぬこんとろーれ</string></dict>
 	<dict><key>phrase</key><string>Arbois</string><key>shortcut</key><string>あるぼわ</string></dict>
 	<dict><key>phrase</key><string>Asolo Prosecco</string><key>shortcut</key><string>あぞーろぷろせっこ</string></dict>
 	<dict><key>phrase</key><string>Assmannshausen</string><key>shortcut</key><string>あすまんずはうぜん</string></dict>
@@ -48,7 +53,6 @@
 	<dict><key>phrase</key><string>Awatere Valley</string><key>shortcut</key><string>あわてれゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Aÿ</string><key>shortcut</key><string>あい</string></dict>
 	<dict><key>phrase</key><string>BC V.Q.A.</string><key>shortcut</key><string>ぶりてぃっしゅころんびあゔぃーきゅーえー</string></dict>
-	<dict><key>phrase</key><string>Baco Blanc</string><key>shortcut</key><string>ばこぶらん</string></dict>
 	<dict><key>phrase</key><string>Baden</string><key>shortcut</key><string>ばーでん</string></dict>
 	<dict><key>phrase</key><string>Banyuls Grand Cru Rancio</string><key>shortcut</key><string>ばにゅるすぐらんくりゅらんしお</string></dict>
 	<dict><key>phrase</key><string>Banyuls Grand Cru hors d'âge</string><key>shortcut</key><string>ばにゅるすぐらんくりゅおーるだーじゅ</string></dict>
@@ -78,7 +82,6 @@
 	<dict><key>phrase</key><string>Bernkastel</string><key>shortcut</key><string>べるんかすてる</string></dict>
 	<dict><key>phrase</key><string>Bierzo</string><key>shortcut</key><string>びえるそ</string></dict>
 	<dict><key>phrase</key><string>Binissalem</string><key>shortcut</key><string>びにされむ</string></dict>
-	<dict><key>phrase</key><string>Black Queen</string><key>shortcut</key><string>ぶらっくくいーん</string></dict>
 	<dict><key>phrase</key><string>Black Sea</string><key>shortcut</key><string>ぶらっくしー</string></dict>
 	<dict><key>phrase</key><string>Blue Mountain</string><key>shortcut</key><string>ぶるーまうんてん</string></dict>
 	<dict><key>phrase</key><string>Bordeaux Clairet</string><key>shortcut</key><string>ぼるどー</string></dict>
@@ -98,14 +101,11 @@
 	<dict><key>phrase</key><string>Breede River Valley</string><key>shortcut</key><string>ぶりーどりゔぁーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Bridge Pa Triangle</string><key>shortcut</key><string>ぶりっじぱとらいあんぐる</string></dict>
 	<dict><key>phrase</key><string>Bío Bío Valley</string><key>shortcut</key><string>びおびおゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Cabernet Sauvignon</string><key>shortcut</key><string>かべるねそーゔぃによん</string></dict>
 	<dict><key>phrase</key><string>Cabernet d'Anjou</string><key>shortcut</key><string>かべるねだんじゅ</string></dict>
 	<dict><key>phrase</key><string>Cachapoal Valley</string><key>shortcut</key><string>かちゃぽあるゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Cadillac Côtes de Bordeaux</string><key>shortcut</key><string>かでぃやっくこーとどぼるどー</string></dict>
 	<dict><key>phrase</key><string>Cahors</string><key>shortcut</key><string>かおーる</string></dict>
-	<dict><key>phrase</key><string>Caladoc</string><key>shortcut</key><string>からどっく</string></dict>
 	<dict><key>phrase</key><string>Camel Valley Vineyard</string><key>shortcut</key><string>きゃめるゔぁれーゔぃんやーど</string></dict>
-	<dict><key>phrase</key><string>Cape Doctor</string><key>shortcut</key><string>けいぷどくたー</string></dict>
 	<dict><key>phrase</key><string>Cape Doctor</string><key>shortcut</key><string>けーぷどくたー</string></dict>
 	<dict><key>phrase</key><string>Cape South Coast</string><key>shortcut</key><string>けいぷさうすこーすと</string></dict>
 	<dict><key>phrase</key><string>Cape South Coast</string><key>shortcut</key><string>けーぷさうすこーすと</string></dict>
@@ -199,11 +199,9 @@
 	<dict><key>phrase</key><string>Côtes-de-l'Orbe</string><key>shortcut</key><string>こーとどろるぶ</string></dict>
 	<dict><key>phrase</key><string>Darnibole</string><key>shortcut</key><string>だーにぼーる</string></dict>
 	<dict><key>phrase</key><string>Deutschschweiz</string><key>shortcut</key><string>どいちゅしゅゔぁいつ</string></dict>
-	<dict><key>phrase</key><string>Deuxièmes Cru</string><key>shortcut</key><string>どぅじえむくりゅ</string></dict>
 	<dict><key>phrase</key><string>Diamond Mountain District</string><key>shortcut</key><string>だいやもんどまうんてんでぃすとりくと</string></dict>
 	<dict><key>phrase</key><string>District Wines</string><key>shortcut</key><string>でぃすとりくとわいんず</string></dict>
 	<dict><key>phrase</key><string>District</string><key>shortcut</key><string>でぃすとりくと</string></dict>
-	<dict><key>phrase</key><string>Districtus Hungaricus Controllatus</string><key>shortcut</key><string>でぃすとりくとぅすふんがりくすこんとろっらーとぅす</string></dict>
 	<dict><key>phrase</key><string>Do Tejo</string><key>shortcut</key><string>どてーじょ</string></dict>
 	<dict><key>phrase</key><string>Doctor</string><key>shortcut</key><string>どくたー</string></dict>
 	<dict><key>phrase</key><string>Douro</string><key>shortcut</key><string>どうろ</string></dict>
@@ -214,7 +212,6 @@
 	<dict><key>phrase</key><string>Eden Valley</string><key>shortcut</key><string>えでんゔぁれー</string></dict>
 	<dict><key>phrase</key><string>El Dorado</string><key>shortcut</key><string>えるどらど</string></dict>
 	<dict><key>phrase</key><string>Elqui Valley</string><key>shortcut</key><string>えるきゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Encruzado</string><key>shortcut</key><string>えんくるざーど</string></dict>
 	<dict><key>phrase</key><string>Etna</string><key>shortcut</key><string>えとな</string></dict>
 	<dict><key>phrase</key><string>Felső-Magyarország</string><key>shortcut</key><string>ふぇるしぇーまじゃろるさーぐ</string></dict>
 	<dict><key>phrase</key><string>Fiano di Avellino</string><key>shortcut</key><string>ふぃあのでぃあゔぇっりの</string></dict>
@@ -224,7 +221,6 @@
 	<dict><key>phrase</key><string>Franschhoek Valley</string><key>shortcut</key><string>ふらんしゅふっくゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Frascati Superiore</string><key>shortcut</key><string>ふらすかてぃすぺりおーれ</string></dict>
 	<dict><key>phrase</key><string>Fraser Valley</string><key>shortcut</key><string>ふれいざーゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Fremantle Doctor</string><key>shortcut</key><string>ふりーまんとるどくたー</string></dict>
 	<dict><key>phrase</key><string>Gewürztraminer Sélection de Grains Nobles</string><key>shortcut</key><string>げゔゅるつとらみねーるせれくしおんどぐらんのーぶる</string></dict>
 	<dict><key>phrase</key><string>Gibbston Valley</string><key>shortcut</key><string>ぎぶすとんゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Gimblett Gravels District</string><key>shortcut</key><string>ぎむれっとぐらゔぇるずでぃすとりくと</string></dict>
@@ -232,14 +228,11 @@
 	<dict><key>phrase</key><string>Grand Cru</string><key>shortcut</key><string>ぐらんくりゅ</string></dict>
 	<dict><key>phrase</key><string>Grands Cru Classés</string><key>shortcut</key><string>ぐらんくりゅくらっせ</string></dict>
 	<dict><key>phrase</key><string>Greco di Tufo</string><key>shortcut</key><string>ぐれこーでぃとぅーふぉ</string></dict>
-	<dict><key>phrase</key><string>Greece</string><key>shortcut</key><string>ぐりーす</string></dict>
 	<dict><key>phrase</key><string>Gulf Islands</string><key>shortcut</key><string>がるふあいらんず</string></dict>
 	<dict><key>phrase</key><string>Hastings River</string><key>shortcut</key><string>へいすてぃんぐすりゔぁー</string></dict>
 	<dict><key>phrase</key><string>Hattenheim</string><key>shortcut</key><string>はってんはいむ</string></dict>
 	<dict><key>phrase</key><string>Haut-Médoc</string><key>shortcut</key><string>おーめどっく</string></dict>
 	<dict><key>phrase</key><string>Hawke's Bay</string><key>shortcut</key><string>ほーくすべい</string></dict>
-	<dict><key>phrase</key><string>Henschke Hill of Grace</string><key>shortcut</key><string>へんちきひるおゔぐれいす</string></dict>
-	<dict><key>phrase</key><string>Henschke</string><key>shortcut</key><string>へんちき</string></dict>
 	<dict><key>phrase</key><string>Hill of Grace</string><key>shortcut</key><string>ひるおゔぐれいす</string></dict>
 	<dict><key>phrase</key><string>Horse Heaven Hills</string><key>shortcut</key><string>ほーすへゔんひるず</string></dict>
 	<dict><key>phrase</key><string>Howell Mountain</string><key>shortcut</key><string>はうえるまうんてん</string></dict>
@@ -258,7 +251,6 @@
 	<dict><key>phrase</key><string>La Plata</string><key>shortcut</key><string>らぷらた</string></dict>
 	<dict><key>phrase</key><string>Lake Country</string><key>shortcut</key><string>れいくかんとりー</string></dict>
 	<dict><key>phrase</key><string>Lake County</string><key>shortcut</key><string>れいくかうんてぃ</string></dict>
-	<dict><key>phrase</key><string>Lake Doctor</string><key>shortcut</key><string>れいくどくたー</string></dict>
 	<dict><key>phrase</key><string>Lake Erie North Shore</string><key>shortcut</key><string>れいくえりーのーすしょあ</string></dict>
 	<dict><key>phrase</key><string>Lake Erie</string><key>shortcut</key><string>れいくえりー</string></dict>
 	<dict><key>phrase</key><string>Lake Saint-Pierre</string><key>shortcut</key><string>れいくさんぴえーる</string></dict>
@@ -335,7 +327,6 @@
 	<dict><key>phrase</key><string>Rheinhessen</string><key>shortcut</key><string>らいんへっせん</string></dict>
 	<dict><key>phrase</key><string>Ribeira Sacra</string><key>shortcut</key><string>りべいらさくら</string></dict>
 	<dict><key>phrase</key><string>Ribera del Duero</string><key>shortcut</key><string>りべらでるどぅえろ</string></dict>
-	<dict><key>phrase</key><string>Ridge Vineyards</string><key>shortcut</key><string>りっじゔぃんやーど</string></dict>
 	<dict><key>phrase</key><string>Ridge</string><key>shortcut</key><string>りっじ</string></dict>
 	<dict><key>phrase</key><string>Riesling Sélection de Grains Nobles</string><key>shortcut</key><string>りーすりんぐせれくしおんどぐらんのーぶる</string></dict>
 	<dict><key>phrase</key><string>Rioja</string><key>shortcut</key><string>りおは</string></dict>
@@ -367,7 +358,6 @@
 	<dict><key>phrase</key><string>Santa Cruz Mountains</string><key>shortcut</key><string>さんたくるーずまうんてん</string></dict>
 	<dict><key>phrase</key><string>Santa Maria Valley</string><key>shortcut</key><string>さんたまりあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Santa Ynez Valley</string><key>shortcut</key><string>さんたいねずゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Sauternes Premiers Cru</string><key>shortcut</key><string>そーてるぬぷるみえくりゅ</string></dict>
 	<dict><key>phrase</key><string>Savoie</string><key>shortcut</key><string>さゔぉあ</string></dict>
 	<dict><key>phrase</key><string>Seneca Lake</string><key>shortcut</key><string>せねかれいく</string></dict>
 	<dict><key>phrase</key><string>Setúbal</string><key>shortcut</key><string>せとぅーばる</string></dict>
@@ -401,7 +391,6 @@
 	<dict><key>phrase</key><string>Thermenregion</string><key>shortcut</key><string>てるめんれぎおん</string></dict>
 	<dict><key>phrase</key><string>Thracian Valley</string><key>shortcut</key><string>とらきあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Tidal Bay</string><key>shortcut</key><string>たいだるべい</string></dict>
-	<dict><key>phrase</key><string>Tinta del País</string><key>shortcut</key><string>てぃんたでるぱいす</string></dict>
 	<dict><key>phrase</key><string>Tokaj</string><key>shortcut</key><string>とかい</string></dict>
 	<dict><key>phrase</key><string>Torgiano Rosso Riserva</string><key>shortcut</key><string>とるじゃーのろっそりぜるゔぁ</string></dict>
 	<dict><key>phrase</key><string>Tualatin Hills</string><key>shortcut</key><string>ちゅあらてぃんひるず</string></dict>
@@ -453,7 +442,6 @@
 	<dict><key>phrase</key><string>クナワラ</string><key>shortcut</key><string>くなわら</string></dict>
 	<dict><key>phrase</key><string>クリコヴァ</string><key>shortcut</key><string>くりこゔぁ</string></dict>
 	<dict><key>phrase</key><string>クレムスタール</string><key>shortcut</key><string>くれむすたーる</string></dict>
-	<dict><key>phrase</key><string>グラン・クリュ</string><key>shortcut</key><string>ぐらんくりゅ</string></dict>
 	<dict><key>phrase</key><string>コトナリ</string><key>shortcut</key><string>ことなり</string></dict>
 	<dict><key>phrase</key><string>コミュナル</string><key>shortcut</key><string>こみゅなる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コート・シャロネーズ</string><key>shortcut</key><string>こーとしゃろねーず</string></dict>
@@ -468,7 +456,6 @@
 	<dict><key>phrase</key><string>サントル・ロワール</string><key>shortcut</key><string>さんとるろわーる</string></dict>
 	<dict><key>phrase</key><string>サン・ジュリアン</string><key>shortcut</key><string>さんじゅりあん</string></dict>
 	<dict><key>phrase</key><string>サン・テステフ</string><key>shortcut</key><string>さんてすてふ</string></dict>
-	<dict><key>phrase</key><string>サヴォワ地方・牛乳</string><key>shortcut</key><string>さゔぉわちほうぎゅうにゅう</string></dict>
 	<dict><key>phrase</key><string>シエラ・フットヒルズ</string><key>shortcut</key><string>しえらふっとひるず</string></dict>
 	<dict><key>phrase</key><string>シュヴィツェーラ・イタリアーナ</string><key>shortcut</key><string>しゅゔぃつぇーらいたりあーな</string></dict>
 	<dict><key>phrase</key><string>ジェノヴァ</string><key>shortcut</key><string>じぇのゔぁ</string></dict>	<!-- Sudachiにもある -->
@@ -476,7 +463,6 @@
 	<dict><key>phrase</key><string>セトゥーバル</string><key>shortcut</key><string>せとぅーばる</string></dict>
 	<dict><key>phrase</key><string>セントラル・オタゴ</string><key>shortcut</key><string>せんとらるおたご</string></dict>
 	<dict><key>phrase</key><string>ソアーヴェ</string><key>shortcut</key><string>そあーゔぇ</string></dict>
-	<dict><key>phrase</key><string>タブラス・クリーク・ヴィンヤード</string><key>shortcut</key><string>たぶらすくりーくゔぃんやーど</string></dict>
 	<dict><key>phrase</key><string>ダーニボール</string><key>shortcut</key><string>だーにぼーる</string></dict>
 	<dict><key>phrase</key><string>トカイ原産地呼称</string><key>shortcut</key><string>とかいげんさんちこしょう</string></dict>
 	<dict><key>phrase</key><string>トリノ</string><key>shortcut</key><string>とりの</string></dict>	<!-- Sudachiにもある -->
@@ -506,7 +492,6 @@
 	<dict><key>phrase</key><string>ポンペイ</string><key>shortcut</key><string>ぽんぺい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マディラン</string><key>shortcut</key><string>までぃらん</string></dict>
 	<dict><key>phrase</key><string>マデラ</string><key>shortcut</key><string>までら</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>マデラスタイル</string><key>shortcut</key><string>までらすたいる</string></dict>
 	<dict><key>phrase</key><string>マリブ・コースト</string><key>shortcut</key><string>まりぶこーすと</string></dict>
 	<dict><key>phrase</key><string>マルセイユ</string><key>shortcut</key><string>まるせいゆ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マーティンボロ</string><key>shortcut</key><string>まーてぃんぼろ</string></dict>
@@ -515,7 +500,6 @@
 	<dict><key>phrase</key><string>ミラノ</string><key>shortcut</key><string>みらの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>モンテビデオ</string><key>shortcut</key><string>もんてびでお</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>モンテプルチャーノ</string><key>shortcut</key><string>もんてぷるちゃーの</string></dict>
-	<dict><key>phrase</key><string>ラントヴァイン生産地域</string><key>shortcut</key><string>らんとゔぁいんせいさんちいき</string></dict>
 	<dict><key>phrase</key><string>ラ・セレナ</string><key>shortcut</key><string>らせれな</string></dict>
 	<dict><key>phrase</key><string>リオハ</string><key>shortcut</key><string>りおは</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>リヨン</string><key>shortcut</key><string>りよん</string></dict>	<!-- Sudachiにもある -->
@@ -541,23 +525,7 @@
 	<dict><key>phrase</key><string>利根郡</string><key>shortcut</key><string>とねぐん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>勝沼町</string><key>shortcut</key><string>かつぬまちょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>千曲川ワインバレー</string><key>shortcut</key><string>ちくまがわわいんばれー</string></dict>
-	<dict><key>phrase</key><string>原産地保護</string><key>shortcut</key><string>げんさんちほご</string></dict>
-	<dict><key>phrase</key><string>原産地名</string><key>shortcut</key><string>げんさんちめい</string></dict>
-	<dict><key>phrase</key><string>原産地名称保護</string><key>shortcut</key><string>げんさんちめいしょうほご</string></dict>
-	<dict><key>phrase</key><string>原産地呼称</string><key>shortcut</key><string>げんさんちこしょう</string></dict>
-	<dict><key>phrase</key><string>原産地呼称保護</string><key>shortcut</key><string>げんさんちこしょうほご</string></dict>
-	<dict><key>phrase</key><string>原産地呼称制度</string><key>shortcut</key><string>げんさんちこしょうせいど</string></dict>
-	<dict><key>phrase</key><string>原産地呼称法</string><key>shortcut</key><string>げんさんちこしょうほう</string></dict>
-	<dict><key>phrase</key><string>原産地呼称管理法</string><key>shortcut</key><string>げんさんちこしょうかんりほう</string></dict>
-	<dict><key>phrase</key><string>原産地呼称統制</string><key>shortcut</key><string>げんさんちこしょうとうせい</string></dict>
-	<dict><key>phrase</key><string>原産地呼称統制制度</string><key>shortcut</key><string>げんさんちこしょうとうせいせいど</string></dict>
-	<dict><key>phrase</key><string>原産地呼称表示</string><key>shortcut</key><string>げんさんちこしょうひょうじ</string></dict>
-	<dict><key>phrase</key><string>原産地統制呼称</string><key>shortcut</key><string>げんさんちとうせいこしょう</string></dict>
-	<dict><key>phrase</key><string>原産地表示</string><key>shortcut</key><string>げんさんちひょうじ</string></dict>
-	<dict><key>phrase</key><string>原産地表記</string><key>shortcut</key><string>げんさんちひょうき</string></dict>
-	<dict><key>phrase</key><string>原産地表記付</string><key>shortcut</key><string>げんさんちひょうきつき</string></dict>
 	<dict><key>phrase</key><string>善光寺</string><key>shortcut</key><string>ぜんこうじ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>四川省</string><key>shortcut</key><string>しせんしょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>坂城町</string><key>shortcut</key><string>さかきまち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>塩山</string><key>shortcut</key><string>えんざん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>大迫</string><key>shortcut</key><string>おおはさま</string></dict>	<!-- Sudachiにもある -->
@@ -569,7 +537,6 @@
 	<dict><key>phrase</key><string>小布施町</string><key>shortcut</key><string>おぶせまち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>山形</string><key>shortcut</key><string>やまがた</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>山梨</string><key>shortcut</key><string>やまなし</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>山西省</string><key>shortcut</key><string>さんせいしょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>岩山</string><key>shortcut</key><string>いわやま</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>平川ワイナリー</string><key>shortcut</key><string>ひらかわわいなりー</string></dict>
 	<dict><key>phrase</key><string>日本アルプスワインバレー</string><key>shortcut</key><string>にほんあるぷすわいんばれー</string></dict>
@@ -589,14 +556,10 @@
 	<dict><key>phrase</key><string>立科町</string><key>shortcut</key><string>たてしなまち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>芽室町</string><key>shortcut</key><string>めむろちょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>西川町</string><key>shortcut</key><string>にしかわまち</string></dict>
-	<dict><key>phrase</key><string>西豪州</string><key>shortcut</key><string>せいごうしゅう</string></dict>
-	<dict><key>phrase</key><string>豪州</string><key>shortcut</key><string>ごうしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>赤湯町</string><key>shortcut</key><string>あかゆまち</string></dict>
 	<dict><key>phrase</key><string>都農町</string><key>shortcut</key><string>つのちょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>野山</string><key>shortcut</key><string>のやま</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>長和町</string><key>shortcut</key><string>ながわまち</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>長野県原産地呼称管理制度</string><key>shortcut</key><string>ながのけんげんさんちこしょうかんりせいど</string></dict>
-	<dict><key>phrase</key><string>長野県農事試験場</string><key>shortcut</key><string>ながのけんのうじしけんじょう</string></dict>
 	<dict><key>phrase</key><string>長門市</string><key>shortcut</key><string>ながとし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>阿武町</string><key>shortcut</key><string>あぶちょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>阿武郡</string><key>shortcut</key><string>あぶぐん</string></dict>	<!-- Sudachiにもある -->
@@ -1635,21 +1598,10 @@
 	<dict><key>phrase</key><string>P.G.I. Area Wine</string><key>shortcut</key><string>ぴーじーあいえりあわいん</string></dict>
 	<dict><key>phrase</key><string>P.G.I. Area Wines</string><key>shortcut</key><string>ぴーじーあいえりあわいんず</string></dict>
 
-	<!-- P.G.O. -->
-	<dict><key>phrase</key><string>Deželno vino</string><key>shortcut</key><string>でじぇうのゔぃの</string></dict>
-
-	<!-- Z.G.P. -->
-	<dict><key>phrase</key><string>Kakovostno vino</string><key>shortcut</key><string>かこゔぉすとのゔぃの</string></dict>
-	<dict><key>phrase</key><string>Vrhunsko vino</string><key>shortcut</key><string>ゔるふんすこゔぃの</string></dict>
-
-	<dict><key>phrase</key><string>Qualitätsschaumwein b.A.</string><key>shortcut</key><string>くゔぁりてーつしゃうむばいんべーあー</string></dict>
-	<dict><key>phrase</key><string>Sekt b.A.</string><key>shortcut</key><string>ぜくとべーあー</string></dict>
-	<dict><key>phrase</key><string>オーストリアン・ゼクトg.U.</string><key>shortcut</key><string>おーすとりあんぜくと</string></dict>
-
-	<dict><key>phrase</key><string>アー・ペー・ヌマー</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
-	<dict><key>phrase</key><string>A.P. Nr.</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
 
 	<!-- 地名(国名) -->
+	<dict><key>phrase</key><string>豪州</string><key>shortcut</key><string>ごうしゅう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Greece</string><key>shortcut</key><string>ぐりーす</string></dict>
 	<dict><key>phrase</key><string>Argentina</string><key>shortcut</key><string>あるぜんちん</string></dict>
 	<dict><key>phrase</key><string>Australia</string><key>shortcut</key><string>おーすとらりあ</string></dict>
 	<dict><key>phrase</key><string>Canada</string><key>shortcut</key><string>かなだ</string></dict>
@@ -1672,16 +1624,13 @@
 	<dict><key>phrase</key><string>ウクライナ</string><key>shortcut</key><string>うくらいな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ウルグアイ</string><key>shortcut</key><string>うるぐあい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エジプト</string><key>shortcut</key><string>えじぷと</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>エジプト文明</string><key>shortcut</key><string>えじぷとぶんめい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エチオピア</string><key>shortcut</key><string>えちおぴあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エトルリア</string><key>shortcut</key><string>えとるりあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エトルリア人</string><key>shortcut</key><string>えとるりあじん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>エトルリア時代</string><key>shortcut</key><string>えとるりあじだい</string></dict>
 	<dict><key>phrase</key><string>カナダ</string><key>shortcut</key><string>かなだ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キューバ</string><key>shortcut</key><string>きゅーば</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ギリシャ</string><key>shortcut</key><string>ぎりしゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ギリシャ人</string><key>shortcut</key><string>ぎりしゃじん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
 	<dict><key>phrase</key><string>クロアチア</string><key>shortcut</key><string>くろあちあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>南アフリカ</string><key>shortcut</key><string>みなみあふりか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>Bulgaria</string><key>shortcut</key><string>ぶるがりあ</string></dict>
@@ -1700,6 +1649,14 @@
 	<dict><key>phrase</key><string>Uruguay</string><key>shortcut</key><string>うるぐあい</string></dict>
 	<dict><key>phrase</key><string>Wales</string><key>shortcut</key><string>うぇーるず</string></dict>
 	<dict><key>phrase</key><string>Österreich</string><key>shortcut</key><string>えすたらいひ</string></dict>
+
+	<!-- 文明・民族・神話名 -->
+	<dict><key>phrase</key><string>エジプト文明</string><key>shortcut</key><string>えじぷとぶんめい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>エトルリア人・フォカイア人</string><key>shortcut</key><string>えとるりあじんふぉかいあじん</string></dict>
+	<dict><key>phrase</key><string>ギリシャ人・フォカイア人</string><key>shortcut</key><string>ぎりしゃじんふぉかいあじん</string></dict>
+	<dict><key>phrase</key><string>エトルリア時代</string><key>shortcut</key><string>えとるりあじだい</string></dict>
+	<dict><key>phrase</key><string>フェニキア人・ギリシャ人</string><key>shortcut</key><string>ふぇにきあじんぎりしゃじん</string></dict>
+	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
 
 	<!-- 地名(山) -->
 	<dict><key>phrase</key><string>秩父山麓</string><key>shortcut</key><string>ちちぶさんろく</string></dict>
@@ -1896,6 +1853,7 @@
 	<dict><key>phrase</key><string>洞爺湖町</string><key>shortcut</key><string>とうやこちょう</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- 地方 -->
+	<dict><key>phrase</key><string>スラヴォニア</string><key>shortcut</key><string>すらゔぉにあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アッティカ</string><key>shortcut</key><string>あってぃか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アトランティカ</string><key>shortcut</key><string>あとらんてぃか</string></dict>
 	<dict><key>phrase</key><string>アルザス・ロレーヌ</string><key>shortcut</key><string>あるざすろれーぬ</string></dict>	<!-- Sudachiにもある -->
@@ -2076,6 +2034,9 @@
 	<dict><key>phrase</key><string>Grand Auxerrois</string><key>shortcut</key><string>ぐらんおーせろわ</string></dict>
 
 	<!-- 州名 -->
+	<dict><key>phrase</key><string>山西省</string><key>shortcut</key><string>さんせいしょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>四川省</string><key>shortcut</key><string>しせんしょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>西豪州</string><key>shortcut</key><string>せいごうしゅう</string></dict>
 	<dict><key>phrase</key><string>クイーンズランド州</string><key>shortcut</key><string>くいーんずらんどしゅう</string></dict>
 	<dict><key>phrase</key><string>カスティーリャ・イ・レオン州</string><key>shortcut</key><string>かすてぃーりゃいれおんしゅう</string></dict>
 	<dict><key>phrase</key><string>カスティーリャ・ラ・マンチャ州</string><key>shortcut</key><string>かすてぃーりゃらまんちゃしゅう</string></dict>
@@ -2645,6 +2606,44 @@
 	<dict><key>phrase</key><string>黒海</string><key>shortcut</key><string>こっかい</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- 格付けや分類、ワインのタイプ、区分、種別、種類 -->
+	<dict><key>phrase</key><string>Deželno vino</string><key>shortcut</key><string>でじぇうのゔぃの</string></dict>
+	<dict><key>phrase</key><string>Kakovostno vino</string><key>shortcut</key><string>かこゔぉすとのゔぃの</string></dict>
+	<dict><key>phrase</key><string>Vrhunsko vino</string><key>shortcut</key><string>ゔるふんすこゔぃの</string></dict>
+	<dict><key>phrase</key><string>アー・ペー・ヌマー</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
+	<dict><key>phrase</key><string>A.P. Nr.</string><key>shortcut</key><string>あーぺーぬまー</string></dict>
+	<dict><key>phrase</key><string>オーストリアン・ゼクトg.U.</string><key>shortcut</key><string>おーすとりあんぜくと</string></dict>
+	<dict><key>phrase</key><string>Sekt b.A.</string><key>shortcut</key><string>ぜくとべーあー</string></dict>
+	<dict><key>phrase</key><string>Qualitätsschaumwein b.A.</string><key>shortcut</key><string>くゔぁりてーつしゃうむばいんべーあー</string></dict>
+	<dict><key>phrase</key><string>長野県原産地呼称管理制度</string><key>shortcut</key><string>ながのけんげんさんちこしょうかんりせいど</string></dict>
+	<dict><key>phrase</key><string>原産地保護</string><key>shortcut</key><string>げんさんちほご</string></dict>
+	<dict><key>phrase</key><string>原産地名</string><key>shortcut</key><string>げんさんちめい</string></dict>
+	<dict><key>phrase</key><string>原産地名称保護</string><key>shortcut</key><string>げんさんちめいしょうほご</string></dict>
+	<dict><key>phrase</key><string>原産地呼称</string><key>shortcut</key><string>げんさんちこしょう</string></dict>
+	<dict><key>phrase</key><string>原産地呼称保護</string><key>shortcut</key><string>げんさんちこしょうほご</string></dict>
+	<dict><key>phrase</key><string>原産地呼称制度</string><key>shortcut</key><string>げんさんちこしょうせいど</string></dict>
+	<dict><key>phrase</key><string>原産地呼称法</string><key>shortcut</key><string>げんさんちこしょうほう</string></dict>
+	<dict><key>phrase</key><string>原産地呼称管理法</string><key>shortcut</key><string>げんさんちこしょうかんりほう</string></dict>
+	<dict><key>phrase</key><string>原産地呼称統制</string><key>shortcut</key><string>げんさんちこしょうとうせい</string></dict>
+	<dict><key>phrase</key><string>原産地呼称統制制度</string><key>shortcut</key><string>げんさんちこしょうとうせいせいど</string></dict>
+	<dict><key>phrase</key><string>原産地呼称表示</string><key>shortcut</key><string>げんさんちこしょうひょうじ</string></dict>
+	<dict><key>phrase</key><string>原産地統制呼称</string><key>shortcut</key><string>げんさんちとうせいこしょう</string></dict>
+	<dict><key>phrase</key><string>原産地表示</string><key>shortcut</key><string>げんさんちひょうじ</string></dict>
+	<dict><key>phrase</key><string>原産地表記</string><key>shortcut</key><string>げんさんちひょうき</string></dict>
+	<dict><key>phrase</key><string>原産地表記付</string><key>shortcut</key><string>げんさんちひょうきつき</string></dict>
+	<dict><key>phrase</key><string>Districtus Hungaricus Controllatus</string><key>shortcut</key><string>でぃすとりくとぅすふんがりくすこんとろっらーとぅす</string></dict>
+	<dict><key>phrase</key><string>Appellation d'Origine Contrôlée</string><key>shortcut</key><string>あぺらしおんどりじーぬこんとろーれ</string></dict>
+	<dict><key>phrase</key><string>ラントヴァイン生産地域</string><key>shortcut</key><string>らんとゔぁいんせいさんちいき</string></dict>
+	<dict><key>phrase</key><string>マデラスタイル</string><key>shortcut</key><string>までらすたいる</string></dict>
+	<dict><key>phrase</key><string>グラン・クリュ</string><key>shortcut</key><string>ぐらんくりゅ</string></dict>
+	<dict><key>phrase</key><string>Sauternes Premiers Cru</string><key>shortcut</key><string>そーてるぬぷるみえくりゅ</string></dict>
+	<dict><key>phrase</key><string>Deuxièmes Cru</string><key>shortcut</key><string>どぅじえむくりゅ</string></dict>
+	<dict><key>phrase</key><string>Premier Grand Cru</string><key>shortcut</key><string>ぷるみえぐらんくりゅ</string></dict>
+	<dict><key>phrase</key><string>Premier Grand Cru Classé</string><key>shortcut</key><string>ぷるみえぐらんくりゅくらっせ</string></dict>
+	<dict><key>phrase</key><string>トウニー・ポルト</string><key>shortcut</key><string>とうにーぽると</string></dict>
+	<dict><key>phrase</key><string>Rotling</string><key>shortcut</key><string>ろーとりんぐ</string></dict>
+	<dict><key>phrase</key><string>Gemischter Satz</string><key>shortcut</key><string>げみしゅたーざっつ</string></dict>
+	<dict><key>phrase</key><string>Cviček</string><key>shortcut</key><string>ちゔぃちぇっく</string></dict>
+	<dict><key>phrase</key><string>フェーダーシュピール</string><key>shortcut</key><string>ふぇーだーしゅぴーる</string></dict>
 	<dict><key>phrase</key><string>Pétillant</string><key>shortcut</key><string>ぺてぃやん</string></dict>
 	<dict><key>phrase</key><string>Frizzante</string><key>shortcut</key><string>ふりっつぁんて</string></dict>
 	<dict><key>phrase</key><string>Perlwein</string><key>shortcut</key><string>ぺるるゔぁいん</string></dict>
@@ -2695,8 +2694,6 @@
 	<dict><key>phrase</key><string>Schillerwein</string><key>shortcut</key><string>しらーゔぁいん</string></dict>
 	<dict><key>phrase</key><string>Premier Cru</string><key>shortcut</key><string>ぷるみえくりゅ</string></dict>
 	<dict><key>phrase</key><string>Premier Cru Supérieur</string><key>shortcut</key><string>ぷるみえくりゅしゅぺりゅーる</string></dict>
-	<dict><key>phrase</key><string>Premier Grand Cru</string><key>shortcut</key><string>ぷるみえぐらんくりゅ</string></dict>
-	<dict><key>phrase</key><string>Premier Grand Cru Classé</string><key>shortcut</key><string>ぷるみえぐらんくりゅくらっせ</string></dict>
 	<dict><key>phrase</key><string>Premiers Cru</string><key>shortcut</key><string>ぷるみえくりゅ</string></dict>
 	<dict><key>phrase</key><string>Premiers Grands Cru Classés</string><key>shortcut</key><string>ぷるみえぐらんくりゅくらっせ</string></dict>
 	<dict><key>phrase</key><string>村名アペラシオン</string><key>shortcut</key><string>そんめいあぺらしおん</string></dict>
@@ -3152,6 +3149,11 @@
 	<dict><key>phrase</key><string>トパーク</string><key>shortcut</key><string>とぱーく</string></dict>
 
 	<!-- ワイン用ぶどう品種名 / セパージュ -->
+	<dict><key>phrase</key><string>Tinta del País</string><key>shortcut</key><string>てぃんたでるぱいす</string></dict>
+	<dict><key>phrase</key><string>Encruzado</string><key>shortcut</key><string>えんくるざーど</string></dict>
+	<dict><key>phrase</key><string>Caladoc</string><key>shortcut</key><string>からどっく</string></dict>
+	<dict><key>phrase</key><string>Cabernet Sauvignon</string><key>shortcut</key><string>かべるねそーゔぃによん</string></dict>
+	<dict><key>phrase</key><string>Baco Blanc</string><key>shortcut</key><string>ばこぶらん</string></dict>
 	<dict><key>phrase</key><string>UCD5</string><key>shortcut</key><string>ゆーしーでぃーふぁいゔ</string></dict>
 	<dict><key>phrase</key><string>AXR#1</string><key>shortcut</key><string>えいえっくすあーるいち</string></dict>
 	<dict><key>phrase</key><string>PIWI</string><key>shortcut</key><string>ぴーゔぃー</string></dict>
@@ -3183,6 +3185,7 @@
 	<dict><key>phrase</key><string>Barbarossa</string><key>shortcut</key><string>ばるばろっさ</string></dict>
 	<dict><key>phrase</key><string>Barbera</string><key>shortcut</key><string>ばるべーら</string></dict>
 	<dict><key>phrase</key><string>Bastardo</string><key>shortcut</key><string>ばすたるど</string></dict>
+	<dict><key>phrase</key><string>Black Queen</string><key>shortcut</key><string>ぶらっくくいーん</string></dict>
 	<dict><key>phrase</key><string>Black Queen</string><key>shortcut</key><string>ぶらっくくぃーん</string></dict>
 	<dict><key>phrase</key><string>Blanc Fumé</string><key>shortcut</key><string>ぶらんふゅめ</string></dict>
 	<dict><key>phrase</key><string>Blauburger</string><key>shortcut</key><string>ぶらうぶるがー</string></dict>
@@ -3243,7 +3246,6 @@
 	<dict><key>phrase</key><string>Crljenak Kastelanski</string><key>shortcut</key><string>つぇりになっくかしゅてらんすき</string></dict>
 	<dict><key>phrase</key><string>Croatina</string><key>shortcut</key><string>くろあてぃーな</string></dict>
 	<dict><key>phrase</key><string>Cserszegi Fűszeres</string><key>shortcut</key><string>ちぇるせぎふゅーせれしゅ</string></dict>
-	<dict><key>phrase</key><string>Cviček</string><key>shortcut</key><string>ちゔぃちぇっく</string></dict>
 	<dict><key>phrase</key><string>Côt</string><key>shortcut</key><string>こっと</string></dict>
 	<dict><key>phrase</key><string>Côt</string><key>shortcut</key><string>こー</string></dict>
 	<dict><key>phrase</key><string>Delaware</string><key>shortcut</key><string>でらうぇあ</string></dict>
@@ -3281,7 +3283,6 @@
 	<dict><key>phrase</key><string>Garnacha Blanca</string><key>shortcut</key><string>がるなっちゃぶらんか</string></dict>
 	<dict><key>phrase</key><string>Garnacha Tinta</string><key>shortcut</key><string>がるなっちゃてぃんた</string></dict>
 	<dict><key>phrase</key><string>Garnacha</string><key>shortcut</key><string>がるなっちゃ</string></dict>
-	<dict><key>phrase</key><string>Gemischter Satz</string><key>shortcut</key><string>げみしゅたーざっつ</string></dict>
 	<dict><key>phrase</key><string>Gewürztraminer</string><key>shortcut</key><string>げゔゅるつとらみねーる</string></dict>
 	<dict><key>phrase</key><string>Glera</string><key>shortcut</key><string>ぐれーら</string></dict>
 	<dict><key>phrase</key><string>Godello</string><key>shortcut</key><string>ごでーりょ</string></dict>
@@ -3378,7 +3379,6 @@
 	<dict><key>phrase</key><string>Moschofilero</string><key>shortcut</key><string>もすこふぃれろ</string></dict>
 	<dict><key>phrase</key><string>Mourvèdre</string><key>shortcut</key><string>むーるゔぇーどる</string></dict>
 	<dict><key>phrase</key><string>Muscadelle</string><key>shortcut</key><string>みゅすかでる</string></dict>
-	<dict><key>phrase</key><string>Muscadet Côtes de Grandlieu</string><key>shortcut</key><string>みゅすかでこーとどぐらんりゅー</string></dict>
 	<dict><key>phrase</key><string>Muscardin</string><key>shortcut</key><string>みゅすかるだん</string></dict>
 	<dict><key>phrase</key><string>Muscat Bailey A</string><key>shortcut</key><string>ますかっとべいりーえい</string></dict>
 	<dict><key>phrase</key><string>Muscat Blanc à Petit Grains</string><key>shortcut</key><string>みゅすかぶらんあぷてぃぐらん</string></dict>
@@ -3464,7 +3464,6 @@
 	<dict><key>phrase</key><string>Rotburger</string><key>shortcut</key><string>ろーとぶるがー</string></dict>
 	<dict><key>phrase</key><string>Roter Veltliner</string><key>shortcut</key><string>ろーたーふぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>Rotgipfler</string><key>shortcut</key><string>ろーとぎぷふらー</string></dict>
-	<dict><key>phrase</key><string>Rotling</string><key>shortcut</key><string>ろーとりんぐ</string></dict>
 	<dict><key>phrase</key><string>Roupeiro</string><key>shortcut</key><string>ろうぺいろ</string></dict>
 	<dict><key>phrase</key><string>Roussanne</string><key>shortcut</key><string>るーさんぬ</string></dict>
 	<dict><key>phrase</key><string>Roussette</string><key>shortcut</key><string>るーせっと</string></dict>
@@ -3632,7 +3631,6 @@
 	<dict><key>phrase</key><string>カリニェナ</string><key>shortcut</key><string>かりにぇな</string></dict>
 	<dict><key>phrase</key><string>カリニャン</string><key>shortcut</key><string>かりにゃん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カンノナウ</string><key>shortcut</key><string>かんのなう</string></dict>
-	<dict><key>phrase</key><string>ガッティナーラ</string><key>shortcut</key><string>がってぃなーら</string></dict>
 	<dict><key>phrase</key><string>ガマレ</string><key>shortcut</key><string>がまれ</string></dict>
 	<dict><key>phrase</key><string>ガメイ</string><key>shortcut</key><string>がめい</string></dict>
 	<dict><key>phrase</key><string>ガルガネガ</string><key>shortcut</key><string>がるがねが</string></dict>
@@ -3689,7 +3687,6 @@
 	<dict><key>phrase</key><string>ダオン</string><key>shortcut</key><string>だおん</string></dict>
 	<dict><key>phrase</key><string>ダヴィディ</string><key>shortcut</key><string>だゔぃでぃ</string></dict>
 	<dict><key>phrase</key><string>チェザネーゼ</string><key>shortcut</key><string>ちぇざねーぜ</string></dict>
-	<dict><key>phrase</key><string>チュリ</string><key>shortcut</key><string>ちゅり</string></dict>
 	<dict><key>phrase</key><string>ツァメトフカ</string><key>shortcut</key><string>つぁめとふか</string></dict>
 	<dict><key>phrase</key><string>ツィアファンドラー</string><key>shortcut</key><string>つぃあふぁんどらー</string></dict>
 	<dict><key>phrase</key><string>ツェリニナック・カシュテランスキ</string><key>shortcut</key><string>つぇりになっくかしゅてらんすき</string></dict>
@@ -3758,7 +3755,6 @@
 	<dict><key>phrase</key><string>ブラウアー・ヴィルトバッハー</string><key>shortcut</key><string>ぶらうあーゔぃるとばっはー</string></dict>
 	<dict><key>phrase</key><string>ブラウフレンキッシュ</string><key>shortcut</key><string>ぶらうふれんきっしゅ</string></dict>
 	<dict><key>phrase</key><string>ブルネッロ</string><key>shortcut</key><string>ぶるねっろ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ブルネッロ・ディ・モンタルチーノ</string><key>shortcut</key><string>ぶるねっろでぃもんたるちーの</string></dict>
 	<dict><key>phrase</key><string>プティ・マンサン</string><key>shortcut</key><string>ぷてぃまんさん</string></dict>
 	<dict><key>phrase</key><string>プティ・メリエ</string><key>shortcut</key><string>ぷてぃめりえ</string></dict>
 	<dict><key>phrase</key><string>プラヴァッツ・マリ</string><key>shortcut</key><string>ぷらゔぁっつまり</string></dict>
@@ -3812,7 +3808,6 @@
 	<dict><key>phrase</key><string>モスカテル</string><key>shortcut</key><string>もすかてる</string></dict>
 	<dict><key>phrase</key><string>モスカテル・デ・アレハンドリア</string><key>shortcut</key><string>もすかてるであれはんどりあ</string></dict>
 	<dict><key>phrase</key><string>モスカート・ジャッロ</string><key>shortcut</key><string>もすかーとじゃっろ</string></dict>
-	<dict><key>phrase</key><string>モスカート・ダスティ</string><key>shortcut</key><string>もすかーとだすてぃ</string></dict>
 	<dict><key>phrase</key><string>モスカート・ビアンコ</string><key>shortcut</key><string>もすかーとびあんこ</string></dict>
 	<dict><key>phrase</key><string>モスホフィレロ</string><key>shortcut</key><string>もすほふぃれろ</string></dict>
 	<dict><key>phrase</key><string>モドラ・フランキニャ</string><key>shortcut</key><string>もどらふらんきにゃ</string></dict>
@@ -3845,7 +3840,6 @@
 	<dict><key>phrase</key><string>ロボラ</string><key>shortcut</key><string>ろぼら</string></dict>
 	<dict><key>phrase</key><string>ローター・ヴェルトリーナー</string><key>shortcut</key><string>ろーたーゔぇるとりーなー</string></dict>
 	<dict><key>phrase</key><string>ロートギプフラー</string><key>shortcut</key><string>ろーとぎぷふらー</string></dict>
-	<dict><key>phrase</key><string>ヴァルポリチェッラ</string><key>shortcut</key><string>ゔぁるぽりちぇっら</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・コワニティ</string><key>shortcut</key><string>ゔぃてぃすこわにてぃ</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ベルランディエリ</string><key>shortcut</key><string>ゔぃてぃすべるらんでぃえり</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ラブルスカ</string><key>shortcut</key><string>ゔぃてぃすらぶるすか</string></dict>
@@ -3856,7 +3850,6 @@
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇら</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ種</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇらしゅ</string></dict>
 	<dict><key>phrase</key><string>ヴィティス・ヴィニフェラ系</string><key>shortcut</key><string>ゔぃてぃすゔぃにふぇらけい</string></dict>
-	<dict><key>phrase</key><string>ヴィテッロ・トンナート</string><key>shortcut</key><string>ゔぃてっろとんなーと</string></dict>
 	<dict><key>phrase</key><string>ヴィニフェラ</string><key>shortcut</key><string>ゔぃにふぇら</string></dict>
 	<dict><key>phrase</key><string>ヴィニフェラ種</string><key>shortcut</key><string>ゔぃにふぇらしゅ</string></dict>
 	<dict><key>phrase</key><string>ヴィニフェラ系</string><key>shortcut</key><string>ゔぃにふぇらけい</string></dict>
@@ -3936,7 +3929,8 @@
 	<dict><key>phrase</key><string>Red Millennium</string><key>shortcut</key><string>れっどみれにあむ</string></dict>
 	<dict><key>phrase</key><string>Shokoshi</string><key>shortcut</key><string>しょうこうし</string></dict>
 
-	<!-- 米の品種 -->
+	<!-- 米の品種・芋の品種 -->
+	<dict><key>phrase</key><string>黄金千貫</string><key>shortcut</key><string>こがねせんがん</string></dict>
 	<dict><key>phrase</key><string>M310</string><key>shortcut</key><string>えむさんいちぜろ</string></dict>
 	<dict><key>phrase</key><string>雄町</string><key>shortcut</key><string>おまち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>五百万石</string><key>shortcut</key><string>ごひゃくまんごく</string></dict>
@@ -4074,8 +4068,6 @@
 	<dict><key>phrase</key><string>アンジュー伯・ノルマンディー公</string><key>shortcut</key><string>あんじゅーはくのるまんでぃーこう</string></dict>
 	<dict><key>phrase</key><string>アンティノーリ</string><key>shortcut</key><string>あんてぃのーり</string></dict>
 	<dict><key>phrase</key><string>アントニオ・サラザール</string><key>shortcut</key><string>あんとにおさらざーる</string></dict>
-	<dict><key>phrase</key><string>エトルリア人・フォカイア人</string><key>shortcut</key><string>えとるりあじんふぉかいあじん</string></dict>
-	<dict><key>phrase</key><string>ギリシャ人・フォカイア人</string><key>shortcut</key><string>ぎりしゃじんふぉかいあじん</string></dict>
 	<dict><key>phrase</key><string>クリストフォロ・コロンボ</string><key>shortcut</key><string>くりすとふぉろころんぼ</string></dict>
 	<dict><key>phrase</key><string>クレメンス・ヴェンツェスラウス</string><key>shortcut</key><string>くれめんすゔぇんつぇすらうす</string></dict>
 	<dict><key>phrase</key><string>コンティ公ルイ・フランソワ・ド・ブルボン</string><key>shortcut</key><string>こんてぃこうるいふらんそわどぶるぼん</string></dict>
@@ -4118,7 +4110,6 @@
 	<dict><key>phrase</key><string>酒井彌惣</string><key>shortcut</key><string>さかいやそう</string></dict>
 	<dict><key>phrase</key><string>高品質ピノ・ノワール生産者</string><key>shortcut</key><string>こうひんしつぴののわーるせいさんしゃ</string></dict>
 	<dict><key>phrase</key><string>イーニアス・カフェ</string><key>shortcut</key><string>いーにあすかふぇ</string></dict>
-	<dict><key>phrase</key><string>フェニキア人・ギリシャ人</string><key>shortcut</key><string>ふぇにきあじんぎりしゃじん</string></dict>
 	<dict><key>phrase</key><string>フォカイア人</string><key>shortcut</key><string>ふぉかいあじん</string></dict>
 	<dict><key>phrase</key><string>ベルガエ人</string><key>shortcut</key><string>べるがえじん</string></dict>
 	<dict><key>phrase</key><string>マオリ族</string><key>shortcut</key><string>まおりぞく</string></dict>
@@ -4137,7 +4128,6 @@
 	<dict><key>phrase</key><string>Pruning</string><key>shortcut</key><string>ぷるーにんぐ</string></dict>
 	<dict><key>phrase</key><string>Spur Pruning</string><key>shortcut</key><string>すぱーぷるーにんぐ</string></dict>
 	<dict><key>phrase</key><string>Summer pruning</string><key>shortcut</key><string>さまーぷるーにんぐ</string></dict>
-	<dict><key>phrase</key><string>The Eyrie Vineyards</string><key>shortcut</key><string>じあいりーゔぃんやーず</string></dict>
 	<dict><key>phrase</key><string>アメリカ系台木</string><key>shortcut</key><string>あめりかけいだいぎ</string></dict>
 	<dict><key>phrase</key><string>オーガニック栽培</string><key>shortcut</key><string>おーがにっくさいばい</string></dict>
 	<dict><key>phrase</key><string>キャノピー・マネジメント</string><key>shortcut</key><string>きゃのぴーまねじめんと</string></dict>
@@ -4145,7 +4135,6 @@
 	<dict><key>phrase</key><string>クローン技術</string><key>shortcut</key><string>くろーんぎじゅつ</string></dict>
 	<dict><key>phrase</key><string>クローン選抜</string><key>shortcut</key><string>くろーんせんばつ</string></dict>
 	<dict><key>phrase</key><string>グラン・クリュ畑</string><key>shortcut</key><string>ぐらんくりゅばたけ</string></dict>
-	<dict><key>phrase</key><string>シャローン・ヴィンヤード</string><key>shortcut</key><string>しゃろーんゔぃんやーど</string></dict>
 	<dict><key>phrase</key><string>ディジョン・クローン</string><key>shortcut</key><string>でぃじょんくろーん</string></dict>
 	<dict><key>phrase</key><string>ドリップ灌漑</string><key>shortcut</key><string>どりっぷかんがい</string></dict>
 	<dict><key>phrase</key><string>ナチュラル灌漑</string><key>shortcut</key><string>なちゅらるかんがい</string></dict>
@@ -4423,7 +4412,6 @@
 	<dict><key>phrase</key><string>微気候</string><key>shortcut</key><string>びきこう</string></dict>
 	<dict><key>phrase</key><string>冷涼気候</string><key>shortcut</key><string>れいりょうきこう</string></dict>
 	<dict><key>phrase</key><string>アフリカ近く</string><key>shortcut</key><string>あふりかちかく</string></dict>
-	<dict><key>phrase</key><string>ブライテングラート 51</string><key>shortcut</key><string>ぶらいてんぐらーとごじゅういち</string></dict>
 	<dict><key>phrase</key><string>Gelé</string><key>shortcut</key><string>じゅれ</string></dict>
 	<dict><key>phrase</key><string>Temperate</string><key>shortcut</key><string>てんぺれーと</string></dict>
 	<dict><key>phrase</key><string>マイクロ・クライメット</string><key>shortcut</key><string>まいくろくらいめっと</string></dict>
@@ -4455,13 +4443,17 @@
 	<dict><key>phrase</key><string>海沿</string><key>shortcut</key><string>うみぞい</string></dict>
 
 	<!-- 風 -->
+	<dict><key>phrase</key><string>ミストラル</string><key>shortcut</key><string>みすとらる</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Cape Doctor</string><key>shortcut</key><string>けいぷどくたー</string></dict>
+	<dict><key>phrase</key><string>Lake Doctor</string><key>shortcut</key><string>れいくどくたー</string></dict>
+	<dict><key>phrase</key><string>Fremantle Doctor</string><key>shortcut</key><string>ふりーまんとるどくたー</string></dict>
 	<dict><key>phrase</key><string>Zonda</string><key>shortcut</key><string>そんだ</string></dict>
 	<dict><key>phrase</key><string>Zonda</string><key>shortcut</key><string>ぞんだ</string></dict>
 	<dict><key>phrase</key><string>Autan</string><key>shortcut</key><string>おーたん</string></dict>
 	<dict><key>phrase</key><string>Marin</string><key>shortcut</key><string>まらん</string></dict>
 	<dict><key>phrase</key><string>寒冷風</string><key>shortcut</key><string>かんれいふう</string></dict>
-	<dict><key>phrase</key><string>風ポニエンテ</string><key>shortcut</key><string>かぜぽにえんて</string></dict>
-	<dict><key>phrase</key><string>風レバンテ</string><key>shortcut</key><string>かぜればんて</string></dict>
+	<dict><key>phrase</key><string>ポニエンテ</string><key>shortcut</key><string>ぽにえんて</string></dict>
+	<dict><key>phrase</key><string>レバンテ</string><key>shortcut</key><string>ればんて</string></dict>
 	<dict><key>phrase</key><string>ゾンダ風</string><key>shortcut</key><string>ぞんだふう</string></dict>
 	<dict><key>phrase</key><string>フリーマントル・ドクター</string><key>shortcut</key><string>ふりーまんとるどくたー</string></dict>
 
@@ -4614,6 +4606,7 @@
 	<dict><key>phrase</key><string>数本残す</string><key>shortcut</key><string>すうほんのこす</string></dict>
 
 	<!-- 醸造技術 -->
+	<dict><key>phrase</key><string>チュリ</string><key>shortcut</key><string>ちゅり</string></dict>
 	<dict><key>phrase</key><string>STELVIN</string><key>shortcut</key><string>すてるゔぁん</string></dict>
 	<dict><key>phrase</key><string>サツナヘリ</string><key>shortcut</key><string>さつなへり</string></dict>
 	<dict><key>phrase</key><string>デダゼ</string><key>shortcut</key><string>でだぜ</string></dict>
@@ -4627,7 +4620,6 @@
 	<dict><key>phrase</key><string>オーク材</string><key>shortcut</key><string>おーくざい</string></dict>
 	<dict><key>phrase</key><string>オーク樽</string><key>shortcut</key><string>おーくだる</string></dict>
 	<dict><key>phrase</key><string>ペドンキュラータ・オーク</string><key>shortcut</key><string>ぺどんきゅらーたおーく</string></dict>
-	<dict><key>phrase</key><string>スラヴォニア</string><key>shortcut</key><string>すらゔぉにあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スラヴォニア・オーク</string><key>shortcut</key><string>すらゔぉにあおーく</string></dict>
 	<dict><key>phrase</key><string>セシル・オーク</string><key>shortcut</key><string>せしるおーく</string></dict>
 	<dict><key>phrase</key><string>フレンチ・オーク</string><key>shortcut</key><string>ふれんちおーく</string></dict>
@@ -4651,7 +4643,6 @@
 	<dict><key>phrase</key><string>Blend</string><key>shortcut</key><string>ぶれんど</string></dict>
 	<dict><key>phrase</key><string>Blending</string><key>shortcut</key><string>ぶれんでぃんぐ</string></dict>
 	<dict><key>phrase</key><string>Carbonic maceration</string><key>shortcut</key><string>かるぼにっくませれいしょん</string></dict>
-	<dict><key>phrase</key><string>Cidre</string><key>shortcut</key><string>しーどる</string></dict>
 	<dict><key>phrase</key><string>Clairette de Die Méthode Ancestrale</string><key>shortcut</key><string>くれれっとどでぃーめとーどあんせすとらる</string></dict>
 	<dict><key>phrase</key><string>Deuxième Fermentation en Bouteille</string><key>shortcut</key><string>どぅーじえーむふぇるまんたしおんあんぶていゆ</string></dict>
 	<dict><key>phrase</key><string>Disgorgement</string><key>shortcut</key><string>でぃすごーじめんと</string><key>pos</key><string>サ変名詞</string></dict>
@@ -4677,7 +4668,6 @@
 	<dict><key>phrase</key><string>Méthode de transfert</string><key>shortcut</key><string>めとーどどとらんすふぇーる</string></dict>
 	<dict><key>phrase</key><string>Méthode rurale</string><key>shortcut</key><string>めとーどりゅらる</string></dict>
 	<dict><key>phrase</key><string>Méthode traditionnelle</string><key>shortcut</key><string>めとーどとらでぃしょねる</string></dict>
-	<dict><key>phrase</key><string>Poire</string><key>shortcut</key><string>ぽわーる</string></dict>
 	<dict><key>phrase</key><string>Riddling</string><key>shortcut</key><string>りどりんぐ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>aging</string><key>shortcut</key><string>えいじんぐ</string></dict>
 	<dict><key>phrase</key><string>アッサンブラージュ</string><key>shortcut</key><string>あっさんぶらーじゅ</string></dict>	<!-- Sudachiにもある -->
@@ -4697,7 +4687,6 @@
 	<dict><key>phrase</key><string>スペイン醸造技術</string><key>shortcut</key><string>すぺいんじょうぞうぎじゅつ</string></dict>
 	<dict><key>phrase</key><string>デゴルジュマン</string><key>shortcut</key><string>でごるじゅまん</string></dict>
 	<dict><key>phrase</key><string>デブルバージュ</string><key>shortcut</key><string>でぶるばーじゅ</string></dict>
-	<dict><key>phrase</key><string>トウニー・ポルト</string><key>shortcut</key><string>とうにーぽると</string></dict>
 	<dict><key>phrase</key><string>ドザージュ</string><key>shortcut</key><string>どざーじゅ</string></dict>
 	<dict><key>phrase</key><string>ドザージュ不可</string><key>shortcut</key><string>どざーじゅふか</string></dict>
 	<dict><key>phrase</key><string>ナバーラ・ブレンド</string><key>shortcut</key><string>なばーらぶれんど</string></dict>
@@ -4710,13 +4699,11 @@
 	<dict><key>phrase</key><string>ビン熟成</string><key>shortcut</key><string>びんじゅくせい</string></dict>
 	<dict><key>phrase</key><string>ビン貯蔵・熟成期間</string><key>shortcut</key><string>びんちょぞうじゅくせいきかん</string></dict>
 	<dict><key>phrase</key><string>ビール醸造</string><key>shortcut</key><string>びーるじょうぞう</string></dict>
-	<dict><key>phrase</key><string>ピスコ</string><key>shortcut</key><string>ぴすこ</string></dict>
 	<dict><key>phrase</key><string>ブランデー蒸溜所</string><key>shortcut</key><string>ぶらんでーじょうりゅうしょ</string></dict>
 	<dict><key>phrase</key><string>ブレンド</string><key>shortcut</key><string>ぶれんど</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ブレンドワイン</string><key>shortcut</key><string>ぶれんどわいん</string></dict>
 	<dict><key>phrase</key><string>ブレンド・スタイル</string><key>shortcut</key><string>ぶれんどすたいる</string></dict>
 	<dict><key>phrase</key><string>ブレンド法</string><key>shortcut</key><string>ぶれんどほう</string></dict>
-	<dict><key>phrase</key><string>プレディカーツヴァイン醸造所連盟</string><key>shortcut</key><string>ぷれでぃかーつゔぁいんじょうぞうしょれんめい</string></dict>
 	<dict><key>phrase</key><string>ボルドー・ブレンド</string><key>shortcut</key><string>ぼるどーぶれんど</string></dict>
 	<dict><key>phrase</key><string>マセラシオン</string><key>shortcut</key><string>ませらしおん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マセラシオン・ア・ショー</string><key>shortcut</key><string>ませらしおんあしょー</string></dict>
@@ -4767,7 +4754,6 @@
 	<dict><key>phrase</key><string>圧搾法</string><key>shortcut</key><string>あっさくほう</string></dict>
 	<dict><key>phrase</key><string>夏熟成</string><key>shortcut</key><string>なつじゅくせい</string></dict>
 	<dict><key>phrase</key><string>委託醸造</string><key>shortcut</key><string>いたくじょうぞう</string></dict>
-	<dict><key>phrase</key><string>山崎蒸溜所</string><key>shortcut</key><string>やまざきじょうりゅうしょ</string></dict>
 	<dict><key>phrase</key><string>常圧蒸溜</string><key>shortcut</key><string>じょうあつじょうりゅう</string></dict>
 	<dict><key>phrase</key><string>常圧蒸溜焼酎</string><key>shortcut</key><string>じょうあつじょうりゅうしょうちゅう</string></dict>
 	<dict><key>phrase</key><string>平均熟成年数</string><key>shortcut</key><string>へいきんじゅくせいねんすう</string></dict>
@@ -4784,7 +4770,6 @@
 	<dict><key>phrase</key><string>木樽熟成中</string><key>shortcut</key><string>きだるじゅくせいちゅう</string></dict>
 	<dict><key>phrase</key><string>未破砕</string><key>shortcut</key><string>みはさい</string></dict>
 	<dict><key>phrase</key><string>未醗酵</string><key>shortcut</key><string>みはっこう</string></dict>
-	<dict><key>phrase</key><string>本醸造酒</string><key>shortcut</key><string>ほんじょうぞうしゅ</string></dict>
 	<dict><key>phrase</key><string>果汁清澄</string><key>shortcut</key><string>かじゅうせいちょう</string></dict>
 	<dict><key>phrase</key><string>栽培・ワイン醸造</string><key>shortcut</key><string>さいばいわいんじょうぞう</string></dict>
 	<dict><key>phrase</key><string>栽培・ワイン醸造技術</string><key>shortcut</key><string>さいばいわいんじょうぞうぎじゅつ</string></dict>
@@ -4852,7 +4837,6 @@
 	<dict><key>phrase</key><string>熟成規定</string><key>shortcut</key><string>じゅくせいきてい</string></dict>
 	<dict><key>phrase</key><string>熟成規定名称</string><key>shortcut</key><string>じゅくせいきていめいしょう</string></dict>
 	<dict><key>phrase</key><string>熟成過程</string><key>shortcut</key><string>じゅくせいかてい</string></dict>
-	<dict><key>phrase</key><string>特別本醸造酒</string><key>shortcut</key><string>とくべつほんじょうぞうしゅ</string></dict>
 	<dict><key>phrase</key><string>珪藻土濾過器</string><key>shortcut</key><string>けいそうどろかき</string></dict>
 	<dict><key>phrase</key><string>瓶詰</string><key>shortcut</key><string>びんづめ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>瓶詰期間</string><key>shortcut</key><string>びんづめきかん</string></dict>
@@ -5477,13 +5461,14 @@
 	<dict><key>phrase</key><string>drc</string><key>shortcut</key><string>でぃーあーるしー</string></dict>	<!-- 元: ワイン名 -->
 
 	<!-- SAKE -->
+	<dict><key>phrase</key><string>特別本醸造酒</string><key>shortcut</key><string>とくべつほんじょうぞうしゅ</string></dict>
+	<dict><key>phrase</key><string>本醸造酒</string><key>shortcut</key><string>ほんじょうぞうしゅ</string></dict>
 	<dict><key>phrase</key><string>新政</string><key>shortcut</key><string>あらまさ</string></dict>
 	<dict><key>phrase</key><string>新政酵母</string><key>shortcut</key><string>あらまさこうぼ</string></dict>
 	<dict><key>phrase</key><string>6号酵母</string><key>shortcut</key><string>ろくごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>7号酵母</string><key>shortcut</key><string>ななごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>9号酵母</string><key>shortcut</key><string>きゅうごうこうぼ</string></dict>
 	<dict><key>phrase</key><string>カプロン酸エチル</string><key>shortcut</key><string>かぷろんさんえちる</string></dict>
-	<dict><key>phrase</key><string>黄金千貫</string><key>shortcut</key><string>こがねせんがん</string></dict>
 	<dict><key>phrase</key><string>鑑評会出品酒</string><key>shortcut</key><string>かんぴょうかいしゅっぴんしゅ</string></dict>
 	<dict><key>phrase</key><string>含有水分量</string><key>shortcut</key><string>がんゆうすいぶんりょう</string></dict>
 	<dict><key>phrase</key><string>含有量</string><key>shortcut</key><string>がんゆうりょう</string></dict>	<!-- Sudachiにもある -->
@@ -5498,9 +5483,6 @@
 	<dict><key>phrase</key><string>酵母タイプ</string><key>shortcut</key><string>こうぼたいぷ</string></dict>
 	<dict><key>phrase</key><string>酵母菌</string><key>shortcut</key><string>こうぼきん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>酵母培養法</string><key>shortcut</key><string>こうぼばいようほう</string></dict>
-	<dict><key>phrase</key><string>降雨</string><key>shortcut</key><string>こうう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>降雨量</string><key>shortcut</key><string>こううりょう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>降水量</string><key>shortcut</key><string>こうすいりょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>香露</string><key>shortcut</key><string>こうろ</string></dict>
 	<dict><key>phrase</key><string>香露酵母</string><key>shortcut</key><string>こうろこうぼ</string></dict>
 	<dict><key>phrase</key><string>麹</string><key>shortcut</key><string>こうじ</string></dict>	<!-- Sudachiにもある -->
@@ -5531,14 +5513,11 @@
 	<dict><key>phrase</key><string>静岡吟醸</string><key>shortcut</key><string>しずおかぎんじょう</string></dict>
 	<dict><key>phrase</key><string>静岡酵母</string><key>shortcut</key><string>しずおかこうぼ</string></dict>
 	<dict><key>phrase</key><string>全麹仕込</string><key>shortcut</key><string>ぜんこうじじこみ</string></dict>
-	<dict><key>phrase</key><string>全米</string><key>shortcut</key><string>ぜんべい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>速醸系酒母</string><key>shortcut</key><string>そくじょうけいしゅぼ</string></dict>
 	<dict><key>phrase</key><string>速醸系酒母造り</string><key>shortcut</key><string>そくじょうけいしゅぼづくり</string></dict>
 	<dict><key>phrase</key><string>村米制度</string><key>shortcut</key><string>むらまいせいど</string></dict>
 	<dict><key>phrase</key><string>仲添</string><key>shortcut</key><string>なかぞえ</string></dict>
 	<dict><key>phrase</key><string>非セレヴィシエ酵母</string><key>shortcut</key><string>ひせれゔぃしえこうぼ</string></dict>
-	<dict><key>phrase</key><string>防雹ネット</string><key>shortcut</key><string>ぼうひょうねっと</string></dict>
-	<dict><key>phrase</key><string>防雹対策</string><key>shortcut</key><string>ぼうひょうたいさく</string></dict>
 	<dict><key>phrase</key><string>鈴鹿</string><key>shortcut</key><string>すずか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>醪</string><key>shortcut</key><string>もろみ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>全国新酒鑑評会</string><key>shortcut</key><string>ぜんこくしんしゅかんぴょうかい</string></dict>
@@ -5568,7 +5547,6 @@
 	<dict><key>phrase</key><string>清酒等</string><key>shortcut</key><string>せいしゅとう</string></dict>
 	<dict><key>phrase</key><string>生原酒</string><key>shortcut</key><string>なまげんしゅ</string></dict>
 	<dict><key>phrase</key><string>直燗</string><key>shortcut</key><string>じかかん</string></dict>
-	<dict><key>phrase</key><string>御香宮神社</string><key>shortcut</key><string>ごこうのみやじんじゃ</string></dict>
 	<dict><key>phrase</key><string>米消費量</string><key>shortcut</key><string>こめしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>米由来</string><key>shortcut</key><string>こめゆらい</string></dict>
 	<dict><key>phrase</key><string>総検査数量</string><key>shortcut</key><string>そうけんさすうりょう</string></dict>
@@ -5595,7 +5573,6 @@
 	<dict><key>phrase</key><string>出羽燦々</string><key>shortcut</key><string>でわさんさん</string></dict>
 	<dict><key>phrase</key><string>千粒重</string><key>shortcut</key><string>せんりゅうじゅう</string></dict>
 	<dict><key>phrase</key><string>含糖質物</string><key>shortcut</key><string>がんとうしつぶつ</string></dict>
-	<dict><key>phrase</key><string>和歌山梅酒</string><key>shortcut</key><string>わかやまうめしゅ</string></dict>
 	<dict><key>phrase</key><string>国酒</string><key>shortcut</key><string>こくしゅ</string></dict>
 	<dict><key>phrase</key><string>増醸酒</string><key>shortcut</key><string>ぞうじょうしゅ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>外硬内軟</string><key>shortcut</key><string>がいこうないなん</string></dict>
@@ -5630,7 +5607,6 @@
 	<dict><key>phrase</key><string>特定名称酒</string><key>shortcut</key><string>とくていめいしょうしゅ</string></dict>
 	<dict><key>phrase</key><string>特級酒</string><key>shortcut</key><string>とっきゅうしゅ</string></dict>
 	<dict><key>phrase</key><string>玉栄</string><key>shortcut</key><string>たまさかえ</string></dict>
-	<dict><key>phrase</key><string>白酒</string><key>shortcut</key><string>ぱいちゅう</string></dict>
 	<dict><key>phrase</key><string>真精米歩合</string><key>shortcut</key><string>しんせいまいぶあい</string></dict>
 	<dict><key>phrase</key><string>短稈</string><key>shortcut</key><string>たんかん</string></dict>
 	<dict><key>phrase</key><string>砕米</string><key>shortcut</key><string>さいまい</string></dict>
@@ -5656,8 +5632,6 @@
 	<dict><key>phrase</key><string>醇良酒</string><key>shortcut</key><string>じゅんりょうしゅ</string></dict>
 	<dict><key>phrase</key><string>香気成分</string><key>shortcut</key><string>こうきせいぶん</string></dict>
 	<dict><key>phrase</key><string>高精米</string><key>shortcut</key><string>こうせいまい</string></dict>
-	<dict><key>phrase</key><string>黄酒</string><key>shortcut</key><string>ほあんちゅう</string></dict>
-
 
 	<!-- 銘柄 -->
 	<dict><key>phrase</key><string>テタンジェ</string><key>shortcut</key><string>てたんじぇ</string></dict>
@@ -5674,9 +5648,21 @@
 	<dict><key>phrase</key><string>Felsenspiel</string><key>shortcut</key><string>ふぇるぜんしゅぴーる</string></dict>
 	<dict><key>phrase</key><string>Handstreich</string><key>shortcut</key><string>はんとしゅとらいひ</string></dict>
 	<dict><key>phrase</key><string>Meisterstück</string><key>shortcut</key><string>まいすたーしゅてゅっく</string></dict>
+	<dict><key>phrase</key><string>Henschke</string><key>shortcut</key><string>へんちき</string></dict>
 
+	<!-- 生産者 -->
+	<dict><key>phrase</key><string>The Eyrie Vineyards</string><key>shortcut</key><string>じあいりーゔぃんやーず</string></dict>
+	<dict><key>phrase</key><string>シャローン・ヴィンヤード</string><key>shortcut</key><string>しゃろーんゔぃんやーど</string></dict>
+	<dict><key>phrase</key><string>Henschke Hill of Grace</string><key>shortcut</key><string>へんちきひるおゔぐれいす</string></dict>
+	<dict><key>phrase</key><string>Ridge Vineyards</string><key>shortcut</key><string>りっじゔぃんやーど</string></dict>
+	<dict><key>phrase</key><string>タブラス・クリーク・ヴィンヤード</string><key>shortcut</key><string>たぶらすくりーくゔぃんやーど</string></dict>
 
 	<!-- 団体・組織 -->
+	<dict><key>phrase</key><string>プレディカーツヴァイン醸造所連盟</string><key>shortcut</key><string>ぷれでぃかーつゔぁいんじょうぞうしょれんめい</string></dict>
+	<dict><key>phrase</key><string>長野県農事試験場</string><key>shortcut</key><string>ながのけんのうじしけんじょう</string></dict>
+	<dict><key>phrase</key><string>御香宮神社</string><key>shortcut</key><string>ごこうのみやじんじゃ</string></dict>
+	<dict><key>phrase</key><string>山崎蒸溜所</string><key>shortcut</key><string>やまざきじょうりゅうしょ</string></dict>
+	<dict><key>phrase</key><string>ブライテングラート 51</string><key>shortcut</key><string>ぶらいてんぐらーとごじゅういち</string></dict>
 	<dict><key>phrase</key><string>PiPA</string><key>shortcut</key><string>ぴーあいぴーえい</string></dict>
 	<dict><key>phrase</key><string>VIGNO</string><key>shortcut</key><string>びーにょ</string></dict>
 	<dict><key>phrase</key><string>農業省農牧庁SAG</string><key>shortcut</key><string>のうぎょうしょうのうぼくちょうえすえーじー</string></dict>
@@ -5759,6 +5745,14 @@
 	<dict><key>phrase</key><string>酒類業組合</string><key>shortcut</key><string>しゅるいぎょうくみあい</string></dict>
 
 	<!-- 栽培技術 -->
+	<dict><key>phrase</key><string>防雹ネット</string><key>shortcut</key><string>ぼうひょうねっと</string></dict>
+	<dict><key>phrase</key><string>防雹対策</string><key>shortcut</key><string>ぼうひょうたいさく</string></dict>
+	<dict><key>phrase</key><string>年間降水量</string><key>shortcut</key><string>ねんかんこうすいりょう</string></dict>
+	<dict><key>phrase</key><string>年間降水雨量</string><key>shortcut</key><string>ねんかんこうすいうりょう</string></dict>
+	<dict><key>phrase</key><string>年間降雨量</string><key>shortcut</key><string>ねんかんこううりょう</string></dict>
+	<dict><key>phrase</key><string>降雨量</string><key>shortcut</key><string>こううりょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>降水量</string><key>shortcut</key><string>こうすいりょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>降雨</string><key>shortcut</key><string>こうう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>Dehilling</string><key>shortcut</key><string>でぃひりんぐ</string></dict>
 	<dict><key>phrase</key><string>Hilling</string><key>shortcut</key><string>ひりんぐ</string></dict>
 
@@ -5904,6 +5898,8 @@
 	<dict><key>phrase</key><string>聖餐用</string><key>shortcut</key><string>せいさんよう</string></dict>
 
 	<!-- フロマージュ -->
+	<dict><key>phrase</key><string>サヴォワ地方・牛乳</string><key>shortcut</key><string>さゔぉわちほうぎゅうにゅう</string></dict>
+	<dict><key>phrase</key><string>羊主体+山羊</string><key>shortcut</key><string>ひつじしゅたいやぎ</string></dict>
 	<dict><key>phrase</key><string>Appenzell</string><key>shortcut</key><string>あっぺんつぇる</string></dict>
 	<dict><key>phrase</key><string>Appenzeller®️</string><key>shortcut</key><string>あっぺんつぇらー</string></dict>
 	<dict><key>phrase</key><string>Asiago</string><key>shortcut</key><string>あじあーご</string></dict>
@@ -6035,8 +6031,6 @@
 	<dict><key>phrase</key><string>ペコリーノ</string><key>shortcut</key><string>ぺこりーの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ペコリーノ・チーズ</string><key>shortcut</key><string>ぺこりーのちーず</string></dict>
 	<dict><key>phrase</key><string>ペコリーノ・ロマーノ</string><key>shortcut</key><string>ぺこりーのろまーの</string></dict>
-	<dict><key>phrase</key><string>ペニシリウム・カンディダム</string><key>shortcut</key><string>ぺにしりうむかんでぃだむ</string></dict>
-	<dict><key>phrase</key><string>ペニシリウム・ロックフォルティ</string><key>shortcut</key><string>ぺにしりうむろっくふぉるてぃ</string></dict>
 	<dict><key>phrase</key><string>マンステール</string><key>shortcut</key><string>まんすてーる</string></dict>
 	<dict><key>phrase</key><string>ラクレット</string><key>shortcut</key><string>らくれっと</string></dict>
 	<dict><key>phrase</key><string>加熱圧搾</string><key>shortcut</key><string>かねつあっさく</string></dict>
@@ -6093,7 +6087,7 @@
 	<dict><key>phrase</key><string>牧畜業</string><key>shortcut</key><string>ぼくちくぎょう</string></dict>
 	<dict><key>phrase</key><string>筒状</string><key>shortcut</key><string>つつじょう</string></dict>
 
-	<!-- 紅茶 -->
+	<!-- 茶 -->
 	<dict><key>phrase</key><string>アッサム種</string><key>shortcut</key><string>あっさむしゅ</string></dict>
 	<dict><key>phrase</key><string>Uva</string><key>shortcut</key><string>うゔぁ</string></dict>
 	<dict><key>phrase</key><string>Broken O.P.</string><key>shortcut</key><string>ぶろーくんおれんじぺこー</string></dict>
@@ -6117,8 +6111,21 @@
 	<dict><key>phrase</key><string>抹茶用原料</string><key>shortcut</key><string>まっちゃようげんりょう</string></dict>
 	<dict><key>phrase</key><string>Assam</string><key>shortcut</key><string>あっさむ</string></dict>
 	<dict><key>phrase</key><string>粉末茶</string><key>shortcut</key><string>ふんまつちゃ</string></dict>
+	<dict><key>phrase</key><string>セイロン</string><key>shortcut</key><string>せいろん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>セイロン紅茶</string><key>shortcut</key><string>せいろんこうちゃ</string></dict>
+	<dict><key>phrase</key><string>紅茶</string><key>shortcut</key><string>こうちゃ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>紅茶生産量</string><key>shortcut</key><string>こうちゃせいさんりょう</string></dict>
+	<dict><key>phrase</key><string>ウバ</string><key>shortcut</key><string>うば</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>キームン</string><key>shortcut</key><string>きーむん</string></dict>
+	<dict><key>phrase</key><string>ダージリン</string><key>shortcut</key><string>だーじりん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ディンブラ</string><key>shortcut</key><string>でぃんぶら</string></dict>
 
 	<!-- コーヒー -->
+	<dict><key>phrase</key><string>マンデリン</string><key>shortcut</key><string>まんでりん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>トラジャ</string><key>shortcut</key><string>とらじゃ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>スターバックス</string><key>shortcut</key><string>すたーばっくす</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>コナ</string><key>shortcut</key><string>こな</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>キリマンジャロ</string><key>shortcut</key><string>きりまんじゃろ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>Traja</string><key>shortcut</key><string>とらじゃ</string></dict>
 	<dict><key>phrase</key><string>リベリカ種</string><key>shortcut</key><string>りべりかしゅ</string></dict>
 	<dict><key>phrase</key><string>ロブスタ種</string><key>shortcut</key><string>ろぶすたしゅ</string></dict>
@@ -6165,6 +6172,7 @@
 	<dict><key>phrase</key><string>硫黄泉</string><key>shortcut</key><string>いおうせん</string></dict>
 
 	<!-- 料理・食材 -->
+	<dict><key>phrase</key><string>ヴィテッロ・トンナート</string><key>shortcut</key><string>ゔぃてっろとんなーと</string></dict>
 	<dict><key>phrase</key><string>Ñora</string><key>shortcut</key><string>にょら</string></dict>
 	<dict><key>phrase</key><string>バザデ種</string><key>shortcut</key><string>ばざでしゅ</string></dict>
 	<dict><key>phrase</key><string>クレピネット</string><key>shortcut</key><string>くれぴねっと</string></dict>
@@ -6266,7 +6274,6 @@
 	<dict><key>phrase</key><string>ツナマヨネーズ</string><key>shortcut</key><string>つなまよねーず</string></dict>
 	<dict><key>phrase</key><string>ツナマヨネーズソース</string><key>shortcut</key><string>つなまよねーずそーす</string></dict>
 	<dict><key>phrase</key><string>ディル</string><key>shortcut</key><string>でぃる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>テキスト</string><key>shortcut</key><string>てきすと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トウガラシ</string><key>shortcut</key><string>とうがらし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トウモロコシ</string><key>shortcut</key><string>とうもろこし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トマト</string><key>shortcut</key><string>とまと</string></dict>	<!-- Sudachiにもある -->
@@ -6306,7 +6313,6 @@
 	<dict><key>phrase</key><string>ピッツァ</string><key>shortcut</key><string>ぴっつぁ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ピッツァ・マルゲリータ</string><key>shortcut</key><string>ぴっつぁまるげりーた</string></dict>
 	<dict><key>phrase</key><string>ピュレ</string><key>shortcut</key><string>ぴゅれ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>フェーダーシュピール</string><key>shortcut</key><string>ふぇーだーしゅぴーる</string></dict>
 	<dict><key>phrase</key><string>フェタ</string><key>shortcut</key><string>ふぇた</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フォンダン</string><key>shortcut</key><string>ふぉんだん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フォンデュ</string><key>shortcut</key><string>ふぉんでゅ</string></dict>	<!-- Sudachiにもある -->
@@ -6484,7 +6490,6 @@
 	<dict><key>phrase</key><string>カッポン・マーグロ</string><key>shortcut</key><string>かっぽんまーぐろ</string></dict>
 	<dict><key>phrase</key><string>カネロネス</string><key>shortcut</key><string>かねろねす</string></dict>
 	<dict><key>phrase</key><string>キュルビスケルン・ウル</string><key>shortcut</key><string>きゅるびすけるんうる</string></dict>
-	<dict><key>phrase</key><string>グレイプフルーツ・ジュース</string><key>shortcut</key><string>ぐれいぷふるーつじゅーす</string></dict>
 	<dict><key>phrase</key><string>コリアンダーシード等</string><key>shortcut</key><string>こりあんだーしーどとう</string></dict>
 	<dict><key>phrase</key><string>コルシカ風ブイヤベース</string><key>shortcut</key><string>こるしかふうぶいやべーす</string></dict>
 	<dict><key>phrase</key><string>サトウキビ汁</string><key>shortcut</key><string>さとうきびじる</string></dict>
@@ -6525,8 +6530,6 @@
 	<dict><key>phrase</key><string>ミラノ風仔牛</string><key>shortcut</key><string>みらのふうこうし</string></dict>
 	<dict><key>phrase</key><string>ミートソース和</string><key>shortcut</key><string>みーとそーすあえ</string></dict>
 	<dict><key>phrase</key><string>ライ麦</string><key>shortcut</key><string>らいむぎ</string></dict>
-	<dict><key>phrase</key><string>リンドウ科</string><key>shortcut</key><string>りんどうか</string></dict>
-	<dict><key>phrase</key><string>リンドウ科ジェンシアン</string><key>shortcut</key><string>りんどうかじぇんしあん</string></dict>
 	<dict><key>phrase</key><string>レモン果汁和</string><key>shortcut</key><string>れもんかじゅうあえ</string></dict>
 	<dict><key>phrase</key><string>レーズン入</string><key>shortcut</key><string>れーずんいり</string></dict>
 	<dict><key>phrase</key><string>ワカピラウ</string><key>shortcut</key><string>わかぴらう</string></dict>
@@ -6540,7 +6543,6 @@
 	<dict><key>phrase</key><string>牛肉入</string><key>shortcut</key><string>ぎゅうにくいり</string></dict>
 	<dict><key>phrase</key><string>特産Bottarga</string><key>shortcut</key><string>とくさんぼったるが</string></dict>
 	<dict><key>phrase</key><string>特産物</string><key>shortcut</key><string>とくさんぶつ</string></dict>
-	<dict><key>phrase</key><string>白樺炭</string><key>shortcut</key><string>しらかばずみ</string></dict>
 	<dict><key>phrase</key><string>砂糖漬</string><key>shortcut</key><string>さとうづけ</string></dict>
 	<dict><key>phrase</key><string>細切</string><key>shortcut</key><string>ほそぎり</string></dict>
 	<dict><key>phrase</key><string>細麺</string><key>shortcut</key><string>ほそめん</string></dict>
@@ -6561,7 +6563,6 @@
 	<dict><key>phrase</key><string>鴨脂</string><key>shortcut</key><string>かもあぶら</string></dict>
 	<dict><key>phrase</key><string>香草入り</string><key>shortcut</key><string>こうそういり</string></dict>
 	<dict><key>phrase</key><string>クリーヒェル</string><key>shortcut</key><string>くりーひぇる</string></dict>
-	<dict><key>phrase</key><string>王立製塩所</string><key>shortcut</key><string>おうりつせいえんしょ</string></dict>
 	<dict><key>phrase</key><string>肉消費量</string><key>shortcut</key><string>にくしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>食文化</string><key>shortcut</key><string>しょくぶんか</string></dict>
 	<dict><key>phrase</key><string>seasoning</string><key>shortcut</key><string>しーずにんぐ</string></dict>	<!-- 元: 料理や食材 -->
@@ -6569,6 +6570,18 @@
 	<dict><key>phrase</key><string>小籠包</string><key>shortcut</key><string>しょうろんぽう</string></dict>	<!-- Sudachiにもある -->	<!-- 元: 料理や食材 -->
 
 	<!-- カクテル -->
+	<dict><key>phrase</key><string>モスコー・ミュール</string><key>shortcut</key><string>もすこーみゅーる</string></dict>
+	<dict><key>phrase</key><string>マンハッタン</string><key>shortcut</key><string>まんはったん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>フローズン・ダイキリ</string><key>shortcut</key><string>ふろーずんだいきり</string></dict>
+	<dict><key>phrase</key><string>ソルティ・ドッグ</string><key>shortcut</key><string>そるてぃどっぐ</string></dict>
+	<dict><key>phrase</key><string>ジン・フィズ</string><key>shortcut</key><string>じんふぃず</string></dict>
+	<dict><key>phrase</key><string>シンデレラ</string><key>shortcut</key><string>しんでれら</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>シャーリー・テンプル</string><key>shortcut</key><string>しゃーりーてんぷる</string></dict>
+	<dict><key>phrase</key><string>キール・ロワイヤル</string><key>shortcut</key><string>きーるろわいやる</string></dict>
+	<dict><key>phrase</key><string>ウィスキー・サイドカー</string><key>shortcut</key><string>うぃすきーさいどかー</string></dict>
+	<dict><key>phrase</key><string>リンドウ科</string><key>shortcut</key><string>りんどうか</string></dict>
+	<dict><key>phrase</key><string>リンドウ科ジェンシアン</string><key>shortcut</key><string>りんどうかじぇんしあん</string></dict>
+	<dict><key>phrase</key><string>グレイプフルーツ・ジュース</string><key>shortcut</key><string>ぐれいぷふるーつじゅーす</string></dict>
 	<dict><key>phrase</key><string>カクテル</string><key>shortcut</key><string>かくてる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カクテルベース</string><key>shortcut</key><string>かくてるべーす</string></dict>
 	<dict><key>phrase</key><string>オーセンティック・カクテル</string><key>shortcut</key><string>おーせんてぃっくかくてる</string></dict>
@@ -6589,6 +6602,22 @@
 	<dict><key>phrase</key><string>cocktail</string><key>shortcut</key><string>かくてる</string></dict>	<!-- 元: ワイン以外の飲料名 -->
 
 	<!-- リキュール・スピリッツ -->
+	<dict><key>phrase</key><string>白酒</string><key>shortcut</key><string>ぱいちゅう</string></dict>
+	<dict><key>phrase</key><string>レミー・マルタン</string><key>shortcut</key><string>れみーまるたん</string></dict>
+	<dict><key>phrase</key><string>ボンベイ・サファイア</string><key>shortcut</key><string>ぼんべいさふぁいあ</string></dict>
+	<dict><key>phrase</key><string>ボンベイ・ドライ・ジン</string><key>shortcut</key><string>ぼんべいどらいじん</string></dict>
+	<dict><key>phrase</key><string>バカルディー</string><key>shortcut</key><string>ばかるでぃー</string></dict>
+	<dict><key>phrase</key><string>ハバナクラブ</string><key>shortcut</key><string>はばなくらぶ</string></dict>
+	<dict><key>phrase</key><string>タンカレー</string><key>shortcut</key><string>たんかれー</string></dict>
+	<dict><key>phrase</key><string>スミノフ</string><key>shortcut</key><string>すみのふ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>グレイグース</string><key>shortcut</key><string>ぐれいぐーす</string></dict>
+	<dict><key>phrase</key><string>クエルボ</string><key>shortcut</key><string>くえるぼ</string></dict>
+	<dict><key>phrase</key><string>キャプテンモーガン</string><key>shortcut</key><string>きゃぷてんもーがん</string></dict>
+	<dict><key>phrase</key><string>イエーガーマイスター</string><key>shortcut</key><string>いえーがーまいすたー</string></dict>
+	<dict><key>phrase</key><string>ピスコ</string><key>shortcut</key><string>ぴすこ</string></dict>
+	<dict><key>phrase</key><string>Poire</string><key>shortcut</key><string>ぽわーる</string></dict>
+	<dict><key>phrase</key><string>Cidre</string><key>shortcut</key><string>しーどる</string></dict>
+	<dict><key>phrase</key><string>白樺炭</string><key>shortcut</key><string>しらかばずみ</string></dict>
 	<dict><key>phrase</key><string>カンパリ</string><key>shortcut</key><string>かんぱり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エッグ・リキュール</string><key>shortcut</key><string>えっぐりきゅーる</string></dict>
 	<dict><key>phrase</key><string>カカオ・リキュール</string><key>shortcut</key><string>かかおりきゅーる</string></dict>
@@ -6605,7 +6634,6 @@
 	<dict><key>phrase</key><string>Gin</string><key>shortcut</key><string>じん</string></dict>
 	<dict><key>phrase</key><string>Rum</string><key>shortcut</key><string>らむ</string></dict>
 	<dict><key>phrase</key><string>アネホ</string><key>shortcut</key><string>あねほ</string></dict>
-	<dict><key>phrase</key><string>Appletiser®</string><key>shortcut</key><string>あっぷるたいざー</string></dict>
 	<dict><key>phrase</key><string>Absinthe</string><key>shortcut</key><string>あぶさん</string></dict>
 	<dict><key>phrase</key><string>Advocaat</string><key>shortcut</key><string>あどゔぉかーと</string></dict>
 	<dict><key>phrase</key><string>Armagnac</string><key>shortcut</key><string>あるまにゃっく</string></dict>
@@ -6718,6 +6746,9 @@
 	<dict><key>phrase</key><string>Blue agave</string><key>shortcut</key><string>ぶるーあがゔぇ</string></dict>
 	<dict><key>phrase</key><string>liqueur</string><key>shortcut</key><string>りきゅーる</string></dict>	<!-- 元: ワイン以外の飲料名 -->
 	<dict><key>phrase</key><string>whisky</string><key>shortcut</key><string>ういすきー</string></dict>	<!-- 元: ワイン以外の飲料名 -->
+
+	<!-- その他の酒類 -->
+	<dict><key>phrase</key><string>黄酒</string><key>shortcut</key><string>ほあんちゅう</string></dict>
 
 	<!-- デギュスタシオン、味わい、テイスティング -->
 	<dict><key>phrase</key><string>スワリング</string><key>shortcut</key><string>すわりんぐ</string><key>pos</key><string>サ変名詞</string></dict>
@@ -6903,6 +6934,7 @@
 	<dict><key>phrase</key><string>sec</string><key>shortcut</key><string>せっく</string></dict>	<!-- 元: ワインの外観や味の評価の名前 -->
 
 	<!-- その他 -->
+	<dict><key>phrase</key><string>王立製塩所</string><key>shortcut</key><string>おうりつせいえんしょ</string></dict>
 	<dict><key>phrase</key><string>洞爺湖サミット</string><key>shortcut</key><string>とうやこさみっと</string></dict>
 	<dict><key>phrase</key><string>有名ワイン産地名</string><key>shortcut</key><string>ゆうめいわいんさんちめい</string></dict>
 	<dict><key>phrase</key><string>信州ワインバレー構想</string><key>shortcut</key><string>しんしゅうわいんばれーこうそう</string></dict>
@@ -6940,7 +6972,6 @@
 	<dict><key>phrase</key><string>県単位</string><key>shortcut</key><string>けんたんい</string></dict>
 	<dict><key>phrase</key><string>県庁所在地</string><key>shortcut</key><string>けんちょうしょざいち</string></dict>
 	<dict><key>phrase</key><string>県産ワイン</string><key>shortcut</key><string>けんさんわいん</string></dict>
-	<dict><key>phrase</key><string>羊主体+山羊</string><key>shortcut</key><string>ひつじしゅたいやぎ</string></dict>
 	<dict><key>phrase</key><string>限定的生産地域</string><key>shortcut</key><string>げんていてきせいさんちいき</string></dict>
 	<dict><key>phrase</key><string>限定的生産地域名</string><key>shortcut</key><string>げんていてきせいさんちいきめい</string></dict>
 	<dict><key>phrase</key><string>旧市街</string><key>shortcut</key><string>きゅうしがい</string></dict>	<!-- Sudachiにもある -->
@@ -7089,7 +7120,6 @@
 	<dict><key>phrase</key><string>アールグレイ</string><key>shortcut</key><string>あーるぐれい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アーン</string><key>shortcut</key><string>あーん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>イエローワイン</string><key>shortcut</key><string>いえろーわいん</string></dict>
-	<dict><key>phrase</key><string>イエーガーマイスター</string><key>shortcut</key><string>いえーがーまいすたー</string></dict>
 	<dict><key>phrase</key><string>イストラ</string><key>shortcut</key><string>いすとら</string></dict>
 	<dict><key>phrase</key><string>イストラ品質</string><key>shortcut</key><string>いすとらひんしつ</string></dict>
 	<dict><key>phrase</key><string>イスラム</string><key>shortcut</key><string>いすらむ</string></dict>	<!-- Sudachiにもある -->
@@ -7110,7 +7140,6 @@
 	<dict><key>phrase</key><string>インド航路</string><key>shortcut</key><string>いんどこうろ</string></dict>
 	<dict><key>phrase</key><string>インド航路発見</string><key>shortcut</key><string>いんどこうろはっけん</string></dict>
 	<dict><key>phrase</key><string>インポーター</string><key>shortcut</key><string>いんぽーたー</string></dict>
-	<dict><key>phrase</key><string>ウィスキー・サイドカー</string><key>shortcut</key><string>うぃすきーさいどかー</string></dict>
 	<dict><key>phrase</key><string>ウィラケンジー</string><key>shortcut</key><string>うぃらけんじー</string></dict>
 	<dict><key>phrase</key><string>ウィラメット・ヴァレー</string><key>shortcut</key><string>うぃらめっとゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ウィルス</string><key>shortcut</key><string>うぃるす</string></dict>	<!-- Sudachiにもある -->
@@ -7132,7 +7161,6 @@
 	<dict><key>phrase</key><string>ウコ・ヴァレー</string><key>shortcut</key><string>うこゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ウスター</string><key>shortcut</key><string>うすたー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ウゾ</string><key>shortcut</key><string>うぞ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ウバ</string><key>shortcut</key><string>うば</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ウミタス</string><key>shortcut</key><string>うみたす</string></dict>
 	<dict><key>phrase</key><string>ウルビーノ</string><key>shortcut</key><string>うるびーの</string></dict>
 	<dict><key>phrase</key><string>ウンブリア</string><key>shortcut</key><string>うんぶりあ</string></dict>	<!-- Sudachiにもある -->
@@ -7195,7 +7223,6 @@
 	<dict><key>phrase</key><string>オリジナリティ</string><key>shortcut</key><string>おりじなりてぃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オリジナル</string><key>shortcut</key><string>おりじなる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オリジナルワイン</string><key>shortcut</key><string>おりじなるわいん</string></dict>
-	<dict><key>phrase</key><string>オリンピック</string><key>shortcut</key><string>おりんぴっく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オルメアスコ</string><key>shortcut</key><string>おるめあすこ</string></dict>
 	<dict><key>phrase</key><string>オルモ博士</string><key>shortcut</key><string>おるもはかせ</string></dict>
 	<dict><key>phrase</key><string>オルレアン</string><key>shortcut</key><string>おるれあん</string></dict>	<!-- Sudachiにもある -->
@@ -7305,7 +7332,6 @@
 	<dict><key>phrase</key><string>キャップ</string><key>shortcut</key><string>きゃっぷ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キャップシール</string><key>shortcut</key><string>きゃっぷしーる</string></dict>
 	<dict><key>phrase</key><string>キャップ・クラシック</string><key>shortcut</key><string>きゃっぷくらしっく</string></dict>
-	<dict><key>phrase</key><string>キャプテンモーガン</string><key>shortcut</key><string>きゃぷてんもーがん</string></dict>
 	<dict><key>phrase</key><string>キャベツ</string><key>shortcut</key><string>きゃべつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キャラウェイ</string><key>shortcut</key><string>きゃらうぇい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キャラメル</string><key>shortcut</key><string>きゃらめる</string></dict>	<!-- Sudachiにもある -->
@@ -7316,21 +7342,16 @@
 	<dict><key>phrase</key><string>キュラソー</string><key>shortcut</key><string>きゅらそー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キリスト教</string><key>shortcut</key><string>きりすときょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キリスト教徒</string><key>shortcut</key><string>きりすときょうと</string></dict>
-	<dict><key>phrase</key><string>キリマンジャロ</string><key>shortcut</key><string>きりまんじゃろ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キルシュ</string><key>shortcut</key><string>きるしゅ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キルシュヴァッサー</string><key>shortcut</key><string>きるしゅゔぁっさー</string></dict>
 	<dict><key>phrase</key><string>キンキナ</string><key>shortcut</key><string>きんきな</string></dict>
 	<dict><key>phrase</key><string>キンメリジャン</string><key>shortcut</key><string>きんめりじゃん</string></dict>
-	<dict><key>phrase</key><string>キームン</string><key>shortcut</key><string>きーむん</string></dict>
 	<dict><key>phrase</key><string>キール</string><key>shortcut</key><string>きーる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>キール・ロワイヤル</string><key>shortcut</key><string>きーるろわいやる</string></dict>
 	<dict><key>phrase</key><string>ギズボーン</string><key>shortcut</key><string>ぎずぼーん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ギター</string><key>shortcut</key><string>ぎたー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ギネス</string><key>shortcut</key><string>ぎねす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ギヨ・サンプル</string><key>shortcut</key><string>ぎよさんぷる</string></dict>
 	<dict><key>phrase</key><string>ギヨ・ドゥブル</string><key>shortcut</key><string>ぎよどぅぶる</string></dict>
 	<dict><key>phrase</key><string>ギリシャ語</string><key>shortcut</key><string>ぎりしゃご</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>クエルボ</string><key>shortcut</key><string>くえるぼ</string></dict>
 	<dict><key>phrase</key><string>クオリティ</string><key>shortcut</key><string>くおりてぃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>クセ</string><key>shortcut</key><string>くせ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>クライス</string><key>shortcut</key><string>くらいす</string></dict>
@@ -7402,7 +7423,6 @@
 	<dict><key>phrase</key><string>グリーン・ハーベスト</string><key>shortcut</key><string>ぐりーんはーべすと</string></dict>
 	<dict><key>phrase</key><string>グリーン・ワイン</string><key>shortcut</key><string>ぐりーんわいん</string></dict>
 	<dict><key>phrase</key><string>グルメタウン</string><key>shortcut</key><string>ぐるめたうん</string></dict>
-	<dict><key>phrase</key><string>グレイグース</string><key>shortcut</key><string>ぐれいぐーす</string></dict>
 	<dict><key>phrase</key><string>グレイディング</string><key>shortcut</key><string>ぐれいでぃんぐ</string></dict>
 	<dict><key>phrase</key><string>グレイプフルーツ</string><key>shortcut</key><string>ぐれいぷふるーつ</string></dict>
 	<dict><key>phrase</key><string>グレイプフルーツジュース</string><key>shortcut</key><string>ぐれいぷふるーつじゅーす</string></dict>
@@ -7456,7 +7476,6 @@
 	<dict><key>phrase</key><string>コテシュティ</string><key>shortcut</key><string>こてしゅてぃ</string></dict>
 	<dict><key>phrase</key><string>コトー・デュ・レイヨン</string><key>shortcut</key><string>ことーでゅれいよん</string></dict>
 	<dict><key>phrase</key><string>コトー・ド</string><key>shortcut</key><string>ことーど</string></dict>
-	<dict><key>phrase</key><string>コナ</string><key>shortcut</key><string>こな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コピー</string><key>shortcut</key><string>こぴー</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コブレンツ</string><key>shortcut</key><string>こぶれんつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コミューン</string><key>shortcut</key><string>こみゅーん</string></dict>	<!-- Sudachiにもある -->
@@ -7474,7 +7493,6 @@
 	<dict><key>phrase</key><string>コルナス</string><key>shortcut</key><string>こるなす</string></dict>
 	<dict><key>phrase</key><string>コルマール</string><key>shortcut</key><string>こるまーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コレステロール</string><key>shortcut</key><string>これすてろーる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>コロナ禍</string><key>shortcut</key><string>ころなか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コロニア</string><key>shortcut</key><string>ころにあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コロンバール</string><key>shortcut</key><string>ころんばーる</string></dict>
 	<dict><key>phrase</key><string>コロンビア・ヴァレー</string><key>shortcut</key><string>ころんびあゔぁれー</string></dict>
@@ -7576,7 +7594,6 @@
 	<dict><key>phrase</key><string>サヴォイア王家</string><key>shortcut</key><string>さゔぉいあおうけ</string></dict>
 	<dict><key>phrase</key><string>サービス</string><key>shortcut</key><string>さーびす</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サービス業</string><key>shortcut</key><string>さーびすぎょう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>サーフィン</string><key>shortcut</key><string>さーふぃん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サーヴィス</string><key>shortcut</key><string>さーゔぃす</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サーヴィス・ナプキン</string><key>shortcut</key><string>さーゔぃすなぷきん</string></dict>
 	<dict><key>phrase</key><string>ザウアークラウト</string><key>shortcut</key><string>ざうあーくらうと</string></dict>	<!-- Sudachiにもある -->
@@ -7604,7 +7621,6 @@
 	<dict><key>phrase</key><string>シナモン</string><key>shortcut</key><string>しなもん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シノニム</string><key>shortcut</key><string>しのにむ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シノン</string><key>shortcut</key><string>しのん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>シフトチェンジ</string><key>shortcut</key><string>しふとちぇんじ</string></dict>
 	<dict><key>phrase</key><string>シマ・コルゴ</string><key>shortcut</key><string>しまこるご</string></dict>
 	<dict><key>phrase</key><string>シャッケトラ</string><key>shortcut</key><string>しゃっけとら</string></dict>
 	<dict><key>phrase</key><string>シャトー</string><key>shortcut</key><string>しゃとー</string></dict>	<!-- Sudachiにもある -->
@@ -7630,7 +7646,6 @@
 	<dict><key>phrase</key><string>シャヴィニョル</string><key>shortcut</key><string>しゃゔぃにょる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シャープ</string><key>shortcut</key><string>しゃーぷ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シャープシューター</string><key>shortcut</key><string>しゃーぷしゅーたー</string></dict>
-	<dict><key>phrase</key><string>シャーリー・テンプル</string><key>shortcut</key><string>しゃーりーてんぷる</string></dict>
 	<dict><key>phrase</key><string>シュイイ</string><key>shortcut</key><string>しゅいい</string></dict>
 	<dict><key>phrase</key><string>シュタイガーヴァルト</string><key>shortcut</key><string>しゅたいがーゔぁると</string></dict>
 	<dict><key>phrase</key><string>シュタイヤーマルク</string><key>shortcut</key><string>しゅたいやーまるく</string></dict>
@@ -7665,7 +7680,6 @@
 	<dict><key>phrase</key><string>シロユタカ</string><key>shortcut</key><string>しろゆたか</string></dict>
 	<dict><key>phrase</key><string>シンクタンク</string><key>shortcut</key><string>しんくたんく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シングルヴィンテージ</string><key>shortcut</key><string>しんぐるゔぃんてーじ</string></dict>
-	<dict><key>phrase</key><string>シンデレラ</string><key>shortcut</key><string>しんでれら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シンプル</string><key>shortcut</key><string>しんぷる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シンボル</string><key>shortcut</key><string>しんぼる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シンボルマーク</string><key>shortcut</key><string>しんぼるまーく</string></dict>
@@ -7708,7 +7722,6 @@
 	<dict><key>phrase</key><string>ジンファンデル</string><key>shortcut</key><string>じんふぁんでる</string></dict>
 	<dict><key>phrase</key><string>ジンベース</string><key>shortcut</key><string>じんべーす</string></dict>
 	<dict><key>phrase</key><string>ジン・トニック</string><key>shortcut</key><string>じんとにっく</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ジン・フィズ</string><key>shortcut</key><string>じんふぃず</string></dict>
 	<dict><key>phrase</key><string>スイス</string><key>shortcut</key><string>すいす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スイスアルプス</string><key>shortcut</key><string>すいすあるぷす</string></dict>
 	<dict><key>phrase</key><string>スイーツ</string><key>shortcut</key><string>すいーつ</string></dict>	<!-- Sudachiにもある -->
@@ -7736,7 +7749,6 @@
 	<dict><key>phrase</key><string>スタンダード・シャンパーニュ</string><key>shortcut</key><string>すたんだーどしゃんぱーにゅ</string></dict>
 	<dict><key>phrase</key><string>スターチ</string><key>shortcut</key><string>すたーち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スタート</string><key>shortcut</key><string>すたーと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>スターバックス</string><key>shortcut</key><string>すたーばっくす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ステア</string><key>shortcut</key><string>すてあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スティル</string><key>shortcut</key><string>すてぃる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スティルワイン</string><key>shortcut</key><string>すてぃるわいん</string></dict>
@@ -7772,7 +7784,6 @@
 	<dict><key>phrase</key><string>スポンジケーキ</string><key>shortcut</key><string>すぽんじけーき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スマラクト</string><key>shortcut</key><string>すまらくと</string></dict>
 	<dict><key>phrase</key><string>スマートマイヨーガー仕立</string><key>shortcut</key><string>すまーとまいよーがーしたて</string></dict>
-	<dict><key>phrase</key><string>スミノフ</string><key>shortcut</key><string>すみのふ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スミレ</string><key>shortcut</key><string>すみれ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スムーズ</string><key>shortcut</key><string>すむーず</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スモモ</string><key>shortcut</key><string>すもも</string></dict>	<!-- Sudachiにもある -->
@@ -7795,8 +7806,6 @@
 	<dict><key>phrase</key><string>スーパーマーケット</string><key>shortcut</key><string>すーぱーまーけっと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スール</string><key>shortcut</key><string>すーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>セイセル</string><key>shortcut</key><string>せいせる</string></dict>
-	<dict><key>phrase</key><string>セイロン</string><key>shortcut</key><string>せいろん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>セイロン紅茶</string><key>shortcut</key><string>せいろんこうちゃ</string></dict>
 	<dict><key>phrase</key><string>セイヴァル</string><key>shortcut</key><string>せいゔぁる</string></dict>
 	<dict><key>phrase</key><string>セイヴァルブラン</string><key>shortcut</key><string>せいゔぁるぶらん</string></dict>
 	<dict><key>phrase</key><string>セイヴォリー</string><key>shortcut</key><string>せいゔぉりー</string></dict>	<!-- Sudachiにもある -->
@@ -7829,7 +7838,6 @@
 	<dict><key>phrase</key><string>ソムリエ・ナイフ</string><key>shortcut</key><string>そむりえないふ</string></dict>
 	<dict><key>phrase</key><string>ソラノ</string><key>shortcut</key><string>そらの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ソラノ・カウンティ</string><key>shortcut</key><string>そらのかうんてぃ</string></dict>
-	<dict><key>phrase</key><string>ソルティ・ドッグ</string><key>shortcut</key><string>そるてぃどっぐ</string></dict>
 	<dict><key>phrase</key><string>ソンダ</string><key>shortcut</key><string>そんだ</string></dict>
 	<dict><key>phrase</key><string>ソンダ・ヴァレー</string><key>shortcut</key><string>そんだゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ソーテルヌ地区</string><key>shortcut</key><string>そーてるぬちく</string></dict>
@@ -7856,7 +7864,6 @@
 	<dict><key>phrase</key><string>タルトフランベ</string><key>shortcut</key><string>たるとふらんべ</string></dict>
 	<dict><key>phrase</key><string>タルト・タタン</string><key>shortcut</key><string>たるとたたん</string></dict>
 	<dict><key>phrase</key><string>タン</string><key>shortcut</key><string>たん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>タンカレー</string><key>shortcut</key><string>たんかれー</string></dict>
 	<dict><key>phrase</key><string>タンク</string><key>shortcut</key><string>たんく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>タンク・メソッド</string><key>shortcut</key><string>たんくめそっど</string></dict>
 	<dict><key>phrase</key><string>タンク方式</string><key>shortcut</key><string>たんくほうしき</string></dict>
@@ -7877,7 +7884,6 @@
 	<dict><key>phrase</key><string>ダンディー・ヒルズ</string><key>shortcut</key><string>だんでぃーひるず</string></dict>
 	<dict><key>phrase</key><string>ダーク</string><key>shortcut</key><string>だーく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ダークラム</string><key>shortcut</key><string>だーくらむ</string></dict>
-	<dict><key>phrase</key><string>ダージリン</string><key>shortcut</key><string>だーじりん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ダーニボール・ワイン</string><key>shortcut</key><string>だーにぼーるわいん</string></dict>
 	<dict><key>phrase</key><string>チェコ</string><key>shortcut</key><string>ちぇこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>チェック</string><key>shortcut</key><string>ちぇっく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
@@ -7931,7 +7937,6 @@
 	<dict><key>phrase</key><string>ディジェスティフ</string><key>shortcut</key><string>でぃじぇすてぃふ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ディジョン</string><key>shortcut</key><string>でぃじょん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ディップ</string><key>shortcut</key><string>でぃっぷ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ディンブラ</string><key>shortcut</key><string>でぃんぶら</string></dict>
 	<dict><key>phrase</key><string>ディヴィン</string><key>shortcut</key><string>でぃゔぃん</string></dict>
 	<dict><key>phrase</key><string>デイセラー</string><key>shortcut</key><string>でいせらー</string></dict>
 	<dict><key>phrase</key><string>デイヴィッド・ホーネン</string><key>shortcut</key><string>でいゔぃっどほーねん</string></dict>
@@ -7968,7 +7973,6 @@
 	<dict><key>phrase</key><string>トビリシ</string><key>shortcut</key><string>とびりし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トライゼンタール</string><key>shortcut</key><string>とらいぜんたーる</string></dict>
 	<dict><key>phrase</key><string>トラクター</string><key>shortcut</key><string>とらくたー</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>トラジャ</string><key>shortcut</key><string>とらじゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トラック会社</string><key>shortcut</key><string>とらっくがいしゃ</string></dict>
 	<dict><key>phrase</key><string>トラディショナル・メソッド</string><key>shortcut</key><string>とらでぃしょなるめそっど</string></dict>
 	<dict><key>phrase</key><string>トラディショナル方式</string><key>shortcut</key><string>とらでぃしょなるほうしき</string></dict>
@@ -8058,8 +8062,6 @@
 	<dict><key>phrase</key><string>ノジオーラ</string><key>shortcut</key><string>のじおーら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ノルウェー</string><key>shortcut</key><string>のるうぇー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ノワール・ド・ブラン</string><key>shortcut</key><string>のわーるどぶらん</string></dict>
-	<dict><key>phrase</key><string>ノンアルコール・カクテル</string><key>shortcut</key><string>のんあるこーるかくてる</string></dict>
-	<dict><key>phrase</key><string>ノンアルコール飲料</string><key>shortcut</key><string>のんあるこーるいんりょう</string></dict>
 	<dict><key>phrase</key><string>ノンフィルター</string><key>shortcut</key><string>のんふぃるたー</string></dict>
 	<dict><key>phrase</key><string>ノンヴィンテージ</string><key>shortcut</key><string>のんゔぃんてーじ</string></dict>
 	<dict><key>phrase</key><string>ノースランド</string><key>shortcut</key><string>のーすらんど</string></dict>	<!-- Sudachiにもある -->
@@ -8073,7 +8075,6 @@
 	<dict><key>phrase</key><string>ハト</string><key>shortcut</key><string>はと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ハドソン・リヴァー・リージョン</string><key>shortcut</key><string>はどそんりゔぁーりーじょん</string></dict>
 	<dict><key>phrase</key><string>ハネツキアブラムシ</string><key>shortcut</key><string>はねつきあぶらむし</string></dict>
-	<dict><key>phrase</key><string>ハバナクラブ</string><key>shortcut</key><string>はばなくらぶ</string></dict>
 	<dict><key>phrase</key><string>ハブ</string><key>shortcut</key><string>はぶ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ハプスブルク</string><key>shortcut</key><string>はぷすぶるく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ハム</string><key>shortcut</key><string>はむ</string></dict>	<!-- Sudachiにもある -->
@@ -8093,7 +8094,6 @@
 	<dict><key>phrase</key><string>ハーブ</string><key>shortcut</key><string>はーぶ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バイオダイナミック</string><key>shortcut</key><string>ばいおだいなみっく</string></dict>
 	<dict><key>phrase</key><string>バイオダイナミック農法</string><key>shortcut</key><string>ばいおだいなみっくのうほう</string></dict>
-	<dict><key>phrase</key><string>バカルディー</string><key>shortcut</key><string>ばかるでぃー</string></dict>
 	<dict><key>phrase</key><string>バガ</string><key>shortcut</key><string>ばが</string></dict>
 	<dict><key>phrase</key><string>バクテリア</string><key>shortcut</key><string>ばくてりあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バジリカータ</string><key>shortcut</key><string>ばじりかーた</string></dict>
@@ -8281,7 +8281,6 @@
 	<dict><key>phrase</key><string>フロンサック</string><key>shortcut</key><string>ふろんさっく</string></dict>
 	<dict><key>phrase</key><string>フロンサデ地区</string><key>shortcut</key><string>ふろんさでちく</string></dict>
 	<dict><key>phrase</key><string>フロントン</string><key>shortcut</key><string>ふろんとん</string></dict>
-	<dict><key>phrase</key><string>フローズン・ダイキリ</string><key>shortcut</key><string>ふろーずんだいきり</string></dict>
 	<dict><key>phrase</key><string>フローラル</string><key>shortcut</key><string>ふろーらる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フーラージュ</string><key>shortcut</key><string>ふーらーじゅ</string></dict>
 	<dict><key>phrase</key><string>ブエノスアイレス</string><key>shortcut</key><string>ぶえのすあいれす</string></dict>	<!-- Sudachiにもある -->
@@ -8465,8 +8464,6 @@
 	<dict><key>phrase</key><string>ボン</string><key>shortcut</key><string>ぼん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ボンヌゾー</string><key>shortcut</key><string>ぼんぬぞー</string></dict>
 	<dict><key>phrase</key><string>ボンベイ</string><key>shortcut</key><string>ぼんべい</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ボンベイ・サファイア</string><key>shortcut</key><string>ぼんべいさふぁいあ</string></dict>
-	<dict><key>phrase</key><string>ボンベイ・ドライ・ジン</string><key>shortcut</key><string>ぼんべいどらいじん</string></dict>
 	<dict><key>phrase</key><string>ボーゲン</string><key>shortcut</key><string>ぼーげん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ボージョレ・ヌーヴォー</string><key>shortcut</key><string>ぼーじょれぬーゔぉー</string></dict>
 	<dict><key>phrase</key><string>ボージョレ地区</string><key>shortcut</key><string>ぼーじょれちく</string></dict>
@@ -8482,7 +8479,6 @@
 	<dict><key>phrase</key><string>ポドゾル</string><key>shortcut</key><string>ぽどぞる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポドラウイエ</string><key>shortcut</key><string>ぽどらういえ</string></dict>
 	<dict><key>phrase</key><string>ポドラウイエ地域</string><key>shortcut</key><string>ぽどらういえちいき</string></dict>
-	<dict><key>phrase</key><string>ポニエンテ</string><key>shortcut</key><string>ぽにえんて</string></dict>
 	<dict><key>phrase</key><string>ポピュラー</string><key>shortcut</key><string>ぽぴゅらー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポプラ</string><key>shortcut</key><string>ぽぷら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポムロール地区</string><key>shortcut</key><string>ぽむろーるちく</string></dict>
@@ -8504,7 +8500,6 @@
 	<dict><key>phrase</key><string>ポーリッシュ・ヒル・リヴァー</string><key>shortcut</key><string>ぽーりっしゅひるりゔぁー</string></dict>
 	<dict><key>phrase</key><string>ポーン</string><key>shortcut</key><string>ぽーん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポー平原</string><key>shortcut</key><string>ぽーへいげん</string></dict>
-	<dict><key>phrase</key><string>マイクロソフト</string><key>shortcut</key><string>まいくろそふと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マイセン</string><key>shortcut</key><string>まいせん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マイナス</string><key>shortcut</key><string>まいなす</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マイプー</string><key>shortcut</key><string>まいぷー</string></dict>
@@ -8561,9 +8556,7 @@
 	<dict><key>phrase</key><string>マンズワイン</string><key>shortcut</key><string>まんずわいん</string></dict>
 	<dict><key>phrase</key><string>マンズワイン勝沼ワイナリー</string><key>shortcut</key><string>まんずわいんかつぬまわいなりー</string></dict>
 	<dict><key>phrase</key><string>マンチャ</string><key>shortcut</key><string>まんちゃ</string></dict>
-	<dict><key>phrase</key><string>マンデリン</string><key>shortcut</key><string>まんでりん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マント・ネグロ</string><key>shortcut</key><string>まんとねぐろ</string></dict>
-	<dict><key>phrase</key><string>マンハッタン</string><key>shortcut</key><string>まんはったん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マヴロ</string><key>shortcut</key><string>まゔろ</string></dict>
 	<dict><key>phrase</key><string>マーガレット・リヴァー</string><key>shortcut</key><string>まーがれっとりゔぁー</string></dict>
 	<dict><key>phrase</key><string>マーケティング団体</string><key>shortcut</key><string>まーけてぃんぐだんたい</string></dict>
@@ -8576,7 +8569,6 @@
 	<dict><key>phrase</key><string>ミケーネ文明</string><key>shortcut</key><string>みけーねぶんめい</string></dict>
 	<dict><key>phrase</key><string>ミゲル・トーレス</string><key>shortcut</key><string>みげるとーれす</string></dict>
 	<dict><key>phrase</key><string>ミスケット</string><key>shortcut</key><string>みすけっと</string></dict>
-	<dict><key>phrase</key><string>ミストラル</string><key>shortcut</key><string>みすとらる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ミックスハーブ</string><key>shortcut</key><string>みっくすはーぶ</string></dict>
 	<dict><key>phrase</key><string>ミッテルライン</string><key>shortcut</key><string>みってるらいん</string></dict>
 	<dict><key>phrase</key><string>ミディアム</string><key>shortcut</key><string>みでぃあむ</string></dict>	<!-- Sudachiにもある -->
@@ -8635,7 +8627,6 @@
 	<dict><key>phrase</key><string>モクテル</string><key>shortcut</key><string>もくてる</string></dict>
 	<dict><key>phrase</key><string>モザイク</string><key>shortcut</key><string>もざいく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>モスカート</string><key>shortcut</key><string>もすかーと</string></dict>
-	<dict><key>phrase</key><string>モスコー・ミュール</string><key>shortcut</key><string>もすこーみゅーる</string></dict>
 	<dict><key>phrase</key><string>モダン</string><key>shortcut</key><string>もだん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>モダンキャップ</string><key>shortcut</key><string>もだんきゃっぷ</string></dict>
 	<dict><key>phrase</key><string>モダンスタイル</string><key>shortcut</key><string>もだんすたいる</string></dict>
@@ -8799,10 +8790,8 @@
 	<dict><key>phrase</key><string>レタス</string><key>shortcut</key><string>れたす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レニエ</string><key>shortcut</key><string>れにえ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レバノン法典</string><key>shortcut</key><string>ればのんほうてん</string></dict>
-	<dict><key>phrase</key><string>レバンテ</string><key>shortcut</key><string>ればんて</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レベル</string><key>shortcut</key><string>れべる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レポサド</string><key>shortcut</key><string>れぽさど</string></dict>
-	<dict><key>phrase</key><string>レミー・マルタン</string><key>shortcut</key><string>れみーまるたん</string></dict>
 	<dict><key>phrase</key><string>レモン</string><key>shortcut</key><string>れもん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レモングラス</string><key>shortcut</key><string>れもんぐらす</string></dict>
 	<dict><key>phrase</key><string>レモン・ジュース</string><key>shortcut</key><string>れもんじゅーす</string></dict>
@@ -8814,7 +8803,6 @@
 	<dict><key>phrase</key><string>ロゼ</string><key>shortcut</key><string>ろぜ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ロゼ・白ワイン</string><key>shortcut</key><string>ろぜしろわいん</string></dict>
 	<dict><key>phrase</key><string>ロタンドン</string><key>shortcut</key><string>ろたんどん</string></dict>
-	<dict><key>phrase</key><string>ロッシーニ・オペラ・フェスティバル</string><key>shortcut</key><string>ろっしーにおぺらふぇすてぃばる</string></dict>
 	<dict><key>phrase</key><string>ロッジ</string><key>shortcut</key><string>ろっじ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ロディティス</string><key>shortcut</key><string>ろでぃてぃす</string></dict>
 	<dict><key>phrase</key><string>ロバートソン</string><key>shortcut</key><string>ろばーとそん</string></dict>	<!-- Sudachiにもある -->
@@ -8958,7 +8946,6 @@
 	<dict><key>phrase</key><string>仙台</string><key>shortcut</key><string>せんだい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>仲卸問屋</string><key>shortcut</key><string>なかおろしどんや</string></dict>
 	<dict><key>phrase</key><string>仲買人</string><key>shortcut</key><string>なかがいにん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>任天堂</string><key>shortcut</key><string>にんてんどう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>任意記載事項</string><key>shortcut</key><string>にんいきさいじこう</string></dict>
 	<dict><key>phrase</key><string>伊勢神宮</string><key>shortcut</key><string>いせじんぐう</string></dict>
 	<dict><key>phrase</key><string>伏流水</string><key>shortcut</key><string>ふくりゅうすい</string></dict>	<!-- Sudachiにもある -->
@@ -9055,7 +9042,6 @@
 	<dict><key>phrase</key><string>再建</string><key>shortcut</key><string>さいけん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>再評価</string><key>shortcut</key><string>さいひょうか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>冬季</string><key>shortcut</key><string>とうき</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>冬季オリンピック</string><key>shortcut</key><string>とうきおりんぴっく</string></dict>
 	<dict><key>phrase</key><string>冷凍庫</string><key>shortcut</key><string>れいとうこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>冷却</string><key>shortcut</key><string>れいきゃく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>冷却処理</string><key>shortcut</key><string>れいきゃくしょり</string></dict>
@@ -9732,9 +9718,6 @@
 	<dict><key>phrase</key><string>年間消費量</string><key>shortcut</key><string>ねんかんしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>年間牛肉消費量</string><key>shortcut</key><string>ねんかんぎゅうにくしょうひりょう</string></dict>
 	<dict><key>phrase</key><string>年間生産量</string><key>shortcut</key><string>ねんかんせいさんりょう</string></dict>
-	<dict><key>phrase</key><string>年間降水量</string><key>shortcut</key><string>ねんかんこうすいりょう</string></dict>
-	<dict><key>phrase</key><string>年間降水雨量</string><key>shortcut</key><string>ねんかんこうすいうりょう</string></dict>
-	<dict><key>phrase</key><string>年間降雨量</string><key>shortcut</key><string>ねんかんこううりょう</string></dict>
 	<dict><key>phrase</key><string>広域</string><key>shortcut</key><string>こういき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>広大</string><key>shortcut</key><string>こうだい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>広範囲</string><key>shortcut</key><string>こうはんい</string></dict>	<!-- Sudachiにもある -->
@@ -10525,7 +10508,6 @@
 	<dict><key>phrase</key><string>漁業</string><key>shortcut</key><string>ぎょぎょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>潜在アルコール度数</string><key>shortcut</key><string>せんざいあるこーるどすう</string></dict>
 	<dict><key>phrase</key><string>潜在能力</string><key>shortcut</key><string>せんざいのうりょく</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>潜水艦探知機</string><key>shortcut</key><string>せんすいかんたんちき</string></dict>
 	<dict><key>phrase</key><string>潤沢</string><key>shortcut</key><string>じゅんたく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>潮風</string><key>shortcut</key><string>しおかぜ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>激減</string><key>shortcut</key><string>げきげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
@@ -10912,8 +10894,6 @@
 	<dict><key>phrase</key><string>糖度基準単位</string><key>shortcut</key><string>とうどきじゅんたんい</string></dict>
 	<dict><key>phrase</key><string>糖度測定方法</string><key>shortcut</key><string>とうどそくていほうほう</string></dict>
 	<dict><key>phrase</key><string>糖蜜</string><key>shortcut</key><string>とうみつ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>紅茶</string><key>shortcut</key><string>こうちゃ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>紅茶生産量</string><key>shortcut</key><string>こうちゃせいさんりょう</string></dict>
 	<dict><key>phrase</key><string>純度</string><key>shortcut</key><string>じゅんど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>純米</string><key>shortcut</key><string>じゅんまい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>純米吟醸酒</string><key>shortcut</key><string>じゅんまいぎんじょうしゅ</string></dict>
@@ -11822,6 +11802,8 @@
 	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>まりあーじゅ</string></dict>	<!-- 元: ワイン醸造技術用語 -->
 	<dict><key>phrase</key><string>解禁日</string><key>shortcut</key><string>かいきんび</string></dict>	<!-- Sudachiにもある -->	<!-- 元: サーヴィスの用語 -->
 	<!-- 微生物 -->
+	<dict><key>phrase</key><string>ペニシリウム・カンディダム</string><key>shortcut</key><string>ぺにしりうむかんでぃだむ</string></dict>
+	<dict><key>phrase</key><string>ペニシリウム・ロックフォルティ</string><key>shortcut</key><string>ぺにしりうむろっくふぉるてぃ</string></dict>
 	<dict><key>phrase</key><string>Downy mildew</string><key>shortcut</key><string>だうにーみるでゅー</string></dict>
 	<dict><key>phrase</key><string>Mildiou</string><key>shortcut</key><string>みるでぃう</string></dict>
 	<dict><key>phrase</key><string>Oïdium</string><key>shortcut</key><string>おいでぃうむ</string></dict>
@@ -11867,7 +11849,6 @@
 	<dict><key>phrase</key><string>静菌作用</string><key>shortcut</key><string>せいきんさよう</string></dict>
 	<dict><key>phrase</key><string>高エステル生成酵母</string><key>shortcut</key><string>こうえすてるせいせいこうぼ</string></dict>
 	<dict><key>phrase</key><string>黄麹菌</string><key>shortcut</key><string>きこうじきん</string></dict>
-	<dict><key>phrase</key><string>細胞内</string><key>shortcut</key><string>さいぼうない</string></dict>
 	<!-- 輸入・流通 -->
 	<dict><key>phrase</key><string>Mis en bouteille au Domaine</string><key>shortcut</key><string>みざんぶてぃゆおどめーぬ</string></dict>
 	<dict><key>phrase</key><string>輸出用ワイン</string><key>shortcut</key><string>ゆしゅつようわいん</string></dict>
@@ -12019,5 +12000,22 @@
 	<dict><key>phrase</key><string>チューリップ型</string><key>shortcut</key><string>ちゅーりっぷがた</string></dict>
 	<dict><key>phrase</key><string>ミシュラン星付</string><key>shortcut</key><string>みしゅらんほしつき</string></dict>
 	<dict><key>phrase</key><string>ヴェトロ</string><key>shortcut</key><string>ゔぇとろ</string></dict>
+
+	<dict><key>phrase</key><string>ノンアルコール・カクテル</string><key>shortcut</key><string>のんあるこーるかくてる</string></dict>
+	<dict><key>phrase</key><string>ノンアルコール飲料</string><key>shortcut</key><string>のんあるこーるいんりょう</string></dict>
+	<dict><key>phrase</key><string>Appletiser®</string><key>shortcut</key><string>あっぷるたいざー</string></dict>
+	<dict><key>phrase</key><string>テキスト</string><key>shortcut</key><string>てきすと</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>細胞内</string><key>shortcut</key><string>さいぼうない</string></dict>
+	<dict><key>phrase</key><string>オリンピック</string><key>shortcut</key><string>おりんぴっく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ギター</string><key>shortcut</key><string>ぎたー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>コロナ禍</string><key>shortcut</key><string>ころなか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>サーフィン</string><key>shortcut</key><string>さーふぃん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>シフトチェンジ</string><key>shortcut</key><string>しふとちぇんじ</string></dict>
+	<dict><key>phrase</key><string>マイクロソフト</string><key>shortcut</key><string>まいくろそふと</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ロッシーニ・オペラ・フェスティバル</string><key>shortcut</key><string>ろっしーにおぺらふぇすてぃばる</string></dict>
+	<dict><key>phrase</key><string>任天堂</string><key>shortcut</key><string>にんてんどう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>冬季オリンピック</string><key>shortcut</key><string>とうきおりんぴっく</string></dict>
+	<dict><key>phrase</key><string>潜水艦探知機</string><key>shortcut</key><string>せんすいかんたんちき</string></dict>
+	<dict><key>phrase</key><string>全米</string><key>shortcut</key><string>ぜんべい</string></dict>	<!-- Sudachiにもある -->
 </array>
 </plist>
