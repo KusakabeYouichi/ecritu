@@ -12001,6 +12001,7 @@
 	<dict><key>phrase</key><string>ミシュラン星付</string><key>shortcut</key><string>みしゅらんほしつき</string></dict>
 	<dict><key>phrase</key><string>ヴェトロ</string><key>shortcut</key><string>ゔぇとろ</string></dict>
 
+	<!-- ■ その他(ワインの文脈外だがソムリエ教本・実務で出てくる一般語) -->
 	<dict><key>phrase</key><string>ノンアルコール・カクテル</string><key>shortcut</key><string>のんあるこーるかくてる</string></dict>
 	<dict><key>phrase</key><string>ノンアルコール飲料</string><key>shortcut</key><string>のんあるこーるいんりょう</string></dict>
 	<dict><key>phrase</key><string>Appletiser®</string><key>shortcut</key><string>あっぷるたいざー</string></dict>
