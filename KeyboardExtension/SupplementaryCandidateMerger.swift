@@ -37,7 +37,7 @@ enum SupplementaryCandidateMerger {
             preliminaryMinimumConverterSlots = ExternalCandidateLimits.minimumConverterSlots
         }
 
-        // 補完候補(連絡先・ユーザー辞書 等)が一切表示されなくなる事態を防ぐため、
+        // 補完候補(連絡先・ユーザ辞書 等)が一切表示されなくなる事態を防ぐため、
         // limit に対して最低限の補完スロットを確保する。
         // 例: limit=14 で短い読み(≤2文字)の場合、preliminary が 20 だと supplementaryLimit=0 となり
         // 連絡先「麻理(まり)」のようなユーザー指定候補が完全に消える。

@@ -25,7 +25,7 @@ struct KeyRepeatSettingsSection: View {
                             keyRepeatInitialDelay,
                             default: RepeatSettings.initialDelayDefault
                         ) {
-                            Text("デフォルト")
+                            Text("初期設定")
                                 .font(.caption2.weight(.semibold))
                                 .foregroundStyle(Color.orange)
                                 .padding(.horizontal, 6)
@@ -44,7 +44,7 @@ struct KeyRepeatSettingsSection: View {
                         .tint(Color.orange)
 
                     HStack {
-                        Text("デフォルト: \(RepeatSettings.initialDelayDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
+                        Text("初期設定: \(RepeatSettings.initialDelayDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -54,7 +54,7 @@ struct KeyRepeatSettingsSection: View {
                             keyRepeatInitialDelay,
                             default: RepeatSettings.initialDelayDefault
                         ) {
-                            Button("デフォルトに戻す") {
+                            Button("初期設定に戻す") {
                                 keyRepeatInitialDelay = RepeatSettings.initialDelayDefault
                             }
                             .font(.caption.weight(.semibold))
@@ -71,7 +71,7 @@ struct KeyRepeatSettingsSection: View {
                             keyRepeatInterval,
                             default: RepeatSettings.intervalDefault
                         ) {
-                            Text("デフォルト")
+                            Text("初期設定")
                                 .font(.caption2.weight(.semibold))
                                 .foregroundStyle(Color.orange)
                                 .padding(.horizontal, 6)
@@ -90,7 +90,7 @@ struct KeyRepeatSettingsSection: View {
                         .tint(Color.orange)
 
                     HStack {
-                        Text("デフォルト: \(RepeatSettings.intervalDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
+                        Text("初期設定: \(RepeatSettings.intervalDefault.formatted(.number.precision(.fractionLength(2)))) 秒")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
@@ -100,7 +100,7 @@ struct KeyRepeatSettingsSection: View {
                             keyRepeatInterval,
                             default: RepeatSettings.intervalDefault
                         ) {
-                            Button("デフォルトに戻す") {
+                            Button("初期設定に戻す") {
                                 keyRepeatInterval = RepeatSettings.intervalDefault
                             }
                             .font(.caption.weight(.semibold))
@@ -141,7 +141,7 @@ struct IdleCommitSettingsSection: View {
                             .font(.subheadline.weight(.semibold))
                         Spacer(minLength: 12)
                         if isAtDefault(idleCommitInterval, default: IdleCommitSettings.intervalDefault) {
-                            Text("デフォルト")
+                            Text("初期設定")
                                 .font(.caption2.weight(.semibold))
                                 .foregroundStyle(Color.orange)
                                 .padding(.horizontal, 6)
@@ -160,14 +160,14 @@ struct IdleCommitSettingsSection: View {
                         .tint(Color.orange)
 
                     HStack {
-                        Text("デフォルト: \(IdleCommitSettings.intervalDefault.formatted(.number.precision(.fractionLength(1)))) 秒")
+                        Text("初期設定: \(IdleCommitSettings.intervalDefault.formatted(.number.precision(.fractionLength(1)))) 秒")
                             .font(.caption)
                             .foregroundStyle(.secondary)
 
                         Spacer(minLength: 8)
 
                         if !isAtDefault(idleCommitInterval, default: IdleCommitSettings.intervalDefault) {
-                            Button("デフォルトに戻す") {
+                            Button("初期設定に戻す") {
                                 idleCommitInterval = IdleCommitSettings.intervalDefault
                             }
                             .font(.caption.weight(.semibold))

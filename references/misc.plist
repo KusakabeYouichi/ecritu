@@ -18,43 +18,43 @@
 	<dict><key>phrase</key><string>気がしません</string><key>shortcut</key><string>きがしません</string></dict>
 	<dict><key>phrase</key><string>手に入る</string><key>shortcut</key><string>てにはいる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>役に立つ</string><key>shortcut</key><string>やくにたつ</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気の利く</string><key>shortcut</key><string>きのきく</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気がつく</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気が付く</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気が長い</string><key>shortcut</key><string>きがながい</string><key>pos</key><string>形容詞</string></dict>
-    <dict><key>phrase</key><string>気が早い</string><key>shortcut</key><string>きがはやい</string><key>pos</key><string>形容詞</string></dict>
-    <dict><key>phrase</key><string>気が向く</string><key>shortcut</key><string>きがむく</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気に入る</string><key>shortcut</key><string>きにいる</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気にかかる</string><key>shortcut</key><string>きにかかる</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気にかける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
-    <dict><key>phrase</key><string>気に掛ける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
-    <dict><key>phrase</key><string>気に食わない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
-    <dict><key>phrase</key><string>気にくわない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
-    <dict><key>phrase</key><string>気にとめる</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
-    <dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
-    <dict><key>phrase</key><string>気に病む</string><key>shortcut</key><string>きにやむ</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を失う</string><key>shortcut</key><string>きをうしなう</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を利かせる</string><key>shortcut</key><string>きをきかせる</string><key>pos</key><string>一段</string></dict>
-    <dict><key>phrase</key><string>気を配る</string><key>shortcut</key><string>きをくばる</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を遣う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を使う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気をつかう</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気をつける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
-    <dict><key>phrase</key><string>気を付ける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
-    <!-- て形の直接表層: 連文節の(b2)派生は isCurated=false のため を含み免除が効かず、機をつけて 分割に負ける。curated直接供給で連文節に乗せる -->
-    <dict><key>phrase</key><string>気をつけて</string><key>shortcut</key><string>きをつけて</string></dict>
-    <dict><key>phrase</key><string>気を付けて</string><key>shortcut</key><string>きをつけて</string></dict>
-    <dict><key>phrase</key><string>気を引く</string><key>shortcut</key><string>きをひく</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を回す</string><key>shortcut</key><string>きをまわす</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を揉む</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気をもむ</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>気を良くする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
-    <dict><key>phrase</key><string>気をよくする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
-    <dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
-    <dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気がある</string><key>shortcut</key><string>きがある</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気が利く</string><key>shortcut</key><string>きがきく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気の利く</string><key>shortcut</key><string>きのきく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気が散る</string><key>shortcut</key><string>きがちる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気がつく</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気が付く</string><key>shortcut</key><string>きがつく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気が長い</string><key>shortcut</key><string>きがながい</string><key>pos</key><string>形容詞</string></dict>
+	<dict><key>phrase</key><string>気が早い</string><key>shortcut</key><string>きがはやい</string><key>pos</key><string>形容詞</string></dict>
+	<dict><key>phrase</key><string>気が向く</string><key>shortcut</key><string>きがむく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気に入る</string><key>shortcut</key><string>きにいる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気にかかる</string><key>shortcut</key><string>きにかかる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気にかける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>気に掛ける</string><key>shortcut</key><string>きにかける</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>気に食わない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
+	<dict><key>phrase</key><string>気にくわない</string><key>shortcut</key><string>きにくわない</string><key>pos</key><string>形容詞</string></dict>
+	<dict><key>phrase</key><string>気にとめる</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>気に留める</string><key>shortcut</key><string>きにとめる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>気に病む</string><key>shortcut</key><string>きにやむ</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気を失う</string><key>shortcut</key><string>きをうしなう</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気を利かせる</string><key>shortcut</key><string>きをきかせる</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>気を配る</string><key>shortcut</key><string>きをくばる</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気を遣う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気を使う</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気をつかう</string><key>shortcut</key><string>きをつかう</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気をつける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
+	<dict><key>phrase</key><string>気を付ける</string><key>shortcut</key><string>きをつける</string><key>pos</key><string>一段</string></dict>
+	<!-- て形の直接表層: 連文節の(b2)派生は isCurated=false のため を含み免除が効かず、機をつけて 分割に負ける。curated直接供給で連文節に乗せる -->
+	<dict><key>phrase</key><string>気をつけて</string><key>shortcut</key><string>きをつけて</string></dict>
+	<dict><key>phrase</key><string>気を付けて</string><key>shortcut</key><string>きをつけて</string></dict>
+	<dict><key>phrase</key><string>気を引く</string><key>shortcut</key><string>きをひく</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気を回す</string><key>shortcut</key><string>きをまわす</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気を揉む</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気をもむ</string><key>shortcut</key><string>きをもむ</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>気を良くする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>気をよくする</string><key>shortcut</key><string>きをよくする</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>写り込む</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>写りこむ</string><key>shortcut</key><string>うつりこむ</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>全会一致</string><key>shortcut</key><string>ぜんかいいっち</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- 少ない: ランキング一般則(suffix一致+500)だけでは実機の すくないなあ で 酸くない 語幹合成が残るため、curatedで全経路先頭を保証 -->
 	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>	<!-- Sudachiにもある -->
@@ -92,7 +92,7 @@
 	<!-- サ変動詞化する名詞 -->
 	<dict><key>phrase</key><string>自画自賛</string><key>shortcut</key><string>じがじさん</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>寝落ち</string><key>shortcut</key><string>ねおち</string><key>pos</key><string>サ変名詞</string></dict>
-    <dict><key>phrase</key><string>魔改造</string><key>shortcut</key><string>まかいぞう</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>魔改造</string><key>shortcut</key><string>まかいぞう</string><key>pos</key><string>サ変名詞</string></dict>
 	<!-- 中黒装飾フィルタで既定候補から外れた実在固有名の復活(映画/ゆうちょ/出版社) -->
 	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ぱ・る・る</string><key>shortcut</key><string>ぱるる</string></dict>	<!-- Sudachiにもある -->
