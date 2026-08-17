@@ -691,6 +691,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "できないですもんね"))
     }
 
+    // いいほんでした: ほんで の固有名収穫(本出 wc10000/品田 wc11000)が
+    // 本+でした の正しい分割に勝ち いい本出した になっていた(suppr で除去。2564)。
+    func testRegressionRealLMIihondeshitaPrefersHon() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let hon = converter.multiClauseCandidates(for: "いいほんでした", systemCandidateMode: .surface)
+        XCTAssertEqual(hon.first, "いい本でした", "multi=\(hon)")
+        XCTAssertFalse(hon.contains { $0.contains("本出") || $0.contains("品田") }, "multi=\(hon)")
+    }
+
     // みずにつけてた: 水(+助詞)直後の つけ活用は 浸/漬 が主({水に付けてた, 水に着けてた}
     // が先頭だった)。連語の複数プレフィクス選好+seed つける 並び拡充(ユーザ指定 2563)。
     func testRegressionRealLMMizuniTsuketetaPrefersTsukeru() throws {

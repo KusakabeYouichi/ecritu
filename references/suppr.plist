@@ -12,6 +12,9 @@
 	<dict><key>phrase</key><string>カウカ</string><key>shortcut</key><string>かうか</string></dict>
 	<!-- アルノ(あるの、伊アルノ川等のカタカナ固有名の収穫 wc4576=異常低): ある+の の合成に1ノードで勝ち あるのになあ→アルノになあ を作る -->
 	<dict><key>phrase</key><string>アルノ</string><key>shortcut</key><string>あるの</string></dict>
+	<!-- 本出/品田(ほんで、固有名の収穫 wc10000/11000): 本+でした の正しい分割に勝ち いいほんでした→いい本出した を作る。かな ほんで(関西弁)は無傷 -->
+	<dict><key>phrase</key><string>本出</string><key>shortcut</key><string>ほんで</string></dict>
+	<dict><key>phrase</key><string>品田</string><key>shortcut</key><string>ほんで</string></dict>
 	<!-- 打ち荷/打荷(うちに、海事のレア語 wc7864): 家に/内に の合成より先頭に来て迷惑 -->
 	<dict><key>phrase</key><string>打ち荷</string><key>shortcut</key><string>うちに</string></dict>
 	<dict><key>phrase</key><string>打荷</string><key>shortcut</key><string>うちに</string></dict>
