@@ -236,6 +236,7 @@ enum KanjiRadicalCatalog {
         didSet {
             lock.lock()
             cache = nil
+            cachedFormsByKanaName = nil
             lock.unlock()
         }
     }
@@ -252,6 +253,28 @@ enum KanjiRadicalCatalog {
         cache = loaded
         lock.unlock()
         return loaded
+    }
+
+    // 部首名(かな)→字形(くさかんむり→[艹] 等)。変換の完全一致末尾供給に使う。
+    // 1字の名前(の/に 等)は一般語と衝突するため対象外(2565)。
+    private static var cachedFormsByKanaName: [String: [String]]?
+    static var formsByKanaName: [String: [String]] {
+        lock.lock()
+        if let cachedFormsByKanaName {
+            lock.unlock()
+            return cachedFormsByKanaName
+        }
+        lock.unlock()
+        var map: [String: [String]] = [:]
+        for entry in allForms where entry.name.count >= 2 {
+            if !(map[entry.name]?.contains(entry.form) ?? false) {
+                map[entry.name, default: []].append(entry.form)
+            }
+        }
+        lock.lock()
+        cachedFormsByKanaName = map
+        lock.unlock()
+        return map
     }
 
     // カテゴリー内は画数順(同画数は部首番号順)。部首を探すときの手掛かりが画数のため、

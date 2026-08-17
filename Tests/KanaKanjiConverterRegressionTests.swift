@@ -8451,6 +8451,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やっぱり"))
     }
 
+    // 部首名の変換供給(くさかんむり→艹 等、2565)。bushu.plist の全名前(2字以上)で
+    // 完全一致入力から字形が候補に出ることを一括検査する。
+    func testRegressionRealLMRadicalNameSuppliesForm() throws {
+        KanjiRadicalCatalog.resourceDirectoryURLOverride = URL(
+            fileURLWithPath: "/Users/kusakabe/Git/ecritu/references", isDirectory: true
+        )
+        defer { KanjiRadicalCatalog.resourceDirectoryURLOverride = nil }
+        try prepareRealLMDictionary()
+
+        var failures: [String] = []
+        for (name, forms) in KanjiRadicalCatalog.formsByKanaName.sorted(by: { $0.key < $1.key }) {
+            let list = converter.candidates(for: name, limit: 64, systemCandidateMode: .surface)
+            for form in forms where !list.contains(form) {
+                failures.append("\(name)→\(form) list=\(list.suffix(4))")
+            }
+        }
+        XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
+    }
+
     // 部首カテゴリー分類表(bushu.plist)の読み込みと、8カテゴリーへの割り振り(2444)
     func testKanjiRadicalCatalogCategories() throws {
         KanjiRadicalCatalog.resourceDirectoryURLOverride = URL(

@@ -407,6 +407,11 @@ final class KanaKanjiConverter {
         if let exactOnly = KanaKanjiSeedDictionary.exactReadingOnlySeed[context.reading] {
             addCandidates(exactOnly, baseScore: CandidateScore.exactReadingOnly, to: &scores)
         }
+        // 部首名の完全一致(くさかんむり→艹 等)は字形を末尾供給する(2565)。
+        // 名前は bushu.plist 由来(2字以上のみ。の/に 等の1字名は一般語と衝突するため対象外)
+        if let radicalForms = KanjiRadicalCatalog.formsByKanaName[context.reading] {
+            addCandidates(radicalForms, baseScore: CandidateScore.exactReadingOnly, to: &scores)
+        }
     }
 
     // ステージ2: 派生候補(活用/ガル形/丁寧接頭辞/序数/数値/名詞接辞/postfix)を登録する。
