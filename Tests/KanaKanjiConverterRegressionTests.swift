@@ -8470,6 +8470,35 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
     }
 
+    // フルアクセスOFF相当(共有コンテナ不達・共有defaults空)でも、変換系APIが
+    // クラッシュせず動作すること(App Store ガイドライン4.4.1: フルアクセスなしでも
+    // 基本機能が動くこと)。実機ではバンドル辞書で変換も維持されるが、テスト環境は
+    // バンドルに辞書が無いためフォールバック動作(候補が返り、落ちない)を確認する。
+    func testKeyboardSurvivesWithoutAppGroupAccess() throws {
+        let previousOverride = KanaKanjiStore.sharedContainerURLOverride
+        defer { KanaKanjiStore.sharedContainerURLOverride = previousOverride }
+        // 存在せず作成もできないパス=コンテナ不達を再現
+        KanaKanjiStore.sharedContainerURLOverride = URL(
+            fileURLWithPath: "/nonexistent-fullaccess-off/\(UUID().uuidString)", isDirectory: true
+        )
+        let isolated = KanaKanjiConverter(
+            store: KanaKanjiStore(appGroupID: "group.fullaccess.off.\(UUID().uuidString)")
+        )
+
+        // 変換・学習・語彙・診断系の主要APIを一巡(すべて落ちないこと)
+        let single = isolated.candidates(for: "きょうは", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(single.isEmpty, "フォールバックでも候補ゼロにならない list=\(single)")
+        _ = isolated.multiClauseCandidates(for: "きょうはあめです", systemCandidateMode: .surface)
+        _ = isolated.shouldKeepKanaIdentityLeading(for: "きょうは")
+        isolated.store.addLearnedEntry(reading: "てすと", candidate: "テスト")
+        _ = isolated.store.learnedDictionary()
+        _ = isolated.store.userDictionary()
+        _ = isolated.store.initialUserDictionary()
+        _ = isolated.store.suppressedCandidatesByReading()
+        _ = isolated.store.shortcutVocabulary()
+        _ = isolated.store.loadSupplementalSystemDictionary()
+    }
+
     // 部首カテゴリー分類表(bushu.plist)の読み込みと、8カテゴリーへの割り振り(2444)
     func testKanjiRadicalCatalogCategories() throws {
         KanjiRadicalCatalog.resourceDirectoryURLOverride = URL(

@@ -73,7 +73,7 @@ struct ThirdPartyLicensesSection: View {
             }
             .buttonStyle(.plain)
 
-            Text("App Store 配布時に必要となる SudachiDict 関連のライセンス文書を確認できます。")
+            Text("同梱データ(SudachiDict、Wikipedia 由来の言語モデル統計、Unicode CLDR 絵文字読み 等)のライセンス文書を確認できます。")
                 .font(.footnote)
                 .foregroundStyle(.secondary)
         }
