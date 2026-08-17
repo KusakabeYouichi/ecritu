@@ -11900,8 +11900,9 @@
 	<dict><key>phrase</key><string>出荷前</string><key>shortcut</key><string>しゅっかまえ</string></dict>
 	<dict><key>phrase</key><string>分析書</string><key>shortcut</key><string>ぶんせきしょ</string></dict>
 	<dict><key>phrase</key><string>到着後</string><key>shortcut</key><string>とうちゃくご</string></dict>
-	<dict><key>phrase</key><string>前月棚卸在庫金額 + 当月仕入金額</string><key>shortcut</key><string>ぜんげつたなおろしざいこきんがくぷらすとうげつしいれきんがく</string></dict>
-	<dict><key>phrase</key><string>前月棚卸在庫金額+当月仕入</string><key>shortcut</key><string>ぜんげつたなおろしざいこきんがくぷらすとうげつしいれ</string></dict>
+	<dict><key>phrase</key><string>前月棚卸在庫金額</string><key>shortcut</key><string>ぜんげつたなおろしざいこきんがく</string></dict>
+	<dict><key>phrase</key><string>当月仕入金額</string><key>shortcut</key><string>とうげつしいれきんがく</string></dict>
+	<dict><key>phrase</key><string>当月仕入</string><key>shortcut</key><string>とうげつしいれ</string></dict>
 	<dict><key>phrase</key><string>包装紙</string><key>shortcut</key><string>ほうそうし</string></dict>
 	<dict><key>phrase</key><string>容器入り</string><key>shortcut</key><string>ようきいり</string></dict>
 	<dict><key>phrase</key><string>容器内</string><key>shortcut</key><string>ようきない</string></dict>
@@ -11932,11 +11933,14 @@
 	<dict><key>phrase</key><string>消費増</string><key>shortcut</key><string>しょうひぞう</string></dict>
 	<dict><key>phrase</key><string>粗利益率</string><key>shortcut</key><string>あらりえきりつ</string></dict>
 	<dict><key>phrase</key><string>総消費量</string><key>shortcut</key><string>そうしょうひりょう</string></dict>
-	<dict><key>phrase</key><string>当月棚卸在庫金額 + 他部署</string><key>shortcut</key><string>とうげつたなおろしざいこきんがくぷらすたぶしょ</string></dict>
-	<dict><key>phrase</key><string>当月棚卸金額+他部署</string><key>shortcut</key><string>とうげつたなおろしきんがくぷらすたぶしょ</string></dict>
-	<dict><key>phrase</key><string>振替金額 + 社用金額 + 破損金額</string><key>shortcut</key><string>ふりかえきんがくぷらすしゃようきんがくぷらすはそんきんがく</string></dict>
+	<dict><key>phrase</key><string>当月棚卸在庫金額</string><key>shortcut</key><string>とうげつたなおろしざいこきんがく</string></dict>
+	<dict><key>phrase</key><string>当月棚卸金額</string><key>shortcut</key><string>とうげつたなおろしきんがく</string></dict>
+	<dict><key>phrase</key><string>他部署</string><key>shortcut</key><string>たぶしょ</string></dict>
+	<dict><key>phrase</key><string>振替金額</string><key>shortcut</key><string>ふりかえきんがく</string></dict>
+	<dict><key>phrase</key><string>社用金額</string><key>shortcut</key><string>しゃようきんがく</string></dict>
+	<dict><key>phrase</key><string>破損金額</string><key>shortcut</key><string>はそんきんがく</string></dict>
 	<dict><key>phrase</key><string>P決済</string><key>shortcut</key><string>ぴーけっさい</string></dict>
-	<dict><key>phrase</key><string>総合売</string><key>shortcut</key><string>そうごううり</string></dict>
+	<dict><key>phrase</key><string>総合売り</string><key>shortcut</key><string>そうごううり</string></dict>
 	<!-- サーヴィス -->
 	<dict><key>phrase</key><string>No.3591規格グラス</string><key>shortcut</key><string>なんばーさんごーきゅーいちきかくぐらす</string></dict>
 	<dict><key>phrase</key><string>Chambré</string><key>shortcut</key><string>しゃんぶれ</string></dict>
@@ -12006,9 +12010,9 @@
 	<dict><key>phrase</key><string>再栓</string><key>shortcut</key><string>さいせん</string></dict>
 	<dict><key>phrase</key><string>動ビン</string><key>shortcut</key><string>どうびん</string></dict>
 	<dict><key>phrase</key><string>動ビン時</string><key>shortcut</key><string>どうびんじ</string></dict>
-	<dict><key>phrase</key><string>口直</string><key>shortcut</key><string>くちなおし</string></dict>
-	<dict><key>phrase</key><string>客様</string><key>shortcut</key><string>きゃくさま</string></dict>
-	<dict><key>phrase</key><string>小分</string><key>shortcut</key><string>こわけ</string></dict>
+	<dict><key>phrase</key><string>口直し</string><key>shortcut</key><string>くちなおし</string></dict>
+	<dict><key>phrase</key><string>お客様</string><key>shortcut</key><string>おきゃくさま</string></dict>
+	<dict><key>phrase</key><string>小分け</string><key>shortcut</key><string>こわけ</string></dict>
 	<dict><key>phrase</key><string>抜栓</string><key>shortcut</key><string>ばっせん</string></dict>
 	<dict><key>phrase</key><string>抜栓前</string><key>shortcut</key><string>ばっせんまえ</string></dict>
 	<dict><key>phrase</key><string>抜栓後</string><key>shortcut</key><string>ばっせんご</string></dict>
