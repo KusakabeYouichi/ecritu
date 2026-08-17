@@ -213,6 +213,11 @@ extension KeyboardViewController {
 
     // ゾンビ・カナリア: 降格から一定時間後に弱参照で生存確認し、まだ生きていれば
     // アンカーを再ダンプする(何も強参照しないので延命はしない)。
+    // 併せてビュー階層の解放を再試行する: 降格時点の一度きりの解放判定
+    // (shouldSuppressHeavyOperations の releaseHostingView: view.window == nil)は、
+    // その瞬間まだ window に載っていると false になり、didApplyInactiveSessionMitigation
+    // により二度と試されない。実測(2570 census)でゾンビ2体が80分/97分ビュー階層を
+    // 抱えたまま生存しており、footprint 固定費の主因だった(2574)。
     func scheduleZombieSurvivalCanary() {
         for delay in [30.0, 120.0] {
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
@@ -226,8 +231,35 @@ extension KeyboardViewController {
                     line: #line,
                     function: #function
                 )
+                self.releaseHostingViewIfZombie(reason: "zombieCanary+\(Int(delay))s")
             }
         }
+    }
+
+    // 非表示のゾンビが抱えるビュー階層(UIHostingController+SwiftUI階層)を解放する。
+    // 表示中(window あり)やオーナー復帰後は何もしない。再表示時は
+    // ensureKeyboardViewIfNeeded が再構築する。
+    func releaseHostingViewIfZombie(reason: String) {
+        guard lostActiveOwnershipAt > 0,
+            let host = hostingController,
+            view.window == nil,
+            host.view.window == nil else {
+            return
+        }
+        let beforeMB = currentFootprintMB()
+        host.willMove(toParent: nil)
+        host.view.removeFromSuperview()
+        host.removeFromParent()
+        hostingController = nil
+        lastRenderConfiguration = nil
+        let beforeText = beforeMB.map { String(format: "%.1f", $0) } ?? "?"
+        appendKeyboardDiagnosticsLog(
+            "ゾンビのビュー階層を解放 reason=\(reason) footprintMB=\(beforeText)→\(diagnosticsFootprintMBText())",
+            critical: true,
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
     }
 
     func performHiddenKeyboardMemoryTrim(
