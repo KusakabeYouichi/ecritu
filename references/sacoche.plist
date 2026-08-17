@@ -21,6 +21,8 @@
 	        <dict><key>phrase</key><string>ラーメン二郎</string><key>shortcut</key><string>らーめんじろう</string></dict>
 	        <dict><key>phrase</key><string>二郎インスパイア系</string><key>shortcut</key><string>じろういんすぱいあけい</string></dict>
 	        <dict><key>phrase</key><string>二郎系</string><key>shortcut</key><string>じろうけい</string></dict>
+	        <dict><key>phrase</key><string>群林堂</string><key>shortcut</key><string>ぐんりんどう</string></dict>
+	        <dict><key>phrase</key><string>椿山荘</string><key>shortcut</key><string>ちんざんそう</string></dict>
 	<!-- 高山 -->
 	        <dict><key>phrase</key><string>なか川</string><key>shortcut</key><string>なかがわ</string></dict>
 	        <dict><key>phrase</key><string>みやび庵</string><key>shortcut</key><string>みやびあん</string></dict>
@@ -30,11 +32,9 @@
 	        <dict><key>phrase</key><string>井之下</string><key>shortcut</key><string>いのした</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>宗和好み</string><key>shortcut</key><string>そうわごのみ</string></dict>
 	        <dict><key>phrase</key><string>寿美久</string><key>shortcut</key><string>すみきゅう</string></dict>
-	        <dict><key>phrase</key><string>椿山荘</string><key>shortcut</key><string>ちんざんそう</string></dict>
 	        <dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すさき</string></dict>
 	        <dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
 	        <dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
-	        <dict><key>phrase</key><string>群林堂</string><key>shortcut</key><string>ぐんりんどう</string></dict>
 	        <dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>	<!-- Sudachiにもある -->
 	<!-- その他の地方 -->
 	        <dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
@@ -79,6 +79,9 @@
 	        <dict><key>phrase</key><string>エレヴォイ</string><key>shortcut</key><string>えれゔぉい</string></dict>
 	        <dict><key>phrase</key><string>Electro-Voice</string><key>shortcut</key><string>えれくとろゔぉいす</string></dict>
 	        <dict><key>phrase</key><string>雅楽</string><key>shortcut</key><string>ががく</string></dict>	<!-- Sudachiにもある -->
+	        <dict><key>phrase</key><string>ト音記号</string><key>shortcut</key><string>とおんきごう</string></dict>
+	        <dict><key>phrase</key><string>ヘ音記号</string><key>shortcut</key><string>へおんきごう</string></dict>
+	        <dict><key>phrase</key><string>ハ音記号</string><key>shortcut</key><string>はおんきごう</string></dict>
 	<!-- 照明 -->
 	        <dict><key>phrase</key><string>演色</string><key>shortcut</key><string>えんしょく</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>演色性能</string><key>shortcut</key><string>えんしょくせいのう</string></dict>
@@ -256,7 +259,7 @@
 	        <dict><key>phrase</key><string>medium rare</string><key>shortcut</key><string>みでぃあむれあ</string></dict>
 	        <dict><key>phrase</key><string>medium</string><key>shortcut</key><string>みでぃあむ</string></dict>
 	        <dict><key>phrase</key><string>medium well</string><key>shortcut</key><string>みでぃあむうぇる</string></dict>
-	        <dict><key>phrase</key><string>woell-done</string><key>shortcut</key><string>うぇるだん</string></dict>
+	        <dict><key>phrase</key><string>well-done</string><key>shortcut</key><string>うぇるだん</string></dict>
 	        <dict><key>phrase</key><string>very well-done</string><key>shortcut</key><string>ゔぇりーうぇるだん</string></dict>
 	        <dict><key>phrase</key><string>ブル</string><key>shortcut</key><string>ぶる</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>セニャン</string><key>shortcut</key><string>せにゃん</string></dict>
@@ -381,9 +384,6 @@
 	<!-- 一般用語 -->
 	        <!-- アイユ: 辞書に実在(あいゆ wc2148)だが、同読みの漢字収穫(愛由/藍結=収穫底値10000)が
 	             あるためカタカナ強調抑止で候補から消える。追加語彙登録で復活させる -->
-	        <dict><key>phrase</key><string>ト音記号</string><key>shortcut</key><string>とおんきごう</string></dict>
-	        <dict><key>phrase</key><string>ヘ音記号</string><key>shortcut</key><string>へおんきごう</string></dict>
-	        <dict><key>phrase</key><string>ハ音記号</string><key>shortcut</key><string>はおんきごう</string></dict>
 	        <dict><key>phrase</key><string>アイユ</string><key>shortcut</key><string>あいゆ</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict><!-- [そのあと]ならある -->
 	        <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict><!-- [ははかた]ならある -->
@@ -445,6 +445,7 @@
 	        <dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>たつさき</string></dict>
 	        <dict><key>phrase</key><string>嶋</string><key>shortcut</key><string>やまどりのしま</string></dict>
 	        <dict><key>phrase</key><string>濵</string><key>shortcut</key><string>まゆはま</string></dict>
+	<!-- ギリシャ文字 -->
 	        <dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
 </array>
 </plist>
