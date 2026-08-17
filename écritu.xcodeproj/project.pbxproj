@@ -84,6 +84,8 @@
 		CFF9B0163E5247C5A9BDA3B6 /* KanaKanjiConverter+RankingHeuristics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */; };
 		8D5E4B6DA71340D48E5D984B /* KanaKanjiConverter+SurfaceFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */; };
 		87C85492924F4B02AA6B7C27 /* KanaKanjiConverter+MultiClause.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */; };
+		A1B2C3D4E5F600000000AB06 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */; };
+		A1B2C3D4E5F600000000AB07 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */; };
 		38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */; };
 		3B731B693D5ABC86B422C333 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
 		3CE284AC441A0CC766575E9E /* LICENSE-2.0.txt in Resources */ = {isa = PBXBuildFile; fileRef = 16990983DAC17CA61989BE7D /* LICENSE-2.0.txt */; };
@@ -244,6 +246,7 @@
 		940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+RankingHeuristics.swift"; sourceTree = "<group>"; };
 		2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+SurfaceFilters.swift"; sourceTree = "<group>"; };
 		76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+MultiClause.swift"; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+MultiClauseTables.swift"; sourceTree = "<group>"; };
 		B69E8277B29FFE7871F04CFB /* ContentView+Diagnostics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+Diagnostics.swift"; sourceTree = "<group>"; };
 		BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardViewController.swift; sourceTree = "<group>"; };
 		C1ECA6389592415ABEA9CA17 /* APP_STORE_OPEN_SOURCE_NOTICES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = APP_STORE_OPEN_SOURCE_NOTICES.md; sourceTree = "<group>"; };
@@ -368,6 +371,7 @@
 				940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */,
 				2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */,
 				76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */,
+				A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */,
 				280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */,
 				0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */,
 				273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */,
@@ -697,6 +701,7 @@
 				CFF9B0163E5247C5A9BDA3B6 /* KanaKanjiConverter+RankingHeuristics.swift in Sources */,
 				8D5E4B6DA71340D48E5D984B /* KanaKanjiConverter+SurfaceFilters.swift in Sources */,
 				87C85492924F4B02AA6B7C27 /* KanaKanjiConverter+MultiClause.swift in Sources */,
+				A1B2C3D4E5F600000000AB06 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */,
 				E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */,
 				38B6E4119C8C44881C192E33 /* KanaKanjiSeedDictionary.swift in Sources */,
 				8D78613535A703BDB593E778 /* KanaKanjiStore.swift in Sources */,
@@ -751,6 +756,7 @@
 				D4C98B3B37BF4A51954BE3ED /* KanaKanjiConverter+RankingHeuristics.swift in Sources */,
 				6181BCCBB3784740A7CC7802 /* KanaKanjiConverter+SurfaceFilters.swift in Sources */,
 				9F66315689C04FCE886B08C2 /* KanaKanjiConverter+MultiClause.swift in Sources */,
+				A1B2C3D4E5F600000000AB07 /* KanaKanjiConverter+MultiClauseTables.swift in Sources */,
 				1574B0356912D7E82C120E75 /* KanaKanjiSeedDictionary.swift in Sources */,
 				3B731B693D5ABC86B422C333 /* KanaKanjiStore.swift in Sources */,
 				2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */,
