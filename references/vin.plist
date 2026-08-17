@@ -11900,8 +11900,6 @@
 	<dict><key>phrase</key><string>出荷前</string><key>shortcut</key><string>しゅっかまえ</string></dict>
 	<dict><key>phrase</key><string>分析書</string><key>shortcut</key><string>ぶんせきしょ</string></dict>
 	<dict><key>phrase</key><string>到着後</string><key>shortcut</key><string>とうちゃくご</string></dict>
-	<dict><key>phrase</key><string>前月棚卸在庫金額</string><key>shortcut</key><string>ぜんげつたなおろしざいこきんがく</string></dict>
-	<dict><key>phrase</key><string>当月仕入金額</string><key>shortcut</key><string>とうげつしいれきんがく</string></dict>
 	<dict><key>phrase</key><string>当月仕入</string><key>shortcut</key><string>とうげつしいれ</string></dict>
 	<dict><key>phrase</key><string>包装紙</string><key>shortcut</key><string>ほうそうし</string></dict>
 	<dict><key>phrase</key><string>容器入り</string><key>shortcut</key><string>ようきいり</string></dict>
@@ -11933,10 +11931,8 @@
 	<dict><key>phrase</key><string>消費増</string><key>shortcut</key><string>しょうひぞう</string></dict>
 	<dict><key>phrase</key><string>粗利益率</string><key>shortcut</key><string>あらりえきりつ</string></dict>
 	<dict><key>phrase</key><string>総消費量</string><key>shortcut</key><string>そうしょうひりょう</string></dict>
-	<dict><key>phrase</key><string>当月棚卸在庫金額</string><key>shortcut</key><string>とうげつたなおろしざいこきんがく</string></dict>
 	<dict><key>phrase</key><string>当月棚卸金額</string><key>shortcut</key><string>とうげつたなおろしきんがく</string></dict>
 	<dict><key>phrase</key><string>他部署</string><key>shortcut</key><string>たぶしょ</string></dict>
-	<dict><key>phrase</key><string>振替金額</string><key>shortcut</key><string>ふりかえきんがく</string></dict>
 	<dict><key>phrase</key><string>社用金額</string><key>shortcut</key><string>しゃようきんがく</string></dict>
 	<dict><key>phrase</key><string>破損金額</string><key>shortcut</key><string>はそんきんがく</string></dict>
 	<dict><key>phrase</key><string>P決済</string><key>shortcut</key><string>ぴーけっさい</string></dict>
