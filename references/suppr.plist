@@ -110,8 +110,8 @@
 	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>
 	<!-- 単独の当(あたり)表記は現代では使わない(当たり は残す)。来週当 型の単漢字合成の是正 -->
 	<dict><key>phrase</key><string>当</string><key>shortcut</key><string>あたり</string></dict>
-	<dict><key>phrase</key><string>當</string><key>shortcut</key><string>あたり</string></dict>
-	<dict><key>phrase</key><string>中</string><key>shortcut</key><string>あたり</string></dict>
+	<dict><key>phrase</key><string>當</string><key>shortcut</key><string>あたり</string></dict>	<!-- ryukyu側と意図的併存 -->
+	<dict><key>phrase</key><string>中</string><key>shortcut</key><string>あたり</string></dict>	<!-- ryukyu側と意図的併存 -->
 	<dict><key>phrase</key><string>矢ッ張り</string><key>shortcut</key><string>やっぱり</string></dict>
 	<dict><key>phrase</key><string>矢ツぱり</string><key>shortcut</key><string>やっぱり</string></dict>
 	<dict><key>phrase</key><string>なァる程</string><key>shortcut</key><string>なるほど</string></dict>
@@ -219,7 +219,7 @@
 	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>
 	<dict><key>phrase</key><string>晏い</string><key>shortcut</key><string>おそい</string></dict>
 	<dict><key>phrase</key><string>遅そい</string><key>shortcut</key><string>おそい</string></dict>
-	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>
+	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>	<!-- ryukyu側と意図的併存 -->
 	<!-- 石ユ: 石工(いしく)のカタカナ混じり表記ゆれエントリ(wc10000、うツかり族)。お+石ユ 敬語合成で どちらもお石ユ 等を作る -->
 	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
 	<!-- ぜい金: 税金(ぜいきん)のかな漢字混じり表記ゆれエントリ(wc8269、rank1収穫遺物)。連文節の同スパン変種に浮上する -->
