@@ -1286,6 +1286,9 @@ struct ContentView: View {
 
                         ConversionCacheSettingsSection()
 
+                        // キーボード診断ログは開発ビルド専用(キーボード側の記録も
+                        // DEBUG 専用のため、リリースでは常に空。審査ガイドライン2.2対策)
+                        #if DEBUG
                         KeyboardDiagnosticsSection(
                             isSessionActive: keyboardDiagnosticsSessionActive,
                             failSafeProfile: keyboardDiagnosticsFailSafeProfile,
@@ -1304,6 +1307,7 @@ struct ContentView: View {
                             onCopyDetail: { copyKeyboardDiagnosticsToPasteboard(detail: true) },
                             onClear: clearKeyboardDiagnosticsState
                         )
+                        #endif
 
                         Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                             .font(.footnote)
