@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- 抑制語彙(アプリの『抑制語彙』UIに初期表示される分)。■ で始まる行がグループ見出し(直前に空行)。行末のコメントはその語の個別理由。 -->
+	<!-- 抑制語彙(アプリの『抑制語彙』UIに初期表示される分)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。 -->
 
 	<!-- ■ 旧字体・異体字(現代の標準字体を勝たせる) -->
 	<dict><key>phrase</key><string>沖繩</string><key>shortcut</key><string>おきなわ</string></dict>
@@ -20,7 +20,6 @@
 	<dict><key>phrase</key><string>寫眞</string><key>shortcut</key><string>しゃしん</string></dict>
 	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>
 	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
-	<dict><key>phrase</key><string>記臆</string><key>shortcut</key><string>きおく</string></dict>
 
 	<!-- ■ 過剰な漢字化(かな書きが正書の語。副詞・接続詞・補助動詞など) -->
 	<dict><key>phrase</key><string>至って</string><key>shortcut</key><string>いたって</string></dict>
@@ -52,8 +51,6 @@
 	<dict><key>phrase</key><string>尚</string><key>shortcut</key><string>なお</string></dict>
 	<dict><key>phrase</key><string>女</string><key>shortcut</key><string>ひと</string></dict>	<!-- ひと 読みは文学的用法で日常では出さない -->
 	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
-	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>	<!-- やる のカタカナ表記 -->
-	<dict><key>phrase</key><string>ヤる</string><key>shortcut</key><string>やる</string></dict>	<!-- やる の交ぜ書き -->
 	<dict><key>phrase</key><string>為る</string><key>shortcut</key><string>する</string></dict>
 	<dict><key>phrase</key><string>仕る</string><key>shortcut</key><string>する</string></dict>
 	<dict><key>phrase</key><string>不味い</string><key>shortcut</key><string>まずい</string></dict>
@@ -64,6 +61,13 @@
 	<dict><key>phrase</key><string>故に</string><key>shortcut</key><string>ゆえに</string></dict>
 	<dict><key>phrase</key><string>美味い</string><key>shortcut</key><string>うまい</string></dict>	<!-- うまい はかな書きを優先 -->
 	<dict><key>phrase</key><string>甘い</string><key>shortcut</key><string>うまい</string></dict>	<!-- うまい 読みは方言・古語寄り -->
+
+	<!-- ■ カタカナ表記・交ぜ書き(かな/漢字の正書を勝たせる) -->
+	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>	<!-- やる のカタカナ表記 -->
+	<dict><key>phrase</key><string>ヤる</string><key>shortcut</key><string>やる</string></dict>	<!-- やる の交ぜ書き -->
+
+	<!-- ■ 誤字・誤表記 -->
+	<dict><key>phrase</key><string>記臆</string><key>shortcut</key><string>きおく</string></dict>	<!-- 記憶 の誤字(旧字体ではない) -->
 
 	<!-- ■ あえて常用漢字による書き換えを使わないようにするため(書き換え=同音の常用漢字で置き換えた新表記: 沈澱→沈殿、醱酵/醗酵→発酵。使いたいのは 沈澱 と 醗酵。旧字体の 醱酵 は上のグループで抑制し、似た字形が候補に並んで選び間違えるのを防ぐ) -->
 	<dict><key>phrase</key><string>沈殿</string><key>shortcut</key><string>ちんでん</string></dict>

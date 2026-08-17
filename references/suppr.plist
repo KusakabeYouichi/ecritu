@@ -2,23 +2,30 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。■ で始まる行がグループ見出し(直前に空行)。各行の後ろのコメントはその語の個別理由。 -->
+	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
-	<dict><key>phrase</key><string>泰輝</string><key>shortcut</key><string>たいて</string></dict>
+	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>
+	<dict><key>phrase</key><string>立つ</string><key>shortcut</key><string>だつ</string></dict>	<!-- だつ→立つ系はSudachiが 目立つ/旅立つ 等の連濁内部読みを単独収穫したもの。活用基底に化けて だった→立った を作るため抑制(単独 だつ の正解は 脱/奪) -->
+	<dict><key>phrase</key><string>佇つ</string><key>shortcut</key><string>だつ</string></dict>
+	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>
+	<dict><key>phrase</key><string>建つ</string><key>shortcut</key><string>だつ</string></dict>
+	<dict><key>phrase</key><string>起つ</string><key>shortcut</key><string>だつ</string></dict>
 	<dict><key>phrase</key><string>大な</string><key>shortcut</key><string>おおきな</string></dict>	<!-- おおきな→大な(Sudachiの妙な収穫。大きな が正書) -->
 	<dict><key>phrase</key><string>大い</string><key>shortcut</key><string>おおきい</string></dict>	<!-- おおきい→大い(送り仮名欠落の収穫。大な と同根で、連用形 大く 等の派生源にもなる) -->
 	<dict><key>phrase</key><string>大く</string><key>shortcut</key><string>おおきく</string></dict>	<!-- おおきく→大く(大い の連用形派生。基底抑制だけでは活用列挙に残るため表層も抑制) -->
-	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>	<!-- おそいからな 対策: 唐菜(からな=野菜のレア語1ノード)、晏い/遅そい/襲(おそい のレア・誤送りがな表記) -->
-	<dict><key>phrase</key><string>晏い</string><key>shortcut</key><string>おそい</string></dict>
+	<dict><key>phrase</key><string>失え</string><key>shortcut</key><string>ねえ</string></dict>
+	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんと</string></dict>
+	<dict><key>phrase</key><string>晏い</string><key>shortcut</key><string>おそい</string></dict>	<!-- おそいからな 対策: 唐菜(からな=野菜のレア語1ノード)、晏い/遅そい/襲(おそい のレア・誤送りがな表記) -->
 	<dict><key>phrase</key><string>遅そい</string><key>shortcut</key><string>おそい</string></dict>
 	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>	<!-- ryukyu側と意図的併存 -->
+	<dict><key>phrase</key><string>永穂</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 永穂(なんごう): 沖縄読谷村の地名 永穂 の読みは なんご(なんご 側は収録済み)。 なんごう は SudachiDict の異読/誤り疑いのため抑制 -->
 	<dict><key>phrase</key><string>カ申</string><key>shortcut</key><string>かみ</string></dict>	<!-- カ申(かみ): 神 の分解ノイズ収穫(カ+申)。意味のある語ではないので抑制 -->
 	<dict><key>phrase</key><string>ですゥ</string><key>shortcut</key><string>です</string></dict>	<!-- ですゥ/です〜/で〜す/で〜〜す: です の装飾表記ゆれエントリ(wc7118〜7125、うツかり族)。ですけど→ですゥけど 等の変種に浮上する -->
 	<dict><key>phrase</key><string>です〜</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>で〜す</string><key>shortcut</key><string>です</string></dict>
 	<dict><key>phrase</key><string>で〜〜す</string><key>shortcut</key><string>です</string></dict>
-	<dict><key>phrase</key><string>秋</string><key>shortcut</key><string>あきの</string></dict>	<!-- ▼誤エントリ(辞書の誤った読み): Sudachi等が生成した本来しない読みの表層。学習でも古語でもなく明確な誤り。 秋(あきの): 秋 に あきの の読みは無い(秋乃系の正規化ミス収穫)。word_costsにも無くdictのみ -->
+	<dict><key>phrase</key><string>秋</string><key>shortcut</key><string>あきの</string></dict>	<!-- 秋(あきの): 秋 に あきの の読みは無い(秋乃系の正規化ミス収穫)。word_costsにも無くdictのみ -->
 	<dict><key>phrase</key><string>可愛いい</string><key>shortcut</key><string>かわいい</string></dict>
 	<dict><key>phrase</key><string>出きる</string><key>shortcut</key><string>できる</string></dict>
 	<dict><key>phrase</key><string>底触</string><key>shortcut</key><string>ていしょく</string></dict>	<!-- 底触/低触(ていしょく): 存在しない表記(抵触 の収穫ミス) -->
@@ -26,6 +33,21 @@
 	<dict><key>phrase</key><string>違うい</string><key>shortcut</key><string>ちがうい</string></dict>	<!-- 違うい(ちがうい): 存在しない語の収穫(adjective-i クラス付き)。く形派生 違うく(ちがうく)を作り、ちがうくに→違うく+に が 違う+国 を逆転する温床(危うい/ものうい は正当なので残す) -->
 	<dict><key>phrase</key><string>報る</string><key>shortcut</key><string>しる</string></dict>	<!-- 報る(しる): 報 に しる の読みは無い(報せる=しらせる/報いる=むくいる のみ)。報って(しって)等の温床 -->
 	<dict><key>phrase</key><string>這んな</string><key>shortcut</key><string>こんな</string></dict>	<!-- 這んな(こんな): 現代語に存在しない表記の収穫(這う とは無関係) -->
+	<!-- ※ ばかリ(ひらがな+カタカナ混在): 正書として存在しない交ぜ書きの収穫ミス -->
+	<dict><key>phrase</key><string>暗い</string><key>shortcut</key><string>ぐらい</string></dict>	<!-- ぐらい(連濁した副助詞・かな正書): 暗い/昏い/冥い等はくらい読みのい形容詞で「ぐらい」とは読まない。読みぐらいでのみ抑制(くらい→暗い は温存) -->
+	<dict><key>phrase</key><string>昏い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>冥い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>瞑い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>黯い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>闇い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>蒙い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>溟い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>現る</string><key>shortcut</key><string>うつる</string></dict>	<!-- 現る(うつる): うつる とは読まない。現れる=あらわれる、古語 現る=あらわる。Sudachiの誤った読み割り当て。基底+て形を登録(現ってます/現ってる/現ってた を包含) -->
+	<dict><key>phrase</key><string>現って</string><key>shortcut</key><string>うつって</string></dict>
+	<dict><key>phrase</key><string>現ってます</string><key>shortcut</key><string>うつってます</string></dict>	<!-- ニー(にー): の+にー(のにー=接続助詞のに+長音)の にー を カタカナ化した誤り(行ったのにー→行ったのニー)。にー は native でカタカナにしない -->
+	<dict><key>phrase</key><string>現ってる</string><key>shortcut</key><string>うつってる</string></dict>
+	<dict><key>phrase</key><string>現ってた</string><key>shortcut</key><string>うつってた</string></dict>
+	<dict><key>phrase</key><string>現った</string><key>shortcut</key><string>うつった</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
 	<dict><key>phrase</key><string>喜多代</string><key>shortcut</key><string>きたよ</string></dict>	<!-- きたよ の超レア人名(cost10000)。1ノードで済むため 来た+よ 合成より安くなり 急に喜多代 等を作る -->
@@ -51,8 +73,6 @@
 	<dict><key>phrase</key><string>達都</string><key>shortcut</key><string>たつと</string></dict>
 	<dict><key>phrase</key><string>龍人</string><key>shortcut</key><string>たつと</string></dict>
 	<dict><key>phrase</key><string>美多奈</string><key>shortcut</key><string>みたな</string></dict>
-	<dict><key>phrase</key><string>者</string><key>shortcut</key><string>は</string></dict>
-	<dict><key>phrase</key><string>うツかり</string><key>shortcut</key><string>うっかり</string></dict>
 	<dict><key>phrase</key><string>水羽</string><key>shortcut</key><string>みずは</string></dict>	<!-- みずは のレア人名11件(全て wc10000 ジャンク級)。単文節で 水+は 合成より前に並ぶ(たつと 人名と同型) -->
 	<dict><key>phrase</key><string>水華</string><key>shortcut</key><string>みずは</string></dict>
 	<dict><key>phrase</key><string>水葉</string><key>shortcut</key><string>みずは</string></dict>
@@ -65,7 +85,7 @@
 	<dict><key>phrase</key><string>美須羽</string><key>shortcut</key><string>みずは</string></dict>
 	<dict><key>phrase</key><string>美須葉</string><key>shortcut</key><string>みずは</string></dict>
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
-	<dict><key>phrase</key><string>江</string><key>shortcut</key><string>え</string></dict>	<!-- 読み「え」の名前・旧字・レア読み。単独の え としても使わず、え+だ の合成 -->
+	<dict><key>phrase</key><string>江</string><key>shortcut</key><string>え</string></dict>	<!-- 読み「え」の名前・旧字・レア読み。単独の え としても使わず、え+だ の合成 (江だ/衣だ/穢だ/重だ/慧だ/会だ/枝だ/畫だ)を作る温床になる。畫 は画の旧字で 読み え は正当だが現代入力では不要(ユーザー指摘)。絵/画/餌/柄 等は温存 -->
 	<dict><key>phrase</key><string>衣</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>枝</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>穢</string><key>shortcut</key><string>え</string></dict>
@@ -73,12 +93,12 @@
 	<dict><key>phrase</key><string>重</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>慧</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>会</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。 -->
-	<dict><key>phrase</key><string>藤原</string><key>shortcut</key><string>ふじわらの</string></dict>	<!-- 古代氏姓の「の込み」読み(藤原=フジワラノ/源=ミナモトノ/平=タイラノ、Sudachi実在)。 -->
+	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。 あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
+	<dict><key>phrase</key><string>藤原</string><key>shortcut</key><string>ふじわらの</string></dict>	<!-- 古代氏姓の「の込み」読み(藤原=フジワラノ/源=ミナモトノ/平=タイラノ、Sudachi実在)。 ふじわらの 等で rank0 に居座り 藤原の/源の/平の の合成を抑えるため 阿刀 と同型の 二段構え。平野(たいらの) は読み跨ぎ気味の収穫で同時に抑制 -->
 	<dict><key>phrase</key><string>源</string><key>shortcut</key><string>みなもとの</string></dict>
 	<dict><key>phrase</key><string>平</string><key>shortcut</key><string>たいらの</string></dict>
 	<dict><key>phrase</key><string>平野</string><key>shortcut</key><string>たいらの</string></dict>
-	<dict><key>phrase</key><string>小恋</string><key>shortcut</key><string>ここ</string></dict>	<!-- ここ のレア人名収穫(rank13-23)。ここでは/ここに 等の合成・連文節を汚すため辞書からは -->
+	<dict><key>phrase</key><string>小恋</string><key>shortcut</key><string>ここ</string></dict>	<!-- ここ のレア人名収穫(rank13-23)。ここでは/ここに 等の合成・連文節を汚すため辞書からは 抑制し、exactReadingOnlySeed で ここ 完全一致時のみ末尾供給に移す -->
 	<dict><key>phrase</key><string>小瑚</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>小虹</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>小香</string><key>shortcut</key><string>ここ</string></dict>
@@ -89,11 +109,10 @@
 	<dict><key>phrase</key><string>湖紅</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>琥々</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>瑚々</string><key>shortcut</key><string>ここ</string></dict>
-	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- リョウガ/リョウ: りょうが/りょう のカタカナ人名収穫(レア)。量が/凌駕 等の正規候補の前に並ぶ イく/イク: いく のカタカナ交ぜ書き・カタカナ表記(デキる/イタめる/ヤる 族)。godan-ku の活用クラス付きで収穫されており、イかなくて/イきます 等のジャンク派生を正規活用として作る 會社: 会社 の旧字体(かぶしきかいしゃ→株式會社 等の合成に混入)。現代表記は 会社 -->
-	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大睦(たいりく): 収穫底値(wc10000)のレア人名収穫。睦 自体の読みは むつみ/ぼく/まこと だけで -->
+	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大睦(たいりく): 収穫底値(wc10000)のレア人名収穫。睦 自体の読みは むつみ/ぼく/まこと だけで 辞書に りく が無く、たい+りく の分解でも説明できない。人名で無理やりそう読ませている例が ないとは言えないが、大陸 と字形が似ていて選び間違えやすいので抑制する -->
 
-	<!-- ■ 姓グロブ: 長語の分断防止(短い姓が長語を割るのを抑える。完全一致時は seed で再供給) -->
-	<dict><key>phrase</key><string>三谷</string><key>shortcut</key><string>みたに</string></dict>	<!-- みたに の姓グロブ(三谷/水谷 等)。3char単ノードが みたにある→三田にある 等の -->
+	<!-- ■ 姓グロブ: 長語の分断防止(短い姓が長語を割る。完全一致時は seed で再供給) -->
+	<dict><key>phrase</key><string>三谷</string><key>shortcut</key><string>みたに</string></dict>	<!-- みたに の姓グロブ(三谷/水谷 等)。3char単ノードが みたにある→三田にある 等の [地名][に][ある] locative 合成を preempt する。exactReadingOnlySeed で みたに 完全一致 時のみ供給(著名姓は残す)。せなかがわ/かたも と同じ分断対策 -->
 	<dict><key>phrase</key><string>三渓</string><key>shortcut</key><string>みたに</string></dict>
 	<dict><key>phrase</key><string>水谷</string><key>shortcut</key><string>みたに</string></dict>
 	<dict><key>phrase</key><string>三谿</string><key>shortcut</key><string>みたに</string></dict>
@@ -107,75 +126,49 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
-	<dict><key>phrase</key><string>日圧</string><key>shortcut</key><string>にち</string></dict>	<!-- 日圧: Sudachi core に実在するエントリ(固有名詞・一般、読み=ニチ、wc10000。 -->
-	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>	<!-- いい はひらがなのみ(良い は よい の読みでのみ出す。Sudachi表記ゆれ収穫で いい→良い が最安になるのを断つ) -->
-	<dict><key>phrase</key><string>立つ</string><key>shortcut</key><string>だつ</string></dict>	<!-- だつ→立つ系はSudachiが 目立つ/旅立つ 等の連濁内部読みを単独収穫したもの。活用基底に化けて だった→立った を作るため抑制(単独 だつ の正解は 脱/奪) -->
-	<dict><key>phrase</key><string>佇つ</string><key>shortcut</key><string>だつ</string></dict>
-	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>
-	<dict><key>phrase</key><string>建つ</string><key>shortcut</key><string>だつ</string></dict>
-	<dict><key>phrase</key><string>起つ</string><key>shortcut</key><string>だつ</string></dict>
-	<dict><key>phrase</key><string>ぜい金</string><key>shortcut</key><string>ぜいきん</string></dict>	<!-- ぜい金: 税金(ぜいきん)のかな漢字混じり表記ゆれエントリ(wc8269、rank1収穫遺物)。連文節の同スパン変種に浮上する -->
-	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>	<!-- 霊(よん): Sudachi 収穫の異体字扱い(よん→{よん,ヨン,四,霊})。霊ん+でない 等の -->
-	<dict><key>phrase</key><string>方面</string><key>shortcut</key><string>かたも</string></dict>	<!-- 方面(かたも): 鳥取県湯梨浜町の地名のレア読み収穫(wc11000)。表層unigram(ほうめん用途 -->
-	<dict><key>phrase</key><string>永穂</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 永穂(なんごう): 沖縄読谷村の地名 永穂 の読みは なんご(なんご 側は収録済み)。 -->
+	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>
+	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>
 	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
 	<dict><key>phrase</key><string>進拝</string><key>shortcut</key><string>しんぱい</string></dict>
-	<dict><key>phrase</key><string>堺町</string><key>shortcut</key><string>さかえまち</string></dict>	<!-- レア読み -->
-	<dict><key>phrase</key><string>栄恵町</string><key>shortcut</key><string>さかえまち</string></dict>
 
 	<!-- ■ カタカナ収穫・カタカナ強調(かな/漢字の正書を勝たせる) -->
 	<dict><key>phrase</key><string>カウカ</string><key>shortcut</key><string>かうか</string></dict>	<!-- カウカ(かうか、カタカナ固有名の収穫 wc4576=異常低): 買う+か の合成に1ノードで勝ち しんぴんかうか→新品カウカ を作る -->
 	<dict><key>phrase</key><string>アルノ</string><key>shortcut</key><string>あるの</string></dict>	<!-- アルノ(あるの、伊アルノ川等のカタカナ固有名の収穫 wc4576=異常低): ある+の の合成に1ノードで勝ち あるのになあ→アルノになあ を作る -->
 	<dict><key>phrase</key><string>ニー</string><key>shortcut</key><string>にー</string></dict>	<!-- ニー(にー のカタカナ)。knee等のLM実在でクラス保護されるため個別suppr(なのニー/行ったのニー) -->
 	<dict><key>phrase</key><string>のニー</string><key>shortcut</key><string>のにー</string></dict>
-	<dict><key>phrase</key><string>謂</string><key>shortcut</key><string>いい</string></dict>	<!-- マンエン(蔓延/万円系のカタカナ収穫、rank1)。かな/漢字を優先 セン(せん のカタカナ収穫、dict rank0)。線/千/先 等の実語を優先 コレ/イイ(これ/いい のカタカナ書き)。かなを優先(イイね は既存抑制) 謂(いい)は単独では使わない読み(謂う/謂れ のみ)。これで謂 等の合成の温床 -->
-	<dict><key>phrase</key><string>ダッケ</string><key>shortcut</key><string>だっけ</string></dict>	<!-- クスリ(薬のカタカナ書き、wc3228=薬と同値)。かな/漢字を優先 ダ(コピュラだ のカタカナ収穫、rank0/wc4406=かな だ5733より安)。ダよ/ダけど 一族の根本 ダッケ(だっけ のカタカナ収穫、だっけ の辞書エントリはこれのみ)。だっけ はLM未収録かつ漢字代替ゼロで、クラス抑制の「代替が存在する限り強調」判定が成立せず素通りする。かな だっけ を勝たせる(ダッケな→だっけな) -->
+	<!-- ※ クスリ(薬のカタカナ書き、wc3228=薬と同値)。かな/漢字を優先 -->
+	<!-- ※ ダ(コピュラだ のカタカナ収穫、rank0/wc4406=かな だ5733より安)。ダよ/ダけど 一族の根本 -->
+	<dict><key>phrase</key><string>ダッケ</string><key>shortcut</key><string>だっけ</string></dict>	<!-- ダッケ(だっけ のカタカナ収穫、だっけ の辞書エントリはこれのみ)。だっけ はLM未収録かつ漢字代替ゼロで、クラス抑制の「代替が存在する限り強調」判定が成立せず素通りする。かな だっけ を勝たせる(ダッケな→だっけな) -->
+	<!-- ※ なった(なる過去、かな正書)のカタカナ収穫。なった の辞書エントリはこれのみで、ナッタのは 等の先頭化を作る -->
+	<!-- ※ ばかり(副助詞、かな正書)のカタカナ強調。計り/許り/秤り 等の漢字は残す。交ぜ書き ばかリ は誤エントリ群へ -->
 	<dict><key>phrase</key><string>ヱル</string><key>shortcut</key><string>える</string></dict>	<!-- 旧仮名カタカナ ヱル(える)。godan-ru扱いの活用派生で はらえって→原ヱって 等のゴミを作る -->
 	<dict><key>phrase</key><string>さァ</string><key>shortcut</key><string>さあ</string></dict>	<!-- さあ のカタカナ混じり表記(古風で今は使わない) -->
 	<dict><key>phrase</key><string>さアっ</string><key>shortcut</key><string>さあ</string></dict>
 	<dict><key>phrase</key><string>ねェ</string><key>shortcut</key><string>ねえ</string></dict>	<!-- 終助詞 ねえ のカタカナ混じり表記(ねェ/ネエ)と異常エントリ 失え(失に ね読みは無い=Sudachiノイズ) -->
-	<dict><key>phrase</key><string>失え</string><key>shortcut</key><string>ねえ</string></dict>
-	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんと</string></dict>	<!-- 俗語 すげー のカタカナ表記 スゲー(Sudachi word_cost 4280 で かな 7611 より安く先頭化)。あまり使わないため抑制 口語 ほんと に Sudachi が 本当(本来 ほんとう の表記)を割り当てている。ほんとう→本当、ほんと→ほんと に分けたいので ほんと 読みの 本当 を抑制 -->
 	<dict><key>phrase</key><string>ツて</string><key>shortcut</key><string>って</string></dict>	<!-- 引用/終助詞 って のカタカナ・カタカナ混じり表記(ッテ/ッて/ツて/っテ)。かな って が正書 -->
-	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>	<!-- 石ユ: 石工(いしく)のカタカナ混じり表記ゆれエントリ(wc10000、うツかり族)。お+石ユ 敬語合成で どちらもお石ユ 等を作る -->
-	<dict><key>phrase</key><string>タイワン</string><key>shortcut</key><string>たいわん</string></dict>	<!-- ギンコウ: 銀行 のカタカナ表記ゆれ収穫(wc が 銀行 と同値3295=同一語彙の別表記)。ナカノ/アシタ 族 タイワン: 台湾 のカタカナ表記ゆれ収穫(たいわん rank1)。カタカナ需要は無く候補を汚すため -->
-	<dict><key>phrase</key><string>入ル</string><key>shortcut</key><string>いる</string></dict>	<!-- イル/入ル(いる): カタカナ表記(イル=SudachiDict のカタカナ源 wc5000/入ル=京都の地名 -->
-	<dict><key>phrase</key><string>晨</string><key>shortcut</key><string>あした</string></dict>	<!-- イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) あした の古語読み・カタカナ収穫のうち不要分: 晨(古語)、アシタ(カタカナ収穫 wc5527)。 -->
-	<dict><key>phrase</key><string>現ってます</string><key>shortcut</key><string>うつってます</string></dict>	<!-- ニー(にー): の+にー(のにー=接続助詞のに+長音)の にー を カタカナ化した誤り(行ったのにー→行ったのニー)。にー は native でカタカナにしない -->
-	<dict><key>phrase</key><string>現ってる</string><key>shortcut</key><string>うつってる</string></dict>
-	<dict><key>phrase</key><string>現ってた</string><key>shortcut</key><string>うつってた</string></dict>
-	<dict><key>phrase</key><string>現った</string><key>shortcut</key><string>うつった</string></dict>
-	<dict><key>phrase</key><string>出は</string><key>shortcut</key><string>では</string></dict>	<!-- では の誤生成: で(格助詞/接続=かな)の漢字/カタカナ表層(デ/出/手)+は の合成。では はかなが正書。手 は連濁でしか で と読まない -->
-	<dict><key>phrase</key><string>手は</string><key>shortcut</key><string>では</string></dict>
-	<dict><key>phrase</key><string>打けど</string><key>shortcut</key><string>だけど</string></dict>	<!-- だけど の誤生成: だ(コピュラ=常にかな)の漢字/カタカナ表層(ダ/打/駄/堕/大/娜/惰/田/舵/拿)+けど の合成。だけど はかなが正書 -->
-	<dict><key>phrase</key><string>駄けど</string><key>shortcut</key><string>だけど</string></dict>
-	<dict><key>phrase</key><string>堕けど</string><key>shortcut</key><string>だけど</string></dict>
-	<dict><key>phrase</key><string>大けど</string><key>shortcut</key><string>だけど</string></dict>
-	<dict><key>phrase</key><string>娜けど</string><key>shortcut</key><string>だけど</string></dict>
-	<dict><key>phrase</key><string>惰けど</string><key>shortcut</key><string>だけど</string></dict>
-	<dict><key>phrase</key><string>田けど</string><key>shortcut</key><string>だけど</string></dict>
-	<dict><key>phrase</key><string>舵けど</string><key>shortcut</key><string>だけど</string></dict>
-	<dict><key>phrase</key><string>拿けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>うツかり</string><key>shortcut</key><string>うっかり</string></dict>
+	<!-- ※ ギンコウ: 銀行 のカタカナ表記ゆれ収穫(wc が 銀行 と同値3295=同一語彙の別表記)。ナカノ/アシタ 族 -->
+	<dict><key>phrase</key><string>タイワン</string><key>shortcut</key><string>たいわん</string></dict>	<!-- タイワン: 台湾 のカタカナ表記ゆれ収穫(たいわん rank1)。カタカナ需要は無く候補を汚すため 抑制(ユーザ指定 2529)。🇹🇼/台湾/台灣 は温存 -->
+	<!-- ※ イイね: 今どき流行らない書き方(イイ=カタカナ強調)。いい+ね 合成由来なので読み いいね の直接ペアで抑制(イイ感じ 等、他の読みでの イイ は温存)。※踊り字 いゝね は旧仮名・踊り字トグルのフィルタで制御(個別抑制は撤去) -->
 
 	<!-- ■ 交ぜ書き・表記ゆれの収穫(石ユ/ぜい金 等、意味のない混ぜ表記) -->
-	<dict><key>phrase</key><string>頭</string><key>shortcut</key><string>かしら</string></dict>	<!-- なった(なる過去、かな正書)のカタカナ収穫。なった の辞書エントリはこれのみで、ナッタのは 等の先頭化を作る ばかり(副助詞、かな正書)のカタカナ強調。計り/許り/秤り 等の漢字は残す。交ぜ書き ばかリ は誤エントリ群へ かしら(疑問終助詞、かな正書)への 頭(組の頭=レア用法)/カタカナ化。占い師頭ないが 等の誤区切りの温床 -->
-	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>	<!-- カタカナ強調のウマイ/ウマい(wc5415=旨いと同値で激安)。かな うまい を勝たせる カタカナ強調のカワイイ/交ぜ書きカワイい(Sudachi収穫)。かわいい のかな正書を勝たせる 来日(くるひ)は文語のレア読み収穫。現代では らいにち のみ。くるひ は 来る日 が正 -->
-	<dict><key>phrase</key><string>細きん</string><key>shortcut</key><string>さいきん</string></dict>	<!-- サンガ: さんが rank0(京都サンガ/僧伽)。敬称「〜さんが」(X さん+が)が圧倒的に頻出で カイソウ: 海藻 のカタカナ表記ゆれ収穫(かいそう rank6)。単独カタカナ需要は無く候補を汚すため抑制 細きん(さいきん): 細菌 の交ぜ書き収穫(菌 だけかな)。意味のない表記ゆれなので抑制 -->
-	<dict><key>phrase</key><string>河う</string><key>shortcut</key><string>かわう</string></dict>	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が -->
-	<dict><key>phrase</key><string>暗い</string><key>shortcut</key><string>ぐらい</string></dict>	<!-- ばかリ(ひらがな+カタカナ混在): 正書として存在しない交ぜ書きの収穫ミス ぐらい(連濁した副助詞・かな正書): 暗い/昏い/冥い等はくらい読みのい形容詞で「ぐらい」とは読まない。読みぐらいでのみ抑制(くらい→暗い は温存) -->
-	<dict><key>phrase</key><string>昏い</string><key>shortcut</key><string>ぐらい</string></dict>
-	<dict><key>phrase</key><string>冥い</string><key>shortcut</key><string>ぐらい</string></dict>
-	<dict><key>phrase</key><string>瞑い</string><key>shortcut</key><string>ぐらい</string></dict>
-	<dict><key>phrase</key><string>黯い</string><key>shortcut</key><string>ぐらい</string></dict>
-	<dict><key>phrase</key><string>闇い</string><key>shortcut</key><string>ぐらい</string></dict>
-	<dict><key>phrase</key><string>蒙い</string><key>shortcut</key><string>ぐらい</string></dict>
-	<dict><key>phrase</key><string>溟い</string><key>shortcut</key><string>ぐらい</string></dict>
+	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
+	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>
+	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
+	<dict><key>phrase</key><string>ぜい金</string><key>shortcut</key><string>ぜいきん</string></dict>
+	<!-- ※ サンガ: さんが rank0(京都サンガ/僧伽)。敬称「〜さんが」(X さん+が)が圧倒的に頻出で 根路銘さんが→根路銘サンガ 等の分断を作る。exactReadingOnlySeed で さんが 完全一致時のみ末尾へ -->
+	<!-- ※ カイソウ: 海藻 のカタカナ表記ゆれ収穫(かいそう rank6)。単独カタカナ需要は無く候補を汚すため抑制 -->
+	<dict><key>phrase</key><string>細きん</string><key>shortcut</key><string>さいきん</string></dict>	<!-- 細きん(さいきん): 細菌 の交ぜ書き収穫(菌 だけかな)。意味のない表記ゆれなので抑制 -->
+	<dict><key>phrase</key><string>河う</string><key>shortcut</key><string>かわう</string></dict>	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が 無いため五段う動詞と推論され、河って/河ってきて を生成して 変わってきてる を逆転していた。 交ぜ書き判定はかな部分1文字を対象外(漢字+助詞と区別不能)なので構造的にすり抜ける。 クラス推論側は 2465 で塞いだが、交ぜ書きエントリ自体も残す価値が無いので抑制する -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
-	<dict><key>phrase</key><string>著る</string><key>shortcut</key><string>きる</string></dict>	<!-- 現代的に流行っていない言い方 著る/衣る(きる): 着る の古語・異表記(著物)。派生(著て/衣てしまいました 等)にも波及するため基底で抑制 -->
+	<dict><key>phrase</key><string>著る</string><key>shortcut</key><string>きる</string></dict>	<!-- 著る/衣る(きる): 着る の古語・異表記(著物)。派生(著て/衣てしまいました 等)にも波及するため基底で抑制 -->
 	<dict><key>phrase</key><string>衣る</string><key>shortcut</key><string>きる</string></dict>
 	<dict><key>phrase</key><string>厭きの</string><key>shortcut</key><string>あきの</string></dict>	<!-- 厭きの(あきの): 厭きる は現代では 飽きる が主。飽きの(飽きのこない)は残す -->
 	<dict><key>phrase</key><string>來れる</string><key>shortcut</key><string>これる</string></dict>	<!-- 來れる(これる): 旧字体の ら抜き可能形(wc9641=来れる より安く基底先頭)。活用派生(來れやすい/來れ 等)の温床。來 の人名(來島/來田 等)は別読みで無傷 -->
+	<dict><key>phrase</key><string>謂</string><key>shortcut</key><string>いい</string></dict>
+	<!-- ※ カタカナ強調のウマイ/ウマい(wc5415=旨いと同値で激安)。かな うまい を勝たせる -->
+	<!-- ※ カタカナ強調のカワイイ/交ぜ書きカワイい(Sudachi収穫)。かわいい のかな正書を勝たせる -->
 	<dict><key>phrase</key><string>当</string><key>shortcut</key><string>あたり</string></dict>	<!-- 単独の当(あたり)表記は現代では使わない(当たり は残す)。来週当 型の単漢字合成の是正 -->
 	<dict><key>phrase</key><string>當</string><key>shortcut</key><string>あたり</string></dict>	<!-- ryukyu側と意図的併存 -->
 	<dict><key>phrase</key><string>中</string><key>shortcut</key><string>あたり</string></dict>	<!-- ryukyu側と意図的併存 -->
@@ -205,27 +198,29 @@
 	<dict><key>phrase</key><string>姦る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>吊れる</string><key>shortcut</key><string>つれる</string></dict>	<!-- 吊れる/攣れる は極めて稀な活用(吊る/攣る が普通)。つれてくる 等で 連れて を邪魔する -->
 	<dict><key>phrase</key><string>攣れる</string><key>shortcut</key><string>つれる</string></dict>
-	<dict><key>phrase</key><string>熟寝</string><key>shortcut</key><string>うまい</string></dict>	<!-- ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 読み「うまい」のレア語(熟寝/熟睡=よく眠る意の古語、右舞=雅楽、馬井/馬居=姓)。 -->
+	<!-- ※ ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 -->
+	<dict><key>phrase</key><string>熟寝</string><key>shortcut</key><string>うまい</string></dict>	<!-- 読み「うまい」のレア語(熟寝/熟睡=よく眠る意の古語、右舞=雅楽、馬井/馬居=姓)。 合成に混ざって 熟睡ものがたくさん のようなジャンクを作る。旨い/美味い/上手い/巧い は温存 -->
 	<dict><key>phrase</key><string>熟睡</string><key>shortcut</key><string>うまい</string></dict>
 	<dict><key>phrase</key><string>右舞</string><key>shortcut</key><string>うまい</string></dict>
-	<dict><key>phrase</key><string>坐す</string><key>shortcut</key><string>います</string></dict>	<!-- 坐す/在す(います): 古語の敬語動詞(御座います の語源)で読みは正当だが、現代入力では -->
-	<dict><key>phrase</key><string>在す</string><key>shortcut</key><string>います</string></dict>
-	<dict><key>phrase</key><string>ゐる</string><key>shortcut</key><string>いる</string></dict>	<!-- ゐる(いる): 歴史的仮名遣いの居る。dict rank4 だが現代入力では雑音で、いるので→ -->
+	<dict><key>phrase</key><string>ゐる</string><key>shortcut</key><string>いる</string></dict>	<!-- ゐる(いる): 歴史的仮名遣いの居る。dict rank4 だが現代入力では雑音で、いるので→ ゐるので 等 活用派生でも先頭化する。脱活用伝播で ゐる系の派生も抑制される -->
 	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南鄕(なんごう): 南郷 の旧字体異体字収穫。見た目が同一で重複に見えるだけなので抑制 -->
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>	<!-- 酤う/支う/交う: かう の古語・レア表記(酤う=酒を売る古語、支う=つっかえ棒の方言、交う=飛び交う等の複合専用)。買って/飼って の派生に混じり、勝って(かつ由来)を語幹上限の外へ押し出す(かってほしい→勝ってほしい欠落) -->
 	<dict><key>phrase</key><string>支う</string><key>shortcut</key><string>かう</string></dict>
 	<dict><key>phrase</key><string>交う</string><key>shortcut</key><string>かう</string></dict>
-	<dict><key>phrase</key><string>忘る</string><key>shortcut</key><string>わすれる</string></dict>	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、 -->
+	<!-- ※ リョウガ/リョウ: りょうが/りょう のカタカナ人名収穫(レア)。量が/凌駕 等の正規候補の前に並ぶ -->
+	<!-- ※ イく/イク: いく のカタカナ交ぜ書き・カタカナ表記(デキる/イタめる/ヤる 族)。godan-ku の活用クラス付きで収穫されており、イかなくて/イきます 等のジャンク派生を正規活用として作る -->
+	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- 會社: 会社 の旧字体(かぶしきかいしゃ→株式會社 等の合成に混入)。現代表記は 会社 -->
+	<dict><key>phrase</key><string>晨</string><key>shortcut</key><string>あした</string></dict>
+	<dict><key>phrase</key><string>忘る</string><key>shortcut</key><string>わすれる</string></dict>	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、 語幹「忘」から 忘て/忘てる/忘た のような送り仮名を欠いた活用形を派生させていた (とりわすれてる→取り忘てる)。現代語は 忘れる(一段)のみなので基底ごと抑制する -->
 	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
-	<dict><key>phrase</key><string>現る</string><key>shortcut</key><string>うつる</string></dict>	<!-- 現る(うつる): うつる とは読まない。現れる=あらわれる、古語 現る=あらわる。Sudachiの誤った読み割り当て。基底+て形を登録(現ってます/現ってる/現ってた を包含) -->
-	<dict><key>phrase</key><string>現って</string><key>shortcut</key><string>うつって</string></dict>
 
 	<!-- ■ 単漢字・断片が合成を乗っ取るもの(1ノードの安さで正しい分割に勝つ) -->
+	<dict><key>phrase</key><string>泰輝</string><key>shortcut</key><string>たいて</string></dict>
+	<dict><key>phrase</key><string>日圧</string><key>shortcut</key><string>にち</string></dict>	<!-- 日圧: Sudachi core に実在するエントリ(固有名詞・一般、読み=ニチ、wc10000。 日本圧着端子製造の通称の収穫とみられる)。誤合成ではなく辞書由来だが、単独読み にち で立つと にちめ→日圧め/日圧目 等の合成の温床になるため抑制(2430) -->
 	<dict><key>phrase</key><string>本出</string><key>shortcut</key><string>ほんで</string></dict>	<!-- 本出/品田(ほんで、固有名の収穫 wc10000/11000): 本+でした の正しい分割に勝ち いいほんでした→いい本出した を作る。かな ほんで(関西弁)は無傷 -->
 	<dict><key>phrase</key><string>品田</string><key>shortcut</key><string>ほんで</string></dict>
 	<dict><key>phrase</key><string>打ち荷</string><key>shortcut</key><string>うちに</string></dict>	<!-- 打ち荷/打荷(うちに、海事のレア語 wc7864): 家に/内に の合成より先頭に来て迷惑 -->
 	<dict><key>phrase</key><string>打荷</string><key>shortcut</key><string>うちに</string></dict>
-	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>
 	<dict><key>phrase</key><string>喪々</string><key>shortcut</key><string>もも</string></dict>
 	<dict><key>phrase</key><string>望茂</string><key>shortcut</key><string>もも</string></dict>
 	<dict><key>phrase</key><string>望萌</string><key>shortcut</key><string>もも</string></dict>
@@ -252,7 +247,6 @@
 	<dict><key>phrase</key><string>一一</string><key>shortcut</key><string>いちいち</string></dict>
 	<dict><key>phrase</key><string>市市</string><key>shortcut</key><string>いちいち</string></dict>
 	<dict><key>phrase</key><string>綯う</string><key>shortcut</key><string>なう</string></dict>
-	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>有乃</string><key>shortcut</key><string>あるの</string></dict>
 	<dict><key>phrase</key><string>哨吶</string><key>shortcut</key><string>そうな</string></dict>
 	<dict><key>phrase</key><string>奏奈</string><key>shortcut</key><string>そうな</string></dict>
@@ -275,9 +269,28 @@
 	<dict><key>phrase</key><string>菜乃</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>菜野</string><key>shortcut</key><string>なの</string></dict>
 	<dict><key>phrase</key><string>哉</string><key>shortcut</key><string>かな</string></dict>
+	<!-- ※ マンエン(蔓延/万円系のカタカナ収穫、rank1)。かな/漢字を優先 -->
+	<!-- ※ セン(せん のカタカナ収穫、dict rank0)。線/千/先 等の実語を優先 -->
+	<!-- ※ コレ/イイ(これ/いい のカタカナ書き)。かなを優先(イイね は既存抑制) -->
+	<dict><key>phrase</key><string>頭</string><key>shortcut</key><string>かしら</string></dict>
 	<dict><key>phrase</key><string>三</string><key>shortcut</key><string>み</string></dict>	<!-- 単独読み み で 三 は出さない(みっか等の連濁断片由来)。LM unigram 三(数字頻出)が安く、み+れる が 見れる を僅差で破って 温度三れるかな 等の断片チェーンを作る -->
+	<!-- ※ 俗語 すげー のカタカナ表記 スゲー(Sudachi word_cost 4280 で かな 7611 より安く先頭化)。あまり使わないため抑制 -->
 	<dict><key>phrase</key><string>奴</string><key>shortcut</key><string>な</string></dict>	<!-- な 読みの 奴(奴国等の断片読み)。終助詞 な を あるといい奴 等に化けさせる。奴 は やつ で打てるため全面抑制 -->
-	<dict><key>phrase</key><string>蚕糸</string><key>shortcut</key><string>さんし</string></dict>	<!-- 蚕糸(さんし): 絹糸の意の実語だが unigram7216 を持ち、ねろめさんしか→根路銘蚕糸か の -->
+	<dict><key>phrase</key><string>者</string><key>shortcut</key><string>は</string></dict>
+	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>	<!-- 霊(よん): Sudachi 収穫の異体字扱い(よん→{よん,ヨン,四,霊})。霊ん+でない 等の ゴミ合成の種になる。よん で 霊 を出したい場面は無いので抑制 -->
+	<dict><key>phrase</key><string>出は</string><key>shortcut</key><string>では</string></dict>	<!-- では の誤生成: で(格助詞/接続=かな)の漢字/カタカナ表層(デ/出/手)+は の合成。では はかなが正書。手 は連濁でしか で と読まない -->
+	<dict><key>phrase</key><string>手は</string><key>shortcut</key><string>では</string></dict>
+	<dict><key>phrase</key><string>打けど</string><key>shortcut</key><string>だけど</string></dict>	<!-- だけど の誤生成: だ(コピュラ=常にかな)の漢字/カタカナ表層(ダ/打/駄/堕/大/娜/惰/田/舵/拿)+けど の合成。だけど はかなが正書 -->
+	<dict><key>phrase</key><string>駄けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>堕けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>大けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>娜けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>惰けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>田けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>舵けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>拿けど</string><key>shortcut</key><string>だけど</string></dict>
+	<dict><key>phrase</key><string>堺町</string><key>shortcut</key><string>さかえまち</string></dict>
+	<dict><key>phrase</key><string>栄恵町</string><key>shortcut</key><string>さかえまち</string></dict>
 
 	<!-- ■ 完全一致で再供給する二段構え(抑制しつつ exactReadingOnlySeed で末尾に出す) -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
@@ -286,6 +299,11 @@
 	<dict><key>phrase</key><string>カジャ</string><key>shortcut</key><string>かじゃ</string></dict>
 	<dict><key>phrase</key><string>御</string><key>shortcut</key><string>おん</string></dict>	<!-- 御(接頭辞)/音(単独名詞でない読み)。を→御(5399)等のbigramで えあこんをおん の変種枠を占有し ON/On/on を圏外に押し出す。完全一致時のみ末尾再供給(おんしゃ→御社 等の複合読みは無傷) -->
 	<dict><key>phrase</key><string>音</string><key>shortcut</key><string>おん</string></dict>
-	<dict><key>phrase</key><string>甲虫</string><key>shortcut</key><string>かぶとむし</string></dict>	<!-- 甲虫(かぶとむし): 主読みは こうちゅう。かぶとむし では exactReadingOnlySeed の -->
+	<dict><key>phrase</key><string>坐す</string><key>shortcut</key><string>います</string></dict>	<!-- 坐す/在す(います): 古語の敬語動詞(御座います の語源)で読みは正当だが、現代入力では 居ます/います の前に出る雑音。exactReadingOnlySeed で完全一致時のみ末尾供給に移す -->
+	<dict><key>phrase</key><string>在す</string><key>shortcut</key><string>います</string></dict>
+	<dict><key>phrase</key><string>入ル</string><key>shortcut</key><string>いる</string></dict>	<!-- イル/入ル(いる): カタカナ表記(イル=SudachiDict のカタカナ源 wc5000/入ル=京都の地名 表記「東入ル」等 wc9679)。読みは正当だが いるので→イルので/入ルので と活用派生で 先頭化する雑音。exactReadingOnlySeed で いる 完全一致時のみ末尾供給し、合成・連文節から排除 -->
+	<dict><key>phrase</key><string>蚕糸</string><key>shortcut</key><string>さんし</string></dict>	<!-- 蚕糸(さんし): 絹糸の意の実語だが unigram7216 を持ち、ねろめさんしか→根路銘蚕糸か の ように 敬称「さん」+副助詞「しか」の分割を preempt する(レア名は →さん bigram が無く 蚕糸+か に負ける)。exactReadingOnlySeed で さんし 完全一致時のみ末尾供給し合成・連文節から排除。 他の さんし 名詞(参仕/散仕/三思 等)は unigram を持たずOOVで さん+しか に負けるため対象外 -->
+	<dict><key>phrase</key><string>甲虫</string><key>shortcut</key><string>かぶとむし</string></dict>	<!-- 甲虫(かぶとむし): 主読みは こうちゅう。かぶとむし では exactReadingOnlySeed の 完全一致末尾供給へ移す(かぶとむしも 等の合成で先頭を取るため) -->
+	<dict><key>phrase</key><string>方面</string><key>shortcut</key><string>かたも</string></dict>	<!-- 方面(かたも): 鳥取県湯梨浜町の地名のレア読み収穫(wc11000)。表層unigram(ほうめん用途 4792)にタダ乗りして連文節の区切りを奪う(そんなつくりかたも→そんな作り方面)。 exactReadingOnlySeed で かたも 完全一致時のみ末尾供給へ -->
 </array>
 </plist>
