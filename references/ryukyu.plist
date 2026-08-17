@@ -197,8 +197,8 @@
 	<dict><key>phrase</key><string>安谷屋</string><key>shortcut</key><string>あだにや</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>安谷屋グスク</string><key>shortcut</key><string>あだにやぐすく</string></dict>
 	<dict><key>phrase</key><string>安田浜</string><key>shortcut</key><string>あだばま</string></dict>
-	<dict><key>phrase</key><string>當</string><key>shortcut</key><string>あたり</string></dict>
-	<dict><key>phrase</key><string>中</string><key>shortcut</key><string>あたり</string></dict>
+	<dict><key>phrase</key><string>當</string><key>shortcut</key><string>あたり</string></dict>	<!-- suppr側と意図的併存(抑制が優先、2026-08-17確認) -->
+	<dict><key>phrase</key><string>中</string><key>shortcut</key><string>あたり</string></dict>	<!-- suppr側と意図的併存(抑制が優先、2026-08-17確認) -->
 	<dict><key>phrase</key><string>あだん</string><key>shortcut</key><string>あだん</string></dict>
 	<dict><key>phrase</key><string>あだん児童公園</string><key>shortcut</key><string>あだんじどうこうえん</string></dict>
 	<dict><key>phrase</key><string>安谷屋</string><key>shortcut</key><string>あだんな</string></dict>	<!-- Sudachiにもある -->
@@ -1284,7 +1284,7 @@
 	<dict><key>phrase</key><string>押</string><key>shortcut</key><string>おさえ</string></dict>
 	<dict><key>phrase</key><string>おさむ工房</string><key>shortcut</key><string>おさむこうぼう</string></dict>
 	<dict><key>phrase</key><string>押川</string><key>shortcut</key><string>おしかわ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>
+	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>	<!-- suppr側と意図的併存(抑制が優先、2026-08-17確認) -->
 	<dict><key>phrase</key><string>御茶屋御殿</string><key>shortcut</key><string>おちゃやおどん</string></dict>
 	<dict><key>phrase</key><string>おつかれさん</string><key>shortcut</key><string>おつかれさん</string></dict>
 	<dict><key>phrase</key><string>小渡</string><key>shortcut</key><string>おど</string></dict>
