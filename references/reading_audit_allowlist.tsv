@@ -99,3 +99,68 @@ vin.plist	村名ワイン	そんめいわいん	vin、ユーザ確定(2026-08-13
 vin.plist	Stelvin	すてるゔぃん	vin、ユーザ確定(2026-08-13)。STELVIN=すてるゔぁん(仏語系開発元の読み)との2読み併存は意図的。買収先の国の読みでステルヴィンも通用するため、同綴り異読みとしてフラグしない
 vin.plist	Weinviertel	ゔぁいんふぃあてる	vin、教本準拠(2026-08-13)。ゔぁいんふぃーあてる の長音を外す。独語W=[v]→ゔぁ、v=[f]→ふぃ は規則どおり
 vin.plist	Vorbourg	ふぉるぶーる	vin、教本準拠(2026-08-13)。アルザスの特級畑だが独語系の読みフォルブールを採用。仏語読みの ゔぉるぶーる へ直さない
+vin.plist	置賜	おきたま	いずれもvin、2026-08-18の対Sudachi読み差分監査でOK確定。山形の地方名
+vin.plist	壱岐島	いきのしま	長崎の島名の通用読み
+vin.plist	畑名	はたけめい	ワインの単一畑名の慣用読み
+vin.plist	浸漬	しんせき	醸造・食品分野の慣用読み。しんし ではない
+vin.plist	滓	おり	酒の澱=おり。滓下げ等
+vin.plist	新政	あらまさ	秋田の酒蔵名
+vin.plist	水資源	すいしげん	一般語の正読
+vin.plist	中生	なかて	稲の熟期区分
+vin.plist	側板	がわいた	木桶・樽の側板
+vin.plist	掛米	かけまい	酒造用語の標準読み
+vin.plist	渡船	わたりぶね	酒米品種名
+vin.plist	玉栄	たまさかえ	滋賀の酒米品種
+vin.plist	砕米	さいまい	米穀・精米用語
+vin.plist	神蔵	かぐら	京都の日本酒銘柄
+vin.plist	木香	きが	木香様臭など醸造用語
+vin.plist	白酒	ぱいちゅう	中国蒸留酒の慣用表記
+vin.plist	アモンティリャード	あもんてぃりゃーど	Amontilladoの表記どおり
+vin.plist	サン・ヴェラン	さんゔぇらん	辞書のヴ表記方針に一致
+vin.plist	加塩	かえん	無塩⇔加塩の食品用語
+vin.plist	大平原	だいへいげん	一般語の正読
+vin.plist	小樽	こだる	樽の大きさを指す語。地名おたる ではない
+vin.plist	年較差	ねんこうさ	ワイン教本の慣用読み
+vin.plist	日本初	にほんはつ	一般的な読み
+vin.plist	日較差	にっこうさ	ワイン教本の慣用読み
+vin.plist	猪肉	いのししにく	ジビエ文脈の通用読み
+vin.plist	生葉	なまは	茶業界の標準用語
+vin.plist	碾茶	てんちゃ	抹茶原料茶の正読
+vin.plist	縁取	ふちどり	色調の縁取り
+vin.plist	船積	ふなづみ	貿易実務の標準読み
+vin.plist	良年	りょうねん	良いヴィンテージ
+vin.plist	花香	かこう	酒・茶の香味用語
+vin.plist	蔵出	くらだし	蔵出しの正読
+vin.plist	薪火	まきび	薪火焼きなど料理用語
+vin.plist	身質	みしつ	魚の身の質
+vin.plist	鳥居平	とりいびら	勝沼の著名畑名
+vin.plist	service	せるゔぃす	仏語serviceの読み
+sacoche.plist	梅香	めいしゃん	いずれもsacoche、2026-08-18の対Sudachi読み差分監査でOK確定。中華料理店名の現地音写
+sacoche.plist	新疆	しんちゃん	Xinjiangの中国語音写
+sacoche.plist	白湯	ぱいたん	中華スープのパイタン
+sacoche.plist	担仔麺	たーみー	台湾語ta-a-miの音写
+sacoche.plist	香菜	しゃんつぁい	xiangcaiの音写
+sacoche.plist	成吉思汗	じんぎすかん	料理名の日本慣用
+sacoche.plist	饅頭	まんとう	mantouの音写
+sacoche.plist	餃子	ぎょうざ	仮名遣い正書
+sacoche.plist	餃子	ちゃおず	jiaoziの音写
+sacoche.plist	刀削麺	だおしゃおみえん	daoxiaomianの音写
+sacoche.plist	杏仁豆腐	きょうにんどーふ	きょうにんどうふ との長音表記ゆれを併記
+sacoche.plist	杏仁豆腐	きょうにんどうふ	杏仁の漢方読み慣用
+sacoche.plist	回鍋肉	ほいこーろー	ホイコーロー慣用
+sacoche.plist	青椒肉絲	ちんじゃおろーすー	長音表記の慣用
+sacoche.plist	焼売	しゅうまい	仮名遣い正書
+sacoche.plist	八宝菜	ぱーぱおつぁい	babaocaiの音写
+sacoche.plist	小籠包	しゃおろんばお	xiaolongbaoの音写
+sacoche.plist	小籠包	しょうろんぽー	日本慣用の長音表記
+sacoche.plist	parisien	ぱりじゃん	仏語パリジャン
+sacoche.plist	epi	えぴ	仏語epi(パン)
+sacoche.plist	champignon	しゃんぴにおん	シャンピニオン併用
+sacoche.plist	その後	そのご	標準的な音読み
+sacoche.plist	母方	ははがた	慣用の連濁読み
+sacoche.plist	父方	ちちがた	慣用の連濁読み
+sacoche.plist	嶋	やまどりのしま	単漢字の説明読み
+sacoche.plist	μ	まいくろ	SI接頭辞マイクロ
+it.plist	au	えいゆー	it、2026-08-18の対Sudachi読み差分監査でOK確定。えーゆー を併記済み
+misc.plist	生揚げ	きあげ	いずれもmisc、2026-08-18の対Sudachi読み差分監査でOK確定。醤油の生揚げ(きあげ)
+misc.plist	日後	にちご	三日後 等の後半読み
