@@ -13,6 +13,9 @@
 	<dict><key>phrase</key><string>入口</string><key>shortcut</key><string>いりぐち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エネルギー</string><key>shortcut</key><string>えねるぎー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>謳歌</string><key>shortcut</key><string>おうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>オリンピック</string><key>shortcut</key><string>おりんぴっく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>解禁</string><key>shortcut</key><string>かいきん</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
+	<dict><key>phrase</key><string>解禁日</string><key>shortcut</key><string>かいきんび</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>化学式</string><key>shortcut</key><string>かがくしき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>化学者</string><key>shortcut</key><string>かがくしゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>科学者</string><key>shortcut</key><string>かがくしゃ</string></dict>	<!-- Sudachiにもある -->
@@ -49,6 +52,7 @@
 	<dict><key>phrase</key><string>協力</string><key>shortcut</key><string>きょうりょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キレ</string><key>shortcut</key><string>きれ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>儀式</string><key>shortcut</key><string>ぎしき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ギター</string><key>shortcut</key><string>ぎたー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>義務付け</string><key>shortcut</key><string>ぎむづけ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>逆転</string><key>shortcut</key><string>ぎゃくてん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>傾向</string><key>shortcut</key><string>けいこう</string></dict>	<!-- Sudachiにもある -->
@@ -71,6 +75,9 @@
 	<dict><key>phrase</key><string>個人的</string><key>shortcut</key><string>こじんてき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>個性</string><key>shortcut</key><string>こせい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>個性的</string><key>shortcut</key><string>こせいてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>コロナ禍</string><key>shortcut</key><string>ころなか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>コンクール</string><key>shortcut</key><string>こんくーる</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
+	<dict><key>phrase</key><string>コンテスト</string><key>shortcut</key><string>こんてすと</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>コンパクト</string><key>shortcut</key><string>こんぱくと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コンビネーション</string><key>shortcut</key><string>こんびねーしょん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>豪華</string><key>shortcut</key><string>ごうか</string></dict>	<!-- Sudachiにもある -->
@@ -80,10 +87,13 @@
 	<dict><key>phrase</key><string>誤差</string><key>shortcut</key><string>ごさ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>誤答</string><key>shortcut</key><string>ごとう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>語尾</string><key>shortcut</key><string>ごび</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最高賞</string><key>shortcut</key><string>さいこうしょう</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>祭典</string><key>shortcut</key><string>さいてん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>作成</string><key>shortcut</key><string>さくせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>刷新</string><key>shortcut</key><string>さっしん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>サブ</string><key>shortcut</key><string>さぶ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>皿数</string><key>shortcut</key><string>さらかず</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>サーフィン</string><key>shortcut</key><string>さーふぃん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>識別</string><key>shortcut</key><string>しきべつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>刺激</string><key>shortcut</key><string>しげき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>刺激的</string><key>shortcut</key><string>しげきてき</string></dict>	<!-- Sudachiにもある -->
@@ -106,6 +116,7 @@
 	<dict><key>phrase</key><string>充分</string><key>shortcut</key><string>じゅうぶん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>充満</string><key>shortcut</key><string>じゅうまん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>住民</string><key>shortcut</key><string>じゅうみん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>受賞</string><key>shortcut</key><string>じゅしょう</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>スッキリ</string><key>shortcut</key><string>すっきり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スピード</string><key>shortcut</key><string>すぴーど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スポット</string><key>shortcut</key><string>すぽっと</string></dict>	<!-- Sudachiにもある -->
@@ -139,6 +150,7 @@
 	<dict><key>phrase</key><string>全体的</string><key>shortcut</key><string>ぜんたいてき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>前提</string><key>shortcut</key><string>ぜんてい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>前年</string><key>shortcut</key><string>ぜんねん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>全米</string><key>shortcut</key><string>ぜんべい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>前面</string><key>shortcut</key><string>ぜんめん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創刊</string><key>shortcut</key><string>そうかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創業</string><key>shortcut</key><string>そうぎょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
@@ -173,6 +185,7 @@
 	<dict><key>phrase</key><string>土踏まず</string><key>shortcut</key><string>つちふまず</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>停滞</string><key>shortcut</key><string>ていたい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>程度</string><key>shortcut</key><string>ていど</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>テキスト</string><key>shortcut</key><string>てきすと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>手作り</string><key>shortcut</key><string>てづくり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>伝説</string><key>shortcut</key><string>でんせつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>到達</string><key>shortcut</key><string>とうたつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
@@ -188,11 +201,13 @@
 	<dict><key>phrase</key><string>入植</string><key>shortcut</key><string>にゅうしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>入力</string><key>shortcut</key><string>にゅうりょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>任意</string><key>shortcut</key><string>にんい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>任天堂</string><key>shortcut</key><string>にんてんどう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>値段</string><key>shortcut</key><string>ねだん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>破壊</string><key>shortcut</key><string>はかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>破損</string><key>shortcut</key><string>はそん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>非公式</string><key>shortcut</key><string>ひこうしき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>非常</string><key>shortcut</key><string>ひじょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>品評会</string><key>shortcut</key><string>ひんぴょうかい</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>へくたーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>返済</string><key>shortcut</key><string>へんさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>包括</string><key>shortcut</key><string>ほうかつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
@@ -202,6 +217,7 @@
 	<dict><key>phrase</key><string>保護</string><key>shortcut</key><string>ほご</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>保証</string><key>shortcut</key><string>ほしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>保持</string><key>shortcut</key><string>ほじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>マイクロソフト</string><key>shortcut</key><string>まいくろそふと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>真上</string><key>shortcut</key><string>まうえ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>真横</string><key>shortcut</key><string>まよこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>見極める</string><key>shortcut</key><string>みきわめる</string></dict>	<!-- Sudachiにもある -->
@@ -218,6 +234,8 @@
 	<dict><key>phrase</key><string>幼少期</string><key>shortcut</key><string>ようしょうき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>リサイクル</string><key>shortcut</key><string>りさいくる</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>リスク</string><key>shortcut</key><string>りすく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>リスト</string><key>shortcut</key><string>りすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>リターンマッチ</string><key>shortcut</key><string>りたーんまっち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>利点</string><key>shortcut</key><string>りてん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>利用</string><key>shortcut</key><string>りよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ルール</string><key>shortcut</key><string>るーる</string></dict>	<!-- Sudachiにもある -->
@@ -277,6 +295,8 @@
 	<dict><key>phrase</key><string>業者名</string><key>shortcut</key><string>ぎょうしゃめい</string></dict>
 	<dict><key>phrase</key><string>口付近</string><key>shortcut</key><string>くちふきん</string></dict>
 	<dict><key>phrase</key><string>偶発的</string><key>shortcut</key><string>ぐうはつてき</string></dict>
+	<dict><key>phrase</key><string>渓谷沿</string><key>shortcut</key><string>けいこくぞい</string></dict>
+	<dict><key>phrase</key><string>渓谷内</string><key>shortcut</key><string>けいこくない</string></dict>
 	<dict><key>phrase</key><string>ケルト族</string><key>shortcut</key><string>けるとぞく</string></dict>
 	<dict><key>phrase</key><string>ケルト族貴族</string><key>shortcut</key><string>けるとぞくきぞく</string></dict>
 	<dict><key>phrase</key><string>研究・開発</string><key>shortcut</key><string>けんきゅうかいはつ</string></dict>
@@ -307,6 +327,7 @@
 	<dict><key>phrase</key><string>最南</string><key>shortcut</key><string>さいなん</string></dict>
 	<dict><key>phrase</key><string>最南部</string><key>shortcut</key><string>さいなんぶ</string></dict>
 	<dict><key>phrase</key><string>最北部</string><key>shortcut</key><string>さいほくぶ</string></dict>
+	<dict><key>phrase</key><string>細胞内</string><key>shortcut</key><string>さいぼうない</string></dict>
 	<dict><key>phrase</key><string>採用率</string><key>shortcut</key><string>さいようりつ</string></dict>
 	<dict><key>phrase</key><string>South</string><key>shortcut</key><string>さうす</string></dict>
 	<dict><key>phrase</key><string>散発的</string><key>shortcut</key><string>さんぱつてき</string></dict>
@@ -314,6 +335,7 @@
 	<dict><key>phrase</key><string>自然豊か</string><key>shortcut</key><string>しぜんゆたか</string></dict>
 	<dict><key>phrase</key><string>漆喰固め</string><key>shortcut</key><string>しっくいがため</string></dict>
 	<dict><key>phrase</key><string>chinoise</string><key>shortcut</key><string>しのわーず</string></dict>
+	<dict><key>phrase</key><string>シフトチェンジ</string><key>shortcut</key><string>しふとちぇんじ</string></dict>
 	<dict><key>phrase</key><string>社会問題化</string><key>shortcut</key><string>しゃかいもんだいか</string></dict>
 	<dict><key>phrase</key><string>社交行事</string><key>shortcut</key><string>しゃこうぎょうじ</string></dict>
 	<dict><key>phrase</key><string>州憲法</string><key>shortcut</key><string>しゅうけんぽう</string></dict>
@@ -348,6 +370,7 @@
 	<dict><key>phrase</key><string>制定年</string><key>shortcut</key><string>せいていねん</string></dict>
 	<dict><key>phrase</key><string>先駆者的地区</string><key>shortcut</key><string>せんくしゃまとじく</string></dict>
 	<dict><key>phrase</key><string>先住民族</string><key>shortcut</key><string>せんじゅうみんぞく</string></dict>
+	<dict><key>phrase</key><string>潜水艦探知機</string><key>shortcut</key><string>せんすいかんたんちき</string></dict>
 	<dict><key>phrase</key><string>選抜方法</string><key>shortcut</key><string>せんばつほうほう</string></dict>
 	<dict><key>phrase</key><string>洗礼式</string><key>shortcut</key><string>せんれいしき</string></dict>
 	<dict><key>phrase</key><string>税関職員</string><key>shortcut</key><string>ぜいかんしょくいん</string></dict>
@@ -377,8 +400,6 @@
 	<dict><key>phrase</key><string>展示品</string><key>shortcut</key><string>てんじひん</string></dict>
 	<dict><key>phrase</key><string>Detail</string><key>shortcut</key><string>でぃてーる</string></dict>
 	<dict><key>phrase</key><string>電動式</string><key>shortcut</key><string>でんどうしき</string></dict>
-	<dict><key>phrase</key><string>Turangawaewae</string><key>shortcut</key><string>とぅらんがわえわえ</string></dict>
-	<dict><key>phrase</key><string>トゥーランガワエワエ</string><key>shortcut</key><string>とぅーらんがわえわえ</string></dict>
 	<dict><key>phrase</key><string>Thurgau出身</string><key>shortcut</key><string>とぅーるがうしゅっしん</string></dict>
 	<dict><key>phrase</key><string>当該年</string><key>shortcut</key><string>とうがいねん</string></dict>
 	<dict><key>phrase</key><string>登録数</string><key>shortcut</key><string>とうろくすう</string></dict>
@@ -393,6 +414,7 @@
 	<dict><key>phrase</key><string>春以降</string><key>shortcut</key><string>はるいこう</string></dict>
 	<dict><key>phrase</key><string>反対側</string><key>shortcut</key><string>はんたいがわ</string></dict>
 	<dict><key>phrase</key><string>反対向き</string><key>shortcut</key><string>はんたいむき</string></dict>
+	<dict><key>phrase</key><string>販売解禁日</string><key>shortcut</key><string>はんばいかいきんび</string></dict>	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>化学物質</string><key>shortcut</key><string>ばけがくぶっしつ</string></dict>
 	<dict><key>phrase</key><string>パノニア系</string><key>shortcut</key><string>ぱのにあけい</string></dict>
 	<dict><key>phrase</key><string>比較的低</string><key>shortcut</key><string>ひかくてきてい</string></dict>
@@ -402,6 +424,8 @@
 	<dict><key>phrase</key><string>ピチェーノ人</string><key>shortcut</key><string>ぴちぇーのじん</string></dict>
 	<dict><key>phrase</key><string>ピーク時</string><key>shortcut</key><string>ぴーくじ</string></dict>
 	<dict><key>phrase</key><string>風光明媚</string><key>shortcut</key><string>ふうこうめいび</string></dict>
+	<dict><key>phrase</key><string>フェアトレード</string><key>shortcut</key><string>ふぇあとれーど</string></dict>	<!-- 元: vin.plist -->
+	<dict><key>phrase</key><string>フェアトレードワイン</string><key>shortcut</key><string>ふぇあとれーどわいん</string></dict>	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>フェニキア人</string><key>shortcut</key><string>ふぇにきあじん</string></dict>
 	<dict><key>phrase</key><string>フォルムラ</string><key>shortcut</key><string>ふぉるむら</string></dict>
 	<dict><key>phrase</key><string>Formulae</string><key>shortcut</key><string>ふぉーみゅれー</string></dict>
@@ -437,6 +461,7 @@
 	<dict><key>phrase</key><string>労働環境</string><key>shortcut</key><string>ろうどうかんきょう</string></dict>
 	<dict><key>phrase</key><string>労働環境改善</string><key>shortcut</key><string>ろうどうかんきょうかいぜん</string></dict>
 	<dict><key>phrase</key><string>労働コスト</string><key>shortcut</key><string>ろうどうこすと</string></dict>
+	<dict><key>phrase</key><string>ワインツーリズム</string><key>shortcut</key><string>わいんつーりずむ</string></dict>	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>visão geral</string><key>shortcut</key><string>ゔぃざおじぇらる</string></dict>
 </array>
 </plist>
