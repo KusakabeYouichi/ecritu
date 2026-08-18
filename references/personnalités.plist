@@ -26,12 +26,10 @@
 	<dict><key>phrase</key><string>アン・ルイス</string><key>shortcut</key><string>あんるいす</string></dict>
 	<dict><key>phrase</key><string>ジュディ・オング</string><key>shortcut</key><string>じゅでぃおんぐ</string></dict>
 	<dict><key>phrase</key><string>高橋真梨子</string><key>shortcut</key><string>たかはしまりこ</string></dict>
-	<dict><key>phrase</key><string>ペドロ&amp;カプリシャス</string><key>shortcut</key><string>ぺどろあんどかぷりしゃす</string></dict>
 	<dict><key>phrase</key><string>しばたはつみ</string><key>shortcut</key><string>しばたはつみ</string></dict>
 	<dict><key>phrase</key><string>大橋純子</string><key>shortcut</key><string>おおはしじゅんこ</string></dict>
 	<dict><key>phrase</key><string>庄野真代</string><key>shortcut</key><string>しょうのまよ</string></dict>
 	<dict><key>phrase</key><string>渡辺真知子</string><key>shortcut</key><string>わたなべまちこ</string></dict>
-	<dict><key>phrase</key><string>サーカス</string><key>shortcut</key><string>さーかす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ジュディ・アントン</string><key>shortcut</key><string>じゅでぃあんとん</string></dict>
 	<dict><key>phrase</key><string>朝倉理恵</string><key>shortcut</key><string>あさくらりえ</string></dict>
 	<dict><key>phrase</key><string>夏木マリ</string><key>shortcut</key><string>なつきまり</string></dict>
@@ -825,6 +823,10 @@
 	<dict><key>phrase</key><string>桑田佳祐</string><key>shortcut</key><string>くわたけいすけ</string></dict>
 	<dict><key>phrase</key><string>尾崎紀世彦</string><key>shortcut</key><string>おざききよひこ</string></dict>
 	<dict><key>phrase</key><string>楠瀬誠志郎</string><key>shortcut</key><string>くすのせせいしろう</string></dict>
+
+	<!-- グループ・バンド -->
+	<dict><key>phrase</key><string>ペドロ&amp;カプリシャス</string><key>shortcut</key><string>ぺどろあんどかぷりしゃす</string></dict>
+	<dict><key>phrase</key><string>サーカス</string><key>shortcut</key><string>さーかす</string></dict>	<!-- Sudachiにもある -->
 
     <!-- 世界のミュージシャン100 (A) -->
     <dict><key>phrase</key><string>ザ・ビートルズ</string><key>shortcut</key><string>ざびーとるず</string></dict>
