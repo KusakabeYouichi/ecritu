@@ -915,7 +915,7 @@ final class KanaKanjiConverter {
     }
 
     private func computeShouldKeepKanaIdentityLeading(normalized: String) -> Bool {
-        if hasLearnedKanaIdentity(for: normalized) {
+        if hasLearnedKanaIdentity(for: normalized) || hasCuratedKanaIdentity(for: normalized) {
             return true
         }
         // 口語の否定コピュラ・断定(じゃない/じゃん/だろう/でしょ 等)で終わる読みは、かなが
@@ -1551,6 +1551,19 @@ final class KanaKanjiConverter {
             return false
         }
         return (store.learnedDictionary()[normalizedReading] ?? []).contains(normalizedReading)
+    }
+
+    // 追加語彙(手動 or misc.plist の curated)に読みと同一のかな表層が登録されているか。
+    // 「かながこの読みの正書」という人手の明示なので、提示層のかな維持根拠として学習と同格に
+    // 扱う。keepKana の活用形経路は末尾から活用規則で基底を辿るため、補助動詞付きの句
+    // (やってください=やる+て+ください)では基底 やる に到達できず判定できない(2564)。
+    func hasCuratedKanaIdentity(for reading: String) -> Bool {
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+        guard !normalizedReading.isEmpty else {
+            return false
+        }
+        return (store.userDictionary()[normalizedReading] ?? []).contains(normalizedReading)
+            || (store.initialUserDictionary()[normalizedReading] ?? []).contains(normalizedReading)
     }
 
     func invalidateCandidateCache() {
