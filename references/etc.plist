@@ -5,130 +5,395 @@
 	<!-- 参照用の語彙(ビルドには取り込まない保管ファイル)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別注記。各グループ内は読み(shortcut)の五十音順。 -->
 
 	<!-- ■ SudachiDict に収録がある語(読み+表記の組が一致。生CSV core/small で判定) -->
+	<dict><key>phrase</key><string>愛称</string><key>shortcut</key><string>あいしょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>相性</string><key>shortcut</key><string>あいしょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>相次</string><key>shortcut</key><string>あいじ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>朝日</string><key>shortcut</key><string>あさひ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>圧力</string><key>shortcut</key><string>あつりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>安全</string><key>shortcut</key><string>あんぜん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>安定</string><key>shortcut</key><string>あんてい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>委員会</string><key>shortcut</key><string>いいんかい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>偉業</string><key>shortcut</key><string>いぎょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>育成</string><key>shortcut</key><string>いくせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>意見</string><key>shortcut</key><string>いけん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>移行</string><key>shortcut</key><string>いこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>遺産</string><key>shortcut</key><string>いさん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>意識</string><key>shortcut</key><string>いしき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>維持</string><key>shortcut</key><string>いじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>異常</string><key>shortcut</key><string>いじょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>遺跡</string><key>shortcut</key><string>いせき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>遺伝子</string><key>shortcut</key><string>いでんし</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>意図</string><key>shortcut</key><string>いと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>意味</string><key>shortcut</key><string>いみ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>移民</string><key>shortcut</key><string>いみん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>入口</string><key>shortcut</key><string>いりぐち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>運賃</string><key>shortcut</key><string>うんちん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>影響</string><key>shortcut</key><string>えいきょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>影響力</string><key>shortcut</key><string>えいきょうりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>英語</string><key>shortcut</key><string>えいご</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>液体</string><key>shortcut</key><string>えきたい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エネルギー</string><key>shortcut</key><string>えねるぎー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>援助</string><key>shortcut</key><string>えんじょ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>謳歌</string><key>shortcut</key><string>おうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>黄金</string><key>shortcut</key><string>おうごん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>応用</string><key>shortcut</key><string>おうよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大型</string><key>shortcut</key><string>おおがた</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大幅</string><key>shortcut</key><string>おおはば</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大人</string><key>shortcut</key><string>おとな</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オリンピック</string><key>shortcut</key><string>おりんぴっく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>温度</string><key>shortcut</key><string>おんど</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>海外</string><key>shortcut</key><string>かいがい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>海岸</string><key>shortcut</key><string>かいがん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>解禁</string><key>shortcut</key><string>かいきん</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>解禁日</string><key>shortcut</key><string>かいきんび</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
+	<dict><key>phrase</key><string>改称</string><key>shortcut</key><string>かいしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>改正</string><key>shortcut</key><string>かいせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>改善</string><key>shortcut</key><string>かいぜん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>改良</string><key>shortcut</key><string>かいりょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>化学式</string><key>shortcut</key><string>かがくしき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>化学者</string><key>shortcut</key><string>かがくしゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>科学者</string><key>shortcut</key><string>かがくしゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>夏季</string><key>shortcut</key><string>かき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>確信</string><key>shortcut</key><string>かくしん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>拡大</string><key>shortcut</key><string>かくだい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>各地</string><key>shortcut</key><string>かくち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>獲得</string><key>shortcut</key><string>かくとく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>確認</string><key>shortcut</key><string>かくにん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>確保</string><key>shortcut</key><string>かくほ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>確率</string><key>shortcut</key><string>かくりつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>確立</string><key>shortcut</key><string>かくりつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>加工</string><key>shortcut</key><string>かこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>化合物</string><key>shortcut</key><string>かごうぶつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>箇所</string><key>shortcut</key><string>かしょ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>果実</string><key>shortcut</key><string>かじつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カジュアル</string><key>shortcut</key><string>かじゅある</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カタカナ</string><key>shortcut</key><string>かたかな</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>各国</string><key>shortcut</key><string>かっこく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>割譲</string><key>shortcut</key><string>かつじょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>勝利</string><key>shortcut</key><string>かつとし</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>活動</string><key>shortcut</key><string>かつどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>活躍</string><key>shortcut</key><string>かつやく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>活用</string><key>shortcut</key><string>かつよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>家庭</string><key>shortcut</key><string>かてい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カテゴライズ</string><key>shortcut</key><string>かてごらいず</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カテゴリー</string><key>shortcut</key><string>かてごりー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>稼働</string><key>shortcut</key><string>かどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>加熱</string><key>shortcut</key><string>かねつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>加盟</string><key>shortcut</key><string>かめい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>貨物</string><key>shortcut</key><string>かもつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>culture</string><key>shortcut</key><string>かるちゃー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>皮切</string><key>shortcut</key><string>かわきり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>感覚</string><key>shortcut</key><string>かんかく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>管轄</string><key>shortcut</key><string>かんかつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>環境</string><key>shortcut</key><string>かんきょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>観察</string><key>shortcut</key><string>かんさつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>完成</string><key>shortcut</key><string>かんせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>感染</string><key>shortcut</key><string>かんせん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>完全</string><key>shortcut</key><string>かんぜん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>乾燥</string><key>shortcut</key><string>かんそう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>勘違い</string><key>shortcut</key><string>かんちがい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>観点</string><key>shortcut</key><string>かんてん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>管理</string><key>shortcut</key><string>かんり</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>該当</string><key>shortcut</key><string>がいとう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ガイドライン</string><key>shortcut</key><string>がいどらいん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>概念</string><key>shortcut</key><string>がいねん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>外部</string><key>shortcut</key><string>がいぶ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>学習</string><key>shortcut</key><string>がくしゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>合併</string><key>shortcut</key><string>がっぺい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>元祖</string><key>shortcut</key><string>がんそ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>記憶</string><key>shortcut</key><string>きおく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>気温</string><key>shortcut</key><string>きおん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>機械</string><key>shortcut</key><string>きかい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>規格</string><key>shortcut</key><string>きかく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>期間</string><key>shortcut</key><string>きかん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>機関</string><key>shortcut</key><string>きかん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>企業</string><key>shortcut</key><string>きぎょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>危険</string><key>shortcut</key><string>きけん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>気候</string><key>shortcut</key><string>きこう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>記号</string><key>shortcut</key><string>きごう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>記載</string><key>shortcut</key><string>きさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>記述</string><key>shortcut</key><string>きじゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>基準</string><key>shortcut</key><string>きじゅん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>傷口</string><key>shortcut</key><string>きずぐち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>規制</string><key>shortcut</key><string>きせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>基礎</string><key>shortcut</key><string>きそ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>規則</string><key>shortcut</key><string>きそく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>既存</string><key>shortcut</key><string>きそん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>貴族</string><key>shortcut</key><string>きぞく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>期待</string><key>shortcut</key><string>きたい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>北側</string><key>shortcut</key><string>きたがわ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>北半球</string><key>shortcut</key><string>きたはんきゅう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>規定</string><key>shortcut</key><string>きてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>企図</string><key>shortcut</key><string>きと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>機能</string><key>shortcut</key><string>きのう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>基盤</string><key>shortcut</key><string>きばん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>基本的</string><key>shortcut</key><string>きほんてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>規模</string><key>shortcut</key><string>きぼ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>急速</string><key>shortcut</key><string>きゅうそく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>宮廷</string><key>shortcut</key><string>きゅうてい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>教育</string><key>shortcut</key><string>きょういく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>強化</string><key>shortcut</key><string>きょうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>境界</string><key>shortcut</key><string>きょうかい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>教会</string><key>shortcut</key><string>きょうかい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>強調</string><key>shortcut</key><string>きょうちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>共通</string><key>shortcut</key><string>きょうつう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>協定</string><key>shortcut</key><string>きょうてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>共有</string><key>shortcut</key><string>きょうゆう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>協力</string><key>shortcut</key><string>きょうりょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>強力</string><key>shortcut</key><string>きょうりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>許可</string><key>shortcut</key><string>きょか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>巨大</string><key>shortcut</key><string>きょだい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>拠点</string><key>shortcut</key><string>きょてん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>距離</string><key>shortcut</key><string>きょり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キレ</string><key>shortcut</key><string>きれ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>記録</string><key>shortcut</key><string>きろく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>近年</string><key>shortcut</key><string>きんねん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>金融</string><key>shortcut</key><string>きんゆう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>儀式</string><key>shortcut</key><string>ぎしき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>技術</string><key>shortcut</key><string>ぎじゅつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ギター</string><key>shortcut</key><string>ぎたー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>技法</string><key>shortcut</key><string>ぎほう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>義務</string><key>shortcut</key><string>ぎむ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>義務付け</string><key>shortcut</key><string>ぎむづけ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>逆転</string><key>shortcut</key><string>ぎゃくてん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>空間</string><key>shortcut</key><string>くうかん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>空気</string><key>shortcut</key><string>くうき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>組合</string><key>shortcut</key><string>くみあい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>具体的</string><key>shortcut</key><string>ぐたいてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>経緯</string><key>shortcut</key><string>けいい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>経営</string><key>shortcut</key><string>けいえい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>経験</string><key>shortcut</key><string>けいけん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>傾向</string><key>shortcut</key><string>けいこう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>掲載</string><key>shortcut</key><string>けいさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>計算</string><key>shortcut</key><string>けいさん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>経済</string><key>shortcut</key><string>けいざい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>経済的</string><key>shortcut</key><string>けいざいてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>形式</string><key>shortcut</key><string>けいしき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>形状</string><key>shortcut</key><string>けいじょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>形成</string><key>shortcut</key><string>けいせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>継続</string><key>shortcut</key><string>けいぞく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>形態</string><key>shortcut</key><string>けいたい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>経由</string><key>shortcut</key><string>けいゆ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>稀有</string><key>shortcut</key><string>けう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>結果</string><key>shortcut</key><string>けっか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>結成</string><key>shortcut</key><string>けっせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>決定</string><key>shortcut</key><string>けってい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>結合</string><key>shortcut</key><string>けつごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>権威</string><key>shortcut</key><string>けんい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>研究</string><key>shortcut</key><string>けんきゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>研究者</string><key>shortcut</key><string>けんきゅうしゃ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>権限</string><key>shortcut</key><string>けんげん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>健康</string><key>shortcut</key><string>けんこう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>建国</string><key>shortcut</key><string>けんこく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>検査</string><key>shortcut</key><string>けんさ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>研鑽</string><key>shortcut</key><string>けんさん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>建設</string><key>shortcut</key><string>けんせつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>健全</string><key>shortcut</key><string>けんぜん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>権利</string><key>shortcut</key><string>けんり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>権力</string><key>shortcut</key><string>けんりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>原因</string><key>shortcut</key><string>げんいん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>言語</string><key>shortcut</key><string>げんご</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>減少</string><key>shortcut</key><string>げんしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>現象</string><key>shortcut</key><string>げんしょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>原則</string><key>shortcut</key><string>げんそく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>現存</string><key>shortcut</key><string>げんそん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>現地</string><key>shortcut</key><string>げんち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>厳密</string><key>shortcut</key><string>げんみつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>原理</string><key>shortcut</key><string>げんり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>考案</string><key>shortcut</key><string>こうあん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>行為</string><key>shortcut</key><string>こうい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>幸運</string><key>shortcut</key><string>こううん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>高温</string><key>shortcut</key><string>こうおん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>効果</string><key>shortcut</key><string>こうか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>効果的</string><key>shortcut</key><string>こうかてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>工業</string><key>shortcut</key><string>こうぎょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>貢献</string><key>shortcut</key><string>こうけん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>公式</string><key>shortcut</key><string>こうしき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>後者</string><key>shortcut</key><string>こうしゃ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>構成</string><key>shortcut</key><string>こうせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>功績</string><key>shortcut</key><string>こうせき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>酵素</string><key>shortcut</key><string>こうそ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>構造</string><key>shortcut</key><string>こうぞう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>光沢</string><key>shortcut</key><string>こうたく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>行程</string><key>shortcut</key><string>こうてい</string></dict>	<!-- Sudachiにもある -->	<!-- 元: その他の不明なもの -->
 	<dict><key>phrase</key><string>高騰</string><key>shortcut</key><string>こうとう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>高度</string><key>shortcut</key><string>こうど</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>購入</string><key>shortcut</key><string>こうにゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>勾配</string><key>shortcut</key><string>こうばい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>公布</string><key>shortcut</key><string>こうふ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>効用</string><key>shortcut</key><string>こうよう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>公用語</string><key>shortcut</key><string>こうようご</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>考慮</string><key>shortcut</key><string>こうりょ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>効力</string><key>shortcut</key><string>こうりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>小型</string><key>shortcut</key><string>こがた</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>国際</string><key>shortcut</key><string>こくさい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>国際的</string><key>shortcut</key><string>こくさいてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>国立</string><key>shortcut</key><string>こくりつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>個人的</string><key>shortcut</key><string>こじんてき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>個性</string><key>shortcut</key><string>こせい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>個性的</string><key>shortcut</key><string>こせいてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>古代</string><key>shortcut</key><string>こだい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>言葉</string><key>shortcut</key><string>ことば</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>子供</string><key>shortcut</key><string>こども</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コロナ禍</string><key>shortcut</key><string>ころなか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コンクール</string><key>shortcut</key><string>こんくーる</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>コンテスト</string><key>shortcut</key><string>こんてすと</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
 	<dict><key>phrase</key><string>コンパクト</string><key>shortcut</key><string>こんぱくと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コンビネーション</string><key>shortcut</key><string>こんびねーしょん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>合意</string><key>shortcut</key><string>ごうい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>豪華</string><key>shortcut</key><string>ごうか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>豪快</string><key>shortcut</key><string>ごうかい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>合計</string><key>shortcut</key><string>ごうけい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>語句</string><key>shortcut</key><string>ごく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>語源</string><key>shortcut</key><string>ごげん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>誤差</string><key>shortcut</key><string>ごさ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>誤答</string><key>shortcut</key><string>ごとう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>語尾</string><key>shortcut</key><string>ごび</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最近</string><key>shortcut</key><string>さいきん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>細菌</string><key>shortcut</key><string>さいきん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最古</string><key>shortcut</key><string>さいこ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最高</string><key>shortcut</key><string>さいこう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>最高賞</string><key>shortcut</key><string>さいこうしょう</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
+	<dict><key>phrase</key><string>最後</string><key>shortcut</key><string>さいご</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最終的</string><key>shortcut</key><string>さいしゅうてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最初</string><key>shortcut</key><string>さいしょ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最新</string><key>shortcut</key><string>さいしん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最多</string><key>shortcut</key><string>さいた</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最大</string><key>shortcut</key><string>さいだい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>最低</string><key>shortcut</key><string>さいてい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>祭典</string><key>shortcut</key><string>さいてん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>栽培</string><key>shortcut</key><string>さいばい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>採用</string><key>shortcut</key><string>さいよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>作成</string><key>shortcut</key><string>さくせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>策定</string><key>shortcut</key><string>さくてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>刷新</string><key>shortcut</key><string>さっしん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サブ</string><key>shortcut</key><string>さぶ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>左右</string><key>shortcut</key><string>さゆう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>皿数</string><key>shortcut</key><string>さらかず</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>酸化</string><key>shortcut</key><string>さんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>産業</string><key>shortcut</key><string>さんぎょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>参考</string><key>shortcut</key><string>さんこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>酸素</string><key>shortcut</key><string>さんそ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サーフィン</string><key>shortcut</key><string>さーふぃん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>材料</string><key>shortcut</key><string>ざいりょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>支援</string><key>shortcut</key><string>しえん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>識別</string><key>shortcut</key><string>しきべつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>試験</string><key>shortcut</key><string>しけん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>刺激</string><key>shortcut</key><string>しげき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>刺激的</string><key>shortcut</key><string>しげきてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>施行</string><key>shortcut</key><string>しこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>指示</string><key>shortcut</key><string>しじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>支持</string><key>shortcut</key><string>しじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>施設</string><key>shortcut</key><string>しせつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>自然</string><key>shortcut</key><string>しぜん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>次第</string><key>shortcut</key><string>しだい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>指定</string><key>shortcut</key><string>してい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>視点</string><key>shortcut</key><string>してん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>指導</string><key>shortcut</key><string>しどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>支配</string><key>shortcut</key><string>しはい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>秀逸</string><key>shortcut</key><string>しゅういつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>宗教</string><key>shortcut</key><string>しゅうきょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>終了</string><key>shortcut</key><string>しゅうりょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>縮小</string><key>shortcut</key><string>しゅくしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>種子</string><key>shortcut</key><string>しゅし</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>出荷</string><key>shortcut</key><string>しゅっか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>出身</string><key>shortcut</key><string>しゅっしん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>出現</string><key>shortcut</key><string>しゅつげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>取得</string><key>shortcut</key><string>しゅとく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>手法</string><key>shortcut</key><string>しゅほう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>種類</string><key>shortcut</key><string>しゅるい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>昇格</string><key>shortcut</key><string>しょうかく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>証拠</string><key>shortcut</key><string>しょうこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>称号</string><key>shortcut</key><string>しょうごう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>詳細</string><key>shortcut</key><string>しょうさい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>勝者</string><key>shortcut</key><string>しょうしゃ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>少数</string><key>shortcut</key><string>しょうすう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>象徴</string><key>shortcut</key><string>しょうちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>象徴的</string><key>shortcut</key><string>しょうちょうてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>消費</string><key>shortcut</key><string>しょうひ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>証明</string><key>shortcut</key><string>しょうめい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>消滅</string><key>shortcut</key><string>しょうめつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>省略</string><key>shortcut</key><string>しょうりゃく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>初期</string><key>shortcut</key><string>しょき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>食品</string><key>shortcut</key><string>しょくひん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>植物</string><key>shortcut</key><string>しょくぶつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>植民地</string><key>shortcut</key><string>しょくみんち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>所在地</string><key>shortcut</key><string>しょざいち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>諸説</string><key>shortcut</key><string>しょせつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>所有</string><key>shortcut</key><string>しょゆう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>処理</string><key>shortcut</key><string>しょり</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>白黒</string><key>shortcut</key><string>しろくろ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>仕分</string><key>shortcut</key><string>しわけ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>信仰</string><key>shortcut</key><string>しんこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>真珠</string><key>shortcut</key><string>しんじゅ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>申請</string><key>shortcut</key><string>しんせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>新設</string><key>shortcut</key><string>しんせつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>時間</string><key>shortcut</key><string>じかん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>時期</string><key>shortcut</key><string>じき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>自体</string><key>shortcut</key><string>じたい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>時代</string><key>shortcut</key><string>じだい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>実際</string><key>shortcut</key><string>じっさい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>実施</string><key>shortcut</key><string>じっし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>実質的</string><key>shortcut</key><string>じっしつてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>自動車</string><key>shortcut</key><string>じどうしゃ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>自分</string><key>shortcut</key><string>じぶん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>住所</string><key>shortcut</key><string>じゅうしょ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>充実</string><key>shortcut</key><string>じゅうじつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>充填</string><key>shortcut</key><string>じゅうてん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>充分</string><key>shortcut</key><string>じゅうぶん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>充満</string><key>shortcut</key><string>じゅうまん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>住民</string><key>shortcut</key><string>じゅうみん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>従来</string><key>shortcut</key><string>じゅうらい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>受賞</string><key>shortcut</key><string>じゅしょう</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
+	<dict><key>phrase</key><string>需要</string><key>shortcut</key><string>じゅよう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>循環</string><key>shortcut</key><string>じゅんかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>自由</string><key>shortcut</key><string>じゆう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>状況</string><key>shortcut</key><string>じょうきょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>条件</string><key>shortcut</key><string>じょうけん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>状態</string><key>shortcut</key><string>じょうたい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>女王</string><key>shortcut</key><string>じょおう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>推進</string><key>shortcut</key><string>すいしん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>水準</string><key>shortcut</key><string>すいじゅん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>推測</string><key>shortcut</key><string>すいそく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>衰退</string><key>shortcut</key><string>すいたい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>数字</string><key>shortcut</key><string>すうじ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>数値</string><key>shortcut</key><string>すうち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スッキリ</string><key>shortcut</key><string>すっきり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スピード</string><key>shortcut</key><string>すぴーど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スポット</string><key>shortcut</key><string>すぽっと</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>正確</string><key>shortcut</key><string>せいかく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>生活</string><key>shortcut</key><string>せいかつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>制限</string><key>shortcut</key><string>せいげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>成功</string><key>shortcut</key><string>せいこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>政策</string><key>shortcut</key><string>せいさく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>生産</string><key>shortcut</key><string>せいさん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>正式</string><key>shortcut</key><string>せいしき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>性質</string><key>shortcut</key><string>せいしつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>生成</string><key>shortcut</key><string>せいせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>製造</string><key>shortcut</key><string>せいぞう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>成長</string><key>shortcut</key><string>せいちょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>制定</string><key>shortcut</key><string>せいてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>制度</string><key>shortcut</key><string>せいど</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>製品</string><key>shortcut</key><string>せいひん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>整備</string><key>shortcut</key><string>せいび</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>政府</string><key>shortcut</key><string>せいふ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>西部</string><key>shortcut</key><string>せいぶ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>成分</string><key>shortcut</key><string>せいぶん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>制約</string><key>shortcut</key><string>せいやく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>成立</string><key>shortcut</key><string>せいりつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>勢力</string><key>shortcut</key><string>せいりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>責任</string><key>shortcut</key><string>せきにん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>積極的</string><key>shortcut</key><string>せっきょくてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>接触</string><key>shortcut</key><string>せっしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>設置</string><key>shortcut</key><string>せっち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>設定</string><key>shortcut</key><string>せってい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>説明</string><key>shortcut</key><string>せつめい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>説明文</string><key>shortcut</key><string>せつめいぶん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>設立</string><key>shortcut</key><string>せつりつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>セメント</string><key>shortcut</key><string>せめんと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>先駆</string><key>shortcut</key><string>せんく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>宣言</string><key>shortcut</key><string>せんげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>戦後</string><key>shortcut</key><string>せんご</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>先住民</string><key>shortcut</key><string>せんじゅうみん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>先祖</string><key>shortcut</key><string>せんぞ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>選択</string><key>shortcut</key><string>せんたく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
@@ -136,8 +401,11 @@
 	<dict><key>phrase</key><string>先端</string><key>shortcut</key><string>せんたん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>先入観</string><key>shortcut</key><string>せんにゅうかん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>選抜</string><key>shortcut</key><string>せんばつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>専用</string><key>shortcut</key><string>せんよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>税金</string><key>shortcut</key><string>ぜいきん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>税務署</string><key>shortcut</key><string>ぜいむしょ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>絶対</string><key>shortcut</key><string>ぜったい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>全域</string><key>shortcut</key><string>ぜんいき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>前回</string><key>shortcut</key><string>ぜんかい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>全国</string><key>shortcut</key><string>ぜんこく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>全国的</string><key>shortcut</key><string>ぜんこくてき</string></dict>	<!-- Sudachiにもある -->
@@ -154,97 +422,302 @@
 	<dict><key>phrase</key><string>前面</string><key>shortcut</key><string>ぜんめん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創刊</string><key>shortcut</key><string>そうかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創業</string><key>shortcut</key><string>そうぎょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>操作</string><key>shortcut</key><string>そうさ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>相殺</string><key>shortcut</key><string>そうさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創始者</string><key>shortcut</key><string>そうししゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創出</string><key>shortcut</key><string>そうしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>総称</string><key>shortcut</key><string>そうしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創設</string><key>shortcut</key><string>そうせつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>相対的</string><key>shortcut</key><string>そうたいてき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>相当</string><key>shortcut</key><string>そうとう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>相反</string><key>shortcut</key><string>そうはん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>装備</string><key>shortcut</key><string>そうび</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>双方</string><key>shortcut</key><string>そうほう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>創立</string><key>shortcut</key><string>そうりつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>即位</string><key>shortcut</key><string>そくい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>側部</string><key>shortcut</key><string>そくぶ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>素材</string><key>shortcut</key><string>そざい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>組織</string><key>shortcut</key><string>そしき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>祖先</string><key>shortcut</key><string>そせん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>存在</string><key>shortcut</key><string>そんざい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>増加</string><key>shortcut</key><string>ぞうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>増大</string><key>shortcut</key><string>ぞうだい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>対応</string><key>shortcut</key><string>たいおう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>体外</string><key>shortcut</key><string>たいがい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>体型</string><key>shortcut</key><string>たいけい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>対策</string><key>shortcut</key><string>たいさく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>対象</string><key>shortcut</key><string>たいしょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大半</string><key>shortcut</key><string>たいはん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>太陽</string><key>shortcut</key><string>たいよう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大量</string><key>shortcut</key><string>たいりょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>卓越</string><key>shortcut</key><string>たくえつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>多数</string><key>shortcut</key><string>たすう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>立場</string><key>shortcut</key><string>たちば</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>建物</string><key>shortcut</key><string>たてもの</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>多様</string><key>shortcut</key><string>たよう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>単位</string><key>shortcut</key><string>たんい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>単一</string><key>shortcut</key><string>たんいつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>単語</string><key>shortcut</key><string>たんご</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>短縮</string><key>shortcut</key><string>たんしゅく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>短所</string><key>shortcut</key><string>たんしょ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>短時間</string><key>shortcut</key><string>たんじかん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>誕生</string><key>shortcut</key><string>たんじょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>単独</string><key>shortcut</key><string>たんどく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大学</string><key>shortcut</key><string>だいがく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大規模</string><key>shortcut</key><string>だいきぼ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大部分</string><key>shortcut</key><string>だいぶぶん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>段階</string><key>shortcut</key><string>だんかい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地位</string><key>shortcut</key><string>ちい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地域</string><key>shortcut</key><string>ちいき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地下</string><key>shortcut</key><string>ちか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地球</string><key>shortcut</key><string>ちきゅう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地区</string><key>shortcut</key><string>ちく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地形</string><key>shortcut</key><string>ちけい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>知識</string><key>shortcut</key><string>ちしき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地上</string><key>shortcut</key><string>ちじょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地図</string><key>shortcut</key><string>ちず</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地帯</string><key>shortcut</key><string>ちたい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>地名</string><key>shortcut</key><string>ちめい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>知名度</string><key>shortcut</key><string>ちめいど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>着目</string><key>shortcut</key><string>ちゃくもく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>注意</string><key>shortcut</key><string>ちゅうい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>注目</string><key>shortcut</key><string>ちゅうもく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>停止</string><key>shortcut</key><string>ちょうじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>挑戦</string><key>shortcut</key><string>ちょうせん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>直射日光</string><key>shortcut</key><string>ちょくしゃにっこう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>直前</string><key>shortcut</key><string>ちょくぜん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>直訳</string><key>shortcut</key><string>ちょくやく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>著名</string><key>shortcut</key><string>ちょめい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>追加</string><key>shortcut</key><string>ついか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>追求</string><key>shortcut</key><string>ついきゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>通過</string><key>shortcut</key><string>つうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>通称</string><key>shortcut</key><string>つうしょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>通常</string><key>shortcut</key><string>つうじょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>土踏まず</string><key>shortcut</key><string>つちふまず</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>提案</string><key>shortcut</key><string>ていあん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>提供</string><key>shortcut</key><string>ていきょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>定義</string><key>shortcut</key><string>ていぎ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>締結</string><key>shortcut</key><string>ていけつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>帝国</string><key>shortcut</key><string>ていこく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>提出</string><key>shortcut</key><string>ていしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>提唱</string><key>shortcut</key><string>ていしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>停滞</string><key>shortcut</key><string>ていたい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>定着</string><key>shortcut</key><string>ていちゃく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>程度</string><key>shortcut</key><string>ていど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>テキスト</string><key>shortcut</key><string>てきすと</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>手作り</string><key>shortcut</key><string>てづくり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>展開</string><key>shortcut</key><string>てんかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>転換</string><key>shortcut</key><string>てんかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>天然</string><key>shortcut</key><string>てんねん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>伝承</string><key>shortcut</key><string>でんしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>伝説</string><key>shortcut</key><string>でんせつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>伝統</string><key>shortcut</key><string>でんとう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>統一</string><key>shortcut</key><string>とういつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>当該</string><key>shortcut</key><string>とうがい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>統計</string><key>shortcut</key><string>とうけい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>東西</string><key>shortcut</key><string>とうざい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>投資</string><key>shortcut</key><string>とうし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>登場</string><key>shortcut</key><string>とうじょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>到達</string><key>shortcut</key><string>とうたつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>到着</string><key>shortcut</key><string>とうちゃく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>投入</string><key>shortcut</key><string>とうにゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>東部</string><key>shortcut</key><string>とうぶ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>到来</string><key>shortcut</key><string>とうらい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>登録</string><key>shortcut</key><string>とうろく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>途切れる</string><key>shortcut</key><string>とぎれる</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>特殊</string><key>shortcut</key><string>とくしゅ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>特性</string><key>shortcut</key><string>とくせい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>特徴</string><key>shortcut</key><string>とくちょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>特定</string><key>shortcut</key><string>とくてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>特別</string><key>shortcut</key><string>とくべつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>途上</string><key>shortcut</key><string>とじょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>途上国</string><key>shortcut</key><string>とじょうこく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>土地</string><key>shortcut</key><string>とち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>途中</string><key>shortcut</key><string>とちゅう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>特許</string><key>shortcut</key><string>とっきょ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>取引</string><key>shortcut</key><string>とりひき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>同一</string><key>shortcut</key><string>どういつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>導入</string><key>shortcut</key><string>どうにゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>動物</string><key>shortcut</key><string>どうぶつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>動物的</string><key>shortcut</key><string>どうぶつてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>独自</string><key>shortcut</key><string>どくじ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>独特</string><key>shortcut</key><string>どくとく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>独立</string><key>shortcut</key><string>どくりつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>内部</string><key>shortcut</key><string>ないぶ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>内容</string><key>shortcut</key><string>ないよう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>南北</string><key>shortcut</key><string>なんぼく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>西側</string><key>shortcut</key><string>にしがわ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>日本語</string><key>shortcut</key><string>にほんご</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>入手</string><key>shortcut</key><string>にゅうしゅ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>入植</string><key>shortcut</key><string>にゅうしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>入力</string><key>shortcut</key><string>にゅうりょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>任意</string><key>shortcut</key><string>にんい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>認知</string><key>shortcut</key><string>にんち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>認定</string><key>shortcut</key><string>にんてい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>任天堂</string><key>shortcut</key><string>にんてんどう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>値段</string><key>shortcut</key><string>ねだん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>年間</string><key>shortcut</key><string>ねんかん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>年度</string><key>shortcut</key><string>ねんど</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>農業</string><key>shortcut</key><string>のうぎょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>濃度</string><key>shortcut</key><string>のうど</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>能力</string><key>shortcut</key><string>のうりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>背景</string><key>shortcut</key><string>はいけい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>廃止</string><key>shortcut</key><string>はいし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>排除</string><key>shortcut</key><string>はいじょ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>破壊</string><key>shortcut</key><string>はかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>博士</string><key>shortcut</key><string>はかせ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>博物館</string><key>shortcut</key><string>はくぶつかん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>派遣</string><key>shortcut</key><string>はけん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>破損</string><key>shortcut</key><string>はそん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発見</string><key>shortcut</key><string>はっけん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発行</string><key>shortcut</key><string>はっこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発生</string><key>shortcut</key><string>はっせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発達</string><key>shortcut</key><string>はったつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発展</string><key>shortcut</key><string>はってん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発表</string><key>shortcut</key><string>はっぴょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発音</string><key>shortcut</key><string>はつおん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発売</string><key>shortcut</key><string>はつばい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発明</string><key>shortcut</key><string>はつめい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>母親</string><key>shortcut</key><string>ははおや</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>範囲</string><key>shortcut</key><string>はんい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>反映</string><key>shortcut</key><string>はんえい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>反対</string><key>shortcut</key><string>はんたい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>判断</string><key>shortcut</key><string>はんだん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>反応</string><key>shortcut</key><string>はんのう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>販売</string><key>shortcut</key><string>はんばい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>判明</string><key>shortcut</key><string>はんめい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>場合</string><key>shortcut</key><string>ばあい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>場所</string><key>shortcut</key><string>ばしょ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>番号</string><key>shortcut</key><string>ばんごう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>比較</string><key>shortcut</key><string>ひかく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>被害</string><key>shortcut</key><string>ひがい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>非公式</string><key>shortcut</key><string>ひこうしき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>非常</string><key>shortcut</key><string>ひじょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>必要</string><key>shortcut</key><string>ひつよう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>評価</string><key>shortcut</key><string>ひょうか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>表記</string><key>shortcut</key><string>ひょうき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>表現</string><key>shortcut</key><string>ひょうげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>標高</string><key>shortcut</key><string>ひょうこう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>表示</string><key>shortcut</key><string>ひょうじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>表面</string><key>shortcut</key><string>ひょうめん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>費用</string><key>shortcut</key><string>ひよう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>比率</string><key>shortcut</key><string>ひりつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>品評会</string><key>shortcut</key><string>ひんぴょうかい</string></dict>	<!-- Sudachiにもある -->	<!-- 元: vin.plist -->
+	<dict><key>phrase</key><string>病院</string><key>shortcut</key><string>びょういん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>病気</string><key>shortcut</key><string>びょうき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>普及</string><key>shortcut</key><string>ふきゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>複雑</string><key>shortcut</key><string>ふくざつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>複数</string><key>shortcut</key><string>ふくすう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>負担</string><key>shortcut</key><string>ふたん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>復帰</string><key>shortcut</key><string>ふっき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>復興</string><key>shortcut</key><string>ふっこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>噴火</string><key>shortcut</key><string>ふんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>舞台</string><key>shortcut</key><string>ぶたい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>物質</string><key>shortcut</key><string>ぶっしつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>文化</string><key>shortcut</key><string>ぶんか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分解</string><key>shortcut</key><string>ぶんかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分割</string><key>shortcut</key><string>ぶんかつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分散</string><key>shortcut</key><string>ぶんさん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>文書</string><key>shortcut</key><string>ぶんしょ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>文章</string><key>shortcut</key><string>ぶんしょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分析</string><key>shortcut</key><string>ぶんせき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分布</string><key>shortcut</key><string>ぶんぷ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>文明</string><key>shortcut</key><string>ぶんめい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分離</string><key>shortcut</key><string>ぶんり</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分類</string><key>shortcut</key><string>ぶんるい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>分裂</string><key>shortcut</key><string>ぶんれつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ha</string><key>shortcut</key><string>へくたーる</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>変化</string><key>shortcut</key><string>へんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>変換</string><key>shortcut</key><string>へんかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>変更</string><key>shortcut</key><string>へんこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>返済</string><key>shortcut</key><string>へんさい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>変動</string><key>shortcut</key><string>へんどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>包括</string><key>shortcut</key><string>ほうかつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>包括的</string><key>shortcut</key><string>ほうかつてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>方向</string><key>shortcut</key><string>ほうこう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>報告</string><key>shortcut</key><string>ほうこく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>方式</string><key>shortcut</key><string>ほうしき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>放出</string><key>shortcut</key><string>ほうしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>方針</string><key>shortcut</key><string>ほうしん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>包装</string><key>shortcut</key><string>ほうそう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>法的</string><key>shortcut</key><string>ほうてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>方法</string><key>shortcut</key><string>ほうほう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>法律</string><key>shortcut</key><string>ほうりつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>保管</string><key>shortcut</key><string>ほかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>保護</string><key>shortcut</key><string>ほご</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>保証</string><key>shortcut</key><string>ほしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>保持</string><key>shortcut</key><string>ほじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>発足</string><key>shortcut</key><string>ほっそく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>本格的</string><key>shortcut</key><string>ほんかくてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>本拠地</string><key>shortcut</key><string>ほんきょち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>本名</string><key>shortcut</key><string>ほんみょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>本来</string><key>shortcut</key><string>ほんらい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>貿易</string><key>shortcut</key><string>ぼうえき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>防止</string><key>shortcut</key><string>ぼうし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マイクロソフト</string><key>shortcut</key><string>まいくろそふと</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>毎年</string><key>shortcut</key><string>まいとし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>真上</string><key>shortcut</key><string>まうえ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>真横</string><key>shortcut</key><string>まよこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>見極める</string><key>shortcut</key><string>みきわめる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>魅了</string><key>shortcut</key><string>みりょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>魅力</string><key>shortcut</key><string>みりょく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>民族</string><key>shortcut</key><string>みんぞく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>無視</string><key>shortcut</key><string>むし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>明確</string><key>shortcut</key><string>めいかく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>目覚</string><key>shortcut</key><string>めざまし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>目安</string><key>shortcut</key><string>めやす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>メリハリ</string><key>shortcut</key><string>めりはり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>目的</string><key>shortcut</key><string>もくてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>文字</string><key>shortcut</key><string>もじ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>物語</string><key>shortcut</key><string>ものがたり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>夜間</string><key>shortcut</key><string>やかん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>役割</string><key>shortcut</key><string>やくわり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>野菜</string><key>shortcut</key><string>やさい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>優位性</string><key>shortcut</key><string>ゆういせい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>有効</string><key>shortcut</key><string>ゆうこう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>融合</string><key>shortcut</key><string>ゆうごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>優秀</string><key>shortcut</key><string>ゆうしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>優勝</string><key>shortcut</key><string>ゆうしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>有名</string><key>shortcut</key><string>ゆうめい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>優劣</string><key>shortcut</key><string>ゆうれつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>輸出</string><key>shortcut</key><string>ゆしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>輸送</string><key>shortcut</key><string>ゆそう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>輸入</string><key>shortcut</key><string>ゆにゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>由来</string><key>shortcut</key><string>ゆらい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>容易</string><key>shortcut</key><string>ようい</string><key>pos</key><string>形容詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>要因</string><key>shortcut</key><string>よういん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>用語</string><key>shortcut</key><string>ようご</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>幼少期</string><key>shortcut</key><string>ようしょうき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>要素</string><key>shortcut</key><string>ようそ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>容量</string><key>shortcut</key><string>ようりょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>翌年</string><key>shortcut</key><string>よくねん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>理解</string><key>shortcut</key><string>りかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>リサイクル</string><key>shortcut</key><string>りさいくる</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>リスク</string><key>shortcut</key><string>りすく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>リスト</string><key>shortcut</key><string>りすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>リターンマッチ</string><key>shortcut</key><string>りたーんまっち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>離脱</string><key>shortcut</key><string>りだつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>利点</string><key>shortcut</key><string>りてん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>略称</string><key>shortcut</key><string>りゃくしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>流行</string><key>shortcut</key><string>りゅうこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>粒子</string><key>shortcut</key><string>りゅうし</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>流通</string><key>shortcut</key><string>りゅうつう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>理由</string><key>shortcut</key><string>りゆう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>料理</string><key>shortcut</key><string>りょうり</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>利用</string><key>shortcut</key><string>りよう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>理論</string><key>shortcut</key><string>りろん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ルール</string><key>shortcut</key><string>るーる</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>歴史</string><key>shortcut</key><string>れきし</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>歴史的</string><key>shortcut</key><string>れきしてき</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>歴代</string><key>shortcut</key><string>れきだい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レシピ</string><key>shortcut</key><string>れしぴ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レストラン</string><key>shortcut</key><string>れすとらん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>劣化</string><key>shortcut</key><string>れっか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>労働</string><key>shortcut</key><string>ろうどう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>労働者</string><key>shortcut</key><string>ろうどうしゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>労働条件</string><key>shortcut</key><string>ろうどうじょうけん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>惑星</string><key>shortcut</key><string>わくせい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>話題</string><key>shortcut</key><string>わだい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>割合</string><key>shortcut</key><string>わりあい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>割水</string><key>shortcut</key><string>わりみず</string></dict>	<!-- Sudachiにもある -->
 
@@ -406,6 +879,7 @@
 	<dict><key>phrase</key><string>トラキア人</string><key>shortcut</key><string>とらきあじん</string></dict>
 	<dict><key>phrase</key><string>ドナウ系</string><key>shortcut</key><string>どなうけい</string></dict>
 	<dict><key>phrase</key><string>長年各工房</string><key>shortcut</key><string>ながねんかくこうぼう</string></dict>
+	<dict><key>phrase</key><string>日本初</string><key>shortcut</key><string>にほんはつ</string></dict>
 	<dict><key>phrase</key><string>認知度</string><key>shortcut</key><string>にんちど</string></dict>
 	<dict><key>phrase</key><string>認定年</string><key>shortcut</key><string>にんていねん</string></dict>
 	<dict><key>phrase</key><string>発効年</string><key>shortcut</key><string>はっこうねん</string></dict>
