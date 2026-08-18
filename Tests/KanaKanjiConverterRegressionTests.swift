@@ -767,7 +767,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMYaruPrefersKana() throws {
         try prepareRealLMDictionary()
         // 遣る は poubelle(InitialSuppr)、殺る/姦る は suppr(InitialSupprHidden)。
-        // 実機相当にするため両方をマージして注入する
+        // かな活用形は misc(InitialMisc)の curated 供給。実機相当にするため全部注入する
         var merged: [String: [String]] = [:]
         for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
             let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
@@ -776,10 +776,64 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
         UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "ÉcrituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
         let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
         for reading in ["やってください", "やってる", "やった"] {
             let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
-            XCTAssertEqual(list.first, reading, "reading=\(reading) list=\(list)")
+            // 当て表記(演る/犯る/飲る/行る)は候補に残す。抑制すると活用形の生成元ごと
+            // 消えて候補ゼロになるため、提示層で かな版の下へ回す方式にした
+            XCTAssertGreaterThan(list.count, 1, "reading=\(reading) list=\(list)")
+            let presented = SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(list)
+            XCTAssertEqual(presented.first, reading, "reading=\(reading) presented=\(presented)")
+        }
+    }
+
+    // 2564 第2報: のずるそうじ/はやり/だねえ/すむのよ/なるほどー の候補順。
+    // なるほ(成保/鳴穂)と のよ(野与/野與)はいずれも収穫底値10000のレア語しか無く、
+    // なるほどー・すむのよ を割って当て字合成を作っていたので抑制する。
+    func testRegressionRealLMOrderFixes2564Second() throws {
+        try prepareRealLMDictionary()
+        var merged: [String: [String]] = [:]
+        for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                merged[reading, default: []].append(contentsOf: candidates)
+            }
+        }
+        UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let singles: [(reading: String, expected: String)] = [
+            ("のずるそうじ", "ノズル掃除"),
+            ("はやり", "流行り"),
+            ("だねえ", "だねえ"),
+            ("すむのよ", "済むのよ")
+        ]
+        for (reading, expected) in singles {
+            let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list)")
+        }
+        // なるほどー は連文節が 成保どー/鳴穂どー を返していた。なるほ の抑制で消える
+        for reading in ["なるほどー", "なるほどーー"] {
+            let multi = fresh.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertFalse(
+                multi.contains(where: { $0.contains("成保") || $0.contains("鳴穂") }),
+                "reading=\(reading) multi=\(multi)"
+            )
         }
     }
 

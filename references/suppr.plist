@@ -118,6 +118,10 @@
 	<dict><key>phrase</key><string>平</string><key>shortcut</key><string>たいらの</string></dict>
 	<dict><key>phrase</key><string>平野</string><key>shortcut</key><string>たいらの</string></dict>
 	<dict><key>phrase</key><string>藤原</string><key>shortcut</key><string>ふじわらの</string></dict>	<!-- 古代氏姓の「の込み」読み(藤原=フジワラノ/源=ミナモトノ/平=タイラノ、Sudachi実在)。 ふじわらの 等で rank0 に居座り 藤原の/源の/平の の合成を抑えるため 阿刀 と同型の 二段構え。平野(たいらの) は読み跨ぎ気味の収穫で同時に抑制 -->
+	<dict><key>phrase</key><string>成保</string><key>shortcut</key><string>なるほ</string></dict>	<!-- なるほ には 成保/鳴穂(いずれも収穫底値10000)しか無く、なるほどー を なるほ+どー に割って 成保どー/鳴穂どー を作る。なるほど はかなが正書で、伸ばした形も同じ(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>鳴穂</string><key>shortcut</key><string>なるほ</string></dict>
+	<dict><key>phrase</key><string>野与</string><key>shortcut</key><string>のよ</string></dict>	<!-- のよ には 野与/野與(武蔵七党の氏族名、収穫底値10000)しか無く、すむのよ 等の 述語+のよ を 〜の+よ でなく 野与 で割る。終助詞 のよ はかなが正書(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>野與</string><key>shortcut</key><string>のよ</string></dict>
 	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>
 	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>
 	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
@@ -188,9 +192,6 @@
 	<dict><key>phrase</key><string>耳</string><key>shortcut</key><string>のみ</string></dict>	<!-- のみ→耳(古語読み11090)。飲みに行けますよ 等で 耳に... の断片を作る -->
 	<dict><key>phrase</key><string>殺る</string><key>shortcut</key><string>やる</string></dict>	<!-- やる の物騒な表記。基底が かな やる(8372)とほぼ同率で、までやってる→まで殺ってる 等の派生を作る(遣る/ヤル は poubelle 済み。演る は芸能文脈で実在につき残置) -->
 	<dict><key>phrase</key><string>姦る</string><key>shortcut</key><string>やる</string></dict>
-	<dict><key>phrase</key><string>犯る</string><key>shortcut</key><string>やる</string></dict>	<!-- 犯る/飲る/行る も やる の当て表記。殺る/姦る を抑制しても これらが残って やってください→犯って/飲って/行って が先頭に居座る。やる 系はかなが正書(ユーザ指定 2564) -->
-	<dict><key>phrase</key><string>飲る</string><key>shortcut</key><string>やる</string></dict>
-	<dict><key>phrase</key><string>行る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>吊れる</string><key>shortcut</key><string>つれる</string></dict>	<!-- 吊れる/攣れる は極めて稀な活用(吊る/攣る が普通)。つれてくる 等で 連れて を邪魔する -->
 	<dict><key>phrase</key><string>攣れる</string><key>shortcut</key><string>つれる</string></dict>
 	<!-- ※ ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 -->
@@ -298,7 +299,6 @@
 	<!-- ■ 完全一致で再供給する二段構え(抑制しつつ exactReadingOnlySeed で末尾に出す) -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
 	<dict><key>phrase</key><string>サンガ</string><key>shortcut</key><string>さんが</string></dict>
-	<dict><key>phrase</key><string>演る</string><key>shortcut</key><string>やる</string></dict>	<!-- 演る は芸能文脈で実在(ライヴで演る)。活用形で やってください→演ってください を作るので抑制するが、やる 完全一致時のみ末尾に再供給して選べるようにする(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>冠者</string><key>shortcut</key><string>かじゃ</string></dict>	<!-- 冠者(かじゃ、狂言用語wc5886)が と+冠者 分割で とかじゃ〜 を乗っ取る。カジャ(wc2148)も冠者suppr後は同穴で浮上。冠者 は完全一致時のみ再供給(かんじゃ 読みは無傷) -->
 	<dict><key>phrase</key><string>カジャ</string><key>shortcut</key><string>かじゃ</string></dict>
 	<dict><key>phrase</key><string>御</string><key>shortcut</key><string>おん</string></dict>	<!-- 御(接頭辞)/音(単独名詞でない読み)。を→御(5399)等のbigramで えあこんをおん の変種枠を占有し ON/On/on を圏外に押し出す。完全一致時のみ末尾再供給(おんしゃ→御社 等の複合読みは無傷) -->
