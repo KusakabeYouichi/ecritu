@@ -160,6 +160,29 @@ enum SupplementaryCandidateMerger {
         return prioritizedCandidates
     }
 
+    // やる の当て表記(Sudachi 収穫)。かな正書を先頭にするための降格対象。
+    static let yaruKanjiSurfaces = ["演", "犯", "飲", "行", "遣", "殺", "姦"]
+    // やる の活用語尾の頭文字(やって/やった/やり/やら/やれ/やろ)。
+    static let yaruInflectionHeads: Set<Character> = ["っ", "り", "ら", "れ", "ろ", "る"]
+
+    // 漢字表層をかなへ置換した版が同一リストにあるとき、その置換版を返す。置換対象の直後が
+    // 活用語尾の頭文字であることを要求し、複合語(出来事/行方 等)への誤爆を防ぐ。
+    private static func kanaCounterpartByReplacement(
+        of candidate: String,
+        kanji: String,
+        kana: String,
+        inflectionHeads: Set<Character>,
+        candidateSet: Set<String>
+    ) -> String? {
+        guard let range = candidate.range(of: kanji) else { return nil }
+        guard range.upperBound < candidate.endIndex,
+            inflectionHeads.contains(candidate[range.upperBound]) else {
+            return nil
+        }
+        let replaced = candidate.replacingOccurrences(of: kanji, with: kana)
+        return (replaced != candidate && candidateSet.contains(replaced)) ? replaced : nil
+    }
+
     // ユーザ方針: 「出来る」系は候補に出してよいが、必ず「できる」系より後ろ。
     // 「出来」の直後がひらがな(できる活用の頭 る/た/て/ま/な/ち/れ)で、同一リストに
     // 「でき」へ置換した版が存在する場合のみ、漢字版をかな版の直後へ回す。
@@ -169,13 +192,30 @@ enum SupplementaryCandidateMerger {
         let candidateSet = Set(candidates)
 
         func kanaCounterpart(of candidate: String) -> String? {
-            guard let range = candidate.range(of: "出来") else { return nil }
-            guard range.upperBound < candidate.endIndex,
-                dekiInflectionHeads.contains(candidate[range.upperBound]) else {
-                return nil
+            if let kana = kanaCounterpartByReplacement(
+                of: candidate,
+                kanji: "出来",
+                kana: "でき",
+                inflectionHeads: dekiInflectionHeads,
+                candidateSet: candidateSet
+            ) {
+                return kana
             }
-            let kana = candidate.replacingOccurrences(of: "出来", with: "でき")
-            return (kana != candidate && candidateSet.contains(kana)) ? kana : nil
+            // やる も同じ扱い(ユーザ方針: やる系はかなが先頭)。演る/犯る/飲る/行る/遣る/殺る
+            // といった当て表記は候補に残してよいが、必ず かな版の後ろ。基底を抑制すると活用形の
+            // 生成元ごと消えて候補ゼロになるため、抑制ではなく並べ替えで対処する(2564)。
+            for kanji in Self.yaruKanjiSurfaces {
+                if let kana = kanaCounterpartByReplacement(
+                    of: candidate,
+                    kanji: kanji,
+                    kana: "や",
+                    inflectionHeads: Self.yaruInflectionHeads,
+                    candidateSet: candidateSet
+                ) {
+                    return kana
+                }
+            }
+            return nil
         }
 
         var result: [String] = []
