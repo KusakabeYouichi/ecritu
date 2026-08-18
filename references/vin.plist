@@ -10432,7 +10432,7 @@
 	<dict><key>phrase</key><string>淡色ビール</string><key>shortcut</key><string>たんしょくびーる</string></dict>
 	<dict><key>phrase</key><string>淡麗</string><key>shortcut</key><string>たんれい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>深刻</string><key>shortcut</key><string>しんこく</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>深紅色</string><key>shortcut</key><string>しんくいろ</string></dict>
+	<dict><key>phrase</key><string>深紅色</string><key>shortcut</key><string>しんこうしょく</string></dict>
 	<dict><key>phrase</key><string>混入</string><key>shortcut</key><string>こんにゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>混合</string><key>shortcut</key><string>こんごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>混合溶液</string><key>shortcut</key><string>こんごうようえき</string></dict>
