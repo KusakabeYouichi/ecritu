@@ -70,10 +70,10 @@
 	<dict><key>phrase</key><string>MacBook Pro</string><key>shortcut</key><string>まっくぶっくぷろ</string></dict>
 	<dict><key>phrase</key><string>MacBook</string><key>shortcut</key><string>まっくぶっく</string></dict>
 	<dict><key>phrase</key><string>Macintosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
-	<dict><key>phrase</key><string>MagSafe</string><key>shortcut</key><string>まぐせいふ</string></dict>
-	<dict><key>phrase</key><string>McIntosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
 
 	<!-- OSや機能 -->
+	<dict><key>phrase</key><string>MagSafe</string><key>shortcut</key><string>まぐせいふ</string></dict>
+	<dict><key>phrase</key><string>Lightning</string><key>shortcut</key><string>らいとにんぐ</string></dict>
 	<dict><key>phrase</key><string>AirDrop</string><key>shortcut</key><string>えあどろっぷ</string></dict>
 	<dict><key>phrase</key><string>AirPlay</string><key>shortcut</key><string>えあぷれい</string></dict>
 	<dict><key>phrase</key><string>Apple Intelligence</string><key>shortcut</key><string>あっぷるいんてりじぇんす</string></dict>
