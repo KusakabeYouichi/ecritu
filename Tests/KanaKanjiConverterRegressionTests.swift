@@ -826,12 +826,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         for (reading, expected) in singles {
             let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
             XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list)")
+            // 連文節が別解(住むのよ 等)を先頭に返すと実機で負けるので、curated 1ノード化で
+            // 単文節に委ねさせる。空か、先頭が単文節と一致していること
+            let multi = fresh.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.isEmpty || multi.first == expected, "reading=\(reading) multi=\(multi)")
         }
         // なるほどー は連文節が 成保どー/鳴穂どー を返していた。なるほ の抑制で消える
+        // なるほどー: なるほ の抑制後も なる+保+どー に割られたので seed で1ノード化した
         for reading in ["なるほどー", "なるほどーー"] {
+            let single = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, reading, "reading=\(reading) single=\(single)")
             let multi = fresh.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertFalse(
-                multi.contains(where: { $0.contains("成保") || $0.contains("鳴穂") }),
+                multi.contains(where: { $0.contains("保") || $0.contains("穂") }),
                 "reading=\(reading) multi=\(multi)"
             )
         }
