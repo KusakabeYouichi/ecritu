@@ -761,6 +761,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(hanashika.prefix(3).contains("はなしか"), "list=\(hanashika)")
     }
 
+    // はくし: 博士 が word_cost 8757 で {柏子, 白指, 白詩, 薄志, 薄資}(7404)のレア語群に
+    // 負けて7番目だった。白紙 1位を維持しつつ 博士 を2位へ(ユーザ指定 2564)。
+    func testRegressionRealLMHakushiPrefersHakushi() throws {
+        try prepareRealLMDictionary()
+
+        let hakushi = converter.candidates(for: "はくし", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(hakushi.first, "白紙", "list=\(hakushi)")
+        XCTAssertEqual(hakushi.dropFirst().first, "博士", "list=\(hakushi)")
+    }
+
     // なるので/ですかね: かな正書の機能語句が連文節で 鳴るので/出須賀ね に乗っ取られて
     // いた。句スパンのかな識別を seed 供給+ボーナスで先頭に(ユーザ指定 2556)。
     func testRegressionRealLMNarunodeDesukaneKanaLeading() throws {
