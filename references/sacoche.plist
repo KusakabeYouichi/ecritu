@@ -75,6 +75,7 @@
 	        <dict><key>phrase</key><string>金環蝕</string><key>shortcut</key><string>きんかんしょく</string></dict>
 	        <dict><key>phrase</key><string>金環日蝕</string><key>shortcut</key><string>きんかんにっしょく</string></dict>
 	<!-- 音楽 -->
+	        <dict><key>phrase</key><string>McIntosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
 	        <dict><key>phrase</key><string>Fostex</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
 	        <dict><key>phrase</key><string>iReal b</string><key>shortcut</key><string>あいりあるびー</string></dict>
 	        <dict><key>phrase</key><string>iReal Pro</string><key>shortcut</key><string>あいりあるぷろ</string></dict>
@@ -105,7 +106,6 @@
 	        <dict><key>phrase</key><string>カ行変格活用</string><key>shortcut</key><string>かぎょうへんかくかつよう</string></dict>
 	        <dict><key>phrase</key><string>名詞形</string><key>shortcut</key><string>めいしけい</string></dict>
 	<!-- 技術 -->
-	        <dict><key>phrase</key><string>Lightning</string><key>shortcut</key><string>らいとにんぐ</string></dict>
 	        <dict><key>phrase</key><string>Microwave</string><key>shortcut</key><string>まいくろうえいゔ</string></dict>
 	        <dict><key>phrase</key><string>Square</string><key>shortcut</key><string>すくえあ</string></dict>
 	        <dict><key>phrase</key><string>US-BUYER</string><key>shortcut</key><string>ゆーえすばいやー</string></dict>
@@ -248,6 +248,7 @@
 	        <dict><key>phrase</key><string>袱紗仕立て</string><key>shortcut</key><string>ふくさじたて</string></dict>
 	        <dict><key>phrase</key><string>ブルグル</string><key>shortcut</key><string>ぶるぐる</string></dict>
 	        <dict><key>phrase</key><string>ブルグア</string><key>shortcut</key><string>ぶるぐあ</string></dict>
+	        <dict><key>phrase</key><string>醤油麹</string><key>shortcut</key><string>しょうゆこうじ</string></dict>	<!-- 未登録で {醤油工事, 醤油高次, 醤油公示, 醤油こうじ} になる。語として登録すれば合成に頼らない(ユーザ指定 2564) -->
 	<!-- 肉の焼き具合 -->
 	        <dict><key>phrase</key><string>ブルー・レア</string><key>shortcut</key><string>ぶるーれあ</string></dict>
 	        <dict><key>phrase</key><string>ミディアム・レア</string><key>shortcut</key><string>みでぃあむれあ</string></dict>
@@ -385,6 +386,7 @@
 	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
 	        <dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
 	<!-- 一般用語 -->
+	        <dict><key>phrase</key><string>OK</string><key>shortcut</key><string>おーけい</string></dict>	<!-- 辞書は {オーケイ, おーけい} のみで OK が引けなかった(ユーザ指定 2564) -->
 	        <dict><key>phrase</key><string>Hermès</string><key>shortcut</key><string>えるめす</string></dict>
 	        <dict><key>phrase</key><string>再設計</string><key>shortcut</key><string>さいせっけい</string><key>pos</key><string>サ変名詞</string></dict>
 	        <dict><key>phrase</key><string>拡大率</string><key>shortcut</key><string>かくだいりつ</string></dict>
@@ -450,244 +452,6 @@
 	        <dict><key>phrase</key><string>濵</string><key>shortcut</key><string>まゆはま</string></dict>
 	<!-- ギリシャ文字 -->
 	        <dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
-	<!-- 変換順位の維持(vin.plist から移した同音競合語。同じ読みの候補中でコスト順位が3位以下のため、供給が無いと順位が落ちる) -->
-	        <dict><key>phrase</key><string>青臭</string><key>shortcut</key><string>あおくさ</string><key>pos</key><string>形容詞</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>赤身</string><key>shortcut</key><string>あかみ</string></dict>	<!-- 3位/12候補 -->
-	        <dict><key>phrase</key><string>葦</string><key>shortcut</key><string>あし</string></dict>	<!-- 5位/8候補 -->
-	        <dict><key>phrase</key><string>安価</string><key>shortcut</key><string>あんか</string></dict>	<!-- 4位/8候補 -->
-	        <dict><key>phrase</key><string>異臭</string><key>shortcut</key><string>いしゅう</string></dict>	<!-- 3位/12候補 -->
-	        <dict><key>phrase</key><string>意匠</string><key>shortcut</key><string>いしょう</string></dict>	<!-- 5位/9候補 -->
-	        <dict><key>phrase</key><string>委託</string><key>shortcut</key><string>いたく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/12候補 -->
-	        <dict><key>phrase</key><string>萎凋</string><key>shortcut</key><string>いちょう</string></dict>	<!-- 11位/18候補 -->
-	        <dict><key>phrase</key><string>緯度</string><key>shortcut</key><string>いど</string></dict>	<!-- 6位/11候補 -->
-	        <dict><key>phrase</key><string>意味合</string><key>shortcut</key><string>いみあい</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>色合</string><key>shortcut</key><string>いろあい</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>旨味</string><key>shortcut</key><string>うまみ</string></dict>	<!-- 4位/8候補 -->
-	        <dict><key>phrase</key><string>売上</string><key>shortcut</key><string>うりあげ</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>栄華</string><key>shortcut</key><string>えいが</string></dict>	<!-- 3位/19候補 -->
-	        <dict><key>phrase</key><string>液中</string><key>shortcut</key><string>えきちゅう</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>雄牛</string><key>shortcut</key><string>おうし</string></dict>	<!-- 8位/12候補 -->
-	        <dict><key>phrase</key><string>黄桃</string><key>shortcut</key><string>おうとう</string></dict>	<!-- 5位/13候補 -->
-	        <dict><key>phrase</key><string>櫂</string><key>shortcut</key><string>かい</string></dict>	<!-- 14位/24候補 -->
-	        <dict><key>phrase</key><string>改植</string><key>shortcut</key><string>かいしょく</string></dict>	<!-- 8位/11候補 -->
-	        <dict><key>phrase</key><string>海底</string><key>shortcut</key><string>かいてい</string></dict>	<!-- 4位/10候補 -->
-	        <dict><key>phrase</key><string>海霧</string><key>shortcut</key><string>かいむ</string></dict>	<!-- 4位/6候補 -->
-	        <dict><key>phrase</key><string>海洋</string><key>shortcut</key><string>かいよう</string></dict>	<!-- 3位/14候補 -->
-	        <dict><key>phrase</key><string>牡蠣</string><key>shortcut</key><string>かき</string></dict>	<!-- 18位/24候補 -->
-	        <dict><key>phrase</key><string>格付</string><key>shortcut</key><string>かくづけ</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>角度</string><key>shortcut</key><string>かくど</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>攪拌</string><key>shortcut</key><string>かくはん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/11候補 -->
-	        <dict><key>phrase</key><string>河口</string><key>shortcut</key><string>かこう</string></dict>	<!-- 6位/26候補 -->
-	        <dict><key>phrase</key><string>菓子</string><key>shortcut</key><string>かし</string></dict>	<!-- 5位/24候補 -->
-	        <dict><key>phrase</key><string>果樹</string><key>shortcut</key><string>かじゅ</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>果汁</string><key>shortcut</key><string>かじゅう</string></dict>	<!-- 4位/7候補 -->
-	        <dict><key>phrase</key><string>粕</string><key>shortcut</key><string>かす</string></dict>	<!-- 5位/12候補 -->
-	        <dict><key>phrase</key><string>花穂</string><key>shortcut</key><string>かすい</string></dict>	<!-- 7位/15候補 -->
-	        <dict><key>phrase</key><string>果糖</string><key>shortcut</key><string>かとう</string></dict>	<!-- 12位/24候補 -->
-	        <dict><key>phrase</key><string>果皮</string><key>shortcut</key><string>かひ</string></dict>	<!-- 5位/8候補 -->
-	        <dict><key>phrase</key><string>甕</string><key>shortcut</key><string>かめ</string></dict>	<!-- 4位/5候補 -->
-	        <dict><key>phrase</key><string>辛味</string><key>shortcut</key><string>からみ</string></dict>	<!-- 6位/12候補 -->
-	        <dict><key>phrase</key><string>果粒</string><key>shortcut</key><string>かりゅう</string></dict>	<!-- 4位/18候補 -->
-	        <dict><key>phrase</key><string>還元</string><key>shortcut</key><string>かんげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/13候補 -->
-	        <dict><key>phrase</key><string>肝臓</string><key>shortcut</key><string>かんぞう</string></dict>	<!-- 3位/24候補 -->
-	        <dict><key>phrase</key><string>概要</string><key>shortcut</key><string>がいよう</string></dict>	<!-- 6位/8候補 -->
-	        <dict><key>phrase</key><string>樹</string><key>shortcut</key><string>き</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>木イチゴ</string><key>shortcut</key><string>きいちご</string></dict>	<!-- 4位/5候補 -->
-	        <dict><key>phrase</key><string>帰還</string><key>shortcut</key><string>きかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/24候補 -->
-	        <dict><key>phrase</key><string>器具</string><key>shortcut</key><string>きぐ</string></dict>	<!-- 4位/7候補 -->
-	        <dict><key>phrase</key><string>希少</string><key>shortcut</key><string>きしょう</string></dict>	<!-- 14位/24候補 -->
-	        <dict><key>phrase</key><string>生地</string><key>shortcut</key><string>きじ</string></dict>	<!-- 3位/22候補 -->
-	        <dict><key>phrase</key><string>寄生</string><key>shortcut</key><string>きせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/24候補 -->
-	        <dict><key>phrase</key><string>忌憚</string><key>shortcut</key><string>きたん</string></dict>	<!-- 6位/8候補 -->
-	        <dict><key>phrase</key><string>貴重</string><key>shortcut</key><string>きちょう</string></dict>	<!-- 9位/15候補 -->
-	        <dict><key>phrase</key><string>貴腐</string><key>shortcut</key><string>きふ</string></dict>	<!-- 9位/13候補 -->
-	        <dict><key>phrase</key><string>気持</string><key>shortcut</key><string>きもち</string></dict>	<!-- 3位/8候補 -->
-	        <dict><key>phrase</key><string>急激</string><key>shortcut</key><string>きゅうげき</string></dict>	<!-- 4位/5候補 -->
-	        <dict><key>phrase</key><string>急峻</string><key>shortcut</key><string>きゅうしゅん</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>旧称</string><key>shortcut</key><string>きゅうしょう</string></dict>	<!-- 5位/9候補 -->
-	        <dict><key>phrase</key><string>菌</string><key>shortcut</key><string>きん</string></dict>	<!-- 3位/23候補 -->
-	        <dict><key>phrase</key><string>金額</string><key>shortcut</key><string>きんがく</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>菌糸</string><key>shortcut</key><string>きんし</string></dict>	<!-- 7位/16候補 -->
-	        <dict><key>phrase</key><string>釧路</string><key>shortcut</key><string>くしろ</string></dict>	<!-- 3位/10候補 -->
-	        <dict><key>phrase</key><string>景観</string><key>shortcut</key><string>けいかん</string></dict>	<!-- 3位/13候補 -->
-	        <dict><key>phrase</key><string>契機</string><key>shortcut</key><string>けいき</string></dict>	<!-- 8位/24候補 -->
-	        <dict><key>phrase</key><string>経済連携協定</string><key>shortcut</key><string>けいざいれんけいきょうてい</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>経度</string><key>shortcut</key><string>けいど</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>原価</string><key>shortcut</key><string>げんか</string></dict>	<!-- 6位/21候補 -->
-	        <dict><key>phrase</key><string>厳格</string><key>shortcut</key><string>げんかく</string></dict>	<!-- 4位/11候補 -->
-	        <dict><key>phrase</key><string>厳寒</string><key>shortcut</key><string>げんかん</string></dict>	<!-- 3位/10候補 -->
-	        <dict><key>phrase</key><string>厳禁</string><key>shortcut</key><string>げんきん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>原型</string><key>shortcut</key><string>げんけい</string></dict>	<!-- 4位/12候補 -->
-	        <dict><key>phrase</key><string>厳冬</string><key>shortcut</key><string>げんとう</string></dict>	<!-- 4位/18候補 -->
-	        <dict><key>phrase</key><string>梗</string><key>shortcut</key><string>こう</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>高価</string><key>shortcut</key><string>こうか</string></dict>	<!-- 7位/24候補 -->
-	        <dict><key>phrase</key><string>広義</string><key>shortcut</key><string>こうぎ</string></dict>	<!-- 3位/18候補 -->
-	        <dict><key>phrase</key><string>硬質</string><key>shortcut</key><string>こうしつ</string></dict>	<!-- 3位/12候補 -->
-	        <dict><key>phrase</key><string>硬水</string><key>shortcut</key><string>こうすい</string></dict>	<!-- 6位/12候補 -->
-	        <dict><key>phrase</key><string>公正</string><key>shortcut</key><string>こうせい</string></dict>	<!-- 3位/24候補 -->
-	        <dict><key>phrase</key><string>降雪</string><key>shortcut</key><string>こうせつ</string></dict>	<!-- 6位/24候補 -->
-	        <dict><key>phrase</key><string>広大</string><key>shortcut</key><string>こうだい</string></dict>	<!-- 7位/24候補 -->
-	        <dict><key>phrase</key><string>高地</string><key>shortcut</key><string>こうち</string></dict>	<!-- 21位/24候補 -->
-	        <dict><key>phrase</key><string>工程</string><key>shortcut</key><string>こうてい</string></dict>	<!-- 9位/24候補 -->
-	        <dict><key>phrase</key><string>好適</string><key>shortcut</key><string>こうてき</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>硬度</string><key>shortcut</key><string>こうど</string></dict>	<!-- 6位/24候補 -->
-	        <dict><key>phrase</key><string>航路</string><key>shortcut</key><string>こうろ</string></dict>	<!-- 4位/25候補 -->
-	        <dict><key>phrase</key><string>国籍</string><key>shortcut</key><string>こくせき</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>枯死</string><key>shortcut</key><string>こし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/23候補 -->
-	        <dict><key>phrase</key><string>故事</string><key>shortcut</key><string>こじ</string></dict>	<!-- 9位/18候補 -->
-	        <dict><key>phrase</key><string>弧状</string><key>shortcut</key><string>こじょう</string></dict>	<!-- 6位/12候補 -->
-	        <dict><key>phrase</key><string>米麹</string><key>shortcut</key><string>こめこうじ</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>混合</string><key>shortcut</key><string>こんごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>最上</string><key>shortcut</key><string>さいじょう</string></dict>	<!-- 4位/24候補 -->
-	        <dict><key>phrase</key><string>最良</string><key>shortcut</key><string>さいりょう</string></dict>	<!-- 3位/11候補 -->
-	        <dict><key>phrase</key><string>左岸</string><key>shortcut</key><string>さがん</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>砂岩</string><key>shortcut</key><string>さがん</string></dict>	<!-- 4位/4候補 -->
-	        <dict><key>phrase</key><string>左端</string><key>shortcut</key><string>さたん</string></dict>	<!-- 5位/5候補 -->
-	        <dict><key>phrase</key><string>酸</string><key>shortcut</key><string>さん</string></dict>	<!-- 16位/23候補 -->
-	        <dict><key>phrase</key><string>酸性</string><key>shortcut</key><string>さんせい</string></dict>	<!-- 6位/14候補 -->
-	        <dict><key>phrase</key><string>散布</string><key>shortcut</key><string>さんぷ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/6候補 -->
-	        <dict><key>phrase</key><string>滋賀</string><key>shortcut</key><string>しが</string></dict>	<!-- 7位/11候補 -->
-	        <dict><key>phrase</key><string>死骸</string><key>shortcut</key><string>しがい</string></dict>	<!-- 5位/11候補 -->
-	        <dict><key>phrase</key><string>紫外線</string><key>shortcut</key><string>しがいせん</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>脂質</string><key>shortcut</key><string>ししつ</string></dict>	<!-- 5位/8候補 -->
-	        <dict><key>phrase</key><string>執政</string><key>shortcut</key><string>しっせい</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>脂肪</string><key>shortcut</key><string>しぼう</string></dict>	<!-- 3位/9候補 -->
-	        <dict><key>phrase</key><string>遮光</string><key>shortcut</key><string>しゃこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/15候補 -->
-	        <dict><key>phrase</key><string>習慣</string><key>shortcut</key><string>しゅうかん</string></dict>	<!-- 8位/12候補 -->
-	        <dict><key>phrase</key><string>手指</string><key>shortcut</key><string>しゅし</string></dict>	<!-- 5位/8候補 -->
-	        <dict><key>phrase</key><string>種名</string><key>shortcut</key><string>しゅめい</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>酒類</string><key>shortcut</key><string>しゅるい</string></dict>	<!-- 4位/4候補 -->
-	        <dict><key>phrase</key><string>紹興</string><key>shortcut</key><string>しょうこう</string></dict>	<!-- 8位/26候補 -->
-	        <dict><key>phrase</key><string>照射</string><key>shortcut</key><string>しょうしゃ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/16候補 -->
-	        <dict><key>phrase</key><string>招聘</string><key>shortcut</key><string>しょうへい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/24候補 -->
-	        <dict><key>phrase</key><string>食事</string><key>shortcut</key><string>しょくじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>触感</string><key>shortcut</key><string>しょっかん</string></dict>	<!-- 4位/6候補 -->
-	        <dict><key>phrase</key><string>初冬</string><key>shortcut</key><string>しょとう</string></dict>	<!-- 4位/11候補 -->
-	        <dict><key>phrase</key><string>深刻</string><key>shortcut</key><string>しんこく</string></dict>	<!-- 6位/8候補 -->
-	        <dict><key>phrase</key><string>新種</string><key>shortcut</key><string>しんしゅ</string></dict>	<!-- 6位/7候補 -->
-	        <dict><key>phrase</key><string>浸出</string><key>shortcut</key><string>しんしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>新植</string><key>shortcut</key><string>しんしょく</string></dict>	<!-- 5位/9候補 -->
-	        <dict><key>phrase</key><string>心臓</string><key>shortcut</key><string>しんぞう</string></dict>	<!-- 3位/24候補 -->
-	        <dict><key>phrase</key><string>審判</string><key>shortcut</key><string>しんぱん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 7位/8候補 -->
-	        <dict><key>phrase</key><string>磁器</string><key>shortcut</key><string>じき</string></dict>	<!-- 9位/19候補 -->
-	        <dict><key>phrase</key><string>自根</string><key>shortcut</key><string>じこん</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>自重</string><key>shortcut</key><string>じじゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>次点</string><key>shortcut</key><string>じてん</string></dict>	<!-- 5位/12候補 -->
-	        <dict><key>phrase</key><string>樹液</string><key>shortcut</key><string>じゅえき</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>樹高</string><key>shortcut</key><string>じゅこう</string></dict>	<!-- 7位/14候補 -->
-	        <dict><key>phrase</key><string>樹勢</string><key>shortcut</key><string>じゅせい</string></dict>	<!-- 4位/7候補 -->
-	        <dict><key>phrase</key><string>条件付</string><key>shortcut</key><string>じょうけんつき</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>城塞</string><key>shortcut</key><string>じょうさい</string></dict>	<!-- 3位/12候補 -->
-	        <dict><key>phrase</key><string>推奨</string><key>shortcut</key><string>すいしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/9候補 -->
-	        <dict><key>phrase</key><string>水色</string><key>shortcut</key><string>すいしょく</string></dict>	<!-- 4位/4候補 -->
-	        <dict><key>phrase</key><string>水深</string><key>shortcut</key><string>すいしん</string></dict>	<!-- 3位/7候補 -->
-	        <dict><key>phrase</key><string>巣立</string><key>shortcut</key><string>すだち</string></dict>	<!-- 5位/7候補 -->
-	        <dict><key>phrase</key><string>素早</string><key>shortcut</key><string>すばや</string><key>pos</key><string>形容詞</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>成形</string><key>shortcut</key><string>せいけい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/24候補 -->
-	        <dict><key>phrase</key><string>静止</string><key>shortcut</key><string>せいし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/24候補 -->
-	        <dict><key>phrase</key><string>西端</string><key>shortcut</key><string>せいたん</string></dict>	<!-- 3位/8候補 -->
-	        <dict><key>phrase</key><string>静置</string><key>shortcut</key><string>せいち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/19候補 -->
-	        <dict><key>phrase</key><string>製糖</string><key>shortcut</key><string>せいとう</string></dict>	<!-- 16位/24候補 -->
-	        <dict><key>phrase</key><string>政令</string><key>shortcut</key><string>せいれい</string></dict>	<!-- 10位/17候補 -->
-	        <dict><key>phrase</key><string>赤道</string><key>shortcut</key><string>せきどう</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>船舶</string><key>shortcut</key><string>せんぱく</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>船名</string><key>shortcut</key><string>せんめい</string></dict>	<!-- 5位/8候補 -->
-	        <dict><key>phrase</key><string>爽快</string><key>shortcut</key><string>そうかい</string></dict>	<!-- 4位/12候補 -->
-	        <dict><key>phrase</key><string>早期</string><key>shortcut</key><string>そうき</string></dict>	<!-- 3位/24候補 -->
-	        <dict><key>phrase</key><string>早朝</string><key>shortcut</key><string>そうちょう</string></dict>	<!-- 3位/12候補 -->
-	        <dict><key>phrase</key><string>蕎麦</string><key>shortcut</key><string>そば</string></dict>	<!-- 4位/10候補 -->
-	        <dict><key>phrase</key><string>対価</string><key>shortcut</key><string>たいか</string></dict>	<!-- 5位/18候補 -->
-	        <dict><key>phrase</key><string>帯状</string><key>shortcut</key><string>たいじょう</string></dict>	<!-- 6位/8候補 -->
-	        <dict><key>phrase</key><string>耐性</string><key>shortcut</key><string>たいせい</string></dict>	<!-- 9位/24候補 -->
-	        <dict><key>phrase</key><string>多彩</string><key>shortcut</key><string>たさい</string></dict>	<!-- 3位/10候補 -->
-	        <dict><key>phrase</key><string>樽</string><key>shortcut</key><string>たる</string></dict>	<!-- 3位/7候補 -->
-	        <dict><key>phrase</key><string>単価</string><key>shortcut</key><string>たんか</string></dict>	<!-- 6位/13候補 -->
-	        <dict><key>phrase</key><string>大地</string><key>shortcut</key><string>だいち</string></dict>	<!-- 5位/9候補 -->
-	        <dict><key>phrase</key><string>断崖</string><key>shortcut</key><string>だんがい</string></dict>	<!-- 4位/4候補 -->
-	        <dict><key>phrase</key><string>段上</string><key>shortcut</key><string>だんじょう</string></dict>	<!-- 3位/9候補 -->
-	        <dict><key>phrase</key><string>貯蔵</string><key>shortcut</key><string>ちょぞう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>通関</string><key>shortcut</key><string>つうかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/5候補 -->
-	        <dict><key>phrase</key><string>接木</string><key>shortcut</key><string>つぎき</string></dict>	<!-- 3位/8候補 -->
-	        <dict><key>phrase</key><string>ツバキ科</string><key>shortcut</key><string>つばきか</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>蔓</string><key>shortcut</key><string>つる</string></dict>	<!-- 3位/15候補 -->
-	        <dict><key>phrase</key><string>逓減</string><key>shortcut</key><string>ていげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/7候補 -->
-	        <dict><key>phrase</key><string>低地</string><key>shortcut</key><string>ていち</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>手打</string><key>shortcut</key><string>てうち</string></dict>	<!-- 5位/5候補 -->
-	        <dict><key>phrase</key><string>手間</string><key>shortcut</key><string>てま</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>添加</string><key>shortcut</key><string>てんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 6位/23候補 -->
-	        <dict><key>phrase</key><string>天候</string><key>shortcut</key><string>てんこう</string></dict>	<!-- 4位/19候補 -->
-	        <dict><key>phrase</key><string>伝播</string><key>shortcut</key><string>でんぱ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>冬季</string><key>shortcut</key><string>とうき</string></dict>	<!-- 12位/24候補 -->
-	        <dict><key>phrase</key><string>等級</string><key>shortcut</key><string>とうきゅう</string></dict>	<!-- 5位/11候補 -->
-	        <dict><key>phrase</key><string>当然</string><key>shortcut</key><string>とうぜん</string></dict>	<!-- 5位/10候補 -->
-	        <dict><key>phrase</key><string>島内</string><key>shortcut</key><string>とうない</string></dict>	<!-- 4位/8候補 -->
-	        <dict><key>phrase</key><string>糖分</string><key>shortcut</key><string>とうぶん</string></dict>	<!-- 5位/8候補 -->
-	        <dict><key>phrase</key><string>糖蜜</string><key>shortcut</key><string>とうみつ</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>特色</string><key>shortcut</key><string>とくしょく</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>杜松</string><key>shortcut</key><string>としょう</string></dict>	<!-- 4位/4候補 -->
-	        <dict><key>phrase</key><string>登美</string><key>shortcut</key><string>とみ</string></dict>	<!-- 13位/14候補 -->
-	        <dict><key>phrase</key><string>同地</string><key>shortcut</key><string>どうち</string></dict>	<!-- 8位/8候補 -->
-	        <dict><key>phrase</key><string>名乗</string><key>shortcut</key><string>なのり</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>南下</string><key>shortcut</key><string>なんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/8候補 -->
-	        <dict><key>phrase</key><string>軟化</string><key>shortcut</key><string>なんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/8候補 -->
-	        <dict><key>phrase</key><string>南極</string><key>shortcut</key><string>なんきょく</string></dict>	<!-- 7位/7候補 -->
-	        <dict><key>phrase</key><string>煮込</string><key>shortcut</key><string>にこみ</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>西オーストラリア大学</string><key>shortcut</key><string>にしおーすとらりあだいがく</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>日光</string><key>shortcut</key><string>にっこう</string></dict>	<!-- 3位/13候補 -->
-	        <dict><key>phrase</key><string>根強</string><key>shortcut</key><string>ねづよ</string><key>pos</key><string>形容詞</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>濃厚</string><key>shortcut</key><string>のうこう</string></dict>	<!-- 5位/7候補 -->
-	        <dict><key>phrase</key><string>農林水産省</string><key>shortcut</key><string>のうりんすいさんしょう</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>軒並</string><key>shortcut</key><string>のきなみ</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>廃墟</string><key>shortcut</key><string>はいきょ</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>機織</string><key>shortcut</key><string>はたおり</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>発効</string><key>shortcut</key><string>はっこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/23候補 -->
-	        <dict><key>phrase</key><string>発声</string><key>shortcut</key><string>はっせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>発泡</string><key>shortcut</key><string>はっぽう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/11候補 -->
-	        <dict><key>phrase</key><string>溌溂</string><key>shortcut</key><string>はつらつ</string></dict>	<!-- 6位/8候補 -->
-	        <dict><key>phrase</key><string>麦芽</string><key>shortcut</key><string>ばくが</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>東日本大震災</string><key>shortcut</key><string>ひがしにほんだいしんさい</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>平打</string><key>shortcut</key><string>ひらうち</string></dict>	<!-- 4位/5候補 -->
-	        <dict><key>phrase</key><string>微妙</string><key>shortcut</key><string>びみょう</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>負荷</string><key>shortcut</key><string>ふか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 6位/16候補 -->
-	        <dict><key>phrase</key><string>腐植</string><key>shortcut</key><string>ふしょく</string></dict>	<!-- 10位/11候補 -->
-	        <dict><key>phrase</key><string>腐食</string><key>shortcut</key><string>ふしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/11候補 -->
-	        <dict><key>phrase</key><string>敷設</string><key>shortcut</key><string>ふせつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/9候補 -->
-	        <dict><key>phrase</key><string>平地</string><key>shortcut</key><string>へいち</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>変異</string><key>shortcut</key><string>へんい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/7候補 -->
-	        <dict><key>phrase</key><string>芳香</string><key>shortcut</key><string>ほうこう</string></dict>	<!-- 10位/24候補 -->
-	        <dict><key>phrase</key><string>胞子</string><key>shortcut</key><string>ほうし</string></dict>	<!-- 15位/24候補 -->
-	        <dict><key>phrase</key><string>豊潤</string><key>shortcut</key><string>ほうじゅん</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>法典</string><key>shortcut</key><string>ほうてん</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>補完</string><key>shortcut</key><string>ほかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>北極</string><key>shortcut</key><string>ほっきょく</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>骨組</string><key>shortcut</key><string>ほねぐみ</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>牧畜</string><key>shortcut</key><string>ぼくちく</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>街中</string><key>shortcut</key><string>まちなか</string></dict>	<!-- 6位/6候補 -->
-	        <dict><key>phrase</key><string>街並</string><key>shortcut</key><string>まちなみ</string></dict>	<!-- 6位/8候補 -->
-	        <dict><key>phrase</key><string>松脂</string><key>shortcut</key><string>まつやに</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>まりあーじゅ</string></dict>	<!-- word_costs に無し -->
-	        <dict><key>phrase</key><string>見込</string><key>shortcut</key><string>みこみ</string></dict>	<!-- 4位/4候補 -->
-	        <dict><key>phrase</key><string>見出</string><key>shortcut</key><string>みだし</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>見直</string><key>shortcut</key><string>みなおし</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>見舞</string><key>shortcut</key><string>みまい</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>紫色</string><key>shortcut</key><string>むらさきいろ</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>明示</string><key>shortcut</key><string>めいじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/9候補 -->
-	        <dict><key>phrase</key><string>綿花</string><key>shortcut</key><string>めんか</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>木製</string><key>shortcut</key><string>もくせい</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>有害</string><key>shortcut</key><string>ゆうがい</string></dict>	<!-- 3位/4候補 -->
-	        <dict><key>phrase</key><string>優良</string><key>shortcut</key><string>ゆうりょう</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>雪解</string><key>shortcut</key><string>ゆきどけ</string></dict>	<!-- 5位/6候補 -->
-	        <dict><key>phrase</key><string>溶液</string><key>shortcut</key><string>ようえき</string></dict>	<!-- 8位/9候補 -->
-	        <dict><key>phrase</key><string>溶解</string><key>shortcut</key><string>ようかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/18候補 -->
-	        <dict><key>phrase</key><string>容器</string><key>shortcut</key><string>ようき</string></dict>	<!-- 4位/24候補 -->
-	        <dict><key>phrase</key><string>用具</string><key>shortcut</key><string>ようぐ</string></dict>	<!-- 3位/5候補 -->
-	        <dict><key>phrase</key><string>陽光</string><key>shortcut</key><string>ようこう</string></dict>	<!-- 16位/24候補 -->
-	        <dict><key>phrase</key><string>要衝</string><key>shortcut</key><string>ようしょう</string></dict>	<!-- 3位/8候補 -->
-	        <dict><key>phrase</key><string>洋梨</string><key>shortcut</key><string>ようなし</string></dict>	<!-- 3位/3候補 -->
-	        <dict><key>phrase</key><string>卵巣</string><key>shortcut</key><string>らんそう</string></dict>	<!-- 3位/6候補 -->
-	        <dict><key>phrase</key><string>竜眼</string><key>shortcut</key><string>りゅうがん</string></dict>	<!-- 3位/7候補 -->
-	        <dict><key>phrase</key><string>良好</string><key>shortcut</key><string>りょうこう</string></dict>	<!-- 8位/14候補 -->
-	        <dict><key>phrase</key><string>冷気</string><key>shortcut</key><string>れいき</string></dict>	<!-- 3位/24候補 -->
-	        <dict><key>phrase</key><string>礫</string><key>shortcut</key><string>れき</string></dict>	<!-- 4位/10候補 -->
+
 </array>
 </plist>

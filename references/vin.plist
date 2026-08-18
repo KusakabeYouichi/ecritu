@@ -7347,6 +7347,7 @@
 	<dict><key>phrase</key><string>民間会社</string><key>shortcut</key><string>みんかんがいしゃ</string></dict>
 
 	<!-- 団体・組織 -->
+	<dict><key>phrase</key><string>テキーラ規則委員会</string><key>shortcut</key><string>てきーらきそくいいんかい</string></dict>
 	<dict><key>phrase</key><string>ユグノー派</string><key>shortcut</key><string>ゆぐのーは</string></dict>
 	<dict><key>phrase</key><string>現エーデルワイン</string><key>shortcut</key><string>げんえーでるわいん</string></dict>
 	<dict><key>phrase</key><string>現サントリー</string><key>shortcut</key><string>げんさんとりー</string></dict>
@@ -8691,31 +8692,25 @@
 	<dict><key>phrase</key><string>キール</string><key>shortcut</key><string>きーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サングリア</string><key>shortcut</key><string>さんぐりあ</string></dict>	<!-- Sudachiにもある -->
 
-	<!-- リキュール・スピリッツ -->
+	<!-- vin aromatisé -->
+	<dict><key>phrase</key><string>キンキナ</string><key>shortcut</key><string>きんきな</string></dict>
+	<dict><key>phrase</key><string>ヴェルモット</string><key>shortcut</key><string>ゔぇるもっと</string></dict>
+	<dict><key>phrase</key><string>スイート・ベルモット</string><key>shortcut</key><string>すいーとべるもっと</string></dict>
+	<dict><key>phrase</key><string>ドライ・ベルモット</string><key>shortcut</key><string>どらいべるもっと</string></dict>
+	<dict><key>phrase</key><string>ドライ・ヴェルモット</string><key>shortcut</key><string>どらいゔぇるもっと</string></dict>
+
+	<!-- リキュール -->
+	<dict><key>phrase</key><string>クレーム・ド・</string><key>shortcut</key><string>くれーむど</string></dict>
+	<dict><key>phrase</key><string>ルクサルド</string><key>shortcut</key><string>るくさるど</string></dict>
+	<dict><key>phrase</key><string>リレ</string><key>shortcut</key><string>りれ</string></dict>
 	<dict><key>phrase</key><string>リモンチェッロ</string><key>shortcut</key><string>りもんちぇっろ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>マイヤーズ</string><key>shortcut</key><string>まいやーず</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フランジェリコ</string><key>shortcut</key><string>ふらんじぇりこ</string></dict>
 	<dict><key>phrase</key><string>スーズ</string><key>shortcut</key><string>すーず</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サンブーカ</string><key>shortcut</key><string>さんぶーか</string></dict>
-	<dict><key>phrase</key><string>ゴードン</string><key>shortcut</key><string>ごーどん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コアントロー</string><key>shortcut</key><string>こあんとろー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カルーア</string><key>shortcut</key><string>かるーあ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>アブソルート</string><key>shortcut</key><string>あぶそるーと</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>白酒</string><key>shortcut</key><string>ぱいちゅう</string></dict>
-	<dict><key>phrase</key><string>レミー・マルタン</string><key>shortcut</key><string>れみーまるたん</string></dict>
-	<dict><key>phrase</key><string>ボンベイ・サファイア</string><key>shortcut</key><string>ぼんべいさふぁいあ</string></dict>
-	<dict><key>phrase</key><string>ボンベイ・ドライ・ジン</string><key>shortcut</key><string>ぼんべいどらいじん</string></dict>
-	<dict><key>phrase</key><string>バカルディー</string><key>shortcut</key><string>ばかるでぃー</string></dict>
-	<dict><key>phrase</key><string>ハバナクラブ</string><key>shortcut</key><string>はばなくらぶ</string></dict>
-	<dict><key>phrase</key><string>タンカレー</string><key>shortcut</key><string>たんかれー</string></dict>
-	<dict><key>phrase</key><string>スミノフ</string><key>shortcut</key><string>すみのふ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>グレイグース</string><key>shortcut</key><string>ぐれいぐーす</string></dict>
-	<dict><key>phrase</key><string>クエルボ</string><key>shortcut</key><string>くえるぼ</string></dict>
-	<dict><key>phrase</key><string>キャプテンモーガン</string><key>shortcut</key><string>きゃぷてんもーがん</string></dict>
 	<dict><key>phrase</key><string>イエーガーマイスター</string><key>shortcut</key><string>いえーがーまいすたー</string></dict>
-	<dict><key>phrase</key><string>ピスコ</string><key>shortcut</key><string>ぴすこ</string></dict>
 	<dict><key>phrase</key><string>Poire</string><key>shortcut</key><string>ぽわーる</string></dict>
-	<dict><key>phrase</key><string>白樺炭</string><key>shortcut</key><string>しらかばずみ</string></dict>
 	<dict><key>phrase</key><string>カンパリ</string><key>shortcut</key><string>かんぱり</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エッグ・リキュール</string><key>shortcut</key><string>えっぐりきゅーる</string></dict>
 	<dict><key>phrase</key><string>カカオ・リキュール</string><key>shortcut</key><string>かかおりきゅーる</string></dict>
@@ -8726,7 +8721,6 @@
 	<dict><key>phrase</key><string>Marc d'Alsace Gewürztraminer</string><key>shortcut</key><string>まーるだるざすげゔゅるつとらみねる</string></dict>
 	<dict><key>phrase</key><string>White agave</string><key>shortcut</key><string>ほわいとあがゔぇ</string></dict>
 	<dict><key>phrase</key><string>テキーラ</string><key>shortcut</key><string>てきーら</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>テキーラ規則委員会</string><key>shortcut</key><string>てきーらきそくいいんかい</string></dict>
 	<dict><key>phrase</key><string>MIDORI</string><key>shortcut</key><string>みどり</string></dict>
 	<dict><key>phrase</key><string>Ricard</string><key>shortcut</key><string>りかーる</string></dict>
 	<dict><key>phrase</key><string>Gin</string><key>shortcut</key><string>じん</string></dict>
@@ -8812,104 +8806,117 @@
 	<dict><key>phrase</key><string>キナート</string><key>shortcut</key><string>きなーと</string></dict>
 	<dict><key>phrase</key><string>キンキナ系</string><key>shortcut</key><string>きんきなけい</string></dict>
 	<dict><key>phrase</key><string>シャルトリューズ・ジョーヌ</string><key>shortcut</key><string>しゃるとりゅーずじょーぬ</string></dict>
-	<dict><key>phrase</key><string>スピリッツ等</string><key>shortcut</key><string>すぴりっつとう</string></dict>
-	<dict><key>phrase</key><string>スピリッツ系</string><key>shortcut</key><string>すぴりっつけい</string></dict>
-	<dict><key>phrase</key><string>スピリッツ系アペリティフ</string><key>shortcut</key><string>すぴりっつけいあぺりてぃふ</string></dict>
-	<dict><key>phrase</key><string>スピリッツ類</string><key>shortcut</key><string>すぴりっつるい</string></dict>
 	<dict><key>phrase</key><string>チナール</string><key>shortcut</key><string>ちなーる</string></dict>
 	<dict><key>phrase</key><string>デジェスティヴ・ニストレニ</string><key>shortcut</key><string>でじぇすてぃゔにすとれに</string></dict>
-	<dict><key>phrase</key><string>ドライ・ヴェルモット</string><key>shortcut</key><string>どらいゔぇるもっと</string></dict>
 	<dict><key>phrase</key><string>バローロ・キナート</string><key>shortcut</key><string>ばろーろきなーと</string></dict>
-	<dict><key>phrase</key><string>ビフィーター</string><key>shortcut</key><string>びふぃーたー</string></dict>
 	<dict><key>phrase</key><string>フェンチュウ</string><key>shortcut</key><string>ふぇんちゅう</string></dict>
-	<dict><key>phrase</key><string>ホワイトリカー②</string><key>shortcut</key><string>ほわいとりかーに</string></dict>
-	<dict><key>phrase</key><string>マルティニク・ラム・アグリコール</string><key>shortcut</key><string>まるてぃにくらむあぐりこーる</string></dict>
-	<dict><key>phrase</key><string>モルトウイスキー造</string><key>shortcut</key><string>もるとういすきーづくり</string></dict>
-	<dict><key>phrase</key><string>ラム等</string><key>shortcut</key><string>らむとう</string></dict>
-	<dict><key>phrase</key><string>リレ</string><key>shortcut</key><string>りれ</string></dict>
 	<dict><key>phrase</key><string>五糧液</string><key>shortcut</key><string>ごりょうえき</string></dict>
 	<dict><key>phrase</key><string>剣南春</string><key>shortcut</key><string>けんなんしゅん</string></dict>
 	<dict><key>phrase</key><string>桂林三花酒</string><key>shortcut</key><string>けいりんさんかしゅ</string></dict>
 	<dict><key>phrase</key><string>清香型</string><key>shortcut</key><string>せいこうがた</string></dict>
 	<dict><key>phrase</key><string>濃香型</string><key>shortcut</key><string>のうこうがた</string></dict>
-	<dict><key>phrase</key><string>焼酎乙類</string><key>shortcut</key><string>しょうちゅうおつるい</string></dict>
 	<dict><key>phrase</key><string>米香型</string><key>shortcut</key><string>べいこうがた</string></dict>
+	<dict><key>phrase</key><string>醤香型</string><key>shortcut</key><string>しょうこうがた</string></dict>
 	<dict><key>phrase</key><string>薬草・香草系リキュール</string><key>shortcut</key><string>やくそうこうそうけいりきゅーる</string></dict>
 	<dict><key>phrase</key><string>薬草系リキュール</string><key>shortcut</key><string>やくそうけいりきゅーる</string></dict>
-	<dict><key>phrase</key><string>醤香型</string><key>shortcut</key><string>しょうこうがた</string></dict>
-	<dict><key>phrase</key><string>Añejo</string><key>shortcut</key><string>あにぇほ</string></dict>
 	<dict><key>phrase</key><string>Amaretto</string><key>shortcut</key><string>あまれっと</string></dict>
-	<dict><key>phrase</key><string>サウザ</string><key>shortcut</key><string>さうざ</string></dict>
-	<dict><key>phrase</key><string>Black agave</string><key>shortcut</key><string>ぶらっくあがゔぇ</string></dict>
-	<dict><key>phrase</key><string>Blue agave</string><key>shortcut</key><string>ぶるーあがゔぇ</string></dict>
 	<dict><key>phrase</key><string>liqueur</string><key>shortcut</key><string>りきゅーる</string></dict>	<!-- 元: ワイン以外の飲料名 -->
-	<dict><key>phrase</key><string>whisky</string><key>shortcut</key><string>ういすきー</string></dict>	<!-- 元: ワイン以外の飲料名 -->
 	<dict><key>phrase</key><string>リンドウ科</string><key>shortcut</key><string>りんどうか</string></dict>
 	<dict><key>phrase</key><string>ジェンシアン</string><key>shortcut</key><string>じぇんしあん</string></dict>
 	<dict><key>phrase</key><string>アイリッシュウイスキー</string><key>shortcut</key><string>あいりっしゅういすきー</string></dict>
-	<dict><key>phrase</key><string>アクアヴィット</string><key>shortcut</key><string>あくあゔぃっと</string></dict>
-	<dict><key>phrase</key><string>アップルブランデー</string><key>shortcut</key><string>あっぷるぶらんでー</string></dict>
-	<dict><key>phrase</key><string>アブサン</string><key>shortcut</key><string>あぶさん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アマレット</string><key>shortcut</key><string>あまれっと</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>アメリカンウイスキー</string><key>shortcut</key><string>あめりかんういすきー</string></dict>
-	<dict><key>phrase</key><string>ウイスキー</string><key>shortcut</key><string>ういすきー</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ウオッカ</string><key>shortcut</key><string>うおっか</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ウゾ</string><key>shortcut</key><string>うぞ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>オランダジン</string><key>shortcut</key><string>おらんだじん</string></dict>
-	<dict><key>phrase</key><string>オー・ド・ヴィー</string><key>shortcut</key><string>おーどゔぃー</string></dict>
-	<dict><key>phrase</key><string>カナディアンウイスキー</string><key>shortcut</key><string>かなでぃあんういすきー</string></dict>
 	<dict><key>phrase</key><string>キュラソー</string><key>shortcut</key><string>きゅらそー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キルシュ</string><key>shortcut</key><string>きるしゅ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キルシュヴァッサー</string><key>shortcut</key><string>きるしゅゔぁっさー</string></dict>
 	<dict><key>phrase</key><string>クレーム・ド・カシス</string><key>shortcut</key><string>くれーむどかしす</string></dict>
-	<dict><key>phrase</key><string>グラッパ</string><key>shortcut</key><string>ぐらっぱ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>シュタインヘーガー</string><key>shortcut</key><string>しゅたいんへーがー</string></dict>
+	<dict><key>phrase</key><string>アペリティフ</string><key>shortcut</key><string>あぺりてぃふ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>オレンジ・ビターズ</string><key>shortcut</key><string>おれんじびたーず</string></dict>
+	<dict><key>phrase</key><string>チャチャ</string><key>shortcut</key><string>ちゃちゃ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ディジェスティフ</string><key>shortcut</key><string>でぃじぇすてぃふ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ディヴィン</string><key>shortcut</key><string>でぃゔぃん</string></dict>
+	<dict><key>phrase</key><string>ホワイト・キュラソー</string><key>shortcut</key><string>ほわいときゅらそー</string></dict>
+	<dict><key>phrase</key><string>ホワイト・ペパーミント</string><key>shortcut</key><string>ほわいとぺぱーみんと</string></dict>
+
+	<!-- スピリッツ -->
+	<dict><key>phrase</key><string>ピスコ</string><key>shortcut</key><string>ぴすこ</string></dict>
+	<dict><key>phrase</key><string>ピスコ</string><key>shortcut</key><string>ぴすこ</string></dict>
+	<dict><key>phrase</key><string>白樺炭</string><key>shortcut</key><string>しらかばずみ</string></dict>
+	<dict><key>phrase</key><string>白樺炭</string><key>shortcut</key><string>しらかばずみ</string></dict>
+	<dict><key>phrase</key><string>ゴードン</string><key>shortcut</key><string>ごーどん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>バカルディー</string><key>shortcut</key><string>ばかるでぃー</string></dict>
+	<dict><key>phrase</key><string>ハバナクラブ</string><key>shortcut</key><string>はばなくらぶ</string></dict>
+	<dict><key>phrase</key><string>タンカレー</string><key>shortcut</key><string>たんかれー</string></dict>
+	<dict><key>phrase</key><string>スミノフ</string><key>shortcut</key><string>すみのふ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>グレイグース</string><key>shortcut</key><string>ぐれいぐーす</string></dict>
+	<dict><key>phrase</key><string>クエルボ</string><key>shortcut</key><string>くえるぼ</string></dict>
+	<dict><key>phrase</key><string>キャプテンモーガン</string><key>shortcut</key><string>きゃぷてんもーがん</string></dict>
+	<dict><key>phrase</key><string>焼酎乙類</string><key>shortcut</key><string>しょうちゅうおつるい</string></dict>
+	<dict><key>phrase</key><string>Añejo</string><key>shortcut</key><string>あにぇほ</string></dict>
+	<dict><key>phrase</key><string>whisky</string><key>shortcut</key><string>ういすきー</string></dict>	<!-- 元: ワイン以外の飲料名 -->
+	<dict><key>phrase</key><string>アブソルート</string><key>shortcut</key><string>あぶそるーと</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>白酒</string><key>shortcut</key><string>ぱいちゅう</string></dict>
+	<dict><key>phrase</key><string>レミー・マルタン</string><key>shortcut</key><string>れみーまるたん</string></dict>
+	<dict><key>phrase</key><string>ボンベイ・サファイア</string><key>shortcut</key><string>ぼんべいさふぁいあ</string></dict>
+	<dict><key>phrase</key><string>ボンベイ・ドライ・ジン</string><key>shortcut</key><string>ぼんべいどらいじん</string></dict>
+	<dict><key>phrase</key><string>ホワイトリカー②</string><key>shortcut</key><string>ほわいとりかーに</string></dict>
+	<dict><key>phrase</key><string>ビフィーター</string><key>shortcut</key><string>びふぃーたー</string></dict>
+	<dict><key>phrase</key><string>マルティニク・ラム・アグリコール</string><key>shortcut</key><string>まるてぃにくらむあぐりこーる</string></dict>
+	<dict><key>phrase</key><string>モルトウイスキー造</string><key>shortcut</key><string>もるとういすきーづくり</string></dict>
+	<dict><key>phrase</key><string>ラム等</string><key>shortcut</key><string>らむとう</string></dict>
+	<dict><key>phrase</key><string>サウザ</string><key>shortcut</key><string>さうざ</string></dict>
+	<dict><key>phrase</key><string>Black agave</string><key>shortcut</key><string>ぶらっくあがゔぇ</string></dict>
+	<dict><key>phrase</key><string>Blue agave</string><key>shortcut</key><string>ぶるーあがゔぇ</string></dict>
+	<dict><key>phrase</key><string>アクアヴィット</string><key>shortcut</key><string>あくあゔぃっと</string></dict>
+	<dict><key>phrase</key><string>ドライ・ジン</string><key>shortcut</key><string>どらいじん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>スピリッツ等</string><key>shortcut</key><string>すぴりっつとう</string></dict>
+	<dict><key>phrase</key><string>スピリッツ系</string><key>shortcut</key><string>すぴりっつけい</string></dict>
+	<dict><key>phrase</key><string>スピリッツ系アペリティフ</string><key>shortcut</key><string>すぴりっつけいあぺりてぃふ</string></dict>
+	<dict><key>phrase</key><string>スピリッツ類</string><key>shortcut</key><string>すぴりっつるい</string></dict>
 	<dict><key>phrase</key><string>グレイプ・スピリッツ</string><key>shortcut</key><string>ぐれいぷすぴりっつ</string></dict>
 	<dict><key>phrase</key><string>グレインウイスキー</string><key>shortcut</key><string>ぐれいんういすきー</string></dict>
 	<dict><key>phrase</key><string>グレインスピリッツ</string><key>shortcut</key><string>ぐれいんすぴりっつ</string></dict>
 	<dict><key>phrase</key><string>グレープスピリッツ</string><key>shortcut</key><string>ぐれーぷすぴりっつ</string></dict>
-	<dict><key>phrase</key><string>グレープブランデー</string><key>shortcut</key><string>ぐれーぷぶらんでー</string></dict>
-	<dict><key>phrase</key><string>グレープ・スピリッツ</string><key>shortcut</key><string>ぐれーぷすぴりっつ</string></dict>
-	<dict><key>phrase</key><string>ゴールドラム</string><key>shortcut</key><string>ごーるどらむ</string></dict>
-	<dict><key>phrase</key><string>シュタインヘーガー</string><key>shortcut</key><string>しゅたいんへーがー</string></dict>
-	<dict><key>phrase</key><string>ジャパニーズウイスキー</string><key>shortcut</key><string>じゃぱにーずういすきー</string></dict>
+	<dict><key>phrase</key><string>アップルブランデー</string><key>shortcut</key><string>あっぷるぶらんでー</string></dict>
+	<dict><key>phrase</key><string>アブサン</string><key>shortcut</key><string>あぶさん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ウゾ</string><key>shortcut</key><string>うぞ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>オランダジン</string><key>shortcut</key><string>おらんだじん</string></dict>
+	<dict><key>phrase</key><string>オー・ド・ヴィー</string><key>shortcut</key><string>おーどゔぃー</string></dict>
+	<dict><key>phrase</key><string>カナディアンウイスキー</string><key>shortcut</key><string>かなでぃあんういすきー</string></dict>
 	<dict><key>phrase</key><string>ジュネバ</string><key>shortcut</key><string>じゅねば</string></dict>
 	<dict><key>phrase</key><string>アグリコール</string><key>shortcut</key><string>あぐりこーる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>アペリティフ</string><key>shortcut</key><string>あぺりてぃふ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ウオッカ・ジン・ラム</string><key>shortcut</key><string>うおっかじんらむ</string></dict>
-	<dict><key>phrase</key><string>オレンジ・ビターズ</string><key>shortcut</key><string>おれんじびたーず</string></dict>
-	<dict><key>phrase</key><string>ジン</string><key>shortcut</key><string>じん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ジンベース</string><key>shortcut</key><string>じんべーす</string></dict>
-	<dict><key>phrase</key><string>スイート・ベルモット</string><key>shortcut</key><string>すいーとべるもっと</string></dict>
-	<dict><key>phrase</key><string>スコッチ</string><key>shortcut</key><string>すこっち</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>スコッチウイスキー</string><key>shortcut</key><string>すこっちういすきー</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>スピリッツ</string><key>shortcut</key><string>すぴりっつ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ダークラム</string><key>shortcut</key><string>だーくらむ</string></dict>
-	<dict><key>phrase</key><string>チャチャ</string><key>shortcut</key><string>ちゃちゃ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ディジェスティフ</string><key>shortcut</key><string>でぃじぇすてぃふ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ディヴィン</string><key>shortcut</key><string>でぃゔぃん</string></dict>
-	<dict><key>phrase</key><string>ドライ・ジン</string><key>shortcut</key><string>どらいじん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ドライ・ベルモット</string><key>shortcut</key><string>どらいべるもっと</string></dict>
+	<dict><key>phrase</key><string>マール</string><key>shortcut</key><string>まーる</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ブルー・アガベ</string><key>shortcut</key><string>ぶるーあがべ</string></dict>
+	<dict><key>phrase</key><string>ブランデー</string><key>shortcut</key><string>ぶらんでー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バーボン</string><key>shortcut</key><string>ばーぼん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バーボンウイスキー</string><key>shortcut</key><string>ばーぼんういすきー</string></dict>
 	<dict><key>phrase</key><string>フィーヌ</string><key>shortcut</key><string>ふぃーぬ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フィーヌ・シャンパーニュ</string><key>shortcut</key><string>ふぃーぬしゃんぱーにゅ</string></dict>
-	<dict><key>phrase</key><string>ブランデー</string><key>shortcut</key><string>ぶらんでー</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ブルー・アガベ</string><key>shortcut</key><string>ぶるーあがべ</string></dict>
+	<dict><key>phrase</key><string>ウオッカ・ジン・ラム</string><key>shortcut</key><string>うおっかじんらむ</string></dict>
+	<dict><key>phrase</key><string>マイヤーズ</string><key>shortcut</key><string>まいやーず</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ホワイトラム</string><key>shortcut</key><string>ほわいとらむ</string></dict>
-	<dict><key>phrase</key><string>ホワイト・キュラソー</string><key>shortcut</key><string>ほわいときゅらそー</string></dict>
-	<dict><key>phrase</key><string>ホワイト・ペパーミント</string><key>shortcut</key><string>ほわいとぺぱーみんと</string></dict>
-	<dict><key>phrase</key><string>マール</string><key>shortcut</key><string>まーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ロンドンジン</string><key>shortcut</key><string>ろんどんじん</string></dict>
 	<dict><key>phrase</key><string>ワインスピリッツ</string><key>shortcut</key><string>わいんすぴりっつ</string></dict>
-	<dict><key>phrase</key><string>ヴェルモット</string><key>shortcut</key><string>ゔぇるもっと</string></dict>
-	<dict><key>phrase</key><string>ルクサルド</string><key>shortcut</key><string>るくさるど</string></dict>
 	<dict><key>phrase</key><string>国産ウイスキー</string><key>shortcut</key><string>こくさんういすきー</string></dict>
-	<dict><key>phrase</key><string>キンキナ</string><key>shortcut</key><string>きんきな</string></dict>
-	<dict><key>phrase</key><string>クレーム・ド・</string><key>shortcut</key><string>くれーむど</string></dict>
 	<dict><key>phrase</key><string>ヴィンテージ・アルマニャック</string><key>shortcut</key><string>ゔぃんてーじあるまにゃっく</string></dict>
-	<dict><key>phrase</key><string>Apéritif</string><key>shortcut</key><string>あぺりてぃふ</string></dict>
+	<dict><key>phrase</key><string>スコッチ</string><key>shortcut</key><string>すこっち</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>スコッチウイスキー</string><key>shortcut</key><string>すこっちういすきー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>デュアーズ</string><key>shortcut</key><string>でゅあーず</string></dict>	<!-- Dewar's。ブレンデッドスコッチの銘柄。未登録だった(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>スピリッツ</string><key>shortcut</key><string>すぴりっつ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ダークラム</string><key>shortcut</key><string>だーくらむ</string></dict>
+	<dict><key>phrase</key><string>ジンベース</string><key>shortcut</key><string>じんべーす</string></dict>
+	<dict><key>phrase</key><string>アメリカンウイスキー</string><key>shortcut</key><string>あめりかんういすきー</string></dict>
+	<dict><key>phrase</key><string>ウイスキー</string><key>shortcut</key><string>ういすきー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ウオッカ</string><key>shortcut</key><string>うおっか</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>グラッパ</string><key>shortcut</key><string>ぐらっぱ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>グレープブランデー</string><key>shortcut</key><string>ぐれーぷぶらんでー</string></dict>
+	<dict><key>phrase</key><string>グレープ・スピリッツ</string><key>shortcut</key><string>ぐれーぷすぴりっつ</string></dict>
+	<dict><key>phrase</key><string>ゴールドラム</string><key>shortcut</key><string>ごーるどらむ</string></dict>
+	<dict><key>phrase</key><string>ジャパニーズウイスキー</string><key>shortcut</key><string>じゃぱにーずういすきー</string></dict>
+	<dict><key>phrase</key><string>ジン</string><key>shortcut</key><string>じん</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- その他の酒類 -->
+	<dict><key>phrase</key><string>Apéritif</string><key>shortcut</key><string>あぺりてぃふ</string></dict>
 	<dict><key>phrase</key><string>黄酒</string><key>shortcut</key><string>ほあんちゅう</string></dict>
 	<dict><key>phrase</key><string>サントリーウイスキー白札</string><key>shortcut</key><string>さんとりーういすきーしろふだ</string></dict>
 	<dict><key>phrase</key><string>ギネス</string><key>shortcut</key><string>ぎねす</string></dict>	<!-- Sudachiにもある -->
@@ -9983,5 +9990,245 @@
 	<dict><key>phrase</key><string>イタリアワイン・ルネッサンス</string><key>shortcut</key><string>いたりあわいんるねっさんす</string></dict>
 	<dict><key>phrase</key><string>ナチュラルワイン・ムーヴメント</string><key>shortcut</key><string>なちゅらるわいんむーゔめんと</string></dict>
 	<dict><key>phrase</key><string>スプラ</string><key>shortcut</key><string>すぷら</string></dict>
+
+	<!-- 変換順位の維持(一般語だが同じ読みの候補中でコスト順位が3位以下で、補助語彙としての供給が順位を支えている。sacoche だと追加語彙2400になり 忌憚だが>来たんだが 等の逆転を起こすため、補助語彙1500のまま置く) -->
+	<dict><key>phrase</key><string>青臭</string><key>shortcut</key><string>あおくさ</string><key>pos</key><string>形容詞</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>赤身</string><key>shortcut</key><string>あかみ</string></dict>	<!-- 3位/12候補 -->
+	<dict><key>phrase</key><string>葦</string><key>shortcut</key><string>あし</string></dict>	<!-- 5位/8候補 -->
+	<dict><key>phrase</key><string>安価</string><key>shortcut</key><string>あんか</string></dict>	<!-- 4位/8候補 -->
+	<dict><key>phrase</key><string>異臭</string><key>shortcut</key><string>いしゅう</string></dict>	<!-- 3位/12候補 -->
+	<dict><key>phrase</key><string>意匠</string><key>shortcut</key><string>いしょう</string></dict>	<!-- 5位/9候補 -->
+	<dict><key>phrase</key><string>委託</string><key>shortcut</key><string>いたく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/12候補 -->
+	<dict><key>phrase</key><string>緯度</string><key>shortcut</key><string>いど</string></dict>	<!-- 6位/11候補 -->
+	<dict><key>phrase</key><string>意味合</string><key>shortcut</key><string>いみあい</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>色合</string><key>shortcut</key><string>いろあい</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>旨味</string><key>shortcut</key><string>うまみ</string></dict>	<!-- 4位/8候補 -->
+	<dict><key>phrase</key><string>売上</string><key>shortcut</key><string>うりあげ</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>栄華</string><key>shortcut</key><string>えいが</string></dict>	<!-- 3位/19候補 -->
+	<dict><key>phrase</key><string>液中</string><key>shortcut</key><string>えきちゅう</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>櫂</string><key>shortcut</key><string>かい</string></dict>	<!-- 14位/24候補 -->
+	<dict><key>phrase</key><string>改植</string><key>shortcut</key><string>かいしょく</string></dict>	<!-- 8位/11候補 -->
+	<dict><key>phrase</key><string>海底</string><key>shortcut</key><string>かいてい</string></dict>	<!-- 4位/10候補 -->
+	<dict><key>phrase</key><string>海霧</string><key>shortcut</key><string>かいむ</string></dict>	<!-- 4位/6候補 -->
+	<dict><key>phrase</key><string>海洋</string><key>shortcut</key><string>かいよう</string></dict>	<!-- 3位/14候補 -->
+	<dict><key>phrase</key><string>牡蠣</string><key>shortcut</key><string>かき</string></dict>	<!-- 18位/24候補 -->
+	<dict><key>phrase</key><string>角度</string><key>shortcut</key><string>かくど</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>攪拌</string><key>shortcut</key><string>かくはん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/11候補 -->
+	<dict><key>phrase</key><string>河口</string><key>shortcut</key><string>かこう</string></dict>	<!-- 6位/26候補 -->
+	<dict><key>phrase</key><string>菓子</string><key>shortcut</key><string>かし</string></dict>	<!-- 5位/24候補 -->
+	<dict><key>phrase</key><string>果樹</string><key>shortcut</key><string>かじゅ</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>果汁</string><key>shortcut</key><string>かじゅう</string></dict>	<!-- 4位/7候補 -->
+	<dict><key>phrase</key><string>粕</string><key>shortcut</key><string>かす</string></dict>	<!-- 5位/12候補 -->
+	<dict><key>phrase</key><string>花穂</string><key>shortcut</key><string>かすい</string></dict>	<!-- 7位/15候補 -->
+	<dict><key>phrase</key><string>果糖</string><key>shortcut</key><string>かとう</string></dict>	<!-- 12位/24候補 -->
+	<dict><key>phrase</key><string>果皮</string><key>shortcut</key><string>かひ</string></dict>	<!-- 5位/8候補 -->
+	<dict><key>phrase</key><string>甕</string><key>shortcut</key><string>かめ</string></dict>	<!-- 4位/5候補 -->
+	<dict><key>phrase</key><string>辛味</string><key>shortcut</key><string>からみ</string></dict>	<!-- 6位/12候補 -->
+	<dict><key>phrase</key><string>果粒</string><key>shortcut</key><string>かりゅう</string></dict>	<!-- 4位/18候補 -->
+	<dict><key>phrase</key><string>還元</string><key>shortcut</key><string>かんげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/13候補 -->
+	<dict><key>phrase</key><string>肝臓</string><key>shortcut</key><string>かんぞう</string></dict>	<!-- 3位/24候補 -->
+	<dict><key>phrase</key><string>概要</string><key>shortcut</key><string>がいよう</string></dict>	<!-- 6位/8候補 -->
+	<dict><key>phrase</key><string>樹</string><key>shortcut</key><string>き</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>帰還</string><key>shortcut</key><string>きかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/24候補 -->
+	<dict><key>phrase</key><string>器具</string><key>shortcut</key><string>きぐ</string></dict>	<!-- 4位/7候補 -->
+	<dict><key>phrase</key><string>希少</string><key>shortcut</key><string>きしょう</string></dict>	<!-- 14位/24候補 -->
+	<dict><key>phrase</key><string>生地</string><key>shortcut</key><string>きじ</string></dict>	<!-- 3位/22候補 -->
+	<dict><key>phrase</key><string>寄生</string><key>shortcut</key><string>きせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/24候補 -->
+	<dict><key>phrase</key><string>忌憚</string><key>shortcut</key><string>きたん</string></dict>	<!-- 6位/8候補 -->
+	<dict><key>phrase</key><string>貴重</string><key>shortcut</key><string>きちょう</string></dict>	<!-- 9位/15候補 -->
+	<dict><key>phrase</key><string>貴腐</string><key>shortcut</key><string>きふ</string></dict>	<!-- 9位/13候補 -->
+	<dict><key>phrase</key><string>気持</string><key>shortcut</key><string>きもち</string></dict>	<!-- 3位/8候補 -->
+	<dict><key>phrase</key><string>急激</string><key>shortcut</key><string>きゅうげき</string></dict>	<!-- 4位/5候補 -->
+	<dict><key>phrase</key><string>急峻</string><key>shortcut</key><string>きゅうしゅん</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>旧称</string><key>shortcut</key><string>きゅうしょう</string></dict>	<!-- 5位/9候補 -->
+	<dict><key>phrase</key><string>菌</string><key>shortcut</key><string>きん</string></dict>	<!-- 3位/23候補 -->
+	<dict><key>phrase</key><string>金額</string><key>shortcut</key><string>きんがく</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>釧路</string><key>shortcut</key><string>くしろ</string></dict>	<!-- 3位/10候補 -->
+	<dict><key>phrase</key><string>景観</string><key>shortcut</key><string>けいかん</string></dict>	<!-- 3位/13候補 -->
+	<dict><key>phrase</key><string>契機</string><key>shortcut</key><string>けいき</string></dict>	<!-- 8位/24候補 -->
+	<dict><key>phrase</key><string>経済連携協定</string><key>shortcut</key><string>けいざいれんけいきょうてい</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>経度</string><key>shortcut</key><string>けいど</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>原価</string><key>shortcut</key><string>げんか</string></dict>	<!-- 6位/21候補 -->
+	<dict><key>phrase</key><string>厳格</string><key>shortcut</key><string>げんかく</string></dict>	<!-- 4位/11候補 -->
+	<dict><key>phrase</key><string>厳寒</string><key>shortcut</key><string>げんかん</string></dict>	<!-- 3位/10候補 -->
+	<dict><key>phrase</key><string>厳禁</string><key>shortcut</key><string>げんきん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>原型</string><key>shortcut</key><string>げんけい</string></dict>	<!-- 4位/12候補 -->
+	<dict><key>phrase</key><string>厳冬</string><key>shortcut</key><string>げんとう</string></dict>	<!-- 4位/18候補 -->
+	<dict><key>phrase</key><string>梗</string><key>shortcut</key><string>こう</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>高価</string><key>shortcut</key><string>こうか</string></dict>	<!-- 7位/24候補 -->
+	<dict><key>phrase</key><string>広義</string><key>shortcut</key><string>こうぎ</string></dict>	<!-- 3位/18候補 -->
+	<dict><key>phrase</key><string>硬質</string><key>shortcut</key><string>こうしつ</string></dict>	<!-- 3位/12候補 -->
+	<dict><key>phrase</key><string>硬水</string><key>shortcut</key><string>こうすい</string></dict>	<!-- 6位/12候補 -->
+	<dict><key>phrase</key><string>公正</string><key>shortcut</key><string>こうせい</string></dict>	<!-- 3位/24候補 -->
+	<dict><key>phrase</key><string>降雪</string><key>shortcut</key><string>こうせつ</string></dict>	<!-- 6位/24候補 -->
+	<dict><key>phrase</key><string>広大</string><key>shortcut</key><string>こうだい</string></dict>	<!-- 7位/24候補 -->
+	<dict><key>phrase</key><string>高地</string><key>shortcut</key><string>こうち</string></dict>	<!-- 21位/24候補 -->
+	<dict><key>phrase</key><string>工程</string><key>shortcut</key><string>こうてい</string></dict>	<!-- 9位/24候補 -->
+	<dict><key>phrase</key><string>好適</string><key>shortcut</key><string>こうてき</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>硬度</string><key>shortcut</key><string>こうど</string></dict>	<!-- 6位/24候補 -->
+	<dict><key>phrase</key><string>航路</string><key>shortcut</key><string>こうろ</string></dict>	<!-- 4位/25候補 -->
+	<dict><key>phrase</key><string>国籍</string><key>shortcut</key><string>こくせき</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>枯死</string><key>shortcut</key><string>こし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/23候補 -->
+	<dict><key>phrase</key><string>故事</string><key>shortcut</key><string>こじ</string></dict>	<!-- 9位/18候補 -->
+	<dict><key>phrase</key><string>弧状</string><key>shortcut</key><string>こじょう</string></dict>	<!-- 6位/12候補 -->
+	<dict><key>phrase</key><string>混合</string><key>shortcut</key><string>こんごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>最上</string><key>shortcut</key><string>さいじょう</string></dict>	<!-- 4位/24候補 -->
+	<dict><key>phrase</key><string>最良</string><key>shortcut</key><string>さいりょう</string></dict>	<!-- 3位/11候補 -->
+	<dict><key>phrase</key><string>左端</string><key>shortcut</key><string>さたん</string></dict>	<!-- 5位/5候補 -->
+	<dict><key>phrase</key><string>酸</string><key>shortcut</key><string>さん</string></dict>	<!-- 16位/23候補 -->
+	<dict><key>phrase</key><string>酸性</string><key>shortcut</key><string>さんせい</string></dict>	<!-- 6位/14候補 -->
+	<dict><key>phrase</key><string>散布</string><key>shortcut</key><string>さんぷ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/6候補 -->
+	<dict><key>phrase</key><string>滋賀</string><key>shortcut</key><string>しが</string></dict>	<!-- 7位/11候補 -->
+	<dict><key>phrase</key><string>死骸</string><key>shortcut</key><string>しがい</string></dict>	<!-- 5位/11候補 -->
+	<dict><key>phrase</key><string>紫外線</string><key>shortcut</key><string>しがいせん</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>脂質</string><key>shortcut</key><string>ししつ</string></dict>	<!-- 5位/8候補 -->
+	<dict><key>phrase</key><string>執政</string><key>shortcut</key><string>しっせい</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>脂肪</string><key>shortcut</key><string>しぼう</string></dict>	<!-- 3位/9候補 -->
+	<dict><key>phrase</key><string>遮光</string><key>shortcut</key><string>しゃこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/15候補 -->
+	<dict><key>phrase</key><string>習慣</string><key>shortcut</key><string>しゅうかん</string></dict>	<!-- 8位/12候補 -->
+	<dict><key>phrase</key><string>手指</string><key>shortcut</key><string>しゅし</string></dict>	<!-- 5位/8候補 -->
+	<dict><key>phrase</key><string>種名</string><key>shortcut</key><string>しゅめい</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>酒類</string><key>shortcut</key><string>しゅるい</string></dict>	<!-- 4位/4候補 -->
+	<dict><key>phrase</key><string>紹興</string><key>shortcut</key><string>しょうこう</string></dict>	<!-- 8位/26候補 -->
+	<dict><key>phrase</key><string>照射</string><key>shortcut</key><string>しょうしゃ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/16候補 -->
+	<dict><key>phrase</key><string>招聘</string><key>shortcut</key><string>しょうへい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/24候補 -->
+	<dict><key>phrase</key><string>食事</string><key>shortcut</key><string>しょくじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>触感</string><key>shortcut</key><string>しょっかん</string></dict>	<!-- 4位/6候補 -->
+	<dict><key>phrase</key><string>初冬</string><key>shortcut</key><string>しょとう</string></dict>	<!-- 4位/11候補 -->
+	<dict><key>phrase</key><string>深刻</string><key>shortcut</key><string>しんこく</string></dict>	<!-- 6位/8候補 -->
+	<dict><key>phrase</key><string>新種</string><key>shortcut</key><string>しんしゅ</string></dict>	<!-- 6位/7候補 -->
+	<dict><key>phrase</key><string>浸出</string><key>shortcut</key><string>しんしゅつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>新植</string><key>shortcut</key><string>しんしょく</string></dict>	<!-- 5位/9候補 -->
+	<dict><key>phrase</key><string>心臓</string><key>shortcut</key><string>しんぞう</string></dict>	<!-- 3位/24候補 -->
+	<dict><key>phrase</key><string>審判</string><key>shortcut</key><string>しんぱん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 7位/8候補 -->
+	<dict><key>phrase</key><string>磁器</string><key>shortcut</key><string>じき</string></dict>	<!-- 9位/19候補 -->
+	<dict><key>phrase</key><string>自根</string><key>shortcut</key><string>じこん</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>自重</string><key>shortcut</key><string>じじゅう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>次点</string><key>shortcut</key><string>じてん</string></dict>	<!-- 5位/12候補 -->
+	<dict><key>phrase</key><string>樹液</string><key>shortcut</key><string>じゅえき</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>樹高</string><key>shortcut</key><string>じゅこう</string></dict>	<!-- 7位/14候補 -->
+	<dict><key>phrase</key><string>樹勢</string><key>shortcut</key><string>じゅせい</string></dict>	<!-- 4位/7候補 -->
+	<dict><key>phrase</key><string>条件付</string><key>shortcut</key><string>じょうけんつき</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>城塞</string><key>shortcut</key><string>じょうさい</string></dict>	<!-- 3位/12候補 -->
+	<dict><key>phrase</key><string>推奨</string><key>shortcut</key><string>すいしょう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/9候補 -->
+	<dict><key>phrase</key><string>水深</string><key>shortcut</key><string>すいしん</string></dict>	<!-- 3位/7候補 -->
+	<dict><key>phrase</key><string>巣立</string><key>shortcut</key><string>すだち</string></dict>	<!-- 5位/7候補 -->
+	<dict><key>phrase</key><string>素早</string><key>shortcut</key><string>すばや</string><key>pos</key><string>形容詞</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>成形</string><key>shortcut</key><string>せいけい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/24候補 -->
+	<dict><key>phrase</key><string>静止</string><key>shortcut</key><string>せいし</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/24候補 -->
+	<dict><key>phrase</key><string>西端</string><key>shortcut</key><string>せいたん</string></dict>	<!-- 3位/8候補 -->
+	<dict><key>phrase</key><string>静置</string><key>shortcut</key><string>せいち</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/19候補 -->
+	<dict><key>phrase</key><string>製糖</string><key>shortcut</key><string>せいとう</string></dict>	<!-- 16位/24候補 -->
+	<dict><key>phrase</key><string>政令</string><key>shortcut</key><string>せいれい</string></dict>	<!-- 10位/17候補 -->
+	<dict><key>phrase</key><string>赤道</string><key>shortcut</key><string>せきどう</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>船舶</string><key>shortcut</key><string>せんぱく</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>船名</string><key>shortcut</key><string>せんめい</string></dict>	<!-- 5位/8候補 -->
+	<dict><key>phrase</key><string>爽快</string><key>shortcut</key><string>そうかい</string></dict>	<!-- 4位/12候補 -->
+	<dict><key>phrase</key><string>早期</string><key>shortcut</key><string>そうき</string></dict>	<!-- 3位/24候補 -->
+	<dict><key>phrase</key><string>早朝</string><key>shortcut</key><string>そうちょう</string></dict>	<!-- 3位/12候補 -->
+	<dict><key>phrase</key><string>蕎麦</string><key>shortcut</key><string>そば</string></dict>	<!-- 4位/10候補 -->
+	<dict><key>phrase</key><string>対価</string><key>shortcut</key><string>たいか</string></dict>	<!-- 5位/18候補 -->
+	<dict><key>phrase</key><string>帯状</string><key>shortcut</key><string>たいじょう</string></dict>	<!-- 6位/8候補 -->
+	<dict><key>phrase</key><string>耐性</string><key>shortcut</key><string>たいせい</string></dict>	<!-- 9位/24候補 -->
+	<dict><key>phrase</key><string>多彩</string><key>shortcut</key><string>たさい</string></dict>	<!-- 3位/10候補 -->
+	<dict><key>phrase</key><string>樽</string><key>shortcut</key><string>たる</string></dict>	<!-- 3位/7候補 -->
+	<dict><key>phrase</key><string>単価</string><key>shortcut</key><string>たんか</string></dict>	<!-- 6位/13候補 -->
+	<dict><key>phrase</key><string>大地</string><key>shortcut</key><string>だいち</string></dict>	<!-- 5位/9候補 -->
+	<dict><key>phrase</key><string>断崖</string><key>shortcut</key><string>だんがい</string></dict>	<!-- 4位/4候補 -->
+	<dict><key>phrase</key><string>段上</string><key>shortcut</key><string>だんじょう</string></dict>	<!-- 3位/9候補 -->
+	<dict><key>phrase</key><string>貯蔵</string><key>shortcut</key><string>ちょぞう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>接木</string><key>shortcut</key><string>つぎき</string></dict>	<!-- 3位/8候補 -->
+	<dict><key>phrase</key><string>蔓</string><key>shortcut</key><string>つる</string></dict>	<!-- 3位/15候補 -->
+	<dict><key>phrase</key><string>逓減</string><key>shortcut</key><string>ていげん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/7候補 -->
+	<dict><key>phrase</key><string>低地</string><key>shortcut</key><string>ていち</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>手打</string><key>shortcut</key><string>てうち</string></dict>	<!-- 5位/5候補 -->
+	<dict><key>phrase</key><string>手間</string><key>shortcut</key><string>てま</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>添加</string><key>shortcut</key><string>てんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 6位/23候補 -->
+	<dict><key>phrase</key><string>天候</string><key>shortcut</key><string>てんこう</string></dict>	<!-- 4位/19候補 -->
+	<dict><key>phrase</key><string>伝播</string><key>shortcut</key><string>でんぱ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>冬季</string><key>shortcut</key><string>とうき</string></dict>	<!-- 12位/24候補 -->
+	<dict><key>phrase</key><string>等級</string><key>shortcut</key><string>とうきゅう</string></dict>	<!-- 5位/11候補 -->
+	<dict><key>phrase</key><string>当然</string><key>shortcut</key><string>とうぜん</string></dict>	<!-- 5位/10候補 -->
+	<dict><key>phrase</key><string>島内</string><key>shortcut</key><string>とうない</string></dict>	<!-- 4位/8候補 -->
+	<dict><key>phrase</key><string>糖分</string><key>shortcut</key><string>とうぶん</string></dict>	<!-- 5位/8候補 -->
+	<dict><key>phrase</key><string>糖蜜</string><key>shortcut</key><string>とうみつ</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>特色</string><key>shortcut</key><string>とくしょく</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>杜松</string><key>shortcut</key><string>としょう</string></dict>	<!-- 4位/4候補 -->
+	<dict><key>phrase</key><string>登美</string><key>shortcut</key><string>とみ</string></dict>	<!-- 13位/14候補 -->
+	<dict><key>phrase</key><string>同地</string><key>shortcut</key><string>どうち</string></dict>	<!-- 8位/8候補 -->
+	<dict><key>phrase</key><string>名乗</string><key>shortcut</key><string>なのり</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>南下</string><key>shortcut</key><string>なんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/8候補 -->
+	<dict><key>phrase</key><string>軟化</string><key>shortcut</key><string>なんか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/8候補 -->
+	<dict><key>phrase</key><string>南極</string><key>shortcut</key><string>なんきょく</string></dict>	<!-- 7位/7候補 -->
+	<dict><key>phrase</key><string>煮込</string><key>shortcut</key><string>にこみ</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>日光</string><key>shortcut</key><string>にっこう</string></dict>	<!-- 3位/13候補 -->
+	<dict><key>phrase</key><string>根強</string><key>shortcut</key><string>ねづよ</string><key>pos</key><string>形容詞</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>濃厚</string><key>shortcut</key><string>のうこう</string></dict>	<!-- 5位/7候補 -->
+	<dict><key>phrase</key><string>軒並</string><key>shortcut</key><string>のきなみ</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>廃墟</string><key>shortcut</key><string>はいきょ</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>機織</string><key>shortcut</key><string>はたおり</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>発効</string><key>shortcut</key><string>はっこう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/23候補 -->
+	<dict><key>phrase</key><string>発声</string><key>shortcut</key><string>はっせい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>発泡</string><key>shortcut</key><string>はっぽう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/11候補 -->
+	<dict><key>phrase</key><string>溌溂</string><key>shortcut</key><string>はつらつ</string></dict>	<!-- 6位/8候補 -->
+	<dict><key>phrase</key><string>麦芽</string><key>shortcut</key><string>ばくが</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>東日本大震災</string><key>shortcut</key><string>ひがしにほんだいしんさい</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>平打</string><key>shortcut</key><string>ひらうち</string></dict>	<!-- 4位/5候補 -->
+	<dict><key>phrase</key><string>微妙</string><key>shortcut</key><string>びみょう</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>負荷</string><key>shortcut</key><string>ふか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 6位/16候補 -->
+	<dict><key>phrase</key><string>腐植</string><key>shortcut</key><string>ふしょく</string></dict>	<!-- 10位/11候補 -->
+	<dict><key>phrase</key><string>腐食</string><key>shortcut</key><string>ふしょく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 5位/11候補 -->
+	<dict><key>phrase</key><string>敷設</string><key>shortcut</key><string>ふせつ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/9候補 -->
+	<dict><key>phrase</key><string>平地</string><key>shortcut</key><string>へいち</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>変異</string><key>shortcut</key><string>へんい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/7候補 -->
+	<dict><key>phrase</key><string>胞子</string><key>shortcut</key><string>ほうし</string></dict>	<!-- 15位/24候補 -->
+	<dict><key>phrase</key><string>法典</string><key>shortcut</key><string>ほうてん</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>補完</string><key>shortcut</key><string>ほかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>北極</string><key>shortcut</key><string>ほっきょく</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>骨組</string><key>shortcut</key><string>ほねぐみ</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>牧畜</string><key>shortcut</key><string>ぼくちく</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>街中</string><key>shortcut</key><string>まちなか</string></dict>	<!-- 6位/6候補 -->
+	<dict><key>phrase</key><string>街並</string><key>shortcut</key><string>まちなみ</string></dict>	<!-- 6位/8候補 -->
+	<dict><key>phrase</key><string>松脂</string><key>shortcut</key><string>まつやに</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>見込</string><key>shortcut</key><string>みこみ</string></dict>	<!-- 4位/4候補 -->
+	<dict><key>phrase</key><string>見出</string><key>shortcut</key><string>みだし</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>見直</string><key>shortcut</key><string>みなおし</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>見舞</string><key>shortcut</key><string>みまい</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>紫色</string><key>shortcut</key><string>むらさきいろ</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>明示</string><key>shortcut</key><string>めいじ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/9候補 -->
+	<dict><key>phrase</key><string>綿花</string><key>shortcut</key><string>めんか</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>木製</string><key>shortcut</key><string>もくせい</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>有害</string><key>shortcut</key><string>ゆうがい</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>優良</string><key>shortcut</key><string>ゆうりょう</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>雪解</string><key>shortcut</key><string>ゆきどけ</string></dict>	<!-- 5位/6候補 -->
+	<dict><key>phrase</key><string>溶液</string><key>shortcut</key><string>ようえき</string></dict>	<!-- 8位/9候補 -->
+	<dict><key>phrase</key><string>溶解</string><key>shortcut</key><string>ようかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 3位/18候補 -->
+	<dict><key>phrase</key><string>容器</string><key>shortcut</key><string>ようき</string></dict>	<!-- 4位/24候補 -->
+	<dict><key>phrase</key><string>用具</string><key>shortcut</key><string>ようぐ</string></dict>	<!-- 3位/5候補 -->
+	<dict><key>phrase</key><string>陽光</string><key>shortcut</key><string>ようこう</string></dict>	<!-- 16位/24候補 -->
+	<dict><key>phrase</key><string>洋梨</string><key>shortcut</key><string>ようなし</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>卵巣</string><key>shortcut</key><string>らんそう</string></dict>	<!-- 3位/6候補 -->
+	<dict><key>phrase</key><string>竜眼</string><key>shortcut</key><string>りゅうがん</string></dict>	<!-- 3位/7候補 -->
+	<dict><key>phrase</key><string>良好</string><key>shortcut</key><string>りょうこう</string></dict>	<!-- 8位/14候補 -->
+	<dict><key>phrase</key><string>冷気</string><key>shortcut</key><string>れいき</string></dict>	<!-- 3位/24候補 -->
+	<dict><key>phrase</key><string>雄牛</string><key>shortcut</key><string>おうし</string></dict>	<!-- 8位/12候補 -->
+	<dict><key>phrase</key><string>芳香</string><key>shortcut</key><string>ほうこう</string></dict>	<!-- 10位/24候補 -->
+	<dict><key>phrase</key><string>豊潤</string><key>shortcut</key><string>ほうじゅん</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>黄桃</string><key>shortcut</key><string>おうとう</string></dict>	<!-- 5位/13候補 -->
+	<dict><key>phrase</key><string>米麹</string><key>shortcut</key><string>こめこうじ</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>格付け</string><key>shortcut</key><string>かくづけ</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>水色</string><key>shortcut</key><string>すいしょく</string></dict>	<!-- 4位/4候補 -->
+	<dict><key>phrase</key><string>木イチゴ</string><key>shortcut</key><string>きいちご</string></dict>	<!-- 4位/5候補 -->
+	<dict><key>phrase</key><string>左岸</string><key>shortcut</key><string>さがん</string></dict>	<!-- 3位/4候補 -->
+	<dict><key>phrase</key><string>砂岩</string><key>shortcut</key><string>さがん</string></dict>	<!-- 4位/4候補 -->
+	<dict><key>phrase</key><string>萎凋</string><key>shortcut</key><string>いちょう</string></dict>	<!-- 11位/18候補 -->
+	<dict><key>phrase</key><string>菌糸</string><key>shortcut</key><string>きんし</string></dict>	<!-- 7位/16候補 -->
+	<dict><key>phrase</key><string>通関</string><key>shortcut</key><string>つうかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 4位/5候補 -->
+	<dict><key>phrase</key><string>ツバキ科</string><key>shortcut</key><string>つばきか</string></dict>	<!-- 3位/3候補 -->
+	<dict><key>phrase</key><string>西オーストラリア大学</string><key>shortcut</key><string>にしおーすとらりあだいがく</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>農林水産省</string><key>shortcut</key><string>のうりんすいさんしょう</string></dict>	<!-- word_costs に無し -->
+	<dict><key>phrase</key><string>要衝</string><key>shortcut</key><string>ようしょう</string></dict>	<!-- 3位/8候補 -->
+	<dict><key>phrase</key><string>礫</string><key>shortcut</key><string>れき</string></dict>	<!-- 4位/10候補 -->
+	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>まりあーじゅ</string></dict>	<!-- word_costs に無し -->
 </array>
 </plist>
