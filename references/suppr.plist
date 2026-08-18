@@ -188,6 +188,9 @@
 	<dict><key>phrase</key><string>耳</string><key>shortcut</key><string>のみ</string></dict>	<!-- のみ→耳(古語読み11090)。飲みに行けますよ 等で 耳に... の断片を作る -->
 	<dict><key>phrase</key><string>殺る</string><key>shortcut</key><string>やる</string></dict>	<!-- やる の物騒な表記。基底が かな やる(8372)とほぼ同率で、までやってる→まで殺ってる 等の派生を作る(遣る/ヤル は poubelle 済み。演る は芸能文脈で実在につき残置) -->
 	<dict><key>phrase</key><string>姦る</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>犯る</string><key>shortcut</key><string>やる</string></dict>	<!-- 犯る/飲る/行る も やる の当て表記。殺る/姦る を抑制しても これらが残って やってください→犯って/飲って/行って が先頭に居座る。やる 系はかなが正書(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>飲る</string><key>shortcut</key><string>やる</string></dict>
+	<dict><key>phrase</key><string>行る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>吊れる</string><key>shortcut</key><string>つれる</string></dict>	<!-- 吊れる/攣れる は極めて稀な活用(吊る/攣る が普通)。つれてくる 等で 連れて を邪魔する -->
 	<dict><key>phrase</key><string>攣れる</string><key>shortcut</key><string>つれる</string></dict>
 	<!-- ※ ナンノ: 固有名の愛称収穫(南野陽子等、なんの rank0/wc5496)。何の を差し置いて先頭化するため抑制 -->
@@ -295,6 +298,7 @@
 	<!-- ■ 完全一致で再供給する二段構え(抑制しつつ exactReadingOnlySeed で末尾に出す) -->
 	<dict><key>phrase</key><string>イル</string><key>shortcut</key><string>いる</string></dict>	<!-- exactReadingOnlySeed との二段構え(抑制→完全一致時のみ末尾再供給)。クラス抑制(強調/交ぜ書き)からは免除される -->
 	<dict><key>phrase</key><string>サンガ</string><key>shortcut</key><string>さんが</string></dict>
+	<dict><key>phrase</key><string>演る</string><key>shortcut</key><string>やる</string></dict>	<!-- 演る は芸能文脈で実在(ライヴで演る)。活用形で やってください→演ってください を作るので抑制するが、やる 完全一致時のみ末尾に再供給して選べるようにする(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>冠者</string><key>shortcut</key><string>かじゃ</string></dict>	<!-- 冠者(かじゃ、狂言用語wc5886)が と+冠者 分割で とかじゃ〜 を乗っ取る。カジャ(wc2148)も冠者suppr後は同穴で浮上。冠者 は完全一致時のみ再供給(かんじゃ 読みは無傷) -->
 	<dict><key>phrase</key><string>カジャ</string><key>shortcut</key><string>かじゃ</string></dict>
 	<dict><key>phrase</key><string>御</string><key>shortcut</key><string>おん</string></dict>	<!-- 御(接頭辞)/音(単独名詞でない読み)。を→御(5399)等のbigramで えあこんをおん の変種枠を占有し ON/On/on を圏外に押し出す。完全一致時のみ末尾再供給(おんしゃ→御社 等の複合読みは無傷) -->
