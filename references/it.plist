@@ -111,6 +111,8 @@
 	<dict><key>phrase</key><string>Ventura</string><key>shortcut</key><string>べんちゅら</string></dict>
 	<dict><key>phrase</key><string>watchOS</string><key>shortcut</key><string>うぉっちおーえす</string></dict>
 	<dict><key>phrase</key><string>Yosemite</string><key>shortcut</key><string>よせみて</string></dict>
+	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましーん</string></dict>
+	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましん</string></dict>
 
 	<!-- サーヴィス -->
 	<dict><key>phrase</key><string>App Store</string><key>shortcut</key><string>あっぷすとあ</string></dict>
@@ -124,9 +126,6 @@
 	<dict><key>phrase</key><string>FaceTimeオーディオ</string><key>shortcut</key><string>ふぇいすたいむおーでぃお</string></dict>
 	<dict><key>phrase</key><string>iMessage</string><key>shortcut</key><string>あいめっせーじ</string></dict>
 	<dict><key>phrase</key><string>iTunes</string><key>shortcut</key><string>あいちゅーんず</string></dict>
-	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
-	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましーん</string></dict>
-	<dict><key>phrase</key><string>Time Machine</string><key>shortcut</key><string>たいむましん</string></dict>
 	<dict><key>phrase</key><string>Apple ID</string><key>shortcut</key><string>あっぷるあいでぃー</string></dict>
 	<dict><key>phrase</key><string>App Group</string><key>shortcut</key><string>あっぷぐるーぷ</string></dict>
 	<dict><key>phrase</key><string>Apple Card</string><key>shortcut</key><string>あっぷるかーど</string></dict>
@@ -145,6 +144,10 @@
 	<dict><key>phrase</key><string>Xcode</string><key>shortcut</key><string>えっくすこーど</string></dict>
 	<dict><key>phrase</key><string>Photoshop</string><key>shortcut</key><string>ふぉとしょっぷ</string></dict>
 	<dict><key>phrase</key><string>Inkscape</string><key>shortcut</key><string>いんくすけいぷ</string></dict>
+
+	<!-- プログラミング言語 -->
+	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
+	<dict><key>phrase</key><string>SwiftUI</string><key>shortcut</key><string>すいふとゆーあい</string></dict>
 
 	<!-- AI -->
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>

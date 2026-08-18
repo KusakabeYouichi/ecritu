@@ -37,6 +37,8 @@
 	        <dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
 	        <dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>	<!-- Sudachiにもある -->
 	<!-- その他の地方 -->
+	        <dict><key>phrase</key><string>リアンクール</string><key>shortcut</key><string>りあんくーる</string></dict>
+	        <dict><key>phrase</key><string>福砂屋</string><key>shortcut</key><string>ふくさや</string></dict>
 	        <dict><key>phrase</key><string>新疆</string><key>shortcut</key><string>しんちゃん</string></dict>
 	        <dict><key>phrase</key><string>占守</string><key>shortcut</key><string>しゅむしゅ</string></dict>
 	        <dict><key>phrase</key><string>占守島</string><key>shortcut</key><string>しゅむしゅとう</string></dict>
@@ -242,11 +244,9 @@
 	        <dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽうろう</string></dict>
 	        <dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽーろう</string></dict>
 	        <dict><key>phrase</key><string>東坡肉</string><key>shortcut</key><string>どんぽうろー</string></dict>
-	        <dict><key>phrase</key><string>福砂屋</string><key>shortcut</key><string>ふくさや</string></dict>
 	        <dict><key>phrase</key><string>袱紗仕立て</string><key>shortcut</key><string>ふくさじたて</string></dict>
 	        <dict><key>phrase</key><string>ブルグル</string><key>shortcut</key><string>ぶるぐる</string></dict>
 	        <dict><key>phrase</key><string>ブルグア</string><key>shortcut</key><string>ぶるぐあ</string></dict>
-	        <dict><key>phrase</key><string>リアンクール</string><key>shortcut</key><string>りあんくーる</string></dict>
 	<!-- 肉の焼き具合 -->
 	        <dict><key>phrase</key><string>ブルー・レア</string><key>shortcut</key><string>ぶるーれあ</string></dict>
 	        <dict><key>phrase</key><string>ミディアム・レア</string><key>shortcut</key><string>みでぃあむれあ</string></dict>
@@ -333,8 +333,10 @@
 	        <dict><key>phrase</key><string>Panamera</string><key>shortcut</key><string>ぱなめーら</string></dict>
 	        <dict><key>phrase</key><string>Taycan</string><key>shortcut</key><string>たいかん</string></dict>
 	        <dict><key>phrase</key><string>Porsche</string><key>shortcut</key><string>ぽるしぇ</string></dict>
+
 	        <dict><key>phrase</key><string>水冷式</string><key>shortcut</key><string>すいれいしき</string></dict>
 	        <dict><key>phrase</key><string>空冷式</string><key>shortcut</key><string>くうれいしき</string></dict>
+
 	<!-- ワイン -->
 	        <dict><key>phrase</key><string>アペロ</string><key>shortcut</key><string>あぺろ</string></dict>
 	        <dict><key>phrase</key><string>蔵付き酵母</string><key>shortcut</key><string>くらつきこうぼ</string></dict>
