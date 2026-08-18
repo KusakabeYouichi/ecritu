@@ -122,6 +122,7 @@
 	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string></dict>	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>
 	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>なのね</string><key>shortcut</key><string>なのね</string></dict>	<!-- なのね: {ナノね, 奈のね, 名のね, 菜のね, …} の合成に負ける。断定+終助詞の句でかなが正書(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
