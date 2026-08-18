@@ -412,6 +412,13 @@ final class KanaKanjiConverter {
         if let radicalForms = KanjiRadicalCatalog.formsByKanaName[context.reading] {
             addCandidates(radicalForms, baseScore: CandidateScore.exactReadingOnly, to: &scores)
         }
+        // 末尾を長音で引き伸ばした形(なるほどー)は辞書に無く、単文節では候補が1件も
+        // 作れない。keepKana(末尾長音の剥がし)が根拠を認める読みに限り、かな全長を
+        // 供給する。keepKana は既にあるかな候補を維持するだけで供給はしないため(2564)
+        if shouldKeepKanaIdentityLeading(for: context.reading),
+            context.reading.hasSuffix("ー") {
+            addCandidates([context.reading], baseScore: CandidateScore.supplementalVocabulary, to: &scores)
+        }
     }
 
     // ステージ2: 派生候補(活用/ガル形/丁寧接頭辞/序数/数値/名詞接辞/postfix)を登録する。
@@ -1079,6 +1086,19 @@ final class KanaKanjiConverter {
         for auxiliary in ["まくり", "まくる", "まくった", "まくって", "まくれ"]
         where normalized.count > auxiliary.count && normalized.hasSuffix(auxiliary) {
             return true
+        }
+        // 末尾を長音で引き伸ばした形(なるほどー/なるほどーー)は辞書に無く、合成の
+        // {成保どー, 鳴穂どー} だけが並ぶ。長音を剥がした本体がかな正書の根拠を持つなら
+        // 伸ばした形もかなが正書(2564)。本体判定の再帰なので、成る程 が正書の語には
+        // 発火しない。長音だけの読み(ーー)は本体が空になるので対象外。
+        if normalized.count > 1, normalized.hasSuffix("ー") {
+            var stem = normalized
+            while stem.count > 1, stem.hasSuffix("ー") {
+                stem = String(stem.dropLast())
+            }
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
         }
         // 指示代名詞(それ/これ 等)始まりの句は、続く副助詞(ぐらい/だけ 等、任意)を剥がした
         // 残りがかな維持の根拠を持つなら維持(それぐらいやるよ→やるよ→やる=辞書かな語。

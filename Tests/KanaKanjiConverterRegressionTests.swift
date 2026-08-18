@@ -761,6 +761,106 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(hanashika.prefix(3).contains("はなしか"), "list=\(hanashika)")
     }
 
+    // やる: かな やる(8372)が 遣る/ヤル(5971) に負けて基底4位で、活用コピーもその順を継ぎ
+    // やってください→{演って, 犯って, 飲って…} になっていた。seed で基底先頭をかなに
+    // (ユーザ指定 2564)。
+    func testRegressionRealLMYaruPrefersKana() throws {
+        try prepareRealLMDictionary()
+        // 遣る は poubelle(InitialSuppr)、殺る/姦る は suppr(InitialSupprHidden)。
+        // 実機相当にするため両方をマージして注入する
+        var merged: [String: [String]] = [:]
+        for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                merged[reading, default: []].append(contentsOf: candidates)
+            }
+        }
+        UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "ÉcrituSuppr_Vocab")
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        for reading in ["やってください", "やってる", "やった"] {
+            let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, reading, "reading=\(reading) list=\(list)")
+        }
+    }
+
+    // つかわずにすむ: すむ の word_cost が 住む(7228) < 済む(7946) のため 使わずに住む
+    // だった。「〜ずに済む」は済むが正しい(ユーザ指定 2564)。
+    func testRegressionRealLMTsukawazuNiSumu() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "つかわずにすむ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "使わずに済む", "list=\(list)")
+    }
+
+    // なんでまた: {何で又, 何でまた, 何で股, なんで又, なんでまた} だった。日常表記の
+    // 何でまた を先頭、かな を2位へ(ユーザ指定 2564)。
+    func testRegressionRealLMNandeMata() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "なんでまた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "何でまた", "list=\(list)")
+        XCTAssertEqual(list.dropFirst().first, "なんでまた", "list=\(list)")
+    }
+
+    // かえるかなあ: {変えるかなあ, 蛙化なあ, 帰るかなあ, カエルかなあ, …} で 買えるかなあ が
+    // 7位だった。買える→帰る→変える の順に(ユーザ指定 2564)。
+    func testRegressionRealLMKaeruKanaa() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "かえるかなあ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["買えるかなあ", "帰るかなあ", "変えるかなあ"], "list=\(list)")
+    }
+
+    // くいにいきませんか: くい の word_cost が 悔い(7159) < 食い(9019) で
+    // 悔いに行きませんか が先頭だった(ユーザ指定 2564)。
+    func testRegressionRealLMKuiNiIkimasenka() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "くいにいきませんか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "食いに行きませんか", "list=\(list)")
+    }
+
+    // なるほどー: 末尾を長音で引き伸ばした形は辞書に無く {成保どー, 鳴穂どー, なるほどー} の
+    // 順だった。長音を剥がした本体がかな正書なら伸ばした形もかなが正書として供給する
+    // (ユーザ指定 2564)。漢字が正書の語(成る程 ではなく なるほど 側)にのみ発火する。
+    func testRegressionRealLMElongatedKanaTail() throws {
+        try prepareRealLMDictionary()
+
+        for reading in ["なるほどー", "なるほどーー"] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, reading, "single reading=\(reading) list=\(single)")
+        }
+        // 長音を伴わない本体側は従来どおり(なるほど 自体の先頭は変わらない)
+        let base = converter.candidates(for: "なるほど", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(base.first, "なるほど", "list=\(base)")
+    }
+
+    // 追加語彙(sacoche/misc)込みの回帰: なのね のかな正書、醤油麹/OK/デュアーズ の供給欠落
+    // (ユーザ指定 2564)。テストバンドルには JSON が載らないので実機相当に注入する。
+    func testRegressionRealLMVocabAdditions2564() throws {
+        try prepareRealLMDictionary()
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            let dict = try JSONDecoder().decode([String: [String]].self, from: data)
+            for (reading, candidates) in dict {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let cases: [(reading: String, expected: String)] = [
+            ("なのね", "なのね"),
+            ("しょうゆこうじ", "醤油麹"),
+            ("おーけい", "OK"),
+            ("でゅあーず", "デュアーズ")
+        ]
+        for (reading, expected) in cases {
+            let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list)")
+        }
+    }
+
     // はくし: 博士 が word_cost 8757 で {柏子, 白指, 白詩, 薄志, 薄資}(7404)のレア語群に
     // 負けて7番目だった。白紙 1位を維持しつつ 博士 を2位へ(ユーザ指定 2564)。
     func testRegressionRealLMHakushiPrefersHakushi() throws {
