@@ -85,19 +85,6 @@
 	<dict><key>phrase</key><string>美須羽</string><key>shortcut</key><string>みずは</string></dict>
 	<dict><key>phrase</key><string>美須葉</string><key>shortcut</key><string>みずは</string></dict>
 	<dict><key>phrase</key><string>中ノ</string><key>shortcut</key><string>なかの</string></dict>	<!-- 中ノ/ナカノ: なかの の交ぜ書き・カタカナ人名収穫(wc6000/5652で正規の中野9095より安い)。中ノ島 等の複合地名は別surface登録なので影響しない -->
-	<dict><key>phrase</key><string>江</string><key>shortcut</key><string>え</string></dict>	<!-- 読み「え」の名前・旧字・レア読み。単独の え としても使わず、え+だ の合成 (江だ/衣だ/穢だ/重だ/慧だ/会だ/枝だ/畫だ)を作る温床になる。畫 は画の旧字で 読み え は正当だが現代入力では不要(ユーザー指摘)。絵/画/餌/柄 等は温存 -->
-	<dict><key>phrase</key><string>衣</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>枝</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>穢</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>畫</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>重</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>慧</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>会</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。 あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
-	<dict><key>phrase</key><string>藤原</string><key>shortcut</key><string>ふじわらの</string></dict>	<!-- 古代氏姓の「の込み」読み(藤原=フジワラノ/源=ミナモトノ/平=タイラノ、Sudachi実在)。 ふじわらの 等で rank0 に居座り 藤原の/源の/平の の合成を抑えるため 阿刀 と同型の 二段構え。平野(たいらの) は読み跨ぎ気味の収穫で同時に抑制 -->
-	<dict><key>phrase</key><string>源</string><key>shortcut</key><string>みなもとの</string></dict>
-	<dict><key>phrase</key><string>平</string><key>shortcut</key><string>たいらの</string></dict>
-	<dict><key>phrase</key><string>平野</string><key>shortcut</key><string>たいらの</string></dict>
 	<dict><key>phrase</key><string>小恋</string><key>shortcut</key><string>ここ</string></dict>	<!-- ここ のレア人名収穫(rank13-23)。ここでは/ここに 等の合成・連文節を汚すため辞書からは 抑制し、exactReadingOnlySeed で ここ 完全一致時のみ末尾供給に移す -->
 	<dict><key>phrase</key><string>小瑚</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>小虹</string><key>shortcut</key><string>ここ</string></dict>
@@ -126,6 +113,11 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。 あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
+	<dict><key>phrase</key><string>源</string><key>shortcut</key><string>みなもとの</string></dict>
+	<dict><key>phrase</key><string>平</string><key>shortcut</key><string>たいらの</string></dict>
+	<dict><key>phrase</key><string>平野</string><key>shortcut</key><string>たいらの</string></dict>
+	<dict><key>phrase</key><string>藤原</string><key>shortcut</key><string>ふじわらの</string></dict>	<!-- 古代氏姓の「の込み」読み(藤原=フジワラノ/源=ミナモトノ/平=タイラノ、Sudachi実在)。 ふじわらの 等で rank0 に居座り 藤原の/源の/平の の合成を抑えるため 阿刀 と同型の 二段構え。平野(たいらの) は読み跨ぎ気味の収穫で同時に抑制 -->
 	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>
 	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>
 	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
@@ -278,6 +270,14 @@
 	<dict><key>phrase</key><string>奴</string><key>shortcut</key><string>な</string></dict>	<!-- な 読みの 奴(奴国等の断片読み)。終助詞 な を あるといい奴 等に化けさせる。奴 は やつ で打てるため全面抑制 -->
 	<dict><key>phrase</key><string>者</string><key>shortcut</key><string>は</string></dict>
 	<dict><key>phrase</key><string>霊</string><key>shortcut</key><string>よん</string></dict>	<!-- 霊(よん): Sudachi 収穫の異体字扱い(よん→{よん,ヨン,四,霊})。霊ん+でない 等の ゴミ合成の種になる。よん で 霊 を出したい場面は無いので抑制 -->
+	<dict><key>phrase</key><string>江</string><key>shortcut</key><string>え</string></dict>	<!-- 読み「え」の名前・旧字・レア読み。単独の え としても使わず、え+だ の合成 (江だ/衣だ/穢だ/重だ/慧だ/会だ/枝だ/畫だ)を作る温床になる。畫 は画の旧字で 読み え は正当だが現代入力では不要(ユーザー指摘)。絵/画/餌/柄 等は温存 -->
+	<dict><key>phrase</key><string>衣</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>枝</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>穢</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>畫</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>重</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>慧</string><key>shortcut</key><string>え</string></dict>
+	<dict><key>phrase</key><string>会</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>出は</string><key>shortcut</key><string>では</string></dict>	<!-- では の誤生成: で(格助詞/接続=かな)の漢字/カタカナ表層(デ/出/手)+は の合成。では はかなが正書。手 は連濁でしか で と読まない -->
 	<dict><key>phrase</key><string>手は</string><key>shortcut</key><string>では</string></dict>
 	<dict><key>phrase</key><string>打けど</string><key>shortcut</key><string>だけど</string></dict>	<!-- だけど の誤生成: だ(コピュラ=常にかな)の漢字/カタカナ表層(ダ/打/駄/堕/大/娜/惰/田/舵/拿)+けど の合成。だけど はかなが正書 -->

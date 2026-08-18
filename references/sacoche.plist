@@ -116,7 +116,6 @@
 	        <dict><key>phrase</key><string>中音域</string><key>shortcut</key><string>ちゅうおんいき</string></dict>
 	        <dict><key>phrase</key><string>低音域</string><key>shortcut</key><string>ていおんいき</string></dict>
 	        <dict><key>phrase</key><string>過放電</string><key>shortcut</key><string>かほうでん</string></dict>
-	        <dict><key>phrase</key><string>拡大率</string><key>shortcut</key><string>かくだいりつ</string></dict>
 	        <dict><key>phrase</key><string>核種</string><key>shortcut</key><string>かくしゅ</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>丸環</string><key>shortcut</key><string>まるかん</string></dict>
 	        <dict><key>phrase</key><string>超短焦点</string><key>shortcut</key><string>ちょうたんしょうてん</string></dict>
@@ -125,9 +124,11 @@
 	        <dict><key>phrase</key><string>防湿庫</string><key>shortcut</key><string>ぼうしつこ</string></dict>
 	        <dict><key>phrase</key><string>線量</string><key>shortcut</key><string>せんりょう</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>	<!-- Sudachiにもある -->
-	        <dict><key>phrase</key><string>高確率</string><key>shortcut</key><string>こうかくりつ</string></dict>
 	        <dict><key>phrase</key><string>短焦点</string><key>shortcut</key><string>たんしょうてん</string></dict>
 	<!-- 料理・食材 -->
+	        <!-- アイユ: 辞書に実在(あいゆ wc2148)だが、同読みの漢字収穫(愛由/藍結=収穫底値10000)が
+	             あるためカタカナ強調抑止で候補から消える。追加語彙登録で復活させる -->
+	        <dict><key>phrase</key><string>アイユ</string><key>shortcut</key><string>あいゆ</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>スプレッド</string><key>shortcut</key><string>すぷれっど</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>マリネ</string><key>shortcut</key><string>まりね</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	        <dict><key>phrase</key><string>メランジェ</string><key>shortcut</key><string>めらんじぇ</string><key>pos</key><string>サ変名詞</string></dict>
@@ -382,17 +383,16 @@
 	        <dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
 	<!--既存<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict> -->
 	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
-	<!--既存<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict> -->
+	        <dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
 	<!-- 一般用語 -->
-	        <!-- アイユ: 辞書に実在(あいゆ wc2148)だが、同読みの漢字収穫(愛由/藍結=収穫底値10000)が
-	             あるためカタカナ強調抑止で候補から消える。追加語彙登録で復活させる -->
-	        <dict><key>phrase</key><string>アイユ</string><key>shortcut</key><string>あいゆ</string></dict>	<!-- Sudachiにもある -->
+	        <dict><key>phrase</key><string>Hermès</string><key>shortcut</key><string>えるめす</string></dict>
+	        <dict><key>phrase</key><string>再設計</string><key>shortcut</key><string>さいせっけい</string><key>pos</key><string>サ変名詞</string></dict>
+	        <dict><key>phrase</key><string>拡大率</string><key>shortcut</key><string>かくだいりつ</string></dict>
 	        <dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict><!-- [そのあと]ならある -->
 	        <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict><!-- [ははかた]ならある -->
 	        <dict><key>phrase</key><string>父方</string><key>shortcut</key><string>ちちがた</string></dict><!-- [ちちかた]ならある -->
 	        <dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>	<!-- Sudachiにもある --><!-- 先頭に出すため -->
 	        <dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict><!-- 単独でもない!! -->
-	        <dict><key>phrase</key><string>プロフェショナル</string><key>shortcut</key><string>ぷろふぇしょなる</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>ラバーダッキー</string><key>shortcut</key><string>らばーだっきー</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>グランメゾン</string><key>shortcut</key><string>ぐらんめぞん</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>タニタ</string><key>shortcut</key><string>たにた</string></dict><!-- 単独でもない!! -->
@@ -404,6 +404,7 @@
 	        <dict><key>phrase</key><string>ソウルフード</string><key>shortcut</key><string>そうるふーど</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>人身事故</string><key>shortcut</key><string>じんしんじこ</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>低確率</string><key>shortcut</key><string>ていかくりつ</string></dict><!-- 複合語が薄くて -->
+	        <dict><key>phrase</key><string>高確率</string><key>shortcut</key><string>こうかくりつ</string></dict>
 	        <dict><key>phrase</key><string>半人半馬</string><key>shortcut</key><string>はんじんはんば</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>原価率</string><key>shortcut</key><string>げんかりつ</string></dict><!-- 複合語が薄くて -->
 	        <dict><key>phrase</key><string>問題数</string><key>shortcut</key><string>もんだいすう</string></dict><!-- 複合語が薄くて -->

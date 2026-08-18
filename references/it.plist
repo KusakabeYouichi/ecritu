@@ -149,6 +149,13 @@
 	<dict><key>phrase</key><string>Swift</string><key>shortcut</key><string>すいふと</string></dict>
 	<dict><key>phrase</key><string>SwiftUI</string><key>shortcut</key><string>すいふとゆーあい</string></dict>
 
+	<!-- IT用語で独自表記 -->
+	<dict><key>phrase</key><string>エミュレイター</string><key>shortcut</key><string>えみゅれいたー</string></dict>
+	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
+	<dict><key>phrase</key><string>アップデイト</string><key>shortcut</key><string>あっぷでいと</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+
 	<!-- AI -->
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えいあい</string></dict>
 	<dict><key>phrase</key><string>AI</string><key>shortcut</key><string>えーあい</string></dict>
@@ -184,7 +191,6 @@
 	<dict><key>phrase</key><string>Type-A</string><key>shortcut</key><string>たいぷえー</string></dict>
 	<dict><key>phrase</key><string>Type-C</string><key>shortcut</key><string>たいぷしー</string></dict>
 	<dict><key>phrase</key><string>VScode</string><key>shortcut</key><string>ゔいえすこーど</string></dict>
-	<dict><key>phrase</key><string>エミュレイター</string><key>shortcut</key><string>えみゅれいたー</string></dict>
 	<dict><key>phrase</key><string>フルアクセス</string><key>shortcut</key><string>ふるあくせす</string></dict>
 	<dict><key>phrase</key><string>テンキー</string><key>shortcut</key><string>てんきー</string></dict>
 	<dict><key>phrase</key><string>Excel</string><key>shortcut</key><string>えくせる</string></dict>
@@ -195,7 +201,6 @@
 	<dict><key>phrase</key><string>Logic Pro</string><key>shortcut</key><string>ろじっくぷろ</string></dict>
 	<dict><key>phrase</key><string>Python</string><key>shortcut</key><string>ぱいそん</string></dict>
 	<dict><key>phrase</key><string>チェックサム</string><key>shortcut</key><string>ちぇっくさむ</string></dict>
-	<dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
 	<dict><key>phrase</key><string>IIJmio</string><key>shortcut</key><string>あいあいじぇいみお</string></dict>
 	<dict><key>phrase</key><string>IIJ</string><key>shortcut</key><string>あいあいじぇい</string></dict>
 	<dict><key>phrase</key><string>Google Maps</string><key>shortcut</key><string>ぐーぐるまっぷ</string></dict>
@@ -215,7 +220,7 @@
 	<dict><key>phrase</key><string>ニーモニック</string><key>shortcut</key><string>にーもにっく</string></dict>
 	<dict><key>phrase</key><string>PayPal</string><key>shortcut</key><string>ぺいぱる</string></dict>
 	<dict><key>phrase</key><string>PayPay</string><key>shortcut</key><string>ぺいぺい</string></dict>
-	<dict><key>phrase</key><string>スプレッド・シート</string><key>shortcut</key><string>すぷれっどしーと</string></dict>
+	<dict><key>phrase</key><string>スプレッドシート</string><key>shortcut</key><string>すぷれっどしーと</string></dict>
 	<dict><key>phrase</key><string>コードポイント</string><key>shortcut</key><string>こーどぽいんと</string></dict>
 	<dict><key>phrase</key><string>Unicode</string><key>shortcut</key><string>ゆにこーど</string></dict>
 	<dict><key>phrase</key><string>Shift_JIS</string><key>shortcut</key><string>しふとじす</string></dict>
@@ -223,7 +228,6 @@
 	<dict><key>phrase</key><string>ロッシー</string><key>shortcut</key><string>ろっしー</string></dict>
 	<dict><key>phrase</key><string>Android</string><key>shortcut</key><string>あんどろいど</string></dict>
 	<dict><key>phrase</key><string>écritu</string><key>shortcut</key><string>えくりちゅ</string></dict>
-	<dict><key>phrase</key><string>Hermès</string><key>shortcut</key><string>えるめす</string></dict>
 	<dict><key>phrase</key><string>Facebook</string><key>shortcut</key><string>ふぇいすぶっく</string></dict>
 	<dict><key>phrase</key><string>Linksys</string><key>shortcut</key><string>りんくしす</string></dict>
 	<dict><key>phrase</key><string>Windows</string><key>shortcut</key><string>うぃんどうず</string></dict>
@@ -236,13 +240,9 @@
 	<dict><key>phrase</key><string>タップ</string><key>shortcut</key><string>たっぷ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ダブルタップ</string><key>shortcut</key><string>だぶるたっぷ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ロングタップ</string><key>shortcut</key><string>ろんぐたっぷ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ペースト</string><key>shortcut</key><string>ぺーすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string><key>pos</key><string>サ変名詞</string></dict>
-	<dict><key>phrase</key><string>アップデイト</string><key>shortcut</key><string>あっぷでいと</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>デグレ</string><key>shortcut</key><string>でぐれ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>再設計</string><key>shortcut</key><string>さいせっけい</string><key>pos</key><string>サ変名詞</string></dict>
 </array>
 </plist>
