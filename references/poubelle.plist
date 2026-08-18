@@ -49,7 +49,6 @@
 	<dict><key>phrase</key><string>全て</string><key>shortcut</key><string>すべて</string></dict>
 	<dict><key>phrase</key><string>但し</string><key>shortcut</key><string>ただし</string></dict>
 	<dict><key>phrase</key><string>尚</string><key>shortcut</key><string>なお</string></dict>
-	<dict><key>phrase</key><string>女</string><key>shortcut</key><string>ひと</string></dict>	<!-- ひと 読みは文学的用法で日常では出さない -->
 	<dict><key>phrase</key><string>遣る</string><key>shortcut</key><string>やる</string></dict>
 	<dict><key>phrase</key><string>為る</string><key>shortcut</key><string>する</string></dict>
 	<dict><key>phrase</key><string>仕る</string><key>shortcut</key><string>する</string></dict>
@@ -60,7 +59,10 @@
 	<dict><key>phrase</key><string>最早</string><key>shortcut</key><string>もはや</string></dict>
 	<dict><key>phrase</key><string>故に</string><key>shortcut</key><string>ゆえに</string></dict>
 	<dict><key>phrase</key><string>美味い</string><key>shortcut</key><string>うまい</string></dict>	<!-- うまい はかな書きを優先 -->
+
+	<!-- ■ 当て読み・熟字訓のうち違和感のあるもの -->
 	<dict><key>phrase</key><string>甘い</string><key>shortcut</key><string>うまい</string></dict>	<!-- うまい 読みは方言・古語寄り -->
+	<dict><key>phrase</key><string>女</string><key>shortcut</key><string>ひと</string></dict>	<!-- ひと 読みは文学的用法で日常では出さない -->
 
 	<!-- ■ カタカナ表記・交ぜ書き(かな/漢字の正書を勝たせる) -->
 	<dict><key>phrase</key><string>ヤル</string><key>shortcut</key><string>やる</string></dict>	<!-- やる のカタカナ表記 -->

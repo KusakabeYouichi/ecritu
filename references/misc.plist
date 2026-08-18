@@ -278,6 +278,8 @@
 	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>	<!-- 中黒装飾フィルタで既定候補から外れた実在固有名の復活(映画/ゆうちょ/出版社) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ぱ・る・る</string><key>shortcut</key><string>ぱるる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>さ・え・ら</string><key>shortcut</key><string>さえら</string></dict>	<!-- Sudachiにもある -->
+
+	<!-- ■ かなが正書の接続詞(Sudachi に単独エントリが無く人名等に負ける) -->
 	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
 	<dict><key>phrase</key><string>なのに</string><key>shortcut</key><string>なのに</string></dict>
 	<dict><key>phrase</key><string>なので</string><key>shortcut</key><string>なので</string></dict>
