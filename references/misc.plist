@@ -122,7 +122,8 @@
 	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string></dict>	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>
 	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>なのね</string><key>shortcut</key><string>なのね</string></dict>	<!-- なのね: {ナノね, 奈のね, 名のね, 菜のね, …} の合成に負ける。断定+終助詞の句でかなが正書(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>なのね</string><key>shortcut</key><string>なのね</string></dict>
+	<dict><key>phrase</key><string>だねえ</string><key>shortcut</key><string>だねえ</string></dict>	<!-- だねえ: {打ねえ, 駄ねえ, 惰ねえ, 堕ねえ, 舵ねえ} の当て字合成に負ける。断定+終助詞の句でかなが正書(ユーザ指定 2564) -->	<!-- なのね: {ナノね, 奈のね, 名のね, 菜のね, …} の合成に負ける。断定+終助詞の句でかなが正書(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>なのよね</string><key>shortcut</key><string>なのよね</string></dict>
 	<dict><key>phrase</key><string>なのだ</string><key>shortcut</key><string>なのだ</string></dict>
 	<dict><key>phrase</key><string>なのです</string><key>shortcut</key><string>なのです</string></dict>
@@ -141,6 +142,15 @@
 	<dict><key>phrase</key><string>やってみて</string><key>shortcut</key><string>やってみて</string></dict>
 	<dict><key>phrase</key><string>やってみよう</string><key>shortcut</key><string>やってみよう</string></dict>
 	<dict><key>phrase</key><string>やってた</string><key>shortcut</key><string>やってた</string></dict>
+	<dict><key>phrase</key><string>やってください</string><key>shortcut</key><string>やってください</string></dict>	<!-- やる のかな活用形の補充。基底の漢字当て字(演る/犯る/飲る/行る)を抑制すると活用形の生成元ごと消えて候補ゼロになるため、抑制ではなくかな側の直接登録で先頭を取る(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>やってます</string><key>shortcut</key><string>やってます</string></dict>
+	<dict><key>phrase</key><string>やっといて</string><key>shortcut</key><string>やっといて</string></dict>
+	<dict><key>phrase</key><string>やった</string><key>shortcut</key><string>やった</string></dict>
+	<dict><key>phrase</key><string>やります</string><key>shortcut</key><string>やります</string></dict>
+	<dict><key>phrase</key><string>やりました</string><key>shortcut</key><string>やりました</string></dict>
+	<dict><key>phrase</key><string>やろう</string><key>shortcut</key><string>やろう</string></dict>
+	<dict><key>phrase</key><string>やらない</string><key>shortcut</key><string>やらない</string></dict>
+	<dict><key>phrase</key><string>やれば</string><key>shortcut</key><string>やれば</string></dict>
 	<dict><key>phrase</key><string>してる</string><key>shortcut</key><string>してる</string></dict>	<!-- してる: 進行形のかな正書。して が LM 未収録で弱く、してるな→して+ルナ(uni6239)に区切りを取られる -->
 	<dict><key>phrase</key><string>那覇</string><key>shortcut</key><string>なは</string></dict>	<!-- 那覇(なは): 沖縄県都。unigram 6411 が高めで な+波 断片や全かなに負ける (なはでは→なはでは、なはではこれです→な波では)。curated で区切りを勝たせる -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>なってる</string><key>shortcut</key><string>なってる</string></dict>	<!-- なってる(なる+てる縮約、かな正書): 基底列挙で 綯う(レア)経由の 綯ってる が先行し、ことになってる→ことに綯ってる/成ってる が先頭化するため curated 供給 -->
