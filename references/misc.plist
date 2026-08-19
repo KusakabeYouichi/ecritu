@@ -141,6 +141,12 @@
 	<dict><key>phrase</key><string>しまった</string><key>shortcut</key><string>しまった</string></dict>	<!-- 補助動詞 しまう のかな正書。しまおう は 縞王(7380)/島王(10000) しか無い(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>しまって</string><key>shortcut</key><string>しまって</string></dict>
 	<dict><key>phrase</key><string>しまおう</string><key>shortcut</key><string>しまおう</string></dict>
+	<dict><key>phrase</key><string>でもない</string><key>shortcut</key><string>でもない</string></dict>	<!-- 活用形 なかった は LM に無く(Sudachi の A単位は ない+た に分割)、連文節は基底 ない の並び(dict rank は 無い が0位)を継ぐため それほどでも無かった が先頭になる。でも→ない の bigram も未観測で文脈補正が効かない。句として登録する(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>でもなかった</string><key>shortcut</key><string>でもなかった</string></dict>
+	<dict><key>phrase</key><string>でもなく</string><key>shortcut</key><string>でもなく</string></dict>
+	<dict><key>phrase</key><string>でもなくて</string><key>shortcut</key><string>でもなくて</string></dict>
+	<dict><key>phrase</key><string>ほどでもない</string><key>shortcut</key><string>ほどでもない</string></dict>
+	<dict><key>phrase</key><string>ほどでもなかった</string><key>shortcut</key><string>ほどでもなかった</string></dict>
 	<dict><key>phrase</key><string>になる</string><key>shortcut</key><string>になる</string></dict>	<!-- 「になる」文法クラスタ: になって は 担う(になう)のて形 担って が1ノードで全長を取り、よるになって→よる担って 等を作る(にする と同型)。かな識別curatedで供給 -->
 	<dict><key>phrase</key><string>になった</string><key>shortcut</key><string>になった</string></dict>
 	<dict><key>phrase</key><string>になって</string><key>shortcut</key><string>になって</string></dict>
