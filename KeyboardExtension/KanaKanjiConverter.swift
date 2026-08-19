@@ -983,7 +983,10 @@ final class KanaKanjiConverter {
         // (それぞれの/ひとりひとりの)。いずれもかな語幹+終端はかなが正書
         // なあ/ねえ 系(詠嘆の長形。すごいなあ 等)も同型 — な の1字剥がしでは語幹が
         // すごいな になり不成立のため、長形を明示する(2403)。
-        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ", "そう", "の", "なあ", "なぁ", "ねえ", "ねぇ"]
+        // よね/よねえ(同意を求める複合終助詞)も同型。おいしいよね は おいしい が misc の
+        // かな正書登録なので語幹の根拠が立つ。2文字以上の複合形はリストに無く漏れていた(2564)
+        for particle in ["よ", "ね", "な", "わ", "ぞ", "さ", "そう", "の", "なあ", "なぁ", "ねえ", "ねぇ",
+                         "よね", "よねえ", "よねー", "わね", "わよ", "もんね"]
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {

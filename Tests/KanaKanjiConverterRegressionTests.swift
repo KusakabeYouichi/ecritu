@@ -873,6 +873,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertNotEqual(ramen.first, "らーめん", "ramen=\(ramen)")
     }
 
+    // 単漢字が最安・rank0 なのに seed 未掲載で沈む読み(からだ→体 と同型)。
+    // なみだ は24候補中に 涙 が無かった。単漢字は seed 掲載時のみ優遇される設計
+    // (applySeedSingleKanjiPriorityBoost)。1073件の実測から単独入力する語を抽出した。
+    // ちから→力 は元々2位に出ていたが、seed で先頭に揃える(ユーザ指定 2564)。
+    func testRegressionRealLMSingleKanjiSeeds() throws {
+        try prepareRealLMDictionary()
+
+        let cases: [(reading: String, kanji: String)] = [
+            ("なみだ", "涙"), ("あいだ", "間"), ("ちから", "力"), ("いけ", "池"), ("ふだ", "札")
+        ]
+        for (reading, kanji) in cases {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, kanji, "reading=\(reading) list=\(list)")
+            // かなも候補に残す
+            XCTAssertTrue(list.contains(reading), "reading=\(reading) list=\(list)")
+        }
+    }
+
     // からだ: {嘉良だ, 唐だ, 迦羅だ, 空だ, 殻だ, 幹だ, 加羅だ} で 体 が出なかった。
     // 体 は word_cost 2888(カラダ と最安タイ)・dict rank0 なのに、から が助詞として
     // 超高頻度(LM 2848)で から+だ(bigram 3176)の合計6024 が 体(4545)+体→だ(3338)=7883 を
@@ -940,6 +958,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         if let ishiiIndex = multi.firstIndex(where: { $0.contains("石井") }) {
             XCTAssertGreaterThan(ishiiIndex, 0, "石井 が先頭に来てはいけない multi=\(multi)")
         }
+        // 実機で問題だったのは提示層。converter は おいしいよね を1位で返していたのに
+        // shouldKeepKanaIdentityLeading が false でかな候補が除去され お石井よね が
+        // 繰り上がっていた(実機トレースで確認。2564)
+        XCTAssertTrue(
+            fresh.shouldKeepKanaIdentityLeading(for: "おいしいよね"),
+            "提示層がかな候補を除去してしまう"
+        )
         // 単独の おいしい も 石井系 が候補から消える(石井 単体は姓として残す)
         let solo = fresh.candidates(for: "おいしい", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(solo.first, "おいしい", "solo=\(solo)")

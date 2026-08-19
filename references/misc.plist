@@ -157,7 +157,7 @@
 	<dict><key>phrase</key><string>うっかり</string><key>shortcut</key><string>うっかり</string></dict>	<!-- うっかり: かな正書語。かな識別curatedが無いと に+うっかり(最良)が全かなエコー抑制で捨てられ、同コスト(dictUnknown8700)変種の うツかり(Sudachiの促音大書き表記ゆれエントリ、supprで抑制済み)等が繰り上がる -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>それぞれ</string><key>shortcut</key><string>それぞれ</string></dict>	<!-- それぞれ: かな正書語(uni4329≪其々7995)。かな識別curatedが無いと それぞれ+を(最良)が全かなエコー抑制で捨てられ 其々を が繰り上がる(うっかり と同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>なぜ</string><key>shortcut</key><string>なぜ</string></dict>	<!-- なぜ: かな正書語(uni5289<何故6391)。かな識別curatedが無いと なぜそれが(最良・全かな)がエコー抑制で捨てられ 何故それが が先頭化する(それぞれ と同型) -->	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string></dict>	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string><key>pos</key><string>形容詞</string></dict>	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>
 	<dict><key>phrase</key><string>夜</string><key>shortcut</key><string>よる</string></dict>	<!-- よる は unigram で かな よる が 夜 より安く、curated になって と組むと全かな よるになって が最良化するため 夜 を先頭化 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>なのね</string><key>shortcut</key><string>なのね</string></dict>
