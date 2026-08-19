@@ -857,6 +857,44 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // 活用クラスタの穴を一括で埋めた分(2564)。にした/にして/にする/にしよう はあったのに
+    // 条件形 にしたら が漏れていた件の横展開。読みの候補が収穫底値のレア語だけ(にしながら→
+    // 西名柄10000、できた→出來田/出木田/出来田、できれば→出来れば11155、しまおう→縞王/島王)
+    // のものは かまぼこにしたら と同じく句を割るので優先度が高い。してみる 系は丸ごと未登録。
+    func testRegressionRealLMConjugationClusterGaps() throws {
+        try prepareRealLMDictionary()
+        var merged: [String: [String]] = [:]
+        for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                merged[reading, default: []].append(contentsOf: candidates)
+            }
+        }
+        UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let readings = ["にしても", "にしながら",
+                        "になったら", "になっても", "になったり", "になりません",
+                        "してみる", "してみた", "してみて", "してみよう",
+                        "してみたら", "してみれば", "してみても",
+                        "やったら", "やっても", "やったり",
+                        "できた", "できて", "できない", "できたら",
+                        "できれば", "できても", "できます",
+                        "しまった", "しまって", "しまおう"]
+        for reading in readings {
+            let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            let presented = SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(list)
+            XCTAssertEqual(presented.first, reading, "reading=\(reading) presented=\(presented)")
+        }
+    }
+
     // せいせい: dictionary_entries の rank が 整斉/世世/清々/正々/済々/世々/斉整/齊整 の
     // 順で、LM で圧倒的に高頻度な 生成(4824)/精製(6032) が9位・10位に沈んでいた。
     // 製成 は sacoche 登録(酒造用語)で先頭に出ていたが日常語を優先する(ユーザ指定 2564)。
