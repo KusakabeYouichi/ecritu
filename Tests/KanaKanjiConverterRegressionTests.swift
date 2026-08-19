@@ -857,6 +857,42 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // かまぼこにしたら: {かまぼこ西田ら, 蒲鉾にしたら, かまぼこ仁下ら, …} の順だった。
+    // にした/にして/にする/にしよう は misc に登録済みだが条件形 にしたら が漏れており、
+    // したら 単独も辞書は 設楽/設樂 だけでかながない。さらに にした の読みには収穫底値
+    // 10000 のレア姓(仁下/西多/西夛)、にしたら には 西太良 があり句を割る(ユーザ指定 2564)。
+    func testRegressionRealLMShitaraConditional() throws {
+        try prepareRealLMDictionary()
+        var merged: [String: [String]] = [:]
+        for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                merged[reading, default: []].append(contentsOf: candidates)
+            }
+        }
+        UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let multi = fresh.multiClauseCandidates(for: "かまぼこにしたら", systemCandidateMode: .surface)
+        // 蒲鉾 を先頭に(LM は かまぼこ7216 < 蒲鉾7272 の僅差で放置するとかなが勝つ)
+        XCTAssertEqual(multi.first, "蒲鉾にしたら", "multi=\(multi)")
+        XCTAssertFalse(
+            multi.contains(where: { $0.contains("仁下") || $0.contains("西多") || $0.contains("西太良") }),
+            "multi=\(multi)"
+        )
+        for reading in ["したら", "にしたら"] {
+            let list = fresh.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, reading, "reading=\(reading) list=\(list)")
+        }
+    }
+
     // ろーすかつ: {ロース勝つ, ロースかつ, ロース且つ, ロース喝} で ロースカツ が出なかった。
     // ロース→カツ の bigram が未観測で unigram 差だけで決まり、Wikipedia 由来の LM では
     // 勝つ(5948)/かつ(4857) が カツ(7243) より安い。ヒレカツ(2148)・メンチカツ(2118)・
