@@ -110,6 +110,11 @@
 	<dict><key>phrase</key><string>にして</string><key>shortcut</key><string>にして</string></dict>
 	<dict><key>phrase</key><string>にする</string><key>shortcut</key><string>にする</string></dict>
 	<dict><key>phrase</key><string>にしよう</string><key>shortcut</key><string>にしよう</string></dict>
+	<dict><key>phrase</key><string>にしたら</string><key>shortcut</key><string>にしたら</string></dict>	<!-- 条件形の漏れ: にした/にして/にする/にしよう はあったが にしたら が無く、かまぼこにしたら→かまぼこ西田ら/かまぼこ仁下ら になる。したら 単独も辞書は 設楽/設樂 だけでかなが無い(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>にしたり</string><key>shortcut</key><string>にしたり</string></dict>
+	<dict><key>phrase</key><string>したら</string><key>shortcut</key><string>したら</string></dict>
+	<dict><key>phrase</key><string>したり</string><key>shortcut</key><string>したり</string></dict>
+	<dict><key>phrase</key><string>してたら</string><key>shortcut</key><string>してたら</string></dict>
 	<dict><key>phrase</key><string>になる</string><key>shortcut</key><string>になる</string></dict>	<!-- 「になる」文法クラスタ: になって は 担う(になう)のて形 担って が1ノードで全長を取り、よるになって→よる担って 等を作る(にする と同型)。かな識別curatedで供給 -->
 	<dict><key>phrase</key><string>になった</string><key>shortcut</key><string>になった</string></dict>
 	<dict><key>phrase</key><string>になって</string><key>shortcut</key><string>になって</string></dict>
