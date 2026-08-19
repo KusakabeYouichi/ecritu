@@ -794,6 +794,120 @@ final class KeyboardViewController: UIInputViewController {
         return "zones(used/allocMB)[\(parts.joined(separator: " "))]"
     }
 
+    // DefaultMallocZone の生存ブロックをサイズ階級別に数える。alloc と used の差
+    // (実測 69MB vs 40MB = 29MB のスラック)がどのサイズ帯で生じているかを見るため。
+    // 小さいブロックが大量に散っているなら確保回数そのものを減らす方向、大きいブロックが
+    // 残っているなら mmap へ移す方向、と打ち手が変わる(2564)。
+    // malloc_zone_enumerate の recorder はプロセス外からも呼べるC関数である必要があるため、
+    // 集計先はファイルスコープのグローバルに置く。
+    static func diagnosticsMallocSizeHistogram() -> String {
+        var zoneAddresses: UnsafeMutablePointer<vm_address_t>?
+        var zoneCount: UInt32 = 0
+        guard malloc_get_all_zones(mach_task_self_, nil, &zoneAddresses, &zoneCount) == KERN_SUCCESS,
+            let zoneAddresses else {
+            return "hist=?"
+        }
+        diagnosticsMallocHistogramBuckets = Array(repeating: 0, count: diagnosticsMallocHistogramBounds.count + 1)
+        diagnosticsMallocHistogramBytes = Array(repeating: 0, count: diagnosticsMallocHistogramBounds.count + 1)
+        diagnosticsMallocSamples = Array(repeating: [], count: diagnosticsMallocHistogramBounds.count + 1)
+        for index in 0..<Int(zoneCount) {
+            guard let rawZone = UnsafeMutableRawPointer(bitPattern: UInt(zoneAddresses[index])) else {
+                continue
+            }
+            let zone = rawZone.assumingMemoryBound(to: malloc_zone_t.self)
+            let name = malloc_get_zone_name(zone).map { String(cString: $0) } ?? ""
+            guard name == "DefaultMallocZone" else {
+                continue
+            }
+            guard let introspect = zone.pointee.introspect,
+                let enumerator = introspect.pointee.enumerator else {
+                continue
+            }
+            _ = enumerator(
+                mach_task_self_,
+                nil,
+                UInt32(MALLOC_PTR_IN_USE_RANGE_TYPE),
+                vm_address_t(UInt(bitPattern: rawZone)),
+                nil
+            ) { _, _, _, ranges, count in
+                guard let ranges else { return }
+                for index in 0..<Int(count) {
+                    let size = Int(ranges[index].size)
+                    var bucket = KeyboardViewController.diagnosticsMallocHistogramBounds.count
+                    for (boundIndex, bound) in KeyboardViewController.diagnosticsMallocHistogramBounds.enumerated()
+                    where size <= bound {
+                        bucket = boundIndex
+                        break
+                    }
+                    KeyboardViewController.diagnosticsMallocHistogramBuckets[bucket] += 1
+                    KeyboardViewController.diagnosticsMallocHistogramBytes[bucket] += size
+                    // 階級ごとに先頭数ブロックだけ中身を覗いて正体の手がかりにする。
+                    // Swift の String/Array の内部確保には印を埋め込めないので、代わりに
+                    // 実データを読んで「日本語文字列か/ポインタ列か」を判別する(2564)
+                    KeyboardViewController.recordMallocSampleIfNeeded(
+                        bucket: bucket,
+                        address: UInt(ranges[index].address),
+                        size: size
+                    )
+                }
+            }
+        }
+        var parts: [String] = []
+        for (index, count) in diagnosticsMallocHistogramBuckets.enumerated() where count > 0 {
+            let label = index < diagnosticsMallocHistogramBounds.count
+                ? "≤\(diagnosticsMallocHistogramBounds[index])"
+                : ">\(diagnosticsMallocHistogramBounds.last ?? 0)"
+            let mb = Double(diagnosticsMallocHistogramBytes[index]) / 1_048_576
+            let samples = index < diagnosticsMallocSamples.count && !diagnosticsMallocSamples[index].isEmpty
+                ? "{" + diagnosticsMallocSamples[index].joined(separator: ",") + "}"
+                : ""
+            parts.append("\(label):\(count)/\(String(format: "%.1f", mb))MB\(samples)")
+        }
+        return "hist(count/MB)[\(parts.joined(separator: " "))]"
+    }
+
+    static let diagnosticsMallocHistogramBounds = [64, 256, 1024, 4096, 16384, 65536, 262_144, 1_048_576]
+    static var diagnosticsMallocHistogramBuckets: [Int] = []
+    static var diagnosticsMallocHistogramBytes: [Int] = []
+    // 階級ごとに保持する中身サンプル。1階級あたり数件で足りる(傾向が分かればよい)
+    static var diagnosticsMallocSamples: [[String]] = []
+    static let diagnosticsMallocSamplesPerBucket = 3
+
+    // ブロックの先頭を読んで正体の手がかりを作る。UTF-8 として読めれば文字列データ、
+    // 上位バイトがポインタらしければ参照の配列、と当たりを付ける。入力内容が混じりうるので
+    // 開発ビルド限定(診断ログ自体が #if !DEBUG で無効)。
+    static func recordMallocSampleIfNeeded(bucket: Int, address: UInt, size: Int) {
+        #if !DEBUG
+        return
+        #else
+        guard bucket < diagnosticsMallocSamples.count,
+            diagnosticsMallocSamples[bucket].count < diagnosticsMallocSamplesPerBucket,
+            size >= 16,
+            let base = UnsafeRawPointer(bitPattern: address) else {
+            return
+        }
+        let peekCount = min(size, 48)
+        let bytes = UnsafeRawBufferPointer(start: base, count: peekCount)
+        // Swift のヒープオブジェクトは先頭にメタデータポインタを持つ。0x0000_0001_.... 帯なら
+        // クラスインスタンス/バッファ、それ以外は生データの可能性が高い
+        let head = bytes.loadUnaligned(fromByteOffset: 0, as: UInt64.self)
+        let looksLikePointer = head > 0x1_0000 && head < 0x0002_0000_0000_0000
+        // 文字列らしさ: 可読 UTF-8(日本語含む)がある程度続くか
+        let tail = Array(bytes.dropFirst(8).prefix(32))
+        let text = String(decoding: tail.prefix(while: { $0 != 0 }), as: UTF8.self)
+        let printable = text.unicodeScalars.filter { $0.value >= 0x20 && $0.value != 0x7F }.count
+        let kind: String
+        if printable >= 4 && printable * 2 >= text.unicodeScalars.count {
+            kind = "text:\(text.prefix(12))"
+        } else if looksLikePointer {
+            kind = "obj"
+        } else {
+            kind = "raw"
+        }
+        diagnosticsMallocSamples[bucket].append(kind)
+        #endif
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // 多重生存中の非アクティブ(ゾンビ)側は軽量対応のみ: キャッシュを解放して終わる。
@@ -829,7 +943,8 @@ final class KeyboardViewController: UIInputViewController {
             // (b) 常駐辞書構造の概算バイト — ベースライン固定費(約35MB)の正体特定用。
             appendKeyboardDiagnosticsLog(
                 "メモリ内訳census2 \(Self.diagnosticsAllMallocZonesSummary())"
-                    + " | \(kanaKanjiConverter.store.diagnosticsStructureBytesSummary())",
+                    + " | \(kanaKanjiConverter.store.diagnosticsStructureBytesSummary())"
+                    + " | \(Self.diagnosticsMallocSizeHistogram())",
                 critical: true,
                 file: #fileID,
                 line: #line,
