@@ -131,6 +131,36 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(chishimato.contains("致死的"), "multi=\(chishimato)")
     }
 
+    // きぐ: 単文節は rank(器具0<危惧1)も unigram(5885<6112)も 器具 が上なのに、読み2字は
+    // 短spanレア読み床上げ base=max(base, wc) を受け、wc が実勢と逆(器具7179>危惧6518)な
+    // ために連文節だけ 危惧なんて が先頭になっていた。床上げ免除で是正(むき/じ/けい と同型)。
+    // 併せて 危惧 の交ぜ書き 危ぐ が候補から消えていること。
+    func testRegressionRealLMKiguOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "きぐ", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "器具", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "きぐなんて", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "器具なんて", "multi=\(multi)")
+
+        // 交ぜ書き 危ぐ の抑制(suppr.plist 由来)はテストバンドルに JSON が載らないため
+        // defaults 側で再現する。実機では bundledHiddenSuppressionDictionary が読む。
+        try injectSuppression(["きぐ": ["危ぐ"]])
+        converter.clearAllCaches()
+        let suppressed = converter.candidates(for: "きぐ", limit: 24, systemCandidateMode: .surface)
+        XCTAssertFalse(suppressed.contains("危ぐ"), "single=\(suppressed)")
+        XCTAssertEqual(suppressed.first, "器具", "single=\(suppressed)")
+    }
+
+    // いっかつ: dictionary_entries が 一喝 rank0 で、LM(一括6106<一喝7216)と食い違っていた。
+    // rank1 は 喝 の互換漢字(U+FA36)版という重複エントリ。seed で 一括 を先頭に。
+    func testRegressionRealLMIkkatsuOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let candidates = converter.candidates(for: "いっかつ", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(candidates.first, "一括", "candidates=\(candidates)")
+    }
+
     // こういしょう: 後遺症 の読み別 wc 13100(unigram 6676 の一般語なのに収穫底値超え)で
     // 連文節の床上げ+bigram借用拒否を受け、へんな+こういしょう が 3分割(変な行為章)に
     // 負けていた。ひこうき と同型。seed 免除で 変な後遺症 が最良になること。
@@ -854,6 +884,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 値側も空でないこと(空配列は候補ゼロを招く)
         for (reading, candidates) in KanaKanjiSeedDictionary.seed {
             XCTAssertFalse(candidates.isEmpty, "seed[\(reading)] が空")
+        }
+        for (reading, candidates) in KanaKanjiSeedDictionary.exactReadingOnlySeed {
+            XCTAssertFalse(candidates.isEmpty, "exactReadingOnlySeed[\(reading)] が空")
         }
     }
 
@@ -3840,6 +3873,69 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             inflectedCandidates.contains("美味しく"),
             "candidates=\(inflectedCandidates)"
         )
+    }
+
+    // poubelle【過剰な漢字化】で抑制中の語は、抑制の有無に関わらずかなが先頭であること。
+    // 抑制はアプリの画面から解除できるので、解除された瞬間に既定が漢字へ変わらないよう
+    // seed で並びを宣言している。同時に、seed へ対の漢字を書くと抑制を上書きして再供給
+    // してしまうため、抑制中は漢字が出ないことも併せて固定する(2583)。
+    func testRegressionOverKanjifiedWordsKeepKanaLeadingRegardlessOfSuppression() throws {
+        try prepareRealLMDictionary()
+        guard let defaults = UserDefaults(suiteName: defaultsSuiteName) else {
+            XCTFail("failed to open test defaults")
+            return
+        }
+
+        let cases: [(reading: String, kanji: String)] = [
+            ("おいしい", "美味しい"),
+            ("かわいい", "可愛い"),
+            ("まずい", "不味い"),
+            ("さらに", "更に"),
+            ("ただし", "但し"),
+            ("おそらく", "恐らく"),
+            ("しばらく", "暫く"),
+            ("さすが", "流石"),
+            ("もはや", "最早"),
+            ("なお", "猶")
+        ]
+
+        for testCase in cases {
+            defaults.removeObject(forKey: KanaKanjiStorageKeys.suppressionVocabulary)
+            converter.clearAllCaches()
+            let unsuppressed = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+            XCTAssertEqual(
+                unsuppressed.first,
+                testCase.reading,
+                "抑制なしで かな が先頭でない: \(testCase.reading) candidates=\(unsuppressed)"
+            )
+
+            defaults.set(
+                [testCase.reading: [testCase.kanji]],
+                forKey: KanaKanjiStorageKeys.suppressionVocabulary
+            )
+            converter.clearAllCaches()
+            let suppressed = converter.candidates(
+                for: testCase.reading,
+                limit: 24,
+                systemCandidateMode: .surface
+            )
+            XCTAssertEqual(
+                suppressed.first,
+                testCase.reading,
+                "抑制ありで かな が先頭でない: \(testCase.reading) candidates=\(suppressed)"
+            )
+            XCTAssertFalse(
+                suppressed.contains(testCase.kanji),
+                "seed が抑制を上書きして再供給している: \(testCase.kanji) candidates=\(suppressed)"
+            )
+        }
+
+        defaults.removeObject(forKey: KanaKanjiStorageKeys.suppressionVocabulary)
+        converter.clearAllCaches()
     }
 
     func testRegressionNumericUnitReadingsIncludeCurrencyCandidates() {
