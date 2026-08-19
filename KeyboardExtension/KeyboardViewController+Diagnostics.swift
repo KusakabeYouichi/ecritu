@@ -120,6 +120,20 @@ extension KeyboardViewController {
         return Double(bytes) / 1_048_576
     }
 
+    // 今この瞬間、別インスタンスがセッションのオーナーかどうか。lostActiveOwnershipAt は
+    // 降格時に立つ一度きりのフラグなので、破壊的な解放の直前には現在値を取り直す。
+    func isConfirmedNonOwnerSession() -> Bool {
+        guard let sharedDefaults,
+            let activeOwnerToken = sharedDefaults.string(
+                forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+            ),
+            !activeOwnerToken.isEmpty else {
+            return false
+        }
+
+        return activeOwnerToken != diagnosticsSessionOwnerToken()
+    }
+
     func shouldSuppressHeavyOperations(reason: String) -> Bool {
         guard let sharedDefaults,
             let activeOwnerToken = sharedDefaults.string(
@@ -219,7 +233,9 @@ extension KeyboardViewController {
     // により二度と試されない。実測(2570 census)でゾンビ2体が80分/97分ビュー階層を
     // 抱えたまま生存しており、footprint 固定費の主因だった(2574)。
     func scheduleZombieSurvivalCanary() {
-        for delay in [30.0, 120.0] {
+        // 30s は window から外れたゾンビだけを穏当に回収する。それでも生き残る個体は
+        // window に載ったままなので、120s 以降は window 条件を外して解放する。
+        for delay in [30.0, 120.0, 300.0] {
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
                 guard let self, self.lostActiveOwnershipAt > 0 else {
                     return
@@ -231,7 +247,10 @@ extension KeyboardViewController {
                     line: #line,
                     function: #function
                 )
-                self.releaseHostingViewIfZombie(reason: "zombieCanary+\(Int(delay))s")
+                self.releaseHostingViewIfZombie(
+                    reason: "zombieCanary+\(Int(delay))s",
+                    ignoringWindowAttachment: delay >= 120.0
+                )
             }
         }
     }
@@ -239,12 +258,25 @@ extension KeyboardViewController {
     // 非表示のゾンビが抱えるビュー階層(UIHostingController+SwiftUI階層)を解放する。
     // 表示中(window あり)やオーナー復帰後は何もしない。再表示時は
     // ensureKeyboardViewIfNeeded が再構築する。
-    func releaseHostingViewIfZombie(reason: String) {
-        guard lostActiveOwnershipAt > 0,
-            let host = hostingController,
-            view.window == nil,
-            host.view.window == nil else {
+    func releaseHostingViewIfZombie(reason: String, ignoringWindowAttachment: Bool = false) {
+        guard lostActiveOwnershipAt > 0, let host = hostingController else {
             return
+        }
+        if ignoringWindowAttachment {
+            // 長期滞留カナリアからの再試行。window に載ったままのゾンビも対象にする。
+            // 実測(2582 census)で zombie=109.8s のインスタンスが window=true のため
+            // 上の条件で毎回弾かれ、SwiftUI 階層を抱えたまま生存していた。旧入力
+            // ウィンドウに載り続けること自体が漏れなので window は判断材料にしない。
+            // 誤爆(表示中のキーボードを消す)を防ぐため、代わりに二つ確認する:
+            //   - viewWillAppear を通っていない(observer 未登録=再表示されていない)
+            //   - 今この瞬間も別インスタンスがオーナーである
+            guard !isObservingSettingsDidChange, isConfirmedNonOwnerSession() else {
+                return
+            }
+        } else {
+            guard view.window == nil, host.view.window == nil else {
+                return
+            }
         }
         let beforeMB = currentFootprintMB()
         host.willMove(toParent: nil)
