@@ -402,7 +402,7 @@
 	        <dict><key>phrase</key><string>その後</string><key>shortcut</key><string>そのご</string></dict><!-- [そのあと]ならある -->
 	        <dict><key>phrase</key><string>母方</string><key>shortcut</key><string>ははがた</string></dict><!-- [ははかた]ならある -->
 	        <dict><key>phrase</key><string>父方</string><key>shortcut</key><string>ちちがた</string></dict><!-- [ちちかた]ならある -->
-	        <dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>	<!-- Sudachiにもある --><!-- 先頭に出すため -->
+	        <dict><key>phrase</key><string>製成</string><key>shortcut</key><string>せいせい</string></dict>	<!-- Sudachiにもある -->	<!-- 酒造用語。日常語の 生成/精製 を優先するため seed で3位に置く(2564) -->
 	        <dict><key>phrase</key><string>芯</string><key>shortcut</key><string>しん</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>ラバーダッキー</string><key>shortcut</key><string>らばーだっきー</string></dict><!-- 単独でもない!! -->
 	        <dict><key>phrase</key><string>グランメゾン</string><key>shortcut</key><string>ぐらんめぞん</string></dict><!-- 単独でもない!! -->

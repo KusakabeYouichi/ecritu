@@ -857,6 +857,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // せいせい: dictionary_entries の rank が 整斉/世世/清々/正々/済々/世々/斉整/齊整 の
+    // 順で、LM で圧倒的に高頻度な 生成(4824)/精製(6032) が9位・10位に沈んでいた。
+    // 製成 は sacoche 登録(酒造用語)で先頭に出ていたが日常語を優先する(ユーザ指定 2564)。
+    func testRegressionRealLMSeiseiOrder() throws {
+        try prepareRealLMDictionary()
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let list = fresh.candidates(for: "せいせい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["生成", "精製", "製成"], "list=\(list)")
+    }
+
     // やわらかくてのうこう: {軟らかくて農耕, 柔らかくて農耕, 軟かくて農耕, 柔らかくて濃厚}
     // の順で 農耕 が固定されていた。単文節は dictionary_entries の rank(濃厚が rank0)を
     // 見るので 濃厚 が先頭になるが、連文節は LM unigram(農耕5874 < 濃厚6427)を見るため
