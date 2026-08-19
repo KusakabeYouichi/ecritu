@@ -261,10 +261,21 @@ struct KeyboardDiagnosticsSection: View {
     let logLines: [String]
     let launchCount: Int
     let attachFailureCount: Int
+    let attachLateRecoveryCount: Int
     let onReload: () -> Void
     let onCopy: () -> Void
     let onCopyDetail: () -> Void
     let onClear: () -> Void
+
+    // 診断ログは開発ビルド専用(#if !DEBUG で早期 return)。ログが空のときに構成の
+    // 違いなのか異常なのかを画面で切り分けられるようにする(2564)
+    private var buildConfigurationLabel: String {
+        #if DEBUG
+        return "Debug(診断ログ有効)"
+        #else
+        return "Release(診断ログ無効)"
+        #endif
+    }
 
     @State private var isClearConfirmationPresented = false
     @State private var isCopiedBadgeVisible = false
@@ -300,9 +311,11 @@ struct KeyboardDiagnosticsSection: View {
             }
 
             VStack(alignment: .leading, spacing: 3) {
+                // 診断ログは Debug 専用。ログが空のときに構成の違いか異常かを切り分ける
+                Text("ビルド: \(buildConfigurationLabel)")
                 Text("fail-safe: \(failSafeProfile)")
                 // attach失敗頻度の観察用(コピーせず画面で読み取れるように常時表示)
-                Text("起動\(launchCount)回 / 表示未到達\(attachFailureCount)回")
+                Text("起動\(launchCount)回 / 表示未到達\(attachFailureCount)回 / 遅延復帰\(attachLateRecoveryCount)回")
                 Text("最終ハートビート: \(lastHeartbeatText)")
                 Text("最終セッションID: \(lastSessionID.isEmpty ? "なし" : lastSessionID)")
                 Text("最終イベント: \(lastEvent.isEmpty ? "なし" : lastEvent)")

@@ -208,6 +208,9 @@ final class KeyboardViewController: UIInputViewController {
     var keyboardBootstrapWorkItem: DispatchWorkItem?
     var sharedDataPrewarmWorkItem: DispatchWorkItem?
     var keyboardAttachWatchdogWorkItem: DispatchWorkItem?
+    // watchdog が「表示未到達」と数えた時刻。この後 viewWillAppear が来たら遅延復帰として
+    // 数え直す(ホスト接続の再確立が遅いだけで attach 自体は成立している。2564)
+    var keyboardAttachWatchdogFiredAt: CFAbsoluteTime?
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
     var contactCandidatesByReading: [String: [String]] = [:]
@@ -405,6 +408,9 @@ final class KeyboardViewController: UIInputViewController {
         // critical logと同様にinstall変更リセットの対象外(「何回中何回」を累積で観測する)。
         static let keyboardDiagnosticsLaunchCount = "keyboardDiagnosticsLaunchCount"
         static let keyboardDiagnosticsAttachFailureCount = "keyboardDiagnosticsAttachFailureCount"
+        // 未到達と数えた後に viewWillAppear が遅れて来た回数。ホスト接続の再確立が遅いだけで
+        // attach は成立しており、真の失敗と区別しないと統計が実態からずれる(実測6.5秒。2564)
+        static let keyboardDiagnosticsAttachLateRecoveryCount = "keyboardDiagnosticsAttachLateRecoveryCount"
         // デバッグ用: 直近1回の変換トレース(上書き式)。実機のみ再現する誤変換の層特定に使う。
         // reading→連文節上位|単文節上位|LM/フェイルセーフ/モード を記録。ローテなし・単一値。
         static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
@@ -563,6 +569,8 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         cancelKeyboardAttachWatchdog()
+        // 未到達と数えた後に表示が来たなら遅延復帰として数え直す(cancel より後に呼ぶ)
+        recordKeyboardAttachLateRecoveryIfNeeded()
         Self.lastAttachedViewWillAppearAt = CFAbsoluteTimeGetCurrent()
         // 表示された時点でオーナー権を主張する(未表示の投機生成VCに奪われた状態からの復帰も
         // ここで行う)。この後の shouldSuppressHeavyOperations が誤って抑止に落ちないよう、
