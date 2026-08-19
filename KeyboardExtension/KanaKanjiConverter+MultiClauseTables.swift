@@ -617,6 +617,7 @@ extension KanaKanjiConverter {
         "というのは", "というのが", "というのを", "というのも", "ということ", "ということは"
     ]
 
+
     // 上の引用連鎖の前に立つ、かな正書の副助詞・並立助詞。名詞+という(図鑑という)は対象外。
     static let kanaOrthographyQuotationStems: Set<String> = [
         "など", "なんて", "とか", "だけ", "ばかり", "くらい", "ぐらい",
