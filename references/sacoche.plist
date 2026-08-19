@@ -250,6 +250,7 @@
 	        <dict><key>phrase</key><string>ブルグア</string><key>shortcut</key><string>ぶるぐあ</string></dict>
 	        <dict><key>phrase</key><string>醤油麹</string><key>shortcut</key><string>しょうゆこうじ</string></dict>	<!-- 未登録で {醤油工事, 醤油高次, 醤油公示, 醤油こうじ} になる。語として登録すれば合成に頼らない(ユーザ指定 2564) -->
 	        <dict><key>phrase</key><string>ロースカツ</string><key>shortcut</key><string>ろーすかつ</string></dict>	<!-- ロースカツ/カツサンド 等: ヒレカツ(2148)/メンチカツ(2118)/カツ丼(3702)は辞書にあるのに これらは未収録。LM unigram が 勝つ5948 < カツ7243 なので合成では ロース勝つ に負ける(ユーザ指定 2564) -->
+	        <dict><key>phrase</key><string>三元豚</string><key>shortcut</key><string>さんげんとん</string></dict>	<!-- 三元豚(3品種の交配豚): Sudachi に 三元豚 も 三元 も無く、さんげん→三弦/三絃 の合成にしかならない。黒豚 は Sudachi にあるがブランド豚は軒並み未収録(ユーザ指定 2564) -->
 	        <dict><key>phrase</key><string>牛カツ</string><key>shortcut</key><string>ぎゅうかつ</string></dict>
 	        <dict><key>phrase</key><string>カツサンド</string><key>shortcut</key><string>かつさんど</string></dict>
 	        <dict><key>phrase</key><string>カツカレー</string><key>shortcut</key><string>かつかれー</string></dict>
