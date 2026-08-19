@@ -857,6 +857,35 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // ろーすかつ: {ロース勝つ, ロースかつ, ロース且つ, ロース喝} で ロースカツ が出なかった。
+    // ロース→カツ の bigram が未観測で unigram 差だけで決まり、Wikipedia 由来の LM では
+    // 勝つ(5948)/かつ(4857) が カツ(7243) より安い。ヒレカツ(2148)・メンチカツ(2118)・
+    // カツ丼(3702)は辞書にあるのに ロースカツ 等は未収録だった(ユーザ指定 2564)。
+    func testRegressionRealLMKatsuCompounds() throws {
+        try prepareRealLMDictionary()
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let cases: [(reading: String, expected: String)] = [
+            ("ろーすかつ", "ロースカツ"),
+            ("ぎゅうかつ", "牛カツ"),
+            ("かつさんど", "カツサンド"),
+            ("かつかれー", "カツカレー"),
+            ("えびふらい", "エビフライ"),
+            ("かきふらい", "カキフライ")
+        ]
+        for (reading, expected) in cases {
+            let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list)")
+        }
+    }
+
     // なはしすいどうきょく: {那覇し水道局, 奈半し水道局, …} で 那覇市水道局 が5位だった。
     // 那覇市 は word_cost 10199(収穫底値帯)で 那覇(7869)+し(2760)の分割より高く、
     // 連文節も 那覇→市 / 市→水道 の bigram が未観測。水道局 も辞書・LM とも未収録で
