@@ -1100,6 +1100,20 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 語中に長音を挟んだ強調形(すごーい/たかーい/ながーい)も同じ扱い。末尾長音の
+        // 判定だけでは すごーい(末尾は い)に発火しない。長音を全部取り除いた本体が
+        // かな正書なら伸ばした形もかなが正書(すごい は seed でかな先頭。2564)。
+        // 対象は本体が全てかなのときだけ — ラーメン/コーヒー のようなカタカナ語の
+        // ひらがな入力(らーめん)を巻き込まないため。
+        if normalized.count > 2, normalized.contains("ー"),
+            !normalized.hasSuffix("ー") {
+            let stem = normalized.replacingOccurrences(of: "ー", with: "")
+            if stem.count >= 2, stem != normalized,
+                stem.unicodeScalars.allSatisfy({ (0x3041...0x3096).contains($0.value) }),
+                computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // 指示代名詞(それ/これ 等)始まりの句は、続く副助詞(ぐらい/だけ 等、任意)を剥がした
         // 残りがかな維持の根拠を持つなら維持(それぐらいやるよ→やるよ→やる=辞書かな語。
         // 反れ/剃れ の活用が提示層で繰り上がるのを防ぐ。2535)。
