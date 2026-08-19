@@ -878,7 +878,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("かつさんど", "カツサンド"),
             ("かつかれー", "カツカレー"),
             ("えびふらい", "エビフライ"),
-            ("かきふらい", "カキフライ")
+            ("かきふらい", "カキフライ"),
+            // 三元豚: Sudachi に 三元豚 も 三元 も無く さんげん→三弦/三絃 にしかならない
+            ("さんげんとん", "三元豚")
         ]
         for (reading, expected) in cases {
             let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
