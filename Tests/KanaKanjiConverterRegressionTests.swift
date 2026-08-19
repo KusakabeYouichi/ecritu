@@ -857,6 +857,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // やわらかくてのうこう: {軟らかくて農耕, 柔らかくて農耕, 軟かくて農耕, 柔らかくて濃厚}
+    // の順で 農耕 が固定されていた。単文節は dictionary_entries の rank(濃厚が rank0)を
+    // 見るので 濃厚 が先頭になるが、連文節は LM unigram(農耕5874 < 濃厚6427)を見るため
+    // 逆転する。柔らかくて→農耕 も →濃厚 も bigram 未観測で文脈補正が効かない。
+    // 変種は1文節だけ差し替える方式なので 農耕 固定のまま前半だけが入れ替わっていた。
+    func testRegressionRealLMYawarakakuteNoukou() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "やわらかくてのうこう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "柔らかくて濃厚", "multi=\(multi)")
+        // 単文節の並びは従来どおり(濃厚が先頭)
+        let single = converter.candidates(for: "のうこう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "濃厚", "single=\(single)")
+    }
+
     // かまぼこにしたら: {かまぼこ西田ら, 蒲鉾にしたら, かまぼこ仁下ら, …} の順だった。
     // にした/にして/にする/にしよう は misc に登録済みだが条件形 にしたら が漏れており、
     // したら 単独も辞書は 設楽/設樂 だけでかながない。さらに にした の読みには収穫底値
@@ -921,6 +936,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         for (reading, expected) in cases {
             let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
             XCTAssertEqual(list.first, expected, "reading=\(reading) list=\(list)")
+        }
+        // フライ物はカタカナを先頭にしつつ漢字表記も候補に残す(ユーザ指定 2564)
+        for (reading, kanji) in [("えびふらい", "海老フライ"), ("かきふらい", "牡蠣フライ")] {
+            let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(kanji), "reading=\(reading) list=\(list)")
         }
     }
 
