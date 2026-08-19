@@ -857,6 +857,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // それほどでもなかった: 単独の なかった は {なかった, 無かった, 莫かった…} で妥当だが、
+    // 連文節では {それほどでも無かった, それほどでも莫かった, …} でかなが末尾に落ちていた。
+    // 活用形 なかった は LM に無い(Sudachi の A単位は ない+た に分割)ため unigram で
+    // 評価できず、活用エンジンが基底 ない の並び(dict rank は 無い が0位)を継ぐ。
+    // でも→ない の bigram も未観測で文脈補正が効かない(ユーザ指定 2564)。
+    func testRegressionRealLMDemoNakattaKanaLeading() throws {
+        try prepareRealLMDictionary()
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let multi = fresh.multiClauseCandidates(for: "それほどでもなかった", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "それほどでもなかった", "multi=\(multi)")
+        // 単独の なかった は従来どおりかな先頭
+        let solo = fresh.candidates(for: "なかった", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(solo.first, "なかった", "solo=\(solo)")
+    }
+
     // 活用クラスタの穴を一括で埋めた分(2564)。にした/にして/にする/にしよう はあったのに
     // 条件形 にしたら が漏れていた件の横展開。読みの候補が収穫底値のレア語だけ(にしながら→
     // 西名柄10000、できた→出來田/出木田/出来田、できれば→出来れば11155、しまおう→縞王/島王)
