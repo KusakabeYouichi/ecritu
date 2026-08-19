@@ -115,6 +115,32 @@
 	<dict><key>phrase</key><string>したら</string><key>shortcut</key><string>したら</string></dict>
 	<dict><key>phrase</key><string>したり</string><key>shortcut</key><string>したり</string></dict>
 	<dict><key>phrase</key><string>してたら</string><key>shortcut</key><string>してたら</string></dict>
+	<dict><key>phrase</key><string>にしても</string><key>shortcut</key><string>にしても</string></dict>	<!-- にする の逆接・許容形。にした/にして/にする/にしよう/にしたら の並びで漏れていた(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>にしながら</string><key>shortcut</key><string>にしながら</string></dict>	<!-- にしながら: 読みの候補が 西名柄(収穫底値10000)だけで句を割る(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>になったら</string><key>shortcut</key><string>になったら</string></dict>	<!-- になる クラスタの条件形。になる/になった/になって/になります/になれば はあった(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>になっても</string><key>shortcut</key><string>になっても</string></dict>
+	<dict><key>phrase</key><string>になったり</string><key>shortcut</key><string>になったり</string></dict>
+	<dict><key>phrase</key><string>になりません</string><key>shortcut</key><string>になりません</string></dict>
+	<dict><key>phrase</key><string>してみる</string><key>shortcut</key><string>してみる</string></dict>	<!-- してみる クラスタは丸ごと未登録だった(辞書にかな候補が無く合成頼み)(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>してみた</string><key>shortcut</key><string>してみた</string></dict>
+	<dict><key>phrase</key><string>してみて</string><key>shortcut</key><string>してみて</string></dict>
+	<dict><key>phrase</key><string>してみよう</string><key>shortcut</key><string>してみよう</string></dict>
+	<dict><key>phrase</key><string>してみたら</string><key>shortcut</key><string>してみたら</string></dict>
+	<dict><key>phrase</key><string>してみれば</string><key>shortcut</key><string>してみれば</string></dict>
+	<dict><key>phrase</key><string>してみても</string><key>shortcut</key><string>してみても</string></dict>
+	<dict><key>phrase</key><string>やったら</string><key>shortcut</key><string>やったら</string></dict>	<!-- やる クラスタの条件形・許容形(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>やっても</string><key>shortcut</key><string>やっても</string></dict>
+	<dict><key>phrase</key><string>やったり</string><key>shortcut</key><string>やったり</string></dict>
+	<dict><key>phrase</key><string>できた</string><key>shortcut</key><string>できた</string></dict>	<!-- できた の読みは 出來田/出木田/出来田(すべて収穫底値10000)だけで句を割る(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>できて</string><key>shortcut</key><string>できて</string></dict>
+	<dict><key>phrase</key><string>できない</string><key>shortcut</key><string>できない</string></dict>
+	<dict><key>phrase</key><string>できたら</string><key>shortcut</key><string>できたら</string></dict>
+	<dict><key>phrase</key><string>できれば</string><key>shortcut</key><string>できれば</string></dict>	<!-- できれば: 出来れば(11155)しか無い。提示層の demotingDekiKanjiBelowKana と併せてかなを先頭に(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>できても</string><key>shortcut</key><string>できても</string></dict>
+	<dict><key>phrase</key><string>できます</string><key>shortcut</key><string>できます</string></dict>
+	<dict><key>phrase</key><string>しまった</string><key>shortcut</key><string>しまった</string></dict>	<!-- 補助動詞 しまう のかな正書。しまおう は 縞王(7380)/島王(10000) しか無い(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>しまって</string><key>shortcut</key><string>しまって</string></dict>
+	<dict><key>phrase</key><string>しまおう</string><key>shortcut</key><string>しまおう</string></dict>
 	<dict><key>phrase</key><string>になる</string><key>shortcut</key><string>になる</string></dict>	<!-- 「になる」文法クラスタ: になって は 担う(になう)のて形 担って が1ノードで全長を取り、よるになって→よる担って 等を作る(にする と同型)。かな識別curatedで供給 -->
 	<dict><key>phrase</key><string>になった</string><key>shortcut</key><string>になった</string></dict>
 	<dict><key>phrase</key><string>になって</string><key>shortcut</key><string>になって</string></dict>
