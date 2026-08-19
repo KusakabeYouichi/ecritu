@@ -204,6 +204,9 @@ extension ContentView {
         keyboardDiagnosticsAttachFailureCount = defaults.integer(
             forKey: SettingsKeys.keyboardDiagnosticsAttachFailureCount
         )
+        keyboardDiagnosticsAttachLateRecoveryCount = defaults.integer(
+            forKey: SettingsKeys.keyboardDiagnosticsAttachLateRecoveryCount
+        )
     }
 
     func clearKeyboardDiagnosticsState() {
@@ -253,6 +256,17 @@ extension ContentView {
     // キーボード拡張が書く「落ちても残る」フライトレコーダファイル。
     // ファイル名は KeyboardViewController+Diagnostics.swift 側の定義と一致させること。
     static let keyboardDiagnosticsFlightFileName = "keyboard_diagnostics_flight.log"
+
+    // 診断ログは開発ビルド専用(#if !DEBUG で早期 return)なので、ログが空のときに
+    // 「Release だから出ていない」のか「Debug なのに出ていない=異常」のかを区別できる
+    // ようにビルド構成を明示する。⌘R しただけでは構成が分からないという指摘への対応(2564)
+    static var buildConfigurationLabel: String {
+        #if DEBUG
+        return "Debug(診断ログ有効)"
+        #else
+        return "Release(診断ログ無効)"
+        #endif
+    }
 
     func keyboardDiagnosticsFlightFileURL() -> URL? {
         FileManager.default.containerURL(
@@ -312,6 +326,7 @@ extension ContentView {
     func keyboardDiagnosticsExportText(detail: Bool = false) -> String {
         var sections: [String] = []
         sections.append("installMarker: \(keyboardDiagnosticsInstallMarker)")
+        sections.append("buildConfiguration: \(Self.buildConfigurationLabel)")
         sections.append("sessionActive: \(keyboardDiagnosticsSessionActive ? "true" : "false")")
         sections.append("failSafeProfile: \(keyboardDiagnosticsFailSafeProfile)")
         sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
@@ -319,6 +334,7 @@ extension ContentView {
         sections.append("lastEvent: \(keyboardDiagnosticsLastEvent)")
         sections.append(
             "起動\(keyboardDiagnosticsLaunchCount)回 / 表示未到達(attach失敗の疑い)\(keyboardDiagnosticsAttachFailureCount)回"
+                + " / 遅延復帰\(keyboardDiagnosticsAttachLateRecoveryCount)回"
         )
         let registrationState: String
         switch isKeyboardExtensionRegistered() {

@@ -111,6 +111,8 @@ enum SettingsKeys {
     // 起動回数/表示未到達回数(キーボード側と同一キー文字列)。install変更リセット対象外
     static let keyboardDiagnosticsLaunchCount = "keyboardDiagnosticsLaunchCount"
     static let keyboardDiagnosticsAttachFailureCount = "keyboardDiagnosticsAttachFailureCount"
+    // 遅延復帰回数(キーボード側と同一キー文字列)。未到達と数えた後に表示が来たケース
+    static let keyboardDiagnosticsAttachLateRecoveryCount = "keyboardDiagnosticsAttachLateRecoveryCount"
     static let keyboardDiagnosticsRegistrationHistory = "keyboardDiagnosticsRegistrationHistory"
     // デバッグ: 直近1回の変換トレース(上書き式)。KeyboardExtension 側 SharedDefaultsKeys と同一。
     static let keyboardConversionLastTrace = "keyboardConversionLastTrace"

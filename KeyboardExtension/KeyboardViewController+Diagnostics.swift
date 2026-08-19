@@ -521,6 +521,10 @@ extension KeyboardViewController {
                 "表示未到達(attach失敗の疑い) viewDidLoad後\(Int(Self.keyboardAttachWatchdogDelaySec))秒viewWillAppear未到達 累計\(failureCount)回/起動\(totalLaunchCount)回",
                 critical: true
             )
+            // 遅延復帰の判定用に「未到達と数えた」ことを覚えておく。ホスト接続の再確立に
+            // 数秒かかるケース(実測6.5秒)では、この後 viewWillAppear が来る。真の失敗と
+            // 区別できないと統計が実態からずれる(2564)
+            self.keyboardAttachWatchdogFiredAt = CFAbsoluteTimeGetCurrent()
             self.releaseNeverDisplayedKeyboardResources(reason: "attachFailure")
         }
         keyboardAttachWatchdogWorkItem = workItem
@@ -533,6 +537,34 @@ extension KeyboardViewController {
     func cancelKeyboardAttachWatchdog() {
         keyboardAttachWatchdogWorkItem?.cancel()
         keyboardAttachWatchdogWorkItem = nil
+    }
+
+    // watchdog が「表示未到達」と数えた後に viewWillAppear が来たケース。ホスト接続の
+    // 再確立が遅かっただけで attach は最終的に成立しているので、失敗カウントを取り消して
+    // 遅延復帰として記録する。ユーザー体験としては「その待ち時間だけ純正キーボードが出る」
+    // という別の問題なので、遅延そのものは残す(2564)。
+    func recordKeyboardAttachLateRecoveryIfNeeded() {
+        guard let firedAt = keyboardAttachWatchdogFiredAt else {
+            return
+        }
+        keyboardAttachWatchdogFiredAt = nil
+        let lateSec = CFAbsoluteTimeGetCurrent() - firedAt
+        guard let defaults = sharedDefaults else {
+            return
+        }
+        let failureCount = defaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsAttachFailureCount)
+        if failureCount > 0 {
+            defaults.set(failureCount - 1, forKey: SharedDefaultsKeys.keyboardDiagnosticsAttachFailureCount)
+        }
+        let lateCount =
+            defaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsAttachLateRecoveryCount) + 1
+        defaults.set(lateCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsAttachLateRecoveryCount)
+        let totalDelaySec = Self.keyboardAttachWatchdogDelaySec + lateSec
+        appendKeyboardDiagnosticsLog(
+            "表示未到達から遅延復帰(attach失敗ではない) viewDidLoad→viewWillAppear=\(String(format: "%.1f", totalDelaySec))秒"
+                + " 累計遅延復帰\(lateCount)回 / 未到達\(max(failureCount - 1, 0))回",
+            critical: true
+        )
     }
 
     // 表示されたインスタンスがオーナー権(重い処理を担う権利)を主張する。viewWillAppear から
