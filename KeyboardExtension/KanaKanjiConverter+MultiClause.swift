@@ -1019,6 +1019,11 @@ extension KanaKanjiConverter {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
             var penalty = 0
+            // bigram 未観測ペアの補完(定数コメント参照)。観測が無いと unigram 差だけで
+            // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
+            if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
+                penalty -= bonus
+            }
             penalty += penaltyForNounHoshii
             // 係助詞「は」(では/には/とは 等の複合助詞末尾含む)直後の ある は漢字化しない=
             // かな正書(定数コメント参照)。変種生成(pairCost)も本関数を通るため 有る/在る/或る を

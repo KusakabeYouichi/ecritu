@@ -423,6 +423,18 @@ extension KanaKanjiConverter {
     static let multiClauseBigramPairDenied: Set<String> = [
         "飼う\tか"
     ]
+    // bigram 未観測ペアの補完。LM に両方の観測が無いと unigram 差だけで決まり、
+    // Wikipedia の頻度がそのまま出る(やわらかくてのうこう→柔らかくて農耕: 農耕5874 <
+    // 濃厚6427)。文として成立しない組み合わせを避けるため、正しいペアに割引を与える。
+    // 値は bigram コストからの減算。同読みの対抗馬との unigram 差を跨げる幅にする(2564)
+    static let multiClauseBigramPairBonuses: [String: Int] = [
+        // 形容詞連用形+て に続く のうこう は食感の 濃厚(農耕/農高/脳溝/農工 ではない)
+        "柔らかくて\t濃厚": 1200,
+        "軟らかくて\t濃厚": 1200,
+        "甘くて\t濃厚": 1200,
+        "苦くて\t濃厚": 1200,
+        "濃くて\t濃厚": 1200
+    ]
     // 準体助詞 の のクランプ対象になる連体詞表層(こういうの/そういうの 等の名詞化)。
     static let multiClausePrenominalAdjectivalSurfaces: Set<String> = [
         "こういう", "そういう", "ああいう", "どういう"

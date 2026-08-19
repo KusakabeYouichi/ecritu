@@ -255,7 +255,9 @@
 	        <dict><key>phrase</key><string>カツサンド</string><key>shortcut</key><string>かつさんど</string></dict>
 	        <dict><key>phrase</key><string>カツカレー</string><key>shortcut</key><string>かつかれー</string></dict>
 	        <dict><key>phrase</key><string>エビフライ</string><key>shortcut</key><string>えびふらい</string></dict>
+	        <dict><key>phrase</key><string>海老フライ</string><key>shortcut</key><string>えびふらい</string></dict>	<!-- エビフライ に次ぐ第2候補として漢字表記も出す(ユーザ指定 2564) -->
 	        <dict><key>phrase</key><string>カキフライ</string><key>shortcut</key><string>かきふらい</string></dict>
+	        <dict><key>phrase</key><string>牡蠣フライ</string><key>shortcut</key><string>かきふらい</string></dict>	<!-- カキフライ に次ぐ第2候補として漢字表記も出す(ユーザ指定 2564) -->
 	<!-- 肉の焼き具合 -->
 	        <dict><key>phrase</key><string>ブルー・レア</string><key>shortcut</key><string>ぶるーれあ</string></dict>
 	        <dict><key>phrase</key><string>ミディアム・レア</string><key>shortcut</key><string>みでぃあむれあ</string></dict>
