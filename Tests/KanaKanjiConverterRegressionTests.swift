@@ -857,6 +857,96 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // すごーい: {スゴーイ, すごーい} でカタカナが先頭だった(スゴ〜イ/スゴーイ 4283 に対し
+    // かな 8156)。末尾長音の keepKana は hasSuffix("ー") 判定なので、長音が語中にある
+    // すごーい(末尾は い)には発火しない。長音を全部除いた本体がかな正書(すごい は seed で
+    // かな先頭)なら伸ばした形もかなが正書として扱う(ユーザ指定 2564)。
+    func testRegressionRealLMInternalElongationKana() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "すごーい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "すごーい", "list=\(list)")
+        // カタカナも候補には残す
+        XCTAssertTrue(list.contains(where: { $0.contains("スゴ") }), "list=\(list)")
+        // カタカナ語のひらがな入力は巻き込まない(らーめん→ラーメン のままでよい)
+        let ramen = converter.candidates(for: "らーめん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertNotEqual(ramen.first, "らーめん", "ramen=\(ramen)")
+    }
+
+    // からだ: {嘉良だ, 唐だ, 迦羅だ, 空だ, 殻だ, 幹だ, 加羅だ} で 体 が出なかった。
+    // 体 は word_cost 2888(カラダ と最安タイ)・dict rank0 なのに、から が助詞として
+    // 超高頻度(LM 2848)で から+だ(bigram 3176)の合計6024 が 体(4545)+体→だ(3338)=7883 を
+    // 下回るため。misc の 体が(からだが)と同じ構図で、が が付かない形が抜けていた。
+    // 抑制の誤りではなく辞書は正常(ユーザ指定 2564)。
+    func testRegressionRealLMKaradaSingleNode() throws {
+        try prepareRealLMDictionary()
+
+        let solo = converter.candidates(for: "からだ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(solo.first, "体", "solo=\(solo)")
+        // seed で1ノード化されるので連文節は単文節に委ねる(空 or 体 が先頭)
+        let multi = converter.multiClauseCandidates(for: "からだ", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "体", "multi=\(multi)")
+        XCTAssertFalse(multi.contains(where: { $0.contains("空だ") || $0.contains("殻だ") }), "multi=\(multi)")
+    }
+
+    // いたみが: 単独の いたみ は {痛み, 悼み, 伊丹, 悼, 傷み} で妥当なのに、いたみが だと
+    // {傷みが, 痛みが, 伊丹が, …} に変わる。傷み→が の bigram が 424 と極端に安く
+    // (傷みが激しい 等)、unigram 差(痛み6254 < 傷み7022)を逆転する。単文節は bigram を
+    // 見ないため並びが食い違っていた(ユーザ指定 2564)。
+    func testRegressionRealLMItamiGa() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "いたみが", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "痛みが", "multi=\(multi)")
+        // 単独の並びは従来どおり
+        let solo = converter.candidates(for: "いたみ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(solo.first, "痛み", "solo=\(solo)")
+    }
+
+    // おいしいよね: {お石井よね, お石射よね, お伊志井よね, …} と合成だらけだった。
+    // お(LM4363)+石井(LM5382) の合計が おいしい(LM6491)より安く、よね は LM 未収録で
+    // どちらの経路でも同じ評価なので前半の差で分割が勝つ。単独の おいしい でも2位以降が
+    // お石井/お石射 になっていた(ユーザ指定 2564)。
+    // 対処は (1) いしい の収穫底値レア姓を抑制 (2) お+石井 のペアを重くする の2つ。
+    // よね 側も抑制しかけたが、よね の候補を減らすと います+よね が組めなくなり
+    // いますよね→井升よね に壊れたため撤回した(既存テストで検出)。
+    func testRegressionRealLMOishiiYone() throws {
+        try prepareRealLMDictionary()
+        var merged: [String: [String]] = [:]
+        for name in ["InitialSupprVocabMigration", "InitialSupprHiddenVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                merged[reading, default: []].append(contentsOf: candidates)
+            }
+        }
+        UserDefaults(suiteName: defaultsSuiteName)?.set(try JSONEncoder().encode(merged), forKey: "\u{c9}crituSuppr_Vocab")
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let multi = fresh.multiClauseCandidates(for: "おいしいよね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "おいしいよね", "multi=\(multi)")
+        // 石井 は姓として残すが、接頭辞 お の直後に来る組み合わせ(お石井)はペアで
+        // 重くしたので先頭には立たない
+        XCTAssertFalse(
+            multi.contains(where: { $0.contains("石射") || $0.contains("伊志井") || $0.contains("甃井") }),
+            "multi=\(multi)"
+        )
+        if let ishiiIndex = multi.firstIndex(where: { $0.contains("石井") }) {
+            XCTAssertGreaterThan(ishiiIndex, 0, "石井 が先頭に来てはいけない multi=\(multi)")
+        }
+        // 単独の おいしい も 石井系 が候補から消える(石井 単体は姓として残す)
+        let solo = fresh.candidates(for: "おいしい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(solo.first, "おいしい", "solo=\(solo)")
+        let ishii = fresh.candidates(for: "いしい", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(ishii.contains("石井"), "ishii=\(ishii)")
+    }
+
     // それほどでもなかった: 単独の なかった は {なかった, 無かった, 莫かった…} で妥当だが、
     // 連文節では {それほどでも無かった, それほどでも莫かった, …} でかなが末尾に落ちていた。
     // 活用形 なかった は LM に無い(Sudachi の A単位は ない+た に分割)ため unigram で

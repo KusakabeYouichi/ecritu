@@ -126,6 +126,12 @@
 	<dict><key>phrase</key><string>西多</string><key>shortcut</key><string>にした</string></dict>
 	<dict><key>phrase</key><string>西夛</string><key>shortcut</key><string>にした</string></dict>
 	<dict><key>phrase</key><string>西太良</string><key>shortcut</key><string>にしたら</string></dict>
+	<dict><key>phrase</key><string>伊志井</string><key>shortcut</key><string>いしい</string></dict>	<!-- おいしい が お+いしい に割られる温床。お(LM4363)+石井(LM5382)の合計が おいしい(LM6491)より安く、おいしいよね→お石井よね になる。石井 は実在の頻出姓なので残し、収穫底値(9201〜10000)のものだけ抑制(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>石射</string><key>shortcut</key><string>いしい</string></dict>
+	<dict><key>phrase</key><string>伊志伊</string><key>shortcut</key><string>いしい</string></dict>
+	<dict><key>phrase</key><string>甃井</string><key>shortcut</key><string>いしい</string></dict>
+	<dict><key>phrase</key><string>石伊</string><key>shortcut</key><string>いしい</string></dict>
+	<dict><key>phrase</key><string>石居</string><key>shortcut</key><string>いしい</string></dict>
 	<dict><key>phrase</key><string>来日</string><key>shortcut</key><string>くるひ</string></dict>
 	<dict><key>phrase</key><string>唐菜</string><key>shortcut</key><string>からな</string></dict>
 	<dict><key>phrase</key><string>親拝</string><key>shortcut</key><string>しんぱい</string></dict>	<!-- 親拝/進拝: しんぱい のレア語収穫。inflection_classes に suru 登録されており(心配は未登録=メタデータ穴)、心配しなくて 等の正規形より先に 親拝しなくて を導出する -->
