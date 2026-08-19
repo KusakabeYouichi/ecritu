@@ -844,6 +844,64 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // Swift の辞書リテラルはキー重複で実行時に必ずクラッシュする(Dictionary.swift:840
+    // "Dictionary literal contains duplicate keys" → SIGTRAP)。2564で なはし を既存と
+    // 気づかず重複追加し、実機のキーボードが起動46秒で落ちた。静的な表なので早期に検出する。
+    func testSeedDictionaryHasNoDuplicateKeys() throws {
+        // 参照するだけでリテラルが評価される。重複があればここで落ちる
+        XCTAssertFalse(KanaKanjiSeedDictionary.seed.isEmpty)
+        XCTAssertFalse(KanaKanjiSeedDictionary.exactReadingOnlySeed.isEmpty)
+        // 値側も空でないこと(空配列は候補ゼロを招く)
+        for (reading, candidates) in KanaKanjiSeedDictionary.seed {
+            XCTAssertFalse(candidates.isEmpty, "seed[\(reading)] が空")
+        }
+    }
+
+    // なはしすいどうきょく: {那覇し水道局, 奈半し水道局, …} で 那覇市水道局 が5位だった。
+    // 那覇市 は word_cost 10199(収穫底値帯)で 那覇(7869)+し(2760)の分割より高く、
+    // 連文節も 那覇→市 / 市→水道 の bigram が未観測。水道局 も辞書・LM とも未収録で
+    // 水道+局 の合成頼みだった(ユーザ指定 2564)。
+    func testRegressionRealLMNahaCityWaterBureau() throws {
+        try prepareRealLMDictionary()
+        for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
+            let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
+            for (reading, candidates) in try JSONDecoder().decode([String: [String]].self, from: data) {
+                for candidate in candidates.reversed() {
+                    converter.store.addUserEntry(reading: reading, candidate: candidate)
+                }
+            }
+        }
+        let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
+        let naha = fresh.candidates(for: "なはし", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(naha.first, "那覇市", "list=\(naha)")
+        let bureau = fresh.candidates(for: "すいどうきょく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(bureau.first, "水道局", "list=\(bureau)")
+        let combined = fresh.multiClauseCandidates(for: "なはしすいどうきょく", systemCandidateMode: .surface)
+        XCTAssertEqual(combined.first, "那覇市水道局", "multi=\(combined)")
+    }
+
+    // 句・複合語の読みは基底辞書が空で seed が候補集合そのものになる(systemCandidates の
+    // マージは storeCandidates が空なら seed のみ)。1候補だけ書くと他の表記が出せなくなる
+    // ため、残したい表記も並べる。先頭(既定の変換結果)は変えない(ユーザ指定 2564)。
+    func testRegressionRealLMPhraseSeedKeepsVariants() throws {
+        try prepareRealLMDictionary()
+
+        let cases: [(reading: String, leading: String, variant: String)] = [
+            ("くいかた", "食い方", "食いかた"),
+            ("からつき", "殻付き", "殻つき"),
+            ("いきませんか", "行きませんか", "いきませんか"),
+            ("くいにいきませんか", "食いに行きませんか", "食いにいきませんか"),
+            ("つかわずにすむ", "使わずに済む", "使わずにすむ"),
+            ("なにする", "何する", "なにする"),
+            ("ひとばん", "一晩", "ひと晩")
+        ]
+        for (reading, leading, variant) in cases {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, leading, "reading=\(reading) list=\(list)")
+            XCTAssertTrue(list.contains(variant), "reading=\(reading) list=\(list)")
+        }
+    }
+
     // つかわずにすむ: すむ の word_cost が 住む(7228) < 済む(7946) のため 使わずに住む
     // だった。「〜ずに済む」は済むが正しい(ユーザ指定 2564)。
     func testRegressionRealLMTsukawazuNiSumu() throws {
