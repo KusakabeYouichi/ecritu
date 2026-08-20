@@ -104,6 +104,7 @@
 		7B1D9A4E6F8C2A0D5B3E1C09 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */; };
 		80C53EDAEAB5510D13B9CAFB /* InitialSupprVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */; };
 		A1B2C3D4E5F600000000BB01 /* InitialSupprHiddenVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */; };
+		A1B2C3D4E5F600000000BB03 /* InitialSupprHiddenVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */; };
 		86EE26729B525F6D695B17FB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1791BF31100B74EA2421EB52 /* Assets.xcassets */; };
 		8B889DCACD9F73C8DC3120CD /* APP_STORE_OPEN_SOURCE_NOTICES.md in Resources */ = {isa = PBXBuildFile; fileRef = C1ECA6389592415ABEA9CA17 /* APP_STORE_OPEN_SOURCE_NOTICES.md */; };
 		8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807A57473C85475BCAA585B /* EcrituApp.swift */; };
@@ -465,6 +466,7 @@
 			buildPhases = (
 				418031ED91AC8E1450690841 /* Enforce Blank Line After Top-Level Brace */,
 				6006A30D6C0072653326C6E4 /* Sources */,
+				A1B2C3D4E5F600000000BB04 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -534,6 +536,14 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A1B2C3D4E5F600000000BB04 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1B2C3D4E5F600000000BB03 /* InitialSupprHiddenVocabMigration.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DAFC31EE8DBF17957F350584 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
