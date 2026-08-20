@@ -4,11 +4,11 @@
 <array>
 	<!-- AOC名、DOC名、GI名や地名 -->
 	<dict><key>phrase</key><string>Aletta</string><key>shortcut</key><string>あれった</string></dict>
-	<dict><key>phrase</key><string>Haut</string><key>shortcut</key><string>おー</string></dict>
-	<dict><key>phrase</key><string>Cadastro</string><key>shortcut</key><string>かだすとろ</string></dict>
-	<dict><key>phrase</key><string>Grand</string><key>shortcut</key><string>ぐらん</string></dict>
+	<dict><key>phrase</key><string>Haut</string><key>shortcut</key><string>おー</string></dict>	<!-- ??上 -->
+	<dict><key>phrase</key><string>Cadastro</string><key>shortcut</key><string>かだすとろ</string></dict>	<!-- ??ポルトのぶどう畑の形状 -->
+	<dict><key>phrase</key><string>Grand</string><key>shortcut</key><string>ぐらん</string></dict>	<!-- ??偉大な -->
 	<dict><key>phrase</key><string>コトー・ド</string><key>shortcut</key><string>ことーど</string></dict>
-	<dict><key>phrase</key><string>Commune</string><key>shortcut</key><string>こみゅーん</string></dict>
+	<dict><key>phrase</key><string>Commune</string><key>shortcut</key><string>こみゅーん</string></dict>	<!-- ??村 -->
 	<dict><key>phrase</key><string>コート・ド</string><key>shortcut</key><string>こーとど</string></dict>
 	<dict><key>phrase</key><string>Bereich Saar</string><key>shortcut</key><string>べらいひざーる</string></dict>
 	<dict><key>phrase</key><string>Bereich Werder</string><key>shortcut</key><string>べらいひゔぇあだー</string></dict>
@@ -2236,7 +2236,6 @@
 	<dict><key>phrase</key><string>ギリシャ人・フォカイア人</string><key>shortcut</key><string>ぎりしゃじんふぉかいあじん</string></dict>
 	<dict><key>phrase</key><string>古代ギリシャ人</string><key>shortcut</key><string>こだいぎりしゃじん</string></dict>
 	<dict><key>phrase</key><string>ギリシャ人</string><key>shortcut</key><string>ぎりしゃじん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>エトルリア時代</string><key>shortcut</key><string>えとるりあじだい</string></dict>
 	<dict><key>phrase</key><string>フェニキア人・ギリシャ人</string><key>shortcut</key><string>ふぇにきあじんぎりしゃじん</string></dict>
 	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
 	<dict><key>phrase</key><string>アイルランド人</string><key>shortcut</key><string>あいるらんどじん</string></dict>	<!-- Sudachiにもある -->
@@ -2273,13 +2272,11 @@
 	<dict><key>phrase</key><string>メソポタミア文明</string><key>shortcut</key><string>めそぽたみあぶんめい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ローマ人</string><key>shortcut</key><string>ろーまじん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ローマ帝国</string><key>shortcut</key><string>ろーまていこく</string></dict>
-	<dict><key>phrase</key><string>ローマ時代</string><key>shortcut</key><string>ろーまじだい</string></dict>
 	<dict><key>phrase</key><string>ローマ神話</string><key>shortcut</key><string>ろーましんわ</string></dict>
 	<dict><key>phrase</key><string>ヴェネツィア共和国</string><key>shortcut</key><string>ゔぇねつぃあきょうわこく</string></dict>
 	<dict><key>phrase</key><string>伝道師</string><key>shortcut</key><string>でんどうし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>修道士</string><key>shortcut</key><string>しゅうどうし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>元寇</string><key>shortcut</key><string>げんこう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>先史時代</string><key>shortcut</key><string>せんしじだい</string></dict>
 	<dict><key>phrase</key><string>南蛮貿易</string><key>shortcut</key><string>なんばんぼうえき</string></dict>
 	<dict><key>phrase</key><string>古代イタリア中部</string><key>shortcut</key><string>こだいいたりあちゅうぶ</string></dict>
 	<dict><key>phrase</key><string>古代ギリシャ</string><key>shortcut</key><string>こだいぎりしゃ</string></dict>
@@ -2287,36 +2284,25 @@
 	<dict><key>phrase</key><string>古代ローマ</string><key>shortcut</key><string>こだいろーま</string></dict>
 	<dict><key>phrase</key><string>古代ローマ人</string><key>shortcut</key><string>こだいろーまじん</string></dict>
 	<dict><key>phrase</key><string>古代ローマ以前</string><key>shortcut</key><string>こだいろーまいぜん</string></dict>
-	<dict><key>phrase</key><string>古代ローマ帝国時代</string><key>shortcut</key><string>こだいろーまていこくじだい</string></dict>
-	<dict><key>phrase</key><string>古代ローマ時代</string><key>shortcut</key><string>こだいろーまじだい</string></dict>
-	<dict><key>phrase</key><string>大航海時代</string><key>shortcut</key><string>だいこうかいじだい</string></dict>
 	<dict><key>phrase</key><string>宣教師</string><key>shortcut</key><string>せんきょうし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>インド航路</string><key>shortcut</key><string>いんどこうろ</string></dict>
 	<dict><key>phrase</key><string>インド航路発見</string><key>shortcut</key><string>いんどこうろはっけん</string></dict>
 	<dict><key>phrase</key><string>ゴルバチョフ政権</string><key>shortcut</key><string>ごるばちょふせいけん</string></dict>
-	<dict><key>phrase</key><string>シェイクスピア時代</string><key>shortcut</key><string>しぇいくすぴあじだい</string></dict>
-	<dict><key>phrase</key><string>ソ連時代</string><key>shortcut</key><string>それんじだい</string></dict>
 	<dict><key>phrase</key><string>モルドヴァ公国</string><key>shortcut</key><string>もるどゔぁこうこく</string></dict>
 	<dict><key>phrase</key><string>大帝国</string><key>shortcut</key><string>だいていこく</string></dict>
 	<dict><key>phrase</key><string>大帝国内</string><key>shortcut</key><string>だいていこくない</string></dict>
 	<dict><key>phrase</key><string>大正初期</string><key>shortcut</key><string>たいしょうしょき</string></dict>
-	<dict><key>phrase</key><string>大正時代</string><key>shortcut</key><string>たいしょうじだい</string></dict>
-	<dict><key>phrase</key><string>大正時代初期</string><key>shortcut</key><string>たいしょうじだいしょき</string></dict>
 	<dict><key>phrase</key><string>宗教的迫害</string><key>shortcut</key><string>しゅうきょうてきはくがい</string></dict>
 	<dict><key>phrase</key><string>宗教迫害</string><key>shortcut</key><string>しゅうきょうはくがい</string></dict>
-	<dict><key>phrase</key><string>帝国時代</string><key>shortcut</key><string>ていこくじだい</string></dict>
 	<dict><key>phrase</key><string>政権崩壊</string><key>shortcut</key><string>せいけんほうかい</string></dict>
 	<dict><key>phrase</key><string>日明貿易</string><key>shortcut</key><string>にちみんぼうえき</string></dict>
 	<dict><key>phrase</key><string>旧ソビエト</string><key>shortcut</key><string>きゅうそびえと</string></dict>
 	<dict><key>phrase</key><string>旧ソ連</string><key>shortcut</key><string>きゅうそれん</string></dict>
-	<dict><key>phrase</key><string>旧ソ連時代</string><key>shortcut</key><string>きゅうそれんじだい</string></dict>
 	<dict><key>phrase</key><string>旧モルドヴァ公国</string><key>shortcut</key><string>きゅうもるどゔぁこうこく</string></dict>
 	<dict><key>phrase</key><string>旧ユーゴスラヴィア</string><key>shortcut</key><string>きゅうゆーごすらゔぃあ</string></dict>
 	<dict><key>phrase</key><string>明治以前</string><key>shortcut</key><string>めいじいぜん</string></dict>
 	<dict><key>phrase</key><string>明治初期</string><key>shortcut</key><string>めいじしょき</string></dict>
-	<dict><key>phrase</key><string>明治時代初期</string><key>shortcut</key><string>めいじじだいしょき</string></dict>
 	<dict><key>phrase</key><string>昭和初期</string><key>shortcut</key><string>しょうわしょき</string></dict>
-	<dict><key>phrase</key><string>昭和時代初期</string><key>shortcut</key><string>しょうわじだいしょき</string></dict>
 	<dict><key>phrase</key><string>東ローマ帝国</string><key>shortcut</key><string>ひがしろーまていこく</string></dict>
 	<dict><key>phrase</key><string>植民地開拓者</string><key>shortcut</key><string>しょくみんちかいたくしゃ</string></dict>
 	<dict><key>phrase</key><string>殖産興業政策</string><key>shortcut</key><string>しょくさんこうぎょうせいさく</string></dict>
@@ -2325,7 +2311,6 @@
 	<dict><key>phrase</key><string>独裁体制</string><key>shortcut</key><string>どくさいたいせい</string></dict>
 	<dict><key>phrase</key><string>王侯貴族</string><key>shortcut</key><string>おうこうきぞく</string></dict>
 	<dict><key>phrase</key><string>禁酒政策</string><key>shortcut</key><string>きんしゅせいさく</string></dict>
-	<dict><key>phrase</key><string>禁酒法時代</string><key>shortcut</key><string>きんしゅほうじだい</string></dict>
 	<dict><key>phrase</key><string>英国宮廷</string><key>shortcut</key><string>えいこくきゅうてい</string></dict>
 	<dict><key>phrase</key><string>英国軍人</string><key>shortcut</key><string>えいこくぐんじん</string></dict>
 	<dict><key>phrase</key><string>西ローマ皇帝</string><key>shortcut</key><string>にしろーまこうてい</string></dict>
@@ -2333,6 +2318,24 @@
 	<dict><key>phrase</key><string>近代国家イタリア王国</string><key>shortcut</key><string>きんだいこっかいたりあおうこく</string></dict>
 	<dict><key>phrase</key><string>鎌倉幕府</string><key>shortcut</key><string>かまくらばくふ</string></dict>
 	<dict><key>phrase</key><string>黒船来航</string><key>shortcut</key><string>くろふねらいこう</string></dict>
+
+	<!-- 時代 -->
+	<dict><key>phrase</key><string>オックスフォーディアン</string><key>shortcut</key><string>おっくすふぉーでぃあん</string></dict>
+	<dict><key>phrase</key><string>エトルリア時代</string><key>shortcut</key><string>えとるりあじだい</string></dict>
+	<dict><key>phrase</key><string>ローマ時代</string><key>shortcut</key><string>ろーまじだい</string></dict>
+	<dict><key>phrase</key><string>先史時代</string><key>shortcut</key><string>せんしじだい</string></dict>
+	<dict><key>phrase</key><string>古代ローマ帝国時代</string><key>shortcut</key><string>こだいろーまていこくじだい</string></dict>
+	<dict><key>phrase</key><string>古代ローマ時代</string><key>shortcut</key><string>こだいろーまじだい</string></dict>
+	<dict><key>phrase</key><string>大航海時代</string><key>shortcut</key><string>だいこうかいじだい</string></dict>
+	<dict><key>phrase</key><string>シェイクスピア時代</string><key>shortcut</key><string>しぇいくすぴあじだい</string></dict>
+	<dict><key>phrase</key><string>ソ連時代</string><key>shortcut</key><string>それんじだい</string></dict>
+	<dict><key>phrase</key><string>大正時代</string><key>shortcut</key><string>たいしょうじだい</string></dict>
+	<dict><key>phrase</key><string>大正時代初期</string><key>shortcut</key><string>たいしょうじだいしょき</string></dict>
+	<dict><key>phrase</key><string>帝国時代</string><key>shortcut</key><string>ていこくじだい</string></dict>
+	<dict><key>phrase</key><string>旧ソ連時代</string><key>shortcut</key><string>きゅうそれんじだい</string></dict>
+	<dict><key>phrase</key><string>明治時代初期</string><key>shortcut</key><string>めいじじだいしょき</string></dict>
+	<dict><key>phrase</key><string>昭和時代初期</string><key>shortcut</key><string>しょうわじだいしょき</string></dict>
+	<dict><key>phrase</key><string>禁酒法時代</string><key>shortcut</key><string>きんしゅほうじだい</string></dict>
 	<dict><key>phrase</key><string>安土桃山時代</string><key>shortcut</key><string>あづちももやまじだい</string></dict>
 
 	<!-- 地名(山) -->
@@ -6107,7 +6110,6 @@
 	<dict><key>phrase</key><string>アメリカンオーク樽</string><key>shortcut</key><string>あめりかんおーくだる</string></dict>
 	<dict><key>phrase</key><string>オーク材</string><key>shortcut</key><string>おーくざい</string></dict>
 	<dict><key>phrase</key><string>オーク樽</string><key>shortcut</key><string>おーくだる</string></dict>
-	<dict><key>phrase</key><string>フラス</string><key>shortcut</key><string>ふらす</string></dict>
 	<dict><key>phrase</key><string>ペドンキュラータ・オーク</string><key>shortcut</key><string>ぺどんきゅらーたおーく</string></dict>
 	<dict><key>phrase</key><string>スラヴォニア・オーク</string><key>shortcut</key><string>すらゔぉにあおーく</string></dict>
 	<dict><key>phrase</key><string>セシル・オーク</string><key>shortcut</key><string>せしるおーく</string></dict>
@@ -9274,7 +9276,6 @@
 
 	<!-- その他 -->
 	<dict><key>phrase</key><string>王立製塩所</string><key>shortcut</key><string>おうりつせいえんしょ</string></dict>
-	<dict><key>phrase</key><string>オックスフォーディアン</string><key>shortcut</key><string>おっくすふぉーでぃあん</string></dict>
 	<dict><key>phrase</key><string>有名ワイン産地名</string><key>shortcut</key><string>ゆうめいわいんさんちめい</string></dict>
 	<dict><key>phrase</key><string>信州ワインバレー構想</string><key>shortcut</key><string>しんしゅうわいんばれーこうそう</string></dict>
 	<dict><key>phrase</key><string>州名</string><key>shortcut</key><string>しゅうめい</string></dict>	<!-- Sudachiにもある -->
