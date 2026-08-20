@@ -703,7 +703,7 @@ enum KeyboardBackgroundThemeOption: String, CaseIterable, Identifiable {
     }
 }
 
-struct VocabularyEntry: Identifiable {
+struct VocabularyEntry: Identifiable, Equatable {
     let reading: String
     let candidate: String
 

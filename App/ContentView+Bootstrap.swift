@@ -274,11 +274,28 @@ extension ContentView {
         )
     }
 
-    func applyInitialDataSnapshot(_ snapshot: InitialDataSnapshot) {
+    // 反映は @State の書き換えなので、値が同じでも SwiftUI は設定画面を作り直す。
+    // 起動時は snapshot 段と migration 段で2回呼ばれ、移行が済んでいる再インストールでは
+    // 2回目の中身が1回目と完全に同じになる(実測 user=427/suppression=59/shortcut=21 が
+    // 両方同一)。この空振りの再構築だけで約2.4秒使っていたので、同値なら書かない(2587)。
+    // 戻り値は「実際に書き換えたか」。
+    @discardableResult
+    func applyInitialDataSnapshot(_ snapshot: InitialDataSnapshot) -> Bool {
+        let current = InitialDataSnapshot(
+            userDictionaryEntries: userDictionaryEntries,
+            learnedDictionaryEntries: learnedDictionaryEntries,
+            suppressionDictionaryEntries: suppressionDictionaryEntries,
+            shortcutDictionaryEntries: shortcutDictionaryEntries
+        )
+        guard current != snapshot else {
+            return false
+        }
+
         userDictionaryEntries = snapshot.userDictionaryEntries
         learnedDictionaryEntries = snapshot.learnedDictionaryEntries
         suppressionDictionaryEntries = snapshot.suppressionDictionaryEntries
         shortcutDictionaryEntries = snapshot.shortcutDictionaryEntries
+        return true
     }
 
     func loadInitialDataSnapshotInBackground() async -> InitialDataSnapshot {
@@ -344,11 +361,11 @@ extension ContentView {
             let migratedSnapshot = await loadInitialDataSnapshotInBackground()
             let reloadMs = containerDiagnosticsElapsedMilliseconds(since: reloadStartedAt)
             let applyStartedAt = CFAbsoluteTimeGetCurrent()
-            applyInitialDataSnapshot(migratedSnapshot)
+            let didApply = applyInitialDataSnapshot(migratedSnapshot)
             let applyMs = containerDiagnosticsElapsedMilliseconds(since: applyStartedAt)
 
             appendContainerDiagnosticsLog(
-                "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) waitMs=\(waitMs) migrateMs=\(migrateMs) reloadMs=\(reloadMs) applyMs=\(applyMs) user=\(migratedSnapshot.userDictionaryEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
+                "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) waitMs=\(waitMs) migrateMs=\(migrateMs) reloadMs=\(reloadMs) applyMs=\(applyMs) changed=\(didApply) user=\(migratedSnapshot.userDictionaryEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
             )
             loadKeyboardDiagnosticsState()
             SettingsSyncNotification.postSettingsDidChange()
