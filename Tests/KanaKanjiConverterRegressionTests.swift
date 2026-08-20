@@ -858,7 +858,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let bare = converter.candidates(for: "もん", limit: 10, systemCandidateMode: .surface)
         XCTAssertFalse(bare.isEmpty)
         let withDigit = converter.candidates(for: "2もん", limit: 10, systemCandidateMode: .surface)
-        XCTAssertEqual(withDigit.first, "問", "list=\(withDigit)")
+        // 3つとも助数詞なので順序まで固定する(問=問題数 / 門=大砲 / 文=昔の通貨単位)
+        XCTAssertEqual(Array(withDigit.prefix(3)), ["問", "門", "文"], "list=\(withDigit)")
         XCTAssertEqual(withDigit.last, "もん", "かなエコーは末尾へ list=\(withDigit)")
 
         // 提示層の経路(直前確定が数字)も同じ表を使う
