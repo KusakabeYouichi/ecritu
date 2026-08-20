@@ -251,6 +251,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // だった(2592)。
         let obon = converter.candidates(for: "おぼん", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(obon.first, "お盆", "single=\(obon)")
+
+        // お/ご+名詞の素通り合成は語幹の読み別 word_cost 順を継ぐため、常用の ご神体/ご家紋 が
+        // 5位に沈んでいた(audit_polite_prefix_order.py で検出)。先頭は据え置きで2番目に固定
+        // するというユーザ判断(2594)。
+        for testCase in [("ごしんたい", "ご進退", "ご神体"), ("ごかもん", "ご花紋", "ご家紋")] {
+            let list = converter.candidates(for: testCase.0, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(
+                Array(list.prefix(2)),
+                [testCase.1, testCase.2],
+                "reading=\(testCase.0) list=\(list)"
+            )
+        }
     }
 
     // そんなことないのに: エンジンは かな を先頭で返すのに keepKana=false で提示層が
