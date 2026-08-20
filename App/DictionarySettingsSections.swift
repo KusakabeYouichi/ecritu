@@ -583,7 +583,7 @@ struct ShortcutDictionarySettingsSection: View {
                 pendingDeletionEntry = nil
             }
         } message: { entry in
-            Text("「\(entry.candidate)」を削除します。")
+            Text("『\(entry.candidate)』を削除します。")
         }
     }
 }
