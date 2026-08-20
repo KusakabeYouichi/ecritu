@@ -245,6 +245,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "お菓子", "single=\(single)")
         let multi = converter.multiClauseCandidates(for: "ぼるどーのおかし", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "ボルドーのお菓子", "multi=\(Array(multi.prefix(4)))")
+
+        // おぼん も同型: 辞書はかな1件(wc10005)だけで お盆 が無く、丁寧接頭辞 お+ぼん の
+        // 合成になる。ぼん の読み別 wc が 梵7407 < 盆7453 と46だけ梵が安いため お梵 が先頭
+        // だった(2592)。
+        let obon = converter.candidates(for: "おぼん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(obon.first, "お盆", "single=\(obon)")
     }
 
     // そんなことないのに: エンジンは かな を先頭で返すのに keepKana=false で提示層が
