@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260820105021"
+    private static let editionUpdatedAtRaw: String = "20260820112753"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -424,6 +424,8 @@ struct ContentView: View {
     @State var bootstrapTimingParts: [String] = []
     // 各事象が起動から何ms後に起きたかを出すための基準時刻。
     @State var containerBootstrapStartedAt: CFAbsoluteTime = 0
+    // 起動開始時点のページイン/フォールト数(完了時に差分を取る)。
+    @State var containerBootstrapPageEventsAtStart: (faults: Int, pageins: Int)?
     @Environment(\.scenePhase) private var scenePhase
 
     private let setupSteps: [String] = [
