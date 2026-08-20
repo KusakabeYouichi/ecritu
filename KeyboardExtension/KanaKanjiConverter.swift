@@ -1032,6 +1032,20 @@ final class KanaKanjiConverter {
                 return true
             }
         }
+        // 準体助詞クラスタ(のに/のは/のが/のを/のも)で終わる読みは、剥がした語幹がかな正書の
+        // 根拠を持つなら根拠あり。既存の判定は「終助詞を剥がした語幹がちょうど のに」という形
+        // (のになあ)しか見ておらず、語幹側に のに が付く形(そんなことないのに)は漏れていた。
+        // そんなことない/ないのに は個別には true なのに、繋げた形だけ false で提示層がかなを
+        // 捨て、其麼ことないのに が先頭に残っていた(2584)。
+        // 剥がした語幹の再帰判定なので、漢字が正書の語(食べるのに 等)には根拠が立っても
+        // keepKana は昇格しないため表示は変わらない。
+        for cluster in Self.multiClauseNominalizerSurfaces
+        where normalized.count > cluster.count + 1 && normalized.hasSuffix(cluster) {
+            let stem = String(normalized.dropLast(cluster.count))
+            if stem.count >= 2, computeShouldKeepKanaIdentityLeading(normalized: stem) {
+                return true
+            }
+        }
         // 連体の「の」で始まる断片(のときは/のときのは 等、文中から打ち始めた形)は、
         // 先頭の の を剥がした残りがかな正書の識別なら根拠あり(2455)。
         if normalized.count > 3, normalized.hasPrefix("の") {
