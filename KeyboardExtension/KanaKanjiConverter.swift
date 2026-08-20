@@ -1090,6 +1090,22 @@ final class KanaKanjiConverter {
         where normalized.count > auxiliary.count && normalized.hasSuffix(auxiliary) {
             return true
         }
+        // やる の活用形で始まる全かなの読み(やってみようかな/やっておく/やりきる 等)は
+        // かなが正書。やる は seed でかな先頭に固定してあり、当て表記(演る/犯る/飲る/行る/
+        // 遣る/殺る)は提示層の demotingDekiKanjiBelowKana がかな版の下へ回す。ところが
+        // その降格は「同じ候補列にかな版が居ること」が条件で、keepKana が false だと提示層が
+        // 先にかな版を捨ててしまい、遣ってみようかな が先頭に残っていた(2583)。
+        // やってみよう/やってみようかなー は別経路で true になっていて、間に挟まる
+        // やってみようかな だけ false という不整合だったので、やる系をまとめて根拠にする。
+        // keepKana は昇格せず「既にかな先頭の候補を維持する」だけなので、やり方 のように
+        // 漢字が正書の語(エンジンが漢字先頭)に当たっても表示は変わらない。
+        if normalized.count >= 3, normalized.hasPrefix("や"),
+            normalized.unicodeScalars.allSatisfy({ (0x3041...0x3096).contains($0.value) }) {
+            let second = normalized[normalized.index(normalized.startIndex, offsetBy: 1)]
+            if SupplementaryCandidateMerger.yaruInflectionHeads.contains(second) {
+                return true
+            }
+        }
         // 末尾を長音で引き伸ばした形(なるほどー/なるほどーー)は辞書に無く、合成の
         // {成保どー, 鳴穂どー} だけが並ぶ。長音を剥がした本体がかな正書の根拠を持つなら
         // 伸ばした形もかなが正書(2564)。本体判定の再帰なので、成る程 が正書の語には
