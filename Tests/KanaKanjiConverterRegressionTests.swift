@@ -815,11 +815,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
         let fresh = KanaKanjiConverter(store: KanaKanjiStore(appGroupID: defaultsSuiteName))
-        for reading in ["やってください", "やってる", "やった"] {
+        // やってみようかな は keepKana が false で提示層がかな版を捨てており、降格の相方が
+        // 消えて 遣ってみようかな が先頭に残っていた。やってみよう/やってみようかなー は
+        // 別経路で true だったので、間に挟まる形だけ落ちるという不整合だった(2583)。
+        for reading in ["やってください", "やってる", "やった",
+                        "やってみよう", "やってみようかな", "やってみようかなー",
+                        "やっておく", "やらないで", "やれそう"] {
             let list = fresh.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
             // 当て表記(演る/犯る/飲る/行る)は候補に残す。抑制すると活用形の生成元ごと
             // 消えて候補ゼロになるため、提示層で かな版の下へ回す方式にした
             XCTAssertGreaterThan(list.count, 1, "reading=\(reading) list=\(list)")
+            XCTAssertTrue(
+                fresh.shouldKeepKanaIdentityLeading(for: reading),
+                "keepKana=false だと提示層がかな版を捨てる: reading=\(reading)"
+            )
             let presented = SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(list)
             XCTAssertEqual(presented.first, reading, "reading=\(reading) presented=\(presented)")
         }
