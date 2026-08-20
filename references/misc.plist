@@ -246,6 +246,7 @@
 	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>	<!-- 禿げる: dict rank0 だが uni 未収録(=連文節ノード8700)で、は+ゲル(uni6785)の断片連結に負ける(おおいとはげるよ→多いとはゲルよ)。curated で供給 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>殻付き</string><key>shortcut</key><string>からつき</string><key>pos</key><string>名詞</string></dict>	<!-- 殻付き: 複合語が辞書に無く、連文節で から(助詞・激安)+付き 分割に負けて 殻付き が出ない(からつきのほうが→から付きの方が)。curated 化(コスト1500)で連文節でも 殻付き を勝たせる。単文節は seed でも供給 -->
 	<dict><key>phrase</key><string>康熙字典</string><key>shortcut</key><string>こうきじてん</string><key>pos</key><string>名詞</string></dict>	<!-- 康熙字典(こうきじてん): SudachiDict/LM に無い(じてん→字典 のみ)。curated で供給 -->
+	<dict><key>phrase</key><string>お菓子</string><key>shortcut</key><string>おかし</string><key>pos</key><string>名詞</string></dict>	<!-- お菓子: おかし の辞書エントリは 御菓子(wc7812)だけで、現代正書の お菓子 が1件も無い(LM には表層 お菓子6785 が在るのに読みの組が欠落)。御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし→ボルドーの丘し のように 丘(LM5514)+し の分割に負ける。curated で供給する -->
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
 	<dict><key>phrase</key><string>仕方ない</string><key>shortcut</key><string>しかたない</string><key>pos</key><string>形容詞</string></dict>	<!-- 仕方ない: 辞書に在る(wc7696)が連文節で から+仕方ない の区切りが 枯らし+方+ない 分割に負ける(まけたからしかたない→負けた枯らし方ない)。curated化(連文節1500)で区切りを勝たせる -->	<!-- Sudachiにもある -->
