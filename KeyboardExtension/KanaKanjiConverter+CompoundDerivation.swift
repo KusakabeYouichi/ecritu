@@ -27,6 +27,10 @@ extension KanaKanjiConverter {
     ]
 
     static let numericCounterSuffixCandidatesByReading: [String: [String]] = [
+        // もん: 問題数の助数詞。2を確定してから もん を打つと {もん, 門, 物, 紋, 者, 文, 問, 悶}
+        // で問が7位、第2問/何問 も出なかった。Sudachi は 問 を助数詞可能と付けていない
+        // (もん の助数詞は 文=足袋のサイズ だけ)ので、機械的な洗い出しでも拾えない(2596)
+        "もん": ["問"],
         "こ": ["個"],
         "えん": ["円"],
         "えんだま": ["円玉"],

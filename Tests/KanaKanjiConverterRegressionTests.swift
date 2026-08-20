@@ -844,6 +844,38 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
     }
 
+    // もん: 2を確定してから もん を打つと {もん, 門, 物, 紋, 者, 文, 問, 悶} で 問 が7位だった。
+    // Sudachi は 問 を助数詞可能と付けていない(もん の助数詞は 文=足袋のサイズ だけ)ので、
+    // 品詞由来の機械的な洗い出しでも拾えない。本表へ登録する(2596)。
+    // あわせて候補キャッシュのキーに数字接頭が入っておらず、先に「もん」を変換していると
+    // 「2もん」がそのキャッシュを引き当てて数字ブーストに到達しない状態だった。
+    // 呼び出し順で助数詞が出る/出ないが変わるので、順序に依存する形で検証する。
+    func testRegressionRealLMMonCounterAfterDigit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        // 先にキャッシュを作ってから数字付きを引く(キャッシュキーの取り違えの再発検出)
+        let bare = converter.candidates(for: "もん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(bare.isEmpty)
+        let withDigit = converter.candidates(for: "2もん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(withDigit.first, "問", "list=\(withDigit)")
+        XCTAssertEqual(withDigit.last, "もん", "かなエコーは末尾へ list=\(withDigit)")
+
+        // 提示層の経路(直前確定が数字)も同じ表を使う
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            bare,
+            reading: "もん",
+            precedingCharacter: "2",
+            suppressedCandidates: []
+        )
+        XCTAssertEqual(boosted.first, "問", "list=\(boosted)")
+
+        // ばん(既存)も順序に依存せず効くこと
+        _ = converter.candidates(for: "ばん", limit: 10, systemCandidateMode: .surface)
+        let ban = converter.candidates(for: "1ばん", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
+    }
+
     // はなしか: {噺家, 咄家, はなしか, 話か} だった。話か を先頭に、かな は末尾へ
     // (ユーザ指定 2559)。
     func testRegressionRealLMHanashikaPrefersHanashika() throws {
