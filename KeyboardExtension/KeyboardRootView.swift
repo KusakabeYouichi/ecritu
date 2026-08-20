@@ -28,6 +28,10 @@ struct KeyboardRootView: View {
     let latinLayoutMode: LatinLayoutMode
     let accentPaletteRawValue: String
     let isSystemDictionaryFallback: Bool
+    // フルアクセスの可否。オフだと app group への書き込みが黙って失敗し、学習も設定の保存も
+    // 効かないのに見た目は正常なので、ユーザーが気づけない(2026-08-20 に実際に半日気づけず、
+    // 読み取りだけは効いていたためテーマは設定どおりに見えていた)。全面の案内で知らせる。
+    let hasFullAccess: Bool
     let keyboardBackgroundThemeRawValue: String
     let basicSymbolOrderRawValue: String
     let temperatureUnitRawValue: String
@@ -78,6 +82,9 @@ struct KeyboardRootView: View {
     @State var lastShownSpaceToastTrigger = -1
     @State var latinShiftState: LatinShiftState = .off
     @State private var lastLatinShiftTapAt: Date? = nil
+    // フルアクセス案内を閉じたか。オフのままでも変換は動くので、閉じれば通常どおり使える。
+    // ビュー階層が作り直されると戻る(未設定という異常状態なので、また出るのが妥当)。
+    @State private var didDismissFullAccessNotice = false
     @State var isAwaitingLatinModeSwitchSecondTap = false
     @State var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     @State var selectedEmojiCategory: EmojiCategory = .people
@@ -1104,6 +1111,48 @@ struct KeyboardRootView: View {
         .environment(\.flickDirectionProfile, directionProfile)
         .environment(\.flickGuideDisplayMode, currentFlickGuideDisplayMode)
         .environment(\.keyboardAccentColor, accentColor)
+        .overlay {
+            if !hasFullAccess, !didDismissFullAccessNotice {
+                fullAccessRequiredOverlay
+            }
+        }
+    }
+
+    // フルアクセス未許可の案内。インストール直後や削除→再インストールの直後はオフに戻るが、
+    // 読み取りだけは効くため見た目が設定どおりで気づけない。学習・設定の保存・診断が
+    // 黙って失敗し続けるので、キー面を覆って明示する。変換自体は動くので
+    // 「このまま使う」で閉じられるようにし、閉じている間は通常のキーボードとして使える。
+    private var fullAccessRequiredOverlay: some View {
+        ZStack {
+            Rectangle()
+                .fill(.regularMaterial)
+                .ignoresSafeArea()
+
+            VStack(spacing: 10) {
+                Text("フルアクセスが必要です")
+                    .font(.headline)
+
+                Text("設定 › 一般 › キーボード › キーボード › écritu で\n「フルアクセスを許可」をオンにしてください。")
+                    .font(.footnote)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text("オフのままだと、学習・設定の保存・追加語彙が反映されません。")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Button("このまま使う") {
+                    didDismissFullAccessNotice = true
+                }
+                .font(.callout.weight(.semibold))
+                .buttonStyle(.borderedProminent)
+                .tint(accentColor)
+                .padding(.top, 2)
+            }
+            .padding(.horizontal, 20)
+        }
     }
 
 }
@@ -1132,6 +1181,7 @@ struct KeyboardRootView: View {
         latinLayoutMode: .flick,
         accentPaletteRawValue: "emeraude",
         isSystemDictionaryFallback: false,
+        hasFullAccess: true,
         keyboardBackgroundThemeRawValue: "bleu",
         basicSymbolOrderRawValue: "ascii",
         temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
