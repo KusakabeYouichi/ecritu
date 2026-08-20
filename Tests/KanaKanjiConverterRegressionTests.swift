@@ -234,6 +234,51 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(magsafe.first, "MagSafe", "single=\(magsafe)")
     }
 
+    // おかし: 辞書エントリが 御菓子(wc7812)だけで現代正書の お菓子 が1件も無かった。
+    // 御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし が
+    // 丘(LM5514)+し の分割に負けて ボルドーの丘し になっていた(2584)。
+    func testRegressionRealLMOkashi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let single = converter.candidates(for: "おかし", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "お菓子", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ぼるどーのおかし", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ボルドーのお菓子", "multi=\(Array(multi.prefix(4)))")
+    }
+
+    // そんなことないのに: エンジンは かな を先頭で返すのに keepKana=false で提示層が
+    // それを捨て、其麼(白話文由来の当て字)が先頭に残っていた。そんなことない/ないのに は
+    // 個別には true なのに繋げた形だけ漏れていたので、準体助詞クラスタ(のに/のは/のが/
+    // のを/のも)の剥がしを keepKana の根拠に足した。其麼 自体もユーザ指定で抑制(2584)。
+    func testRegressionRealLMSonnaKotoNaiNoni() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        XCTAssertTrue(
+            converter.shouldKeepKanaIdentityLeading(for: "そんなことないのに"),
+            "keepKana=false だと提示層がかなを捨てる"
+        )
+        let multi = converter.multiClauseCandidates(for: "そんなことないのに", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "そんなことないのに", "multi=\(Array(multi.prefix(4)))")
+        // 抑制だけ入れると かな が捨てられて候補ゼロになるので、残っていることを固定する
+        XCTAssertFalse(multi.isEmpty, "候補ゼロ")
+        XCTAssertFalse(multi.contains("其麼ことないのに"), "multi=\(Array(multi.prefix(4)))")
+        let sonna = converter.candidates(for: "そんな", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(sonna.first, "そんな", "single=\(sonna)")
+        XCTAssertFalse(sonna.contains("其麼"), "single=\(sonna)")
+    }
+
+    // でのむ: 格助詞1字+2字動詞の3文字読みは連文節の対象外(multiClauseMinReadingCount=4)で
+    // で|飲む の分割が試されず、でのむ の辞書エントリも無いため候補ゼロだった。とよむ と同型で
+    // 単文節へ seed 供給する(2584)。
+    func testRegressionRealLMDeNomu() throws {
+        try prepareRealLMDictionary()
+
+        let candidates = converter.candidates(for: "でのむ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(candidates.first, "で飲む", "candidates=\(candidates)")
+    }
+
     // いーしむ→eSIM(it.plist=SecondVocab 経由。ユーザ追加 2552)。
     func testRegressionRealLMVocabESIM() throws {
         try prepareRealLMDictionary()
