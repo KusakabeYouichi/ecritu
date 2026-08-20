@@ -946,8 +946,16 @@ extension ContentView {
             isBootstrappingInitialData = true
             scheduleContainerBootstrapFailSafe()
 
+            let reappearQueuedAt = CFAbsoluteTimeGetCurrent()
             Task { @MainActor in
                 let refreshStartedAt = CFAbsoluteTimeGetCurrent()
+                // 再表示も履歴に残す。初回表示だけ記録していたので、サスペンドからの
+                // 復帰が遅かった回を取り逃がしていた(ユーザ報告: 普通に開いても遅いときがある。2590)
+                containerBootstrapStartedAt = reappearQueuedAt
+                recordBootstrapTimingPart("kind=reappear")
+                recordBootstrapTimingPart(
+                    "reappearWaitMs=\(containerDiagnosticsElapsedMilliseconds(since: reappearQueuedAt))"
+                )
                 requestContactsAccessIfNeededInBackground()
                 clearKeyboardDiagnosticsIfInstallChanged()
                 recordKeyboardExtensionRegistrationState()
@@ -970,6 +978,9 @@ extension ContentView {
                     requestSecondSystemVocabularyEntriesLoadIfNeeded()
                 }
 
+                flushBootstrapTimingHistory(
+                    totalMs: containerDiagnosticsElapsedMilliseconds(since: reappearQueuedAt)
+                )
                 appendContainerDiagnosticsLog(
                     "コンテナ再表示 refresh完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: refreshStartedAt)) user=\(userDictionaryEntries.count) learned=\(learnedDictionaryEntries.count) suppression=\(suppressionDictionaryEntries.count) shortcut=\(shortcutDictionaryEntries.count)"
                 )
@@ -1003,6 +1014,7 @@ extension ContentView {
             // firstFrameMs = 初回フレームを譲るのに掛かった時間(ここが大きいと ContentView
             // 本体の構築が重い)。preludeMs = 診断の読み書き等の前処理(2585)
             containerBootstrapStartedAt = bootstrapStartedAt
+            recordBootstrapTimingPart("kind=firstAppear")
             recordBootstrapTimingPart("firstFrameMs=\(firstFrameMs)")
             appendContainerDiagnosticsLog(
                 "コンテナ初回表示 bootstrap開始 firstFrameMs=\(firstFrameMs) preludeMs=\(containerDiagnosticsElapsedMilliseconds(since: preludeStartedAt))"
