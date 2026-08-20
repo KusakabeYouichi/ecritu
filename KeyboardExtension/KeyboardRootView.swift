@@ -1132,7 +1132,7 @@ struct KeyboardRootView: View {
                 Text("フルアクセスが必要です")
                     .font(.headline)
 
-                Text("設定 › 一般 › キーボード › キーボード › écritu で\n『フルアクセスを許可』をオンにしてください。")
+                Text("設定 › 一般 › キーボード › キーボード › écritu で\n[フルアクセスを許可]をオンにしてください。")
                     .font(.footnote)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
