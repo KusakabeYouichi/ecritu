@@ -451,6 +451,28 @@ extension ContentView {
         return UInt64(info.resident_size)
     }
 
+    // ページイン(ディスクから実メモリへ読み込んだ回数)と全フォールト数。
+    // バンドル498MB(うち sqlite 417MB)の遅延ページイン+署名検証が疑わしいという仮説を
+    // 検証するための計測(2591)。カーネル内で待つのでアプリ側の所要時間には現れず、
+    // 「計測範囲外の6秒」の正体かどうかはこの差分で判定できる。
+    func containerTaskPageEvents() -> (faults: Int, pageins: Int)? {
+        var info = task_events_info()
+        var count = mach_msg_type_number_t(
+            MemoryLayout<task_events_info>.size / MemoryLayout<natural_t>.size
+        )
+        let result = withUnsafeMutablePointer(to: &info) { pointer in
+            pointer.withMemoryRebound(to: integer_t.self, capacity: Int(count)) { rebound in
+                task_info(mach_task_self_, task_flavor_t(TASK_EVENTS_INFO), rebound, &count)
+            }
+        }
+
+        guard result == KERN_SUCCESS else {
+            return nil
+        }
+
+        return (Int(info.faults), Int(info.pageins))
+    }
+
     func containerResidentMemoryMBText() -> String {
         guard let bytes = containerCurrentResidentMemoryBytes() else {
             return "unknown"
@@ -531,8 +553,20 @@ extension ContentView {
         }
 
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
+        // ページイン/フォールトの増分。カーネル内の待ちは所要時間に現れないので、
+        // 「計測範囲外の時間」がページインによるものかをこの数で判定する。
+        var pageText = ""
+        if let end = containerTaskPageEvents() {
+            if let start = containerBootstrapPageEventsAtStart {
+                pageText = " pageins=\(end.pageins - start.pageins) faults=\(end.faults - start.faults)"
+            } else {
+                pageText = " pageinsTotal=\(end.pageins)"
+            }
+        }
+        containerBootstrapPageEventsAtStart = nil
         let entry = "\(timestamp) totalMs=\(totalMs) "
             + bootstrapTimingParts.joined(separator: " ")
+            + pageText
             + " rssMB=\(containerResidentMemoryMBText())"
         bootstrapTimingParts = []
 
