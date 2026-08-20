@@ -90,10 +90,12 @@ extension KanaKanjiConverter {
                 continue
             }
 
+            // 語幹の再利用なので数字接頭は無し(語幹は常にかな)。
             let stemKey = CandidateCacheKey(
                 reading: stem,
                 limit: limit,
-                modeRawValue: systemCandidateMode.rawValue
+                modeRawValue: systemCandidateMode.rawValue,
+                hasDigitPrefix: false
             )
 
             guard let cachedStemCandidates = stateQueue.sync(execute: { candidateCache[stemKey] }),
