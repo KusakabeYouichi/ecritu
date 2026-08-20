@@ -503,8 +503,44 @@ extension ContentView {
         }
 
         didLogSettingsCardsRendered = true
-        appendContainerDiagnosticsLog(
-            "設定カード群の描画完了 buildMs=\(containerDiagnosticsElapsedMilliseconds(since: settingsCardsBuildStartedAt))"
+        let buildMs = containerDiagnosticsElapsedMilliseconds(since: settingsCardsBuildStartedAt)
+        recordBootstrapTimingPart("cardsBuildMs=\(buildMs)")
+        appendContainerDiagnosticsLog("設定カード群の描画完了 buildMs=\(buildMs)")
+    }
+
+    // 起動計測の断片を溜める。段の順序どおりに並ぶよう、計測した側から呼ぶ。
+    func recordBootstrapTimingPart(_ part: String) {
+        bootstrapTimingParts.append(part)
+    }
+
+    // 1起動を1行にまとめて専用キーへ残す。共有ログと違い拡張側の書き込みで流れないので、
+    // 遅い回と速い回を後から比べられる(起動時間はばらつくため単発の計測では判断できない)。
+    func flushBootstrapTimingHistory(totalMs: Int) {
+        guard let defaults = Self.sharedDefaults else {
+            return
+        }
+
+        let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
+        let entry = "\(timestamp) totalMs=\(totalMs) "
+            + bootstrapTimingParts.joined(separator: " ")
+            + " rssMB=\(containerResidentMemoryMBText())"
+        bootstrapTimingParts = []
+
+        var history = decodeStringArray(
+            forKey: SettingsKeys.containerBootstrapTimingHistory,
+            defaults: defaults
+        )
+        history.append(entry)
+
+        let maxEntryCount = 40
+        if history.count > maxEntryCount {
+            history.removeFirst(history.count - maxEntryCount)
+        }
+
+        saveStringArray(
+            history,
+            forKey: SettingsKeys.containerBootstrapTimingHistory,
+            defaults: defaults
         )
     }
 }

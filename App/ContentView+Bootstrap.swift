@@ -339,6 +339,7 @@ extension ContentView {
             let applyMs = containerDiagnosticsElapsedMilliseconds(since: applyStartedAt)
             didCompleteInitialDataSnapshot = true
 
+            recordBootstrapTimingPart("snapWaitMs=\(waitMs) snapLoadMs=\(loadMs) snapApplyMs=\(applyMs)")
             appendContainerDiagnosticsLog(
                 "\(logEventPrefix) snapshot反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: snapshotStartedAt)) waitMs=\(waitMs) loadMs=\(loadMs) applyMs=\(applyMs) user=\(snapshot.userDictionaryEntries.count) learned=\(snapshot.learnedDictionaryEntries.count) suppression=\(snapshot.suppressionDictionaryEntries.count) shortcut=\(snapshot.shortcutDictionaryEntries.count)"
             )
@@ -364,6 +365,7 @@ extension ContentView {
             let didApply = applyInitialDataSnapshot(migratedSnapshot)
             let applyMs = containerDiagnosticsElapsedMilliseconds(since: applyStartedAt)
 
+            recordBootstrapTimingPart("migWaitMs=\(waitMs) migMs=\(migrateMs) migApplyMs=\(applyMs) migChanged=\(didApply)")
             appendContainerDiagnosticsLog(
                 "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) waitMs=\(waitMs) migrateMs=\(migrateMs) reloadMs=\(reloadMs) applyMs=\(applyMs) changed=\(didApply) user=\(migratedSnapshot.userDictionaryEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
             )
@@ -553,14 +555,13 @@ extension ContentView {
         // 設定画面構築か)が確定する。
         let queuedAt = CFAbsoluteTimeGetCurrent()
         Task { @MainActor in
-            appendContainerDiagnosticsLog(
-                "連絡先タスク入場 waitMs=\(containerDiagnosticsElapsedMilliseconds(since: queuedAt))"
-            )
+            let contactsWaitMs = containerDiagnosticsElapsedMilliseconds(since: queuedAt)
+            appendContainerDiagnosticsLog("連絡先タスク入場 waitMs=\(contactsWaitMs)")
             let startedAt = CFAbsoluteTimeGetCurrent()
             await requestContactsAccessIfNeeded()
-            appendContainerDiagnosticsLog(
-                "連絡先タスク完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: startedAt))"
-            )
+            let contactsMs = containerDiagnosticsElapsedMilliseconds(since: startedAt)
+            recordBootstrapTimingPart("contactsWaitMs=\(contactsWaitMs) contactsMs=\(contactsMs)")
+            appendContainerDiagnosticsLog("連絡先タスク完了 elapsedMs=\(contactsMs)")
         }
     }
 
@@ -998,14 +999,15 @@ extension ContentView {
             loadKeyboardDiagnosticsState()
             // firstFrameMs = 初回フレームを譲るのに掛かった時間(ここが大きいと ContentView
             // 本体の構築が重い)。preludeMs = 診断の読み書き等の前処理(2585)
+            recordBootstrapTimingPart("firstFrameMs=\(firstFrameMs)")
             appendContainerDiagnosticsLog(
                 "コンテナ初回表示 bootstrap開始 firstFrameMs=\(firstFrameMs) preludeMs=\(containerDiagnosticsElapsedMilliseconds(since: preludeStartedAt))"
             )
             startInitialSnapshotLoadInBackground(logEventPrefix: "コンテナ初回表示") {
                 startInitialMigrationsAndRefreshSnapshotInBackground {
-                    appendContainerDiagnosticsLog(
-                        "コンテナ初回表示 bootstrap完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: bootstrapStartedAt))"
-                    )
+                    let totalMs = containerDiagnosticsElapsedMilliseconds(since: bootstrapStartedAt)
+                    appendContainerDiagnosticsLog("コンテナ初回表示 bootstrap完了 elapsedMs=\(totalMs)")
+                    flushBootstrapTimingHistory(totalMs: totalMs)
                     loadKeyboardDiagnosticsState()
                     finishBootstrappingIfNeeded()
                 }

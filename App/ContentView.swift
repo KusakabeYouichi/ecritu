@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260820103504"
+    private static let editionUpdatedAtRaw: String = "20260820103818"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -420,6 +420,8 @@ struct ContentView: View {
     // 最後の要素が画面に載った時刻の差が構築コストそのもの。
     @State var settingsCardsBuildStartedAt: CFAbsoluteTime = 0
     @State var didLogSettingsCardsRendered = false
+    // 1起動ぶんの計測断片。bootstrap完了で1行にまとめて履歴キーへ流す。
+    @State var bootstrapTimingParts: [String] = []
     @Environment(\.scenePhase) private var scenePhase
 
     private let setupSteps: [String] = [
