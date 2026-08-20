@@ -504,13 +504,23 @@ extension ContentView {
 
         didLogSettingsCardsRendered = true
         let buildMs = containerDiagnosticsElapsedMilliseconds(since: settingsCardsBuildStartedAt)
-        recordBootstrapTimingPart("cardsBuildMs=\(buildMs)")
+        let startOffset = max(0, containerBootstrapOffsetMilliseconds() - buildMs)
+        recordBootstrapTimingPart("cardsAtMs=\(startOffset) cardsBuildMs=\(buildMs)")
         appendContainerDiagnosticsLog("設定カード群の描画完了 buildMs=\(buildMs)")
     }
 
     // 起動計測の断片を溜める。段の順序どおりに並ぶよう、計測した側から呼ぶ。
     func recordBootstrapTimingPart(_ part: String) {
         bootstrapTimingParts.append(part)
+    }
+
+    // 起動からの経過(ms)。所要時間だけでは事象の位置が分からないため併記する。
+    func containerBootstrapOffsetMilliseconds() -> Int {
+        guard containerBootstrapStartedAt > 0 else {
+            return -1
+        }
+
+        return containerDiagnosticsElapsedMilliseconds(since: containerBootstrapStartedAt)
     }
 
     // 1起動を1行にまとめて専用キーへ残す。共有ログと違い拡張側の書き込みで流れないので、
