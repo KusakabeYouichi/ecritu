@@ -307,14 +307,23 @@ extension ContentView {
         logEventPrefix: String,
         onCompleted: (() -> Void)? = nil
     ) {
+        // Loading 表示が長い件の内訳計測(2585)。段を分けて出す:
+        //   waitMs  = Task が main actor を取れるまでの待ち(直前の描画が塞いでいる時間)
+        //   loadMs  = ファイル I/O + JSON デコード(バックグラウンド)
+        //   applyMs = @State 反映(SwiftUI の再構築を誘発する。戻り値後の描画は次の段の waitMs に出る)
+        let queuedAt = CFAbsoluteTimeGetCurrent()
         Task { @MainActor in
             let snapshotStartedAt = CFAbsoluteTimeGetCurrent()
+            let waitMs = containerDiagnosticsElapsedMilliseconds(since: queuedAt)
             let snapshot = await loadInitialDataSnapshotInBackground()
+            let loadMs = containerDiagnosticsElapsedMilliseconds(since: snapshotStartedAt)
+            let applyStartedAt = CFAbsoluteTimeGetCurrent()
             applyInitialDataSnapshot(snapshot)
+            let applyMs = containerDiagnosticsElapsedMilliseconds(since: applyStartedAt)
             didCompleteInitialDataSnapshot = true
 
             appendContainerDiagnosticsLog(
-                "\(logEventPrefix) snapshot反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: snapshotStartedAt)) user=\(snapshot.userDictionaryEntries.count) learned=\(snapshot.learnedDictionaryEntries.count) suppression=\(snapshot.suppressionDictionaryEntries.count) shortcut=\(snapshot.shortcutDictionaryEntries.count)"
+                "\(logEventPrefix) snapshot反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: snapshotStartedAt)) waitMs=\(waitMs) loadMs=\(loadMs) applyMs=\(applyMs) user=\(snapshot.userDictionaryEntries.count) learned=\(snapshot.learnedDictionaryEntries.count) suppression=\(snapshot.suppressionDictionaryEntries.count) shortcut=\(snapshot.shortcutDictionaryEntries.count)"
             )
             loadKeyboardDiagnosticsState()
             onCompleted?()
@@ -322,15 +331,24 @@ extension ContentView {
     }
 
     func startInitialMigrationsAndRefreshSnapshotInBackground(onCompleted: (() -> Void)? = nil) {
+        // 段の内訳は snapshot 側と同じ意味(2585)。waitMs が大きければ直前の SwiftUI 描画が
+        // main actor を占有しているということで、移行処理そのものは犯人ではない。
+        let queuedAt = CFAbsoluteTimeGetCurrent()
         Task { @MainActor in
             let migrationStartedAt = CFAbsoluteTimeGetCurrent()
+            let waitMs = containerDiagnosticsElapsedMilliseconds(since: queuedAt)
             await performInitialMigrationsInBackground()
+            let migrateMs = containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)
 
+            let reloadStartedAt = CFAbsoluteTimeGetCurrent()
             let migratedSnapshot = await loadInitialDataSnapshotInBackground()
+            let reloadMs = containerDiagnosticsElapsedMilliseconds(since: reloadStartedAt)
+            let applyStartedAt = CFAbsoluteTimeGetCurrent()
             applyInitialDataSnapshot(migratedSnapshot)
+            let applyMs = containerDiagnosticsElapsedMilliseconds(since: applyStartedAt)
 
             appendContainerDiagnosticsLog(
-                "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) user=\(migratedSnapshot.userDictionaryEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
+                "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) waitMs=\(waitMs) migrateMs=\(migrateMs) reloadMs=\(reloadMs) applyMs=\(applyMs) user=\(migratedSnapshot.userDictionaryEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
             )
             loadKeyboardDiagnosticsState()
             SettingsSyncNotification.postSettingsDidChange()
@@ -931,15 +949,21 @@ extension ContentView {
             let bootstrapStartedAt = CFAbsoluteTimeGetCurrent()
             // Let SwiftUI present the first frame before expensive file I/O and JSON decode.
             await Task.yield()
+            let firstFrameMs = containerDiagnosticsElapsedMilliseconds(since: bootstrapStartedAt)
 
             requestContactsAccessIfNeededInBackground()
 
+            let preludeStartedAt = CFAbsoluteTimeGetCurrent()
             clearLegacyKeyboardDebugLogKeysIfNeeded()
             migrateLegacyFlickGuideSettingIfNeeded()
             clearKeyboardDiagnosticsIfInstallChanged()
             recordKeyboardExtensionRegistrationState()
             loadKeyboardDiagnosticsState()
-            appendContainerDiagnosticsLog("コンテナ初回表示 bootstrap開始")
+            // firstFrameMs = 初回フレームを譲るのに掛かった時間(ここが大きいと ContentView
+            // 本体の構築が重い)。preludeMs = 診断の読み書き等の前処理(2585)
+            appendContainerDiagnosticsLog(
+                "コンテナ初回表示 bootstrap開始 firstFrameMs=\(firstFrameMs) preludeMs=\(containerDiagnosticsElapsedMilliseconds(since: preludeStartedAt))"
+            )
             startInitialSnapshotLoadInBackground(logEventPrefix: "コンテナ初回表示") {
                 startInitialMigrationsAndRefreshSnapshotInBackground {
                     appendContainerDiagnosticsLog(
