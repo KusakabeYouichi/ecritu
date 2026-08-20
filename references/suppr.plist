@@ -15,7 +15,6 @@
 	<dict><key>phrase</key><string>大い</string><key>shortcut</key><string>おおきい</string></dict>	<!-- おおきい→大い(送り仮名欠落の収穫。大な と同根で、連用形 大く 等の派生源にもなる) -->
 	<dict><key>phrase</key><string>大く</string><key>shortcut</key><string>おおきく</string></dict>	<!-- おおきく→大く(大い の連用形派生。基底抑制だけでは活用列挙に残るため表層も抑制) -->
 	<dict><key>phrase</key><string>失え</string><key>shortcut</key><string>ねえ</string></dict>
-	<dict><key>phrase</key><string>本当</string><key>shortcut</key><string>ほんと</string></dict>
 	<dict><key>phrase</key><string>晏い</string><key>shortcut</key><string>おそい</string></dict>	<!-- おそいからな 対策: 唐菜(からな=野菜のレア語1ノード)、晏い/遅そい/襲(おそい のレア・誤送りがな表記) -->
 	<dict><key>phrase</key><string>遅そい</string><key>shortcut</key><string>おそい</string></dict>
 	<dict><key>phrase</key><string>襲</string><key>shortcut</key><string>おそい</string></dict>	<!-- ryukyu側と意図的併存 -->
@@ -33,6 +32,9 @@
 	<dict><key>phrase</key><string>違うい</string><key>shortcut</key><string>ちがうい</string></dict>	<!-- 違うい(ちがうい): 存在しない語の収穫(adjective-i クラス付き)。く形派生 違うく(ちがうく)を作り、ちがうくに→違うく+に が 違う+国 を逆転する温床(危うい/ものうい は正当なので残す) -->
 	<dict><key>phrase</key><string>報る</string><key>shortcut</key><string>しる</string></dict>	<!-- 報る(しる): 報 に しる の読みは無い(報せる=しらせる/報いる=むくいる のみ)。報って(しって)等の温床 -->
 	<dict><key>phrase</key><string>這んな</string><key>shortcut</key><string>こんな</string></dict>	<!-- 這んな(こんな): 現代語に存在しない表記の収穫(這う とは無関係) -->
+	<dict><key>phrase</key><string>解そう</string><key>shortcut</key><string>かいそう</string></dict>	<!-- 解そう/会そう/介そう(かいそう): サ変名詞 解/会/介 を五段化した 解す/会す/介す の意向形という収穫。2153 でブースト対象外にして実語を押しのけないようにしたが、候補列の末尾には残る。語として使わないので表層ごと抑制 -->
+	<dict><key>phrase</key><string>会そう</string><key>shortcut</key><string>かいそう</string></dict>
+	<dict><key>phrase</key><string>介そう</string><key>shortcut</key><string>かいそう</string></dict>
 	<!-- ※ ばかリ(ひらがな+カタカナ混在): 正書として存在しない交ぜ書きの収穫ミス -->
 	<dict><key>phrase</key><string>暗い</string><key>shortcut</key><string>ぐらい</string></dict>	<!-- ぐらい(連濁した副助詞・かな正書): 暗い/昏い/冥い等はくらい読みのい形容詞で「ぐらい」とは読まない。読みぐらいでのみ抑制(くらい→暗い は温存) -->
 	<dict><key>phrase</key><string>昏い</string><key>shortcut</key><string>ぐらい</string></dict>
@@ -44,12 +46,15 @@
 	<dict><key>phrase</key><string>溟い</string><key>shortcut</key><string>ぐらい</string></dict>
 	<dict><key>phrase</key><string>現る</string><key>shortcut</key><string>うつる</string></dict>	<!-- 現る(うつる): うつる とは読まない。現れる=あらわれる、古語 現る=あらわる。Sudachiの誤った読み割り当て。基底+て形を登録(現ってます/現ってる/現ってた を包含) -->
 	<dict><key>phrase</key><string>現って</string><key>shortcut</key><string>うつって</string></dict>
-	<dict><key>phrase</key><string>現ってます</string><key>shortcut</key><string>うつってます</string></dict>	<!-- ニー(にー): の+にー(のにー=接続助詞のに+長音)の にー を カタカナ化した誤り(行ったのにー→行ったのニー)。にー は native でカタカナにしない -->
+	<dict><key>phrase</key><string>現ってます</string><key>shortcut</key><string>うつってます</string></dict>
 	<dict><key>phrase</key><string>現ってる</string><key>shortcut</key><string>うつってる</string></dict>
 	<dict><key>phrase</key><string>現ってた</string><key>shortcut</key><string>うつってた</string></dict>
 	<dict><key>phrase</key><string>現った</string><key>shortcut</key><string>うつった</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
+	<dict><key>phrase</key><string>本途</string><key>shortcut</key><string>ほんと</string></dict>	<!-- 本途/本斗/本登(ほんと): LM 不在のレア人名・地名収穫。ほんと の かな先頭化は seed で行うため、これらが2番手以降に居座らないよう抑制する(旧: 本当 を抑制していたが ほんとだ/ほんとに 等の合成から 本当 が消えるため seed へ移行。2583) -->
+	<dict><key>phrase</key><string>本斗</string><key>shortcut</key><string>ほんと</string></dict>
+	<dict><key>phrase</key><string>本登</string><key>shortcut</key><string>ほんと</string></dict>
 	<dict><key>phrase</key><string>喜多代</string><key>shortcut</key><string>きたよ</string></dict>	<!-- きたよ の超レア人名(cost10000)。1ノードで済むため 来た+よ 合成より安くなり 急に喜多代 等を作る -->
 	<dict><key>phrase</key><string>鍛代</string><key>shortcut</key><string>きたよ</string></dict>
 	<dict><key>phrase</key><string>寿羽</string><key>shortcut</key><string>ことは</string></dict>	<!-- ことは のレア人名(寿羽/寿葉/こと羽/古都羽)。ことはない で 寿羽ない 等の断片を作る -->
