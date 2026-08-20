@@ -445,11 +445,13 @@ extension ContentView {
             return
         }
 
+        let statusStartedAt = CFAbsoluteTimeGetCurrent()
         let status = CNContactStore.authorizationStatus(for: .contacts)
+        let statusMs = containerDiagnosticsElapsedMilliseconds(since: statusStartedAt)
 
         switch status {
         case .authorized, .limited:
-            appendContainerDiagnosticsLog("連絡先アクセス状態 status=authorized")
+            appendContainerDiagnosticsLog("連絡先アクセス状態 status=authorized statusMs=\(statusMs)")
         case .denied, .restricted:
             appendContainerDiagnosticsLog("連絡先アクセス状態 status=deniedOrRestricted")
         case .notDetermined:
@@ -464,7 +466,13 @@ extension ContentView {
             appendContainerDiagnosticsLog("連絡先アクセス状態 status=unknown")
         }
 
+        // 連絡先の読み出しとキャッシュ生成は main actor 上で同期実行される。件数次第で
+        // 重くなりうる箇所なので単独で計測する(2586)。
+        let syncStartedAt = CFAbsoluteTimeGetCurrent()
         syncContactCandidatesCacheFromContainerApp()
+        appendContainerDiagnosticsLog(
+            "連絡先キャッシュ同期完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: syncStartedAt))"
+        )
     }
 
     func syncContactCandidatesCacheFromContainerApp() {
@@ -522,8 +530,20 @@ extension ContentView {
     }
 
     func requestContactsAccessIfNeededInBackground() {
+        // Loading が長い件の切り分け(2586)。連絡先のログが待ち時間の終わりに来ていたが、
+        // 「連絡先が5秒かかった」のか「5秒待たされた末に動いた」のかが区別できなかった。
+        // Task 入場時の待ちを出せば、main actor を塞いでいるのが連絡先か別か(SwiftUI の
+        // 設定画面構築か)が確定する。
+        let queuedAt = CFAbsoluteTimeGetCurrent()
         Task { @MainActor in
+            appendContainerDiagnosticsLog(
+                "連絡先タスク入場 waitMs=\(containerDiagnosticsElapsedMilliseconds(since: queuedAt))"
+            )
+            let startedAt = CFAbsoluteTimeGetCurrent()
             await requestContactsAccessIfNeeded()
+            appendContainerDiagnosticsLog(
+                "連絡先タスク完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: startedAt))"
+            )
         }
     }
 
