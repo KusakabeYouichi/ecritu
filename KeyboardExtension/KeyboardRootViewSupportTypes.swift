@@ -375,7 +375,7 @@ extension KeyboardRootView {
                 case .ansi:
                     baseSymbols = Self.basicSymbolsANSI
                 }
-                return baseSymbols + Self.basicSymbolsExtras
+                return Self.basicSymbolsCommon + Self.basicSymbolsExtras + baseSymbols
             case .brackets:
                 return Self.bracketAndQuoteSymbols
             case .currency:
@@ -394,25 +394,29 @@ extension KeyboardRootView {
         // ASCII punctuation in code point order.
         private static let basicSymbolsASCII: [String] = [
             "!", "\"", "#", "$", "%", "&", "'", "(", ")", "*", "+", ",", "-", ".", "/",
-            ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~",
-            "", "⌘", "☻", "・", "←", "↑", "→", "↓", "「", "」", "『", "』"
+            ":", ";", "<", "=", ">", "?", "@", "[", "\\", "]", "^", "_", "`", "{", "|", "}", "~"
         ]
 
         private static let basicSymbolsEBCDIC: [String] = [
             ".", "<", "(", "+", "|", "&", "!", "$", "*", ")", ";", "-", "/", ",", "%", "_",
-            ">", "?", "`", ":", "#", "@", "'", "=", "\"", "~", "^", "[", "]", "{", "}", "\\",
-            "", "⌘", "☻", "・", "←", "↑", "→", "↓", "「", "」", "『", "』"
+            ">", "?", "`", ":", "#", "@", "'", "=", "\"", "~", "^", "[", "]", "{", "}", "\\"
         ]
 
         private static let basicSymbolsANSI: [String] = [
             "!", "@", "#", "$", "%", "^", "&", "*",
             "(", ")", "-", "_", "=", "+", "[", "]",
             "{", "}", ";", ":", "'", "\"", ",", ".",
-            "<", ">", "/", "?", "\\", "|", "`", "~",
+            "<", ">", "/", "?", "\\", "|", "`", "~"
+        ]
+
+        // どの並び(ASCII/EBCDIC/ANSI)でも共通で出す記号。りんごマーク・⌘・中黒・矢印・和文括弧。
+        // basic カテゴリーの先頭セクションに置く(ユーザー指定 2600: 共通記号 → 図形 →
+        // ASCII/JIS の順。使用頻度の高いものを手前に)。
+        static let basicSymbolsCommon: [String] = [
             "", "⌘", "☻", "・", "←", "↑", "→", "↓", "「", "」", "『", "』"
         ]
 
-        // basicカテゴリーの末尾に区切り線を挟んで配置する図形記号(16個)。
+        // basicカテゴリーの2番目のセクションに置く図形記号(16個)。
         static let basicSymbolsExtras: [String] = [
             "○", "●", "△", "▲", "▽", "▼", "□", "■",
             "◇", "◆", "☆", "★", "◎", "×", "※", "✓"
@@ -771,14 +775,16 @@ extension KeyboardRootView {
 
             switch selectedSymbolCategory {
             case .basic:
+                // 並びは 共通記号 → 図形 → ASCII/JIS。件数から素直に切る(末尾からの
+                // 逆算とマジックナンバーをやめた)。
+                let commonCount = KeyboardRootView.SymbolCategory.basicSymbolsCommon.count
                 let extrasCount = KeyboardRootView.SymbolCategory.basicSymbolsExtras.count
-                let middleCount = 12  // ⌘ ☻ ・ ←↑→↓ 「」『』 などの第2セクション
-                let extrasStart = max(0, symbols.count - extrasCount)
-                let middleStart = max(0, extrasStart - middleCount)
-                let leadingSymbols = Array(symbols.prefix(middleStart))
-                let middleSymbols = Array(symbols[middleStart..<extrasStart])
-                let trailingSymbols = Array(symbols.suffix(extrasCount))
-                symbolGridSections([leadingSymbols, middleSymbols, trailingSymbols])
+                let commonEnd = min(symbols.count, commonCount)
+                let extrasEnd = min(symbols.count, commonCount + extrasCount)
+                let commonSymbols = Array(symbols.prefix(commonEnd))
+                let shapeSymbols = Array(symbols[commonEnd..<extrasEnd])
+                let punctuationSymbols = Array(symbols.dropFirst(extrasEnd))
+                symbolGridSections([commonSymbols, shapeSymbols, punctuationSymbols])
 
             case .currency:
                 let cryptoCount = KeyboardRootView.SymbolCategory.cryptoAlternativeSymbols.count

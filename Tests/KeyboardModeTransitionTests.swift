@@ -386,4 +386,36 @@ final class KeyboardModeTransitionTests: XCTestCase {
             spaceToastOpacity: spaceToastOpacity
         )
     }
+    // 基本記号の並びは 共通記号(りんごマーク・矢印・和文括弧) → 図形 → ASCII/JIS の順。
+    // 使用頻度の高いものを手前に置くというユーザー指定(2600)。以前は ASCII が先頭で、
+    // 共通記号は各並び(ASCII/EBCDIC/ANSI)の配列末尾に埋め込まれていた。
+    func testBasicSymbolSectionsAreOrderedCommonShapesThenPunctuation() {
+        let common = KeyboardRootView.SymbolCategory.basicSymbolsCommon
+        let shapes = KeyboardRootView.SymbolCategory.basicSymbolsExtras
+
+        let orders: [KeyboardRootView.BasicSymbolOrder] = [.ascii, .ebcdic, .ansi]
+        for order in orders {
+            let symbols = KeyboardRootView.SymbolCategory.basic.symbols(
+                basicOrder: order,
+                temperatureUnit: .celsius
+            )
+            XCTAssertEqual(
+                Array(symbols.prefix(common.count)),
+                common,
+                "共通記号が先頭でない order=\(order)"
+            )
+            XCTAssertEqual(
+                Array(symbols.dropFirst(common.count).prefix(shapes.count)),
+                shapes,
+                "図形が2番目でない order=\(order)"
+            )
+            let punctuation = Array(symbols.dropFirst(common.count + shapes.count))
+            XCTAssertFalse(punctuation.isEmpty, "ASCII/JIS が空 order=\(order)")
+            // 約物セクションに共通記号や図形が混ざっていないこと
+            XCTAssertTrue(
+                punctuation.allSatisfy { !common.contains($0) && !shapes.contains($0) },
+                "約物セクションに他の群が混ざっている order=\(order) punctuation=\(punctuation)"
+            )
+        }
+    }
 }
