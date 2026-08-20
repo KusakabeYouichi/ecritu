@@ -14,6 +14,7 @@ extension KeyboardViewController {
         let latinLayoutMode: LatinLayoutMode
         let accentPaletteRawValue: String
         let isSystemDictionaryFallback: Bool
+        let hasFullAccess: Bool
         let keyboardBackgroundThemeRawValue: String
         let basicSymbolOrderRawValue: String
         let temperatureUnitRawValue: String
@@ -83,6 +84,7 @@ extension KeyboardViewController {
                 latinLayoutMode: latinLayoutMode,
                 accentPaletteRawValue: accentPaletteRawValue,
                 isSystemDictionaryFallback: isSystemDictionaryFallback,
+                hasFullAccess: hasFullAccess,
                 keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
                 basicSymbolOrderRawValue: basicSymbolOrderRawValue,
                 temperatureUnitRawValue: temperatureUnitRawValue,
@@ -326,6 +328,7 @@ extension KeyboardViewController {
             latinLayoutMode: latinLayoutMode,
             accentPaletteRawValue: accentPaletteRawValue,
             isSystemDictionaryFallback: kanaKanjiStore.isSystemDictionaryFallback(),
+            hasFullAccess: hasFullAccess,
             keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
             basicSymbolOrderRawValue: basicSymbolOrderRawValue,
             temperatureUnitRawValue: temperatureUnitRawValue,
@@ -487,6 +490,7 @@ extension KeyboardViewController {
             latinLayoutMode: configuration.latinLayoutMode,
             accentPaletteRawValue: configuration.accentPaletteRawValue,
             isSystemDictionaryFallback: configuration.isSystemDictionaryFallback,
+            hasFullAccess: configuration.hasFullAccess,
             keyboardBackgroundThemeRawValue: configuration.keyboardBackgroundThemeRawValue,
             basicSymbolOrderRawValue: configuration.basicSymbolOrderRawValue,
             temperatureUnitRawValue: configuration.temperatureUnitRawValue,

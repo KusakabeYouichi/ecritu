@@ -10126,6 +10126,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             latinLayoutMode: .flick,
             accentPaletteRawValue: "emeraude",
             isSystemDictionaryFallback: false,
+            hasFullAccess: true,
             keyboardBackgroundThemeRawValue: "sakura",
             basicSymbolOrderRawValue: "ascii",
             temperatureUnitRawValue: TemperatureUnitPreference.celsius.rawValue,
