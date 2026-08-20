@@ -100,6 +100,10 @@ enum SettingsKeys {
     // 重大イベント(メモリ警告/最終手段アンロード/フェイルセーフ遷移)の保護ログ。
     // 拡張側の320行ローテーションとinstall変更リセットの対象外
     static let keyboardDiagnosticsCriticalLogLines = "keyboardDiagnosticsCriticalLogLines"
+    // コンテナ起動の所要時間を1起動1行で蓄積する(2588)。共有ログ配列は拡張側の書き込みで
+    // 320行ローテーションに押し流され、起動計測が数回で消えてしまう(実測で5行しか残らず、
+    // 遅い回と速い回を比べられなかった)。起動時間はばらつくので、比較には履歴が要る。
+    static let containerBootstrapTimingHistory = "containerBootstrapTimingHistory"
     static let keyboardDiagnosticsInstallMarker = "keyboardDiagnosticsInstallMarker"
     static let keyboardDiagnosticsSessionActive = "keyboardDiagnosticsSessionActive"
     static let keyboardDiagnosticsSessionOwnerToken = "keyboardDiagnosticsSessionOwnerToken"
