@@ -270,7 +270,31 @@ extension KeyboardViewController {
             // 誤爆(表示中のキーボードを消す)を防ぐため、代わりに二つ確認する:
             //   - viewWillAppear を通っていない(observer 未登録=再表示されていない)
             //   - 今この瞬間も別インスタンスがオーナーである
-            guard !isObservingSettingsDidChange, isConfirmedNonOwnerSession() else {
+            // オーナートークンが「不在」の場合も解放する(2601)。降格させた側の
+            // インスタンスが破棄されるとき releaseKeyboardSessionOwnershipIfHeld() が
+            // トークンを消すため、降格済みインスタンスから見ると不在が普通に起きる。
+            // isConfirmedNonOwnerSession() は不在を false(=確認できない)として扱うので、
+            // それだけを条件にすると解放が永久に走らなかった(実測: 2601 で
+            // ゾンビ生存確認 +120s/+300s が発火しても hosting=true のまま23分滞留)。
+            // 不在は「誰もオーナーを主張していない」状態で、表示中なら viewWillAppear が
+            // 必ず主張するので、不在かつ observer 未登録なら表示中ではないと判断できる。
+            let hasNoRecordedOwner = (sharedDefaults?.string(
+                forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
+            )?.isEmpty ?? true)
+            guard !isObservingSettingsDidChange,
+                isConfirmedNonOwnerSession() || hasNoRecordedOwner else {
+                // 弾いた理由を残す。ログに「ゾンビ生存確認」だけが並んで解放が来ないとき、
+                // どちらのゲートで止まったのかが分からず調査が遠回りになった(2601)。
+                appendKeyboardDiagnosticsLog(
+                    "ゾンビ解放を見送り reason=\(reason)"
+                        + " observing=\(isObservingSettingsDidChange)"
+                        + " confirmedNonOwner=\(isConfirmedNonOwnerSession())"
+                        + " noRecordedOwner=\(hasNoRecordedOwner)",
+                    critical: true,
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
                 return
             }
         } else {
