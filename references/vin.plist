@@ -3404,6 +3404,7 @@
 	<dict><key>phrase</key><string>太平洋</string><key>shortcut</key><string>たいへいよう</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- 格付けや分類、ワインのタイプ、区分、種別、種類 -->
+	<dict><key>phrase</key><string>ジャンティ</string><key>shortcut</key><string>じゃんてぃ</string></dict>	<!-- ジャンティ(Gentil): アルザスの品種ブレンド表記。品種名ではなくワインのタイプ -->
 	<dict><key>phrase</key><string>ペアルヴァイン</string><key>shortcut</key><string>ぺあるゔぁいん</string></dict>
 	<dict><key>phrase</key><string>メディエヴァル・デ・オウレン</string><key>shortcut</key><string>めでぃえゔぁるでおうれん</string></dict>
 	<dict><key>phrase</key><string>Grand Cru</string><key>shortcut</key><string>ぐらんくりゅ</string></dict>
@@ -4362,8 +4363,8 @@
 	<dict><key>phrase</key><string>アンダナ</string><key>shortcut</key><string>あんだな</string></dict>
 	<dict><key>phrase</key><string>オセアニカ</string><key>shortcut</key><string>おせあにか</string></dict>
 	<dict><key>phrase</key><string>カラマン</string><key>shortcut</key><string>からまん</string></dict>
-	<dict><key>phrase</key><string>ジャンティ</string><key>shortcut</key><string>じゃんてぃ</string></dict>
 	<dict><key>phrase</key><string>バッフス</string><key>shortcut</key><string>ばっふす</string></dict>
+	<dict><key>phrase</key><string>ピーヴィ</string><key>shortcut</key><string>ぴーゔぃ</string></dict>	<!-- ピーヴィ(PIWI): 耐病性品種(Pilzwiderstandsfähige Rebsorten)の総称 -->
 	<dict><key>phrase</key><string>フランクシャ</string><key>shortcut</key><string>ふらんくしゃ</string></dict>
 	<dict><key>phrase</key><string>プリミティーヴォ</string><key>shortcut</key><string>ぷりみてぃーゔぉ</string></dict>
 	<dict><key>phrase</key><string>Tinta del País</string><key>shortcut</key><string>てぃんたでるぱいす</string></dict>
@@ -6106,7 +6107,6 @@
 	<dict><key>phrase</key><string>アメリカンオーク樽</string><key>shortcut</key><string>あめりかんおーくだる</string></dict>
 	<dict><key>phrase</key><string>オーク材</string><key>shortcut</key><string>おーくざい</string></dict>
 	<dict><key>phrase</key><string>オーク樽</string><key>shortcut</key><string>おーくだる</string></dict>
-	<dict><key>phrase</key><string>ピーヴィ</string><key>shortcut</key><string>ぴーゔぃ</string></dict>
 	<dict><key>phrase</key><string>フラス</string><key>shortcut</key><string>ふらす</string></dict>
 	<dict><key>phrase</key><string>ペドンキュラータ・オーク</string><key>shortcut</key><string>ぺどんきゅらーたおーく</string></dict>
 	<dict><key>phrase</key><string>スラヴォニア・オーク</string><key>shortcut</key><string>すらゔぉにあおーく</string></dict>
