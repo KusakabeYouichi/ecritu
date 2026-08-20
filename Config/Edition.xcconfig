@@ -7,8 +7,21 @@ ECRITU_KEYBOARD_BUNDLE_IDENTIFIER = $(ECRITU_APP_BUNDLE_IDENTIFIER).keyboard
 ECRITU_TESTS_BUNDLE_IDENTIFIER = $(ECRITU_APP_BUNDLE_IDENTIFIER).tests
 ECRITU_APP_GROUP_IDENTIFIER = group.$(ECRITU_APP_BUNDLE_IDENTIFIER)
 
-ECRITU_EDITION_NUMBER = 2595
-ECRITU_EDITION_UPDATED_AT = 20260820154310
+// Xcode 16 以降の Debug は既定で実行ファイルをスタブ化し、本体を <target>.debug.dylib へ
+// 分離する(ENABLE_DEBUG_DYLIB の既定 YES)。アプリ本体は動くが、App Extension は launchd が
+// 直接 spawn するため、この構成だと起動が失敗しうる。実測(2026-08-20 15:44 の統合ログ):
+//   MobileNotes: RBSLaunchRequest error ... Launch failed
+//     NSPOSIXErrorDomain Code=85 "Bad executable (or shared library)"
+//     NSLocalizedDescription=Launchd job spawn failed
+//   → 拡張のプロセスが起動せず、iOS が純正キーボードへ黙って切り替わる
+// バンドルの実測は KeyboardExtension が 56KB のスタブ、.debug.dylib が 12MB だった。
+// 「たまに純正キーボードが出る」「拡張のログが1行も残らない」の正体はこれ。
+// 0xDEAD10CC(immutable=1 で対処)やホスト再起動スクリプトとは別クラスの障害。
+// 単一バイナリに戻す。増分ビルドの高速化は失うが、拡張が起動しないほうが致命的。
+ENABLE_DEBUG_DYLIB = NO
+
+ECRITU_EDITION_NUMBER = 2596
+ECRITU_EDITION_UPDATED_AT = 20260820160055
 
 // Optional per-developer signing overrides (ignored from git).
 #include? "Signing.local.xcconfig"
