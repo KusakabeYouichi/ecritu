@@ -5,6 +5,11 @@ final class KanaKanjiConverter {
         let reading: String
         let limit: Int
         let modeRawValue: String
+        // 数字接頭の有無。正規化読みは数字を落とすため、これをキーに含めないと
+        // 「2もん」が先に計算済みの「もん」のキャッシュを引き当て、数字直後の助数詞
+        // ブースト(下の digitContextCounterBoostedCandidates)に到達しない。
+        // 呼び出し順に依存して助数詞が出る/出ないが変わる状態だった(2596)。
+        let hasDigitPrefix: Bool
     }
 
     let store: KanaKanjiStore
@@ -248,10 +253,14 @@ final class KanaKanjiConverter {
             return []
         }
 
+        let hasDigitPrefix = reading.first.map {
+            ("0"..."9").contains(String($0)) || ("０"..."９").contains(String($0))
+        } ?? false
         let cacheKey = CandidateCacheKey(
             reading: normalizedReading,
             limit: limit,
-            modeRawValue: systemCandidateMode.rawValue
+            modeRawValue: systemCandidateMode.rawValue,
+            hasDigitPrefix: hasDigitPrefix
         )
 
         if let cachedCandidates = stateQueue.sync(execute: { candidateCache[cacheKey] }) {
@@ -283,7 +292,7 @@ final class KanaKanjiConverter {
         finalCandidates = Self.counterKanaTailPromotedCandidates(finalCandidates, reading: normalizedReading)
         // 合成中の読みが数字接頭(4まんえん 等。normalizedReading は数字を落とすため元の reading で
         // 判定)なら、確定済み数字直後と同じ助数詞ブーストを適用して 万円/本 等を先頭へ。
-        if let digit = reading.first, ("0"..."9").contains(String(digit)) || ("０"..."９").contains(String(digit)) {
+        if hasDigitPrefix, let digit = reading.first {
             finalCandidates = Self.digitContextCounterBoostedCandidates(
                 finalCandidates,
                 reading: normalizedReading,
