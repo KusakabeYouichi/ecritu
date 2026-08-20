@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260820102113"
+    private static let editionUpdatedAtRaw: String = "20260820103504"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -416,6 +416,10 @@ struct ContentView: View {
     @State private var showsSettingsYAMLCopiedToast = false
     // 初回フレーム軽量化: 設定カード群は最初の描画後に構築する(起動直後の白背景 Loading 対策)。
     @State private var didRenderInitialFrame = false
+    // 設定カード群の構築計測(2587)。didRenderInitialFrame を立てた時刻と、カード群の
+    // 最後の要素が画面に載った時刻の差が構築コストそのもの。
+    @State var settingsCardsBuildStartedAt: CFAbsoluteTime = 0
+    @State var didLogSettingsCardsRendered = false
     @Environment(\.scenePhase) private var scenePhase
 
     private let setupSteps: [String] = [
@@ -927,7 +931,7 @@ struct ContentView: View {
         return min(userVocabularyListMaxHeight, max(userVocabularyListMinHeight, contentHeight))
     }
 
-    struct InitialDataSnapshot {
+    struct InitialDataSnapshot: Equatable {
         let userDictionaryEntries: [VocabularyEntry]
         let learnedDictionaryEntries: [VocabularyEntry]
         let suppressionDictionaryEntries: [VocabularyEntry]
@@ -1314,6 +1318,11 @@ struct ContentView: View {
                         Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
                             .font(.footnote)
                             .foregroundStyle(.secondary)
+                            // Loading が長い件の切り分け(2587)。段別計測で「実作業は約100ms、
+                            // 残りは main actor の待ち」と分かったが、塞いでいるのが本当に
+                            // 設定カード群の構築なのかは未確認だった。カード群の最後の要素が
+                            // 画面に載った時刻を出せば、構築に何ms掛かったかが直接分かる。
+                            .onAppear { logSettingsCardsRenderedIfNeeded() }
 
                         } // didRenderInitialFrame
                         }
@@ -1327,6 +1336,7 @@ struct ContentView: View {
                 }
                 // 1フレーム分だけ譲ってヘッダーを先に描画してから、カード群を構築する。
                 await Task.yield()
+                settingsCardsBuildStartedAt = CFAbsoluteTimeGetCurrent()
                 didRenderInitialFrame = true
             }
             .onAppear {
