@@ -876,6 +876,55 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(ban.prefix(2)), ["番", "晩"], "list=\(ban)")
     }
 
+    // 「数詞に付く助数詞は大抵『何』にも付く」(ユーザ指摘 2597)。個別対応ではなく生成規則に
+    // する。なんもん→何問 が出なかったのは japaneseNumberReadingValue が なん を数詞と
+    // 見ないため。序数接頭とも両立させる(だいなんもん→第何問)。スコアは数詞複合(360)なので
+    // 辞書語(難問/難題)を押しのけない。
+    func testRegressionRealLMNanCounterCompound() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        for (reading, expected) in [("なんもん", "何問"), ("なんぼん", "何本"),
+                                    ("なんにん", "何人"), ("なんまい", "何枚"),
+                                    ("なんこ", "何個"), ("なんがい", "何階"),
+                                    ("なんかぶ", "何株"), ("なんめい", "何名"),
+                                    ("なんけた", "何桁"), ("なんわり", "何割")] {
+            let list = converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(expected), "reading=\(reading) list=\(list)")
+        }
+        // 辞書語は先頭を保つ(何N が押しのけない)
+        XCTAssertEqual(
+            converter.candidates(for: "なんもん", limit: 6, systemCandidateMode: .surface).first,
+            "難問"
+        )
+        XCTAssertEqual(
+            converter.candidates(for: "なんだい", limit: 6, systemCandidateMode: .surface).first,
+            "難題"
+        )
+        // 助数詞でない なん+かな には波及しない
+        for reading in ["なんて", "なんの", "なんとか"] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertFalse(list.isEmpty, "reading=\(reading)")
+        }
+        // 機械洗い出しの助数詞は数字文脈限定の表へ入れた。本表はかなの数詞読みからも
+        // 算用数字の複合を作るので、本表へ入れると以下が汚れる(実測で確認した経路)。
+        for (reading, expectedFirst) in [("さんま", "さんま"), ("さんか", "参加"),
+                                         ("さんぽ", "散歩"), ("にせ", "偽")] {
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expectedFirst, "reading=\(reading) list=\(list)")
+        }
+        // ordinalMeStemTailCharacters は本表の表層末字から自動生成される。目/米/間 が増えても
+        // 〜め/〜目 の序数判定が一般名詞を巻き込まないこと。
+        XCTAssertEqual(
+            converter.candidates(for: "あとめ", limit: 4, systemCandidateMode: .surface).first,
+            "跡目"
+        )
+        XCTAssertEqual(
+            converter.candidates(for: "かため", limit: 4, systemCandidateMode: .surface).first,
+            "固め"
+        )
+    }
+
     // はなしか: {噺家, 咄家, はなしか, 話か} だった。話か を先頭に、かな は末尾へ
     // (ユーザ指定 2559)。
     func testRegressionRealLMHanashikaPrefersHanashika() throws {
