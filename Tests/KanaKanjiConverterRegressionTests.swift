@@ -982,6 +982,53 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(sokoNi.prefix(3)), ["そこに", "底に", "其処に"], "list=\(sokoNi)")
     }
 
+    // はなにみず: 文頭の裸の係助詞 は が組む は+何+水(unigram 計 11133)が
+    // 花+に+水(11248)を 115 差で押し切っていた。BOS 助詞減点で是正(ユーザ報告 2606)。
+    func testRegressionRealLMHanaNiMizuPrefersHanaNiMizu() throws {
+        try prepareRealLMDictionary()
+
+        let hanaNiMizu = converter.multiClauseCandidates(for: "はなにみず", systemCandidateMode: .surface)
+        XCTAssertEqual(hanaNiMizu.first, "花に水", "list=\(hanaNiMizu)")
+    }
+
+    // 文頭の助詞減点が断片継続(で飲む)や 楽しいし嬉しい を巻き添えにしないこと。
+    func testRegressionRealLMBOSParticlePenaltyKeepsFragments() throws {
+        try prepareRealLMDictionary()
+
+        let denomu = converter.candidates(for: "でのむ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(denomu.first, "で飲む", "list=\(denomu)")
+        let tanoshii = converter.multiClauseCandidates(for: "たのしいしうれしい", systemCandidateMode: .surface)
+        XCTAssertEqual(tanoshii.first, "楽しいし嬉しい", "list=\(tanoshii)")
+    }
+
+    // しけんまえだし: 姓の1ノード 前田(uni 5390)が 前(4035)+だし(6401)を下回り
+    // 「試験前田し」になっていた。接続助詞 し は述語直後にしか立てない(ユーザ報告 2606)。
+    func testRegressionRealLMShikenMaeDashiPrefersShikenMaeDashi() throws {
+        try prepareRealLMDictionary()
+
+        let shikenMaeDashi = converter.multiClauseCandidates(for: "しけんまえだし", systemCandidateMode: .surface)
+        XCTAssertEqual(shikenMaeDashi.first, "試験前だし", "list=\(shikenMaeDashi)")
+        // 乃至(ないし)は い が述語末尾なので し 減点の対象外
+        let naishi = converter.candidates(for: "ないし", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(naishi.contains("乃至"), "list=\(naishi)")
+    }
+
+    // にわにみず: 二→輪(2684)を にりん 文脈から借用した単漢字断片 二+輪(計7125)が
+    // 庭(8203)を下回っていた。輪(わ)の bigram 借用を遮断(調査中に発見 2606)。
+    func testRegressionRealLMNiwaPrefersNiwa() throws {
+        try prepareRealLMDictionary()
+
+        let niwaNiMizu = converter.multiClauseCandidates(for: "にわにみず", systemCandidateMode: .surface)
+        XCTAssertEqual(niwaNiMizu.first, "庭に水", "list=\(niwaNiMizu)")
+        let niwaNoKi = converter.multiClauseCandidates(for: "にわのき", systemCandidateMode: .surface)
+        XCTAssertEqual(niwaNoKi.first, "庭の木", "list=\(niwaNoKi)")
+        // 輪 の正当な複合(首輪/一輪車)は無傷
+        let kubiwa = converter.multiClauseCandidates(for: "くびわをつける", systemCandidateMode: .surface)
+        XCTAssertEqual(kubiwa.first, "首輪をつける", "list=\(kubiwa)")
+        let ichirinsha = converter.candidates(for: "いちりんしゃ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(ichirinsha.first, "一輪車", "list=\(ichirinsha)")
+    }
+
     // きゅうかんび: {休館日, 休刊日, 休肝日} だった。休肝日 を2番目に(ユーザ指定 2606)。
     func testRegressionRealLMKyukanbiOrdering() throws {
         try prepareRealLMDictionary()
