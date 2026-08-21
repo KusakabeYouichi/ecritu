@@ -64,6 +64,8 @@
 	<dict><key>phrase</key><string>iPhone Air</string><key>shortcut</key><string>あいふぉんえあ</string></dict>
 	<dict><key>phrase</key><string>iPhone SE</string><key>shortcut</key><string>あいふぉんえすいー</string></dict>
 	<dict><key>phrase</key><string>iPhone</string><key>shortcut</key><string>あいふぉん</string></dict>
+	<dict><key>phrase</key><string>iPhone Pro</string><key>shortcut</key><string>あいふぉんぷろ</string></dict>
+	<dict><key>phrase</key><string>iPhone Pro Max</string><key>shortcut</key><string>あいふぉんぷろまっくす</string></dict>
 	<dict><key>phrase</key><string>Mac</string><key>shortcut</key><string>まっく</string></dict>
 	<dict><key>phrase</key><string>MacBook Air</string><key>shortcut</key><string>まっくぶっくえあ</string></dict>
 	<dict><key>phrase</key><string>MacBook Neo</string><key>shortcut</key><string>まっくぶっくねお</string></dict>
