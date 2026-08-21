@@ -1029,6 +1029,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ichirinsha.first, "一輪車", "list=\(ichirinsha)")
     }
 
+    // たい: 国名の タイ は dict rank1 なのにカタカナ強調フィルタで消えていた。
+    // seed 掲載で免除し先頭へ。對 は末尾、かな たい も先頭から外す(ユーザ指定 2608)。
+    func testRegressionRealLMTaiIncludesKatakanaTai() throws {
+        try prepareRealLMDictionary()
+
+        let tai = converter.candidates(for: "たい", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tai.prefix(6)), ["タイ", "鯛", "他意", "Tai", "🇹🇭", "対"], "list=\(tai)")
+        let taiIndex = tai.firstIndex(of: "たい") ?? Int.max
+        let objIndex = tai.firstIndex(of: "對") ?? Int.max
+        XCTAssertGreaterThan(taiIndex, 10, "list=\(tai)")
+        XCTAssertGreaterThan(objIndex, taiIndex, "list=\(tai)")
+    }
+
     // きゅうかんび: {休館日, 休刊日, 休肝日} だった。休肝日 を2番目に(ユーザ指定 2606)。
     func testRegressionRealLMKyukanbiOrdering() throws {
         try prepareRealLMDictionary()
@@ -1871,7 +1884,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("さけ", "酒"), ("さし", "指し"), ("さつ", "冊"), ("さとこ", "敏子"), ("さへん", "左辺"), ("さわだ", "沢田"),
             ("しこう", "施行"), ("しだ", "志田"), ("しゅういち", "修一"), ("しゅん", "駿"), ("しるべ", "導"),
             ("しんし", "紳士"), ("しんど", "震度"), ("じゅり", "受理"), ("じょうおう", "承応"), ("すおう", "周防"),
-            ("せい", "性"), ("せんない", "線内"), ("そうけい", "総計"), ("そうだ", "操舵"), ("そだ", "曽田"), ("たい", "対"),
+            // たい→対 は 2608 で除外。ユーザ指定で タイ を先頭にしたため上位2件に入らなくなった
+            ("せい", "性"), ("せんない", "線内"), ("そうけい", "総計"), ("そうだ", "操舵"), ("そだ", "曽田"),
             ("たいぞう", "泰三"), ("たいない", "体内"), ("たかあき", "貴明"), ("たかこ", "貴子"), ("たから", "宝"),
             ("たくろう", "拓郎"), ("たけもと", "竹本"), ("たける", "健"), ("ただお", "忠夫"), ("だいだ", "代打"),
             ("ちゅう", "注"), ("ちょうだ", "町田"), ("ちり", "地理"), ("つげ", "告げ"), ("つむ", "積む"), ("つよし", "剛"),
