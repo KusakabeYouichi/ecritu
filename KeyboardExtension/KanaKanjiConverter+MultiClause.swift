@@ -1188,6 +1188,11 @@ extension KanaKanjiConverter {
                 prev == Self.multiClauseBOSMarker || Self.multiClauseCaseParticleSurfaces.contains(prev) {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
+            // 文頭の裸の格助詞/係助詞は非文(定数コメント参照)。禁止ではなく減点で拮抗を覆す。
+            if prev == Self.multiClauseBOSMarker, surface == reading,
+                Self.multiClauseBOSPenalizedParticles.contains(surface) {
+                penalty += Self.multiClauseBOSParticlePenalty
+            }
             // カタカナ強調/交ぜ書きモードのノード別ペナルティ(suppress=100000/demote=6000)
             penalty += scriptVariantPenalty
             return base + penalty
@@ -1320,6 +1325,12 @@ extension KanaKanjiConverter {
                         prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
                         isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
                     ) - preferredInflectionBonus + nodeTanContractionPenalty
+                    // 入力末尾の裸の接続助詞「し」は述語直後にしか立てない(定数コメント参照)。
+                    // 文中の し はサ変の連用形(勉強し+まくり)なので対象外にする。
+                    if node.end == n, node.reading == "し", node.surface == "し",
+                        !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
+                        cost += Self.multiClauseKanaShiAfterNonPredicatePenalty
+                    }
                     // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                     // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
                     if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
