@@ -1097,6 +1097,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(kyukanbi.prefix(3)), ["休館日", "休肝日", "休刊日"], "list=\(kyukanbi)")
     }
 
+    // での: 複合助詞のかなが正書なのに デの/手の の合成が先頭だった(ユーザ指定 2610)。
+    func testRegressionRealLMDenoPrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        let deno = converter.candidates(for: "での", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(deno.prefix(2)), ["での", "出の"], "list=\(deno)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "での"), "list=\(deno)")
+    }
+
+    // がすき: 助詞+述語の断片 が+好き が候補ゼロだった(でのむ/なひと と同型。ユーザ指定 2610)。
+    func testRegressionRealLMGaSukiSuppliesGaSuki() throws {
+        try prepareRealLMDictionary()
+
+        let gasuki = converter.candidates(for: "がすき", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(gasuki.first, "が好き", "list=\(gasuki)")
+    }
+
     // なひと: 形容動詞連体形の な+人 が候補ゼロだった(ユーザ指定 2606)。
     func testRegressionRealLMNaHitoSuppliesNaHito() throws {
         try prepareRealLMDictionary()
