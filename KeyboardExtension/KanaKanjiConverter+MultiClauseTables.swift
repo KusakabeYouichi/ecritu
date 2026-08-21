@@ -867,6 +867,20 @@ extension KanaKanjiConverter {
     // 「しけんまえだし→試験前田し」のような誤分割が勝つ。非述語直後の し を減点して
     // 前+だし 経路を通す。名詞の し(詩/市/死)は surface != reading なので対象外(2606)。
     static let multiClauseKanaShiAfterNonPredicatePenalty = 6000
+    // 名詞直後の裸のかな「な」。連体の な は形容動詞語幹にしか付かないが、ラティスでは
+    // どんな名詞にも な を継げてしまい「しきなそば→式な側」のような分割を作る
+    // (識名 は収穫底値 wc10000 で 9500 に床上げされ、式4775+な3727=8502 に負ける)。
+    // 形容動詞語幹の判定は既存の prev→な bigram 実績(multiClauseNaAdjectiveBigramThreshold)を
+    // 流用する ─ 便利491/有名422/静か425/大切484/変1417 に対し 式3727 と綺麗に分かれる。
+    // 述語直後の な(行くな/だな=終助詞)は対象外(ユーザ報告 2608)。
+    static let multiClauseNaAfterNonNaAdjectivePenalty = 3000
+    // 表外訓の漢字表層はかな正書が実勢。そば の 側/傍 は常用漢字表に訓が無く、しかも
+    // 側 の unigram(4280)は主読み がわ(右側/向こう側)の統計に支配されているため、
+    // 短span床(wc そば=5755)を通しても かな そば(5965)に勝ってしまい
+    // 「そばをたべる→側を食べる」「しきなそば→識名側」を作る。単文節の候補列には残して
+    // 明示選択できるようにし、連文節でだけ減点する(ユーザー報告 2608)。
+    static let multiClauseKanaOrthodoxReadings: Set<String> = ["そば"]
+    static let multiClauseKanaOrthodoxKanjiPenalty = 1500
 
     static let multiClauseForbiddenPenaltyCost = 100000
     static let multiClauseForbiddenInitials: Set<Character> = [
