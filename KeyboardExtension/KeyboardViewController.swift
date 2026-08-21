@@ -810,6 +810,16 @@ final class KeyboardViewController: UIInputViewController {
         diagnosticsMallocHistogramBuckets = Array(repeating: 0, count: diagnosticsMallocHistogramBounds.count + 1)
         diagnosticsMallocHistogramBytes = Array(repeating: 0, count: diagnosticsMallocHistogramBounds.count + 1)
         diagnosticsMallocSamples = Array(repeating: [], count: diagnosticsMallocHistogramBounds.count + 1)
+        diagnosticsMallocClassCounts = Array(
+            // malloc ゾーンを列挙している最中に辞書が拡張すると、ロックを保持したまま
+            // 確保することになりデッドロックしうる。実在クラス数を十分上回る容量を
+            // 先に確保して、列挙中は絶対に拡張させない。
+            repeating: [UInt: Int](minimumCapacity: 4096),
+            count: diagnosticsMallocHistogramBounds.count + 1
+        )
+        // 名前の表はここで作っておく(列挙中に初めて触ると、ゾーンを列挙しながら
+        // objc_copyClassList を呼ぶことになる)。
+        _ = diagnosticsClassNamesByPointer
         for index in 0..<Int(zoneCount) {
             guard let rawZone = UnsafeMutableRawPointer(bitPattern: UInt(zoneAddresses[index])) else {
                 continue
@@ -849,6 +859,11 @@ final class KeyboardViewController: UIInputViewController {
                         address: UInt(ranges[index].address),
                         size: size
                     )
+                    KeyboardViewController.recordMallocClassIfNeeded(
+                        bucket: bucket,
+                        address: UInt(ranges[index].address),
+                        size: size
+                    )
                 }
             }
         }
@@ -861,7 +876,16 @@ final class KeyboardViewController: UIInputViewController {
             let samples = index < diagnosticsMallocSamples.count && !diagnosticsMallocSamples[index].isEmpty
                 ? "{" + diagnosticsMallocSamples[index].joined(separator: ",") + "}"
                 : ""
-            parts.append("\(label):\(count)/\(String(format: "%.1f", mb))MB\(samples)")
+            // クラス別の上位3種を件数付きで添える。ここで初めて名前を解決する。
+            var classes = ""
+            if index < diagnosticsMallocClassCounts.count, !diagnosticsMallocClassCounts[index].isEmpty {
+                let top = diagnosticsMallocClassCounts[index]
+                    .sorted { $0.value != $1.value ? $0.value > $1.value : $0.key < $1.key }
+                    .prefix(3)
+                    .map { "\(diagnosticsClassNamesByPointer[$0.key] ?? "?")×\($0.value)" }
+                classes = "<" + top.joined(separator: ",") + ">"
+            }
+            parts.append("\(label):\(count)/\(String(format: "%.1f", mb))MB\(samples)\(classes)")
         }
         return "hist(count/MB)[\(parts.joined(separator: " "))]"
     }
@@ -872,6 +896,28 @@ final class KeyboardViewController: UIInputViewController {
     // 階級ごとに保持する中身サンプル。1階級あたり数件で足りる(傾向が分かればよい)
     static var diagnosticsMallocSamples: [[String]] = []
     static let diagnosticsMallocSamplesPerBucket = 3
+    // 階級ごとの「Objective-C クラス別の件数」。3件のサンプルでは 16万件の正体が分からず、
+    // 4.8万件の増分が何なのか特定できなかった(2602)。全ブロックを数えて名前で出す。
+    // 値はクラスポインタ→件数。名前の解決(String 生成)は列挙が終わってから行う —
+    // malloc ゾーンを列挙中のコールバック内で余計な確保をしないため。
+    static var diagnosticsMallocClassCounts: [[UInt: Int]] = []
+    // 登録済み Objective-C クラスの「ポインタ→名前」。任意のメモリの先頭ワードを
+    // class_getName に渡すのは危険(オブジェクトでなければクラッシュする)なので、
+    // この表に在るポインタだけ名前を引く。Swift のクラスも Apple 環境では登録される。
+    static let diagnosticsClassNamesByPointer: [UInt: String] = {
+        var count: UInt32 = 0
+        guard let list = objc_copyClassList(&count) else {
+            return [:]
+        }
+        defer { free(UnsafeMutableRawPointer(list)) }
+        var names = [UInt: String](minimumCapacity: Int(count))
+        for index in 0..<Int(count) {
+            let cls: AnyClass = list[index]
+            let pointer = UInt(bitPattern: unsafeBitCast(cls, to: UnsafeRawPointer.self))
+            names[pointer] = String(cString: class_getName(cls))
+        }
+        return names
+    }()
 
     // ブロックの先頭を読んで正体の手がかりを作る。UTF-8 として読めれば文字列データ、
     // 上位バイトがポインタらしければ参照の配列、と当たりを付ける。入力内容が混じりうるので
@@ -905,6 +951,30 @@ final class KeyboardViewController: UIInputViewController {
             kind = "raw"
         }
         diagnosticsMallocSamples[bucket].append(kind)
+        #endif
+    }
+
+    // 階級ごとに Objective-C クラス別の件数を数える(2602)。3件のサンプルでは
+    // 16万件の内訳が分からなかったため、全ブロックの先頭ワードを見て集計する。
+    // 安全のため、登録済みクラスの表に在るポインタだけを対象にする(任意のメモリを
+    // class_getName に渡すとクラッシュしうる)。名前の解決は列挙後に行う —
+    // malloc ゾーンの列挙中に String を作らないため、ここではポインタのまま数える。
+    static func recordMallocClassIfNeeded(bucket: Int, address: UInt, size: Int) {
+        #if !DEBUG
+        return
+        #else
+        guard bucket < diagnosticsMallocClassCounts.count,
+            size >= 16,
+            let base = UnsafeRawPointer(bitPattern: address) else {
+            return
+        }
+        let head = UInt(UnsafeRawBufferPointer(start: base, count: 8).loadUnaligned(as: UInt64.self))
+        // Swift/ObjC のインスタンスは先頭に isa(クラスポインタ)を持つ。下位ビットに
+        // タグが載る実装があるので素の値で引けなければ諦める(推測で剥がさない)。
+        guard diagnosticsClassNamesByPointer[head] != nil else {
+            return
+        }
+        diagnosticsMallocClassCounts[bucket][head, default: 0] += 1
         #endif
     }
 
