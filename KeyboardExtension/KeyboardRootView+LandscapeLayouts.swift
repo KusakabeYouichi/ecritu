@@ -421,6 +421,8 @@ extension KeyboardRootView {
                     }
                 }
             } else {
+                // 縦画面と同じく、変換キー連打での選択送りに追従させる(2605)。
+                ScrollViewReader { proxy in
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVStack(alignment: .leading, spacing: 4) {
                         ForEach(Array(conversionCandidates.enumerated()), id: \.offset) { index, candidate in
@@ -470,9 +472,19 @@ extension KeyboardRootView {
                                 }
                             }
                             .buttonStyle(.plain)
+                            .id(index)
                         }
                     }
                     .padding(.vertical, 0)
+                }
+                .onChange(of: selectedConversionCandidateIndex) { index in
+                    guard let index else {
+                        return
+                    }
+                    withAnimation(.easeOut(duration: 0.12)) {
+                        proxy.scrollTo(index, anchor: .center)
+                    }
+                }
                 }
             }
         }
