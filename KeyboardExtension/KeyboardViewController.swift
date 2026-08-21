@@ -442,28 +442,12 @@ final class KeyboardViewController: UIInputViewController {
     }()
 
     private static let hostTopOverlap: CGFloat = 0
-    static let baselinePortraitScreenWidth: CGFloat = 390
-    static let baselineLandscapeScreenHeight: CGFloat = 393
-    static let candidateHeaderExpandedHeight: CGFloat = 35
-    static let candidateHeaderCollapsedHeight: CGFloat = 3
-    static let keyboardVerticalPadding: CGFloat = 23
-    static let keyboardRowSpacing: CGFloat = 6
-    static let mainKeyRowHeight: CGFloat = 46
-    static let actionRowHeight: CGFloat = 42
-    static let minimumKanaThreeByThreeHeight: CGFloat = 220
-    static let maximumKanaThreeByThreeHeight: CGFloat = 280
-    static let minimumCompactGridHeight: CGFloat = 194
-    static let maximumCompactGridHeight: CGFloat = 252
-    static let minimumCompactActionRowHeight: CGFloat = 200
-    static let maximumCompactActionRowHeight: CGFloat = 260
-    static let minimumKanaFiveByTwoHeight: CGFloat = 216
-    static let maximumKanaFiveByTwoHeight: CGFloat = 280
-    static let minimumEmojiHeight: CGFloat = 228
-    static let maximumEmojiHeight: CGFloat = 290
-    // 書式化数値モードは単位ドラム/カレンダーに縦の余裕が要るため専用の中高さにする。
-    static let minimumFormattedNumberHeight: CGFloat = 300
-    static let maximumFormattedNumberHeight: CGFloat = 340
-    static let portraitSystemAccessoryOffset: CGFloat = 6
+    // 寸法・位置の定数は KeyboardLayoutMetrics に集約した(2609)。
+    // 端末別の値はそちらの .phone / .pad を触る。
+    var layoutMetrics: KeyboardLayoutMetrics {
+        KeyboardLayoutMetrics.metrics(for: KeyboardDeviceKind.resolve(traitCollection))
+    }
+
     static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
     private static let deviceSystemDictionaryPreloadDelay: TimeInterval = 1.2
     private static let minimumPhysicalMemoryForSystemDictionaryPreload: UInt64 = 5 * 1024 * 1024 * 1024

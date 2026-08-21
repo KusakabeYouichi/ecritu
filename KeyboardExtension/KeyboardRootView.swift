@@ -117,28 +117,33 @@ struct KeyboardRootView: View {
     @State var pendingKatakanaCommitWorkItem: DispatchWorkItem?
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.verticalSizeClass) private var verticalSizeClass
+    var layoutMetrics: KeyboardLayoutMetrics = .phone
 
     let shiftDoubleTapThreshold: TimeInterval = 0.32
     let latinModeSwitchDoubleTapThreshold: TimeInterval = 0.28
     let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
     let katakanaCommitFeedbackDelay: TimeInterval = 0.14
     let keyLabelColor = KeyboardThemePalette.keyLabel
-    private let candidateHeaderExpandedHeight: CGFloat = 35
+    private var candidateHeaderExpandedHeight: CGFloat { layoutMetrics.candidateHeaderExpandedHeight }
     private let candidateHeaderContentDownshift: CGFloat = 4
-    var keyboardRowSpacing: CGFloat { isLandscapeLayout ? 4 : 6 }
+    // 寸法・位置は KeyboardLayoutMetrics に集約(2609)。端末別の値はそちらで分岐する。
+    private var frameMetrics: KeyboardLayoutMetrics.FrameMetrics {
+        layoutMetrics.frame(usesCompactLandscapeLayout: isLandscapeLayout)
+    }
+    var keyboardRowSpacing: CGFloat { frameMetrics.rowSpacing }
     private var keyboardTopPadding: CGFloat {
         if isLandscapeLayout
             && (inputMode == .kana || inputMode == .number || isLandscapeLatinThreeByThreeMode) {
-            return 0
+            return frameMetrics.topPaddingWhenRowsAreDense
         }
 
-        return isLandscapeLayout ? 1 : 3
+        return frameMetrics.topPadding
     }
-    private var keyboardHorizontalPadding: CGFloat { isLandscapeLayout ? 6 : 8 }
-    private var keyboardBottomPadding: CGFloat { isLandscapeLayout ? 4 : 20 }
+    private var keyboardHorizontalPadding: CGFloat { frameMetrics.horizontalPadding }
+    private var keyboardBottomPadding: CGFloat { frameMetrics.bottomPadding }
     let candidateStateFontSize: CGFloat = 15
     let candidateTextFontSize: CGFloat = 16
-    var compactActionKeyHeight: CGFloat { isLandscapeLayout ? 34 : 42 }
+    var compactActionKeyHeight: CGFloat { frameMetrics.actionKeyHeight }
     private let compactModeSwitchKeyWidth: CGFloat = 32
     private let wideModeSwitchKeyWidth: CGFloat = 58
     let compactEmojiKeyHeight: CGFloat = 28
@@ -156,8 +161,13 @@ struct KeyboardRootView: View {
         inputMode == .kana && (!composingText.isEmpty || showsParenthesesWrapper)
     }
 
+    // 横組み(段を詰めた背の低い構成)を使うかの唯一の判定。高さ計算側
+    // (KeyboardViewController+Layout.preferredKeyboardHeight)も同じ metrics を見るので、
+    // 「ビューは縦組み・枠は横組み」という食い違いが構造的に起きない。
+    // iPad は verticalSizeClass が横画面でも .regular なうえ、metrics 側で
+    // allowsCompactLandscapeLayout=false なので常に縦組みになる。
     var isLandscapeLayout: Bool {
-        verticalSizeClass == .compact
+        layoutMetrics.usesCompactLandscapeLayout(isLandscapeOrientation: verticalSizeClass == .compact)
     }
 
     var showsLatinSuggestionCandidates: Bool {
