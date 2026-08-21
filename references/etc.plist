@@ -1297,7 +1297,7 @@
 	<dict><key>phrase</key><string>手配</string><key>shortcut</key><string>てはい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>手本</string><key>shortcut</key><string>てほん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>テラス</string><key>shortcut</key><string>てらす</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>テルス</string><key>shortcut</key><string>てるす</string></dict>	<!-- 古代ギリシャ語で『大地』の意味 -->
+	<dict><key>phrase</key><string>テルス</string><key>shortcut</key><string>てるす</string></dict>	<!-- ラテン語で『大地』の意味。エノトリア・テルス(=ワインの大地)は古代ギリシャ由来の地名 Oenotria とラテン語 Tellus の組み合わせ -->
 	<dict><key>phrase</key><string>展開</string><key>shortcut</key><string>てんかい</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>添加物</string><key>shortcut</key><string>てんかぶつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>転換</string><key>shortcut</key><string>てんかん</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
