@@ -957,6 +957,47 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(jikasengaMulti.first, "耳下腺が", "multi=\(Array(jikasengaMulti.prefix(4)))")
     }
 
+    // いたい: 痛い は dict rank0 なのに {いたい, 遺体, 居たい, 射たい, 鋳たい, 痛い} と6位。
+    // たい(願望)の活用派生が上位を占めていた。seed で宣言順に矯正(ユーザ指定 2606)。
+    func testRegressionRealLMItaiPrefersItai() throws {
+        try prepareRealLMDictionary()
+
+        let itai = converter.candidates(for: "いたい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(itai.prefix(4)), ["痛い", "居たい", "いたい", "遺体"], "list=\(itai)")
+    }
+
+    // てんじて: {点じて, 転じて} だった。話題を転じて 等の 転じて が実勢(ユーザ指定 2606)。
+    func testRegressionRealLMTenjitePrefersTenjite() throws {
+        try prepareRealLMDictionary()
+
+        let tenjite = converter.candidates(for: "てんじて", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(tenjite.first, "転じて", "list=\(tenjite)")
+    }
+
+    // そこに: 底荷(船舶のバラスト)が先頭だった。指示語のかなが実勢(ユーザ指定 2606)。
+    func testRegressionRealLMSokoNiPrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        let sokoNi = converter.candidates(for: "そこに", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sokoNi.prefix(3)), ["そこに", "底に", "其処に"], "list=\(sokoNi)")
+    }
+
+    // きゅうかんび: {休館日, 休刊日, 休肝日} だった。休肝日 を2番目に(ユーザ指定 2606)。
+    func testRegressionRealLMKyukanbiOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let kyukanbi = converter.candidates(for: "きゅうかんび", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kyukanbi.prefix(3)), ["休館日", "休肝日", "休刊日"], "list=\(kyukanbi)")
+    }
+
+    // なひと: 形容動詞連体形の な+人 が候補ゼロだった(ユーザ指定 2606)。
+    func testRegressionRealLMNaHitoSuppliesNaHito() throws {
+        try prepareRealLMDictionary()
+
+        let nahito = converter.candidates(for: "なひと", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(nahito.first, "な人", "list=\(nahito)")
+    }
+
     // はなしか: {噺家, 咄家, はなしか, 話か} だった。話か を先頭に、かな は末尾へ
     // (ユーザ指定 2559)。
     func testRegressionRealLMHanashikaPrefersHanashika() throws {
@@ -1768,7 +1809,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let pairs: [(String, String)] = [
             ("あいこ", "愛子"), ("あかし", "証"), ("あきら", "晶"), ("あこう", "赤穂"), ("あすか", "飛鳥"), ("あず", "按司"),
             ("あたえ", "与"), ("あまてらす", "アマテラス"), ("あまの", "天野"), ("あめ", "雨"), ("あらまち", "新町"),
-            ("あんだ", "安打"), ("いこう", "以降"), ("いたい", "遺体"), ("いちお", "一男"), ("うただ", "宇多田"),
+            // いたい→遺体 は 2606 で除外。ユーザ指定で {痛い, 居たい, いたい, 遺体} の順に
+            // 変えたため上位2件に入らなくなった(testRegressionRealLMItaiPrefersItai が受け持つ)
+            ("あんだ", "安打"), ("いこう", "以降"), ("いちお", "一男"), ("うただ", "宇多田"),
             ("うつびょう", "うつ病"), ("うら", "裏"), ("えんじゃ", "演者"), ("おおはら", "小原"), ("おき", "起き"),
             ("おくない", "屋内"), ("おさか", "櫻坂"), ("おた", "尾田"), ("おちかた", "遠方"), ("かえ", "変え"),
             ("かき", "下記"), ("かぐら", "神楽"), ("かごう", "化合"), ("かずお", "和夫"), ("かずき", "和樹"),
