@@ -1002,6 +1002,8 @@ extension KeyboardRootView {
                             }
                         }
                 )
+                // 選択追従のスクロール先。ForEach の id と揃える。
+                .id(index)
             }
         }
 
@@ -1032,6 +1034,9 @@ extension KeyboardRootView {
         }
 
         var body: some View {
+            // 変換キー連打で選択を送ると、選択チップが画面外のままになっていた(2605)。
+            // スワイプで手動スクロールしていると気づけない。選択が変わったら追従させる。
+            ScrollViewReader { proxy in
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 6) {
                     let showsWrapperOnly = showsParenthesesWrapper && composingText.isEmpty
@@ -1090,6 +1095,16 @@ extension KeyboardRootView {
                 .padding(.top, kanaCandidateHeaderTopPadding)
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
+            }
+            .onChange(of: selectedConversionCandidateIndex) { index in
+                guard let index else {
+                    return
+                }
+                // 端では SwiftUI が clamp するので、先頭でも不自然な余白にはならない。
+                withAnimation(.easeOut(duration: 0.12)) {
+                    proxy.scrollTo(index, anchor: .center)
+                }
+            }
             }
         }
     }
