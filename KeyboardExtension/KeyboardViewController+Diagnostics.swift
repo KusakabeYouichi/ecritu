@@ -326,6 +326,13 @@ extension KeyboardViewController {
         pendingRefreshKeyboardStateRequests = 0
         isRefreshKeyboardStateAsyncScheduled = false
         activeConversion = nil
+        // 診断バッファ(ログ最大320行+フライトレコーダ)はインスタンスごとに持つ。
+        // ゾンビが増えるほど積み上がるので、降格時に書き出して手放す(2603)。
+        // 実測: alive=10→37.0MB / 12→40.6MB / 15→46.7MB と1体あたり約1.3MB増えていた。
+        // 再表示されたら次の追記時に defaults から読み直される(nil=未ロード)。
+        persistBufferedKeyboardDiagnostics()
+        diagnosticsState.diagnosticsLogLinesBuffer = nil
+        diagnosticsState.diagnosticsFlightRecorderBuffer = nil
         clearComposingState()
         clearRecentKanaPlainCommitUpgradeContext()
         lastSynchronizedContextBeforeInputTail = ""
