@@ -25,13 +25,13 @@
 	<dict><key>phrase</key><string>HomePod mini</string><key>shortcut</key><string>ほーむぽっどみに</string></dict>
 	<dict><key>phrase</key><string>HomePod</string><key>shortcut</key><string>ほーむぽっど</string></dict>
 	<dict><key>phrase</key><string>iMac</string><key>shortcut</key><string>あいまっく</string></dict>
+	<dict><key>phrase</key><string>iPad</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad Air</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad Air</string><key>shortcut</key><string>あいぱっどえあ</string></dict>
 	<dict><key>phrase</key><string>iPad mini</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad mini</string><key>shortcut</key><string>あいぱっどみに</string></dict>
 	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPad Pro</string><key>shortcut</key><string>あいぱっどぷろ</string></dict>
-	<dict><key>phrase</key><string>iPad</string><key>shortcut</key><string>あいぱっど</string></dict>
 	<dict><key>phrase</key><string>iPhone 12 Pro</string><key>shortcut</key><string>あいふぉんじゅうにぷろ</string></dict>
 	<dict><key>phrase</key><string>iPhone 12 Pro Max</string><key>shortcut</key><string>あいふぉんじゅうにぷろまっくす</string></dict>
 	<dict><key>phrase</key><string>iPhone 12 mini</string><key>shortcut</key><string>あいふぉんじゅうにみに</string></dict>

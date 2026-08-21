@@ -1097,6 +1097,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(kyukanbi.prefix(3)), ["休館日", "休肝日", "休刊日"], "list=\(kyukanbi)")
     }
 
+    // あいぱっど: it.plist の記載順(iPad Air→mini→Pro→iPad)がそのまま rank になり、
+    // 無印 iPad が4番目だった。plist の並べ替えで先頭に(ユーザ指定 2611)。
+    func testRegressionRealLMAipaddoPrefersIPad() throws {
+        try prepareRealLMDictionary()
+
+        let aipaddo = converter.candidates(for: "あいぱっど", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(aipaddo.first, "iPad", "list=\(aipaddo)")
+    }
+
     // での: 複合助詞のかなが正書なのに デの/手の の合成が先頭だった(ユーザ指定 2610)。
     func testRegressionRealLMDenoPrefersKana() throws {
         try prepareRealLMDictionary()
