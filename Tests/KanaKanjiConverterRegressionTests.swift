@@ -1042,6 +1042,53 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertGreaterThan(objIndex, taiIndex, "list=\(tai)")
     }
 
+    // ちしまをさきに: 連用形+に(目的)ノード 裂きに に格助詞直後の活用割引(5000)が効き、
+    // 先(を→先4557)+に(先→に532)を 89 差で押し切っていた。文末では割引を外す(ユーザ報告 2608)。
+    func testRegressionRealLMChishimaWoSakiNiPrefersSakiNi() throws {
+        try prepareRealLMDictionary()
+
+        let chishima = converter.multiClauseCandidates(for: "ちしまをさきに", systemCandidateMode: .surface)
+        XCTAssertEqual(chishima.first, "千島を先に", "list=\(chishima)")
+        // 目的の に は移動動詞が続く文中では従来どおり効く
+        let sakiniiku = converter.multiClauseCandidates(for: "はなをさきにいく", systemCandidateMode: .surface)
+        XCTAssertTrue(sakiniiku.contains { $0.hasSuffix("に行く") }, "list=\(sakiniiku)")
+    }
+
+    // しきなそば: 連体の な がどんな名詞にも継げて 式な側 になっていた。形容動詞語幹の
+    // 判定(prev→な bigram 実績)で遮断し、識名 は seed で収穫底値降格を免除、
+    // 表外訓の 側(そば)は連文節で減点する(ユーザ報告 2608)。
+    func testRegressionRealLMShikinaSobaPrefersShikinaSoba() throws {
+        try prepareRealLMDictionary()
+
+        let shikinaSoba = converter.multiClauseCandidates(for: "しきなそば", systemCandidateMode: .surface)
+        XCTAssertEqual(shikinaSoba.first, "識名そば", "list=\(shikinaSoba)")
+        let shikina = converter.candidates(for: "しきな", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(shikina.first, "識名", "list=\(shikina)")
+    }
+
+    // 形容動詞語幹の な は従来どおり通ること(便利491/有名422/静か425 は閾値2000より安い)。
+    func testRegressionRealLMNaAdjectiveStemsStillConnect() throws {
+        try prepareRealLMDictionary()
+
+        for (reading, expected) in [("べんりなもの", "便利な"), ("ゆうめいなひと", "有名な"),
+                                    ("しずかなへや", "静かな")] {
+            let list = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(list.first?.hasPrefix(expected) ?? false, "\(reading) list=\(list)")
+        }
+    }
+
+    // そば: 側 の unigram(4280)は主読み がわ の統計に支配されており、短span床(wc5755)を
+    // 通しても かな そば(5965)に勝って 側を食べる を作っていた(ユーザ報告 2608)。
+    func testRegressionRealLMSobaPrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        let taberu = converter.multiClauseCandidates(for: "そばをたべる", systemCandidateMode: .surface)
+        XCTAssertEqual(taberu.first, "そばを食べる", "list=\(taberu)")
+        XCTAssertTrue(taberu.contains("蕎麦を食べる"), "list=\(taberu)")
+        let oku = converter.multiClauseCandidates(for: "そばにおく", systemCandidateMode: .surface)
+        XCTAssertEqual(oku.first, "そばに置く", "list=\(oku)")
+    }
+
     // きゅうかんび: {休館日, 休刊日, 休肝日} だった。休肝日 を2番目に(ユーザ指定 2606)。
     func testRegressionRealLMKyukanbiOrdering() throws {
         try prepareRealLMDictionary()

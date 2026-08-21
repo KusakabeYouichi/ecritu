@@ -1193,6 +1193,11 @@ extension KanaKanjiConverter {
                 Self.multiClauseBOSPenalizedParticles.contains(surface) {
                 penalty += Self.multiClauseBOSParticlePenalty
             }
+            // 表外訓はかな正書が実勢(定数コメント参照)。連文節でだけ漢字表層を減点する。
+            if surface != reading, !isCurated,
+                Self.multiClauseKanaOrthodoxReadings.contains(reading) {
+                penalty += Self.multiClauseKanaOrthodoxKanjiPenalty
+            }
             // カタカナ強調/交ぜ書きモードのノード別ペナルティ(suppress=100000/demote=6000)
             penalty += scriptVariantPenalty
             return base + penalty
@@ -1325,6 +1330,27 @@ extension KanaKanjiConverter {
                         prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
                         isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
                     ) - preferredInflectionBonus + nodeTanContractionPenalty
+                    // 連用形+に(目的)は移動動詞が続くときの用法。文末でも格助詞直後の活用割引
+                    // (5000)が効くと 千島を裂きに が 千島を先に(を→先4557+先→に532)を
+                    // 89 差で押し切るため、文末に限り割引を取り消して素の OOV 値に戻す。
+                    if node.end == n, renyouNiNodeKeys.contains(nodeKeySV),
+                        Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
+                        cost += Self.multiClauseInflectionDerivedOOVCost
+                            - Self.multiClauseInflectionAfterParticleCost
+                    }
+                    // 名詞直後の裸のかな「な」は形容動詞語幹にしか付かない(定数コメント参照)。
+                    // ただし直後が の/ん(なので/なのは/なのに/なんです)は断定の助動詞 な
+                    // (だ の連体形)で全名詞に付くため対象外 ─ 除外しないと
+                    // ひらがななのは→平仮名夏乃波 のように名前へ流れる。
+                    if node.surface == "な", node.reading == "な",
+                        !(node.end < n && (chars[node.end] == "の" || chars[node.end] == "ん")),
+                        !prevNode.isInflectionDerived,
+                        !prevNode.isDictionaryFormPredicate,
+                        !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
+                        (bigramCosts[prevNode.surface + "\tな"] ?? Int.max)
+                            > Self.multiClauseNaAdjectiveBigramThreshold {
+                        cost += Self.multiClauseNaAfterNonNaAdjectivePenalty
+                    }
                     // 入力末尾の裸の接続助詞「し」は述語直後にしか立てない(定数コメント参照)。
                     // 文中の し はサ変の連用形(勉強し+まくり)なので対象外にする。
                     if node.end == n, node.reading == "し", node.surface == "し",
