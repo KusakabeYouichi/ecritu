@@ -901,6 +901,9 @@ final class KeyboardViewController: UIInputViewController {
     // 値はクラスポインタ→件数。名前の解決(String 生成)は列挙が終わってから行う —
     // malloc ゾーンを列挙中のコールバック内で余計な確保をしないため。
     static var diagnosticsMallocClassCounts: [[UInt: Int]] = []
+    // メモリ内訳の採取間隔。連続警告のたびに全ブロックを列挙すると main を塞ぐ。
+    static var lastMemoryCensusAt: CFAbsoluteTime = 0
+    static let memoryCensusMinimumInterval: CFAbsoluteTime = 10
     // 登録済み Objective-C クラスの「ポインタ→名前」。任意のメモリの先頭ワードを
     // class_getName に渡すのは危険(オブジェクトでなければクラッシュする)なので、
     // この表に在るポインタだけ名前を引く。Swift のクラスも Apple 環境では登録される。
@@ -991,11 +994,38 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
         diagnosticsState.memoryWarningCountThisSession += 1
-        logLiveControllerCensus(trigger: "memoryWarning")
+        // attach 待ちの5秒間は診断を丸ごと飛ばす(2603)。実測(00:41 の attach 失敗):
+        // 起動直後のインスタンスが viewWillAppear を待っている最中にメモリ警告を2回受け、
+        // センサス(alive=12 の走査)+ census2(malloc 全ブロック列挙、実測113ms)を
+        // 2往復ぶん main スレッドで実行していた。refreshKeyboardStateAsync が waitMs=2478 まで
+        // 押し出され、viewDidLoad から5秒以内に viewWillAppear が来ず純正へ落ちた。
+        // 診断は原因を測るためのものなので、それ自体が原因になっては本末転倒。
+        // 解放(キャッシュ/アリーナ返却)は下でそのまま行う。
+        // 警告は数百msの間に連続で届くことがある(実測: 200ms 内に6回)。そのたびに
+        // 全ブロック列挙をやり直すと main を塞ぐだけで新しい情報も出ないので間隔を置く。
+        let now = CFAbsoluteTimeGetCurrent()
+        let isCensusThrottled = now - Self.lastMemoryCensusAt < Self.memoryCensusMinimumInterval
+        let isAwaitingAttach = keyboardAttachWatchdogWorkItem != nil || isCensusThrottled
+        if !isAwaitingAttach {
+            Self.lastMemoryCensusAt = now
+        }
+        if isAwaitingAttach {
+            appendKeyboardDiagnosticsLog(
+                "メモリ内訳の採取をスキップ"
+                    + " reason=\(keyboardAttachWatchdogWorkItem != nil ? "awaitingAttach" : "throttled")"
+                    + " footprintMB=\(diagnosticsFootprintMBText())",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        } else {
+            logLiveControllerCensus(trigger: "memoryWarning")
+        }
         // footprint 高止まり(安静時51MB級)の正体切り分け: malloc ヒープの実使用量と
         // 自前キャッシュの件数を記録する。mallocUsed が小さいのに footprint が大きければ
         // ヒープ外(描画層/IOSurface/圧縮メモリ 等)、大きければ自前かライブラリの蓄積。
-        do {
+        if !isAwaitingAttach {
             var stats = malloc_statistics_t()
             malloc_zone_statistics(nil, &stats)
             let usedMB = Double(stats.size_in_use) / 1_048_576
