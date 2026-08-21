@@ -127,65 +127,6 @@ extension KeyboardViewController {
         }
     }
 
-    func portraitHeightBounds(for profile: PortraitHeightProfile) -> ClosedRange<CGFloat> {
-        switch profile {
-        case .kanaThreeByThree:
-            return Self.minimumKanaThreeByThreeHeight...Self.maximumKanaThreeByThreeHeight
-        case .compactGrid:
-            return Self.minimumCompactGridHeight...Self.maximumCompactGridHeight
-        case .compactActionRow:
-            return Self.minimumCompactActionRowHeight...Self.maximumCompactActionRowHeight
-        case .kanaFiveByTwo:
-            return Self.minimumKanaFiveByTwoHeight...Self.maximumKanaFiveByTwoHeight
-        case .emoji:
-            return Self.minimumEmojiHeight...Self.maximumEmojiHeight
-        case .formattedNumber:
-            return Self.minimumFormattedNumberHeight...Self.maximumFormattedNumberHeight
-        }
-    }
-
-    func landscapeHeightBounds(for profile: PortraitHeightProfile) -> ClosedRange<CGFloat> {
-        switch profile {
-        case .kanaThreeByThree:
-            return 162...194
-        case .compactGrid:
-            if shouldUseKanaLandscapeHeightForCompactGrid() {
-                return 162...194
-            }
-
-            return 172...204
-        case .compactActionRow:
-            return 162...194
-        case .kanaFiveByTwo:
-            return 162...194
-        case .emoji:
-            return 170...204
-        case .formattedNumber:
-            return 200...260
-        }
-    }
-
-    func baseLandscapeKeyboardHeight(for profile: PortraitHeightProfile) -> CGFloat {
-        switch profile {
-        case .kanaThreeByThree:
-            return 176
-        case .compactGrid:
-            if shouldUseKanaLandscapeHeightForCompactGrid() {
-                return 176
-            }
-
-            return 186
-        case .compactActionRow:
-            return 176
-        case .kanaFiveByTwo:
-            return 176
-        case .emoji:
-            return 188
-        case .formattedNumber:
-            return 230
-        }
-    }
-
     func shouldUseKanaLandscapeHeightForCompactGrid() -> Bool {
         if currentInputMode == .number {
             return true
@@ -196,112 +137,6 @@ extension KeyboardViewController {
         }
 
         return false
-    }
-
-    func portraitHeightFineTuning(for profile: PortraitHeightProfile) -> CGFloat {
-        switch profile {
-        case .kanaThreeByThree:
-            // 3x3+わは独立補正で高さを合わせる。
-            return 46
-        case .compactGrid:
-            // 数字/ラテンフリック系も3x3+わと同一高さに揃える。
-            return 46
-        case .compactActionRow:
-            // compactActionRowはベースが4pt低い分だけ加算して揃える。
-            return 50
-        case .kanaFiveByTwo:
-            // 5x2(上段数字+かな2段+下段アクション)は実質4段なのでcompactActionRowと同等に合わせる。
-            return 50
-        case .emoji:
-            // 絵文字/記号入力もテキスト系モードと同等の見た目高さに揃える。
-            return 46
-        case .formattedNumber:
-            return 46
-        }
-    }
-
-    func candidateHeaderHeightCompensation(
-        for profile: PortraitHeightProfile,
-        using configuration: RenderConfiguration? = nil
-    ) -> CGFloat {
-        guard hasExpandedHeaderForHeight(using: configuration) else {
-            return 0
-        }
-
-        let headerDelta = Self.candidateHeaderExpandedHeight - Self.candidateHeaderCollapsedHeight
-
-        switch profile {
-        case .kanaThreeByThree:
-            return headerDelta
-        case .compactGrid:
-            return headerDelta
-        case .compactActionRow:
-            return headerDelta
-        case .kanaFiveByTwo:
-            return headerDelta
-        case .emoji:
-            return headerDelta
-        case .formattedNumber:
-            return headerDelta
-        }
-    }
-
-    func basePortraitKeyboardHeight(
-        for profile: PortraitHeightProfile,
-        using configuration: RenderConfiguration? = nil
-    ) -> CGFloat {
-        let headerHeight = hasExpandedHeaderForHeight(using: configuration)
-            ? Self.candidateHeaderExpandedHeight
-            : Self.candidateHeaderCollapsedHeight
-        let rowSpacing = Self.keyboardRowSpacing
-
-        switch profile {
-        case .kanaThreeByThree:
-            // Header + 4 main rows + internal row spacing + outer vertical padding.
-            return headerHeight
-                + rowSpacing
-                + Self.mainKeyRowHeight * 4
-                + rowSpacing * 3
-                + Self.keyboardVerticalPadding
-        case .compactGrid:
-            // Header + 4 main rows + internal row spacing + outer vertical padding.
-            return headerHeight
-                + rowSpacing
-                + Self.mainKeyRowHeight * 4
-                + rowSpacing * 3
-                + Self.keyboardVerticalPadding
-        case .compactActionRow:
-            // Header + 3 main rows + action row + internal row spacing + outer vertical padding.
-            return headerHeight
-                + rowSpacing
-                + Self.mainKeyRowHeight * 3
-                + Self.actionRowHeight
-                + rowSpacing * 3
-                + Self.keyboardVerticalPadding
-        case .kanaFiveByTwo:
-            // Header + top number row + 2 kana rows + action row + internal row spacing + padding.
-            return headerHeight
-                + rowSpacing
-                + Self.mainKeyRowHeight * 3
-                + Self.actionRowHeight
-                + rowSpacing * 3
-                + Self.keyboardVerticalPadding
-        case .emoji:
-            // 絵文字/記号入力もテキスト系と同じ基準高さに揃える。
-            return headerHeight
-                + rowSpacing
-                + Self.mainKeyRowHeight * 4
-                + rowSpacing * 3
-                + Self.keyboardVerticalPadding
-        case .formattedNumber:
-            // 単位ドラム/カレンダーに縦の余裕を持たせるため、テキスト系より高い基準にする。
-            return headerHeight
-                + rowSpacing
-                + Self.mainKeyRowHeight * 4
-                + rowSpacing * 3
-                + Self.keyboardVerticalPadding
-                + 90
-        }
     }
 
     func effectivePortraitBottomInset(for shorterScreenEdge: CGFloat) -> CGFloat {
@@ -345,34 +180,17 @@ extension KeyboardViewController {
             return false
         }()
 
-        if isLandscapeOrientation {
-            let profile = portraitHeightProfile()
-            let baseLandscapeHeight = baseLandscapeKeyboardHeight(for: profile)
-            let scale = max(0.9, min(shorterScreenEdge / Self.baselineLandscapeScreenHeight, 1.08))
-            let scaledLandscapeHeight = round(baseLandscapeHeight * scale)
-            let bounds = landscapeHeightBounds(for: profile)
-            return min(max(scaledLandscapeHeight, bounds.lowerBound), bounds.upperBound)
-        }
-
-        let profile = portraitHeightProfile()
-        let basePortraitHeight = basePortraitKeyboardHeight(for: profile, using: configuration)
-        let widthScale = max(0.92, min(shorterScreenEdge / Self.baselinePortraitScreenWidth, 1.08))
-        let scaledPortraitKeyboardHeight = round(basePortraitHeight * widthScale)
-        let systemInset = effectivePortraitBottomInset(for: shorterScreenEdge)
-        let headerCompensation = candidateHeaderHeightCompensation(
-            for: profile,
-            using: configuration
-        )
-        let adjustedPortraitKeyboardHeight = scaledPortraitKeyboardHeight
-            - systemInset
-            - Self.portraitSystemAccessoryOffset
-            + portraitHeightFineTuning(for: profile)
-            - headerCompensation
-        let bounds = portraitHeightBounds(for: profile)
-
-        return min(
-            max(adjustedPortraitKeyboardHeight, bounds.lowerBound),
-            bounds.upperBound
+        // 実際の算出は KeyboardLayoutMetrics.preferredHeight(純粋関数)に委譲する。
+        // ここは環境値を集めるだけ。横組みにするかの判定もビュー側と同じ metrics が持つ。
+        return layoutMetrics.preferredHeight(
+            KeyboardLayoutMetrics.HeightInputs(
+                profile: portraitHeightProfile(),
+                isLandscapeOrientation: isLandscapeOrientation,
+                shorterScreenEdge: shorterScreenEdge,
+                hasExpandedHeader: hasExpandedHeaderForHeight(using: configuration),
+                portraitBottomInset: effectivePortraitBottomInset(for: shorterScreenEdge),
+                usesKanaLandscapeHeightForCompactGrid: shouldUseKanaLandscapeHeightForCompactGrid()
+            )
         )
     }
 

@@ -377,7 +377,7 @@ extension KeyboardViewController {
     }
 
     func makeRootView(from configuration: RenderConfiguration) -> KeyboardRootView {
-        return KeyboardRootView(
+        var rootView = KeyboardRootView(
             onTextInput: { [weak self] text in
                 self?.handleTextInput(text)
             },
@@ -521,5 +521,8 @@ extension KeyboardViewController {
             initialSpaceToastText: "écritu",
             initialInputMode: preferredInitialInputMode()
         )
+        // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)。引数順に依存しないよう生成後に渡す。
+        rootView.layoutMetrics = layoutMetrics
+        return rootView
     }
 }
