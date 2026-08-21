@@ -278,18 +278,26 @@ extension KeyboardViewController {
             // ゾンビ生存確認 +120s/+300s が発火しても hosting=true のまま23分滞留)。
             // 不在は「誰もオーナーを主張していない」状態で、表示中なら viewWillAppear が
             // 必ず主張するので、不在かつ observer 未登録なら表示中ではないと判断できる。
-            let hasNoRecordedOwner = (sharedDefaults?.string(
-                forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken
-            )?.isEmpty ?? true)
+            // 「トークン不在なら解放してよい」は危険だった(2604で撤回)。表示中の A が
+            // 投機生成の B に一瞬オーナーを奪われ、B が破棄されてトークンを消すと、
+            // 画面に出たままの A が解放対象になってしまう(=表示中のキーボードを壊す)。
+            // 代わりに「他に生きて表示中のインスタンスが実在するか」を直接見る。
+            // これなら自分が唯一の表示インスタンスのときは絶対に解放しない。
+            let hasOtherActiveController = KeyboardViewController.liveControllerCensus.allObjects
+                .contains { other in
+                    other !== self
+                        && other.lostActiveOwnershipAt == 0
+                        && other.isObservingSettingsDidChange
+                }
             guard !isObservingSettingsDidChange,
-                isConfirmedNonOwnerSession() || hasNoRecordedOwner else {
+                isConfirmedNonOwnerSession() || hasOtherActiveController else {
                 // 弾いた理由を残す。ログに「ゾンビ生存確認」だけが並んで解放が来ないとき、
                 // どちらのゲートで止まったのかが分からず調査が遠回りになった(2601)。
                 appendKeyboardDiagnosticsLog(
                     "ゾンビ解放を見送り reason=\(reason)"
                         + " observing=\(isObservingSettingsDidChange)"
                         + " confirmedNonOwner=\(isConfirmedNonOwnerSession())"
-                        + " noRecordedOwner=\(hasNoRecordedOwner)",
+                        + " otherActive=\(hasOtherActiveController)",
                     critical: true,
                     file: #fileID,
                     line: #line,
