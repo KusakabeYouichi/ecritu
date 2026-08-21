@@ -926,6 +926,37 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
     }
 
+    // かんしては: 基底 かんする の順は正しい(関0/冠1/關2/姦3/箝4/緘5)のに、て形の派生で
+    // {冠しては, 關しては, 関しては, …} と崩れていた。基底に seed を置いても派生には
+    // 伝わらないので活用形側にも置く。旧字体の關と別語の姦は末尾へ(ユーザー指定 2606)。
+    // じかせんが: 耳下腺 は wc11060(収穫底値超え)で LM 未収録のため連文節で重く扱われ、
+    // 時(3807)+河川(5321)+が の分割に負けていた。seed 掲載で収穫底値の降格を免除する。
+    func testRegressionRealLMKanshiteAndJikasen() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let expectedOrder = ["関しては", "冠しては", "箝しては", "緘しては", "關しては", "姦しては"]
+        let kanshiteha = converter.candidates(for: "かんしては", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kanshiteha.prefix(6)), expectedOrder, "list=\(kanshiteha)")
+        XCTAssertEqual(kanshiteha.last, "かんしては", "かなは末尾 list=\(kanshiteha)")
+        // 基底と て形も同じ並び
+        XCTAssertEqual(
+            Array(converter.candidates(for: "かんする", limit: 6, systemCandidateMode: .surface).prefix(2)),
+            ["関する", "冠する"]
+        )
+        XCTAssertEqual(
+            Array(converter.candidates(for: "かんして", limit: 6, systemCandidateMode: .surface).prefix(2)),
+            ["関して", "冠して"]
+        )
+
+        XCTAssertEqual(
+            converter.candidates(for: "じかせんが", limit: 6, systemCandidateMode: .surface).first,
+            "耳下腺が"
+        )
+        let jikasengaMulti = converter.multiClauseCandidates(for: "じかせんが", systemCandidateMode: .surface)
+        XCTAssertEqual(jikasengaMulti.first, "耳下腺が", "multi=\(Array(jikasengaMulti.prefix(4)))")
+    }
+
     // はなしか: {噺家, 咄家, はなしか, 話か} だった。話か を先頭に、かな は末尾へ
     // (ユーザ指定 2559)。
     func testRegressionRealLMHanashikaPrefersHanashika() throws {
