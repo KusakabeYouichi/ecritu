@@ -75,7 +75,9 @@ extension KanaKanjiConverter {
         "せき": ["席", "隻"],
         // 万円(金額)。直前が数字のとき 万円 を先頭へ(5確定→まんえん→万円)。
         // 何万円/数万円 は大数位(まん=万)+えん の複合で既に対応済み
-        "まんえん": ["万円"]
+        "まんえん": ["万円"],
+        // 万石(石高)。62確定→まんごく→62万石(仙台六十二万石 等。ユーザー文脈 2613)
+        "まんごく": ["万石"]
     ]
 
     static let numericCounterAllowedSuffixReadingsByPrefixReading: [String: Set<String>] = [
