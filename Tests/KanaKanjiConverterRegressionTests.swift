@@ -6672,6 +6672,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // 回帰: かこく(助数詞 か国/ヶ国)は数字直後で か国→箇国→カ国… の順(マップ順)に前置。カコク抑制。
+    // 尺貫法の体積単位: 数字文脈で 合/勺/升/斗/石 が出ること(ユーザ指摘 2612)。
+    // 合 と 勺 が欠落していた(ごう=[号]のみ/しゃく=[尺]のみ)。升/斗/石(連濁ごく含む)は
+    // 既存の digit 表でカバー済みなことも合わせて固定する。
+    func testRegressionDigitContextVolumeUnitCounters() {
+        func boosted(_ reading: String) -> [String] {
+            KanaKanjiConverter.digitContextCounterBoostedCandidates([], reading: reading, precedingCharacter: "2")
+        }
+        XCTAssertTrue(boosted("ごう").contains("合"), "\(boosted("ごう"))")
+        XCTAssertEqual(boosted("ごう").first, "号", "号の先頭は維持 \(boosted("ごう"))")
+        XCTAssertTrue(boosted("しゃく").contains("勺"), "\(boosted("しゃく"))")
+        XCTAssertEqual(boosted("しゃく").first, "尺", "尺の先頭は維持 \(boosted("しゃく"))")
+        XCTAssertTrue(boosted("しょう").contains("升"), "\(boosted("しょう"))")
+        XCTAssertTrue(boosted("と").contains("斗"), "\(boosted("と"))")
+        XCTAssertTrue(boosted("こく").contains("石"), "\(boosted("こく"))")
+        XCTAssertTrue(boosted("ごく").contains("石"), "連濁 \(boosted("ごく"))")
+        // 勺 は連濁しない: じゃく は 尺 のみ
+        XCTAssertFalse(boosted("じゃく").contains("勺"), "\(boosted("じゃく"))")
+    }
+
     func testRegressionRealLMKakokuCounter() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["かこく": ["カコク"]])
