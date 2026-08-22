@@ -1351,6 +1351,15 @@ extension KanaKanjiConverter {
                             > Self.multiClauseNaAdjectiveBigramThreshold {
                         cost += Self.multiClauseNaAfterNonNaAdjectivePenalty
                     }
+                    // 終端の単独母音読みの漢字ノードは、直前ノード読み末尾と同母音なら
+                    // 引き伸ばし表記の乗っ取り(いいねえ→いいね画。定数コメント参照)。
+                    if node.end == n, node.surface != node.reading,
+                        node.reading.count == 1,
+                        let nodeVowel = node.reading.first.flatMap({ Self.multiClauseVowelByKana[$0] }),
+                        let prevLastKana = prevNode.reading.last,
+                        Self.multiClauseVowelByKana[prevLastKana] == nodeVowel {
+                        cost += Self.multiClauseProlongedVowelKanjiPenalty
+                    }
                     // 入力末尾の裸の接続助詞「し」は述語直後にしか立てない(定数コメント参照)。
                     // 文中の し はサ変の連用形(勉強し+まくり)なので対象外にする。
                     if node.end == n, node.reading == "し", node.surface == "し",

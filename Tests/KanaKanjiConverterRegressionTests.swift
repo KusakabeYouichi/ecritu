@@ -1089,6 +1089,48 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(oku.first, "そばに置く", "list=\(oku)")
     }
 
+    // いいねえ: 連文節が終助詞の引き伸ばし え を 画(いいね画)に漢字化して先頭を
+    // 乗っ取っていた。終端の単独母音読み漢字ノードは直前ノード読み末尾と同母音なら
+    // 引き伸ばし表記としてペナルティ(ユーザ報告 2614)。
+    func testRegressionRealLMIineePrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        for reading in ["いいねえ", "いいなあ"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, reading, "multi=\(multi) single=\(single)")
+        }
+        // 異母音の正当な単漢字合成(この+絵 等の え)は巻き添えにしない
+        let konoe = converter.candidates(for: "このえ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(konoe.first, "近衛", "list=\(konoe)")
+    }
+
+    // うちやすさ: 補助形容詞の さ名詞化(やすさ/にくさ)が派生語尾に無く、
+    // 打ちやすさ が生成されなかった(やすい は在るのに)。ユーザ報告 2614。
+    func testRegressionRealLMYasusaNominalization() throws {
+        try prepareRealLMDictionary()
+
+        let uchiyasusa = converter.candidates(for: "うちやすさ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(uchiyasusa.first, "打ちやすさ", "list=\(uchiyasusa)")
+        let mienikusa = converter.candidates(for: "みえにくさ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(mienikusa.first, "見えにくさ", "list=\(mienikusa)")
+        let tabeyasusa = converter.candidates(for: "たべやすさ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(tabeyasusa.first, "食べやすさ", "list=\(tabeyasusa)")
+    }
+
+    // ゆうせんで: 関西弁縮約(する→せんで)が文語サ変(有する/幽する)と組んで
+    // 有せんで/幽せんで が上位を占めていた。漢語一字サ変は縮約対象から除外し、
+    // 優先(wc8457=同音最悪)は seed の基底順宣言で救済(ユーザ報告 2614)。
+    func testRegressionRealLMYuusendePrefersYuusen() throws {
+        try prepareRealLMDictionary()
+
+        let yuusende = converter.candidates(for: "ゆうせんで", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(yuusende.prefix(3)), ["ゆうせんで", "優先で", "有線で"], "list=\(yuusende)")
+        XCTAssertFalse(yuusende.contains("有せんで"), "list=\(yuusende)")
+        // ※語幹2字以上の正例は無し: せん縮約は辞書単独エントリのサ変(ほぼ漢語一字+する)
+        // にのみ効く仕組みで、掃除する 等の複合サ変には元から生成されない(ゲートは削るだけ)
+    }
+
     // かくてい: 基底辞書順が 画定>劃定>確定 と実頻度の逆で、単文節は LM優位昇格(2545)が
     // 救うが活用派生(しちゃう 等)は基底順をコピーして 画定しちゃう が先頭だった。
     // seed の基底順宣言で全派生を是正(ユーザ報告 2613)。

@@ -882,6 +882,27 @@ extension KanaKanjiConverter {
     static let multiClauseKanaOrthodoxReadings: Set<String> = ["そば"]
     static let multiClauseKanaOrthodoxKanjiPenalty = 1500
 
+    // かなの母音(引き伸ばし判定用)。ねえ=ね(e)+え、なあ=な(a)+あ のような終助詞の
+    // 引き伸ばしで、余った母音1字が同母音のまま漢字化(え→画/絵)して
+    // いいねえ→いいね画 を作るのを防ぐ。この絵(の=o+え=e)のような異母音の正当な
+    // 単漢字は対象外(ユーザー報告 2614)。
+    static let multiClauseVowelByKana: [Character: Character] = {
+        var map: [Character: Character] = [:]
+        for (vowel, row) in [
+            ("あ", "あぁかがさざただなはばぱまやゃらわゎ"),
+            ("い", "いぃきぎしじちぢにひびぴみり"),
+            ("う", "うぅゔくぐすずつづっぬふぶぷむゆゅる"),
+            ("え", "えぇけげせぜてでねへべぺめれ"),
+            ("お", "おぉこごそぞとどのほぼぽもよょろを")
+        ] {
+            for kana in row {
+                map[kana] = Character(vowel)
+            }
+        }
+        return map
+    }()
+    static let multiClauseProlongedVowelKanjiPenalty = 6000
+
     static let multiClauseForbiddenPenaltyCost = 100000
     static let multiClauseForbiddenInitials: Set<Character> = [
         "ん", "ー", "っ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
