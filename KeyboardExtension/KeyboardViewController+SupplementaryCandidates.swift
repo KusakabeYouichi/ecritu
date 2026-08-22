@@ -326,19 +326,14 @@ extension KeyboardViewController {
                 return
             }
 
-            let authorizationStatus = CNContactStore.authorizationStatus(for: .contacts)
-
-            switch authorizationStatus {
-            case .authorized, .limited:
-                self.loadContactCandidates(displayMode: currentDisplayMode)
-            case .notDetermined:
-                // Avoid permission prompts from extension process; app-side permission flow should handle this.
-                self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
-            case .denied, .restricted:
-                self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
-            @unknown default:
-                self.clearContactCandidatesIfNeeded(refreshKeyboardState: true)
-            }
+            // ★拡張プロセスからの Contacts 接触を全面停止(2624)。レキシコン停止(2622)後も
+            // per-process-limit 即死が再発し、直前指紋はやはり Contacts 初期化(AB通知登録の
+            // 0.45秒後に死)だった。CNContactStore.authorizationStatus / enumerateContacts とも
+            // Apple フレームワーク内の巨大スパイクを誘発しうるため、拡張では一切呼ばない。
+            // 連絡先候補はコンテナーアプリが書く共有キャッシュ(cachedContactCandidates…)専用。
+            // キャッシュが空のときは候補なしで妥協する(App を開けば更新される)。
+            self.isRefreshingContactCandidates = false
+            self.contactCandidatesLastRefreshAt = Date()
         }
     }
 
