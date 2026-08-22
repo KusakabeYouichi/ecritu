@@ -457,6 +457,10 @@ extension KeyboardViewController {
                 // (LM/word_costs/JSON辞書系。欧文辞書本体は mmap でfootprint非寄与)を落として
                 // 余白を作る。sqlite は保持されるので変換は劣化せず、キャッシュは次の利用時に
                 // 遅延再構築される。
+                // MEMFORENSICS(時限計測 2611): 絵文字ピッカー構築の高水位帰属
+                if mode == .emoji {
+                    MemoryForensics.noteOperation("絵文字切替")
+                }
                 if mode == .emoji,
                     let footprintMB = self.currentFootprintMB(),
                     footprintMB >= 50 {
