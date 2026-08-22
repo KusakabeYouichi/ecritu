@@ -594,6 +594,17 @@ final class KanaKanjiConverter {
                 to: &scores
             )
         }
+        // 単漢字+ない断片が辞書語を跨ぐ構造の是正(定義コメント参照。2618)。
+        // 追加/学習語彙がある読みはユーザー矯正済みなので触らない(2545と同条件)
+        if context.userCandidates.isEmpty, context.learnedCandidates.isEmpty {
+            applyDictOverNaiFragmentBoost(
+                for: context.reading,
+                systemCandidates: suppressed.isEmpty
+                    ? context.systemCandidates
+                    : context.systemCandidates.filter { !suppressed.contains($0) },
+                to: &scores
+            )
+        }
         applySameReadingScriptPreference(
             for: context.reading,
             systemCandidates: suppressed.isEmpty
