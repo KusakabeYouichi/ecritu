@@ -32,6 +32,13 @@ final class MemoryForensicsTests: XCTestCase {
         XCTAssertGreaterThan(liveMB ?? -1, 0.1, "line=\(line)")
     }
 
+    func testVMRegionSummaryProducesTags() {
+        let line = MemoryForensics.vmRegionSummaryByTag()
+        print("FORENSICS \(line)")
+        XCTAssertTrue(line.hasPrefix("vmTags["), "line=\(line)")
+        XCTAssertTrue(line.contains("malloc"), "line=\(line)")
+    }
+
     func testWatermarkLedgerEmitsOnGrowth() {
         var captured: [String] = []
         MemoryForensics.logSink = { captured.append($0) }
