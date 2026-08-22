@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- 日本語に存在しない拗音表記を含む読みの検査結果(écritu には組み込まない資料)。
+	     検出器: tools/audit_plist_readings.py の INVALID_YOON_SEQUENCES と同じ表
+	     (いゃ/いゅ/いょ/てぅ/ぶゅ/ぷゅ/むゅ/るゃ/るゅ)。これらの読みはフリックで
+	     打鍵できず候補に出ない。行は元ファイルとの重複で、修正は元ファイル側で行う。
+	     再生成: このヘッダの検査を再実行して上書き(2026-08-22 時点のスナップショット) -->
+
+	<!-- ■ vin.plist -->
+	<dict><key>phrase</key><string>Kvalitetno vino s kontroliranim podrijetlom</string><key>shortcut</key><string>くゔぁりててぅのゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ</string></dict>	<!-- 不正拗音: てぅ -->
+
+	<!-- ■ ryukyu.plist -->
+	<dict><key>phrase</key><string>いゃーくゎてぃーたーみーゆー</string><key>shortcut</key><string>いゃーくゎてぃーたーみーゆー</string></dict>	<!-- 不正拗音: いゃ -->
+	<dict><key>phrase</key><string>ダーナガイュ</string><key>shortcut</key><string>だーながいゅ</string></dict>	<!-- 不正拗音: いゅ -->
+</array>
+</plist>
