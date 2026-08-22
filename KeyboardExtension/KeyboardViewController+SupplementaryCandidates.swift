@@ -14,13 +14,16 @@ extension KeyboardViewController {
 
         hydrateSupplementaryLexiconCandidatesFromPersistentCacheIfNeeded()
 
-        // ★暫定キルスイッチ(2622): requestSupplementaryLexicon(iOSユーザ辞書+連絡先の
-        // レキシコン取得)の完了直後にメモリ警告→1秒未満で per-process-limit 即死する事象が
-        // 2026-08-22 に4連続(fp26〜30MBでの死=Apple フレームワーク内の巨大スパイク。
-        // contactsd も同日 per-process-limit 死しており、端末再起動でも再発)。
-        // 因果の最終確定と出血停止のため生取得を停止する。ユーザ辞書語は上の永続キャッシュ
-        // から供給が続く(新規登録分が届かないだけ)。事象が収まったら低頻度取得で復活を検討。
-        if true {
+        // レキシコン生取得は24時間に1回だけ(2623)。requestSupplementaryLexicon の完了直後に
+        // Apple フレームワーク内の巨大スパイクで per-process-limit 即死する事象が
+        // 2026-08-22 に5連続した(fp26〜30MBでの死。contactsd も同日 per-process-limit 死、
+        // 端末再起動でも再発)ため、一度は全面停止(2622)した上で低頻度取得に切り替えた。
+        // 仕様: 「ここ24時間以内に iOS のユーザ辞書へ追加した語は反映されない」(ユーザ合意)。
+        // タイムスタンプは取得の**前**に書く — 取得が原因で死んでも次の24時間は再試行せず、
+        // 死のループにならない(被害は最悪でも24時間に1回)。
+        let lexiconFetchStampKey = "supplementaryLexiconLastFetchAttemptAt"
+        let lastFetchAttempt = sharedDefaults?.double(forKey: lexiconFetchStampKey) ?? 0
+        if Date().timeIntervalSince1970 - lastFetchAttempt < 24 * 3600 {
             isRefreshingSupplementaryLexicon = false
             return
         }
@@ -37,6 +40,7 @@ extension KeyboardViewController {
         }
 
         isRefreshingSupplementaryLexicon = true
+        sharedDefaults?.set(Date().timeIntervalSince1970, forKey: lexiconFetchStampKey)
 
         requestSupplementaryLexicon { [weak self] lexicon in
             guard let self else {
