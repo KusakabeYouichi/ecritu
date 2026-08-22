@@ -20,8 +20,6 @@
 	<dict><key>phrase</key><string>寫眞</string><key>shortcut</key><string>しゃしん</string></dict>
 	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>
 	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
-	<dict><key>phrase</key><string>壘</string><key>shortcut</key><string>るい</string></dict>	<!-- 塁 の旧字体。字形が似て選び間違える -->
-	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
 
 	<!-- ■ 過剰な漢字化(かな書きが正書の語。副詞・接続詞・補助動詞など) -->
 	<dict><key>phrase</key><string>至って</string><key>shortcut</key><string>いたって</string></dict>

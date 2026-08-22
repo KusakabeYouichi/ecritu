@@ -5,7 +5,6 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
-	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形が似ており、Sudachiの収穫にも混入(wc10000)。候補に並ぶと選び間違えるため抑制 -->
 	<dict><key>phrase</key><string>立つ</string><key>shortcut</key><string>だつ</string></dict>	<!-- だつ→立つ系はSudachiが 目立つ/旅立つ 等の連濁内部読みを単独収穫したもの。活用基底に化けて だった→立った を作るため抑制(単独 だつ の正解は 脱/奪) -->
 	<dict><key>phrase</key><string>佇つ</string><key>shortcut</key><string>だつ</string></dict>
 	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>
@@ -101,7 +100,6 @@
 	<dict><key>phrase</key><string>湖紅</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>琥々</string><key>shortcut</key><string>ここ</string></dict>
 	<dict><key>phrase</key><string>瑚々</string><key>shortcut</key><string>ここ</string></dict>
-	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大睦(たいりく): 収穫底値(wc10000)のレア人名収穫。睦 自体の読みは むつみ/ぼく/まこと だけで 辞書に りく が無く、たい+りく の分解でも説明できない。人名で無理やりそう読ませている例が ないとは言えないが、大陸 と字形が似ていて選び間違えやすいので抑制する -->
 
 	<!-- ■ 姓グロブ: 長語の分断防止(短い姓が長語を割る。完全一致時は seed で再供給) -->
 	<dict><key>phrase</key><string>三谷</string><key>shortcut</key><string>みたに</string></dict>	<!-- みたに の姓グロブ(三谷/水谷 等)。3char単ノードが みたにある→三田にある 等の [地名][に][ある] locative 合成を preempt する。exactReadingOnlySeed で みたに 完全一致 時のみ供給(著名姓は残す)。せなかがわ/かたも と同じ分断対策 -->
@@ -173,12 +171,20 @@
 	<dict><key>phrase</key><string>危ぐ</string><key>shortcut</key><string>きぐ</string></dict>	<!-- 危ぐ(きぐ): 危惧 の交ぜ書き(惧 が常用漢字外だった頃の書き換え。2010年の改定で惧は常用漢字に入っており現行表記ではない)。word_cost が 危惧 と同値(6518)で候補上位に並ぶ -->
 	<dict><key>phrase</key><string>河う</string><key>shortcut</key><string>かわう</string></dict>	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が 無いため五段う動詞と推論され、河って/河ってきて を生成して 変わってきてる を逆転していた。 交ぜ書き判定はかな部分1文字を対象外(漢字+助詞と区別不能)なので構造的にすり抜ける。 クラス推論側は 2465 で塞いだが、交ぜ書きエントリ自体も残す価値が無いので抑制する -->
 
+	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
+	<dict><key>phrase</key><string>壘</string><key>shortcut</key><string>るい</string></dict>	<!-- 塁 の旧字体。字形が似て選び間違える -->
+	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
+	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南郷 の旧字体異体字収穫。見た目がほぼ同一で重複に見える -->
+	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- 会社 の旧字体(株式會社 等の合成にも混入していた) -->
+	<dict><key>phrase</key><string>來れる</string><key>shortcut</key><string>これる</string></dict>	<!-- 来れる の旧字体ら抜き形。活用派生(來れやすい 等)の温床でもある -->
+	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形類似で辞書収穫にも混入した誤表記 -->
+	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大陸 と字形類似のレア人名収穫。たいりく で出したい場面が無い -->
+
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
 	<dict><key>phrase</key><string>其麼</string><key>shortcut</key><string>そんな</string></dict>	<!-- 其麼(そんな): 白話文由来の当て字(什麼/怎麼 と同族)。読めないので候補に並ぶと困る(ユーザ指定)。かな そんな は wc4833/rank0 で基底が健在なので供給には影響しない。抑制だけ入れると そんなことないのに が候補ゼロになるため、keepKana の準体助詞クラスタ剥がしと同時に入れた(2584) -->
 	<dict><key>phrase</key><string>著る</string><key>shortcut</key><string>きる</string></dict>	<!-- 著る/衣る(きる): 着る の古語・異表記(著物)。派生(著て/衣てしまいました 等)にも波及するため基底で抑制 -->
 	<dict><key>phrase</key><string>衣る</string><key>shortcut</key><string>きる</string></dict>
 	<dict><key>phrase</key><string>厭きの</string><key>shortcut</key><string>あきの</string></dict>	<!-- 厭きの(あきの): 厭きる は現代では 飽きる が主。飽きの(飽きのこない)は残す -->
-	<dict><key>phrase</key><string>來れる</string><key>shortcut</key><string>これる</string></dict>	<!-- 來れる(これる): 旧字体の ら抜き可能形(wc9641=来れる より安く基底先頭)。活用派生(來れやすい/來れ 等)の温床。來 の人名(來島/來田 等)は別読みで無傷 -->
 	<dict><key>phrase</key><string>謂</string><key>shortcut</key><string>いい</string></dict>
 	<!-- ※ カタカナ強調のウマイ/ウマい(wc5415=旨いと同値で激安)。かな うまい を勝たせる -->
 	<!-- ※ カタカナ強調のカワイイ/交ぜ書きカワイい(Sudachi収穫)。かわいい のかな正書を勝たせる -->
@@ -216,13 +222,11 @@
 	<dict><key>phrase</key><string>熟睡</string><key>shortcut</key><string>うまい</string></dict>
 	<dict><key>phrase</key><string>右舞</string><key>shortcut</key><string>うまい</string></dict>
 	<dict><key>phrase</key><string>ゐる</string><key>shortcut</key><string>いる</string></dict>	<!-- ゐる(いる): 歴史的仮名遣いの居る。dict rank4 だが現代入力では雑音で、いるので→ ゐるので 等 活用派生でも先頭化する。脱活用伝播で ゐる系の派生も抑制される -->
-	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南鄕(なんごう): 南郷 の旧字体異体字収穫。見た目が同一で重複に見えるだけなので抑制 -->
 	<dict><key>phrase</key><string>酤う</string><key>shortcut</key><string>かう</string></dict>	<!-- 酤う/支う/交う: かう の古語・レア表記(酤う=酒を売る古語、支う=つっかえ棒の方言、交う=飛び交う等の複合専用)。買って/飼って の派生に混じり、勝って(かつ由来)を語幹上限の外へ押し出す(かってほしい→勝ってほしい欠落) -->
 	<dict><key>phrase</key><string>支う</string><key>shortcut</key><string>かう</string></dict>
 	<dict><key>phrase</key><string>交う</string><key>shortcut</key><string>かう</string></dict>
 	<!-- ※ リョウガ/リョウ: りょうが/りょう のカタカナ人名収穫(レア)。量が/凌駕 等の正規候補の前に並ぶ -->
 	<!-- ※ イく/イク: いく のカタカナ交ぜ書き・カタカナ表記(デキる/イタめる/ヤる 族)。godan-ku の活用クラス付きで収穫されており、イかなくて/イきます 等のジャンク派生を正規活用として作る -->
-	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- 會社: 会社 の旧字体(かぶしきかいしゃ→株式會社 等の合成に混入)。現代表記は 会社 -->
 	<dict><key>phrase</key><string>晨</string><key>shortcut</key><string>あした</string></dict>
 	<dict><key>phrase</key><string>忘る</string><key>shortcut</key><string>わすれる</string></dict>	<!-- 忘る(わすれる): 文語の「忘る」が inflection_classes で一段活用として登録されており、 語幹「忘」から 忘て/忘てる/忘た のような送り仮名を欠いた活用形を派生させていた (とりわすれてる→取り忘てる)。現代語は 忘れる(一段)のみなので基底ごと抑制する -->
 	<dict><key>phrase</key><string>速る</string><key>shortcut</key><string>はやる</string></dict>	<!-- 速る(はやる): 速い(はやい)の形容詞を動詞化した非標準表記。逸る/早る は実在だが 速る は標準では使わない。早る は温存 -->
