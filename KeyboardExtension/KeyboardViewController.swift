@@ -510,6 +510,14 @@ final class KeyboardViewController: UIInputViewController {
         let launchStartedAt = CFAbsoluteTimeGetCurrent()
         keyboardLaunchViewDidLoadAt = launchStartedAt
         startKeyboardDiagnosticsSession()
+        // MEMFORENSICS(時限計測 2611): 高水位台帳の出力先。剥がすときはこのブロックと
+        // KeyboardMemoryForensics.swift を削除(grep MEMFORENSICS)
+        MemoryForensics.logSink = { [weak self] line in
+            DispatchQueue.main.async {
+                self?.appendKeyboardDiagnosticsLog(line, critical: true, file: #fileID, line: #line, function: "MemoryForensics")
+            }
+        }
+        MemoryForensics.noteOperation("起動")
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
@@ -892,16 +900,23 @@ final class KeyboardViewController: UIInputViewController {
     // class_getName に渡すのは危険(オブジェクトでなければクラッシュする)なので、
     // この表に在るポインタだけ名前を引く。Swift のクラスも Apple 環境では登録される。
     static let diagnosticsClassNamesByPointer: [UInt: String] = {
-        var count: UInt32 = 0
-        guard let list = objc_copyClassList(&count) else {
-            return [:]
+        let declared = objc_getClassList(nil, 0)
+        guard declared > 0 else { return [:] }
+        // AnyClass 経由の要素アクセス(objc_copyClassList の list[i])は swift_dynamicCast を
+        // 挟み、NSObject 系メソッドを実装しない内部クラス(__NSGenericDeallocHandler 等)で
+        // forwarding abort する(2611でテスト実測)。生ポインタのまま受け取り、
+        // 名前取得はメッセージ送信しない class_getName(メタデータ直読み)だけに留める。
+        var raw = [UnsafeRawPointer?](repeating: nil, count: Int(declared))
+        let filled = raw.withUnsafeMutableBufferPointer { buffer -> Int32 in
+            guard let base = buffer.baseAddress else { return 0 }
+            return base.withMemoryRebound(to: AnyClass.self, capacity: buffer.count) { rebound in
+                objc_getClassList(AutoreleasingUnsafeMutablePointer(rebound), declared)
+            }
         }
-        defer { free(UnsafeMutableRawPointer(list)) }
-        var names = [UInt: String](minimumCapacity: Int(count))
-        for index in 0..<Int(count) {
-            let cls: AnyClass = list[index]
-            let pointer = UInt(bitPattern: unsafeBitCast(cls, to: UnsafeRawPointer.self))
-            names[pointer] = String(cString: class_getName(cls))
+        var names = [UInt: String](minimumCapacity: Int(filled))
+        for index in 0..<Int(min(filled, declared)) {
+            guard let pointer = raw[index] else { continue }
+            names[UInt(bitPattern: pointer)] = String(cString: class_getName(unsafeBitCast(pointer, to: AnyClass.self)))
         }
         return names
     }()
@@ -1037,6 +1052,14 @@ final class KeyboardViewController: UIInputViewController {
             )
             appendKeyboardDiagnosticsLog(
                 "メモリ内訳census3 \(Self.diagnosticsStaticCatalogBytesSummary())",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+            // MEMFORENSICS(時限計測 2611): sqlite/footprint内訳+ヒープ解剖(ページ占有×dirty)
+            appendKeyboardDiagnosticsLog(
+                "メモリ内訳census4 \(MemoryForensics.summaryLine()) | \(MemoryForensics.heapAnatomySummary())",
                 critical: true,
                 file: #fileID,
                 line: #line,

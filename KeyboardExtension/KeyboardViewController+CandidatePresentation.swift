@@ -224,6 +224,8 @@ extension KeyboardViewController {
                     single: singleForTrace,
                     mode: systemCandidateMode
                 )
+                // MEMFORENSICS(時限計測 2611): 変換がアリーナ高水位を育てたかの帰属
+                MemoryForensics.noteOperation("変換\(reading.count)字")
                 if !multiClause.isEmpty {
                     // 連文節の並び(最良+変種)を先頭にそのまま置き、単文節候補を後ろに
                     // 続ける(重複は単文節側から除去)。連文節が返せる読み(4文字以上)では
