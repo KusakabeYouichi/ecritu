@@ -6691,6 +6691,25 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(boosted("じゃく").contains("勺"), "\(boosted("じゃく"))")
     }
 
+    // 尺貫法×漢数字(一〜十)の複合44件を exactReadingOnly で補充(ユーザ指定 2613)。
+    // 完全一致時のみ末尾供給: 頻出語(じっと/護国 等)の先頭は変えない。
+    func testRegressionRealLMKanjiNumeralVolumeUnits() throws {
+        try prepareRealLMDictionary()
+
+        for (reading, compound) in [("さんごう", "三合"), ("いちごう", "一合"), ("ごしゃく", "五勺"),
+                                    ("にしょう", "二升"), ("さんと", "三斗"), ("さんごく", "三石"),
+                                    ("ごこく", "五石"), ("じっと", "十斗")] {
+            let list = converter.candidates(for: reading, limit: 30, systemCandidateMode: .surface)
+            XCTAssertTrue(list.contains(compound), "\(reading) list=\(list)")
+        }
+        // 頻出語の先頭は不変
+        XCTAssertEqual(converter.candidates(for: "じっと", limit: 4, systemCandidateMode: .surface).first, "じっと")
+        XCTAssertEqual(converter.candidates(for: "ごこく", limit: 4, systemCandidateMode: .surface).first, "護国")
+        // 万石: 数字直後の優先(62確定→まんごく→万石 が先頭群)
+        let mangoku = KanaKanjiConverter.digitContextCounterBoostedCandidates([], reading: "まんごく", precedingCharacter: "2")
+        XCTAssertTrue(mangoku.contains("万石"), "\(mangoku)")
+    }
+
     func testRegressionRealLMKakokuCounter() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["かこく": ["カコク"]])
