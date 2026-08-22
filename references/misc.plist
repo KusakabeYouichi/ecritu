@@ -335,5 +335,7 @@
 	<dict><key>phrase</key><string>だが</string><key>shortcut</key><string>だが</string></dict>
 	<dict><key>phrase</key><string>なのに</string><key>shortcut</key><string>なのに</string></dict>
 	<dict><key>phrase</key><string>なので</string><key>shortcut</key><string>なので</string></dict>
+	<dict><key>phrase</key><string>炊ける</string><key>shortcut</key><string>たける</string><key>pos</key><string>一段</string></dict>	<!-- ごはんがたける→ご飯が健 対策。人名 健(seed)が連文節で1ノード勝ちするため curated 供給(2618) -->
+	<dict><key>phrase</key><string>十割</string><key>shortcut</key><string>じゅうわり</string></dict>	<!-- 十割そば。辞書読みは とわり のみで、連文節が 中(じゅう)+割り を作る(2618) -->
 </array>
 </plist>
