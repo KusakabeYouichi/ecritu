@@ -14,6 +14,17 @@ extension KeyboardViewController {
 
         hydrateSupplementaryLexiconCandidatesFromPersistentCacheIfNeeded()
 
+        // ★暫定キルスイッチ(2622): requestSupplementaryLexicon(iOSユーザ辞書+連絡先の
+        // レキシコン取得)の完了直後にメモリ警告→1秒未満で per-process-limit 即死する事象が
+        // 2026-08-22 に4連続(fp26〜30MBでの死=Apple フレームワーク内の巨大スパイク。
+        // contactsd も同日 per-process-limit 死しており、端末再起動でも再発)。
+        // 因果の最終確定と出血停止のため生取得を停止する。ユーザ辞書語は上の永続キャッシュ
+        // から供給が続く(新規登録分が届かないだけ)。事象が収まったら低頻度取得で復活を検討。
+        if true {
+            isRefreshingSupplementaryLexicon = false
+            return
+        }
+
         if !force,
             isRefreshingSupplementaryLexicon {
             return
