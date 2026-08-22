@@ -489,6 +489,47 @@ extension KanaKanjiConverter {
         }
     }
 
+    // 「単漢字+ない」の素通り合成断片(件ない/券ない/千ない 等)が複数チャネルの累積で
+    // 読み全体の辞書語(県内 uni5537/圏内)を追い越す構造の是正(2618)。
+    // 断片は「辞書に無い 1漢字+ない」に限定 — 切ない/危ない は辞書掲載なので対象外、
+    // 濃くない 等の活用合成(語幹2字以上)も対象外。LM unigram 実在の辞書語だけを
+    // 断片群の直上へ持ち上げる(相対順は維持)。せんない の 詮ない(1699)のような
+    // 高スコアの正当語は跨がない(断片 top 基準の底上げのみ)。
+    func applyDictOverNaiFragmentBoost(
+        for reading: String,
+        systemCandidates: [String],
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 3, reading.hasSuffix("ない"),
+            !systemCandidates.isEmpty else {
+            return
+        }
+        let dictSet = Set(systemCandidates)
+        // 断片クラスタ: 辞書非掲載の「1文字(かな以外)+ない」
+        var fragmentTop = 0
+        for (candidate, score) in scores where candidate.count == 3 && candidate.hasSuffix("ない") {
+            guard !dictSet.contains(candidate),
+                let head = candidate.first,
+                !("ぁ"..."ん").contains(head), !("ァ"..."ヶ").contains(head) else {
+                continue
+            }
+            fragmentTop = max(fragmentTop, score)
+        }
+        guard fragmentTop > 0 else {
+            return
+        }
+        // LM unigram 実在の辞書語(読み全体が1語)を、断片群の直上へ。相対順維持のため
+        // 上位から降順の下駄を履かせる。既に断片より上の語(線内 2495 等)は触らない
+        let unigrams = store.wordLMUnigramCosts(for: systemCandidates)
+        let lifted = systemCandidates.filter { unigrams[$0] != nil && $0 != reading }
+        for (index, candidate) in lifted.enumerated() {
+            let target = fragmentTop + 40 + (lifted.count - index)
+            if scores[candidate, default: 0] < target {
+                scores[candidate] = target
+            }
+        }
+    }
+
     func applyAdjectiveSaBoost(
         for reading: String,
         inflectionDerivedCandidates: Set<String>,

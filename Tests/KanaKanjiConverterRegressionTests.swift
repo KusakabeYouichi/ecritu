@@ -1237,7 +1237,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         report("F:コールド新規x3", b)
     }
 
-    // いいねえ: 連文節が終助詞の引き伸ばし え を 画(いいね画)に漢字化して先頭を
+    // けんない: 単漢字+ない の素通り断片(件ない/券ない…24件)が複数チャネル累積で
+    // 辞書語(県内 rank0/uni5537、圏内)を追い越していた。せんない/とない は LM優位昇格
+    // (2545)が偶然救っていただけで、rank0 が LM 最良の読みでは断片が露出する構造。
+    // 「辞書非掲載の1漢字+ない」断片群の直上へ LM実在の辞書語を持ち上げる(ユーザ報告 2618)。
+    func testRegressionRealLMKennaiPrefersDictionaryWords() throws {
+        try prepareRealLMDictionary()
+
+        let kennai = converter.candidates(for: "けんない", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kennai.prefix(2)), ["県内", "圏内"], "list=\(kennai)")
+        let shanai = converter.candidates(for: "しゃない", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(shanai.prefix(3)), ["しゃない", "社内", "車内"], "list=\(shanai)")
+        let kannai = converter.candidates(for: "かんない", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kannai.first, "管内", "list=\(kannai)")
+        // 既存の救済経路は不変(かなエコー→線内/都内 の並び)
+        let sennai = converter.candidates(for: "せんない", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sennai.prefix(3)), ["せんない", "線内", "詮ない"], "list=\(sennai)")
+        // 正当な 1漢字+ない の辞書語は無傷
+        let setsunai = converter.candidates(for: "せつない", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(setsunai.first, "切ない", "list=\(setsunai)")
+    }
+
+    // いいねえ: 連文節が終助詞の引き伸ばし    // いいねえ: 連文節が終助詞の引き伸ばし え を 画(いいね画)に漢字化して先頭を
     // 乗っ取っていた。終端の単独母音読み漢字ノードは直前ノード読み末尾と同母音なら
     // 引き伸ばし表記としてペナルティ(ユーザ報告 2614)。
     func testRegressionRealLMIineePrefersKana() throws {
