@@ -207,6 +207,13 @@ extension KeyboardViewController {
             key: SharedDefaultsKeys.latinLayoutMode,
             fallback: LatinLayoutMode.azerty
         )
+        // MEMFORENSICS(時限計測 2624): 配列設定の化け(勝手な書き換わり/キー欠落)の監視。
+        // 剥がすときはこのブロックと KeyboardMemoryForensics.swift を削除
+        MemoryForensics.noteLayoutSettingsSnapshot(
+            "kana=\(sharedDefaults?.string(forKey: SharedDefaultsKeys.kanaLayoutMode) ?? "欠落")"
+                + " latin=\(sharedDefaults?.string(forKey: SharedDefaultsKeys.latinLayoutMode) ?? "欠落")"
+                + " number=\(sharedDefaults?.string(forKey: SharedDefaultsKeys.numberLayoutMode) ?? "欠落")"
+        )
         let accentPaletteRawValue = sharedStringValue(
             from: sharedDefaults,
             key: SharedDefaultsKeys.accentPalette,
