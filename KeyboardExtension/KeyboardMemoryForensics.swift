@@ -57,16 +57,14 @@ enum MemoryForensics {
             + " used=\(String(format: "%.1f", Double(stats.size_in_use) / 1_048_576))"
             + " fp=\(String(format: "%.1f", currentPhysFootprintMB() ?? -1))"
         logSink?(line)
-        // 解剖は警告時では間に合わない(実機で3回連続、警告→SIGKILL <1秒で census4 を
-        // 書けずに死亡)。高水位イベント=まだ元気なうちに撮る。ここは変換キュー内なので
-        // main は塞がない。60秒スロットルは heapAnatomySummary 内蔵のものを使う。
-        // ベースライン(起動直後)はまだ育っていないので撮らない。
+        // ★高水位時の自動解剖は停止(2626)。実機で「alloc が初めて48MBに達した高水位
+        // イベントの直後に警告→per-process-limit 即死」が4回一致した(17:00/20:17/20:38 他)。
+        // 解剖の釘の正体集計が objc_getClassList で全クラスを realize し、①数十MBの
+        // メモリスパイク ②Contacts 系クラスの実体化(distnoted の AB 登録=誤認の元)を
+        // 起こしていた疑いが濃厚 — 診断自体が死因になっては本末転倒(2603の教訓の再演)。
+        // 解剖は summaryLine(軽量)だけ残し、フル解剖は必要時に手動ビルドで行う。
         if previous != 0, alloc >= 48 * 1_048_576 {
-            let anatomy = heapAnatomySummary()
-            if anatomy != "anatomy=throttled" {
-                logSink?("MEMFORENSICS解剖@高水位#\(eventNumber) \(anatomy) | \(summaryLine())")
-                logSink?("MEMFORENSICS帰属@高水位#\(eventNumber) \(vmRegionSummaryByTag())")
-            }
+            logSink?("MEMFORENSICS概況@高水位#\(eventNumber) \(summaryLine())")
         }
         #endif
     }
