@@ -65,6 +65,7 @@ enum MemoryForensics {
             let anatomy = heapAnatomySummary()
             if anatomy != "anatomy=throttled" {
                 logSink?("MEMFORENSICS解剖@高水位#\(eventNumber) \(anatomy) | \(summaryLine())")
+                logSink?("MEMFORENSICS帰属@高水位#\(eventNumber) \(vmRegionSummaryByTag())")
             }
         }
         #endif
@@ -442,6 +443,116 @@ enum MemoryForensics {
         #endif
     }
 }
+
+extension MemoryForensics {
+    // ──────────────────────────────────────────────
+    // VM リージョン走査: malloc 外の internal dirty の帰属
+    // ──────────────────────────────────────────────
+    // 実機解剖(2620)で footprint 71.9MB のうち malloc ヒープの dirty は約23MB しかなく、
+    // 残り約45MB が malloc 外の internal と判明した。AttributeGraph(SwiftUI の依存グラフ)は
+    // malloc ゾーンでなく自前の vm_allocate を使うため malloc 解剖に写らない。
+    // 全リージョンを user_tag 別に dirty+swapped で集計して帰属を名指しする。
+    static func vmRegionSummaryByTag() -> String {
+        #if DEBUG
+        var totalsByTag: [UInt32: (dirtyPages: Int, regions: Int)] = [:]
+        var address: mach_vm_address_t = 0
+        var iterations = 0
+        while iterations < 8192 {
+            iterations += 1
+            var size: mach_vm_size_t = 0
+            var info = vm_region_submap_info_64()
+            var count = mach_msg_type_number_t(
+                MemoryLayout<vm_region_submap_info_64>.size / MemoryLayout<Int32>.size
+            )
+            var depth: natural_t = 0
+            let kern = withUnsafeMutablePointer(to: &info) { pointer in
+                pointer.withMemoryRebound(to: Int32.self, capacity: Int(count)) { rebound in
+                    ecritu_mach_vm_region_recurse(mach_task_self_, &address, &size, &depth, rebound, &count)
+                }
+            }
+            guard kern == KERN_SUCCESS else { break }
+            if info.is_submap != 0 {
+                // submap は潜らず(深さ0集計で共有キャッシュ等は除外側に落ちる)、次へ
+                address += size
+                continue
+            }
+            // internal(アプリ由来 dirty)+ 圧縮器へ退避済み(どちらも footprint に計上)
+            let dirty = Int(info.pages_dirtied) + Int(info.pages_swapped_out)
+            if dirty > 0 {
+                totalsByTag[info.user_tag, default: (0, 0)].dirtyPages += dirty
+                totalsByTag[info.user_tag, default: (0, 0)].regions += 1
+            }
+            address += size
+        }
+        // 主要タグ名(mach/vm_statistics.h の VM_MEMORY_*)
+        func tagName(_ tag: UInt32) -> String {
+            switch tag {
+            case 0: return "untagged"
+            case 1...9: return "malloc"
+            case 10: return "malloc_huge"
+            case 11: return "sbrk"
+            case 12: return "realloc"
+            case 13: return "malloc_tiny"
+            case 30: return "stack"
+            case 31: return "guard"
+            case 32: return "shared_pmap"
+            case 33: return "dylib"
+            case 34: return "objc_dispatchers"
+            case 35: return "unshared_pmap"
+            case 40: return "appkit"
+            case 41: return "foundation"
+            case 42: return "coregraphics"
+            case 43: return "corservices"
+            case 44: return "java"
+            case 46: return "ats"
+            case 53: return "cgimage"
+            case 54: return "tcmalloc"
+            case 63: return "iokit"
+            case 66: return "libdispatch"
+            case 70: return "os_alloc_once"
+            case 71: return "libdispatch"
+            case 72: return "accelerate"
+            case 73: return "coreui"
+            case 74: return "coreuifile"
+            case 75: return "genealogy"
+            case 76: return "rawcamera"
+            case 80: return "swift_metadata"
+            case 84: return "cm_regwarehouse"
+            case 87: return "coreanimation(CA)"
+            case 88: return "coreanimation_layer"
+            case 89: return "coreanimation_render"
+            case 90: return "coreanimation_backing"
+            case 96: return "objc_runtime"
+            case 98: return "os_log"
+            case 99: return "descriptive"
+            case 100: return "graphics_misc"
+            case 240: return "AttributeGraph?"
+            case 241: return "AttributeGraph?"
+            default: return "tag\(tag)"
+            }
+        }
+        let sorted = totalsByTag.sorted { $0.value.dirtyPages > $1.value.dirtyPages }.prefix(12)
+        let parts = sorted.map { entry in
+            let mb = Double(entry.value.dirtyPages) * 16384 / 1_048_576
+            return "\(tagName(entry.key))=\(String(format: "%.1f", mb))MB(\(entry.value.regions)r)"
+        }
+        return "vmTags[\(parts.joined(separator: " "))]"
+        #else
+        return "off"
+        #endif
+    }
+}
+
+// mach_vm_region_recurse も同様に直接束ねる(自タスクへの照会は entitlement 不要)。
+@_silgen_name("mach_vm_region_recurse")
+private func ecritu_mach_vm_region_recurse(
+    _ targetTask: mach_port_name_t,
+    _ address: UnsafeMutablePointer<mach_vm_address_t>,
+    _ size: UnsafeMutablePointer<mach_vm_size_t>,
+    _ nestingDepth: UnsafeMutablePointer<natural_t>,
+    _ info: UnsafeMutablePointer<Int32>,
+    _ infoCount: UnsafeMutablePointer<mach_msg_type_number_t>
+) -> kern_return_t
 
 // mach_vm_page_query は SDK ヘッダに在るが Swift へ露出しない環境があるため直接束ねる。
 // 自タスクへの照会は entitlement 不要。
