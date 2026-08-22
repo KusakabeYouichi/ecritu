@@ -1361,6 +1361,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // るい: 人名の ルイ(基底rank2)がカタカナ強調フィルタで消え、かな るい が2位だった。
+    // seed {類, ルイ, 塁, 累}+かな非掲載で末尾降格(ユーザ指定 2627)。
+    func testRegressionRealLMRuiIncludesKatakanaRui() throws {
+        try prepareRealLMDictionary()
+
+        let rui = converter.candidates(for: "るい", limit: 24, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(rui.prefix(4)), ["類", "ルイ", "塁", "累"], "list=\(rui)")
+        // かな るい は上位から退く(完全除去はしない: かなチップとは別に候補列の末尾側へ)
+        if let kanaIndex = rui.firstIndex(of: "るい") {
+            XCTAssertGreaterThan(kanaIndex, 7, "list=\(rui)")
+        }
+    }
+
     // せんせんげつ: Sudachi は 先先月(踊り字なし)を収穫底値 wc11402 で持つのみで、
     // 底値降格で沈み候補ゼロ同然。先々週 は踊り字なし版すら無い。seed 供給(ユーザ報告 2613)。
     func testRegressionRealLMSensengetsuSuppliesOdoriji() throws {
