@@ -187,12 +187,14 @@ extension KanaKanjiConverter {
                 continue
             }
 
-            for baseCandidateSuffix in rule.baseCandidateSuffixes {
-                let baseCandidate = candidateStem + baseCandidateSuffix
-
-                if suppressedSet.contains(baseCandidate) {
-                    return true
+            var matched = false
+            rule.forEachBaseCandidateSuffix { baseCandidateSuffix in
+                if !matched, suppressedSet.contains(candidateStem + baseCandidateSuffix) {
+                    matched = true
                 }
+            }
+            if matched {
+                return true
             }
         }
 
