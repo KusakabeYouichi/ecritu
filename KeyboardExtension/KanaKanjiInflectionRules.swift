@@ -222,6 +222,9 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "にくく", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "にくくない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "にくかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        // 補助形容詞の さ名詞化(食べやすさ/見えにくさ)。やすい は在るのに やすさ が無く
+        // うちやすさ→内安さ になっていた(ユーザー報告 2614)
+        InflectionRule(readingSuffix: "にくさ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "すぎ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "すぎる", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "すぎない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
@@ -401,6 +404,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
+        InflectionRule(readingSuffix: "やすさ", baseReadingSuffix: "る", allowedClasses: [InflectionClass.ichidan]),
         // 「〜やすい」の漢字「易い」候補(食べ易い 等)
         InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", outputCandidateSuffix: "易い", allowedClasses: [InflectionClass.ichidan]),
         InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", outputCandidateSuffix: "易く", allowedClasses: [InflectionClass.ichidan]),
@@ -901,10 +905,12 @@ extension KanaKanjiConverter {
                 pattern.iForm + "にくく",
                 pattern.iForm + "にくくない",
                 pattern.iForm + "にくかった",
+                pattern.iForm + "にくさ",
                 pattern.iForm + "やすい",
                 pattern.iForm + "やすく",
                 pattern.iForm + "やすくない",
                 pattern.iForm + "やすかった",
+                pattern.iForm + "やすさ",
                 pattern.iForm + "すぎ",
                 pattern.iForm + "すぎる",
                 pattern.iForm + "すぎない",

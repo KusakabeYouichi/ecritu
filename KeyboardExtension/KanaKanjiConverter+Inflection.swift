@@ -238,6 +238,9 @@ extension KanaKanjiConverter {
 
     // 戻り値の familyKey = 実際に派生へ寄与した基底表層の LM unigram 最小値(かな識別も
     // 寄与すれば含む)。連文節 b2b の「未代表族の追加供給」の優劣ゲートにだけ使う。
+    // 関西弁・口語の否定縮約(する→せん 系)。文語サ変ゲート(derivedCandidates)で参照
+    static let kansaiContractionReadingSuffixes: Set<String> = ["せん", "せんかった", "せんかったら", "せんで"]
+
     func derivedCandidates(
         for reading: String,
         rule: InflectionRule,
@@ -266,6 +269,13 @@ extension KanaKanjiConverter {
             !isKatakanaEmphasisBaseCandidate($0, reading: baseReading)
                 // 連濁収穫の動詞基底(どる→取る 等)も派生させない(定義コメント参照。2419)
                 && !isRendakuHarvestVerbBase($0, baseReading: baseReading)
+                // 関西弁縮約(せん/せんで 等)は文語調の漢語一字サ変(有する/科する/幽する)とは
+                // 組まない — ゆうせんで→有せんで が 優先で を乗っ取っていた(2614)。
+                // 勉強する 等の語幹2字以上はそのまま(掃除せんで は自然な口語)
+                && !(Self.kansaiContractionReadingSuffixes.contains(rule.readingSuffix)
+                    && rule.baseReadingSuffix == "する"
+                    && $0.hasSuffix("する") && $0.count == 3
+                    && ($0.first.map { !("ぁ"..."ん").contains($0) && !("ァ"..."ヶ").contains($0) } ?? false))
         }
 
         guard !baseCandidates.isEmpty else {
