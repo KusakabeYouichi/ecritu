@@ -179,6 +179,15 @@
 	<dict><key>phrase</key><string>來れる</string><key>shortcut</key><string>これる</string></dict>	<!-- 来れる の旧字体ら抜き形。活用派生(來れやすい 等)の温床でもある -->
 	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形類似で辞書収穫にも混入した誤表記 -->
 	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大陸 と字形類似のレア人名収穫。たいりく で出したい場面が無い -->
+	<dict><key>phrase</key><string>沖繩</string><key>shortcut</key><string>おきなわ</string></dict>	<!-- 沖縄 に似る(繩 は 縄 の旧字体) -->
+	<dict><key>phrase</key><string>多數</string><key>shortcut</key><string>たすう</string></dict>	<!-- 多数 に似る(數 は 数 の旧字体) -->
+	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>	<!-- 呑む に似る(吞 は 呑 の正字体。ほぼ同形で見分け困難) -->
+	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>	<!-- 醗酵 に似る(醱 は 醗 の旧字体。使いたいのは 醗酵) -->
+	<dict><key>phrase</key><string>反對</string><key>shortcut</key><string>はんたい</string></dict>	<!-- 反対 に似る(對 は 対 の旧字体) -->
+	<dict><key>phrase</key><string>單位</string><key>shortcut</key><string>たんい</string></dict>	<!-- 単位 に似る(單 は 単 の旧字体) -->
+	<dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict>	<!-- 黒 に似る(黑 は 黒 の旧字体) -->
+	<dict><key>phrase</key><string>出來る</string><key>shortcut</key><string>できる</string></dict>	<!-- 出来る に似る(來 は 来 の旧字体) -->
+	<dict><key>phrase</key><string>摸型</string><key>shortcut</key><string>もけい</string></dict>	<!-- 模型 に似る(摸 は 模 と手偏/木偏違いの別字) -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
 	<dict><key>phrase</key><string>其麼</string><key>shortcut</key><string>そんな</string></dict>	<!-- 其麼(そんな): 白話文由来の当て字(什麼/怎麼 と同族)。読めないので候補に並ぶと困る(ユーザ指定)。かな そんな は wc4833/rank0 で基底が健在なので供給には影響しない。抑制だけ入れると そんなことないのに が候補ゼロになるため、keepKana の準体助詞クラスタ剥がしと同時に入れた(2584) -->
