@@ -1193,6 +1193,12 @@ extension KanaKanjiConverter {
                 Self.multiClauseBOSPenalizedParticles.contains(surface) {
                 penalty += Self.multiClauseBOSParticlePenalty
             }
+            // コピュラ だ の直後の追加語彙の短い非かな断片(ろー→raw/ロー 等)は
+            // だろー クラスタの乗っ取り(すごいだろー→すごいだraw)。だ+外来語の
+            // 無空白連結は非文なので減点する(ユーザー報告 2618)。
+            if prev == "だ", isCurated, surface != reading, reading.count <= 2 {
+                penalty += Self.multiClauseKanaShiAfterNonPredicatePenalty
+            }
             // 表外訓はかな正書が実勢(定数コメント参照)。連文節でだけ漢字表層を減点する。
             if surface != reading, !isCurated,
                 Self.multiClauseKanaOrthodoxReadings.contains(reading) {
