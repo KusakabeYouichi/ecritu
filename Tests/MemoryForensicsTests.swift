@@ -52,8 +52,10 @@ final class MemoryForensicsTests: XCTestCase {
             MemoryForensics.noteOperation("テスト成長")
         }
         XCTAssertFalse(captured.isEmpty, "captured=\(captured)")
-        XCTAssertTrue(captured.allSatisfy { $0.contains("MEMFORENSICS高水位") }, "captured=\(captured)")
-        XCTAssertTrue(captured.last?.contains("op=テスト") ?? false, "captured=\(captured)")
+        // 高水位行のほか、alloc≥48MB では概況行(summaryLine)も出る(2626)
+        XCTAssertTrue(captured.allSatisfy { $0.contains("MEMFORENSICS") }, "captured=\(captured)")
+        let watermarkLines = captured.filter { $0.contains("MEMFORENSICS高水位") }
+        XCTAssertTrue(watermarkLines.last?.contains("op=テスト") ?? false, "captured=\(captured)")
     }
 
     private static func intValue(after prefix: String, in line: String) -> Int? {
