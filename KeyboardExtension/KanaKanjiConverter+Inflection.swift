@@ -303,7 +303,7 @@ extension KanaKanjiConverter {
         var contributingBases: [String] = []
 
         for candidate in baseCandidates {
-            guard let matchedSuffix = rule.baseCandidateSuffixes.first(where: { candidate.hasSuffix($0) }) else {
+            guard let matchedSuffix = rule.firstBaseCandidateSuffix(where: { candidate.hasSuffix($0) }) else {
                 continue
             }
 
@@ -331,8 +331,8 @@ extension KanaKanjiConverter {
             // も許可判定に含める。
             let supplementaryClasses = Self.supplementaryInflectionClassesByReading[baseReading]?[candidate] ?? []
             guard let inflectionClass,
-                rule.allowedClasses.contains(inflectionClass)
-                    || !rule.allowedClasses.isDisjoint(with: supplementaryClasses) else {
+                rule.allowedClasses.contains(className: inflectionClass)
+                    || rule.allowedClasses.intersects(classNames: supplementaryClasses) else {
                 continue
             }
 
@@ -410,7 +410,7 @@ extension KanaKanjiConverter {
         userCandidateSet: Set<String>
     ) -> String? {
         guard rule.baseReadingSuffix.isEmpty,
-            rule.allowedClasses == [InflectionClass.suru],
+            rule.allowedClasses == .suru,
             !candidate.hasSuffix("する"),
             !candidate.hasSuffix("くる"),
             !candidate.hasSuffix("来る"),
@@ -463,7 +463,7 @@ extension KanaKanjiConverter {
         for candidate: String,
         rule: InflectionRule
     ) -> String? {
-        guard rule.allowedClasses.contains(InflectionClass.suru),
+        guard rule.allowedClasses.contains(.suru),
             candidate.hasSuffix("する") else {
             return nil
         }
