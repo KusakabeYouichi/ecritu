@@ -446,6 +446,28 @@ enum MemoryForensics {
 
 extension MemoryForensics {
     // ──────────────────────────────────────────────
+    // 設定化けの監視(2624)— レイアウト系設定が勝手に変わる事象の証拠採取
+    // ──────────────────────────────────────────────
+    // 2026-08-22 に保存済みの配列設定(かな/ラテン/数字)が1日に3回、別々の歴史的状態へ
+    // 飛んだ(qwerty/telephone/fiveByTwo/キー欠落)。écritu には配列設定を書くコードが
+    // App の Picker 以外に無く、cfprefsd の plist 巻き戻り(iOS 側)を疑っている。
+    // 変化の瞬間を時刻+旧新値で criticalLog に残し、次回の発生を帰属する。
+    nonisolated(unsafe) private static var lastObservedLayoutSnapshot: String?
+
+    static func noteLayoutSettingsSnapshot(_ snapshot: String) {
+        #if DEBUG
+        ledgerLock.lock()
+        let previous = lastObservedLayoutSnapshot
+        lastObservedLayoutSnapshot = snapshot
+        ledgerLock.unlock()
+        guard let previous, previous != snapshot else {
+            return
+        }
+        logSink?("MEMFORENSICS設定変化 \(previous) → \(snapshot)")
+        #endif
+    }
+
+    // ──────────────────────────────────────────────
     // VM リージョン走査: malloc 外の internal dirty の帰属
     // ──────────────────────────────────────────────
     // 実機解剖(2620)で footprint 71.9MB のうち malloc ヒープの dirty は約23MB しかなく、
