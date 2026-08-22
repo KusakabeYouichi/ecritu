@@ -1089,6 +1089,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(oku.first, "そばに置く", "list=\(oku)")
     }
 
+    // かくてい: 基底辞書順が 画定>劃定>確定 と実頻度の逆で、単文節は LM優位昇格(2545)が
+    // 救うが活用派生(しちゃう 等)は基底順をコピーして 画定しちゃう が先頭だった。
+    // seed の基底順宣言で全派生を是正(ユーザ報告 2613)。
+    func testRegressionRealLMKakuteiDerivationsPreferKakutei() throws {
+        try prepareRealLMDictionary()
+
+        let base = converter.candidates(for: "かくてい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(base.first, "確定", "list=\(base)")
+        for reading in ["かくていしちゃう", "かくていした", "かくていして"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            let top = multi.first ?? single.first
+            XCTAssertTrue(top?.hasPrefix("確定") ?? false, "\(reading) multi=\(multi) single=\(single)")
+        }
+    }
+
     // せんせんげつ: Sudachi は 先先月(踊り字なし)を収穫底値 wc11402 で持つのみで、
     // 底値降格で沈み候補ゼロ同然。先々週 は踊り字なし版すら無い。seed 供給(ユーザ報告 2613)。
     func testRegressionRealLMSensengetsuSuppliesOdoriji() throws {
