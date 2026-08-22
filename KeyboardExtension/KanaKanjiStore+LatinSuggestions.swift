@@ -324,29 +324,27 @@ extension KanaKanjiStore {
         var seenCandidates = Set<String>()
         var entries: [LatinSuggestionEntry] = []
 
-        for candidates in supplementalDictionary.values {
-            for candidate in candidates {
-                let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+        supplementalDictionary.forEachCandidate { candidate in
+            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
-                guard !trimmedCandidate.isEmpty,
-                    seenCandidates.insert(trimmedCandidate).inserted,
-                    isLatinSuggestionCandidate(trimmedCandidate) else {
-                    continue
-                }
-
-                let searchKey = latinSuggestionSearchKey(trimmedCandidate)
-
-                guard !searchKey.isEmpty else {
-                    continue
-                }
-
-                entries.append(
-                    LatinSuggestionEntry(
-                        searchKey: searchKey,
-                        candidate: trimmedCandidate
-                    )
-                )
+            guard !trimmedCandidate.isEmpty,
+                seenCandidates.insert(trimmedCandidate).inserted,
+                isLatinSuggestionCandidate(trimmedCandidate) else {
+                return
             }
+
+            let searchKey = latinSuggestionSearchKey(trimmedCandidate)
+
+            guard !searchKey.isEmpty else {
+                return
+            }
+
+            entries.append(
+                LatinSuggestionEntry(
+                    searchKey: searchKey,
+                    candidate: trimmedCandidate
+                )
+            )
         }
 
         guard !entries.isEmpty else {

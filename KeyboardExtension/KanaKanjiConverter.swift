@@ -376,7 +376,7 @@ final class KanaKanjiConverter {
         let seedExempt = Set(KanaKanjiSeedDictionary.seed[context.reading] ?? [])
         // 補助語彙の昇格判定(定数コメント参照)。同読みに語LM実在の一般語があれば昇格しない。
         let supplementalCandidates = Set(
-            store.loadSupplementalSystemDictionary()[context.reading] ?? []
+            store.loadSupplementalSystemDictionary().candidates(for: context.reading)
         )
         let promotesSupplemental: Bool = {
             guard !supplementalCandidates.isEmpty else {

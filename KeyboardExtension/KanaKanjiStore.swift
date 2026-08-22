@@ -61,7 +61,7 @@ final class KanaKanjiStore {
     // なっていた。辞書ファイル差し替え(reopenSystemDictionary)では解除する。
     private var isSQLiteReopenSuppressed = false
     private var cachedSystemDictionary: [String: [String]]?
-    private var cachedSupplementalSystemDictionary: [String: [String]]?
+    private var cachedSupplementalSystemDictionary: SupplementalVocabCompactStore?
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
     // 汎用Latinサジェスト語彙のmmap索引キャッシュ(言語別)と有効言語
     // (既定は全言語OFF。設定で言語別にON)。索引は Data(mappedIfSafe) 保持のみで
@@ -281,7 +281,7 @@ final class KanaKanjiStore {
             )
         }
 
-        let supplementalCandidates = loadSupplementalSystemDictionary()[normalizedReading] ?? []
+        let supplementalCandidates = loadSupplementalSystemDictionary().candidates(for: normalizedReading)
         let dictionary = loadSystemDictionary()
         let baseCandidates = dictionary[normalizedReading] ?? []
 
@@ -578,7 +578,7 @@ final class KanaKanjiStore {
         return decoded
     }
 
-    func loadSupplementalSystemDictionary() -> [String: [String]] {
+    func loadSupplementalSystemDictionary() -> SupplementalVocabCompactStore {
         if let cached = withCacheLock({ cachedSupplementalSystemDictionary }) {
             return cached
         }
@@ -591,13 +591,16 @@ final class KanaKanjiStore {
             // candidates() 毎回の呼び出し(2497)でファイル探索+デコード試行が変換ごとに走り、
             // テストスイートを数十秒遅くしていた(実機でも無駄)。後からのデプロイは
             // 設定変更世代カウンタ→clearSharedDataCaches 経由でこのキャッシュも破棄して拾う(2515)
-            withCacheLock { cachedSupplementalSystemDictionary = [:] }
-            return [:]
+            withCacheLock { cachedSupplementalSystemDictionary = SupplementalVocabCompactStore.empty }
+            return .empty
         }
 
-        let normalized = normalizeDictionary(decoded)
-        withCacheLock { cachedSupplementalSystemDictionary = normalized }
-        return normalized
+        // [String: [String]] のまま常駐させると約6.8MB食う(実測: 初回変換の used +6.8MB の主因、
+        // 高水位台帳 2615)。使い道は読み単位の点引きと一度きりの全走査だけなので、
+        // UTF8ブロブ+オフセット表へ詰め直して常駐を約1/7にする。decode結果は使い捨て。
+        let packed = SupplementalVocabCompactStore(dictionary: normalizeDictionary(decoded))
+        withCacheLock { cachedSupplementalSystemDictionary = packed }
+        return packed
     }
 
     func loadSystemCandidateSources() -> [String: [String: Set<String>]] {
@@ -762,7 +765,7 @@ final class KanaKanjiStore {
             bytes < 0 ? "-" : String(bytes / 1024)
         }
         return withCacheLock {
-            "structKB: suppl=\(kb(dictBytes(cachedSupplementalSystemDictionary)))"
+            "structKB: suppl=\(kb(cachedSupplementalSystemDictionary?.estimatedBytes ?? -1))"
                 + " sysDict=\(kb(dictBytes(cachedSystemDictionary)))"
                 + " initialUser=\(kb(dictBytes(cachedInitialUserDictionary)))"
                 + " user=\(kb(dictBytes(cachedUserDictionary)))"
@@ -776,7 +779,7 @@ final class KanaKanjiStore {
     func diagnosticsCacheCountsSummary() -> String {
         withCacheLock {
             "sysDict=\(cachedSystemDictionary?.count ?? -1)"
-                + " suppl=\(cachedSupplementalSystemDictionary?.count ?? -1)"
+                + " suppl=\(cachedSupplementalSystemDictionary?.readingCount ?? -1)"
                 + " latin=\(cachedLatinSuggestionEntries?.count ?? -1)"
                 + " latinIdx=\(cachedGenericLatinLexiconIndexByLanguage.count)"
                 + " lmUni=\(cachedWordLMUnigram.count)"
@@ -1193,4 +1196,134 @@ final class KanaKanjiStore {
         return uniqueCandidates(from: primary + supplemental)
     }
 
+}
+
+// 補助語彙(SecondVocab: vin/it/ryukyu/personnalites/drapeaux/monnaies)の常駐用コンパクト表。
+// [String: [String]] だと Swift 辞書+String ヒープのオーバーヘッドで約6.8MB常駐する
+// (15,901読み。初回変換の used +6.8MB の主因 — 高水位台帳 2615 で実測)。
+// 消費点は「読み単位の点引き」(候補マージ/昇格判定/カタカナ化抑止免除)と
+// 「一度きりの全走査」(欧文サジェスト索引の構築)だけなので、全文字列を1本の UTF8 ブロブに
+// 詰め、読みはバイト列ソート+二分探索で引く。実測で常駐 約1MB 弱まで下がる。
+struct SupplementalVocabCompactStore {
+    // 全読み・全表層の UTF8 を連結したブロブ。個々の文字列はオフセット表で参照する。
+    private let blob: [UInt8]
+    // 読み i のバイト範囲 = blob[readingOffsets[i]..<readingOffsets[i+1]](読みはバイト列昇順)
+    private let readingOffsets: [UInt32]
+    // 読み i の表層は表層スロット surfaceListStarts[i]..<surfaceListStarts[i+1]
+    private let surfaceListStarts: [UInt32]
+    // 表層スロット j のバイト範囲 = blob[surfaceOffsets[j]..<surfaceOffsets[j+1]]
+    private let surfaceOffsets: [UInt32]
+
+    static let empty = SupplementalVocabCompactStore(dictionary: [:])
+
+    var readingCount: Int { max(0, readingOffsets.count - 1) }
+    var isEmpty: Bool { readingCount == 0 }
+    var estimatedBytes: Int {
+        blob.count + (readingOffsets.count + surfaceListStarts.count + surfaceOffsets.count) * 4
+    }
+
+    init(dictionary: [String: [String]]) {
+        let sortedReadings = dictionary.keys.sorted { Array($0.utf8).lexicographicallyPrecedes(Array($1.utf8)) }
+        var blob: [UInt8] = []
+        var readingOffsets: [UInt32] = []
+        var surfaceListStarts: [UInt32] = []
+        var surfaceOffsets: [UInt32] = []
+        blob.reserveCapacity(dictionary.count * 24)
+        readingOffsets.reserveCapacity(sortedReadings.count + 1)
+        surfaceListStarts.reserveCapacity(sortedReadings.count + 1)
+        // 表層の総数は不明なので append 主体で構築(初回ロード時の一度きり)
+        var surfaceCursorOffsets: [UInt32] = []
+        for reading in sortedReadings {
+            readingOffsets.append(UInt32(blob.count))
+            blob.append(contentsOf: reading.utf8)
+            surfaceListStarts.append(UInt32(surfaceCursorOffsets.count))
+            for surface in dictionary[reading] ?? [] {
+                surfaceCursorOffsets.append(UInt32(blob.count))
+                blob.append(contentsOf: surface.utf8)
+            }
+        }
+        readingOffsets.append(UInt32(blob.count))
+        surfaceListStarts.append(UInt32(surfaceCursorOffsets.count))
+        // blob の配置は [読みi][表層i0][表層i1]…[読みi+1][表層(i+1)0]… の交互。
+        // 各要素の終端は「次に始まるものの開始」で求まる(readingBytes/surfaceBytes 参照)。
+        self.surfaceOffsets = surfaceCursorOffsets
+        self.blob = blob
+        self.readingOffsets = readingOffsets
+        self.surfaceListStarts = surfaceListStarts
+    }
+
+    private func readingBytes(_ index: Int) -> ArraySlice<UInt8> {
+        // 読み index のバイト範囲。読みの直後にその表層列が続くため、終端は
+        // 「最初の表層の開始」(表層が無ければ次の読みの開始)。
+        let start = Int(readingOffsets[index])
+        let firstSurfaceSlot = Int(surfaceListStarts[index])
+        let lastSurfaceSlotExclusive = Int(surfaceListStarts[index + 1])
+        let end: Int
+        if firstSurfaceSlot < lastSurfaceSlotExclusive {
+            end = Int(surfaceOffsets[firstSurfaceSlot])
+        } else {
+            end = Int(readingOffsets[index + 1])
+        }
+        return blob[start..<end]
+    }
+
+    private func surfaceBytes(slot: Int, ownerReadingIndex: Int) -> ArraySlice<UInt8> {
+        let start = Int(surfaceOffsets[slot])
+        let lastSlotOfOwner = Int(surfaceListStarts[ownerReadingIndex + 1]) - 1
+        let end = slot < lastSlotOfOwner
+            ? Int(surfaceOffsets[slot + 1])
+            : Int(readingOffsets[ownerReadingIndex + 1])
+        return blob[start..<end]
+    }
+
+    private func indexOfReading(_ reading: String) -> Int? {
+        let target = Array(reading.utf8)
+        var low = 0
+        var high = readingCount - 1
+        while low <= high {
+            let mid = (low + high) / 2
+            let bytes = readingBytes(mid)
+            if bytes.elementsEqual(target) {
+                return mid
+            }
+            if bytes.lexicographicallyPrecedes(target) {
+                low = mid + 1
+            } else {
+                high = mid - 1
+            }
+        }
+        return nil
+    }
+
+    func candidates(for reading: String) -> [String] {
+        guard let index = indexOfReading(reading) else {
+            return []
+        }
+        var result: [String] = []
+        for slot in Int(surfaceListStarts[index])..<Int(surfaceListStarts[index + 1]) {
+            result.append(String(decoding: surfaceBytes(slot: slot, ownerReadingIndex: index), as: UTF8.self))
+        }
+        return result
+    }
+
+    func contains(reading: String, surface: String) -> Bool {
+        guard let index = indexOfReading(reading) else {
+            return false
+        }
+        let target = Array(surface.utf8)
+        for slot in Int(surfaceListStarts[index])..<Int(surfaceListStarts[index + 1])
+        where surfaceBytes(slot: slot, ownerReadingIndex: index).elementsEqual(target) {
+            return true
+        }
+        return false
+    }
+
+    // 欧文サジェスト索引の構築用: 全表層を一度だけ列挙する
+    func forEachCandidate(_ body: (String) -> Void) {
+        for index in 0..<readingCount {
+            for slot in Int(surfaceListStarts[index])..<Int(surfaceListStarts[index + 1]) {
+                body(String(decoding: surfaceBytes(slot: slot, ownerReadingIndex: index), as: UTF8.self))
+            }
+        }
+    }
 }

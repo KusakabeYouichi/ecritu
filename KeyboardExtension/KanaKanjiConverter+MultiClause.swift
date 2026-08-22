@@ -385,7 +385,7 @@ extension KanaKanjiConverter {
                             isDictionaryFormPredicate: isDictionaryFormPredicate
                         )
                         if Self.isKatakanaString(surface),
-                            supplementalSystemDictionary[segmentReading]?.contains(surface) == true {
+                            supplementalSystemDictionary.contains(reading: segmentReading, surface: surface) {
                             supplementalKatakanaExemptNodeKeys.insert("\(start)-\(end)-\(surface)")
                         }
                         dictCount += 1

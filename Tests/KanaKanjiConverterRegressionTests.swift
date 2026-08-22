@@ -1089,6 +1089,154 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(oku.first, "そばに置く", "list=\(oku)")
     }
 
+    // 補助語彙のコンパクト表(UTF8ブロブ+二分探索)が [String: [String]] と同じ答えを
+    // 返すことの固定。常駐 6.8MB→約1MB の置き換え(2615)の正しさの根拠。
+    func testSupplementalVocabCompactStoreRoundTrip() {
+        let dictionary: [String: [String]] = [
+            "まつやにわいん": ["松脂ワイン"],
+            "あ": ["亜", "阿"],
+            "てーるぶらんしゅ": ["テール・ブランシュ"],
+            "ん": [],
+            "じゃんぐりあ": ["ジャングリア"],
+            "ぴーゔぃ": ["ピーヴィ", "PIWI"]
+        ]
+        let store = SupplementalVocabCompactStore(dictionary: dictionary)
+        XCTAssertEqual(store.readingCount, dictionary.count)
+        for (reading, candidates) in dictionary {
+            XCTAssertEqual(store.candidates(for: reading), candidates, "reading=\(reading)")
+            for candidate in candidates {
+                XCTAssertTrue(store.contains(reading: reading, surface: candidate), "\(reading)/\(candidate)")
+            }
+            XCTAssertFalse(store.contains(reading: reading, surface: "存在しない表層"))
+        }
+        XCTAssertEqual(store.candidates(for: "みとうろく"), [])
+        XCTAssertFalse(store.contains(reading: "みとうろく", surface: "亜"))
+        var collected: Set<String> = []
+        store.forEachCandidate { collected.insert($0) }
+        XCTAssertEqual(collected, Set(dictionary.values.flatMap { $0 }))
+        // 空辞書
+        XCTAssertTrue(SupplementalVocabCompactStore.empty.isEmpty)
+        XCTAssertEqual(SupplementalVocabCompactStore.empty.candidates(for: "あ"), [])
+    }
+
+    // ★時限診断(MEMFORENSICS 2615): 変換1回あたりの malloc アリーナ成長をチャネル別に測る。
+    // 実機台帳で「変換1〜2字で+4〜8MB」の高水位成長が確定したため、犯行チャネルを Mac で絞る。
+    // 原因解明後に削除してよい(常設の回帰アサートは持たない)。
+    func testDiagMemoryWatermarkPerConversionChannel() throws {
+        guard ProcessInfo.processInfo.environment["WATERMARK"] != nil else {
+            throw XCTSkip("WATERMARK=1(xcodebuild には TEST_RUNNER_WATERMARK=1)のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        func stats() -> (used: Double, alloc: Double) {
+            var s = malloc_statistics_t()
+            malloc_zone_statistics(nil, &s)
+            return (Double(s.size_in_use) / 1_048_576, Double(s.size_allocated) / 1_048_576)
+        }
+        func report(_ label: String, _ before: (used: Double, alloc: Double)) {
+            let after = stats()
+            print("WATERMARK \(label): used \(String(format: "%.2f→%.2f (Δ%+.2f)", before.used, after.used, after.used - before.used))"
+                + "  alloc \(String(format: "%.1f→%.1f (Δ%+.2f)", before.alloc, after.alloc, after.alloc - before.alloc))")
+        }
+
+        // ── Z: 初回変換で遅延ロードされる常駐の分解(容疑者を1つずつ触る)──
+        var z = stats()
+        _ = converter.store.loadSupplementalSystemDictionary()
+        report("Z:補助語彙(SecondVocab)", z)
+        z = stats()
+        _ = converter.store.suppressedCandidatesByReading()
+        report("Z:抑制語彙", z)
+        z = stats()
+        _ = KanaKanjiSeedDictionary.seed.count
+        _ = KanaKanjiSeedDictionary.exactReadingOnlySeed.count
+        report("Z:seed静的表", z)
+        z = stats()
+        _ = converter.store.initialUserDictionary()
+        _ = converter.store.learnedDictionary()
+        _ = converter.store.userDictionary()
+        report("Z:追加/学習語彙", z)
+        z = stats()
+        _ = converter.store.loadSystemCandidateSources()
+        report("Z:candidateSources", z)
+        z = stats()
+        _ = converter.store.loadSystemDictionary()
+        report("Z:systemDictionary(JSON)", z)
+
+        // ── Z2: 変換パイプラインの段階分解(初回変換の +3.3MB の在処)──
+        z = stats()
+        _ = converter.store.systemCandidates(for: "が", taggedWith: "second")
+        report("Z2:store点引き[が]", z)
+        z = stats()
+        _ = converter.store.systemCandidates(for: "が", mode: .surface)
+        report("Z2:store.systemCandidates[が]", z)
+        z = stats()
+        _ = converter.systemCandidates(for: "が", mode: .surface)
+        report("Z2:converter.systemCandidates[が]", z)
+        z = stats()
+        _ = converter.candidatesForReading("が", userDictionary: [:], initialUserDictionary: [:], systemCandidateMode: .surface)
+        report("Z2:candidatesForReading[が]", z)
+        print("WATERMARK hist前: \(KeyboardViewController.diagnosticsMallocSizeHistogram())")
+        // ── A: 1字読みの単文節(実機台帳の主犯疑い)を読み別に ──
+        for r in ["が", "に", "と", "し", "か", "は", "の", "て", "も", "で"] {
+            let b1 = stats()
+            _ = converter.candidates(for: r, limit: 24, systemCandidateMode: .surface)
+            report("A:単文節[\(r)]", b1)
+        }
+        print("WATERMARK キャッシュ: \(converter.diagnosticsCacheCountsSummary())")
+        print("WATERMARK sqlite/fp: \(MemoryForensics.summaryLine())")
+        print("WATERMARK hist後: \(KeyboardViewController.diagnosticsMallocSizeHistogram())")
+        print("WATERMARK 構造: \(converter.store.diagnosticsStructureBytesSummary())")
+        var b = stats()
+
+        // ── B: バースト打鍵の再現(1打鍵ごとに変換。実運用と同じ増分列)──
+        b = stats()
+        let phrase = "きょうのてんきはいいですね"
+        for end in 1...phrase.count {
+            let r = String(phrase.prefix(end))
+            _ = converter.candidates(for: r, limit: 24, systemCandidateMode: .surface)
+            if r.count >= 4 {
+                _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            }
+        }
+        report("B:バースト13打鍵", b)
+
+        // ── C: 連文節だけ(長め読み5種)──
+        b = stats()
+        for r in ["きょうはいいてんきですね", "あしたのかいぎのしりょう", "でんしゃがおくれています",
+                  "おひるごはんなにたべよう", "しゅうまつはえいがをみたい"] {
+            _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+        }
+        report("C:連文節x5", b)
+
+        // ── D: 単文節だけ(同じ長め読み)──
+        b = stats()
+        for r in ["きょうはいいてんきですね", "あしたのかいぎのしりょう", "でんしゃがおくれています",
+                  "おひるごはんなにたべよう", "しゅうまつはえいがをみたい"] {
+            _ = converter.candidates(for: r, limit: 24, systemCandidateMode: .surface)
+        }
+        report("D:単文節長め x5", b)
+
+        // ── E: A〜D をもう1周(キャッシュ温存時の定常成長)──
+        b = stats()
+        for r in ["が", "に", "と", "し", "か"] {
+            _ = converter.candidates(for: r, limit: 24, systemCandidateMode: .surface)
+        }
+        for r in ["きょうはいいてんきですね", "あしたのかいぎのしりょう"] {
+            _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            _ = converter.candidates(for: r, limit: 24, systemCandidateMode: .surface)
+        }
+        report("E:2周目(ウォーム)", b)
+
+        // ── F: 別の読み群でコールド増分(キャッシュに乗っていない読み)──
+        b = stats()
+        for r in ["ぎんこうにいってきます", "らいしゅうのよていをきめる", "ばんごはんはかれーにする"] {
+            _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            _ = converter.candidates(for: r, limit: 24, systemCandidateMode: .surface)
+        }
+        report("F:コールド新規x3", b)
+    }
+
     // いいねえ: 連文節が終助詞の引き伸ばし え を 画(いいね画)に漢字化して先頭を
     // 乗っ取っていた。終端の単独母音読み漢字ノードは直前ノード読み末尾と同母音なら
     // 引き伸ばし表記としてペナルティ(ユーザ報告 2614)。
