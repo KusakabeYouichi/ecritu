@@ -57,6 +57,16 @@ enum MemoryForensics {
             + " used=\(String(format: "%.1f", Double(stats.size_in_use) / 1_048_576))"
             + " fp=\(String(format: "%.1f", currentPhysFootprintMB() ?? -1))"
         logSink?(line)
+        // 解剖は警告時では間に合わない(実機で3回連続、警告→SIGKILL <1秒で census4 を
+        // 書けずに死亡)。高水位イベント=まだ元気なうちに撮る。ここは変換キュー内なので
+        // main は塞がない。60秒スロットルは heapAnatomySummary 内蔵のものを使う。
+        // ベースライン(起動直後)はまだ育っていないので撮らない。
+        if previous != 0, alloc >= 48 * 1_048_576 {
+            let anatomy = heapAnatomySummary()
+            if anatomy != "anatomy=throttled" {
+                logSink?("MEMFORENSICS解剖@高水位#\(eventNumber) \(anatomy) | \(summaryLine())")
+            }
+        }
         #endif
     }
 
