@@ -1089,6 +1089,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(oku.first, "そばに置く", "list=\(oku)")
     }
 
+    // せんせんげつ: Sudachi は 先先月(踊り字なし)を収穫底値 wc11402 で持つのみで、
+    // 底値降格で沈み候補ゼロ同然。先々週 は踊り字なし版すら無い。seed 供給(ユーザ報告 2613)。
+    func testRegressionRealLMSensengetsuSuppliesOdoriji() throws {
+        try prepareRealLMDictionary()
+
+        let sensengetsu = converter.candidates(for: "せんせんげつ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(sensengetsu.first, "先々月", "list=\(sensengetsu)")
+        let sensenshuu = converter.candidates(for: "せんせんしゅう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(sensenshuu.first, "先々週", "list=\(sensenshuu)")
+    }
+
     // きゅうかんび: {休館日, 休刊日, 休肝日} だった。休肝日 を2番目に(ユーザ指定 2606)。
     func testRegressionRealLMKyukanbiOrdering() throws {
         try prepareRealLMDictionary()
