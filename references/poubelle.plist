@@ -5,21 +5,12 @@
 	<!-- 抑制語彙(アプリの『抑制語彙』UIに初期表示される分)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。 -->
 
 	<!-- ■ 旧字体・異体字(現代の標準字体を勝たせる) -->
-	<dict><key>phrase</key><string>沖繩</string><key>shortcut</key><string>おきなわ</string></dict>
 	<dict><key>phrase</key><string>仝じ</string><key>shortcut</key><string>おなじ</string></dict>
 	<dict><key>phrase</key><string>區別</string><key>shortcut</key><string>くべつ</string></dict>
-	<dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict>
 	<dict><key>phrase</key><string>卆</string><key>shortcut</key><string>そつ</string></dict>
-	<dict><key>phrase</key><string>多數</string><key>shortcut</key><string>たすう</string></dict>
-	<dict><key>phrase</key><string>單位</string><key>shortcut</key><string>たんい</string></dict>
-	<dict><key>phrase</key><string>出來る</string><key>shortcut</key><string>できる</string></dict>
-	<dict><key>phrase</key><string>反對</string><key>shortcut</key><string>はんたい</string></dict>
-	<dict><key>phrase</key><string>摸型</string><key>shortcut</key><string>もけい</string></dict>
 	<dict><key>phrase</key><string>聯合</string><key>shortcut</key><string>れんごう</string></dict>
 	<dict><key>phrase</key><string>聨合</string><key>shortcut</key><string>れんごう</string></dict>
 	<dict><key>phrase</key><string>寫眞</string><key>shortcut</key><string>しゃしん</string></dict>
-	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>
-	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
 
 	<!-- ■ 過剰な漢字化(かな書きが正書の語。副詞・接続詞・補助動詞など) -->
 	<dict><key>phrase</key><string>至って</string><key>shortcut</key><string>いたって</string></dict>
