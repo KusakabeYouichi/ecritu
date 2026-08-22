@@ -368,6 +368,10 @@
 	        <dict><key>phrase</key><string>ナチュール・ワイン</string><key>shortcut</key><string>なちゅーるわいん</string></dict>
 	        <dict><key>phrase</key><string>ナチュラル・ワイン</string><key>shortcut</key><string>なちゅらるわいん</string></dict>
 	        <dict><key>phrase</key><string>コンヴェンショナル</string><key>shortcut</key><string>こんゔぇんしょなる</string></dict>
+	        <dict><key>phrase</key><string>AntiOx</string><key>shortcut</key><string>あんちおっくす</string></dict>
+	        <dict><key>phrase</key><string>AntiOx</string><key>shortcut</key><string>あんてぃおっくす</string></dict>
+	        <dict><key>phrase</key><string>Vacu Vin</string><key>shortcut</key><string>ゔぁきゅゔぁん</string></dict>
+	        <dict><key>phrase</key><string>Vacu Vin</string><key>shortcut</key><string>ばきゅばん</string></dict>
 	<!-- 植物 -->
 	        <dict><key>phrase</key><string>黒葉</string><key>shortcut</key><string>こくよう</string></dict>
 	        <dict><key>phrase</key><string>夜香木</string><key>shortcut</key><string>やこうぼく</string></dict>
