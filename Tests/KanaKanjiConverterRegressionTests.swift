@@ -1237,6 +1237,51 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         report("F:コールド新規x3", b)
     }
 
+    // 2618バッチ: ユーザ報告7件(じゅうわり/みしょうの/あれがはじめて/すごいだろー/
+    // するのね/うまいぜ/ごはんがたける)。詳細は各コミットメッセージ参照。
+    func testRegression2618Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        func barTop(_ reading: String) -> String? {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            if let first = multi.first { return first }
+            return converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first
+        }
+        // じゅうわり: 十割 は とわり のみ辞書登録で、連文節が 中(じゅう)+割り を作っていた
+        XCTAssertEqual(barTop("じゅうわり"), "十割")
+        // みしょうの: 実生 を2番目に
+        let mishouno = converter.candidates(for: "みしょうの", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mishouno.prefix(2)), ["未詳の", "実生の"], "list=\(mishouno)")
+        // あれがはじめて: 文語已然形 有れ がかな指示語を跨いでいた
+        XCTAssertEqual(barTop("あれがはじめて"), "あれが初めて")
+        // すごいだろー: 追加語彙 ろー(raw)が だ の直後に食い込んでいた
+        XCTAssertEqual(barTop("すごいだろー"), "すごいだろー")
+        // するのね: かな する が述語判定されず のね クランプが漢字側だけに効いていた
+        XCTAssertEqual(barTop("するのね"), "するのね")
+        // うまいぜ: keepKana が立たず提示層でかなが退避されていた
+        XCTAssertEqual(barTop("うまいぜ"), "うまいぜ")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "うまいぜ"))
+        // ごはんがたける: 人名 健(seed)の1ノード勝ち。炊ける curated 供給で1・2位に
+        let gohan = converter.multiClauseCandidates(for: "ごはんがたける", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(gohan.prefix(2)), ["ごはんが炊ける", "ご飯が炊ける"], "list=\(gohan)")
+        // 健 は単語レベルでは上位に残す(人名入力の受け皿)
+        let takeru = converter.candidates(for: "たける", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(takeru.first, "炊ける", "list=\(takeru)")
+        XCTAssertTrue(takeru.prefix(3).contains("健"), "list=\(takeru)")
+
+        // 防護: 荒れ系(あれ 床免除の巻き添え確認)
+        let hada = converter.multiClauseCandidates(for: "はだがあれた", systemCandidateMode: .surface)
+        XCTAssertTrue(hada.first?.hasSuffix("荒れた") ?? false, "list=\(hada)")
+        // 防護: ろー の終助詞化が タロー(たろー、辞書唯一のエントリ)を壊さない
+        // (太郎 は たろう 表記のみで、たろー には元から居ない)
+        let taroo = converter.candidates(for: "たろー", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(taroo.contains("タロー"), "list=\(taroo)")
+        // 防護: 単独 ろー の追加語彙(raw/ロー)は健在
+        let roo = converter.candidates(for: "ろー", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(roo.contains("raw"), "list=\(roo)")
+    }
+
     // けんない: 単漢字+ない の素通り断片(件ない/券ない…24件)が複数チャネル累積で
     // 辞書語(県内 rank0/uni5537、圏内)を追い越していた。せんない/とない は LM優位昇格
     // (2545)が偶然救っていただけで、rank0 が LM 最良の読みでは断片が露出する構造。
