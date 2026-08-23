@@ -472,6 +472,12 @@ extension KeyboardViewController {
                     MemoryForensics.noteSpikeWindow("絵文字切替")
                     MemoryForensics.noteSpikeWindow("絵文字切替+5s", delaySeconds: 5.0)
                 }
+                if previousMode == .emoji {
+                    // 退出後に used が戻るか(=グリフキャッシュが解放されるか)の判定材料。
+                    // 戻るなら退出時 pressure_relief でページ返却が根治になる(2632)
+                    MemoryForensics.noteSpikeWindow("絵文字退出", minDeltaMB: -1_000)
+                    MemoryForensics.noteSpikeWindow("絵文字退出+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
+                }
                 if mode == .emoji,
                     let footprintMB = self.currentFootprintMB(),
                     footprintMB >= 50 {
