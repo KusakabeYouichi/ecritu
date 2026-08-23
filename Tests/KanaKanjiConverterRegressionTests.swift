@@ -1395,6 +1395,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(kokode.contains { $0.contains("一手") } || !kokode.isEmpty, "list=\(kokode)")
     }
 
+    // たく: 基底順が実頻度の逆(炊く rank8)。seed {炊く, 焚く, 卓, 択}+かな末尾降格
+    // (ユーザ指定 2630)。たくのが好き(名詞化節)の既存調整は無傷であること。
+    func testRegressionRealLMTakuPrefersVerb() throws {
+        try prepareRealLMDictionary()
+
+        let taku = converter.candidates(for: "たく", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(taku.prefix(4)), ["炊く", "焚く", "卓", "択"], "list=\(taku)")
+        if let kanaIndex = taku.firstIndex(of: "たく") {
+            XCTAssertGreaterThan(kanaIndex, 5, "list=\(taku)")
+        }
+        // 防護: 名詞化節(たくのがすき→炊くのが好き)
+        let takunoga = converter.multiClauseCandidates(for: "たくのがすき", systemCandidateMode: .surface)
+        XCTAssertEqual(takunoga.first, "炊くのが好き", "list=\(takunoga)")
+
+        // 卓 は助数詞としても供給(数字文脈限定の表+何N。ユーザ指定 2630)。
+        // 数字文脈限定なので さんたく→三択 は侵食しない。
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates([], reading: "たく", precedingCharacter: "3")
+        XCTAssertTrue(boosted.contains("卓"), "\(boosted)")
+        let nantaku = converter.candidates(for: "なんたく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(nantaku.contains("何卓"), "single=\(nantaku)")
+        let santaku = converter.candidates(for: "さんたく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertFalse(santaku.contains("3卓") || santaku.contains("三卓"), "single=\(santaku)")
+    }
+
     // るい: 人名の ルイ(基底rank2)がカタカナ強調フィルタで消え、かな るい が2位だった。
     // seed {類, ルイ, 塁, 累}+かな非掲載で末尾降格(ユーザ指定 2627)。
     func testRegressionRealLMRuiIncludesKatakanaRui() throws {
