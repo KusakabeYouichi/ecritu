@@ -58,6 +58,25 @@ final class MemoryForensicsTests: XCTestCase {
         XCTAssertTrue(watermarkLines.last?.contains("op=テスト") ?? false, "captured=\(captured)")
     }
 
+    // スパイク窓: 前後差分の行が出ること(minDeltaMB を負にして必ずログさせる)
+    func testSpikeWindowEmitsDeltaLine() {
+        var captured: [String] = []
+        MemoryForensics.logSink = { captured.append($0) }
+        defer { MemoryForensics.logSink = nil }
+
+        let expectation = expectation(description: "spike window fired")
+        MemoryForensics.noteSpikeWindow("テスト窓", delaySeconds: 0.1, minDeltaMB: -1_000)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { expectation.fulfill() }
+        wait(for: [expectation], timeout: 3.0)
+
+        let spikeLines = captured.filter { $0.contains("MEMFORENSICSスパイク") }
+        XCTAssertEqual(spikeLines.count, 1, "captured=\(captured)")
+        let line = spikeLines[0]
+        XCTAssertTrue(line.contains("op=テスト窓"), line)
+        XCTAssertTrue(line.contains("used=") && line.contains("alloc=") && line.contains("fp="), line)
+        XCTAssertTrue(line.contains("→"), line)
+    }
+
     private static func intValue(after prefix: String, in line: String) -> Int? {
         guard let range = line.range(of: prefix) else { return nil }
         return Int(line[range.upperBound...].prefix(while: { $0.isNumber }))

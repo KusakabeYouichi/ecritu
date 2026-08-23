@@ -75,6 +75,43 @@ enum MemoryForensics {
     }
 
     // ──────────────────────────────────────────────
+    // A'. スパイク窓 noteSpikeWindow — 操作「前→後」のペア計測(2631)
+    // noteOperation は SwiftUI 再構築の前に発火するため、op タグは「水位を跨いだ時点の
+    // 操作」であって直前の成長の犯人とは限らない(#10 絵文字切替 +12.6MB は切替前
+    // 2分間の入力分を含む)。こちらは同一操作の前後で used/alloc/fp の差分を取り、
+    // その操作自身の寄与だけを名指しする。
+    // ──────────────────────────────────────────────
+    static func noteSpikeWindow(
+        _ tag: String,
+        delaySeconds: Double = 1.2,
+        minDeltaMB: Double = 1.0
+    ) {
+        #if DEBUG
+        var stats = malloc_statistics_t()
+        malloc_zone_statistics(nil, &stats)
+        let usedBefore = Double(stats.size_in_use) / 1_048_576
+        let allocBefore = Double(stats.size_allocated) / 1_048_576
+        let fpBefore = currentPhysFootprintMB() ?? -1
+        DispatchQueue.main.asyncAfter(deadline: .now() + delaySeconds) {
+            var after = malloc_statistics_t()
+            malloc_zone_statistics(nil, &after)
+            let usedAfter = Double(after.size_in_use) / 1_048_576
+            let allocAfter = Double(after.size_allocated) / 1_048_576
+            let fpAfter = currentPhysFootprintMB() ?? -1
+            guard usedAfter - usedBefore >= minDeltaMB
+                || fpAfter - fpBefore >= minDeltaMB else { return }
+            func fmt(_ value: Double) -> String { String(format: "%.1f", value) }
+            logSink?(
+                "MEMFORENSICSスパイク op=\(tag) 窓\(fmt(delaySeconds))s"
+                    + " used=\(fmt(usedBefore))→\(fmt(usedAfter))(+\(fmt(usedAfter - usedBefore)))"
+                    + " alloc=\(fmt(allocBefore))→\(fmt(allocAfter))(+\(fmt(allocAfter - allocBefore)))"
+                    + " fp=\(fmt(fpBefore))→\(fmt(fpAfter))(+\(fmt(fpAfter - fpBefore)))"
+            )
+        }
+        #endif
+    }
+
+    // ──────────────────────────────────────────────
     // C+D. sqlite 自己申告 + footprint 内訳(census4 の1行目)
     // ──────────────────────────────────────────────
     static func summaryLine() -> String {
