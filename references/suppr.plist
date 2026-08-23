@@ -171,6 +171,9 @@
 	<dict><key>phrase</key><string>危ぐ</string><key>shortcut</key><string>きぐ</string></dict>	<!-- 危ぐ(きぐ): 危惧 の交ぜ書き(惧 が常用漢字外だった頃の書き換え。2010年の改定で惧は常用漢字に入っており現行表記ではない)。word_cost が 危惧 と同値(6518)で候補上位に並ぶ -->
 	<dict><key>phrase</key><string>河う</string><key>shortcut</key><string>かわう</string></dict>	<!-- 河う(かわう): 鳥のカワウ=河鵜 の交ぜ書き(鵜が常用外)。名詞なのに読み かわう に活用クラス行が 無いため五段う動詞と推論され、河って/河ってきて を生成して 変わってきてる を逆転していた。 交ぜ書き判定はかな部分1文字を対象外(漢字+助詞と区別不能)なので構造的にすり抜ける。 クラス推論側は 2465 で塞いだが、交ぜ書きエントリ自体も残す価値が無いので抑制する -->
 
+	<!-- ■ 非文法・実用ゼロの合成(学習しても出さない) -->
+	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
+
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
 	<dict><key>phrase</key><string>壘</string><key>shortcut</key><string>るい</string></dict>	<!-- 塁 の旧字体。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
