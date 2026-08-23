@@ -467,6 +467,10 @@ extension KeyboardViewController {
                 // MEMFORENSICS(時限計測 2611): 絵文字ピッカー構築の高水位帰属
                 if mode == .emoji {
                     MemoryForensics.noteOperation("絵文字切替")
+                    // ピッカー構築そのものの寄与を前後差分で名指しする(2631)。
+                    // 1.2s=初期構築、5s=初期スクロール・グリフキャッシュ含む
+                    MemoryForensics.noteSpikeWindow("絵文字切替")
+                    MemoryForensics.noteSpikeWindow("絵文字切替+5s", delaySeconds: 5.0)
                 }
                 if mode == .emoji,
                     let footprintMB = self.currentFootprintMB(),
