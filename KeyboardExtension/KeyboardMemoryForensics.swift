@@ -65,6 +65,11 @@ enum MemoryForensics {
         // 解剖は summaryLine(軽量)だけ残し、フル解剖は必要時に手動ビルドで行う。
         if previous != 0, alloc >= 48 * 1_048_576 {
             logSink?("MEMFORENSICS概況@高水位#\(eventNumber) \(summaryLine())")
+            // vmTags(タグ別のdirty集計)は region 走査のみで安全(数ms・確保ゼロ・
+            // クラス表不使用)。凶器だったのは heapAnatomy のクラス表(objc_getClassList=
+            // 全クラスrealize)で、そちらは停止のまま。malloc外 internal 約45MB の帰属を
+            // 名指しするための本命データ(2629)
+            logSink?("MEMFORENSICS帰属@高水位#\(eventNumber) \(vmRegionSummaryByTag())")
         }
         #endif
     }
