@@ -1419,6 +1419,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(santaku.contains("3卓") || santaku.contains("三卓"), "single=\(santaku)")
     }
 
+    // N択(三者択一の意): 一〜四択が辞書・LMに無い → seed 供給(算用併記)。
+    // ごたく は 御託 先頭を守り exactReadingOnly で末尾供給。3+たく の数字文脈は 卓/択(2633)
+    func testRegressionRealLMNTakuChoices() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertEqual(converter.candidates(for: "いったく", limit: 3, systemCandidateMode: .surface).first, "一択")
+        XCTAssertEqual(converter.candidates(for: "にたく", limit: 3, systemCandidateMode: .surface).first, "二択")
+        let santaku = converter.candidates(for: "さんたく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(santaku.first, "三択", "single=\(santaku)")
+        XCTAssertTrue(santaku.contains("賛託"), "賛託は残す: \(santaku)")
+        XCTAssertEqual(converter.candidates(for: "よんたく", limit: 3, systemCandidateMode: .surface).first, "四択")
+
+        // ご託(ご+託 合成)が先頭に来る経路は従来からある。御託 が上位に残ることと
+        // 五択 が末尾供給されることだけ固定する
+        let gotaku = converter.candidates(for: "ごたく", limit: 30, systemCandidateMode: .surface)
+        XCTAssertTrue(gotaku.prefix(2).contains("御託"), "御託は上位維持: \(gotaku)")
+        XCTAssertTrue(gotaku.contains("五択"), "single=\(gotaku)")
+
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates([], reading: "たく", precedingCharacter: "3")
+        XCTAssertTrue(boosted.contains("択") && boosted.contains("卓"), "\(boosted)")
+    }
+
     // るい: 人名の ルイ(基底rank2)がカタカナ強調フィルタで消え、かな るい が2位だった。
     // seed {類, ルイ, 塁, 累}+かな非掲載で末尾降格(ユーザ指定 2627)。
     func testRegressionRealLMRuiIncludesKatakanaRui() throws {
