@@ -2412,6 +2412,185 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         print("SWEEP done checked=\(checked) ng=\(ngCount)")
     }
 
+    // カタカナ強調フィルタ誤爆スキャン第2段(タイ/ルイの一般化。2634):
+    // tools/audit_katakana_emphasis_drop.py の出力(辞書rank≤2かつLM実在のカタカナ)を
+    // 実変換に通し、候補リストから完全に消えている読みだけを KATADROP 行で報告する。
+    // TEST_RUNNER_SWEEP_KATAKANA=1 のときだけ実行。
+    func testDiagnosticKatakanaEmphasisDropSweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP_KATAKANA"] != nil else {
+            throw XCTSkip("SWEEP_KATAKANA=1(xcodebuild には TEST_RUNNER_SWEEP_KATAKANA=1)のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/katakana_emphasis_drop.tsv")
+        guard FileManager.default.fileExists(atPath: tsvURL.path) else {
+            throw XCTSkip("先に tools/audit_katakana_emphasis_drop.py を実行して TSV を生成すること")
+        }
+        let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        var checked = 0
+        var ngCount = 0
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 4 else { continue }
+            let reading = String(cols[0])
+            let katakana = String(cols[1])
+            let list = converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface)
+            checked += 1
+            if !list.contains(katakana) {
+                ngCount += 1
+                print("KATADROP\t\(reading)\t\(katakana)\trank=\(cols[2])\tuni=\(cols[3])\ttop=\(list.prefix(4))")
+            }
+        }
+        print("KATADROP done checked=\(checked) ng=\(ngCount)")
+    }
+
+    // 活用派生の基底順コピー検出(かくてい/ゆうせんの一般化。2634):
+    // lm_rank_mismatch の読みに しちゃう を付けた実変換で、基底は是正済み
+    // (LM最良が上位2位)なのに派生では辞書順コピーが勝つものを DERIVEDNG 行で報告。
+    // 2545のLM優位昇格が直接辞書候補のみで、活用派生に届かない構造の網羅検査。
+    func testDiagnosticDerivedBaseOrderCopySweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP_DERIVED"] != nil else {
+            throw XCTSkip("SWEEP_DERIVED=1(env TEST_RUNNER_SWEEP_DERIVED=1)のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/lm_rank_mismatch.tsv")
+        guard FileManager.default.fileExists(atPath: tsvURL.path) else {
+            throw XCTSkip("先に tools/audit_lm_rank_mismatch.py を実行して TSV を生成すること")
+        }
+        let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        var checked = 0
+        var ngCount = 0
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 6 else { continue }
+            let reading = String(cols[0])
+            let best = String(cols[1])
+            let top = String(cols[3])
+            // 基底が是正済みの読みだけが対象(未是正はLM順乖離スイープの持ち場)
+            let baseList = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            guard baseList.prefix(2).contains(best) else { continue }
+            let derived = converter.candidates(for: reading + "しちゃう", limit: 12, systemCandidateMode: .surface)
+            let posBest = derived.firstIndex(of: best + "しちゃう")
+            let posTop = derived.firstIndex(of: top + "しちゃう")
+            // サ変でない読みは両派生とも出ないのでスキップ
+            guard posBest != nil || posTop != nil else { continue }
+            checked += 1
+            if let posTop, posBest == nil || posBest! > posTop {
+                ngCount += 1
+                print("DERIVEDNG\t\(reading)\t\(best)\ttop=\(top)\tderived=\(derived.prefix(4))")
+            }
+        }
+        print("DERIVEDNG done checked=\(checked) ng=\(ngCount)")
+    }
+
+    // 単漢字+付属語断片の辞書語跨ぎ検出(けんない=県内の一般化。2634):
+    // まで/から/だけ/など/ない 終わりの読みの辞書語が実変換の上位2位に出ないものを
+    // FRAGNG 行で報告。SWEEP_FRAGMENT=1(env TEST_RUNNER_SWEEP_FRAGMENT=1)のときだけ実行。
+    func testDiagnosticFragmentUndercutSweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP_FRAGMENT"] != nil else {
+            throw XCTSkip("SWEEP_FRAGMENT=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/fragment_undercut.tsv")
+        guard FileManager.default.fileExists(atPath: tsvURL.path) else {
+            throw XCTSkip("先に tools/audit_fragment_undercut.py を実行して TSV を生成すること")
+        }
+        let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        var checked = 0
+        var ngCount = 0
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 4 else { continue }
+            let reading = String(cols[0])
+            let word = String(cols[1])
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            checked += 1
+            if !list.prefix(2).contains(word) {
+                ngCount += 1
+                print("FRAGNG\t\(reading)\t\(word)\tuni=\(cols[3])\ttop=\(list.prefix(4))")
+            }
+        }
+        print("FRAGNG done checked=\(checked) ng=\(ngCount)")
+    }
+
+    // word_costs 異常高・欠落の常用語検出(優先/縞模様の一般化。2634):
+    // uni≤6000 かつ (wc≥8000 or 欠落) の辞書語が実変換の上位2位に出ないものを
+    // WCNG 行で報告。SWEEP_WC=1(env TEST_RUNNER_SWEEP_WC=1)のときだけ実行。
+    func testDiagnosticWordCostAnomalySweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP_WC"] != nil else {
+            throw XCTSkip("SWEEP_WC=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/wc_anomaly.tsv")
+        guard FileManager.default.fileExists(atPath: tsvURL.path) else {
+            throw XCTSkip("先に tools/audit_wc_anomaly.py を実行して TSV を生成すること")
+        }
+        let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        var checked = 0
+        var ngCount = 0
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 4 else { continue }
+            let reading = String(cols[0])
+            let word = String(cols[1])
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            checked += 1
+            if !list.prefix(2).contains(word) {
+                ngCount += 1
+                print("WCNG\t\(reading)\t\(word)\tuni=\(cols[2])\twc=\(cols[3])\ttop=\(list.prefix(4))")
+            }
+        }
+        print("WCNG done checked=\(checked) ng=\(ngCount)")
+    }
+
+    // かな述語+終助詞クラスタの乗っ取り検出(かわいいなあの一般化。2634):
+    // 述語単体の multi 先頭を基準表記とし、終助詞クラスタを付けた multi 先頭が
+    // 「基準表記+クラスタそのまま」にならない組を PARTNG 行で報告。
+    // SWEEP_PARTICLE=1(env TEST_RUNNER_SWEEP_PARTICLE=1)のときだけ実行。
+    func testDiagnosticFinalParticleClusterSweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP_PARTICLE"] != nil else {
+            throw XCTSkip("SWEEP_PARTICLE=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let predicates = [
+            "かわいい", "おいしい", "すごい", "たのしい", "うれしい", "ねむい", "さむい",
+            "あつい", "やばい", "つらい", "えらい", "ひどい", "うまい", "たかい", "やすい",
+            "おおきい", "ちいさい", "たべる", "たべた", "いく", "いった", "する", "した",
+            "ある", "あった", "ない", "なかった", "できる", "できた", "わかる", "わかった"
+        ]
+        let clusters = [
+            "なあ", "ねえ", "よね", "よねえ", "かな", "かなー", "かも", "けど",
+            "わあ", "よお", "なー", "ねー", "だろー", "よなあ"
+        ]
+        var checked = 0
+        var ngCount = 0
+        for predicate in predicates {
+            let baseTop = converter.multiClauseCandidates(for: predicate, systemCandidateMode: .surface).first
+                ?? converter.candidates(for: predicate, limit: 1, systemCandidateMode: .surface).first
+            guard let baseTop else { continue }
+            for cluster in clusters {
+                let reading = predicate + cluster
+                let top = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first
+                    ?? converter.candidates(for: reading, limit: 1, systemCandidateMode: .surface).first
+                checked += 1
+                if top != baseTop + cluster {
+                    ngCount += 1
+                    print("PARTNG\t\(reading)\texpected=\(baseTop + cluster)\ttop=\(top ?? "-")")
+                }
+            }
+        }
+        print("PARTNG done checked=\(checked) ng=\(ngCount)")
+    }
+
     func testRegressionRealLMMukashiMitanaPrefersPredicateParse() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["みたな": ["美多奈"]])
