@@ -307,12 +307,14 @@ extension KeyboardRootView {
         18
     }
 
+    // 幅狭・縦画面の ☺︎ は文字ラベル基準(13pt)由来で小さすぎた。タップ面・フリック中
+    // 表示とも3段階拡大(15→18 / 20→23。ユーザ指定 2634)
     var compactKanaModeSwitcherEmojiMainLabelFontSize: CGFloat {
-        unifiedLeftModeSwitchFontSize + 2
+        unifiedLeftModeSwitchFontSize + 5
     }
 
     var compactKanaModeSwitcherEmojiActiveIconFontSize: CGFloat {
-        compactKanaModeSwitcherPreviewIconFontSize + 2
+        compactKanaModeSwitcherPreviewIconFontSize + 5
     }
 
     func kanaModeSwitcherPreviewFontSizeForDirection(
