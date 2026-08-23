@@ -2,17 +2,74 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- 日本語に存在しない拗音表記を含む読みの検査結果(écritu には組み込まない資料)。
-	     検出器: tools/audit_plist_readings.py の INVALID_YOON_SEQUENCES と同じ表
-	     (いゃ/いゅ/いょ/てぅ/ぶゅ/ぷゅ/むゅ/るゃ/るゅ)。これらの読みはフリックで
-	     打鍵できず候補に出ない。行は元ファイルとの重複で、修正は元ファイル側で行う。
-	     再生成: このヘッダの検査を再実行して上書き(2026-08-22 時点のスナップショット) -->
+	<!-- 標準的な日本語・外来語モーラに無い「文字+小書きかな」を含む読みの総当たり検査結果
+	     (écritu には組み込まない資料。行は元ファイルとの重複で、修正は元ファイル側で行う)。
+	     検査: 全配線plist+grenierの読みからホワイトリスト外の小書き連なりを抽出し、
+	     由来別に分類(2026-08-23 スナップショット。再生成はこのヘッダの手順で上書き) -->
 
-	<!-- ■ vin.plist -->
-	<dict><key>phrase</key><string>Kvalitetno vino s kontroliranim podrijetlom</string><key>shortcut</key><string>くゔぁりててぅのゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ</string></dict>	<!-- 不正拗音: てぅ -->
+	<!-- ■ 琉球語の音写(意図的) -->
+	<dict><key>phrase</key><string>いい正月や</string><key>shortcut</key><string>いいそーがゎちや</string></dict>	<!-- がゎ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>いゃーくゎてぃーたーみーゆー</string><key>shortcut</key><string>いゃーくゎてぃーたーみーゆー</string></dict>	<!-- いゃ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>ウルギィーラ</string><key>shortcut</key><string>うるぎぃーら</string></dict>	<!-- ぎぃ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>ギィーラ</string><key>shortcut</key><string>ぎぃーら</string></dict>	<!-- ぎぃ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>キッチィ</string><key>shortcut</key><string>きっちぃ</string></dict>	<!-- ちぃ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>三月菓子</string><key>shortcut</key><string>さんがゎちがし</string></dict>	<!-- がゎ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>スーギィーラ</string><key>shortcut</key><string>すーぎぃーら</string></dict>	<!-- ぎぃ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>ダーナガイュ</string><key>shortcut</key><string>だーながいゅ</string></dict>	<!-- いゅ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>ナビィとかまど</string><key>shortcut</key><string>なびぃとかまど</string></dict>	<!-- びぃ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>マーギィーラ</string><key>shortcut</key><string>まーぎぃーら</string></dict>	<!-- ぎぃ(ryukyu.plist) -->
+	<dict><key>phrase</key><string>銘苅子</string><key>shortcut</key><string>めかるしぃ</string></dict>	<!-- しぃ(ryukyu.plist) -->
 
-	<!-- ■ ryukyu.plist -->
-	<dict><key>phrase</key><string>いゃーくゎてぃーたーみーゆー</string><key>shortcut</key><string>いゃーくゎてぃーたーみーゆー</string></dict>	<!-- 不正拗音: いゃ -->
-	<dict><key>phrase</key><string>ダーナガイュ</string><key>shortcut</key><string>だーながいゅ</string></dict>	<!-- 不正拗音: いゅ -->
+	<!-- ■ ポルトガル語 ão の音写(意図的) -->
+	<dict><key>phrase</key><string>モンサォン・イ・メルガッソ</string><key>shortcut</key><string>もんさぉんいめるがっそ</string></dict>	<!-- さぉ(vin.plist) -->
+	<dict><key>phrase</key><string>Castelão</string><key>shortcut</key><string>かすてらぉん</string></dict>	<!-- らぉ(vin.plist) -->
+	<dict><key>phrase</key><string>Fernão Pires</string><key>shortcut</key><string>ふぇるなぉんぴれす</string></dict>	<!-- なぉ(vin.plist) -->
+	<dict><key>phrase</key><string>João de Santarém</string><key>shortcut</key><string>じょあぉんでさんたれん</string></dict>	<!-- あぉ(vin.plist) -->
+	<dict><key>phrase</key><string>Pedernã</string><key>shortcut</key><string>ぺでるなぁ</string></dict>	<!-- なぁ(vin.plist) -->
+	<dict><key>phrase</key><string>Sousão</string><key>shortcut</key><string>そうざぉん</string></dict>	<!-- ざぉ(vin.plist) -->
+	<dict><key>phrase</key><string>カステラォン</string><key>shortcut</key><string>かすてらぉん</string></dict>	<!-- らぉ(vin.plist) -->
+	<dict><key>phrase</key><string>フェルナォン・ピレス</string><key>shortcut</key><string>ふぇるなぉんぴれす</string></dict>	<!-- なぉ(vin.plist) -->
+
+	<!-- ■ ドイツ語 ü の音写(意図的) -->
+	<dict><key>phrase</key><string>VDP. Die Prädikatsweingüter</string><key>shortcut</key><string>ゔぃーでぃーぴーでぃーぷれでぃかーつわいんぐゅーたー★</string></dict>	<!-- ぐゅ(grenier/vin-acronyme.plist) -->
+	<dict><key>phrase</key><string>Südsteiermark</string><key>shortcut</key><string>ずゅーとしゅたいやーまるく</string></dict>	<!-- ずゅ(vin.plist) -->
+	<dict><key>phrase</key><string>ズュートシュタイヤーマルク</string><key>shortcut</key><string>ずゅーとしゅたいやーまるく</string></dict>	<!-- ずゅ(vin.plist) -->
+	<dict><key>phrase</key><string>ズュース</string><key>shortcut</key><string>ずゅーす</string></dict>	<!-- ずゅ(vin.plist) -->
+	<dict><key>phrase</key><string>Süßreserve</string><key>shortcut</key><string>ずゅーすれぜるゔぇ</string></dict>	<!-- ずゅ(vin.plist) -->
+	<dict><key>phrase</key><string>ズュースレゼルヴェ</string><key>shortcut</key><string>ずゅーすれぜるゔぇ</string></dict>	<!-- ずゅ(vin.plist) -->
+	<dict><key>phrase</key><string>Süß</string><key>shortcut</key><string>ずゅーす</string></dict>	<!-- ずゅ(vin.plist) -->
+
+	<!-- ■ スペイン語 lle 等の音写(意図的) -->
+	<dict><key>phrase</key><string>Valle de la Orotava</string><key>shortcut</key><string>ばりぇでらおろたば</string></dict>	<!-- りぇ(vin.plist) -->
+	<dict><key>phrase</key><string>Slavonija i Hrvatsko Podunavlje</string><key>shortcut</key><string>すらゔぉにやいふるゔぁつこぽどぅなゔりぇ</string></dict>	<!-- りぇ(vin.plist) -->
+	<dict><key>phrase</key><string>エントレ・コルディリェラス</string><key>shortcut</key><string>えんとれこるでぃりぇらす</string></dict>	<!-- りぇ(vin.plist) -->
+	<dict><key>phrase</key><string>Vinogorje</string><key>shortcut</key><string>ゔぃのごりぇ</string></dict>	<!-- りぇ(vin.plist) -->
+	<dict><key>phrase</key><string>Colheita</string><key>shortcut</key><string>こりぇいた</string></dict>	<!-- りぇ(vin.plist) -->
+	<dict><key>phrase</key><string>コリェイタ</string><key>shortcut</key><string>こりぇいた</string></dict>	<!-- りぇ(vin.plist) -->
+	<dict><key>phrase</key><string>スペシャルタイプColheita</string><key>shortcut</key><string>すぺしゃるたいぷこりぇいた</string></dict>	<!-- りぇ(vin.plist) -->
+	<dict><key>phrase</key><string>Ull de Llebre</string><key>shortcut</key><string>うるでりぇぶれ</string></dict>	<!-- りぇ(vin.plist) -->
+
+	<!-- ■ 装飾的な小書き(固有名詞の公式表記) -->
+	<dict><key>phrase</key><string>カヒミ・カリィ</string><key>shortcut</key><string>かひみかりぃ</string></dict>	<!-- りぃ(personnalités.plist) -->
+	<dict><key>phrase</key><string>夫妻肺片</string><key>shortcut</key><string>ふーちーふぇいぴぃえん</string></dict>	<!-- ぴぃ(sacoche.plist) -->
+	<dict><key>phrase</key><string>ピュリニィ・モンラッシェ</string><key>shortcut</key><string>ぴゅりにぃもんらっしぇ</string></dict>	<!-- にぃ(vin.plist) -->
+	<dict><key>phrase</key><string>Pouilly sur Loire</string><key>shortcut</key><string>ぷいぃしゅーるろわーる</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>Pouilly-Fuissé</string><key>shortcut</key><string>ぷいぃふゅいっせ</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>Pouilly-Fumé</string><key>shortcut</key><string>ぷいぃふゅめ</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>Reuilly</string><key>shortcut</key><string>るいぃ</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>コート・デュ・ピィ</string><key>shortcut</key><string>こーとでゅぴぃ</string></dict>	<!-- ぴぃ(vin.plist) -->
+	<dict><key>phrase</key><string>ソミュール・シャンピニィ</string><key>shortcut</key><string>そみゅーるしゃんぴにぃ</string></dict>	<!-- にぃ(vin.plist) -->
+	<dict><key>phrase</key><string>ブラニィ</string><key>shortcut</key><string>ぶらにぃ</string></dict>	<!-- にぃ(vin.plist) -->
+	<dict><key>phrase</key><string>プイィ・シュール・ロワール</string><key>shortcut</key><string>ぷいぃしゅーるろわーる</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>プイィ・フュイッセ</string><key>shortcut</key><string>ぷいぃふゅいっせ</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>プイィ・フュメ</string><key>shortcut</key><string>ぷいぃふゅめ</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>プイィ・ロシェ</string><key>shortcut</key><string>ぷいぃろしぇ</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>プイィ・ヴァンゼル</string><key>shortcut</key><string>ぷいぃゔぁんぜる</string></dict>	<!-- いぃ(vin.plist) -->
+	<dict><key>phrase</key><string>ミュジニィ</string><key>shortcut</key><string>みゅじにぃ</string></dict>	<!-- にぃ(vin.plist) -->
+	<dict><key>phrase</key><string>Pouligny-Saint-Pierre</string><key>shortcut</key><string>ぷーりにぃさんぴえーる</string></dict>	<!-- にぃ(vin.plist) -->
+
+	<!-- ■ 誤記の疑い(要修正検討) -->
+	<dict><key>phrase</key><string>Kvalitetno vino s kontroliranim podrijetlom</string><key>shortcut</key><string>くゔぁりててぅのゔぃーのさこんとぅろりらにむぽどぅりえとぅろむ</string></dict>	<!-- てぅ(vin.plist) -->
+	<dict><key>phrase</key><string>Cules târziu</string><key>shortcut</key><string>くれすたるぜぃう</string></dict>	<!-- ぜぃ(vin.plist) -->
 </array>
 </plist>
