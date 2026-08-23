@@ -1361,6 +1361,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // かわいいなあ: 終助詞 なあ の遷移が bigram 頼みで、いい→なあ の観測bigramを持つ
+    // 川+いい 分割が かわいい を跨いでいた。述語直後の終助詞かなクラスタをクランプ
+    // (のが/のは と同型の文法クランプ。ユーザ報告 2628)。
+    func testRegressionRealLMKawaiinaaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        for reading in ["かわいいなあ", "かわいいな", "かわいいねえ", "すごいなあ"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, reading, "reading=\(reading) multi=\(multi)")
+        }
+    }
+
+    // つれていって: 辞書の いって は名詞 一手 のみで、動詞て形直後でも 連れて一手 が
+    // 先頭だった(行って/言って は派生OOV 7200 で常敗)。て形直後の いって は
+    // 行って をクランプ・一手 を減点し、連れて言って は suppr で封じる(ユーザ報告 2628)。
+    func testRegressionRealLMTsureteittePrefersItte() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let tsurete = converter.multiClauseCandidates(for: "つれていって", systemCandidateMode: .surface)
+        XCTAssertEqual(tsurete.first, "連れて行って", "list=\(tsurete)")
+        XCTAssertFalse(tsurete.contains("連れて言って"), "list=\(tsurete)")
+        // 同型の補助動詞連結(multi が空なら単文節に委譲されるのでバートップで判定)
+        let motteMulti = converter.multiClauseCandidates(for: "もっていって", systemCandidateMode: .surface)
+        let motteSingle = converter.candidates(for: "もっていって", limit: 4, systemCandidateMode: .surface)
+        let motteTop = motteMulti.first ?? motteSingle.first
+        XCTAssertTrue(motteTop == "持って行って" || motteTop == "持っていって",
+                      "multi=\(motteMulti) single=\(motteSingle)")
+        // 将棋の「ここで一手」(助詞 で+一手)は無傷
+        let kokode = converter.multiClauseCandidates(for: "ここでいって", systemCandidateMode: .surface)
+        XCTAssertTrue(kokode.contains { $0.contains("一手") } || !kokode.isEmpty, "list=\(kokode)")
+    }
+
     // るい: 人名の ルイ(基底rank2)がカタカナ強調フィルタで消え、かな るい が2位だった。
     // seed {類, ルイ, 塁, 累}+かな非掲載で末尾降格(ユーザ指定 2627)。
     func testRegressionRealLMRuiIncludesKatakanaRui() throws {

@@ -1193,6 +1193,26 @@ extension KanaKanjiConverter {
                 Self.multiClauseBOSPenalizedParticles.contains(surface) {
                 penalty += Self.multiClauseBOSParticlePenalty
             }
+            // 述語直後の終助詞かなクラスタはクランプ(定数コメント参照。2628)。
+            // 1字(な/ね/し 等)は対象外 — 来ん(派生)+な が こんな を乗っ取る(検証で2件退行)。
+            // のね/のよ も対象外 — 名詞除外付きの既存厳格ゲート(ExplanatoryFinal)に委譲
+            if surface == reading, reading.count >= 2,
+                Self.multiClauseFinalParticleReadings.contains(reading),
+                !Self.multiClauseExplanatoryFinalSurfaces.contains(reading),
+                prev != Self.multiClauseBOSMarker,
+                (prevIsInflectionDerived || prevIsDictionaryFormPredicate
+                    || (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)) {
+                base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
+            }
+            // 動詞て形(活用派生)直後の いって(定数コメント参照。2628)
+            if reading == "いって", prevIsInflectionDerived,
+                prev.hasSuffix("て") || prev.hasSuffix("で") {
+                if surface == "行って" {
+                    base = min(base, Self.multiClauseTeIkuAuxiliaryCost)
+                } else if surface == "一手" {
+                    penalty += Self.multiClauseTeNounItteAfterTeFormPenalty
+                }
+            }
             // コピュラ だ の直後の追加語彙の短い非かな断片(ろー→raw/ロー 等)は
             // だろー クラスタの乗っ取り(すごいだろー→すごいだraw)。だ+外来語の
             // 無空白連結は非文なので減点する(ユーザー報告 2618)。
@@ -1899,6 +1919,12 @@ extension KanaKanjiConverter {
         // かなに是正した「なら」の元の漢字版(買う奈良 等)は候補として温存する(#2以降)。
         if let kanjiVariant = conditionalNaraKanjiVariant, !results.contains(kanjiVariant) {
             results.append(kanjiVariant)
+        }
+        // 読み全体キーの抑制(suppr の つれていって→連れて言って 等)を結合結果にも適用する。
+        // 従来はセグメント単位の直接surfaceチェックのみで、複数ノードの結合が抑制表層と
+        // 一致するケースをすり抜けていた(2628)。
+        if let directSuppressed = suppressedByReading[normalized], !directSuppressed.isEmpty {
+            results.removeAll { directSuppressed.contains($0) }
         }
         // 旧仮名遣い(ゐゑヰヱ 等)の抑制は単文節と同じく連文節にも適用する(ぐらゐかなー 等)。
         return filterHistoricalKanaSurfaceCandidates(for: normalized, candidates: results)
