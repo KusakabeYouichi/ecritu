@@ -98,8 +98,9 @@ enum MemoryForensics {
             let usedAfter = Double(after.size_in_use) / 1_048_576
             let allocAfter = Double(after.size_allocated) / 1_048_576
             let fpAfter = currentPhysFootprintMB() ?? -1
-            guard usedAfter - usedBefore >= minDeltaMB
-                || fpAfter - fpBefore >= minDeltaMB else { return }
+            // 増減どちらも記録対象(スリム化の返却量も見る。2640)
+            guard abs(usedAfter - usedBefore) >= minDeltaMB
+                || abs(fpAfter - fpBefore) >= minDeltaMB else { return }
             func fmt(_ value: Double) -> String { String(format: "%.1f", value) }
             logSink?(
                 "MEMFORENSICSスパイク op=\(tag) 窓\(fmt(delaySeconds))s"

@@ -314,6 +314,12 @@ struct ContentView: View {
     private var adjectiveMeKanjiCandidatesEnabled = false
 
     @AppStorage(
+        SettingsKeys.suspendMemorySlimmingEnabled,
+        store: Self.sharedDefaults
+    )
+    private var suspendMemorySlimmingEnabled = true
+
+    @AppStorage(
         SettingsKeys.kaomojiCandidateDisplayEnabled,
         store: Self.sharedDefaults
     )
@@ -479,6 +485,7 @@ struct ContentView: View {
             radicalStrokeCountStyleRawValue,
             String(ordinalMeKanjiPreferred),
             String(adjectiveMeKanjiCandidatesEnabled),
+            String(suspendMemorySlimmingEnabled),
             String(kaomojiCandidateDisplayEnabled),
             String(historicalKanaCandidatesEnabled),
             String(iterationMarkCandidatesEnabled),
@@ -580,6 +587,7 @@ struct ContentView: View {
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "première…: 順序の『目』を漢字で先に")
         bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "un peu …: 形容詞語幹の『目』候補も出す")
+        bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
         str(SettingsKeys.contactCandidateDisplayMode, contactCandidateDisplayModeRawValue, "iOSの連絡先の姓、名、会社名")
         str(SettingsKeys.userDictionaryCandidateDisplayMode, userDictionaryCandidateDisplayModeRawValue, "iOSのユーザ辞書の単語")
@@ -1295,7 +1303,9 @@ struct ContentView: View {
 
                         // ──── 診断 ────
 
-                        ConversionCacheSettingsSection()
+                        ConversionCacheSettingsSection(
+                            suspendMemorySlimmingEnabled: $suspendMemorySlimmingEnabled
+                        )
 
                         // キーボード診断ログは開発ビルド専用(キーボード側の記録も
                         // DEBUG 専用のため、リリースでは常に空。審査ガイドライン2.2対策)

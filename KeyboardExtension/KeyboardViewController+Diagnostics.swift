@@ -326,11 +326,15 @@ extension KeyboardViewController {
         )
     }
 
+    // honorsSlimmingToggle: 通常の非表示時(viewWillDisappear/viewDidDisappear)だけ true。
+    // メモリ警告・ゾンビ不活性化・attach失敗の後始末は生存機構なのでトグルに関係なく実行する(2640)
     func performHiddenKeyboardMemoryTrim(
         reason: String,
         releaseHostingView: Bool,
-        includeSystemCaches: Bool
+        includeSystemCaches: Bool,
+        honorsSlimmingToggle: Bool = false
     ) {
+        let slimmingActive = !honorsSlimmingToggle || isSuspendMemorySlimmingEnabled
         pendingRefreshKeyboardStateRequests = 0
         isRefreshKeyboardStateAsyncScheduled = false
         activeConversion = nil
@@ -364,10 +368,13 @@ extension KeyboardViewController {
         clearSupplementaryLexiconCandidatesForMemoryTrim()
         clearContactCandidatesIfNeeded(refreshKeyboardState: false)
 
-        if includeSystemCaches {
-            kanaKanjiConverter.clearAllCaches()
-        } else {
-            kanaKanjiConverter.clearSharedDataCaches()
+        // 変換キャッシュ破棄はスリム化設定に従う(オフ=調査時など、破棄も返却もしない)
+        if slimmingActive {
+            if includeSystemCaches {
+                kanaKanjiConverter.clearAllCaches()
+            } else {
+                kanaKanjiConverter.clearSharedDataCaches()
+            }
         }
 
         if releaseHostingView,
@@ -380,8 +387,20 @@ extension KeyboardViewController {
 
         lastRenderConfiguration = nil
 
+        // free済みdirtyページをOSへ返す(2640)。キャッシュ解放だけでは malloc が
+        // ページを抱えたままで footprint が下がらず(実測: 退出後も alloc 68MB 据え置き)、
+        // 長寝プロセスが高水位のまま叩き起こされて per-process-limit 即死→
+        // 再起動ペナルティ(40秒→141秒とエスカレート)→Apple KB 化していた。
+        // 寝る瞬間に返却しておけば起床時の最初の変換(+4MB)に耐えられる。
+        if slimmingActive {
+            malloc_zone_pressure_relief(nil, 0)
+            // MEMFORENSICS(時限計測 2640): スリム化の返却量(1MB以上動いたときだけ記録)
+            MemoryForensics.noteSpikeWindow("スリム化(\(reason))")
+        }
+
         updateKeyboardDiagnosticsHeartbeat(
-            event: "キーボード非表示でメモリ解放 reason=\(reason) releaseView=\(releaseHostingView) clearSystem=\(includeSystemCaches) profile=\(memoryFailSafeProfile.rawValue)",
+            event: "キーボード非表示でメモリ解放 reason=\(reason) releaseView=\(releaseHostingView) clearSystem=\(includeSystemCaches)"
+                + " slim=\(slimmingActive ? "on" : "off") profile=\(memoryFailSafeProfile.rawValue)",
             appendLog: true
         )
     }
