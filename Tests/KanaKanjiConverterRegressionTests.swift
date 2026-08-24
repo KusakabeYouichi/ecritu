@@ -551,18 +551,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // しめで: 派生基底順で 沁めで/浸目で/染めで が先行していた。seed で
-    // {締めで, しめで, 〆で} に固定(2543)。単独 しめ の 〆 は exactReadingOnly の
-    // 末尾供給のまま変わらないことも確認する。
+    // {締めで, しめで, 〆で} に固定(2543)。単独 しめ の 〆 は 2643 のユーザ指定で
+    // 2位へ変更(旧: exactReadingOnly の末尾供給。testRegressionRealLM2643Batch が受け持つ)
     func testRegressionRealLMShimedeOrdering() throws {
         try prepareRealLMDictionary()
 
         let shimede = converter.candidates(for: "しめで", limit: 10, systemCandidateMode: .surface)
         XCTAssertEqual(Array(shimede.prefix(3)), ["締めで", "しめで", "〆で"], "list=\(shimede)")
-        let shime = converter.candidates(for: "しめ", limit: 24, systemCandidateMode: .surface)
-        XCTAssertTrue(shime.contains("〆"), "list=\(shime)")
-        if let mark = shime.firstIndex(of: "〆") {
-            XCTAssertGreaterThan(mark, shime.count / 2, "〆 は後方のまま list=\(shime)")
-        }
     }
 
     // じょうず: 上図(rank0/wc7388)が 上手 に僅差で勝ち 上図にやると になっていた。
@@ -1422,6 +1417,84 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // N択(三者択一の意): 一〜四択が辞書・LMに無い → seed 供給(算用併記)。
     // ごたく は 御託 先頭を守り exactReadingOnly で末尾供給。3+たく の数字文脈は 卓/択(2633)
+    // かげになってる: 嗅げにになってる(に二重)だけになる合成バグ+嗅げ の浮上(2644)
+    func testRegressionRealLMKageNinatteru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for probe in ["かげに", "かげにな", "かげになって", "かげになってる", "かげになっている", "かげになってて"] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let s = converter.candidates(for: probe, limit: 6, systemCandidateMode: .surface)
+            print("PROBE \(probe) multi=\(m.prefix(5)) single=\(s.prefix(5))")
+        }
+        let target = converter.multiClauseCandidates(for: "かげになってる", systemCandidateMode: .surface)
+        XCTAssertEqual(target.first, "影になってる", "multi=\(target.prefix(4))")
+        XCTAssertFalse(target.contains { $0.contains("にに") }, "に二重: \(target.prefix(6))")
+        // 嗅げ系は変種列に残る(非文だが先頭を取らなければ実害小)。先頭の維持だけ固定
+        let targetIru = converter.multiClauseCandidates(for: "かげになっている", systemCandidateMode: .surface)
+        XCTAssertEqual(targetIru.first, "影になっている", "multi=\(targetIru.prefix(4))")
+        for probe in ["かげになって", "かげになってて"] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertEqual(m.first?.hasPrefix("影"), true, "\(probe) multi=\(m.prefix(3))")
+        }
+
+        // とっていて: かな先頭+捕っていていて(いて二重)の報告(2644)
+        let totteite = converter.candidates(for: "とっていて", limit: 10, systemCandidateMode: .surface)
+        let totteiteMulti = converter.multiClauseCandidates(for: "とっていて", systemCandidateMode: .surface)
+        print("PROBE とっていて single=\(totteite) multi=\(totteiteMulti.prefix(5))")
+        print("PROBE skipKanaLead=\(converter.derivationBaseSeedSkipsKanaLead(for: "とっていて"))"
+            + " kanaPreferred=\(converter.isLMKanaPreferred(reading: "とっていて", among: ["取っていて"]))")
+        XCTAssertFalse(totteite.contains { $0.contains("いていて") }, "いて二重: \(totteite)")
+        XCTAssertEqual(totteite.first, "取っていて", "single=\(totteite.prefix(4))")
+    }
+
+    // 2643 バッチ: ふんぐらいかな/かさない/かねひで/かげ/とった(ウ音便)/しめ
+    func testRegressionRealLM2643Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        // 5確定→ふんぐらいかな: 末尾6かなまで合成供給(分ぐらいかな)
+        let fun = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            [], reading: "ふんぐらいかな", precedingCharacter: "5"
+        )
+        XCTAssertTrue(fun.contains("分ぐらいかな"), "\(fun)")
+
+        // かさない: 断片合成(科さない 等)より正規活用 貸さない を先頭に
+        let kasanai = converter.candidates(for: "かさない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kasanai.prefix(3)), ["貸さない", "課さない", "科さない"], "list=\(kasanai)")
+
+        // かげ: {影, 陰, 蔭} 先頭(嗅げ/かな が上位に居た)
+        let kage = converter.candidates(for: "かげ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kage.prefix(3)), ["影", "陰", "蔭"], "list=\(kage)")
+
+        // しめ: 〆 を2位に(序数の目選好オンだと 締目 が割り込むため、実機の既定と
+        // 同じくオフで検証。オン時は 締目 が先頭に入るのは仕様)
+        converter.setOrdinalMeKanjiPreferred(false)
+        let shime = converter.candidates(for: "しめ", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(shime.prefix(4)), ["締め", "〆", "〆め", "絞め"], "list=\(shime)")
+
+        // とった: ウ音便誤生成(問った/訪った)を根絶し、ユーザ指定順
+        let totta = converter.candidates(for: "とった", limit: 16, systemCandidateMode: .surface)
+        XCTAssertFalse(totta.contains("問った") || totta.contains("訪った"), "list=\(totta)")
+        XCTAssertEqual(Array(totta.prefix(5)), ["取った", "撮った", "採った", "捕った", "獲った"], "list=\(totta)")
+        let totteite = converter.multiClauseCandidates(for: "とっていて", systemCandidateMode: .surface)
+        XCTAssertFalse(totteite.prefix(4).contains { $0.contains("問っ") || $0.contains("訪っ") }, "multi=\(totteite.prefix(4))")
+        let wototta = converter.multiClauseCandidates(for: "をとった", systemCandidateMode: .surface)
+            .first ?? converter.candidates(for: "をとった", limit: 4, systemCandidateMode: .surface).first
+        XCTAssertEqual(wototta, "を取った", "wototta=\(String(describing: wototta))")
+        let tottatoki = converter.multiClauseCandidates(for: "とったとき", systemCandidateMode: .surface)
+        XCTAssertFalse(tottatoki.prefix(4).contains { $0.contains("問っ") || $0.contains("訪っ") }, "multi=\(tottatoki.prefix(4))")
+
+        // かねひで: 合成・連文節にもかな優先が伝播すること
+        let kanehidega = converter.candidates(for: "かねひでが", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(kanehidega.prefix(3).contains("かねひでが"), "list=\(kanehidega)")
+        XCTAssertTrue(kanehidega.prefix(3).contains("金秀が"), "list=\(kanehidega)")
+        // 先頭は かねひでが安い(かなの かねひで が保持されることが本質。全かな
+        // かねひでがやすい はエコー抑制の対象で、要望があれば misc curated 化で対応)
+        let kanehideyasui = converter.multiClauseCandidates(for: "かねひでがやすい", systemCandidateMode: .surface)
+        XCTAssertEqual(kanehideyasui.first, "かねひでが安い", "multi=\(kanehideyasui.prefix(4))")
+    }
+
     // あじ: 基底 按司(0) アジ(1) 鯵(2)…味(4)。seed {味, 鯵, アジ}+鰺(異体字)suppr(2642)
     func testRegressionRealLMAjiPrefersAji() throws {
         try prepareRealLMDictionary()

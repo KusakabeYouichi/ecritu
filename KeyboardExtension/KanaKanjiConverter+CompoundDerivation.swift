@@ -587,7 +587,9 @@ extension KanaKanjiConverter {
             where reading.count > counterReading.count && reading.hasPrefix(counterReading) {
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
                 let tail = String(reading.dropFirst(counterReading.count))
-                guard tail.count <= 4,
+                // 末尾は6かなまで(ぐらいかな=5かな が4制限で漏れ、5確定→ふんぐらいかな で
+                // 分ぐらいかな が出なかった。ユーザ報告 2643)
+                guard tail.count <= 6,
                     tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
                     continue
                 }
@@ -766,6 +768,11 @@ extension KanaKanjiConverter {
                     break
                 }
             }
+        }
+        // 補生成した 〜目/〜め が抑制済み表層を復活させないように、読み単位の抑制を
+        // 出口で適用する(締目@しめ が suppr を素通りしていた。2643)
+        if let suppressed = store.suppressedCandidatesByReading()[reading], !suppressed.isEmpty {
+            result.removeAll { suppressed.contains($0) }
         }
         return result
     }

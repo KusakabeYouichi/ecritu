@@ -723,6 +723,13 @@ extension KanaKanjiConverter {
     ]
     // 動詞て形直後の短い(≤2かな)カタカナ化ノードの減点(〜てるね→〜てルネ 対策。2642)
     static let multiClauseTeKatakanaShortNounPenalty = 6000
+    // 命令形(え段)+格助詞 込みの活用供給ノードの減点(嗅げに 対策。2644)。
+    // と(引用: 読めと言った)は文法的なので含めない
+    static let multiClauseImperativeBannedTailParticles: Set<Character> = ["に", "を", "が", "は", "へ", "も"]
+    static let multiClauseERowKanaCharacters: Set<Character> = [
+        "え", "け", "げ", "せ", "ぜ", "て", "で", "ね", "へ", "べ", "ぺ", "め", "れ"
+    ]
+    static let multiClauseImperativeParticlePenalty = 3000
     // 副助詞 くらい/ぐらい は体言・用言に付き文頭には立たない。文頭のかな識別 くらい は
     // 形容詞 暗い(uni6012)より安い(5614)ため くらいのはなぜだろう が 暗いのは… に勝っていた。
     // BOS 直後のかな くらい/ぐらい に減点して文頭では形容詞を優先する(2513)

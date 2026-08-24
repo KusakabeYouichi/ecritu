@@ -241,6 +241,10 @@ extension KanaKanjiConverter {
     // 関西弁・口語の否定縮約(する→せん 系)。文語サ変ゲート(derivedCandidates)で参照
     static let kansaiContractionReadingSuffixes: Set<String> = ["せん", "せんかった", "せんかったら", "せんで"]
 
+    // ウ音便の五段う動詞(促音便形 った/って を作らず、うた/うて が正)。
+    // 現代語で頻出の 問う/請う/乞う を中心に、辞書に載る同型のみ
+    static let uOnbinGodanUSurfaces: Set<String> = ["問う", "請う", "乞う", "訪う", "厭う", "恋う"]
+
     func derivedCandidates(
         for reading: String,
         rule: InflectionRule,
@@ -347,6 +351,14 @@ extension KanaKanjiConverter {
             // 押し下げていた(いい 基底の除外と同型の一般対策。2494)。
             // える 読みの 得る/獲る は無傷なので 得られる/得ています 等は従来どおり作れる。
             if baseReading == "うる", inflectionClass == InflectionClass.ichidan {
+                continue
+            }
+            // ウ音便動詞(問う/請う/乞う/訪う/厭う/恋う)は促音便形を作らない。
+            // 正しくは 問うた/問うて(ウ音便)で、godan-u の機械適用が 問った/問って を
+            // 誤生成し とった/とって系の上位に紛れ込んでいた(ユーザ報告 2643)
+            if inflectionClass == InflectionClass.godanU,
+                rule.outputCandidateSuffix.hasPrefix("っ"),
+                Self.uOnbinGodanUSurfaces.contains(candidate) {
                 continue
             }
 

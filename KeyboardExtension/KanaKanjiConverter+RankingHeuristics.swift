@@ -94,13 +94,27 @@ extension KanaKanjiConverter {
             // 出したい読みは seed にかなを掲載済みなので発火しない)。
             let seedDeclared = KanaKanjiSeedDictionary.seed[reading]
             let kanaSkippedBySeed = seedDeclared != nil && !(seedDeclared?.contains(reading) ?? false)
+            // 派生読み(とっていて 等)は、基底 seed がかな非掲載(とる {取る,…})なら
+            // 同じ人手宣言としてかな識別を全候補の末尾へ降格する。辞書直候補ゼロの
+            // 派生専用読みなので systemCandidates 基準では others が空になり、
+            // 全 scores 基準で降格する(かな とって+いて の quickPostfix 合成(1120)が
+            // 活用チャネル(980)より高スコアで先頭化していた。2644)
+            // 降格先は「最上位の直下」: 先頭は譲るがかなは2位に残す(知って/しって の
+            // 既存期待と両立。末尾送りは しって の退行になった)
+            if seedDeclared == nil, derivationBaseSeedSkipsKanaLead(for: reading) {
+                let allOthers = scores.keys.filter { $0 != reading }
+                if let top = allOthers.compactMap({ scores[$0] }).max() {
+                    scores[reading] = min(identityScore, top - 1)
+                }
+            }
             let others = uniqueCandidates(from: systemCandidates).filter { $0 != reading }
             if kanaSkippedBySeed {
                 let otherScores = others.compactMap { scores[$0] }
                 if let lowest = otherScores.min() {
                     scores[reading] = min(identityScore, lowest - 1)
                 }
-            } else if !others.isEmpty, isLMKanaPreferred(reading: reading, among: others) {
+            } else if !others.isEmpty, isLMKanaPreferred(reading: reading, among: others),
+                !derivationBaseSeedSkipsKanaLead(for: reading) {
                 let maxOther = others.map { scores[$0, default: 0] }.max() ?? 0
                 scores[reading] = max(identityScore, maxOther + 1)
             }
@@ -122,6 +136,23 @@ extension KanaKanjiConverter {
                 scores[candidate] = min(penalizedScore, lowestNonKatakanaScore - 1)
             }
         }
+    }
+
+    // 派生読み(とっていて 等)のかな首位化の抑止判定(2644): 派生の基底読みの seed が
+    // かな非掲載(=漢字正書の人手宣言。とる {取る,…} 等)なら、corpus 優位のかな識別が
+    // 派生形で先頭化するのを防ぐ。基底 seed にかなを掲載した族(ある/うまい 等)は不発。
+    func derivationBaseSeedSkipsKanaLead(for reading: String) -> Bool {
+        for rule in Self.allInflectionRules {
+            guard let stem = removingSuffix(reading, suffix: rule.readingSuffix),
+                !stem.isEmpty else {
+                continue
+            }
+            let base = stem + rule.baseReadingSuffix
+            if let seedOrder = KanaKanjiSeedDictionary.seed[base], !seedOrder.contains(base) {
+                return true
+            }
+        }
+        return false
     }
 
     // コピュラ だ の活用尾。keepKana(だ剥がし)で使う。長い方を先にマッチさせる
@@ -188,10 +219,11 @@ extension KanaKanjiConverter {
         guard ordered.contains(reading) else {
             return ordered
         }
-        // seed がかな識別を明示先頭にしている読み(うまい 等)は LM 比較で降格しない。
-        // 同表記レア読み(甘い=うまい 等)の安い unigram が比較を汚し、seed の並びを
-        // 覆してしまう(うまいのだ の派生でかなが末尾落ち。2402)。
-        if KanaKanjiSeedDictionary.seed[reading]?.first == reading {
+        // seed のある読みは人手の並びが最終決定(2644)。かな識別の LM 昇格が seed の
+        // 漢字先頭を覆す(とる: かな とる が corpus 優位で、seed {取る,…} を差し置いて
+        // とっていて 等の派生でかなが先頭化)のを防ぐ。かな先頭にしたい読みは seed の
+        // 先頭にかなを書けばよい(うまい 等の既存流儀)。
+        if KanaKanjiSeedDictionary.seed[reading] != nil {
             return ordered
         }
         let others = ordered.filter { $0 != reading }
