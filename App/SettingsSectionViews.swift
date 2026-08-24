@@ -219,12 +219,22 @@ struct SetupStepsSection: View {
 // カウンタを +1 すると、キーボード側が次の表示または Darwin 通知で clearSharedDataCaches() を
 // 呼んで候補キャッシュ・学習/追加語彙キャッシュを破棄する(語彙自体は消えない。2510)
 struct ConversionCacheSettingsSection: View {
+    @Binding var suspendMemorySlimmingEnabled: Bool
     @State private var isClearedBadgeVisible = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("変換キャッシュ")
                 .font(.headline)
+
+            Toggle("キーボードが閉じたときにメモリを整理", isOn: $suspendMemorySlimmingEnabled)
+                .toggleStyle(.switch)
+
+            Text("キーボードが画面から消えるたびに、変換キャッシュの破棄と使い終わったメモリのシステムへの返却を行います。長時間使い続けたときにキーボードがシステムに強制終了されて標準キーボードに切り替わってしまう問題を抑えます。次回表示時のキャッシュ再構築ぶんだけ、最初の変換がわずかに遅くなることがあります。初期設定はオンです。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+
+            Divider()
 
             Text("キーボードが持っている変換結果のキャッシュを破棄します。学習語彙や追加語彙は消えません。誤変換を直したのに『前の並びが残っている』ときに使ってください(キーボードを閉じて開き直すか、他のアプリに切り替えても破棄されます)。")
                 .font(.footnote)

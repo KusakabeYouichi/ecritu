@@ -52,6 +52,12 @@ extension KeyboardViewController {
                 fallback: false
             )
         )
+        // サスペンド時スリム化(キャッシュ破棄+ページ返却)。既定オン(2640)
+        isSuspendMemorySlimmingEnabled = sharedBoolValue(
+            from: sharedDefaults,
+            key: SharedDefaultsKeys.suspendMemorySlimmingEnabled,
+            fallback: true
+        )
 
         // 汎用Latinサジェスト語彙(同梱頻度リスト)の言語別トグル。既定は全言語OFF。
         var latinLexiconLanguages: Set<String> = []

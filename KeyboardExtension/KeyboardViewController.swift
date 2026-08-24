@@ -270,6 +270,9 @@ final class KeyboardViewController: UIInputViewController {
         let modeRawValue: String
     }
     var memoryFailSafeProfile: MemoryFailSafeProfile = .normal
+    // サスペンド時スリム化(キーボード非表示時のキャッシュ破棄+ページ返却)。
+    // コンテナーアプリでOn/Off可、既定オン(2640)
+    var isSuspendMemorySlimmingEnabled = true
     var hasDeferredSharedSettingsCatchUp = false
     var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     var didApplyInactiveSessionMitigation = false
@@ -388,6 +391,7 @@ final class KeyboardViewController: UIInputViewController {
         static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
         static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
         static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
+        static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
         static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
         static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
         static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
@@ -727,7 +731,8 @@ final class KeyboardViewController: UIInputViewController {
         performHiddenKeyboardMemoryTrim(
             reason: "viewWillDisappear",
             releaseHostingView: false,
-            includeSystemCaches: memoryFailSafeProfile != .normal
+            includeSystemCaches: memoryFailSafeProfile != .normal,
+            honorsSlimmingToggle: true
         )
     }
 
@@ -738,7 +743,8 @@ final class KeyboardViewController: UIInputViewController {
         performHiddenKeyboardMemoryTrim(
             reason: "viewDidDisappear",
             releaseHostingView: true,
-            includeSystemCaches: true
+            includeSystemCaches: true,
+            honorsSlimmingToggle: true
         )
     }
 

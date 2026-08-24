@@ -83,6 +83,7 @@ enum SettingsKeys {
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
+    static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
     static let mazegakiCandidateMode = "mazegakiCandidateMode"
     static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
     static let latinLexiconEnglishEnabled = "latinLexiconEnglishEnabled"
