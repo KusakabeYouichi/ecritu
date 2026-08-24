@@ -339,7 +339,13 @@ extension KeyboardViewController {
             reading: cacheKey.reading,
             precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last,
             suppressedCandidates: kanaKanjiConverter.store
-                .suppressedCandidatesByReading()[cacheKey.reading] ?? []
+                .suppressedCandidatesByReading()[cacheKey.reading] ?? [],
+            tailConversion: { [weak self] tail in
+                // 助数詞の後ろの読みを変換した形(しけん→試験)を合成供給に使う(2645)
+                self?.kanaKanjiConverter.candidates(
+                    for: tail, limit: 1, systemCandidateMode: .surface
+                ).first
+            }
         )
 
         let presentation = CandidatePresentation(

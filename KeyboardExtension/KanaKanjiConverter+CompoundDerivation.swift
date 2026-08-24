@@ -556,11 +556,15 @@ extension KanaKanjiConverter {
         }
     }
 
+    // tailConversion: 助数詞+かな末尾の合成供給時に、末尾を変換して漢字形も併せて
+    // 供給するためのフック(2確定→じしけん→次試験。static のため呼び出し側が
+    // converter.candidates を閉じ込めて渡す。2645)
     static func digitContextCounterBoostedCandidates(
         _ candidates: [String],
         reading: String,
         precedingCharacter: Character?,
-        suppressedCandidates: Set<String> = []
+        suppressedCandidates: Set<String> = [],
+        tailConversion: ((String) -> String?)? = nil
     ) -> [String] {
         guard let precedingCharacter,
             isCounterBoostDigit(precedingCharacter) else {
@@ -595,6 +599,19 @@ extension KanaKanjiConverter {
                 }
                 var matched: [String] = []
                 for surface in surfaces {
+                    // 末尾の変換形(しけん→試験)も供給する(2次試験。かな形より先)。
+                    // 付属語末尾(しか/だけ 等)は変換しない(回鹿 の誤供給防止)。
+                    // 変換形は全漢字のみ(分行き 等の交ぜ形は供給しない)
+                    if !counterPromotableKanaTails.contains(tail),
+                        let convertedTail = tailConversion?(tail),
+                        convertedTail != tail,
+                        KanaKanjiConverter.isAllKanjiSurface(convertedTail) {
+                        let convertedForm = surface + convertedTail
+                        if !suppressedCandidates.contains(convertedForm),
+                            !matched.contains(convertedForm) {
+                            matched.append(convertedForm)
+                        }
+                    }
                     let existing = candidates.filter {
                         $0.count > surface.count && $0.hasPrefix(surface) && !matched.contains($0)
                     }
