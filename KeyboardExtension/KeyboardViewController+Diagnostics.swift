@@ -289,15 +289,26 @@ extension KeyboardViewController {
                         && other.lostActiveOwnershipAt == 0
                         && other.isObservingSettingsDidChange
                 }
+            // ビュー木から完全に外れている(window/superview/parentVC 全て無し)ゾンビは、
+            // オーナー確認が取れなくても解放してよい(2646)。表示中のキーボードは必ず
+            // window を持つ(2604 の誤爆は window=true の個体をトークン不在だけで解放
+            // しようとしたのが原因)。全インスタンス降格中はオーナー不在かつ他アクティブ
+            // 無しになり、hosting を抱えた降格個体が解放されずに正味常駐を押し上げていた
+            // (2026-08-25 0:49 の死: 見送り3連発の後 fp61.8 で per-process-limit)。
+            let fullyDetached = viewIfLoaded?.window == nil
+                && viewIfLoaded?.superview == nil
+                && parent == nil
+                && host.view.window == nil
             guard !isObservingSettingsDidChange,
-                isConfirmedNonOwnerSession() || hasOtherActiveController else {
+                isConfirmedNonOwnerSession() || hasOtherActiveController || fullyDetached else {
                 // 弾いた理由を残す。ログに「ゾンビ生存確認」だけが並んで解放が来ないとき、
                 // どちらのゲートで止まったのかが分からず調査が遠回りになった(2601)。
                 appendKeyboardDiagnosticsLog(
                     "ゾンビ解放を見送り reason=\(reason)"
                         + " observing=\(isObservingSettingsDidChange)"
                         + " confirmedNonOwner=\(isConfirmedNonOwnerSession())"
-                        + " otherActive=\(hasOtherActiveController)",
+                        + " otherActive=\(hasOtherActiveController)"
+                        + " detached=\(fullyDetached)",
                     critical: true,
                     file: #fileID,
                     line: #line,
@@ -316,6 +327,9 @@ extension KeyboardViewController {
         host.removeFromParent()
         hostingController = nil
         lastRenderConfiguration = nil
+        // 解放したビュー階層のページをOSへ返す(2646)。実測でビュー解放だけでは
+        // footprint が動かなかった(57.7→57.7)— malloc が抱えたままだった
+        malloc_zone_pressure_relief(nil, 0)
         let beforeText = beforeMB.map { String(format: "%.1f", $0) } ?? "?"
         appendKeyboardDiagnosticsLog(
             "ゾンビのビュー階層を解放 reason=\(reason) footprintMB=\(beforeText)→\(diagnosticsFootprintMBText())",
