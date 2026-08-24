@@ -67,6 +67,8 @@
 		A1B2C3D4E5F600000000CC0E /* LatinSuggestionLexicon_de.txt in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000CC0F /* LatinSuggestionLexicon_de.txt */; };
 		DEADBEEF0000000000000001 /* KanjiRadicalIndex.txt in Resources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000002 /* KanjiRadicalIndex.txt */; };
 		DEADBEEF000000000000000C /* bushu.plist in Resources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000000000000D /* bushu.plist */; };
+		A1B2C3D4E5F600000000FA01 /* grammaire.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FA02 /* grammaire.plist */; };
+		A1B2C3D4E5F600000000FA03 /* grammaire.plist in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FA02 /* grammaire.plist */; };
 		A1B2C3D4E5F600000000AB01 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB02 /* PrivacyInfo.xcprivacy */; };
 		A1B2C3D4E5F600000000AB03 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000AB04 /* PrivacyInfo.xcprivacy */; };
 		A1B2C3D4E5F600000000CC10 /* LatinSuggestionLexicon_it.txt in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000CC11 /* LatinSuggestionLexicon_it.txt */; };
@@ -197,6 +199,7 @@
 		A1B2C3D4E5F600000000CC0F /* LatinSuggestionLexicon_de.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LatinSuggestionLexicon_de.txt; sourceTree = "<group>"; };
 		DEADBEEF0000000000000002 /* KanjiRadicalIndex.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = KanjiRadicalIndex.txt; sourceTree = "<group>"; };
 		DEADBEEF000000000000000D /* bushu.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = bushu.plist; path = ../references/bushu.plist; sourceTree = "<group>"; };
+		A1B2C3D4E5F600000000FA02 /* grammaire.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = grammaire.plist; path = ../references/grammaire.plist; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000AB02 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000AB04 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000CC11 /* LatinSuggestionLexicon_it.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LatinSuggestionLexicon_it.txt; sourceTree = "<group>"; };
@@ -363,6 +366,7 @@
 				A1B2C3D4E5F600000000CC0F /* LatinSuggestionLexicon_de.txt */,
 				DEADBEEF0000000000000002 /* KanjiRadicalIndex.txt */,
 				DEADBEEF000000000000000D /* bushu.plist */,
+				A1B2C3D4E5F600000000FA02 /* grammaire.plist */,
 				A1B2C3D4E5F600000000AB04 /* PrivacyInfo.xcprivacy */,
 				A1B2C3D4E5F600000000CC11 /* LatinSuggestionLexicon_it.txt */,
 				A736682B523FF46CC7E3B566 /* InitialShortcutVocabMigration.json */,
@@ -555,6 +559,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1B2C3D4E5F600000000BB03 /* InitialSupprHiddenVocabMigration.json in Resources */,
+				A1B2C3D4E5F600000000FA03 /* grammaire.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -569,6 +574,7 @@
 				A1B2C3D4E5F600000000CC0E /* LatinSuggestionLexicon_de.txt in Resources */,
 				DEADBEEF0000000000000001 /* KanjiRadicalIndex.txt in Resources */,
 				DEADBEEF000000000000000C /* bushu.plist in Resources */,
+				A1B2C3D4E5F600000000FA01 /* grammaire.plist in Resources */,
 				A1B2C3D4E5F600000000AB03 /* PrivacyInfo.xcprivacy in Resources */,
 				A1B2C3D4E5F600000000CC10 /* LatinSuggestionLexicon_it.txt in Resources */,
 				70F6C445A2D172371280F702 /* InitialShortcutVocabMigration.json in Resources */,

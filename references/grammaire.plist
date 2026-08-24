@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- grammaire.plist: Sudachi の品詞・活用クラス誤りの記録(抑制ではない)。
+	     phrase=表層 / shortcut=読み。語そのものは候補に残し、活用クラスだけを否認する。
+	     実行時の実体は KanaKanjiStore.inflectionClassDeniedSurfacesByReading(手動同期)。
+	     suppr.plist はバンドル直読みで全エントリが抑制されるため、ここに分離している。 -->
+	<!-- ■ サ変可能の過剰付与(〜する は規範的でない) -->
+	<dict><key>phrase</key><string>既存</string><key>shortcut</key><string>きそん</string></dict>	<!-- 既存する は非規範。既存しちゃう 等の派生ゴミの源だった(2639)。サ変は 毀損/棄損 が正 -->
+</array>
+</plist>

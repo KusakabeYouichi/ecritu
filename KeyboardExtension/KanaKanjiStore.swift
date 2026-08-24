@@ -327,6 +327,36 @@ final class KanaKanjiStore {
         return !loadInflectionDictionary().isEmpty
     }
 
+    // 辞書(Sudachi)の品詞・活用クラス誤りの否認(2639)。既存 は suru(サ変可能)が
+    // 付くが 既存する は規範的でなく、既存しちゃう 等の派生ゴミの源になる(ユーザ指摘)。
+    // 源泉は references/grammaire.plist(バンドル直読み・同期不要)。phrase=表層/
+    // shortcut=読み で、語自体は候補に残し活用クラスだけ否認する
+    nonisolated(unsafe) private static var cachedInflectionClassDeniedSurfaces: [String: Set<String>]?
+    nonisolated(unsafe) private static let inflectionClassDeniedLock = NSLock()
+
+    static func inflectionClassDeniedSurfacesByReading() -> [String: Set<String>] {
+        inflectionClassDeniedLock.lock()
+        defer { inflectionClassDeniedLock.unlock() }
+        if let cached = cachedInflectionClassDeniedSurfaces {
+            return cached
+        }
+        var denied: [String: Set<String>] = [:]
+        let bundle = Bundle(for: KanaKanjiStore.self)
+        if let url = bundle.url(forResource: "grammaire", withExtension: "plist"),
+            let data = try? Data(contentsOf: url),
+            let entries = try? PropertyListSerialization.propertyList(
+                from: data, options: [], format: nil
+            ) as? [[String: String]] {
+            for entry in entries {
+                guard let phrase = entry["phrase"], let shortcut = entry["shortcut"],
+                    !phrase.isEmpty, !shortcut.isEmpty else { continue }
+                denied[shortcut, default: []].insert(phrase)
+            }
+        }
+        cachedInflectionClassDeniedSurfaces = denied
+        return denied
+    }
+
     func systemInflectionMetadata(for reading: String) -> (classMap: [String: String], hasMetadata: Bool) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
 
@@ -334,13 +364,15 @@ final class KanaKanjiStore {
             return ([:], false)
         }
 
+        var classMap: [String: String]
         if let sqliteIndex = sqliteIndexIfAvailable() {
-            let classMap = sqliteIndex.inflectionClassMap(for: normalizedReading)
-            return (classMap, !classMap.isEmpty)
+            classMap = sqliteIndex.inflectionClassMap(for: normalizedReading)
+        } else {
+            classMap = loadInflectionDictionary()[normalizedReading] ?? [:]
         }
-
-        let inflectionDictionary = loadInflectionDictionary()
-        let classMap = inflectionDictionary[normalizedReading] ?? [:]
+        if let denied = Self.inflectionClassDeniedSurfacesByReading()[normalizedReading] {
+            classMap = classMap.filter { !denied.contains($0.key) }
+        }
         return (classMap, !classMap.isEmpty)
     }
 
