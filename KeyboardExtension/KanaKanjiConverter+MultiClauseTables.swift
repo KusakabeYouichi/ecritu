@@ -703,12 +703,26 @@ extension KanaKanjiConverter {
     // などという→等という を作っていた。単文節では2番目に出したいので供給は残し、連文節だけ
     // 重くする(2508)
     static let multiClauseSeedSupplyCostFloors: [String: [String: Int]] = [
-        "など": ["等": 9000]
+        "など": ["等": 9000],
+        // サラ(人名)は Wikipedia LM バイアスで uni5852 と 皿(6338)より安く、
+        // 白いサラ/サラの上 を作る。皿の実効コスト(6838)の直上へ(2642)
+        "さら": ["サラ": 6950]
     ]
     // 比較の ほうが(方が)は連体形(買った/早い/する)・の・な の直後にしか立たない。curated の
     // ほうが(床1500)が名詞の直後にも立てると、方(かた)+ほうが が 片方+が に勝つ
     // (かたほうが→方ほうが。実機のみ=テストは misc を読まない。2514)
     static let multiClauseHougaAfterNonPredicatePenalty = 4000
+    // 1字かな素通りノードが1字かなノードに続くときの減点(バブル連鎖の遮断。2642)
+    static let multiClauseKanaMoraChainPenalty = 4000
+    // バブル遮断の対象外にする機能モーラ(助動詞・活用断片・接続の1字かな)。
+    // 助詞・終助詞・名詞化は既存セットで除外済みなので、ここはそれ以外の文法1字
+    // の は CaseParticleSurfaces に意図的に入っていない(名詞化は のが/のは 側)ため明記
+    static let multiClauseFunctionalSingleKanaSurfaces: Set<String> = [
+        "た", "だ", "か", "ん", "う", "て", "で", "ば", "ず", "ぬ",
+        "れ", "せ", "き", "し", "え", "さ", "そ", "の"
+    ]
+    // 動詞て形直後の短い(≤2かな)カタカナ化ノードの減点(〜てるね→〜てルネ 対策。2642)
+    static let multiClauseTeKatakanaShortNounPenalty = 6000
     // 副助詞 くらい/ぐらい は体言・用言に付き文頭には立たない。文頭のかな識別 くらい は
     // 形容詞 暗い(uni6012)より安い(5614)ため くらいのはなぜだろう が 暗いのは… に勝っていた。
     // BOS 直後のかな くらい/ぐらい に減点して文頭では形容詞を優先する(2513)
