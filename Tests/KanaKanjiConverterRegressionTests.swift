@@ -1417,6 +1417,55 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // N択(三者択一の意): 一〜四択が辞書・LMに無い → seed 供給(算用併記)。
     // ごたく は 御託 先頭を守り exactReadingOnly で末尾供給。3+たく の数字文脈は 卓/択(2633)
+    // 2645 バッチ: うんだ/うみやすい/かねはらって/ちこくしないでねー/うかった/せみなー/
+    // れいかい/2じしけん(全てユーザ報告・指定順)
+    func testRegressionRealLM2645Batch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let unda = converter.candidates(for: "うんだ", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(unda.prefix(9)),
+                       ["生んだ", "産んだ", "膿んだ", "熟んだ", "倦んだ", "惓んだ", "績んだ", "運だ", "うんだ"],
+                       "list=\(unda)")
+        let sokode = converter.multiClauseCandidates(for: "そこでうんだ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sokode.prefix(2)), ["そこで生んだ", "そこで産んだ"], "multi=\(sokode.prefix(4))")
+        let umiyasui = converter.multiClauseCandidates(for: "もっとうみやすい", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(umiyasui.prefix(2)), ["もっと生みやすい", "もっと産みやすい"], "multi=\(umiyasui.prefix(4))")
+
+        let kaneharatte = converter.multiClauseCandidates(for: "かねはらって", systemCandidateMode: .surface)
+        XCTAssertEqual(kaneharatte.first, "金払って", "multi=\(kaneharatte.prefix(4))")
+
+        let chikoku = converter.multiClauseCandidates(for: "ちこくしないでねー", systemCandidateMode: .surface)
+        XCTAssertEqual(chikoku.first, "遅刻しないでねー", "multi=\(chikoku.prefix(4))")
+
+        let ukatta = converter.candidates(for: "うかった", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ukatta.prefix(3)), ["受かった", "憂かった", "うかった"], "list=\(ukatta)")
+        let ukattahouga = converter.multiClauseCandidates(for: "うかったほうが", systemCandidateMode: .surface)
+        XCTAssertEqual(ukattahouga.first?.hasPrefix("受かった"), true, "multi=\(ukattahouga.prefix(4))")
+
+        let seminar = converter.candidates(for: "せみなー", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(seminar.first, "セミナー", "list=\(seminar)")
+
+        let reikai = converter.candidates(for: "れいかい", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(reikai.prefix(6)), ["例会", "例解", "嶺海", "冷灰", "霊界", "霊怪"], "list=\(reikai)")
+
+        // 2確定→じしけん: 次試験(末尾変換込みの合成供給)を先頭群に
+        let converterForTail = converter
+        let ji = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            ["時試験", "次しけん", "じしけん"], reading: "じしけん", precedingCharacter: "2",
+            tailConversion: { tail in
+                converterForTail?.candidates(for: tail, limit: 1, systemCandidateMode: .surface).first
+            }
+        )
+        XCTAssertEqual(ji.first, "次試験", "boost=\(ji)")
+        // 付属語末尾は変換供給しない(3+かいしか → 回鹿 を作らない)
+        let kaishika = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            [], reading: "かいしか", precedingCharacter: "3",
+            tailConversion: { _ in "鹿" }
+        )
+        XCTAssertFalse(kaishika.contains("回鹿"), "boost=\(kaishika)")
+    }
+
     // かげになってる: 嗅げにになってる(に二重)だけになる合成バグ+嗅げ の浮上(2644)
     func testRegressionRealLMKageNinatteru() throws {
         try prepareRealLMDictionary()
@@ -2810,6 +2859,39 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let mama = converter.candidates(for: "まま", limit: 12, systemCandidateMode: .surface)
         XCTAssertFalse(mama.contains("ママぁ"), "ママぁは抑制: \(mama)")
         XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
+    }
+
+    // カタカナ先頭スキャン(せみなー型の一般化。2645): 辞書 rank0 がカタカナ実語
+    // (LM収録)なのに、かな識別が先頭に出る読みを KATALEAD 行で報告。
+    // tools/audit_katakana_emphasis_drop.py の TSV(rank列)を再利用する。
+    // SWEEP_KATALEAD=1(env TEST_RUNNER_SWEEP_KATALEAD=1)のときだけ実行。
+    func testDiagnosticKatakanaLeadSweep() throws {
+        guard ProcessInfo.processInfo.environment["SWEEP_KATALEAD"] != nil else {
+            throw XCTSkip("SWEEP_KATALEAD=1 のときだけ実行")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/katakana_emphasis_drop.tsv")
+        guard FileManager.default.fileExists(atPath: tsvURL.path) else {
+            throw XCTSkip("先に tools/audit_katakana_emphasis_drop.py を実行して TSV を生成すること")
+        }
+        let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        var checked = 0
+        var ngCount = 0
+        for line in tsv.split(separator: "\n") {
+            let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
+            guard cols.count >= 4, cols[2] == "0" else { continue }
+            let reading = String(cols[0])
+            let katakana = String(cols[1])
+            let list = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            checked += 1
+            if list.first == reading {
+                ngCount += 1
+                print("KATALEAD\t\(reading)\t\(katakana)\tuni=\(cols[3])\ttop=\(list.prefix(4))")
+            }
+        }
+        print("KATALEAD done checked=\(checked) ng=\(ngCount)")
     }
 
     // カタカナ強調フィルタ誤爆スキャン第2段(タイ/ルイの一般化。2634):
