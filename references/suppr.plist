@@ -185,6 +185,7 @@
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
+	<dict><key>phrase</key><string>鰺</string><key>shortcut</key><string>あじ</string></dict>	<!-- 鯵 の異体字。字形が似て選び間違える(2642) -->
 	<dict><key>phrase</key><string>歷史</string><key>shortcut</key><string>れきし</string></dict>	<!-- 歴史 の旧字体(歷)。字形が似て選び間違える(2637) -->
 	<dict><key>phrase</key><string>專門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の旧字体(專)。字形が似て選び間違える(2637) -->
 	<dict><key>phrase</key><string>飜訳</string><key>shortcut</key><string>ほんやく</string></dict>	<!-- 翻訳 の異体字(飜)。字形が似て選び間違える(2637) -->
