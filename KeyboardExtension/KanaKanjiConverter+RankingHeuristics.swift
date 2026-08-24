@@ -120,6 +120,19 @@ extension KanaKanjiConverter {
             }
         }
 
+        // 保護カタカナ(辞書先頭からカタカナが連なる=外来語・固有名: アメリカ/セミナー/
+        // コーヒー 等)がある読みでは、かな識別をその直下に降格する(2645)。かな識別の
+        // エコーが79読みで外来語カタカナを差し置いて先頭化していた(せみなー 型の一般是正)。
+        // かな正書の読み(やっぱり 等)は辞書先頭がかななので保護カタカナが空=不発。
+        // seed 宣言のある読みは人手の並び(まま/たい 等)に任せる。
+        if let identityScore = scores[reading],
+            KanaKanjiSeedDictionary.seed[reading] == nil {
+            let protectedScores = protectedKatakanaCandidates.compactMap { scores[$0] }
+            if let topProtected = protectedScores.max(), identityScore >= topProtected {
+                scores[reading] = topProtected - 1
+            }
+        }
+
         // かな識別(読みそのもの)が居る場合、非保護カタカナは「かなの直後」に置く
         // (やっぱり→ヤッパリ の順。従来の lowest-1 だと当て字群より下に沈みすぎる)。
         let kanaIdentityScore = scores[reading]
