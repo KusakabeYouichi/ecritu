@@ -39,8 +39,24 @@ extension KeyboardViewController {
             return
         }
 
+        // 取得スパイクは数十MB級(2026-08-22 の5連続即死は fp26〜30MB からでも死んだ)。
+        // 高水位で走らせると即死の最後の一押しになるため、footprint が低いときだけ取得する。
+        // 見送り時はタイムスタンプを書かない=次のセッションで再判定(取得しない限り無害)(2641)
+        if let footprintMB = currentFootprintMB(), footprintMB >= 30 {
+            isRefreshingSupplementaryLexicon = false
+            updateKeyboardDiagnosticsHeartbeat(
+                event: "レキシコン取得を見送り(高水位) footprintMB=\(String(format: "%.1f", footprintMB))",
+                appendLog: true
+            )
+            return
+        }
+
         isRefreshingSupplementaryLexicon = true
         sharedDefaults?.set(Date().timeIntervalSince1970, forKey: lexiconFetchStampKey)
+
+        // MEMFORENSICS(時限計測 2641): 取得スパイクの実数(1.2s=取得中、5s=index構築込み)
+        MemoryForensics.noteSpikeWindow("レキシコン取得")
+        MemoryForensics.noteSpikeWindow("レキシコン取得+5s", delaySeconds: 5.0)
 
         requestSupplementaryLexicon { [weak self] lexicon in
             guard let self else {
