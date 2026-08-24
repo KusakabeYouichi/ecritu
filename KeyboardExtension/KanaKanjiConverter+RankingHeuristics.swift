@@ -530,6 +530,51 @@ extension KanaKanjiConverter {
         }
     }
 
+    // 「多字語+末尾1かな」の素通り合成断片(実業か/演算し 等)が読み全体の
+    // 辞書語(実業家/演算子)を追い越す構造の是正(2637、〜家問題の一般対応)。
+    // applyDictOverNaiFragmentBoost の同型で、断片は「辞書非掲載の 漢字含み+読み末尾の
+    // 1かな」に限定。対象末尾は か/し のみ(scoped): だ/は/が は 来たんだ/夏は 等の
+    // 正当な助詞・縮約合成が同じ形になり、レア辞書語(木反田/夏羽)の誤昇格を招くため
+    // 対象外(全スイートで実証済み)。だ/は 系の実害読みは seed で個別是正する。
+    // 持ち上げは LM unigram 実在の辞書語を先(相対順維持)、次いでその他の辞書候補
+    // (実業科/実業課 等のレア複合)— 断片より辞書語が下に居る状態だけを直す。
+    static let tailKanaFragmentBoostTails: Set<Character> = ["か", "し"]
+
+    func applyDictOverTailKanaFragmentBoost(
+        for reading: String,
+        systemCandidates: [String],
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 3,
+            let tail = reading.last,
+            Self.tailKanaFragmentBoostTails.contains(tail),
+            !systemCandidates.isEmpty else {
+            return
+        }
+        let dictSet = Set(systemCandidates)
+        // 断片クラスタ: 辞書非掲載の「漢字含み(2文字以上)+末尾1かな」
+        var fragmentTop = 0
+        for (candidate, score) in scores where candidate.count >= 3 && candidate.last == tail {
+            guard !dictSet.contains(candidate) else { continue }
+            let stem = String(candidate.dropLast())
+            guard Self.containsKanjiCandidate(stem) else { continue }
+            fragmentTop = max(fragmentTop, score)
+        }
+        guard fragmentTop > 0 else {
+            return
+        }
+        let unigrams = store.wordLMUnigramCosts(for: systemCandidates)
+        let lmBacked = systemCandidates.filter { unigrams[$0] != nil && $0 != reading }
+        let others = systemCandidates.filter { unigrams[$0] == nil && $0 != reading }
+        let lifted = lmBacked + others
+        for (index, candidate) in lifted.enumerated() {
+            let target = fragmentTop + 40 + (lifted.count - index)
+            if scores[candidate, default: 0] < target {
+                scores[candidate] = target
+            }
+        }
+    }
+
     func applyAdjectiveSaBoost(
         for reading: String,
         inflectionDerivedCandidates: Set<String>,
