@@ -48,7 +48,9 @@ extension KanaKanjiConverter {
         "けん": ["軒", "件"],
         "しゅうかん": ["週間"],
         "じかん": ["時間"],
-        "じつ": ["日"],
+        // じつ→日 は本表から数字文脈限定表へ移動(2647): 助数詞単独の 日 は にち 読みが正で、
+        // 本表に居ると かな数詞合成が せん+じつ→1000日 を作る。数日(すうじつ)は
+        // 数字文脈限定表も引くため健在
         "にち": ["日"],
         "だい": ["台"],
         "にん": ["人"],
@@ -405,6 +407,7 @@ extension KanaKanjiConverter {
         "しょう": ["勝", "升"],
         "しょく": ["食"],
         "しりんぐ": ["志"],
+        "じつ": ["日"],
         "じつかん": ["日間"],
         "じめ": ["締め", "締"],
         "じゃく": ["尺"],
@@ -946,7 +949,8 @@ extension KanaKanjiConverter {
             // 入れると さんま→3間 / さんか→3課 のような無用な候補が付く。一方「何」は
             // なん+助数詞 の形しか作らず、許可リストでゲートもされるので普通の語を汚さない。
             let allowedSuffixes: [String]
-            if prefixReading == "なん",
+            // すう も同様(じつ→日 を本表から数字文脈限定表へ移した後の 数日 供給。2647)
+            if prefixReading == "なん" || prefixReading == "すう",
                 let digitOnly = Self.digitContextAdditionalCounterSurfacesByReading[suffixReading] {
                 let compound = Self.numericCompoundCounterSurfaces(for: suffixReading) ?? []
                 allowedSuffixes = compound + digitOnly.filter { !compound.contains($0) }

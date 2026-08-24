@@ -406,8 +406,18 @@ extension KanaKanjiConverter {
                     userDictionary: userDictionary
                 ) + (initialUserDictionary[stem] ?? [])
             )
+            // 収穫底値(wc>=10000)の語=レア人名収穫(皿野/紗良乃 等)に敬語接頭は
+            // 付かない。お皿野 が8700定額で立ち、正解の お+皿+の 経路(連文節)を
+            // 跨いでいた(おさらのちょっけい→お皿野直径。ユーザ報告 2647)
+            let stemWordCosts = store.wordCosts(for: stem)
 
             for candidate in stemCandidates {
+                if let wc = stemWordCosts[candidate],
+                    wc >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                    !userCandidateSet.contains(candidate),
+                    !(KanaKanjiSeedDictionary.seed[stem]?.contains(candidate) ?? false) {
+                    continue
+                }
                 let resolvedClass = resolvedInflectionClass(
                     for: candidate,
                     baseReading: stem,

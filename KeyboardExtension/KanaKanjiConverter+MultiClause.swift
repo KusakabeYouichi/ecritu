@@ -1240,7 +1240,11 @@ extension KanaKanjiConverter {
                 !Self.multiClauseExplanatoryFinalSurfaces.contains(reading),
                 prev != Self.multiClauseBOSMarker,
                 (prevIsInflectionDerived || prevIsDictionaryFormPredicate
-                    || (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)) {
+                    || (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
+                    // め終わりの体言(買い占め/雨(あめ)等)+2字クラスタも自然な口語
+                    // (買い占めよね)。派生の 染め だけがクランプされて 会染めよね が
+                    // 買い占めよね を跨いでいた(2647)
+                    || prev.hasSuffix("め")) {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
             // 動詞て形(活用派生)直後の いって(定数コメント参照。2628)

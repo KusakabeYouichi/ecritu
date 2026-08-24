@@ -150,7 +150,8 @@ extension KanaKanjiConverter {
     // すくない: すくなかった/すくなかったので が ルール定義順で 酸い族(酸くなかった)に
     // 先を越されていた(酸い は LM 未収録のレア語、少ない は unigram 4804 の最頻出語)。
     // 少ない族を昇格(単文節の列挙順と連文節 b2 の両方に効く。2535)
-    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく", "まつ", "すくない"]
+    // くう: 悔いる族(ichidan ルールが先)より 食う族 を先頭に(くいたくなって 等。2647)
+    static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく", "まつ", "すくない", "くう"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)と読み別ボーナス値。
     // 数量詞複合(2本/二本)や分割に押されて seed 既定(日本)が沈むのを是正する。
     // a2 seed の先頭候補ノードにボーナス。既定は 800(multiClausePreferredInflectionBonus と同値)。
@@ -349,6 +350,9 @@ extension KanaKanjiConverter {
     // なる。かな識別を安価にして やばいじゃん を最上位にする(かなが現代口語の正書)。
     static let multiClauseKanaAdverbReadings: Set<String> = [
         "いまだに", "したんだが", "やばい", "じゃん",
+        // ときどき(かな正書の副詞、seed 済み): 連文節では 時々通ります と漢字化して
+        // 単文節(かな先頭)と食い違っていた(ユーザ報告 2647)
+        "ときどき",
         // せめて(副詞、かな正書): 攻めて/責めて(活用派生)に負けて せめてこれぐらい→
         // 攻めてこれぐらい になっていた(2513)
         "せめて",
@@ -874,7 +878,10 @@ extension KanaKanjiConverter {
         // を116差で下回れなかった。uni 6925 は実勢なので床免除で ノー に勝つ)
         "のー",
         // 複数接尾辞(彼ら/子供ら 等。A単位分割で 彼+ら と割れる正当な頻出かな)
-        "ら"
+        "ら",
+        // うまい はかな正書(seed かな先頭済み)。床上げ(wc)で 上手い/旨い に負けて
+        // 助詞直後(はうまいなあ→は上手いなあ)だけ漢字化していた(ユーザ報告 2647)
+        "うまい"
     ]
     static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)
