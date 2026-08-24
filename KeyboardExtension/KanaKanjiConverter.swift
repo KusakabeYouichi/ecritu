@@ -604,6 +604,14 @@ final class KanaKanjiConverter {
                     : context.systemCandidates.filter { !suppressed.contains($0) },
                 to: &scores
             )
+            // 多字語+末尾1かな断片(実業か/池だ 等)版。〜家問題の一般対応(2637)
+            applyDictOverTailKanaFragmentBoost(
+                for: context.reading,
+                systemCandidates: suppressed.isEmpty
+                    ? context.systemCandidates
+                    : context.systemCandidates.filter { !suppressed.contains($0) },
+                to: &scores
+            )
         }
         applySameReadingScriptPreference(
             for: context.reading,
