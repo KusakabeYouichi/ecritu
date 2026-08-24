@@ -286,6 +286,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "たくありません", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たければ", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 願望+変化(食べたくなって 等。2647)
+        InflectionRule(readingSuffix: "たくなる", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たくなった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たくなって", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "そう", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "そうだ", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "そうな", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -697,7 +701,13 @@ extension KanaKanjiConverter {
             iStem + "たくなかった",
             iStem + "たくありません",
             iStem + "たかった",
-            iStem + "たければ"
+            iStem + "たければ",
+            // 願望+変化(食いたくなって/読みたくなる 等)。単一スパンの供給が無いと
+            // 連文節で 悔いたく(7200)+なって(7200)=2スパンが 句+痛くなって(BOS bigram
+            // 持ち)に僅差で跨がれ、食いたくなって が候補から消えていた(2647)
+            iStem + "たくなる",
+            iStem + "たくなった",
+            iStem + "たくなって"
         ]
     }
 
@@ -970,6 +980,11 @@ extension KanaKanjiConverter {
                 pattern.iForm + "たくありません",
                 pattern.iForm + "たかった",
                 pattern.iForm + "たければ",
+                // 願望+変化(食いたくなって 等。単一スパン供給が無いと連文節で
+                // 句+痛くなって に跨がれる。2647)
+                pattern.iForm + "たくなる",
+                pattern.iForm + "たくなった",
+                pattern.iForm + "たくなって",
                 pattern.iForm + "そう",
                 pattern.iForm + "そうだ",
                 pattern.iForm + "そうな",

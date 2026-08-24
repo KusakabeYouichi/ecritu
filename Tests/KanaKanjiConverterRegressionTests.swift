@@ -1417,6 +1417,56 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // N択(三者択一の意): 一〜四択が辞書・LMに無い → seed 供給(算用併記)。
     // ごたく は 御託 先頭を守り exactReadingOnly で末尾供給。3+たく の数字文脈は 卓/択(2633)
+    // くいたくなって: 食いたくなって が消え {句痛くなって, くいたくなって} だけに(2647)
+    func testRegressionRealLMKuitakunatte() throws {
+        try prepareRealLMDictionary()
+
+        for probe in ["くいたい", "くいたく", "くいたくなって", "くいたくない",
+                      "おさらのちょっけい", "さらのちょっけい", "おさらの", "みたの"] {
+            let s = converter.candidates(for: probe, limit: 8, systemCandidateMode: .surface)
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            print("PROBE2647 \(probe) single=\(s.prefix(6)) multi=\(m.prefix(4))")
+        }
+        let target = converter.candidates(for: "くいたくなって", limit: 8, systemCandidateMode: .surface)
+        let multi = converter.multiClauseCandidates(for: "くいたくなって", systemCandidateMode: .surface)
+        let barTop = multi.first ?? target.first
+        XCTAssertEqual(barTop, "食いたくなって", "multi=\(multi.prefix(3)) single=\(target.prefix(4))")
+
+        // おさらのちょっけい: お+収穫底値人名(皿野)の敬語合成が正解経路を跨いでいた(2647)
+        let osara = converter.multiClauseCandidates(for: "おさらのちょっけい", systemCandidateMode: .surface)
+        XCTAssertEqual(osara.first, "お皿の直径", "multi=\(osara.prefix(4))")
+
+        // みたの: 三田の を2位へ(見たの 先頭は維持)
+        let mitano = converter.candidates(for: "みたの", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(mitano.prefix(2)), ["見たの", "三田の"], "list=\(mitano)")
+
+        // はうまいなあ: 助詞直後でも うまい はかな(床免除)
+        let umai = converter.multiClauseCandidates(for: "はうまいなあ", systemCandidateMode: .surface)
+        XCTAssertEqual(umai.first, "はうまいなあ", "multi=\(umai.prefix(4))")
+
+        // かいしめよね: 会染めよね(染む族)が 買い占めよね を跨ぐ(2647追)
+        let kaishime = converter.multiClauseCandidates(for: "かいしめよね", systemCandidateMode: .surface)
+        print("PROBE2647 かいしめよね multi=\(kaishime.prefix(6))")
+        XCTAssertEqual(kaishime.first, "買い占めよね", "multi=\(kaishime.prefix(4))")
+
+        // せんじつはじめて: じつ 読みの 日 助数詞合成(1000日)を作らない
+        let senjitsu = converter.multiClauseCandidates(for: "せんじつはじめて", systemCandidateMode: .surface)
+        XCTAssertEqual(senjitsu.first, "先日初めて", "multi=\(senjitsu.prefix(4))")
+        XCTAssertFalse(senjitsu.prefix(4).contains { $0.contains("1000日") || $0.contains("千日") },
+                       "multi=\(senjitsu.prefix(4))")
+    }
+
+    // ときどき: かな正書の副詞。単文節(かな先頭)と連文節(時々通ります)の不整合を
+    // multiClauseKanaAdverbReadings で是正(ユーザ報告 2647)
+    func testRegressionRealLMTokidokiKanaAdverb() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "ときどき", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ときどき", "時々"], "list=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ときどきとおります", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ときどき通ります", "multi=\(multi.prefix(4))")
+    }
+
     // 2645 バッチ: うんだ/うみやすい/かねはらって/ちこくしないでねー/うかった/せみなー/
     // れいかい/2じしけん(全てユーザ報告・指定順)
     func testRegressionRealLM2645Batch() throws {
