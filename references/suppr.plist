@@ -7,6 +7,13 @@
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
 	<dict><key>phrase</key><string>せん門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の部分かな書き(Sudachi実在)。ばかリ と同型の交ぜ書きエントリ(2637) -->
+	<dict><key>phrase</key><string>き損</string><key>shortcut</key><string>きそん</string></dict>	<!-- 毀損 の交ぜ書き(新聞表記)(2638) -->
+	<dict><key>phrase</key><string>出えん</string><key>shortcut</key><string>しゅつえん</string></dict>	<!-- 出捐 の交ぜ書き(2638) -->
+	<dict><key>phrase</key><string>ふん装</string><key>shortcut</key><string>ふんそう</string></dict>	<!-- 扮装 の交ぜ書き(2638) -->
+	<dict><key>phrase</key><string>沈でん</string><key>shortcut</key><string>ちんでん</string></dict>	<!-- 沈澱 の交ぜ書き(2638) -->
+	<dict><key>phrase</key><string>かい助</string><key>shortcut</key><string>かいじょ</string></dict>	<!-- 介助 の交ぜ書き(2638) -->
+	<dict><key>phrase</key><string>愛がん</string><key>shortcut</key><string>あいがん</string></dict>	<!-- 愛玩 の交ぜ書き(2638) -->
+	<dict><key>phrase</key><string>連けい</string><key>shortcut</key><string>れんけい</string></dict>	<!-- 連携/連係 の交ぜ書き(2638) -->
 	<dict><key>phrase</key><string>立つ</string><key>shortcut</key><string>だつ</string></dict>	<!-- だつ→立つ系はSudachiが 目立つ/旅立つ 等の連濁内部読みを単独収穫したもの。活用基底に化けて だった→立った を作るため抑制(単独 だつ の正解は 脱/奪) -->
 	<dict><key>phrase</key><string>佇つ</string><key>shortcut</key><string>だつ</string></dict>
 	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>

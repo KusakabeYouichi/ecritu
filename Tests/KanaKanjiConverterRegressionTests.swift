@@ -2698,19 +2698,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             throw XCTSkip("SWEEP_DERIVED=1(env TEST_RUNNER_SWEEP_DERIVED=1)のときだけ実行")
         }
         try prepareRealLMDictionary()
-        try loadDeviceAddedVocabulary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
 
         let tsvURL = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/lm_rank_mismatch.tsv")
         guard FileManager.default.fileExists(atPath: tsvURL.path) else {
             throw XCTSkip("先に tools/audit_lm_rank_mismatch.py を実行して TSV を生成すること")
         }
         let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
+        // ユーザレビュー済みの許容読み(両表記とも正当なサ変で現状の並びが可。2638)
+        let acceptedReadings: Set<String> = [
+            "ほうそう", "かんどう", "かんつう", "へいかん", "せっぷく", "らっか", "めっき", "しっと"
+        ]
         var checked = 0
         var ngCount = 0
         for line in tsv.split(separator: "\n") {
             let cols = line.split(separator: "\t", omittingEmptySubsequences: false)
             guard cols.count >= 6 else { continue }
             let reading = String(cols[0])
+            // する動詞・サ変(〜する)には しちゃう が直接接続しない
+            // (して+ちゃう=しちゃう が正で、するしちゃう は打たれない。2638)
+            guard reading != "する", !reading.hasSuffix("する") else { continue }
+            guard !acceptedReadings.contains(reading) else { continue }
             let best = String(cols[1])
             let top = String(cols[3])
             // 基底が是正済みの読みだけが対象(未是正はLM順乖離スイープの持ち場)
