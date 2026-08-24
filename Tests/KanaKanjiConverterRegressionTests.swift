@@ -1291,8 +1291,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let kennai = converter.candidates(for: "けんない", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(kennai.prefix(2)), ["県内", "圏内"], "list=\(kennai)")
+        // しゃない は 2636 のユーザ指定で {社内, 車内} 先頭(かな降格)に変更
         let shanai = converter.candidates(for: "しゃない", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(shanai.prefix(3)), ["しゃない", "社内", "車内"], "list=\(shanai)")
+        XCTAssertEqual(Array(shanai.prefix(2)), ["社内", "車内"], "list=\(shanai)")
         let kannai = converter.candidates(for: "かんない", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(kannai.first, "管内", "list=\(kannai)")
         // 既存の救済経路は不変(かなエコー→線内/都内 の並び)
@@ -2410,6 +2411,55 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
         print("SWEEP done checked=\(checked) ng=\(ngCount)")
+    }
+
+    // 付属語断片スキャン32件の一括是正(並びはユーザ指定 2636)。
+    func testRegressionRealLMFragmentUndercutBatchOrdering() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let expectations: [(String, [String])] = [
+            ("こくない", ["国内", "濃くない"]),
+            ("みずから", ["みずから", "水から", "自ら", "自から", "美豆から"]),
+            ("おこない", ["行ない", "行い"]),
+            ("しゃない", ["社内", "車内"]),
+            ("あきない", ["商い", "商", "あきない", "飽きない", "厭きない", "倦きない"]),
+            ("あてない", ["当てない", "宛てない", "アテナイ"]),
+            ("うらない", ["売らない", "占い", "うらない"]),
+            ("くれない", ["くれない", "紅", "暮れない", "繰れない"]),
+            ("おさない", ["幼い", "押さない", "稚ない", "幼ない"]),
+            ("まじない", ["まじない", "呪い"]),
+            ("かいさつない", ["改札内", "開札ない", "改刷ない"]),
+            ("しきちない", ["敷地内"]),
+            ("いざない", ["いざない", "誘い"]),
+            ("とうきょうとない", ["東京都内"]),
+            ("おおだから", ["大宝", "おおだから"]),
+            ("おおだけ", ["大岳", "大竹", "大嶽", "おおだけ"]),
+            ("いきない", ["域内", "活きない", "生きない"]),
+            ("せいたいない", ["生体内", "生態ない"]),
+            ("きかんない", ["期間内", "機関ない"]),
+            ("かていない", ["家庭内", "課程ない", "仮定ない", "過程ない"]),
+            ("しせつない", ["施設内", "使節ない"]),
+            ("いけない", ["いけない", "行けない", "逝けない", "池内"]),
+            ("ぐるーぷない", ["グループ内"]),
+            ("かいから", ["回から", "会から", "貝殻"]),
+            ("そしきない", ["組織内"]),
+            ("かわない", ["かわない", "買わない", "飼わない", "川内"]),
+            ("きたない", ["汚い", "きたない", "汚ない", "汚たない", "キタナイ"]),
+            ("ぎたない", ["汚い", "ぎたない"]),
+            ("ほっかいどうない", ["北海道内"]),
+            ("こうない", ["構内", "校内"]),
+            ("しんない", ["新内", "身内", "心内", "芯ない"]),
+            ("ねんどない", ["年度内"])
+        ]
+        var failures: [String] = []
+        for (reading, expected) in expectations {
+            let list = converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface)
+            if Array(list.prefix(expected.count)) != expected {
+                failures.append("\(reading) expected=\(expected) got=\(list.prefix(expected.count + 2))")
+            }
+        }
+        XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
     }
 
     // カタカナ誤爆スキャン23件の一括是正(並びはユーザ指定 2635)。

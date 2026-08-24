@@ -380,6 +380,11 @@ extension KanaKanjiConverter {
             let devoicedFirst = Self.rendakuDevoicedKanaCharacter[firstChar] else {
             return false
         }
+        // seed 掲載の表層は正当な濁音変種(ぎたない→汚い 等)なので免除
+        // (カタカナ強調の katakanaRunsAreSeedProtected と同じ流儀。2636)
+        if KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false {
+            return false
+        }
         let devoicedReading = String(devoicedFirst) + reading.dropFirst()
         guard let devoicedCost = store.wordCosts(for: devoicedReading)[surface] else {
             return false
