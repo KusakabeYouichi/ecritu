@@ -142,9 +142,18 @@ extension KanaKanjiConverter {
         return others.allSatisfy { (costs[$0] ?? Int.max) > kanaCost }
     }
 
+    // 派生基底のLM優位昇格の例外読み(ユーザレビュー 2639: 現状の辞書順が正)。
+    // 商談/閉廷/棲息/沈澱 が先頭のままで良い(LM最良の 昇段/平定/生息/沈殿 を上げない)
+    static let derivationLMPromotionDeniedReadings: Set<String> = [
+        "ちんでん", "しょうだん", "へいてい", "せいそく"
+    ]
+
     // 派生(活用基底・postfix語幹)の候補並びを整える(かいてある対策の一般化):
     // (1) seed の並び(書く/描く…)を先頭へ — 派生が正書から出るように。
-    // (2) かな識別(候補==読み)は LM 優位なら先頭へ(ある/やる 等)、劣位で先頭に居る
+    // (2) 生の辞書順が LM 実勢と大きく乖離している読みは LM 最良の辞書語を先頭へ
+    //     (2545 の派生版: 出演しちゃう が 出捐しちゃう の下に沈む型の構造対応。
+    //     スイープ真性90件の一掃。ガードは 2545 と同じ gap/主読み/ユーザ矯正済み除外。2639)
+    // (3) かな識別(候補==読み)は LM 優位なら先頭へ(ある/やる 等)、劣位で先頭に居る
     //     場合は末尾へ(かく 等)。生の辞書順は 書く rank15・有る先頭 等の歪みがある。
     func orderedDerivationBaseCandidates(_ candidates: [String], reading: String) -> [String] {
         var ordered = candidates
@@ -152,6 +161,29 @@ extension KanaKanjiConverter {
             let seedSet = Set(seedOrder)
             let seeded = seedOrder.filter { ordered.contains($0) }
             ordered = seeded + ordered.filter { !seedSet.contains($0) }
+        } else if !Self.derivationLMPromotionDeniedReadings.contains(reading),
+            store.userDictionary()[reading] == nil,
+            store.learnedDictionary()[reading] == nil,
+            let currentFirst = ordered.first {
+            let kanjiCandidates = ordered.filter { $0 != reading && Self.containsKanjiCandidate($0) }
+            let costs = store.wordLMUnigramCosts(for: kanjiCandidates)
+            if let best = kanjiCandidates.min(by: { (costs[$0] ?? Int.max) < (costs[$1] ?? Int.max) }),
+                let bestUni = costs[best],
+                best != currentFirst,
+                (costs[currentFirst] ?? Int.max) - bestUni >= Self.lmDominantDictBoostMinGap {
+                // 読み跨ぎの誤昇格防止(2545と同じ主読みガード。word_cost 記録なしは主読み扱い)
+                let isMainReading: Bool
+                if let wc = store.wordCosts(for: reading)[best],
+                    let minWc = store.candidateMinWordCosts(for: [best])[best] {
+                    isMainReading = wc - minWc <= Self.lmDominantDictBoostMaxReadingGap
+                } else {
+                    isMainReading = true
+                }
+                if isMainReading {
+                    ordered.removeAll { $0 == best }
+                    ordered.insert(best, at: 0)
+                }
+            }
         }
         guard ordered.contains(reading) else {
             return ordered

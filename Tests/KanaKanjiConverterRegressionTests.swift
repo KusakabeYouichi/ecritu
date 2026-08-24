@@ -2413,6 +2413,37 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         print("SWEEP done checked=\(checked) ng=\(ngCount)")
     }
 
+    // 派生基底のLM優位昇格(2639、かくてい型90件の構造対応): 辞書順が LM 実勢と
+    // 乖離した読みの活用派生が LM 最良から出ること。例外4読み(商談/閉廷/棲息/沈澱が正)
+    // と、きそん の suru 否認(既存 は辞書がサ変可能を過剰付与、既存しちゃう を生成しない)。
+    func testRegressionRealLMDerivationBaseLMPromotion() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        // 代表例: 出演/急行/信仰/覚醒(スイープ真性群)
+        for (reading, expected) in [("しゅつえんしちゃう", "出演しちゃう"),
+                                    ("きゅうこうしちゃう", "急行しちゃう"),
+                                    ("しんこうしちゃう", "信仰しちゃう"),
+                                    ("かくせいしちゃう", "覚醒しちゃう")] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) list=\(list)")
+        }
+        // 例外読み: 現状の辞書順を維持(ユーザ指定)
+        for (reading, expected) in [("しょうだんしちゃう", "商談しちゃう"),
+                                    ("へいていしちゃう", "閉廷しちゃう"),
+                                    ("せいそくしちゃう", "棲息しちゃう")] {
+            let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, expected, "\(reading) list=\(list)")
+        }
+        // きそん: 既存 はサ変化しない(クラス否認)。毀損しちゃう が先頭で 既存しちゃう は不在
+        let kison = converter.candidates(for: "きそんしちゃう", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(kison.first, "毀損しちゃう", "list=\(kison)")
+        XCTAssertFalse(kison.contains("既存しちゃう"), "list=\(kison)")
+        // 基底単体の並びは不変(既存 が名詞として先頭のまま)
+        let kisonBase = converter.candidates(for: "きそん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(kisonBase.first, "既存", "list=\(kisonBase)")
+    }
+
     // wc異常スキャン129件の一括是正(並びはユーザ指定 2637)。〜家/師/市/誌 等の
     // 複合は applyDictOverTailKanaFragmentBoost(ロジック対応)、その他は seed。
     // 抑制連動: 歷史/專門/せん門/飜訳/飜譯(字形類似・交ぜ書き)、岡@おかの(二段構え)。
@@ -2705,9 +2736,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             throw XCTSkip("先に tools/audit_lm_rank_mismatch.py を実行して TSV を生成すること")
         }
         let tsv = try String(contentsOf: tsvURL, encoding: .utf8)
-        // ユーザレビュー済みの許容読み(両表記とも正当なサ変で現状の並びが可。2638)
+        // ユーザレビュー済みの許容読み(両表記とも正当なサ変で現状の並びが可。2638)。
+        // 後半4読みは 2639 のLM昇格例外(derivationLMPromotionDeniedReadings)と対
         let acceptedReadings: Set<String> = [
-            "ほうそう", "かんどう", "かんつう", "へいかん", "せっぷく", "らっか", "めっき", "しっと"
+            "ほうそう", "かんどう", "かんつう", "へいかん", "せっぷく", "らっか", "めっき", "しっと",
+            "ちんでん", "しょうだん", "へいてい", "せいそく",
+            // おでかけ=お出かけしちゃう 先頭が自然/そうでん=wc1点差(相伝6517vs送電6518)で
+            // 送電しちゃう 2位、許容範囲(2639)
+            "おでかけ", "そうでん"
         ]
         var checked = 0
         var ngCount = 0
