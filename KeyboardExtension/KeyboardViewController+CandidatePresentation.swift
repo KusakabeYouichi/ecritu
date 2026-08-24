@@ -212,11 +212,23 @@ extension KeyboardViewController {
             // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
             // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
             if Self.isMultiClauseConversionEnabled {
-                let multiClause = autoreleasepool {
+                var multiClause = autoreleasepool {
                     converter.multiClauseCandidates(
                         for: reading,
                         systemCandidateMode: systemCandidateMode
                     )
+                }
+                // 候補ゼロ救済(2642): 単文節も連文節(4かな以上)も空の短い読み
+                // (のいみ 等の助詞始まり断片)は、連文節を短読みで再試行して
+                // 断片解釈(の+意味)を出す。通常読みには影響しない。
+                if multiClause.isEmpty, converterCandidates.isEmpty, reading.count >= 2 {
+                    multiClause = autoreleasepool {
+                        converter.multiClauseCandidates(
+                            for: reading,
+                            systemCandidateMode: systemCandidateMode,
+                            minReadingCountOverride: 2
+                        )
+                    }
                 }
                 self?.recordConversionTrace(
                     reading: reading,

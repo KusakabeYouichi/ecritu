@@ -1422,6 +1422,58 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // N択(三者択一の意): 一〜四択が辞書・LMに無い → seed 供給(算用併記)。
     // ごたく は 御託 先頭を守り exactReadingOnly で末尾供給。3+たく の数字文脈は 卓/択(2633)
+    // あじ: 基底 按司(0) アジ(1) 鯵(2)…味(4)。seed {味, 鯵, アジ}+鰺(異体字)suppr(2642)
+    func testRegressionRealLMAjiPrefersAji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let aji = converter.candidates(for: "あじ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(aji.prefix(3)), ["味", "鯵", "アジ"], "list=\(aji)")
+        XCTAssertFalse(aji.contains("鰺"), "鰺は抑制: \(aji)")
+    }
+
+    // さがっちゃってるね: て形直後の短カタカナ化(ルネ)の乗っ取り防止の一般則(2642)
+    func testRegressionRealLMSagatchatteruNeAvoidsRune() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "さがっちゃってるね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "下がっちゃってるね", "multi=\(multi.prefix(4))")
+        XCTAssertFalse(multi.prefix(3).contains { $0.contains("ルネ") }, "multi=\(multi.prefix(4))")
+    }
+
+    // しろいさらの: 白い皿の が先頭になること(ユーザ報告 2642。さらの がかな固定で
+    // 皿 が出ず、しろい に 皓い/皎い のレア字が出ていた)
+    func testRegressionRealLMShiroiSaranoPrefersShiroiSarano() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "しろいさらの", systemCandidateMode: .surface)
+        let sara = converter.candidates(for: "さら", limit: 6, systemCandidateMode: .surface)
+        let sarano = converter.multiClauseCandidates(for: "さらの", systemCandidateMode: .surface)
+        print("PROBE shiroisarano multi=\(multi.prefix(6)) sara=\(sara) sarano=\(sarano.prefix(6))")
+        for probe in ["しろいさら", "さらをあらう", "さらのうえ", "おおきいさらの", "さらがしろい"] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            print("PROBE \(probe) multi=\(m.prefix(5))")
+        }
+        XCTAssertEqual(multi.first, "白い皿の", "multi=\(multi.prefix(4))")
+    }
+
+    // のいみ: 連文節の断片(の+意味)として の意味 が出ること(ユーザ報告 2642)
+    func testRegressionRealLMNoImiOffersComposition() throws {
+        try prepareRealLMDictionary()
+
+        var multi = converter.multiClauseCandidates(for: "のいみ", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "のいみ", limit: 8, systemCandidateMode: .surface)
+        // 実機と同じ候補ゼロ救済(単・連とも空→連文節を短読みで再試行)
+        if multi.isEmpty, single.isEmpty {
+            multi = converter.multiClauseCandidates(
+                for: "のいみ", systemCandidateMode: .surface, minReadingCountOverride: 2
+            )
+        }
+        print("PROBE noimi multi=\(multi.prefix(6)) single=\(single.prefix(8))")
+        let barTop = multi.first ?? single.first
+        XCTAssertEqual(barTop, "の意味", "multi=\(multi.prefix(4)) single=\(single.prefix(4))")
+    }
+
     func testRegressionRealLMNTakuChoices() throws {
         try prepareRealLMDictionary()
 

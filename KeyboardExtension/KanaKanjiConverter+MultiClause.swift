@@ -20,9 +20,13 @@ extension KanaKanjiConverter {
         var isDictionaryFormPredicate: Bool = false
     }
 
+    // minReadingCountOverride: 通常は4かな以上だが、単文節が候補ゼロの読み(のいみ 等の
+    // 助詞始まり断片)は短くても連文節に断片解釈(の+意味)をさせる(呼び出し側の
+    // フォールバック専用。2642)
     func multiClauseCandidates(
         for reading: String,
-        systemCandidateMode: KanaKanjiCandidateSourceMode
+        systemCandidateMode: KanaKanjiCandidateSourceMode,
+        minReadingCountOverride: Int? = nil
     ) -> [String] {
         guard store.hasWordLMMetadata else {
             return []
@@ -30,7 +34,7 @@ extension KanaKanjiConverter {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         let chars = Array(normalized)
         let n = chars.count
-        guard n >= Self.multiClauseMinReadingCount,
+        guard n >= (minReadingCountOverride ?? Self.multiClauseMinReadingCount),
             n <= Self.multiClauseMaxReadingCount else {
             return []
         }
@@ -1123,6 +1127,23 @@ extension KanaKanjiConverter {
             if reading.count > 1, reading.contains("を"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
+            // 1字かな素通りの連鎖(さ+ら 等)の遮断(2642): さ/ら のような1字トークンは
+            // corpus の字単位 bigram で不当に安く繋がり、白いさらの が 白い+さ+ら+の の
+            // バブル経路で最良化していた(皿 が居るのに)。cur 側が機能モーラ(助詞・助動詞・
+            // 活用断片: の/た/だ/か/れ/て 等)や活用派生ノード・curated のときは正当な文法連鎖
+            // (し+た/の+だ+が/公開+さ+れ+て)なので対象外。
+            if surface == reading, reading.count == 1, !isCurated, !isInflectionDerived,
+                let scalar = reading.unicodeScalars.first,
+                (0x3041...0x3096).contains(scalar.value),
+                !Self.multiClauseCaseParticleSurfaces.contains(surface),
+                !Self.multiClauseFinalParticleReadings.contains(reading),
+                !Self.multiClauseNominalizerSurfaces.contains(surface),
+                !Self.multiClauseFunctionalSingleKanaSurfaces.contains(surface),
+                prev.count == 1,
+                let prevScalar = prev.unicodeScalars.first,
+                (0x3041...0x3096).contains(prevScalar.value) {
+                penalty += Self.multiClauseKanaMoraChainPenalty
+            }
             // seed 供給表層の連文節床(定数コメント参照)。
             if let floor = Self.multiClauseSeedSupplyCostFloors[reading]?[surface] {
                 base = max(base, floor)
@@ -1212,6 +1233,16 @@ extension KanaKanjiConverter {
                 } else if surface == "一手" {
                     penalty += Self.multiClauseTeNounItteAfterTeFormPenalty
                 }
+            }
+            // 動詞て形(活用派生)直後の短いカタカナ化ノード(≤2かな)は減点(2642)。
+            // さがっちゃってるね→下がっちゃて+ルネ(人名)のように、てる/るね/みて 等の
+            // 補助・終助詞領域をカタカナ人名がLMバイアスで乗っ取る。て形直後に無空白で
+            // カタカナ固有名が続く日本語は不自然なので一般則で沈める(curated は除外)。
+            if !isCurated, surface != reading, reading.count <= 2,
+                prevIsInflectionDerived,
+                prev.hasSuffix("て") || prev.hasSuffix("で"),
+                Self.isNonNativeScriptSurface(surface) {
+                penalty += Self.multiClauseTeKatakanaShortNounPenalty
             }
             // コピュラ だ の直後の追加語彙の短い非かな断片(ろー→raw/ロー 等)は
             // だろー クラスタの乗っ取り(すごいだろー→すごいだraw)。だ+外来語の
@@ -1625,6 +1656,16 @@ extension KanaKanjiConverter {
             idx = backPointer[idx]
         }
         pathIndices.reverse()
+        #if DEBUG
+        // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
+        if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
+            print("MULTITRACE reading=\(normalized) bestTotal=\(bestTotal)")
+            for (i, node) in nodes.enumerated() where best[i] < infinity {
+                let bp = backPointer[i] >= 0 ? nodes[backPointer[i]].surface : "BOS"
+                print("MULTITRACE node[\(i)] \(node.reading)→\(node.surface) cum=\(best[i]) prev=\(bp)\(pathIndices.contains(i) ? " *PATH" : "")")
+            }
+        }
+        #endif
         guard pathIndices.count >= 2 else {
             return []   // 単文節は既存の単文節経路に任せる
         }
