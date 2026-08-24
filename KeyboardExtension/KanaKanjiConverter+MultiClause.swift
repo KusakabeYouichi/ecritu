@@ -1034,6 +1034,13 @@ extension KanaKanjiConverter {
                 Self.multiClauseERowKanaCharacters.contains(impMora) {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 打ち消しの ないで は動詞未然形直後のかなが正書(遅刻しないでね)。
+            // 凪いで/薙いで/和いで(風が凪いで 等の正当な動詞)が活用派生直後に立って
+            // 遅刻し凪いでねー を作るのを防ぐ(ユーザ報告 2645)。名詞・助詞直後は無傷
+            if reading == "ないで", surface != reading,
+                prevIsInflectionDerived || prev.hasSuffix("し") {
+                penalty += Self.multiClauseImperativeParticlePenalty
+            }
             // bigram 未観測ペアの補完(定数コメント参照)。観測が無いと unigram 差だけで
             // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
