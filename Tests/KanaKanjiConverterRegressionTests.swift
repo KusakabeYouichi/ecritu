@@ -2412,6 +2412,49 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         print("SWEEP done checked=\(checked) ng=\(ngCount)")
     }
 
+    // カタカナ誤爆スキャン23件の一括是正(並びはユーザ指定 2635)。
+    // ママぁ(読み違いの誤エントリ)は suppr で抑制。
+    func testRegressionRealLMKatakanaDropBatchOrdering() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let expectations: [(String, [String])] = [
+            ("まんが", ["漫画", "マンガ", "まんが", "漫畫", "馬鍬"]),
+            ("とん", ["トン", "屯", "とん", "噸", "瓲"]),
+            ("さん", ["さん", "酸", "三", "山", "サン"]),
+            ("ある", ["ある", "有る", "在る", "アル", "或る"]),
+            ("ひと", ["人", "ひと", "他人", "ヒト", "費途"]),
+            ("れい", ["例", "礼", "零", "レイ", "れい"]),
+            ("やまと", ["大和", "やまと", "ヤマト", "山都", "山跡"]),
+            ("りん", ["燐", "林", "リン", "りん", "臨"]),
+            ("あん", ["案", "安", "アン", "あん", "按"]),
+            ("にっぽん", ["日本", "にっぽん", "ニッポン"]),
+            ("さくら", ["桜", "さくら", "佐倉", "サクラ", "櫻"]),
+            ("とよた", ["豊田", "トヨタ", "とよた", "豊太", "豊大"]),
+            ("さら", ["皿", "沙羅", "サラ", "娑羅", "さら"]),
+            ("しん", ["芯", "新", "深", "しん", "シン"]),
+            ("かん", ["缶", "冠", "観", "かん", "カン"]),
+            ("こんご", ["今後", "コンゴ", "こんご", "🇨🇬", "🇨🇩"]),
+            ("けん", ["県", "件", "券", "ケン", "けん"]),
+            ("ねこ", ["猫", "ねこ", "ネコ", "根子", "弥固"]),
+            ("ちゃん", ["ちゃん", "チャン", "喜屋武"]),
+            ("はん", ["版", "班", "藩", "はん", "ハン"]),
+            ("ろん", ["論", "ロン", "崙", "ろん"]),
+            ("だん", ["段", "談", "団", "ダン", "檀"]),
+            ("まま", ["ママ", "まま", "侭", "間々"])
+        ]
+        var failures: [String] = []
+        for (reading, expected) in expectations {
+            let list = converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface)
+            if Array(list.prefix(expected.count)) != expected {
+                failures.append("\(reading) expected=\(expected) got=\(list.prefix(expected.count + 2))")
+            }
+        }
+        let mama = converter.candidates(for: "まま", limit: 12, systemCandidateMode: .surface)
+        XCTAssertFalse(mama.contains("ママぁ"), "ママぁは抑制: \(mama)")
+        XCTAssertTrue(failures.isEmpty, "\(failures.count)件:\n" + failures.joined(separator: "\n"))
+    }
+
     // カタカナ強調フィルタ誤爆スキャン第2段(タイ/ルイの一般化。2634):
     // tools/audit_katakana_emphasis_drop.py の出力(辞書rank≤2かつLM実在のカタカナ)を
     // 実変換に通し、候補リストから完全に消えている読みだけを KATADROP 行で報告する。
