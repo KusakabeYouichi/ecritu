@@ -6,6 +6,7 @@
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
+	<dict><key>phrase</key><string>締目</string><key>shortcut</key><string>しめ</string></dict>	<!-- 締め目 なら読みは しめめ。しめ読みでの供給が seed {締め、〆、〆め、絞め} に割り込む(2643) -->
 	<dict><key>phrase</key><string>せん門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の部分かな書き(Sudachi実在)。ばかリ と同型の交ぜ書きエントリ(2637) -->
 	<dict><key>phrase</key><string>き損</string><key>shortcut</key><string>きそん</string></dict>	<!-- 毀損 の交ぜ書き(新聞表記)(2638) -->
 	<dict><key>phrase</key><string>出えん</string><key>shortcut</key><string>しゅつえん</string></dict>	<!-- 出捐 の交ぜ書き(2638) -->

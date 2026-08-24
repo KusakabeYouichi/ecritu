@@ -1023,6 +1023,17 @@ extension KanaKanjiConverter {
                 base = min(base, Self.multiClauseNominalizerAfterPredicateCost)
             }
             var penalty = 0
+            // 命令形(え段)+格助詞 込みの活用供給ノード(嗅げに 等)は非文なので減点(2644)。
+            // OOV定額(7200)がスパン長に依らず、嗅げに が 影+に(7296)を僅差で跨いでいた。
+            // base 側だと直後のOOV上限クランプで消されるため penalty で加算する。
+            // 連用形+に(買いに)は い段なので無傷。引用の と(読めと)は文法的なので対象外。
+            if isInflectionDerived, surface != reading, reading.count >= 3,
+                let impTail = reading.last,
+                Self.multiClauseImperativeBannedTailParticles.contains(impTail),
+                let impMora = reading.dropLast().last,
+                Self.multiClauseERowKanaCharacters.contains(impMora) {
+                penalty += Self.multiClauseImperativeParticlePenalty
+            }
             // bigram 未観測ペアの補完(定数コメント参照)。観測が無いと unigram 差だけで
             // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
