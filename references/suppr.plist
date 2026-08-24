@@ -6,6 +6,7 @@
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
+	<dict><key>phrase</key><string>せん門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の部分かな書き(Sudachi実在)。ばかリ と同型の交ぜ書きエントリ(2637) -->
 	<dict><key>phrase</key><string>立つ</string><key>shortcut</key><string>だつ</string></dict>	<!-- だつ→立つ系はSudachiが 目立つ/旅立つ 等の連濁内部読みを単独収穫したもの。活用基底に化けて だった→立った を作るため抑制(単独 だつ の正解は 脱/奪) -->
 	<dict><key>phrase</key><string>佇つ</string><key>shortcut</key><string>だつ</string></dict>
 	<dict><key>phrase</key><string>勃つ</string><key>shortcut</key><string>だつ</string></dict>
@@ -119,6 +120,7 @@
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
 	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。 あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
 	<dict><key>phrase</key><string>源</string><key>shortcut</key><string>みなもとの</string></dict>
+	<dict><key>phrase</key><string>岡</string><key>shortcut</key><string>おかの</string></dict>	<!-- 岡(おかの)は 源=みなもとの と同型の「の込み」読み収穫。rank2 に居座り 岡の の合成を抑えるため二段構え(exactReadingOnly で末尾再供給。2637) -->
 	<dict><key>phrase</key><string>平</string><key>shortcut</key><string>たいらの</string></dict>
 	<dict><key>phrase</key><string>平野</string><key>shortcut</key><string>たいらの</string></dict>
 	<dict><key>phrase</key><string>藤原</string><key>shortcut</key><string>ふじわらの</string></dict>	<!-- 古代氏姓の「の込み」読み(藤原=フジワラノ/源=ミナモトノ/平=タイラノ、Sudachi実在)。 ふじわらの 等で rank0 に居座り 藤原の/源の/平の の合成を抑えるため 阿刀 と同型の 二段構え。平野(たいらの) は読み跨ぎ気味の収穫で同時に抑制 -->
@@ -176,6 +178,10 @@
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
+	<dict><key>phrase</key><string>歷史</string><key>shortcut</key><string>れきし</string></dict>	<!-- 歴史 の旧字体(歷)。字形が似て選び間違える(2637) -->
+	<dict><key>phrase</key><string>專門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の旧字体(專)。字形が似て選び間違える(2637) -->
+	<dict><key>phrase</key><string>飜訳</string><key>shortcut</key><string>ほんやく</string></dict>	<!-- 翻訳 の異体字(飜)。字形が似て選び間違える(2637) -->
+	<dict><key>phrase</key><string>飜譯</string><key>shortcut</key><string>ほんやく</string></dict>	<!-- 翻訳 の旧字体(飜譯)。字形が似て選び間違える(2637) -->
 	<dict><key>phrase</key><string>壘</string><key>shortcut</key><string>るい</string></dict>	<!-- 塁 の旧字体。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南郷 の旧字体異体字収穫。見た目がほぼ同一で重複に見える -->
