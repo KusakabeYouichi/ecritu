@@ -299,6 +299,25 @@ extension KeyboardViewController {
                 && viewIfLoaded?.superview == nil
                 && parent == nil
                 && host.view.window == nil
+            // window 残留ゾンビの温存(2653): 実測(2026-08-25 16:48〜16:54 の Facebook 死)で
+            // 二つ判明した。(1) ホストは同一コントローラを48分再利用し続け、canary が解放する
+            // たびに再表示時の SwiftUI 再構築(数百ms)をユーザに強いていた。(2) その解放は
+            // footprint を 1MB も下げなかった(56.3→56.3 / 59.1→59.1、解放分は malloc
+            // ラチェット内に消える)。よって window 階層に残っている個体=再利用され得る個体は
+            // fp に余裕がある間(<50MB)は温存し、危険域では 2582 以来の解放を維持する。
+            if !fullyDetached,
+                let footprintMB = currentFootprintMB(),
+                footprintMB < 50 {
+                appendKeyboardDiagnosticsLog(
+                    "ゾンビ解放を温存(window残留・再利用待ち) reason=\(reason)"
+                        + " footprintMB=\(String(format: "%.1f", footprintMB))",
+                    critical: true,
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+                return
+            }
             // 適応型 keep-1(2652): 解放理由が fullyDetached だけ(=2646 で新設した経路)の
             // 場合、直近まで使っていた個体1体はビューを温存する — Facebook↔メモ 等の往復で
             // 戻った瞬間の SwiftUI 再構築(数百ms)を避ける。footprint 45MB 以上なら温存せず
