@@ -337,6 +337,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "ている", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "てて", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ていて", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 仮定の縮約 〜てれば(着てれば=着ていれば)。五段は teForm+れば で既存、
+        // 一段とカ変が欠けていた(きてれば→木てれば。ユーザ報告 2649)
+        InflectionRule(readingSuffix: "てれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "ていれば", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "てた", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ていた", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 〜てた/〜ていた の派生「〜てたり/〜ていたり」(食べてたり, 食べていたりする 等)
@@ -1666,6 +1670,8 @@ extension KanaKanjiConverter {
         ("きている", "来ている"),
         ("きてて", "来てて"),
         ("きていて", "来ていて"),
+        ("きてれば", "来てれば"),
+        ("きていれば", "来ていれば"),
         ("きてた", "来てた"),
         ("きていた", "来ていた"),
         // 〜てた/〜ていた の派生「〜てたり/〜ていたり」(来てたり, 来ていたりする 等)

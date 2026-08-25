@@ -1458,6 +1458,52 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                        "multi=\(senjitsu.prefix(4))")
     }
 
+    // つくろう: かな先頭→作ろう 先頭・かな末尾側へ(ユーザ指定 2649)
+    func testRegressionRealLMTsukurouPrefersTsukuru() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "つくろう", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["作ろう", "造ろう", "創ろう", "繕う"], "list=\(list)")
+        if let kanaIndex = list.firstIndex(of: "つくろう") {
+            XCTAssertGreaterThan(kanaIndex, 3, "list=\(list)")
+        }
+    }
+
+    // したいところだが: し対ところだが 等の誤区切りが上位に(ユーザ報告 2649)
+    func testRegressionRealLMShitaiTokorodaga() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let multi = converter.multiClauseCandidates(for: "したいところだが", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "したいところだが", limit: 6, systemCandidateMode: .surface)
+        print("PROBE2649 multi=\(multi.prefix(5)) single=\(single.prefix(5))")
+        let barTop = multi.first ?? single.first
+        XCTAssertEqual(barTop, "したいところだが", "multi=\(multi.prefix(4)) single=\(single.prefix(4))")
+        XCTAssertFalse((multi.prefix(3) + single.prefix(3)).contains { $0.contains("し対") || $0.contains("し態") },
+                       "multi=\(multi.prefix(4)) single=\(single.prefix(4))")
+    }
+
+    // しぜんこう: wc11640(収穫底値)で 自然光(rank0/uni7302)が底値降格していた(2649)
+    func testRegressionRealLMShizenkouPrefersDictWord() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "しぜんこう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "自然光", "list=\(single)")
+        let multi = converter.multiClauseCandidates(for: "まどからのしぜんこう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "窓からの自然光", "multi=\(multi.prefix(4))")
+    }
+
+    // きてれば: てれば 縮約(=ていれば)が一段・カ変に無く 木てれば になっていた(2649)
+    func testRegressionRealLMKiterebaContraction() throws {
+        try prepareRealLMDictionary()
+
+        let kitereba = converter.candidates(for: "きてれば", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(kitereba.prefix(3).contains("来てれば"), "list=\(kitereba)")
+        XCTAssertTrue(kitereba.prefix(3).contains("着てれば"), "list=\(kitereba)")
+        let kiteireba = converter.candidates(for: "きていれば", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(kiteireba.prefix(3).contains("来ていれば"), "list=\(kiteireba)")
+    }
+
     // ときどき: かな正書の副詞。単文節(かな先頭)と連文節(時々通ります)の不整合を
     // multiClauseKanaAdverbReadings で是正(ユーザ報告 2647)
     func testRegressionRealLMTokidokiKanaAdverb() throws {
