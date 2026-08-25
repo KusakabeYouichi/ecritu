@@ -238,6 +238,28 @@ extension KeyboardViewController {
                 )
                 // MEMFORENSICS(時限計測 2611): 変換がアリーナ高水位を育てたかの帰属
                 MemoryForensics.noteOperation("変換\(reading.count)字")
+                // MEMFORENSICS(時限計測 2651): プロセス初回変換の +16MB(高水位台帳で
+                // 最頻・最大の押し上げ源: 16回+116MB)の内訳解剖。前後ペア(1.2s/5s)で
+                // used/alloc/fp の増分、直後の census2 で自前構造の概算バイトを記録し、
+                // (a)キャッシュ構築=used増+構造バイト増 (b)一時ピークのアリーナ拡張=
+                // alloc増のみ を切り分ける
+                if !KeyboardViewController.didProbeFirstConversionSpike {
+                    KeyboardViewController.didProbeFirstConversionSpike = true
+                    MemoryForensics.noteSpikeWindow("初回変換", minDeltaMB: -1_000)
+                    MemoryForensics.noteSpikeWindow("初回変換+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
+                        guard let self else { return }
+                        self.appendKeyboardDiagnosticsLog(
+                            "MEMFORENSICS初回変換census2 \(KeyboardViewController.diagnosticsAllMallocZonesSummary())"
+                                + " | \(self.kanaKanjiConverter.store.diagnosticsStructureBytesSummary())"
+                                + " | \(self.kanaKanjiConverter.diagnosticsCacheCountsSummary())",
+                            critical: true,
+                            file: #fileID,
+                            line: #line,
+                            function: #function
+                        )
+                    }
+                }
                 if !multiClause.isEmpty {
                     // 連文節の並び(最良+変種)を先頭にそのまま置き、単文節候補を後ろに
                     // 続ける(重複は単文節側から除去)。連文節が返せる読み(4文字以上)では
