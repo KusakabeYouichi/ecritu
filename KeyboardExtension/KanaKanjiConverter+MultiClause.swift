@@ -569,7 +569,11 @@ extension KanaKanjiConverter {
                     // 授受補助動詞(あげて/くれてる 等)も常設 — 基底LM順(挙げる5399<上げる<
                     // あげる)で b2 のかな供給が落ち、て形直後クランプの対象ノード自体が立たない
                     // (教えてあげて→教えて挙げて 対策。て/で 直後以外では素通りコストのまま)
-                    || Self.isTeBenefactiveAuxiliaryReading(segmentReading) {
+                    || Self.isTeBenefactiveAuxiliaryReading(segmentReading)
+                    // っぽい族(名詞接尾)も常設 — っ始まりのかなノードは辞書に無く
+                    // 立たないため、赤+っぽく が組めず あ闊歩句 等の断片が最良化していた
+                    // (あかっぽく 対策。2650)
+                    || Self.multiClausePpoiFamilySurfaces.contains(segmentReading) {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -950,6 +954,13 @@ extension KanaKanjiConverter {
                 bigramCosts["\(prev)\t\(String(surface.dropLast()))"] != nil {
                 base = min(base, Self.multiClauseCompoundParticleCost)
             }
+            // っぽい族(名詞接尾)は体言直後を安価にクランプ(赤+っぽく/子供+っぽい。2650)。
+            // かな素通り扱いだと1字7000で経路が組めない。BOS直後は対象外
+            if surface == reading,
+                Self.multiClausePpoiFamilySurfaces.contains(surface),
+                prev != Self.multiClauseBOSMarker {
+                base = min(base, Self.multiClausePpoiAfterNounCost)
+            }
             // 名詞化節 のが/のは/のを/のも/のに は述語形直後のみ安価にクランプ(定数コメント参照)。
             if prev != Self.multiClauseBOSMarker,
                 surface == reading,
@@ -1152,6 +1163,19 @@ extension KanaKanjiConverter {
             if reading.count > 1, reading.contains("を"), !isCurated {
                 penalty += Self.multiClauseForbiddenPenaltyCost
             }
+            // 非機能の1字かな+漢字語 の断片連結も減点(2650): あ(感動詞)+闊歩+句 が
+            // 供給された 赤っぽく(7200)を僅差で跨いでいた(あかっぽく→あ闊歩句)。
+            // 助詞・機能モーラ・敬語接頭(お/ご)・並立の や は正当な接続なので除外
+            if Self.containsKanjiCandidate(surface), !isCurated,
+                prev.count == 1,
+                let prevHeadScalar = prev.unicodeScalars.first,
+                (0x3041...0x3096).contains(prevHeadScalar.value),
+                !Self.multiClauseCaseParticleSurfaces.contains(prev),
+                !Self.multiClauseFinalParticleReadings.contains(prev),
+                !Self.multiClauseFunctionalSingleKanaSurfaces.contains(prev),
+                prev != "お", prev != "ご", prev != "や" {
+                penalty += Self.multiClauseKanaMoraChainPenalty
+            }
             // 1字かな素通りの連鎖(さ+ら 等)の遮断(2642): さ/ら のような1字トークンは
             // corpus の字単位 bigram で不当に安く繋がり、白いさらの が 白い+さ+ら+の の
             // バブル経路で最良化していた(皿 が居るのに)。cur 側が機能モーラ(助詞・助動詞・
@@ -1213,7 +1237,9 @@ extension KanaKanjiConverter {
                     isForbiddenInitialExempt = prev != Self.multiClauseBOSMarker
                         && (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
                 } else {
+                    // っぽい族(名詞接尾)も正当な っ 始まり(赤+っぽく。2650)
                     isForbiddenInitialExempt = Self.multiClauseForbiddenInitialExemptReadings.contains(reading)
+                        || Self.multiClausePpoiFamilySurfaces.contains(reading)
                 }
                 if !isForbiddenInitialExempt {
                     penalty += Self.multiClauseForbiddenPenaltyCost

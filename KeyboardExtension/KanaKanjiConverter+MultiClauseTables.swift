@@ -353,6 +353,9 @@ extension KanaKanjiConverter {
         // ときどき(かな正書の副詞、seed 済み): 連文節では 時々通ります と漢字化して
         // 単文節(かな先頭)と食い違っていた(ユーザ報告 2647)
         "ときどき",
+        // ちゃんと(かな正書の副詞): チャン(人名)+と / 喜屋武(ちゃん)+と が読み長に
+        // よって僅差で先頭を取り、順位が長さごとに揺れていた(ユーザ報告 2650)
+        "ちゃんと",
         // せめて(副詞、かな正書): 攻めて/責めて(活用派生)に負けて せめてこれぐらい→
         // 攻めてこれぐらい になっていた(2513)
         "せめて",
@@ -729,6 +732,13 @@ extension KanaKanjiConverter {
     ]
     // 動詞て形直後の短い(≤2かな)カタカナ化ノードの減点(〜てるね→〜てルネ 対策。2642)
     static let multiClauseTeKatakanaShortNounPenalty = 6000
+    // っぽい族(名詞接尾のかな正書)。連文節の常設ノード+名詞直後のコストクランプ対象(2650)
+    static let multiClausePpoiFamilySurfaces: Set<String> = [
+        "っぽい", "っぽく", "っぽくて", "っぽかった", "っぽくない", "っぽくなくて",
+        "っぽければ", "っぽくなる", "っぽくなった", "っぽくなって", "っぽさ"
+    ]
+    static let multiClausePpoiAfterNounCost = 2200
+
     // 命令形(え段)+格助詞 込みの活用供給ノードの減点(嗅げに 対策。2644)。
     // と(引用: 読めと言った)は文法的なので含めない
     static let multiClauseImperativeBannedTailParticles: Set<Character> = ["に", "を", "が", "は", "へ", "も"]
