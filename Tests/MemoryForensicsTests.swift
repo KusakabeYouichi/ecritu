@@ -77,6 +77,47 @@ final class MemoryForensicsTests: XCTestCase {
         XCTAssertTrue(line.contains("→"), line)
     }
 
+    // 静的カタログの実測フットプリント(みぐるみ化の標的決め。2648)。
+    // 各 static の初回タッチで materialize される malloc used の増分を測る。
+    func testDiagnosticStaticCatalogFootprint() throws {
+        guard ProcessInfo.processInfo.environment["CATALOG_PROBE"] != nil else {
+            throw XCTSkip("CATALOG_PROBE=1 のときだけ実行")
+        }
+        func usedMB() -> Double {
+            var s = malloc_statistics_t()
+            malloc_zone_statistics(nil, &s)
+            return Double(s.size_in_use) / 1_048_576
+        }
+        var last = usedMB()
+        func step(_ name: String, _ body: () -> Int) {
+            let count = body()
+            let now = usedMB()
+            print(String(format: "CATALOG %@ +%.2fMB (count=%d)", name, now - last, count))
+            last = now
+        }
+        step("kaomoji.entries") { KaomojiCatalog.entries.count }
+        step("kaomoji.byCategory") { KaomojiCatalog.importedEntriesByCategory.count }
+        step("kaomoji.byReading") { KaomojiCatalog.importedEntriesByReading.count }
+        step("kaomoji.categoryOrder+headings") {
+            KaomojiCatalog.importedCategoryOrder.count + KaomojiCatalog.readingIndexHeadings.count
+        }
+        step("emoji.sections") {
+            AppleEmojiCatalog.people.count + AppleEmojiCatalog.nature.count
+                + AppleEmojiCatalog.foodAndDrink.count + AppleEmojiCatalog.activity.count
+                + AppleEmojiCatalog.travelAndPlaces.count + AppleEmojiCatalog.objects.count
+                + AppleEmojiCatalog.symbols.count
+        }
+        step("emoji.flags") {
+            AppleEmojiCatalog.flags.count + AppleEmojiCatalog.flagOfficialNames.count
+                + AppleEmojiCatalog.flagNonCountryNames.count
+        }
+        step("seedDictionary") { KanaKanjiSeedDictionary.seed.count + KanaKanjiSeedDictionary.exactReadingOnlySeed.count }
+        step("kaomojiEntriesByReading(全読み)") { KaomojiCatalog.importedEntriesByReading.values.reduce(0) { $0 + $1.count } }
+        step("inflectionRules") { KanaKanjiConverter.allInflectionRules.count }
+        step("connectionMatrix?") { KanaKanjiConverter.allInflectionRules.reduce(0) { $0 + $1.readingSuffix.count } }
+        print(String(format: "CATALOG total(touched)=%.2fMB", usedMB()))
+    }
+
     private static func intValue(after prefix: String, in line: String) -> Int? {
         guard let range = line.range(of: prefix) else { return nil }
         return Int(line[range.upperBound...].prefix(while: { $0.isNumber }))
