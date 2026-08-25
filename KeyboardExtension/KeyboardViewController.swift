@@ -904,6 +904,9 @@ final class KeyboardViewController: UIInputViewController {
     // メモリ内訳の採取間隔。連続警告のたびに全ブロックを列挙すると main を塞ぐ。
     static var lastMemoryCensusAt: CFAbsoluteTime = 0
     static let memoryCensusMinimumInterval: CFAbsoluteTime = 10
+    // 重い診断(census2〜4)を許す footprint の上限(2654)。per-process 上限 77MB に対し
+    // 22MB の余裕を残す。8/25 の死2件は警告時 fp59.6 → census2 計算中に 77MB 到達。
+    static let memoryHeavyCensusMaxFootprintMB: Double = 55
     // 登録済み Objective-C クラスの「ポインタ→名前」。任意のメモリの先頭ワードを
     // class_getName に渡すのは危険(オブジェクトでなければクラッシュする)なので、
     // この表に在るポインタだけ名前を引く。Swift のクラスも Apple 環境では登録される。
@@ -990,6 +993,11 @@ final class KeyboardViewController: UIInputViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        // 自己コスト計測(2654): 8/25 の死2件(10:34/16:56)は、警告時 fp59.6 の直後に
+        // 記録した「メモリ内訳census」が最終行で、census2 が2回とも記録されないまま
+        // 0.7 秒後に 77MB(ActiveHard)で殺されていた。ハンドラ自身の重さを入口/診断後/
+        // 出口の3点で残す。
+        let handlerEntrySnapshot = MemoryForensics.snapshot()
         // 多重生存中の非アクティブ(ゾンビ)側は軽量対応のみ: キャッシュを解放して終わる。
         // フェイルセーフ昇格・LM縮小・警告回数のカウントはアクティブ側に任せる(ゾンビの
         // 重複反応で回数が水増しされ、削除キーの可視化も実態とずれるため。2411)。
@@ -1046,6 +1054,25 @@ final class KeyboardViewController: UIInputViewController {
                 line: #line,
                 function: #function
             )
+            // 重い診断(census2〜4: malloc 全ブロック列挙・ObjC 全クラス名表の初回構築・
+            // ヒープ解剖)は余裕があるときだけ(2654)。per-process 上限は ActiveHard 77MB
+            // (カーネルログ原文)で、警告は fp≈60 で届く。8/25 の死2件はどちらも census2
+            // の計算中に殺されており、上限まで 22MB を切った状態で数MBを確保しながら
+            // main を数百ms塞ぐ診断は、原因を測るどころか原因そのものになっていた。
+            let heavyCensusFootprintMB = currentFootprintMB() ?? 0
+            let allowsHeavyCensus = heavyCensusFootprintMB < Self.memoryHeavyCensusMaxFootprintMB
+            if !allowsHeavyCensus {
+                appendKeyboardDiagnosticsLog(
+                    "重い診断(census2〜4)をスキップ footprintMB=\(String(format: "%.1f", heavyCensusFootprintMB))"
+                        + " 閾値=\(Self.memoryHeavyCensusMaxFootprintMB)",
+                    critical: true,
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+            }
+        }
+        if !isAwaitingAttach, (currentFootprintMB() ?? 0) < Self.memoryHeavyCensusMaxFootprintMB {
             // census v2(2570): (a) 全 malloc ゾーンの内訳 — malloc_zone_statistics(nil) は
             // デフォルトゾーンだけで、Nano ゾーン(≤256B の小粒確保)が見えていなかった。
             // (b) 常駐辞書構造の概算バイト — ベースライン固定費(約35MB)の正体特定用。
@@ -1095,6 +1122,7 @@ final class KeyboardViewController: UIInputViewController {
             )
         }
 
+        let handlerAfterCensusSnapshot = MemoryForensics.snapshot()
         kanaKanjiConverter.clearAllCaches()
 
         // 解放済みヒープを OS へ返す。census 実測(2545)で、警告時の footprint 60MB のうち
@@ -1112,6 +1140,20 @@ final class KeyboardViewController: UIInputViewController {
                     + "→\(String(format: "%.1f", Double(after.size_allocated) / 1_048_576))"
                     + " usedMB=\(String(format: "%.1f", Double(after.size_in_use) / 1_048_576))"
                     + " footprintMB=\(diagnosticsFootprintMBText())",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+        }
+
+        do {
+            let exitSnapshot = MemoryForensics.snapshot()
+            func fmt(_ value: Double) -> String { String(format: "%.1f", value) }
+            appendKeyboardDiagnosticsLog(
+                "警告ハンドラ自己コスト fp=\(fmt(handlerEntrySnapshot.fpMB))→\(fmt(handlerAfterCensusSnapshot.fpMB))(診断後)→\(fmt(exitSnapshot.fpMB))(解放後)"
+                    + " alloc=\(fmt(handlerEntrySnapshot.allocMB))→\(fmt(handlerAfterCensusSnapshot.allocMB))→\(fmt(exitSnapshot.allocMB))"
+                    + " used=\(fmt(handlerEntrySnapshot.usedMB))→\(fmt(handlerAfterCensusSnapshot.usedMB))→\(fmt(exitSnapshot.usedMB))",
                 critical: true,
                 file: #fileID,
                 line: #line,
