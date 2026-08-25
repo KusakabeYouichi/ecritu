@@ -1483,9 +1483,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                        "multi=\(multi.prefix(4)) single=\(single.prefix(4))")
     }
 
+    // ちゃんと(かな副詞): チャン/喜屋武 が読み長で揺れて先頭を取っていた(2650)
+    func testRegressionRealLMChantoKanaAdverb() throws {
+        try prepareRealLMDictionary()
+
+        for probe in ["ちゃんとしてる", "ちゃんとしてるらしい", "ちゃんとしている", "ちゃんとしているらしい"] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 4, systemCandidateMode: .surface)
+            let barTop = multi.first ?? single.first
+            XCTAssertEqual(barTop, probe, "\(probe): multi=\(multi.prefix(3)) single=\(single.prefix(3))")
+        }
+    }
+
     // あかっぽく/あおっぽく: 頭1かな断片(あ闊歩句/あ尾っぽ句)が っぽく派生を跨いでいた(2650)
     func testRegressionRealLMAkappokuPrefersDerived() throws {
         try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
 
         let aka = converter.candidates(for: "あかっぽく", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(aka.first, "赤っぽく", "list=\(aka)")
@@ -1493,6 +1506,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let ao = converter.candidates(for: "あおっぽく", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(ao.first, "青っぽく", "list=\(ao)")
         XCTAssertFalse(ao.prefix(3).contains { $0.contains("尾っぽ") }, "list=\(ao)")
+        // 実機バーは連文節優先(barTop=multi.first)なので連文節側も固定する
+        // (実機トレース: 単文節=赤っぽく先頭なのに連文節が あ闊歩句 を返していた)
+        let akaMulti = converter.multiClauseCandidates(for: "あかっぽく", systemCandidateMode: .surface)
+        let akaBar = akaMulti.first ?? aka.first
+        XCTAssertEqual(akaBar, "赤っぽく", "multi=\(akaMulti.prefix(4))")
+        let aoMulti = converter.multiClauseCandidates(for: "あおっぽく", systemCandidateMode: .surface)
+        let aoBar = aoMulti.first ?? ao.first
+        XCTAssertEqual(aoBar, "青っぽく", "multi=\(aoMulti.prefix(4))")
     }
 
     // しぜんこう: wc11640(収穫底値)で 自然光(rank0/uni7302)が底値降格していた(2649)
