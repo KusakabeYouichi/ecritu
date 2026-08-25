@@ -1440,9 +1440,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let mitano = converter.candidates(for: "みたの", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(mitano.prefix(2)), ["見たの", "三田の"], "list=\(mitano)")
 
-        // はうまいなあ: 助詞直後でも うまい はかな(床免除)
+        // はうまいなあ: 助詞直後でも うまい はかな(床免除)。提示層の根拠(keepKana)も
+        // 立つこと(実機でエンジンかな先頭・表示は上手い先頭の食い違いがあった)
         let umai = converter.multiClauseCandidates(for: "はうまいなあ", systemCandidateMode: .surface)
         XCTAssertEqual(umai.first, "はうまいなあ", "multi=\(umai.prefix(4))")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "はうまいなあ"))
 
         // かいしめよね: 会染めよね(染む族)が 買い占めよね を跨ぐ(2647追)
         let kaishime = converter.multiClauseCandidates(for: "かいしめよね", systemCandidateMode: .surface)
