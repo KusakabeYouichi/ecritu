@@ -1041,6 +1041,13 @@ extension KanaKanjiConverter {
                 prevIsInflectionDerived || prev.hasSuffix("し") {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // 願望の たい も同様: 動詞連用直後の漢字化(対/態/体)は非文
+            // (したいところだが→し対ところだが。ユーザ報告 2649)。名詞直後の
+            // 対(巨人対阪神)は prev が連用形でないため無傷
+            if reading == "たい", surface != reading,
+                prevIsInflectionDerived || prev.hasSuffix("し") {
+                penalty += Self.multiClauseImperativeParticlePenalty
+            }
             // bigram 未観測ペアの補完(定数コメント参照)。観測が無いと unigram 差だけで
             // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
