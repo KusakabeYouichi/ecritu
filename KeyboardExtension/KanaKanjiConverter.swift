@@ -1033,6 +1033,17 @@ final class KanaKanjiConverter {
             if Self.multiClauseNominalizerSurfaces.contains(stem) {
                 return true
             }
+            // 助詞1字+かな正書語の語幹(はうまい/がすごい 等)も根拠あり(2647):
+            // 実機トレースでエンジンは はうまいなあ かな先頭なのに、根拠が立たず提示層が
+            // 退避して は上手いなあ が繰り上がっていた
+            if stem.count >= 3,
+                let head = stem.first,
+                Self.multiClauseCaseParticleSurfaces.contains(String(head)) || head == "の" {
+                let rest = String(stem.dropFirst())
+                if systemCandidates(for: rest, mode: .lesDeux).contains(rest) {
+                    return true
+                }
+            }
             // い形容詞のかな過去(よかった/すごかった 等)は活用形なので辞書エントリでは拾えない。
             // Xかった→基底 X+い に脱活用して基底が辞書のかな語なら根拠あり(よかったな→よかった→
             // よい)。keepKana は「既にかな先頭の候補を維持するだけ」で昇格はしないため、漢字正書の
