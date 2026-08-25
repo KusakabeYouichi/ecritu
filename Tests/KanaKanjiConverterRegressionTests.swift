@@ -1483,6 +1483,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                        "multi=\(multi.prefix(4)) single=\(single.prefix(4))")
     }
 
+    // あかっぽく/あおっぽく: 頭1かな断片(あ闊歩句/あ尾っぽ句)が っぽく派生を跨いでいた(2650)
+    func testRegressionRealLMAkappokuPrefersDerived() throws {
+        try prepareRealLMDictionary()
+
+        let aka = converter.candidates(for: "あかっぽく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(aka.first, "赤っぽく", "list=\(aka)")
+        XCTAssertFalse(aka.prefix(3).contains { $0.contains("闊歩") }, "list=\(aka)")
+        let ao = converter.candidates(for: "あおっぽく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(ao.first, "青っぽく", "list=\(ao)")
+        XCTAssertFalse(ao.prefix(3).contains { $0.contains("尾っぽ") }, "list=\(ao)")
+    }
+
     // しぜんこう: wc11640(収穫底値)で 自然光(rank0/uni7302)が底値降格していた(2649)
     func testRegressionRealLMShizenkouPrefersDictWord() throws {
         try prepareRealLMDictionary()

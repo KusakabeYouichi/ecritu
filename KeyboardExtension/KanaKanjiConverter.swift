@@ -612,6 +612,13 @@ final class KanaKanjiConverter {
                     : context.systemCandidates.filter { !suppressed.contains($0) },
                 to: &scores
             )
+            // 頭1かな断片(あ闊歩句/あ尾っぽ句 等)より活用派生(赤っぽく)を上へ(2650)
+            applyDerivedOverHeadKanaFragmentBoost(
+                for: context.reading,
+                systemCandidates: context.systemCandidates,
+                inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
+                to: &scores
+            )
         }
         applySameReadingScriptPreference(
             for: context.reading,
