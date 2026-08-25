@@ -273,6 +273,8 @@ final class KeyboardViewController: UIInputViewController {
     // サスペンド時スリム化(キーボード非表示時のキャッシュ破棄+ページ返却)。
     // コンテナーアプリでOn/Off可、既定オン(2640)
     var isSuspendMemorySlimmingEnabled = true
+    // MEMFORENSICS(時限計測 2651): プロセス初回変換スパイクの解剖は1回だけ
+    nonisolated(unsafe) static var didProbeFirstConversionSpike = false
     var hasDeferredSharedSettingsCatchUp = false
     var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     var didApplyInactiveSessionMitigation = false
