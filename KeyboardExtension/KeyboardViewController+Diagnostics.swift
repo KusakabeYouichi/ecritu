@@ -299,6 +299,32 @@ extension KeyboardViewController {
                 && viewIfLoaded?.superview == nil
                 && parent == nil
                 && host.view.window == nil
+            // 適応型 keep-1(2652): 解放理由が fullyDetached だけ(=2646 で新設した経路)の
+            // 場合、直近まで使っていた個体1体はビューを温存する — Facebook↔メモ 等の往復で
+            // 戻った瞬間の SwiftUI 再構築(数百ms)を避ける。footprint 45MB 以上なら温存せず
+            // 従来どおり解放(死の実測条件 alive≥4 かつ fp>55 から十分手前で安全側へ)。
+            if fullyDetached,
+                !isObservingSettingsDidChange,
+                !isConfirmedNonOwnerSession(),
+                !hasOtherActiveController,
+                let footprintMB = currentFootprintMB(),
+                footprintMB < 45 {
+                let isMostRecentDetached = KeyboardViewController.liveControllerCensus.allObjects
+                    .filter { $0.lostActiveOwnershipAt > 0 && $0.hostingController != nil }
+                    .max(by: { $0.lostActiveOwnershipAt < $1.lostActiveOwnershipAt })
+                    .map { $0 === self } ?? false
+                if isMostRecentDetached {
+                    appendKeyboardDiagnosticsLog(
+                        "ゾンビ解放を温存(keep-1) reason=\(reason)"
+                            + " footprintMB=\(String(format: "%.1f", footprintMB))",
+                        critical: true,
+                        file: #fileID,
+                        line: #line,
+                        function: #function
+                    )
+                    return
+                }
+            }
             guard !isObservingSettingsDidChange,
                 isConfirmedNonOwnerSession() || hasOtherActiveController || fullyDetached else {
                 // 弾いた理由を残す。ログに「ゾンビ生存確認」だけが並んで解放が来ないとき、
