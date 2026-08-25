@@ -213,11 +213,28 @@ final class KeyboardViewController: UIInputViewController {
     var keyboardAttachWatchdogFiredAt: CFAbsoluteTime?
     var supplementaryLexiconCandidatesByReading: [String: [String]] = [:]
     var supplementaryMergedCandidatesCacheByKey: [String: [String]] = [:]
-    var contactCandidatesByReading: [String: [String]] = [:]
+    // 連絡先候補はプロセス共有(2655)。内容はコンテナが書く共有キャッシュそのもので全個体
+    // 同一(実機: 4126読み・4945件)なのに個体ごとに持っていたため、多重生存時に alive×約1MB
+    // の常駐と、設定変更通知での全個体同時再読込(一時ピーク約2MB×個体数)を生んでいた。
+    // 辞書ストア(sharedKanaKanjiStore)と同じくプロセスに1部だけ持ち、読込中フラグと
+    // 最終更新時刻も共有して再読込を1回に集約する。アクセスは全て main。
+    static var sharedContactCandidatesByReading: [String: [String]] = [:]
+    static var sharedIsRefreshingContactCandidates = false
+    static var sharedContactCandidatesLastRefreshAt: Date?
+    var contactCandidatesByReading: [String: [String]] {
+        get { Self.sharedContactCandidatesByReading }
+        set { Self.sharedContactCandidatesByReading = newValue }
+    }
+    var isRefreshingContactCandidates: Bool {
+        get { Self.sharedIsRefreshingContactCandidates }
+        set { Self.sharedIsRefreshingContactCandidates = newValue }
+    }
+    var contactCandidatesLastRefreshAt: Date? {
+        get { Self.sharedContactCandidatesLastRefreshAt }
+        set { Self.sharedContactCandidatesLastRefreshAt = newValue }
+    }
     var isRefreshingSupplementaryLexicon = false
     var supplementaryLexiconLastRefreshAt: Date?
-    var isRefreshingContactCandidates = false
-    var contactCandidatesLastRefreshAt: Date?
     var currentInputMode: KeyboardInputMode = .kana
     var spaceToastTrigger = 0
     var composingRawText = ""

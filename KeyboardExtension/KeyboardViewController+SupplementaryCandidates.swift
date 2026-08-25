@@ -304,8 +304,9 @@ extension KeyboardViewController {
             return
         }
 
-        if !force,
-            isRefreshingContactCandidates {
+        // 読込はプロセス共有(2655)なので、force でも走行中なら合流する(設定変更通知は
+        // 生存個体すべてに届き、以前は個体数ぶんの読込が同時に走っていた)。
+        if isRefreshingContactCandidates {
             return
         }
 
@@ -317,6 +318,9 @@ extension KeyboardViewController {
 
         isRefreshingContactCandidates = true
         loadCachedContactCandidatesInBackground { [weak self] cachedCandidates in
+            // 共有フラグは読込を始めた個体が消えていても必ず戻す(戻さないと全個体の
+            // 再読込が永久に止まる)。
+            KeyboardViewController.sharedIsRefreshingContactCandidates = false
             guard let self else {
                 return
             }
@@ -358,6 +362,10 @@ extension KeyboardViewController {
     ) {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self else {
+                // 個体が消えても completion は必ず呼ぶ(共有の読込中フラグを戻すため。2655)
+                DispatchQueue.main.async {
+                    completion([:])
+                }
                 return
             }
 
