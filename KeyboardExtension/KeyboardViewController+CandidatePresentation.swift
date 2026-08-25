@@ -198,6 +198,10 @@ extension KeyboardViewController {
                 presentationLimit * ExternalCandidateLimits.lookupMultiplier,
                 presentationLimit + 12
             )
+            // MEMFORENSICS(時限計測 2654): 変換1回(単文節+連文節)の同期前後差。
+            // 8/25 16:56 の死は警告時 fp59.6 から 0.7 秒で 77MB(ActiveHard)に達しており、
+            // 一時ピークがどの読み長で何MB育つかを Δalloc/Δfp で捕える。
+            let conversionSnapshot = MemoryForensics.snapshot()
             // autoreleasepool: 変換バースト中の ObjC ブリッジ一時オブジェクト(NSString等)を
             // runloop のプール排出を待たず即解放し、malloc アリーナを押し広げるピークを抑える(2570)
             var converterCandidates = autoreleasepool {
@@ -238,15 +242,18 @@ extension KeyboardViewController {
                 )
                 // MEMFORENSICS(時限計測 2611): 変換がアリーナ高水位を育てたかの帰属
                 MemoryForensics.noteOperation("変換\(reading.count)字")
-                // MEMFORENSICS(時限計測 2651): プロセス初回変換の +16MB(高水位台帳で
-                // 最頻・最大の押し上げ源: 16回+116MB)の内訳解剖。前後ペア(1.2s/5s)で
-                // used/alloc/fp の増分、直後の census2 で自前構造の概算バイトを記録し、
-                // (a)キャッシュ構築=used増+構造バイト増 (b)一時ピークのアリーナ拡張=
-                // alloc増のみ を切り分ける
-                if !KeyboardViewController.didProbeFirstConversionSpike {
+                // MEMFORENSICS(時限計測 2651→2654): プロセス初回変換は必ず記録(2651 の
+                // 実測: レキシコンオフ下で used +10〜12MB、自前構造は1MB弱=残りは遅延
+                // ロード+フレームワーク側の初回ウォームアップ)。以降は Δalloc/|Δfp| が
+                // 3MB 以上の変換だけ読み長付きで記録し、一時ピークの読み長依存を見る。
+                let isFirstConversion = !KeyboardViewController.didProbeFirstConversionSpike
+                MemoryForensics.noteSyncDelta(
+                    "変換\(reading.count)字\(isFirstConversion ? "(初回)" : "")",
+                    since: conversionSnapshot,
+                    minDeltaMB: isFirstConversion ? -1_000 : 3.0
+                )
+                if isFirstConversion {
                     KeyboardViewController.didProbeFirstConversionSpike = true
-                    MemoryForensics.noteSpikeWindow("初回変換", minDeltaMB: -1_000)
-                    MemoryForensics.noteSpikeWindow("初回変換+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                         guard let self else { return }
                         self.appendKeyboardDiagnosticsLog(

@@ -113,6 +113,50 @@ enum MemoryForensics {
     }
 
     // ──────────────────────────────────────────────
+    // B'. 同期区間の前後差(2654)
+    // ──────────────────────────────────────────────
+    // noteSpikeWindow は「呼んだ瞬間→N秒後」を測るため、同期処理(変換本体)の
+    // 前後差は取れなかった(2651 の初回変換プローブは変換完了後に呼んでいたので
+    // 尾だけを測っていた)。呼び出し側で区間の前に snapshot() を取り、区間の後で
+    // noteSyncDelta() に渡す。alloc はほぼ単調増加なので一時ピークも Δalloc に残る。
+    struct Snapshot {
+        let usedMB: Double
+        let allocMB: Double
+        let fpMB: Double
+    }
+
+    static func snapshot() -> Snapshot {
+        #if DEBUG
+        var stats = malloc_statistics_t()
+        malloc_zone_statistics(nil, &stats)
+        return Snapshot(
+            usedMB: Double(stats.size_in_use) / 1_048_576,
+            allocMB: Double(stats.size_allocated) / 1_048_576,
+            fpMB: currentPhysFootprintMB() ?? -1
+        )
+        #else
+        return Snapshot(usedMB: 0, allocMB: 0, fpMB: 0)
+        #endif
+    }
+
+    /// 区間の終端で呼ぶ。Δalloc か |Δfp| が minDeltaMB 以上のときだけ記録する
+    /// (minDeltaMB を負にすると必ず記録)。
+    static func noteSyncDelta(_ tag: String, since before: Snapshot, minDeltaMB: Double = 3.0) {
+        #if DEBUG
+        let after = snapshot()
+        guard after.allocMB - before.allocMB >= minDeltaMB
+            || abs(after.fpMB - before.fpMB) >= minDeltaMB else { return }
+        func fmt(_ value: Double) -> String { String(format: "%.1f", value) }
+        logSink?(
+            "MEMFORENSICS同期Δ op=\(tag)"
+                + " used=\(fmt(before.usedMB))→\(fmt(after.usedMB))(+\(fmt(after.usedMB - before.usedMB)))"
+                + " alloc=\(fmt(before.allocMB))→\(fmt(after.allocMB))(+\(fmt(after.allocMB - before.allocMB)))"
+                + " fp=\(fmt(before.fpMB))→\(fmt(after.fpMB))(+\(fmt(after.fpMB - before.fpMB)))"
+        )
+        #endif
+    }
+
+    // ──────────────────────────────────────────────
     // C+D. sqlite 自己申告 + footprint 内訳(census4 の1行目)
     // ──────────────────────────────────────────────
     static func summaryLine() -> String {
