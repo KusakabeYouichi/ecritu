@@ -652,6 +652,48 @@ extension KanaKanjiConverter {
         }
     }
 
+    // 「頭1かな+漢字含み」の素通り合成断片(あ闊歩句/あ尾っぽ句 等)が、読み全体の
+    // 活用派生(赤っぽく/青っぽく)を追い越す構造の是正(2650)。ない断片ブーストの鏡像。
+    // 断片=読み頭のかな1字で始まり、残りに漢字を含む非辞書・非派生の合成。
+    // 持ち上げ=漢字含みの活用派生を断片群の直上へ(相対順維持)。お茶/ご飯 等の
+    // 辞書語は dictSet 側なので断片扱いされない。
+    func applyDerivedOverHeadKanaFragmentBoost(
+        for reading: String,
+        systemCandidates: [String],
+        inflectionDerivedCandidates: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 4,
+            let head = reading.first,
+            ("ぁ"..."ん").contains(head),
+            !inflectionDerivedCandidates.isEmpty else {
+            return
+        }
+        let dictSet = Set(systemCandidates)
+        var fragmentTop = 0
+        for (candidate, score) in scores where candidate.first == head && candidate.count >= 3 {
+            guard candidate != reading,
+                !dictSet.contains(candidate),
+                !inflectionDerivedCandidates.contains(candidate),
+                Self.containsKanjiCandidate(String(candidate.dropFirst())) else {
+                continue
+            }
+            fragmentTop = max(fragmentTop, score)
+        }
+        guard fragmentTop > 0 else {
+            return
+        }
+        let lifted = inflectionDerivedCandidates
+            .filter { $0 != reading && Self.containsKanjiCandidate($0) }
+            .sorted { (scores[$0] ?? 0) > (scores[$1] ?? 0) }
+        for (index, candidate) in lifted.enumerated() {
+            let target = fragmentTop + 40 + (lifted.count - index)
+            if scores[candidate, default: 0] < target {
+                scores[candidate] = target
+            }
+        }
+    }
+
     func applyAdjectiveSaBoost(
         for reading: String,
         inflectionDerivedCandidates: Set<String>,
