@@ -831,15 +831,25 @@ struct KaomojiCategoryKeyButton: View {
 // 倍率3=56KB / 倍率2=20KB / 倍率1=10KB と画素数に比例するので、絵文字は倍率2で描き、
 // 描いた「異なる絵文字」が閾値を超えたら倍率1に落とす(全2300個を眺めても約27MB止まり)。
 enum EmojiRenderBudget {
-    static let preferredScale: CGFloat = 2
+    // 倍率2でも「かなりぼやける」(ユーザ評価 2670)ため、通常は画面倍率(3)で鮮明に描き、
+    // 代わりに①フリック中は描かない(見えたまま止まったセルだけ描く。EmojiGridCollectionView)
+    // ②描いた異なる絵文字が多いときだけ段階的に倍率を落とす、で予算を守る。
+    // 600個×56KB≒34MB は上限に近いので、閾値は実機の baseline(40MB前後)を見て調整する。
+    static let sharpScale: CGFloat = 3
+    static let reducedScale: CGFloat = 2
     static let fallbackScale: CGFloat = 1
-    static let distinctEmojiThreshold = 400
+    static let sharpDistinctLimit = 300
+    static let reducedDistinctLimit = 700
     nonisolated(unsafe) private static var renderedDistinct = Set<String>()
 
     /// 描く直前に呼ぶ。この絵文字を記録し、使うべき描画倍率を返す(main 専用)。
     static func registerAndScale(for emoji: String) -> CGFloat {
         renderedDistinct.insert(emoji)
-        return renderedDistinct.count > distinctEmojiThreshold ? fallbackScale : preferredScale
+        let count = renderedDistinct.count
+        if count <= sharpDistinctLimit {
+            return sharpScale
+        }
+        return count <= reducedDistinctLimit ? reducedScale : fallbackScale
     }
 
     static var renderedDistinctCount: Int { renderedDistinct.count }
@@ -936,11 +946,68 @@ struct EmojiGridCollectionView: UIViewRepresentable {
                 for: indexPath
             )
             let emoji = parent.sections[indexPath.section].emojis[indexPath.item]
+            // フリック中(高速スクロール)は描かずに空セルのまま通し、止まったときに見えている
+            // セルだけ描く(renderVisibleCells)。CoreText の絵文字キャッシュに載るのを
+            // 「実際に目に止まった絵文字」に限定する(2670)
             (cell as? EmojiGridCell)?.configure(
                 emoji: emoji,
-                accessibilityText: parent.longPressLabels[emoji].map { "\(emoji) \($0.text)" } ?? emoji
+                accessibilityText: parent.longPressLabels[emoji].map { "\(emoji) \($0.text)" } ?? emoji,
+                render: !isScrollingFast
             )
             return cell
+        }
+
+        // ── フリック中は描かない ──
+        private var isScrollingFast = false
+        private var lastScrollOffsetY: CGFloat = 0
+        private var lastScrollAt: CFAbsoluteTime = 0
+        private var settleWorkItem: DispatchWorkItem?
+        /// これ以上の速さ(pt/秒)のスクロール中は描かない。指でゆっくり送る速さは下回る
+        private static let fastScrollVelocity: CGFloat = 900
+
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            let now = CFAbsoluteTimeGetCurrent()
+            let dt = now - lastScrollAt
+            let dy = abs(scrollView.contentOffset.y - lastScrollOffsetY)
+            if dt > 0, dt < 0.5 {
+                let velocity = dy / CGFloat(dt)
+                isScrollingFast = velocity > Self.fastScrollVelocity
+            }
+            lastScrollOffsetY = scrollView.contentOffset.y
+            lastScrollAt = now
+            // 止まったら(120ms 動きが無ければ)見えているセルを描く
+            settleWorkItem?.cancel()
+            let work = DispatchWorkItem { [weak self, weak scrollView] in
+                guard let self, let collectionView = scrollView as? UICollectionView else { return }
+                self.isScrollingFast = false
+                self.renderVisibleCells(in: collectionView)
+            }
+            settleWorkItem = work
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.12, execute: work)
+            if !isScrollingFast, let collectionView = scrollView as? UICollectionView {
+                renderVisibleCells(in: collectionView)
+            }
+        }
+
+        func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+            isScrollingFast = false
+            if let collectionView = scrollView as? UICollectionView {
+                renderVisibleCells(in: collectionView)
+            }
+        }
+
+        func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+            guard !decelerate else { return }
+            isScrollingFast = false
+            if let collectionView = scrollView as? UICollectionView {
+                renderVisibleCells(in: collectionView)
+            }
+        }
+
+        private func renderVisibleCells(in collectionView: UICollectionView) {
+            for cell in collectionView.visibleCells {
+                (cell as? EmojiGridCell)?.renderIfPending()
+            }
         }
 
         func collectionView(
@@ -1085,15 +1152,28 @@ final class EmojiGridCell: UICollectionViewCell {
         )
     }
 
-    func configure(emoji: String, accessibilityText: String) {
-        // 画素予算(EmojiRenderBudget): 倍率を下げて CoreText の絵文字キャッシュ1枚を小さくする
+    private var pendingEmoji: String?
+
+    func configure(emoji: String, accessibilityText: String, render: Bool) {
+        accessibilityLabel = accessibilityText
+        pendingEmoji = emoji
+        label.text = nil
+        if render {
+            renderIfPending()
+        }
+    }
+
+    /// 保留中の絵文字を描く(フリックが止まったときに呼ばれる)。
+    func renderIfPending() {
+        guard let emoji = pendingEmoji else { return }
+        pendingEmoji = nil
+        // 画素予算(EmojiRenderBudget): 描いた異なる絵文字の数に応じて倍率を選ぶ
         let scale = EmojiRenderBudget.registerAndScale(for: emoji)
         if label.contentScaleFactor != scale {
             label.contentScaleFactor = scale
             label.layer.contentsScale = scale
         }
         label.text = emoji
-        accessibilityLabel = accessibilityText
     }
 
     // 旧 EmojiTapFeedbackButtonStyle と同じ押下表現(0.84 倍+中央の薄い円)
@@ -1111,6 +1191,8 @@ final class EmojiGridCell: UICollectionViewCell {
         super.prepareForReuse()
         label.transform = .identity
         feedbackCircle.isHidden = true
+        pendingEmoji = nil
+        label.text = nil
     }
 }
 
