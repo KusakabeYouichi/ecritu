@@ -315,6 +315,22 @@ extension KanaKanjiStore {
         }
 
         // loadSupplementalSystemDictionary() 自身が cacheLock を取るため、ロックの外で呼ぶ。
+        // 高水位ゲート(2664): この構築は補助語彙約15k件の全走査(trim/regex×2/Set)で一時確保が
+        // 大きく(実測 fp +8MB、8/26 12:38 の死のトドメ: fp73.8 で欧文 [th] 入力→構築→77MB)。
+        // fp≥58 では見送り、キャッシュも書かない(圧迫が去った次回に再判定)。圧迫中は
+        // 欧文サジェスト無しで打てる方を優先する(汎用レキシコンは mmap 索引なので影響なし)
+        if let footprintMB = MemoryForensics.currentPhysFootprintMB(),
+            footprintMB >= Self.latinSuggestionBuildMaxFootprintMB {
+            if !didSkipLatinSuggestionBuildForPressure {
+                MemoryForensics.logSink?(
+                    "欧文サジェスト構築を見送り(高水位) footprintMB=\(String(format: "%.1f", footprintMB))"
+                )
+            }
+            didSkipLatinSuggestionBuildForPressure = true
+            return []
+        }
+        didSkipLatinSuggestionBuildForPressure = false
+
         let supplementalDictionary = loadSupplementalSystemDictionary()
 
         guard !supplementalDictionary.isEmpty else {
@@ -325,11 +341,16 @@ extension KanaKanjiStore {
         var entries: [LatinSuggestionEntry] = []
 
         supplementalDictionary.forEachCandidate { candidate in
+            // 欧文/数字を1文字も含まない候補(補助語彙の大半=日本語)は trim も regex も
+            // Set 挿入もせず即除外し、一時確保を欧文候補ぶんだけに絞る(2664)
+            guard Self.mayContainLatinLetterOrDigit(candidate) else {
+                return
+            }
             let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
 
             guard !trimmedCandidate.isEmpty,
-                seenCandidates.insert(trimmedCandidate).inserted,
-                isLatinSuggestionCandidate(trimmedCandidate) else {
+                isLatinSuggestionCandidate(trimmedCandidate),
+                seenCandidates.insert(trimmedCandidate).inserted else {
                 return
             }
 
@@ -385,6 +406,22 @@ extension KanaKanjiStore {
                 locale: Locale(identifier: "fr_FR")
             )
             .lowercased()
+    }
+
+    // 欧文サジェスト構築を見送る footprint(2664)。per-process 上限 77MB に対し構築の一時確保
+    // (+8MB 実測)を乗せても届かない水準
+    static let latinSuggestionBuildMaxFootprintMB: Double = 58
+
+    // ASCII 英数字か Latin-1/拡張(é/ü 等)の scalar を1つでも含むか。regex 前の高速事前判定
+    static func mayContainLatinLetterOrDigit(_ candidate: String) -> Bool {
+        for scalar in candidate.unicodeScalars {
+            let value = scalar.value
+            if (0x30...0x39).contains(value) || (0x41...0x5A).contains(value)
+                || (0x61...0x7A).contains(value) || (0x00C0...0x024F).contains(value) {
+                return true
+            }
+        }
+        return false
     }
 
     func isLatinSuggestionCandidate(_ candidate: String) -> Bool {

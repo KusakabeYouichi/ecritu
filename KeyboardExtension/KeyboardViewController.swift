@@ -606,6 +606,7 @@ final class KeyboardViewController: UIInputViewController {
         diagnosticsState.memoryWarningCountThisSession = 0
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
+        candidateBarModel.latinSuggestionSkippedForDebugDisplay = kanaKanjiStore.didSkipLatinSuggestionBuildForPressure
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
@@ -1824,6 +1825,21 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     func latinSuggestions(prefix: String, limit: Int) -> [String] {
-        kanaKanjiStore.latinSuggestions(prefix: prefix, limit: limit)
+        let suggestions = kanaKanjiStore.latinSuggestions(prefix: prefix, limit: limit)
+        // 高水位で構築を見送った状態を削除キー(薄ピンク)へ反映(2664)
+        let skipped = kanaKanjiStore.didSkipLatinSuggestionBuildForPressure
+        if Thread.isMainThread {
+            if candidateBarModel.latinSuggestionSkippedForDebugDisplay != skipped {
+                candidateBarModel.latinSuggestionSkippedForDebugDisplay = skipped
+            }
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                guard let self, self.candidateBarModel.latinSuggestionSkippedForDebugDisplay != skipped else {
+                    return
+                }
+                self.candidateBarModel.latinSuggestionSkippedForDebugDisplay = skipped
+            }
+        }
+        return suggestions
     }
 }

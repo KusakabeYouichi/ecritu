@@ -14,6 +14,8 @@ final class KeyboardCandidateBarModel: ObservableObject {
     // 1回目=黄 / 2回目以降=橙+回数 / 2回目以降+footprint臨界(sqliteアンロード)=えんじ。
     @Published var memoryWarningCountForDebugDisplay: Int = 0
     @Published var memoryPressureSQLiteUnloadedForDebugDisplay: Bool = false
+    // 欧文サジェスト構築を高水位で見送り中(削除キー薄ピンク。ユーザ指定 2664)
+    @Published var latinSuggestionSkippedForDebugDisplay: Bool = false
 }
 
 enum KeyboardThemePalette {
