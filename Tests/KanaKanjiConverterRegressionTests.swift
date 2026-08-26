@@ -9932,8 +9932,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         converter.invalidateCandidateCache()
         let kitanda = converter.multiClauseCandidates(for: "きたんだが", systemCandidateMode: .surface)
         XCTAssertEqual(kitanda.first, "来たんだが", "kitanda=\(kitanda.prefix(3))")
+        // 読み全体に seed があると連文節は単文節(seed 順)に委ねる(2657)ので、実機バーと同じ
+        // multi ?? single で検証する
         let katahou = converter.multiClauseCandidates(for: "かたほうが", systemCandidateMode: .surface)
-        XCTAssertEqual(katahou.first, "片方が", "katahou=\(katahou.prefix(3))")
+        let katahouSingle = converter.candidates(for: "かたほうが", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(katahou.first ?? katahouSingle.first, "片方が", "katahou=\(katahou.prefix(3)) single=\(katahouSingle)")
         // 比較の ほうが の正当な文脈(連体形/の/な)は無傷
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "かったほうがいい", systemCandidateMode: .surface).first,
@@ -9964,8 +9967,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         let katahou = converter.candidates(for: "かたほうが", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(katahou.first, "片方が", "katahou=\(katahou)")
+        // 読み全体に seed があると連文節は単文節に委ねる(2657): バー基準(multi ?? single)
         XCTAssertEqual(
-            converter.multiClauseCandidates(for: "かたほうが", systemCandidateMode: .surface).first,
+            converter.multiClauseCandidates(for: "かたほうが", systemCandidateMode: .surface).first ?? katahou.first,
             "片方が"
         )
         for reading in ["くらいのはなぜだ", "くらいのはなぜだろう"] {
@@ -11117,8 +11121,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 張り忘れ 等の既存合成はクリーンテスト環境では再現しない(実機のみの合成経路)。
         // 本修正は curated の追加供給のみで既存経路に触れないため、先頭の検証に留める。
         // 一段 curated からの活用派生(貼り忘れた)も供給される
+        // 全読みを1ノードで覆う 貼り忘れた が立つ場合、連文節は単文節に委ねる(2657)ので
+        // 実機バーと同じ multi ?? single で検証する
         let ta = converter.multiClauseCandidates(for: "はりわすれた", systemCandidateMode: .surface)
-        XCTAssertEqual(ta.first, "貼り忘れた", "ta=\(ta.prefix(4))")
+        let taSingle = converter.candidates(for: "はりわすれた", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(ta.first ?? taSingle.first, "貼り忘れた", "ta=\(ta.prefix(4)) single=\(taSingle.prefix(4))")
     }
 
     // おやどりの: 丁寧接頭辞合成(お+宿り→御宿り)が実辞書語 親鳥/親鶏 と同点(共に
@@ -11763,5 +11770,81 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         let tonari = converter.multiClauseCandidates(for: "となりのせき", systemCandidateMode: .surface)
         XCTAssertTrue(tonari.contains("隣の積"), "積 は候補として残す list=\(tonari.prefix(5))")
+    }
+
+    // かくした: 核子+た/各紙+た/客死+た(名詞+過去助動詞=非文)が 1ノードの 格下 を跨いで
+    // {隠した,核子た,各紙た,客死た,…}になり 格下 が8番目だった(ユーザ報告 2657)。
+    // 活用派生でない漢字語直後の た を遮断し {隠した,格下,…} へ。
+    func testRegressionRealLMKakushitaBlocksNounPlusTa() throws {
+        try prepareRealLMDictionary()
+
+        let multi = converter.multiClauseCandidates(for: "かくした", systemCandidateMode: .surface)
+        let single = converter.candidates(for: "かくした", limit: 6, systemCandidateMode: .surface)
+        let bar = multi + single.filter { !multi.contains($0) }
+        // ユーザ指定: 格下 を先頭(seed。読み全体の seed があれば連文節は単文節に委ねる)
+        XCTAssertEqual(Array(bar.prefix(2)), ["格下", "隠した"], "bar=\(bar.prefix(6))")
+        for junk in ["核子た", "各紙た", "客死た", "各誌た"] {
+            XCTAssertFalse(bar.prefix(4).contains(junk), "\(junk) bar=\(bar.prefix(6))")
+        }
+        // 活用派生の 連用形+た は従来どおり(退行監視)
+        for (probe, expected) in [("はなした", "話した"), ("かえした", "返した"), ("しめした", "示した"), ("こわした", "壊した")] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let s = converter.candidates(for: probe, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(m.first ?? s.first, expected, "\(probe): multi=\(m.prefix(4)) single=\(s.prefix(4))")
+        }
+    }
+
+    // きはじめる: 辞書に き→来 が無く 木始める しか出なかった(ユーザ報告 2658)。カ変ペアで
+    // 来始める 族を供給し、活用順位サフィックス外でもカ変ブーストを適用して先頭に
+    func testRegressionRealLMKihajimeruSuppliesKuru() throws {
+        try prepareRealLMDictionary()
+
+        for (probe, expected, second) in [("きはじめる", "来始める", "着始める"), ("きはじめた", "来始めた", "着始めた"), ("きはじめて", "来始めて", "着始めて")] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 4, systemCandidateMode: .surface)
+            let bar = multi + single.filter { !multi.contains($0) }
+            XCTAssertEqual(bar.first, expected, "\(probe): multi=\(multi.prefix(4)) single=\(single.prefix(4))")
+            // 着る(一段)の 連用形+始める も2番目に(ユーザ指定 2658)
+            XCTAssertEqual(bar.dropFirst().first, second, "\(probe): bar=\(bar.prefix(4))")
+        }
+        // 一段/五段の 連用形+始める が1ノードで供給される
+        XCTAssertEqual(converter.candidates(for: "たべはじめる", limit: 3, systemCandidateMode: .surface).first, "食べ始める")
+        XCTAssertEqual(converter.candidates(for: "のみはじめた", limit: 3, systemCandidateMode: .surface).first, "飲み始めた")
+        // 既存のカ変ペアの並びは不変(退行監視)
+        let sugiru = converter.candidates(for: "きすぎる", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(sugiru.first, "来すぎる", "list=\(sugiru)")
+    }
+
+    // しそ: 紫蘇(辞書 rank0・wc2692)が Wikipedia LM 未収録で、LM 収録の 始祖 が先頭化していた
+    // (ユーザ指定 2661: {紫蘇, シソ, 始祖, …})
+    func testRegressionRealLMShisoPrefersPerilla() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "しそ", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(3)), ["紫蘇", "シソ", "始祖"], "list=\(list)")
+    }
+
+    // もったいないよ/よね: 終助詞を付けると 勿体無いよ が繰り上がっていた(ユーザ報告 2659)。
+    // もったいない は dictionary_entries に行が無く、終助詞剥がしの辞書判定に掛からなかった
+    func testRegressionRealLMMottainaiWithFinalParticleKeepsKana() throws {
+        try prepareRealLMDictionary()
+
+        for probe in ["もったいない", "もったいないよ", "もったいないよね"] {
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: probe), probe)
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, probe, "\(probe): multi=\(multi.prefix(3)) single=\(single.prefix(3))")
+        }
+    }
+
+    // そんなものはない: {そんなものは無い, そんな物はない, そんなものは内} だった(ユーザ報告 2659)。
+    // 係助詞 は/も + ない の keepKana 根拠と、は/も 直後の 無い の減点(変種としては残す)
+    func testRegressionRealLMSonnaMonoWaNaiKanaOrder() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そんなものはない"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なにもない"))
+        let multi = converter.multiClauseCandidates(for: "そんなものはない", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(3)), ["そんなものはない", "そんな物はない", "そんなものは無い"], "multi=\(multi.prefix(5))")
     }
 }

@@ -23,6 +23,23 @@ extension KanaKanjiConverter {
     // minReadingCountOverride: 通常は4かな以上だが、単文節が候補ゼロの読み(のいみ 等の
     // 助詞始まり断片)は短くても連文節に断片解釈(の+意味)をさせる(呼び出し側の
     // フォールバック専用。2642)
+    // 名詞+た 遮断(2657)の免除判定: prev の読み+た を活用エンジンに通し、prev.surface+た が
+    // 生成形に含まれれば「連用形が名詞/curated として立っているだけの正当な過去形」
+    // (出来+た/貼り忘れ+た)。核子+た/話+た は生成されないので遮断対象のまま。
+    func isInflectedTaFormOfKnownVerb(prevSurface: String, prevReading: String?) -> Bool {
+        guard let prevReading, !prevReading.isEmpty else {
+            return false
+        }
+        let forms = inflectionCandidates(
+            for: prevReading + "た",
+            userDictionary: store.userDictionary(),
+            initialUserDictionary: store.initialUserDictionary(),
+            systemCandidateMode: .surface,
+            limit: 16
+        )
+        return forms.contains(prevSurface + "た")
+    }
+
     func multiClauseCandidates(
         for reading: String,
         systemCandidateMode: KanaKanjiCandidateSourceMode,
@@ -36,6 +53,13 @@ extension KanaKanjiConverter {
         let n = chars.count
         guard n >= (minReadingCountOverride ?? Self.multiClauseMinReadingCount),
             n <= Self.multiClauseMaxReadingCount else {
+            return []
+        }
+        // 読み全体に seed(人手宣言の完全な並び)があれば連文節は単文節に委ねる(2657)。
+        // かくした は 隠し+た(名詞+た の免除で正当)の2ノード経路が最良になり、その変種
+        // (かな識別 等)が単文節の seed 順(格下/隠した)の前に割り込んでいた。単文節で
+        // 「seed ありは最終」なのと同じく、読み全体の seed はその読みの最終回答とする
+        if KanaKanjiSeedDictionary.seed[normalized] != nil {
             return []
         }
 
@@ -773,6 +797,7 @@ extension KanaKanjiConverter {
             isDictionaryFormPredicate: Bool = false,
             prevIsDictionaryFormPredicate: Bool = false,
             prevIsInflectionDerived: Bool = false,
+            prevReading: String? = nil,
             isShortCuratedFragment: Bool = false,
             isCollocationPreferredKana: Bool = false,
             isCollocationPreferredVerb: Bool = false,
@@ -1075,6 +1100,16 @@ extension KanaKanjiConverter {
                 prev.hasSuffix("は") {
                 penalty += Self.multiClauseAruKanjiAfterWaPenalty
             }
+            // 係助詞 は/も 直後の ない も同じ(そんなものはない→そんなものは無い が
+            // そんな物はない より前に出ていた。ユーザ報告 2659)。補助形容詞・存在否定の
+            // ない はかなが正書。無い は変種として残る(2位以降)
+            if reading == "ない",
+                surface != "ない",
+                containsKanji(surface),
+                prev != Self.multiClauseBOSMarker,
+                prev.hasSuffix("は") || prev.hasSuffix("も") {
+                penalty += Self.multiClauseNaiKanjiAfterWaPenalty
+            }
             // 接頭辞「お」(かな)+ そい は おそい(遅い)の誤分割。お添い/お沿い を変種から落とす。
             if reading == "そい", prev == "お" {
                 penalty += Self.multiClauseHonorificOsoiSplitPenalty
@@ -1174,6 +1209,20 @@ extension KanaKanjiConverter {
                 !Self.multiClauseFinalParticleReadings.contains(prev),
                 !Self.multiClauseFunctionalSingleKanaSurfaces.contains(prev),
                 prev != "お", prev != "ご", prev != "や" {
+                penalty += Self.multiClauseKanaMoraChainPenalty
+            }
+            // 名詞+た の非文連結の遮断(2657): 核子+た/各紙+た/客死+た が 1ノードの 格下
+            // (unigram 7272、Wikipedia で希少)を跨いでいた(かくした)。過去の助動詞 た が
+            // 付くのは活用語の連用形(活用派生ノード: 隠し+た)だけで、活用派生でない漢字語
+            // (名詞)直後の た は非文。だ(名詞+だ=断定)は正当なので対象外。1字漢字も
+            // 対象(話(はなし)+た が 話した を跨いで連文節先頭になっていた — 活用形の
+            // 話し は活用派生ノードなので免除され、話した は1ノードで成立する)
+            // ただし prev+た が活用エンジンの生成形(出来+た=出来た、貼り忘れ+た=貼り忘れた:
+            // 連用形が辞書名詞/curated として立っている)なら正当な過去形なので免除
+            if surface == "た", reading == "た", !isCurated,
+                !prevIsInflectionDerived,
+                Self.containsKanjiCandidate(prev),
+                !isInflectedTaFormOfKnownVerb(prevSurface: prev, prevReading: prevReading) {
                 penalty += Self.multiClauseKanaMoraChainPenalty
             }
             // 1字かな素通りの連鎖(さ+ら 等)の遮断(2642): さ/ら のような1字トークンは
@@ -1435,6 +1484,7 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
                         prevIsInflectionDerived: prevNode.isInflectionDerived,
+                        prevReading: prevNode.reading,
                         isShortCuratedFragment: nodeIsShortCuratedFragment,
                         isCollocationPreferredKana: nodeIsCollocationPreferredKana,
                         isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
@@ -1830,6 +1880,7 @@ extension KanaKanjiConverter {
                     prevIsInflectionDerived: pos > 0
                         ? nodes[pathIndices[pos - 1]].isInflectionDerived
                         : false,
+                    prevReading: pos > 0 ? nodes[pathIndices[pos - 1]].reading : nil,
                     isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
                     isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
                     isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
@@ -1853,6 +1904,7 @@ extension KanaKanjiConverter {
                         isDictionaryFormPredicate: nextNode.isDictionaryFormPredicate,
                         prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsInflectionDerived: node.isInflectionDerived,
+                        prevReading: node.reading,
                         isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
                         isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
                         isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),

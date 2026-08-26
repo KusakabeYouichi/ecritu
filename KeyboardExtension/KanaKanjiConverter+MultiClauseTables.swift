@@ -338,6 +338,12 @@ extension KanaKanjiConverter {
     // 有る/在る/或る への漢字化は不自然なので減点し、N-best 変種(maxDelta4000)から落とす
     // (うまそうでは有る 対策)。ある はかな正書動詞(seed ある=[ある,有る,在る] のかな先頭)。
     static let multiClauseAruKanjiAfterWaPenalty = 4200
+    // 係助詞 は/も 直後の ない の漢字化(無い)。ある と違い変種として残す(そんなものはない→
+    // {そんなものはない, そんな物はない, そんなものは無い} の3位。ユーザ指定 2659)ため、
+    // N-best 上限(4000)を超えない幅で 物 差し替え変種の後ろへ送る。実測(MULTI_TRACE):
+    // 物 差し替え delta=3351、無い 差し替え delta=1520(bigram)+unigram差 ≒ 1520 に本値を
+    // 加えて 3520 → 物 の後ろ・上限内
+    static let multiClauseNaiKanjiAfterWaPenalty = 2000
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。

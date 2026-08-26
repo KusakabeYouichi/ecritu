@@ -418,6 +418,9 @@ extension KanaKanjiConverter {
                 inflectionDerivedCandidates: inflectionDerivedCandidates,
                 to: &scores
             )
+            // カ変の明示ペア(きはじめる→来始める 等)は活用順位サフィックスに無い語尾でも
+            // 成立する。ここで抜けると 来始める(979)がかな識別(980)の下に残る(2658)
+            applyKuruCandidateBoost(for: reading, to: &scores)
             return
         }
 
@@ -937,6 +940,47 @@ extension KanaKanjiConverter {
                 scores[candidate, default: 0] += Self.godanVolitionalCandidateBoost
             }
         }
+    }
+
+    // 辞書の主要語を活用族の先頭直下へ(2657): かくした は活用派生の族(隠した/画した/劃した/
+    // 匿した/かくした=+500 で 1480〜1476)が族ごと辞書語 格下(1200)を跨ぎ、格下 が6番目
+    // だった。族の先頭(隠した)が辞書語に勝つのは正当だが、劣位の派生(画した/劃した)や
+    // かな識別(かくした)まで主要語を跨ぐのは不当。読み全体で辞書 rank0・Sudachi 連接コスト
+    // が収穫底値未満・LM 収録・漢字含み・非カタカナの語を、活用族先頭の直下へ置く。
+    // はなした の 咄下(wc10000)、かった の カッタ(カタカナ)は条件で外れる。seed/学習/
+    // 追加語彙のある読みは呼び出し側ガードで対象外。
+    func applyDictWordOverInflectionSiblingsBoost(
+        for reading: String,
+        systemCandidates: [String],
+        inflectionDerivedCandidates: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 3, !inflectionDerivedCandidates.isEmpty,
+            let dictTop = systemCandidates.first,
+            dictTop != reading,
+            containsKanji(dictTop),
+            !Self.isKatakanaString(dictTop),
+            !inflectionDerivedCandidates.contains(dictTop),
+            let dictScore = scores[dictTop] else {
+            return
+        }
+        let inflectionScores = inflectionDerivedCandidates.compactMap { scores[$0] }
+        guard let topInflection = inflectionScores.max(), topInflection > dictScore else {
+            return
+        }
+        let wordCost = store.wordCosts(for: reading)[dictTop] ?? Int.max
+        guard wordCost < CandidateScore.harvestTierWordCostFloor,
+            store.wordLMUnigramCosts(for: [dictTop])[dictTop] != nil else {
+            return
+        }
+        // 先頭以外の派生を1つ下げて主要語の席を空ける(同点タイブレーク=文字数/辞書順に
+        // 頼らない)。族内の相対順は保たれる
+        for sibling in inflectionDerivedCandidates where sibling != dictTop {
+            if let score = scores[sibling], score < topInflection {
+                scores[sibling] = score - 1
+            }
+        }
+        scores[dictTop] = topInflection - 1
     }
 
     func applyKuruCandidateBoost(

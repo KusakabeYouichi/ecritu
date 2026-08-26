@@ -316,6 +316,22 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すぎなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "すぎて", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "すぎた", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 連用形+始める(補助動詞)。きはじめる で 着始める(着る)が出ず、カ変ペアの 来始める
+        // だけになっていた(ユーザ指定 2658)。他の一段(食べ始める 等)も1ノードで供給される
+        InflectionRule(readingSuffix: "はじめる", baseReadingSuffix: "る", outputCandidateSuffix: "始める", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめた", baseReadingSuffix: "る", outputCandidateSuffix: "始めた", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめて", baseReadingSuffix: "る", outputCandidateSuffix: "始めて", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめない", baseReadingSuffix: "る", outputCandidateSuffix: "始めない", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめなかった", baseReadingSuffix: "る", outputCandidateSuffix: "始めなかった", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめます", baseReadingSuffix: "る", outputCandidateSuffix: "始めます", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめました", baseReadingSuffix: "る", outputCandidateSuffix: "始めました", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめません", baseReadingSuffix: "る", outputCandidateSuffix: "始めません", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめたら", baseReadingSuffix: "る", outputCandidateSuffix: "始めたら", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめれば", baseReadingSuffix: "る", outputCandidateSuffix: "始めれば", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめると", baseReadingSuffix: "る", outputCandidateSuffix: "始めると", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめてる", baseReadingSuffix: "る", outputCandidateSuffix: "始めてる", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめている", baseReadingSuffix: "る", outputCandidateSuffix: "始めている", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "はじめてから", baseReadingSuffix: "る", outputCandidateSuffix: "始めてから", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "すぎます", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "すぎました", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "すぎません", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -1094,6 +1110,35 @@ extension KanaKanjiConverter {
                     )
                 )
             }
+
+            // 連用形+始める(補助動詞。のみはじめる→飲み始める。2658)。一段側は
+            // InflectionRule の outputCandidateSuffix で同じく 始め を漢字出力する
+            let hajimeruKanjiForms: [(reading: String, candidate: String)] = [
+                ("はじめる", "始める"),
+                ("はじめた", "始めた"),
+                ("はじめて", "始めて"),
+                ("はじめない", "始めない"),
+                ("はじめなかった", "始めなかった"),
+                ("はじめます", "始めます"),
+                ("はじめました", "始めました"),
+                ("はじめません", "始めません"),
+                ("はじめたら", "始めたら"),
+                ("はじめれば", "始めれば"),
+                ("はじめると", "始めると"),
+                ("はじめてる", "始めてる"),
+                ("はじめている", "始めている"),
+                ("はじめてから", "始めてから")
+            ]
+            for form in hajimeruKanjiForms {
+                rules.append(
+                    InflectionRule(
+                        readingSuffix: pattern.iForm + form.reading,
+                        baseReadingSuffix: pattern.dictionaryEnding,
+                        outputCandidateSuffix: pattern.iForm + form.candidate,
+                        allowedClasses: pattern.classBit
+                    )
+                )
+            }
         }
 
         return rules
@@ -1665,6 +1710,22 @@ extension KanaKanjiConverter {
         ("きすぎました", "来すぎました"),
         ("きすぎません", "来すぎません"),
         ("きすぎれば", "来すぎれば"),
+        // 連用形+始める(きはじめる→木始める。ユーザ報告 2658)。他の動詞は 連用形ノード
+        // (食べ 等)+始める の2ノードで成立するが、来 は辞書に き→来 が無く供給欠落だった
+        ("きはじめる", "来始める"),
+        ("きはじめた", "来始めた"),
+        ("きはじめて", "来始めて"),
+        ("きはじめない", "来始めない"),
+        ("きはじめなかった", "来始めなかった"),
+        ("きはじめます", "来始めます"),
+        ("きはじめました", "来始めました"),
+        ("きはじめません", "来始めません"),
+        ("きはじめたら", "来始めたら"),
+        ("きはじめれば", "来始めれば"),
+        ("きはじめると", "来始めると"),
+        ("きはじめてる", "来始めてる"),
+        ("きはじめている", "来始めている"),
+        ("きはじめてから", "来始めてから"),
         ("きて", "来て"),
         ("きてる", "来てる"),
         ("きている", "来ている"),
