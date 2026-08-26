@@ -20,8 +20,8 @@ ECRITU_APP_GROUP_IDENTIFIER = group.$(ECRITU_APP_BUNDLE_IDENTIFIER)
 // 単一バイナリに戻す。増分ビルドの高速化は失うが、拡張が起動しないほうが致命的。
 ENABLE_DEBUG_DYLIB = NO
 
-ECRITU_EDITION_NUMBER = 2636
-ECRITU_EDITION_UPDATED_AT = 20260826191326
+ECRITU_EDITION_NUMBER = 2637
+ECRITU_EDITION_UPDATED_AT = 20260826193104
 
 // Optional per-developer signing overrides (ignored from git).
 #include? "Signing.local.xcconfig"

@@ -596,6 +596,9 @@ extension KeyboardRootView {
         let onTextInput: (String) -> Void
         let onSwitchToKana: () -> Void
         let onDeleteBackward: () -> Void
+        // 圧迫可視化(削除キーの色/回数)。かなレイアウトの⌫と同じ状態を絵文字パネルでも見せる(2673)
+        var deleteKeyBackgroundColorOverride: Color? = nil
+        var deleteKeyCornerBadgeText: String? = nil
 
         var body: some View {
             VStack(spacing: keyboardRowSpacing) {
@@ -640,6 +643,8 @@ extension KeyboardRootView {
                         repeatsWhileHolding: true,
                         repeatInitialDelay: keyRepeatInitialDelay,
                         repeatInterval: keyRepeatInterval,
+                        backgroundColorOverride: deleteKeyBackgroundColorOverride,
+                        cornerBadgeText: deleteKeyCornerBadgeText,
                         action: onDeleteBackward
                     )
                     .frame(height: mainFlickKeyHeight)
