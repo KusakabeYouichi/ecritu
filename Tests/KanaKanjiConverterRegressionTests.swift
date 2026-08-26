@@ -11822,6 +11822,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let list = converter.candidates(for: "しそ", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(Array(list.prefix(3)), ["紫蘇", "シソ", "始祖"], "list=\(list)")
+        // 連文節の中でも seed 先頭語が LM 未収録のせいで消えない(しそじゃない→始祖じゃない
+        // だった。ユーザ報告 2662)
+        let multi = converter.multiClauseCandidates(for: "しそじゃない", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "紫蘇じゃない", "multi=\(multi.prefix(4))")
+        XCTAssertTrue(multi.prefix(3).contains("シソじゃない"), "multi=\(multi.prefix(4))")
+    }
+
+    // せきをたつ: {籍を絶つ, 籍を断つ, 席を絶つ, 籍を発つ} で 席を立つ が無かった(ユーザ報告 2663)。
+    // Wikipedia LM の を→絶つ/籍→を 優遇。seed たつ 先頭の 立つ 族を連文節でも優先
+    func testRegressionRealLMSekiWoTatsuPrefersStandUp() throws {
+        try prepareRealLMDictionary()
+
+        // せき の同音競争は連語外では LM に任せる(席→を のペア重みは 咳をする をさらに
+        // 遠ざける)。せきをする は {席をする, 咳をする}(籍をする 先頭からは改善、咳 先頭は
+        // 連語表の複数エントリ対応が要る別案件)
+        for (probe, expected) in [("せきをたつ", "席を立つ"), ("せきをたって", "席を立って"), ("せきをたった", "席を立った")] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(probe): multi=\(multi.prefix(4)) single=\(single.prefix(3))")
+        }
     }
 
     // もったいないよ/よね: 終助詞を付けると 勿体無いよ が繰り上がっていた(ユーザ報告 2659)。

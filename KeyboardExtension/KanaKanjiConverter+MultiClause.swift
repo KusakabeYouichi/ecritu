@@ -939,6 +939,25 @@ extension KanaKanjiConverter {
                     !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
                     base = Self.multiClauseHarvestTierUnknownCost
                 }
+                // seed 先頭語の LM 未収録救済(2662): seed がその読みの先頭に指定した表層が
+                // Wikipedia 未収録(紫蘇: Wikipedia は シソ 表記)のせいで dictUnknown(8700)に
+                // なり、同読みの LM 収録語(始祖 6217)に連文節で必ず負けていた(しそじゃない→
+                // 始祖じゃない。単文節の seed 順は長い読みの中のノードコストには効かない)。
+                // seed の宣言を尊重し、seed 掲載の兄弟のうち最安 unigram の直下へ置く。
+                // 先頭語が LM 収録済なら不発 — 収録語同士の文脈判断(缶/勘 等)には触れない
+                // seed順ボーナス(おとく 3300 等)を持つ読みは既に人手で調整済みなので二重に
+                // 効かせない(お得+伊佐間 が お得意さま を侵食した)。基準はかな識別以外の兄弟
+                if base == Self.multiClauseDictUnknownCost,
+                    surface != reading,
+                    Self.multiClauseSeedOrderNounBonusesByReading[reading] == nil,
+                    let seedList = KanaKanjiSeedDictionary.seed[reading],
+                    seedList.first == surface {
+                    let siblings = seedList.dropFirst().filter { $0 != reading }
+                    let siblingCosts = store.wordLMUnigramCosts(for: Array(siblings))
+                    if let cheapest = siblingCosts.values.min() {
+                        base = min(base, cheapest - 1)
+                    }
+                }
             } else {
                 base = Self.multiClausePassthroughPerCharCost * reading.count
             }
