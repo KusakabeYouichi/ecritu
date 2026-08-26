@@ -619,6 +619,15 @@ final class KanaKanjiConverter {
                 inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
                 to: &scores
             )
+            // 辞書の主要語(格下)を活用族(隠した/画した/…/かくした)の先頭直下へ(2657)
+            applyDictWordOverInflectionSiblingsBoost(
+                for: context.reading,
+                systemCandidates: suppressed.isEmpty
+                    ? context.systemCandidates
+                    : context.systemCandidates.filter { !suppressed.contains($0) },
+                inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
+                to: &scores
+            )
         }
         applySameReadingScriptPreference(
             for: context.reading,
@@ -824,6 +833,15 @@ final class KanaKanjiConverter {
 
             return lhs < rhs
         }
+        #if DEBUG
+        // 時限トレース(2660): SINGLE_TRACE=1 のときだけ単文節の最終スコア上位を吐く
+        // (MULTI_TRACE の単文節版。チャネル基準値 1200/1120/1040/980 からの増減で経路が読める)
+        if ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil {
+            for (index, candidate) in sortedCandidates.prefix(14).enumerated() {
+                print("SINGLETRACE[\(context.reading)] #\(index) \(candidate) score=\(scores[candidate, default: 0])")
+            }
+        }
+        #endif
 
         let archaicAdjectiveFiltered = filterArchaicAdjectiveSurfaceCandidates(
             for: context.reading,
@@ -964,6 +982,14 @@ final class KanaKanjiConverter {
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return true
         }
+        // 係助詞 は/も + ない(そんなものはない/なにもない/じかんはない)は補助形容詞・
+        // 存在否定のかな正書。連文節は かな最良を返すが根拠が無いと提示層が退避して
+        // そんなものは無い が繰り上がっていた(ユーザ報告 2659)。維持のみで昇格しない。
+        for suffix in ["はない", "もない", "はなかった", "もなかった", "はなく", "もなく", "はないよ", "もないよ",
+                       "はないね", "もないね", "はないな", "もないな", "はないし", "もないし"]
+        where normalized.count > suffix.count + 1 && normalized.hasSuffix(suffix) {
+            return true
+        }
         // 逆接の接続助詞・接続詞(だけど/けど/けれど/けれども)で終わる読みは、かなが正書
         // (だけど 単独/行くけど 等)。ダけど/打けど 等の漢字混じり誤変換が繰り上がるのを防ぐ。
         // 単独(==suffix)も対象にするため hasSuffix のみで判定する。
@@ -1025,6 +1051,12 @@ final class KanaKanjiConverter {
         where normalized.count > particle.count && normalized.hasSuffix(particle) {
             let stem = String(normalized.dropLast(particle.count))
             if stem.count >= 2, systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
+                return true
+            }
+            // 語幹自身に根拠があれば終助詞付きも同格(もったいないよ/よね: もったいない は
+            // dictionary_entries に行が無く上の辞書判定に掛からないが、単独では根拠が立って
+            // かな先頭で出る。終助詞を付けた途端 勿体無いよ が繰り上がっていた。2659)
+            if stem.count >= 3, computeShouldKeepKanaIdentityLeading(normalized: stem) {
                 return true
             }
             // curated かな識別(misc の だっけ 等=かな正書の明示登録)も語幹の根拠と認める。
