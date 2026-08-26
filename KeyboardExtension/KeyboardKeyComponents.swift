@@ -825,6 +825,26 @@ struct KaomojiCategoryKeyButton: View {
 // キャッシュを通らず、UICollectionView のセル再利用で同時生存を画面分(約40個)に固定する。
 // ============================================================================
 
+// 絵文字描画の画素予算(2669)。CoreText はカラー絵文字を描くたびに展開画像をシステムの
+// NSCache に保持し、プロセスが死ぬまで捨てない(UILabel/CTLineDraw/SwiftUI のどの経路でも同じ。
+// sbix の emjc は Apple 独自の予測圧縮で自前復号は断念)。実測の1個あたりコストは
+// 倍率3=56KB / 倍率2=20KB / 倍率1=10KB と画素数に比例するので、絵文字は倍率2で描き、
+// 描いた「異なる絵文字」が閾値を超えたら倍率1に落とす(全2300個を眺めても約27MB止まり)。
+enum EmojiRenderBudget {
+    static let preferredScale: CGFloat = 2
+    static let fallbackScale: CGFloat = 1
+    static let distinctEmojiThreshold = 400
+    nonisolated(unsafe) private static var renderedDistinct = Set<String>()
+
+    /// 描く直前に呼ぶ。この絵文字を記録し、使うべき描画倍率を返す(main 専用)。
+    static func registerAndScale(for emoji: String) -> CGFloat {
+        renderedDistinct.insert(emoji)
+        return renderedDistinct.count > distinctEmojiThreshold ? fallbackScale : preferredScale
+    }
+
+    static var renderedDistinctCount: Int { renderedDistinct.count }
+}
+
 /// 絵文字パネルのグリッド。セクションの間に区切り線(ヘッダー)を挟む。
 struct EmojiGridCollectionView: UIViewRepresentable {
     struct Section: Equatable {
@@ -1066,6 +1086,12 @@ final class EmojiGridCell: UICollectionViewCell {
     }
 
     func configure(emoji: String, accessibilityText: String) {
+        // 画素予算(EmojiRenderBudget): 倍率を下げて CoreText の絵文字キャッシュ1枚を小さくする
+        let scale = EmojiRenderBudget.registerAndScale(for: emoji)
+        if label.contentScaleFactor != scale {
+            label.contentScaleFactor = scale
+            label.layer.contentsScale = scale
+        }
         label.text = emoji
         accessibilityLabel = accessibilityText
     }
@@ -1126,6 +1152,11 @@ struct EmojiUILabelText: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UILabel, context: Context) {
+        let scale = EmojiRenderBudget.registerAndScale(for: text)
+        if uiView.contentScaleFactor != scale {
+            uiView.contentScaleFactor = scale
+            uiView.layer.contentsScale = scale
+        }
         uiView.text = text
         uiView.font = font
         uiView.textColor = color
