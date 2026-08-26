@@ -833,22 +833,25 @@ struct KaomojiCategoryKeyButton: View {
 // 「フリック中は描かない」(2670)は探すときのスクロールで空白になり本末転倒、「常に倍率2」(2633)は
 // ぼやける、と使い勝手で不可(ユーザ評価)。そこで平時は元どおり(常時描画・倍率3)とし、
 // footprint が高いときだけ「これから新しく描く絵文字」の倍率を落とす(既に描いた分はキャッシュ済み
-// なので鮮明のまま)。段階は削除キーの色で可視化: 55MB〜=薄ピンク、65MB〜=ピンク。
+// なので鮮明のまま)。段階は削除キーの色で可視化: 50MB〜=薄ピンク、65MB〜=ピンク。
 enum EmojiRenderBudget {
     static let sharpScale: CGFloat = 3
     static let reducedScale: CGFloat = 2
     static let fallbackScale: CGFloat = 1
-    static let reducedFootprintMB: Double = 55
+    static let reducedFootprintMB: Double = 50
     static let fallbackFootprintMB: Double = 65
     /// 節約段階(0=平時 / 1=倍率2 / 2=倍率1)。変化したときに呼ばれる(削除キーの色へ。main 専用)
     nonisolated(unsafe) static var onSavingLevelChange: ((Int) -> Void)?
     nonisolated(unsafe) private static var currentLevel = 0
     nonisolated(unsafe) private static var lastFootprintCheckAt: CFAbsoluteTime = 0
     nonisolated(unsafe) private static var cachedScale: CGFloat = sharpScale
+    /// 直近に絵文字を描いた時刻(絵文字キャッシュ由来のメモリ警告の判定に使う。2673)
+    nonisolated(unsafe) static var lastRenderAt: CFAbsoluteTime = 0
 
     /// 描く直前に呼ぶ。footprint に応じた描画倍率を返す(main 専用。footprint は 0.25 秒キャッシュ)
     static func scaleForRendering() -> CGFloat {
         let now = CFAbsoluteTimeGetCurrent()
+        lastRenderAt = now
         if now - lastFootprintCheckAt < 0.25 {
             return cachedScale
         }

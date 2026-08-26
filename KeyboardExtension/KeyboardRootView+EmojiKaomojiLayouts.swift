@@ -237,7 +237,9 @@ extension KeyboardRootView {
             keyRepeatInterval: keyRepeatInterval,
             onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
-            onDeleteBackward: onDeleteBackward
+            onDeleteBackward: onDeleteBackward,
+            deleteKeyBackgroundColorOverride: memoryPressureDeleteKeyColor,
+            deleteKeyCornerBadgeText: memoryPressureDeleteKeyBadge
         )
     }
 

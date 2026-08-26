@@ -1031,6 +1031,24 @@ final class KeyboardViewController: UIInputViewController {
             releaseHostingViewIfZombie(reason: "memoryWarning", ignoringWindowAttachment: true)
             return
         }
+        // 絵文字キャッシュ由来の警告(2673): 実機では CoreText の絵文字キャッシュ(展開画像、
+        // 1個54KB)が per-process 警告のタイミングで OS に purge される(実測 8/26 19:27:
+        // fp59.1→27.5、used44→15)。絵文字パネル表示中/描画直後の警告は OS 側で正しく処理される
+        // 無害なもので、LM縮小・critical昇格・削除キー橙は過剰反応になる。軽量対応だけして戻る
+        if currentInputMode == .emoji
+            || CFAbsoluteTimeGetCurrent() - EmojiRenderBudget.lastRenderAt < 3 {
+            kanaKanjiConverter.clearAllCaches()
+            malloc_zone_pressure_relief(nil, 0)
+            appendKeyboardDiagnosticsLog(
+                "メモリ警告(絵文字キャッシュ由来)を軽量処理 footprintMB=\(diagnosticsFootprintMBText())"
+                    + " mode=\(currentInputMode)",
+                critical: true,
+                file: #fileID,
+                line: #line,
+                function: #function
+            )
+            return
+        }
         diagnosticsState.memoryWarningCountThisSession += 1
         // attach 待ちの5秒間は診断を丸ごと飛ばす(2603)。実測(00:41 の attach 失敗):
         // 起動直後のインスタンスが viewWillAppear を待っている最中にメモリ警告を2回受け、
