@@ -939,27 +939,29 @@ extension KanaKanjiConverter {
                     !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
                     base = Self.multiClauseHarvestTierUnknownCost
                 }
-                // seed 先頭語の LM 未収録救済(2662): seed がその読みの先頭に指定した表層が
-                // Wikipedia 未収録(紫蘇: Wikipedia は シソ 表記)のせいで dictUnknown(8700)に
-                // なり、同読みの LM 収録語(始祖 6217)に連文節で必ず負けていた(しそじゃない→
-                // 始祖じゃない。単文節の seed 順は長い読みの中のノードコストには効かない)。
-                // seed の宣言を尊重し、seed 掲載の兄弟のうち最安 unigram の直下へ置く。
-                // 先頭語が LM 収録済なら不発 — 収録語同士の文脈判断(缶/勘 等)には触れない
-                // seed順ボーナス(おとく 3300 等)を持つ読みは既に人手で調整済みなので二重に
-                // 効かせない(お得+伊佐間 が お得意さま を侵食した)。基準はかな識別以外の兄弟
-                if base == Self.multiClauseDictUnknownCost,
-                    surface != reading,
-                    Self.multiClauseSeedOrderNounBonusesByReading[reading] == nil,
-                    let seedList = KanaKanjiSeedDictionary.seed[reading],
-                    seedList.first == surface {
-                    let siblings = seedList.dropFirst().filter { $0 != reading }
-                    let siblingCosts = store.wordLMUnigramCosts(for: Array(siblings))
-                    if let cheapest = siblingCosts.values.min() {
-                        base = min(base, cheapest - 1)
-                    }
-                }
             } else {
                 base = Self.multiClausePassthroughPerCharCost * reading.count
+            }
+            // seed 先頭語のコスト救済(2662→2677): seed がその読みの先頭に指定した表層が、
+            // seed 掲載の兄弟より LM で高い(または LM 未収録=dictUnknown)ために連文節で必ず
+            // 負けるのを是正する。紫蘇(Wikipedia 未収録で 始祖 に負けた)、正解(Sudachi は
+            // 正解6465<政界7140 なのに LM は 政界6236<正解6479 で 政界では が先頭だった)。
+            // 人手宣言の並びを連文節のノードコストにも反映する(2665 の変種順と同じ思想)。
+            // かな識別と seed順ボーナス持ち(おとく 等、既に人手調整済み)は対象外
+            // LM 収録済みの表層にも効かせるのは opt-in の読みだけ(2677 で無条件にしたら
+            // 位置から/占いしか/東京中 等7件が退行した。大域変更は revert して scoped 機構へ)
+            if isDictWord,
+                surface != reading,
+                base == Self.multiClauseDictUnknownCost
+                    || Self.multiClauseSeedFirstLMOverrideReadings.contains(reading),
+                Self.multiClauseSeedOrderNounBonusesByReading[reading] == nil,
+                let seedList = KanaKanjiSeedDictionary.seed[reading],
+                seedList.first == surface {
+                let siblings = seedList.dropFirst().filter { $0 != reading }
+                let siblingCosts = store.wordLMUnigramCosts(for: Array(siblings))
+                if let cheapest = siblingCosts.values.min() {
+                    base = min(base, cheapest - 1)
+                }
             }
             // 活用派生ノードは OOV 信頼水準を上限にする。LM unigram に「実在するが高い」表層
             // (付けよう=7743)が、未収録の同族(着けよう=OOV 7200)より高く付いて基底順が
