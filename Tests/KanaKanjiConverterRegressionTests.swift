@@ -11742,4 +11742,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         UserDefaults.standard.removePersistentDomain(forName: suiteName)
     }
+
+    // となりのせき: Wikipedia LM の 積 優遇(の→積 bigram が の→席 より安い)で
+    // 隣の積 が先頭だった。の→席 ペア重みで日常語の 席 を先頭に(ユーザ報告 2656)
+    func testRegressionRealLMTonarinoSekiPrefersSeat() throws {
+        try prepareRealLMDictionary()
+
+        let expectations: [(String, String)] = [
+            ("となりのせき", "隣の席"),
+            ("まどがわのせき", "窓側の席"),
+            // 席+助詞 は元から 席 が勝つ(席→に/が の bigram)。退行監視
+            ("せきにつく", "席に就く"),
+            ("せきがない", "席がない")
+        ]
+        for (probe, expected) in expectations {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 4, systemCandidateMode: .surface)
+            let barTop = multi.first ?? single.first
+            XCTAssertEqual(barTop, expected, "\(probe): multi=\(multi.prefix(4)) single=\(single.prefix(4))")
+        }
+        let tonari = converter.multiClauseCandidates(for: "となりのせき", systemCandidateMode: .surface)
+        XCTAssertTrue(tonari.contains("隣の積"), "積 は候補として残す list=\(tonari.prefix(5))")
+    }
 }
