@@ -11867,4 +11867,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "そんなものはない", systemCandidateMode: .surface)
         XCTAssertEqual(Array(multi.prefix(3)), ["そんなものはない", "そんな物はない", "そんなものは無い"], "multi=\(multi.prefix(5))")
     }
+
+    // ごうてん: 号店(2号店)は辞書に無く ごう/てん の辞書順も下位で {ご雨天, ご于闐} だった。
+    // たくさんのめると: たくさん→の bigram 461 が安く たくさんの+メルト(wc 2148)に負けていた
+    // (ユーザ報告 2674)
+    func testRegressionRealLMGoutenAndTakusanNomeru() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertEqual(
+            Array(converter.candidates(for: "ごうてん", limit: 3, systemCandidateMode: .surface).prefix(2)),
+            ["号店", "合点"]
+        )
+        XCTAssertEqual(converter.candidates(for: "のめる", limit: 3, systemCandidateMode: .surface).first, "飲める")
+        for (probe, expected) in [
+            ("たくさんのめると", "たくさん飲めると"),
+            ("たくさんのめるといいなー", "たくさん飲めるといいなー"),
+            // 連語外の正常系(が→飲める bigram 観測)は不変
+            ("びーるがのめると", "ビールが飲めると")
+        ] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(probe): multi=\(multi.prefix(3))")
+        }
+        // たくさんの+名詞(連語の verbPrefixes 外)は無傷
+        let hito = converter.multiClauseCandidates(for: "たくさんのひとが", systemCandidateMode: .surface)
+        XCTAssertEqual(hito.first, "たくさんの人が", "multi=\(hito.prefix(3))")
+    }
 }
