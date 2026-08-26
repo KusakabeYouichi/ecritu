@@ -346,6 +346,9 @@ extension KanaKanjiConverter {
     // 物 差し替え delta=3351、無い 差し替え delta=1520(bigram)+unigram差 ≒ 1520 に本値を
     // 加えて 3520 → 物 の後ろ・上限内
     static let multiClauseNaiKanjiAfterWaPenalty = 2000
+    // seed 掲載表層同士の変種順を seed の並びで決めるときの1段の delta(2665)。
+    // 同スパンの seed 外変種や他スパンの変種より確実に前に出る小さな値
+    static let multiClauseSeedOrderVariantStep = 100
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。

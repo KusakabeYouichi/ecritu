@@ -2014,7 +2014,24 @@ extension KanaKanjiConverter {
                 let effectiveBase = (alt.isInflectionDerived && containsKanji(alt.surface))
                     ? baseCostCurated
                     : baseCost
-                let delta = pairCost(alt) - effectiveBase
+                var delta = pairCost(alt) - effectiveBase
+                // seed 順の変種反映(2665): 同じ文節で seed に掲載された表層同士は、LM コスト差
+                // ではなく seed の並びで変種順を決める(しそじゃない: 始祖 6217 < シソ 7243 の
+                // Wikipedia 統計で {紫蘇, 始祖, シソ} になっていた。単文節 [しそ] は seed 順が
+                // 最終なのに連文節だけ違う並びになる不一致の是正)。seed 外の変種より前に出す
+                // 対象は「元の delta が変種上限内(=文法/文脈ペナルティで落とされていない)」かつ
+                // かな識別でない表層のみ。では有る(4200罰)や にほんビール(かな変種)を救わない
+                // 選ばれた表層がかな識別(など/おいしい 等かな正書の seed 先頭)のときも対象外 —
+                // その兄弟漢字(等)は床で退けた表層で、seed 順で繰り上げる対象ではない
+                if alt.reading == chosen.reading,
+                    alt.surface != alt.reading,
+                    chosen.surface != chosen.reading,
+                    delta <= Self.multiClauseVariantMaxDelta,
+                    let seedList = KanaKanjiSeedDictionary.seed[alt.reading],
+                    let chosenIndex = seedList.firstIndex(of: chosen.surface),
+                    let altIndex = seedList.firstIndex(of: alt.surface) {
+                    delta = min(delta, max(1, altIndex - chosenIndex) * Self.multiClauseSeedOrderVariantStep)
+                }
                 // 連語の名詞スパンの表記変種(めど/メド 等、かな識別か seed 掲載)は
                 // 変種枠の主役なので delta 上限を緩和する(2559)
                 let isCollocationNounScriptVariant = collocationNounSpans.contains("\(chosen.start)-\(chosen.end)")
