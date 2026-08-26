@@ -11910,7 +11910,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(testSpec.first, "テスト仕様書", "multi=\(testSpec.prefix(3))")
         // いまだ/まだ はかな正書(辞書 rank0 は 未だ)
         let imada = converter.multiClauseCandidates(for: "いまだとまだ", systemCandidateMode: .surface)
-        XCTAssertEqual(imada.first, "いまだとまだ", "multi=\(imada.prefix(3))")
+        // ユーザ指定: 先頭かな、2位は 今だとまだ(2682)
+        XCTAssertEqual(Array(imada.prefix(2)), ["いまだとまだ", "今だとまだ"], "multi=\(imada.prefix(4))")
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "まだできない", systemCandidateMode: .surface).first,
             "まだできない"
@@ -11919,6 +11920,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             converter.multiClauseCandidates(for: "いまだにできない", systemCandidateMode: .surface).first,
             "いまだにできない"
         )
+        // opt-in 外のかな正書(など)は従来どおり 等 を繰り上げない
+        let nado = converter.multiClauseCandidates(for: "などという", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nado.prefix(2)), ["などという", "などと言う"], "multi=\(nado.prefix(3))")
         // せいかい: Sudachi は 正解<政界 なのに LM は 政界<正解 で 政界では が先頭だった。
         // seed 先頭語を seed 兄弟の最安 unigram 直下へ置く一般則(2677)で是正
         let seikai = converter.multiClauseCandidates(for: "せいかいでは", systemCandidateMode: .surface)
@@ -11960,5 +11964,28 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(probe): multi=\(multi.prefix(3))")
         }
+    }
+
+    // 2確定→ごうてん: 数字文脈の助数詞合成(号+てん=号点/号てん/合点/合てん)が本来の
+    // 号店 を押しのけていた。読み全体に seed 宣言のある語では合成を前置しない(2681)
+    func testRegressionDigitContextSkipsCounterWhenSeedWordExists() throws {
+        try prepareRealLMDictionary()
+
+        func boosted(_ reading: String) -> [String] {
+            let base = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            return KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                base,
+                reading: reading,
+                precedingCharacter: "2",
+                tailConversion: { [weak converter] tail in
+                    converter?.candidates(for: tail, limit: 1, systemCandidateMode: .surface).first
+                }
+            )
+        }
+        XCTAssertEqual(boosted("ごうてん").first, "号店", "boosted=\(boosted("ごうてん").prefix(4))")
+        // 既存の助数詞合成(seed の無い読み)は不変
+        XCTAssertEqual(boosted("かいしか").first, "回しか")
+        XCTAssertEqual(boosted("ふんぐらいかな").first, "分ぐらいかな")
+        XCTAssertEqual(boosted("さい").first, "歳")
     }
 }

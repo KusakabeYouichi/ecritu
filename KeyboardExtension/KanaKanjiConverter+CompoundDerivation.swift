@@ -588,10 +588,16 @@ extension KanaKanjiConverter {
             // 始まる合成候補(回しか/枚中。末尾はかな素通りでも変換済みでも可)を前置する
             // (1確定→かいしか→1回しか、17確定→まいちゅう→17枚中。2416/2421)。複数の
             // 助数詞読みが前方一致する場合は最長を優先し、末尾は短いかなに限定する。
+            // 読み全体が seed 宣言のある語(号店/回転 等)なら、助数詞+かな末尾の合成は前置
+            // しない(2681)。2確定→ごうてん で 号+てん の合成(号点/号てん/合点/合てん)が
+            // 本来の 号店 を押しのけていた。合成は語が無いときの受け皿なので、人手宣言のある
+            // 読みでは出番がない
+            let readingHasSeedWord = KanaKanjiSeedDictionary.seed[reading] != nil
             for counterReading in Set(numericCounterSuffixCandidatesByReading.keys)
                 .union(digitContextAdditionalCounterSurfacesByReading.keys)
                 .sorted(by: { $0.count != $1.count ? $0.count > $1.count : $0 < $1 })
-            where reading.count > counterReading.count && reading.hasPrefix(counterReading) {
+            where !readingHasSeedWord
+                && reading.count > counterReading.count && reading.hasPrefix(counterReading) {
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
                 let tail = String(reading.dropFirst(counterReading.count))
                 // 末尾は6かなまで(ぐらいかな=5かな が4制限で漏れ、5確定→ふんぐらいかな で
