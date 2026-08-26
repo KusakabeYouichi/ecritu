@@ -349,6 +349,10 @@ extension KanaKanjiConverter {
     // seed 掲載表層同士の変種順を seed の並びで決めるときの1段の delta(2665)。
     // 同スパンの seed 外変種や他スパンの変種より確実に前に出る小さな値
     static let multiClauseSeedOrderVariantStep = 100
+    // 2682: 選ばれた表層がかな識別のときも seed 順で変種を並べる読み(opt-in)。
+    // いまだ: {いまだ, 今だ, 未だ} の順に出す(かな副詞クランプで いまだ が最良、
+    // 今だ は LM 未収録で変種上限を超えていた)
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ"]
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)

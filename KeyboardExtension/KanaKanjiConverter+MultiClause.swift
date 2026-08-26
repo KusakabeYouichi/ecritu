@@ -2044,10 +2044,16 @@ extension KanaKanjiConverter {
                 // かな識別でない表層のみ。では有る(4200罰)や にほんビール(かな変種)を救わない
                 // 選ばれた表層がかな識別(など/おいしい 等かな正書の seed 先頭)のときも対象外 —
                 // その兄弟漢字(等)は床で退けた表層で、seed 順で繰り上げる対象ではない
+                // 選ばれた表層がかな識別でも seed 順を使う opt-in(2682)。いまだとまだ で
+                // 2位が 今だとまだ にならなかった(いまだ はかな副詞クランプ4000、seed 兄弟の
+                // 今だ は LM 未収録 8700 で差 4700 が変種上限 4000 を超えて落ちていた)。
+                // 無条件に許すと などという→等という が復活するため読み単位の opt-in にする
+                let allowsSeedOrderFromKanaLead =
+                    Self.multiClauseSeedOrderVariantKanaLeadReadings.contains(alt.reading)
                 if alt.reading == chosen.reading,
                     alt.surface != alt.reading,
-                    chosen.surface != chosen.reading,
-                    delta <= Self.multiClauseVariantMaxDelta,
+                    chosen.surface != chosen.reading || allowsSeedOrderFromKanaLead,
+                    delta <= Self.multiClauseVariantMaxDelta || allowsSeedOrderFromKanaLead,
                     let seedList = KanaKanjiSeedDictionary.seed[alt.reading],
                     let chosenIndex = seedList.firstIndex(of: chosen.surface),
                     let altIndex = seedList.firstIndex(of: alt.surface) {
