@@ -11825,8 +11825,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 連文節の中でも seed 先頭語が LM 未収録のせいで消えない(しそじゃない→始祖じゃない
         // だった。ユーザ報告 2662)
         let multi = converter.multiClauseCandidates(for: "しそじゃない", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "紫蘇じゃない", "multi=\(multi.prefix(4))")
-        XCTAssertTrue(multi.prefix(3).contains("シソじゃない"), "multi=\(multi.prefix(4))")
+        // 変種順も seed の並び(ユーザ指定 2665: 単文節 [しそ] と同じ順に)
+        XCTAssertEqual(Array(multi.prefix(3)), ["紫蘇じゃない", "シソじゃない", "始祖じゃない"], "multi=\(multi.prefix(4))")
     }
 
     // せきをたつ: {籍を絶つ, 籍を断つ, 席を絶つ, 籍を発つ} で 席を立つ が無かった(ユーザ報告 2663)。
