@@ -607,6 +607,11 @@ final class KeyboardViewController: UIInputViewController {
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
         candidateBarModel.latinSuggestionSkippedForDebugDisplay = kanaKanjiStore.didSkipLatinSuggestionBuildForPressure
+        // 絵文字描画の節約段階(footprint 連動)を削除キーの色へ(2672)
+        EmojiRenderBudget.onSavingLevelChange = { [weak self] level in
+            guard let self, self.candidateBarModel.emojiSavingLevelForDebugDisplay != level else { return }
+            self.candidateBarModel.emojiSavingLevelForDebugDisplay = level
+        }
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
