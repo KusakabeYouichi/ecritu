@@ -16,6 +16,8 @@ final class KeyboardCandidateBarModel: ObservableObject {
     @Published var memoryPressureSQLiteUnloadedForDebugDisplay: Bool = false
     // 欧文サジェスト構築を高水位で見送り中(削除キー薄ピンク。ユーザ指定 2664)
     @Published var latinSuggestionSkippedForDebugDisplay: Bool = false
+    // 絵文字描画の節約段階(0=平時 / 1=fp55〜: 倍率2=薄ピンク / 2=fp65〜: 倍率1=ピンク。2672)
+    @Published var emojiSavingLevelForDebugDisplay: Int = 0
 }
 
 enum KeyboardThemePalette {
