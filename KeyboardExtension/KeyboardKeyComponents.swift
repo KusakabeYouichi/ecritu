@@ -814,3 +814,379 @@ struct KaomojiCategoryKeyButton: View {
         .accessibilityLabel(accessibilityLabel)
     }
 }
+
+// ============================================================================
+// 絵文字の描画を SwiftUI Text から UIKit(UILabel)へ(2668)
+// ----------------------------------------------------------------------------
+// メモリグラフ(simulator、8/26)で判明: SwiftUI の Text でカラー絵文字を描くと、描画済みの
+// 絵文字1個ごとに 48KB の CGImage がシステム側の NSCache(_os_alloc_once_table 配下)に溜まり、
+// パネルで眺めた絵文字の数だけ増えて退出でも消えない(601枚=27.3MB を実測。実機の per-process
+// 上限 77MB に対し最大の押し上げ源)。UILabel は CoreText で直接レイヤーへ描くのでこの
+// キャッシュを通らず、UICollectionView のセル再利用で同時生存を画面分(約40個)に固定する。
+// ============================================================================
+
+/// 絵文字パネルのグリッド。セクションの間に区切り線(ヘッダー)を挟む。
+struct EmojiGridCollectionView: UIViewRepresentable {
+    struct Section: Equatable {
+        let emojis: [String]
+        let showsDividerBefore: Bool
+    }
+
+    let sections: [Section]
+    let columnCount: Int
+    let itemSpacing: CGFloat
+    let itemHeight: CGFloat
+    let dividerBlockHeight: CGFloat
+    /// 国旗カテゴリー: 押下中に国名の吹き出しを出す。
+    let longPressLabels: [String: (text: String, kind: SymbolInspectBubbleKind)]
+    /// カテゴリー切替の検知(変わったら先頭へスクロール)。
+    let categoryKey: Int
+    let onTextInput: (String) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIView(context: Context) -> UICollectionView {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = itemSpacing
+        layout.minimumLineSpacing = itemSpacing
+        layout.sectionInset = .zero
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        view.backgroundColor = .clear
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
+        view.alwaysBounceVertical = true
+        view.delaysContentTouches = false
+        // 国旗の吹き出しが最上段で見切れないようクリップしない(旧 SymbolScrollClipDisabledModifier 相当)
+        view.clipsToBounds = false
+        view.register(EmojiGridCell.self, forCellWithReuseIdentifier: EmojiGridCell.reuseIdentifier)
+        view.register(
+            EmojiGridDividerView.self,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
+            withReuseIdentifier: EmojiGridDividerView.reuseIdentifier
+        )
+        view.dataSource = context.coordinator
+        view.delegate = context.coordinator
+        context.coordinator.parent = self
+        return view
+    }
+
+    func updateUIView(_ uiView: UICollectionView, context: Context) {
+        let coordinator = context.coordinator
+        let categoryChanged = coordinator.parent.categoryKey != categoryKey
+        let sectionsChanged = coordinator.parent.sections != sections
+        coordinator.parent = self
+        if let layout = uiView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.minimumInteritemSpacing = itemSpacing
+            layout.minimumLineSpacing = itemSpacing
+        }
+        if categoryChanged || sectionsChanged {
+            coordinator.hideBubble()
+            uiView.reloadData()
+            if categoryChanged {
+                uiView.setContentOffset(.zero, animated: false)
+            }
+        }
+    }
+
+    final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+        var parent: EmojiGridCollectionView
+        private weak var bubble: UIView?
+
+        init(parent: EmojiGridCollectionView) {
+            self.parent = parent
+        }
+
+        func numberOfSections(in collectionView: UICollectionView) -> Int {
+            parent.sections.count
+        }
+
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            parent.sections[section].emojis.count
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            cellForItemAt indexPath: IndexPath
+        ) -> UICollectionViewCell {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: EmojiGridCell.reuseIdentifier,
+                for: indexPath
+            )
+            let emoji = parent.sections[indexPath.section].emojis[indexPath.item]
+            (cell as? EmojiGridCell)?.configure(
+                emoji: emoji,
+                accessibilityText: parent.longPressLabels[emoji].map { "\(emoji) \($0.text)" } ?? emoji
+            )
+            return cell
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            viewForSupplementaryElementOfKind kind: String,
+            at indexPath: IndexPath
+        ) -> UICollectionReusableView {
+            collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: EmojiGridDividerView.reuseIdentifier,
+                for: indexPath
+            )
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            sizeForItemAt indexPath: IndexPath
+        ) -> CGSize {
+            let columns = max(1, parent.columnCount)
+            let available = collectionView.bounds.width - parent.itemSpacing * CGFloat(columns - 1)
+            let width = floor(max(1, available / CGFloat(columns)))
+            return CGSize(width: width, height: parent.itemHeight)
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            referenceSizeForHeaderInSection section: Int
+        ) -> CGSize {
+            guard parent.sections[section].showsDividerBefore else {
+                return .zero
+            }
+            return CGSize(width: collectionView.bounds.width, height: parent.dividerBlockHeight)
+        }
+
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+            let emoji = parent.sections[indexPath.section].emojis[indexPath.item]
+            parent.onTextInput(emoji)
+        }
+
+        func collectionView(_ collectionView: UICollectionView, didHighlightItemAt indexPath: IndexPath) {
+            let emoji = parent.sections[indexPath.section].emojis[indexPath.item]
+            guard let label = parent.longPressLabels[emoji],
+                let cell = collectionView.cellForItem(at: indexPath) else {
+                return
+            }
+            showBubble(text: label.text, kind: label.kind, above: cell, in: collectionView)
+        }
+
+        func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+            hideBubble()
+        }
+
+        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            hideBubble()
+        }
+
+        // 国旗の国名吹き出し(旧 SymbolInspectBubbleOverlay と同じ寸法: 13pt bold rounded、
+        // 左右 padding 10、キーの上 36pt、画面端で 6pt 内側にクランプ)
+        private func showBubble(text: String, kind: SymbolInspectBubbleKind, above cell: UIView, in host: UIView) {
+            hideBubble()
+            var font = UIFont.systemFont(ofSize: 13, weight: .bold)
+            if let descriptor = font.fontDescriptor.withDesign(.rounded) {
+                font = UIFont(descriptor: descriptor, size: 13)
+            }
+            let label = UILabel()
+            label.text = text
+            label.font = font
+            label.textColor = .white
+            label.textAlignment = .center
+            label.numberOfLines = 1
+            label.lineBreakMode = .byTruncatingTail
+            let textWidth = min(ceil((text as NSString).size(withAttributes: [.font: font]).width), 300)
+            let bubbleWidth = textWidth + 20
+            let bubbleHeight: CGFloat = 26
+            let container = UIView()
+            container.backgroundColor = UIColor(kind.bubbleColor)
+            container.layer.cornerRadius = 8
+            container.layer.cornerCurve = .continuous
+            container.isUserInteractionEnabled = false
+            label.frame = CGRect(x: 10, y: 0, width: textWidth, height: bubbleHeight)
+            container.addSubview(label)
+            let cellFrame = cell.convert(cell.bounds, to: host)
+            let screenWidth = UIScreen.main.bounds.width
+            let hostOriginX = host.convert(CGPoint.zero, to: nil).x
+            let half = bubbleWidth / 2
+            let centerXInScreen = hostOriginX + cellFrame.midX
+            let clampedCenterX = min(max(centerXInScreen, 6 + half), max(6 + half, screenWidth - 6 - half))
+            let centerX = clampedCenterX - hostOriginX
+            container.frame = CGRect(
+                x: centerX - half,
+                y: cellFrame.midY - 36 - bubbleHeight / 2,
+                width: bubbleWidth,
+                height: bubbleHeight
+            )
+            host.addSubview(container)
+            bubble = container
+        }
+
+        func hideBubble() {
+            bubble?.removeFromSuperview()
+            bubble = nil
+        }
+    }
+}
+
+final class EmojiGridCell: UICollectionViewCell {
+    static let reuseIdentifier = "EmojiGridCell"
+    private let label = UILabel()
+    private let feedbackCircle = UIView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        feedbackCircle.backgroundColor = UIColor(KeyboardThemePalette.pressFeedbackCircle)
+        feedbackCircle.layer.cornerRadius = 12
+        feedbackCircle.isHidden = true
+        feedbackCircle.isUserInteractionEnabled = false
+        label.font = .systemFont(ofSize: 24)
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = false
+        label.isAccessibilityElement = false
+        contentView.addSubview(feedbackCircle)
+        contentView.addSubview(label)
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        label.frame = contentView.bounds
+        feedbackCircle.frame = CGRect(
+            x: contentView.bounds.midX - 12,
+            y: contentView.bounds.midY - 12,
+            width: 24,
+            height: 24
+        )
+    }
+
+    func configure(emoji: String, accessibilityText: String) {
+        label.text = emoji
+        accessibilityLabel = accessibilityText
+    }
+
+    // 旧 EmojiTapFeedbackButtonStyle と同じ押下表現(0.84 倍+中央の薄い円)
+    override var isHighlighted: Bool {
+        didSet {
+            let pressed = isHighlighted
+            UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
+                self.label.transform = pressed ? CGAffineTransform(scaleX: 0.84, y: 0.84) : .identity
+                self.feedbackCircle.isHidden = !pressed
+            }
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        label.transform = .identity
+        feedbackCircle.isHidden = true
+    }
+}
+
+final class EmojiGridDividerView: UICollectionReusableView {
+    static let reuseIdentifier = "EmojiGridDividerView"
+    private let line = UIView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        line.backgroundColor = UIColor(KeyboardThemePalette.thinDivider)
+        addSubview(line)
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        // 旧 emojiSectionDivider: 高さ1の線+上下 padding 2
+        line.frame = CGRect(x: 0, y: (bounds.height - 1) / 2, width: bounds.width, height: 1)
+    }
+}
+
+/// UILabel で1行のテキストを描く(候補チップの絵文字用)。intrinsic サイズで SwiftUI に載る。
+struct EmojiUILabelText: UIViewRepresentable {
+    let text: String
+    let font: UIFont
+    let color: UIColor
+
+    func makeUIView(context: Context) -> UILabel {
+        let label = UILabel()
+        label.numberOfLines = 1
+        label.lineBreakMode = .byTruncatingTail
+        label.setContentHuggingPriority(.required, for: .horizontal)
+        label.setContentCompressionResistancePriority(.required, for: .horizontal)
+        return label
+    }
+
+    func updateUIView(_ uiView: UILabel, context: Context) {
+        uiView.text = text
+        uiView.font = font
+        uiView.textColor = color
+    }
+
+    func sizeThatFits(_ proposal: ProposedViewSize, uiView: UILabel, context: Context) -> CGSize? {
+        let size = uiView.intrinsicContentSize
+        return CGSize(width: ceil(size.width), height: ceil(size.height))
+    }
+}
+
+/// 候補チップの文字: 絵文字を含むときだけ UILabel 経由(SwiftUI Text の絵文字 CGImage キャッシュ回避)。
+struct CandidateGlyphText: View {
+    let text: String
+    let fontSize: CGFloat
+    let weight: Font.Weight
+    let color: Color
+
+    init(_ text: String, fontSize: CGFloat, weight: Font.Weight = .semibold, color: Color) {
+        self.text = text
+        self.fontSize = fontSize
+        self.weight = weight
+        self.color = color
+    }
+
+    var body: some View {
+        if Self.containsEmoji(text) {
+            EmojiUILabelText(
+                text: text,
+                font: .systemFont(ofSize: fontSize, weight: Self.uiWeight(weight)),
+                color: UIColor(color)
+            )
+            .fixedSize()
+        } else {
+            Text(text)
+                .font(.system(size: fontSize, weight: weight))
+                .foregroundStyle(color)
+        }
+    }
+
+    static func containsEmoji(_ text: String) -> Bool {
+        for scalar in text.unicodeScalars {
+            let value = scalar.value
+            if scalar.properties.isEmojiPresentation
+                || value == 0xFE0F
+                || (0x1F1E6...0x1F1FF).contains(value)
+                || (0x1F300...0x1FAFF).contains(value) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private static func uiWeight(_ weight: Font.Weight) -> UIFont.Weight {
+        switch weight {
+        case .bold: return .bold
+        case .semibold: return .semibold
+        case .medium: return .medium
+        case .light: return .light
+        case .heavy: return .heavy
+        default: return .regular
+        }
+    }
+}
