@@ -1094,10 +1094,14 @@ final class KeyboardViewController: UIInputViewController {
             // census v2(2570): (a) 全 malloc ゾーンの内訳 — malloc_zone_statistics(nil) は
             // デフォルトゾーンだけで、Nano ゾーン(≤256B の小粒確保)が見えていなかった。
             // (b) 常駐辞書構造の概算バイト — ベースライン固定費(約35MB)の正体特定用。
+            // ★malloc 全ブロック列挙(diagnosticsMallocSizeHistogram / heapAnatomySummary)は
+            // 実機では呼ばない(2667)。プロセス内の列挙はヒープ規模に比例した一時確保を行い、
+            // 実測 fp 39.6→77MB(+37MB、1.5秒)で即死した(8/26 15:24、カーネルログ確定)。
+            // 8/25 の警告時2件(fp59.6→0.7秒で77)も census2 実行中で、同じ原因。
+            // 統計読み(malloc_zone_statistics/task_info)と自前構造の概算だけ残す。
             appendKeyboardDiagnosticsLog(
                 "メモリ内訳census2 \(Self.diagnosticsAllMallocZonesSummary())"
-                    + " | \(kanaKanjiConverter.store.diagnosticsStructureBytesSummary())"
-                    + " | \(Self.diagnosticsMallocSizeHistogram())",
+                    + " | \(kanaKanjiConverter.store.diagnosticsStructureBytesSummary())",
                 critical: true,
                 file: #fileID,
                 line: #line,
@@ -1110,9 +1114,9 @@ final class KeyboardViewController: UIInputViewController {
                 line: #line,
                 function: #function
             )
-            // MEMFORENSICS(時限計測 2611): sqlite/footprint内訳+ヒープ解剖(ページ占有×dirty)
+            // MEMFORENSICS(時限計測 2611): sqlite/footprint 内訳(ヒープ解剖は 2667 で撤去、上記)
             appendKeyboardDiagnosticsLog(
-                "メモリ内訳census4 \(MemoryForensics.summaryLine()) | \(MemoryForensics.heapAnatomySummary())",
+                "メモリ内訳census4 \(MemoryForensics.summaryLine())",
                 critical: true,
                 file: #fileID,
                 line: #line,
