@@ -994,6 +994,11 @@ struct KeyboardRootView: View {
         }
         switch candidateBarModel.memoryWarningCountForDebugDisplay {
         case 0:
+            // 警告前の段階: 欧文サジェスト構築を高水位(fp≥58)で見送り中なら薄ピンク
+            // (ユーザ指定 2664。警告が来たら黄/橙が優先)
+            if candidateBarModel.latinSuggestionSkippedForDebugDisplay {
+                return Color(red: 1.0, green: 0.78, blue: 0.84).opacity(0.9)
+            }
             return nil
         case 1:
             return Color.yellow.opacity(0.85)

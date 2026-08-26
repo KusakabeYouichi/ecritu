@@ -68,6 +68,9 @@ final class KanaKanjiStore {
     // 常駐フットプリントを持たない(GenericLatinLexiconFileIndex 定義コメント参照)。
     var cachedGenericLatinLexiconIndexByLanguage: [String: GenericLatinLexiconFileIndex] = [:]
     var genericLatinLexiconEnabledLanguages: Set<String> = []
+    // 欧文サジェスト構築を高水位で見送った状態(削除キー薄ピンクの可視化用。2664)。
+    // 構築が成功したら false に戻る
+    var didSkipLatinSuggestionBuildForPressure = false
     // テスト用: bundle 未同梱の環境(unit test)でリポジトリのtxtを直接読ませるディレクトリ
     var genericLatinLexiconDirectoryURLOverride: URL?
     // 漢字1文字ピッカーの索引(mmap)。テスト用に読み込み元を差し替えられるようにする。
