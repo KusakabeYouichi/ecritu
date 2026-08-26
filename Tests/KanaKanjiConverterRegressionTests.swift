@@ -6351,7 +6351,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let single = converter.candidates(for: "とよむ", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "と読む", "single=\(single)")
-        XCTAssertTrue(single.contains("響動む"), "single=\(single)")
+        // 響動む(古語)は 2679 で抑制(とよんでた→響動んでた が と+呼んでた を跨いでいた)
+        XCTAssertFalse(single.contains("響動む"), "single=\(single)")
     }
 
     // 実LM回帰: れいは のかな識別先頭化を是正。あきの と同型(かな人名収穫 wc10000 +
@@ -11922,5 +11923,42 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // seed 先頭語を seed 兄弟の最安 unigram 直下へ置く一般則(2677)で是正
         let seikai = converter.multiClauseCandidates(for: "せいかいでは", systemCandidateMode: .surface)
         XCTAssertEqual(seikai.first, "正解では", "multi=\(seikai.prefix(3))")
+    }
+
+    // うたい/うたいだし/こうあつせんじょうき/やつですね/とよんでた/ばいしょうきん/
+    // きゅうりょうぶくろ(ユーザ指定 2678/2679)
+    func testRegressionRealLMCompoundSupplyAndKanaNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        // 収穫底値の床上げ除外(2678): 自分の主読みで LM がよく知る複合語は分割に負けない
+        let baishou = converter.multiClauseCandidates(for: "ばいしょうきん", systemCandidateMode: .surface)
+        let baishouSingle = converter.candidates(for: "ばいしょうきん", limit: 2, systemCandidateMode: .surface)
+        XCTAssertEqual(baishou.first ?? baishouSingle.first, "賠償金", "multi=\(baishou.prefix(3))")
+        // 供給欠落の補填(seed)
+        XCTAssertEqual(converter.candidates(for: "うたい", limit: 3, systemCandidateMode: .surface).first, "歌い")
+        for (probe, expected) in [
+            ("うたいだし", "歌い出し"),
+            ("こうあつせんじょうき", "高圧洗浄機"),
+            ("きゅうりょうぶくろ", "給料袋")
+        ] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(probe): multi=\(multi.prefix(3)) single=\(single.prefix(3))")
+        }
+        // やつ はかな正書(単文節と連文節の先頭を揃える)
+        let yatsu = converter.multiClauseCandidates(for: "やつですね", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(yatsu.prefix(2)), ["やつですね", "奴ですね"], "multi=\(yatsu.prefix(3))")
+        // とよんでた: 響動む/とよむ(古語)を抑制し、引用の と は 呼 を先に。
+        // 目的語+を の文脈は 読 のまま、名前/そう+よぶ活用は 呼(連語表)
+        for (probe, expected) in [
+            ("とよんでた", "と呼んでた"),
+            ("そうよんでた", "そう呼んでた"),
+            ("なまえをよんでた", "名前を呼んでた"),
+            ("ほんをよんでた", "本を読んでた")
+        ] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(probe): multi=\(multi.prefix(3))")
+        }
     }
 }

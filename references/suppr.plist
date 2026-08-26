@@ -210,6 +210,8 @@
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
 	<dict><key>phrase</key><string>其麼</string><key>shortcut</key><string>そんな</string></dict>	<!-- 其麼(そんな): 白話文由来の当て字(什麼/怎麼 と同族)。読めないので候補に並ぶと困る(ユーザ指定)。かな そんな は wc4833/rank0 で基底が健在なので供給には影響しない。抑制だけ入れると そんなことないのに が候補ゼロになるため、keepKana の準体助詞クラスタ剥がしと同時に入れた(2584) -->
+	<dict><key>phrase</key><string>響動む</string><key>shortcut</key><string>とよむ</string></dict>
+	<dict><key>phrase</key><string>とよむ</string><key>shortcut</key><string>とよむ</string></dict>	<!-- とよむ(かな): 響動む の抑制後、活用エンジンが1ノードの かな とよんでた を作り と+呼んでた/読んでた を跨いでいた(2679)。かな確定はチップから可能 -->	<!-- 響動む(とよむ): 「鳴り響く」の古語。とよんでた→響動んでた が と+呼んでた/読んでた を跨いでいた(ユーザ報告 2679) -->
 	<dict><key>phrase</key><string>著る</string><key>shortcut</key><string>きる</string></dict>	<!-- 著る/衣る(きる): 着る の古語・異表記(著物)。派生(著て/衣てしまいました 等)にも波及するため基底で抑制 -->
 	<dict><key>phrase</key><string>衣る</string><key>shortcut</key><string>きる</string></dict>
 	<dict><key>phrase</key><string>厭きの</string><key>shortcut</key><string>あきの</string></dict>	<!-- 厭きの(あきの): 厭きる は現代では 飽きる が主。飽きの(飽きのこない)は残す -->
