@@ -455,6 +455,7 @@ extension KeyboardViewController {
             malloc_zone_pressure_relief(nil, 0)
             // MEMFORENSICS(時限計測 2640): スリム化の返却量(1MB以上動いたときだけ記録)
             MemoryForensics.noteSpikeWindow("スリム化(\(reason))")
+            recordSafeMomentHeapAnatomyIfDue(reason: reason)
         }
 
         updateKeyboardDiagnosticsHeartbeat(
@@ -462,6 +463,48 @@ extension KeyboardViewController {
                 + " slim=\(slimmingActive ? "on" : "off") profile=\(memoryFailSafeProfile.rawValue)",
             appendLog: true
         )
+    }
+
+    // 安全な瞬間のヒープ解剖(2666): 「返却不能な断片化ページ約30MB」(used 38〜42 / alloc 72〜76)
+    // の釘付けの正体を測る。警告時(fp≈62)の census2〜4 は上限77まで余裕が無く 2654 で止めたので、
+    // キーボードが隠れた直後(スリム化・relief 済み、main が空いている)かつ fp 40〜55 のときに
+    // 10分に1回だけ、サイズ階級×クラス名(census2)とページ占有×dirty(census4)を記録する。
+    // 何のクラスの生き残りが何ページを釘付けにしているかが数字で出る。
+    nonisolated(unsafe) static var lastSafeMomentHeapAnatomyAt: CFAbsoluteTime = 0
+    static let safeMomentHeapAnatomyMinimumInterval: CFAbsoluteTime = 600
+    static let safeMomentHeapAnatomyFootprintRange: ClosedRange<Double> = 40...55
+
+    func recordSafeMomentHeapAnatomyIfDue(reason: String) {
+        #if DEBUG
+        guard reason == "viewDidDisappear",
+            let footprintMB = currentFootprintMB(),
+            Self.safeMomentHeapAnatomyFootprintRange.contains(footprintMB) else {
+            return
+        }
+        let now = CFAbsoluteTimeGetCurrent()
+        guard now - Self.lastSafeMomentHeapAnatomyAt >= Self.safeMomentHeapAnatomyMinimumInterval else {
+            return
+        }
+        Self.lastSafeMomentHeapAnatomyAt = now
+        // relief の反映と非表示遷移の完了を待ってから測る(0.8秒後、まだ隠れているとき)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { [weak self] in
+            guard let self, self.viewIfLoaded?.window == nil else {
+                return
+            }
+            let before = MemoryForensics.snapshot()
+            let census2 = "\(Self.diagnosticsAllMallocZonesSummary()) | \(Self.diagnosticsMallocSizeHistogram())"
+            let census4 = "\(MemoryForensics.summaryLine()) | \(MemoryForensics.heapAnatomySummary(ignoreThrottle: true))"
+            let after = MemoryForensics.snapshot()
+            self.appendKeyboardDiagnosticsLog(
+                "MEMFORENSICS安全時census2 fp=\(String(format: "%.1f", before.fpMB)) \(census2)",
+                critical: true, file: #fileID, line: #line, function: #function
+            )
+            self.appendKeyboardDiagnosticsLog(
+                "MEMFORENSICS安全時census4 \(census4) | 解剖コスト fp+\(String(format: "%.1f", after.fpMB - before.fpMB))",
+                critical: true, file: #fileID, line: #line, function: #function
+            )
+        }
+        #endif
     }
 
     func updateMemoryFailSafeProfile(trigger: String) {
