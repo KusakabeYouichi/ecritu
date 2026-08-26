@@ -11893,4 +11893,34 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let hito = converter.multiClauseCandidates(for: "たくさんのひとが", systemCandidateMode: .surface)
         XCTAssertEqual(hito.first, "たくさんの人が", "multi=\(hito.prefix(3))")
     }
+
+    // かかせる/しようしょ/いまだとまだ/せいかいでは(ユーザ指定 2675〜2677)
+    func testRegressionRealLMKakaseruShiyoushoImadaSeikai() throws {
+        try prepareRealLMDictionary()
+
+        // かかせる: 辞書は {欠かせる, かかせる} のみで 書/描 は活用由来のため下位だった
+        XCTAssertEqual(
+            Array(converter.candidates(for: "かかせる", limit: 4, systemCandidateMode: .surface).prefix(2)),
+            ["書かせる", "描かせる"]
+        )
+        // しようしょ: 仕様書 は Sudachi wc 13674(収穫底値超)で連文節が床上げして却下していた
+        XCTAssertEqual(converter.candidates(for: "しようしょ", limit: 2, systemCandidateMode: .surface).first, "仕様書")
+        let testSpec = converter.multiClauseCandidates(for: "てすとしようしょ", systemCandidateMode: .surface)
+        XCTAssertEqual(testSpec.first, "テスト仕様書", "multi=\(testSpec.prefix(3))")
+        // いまだ/まだ はかな正書(辞書 rank0 は 未だ)
+        let imada = converter.multiClauseCandidates(for: "いまだとまだ", systemCandidateMode: .surface)
+        XCTAssertEqual(imada.first, "いまだとまだ", "multi=\(imada.prefix(3))")
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "まだできない", systemCandidateMode: .surface).first,
+            "まだできない"
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "いまだにできない", systemCandidateMode: .surface).first,
+            "いまだにできない"
+        )
+        // せいかい: Sudachi は 正解<政界 なのに LM は 政界<正解 で 政界では が先頭だった。
+        // seed 先頭語を seed 兄弟の最安 unigram 直下へ置く一般則(2677)で是正
+        let seikai = converter.multiClauseCandidates(for: "せいかいでは", systemCandidateMode: .surface)
+        XCTAssertEqual(seikai.first, "正解では", "multi=\(seikai.prefix(3))")
+    }
 }

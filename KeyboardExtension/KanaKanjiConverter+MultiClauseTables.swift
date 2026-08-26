@@ -349,6 +349,10 @@ extension KanaKanjiConverter {
     // seed 掲載表層同士の変種順を seed の並びで決めるときの1段の delta(2665)。
     // 同スパンの seed 外変種や他スパンの変種より確実に前に出る小さな値
     static let multiClauseSeedOrderVariantStep = 100
+    // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
+    // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
+    // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -361,6 +365,9 @@ extension KanaKanjiConverter {
     // なる。かな識別を安価にして やばいじゃん を最上位にする(かなが現代口語の正書)。
     static let multiClauseKanaAdverbReadings: Set<String> = [
         "いまだに", "したんだが", "やばい", "じゃん",
+        // いまだ/まだ(副詞、かな正書): 辞書 rank0 が 未だ(いまだ/まだ 両読み)で、
+        // いまだとまだ→{いまだと未だ, 未だとまだ} になっていた(ユーザ指定 2676)
+        "いまだ", "まだ",
         // ときどき(かな正書の副詞、seed 済み): 連文節では 時々通ります と漢字化して
         // 単文節(かな先頭)と食い違っていた(ユーザ報告 2647)
         "ときどき",
