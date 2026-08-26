@@ -597,13 +597,20 @@ extension KeyboardRootView {
 
         var body: some View {
             VStack(spacing: keyboardRowSpacing) {
-                ScrollView(.vertical, showsIndicators: false) {
-                    emojiScrollContent
-                        .padding(.vertical, 2)
-                }
+                // UIKit のセル再利用グリッド(2668)。SwiftUI の LazyVGrid+Text は生成したセルを
+                // 閉じるまで保持し、描画済み絵文字1個ごとに 48KB の CGImage がシステムの
+                // NSCache に溜まって退出でも消えなかった(601枚=27.3MB 実測)。
+                EmojiGridCollectionView(
+                    sections: emojiGridSections,
+                    columnCount: emojiGridColumns.count,
+                    itemSpacing: emojiGridSpacing,
+                    itemHeight: compactEmojiKeyHeight,
+                    dividerBlockHeight: 5 + keyboardRowSpacing,
+                    longPressLabels: emojiLongPressLabels,
+                    categoryKey: selectedEmojiCategory.rawValue,
+                    onTextInput: onTextInput
+                )
                 .frame(height: fourRowAlignedTopContentHeight)
-                // 国旗の長押し吹き出しが最上段で見切れないようクリップを解除(iOS17+)。
-                .modifier(SymbolScrollClipDisabledModifier())
 
                 HStack(spacing: keyboardRowSpacing) {
                     ActionKeyButton(
@@ -642,17 +649,11 @@ extension KeyboardRootView {
 
         // 複数セクションのカテゴリー(顔/食べ物/動物/行動/乗り物)は、サブグループの間に
         // 区切り線を挟む。国旗は動的分割(国→領土→その他)のため特別扱い。
-        @ViewBuilder
-        private var emojiScrollContent: some View {
+        private var emojiGridSections: [EmojiGridCollectionView.Section] {
             let sections = selectedEmojiCategory.sections
             if selectedEmojiCategory != .flags, sections.count > 1 {
-                LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
-                    ForEach(Array(sections.enumerated()), id: \.offset) { index, section in
-                        if index > 0 {
-                            emojiSectionDivider
-                        }
-                        emojiGrid(section)
-                    }
+                return sections.enumerated().map { index, section in
+                    EmojiGridCollectionView.Section(emojis: section, showsDividerBefore: index > 0)
                 }
             } else if selectedEmojiCategory == .flags {
                 let territorySet = AppleEmojiCatalog.flagOverseasTerritories
@@ -662,45 +663,33 @@ extension KeyboardRootView {
                 let countryFlags = all.filter { !territorySet.contains($0) && !nonCountrySet.contains($0) }
                 let territoryFlags = all.filter { territorySet.contains($0) }
                 let otherFlags = all.filter { nonCountrySet.contains($0) }
-                LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
-                    emojiGrid(countryFlags)
-                    if !territoryFlags.isEmpty {
-                        emojiSectionDivider
-                        emojiGrid(territoryFlags)
-                    }
-                    if !otherFlags.isEmpty {
-                        emojiSectionDivider
-                        emojiGrid(otherFlags)
-                    }
+                var result = [EmojiGridCollectionView.Section(emojis: countryFlags, showsDividerBefore: false)]
+                if !territoryFlags.isEmpty {
+                    result.append(EmojiGridCollectionView.Section(emojis: territoryFlags, showsDividerBefore: true))
                 }
+                if !otherFlags.isEmpty {
+                    result.append(EmojiGridCollectionView.Section(emojis: otherFlags, showsDividerBefore: true))
+                }
+                return result
             } else {
-                emojiGrid(selectedEmojiCategory.emojis)
+                return [EmojiGridCollectionView.Section(emojis: selectedEmojiCategory.emojis, showsDividerBefore: false)]
             }
         }
 
-        private var emojiSectionDivider: some View {
-            Rectangle()
-                .fill(KeyboardThemePalette.thinDivider)
-                .frame(height: 1)
-                .padding(.vertical, 2)
-        }
-
-        private func emojiGrid(_ emojis: [String]) -> some View {
-            LazyVGrid(columns: emojiGridColumns, spacing: emojiGridSpacing) {
-                ForEach(Array(emojis.enumerated()), id: \.offset) { _, emoji in
-                    let isFlags = selectedEmojiCategory == .flags
-                    let countryName = isFlags ? AppleEmojiCatalog.flagOfficialNames[emoji] : nil
-                    let nonCountryName = isFlags ? AppleEmojiCatalog.flagNonCountryNames[emoji] : nil
-                    EmojiKeyButton(
-                        emoji: emoji,
-                        longPressLabel: countryName ?? nonCountryName,
-                        longPressLabelKind: (countryName == nil && nonCountryName != nil) ? .alternate : .standard
-                    ) {
-                        onTextInput(emoji)
-                    }
-                    .frame(height: compactEmojiKeyHeight)
+        // 国旗の押下吹き出し(国名。領土・その他は青系)
+        private var emojiLongPressLabels: [String: (text: String, kind: SymbolInspectBubbleKind)] {
+            guard selectedEmojiCategory == .flags else {
+                return [:]
+            }
+            var labels: [String: (text: String, kind: SymbolInspectBubbleKind)] = [:]
+            for emoji in selectedEmojiCategory.emojis {
+                if let name = AppleEmojiCatalog.flagOfficialNames[emoji] {
+                    labels[emoji] = (name, .standard)
+                } else if let name = AppleEmojiCatalog.flagNonCountryNames[emoji] {
+                    labels[emoji] = (name, .alternate)
                 }
             }
+            return labels
         }
     }
 
@@ -944,8 +933,7 @@ extension KeyboardRootView {
                         HStack(spacing: 0) {
                             Text("(")
                                 .foregroundStyle(isSelected ? Color.white : accentColor)
-                            Text(candidate)
-                                .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                            CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
                             Text(")")
                                 .foregroundStyle(isSelected ? Color.white : accentColor)
                         }
@@ -969,9 +957,7 @@ extension KeyboardRootView {
                                 )
                         )
                     } else {
-                        Text(candidate)
-                            .font(.system(size: candidateTextFontSize, weight: .semibold))
-                            .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                        CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
                             .lineLimit(1)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)

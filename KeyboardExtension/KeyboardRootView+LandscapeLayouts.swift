@@ -435,8 +435,7 @@ extension KeyboardRootView {
                                     HStack(spacing: 0) {
                                         Text("(")
                                             .foregroundStyle(isSelected ? Color.white : accentColor)
-                                        Text(candidate)
-                                            .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                        CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
                                         Text(")")
                                             .foregroundStyle(isSelected ? Color.white : accentColor)
                                     }
@@ -454,9 +453,7 @@ extension KeyboardRootView {
                                             )
                                     )
                                 } else {
-                                    Text(candidate)
-                                        .font(.system(size: candidateTextFontSize, weight: .semibold))
-                                        .foregroundStyle(isSelected ? Color.white : keyLabelColor)
+                                    CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
                                         .lineLimit(1)
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                         .padding(.horizontal, 8)
