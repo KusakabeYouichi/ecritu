@@ -906,8 +906,27 @@ extension KanaKanjiConverter {
                 // たなか 用途の4821、方面(かたも11000)が ほうめん 用途の4792 に乗って
                 // 正解の区切りを奪う)。dictUnknown 分岐の底値降格と同じ水準へ床上げする。
                 // seed 掲載語は人手選別のため免除(他の降格と同条件)。
+                // 例外(2678): 収穫底値でも「その表層自身の主読み」かつ「LM がよく知る語」なら
+                // 床上げしない。床上げの目的はレア読みのタダ乗り(田中=でんちゅう12670 が
+                // たなか 用途の unigram 4821 に乗る)を防ぐことで、それは下の読み跨ぎ規則が
+                // word_cost の読み間乖離で判定している。乖離ゼロ(=この読みが主読み)で
+                // unigram も dictUnknown より安い実在語(賠償金 wc11179/uni6461、
+                // 仕様書 wc13674/uni6386)は、Sudachi の連接コストが高いだけの正当な複合語。
+                // 床上げすると 杯+賞金 や テストしよう+署 のような分割に必ず負ける
+                // 読み5かな以上に限る: 短い読み(あった 等)は word_costs にその読みの行しか無い
+                // 表層(熱田)でも乖離ゼロになり、除外が効きすぎる(あったが で 熱田が が2位に)
+                let isOwnMainReadingWellKnownCompound: Bool = {
+                    guard reading.count >= 5,
+                        let wordCost, let unigram = unigramCosts[surface],
+                        unigram < Self.multiClauseDictUnknownCost,
+                        let minWordCost = candidateMinWordCosts[surface] else {
+                        return false
+                    }
+                    return wordCost - minWordCost < Self.multiClauseCrossReadingUnigramGapThreshold
+                }()
                 if let wordCost,
                     wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                    !isOwnMainReadingWellKnownCompound,
                     !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
                     base = max(base, Self.multiClauseHarvestTierUnknownCost)
                 }
