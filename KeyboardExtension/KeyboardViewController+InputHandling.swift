@@ -9,6 +9,7 @@ extension KeyboardViewController {
     static let rapidDakutenSecondTapTargets: Set<Character> = ["っ", "ぅ"]
 
     func handleTextInput(_ text: String) {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "textInput")
         guard !text.isEmpty else {
             return
         }
@@ -167,6 +168,7 @@ extension KeyboardViewController {
     }
 
     func handleDeleteBackward() {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "deleteBackward")
         if revertIdleCommitToComposingIfNeeded() {
             return
         }
@@ -212,6 +214,7 @@ extension KeyboardViewController {
     }
 
     func handleSpaceInput() {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "space")
         clearRecentKanaPlainCommitUpgradeContext()
 
         guard currentInputMode == .kana else {
@@ -260,6 +263,7 @@ extension KeyboardViewController {
     }
 
     func handleReturnInput() {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "return")
         let hasActiveConversion = activeConversion != nil
         let hasComposingText = !composingRawText.isEmpty
 
@@ -311,6 +315,7 @@ extension KeyboardViewController {
     }
 
     func handleConversionCandidateSelection(_ index: Int) {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "candidate")
         clearRecentKanaPlainCommitUpgradeContext()
 
         // stale-while-revalidate 表示中(前回読みの候補を暫定表示)にタップされた場合、
@@ -410,6 +415,7 @@ extension KeyboardViewController {
     }
 
     func handleCommitComposingText() {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "commit")
         clearRecentKanaPlainCommitUpgradeContext()
 
         guard currentInputMode == .kana else {
@@ -442,6 +448,7 @@ extension KeyboardViewController {
     }
 
     func handleCommitComposingTextAsKatakana() {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "commitKatakana")
         clearRecentKanaPlainCommitUpgradeContext()
 
         guard currentInputMode == .kana else {
@@ -574,6 +581,7 @@ extension KeyboardViewController {
     }
 
     func cycleActiveConversionCandidate() {
+        reconcileHostCommittedMarkedTextIfNeeded(trigger: "cycle")
         guard var conversion = activeConversion,
                 !conversion.candidates.isEmpty else {
             return
