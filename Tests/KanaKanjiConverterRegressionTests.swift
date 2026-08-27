@@ -12203,4 +12203,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             converter.candidates(for: "おきろ", limit: 6, systemCandidateMode: .surface).contains("起きろ")
         )
     }
+
+    // ちかく: 近く(LM 4969)優位なのに辞書順が 知覚→地殻→近く。お+合成で お地殻 が先頭化(2666)
+    func testOchikakuPrefersONear() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "おちかく", limit: 3, systemCandidateMode: .surface).first, "お近く")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おちかくの", systemCandidateMode: .surface).first, "お近くの")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おちかくまで", systemCandidateMode: .surface).first, "お近くまで")
+        XCTAssertEqual(converter.candidates(for: "ちかく", limit: 3, systemCandidateMode: .surface).first, "近く")
+    }
 }
