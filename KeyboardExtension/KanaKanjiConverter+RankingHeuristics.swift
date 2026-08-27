@@ -1010,6 +1010,46 @@ extension KanaKanjiConverter {
 
     static let formalNounTokiTails = ["とき", "ときに", "ときは", "ときの", "ときも", "ときには"]
 
+    // 形容詞の連用形(高く/寒く/近く)の順位補正(2026-08-27)。規則(く←い)で供給はされるが
+    // 順位補正が無く、たかく→高久/多角/他覚… と人名・熟語に埋もれて 高く が9番目だった。
+    // 汎用の inflectionRankingSuffixes に "く" を足すと たく→炷く/卓 のような く で終わる
+    // 一般の読みまで巻き込む(卓/択 が沈む)ので、
+    // 「読みが く で終わる」かつ「活用派生」かつ「LM が辞書先頭より安い」ものだけ引き上げる
+    func applyAdjectiveRenyouBoost(
+        for reading: String,
+        dictionaryCandidates: [String],
+        inflectionDerivedCandidates: Set<String>,
+        to scores: inout [String: Int]
+    ) {
+        guard reading.count >= 3, reading.hasSuffix("く"),
+            !inflectionDerivedCandidates.isEmpty,
+            let dictTop = dictionaryCandidates.first,
+            let dictTopScore = scores[dictTop] else {
+            return
+        }
+        // 対象は「基底が い形容詞」の派生に限る(高く←高い)。辞書形の動詞(炷く 等)は
+        // 活用派生ではないので入らない
+        let adjectiveBase = String(reading.dropLast()) + "い"
+        let adjectiveBaseCandidates = self.systemCandidates(
+            for: adjectiveBase,
+            mode: KanaKanjiCandidateSourceMode.lesDeux
+        )
+        guard adjectiveBaseCandidates.contains(where: { $0.hasSuffix("い") }) else {
+            return
+        }
+        let costs = store.wordLMUnigramCosts(for: Array(inflectionDerivedCandidates) + [dictTop])
+        guard let dictTopCost = costs[dictTop] else {
+            return
+        }
+        for candidate in inflectionDerivedCandidates {
+            guard candidate.hasSuffix("く"), let cost = costs[candidate], cost < dictTopCost,
+                let score = scores[candidate], score <= dictTopScore else {
+                continue
+            }
+            scores[candidate] = dictTopScore + 1
+        }
+    }
+
     func applyKuruCandidateBoost(
         for reading: String,
         to scores: inout [String: Int]

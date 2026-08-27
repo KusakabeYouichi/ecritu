@@ -274,6 +274,13 @@ extension KanaKanjiConverter {
         }
 
         let baseReading = readingStem + rule.baseReadingSuffix
+        // 一段命令形(ろ/よ)の除外(2026-08-27): 居ろ/射ろ 等は同音語(色/意呂)を跨ぐ実害が
+        // 命令形の利便を上回る
+        if (rule.readingSuffix == "ろ" || rule.readingSuffix == "よ"),
+            rule.baseReadingSuffix == "る",
+            Self.ichidanImperativeDeniedBaseReadings.contains(baseReading) {
+            return ([], Int.max)
+        }
 
         var baseCandidates = candidatesForReading(
             baseReading,
