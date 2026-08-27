@@ -47,7 +47,7 @@
 	<dict><key>phrase</key><string>Alisos Canyon</string><key>shortcut</key><string>ありそすきゃにおん</string></dict>
 	<dict><key>phrase</key><string>Aloxe-Corton</string><key>shortcut</key><string>あろーすこるとん</string></dict>
 	<dict><key>phrase</key><string>Alsace Grand Cru</string><key>shortcut</key><string>あるざすぐらんくりゅ</string></dict>
-	<dict><key>phrase</key><string>Alsace-Lorraine</string><key>shortcut</key><string>あるざす</string></dict>
+	<dict><key>phrase</key><string>Alsace-Lorraine</string><key>shortcut</key><string>あるざすろれーぬ</string></dict>
 	<dict><key>phrase</key><string>Alsace</string><key>shortcut</key><string>あるざす</string></dict>
 	<dict><key>phrase</key><string>Alta Langa</string><key>shortcut</key><string>あるたらんが</string></dict>
 	<dict><key>phrase</key><string>Amarone della Valpolicella</string><key>shortcut</key><string>あまろーねでっらゔぁるぽりちぇっら</string></dict>
@@ -77,7 +77,7 @@
 	<dict><key>phrase</key><string>Bardolino Superiore</string><key>shortcut</key><string>ばるどりーのすぺりおーれ</string></dict>
 	<dict><key>phrase</key><string>Barolo Riserva</string><key>shortcut</key><string>ばろーろりぜるゔぁ</string></dict>
 	<dict><key>phrase</key><string>Barolo</string><key>shortcut</key><string>ばろーろ</string></dict>
-	<dict><key>phrase</key><string>Barossa Range</string><key>shortcut</key><string>ばろっさ</string></dict>
+	<dict><key>phrase</key><string>Barossa Range</string><key>shortcut</key><string>ばろっされんじ</string></dict>
 	<dict><key>phrase</key><string>Barossa Valley</string><key>shortcut</key><string>ばろっさゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Barossa</string><key>shortcut</key><string>ばろっさ</string></dict>
 	<dict><key>phrase</key><string>Bas Médoc</string><key>shortcut</key><string>ばめどっく</string></dict>
@@ -93,9 +93,9 @@
 	<dict><key>phrase</key><string>Binissalem</string><key>shortcut</key><string>びにされむ</string></dict>
 	<dict><key>phrase</key><string>Black Sea</string><key>shortcut</key><string>ぶらっくしー</string></dict>
 	<dict><key>phrase</key><string>Blue Mountain</string><key>shortcut</key><string>ぶるーまうんてん</string></dict>
-	<dict><key>phrase</key><string>Bordeaux Clairet</string><key>shortcut</key><string>ぼるどー</string></dict>
-	<dict><key>phrase</key><string>Bordeaux Claret</string><key>shortcut</key><string>ぼるどー</string></dict>
-	<dict><key>phrase</key><string>Bordeaux Haut-Benauge</string><key>shortcut</key><string>ぼるどー</string></dict>
+	<dict><key>phrase</key><string>Bordeaux Clairet</string><key>shortcut</key><string>ぼるどーくれれ</string></dict>
+	<dict><key>phrase</key><string>Bordeaux Claret</string><key>shortcut</key><string>ぼるどーくられっと</string></dict>
+	<dict><key>phrase</key><string>Bordeaux Haut-Benauge</string><key>shortcut</key><string>ぼるどーおーぶのーじゅ</string></dict>
 	<dict><key>phrase</key><string>Bordeaux Supérieur</string><key>shortcut</key><string>ぼるどーしゅぺりゅーる</string></dict>
 	<dict><key>phrase</key><string>Bordeaux</string><key>shortcut</key><string>ぼるどー</string></dict>
 	<dict><key>phrase</key><string>Bourgogne Aligoté</string><key>shortcut</key><string>ぶるごーにゅありごて</string></dict>
