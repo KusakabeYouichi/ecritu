@@ -144,6 +144,41 @@ extension KeyboardViewController {
         textDocumentProxy.unmarkText()
     }
 
+    // ホストがタップ等で未確定(marked)を自前で確定したのに拡張へコールバックが来ない
+    // (実機 TAPTRACE で確認: メモ帳の余白タップは textDidChange/selectionDidChange とも無し)
+    // 場合、écritu 側は未確定のままなので次の打鍵で setMarkedText が「確定済み さしす」の後ろに
+    // 新たな marked さしすせ を挿入し、二重になる(ユーザ報告 2675)。打鍵の入口で
+    // documentContextBeforeInput を照合し、marked が実テキストとして末尾に現れ、かつ長さが
+    // marked ぶん増えていたら「ホスト確定済み」とみなして内部状態だけ捨てる(Apple の
+    // タップ確定と同じ結果になる)。marked は通常 context に含まれないので、含まれていること
+    // 自体が確定の証拠。長さ条件は「直前の確定文字列が偶然 marked と同じ(は+は 等)」の誤検知防止。
+    // 未確定を捨てられた(文字が消える)側は context が変わらないため検知不能=従来どおり続きになる。
+    @discardableResult
+    func reconcileHostCommittedMarkedTextIfNeeded(trigger: String) -> Bool {
+        let marked = activeConversion?.committedText ?? composingRawText
+        guard !marked.isEmpty else {
+            return false
+        }
+        invalidateTextContextCache()
+        let contextBeforeInput = currentTextContextBeforeInput()
+        guard contextBeforeInput.count < TextContextLimits.cachedContextBeforeInputMaxLength,
+            context(contextBeforeInput, hasSuffix: marked),
+            contextBeforeInput.count >= lastSynchronizedContextBeforeInputLength + marked.count else {
+            return false
+        }
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "ホスト側で未確定が確定済み(コールバック無し) trigger=\(trigger) markedLen=\(marked.count) context=len\(contextBeforeInput.count) prevLen=\(lastSynchronizedContextBeforeInputLength) active=\(activeConversion != nil)"
+        )
+        activeConversion = nil
+        clearComposingState()
+        stopMarkedTextWatchdog()
+        lastSynchronizedContextBeforeInputTail = String(
+            contextBeforeInput.suffix(TextContextLimits.synchronizedContextTailLength)
+        )
+        lastSynchronizedContextBeforeInputLength = contextBeforeInput.count
+        return true
+    }
+
     func rememberComposingContextPrefixTail() {
         let contextBeforeInput = currentTextContextBeforeInput()
         composingContextPrefixTail = String(
