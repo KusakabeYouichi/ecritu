@@ -242,6 +242,14 @@ extension KeyboardViewController {
                 )
                 // MEMFORENSICS(時限計測 2611): 変換がアリーナ高水位を育てたかの帰属
                 MemoryForensics.noteOperation("変換\(reading.count)字")
+                // 予防的スリム化(2658): 変換はアリーナを押し広げる主因なので、その直後に
+                // footprint が高ければ返却しておく。実測(8/27 05:39)では警告時点で
+                // alloc 68 / used 39 = 29MB が「free 済みだが返していない」領域だった。
+                // 警告(fp≈58)を待たずに返せば、警告そのものを減らせる。
+                // relief は数ms だが連続変換で毎回走らせない(最短間隔 preventiveReliefMinimumInterval)
+                DispatchQueue.main.async { [weak self] in
+                    self?.performPreventiveMallocReliefIfNeeded()
+                }
                 // MEMFORENSICS(時限計測 2651→2654): プロセス初回変換は必ず記録(2651 の
                 // 実測: レキシコンオフ下で used +10〜12MB、自前構造は1MB弱=残りは遅延
                 // ロード+フレームワーク側の初回ウォームアップ)。以降は Δalloc/|Δfp| が
