@@ -2646,7 +2646,6 @@
 	<dict><key>phrase</key><string>パノニア平原</string><key>shortcut</key><string>ぱのにあへいげん</string></dict>
 	<dict><key>phrase</key><string>Andalucía</string><key>shortcut</key><string>あんだるしあ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り(アクセント付き) -->
 	<dict><key>phrase</key><string>Asturias</string><key>shortcut</key><string>あすとぅりあす</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り -->
-	<dict><key>phrase</key><string>Andalucia</string><key>shortcut</key><string>あんだるしーあ</string></dict>
 	<dict><key>phrase</key><string>Aragón</string><key>shortcut</key><string>あらごん</string></dict>
 
 	<!-- 地区 -->
