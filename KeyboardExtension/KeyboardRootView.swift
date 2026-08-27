@@ -23,7 +23,6 @@ struct KeyboardRootView: View {
     let directionProfile: FlickDirectionProfile
     let kanaLayoutMode: KanaLayoutMode
     let kanaModifierPlacementMode: KanaModifierPlacementMode
-    let kanaPostModifierButtonState: KanaPostModifierButtonState
     let numberLayoutMode: NumberLayoutMode
     let latinLayoutMode: LatinLayoutMode
     let accentPaletteRawValue: String
@@ -67,6 +66,7 @@ struct KeyboardRootView: View {
     var selectedConversionCandidateIndex: Int? { candidateBarModel.selectedConversionCandidateIndex }
     var latinSuggestionQuery: String { candidateBarModel.latinSuggestionQuery }
     var latinSuggestions: [String] { candidateBarModel.latinSuggestions }
+    var kanaPostModifierButtonState: KanaPostModifierButtonState { candidateBarModel.kanaPostModifierButtonState }
     let showsParenthesesWrapper: Bool
     let initialSpaceToastText: String?
     // フィールドの keyboardType(数字入力欄等)に合わせた初期入力モード(4.4.1 準拠)。
@@ -1191,7 +1191,6 @@ struct KeyboardRootView: View {
         directionProfile: .ecritu,
         kanaLayoutMode: .fiveByTwo,
         kanaModifierPlacementMode: .prefix,
-        kanaPostModifierButtonState: .kaomoji,
         numberLayoutMode: .calculette,
         latinLayoutMode: .flick,
         accentPaletteRawValue: "emeraude",

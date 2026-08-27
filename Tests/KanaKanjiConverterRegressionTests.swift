@@ -11653,7 +11653,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             directionProfile: .apple,
             kanaLayoutMode: .threeByThreePlusWa,
             kanaModifierPlacementMode: .postfix,
-            kanaPostModifierButtonState: .kaomoji,
             numberLayoutMode: .calculette,
             latinLayoutMode: .flick,
             accentPaletteRawValue: "emeraude",

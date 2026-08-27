@@ -9,7 +9,6 @@ extension KeyboardViewController {
         let directionProfile: FlickDirectionProfile
         let kanaLayoutMode: KanaLayoutMode
         let kanaModifierPlacementMode: KanaModifierPlacementMode
-        let kanaPostModifierButtonState: KanaPostModifierButtonState
         let numberLayoutMode: NumberLayoutMode
         let latinLayoutMode: LatinLayoutMode
         let accentPaletteRawValue: String
@@ -79,7 +78,6 @@ extension KeyboardViewController {
                 directionProfile: directionProfile,
                 kanaLayoutMode: kanaLayoutMode,
                 kanaModifierPlacementMode: kanaModifierPlacementMode,
-                kanaPostModifierButtonState: kanaPostModifierButtonState,
                 numberLayoutMode: numberLayoutMode,
                 latinLayoutMode: latinLayoutMode,
                 accentPaletteRawValue: accentPaletteRawValue,
@@ -125,6 +123,13 @@ extension KeyboardViewController {
     // 再評価を避ける)。
     func updateCandidateBarModel(from configuration: RenderConfiguration) {
         let model = candidateBarModel
+        // 後置修飾ボタンの状態も publish 経由(2686)。直前文脈から毎回算出する
+        let postModifierState = FlickKanaLayout.postModifierButtonState(
+            contextBeforeInput: postModifierContextForRender()
+        )
+        if model.kanaPostModifierButtonState != postModifierState {
+            model.kanaPostModifierButtonState = postModifierState
+        }
         if model.composingText != configuration.composingText {
             model.composingText = configuration.composingText
         }
@@ -193,9 +198,6 @@ extension KeyboardViewController {
             from: sharedDefaults,
             key: SharedDefaultsKeys.kanaModifierPlacement,
             fallback: KanaModifierPlacementMode.prefix
-        )
-        let kanaPostModifierButtonState = FlickKanaLayout.postModifierButtonState(
-            contextBeforeInput: postModifierContextForRender()
         )
         let numberLayoutMode = sharedEnumValue(
             from: sharedDefaults,
@@ -330,7 +332,6 @@ extension KeyboardViewController {
             directionProfile: directionProfile,
             kanaLayoutMode: kanaLayoutMode,
             kanaModifierPlacementMode: kanaModifierPlacementMode,
-            kanaPostModifierButtonState: kanaPostModifierButtonState,
             numberLayoutMode: numberLayoutMode,
             latinLayoutMode: latinLayoutMode,
             accentPaletteRawValue: accentPaletteRawValue,
@@ -506,7 +507,6 @@ extension KeyboardViewController {
             directionProfile: configuration.directionProfile,
             kanaLayoutMode: configuration.kanaLayoutMode,
             kanaModifierPlacementMode: configuration.kanaModifierPlacementMode,
-            kanaPostModifierButtonState: configuration.kanaPostModifierButtonState,
             numberLayoutMode: configuration.numberLayoutMode,
             latinLayoutMode: configuration.latinLayoutMode,
             accentPaletteRawValue: configuration.accentPaletteRawValue,
