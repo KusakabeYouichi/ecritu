@@ -2380,6 +2380,7 @@
 	<dict><key>phrase</key><string>カスケード山脈</string><key>shortcut</key><string>かすけーどさんみゃく</string></dict>
 	<dict><key>phrase</key><string>カラボヤ山脈</string><key>shortcut</key><string>からぼやさんみゃく</string></dict>
 	<dict><key>phrase</key><string>カルパチア山脈</string><key>shortcut</key><string>かるぱちあさんみゃく</string></dict>
+	<dict><key>phrase</key><string>カンタブリア</string><key>shortcut</key><string>かんたぶりあ</string></dict>	<!-- スペイン17自治州(2026-08-27)。カンタブリア山脈/海は登録済みだったが自治州名として無かった -->
 	<dict><key>phrase</key><string>カンタブリア山脈</string><key>shortcut</key><string>かんたぶりあさんみゃく</string></dict>
 	<dict><key>phrase</key><string>グレート・ディヴァイディング山脈</string><key>shortcut</key><string>ぐれーとでぃゔぁいでぃんぐさんみゃく</string></dict>
 	<dict><key>phrase</key><string>コーカサス山脈</string><key>shortcut</key><string>こーかさすさんみゃく</string></dict>
@@ -2551,6 +2552,7 @@
 	<dict><key>phrase</key><string>アルト・アディジェ</string><key>shortcut</key><string>あるとあでぃじぇ</string></dict>
 	<dict><key>phrase</key><string>アルプスチロル</string><key>shortcut</key><string>あるぷすちろる</string></dict>
 	<dict><key>phrase</key><string>アルマニャック</string><key>shortcut</key><string>あるまにゃっく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>アストゥリアス</string><key>shortcut</key><string>あすとぅりあす</string></dict>	<!-- スペイン17自治州(2026-08-27) -->
 	<dict><key>phrase</key><string>アンダルシア</string><key>shortcut</key><string>あんだるしあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>イピロス</string><key>shortcut</key><string>いぴろす</string></dict>
 	<dict><key>phrase</key><string>イメレティ</string><key>shortcut</key><string>いめれてぃ</string></dict>
@@ -2642,6 +2644,8 @@
 	<dict><key>phrase</key><string>ヌーヴェル・アキテーヌ地域圏</string><key>shortcut</key><string>ぬーゔぇるあきてーぬちいきけん</string></dict>
 	<dict><key>phrase</key><string>パノニア</string><key>shortcut</key><string>ぱのにあ</string></dict>
 	<dict><key>phrase</key><string>パノニア平原</string><key>shortcut</key><string>ぱのにあへいげん</string></dict>
+	<dict><key>phrase</key><string>Andalucía</string><key>shortcut</key><string>あんだるしあ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り(アクセント付き) -->
+	<dict><key>phrase</key><string>Asturias</string><key>shortcut</key><string>あすとぅりあす</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り -->
 	<dict><key>phrase</key><string>Andalucia</string><key>shortcut</key><string>あんだるしーあ</string></dict>
 	<dict><key>phrase</key><string>Aragón</string><key>shortcut</key><string>あらごん</string></dict>
 
@@ -2766,6 +2770,7 @@
 	<dict><key>phrase</key><string>西豪州</string><key>shortcut</key><string>せいごうしゅう</string></dict>
 	<dict><key>phrase</key><string>クイーンズランド州</string><key>shortcut</key><string>くいーんずらんどしゅう</string></dict>
 	<dict><key>phrase</key><string>カスティーリャ・イ・レオン州</string><key>shortcut</key><string>かすてぃーりゃいれおんしゅう</string></dict>
+	<dict><key>phrase</key><string>カスティーリャ・ラ・マンチャ</string><key>shortcut</key><string>かすてぃーりゃらまんちゃ</string></dict>	<!-- スペイン17自治州(2026-08-27)。単独形が欠けていた -->
 	<dict><key>phrase</key><string>カスティーリャ・ラ・マンチャ州</string><key>shortcut</key><string>かすてぃーりゃらまんちゃしゅう</string></dict>
 	<dict><key>phrase</key><string>ブリティッシュ・コロンビア州</string><key>shortcut</key><string>ぶりてぃっしゅころんびあしゅう</string></dict>
 	<dict><key>phrase</key><string>オンタリオ州</string><key>shortcut</key><string>おんたりおしゅう</string></dict>	<!-- Sudachiにもある -->
@@ -2869,6 +2874,7 @@
 	<dict><key>phrase</key><string>フリーステイト州</string><key>shortcut</key><string>ふりーすていとしゅう</string></dict>
 	<dict><key>phrase</key><string>ブランデンブルグ州</string><key>shortcut</key><string>ぶらんでんぶるぐしゅう</string></dict>
 	<dict><key>phrase</key><string>ラ・パンパ州</string><key>shortcut</key><string>らぱんぱしゅう</string></dict>
+	<dict><key>phrase</key><string>ラ・リオハ</string><key>shortcut</key><string>らりおは</string></dict>	<!-- スペイン17自治州(2026-08-27)。単独形が欠けていた(ワイン産地 リオハ は別に登録済み) -->
 	<dict><key>phrase</key><string>ラ・リオハ州</string><key>shortcut</key><string>らりおはしゅう</string></dict>
 	<dict><key>phrase</key><string>リオハ州</string><key>shortcut</key><string>りおはしゅう</string></dict>
 	<dict><key>phrase</key><string>リオ・ネグロ州</string><key>shortcut</key><string>りおねぐろしゅう</string></dict>
@@ -2884,6 +2890,8 @@
 	<dict><key>phrase</key><string>Calabria</string><key>shortcut</key><string>からぶりあ</string></dict>
 	<dict><key>phrase</key><string>California</string><key>shortcut</key><string>かりふぉるにあ</string></dict>
 	<dict><key>phrase</key><string>Campania</string><key>shortcut</key><string>かんぱーにあ</string></dict>
+	<dict><key>phrase</key><string>Cantabria</string><key>shortcut</key><string>かんたぶりあ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り -->
+	<dict><key>phrase</key><string>Castilla-La Mancha</string><key>shortcut</key><string>かすてぃーりゃらまんちゃ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り(ハイフン付きが正式) -->
 	<dict><key>phrase</key><string>Castilla La Mancha</string><key>shortcut</key><string>かすてぃーりゃらまんちゃ</string></dict>
 	<dict><key>phrase</key><string>Castilla y León</string><key>shortcut</key><string>かすてぃーりゃいれおん</string></dict>
 	<dict><key>phrase</key><string>Cataluña</string><key>shortcut</key><string>かたるーにゃ</string></dict>
@@ -3321,6 +3329,7 @@
 	<dict><key>phrase</key><string>西インド諸島</string><key>shortcut</key><string>にしいんどしょとう</string></dict>
 	<dict><key>phrase</key><string>ペラジエ諸島</string><key>shortcut</key><string>ぺらじえしょとう</string></dict>
 	<dict><key>phrase</key><string>Açores</string><key>shortcut</key><string>あそーれす</string></dict>
+	<dict><key>phrase</key><string>Extremadura</string><key>shortcut</key><string>えすとれまどぅーら</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り -->
 	<dict><key>phrase</key><string>Islas Baleares</string><key>shortcut</key><string>いすらすばれあれす</string></dict>
 	<dict><key>phrase</key><string>Islas Canarias</string><key>shortcut</key><string>いすらすかなりあす</string></dict>
 	<dict><key>phrase</key><string>ガルフ・アイランズ</string><key>shortcut</key><string>がるふあいらんず</string></dict>
@@ -8018,6 +8027,7 @@
 	<dict><key>phrase</key><string>Neufchâtel</string><key>shortcut</key><string>ぬーふしゃてる</string></dict>
 	<dict><key>phrase</key><string>Piacentinu Ennese</string><key>shortcut</key><string>ぴあちぇんてぃぬえんねーぜ</string></dict>
 	<dict><key>phrase</key><string>Queijo Serra da Estrela</string><key>shortcut</key><string>けいじょせっらだえすとれーら</string></dict>
+	<dict><key>phrase</key><string>Murcia</string><key>shortcut</key><string>むるしあ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り(単独形が無かった) -->
 	<dict><key>phrase</key><string>Queso de Murcia al Vino</string><key>shortcut</key><string>けそでむるしああるびーの</string></dict>
 	<dict><key>phrase</key><string>Queso de la Serena</string><key>shortcut</key><string>けそでらせれーな</string></dict>
 	<dict><key>phrase</key><string>Raschera</string><key>shortcut</key><string>らすけーら</string></dict>
