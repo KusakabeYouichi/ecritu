@@ -12232,4 +12232,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let result = converter.candidates(for: "さいはっこうする", limit: 5, systemCandidateMode: .surface)
         XCTAssertTrue(result.contains("再醗酵する"), "\(result)")
     }
+
+    // のか/のかな を終助詞クラスタに。人名収穫 乃佳/乃歌/乃花 が文末で勝っていた(2666)
+    func testNokaSentenceFinalStaysKana() throws {
+        try prepareRealLMDictionary()
+        let result = converter.multiClauseCandidates(for: "こうなるのか", systemCandidateMode: .surface)
+        XCTAssertEqual(result.first, "こうなるのか", "\(result)")
+        XCTAssertFalse(result.contains { $0.contains("乃") }, "\(result)")
+    }
 }
