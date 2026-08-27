@@ -556,6 +556,37 @@ extension KeyboardViewController {
         return true
     }
 
+    // キーボードが閉じる(メモの完了ボタン/他アプリへ切替/キーボード切替)ときに未確定を確定する。
+    // Apple 純正はキーボード終了で未確定を確定するが、écritu は marked のまま残していたため、
+    // ホスト次第で「下線付きのまま残る」「未確定が消える」のどちらかになっていた(ユーザ報告 2680)。
+    // viewWillDisappear の時点ではプロキシ編集がまだ届くので、ここで実テキストに確定する。
+    // 学習はしない(ユーザが候補を選んだわけではない)。
+    func commitPendingComposingTextForKeyboardDismiss() {
+        guard currentInputMode == .kana else {
+            return
+        }
+        if let activeConversion {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "キーボード終了で変換中を確定 committedLen=\(activeConversion.committedText.count)"
+            )
+            commitActiveConversion(learn: false)
+            clearComposingState()
+            return
+        }
+        guard !composingRawText.isEmpty else {
+            return
+        }
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "キーボード終了で未確定を確定 composingLen=\(composingRawText.count)"
+        )
+        commitComposingText(
+            sourceText: composingRawText,
+            sourceReading: composingReading,
+            committedText: composingRawText,
+            learn: false
+        )
+    }
+
     func commitPendingComposingTextBeforeInputModeSwitch() {
         clearRecentKanaPlainCommitUpgradeContext()
 

@@ -736,6 +736,7 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
         persistBufferedKeyboardDiagnostics()
 
+        commitPendingComposingTextForKeyboardDismiss()
         stopMarkedTextWatchdog()
         cancelIdleCommit()
 
