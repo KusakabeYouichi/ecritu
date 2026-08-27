@@ -12231,6 +12231,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         let result = converter.candidates(for: "さいはっこうする", limit: 5, systemCandidateMode: .surface)
         XCTAssertTrue(result.contains("再醗酵する"), "\(result)")
+        // 派生でも 再醗酵 を先頭に(ユーザ指定 2668)
+        let saseta = converter.candidates(for: "さいはっこうさせた", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(saseta.prefix(2)), ["再醗酵させた", "再発行させた"], "\(saseta)")
+        let bare = converter.candidates(for: "さいはっこう", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(bare.prefix(2)), ["再醗酵", "再発行"], "\(bare)")
     }
 
     // のか/のかな を終助詞クラスタに。人名収穫 乃佳/乃歌/乃花 が文末で勝っていた(2666)
