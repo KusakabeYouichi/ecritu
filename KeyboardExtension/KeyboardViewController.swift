@@ -631,9 +631,24 @@ final class KeyboardViewController: UIInputViewController {
         refreshKeyboardState(trigger: "viewWillAppear")
     }
 
+    // 時限トレース(2675): メモ帳で未確定中に余白タップすると未確定が消える/残る問題の切り分け。
+    // ホストからのコールバックの有無と、その時点の文脈・未確定状態を記録する。原因確定後に撤去。
+    func logHostCallbackTraceForTapCommitInvestigation(event: String) {
+        #if DEBUG
+        let before = currentTextContextBeforeInput()
+        let after = currentTextContextAfterInput()
+        let external = shouldTreatAsExternalTextChange()
+        appendKeyboardDiagnosticsLog(
+            "TAPTRACE \(event) external=\(external) before=len\(before.count) tail=\(String(before.suffix(6))) after=len\(after.count) composing=\(composingRawText) active=\(activeConversion?.committedText ?? "-") hasMarked=\(textDocumentProxy.hasText)",
+            file: #fileID, line: #line, function: #function
+        )
+        #endif
+    }
+
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
+        logHostCallbackTraceForTapCommitInvestigation(event: "textDidChange")
 
         // textDidChange は host 側のテキストが変化した(送信/autocorrect/paste/選択など
         // 何らかの理由で)シグナルなので、自前/外部を問わずキャッシュを必ず無効化する。
@@ -658,6 +673,7 @@ final class KeyboardViewController: UIInputViewController {
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
+        logHostCallbackTraceForTapCommitInvestigation(event: "selectionDidChange")
 
         // 多重生存の非アクティブインスタンスでも、未確定の確定/クリアと下線残留クリアは
         // 正しさに不可欠なので必ず実行し、重い再描画(refreshKeyboardState)のみ抑止する。

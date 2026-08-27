@@ -648,6 +648,11 @@ extension KeyboardViewController {
             lastSynchronizedContextBeforeInputLength = contextBeforeInput.count
         }
 
+        #if DEBUG
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "TAPTRACE sync external=\(triggeredByExternalChange) before=len\(contextBeforeInput.count) prevLen=\(previousContextBeforeInputLength) composingLen=\(composingRawText.count) active=\(activeConversion?.committedText.count ?? -1)"
+        )
+        #endif
         if let activeConversion {
             guard context(contextBeforeInput, hasSuffix: activeConversion.committedText) else {
                 appendKeyboardDiagnosticsLogFromInputHandling(
