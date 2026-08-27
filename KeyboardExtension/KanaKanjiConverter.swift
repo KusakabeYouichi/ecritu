@@ -619,6 +619,13 @@ final class KanaKanjiConverter {
                 inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
                 to: &scores
             )
+            // 形容詞連用形(高く/寒く/近く)の順位補正(2026-08-27)
+            applyAdjectiveRenyouBoost(
+                for: context.reading,
+                dictionaryCandidates: context.systemCandidates,
+                inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
+                to: &scores
+            )
             // 形式名詞 とき のかな正書(2690)
             applyFormalNounTokiKanaPreference(for: context.reading, to: &scores)
             // 辞書の主要語(格下)を活用族(隠した/画した/…/かくした)の先頭直下へ(2657)

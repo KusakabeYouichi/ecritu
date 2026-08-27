@@ -12174,4 +12174,33 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "たべる", limit: 2, systemCandidateMode: .surface).first, "食べる")
         XCTAssertEqual(converter.candidates(for: "たべなければ", limit: 2, systemCandidateMode: .surface).first, "食べなければ")
     }
+
+    // 活用形の網羅点検(ユーザ依頼 2026-08-27)。一段の命令形(食べろ/見ろ/起きろ)、
+    // カ変の使役・可能(来させる/来られる)、形容詞連用形の順位(高く が9番目だった)、
+    // サ変受身の単独形(される)を是正
+    func testRegressionInflectionCoverageGaps() throws {
+        try prepareRealLMDictionary()
+
+        for (probe, expected) in [
+            ("たべろ", "食べろ"),     // 一段の命令形(ろ の規則が無かった)
+            // 起きろ は お+帰路 の敬語接頭合成が辞書チャネルで勝つため先頭は譲るが候補には出る
+            ("たべよ", "食べよ"),
+            ("こさせる", "来させる"),  // カ変の使役
+            ("こられる", "来られる"),  // カ変の可能/受身
+            ("たかく", "高く"),       // 形容詞連用形(人名 高久 に埋もれていた)
+            ("さむく", "寒く"),
+            ("ちかく", "近く"),
+            ("される", "される")      // サ変受身の単独形
+        ] {
+            let single = converter.candidates(for: probe, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "\(probe): single=\(single.prefix(4))")
+        }
+        // 見ろ は ミロ(人名/画家)が辞書 rank0 なので先頭は譲るが候補には出る
+        XCTAssertTrue(
+            converter.candidates(for: "みろ", limit: 6, systemCandidateMode: .surface).contains("見ろ")
+        )
+        XCTAssertTrue(
+            converter.candidates(for: "おきろ", limit: 6, systemCandidateMode: .surface).contains("起きろ")
+        )
+    }
 }

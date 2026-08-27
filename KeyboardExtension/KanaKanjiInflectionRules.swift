@@ -224,6 +224,10 @@ extension KanaKanjiConverter {
     // 空の readingSuffix = 読み全体が語幹(derivedCandidates 側で分岐)
     static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる"]
 
+    // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、
+    // 命令形として使う頻度より同音語の実害が大きいもの(2026-08-27)
+    static let ichidanImperativeDeniedBaseReadings: Set<String> = ["いる", "える", "うる", "おる"]
+
     static let ichidanRenyouNounRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .ichidan)
     ]
@@ -246,6 +250,12 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "なければいけない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なけれ", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 命令形+引用「って」(食べろって 等の口語)
+        // 一段の命令形(食べろ/見ろ/起きろ)。命令+引用の ろって はあるのに素の ろ が無く、
+        // たべろ は候補ゼロ、みろ→ミロ、おきろ→お帰路 になっていた(2026-08-27)。
+        // ただし いる は除外(こんないろかなー→こんな居ろかなー と 色 を跨ぐ。
+        // ichidanImperativeDeniedBaseReadings)
+        InflectionRule(readingSuffix: "ろ", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "よ", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ろって", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 「〜なくなる」(状態変化の否定): 食べなくなった/食べなくなったら 等
         InflectionRule(readingSuffix: "なくなる", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -1655,6 +1665,10 @@ extension KanaKanjiConverter {
     static let kuruInflectionForms: [(readingSuffix: String, kanjiOutputSuffix: String)] = [
         ("こない", "来ない"),
         ("こなかった", "来なかった"),
+        ("こさせる", "来させる"),
+        ("こさせた", "来させた"),
+        ("こさせて", "来させて"),
+        ("こられる", "来られる"),
         ("こなければ", "来なければ"),
         ("こなければならない", "来なければならない"),
         ("こなければいけない", "来なければいけない"),
