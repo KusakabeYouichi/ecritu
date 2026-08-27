@@ -688,6 +688,28 @@ extension KeyboardViewController {
             "TAPTRACE sync external=\(triggeredByExternalChange) before=len\(contextBeforeInput.count) prevLen=\(previousContextBeforeInputLength) composingLen=\(composingRawText.count) active=\(activeConversion?.committedText.count ?? -1)"
         )
         #endif
+        // ホストがタップ等で未確定(marked)を実テキストに確定した(実機 TAPTRACE 2676: メモ帳の
+        // 余白タップで textDidChange が来て、文脈末尾に marked が実テキストとして現れていた)。
+        // marked は通常 context に含まれないので、外部変化で「直前の文脈末尾には無かった
+        // marked 文字列が末尾に現れた」ことをホスト確定の証拠とみなし、内部状態だけ捨てる。
+        // 放置すると次の打鍵で setMarkedText が確定済みの後ろに marked を再挿入し
+        // さしす+さしすせ と二重になる。直前末尾が同じ文字列で終わる場合(は の後に は 等)は
+        // 偶然一致なので対象外。行頭(context == marked)は下の既存分岐に委ねる。
+        let markedTextForHostCommitCheck = activeConversion?.committedText ?? composingRawText
+        if triggeredByExternalChange,
+            !markedTextForHostCommitCheck.isEmpty,
+            contextBeforeInput != markedTextForHostCommitCheck,
+            context(contextBeforeInput, hasSuffix: markedTextForHostCommitCheck),
+            !context(previousContextBeforeInputTail, hasSuffix: markedTextForHostCommitCheck) {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "ホスト側で未確定が確定済み(コールバック時) markedLen=\(markedTextForHostCommitCheck.count) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) prevLen=\(previousContextBeforeInputLength) active=\(activeConversion != nil)"
+            )
+            self.activeConversion = nil
+            clearComposingState()
+            stopMarkedTextWatchdog()
+            return
+        }
+
         if let activeConversion {
             guard context(contextBeforeInput, hasSuffix: activeConversion.committedText) else {
                 appendKeyboardDiagnosticsLogFromInputHandling(
