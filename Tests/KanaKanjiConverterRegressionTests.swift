@@ -12213,4 +12213,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "おちかくまで", systemCandidateMode: .surface).first, "お近くまで")
         XCTAssertEqual(converter.candidates(for: "ちかく", limit: 3, systemCandidateMode: .surface).first, "近く")
     }
+
+    // 旧字体 殼 は全7件抑制。球殼 のみ新字体が辞書に無かったため misc で 球殻 を補完(2666)
+    func testOldFormKakuSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let chikaku = converter.candidates(for: "ちかく", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(chikaku.contains("地殼"), "\(chikaku)")
+        XCTAssertTrue(chikaku.contains("地殻"))
+        let kyuukaku = converter.candidates(for: "きゅうかく", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(kyuukaku.first, "球殻", "\(kyuukaku)")
+        XCTAssertFalse(kyuukaku.contains("球殼"))
+    }
 }
