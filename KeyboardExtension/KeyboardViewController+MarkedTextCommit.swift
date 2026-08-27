@@ -161,6 +161,11 @@ extension KeyboardViewController {
         }
         invalidateTextContextCache()
         let contextBeforeInput = currentTextContextBeforeInput()
+        #if DEBUG
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "TAPTRACE reconcile trigger=\(trigger) marked=\(marked) context=len\(contextBeforeInput.count) tail=\(String(contextBeforeInput.suffix(6))) baseline=\(lastSynchronizedContextBeforeInputLength) after=len\(currentTextContextAfterInput().count)"
+        )
+        #endif
         guard contextBeforeInput.count < TextContextLimits.cachedContextBeforeInputMaxLength,
             context(contextBeforeInput, hasSuffix: marked),
             contextBeforeInput.count >= lastSynchronizedContextBeforeInputLength + marked.count else {
