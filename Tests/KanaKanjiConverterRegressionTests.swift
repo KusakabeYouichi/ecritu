@@ -12140,4 +12140,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let ika = converter.candidates(for: "いかなければ", limit: 4, systemCandidateMode: .surface)
         XCTAssertTrue(ika.contains("行かなければ"), "single=\(ika.prefix(4))")
     }
+
+    // だと: 断定「だ」+引用/条件の「と」。辞書に だと のエントリが無く、当て字の
+    // 打つ(だと 読み)/駄と/惰と/堕と しか出なかった(ユーザ指定 2026-08-27)
+    func testRegressionDatoPrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertEqual(converter.candidates(for: "だと", limit: 3, systemCandidateMode: .surface).first, "だと")
+        // 文中の だと は従来どおり
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "だとおもう", systemCandidateMode: .surface).first,
+            "だと思う"
+        )
+        let ame = converter.multiClauseCandidates(for: "あめだと", systemCandidateMode: .surface)
+        XCTAssertEqual(ame.first, "雨だと", "multi=\(ame.prefix(3))")
+    }
 }
