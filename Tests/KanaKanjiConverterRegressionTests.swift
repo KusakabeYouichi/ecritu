@@ -12282,4 +12282,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "めもりーぶそくかな", systemCandidateMode: .surface).first, "メモリー不足かな")
         XCTAssertEqual(converter.multiClauseCandidates(for: "めもりーぶそくか", systemCandidateMode: .surface).first, "メモリー不足か")
     }
+
+    // なる はかな識別の短span床で 成る に負けていた。床免除でかな先頭に(2673)
+    func testNaruKanaLeadsInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なるといいなー", systemCandidateMode: .surface).first, "なるといいなー")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なるのか", systemCandidateMode: .surface).first, "なるのか")
+        // bigram 実勢(が→鳴る 4741 < が→なる 5110)がある文脈は 鳴る を保つ
+        XCTAssertEqual(converter.multiClauseCandidates(for: "でんわがなる", systemCandidateMode: .surface).first, "電話が鳴る")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おおきくなる", systemCandidateMode: .surface).first, "大きくなる")
+    }
 }
