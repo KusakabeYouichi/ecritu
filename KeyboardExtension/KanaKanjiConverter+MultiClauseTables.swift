@@ -356,7 +356,9 @@ extension KanaKanjiConverter {
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい"]
+    // よういち: 連文節では LM(洋一6022<陽一6135)で 日下部洋一 が先頭になるが、ユーザ指定は
+    // 陽一 先頭(2688)。seed 順をノードコストにも反映する
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
