@@ -1103,9 +1103,53 @@ extension KanaKanjiConverter {
         guard reading.count >= 4 else {
             return false
         }
-        return Self.multiClausePromotedWholeReadingAffixes.contains { affix in
+        if Self.multiClausePromotedWholeReadingAffixes.contains(where: { affix in
             reading.hasSuffix(affix.readingSuffix) && singleBest.hasSuffix(affix.surfaceSuffix)
+        }) {
+            return true
         }
+        return isPolitePrefixDerivationOfTopStem(reading: reading, singleBest: singleBest)
+    }
+
+    // 丁寧接頭辞派生(お+語幹最良: お近く/お名前)が単文節最良のとき、連文節の断片分割
+    // (オチ+描く 等)より先頭に置く。全読みを1語で覆う派生ノードは連文節では
+    // dictUnknown(8700)+EOS で分割(オチ 7109+描く 1483)に僅差で負けるが、単文節側は
+    // 派生として正しく供給できている。語幹表層が語幹読みの最良候補(seed/LM 整列後)で
+    // ある場合に限る = お+2位以下の語幹(お地殻)は昇格しない(ユーザ報告 2667)
+    func isPolitePrefixDerivationOfTopStem(reading: String, singleBest: String) -> Bool {
+        guard singleBest != reading,
+            let prefix = Self.politePrefixPassthroughPrefixes.first(where: {
+                reading.hasPrefix($0) && singleBest.hasPrefix($0)
+            }) else {
+            return false
+        }
+        let stemReading = String(reading.dropFirst(prefix.count))
+        let stemSurface = String(singleBest.dropFirst(prefix.count))
+        guard stemReading.count >= 2, containsKanji(stemSurface) else {
+            return false
+        }
+        let userDictionary = store.userDictionary()
+        let initialUserDictionary = store.initialUserDictionary()
+        // 全読みが辞書語(お土産 等)なら派生ではなく通常の辞書語同士の勝負に任せる
+        let wholeCandidates = candidatesForReading(
+            reading,
+            userDictionary: userDictionary,
+            initialUserDictionary: initialUserDictionary,
+            systemCandidateMode: .surface
+        )
+        if wholeCandidates.contains(singleBest) {
+            return false
+        }
+        let stemCandidates = orderedDerivationBaseCandidates(
+            candidatesForReading(
+                stemReading,
+                userDictionary: userDictionary,
+                initialUserDictionary: initialUserDictionary,
+                systemCandidateMode: .surface
+            ),
+            reading: stemReading
+        )
+        return stemCandidates.first == stemSurface
     }
 
     // 名詞に付く生産的な漢字接辞を組み合わせる: 語幹(名詞)+別(種類別)、別+語幹(別会社)。
