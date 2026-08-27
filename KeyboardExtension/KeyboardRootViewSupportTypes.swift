@@ -10,6 +10,10 @@ final class KeyboardCandidateBarModel: ObservableObject {
     @Published var selectedConversionCandidateIndex: Int? = nil
     @Published var latinSuggestionQuery: String = ""
     @Published var latinSuggestions: [String] = []
+    // 後置修飾ボタン(濁点/小書き/顔文字)の状態。直前文脈で毎打鍵変わるため、rootView 差し替え
+    // ではなく publish で渡す(2686)。以前は RenderConfiguration 経由だったので「か/は/つ」等を
+    // 打つたびに候補バー除外判定をすり抜けて全キーを作り直していた
+    @Published var kanaPostModifierButtonState: KanaPostModifierButtonState = .kaomoji
     // メモリ切迫の可視化(でばぐ用途。後で取り除く可能性あり)。かな削除キーの背景色に反映:
     // 1回目=黄 / 2回目以降=橙+回数 / 2回目以降+footprint臨界(sqliteアンロード)=えんじ。
     @Published var memoryWarningCountForDebugDisplay: Int = 0

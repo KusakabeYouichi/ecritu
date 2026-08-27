@@ -153,8 +153,16 @@ struct FlickKeyView: View {
                     .offset(y: centerLabelOffsetY)
             }
 
-            directionalHints
-            downDirectionalHints
+            // ガイド文字は「隠す」のではなく「作らない」(2686)。以前は .opacity(0) で
+            // 隠していたため、非表示のキーでも4方向ぶんの Text が常時生成され、
+            // SwiftUI の AttributeGraph(実機実測 7.9MB、PropertyList.Tracker 1446件)を
+            // 押し上げていた。押下中(isTouching)も非表示なので同じ条件で分岐する
+            if showsDirectionalHintTexts {
+                directionalHints
+            }
+            if showsDownDirectionalHintTexts {
+                downDirectionalHints
+            }
 
             if isTouching,
                 !longPressIsActive,
@@ -302,14 +310,19 @@ struct FlickKeyView: View {
                 .offset(x: directionalHintHorizontalOffset)
         }
         .allowsHitTesting(false)
-        .opacity(
-            isTouching
-                || !showsGuideText
-                || !showsDirectionalHints
-                || effectiveFlickGuideDisplayMode != .fourDirections
-                ? 0.0
-                : 1.0
-        )
+    }
+
+    // 4方向ガイドを描くか(旧 .opacity 条件と同値)
+    private var showsDirectionalHintTexts: Bool {
+        !isTouching
+            && showsGuideText
+            && showsDirectionalHints
+            && effectiveFlickGuideDisplayMode == .fourDirections
+    }
+
+    // 下段まとめガイドを描くか(旧 .opacity 条件と同値)
+    private var showsDownDirectionalHintTexts: Bool {
+        !isTouching && showsGuideText && effectiveFlickGuideDisplayMode == .down
     }
 
     private var downDirectionalHints: some View {
@@ -327,7 +340,6 @@ struct FlickKeyView: View {
         .padding(.horizontal, 4)
         .offset(y: Metrics.directionHintVerticalOffset + downDirectionalHintVerticalOffsetAdjustment)
         .allowsHitTesting(false)
-        .opacity(isTouching || !showsGuideText || effectiveFlickGuideDisplayMode != .down ? 0.0 : 1.0)
     }
 
     @ViewBuilder
