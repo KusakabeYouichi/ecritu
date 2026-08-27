@@ -983,6 +983,33 @@ extension KanaKanjiConverter {
         scores[dictTop] = topInflection - 1
     }
 
+    // 形式名詞「とき」はかなが正書(2690)。連体修飾を受けた 〜するとき/〜というとき/〜のとき は
+    // かな、時刻そのものを指す 3時/その時刻 は漢字、という書き分けが標準。辞書に句として
+    // 両形が入っている読み(いざというとき: 時=rank0/かな=rank1)で漢字が先頭に出ていた。
+    // keepKana(= かなが正書と判定済み)の読みでだけ、同じ読みのかな識別を漢字版の直上へ置く。
+    // 提示層は「かな先頭の維持」しかしないため、ここで並べ替える必要がある
+    func applyFormalNounTokiKanaPreference(
+        for reading: String,
+        to scores: inout [String: Int]
+    ) {
+        guard Self.formalNounTokiTails.contains(where: { reading.hasSuffix($0) }),
+            scores[reading] != nil,
+            shouldKeepKanaIdentityLeading(for: reading) else {
+            return
+        }
+        // 「とき」を「時」に置き換えた表層(いざという時)より上に置く
+        let kanjiForm = reading.replacingOccurrences(of: "とき", with: "時")
+        guard kanjiForm != reading, let kanjiScore = scores[kanjiForm] else {
+            return
+        }
+        let kanaScore = scores[reading, default: 0]
+        if kanaScore <= kanjiScore {
+            scores[reading] = kanjiScore + 1
+        }
+    }
+
+    static let formalNounTokiTails = ["とき", "ときに", "ときは", "ときの", "ときも", "ときには"]
+
     func applyKuruCandidateBoost(
         for reading: String,
         to scores: inout [String: Int]

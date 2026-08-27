@@ -1885,6 +1885,11 @@ extension KanaKanjiConverter {
             // b4 常設ノードが くれないかな を1スパン化すると末尾ノードの終助詞免除が
             // 外れるため、joined 全体の一般判定で免除する(keepKana 側と同じ述語)
             && !KanaKanjiConverter.hasTeBenefactiveKanaTail(normalized)
+            // かなが正書と判定済みの読み(keepKana)は素通りエコーではない(2690)。
+            // いざというとき が抑制されて multi 空になり、単文節の いざという時 が
+            // 先頭に出ていた。提示層は「かな先頭の維持」しかしないため、エンジンが
+            // かなを返さないと漢字が先頭のままになる
+            && !shouldKeepKanaIdentityLeading(for: normalized)
 
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→

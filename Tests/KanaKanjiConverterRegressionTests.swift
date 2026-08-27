@@ -12024,4 +12024,48 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertFalse(multi.prefix(3).contains { $0.contains("容") }, "\(probe): multi=\(multi.prefix(3))")
         }
     }
+
+    // かじ: 辞書は人名/寺の数え方が上位で 家事15位・火事20位だった(ユーザ指定 2689)。
+    // 鍛治(鍛冶の誤用表記)は抑制。かじがおきた は文脈的に 火事 なので連語で上書き
+    func testRegressionRealLMKajiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let single = converter.candidates(for: "かじ", limit: 7, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["家事", "火事", "鍛冶", "梶"], "single=\(single)")
+        XCTAssertFalse(single.contains("鍛治"), "誤用表記は抑制: \(single)")
+        for (probe, expected) in [
+            ("かじがおきた", "火事が起きた"),
+            ("かじをてつだう", "家事を手伝う"),
+            ("かじやさん", "鍛冶屋さん")
+        ] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(probe): multi=\(multi.prefix(3))")
+        }
+    }
+
+    // 形式名詞「とき」はかなが正書(2690)。〜するとき/〜というとき/〜のとき はかな、
+    // 時刻そのもの(3時)は漢字、の書き分け
+    func testRegressionFormalNounTokiPrefersKana() throws {
+        try prepareRealLMDictionary()
+
+        // 句として辞書に両形がある読み(時=rank0/かな=rank1)でもかなが先頭
+        XCTAssertEqual(
+            converter.candidates(for: "いざというとき", limit: 2, systemCandidateMode: .surface).first,
+            "いざというとき"
+        )
+        for (probe, expected) in [
+            ("こまったとき", "困ったとき"),
+            ("そのとき", "そのとき"),
+            ("たべるときに", "食べるときに"),
+            ("がっこうのとき", "学校のとき")
+        ] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(probe): multi=\(multi.prefix(3))")
+        }
+        // 単独の とき は従来どおり(かな先頭は辞書順のまま)
+        XCTAssertEqual(converter.candidates(for: "とき", limit: 2, systemCandidateMode: .surface).first, "とき")
+    }
 }
