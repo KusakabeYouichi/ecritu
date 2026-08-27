@@ -465,6 +465,10 @@
 	        <dict><key>phrase</key><string>﨑</string><key>shortcut</key><string>たつさき</string></dict>
 	        <dict><key>phrase</key><string>嶋</string><key>shortcut</key><string>やまどりのしま</string></dict>
 	        <dict><key>phrase</key><string>濵</string><key>shortcut</key><string>まゆはま</string></dict>
+	<!-- 気象・自然現象 -->
+	        <dict><key>phrase</key><string>太陽柱</string><key>shortcut</key><string>たいようちゅう</string></dict>	<!-- サンピラー(日本語名)。Sudachi にも Wikipedia LM にも無く、たいようちゅう→{太陽中, 太陽注, 太陽虫, 太陽忠} の合成しか出なかった(ユーザ指定 2691) -->
+	        <dict><key>phrase</key><string>太陽中</string><key>shortcut</key><string>たいようちゅう</string></dict>	<!-- 追加語彙のある読みは合成(太陽+中)が抑止されるため、使う可能性のある 太陽中 だけ明示的に2番目へ(ユーザ指定 2691)。太陽注/太陽虫/太陽忠 は不要 -->
+
 	<!-- ギリシャ文字 -->
 	        <dict><key>phrase</key><string>μ</string><key>shortcut</key><string>まいくろ</string></dict>
 
