@@ -217,6 +217,17 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "めに", baseReadingSuffix: "い", allowedClasses: .adjectiveI)
     ]
 
+    // 一段の連用形(語幹そのもの)を供給する基底読みの opt-in(2026-08-27)。
+    // 五段は iForm(食い/つき)があるのに一段には規則が無く、さんかくたべ→三角夛部 の人名合成
+    // しか出なかった。ただし全一段に開くと 溜め/占め 等が既存の並びを崩す(ため→為 が
+    // 溜め に、買い占めよね が 買いしめよね に退行)ため、報告のあった語だけ有効にする。
+    // 空の readingSuffix = 読み全体が語幹(derivedCandidates 側で分岐)
+    static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる"]
+
+    static let ichidanRenyouNounRules: [InflectionRule] = [
+        InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .ichidan)
+    ]
+
     static let ichidanInflectionRules: [InflectionRule] = [
         InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なく", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -1881,6 +1892,7 @@ extension KanaKanjiConverter {
     static let allInflectionRules: [InflectionRule] =
         adjectiveInflectionRules
         + ichidanInflectionRules
+        + ichidanRenyouNounRules
         + godanInflectionRules
         + sahenNounSuruInflectionRules
         + suruInflectionRules

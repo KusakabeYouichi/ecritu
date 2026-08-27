@@ -252,7 +252,19 @@ extension KanaKanjiConverter {
         initialUserDictionary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> (items: [String], familyKey: Int) {
-        guard let readingStem = removingSuffix(reading, suffix: rule.readingSuffix) else {
+        // 空の readingSuffix は「読み全体が語幹」を意味する(一段の連用形: たべ→食べる の 食べ)。
+        // removingSuffix は空文字を弾くのでここで分ける(2026-08-27)
+        let readingStem: String
+        if rule.readingSuffix.isEmpty {
+            // 一段の連用形は opt-in の基底読みだけ(全一段に開くと 溜め/占め 等が
+            // 既存の並びを崩す。ため→為 が 溜め に、買い占めよね が 買いしめよね に退行した)
+            guard Self.ichidanRenyouNounBaseReadings.contains(reading + rule.baseReadingSuffix) else {
+                return ([], Int.max)
+            }
+            readingStem = reading
+        } else if let stem = removingSuffix(reading, suffix: rule.readingSuffix) {
+            readingStem = stem
+        } else {
             return ([], Int.max)
         }
 
