@@ -12272,4 +12272,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おみやげ", singleBest: "お土産"))
         XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おそいから", singleBest: "遅いから"))
     }
+
+    // 終助詞クラスタのクランプが表層末尾(く/い…)で判定され、かな識別 ぶそく だけ安く 不足 は
+    // 素通りだったため メモリーぶそくかも が先頭化していた。読みでも判定して揃える(2672)
+    func testMemoryBusokuKamoKeepsKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "めもりーぶそくかも", systemCandidateMode: .surface).first, "メモリー不足かも")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "めもりーぶそくかな", systemCandidateMode: .surface).first, "メモリー不足かな")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "めもりーぶそくか", systemCandidateMode: .surface).first, "メモリー不足か")
+    }
 }

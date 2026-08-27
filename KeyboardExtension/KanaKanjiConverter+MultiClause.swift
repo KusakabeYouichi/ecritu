@@ -1363,6 +1363,11 @@ extension KanaKanjiConverter {
                 prev != Self.multiClauseBOSMarker,
                 (prevIsInflectionDerived || prevIsDictionaryFormPredicate
                     || (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
+                    // 述語末尾判定を表層でなく読みでも行う: かな識別 ぶそく(く終わり)だけが
+                    // クランプされ、漢字表層 不足 は素通り(7792+500)のままになるため
+                    // メモリーぶそくかも が メモリー不足かも を跨いでいた(ユーザ報告 2672)。
+                    // 表記が違うだけの同じ語で遷移コストが変わるのは不公平なので読みで揃える
+                    || (prevReading?.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
                     // め終わりの体言(買い占め/雨(あめ)等)+2字クラスタも自然な口語
                     // (買い占めよね)。派生の 染め だけがクランプされて 会染めよね が
                     // 買い占めよね を跨いでいた(2647)
