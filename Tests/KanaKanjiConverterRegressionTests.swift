@@ -12244,6 +12244,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let result = converter.multiClauseCandidates(for: "こうなるのか", systemCandidateMode: .surface)
         XCTAssertEqual(result.first, "こうなるのか", "\(result)")
         XCTAssertFalse(result.contains { $0.contains("乃") }, "\(result)")
+        // 提示層: 根拠が無いとかな最良が末尾へ退避し 公なるのか が先頭化していた(実機トレース 2669)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "こうなるのか"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "どうなるのかな"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "のか"))
     }
 
     // さすが をかな副詞に(指す+が 分割が勝っていた)。seed 順変種で 流石Apple を2番目に(2666)

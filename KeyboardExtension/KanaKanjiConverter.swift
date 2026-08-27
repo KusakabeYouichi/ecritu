@@ -1059,6 +1059,14 @@ final class KanaKanjiConverter {
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return true
         }
+        // 説明・疑問の終止クラスタ(こうなるのか/どうなるのかな/いいのかも 等)で終わる読みは、
+        // かなが正書の話し言葉。連文節は こうなるのか をかな最良に選ぶが根拠が無いと提示層が
+        // 末尾へ退避し、実機で 公なるのか が先頭になっていた(実機トレースで converter=かな先頭・
+        // 表示=公なるのか先頭 の食い違いを確認、2669)。維持のみで昇格しない。
+        for suffix in ["のか", "のかな", "のかなー", "のかも", "のかしら", "のかね", "のかよ", "のかい"]
+        where normalized.count > suffix.count + 1 && normalized.hasSuffix(suffix) {
+            return true
+        }
         // 複合助詞(では/には/とは/でも 等)そのものはかなが正書。デは/出は/手は 等の漢字混じり
         // 誤変換が提示層で繰り上がるのを防ぐ(単独入力=複合助詞の話題断片)。
         if Self.multiClauseCompoundParticles.contains(normalized) {
