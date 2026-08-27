@@ -12249,4 +12249,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let sore = converter.multiClauseCandidates(for: "さすがにそれは", systemCandidateMode: .surface)
         XCTAssertEqual(Array(sore.prefix(2)), ["さすがにそれは", "流石にそれは"], "\(sore)")
     }
+
+    // おちかく(全読み): 連文節 オチ描く が単文節 お近く より先に合流していた。丁寧接頭辞派生
+    // (お+語幹最良)は連文節の断片分割より先頭に置く(2667)
+    func testOchikakuWholeReadingPromotesPoliteDerivation() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertTrue(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おちかく", singleBest: "お近く"))
+        XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おちかく", singleBest: "お地殻"))
+        // 全読みが辞書語(お母さん)なら派生ではないので対象外
+        XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おかあさん", singleBest: "お母さん"))
+        // 派生でも語幹が最良(土産)なら昇格対象(おみやげ は辞書に全読みが無い)
+        XCTAssertTrue(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おみやげ", singleBest: "お土産"))
+        XCTAssertFalse(converter.shouldPromoteSingleBestAboveMultiClause(reading: "おそいから", singleBest: "遅いから"))
+    }
 }
