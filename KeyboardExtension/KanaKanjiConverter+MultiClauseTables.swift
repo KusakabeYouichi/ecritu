@@ -358,7 +358,9 @@ extension KanaKanjiConverter {
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
     // よういち: 連文節では LM(洋一6022<陽一6135)で 日下部洋一 が先頭になるが、ユーザ指定は
     // 陽一 先頭(2688)。seed 順をノードコストにも反映する
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち"]
+    // かじ: LM は 梶6391<火事6491<舵6617<鍛冶6676<家事6658 で、連文節が 舵が起きた/舵を手伝う
+    // を先頭にしていた。seed 順(家事→火事→鍛冶)をノードコストへ(2689)
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -473,6 +475,15 @@ extension KanaKanjiConverter {
             surface: "たくさん",
             verbPrefixes: ["のめ", "のみ", "のん", "のま", "のも"],
             preferredVerbSurfacePrefixes: ["飲"],
+            demotedSurfaces: []
+        ),
+        // かじ + おきる/おこる活用 → 火事(2689): seed 順(家事先頭)は単独入力向けで、
+        // 「かじがおきた/かじがおこった」は 火事 が正解。連語で文脈限定に上書きする
+        // (家事が起きた/舵が起きた は非文)
+        "かじ": (
+            surface: "火事",
+            verbPrefixes: ["おき", "おこ", "はっせい", "ひろが", "もえ"],
+            preferredVerbSurfacePrefixes: [],
             demotedSurfaces: []
         ),
         // 名前/そう + よぶ活用 → 呼(2679): よむ族を b2b 供給の opt-in に入れた副作用で

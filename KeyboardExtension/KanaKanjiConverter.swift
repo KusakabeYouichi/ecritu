@@ -619,6 +619,8 @@ final class KanaKanjiConverter {
                 inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
                 to: &scores
             )
+            // 形式名詞 とき のかな正書(2690)
+            applyFormalNounTokiKanaPreference(for: context.reading, to: &scores)
             // 辞書の主要語(格下)を活用族(隠した/画した/…/かくした)の先頭直下へ(2657)
             applyDictWordOverInflectionSiblingsBoost(
                 for: context.reading,
@@ -981,6 +983,22 @@ final class KanaKanjiConverter {
                        "ではない", "ではないか", "ではないの"]
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return true
+        }
+        // 形式名詞「とき」(〜するとき/〜というとき/〜のとき)はかなが正書(2690)。
+        // 時刻そのものを指す「時」(3時/その時刻)とは用法が違い、連体修飾を受けた形式名詞は
+        // かなで書くのが標準。連文節は 困ったとき/行くとき/食べるときに を既にかな最良に
+        // しているが、全かな読み(いざというとき)は素通りエコー抑制で multi が空になり、
+        // 単文節の いざという時 が先頭に出ていた。連体修飾(直前が用言の連体形/という/の)の
+        // ときだけ根拠にする — 名詞直後(たとえばの時)や単独の とき は対象外
+        for tail in ["とき", "ときに", "ときは", "ときの", "ときも", "ときには"]
+        where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
+            let stem = String(normalized.dropLast(tail.count))
+            guard let last = stem.last else { continue }
+            // 連体修飾の目印: 用言の連体形語尾(る/た/だ/い/な)か「という/の」
+            if stem.hasSuffix("という") || stem.hasSuffix("の")
+                || "るたないだいくうつむぶぬすぐぐ".contains(last) {
+                return true
+            }
         }
         // かな正書の語+助詞1字+かな正書の語(2683): いまだとまだ が keepKana=false で提示層に
         // 降格され、実機だけ 今だとまだ が先頭になっていた(いまだ/まだ 単独はどちらも true)。
