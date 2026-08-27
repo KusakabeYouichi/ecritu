@@ -2496,6 +2496,8 @@
 	<dict><key>phrase</key><string>ムトゥクヴァリ川</string><key>shortcut</key><string>むとぅくゔぁりがわ</string></dict>
 	<dict><key>phrase</key><string>ムラ川</string><key>shortcut</key><string>むらがわ</string></dict>
 	<dict><key>phrase</key><string>メンドーサ川</string><key>shortcut</key><string>めんどーさがわ</string></dict>
+	<dict><key>phrase</key><string>モーゼル</string><key>shortcut</key><string>もーぜる</string></dict>	<!-- ドイツ13産地の一つ(Mosel)。独語綴り Mosel は登録済みだがカタカナが無かった(2026-08-27) -->
+	<dict><key>phrase</key><string>モーゼル・ザール・ルーヴァー</string><key>shortcut</key><string>もーぜるざーるるーゔぁー</string></dict>	<!-- 2007年までの旧称。実務では今も使われる(ユーザ指定) -->
 	<dict><key>phrase</key><string>モーゼル川</string><key>shortcut</key><string>もーぜるがわ</string></dict>
 	<dict><key>phrase</key><string>ライン川</string><key>shortcut</key><string>らいんがわ</string></dict>
 	<dict><key>phrase</key><string>ラ・プラタ川</string><key>shortcut</key><string>らぷらたがわ</string></dict>
@@ -2819,8 +2821,11 @@
 	<dict><key>phrase</key><string>ミシガン州</string><key>shortcut</key><string>みしがんしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ムルシア州</string><key>shortcut</key><string>むるしあしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>メンドーサ州</string><key>shortcut</key><string>めんどーさしゅう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>モリーゼ</string><key>shortcut</key><string>もりーぜ</string></dict>	<!-- イタリア20州。単独形が欠けていた(2026-08-27) -->
 	<dict><key>phrase</key><string>モリーゼ州</string><key>shortcut</key><string>もりーぜしゅう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ラツィオ</string><key>shortcut</key><string>らつぃお</string></dict>	<!-- イタリア20州。単独形が欠けていた(2026-08-27) -->
 	<dict><key>phrase</key><string>ラツィオ州</string><key>shortcut</key><string>らつぃおしゅう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>リグーリア</string><key>shortcut</key><string>りぐーりあ</string></dict>	<!-- イタリア20州。他17州は単独形も登録済みだったが欠けていた(2026-08-27) -->
 	<dict><key>phrase</key><string>リグーリア州</string><key>shortcut</key><string>りぐーりあしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>レスターシャー州</string><key>shortcut</key><string>れすたーしゃーしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ロンバルディア州</string><key>shortcut</key><string>ろんばるでぃあしゅう</string></dict>	<!-- Sudachiにもある -->
@@ -2888,6 +2893,7 @@
 	<dict><key>phrase</key><string>Devon</string><key>shortcut</key><string>でゔぉん</string></dict>
 	<dict><key>phrase</key><string>Dorset</string><key>shortcut</key><string>どーせっと</string></dict>
 	<dict><key>phrase</key><string>East Sussex</string><key>shortcut</key><string>いーすとさせっくす</string></dict>
+	<dict><key>phrase</key><string>Emilia</string><key>shortcut</key><string>えみりあ</string></dict>	<!-- イタリア語綴りの略称。正式名 Emilia Romagna は登録済み(2026-08-27) -->
 	<dict><key>phrase</key><string>Emilia Romagna</string><key>shortcut</key><string>えみりあろまーにゃ</string></dict>
 	<dict><key>phrase</key><string>Essex</string><key>shortcut</key><string>えせっくす</string></dict>
 	<dict><key>phrase</key><string>Free State</string><key>shortcut</key><string>ふりーすてーと</string></dict>
@@ -2918,6 +2924,7 @@
 	<dict><key>phrase</key><string>Thurgau</string><key>shortcut</key><string>とぅーるがう</string></dict>
 	<dict><key>phrase</key><string>Ticino</string><key>shortcut</key><string>てぃちーの</string></dict>
 	<dict><key>phrase</key><string>Toscana</string><key>shortcut</key><string>とすかーな</string></dict>
+	<dict><key>phrase</key><string>Trentino</string><key>shortcut</key><string>とれんてぃーの</string></dict>	<!-- イタリア語綴りの略称。正式名 Trentino-Alto Adige は登録済み(2026-08-27) -->
 	<dict><key>phrase</key><string>Trentino-Alto Adige</string><key>shortcut</key><string>とれんてぃーのあるとあーでぃじぇ</string></dict>
 	<dict><key>phrase</key><string>Umbria</string><key>shortcut</key><string>うんぶりあ</string></dict>
 	<dict><key>phrase</key><string>Valais</string><key>shortcut</key><string>ゔぁれー</string></dict>
@@ -2935,6 +2942,7 @@
 	<dict><key>phrase</key><string>ナヤリット</string><key>shortcut</key><string>なやりっと</string></dict>
 	<dict><key>phrase</key><string>ニーダーエステライヒ州北部</string><key>shortcut</key><string>にーだーえすてらいひしゅうほくぶ</string></dict>
 	<dict><key>phrase</key><string>ノヴァ・スコシア州初</string><key>shortcut</key><string>のゔぁすこしあしゅうはつ</string></dict>
+	<dict><key>phrase</key><string>フリウリ</string><key>shortcut</key><string>ふりうり</string></dict>	<!-- イタリア20州の略称。正式名 フリウリ・ヴェネツィア・ジューリア は登録済み(2026-08-27) -->
 	<dict><key>phrase</key><string>フリウリ・ヴェネツィア・ジューリア</string><key>shortcut</key><string>ふりうりゔぇねつぃあじゅーりあ</string></dict>
 	<dict><key>phrase</key><string>ブエノスアイレス州南部</string><key>shortcut</key><string>ぶえのすあいれすしゅうなんぶ</string></dict>
 	<dict><key>phrase</key><string>ミチョアカン</string><key>shortcut</key><string>みちょあかん</string></dict>
@@ -8048,6 +8056,7 @@
 
 	<!-- 茶 -->
 	<dict><key>phrase</key><string>ミルクティー</string><key>shortcut</key><string>みるくてぃー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>アール</string><key>shortcut</key><string>あーる</string></dict>	<!-- ドイツ13産地の一つ(Ahr)。独語綴り Ahr は登録済みだがカタカナが無かった(2026-08-27) -->
 	<dict><key>phrase</key><string>アールグレイ</string><key>shortcut</key><string>あーるぐれい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アッサム種</string><key>shortcut</key><string>あっさむしゅ</string></dict>
 	<dict><key>phrase</key><string>Uva</string><key>shortcut</key><string>うゔぁ</string></dict>
