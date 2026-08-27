@@ -12068,4 +12068,20 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 単独の とき は従来どおり(かな先頭は辞書順のまま)
         XCTAssertEqual(converter.candidates(for: "とき", limit: 2, systemCandidateMode: .surface).first, "とき")
     }
+
+    // たいようちゅう: 太陽柱(サンピラーの日本語名)は Sudachi にも LM にも無く、
+    // {太陽中, 太陽注, 太陽虫, 太陽忠} の合成しか出なかった。sacoche.plist に追加語彙として
+    // 登録(ユーザ指定 2691)。追加語彙のある読みは合成が抑止されるため、使う可能性のある
+    // 太陽中 だけ明示的に2番目へ
+    func testRegressionAjoutTaiyouchuu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let single = converter.candidates(for: "たいようちゅう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["太陽柱", "太陽中"], "single=\(single)")
+        XCTAssertFalse(single.contains { $0.hasPrefix("太陽") && ["注", "虫", "忠"].contains(String($0.suffix(1))) },
+                       "不要な合成が残っている: \(single)")
+        let multi = converter.multiClauseCandidates(for: "たいようちゅうがみえた", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "太陽柱が見えた", "multi=\(multi.prefix(3))")
+    }
 }
