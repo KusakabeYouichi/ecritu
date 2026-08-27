@@ -161,11 +161,6 @@ extension KeyboardViewController {
         }
         invalidateTextContextCache()
         let contextBeforeInput = currentTextContextBeforeInput()
-        #if DEBUG
-        appendKeyboardDiagnosticsLogFromInputHandling(
-            "TAPTRACE reconcile trigger=\(trigger) marked=\(marked) context=len\(contextBeforeInput.count) tail=\(String(contextBeforeInput.suffix(6))) baseline=\(lastSynchronizedContextBeforeInputLength) after=len\(currentTextContextAfterInput().count)"
-        )
-        #endif
         guard contextBeforeInput.count < TextContextLimits.cachedContextBeforeInputMaxLength,
             context(contextBeforeInput, hasSuffix: marked),
             contextBeforeInput.count >= lastSynchronizedContextBeforeInputLength + marked.count else {
@@ -688,11 +683,6 @@ extension KeyboardViewController {
             lastSynchronizedContextBeforeInputLength = contextBeforeInput.count
         }
 
-        #if DEBUG
-        appendKeyboardDiagnosticsLogFromInputHandling(
-            "TAPTRACE sync external=\(triggeredByExternalChange) before=len\(contextBeforeInput.count) prevLen=\(previousContextBeforeInputLength) composingLen=\(composingRawText.count) active=\(activeConversion?.committedText.count ?? -1)"
-        )
-        #endif
         // ホストがタップ等で未確定(marked)を実テキストに確定した(実機 TAPTRACE 2676: メモ帳の
         // 余白タップで textDidChange が来て、文脈末尾に marked が実テキストとして現れていた)。
         // marked は通常 context に含まれないので、外部変化で「直前の文脈末尾には無かった
