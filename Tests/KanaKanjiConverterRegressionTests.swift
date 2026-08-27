@@ -12005,4 +12005,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             "いまだにできない"
         )
     }
+
+    // よういち: 辞書 rank0 は 洋一 だがユーザ指定で 陽一 を先頭に(2688)。さらに よういち の
+    // 候補は Sudachi wc が全て10000(収穫底値)で連文節では全員 9500 に床上げされ同点になり、
+    // くさかべよういち→日下部容一 のように辞書順の偶然で並んでいた
+    func testRegressionRealLMYouichiPrefersYou() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertEqual(
+            Array(converter.candidates(for: "よういち", limit: 4, systemCandidateMode: .surface).prefix(2)),
+            ["陽一", "洋一"]
+        )
+        for probe in ["くさかべよういち", "たなかよういち"] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasSuffix("陽一") == true, "\(probe): multi=\(multi.prefix(3))")
+            XCTAssertTrue(multi.dropFirst().first?.hasSuffix("洋一") == true, "\(probe): multi=\(multi.prefix(3))")
+            // 収穫底値の同点で紛れ込んでいた 容一/容壱/容市 が先頭群に来ない
+            XCTAssertFalse(multi.prefix(3).contains { $0.contains("容") }, "\(probe): multi=\(multi.prefix(3))")
+        }
+    }
 }
