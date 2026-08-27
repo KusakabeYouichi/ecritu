@@ -249,6 +249,21 @@ needs_sqlite_regeneration() {
     return 0
   fi
 
+  # 活用クラス(plist の pos)と追加語彙は、語彙 JSON の中身が変わらないまま更新される
+  # ことがある(既存語に pos を足しただけの編集)。これらを判定に入れないと
+  # inflection_classes が古いまま残り、サ変名詞を足しても「〜する」が出ない
+  # (再醗酵する が出なかった原因。2666)
+  for inflection_source in \
+    "$TMP_SECOND_INFLECTIONS" \
+    "$TMP_INITIAL_AJOUT_INFLECTIONS" \
+    "$TMP_INITIAL_MISC_INFLECTIONS" \
+    "$TMP_INITIAL_AJOUT" \
+    "$TMP_INITIAL_MISC"; do
+    if [[ -f "$inflection_source" && "$inflection_source" -nt "$TMP_SQLITE" ]]; then
+      return 0
+    fi
+  done
+
   return 1
 }
 

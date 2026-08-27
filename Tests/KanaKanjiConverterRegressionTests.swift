@@ -12225,4 +12225,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kyuukaku.first, "球殻", "\(kyuukaku)")
         XCTAssertFalse(kyuukaku.contains("球殼"))
     }
+
+    // vin.plist の 醗酵 系にサ変属性(pos)を付与。sqlite 再生成判定の穴も同時に塞いだ(2666)
+    func testSaihakkouSuruFromVinPos() throws {
+        try prepareRealLMDictionary()
+        let result = converter.candidates(for: "さいはっこうする", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(result.contains("再醗酵する"), "\(result)")
+    }
 }
