@@ -34,7 +34,7 @@
 	<dict><key>phrase</key><string>Pernand-Vergelesses</string><key>shortcut</key><string>ぺるなんゔぇるじゅれす</string></dict>
 	<dict><key>phrase</key><string>ペルナン・ヴェルジュレス</string><key>shortcut</key><string>ぺるなんゔぇるじゅれす</string></dict>
 	<dict><key>phrase</key><string>Aargau</string><key>shortcut</key><string>あーるがう</string></dict>
-	<dict><key>phrase</key><string>Abbaye de Mont</string><key>shortcut</key><string>あべいどぅもん</string></dict>
+	<dict><key>phrase</key><string>Abbaye de Mont</string><key>shortcut</key><string>あべいどもん</string></dict>
 	<dict><key>phrase</key><string>Abkhazia</string><key>shortcut</key><string>あぶはじあ</string></dict>
 	<dict><key>phrase</key><string>Aconcagua Valley</string><key>shortcut</key><string>あこんかぐあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Aconcagua</string><key>shortcut</key><string>あこんかぐあ</string></dict>
@@ -563,15 +563,15 @@
 	<dict><key>phrase</key><string>Côtes de</string><key>shortcut</key><string>こーとど</string></dict>
 	<dict><key>phrase</key><string>Elba Aleatico Passito</string><key>shortcut</key><string>えるばあれあてぃこぱっしーと</string></dict>
 	<dict><key>phrase</key><string>Erbaluce di Caluso</string><key>shortcut</key><string>えるばるーちぇでぃかるーそ</string></dict>
-	<dict><key>phrase</key><string>Francs Côtes de Bordeaux</string><key>shortcut</key><string>ふらんこーとどぅぼるどー</string></dict>
+	<dict><key>phrase</key><string>Francs Côtes de Bordeaux</string><key>shortcut</key><string>ふらんこーとどぼるどー</string></dict>
 	<dict><key>phrase</key><string>Gros Plant du Pays Nantais</string><key>shortcut</key><string>ぐろぷらんでゅぺいなんて</string></dict>
 	<dict><key>phrase</key><string>Montefalco Sagrantino</string><key>shortcut</key><string>もんてふぁるこさぐらんてぃーの</string></dict>
 	<dict><key>phrase</key><string>Montepulciano d'Abruzzo</string><key>shortcut</key><string>もんてぷるちあーのだぶるっつぉ</string></dict>
 	<dict><key>phrase</key><string>Niagara Escarpment</string><key>shortcut</key><string>ないあがらえすかーぷめんと</string></dict>
 	<dict><key>phrase</key><string>Niagara Peninsula</string><key>shortcut</key><string>ないあがらぺにんしゅら</string></dict>
-	<dict><key>phrase</key><string>Picpoul de Pinet</string><key>shortcut</key><string>ぴくぷーるどぅぴね</string></dict>
+	<dict><key>phrase</key><string>Picpoul de Pinet</string><key>shortcut</key><string>ぴくぷーるどぴね</string></dict>
 	<dict><key>phrase</key><string>Romagna Albana</string><key>shortcut</key><string>ろまーにゃあるばーな</string></dict>
-	<dict><key>phrase</key><string>Sainte-Foy Côtes de Bordeaux</string><key>shortcut</key><string>さんとふぉわこーとどぅぼるどー</string></dict>
+	<dict><key>phrase</key><string>Sainte-Foy Côtes de Bordeaux</string><key>shortcut</key><string>さんとふぉわこーとどぼるどー</string></dict>
 	<dict><key>phrase</key><string>Saperavi Khashmi</string><key>shortcut</key><string>さぺらゔぃはしゅみ</string></dict>
 	<dict><key>phrase</key><string>バルベーラ・ダスティ</string><key>shortcut</key><string>ばるべーらだすてぃ</string></dict>
 	<dict><key>phrase</key><string>レチョート・デッラ・ヴァルポリチェッラ</string><key>shortcut</key><string>れちょーとでっらゔぁるぽりちぇっら</string></dict>
@@ -581,7 +581,7 @@
 	<dict><key>phrase</key><string>Alentejano</string><key>shortcut</key><string>あれんてじゃーの</string></dict>
 	<dict><key>phrase</key><string>Alicante</string><key>shortcut</key><string>ありかんて</string></dict>
 	<dict><key>phrase</key><string>Alta</string><key>shortcut</key><string>あるた</string></dict>
-	<dict><key>phrase</key><string>Altenberg de Bergheim</string><key>shortcut</key><string>あるてんべるくどぅべるくはいむ</string></dict>
+	<dict><key>phrase</key><string>Altenberg de Bergheim</string><key>shortcut</key><string>あるてんべるくどべるくはいむ</string></dict>
 	<dict><key>phrase</key><string>Amydeon</string><key>shortcut</key><string>あみでおん</string></dict>
 	<dict><key>phrase</key><string>Amyntaio</string><key>shortcut</key><string>あみんでお</string></dict>
 	<dict><key>phrase</key><string>Amynteo</string><key>shortcut</key><string>あみんでお</string></dict>
@@ -604,7 +604,7 @@
 	<dict><key>phrase</key><string>Banyuls</string><key>shortcut</key><string>ばにゅるす</string></dict>
 	<dict><key>phrase</key><string>Bardolino</string><key>shortcut</key><string>ばるどりーの</string></dict>
 	<dict><key>phrase</key><string>Barsac</string><key>shortcut</key><string>ばるさっく</string></dict>
-	<dict><key>phrase</key><string>Beaumes de Venise</string><key>shortcut</key><string>ぼーむどぅゔにーず</string></dict>
+	<dict><key>phrase</key><string>Beaumes de Venise</string><key>shortcut</key><string>ぼーむどゔにーず</string></dict>
 	<dict><key>phrase</key><string>Beaune</string><key>shortcut</key><string>ぼーぬ</string></dict>
 	<dict><key>phrase</key><string>Beechworth</string><key>shortcut</key><string>びーちわーす</string></dict>
 	<dict><key>phrase</key><string>Bellet</string><key>shortcut</key><string>べれ</string></dict>
@@ -619,7 +619,7 @@
 	<dict><key>phrase</key><string>Biscoitos</string><key>shortcut</key><string>びすこいとす</string></dict>
 	<dict><key>phrase</key><string>Black Sage Bench</string><key>shortcut</key><string>ぶらっくせーじべんち</string></dict>
 	<dict><key>phrase</key><string>Blagny</string><key>shortcut</key><string>ぶらにー</string></dict>
-	<dict><key>phrase</key><string>Blanc de Morgex et de La Salle</string><key>shortcut</key><string>ぶらんどぅもるじぇえどぅらさーる</string></dict>
+	<dict><key>phrase</key><string>Blanc de Morgex et de La Salle</string><key>shortcut</key><string>ぶらんどもるじぇえどらさーる</string></dict>
 	<dict><key>phrase</key><string>Blanchot</string><key>shortcut</key><string>ぶらんしょ</string></dict>
 	<dict><key>phrase</key><string>Blaye</string><key>shortcut</key><string>ぶらい</string></dict>
 	<dict><key>phrase</key><string>Bois Ordinaires</string><key>shortcut</key><string>ぼわおるでぃねーる</string></dict>
@@ -681,7 +681,7 @@
 	<dict><key>phrase</key><string>Clos Saint-Jacques</string><key>shortcut</key><string>くろさんじゃっく</string></dict>
 	<dict><key>phrase</key><string>Clos Saint-Julien</string><key>shortcut</key><string>くろさんじゅりあん</string></dict>
 	<dict><key>phrase</key><string>Clos Tamisot</string><key>shortcut</key><string>くろたみぞ</string></dict>
-	<dict><key>phrase</key><string>Clos de Tart</string><key>shortcut</key><string>くろどぅたーる</string></dict>
+	<dict><key>phrase</key><string>Clos de Tart</string><key>shortcut</key><string>くろどたーる</string></dict>
 	<dict><key>phrase</key><string>Clos de Vougeot</string><key>shortcut</key><string>くろどゔーじょー</string></dict>
 	<dict><key>phrase</key><string>Clos de la Roche</string><key>shortcut</key><string>くろどらろっしゅ</string></dict>
 	<dict><key>phrase</key><string>Clos des Lambrays</string><key>shortcut</key><string>くろでらんぶれ</string></dict>
@@ -1211,10 +1211,10 @@
 	<dict><key>phrase</key><string>Ventoux</string><key>shortcut</key><string>ゔぁんとぅー</string></dict>
 	<dict><key>phrase</key><string>Verdea, Traditional Designation of Zakynthos</string><key>shortcut</key><string>ゔぇるであとらでぃしょなるでじぐねーしょんおぶざきんとす</string></dict>
 	<dict><key>phrase</key><string>Villány</string><key>shortcut</key><string>ゔぃっらーに</string></dict>
-	<dict><key>phrase</key><string>Vin de Corse</string><key>shortcut</key><string>ゔぁんどぅこるす</string></dict>
-	<dict><key>phrase</key><string>Vin de Corse Coteaux du Cap Corse</string><key>shortcut</key><string>ゔぁんどぅこるすことーでゅかっぷこるす</string></dict>
-	<dict><key>phrase</key><string>Vin de Corse Figari</string><key>shortcut</key><string>ゔぁんどぅこるすふぃがり</string></dict>
-	<dict><key>phrase</key><string>Vin de Savoie</string><key>shortcut</key><string>ゔぁんどぅさゔぉわ</string></dict>
+	<dict><key>phrase</key><string>Vin de Corse</string><key>shortcut</key><string>ゔぁんどこるす</string></dict>
+	<dict><key>phrase</key><string>Vin de Corse Coteaux du Cap Corse</string><key>shortcut</key><string>ゔぁんどこるすことーでゅかっぷこるす</string></dict>
+	<dict><key>phrase</key><string>Vin de Corse Figari</string><key>shortcut</key><string>ゔぁんどこるすふぃがり</string></dict>
+	<dict><key>phrase</key><string>Vin de Savoie</string><key>shortcut</key><string>ゔぁんどさゔぉわ</string></dict>
 	<dict><key>phrase</key><string>Vinos de Madrid</string><key>shortcut</key><string>びのすでまどりーど</string></dict>
 	<dict><key>phrase</key><string>Vinsobres</string><key>shortcut</key><string>ゔぁんそーぶる</string></dict>
 	<dict><key>phrase</key><string>Viré-Clessé</string><key>shortcut</key><string>ゔぃれくれっせ</string></dict>
@@ -3239,7 +3239,7 @@
 	<dict><key>phrase</key><string>Valle de Cafayate</string><key>shortcut</key><string>ばじぇでかふぁやて</string></dict>
 	<dict><key>phrase</key><string>Valle de Uco</string><key>shortcut</key><string>ばじぇでうこ</string></dict>
 	<dict><key>phrase</key><string>Valles Calchaquíes</string><key>shortcut</key><string>ばじぇすかるちゃきえす</string></dict>
-	<dict><key>phrase</key><string>Vallée de la Marne</string><key>shortcut</key><string>ゔぁれーどぅらまるぬ</string></dict>
+	<dict><key>phrase</key><string>Vallée de la Marne</string><key>shortcut</key><string>ゔぁれーどらまるぬ</string></dict>
 	<dict><key>phrase</key><string>Vallée du Rhône</string><key>shortcut</key><string>ゔぁれーでゅろーぬ</string></dict>
 	<dict><key>phrase</key><string>Rhône</string><key>shortcut</key><string>ろーぬ</string></dict>
 	<dict><key>phrase</key><string>アコンカグア・ヴァレー</string><key>shortcut</key><string>あこんかぐあゔぁれー</string></dict>
@@ -3525,7 +3525,7 @@
 	<dict><key>phrase</key><string>Region</string><key>shortcut</key><string>りーじょん</string></dict>
 	<dict><key>phrase</key><string>Regional Wines</string><key>shortcut</key><string>りーじょなるわいんず</string></dict>
 	<dict><key>phrase</key><string>Gewürztraminer Vendanges Tardives</string><key>shortcut</key><string>げゔゅるつとらみねーるゔぁんだんじゅたるでぃーゔ</string></dict>
-	<dict><key>phrase</key><string>Pinot Gris Sélection de Grains Nobles</string><key>shortcut</key><string>ぴのぐりせれくしおんどぅぐらんのーぶる</string></dict>
+	<dict><key>phrase</key><string>Pinot Gris Sélection de Grains Nobles</string><key>shortcut</key><string>ぴのぐりせれくしおんどぐらんのーぶる</string></dict>
 	<dict><key>phrase</key><string>Tokaj Aszú</string><key>shortcut</key><string>とかいあすー</string></dict>
 	<dict><key>phrase</key><string>V.Q.A.規定</string><key>shortcut</key><string>ぶいきゅーえいきてい</string></dict>
 	<dict><key>phrase</key><string>Amtliche Prüfungsnummer</string><key>shortcut</key><string>あむとりっひぇぷりゅーふんぐすぬんまー</string></dict>
@@ -3594,12 +3594,12 @@
 	<dict><key>phrase</key><string>Cules târziu</string><key>shortcut</key><string>くれすたるぜぃう</string></dict>
 	<dict><key>phrase</key><string>Öchsle</string><key>shortcut</key><string>えくすれ</string></dict>
 	<dict><key>phrase</key><string>Colheita</string><key>shortcut</key><string>こりぇいた</string></dict>
-	<dict><key>phrase</key><string>Coopérative de Manipulation</string><key>shortcut</key><string>こおぺらてぃーゔどぅまにぴゅらしおん</string></dict>
+	<dict><key>phrase</key><string>Coopérative de Manipulation</string><key>shortcut</key><string>こおぺらてぃーゔどまにぴゅらしおん</string></dict>
 	<dict><key>phrase</key><string>Integrated Production of Wine</string><key>shortcut</key><string>いんてぐれーてっどぷろだくしょんおぶわいん</string></dict>
 	<dict><key>phrase</key><string>Millésimé</string><key>shortcut</key><string>みれじめ</string></dict>
 	<dict><key>phrase</key><string>Récoltant-Coopérateur</string><key>shortcut</key><string>れこるたんこーぺらとぅーる</string></dict>
 	<dict><key>phrase</key><string>Récoltant-Manipulant</string><key>shortcut</key><string>れこるたんまにぴゅらん</string></dict>
-	<dict><key>phrase</key><string>Société de Récoltants</string><key>shortcut</key><string>そしえてどぅれこるたん</string></dict>
+	<dict><key>phrase</key><string>Société de Récoltants</string><key>shortcut</key><string>そしえてどれこるたん</string></dict>
 	<dict><key>phrase</key><string>Weingut</string><key>shortcut</key><string>ばいんぐーと</string></dict>
 	<dict><key>phrase</key><string>レコルタン</string><key>shortcut</key><string>れこるたん</string></dict>
 	<dict><key>phrase</key><string>レコルタン・コーペラトゥール</string><key>shortcut</key><string>れこるたんこーぺらとぅーる</string></dict>
@@ -6458,7 +6458,7 @@
 	<dict><key>phrase</key><string>Heavy toast</string><key>shortcut</key><string>へゔぃーとーすと</string></dict>
 	<dict><key>phrase</key><string>Lees stirring</string><key>shortcut</key><string>りーずすたーりんぐ</string></dict>
 	<dict><key>phrase</key><string>Light toast</string><key>shortcut</key><string>らいととーすと</string></dict>
-	<dict><key>phrase</key><string>Liqueur de Tirage</string><key>shortcut</key><string>りきゅーるどぅてぃらーじゅ</string></dict>
+	<dict><key>phrase</key><string>Liqueur de Tirage</string><key>shortcut</key><string>りきゅーるどてぃらーじゅ</string></dict>
 	<dict><key>phrase</key><string>Macération carbonique</string><key>shortcut</key><string>ませらしおんかるぼにっく</string></dict>
 	<dict><key>phrase</key><string>Macération finale</string><key>shortcut</key><string>ませらしおんふぃなる</string></dict>
 	<dict><key>phrase</key><string>Macération pelliculaire</string><key>shortcut</key><string>ませらしおんぺりきゅれーる</string></dict>
@@ -7065,8 +7065,8 @@
 	<dict><key>phrase</key><string>Domaine Bronze Père et Fils</string><key>shortcut</key><string>どめーぬぶろんずぺーるえふぃす</string></dict>
 	<dict><key>phrase</key><string>Domaine Mont</string><key>shortcut</key><string>どめーぬもん</string></dict>
 	<dict><key>phrase</key><string>Domaine Takahiko</string><key>shortcut</key><string>どめーぬたかひこ</string></dict>
-	<dict><key>phrase</key><string>Domaine de Chevalier</string><key>shortcut</key><string>どめーぬどぅしゅゔぁりえ</string></dict>
-	<dict><key>phrase</key><string>Domaine de la Romanée-Conti</string><key>shortcut</key><string>どめーぬどぅらろまねこんてぃ</string></dict>
+	<dict><key>phrase</key><string>Domaine de Chevalier</string><key>shortcut</key><string>どめーぬどしゅゔぁりえ</string></dict>
+	<dict><key>phrase</key><string>Domaine de la Romanée-Conti</string><key>shortcut</key><string>どめーぬどらろまねこんてぃ</string></dict>
 	<dict><key>phrase</key><string>Giaconda</string><key>shortcut</key><string>じゃこんだ</string></dict>
 	<dict><key>phrase</key><string>Grange</string><key>shortcut</key><string>ぐらんじ</string></dict>
 	<dict><key>phrase</key><string>Houghton社</string><key>shortcut</key><string>ほーとんしゃ</string></dict>
@@ -7082,14 +7082,14 @@
 	<dict><key>phrase</key><string>Schloss Reichartshausen</string><key>shortcut</key><string>しゅろすらいひゃるつはうぜん</string></dict>
 	<dict><key>phrase</key><string>Schloss Vollrads</string><key>shortcut</key><string>しゅろすふぉるらーつ</string></dict>
 	<dict><key>phrase</key><string>Stag's Leap Wine Cellars</string><key>shortcut</key><string>すたっぐすりーぷわいんせらーず</string></dict>
-	<dict><key>phrase</key><string>Vin de Constance</string><key>shortcut</key><string>ゔぁんどぅこんすたんす</string></dict>
+	<dict><key>phrase</key><string>Vin de Constance</string><key>shortcut</key><string>ゔぁんどこんすたんす</string></dict>
 	<dict><key>phrase</key><string>Vin des Glaciers</string><key>shortcut</key><string>ゔぁんでぐらしえ</string></dict>
 	<dict><key>phrase</key><string>キアンティワイン</string><key>shortcut</key><string>きあんてぃわいん</string></dict>
 	<dict><key>phrase</key><string>クラウディ・ベイ</string><key>shortcut</key><string>くらうでぃべい</string></dict>
 	<dict><key>phrase</key><string>シャトー・ド・ボーカステル</string><key>shortcut</key><string>しゃとーどぼーかすてる</string></dict>
 	<dict><key>phrase</key><string>シャトー・ド・ポマール</string><key>shortcut</key><string>しゃとーどぽまーる</string></dict>
 	<dict><key>phrase</key><string>ジ・アイリー・ヴィンヤーズ</string><key>shortcut</key><string>じあいりーゔぃんやーず</string></dict>
-	<dict><key>phrase</key><string>デザートワインVin de Constance</string><key>shortcut</key><string>でざーとわいんゔぁんどぅこんすたんす</string></dict>
+	<dict><key>phrase</key><string>デザートワインVin de Constance</string><key>shortcut</key><string>でざーとわいんゔぁんどこんすたんす</string></dict>
 	<dict><key>phrase</key><string>トカイ・アスー</string><key>shortcut</key><string>とかいあすー</string></dict>
 	<dict><key>phrase</key><string>ドメイヌ・タケダ</string><key>shortcut</key><string>どめいぬたけだ</string></dict>
 	<dict><key>phrase</key><string>ドメーヌ ミエ・イケノ</string><key>shortcut</key><string>どめーぬみえいけの</string></dict>
@@ -8381,7 +8381,7 @@
 	<dict><key>phrase</key><string>Baeckeoffe</string><key>shortcut</key><string>べっけおっふ</string></dict>
 	<dict><key>phrase</key><string>Bagna Cauda</string><key>shortcut</key><string>ばーにゃかうだ</string></dict>
 	<dict><key>phrase</key><string>Basilico Genovese</string><key>shortcut</key><string>ばじりこじぇのゔぇーぜ</string></dict>
-	<dict><key>phrase</key><string>Biscuit Rose de Reims</string><key>shortcut</key><string>びすきゅいろーずどぅらんす</string></dict>
+	<dict><key>phrase</key><string>Biscuit Rose de Reims</string><key>shortcut</key><string>びすきゅいろーずどらんす</string></dict>
 	<dict><key>phrase</key><string>Bistecca alla Fiorentina</string><key>shortcut</key><string>びすてっかあっらふぃおれんてぃーな</string></dict>
 	<dict><key>phrase</key><string>Bistecca alla Pizzaiola</string><key>shortcut</key><string>びすてっかあっらぴっつぁいおーら</string></dict>
 	<dict><key>phrase</key><string>Blutwurst</string><key>shortcut</key><string>ぶるーとぶるすと</string></dict>
@@ -8390,12 +8390,12 @@
 	<dict><key>phrase</key><string>Boeuf Bourguignon</string><key>shortcut</key><string>ぶふぶるぎにょん</string></dict>
 	<dict><key>phrase</key><string>Bottarga</string><key>shortcut</key><string>ぼったるが</string></dict>
 	<dict><key>phrase</key><string>Bouillabaisse</string><key>shortcut</key><string>ぶいやべーす</string></dict>
-	<dict><key>phrase</key><string>Brandade de Morue</string><key>shortcut</key><string>ぶらんだーどどぅもりゅ</string></dict>
+	<dict><key>phrase</key><string>Brandade de Morue</string><key>shortcut</key><string>ぶらんだーどどもりゅ</string></dict>
 	<dict><key>phrase</key><string>Brasato</string><key>shortcut</key><string>ぶらざーと</string></dict>
 	<dict><key>phrase</key><string>Brochet au Beurre Blanc</string><key>shortcut</key><string>ぶろしぇおぶーるぶらん</string></dict>
 	<dict><key>phrase</key><string>Bucatini all'Amatriciana</string><key>shortcut</key><string>ぶかてぃーにあっらまとりちゃーな</string></dict>
 	<dict><key>phrase</key><string>Burgenländer Kipferl</string><key>shortcut</key><string>ぶるげんれんだーきぷふぇるる</string></dict>
-	<dict><key>phrase</key><string>Bœuf de Bazas</string><key>shortcut</key><string>ぶふどぅばざす</string></dict>
+	<dict><key>phrase</key><string>Bœuf de Bazas</string><key>shortcut</key><string>ぶふどばざす</string></dict>
 	<dict><key>phrase</key><string>Canelé</string><key>shortcut</key><string>かぬれ</string></dict>
 	<dict><key>phrase</key><string>Cannoli</string><key>shortcut</key><string>かんのーり</string></dict>
 	<dict><key>phrase</key><string>Caponata</string><key>shortcut</key><string>かぽなーた</string></dict>
@@ -8405,8 +8405,8 @@
 	<dict><key>phrase</key><string>Chivito</string><key>shortcut</key><string>ちびーと</string></dict>
 	<dict><key>phrase</key><string>Choucroute</string><key>shortcut</key><string>しゅくるーと</string></dict>
 	<dict><key>phrase</key><string>Ciuppin</string><key>shortcut</key><string>ちゅっぴん</string></dict>
-	<dict><key>phrase</key><string>Civet de Sanglier</string><key>shortcut</key><string>しゔぇどぅさんぐりえ</string></dict>
-	<dict><key>phrase</key><string>Confit de Canard</string><key>shortcut</key><string>こんふぃどぅかなーる</string></dict>
+	<dict><key>phrase</key><string>Civet de Sanglier</string><key>shortcut</key><string>しゔぇどさんぐりえ</string></dict>
+	<dict><key>phrase</key><string>Confit de Canard</string><key>shortcut</key><string>こんふぃどかなーる</string></dict>
 	<dict><key>phrase</key><string>Coq au Vin</string><key>shortcut</key><string>こっこーゔぁん</string></dict>
 	<dict><key>phrase</key><string>Costoletta alla Milanese</string><key>shortcut</key><string>こすとれったあっらみらねーぜ</string></dict>
 	<dict><key>phrase</key><string>Costoletta alla Valdostana</string><key>shortcut</key><string>こすとれったあっらゔぁるどすたーな</string></dict>
@@ -8419,7 +8419,7 @@
 	<dict><key>phrase</key><string>Escargots</string><key>shortcut</key><string>えすかるご</string></dict>
 	<dict><key>phrase</key><string>Esterhazy Torte</string><key>shortcut</key><string>えすてるはーじーとるて</string></dict>
 	<dict><key>phrase</key><string>Fegato alla Veneziana</string><key>shortcut</key><string>ふぇがーとあっらゔぇねつぃあーな</string></dict>
-	<dict><key>phrase</key><string>Filet de Perche</string><key>shortcut</key><string>ふぃれどぅぺるしゅ</string></dict>
+	<dict><key>phrase</key><string>Filet de Perche</string><key>shortcut</key><string>ふぃれどぺるしゅ</string></dict>
 	<dict><key>phrase</key><string>Fiorentina</string><key>shortcut</key><string>ふぃおれんてぃーな</string></dict>
 	<dict><key>phrase</key><string>Gebackenes Kalbshirn</string><key>shortcut</key><string>げばっけねすかるぷすひるん</string></dict>
 	<dict><key>phrase</key><string>Geschnetzeltes</string><key>shortcut</key><string>げしゅねっつぇるてす</string></dict>
@@ -8432,12 +8432,12 @@
 	<dict><key>phrase</key><string>Hangi</string><key>shortcut</key><string>はんぎ</string></dict>
 	<dict><key>phrase</key><string>Himmel und Erde</string><key>shortcut</key><string>ひんめるうんとえるで</string></dict>
 	<dict><key>phrase</key><string>Jambon Persillé</string><key>shortcut</key><string>じゃんぼんぺるしえ</string></dict>
-	<dict><key>phrase</key><string>Jambon Sec de Corse</string><key>shortcut</key><string>じゃんぼんせっくどぅこるす</string></dict>
+	<dict><key>phrase</key><string>Jambon Sec de Corse</string><key>shortcut</key><string>じゃんぼんせっくどこるす</string></dict>
 	<dict><key>phrase</key><string>Karpfen blau</string><key>shortcut</key><string>かるぷふぇんぶらう</string></dict>
 	<dict><key>phrase</key><string>Kouglof</string><key>shortcut</key><string>くーぐろふ</string></dict>
 	<dict><key>phrase</key><string>Kriecherl</string><key>shortcut</key><string>くりーひぇるる</string></dict>
 	<dict><key>phrase</key><string>Lamproie</string><key>shortcut</key><string>らんぷろわ</string></dict>
-	<dict><key>phrase</key><string>Macarons de Saint-Emilion</string><key>shortcut</key><string>まかろんどぅさんてみりおん</string></dict>
+	<dict><key>phrase</key><string>Macarons de Saint-Emilion</string><key>shortcut</key><string>まかろんどさんてみりおん</string></dict>
 	<dict><key>phrase</key><string>Maccheroni alla Chitarra</string><key>shortcut</key><string>まっけろーにあっらきたーら</string></dict>
 	<dict><key>phrase</key><string>Marillenknödel</string><key>shortcut</key><string>まりれんくねーでる</string></dict>
 	<dict><key>phrase</key><string>Medieval de Ourém</string><key>shortcut</key><string>めでぃえゔぁうでおうれん</string></dict>
@@ -8465,7 +8465,7 @@
 	<dict><key>phrase</key><string>Quetsche</string><key>shortcut</key><string>けっちゅ</string></dict>
 	<dict><key>phrase</key><string>Ratatouille</string><key>shortcut</key><string>らたとぅいゆ</string></dict>
 	<dict><key>phrase</key><string>Ribollita</string><key>shortcut</key><string>りぼっりーた</string></dict>
-	<dict><key>phrase</key><string>Rillette de Tours</string><key>shortcut</key><string>りえっとどぅとぅーる</string></dict>
+	<dict><key>phrase</key><string>Rillette de Tours</string><key>shortcut</key><string>りえっとどとぅーる</string></dict>
 	<dict><key>phrase</key><string>Salade Niçoise</string><key>shortcut</key><string>さらどにそわーず</string></dict>
 	<dict><key>phrase</key><string>Sarmale</string><key>shortcut</key><string>さるまーれ</string></dict>
 	<dict><key>phrase</key><string>Sauerkraut</string><key>shortcut</key><string>ざわーくらうと</string></dict>
