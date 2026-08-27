@@ -982,6 +982,31 @@ final class KanaKanjiConverter {
         where normalized.count > suffix.count && normalized.hasSuffix(suffix) {
             return true
         }
+        // かな正書の語+助詞1字+かな正書の語(2683): いまだとまだ が keepKana=false で提示層に
+        // 降格され、実機だけ 今だとまだ が先頭になっていた(いまだ/まだ 単独はどちらも true)。
+        // 連結部は格助詞・接続助詞の1字に限り、両側とも根拠のある語のときだけ成立させる
+        // (再帰は片側1段まで。長い文全体が無条件に keepKana になるのを防ぐ)
+        if normalized.count >= 5 {
+            for (index, character) in normalized.enumerated()
+            where index >= 2 && index <= normalized.count - 3 {
+                let particle = String(character)
+                guard Self.multiClauseCaseParticleSurfaces.contains(particle) || particle == "は"
+                    || particle == "も" || particle == "の" else {
+                    continue
+                }
+                let head = String(normalized.prefix(index))
+                let tail = String(normalized.dropFirst(index + 1))
+                guard head.count >= 2, tail.count >= 2,
+                    Self.multiClauseKanaAdverbReadings.contains(head)
+                        || Self.multiClauseKanaAdverbReadings.contains(tail) else {
+                    continue
+                }
+                if computeShouldKeepKanaIdentityLeading(normalized: head),
+                    computeShouldKeepKanaIdentityLeading(normalized: tail) {
+                    return true
+                }
+            }
+        }
         // 係助詞 は/も + ない(そんなものはない/なにもない/じかんはない)は補助形容詞・
         // 存在否定のかな正書。連文節は かな最良を返すが根拠が無いと提示層が退避して
         // そんなものは無い が繰り上がっていた(ユーザ報告 2659)。維持のみで昇格しない。

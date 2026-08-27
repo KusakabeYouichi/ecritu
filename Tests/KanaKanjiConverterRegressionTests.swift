@@ -11910,8 +11910,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(testSpec.first, "テスト仕様書", "multi=\(testSpec.prefix(3))")
         // いまだ/まだ はかな正書(辞書 rank0 は 未だ)
         let imada = converter.multiClauseCandidates(for: "いまだとまだ", systemCandidateMode: .surface)
-        // ユーザ指定: 先頭かな、2位は 今だとまだ(2682)
-        XCTAssertEqual(Array(imada.prefix(2)), ["いまだとまだ", "今だとまだ"], "multi=\(imada.prefix(4))")
+        // ユーザ指定(2684): 1位 今だとまだ、2位 いまだとまだ(seed 順)
+        XCTAssertEqual(Array(imada.prefix(3)), ["今だとまだ", "いまだとまだ", "未だとまだ"], "multi=\(imada.prefix(4))")
         XCTAssertEqual(
             converter.multiClauseCandidates(for: "まだできない", systemCandidateMode: .surface).first,
             "まだできない"
@@ -11987,5 +11987,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(boosted("かいしか").first, "回しか")
         XCTAssertEqual(boosted("ふんぐらいかな").first, "分ぐらいかな")
         XCTAssertEqual(boosted("さい").first, "歳")
+    }
+
+    // いまだとまだ: 提示層の keepKana が false でかな候補が降格され、実機だけ 今だとまだ が
+    // 先頭になっていた(いまだ/まだ 単独は true)。かな正書の語+助詞1字+かな正書の語 を
+    // 根拠に加える(2683)
+    func testRegressionKeepKanaForKanaWordParticleKanaWord() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いまだとまだ"))
+        // 両側ともかな副詞でない(名詞+と+名詞)は従来どおり false
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "がっこうとびょういん"))
+        let imada = converter.multiClauseCandidates(for: "いまだとまだ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(imada.prefix(2)), ["今だとまだ", "いまだとまだ"], "multi=\(imada.prefix(4))")
+        // いまだに/まだ のかな正書は不変(2676)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "いまだにできない", systemCandidateMode: .surface).first,
+            "いまだにできない"
+        )
     }
 }
