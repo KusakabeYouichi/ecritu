@@ -12084,4 +12084,60 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "たいようちゅうがみえた", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "太陽柱が見えた", "multi=\(multi.prefix(3))")
     }
+
+    // あいます: Sudachi の唯一の候補が アイマス(ゲームの略称、wc2117)で、活用エンジン由来の
+    // 会います/合います/逢います(活用チャネル980 < 辞書1200)を跨いで先頭に居座っていた。
+    // 抑制せず4番目に残す(ユーザ指定 2026-08-27)
+    func testRegressionRealLMAimasuPrefersVerb() throws {
+        try prepareRealLMDictionary()
+
+        XCTAssertEqual(
+            Array(converter.candidates(for: "あいます", limit: 5, systemCandidateMode: .surface)),
+            ["会います", "合います", "逢います", "アイマス", "あいます"]
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "きょうあいます", systemCandidateMode: .surface).first,
+            "今日会います"
+        )
+    }
+
+    // 並列の接続詞はかなが正書(ユーザ指定 2026-08-27)。または/又は は両方 LM 未収録で
+    // 辞書順(又は 上位)に従い、そーすまたは→ソース又は になっていた
+    func testRegressionConjunctionsPreferKana() throws {
+        try prepareRealLMDictionary()
+
+        for (probe, expected) in [
+            ("そーすまたは", "ソースまたは"),
+            ("しおまたはこしょう", "塩または"),
+            ("しおもしくはこしょう", "塩もしくは"),
+            ("しおならびにこしょう", "塩ならびに"),
+            ("しおあるいはこしょう", "塩あるいは"),
+            ("しおおよびこしょう", "塩および")
+        ] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasPrefix(expected) == true, "\(probe): multi=\(multi.prefix(3))")
+        }
+        XCTAssertEqual(converter.candidates(for: "または", limit: 2, systemCandidateMode: .surface).first, "または")
+    }
+
+    // 否定仮定形「〜なければ」の供給(ユーザ報告 2026-08-27)。口語縮約(なきゃ/なくちゃ)
+    // だけあって標準形が全クラスで欠けており、ねなければ→ね無ければ、たべなければ→候補なし
+    // になっていた
+    func testRegressionNegativeConditionalSupplied() throws {
+        try prepareRealLMDictionary()
+
+        for (probe, expected) in [
+            ("ねなければ", "寝なければ"),        // 一段
+            ("みなければ", "見なければ"),
+            ("たべなければ", "食べなければ"),
+            ("こなければ", "来なければ"),        // カ変
+            ("たべなければならない", "食べなければならない")
+        ] {
+            let single = converter.candidates(for: probe, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "\(probe): single=\(single.prefix(4))")
+        }
+        // 五段(行く)はかな正書の いかなければ が先頭でも 行かなければ が候補にあること
+        let ika = converter.candidates(for: "いかなければ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(ika.contains("行かなければ"), "single=\(ika.prefix(4))")
+    }
 }
