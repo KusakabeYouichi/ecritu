@@ -12240,4 +12240,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(result.first, "こうなるのか", "\(result)")
         XCTAssertFalse(result.contains { $0.contains("乃") }, "\(result)")
     }
+
+    // さすが をかな副詞に(指す+が 分割が勝っていた)。seed 順変種で 流石Apple を2番目に(2666)
+    func testSasugaAppleOrdering() throws {
+        try prepareRealLMDictionary()
+        let result = converter.multiClauseCandidates(for: "さすがあっぷる", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(result.prefix(2)), ["さすがApple", "流石Apple"], "\(result)")
+        let sore = converter.multiClauseCandidates(for: "さすがにそれは", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(sore.prefix(2)), ["さすがにそれは", "流石にそれは"], "\(sore)")
+    }
 }
