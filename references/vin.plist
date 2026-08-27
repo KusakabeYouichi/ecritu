@@ -29,7 +29,6 @@
 	<dict><key>phrase</key><string>Echezeaux</string><key>shortcut</key><string>えしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇいえしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Flagey-Echézeaux</string><key>shortcut</key><string>ふらじぇえしぇぞー</string></dict>
-	<dict><key>phrase</key><string>エシェゾー</string><key>shortcut</key><string>えしぇぞー</string></dict>
 	<dict><key>phrase</key><string>フラジェ・エシェゾー</string><key>shortcut</key><string>ふらじぇえしぇぞー</string></dict>
 	<dict><key>phrase</key><string>フラジェイ・エシェゾー</string><key>shortcut</key><string>ふらじぇいえしぇぞー</string></dict>
 	<dict><key>phrase</key><string>Pernand-Vergelesses</string><key>shortcut</key><string>ぺるなんゔぇるじゅれす</string></dict>
@@ -427,7 +426,6 @@
 	<dict><key>phrase</key><string>アデレード</string><key>shortcut</key><string>あでれーど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アルバ</string><key>shortcut</key><string>あるば</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アルバニー</string><key>shortcut</key><string>あるばにー</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>アロース・コルトン</string><key>shortcut</key><string>あろーすこるとん</string></dict>
 	<dict><key>phrase</key><string>エンポルダ</string><key>shortcut</key><string>えんぽるだ</string></dict>
 	<dict><key>phrase</key><string>オークヴィル</string><key>shortcut</key><string>おーくゔぃる</string></dict>
 	<dict><key>phrase</key><string>カウケネス</string><key>shortcut</key><string>かうけねす</string></dict>
@@ -484,7 +482,6 @@
 	<dict><key>phrase</key><string>ペネデス</string><key>shortcut</key><string>ぺねです</string></dict>
 	<dict><key>phrase</key><string>ボローニャ</string><key>shortcut</key><string>ぼろーにゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポサウイエ</string><key>shortcut</key><string>ぽさういえ</string></dict>
-	<dict><key>phrase</key><string>ポマール</string><key>shortcut</key><string>ぽまーる</string></dict>
 	<dict><key>phrase</key><string>ポンペイ</string><key>shortcut</key><string>ぽんぺい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マディラン</string><key>shortcut</key><string>までぃらん</string></dict>
 	<dict><key>phrase</key><string>マデラ</string><key>shortcut</key><string>までら</string></dict>	<!-- Sudachiにもある -->
@@ -508,7 +505,6 @@
 	<dict><key>phrase</key><string>ヴィルティンゲン</string><key>shortcut</key><string>ゔぃるてぃんげん</string></dict>
 	<dict><key>phrase</key><string>ヴィーノ・ノビレ・ディ・モンテプルチャーノ</string><key>shortcut</key><string>ゔぃーののびれでぃもんてぷるちゃーの</string></dict>
 	<dict><key>phrase</key><string>ヴェストシュタイヤーマルク</string><key>shortcut</key><string>ゔぇすとしゅたいやーまるく</string></dict>
-	<dict><key>phrase</key><string>ヴォーヌ・ロマネ</string><key>shortcut</key><string>ゔぉーぬろまね</string></dict>
 	<dict><key>phrase</key><string>ヴルカンラント・シュタイヤーマルク</string><key>shortcut</key><string>ゔるかんらんとしゅたいやーまるく</string></dict>
 	<dict><key>phrase</key><string>ヴージョ</string><key>shortcut</key><string>ゔーじょ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>上山</string><key>shortcut</key><string>かみのやま</string></dict>	<!-- Sudachiにもある -->
@@ -1295,7 +1291,6 @@
 	<dict><key>phrase</key><string>クロ・デ・モワン</string><key>shortcut</key><string>くろでもわん</string></dict>
 	<dict><key>phrase</key><string>クヴァルネル</string><key>shortcut</key><string>くゔぁるねる</string></dict>
 	<dict><key>phrase</key><string>クーレ・ド・セラン</string><key>shortcut</key><string>くーれどせらん</string></dict>
-	<dict><key>phrase</key><string>グリオット・シャンベルタン</string><key>shortcut</key><string>ぐりおっとしゃんべるたん</string></dict>
 	<dict><key>phrase</key><string>グリニャン・レ・ザデマール</string><key>shortcut</key><string>ぐりにゃんれざでまーる</string></dict>
 	<dict><key>phrase</key><string>グレーコ・ディ・トゥーフォ</string><key>shortcut</key><string>ぐれーこでぃとぅーふぉ</string></dict>
 	<dict><key>phrase</key><string>ケブラダ・デ・ウマワカ</string><key>shortcut</key><string>けぶらだでうまわか</string></dict>
@@ -1321,20 +1316,15 @@
 	<dict><key>phrase</key><string>シトラスダル・マウンテン</string><key>shortcut</key><string>しとらすだるまうんてん</string></dict>
 	<dict><key>phrase</key><string>シトラスダル・ヴァレー</string><key>shortcut</key><string>しとらすだるゔぁれー</string></dict>
 	<dict><key>phrase</key><string>シミルカミーン・ヴァレー</string><key>shortcut</key><string>しみるかみーんゔぁれー</string></dict>
-	<dict><key>phrase</key><string>シャサーニュ・モンラッシェ</string><key>shortcut</key><string>しゃさーにゅもんらっしぇ</string></dict>
 	<dict><key>phrase</key><string>シャペル・シャンベルタン</string><key>shortcut</key><string>しゃぺるしゃんべるたん</string></dict>
-	<dict><key>phrase</key><string>シャルム・シャンベルタン</string><key>shortcut</key><string>しゃるむしゃんべるたん</string></dict>
 	<dict><key>phrase</key><string>シャロレ</string><key>shortcut</key><string>しゃろれ</string></dict>
 	<dict><key>phrase</key><string>シャンプレイン・ヴァレー・オブ・ニューヨーク</string><key>shortcut</key><string>しゃんぷれいんゔぁれーおぶにゅーよーく</string></dict>
-	<dict><key>phrase</key><string>シャンベルタン・クロ・ド・ベーズ</string><key>shortcut</key><string>しゃんべるたんくろどべーず</string></dict>
-	<dict><key>phrase</key><string>シャンボール・ミュジニー</string><key>shortcut</key><string>しゃんぼーるみゅじにー</string></dict>
 	<dict><key>phrase</key><string>シュタイエルシュカ・スロヴェニア</string><key>shortcut</key><string>しゅたいえるしゅかすろゔぇにあ</string></dict>
 	<dict><key>phrase</key><string>シュテファン・ヴォダ</string><key>shortcut</key><string>しゅてふぁんゔぉだ</string></dict>
 	<dict><key>phrase</key><string>シルーブル</string><key>shortcut</key><string>しるーぶる</string></dict>
 	<dict><key>phrase</key><string>ジゴンダス</string><key>shortcut</key><string>じごんだす</string></dict>
 	<dict><key>phrase</key><string>ジツァ</string><key>shortcut</key><string>じつぁ</string></dict>
 	<dict><key>phrase</key><string>ジュランソン・セック</string><key>shortcut</key><string>じゅらんそんせっく</string></dict>
-	<dict><key>phrase</key><string>ジュヴレ・シャンベルタン</string><key>shortcut</key><string>じゅゔれしゃんべるたん</string></dict>
 	<dict><key>phrase</key><string>ジロング</string><key>shortcut</key><string>じろんぐ</string></dict>
 	<dict><key>phrase</key><string>スイス・アルモン</string><key>shortcut</key><string>すいすあるもん</string></dict>
 	<dict><key>phrase</key><string>スキロガリー・ヴァレー</string><key>shortcut</key><string>すきろがりーゔぁれー</string></dict>
@@ -1396,7 +1386,6 @@
 	<dict><key>phrase</key><string>ビュゼ</string><key>shortcut</key><string>びゅぜ</string></dict>
 	<dict><key>phrase</key><string>ピュイスガン・サンテミリオン</string><key>shortcut</key><string>ぴゅいすがんさんてみりおん</string></dict>
 	<dict><key>phrase</key><string>ファーロ</string><key>shortcut</key><string>ふぁーろ</string></dict>
-	<dict><key>phrase</key><string>フィサン</string><key>shortcut</key><string>ふぃさん</string></dict>
 	<dict><key>phrase</key><string>フォルブール</string><key>shortcut</key><string>ふぉるぶーる</string></dict>
 	<dict><key>phrase</key><string>フランシュフック・ヴァレー</string><key>shortcut</key><string>ふらんしゅふっくゔぁれー</string></dict>
 	<dict><key>phrase</key><string>フルヴァツカ・イストラ</string><key>shortcut</key><string>ふるゔぁつかいすとら</string></dict>
@@ -1430,7 +1419,6 @@
 	<dict><key>phrase</key><string>マウント・ロフティー・レンジズ</string><key>shortcut</key><string>まうんとろふてぃーれんじず</string></dict>
 	<dict><key>phrase</key><string>マウント・ヴィーダー</string><key>shortcut</key><string>まうんとゔぃーだー</string></dict>
 	<dict><key>phrase</key><string>マジェコ・ヴァレー</string><key>shortcut</key><string>まじぇこゔぁれー</string></dict>
-	<dict><key>phrase</key><string>マジ・シャンベルタン</string><key>shortcut</key><string>まじしゃんべるたん</string></dict>
 	<dict><key>phrase</key><string>マセドン・レーンジズ</string><key>shortcut</key><string>ませどんれーんじず</string></dict>
 	<dict><key>phrase</key><string>マテーラ</string><key>shortcut</key><string>まてーら</string></dict>
 	<dict><key>phrase</key><string>マルサネ</string><key>shortcut</key><string>まるさね</string></dict>
@@ -1461,7 +1449,6 @@
 	<dict><key>phrase</key><string>リベラ・デル・グアディアーナ</string><key>shortcut</key><string>りべらでるぐあでぃあーな</string></dict>
 	<dict><key>phrase</key><string>リベラ・デル・ドゥエロ</string><key>shortcut</key><string>りべらでるどぅえろ</string></dict>
 	<dict><key>phrase</key><string>リュサック・サンテミリオン</string><key>shortcut</key><string>りゅさっくさんてみりおん</string></dict>
-	<dict><key>phrase</key><string>リュショット・シャンベルタン</string><key>shortcut</key><string>りゅしょっとしゃんべるたん</string></dict>
 	<dict><key>phrase</key><string>リラック</string><key>shortcut</key><string>りらっく</string></dict>
 	<dict><key>phrase</key><string>ルエダ</string><key>shortcut</key><string>るえだ</string></dict>
 	<dict><key>phrase</key><string>ルエダ・ソーヴィニヨン・ブラン</string><key>shortcut</key><string>るえだそーゔぃによんぶらん</string></dict>
@@ -1594,8 +1581,6 @@
 	<dict><key>phrase</key><string>クロアチア高地</string><key>shortcut</key><string>くろあちあこうち</string></dict>
 	<dict><key>phrase</key><string>クロ・デ・アベイ</string><key>shortcut</key><string>くろであべい</string></dict>
 	<dict><key>phrase</key><string>クロ・デ・ロジエール</string><key>shortcut</key><string>くろでろじえーる</string></dict>
-	<dict><key>phrase</key><string>クロ・ド・タール</string><key>shortcut</key><string>くろどたーる</string></dict>
-	<dict><key>phrase</key><string>クロ・ド・ヴージョ</string><key>shortcut</key><string>くろどゔーじょ</string></dict>
 	<dict><key>phrase</key><string>クローズ・エルミタージュ</string><key>shortcut</key><string>くろーずえるみたーじゅ</string></dict>
 	<dict><key>phrase</key><string>クンシャーグ</string><key>shortcut</key><string>くんしゃーぐ</string></dict>
 	<dict><key>phrase</key><string>クートネイ</string><key>shortcut</key><string>くーとねい</string></dict>
@@ -1615,7 +1600,6 @@
 	<dict><key>phrase</key><string>コテシュティ</string><key>shortcut</key><string>こてしゅてぃ</string></dict>
 	<dict><key>phrase</key><string>コトー・デュ・レイヨン</string><key>shortcut</key><string>ことーでゅれいよん</string></dict>
 	<dict><key>phrase</key><string>コブレンツ</string><key>shortcut</key><string>こぶれんつ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>コルトン・シャルルマーニュ</string><key>shortcut</key><string>こるとんしゃるるまーにゅ</string></dict>
 	<dict><key>phrase</key><string>コルナス</string><key>shortcut</key><string>こるなす</string></dict>
 	<dict><key>phrase</key><string>コルマール</string><key>shortcut</key><string>こるまーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コロニア</string><key>shortcut</key><string>ころにあ</string></dict>	<!-- Sudachiにもある -->
@@ -1671,13 +1655,11 @@
 	<dict><key>phrase</key><string>シャトーヌフ</string><key>shortcut</key><string>しゃとーぬふ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シャトーヌフ・デュ・パプ</string><key>shortcut</key><string>しゃとーぬふでゅぱぷ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>シャブリ・グラン・クリュ</string><key>shortcut</key><string>しゃぶりぐらんくりゅ</string></dict>
-	<dict><key>phrase</key><string>シャンベルタン</string><key>shortcut</key><string>しゃんべるたん</string></dict>
 	<dict><key>phrase</key><string>シュイイ</string><key>shortcut</key><string>しゅいい</string></dict>
 	<dict><key>phrase</key><string>シュタイガーヴァルト</string><key>shortcut</key><string>しゅたいがーゔぁると</string></dict>
 	<dict><key>phrase</key><string>シュタイヤーマルク</string><key>shortcut</key><string>しゅたいやーまるく</string></dict>
 	<dict><key>phrase</key><string>シュタインベルク</string><key>shortcut</key><string>しゅたいんべるく</string></dict>
 	<dict><key>phrase</key><string>シュトゥットガルト</string><key>shortcut</key><string>しゅとぅっとがると</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>シュヴァリエ・モンラッシェ</string><key>shortcut</key><string>しゅゔぁりえもんらっしぇ</string></dict>
 	<dict><key>phrase</key><string>ショプロン</string><key>shortcut</key><string>しょぷろん</string></dict>
 	<dict><key>phrase</key><string>シルリー</string><key>shortcut</key><string>しるりー</string></dict>
 	<dict><key>phrase</key><string>ジャコンダ</string><key>shortcut</key><string>じゃこんだ</string></dict>
@@ -1733,7 +1715,6 @@
 	<dict><key>phrase</key><string>ナンシー</string><key>shortcut</key><string>なんしー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ニアシュタイン</string><key>shortcut</key><string>にあしゅたいん</string></dict>
 	<dict><key>phrase</key><string>ニコレシティ</string><key>shortcut</key><string>にこれしてぃ</string></dict>
-	<dict><key>phrase</key><string>ニュイ・サン・ジョルジュ</string><key>shortcut</key><string>にゅいさんじょるじゅ</string></dict>
 	<dict><key>phrase</key><string>ニューヨーク</string><key>shortcut</key><string>にゅーよーく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ニュー・サウス・ウェールズ</string><key>shortcut</key><string>にゅーさうすうぇーるず</string></dict>
 	<dict><key>phrase</key><string>ニース</string><key>shortcut</key><string>にーす</string></dict>	<!-- Sudachiにもある -->
@@ -1750,7 +1731,6 @@
 	<dict><key>phrase</key><string>ハンブルドン</string><key>shortcut</key><string>はんぶるどん</string></dict>
 	<dict><key>phrase</key><string>ハンプシャー</string><key>shortcut</key><string>はんぷしゃー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バジリカータ</string><key>shortcut</key><string>ばじりかーた</string></dict>
-	<dict><key>phrase</key><string>バタール・モンラッシェ</string><key>shortcut</key><string>ばたーるもんらっしぇ</string></dict>
 	<dict><key>phrase</key><string>バハ・カリフォルニア</string><key>shortcut</key><string>ばはかりふぉるにあ</string></dict>
 	<dict><key>phrase</key><string>バルドリーノ</string><key>shortcut</key><string>ばるどりーの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バルバレスコ</string><key>shortcut</key><string>ばるばれすこ</string></dict>
@@ -1835,7 +1815,6 @@
 	<dict><key>phrase</key><string>マタカナ</string><key>shortcut</key><string>またかな</string></dict>
 	<dict><key>phrase</key><string>マドリード</string><key>shortcut</key><string>まどりーど</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マラガ</string><key>shortcut</key><string>まらが</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>マランジュ</string><key>shortcut</key><string>まらんじゅ</string></dict>
 	<dict><key>phrase</key><string>マリン・カウンティ</string><key>shortcut</key><string>まりんかうんてぃ</string></dict>
 	<dict><key>phrase</key><string>マルケ</string><key>shortcut</key><string>まるけ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マルゴー</string><key>shortcut</key><string>まるごー</string></dict>	<!-- Sudachiにもある -->
@@ -1851,7 +1830,6 @@
 	<dict><key>phrase</key><string>ミュルーズ</string><key>shortcut</key><string>みゅるーず</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ミラノ北部</string><key>shortcut</key><string>みらのほくぶ</string></dict>
 	<dict><key>phrase</key><string>ムルシア</string><key>shortcut</key><string>むるしあ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ムルソー</string><key>shortcut</key><string>むるそー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ムーリス</string><key>shortcut</key><string>むーりす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ムーリス・アン・メドック</string><key>shortcut</key><string>むーりすあんめどっく</string></dict>
 	<dict><key>phrase</key><string>メス</string><key>shortcut</key><string>めす</string></dict>	<!-- Sudachiにもある -->
@@ -1883,7 +1861,6 @@
 	<dict><key>phrase</key><string>ヴェルズネー</string><key>shortcut</key><string>ゔぇるずねー</string></dict>
 	<dict><key>phrase</key><string>ヴェレンシュタイン</string><key>shortcut</key><string>ゔぇれんしゅたいん</string></dict>
 	<dict><key>phrase</key><string>ヴェローナ</string><key>shortcut</key><string>ゔぇろーな</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ヴォルネイ</string><key>shortcut</key><string>ゔぉるねい</string></dict>
 	<dict><key>phrase</key><string>ヴォルムス</string><key>shortcut</key><string>ゔぉるむす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ヴォワロン</string><key>shortcut</key><string>ゔぉわろん</string></dict>
 	<dict><key>phrase</key><string>ヴォーメルダンジュ</string><key>shortcut</key><string>ゔぉーめるだんじゅ</string></dict>
@@ -1905,7 +1882,6 @@
 	<dict><key>phrase</key><string>アルハンブラ宮殿</string><key>shortcut</key><string>あるはんぶらきゅうでん</string></dict>
 	<dict><key>phrase</key><string>プイイ・フュメ</string><key>shortcut</key><string>ぷいいふゅめ</string></dict>
 	<dict><key>phrase</key><string>モルジュ</string><key>shortcut</key><string>もるじゅ</string></dict>
-	<dict><key>phrase</key><string>モレ・サン・ドニ</string><key>shortcut</key><string>もれさんどに</string></dict>
 	<dict><key>phrase</key><string>モンツィンゲン</string><key>shortcut</key><string>もんつぃんげん</string></dict>
 	<dict><key>phrase</key><string>モントレー・カウンティ</string><key>shortcut</key><string>もんとれーかうんてぃ</string></dict>
 	<dict><key>phrase</key><string>モン・スル・ロール</string><key>shortcut</key><string>もんするろーる</string></dict>
@@ -6894,12 +6870,37 @@
 	<dict><key>phrase</key><string>Croizet-Bages</string><key>shortcut</key><string>くろわぜばーじゅ</string></dict>
 	<dict><key>phrase</key><string>Cantemerle</string><key>shortcut</key><string>かんとめるる</string></dict>
 	<dict><key>phrase</key><string>シャトー・ムートン・ローシルト</string><key>shortcut</key><string>しゃとーむーとんろーしると</string></dict>
-	<dict><key>phrase</key><string>シャトー・オーゾンヌ</string><key>shortcut</key><string>しゃとーおーぞんぬ</string></dict>
-	<dict><key>phrase</key><string>シャトー・オー・ブリオン</string><key>shortcut</key><string>しゃとーおーぶりおん</string></dict>
 	<dict><key>phrase</key><string>シャトー・グリエ</string><key>shortcut</key><string>しゃとーぐりえ</string></dict>
-	<dict><key>phrase</key><string>シャトー・マルゴー</string><key>shortcut</key><string>しゃとーまるごー</string></dict>
 	<dict><key>phrase</key><string>シャトー・ムートン・ロスチャイルド</string><key>shortcut</key><string>しゃとーむーとんろすちゃいるど</string></dict>
 
+
+	<!-- ■ メドック格付け(カタカナ表記): 第1級 -->
+	<dict><key>phrase</key><string>シャトー・オー・ブリオン</string><key>shortcut</key><string>しゃとーおーぶりおん</string></dict>
+	<dict><key>phrase</key><string>シャトー・マルゴー</string><key>shortcut</key><string>しゃとーまるごー</string></dict>
+	<dict><key>phrase</key><string>シャトー・ムートン・ロートシルト</string><key>shortcut</key><string>しゃとーむーとんろーとしると</string></dict>
+	<dict><key>phrase</key><string>シャトー・ラトゥール</string><key>shortcut</key><string>しゃとーらとぅーる</string></dict>
+	<dict><key>phrase</key><string>シャトー・ラフィット・ロートシルト</string><key>shortcut</key><string>しゃとーらふぃっとろーとしると</string></dict>
+
+	<!-- ■ メドック格付け(カタカナ表記): 第2級以下(主要) -->
+	<dict><key>phrase</key><string>シャトー・グリュオー・ラローズ</string><key>shortcut</key><string>しゃとーぐりゅおーらろーず</string></dict>
+	<dict><key>phrase</key><string>シャトー・コス・デストゥルネル</string><key>shortcut</key><string>しゃとーこすですとぅるねる</string></dict>
+	<dict><key>phrase</key><string>シャトー・デュクリュ・ボーカイユ</string><key>shortcut</key><string>しゃとーでゅくりゅぼーかいゆ</string></dict>
+	<dict><key>phrase</key><string>シャトー・デュルフォール・ヴィヴァン</string><key>shortcut</key><string>しゃとーでゅるふぉーるゔぃゔぁん</string></dict>
+	<dict><key>phrase</key><string>シャトー・ピション・ラランド</string><key>shortcut</key><string>しゃとーぴしょんららんど</string></dict>
+	<dict><key>phrase</key><string>シャトー・ピション・ロングヴィル</string><key>shortcut</key><string>しゃとーぴしょんろんぐゔぃる</string></dict>
+	<dict><key>phrase</key><string>シャトー・ブラーヌ・カントナック</string><key>shortcut</key><string>しゃとーぶらーぬかんとなっく</string></dict>
+	<dict><key>phrase</key><string>シャトー・モンローズ</string><key>shortcut</key><string>しゃとーもんろーず</string></dict>
+	<dict><key>phrase</key><string>シャトー・レオヴィル・バルトン</string><key>shortcut</key><string>しゃとーれおゔぃるばるとん</string></dict>
+	<dict><key>phrase</key><string>シャトー・レオヴィル・ポワフェレ</string><key>shortcut</key><string>しゃとーれおゔぃるぽわふぇれ</string></dict>
+	<dict><key>phrase</key><string>シャトー・レオヴィル・ラス・カーズ</string><key>shortcut</key><string>しゃとーれおゔぃるらすかーず</string></dict>
+	<dict><key>phrase</key><string>シャトー・ローザン・セグラ</string><key>shortcut</key><string>しゃとーろーざんせぐら</string></dict>
+
+	<!-- ■ ソーテルヌ/バルサック格付け(カタカナ表記、主要) -->
+	<dict><key>phrase</key><string>シャトー・ギロー</string><key>shortcut</key><string>しゃとーぎろー</string></dict>
+	<dict><key>phrase</key><string>シャトー・クリマン</string><key>shortcut</key><string>しゃとーくりまん</string></dict>
+	<dict><key>phrase</key><string>シャトー・スデュイロー</string><key>shortcut</key><string>しゃとーすでゅいろー</string></dict>
+	<dict><key>phrase</key><string>シャトー・ディケム</string><key>shortcut</key><string>しゃとーでぃけむ</string></dict>
+	<dict><key>phrase</key><string>シャトー・リューセック</string><key>shortcut</key><string>しゃとーりゅーせっく</string></dict>
 	<!-- ワイン -->
 	<dict><key>phrase</key><string>Château Angélus</string><key>shortcut</key><string>しゃとーあんじぇりゅす</string></dict>
 	<dict><key>phrase</key><string>Château Ausone</string><key>shortcut</key><string>しゃとーおーぞんぬ</string></dict>
@@ -7100,7 +7101,6 @@
 	<dict><key>phrase</key><string>ラ・フランセサ</string><key>shortcut</key><string>らふらんせさ</string></dict>
 	<dict><key>phrase</key><string>drc</string><key>shortcut</key><string>でぃーあーるしー</string></dict>	<!-- 元: ワイン名 -->
 	<dict><key>phrase</key><string>サッシカイア</string><key>shortcut</key><string>さっしかいあ</string></dict>
-	<dict><key>phrase</key><string>ロマネ・コンティ</string><key>shortcut</key><string>ろまねこんてぃ</string></dict>
 	<dict><key>phrase</key><string>オーパス・ワン</string><key>shortcut</key><string>おーぱすわん</string></dict>
 	<dict><key>phrase</key><string>Opus One</string><key>shortcut</key><string>おーぱすわん</string></dict>
 	<dict><key>phrase</key><string>マールボロ・ソーヴィニヨン・ブラン</string><key>shortcut</key><string>まーるぼろそーゔぃによんぶらん</string></dict>
@@ -7304,12 +7304,7 @@
 	<dict><key>phrase</key><string>高精米</string><key>shortcut</key><string>こうせいまい</string></dict>
 
 	<!-- 銘柄 -->
-	<dict><key>phrase</key><string>テタンジェ</string><key>shortcut</key><string>てたんじぇ</string></dict>
-	<dict><key>phrase</key><string>ボランジェ</string><key>shortcut</key><string>ぼらんじぇ</string></dict>
 	<dict><key>phrase</key><string>ポール・ロジェ</string><key>shortcut</key><string>ぽーるろじぇ</string></dict>
-	<dict><key>phrase</key><string>ドン・ペリニヨン</string><key>shortcut</key><string>どんぺりによん</string></dict>
-	<dict><key>phrase</key><string>ヴーヴ・クリコ</string><key>shortcut</key><string>ゔーゔくりこ</string></dict>
-	<dict><key>phrase</key><string>モエ・エ・シャンドン</string><key>shortcut</key><string>もええしゃんどん</string></dict>
 	<dict><key>phrase</key><string>クリュグ</string><key>shortcut</key><string>くりゅぐ</string></dict>
 	<dict><key>phrase</key><string>赤玉ポートワイン</string><key>shortcut</key><string>あかだまぽーとわいん</string></dict>
 	<dict><key>phrase</key><string>Champagne Grande Cuvée</string><key>shortcut</key><string>しゃんぱーにゅぐらんどきゅゔぇ</string></dict>
@@ -10035,5 +10030,77 @@
 	<dict><key>phrase</key><string>要衝</string><key>shortcut</key><string>ようしょう</string></dict>	<!-- 3位/8候補 -->
 	<dict><key>phrase</key><string>礫</string><key>shortcut</key><string>れき</string></dict>	<!-- 4位/10候補 -->
 	<dict><key>phrase</key><string>mariage</string><key>shortcut</key><string>まりあーじゅ</string></dict>	<!-- word_costs に無し -->
+	<!-- ================= ワイン分野別サブカテゴリー(2026-08-27 整理) ================= -->
+	<!-- ■ ボルドー右岸: ポムロール/サン・テミリオン(主要) -->
+	<dict><key>phrase</key><string>シャトー・アンジェリュス</string><key>shortcut</key><string>しゃとーあんじぇりゅす</string></dict>
+	<dict><key>phrase</key><string>シャトー・オーゾンヌ</string><key>shortcut</key><string>しゃとーおーぞんぬ</string></dict>
+	<dict><key>phrase</key><string>シャトー・シュヴァル・ブラン</string><key>shortcut</key><string>しゃとーしゅゔぁるぶらん</string></dict>
+	<dict><key>phrase</key><string>シャトー・パヴィ</string><key>shortcut</key><string>しゃとーぱゔぃ</string></dict>
+	<dict><key>phrase</key><string>シャトー・フィジャック</string><key>shortcut</key><string>しゃとーふぃじゃっく</string></dict>
+	<dict><key>phrase</key><string>シャトー・ペトリュス</string><key>shortcut</key><string>しゃとーぺとりゅす</string></dict>
+	<dict><key>phrase</key><string>シャトー・ル・パン</string><key>shortcut</key><string>しゃとーるぱん</string></dict>
+
+	<!-- ■ ブルゴーニュ: 特級畑(グラン・クリュ) -->
+	<dict><key>phrase</key><string>エシェゾー</string><key>shortcut</key><string>えしぇぞー</string></dict>
+	<dict><key>phrase</key><string>クロ・サン・ドニ</string><key>shortcut</key><string>くろさんどに</string></dict>
+	<dict><key>phrase</key><string>クロ・ド・タール</string><key>shortcut</key><string>くろどたーる</string></dict>
+	<dict><key>phrase</key><string>クロ・ド・ラ・ロシュ</string><key>shortcut</key><string>くろどらろしゅ</string></dict>
+	<dict><key>phrase</key><string>クロ・ド・ヴージョ</string><key>shortcut</key><string>くろどゔーじょ</string></dict>
+	<dict><key>phrase</key><string>グラン・エシェゾー</string><key>shortcut</key><string>ぐらんえしぇぞー</string></dict>
+	<dict><key>phrase</key><string>グリオット・シャンベルタン</string><key>shortcut</key><string>ぐりおっとしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>コルトン・シャルルマーニュ</string><key>shortcut</key><string>こるとんしゃるるまーにゅ</string></dict>
+	<dict><key>phrase</key><string>シャルム・シャンベルタン</string><key>shortcut</key><string>しゃるむしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>シャンベルタン</string><key>shortcut</key><string>しゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>シャンベルタン・クロ・ド・ベーズ</string><key>shortcut</key><string>しゃんべるたんくろどべーず</string></dict>
+	<dict><key>phrase</key><string>シュヴァリエ・モンラッシェ</string><key>shortcut</key><string>しゅゔぁりえもんらっしぇ</string></dict>
+	<dict><key>phrase</key><string>バタール・モンラッシェ</string><key>shortcut</key><string>ばたーるもんらっしぇ</string></dict>
+	<dict><key>phrase</key><string>ボンヌ・マール</string><key>shortcut</key><string>ぼんぬまーる</string></dict>
+	<dict><key>phrase</key><string>マジ・シャンベルタン</string><key>shortcut</key><string>まじしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>ミュジニー</string><key>shortcut</key><string>みゅじにー</string></dict>
+	<dict><key>phrase</key><string>ラ・ターシュ</string><key>shortcut</key><string>らたーしゅ</string></dict>
+	<dict><key>phrase</key><string>ラ・ロマネ</string><key>shortcut</key><string>らろまね</string></dict>
+	<dict><key>phrase</key><string>リシュブール</string><key>shortcut</key><string>りしゅぶーる</string></dict>
+	<dict><key>phrase</key><string>リュショット・シャンベルタン</string><key>shortcut</key><string>りゅしょっとしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>ロマネ・コンティ</string><key>shortcut</key><string>ろまねこんてぃ</string></dict>
+	<dict><key>phrase</key><string>ロマネ・サン・ヴィヴァン</string><key>shortcut</key><string>ろまねさんゔぃゔぁん</string></dict>
+
+	<!-- ■ ブルゴーニュ: 村名アペラシオン(コート・ドール中心) -->
+	<dict><key>phrase</key><string>アロース・コルトン</string><key>shortcut</key><string>あろーすこるとん</string></dict>
+	<dict><key>phrase</key><string>サントネー</string><key>shortcut</key><string>さんとねー</string></dict>
+	<dict><key>phrase</key><string>サヴィニー・レ・ボーヌ</string><key>shortcut</key><string>さゔぃにーれぼーぬ</string></dict>
+	<dict><key>phrase</key><string>シャサーニュ・モンラッシェ</string><key>shortcut</key><string>しゃさーにゅもんらっしぇ</string></dict>
+	<dict><key>phrase</key><string>シャンボール・ミュジニー</string><key>shortcut</key><string>しゃんぼーるみゅじにー</string></dict>
+	<dict><key>phrase</key><string>ジュヴレ・シャンベルタン</string><key>shortcut</key><string>じゅゔれしゃんべるたん</string></dict>
+	<dict><key>phrase</key><string>ニュイ・サン・ジョルジュ</string><key>shortcut</key><string>にゅいさんじょるじゅ</string></dict>
+	<dict><key>phrase</key><string>ピュリニー・モンラッシェ</string><key>shortcut</key><string>ぴゅりにーもんらっしぇ</string></dict>
+	<dict><key>phrase</key><string>フィサン</string><key>shortcut</key><string>ふぃさん</string></dict>
+	<dict><key>phrase</key><string>ポマール</string><key>shortcut</key><string>ぽまーる</string></dict>
+	<dict><key>phrase</key><string>マランジュ</string><key>shortcut</key><string>まらんじゅ</string></dict>
+	<dict><key>phrase</key><string>ムルソー</string><key>shortcut</key><string>むるそー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>モレ・サン・ドニ</string><key>shortcut</key><string>もれさんどに</string></dict>
+	<dict><key>phrase</key><string>ヴォルネイ</string><key>shortcut</key><string>ゔぉるねい</string></dict>
+	<dict><key>phrase</key><string>ヴォーヌ・ロマネ</string><key>shortcut</key><string>ゔぉーぬろまね</string></dict>
+
+	<!-- ■ シャンパーニュ: 主要メゾン -->
+	<dict><key>phrase</key><string>アンリオ</string><key>shortcut</key><string>あんりお</string></dict>
+	<dict><key>phrase</key><string>クリュッグ</string><key>shortcut</key><string>くりゅっぐ</string></dict>
+	<dict><key>phrase</key><string>ゴッセ</string><key>shortcut</key><string>ごっせ</string></dict>
+	<dict><key>phrase</key><string>テタンジェ</string><key>shortcut</key><string>てたんじぇ</string></dict>
+	<dict><key>phrase</key><string>ドゥーツ</string><key>shortcut</key><string>どぅーつ</string></dict>
+	<dict><key>phrase</key><string>ドン・ペリニヨン</string><key>shortcut</key><string>どんぺりによん</string></dict>
+	<dict><key>phrase</key><string>パイパー・エドシック</string><key>shortcut</key><string>ぱいぱーえどしっく</string></dict>
+	<dict><key>phrase</key><string>ビルカール・サルモン</string><key>shortcut</key><string>びるかーるさるもん</string></dict>
+	<dict><key>phrase</key><string>ペリエ・ジュエ</string><key>shortcut</key><string>ぺりえじゅえ</string></dict>
+	<dict><key>phrase</key><string>ボランジェ</string><key>shortcut</key><string>ぼらんじぇ</string></dict>
+	<dict><key>phrase</key><string>ポル・ロジェ</string><key>shortcut</key><string>ぽるろじぇ</string></dict>
+	<dict><key>phrase</key><string>モエ・エ・シャンドン</string><key>shortcut</key><string>もええしゃんどん</string></dict>
+	<dict><key>phrase</key><string>ルイ・ロデレール</string><key>shortcut</key><string>るいろでれーる</string></dict>
+	<dict><key>phrase</key><string>ローラン・ペリエ</string><key>shortcut</key><string>ろーらんぺりえ</string></dict>
+	<dict><key>phrase</key><string>ヴーヴ・クリコ</string><key>shortcut</key><string>ゔーゔくりこ</string></dict>
+
+	<!-- ■ ワイン用語(醸造・テイスティング) -->
+	<dict><key>phrase</key><string>デギュスタシオン</string><key>shortcut</key><string>でぎゅすたしおん</string></dict>
+	<dict><key>phrase</key><string>ヴィエイユ・ヴィーニュ</string><key>shortcut</key><string>ゔぃえいゆゔぃーにゅ</string></dict>
+
 </array>
 </plist>
