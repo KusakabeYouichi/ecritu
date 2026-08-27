@@ -607,11 +607,6 @@ final class KeyboardViewController: UIInputViewController {
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
         candidateBarModel.latinSuggestionSkippedForDebugDisplay = kanaKanjiStore.didSkipLatinSuggestionBuildForPressure
-        // 絵文字描画の節約段階(footprint 連動)を削除キーの色へ(2672)
-        EmojiRenderBudget.onSavingLevelChange = { [weak self] level in
-            guard let self, self.candidateBarModel.emojiSavingLevelForDebugDisplay != level else { return }
-            self.candidateBarModel.emojiSavingLevelForDebugDisplay = level
-        }
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
@@ -1035,8 +1030,7 @@ final class KeyboardViewController: UIInputViewController {
         // 1個54KB)が per-process 警告のタイミングで OS に purge される(実測 8/26 19:27:
         // fp59.1→27.5、used44→15)。絵文字パネル表示中/描画直後の警告は OS 側で正しく処理される
         // 無害なもので、LM縮小・critical昇格・削除キー橙は過剰反応になる。軽量対応だけして戻る
-        if currentInputMode == .emoji
-            || CFAbsoluteTimeGetCurrent() - EmojiRenderBudget.lastRenderAt < 3 {
+        if currentInputMode == .emoji {
             kanaKanjiConverter.clearAllCaches()
             malloc_zone_pressure_relief(nil, 0)
             appendKeyboardDiagnosticsLog(

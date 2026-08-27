@@ -825,47 +825,15 @@ struct KaomojiCategoryKeyButton: View {
 // キャッシュを通らず、UICollectionView のセル再利用で同時生存を画面分(約40個)に固定する。
 // ============================================================================
 
-// 絵文字描画の画素予算(2669→2672)。CoreText はカラー絵文字を描くたびに展開画像をシステムの
-// NSCache に保持し、プロセスが死ぬまで捨てない(UILabel/CTLineDraw/SwiftUI のどの経路でも同じ。
-// sbix の emjc は Apple 独自の予測圧縮で自前復号は断念)。1個あたりの実測コストは絵文字フォントの
-// ビットマップ段階で決まり、24pt では倍率3=54KB / 倍率2=20KB / 倍率1=10KB(段階の境界は約48px:
-// 17pt 以下でないと 20KB にならず、フォントを少し縮めても効かない)。
-// 「フリック中は描かない」(2670)は探すときのスクロールで空白になり本末転倒、「常に倍率2」(2633)は
-// ぼやける、と使い勝手で不可(ユーザ評価)。そこで平時は元どおり(常時描画・倍率3)とし、
-// footprint が高いときだけ「これから新しく描く絵文字」の倍率を落とす(既に描いた分はキャッシュ済み
-// なので鮮明のまま)。段階は削除キーの色で可視化: 50MB〜=薄ピンク、65MB〜=ピンク。
-enum EmojiRenderBudget {
-    static let sharpScale: CGFloat = 3
-    static let reducedScale: CGFloat = 2
-    static let fallbackScale: CGFloat = 1
-    static let reducedFootprintMB: Double = 50
-    static let fallbackFootprintMB: Double = 65
-    /// 節約段階(0=平時 / 1=倍率2 / 2=倍率1)。変化したときに呼ばれる(削除キーの色へ。main 専用)
-    nonisolated(unsafe) static var onSavingLevelChange: ((Int) -> Void)?
-    nonisolated(unsafe) private static var currentLevel = 0
-    nonisolated(unsafe) private static var lastFootprintCheckAt: CFAbsoluteTime = 0
-    nonisolated(unsafe) private static var cachedScale: CGFloat = sharpScale
-    /// 直近に絵文字を描いた時刻(絵文字キャッシュ由来のメモリ警告の判定に使う。2673)
-    nonisolated(unsafe) static var lastRenderAt: CFAbsoluteTime = 0
-
-    /// 描く直前に呼ぶ。footprint に応じた描画倍率を返す(main 専用。footprint は 0.25 秒キャッシュ)
-    static func scaleForRendering() -> CGFloat {
-        let now = CFAbsoluteTimeGetCurrent()
-        lastRenderAt = now
-        if now - lastFootprintCheckAt < 0.25 {
-            return cachedScale
-        }
-        lastFootprintCheckAt = now
-        let footprintMB = MemoryForensics.currentPhysFootprintMB() ?? 0
-        let level = footprintMB >= fallbackFootprintMB ? 2 : (footprintMB >= reducedFootprintMB ? 1 : 0)
-        cachedScale = level == 2 ? fallbackScale : (level == 1 ? reducedScale : sharpScale)
-        if level != currentLevel {
-            currentLevel = level
-            onSavingLevelChange?(level)
-        }
-        return cachedScale
-    }
-}
+// 絵文字の描画メモリについて(2669〜2685 の調査結果):
+// CoreText はカラー絵文字を描くたびに展開画像をシステムの NSCache に保持する(1個あたり
+// 24pt 倍率3 で約54KB。UILabel/CTLineDraw/SwiftUI のどの経路でも同じで、経路では避けられない。
+// sbix の emjc は Apple 独自の予測圧縮で自前復号は断念)。ただし実機ではこのキャッシュは
+// per-process のメモリ警告時に OS が捨てる(実測 8/26 19:27: fp59.1→27.5、used44→15)ので
+// 青天井には積まれない。シミュレータには上限が無いため 121MB まで積み上がるが実機とは別物。
+// よって描画倍率を落とす節約(2672〜2679)は撤去し、常に画面倍率で鮮明に描く(ユーザ指定 2685)。
+// メモリ面で残す価値があるのは UICollectionView のセル再利用(SwiftUI の LazyVGrid は生成した
+// セルを閉じるまで保持していた)。
 
 /// 絵文字パネルのグリッド。セクションの間に区切り線(ヘッダー)を挟む。
 struct EmojiGridCollectionView: UIViewRepresentable {
@@ -1108,12 +1076,6 @@ final class EmojiGridCell: UICollectionViewCell {
     }
 
     func configure(emoji: String, accessibilityText: String) {
-        // 画素予算(EmojiRenderBudget): footprint が高いときだけ倍率を落とす
-        let scale = EmojiRenderBudget.scaleForRendering()
-        if label.contentScaleFactor != scale {
-            label.contentScaleFactor = scale
-            label.layer.contentsScale = scale
-        }
         label.text = emoji
         accessibilityLabel = accessibilityText
     }
@@ -1174,11 +1136,6 @@ struct EmojiUILabelText: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: UILabel, context: Context) {
-        let scale = EmojiRenderBudget.scaleForRendering()
-        if uiView.contentScaleFactor != scale {
-            uiView.contentScaleFactor = scale
-            uiView.layer.contentsScale = scale
-        }
         uiView.text = text
         uiView.font = font
         uiView.textColor = color

@@ -992,16 +992,11 @@ struct KeyboardRootView: View {
             // えんじ(臙脂)#A22041
             return Color(red: 162.0 / 255.0, green: 32.0 / 255.0, blue: 65.0 / 255.0).opacity(0.92)
         }
-        // 絵文字描画が倍率1まで落ちている(fp≥65)ときは警告色より優先してピンク(ユーザ指定 2672)
-        if candidateBarModel.emojiSavingLevelForDebugDisplay >= 2 {
-            return Color(red: 1.0, green: 0.45, blue: 0.62).opacity(0.92)
-        }
         switch candidateBarModel.memoryWarningCountForDebugDisplay {
         case 0:
-            // 警告前の段階: 欧文サジェスト構築の見送り(fp≥58)か絵文字の倍率2(fp≥55)なら薄ピンク
-            // (ユーザ指定 2664/2672。警告が来たら黄/橙が優先)
-            if candidateBarModel.latinSuggestionSkippedForDebugDisplay
-                || candidateBarModel.emojiSavingLevelForDebugDisplay == 1 {
+            // 警告前の段階: 欧文サジェスト構築を高水位(fp≥58)で見送り中なら薄ピンク
+            // (ユーザ指定 2664。警告が来たら黄/橙が優先)
+            if candidateBarModel.latinSuggestionSkippedForDebugDisplay {
                 return Color(red: 1.0, green: 0.78, blue: 0.84).opacity(0.9)
             }
             return nil
