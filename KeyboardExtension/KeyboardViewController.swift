@@ -925,6 +925,9 @@ final class KeyboardViewController: UIInputViewController {
     // 重い診断(census2〜4)を許す footprint の上限(2654)。per-process 上限 77MB に対し
     // 22MB の余裕を残す。8/25 の死2件は警告時 fp59.6 → census2 計算中に 77MB 到達。
     static let memoryHeavyCensusMaxFootprintMB: Double = 55
+    // 非表示個体を強制解放しはじめる警告回数(2658、ユーザ指定の段階制)。
+    // 予防スリム化(常時)で足りないときの次の手
+    static let aggressiveInactiveReleaseWarningCount = 3
     // 登録済み Objective-C クラスの「ポインタ→名前」。任意のメモリの先頭ワードを
     // class_getName に渡すのは危険(オブジェクトでなければクラッシュする)なので、
     // この表に在るポインタだけ名前を引く。Swift のクラスも Apple 環境では登録される。
@@ -1198,6 +1201,35 @@ final class KeyboardViewController: UIInputViewController {
                 line: #line,
                 function: #function
             )
+        }
+
+        // 警告が重なるときは非アクティブ個体を積極的に手放す(2658、ユーザ指定の段階制)。
+        // 通常のゾンビ解放はオーナー確認や滞留時間の条件を課しているが、警告3回目以降は
+        // 「まだ純正へ落ちてはいないが危ない」状態なので、表示中でない全個体のビュー階層と
+        // キャッシュを即座に捨てる(1体あたりフレームワーク状態が3〜4MB)。
+        // 表示中の個体は window を持つので対象にならない
+        if diagnosticsState.memoryWarningCountThisSession >= Self.aggressiveInactiveReleaseWarningCount {
+            var releasedCount = 0
+            for controller in KeyboardViewController.liveControllerCensus.allObjects
+            where controller !== self && controller.viewIfLoaded?.window == nil {
+                controller.kanaKanjiConverter.clearAllCaches()
+                controller.releaseHostingViewIfZombie(
+                    reason: "memoryWarning×\(diagnosticsState.memoryWarningCountThisSession)",
+                    ignoringWindowAttachment: true
+                )
+                releasedCount += 1
+            }
+            if releasedCount > 0 {
+                malloc_zone_pressure_relief(nil, 0)
+                appendKeyboardDiagnosticsLog(
+                    "警告\(diagnosticsState.memoryWarningCountThisSession)回目のため非表示個体を強制解放"
+                        + " count=\(releasedCount) footprintMB=\(diagnosticsFootprintMBText())",
+                    critical: true,
+                    file: #fileID,
+                    line: #line,
+                    function: #function
+                )
+            }
         }
 
         // 2回目以降の警告は圧迫が続いている証拠なので、LMキャッシュを縮小モードへ

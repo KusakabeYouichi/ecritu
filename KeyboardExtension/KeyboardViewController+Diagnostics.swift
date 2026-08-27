@@ -469,6 +469,46 @@ extension KeyboardViewController {
     // カーネルログ確定)。プロセス内の列挙はヒープ規模に比例した一時確保を行うため、ゲートを
     // どこに置いても安全にならない。断片化の解剖は simulator 上の heap/vmmap 等で行う。
 
+    // 予防的な malloc アリーナ返却(2658)。変換直後に footprint が閾値を超えていたら
+    // pressure_relief でページを OS へ返す。iOS のメモリ警告は fp≈58(上限77の75%)で
+    // 来るため、その手前(50MB)で返しておけば警告に至りにくい。
+    // 効果はログ「予防スリム化」で計測する(返却量が常にゼロなら閾値か頻度を見直す)
+    static let preventiveReliefFootprintMB: Double = 50
+    static let preventiveReliefMinimumInterval: CFAbsoluteTime = 3
+    nonisolated(unsafe) static var lastPreventiveReliefAt: CFAbsoluteTime = 0
+
+    func performPreventiveMallocReliefIfNeeded() {
+        guard isSuspendMemorySlimmingEnabled else {
+            return   // 「キーボードが閉じたときにメモリを整理」トグルに追従する
+        }
+        let now = CFAbsoluteTimeGetCurrent()
+        guard now - Self.lastPreventiveReliefAt >= Self.preventiveReliefMinimumInterval,
+            let footprintMB = currentFootprintMB(),
+            footprintMB >= Self.preventiveReliefFootprintMB else {
+            return
+        }
+        Self.lastPreventiveReliefAt = now
+        var before = malloc_statistics_t()
+        malloc_zone_statistics(nil, &before)
+        malloc_zone_pressure_relief(nil, 0)
+        var after = malloc_statistics_t()
+        malloc_zone_statistics(nil, &after)
+        let returnedMB = Double(before.size_allocated - after.size_allocated) / 1_048_576
+        guard returnedMB >= 0.5 || footprintMB >= 55 else {
+            return   // ほぼ返らなかったときはログを増やさない(高水位時だけ記録)
+        }
+        appendKeyboardDiagnosticsLog(
+            "予防スリム化 footprintMB=\(String(format: "%.1f", footprintMB))→\(diagnosticsFootprintMBText())"
+                + " allocMB=\(String(format: "%.1f", Double(before.size_allocated) / 1_048_576))"
+                + "→\(String(format: "%.1f", Double(after.size_allocated) / 1_048_576))"
+                + " usedMB=\(String(format: "%.1f", Double(after.size_in_use) / 1_048_576))",
+            critical: true,
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+    }
+
     func updateMemoryFailSafeProfile(trigger: String) {
         guard let footprintMB = currentFootprintMB() else {
             return
