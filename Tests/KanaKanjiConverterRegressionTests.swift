@@ -12155,4 +12155,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let ame = converter.multiClauseCandidates(for: "あめだと", systemCandidateMode: .surface)
         XCTAssertEqual(ame.first, "雨だと", "multi=\(ame.prefix(3))")
     }
+
+    // 一段の連用形(食べる→食べ)の供給(ユーザ報告 2026-08-27)。五段は iForm(食い/つき)が
+    // あるのに一段には規則が無く、さんかくたべ→三角夛部/三角田倍 の人名合成しか出なかった
+    func testRegressionIchidanRenyouNounSupplied() throws {
+        try prepareRealLMDictionary()
+
+        for (probe, expected) in [
+            ("さんかくたべ", "三角食べ"),
+            ("まわしたべ", "回し食べ"),
+            ("たべほうだい", "食べ放題")
+        ] {
+            let multi = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            let single = converter.candidates(for: probe, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(probe): multi=\(multi.prefix(3))")
+        }
+        // 基底(食べる)と既存の派生は不変
+        XCTAssertEqual(converter.candidates(for: "たべる", limit: 2, systemCandidateMode: .surface).first, "食べる")
+        XCTAssertEqual(converter.candidates(for: "たべなければ", limit: 2, systemCandidateMode: .surface).first, "食べなければ")
+    }
 }
