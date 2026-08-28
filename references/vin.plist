@@ -1255,7 +1255,6 @@
 
 	<!-- □ ブルガリア -->
 	<dict><key>phrase</key><string>Asenovgrad</string><key>shortcut</key><string>あせのふぐらーど</string></dict>
-	<dict><key>phrase</key><string>Danube Plain</string><key>shortcut</key><string>だにゅーぶぷれいん</string></dict>
 	<dict><key>phrase</key><string>Struma Valley</string><key>shortcut</key><string>すとるまゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Thracian Valley</string><key>shortcut</key><string>とらきあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>アセノフグラッド</string><key>shortcut</key><string>あせのふぐらっど</string></dict>
@@ -1374,11 +1373,9 @@
 	<dict><key>phrase</key><string>下岩崎</string><key>shortcut</key><string>しもいわさき</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>千曲川ワインバレー</string><key>shortcut</key><string>ちくまがわわいんばれー</string></dict>
 	<dict><key>phrase</key><string>天竜川ワインバレー</string><key>shortcut</key><string>てんりゅうがわわいんばれー</string></dict>
-	<dict><key>phrase</key><string>十勝平野</string><key>shortcut</key><string>とかちへいや</string></dict>
 	<dict><key>phrase</key><string>利根沼田</string><key>shortcut</key><string>とねぬまた</string></dict>
 	<dict><key>phrase</key><string>鳥居平</string><key>shortcut</key><string>とりいびら</string></dict>
 	<dict><key>phrase</key><string>灘五郷</string><key>shortcut</key><string>なだごごう</string></dict>
-	<dict><key>phrase</key><string>新潟砂丘</string><key>shortcut</key><string>にいがたさきゅう</string></dict>
 	<dict><key>phrase</key><string>新潟ワインコースト</string><key>shortcut</key><string>にいがたわいんこーすと</string></dict>
 	<dict><key>phrase</key><string>西宮郷</string><key>shortcut</key><string>にしのみやごう</string></dict>
 	<dict><key>phrase</key><string>日本アルプスワインバレー</string><key>shortcut</key><string>にほんあるぷすわいんばれー</string></dict>
@@ -1386,7 +1383,6 @@
 	<dict><key>phrase</key><string>富士北麓</string><key>shortcut</key><string>ふじほくろく</string></dict>
 	<dict><key>phrase</key><string>富士・御坂</string><key>shortcut</key><string>ふじみさか</string></dict>
 	<dict><key>phrase</key><string>北海道十勝地域</string><key>shortcut</key><string>ほっかいどうとかちちいき</string></dict>
-	<dict><key>phrase</key><string>北海道十勝平野</string><key>shortcut</key><string>ほっかいどうとかちへいや</string></dict>
 	<dict><key>phrase</key><string>北海道名寄</string><key>shortcut</key><string>ほっかいどうなよろ</string></dict>
 	<dict><key>phrase</key><string>牧丘</string><key>shortcut</key><string>まきおか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>御影郷</string><key>shortcut</key><string>みかげごう</string></dict>
@@ -1831,7 +1827,6 @@
 	<dict><key>phrase</key><string>Pisa Range</string><key>shortcut</key><string>ぴされんじ</string></dict>
 	<dict><key>phrase</key><string>Southern Valley</string><key>shortcut</key><string>さざんゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Waiheke Island</string><key>shortcut</key><string>わいへけあいらんど</string></dict>
-	<dict><key>phrase</key><string>Waimea Plains</string><key>shortcut</key><string>わいめあぷれいんず</string></dict>
 	<dict><key>phrase</key><string>Waipara Valley</string><key>shortcut</key><string>わいぱらゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Wairarapa</string><key>shortcut</key><string>わいららぱ</string></dict>
 	<dict><key>phrase</key><string>Wairau Valley</string><key>shortcut</key><string>わいらうゔぁれー</string></dict>
@@ -1891,7 +1886,6 @@
 	<dict><key>phrase</key><string>クレイン・カルー</string><key>shortcut</key><string>くれいんかるー</string></dict>
 	<dict><key>phrase</key><string>ケープ・アガラス</string><key>shortcut</key><string>けーぷあがらす</string></dict>
 	<dict><key>phrase</key><string>ケープ・サウス・コースト</string><key>shortcut</key><string>けーぷさうすこーすと</string></dict>
-	<dict><key>phrase</key><string>ケープ・サウス・コースト地域</string><key>shortcut</key><string>けーぷさうすこーすとちいき</string></dict>
 	<dict><key>phrase</key><string>ケープ・タウン</string><key>shortcut</key><string>けーぷたうん</string></dict>
 	<dict><key>phrase</key><string>コースタル・リージョン</string><key>shortcut</key><string>こーすたるりーじょん</string></dict>
 	<dict><key>phrase</key><string>コンスタンシア</string><key>shortcut</key><string>こんすたんしあ</string></dict>	<!-- Sudachiにもある -->
@@ -1903,159 +1897,89 @@
 	<dict><key>phrase</key><string>西ケープ</string><key>shortcut</key><string>にしけーぷ</string></dict>
 	<dict><key>phrase</key><string>フランシュフック</string><key>shortcut</key><string>ふらんしゅふっく</string></dict>
 	<dict><key>phrase</key><string>フランシュフック・ヴァレー</string><key>shortcut</key><string>ふらんしゅふっくゔぁれー</string></dict>
-	<dict><key>phrase</key><string>ブリード・リヴァー・ヴァレー地域</string><key>shortcut</key><string>ぶりーどりゔぁーゔぁれーちいき</string></dict>
+	<dict><key>phrase</key><string>ブリード・リヴァー・ヴァレー</string><key>shortcut</key><string>ぶりーどりゔぁーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ロバートソン</string><key>shortcut</key><string>ろばーとそん</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- □ その他の国(27か国以外) -->
-	<dict><key>phrase</key><string>浙江省紹興</string><key>shortcut</key><string>せっこうしょうしょうこう</string></dict>
 	<dict><key>phrase</key><string>バハ・カリフォルニア</string><key>shortcut</key><string>ばはかりふぉるにあ</string></dict>
 
 	<!-- □ 地名・原産地(アペラシオン名でない地名・産地表記) -->
+	<dict><key>phrase</key><string>ワインルート</string><key>shortcut</key><string>わいんるーと</string></dict>
+	<dict><key>phrase</key><string>アッピア街道</string><key>shortcut</key><string>あっぴあかいどう</string></dict>
+	<dict><key>phrase</key><string>ブロワ城</string><key>shortcut</key><string>ぶろわじょう</string></dict>
+	<dict><key>phrase</key><string>シノン城</string><key>shortcut</key><string>しのんじょう</string></dict>
+	<dict><key>phrase</key><string>シュノンソー城</string><key>shortcut</key><string>しゅのんそーじょう</string></dict>
+	<dict><key>phrase</key><string>アンボワーズ城</string><key>shortcut</key><string>あんぼわーずじょう</string></dict>
 	<dict><key>phrase</key><string>Black Sea</string><key>shortcut</key><string>ぶらっくしー</string></dict>
 	<dict><key>phrase</key><string>Buenos Aires</string><key>shortcut</key><string>ぶえのすあいれす</string></dict>
 	<dict><key>phrase</key><string>Commune</string><key>shortcut</key><string>こみゅーん</string></dict>	<!-- ??村 -->
 	<dict><key>phrase</key><string>Grand</string><key>shortcut</key><string>ぐらん</string></dict>	<!-- ??偉大な -->
 	<dict><key>phrase</key><string>Haut</string><key>shortcut</key><string>おー</string></dict>	<!-- ??上 -->
-	<dict><key>phrase</key><string>Haut-Armagnac産</string><key>shortcut</key><string>おーあるまにゃっくさん</string></dict>
 	<dict><key>phrase</key><string>hors Côte d’Or</string><key>shortcut</key><string>おーるこーとどーる</string></dict>
 	<dict><key>phrase</key><string>Lake</string><key>shortcut</key><string>れいく</string></dict>
-	<dict><key>phrase</key><string>Lisboa付近</string><key>shortcut</key><string>りすぼあふきん</string></dict>
-	<dict><key>phrase</key><string>Molise以外</string><key>shortcut</key><string>もりーぜいがい</string></dict>
-	<dict><key>phrase</key><string>Musigny以外</string><key>shortcut</key><string>みゅじにーいがい</string></dict>
-	<dict><key>phrase</key><string>Nice近郊</string><key>shortcut</key><string>にーすきんこう</string></dict>
+	<dict><key>phrase</key><string>Nice</string><key>shortcut</key><string>にーす</string></dict>
 	<dict><key>phrase</key><string>Ridge</string><key>shortcut</key><string>りっじ</string></dict>
-	<dict><key>phrase</key><string>Slovenia</string><key>shortcut</key><string>すろゔぇにあ</string></dict>
-	<dict><key>phrase</key><string>アガラス平原</string><key>shortcut</key><string>あがらすへいげん</string></dict>
-	<dict><key>phrase</key><string>アッピア街道</string><key>shortcut</key><string>あっぴあかいどう</string></dict>
-	<dict><key>phrase</key><string>阿武郡</string><key>shortcut</key><string>あぶぐん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ヴァティカン</string><key>shortcut</key><string>ゔぁてぃかん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アルタ・カリフォルニア</string><key>shortcut</key><string>あるたかりふぉるにあ</string></dict>
 	<dict><key>phrase</key><string>アルハンブラ宮殿</string><key>shortcut</key><string>あるはんぶらきゅうでん</string></dict>
 	<dict><key>phrase</key><string>伊勢神宮</string><key>shortcut</key><string>いせじんぐう</string></dict>
-	<dict><key>phrase</key><string>稲作地帯</string><key>shortcut</key><string>いなさくちたい</string></dict>
-	<dict><key>phrase</key><string>岩山</string><key>shortcut</key><string>いわやま</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ヴァティカン</string><key>shortcut</key><string>ゔぁてぃかん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ヴィーニョ・ヴェルデ北部</string><key>shortcut</key><string>ゔぃーにょゔぇるでほくぶ</string></dict>
-	<dict><key>phrase</key><string>ヴュルテンベルク産</string><key>shortcut</key><string>ゔゅるてんべるくさん</string></dict>
 	<dict><key>phrase</key><string>英国南岸</string><key>shortcut</key><string>えいこくなんがん</string></dict>
 	<dict><key>phrase</key><string>英国南東端</string><key>shortcut</key><string>えいこくなんとうたん</string></dict>
 	<dict><key>phrase</key><string>英国南部</string><key>shortcut</key><string>えいこくなんぶ</string></dict>
-	<dict><key>phrase</key><string>沿岸地域</string><key>shortcut</key><string>えんがんちいき</string></dict>
 	<dict><key>phrase</key><string>欧州</string><key>shortcut</key><string>おうしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オクシタニー圏</string><key>shortcut</key><string>おくしたにーけん</string></dict>
 	<dict><key>phrase</key><string>オクシタニー地域圏</string><key>shortcut</key><string>おくしたにーちいきけん</string></dict>
-	<dict><key>phrase</key><string>海岸地域</string><key>shortcut</key><string>かいがんちいき</string></dict>
-	<dict><key>phrase</key><string>カイザーシュトゥール周辺</string><key>shortcut</key><string>かいざーしゅとぅーるしゅうへん</string></dict>
-	<dict><key>phrase</key><string>乾燥高原</string><key>shortcut</key><string>かんそうこうげん</string></dict>
+	<dict><key>phrase</key><string>カイザーシュトゥール</string><key>shortcut</key><string>かいざーしゅとぅーるしゅうへん</string></dict>
 	<dict><key>phrase</key><string>キシナウ</string><key>shortcut</key><string>きしなう</string></dict>
 	<dict><key>phrase</key><string>貴州省産</string><key>shortcut</key><string>きしゅうしょうさん</string></dict>
 	<dict><key>phrase</key><string>北アメリカ</string><key>shortcut</key><string>きたあめりか</string></dict>
 	<dict><key>phrase</key><string>北アメリカ大陸</string><key>shortcut</key><string>きたあめりかたいりく</string></dict>
-	<dict><key>phrase</key><string>北アメリカ大陸西部</string><key>shortcut</key><string>きたあめりかたいりくせいぶ</string></dict>
-	<dict><key>phrase</key><string>北アメリカ由来</string><key>shortcut</key><string>きたあめりかゆらい</string></dict>
 	<dict><key>phrase</key><string>北イタリア</string><key>shortcut</key><string>きたいたりあ</string></dict>
 	<dict><key>phrase</key><string>北インド</string><key>shortcut</key><string>きたいんど</string></dict>
-	<dict><key>phrase</key><string>北インド産</string><key>shortcut</key><string>きたいんどさん</string></dict>
 	<dict><key>phrase</key><string>北島Auckland</string><key>shortcut</key><string>きたじまおーくらんど</string></dict>
 	<dict><key>phrase</key><string>北ピエモンテ</string><key>shortcut</key><string>きたぴえもんて</string></dict>
 	<dict><key>phrase</key><string>キプロス</string><key>shortcut</key><string>きぷろす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>グラスゴー</string><key>shortcut</key><string>ぐらすごー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ケープ</string><key>shortcut</key><string>けーぷ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ケープ植物区</string><key>shortcut</key><string>けーぷしょくぶつく</string></dict>
-	<dict><key>phrase</key><string>穀倉地帯</string><key>shortcut</key><string>こくそうちたい</string></dict>
 	<dict><key>phrase</key><string>コトー・ド</string><key>shortcut</key><string>ことーど</string></dict>
 	<dict><key>phrase</key><string>コート・ド</string><key>shortcut</key><string>こーとど</string></dict>
-	<dict><key>phrase</key><string>コート・ドール以外</string><key>shortcut</key><string>こーとどーるいがい</string></dict>
-	<dict><key>phrase</key><string>コート・ドール地域</string><key>shortcut</key><string>こーとどーるちいき</string></dict>
-	<dict><key>phrase</key><string>コート・ドール南端</string><key>shortcut</key><string>こーとどーるなんたん</string></dict>
-	<dict><key>phrase</key><string>コロンビア・ヴァレー流域</string><key>shortcut</key><string>ころんびあゔぁれーりゅういき</string></dict>
-	<dict><key>phrase</key><string>コンスタンシア産</string><key>shortcut</key><string>こんすたんしあさん</string></dict>
 	<dict><key>phrase</key><string>コンスタンティノーブル</string><key>shortcut</key><string>こんすたんてぃのーぶる</string></dict>
-	<dict><key>phrase</key><string>最南端地域</string><key>shortcut</key><string>さいなんたんちいき</string></dict>
-	<dict><key>phrase</key><string>最北東部</string><key>shortcut</key><string>さいほくとうぶ</string></dict>
-	<dict><key>phrase</key><string>サヴォワ等</string><key>shortcut</key><string>さゔぉわとう</string></dict>
-	<dict><key>phrase</key><string>サハラ砂漠</string><key>shortcut</key><string>さはらさばく</string></dict>
 	<dict><key>phrase</key><string>サハリン</string><key>shortcut</key><string>さはりん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>サマセット州発祥</string><key>shortcut</key><string>さませっとしゅうはっしょう</string></dict>
-	<dict><key>phrase</key><string>サン・ジミニャーノ周辺</string><key>shortcut</key><string>さんじみにゃーのしゅうへん</string></dict>
-	<dict><key>phrase</key><string>サントル・ロワール地区最大</string><key>shortcut</key><string>さんとるろわーるちくさいだい</string></dict>
-	<dict><key>phrase</key><string>サントル・ロワール地区サンセール</string><key>shortcut</key><string>さんとるろわーるちくさんせーる</string></dict>
-	<dict><key>phrase</key><string>ザクセン産</string><key>shortcut</key><string>ざくせんさん</string></dict>
+	<dict><key>phrase</key><string>サン・ジミニャーノ</string><key>shortcut</key><string>さんじみにゃーのしゅうへん</string></dict>
 	<dict><key>phrase</key><string>ザグレブ</string><key>shortcut</key><string>ざぐれぶ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>シノン城</string><key>shortcut</key><string>しのんじょう</string></dict>
-	<dict><key>phrase</key><string>シュノンソー城</string><key>shortcut</key><string>しゅのんそーじょう</string></dict>
 	<dict><key>phrase</key><string>ジェノヴァ</string><key>shortcut</key><string>じぇのゔぁ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ジェノヴァ産</string><key>shortcut</key><string>じぇのゔぁさん</string></dict>
-	<dict><key>phrase</key><string>ジョージア最東部</string><key>shortcut</key><string>じょーじあさいとうぶ</string></dict>
-	<dict><key>phrase</key><string>ジョージア東部Kakheti</string><key>shortcut</key><string>じょーじあとうぶかへてぃ</string></dict>
-	<dict><key>phrase</key><string>ジロング近郊</string><key>shortcut</key><string>じろんぐきんこう</string></dict>
-	<dict><key>phrase</key><string>スコットランド産</string><key>shortcut</key><string>すこっとらんどさん</string></dict>
-	<dict><key>phrase</key><string>スペイン原産</string><key>shortcut</key><string>すぺいんげんさん</string></dict>
-	<dict><key>phrase</key><string>スペイン産</string><key>shortcut</key><string>すぺいんさん</string></dict>
-	<dict><key>phrase</key><string>スリランカ産</string><key>shortcut</key><string>すりらんかさん</string></dict>
-	<dict><key>phrase</key><string>スワン・ヴァレー周域</string><key>shortcut</key><string>すわんゔぁれーしゅういき</string></dict>
 	<dict><key>phrase</key><string>善光寺</string><key>shortcut</key><string>ぜんこうじ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>大西洋沿岸</string><key>shortcut</key><string>たいせいようえんがん</string></dict>
-	<dict><key>phrase</key><string>大西洋沿岸地域</string><key>shortcut</key><string>たいせいようえんがんちいき</string></dict>
-	<dict><key>phrase</key><string>太平洋沿岸</string><key>shortcut</key><string>たいへいようえんがん</string></dict>
-	<dict><key>phrase</key><string>タクラマカン沙漠</string><key>shortcut</key><string>たくらまかんさばく</string></dict>
-	<dict><key>phrase</key><string>タスマニア産</string><key>shortcut</key><string>たすまにあさん</string></dict>
-	<dict><key>phrase</key><string>タンザニア産</string><key>shortcut</key><string>たんざにあさん</string></dict>
 	<dict><key>phrase</key><string>チェコ・プルゼニュ発祥</string><key>shortcut</key><string>ちぇこぷるぜにゅはっしょう</string></dict>
-	<dict><key>phrase</key><string>地区Kras</string><key>shortcut</key><string>ちくくらす</string></dict>
-	<dict><key>phrase</key><string>中央高原地帯</string><key>shortcut</key><string>ちゅうおうこうげんちたい</string></dict>
-	<dict><key>phrase</key><string>チリ沖</string><key>shortcut</key><string>ちりおき</string></dict>
-	<dict><key>phrase</key><string>チリ側</string><key>shortcut</key><string>ちりがわ</string></dict>
 	<dict><key>phrase</key><string>チリ側アンデス</string><key>shortcut</key><string>ちりがわあんです</string></dict>
-	<dict><key>phrase</key><string>チリ等</string><key>shortcut</key><string>ちりとう</string></dict>
 	<dict><key>phrase</key><string>ティレニア</string><key>shortcut</key><string>てぃれにあ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>テルメンレギオン原産</string><key>shortcut</key><string>てるめんれぎおんげんさん</string></dict>
 	<dict><key>phrase</key><string>天竜川</string><key>shortcut</key><string>てんりゅうがわ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>デアルル・クラヴェツ地域</string><key>shortcut</key><string>であるるくらゔぇつちいき</string></dict>
-	<dict><key>phrase</key><string>東西ドイツ</string><key>shortcut</key><string>とうざいどいつ</string></dict>
-	<dict><key>phrase</key><string>トゥーレーヌ辺り</string><key>shortcut</key><string>とぅーれーぬあたり</string></dict>
-	<dict><key>phrase</key><string>利根郡</string><key>shortcut</key><string>とねぐん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トビリシ</string><key>shortcut</key><string>とびりし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トリノ</string><key>shortcut</key><string>とりの</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>トロワ</string><key>shortcut</key><string>とろわ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ドイツ語圏</string><key>shortcut</key><string>どいつごけん</string></dict>
 	<dict><key>phrase</key><string>ドレスデン</string><key>shortcut</key><string>どれすでん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>内陸中央部</string><key>shortcut</key><string>ないりくちゅうおうぶ</string></dict>
-	<dict><key>phrase</key><string>長門市</string><key>shortcut</key><string>ながとし</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ナパ・ヴァレー最北</string><key>shortcut</key><string>なぱゔぁれーさいほく</string></dict>
-	<dict><key>phrase</key><string>ナパ・ヴァレー中央部</string><key>shortcut</key><string>なぱゔぁれーちゅうおうぶ</string></dict>
 	<dict><key>phrase</key><string>ナポリ</string><key>shortcut</key><string>なぽり</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>南東部クロアチア</string><key>shortcut</key><string>なんとうぶくろあちあ</string></dict>
 	<dict><key>phrase</key><string>西アジア</string><key>shortcut</key><string>にしあじあ</string></dict>
 	<dict><key>phrase</key><string>西ケープ州・喜望峰周辺</string><key>shortcut</key><string>にしけーぷしゅうきぼうほうしゅうへん</string></dict>
-	<dict><key>phrase</key><string>ニース近郊</string><key>shortcut</key><string>にーすきんこう</string></dict>
-	<dict><key>phrase</key><string>ニーダーエステライヒ東部</string><key>shortcut</key><string>にーだーえすてらいひとうぶ</string></dict>
-	<dict><key>phrase</key><string>ニューヨーク市</string><key>shortcut</key><string>にゅーよーくし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ネメア地域</string><key>shortcut</key><string>ねめあちいき</string></dict>
 	<dict><key>phrase</key><string>野山</string><key>shortcut</key><string>のやま</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>白山</string><key>shortcut</key><string>はくさん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バルセロナ</string><key>shortcut</key><string>ばるせろな</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>パース近郊</string><key>shortcut</key><string>ぱーすきんこう</string></dict>
-	<dict><key>phrase</key><string>パース北部</string><key>shortcut</key><string>ぱーすほくぶ</string></dict>
-	<dict><key>phrase</key><string>パンノニア平原</string><key>shortcut</key><string>ぱんのにあへいげん</string></dict>
+	<dict><key>phrase</key><string>パース</string><key>shortcut</key><string>ぱーすきんこう</string></dict>
 	<dict><key>phrase</key><string>東アジア</string><key>shortcut</key><string>ひがしあじあ</string></dict>
 	<dict><key>phrase</key><string>東地中海諸国</string><key>shortcut</key><string>ひがしちちゅうかいしょこく</string></dict>
 	<dict><key>phrase</key><string>東マケドニア</string><key>shortcut</key><string>ひがしまけどにあ</string></dict>
 	<dict><key>phrase</key><string>フェーカン</string><key>shortcut</key><string>ふぇーかん</string></dict>
-	<dict><key>phrase</key><string>麓原産</string><key>shortcut</key><string>ふもとげんさん</string></dict>
-	<dict><key>phrase</key><string>ブロワ城</string><key>shortcut</key><string>ぶろわじょう</string></dict>
 	<dict><key>phrase</key><string>プレ・アンデス</string><key>shortcut</key><string>ぷれあんです</string></dict>
 	<dict><key>phrase</key><string>プロヴディフ</string><key>shortcut</key><string>ぷろゔでぃふ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ベルリン近郊</string><key>shortcut</key><string>べるりんきんこう</string></dict>
 	<dict><key>phrase</key><string>ホイリゲ街</string><key>shortcut</key><string>ほいりげがい</string></dict>
-	<dict><key>phrase</key><string>北東部ハンガリー平原地域</string><key>shortcut</key><string>ほくとうぶはんがりーへいげんちいき</string></dict>
-	<dict><key>phrase</key><string>北米原産</string><key>shortcut</key><string>ほくべいげんさん</string></dict>
-	<dict><key>phrase</key><string>北米大陸原産</string><key>shortcut</key><string>ほくべいたいりくげんさん</string></dict>
-	<dict><key>phrase</key><string>本州</string><key>shortcut</key><string>ほんしゅう</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ボルドー原産</string><key>shortcut</key><string>ぼるどーげんさん</string></dict>
+	<dict><key>phrase</key><string>北米</string><key>shortcut</key><string>ほくべいげんさん</string></dict>
+	<dict><key>phrase</key><string>北米大陸</string><key>shortcut</key><string>ほくべいたいりくげんさん</string></dict>
 	<dict><key>phrase</key><string>ボルドー北部</string><key>shortcut</key><string>ぼるどーほくぶ</string></dict>
 	<dict><key>phrase</key><string>ボローニャ</string><key>shortcut</key><string>ぼろーにゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポドラウイエ地域</string><key>shortcut</key><string>ぽどらういえちいき</string></dict>
-	<dict><key>phrase</key><string>ポー平原</string><key>shortcut</key><string>ぽーへいげん</string></dict>
 	<dict><key>phrase</key><string>ポンペイ</string><key>shortcut</key><string>ぽんぺい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポンペイ遺跡</string><key>shortcut</key><string>ぽんぺいいせき</string></dict>
 	<dict><key>phrase</key><string>マルセイユ</string><key>shortcut</key><string>まるせいゆ</string></dict>	<!-- Sudachiにもある -->
@@ -2066,23 +1990,18 @@
 	<dict><key>phrase</key><string>南ドイツ</string><key>shortcut</key><string>みなみどいつ</string></dict>
 	<dict><key>phrase</key><string>南フランス</string><key>shortcut</key><string>みなみふらんす</string></dict>
 	<dict><key>phrase</key><string>ミラノ</string><key>shortcut</key><string>みらの</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ミラノ北部</string><key>shortcut</key><string>みらのほくぶ</string></dict>
 	<dict><key>phrase</key><string>メセタ</string><key>shortcut</key><string>めせた</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>モンテビデオ</string><key>shortcut</key><string>もんてびでお</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>油田地帯</string><key>shortcut</key><string>ゆでんちたい</string></dict>
 	<dict><key>phrase</key><string>ラ・セレナ</string><key>shortcut</key><string>らせれな</string></dict>
-	<dict><key>phrase</key><string>ラペル・ヴァレー南側</string><key>shortcut</key><string>らぺるゔぁれーみなみがわ</string></dict>
 	<dict><key>phrase</key><string>リオ・オハ</string><key>shortcut</key><string>りおおは</string></dict>
 	<dict><key>phrase</key><string>リージョンSouth</string><key>shortcut</key><string>りーじょんさうす</string></dict>
-	<dict><key>phrase</key><string>リムノス島原産</string><key>shortcut</key><string>りむのすとうげんさん</string></dict>
 	<dict><key>phrase</key><string>リヨン</string><key>shortcut</key><string>りよん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ルクセンブルク最南</string><key>shortcut</key><string>るくせんぶるくさいなん</string></dict>
+	<dict><key>phrase</key><string>ルクセンブルク</string><key>shortcut</key><string>るくせんぶるくさいなん</string></dict>
 	<dict><key>phrase</key><string>ローマ</string><key>shortcut</key><string>ろーま</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ロンドン</string><key>shortcut</key><string>ろんどん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ワイパラ地域</string><key>shortcut</key><string>わいぱらちいき</string></dict>
+	<dict><key>phrase</key><string>ワイパラ</string><key>shortcut</key><string>わいぱらちいき</string></dict>
 	<dict><key>phrase</key><string>ワインバレー</string><key>shortcut</key><string>わいんばれー</string></dict>
 	<dict><key>phrase</key><string>ワインベルト</string><key>shortcut</key><string>わいんべると</string></dict>
-	<dict><key>phrase</key><string>ワインルート</string><key>shortcut</key><string>わいんるーと</string></dict>
 
 	<!-- □ 不明(国の判定に自信なし) -->
 	<dict><key>phrase</key><string>サン・パブロ</string><key>shortcut</key><string>さんぱぶろ</string></dict>
@@ -2137,11 +2056,9 @@
 	<!-- ■ P.G.I. -->
 	<dict><key>phrase</key><string>Balaton</string><key>shortcut</key><string>ばらとん</string></dict>
 	<dict><key>phrase</key><string>Balatonmelléki</string><key>shortcut</key><string>ばらとんめっれーき</string></dict>
-	<dict><key>phrase</key><string>Danube Plain</string><key>shortcut</key><string>どなうぷれいん</string></dict>
 	<dict><key>phrase</key><string>Duna-Tisza Közi</string><key>shortcut</key><string>どぅなてぃさくずぃ</string></dict>
 	<dict><key>phrase</key><string>Dunántúl</string><key>shortcut</key><string>どぅなーんとぅーる</string></dict>
 	<dict><key>phrase</key><string>トラキア・ヴァレー</string><key>shortcut</key><string>とらきあゔぁれー</string></dict>
-	<dict><key>phrase</key><string>ドナウ平原</string><key>shortcut</key><string>どなうへいげん</string></dict>
 	<dict><key>phrase</key><string>バラトン</string><key>shortcut</key><string>ばらとん</string></dict>
 	<dict><key>phrase</key><string>Danube Plain P.G.I.</string><key>shortcut</key><string>だにゅーぶぷれいんぴーじーあい</string></dict>
 	<dict><key>phrase</key><string>Pannon</string><key>shortcut</key><string>ぱんのん</string></dict>
@@ -2159,8 +2076,8 @@
 	<dict><key>phrase</key><string>Canada</string><key>shortcut</key><string>かなだ</string></dict>
 	<dict><key>phrase</key><string>ザクセンコイレ</string><key>shortcut</key><string>ざくせんこいれ</string></dict>
 	<dict><key>phrase</key><string>シェリシュ</string><key>shortcut</key><string>しぇりしゅ</string></dict>
-	<dict><key>phrase</key><string>ソンダ</string><key>shortcut</key><string>そんだ</string></dict>
 	<dict><key>phrase</key><string>タイアリン</string><key>shortcut</key><string>たいありん</string></dict>
+	<dict><key>phrase</key><string>Slovenia</string><key>shortcut</key><string>すろゔぇにあ</string></dict>
 	<dict><key>phrase</key><string>Chile</string><key>shortcut</key><string>ちり</string></dict>
 	<dict><key>phrase</key><string>Croatia</string><key>shortcut</key><string>くろあちあ</string></dict>
 	<dict><key>phrase</key><string>Deutschland</string><key>shortcut</key><string>どいちゅらんと</string></dict>
@@ -2209,8 +2126,6 @@
 	<dict><key>phrase</key><string>Österreich</string><key>shortcut</key><string>えすたらいひ</string></dict>
 	<dict><key>phrase</key><string>アジア</string><key>shortcut</key><string>あじあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アゼルバイジャン</string><key>shortcut</key><string>あぜるばいじゃん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>アタカマ沙漠</string><key>shortcut</key><string>あたかまさばく</string></dict>
-	<dict><key>phrase</key><string>アタカマ砂漠</string><key>shortcut</key><string>あたかまさばく</string></dict>
 	<dict><key>phrase</key><string>アフリカ</string><key>shortcut</key><string>あふりか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アマゾン</string><key>shortcut</key><string>あまぞん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アメリカ</string><key>shortcut</key><string>あめりか</string></dict>	<!-- Sudachiにもある -->
@@ -2228,11 +2143,6 @@
 	<dict><key>phrase</key><string>カリフォルニア南部</string><key>shortcut</key><string>かりふぉるにあなんぶ</string></dict>
 	<dict><key>phrase</key><string>オランダ領</string><key>shortcut</key><string>おらんだりょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ジョージア</string><key>shortcut</key><string>じょーじあ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ジョージア全土</string><key>shortcut</key><string>じょーじあぜんど</string></dict>
-	<dict><key>phrase</key><string>ジョージア全域</string><key>shortcut</key><string>じょーじあぜんいき</string></dict>
-	<dict><key>phrase</key><string>ジョージア国内</string><key>shortcut</key><string>じょーじあこくない</string></dict>
-	<dict><key>phrase</key><string>ジョージア最大</string><key>shortcut</key><string>じょーじあさいだい</string></dict>
-	<dict><key>phrase</key><string>ジョージア西部</string><key>shortcut</key><string>じょーじあせいぶ</string></dict>
 	<dict><key>phrase</key><string>スイス</string><key>shortcut</key><string>すいす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スウェーデン</string><key>shortcut</key><string>すうぇーでん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スコットランド</string><key>shortcut</key><string>すこっとらんど</string></dict>	<!-- Sudachiにもある -->
@@ -2467,6 +2377,26 @@
 	<dict><key>phrase</key><string>南アルプス</string><key>shortcut</key><string>みなみあるぷす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エルツベルク</string><key>shortcut</key><string>えるつべるく</string></dict>
 
+	<!-- ■ 平地、平野、平原 -->
+	<dict><key>phrase</key><string>Waimea Plains</string><key>shortcut</key><string>わいめあぷれいんず</string></dict>
+	<dict><key>phrase</key><string>Danube Plain</string><key>shortcut</key><string>どなうぷれいん</string></dict>
+	<dict><key>phrase</key><string>Danube Plain</string><key>shortcut</key><string>だにゅーぶぷれいん</string></dict>
+	<dict><key>phrase</key><string>十勝平野</string><key>shortcut</key><string>とかちへいや</string></dict>
+	<dict><key>phrase</key><string>北海道十勝平野</string><key>shortcut</key><string>ほっかいどうとかちへいや</string></dict>
+	<dict><key>phrase</key><string>アガラス平原</string><key>shortcut</key><string>あがらすへいげん</string></dict>
+	<dict><key>phrase</key><string>パノニア平原</string><key>shortcut</key><string>ぱのにあへいげん</string></dict>
+	<dict><key>phrase</key><string>パンノニア平原</string><key>shortcut</key><string>ぱんのにあへいげん</string></dict>
+	<dict><key>phrase</key><string>ポー平原</string><key>shortcut</key><string>ぽーへいげん</string></dict>
+	<dict><key>phrase</key><string>北東部ハンガリー平原地域</string><key>shortcut</key><string>ほくとうぶはんがりーへいげんちいき</string></dict>
+	<dict><key>phrase</key><string>ドナウ平原</string><key>shortcut</key><string>どなうへいげん</string></dict>
+
+	<!-- ■ 沙漠/砂漠 -->
+	<dict><key>phrase</key><string>タクラマカン沙漠</string><key>shortcut</key><string>たくらまかんさばく</string></dict>
+	<dict><key>phrase</key><string>アタカマ沙漠</string><key>shortcut</key><string>あたかまさばく</string></dict>
+	<dict><key>phrase</key><string>アタカマ砂漠</string><key>shortcut</key><string>あたかまさばく</string></dict>
+	<dict><key>phrase</key><string>サハラ砂漠</string><key>shortcut</key><string>さはらさばく</string></dict>
+	<dict><key>phrase</key><string>新潟砂丘</string><key>shortcut</key><string>にいがたさきゅう</string></dict>
+
 	<!-- ■ 地名(川) -->
 	<dict><key>phrase</key><string>Douro川</string><key>shortcut</key><string>どうろがわ</string></dict>
 	<dict><key>phrase</key><string>Tejo川</string><key>shortcut</key><string>てーじょがわ</string></dict>
@@ -2667,7 +2597,6 @@
 	<dict><key>phrase</key><string>Patagonia</string><key>shortcut</key><string>ぱたごにあ</string></dict>
 	<dict><key>phrase</key><string>ヌーヴェル・アキテーヌ地域圏</string><key>shortcut</key><string>ぬーゔぇるあきてーぬちいきけん</string></dict>
 	<dict><key>phrase</key><string>パノニア</string><key>shortcut</key><string>ぱのにあ</string></dict>
-	<dict><key>phrase</key><string>パノニア平原</string><key>shortcut</key><string>ぱのにあへいげん</string></dict>
 	<dict><key>phrase</key><string>Andalucía</string><key>shortcut</key><string>あんだるしあ</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り(アクセント付き) -->
 	<dict><key>phrase</key><string>Asturias</string><key>shortcut</key><string>あすとぅりあす</string></dict>	<!-- スペイン17自治州(2026-08-27)。西語綴り -->
 	<dict><key>phrase</key><string>Aragón</string><key>shortcut</key><string>あらごん</string></dict>
@@ -2790,6 +2719,9 @@
 	<!-- ■ 州名 -->
 	<dict><key>phrase</key><string>山西省</string><key>shortcut</key><string>さんせいしょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>四川省</string><key>shortcut</key><string>しせんしょう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>浙江省紹興</string><key>shortcut</key><string>せっこうしょうしょうこう</string></dict>
+	<dict><key>phrase</key><string>貴州省</string><key>shortcut</key><string>きしゅうしょう</string></dict>
+	<dict><key>phrase</key><string>安徽省</string><key>shortcut</key><string>あんきしょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>西豪州</string><key>shortcut</key><string>せいごうしゅう</string></dict>
 	<dict><key>phrase</key><string>クイーンズランド州</string><key>shortcut</key><string>くいーんずらんどしゅう</string></dict>
 	<dict><key>phrase</key><string>カスティーリャ・イ・レオン州</string><key>shortcut</key><string>かすてぃーりゃいれおんしゅう</string></dict>
@@ -2971,15 +2903,12 @@
 	<dict><key>phrase</key><string>グァナハット</string><key>shortcut</key><string>ぐぁなはっと</string></dict>
 	<dict><key>phrase</key><string>トレンティーノ・アルト・アディジェ州北部</string><key>shortcut</key><string>とれんてぃーのあるとあでぃじぇしゅうほくぶ</string></dict>
 	<dict><key>phrase</key><string>ナヤリット</string><key>shortcut</key><string>なやりっと</string></dict>
-	<dict><key>phrase</key><string>ニーダーエステライヒ州北部</string><key>shortcut</key><string>にーだーえすてらいひしゅうほくぶ</string></dict>
-	<dict><key>phrase</key><string>ノヴァ・スコシア州初</string><key>shortcut</key><string>のゔぁすこしあしゅうはつ</string></dict>
+	<dict><key>phrase</key><string>ニーダーエステライヒ</string><key>shortcut</key><string>にーだーえすてらいひしゅうほくぶ</string></dict>
 	<dict><key>phrase</key><string>フリウリ</string><key>shortcut</key><string>ふりうり</string></dict>	<!-- イタリア20州の略称。正式名 フリウリ・ヴェネツィア・ジューリア は登録済み(2026-08-27) -->
 	<dict><key>phrase</key><string>フリウリ・ヴェネツィア・ジューリア</string><key>shortcut</key><string>ふりうりゔぇねつぃあじゅーりあ</string></dict>
 	<dict><key>phrase</key><string>ブエノスアイレス州南部</string><key>shortcut</key><string>ぶえのすあいれすしゅうなんぶ</string></dict>
 	<dict><key>phrase</key><string>ミチョアカン</string><key>shortcut</key><string>みちょあかん</string></dict>
-	<dict><key>phrase</key><string>貴州省</string><key>shortcut</key><string>きしゅうしょう</string></dict>
 	<dict><key>phrase</key><string>Abruzzo</string><key>shortcut</key><string>あぶるっつぉ</string></dict>
-	<dict><key>phrase</key><string>安徽省</string><key>shortcut</key><string>あんきしょう</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- ■ 県 -->
 	<dict><key>phrase</key><string>アヴェッリーノ県</string><key>shortcut</key><string>あゔぇっりーのけん</string></dict>
@@ -3062,9 +2991,12 @@
 	<dict><key>phrase</key><string>京都府</string><key>shortcut</key><string>きょうとふ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>佐賀</string><key>shortcut</key><string>さが</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>北海道</string><key>shortcut</key><string>ほっかいどう</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>本州</string><key>shortcut</key><string>ほんしゅう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>大阪府</string><key>shortcut</key><string>おおさかふ</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- ■ 市 -->
+	<dict><key>phrase</key><string>ニューヨーク市</string><key>shortcut</key><string>にゅーよーくし</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>長門市</string><key>shortcut</key><string>ながとし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アンジェ市</string><key>shortcut</key><string>あんじぇし</string></dict>
 	<dict><key>phrase</key><string>クレムス市</string><key>shortcut</key><string>くれむすし</string></dict>
 	<dict><key>phrase</key><string>ソミュール市</string><key>shortcut</key><string>そみゅーるし</string></dict>
@@ -3180,6 +3112,10 @@
 	<dict><key>phrase</key><string>大迫町</string><key>shortcut</key><string>おおはさままち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>安心院町</string><key>shortcut</key><string>あじむまち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>明野町</string><key>shortcut</key><string>あけのちょう</string></dict>	<!-- Sudachiにもある -->
+
+	<!-- ■ 郡 -->
+	<dict><key>phrase</key><string>阿武郡</string><key>shortcut</key><string>あぶぐん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>利根郡</string><key>shortcut</key><string>とねぐん</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- ■ 村 -->
 	<dict><key>phrase</key><string>フラジェ・エシェゾー村</string><key>shortcut</key><string>ふらじぇえしぇぞーむら</string></dict>
@@ -5905,6 +5841,7 @@
 	<dict><key>phrase</key><string>高温乾燥</string><key>shortcut</key><string>こうおんかんそう</string></dict>
 
 	<!-- ■ 風 -->
+	<dict><key>phrase</key><string>ソンダ</string><key>shortcut</key><string>そんだ</string></dict>
 	<dict><key>phrase</key><string>Cape Doctor</string><key>shortcut</key><string>けーぷどくたー</string></dict>
 	<dict><key>phrase</key><string>トラモンタン</string><key>shortcut</key><string>とらもんたん</string></dict>
 	<dict><key>phrase</key><string>ミストラル</string><key>shortcut</key><string>みすとらる</string></dict>	<!-- Sudachiにもある -->
@@ -9393,7 +9330,6 @@
 	<dict><key>phrase</key><string>フランス主要都市</string><key>shortcut</key><string>ふらんすしゅようとし</string></dict>
 	<dict><key>phrase</key><string>植民市</string><key>shortcut</key><string>しょくみんし</string></dict>
 	<dict><key>phrase</key><string>理想都市</string><key>shortcut</key><string>りそうとし</string></dict>
-	<dict><key>phrase</key><string>アンボワーズ城</string><key>shortcut</key><string>あんぼわーずじょう</string></dict>
 	<dict><key>phrase</key><string>エミリア・ロマーニャ州固有</string><key>shortcut</key><string>えみりあろまーにゃしゅうこゆう</string></dict>
 	<dict><key>phrase</key><string>コミューン名</string><key>shortcut</key><string>こみゅーんめい</string></dict>
 	<dict><key>phrase</key><string>大製塩所</string><key>shortcut</key><string>だいせいえんしょ</string></dict>

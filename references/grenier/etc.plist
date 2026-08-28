@@ -2458,5 +2458,20 @@
 	<dict><key>phrase</key><string>被害最大</string><key>shortcut</key><string>ひがいさいだい</string></dict>
 	<dict><key>phrase</key><string>表示出来</string><key>shortcut</key><string>ひょうじでき</string></dict>
 	<dict><key>phrase</key><string>ワイン用</string><key>shortcut</key><string>わいんよう</string></dict>
+
+	<dict><key>phrase</key><string>麓原産</string><key>shortcut</key><string>ふもとげんさん</string></dict>
+	<dict><key>phrase</key><string>稲作地帯</string><key>shortcut</key><string>いなさくちたい</string></dict>
+	<dict><key>phrase</key><string>海岸地域</string><key>shortcut</key><string>かいがんちいき</string></dict>
+	<dict><key>phrase</key><string>乾燥高原</string><key>shortcut</key><string>かんそうこうげん</string></dict>
+	<dict><key>phrase</key><string>沿岸地域</string><key>shortcut</key><string>えんがんちいき</string></dict>
+	<dict><key>phrase</key><string>穀倉地帯</string><key>shortcut</key><string>こくそうちたい</string></dict>
+	<dict><key>phrase</key><string>大西洋沿岸</string><key>shortcut</key><string>たいせいようえんがん</string></dict>
+	<dict><key>phrase</key><string>大西洋沿岸地域</string><key>shortcut</key><string>たいせいようえんがんちいき</string></dict>
+	<dict><key>phrase</key><string>太平洋沿岸</string><key>shortcut</key><string>たいへいようえんがん</string></dict>
+	<dict><key>phrase</key><string>中央高原地帯</string><key>shortcut</key><string>ちゅうおうこうげんちたい</string></dict>
+	<dict><key>phrase</key><string>東西ドイツ</string><key>shortcut</key><string>とうざいどいつ</string></dict>
+	<dict><key>phrase</key><string>内陸中央部</string><key>shortcut</key><string>ないりくちゅうおうぶ</string></dict>
+	<dict><key>phrase</key><string>油田地帯</string><key>shortcut</key><string>ゆでんちたい</string></dict>
+	<dict><key>phrase</key><string>岩山</string><key>shortcut</key><string>いわやま</string></dict>	<!-- Sudachiにもある -->
 </array>
 </plist>
