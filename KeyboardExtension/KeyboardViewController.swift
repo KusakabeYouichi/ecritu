@@ -631,17 +631,9 @@ final class KeyboardViewController: UIInputViewController {
         refreshKeyboardState(trigger: "viewWillAppear")
     }
 
-    // 時限トレース(2684): 編集終了(完了ボタン)の前に textWillChange が来るか、その時点の文脈を見る
+    // 外部変更の直前通知。完了ボタンでは textDidChange(文脈空)の 8ms 前に文脈そのままで届く(2684 実機)
     override func textWillChange(_ textInput: UITextInput?) {
         super.textWillChange(textInput)
-        #if DEBUG
-        if !composingRawText.isEmpty || activeConversion != nil {
-            invalidateTextContextCache()
-            appendKeyboardDiagnosticsLog(
-                "WILLTRACE textWillChange external=\(shouldTreatAsExternalTextChange()) before=len\(currentTextContextBeforeInput().count) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
-            )
-        }
-        #endif
         commitComposingTextOnExternalTextWillChangeIfNeeded()
     }
 
@@ -666,18 +658,6 @@ final class KeyboardViewController: UIInputViewController {
         activeConversion = nil
         clearComposingState()
         stopMarkedTextWatchdog()
-    }
-
-    override func selectionWillChange(_ textInput: UITextInput?) {
-        super.selectionWillChange(textInput)
-        #if DEBUG
-        if !composingRawText.isEmpty || activeConversion != nil {
-            invalidateTextContextCache()
-            appendKeyboardDiagnosticsLog(
-                "WILLTRACE selectionWillChange before=len\(currentTextContextBeforeInput().count) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
-            )
-        }
-        #endif
     }
 
     override func textDidChange(_ textInput: UITextInput?) {
