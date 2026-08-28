@@ -12293,4 +12293,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "でんわがなる", systemCandidateMode: .surface).first, "電話が鳴る")
         XCTAssertEqual(converter.multiClauseCandidates(for: "おおきくなる", systemCandidateMode: .surface).first, "大きくなる")
     }
+
+    // たとえば はかな正書(ユーザ指定 2688)。seed かな先頭+連文節かな副詞
+    func testTatoebaKanaLeads() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.candidates(for: "たとえば", limit: 3, systemCandidateMode: .surface).first, "たとえば")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たとえばこれ", systemCandidateMode: .surface).first, "たとえばこれ")
+    }
 }
