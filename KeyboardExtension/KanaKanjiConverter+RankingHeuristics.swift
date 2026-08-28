@@ -1015,6 +1015,32 @@ extension KanaKanjiConverter {
     // 汎用の inflectionRankingSuffixes に "く" を足すと たく→炷く/卓 のような く で終わる
     // 一般の読みまで巻き込む(卓/択 が沈む)ので、
     // 「読みが く で終わる」かつ「活用派生」かつ「LM が辞書先頭より安い」ものだけ引き上げる
+    // 述語+終助詞クラスタ(きく+かも/かな/よね 等)の単文節候補で、終助詞部分が漢字化した
+    // 合成(菊鹿も/麴嘉も)を、終助詞をかなに保つ候補(聞くかも)より下へ送る(2705)。
+    // 語幹(読みからクラスタを除いた部分)が inflection_classes の用言(動詞/形容詞)のときだけ
+    // 適用し、ひらがな→平仮名(語幹 ひらが は用言でない)のような正当な語には触れない。
+    // 連文節側は述語直後の終助詞クラスタをクランプ済みで、単文節と候補バー合流(単文節#1 を
+    // 2位に挿入)で 菊鹿も が2位に食い込んでいた(ユーザ報告 2705)。
+    static let predicateFinalParticleKanjiTailPenalty = 300
+
+    func applyPredicateFinalParticleClusterPreference(
+        for reading: String,
+        to scores: inout [String: Int]
+    ) {
+        for cluster in Self.multiClauseFinalParticleReadings
+        where cluster.count >= 2 && reading.count > cluster.count + 1 && reading.hasSuffix(cluster) {
+            let stem = String(reading.dropLast(cluster.count))
+            let classMap = inflectionMetadata(for: stem).classMap
+            guard classMap.values.contains(where: { $0 != "suru" }) else {
+                continue
+            }
+            for candidate in scores.keys where !candidate.hasSuffix(cluster) {
+                scores[candidate, default: 0] -= Self.predicateFinalParticleKanjiTailPenalty
+            }
+            return
+        }
+    }
+
     func applyAdjectiveRenyouBoost(
         for reading: String,
         dictionaryCandidates: [String],
