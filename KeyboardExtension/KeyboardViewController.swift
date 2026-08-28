@@ -1141,7 +1141,8 @@ final class KeyboardViewController: UIInputViewController {
             appendKeyboardDiagnosticsLog(
                 "メモリ内訳census mallocUsedMB=\(String(format: "%.1f", usedMB))"
                     + " mallocAllocMB=\(String(format: "%.1f", allocatedMB))"
-                    + " \(kanaKanjiConverter.diagnosticsCacheCountsSummary())",
+                    + " \(kanaKanjiConverter.diagnosticsCacheCountsSummary())"
+                    + " \(MemoryForensics.loadSummary)",
                 critical: true,
                 file: #fileID,
                 line: #line,

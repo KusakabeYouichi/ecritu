@@ -23,6 +23,13 @@ enum MemoryForensics {
     // 台帳イベントの出力先(診断ログへ)。viewDidLoad で1回だけ設定される。
     // 変換キュー等の非 main からも呼ばれるため、設定側で main へディスパッチすること。
     nonisolated(unsafe) static var logSink: ((String) -> Void)?
+    // 負荷カウンタ(2712): メモリ比較は経過時間でなく「変換回数・確定文字数」で正規化する
+    // (ユーザ指摘: Facebook は眺めている時間が長く、分数では負荷が揃わない)。プロセス生涯で累積。
+    nonisolated(unsafe) static var conversionCount = 0
+    nonisolated(unsafe) static var committedCharacterCount = 0
+    static func noteConversion() { conversionCount += 1 }
+    static func noteCommitted(characters: Int) { committedCharacterCount += max(0, characters) }
+    static var loadSummary: String { "load=変換\(conversionCount)回/確定\(committedCharacterCount)字" }
 
     // ──────────────────────────────────────────────
     // A. 高水位台帳
@@ -107,6 +114,7 @@ enum MemoryForensics {
                     + " used=\(fmt(usedBefore))→\(fmt(usedAfter))(+\(fmt(usedAfter - usedBefore)))"
                     + " alloc=\(fmt(allocBefore))→\(fmt(allocAfter))(+\(fmt(allocAfter - allocBefore)))"
                     + " fp=\(fmt(fpBefore))→\(fmt(fpAfter))(+\(fmt(fpAfter - fpBefore)))"
+                    + " \(loadSummary)"
             )
         }
         #endif
