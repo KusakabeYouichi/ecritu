@@ -248,6 +248,8 @@ final class KeyboardViewController: UIInputViewController {
     var lastKanaPostModifierResultCharacter: Character?
     var lastTextProxyEditAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
+    // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
+    static let memoryWarningBurstWindow: CFTimeInterval = 2.0
     var lastSynchronizedContextBeforeInputTail = ""
     var lastSynchronizedContextBeforeInputLength = 0
     var composingContextPrefixTail = ""
@@ -604,7 +606,10 @@ final class KeyboardViewController: UIInputViewController {
         // どこかで警告2回に達した時点で辞書が永久停止し、「みまん→候補なし」の辞書なし
         // キーボードに退化したまま戻らない(いじょう→異常 だけ残るのは学習語彙経路)。
         diagnosticsState.memoryWarningCountThisSession = 0
+        diagnosticsState.memoryWarningBurstCountThisSession = 0
+        diagnosticsState.lastMemoryWarningAt = 0
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
+        candidateBarModel.memoryWarningBurstCountForDebugDisplay = 0
         candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
         candidateBarModel.latinSuggestionSkippedForDebugDisplay = kanaKanjiStore.didSkipLatinSuggestionBuildForPressure
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
@@ -1092,6 +1097,11 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
         diagnosticsState.memoryWarningCountThisSession += 1
+        let warningNow = CFAbsoluteTimeGetCurrent()
+        if warningNow - diagnosticsState.lastMemoryWarningAt > Self.memoryWarningBurstWindow {
+            diagnosticsState.memoryWarningBurstCountThisSession += 1
+        }
+        diagnosticsState.lastMemoryWarningAt = warningNow
         // attach 待ちの5秒間は診断を丸ごと飛ばす(2603)。実測(00:41 の attach 失敗):
         // 起動直後のインスタンスが viewWillAppear を待っている最中にメモリ警告を2回受け、
         // センサス(alive=12 の走査)+ census2(malloc 全ブロック列挙、実測113ms)を
@@ -1190,6 +1200,7 @@ final class KeyboardViewController: UIInputViewController {
         }
         // メモリ切迫の可視化(でばぐ表示): かな削除キーの背景色に反映する。
         candidateBarModel.memoryWarningCountForDebugDisplay = diagnosticsState.memoryWarningCountThisSession
+        candidateBarModel.memoryWarningBurstCountForDebugDisplay = diagnosticsState.memoryWarningBurstCountThisSession
         persistBufferedKeyboardDiagnostics()
         updateKeyboardDiagnosticsHeartbeat(
             event: "メモリ警告受信(\(diagnosticsState.memoryWarningCountThisSession)回目) キャッシュ解放開始",

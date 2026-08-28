@@ -992,7 +992,8 @@ struct KeyboardRootView: View {
             // えんじ(臙脂)#A22041
             return Color(red: 162.0 / 255.0, green: 32.0 / 255.0, blue: 65.0 / 255.0).opacity(0.92)
         }
-        switch candidateBarModel.memoryWarningCountForDebugDisplay {
+        // 色はバースト数(2秒以内の連続警告は1イベント)で決める。1回=黄、2回以上=橙
+        switch candidateBarModel.memoryWarningBurstCountForDebugDisplay {
         case 0:
             // 警告前の段階: 欧文サジェスト構築を高水位(fp≥58)で見送り中なら薄ピンク
             // (ユーザ指定 2664。警告が来たら黄/橙が優先)
@@ -1011,9 +1012,14 @@ struct KeyboardRootView: View {
         #if !DEBUG
         return nil
         #endif
-        return candidateBarModel.memoryWarningCountForDebugDisplay >= 2
-            ? String(candidateBarModel.memoryWarningCountForDebugDisplay)
-            : nil
+        // 「バースト数(実回数)」。1バーストで4回来た場合は 1(4)。実回数がバースト数と同じなら
+        // 2以上のときだけ数字を出す(ユーザ指定 2702)
+        let bursts = candidateBarModel.memoryWarningBurstCountForDebugDisplay
+        let raw = candidateBarModel.memoryWarningCountForDebugDisplay
+        if raw > bursts, bursts >= 1 {
+            return "\(bursts)(\(raw))"
+        }
+        return bursts >= 2 ? String(bursts) : nil
     }
 
     @ViewBuilder
