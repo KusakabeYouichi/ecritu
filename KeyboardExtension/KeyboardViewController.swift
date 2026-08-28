@@ -248,6 +248,8 @@ final class KeyboardViewController: UIInputViewController {
     var lastKanaPostModifierResultCharacter: Character?
     var lastTextProxyEditAt: CFAbsoluteTime = 0
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
+    // 文書全体が消えたコールバック(編集終了 or 送信の全消去)の判定保留(定義は MarkedTextCommit)
+    var hostDocumentVanishWorkItem: DispatchWorkItem?
     var lastSynchronizedContextBeforeInputTail = ""
     var lastSynchronizedContextBeforeInputLength = 0
     var composingContextPrefixTail = ""
@@ -751,6 +753,13 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillDisappear", appendLog: true)
         persistBufferedKeyboardDiagnostics()
 
+        // 直前に「文書が消えた」コールバックがあれば、それは編集終了(閉じる)だったと確定する。
+        // 送信残留として marked を削除する保留処理を取り消し、未確定を確定に回す。
+        if hostDocumentVanishWorkItem != nil {
+            hostDocumentVanishWorkItem?.cancel()
+            hostDocumentVanishWorkItem = nil
+            appendKeyboardDiagnosticsLogFromInputHandling("文書消失の保留を閉じる判定で解消 → 確定へ")
+        }
         commitPendingComposingTextForKeyboardDismiss()
         stopMarkedTextWatchdog()
         cancelIdleCommit()
