@@ -93,4 +93,17 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         let input = ["出来事", "できごと", "出来上がる", "できあがる"]
         XCTAssertEqual(SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(input), input)
     }
+
+    // 診断ログの連続テキストバッファ(2707): 上限超過分を先頭から落とし、旧 JSON 形式も読める
+    func testDiagnosticsLogTextBufferRingAndCompatibility() {
+        var buffer = Data()
+        var count = 0
+        for i in 1...5 {
+            KeyboardViewController.appendDiagnosticsLogLine("line\(i)", to: &buffer, lineCount: &count, maxLineCount: 3)
+        }
+        XCTAssertEqual(count, 3)
+        XCTAssertEqual(KeyboardViewController.diagnosticsLogLines(fromStoredData: buffer), ["line3", "line4", "line5"])
+        let legacy = try! JSONEncoder().encode(["a", "b"])
+        XCTAssertEqual(KeyboardViewController.diagnosticsLogLines(fromStoredData: legacy), ["a", "b"])
+    }
 }
