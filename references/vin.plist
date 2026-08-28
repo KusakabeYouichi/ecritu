@@ -570,6 +570,7 @@
 	<dict><key>phrase</key><string>ピュイジュー</string><key>shortcut</key><string>ぴゅいじゅー</string></dict>
 	<dict><key>phrase</key><string>ピュイスガン・サンテミリオン</string><key>shortcut</key><string>ぴゅいすがんさんてみりおん</string></dict>
 	<dict><key>phrase</key><string>ピュリニィ・モンラッシェ</string><key>shortcut</key><string>ぴゅりにぃもんらっしぇ</string></dict>
+	<dict><key>phrase</key><string>フォルブール</string><key>shortcut</key><string>ふぉるぶーる</string></dict>
 	<dict><key>phrase</key><string>フラジェイ・エシェゾー</string><key>shortcut</key><string>ふらじぇいえしぇぞー</string></dict>
 	<dict><key>phrase</key><string>フラジェ・エシェゾー</string><key>shortcut</key><string>ふらじぇえしぇぞー</string></dict>
 	<dict><key>phrase</key><string>フルーリー</string><key>shortcut</key><string>ふるーりー</string></dict>	<!-- Sudachiにもある -->
@@ -831,6 +832,7 @@
 	<dict><key>phrase</key><string>ロッセーゼ・ディ・ドルチェアックア</string><key>shortcut</key><string>ろっせーぜでぃどるちぇあっくあ</string></dict>
 	<dict><key>phrase</key><string>ロマーニャ</string><key>shortcut</key><string>ろまーにゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ロマーニャ・アルバーナ</string><key>shortcut</key><string>ろまーにゃあるばーな</string></dict>
+	<dict><key>phrase</key><string>ロレート</string><key>shortcut</key><string>ろれーと</string></dict>
 	<dict><key>phrase</key><string>ロンバルディア</string><key>shortcut</key><string>ろんばるでぃあ</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- □ スペイン -->
@@ -881,6 +883,7 @@
 	<dict><key>phrase</key><string>Rioja Alta</string><key>shortcut</key><string>りおはあるた</string></dict>
 	<dict><key>phrase</key><string>Rioja Baja</string><key>shortcut</key><string>りおはばは</string></dict>
 	<dict><key>phrase</key><string>Rioja Oriental</string><key>shortcut</key><string>りおはおりえんたる</string></dict>
+	<dict><key>phrase</key><string>Rosalejo</string><key>shortcut</key><string>ろされほ</string></dict>
 	<dict><key>phrase</key><string>Rueda</string><key>shortcut</key><string>るえだ</string></dict>
 	<dict><key>phrase</key><string>Sherry</string><key>shortcut</key><string>しぇりー</string></dict>
 	<dict><key>phrase</key><string>Somontano</string><key>shortcut</key><string>そもんたーの</string></dict>
@@ -899,6 +902,7 @@
 	<dict><key>phrase</key><string>アラゴン</string><key>shortcut</key><string>あらごん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アリカンテ</string><key>shortcut</key><string>ありかんて</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エクストレマドゥーラ</string><key>shortcut</key><string>えくすとれまどぅーら</string></dict>
+	<dict><key>phrase</key><string>エストレマドゥーラ</string><key>shortcut</key><string>えすとれまどぅーら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エル・イエロ</string><key>shortcut</key><string>えるいえろ</string></dict>
 	<dict><key>phrase</key><string>エンポルダ</string><key>shortcut</key><string>えんぽるだ</string></dict>
 	<dict><key>phrase</key><string>カスティーリャ・イ・レオン</string><key>shortcut</key><string>かすてぃーりゃいれおん</string></dict>
@@ -942,6 +946,7 @@
 	<dict><key>phrase</key><string>ルエダ</string><key>shortcut</key><string>るえだ</string></dict>
 	<dict><key>phrase</key><string>ルエダ・ソーヴィニヨン・ブラン</string><key>shortcut</key><string>るえだそーゔぃによんぶらん</string></dict>
 	<dict><key>phrase</key><string>ルエダ・ベルデホ</string><key>shortcut</key><string>るえだべるでほ</string></dict>
+	<dict><key>phrase</key><string>ロサレホ</string><key>shortcut</key><string>ろされほ</string></dict>
 
 	<!-- □ ポルトガル -->
 	<dict><key>phrase</key><string>Alentejano</string><key>shortcut</key><string>あれんてじゃーの</string></dict>
@@ -999,6 +1004,7 @@
 	<dict><key>phrase</key><string>バイショ・コルゴ</string><key>shortcut</key><string>ばいしょこるご</string></dict>
 	<dict><key>phrase</key><string>バイラーダ</string><key>shortcut</key><string>ばいらーだ</string></dict>
 	<dict><key>phrase</key><string>パルメラ</string><key>shortcut</key><string>ぱるめら</string></dict>
+	<dict><key>phrase</key><string>ファーロ</string><key>shortcut</key><string>ふぁーろ</string></dict>
 	<dict><key>phrase</key><string>ブセーラス</string><key>shortcut</key><string>ぶせーらす</string></dict>
 	<dict><key>phrase</key><string>ペニンスラ・デ・セトゥーバル</string><key>shortcut</key><string>ぺにんすらでせとぅーばる</string></dict>
 	<dict><key>phrase</key><string>ポルタレグレ</string><key>shortcut</key><string>ぽるたれぐれ</string></dict>
@@ -1056,6 +1062,7 @@
 	<dict><key>phrase</key><string>ヴュルツガルテン</string><key>shortcut</key><string>ゔゅるつがるてん</string></dict>
 	<dict><key>phrase</key><string>ヴュルテンベルク</string><key>shortcut</key><string>ゔゅるてんべるく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エアバッハ</string><key>shortcut</key><string>えあばっは</string></dict>
+	<dict><key>phrase</key><string>カステル</string><key>shortcut</key><string>かすてる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ガイゼンハイム</string><key>shortcut</key><string>がいぜんはいむ</string></dict>
 	<dict><key>phrase</key><string>コブレンツ</string><key>shortcut</key><string>こぶれんつ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ゴルトトレプヒェン</string><key>shortcut</key><string>ごるととれぷひぇん</string></dict>
@@ -1108,6 +1115,7 @@
 	<dict><key>phrase</key><string>Abbaye de Mont</string><key>shortcut</key><string>あべいどもん</string></dict>
 	<dict><key>phrase</key><string>Bern Bielersee</string><key>shortcut</key><string>べるんびーらーぜー</string></dict>
 	<dict><key>phrase</key><string>Bern Thunersee</string><key>shortcut</key><string>べるんとぅーなーぜー</string></dict>
+	<dict><key>phrase</key><string>Bouvillars</string><key>shortcut</key><string>ぶゔぃやーる</string></dict>
 	<dict><key>phrase</key><string>Calamin</string><key>shortcut</key><string>からまん</string></dict>
 	<dict><key>phrase</key><string>Chablais</string><key>shortcut</key><string>しゃぶれ</string></dict>
 	<dict><key>phrase</key><string>Chamoson</string><key>shortcut</key><string>しゃもぞん</string></dict>
@@ -1124,6 +1132,7 @@
 	<dict><key>phrase</key><string>Merlot del Ticino</string><key>shortcut</key><string>めるろでるてぃちーの</string></dict>
 	<dict><key>phrase</key><string>Mesolcina</string><key>shortcut</key><string>めぞるちーな</string></dict>
 	<dict><key>phrase</key><string>Neuchâtel Non Filtré</string><key>shortcut</key><string>ぬーしゃてるのんふぃるとれ</string></dict>
+	<dict><key>phrase</key><string>Saint-Léonard</string><key>shortcut</key><string>さんれおなーる</string></dict>
 	<dict><key>phrase</key><string>Salvagnin</string><key>shortcut</key><string>さるゔぁにゃん</string></dict>
 	<dict><key>phrase</key><string>Sopraceneri</string><key>shortcut</key><string>そぷらちぇねーり</string></dict>
 	<dict><key>phrase</key><string>Sottoceneri</string><key>shortcut</key><string>そっとちぇねーり</string></dict>
@@ -1134,7 +1143,9 @@
 	<dict><key>phrase</key><string>クロ・デ・アベイ</string><key>shortcut</key><string>くろであべい</string></dict>
 	<dict><key>phrase</key><string>クロ・デ・モワン</string><key>shortcut</key><string>くろでもわん</string></dict>
 	<dict><key>phrase</key><string>サティニー</string><key>shortcut</key><string>さてぃにー</string></dict>
+	<dict><key>phrase</key><string>サン・レオナール</string><key>shortcut</key><string>さんれおなーる</string></dict>
 	<dict><key>phrase</key><string>シュヴィツェーラ・イタリアーナ</string><key>shortcut</key><string>しゅゔぃつぇーらいたりあーな</string></dict>
+	<dict><key>phrase</key><string>スイス・アルモン</string><key>shortcut</key><string>すいすあるもん</string></dict>
 	<dict><key>phrase</key><string>スイス・ロマンド</string><key>shortcut</key><string>すいすろまんど</string></dict>
 	<dict><key>phrase</key><string>ティチーノ州ソットチェネリ</string><key>shortcut</key><string>てぃちーのしゅうそっとちぇねり</string></dict>
 	<dict><key>phrase</key><string>ティチーノ州ソプラチェネリ</string><key>shortcut</key><string>てぃちーのしゅうそぷらちぇねり</string></dict>
@@ -1183,6 +1194,7 @@
 	<dict><key>phrase</key><string>Hambledon</string><key>shortcut</key><string>はんぶるどん</string></dict>
 	<dict><key>phrase</key><string>Sussex Wine</string><key>shortcut</key><string>させっくすわいん</string></dict>
 	<dict><key>phrase</key><string>サウス・ダウンズ</string><key>shortcut</key><string>さうすだうんず</string></dict>
+	<dict><key>phrase</key><string>サリー・ヒルズ</string><key>shortcut</key><string>さりーひるず</string></dict>
 	<dict><key>phrase</key><string>ダーニボール</string><key>shortcut</key><string>だーにぼーる</string></dict>
 	<dict><key>phrase</key><string>ノース・ダウンズ</string><key>shortcut</key><string>のーすだうんず</string></dict>
 	<dict><key>phrase</key><string>ハンブルドン</string><key>shortcut</key><string>はんぶるどん</string></dict>
@@ -1196,6 +1208,7 @@
 	<dict><key>phrase</key><string>Epirus</string><key>shortcut</key><string>えぴるす</string></dict>
 	<dict><key>phrase</key><string>Goldert</string><key>shortcut</key><string>ごるでーる</string></dict>
 	<dict><key>phrase</key><string>Ionian Islands</string><key>shortcut</key><string>いおにあんあいらんず</string></dict>
+	<dict><key>phrase</key><string>Macedonia</string><key>shortcut</key><string>まけどにあ</string></dict>
 	<dict><key>phrase</key><string>Mantinia</string><key>shortcut</key><string>まんてぃにあ</string></dict>
 	<dict><key>phrase</key><string>Mavrodaphne of Patras</string><key>shortcut</key><string>まゔろだふねおぶぱとらす</string></dict>
 	<dict><key>phrase</key><string>Muscat of Cephalonia</string><key>shortcut</key><string>ますかっとおぶけふぁろにあ</string></dict>
@@ -1217,6 +1230,7 @@
 	<dict><key>phrase</key><string>Verdea, Traditional Designation of Zakynthos</string><key>shortcut</key><string>ゔぇるであとらでぃしょなるでじぐねーしょんおぶざきんとす</string></dict>
 	<dict><key>phrase</key><string>Zitsa</string><key>shortcut</key><string>ずぃつぁ</string></dict>
 	<dict><key>phrase</key><string>アヴディラ</string><key>shortcut</key><string>あゔでぃら</string></dict>
+	<dict><key>phrase</key><string>アクロティリ</string><key>shortcut</key><string>あくろてぃり</string></dict>
 	<dict><key>phrase</key><string>アミンデオ</string><key>shortcut</key><string>あみんでお</string></dict>
 	<dict><key>phrase</key><string>サントリーニ</string><key>shortcut</key><string>さんとりーに</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ジツァ</string><key>shortcut</key><string>じつぁ</string></dict>
@@ -1313,6 +1327,7 @@
 	<dict><key>phrase</key><string>コドゥル</string><key>shortcut</key><string>こどぅる</string></dict>
 	<dict><key>phrase</key><string>シュテファン・ヴォダ</string><key>shortcut</key><string>しゅてふぁんゔぉだ</string></dict>
 	<dict><key>phrase</key><string>チュマイ</string><key>shortcut</key><string>ちゅまい</string></dict>
+	<dict><key>phrase</key><string>デアルル・クラヴェツ</string><key>shortcut</key><string>であるるくらゔぇつ</string></dict>
 	<dict><key>phrase</key><string>ニストレニ地域</string><key>shortcut</key><string>にすとれにちいき</string></dict>
 	<dict><key>phrase</key><string>プルカリ</string><key>shortcut</key><string>ぷるかり</string></dict>
 	<dict><key>phrase</key><string>ロマネシュティ</string><key>shortcut</key><string>ろまねしゅてぃ</string></dict>
@@ -1410,6 +1425,7 @@
 	<dict><key>phrase</key><string>Horse Heaven Hills</string><key>shortcut</key><string>ほーすへゔんひるず</string></dict>
 	<dict><key>phrase</key><string>Howell Mountain</string><key>shortcut</key><string>はうえるまうんてん</string></dict>
 	<dict><key>phrase</key><string>Hudson River Region</string><key>shortcut</key><string>はどそんりゔぁーりーじょん</string></dict>
+	<dict><key>phrase</key><string>Inland Valleys</string><key>shortcut</key><string>いんらんどゔぁれーず</string></dict>
 	<dict><key>phrase</key><string>Knights Valley</string><key>shortcut</key><string>ないつゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Lake County</string><key>shortcut</key><string>れいくかうんてぃ</string></dict>
 	<dict><key>phrase</key><string>Lake Erie</string><key>shortcut</key><string>れいくえりー</string></dict>
@@ -1526,6 +1542,7 @@
 	<dict><key>phrase</key><string>マリン・カウンティ</string><key>shortcut</key><string>まりんかうんてぃ</string></dict>
 	<dict><key>phrase</key><string>メンドシーノ</string><key>shortcut</key><string>めんどしーの</string></dict>
 	<dict><key>phrase</key><string>メンドシーノ・カウンティ</string><key>shortcut</key><string>めんどしーのかうんてぃ</string></dict>
+	<dict><key>phrase</key><string>モンティチェッロ</string><key>shortcut</key><string>もんてぃちぇっろ</string></dict>
 	<dict><key>phrase</key><string>モントレー・カウンティ</string><key>shortcut</key><string>もんとれーかうんてぃ</string></dict>
 	<dict><key>phrase</key><string>ヨーントヴィル</string><key>shortcut</key><string>よーんとゔぃる</string></dict>
 	<dict><key>phrase</key><string>ラトルスネーク・ヒルズ</string><key>shortcut</key><string>らとるすねーくひるず</string></dict>
@@ -1536,6 +1553,7 @@
 
 	<!-- □ カナダ -->
 	<dict><key>phrase</key><string>BC V.Q.A.</string><key>shortcut</key><string>ぶりてぃっしゅころんびあゔぃーきゅーえー</string></dict>
+	<dict><key>phrase</key><string>Bear River</string><key>shortcut</key><string>べありゔぁー</string></dict>
 	<dict><key>phrase</key><string>Black Sage Bench</string><key>shortcut</key><string>ぶらっくせーじべんち</string></dict>
 	<dict><key>phrase</key><string>Deux-Montagnes</string><key>shortcut</key><string>どもんたーにゅ</string></dict>
 	<dict><key>phrase</key><string>East Kelowna Slopes</string><key>shortcut</key><string>いーすとけろうなすろーぷす</string></dict>
@@ -1561,6 +1579,7 @@
 	<dict><key>phrase</key><string>Shuswap</string><key>shortcut</key><string>しゅすわっぷ</string></dict>
 	<dict><key>phrase</key><string>Similkameen Valley</string><key>shortcut</key><string>しみるかみーんゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Skaha Bench</string><key>shortcut</key><string>すかはべんち</string></dict>
+	<dict><key>phrase</key><string>South Islands</string><key>shortcut</key><string>さうすあいらんず</string></dict>
 	<dict><key>phrase</key><string>South Kelowna Slopes</string><key>shortcut</key><string>さうすけろうなすろーぷす</string></dict>
 	<dict><key>phrase</key><string>Summerland Bench</string><key>shortcut</key><string>さまーらんどべんち</string></dict>
 	<dict><key>phrase</key><string>Summerland Lakefront</string><key>shortcut</key><string>さまーらんどれいくふろんと</string></dict>
@@ -1598,6 +1617,7 @@
 	<dict><key>phrase</key><string>Cachapoal Valley</string><key>shortcut</key><string>かちゃぽあるゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Casablanca Valley</string><key>shortcut</key><string>かさぶらんかゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Cautin Valley</string><key>shortcut</key><string>かうてぃんゔぁれー</string></dict>
+	<dict><key>phrase</key><string>Central Valley</string><key>shortcut</key><string>せんとらるゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Choapa Valley</string><key>shortcut</key><string>ちょあぱゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Colchagua Valley</string><key>shortcut</key><string>こるちゃぐあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Copiapó Valley</string><key>shortcut</key><string>こぴあぽゔぁれー</string></dict>
@@ -1615,6 +1635,7 @@
 	<dict><key>phrase</key><string>Maule Valley</string><key>shortcut</key><string>まうれゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Osorno Valley</string><key>shortcut</key><string>おそるのゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Rapel Valley</string><key>shortcut</key><string>らぺるゔぁれー</string></dict>
+	<dict><key>phrase</key><string>San Antonio Valley</string><key>shortcut</key><string>さんあんとにおゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Secano Interior</string><key>shortcut</key><string>せかーのいんてりおーる</string></dict>
 	<dict><key>phrase</key><string>Talagante</string><key>shortcut</key><string>たらがんて</string></dict>
 	<dict><key>phrase</key><string>Tutuvén Valley</string><key>shortcut</key><string>とぅとぅべんゔぁれー</string></dict>
@@ -1623,6 +1644,7 @@
 	<dict><key>phrase</key><string>アタカマ</string><key>shortcut</key><string>あたかま</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アパルタ</string><key>shortcut</key><string>あぱるた</string></dict>
 	<dict><key>phrase</key><string>アパルタ丘陵</string><key>shortcut</key><string>あぱるたきゅうりょう</string></dict>
+	<dict><key>phrase</key><string>アルコワス</string><key>shortcut</key><string>あるこわす</string></dict>
 	<dict><key>phrase</key><string>イタタ</string><key>shortcut</key><string>いたた</string></dict>
 	<dict><key>phrase</key><string>イタタ・ヴァレー</string><key>shortcut</key><string>いたたゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ウアスコ・ヴァレー</string><key>shortcut</key><string>うあすこゔぁれー</string></dict>
@@ -1635,6 +1657,8 @@
 	<dict><key>phrase</key><string>クリコ</string><key>shortcut</key><string>くりこ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コキンボ</string><key>shortcut</key><string>こきんぼ</string></dict>
 	<dict><key>phrase</key><string>コルチャグア・ヴァレー</string><key>shortcut</key><string>こるちゃぐあゔぁれー</string></dict>
+	<dict><key>phrase</key><string>コンセプシオン</string><key>shortcut</key><string>こんせぷしおん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>サンタクルス</string><key>shortcut</key><string>さんたくるす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サンティアゴ</string><key>shortcut</key><string>さんてぃあご</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>セカノ・インテリオル</string><key>shortcut</key><string>せかのいんてりおる</string></dict>
 	<dict><key>phrase</key><string>チョアパ・ヴァレー</string><key>shortcut</key><string>ちょあぱゔぁれー</string></dict>
@@ -1652,6 +1676,7 @@
 	<dict><key>phrase</key><string>リージョンAconcagua</string><key>shortcut</key><string>りーじょんあこんかぐあ</string></dict>
 
 	<!-- □ アルゼンチン -->
+	<dict><key>phrase</key><string>Atlantica</string><key>shortcut</key><string>あとらんてぃか</string></dict>
 	<dict><key>phrase</key><string>Cuyo</string><key>shortcut</key><string>くーよ</string></dict>
 	<dict><key>phrase</key><string>I.G.トレベリン</string><key>shortcut</key><string>あいじーとれべりん</string></dict>
 	<dict><key>phrase</key><string>La Rioja Argentina</string><key>shortcut</key><string>らりおはあるぜんちん</string></dict>
@@ -1660,6 +1685,7 @@
 	<dict><key>phrase</key><string>Mendoza</string><key>shortcut</key><string>めんどーさ</string></dict>
 	<dict><key>phrase</key><string>Río Negro</string><key>shortcut</key><string>りおねぐろ</string></dict>
 	<dict><key>phrase</key><string>Salta</string><key>shortcut</key><string>さるた</string></dict>
+	<dict><key>phrase</key><string>San Carlos</string><key>shortcut</key><string>さんかるろす</string></dict>
 	<dict><key>phrase</key><string>San Juan</string><key>shortcut</key><string>さんふあん</string></dict>
 	<dict><key>phrase</key><string>San Rafael</string><key>shortcut</key><string>さんらふぁえる</string></dict>
 	<dict><key>phrase</key><string>Trevelin</string><key>shortcut</key><string>とれべりん</string></dict>
@@ -1669,6 +1695,7 @@
 	<dict><key>phrase</key><string>カファジャテ</string><key>shortcut</key><string>かふぁじゃて</string></dict>
 	<dict><key>phrase</key><string>カルチャキ・ヴァレー</string><key>shortcut</key><string>かるちゃきゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ケブラダ・デ・ウマワカ</string><key>shortcut</key><string>けぶらだでうまわか</string></dict>
+	<dict><key>phrase</key><string>サン・カルロス</string><key>shortcut</key><string>さんかるろす</string></dict>
 	<dict><key>phrase</key><string>サン・フアン</string><key>shortcut</key><string>さんふあん</string></dict>
 	<dict><key>phrase</key><string>サン・ラファエル</string><key>shortcut</key><string>さんらふぁえる</string></dict>
 	<dict><key>phrase</key><string>トゥヌジャン</string><key>shortcut</key><string>とぅぬじゃん</string></dict>
@@ -1691,8 +1718,11 @@
 	<dict><key>phrase</key><string>Montevideo</string><key>shortcut</key><string>もんてびでお</string></dict>
 	<dict><key>phrase</key><string>Paysandú</string><key>shortcut</key><string>ぱいさんどぅー</string></dict>
 	<dict><key>phrase</key><string>Rivera</string><key>shortcut</key><string>りべら</string></dict>
+	<dict><key>phrase</key><string>San José</string><key>shortcut</key><string>さんほせ</string></dict>
+	<dict><key>phrase</key><string>コロニア</string><key>shortcut</key><string>ころにあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>パイサンドゥ</string><key>shortcut</key><string>ぱいさんどぅ</string></dict>
 	<dict><key>phrase</key><string>マルドナド</string><key>shortcut</key><string>まるどなど</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>メトロポリターナ</string><key>shortcut</key><string>めとろぽりたーな</string></dict>
 	<dict><key>phrase</key><string>リトラル・スル</string><key>shortcut</key><string>りとらるする</string></dict>
 	<dict><key>phrase</key><string>リトラル・ノルテ</string><key>shortcut</key><string>りとらるのるて</string></dict>
 
@@ -1748,6 +1778,7 @@
 	<dict><key>phrase</key><string>アデレード・ヒルズ</string><key>shortcut</key><string>あでれーどひるず</string></dict>
 	<dict><key>phrase</key><string>アルバニー</string><key>shortcut</key><string>あるばにー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ウォーターヴェール</string><key>shortcut</key><string>うぉーたーゔぇーる</string></dict>
+	<dict><key>phrase</key><string>オーバン</string><key>shortcut</key><string>おーばん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>クナワラ</string><key>shortcut</key><string>くなわら</string></dict>
 	<dict><key>phrase</key><string>クレア</string><key>shortcut</key><string>くれあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>グレート・サザン</string><key>shortcut</key><string>ぐれーとさざん</string></dict>
@@ -1798,6 +1829,7 @@
 	<dict><key>phrase</key><string>Nelson</string><key>shortcut</key><string>ねるそん</string></dict>
 	<dict><key>phrase</key><string>Northland</string><key>shortcut</key><string>のーすらんど</string></dict>
 	<dict><key>phrase</key><string>Pisa Range</string><key>shortcut</key><string>ぴされんじ</string></dict>
+	<dict><key>phrase</key><string>Southern Valley</string><key>shortcut</key><string>さざんゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Waiheke Island</string><key>shortcut</key><string>わいへけあいらんど</string></dict>
 	<dict><key>phrase</key><string>Waimea Plains</string><key>shortcut</key><string>わいめあぷれいんず</string></dict>
 	<dict><key>phrase</key><string>Waipara Valley</string><key>shortcut</key><string>わいぱらゔぁれー</string></dict>
@@ -1806,6 +1838,7 @@
 	<dict><key>phrase</key><string>Waitaki Valley North Otago</string><key>shortcut</key><string>わいたきゔぁれーのーすおたご</string></dict>
 	<dict><key>phrase</key><string>Waitangi</string><key>shortcut</key><string>わいたんぎ</string></dict>
 	<dict><key>phrase</key><string>Wanaka</string><key>shortcut</key><string>わなか</string></dict>
+	<dict><key>phrase</key><string>Wellington</string><key>shortcut</key><string>うぇりんとん</string></dict>
 	<dict><key>phrase</key><string>Whakapirau</string><key>shortcut</key><string>ふぁかぴらう</string></dict>
 	<dict><key>phrase</key><string>アワテレ・ヴァレー</string><key>shortcut</key><string>あわてれゔぁれー</string></dict>
 	<dict><key>phrase</key><string>内ワイカリ</string><key>shortcut</key><string>うちわいかり</string></dict>
@@ -1849,6 +1882,7 @@
 	<dict><key>phrase</key><string>Walker Bay</string><key>shortcut</key><string>うぉーかーべい</string></dict>
 	<dict><key>phrase</key><string>Western Cape</string><key>shortcut</key><string>うぇすたんけーぷ</string></dict>
 	<dict><key>phrase</key><string>Worcester</string><key>shortcut</key><string>うすたー</string></dict>
+	<dict><key>phrase</key><string>ウェリントン</string><key>shortcut</key><string>うぇりんとん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ウォーカー・ベイ</string><key>shortcut</key><string>うぉーかーべい</string></dict>
 	<dict><key>phrase</key><string>ウスター</string><key>shortcut</key><string>うすたー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エルギン</string><key>shortcut</key><string>えるぎん</string></dict>	<!-- Sudachiにもある -->
@@ -2051,41 +2085,7 @@
 	<dict><key>phrase</key><string>ワインルート</string><key>shortcut</key><string>わいんるーと</string></dict>
 
 	<!-- □ 不明(国の判定に自信なし) -->
-	<dict><key>phrase</key><string>Atlantica</string><key>shortcut</key><string>あとらんてぃか</string></dict>
-	<dict><key>phrase</key><string>Bear River</string><key>shortcut</key><string>べありゔぁー</string></dict>
-	<dict><key>phrase</key><string>Bouvillars</string><key>shortcut</key><string>ぶゔぃやーる</string></dict>
-	<dict><key>phrase</key><string>Central Valley</string><key>shortcut</key><string>せんとらるゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Inland Valleys</string><key>shortcut</key><string>いんらんどゔぁれーず</string></dict>
-	<dict><key>phrase</key><string>Macedonia</string><key>shortcut</key><string>まけどにあ</string></dict>
-	<dict><key>phrase</key><string>Rosalejo</string><key>shortcut</key><string>ろされほ</string></dict>
-	<dict><key>phrase</key><string>Saint-Léonard</string><key>shortcut</key><string>さんれおなーる</string></dict>
-	<dict><key>phrase</key><string>San Antonio Valley</string><key>shortcut</key><string>さんあんとにおゔぁれー</string></dict>
-	<dict><key>phrase</key><string>San Carlos</string><key>shortcut</key><string>さんかるろす</string></dict>
-	<dict><key>phrase</key><string>San José</string><key>shortcut</key><string>さんほせ</string></dict>
-	<dict><key>phrase</key><string>South Islands</string><key>shortcut</key><string>さうすあいらんず</string></dict>
-	<dict><key>phrase</key><string>Southern Valley</string><key>shortcut</key><string>さざんゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Wellington</string><key>shortcut</key><string>うぇりんとん</string></dict>
-	<dict><key>phrase</key><string>アクロティリ</string><key>shortcut</key><string>あくろてぃり</string></dict>
-	<dict><key>phrase</key><string>アルコワス</string><key>shortcut</key><string>あるこわす</string></dict>
-	<dict><key>phrase</key><string>ウェリントン</string><key>shortcut</key><string>うぇりんとん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>エストレマドゥーラ</string><key>shortcut</key><string>えすとれまどぅーら</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>オーバン</string><key>shortcut</key><string>おーばん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>カステル</string><key>shortcut</key><string>かすてる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>コロニア</string><key>shortcut</key><string>ころにあ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>コンセプシオン</string><key>shortcut</key><string>こんせぷしおん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>サリー・ヒルズ</string><key>shortcut</key><string>さりーひるず</string></dict>
-	<dict><key>phrase</key><string>サン・カルロス</string><key>shortcut</key><string>さんかるろす</string></dict>
-	<dict><key>phrase</key><string>サンタクルス</string><key>shortcut</key><string>さんたくるす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サン・パブロ</string><key>shortcut</key><string>さんぱぶろ</string></dict>
-	<dict><key>phrase</key><string>サン・レオナール</string><key>shortcut</key><string>さんれおなーる</string></dict>
-	<dict><key>phrase</key><string>スイス・アルモン</string><key>shortcut</key><string>すいすあるもん</string></dict>
-	<dict><key>phrase</key><string>デアルル・クラヴェツ</string><key>shortcut</key><string>であるるくらゔぇつ</string></dict>
-	<dict><key>phrase</key><string>ファーロ</string><key>shortcut</key><string>ふぁーろ</string></dict>
-	<dict><key>phrase</key><string>フォルブール</string><key>shortcut</key><string>ふぉるぶーる</string></dict>
-	<dict><key>phrase</key><string>メトロポリターナ</string><key>shortcut</key><string>めとろぽりたーな</string></dict>
-	<dict><key>phrase</key><string>モンティチェッロ</string><key>shortcut</key><string>もんてぃちぇっろ</string></dict>
-	<dict><key>phrase</key><string>ロサレホ</string><key>shortcut</key><string>ろされほ</string></dict>
-	<dict><key>phrase</key><string>ロレート</string><key>shortcut</key><string>ろれーと</string></dict>
 
 	<!-- ■ G.I. -->
 	<dict><key>phrase</key><string>Canterbury</string><key>shortcut</key><string>かんたべりー</string></dict>
