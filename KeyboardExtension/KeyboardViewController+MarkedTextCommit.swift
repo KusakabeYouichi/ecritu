@@ -719,11 +719,10 @@ extension KeyboardViewController {
             appendKeyboardDiagnosticsLogFromInputHandling(
                 "文書消失(直前は非空) → 未確定を確定 prevLen=\(previousContextBeforeInputLength) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
             )
-            // unmarkText は届かなかった(2683 実機)。insertText は marked があれば置換、無ければ
-            // 挿入になる UITextInput 標準の確定手段なので、こちらを試す(2684)。
-            let committed = activeConversion?.committedText ?? composingRawText
+            // 通常は textWillChange 側(2685)で先に確定済みでここには来ない。来た場合の保険として
+            // unmark を試す(2683 実機では届かなかった。insertText も 2684 で届かず)。
             markTextProxyEdit()
-            textDocumentProxy.insertText(committed)
+            textDocumentProxy.unmarkText()
             self.activeConversion = nil
             clearComposingState()
             stopMarkedTextWatchdog()
