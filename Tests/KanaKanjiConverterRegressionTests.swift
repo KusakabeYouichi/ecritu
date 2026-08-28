@@ -12333,6 +12333,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(converter.candidates(for: "きく", limit: 5, systemCandidateMode: .surface).prefix(3)), ["聞く", "効く", "聴く"])
         let kamo = converter.multiClauseCandidates(for: "きくかも", systemCandidateMode: .surface)
         XCTAssertEqual(Array(kamo.prefix(2)), ["聞くかも", "効くかも"], "\(kamo)")
+        // 単文節#1 は候補バーで連文節最良の直後に挿入されるため、単文節側も 菊鹿も(終助詞の漢字化)を
+        // 先頭にしてはいけない(実機で {聞くかも, 菊鹿も, 効くかも} になっていた。2705)
+        let single = converter.candidates(for: "きくかも", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "聞くかも", "\(single)")
+        XCTAssertFalse(single.prefix(3).contains("菊鹿も"), "\(single)")
+        // 語幹 ひらが は用言でないので対象外(従来の先頭 平仮名 を維持)
+        XCTAssertEqual(converter.candidates(for: "ひらがな", limit: 3, systemCandidateMode: .surface).first, "平仮名")
     }
 
     // 用言語幹に名詞接辞(か→課/可/化/科/下)を付けない(来れる課 等の無用合成。2700)

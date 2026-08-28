@@ -664,6 +664,8 @@ final class KanaKanjiConverter {
             )
             // 形式名詞 とき のかな正書(2690)
             applyFormalNounTokiKanaPreference(for: context.reading, to: &scores)
+            // 述語+終助詞クラスタで終助詞を漢字化した合成(菊鹿も)を下へ(2705)
+            applyPredicateFinalParticleClusterPreference(for: context.reading, to: &scores)
             // 辞書の主要語(格下)を活用族(隠した/画した/…/かくした)の先頭直下へ(2657)
             applyDictWordOverInflectionSiblingsBoost(
                 for: context.reading,
