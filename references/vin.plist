@@ -7623,7 +7623,7 @@
 	<dict><key>phrase</key><string>4MMP</string><key>shortcut</key><string>よんえむえむぴー</string></dict>
 	<dict><key>phrase</key><string>ポリフェノール</string><key>shortcut</key><string>ぽりふぇのーる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ポリフェノール類</string><key>shortcut</key><string>ぽりふぇのーるるい</string></dict>
-	<dict><key>phrase</key><string>Velcorin® </string><key>shortcut</key><string>ゔぇるこりん</string></dict>
+	<dict><key>phrase</key><string>Velcorin®</string><key>shortcut</key><string>ゔぇるこりん</string></dict>
 	<dict><key>phrase</key><string>コハク酸</string><key>shortcut</key><string>こはくさん</string></dict>
 	<dict><key>phrase</key><string>リンゴ酸</string><key>shortcut</key><string>りんごさん</string></dict>
 	<dict><key>phrase</key><string>SO2</string><key>shortcut</key><string>えすおーとぅー</string></dict>
