@@ -394,6 +394,7 @@
 	        <dict><key>phrase</key><string>テイブル</string><key>shortcut</key><string>ていぶる</string></dict>
 	        <dict><key>phrase</key><string>ペイス</string><key>shortcut</key><string>ぺいす</string></dict>
 	        <dict><key>phrase</key><string>ペイパー</string><key>shortcut</key><string>ぺいぱー</string></dict>
+	        <dict><key>phrase</key><string>ネイミング</string><key>shortcut</key><string>ねいみんぐ</string></dict>
 	        <dict><key>phrase</key><string>デヴァイス</string><key>shortcut</key><string>でゔぁいす</string></dict>
 	        <dict><key>phrase</key><string>モノレイル</string><key>shortcut</key><string>ものれいる</string></dict>
 	        <dict><key>phrase</key><string>シュガー・ベイブ</string><key>shortcut</key><string>しゅがーべいぶ</string></dict>
