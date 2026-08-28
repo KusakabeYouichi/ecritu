@@ -23,6 +23,10 @@ extension KeyboardViewController {
         // 診断: このセッションで受けたメモリ警告の回数。2回目以降は最終手段として
         // 連文節LM(sqlite)もアンロードする(初回は ef56d52 の方針どおり保持)。
         var memoryWarningCountThisSession = 0
+        // 診断: 警告の「バースト」数。iOS は警告を数百ms内に複数回投げる(実測 16:44:42 に0.6秒で
+        // 4回)ので、2秒以内の連続は1イベントとして数える。表示は バースト(実回数) の形(2702)
+        var memoryWarningBurstCountThisSession = 0
+        var lastMemoryWarningAt: CFAbsoluteTime = 0
     }
 }
 
