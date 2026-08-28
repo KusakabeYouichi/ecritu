@@ -12325,4 +12325,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let r = converter.candidates(for: "じっぷろっく", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(Array(r.prefix(3)), ["ジップロック", "ジップロック®", "Ziploc"], "\(r)")
     }
+
+    // きく: 効く を2位に(ユーザ指定 2698)。連文節の変種順も seed に従う
+    func testKikuSeedOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "きく", limit: 5, systemCandidateMode: .surface).prefix(3)), ["聞く", "効く", "聴く"])
+        let kamo = converter.multiClauseCandidates(for: "きくかも", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kamo.prefix(2)), ["聞くかも", "効くかも"], "\(kamo)")
+    }
 }
