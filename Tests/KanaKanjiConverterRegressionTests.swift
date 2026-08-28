@@ -2929,7 +2929,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("ぐるーぷない", ["グループ内"]),
             ("かいから", ["回から", "会から", "貝殻"]),
             ("そしきない", ["組織内"]),
-            ("かわない", ["かわない", "買わない", "飼わない", "川内"]),
+            ("かわない", ["買わない", "飼わない", "川内", "かわない"]),
             ("きたない", ["汚い", "きたない", "汚ない", "汚たない", "キタナイ"]),
             ("ぎたない", ["汚い", "ぎたない"]),
             ("ほっかいどうない", ["北海道内"]),
@@ -12308,5 +12308,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let result = converter.candidates(for: "すると", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(result.first, "すると", "\(result)")
         XCTAssertFalse(result.contains("スルト"))
+    }
+
+    // かわない: 買う は漢字が常なので 買わない 先頭、かなは後ろ(ユーザ指定 2688)
+    func testKawanaiKanjiLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "わたしはかわない", systemCandidateMode: .surface).first, "私は買わない")
+        XCTAssertEqual(converter.candidates(for: "かわない", limit: 3, systemCandidateMode: .surface).first, "買わない")
     }
 }
