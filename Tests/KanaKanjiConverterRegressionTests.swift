@@ -12317,4 +12317,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "わたしはかわない", systemCandidateMode: .surface).first, "私は買わない")
         XCTAssertEqual(converter.candidates(for: "かわない", limit: 3, systemCandidateMode: .surface).first, "買わない")
     }
+
+    // ジップロック(商品名、Sudachi 未収録)を misc で供給。並びは ジップロック→ジップロック®→Ziploc(2698)
+    func testZiplocFromMisc() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let r = converter.candidates(for: "じっぷろっく", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(r.prefix(3)), ["ジップロック", "ジップロック®", "Ziploc"], "\(r)")
+    }
 }
