@@ -315,7 +315,7 @@ struct SpaceFlickActionKeyButton: View {
     // 呼び出し側は変換キーとして機能している間だけ true にする(空白入力では連打しない)。
     var repeatsWhileHolding = false
     var repeatInitialDelay: TimeInterval = 0.5
-    var repeatInterval: TimeInterval = 0.25
+    var repeatInterval: TimeInterval = 0.2
 
     @Environment(\.keyboardAccentColor) private var accentColor
     @GestureState private var isGestureInProgress = false
