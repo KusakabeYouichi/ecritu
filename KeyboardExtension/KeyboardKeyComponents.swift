@@ -311,12 +311,20 @@ struct SpaceFlickActionKeyButton: View {
     var accessibilityLabelText: String = "空白"
     let onSpace: () -> Void
     let onTab: () -> Void
+    // 長押しで onSpace を連続発火(変換中の候補送り。Apple 純正の変換キー長押しと同じ)。
+    // 呼び出し側は変換キーとして機能している間だけ true にする(空白入力では連打しない)。
+    var repeatsWhileHolding = false
+    var repeatInitialDelay: TimeInterval = 0.5
+    var repeatInterval: TimeInterval = 0.25
 
     @Environment(\.keyboardAccentColor) private var accentColor
     @GestureState private var isGestureInProgress = false
     @State private var activeDirection: FlickDirection = .milieu
     @State private var isTouching = false
     @State private var stuckTouchWatchdogWorkItem: DispatchWorkItem?
+    @State private var repeatStartWorkItem: DispatchWorkItem?
+    @State private var repeatTimer: Timer?
+    @State private var didRepeatDuringTouch = false
 
     private let keyLabelColor = KeyboardThemePalette.keyLabel
     private let tabPreviewText = "⇥"
@@ -382,12 +390,21 @@ struct SpaceFlickActionKeyButton: View {
 
                     if !isTouching {
                         scheduleStuckTouchWatchdog()
+                        if repeatsWhileHolding {
+                            scheduleRepeatStart()
+                        }
                     }
                     isTouching = true
                     let direction = FlickGestureResolver.resolve(translation: value.translation)
                     activeDirection = direction == .haut ? .haut : .milieu
+                    // 上フリック(タブ)に転じたら候補送りは止める
+                    if activeDirection == .haut {
+                        cancelRepeatStart()
+                        stopRepeating()
+                    }
                 }
                 .onEnded { _ in
+                    let repeated = didRepeatDuringTouch
                     defer {
                         finalizeTouchInteractionState()
                     }
@@ -396,7 +413,7 @@ struct SpaceFlickActionKeyButton: View {
 
                     if activeDirection == .haut {
                         onTab()
-                    } else {
+                    } else if !repeated {
                         onSpace()
                     }
                 }
@@ -431,6 +448,36 @@ struct SpaceFlickActionKeyButton: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.2, execute: workItem)
     }
 
+    // 長押し候補送り: 初期遅延後に1回送り、以後 repeatInterval ごとに送る。指を離すか
+    // 上フリックに転じるまで続く。発火した場合、離した時の onSpace は抑止する(二重送り防止)。
+    private func scheduleRepeatStart() {
+        cancelRepeatStart()
+        didRepeatDuringTouch = false
+        let work = DispatchWorkItem {
+            guard isTouching, activeDirection == .milieu else { return }
+            didRepeatDuringTouch = true
+            onSpace()
+            let timer = Timer(timeInterval: repeatInterval, repeats: true) { _ in
+                guard isTouching, activeDirection == .milieu else { return }
+                onSpace()
+            }
+            repeatTimer = timer
+            RunLoop.main.add(timer, forMode: .common)
+        }
+        repeatStartWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + repeatInitialDelay, execute: work)
+    }
+
+    private func cancelRepeatStart() {
+        repeatStartWorkItem?.cancel()
+        repeatStartWorkItem = nil
+    }
+
+    private func stopRepeating() {
+        repeatTimer?.invalidate()
+        repeatTimer = nil
+    }
+
     private func cancelStuckTouchWatchdog() {
         stuckTouchWatchdogWorkItem?.cancel()
         stuckTouchWatchdogWorkItem = nil
@@ -438,6 +485,9 @@ struct SpaceFlickActionKeyButton: View {
 
     private func finalizeTouchInteractionState() {
         cancelStuckTouchWatchdog()
+        cancelRepeatStart()
+        stopRepeating()
+        didRepeatDuringTouch = false
         activeDirection = .milieu
         if isTouching {
             isTouching = false

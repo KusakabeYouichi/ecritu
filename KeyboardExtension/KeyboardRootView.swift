@@ -382,7 +382,7 @@ struct KeyboardRootView: View {
         isActiveConversion ? accentColor : Color.orange
     }
 
-    private var isSpaceActsAsConversionKey: Bool {
+    var isSpaceActsAsConversionKey: Bool {
         inputMode == .kana && !composingText.isEmpty
     }
 
