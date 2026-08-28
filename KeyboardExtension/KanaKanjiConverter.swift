@@ -178,6 +178,42 @@ final class KanaKanjiConverter {
         _ = store.learningScores(for: "あ")
     }
 
+    // 長寿命データを「変換の一時確保と混ざる前に」まとめて実体化する(ヒープ配置の是正、2703)。
+    // 実測(8/28 16:44、Facebook 9分入力)で alloc 68MB / used 38MB = 約30MB が「解放済みなのに
+    // 返せないページ」だった。原因は、初回変換のときに遅延生成される長寿命データ(活用ルール
+    // 約2.5MB、seed 辞書、連文節・助数詞の各種表、補助語彙 約1MB)が、ラティス等の一時確保と
+    // 同じページに点在して確保され、一時側を解放してもページが空にならないこと。起動直後の
+    // 静かなヒープで先に確保しておけば、以後の一時確保は別ページ群で回り、解放後に
+    // pressure_relief で返せる見込み。効果は「長寿命プリウォーム」ログと、長時間入力後の
+    // alloc/used(基準: 68/38)で測る。
+    // 対象の分類: (a) プロセス不死の static let(活用ルール/seed/各種表) (b) 表示セッション寿命で
+    // 非表示時に捨てる store キャッシュ(補助語彙/ユーザ・学習・抑制語彙)。(b) は非表示→再表示で
+    // 作り直されるため、再表示時にも同じ手順で先に確保する(bootstrap 経由)。
+    func prewarmLongLivedDataForHeapLayout() -> Int {
+        var touched = 0
+        // (a) static let: 参照するだけで実体化される
+        touched += KanaKanjiSeedDictionary.seed.count
+        touched += Self.allInflectionRules.count
+        touched += Self.deinflectionRulesByReadingLastCharacter.count
+        touched += Self.godanPotentialDeinflectionMappingsByReadingLastCharacter.count
+        touched += Self.multiClauseKanaAdverbReadings.count
+        touched += Self.multiClauseBigramPairBonuses.count
+        touched += Self.multiClauseFinalParticleReadings.count
+        touched += Self.multiClauseSeedOrderNounBonusesByReading.count
+        touched += Self.multiClauseRareReadingFloorExemptSurfacesByReading.count
+        touched += Self.numericCounterSuffixCandidatesByReading.count
+        touched += Self.numericCounterPrefixCandidatesByReading.count
+        touched += Self.numericUnitFallbackCandidatesByReading.count
+        touched += Self.nounKanjiSuffixAffixCandidatesByReading.count
+        touched += Self.nounKanjiPrefixAffixCandidatesByReading.count
+        touched += Self.supplementalCounterSurfacesByReading.count
+        touched += Self.digitContextAdditionalCounterSurfacesByReading.count
+        // (b) store キャッシュ(非表示時に捨てられ、再表示後の初回変換で作り直されるもの)
+        touched += store.loadSupplementalSystemDictionary().readingCount
+        preloadSharedDataCachesIfNeeded()
+        return touched
+    }
+
     // 候補スコアの基礎点。生成経路ごとの優先順位をここで一元管理する。
     // 大小関係の意図: 追加語彙 > 学習語彙 > 辞書 > quick postfix > 丁寧接頭辞 > 序数
     //   > 数値単位 > BFS postfix > 名詞漢字接辞 > 活用 > ガル形。
