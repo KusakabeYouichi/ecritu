@@ -631,6 +631,31 @@ final class KeyboardViewController: UIInputViewController {
         refreshKeyboardState(trigger: "viewWillAppear")
     }
 
+    // 時限トレース(2684): 編集終了(完了ボタン)の前に textWillChange が来るか、その時点の文脈を見る
+    override func textWillChange(_ textInput: UITextInput?) {
+        super.textWillChange(textInput)
+        #if DEBUG
+        if !composingRawText.isEmpty || activeConversion != nil {
+            invalidateTextContextCache()
+            appendKeyboardDiagnosticsLog(
+                "WILLTRACE textWillChange before=len\(currentTextContextBeforeInput().count) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+            )
+        }
+        #endif
+    }
+
+    override func selectionWillChange(_ textInput: UITextInput?) {
+        super.selectionWillChange(textInput)
+        #if DEBUG
+        if !composingRawText.isEmpty || activeConversion != nil {
+            invalidateTextContextCache()
+            appendKeyboardDiagnosticsLog(
+                "WILLTRACE selectionWillChange before=len\(currentTextContextBeforeInput().count) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+            )
+        }
+        #endif
+    }
+
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
