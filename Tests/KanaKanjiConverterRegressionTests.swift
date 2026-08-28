@@ -12353,4 +12353,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "これるか", systemCandidateMode: .surface).first, "来れるか")
         XCTAssertEqual(converter.multiClauseCandidates(for: "たべれるか", systemCandidateMode: .surface).first, "食べれるか")
     }
+
+    // 数字確定直後の助数詞ブースト: 助詞始まりの長い末尾(もおしたことない)でも 回+変換形 を供給する。
+    // 以前は末尾6かな制限で かいもおしたことない が漏れ、変換形も全漢字限定で おした がかなのままだった(2700)
+    func testDigitContextCounterBoostWithLongParticleTail() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let reading = "かいもおしたことない"
+        let engine = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            + converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            engine, reading: reading, precedingCharacter: "1",
+            tailConversion: { [converter] tail in
+                if tail.count >= 4, let m = converter!.multiClauseCandidates(for: tail, systemCandidateMode: .surface).first { return m }
+                return converter!.candidates(for: tail, limit: 1, systemCandidateMode: .surface).first
+            }
+        )
+        XCTAssertEqual(boosted.first, "回も押したことない", "\(boosted.prefix(5))")
+    }
 }

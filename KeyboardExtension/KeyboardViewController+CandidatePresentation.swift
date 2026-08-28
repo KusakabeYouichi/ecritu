@@ -387,10 +387,14 @@ extension KeyboardViewController {
             suppressedCandidates: kanaKanjiConverter.store
                 .suppressedCandidatesByReading()[cacheKey.reading] ?? [],
             tailConversion: { [weak self] tail in
-                // 助数詞の後ろの読みを変換した形(しけん→試験)を合成供給に使う(2645)
-                self?.kanaKanjiConverter.candidates(
-                    for: tail, limit: 1, systemCandidateMode: .surface
-                ).first
+                // 助数詞の後ろの読みを変換した形(しけん→試験)を合成供給に使う(2645)。
+                // 4かな以上の末尾(もおしたことない 等)は連文節の最良を使う(2700)
+                guard let converter = self?.kanaKanjiConverter else { return nil }
+                if tail.count >= 4,
+                    let multi = converter.multiClauseCandidates(for: tail, systemCandidateMode: .surface).first {
+                    return multi
+                }
+                return converter.candidates(for: tail, limit: 1, systemCandidateMode: .surface).first
             }
         )
 
