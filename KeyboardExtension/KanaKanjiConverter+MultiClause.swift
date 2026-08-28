@@ -1374,6 +1374,15 @@ extension KanaKanjiConverter {
                     || prev.hasSuffix("め")) {
                 base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
             }
+            // 述語(活用派生/辞書形)直後の疑問終助詞「か」1字もクランプ(2700)。2字以上のクラスタと
+            // 違い 1字は こんな(来ん+な)退行のため除外していたが、か は 来れる+か / 行ける+か の
+            // 述語直後で終助詞以外の解釈がなく、素通り(3565+500)だと これ+ルカ(人名)の分割に
+            // 負けていた(これるか→これルカ。ユーザ報告 2700)
+            if reading == "か", surface == "か",
+                prev != Self.multiClauseBOSMarker,
+                prevIsInflectionDerived || prevIsDictionaryFormPredicate {
+                base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
+            }
             // 動詞て形(活用派生)直後の いって(定数コメント参照。2628)
             if reading == "いって", prevIsInflectionDerived,
                 prev.hasSuffix("て") || prev.hasSuffix("で") {

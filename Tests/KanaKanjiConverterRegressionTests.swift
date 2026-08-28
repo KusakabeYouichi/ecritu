@@ -12345,4 +12345,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let t = converter.candidates(for: "たべれるか", limit: 8, systemCandidateMode: .surface)
         XCTAssertFalse(t.contains("食べれる課"), "\(t)")
     }
+
+    // 述語直後の か(1字)をクランプし、これ+ルカ(人名)の分割に負けないようにする(2700)
+    func testKaAfterPredicateClampInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "これるか", systemCandidateMode: .surface).first, "来れるか")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たべれるか", systemCandidateMode: .surface).first, "食べれるか")
+    }
 }
