@@ -12300,4 +12300,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "たとえば", limit: 3, systemCandidateMode: .surface).first, "たとえば")
         XCTAssertEqual(converter.multiClauseCandidates(for: "たとえばこれ", systemCandidateMode: .surface).first, "たとえばこれ")
     }
+
+    // すると: 辞書の唯一の語 スルト(人名 Surtr)を抑制し、接続詞 すると をかなで供給(2688)
+    func testSurutoSuppressedAndKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let result = converter.candidates(for: "すると", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(result.first, "すると", "\(result)")
+        XCTAssertFalse(result.contains("スルト"))
+    }
 }
