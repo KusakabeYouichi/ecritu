@@ -179,6 +179,40 @@ extension KeyboardViewController {
         return true
     }
 
+    static let hostDocumentVanishResolutionDelay: TimeInterval = 0.15
+
+    func scheduleHostDocumentVanishResolution(previousContextLength: Int) {
+        hostDocumentVanishWorkItem?.cancel()
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "文書消失を保留 prevLen=\(previousContextLength) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+        )
+        let work = DispatchWorkItem { [weak self] in
+            self?.resolveHostDocumentVanishAsSendResidual()
+        }
+        hostDocumentVanishWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.hostDocumentVanishResolutionDelay, execute: work)
+    }
+
+    // 保留期間内に閉じなかった=送信の全消去。従来どおり残留 marked を空置換で取り除く
+    // (確定文字が無い入力欄なので巻き込みのリスクは無い)。
+    func resolveHostDocumentVanishAsSendResidual() {
+        hostDocumentVanishWorkItem = nil
+        guard activeConversion != nil || !composingRawText.isEmpty else {
+            return
+        }
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "文書消失を送信残留と判定 → 削除 composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+        )
+        markTextProxyEdit()
+        textDocumentProxy.setMarkedText("", selectedRange: NSRange(location: 0, length: 0))
+        markTextProxyEdit()
+        textDocumentProxy.unmarkText()
+        activeConversion = nil
+        clearComposingState()
+        stopMarkedTextWatchdog()
+        refreshKeyboardStateAsync()
+    }
+
     func rememberComposingContextPrefixTail() {
         let contextBeforeInput = currentTextContextBeforeInput()
         composingContextPrefixTail = String(
@@ -702,6 +736,19 @@ extension KeyboardViewController {
             self.activeConversion = nil
             clearComposingState()
             stopMarkedTextWatchdog()
+            return
+        }
+
+        // 文書全体が消えた(context 空、直前は非空)外部変化は2通りある: (a) メモの完了ボタン等で
+        // 編集が終了しキーボードが閉じる直前(実機ログ 2680: この callback の 25ms 後に
+        // viewWillDisappear)、(b) メッセージ送信で入力欄が全消去された。(a) なら未確定は確定
+        // すべき(Apple 純正と同じ)、(b) なら残留 marked は削除すべき。即断せず 150ms 保留し、
+        // その間に viewWillDisappear が来れば (a) として確定、来なければ (b) として従来の削除を行う。
+        if triggeredByExternalChange,
+            contextBeforeInput.isEmpty,
+            previousContextBeforeInputLength > 0,
+            activeConversion != nil || !composingRawText.isEmpty {
+            scheduleHostDocumentVanishResolution(previousContextLength: previousContextBeforeInputLength)
             return
         }
 
