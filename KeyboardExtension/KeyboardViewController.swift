@@ -710,9 +710,24 @@ final class KeyboardViewController: UIInputViewController {
 
     var keyboardLaunchViewDidLoadAt: CFAbsoluteTime = 0
 
+    // 前回のセッションが未確定(marked)を残したままキーボードが閉じた場合(メモの完了ボタン等。
+    // 閉じる時点の確定はホストに届かない回がある)、ホスト側には下線付きの marked 範囲が残る。
+    // 次にキーボードが出た時点で écritu 側に未確定は無いので、ここで unmarkText して
+    // 残留 marked を確定文字にする(Apple 純正がキーボード終了時に確定するのと同じ結果)。
+    // marked が無ければ unmarkText は文書を変えない。放置すると最初の打鍵の setMarkedText が
+    // 残留範囲を置き換えて前回の文字が消えていた(ユーザ報告 2680)。
+    func commitStaleHostMarkedTextOnAppear() {
+        guard composingRawText.isEmpty, activeConversion == nil else {
+            return
+        }
+        noteOwnTextProxyEditTimestamp()
+        textDocumentProxy.unmarkText()
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
+        commitStaleHostMarkedTextOnAppear()
 
         if keyboardLaunchViewDidLoadAt > 0 {
             let toAppearMs = Int((CFAbsoluteTimeGetCurrent() - keyboardLaunchViewDidLoadAt) * 1000)
