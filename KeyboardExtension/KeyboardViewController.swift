@@ -638,10 +638,32 @@ final class KeyboardViewController: UIInputViewController {
         if !composingRawText.isEmpty || activeConversion != nil {
             invalidateTextContextCache()
             appendKeyboardDiagnosticsLog(
-                "WILLTRACE textWillChange before=len\(currentTextContextBeforeInput().count) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+                "WILLTRACE textWillChange external=\(shouldTreatAsExternalTextChange()) before=len\(currentTextContextBeforeInput().count) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
             )
         }
         #endif
+        commitComposingTextOnExternalTextWillChangeIfNeeded()
+    }
+
+    // ホスト起因の変更が「起きる前」に届く唯一のフック。メモの完了ボタンでは textDidChange
+    // (文脈空=編集終了後)の 8ms 前に来て、文脈はまだ元のまま(実機ログ 2684)。編集終了後の
+    // 確定(viewWillDisappear / textDidChange 内)はホストに届かなかったので、ここで未確定を
+    // 確定する(Apple 純正のキーボード終了時確定と同じ結果)。自前の編集(setMarkedText 等)に
+    // 伴う通知は 0.35s 窓で除外。外部変更で未確定を保持し続ける理由は無く(従来は直後の
+    // textDidChange で破棄していた)、確定の方が Apple の挙動に近い。
+    func commitComposingTextOnExternalTextWillChangeIfNeeded() {
+        guard shouldTreatAsExternalTextChange(),
+            activeConversion != nil || !composingRawText.isEmpty else {
+            return
+        }
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "外部変更の直前に未確定を確定 composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+        )
+        markTextProxyEdit()
+        textDocumentProxy.unmarkText()
+        activeConversion = nil
+        clearComposingState()
+        stopMarkedTextWatchdog()
     }
 
     override func selectionWillChange(_ textInput: UITextInput?) {
