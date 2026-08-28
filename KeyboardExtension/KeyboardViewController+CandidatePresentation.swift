@@ -212,6 +212,7 @@ extension KeyboardViewController {
                 )
             }
             let singleForTrace = Array(converterCandidates.prefix(4))
+            var multiClauseLeadingKana = false
 
             // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
             // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
@@ -275,6 +276,11 @@ extension KeyboardViewController {
                         )
                     }
                 }
+                // 連文節エンジンが全かなを最良に選んだか(提示層のかな識別退避を免除する根拠。
+                // エンジン側は全かな結果を素通りエコーから守る妥当性フィルタ(curated/終助詞/
+                // 全ノード辞書語/keepKana)を通しているので、提示層が別基準で覆すと
+                // なるといいなー→成るといいなー のような食い違いになる。2688)
+                multiClauseLeadingKana = (multiClause.first == pendingKey.composingRawText)
                 if !multiClause.isEmpty {
                     // 連文節の並び(最良+変種)を先頭にそのまま置き、単文節候補を後ろに
                     // 続ける(重複は単文節側から除去)。連文節が返せる読み(4文字以上)では
@@ -316,6 +322,7 @@ extension KeyboardViewController {
                     generation: generation,
                     cacheKey: pendingKey,
                     converterCandidates: converterCandidates,
+                    multiClauseLeadingKana: multiClauseLeadingKana,
                     presentationLimit: presentationLimit,
                     systemCandidateMode: systemCandidateMode
                 )
@@ -327,6 +334,7 @@ extension KeyboardViewController {
         generation: UInt64,
         cacheKey: CandidatePresentationCacheKey,
         converterCandidates: [String],
+        multiClauseLeadingKana: Bool = false,
         presentationLimit: Int,
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) {
@@ -357,7 +365,8 @@ extension KeyboardViewController {
 
         let filtered = candidatesForPresentation(
             from: merged,
-            composingText: cacheKey.composingRawText
+            composingText: cacheKey.composingRawText,
+            multiClauseLeadingKana: multiClauseLeadingKana
         )
 
         // め終わり読みの『め/目』選好(序数/形容詞語幹)。連文節混じりの一覧にも一様に効かせる。
@@ -459,7 +468,8 @@ extension KeyboardViewController {
 
     func candidatesForPresentation(
         from candidates: [String],
-        composingText: String
+        composingText: String,
+        multiClauseLeadingKana: Bool = false
     ) -> [String] {
         // どの経路から来ても表示リストに同一文字列が二度出ないようにする(先勝ち)。
         var seen = Set<String>()
@@ -487,7 +497,8 @@ extension KeyboardViewController {
         if let first = candidates.first,
             first == composingText,
             isKanaOnlyText(first),
-            kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
+            multiClauseLeadingKana
+                || kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
             return candidates
         }
         if kanaKanjiConverter.shouldKeepKanaIdentityLeading(for: composingReading) {
