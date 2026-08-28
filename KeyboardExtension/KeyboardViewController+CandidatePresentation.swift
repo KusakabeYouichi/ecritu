@@ -243,6 +243,7 @@ extension KeyboardViewController {
                 )
                 // MEMFORENSICS(時限計測 2611): 変換がアリーナ高水位を育てたかの帰属
                 MemoryForensics.noteOperation("変換\(reading.count)字")
+                MemoryForensics.noteConversion()
                 // 予防的スリム化(2658): 変換はアリーナを押し広げる主因なので、その直後に
                 // footprint が高ければ返却しておく。実測(8/27 05:39)では警告時点で
                 // alloc 68 / used 39 = 29MB が「free 済みだが返していない」領域だった。

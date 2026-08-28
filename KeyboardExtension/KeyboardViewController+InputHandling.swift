@@ -830,6 +830,7 @@ extension KeyboardViewController {
         learnKanaIdentity: Bool = false,
         trailingText: String = ""
     ) {
+        MemoryForensics.noteCommitted(characters: committedText.count + trailingText.count)
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
         commitMarkedTextByReplacingCurrentMarkedText(
             currentMarkedText: sourceText,
@@ -867,6 +868,7 @@ extension KeyboardViewController {
         trailingText: String = ""
     ) {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
+        MemoryForensics.noteCommitted(characters: committedTextForInsertion.count)
 
         commitMarkedTextByReplacingCurrentMarkedText(
             currentMarkedText: conversion.committedText,
