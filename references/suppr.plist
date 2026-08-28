@@ -61,6 +61,7 @@
 	<dict><key>phrase</key><string>現った</string><key>shortcut</key><string>うつった</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
+	<dict><key>phrase</key><string>スルト</string><key>shortcut</key><string>すると</string></dict>	<!-- スルト(すると): Sudachi の人名固有名詞(北欧神話 Surtr)。すると の唯一の辞書語で rank0 を占め、接続詞 すると(かな)を跨いでいた(ユーザ指定 2688) -->
 	<dict><key>phrase</key><string>本途</string><key>shortcut</key><string>ほんと</string></dict>	<!-- 本途/本斗/本登(ほんと): LM 不在のレア人名・地名収穫。ほんと の かな先頭化は seed で行うため、これらが2番手以降に居座らないよう抑制する(旧: 本当 を抑制していたが ほんとだ/ほんとに 等の合成から 本当 が消えるため seed へ移行。2583) -->
 	<dict><key>phrase</key><string>本斗</string><key>shortcut</key><string>ほんと</string></dict>
 	<dict><key>phrase</key><string>本登</string><key>shortcut</key><string>ほんと</string></dict>

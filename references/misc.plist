@@ -338,5 +338,6 @@
 	<dict><key>phrase</key><string>炊ける</string><key>shortcut</key><string>たける</string><key>pos</key><string>一段</string></dict>	<!-- ごはんがたける→ご飯が健 対策。人名 健(seed)が連文節で1ノード勝ちするため curated 供給(2618) -->
 	<dict><key>phrase</key><string>十割</string><key>shortcut</key><string>じゅうわり</string></dict>	<!-- 十割そば。辞書読みは とわり のみで、連文節が 中(じゅう)+割り を作る(2618) -->
 	<dict><key>phrase</key><string>球殻</string><key>shortcut</key><string>きゅうかく</string></dict>	<!-- 旧字体 球殼 のみが辞書にあり新字体が無かったため補完。旧字体側は suppr.plist で抑制済み(字形がほぼ同一で候補を圧迫する) -->
+	<dict><key>phrase</key><string>すると</string><key>shortcut</key><string>すると</string></dict>	<!-- 接続詞 すると(かな正書)。辞書には人名 スルト しか無く(抑制済み)、かな語として供給する(ユーザ指定 2688) -->
 </array>
 </plist>
