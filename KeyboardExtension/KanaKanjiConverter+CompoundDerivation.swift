@@ -1168,14 +1168,22 @@ extension KanaKanjiConverter {
         }
 
         func kanjiStemCandidates(for stemReading: String) -> [String] {
-            uniqueCandidates(
+            // 語幹が用言(動詞・形容詞。inflection_classes に登録)なら名詞接辞は付かない
+            // (来れる+か→来れる課/可/化/科/下 の無用な合成。ユーザ報告 2700)。
+            // サ変名詞(suru)は名詞なので許す(情報+化 等)。
+            let classMap = inflectionMetadata(for: stemReading).classMap
+            return uniqueCandidates(
                 from: candidatesForReading(
                     stemReading,
                     userDictionary: userDictionary,
                     initialUserDictionary: initialUserDictionary,
                     systemCandidateMode: systemCandidateMode
                 )
-            ).filter { containsKanjiOrKatakana($0) }
+            ).filter { candidate in
+                guard containsKanjiOrKatakana(candidate) else { return false }
+                if let cls = classMap[candidate], cls != "suru" { return false }
+                return true
+            }
         }
 
         var derived: [String] = []
