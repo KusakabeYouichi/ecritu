@@ -12334,4 +12334,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let kamo = converter.multiClauseCandidates(for: "きくかも", systemCandidateMode: .surface)
         XCTAssertEqual(Array(kamo.prefix(2)), ["聞くかも", "効くかも"], "\(kamo)")
     }
+
+    // 用言語幹に名詞接辞(か→課/可/化/科/下)を付けない(来れる課 等の無用合成。2700)
+    func testNoNounAffixOnVerbStem() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let r = converter.candidates(for: "これるか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(r.first, "来れるか", "\(r)")
+        XCTAssertFalse(r.contains { $0.hasPrefix("来れる") && $0 != "来れるか" }, "\(r)")
+        let t = converter.candidates(for: "たべれるか", limit: 8, systemCandidateMode: .surface)
+        XCTAssertFalse(t.contains("食べれる課"), "\(t)")
+    }
 }
