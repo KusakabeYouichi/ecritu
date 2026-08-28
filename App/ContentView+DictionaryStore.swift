@@ -58,9 +58,18 @@ extension ContentView {
         let maxLogLineCount = 320
 
         if let data = defaults.data(forKey: key),
-            data.count <= maxLogDataBytes,
-            let decoded = try? JSONDecoder().decode([String].self, from: data) {
-            return Array(decoded.suffix(maxLogLineCount))
+            data.count <= maxLogDataBytes {
+            // 旧 JSON 配列("[" 始まり)と 2707 以降の改行区切りテキストの両形式
+            if data.first == UInt8(ascii: "["),
+                let decoded = try? JSONDecoder().decode([String].self, from: data) {
+                return Array(decoded.suffix(maxLogLineCount))
+            }
+            let lines = String(decoding: data, as: UTF8.self)
+                .split(separator: "\n", omittingEmptySubsequences: true)
+                .map(String.init)
+            if !lines.isEmpty {
+                return Array(lines.suffix(maxLogLineCount))
+            }
         }
 
         if let data = defaults.data(forKey: key),

@@ -15,7 +15,12 @@ extension KeyboardViewController {
         // nil=未ロード。永続化は2秒スロットル+重要イベント即時+ライフサイクルでフラッシュ。
         var diagnosticsFlightRecorderBuffer: [DiagnosticsFlightRecorderEvent]?
         var diagnosticsFlightRecorderLastPersistedAt: TimeInterval = 0
-        var diagnosticsLogLinesBuffer: [String]?
+        // 診断ログのメモリ内バッファ(2707): 以前は [String](320本の文字列が変換の合間に
+        // 生成され、一時確保と同じページに散在=返却不能ページを増やす)だったのを、改行区切りの
+        // 1本の連続テキスト(Data)にした。保存もそのまま書く(JSON 化の一時確保 130KB/回も消える)。
+        // 読み手(diagnosticsLogLines / アプリの decodeStringArray)は旧 JSON 形式も受け付ける。
+        var diagnosticsLogTextBuffer: Data?
+        var diagnosticsLogTextLineCount = 0
         // 診断ログの defaults 保存を間引く(2704): 以前は1行ごとに320行を JSON 化(約130KB の
         // 一時確保+XPC)していた。非 critical 行は dirty にして5秒後にまとめて保存し、
         // critical/非表示/警告時は即時保存する
@@ -411,7 +416,8 @@ extension KeyboardViewController {
         // 実測: alive=10→37.0MB / 12→40.6MB / 15→46.7MB と1体あたり約1.3MB増えていた。
         // 再表示されたら次の追記時に defaults から読み直される(nil=未ロード)。
         persistBufferedKeyboardDiagnostics()
-        diagnosticsState.diagnosticsLogLinesBuffer = nil
+        diagnosticsState.diagnosticsLogTextBuffer = nil
+        diagnosticsState.diagnosticsLogTextLineCount = 0
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
         clearComposingState()
         clearRecentKanaPlainCommitUpgradeContext()
@@ -647,9 +653,8 @@ extension KeyboardViewController {
         from defaults: UserDefaults,
         key: String = SharedDefaultsKeys.keyboardDiagnosticsLogLines
     ) -> [String] {
-        if let data = defaults.data(forKey: key),
-            let decoded = try? JSONDecoder().decode([String].self, from: data) {
-            return decoded
+        if let data = defaults.data(forKey: key) {
+            return Self.diagnosticsLogLines(fromStoredData: data)
         }
 
         if let raw = defaults.array(forKey: key) {
@@ -659,17 +664,49 @@ extension KeyboardViewController {
         return []
     }
 
+    // 保存形式は2種: 旧 JSON 配列("[" 始まり)と、2707 以降の改行区切りテキスト
+    static func diagnosticsLogLines(fromStoredData data: Data) -> [String] {
+        if data.first == UInt8(ascii: "["),
+            let decoded = try? JSONDecoder().decode([String].self, from: data) {
+            return decoded
+        }
+        return String(decoding: data, as: UTF8.self)
+            .split(separator: "\n", omittingEmptySubsequences: true)
+            .map(String.init)
+    }
+
+    // 連続テキストバッファへ1行追記し、上限行数を超えた分を先頭から落とす
+    static func appendDiagnosticsLogLine(_ line: String, to buffer: inout Data, lineCount: inout Int, maxLineCount: Int) {
+        buffer.append(contentsOf: Array(line.utf8))
+        buffer.append(UInt8(ascii: "\n"))
+        lineCount += 1
+        let excess = lineCount - maxLineCount
+        guard excess > 0 else { return }
+        var seen = 0
+        var cut = 0
+        for (offset, byte) in buffer.enumerated() where byte == UInt8(ascii: "\n") {
+            seen += 1
+            if seen == excess {
+                cut = offset + 1
+                break
+            }
+        }
+        if cut > 0 {
+            buffer.removeSubrange(0..<cut)
+            lineCount -= excess
+        }
+    }
+
     func saveDiagnosticsLogLines(
         _ lines: [String],
         to defaults: UserDefaults,
         key: String = SharedDefaultsKeys.keyboardDiagnosticsLogLines
     ) {
-        if let encoded = try? JSONEncoder().encode(lines) {
-            defaults.set(encoded, forKey: key)
-            return
-        }
+        defaults.set(Data((lines.joined(separator: "\n") + "\n").utf8), forKey: key)
+    }
 
-        defaults.set(lines, forKey: key)
+    func saveDiagnosticsLogText(_ text: Data, to defaults: UserDefaults) {
+        defaults.set(text, forKey: SharedDefaultsKeys.keyboardDiagnosticsLogLines)
     }
 
     // 表示未到達の監視: viewDidLoad後この秒数以内にviewWillAppearが来なければ、
@@ -971,10 +1008,10 @@ extension KeyboardViewController {
     func flushDiagnosticsLogLinesIfDirty() {
         guard diagnosticsState.diagnosticsLogLinesDirty,
             let sharedDefaults,
-            let lines = diagnosticsState.diagnosticsLogLinesBuffer else {
+            let text = diagnosticsState.diagnosticsLogTextBuffer else {
             return
         }
-        saveDiagnosticsLogLines(lines, to: sharedDefaults)
+        saveDiagnosticsLogText(text, to: sharedDefaults)
         diagnosticsState.diagnosticsLogLinesDirty = false
     }
 
@@ -1042,7 +1079,8 @@ extension KeyboardViewController {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
         // criticalLogLines は意図的に消さない(install 変更をまたいで重大イベントの
         // 証拠を残す。明示クリアはコンテナアプリの診断クリア操作から行う)
-        diagnosticsState.diagnosticsLogLinesBuffer = nil
+        diagnosticsState.diagnosticsLogTextBuffer = nil
+        diagnosticsState.diagnosticsLogTextLineCount = 0
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
@@ -1203,19 +1241,29 @@ extension KeyboardViewController {
             return
         }
 
-        // 320行の JSON デコードを毎回やり直さない(メモリ内バッファ)。保存自体は
-        // まれなイベントかつクラッシュ保全のため即時のまま。
-        var lines = diagnosticsState.diagnosticsLogLinesBuffer ?? diagnosticsLogLines(from: sharedDefaults)
-        lines.append(entry)
-
+        // メモリ内バッファは改行区切りの連続テキスト(2707)。未ロードなら defaults から復元
+        // (旧 JSON 形式ならテキストへ変換)。保存は critical 行のみ即時、他は5秒バッチ。
         let maxLineCount = 320
-        if lines.count > maxLineCount {
-            lines.removeFirst(lines.count - maxLineCount)
+        if diagnosticsState.diagnosticsLogTextBuffer == nil {
+            let existing = diagnosticsLogLines(from: sharedDefaults).suffix(maxLineCount)
+            var buffer = Data(capacity: 160 * 1024)
+            var count = 0
+            for line in existing {
+                Self.appendDiagnosticsLogLine(line, to: &buffer, lineCount: &count, maxLineCount: maxLineCount)
+            }
+            diagnosticsState.diagnosticsLogTextBuffer = buffer
+            diagnosticsState.diagnosticsLogTextLineCount = count
         }
-
-        diagnosticsState.diagnosticsLogLinesBuffer = lines
+        Self.appendDiagnosticsLogLine(
+            entry,
+            to: &diagnosticsState.diagnosticsLogTextBuffer!,
+            lineCount: &diagnosticsState.diagnosticsLogTextLineCount,
+            maxLineCount: maxLineCount
+        )
         if critical {
-            saveDiagnosticsLogLines(lines, to: sharedDefaults)
+            if let text = diagnosticsState.diagnosticsLogTextBuffer {
+                saveDiagnosticsLogText(text, to: sharedDefaults)
+            }
             diagnosticsState.diagnosticsLogLinesDirty = false
             appendKeyboardDiagnosticsCriticalLog(entry, to: sharedDefaults)
         } else {
