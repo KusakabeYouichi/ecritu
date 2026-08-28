@@ -600,21 +600,28 @@ extension KanaKanjiConverter {
                 && reading.count > counterReading.count && reading.hasPrefix(counterReading) {
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
                 let tail = String(reading.dropFirst(counterReading.count))
-                // 末尾は6かなまで(ぐらいかな=5かな が4制限で漏れ、5確定→ふんぐらいかな で
-                // 分ぐらいかな が出なかった。ユーザ報告 2643)
-                guard tail.count <= 6,
-                    tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
+                // 末尾の長さでは制限しない(ユーザ指定 2700)。数字につながる1文節め(助数詞読み)が
+                // 表に一致することが条件で、その後ろは全かななら何文字でもよい。以前は末尾6かなの
+                // 上限があり、かいもおしたこと(6)は通るのに かいもおしたことない(8)が漏れていた
+                // (4→6 は ふんぐらいかな 対策 2643。上限を上げ続ける設計をやめる)
+                guard tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
                     continue
                 }
+                // 助詞で始まる末尾(も/は/が/を/に/で/と…+述語)は「助数詞+助詞+文」の形。
+                // 末尾の変換形は 交ぜ書き(も押したことない)が正解なので全漢字制限を外す
+                let particleLedTail = tail.count >= 3
+                    && (tail.first.map { "もはがをにでとへのやか".contains($0) } ?? false)
                 var matched: [String] = []
                 for surface in surfaces {
                     // 末尾の変換形(しけん→試験)も供給する(2次試験。かな形より先)。
                     // 付属語末尾(しか/だけ 等)は変換しない(回鹿 の誤供給防止)。
-                    // 変換形は全漢字のみ(分行き 等の交ぜ形は供給しない)
+                    // 変換形は全漢字のみ(分行き 等の交ぜ形は供給しない)。助詞始まりの末尾は
+                    // 漢字を含めば可(2700)
                     if !counterPromotableKanaTails.contains(tail),
                         let convertedTail = tailConversion?(tail),
                         convertedTail != tail,
-                        KanaKanjiConverter.isAllKanjiSurface(convertedTail) {
+                        KanaKanjiConverter.isAllKanjiSurface(convertedTail)
+                            || (particleLedTail && containsKanjiCandidate(convertedTail)) {
                         let convertedForm = surface + convertedTail
                         if !suppressedCandidates.contains(convertedForm),
                             !matched.contains(convertedForm) {
