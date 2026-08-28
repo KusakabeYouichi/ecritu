@@ -1134,12 +1134,19 @@ extension KeyboardViewController {
         )?.appendingPathComponent(Self.diagnosticsFlightFileName)
     }
 
+    // フライトファイルは実機で一度も作成されていなかった(2708 時点、App Group 直下への
+    // 書き込みが失敗)。失敗を握りつぶして毎行やり直すと、行ごとの Data 化とファイルI/O が
+    // 無駄になるため、最初の失敗で以後のセッションでは試行を止め、理由を defaults 側の
+    // 診断ログに1回だけ残す。
+    nonisolated(unsafe) private static var diagnosticsFlightFileDisabled = false
+
     func appendKeyboardDiagnosticsFlightFileLine(_ line: String) {
         // 開発ビルド専用(appendKeyboardDiagnosticsLog と同方針)
         #if !DEBUG
         return
         #endif
-        guard let url = diagnosticsFlightFileURL() else {
+        guard !Self.diagnosticsFlightFileDisabled,
+            let url = diagnosticsFlightFileURL() else {
             return
         }
 
@@ -1147,7 +1154,14 @@ extension KeyboardViewController {
         let fileManager = FileManager.default
 
         if !fileManager.fileExists(atPath: url.path) {
-            try? data.write(to: url, options: [.atomic])
+            do {
+                try data.write(to: url, options: [.atomic])
+            } catch {
+                Self.diagnosticsFlightFileDisabled = true
+                appendKeyboardDiagnosticsLog(
+                    "フライトファイル作成失敗のため以後停止 path=\(url.lastPathComponent) error=\(error.localizedDescription)"
+                )
+            }
             return
         }
 
