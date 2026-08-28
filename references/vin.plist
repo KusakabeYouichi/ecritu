@@ -2,6 +2,52 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
+	<!-- ■ フランスの13ワイン生産地域(カタカナ表記): アルザス/ボージョレ/ボルドー/ブルゴーニュ/シャンパーニュ/コルス/ジュラ/ラングドック・ルーション/ロワール/プロヴァンス/サヴォワ(ビュジェ)/シュッド・ウエスト/ヴァレ・デュ・ローヌ -->
+	<dict><key>phrase</key><string>アルザス</string><key>shortcut</key><string>あるざす</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ヴァル・ド・ロワール</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
+	<dict><key>phrase</key><string>ヴァレ・デュ・ローヌ</string><key>shortcut</key><string>ゔぁれでゅろーぬ</string></dict>
+	<dict><key>phrase</key><string>コート・デュ・ローヌ</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>コルシカ</string><key>shortcut</key><string>こるしか</string></dict>
+	<dict><key>phrase</key><string>コルス</string><key>shortcut</key><string>こるす</string></dict>
+	<dict><key>phrase</key><string>サヴォワ</string><key>shortcut</key><string>さゔぉわ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>シャンパーニュ</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>シュッド・ウエスト</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
+	<dict><key>phrase</key><string>ジュラ</string><key>shortcut</key><string>じゅら</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ジュラ・サヴォワ</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
+	<dict><key>phrase</key><string>南西地方</string><key>shortcut</key><string>なんせいちほう</string></dict>
+	<dict><key>phrase</key><string>ビュジェ</string><key>shortcut</key><string>びゅじぇ</string></dict>	<!-- ビュジェイ は教本の表記。発音に沿う ビュジェ も併記 -->
+	<dict><key>phrase</key><string>ビュジェイ</string><key>shortcut</key><string>びゅじぇい</string></dict>
+	<dict><key>phrase</key><string>ブルゴーニュ</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>プロヴァンス</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ボージョレ</string><key>shortcut</key><string>ぼーじょれ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ボルドー</string><key>shortcut</key><string>ぼるどー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ラングドック</string><key>shortcut</key><string>らんぐどっく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ラングドック・ルーション</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
+	<dict><key>phrase</key><string>ルーション</string><key>shortcut</key><string>るーしょん</string></dict>
+	<dict><key>phrase</key><string>ローヌ</string><key>shortcut</key><string>ろーぬ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ロワール</string><key>shortcut</key><string>ろわーる</string></dict>	<!-- Sudachiにもある -->
+
+	<!-- ■ フランスの13ワイン生産地域(現地語表記) -->
+	<dict><key>phrase</key><string>Alsace</string><key>shortcut</key><string>あるざす</string></dict>
+	<dict><key>phrase</key><string>Beaujolais</string><key>shortcut</key><string>ぼーじょれ</string></dict>
+	<dict><key>phrase</key><string>Bordeaux</string><key>shortcut</key><string>ぼるどー</string></dict>
+	<dict><key>phrase</key><string>Bourgogne</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>
+	<dict><key>phrase</key><string>Bugey</string><key>shortcut</key><string>びゅじぇ</string></dict>
+	<dict><key>phrase</key><string>Champagne</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>
+	<dict><key>phrase</key><string>Corse</string><key>shortcut</key><string>こるす</string></dict>
+	<dict><key>phrase</key><string>Côtes du Rhône</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>
+	<dict><key>phrase</key><string>Jura</string><key>shortcut</key><string>じゅら</string></dict>
+	<dict><key>phrase</key><string>Jura-Savoie</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
+	<dict><key>phrase</key><string>Languedoc</string><key>shortcut</key><string>らんぐどっく</string></dict>
+	<dict><key>phrase</key><string>Languedoc-Roussillon</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
+	<dict><key>phrase</key><string>Loire</string><key>shortcut</key><string>ろわーる</string></dict>
+	<dict><key>phrase</key><string>Provence</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>
+	<dict><key>phrase</key><string>Rhône</string><key>shortcut</key><string>ろーぬ</string></dict>
+	<dict><key>phrase</key><string>Roussillon</string><key>shortcut</key><string>るーしょん</string></dict>
+	<dict><key>phrase</key><string>Savoie</string><key>shortcut</key><string>さゔぉわ</string></dict>
+	<dict><key>phrase</key><string>Sud-Ouest</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
+	<dict><key>phrase</key><string>Val de Loire</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
+	<dict><key>phrase</key><string>Vallée du Rhône</string><key>shortcut</key><string>ゔぁれでゅろーぬ</string></dict>
 	<!-- AOC名、DOC名、GI名や地名 -->
 	<dict><key>phrase</key><string>Aletta</string><key>shortcut</key><string>あれった</string></dict>
 	<dict><key>phrase</key><string>Haut</string><key>shortcut</key><string>おー</string></dict>	<!-- ??上 -->
@@ -6838,53 +6884,6 @@
 	<dict><key>phrase</key><string>シャトー・グリエ</string><key>shortcut</key><string>しゃとーぐりえ</string></dict>
 	<dict><key>phrase</key><string>シャトー・ムートン・ロスチャイルド</string><key>shortcut</key><string>しゃとーむーとんろすちゃいるど</string></dict>
 
-
-	<!-- ■ フランスの13ワイン生産地域(カタカナ表記): アルザス/ボージョレ/ボルドー/ブルゴーニュ/シャンパーニュ/コルス/ジュラ/ラングドック・ルーション/ロワール/プロヴァンス/サヴォワ(ビュジェ)/シュッド・ウエスト/ヴァレ・デュ・ローヌ -->
-	<dict><key>phrase</key><string>アルザス</string><key>shortcut</key><string>あるざす</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ヴァル・ド・ロワール</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
-	<dict><key>phrase</key><string>ヴァレ・デュ・ローヌ</string><key>shortcut</key><string>ゔぁれでゅろーぬ</string></dict>
-	<dict><key>phrase</key><string>コート・デュ・ローヌ</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>コルシカ</string><key>shortcut</key><string>こるしか</string></dict>
-	<dict><key>phrase</key><string>コルス</string><key>shortcut</key><string>こるす</string></dict>
-	<dict><key>phrase</key><string>サヴォワ</string><key>shortcut</key><string>さゔぉわ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>シャンパーニュ</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>シュッド・ウエスト</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
-	<dict><key>phrase</key><string>ジュラ</string><key>shortcut</key><string>じゅら</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ジュラ・サヴォワ</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
-	<dict><key>phrase</key><string>南西地方</string><key>shortcut</key><string>なんせいちほう</string></dict>
-	<dict><key>phrase</key><string>ビュジェ</string><key>shortcut</key><string>びゅじぇ</string></dict>	<!-- ビュジェイ は教本の表記。発音に沿う ビュジェ も併記 -->
-	<dict><key>phrase</key><string>ビュジェイ</string><key>shortcut</key><string>びゅじぇい</string></dict>
-	<dict><key>phrase</key><string>ブルゴーニュ</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>プロヴァンス</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ボージョレ</string><key>shortcut</key><string>ぼーじょれ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ボルドー</string><key>shortcut</key><string>ぼるどー</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ラングドック</string><key>shortcut</key><string>らんぐどっく</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ラングドック・ルーション</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
-	<dict><key>phrase</key><string>ルーション</string><key>shortcut</key><string>るーしょん</string></dict>
-	<dict><key>phrase</key><string>ローヌ</string><key>shortcut</key><string>ろーぬ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ロワール</string><key>shortcut</key><string>ろわーる</string></dict>	<!-- Sudachiにもある -->
-
-	<!-- ■ フランスの13ワイン生産地域(現地語表記) -->
-	<dict><key>phrase</key><string>Alsace</string><key>shortcut</key><string>あるざす</string></dict>
-	<dict><key>phrase</key><string>Beaujolais</string><key>shortcut</key><string>ぼーじょれ</string></dict>
-	<dict><key>phrase</key><string>Bordeaux</string><key>shortcut</key><string>ぼるどー</string></dict>
-	<dict><key>phrase</key><string>Bourgogne</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>
-	<dict><key>phrase</key><string>Bugey</string><key>shortcut</key><string>びゅじぇ</string></dict>
-	<dict><key>phrase</key><string>Champagne</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>
-	<dict><key>phrase</key><string>Corse</string><key>shortcut</key><string>こるす</string></dict>
-	<dict><key>phrase</key><string>Côtes du Rhône</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>
-	<dict><key>phrase</key><string>Jura</string><key>shortcut</key><string>じゅら</string></dict>
-	<dict><key>phrase</key><string>Jura-Savoie</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
-	<dict><key>phrase</key><string>Languedoc</string><key>shortcut</key><string>らんぐどっく</string></dict>
-	<dict><key>phrase</key><string>Languedoc-Roussillon</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
-	<dict><key>phrase</key><string>Loire</string><key>shortcut</key><string>ろわーる</string></dict>
-	<dict><key>phrase</key><string>Provence</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>
-	<dict><key>phrase</key><string>Rhône</string><key>shortcut</key><string>ろーぬ</string></dict>
-	<dict><key>phrase</key><string>Roussillon</string><key>shortcut</key><string>るーしょん</string></dict>
-	<dict><key>phrase</key><string>Savoie</string><key>shortcut</key><string>さゔぉわ</string></dict>
-	<dict><key>phrase</key><string>Sud-Ouest</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
-	<dict><key>phrase</key><string>Val de Loire</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
-	<dict><key>phrase</key><string>Vallée du Rhône</string><key>shortcut</key><string>ゔぁれでゅろーぬ</string></dict>
 
 	<!-- ■ メドック格付け(カタカナ表記): 第1級 -->
 	<dict><key>phrase</key><string>シャトー・オー・ブリオン</string><key>shortcut</key><string>しゃとーおーぶりおん</string></dict>
