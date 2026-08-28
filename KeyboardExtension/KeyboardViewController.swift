@@ -1462,23 +1462,31 @@ final class KeyboardViewController: UIInputViewController {
                 return
             }
 
+            // 長寿命データを一時確保より先にまとめて確保する(ヒープ配置の是正。converter 側コメント参照)。
+            // 実測 490ms(2705)なのでメインスレッドを塞がずユーティリティキューで実体化する
+            // (static let の初期化は dispatch_once、store のキャッシュはロック保護で他スレッド可)。
+            let converter = self.kanaKanjiConverter
             let startedAt = CFAbsoluteTimeGetCurrent()
-            // 長寿命データを一時確保より先にまとめて確保する(ヒープ配置の是正。converter 側コメント参照)
             var statsBefore = malloc_statistics_t()
             malloc_zone_statistics(nil, &statsBefore)
-            let touched = self.kanaKanjiConverter.prewarmLongLivedDataForHeapLayout()
-            _ = KeyboardViewController.kaomojiReadingCandidatesByReading.count
-            var statsAfter = malloc_statistics_t()
-            malloc_zone_statistics(nil, &statsAfter)
+            DispatchQueue.global(qos: .utility).async { [weak self] in
+                let touched = converter.prewarmLongLivedDataForHeapLayout()
+                    + KeyboardViewController.kaomojiReadingCandidatesByReading.count
+                var statsAfter = malloc_statistics_t()
+                malloc_zone_statistics(nil, &statsAfter)
+                let elapsedMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000)
+                DispatchQueue.main.async {
+                    self?.appendKeyboardDiagnosticsLog(
+                        "長寿命プリウォーム(背景) touched=\(touched) elapsedMs=\(elapsedMs)"
+                            + " used=\(String(format: "%.1f", Double(statsBefore.size_in_use) / 1_048_576))"
+                            + "→\(String(format: "%.1f", Double(statsAfter.size_in_use) / 1_048_576))"
+                            + " alloc=\(String(format: "%.1f", Double(statsBefore.size_allocated) / 1_048_576))"
+                            + "→\(String(format: "%.1f", Double(statsAfter.size_allocated) / 1_048_576))",
+                        critical: true
+                    )
+                }
+            }
             let elapsedMs = self.performanceElapsedMilliseconds(since: startedAt)
-            self.appendKeyboardDiagnosticsLog(
-                "長寿命プリウォーム touched=\(touched) elapsedMs=\(elapsedMs)"
-                    + " used=\(String(format: "%.1f", Double(statsBefore.size_in_use) / 1_048_576))"
-                    + "→\(String(format: "%.1f", Double(statsAfter.size_in_use) / 1_048_576))"
-                    + " alloc=\(String(format: "%.1f", Double(statsBefore.size_allocated) / 1_048_576))"
-                    + "→\(String(format: "%.1f", Double(statsAfter.size_allocated) / 1_048_576))",
-                critical: true
-            )
 
             if elapsedMs >= Self.renderConfigurationSlowThresholdMs {
                 self.appendKeyboardDiagnosticsLog(
