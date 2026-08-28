@@ -1490,6 +1490,7 @@
 	<dict><key>phrase</key><string>カリフォルニア州セントラル・コースト</string><key>shortcut</key><string>かりふぉるにあしゅうせんとらるこーすと</string></dict>
 	<dict><key>phrase</key><string>カリフォルニア州ノース・コースト</string><key>shortcut</key><string>かりふぉるにあしゅうのーすこーすと</string></dict>
 	<dict><key>phrase</key><string>クームスヴィル</string><key>shortcut</key><string>くーむすゔぃる</string></dict>
+	<dict><key>phrase</key><string>サウス・コースト</string><key>shortcut</key><string>さうすこーすと</string></dict>
 	<dict><key>phrase</key><string>サザン・オレゴン</string><key>shortcut</key><string>さざんおれごん</string></dict>
 	<dict><key>phrase</key><string>サザン・カリフォルニア</string><key>shortcut</key><string>さざんかりふぉるにあ</string></dict>
 	<dict><key>phrase</key><string>サンタ・クララ・カウンティ</string><key>shortcut</key><string>さんたくららかうんてぃ</string></dict>
@@ -1825,6 +1826,7 @@
 	<dict><key>phrase</key><string>マールボロ</string><key>shortcut</key><string>まーるぼろ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ムーテレ・ヒルズ</string><key>shortcut</key><string>むーてれひるず</string></dict>
 	<dict><key>phrase</key><string>ワイタンギ</string><key>shortcut</key><string>わいたんぎ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ワイヘケ・アイランド</string><key>shortcut</key><string>わいへけあいらんど</string></dict>
 
 	<!-- □ 南アフリカ -->
 	<dict><key>phrase</key><string>Breede River Valley</string><key>shortcut</key><string>ぶりーどりゔぁーゔぁれー</string></dict>
@@ -2049,7 +2051,6 @@
 	<dict><key>phrase</key><string>ワインルート</string><key>shortcut</key><string>わいんるーと</string></dict>
 
 	<!-- □ 不明(国の判定に自信なし) -->
-	<dict><key>phrase</key><string>Alta</string><key>shortcut</key><string>あるた</string></dict>
 	<dict><key>phrase</key><string>Atlantica</string><key>shortcut</key><string>あとらんてぃか</string></dict>
 	<dict><key>phrase</key><string>Bear River</string><key>shortcut</key><string>べありゔぁー</string></dict>
 	<dict><key>phrase</key><string>Bouvillars</string><key>shortcut</key><string>ぶゔぃやーる</string></dict>
@@ -2070,10 +2071,8 @@
 	<dict><key>phrase</key><string>エストレマドゥーラ</string><key>shortcut</key><string>えすとれまどぅーら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オーバン</string><key>shortcut</key><string>おーばん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カステル</string><key>shortcut</key><string>かすてる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ケ・アイランド</string><key>shortcut</key><string>けあいらんど</string></dict>
 	<dict><key>phrase</key><string>コロニア</string><key>shortcut</key><string>ころにあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>コンセプシオン</string><key>shortcut</key><string>こんせぷしおん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>サウス・コースト</string><key>shortcut</key><string>さうすこーすと</string></dict>
 	<dict><key>phrase</key><string>サリー・ヒルズ</string><key>shortcut</key><string>さりーひるず</string></dict>
 	<dict><key>phrase</key><string>サン・カルロス</string><key>shortcut</key><string>さんかるろす</string></dict>
 	<dict><key>phrase</key><string>サンタクルス</string><key>shortcut</key><string>さんたくるす</string></dict>	<!-- Sudachiにもある -->
