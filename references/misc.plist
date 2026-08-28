@@ -339,5 +339,8 @@
 	<dict><key>phrase</key><string>十割</string><key>shortcut</key><string>じゅうわり</string></dict>	<!-- 十割そば。辞書読みは とわり のみで、連文節が 中(じゅう)+割り を作る(2618) -->
 	<dict><key>phrase</key><string>球殻</string><key>shortcut</key><string>きゅうかく</string></dict>	<!-- 旧字体 球殼 のみが辞書にあり新字体が無かったため補完。旧字体側は suppr.plist で抑制済み(字形がほぼ同一で候補を圧迫する) -->
 	<dict><key>phrase</key><string>すると</string><key>shortcut</key><string>すると</string></dict>	<!-- 接続詞 すると(かな正書)。辞書には人名 スルト しか無く(抑制済み)、かな語として供給する(ユーザ指定 2688) -->
+	<dict><key>phrase</key><string>ジップロック</string><key>shortcut</key><string>じっぷろっく</string></dict>	<!-- Sudachi(core/small)に無い商品名。ジップロック→ジップロック®→Ziploc の順(ユーザ指定 2698) -->
+	<dict><key>phrase</key><string>ジップロック®</string><key>shortcut</key><string>じっぷろっく</string></dict>
+	<dict><key>phrase</key><string>Ziploc</string><key>shortcut</key><string>じっぷろっく</string></dict>
 </array>
 </plist>
