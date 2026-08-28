@@ -385,7 +385,9 @@ extension KeyboardRootView {
             fixedWidth: fixedWidth,
             accessibilityLabelText: spaceKeyAccessibilityLabel,
             onSpace: onSpace,
-            onTab: { onTextInput("\t") }
+            onTab: { onTextInput("\t") },
+            // 変換キーとして働く間だけ長押しで候補送り(Apple 純正と同じ)。空白入力では連打しない
+            repeatsWhileHolding: isSpaceActsAsConversionKey
         )
     }
 
