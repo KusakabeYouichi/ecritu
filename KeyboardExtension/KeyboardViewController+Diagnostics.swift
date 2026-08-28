@@ -677,7 +677,9 @@ extension KeyboardViewController {
 
     // 連続テキストバッファへ1行追記し、上限行数を超えた分を先頭から落とす
     static func appendDiagnosticsLogLine(_ line: String, to buffer: inout Data, lineCount: inout Int, maxLineCount: Int) {
-        buffer.append(contentsOf: Array(line.utf8))
+        // 一時配列を作らず String の UTF-8 バッファから直接コピーする(追記ごとの小片確保を避ける)
+        var text = line
+        text.withUTF8 { bytes in buffer.append(bytes) }
         buffer.append(UInt8(ascii: "\n"))
         lineCount += 1
         let excess = lineCount - maxLineCount
