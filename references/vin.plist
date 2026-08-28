@@ -49,7 +49,6 @@
 	<dict><key>phrase</key><string>Alsace Grand Cru</string><key>shortcut</key><string>あるざすぐらんくりゅ</string></dict>
 	<dict><key>phrase</key><string>Alsace-Lorraine</string><key>shortcut</key><string>あるざすろれーぬ</string></dict>
 	<dict><key>phrase</key><string>Lorraine</string><key>shortcut</key><string>ろれーぬ</string></dict>
-	<dict><key>phrase</key><string>Alsace</string><key>shortcut</key><string>あるざす</string></dict>
 	<dict><key>phrase</key><string>Alta Langa</string><key>shortcut</key><string>あるたらんが</string></dict>
 	<dict><key>phrase</key><string>Amarone della Valpolicella</string><key>shortcut</key><string>あまろーねでっらゔぁるぽりちぇっら</string></dict>
 	<dict><key>phrase</key><string>Amarone</string><key>shortcut</key><string>あまろーね</string></dict>
@@ -87,7 +86,6 @@
 	<dict><key>phrase</key><string>Bear River</string><key>shortcut</key><string>べありゔぁー</string></dict>
 	<dict><key>phrase</key><string>Beaujolais Nouveau</string><key>shortcut</key><string>ぼーじょれぬーゔぉー</string></dict>
 	<dict><key>phrase</key><string>Beaujolais Villages</string><key>shortcut</key><string>ぼーじょれゔぃらーじゅ</string></dict>
-	<dict><key>phrase</key><string>Beaujolais</string><key>shortcut</key><string>ぼーじょれ</string></dict>
 	<dict><key>phrase</key><string>Bennett Valley</string><key>shortcut</key><string>べねっとゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Bernkastel</string><key>shortcut</key><string>べるんかすてる</string></dict>
 	<dict><key>phrase</key><string>Bierzo</string><key>shortcut</key><string>びえるそ</string></dict>
@@ -98,7 +96,6 @@
 	<dict><key>phrase</key><string>Bordeaux Claret</string><key>shortcut</key><string>ぼるどーくられっと</string></dict>
 	<dict><key>phrase</key><string>Bordeaux Haut-Benauge</string><key>shortcut</key><string>ぼるどーおーぶのーじゅ</string></dict>
 	<dict><key>phrase</key><string>Bordeaux Supérieur</string><key>shortcut</key><string>ぼるどーしゅぺりゅーる</string></dict>
-	<dict><key>phrase</key><string>Bordeaux</string><key>shortcut</key><string>ぼるどー</string></dict>
 	<dict><key>phrase</key><string>Bourgogne Aligoté</string><key>shortcut</key><string>ぶるごーにゅありごて</string></dict>
 	<dict><key>phrase</key><string>Bourgogne Côte d'Or</string><key>shortcut</key><string>ぶるごーにゅこーとどーる</string></dict>
 	<dict><key>phrase</key><string>Bourgogne Côte-Chalonnaise</string><key>shortcut</key><string>ぶるごーにゅこーとしゃろねーず</string></dict>
@@ -107,7 +104,6 @@
 	<dict><key>phrase</key><string>Bourgogne Mousseux</string><key>shortcut</key><string>ぶるごーにゅむーすー</string></dict>
 	<dict><key>phrase</key><string>Bourgogne Passe-Tout-Grains</string><key>shortcut</key><string>ぶるごーにゅぱすとぅぐらん</string></dict>
 	<dict><key>phrase</key><string>Bourgogne Tonnerre</string><key>shortcut</key><string>ぶるごーにゅとねーる</string></dict>
-	<dict><key>phrase</key><string>Bourgogne</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>
 	<dict><key>phrase</key><string>Breede River Valley</string><key>shortcut</key><string>ぶりーどりゔぁーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Bridge Pa Triangle</string><key>shortcut</key><string>ぶりっじぱとらいあんぐる</string></dict>
 	<dict><key>phrase</key><string>Bío Bío Valley</string><key>shortcut</key><string>びおびおゔぁれー</string></dict>
@@ -139,7 +135,6 @@
 	<dict><key>phrase</key><string>Chacolí de Getaria</string><key>shortcut</key><string>ちゃこりでげたりあ</string></dict>
 	<dict><key>phrase</key><string>Chalk Hill</string><key>shortcut</key><string>ちょーくひる</string></dict>
 	<dict><key>phrase</key><string>Champagne Grand Cru</string><key>shortcut</key><string>しゃんぱーにゅぐらんくりゅ</string></dict>
-	<dict><key>phrase</key><string>Champagne</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>
 	<dict><key>phrase</key><string>Champlain Valley of New York</string><key>shortcut</key><string>しゃんぷれいんゔぁれーおゔにゅーよーく</string></dict>
 	<dict><key>phrase</key><string>Chianti Classico</string><key>shortcut</key><string>きあんてぃくらっしこ</string></dict>
 	<dict><key>phrase</key><string>Chianti</string><key>shortcut</key><string>きあんてぃ</string></dict>
@@ -194,7 +189,6 @@
 	<dict><key>phrase</key><string>Côtes de Toul</string><key>shortcut</key><string>こーとどとぅーる</string></dict>
 	<dict><key>phrase</key><string>Côtes du Jura</string><key>shortcut</key><string>こーとでゅじゅら</string></dict>
 	<dict><key>phrase</key><string>Côtes du Rhône Villages</string><key>shortcut</key><string>こーとでゅろーぬゔぃらーじゅ</string></dict>
-	<dict><key>phrase</key><string>Côtes du Rhône</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>
 	<dict><key>phrase</key><string>Côtes du Roussillon Villages Caramany</string><key>shortcut</key><string>こーとでゅるーしょんゔぃらーじゅからまにー</string></dict>
 	<dict><key>phrase</key><string>Côtes du Roussillon Villages Les Aspres</string><key>shortcut</key><string>こーとでゅるーしょんゔぃらーじゅれざすぷる</string></dict>
 	<dict><key>phrase</key><string>Côtes du Roussillon Villages Lesquerde</string><key>shortcut</key><string>こーとでゅるーしょんゔぃらーじゅれすけるど</string></dict>
@@ -246,7 +240,6 @@
 	<dict><key>phrase</key><string>Jerez-Xérès-Sherry</string><key>shortcut</key><string>へれすけれすしぇりー</string></dict>
 	<dict><key>phrase</key><string>Johannisberg</string><key>shortcut</key><string>よはにすべるく</string></dict>
 	<dict><key>phrase</key><string>Jumilla</string><key>shortcut</key><string>ふみーりゃ</string></dict>
-	<dict><key>phrase</key><string>Jura</string><key>shortcut</key><string>じゅら</string></dict>
 	<dict><key>phrase</key><string>Knights Valley</string><key>shortcut</key><string>ないつゔぁれー</string></dict>
 	<dict><key>phrase</key><string>La Plata</string><key>shortcut</key><string>らぷらた</string></dict>
 	<dict><key>phrase</key><string>Lake Country</string><key>shortcut</key><string>れいくかんとりー</string></dict>
@@ -256,8 +249,6 @@
 	<dict><key>phrase</key><string>Lake Saint-Pierre</string><key>shortcut</key><string>れいくさんぴえーる</string></dict>
 	<dict><key>phrase</key><string>Lake</string><key>shortcut</key><string>れいく</string></dict>
 	<dict><key>phrase</key><string>Lambrusco di Sorbara</string><key>shortcut</key><string>らんぶるすこでぃそるばーら</string></dict>
-	<dict><key>phrase</key><string>Languedoc-Roussillon</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
-	<dict><key>phrase</key><string>Languedoc</string><key>shortcut</key><string>らんぐどっく</string></dict>
 	<dict><key>phrase</key><string>Laurelwood District</string><key>shortcut</key><string>ろーれるうっどでぃすとりくと</string></dict>
 	<dict><key>phrase</key><string>Lavaux</string><key>shortcut</key><string>らゔぉー</string></dict>
 	<dict><key>phrase</key><string>Lewis-Clark Valley</string><key>shortcut</key><string>るいすくらーくゔぁれー</string></dict>
@@ -317,7 +308,6 @@
 	<dict><key>phrase</key><string>Primitivo di Manduria Dolce Naturale</string><key>shortcut</key><string>ぷりみてぃーゔぉでぃまんどぅりあどるちぇなとぅらーれ</string></dict>
 	<dict><key>phrase</key><string>Prince Edward County</string><key>shortcut</key><string>ぷりんすえどわーどかうんてぃ</string></dict>
 	<dict><key>phrase</key><string>Priorato</string><key>shortcut</key><string>ぷりおらーと</string></dict>
-	<dict><key>phrase</key><string>Provence</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>
 	<dict><key>phrase</key><string>Puget Sound</string><key>shortcut</key><string>ぴゅーじぇっとさうんど</string></dict>
 	<dict><key>phrase</key><string>Puligny-Montrachet</string><key>shortcut</key><string>ぴゅりにーもんらっしぇ</string></dict>
 	<dict><key>phrase</key><string>Rapel Valley</string><key>shortcut</key><string>らぺるゔぁれー</string></dict>
@@ -335,7 +325,6 @@
 	<dict><key>phrase</key><string>Riverland</string><key>shortcut</key><string>りゔぁーらんど</string></dict>
 	<dict><key>phrase</key><string>Robertson</string><key>shortcut</key><string>ろばーとそん</string></dict>
 	<dict><key>phrase</key><string>Rogue Valley</string><key>shortcut</key><string>ろーぐゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Roussillon</string><key>shortcut</key><string>るーしょん</string></dict>
 	<dict><key>phrase</key><string>Royal Slope</string><key>shortcut</key><string>ろいやるすろーぷ</string></dict>
 	<dict><key>phrase</key><string>Rueda</string><key>shortcut</key><string>るえだ</string></dict>
 	<dict><key>phrase</key><string>Russian River Valley</string><key>shortcut</key><string>ろしあんりゔぁーゔぁれー</string></dict>
@@ -358,7 +347,6 @@
 	<dict><key>phrase</key><string>Santa Cruz Mountains</string><key>shortcut</key><string>さんたくるーずまうんてん</string></dict>
 	<dict><key>phrase</key><string>Santa Maria Valley</string><key>shortcut</key><string>さんたまりあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>Santa Ynez Valley</string><key>shortcut</key><string>さんたいねずゔぁれー</string></dict>
-	<dict><key>phrase</key><string>Savoie</string><key>shortcut</key><string>さゔぉわ</string></dict>
 	<dict><key>phrase</key><string>Seneca Lake</string><key>shortcut</key><string>せねかれいく</string></dict>
 	<dict><key>phrase</key><string>Setúbal</string><key>shortcut</key><string>せとぅーばる</string></dict>
 	<dict><key>phrase</key><string>Shenandoah Valley</string><key>shortcut</key><string>しぇなんどーゔぁれー</string></dict>
@@ -442,8 +430,6 @@
 	<dict><key>phrase</key><string>クレムスタール</string><key>shortcut</key><string>くれむすたーる</string></dict>
 	<dict><key>phrase</key><string>コトナリ</string><key>shortcut</key><string>ことなり</string></dict>
 	<dict><key>phrase</key><string>コート・シャロネーズ</string><key>shortcut</key><string>こーとしゃろねーず</string></dict>
-	<dict><key>phrase</key><string>コート・デュ・ローヌ</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ヴァレ・デュ・ローヌ</string><key>shortcut</key><string>ゔぁれでゅろーぬ</string></dict>
 	<dict><key>phrase</key><string>コート・デ・ブラン</string><key>shortcut</key><string>こーとでぶらん</string></dict>
 	<dict><key>phrase</key><string>コート・ド・ニュイ</string><key>shortcut</key><string>こーとどにゅい</string></dict>
 	<dict><key>phrase</key><string>コート・ド・ボーヌ</string><key>shortcut</key><string>こーとどぼーぬ</string></dict>
@@ -637,7 +623,6 @@
 	<dict><key>phrase</key><string>Brouilly</string><key>shortcut</key><string>ぶるいい</string></dict>
 	<dict><key>phrase</key><string>Bucelas</string><key>shortcut</key><string>ぶせらす</string></dict>
 	<dict><key>phrase</key><string>Buenos Aires</string><key>shortcut</key><string>ぶえのすあいれす</string></dict>
-	<dict><key>phrase</key><string>Bugey</string><key>shortcut</key><string>びゅじぇ</string></dict>
 	<dict><key>phrase</key><string>Bugey Montagnieu</string><key>shortcut</key><string>びゅじぇもんたにゅー</string></dict>
 	<dict><key>phrase</key><string>Bulboaca</string><key>shortcut</key><string>ぶるぼあか</string></dict>
 	<dict><key>phrase</key><string>Burg Cochem</string><key>shortcut</key><string>ぶるくこっへむ</string></dict>
@@ -707,7 +692,6 @@
 	<dict><key>phrase</key><string>Corbières</string><key>shortcut</key><string>こるびえーる</string></dict>
 	<dict><key>phrase</key><string>Corbières Boutenac</string><key>shortcut</key><string>こるびえーるぶーとなっく</string></dict>
 	<dict><key>phrase</key><string>Cornas</string><key>shortcut</key><string>こるなす</string></dict>
-	<dict><key>phrase</key><string>Corse</string><key>shortcut</key><string>こるす</string></dict>
 	<dict><key>phrase</key><string>Corse Calvi</string><key>shortcut</key><string>こるすかるゔぃ</string></dict>
 	<dict><key>phrase</key><string>Corse Coteaux du Cap Corse</string><key>shortcut</key><string>こるすことーでゅかっぷこるす</string></dict>
 	<dict><key>phrase</key><string>Corse Figari</string><key>shortcut</key><string>こるすふぃがり</string></dict>
@@ -1200,8 +1184,6 @@
 	<dict><key>phrase</key><string>Vacqueyras</string><key>shortcut</key><string>ゔぁけいらす</string></dict>
 	<dict><key>phrase</key><string>Vaillons</string><key>shortcut</key><string>ゔぁいよん</string></dict>
 	<dict><key>phrase</key><string>Val d'Arno di Sopra</string><key>shortcut</key><string>ゔぁるだるのでぃそぷら</string></dict>
-	<dict><key>phrase</key><string>Val de Loire</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
-	<dict><key>phrase</key><string>Loire</string><key>shortcut</key><string>ろわーる</string></dict>
 	<dict><key>phrase</key><string>Valdeorras</string><key>shortcut</key><string>ばるでおーらす</string></dict>
 	<dict><key>phrase</key><string>Valdepeñas</string><key>shortcut</key><string>ばるでぺーにゃす</string></dict>
 	<dict><key>phrase</key><string>Valencia</string><key>shortcut</key><string>ばれんしあ</string></dict>
@@ -1753,8 +1735,6 @@
 	<dict><key>phrase</key><string>トレンティーノ・アルト・アディジェ</string><key>shortcut</key><string>とれんてぃーのあるとあでぃじぇ</string></dict>
 	<dict><key>phrase</key><string>ビオ・ビオ</string><key>shortcut</key><string>びおびお</string></dict>
 	<dict><key>phrase</key><string>ビノス・デ・マドリード</string><key>shortcut</key><string>びのすでまどりーど</string></dict>
-	<dict><key>phrase</key><string>ビュジェイ</string><key>shortcut</key><string>びゅじぇい</string></dict>
-	<dict><key>phrase</key><string>ビュジェ</string><key>shortcut</key><string>びゅじぇ</string></dict>	<!-- ビュジェイ は教本の表記。発音に沿う ビュジェ も併記 -->
 	<dict><key>phrase</key><string>ビンゲン</string><key>shortcut</key><string>びんげん</string></dict>
 	<dict><key>phrase</key><string>ビーチワース</string><key>shortcut</key><string>びーちわーす</string></dict>
 	<dict><key>phrase</key><string>ピエモンテ</string><key>shortcut</key><string>ぴえもんて</string></dict>	<!-- Sudachiにもある -->
@@ -1962,7 +1942,6 @@
 	<dict><key>phrase</key><string>灘五郷</string><key>shortcut</key><string>なだごごう</string></dict>
 	<dict><key>phrase</key><string>魚崎郷</string><key>shortcut</key><string>うおざきごう</string></dict>
 	<dict><key>phrase</key><string>Breitengrad</string><key>shortcut</key><string>ぶらいてんぐらーと</string></dict>
-	<dict><key>phrase</key><string>Jura-Savoie</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
 	<dict><key>phrase</key><string>La Rioja</string><key>shortcut</key><string>らりおは</string></dict>
 	<dict><key>phrase</key><string>La Rioja Argentina</string><key>shortcut</key><string>らりおはあるぜんちん</string></dict>
 	<dict><key>phrase</key><string>Valul lui Traian</string><key>shortcut</key><string>ゔぁるるるいとらやん</string></dict>
@@ -2528,7 +2507,6 @@
 	<dict><key>phrase</key><string>アッティカ</string><key>shortcut</key><string>あってぃか</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アトランティカ</string><key>shortcut</key><string>あとらんてぃか</string></dict>
 	<dict><key>phrase</key><string>アルザス・ロレーヌ</string><key>shortcut</key><string>あるざすろれーぬ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>アルザス</string><key>shortcut</key><string>あるざす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アルト・アディジェ</string><key>shortcut</key><string>あるとあでぃじぇ</string></dict>
 	<dict><key>phrase</key><string>アルプスチロル</string><key>shortcut</key><string>あるぷすちろる</string></dict>
 	<dict><key>phrase</key><string>アルマニャック</string><key>shortcut</key><string>あるまにゃっく</string></dict>	<!-- Sudachiにもある -->
@@ -2552,11 +2530,6 @@
 	<dict><key>phrase</key><string>サウス・ウェスト・イングランド</string><key>shortcut</key><string>さうすうぇすといんぐらんど</string></dict>
 	<dict><key>phrase</key><string>サセックス</string><key>shortcut</key><string>させっくす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サルタ</string><key>shortcut</key><string>さるた</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>サヴォワ</string><key>shortcut</key><string>さゔぉわ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>シャンパーニュ</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>シュッド・ウエスト</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
-	<dict><key>phrase</key><string>ジュラ・サヴォワ</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
-	<dict><key>phrase</key><string>ジュラ</string><key>shortcut</key><string>じゅら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>スペインバスク</string><key>shortcut</key><string>すぺいんばすく</string></dict>
 	<dict><key>phrase</key><string>ダルマチア</string><key>shortcut</key><string>だるまちあ</string></dict>
 	<dict><key>phrase</key><string>ダン</string><key>shortcut</key><string>だん</string></dict>	<!-- Sudachiにもある -->
@@ -2574,32 +2547,21 @@
 	<dict><key>phrase</key><string>フランシュ・コンテ</string><key>shortcut</key><string>ふらんしゅこんて</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フランスカルヴァドス</string><key>shortcut</key><string>ふらんすかるゔぁどす</string></dict>
 	<dict><key>phrase</key><string>ブリュッセル</string><key>shortcut</key><string>ぶりゅっせる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ブルゴーニュ</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>プロヴァンス</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ヘレス</string><key>shortcut</key><string>へれす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ベアルン</string><key>shortcut</key><string>べあるん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ベルギー・ブリュッセル</string><key>shortcut</key><string>べるぎーぶりゅっせる</string></dict>
-	<dict><key>phrase</key><string>ボルドー</string><key>shortcut</key><string>ぼるどー</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ボージョレ</string><key>shortcut</key><string>ぼーじょれ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マケドニア</string><key>shortcut</key><string>まけどにあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>マラムレシュ</string><key>shortcut</key><string>まらむれしゅ</string></dict>
 	<dict><key>phrase</key><string>ミーニョ</string><key>shortcut</key><string>みーにょ</string></dict>
 	<dict><key>phrase</key><string>モルドヴァ</string><key>shortcut</key><string>もるどゔぁ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>モンフェッラート</string><key>shortcut</key><string>もんふぇっらーと</string></dict>
-	<dict><key>phrase</key><string>ラングドック・ルーション</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
-	<dict><key>phrase</key><string>ラングドック</string><key>shortcut</key><string>らんぐどっく</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ラ・マンチャ</string><key>shortcut</key><string>らまんちゃ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ルーション</string><key>shortcut</key><string>るーしょん</string></dict>
 	<dict><key>phrase</key><string>ロレーヌ</string><key>shortcut</key><string>ろれーぬ</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ロワール</string><key>shortcut</key><string>ろわーる</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ヴァル・ド・ロワール</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
-	<dict><key>phrase</key><string>ローヌ</string><key>shortcut</key><string>ろーぬ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>上川</string><key>shortcut</key><string>かみかわ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>中国・四国</string><key>shortcut</key><string>ちゅうごくしこく</string></dict>
 	<dict><key>phrase</key><string>十勝</string><key>shortcut</key><string>とかち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>南河内</string><key>shortcut</key><string>みなみかわち</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>南西</string><key>shortcut</key><string>なんせい</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>南西地方</string><key>shortcut</key><string>なんせいちほう</string></dict>
 	<dict><key>phrase</key><string>地中海沿岸</string><key>shortcut</key><string>ちちゅうかいえんがん</string></dict>
 	<dict><key>phrase</key><string>庄内</string><key>shortcut</key><string>しょうない</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>後志</string><key>shortcut</key><string>しりべし</string></dict>	<!-- Sudachiにもある -->
@@ -2621,7 +2583,6 @@
 	<dict><key>phrase</key><string>Kartli</string><key>shortcut</key><string>かるとり</string></dict>
 	<dict><key>phrase</key><string>Norte</string><key>shortcut</key><string>のるて</string></dict>
 	<dict><key>phrase</key><string>Patagonia</string><key>shortcut</key><string>ぱたごにあ</string></dict>
-	<dict><key>phrase</key><string>Sud-Ouest</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
 	<dict><key>phrase</key><string>ヌーヴェル・アキテーヌ地域圏</string><key>shortcut</key><string>ぬーゔぇるあきてーぬちいきけん</string></dict>
 	<dict><key>phrase</key><string>パノニア</string><key>shortcut</key><string>ぱのにあ</string></dict>
 	<dict><key>phrase</key><string>パノニア平原</string><key>shortcut</key><string>ぱのにあへいげん</string></dict>
@@ -3240,8 +3201,6 @@
 	<dict><key>phrase</key><string>Valle de Uco</string><key>shortcut</key><string>ばじぇでうこ</string></dict>
 	<dict><key>phrase</key><string>Valles Calchaquíes</string><key>shortcut</key><string>ばじぇすかるちゃきえす</string></dict>
 	<dict><key>phrase</key><string>Vallée de la Marne</string><key>shortcut</key><string>ゔぁれーどらまるぬ</string></dict>
-	<dict><key>phrase</key><string>Vallée du Rhône</string><key>shortcut</key><string>ゔぁれーでゅろーぬ</string></dict>
-	<dict><key>phrase</key><string>Rhône</string><key>shortcut</key><string>ろーぬ</string></dict>
 	<dict><key>phrase</key><string>アコンカグア・ヴァレー</string><key>shortcut</key><string>あこんかぐあゔぁれー</string></dict>
 	<dict><key>phrase</key><string>アレクサンダー・ヴァレー</string><key>shortcut</key><string>あれくさんだーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>アンダーソン・ヴァレー</string><key>shortcut</key><string>あんだーそんゔぁれー</string></dict>
@@ -3323,8 +3282,6 @@
 	<dict><key>phrase</key><string>ケファロニア島</string><key>shortcut</key><string>けふぁろにあとう</string></dict>
 	<dict><key>phrase</key><string>コルシカ島</string><key>shortcut</key><string>こるしかとう</string></dict>
 	<dict><key>phrase</key><string>コルス島</string><key>shortcut</key><string>こるすとう</string></dict>
-	<dict><key>phrase</key><string>コルス</string><key>shortcut</key><string>こるす</string></dict>
-	<dict><key>phrase</key><string>コルシカ</string><key>shortcut</key><string>こるしか</string></dict>
 	<dict><key>phrase</key><string>サモス島</string><key>shortcut</key><string>さもすとう</string></dict>
 	<dict><key>phrase</key><string>サルデーニャ島</string><key>shortcut</key><string>さるでーにゃとう</string></dict>
 	<dict><key>phrase</key><string>サントリーニ島</string><key>shortcut</key><string>さんとりーにとう</string></dict>
@@ -6881,6 +6838,53 @@
 	<dict><key>phrase</key><string>シャトー・グリエ</string><key>shortcut</key><string>しゃとーぐりえ</string></dict>
 	<dict><key>phrase</key><string>シャトー・ムートン・ロスチャイルド</string><key>shortcut</key><string>しゃとーむーとんろすちゃいるど</string></dict>
 
+
+	<!-- ■ フランスの13ワイン生産地域(カタカナ表記): アルザス/ボージョレ/ボルドー/ブルゴーニュ/シャンパーニュ/コルス/ジュラ/ラングドック・ルーション/ロワール/プロヴァンス/サヴォワ(ビュジェ)/シュッド・ウエスト/ヴァレ・デュ・ローヌ -->
+	<dict><key>phrase</key><string>アルザス</string><key>shortcut</key><string>あるざす</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ヴァル・ド・ロワール</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
+	<dict><key>phrase</key><string>ヴァレ・デュ・ローヌ</string><key>shortcut</key><string>ゔぁれでゅろーぬ</string></dict>
+	<dict><key>phrase</key><string>コート・デュ・ローヌ</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>コルシカ</string><key>shortcut</key><string>こるしか</string></dict>
+	<dict><key>phrase</key><string>コルス</string><key>shortcut</key><string>こるす</string></dict>
+	<dict><key>phrase</key><string>サヴォワ</string><key>shortcut</key><string>さゔぉわ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>シャンパーニュ</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>シュッド・ウエスト</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
+	<dict><key>phrase</key><string>ジュラ</string><key>shortcut</key><string>じゅら</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ジュラ・サヴォワ</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
+	<dict><key>phrase</key><string>南西地方</string><key>shortcut</key><string>なんせいちほう</string></dict>
+	<dict><key>phrase</key><string>ビュジェ</string><key>shortcut</key><string>びゅじぇ</string></dict>	<!-- ビュジェイ は教本の表記。発音に沿う ビュジェ も併記 -->
+	<dict><key>phrase</key><string>ビュジェイ</string><key>shortcut</key><string>びゅじぇい</string></dict>
+	<dict><key>phrase</key><string>ブルゴーニュ</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>プロヴァンス</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ボージョレ</string><key>shortcut</key><string>ぼーじょれ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ボルドー</string><key>shortcut</key><string>ぼるどー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ラングドック</string><key>shortcut</key><string>らんぐどっく</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ラングドック・ルーション</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
+	<dict><key>phrase</key><string>ルーション</string><key>shortcut</key><string>るーしょん</string></dict>
+	<dict><key>phrase</key><string>ローヌ</string><key>shortcut</key><string>ろーぬ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ロワール</string><key>shortcut</key><string>ろわーる</string></dict>	<!-- Sudachiにもある -->
+
+	<!-- ■ フランスの13ワイン生産地域(現地語表記) -->
+	<dict><key>phrase</key><string>Alsace</string><key>shortcut</key><string>あるざす</string></dict>
+	<dict><key>phrase</key><string>Beaujolais</string><key>shortcut</key><string>ぼーじょれ</string></dict>
+	<dict><key>phrase</key><string>Bordeaux</string><key>shortcut</key><string>ぼるどー</string></dict>
+	<dict><key>phrase</key><string>Bourgogne</string><key>shortcut</key><string>ぶるごーにゅ</string></dict>
+	<dict><key>phrase</key><string>Bugey</string><key>shortcut</key><string>びゅじぇ</string></dict>
+	<dict><key>phrase</key><string>Champagne</string><key>shortcut</key><string>しゃんぱーにゅ</string></dict>
+	<dict><key>phrase</key><string>Corse</string><key>shortcut</key><string>こるす</string></dict>
+	<dict><key>phrase</key><string>Côtes du Rhône</string><key>shortcut</key><string>こーとでゅろーぬ</string></dict>
+	<dict><key>phrase</key><string>Jura</string><key>shortcut</key><string>じゅら</string></dict>
+	<dict><key>phrase</key><string>Jura-Savoie</string><key>shortcut</key><string>じゅらさゔぉわ</string></dict>
+	<dict><key>phrase</key><string>Languedoc</string><key>shortcut</key><string>らんぐどっく</string></dict>
+	<dict><key>phrase</key><string>Languedoc-Roussillon</string><key>shortcut</key><string>らんぐどっくるーしょん</string></dict>
+	<dict><key>phrase</key><string>Loire</string><key>shortcut</key><string>ろわーる</string></dict>
+	<dict><key>phrase</key><string>Provence</string><key>shortcut</key><string>ぷろゔぁんす</string></dict>
+	<dict><key>phrase</key><string>Rhône</string><key>shortcut</key><string>ろーぬ</string></dict>
+	<dict><key>phrase</key><string>Roussillon</string><key>shortcut</key><string>るーしょん</string></dict>
+	<dict><key>phrase</key><string>Savoie</string><key>shortcut</key><string>さゔぉわ</string></dict>
+	<dict><key>phrase</key><string>Sud-Ouest</string><key>shortcut</key><string>しゅっどうえすと</string></dict>
+	<dict><key>phrase</key><string>Val de Loire</string><key>shortcut</key><string>ゔぁるどろわーる</string></dict>
+	<dict><key>phrase</key><string>Vallée du Rhône</string><key>shortcut</key><string>ゔぁれでゅろーぬ</string></dict>
 
 	<!-- ■ メドック格付け(カタカナ表記): 第1級 -->
 	<dict><key>phrase</key><string>シャトー・オー・ブリオン</string><key>shortcut</key><string>しゃとーおーぶりおん</string></dict>
