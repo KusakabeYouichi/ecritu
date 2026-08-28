@@ -16,6 +16,11 @@ extension KeyboardViewController {
         var diagnosticsFlightRecorderBuffer: [DiagnosticsFlightRecorderEvent]?
         var diagnosticsFlightRecorderLastPersistedAt: TimeInterval = 0
         var diagnosticsLogLinesBuffer: [String]?
+        // 診断ログの defaults 保存を間引く(2704): 以前は1行ごとに320行を JSON 化(約130KB の
+        // 一時確保+XPC)していた。非 critical 行は dirty にして5秒後にまとめて保存し、
+        // critical/非表示/警告時は即時保存する
+        var diagnosticsLogLinesDirty = false
+        var diagnosticsLogFlushWorkItem: DispatchWorkItem?
         var diagnosticsHeartbeatLastPersistedAt: TimeInterval = 0
         var diagnosticsLastPersistedFailSafeProfile: MemoryFailSafeProfile?
         // 診断: 押下表示残留(赤キー)を watchdog が強制解除した回数(セッション累計)。
@@ -480,6 +485,7 @@ extension KeyboardViewController {
     static let preventiveReliefFootprintMB: Double = 50
     static let preventiveReliefMinimumInterval: CFAbsoluteTime = 3
     nonisolated(unsafe) static var lastPreventiveReliefAt: CFAbsoluteTime = 0
+    nonisolated(unsafe) static var lastPreventiveReliefLogAt: CFAbsoluteTime = 0
 
     func performPreventiveMallocReliefIfNeeded() {
         guard isSuspendMemorySlimmingEnabled else {
@@ -498,9 +504,15 @@ extension KeyboardViewController {
         var after = malloc_statistics_t()
         malloc_zone_statistics(nil, &after)
         let returnedMB = Double(before.size_allocated - after.size_allocated) / 1_048_576
-        guard returnedMB >= 0.5 || footprintMB >= 55 else {
-            return   // ほぼ返らなかったときはログを増やさない(高水位時だけ記録)
+        // 返却があった時は毎回、返却ゼロの高水位は60秒に1行に間引く(2704)。以前は fp≥55 で
+        // 3秒おきに critical 行を書き続け、その保存(320行 JSON 化)自体がヒープを荒らしていた
+        if returnedMB < 0.5 {
+            guard footprintMB >= 55,
+                now - Self.lastPreventiveReliefLogAt >= 60 else {
+                return
+            }
         }
+        Self.lastPreventiveReliefLogAt = now
         appendKeyboardDiagnosticsLog(
             "予防スリム化 footprintMB=\(String(format: "%.1f", footprintMB))→\(diagnosticsFootprintMBText())"
                 + " allocMB=\(String(format: "%.1f", Double(before.size_allocated) / 1_048_576))"
@@ -941,8 +953,36 @@ extension KeyboardViewController {
         }
     }
 
+    static let diagnosticsLogFlushDelay: TimeInterval = 5
+
+    func scheduleDiagnosticsLogFlushIfNeeded() {
+        guard diagnosticsState.diagnosticsLogFlushWorkItem == nil else {
+            return
+        }
+        let work = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            self.diagnosticsState.diagnosticsLogFlushWorkItem = nil
+            self.flushDiagnosticsLogLinesIfDirty()
+        }
+        diagnosticsState.diagnosticsLogFlushWorkItem = work
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.diagnosticsLogFlushDelay, execute: work)
+    }
+
+    func flushDiagnosticsLogLinesIfDirty() {
+        guard diagnosticsState.diagnosticsLogLinesDirty,
+            let sharedDefaults,
+            let lines = diagnosticsState.diagnosticsLogLinesBuffer else {
+            return
+        }
+        saveDiagnosticsLogLines(lines, to: sharedDefaults)
+        diagnosticsState.diagnosticsLogLinesDirty = false
+    }
+
     // メモリ内バッファを defaults へ確定させる(終了・警告・バックグラウンド遷移時)。
     func persistBufferedKeyboardDiagnostics() {
+        diagnosticsState.diagnosticsLogFlushWorkItem?.cancel()
+        diagnosticsState.diagnosticsLogFlushWorkItem = nil
+        flushDiagnosticsLogLinesIfDirty()
         guard let sharedDefaults else {
             return
         }
@@ -1174,9 +1214,13 @@ extension KeyboardViewController {
         }
 
         diagnosticsState.diagnosticsLogLinesBuffer = lines
-        saveDiagnosticsLogLines(lines, to: sharedDefaults)
         if critical {
+            saveDiagnosticsLogLines(lines, to: sharedDefaults)
+            diagnosticsState.diagnosticsLogLinesDirty = false
             appendKeyboardDiagnosticsCriticalLog(entry, to: sharedDefaults)
+        } else {
+            diagnosticsState.diagnosticsLogLinesDirty = true
+            scheduleDiagnosticsLogFlushIfNeeded()
         }
         sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
         sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
