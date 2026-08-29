@@ -631,6 +631,8 @@ final class KanaKanjiConverter {
             applyFormalNounTokiKanaPreference(for: context.reading, to: &scores)
             // 述語+終助詞クラスタで終助詞を漢字化した合成(菊鹿も)を下へ(2705)
             applyPredicateFinalParticleClusterPreference(for: context.reading, to: &scores)
+            // て/で+ください でて形をかなに保たない合成(仕手ください)を下へ(2720)
+            applyTeKudasaiKanaPreference(for: context.reading, to: &scores)
             // 辞書の主要語(格下)を活用族(隠した/画した/…/かくした)の先頭直下へ(2657)
             applyDictWordOverInflectionSiblingsBoost(
                 for: context.reading,
@@ -926,7 +928,9 @@ final class KanaKanjiConverter {
     // て/で 形+授受補助動詞(くれ/あげ)+任意のひらがな連鎖で終わる読みか。
     // してくれて/してくれないかな/してくれてるのね 等を列挙なしで一般判定する。
     static func hasTeBenefactiveKanaTail(_ reading: String) -> Bool {
-        for marker in ["てくれ", "でくれ", "てあげ", "であげ"] {
+        // てください/でください(依頼の補助動詞、かなが正書)も同型: してください が全かなエコー抑制で
+        // 連文節から消え、単文節の 仕手ください が先頭に出ていた(2720)
+        for marker in ["てくれ", "でくれ", "てあげ", "であげ", "てくださ", "でくださ"] {
             guard let range = reading.range(of: marker, options: .backwards),
                 range.lowerBound != reading.startIndex else {
                 continue

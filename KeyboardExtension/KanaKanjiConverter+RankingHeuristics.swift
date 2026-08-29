@@ -1023,6 +1023,23 @@ extension KanaKanjiConverter {
     // 2位に挿入)で 菊鹿も が2位に食い込んでいた(ユーザ報告 2705)。
     static let predicateFinalParticleKanjiTailPenalty = 300
 
+    // て/で+ください(依頼の補助動詞)で終わる読みの単文節候補で、て形をかなに保たない合成
+    // (仕手ください/為手ください/志手ください=名詞 して+ください)を、てください を含む候補
+    // (してください/選んでください)より下へ送る(2720)。連文節側は してください を返すが、
+    // 候補バーは単文節#1 を2位に挿入するため 仕手ください が2位に食い込んでいた。
+    static let teKudasaiKanjiPenalty = 300
+
+    func applyTeKudasaiKanaPreference(for reading: String, to scores: inout [String: Int]) {
+        for tail in ["てください", "でください", "てください", "でください"]
+        where reading.count > tail.count && reading.hasSuffix(tail) {
+            let kanaMarker = String(tail.prefix(1)) + "くださ"
+            for candidate in scores.keys where !candidate.contains(kanaMarker) {
+                scores[candidate, default: 0] -= Self.teKudasaiKanjiPenalty
+            }
+            return
+        }
+    }
+
     func applyPredicateFinalParticleClusterPreference(
         for reading: String,
         to scores: inout [String: Int]
