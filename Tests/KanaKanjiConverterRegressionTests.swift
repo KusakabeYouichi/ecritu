@@ -12485,4 +12485,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let kuu = converter.multiClauseCandidates(for: "くうしかない", systemCandidateMode: .surface)
         XCTAssertEqual(kuu.first, "食うしかない", "multi=\(kuu)")
     }
+
+    // りかいしろ: サ変名詞の命令形(しろ/せよ/しろって)。無いと単文節候補なし・連文節 理解白/理解城 だった(2722)
+    func testRegressionRealLMSahenImperative() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.candidates(for: "ちゅういせよ", limit: 3, systemCandidateMode: .surface).first, "注意せよ")
+        // 派生1ノードが全体を覆うと連文節は単文節に委ねる(空)。理解白/理解城 が先頭に出ないことを確認
+        for (reading, expected) in [("りかいしろ", "理解しろ"), ("べんきょうしろ", "勉強しろ"), ("りかいしろって", "理解しろって")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.isEmpty || multi.first == expected, "\(reading): \(multi)")
+            XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface).first, expected)
+        }
+    }
 }
