@@ -1215,8 +1215,10 @@ final class KanaKanjiConverter {
         // かなが正書。できれば は提示層が 出来れば をかな版の下へ回す(demotingDekiKanjiBelowKana)
         // 一方で、かな識別に根拠が無いと除去してしまい 出来れば が先頭に残っていた(2467)。
         if let lastCharacter = normalized.last,
-            let rules = Self.deinflectionRulesByReadingLastCharacter[lastCharacter] {
-            for rule in rules where !rule.readingSuffix.isEmpty && normalized.hasSuffix(rule.readingSuffix) {
+            let ruleIndices = Self.deinflectionRulesByReadingLastCharacter[lastCharacter] {
+            for index in ruleIndices {
+                let rule = Self.allInflectionRules[index]
+                guard !rule.readingSuffix.isEmpty, normalized.hasSuffix(rule.readingSuffix) else { continue }
                 let stem = normalized.dropLast(rule.readingSuffix.count)
                 guard !stem.isEmpty else { continue }
                 let baseReading = String(stem) + rule.baseReadingSuffix
@@ -1711,10 +1713,11 @@ final class KanaKanjiConverter {
         // かな identity(やる 等「かなが正書」の動詞)なら根拠ありとする。
         // かう→買う のように漢字が先頭の基本形は対象外(かってみようかな は末尾のまま)。
         let suppressedByReading = store.suppressedCandidatesByReading()
-        let candidateRules = normalized.last
+        let candidateRuleIndices = normalized.last
             .flatMap { Self.deinflectionRulesByReadingLastCharacter[$0] } ?? []
-        for rule in candidateRules where normalized.hasSuffix(rule.readingSuffix) {
-            guard !rule.readingSuffix.isEmpty else { continue }
+        for index in candidateRuleIndices {
+            let rule = Self.allInflectionRules[index]
+            guard normalized.hasSuffix(rule.readingSuffix), !rule.readingSuffix.isEmpty else { continue }
             let stem = String(normalized.dropLast(rule.readingSuffix.count))
             guard !stem.isEmpty else { continue }
             let baseReading = stem + rule.baseReadingSuffix

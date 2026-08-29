@@ -449,10 +449,12 @@ extension KanaKanjiConverter {
                     // (つかえた/つかえ→つかえる 等。含まれる時だけ先頭活用形にボーナス)
                     let spanBaseInSeedOrderAllowlist: Bool = {
                         guard let lastChar = segmentReading.last,
-                            let rules = Self.deinflectionRulesByReadingLastCharacter[lastChar] else {
+                            let ruleIndices = Self.deinflectionRulesByReadingLastCharacter[lastChar] else {
                             return false
                         }
-                        for rule in rules where !rule.readingSuffix.isEmpty && segmentReading.hasSuffix(rule.readingSuffix) {
+                        for index in ruleIndices {
+                            let rule = Self.allInflectionRules[index]
+                            guard !rule.readingSuffix.isEmpty, segmentReading.hasSuffix(rule.readingSuffix) else { continue }
                             let stem = segmentReading.dropLast(rule.readingSuffix.count)
                             guard !stem.isEmpty else { continue }
                             if Self.multiClauseSeedOrderInflectionBaseReadings.contains(stem + rule.baseReadingSuffix) {

@@ -98,13 +98,14 @@ extension KanaKanjiConverter {
     // 全ルール(約1000件)の線形走査が candidatesForReading の候補ごとに乗算的に呼ばれる
     // ため、読み末尾が一致し得るルールだけ照合する。readingSuffix が空のルールは
     // どの読みにもマッチし得るので別枠で常に照合する。
-    static let deinflectionRulesByReadingLastCharacter: [Character: [InflectionRule]] = {
-        var buckets: [Character: [InflectionRule]] = [:]
-        for rule in allInflectionRules {
+    // 値はルールのコピーでなく allInflectionRules の添字(構造体の3重保持を避ける。2719)
+    static let deinflectionRulesByReadingLastCharacter: [Character: [Int]] = {
+        var buckets: [Character: [Int]] = [:]
+        for (index, rule) in allInflectionRules.enumerated() {
             guard let last = rule.readingSuffix.last else {
                 continue
             }
-            buckets[last, default: []].append(rule)
+            buckets[last, default: []].append(index)
         }
         return buckets
     }()
@@ -164,12 +165,12 @@ extension KanaKanjiConverter {
         guard let readingLastCharacter = reading.last else {
             return false
         }
-        let bucketedRules = Self.deinflectionRulesByReadingLastCharacter[readingLastCharacter] ?? []
+        let bucketedRuleIndices = Self.deinflectionRulesByReadingLastCharacter[readingLastCharacter] ?? []
 
-        for rule in bucketedRules + Self.deinflectionRulesWithEmptyReadingSuffix {
+        func isSuppressedVia(_ rule: InflectionRule) -> Bool {
             guard reading.hasSuffix(rule.readingSuffix),
                 candidate.hasSuffix(rule.outputCandidateSuffix) else {
-                continue
+                return false
             }
 
             let readingStem = String(reading.dropLast(rule.readingSuffix.count))
@@ -177,14 +178,14 @@ extension KanaKanjiConverter {
 
             if readingStem.isEmpty,
                 !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
-                continue
+                return false
             }
 
             let baseReading = readingStem + rule.baseReadingSuffix
 
             guard let suppressedSet = suppressedByReading[baseReading],
                 !suppressedSet.isEmpty else {
-                continue
+                return false
             }
 
             var matched = false
@@ -193,9 +194,14 @@ extension KanaKanjiConverter {
                     matched = true
                 }
             }
-            if matched {
-                return true
-            }
+            return matched
+        }
+
+        for index in bucketedRuleIndices where isSuppressedVia(Self.allInflectionRules[index]) {
+            return true
+        }
+        for rule in Self.deinflectionRulesWithEmptyReadingSuffix where isSuppressedVia(rule) {
+            return true
         }
 
         let bucketedMappings = Self.godanPotentialDeinflectionMappingsByReadingLastCharacter[readingLastCharacter] ?? []
