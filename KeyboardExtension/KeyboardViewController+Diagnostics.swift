@@ -471,7 +471,7 @@ extension KeyboardViewController {
             // VM タグ別の帰属(malloc 外の untagged/tcmalloc/CoreAnimation 等)は高水位更新時にしか
             // 出ないため、alloc が張り付いた長いセッションでは比較材料が取れなかった。非表示時に
             // fp≥40 なら120秒に1回だけ記録する(走査は数ms)。2713
-            if let fp = currentFootprintMB(), fp >= 40,
+            if let fp = currentFootprintMB(), fp >= 30,   // 2715 で閉じる時の fp が 33 前後に下がり 40 では記録されなくなった
                 CFAbsoluteTimeGetCurrent() - Self.lastHiddenAttributionLogAt >= 120 {
                 Self.lastHiddenAttributionLogAt = CFAbsoluteTimeGetCurrent()
                 appendKeyboardDiagnosticsLog(
