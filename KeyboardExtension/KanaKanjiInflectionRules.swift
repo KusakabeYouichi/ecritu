@@ -1188,6 +1188,9 @@ extension KanaKanjiConverter {
         // 否定テ形(しなくて/しなくても)
         InflectionRule(readingSuffix: "しなくて", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなくても", baseReadingSuffix: "する", allowedClasses: .suru),
+        // 命令形(理解しろ/勉強しろ、文語 せよ)。無いと りかいしろ が単文節候補なし・連文節 理解白/理解城 になっていた(2722)
+        InflectionRule(readingSuffix: "しろ", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せよ", baseReadingSuffix: "する", allowedClasses: .suru),
         // 命令形+引用「って」(集中しろって 等の口語)
         InflectionRule(readingSuffix: "しろって", baseReadingSuffix: "する", allowedClasses: .suru),
         // 「〜なくなる」(状態変化の否定): 利用しなくなった 等
@@ -1608,6 +1611,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しちゃって", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しちゃ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "した", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        // 命令形(理解しろ/勉強しろ、文語 注意せよ)。無いと りかいしろ が単文節候補なし・連文節 理解白/理解城 だった(2722)
+        InflectionRule(readingSuffix: "しろ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "せよ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しろって", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したら", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したり", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりする", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
