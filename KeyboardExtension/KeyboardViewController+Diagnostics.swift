@@ -26,6 +26,11 @@ extension KeyboardViewController {
         // critical/非表示/警告時は即時保存する
         var diagnosticsLogLinesDirty = false
         var diagnosticsLogFlushWorkItem: DispatchWorkItem?
+        // deinit 中は true。解体中の self への weak 参照(DispatchWorkItem の [weak self])は
+        // ObjC ランタイムが "Cannot form weak reference" で即クラッシュさせる(2704 で混入、
+        // 閉じるたびに落ちて launchd の3連続クラッシュ判定→起動拒否→Apple キーボードに
+        // 落ちていた。8/29 19:12 実機ログで確定)。deinit 中は同期保存に切り替える。
+        var diagnosticsIsDeinitializing = false
         var diagnosticsHeartbeatLastPersistedAt: TimeInterval = 0
         var diagnosticsLastPersistedFailSafeProfile: MemoryFailSafeProfile?
         // 診断: 押下表示残留(赤キー)を watchdog が強制解除した回数(セッション累計)。
@@ -1007,6 +1012,11 @@ extension KeyboardViewController {
     static let diagnosticsLogFlushDelay: TimeInterval = 5
 
     func scheduleDiagnosticsLogFlushIfNeeded() {
+        // 解体中に [weak self] を作ってはならない(定義コメント参照)
+        if diagnosticsState.diagnosticsIsDeinitializing {
+            flushDiagnosticsLogLinesIfDirty()
+            return
+        }
         guard diagnosticsState.diagnosticsLogFlushWorkItem == nil else {
             return
         }
@@ -1209,6 +1219,10 @@ extension KeyboardViewController {
             }
             diagnosticsState.diagnosticsLogLinesDirty = false
             appendKeyboardDiagnosticsCriticalLog(entry, to: sharedDefaults)
+        } else if diagnosticsState.diagnosticsIsDeinitializing {
+            // 解体中: 作業項目([weak self])を作らず、その場で保存する
+            saveDiagnosticsLogText(diagnosticsState.diagnosticsLogTextBuffer ?? Data(), to: sharedDefaults)
+            diagnosticsState.diagnosticsLogLinesDirty = false
         } else {
             diagnosticsState.diagnosticsLogLinesDirty = true
             scheduleDiagnosticsLogFlushIfNeeded()

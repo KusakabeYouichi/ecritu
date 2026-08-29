@@ -565,6 +565,11 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     deinit {
+        // 以降のログ書き込みは同期保存(解体中の self への weak 参照を作らない。Diagnostics 参照)
+        diagnosticsState.diagnosticsIsDeinitializing = true
+        diagnosticsState.diagnosticsLogFlushWorkItem?.cancel()
+        diagnosticsState.diagnosticsLogFlushWorkItem = nil
+        flushDiagnosticsLogLinesIfDirty()
         if lostActiveOwnershipAt > 0 {
             let zombieSec = String(format: "%.1f", CFAbsoluteTimeGetCurrent() - lostActiveOwnershipAt)
             appendKeyboardDiagnosticsLog(
