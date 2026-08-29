@@ -250,8 +250,6 @@ final class KeyboardViewController: UIInputViewController {
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
     static let memoryWarningBurstWindow: CFTimeInterval = 2.0
-    // 長寿命プリウォーム(2703)の A/B スイッチ。2714 は無効で計測
-    static let isLongLivedPrewarmEnabled = false
     var lastSynchronizedContextBeforeInputTail = ""
     var lastSynchronizedContextBeforeInputLength = 0
     var composingContextPrefixTail = ""
@@ -1465,36 +1463,9 @@ final class KeyboardViewController: UIInputViewController {
                 return
             }
 
-            // 長寿命データを一時確保より先にまとめて確保する(ヒープ配置の是正。converter 側コメント参照)。
-            // 実測 490ms(2705)なのでメインスレッドを塞がずユーティリティキューで実体化する
-            // (static let の初期化は dispatch_once、store のキャッシュはロック保護で他スレッド可)。
-            // A/B(2714): 同条件比較で malloc の半端分が 3.1→4.3MB と増えたため、プリウォームを止めて
-            // 半端分が戻るかを測る。戻れば 2703 は撤去、戻らなければ別要因。
-            let converter = self.kanaKanjiConverter
             let startedAt = CFAbsoluteTimeGetCurrent()
-            var statsBefore = malloc_statistics_t()
-            malloc_zone_statistics(nil, &statsBefore)
-            if Self.isLongLivedPrewarmEnabled {
-            DispatchQueue.global(qos: .utility).async { [weak self] in
-                let touched = converter.prewarmLongLivedDataForHeapLayout()
-                    + KeyboardViewController.kaomojiReadingCandidatesByReading.count
-                var statsAfter = malloc_statistics_t()
-                malloc_zone_statistics(nil, &statsAfter)
-                let elapsedMs = Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000)
-                DispatchQueue.main.async {
-                    self?.appendKeyboardDiagnosticsLog(
-                        "長寿命プリウォーム(背景) touched=\(touched) elapsedMs=\(elapsedMs)"
-                            + " used=\(String(format: "%.1f", Double(statsBefore.size_in_use) / 1_048_576))"
-                            + "→\(String(format: "%.1f", Double(statsAfter.size_in_use) / 1_048_576))"
-                            + " alloc=\(String(format: "%.1f", Double(statsBefore.size_allocated) / 1_048_576))"
-                            + "→\(String(format: "%.1f", Double(statsAfter.size_allocated) / 1_048_576))",
-                        critical: true
-                    )
-                }
-            }
-            } else {
-                self.appendKeyboardDiagnosticsLog("長寿命プリウォーム 無効(A/B 2714)", critical: true)
-            }
+            // 長寿命データの先行確保(2703)は A/B(2713 vs 2714)で malloc 半端分に差が無く撤去(2715)。
+            self.kanaKanjiConverter.preloadSharedDataCachesIfNeeded()
             let elapsedMs = self.performanceElapsedMilliseconds(since: startedAt)
 
             if elapsedMs >= Self.renderConfigurationSlowThresholdMs {
