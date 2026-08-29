@@ -310,6 +310,9 @@ final class KeyboardViewController: UIInputViewController {
     // iOS の投機生成VCであって attach 失敗ではない。2532)。
     static var lastAttachedViewWillAppearAt: CFAbsoluteTime = 0
     let controllerCreatedAt: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
+    // 測定(2721): 個体1体を立ち上げる(init→初回 viewDidAppear)コスト。init 時点の snapshot
+    let controllerCreationSnapshot = MemoryForensics.snapshot()
+    var didLogControllerCreationDelta = false
     // 非アクティブ降格を検知した時刻(deinit までのゾンビ滞留時間の計測に使う)
     var lostActiveOwnershipAt: CFAbsoluteTime = 0
     // 最後に反映済みの設定変更世代。-1 は未初期化(初回表示で現在値に合わせるだけで破棄しない)。
@@ -540,9 +543,13 @@ final class KeyboardViewController: UIInputViewController {
         startKeyboardDiagnosticsSession()
         // MEMFORENSICS(時限計測 2611): 高水位台帳の出力先。剥がすときはこのブロックと
         // KeyboardMemoryForensics.swift を削除(grep MEMFORENSICS)
-        MemoryForensics.logSink = { [weak self] line in
+        // 出力先は「そのとき生きている個体」を書き込み時に選ぶ(2721)。以前は viewDidLoad の個体を
+        // weak で捕まえていたため、その個体の deinit 直後に発火する測定(個体deinit の窓)が黙って落ちた
+        MemoryForensics.logSink = { line in
             DispatchQueue.main.async {
-                self?.appendKeyboardDiagnosticsLog(line, critical: true, file: #fileID, line: #line, function: "MemoryForensics")
+                let live = KeyboardViewController.liveControllerCensus.allObjects
+                let target = live.first(where: { $0.viewIfLoaded?.window != nil }) ?? live.first
+                target?.appendKeyboardDiagnosticsLog(line, critical: true, file: #fileID, line: #line, function: "MemoryForensics")
             }
         }
         MemoryForensics.noteOperation("起動")
@@ -568,6 +575,13 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     deinit {
+        // 測定(2721): 個体1体の解体で used/alloc/fp がどれだけ戻るか。ゾンビ4体(retain=8、1.5〜2.8時間)
+        // のビュー解放が fp を3MBしか戻さなかったので、VC本体の死の値を直接測る。static 呼び出しで
+        // self は捕まえない(解体中の weak 参照は禁止)
+        MemoryForensics.noteSpikeWindow(
+            "個体deinit(\(diagnosticsState.diagnosticsControllerID.prefix(8))) alive=\(Self.liveControllerCensus.allObjects.count - 1)",
+            minDeltaMB: 0
+        )
         // 以降のログ書き込みは同期保存(解体中の self への weak 参照を作らない。Diagnostics 参照)
         diagnosticsState.diagnosticsIsDeinitializing = true
         diagnosticsState.diagnosticsLogFlushWorkItem?.cancel()
@@ -769,6 +783,14 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
+        if !didLogControllerCreationDelta {
+            didLogControllerCreationDelta = true
+            MemoryForensics.noteSyncDelta(
+                "個体生成→表示(\(diagnosticsState.diagnosticsControllerID.prefix(8))) alive=\(Self.liveControllerCensus.allObjects.count)",
+                since: controllerCreationSnapshot,
+                minDeltaMB: -1
+            )
+        }
         commitStaleHostMarkedTextOnAppear()
 
         if keyboardLaunchViewDidLoadAt > 0 {
@@ -983,6 +1005,19 @@ final class KeyboardViewController: UIInputViewController {
     // 重い診断(census2〜4)を許す footprint の上限(2654)。per-process 上限 77MB に対し
     // 22MB の余裕を残す。8/25 の死2件は警告時 fp59.6 → census2 計算中に 77MB 到達。
     static let memoryHeavyCensusMaxFootprintMB: Double = 55
+    // 測定(2721): census2〜4 は 2667 で全ブロック列挙を撤去済み(統計読みと自前構造の概算だけ)なので、
+    // 55MB 超でもプロセスにつき1回だけ 70MB 未満なら採る。警告が来るのは常に fp≈60 で、
+    // 55 の門番のままでは高水位の中身が一度も記録されなかった
+    static let memoryHeavyCensusOnceMaxFootprintMB: Double = 70
+    static var didRunHeavyCensusAbovePressureThreshold = false
+    static func allowsHeavyCensus(footprintMB: Double) -> Bool {
+        if footprintMB < memoryHeavyCensusMaxFootprintMB { return true }
+        if !didRunHeavyCensusAbovePressureThreshold, footprintMB < memoryHeavyCensusOnceMaxFootprintMB {
+            didRunHeavyCensusAbovePressureThreshold = true
+            return true
+        }
+        return false
+    }
     // 非表示個体を強制解放しはじめる警告回数(2658、ユーザ指定の段階制)。
     // 予防スリム化(常時)で足りないときの次の手
     static let aggressiveInactiveReleaseWarningCount = 3
@@ -1122,6 +1157,7 @@ final class KeyboardViewController: UIInputViewController {
         let now = CFAbsoluteTimeGetCurrent()
         let isCensusThrottled = now - Self.lastMemoryCensusAt < Self.memoryCensusMinimumInterval
         let isAwaitingAttach = keyboardAttachWatchdogWorkItem != nil || isCensusThrottled
+        var heavyCensusAllowedThisWarning = false
         if !isAwaitingAttach {
             Self.lastMemoryCensusAt = now
         }
@@ -1162,8 +1198,8 @@ final class KeyboardViewController: UIInputViewController {
             // の計算中に殺されており、上限まで 22MB を切った状態で数MBを確保しながら
             // main を数百ms塞ぐ診断は、原因を測るどころか原因そのものになっていた。
             let heavyCensusFootprintMB = currentFootprintMB() ?? 0
-            let allowsHeavyCensus = heavyCensusFootprintMB < Self.memoryHeavyCensusMaxFootprintMB
-            if !allowsHeavyCensus {
+            heavyCensusAllowedThisWarning = Self.allowsHeavyCensus(footprintMB: heavyCensusFootprintMB)
+            if !heavyCensusAllowedThisWarning {
                 appendKeyboardDiagnosticsLog(
                     "重い診断(census2〜4)をスキップ footprintMB=\(String(format: "%.1f", heavyCensusFootprintMB))"
                         + " 閾値=\(Self.memoryHeavyCensusMaxFootprintMB)",
@@ -1174,7 +1210,7 @@ final class KeyboardViewController: UIInputViewController {
                 )
             }
         }
-        if !isAwaitingAttach, (currentFootprintMB() ?? 0) < Self.memoryHeavyCensusMaxFootprintMB {
+        if !isAwaitingAttach, heavyCensusAllowedThisWarning {
             // census v2(2570): (a) 全 malloc ゾーンの内訳 — malloc_zone_statistics(nil) は
             // デフォルトゾーンだけで、Nano ゾーン(≤256B の小粒確保)が見えていなかった。
             // (b) 常駐辞書構造の概算バイト — ベースライン固定費(約35MB)の正体特定用。
