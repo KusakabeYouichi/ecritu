@@ -12442,4 +12442,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.candidates(for: "きかんとうしか", limit: 3, systemCandidateMode: .surface).first, "機関投資家")
         XCTAssertEqual(converter.multiClauseCandidates(for: "きかんとうしかの", systemCandidateMode: .surface).first, "機関投資家の")
     }
+
+    // ごく: かな ごく の次に 語句(基底順では 語句 が7位)。連文節 がいとうするごくを は 該当する語句を(2722)
+    func testRegressionRealLMGokuPrefersPhraseSecond() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "ごく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["ごく", "語句"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "がいとうするごくを", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "該当する語句を", "multi=\(multi)")
+    }
 }
