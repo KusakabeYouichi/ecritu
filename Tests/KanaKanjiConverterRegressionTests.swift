@@ -12423,4 +12423,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(converter.multiClauseCandidates(for: "とりおきねがいます", systemCandidateMode: .surface).first, "取り置き願います")
         XCTAssertTrue(converter.candidates(for: "とりおきして", limit: 5, systemCandidateMode: .surface).contains("取り置きして"))
     }
+
+    // きかん: Sudachi 基底順で 期間 が5位(帰還/機関/貴簡/飢寒/亀鑑 の後)。seed で 期間 を先頭にし、
+    // 連文節 きかんの も 語+助詞1字 のボーナス経由で 期間の になる(2722)
+    func testRegressionRealLMKikanPrefersPeriod() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "きかん", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["期間", "機関", "帰還"], "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "きかんの", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "期間の", "multi=\(multi)")
+    }
 }
