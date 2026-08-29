@@ -185,6 +185,13 @@ extension KanaKanjiConverter {
     // bigram 938 が 果汁→の 1562 より安い差 660)。助詞1字は語義をほとんど絞らないので、この場面では
     // 単文節の先頭を優先し、bigram 差がこの値を超える強い文脈だけ LM に従う。
     static let multiClauseSingleTopBeforeParticleBonus = 700
+    // 〜まち: 名詞に続く まち は生産的な接尾 待ち(順番待ち/返事待ち/効果測定待ち)だが、LM は
+    // 町 4577 < 街 5103 < 待ち 5928 で、前の語→町 が未観測(=地名複合ではない)でも 町 を採り
+    // 効果測定町/順番町 になっていた(ユーザ報告 2723)。前の語が漢字2字以上の名詞で、
+    // 前の語→町/街 の bigram が未観測のときだけ 待ち を優先する(城下→町 1060 等の地名は無傷)。
+    // 値の根拠: 待ち は2かなの短スパン床で word_cost 7877 に床上げされ(町 は 4577+500=5077)、
+    // さらに 町→EOS 1794 の観測分で約160差 → 合計約3000を跨ぐ幅
+    static let multiClauseWaitSuffixAfterNounBonus = 3200
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 

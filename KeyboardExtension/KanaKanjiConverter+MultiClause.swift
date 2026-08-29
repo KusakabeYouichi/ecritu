@@ -1137,6 +1137,14 @@ extension KanaKanjiConverter {
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
                 penalty -= bonus
             }
+            // 名詞+まち は接尾 待ち(定数コメント参照。2723)。前の語→町/街 が観測済み(地名)なら触らない
+            if reading == "まち", surface == "待ち",
+                prev != Self.multiClauseBOSMarker,
+                !prevIsInflectionDerived,
+                prev.count >= 2, containsKanji(prev),
+                bigramCosts[prev + "\t町"] == nil, bigramCosts[prev + "\t街"] == nil {
+                penalty -= Self.multiClauseWaitSuffixAfterNounBonus
+            }
             penalty += penaltyForNounHoshii
             // 係助詞「は」(では/には/とは 等の複合助詞末尾含む)直後の ある は漢字化しない=
             // かな正書(定数コメント参照)。変種生成(pairCost)も本関数を通るため 有る/在る/或る を
