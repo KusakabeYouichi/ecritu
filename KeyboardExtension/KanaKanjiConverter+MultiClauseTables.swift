@@ -658,7 +658,11 @@ extension KanaKanjiConverter {
     // (川+ない)に出口コストで逆転される。末尾トークンで bigram を代用して整合させる。
     static let multiClauseInflectionAuxTails: [String] = [
         "ました", "ません", "なかった", "ないで", "ない", "ます", "です", "った", "んだ", "いた",
-        "えた", "した", "てる", "よう", "たい", "て", "た", "だ", "う"
+        "えた", "した", "てる", "よう", "たい", "て", "た", "だ", "う",
+        // 濁音のテ形(読んで/選んで/飲んで)。で が無いため 選んで(派生 7200)+ください が
+        // で→ください(3915)を借りられず、エラン(人名)+で+ください の分割に負けていた
+        // (えらんでください→エランでください。ユーザ報告 2720)
+        "で"
     ]
     static let multiClauseFinalParticleKanjiPenalty = 3000
     // 文末の終助詞「な」は述語(用言・タ形)に付くもの。非述語(地名/名詞、例: 三田)の
@@ -1118,7 +1122,15 @@ extension KanaKanjiConverter {
         guard node.isInflectionDerived || node.surface == node.reading else {
             return nil
         }
-        return inflectionAuxTail(of: node.surface)
+        guard let tail = inflectionAuxTail(of: node.surface) else {
+            return nil
+        }
+        // で は派生ノード(濁音テ形: 選んで/読んで)限定。かな識別(かねひで/これで 等の名詞+で)に
+        // 借用させると名詞側の評価が歪む(2720 の検証で かねひでが安い が 金秀が安い に反転)
+        if tail == "で", !node.isInflectionDerived {
+            return nil
+        }
+        return tail
     }
 
     static func inflectionAuxTail(of surface: String) -> String? {
