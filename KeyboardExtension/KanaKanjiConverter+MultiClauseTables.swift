@@ -179,6 +179,15 @@ extension KanaKanjiConverter {
         "きぐ": ["器具"]
     ]
 
+    // 「先頭の語+格助詞1字」(かじゅうの/かじゅうを 等)の入力で、先頭文節の並びを単文節の最終順位に
+    // 揃えるためのボーナス(2720)。単文節=辞書順+補正、連文節=LM で並べており、辞書全体の21%の読み
+    // (4,895/23,340)で [語]+の の先頭が入れ替わる(かじゅう→果汁 / かじゅうの→荷重の: 荷重→の の
+    // bigram 938 が 果汁→の 1562 より安い差 660)。助詞1字は語義をほとんど絞らないので、この場面では
+    // 単文節の先頭を優先し、bigram 差がこの値を超える強い文脈だけ LM に従う。
+    static let multiClauseSingleTopBeforeParticleBonus = 700
+    // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
+    static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
+
     static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
         "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200,
         // みな はかなが主流(LM みな5809≈皆5748)だが wc 皆4233≪みな7460 で連文節は漢字が勝つ。
