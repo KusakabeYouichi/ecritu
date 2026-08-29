@@ -955,6 +955,10 @@ extension KanaKanjiConverter {
                     : Self.multiClauseInflectionDerivedOOVCost
             } else if isDictWord {
                 base = Self.multiClauseDictUnknownCost
+                // LM がトークン分割していて unigram を持たない日常語(その他 等。定数コメント参照)
+                if let substitute = Self.multiClauseLMSplitCompoundUnigramSubstitutes[surface] {
+                    base = substitute
+                }
                 // 収穫底値ノードはさらに重く(定数コメント参照)。seed 掲載語(柚香 等、
                 // wc が底値でも人手で代表に選んだ語)は単文節の降格と同様に免除する。
                 if let wordCost,

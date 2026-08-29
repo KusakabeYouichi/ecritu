@@ -908,6 +908,13 @@ extension KanaKanjiConverter {
     // - 最近 5000: 細菌→は1097 には勝ち(cap+1138 < 5759+1097 ⇔ cap<5718)、
     //   細菌→が1334 には負ける(cap+2533 > 7093 ⇔ cap>4560)→ さいきんが→細菌が 維持
     // 検索機能 等の複合は bigram 分岐が勝つ。unigram 分岐限定のキャップ。
+    // LM(Wikipedia/Sudachi A単位)がトークン分割していて unigram を持たない日常語(その他 は その/他)。
+    // 辞書にも無く seed だけが供給するため連文節では dictUnknown(8700)になり、その+た+も
+    // (3251+2602+5041=10894)に その他+も(8700+3172=11872)が負けて そのたも が先頭だった(2722)。
+    // 日常頻出の名詞相当の値を unigram の代わりに置く(seed で人手選別済みの表層のみ)
+    static let multiClauseLMSplitCompoundUnigramSubstitutes: [String: Int] = [
+        "その他": 6000,
+    ]
     static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
         "昨日": 4300,
         // 今日(会話最頻)が 経(お経4660)/教派(6278)等に unigram(5041)で競り負ける
