@@ -12452,4 +12452,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "がいとうするごくを", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "該当する語句を", "multi=\(multi)")
     }
+
+    // さらいしゅう: 再来週(辞書 rank0、LM未収録)を seed で最終回答にし、さ+来週(さ来週/さ来襲…)の合成を出さない(2722)
+    func testRegressionRealLMSaraishuuWholeWordSeed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("さらいしゅう", "再来週"), ("さらいげつ", "再来月"), ("さらいねん", "再来年")] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface).first, expected)
+            XCTAssertTrue(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).isEmpty, reading)
+        }
+    }
 }
