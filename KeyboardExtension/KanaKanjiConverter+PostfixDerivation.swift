@@ -211,6 +211,9 @@ extension KanaKanjiConverter {
                 }
 
                 let nextSuffix = passthrough + current.suffix
+                // か+ない の連鎖は漢字語幹には組まない(定義コメント参照。2723)。かな識別
+                // (いかなくて 等の全かなエコー)は従来どおり残す
+                let kaNaiChainKanaOnly = Self.isImpossibleKaNaiPostfixChain(nextSuffix)
                 let visitKey = nextStem + "\u{1}" + nextSuffix
 
                 guard visited.insert(visitKey).inserted else {
@@ -264,6 +267,9 @@ extension KanaKanjiConverter {
                         }
                     }
 
+                    if kaNaiChainKanaOnly {
+                        stemCandidates = stemCandidates.filter { $0 == nextStem }
+                    }
                     let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
                         stemCandidates,
                         stemReading: nextStem,

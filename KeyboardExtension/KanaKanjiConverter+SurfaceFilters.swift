@@ -12,6 +12,17 @@ extension KanaKanjiConverter {
         "い", "た", "だ"
     ]
 
+    // か+ない で始まる素通り連鎖(空士かない/石かない/医師かない)は名詞にも用言にも付かない形
+    // (否定の 書かない は活用規則、食うしかない は しか+ない が担う)。BFS は長い語幹を先に
+    // 処理するため 空士(くうし)+かない が 食う+しか+ない より前に出ていた(2723)。
+    // あるかないか(か+ない+か)は正当なので かないか… は対象外
+    static func isImpossibleKaNaiPostfixChain(_ suffix: String) -> Bool {
+        guard suffix.hasPrefix("かな") else { return false }
+        if suffix.hasPrefix("かないか") { return false }
+        return suffix.hasPrefix("かない") || suffix.hasPrefix("かなかった") || suffix.hasPrefix("かなく")
+            || suffix.hasPrefix("かなければ") || suffix.hasPrefix("かなきゃ")
+    }
+
     static func explanatorySuffixRequiresPredicateStem(_ suffix: String) -> Bool {
         for restricted in predicateRequiredExplanatorySuffixes where suffix.hasPrefix(restricted) {
             return true
