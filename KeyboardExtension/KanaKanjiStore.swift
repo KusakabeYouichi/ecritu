@@ -132,6 +132,10 @@ final class KanaKanjiStore {
     private var cachedBundledHiddenSuppression: [String: [String]]?
     var cachedLearningScores: [String: Int]?
     var cachedLearningScoresByReading: [String: [String: Int]]?
+    // 学習の永続化デバウンス(2715): 確定ごとの全量コピー+全量 JSON 化をやめ、数秒まとめて1回書く
+    var learningPersistDirtyLearned = false
+    var learningPersistDirtyScores = false
+    var learningPersistWorkItem: DispatchWorkItem?
 
     init(appGroupID: String) {
         self.appGroupID = appGroupID
@@ -899,6 +903,8 @@ final class KanaKanjiStore {
     }
 
     func clearSharedDataCaches() {
+        // 未保存の学習をキャッシュ破棄前に書き出す(デバウンス中のデータを失わない)
+        flushPendingLearningPersists()
         withCacheLock {
             cachedUserDictionary = nil
             cachedLearnedDictionary = nil

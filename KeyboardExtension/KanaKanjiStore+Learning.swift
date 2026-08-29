@@ -44,25 +44,67 @@ extension KanaKanjiStore {
             }
         }
 
-        var dictionary = learnedDictionary()
-        var candidates = dictionary[normalizedReading] ?? []
-
-        if let existingIndex = candidates.firstIndex(of: trimmedCandidate) {
-            candidates.remove(at: existingIndex)
+        _ = learnedDictionary()   // キャッシュを確実にロード(ロックの外で)
+        // キャッシュをその場で更新する(2715)。以前は learnedDictionary() の戻り値(コピー)を
+        // 変更していたため、コピーオンライトで確定ごとに学習辞書全体が新しいブロックへ複製され、
+        // 変換の一時確保と同じページに置き直されていた(半端ページの温床)。
+        withCacheLock {
+            var candidates = cachedLearnedDictionary?[normalizedReading] ?? []
+            if let existingIndex = candidates.firstIndex(of: trimmedCandidate) {
+                candidates.remove(at: existingIndex)
+            }
+            candidates.insert(trimmedCandidate, at: 0)
+            cachedLearnedDictionary?[normalizedReading] = Array(candidates.prefix(32))
+            learningPersistDirtyLearned = true
         }
-
-        candidates.insert(trimmedCandidate, at: 0)
-        dictionary[normalizedReading] = Array(candidates.prefix(32))
-        withCacheLock { cachedLearnedDictionary = dictionary }
-        // 永続化は非同期(確定タップを学習データ量に比例して重くしない)。変換は
+        // 永続化は数秒のデバウンスでまとめて1回(確定ごとの全量 JSON 化をやめる)。変換は
         // メモリ内キャッシュを見るため即時に反映される。
-        learningPersistQueue.async { [weak self] in
-            self?.saveLearnedDictionary(dictionary)
+        scheduleLearningPersist()
+    }
+
+    static let learningPersistDebounceInterval: TimeInterval = 2.0
+
+    func scheduleLearningPersist() {
+        let alreadyScheduled: Bool = withCacheLock { learningPersistWorkItem != nil }
+        guard !alreadyScheduled else {
+            return
+        }
+        let work = DispatchWorkItem { [weak self] in
+            self?.persistDirtyLearningNow()
+        }
+        withCacheLock { learningPersistWorkItem = work }
+        learningPersistQueue.asyncAfter(deadline: .now() + Self.learningPersistDebounceInterval, execute: work)
+    }
+
+    // dirty な学習データのスナップショットを1回だけ取り、JSON 化して defaults に書く。
+    // 呼び出し元: デバウンスの発火、キャッシュ破棄前(clearSharedDataCaches)、テストの待機。
+    func persistDirtyLearningNow() {
+        let (learned, scores): ([String: [String]]?, [String: Int]?) = withCacheLock {
+            learningPersistWorkItem?.cancel()
+            learningPersistWorkItem = nil
+            let l = learningPersistDirtyLearned ? cachedLearnedDictionary : nil
+            let s = learningPersistDirtyScores ? cachedLearningScores : nil
+            learningPersistDirtyLearned = false
+            learningPersistDirtyScores = false
+            return (l, s)
+        }
+        if let learned {
+            saveLearnedDictionary(learned)
+        }
+        if let scores, let defaults,
+            let encoded = try? JSONEncoder().encode(scores) {
+            defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
         }
     }
 
-    // テスト用: 学習永続化キューの完了を待つ(フレッシュな store で defaults を読む前に呼ぶ)。
+    func flushPendingLearningPersists() {
+        persistDirtyLearningNow()
+    }
+
+    // テスト用: 学習永続化の完了を待つ(フレッシュな store で defaults を読む前に呼ぶ)。
+    // デバウンス待ちの分も即時に書き出す。
     func waitForPendingLearningPersists() {
+        persistDirtyLearningNow()
         learningPersistQueue.sync {}
     }
 
@@ -126,30 +168,18 @@ extension KanaKanjiStore {
             return
         }
 
-        var scores = learningScores()
+        _ = learningScores()   // キャッシュを確実にロード(ロックの外で)
         let key = learningKey(reading: normalizedReading, candidate: trimmedCandidate)
-        scores[key, default: 0] += 1
+        // スコア表と読み別インデックスもその場で更新(2715。全量コピーをやめる)
         withCacheLock {
-            cachedLearningScores = scores
-
-            if var indexedScores = cachedLearningScoresByReading {
-                var candidateScores = indexedScores[normalizedReading] ?? [:]
-                candidateScores[trimmedCandidate] = scores[key, default: 0]
-                indexedScores[normalizedReading] = candidateScores
-                cachedLearningScoresByReading = indexedScores
+            cachedLearningScores?[key, default: 0] += 1
+            let newScore = cachedLearningScores?[key] ?? 1
+            if cachedLearningScoresByReading != nil {
+                cachedLearningScoresByReading?[normalizedReading, default: [:]][trimmedCandidate] = newScore
             }
+            learningPersistDirtyScores = true
         }
-
-        guard let defaults else {
-            return
-        }
-
-        // スコア全体の再エンコードも確定のたびに main でやらない(学習データ量に比例)。
-        learningPersistQueue.async {
-            if let encoded = try? JSONEncoder().encode(scores) {
-                defaults.set(encoded, forKey: KanaKanjiStorageKeys.learningScores)
-            }
-        }
+        scheduleLearningPersist()
     }
 
     func saveUserDictionary(_ dictionary: [String: [String]]) {
