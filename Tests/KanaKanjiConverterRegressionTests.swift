@@ -12434,4 +12434,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "きかんの", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "期間の", "multi=\(multi)")
     }
+
+    // 機関投資家: Sudachi に複合語が無く きかんとうしか→機関等しか だった。misc で供給(2722)
+    func testKikanToushikaFromMisc() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "きかんとうしか", limit: 3, systemCandidateMode: .surface).first, "機関投資家")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きかんとうしかの", systemCandidateMode: .surface).first, "機関投資家の")
+    }
 }
