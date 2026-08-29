@@ -12469,4 +12469,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let tango = converter.candidates(for: "たんご", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(tango.prefix(4)), ["単語", "丹後", "端午", "タンゴ"], "tango=\(tango)")
     }
+
+    // そのたも: LM分割語 その他(unigram なし)の代替 unigram で その+た+も に勝つ(2722)
+    func testRegressionRealLMSonotaLMSplitCompound() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [("そのたも", "その他も"), ("そのたは", "その他は"), ("そのたの", "その他の")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
+        }
+    }
 }
