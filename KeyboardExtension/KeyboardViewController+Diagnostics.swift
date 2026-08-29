@@ -468,6 +468,17 @@ extension KeyboardViewController {
         // 寝る瞬間に返却しておけば起床時の最初の変換(+4MB)に耐えられる。
         if slimmingActive {
             malloc_zone_pressure_relief(nil, 0)
+            // VM タグ別の帰属(malloc 外の untagged/tcmalloc/CoreAnimation 等)は高水位更新時にしか
+            // 出ないため、alloc が張り付いた長いセッションでは比較材料が取れなかった。非表示時に
+            // fp≥40 なら120秒に1回だけ記録する(走査は数ms)。2713
+            if let fp = currentFootprintMB(), fp >= 40,
+                CFAbsoluteTimeGetCurrent() - Self.lastHiddenAttributionLogAt >= 120 {
+                Self.lastHiddenAttributionLogAt = CFAbsoluteTimeGetCurrent()
+                appendKeyboardDiagnosticsLog(
+                    "MEMFORENSICS帰属@非表示 fp=\(String(format: "%.1f", fp)) \(MemoryForensics.loadSummary) \(MemoryForensics.vmRegionSummaryByTag())",
+                    critical: true
+                )
+            }
             // MEMFORENSICS(時限計測 2640): スリム化の返却量(1MB以上動いたときだけ記録)
             MemoryForensics.noteSpikeWindow("スリム化(\(reason))")
         }
@@ -492,6 +503,7 @@ extension KeyboardViewController {
     static let preventiveReliefMinimumInterval: CFAbsoluteTime = 3
     nonisolated(unsafe) static var lastPreventiveReliefAt: CFAbsoluteTime = 0
     nonisolated(unsafe) static var lastPreventiveReliefLogAt: CFAbsoluteTime = 0
+    nonisolated(unsafe) static var lastHiddenAttributionLogAt: CFAbsoluteTime = 0
 
     func performPreventiveMallocReliefIfNeeded() {
         guard isSuspendMemorySlimmingEnabled else {
