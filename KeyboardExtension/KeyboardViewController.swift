@@ -250,6 +250,8 @@ final class KeyboardViewController: UIInputViewController {
     let externalTextChangeDetectionWindow: CFTimeInterval = 0.35
     // メモリ警告を1イベント(バースト)にまとめる窓(定義は Diagnostics の memoryWarningBurstCountThisSession 参照)
     static let memoryWarningBurstWindow: CFTimeInterval = 2.0
+    // 長寿命プリウォーム(2703)の A/B スイッチ。2714 は無効で計測
+    static let isLongLivedPrewarmEnabled = false
     var lastSynchronizedContextBeforeInputTail = ""
     var lastSynchronizedContextBeforeInputLength = 0
     var composingContextPrefixTail = ""
@@ -1466,10 +1468,13 @@ final class KeyboardViewController: UIInputViewController {
             // 長寿命データを一時確保より先にまとめて確保する(ヒープ配置の是正。converter 側コメント参照)。
             // 実測 490ms(2705)なのでメインスレッドを塞がずユーティリティキューで実体化する
             // (static let の初期化は dispatch_once、store のキャッシュはロック保護で他スレッド可)。
+            // A/B(2714): 同条件比較で malloc の半端分が 3.1→4.3MB と増えたため、プリウォームを止めて
+            // 半端分が戻るかを測る。戻れば 2703 は撤去、戻らなければ別要因。
             let converter = self.kanaKanjiConverter
             let startedAt = CFAbsoluteTimeGetCurrent()
             var statsBefore = malloc_statistics_t()
             malloc_zone_statistics(nil, &statsBefore)
+            if Self.isLongLivedPrewarmEnabled {
             DispatchQueue.global(qos: .utility).async { [weak self] in
                 let touched = converter.prewarmLongLivedDataForHeapLayout()
                     + KeyboardViewController.kaomojiReadingCandidatesByReading.count
@@ -1486,6 +1491,9 @@ final class KeyboardViewController: UIInputViewController {
                         critical: true
                     )
                 }
+            }
+            } else {
+                self.appendKeyboardDiagnosticsLog("長寿命プリウォーム 無効(A/B 2714)", critical: true)
             }
             let elapsedMs = self.performanceElapsedMilliseconds(since: startedAt)
 
