@@ -12403,4 +12403,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "してください", "\(single)")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "してください"))
     }
+
+    // 取り置き: Sudachi には 取り置く の連用形としてしか無く名詞が無かった。misc でサ変名詞登録(2722)
+    func testToriokiFromMisc() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "とりおき", limit: 3, systemCandidateMode: .surface).first, "取り置き")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とりおきねがいます", systemCandidateMode: .surface).first, "取り置き願います")
+        XCTAssertTrue(converter.candidates(for: "とりおきして", limit: 5, systemCandidateMode: .surface).contains("取り置きして"))
+    }
 }

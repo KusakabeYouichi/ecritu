@@ -342,5 +342,6 @@
 	<dict><key>phrase</key><string>ジップロック</string><key>shortcut</key><string>じっぷろっく</string></dict>	<!-- Sudachi(core/small)に無い商品名。ジップロック→ジップロック®→Ziploc の順(ユーザ指定 2698) -->
 	<dict><key>phrase</key><string>ジップロック®</string><key>shortcut</key><string>じっぷろっく</string></dict>
 	<dict><key>phrase</key><string>Ziploc</string><key>shortcut</key><string>じっぷろっく</string></dict>
+	<dict><key>phrase</key><string>取り置き</string><key>shortcut</key><string>とりおき</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachi には 取り置く(動詞)の連用形としてしか無く名詞・サ変名詞の行が無い。とりおき が 鳥沖/取り沖 等の合成だけになっていた(ユーザ報告 2722)。サ変で 取り置きする/取り置き願います を供給 -->
 </array>
 </plist>
