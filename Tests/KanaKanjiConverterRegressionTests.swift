@@ -12502,4 +12502,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface).first, expected)
         }
     }
+
+    // 空士かない: postfix 素通り合成の か+ない 連鎖(名詞にも用言にも付かない形)。BFS が長い語幹を先に
+    // 処理するため 空士+かない が 食う+しか+ない より前に出ていた(2723)
+    func testRegressionRealLMKaNaiPostfixChainDenied() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let kuu = converter.candidates(for: "くうしかない", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kuu.first, "食うしかない", "list=\(kuu)")
+        XCTAssertFalse(kuu.contains("空士かない"), "list=\(kuu)")
+        let ishi = converter.candidates(for: "いしかない", limit: 6, systemCandidateMode: .surface)
+        XCTAssertFalse(ishi.contains("石かない") || ishi.contains("医師かない"), "list=\(ishi)")
+    }
 }
