@@ -12514,4 +12514,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let ishi = converter.candidates(for: "いしかない", limit: 6, systemCandidateMode: .surface)
         XCTAssertFalse(ishi.contains("石かない") || ishi.contains("医師かない"), "list=\(ishi)")
     }
+
+    // 〜まち: 名詞+まち は接尾 待ち。前の語→町/街 の bigram が未観測なら 待ち を優先(2723)
+    func testRegressionRealLMNounMachiPrefersWaiting() throws {
+        try prepareRealLMDictionary()
+        for (reading, expected) in [
+            ("こうかそくていまち", "効果測定待ち"), ("じゅんばんまち", "順番待ち"), ("へんじまち", "返事待ち"),
+            ("にゅうかまち", "入荷待ち"), ("にゅうきんまち", "入金待ち"), ("けっさいまち", "決済待ち"), ("じょうかまち", "城下町")
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(reading): multi=\(multi) single=\(single)")
+        }
+    }
 }
