@@ -143,7 +143,7 @@ extension KanaKanjiConverter {
         let taForm: String
     }
 
-    static let adjectiveInflectionRules: [InflectionRule] = [
+    private static func makeAdjectiveInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "いです", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "のだ", baseReadingSuffix: "", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "のです", baseReadingSuffix: "", allowedClasses: .adjectiveI),
@@ -215,7 +215,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "め", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "めの", baseReadingSuffix: "い", allowedClasses: .adjectiveI),
         InflectionRule(readingSuffix: "めに", baseReadingSuffix: "い", allowedClasses: .adjectiveI)
-    ]
+    ] }
 
     // 一段の連用形(語幹そのもの)を供給する基底読みの opt-in(2026-08-27)。
     // 五段は iForm(食い/つき)があるのに一段には規則が無く、さんかくたべ→三角夛部 の人名合成
@@ -228,11 +228,11 @@ extension KanaKanjiConverter {
     // 命令形として使う頻度より同音語の実害が大きいもの(2026-08-27)
     static let ichidanImperativeDeniedBaseReadings: Set<String> = ["いる", "える", "うる", "おる"]
 
-    static let ichidanRenyouNounRules: [InflectionRule] = [
+    private static func makeIchidanRenyouNounRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "", baseReadingSuffix: "る", allowedClasses: .ichidan)
-    ]
+    ] }
 
-    static let ichidanInflectionRules: [InflectionRule] = [
+    private static func makeIchidanInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "ない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なく", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -543,7 +543,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", outputCandidateSuffix: "易く", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", outputCandidateSuffix: "易くない", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", outputCandidateSuffix: "易かった", allowedClasses: .ichidan)
-    ]
+    ] }
 
     static let godanPatterns: [GodanPattern] = [
         GodanPattern(dictionaryEnding: "う", inflectionClass: InflectionClass.godanU, aForm: "わ", iForm: "い", eForm: "え", oForm: "お", teForm: "って", taForm: "った"),
@@ -942,7 +942,7 @@ extension KanaKanjiConverter {
         return suffixes
     }
 
-    static let godanInflectionRules: [InflectionRule] = {
+    private static func makeGodanInflectionRules() -> [InflectionRule] {
         var rules: [InflectionRule] = []
 
         for pattern in godanPatterns {
@@ -1175,9 +1175,9 @@ extension KanaKanjiConverter {
         }
 
         return rules
-    }()
+    }
 
-    static let suruInflectionRules: [InflectionRule] = [
+    private static func makeSuruInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなければ", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1431,9 +1431,9 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "させられません", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "させられなかった", baseReadingSuffix: "する", allowedClasses: .suru)
-    ]
+    ] }
 
-    static let sahenNounSuruInflectionRules: [InflectionRule] = [
+    private static func makeSahenNounSuruInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "する", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "できる", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "できない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
@@ -1660,7 +1660,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "させられない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "させられません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "させられなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru)
-    ]
+    ] }
 
     static let kuruInflectionForms: [(readingSuffix: String, kanjiOutputSuffix: String)] = [
         ("こない", "来ない"),
@@ -1876,7 +1876,7 @@ extension KanaKanjiConverter {
         ("こられない", "来られない")
     ]
 
-    static let kuruInflectionRules: [InflectionRule] = {
+    private static func makeKuruInflectionRules() -> [InflectionRule] {
         var rules: [InflectionRule] = []
 
         for form in kuruInflectionForms {
@@ -1901,16 +1901,30 @@ extension KanaKanjiConverter {
         }
 
         return rules
-    }()
+    }
 
-    static let allInflectionRules: [InflectionRule] =
-        adjectiveInflectionRules
-        + ichidanInflectionRules
-        + ichidanRenyouNounRules
-        + godanInflectionRules
-        + sahenNounSuruInflectionRules
-        + suruInflectionRules
-        + kuruInflectionRules
+    // 活用ルールの実体はこの1本だけ(2719)。以前は品詞別 static let(計7,676本)+ 連結コピーの
+    // allInflectionRules + 末尾文字バケツ(ルールのコピー)で、同じ64B構造体を3重に常駐させていた
+    // (≈1.5MB、memgraph 2645 の godanInflectionRules 1.06MB / allInflectionRules 0.90MB)。
+    // 品詞別は生成関数にして一時化し、バケツは添字(Int)で参照する。
+    private static let inflectionRuleTable: (rules: [InflectionRule], suruRange: Range<Int>) = {
+        var rules: [InflectionRule] = []
+        rules.append(contentsOf: makeAdjectiveInflectionRules())
+        rules.append(contentsOf: makeIchidanInflectionRules())
+        rules.append(contentsOf: makeIchidanRenyouNounRules())
+        rules.append(contentsOf: makeGodanInflectionRules())
+        rules.append(contentsOf: makeSahenNounSuruInflectionRules())
+        let suruStart = rules.count
+        rules.append(contentsOf: makeSuruInflectionRules())
+        let suruRange = suruStart..<rules.count
+        rules.append(contentsOf: makeKuruInflectionRules())
+        return (rules, suruRange)
+    }()
+    static let allInflectionRules: [InflectionRule] = inflectionRuleTable.rules
+    // サ変(する)ルールだけは丁寧接頭辞の接尾辞列挙が参照する。実体は allInflectionRules の範囲
+    static var suruInflectionRules: ArraySlice<InflectionRule> {
+        allInflectionRules[inflectionRuleTable.suruRange]
+    }
 
     static let emptyStemAllowedBaseReadingSuffixes: Set<String> = [
         "する",
