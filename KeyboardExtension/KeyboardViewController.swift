@@ -218,10 +218,13 @@ final class KeyboardViewController: UIInputViewController {
     // の常駐と、設定変更通知での全個体同時再読込(一時ピーク約2MB×個体数)を生んでいた。
     // 辞書ストア(sharedKanaKanjiStore)と同じくプロセスに1部だけ持ち、読込中フラグと
     // 最終更新時刻も共有して再読込を1回に集約する。アクセスは全て main。
-    static var sharedContactCandidatesByReading: [String: [String]] = [:]
+    // 連絡先候補は補助語彙と同じコンパクト表で常駐させる(2718)。[String: [String]] だと
+    // 1件の連絡先を最大10通りの読みに展開したエントリが Swift 辞書+配列+String の
+    // オーバーヘッド(150〜250B/エントリ)で約0.85MB になっていた(memgraph 2645)。
+    static var sharedContactCandidatesByReading: SupplementalVocabCompactStore = .empty
     static var sharedIsRefreshingContactCandidates = false
     static var sharedContactCandidatesLastRefreshAt: Date?
-    var contactCandidatesByReading: [String: [String]] {
+    var contactCandidatesByReading: SupplementalVocabCompactStore {
         get { Self.sharedContactCandidatesByReading }
         set { Self.sharedContactCandidatesByReading = newValue }
     }

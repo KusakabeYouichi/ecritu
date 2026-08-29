@@ -292,7 +292,7 @@ extension KeyboardViewController {
 
     func refreshContactCandidatesIfNeeded(force: Bool) {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
-            contactCandidatesByReading = [:]
+            contactCandidatesByReading = .empty
             supplementaryMergedCandidatesCacheByKey = [:]
             return
         }
@@ -337,10 +337,10 @@ extension KeyboardViewController {
                 self.contactCandidatesLastRefreshAt = Date()
 
                 let previous = self.contactCandidatesByReading
-                self.contactCandidatesByReading = cachedCandidates
+                self.contactCandidatesByReading = SupplementalVocabCompactStore(dictionary: cachedCandidates)
                 self.supplementaryMergedCandidatesCacheByKey = [:]
 
-                if previous != cachedCandidates {
+                if previous != self.contactCandidatesByReading {
                     self.refreshKeyboardStateAsync()
                 }
                 return
@@ -393,7 +393,7 @@ extension KeyboardViewController {
         let hadContactCandidates = !contactCandidatesByReading.isEmpty
         isRefreshingContactCandidates = false
         contactCandidatesLastRefreshAt = Date()
-        contactCandidatesByReading = [:]
+        contactCandidatesByReading = .empty
         supplementaryMergedCandidatesCacheByKey = [:]
 
         if refreshKeyboardState,
@@ -467,7 +467,7 @@ extension KeyboardViewController {
                 self.contactCandidatesLastRefreshAt = Date()
 
                 let previous = self.contactCandidatesByReading
-                self.contactCandidatesByReading = dictionary
+                self.contactCandidatesByReading = SupplementalVocabCompactStore(dictionary: dictionary)
                 self.supplementaryMergedCandidatesCacheByKey = [:]
 
                 if didReachLimit {
@@ -477,7 +477,7 @@ extension KeyboardViewController {
                     )
                 }
 
-                if previous != dictionary {
+                if previous != self.contactCandidatesByReading {
                     self.refreshKeyboardStateAsync()
                 }
             }
@@ -827,7 +827,7 @@ extension KeyboardViewController {
         let contactCandidates: [String]
 
         if usesContacts {
-            contactCandidates = contactCandidatesByReading[normalizedReading] ?? []
+            contactCandidates = contactCandidatesByReading.candidates(for: normalizedReading)
         } else {
             contactCandidates = []
         }

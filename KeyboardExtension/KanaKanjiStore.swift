@@ -1245,7 +1245,7 @@ final class KanaKanjiStore {
 // 消費点は「読み単位の点引き」(候補マージ/昇格判定/カタカナ化抑止免除)と
 // 「一度きりの全走査」(欧文サジェスト索引の構築)だけなので、全文字列を1本の UTF8 ブロブに
 // 詰め、読みはバイト列ソート+二分探索で引く。実測で常駐 約1MB 弱まで下がる。
-struct SupplementalVocabCompactStore {
+struct SupplementalVocabCompactStore: Equatable {
     // 全読み・全表層の UTF8 を連結したブロブ。個々の文字列はオフセット表で参照する。
     private let blob: [UInt8]
     // 読み i のバイト範囲 = blob[readingOffsets[i]..<readingOffsets[i+1]](読みはバイト列昇順)
