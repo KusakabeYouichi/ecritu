@@ -12378,4 +12378,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         )
         XCTAssertEqual(boosted.first, "回も押したことない", "\(boosted.prefix(5))")
     }
+
+    // 濁音テ形(選んで/読んで)+ください: 派生ノードが で→ください の bigram を借りられず
+    // エラン(人名)+で+ください に負けていた(2720)
+    func testVoicedTeFormKudasaiInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "えらんでください", systemCandidateMode: .surface).first, "選んでください")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "よんでください", systemCandidateMode: .surface).first, "読んでください")
+        // 関西弁縮約は稀な読みの動詞(選る/彫る=える)には組まない。常用動詞(知る)は従来どおり(2721)
+        let eran = converter.candidates(for: "えらん", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(eran.contains("選らん") || eran.contains("彫らん"), "\(eran)")
+        let erankatta = converter.candidates(for: "えらんかった", limit: 10, systemCandidateMode: .surface)
+        XCTAssertFalse(erankatta.contains("選らんかった") || erankatta.contains("彫らんかった"), "\(erankatta)")
+        XCTAssertTrue(converter.candidates(for: "しらんかった", limit: 5, systemCandidateMode: .surface).contains("知らんかった"))
+    }
+
+    // してください はかなが正書: 連文節は全かなエコー抑制の対象外、単文節は 仕手ください を下へ(2720)
+    func testShiteKudasaiKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "してください", systemCandidateMode: .surface).first, "してください")
+        let single = converter.candidates(for: "してください", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "してください", "\(single)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "してください"))
+    }
 }
