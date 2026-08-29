@@ -12404,7 +12404,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "してください"))
     }
 
-    // 取り置き: Sudachi には 取り置く の連用形としてしか無く名詞が無かった。misc でサ変名詞登録(2722)
+    // 先頭の語+格助詞1字は単文節の先頭に揃える(かじゅう→果汁 なのに かじゅうの→荷重の だった。2720)
+    func testLeadWordPlusParticleFollowsSingleClauseTop() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "かじゅう", limit: 3, systemCandidateMode: .surface).first, "果汁")
+        for probe in ["かじゅうの", "かじゅうを", "かじゅうが"] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertEqual(m.first, "果汁" + String(probe.last!), "\(probe): \(m)")
+        }
+    }
+
+    // 取り置き: Sudachi には 取り置く の連用形としてしか無く名詞が無かった。misc でサ変名詞登録(2720)
     func testToriokiFromMisc() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)

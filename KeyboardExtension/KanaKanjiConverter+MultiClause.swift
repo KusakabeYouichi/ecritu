@@ -81,6 +81,8 @@ extension KanaKanjiConverter {
         var preferredInflectedNodeKeys = Set<String>()
         // 名詞 seed 順 opt-in の読み別ボーナス(multiClauseSeedOrderNounBonusesByReading)
         var seedOrderNounNodeBonuses: [String: Int] = [:]
+        // 先頭の語+格助詞1字のとき、先頭文節の単文節先頭候補に与えるボーナス(定数コメント参照。2720)
+        var singleTopLeadNodeBonuses: [String: Int] = [:]
         // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
         var renyouNiNodeKeys = Set<String>()
         // スパン別の活用派生表層(キー "start-end")。かな て の連用形接続判定に使う。
@@ -1420,6 +1422,26 @@ extension KanaKanjiConverter {
             return base + penalty
         }
 
+        // 先頭の語+格助詞1字(かじゅうの 等): 先頭スパンに表層が2つ以上あるときだけ、単文節の最終先頭を
+        // 引いてそのノードにボーナス(定数コメント参照。2720)。単文節 1 回ぶんの計算が増えるが
+        // この形の入力に限る
+        if n >= 3, let tailChar = chars.last, Self.multiClauseSingleTopParticleTails.contains(tailChar) {
+            let leadEnd = n - 1
+            let leadSurfaces = nodes.filter { $0.start == 0 && $0.end == leadEnd }.map(\.surface)
+            // 時相名詞キャップ(昨日/最近 等)で手調整済みの語は助詞ごとの均衡を崩さないよう対象外
+            if leadSurfaces.count >= 2,
+                !leadSurfaces.contains(where: { Self.multiClauseConversationalTemporalNounUnigramCaps[$0] != nil }) {
+                let leadReading = String(chars[0..<leadEnd])
+                // 単文節先頭+この助詞の bigram が実観測のときだけ(未観測=LM が構造的に否定している形
+                // (最近が 等)は上書きしない)
+                if let singleTop = candidates(for: leadReading, limit: 1, systemCandidateMode: systemCandidateMode).first,
+                    leadSurfaces.contains(singleTop),
+                    bigramCosts["\(singleTop)\t\(tailChar)"] != nil {
+                    singleTopLeadNodeBonuses["0-\(leadEnd)-\(singleTop)"] = Self.multiClauseSingleTopBeforeParticleBonus
+                }
+            }
+        }
+
         // --- 4. Viterbi DP(ノード = (span, 表層)) ---
         let infinity = Int.max / 4
         var best = Array(repeating: infinity, count: nodes.count)
@@ -1450,6 +1472,7 @@ extension KanaKanjiConverter {
                     ? Self.multiClausePreferredInflectionBonus
                     : 0)
                     + (seedOrderNounNodeBonuses[nodeKeySV] ?? 0)
+                    + (singleTopLeadNodeBonuses[nodeKeySV] ?? 0)
                     + naAdjectiveSaStemBonus
                 let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains(nodeKeySV)
                 let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains(nodeKeySV)
