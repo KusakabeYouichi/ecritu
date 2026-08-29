@@ -12451,6 +12451,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(single.prefix(2)), ["ごく", "語句"], "single=\(single)")
         let multi = converter.multiClauseCandidates(for: "がいとうするごくを", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "該当する語句を", "multi=\(multi)")
+        // 文末(を なし)は 語句→を の bigram に頼れず 該当する極 だった。する→語句 のペアボーナス(2723)
+        for probe in ["がいとうするごく", "しようするごく", "けんさくするごく"] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertTrue(m.first?.hasSuffix("する語句") == true, "\(probe): \(m)")
+        }
     }
 
     // さらいしゅう: 再来週(辞書 rank0、LM未収録)を seed で最終回答にし、さ+来週(さ来週/さ来襲…)の合成を出さない(2722)
