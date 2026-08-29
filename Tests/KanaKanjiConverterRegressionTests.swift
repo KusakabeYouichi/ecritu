@@ -12462,4 +12462,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertTrue(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).isEmpty, reading)
         }
     }
+
+    // たんご: 基底順 タンゴ/端午/丹後/単語 をユーザ指定の並びへ(2722)
+    func testRegressionRealLMTangoSeedOrder() throws {
+        try prepareRealLMDictionary()
+        let tango = converter.candidates(for: "たんご", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(tango.prefix(4)), ["単語", "丹後", "端午", "タンゴ"], "tango=\(tango)")
+    }
 }
