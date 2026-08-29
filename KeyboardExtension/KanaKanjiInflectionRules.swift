@@ -1080,12 +1080,14 @@ extension KanaKanjiConverter {
             // 関西弁・口語の否定縮約形(知らない→知らん, 知らなかった→知らんかった 等)。
             // 五段す(aForm=さ)だけは除外 — 託さん/托さん/話さん が敬称「さん」と衝突し、
             // たくさん→託さん のように日常入力を邪魔する(方言形の損失より害が大きい。2462)
+            // 「〜んで」(否定の連用: 選らんで=選らないで)は関西でも「ん」以外の形では稀で、
+            // 稀な動詞(選る/彫る=える)と組んで 選らんで/彫らんで を えらんで の候補に混ぜていた
+            // (ユーザ報告 2721)ため供給しない。ん/んかった/んかったら は残す
             if pattern.inflectionClass != InflectionClass.godanSu {
                 suffixes.append(contentsOf: [
                     pattern.aForm + "ん",
                     pattern.aForm + "んかった",
-                    pattern.aForm + "んかったら",
-                    pattern.aForm + "んで"
+                    pattern.aForm + "んかったら"
                 ])
             }
 

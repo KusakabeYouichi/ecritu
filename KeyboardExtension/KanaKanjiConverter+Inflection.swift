@@ -240,6 +240,18 @@ extension KanaKanjiConverter {
     // 寄与すれば含む)。連文節 b2b の「未代表族の追加供給」の優劣ゲートにだけ使う。
     // 関西弁・口語の否定縮約(する→せん 系)。文語サ変ゲート(derivedCandidates)で参照
     static let kansaiContractionReadingSuffixes: Set<String> = ["せん", "せんかった", "せんかったら", "せんで"]
+    // 関西弁の否定縮約(ん/んかった/んかったら、サ変 せん系)の全読み接尾辞。稀な読みの動詞には組まない
+    // ゲート(derivedCandidates)で参照する。ユーザ指摘(2721): 選る/彫る(える)の 選らん/彫らん は
+    // 書き言葉で使わず、えらん 等で常用語(選ぶ)の候補列を汚すだけ。知る/分かる 等の常用動詞は残す
+    static let kansaiNegativeContractionSuffixes: Set<String> = {
+        var set = kansaiContractionReadingSuffixes
+        for pattern in godanPatterns {
+            for tail in ["ん", "んかった", "んかったら"] {
+                set.insert(pattern.aForm + tail)
+            }
+        }
+        return set
+    }()
 
     // ウ音便の五段う動詞(促音便形 った/って を作らず、うた/うて が正)。
     // 現代語で頻出の 問う/請う/乞う を中心に、辞書に載る同型のみ
@@ -282,6 +294,10 @@ extension KanaKanjiConverter {
             return ([], Int.max)
         }
 
+        // 関西弁の否定縮約は、この読みでは稀な動詞(word_cost が収穫底値 10000 以上:
+        // える→選る 10096 / 彫る 11052。知る 7155 / 分かる 6927 は常用)には組まない(2721)
+        let isKansaiNegativeContraction = Self.kansaiNegativeContractionSuffixes.contains(rule.readingSuffix)
+        let baseWordCostsForKansaiGate = isKansaiNegativeContraction ? store.wordCosts(for: baseReading) : [:]
         var baseCandidates = candidatesForReading(
             baseReading,
             userDictionary: userDictionary,
@@ -292,6 +308,9 @@ extension KanaKanjiConverter {
             !isKatakanaEmphasisBaseCandidate($0, reading: baseReading)
                 // 連濁収穫の動詞基底(どる→取る 等)も派生させない(定義コメント参照。2419)
                 && !isRendakuHarvestVerbBase($0, baseReading: baseReading)
+                // 稀な読みの動詞には関西弁縮約を組まない(上の定義コメント参照。2721)
+                && !(isKansaiNegativeContraction
+                    && (baseWordCostsForKansaiGate[$0] ?? 0) >= CandidateScore.harvestTierWordCostFloor)
                 // 関西弁縮約(せん/せんで 等)は文語調の漢語一字サ変(有する/科する/幽する)とは
                 // 組まない — ゆうせんで→有せんで が 優先で を乗っ取っていた(2614)。
                 // 勉強する 等の語幹2字以上はそのまま(掃除せんで は自然な口語)
