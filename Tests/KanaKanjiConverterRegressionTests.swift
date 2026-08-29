@@ -12478,4 +12478,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
         }
     }
+
+    // くうしかない: 食う→しか のペアボーナスで 空しかない(unigram 差 1856)に勝つ(2722)
+    func testRegressionRealLMKuushikanaiPairBonus() throws {
+        try prepareRealLMDictionary()
+        let kuu = converter.multiClauseCandidates(for: "くうしかない", systemCandidateMode: .surface)
+        XCTAssertEqual(kuu.first, "食うしかない", "multi=\(kuu)")
+    }
 }
