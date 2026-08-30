@@ -1143,6 +1143,12 @@ extension KanaKanjiConverter {
                 Self.multiClauseColorTintStemSurfaces.contains(prev) {
                 penalty -= Self.multiClauseColorTintStemBeforeGakaruBonus
             }
+            // かな のか の直後の漢字名詞(定数コメント参照。2736)
+            if prev == "のか", prevReading == "のか",
+                isDictWord, !isInflectionDerived, !isDictionaryFormPredicate,
+                surface != reading, containsKanji(surface) {
+                penalty += Self.multiClauseNounAfterNokaPenalty
+            }
             // 連体の な の直後の述語(定数コメント参照。2731)
             if isDictionaryFormPredicate || isInflectionDerived,
                 prev != Self.multiClauseBOSMarker,
@@ -1468,408 +1474,445 @@ extension KanaKanjiConverter {
 
         // --- 4. Viterbi DP(ノード = (span, 表層)) ---
         let infinity = Int.max / 4
-        var best = Array(repeating: infinity, count: nodes.count)
-        var backPointer = Array(repeating: -1, count: nodes.count)
+        // DP 本体を関数化(2736): 最良経路のほか「先頭文節を seed の次順位に固定した最良経路」を
+        // 第2候補として作るために、開始ノードを1つに限定して再実行できるようにする
+        func solveViterbi(allowedStartNodeIndex: Int?) -> (best: [Int], backPointer: [Int], bestTotal: Int, bestEndIndex: Int, pathIndices: [Int])? {
+            var best = Array(repeating: infinity, count: nodes.count)
+            var backPointer = Array(repeating: -1, count: nodes.count)
 
-        for boundary in 1...n {
-            for idx in nodesEndingAt[boundary] {
-                let node = nodes[idx]
-                // スパン先頭(seed/辞書順で最優先)の活用形へのボーナス(定数コメント参照)。
-                // 読み末尾が名詞化の さ のとき、形容動詞語幹(語幹→な の bigram 実績)ノードへ
-                // ボーナス。される 分割由来の安い bigram(検挙→さ532 等)を持つサ変名詞は
-                // さ側のクランプだけでは勝てない(語幹差+bigram差 > クランプ余地)ための補完。
-                // 読み途中の さ(けんきょされた 等の受身)は末尾条件で対象外(2543)。
-                let naAdjectiveSaStemBonus: Int
-                if normalized.hasSuffix("さ"),
-                    node.end == n - 1,
-                    containsKanji(node.surface),
-                    let naCost = store.wordLMBigramCosts(for: [(node.surface, "な")])["\(node.surface)\tな"],
-                    naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
-                    naAdjectiveSaStemBonus = Self.multiClauseNaAdjectiveSaStemBonus
-                } else {
-                    naAdjectiveSaStemBonus = 0
-                }
-                // ノードキーは1回だけ生成して使い回す(以前は判定ごとに再生成しており、
-                // DP 全体で数千個の一時 String を作っていた。アリーナ肥大対策 2560)
-                let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
-                let preferredInflectionBonus = (preferredInflectedNodeKeys.contains(nodeKeySV)
-                    ? Self.multiClausePreferredInflectionBonus
-                    : 0)
-                    + (seedOrderNounNodeBonuses[nodeKeySV] ?? 0)
-                    + (singleTopLeadNodeBonuses[nodeKeySV] ?? 0)
-                    + naAdjectiveSaStemBonus
-                let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains(nodeKeySV)
-                let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains(nodeKeySV)
-                let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains(nodeKeySV)
-                let nodeScriptVariantPenalty = (scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
-                    : (scriptVariantDemotedNodeKeys.contains(nodeKeySV) ? 6000 : 0))
-                    + (politeSupplementDemotedNodeKeys.contains(nodeKeySV)
-                        ? Self.multiClausePoliteSupplementDemotion
-                        : 0)
-                    + (collocationDemotedNodeKeys.contains(nodeKeySV)
-                        ? Self.multiClauseCollocationDemotionPenalty
-                        : 0)
-                let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
-                // 〜ったん の丸ごと語 vs コピュラ過去+準体助詞(定数コメント参照)
-                let nodeTanContractionPenalty: Int = {
-                    guard node.reading.hasSuffix("ったん"),
-                        node.surface != node.reading,
-                        !node.isInflectionDerived,
-                        node.end < n else {
-                        return 0
-                    }
-                    let rest = String(chars[node.end...])
-                    for follower in ["だろう", "だろ", "でしょう", "でしょ"] where rest.hasPrefix(follower) {
-                        return Self.multiClauseTanContractionSplitPenalty
-                    }
-                    return 0
-                }()
-                if node.start == 0 {
-                    // 文頭の形式名詞読みは実質名詞(定数コメント参照)。かな側に減点して漢字を優先
-                    // こと は直後に格助詞・係助詞が続く形(ことがある/ことでもなく/ことになる)が
-                    // 形式名詞用法でかなが正書。実質名詞は「事の起こり」(の+名詞)や
-                    // 「事あるごとに」(助詞なしで述語が続く)なので、直後が の または
-                    // 助詞以外なら実質名詞として扱う。とき は文頭で接尾辞用法になることが
-                    // 稀なので無条件に漢字を優先する(2459)
-                    let isFormalKotoUsage: Bool = {
-                        guard node.reading == "こと", node.end < n else {
-                            return false
-                        }
-                        let next = chars[node.end]
-                        if next == "の" {
-                            return false
-                        }
-                        return Self.multiClauseCaseParticleSurfaces.contains(String(next))
-                    }()
-                    let substantivePenalty = (
-                        Self.multiClauseSubstantiveNounReadings.contains(node.reading)
-                            && node.surface == node.reading
-                            && !isFormalKotoUsage
-                    ) ? Self.multiClauseSubstantiveNounKanaPenalty : 0
-                    let cost = transitionCost(
-                        prev: Self.multiClauseBOSMarker,
-                        prevAuxTail: nil,
-                        surface: node.surface,
-                        reading: node.reading,
-                        isDictWord: node.isDictWord,
-                        isCurated: node.isCurated,
-                        isInflectionDerived: node.isInflectionDerived,
-                        wordCost: node.wordCost,
-                        isDictionaryFormPredicate: node.isDictionaryFormPredicate,
-                        isShortCuratedFragment: nodeIsShortCuratedFragment,
-                        isCollocationPreferredKana: nodeIsCollocationPreferredKana,
-                        isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
-                        scriptVariantPenalty: nodeScriptVariantPenalty,
-                        isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
-                    ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
-                    if cost < best[idx] {
-                        best[idx] = cost
-                        backPointer[idx] = -1
-                    }
-                }
-                for prevIdx in nodesEndingAt[node.start] {
-                    let prevCost = best[prevIdx]
-                    if prevCost >= infinity {
-                        continue
-                    }
-                    let prevNode = nodes[prevIdx]
-                    let prevDeniesOutgoingBigram = Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
-                        .contains(prevNode.reading) ?? false
-                    var cost = prevCost + transitionCost(
-                        prev: prevNode.surface,
-                        prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),
-                        surface: node.surface,
-                        reading: node.reading,
-                        isDictWord: node.isDictWord,
-                        isCurated: node.isCurated,
-                        isInflectionDerived: node.isInflectionDerived,
-                        wordCost: node.wordCost,
-                        isDictionaryFormPredicate: node.isDictionaryFormPredicate,
-                        prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
-                        prevIsInflectionDerived: prevNode.isInflectionDerived,
-                        prevReading: prevNode.reading,
-                        isShortCuratedFragment: nodeIsShortCuratedFragment,
-                        isCollocationPreferredKana: nodeIsCollocationPreferredKana,
-                        isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
-                        scriptVariantPenalty: nodeScriptVariantPenalty,
-                        prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
-                        isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
-                    ) - preferredInflectionBonus + nodeTanContractionPenalty
-                    // 連用形+に(目的)は移動動詞が続くときの用法。文末でも格助詞直後の活用割引
-                    // (5000)が効くと 千島を裂きに が 千島を先に(を→先4557+先→に532)を
-                    // 89 差で押し切るため、文末に限り割引を取り消して素の OOV 値に戻す。
-                    if node.end == n, renyouNiNodeKeys.contains(nodeKeySV),
-                        Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
-                        cost += Self.multiClauseInflectionDerivedOOVCost
-                            - Self.multiClauseInflectionAfterParticleCost
-                    }
-                    // 名詞直後の裸のかな「な」は形容動詞語幹にしか付かない(定数コメント参照)。
-                    // ただし直後が の/ん(なので/なのは/なのに/なんです)は断定の助動詞 な
-                    // (だ の連体形)で全名詞に付くため対象外 ─ 除外しないと
-                    // ひらがななのは→平仮名夏乃波 のように名前へ流れる。
-                    if node.surface == "な", node.reading == "な",
-                        !(node.end < n && (chars[node.end] == "の" || chars[node.end] == "ん")),
-                        !prevNode.isInflectionDerived,
-                        !prevNode.isDictionaryFormPredicate,
-                        !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
-                        (bigramCosts[prevNode.surface + "\tな"] ?? Int.max)
-                            > Self.multiClauseNaAdjectiveBigramThreshold {
-                        cost += Self.multiClauseNaAfterNonNaAdjectivePenalty
-                    }
-                    // 終端の単独母音読みの漢字ノードは、直前ノード読み末尾と同母音なら
-                    // 引き伸ばし表記の乗っ取り(いいねえ→いいね画。定数コメント参照)。
-                    if node.end == n, node.surface != node.reading,
-                        node.reading.count == 1,
-                        let nodeVowel = node.reading.first.flatMap({ Self.multiClauseVowelByKana[$0] }),
-                        let prevLastKana = prevNode.reading.last,
-                        Self.multiClauseVowelByKana[prevLastKana] == nodeVowel {
-                        cost += Self.multiClauseProlongedVowelKanjiPenalty
-                    }
-                    // 入力末尾の裸の接続助詞「し」は述語直後にしか立てない(定数コメント参照)。
-                    // 文中の し はサ変の連用形(勉強し+まくり)なので対象外にする。
-                    if node.end == n, node.reading == "し", node.surface == "し",
-                        !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
-                        cost += Self.multiClauseKanaShiAfterNonPredicatePenalty
-                    }
-                    // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
-                    // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
-                    if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
-                        Self.multiClauseFormalNounKanaReadings.contains(node.reading),
-                        node.surface != node.reading {
-                        cost += Self.multiClauseFormalNounKanjiPenalty
-                    }
-                    // 連用形+に(目的)の直後は移動動詞(来る/行く 系)が来る(食べに来た/飲みに行く)。
-                    // 前ノードが b5 の 連用形+に なら、移動動詞にボーナスを与え 北 等の名詞化を退ける。
-                    if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
-                        Self.isMotionVerbSurface(node.surface) {
-                        cost -= Self.multiClauseRenyouNiMotionVerbBonus
-                    }
-                    // のだ縮約の準体助詞 ん(定数コメント参照)。述語(活用派生)の直後に限る。
-                    if node.reading == "ん", node.surface == "ん", prevNode.isInflectionDerived {
-                        cost -= Self.multiClauseNominalizerNContractionBonus
-                    }
-                    // のだ縮約の継続(ん の直後の だ 始まりかな: だ/だが/だけど。定数コメント参照)。
-                    // 単独 ん ノードは語頭禁止の免除条件により述語直後にしか生き残らない
-                    if prevNode.surface == "ん", prevNode.reading == "ん",
-                        node.surface == node.reading,
-                        node.reading.first == "だ" {
-                        cost -= Self.multiClauseNominalizerNDaContinuationBonus
-                    }
-                    // かな て(接続助詞・補助動詞)は連用形接続(定数コメント参照)。
-                    if node.reading.first == "て", node.surface == node.reading,
-                        !node.isInflectionDerived,
-                        !prevNode.isInflectionDerived,
-                        !prevNode.isDictionaryFormPredicate,
-                        let derivedForExtendedSpan =
-                            inflectedSurfacesBySpan["\(prevNode.start)-\(prevNode.end + 1)"],
-                        containsKanji(prevNode.surface),
-                        !derivedForExtendedSpan.contains(prevNode.surface + "て") {
-                        cost += Self.multiClauseKanaTeAfterNonPredicatePenalty
-                    }
-                    // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
-                    // 鳥忘れている に勝たせる。
-                    if compoundVerbRenyouNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
-                        node.isInflectionDerived || node.isDictionaryFormPredicate {
-                        cost -= Self.multiClauseCompoundVerbRenyouBonus
-                    }
-                    // 格助詞 に 直後のカ変(来る)活用は移動の到着点用法で最頻(職場に来て/こっちに来た)。
-                    // 同読みの一段 着る はを格が普通(服を着て)なので、に 直後に限り来る側を押し上げる。
-                    // カ変明示供給ノード(kuru map 一致)に限定し、来手 等の辞書同音や 行/言(いって)には
-                    // 触れない。上に着て(重ね着)は稀用法として許容する。連用形+に(飲みに)の直後にも
-                    // 等しく与え、のみ+に+来た が 飲みに+来た を新ボーナス差で逆転しないようにする。
-                    if (prevNode.surface == "に" && prevNode.reading == "に")
-                        || renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
-                        node.isInflectionDerived,
-                        Self.multiClauseKuruFormSurfaces[node.reading] == node.surface {
-                        cost -= Self.multiClauseNiKuruArrivalBonus
-                    }
-                    // 同音異義 あう の出し分け(best-effort): 現ノードが あう活用(会う/合う)で
-                    // 直前が「に」なら、その前の名詞の人物性で優先を決める。人物→会う、
-                    // それ以外→合う。非優先側の表層に減点(前の名詞は backPointer で辿る)。
-                    if let auKanji = Self.auVerbLeadingKanji(of: node.surface),
-                        Self.multiClauseAuVerbReadings.contains(node.reading),
-                        prevNode.reading == "に" || prevNode.reading == "が" {
-                        let nounIsPerson: Bool
-                        if backPointer[prevIdx] >= 0 {
-                            nounIsPerson = Self.isPersonLikeNounSurface(nodes[backPointer[prevIdx]].surface)
-                        } else {
-                            nounIsPerson = false
-                        }
-                        // 人物なら 合(=非会)に減点、非人物なら 会 に減点。
-                        if nounIsPerson, auKanji == "合" {
-                            cost += Self.multiClauseAuPersonMismatchPenalty
-                        } else if !nounIsPerson, auKanji == "会" {
-                            cost += Self.multiClauseAuPersonMismatchPenalty
-                        }
-                    }
-                    // 敬称 さん/さま は数字の後以外では 山/三/桟 等の漢字接尾にならない。
-                    // 名前+さん(かな敬称)を優先するため漢字表層に減点(数字直後は免除)。
-                    // 例外: 地域接尾(県/道/府/都 等)直後の 産 は産地表記(愛知県産)なので
-                    // 減点せず、逆に かな敬称(愛知県さん)より優先するボーナスを与える(2410)。
-                    if Self.multiClauseHonorificSuffixReadings.contains(node.reading),
+            for boundary in 1...n {
+                for idx in nodesEndingAt[boundary] {
+                    let node = nodes[idx]
+                    // スパン先頭(seed/辞書順で最優先)の活用形へのボーナス(定数コメント参照)。
+                    // 読み末尾が名詞化の さ のとき、形容動詞語幹(語幹→な の bigram 実績)ノードへ
+                    // ボーナス。される 分割由来の安い bigram(検挙→さ532 等)を持つサ変名詞は
+                    // さ側のクランプだけでは勝てない(語幹差+bigram差 > クランプ余地)ための補完。
+                    // 読み途中の さ(けんきょされた 等の受身)は末尾条件で対象外(2543)。
+                    let naAdjectiveSaStemBonus: Int
+                    if normalized.hasSuffix("さ"),
+                        node.end == n - 1,
                         containsKanji(node.surface),
-                        !Self.isNumericContextForHonorific(prevSurface: prevNode.surface, prevReading: prevNode.reading) {
-                        if node.surface == "産",
-                            let prevLast = prevNode.surface.last,
-                            KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLast) {
+                        let naCost = store.wordLMBigramCosts(for: [(node.surface, "な")])["\(node.surface)\tな"],
+                        naCost <= Self.multiClauseNaAdjectiveBigramThreshold {
+                        naAdjectiveSaStemBonus = Self.multiClauseNaAdjectiveSaStemBonus
+                    } else {
+                        naAdjectiveSaStemBonus = 0
+                    }
+                    // ノードキーは1回だけ生成して使い回す(以前は判定ごとに再生成しており、
+                    // DP 全体で数千個の一時 String を作っていた。アリーナ肥大対策 2560)
+                    let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
+                    let preferredInflectionBonus = (preferredInflectedNodeKeys.contains(nodeKeySV)
+                        ? Self.multiClausePreferredInflectionBonus
+                        : 0)
+                        + (seedOrderNounNodeBonuses[nodeKeySV] ?? 0)
+                        + (singleTopLeadNodeBonuses[nodeKeySV] ?? 0)
+                        + naAdjectiveSaStemBonus
+                    let nodeIsShortCuratedFragment = shortCuratedFragmentNodeKeys.contains(nodeKeySV)
+                    let nodeIsCollocationPreferredKana = collocationPreferredKanaNodeKeys.contains(nodeKeySV)
+                    let nodeIsCollocationPreferredVerb = collocationPreferredVerbNodeKeys.contains(nodeKeySV)
+                    let nodeScriptVariantPenalty = (scriptVariantSuppressedNodeKeys.contains(nodeKeySV) ? 100000
+                        : (scriptVariantDemotedNodeKeys.contains(nodeKeySV) ? 6000 : 0))
+                        + (politeSupplementDemotedNodeKeys.contains(nodeKeySV)
+                            ? Self.multiClausePoliteSupplementDemotion
+                            : 0)
+                        + (collocationDemotedNodeKeys.contains(nodeKeySV)
+                            ? Self.multiClauseCollocationDemotionPenalty
+                            : 0)
+                    let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
+                    // 〜ったん の丸ごと語 vs コピュラ過去+準体助詞(定数コメント参照)
+                    let nodeTanContractionPenalty: Int = {
+                        guard node.reading.hasSuffix("ったん"),
+                            node.surface != node.reading,
+                            !node.isInflectionDerived,
+                            node.end < n else {
+                            return 0
+                        }
+                        let rest = String(chars[node.end...])
+                        for follower in ["だろう", "だろ", "でしょう", "でしょ"] where rest.hasPrefix(follower) {
+                            return Self.multiClauseTanContractionSplitPenalty
+                        }
+                        return 0
+                    }()
+                    if node.start == 0, allowedStartNodeIndex == nil || allowedStartNodeIndex == idx {
+                        // 文頭の形式名詞読みは実質名詞(定数コメント参照)。かな側に減点して漢字を優先
+                        // こと は直後に格助詞・係助詞が続く形(ことがある/ことでもなく/ことになる)が
+                        // 形式名詞用法でかなが正書。実質名詞は「事の起こり」(の+名詞)や
+                        // 「事あるごとに」(助詞なしで述語が続く)なので、直後が の または
+                        // 助詞以外なら実質名詞として扱う。とき は文頭で接尾辞用法になることが
+                        // 稀なので無条件に漢字を優先する(2459)
+                        let isFormalKotoUsage: Bool = {
+                            guard node.reading == "こと", node.end < n else {
+                                return false
+                            }
+                            let next = chars[node.end]
+                            if next == "の" {
+                                return false
+                            }
+                            return Self.multiClauseCaseParticleSurfaces.contains(String(next))
+                        }()
+                        let substantivePenalty = (
+                            Self.multiClauseSubstantiveNounReadings.contains(node.reading)
+                                && node.surface == node.reading
+                                && !isFormalKotoUsage
+                        ) ? Self.multiClauseSubstantiveNounKanaPenalty : 0
+                        let cost = transitionCost(
+                            prev: Self.multiClauseBOSMarker,
+                            prevAuxTail: nil,
+                            surface: node.surface,
+                            reading: node.reading,
+                            isDictWord: node.isDictWord,
+                            isCurated: node.isCurated,
+                            isInflectionDerived: node.isInflectionDerived,
+                            wordCost: node.wordCost,
+                            isDictionaryFormPredicate: node.isDictionaryFormPredicate,
+                            isShortCuratedFragment: nodeIsShortCuratedFragment,
+                            isCollocationPreferredKana: nodeIsCollocationPreferredKana,
+                            isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
+                            scriptVariantPenalty: nodeScriptVariantPenalty,
+                            isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
+                        ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
+                        if cost < best[idx] {
+                            best[idx] = cost
+                            backPointer[idx] = -1
+                        }
+                    }
+                    for prevIdx in nodesEndingAt[node.start] {
+                        let prevCost = best[prevIdx]
+                        if prevCost >= infinity {
+                            continue
+                        }
+                        let prevNode = nodes[prevIdx]
+                        let prevDeniesOutgoingBigram = Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
+                            .contains(prevNode.reading) ?? false
+                        var cost = prevCost + transitionCost(
+                            prev: prevNode.surface,
+                            prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),
+                            surface: node.surface,
+                            reading: node.reading,
+                            isDictWord: node.isDictWord,
+                            isCurated: node.isCurated,
+                            isInflectionDerived: node.isInflectionDerived,
+                            wordCost: node.wordCost,
+                            isDictionaryFormPredicate: node.isDictionaryFormPredicate,
+                            prevIsDictionaryFormPredicate: prevNode.isDictionaryFormPredicate,
+                            prevIsInflectionDerived: prevNode.isInflectionDerived,
+                            prevReading: prevNode.reading,
+                            isShortCuratedFragment: nodeIsShortCuratedFragment,
+                            isCollocationPreferredKana: nodeIsCollocationPreferredKana,
+                            isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
+                            scriptVariantPenalty: nodeScriptVariantPenalty,
+                            prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
+                            isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
+                        ) - preferredInflectionBonus + nodeTanContractionPenalty
+                        // 連用形+に(目的)は移動動詞が続くときの用法。文末でも格助詞直後の活用割引
+                        // (5000)が効くと 千島を裂きに が 千島を先に(を→先4557+先→に532)を
+                        // 89 差で押し切るため、文末に限り割引を取り消して素の OOV 値に戻す。
+                        if node.end == n, renyouNiNodeKeys.contains(nodeKeySV),
+                            Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
+                            cost += Self.multiClauseInflectionDerivedOOVCost
+                                - Self.multiClauseInflectionAfterParticleCost
+                        }
+                        // 名詞直後の裸のかな「な」は形容動詞語幹にしか付かない(定数コメント参照)。
+                        // ただし直後が の/ん(なので/なのは/なのに/なんです)は断定の助動詞 な
+                        // (だ の連体形)で全名詞に付くため対象外 ─ 除外しないと
+                        // ひらがななのは→平仮名夏乃波 のように名前へ流れる。
+                        if node.surface == "な", node.reading == "な",
+                            !(node.end < n && (chars[node.end] == "の" || chars[node.end] == "ん")),
+                            !prevNode.isInflectionDerived,
+                            !prevNode.isDictionaryFormPredicate,
+                            !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
+                            (bigramCosts[prevNode.surface + "\tな"] ?? Int.max)
+                                > Self.multiClauseNaAdjectiveBigramThreshold {
+                            cost += Self.multiClauseNaAfterNonNaAdjectivePenalty
+                        }
+                        // 終端の単独母音読みの漢字ノードは、直前ノード読み末尾と同母音なら
+                        // 引き伸ばし表記の乗っ取り(いいねえ→いいね画。定数コメント参照)。
+                        if node.end == n, node.surface != node.reading,
+                            node.reading.count == 1,
+                            let nodeVowel = node.reading.first.flatMap({ Self.multiClauseVowelByKana[$0] }),
+                            let prevLastKana = prevNode.reading.last,
+                            Self.multiClauseVowelByKana[prevLastKana] == nodeVowel {
+                            cost += Self.multiClauseProlongedVowelKanjiPenalty
+                        }
+                        // 入力末尾の裸の接続助詞「し」は述語直後にしか立てない(定数コメント参照)。
+                        // 文中の し はサ変の連用形(勉強し+まくり)なので対象外にする。
+                        if node.end == n, node.reading == "し", node.surface == "し",
+                            !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
+                            cost += Self.multiClauseKanaShiAfterNonPredicatePenalty
+                        }
+                        // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
+                        // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
+                        if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
+                            Self.multiClauseFormalNounKanaReadings.contains(node.reading),
+                            node.surface != node.reading {
+                            cost += Self.multiClauseFormalNounKanjiPenalty
+                        }
+                        // 連用形+に(目的)の直後は移動動詞(来る/行く 系)が来る(食べに来た/飲みに行く)。
+                        // 前ノードが b5 の 連用形+に なら、移動動詞にボーナスを与え 北 等の名詞化を退ける。
+                        if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                            Self.isMotionVerbSurface(node.surface) {
+                            cost -= Self.multiClauseRenyouNiMotionVerbBonus
+                        }
+                        // のだ縮約の準体助詞 ん(定数コメント参照)。述語(活用派生)の直後に限る。
+                        if node.reading == "ん", node.surface == "ん", prevNode.isInflectionDerived {
+                            cost -= Self.multiClauseNominalizerNContractionBonus
+                        }
+                        // のだ縮約の継続(ん の直後の だ 始まりかな: だ/だが/だけど。定数コメント参照)。
+                        // 単独 ん ノードは語頭禁止の免除条件により述語直後にしか生き残らない
+                        if prevNode.surface == "ん", prevNode.reading == "ん",
+                            node.surface == node.reading,
+                            node.reading.first == "だ" {
+                            cost -= Self.multiClauseNominalizerNDaContinuationBonus
+                        }
+                        // かな て(接続助詞・補助動詞)は連用形接続(定数コメント参照)。
+                        if node.reading.first == "て", node.surface == node.reading,
+                            !node.isInflectionDerived,
+                            !prevNode.isInflectionDerived,
+                            !prevNode.isDictionaryFormPredicate,
+                            let derivedForExtendedSpan =
+                                inflectedSurfacesBySpan["\(prevNode.start)-\(prevNode.end + 1)"],
+                            containsKanji(prevNode.surface),
+                            !derivedForExtendedSpan.contains(prevNode.surface + "て") {
+                            cost += Self.multiClauseKanaTeAfterNonPredicatePenalty
+                        }
+                        // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
+                        // 鳥忘れている に勝たせる。
+                        if compoundVerbRenyouNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                            node.isInflectionDerived || node.isDictionaryFormPredicate {
+                            cost -= Self.multiClauseCompoundVerbRenyouBonus
+                        }
+                        // 格助詞 に 直後のカ変(来る)活用は移動の到着点用法で最頻(職場に来て/こっちに来た)。
+                        // 同読みの一段 着る はを格が普通(服を着て)なので、に 直後に限り来る側を押し上げる。
+                        // カ変明示供給ノード(kuru map 一致)に限定し、来手 等の辞書同音や 行/言(いって)には
+                        // 触れない。上に着て(重ね着)は稀用法として許容する。連用形+に(飲みに)の直後にも
+                        // 等しく与え、のみ+に+来た が 飲みに+来た を新ボーナス差で逆転しないようにする。
+                        if (prevNode.surface == "に" && prevNode.reading == "に")
+                            || renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                            node.isInflectionDerived,
+                            Self.multiClauseKuruFormSurfaces[node.reading] == node.surface {
+                            cost -= Self.multiClauseNiKuruArrivalBonus
+                        }
+                        // 同音異義 あう の出し分け(best-effort): 現ノードが あう活用(会う/合う)で
+                        // 直前が「に」なら、その前の名詞の人物性で優先を決める。人物→会う、
+                        // それ以外→合う。非優先側の表層に減点(前の名詞は backPointer で辿る)。
+                        if let auKanji = Self.auVerbLeadingKanji(of: node.surface),
+                            Self.multiClauseAuVerbReadings.contains(node.reading),
+                            prevNode.reading == "に" || prevNode.reading == "が" {
+                            let nounIsPerson: Bool
+                            if backPointer[prevIdx] >= 0 {
+                                nounIsPerson = Self.isPersonLikeNounSurface(nodes[backPointer[prevIdx]].surface)
+                            } else {
+                                nounIsPerson = false
+                            }
+                            // 人物なら 合(=非会)に減点、非人物なら 会 に減点。
+                            if nounIsPerson, auKanji == "合" {
+                                cost += Self.multiClauseAuPersonMismatchPenalty
+                            } else if !nounIsPerson, auKanji == "会" {
+                                cost += Self.multiClauseAuPersonMismatchPenalty
+                            }
+                        }
+                        // 敬称 さん/さま は数字の後以外では 山/三/桟 等の漢字接尾にならない。
+                        // 名前+さん(かな敬称)を優先するため漢字表層に減点(数字直後は免除)。
+                        // 例外: 地域接尾(県/道/府/都 等)直後の 産 は産地表記(愛知県産)なので
+                        // 減点せず、逆に かな敬称(愛知県さん)より優先するボーナスを与える(2410)。
+                        if Self.multiClauseHonorificSuffixReadings.contains(node.reading),
+                            containsKanji(node.surface),
+                            !Self.isNumericContextForHonorific(prevSurface: prevNode.surface, prevReading: prevNode.reading) {
+                            if node.surface == "産",
+                                let prevLast = prevNode.surface.last,
+                                KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLast) {
+                                cost -= Self.multiClauseRegionalProduceBonus
+                            } else {
+                                cost += Self.multiClauseHonorificKanjiPenalty
+                            }
+                        }
+                        // 地域接尾(県/道/府/都/市 等)直後の 人(じん) は住人表記(京都人/大阪人)。
+                        // 人(にん/じん) は読み跨ぎ借用の遮断で unigram+床評価になり、同音の
+                        // 陣/尽/腎 等に負けるため、産 と同じボーナスで是正する(2434)
+                        if node.reading == "じん", node.surface == "人",
+                            let prevLastForJin = prevNode.surface.last,
+                            KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLastForJin) {
                             cost -= Self.multiClauseRegionalProduceBonus
-                        } else {
-                            cost += Self.multiClauseHonorificKanjiPenalty
                         }
-                    }
-                    // 地域接尾(県/道/府/都/市 等)直後の 人(じん) は住人表記(京都人/大阪人)。
-                    // 人(にん/じん) は読み跨ぎ借用の遮断で unigram+床評価になり、同音の
-                    // 陣/尽/腎 等に負けるため、産 と同じボーナスで是正する(2434)
-                    if node.reading == "じん", node.surface == "人",
-                        let prevLastForJin = prevNode.surface.last,
-                        KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLastForJin) {
-                        cost -= Self.multiClauseRegionalProduceBonus
-                    }
-                    // 述語(活用派生/辞書形)直後の かち は「〜する価値ない」等の形式名詞的
-                    // 用法が主。短span床の僅差(価値7191 vs 勝6795)で 勝/勝ち に負けるため
-                    // 価値 にボーナス(行く価値ないね 対策。2434)
-                    // 連体の の 直後の いち は 位置 が主(定数コメント参照。2525)
-                    if node.reading == "いち", node.surface == "位置",
-                        prevNode.surface == "の" {
-                        cost -= Self.multiClauseNoIchiPositionBonus
-                    }
-                    if node.reading == "かち", node.surface == "価値",
-                        prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
-                        cost -= Self.multiClausePredicateKachiValueBonus
-                    }
-                    // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
-                    // 助詞(から/まで 等)直後の な は正当(遅いからな)なので免除する。
-                    if node.end == n,
-                        node.reading == "な",
-                        node.surface == "な",
-                        !Self.isPredicateLikePrevForConditional(prevNode),
-                        !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
-                        cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
-                    }
-                    // 述語直後の 人(にん/じん) は文法として接続しない(定数コメント参照)。
-                    if node.surface == "人",
-                        Self.multiClausePersonSuffixSinoReadings.contains(node.reading),
-                        Self.isPredicateLikePrevForConditional(prevNode) {
-                        cost += Self.multiClauseForbiddenPenaltyCost
-                    }
-                    // 連体詞直後の かんじ→漢字 に小減点(定数コメント参照。こんな感じ を最良に)。
-                    if node.reading == "かんじ",
-                        node.surface == "漢字",
-                        Self.multiClauseDemonstrativeSurfaces.contains(prevNode.surface) {
-                        cost += Self.multiClauseDemonstrativeKanjiPenalty
-                    }
-                    // 時間経過の名詞(時間/月日 等。助詞 が/も/は 任意)直後の たつ 活用は
-                    // 経つ が正書。経 以外の たつ 族表層(立/建 等)に減点(あう の人物性
-                    // 判定と同型。時間が経ってたら を最良に)(2408)。
-                    if let tatsuKanji = Self.tatsuVerbLeadingKanji(of: node.surface),
-                        tatsuKanji != "経",
-                        node.reading.hasPrefix("たっ") || node.reading.hasPrefix("たつ") || node.reading.hasPrefix("たち") {
-                        let nounSurface: String?
-                        if prevNode.surface == "が" || prevNode.surface == "も" || prevNode.surface == "は" {
-                            nounSurface = backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil
-                        } else {
-                            nounSurface = prevNode.surface
+                        // 述語(活用派生/辞書形)直後の かち は「〜する価値ない」等の形式名詞的
+                        // 用法が主。短span床の僅差(価値7191 vs 勝6795)で 勝/勝ち に負けるため
+                        // 価値 にボーナス(行く価値ないね 対策。2434)
+                        // 連体の の 直後の いち は 位置 が主(定数コメント参照。2525)
+                        if node.reading == "いち", node.surface == "位置",
+                            prevNode.surface == "の" {
+                            cost -= Self.multiClauseNoIchiPositionBonus
                         }
-                        if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface) {
-                            cost += Self.multiClauseAuPersonMismatchPenalty
+                        if node.reading == "かち", node.surface == "価値",
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
+                            cost -= Self.multiClausePredicateKachiValueBonus
                         }
+                        // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
+                        // 助詞(から/まで 等)直後の な は正当(遅いからな)なので免除する。
+                        if node.end == n,
+                            node.reading == "な",
+                            node.surface == "な",
+                            !Self.isPredicateLikePrevForConditional(prevNode),
+                            !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
+                            cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
+                        }
+                        // 述語直後の 人(にん/じん) は文法として接続しない(定数コメント参照)。
+                        if node.surface == "人",
+                            Self.multiClausePersonSuffixSinoReadings.contains(node.reading),
+                            Self.isPredicateLikePrevForConditional(prevNode) {
+                            cost += Self.multiClauseForbiddenPenaltyCost
+                        }
+                        // 連体詞直後の かんじ→漢字 に小減点(定数コメント参照。こんな感じ を最良に)。
+                        if node.reading == "かんじ",
+                            node.surface == "漢字",
+                            Self.multiClauseDemonstrativeSurfaces.contains(prevNode.surface) {
+                            cost += Self.multiClauseDemonstrativeKanjiPenalty
+                        }
+                        // 時間経過の名詞(時間/月日 等。助詞 が/も/は 任意)直後の たつ 活用は
+                        // 経つ が正書。経 以外の たつ 族表層(立/建 等)に減点(あう の人物性
+                        // 判定と同型。時間が経ってたら を最良に)(2408)。
+                        if let tatsuKanji = Self.tatsuVerbLeadingKanji(of: node.surface),
+                            tatsuKanji != "経",
+                            node.reading.hasPrefix("たっ") || node.reading.hasPrefix("たつ") || node.reading.hasPrefix("たち") {
+                            let nounSurface: String?
+                            if prevNode.surface == "が" || prevNode.surface == "も" || prevNode.surface == "は" {
+                                nounSurface = backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil
+                            } else {
+                                nounSurface = prevNode.surface
+                            }
+                            if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface) {
+                                cost += Self.multiClauseAuPersonMismatchPenalty
+                            }
+                        }
+                        // の を挟む連語(甲州の果皮 等。定数コメント参照。2736)
+                    if prevNode.surface == "の", backPointer[prevIdx] >= 0,
+                        let collocationBonus = Self.multiClauseAcrossNoCollocationBonuses[nodes[backPointer[prevIdx]].surface + "\t" + node.surface] {
+                        cost -= collocationBonus
                     }
                     // 色+が+漢字(買った/勝った): がかった のかなに委ねる(定数コメント参照。2731)
-                    if prevNode.surface == "が", node.reading.hasPrefix("か"), containsKanji(node.surface),
-                        backPointer[prevIdx] >= 0,
-                        Self.multiClauseColorTintStemSurfaces.contains(nodes[backPointer[prevIdx]].surface) {
-                        cost += Self.multiClauseKanjiAfterColorGaPenalty
-                    }
-                    if cost < best[idx] {
-                        best[idx] = cost
-                        backPointer[idx] = prevIdx
-                    } else if cost == best[idx],
-                        backPointer[idx] >= 0,
-                        Self.isNonNativeScriptSurface(nodes[backPointer[idx]].surface),
-                        !Self.isNonNativeScriptSurface(prevNode.surface) {
-                        // 完全同コストのタイブレークは非ネイティブ表層(カタカナのみ/ラテン字のみ)
-                        // でない経路を優先する。かな入力に対して同じ証拠の強さならカタカナ・
-                        // ラテン字化しない方が自然(法律かえるのは: 変える経路 6024+1810 と
-                        // カエル経路 6927+907 が 7834 で完全タイ → 変える を採る。かれらは:
-                        // curated 彼ら/カレラ/Carrera が 1500 で完全タイ → 彼ら を採る。
-                        // 従来はノード列挙順で先に処理された方が勝っていた)。
-                        backPointer[idx] = prevIdx
+                        if prevNode.surface == "が", node.reading.hasPrefix("か"), containsKanji(node.surface),
+                            backPointer[prevIdx] >= 0,
+                            Self.multiClauseColorTintStemSurfaces.contains(nodes[backPointer[prevIdx]].surface) {
+                            cost += Self.multiClauseKanjiAfterColorGaPenalty
+                        }
+                        if cost < best[idx] {
+                            best[idx] = cost
+                            backPointer[idx] = prevIdx
+                        } else if cost == best[idx],
+                            backPointer[idx] >= 0,
+                            Self.isNonNativeScriptSurface(nodes[backPointer[idx]].surface),
+                            !Self.isNonNativeScriptSurface(prevNode.surface) {
+                            // 完全同コストのタイブレークは非ネイティブ表層(カタカナのみ/ラテン字のみ)
+                            // でない経路を優先する。かな入力に対して同じ証拠の強さならカタカナ・
+                            // ラテン字化しない方が自然(法律かえるのは: 変える経路 6024+1810 と
+                            // カエル経路 6927+907 が 7834 で完全タイ → 変える を採る。かれらは:
+                            // curated 彼ら/カレラ/Carrera が 1500 で完全タイ → 彼ら を採る。
+                            // 従来はノード列挙順で先に処理された方が勝っていた)。
+                            backPointer[idx] = prevIdx
+                        }
                     }
                 }
             }
-        }
 
-        // --- 5. EOS 込みで最良の終端ノードを選ぶ ---
-        var bestTotal = infinity
-        var bestEndIndex = -1
-        // 同点タイブレーク: 文末が助詞(かな)の経路を優先する。EOS は unigram を持つため
-        // 文末実績のない名詞も uni+バックオフで文を終えられ、助詞終わりと完全同点になる
-        // ことがある(あめのひも: 紐+EOS と 日+も+EOS が同点で、列挙順により名詞側が
-        // 勝っていた)。同点時のみの介入なので他の均衡には影響しない。
-        var bestIsParticleFinal = false
-        for idx in nodesEndingAt[n] {
-            if best[idx] >= infinity {
-                continue
+            // --- 5. EOS 込みで最良の終端ノードを選ぶ ---
+            var bestTotal = infinity
+            var bestEndIndex = -1
+            // 同点タイブレーク: 文末が助詞(かな)の経路を優先する。EOS は unigram を持つため
+            // 文末実績のない名詞も uni+バックオフで文を終えられ、助詞終わりと完全同点になる
+            // ことがある(あめのひも: 紐+EOS と 日+も+EOS が同点で、列挙順により名詞側が
+            // 勝っていた)。同点時のみの介入なので他の均衡には影響しない。
+            var bestIsParticleFinal = false
+            for idx in nodesEndingAt[n] {
+                if best[idx] >= infinity {
+                    continue
+                }
+                var eosCost = transitionCost(
+                    prev: nodes[idx].surface,
+                    prevAuxTail: Self.auxTailForBigramBorrow(of: nodes[idx]),
+                    surface: Self.multiClauseEOSMarker,
+                    reading: "",
+                    isDictWord: true,
+                    isCurated: false,
+                    isInflectionDerived: false
+                )
+                // curated ノードは EOS 遷移を上限クランプ(定数コメント参照)。
+                if nodes[idx].isCurated {
+                    eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
+                }
+                var total = best[idx] + eosCost
+                // 文末終助詞クラスタの最長一致ボーナス: かなー(3字) を なー(2字) より優先する
+                // (こんないろかなー→色香+なー でなく 色+かなー。文末クラスタは最長で切るのが自然)。
+                // 長さ×400 の差分なので、辞書語が明確に安い場合(ばか+なー 等)は逆転しない。
+                if nodes[idx].surface == nodes[idx].reading,
+                    Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading) {
+                    total -= nodes[idx].reading.count * 400
+                }
+                // 文末が終助詞クラスタ読み(かな/かも 等)なのに漢字表層(仮名/哉/鴨)なのは不自然。
+                if Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading),
+                    nodes[idx].surface != nodes[idx].reading,
+                    !nodes[idx].isCurated {
+                    total += Self.multiClauseFinalParticleKanjiPenalty
+                }
+                // 文末 そう の全漢字表層(層/僧/草)への減点(定数コメント参照)。直前ノードの
+                // 表層がひらがな終わり(ほとんど/たぶん/これも 等)に限定 — 漢字名詞直後は
+                // 学生層/富裕層 等の生産的な複合なので減点しない(がくせいそう の防護)。
+                if Self.multiClauseSentenceFinalAllKanjiPenaltyReadings.contains(nodes[idx].reading),
+                    KanaKanjiConverter.isAllKanjiSurface(nodes[idx].surface),
+                    !nodes[idx].isCurated,
+                    backPointer[idx] >= 0,
+                    let prevLast = nodes[backPointer[idx]].surface.unicodeScalars.last,
+                    (0x3041...0x3096).contains(prevLast.value) {
+                    total += Self.multiClauseFinalParticleKanjiPenalty
+                }
+                let isParticleFinal = nodes[idx].surface == nodes[idx].reading
+                    && (Self.multiClauseCaseParticleSurfaces.contains(nodes[idx].surface)
+                        || Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading))
+                if total < bestTotal || (total == bestTotal && isParticleFinal && !bestIsParticleFinal) {
+                    bestTotal = total
+                    bestEndIndex = idx
+                    bestIsParticleFinal = isParticleFinal
+                }
             }
-            var eosCost = transitionCost(
-                prev: nodes[idx].surface,
-                prevAuxTail: Self.auxTailForBigramBorrow(of: nodes[idx]),
-                surface: Self.multiClauseEOSMarker,
-                reading: "",
-                isDictWord: true,
-                isCurated: false,
-                isInflectionDerived: false
-            )
-            // curated ノードは EOS 遷移を上限クランプ(定数コメント参照)。
-            if nodes[idx].isCurated {
-                eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
+            guard bestEndIndex >= 0 else {
+                return nil
             }
-            var total = best[idx] + eosCost
-            // 文末終助詞クラスタの最長一致ボーナス: かなー(3字) を なー(2字) より優先する
-            // (こんないろかなー→色香+なー でなく 色+かなー。文末クラスタは最長で切るのが自然)。
-            // 長さ×400 の差分なので、辞書語が明確に安い場合(ばか+なー 等)は逆転しない。
-            if nodes[idx].surface == nodes[idx].reading,
-                Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading) {
-                total -= nodes[idx].reading.count * 400
+
+            // --- 6. バックトラック(ノード列を保持) ---
+            var pathIndices: [Int] = []
+            var idx = bestEndIndex
+            while idx >= 0 {
+                pathIndices.append(idx)
+                idx = backPointer[idx]
             }
-            // 文末が終助詞クラスタ読み(かな/かも 等)なのに漢字表層(仮名/哉/鴨)なのは不自然。
-            if Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading),
-                nodes[idx].surface != nodes[idx].reading,
-                !nodes[idx].isCurated {
-                total += Self.multiClauseFinalParticleKanjiPenalty
-            }
-            // 文末 そう の全漢字表層(層/僧/草)への減点(定数コメント参照)。直前ノードの
-            // 表層がひらがな終わり(ほとんど/たぶん/これも 等)に限定 — 漢字名詞直後は
-            // 学生層/富裕層 等の生産的な複合なので減点しない(がくせいそう の防護)。
-            if Self.multiClauseSentenceFinalAllKanjiPenaltyReadings.contains(nodes[idx].reading),
-                KanaKanjiConverter.isAllKanjiSurface(nodes[idx].surface),
-                !nodes[idx].isCurated,
-                backPointer[idx] >= 0,
-                let prevLast = nodes[backPointer[idx]].surface.unicodeScalars.last,
-                (0x3041...0x3096).contains(prevLast.value) {
-                total += Self.multiClauseFinalParticleKanjiPenalty
-            }
-            let isParticleFinal = nodes[idx].surface == nodes[idx].reading
-                && (Self.multiClauseCaseParticleSurfaces.contains(nodes[idx].surface)
-                    || Self.multiClauseFinalParticleReadings.contains(nodes[idx].reading))
-            if total < bestTotal || (total == bestTotal && isParticleFinal && !bestIsParticleFinal) {
-                bestTotal = total
-                bestEndIndex = idx
-                bestIsParticleFinal = isParticleFinal
-            }
+            pathIndices.reverse()
+            return (best, backPointer, bestTotal, bestEndIndex, pathIndices)
         }
-        guard bestEndIndex >= 0 else {
+        guard let solved = solveViterbi(allowedStartNodeIndex: nil) else {
             return []
         }
-
-        // --- 6. バックトラック(ノード列を保持) ---
-        var pathIndices: [Int] = []
-        var idx = bestEndIndex
-        while idx >= 0 {
-            pathIndices.append(idx)
-            idx = backPointer[idx]
+        let best = solved.best
+        let backPointer = solved.backPointer
+        let bestTotal = solved.bestTotal
+        let bestEndIndex = solved.bestEndIndex
+        var pathIndices = solved.pathIndices
+        // 第2候補: 先頭文節が seed 先頭なら、seed 2番目の表層で始まる最良経路を残りごと再最適化して作る
+        // (こうしゅうのかひ: 甲州の果皮 の次に 講習の可否。1文節差し替えの変種では 講習の果皮 しか作れない。2736)
+        // 対象は先頭・次順位とも漢字の内容語(甲州/講習)に限る。かな識別との入れ替え(そこ/其処、水/みず、
+        // 日本/にほん)や など/等 まで作ると、LM の1文節変種(そこで産んだ 等)を押し出して退行した
+        var leadAlternativeJoined: String? = nil
+        if pathIndices.count >= 2 {
+            let lead = nodes[pathIndices[0]]
+            if containsKanji(lead.surface),
+                let seedList = KanaKanjiSeedDictionary.seed[lead.reading], seedList.first == lead.surface, seedList.count >= 2,
+                containsKanji(seedList[1]),
+                let altIdx = nodes.firstIndex(where: { $0.start == lead.start && $0.end == lead.end && $0.surface == seedList[1] }),
+                let alternative = solveViterbi(allowedStartNodeIndex: altIdx), alternative.pathIndices.count >= 2,
+                alternative.bestTotal - bestTotal <= Self.multiClauseLeadAlternativeMaxDelta {
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                if altJoined != normalized {
+                    leadAlternativeJoined = altJoined
+                }
+            }
         }
-        pathIndices.reverse()
         #if DEBUG
         // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
         if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
@@ -2195,6 +2238,9 @@ extension KanaKanjiConverter {
             lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
         }
         var results = suppressAllKanaBest ? [] : [joined]
+        if let leadAlternativeJoined, leadAlternativeJoined != joined, !results.contains(leadAlternativeJoined) {
+            results.append(leadAlternativeJoined)
+        }
         for variant in variants where !results.contains(variant.joined) {
             results.append(variant.joined)
             if results.count >= 1 + Self.multiClauseVariantLimit {

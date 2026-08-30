@@ -209,6 +209,16 @@ extension KanaKanjiConverter {
     }()
     static let multiClauseKanjiAfterColorGaPenalty = 3000
     static let multiClauseColorTintStemBeforeGakaruBonus = 2500
+    // かなの のか(疑問・説明の終端)の直後に漢字名詞は続かない(講習のか日 の か+日 断片。2736)。述語(食べる 等)や
+    // 活用派生、かな表層は対象外。単独の か(赤か青 の「または」)は正当な用法が多いので対象にしない
+    static let multiClauseNounAfterNokaPenalty = 3000
+    // 先頭文節を seed 2番目に固定した再最適化経路を第2候補に採る許容差(最良との合計コスト差。2736)
+    static let multiClauseLeadAlternativeMaxDelta = 6000
+    // の を挟む連語(前々ノード→現ノード)のボーナス(2736)。甲州の果皮: の→可否 5248 < の→果皮 5955 で 可否 が勝つが、
+    // 甲州 の後なら 果皮。かひ 全体を seed 順ボーナスで持ち上げると 講習の可否 まで 講習の果皮 になるため連語に限定
+    static let multiClauseAcrossNoCollocationBonuses: [String: Int] = [
+        "甲州\t果皮": 2500,
+    ]
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 
@@ -223,9 +233,6 @@ extension KanaKanjiConverter {
         "たる": 300,
         // こうしゅう: 公衆(5717、→の 1362)に 甲州(6633、→の 1506)が負ける。ワイン用途で 甲州 を連文節でも先頭に(2735)
         "こうしゅう": 1500,
-        // かひ: の→可否 5248 < の→果皮 5955。甲州の果皮 のために 果皮 を優先。800 では こうしゅうのかひのいろ が
-        // 甲州のか火の色(か+火 の1字断片)に割れたため 1500(2735)
-        "かひ": 1500,
         // なはし は 那覇市(wc10199=Sudachi の収穫底値帯)しか無く、那覇(7869)+し(2760)の
         // 分割の方が安い。連文節側も 那覇→市 / 市→水道 の bigram が未観測で止められず
         // 那覇し水道局 になる。実在の自治体名なので1ノードを勝たせる(2564)
