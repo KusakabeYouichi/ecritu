@@ -462,6 +462,24 @@ extension KanaKanjiConverter {
             }
         }
 
+        // 文語サ変(基底 Xす)の派生順は、対応する Xする の seed に従わせる(2740)。そうしちゃう は す 群(奏す/そうす)が
+        // する 群(seed: そうする/奏する)より先に走って 奏しちゃう が先着していた
+        if isClassicalSuBase, results.count >= 2,
+            let suruSeed = KanaKanjiSeedDictionary.seed[sahenNounReading + "する"] {
+            func seedIndex(_ base: String) -> Int {
+                guard base.hasSuffix("す") else { return Int.max }
+                return suruSeed.firstIndex(of: String(base.dropLast()) + "する") ?? Int.max
+            }
+            let order = contributingBases.indices.sorted { lhs, rhs in
+                let li = seedIndex(contributingBases[lhs]), ri = seedIndex(contributingBases[rhs])
+                return li != ri ? li < ri : lhs < rhs
+            }
+            if order != Array(results.indices) {
+                results = order.map { results[$0] }
+                contributingBases = order.map { contributingBases[$0] }
+            }
+        }
+
         let familyKey = contributingBases.isEmpty
             ? Int.max
             : (store.wordLMUnigramCosts(for: contributingBases).values.min() ?? Int.max)

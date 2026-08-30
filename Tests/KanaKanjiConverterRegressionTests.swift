@@ -12835,4 +12835,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let shiro = converter.candidates(for: "なんとかしろ", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(Array(shiro.prefix(2)), ["なんとかしろ", "何とかしろ"], "list=\(shiro)")
     }
+
+    // そうしちゃう: Sudachi の サ変 奏する/相する/草する が かな そう+しちゃう より前だった。seed でかな先頭、相/草 は suppr(2740)
+    func testRegressionRealLMSoushichauPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "そうしちゃう", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["そうしちゃう", "奏しちゃう"], "list=\(list)")
+        XCTAssertFalse(list.contains("相しちゃう") || list.contains("草しちゃう"), "list=\(list)")
+        XCTAssertEqual(converter.candidates(for: "そうする", limit: 3, systemCandidateMode: .surface).first, "そうする")
+    }
 }
