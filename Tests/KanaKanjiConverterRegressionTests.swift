@@ -12562,4 +12562,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(list.first, "痩せる", "list=\(list)")
         XCTAssertFalse(list.contains("瘠せる") || list.contains("瘦せる"), "list=\(list)")
     }
+
+    // れきしつ→礫質(vin.plist)。礫質土壌 は従来どおり(2731)
+    func testRekishitsuFromVin() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "れきしつ", limit: 3, systemCandidateMode: .surface).first, "礫質")
+        XCTAssertEqual(converter.candidates(for: "れきしつどじょう", limit: 3, systemCandidateMode: .surface).first, "礫質土壌")
+    }
 }
