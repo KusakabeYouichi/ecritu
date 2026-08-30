@@ -246,5 +246,6 @@
 	<dict><key>phrase</key><string>フリック</string><key>shortcut</key><string>ふりっく</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>文字化け</string><key>shortcut</key><string>もじばけ</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>デグレ</string><key>shortcut</key><string>でぐれ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>Dell</string><key>shortcut</key><string>でる</string></dict>	<!-- 企業名。単文節 でる は seed で 出る/でる/Dell/デル の順(ユーザ指定 2736) -->
 </array>
 </plist>
