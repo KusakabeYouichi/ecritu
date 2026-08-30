@@ -12553,4 +12553,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(m.first, expected, "\(probe): \(m)")
         }
     }
+
+    // やせる: 瘠せる/瘦せる(異体字・旧字体)は字形が似て選び間違えるので suppr(2731)
+    func testYaseruOldGlyphsSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "やせる", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "痩せる", "list=\(list)")
+        XCTAssertFalse(list.contains("瘠せる") || list.contains("瘦せる"), "list=\(list)")
+    }
 }
