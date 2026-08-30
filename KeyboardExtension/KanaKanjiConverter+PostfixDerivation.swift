@@ -270,6 +270,11 @@ extension KanaKanjiConverter {
                     if kaNaiChainKanaOnly {
                         stemCandidates = stemCandidates.filter { $0 == nextStem }
                     }
+                    // 1かなの語幹に対する1字カタカナ(で→デ、か→カ 等)は語幹にしない(2736)。辞書に で|デ rank1 があり、
+                    // でも で デも/デで のような合成が出ていた。カタカナ1字は名詞として助詞に付かない
+                    if nextStem.count == 1 {
+                        stemCandidates.removeAll { $0.count == 1 && Self.isKatakanaString($0) && Self.hiraganizedKanaOnlySurface($0) == nextStem }
+                    }
                     let nEndingFiltered = filterVerbStemFragmentCandidatesIfNeeded(
                         stemCandidates,
                         stemReading: nextStem,
