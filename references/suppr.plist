@@ -203,6 +203,9 @@
 	<dict><key>phrase</key><string>説ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 説く の可能形。解ける/溶ける と並ぶと紛らわしく実用頻度も低い(同上) -->
 	<dict><key>phrase</key><string>相する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(人相を見る)。そうしちゃう の候補に 相しちゃう が並び雑音(ユーザ指定 2740) -->
 	<dict><key>phrase</key><string>草する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(草稿を書く)。同上 -->
+	<dict><key>phrase</key><string>ススメる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- カタカナ強調の収穫。派生(ススメて/ススメていて)が常に3位に並ぶ雑音(ユーザ指定 2741) -->
+	<dict><key>phrase</key><string>ススめる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 交ぜ書き収穫。同上 -->
+	<dict><key>phrase</key><string>奬める</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 奨める の異体字(奬)。字形がそっくりで選び間違える(ユーザ指定 2741) -->
 	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南郷 の旧字体異体字収穫。見た目がほぼ同一で重複に見える -->
 	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- 会社 の旧字体(株式會社 等の合成にも混入していた) -->
