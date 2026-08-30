@@ -195,6 +195,7 @@
 	<dict><key>phrase</key><string>壘</string><key>shortcut</key><string>るい</string></dict>	<!-- 塁 の旧字体。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>瘠せる</string><key>shortcut</key><string>やせる</string></dict>	<!-- 痩せる の異体字(瘠)。字形が似て選び間違える(ユーザ指定 2731) -->
 	<dict><key>phrase</key><string>瘦せる</string><key>shortcut</key><string>やせる</string></dict>	<!-- 痩せる の旧字体(瘦)。同上 -->
+	<dict><key>phrase</key><string>少い</string><key>shortcut</key><string>すくない</string></dict>	<!-- 少ない の旧送り仮名。派生 少く/少かった が 少なく の隣に並び紛らわしい(ユーザ指定 2732) -->
 	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南郷 の旧字体異体字収穫。見た目がほぼ同一で重複に見える -->
 	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- 会社 の旧字体(株式會社 等の合成にも混入していた) -->

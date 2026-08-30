@@ -12611,6 +12611,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let list = converter.candidates(for: "すくなく", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(list.first, "少なく", "list=\(list)")
         XCTAssertFalse(list.prefix(3).contains("酸くなく") || list.contains("漉くなく") || list.contains("透くなく"), "list=\(list)")
+        // 少い(旧送り仮名)は suppr → 派生の 少く も出ない(2732)
+        XCTAssertFalse(list.contains("少く"), "list=\(list)")
+        XCTAssertFalse(converter.candidates(for: "すくない", limit: 8, systemCandidateMode: .surface).contains("少い"))
         // 名詞+ない/なく は残す
         XCTAssertTrue(converter.candidates(for: "もんだいなく", limit: 5, systemCandidateMode: .surface).contains("問題なく"))
     }
