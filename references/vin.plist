@@ -6184,6 +6184,7 @@
 	<dict><key>phrase</key><string>マセラシオン・カルボニック</string><key>shortcut</key><string>ませらしおんかるぼにっく</string></dict>
 	<dict><key>phrase</key><string>マセラシオン・フィナル・ア・ショー</string><key>shortcut</key><string>ませらしおんふぃなるあしょー</string></dict>
 	<dict><key>phrase</key><string>マルチ・リージョナル・ブレンド</string><key>shortcut</key><string>まるちりーじょなるぶれんど</string></dict>
+	<dict><key>phrase</key><string>マロラクティック</string><key>shortcut</key><string>まろらくてぃっく</string></dict>
 	<dict><key>phrase</key><string>マロラクティック醗酵</string><key>shortcut</key><string>まろらくてぃっくはっこう</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ヨーロッパ式醸造</string><key>shortcut</key><string>よーろっぱしきじょうぞう</string></dict>
 	<dict><key>phrase</key><string>ルミュアージュ</string><key>shortcut</key><string>るみゅあーじゅ</string></dict>
