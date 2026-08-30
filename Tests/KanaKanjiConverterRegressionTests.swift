@@ -12534,8 +12534,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         let single = converter.candidates(for: "せいほう", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "製法", "single=\(single)")
-        // 語+助詞1字のボーナス(2720)で は/を も 製法 先頭。の は 西方→の の bigram が強く LM に従う(西方の空 等)
-        for probe in ["せいほうは", "せいほうを"] {
+        // 語+助詞1字のボーナス(2720)で は/を も 製法 先頭。の は 西方→の 816 が強いので 製法→の のペアボーナス(2729)
+        for probe in ["せいほうは", "せいほうを", "せいほうの"] {
             let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
             XCTAssertEqual(m.first, "製法" + String(probe.last!), "\(probe): \(m)")
         }
