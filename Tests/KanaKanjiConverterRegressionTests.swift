@@ -2814,7 +2814,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("ひろし", ["弘", "寛", "博"]),
             ("まい", ["枚", "舞", "マイ", "まい"]),
             ("ほんやくか", ["翻訳家", "翻訳か", "本薬か"]),
-            ("かなり", ["かなり", "可成", "可なり", "可", "香菜里"]),
+            ("かなり", ["かなり", "可成", "可なり", "香菜里"]),  // 可 は 2736 で suppr
             ("わたり", ["渡り", "わたり", "ワタリ", "渡"]),
             ("くれ", ["暮れ", "呉", "暮"]),
             ("ゆく", ["行く", "往く", "ゆく"]),
@@ -12724,5 +12724,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(tsunagi.contains("繋ましょ") || tsunagi.contains("繫ぎましょ") || tsunagi.contains("継なぎましょ"), "list=\(tsunagi)")
         XCTAssertEqual(converter.candidates(for: "つなぐ", limit: 3, systemCandidateMode: .surface).first, "繋ぐ")
         XCTAssertEqual(converter.candidates(for: "つなぎ", limit: 3, systemCandidateMode: .surface).first, "繋ぎ")
+    }
+
+    // かなり: 辞書 rank0 の 可(可なり の縮約)が連文節で できたら可 になっていた。かな副詞に登録+可 は suppr(2736)
+    func testRegressionRealLMKanariPrefersKanaAdverb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "かなり", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "かなり", "single=\(single)")
+        XCTAssertFalse(single.contains("可"), "single=\(single)")
+        for reading in ["できたらかなり", "それはかなり", "かなりおおきい"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.contains("かなり") == true, "\(reading): \(multi)")
+            XCTAssertFalse(multi.contains(where: { $0.contains("たら可") || $0.contains("は可") }), "\(reading): \(multi)")
+        }
     }
 }
