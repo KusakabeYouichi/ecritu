@@ -214,6 +214,8 @@ extension KanaKanjiConverter {
     static let multiClauseNounAfterNokaPenalty = 3000
     // 先頭文節を seed 2番目に固定した再最適化経路を第2候補に採る許容差(最良との合計コスト差。2736)
     static let multiClauseLeadAlternativeMaxDelta = 6000
+    // 変種の差分に反映する seed 順ボーナスの上限(2738。pairCost 参照)
+    static let multiClauseVariantSeedBonusCap = 600
     // の を挟む連語(前々ノード→現ノード)のボーナス(2736)。甲州の果皮: の→可否 5248 < の→果皮 5955 で 可否 が勝つが、
     // 甲州 の後なら 果皮。かひ 全体を seed 順ボーナスで持ち上げると 講習の可否 まで 講習の果皮 になるため連語に限定
     static let multiClauseAcrossNoCollocationBonuses: [String: Int] = [
