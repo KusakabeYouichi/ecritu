@@ -12683,4 +12683,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "べつのしゅに", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "別の種に", "multi=\(multi)")
     }
+
+    // たんにん: 連文節は LM(担任 6571<タンニン 7079)で 滑らかな担任 だった。ワイン用途で タンニン を先頭に
+    // (seed+multiClauseSeedFirstLMOverrideReadings)。担任の先生 は bigram で 担任 が残る(2735)
+    func testRegressionRealLMTanninPrefersTannin() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("なめらかなたんにん", "滑らかなタンニン"), ("しっかりとしたたんにん", "しっかりとしたタンニン"), ("たんにんのせんせい", "担任の先生")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
+        }
+    }
 }
