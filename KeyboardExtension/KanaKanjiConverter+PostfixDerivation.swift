@@ -275,8 +275,12 @@ extension KanaKanjiConverter {
                         stemReading: nextStem,
                         nextSuffix: nextSuffix
                     )
-                    let filteredStemCandidates = filterNonVerbalCandidatesForVerbalPostfix(
-                        nEndingFiltered,
+                    let filteredStemCandidates = filterConjugableStemsForNegativeAuxiliaryPostfix(
+                        filterNonVerbalCandidatesForVerbalPostfix(
+                            nEndingFiltered,
+                            stemReading: nextStem,
+                            nextSuffix: nextSuffix
+                        ),
                         stemReading: nextStem,
                         nextSuffix: nextSuffix
                     )

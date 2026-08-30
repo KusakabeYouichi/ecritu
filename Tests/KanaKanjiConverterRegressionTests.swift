@@ -12604,6 +12604,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // すくなく: 動詞終止形+なく(酸くなく/漉くなく)の postfix 合成を除外し 少なく を先頭に(2731)
+    func testRegressionRealLMSukunakuPrefersAdjective() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "すくなく", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "少なく", "list=\(list)")
+        XCTAssertFalse(list.prefix(3).contains("酸くなく") || list.contains("漉くなく") || list.contains("透くなく"), "list=\(list)")
+        // 名詞+ない/なく は残す
+        XCTAssertTrue(converter.candidates(for: "もんだいなく", limit: 5, systemCandidateMode: .surface).contains("問題なく"))
+    }
+
     // たる: 単独は 樽 先頭、連体の な の後の 足る は非文(大きな樽/小さな樽)(2731)
     func testRegressionRealLMTaruPrefersBarrel() throws {
         try prepareRealLMDictionary()
@@ -12623,6 +12634,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let list = converter.candidates(for: "かおり", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(Array(list.prefix(2)), ["香り", "香"], "list=\(list)")
         XCTAssertTrue((list.firstIndex(of: "薫り") ?? 99) < (list.firstIndex(of: "薫") ?? 99), "list=\(list)")
+    }
+
+    // ひょうか: 辞書のかな収穫項目(rank5)と postfix のかなエコー(ひょう+か)が合算されて先頭だった(2731)
+    func testRegressionRealLMHyoukaPrefersEvaluation() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "ひょうか", limit: 3, systemCandidateMode: .surface).first, "評価")
     }
 
     // 色+がかった はかなが正書(紫がかった/緑がかった/青みがかった)。が+買った に割れない(2731)
