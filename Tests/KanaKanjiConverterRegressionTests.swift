@@ -12663,4 +12663,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertTrue(top.map { expected.contains($0) } ?? false, "\(reading): multi=\(multi) single=\(single)")
         }
     }
+
+    // からくちから: から(2848)+口(から→口 4801)+から(口→から 1381)が 辛口+から(辛口→から 未観測)に勝っていた。
+    // 辛口→から のペアボーナス(2735)
+    func testRegressionRealLMKarakuchiKaraPrefersDryWine() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("からくちから", "辛口から"), ("からくちからあまくちまで", "辛口から甘口まで")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
+        }
+    }
 }
