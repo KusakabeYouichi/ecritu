@@ -12869,4 +12869,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(multi.prefix(2).contains(where: { $0.hasSuffix("早くから") }), "multi=\(multi)")
         XCTAssertFalse(multi.prefix(2).contains(where: { $0.contains("がは") }), "multi=\(multi)")
     }
+
+    // とか を複合助詞ノードに: さんこうにしたとかなのかな→参考にしたとかなのかな(と+仮名+のかな だった)(2740)
+    func testRegressionRealLMTokaParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "さんこうにしたとかなのかな", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "参考にしたとかなのかな", "multi=\(multi)")
+        XCTAssertEqual(converter.candidates(for: "とか", limit: 3, systemCandidateMode: .surface).first, "とか")
+    }
 }
