@@ -12644,6 +12644,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
         XCTAssertEqual(converter.candidates(for: "ひょうか", limit: 3, systemCandidateMode: .surface).first, "評価")
+        // 候補数が多いと 名詞+漢字接辞 の合成 表化 が辞書語 表化 と合算されて先頭に出ていた(実機の候補バー相当。2734)
+        let wide = converter.candidates(for: "ひょうか", limit: 16, systemCandidateMode: .surface)
+        XCTAssertEqual(wide.first, "評価", "wide=\(wide)")
     }
 
     // 色+がかった はかなが正書(紫がかった/緑がかった/青みがかった)。が+買った に割れない(2731)
