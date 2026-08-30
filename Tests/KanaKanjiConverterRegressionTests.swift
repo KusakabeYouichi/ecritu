@@ -12674,4 +12674,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
         }
     }
+
+    // しゅ: 種(wc 9318)が連文節の top-K に届かず 別の酒に/守に だった。seed で 種 を先頭・ラティスに供給(2735)
+    func testRegressionRealLMShuPrefersSpecies() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "しゅ", limit: 3, systemCandidateMode: .surface).first, "種")
+        let multi = converter.multiClauseCandidates(for: "べつのしゅに", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "別の種に", "multi=\(multi)")
+    }
 }
