@@ -242,6 +242,45 @@ extension KanaKanjiConverter {
         return false
     }
 
+
+    // 否定の助動詞 ない 系(ない/なく/なかった/なくて/なければ/なきゃ)は用言の終止形には付かない
+    // (動詞は未然形+ない=活用規則が担う、形容詞は 高くない)。postfix 素通り合成が 酸く+なく/漉く+なく
+    // (五段カ行の終止形)を組み、すくなく で 少なく(形容詞 少ない の連用形)より前に並んでいた(2731)。
+    // 活用クラスを持つ語幹(動詞・形容詞)を除外し、名詞(問題ない/仕方なく)とかな識別は残す。
+    // サ変名詞(勉強)はクラス suru を持つが名詞なので除外しない
+    static func isNegativeAuxiliaryPostfixSuffix(_ suffix: String) -> Bool {
+        guard suffix.hasPrefix("な") else { return false }
+        return suffix.hasPrefix("ない") || suffix.hasPrefix("なく") || suffix.hasPrefix("なかっ")
+            || suffix.hasPrefix("なけれ") || suffix.hasPrefix("なきゃ")
+    }
+
+    func filterConjugableStemsForNegativeAuxiliaryPostfix(
+        _ candidates: [String],
+        stemReading: String,
+        nextSuffix: String
+    ) -> [String] {
+        guard Self.isNegativeAuxiliaryPostfixSuffix(nextSuffix) else {
+            return candidates
+        }
+        let metadata = inflectionMetadata(for: stemReading)
+        guard metadata.hasMetadata else {
+            return candidates
+        }
+        return candidates.filter { candidate in
+            guard candidate != stemReading else { return true }
+            if let className = metadata.classMap[candidate] {
+                return className == InflectionClass.suru
+            }
+            // クラス表に無くても「漢字+活用語尾かな」の表層(酸く=酸い の連用形、漉く 等の収穫)は用言形。
+            // 名詞(問題/仕方/例外)は末尾が漢字なので対象外
+            if let last = candidate.last, containsKanji(candidate),
+                Self.predicateStemEndingKana.contains(last) {
+                return false
+            }
+            return true
+        }
+    }
+
     func filterNonVerbalCandidatesForVerbalPostfix(
         _ candidates: [String],
         stemReading: String,

@@ -544,21 +544,31 @@ final class KanaKanjiConverter {
             systemCandidateMode: context.mode
         )
 
+        // かな識別(読みそのもの)が辞書項目として登録済みなら postfix のかなエコーは重ねない(2731)。
+        // addCandidates は経路ごとに加算するため、辞書にかな収穫項目がある読み(ひょうか rank5)は
+        // エコー(ひょう+か)と合算されて 1195+1036=2231 となり 評価(1200)を常に押しのけていた。
+        // 辞書に無い読み(ひとにでも/だよ/いかなくて/うまいのだ)は活用派生のかなエコーとの合算を含め従来どおり
+        let postfixCandidates: [String]
+        let postfixBaseScore: Int
         if !quickPostfixCandidates.isEmpty {
-            addCandidates(quickPostfixCandidates, baseScore: CandidateScore.quickPostfix, to: &scores)
+            postfixCandidates = quickPostfixCandidates
+            postfixBaseScore = CandidateScore.quickPostfix
         } else {
-            addCandidates(
-                postfixPassthroughCandidates(
-                    for: reading,
-                    userDictionary: context.userDictionary,
-                    initialUserDictionary: context.initialUserDictionary,
-                    systemCandidateMode: context.mode,
-                    limit: limit * 3
-                ),
-                baseScore: CandidateScore.bfsPostfix,
-                to: &scores
+            postfixCandidates = postfixPassthroughCandidates(
+                for: reading,
+                userDictionary: context.userDictionary,
+                initialUserDictionary: context.initialUserDictionary,
+                systemCandidateMode: context.mode,
+                limit: limit * 3
             )
+            postfixBaseScore = CandidateScore.bfsPostfix
         }
+        let skipsKanaEcho = context.systemCandidates.contains(reading)
+        addCandidates(
+            skipsKanaEcho ? postfixCandidates.filter { $0 != reading } : postfixCandidates,
+            baseScore: postfixBaseScore,
+            to: &scores
+        )
 
         return inflectionDerivedCandidates
     }

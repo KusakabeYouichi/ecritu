@@ -1064,9 +1064,14 @@ extension KanaKanjiConverter {
         inflectionDerivedCandidates: Set<String>,
         to scores: inout [String: Int]
     ) {
+        // 辞書に読みの項目が無い読み(すくなく)は、派生以外の最高点候補(postfix の すくなく エコー/守宮なく 等)を
+        // 比較相手にする(2731)。かなエコー(unigram すくなく 7884)も 少なく 4770 より高ければ越える
+        let comparisonTop = dictionaryCandidates.first
+            ?? scores.filter { !inflectionDerivedCandidates.contains($0.key) || $0.key == reading }
+                .max(by: { $0.value < $1.value })?.key
         guard reading.count >= 3, reading.hasSuffix("く"),
             !inflectionDerivedCandidates.isEmpty,
-            let dictTop = dictionaryCandidates.first,
+            let dictTop = comparisonTop,
             let dictTopScore = scores[dictTop] else {
             return
         }
@@ -1081,15 +1086,25 @@ extension KanaKanjiConverter {
             return
         }
         let costs = store.wordLMUnigramCosts(for: Array(inflectionDerivedCandidates) + [dictTop])
-        guard let dictTopCost = costs[dictTop] else {
+        // 辞書先頭は unigram 必須(従来どおり慎重に)。辞書項目の無い読みの比較相手(合成)は unigram 無し=最弱とみなす
+        let dictTopCost: Int
+        if let cost = costs[dictTop] {
+            dictTopCost = cost
+        } else if dictionaryCandidates.isEmpty {
+            dictTopCost = Int.max
+        } else {
             return
         }
-        for candidate in inflectionDerivedCandidates {
-            guard candidate.hasSuffix("く"), let cost = costs[candidate], cost < dictTopCost,
+        // 複数の派生(少なく 4770/少く 7xxx)が対象になるときは LM の安い順に並べる(同点だと短い 少く が先に出る。2731)
+        let eligible = inflectionDerivedCandidates.filter { candidate in
+            guard candidate != reading, candidate.hasSuffix("く"), let cost = costs[candidate], cost < dictTopCost,
                 let score = scores[candidate], score <= dictTopScore else {
-                continue
+                return false
             }
-            scores[candidate] = dictTopScore + 1
+            return true
+        }.sorted { (costs[$0] ?? Int.max) < (costs[$1] ?? Int.max) }
+        for (index, candidate) in eligible.enumerated() {
+            scores[candidate] = dictTopScore + eligible.count - index
         }
     }
 
