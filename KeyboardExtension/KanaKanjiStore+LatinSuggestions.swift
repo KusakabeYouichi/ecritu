@@ -331,6 +331,9 @@ extension KanaKanjiStore {
         }
         didSkipLatinSuggestionBuildForPressure = false
 
+        // 構築コストの記録(2724): 補助語彙ロード+エントリ構築の同期Δ(simulator 実測 1.7+0.4MB)
+        let buildSnapshot = MemoryForensics.snapshot()
+        defer { MemoryForensics.noteSyncDelta("欧文サジェスト構築", since: buildSnapshot, minDeltaMB: 1.0) }
         let supplementalDictionary = loadSupplementalSystemDictionary()
 
         guard !supplementalDictionary.isEmpty else {
@@ -408,9 +411,11 @@ extension KanaKanjiStore {
             .lowercased()
     }
 
-    // 欧文サジェスト構築を見送る footprint(2664)。per-process 上限 77MB に対し構築の一時確保
-    // (+8MB 実測)を乗せても届かない水準
-    static let latinSuggestionBuildMaxFootprintMB: Double = 58
+    // 欧文サジェスト構築を見送る footprint(2664→2724)。警告は fp≈60 で届く(8/30 10:43 Safari の
+    // URL 欄: fp 57.1 でゲートを通過→補助語彙ロード 1.7MB+エントリ 0.4MB+欧文盤面で 61.2→警告2回)。
+    // 58 では構築自身が警告を起こすので、構築コスト(約4MB)+余裕ぶん下げる。汎用レキシコン
+    // (mmap 索引、ヒープ 0MB 実測)は対象外なので、見送り中も一般語の欧文サジェストは出る
+    static let latinSuggestionBuildMaxFootprintMB: Double = 52
 
     // ASCII 英数字か Latin-1/拡張(é/ü 等)の scalar を1つでも含むか。regex 前の高速事前判定
     static func mayContainLatinLetterOrDigit(_ candidate: String) -> Bool {
