@@ -10092,10 +10092,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // ので: 辞書には 能出/野出/野手(収穫底値)しか無く、かなの接続助詞が候補に無かった(2507)
     func testRegressionKaAndNodeKanaSeeded() throws {
         try prepareRealLMDictionary()
-        let ka = converter.candidates(for: "か", limit: 8, systemCandidateMode: .surface)
+        let ka = converter.candidates(for: "か", limit: 16, systemCandidateMode: .surface)
         XCTAssertEqual(
-            Array(ka.prefix(7)),
-            ["蚊", "科", "下", "過", "加", "彼", "鹿"],
+            Array(ka.prefix(15)),
+            ["蚊", "科", "化", "下", "家", "過", "加", "仮", "彼", "鹿", "花", "華", "夏", "貨", "柯"],
             "ka=\(ka)"
         )
         let node = converter.candidates(for: "ので", limit: 4, systemCandidateMode: .surface)
