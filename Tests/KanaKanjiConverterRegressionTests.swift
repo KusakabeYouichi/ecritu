@@ -7371,7 +7371,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMAttagaKanaInTop3() throws {
         try prepareRealLMDictionary()
         let single = converter.candidates(for: "あったが", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(single.prefix(3)), ["会ったが", "合ったが", "あったが"], "single=\(single)")
+        // 2740: ある を含む あった はかなを先頭に(ユーザ指定)。会/合 はその直後
+        XCTAssertEqual(Array(single.prefix(3)), ["あったが", "会ったが", "合ったが"], "single=\(single)")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "あったが"))
         // 連文節は文節先頭(直前=BOS)の あった をかな優先するため かな あったが が先頭
         // (あった、が…=ある過去。誰かにあったが 等は に が前にあり無影響)。かな が top3 の意図は維持。
@@ -12844,5 +12845,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(list.prefix(2)), ["そうしちゃう", "奏しちゃう"], "list=\(list)")
         XCTAssertFalse(list.contains("相しちゃう") || list.contains("草しちゃう"), "list=\(list)")
         XCTAssertEqual(converter.candidates(for: "そうする", limit: 3, systemCandidateMode: .surface).first, "そうする")
+    }
+
+    // あった/あったり/あったら: ある(存在)を含む形はかな先頭。もとがあったりして→元があったりして(2740)
+    func testRegressionRealLMAttaFormsPreferKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["あった", "あったり", "あったら", "あって"] {
+            let list = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, reading, "\(reading): \(list)")
+        }
+        let multi = converter.multiClauseCandidates(for: "もとがあったりして", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "元があったりして", "multi=\(multi)")
+        // あう 単独は 会う 先頭のまま
+        XCTAssertEqual(converter.candidates(for: "あう", limit: 3, systemCandidateMode: .surface).first, "会う")
     }
 }

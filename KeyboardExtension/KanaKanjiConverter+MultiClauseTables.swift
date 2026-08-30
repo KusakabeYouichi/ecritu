@@ -212,6 +212,14 @@ extension KanaKanjiConverter {
     // かなの のか(疑問・説明の終端)の直後に漢字名詞は続かない(講習のか日 の か+日 断片。2736)。述語(食べる 等)や
     // 活用派生、かな表層は対象外。単独の か(赤か青 の「または」)は正当な用法が多いので対象にしない
     static let multiClauseNounAfterNokaPenalty = 3000
+    // が の直後の あった/あったり/あったら/あって は存在の ある(かな正書)が主(時間があった/元があったりして)。
+    // 合う の慣用(気が合った/目が合った/サイズが合った/条件に合った)は直前の名詞で除外する(ユーザ指定 2740)
+    static let multiClauseExistentialAttaReadings: Set<String> = ["あった", "あったり", "あったら", "あって", "あったんで", "あったので", "あったし"]
+    static let multiClauseAuIdiomNounsBeforeGa: Set<String> = [
+        "気", "目", "サイズ", "条件", "ピント", "息", "馬", "計算", "意見", "趣味", "波長", "辻褄", "反り", "肌", "口", "話", "足", "手", "都合",
+        "予定", "リズム", "呼吸", "帳尻", "収支", "答え", "解", "寸法", "色", "味", "相性", "性格", "タイミング", "時間帯"
+    ]
+    static let multiClauseExistentialAttaAfterGaBonus = 1500
     // 先頭文節を seed 2番目に固定した再最適化経路を第2候補に採る許容差(最良との合計コスト差。2736)
     static let multiClauseLeadAlternativeMaxDelta = 6000
     // 変種の差分に反映する seed 順ボーナスの上限(2738。pairCost 参照)

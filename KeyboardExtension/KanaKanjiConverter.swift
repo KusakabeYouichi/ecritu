@@ -679,6 +679,11 @@ final class KanaKanjiConverter {
             learningScoresForReading: context.learningScoresForReading,
             to: &scores
         )
+        // あった/あって系の単独読みはかな先頭(seed 順正規化の後に置く。RankingHeuristics の isStandaloneAttaReading 参照。2740)
+        if Self.isStandaloneAttaReading(context.reading), let identity = scores[context.reading] {
+            let maxOther = scores.filter { $0.key != context.reading }.values.max() ?? 0
+            scores[context.reading] = max(identity, maxOther + 1)
+        }
     }
 
     // ステージ4: 抑制語彙(直接+脱活用)と装飾表記の除去。

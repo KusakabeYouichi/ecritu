@@ -64,6 +64,16 @@ extension KanaKanjiConverter {
         }
     }
 
+    // あった/あって に助詞・接続(が/し/ら/り/て/から/けど 等)が続くだけの読み(あった/あったが/あったり/あったら/あって/あってさ)
+    static func isStandaloneAttaReading(_ reading: String) -> Bool {
+        for head in ["あった", "あって"] where reading.hasPrefix(head) {
+            let tail = String(reading.dropFirst(head.count))
+            if tail.isEmpty { return true }
+            if ["が", "し", "ら", "り", "て", "から", "けど", "の", "よ", "ね", "な", "わ", "さ", "ので", "のに", "とき"].contains(tail) { return true }
+        }
+        return false
+    }
+
     // だ/です(+った/でした)に終助詞クラスタ(な/なー/よ/ね/よね/かな 等)が付いた読みそのもの
     static func isCopulaFinalParticleClusterReading(_ reading: String) -> Bool {
         for copula in ["だった", "でした", "です", "だ"] where reading.count > copula.count && reading.hasPrefix(copula) {
@@ -117,9 +127,12 @@ extension KanaKanjiConverter {
         // ため、単文節の並びだけをここで矯正する(2736)
         // コピュラ だ/です+終助詞クラスタ(だなー/だよね/ですね 等)も同型: 辞書が ダナー(靴ブランド、rank0)しか
         // 持たない だなー で {ダナー, だなー, 打なー} になっていた(ユーザ指定 2737)
+        // あった/あって系(ある の過去・て形)を単独で打ったときもかな先頭(ユーザ指定 2740)。seed を [あった, 会った…] に
+        // すると連文節の 人に会った/気が合った(文節途中の あう 慣用)まで かな化して退行したため、単文節の並びだけ矯正する
         if let identityScore = scores[reading],
             KanaKanjiConverter.multiClauseCompoundParticles.contains(reading)
-                || Self.isCopulaFinalParticleClusterReading(reading) {
+                || Self.isCopulaFinalParticleClusterReading(reading)
+                || Self.isStandaloneAttaReading(reading) {
             let maxOther = scores.filter { $0.key != reading }.values.max() ?? 0
             scores[reading] = max(identityScore, maxOther + 1)
             return
