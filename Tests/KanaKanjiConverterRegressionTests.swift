@@ -12704,4 +12704,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
         }
     }
+
+    // ましょ(ましょう の口語)を連用形に付ける活用規則。つなぎましょ が 繋+ましょ(名詞+素通り)に割れていた(2735)
+    func testRegressionRealLMMashoInflection() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("かきましょ", "書きましょ"), ("たべましょ", "食べましょ"), ("はっこうしましょ", "発行しましょ")] {
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "\(reading): \(single)")
+        }
+        // つなぐ はかな表記が LM 優位(つなぎましょう/つなぎます も同じ並び)なので、繋ぎましょ は2位以内・送り仮名なしの 繋ましょ が消えることを確認
+        let tsunagi = converter.candidates(for: "つなぎましょ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertTrue(tsunagi.prefix(2).contains("繋ぎましょ"), "list=\(tsunagi)")
+        XCTAssertFalse(tsunagi.contains("繋ましょ"), "list=\(tsunagi)")
+    }
 }
