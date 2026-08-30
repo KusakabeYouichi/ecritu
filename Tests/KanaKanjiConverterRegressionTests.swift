@@ -12554,6 +12554,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // あやまっている/てる: 誤→謝→過 の順(過つ はレア動詞)。基底 あやまる/あやまった は 謝 先頭のまま(2731)
+    func testRegressionRealLMAyamatteiruPrefersError() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["あやまっている", "あやまってる"] {
+            let single = converter.candidates(for: reading, limit: 5, systemCandidateMode: .surface)
+            let tail = String(reading.dropFirst(4))
+            XCTAssertEqual(Array(single.prefix(2)), ["誤っ" + tail, "謝っ" + tail], "\(reading): \(single)")
+            // 過つ(収穫底値のレア動詞)の派生は常用族の後ろ(かな識別の後でもよい)
+            XCTAssertTrue((single.firstIndex(of: "過っ" + tail) ?? 99) >= 2, "\(reading): \(single)")
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.isEmpty || multi.first == "誤っ" + tail, "\(reading): multi=\(multi)")
+        }
+        XCTAssertEqual(converter.candidates(for: "あやまる", limit: 3, systemCandidateMode: .surface).first, "謝る")
+        XCTAssertEqual(converter.candidates(for: "あやまった", limit: 3, systemCandidateMode: .surface).first, "謝った")
+    }
+
     // やせる: 瘠せる/瘦せる(異体字・旧字体)は字形が似て選び間違えるので suppr(2731)
     func testYaseruOldGlyphsSuppressed() throws {
         try prepareRealLMDictionary()
@@ -12569,5 +12586,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try loadDeviceAddedVocabulary(includeSuppression: true)
         XCTAssertEqual(converter.candidates(for: "れきしつ", limit: 3, systemCandidateMode: .surface).first, "礫質")
         XCTAssertEqual(converter.candidates(for: "れきしつどじょう", limit: 3, systemCandidateMode: .surface).first, "礫質土壌")
+    }
+
+    // てきしている: 基底名詞の順(的/敵/適)で 敵している が先頭だった。サ変派生は辞書形(適する 6641、敵する 未収録)の
+    // LM 頻度で並べる(2731)。てきする は従来から 適する 先頭
+    func testRegressionRealLMTekishiteiruPrefersSuitable() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("てきしている", "適している"), ("てきしてる", "適してる"), ("てきした", "適した"), ("てきする", "適する")] {
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, expected, "\(reading): \(single)")
+            // てきしてる の連文節は 的+してる(1字名詞+してる)が別件で残る
+            if reading != "てきしてる" {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+                XCTAssertTrue(multi.isEmpty || multi.first == expected, "\(reading): multi=\(multi)")
+            }
+        }
     }
 }
