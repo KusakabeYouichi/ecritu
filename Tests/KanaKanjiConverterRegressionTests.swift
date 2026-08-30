@@ -12776,8 +12776,10 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         // 変種の並び: 末尾の僅差変種(解けて)が先、先頭差し替え(凍り)は seed 順の刻みで 郡 より前(2738)
         let melt = converter.multiClauseCandidates(for: "こおりがとけて", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(melt.prefix(2)), ["氷が溶けて", "氷が解けて"], "multi=\(melt)")
-        XCTAssertTrue((melt.firstIndex(where: { $0.hasPrefix("凍り") }) ?? 99) < (melt.firstIndex(where: { $0.hasPrefix("郡") }) ?? 99), "multi=\(melt)")
+        // 3位は 凍りが解けて(凍り→解けて の連語、釈ける は suppr)(2739)
+        XCTAssertEqual(Array(melt.prefix(3)), ["氷が溶けて", "氷が解けて", "凍りが解けて"], "multi=\(melt)")
+        let long = converter.multiClauseCandidates(for: "こおりがとけてきますから", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(long.prefix(3)), ["氷が溶けてきますから", "氷が解けてきますから", "凍りが解けてきますから"], "multi=\(long)")
         // ぐん 読みの 郡 は無傷
         XCTAssertTrue(converter.candidates(for: "ぐん", limit: 3, systemCandidateMode: .surface).contains("郡"))
     }

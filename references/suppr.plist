@@ -199,6 +199,8 @@
 	<dict><key>phrase</key><string>繫ぐ</string><key>shortcut</key><string>つなぐ</string></dict>	<!-- 繋ぐ の異体字(繫)。字形が同じに見え 繋ぎましょ/繫ぎましょ が並ぶ(ユーザ指定 2736) -->
 	<dict><key>phrase</key><string>継なぐ</string><key>shortcut</key><string>つなぐ</string></dict>	<!-- 継ぐ(つぐ)の非標準送り仮名。継なぎましょ 等の派生を出さない(ユーザ指定 2736) -->
 	<dict><key>phrase</key><string>可</string><key>shortcut</key><string>かなり</string></dict>	<!-- 可なり の縮約(Sudachi rank0)。副詞 かなり の変換で 可 が先頭に出てストレス源(ユーザ指定 2736) -->
+	<dict><key>phrase</key><string>釈ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 解ける の稀な表記。氷が釈けて が 氷が解けて の直後に並び紛らわしい(ユーザ指定 2739) -->
+	<dict><key>phrase</key><string>説ける</string><key>shortcut</key><string>とける</string></dict>	<!-- 説く の可能形。解ける/溶ける と並ぶと紛らわしく実用頻度も低い(同上) -->
 	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南郷 の旧字体異体字収穫。見た目がほぼ同一で重複に見える -->
 	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- 会社 の旧字体(株式會社 等の合成にも混入していた) -->

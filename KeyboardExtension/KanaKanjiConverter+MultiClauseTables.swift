@@ -216,11 +216,30 @@ extension KanaKanjiConverter {
     static let multiClauseLeadAlternativeMaxDelta = 6000
     // 変種の差分に反映する seed 順ボーナスの上限(2738。pairCost 参照)
     static let multiClauseVariantSeedBonusCap = 600
+    // 活用派生の変種で語幹が LM 未収録(熔け 等)のときの加算(2739。変種ループ参照)
+    static let multiClauseUnknownDerivedVariantPenalty = 500
+    static let multiClauseRareDerivedVariantGap = 800
+    static let multiClauseRareDerivedVariantPenalty = 300
     // の を挟む連語(前々ノード→現ノード)のボーナス(2736)。甲州の果皮: の→可否 5248 < の→果皮 5955 で 可否 が勝つが、
     // 甲州 の後なら 果皮。かひ 全体を seed 順ボーナスで持ち上げると 講習の可否 まで 講習の果皮 になるため連語に限定
     static let multiClauseAcrossNoCollocationBonuses: [String: Int] = [
         "甲州\t果皮": 2500,
+        // 凍りが解けて: 凍り の後は 溶ける より 解ける(凍結が解ける)。LM は が→溶け 5007/が→解け 4799、溶け 6210/解け 6450 で
+        // 溶けて が約30差で勝つため、先頭差し替え経路(凍り)の末尾が 溶けて になっていた(ユーザ指定 2739)
+        "凍り\t解け": 800,
     ]
+    // 連語の後段は表層の前方一致で引く(解けて/解けてきます 等の活用派生ノードにも効かせる。2739)
+    static func acrossParticleCollocationBonus(prevPrev: String, surface: String) -> Int? {
+        var best: Int? = nil
+        for (key, bonus) in multiClauseAcrossNoCollocationBonuses {
+            let parts = key.split(separator: "\t", maxSplits: 1).map(String.init)
+            guard parts.count == 2, parts[0] == prevPrev, surface.hasPrefix(parts[1]) else { continue }
+            best = max(best ?? 0, bonus)
+        }
+        return best
+    }
+    // 上の連語を挟める1字助詞(の/が/を/は)
+    static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は"]
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 
