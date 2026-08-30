@@ -121,6 +121,33 @@ enum MemoryForensics {
     }
 
     // ──────────────────────────────────────────────
+    // B''. 時系列サンプラ(2726): 表示直後の used/fp を等間隔に採り1行で記録する。
+    // 静的呼び出しで self を捕まえない。統計読み(malloc_zone_statistics/task_info)のみ
+    // ──────────────────────────────────────────────
+    static func sampleTimeline(_ tag: String, intervalSeconds: Double, sampleCount: Int) {
+        #if DEBUG
+        var usedSeries: [String] = []
+        var fpSeries: [String] = []
+        func sample(_ index: Int) {
+            var stats = malloc_statistics_t()
+            malloc_zone_statistics(nil, &stats)
+            usedSeries.append(String(format: "%.1f", Double(stats.size_in_use) / 1_048_576))
+            fpSeries.append(String(format: "%.1f", currentPhysFootprintMB() ?? -1))
+            if index + 1 < sampleCount {
+                DispatchQueue.main.asyncAfter(deadline: .now() + intervalSeconds) { sample(index + 1) }
+            } else {
+                logSink?(
+                    "MEMFORENSICS推移 op=\(tag) 刻み\(String(format: "%.2f", intervalSeconds))s"
+                        + " used=[\(usedSeries.joined(separator: " "))]"
+                        + " fp=[\(fpSeries.joined(separator: " "))] \(loadSummary)"
+                )
+            }
+        }
+        sample(0)
+        #endif
+    }
+
+    // ──────────────────────────────────────────────
     // B'. 同期区間の前後差(2654)
     // ──────────────────────────────────────────────
     // noteSpikeWindow は「呼んだ瞬間→N秒後」を測るため、同期処理(変換本体)の

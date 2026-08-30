@@ -791,6 +791,14 @@ final class KeyboardViewController: UIInputViewController {
                 minDeltaMB: -1
             )
         }
+        // 測定(2726): 表示後4秒の used/fp 推移を 250ms 刻みで1行に。8/30 10:43 の警告は表示の 1.2 秒後に
+        // used +4.4MB だったが、bootstrap の各段(補助語彙/連絡先/プリウォーム/初回変換)のどこかを
+        // 既存の同期Δでは掴めなかった(連絡先は displayMode で未使用、変換Δは閾値未満)。時系列で場所を特定する
+        MemoryForensics.sampleTimeline(
+            "個体表示後(\(diagnosticsState.diagnosticsControllerID.prefix(8)))",
+            intervalSeconds: 0.25,
+            sampleCount: 16
+        )
         commitStaleHostMarkedTextOnAppear()
 
         if keyboardLaunchViewDidLoadAt > 0 {
