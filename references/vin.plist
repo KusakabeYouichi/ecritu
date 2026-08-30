@@ -9252,7 +9252,11 @@
 	<dict><key>phrase</key><string>フラワリー</string><key>shortcut</key><string>ふらわりー</string></dict>
 	<dict><key>phrase</key><string>フルーティ</string><key>shortcut</key><string>ふるーてぃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フルーティー</string><key>shortcut</key><string>ふるーてぃー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>フレーヴァー</string><key>shortcut</key><string>ふれーゔぁー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フレイヴァー</string><key>shortcut</key><string>ふれいゔぁー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>フレイヴァード</string><key>shortcut</key><string>ふれいゔぁーど</string></dict>
+	<dict><key>phrase</key><string>フレーヴァード</string><key>shortcut</key><string>ふれーゔぁーど</string></dict>
+	<dict><key>phrase</key><string>フォーティファイド</string><key>shortcut</key><string>ふぉーてぃふぁいど</string></dict>
 	<dict><key>phrase</key><string>フレーヴァー</string><key>shortcut</key><string>ふれーゔぁー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フローラル</string><key>shortcut</key><string>ふろーらる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ブーケ</string><key>shortcut</key><string>ぶーけ</string></dict>	<!-- Sudachiにもある -->
