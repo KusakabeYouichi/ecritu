@@ -1784,8 +1784,8 @@ extension KanaKanjiConverter {
                             }
                         }
                         // の を挟む連語(甲州の果皮 等。定数コメント参照。2736)
-                    if prevNode.surface == "の", backPointer[prevIdx] >= 0,
-                        let collocationBonus = Self.multiClauseAcrossNoCollocationBonuses[nodes[backPointer[prevIdx]].surface + "\t" + node.surface] {
+                    if Self.multiClauseCollocationBridgeParticles.contains(prevNode.surface), prevNode.surface == prevNode.reading, backPointer[prevIdx] >= 0,
+                        let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: nodes[backPointer[prevIdx]].surface, surface: node.surface) {
                         cost -= collocationBonus
                     }
                     // 色+が+漢字(買った/勝った): がかった のかなに委ねる(定数コメント参照。2731)
@@ -2059,13 +2059,13 @@ extension KanaKanjiConverter {
                 // seed 順ボーナスは変種の差分では上限付き(みな/いくつ の 3300 級をそのまま足すと 幾つ の漢字変種が許容差を超えて消える。
                 // 郡(800)を負値から 200 の刻みに戻すには 600 で足りる)
                 var nodeBonus = min(seedOrderNounNodeBonuses[nodeKey] ?? 0, Self.multiClauseVariantSeedBonusCap)
-                if prevSurface == "の", pos >= 2,
-                    let collocationBonus = Self.multiClauseAcrossNoCollocationBonuses[nodes[pathIndices[pos - 2]].surface + "\t" + node.surface] {
+                if Self.multiClauseCollocationBridgeParticles.contains(prevSurface), pos >= 2,
+                    let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: nodes[pathIndices[pos - 2]].surface, surface: node.surface) {
                     nodeBonus += collocationBonus
                 }
                 // 先頭側を差し替えると後段の連語(甲州→果皮)が失われる分も差分に入れる(公衆の果皮 が負値で先頭に来ていた)
-                if pos + 2 < pathIndices.count, nodes[pathIndices[pos + 1]].surface == "の",
-                    let downstream = Self.multiClauseAcrossNoCollocationBonuses[node.surface + "\t" + nodes[pathIndices[pos + 2]].surface] {
+                if pos + 2 < pathIndices.count, Self.multiClauseCollocationBridgeParticles.contains(nodes[pathIndices[pos + 1]].surface),
+                    let downstream = Self.acrossParticleCollocationBonus(prevPrev: node.surface, surface: nodes[pathIndices[pos + 2]].surface) {
                     nodeBonus += downstream
                 }
                 let outgoing: Int
@@ -2174,6 +2174,25 @@ extension KanaKanjiConverter {
                     ? baseCostCurated
                     : baseCost
                 var delta = pairCost(alt) - effectiveBase
+                // 活用派生同士の変種は OOV で同点になりやすく、列挙順(辞書順)で 熔けて/釈けて のような稀な表記が
+                // 解けて の直後に並んだ。派生語幹(先頭2字: 溶け/解け/熔け)の LM unigram で差を付ける(2739):
+                // 未収録なら定額、収録済みなら差の1/4(解け 6450 vs 溶け 6210 → +60 で 氷が解けて の2位は保つ)
+                if alt.isInflectionDerived, chosen.isInflectionDerived, alt.surface.count >= 2, chosen.surface.count >= 2 {
+                    let altStem = String(alt.surface.prefix(2))
+                    let chosenStem = String(chosen.surface.prefix(2))
+                    let stemCosts = store.wordLMUnigramCosts(for: [altStem, chosenStem])
+                    // 収録済み同士は大差(≥800: 融け 7489 vs 溶け 6210)のときだけ後ろへ。僅差(仕え 5855/支え 5571/使え 5649)は
+                    // seed 由来の列挙順を保つ(つかえたのだが の 使え/仕え/支え 順)
+                    if let chosenCost = stemCosts[chosenStem] {
+                        if let altCost = stemCosts[altStem] {
+                            if altCost - chosenCost >= Self.multiClauseRareDerivedVariantGap {
+                                delta += Self.multiClauseRareDerivedVariantPenalty
+                            }
+                        } else {
+                            delta += Self.multiClauseUnknownDerivedVariantPenalty
+                        }
+                    }
+                }
                 // seed 順の変種反映(2665): 同じ文節で seed に掲載された表層同士は、LM コスト差
                 // ではなく seed の並びで変種順を決める(しそじゃない: 始祖 6217 < シソ 7243 の
                 // Wikipedia 統計で {紫蘇, 始祖, シソ} になっていた。単文節 [しそ] は seed 順が
