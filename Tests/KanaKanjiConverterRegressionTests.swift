@@ -12603,4 +12603,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             }
         }
     }
+
+    // たる: 単独は 樽 先頭、連体の な の後の 足る は非文(大きな樽/小さな樽)(2731)
+    func testRegressionRealLMTaruPrefersBarrel() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "たる", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "樽", "single=\(single)")
+        for (reading, expected) in [("おおきなたる", "大きな樽"), ("ちいさなたる", "小さな樽")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
+        }
+    }
+
+    // かおり: 一般名詞 香り を人名(香/薫)より前に(2731)
+    func testRegressionRealLMKaoriPrefersScent() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "かおり", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["香り", "香"], "list=\(list)")
+        XCTAssertTrue((list.firstIndex(of: "薫り") ?? 99) < (list.firstIndex(of: "薫") ?? 99), "list=\(list)")
+    }
+
+    // 色+がかった はかなが正書(紫がかった/緑がかった/青みがかった)。が+買った に割れない(2731)
+    func testRegressionRealLMColorGakattaKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("むらさきがかった", ["紫がかった"]), ("みどりがかった", ["緑がかった"]),
+            ("あおみがかった", ["青みがかった", "青味がかった"]), ("あかみがかっている", ["赤みがかっている", "赤味がかっている"])
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
+            let top = multi.first ?? single.first
+            XCTAssertTrue(top.map { expected.contains($0) } ?? false, "\(reading): multi=\(multi) single=\(single)")
+        }
+    }
 }

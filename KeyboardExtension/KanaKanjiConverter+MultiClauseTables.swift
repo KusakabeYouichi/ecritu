@@ -192,6 +192,23 @@ extension KanaKanjiConverter {
     // 値の根拠: 待ち は2かなの短スパン床で word_cost 7877 に床上げされ(町 は 4577+500=5077)、
     // さらに 町→EOS 1794 の観測分で約160差 → 合計約3000を跨ぐ幅
     static let multiClauseWaitSuffixAfterNounBonus = 3200
+    // 連体の な(大きな/小さな/静かな 等、漢字含み・2字以上・な終わり)の直後は名詞が続く。辞書形述語
+    // (足る)や活用派生が続くのは非文なので減点し、おおきなたる→大きな足る を 大きな樽 に(2731)。
+    // かなの な終わり(みんな 等の名詞)は対象外
+    static let multiClausePredicateAfterRentaiNaPenalty = 2500
+    // 色+がかった(紫がかった/緑がかった/青みがかった): がかる は「〜の色を帯びる」の接尾動詞でかなが正書。
+    // LM は が+買った/勝った を採り 紫が買った になっていた(ユーザ報告 2731)。色語(+み/味/色)の直後の
+    // が の次に来る漢字表層(買った/勝った/掛かった 等)に減点し、seed の がかった かなノードに委ねる
+    static let multiClauseColorTintStemSurfaces: Set<String> = {
+        let bases = ["赤", "青", "緑", "紫", "黄", "白", "黒", "茶", "灰", "桃", "朱", "紺", "藍", "橙", "金", "銀", "銅", "銀", "緋", "翠", "碧"]
+        var set = Set(bases)
+        for base in bases {
+            set.insert(base + "み"); set.insert(base + "味"); set.insert(base + "色")
+        }
+        return set
+    }()
+    static let multiClauseKanjiAfterColorGaPenalty = 3000
+    static let multiClauseColorTintStemBeforeGakaruBonus = 2500
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 
@@ -202,6 +219,8 @@ extension KanaKanjiConverter {
         "みな": 3300,
         // にた は 似た が辞書に無く seed 供給(dictUnknown 8700)。かな にた(wc8000 床)との差を反転
         "にた": 2000,
+        // たる: 2かなの短span床で 垂 7907 < 樽 7913 と6差で 垂 が勝ち 大きな垂 になっていた。seed 先頭の 樽 を優先(2731)
+        "たる": 300,
         // なはし は 那覇市(wc10199=Sudachi の収穫底値帯)しか無く、那覇(7869)+し(2760)の
         // 分割の方が安い。連文節側も 那覇→市 / 市→水道 の bigram が未観測で止められず
         // 那覇し水道局 になる。実在の自治体名なので1ノードを勝たせる(2564)
