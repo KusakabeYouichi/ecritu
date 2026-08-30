@@ -5952,6 +5952,7 @@
 	<dict><key>phrase</key><string>砂利混じり</string><key>shortcut</key><string>じゃりまじり</string></dict>
 	<dict><key>phrase</key><string>砂利質</string><key>shortcut</key><string>じゃりしつ</string></dict>
 	<dict><key>phrase</key><string>砂礫質</string><key>shortcut</key><string>されきしつ</string></dict>
+	<dict><key>phrase</key><string>礫質</string><key>shortcut</key><string>れきしつ</string></dict>
 	<dict><key>phrase</key><string>粘土岩</string><key>shortcut</key><string>ねんどがん</string></dict>
 	<dict><key>phrase</key><string>粘土石灰質</string><key>shortcut</key><string>ねんどせっかいしつ</string></dict>
 	<dict><key>phrase</key><string>栄養源</string><key>shortcut</key><string>えいようげん</string></dict>
