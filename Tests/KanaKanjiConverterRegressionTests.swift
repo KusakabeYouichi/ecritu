@@ -12807,4 +12807,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let list = converter.candidates(for: "ぶるねっろでぃもんたるちーの", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(Array(list.prefix(2)), ["ブルネッロ・ディ・モンタルチーノ", "Brunello di Montalcino"], "list=\(list)")
     }
+
+    // いい: 好い は いい(かな)より前に出さない(いいかげん→いい加減 が先頭、好い加減 は直下)(2738)
+    func testRegressionRealLMYoiKanjiBelowKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let kagen = converter.candidates(for: "いいかげん", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kagen.prefix(2)), ["いい加減", "好い加減"], "list=\(kagen)")
+        let ii = converter.candidates(for: "いい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue((ii.firstIndex(of: "いい") ?? 99) < (ii.firstIndex(of: "好い") ?? 99), "list=\(ii)")
+    }
 }
