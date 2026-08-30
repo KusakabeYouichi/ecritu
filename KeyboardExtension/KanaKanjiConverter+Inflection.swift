@@ -55,6 +55,11 @@ extension KanaKanjiConverter {
         // おいた/おいてある 等の単文節順に効く(2434)
         var preferredDerived: [String] = []
         var otherDerived: [String] = []
+        // 基底読みの漢字表層がすべて収穫底値(wc>=10000)のレア動詞族(あやまつ→過つ 10750 等)は、
+        // ルール定義順(godanPatterns の つ が る より先)で常用族(あやまる→謝る/誤る)より前に出て
+        // あやまった→過った/あやまっている→過っている になっていた。族ごと後方へ(2731)。
+        // 常用表層を1つでも持つ読み(える=選る 10096/得る)は対象外
+        var rareBaseDerived: [String] = []
         for rule in Self.allInflectionRules {
             let items = derivedCandidates(
                 for: reading,
@@ -68,18 +73,25 @@ extension KanaKanjiConverter {
             }
             let baseReading = removingSuffix(reading, suffix: rule.readingSuffix)
                 .map { $0 + rule.baseReadingSuffix } ?? ""
+            let baseCosts = store.wordCosts(for: baseReading)
+            let kanjiBaseCosts = baseCosts.filter { $0.key != baseReading }
+            let isRareBaseReading = !kanjiBaseCosts.isEmpty
+                && kanjiBaseCosts.values.allSatisfy { $0 >= CandidateScore.harvestTierWordCostFloor }
             if KanaKanjiConverter.multiClauseInflectionFamilyPreferenceBaseReadings.contains(baseReading) {
                 // かな識別は昇格させない(先頭に乗ると b2 の「かなは先頭のときだけ供給」を
                 // 誤発動させ、はったら のかなが 貼ったら を抑えてしまう)。かなの扱いは
                 // 従来位置(other側)のまま既存規則に委ねる
                 preferredDerived.append(contentsOf: items.filter { $0 != reading })
                 otherDerived.append(contentsOf: items.filter { $0 == reading })
+            } else if isRareBaseReading {
+                rareBaseDerived.append(contentsOf: items)
             } else {
                 otherDerived.append(contentsOf: items)
             }
         }
         derived.append(contentsOf: preferredDerived)
         derived.append(contentsOf: otherDerived)
+        derived.append(contentsOf: rareBaseDerived)
 
         return Array(uniqueCandidates(from: derived).prefix(limit))
     }
@@ -403,6 +415,46 @@ extension KanaKanjiConverter {
             let stem = String(candidate.dropLast(matchedSuffix.count))
             results.append(stem + rule.outputCandidateSuffix)
             contributingBases.append(candidate)
+        }
+
+        // サ変名詞の派生順を辞書形(基底+する)の LM 頻度で揃える(2731)。基底名詞の順(てき: 的/敵/適)は
+        // 名詞としての頻度で、サ変としての頻度(適する 6641 は LM 既知、敵する は未収録)と食い違う。
+        // てきする は 適する の unigram で 適 が先頭になるのに てきしている/てきした は 敵 先頭だった。
+        // 辞書形の unigram を持つ基底を安い順に前へ、持たない基底とかな識別は従来順のまま後ろに。
+        // seed のある基底読みは人手の並びを優先して触らない
+        // する単独動詞の規則群(基底読み Xする、基底候補 適する/敵する)と、サ変名詞の規則群(基底読み X、
+        // 基底候補 適/敵)の両方に効かせる(定義順で前者が先に並び、先着 dedupe で順が決まる)
+        // 文語サ変(基底 Xす: 敵す/適す、五段サ行の規則)も同じ語なので 現代語の Xする の頻度で並べる。
+        // 定義順では五段サ行の規則(した/す)が する の規則より先に並び、てきした→敵した が先着していた
+        let isSuruDictionaryFormBase = rule.baseReadingSuffix == "する"
+        let isClassicalSuBase = rule.baseReadingSuffix == "す"
+        if rule.baseReadingSuffix.isEmpty || isSuruDictionaryFormBase || isClassicalSuBase,
+            isClassicalSuBase || rule.allowedClasses.contains(className: InflectionClass.suru),
+            results.count >= 2,
+            KanaKanjiSeedDictionary.seed[baseReading] == nil {
+            func dictionaryForm(_ base: String) -> String {
+                if isSuruDictionaryFormBase { return base }
+                if isClassicalSuBase { return base.hasSuffix("す") ? String(base.dropLast()) + "する" : base }
+                return base + "する"
+            }
+            let dictionaryForms = contributingBases.filter { $0 != baseReading }.map(dictionaryForm)
+            let unigramCosts = store.wordLMUnigramCosts(for: dictionaryForms)
+            var known: [(cost: Int, index: Int)] = []
+            var others: [Int] = []
+            for (index, base) in contributingBases.enumerated() {
+                if base != baseReading, let cost = unigramCosts[dictionaryForm(base)] {
+                    known.append((cost, index))
+                } else {
+                    others.append(index)
+                }
+            }
+            if !known.isEmpty {
+                let order = known.sorted { $0.cost != $1.cost ? $0.cost < $1.cost : $0.index < $1.index }.map(\.index) + others
+                if order != Array(results.indices) {
+                    results = order.map { results[$0] }
+                    contributingBases = order.map { contributingBases[$0] }
+                }
+            }
         }
 
         let familyKey = contributingBases.isEmpty
