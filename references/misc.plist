@@ -347,5 +347,6 @@
 	<dict><key>phrase</key><string>ヘンプシードオイル</string><key>shortcut</key><string>へんぷしーどおいる</string></dict>	<!-- Sudachi(core/small)に無い。ユーザ指定 2736 -->
 	<dict><key>phrase</key><string>ヘンプシード・オイル</string><key>shortcut</key><string>へんぷしーどおいる</string></dict>
 	<dict><key>phrase</key><string>なんとか</string><key>shortcut</key><string>なんとか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachi に無い(なんとかしろ→何と化しろ になっていた)。なんとかする/しろ/して の派生用にサ変(ユーザ指定 2738) -->
+	<dict><key>phrase</key><string>何とか</string><key>shortcut</key><string>なんとか</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 漢字表記も併置(かなだけだと候補バーが ⊘ 表示になる) -->
 </array>
 </plist>
