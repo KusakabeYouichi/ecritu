@@ -400,7 +400,7 @@ extension KanaKanjiConverter {
     // 陽一 先頭(2688)。seed 順をノードコストにも反映する
     // かじ: LM は 梶6391<火事6491<舵6617<鍛冶6676<家事6658 で、連文節が 舵が起きた/舵を手伝う
     // を先頭にしていた。seed 順(家事→火事→鍛冶)をノードコストへ(2689)
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ"]
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
