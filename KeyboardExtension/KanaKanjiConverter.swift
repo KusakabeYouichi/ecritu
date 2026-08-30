@@ -32,6 +32,12 @@ final class KanaKanjiConverter {
     // クエリが走っていた)。学習・抑制・設定変更で invalidateCandidateCache と一緒に消える。
     var kanaIdentityLeadingCache: [String: Bool] = [:]
     let kanaIdentityLeadingCacheLimit = 256
+    // 直近の単文節 finalize の点数内訳(DEBUG の実機トレース用。stateQueue 保護。2732)
+    var lastScoreTraceForDiagnostics: String = ""
+    func scoreTraceForDiagnostics(reading: String) -> String? {
+        let trace = stateQueue.sync { lastScoreTraceForDiagnostics }
+        return trace.hasPrefix(reading + ": ") ? String(trace.dropFirst(reading.count + 2)) : nil
+    }
 
     // applyScriptVariantCandidateModes へ活用派生集合を渡すための一時置き場(candidates() 内のみ使用)
     var inflectionDerivedCandidatesForScriptVariant: Set<String> = []
@@ -865,6 +871,10 @@ final class KanaKanjiConverter {
                 print("SINGLETRACE[\(context.reading)] #\(index) \(candidate) score=\(scores[candidate, default: 0])")
             }
         }
+        // 実機の変換トレース(keyboardConversionLastTrace)向けに上位の点数内訳を残す(2732)。
+        // 実機では環境変数が使えず、Mac と実機で単文節の並びが違う(ひょうか: 表化/評価)ときの切り分け用
+        let scoreTrace = sortedCandidates.prefix(8).map { "\($0)=\(scores[$0, default: 0])" }.joined(separator: " ")
+        stateQueue.sync { lastScoreTraceForDiagnostics = "\(context.reading): \(scoreTrace)" }
         #endif
 
         let archaicAdjectiveFiltered = filterArchaicAdjectiveSurfaceCandidates(

@@ -433,7 +433,9 @@ extension KeyboardViewController {
         let wordLM = kanaKanjiStore.hasWordLMMetadata ? "1" : "0"
         let fallback = kanaKanjiStore.isSystemDictionaryFallback() ? "1" : "0"
         let trace = "[\(edition)] \(reading)\n連文節: \(multiText.isEmpty ? "(空)" : multiText)\n単文節: \(singleText.isEmpty ? "(空)" : singleText)\nwLM=\(wordLM) fallback=\(fallback) fs=\(memoryFailSafeProfile.rawValue) mode=\(mode.rawValue)"
-        sharedDefaults.set(trace, forKey: SharedDefaultsKeys.keyboardConversionLastTrace)
+        // 単文節の点数内訳(2732。Mac/実機の並び差の切り分け用)
+        let scoreTrace = kanaKanjiConverter.scoreTraceForDiagnostics(reading: reading).map { "\n点数: \($0)" } ?? ""
+        sharedDefaults.set(trace + scoreTrace, forKey: SharedDefaultsKeys.keyboardConversionLastTrace)
     }
 
     func kanaKanjiCandidates(
