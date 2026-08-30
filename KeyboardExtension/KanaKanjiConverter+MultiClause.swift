@@ -1143,6 +1143,12 @@ extension KanaKanjiConverter {
                 Self.multiClauseColorTintStemSurfaces.contains(prev) {
                 penalty -= Self.multiClauseColorTintStemBeforeGakaruBonus
             }
+            // 格助詞 が/を の直後の は/も/が/を(定数コメント参照。2740)
+            if surface == reading, ["は", "も", "が", "を"].contains(surface),
+                Self.multiClauseCaseParticleEndingPhrases.contains(prev),
+                (prevReading ?? "").hasSuffix(String(prev.last!)) {
+                penalty += Self.multiClauseParticleAfterCaseParticlePenalty
+            }
             // かな のか の直後の漢字名詞(定数コメント参照。2736)
             if prev == "のか", prevReading == "のか",
                 isDictWord, !isInflectionDerived, !isDictionaryFormPredicate,

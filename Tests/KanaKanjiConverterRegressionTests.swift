@@ -12860,4 +12860,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // あう 単独は 会う 先頭のまま
         XCTAssertEqual(converter.candidates(for: "あう", limit: 3, systemCandidateMode: .surface).first, "会う")
     }
+
+    // 格助詞 が の直後の は は非文: まっくののほうがはやくから が 方が+は+約+から に割れて 早く が出なかった(2740)
+    func testRegressionRealLMGaWaAdjacencyPenalty() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "まっくののほうがはやくから", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.prefix(2).contains(where: { $0.hasSuffix("早くから") }), "multi=\(multi)")
+        XCTAssertFalse(multi.prefix(2).contains(where: { $0.contains("がは") }), "multi=\(multi)")
+    }
 }
