@@ -2834,7 +2834,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("いいだ", ["飯田"]),
             ("いか", ["以下", "イカ", "烏賊", "異化"]),
             ("かずひこ", ["和彦", "一彦"]),
-            ("すすめ", ["薦め", "進め", "勧め", "ススメ"]),
+            ("すすめ", ["薦め", "進め", "勧め", "奨め"]),  // ススメ は 2741 で suppr
             ("えんざんし", ["演算子", "演算し"]),
             ("とく", ["得", "解く", "説く"]),
             ("ぜい", ["税", "勢", "贅"]),
@@ -12877,5 +12877,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let multi = converter.multiClauseCandidates(for: "さんこうにしたとかなのかな", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "参考にしたとかなのかな", "multi=\(multi)")
         XCTAssertEqual(converter.candidates(for: "とか", limit: 3, systemCandidateMode: .surface).first, "とか")
+    }
+
+    // すすめる: 全活用形を 進/薦/勧 の順に統一(すすめていて だけ単文節順が露出して乱れて見えた)。
+    // ススメる/ススめる(カタカナ・交ぜ書き収穫)と 奬める(奨 の異体字)は suppr(2741)
+    func testRegressionRealLMSusumeruFamilyOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for tail in ["て", "ている", "ていて", "てる"] {
+            let reading = "すすめ" + tail
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(Array(list.prefix(3)), ["進め" + tail, "薦め" + tail, "勧め" + tail], "\(reading): \(list)")
+            XCTAssertFalse(list.contains("ススメ" + tail) || list.contains("奬め" + tail), "\(reading): \(list)")
+        }
     }
 }
