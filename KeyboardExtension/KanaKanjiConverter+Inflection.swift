@@ -428,10 +428,15 @@ extension KanaKanjiConverter {
         // 定義順では五段サ行の規則(した/す)が する の規則より先に並び、てきした→敵した が先着していた
         let isSuruDictionaryFormBase = rule.baseReadingSuffix == "する"
         let isClassicalSuBase = rule.baseReadingSuffix == "す"
+        // seed の有無は名詞語幹(なんとか)でも見る: する単独動詞群の基底読み(なんとかする)には seed が無いため、
+        // 名詞側の seed(なんとか→かな先頭)を無視して 何とかしろ が先頭になっていた(2739)
+        let sahenNounReading: String = isSuruDictionaryFormBase ? String(baseReading.dropLast(2))
+            : (isClassicalSuBase && baseReading.hasSuffix("す") ? String(baseReading.dropLast()) : baseReading)
         if rule.baseReadingSuffix.isEmpty || isSuruDictionaryFormBase || isClassicalSuBase,
             isClassicalSuBase || rule.allowedClasses.contains(className: InflectionClass.suru),
             results.count >= 2,
-            KanaKanjiSeedDictionary.seed[baseReading] == nil {
+            KanaKanjiSeedDictionary.seed[baseReading] == nil,
+            KanaKanjiSeedDictionary.seed[sahenNounReading] == nil {
             func dictionaryForm(_ base: String) -> String {
                 if isSuruDictionaryFormBase { return base }
                 if isClassicalSuBase { return base.hasSuffix("す") ? String(base.dropLast()) + "する" : base }

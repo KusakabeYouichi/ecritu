@@ -12831,5 +12831,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         let naru = converter.multiClauseCandidates(for: "なんとかなる", systemCandidateMode: .surface)
         XCTAssertEqual(naru.first, "なんとかなる", "multi=\(naru)")
+        // 漢字表記 何とか も2位に(かなだけだと候補バーが候補なし ⊘ になる。2739)
+        let shiro = converter.candidates(for: "なんとかしろ", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(shiro.prefix(2)), ["なんとかしろ", "何とかしろ"], "list=\(shiro)")
     }
 }
