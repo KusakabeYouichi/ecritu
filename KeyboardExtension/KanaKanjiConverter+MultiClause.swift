@@ -1899,6 +1899,7 @@ extension KanaKanjiConverter {
         // 対象は先頭・次順位とも漢字の内容語(甲州/講習)に限る。かな識別との入れ替え(そこ/其処、水/みず、
         // 日本/にほん)や など/等 まで作ると、LM の1文節変種(そこで産んだ 等)を押し出して退行した
         var leadAlternativeJoined: String? = nil
+        var leadAlternativeDelta = 0
         if pathIndices.count >= 2 {
             let lead = nodes[pathIndices[0]]
             if containsKanji(lead.surface),
@@ -1910,6 +1911,8 @@ extension KanaKanjiConverter {
                 let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
                 if altJoined != normalized {
                     leadAlternativeJoined = altJoined
+                    // 1文節の seed 順変種と同じ刻み(順位×step)に揃える。実差がそれより小さければ実差
+                    leadAlternativeDelta = min(alternative.bestTotal - bestTotal, Self.multiClauseSeedOrderVariantStep)
                 }
             }
         }
@@ -2047,6 +2050,24 @@ extension KanaKanjiConverter {
                             ? Self.multiClauseCollocationDemotionPenalty
                             : 0)
                 )
+                // DP で足していたノード単位のボーナス(seed 順/単文節先頭/の を挟む連語)を変種の差分にも反映する(2738)。
+                // 無いと 郡が溶けて(seed 順ボーナス 800 を持つ 氷 との差)や 公衆の果皮(連語 2500)が負の delta になり
+                // 最良の直後に並んでいた
+                let nodeKey = "\(node.start)-\(node.end)-\(node.surface)"
+                // 単文節先頭のボーナス(2720)は先頭の並びを決めるタイブレークなので変種の差分には含めない
+                // (含めると それぞれを/それはいくつ の漢字変種が許容差を超えて消えた)
+                // seed 順ボーナスは変種の差分では上限付き(みな/いくつ の 3300 級をそのまま足すと 幾つ の漢字変種が許容差を超えて消える。
+                // 郡(800)を負値から 200 の刻みに戻すには 600 で足りる)
+                var nodeBonus = min(seedOrderNounNodeBonuses[nodeKey] ?? 0, Self.multiClauseVariantSeedBonusCap)
+                if prevSurface == "の", pos >= 2,
+                    let collocationBonus = Self.multiClauseAcrossNoCollocationBonuses[nodes[pathIndices[pos - 2]].surface + "\t" + node.surface] {
+                    nodeBonus += collocationBonus
+                }
+                // 先頭側を差し替えると後段の連語(甲州→果皮)が失われる分も差分に入れる(公衆の果皮 が負値で先頭に来ていた)
+                if pos + 2 < pathIndices.count, nodes[pathIndices[pos + 1]].surface == "の",
+                    let downstream = Self.multiClauseAcrossNoCollocationBonuses[node.surface + "\t" + nodes[pathIndices[pos + 2]].surface] {
+                    nodeBonus += downstream
+                }
                 let outgoing: Int
                 if let nextNode {
                     outgoing = transitionCost(
@@ -2087,7 +2108,7 @@ extension KanaKanjiConverter {
                     }
                     outgoing = eosCost
                 }
-                return incoming + outgoing
+                return incoming + outgoing - nodeBonus
             }
 
             // 基準コストは curated 床(1500)を外した自然コストで取る。curated の激安を
@@ -2237,10 +2258,20 @@ extension KanaKanjiConverter {
         variants.sort { lhs, rhs in
             lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
         }
-        var results = suppressAllKanaBest ? [] : [joined]
-        if let leadAlternativeJoined, leadAlternativeJoined != joined, !results.contains(leadAlternativeJoined) {
-            results.append(leadAlternativeJoined)
+        // 先頭差し替えの再最適化経路は、コスト差で1文節変種と同列に並べる(2738)。固定で2位にすると
+        // こおりがとけて で 凍りが溶けて が 氷が解けて(僅差の末尾変種)より前に出た
+        if let leadAlternativeJoined, leadAlternativeJoined != joined {
+            variants.append((leadAlternativeDelta, -1, leadAlternativeJoined))
+            variants.sort { lhs, rhs in
+                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
+            }
         }
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
+            print("MULTITRACE variants[\(normalized)] " + variants.prefix(8).map { "\($0.joined)=\($0.delta)" }.joined(separator: " "))
+        }
+        #endif
+        var results = suppressAllKanaBest ? [] : [joined]
         for variant in variants where !results.contains(variant.joined) {
             results.append(variant.joined)
             if results.count >= 1 + Self.multiClauseVariantLimit {
