@@ -12791,4 +12791,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(list.first, reading, "\(reading): \(list)")
         }
     }
+
+    // ぶるねっろでぃもんたるちーの: 中黒つきカタカナ→イタリア語 の順。中黒なしカタカナ(未登録)は先頭に出さない(2738)
+    func testRegressionRealLMBrunelloOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "ぶるねっろでぃもんたるちーの", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["ブルネッロ・ディ・モンタルチーノ", "Brunello di Montalcino"], "list=\(list)")
+    }
 }
