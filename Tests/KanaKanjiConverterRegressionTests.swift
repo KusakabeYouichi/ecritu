@@ -12739,4 +12739,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertFalse(multi.contains(where: { $0.contains("たら可") || $0.contains("は可") }), "\(reading): \(multi)")
         }
     }
+
+    // ヘンプシードオイル: Sudachi に無い。misc で 2 表記(2736)
+    func testHempSeedOilFromMisc() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "へんぷしーどおいる", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["ヘンプシードオイル", "ヘンプシード・オイル"], "list=\(list)")
+    }
 }
