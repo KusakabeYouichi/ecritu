@@ -12817,4 +12817,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let ii = converter.candidates(for: "いい", limit: 6, systemCandidateMode: .surface)
         XCTAssertTrue((ii.firstIndex(of: "いい") ?? 99) < (ii.firstIndex(of: "好い") ?? 99), "list=\(ii)")
     }
+
+    // なんとか: Sudachi に無く なんとかしろ→何と化しろ だった。misc にサ変名詞で登録(2738)
+    func testRegressionRealLMNantokaFromMisc() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("なんとかしろ", "なんとかしろ"), ("なんとかして", "なんとかして"), ("なんとかする", "なんとかする")] {
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "\(reading): multi=\(multi) single=\(single)")
+        }
+        let naru = converter.multiClauseCandidates(for: "なんとかなる", systemCandidateMode: .surface)
+        XCTAssertEqual(naru.first, "なんとかなる", "multi=\(naru)")
+    }
 }
