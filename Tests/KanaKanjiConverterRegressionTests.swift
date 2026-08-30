@@ -12891,4 +12891,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertFalse(list.contains("ススメ" + tail) || list.contains("奬め" + tail), "\(reading): \(list)")
         }
     }
+
+    // かかくをやすくした: やすく→し の観測 bigram がかなを押し上げていた。安く→し のペアボーナス(2741)
+    func testRegressionRealLMYasukuAfterCaseParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("かかくをやすくした", "価格を安くした"), ("かかくをやすく", "価格を安く"), ("ねだんをやすくして", "値段を安くして")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
+        }
+        // 〜しやすく(接尾用法)はかなのまま
+        let easy = converter.multiClauseCandidates(for: "わかりやすくした", systemCandidateMode: .surface)
+        XCTAssertEqual(easy.first, "分かりやすくした", "multi=\(easy)")
+    }
 }
