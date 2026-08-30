@@ -12764,4 +12764,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(list.prefix(2)), ["でも", "デモ"], "list=\(list)")
         XCTAssertFalse(list.contains("デも"), "list=\(list)")
     }
+
+    // こおり: 郡(ぐん)の unigram 借用で 郡が溶けて が先頭だった。seed+seed 順ボーナスで 氷(2737)
+    func testRegressionRealLMKooriPrefersIce() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "こおり", limit: 3, systemCandidateMode: .surface).first, "氷")
+        for (reading, expected) in [("こおりがとけてきてますから", "氷が溶けてきてますから"), ("こおりが", "氷が"), ("こおりのうえ", "氷の上")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
+        }
+        // ぐん 読みの 郡 は無傷
+        XCTAssertTrue(converter.candidates(for: "ぐん", limit: 3, systemCandidateMode: .surface).contains("郡"))
+    }
 }
