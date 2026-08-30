@@ -1788,6 +1788,12 @@ extension KanaKanjiConverter {
                         let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: nodes[backPointer[prevIdx]].surface, surface: node.surface) {
                         cost -= collocationBonus
                     }
+                    // が の直後の存在動詞 あった系はかな(定数コメント参照。2740)。直前の名詞が 合う 慣用なら対象外
+                    if node.surface == node.reading, Self.multiClauseExistentialAttaReadings.contains(node.reading),
+                        prevNode.surface == "が", prevNode.reading == "が",
+                        !(backPointer[prevIdx] >= 0 && Self.multiClauseAuIdiomNounsBeforeGa.contains(nodes[backPointer[prevIdx]].surface)) {
+                        cost -= Self.multiClauseExistentialAttaAfterGaBonus
+                    }
                     // 色+が+漢字(買った/勝った): がかった のかなに委ねる(定数コメント参照。2731)
                         if prevNode.surface == "が", node.reading.hasPrefix("か"), containsKanji(node.surface),
                             backPointer[prevIdx] >= 0,
