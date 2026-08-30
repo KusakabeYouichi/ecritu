@@ -51,6 +51,19 @@ extension KanaKanjiConverter {
         }
     }
 
+    // 好い(いい)は現代の表記では いい(かな)より前に出さない(ユーザ指定 2738。学習前の初期状態の話)。
+    // 好い加減(rank0)/いい加減(rank1)のように辞書順で 好い 側が先の語があるため、好い を含む候補は
+    // 好い→いい に置き換えた候補が同じ読みにあれば、その直下へ下げる(除去はしない)
+    func applyYoiKanjiBelowKanaPreference(to scores: inout [String: Int]) {
+        for candidate in Array(scores.keys) where candidate.contains("好い") {
+            let kanaVersion = candidate.replacingOccurrences(of: "好い", with: "いい")
+            guard kanaVersion != candidate, let kanaScore = scores[kanaVersion], let score = scores[candidate] else {
+                continue
+            }
+            scores[candidate] = min(score, kanaScore - 1)
+        }
+    }
+
     // だ/です(+った/でした)に終助詞クラスタ(な/なー/よ/ね/よね/かな 等)が付いた読みそのもの
     static func isCopulaFinalParticleClusterReading(_ reading: String) -> Bool {
         for copula in ["だった", "でした", "です", "だ"] where reading.count > copula.count && reading.hasPrefix(copula) {

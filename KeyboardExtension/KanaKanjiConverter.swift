@@ -673,6 +673,7 @@ final class KanaKanjiConverter {
         )
         applySeedSingleKanjiPriorityBoost(for: context.reading, to: &scores)
         applyRegionalProduceBoost(for: context.reading, to: &scores)
+        applyYoiKanjiBelowKanaPreference(to: &scores)
         applySeedOrderNormalization(
             for: context.reading,
             learningScoresForReading: context.learningScoresForReading,
