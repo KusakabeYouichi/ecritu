@@ -1137,6 +1137,18 @@ extension KanaKanjiConverter {
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
                 penalty -= bonus
             }
+            // 色語の直後の がかった(seed かなノード)を優先: みどり/青海(かな識別・同音地名)+がかった より
+            // 緑/青み+がかった を採る(定数コメント参照。2731)
+            if reading.hasPrefix("がか"), surface == reading,
+                Self.multiClauseColorTintStemSurfaces.contains(prev) {
+                penalty -= Self.multiClauseColorTintStemBeforeGakaruBonus
+            }
+            // 連体の な の直後の述語(定数コメント参照。2731)
+            if isDictionaryFormPredicate || isInflectionDerived,
+                prev != Self.multiClauseBOSMarker,
+                prev.count >= 2, prev.hasSuffix("な"), containsKanji(prev) {
+                penalty += Self.multiClausePredicateAfterRentaiNaPenalty
+            }
             // 名詞+まち は接尾 待ち(定数コメント参照。2723)。前の語→町/街 が観測済み(地名)なら触らない
             if reading == "まち", surface == "待ち",
                 prev != Self.multiClauseBOSMarker,
@@ -1761,6 +1773,12 @@ extension KanaKanjiConverter {
                         if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface) {
                             cost += Self.multiClauseAuPersonMismatchPenalty
                         }
+                    }
+                    // 色+が+漢字(買った/勝った): がかった のかなに委ねる(定数コメント参照。2731)
+                    if prevNode.surface == "が", node.reading.hasPrefix("か"), containsKanji(node.surface),
+                        backPointer[prevIdx] >= 0,
+                        Self.multiClauseColorTintStemSurfaces.contains(nodes[backPointer[prevIdx]].surface) {
+                        cost += Self.multiClauseKanjiAfterColorGaPenalty
                     }
                     if cost < best[idx] {
                         best[idx] = cost
