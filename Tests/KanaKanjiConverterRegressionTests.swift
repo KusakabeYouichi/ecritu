@@ -12792,6 +12792,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // たいりょうり: タイ料理 の次に 鯛料理(鯛→料理 のペアボーナスで変種の許容差内に)(2738)
+    func testRegressionRealLMTairyouriSecondIsSeaBream() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "たいりょうり", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["タイ料理", "鯛料理"], "multi=\(multi)")
+    }
+
     // ぶるねっろでぃもんたるちーの: 中黒つきカタカナ→イタリア語 の順。中黒なしカタカナ(未登録)は先頭に出さない(2738)
     func testRegressionRealLMBrunelloOrder() throws {
         try prepareRealLMDictionary()
