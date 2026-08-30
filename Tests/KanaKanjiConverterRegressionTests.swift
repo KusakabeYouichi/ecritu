@@ -12647,6 +12647,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 候補数が多いと 名詞+漢字接辞 の合成 表化 が辞書語 表化 と合算されて先頭に出ていた(実機の候補バー相当。2734)
         let wide = converter.candidates(for: "ひょうか", limit: 16, systemCandidateMode: .surface)
         XCTAssertEqual(wide.first, "評価", "wide=\(wide)")
+        // 苹果(中国語)は5番目へ(seed。2736)
+        XCTAssertEqual(Array(wide.prefix(5)), ["評価", "氷菓", "氷華", "表化", "苹果"], "wide=\(wide)")
     }
 
     // 色+がかった はかなが正書(紫がかった/緑がかった/青みがかった)。が+買った に割れない(2731)
