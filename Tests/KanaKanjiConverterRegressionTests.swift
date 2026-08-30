@@ -12747,4 +12747,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let list = converter.candidates(for: "へんぷしーどおいる", limit: 4, systemCandidateMode: .surface)
         XCTAssertEqual(Array(list.prefix(2)), ["ヘンプシードオイル", "ヘンプシード・オイル"], "list=\(list)")
     }
+
+    // でる: デル(企業名、rank0)より動詞 出る を先頭に。Dell は it.plist から(2736)
+    func testRegressionRealLMDeruPrefersVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "でる", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["出る", "でる", "Dell", "デル"], "list=\(list)")
+    }
 }
