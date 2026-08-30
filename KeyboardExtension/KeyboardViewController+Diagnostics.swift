@@ -445,10 +445,23 @@ extension KeyboardViewController {
         sharedDataPrewarmWorkItem = nil
 
         clearSupplementaryLexiconCandidatesForMemoryTrim()
-        clearContactCandidatesIfNeeded(refreshKeyboardState: false)
+
+        // 共有キャッシュ(補助語彙 compact/LM/活用/かな識別/連絡先)の破棄は、通常の非表示では
+        // 高水位のときだけ(A/B 2727)。実測(8/30、推移サンプラ): 破棄で返る used は −2.2〜−2.7MB、
+        // 次のセッションの最初の変換で作り直すコストは used +3.4(瞬間ピーク +7)/alloc +8 で、
+        // 安定運転では差し引き損。さらに作り直しの確保が断片化した空きに収まらず alloc が
+        // 4MB 刻みで伸びる(56→60→64)ラチェットの機構でもあった。警告・ゾンビ不活性化・attach
+        // 失敗の後始末(honorsSlimmingToggle=false)は従来どおり無条件に捨てる
+        let hiddenFootprintMB = currentFootprintMB() ?? 0
+        let keepsSharedCachesWhileHidden = honorsSlimmingToggle
+            && memoryFailSafeProfile == .normal
+            && hiddenFootprintMB < Self.hiddenCacheClearMinFootprintMB
+        if !keepsSharedCachesWhileHidden {
+            clearContactCandidatesIfNeeded(refreshKeyboardState: false)
+        }
 
         // 変換キャッシュ破棄はスリム化設定に従う(オフ=調査時など、破棄も返却もしない)
-        if slimmingActive {
+        if slimmingActive, !keepsSharedCachesWhileHidden {
             if includeSystemCaches {
                 kanaKanjiConverter.clearAllCaches()
             } else {
@@ -490,6 +503,7 @@ extension KeyboardViewController {
 
         updateKeyboardDiagnosticsHeartbeat(
             event: "キーボード非表示でメモリ解放 reason=\(reason) releaseView=\(releaseHostingView) clearSystem=\(includeSystemCaches)"
+                + " caches=\(keepsSharedCachesWhileHidden ? "kept" : "cleared")(fp\(String(format: "%.1f", hiddenFootprintMB)))"
                 + " slim=\(slimmingActive ? "on" : "off") profile=\(memoryFailSafeProfile.rawValue)",
             appendLog: true
         )
@@ -505,6 +519,9 @@ extension KeyboardViewController {
     // 来るため、その手前(50MB)で返しておけば警告に至りにくい。
     // 効果はログ「予防スリム化」で計測する(返却量が常にゼロなら閾値か頻度を見直す)
     static let preventiveReliefFootprintMB: Double = 50
+    // 通常の非表示で共有キャッシュを捨てはじめる footprint(A/B 2727。performHiddenKeyboardMemoryTrim 参照)。
+    // 警告は fp≈60 で届くので、その手前では作り直しコストの方が高い分を温存する
+    static let hiddenCacheClearMinFootprintMB: Double = 55
     static let preventiveReliefMinimumInterval: CFAbsoluteTime = 3
     nonisolated(unsafe) static var lastPreventiveReliefAt: CFAbsoluteTime = 0
     nonisolated(unsafe) static var lastPreventiveReliefLogAt: CFAbsoluteTime = 0
