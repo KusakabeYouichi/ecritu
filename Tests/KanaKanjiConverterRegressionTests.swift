@@ -12540,4 +12540,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(m.first, "製法" + String(probe.last!), "\(probe): \(m)")
         }
     }
+
+    // なんい: 難易 の頻度は 難易度 由来。単独は 南緯 を先頭に、難易度 は無傷(2730)
+    func testRegressionRealLMNanIPrefersSouthLatitude() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "なんい", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["南緯", "難易"], "single=\(single)")
+        XCTAssertEqual(converter.candidates(for: "なんいど", limit: 3, systemCandidateMode: .surface).first, "難易度")
+        for (probe, expected) in [("なんいは", "南緯は"), ("なんいの", "南緯の"), ("なんいどが", "難易度が")] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertEqual(m.first, expected, "\(probe): \(m)")
+        }
+    }
 }
