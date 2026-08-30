@@ -12755,4 +12755,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let list = converter.candidates(for: "でる", limit: 5, systemCandidateMode: .surface)
         XCTAssertEqual(Array(list.prefix(4)), ["出る", "でる", "Dell", "デル"], "list=\(list)")
     }
+
+    // でも: 辞書項目が デモ だけで {デモ, でも, デも, 出も, 手も} だった。接続詞のかな でも を先頭、デも(で→デ+も)は作らない(2736)
+    func testRegressionRealLMDemoPrefersConjunction() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let list = converter.candidates(for: "でも", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["でも", "デモ"], "list=\(list)")
+        XCTAssertFalse(list.contains("デも"), "list=\(list)")
+    }
 }

@@ -88,6 +88,14 @@ extension KanaKanjiConverter {
         // かな識別が同読みグループ内で LM 優位(ここ4556 vs 個々/ココ…)なら、
         // グループ首位へ引き上げる(此処/個々 等の辞書順よりかな正書を優先)。
         // 今日(LM優位)vs きょう のような漢字正書の読みでは発火しない。
+        // 複合助詞・接続詞そのもの(でも/には/とは 等)を単独で打ったときは、かなが正書。辞書が デモ(rank0)しか持たない
+        // でも で {デモ, でも} になっていた。seed で供給すると連文節の でも ノードの性質が変わる(反対デモ/ことでもなく が退行)
+        // ため、単文節の並びだけをここで矯正する(2736)
+        if let identityScore = scores[reading], KanaKanjiConverter.multiClauseCompoundParticles.contains(reading) {
+            let maxOther = scores.filter { $0.key != reading }.values.max() ?? 0
+            scores[reading] = max(identityScore, maxOther + 1)
+            return
+        }
         if let identityScore = scores[reading] {
             // グループは辞書の同読みリスト全体(systemCandidates)で組む。表層から読みを
             // 判定するかな/カタカナ限定だと、成る程 のような漢字表記が比較対象から漏れて
