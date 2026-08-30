@@ -12527,4 +12527,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(multi.first ?? single.first, expected, "\(reading): multi=\(multi) single=\(single)")
         }
     }
+
+    // せいほう: 基底順 青峰/西方/製法 を seed で 製法 先頭に(2728)
+    func testRegressionRealLMSeihouPrefersManufacturingMethod() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "せいほう", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "製法", "single=\(single)")
+        // 語+助詞1字のボーナス(2720)で は/を も 製法 先頭。の は 西方→の の bigram が強く LM に従う(西方の空 等)
+        for probe in ["せいほうは", "せいほうを"] {
+            let m = converter.multiClauseCandidates(for: probe, systemCandidateMode: .surface)
+            XCTAssertEqual(m.first, "製法" + String(probe.last!), "\(probe): \(m)")
+        }
+    }
 }
