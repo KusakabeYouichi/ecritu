@@ -12777,4 +12777,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // ぐん 読みの 郡 は無傷
         XCTAssertTrue(converter.candidates(for: "ぐん", limit: 3, systemCandidateMode: .surface).contains("郡"))
     }
+
+    // だなー: 辞書が ダナー(靴ブランド)だけで {ダナー, だなー, 打なー} だった。コピュラ+終助詞クラスタはかな先頭(2737)
+    func testRegressionRealLMDanaaPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for reading in ["だなー", "だなあ", "ですねー", "だよねー"] {
+            let list = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(list.first, reading, "\(reading): \(list)")
+        }
+    }
 }
