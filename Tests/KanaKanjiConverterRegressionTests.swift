@@ -12705,6 +12705,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
         }
+        // 第2候補は先頭文節を seed 2番目(講習)に固定した再最適化経路(講習の可否)。ユーザ指定 2736
+        let kahi = converter.multiClauseCandidates(for: "こうしゅうのかひ", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kahi.prefix(2)), ["甲州の果皮", "講習の可否"], "multi=\(kahi)")
     }
 
     // ましょ(ましょう の口語)を連用形に付ける活用規則。つなぎましょ が 繋+ましょ(名詞+素通り)に割れていた(2735)
