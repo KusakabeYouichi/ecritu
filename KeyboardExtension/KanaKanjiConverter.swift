@@ -533,14 +533,18 @@ final class KanaKanjiConverter {
             to: &scores
         )
 
+        // 名詞+漢字接辞の合成は辞書に無い語の補完なので、既に登録済みの候補(辞書語 表化 rank4 等)には
+        // 重ねない(2734)。addCandidates は経路ごとに加算するため、ひょうか で 表化(1196+986=2182)が
+        // 評価(1200)を越えていた(候補数 limit≥8 で合成 表化 が届くとき。limit 3 のテストでは見えなかった)
+        let affixCandidates = nounKanjiAffixCandidates(
+            for: reading,
+            userDictionary: context.userDictionary,
+            initialUserDictionary: context.initialUserDictionary,
+            systemCandidateMode: context.mode,
+            limit: limit * 2
+        )
         addCandidates(
-            nounKanjiAffixCandidates(
-                for: reading,
-                userDictionary: context.userDictionary,
-                initialUserDictionary: context.initialUserDictionary,
-                systemCandidateMode: context.mode,
-                limit: limit * 2
-            ),
+            affixCandidates.filter { scores[$0] == nil },
             baseScore: CandidateScore.nounKanjiAffix,
             to: &scores
         )
