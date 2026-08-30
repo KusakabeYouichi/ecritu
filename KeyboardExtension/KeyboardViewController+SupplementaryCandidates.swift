@@ -337,8 +337,11 @@ extension KeyboardViewController {
                 self.contactCandidatesLastRefreshAt = Date()
 
                 let previous = self.contactCandidatesByReading
+                let compactSnapshot = MemoryForensics.snapshot()
                 self.contactCandidatesByReading = SupplementalVocabCompactStore(dictionary: cachedCandidates)
                 self.supplementaryMergedCandidatesCacheByKey = [:]
+                // 測定(2725): compact 化後の増分(復号した辞書はこのスコープを抜ければ解放される)
+                MemoryForensics.noteSyncDelta("連絡先キャッシュcompact化 readings=\(cachedCandidates.count)", since: compactSnapshot, minDeltaMB: -1)
 
                 if previous != self.contactCandidatesByReading {
                     self.refreshKeyboardStateAsync()
@@ -369,9 +372,13 @@ extension KeyboardViewController {
                 return
             }
 
-            let cachedCandidates = self.limitContactCandidateDictionary(
-                self.cachedContactCandidatesFromSharedDefaults()
-            )
+            // 測定(2725): 共有 defaults の連絡先キャッシュ(約1.6万読み)を毎 bootstrap で復号している。
+            // 8/30 10:43 Safari の警告は bootstrap 直後 1.2 秒で used +4.4MB(latin/補助語彙は未ロード)で、
+            // この復号(NSDictionary→Swift 辞書のブリッジ二重化)が有力候補。復号前後を必ず記録する
+            let decodeSnapshot = MemoryForensics.snapshot()
+            let decoded = self.cachedContactCandidatesFromSharedDefaults()
+            MemoryForensics.noteSyncDelta("連絡先キャッシュ復号 readings=\(decoded.count)", since: decodeSnapshot, minDeltaMB: -1)
+            let cachedCandidates = self.limitContactCandidateDictionary(decoded)
 
             DispatchQueue.main.async {
                 completion(cachedCandidates)
