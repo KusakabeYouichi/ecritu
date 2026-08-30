@@ -12694,4 +12694,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
         }
     }
+
+    // こうしゅう/かひ: 公衆(→の 1362)と 可否(の→ 5248)に負け 公衆の可否 だった。seed 順ボーナスで 甲州の果皮(の色)(2735)
+    func testRegressionRealLMKoshuKahiPrefersGrapeSkin() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("こうしゅうの", "甲州の"), ("こうしゅうのかひ", "甲州の果皮"), ("こうしゅうのかひのいろ", "甲州の果皮の色")] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(multi)")
+        }
+    }
 }
