@@ -12713,9 +12713,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
             XCTAssertEqual(single.first, expected, "\(reading): \(single)")
         }
-        // つなぐ はかな表記が LM 優位(つなぎましょう/つなぎます も同じ並び)なので、繋ぎましょ は2位以内・送り仮名なしの 繋ましょ が消えることを確認
-        let tsunagi = converter.candidates(for: "つなぎましょ", limit: 4, systemCandidateMode: .surface)
-        XCTAssertTrue(tsunagi.prefix(2).contains("繋ぎましょ"), "list=\(tsunagi)")
-        XCTAssertFalse(tsunagi.contains("繋ましょ"), "list=\(tsunagi)")
+        // つなぐ: seed で 繋ぐ 先頭(2736)。繫ぎましょ(異体字)/継なぎましょ(非標準送り仮名)は suppr で消える
+        let tsunagi = converter.candidates(for: "つなぎましょ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(tsunagi.first, "繋ぎましょ", "list=\(tsunagi)")
+        XCTAssertFalse(tsunagi.contains("繋ましょ") || tsunagi.contains("繫ぎましょ") || tsunagi.contains("継なぎましょ"), "list=\(tsunagi)")
+        XCTAssertEqual(converter.candidates(for: "つなぐ", limit: 3, systemCandidateMode: .surface).first, "繋ぐ")
+        XCTAssertEqual(converter.candidates(for: "つなぎ", limit: 3, systemCandidateMode: .surface).first, "繋ぎ")
     }
 }
