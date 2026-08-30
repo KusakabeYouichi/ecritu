@@ -51,6 +51,17 @@ extension KanaKanjiConverter {
         }
     }
 
+    // だ/です(+った/でした)に終助詞クラスタ(な/なー/よ/ね/よね/かな 等)が付いた読みそのもの
+    static func isCopulaFinalParticleClusterReading(_ reading: String) -> Bool {
+        for copula in ["だった", "でした", "です", "だ"] where reading.count > copula.count && reading.hasPrefix(copula) {
+            let tail = String(reading.dropFirst(copula.count))
+            if KanaKanjiConverter.multiClauseFinalParticleReadings.contains(tail) {
+                return true
+            }
+        }
+        return false
+    }
+
     func applySameReadingScriptPreference(
         for reading: String,
         systemCandidates: [String],
@@ -91,7 +102,11 @@ extension KanaKanjiConverter {
         // 複合助詞・接続詞そのもの(でも/には/とは 等)を単独で打ったときは、かなが正書。辞書が デモ(rank0)しか持たない
         // でも で {デモ, でも} になっていた。seed で供給すると連文節の でも ノードの性質が変わる(反対デモ/ことでもなく が退行)
         // ため、単文節の並びだけをここで矯正する(2736)
-        if let identityScore = scores[reading], KanaKanjiConverter.multiClauseCompoundParticles.contains(reading) {
+        // コピュラ だ/です+終助詞クラスタ(だなー/だよね/ですね 等)も同型: 辞書が ダナー(靴ブランド、rank0)しか
+        // 持たない だなー で {ダナー, だなー, 打なー} になっていた(ユーザ指定 2737)
+        if let identityScore = scores[reading],
+            KanaKanjiConverter.multiClauseCompoundParticles.contains(reading)
+                || Self.isCopulaFinalParticleClusterReading(reading) {
             let maxOther = scores.filter { $0.key != reading }.values.max() ?? 0
             scores[reading] = max(identityScore, maxOther + 1)
             return
