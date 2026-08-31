@@ -6,7 +6,7 @@ import Darwin
 extension KeyboardRootView {
     var threeByThreeWaKana: FlickKanaSet {
         displayedKanaForKanaCharacterModeIfNeeded(
-            FlickKanaLayout.waSet(for: activeKanaModifierMode).remapped(for: directionProfile)
+            FlickKanaLayout.waSet(for: activeKanaModifierMode, profile: directionProfile)
         )
     }
 
@@ -148,7 +148,7 @@ extension KeyboardRootView {
     }
 
     var threeByThreeKanaRows: [[FlickKanaSet]] {
-        FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: .threeByThreePlusWa).map { row in
+        FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: .threeByThreePlusWa, profile: directionProfile).map { row in
             row.map {
                 displayedKanaForKanaCharacterModeIfNeeded($0.remapped(for: directionProfile))
             }

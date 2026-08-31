@@ -558,7 +558,7 @@ struct KeyboardRootView: View {
     var rows: [[FlickKanaSet]] {
         switch inputMode {
         case .kana:
-            return FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: kanaLayoutMode).map { row in
+            return FlickKanaLayout.rows(for: activeKanaModifierMode, layoutMode: kanaLayoutMode, profile: directionProfile).map { row in
                 row.map {
                     displayedKanaForKanaCharacterModeIfNeeded($0.remapped(for: directionProfile))
                 }

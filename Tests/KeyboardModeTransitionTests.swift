@@ -352,6 +352,50 @@ final class KeyboardModeTransitionTests: XCTestCase {
         )
     }
 
+    func testWaSecondaryFlickOutputsForHistoricalKana() {
+        // 案C(2026-08-31): を→下=ゐ、ー→下=ゑ、ん→下=〜
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: "を", verticalDirection: .bas),
+            "ゐ"
+        )
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: "ー", verticalDirection: .bas),
+            "ゑ"
+        )
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: "ん", verticalDirection: .bas),
+            "〜"
+        )
+        // 上方向には割り当てなし
+        XCTAssertNil(FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: "を", verticalDirection: .haut))
+        XCTAssertNil(FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: "ー", verticalDirection: .haut))
+    }
+
+    func testWaKeyAssignmentPerDirectionProfile() {
+        // écritu方向: 母音方向(上=い段ゐ、下=お段を)、ー/んは1段のまま
+        let ecritu = FlickKanaLayout.waSet(for: .none, profile: .ecritu)
+        XCTAssertEqual(ecritu.up, "ゐ")
+        XCTAssertEqual(ecritu.down, "を")
+        XCTAssertEqual(ecritu.left, "ー")
+        XCTAssertEqual(ecritu.right, "ん")
+        // Apple方向: 従来の1段割り当てを無傷で維持
+        let apple = FlickKanaLayout.waSet(for: .none, profile: .apple)
+        XCTAssertEqual(apple.up, "ん")
+        XCTAssertEqual(apple.down, "〜")
+        XCTAssertEqual(apple.left, "を")
+        XCTAssertEqual(apple.right, "ー")
+        // remapped がわキーを二重変換しないこと(profile非依存フラグ)
+        XCTAssertEqual(ecritu.remapped(for: .apple), ecritu)
+        // rows(5×2/3×3+わ)にも同じセットが載ること
+        for layout in [KanaLayoutMode.fiveByTwo, .threeByThreePlusWa] {
+            for profile in [FlickDirectionProfile.ecritu, .apple] {
+                let rows = FlickKanaLayout.rows(for: .none, layoutMode: layout, profile: profile)
+                let wa = rows.flatMap { $0 }.first { $0.label == "わ" }
+                XCTAssertEqual(wa, FlickKanaLayout.waSet(for: .none, profile: profile), "layout=\(layout) profile=\(profile)")
+            }
+        }
+    }
+
     func testYaKeyAssignmentMatchesBetweenFiveByTwoAndThreeByThreePlusWa() {
         let fiveByTwoYa = FlickKanaLayout.fiveByTwoRows[1][2]
         let threeByThreeYa = FlickKanaLayout.threeByThreePlusWaRows[2][1]

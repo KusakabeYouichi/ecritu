@@ -27,14 +27,34 @@ enum TemperatureUnitPreference: String {
 
 enum FlickKanaLayout {
     static let latinShiftKeyToken = "__latin_shift__"
-    static let kanaWaSet = FlickKanaSet(label: "わ", center: "わ", up: "を", right: "ん", down: "〜", left: "ー")
+    // わキーは方向プロファイルごとに別定義(2026-08-31、ゐ/ゑ対応の案C)。
+    // écritu方向: 母音方向の一貫性(い段=上/お段=下)を わ行にも通す — 上ゐ・下を。
+    //   最頻出の ー(左)/ん(右) は1段のまま無傷。2段フリック: ー→下=ゑ、ん→下=〜。
+    // Apple方向: 従来の1段割り当てを無傷で維持し、2段で を→下=ゐ、ー→下=ゑ を追加。
+    // 〜 が écritu の1段目に存在しないため、汎用の remapped(for:) では導出できない。
+    static let kanaWaSetEcritu = FlickKanaSet(
+        label: "わ", center: "わ", up: "ゐ", right: "ん", down: "を", left: "ー",
+        usesProfileDependentGuideOrder: false
+    )
+    static let kanaWaSetApple = FlickKanaSet(
+        label: "わ", center: "わ", up: "ん", right: "ー", down: "〜", left: "を",
+        usesProfileDependentGuideOrder: false
+    )
     static let kanaYaSet = FlickKanaSet(label: "や", center: "や", up: "『", right: "ゆ", down: "よ", left: "』")
 
+    // 2段フリック(横フリック後、指を離さず上下)の出力表。や の括弧に加え、
+    // わ の旧仮名 ゐ/ゑ と、案Cで2段へ移した ー/〜 を担う(2026-08-31)。
     static func secondaryBracketFlickOutput(
         forPrimaryOutput primaryOutput: String,
         verticalDirection: FlickDirection
     ) -> String? {
         switch (primaryOutput, verticalDirection) {
+        case ("を", .bas):
+            return "ゐ"
+        case ("ー", .bas):
+            return "ゑ"
+        case ("ん", .bas):
+            return "〜"
         case ("『", .haut):
             return "("
         case ("『", .bas):
@@ -46,6 +66,12 @@ enum FlickKanaLayout {
         default:
             return nil
         }
+    }
+
+    // FlickKeyView が2段フリックを起動してよい1段目出力か(左右フリック限定は呼び出し側)
+    static func hasSecondaryFlickOutput(forPrimaryOutput primaryOutput: String) -> Bool {
+        secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .haut) != nil
+            || secondaryBracketFlickOutput(forPrimaryOutput: primaryOutput, verticalDirection: .bas) != nil
     }
 
     static let fiveByTwoRows: [[FlickKanaSet]] = [
@@ -61,7 +87,7 @@ enum FlickKanaLayout {
             FlickKanaSet(label: "ま", center: "ま", up: "み", right: "む", down: "も", left: "め"),
             kanaYaSet,
             FlickKanaSet(label: "ら", center: "ら", up: "り", right: "る", down: "ろ", left: "れ"),
-            kanaWaSet
+            kanaWaSetEcritu
         ]
     ]
 
@@ -83,14 +109,23 @@ enum FlickKanaLayout {
         ]
     ]
 
-    static func rows(for mode: DiacriticMode, layoutMode: KanaLayoutMode = .fiveByTwo) -> [[FlickKanaSet]] {
-        let sourceRows: [[FlickKanaSet]]
+    static func rows(
+        for mode: DiacriticMode,
+        layoutMode: KanaLayoutMode = .fiveByTwo,
+        profile: FlickDirectionProfile = .ecritu
+    ) -> [[FlickKanaSet]] {
+        var sourceRows: [[FlickKanaSet]]
 
         switch layoutMode {
         case .fiveByTwo:
             sourceRows = fiveByTwoRows
         case .threeByThreePlusWa:
             sourceRows = threeByThreePlusWaRows
+        }
+
+        // わ はプロファイル別定義(汎用置換の対象外)なのでここで差し替える
+        sourceRows = sourceRows.map { row in
+            row.map { $0.label == "わ" ? (profile == .apple ? kanaWaSetApple : kanaWaSetEcritu) : $0 }
         }
 
         guard let map = characterMap(for: mode) else {
@@ -102,12 +137,13 @@ enum FlickKanaLayout {
         }
     }
 
-    static func waSet(for mode: DiacriticMode) -> FlickKanaSet {
+    static func waSet(for mode: DiacriticMode, profile: FlickDirectionProfile = .ecritu) -> FlickKanaSet {
+        let base = profile == .apple ? kanaWaSetApple : kanaWaSetEcritu
         guard let map = characterMap(for: mode) else {
-            return kanaWaSet
+            return base
         }
 
-        return applyingMap(map, to: kanaWaSet)
+        return applyingMap(map, to: base)
     }
 
     static func numberRows(
