@@ -286,8 +286,16 @@ regenerate_sqlite_if_possible() {
   fi
 
   if ! needs_sqlite_regeneration; then
-    echo "[dict] Skip sqlite regeneration (kana_kanji_dictionary.sqlite is up-to-date)."
-    return
+    # 再生成の途中失敗が空のDBを残すと、mtime 判定では「最新」に見えて空辞書を配ってしまう
+    # (2026-08-31: plist 編集とビルドが競合して 86KB の空DBが実機にバンドルされ fallback=1 で変換退化)。
+    # 中身を数えて薄すぎれば作り直す
+    local existing_rows
+    existing_rows=$(sqlite3 "$TMP_SQLITE" "SELECT count(*) FROM dictionary_entries;" 2>/dev/null || echo 0)
+    if [[ "${existing_rows:-0}" -ge 100000 ]]; then
+      echo "[dict] Skip sqlite regeneration (kana_kanji_dictionary.sqlite is up-to-date, rows=$existing_rows)."
+      return
+    fi
+    echo "[dict] Warning: 既存SQLiteの行数が異常に少ない(rows=$existing_rows)。再生成します。"
   fi
 
   local sqlite_args=(
@@ -335,7 +343,14 @@ regenerate_sqlite_if_possible() {
   fi
 
   if "${sqlite_args[@]}"; then
-    echo "[dict] SQLite regeneration complete."
+    local regenerated_rows
+  regenerated_rows=$(sqlite3 "$TMP_SQLITE" "SELECT count(*) FROM dictionary_entries;" 2>/dev/null || echo 0)
+  if [[ "${regenerated_rows:-0}" -lt 100000 ]]; then
+    echo "[dict] error: SQLite regeneration produced too few rows (rows=$regenerated_rows). Failing the build to avoid bundling a broken dictionary." >&2
+    rm -f "$TMP_SQLITE"
+    exit 1
+  fi
+  echo "[dict] SQLite regeneration complete (rows=$regenerated_rows)."
   else
     echo "[dict] Warning: sqlite regeneration failed. Keeping previous artifacts if present."
   fi
