@@ -1121,6 +1121,14 @@ struct KeyboardRootView: View {
         .onChange(of: inputMode) { mode in
             onInputModeChanged(mode)
         }
+        .onChange(of: initialInputMode) { newMode in
+            // フィールド移動で keyboardType が変わったら面を追従させる(4.4.1: かな面のまま
+            // 電話番号欄に留まらない)。同一フィールド内の手動切替では initialInputMode が
+            // 変わらないため、この経路がユーザの選択を上書きすることはない
+            if inputMode != newMode {
+                inputMode = newMode
+            }
+        }
         .onChange(of: spaceToastTrigger) { _ in
             showInitialSpaceToastIfNeeded()
         }
