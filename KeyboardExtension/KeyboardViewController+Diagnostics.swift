@@ -9,11 +9,17 @@ extension KeyboardViewController {
         var diagnosticsSessionID = UUID().uuidString
         var diagnosticsSessionStartedAt = Date()
         let diagnosticsControllerID = UUID().uuidString
+        #if DEBUG
         var diagnosticsFlightRecorderLastObservedAt: [String: TimeInterval] = [:]
+        #endif
         // 診断のメモリ内バッファ(毎打鍵の UserDefaults JSON ラウンドトリップ回避)。
         // nil=未ロード。永続化は2秒スロットル+重要イベント即時+ライフサイクルでフラッシュ。
+        #if DEBUG
         var diagnosticsFlightRecorderBuffer: [DiagnosticsFlightRecorderEvent]?
+        #endif
+        #if DEBUG
         var diagnosticsFlightRecorderLastPersistedAt: TimeInterval = 0
+        #endif
         // 診断ログのメモリ内バッファ(2707): 以前は [String](320本の文字列が変換の合間に
         // 生成され、一時確保と同じページに散在=返却不能ページを増やす)だったのを、改行区切りの
         // 1本の連続テキスト(Data)にした。保存もそのまま書く(JSON 化の一時確保 130KB/回も消える)。
@@ -422,7 +428,9 @@ extension KeyboardViewController {
         persistBufferedKeyboardDiagnostics()
         diagnosticsState.diagnosticsLogTextBuffer = nil
         diagnosticsState.diagnosticsLogTextLineCount = 0
+        #if DEBUG
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
+        #endif
         clearComposingState()
         clearRecentKanaPlainCommitUpgradeContext()
         lastSynchronizedContextBeforeInputTail = ""
@@ -942,6 +950,10 @@ extension KeyboardViewController {
     // メモリ警告等の重要イベント(forceRecord/appendLog)は即時永続化される。
     static let diagnosticsBufferPersistIntervalSec: TimeInterval = 2
 
+    // フライトレコーダー(終了直前6秒のイベント列)は開発ビルド専用(2026-08-31)。
+    // Release では時刻だけの記録は不具合調査に足りず、「打鍵タイミングの記録」に見える
+    // 構造だけが残るため、フラグでなくコードごと外す(以下のFR系関数すべて同様)。
+    #if DEBUG
     func flightRecorderEvents(from defaults: UserDefaults) -> [DiagnosticsFlightRecorderEvent] {
         guard
             let data = defaults.data(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents),
@@ -952,7 +964,9 @@ extension KeyboardViewController {
 
         return decoded
     }
+    #endif
 
+    #if DEBUG
     func saveFlightRecorderEvents(_ events: [DiagnosticsFlightRecorderEvent], to defaults: UserDefaults) {
         if let encoded = try? JSONEncoder().encode(events) {
             defaults.set(encoded, forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
@@ -961,7 +975,9 @@ extension KeyboardViewController {
 
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
     }
+    #endif
 
+    #if DEBUG
     func trimmedFlightRecorderEvents(
         _ events: [DiagnosticsFlightRecorderEvent],
         anchorTimestamp: TimeInterval
@@ -975,13 +991,19 @@ extension KeyboardViewController {
 
         return filtered
     }
+    #endif
 
+    #if DEBUG
     func clearFlightRecorderEvents(in defaults: UserDefaults) {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
+        #if DEBUG
         diagnosticsState.diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
+        #endif
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
     }
+    #endif
 
+    #if DEBUG
     func observeKeyboardDiagnosticsEvent(
         _ event: String,
         file: String = #fileID,
@@ -1024,6 +1046,7 @@ extension KeyboardViewController {
             diagnosticsState.diagnosticsFlightRecorderLastPersistedAt = now
         }
     }
+    #endif
 
     static let diagnosticsLogFlushDelay: TimeInterval = 5
 
@@ -1063,12 +1086,15 @@ extension KeyboardViewController {
         guard let sharedDefaults else {
             return
         }
+        #if DEBUG
         if let buffer = diagnosticsState.diagnosticsFlightRecorderBuffer {
             saveFlightRecorderEvents(buffer, to: sharedDefaults)
             diagnosticsState.diagnosticsFlightRecorderLastPersistedAt = Date().timeIntervalSince1970
         }
+        #endif
     }
 
+    #if DEBUG
     func flushFlightRecorderEventsIfPresent(reason: String) {
         guard let sharedDefaults else {
             return
@@ -1103,6 +1129,7 @@ extension KeyboardViewController {
 
         clearFlightRecorderEvents(in: sharedDefaults)
     }
+    #endif
 
     func keyboardDiagnosticsCurrentInstallMarker() -> String {
         let bundle = Bundle.main
@@ -1121,7 +1148,9 @@ extension KeyboardViewController {
         // 証拠を残す。明示クリアはコンテナアプリの診断クリア操作から行う)
         diagnosticsState.diagnosticsLogTextBuffer = nil
         diagnosticsState.diagnosticsLogTextLineCount = 0
+        #if DEBUG
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
+        #endif
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionOwnerToken)
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
@@ -1260,7 +1289,9 @@ extension KeyboardViewController {
             return
         }
 
+        #if DEBUG
         observeKeyboardDiagnosticsEvent(event, file: file, line: line, function: function)
+        #endif
         persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
 
         // ここから先はログ書き込み(開発ビルド専用)。failSafe の永続化は機能なので残す。
@@ -1292,7 +1323,9 @@ extension KeyboardViewController {
             return
         }
 
+        #if DEBUG
         diagnosticsState.diagnosticsFlightRecorderLastObservedAt.removeAll(keepingCapacity: true)
+        #endif
 
         let previousSessionWasActive = sharedDefaults.bool(
             forKey: SharedDefaultsKeys.keyboardDiagnosticsSessionActive
@@ -1333,9 +1366,13 @@ extension KeyboardViewController {
                 line: #line,
                 function: #function
             )
+            #if DEBUG
             flushFlightRecorderEventsIfPresent(reason: reason)
+            #endif
         } else {
+            #if DEBUG
             clearFlightRecorderEvents(in: sharedDefaults)
+            #endif
         }
 
         diagnosticsState.diagnosticsSessionID = UUID().uuidString
@@ -1402,7 +1439,9 @@ extension KeyboardViewController {
                 Date().timeIntervalSince1970,
                 forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat
             )
+            #if DEBUG
             clearFlightRecorderEvents(in: sharedDefaults)
+            #endif
         } else {
             appendKeyboardDiagnosticsLog(
                 "終了時owner不一致のためactive更新を見送り currentOwner=\(currentOwnerToken) storedOwner=\(storedOwnerToken ?? "none")",
