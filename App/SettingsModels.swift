@@ -95,6 +95,7 @@ enum SettingsKeys {
     static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
     static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
     static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
+    static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
     static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"

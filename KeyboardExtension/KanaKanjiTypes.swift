@@ -1,4 +1,7 @@
+import CryptoKit
 import Foundation
+import Security
+
 
 enum KanaKanjiStorageKeys {
     static let userDictionary = "ÉcrituAjoutVocab"
@@ -87,3 +90,65 @@ enum ContactCandidateDisplayMode: String {
         self == .namesPlusFullName
     }
 }
+
+// 連絡先キャッシュの暗号化(2026-08-31)。氏名・読みの対応表を共有defaultsへ平文で
+// 置かない(端末外送信はもともと無いが、バックアップ等での可読性を断つ)。
+// 鍵は両ターゲット共有のKeychain(kSecAttrAccessibleAfterFirstUnlock)に置き、
+// 本体は AES-GCM で封緘して App Group defaults に保存する。
+enum ContactCacheCipher {
+    static let keychainService = "com.kusakabe.ecritu.contactCache"
+    static let keychainAccount = "aes-256-key"
+
+    // 純関数部(テスト対象): JSONエンコード→AES-GCM封緘
+    static func seal(_ dictionary: [String: [String]], key: SymmetricKey) -> Data? {
+        guard let json = try? JSONEncoder().encode(dictionary),
+            let sealed = try? AES.GCM.seal(json, using: key).combined else {
+            return nil
+        }
+        return sealed
+    }
+
+    static func open(_ data: Data, key: SymmetricKey) -> [String: [String]]? {
+        guard let box = try? AES.GCM.SealedBox(combined: data),
+            let json = try? AES.GCM.open(box, using: key),
+            let dictionary = try? JSONDecoder().decode([String: [String]].self, from: json) else {
+            return nil
+        }
+        return dictionary
+    }
+
+    // Keychainの共有鍵。createNew=false(キーボード側)は既存が無ければ nil を返すだけ。
+    static func keychainKey(createNew: Bool) -> SymmetricKey? {
+        var query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainAccount,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        if status == errSecSuccess, let data = result as? Data, data.count == 32 {
+            return SymmetricKey(data: data)
+        }
+        guard createNew else {
+            return nil
+        }
+        let key = SymmetricKey(size: .bits256)
+        let keyData = key.withUnsafeBytes { Data($0) }
+        query.removeValue(forKey: kSecReturnData as String)
+        query.removeValue(forKey: kSecMatchLimit as String)
+        query[kSecValueData as String] = keyData
+        query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        let addStatus = SecItemAdd(query as CFDictionary, nil)
+        guard addStatus == errSecSuccess || addStatus == errSecDuplicateItem else {
+            return nil
+        }
+        if addStatus == errSecDuplicateItem {
+            // 競合で他方が先に作った場合は読み直す
+            return keychainKey(createNew: false)
+        }
+        return key
+    }
+}
+
