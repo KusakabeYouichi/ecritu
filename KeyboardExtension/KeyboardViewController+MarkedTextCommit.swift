@@ -697,7 +697,9 @@ extension KeyboardViewController {
             context(contextBeforeInput, hasSuffix: markedTextForHostCommitCheck),
             !context(previousContextBeforeInputTail, hasSuffix: markedTextForHostCommitCheck) {
             appendKeyboardDiagnosticsLogFromInputHandling(
-                "ホスト側で未確定が確定済み(コールバック時) markedLen=\(markedTextForHostCommitCheck.count) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) prevLen=\(previousContextBeforeInputLength) active=\(activeConversion != nil)"
+                "ホスト側で未確定が確定済み(コールバック時) markedLen=\(markedTextForHostCommitCheck.count) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) prevLen=\(previousContextBeforeInputLength) active=\(activeConversion != nil)",
+                critical: true
+            
             )
             self.activeConversion = nil
             clearComposingState()
@@ -717,7 +719,9 @@ extension KeyboardViewController {
             previousContextBeforeInputLength > 0,
             activeConversion != nil || !composingRawText.isEmpty {
             appendKeyboardDiagnosticsLogFromInputHandling(
-                "文書消失(直前は非空) → 未確定を確定 prevLen=\(previousContextBeforeInputLength) composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+                "文書消失(直前は非空) → 未確定を確定 prevLen=\(previousContextBeforeInputLength) composingLen=\(composingRawText.count) active=\(activeConversion != nil)",
+                critical: true
+            
             )
             // 通常は textWillChange 側(2685)で先に確定済みでここには来ない。来た場合の保険として
             // unmark を試す(2683 実機では届かなかった。insertText も 2684 で届かず)。
@@ -732,7 +736,9 @@ extension KeyboardViewController {
         if let activeConversion {
             guard context(contextBeforeInput, hasSuffix: activeConversion.committedText) else {
                 appendKeyboardDiagnosticsLogFromInputHandling(
-                    "変換状態不一致で破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) committedLen=\(activeConversion.committedText.count)"
+                    "変換状態不一致で破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) committedLen=\(activeConversion.committedText.count)",
+                critical: true
+            
                 )
                 self.activeConversion = nil
                 clearComposingState()
@@ -758,7 +764,9 @@ extension KeyboardViewController {
                 // Host app actions such as send can leave only marked text.
                 // Treat it as stale composition and clear it so it doesn't remain.
                 appendKeyboardDiagnosticsLogFromInputHandling(
-                    "編集中テキストを破棄 external=\(triggeredByExternalChange) hostConsumed=\(hostLikelyConsumedCommittedText) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=len=\(previousContextBeforeInputLength)"
+                    "編集中テキストを破棄 external=\(triggeredByExternalChange) hostConsumed=\(hostLikelyConsumedCommittedText) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=len=\(previousContextBeforeInputLength)",
+                critical: true
+            
                 )
                 markTextProxyEdit()
                 textDocumentProxy.unmarkText()
@@ -771,7 +779,9 @@ extension KeyboardViewController {
         // Host app side actions (for example send button) can consume marked text.
         // Drop stale internal state so next key starts from a clean composition.
         appendKeyboardDiagnosticsLogFromInputHandling(
-            "文脈不一致で編集中テキストを破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=len=\(previousContextBeforeInputLength)"
+            "文脈不一致で編集中テキストを破棄 external=\(triggeredByExternalChange) context=\(inputHandlingTextLengthSummary(contextBeforeInput)) composingLen=\(composingRawText.count) prevContext=len=\(previousContextBeforeInputLength)",
+                critical: true
+            
         )
 
         if triggeredByExternalChange && contextBeforeInput.isEmpty {

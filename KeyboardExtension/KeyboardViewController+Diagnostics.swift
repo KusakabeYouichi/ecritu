@@ -1452,8 +1452,8 @@ extension KeyboardViewController {
         }
     }
 
-    func appendKeyboardDiagnosticsLogFromInputHandling(_ event: String) {
-        appendKeyboardDiagnosticsLog(event)
+    func appendKeyboardDiagnosticsLogFromInputHandling(_ event: String, critical: Bool = false) {
+        appendKeyboardDiagnosticsLog(event, critical: critical)
     }
 
     func performanceElapsedMilliseconds(since startedAt: CFAbsoluteTime) -> Int {
