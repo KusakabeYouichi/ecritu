@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260831095237"
+    private static let editionUpdatedAtRaw: String = "20260831122021"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -544,9 +544,10 @@ struct ContentView: View {
         str(SettingsKeys.kanaModeSwitcherRightFlickAction, kanaModeSwitcherRightFlickActionRawValue, "かな左下キー割り当て: 右フリック")
         str(SettingsKeys.kanaModeSwitcherUpFlickAction, kanaModeSwitcherUpFlickActionRawValue, "かな左下キー割り当て: 上フリック")
         str(SettingsKeys.kanaPostModifierEmptyTapAction, kanaPostModifierEmptyTapActionRawValue, "タップ (後置修飾、未確定なし)")
-        str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, kanaPostModifierEmptyTapKaomojiCategoryID, "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")
-        str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, kanaPostModifierEmptyTapEmojiCategoryID, "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
-        str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, kanaPostModifierEmptyTapSymbolCategoryID, "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
+        // カテゴリーは内部ID(0/1/shortcut等)ではなく、キーボードのヘッダーに表示されるタイトルで書き出す(YAMLは書き出し専用)
+        str(SettingsKeys.kanaPostModifierEmptyTapKaomojiCategory, KaomojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapKaomojiCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(顔文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, EmojiCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapEmojiCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(絵文字)")
+        str(SettingsKeys.kanaPostModifierEmptyTapSymbolCategory, SymbolCategoryChoice.displayTitle(forID: kanaPostModifierEmptyTapSymbolCategoryID), "タップ (後置修飾、未確定なし): 切替時に開くカテゴリー(記号)")
         bool(SettingsKeys.kanaPostModifierFlickDakutenEnabled, kanaPostModifierFlickDakutenEnabled, "後置修飾キーのフリックで濁点・半濁点")
         str(SettingsKeys.numberThousandsSeparator, numberThousandsSeparatorRawValue, "format numérique: Séparateur de milliers")
         bool(SettingsKeys.numberGroupFourDigits, numberGroupFourDigits, "format numérique: que quatre")
