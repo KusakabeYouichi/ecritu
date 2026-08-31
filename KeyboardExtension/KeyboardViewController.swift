@@ -501,9 +501,11 @@ final class KeyboardViewController: UIInputViewController {
     static let memoryFailSafeCriticalStartMB: Double = 115
     static let memoryFailSafeRecoverDeltaMB: Double = 12
     private static let refreshQueueDropThresholdInCriticalMode = 2
+    #if DEBUG
     static let diagnosticsFlightRecorderWindowSec: TimeInterval = 6
     static let diagnosticsFlightRecorderMaxEventCount = 120
     static let diagnosticsFlightRecorderMinRecordIntervalSec: TimeInterval = 0.12
+    #endif
     private static let baseKeyboardBackgroundColor = UIColor { trait in
         if trait.userInterfaceStyle == .dark {
             return UIColor(red: 0.12, green: 0.14, blue: 0.18, alpha: 1.0)
@@ -521,11 +523,13 @@ final class KeyboardViewController: UIInputViewController {
         case formattedNumber
     }
 
+    #if DEBUG
     struct DiagnosticsFlightRecorderEvent: Codable {
         let timestamp: TimeInterval
         let event: String
         let source: String
     }
+    #endif
 
     enum MemoryFailSafeProfile: String {
         case normal
