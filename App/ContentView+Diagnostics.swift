@@ -108,15 +108,24 @@ extension ContentView {
 
     func isKeyboardExtensionRegistered() -> Bool? {
         // AppleKeyboards はアプリ自身の defaults ドメインに現れる有効キーボード一覧。
-        // 非公開キーだが読み取りのみで、取得できない場合は nil(判定不能)を返す。
+        // 非公開キーのため開発ビルド専用(2026-08-31)。Release バイナリにはキー文字列ごと
+        // 含めない(用途は診断の登録状態記録のみで、ユーザ向けUIは依存していない)
+        #if DEBUG
         guard let enabled = UserDefaults.standard.object(forKey: "AppleKeyboards") as? [String] else {
             return nil
         }
         let identifier = keyboardExtensionBundleIdentifierForDiagnostics()
         return enabled.contains { $0 == identifier || $0.hasPrefix("\(identifier).") }
+        #else
+        return nil
+        #endif
     }
 
     func recordKeyboardExtensionRegistrationState() {
+        // 開発ビルド専用(AppleKeyboards 非公開キー依存。Releaseでは何も記録しない)
+        #if !DEBUG
+        return
+        #endif
         guard let defaults = Self.sharedDefaults else {
             return
         }
