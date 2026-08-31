@@ -386,6 +386,10 @@ extension KeyboardViewController {
         switch textDocumentProxy.keyboardType {
         case .numberPad, .decimalPad, .asciiCapableNumberPad, .phonePad, .numbersAndPunctuation:
             return .number
+        case .emailAddress, .URL, .asciiCapable:
+            // ASCII系フィールドはラテン面で開く(IsASCIICapable 申告とセット。メール/URL欄で
+            // かな面で開くと申告実態と食い違う)。数字・記号は面切替で到達できる
+            return .latin
         default:
             return .kana
         }

@@ -26,6 +26,8 @@
     <dict>
         <key>NSExtensionAttributes</key>
         <dict>
+            <key>IsASCIICapable</key>
+            <true/>
             <key>PrimaryLanguage</key>
             <string>ja-JP</string>
             <key>RequestsOpenAccess</key>
