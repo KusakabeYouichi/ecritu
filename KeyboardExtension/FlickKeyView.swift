@@ -680,7 +680,7 @@ struct FlickKeyView: View {
 
             let primaryOutput = kana.output(for: resolvedDirection)
 
-            guard primaryOutput == "『" || primaryOutput == "』" else {
+            guard FlickKanaLayout.hasSecondaryFlickOutput(forPrimaryOutput: primaryOutput) else {
                 return
             }
 
