@@ -209,9 +209,9 @@ extension KeyboardRootView {
         var title: String {
             switch kind {
             case .shortcut:
-                return "ショートカット"
+                return "Raccourcis (ショートカット)"
             case .existing:
-                return "基本"
+                return "Base (基本)"
             case .imported(let name):
                 switch name {
                 case "笑":
@@ -252,7 +252,7 @@ extension KeyboardRootView {
                     return name
                 }
             case .search:
-                return "検索"
+                return "Recherche (検索)"
             }
         }
 

@@ -572,6 +572,39 @@ enum KaomojiCategoryChoice {
 
         return entries
     }()
+
+    // キーボードのヘッダー表示名(KeyboardRootViewSupportTypes.swift KaomojiCategory.title のミラー)。
+    // 設定YAMLエクスポートで ID の代わりに使う
+    static func displayTitle(forID id: String) -> String {
+        switch id {
+        case "shortcut": return "Raccourcis (ショートカット)"
+        case "existing": return "Base (基本)"
+        case "search": return "Recherche (検索)"
+        default: break
+        }
+        guard id.hasPrefix("imported:") else { return id }
+        let name = String(id.dropFirst("imported:".count))
+        switch name {
+        case "笑": return "Sourire / Rire (笑顔)"
+        case "かわいい": return "Kawaii / Chou (かわいい)"
+        case "照れ": return "Timide (照れ・恥ずかしがり)"
+        case "焦り": return "Stress / Panique (焦り・緊張・パニック)"
+        case "しょぼん": return "Dé çu Dé primé (がっかり・しょぼん)"
+        case "悲": return "Triste (悲しい)"
+        case "怒": return "En colè re (怒り)"
+        case "驚き": return "Surprise (驚き)"
+        case "くそねみ": return "Dodo (くそねみ・超眠い・ねんね)"
+        case "挨拶": return "Coucou (やあ!・親しい挨拶)"
+        case "ラブ": return "Amour (ラブ・愛)"
+        case "激しい": return "Excité / Crazy (激しい・狂気)"
+        case "うごき": return "Action (アクシオン・動き)"
+        case "キモい": return "Bizarre (奇妙・キモい)"
+        case "キャラ": return "Hé ros (主人公・キャラ)"
+        case "特殊": return "Spé cial (特殊)"
+        case "ライン": return "Lignes (区切り線)"
+        default: return name
+        }
+    }
 }
 
 enum EmojiCategoryChoice {
@@ -588,6 +621,21 @@ enum EmojiCategoryChoice {
         CategoryChoiceDescriptor(id: "6", title: "記号", icon: "❤️"),
         CategoryChoiceDescriptor(id: "7", title: "国旗", icon: "🇫🇷")
     ]
+
+    // キーボードのヘッダー表示名(KeyboardRootViewSupportTypes.swift EmojiCategory.frenchName のミラー)
+    static func displayTitle(forID id: String) -> String {
+        switch id {
+        case "0": return "Personnes"
+        case "1": return "Animaux et nature"
+        case "2": return "Nourriture et boissons"
+        case "3": return "Activités"
+        case "4": return "Voyages et lieux"
+        case "5": return "Objets"
+        case "6": return "Symboles"
+        case "7": return "Drapeaux"
+        default: return id
+        }
+    }
 }
 
 enum SymbolCategoryChoice {
@@ -603,6 +651,20 @@ enum SymbolCategoryChoice {
         CategoryChoiceDescriptor(id: "5", title: "矢印", icon: "↗"),
         CategoryChoiceDescriptor(id: "6", title: "囲み文字", icon: "⓪")
     ]
+
+    // キーボードのヘッダー表示名(KeyboardRootViewSupportTypes.swift SymbolCategory.frenchName のミラー)
+    static func displayTitle(forID id: String) -> String {
+        switch id {
+        case "0": return "Symboles de base"
+        case "1": return "Parenthèses et guillemets"
+        case "2": return "Monnaies"
+        case "3": return "Unités"
+        case "4": return "Mathématiques"
+        case "5": return "Flèches"
+        case "6": return "Caractères entourés"
+        default: return id
+        }
+    }
 }
 
 enum DelimiterAutoCommitCandidateOption: String, CaseIterable, Identifiable {
