@@ -386,9 +386,26 @@ extension KeyboardViewController {
     }
 
     func cachedContactCandidatesFromSharedDefaults() -> [String: [String]] {
-        guard let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID),
-            let dictionary = sharedDefaults.dictionary(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache)
-                as? [String: [String]] else {
+        guard let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID) else {
+            return [:]
+        }
+
+        // 封緘版(AES-GCM)を優先。鍵はアプリ側が生成した共有Keychain鍵を読むだけ
+        if let sealed = sharedDefaults.data(forKey: SharedDefaultsKeys.contactCandidatesByReadingCacheSealed) {
+            if let key = ContactCacheCipher.keychainKey(createNew: false),
+                let dictionary = ContactCacheCipher.open(sealed, key: key) {
+                // 移行完了後に平文が残っていたら消す
+                if sharedDefaults.object(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache) != nil {
+                    sharedDefaults.removeObject(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache)
+                }
+                return dictionary
+            }
+            return [:]
+        }
+
+        // 移行前の平文(アプリが次回同期で封緘版へ置き換える)
+        guard let dictionary = sharedDefaults.dictionary(forKey: SharedDefaultsKeys.contactCandidatesByReadingCache)
+            as? [String: [String]] else {
             return [:]
         }
 

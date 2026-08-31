@@ -420,6 +420,8 @@ final class KeyboardViewController: UIInputViewController {
         static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
         static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
         static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
+        // AES-GCM封緘版(平文キーは移行後に削除される)
+        static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
         static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
         static let supplementaryLexiconIndexSignature = "supplementaryLexiconIndexSignature"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"

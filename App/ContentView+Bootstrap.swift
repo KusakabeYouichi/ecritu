@@ -1,3 +1,4 @@
+import CryptoKit
 import SwiftUI
 import UIKit
 import CoreFoundation
@@ -500,23 +501,26 @@ extension ContentView {
         }
 
         let cacheKey = SettingsKeys.contactCandidatesByReadingCache
+        let sealedKey = SettingsKeys.contactCandidatesByReadingCacheSealed
         let mode = ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .namesOnly
 
-        guard mode != .off else {
-            if defaults.object(forKey: cacheKey) != nil {
+        func removeCacheIfPresent() {
+            if defaults.object(forKey: cacheKey) != nil || defaults.object(forKey: sealedKey) != nil {
                 defaults.removeObject(forKey: cacheKey)
+                defaults.removeObject(forKey: sealedKey)
                 SettingsSyncNotification.postSettingsDidChange()
             }
+        }
+
+        guard mode != .off else {
+            removeCacheIfPresent()
             return
         }
 
         let status = CNContactStore.authorizationStatus(for: .contacts)
 
         guard hasGrantedContactsAccess(status) else {
-            if defaults.object(forKey: cacheKey) != nil {
-                defaults.removeObject(forKey: cacheKey)
-                SettingsSyncNotification.postSettingsDidChange()
-            }
+            removeCacheIfPresent()
             return
         }
 
@@ -528,13 +532,33 @@ extension ContentView {
                     return
                 }
 
-                let previous = defaults.dictionary(forKey: cacheKey) as? [String: [String]] ?? [:]
-
-                guard previous != dictionary else {
+                // 氏名の対応表を平文で置かない(2026-08-31)。鍵は共有Keychain、本体はAES-GCM封緘
+                guard let key = ContactCacheCipher.keychainKey(createNew: true) else {
+                    appendContainerDiagnosticsLog("連絡先キャッシュ封緘スキップ reason=keychainKeyUnavailable")
                     return
                 }
 
-                defaults.set(dictionary, forKey: cacheKey)
+                let previous: [String: [String]]
+                if let sealed = defaults.data(forKey: sealedKey),
+                    let decoded = ContactCacheCipher.open(sealed, key: key) {
+                    previous = decoded
+                } else {
+                    previous = defaults.dictionary(forKey: cacheKey) as? [String: [String]] ?? [:]
+                }
+
+                let hadPlaintext = defaults.object(forKey: cacheKey) != nil
+
+                guard previous != dictionary || hadPlaintext else {
+                    return
+                }
+
+                guard let sealed = ContactCacheCipher.seal(dictionary, key: key) else {
+                    appendContainerDiagnosticsLog("連絡先キャッシュ封緘スキップ reason=sealFailed")
+                    return
+                }
+
+                defaults.set(sealed, forKey: sealedKey)
+                defaults.removeObject(forKey: cacheKey)
                 SettingsSyncNotification.postSettingsDidChange()
             }
         }
@@ -1038,3 +1062,61 @@ extension ContentView {
         }
     }
 }
+
+// KeyboardExtension/KanaKanjiTypes.swift の ContactCacheCipher のAppターゲット側コピー
+// (Appは拡張のソースを共有しないミラー構成)。service/account/形式は拡張側と同一で、
+// 共有Keychain(keychain-access-groups)経由で同じ鍵を読み書きする。変更時は両方を揃えること。
+private enum ContactCacheCipher {
+    static let keychainService = "com.kusakabe.ecritu.contactCache"
+    static let keychainAccount = "aes-256-key"
+
+    static func seal(_ dictionary: [String: [String]], key: SymmetricKey) -> Data? {
+        guard let json = try? JSONEncoder().encode(dictionary),
+            let sealed = try? AES.GCM.seal(json, using: key).combined else {
+            return nil
+        }
+        return sealed
+    }
+
+    static func open(_ data: Data, key: SymmetricKey) -> [String: [String]]? {
+        guard let box = try? AES.GCM.SealedBox(combined: data),
+            let json = try? AES.GCM.open(box, using: key),
+            let dictionary = try? JSONDecoder().decode([String: [String]].self, from: json) else {
+            return nil
+        }
+        return dictionary
+    }
+
+    static func keychainKey(createNew: Bool) -> SymmetricKey? {
+        var query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainAccount,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne
+        ]
+        var result: CFTypeRef?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+        if status == errSecSuccess, let data = result as? Data, data.count == 32 {
+            return SymmetricKey(data: data)
+        }
+        guard createNew else {
+            return nil
+        }
+        let key = SymmetricKey(size: .bits256)
+        let keyData = key.withUnsafeBytes { Data($0) }
+        query.removeValue(forKey: kSecReturnData as String)
+        query.removeValue(forKey: kSecMatchLimit as String)
+        query[kSecValueData as String] = keyData
+        query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        let addStatus = SecItemAdd(query as CFDictionary, nil)
+        guard addStatus == errSecSuccess || addStatus == errSecDuplicateItem else {
+            return nil
+        }
+        if addStatus == errSecDuplicateItem {
+            return keychainKey(createNew: false)
+        }
+        return key
+    }
+}
+
