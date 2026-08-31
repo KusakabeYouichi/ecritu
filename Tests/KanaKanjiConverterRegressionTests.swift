@@ -12904,4 +12904,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let easy = converter.multiClauseCandidates(for: "わかりやすくした", systemCandidateMode: .surface)
         XCTAssertEqual(easy.first, "分かりやすくした", "multi=\(easy)")
     }
+
+    // misc 検査(2742): 聞き は Sudachi に有るため misc から削除しても供給が保たれること、禿げる の curated 維持
+    func testMiscSupplyAuditKikiHageru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        // きき→聞き は本番辞書(Sudachi core/small とも収録、rank1)にあるため misc から削除しても供給される(2742 検査)
+        XCTAssertTrue(converter.candidates(for: "きき", limit: 12, systemCandidateMode: .surface).contains("聞き"))
+        XCTAssertEqual(converter.candidates(for: "ききまちがい", limit: 3, systemCandidateMode: .surface).first, "聞き間違い")
+        let hage = converter.multiClauseCandidates(for: "おおいとはげるよ", systemCandidateMode: .surface)
+        XCTAssertEqual(hage.first, "多いと禿げるよ", "multi=\(hage)")
+    }
 }

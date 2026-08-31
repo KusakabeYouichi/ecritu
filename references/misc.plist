@@ -239,11 +239,9 @@
 	<dict><key>phrase</key><string>とんかつ屋</string><key>shortcut</key><string>とんかつや</string><key>pos</key><string>名詞</string></dict>	<!-- とんかつ屋: Sudachi 未収録の複合。連文節で トン+勝谷(かつや の名前収穫)の分割に負けるため curated 化(単文節は seed でも供給) -->
 	<dict><key>phrase</key><string>網脂</string><key>shortcut</key><string>あみあぶら</string><key>pos</key><string>名詞</string></dict>	<!-- 網脂: Sudachi 未収録の複合(調理用語)。網+油/阿弥+油/編み+油 の合成しか出ないため curated 供給 -->
 	<dict><key>phrase</key><string>大麻草</string><key>shortcut</key><string>たいまそう</string></dict>	<!-- 大麻草: 辞書・LMとも未収録で たい増そう/対まそう 等の合成に落ちる -->
-	<dict><key>phrase</key><string>聞き間違い</string><key>shortcut</key><string>ききまちがい</string></dict>	<!-- 聞き(連用形名詞化)が Sudachi に無く(利き/効き は有る)、ききまちがい が 機器間違い/危機間違い 等になる。書き間違い は1語収録済みなのに 聞き間違い が無い収穫の穴 -->
+	<dict><key>phrase</key><string>聞き間違い</string><key>shortcut</key><string>ききまちがい</string></dict>	<!-- ききまちがい が 機器間違い/危機間違い 等になる。書き間違い は1語収録済みなのに 聞き間違い が無い収穫の穴(聞き 自体は Sudachi に有る。2742 検査で確認) -->
 	<dict><key>phrase</key><string>聞きまちがい</string><key>shortcut</key><string>ききまちがい</string></dict>
 	<dict><key>phrase</key><string>聞き間違える</string><key>shortcut</key><string>ききまちがえる</string><key>pos</key><string>一段</string></dict>
-	<dict><key>phrase</key><string>聞き</string><key>shortcut</key><string>きき</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>	<!-- 禿げる: dict rank0 だが uni 未収録(=連文節ノード8700)で、は+ゲル(uni6785)の断片連結に負ける(おおいとはげるよ→多いとはゲルよ)。curated で供給 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>殻付き</string><key>shortcut</key><string>からつき</string><key>pos</key><string>名詞</string></dict>	<!-- 殻付き: 複合語が辞書に無く、連文節で から(助詞・激安)+付き 分割に負けて 殻付き が出ない(からつきのほうが→から付きの方が)。curated 化(コスト1500)で連文節でも 殻付き を勝たせる。単文節は seed でも供給 -->
 	<dict><key>phrase</key><string>康熙字典</string><key>shortcut</key><string>こうきじてん</string><key>pos</key><string>名詞</string></dict>	<!-- 康熙字典(こうきじてん): SudachiDict/LM に無い(じてん→字典 のみ)。curated で供給 -->
 	<dict><key>phrase</key><string>お盆</string><key>shortcut</key><string>おぼん</string><key>pos</key><string>名詞</string></dict>	<!-- お盆: おぼん の辞書エントリはかな1件だけ(wc10005=収穫底値)で、お盆 は辞書にもLMにも無い。候補は丁寧接頭辞 お+ぼん の合成で、ぼん の読み別 wc が 梵7407 < 盆7453 と46だけ梵が安いため お梵 が先頭に立つ。お菓子 と同型の供給欠落なので curated で供給する -->
@@ -279,6 +277,7 @@
 	<dict><key>phrase</key><string>顔</string><key>shortcut</key><string>かお</string></dict>	<!-- 顔: curated のか(疑問形)が 〜のかお を のか+お に分断し 顔 のスパンが消える(あんたのかおなんかいもみたい→あんたのかお南海揉みたい、変種に 乃佳お 等)。ろーまにいたる事件の処方箋どおり、分断される側の 顔 も curated 化して同床で文節数の少ない区切りを勝たせる -->	<!-- Sudachiにもある -->
 
 	<!-- ■ 同音・同読みの優先順の是正(コーパスのコスト/バイアスを頻度実感に寄せる) -->
+	<dict><key>phrase</key><string>禿げる</string><key>shortcut</key><string>はげる</string></dict>	<!-- 禿げる: Sudachi に有り dict rank0 だが LM uni 未収録(=連文節ノード8700)で、は+ゲル(uni6785)の断片連結に負ける(おおいとはげるよ→多いとはゲルよ)。curated で連文節を担保(供給欠落ではないので本節。2742) -->
 	<dict><key>phrase</key><string>これ安い</string><key>shortcut</key><string>これやすい</string></dict>	<!-- これ安い: 口語の 指示詞+形容詞(これ、安い)。活用合成(来れやすい 等)しか出ず、ユーザ第一希望の これ安い が組めないため curated 供給 -->
 	<dict><key>phrase</key><string>夜行性</string><key>shortcut</key><string>やこうせい</string></dict>	<!-- 夜行性: Sudachi実在だが wc10555 のジャンク級+LM unigram 7792 で、や(2998)+後世(bigram4885)+の(413) の接着剤ジャンクに1979差で負ける(やこうせいのどうぶつ→や後世の動物) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>水は</string><key>shortcut</key><string>みずは</string></dict>	<!-- 水は: みずは のレア人名11件(suppr済)が単文節で 水+は 合成より前に並んでいた。固定句curatedで先頭化(からだが と同処方) -->
