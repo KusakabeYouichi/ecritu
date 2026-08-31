@@ -424,14 +424,16 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
     echo "[dict] Overwrote bundle resource: $dst_name"
   }
 
-  copy_into_bundle_if_exists "$TMP_PREMIER" "ÉcrituPremierVocab.json"
+  # ÉcrituPremierVocab.json / kana_kanji_candidate_sources.json / kana_kanji_inflection_dictionary.json は
+  # sqlite に全量焼き込まれるフォールバック専用データ(計約93MB)のため同梱しない(2026-08-31、#4)。
+  # App Store 配布はバンドル署名で整合性が保証され、壊れた sqlite が届く経路はない。開発ビルドの
+  # 事故は行数ガード(exit 1)で遮断済み。sqlite が開けない場合は劣化運転せず fallback 表示に任せる。
+  # ÉcrituSecondVocab.json(補助語彙)だけは通常経路の常用層なので残す。
   copy_into_bundle_if_exists "$TMP_SECOND" "ÉcrituSecondVocab.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_AJOUT" "InitialAjoutVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_MISC" "InitialMiscVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR" "InitialSupprVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR_HIDDEN" "InitialSupprHiddenVocabMigration.json"
-  copy_into_bundle_if_exists "$TMP_SOURCES" "kana_kanji_candidate_sources.json"
-  copy_into_bundle_if_exists "$TMP_INFLECTIONS" "kana_kanji_inflection_dictionary.json"
   copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"
   copy_into_bundle_if_exists "$TMP_EMOJI_READING" "EmojiReadingVocab.json"
 else
