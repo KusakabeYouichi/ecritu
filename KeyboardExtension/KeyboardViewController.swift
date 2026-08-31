@@ -675,9 +675,23 @@ final class KeyboardViewController: UIInputViewController {
     // 確定する(Apple 純正のキーボード終了時確定と同じ結果)。自前の編集(setMarkedText 等)に
     // 伴う通知は 0.35s 窓で除外。外部変更で未確定を保持し続ける理由は無く(従来は直後の
     // textDidChange で破棄していた)、確定の方が Apple の挙動に近い。
+    // 打鍵直後の「外部変更」判定はホスト文脈の遅延・嘘(メッセージ実測 2026-08-31:
+    // context=空なのにmarked=5文字が8回)で誤発火し、入力中の未確定を勝手に確定して
+    // 入力が滅茶苦茶になる。メモの完了ボタン(本来の用途)はタップまでに間が空くので、
+    // 直近打鍵から一定時間は見送る
+    static let externalCommitKeystrokeQuiescenceSec: TimeInterval = 1.0
+
     func commitComposingTextOnExternalTextWillChangeIfNeeded() {
         guard shouldTreatAsExternalTextChange(),
             activeConversion != nil || !composingRawText.isEmpty else {
+            return
+        }
+        let sinceOwnEdit = CFAbsoluteTimeGetCurrent() - lastTextProxyEditAt
+        if sinceOwnEdit < Self.externalCommitKeystrokeQuiescenceSec {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "外部変更確定を打鍵直後のため見送り sinceOwnEditMs=\(Int(sinceOwnEdit * 1000)) composingLen=\(composingRawText.count)",
+                critical: true
+            )
             return
         }
         appendKeyboardDiagnosticsLogFromInputHandling(
