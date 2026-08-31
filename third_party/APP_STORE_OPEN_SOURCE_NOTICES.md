@@ -6,6 +6,10 @@ This app includes dictionary resources generated from SudachiDict source data.
 - The current workflow in this repository uses SudachiDict core and small source CSV files.
 
 SudachiDict is provided under the Apache License, Version 2.0.
+The bundled dictionary databases are modified, derived works: the
+SudachiDict source CSVs are converted, filtered, merged with additional
+vocabulary, and re-indexed into this app's own database format. They are
+not the original SudachiDict distribution.
 The upstream SudachiDict project also provides additional legal notices in its LEGAL document.
 According to upstream documentation, SudachiDict includes UniDic and a part of NEologd.
 
@@ -63,6 +67,10 @@ Wikipedia (https://ja.wikipedia.org/).
   Documentation License.
 - The bundled tables contain aggregated word frequency statistics
   computed from Wikipedia dump data; no article text is included.
+- We consider these aggregated statistics to be factual data rather
+  than an adaptation of the articles. To the extent they are
+  nevertheless considered an adaptation, the bundled tables are
+  likewise provided under CC BY-SA 4.0.
 
 ## Emoji readings (Unicode CLDR)
 
