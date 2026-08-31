@@ -3243,7 +3243,6 @@
 	<dict><key>phrase</key><string>ナイツ・ヴァレー</string><key>shortcut</key><string>ないつゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ハンター・ヴァレー</string><key>shortcut</key><string>はんたーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ビオ・ビオ・ヴァレー</string><key>shortcut</key><string>びおびおゔぁれー</string></dict>
-	<dict><key>phrase</key><string>ブリード・リヴァー・ヴァレー</string><key>shortcut</key><string>ぶりーどりゔぁーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ロシアン・リバー・ヴァレー</string><key>shortcut</key><string>ろしあんりばーゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ローグ・ヴァレー</string><key>shortcut</key><string>ろーぐゔぁれー</string></dict>
 	<dict><key>phrase</key><string>ワイルド・ホース・ヴァレー</string><key>shortcut</key><string>わいるどほーすゔぁれー</string></dict>
@@ -5311,7 +5310,6 @@
 	<dict><key>phrase</key><string>August Wilhelm Freiherr von Babo</string><key>shortcut</key><string>あうぐすとゔぃるへるむふらいへるふぉんばーぼ</string></dict>
 	<dict><key>phrase</key><string>Derek Milne</string><key>shortcut</key><string>でれくみるん</string></dict>
 	<dict><key>phrase</key><string>Derek Milne博士</string><key>shortcut</key><string>でれくみるんはかせ</string></dict>
-	<dict><key>phrase</key><string>Francisco de Aguirre</string><key>shortcut</key><string>ふらんしすこであぎーれ</string></dict>
 	<dict><key>phrase</key><string>James Busby</string><key>shortcut</key><string>じぇーむずばずびー</string></dict>
 	<dict><key>phrase</key><string>Jan van Riebeeck</string><key>shortcut</key><string>やんふぁんりーべっく</string></dict>
 	<dict><key>phrase</key><string>Johann</string><key>shortcut</key><string>よはん</string></dict>
@@ -6351,12 +6349,9 @@
 	<dict><key>phrase</key><string>補糖後</string><key>shortcut</key><string>ほとうご</string></dict>
 	<dict><key>phrase</key><string>補酸</string><key>shortcut</key><string>ほさん</string></dict>
 	<dict><key>phrase</key><string>調合</string><key>shortcut</key><string>ちょうごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>貯蔵</string><key>shortcut</key><string>ちょぞう</string></dict>
-	<dict><key>phrase</key><string>熟成</string><key>shortcut</key><string>じゅくせい</string></dict>
 	<dict><key>phrase</key><string>育成</string><key>shortcut</key><string>いくせい</string></dict>
 	<dict><key>phrase</key><string>購入</string><key>shortcut</key><string>こうにゅう</string></dict>
 	<dict><key>phrase</key><string>保管</string><key>shortcut</key><string>ほかん</string></dict>
-	<dict><key>phrase</key><string>熟成</string><key>shortcut</key><string>じゅくせい</string></dict>
 	<dict><key>phrase</key><string>販売</string><key>shortcut</key><string>はんばい</string></dict>
 	<dict><key>phrase</key><string>赤ワイン醸造法</string><key>shortcut</key><string>あかわいんじょうぞうほう</string></dict>
 	<dict><key>phrase</key><string>連続式蒸溜</string><key>shortcut</key><string>れんぞくしきじょうりゅう</string></dict>
@@ -8917,8 +8912,6 @@
 
 	<!-- ■ スピリッツ -->
 	<dict><key>phrase</key><string>ピスコ</string><key>shortcut</key><string>ぴすこ</string></dict>
-	<dict><key>phrase</key><string>ピスコ</string><key>shortcut</key><string>ぴすこ</string></dict>
-	<dict><key>phrase</key><string>白樺炭</string><key>shortcut</key><string>しらかばずみ</string></dict>
 	<dict><key>phrase</key><string>白樺炭</string><key>shortcut</key><string>しらかばずみ</string></dict>
 	<dict><key>phrase</key><string>ゴードン</string><key>shortcut</key><string>ごーどん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>バカルディー</string><key>shortcut</key><string>ばかるでぃー</string></dict>
@@ -9267,7 +9260,6 @@
 	<dict><key>phrase</key><string>フレイヴァード</string><key>shortcut</key><string>ふれいゔぁーど</string></dict>
 	<dict><key>phrase</key><string>フレーヴァード</string><key>shortcut</key><string>ふれーゔぁーど</string></dict>
 	<dict><key>phrase</key><string>フォーティファイド</string><key>shortcut</key><string>ふぉーてぃふぁいど</string></dict>
-	<dict><key>phrase</key><string>フレーヴァー</string><key>shortcut</key><string>ふれーゔぁー</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フローラル</string><key>shortcut</key><string>ふろーらる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ブーケ</string><key>shortcut</key><string>ぶーけ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ペアリング</string><key>shortcut</key><string>ぺありんぐ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
