@@ -957,7 +957,6 @@
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
-				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -984,7 +983,6 @@
 				CURRENT_PROJECT_VERSION = "$(ECRITU_EDITION_NUMBER)";
 				DEVELOPMENT_TEAM = "$(ECRITU_DEVELOPMENT_TEAM)";
 				INFOPLIST_FILE = KeyboardExtension/Info.plist;
-				INFOPLIST_KEY_NSContactsUsageDescription = "連絡先の名前を変換候補として使うために連絡先データにアクセスします。";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (

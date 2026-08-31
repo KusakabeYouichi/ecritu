@@ -2,7 +2,6 @@ import SwiftUI
 import UIKit
 import CoreFoundation
 import Darwin
-import Contacts
 
 extension KeyboardViewController {
     func applyConverterFeatureFlagsFromSharedDefaults() {
