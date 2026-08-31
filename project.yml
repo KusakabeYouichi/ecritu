@@ -91,7 +91,6 @@ targets:
         CURRENT_PROJECT_VERSION: $(ECRITU_EDITION_NUMBER)
         CODE_SIGN_ENTITLEMENTS: KeyboardExtension/KeyboardExtension.entitlements
         INFOPLIST_FILE: KeyboardExtension/Info.plist
-        INFOPLIST_KEY_NSContactsUsageDescription: 連絡先の名前を変換候補として使うために連絡先データにアクセスします。
         APPLICATION_EXTENSION_API_ONLY: YES
         SKIP_INSTALL: YES
         TARGETED_DEVICE_FAMILY: "1"

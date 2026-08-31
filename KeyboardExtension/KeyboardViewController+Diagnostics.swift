@@ -2,7 +2,6 @@ import SwiftUI
 import UIKit
 import CoreFoundation
 import Darwin
-import Contacts
 
 // 診断まわりの帳簿状態。VC本体の状態肥大を防ぐため分離(挙動不変の移動)。
 extension KeyboardViewController {
