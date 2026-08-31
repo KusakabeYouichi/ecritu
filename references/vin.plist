@@ -2178,27 +2178,37 @@
 	<dict><key>phrase</key><string>ロシア</string><key>shortcut</key><string>ろしあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>北マケドニア</string><key>shortcut</key><string>きたまけどにあ</string></dict>	<!-- Sudachiにもある -->
 
-	<!-- ■ 文明・民族・神話名 -->
+	<!-- ■ 民族 -->
+	<dict><key>phrase</key><string>スコットランド人</string><key>shortcut</key><string>すこっとらんどじん</string></dict>
+	<dict><key>phrase</key><string>ムーア人</string><key>shortcut</key><string>むーあじん</string></dict>
+	<dict><key>phrase</key><string>フォカイア人</string><key>shortcut</key><string>ふぉかいあじん</string></dict>
+	<dict><key>phrase</key><string>ベルガエ人</string><key>shortcut</key><string>べるがえじん</string></dict>
+	<dict><key>phrase</key><string>マオリ族</string><key>shortcut</key><string>まおりぞく</string></dict>
+	<dict><key>phrase</key><string>マオリ民族</string><key>shortcut</key><string>まおりみんぞく</string></dict>
 	<dict><key>phrase</key><string>エトルリア人</string><key>shortcut</key><string>えとるりあじん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>エジプト文明</string><key>shortcut</key><string>えじぷとぶんめい</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>エトルリア人・フォカイア人</string><key>shortcut</key><string>えとるりあじんふぉかいあじん</string></dict>
 	<dict><key>phrase</key><string>ギリシャ人・フォカイア人</string><key>shortcut</key><string>ぎりしゃじんふぉかいあじん</string></dict>
 	<dict><key>phrase</key><string>古代ギリシャ人</string><key>shortcut</key><string>こだいぎりしゃじん</string></dict>
 	<dict><key>phrase</key><string>ギリシャ人</string><key>shortcut</key><string>ぎりしゃじん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>フェニキア人・ギリシャ人</string><key>shortcut</key><string>ふぇにきあじんぎりしゃじん</string></dict>
-	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
 	<dict><key>phrase</key><string>アイルランド人</string><key>shortcut</key><string>あいるらんどじん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>オランダ人</string><key>shortcut</key><string>おらんだじん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ケルト人</string><key>shortcut</key><string>けるとじん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ローマ人</string><key>shortcut</key><string>ろーまじん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>古代ローマ人</string><key>shortcut</key><string>こだいろーまじん</string></dict>
+
+	<!-- ■ 文明・神話名 -->
+	<dict><key>phrase</key><string>エジプト文明</string><key>shortcut</key><string>えじぷとぶんめい</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ギリシャ神話</string><key>shortcut</key><string>ぎりしゃしんわ</string></dict>
 	<dict><key>phrase</key><string>イスラム</string><key>shortcut</key><string>いすらむ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>イスラム勢力</string><key>shortcut</key><string>いすらむせいりょく</string></dict>
 	<dict><key>phrase</key><string>イスラム教徒</string><key>shortcut</key><string>いすらむきょうと</string></dict>
 	<dict><key>phrase</key><string>オスマン</string><key>shortcut</key><string>おすまん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>オスマン帝国</string><key>shortcut</key><string>おすまんていこく</string></dict>
-	<dict><key>phrase</key><string>オランダ人</string><key>shortcut</key><string>おらんだじん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>カトリック伝道者</string><key>shortcut</key><string>かとりっくでんどうしゃ</string></dict>
 	<dict><key>phrase</key><string>キクラデス文明</string><key>shortcut</key><string>きくらですぶんめい</string></dict>
 	<dict><key>phrase</key><string>キリスト教</string><key>shortcut</key><string>きりすときょう</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>キリスト教徒</string><key>shortcut</key><string>きりすときょうと</string></dict>
-	<dict><key>phrase</key><string>ケルト人</string><key>shortcut</key><string>けるとじん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>サヴォイア王家</string><key>shortcut</key><string>さゔぉいあおうけ</string></dict>
 	<dict><key>phrase</key><string>シュメール文明</string><key>shortcut</key><string>しゅめーるぶんめい</string></dict>
 	<dict><key>phrase</key><string>ディオニュソス</string><key>shortcut</key><string>でぃおにゅそす</string></dict>	<!-- Sudachiにもある -->
@@ -2213,13 +2223,11 @@
 	<dict><key>phrase</key><string>プロイセン</string><key>shortcut</key><string>ぷろいせん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ヘラクレス</string><key>shortcut</key><string>へらくれす</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ヘレネス</string><key>shortcut</key><string>へれねす</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>マオリ民族</string><key>shortcut</key><string>まおりみんぞく</string></dict>
 	<dict><key>phrase</key><string>マケドニア王国</string><key>shortcut</key><string>まけどにあおうこく</string></dict>
 	<dict><key>phrase</key><string>ミケーネ文明</string><key>shortcut</key><string>みけーねぶんめい</string></dict>
 	<dict><key>phrase</key><string>ミノア文明</string><key>shortcut</key><string>みのあぶんめい</string></dict>
 	<dict><key>phrase</key><string>メソポタミア</string><key>shortcut</key><string>めそぽたみあ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>メソポタミア文明</string><key>shortcut</key><string>めそぽたみあぶんめい</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>ローマ人</string><key>shortcut</key><string>ろーまじん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ローマ帝国</string><key>shortcut</key><string>ろーまていこく</string></dict>
 	<dict><key>phrase</key><string>ローマ神話</string><key>shortcut</key><string>ろーましんわ</string></dict>
 	<dict><key>phrase</key><string>ヴェネツィア共和国</string><key>shortcut</key><string>ゔぇねつぃあきょうわこく</string></dict>
@@ -2231,7 +2239,6 @@
 	<dict><key>phrase</key><string>古代ギリシャ</string><key>shortcut</key><string>こだいぎりしゃ</string></dict>
 	<dict><key>phrase</key><string>古代バビロニア</string><key>shortcut</key><string>こだいばびろにあ</string></dict>
 	<dict><key>phrase</key><string>古代ローマ</string><key>shortcut</key><string>こだいろーま</string></dict>
-	<dict><key>phrase</key><string>古代ローマ人</string><key>shortcut</key><string>こだいろーまじん</string></dict>
 	<dict><key>phrase</key><string>古代ローマ以前</string><key>shortcut</key><string>こだいろーまいぜん</string></dict>
 	<dict><key>phrase</key><string>宣教師</string><key>shortcut</key><string>せんきょうし</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>インド航路</string><key>shortcut</key><string>いんどこうろ</string></dict>
@@ -2258,11 +2265,8 @@
 	<dict><key>phrase</key><string>洞窟住居</string><key>shortcut</key><string>どうくつじゅうきょ</string></dict>
 	<dict><key>phrase</key><string>海洋交易</string><key>shortcut</key><string>かいようこうえき</string></dict>
 	<dict><key>phrase</key><string>独裁体制</string><key>shortcut</key><string>どくさいたいせい</string></dict>
-	<dict><key>phrase</key><string>王侯貴族</string><key>shortcut</key><string>おうこうきぞく</string></dict>
 	<dict><key>phrase</key><string>禁酒政策</string><key>shortcut</key><string>きんしゅせいさく</string></dict>
 	<dict><key>phrase</key><string>英国宮廷</string><key>shortcut</key><string>えいこくきゅうてい</string></dict>
-	<dict><key>phrase</key><string>英国軍人</string><key>shortcut</key><string>えいこくぐんじん</string></dict>
-	<dict><key>phrase</key><string>西ローマ皇帝</string><key>shortcut</key><string>にしろーまこうてい</string></dict>
 	<dict><key>phrase</key><string>近代イタリア</string><key>shortcut</key><string>きんだいいたりあ</string></dict>
 	<dict><key>phrase</key><string>近代国家イタリア王国</string><key>shortcut</key><string>きんだいこっかいたりあおうこく</string></dict>
 	<dict><key>phrase</key><string>鎌倉幕府</string><key>shortcut</key><string>かまくらばくふ</string></dict>
@@ -5281,35 +5285,16 @@
 	<dict><key>phrase</key><string>シロユタカ</string><key>shortcut</key><string>しろゆたか</string></dict>
 	<dict><key>phrase</key><string>ダイチノユメ</string><key>shortcut</key><string>だいちのゆめ</string></dict>
 
-
 	<!-- ■ 人名、固有名 -->
-	<dict><key>phrase</key><string>富永敬俊</string><key>shortcut</key><string>とみながたかとし</string></dict>
-	<dict><key>phrase</key><string>勘解由</string><key>shortcut</key><string>かげゆ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>Laurenz Moser III</string><key>shortcut</key><string>ろーれんつもーざー</string></dict>
-	<dict><key>phrase</key><string>ダニエル・ノートン</string><key>shortcut</key><string>だにえるのーとん</string></dict>
-	<dict><key>phrase</key><string>ダニエル・ノートン博士</string><key>shortcut</key><string>だにえるのーとんはかせ</string></dict>
 	<dict><key>phrase</key><string>Richard Smart</string><key>shortcut</key><string>りちゃーどすまーと</string></dict>
 	<dict><key>phrase</key><string>Richard Smart博士</string><key>shortcut</key><string>りちゃーどすまーとはかせ</string></dict>
 	<dict><key>phrase</key><string>Fritz Zweigelt</string><key>shortcut</key><string>ふりっつつゔぁいげると</string></dict>
 	<dict><key>phrase</key><string>Fritz Zweigelt博士</string><key>shortcut</key><string>ふりっつつゔぁいげるとはかせ</string></dict>
 	<dict><key>phrase</key><string>Fritz Zweigelt教授</string><key>shortcut</key><string>ふりっつつゔぁいげるときょうじゅ</string></dict>
-	<dict><key>phrase</key><string>コンスタンティン・フランク博士</string><key>shortcut</key><string>こんすたんてぃんふらんくはかせ</string></dict>
-	<dict><key>phrase</key><string>クライヴ・ペイトン</string><key>shortcut</key><string>くらいゔぺいとん</string></dict>
-	<dict><key>phrase</key><string>カトリック伝道者Francisco de Aguirre</string><key>shortcut</key><string>かとりっくでんどうしゃふらんしすこであぎーれ</string></dict>
-	<dict><key>phrase</key><string>フランシスコ・デ・アギーレ</string><key>shortcut</key><string>ふらんしすこであぎーれ</string></dict>
-	<dict><key>phrase</key><string>エンリケ航海王</string><key>shortcut</key><string>えんりけこうかいおう</string></dict>
-	<dict><key>phrase</key><string>アーサー・フィリップ</string><key>shortcut</key><string>あーさーふぃりっぷ</string></dict>
-	<dict><key>phrase</key><string>アーサー・フィリップ大佐</string><key>shortcut</key><string>あーさーふぃりっぷたいさ</string></dict>
-	<dict><key>phrase</key><string>アブラハム・ペロード</string><key>shortcut</key><string>あぶらはむぺろーど</string></dict>
-	<dict><key>phrase</key><string>アブラハム・ペロード博士</string><key>shortcut</key><string>あぶらはむぺろーどはかせ</string></dict>
-	<dict><key>phrase</key><string>アウソニウス</string><key>shortcut</key><string>あうそにうす</string></dict>
+	<dict><key>phrase</key><string>Francisco de Aguirre</string><key>shortcut</key><string>ふらんしすこであぎーれ</string></dict>
 	<dict><key>phrase</key><string>Max Schubert</string><key>shortcut</key><string>まっくすしゅーばーと</string></dict>
 	<dict><key>phrase</key><string>Maynard Amerine教授</string><key>shortcut</key><string>めいなーどあめりんきょうじゅ</string></dict>
-	<dict><key>phrase</key><string>龍憲</string><key>shortcut</key><string>りゅうけん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>詫間憲久</string><key>shortcut</key><string>たくまのりひさ</string></dict>
-	<dict><key>phrase</key><string>シャプタル</string><key>shortcut</key><string>しゃぷたる</string></dict>
-	<dict><key>phrase</key><string>ジャン・アントワーヌ・シャプタル</string><key>shortcut</key><string>じゃんあんとわーぬしゃぷたる</string></dict>
-	<dict><key>phrase</key><string>ヨハン</string><key>shortcut</key><string>よはん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>Johann Schiller</string><key>shortcut</key><string>よはんしらー</string></dict>
 	<dict><key>phrase</key><string>John Schiller</string><key>shortcut</key><string>じょんしらー</string></dict>
 	<dict><key>phrase</key><string>Abraham Perold</string><key>shortcut</key><string>あぶらはむぺろるど</string></dict>
@@ -5323,6 +5308,59 @@
 	<dict><key>phrase</key><string>Jules Guyot</string><key>shortcut</key><string>じゅーるぎよ</string></dict>
 	<dict><key>phrase</key><string>Louis Pasteur</string><key>shortcut</key><string>るいぱすとぅーる</string></dict>
 	<dict><key>phrase</key><string>Steven Spurrier</string><key>shortcut</key><string>すてぃーゔんすぱりゅあ</string></dict>
+	<dict><key>phrase</key><string>August Wilhelm Freiherr von Babo</string><key>shortcut</key><string>あうぐすとゔぃるへるむふらいへるふぉんばーぼ</string></dict>
+	<dict><key>phrase</key><string>Derek Milne</string><key>shortcut</key><string>でれくみるん</string></dict>
+	<dict><key>phrase</key><string>Derek Milne博士</string><key>shortcut</key><string>でれくみるんはかせ</string></dict>
+	<dict><key>phrase</key><string>Francisco de Aguirre</string><key>shortcut</key><string>ふらんしすこであぎーれ</string></dict>
+	<dict><key>phrase</key><string>James Busby</string><key>shortcut</key><string>じぇーむずばずびー</string></dict>
+	<dict><key>phrase</key><string>Jan van Riebeeck</string><key>shortcut</key><string>やんふぁんりーべっく</string></dict>
+	<dict><key>phrase</key><string>Johann</string><key>shortcut</key><string>よはん</string></dict>
+	<dict><key>phrase</key><string>John</string><key>shortcut</key><string>じょん</string></dict>
+	<dict><key>phrase</key><string>Jules</string><key>shortcut</key><string>じゅーる</string></dict>
+	<dict><key>phrase</key><string>Lenz Moser</string><key>shortcut</key><string>れんつもーざー</string></dict>
+	<dict><key>phrase</key><string>Pablo Morande</string><key>shortcut</key><string>ぱぶろもらんで</string></dict>
+	<dict><key>phrase</key><string>Pascual Harriague</string><key>shortcut</key><string>ぱすくあるありあげ</string></dict>
+	<dict><key>phrase</key><string>Patrick Ducournau</string><key>shortcut</key><string>ぱとりっくでゅくるのー</string></dict>
+	<dict><key>phrase</key><string>Rudolf Steiner</string><key>shortcut</key><string>るどるふしゅたいなー</string></dict>
+	<dict><key>phrase</key><string>Samuel Marsden</string><key>shortcut</key><string>さみゅえるまーすでん</string></dict>
+	<dict><key>phrase</key><string>Silvestre Ochagavia</string><key>shortcut</key><string>しるべすとれおちゃがびあ</string></dict>
+	<dict><key>phrase</key><string>Émile Planchon</string><key>shortcut</key><string>えみーるぷらんしょん</string></dict>
+	<dict><key>phrase</key><string>行基</string><key>shortcut</key><string>ぎょうき</string></dict>
+	<dict><key>phrase</key><string>行基</string><key>shortcut</key><string>ぎょうぎ</string></dict>
+	<dict><key>phrase</key><string>富永敬俊</string><key>shortcut</key><string>とみながたかとし</string></dict>
+	<dict><key>phrase</key><string>雨宮勘解由</string><key>shortcut</key><string>あまみやかげゆ</string></dict>
+	<dict><key>phrase</key><string>勘解由</string><key>shortcut</key><string>かげゆ</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>大井上康</string><key>shortcut</key><string>おおいのうえやすし</string></dict>
+	<dict><key>phrase</key><string>宮崎光太郎</string><key>shortcut</key><string>みやざきこうたろう</string></dict>
+	<dict><key>phrase</key><string>小川博士</string><key>shortcut</key><string>おがわはかせ</string></dict>
+	<dict><key>phrase</key><string>山川祥秀</string><key>shortcut</key><string>やまかわよしひで</string></dict>
+	<dict><key>phrase</key><string>山田宥教</string><key>shortcut</key><string>やまだひろのり</string></dict>
+	<dict><key>phrase</key><string>山田宥教</string><key>shortcut</key><string>やまだゆうきょう</string></dict>
+	<dict><key>phrase</key><string>川上善兵衛</string><key>shortcut</key><string>かわかみぜんべえ</string></dict>
+	<dict><key>phrase</key><string>神谷伝兵衛</string><key>shortcut</key><string>かみやでんべえ</string></dict>
+	<dict><key>phrase</key><string>高野正誠</string><key>shortcut</key><string>たかのまさなり</string></dict>
+	<dict><key>phrase</key><string>鳥井信治郎</string><key>shortcut</key><string>とりいしんじろう</string></dict>
+	<dict><key>phrase</key><string>田崎真也</string><key>shortcut</key><string>たさきしんや</string></dict>
+	<dict><key>phrase</key><string>竹鶴政孝</string><key>shortcut</key><string>たけつるまさたか</string></dict>
+	<dict><key>phrase</key><string>酒井彌惣</string><key>shortcut</key><string>さかいやそう</string></dict>
+	<dict><key>phrase</key><string>土屋助次郎</string><key>shortcut</key><string>つちやすけじろう</string></dict>
+	<dict><key>phrase</key><string>土屋龍憲</string><key>shortcut</key><string>つちやりゅうけん</string></dict>
+	<dict><key>phrase</key><string>龍憲</string><key>shortcut</key><string>りゅうけん</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>詫間憲久</string><key>shortcut</key><string>たくまのりひさ</string></dict>
+	<dict><key>phrase</key><string>ダニエル・ノートン</string><key>shortcut</key><string>だにえるのーとん</string></dict>
+	<dict><key>phrase</key><string>ダニエル・ノートン博士</string><key>shortcut</key><string>だにえるのーとんはかせ</string></dict>
+	<dict><key>phrase</key><string>コンスタンティン・フランク博士</string><key>shortcut</key><string>こんすたんてぃんふらんくはかせ</string></dict>
+	<dict><key>phrase</key><string>クライヴ・ペイトン</string><key>shortcut</key><string>くらいゔぺいとん</string></dict>
+	<dict><key>phrase</key><string>フランシスコ・デ・アギーレ</string><key>shortcut</key><string>ふらんしすこであぎーれ</string></dict>
+	<dict><key>phrase</key><string>エンリケ航海王</string><key>shortcut</key><string>えんりけこうかいおう</string></dict>
+	<dict><key>phrase</key><string>アーサー・フィリップ</string><key>shortcut</key><string>あーさーふぃりっぷ</string></dict>
+	<dict><key>phrase</key><string>アーサー・フィリップ大佐</string><key>shortcut</key><string>あーさーふぃりっぷたいさ</string></dict>
+	<dict><key>phrase</key><string>アブラハム・ペロード</string><key>shortcut</key><string>あぶらはむぺろーど</string></dict>
+	<dict><key>phrase</key><string>アブラハム・ペロード博士</string><key>shortcut</key><string>あぶらはむぺろーどはかせ</string></dict>
+	<dict><key>phrase</key><string>アウソニウス</string><key>shortcut</key><string>あうそにうす</string></dict>
+	<dict><key>phrase</key><string>シャプタル</string><key>shortcut</key><string>しゃぷたる</string></dict>
+	<dict><key>phrase</key><string>ジャン・アントワーヌ・シャプタル</string><key>shortcut</key><string>じゃんあんとわーぬしゃぷたる</string></dict>
+	<dict><key>phrase</key><string>ヨハン</string><key>shortcut</key><string>よはん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>アメリン</string><key>shortcut</key><string>あめりん</string></dict>
 	<dict><key>phrase</key><string>アラン・サンドランス</string><key>shortcut</key><string>あらんさんどらんす</string></dict>
 	<dict><key>phrase</key><string>アラン・チフニー</string><key>shortcut</key><string>あらんちふにー</string></dict>
@@ -5367,33 +5405,6 @@
 	<dict><key>phrase</key><string>ロバート・パーカーJr.</string><key>shortcut</key><string>ろばーとぱーかーじゅにあ</string></dict>
 	<dict><key>phrase</key><string>ロバート・モンダヴィ</string><key>shortcut</key><string>ろばーともんだゔぃ</string></dict>
 	<dict><key>phrase</key><string>ロッシーニ</string><key>shortcut</key><string>ろっしーに</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>大井上康氏</string><key>shortcut</key><string>おおいのうえやすしし</string></dict>
-	<dict><key>phrase</key><string>宮崎光太郎</string><key>shortcut</key><string>みやざきこうたろう</string></dict>
-	<dict><key>phrase</key><string>小川博士</string><key>shortcut</key><string>おがわはかせ</string></dict>
-	<dict><key>phrase</key><string>山川祥秀</string><key>shortcut</key><string>やまかわよしひで</string></dict>
-	<dict><key>phrase</key><string>山田宥教</string><key>shortcut</key><string>やまだひろのり</string></dict>
-	<dict><key>phrase</key><string>山田宥教</string><key>shortcut</key><string>やまだゆうきょう</string></dict>
-	<dict><key>phrase</key><string>川上善兵衛</string><key>shortcut</key><string>かわかみぜんべえ</string></dict>
-	<dict><key>phrase</key><string>神谷伝兵衛</string><key>shortcut</key><string>かみやでんべえ</string></dict>
-	<dict><key>phrase</key><string>高野正誠</string><key>shortcut</key><string>たかのまさなり</string></dict>
-	<dict><key>phrase</key><string>鳥井信治郎</string><key>shortcut</key><string>とりいしんじろう</string></dict>
-	<dict><key>phrase</key><string>August Wilhelm Freiherr von Babo</string><key>shortcut</key><string>あうぐすとゔぃるへるむふらいへるふぉんばーぼ</string></dict>
-	<dict><key>phrase</key><string>Derek Milne</string><key>shortcut</key><string>でれくみるん</string></dict>
-	<dict><key>phrase</key><string>Derek Milne博士</string><key>shortcut</key><string>でれくみるんはかせ</string></dict>
-	<dict><key>phrase</key><string>Francisco de Aguirre</string><key>shortcut</key><string>ふらんしすこであぎーれ</string></dict>
-	<dict><key>phrase</key><string>James Busby</string><key>shortcut</key><string>じぇーむずばずびー</string></dict>
-	<dict><key>phrase</key><string>Jan van Riebeeck</string><key>shortcut</key><string>やんふぁんりーべっく</string></dict>
-	<dict><key>phrase</key><string>Johann</string><key>shortcut</key><string>よはん</string></dict>
-	<dict><key>phrase</key><string>John</string><key>shortcut</key><string>じょん</string></dict>
-	<dict><key>phrase</key><string>Jules</string><key>shortcut</key><string>じゅーる</string></dict>
-	<dict><key>phrase</key><string>Lenz Moser</string><key>shortcut</key><string>れんつもーざー</string></dict>
-	<dict><key>phrase</key><string>Pablo Morande</string><key>shortcut</key><string>ぱぶろもらんで</string></dict>
-	<dict><key>phrase</key><string>Pascual Harriague</string><key>shortcut</key><string>ぱすくあるありあげ</string></dict>
-	<dict><key>phrase</key><string>Patrick Ducournau</string><key>shortcut</key><string>ぱとりっくでゅくるのー</string></dict>
-	<dict><key>phrase</key><string>Rudolf Steiner</string><key>shortcut</key><string>るどるふしゅたいなー</string></dict>
-	<dict><key>phrase</key><string>Samuel Marsden</string><key>shortcut</key><string>さみゅえるまーすでん</string></dict>
-	<dict><key>phrase</key><string>Silvestre Ochagavia</string><key>shortcut</key><string>しるべすとれおちゃがびあ</string></dict>
-	<dict><key>phrase</key><string>Émile Planchon</string><key>shortcut</key><string>えみーるぷらんしょん</string></dict>
 	<dict><key>phrase</key><string>アンティノーリ</string><key>shortcut</key><string>あんてぃのーり</string></dict>
 	<dict><key>phrase</key><string>アントニオ・サラザール</string><key>shortcut</key><string>あんとにおさらざーる</string></dict>
 	<dict><key>phrase</key><string>クリストフォロ・コロンボ</string><key>shortcut</key><string>くりすとふぉろころんぼ</string></dict>
@@ -5403,7 +5414,6 @@
 	<dict><key>phrase</key><string>シルベストレ・オチャガビア</string><key>shortcut</key><string>しるべすとれおちゃがびあ</string></dict>
 	<dict><key>phrase</key><string>ジョン・グラッドストーンズ博士</string><key>shortcut</key><string>じょんぐらっどすとーんずはかせ</string></dict>
 	<dict><key>phrase</key><string>ジョン・リドック</string><key>shortcut</key><string>じょんりどっく</string></dict>
-	<dict><key>phrase</key><string>スコットランド人ジョン・リドック</string><key>shortcut</key><string>すこっとらんどじんじょんりどっく</string></dict>
 	<dict><key>phrase</key><string>スティーヴン・スパリュア</string><key>shortcut</key><string>すてぃーゔんすぱりゅあ</string></dict>
 	<dict><key>phrase</key><string>ディレック・ミルネ</string><key>shortcut</key><string>でぃれっくみるね</string></dict>
 	<dict><key>phrase</key><string>ディレック・ミルネ博士</string><key>shortcut</key><string>でぃれっくみるねはかせ</string></dict>
@@ -5423,12 +5433,7 @@
 	<dict><key>phrase</key><string>リチャード・スマート博士</string><key>shortcut</key><string>りちゃーどすまーとはかせ</string></dict>
 	<dict><key>phrase</key><string>ヴァルル・ルイ・トラヤン</string><key>shortcut</key><string>ゔぁるるるいとらやん</string></dict>
 	<dict><key>phrase</key><string>ヴィッラーニ</string><key>shortcut</key><string>ゔぃっらーに</string></dict>
-	<dict><key>phrase</key><string>初代大統領ジョージ・ワシントン</string><key>shortcut</key><string>しょだいだいとうりょうじょーじわしんとん</string></dict>
-	<dict><key>phrase</key><string>南部氏</string><key>shortcut</key><string>なんぶし</string></dict>
-	<dict><key>phrase</key><string>太陽王</string><key>shortcut</key><string>たいようおう</string></dict>
-	<dict><key>phrase</key><string>田崎真也氏</string><key>shortcut</key><string>たさきしんやし</string></dict>
-	<dict><key>phrase</key><string>竹鶴政孝</string><key>shortcut</key><string>たけつるまさたか</string></dict>
-	<dict><key>phrase</key><string>酒井彌惣</string><key>shortcut</key><string>さかいやそう</string></dict>
+	<dict><key>phrase</key><string>ジョージ・ワシントン</string><key>shortcut</key><string>じょーじわしんとん</string></dict>
 	<dict><key>phrase</key><string>イーニアス・カフェ</string><key>shortcut</key><string>いーにあすかふぇ</string></dict>
 	<dict><key>phrase</key><string>ヴァロワ朝</string><key>shortcut</key><string>ゔぁろわちょう</string></dict>
 	<dict><key>phrase</key><string>アルノー・ドー・ヴィラノーヴァ</string><key>shortcut</key><string>あるのーどーゔぃらのーゔぁ</string></dict>
@@ -5456,27 +5461,25 @@
 	<dict><key>phrase</key><string>マルコ・ポーロ</string><key>shortcut</key><string>まるこぽーろ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ミゲル・トーレス</string><key>shortcut</key><string>みげるとーれす</string></dict>
 	<dict><key>phrase</key><string>ヴァスコ・ダ・ガマ</string><key>shortcut</key><string>ゔぁすこだがま</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>初代国王クロヴィス</string><key>shortcut</key><string>しょだいこくおうくろゔぃす</string></dict>
-	<dict><key>phrase</key><string>土屋助次郎</string><key>shortcut</key><string>つちやすけじろう</string></dict>
-	<dict><key>phrase</key><string>土屋龍憲</string><key>shortcut</key><string>つちやりゅうけん</string></dict>
+	<dict><key>phrase</key><string>クロヴィス</string><key>shortcut</key><string>くろゔぃす</string></dict>
 	<dict><key>phrase</key><string>リチャード・スマート</string><key>shortcut</key><string>りちゃーどすまーと</string></dict>
+	<dict><key>phrase</key><string>南部氏</string><key>shortcut</key><string>なんぶし</string></dict>
+	<dict><key>phrase</key><string>太陽王</string><key>shortcut</key><string>たいようおう</string></dict>
 
-	<!-- ■ 人、民族、身分 -->
+	<!-- ■ 人、身分 -->
+	<dict><key>phrase</key><string>王侯貴族</string><key>shortcut</key><string>おうこうきぞく</string></dict>
 	<dict><key>phrase</key><string>ブルゴーニュ公爵</string><key>shortcut</key><string>ぶるごーにゅこうしゃく</string></dict>
 	<dict><key>phrase</key><string>ロシア皇帝</string><key>shortcut</key><string>ろしあこうてい</string></dict>
 	<dict><key>phrase</key><string>ローマ教皇</string><key>shortcut</key><string>ろーまきょうこう</string></dict>
 	<dict><key>phrase</key><string>アンジュー伯・ノルマンディー公</string><key>shortcut</key><string>あんじゅーはくのるまんでぃーこう</string></dict>
 	<dict><key>phrase</key><string>トリーア大司教</string><key>shortcut</key><string>とりーあだいしきょう</string></dict>
-	<dict><key>phrase</key><string>ムーア人</string><key>shortcut</key><string>むーあじん</string></dict>
 	<dict><key>phrase</key><string>モルドヴァ公</string><key>shortcut</key><string>もるどゔぁこう</string></dict>
 	<dict><key>phrase</key><string>修道僧</string><key>shortcut</key><string>しゅうどうそう</string></dict>
-	<dict><key>phrase</key><string>先住民マオリ族</string><key>shortcut</key><string>せんじゅうみんまおりぞく</string></dict>
+	<dict><key>phrase</key><string>ランス司教</string><key>shortcut</key><string>らんすしきょう</string></dict>
 	<dict><key>phrase</key><string>生産者達</string><key>shortcut</key><string>せいさんしゃたち</string></dict>
 	<dict><key>phrase</key><string>高品質ピノ・ノワール生産者</string><key>shortcut</key><string>こうひんしつぴののわーるせいさんしゃ</string></dict>
-	<dict><key>phrase</key><string>フォカイア人</string><key>shortcut</key><string>ふぉかいあじん</string></dict>
-	<dict><key>phrase</key><string>ベルガエ人</string><key>shortcut</key><string>べるがえじん</string></dict>
-	<dict><key>phrase</key><string>マオリ族</string><key>shortcut</key><string>まおりぞく</string></dict>
-	<dict><key>phrase</key><string>ランス司教</string><key>shortcut</key><string>らんすしきょう</string></dict>
+	<dict><key>phrase</key><string>英国軍人</string><key>shortcut</key><string>えいこくぐんじん</string></dict>
+	<dict><key>phrase</key><string>西ローマ皇帝</string><key>shortcut</key><string>にしろーまこうてい</string></dict>
 
 	<!-- ■ 栽培技術 -->
 	<dict><key>phrase</key><string>光合成</string><key>shortcut</key><string>こうごうせい</string></dict>	<!-- Sudachiにもある -->
@@ -6348,8 +6351,13 @@
 	<dict><key>phrase</key><string>補糖後</string><key>shortcut</key><string>ほとうご</string></dict>
 	<dict><key>phrase</key><string>補酸</string><key>shortcut</key><string>ほさん</string></dict>
 	<dict><key>phrase</key><string>調合</string><key>shortcut</key><string>ちょうごう</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>貯蔵・熟成・育成</string><key>shortcut</key><string>ちょぞうじゅくせいいくせい</string></dict>
-	<dict><key>phrase</key><string>購入・保管・熟成・販売</string><key>shortcut</key><string>こうにゅうほかんじゅくせいはんばい</string></dict>
+	<dict><key>phrase</key><string>貯蔵</string><key>shortcut</key><string>ちょぞう</string></dict>
+	<dict><key>phrase</key><string>熟成</string><key>shortcut</key><string>じゅくせい</string></dict>
+	<dict><key>phrase</key><string>育成</string><key>shortcut</key><string>いくせい</string></dict>
+	<dict><key>phrase</key><string>購入</string><key>shortcut</key><string>こうにゅう</string></dict>
+	<dict><key>phrase</key><string>保管</string><key>shortcut</key><string>ほかん</string></dict>
+	<dict><key>phrase</key><string>熟成</string><key>shortcut</key><string>じゅくせい</string></dict>
+	<dict><key>phrase</key><string>販売</string><key>shortcut</key><string>はんばい</string></dict>
 	<dict><key>phrase</key><string>赤ワイン醸造法</string><key>shortcut</key><string>あかわいんじょうぞうほう</string></dict>
 	<dict><key>phrase</key><string>連続式蒸溜</string><key>shortcut</key><string>れんぞくしきじょうりゅう</string></dict>
 	<dict><key>phrase</key><string>連続式蒸溜器</string><key>shortcut</key><string>れんぞくしきじょうりゅうき</string></dict>
