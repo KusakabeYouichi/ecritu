@@ -1,3 +1,4 @@
+import CryptoKit
 import XCTest
 
 final class KeyboardModeTransitionTests: XCTestCase {
@@ -352,6 +353,27 @@ final class KeyboardModeTransitionTests: XCTestCase {
         )
     }
 
+    func testContactCacheCipherRoundTrip() {
+        let key = SymmetricKey(size: .bits256)
+        let dictionary: [String: [String]] = [
+            "やまだ": ["山田", "山田太郎"],
+            "すずき": ["鈴木"]
+        ]
+        guard let sealed = ContactCacheCipher.seal(dictionary, key: key) else {
+            XCTFail("seal failed")
+            return
+        }
+        // 封緘データに平文が含まれない
+        XCTAssertNil(String(data: sealed, encoding: .utf8))
+        XCTAssertEqual(ContactCacheCipher.open(sealed, key: key), dictionary)
+        // 別鍵では開かない
+        XCTAssertNil(ContactCacheCipher.open(sealed, key: SymmetricKey(size: .bits256)))
+        // 改竄検知(1バイト破壊)
+        var tampered = sealed
+        tampered[tampered.count - 1] ^= 0xFF
+        XCTAssertNil(ContactCacheCipher.open(tampered, key: key))
+    }
+
     func testWaSecondaryFlickOutputsForHistoricalKana() {
         // 案C(2026-08-31): を→下=ゐ、ー→下=ゑ、ん→下=〜
         XCTAssertEqual(
@@ -386,13 +408,15 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(apple.right, "ー")
         // remapped がわキーを二重変換しないこと(profile非依存フラグ)
         XCTAssertEqual(ecritu.remapped(for: .apple), ecritu)
-        // rows(5×2/3×3+わ)にも同じセットが載ること
-        for layout in [KanaLayoutMode.fiveByTwo, .threeByThreePlusWa] {
-            for profile in [FlickDirectionProfile.ecritu, .apple] {
-                let rows = FlickKanaLayout.rows(for: .none, layoutMode: layout, profile: profile)
-                let wa = rows.flatMap { $0 }.first { $0.label == "わ" }
-                XCTAssertEqual(wa, FlickKanaLayout.waSet(for: .none, profile: profile), "layout=\(layout) profile=\(profile)")
-            }
+        // 5×2 の rows にも同じセットが載ること。3×3+わ は わキーを rows に含まず
+        // waSet() 経由で別置きする構成なので、rows 側に わ が無いことだけ確認する
+        for profile in [FlickDirectionProfile.ecritu, .apple] {
+            let rows = FlickKanaLayout.rows(for: .none, layoutMode: .fiveByTwo, profile: profile)
+            let wa = rows.flatMap { $0 }.first { $0.label == "わ" }
+            XCTAssertEqual(wa, FlickKanaLayout.waSet(for: .none, profile: profile), "profile=\(profile)")
+
+            let threeByThree = FlickKanaLayout.rows(for: .none, layoutMode: .threeByThreePlusWa, profile: profile)
+            XCTAssertNil(threeByThree.flatMap { $0 }.first { $0.label == "わ" })
         }
     }
 
