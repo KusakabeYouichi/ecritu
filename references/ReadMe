@@ -2,6 +2,8 @@
 sacoche.plist			# 『追加語彙』の初期設定
 poubelle.plist			# 『抑制語彙』の初期設定
 
+# 以下の語彙plist(vin/ryukyu/it/personnalités/drapeaux/monnaies 等)は作者のオリジナル編纂
+# (外部辞書・コーパスからの取り込みではない。2026-08-31 作者確認)
 vin.plist				# [ワイン]
 vin-acronyme.plist		# 読み込まれない
 vin-add.plist			# 読み込まれない
