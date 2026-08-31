@@ -679,7 +679,8 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
         appendKeyboardDiagnosticsLogFromInputHandling(
-            "外部変更の直前に未確定を確定 composingLen=\(composingRawText.count) active=\(activeConversion != nil)"
+            "外部変更の直前に未確定を確定 composingLen=\(composingRawText.count) active=\(activeConversion != nil)",
+            critical: true
         )
         // 素の unmarkText はメモ(Notes)では下線が残る(2685 実機。通常の確定キーも同じ理由で
         // カーソル微動 ±1 を挟む clearPass を使っている)。同期的に届く範囲で同じ手順を2回行う。
