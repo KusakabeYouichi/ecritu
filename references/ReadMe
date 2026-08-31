@@ -22,4 +22,4 @@ apple_missing_examples.md		# (再生成可)「Apple の変換では出るが éc
 adjective_garu_allowlist.json	# (必須)ガル形派生(悲しがる/怖がる 等)を許可する形容詞の allowlist。build_sudachi_index が読む
 compteur						# (資料)助数詞の頻度順一覧資料(compteur=仏語で「カウンター」)。numericCounterSuffixCandidatesByReading(せき=[席,隻]を足したあの表)を整備するときの参考資料
 word_lm.json.gz					# (必須)連文節変換の単語 n-gram LM 本体(11MB)。ビルド時に tmp へ展開→sqlite に焼き込まれる
-emoji_extract_apple.m			# (再整備)Apple 内部の絵文字読みデータを ObjCランタイム経由で抽出するツール。emoji.plist(絵文字の読み変換)を整備したときの生成元
+emoji_extract_apple.m			# (資料)Apple 内部の絵文字読みデータを ObjCランタイム経由で抽出するツール。emoji.plist の生成元ではない(2026-08-31 検証: emoji.plist の全1,559絵文字・7,718読みは CLDR ja アノテーション+機械読み化で説明可能。おとかずお/はーとけい等の機械変換痕も一致)。App Store 配布物には不使用
