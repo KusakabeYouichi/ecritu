@@ -74,6 +74,7 @@ struct KeyboardRootView: View {
     let initialInputMode: KeyboardInputMode
 
     @State var inputMode: KeyboardInputMode = .kana
+    @State private var lastInputModeObservation: InputModeObservation?
     @State var diacriticMode: DiacriticMode = .none
     @State var kanaCharacterMode: KanaCharacterMode = .hiragana
     @State var activeLayerIndex: Int? = nil
@@ -1118,16 +1119,12 @@ struct KeyboardRootView: View {
             onInputModeChanged(inputMode)
             showInitialSpaceToastIfNeeded()
         }
-        .onChange(of: inputMode) { mode in
-            onInputModeChanged(mode)
-        }
-        .onChange(of: initialInputMode) { newMode in
-            // フィールド移動で keyboardType が変わったら面を追従させる(4.4.1: かな面のまま
-            // 電話番号欄に留まらない)。同一フィールド内の手動切替では initialInputMode が
-            // 変わらないため、この経路がユーザの選択を上書きすることはない
-            if inputMode != newMode {
-                inputMode = newMode
-            }
+        // inputMode の変化通知に加えて、フィールド移動での keyboardType trait 変化
+        // (initialInputMode)への追従もこの1個で担う(4.4.1)。素の .onChange を
+        // もう1個足すと Swift 6.3.3 Release(WMO)がopaque type置換の発散でクラッシュ
+        // するため、複合値の監視に置き換えてモディファイア数を増やさない
+        .onChange(of: InputModeObservation(inputMode: inputMode, initialInputMode: initialInputMode)) { signal in
+            handleInputModeObservationChange(signal)
         }
         .onChange(of: spaceToastTrigger) { _ in
             showInitialSpaceToastIfNeeded()
@@ -1248,4 +1245,30 @@ struct KeyboardRootView: View {
         initialSpaceToastText: nil,
         initialInputMode: .kana
     )
+}
+
+// inputMode(手動切替)と initialInputMode(フィールドの keyboardType trait)の複合監視値。
+struct InputModeObservation: Equatable {
+    let inputMode: KeyboardInputMode
+    let initialInputMode: KeyboardInputMode
+}
+
+extension KeyboardRootView {
+    // 同一フィールド内の手動切替では initialInputMode が変わらないため、trait 追従が
+    // ユーザの選択を上書きすることはない。trait が変わって面を切り替えた場合は、
+    // inputMode の変化として次の発火で onInputModeChanged が呼ばれる(従来と同順)。
+    func handleInputModeObservationChange(_ signal: InputModeObservation) {
+        let previous = lastInputModeObservation
+        lastInputModeObservation = signal
+
+        if let previous, previous.initialInputMode != signal.initialInputMode {
+            if inputMode != signal.initialInputMode {
+                inputMode = signal.initialInputMode
+                return
+            }
+        }
+        if previous == nil || previous?.inputMode != signal.inputMode {
+            onInputModeChanged(signal.inputMode)
+        }
+    }
 }
