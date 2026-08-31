@@ -41,6 +41,19 @@ extension KeyboardRootView {
                 kanaConversionCandidateHeaderView
             } else if showsLatinSuggestionCandidates {
                 latinSuggestionHeaderView
+            } else if isSystemDictionaryFallback {
+                // 変換辞書(sqlite)が開けない異常時の案内。フォールバックJSONの同梱を
+                // やめた(2026-08-31 #4)ため、この状態では変換候補が出ない。劣化運転で
+                // 誤魔化さず理由を明示する(アクセント灰色化と併用)
+                Text("変換辞書を読み込めません。écritu の再インストールをお試しください")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .foregroundStyle(keyLabelColor.opacity(0.75))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                    .padding(.leading, 2)
+                    .padding(.top, emojiHeaderTopPadding)
+                    .allowsHitTesting(false)
             } else {
                 Color.clear
                     .allowsHitTesting(false)
