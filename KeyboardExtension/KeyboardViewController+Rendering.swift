@@ -46,6 +46,10 @@ extension KeyboardViewController {
         let latinSuggestionQuery: String
         let latinSuggestions: [String]
         let showsParenthesesWrapper: Bool
+        // フィールドの keyboardType から決まる初期入力モード。フィールド移動で trait が
+        // 変わったときに rootView 差し替えガード(== / equalIgnoringCandidateBar)を通すため
+        // configuration に含める(4.4.1: 数字・小数フィールドへの追従)
+        let initialInputMode: KeyboardInputMode
 
         // 候補バー系(composing/変換候補/選択位置/英字サジェスト)を除いた等価判定。
         // これが等しい打鍵ではキー盤面に影響がなく、rootView 差し替えを省略できる。
@@ -114,7 +118,8 @@ extension KeyboardViewController {
                 selectedConversionCandidateIndex: fields.selectedConversionCandidateIndex,
                 latinSuggestionQuery: fields.latinSuggestionQuery,
                 latinSuggestions: fields.latinSuggestions,
-                showsParenthesesWrapper: showsParenthesesWrapper
+                showsParenthesesWrapper: showsParenthesesWrapper,
+                initialInputMode: initialInputMode
             )
         }
     }
@@ -368,13 +373,15 @@ extension KeyboardViewController {
             selectedConversionCandidateIndex: candidatePresentation.selectedIndex,
             latinSuggestionQuery: latinSuggestionQuery,
             latinSuggestions: latinSuggestions,
-            showsParenthesesWrapper: hasParenthesesWrapper
+            showsParenthesesWrapper: hasParenthesesWrapper,
+            initialInputMode: preferredInitialInputMode()
         )
     }
 
-    // フィールドの keyboardType に初期入力モードを追従させる(App Store ガイドライン
+    // フィールドの keyboardType に入力モードを追従させる(App Store ガイドライン
     // 4.4.1: 数字・小数用のキーボードタイプへの対応)。数値系フィールドでは数字モードで
-    // 開く。それ以外は従来どおり かな。ユーザの手動切替は上書きしない(初期値のみ)。
+    // 開く。それ以外は かな。同一フィールド内のユーザ手動切替は上書きしない(trait が
+    // 変わったフィールド移動時のみ、rootView の .onChange(of: initialInputMode) で追従)。
     func preferredInitialInputMode() -> KeyboardInputMode {
         switch textDocumentProxy.keyboardType {
         case .numberPad, .decimalPad, .asciiCapableNumberPad, .phonePad, .numbersAndPunctuation:
@@ -540,7 +547,7 @@ extension KeyboardViewController {
             candidateBarModel: candidateBarModel,
             showsParenthesesWrapper: configuration.showsParenthesesWrapper,
             initialSpaceToastText: "écritu",
-            initialInputMode: preferredInitialInputMode()
+            initialInputMode: configuration.initialInputMode
         )
         // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)。引数順に依存しないよう生成後に渡す。
         rootView.layoutMetrics = layoutMetrics
