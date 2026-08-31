@@ -822,6 +822,14 @@ extension KeyboardViewController {
         return "(\(text))"
     }
 
+    // パスワード等の secure フィールド(isSecureTextEntry)では入力内容を学習語彙に残さない
+    // (ガイドライン5.1.1)。実際には iOS が secure 欄でカスタムキーボードを純正に自動で
+    // 差し替えるため通常この経路には到達しないが、ホスト実装の不備や将来の挙動変化に
+    // 備えて全学習経路の合流点(kanaKanjiConverter.learn の2呼び出し)で防御的に遮断する
+    var allowsLearningInCurrentField: Bool {
+        textDocumentProxy.isSecureTextEntry != true
+    }
+
     func commitComposingText(
         sourceText: String,
         sourceReading: String,
@@ -838,7 +846,7 @@ extension KeyboardViewController {
             sourceTextForFallbackReplacement: sourceText
         )
 
-        if learn {
+        if learn, allowsLearningInCurrentField {
             kanaKanjiConverter.learn(
                 reading: sourceReading,
                 candidate: committedText,
@@ -876,7 +884,7 @@ extension KeyboardViewController {
             sourceTextForFallbackReplacement: conversion.sourceText
         )
 
-        if learn {
+        if learn, allowsLearningInCurrentField {
             kanaKanjiConverter.learn(
                 reading: conversion.reading,
                 candidate: committedText
