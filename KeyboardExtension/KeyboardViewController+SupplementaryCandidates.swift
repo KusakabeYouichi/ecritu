@@ -538,6 +538,22 @@ extension KeyboardViewController {
         return readingKeys
     }
 
+    // 合流器の連絡先窓(4番目前出し)用: 連絡先由来の候補だけを返す。設定オフなら空
+    func contactCandidatesForMergeWindow(reading: String) -> [String] {
+        guard Self.isSupplementaryExternalCandidatesEnabled else {
+            return []
+        }
+
+        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+
+        guard !normalizedReading.isEmpty,
+            currentContactCandidateDisplayMode(from: sharedDefaults).usesContacts else {
+            return []
+        }
+
+        return contactCandidatesByReading.candidates(for: normalizedReading)
+    }
+
     func supplementaryLexiconCandidates(for reading: String) -> [String] {
         guard Self.isSupplementaryExternalCandidatesEnabled else {
             return []

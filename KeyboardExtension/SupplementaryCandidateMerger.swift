@@ -9,7 +9,30 @@ enum ExternalCandidateLimits {
 }
 
 enum SupplementaryCandidateMerger {
+    // 連絡先候補の「窓」: エンジン候補3つの直後(4番目)に連絡先由来の先頭1件を前出しする
+    // (2026-08-31 ユーザ要望: 登録済みの名前が17番目では遠い)。学習等で既に4番目以内に
+    // 居る場合は動かさない。2件目以降の連絡先は従来の補完位置のまま。
+    static let contactWindowIndex = 3
+
     static func mergeSupplementaryAndConverterCandidates(
+        reading: String,
+        supplementaryCandidates: [String],
+        converterCandidates: [String],
+        contactCandidates: [String] = [],
+        limit: Int
+    ) -> [String] {
+        // コアには早期return(limit到達)が複数あるため、窓の適用は必ずこのラッパーで行う
+        var merged = mergeCoreWithoutContactWindow(
+            reading: reading,
+            supplementaryCandidates: supplementaryCandidates,
+            converterCandidates: converterCandidates,
+            limit: limit
+        )
+        applyContactWindow(to: &merged, contactCandidates: contactCandidates, limit: limit)
+        return merged
+    }
+
+    private static func mergeCoreWithoutContactWindow(
         reading: String,
         supplementaryCandidates: [String],
         converterCandidates: [String],
@@ -111,6 +134,31 @@ enum SupplementaryCandidateMerger {
         }
 
         return mergedCandidates
+    }
+
+    private static func applyContactWindow(
+        to mergedCandidates: inout [String],
+        contactCandidates: [String],
+        limit: Int
+    ) {
+        guard let firstContact = contactCandidates.first(where: { !$0.isEmpty }) else {
+            return
+        }
+
+        if let currentIndex = mergedCandidates.firstIndex(of: firstContact) {
+            guard currentIndex > contactWindowIndex else {
+                return
+            }
+            mergedCandidates.remove(at: currentIndex)
+            mergedCandidates.insert(firstContact, at: min(contactWindowIndex, mergedCandidates.count))
+            return
+        }
+
+        mergedCandidates.insert(firstContact, at: min(contactWindowIndex, mergedCandidates.count))
+
+        if mergedCandidates.count > limit {
+            mergedCandidates.removeLast()
+        }
     }
 
     private static func prioritizedSupplementaryCandidates(

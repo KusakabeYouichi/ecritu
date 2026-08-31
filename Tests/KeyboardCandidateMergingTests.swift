@@ -106,4 +106,55 @@ final class KeyboardCandidateMergingTests: XCTestCase {
         let legacy = try! JSONEncoder().encode(["a", "b"])
         XCTAssertEqual(KeyboardViewController.diagnosticsLogLines(fromStoredData: legacy), ["a", "b"])
     }
+
+    func testContactWindowPromotesFirstContactToFourth() {
+        let supplementary = ["紗綾鼓"] + (1...10).map { "補助候補\($0)" }
+        let converter = (1...20).map { "変換候補\($0)" }
+
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
+            reading: "さやこ",
+            supplementaryCandidates: supplementary,
+            converterCandidates: converter,
+            contactCandidates: ["紗綾鼓"],
+            limit: 24
+        )
+
+        XCTAssertEqual(merged[3], "紗綾鼓", "merged=\(merged)")
+        XCTAssertEqual(Array(merged.prefix(3)), ["変換候補1", "変換候補2", "変換候補3"])
+    }
+
+    func testContactWindowDoesNotDemoteAlreadyHighContact() {
+        // 学習等で先頭に来ている場合は動かさない
+        let converter = ["紗綾鼓", "変換候補1", "変換候補2"]
+
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
+            reading: "さやこ",
+            supplementaryCandidates: ["紗綾鼓"],
+            converterCandidates: converter,
+            contactCandidates: ["紗綾鼓"],
+            limit: 24
+        )
+
+        XCTAssertEqual(merged.first, "紗綾鼓", "merged=\(merged)")
+        XCTAssertEqual(merged.filter { $0 == "紗綾鼓" }.count, 1)
+    }
+
+    func testContactWindowKeepsLimitAndSecondContactStays() {
+        let supplementary = ["連絡先A", "連絡先B"] + (1...10).map { "補助候補\($0)" }
+        let converter = (1...30).map { "変換候補\($0)" }
+
+        let merged = SupplementaryCandidateMerger.mergeSupplementaryAndConverterCandidates(
+            reading: "れんらく",
+            supplementaryCandidates: supplementary,
+            converterCandidates: converter,
+            contactCandidates: ["連絡先A", "連絡先B"],
+            limit: 12
+        )
+
+        XCTAssertEqual(merged.count, 12)
+        XCTAssertEqual(merged[3], "連絡先A", "merged=\(merged)")
+        // 2件目は窓に入れない(従来の補完位置に居るか、枠から溢れてもよい)
+        XCTAssertNotEqual(merged[4], "連絡先B")
+    }
 }
+
