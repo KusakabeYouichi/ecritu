@@ -360,6 +360,7 @@ extension KeyboardViewController {
                 reading: cacheKey.reading,
                 supplementaryCandidates: supplementaryCandidates,
                 converterCandidates: converterCandidates,
+                contactCandidates: contactCandidatesForMergeWindow(reading: cacheKey.reading),
                 limit: presentationLimit
             )
         }
@@ -469,6 +470,7 @@ extension KeyboardViewController {
             reading: reading,
             supplementaryCandidates: supplementaryCandidates,
             converterCandidates: converterCandidates,
+            contactCandidates: contactCandidatesForMergeWindow(reading: reading),
             limit: limit
         )
     }
