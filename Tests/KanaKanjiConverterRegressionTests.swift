@@ -12915,4 +12915,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let hage = converter.multiClauseCandidates(for: "おおいとはげるよ", systemCandidateMode: .surface)
         XCTAssertEqual(hage.first, "多いと禿げるよ", "multi=\(hage)")
     }
+
+    // ロマラン(romarin=ローズマリーの仏語名): エストラゴン・シブレット・セルフィーユ・ローリエ など
+    // 同種の仏語ハーブは基底辞書にあるのに、ロマランだけ抜けていて ろまらんふうみ が変換できなかった。
+    // vin.plist の料理・食材へ追加して供給する(部品を登録すれば風味以外の複合にも効く)。
+    func testRegressionRealLMVocabRomarin() throws {
+        try prepareRealLMDictionary()
+
+        let single = converter.candidates(for: "ろまらん", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "ロマラン", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ろまらんふうみ", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "ロマラン風味", "multi=\(multi)")
+    }
 }
