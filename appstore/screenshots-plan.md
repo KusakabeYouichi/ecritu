@@ -44,6 +44,9 @@
   - 追加候補: 欧文入力(azerty/qwerty)で Château の â・é を長押しアクセント入力しているところ、
     または欧文サジェスト(français 15,000語)が出ているところ。アクサン記号つき文字が
     そのまま打てることが伝わる構図にする
+  - アクサン多め語の候補(vin.plist実在、読みから変換で見せる):
+    Château Beau-Séjour-Bécot / Château Léoville-Poyferré / Réfrigéré /
+    Fromage à pâte molle à croûte lavée(句として最多5個)
 
 ## 撮影メモ(再撮影用)
 
