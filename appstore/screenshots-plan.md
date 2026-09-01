@@ -21,7 +21,7 @@ Safari のドメイン表示ピルもツールバーも写っていない。音�
 | # | ファイル | 内容 |
 |---|---|---|
 | 01 | 01-kana.png | 「トカイの土着品種 Hárslevelű と くゔぇーるすーるー」+ 候補 Kövérszőlő |
-| 02 | 02-comma-flick.png | 読点キーの ? フリックプレビュー(**ピンク背景/Apple式フリック/前置修飾/アヒルのキー**) |
+| 02 | 02-comma-flick.png | や キーの2段階フリックで `(` を入力中(**3x3+わ/ピンク背景/Apple式フリック/前置修飾/アヒルのキー**) |
 | 03 | 03-flags.png | 本文に🇭🇺を入れた状態で🇸🇰を長押し(Slovaquie バブル) |
 | 04 | 04-kaomoji-search.png | 顔文字検索 よみ「わーい」の候補 |
 | 05 | 05-number-unit.png | 書式化数値の単位 `36 200 000 hℓ`(sep mil + espace + 接頭辞 h + ℓ) |
@@ -29,7 +29,9 @@ Safari のドメイン表示ピルもツールバーも写っていない。音�
 
 **02 の設定**(撮影時だけ変更し、撮影後に既定へ戻した):
 `keyboardBackgroundTheme=sakura` / `flickDirectionProfile=apple` /
-`kanaModifierPlacement=prefix` / `flickGuideDisplayModeModifier=off`(これでアヒルになる)。
+`kanaModifierPlacement=prefix` / `flickGuideDisplayModeModifier=off`(これでアヒルになる)/
+`kanaLayoutMode=threeByThreePlusWa`。本文は01の文を Kövérszőlő まで確定させた状態。
+2段階フリックは や キーを左へフリック(『)→指を離さず上へ、で `(` が出る。
 **05 の設定**: `numberLitreSymbol=script`(ℓ)。製品の初期設定は `l`。
 
 数値はユーザー提供。公開前に出典と数字を再確認すること。
