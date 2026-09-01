@@ -12931,6 +12931,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "とにかくやってみる"))
     }
 
+    // くると/おきた(ユーザ報告 2753): どちらも辞書登録が固有名詞だけ(くると=クルト(Kurt)rank0/
+    // 久留戸、おきた=沖田/オキタ/置田)で、来ると・起きた は活用供給のため派生OOV(7200)扱いになり、
+    // Wikipedia 観測済みの固有名詞に一律負けていた。名詞+くると が全部 〜クルト、
+    // おきた+何でも が 沖田〜 になる全面的な誤変換だった。
+    func testRegressionRealLMInflectionOverProperNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        for reading in ["けいこくくると", "でんわくると", "たいふうくると"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasSuffix("来ると") == true, "\(reading) multi=\(Array(multi.prefix(3)))")
+        }
+        let okita = converter.multiClauseCandidates(for: "おきたきがする", systemCandidateMode: .surface)
+        XCTAssertEqual(okita.first, "起きた気がする", "multi=\(Array(okita.prefix(3)))")
+        let bakari = converter.multiClauseCandidates(for: "おきたばかり", systemCandidateMode: .surface)
+        XCTAssertEqual(bakari.first, "起きたばかり", "multi=\(Array(bakari.prefix(3)))")
+        // 助詞ありの従来経路は無傷
+        let ga = converter.multiClauseCandidates(for: "けいこくがくると", systemCandidateMode: .surface)
+        XCTAssertEqual(ga.first, "警告が来ると", "multi=\(Array(ga.prefix(3)))")
+    }
+
     // 歯科矯正/歯列矯正(ユーザ報告 2753): 矯正歯科・歯科医師・歯科衛生士 は収録済みなのに
     // この2語だけ収穫の穴で、しか(助詞用法が強い)+きょうせい の分割になり しか強制/しか共生 が並んでいた。
     // 歯科 は rank6 でペア重みでは勝たせにくいため misc curated で1ノード化する。
