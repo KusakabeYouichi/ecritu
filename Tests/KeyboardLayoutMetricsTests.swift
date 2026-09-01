@@ -163,4 +163,29 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
             XCTAssertEqual(height, expected[profile], "profile=\(profile)")
         }
     }
+
+    // 回転中の向き判定(2026-09-02)。viewWillTransition が渡す遷移先サイズの幅を画面短辺と
+    // 比べて決める。キーボードのビューは常に横長なので size 自身の縦横比では判定できない。
+    // これが無いと遷移中の interfaceOrientation(他のジオメトリより先に切り替わる)を信じ、
+    // 「縦の幅393に横の高さ176」という不整合な高さをホストへ publish していた。
+    func testLandscapeTransitionTargetDetection() {
+        // iPhone 15: 短辺393。縦の遷移先は幅393、横の遷移先は幅852。
+        XCTAssertFalse(
+            KeyboardLayoutMetrics.isLandscapeTransitionTarget(targetWidth: 393, shorterScreenEdge: 393)
+        )
+        XCTAssertTrue(
+            KeyboardLayoutMetrics.isLandscapeTransitionTarget(targetWidth: 852, shorterScreenEdge: 393)
+        )
+        // iPad(短辺744)でも同じ規則で判定できること
+        XCTAssertFalse(
+            KeyboardLayoutMetrics.isLandscapeTransitionTarget(targetWidth: 744, shorterScreenEdge: 744)
+        )
+        XCTAssertTrue(
+            KeyboardLayoutMetrics.isLandscapeTransitionTarget(targetWidth: 1133, shorterScreenEdge: 744)
+        )
+        // 端数のゆらぎ(±0.5pt)を横向きと誤判定しないこと
+        XCTAssertFalse(
+            KeyboardLayoutMetrics.isLandscapeTransitionTarget(targetWidth: 393.4, shorterScreenEdge: 393)
+        )
+    }
 }

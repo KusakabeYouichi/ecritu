@@ -138,12 +138,19 @@ extension KeyboardViewController {
         return false
     }
 
-    func effectivePortraitBottomInset(for shorterScreenEdge: CGFloat) -> CGFloat {
-        let measuredInset = max(
-            view.safeAreaInsets.bottom,
-            view.window?.safeAreaInsets.bottom ?? 0,
-            inputView?.safeAreaInsets.bottom ?? 0
-        )
+    func effectivePortraitBottomInset(for shorterScreenEdge: CGFloat, isLandscapeOrientation: Bool) -> CGFloat {
+        // 実測値を「縦のセーフエリア」として採用してよいのは、縦向きで、かつサイズ遷移が
+        // 終わっているときだけ。横向きのホームインジケーター(21pt)や回転途中の中間値を
+        // 掴むと、縦の高さが誤った値で算出される。実機ログでは回転の最中に 21 を拾って
+        // 255pt(正しくは242pt)を publish していた(2026-09-02)。
+        let canSampleLiveInset = !isLandscapeOrientation && pendingSizeTransitionTargetSize == nil
+        let measuredInset = canSampleLiveInset
+            ? max(
+                view.safeAreaInsets.bottom,
+                view.window?.safeAreaInsets.bottom ?? 0,
+                inputView?.safeAreaInsets.bottom ?? 0
+            )
+            : 0
 
         if measuredInset > 0.5 {
             cachedPortraitSafeAreaBottomInset = measuredInset
@@ -168,6 +175,16 @@ extension KeyboardViewController {
             ?? UIScreen.main.bounds
         let shorterScreenEdge = min(screenBounds.width, screenBounds.height)
         let isLandscapeOrientation: Bool = {
+            // サイズ遷移中は、UIKit が viewWillTransition で渡した遷移先サイズだけが
+            // 一貫した根拠になる。interfaceOrientation は他のジオメトリより先に切り替わる
+            // ことがあり、「縦の幅に横の高さ」という不整合を生む(2026-09-02 実機ログ)。
+            if let target = pendingSizeTransitionTargetSize {
+                return KeyboardLayoutMetrics.isLandscapeTransitionTarget(
+                    targetWidth: target.width,
+                    shorterScreenEdge: shorterScreenEdge
+                )
+            }
+
             if let orientation = view.window?.windowScene?.interfaceOrientation {
                 return orientation.isLandscape
             }
@@ -188,7 +205,10 @@ extension KeyboardViewController {
                 isLandscapeOrientation: isLandscapeOrientation,
                 shorterScreenEdge: shorterScreenEdge,
                 hasExpandedHeader: hasExpandedHeaderForHeight(using: configuration),
-                portraitBottomInset: effectivePortraitBottomInset(for: shorterScreenEdge),
+                portraitBottomInset: effectivePortraitBottomInset(
+                    for: shorterScreenEdge,
+                    isLandscapeOrientation: isLandscapeOrientation
+                ),
                 usesKanaLandscapeHeightForCompactGrid: shouldUseKanaLandscapeHeightForCompactGrid()
             )
         )

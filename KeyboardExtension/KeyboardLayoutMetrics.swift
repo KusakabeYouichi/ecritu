@@ -258,4 +258,18 @@ extension KeyboardLayoutMetrics {
     private func clamp(_ value: CGFloat, to range: ClosedRange<CGFloat>) -> CGFloat {
         min(max(value, range.lowerBound), range.upperBound)
     }
+
+    // 回転アニメーション中の向き判定。viewWillTransition が渡す遷移先サイズ(UIKit が保証する
+    // 確定値)の幅を、画面の短辺と比べて決める。キーボードのビューは常に横長なので size 自身の
+    // 縦横比では判定できず、画面短辺との比較が必要。
+    //
+    // 遷移中の view.window?.windowScene?.interfaceOrientation は、他のジオメトリより先に
+    // 新しい向きへ切り替わることがある。その結果「縦の幅393に横の高さ176」という不整合な
+    // 組み合わせが実機ログに記録されていた(2026-09-02 メッセージ.app で再現)。
+    static func isLandscapeTransitionTarget(
+        targetWidth: CGFloat,
+        shorterScreenEdge: CGFloat
+    ) -> Bool {
+        targetWidth > shorterScreenEdge + 0.5
+    }
 }
