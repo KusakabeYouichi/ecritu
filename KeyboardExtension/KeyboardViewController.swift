@@ -199,6 +199,10 @@ final class KeyboardViewController: UIInputViewController {
     var keyboardMaxHeightConstraint: NSLayoutConstraint?
     weak var keyboardSizingView: UIView?
     var cachedPortraitSafeAreaBottomInset: CGFloat?
+    // 回転アニメーション中の遷移先サイズ(viewWillTransition が渡す確定値)。
+    // 非nilの間は「サイズ遷移が進行中」を意味し、高さ算出は生のウィンドウ・ビューの
+    // ジオメトリでなくこの確定値を根拠にする(preferredKeyboardHeight 参照)。
+    var pendingSizeTransitionTargetSize: CGSize?
     var isObservingSettingsDidChange = false
     var keyboardHeightLockValue: CGFloat?
     // 高さ要求の診断ログ用(変化時だけ1行残す。logPreferredKeyboardHeightIfChanged 参照)
@@ -1431,6 +1435,39 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         applyKeyboardBaseBackground()
+    }
+
+    // 回転(サイズ遷移)の正規の入口。UIKit はここで遷移先サイズを確定値として渡す。
+    //
+    // これが無いと、回転は traitCollectionDidChange と毎フレームのレイアウトパスでしか
+    // 拾えない。どちらもアニメーションの途中で走るため、window/view から読んだ中間状態の
+    // ジオメトリ(向きだけ先に切り替わった状態、確定していないセーフエリア)で高さを算出し、
+    // それをホストへ publish してしまう。実機ログでは 242→255→176→242 と揺れ、
+    // ホスト側は placeholder 300(正しくは317)を掴んだまま固定され、メッセージ.app で
+    // 会話の最終行が入力欄の下に潜り込んでいた(2026-09-02 再現、画面オフ→オンで解消)。
+    override func viewWillTransition(
+        to size: CGSize,
+        with coordinator: any UIViewControllerTransitionCoordinator
+    ) {
+        pendingSizeTransitionTargetSize = size
+        super.viewWillTransition(to: size, with: coordinator)
+
+        // 遷移先の確定値で1回だけ算出して publish する。
+        let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
+        installKeyboardHeightConstraintIfNeeded(using: configuration)
+        updateKeyboardHeightIfNeeded(using: configuration)
+
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in
+            guard let self else {
+                return
+            }
+            // 遷移完了。ここで初めて window/view のジオメトリが確定するので、
+            // 確定値で再算出してホストと同期し直す。
+            pendingSizeTransitionTargetSize = nil
+            let settled = lastRenderConfiguration ?? makeRenderConfiguration()
+            installKeyboardHeightConstraintIfNeeded(using: settled)
+            updateKeyboardHeightIfNeeded(using: settled)
+        }
     }
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
