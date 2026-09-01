@@ -439,13 +439,31 @@ extension KeyboardRootView {
         }
     }
 
-    // 内部保持の中点(U+00B7)を、設定の積記号に置換した表示/確定用の記号にする。
-    private func formattedNumberDisplayUnitSymbol(_ symbol: String) -> String {
-        let separator = formattedNumberUnitProductSeparator
-        guard separator != "\u{00B7}" else {
-            return symbol
+    // リットルの記号。内部は常に大文字 L で保持し、表示/確定時にこの設定へ変換する。
+    // 既定は小文字 l(SI が1879年から用いる記号)。
+    private var formattedNumberLitreSymbol: String {
+        switch formattedNumberSharedDefaults?.string(forKey: "numberLitreSymbol") {
+        case "capital": return "L"
+        case "script": return "\u{2113}"
+        default: return "l"
         }
-        return symbol.replacingOccurrences(of: "\u{00B7}", with: separator)
+    }
+
+    // 内部保持の記号を、設定に合わせた表示/確定用の記号にする。
+    // ・中点(U+00B7)→ 積の記号設定
+    // ・大文字 L → リットルの記号設定(L を含む単位はリットルだけなので単純置換で安全。
+    //   小文字 l は mol・lm・lx 等と衝突するため内部保持には使わない)
+    private func formattedNumberDisplayUnitSymbol(_ symbol: String) -> String {
+        var result = symbol
+        let separator = formattedNumberUnitProductSeparator
+        if separator != "\u{00B7}" {
+            result = result.replacingOccurrences(of: "\u{00B7}", with: separator)
+        }
+        let litre = formattedNumberLitreSymbol
+        if litre != "L" {
+            result = result.replacingOccurrences(of: "L", with: litre)
+        }
+        return result
     }
 
     // テンキー配列: téléphone(上段123)か calculette(上段789、既定)か。

@@ -32,6 +32,7 @@ enum SettingsKeys {
     static let numberDecimalSeparator = "numberDecimalSeparator"
     static let numberGroupFourDigits = "numberGroupFourDigits"
     static let numberUnitProductSeparator = "numberUnitProductSeparator"
+    static let numberLitreSymbol = "numberLitreSymbol"
     static let calendarWeekStart = "calendarWeekStart"
     static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
     static let calendarSundayColor = "calendarSundayColor"
@@ -239,6 +240,44 @@ enum UnitProductSeparatorOption: String, CaseIterable, Identifiable {
         case .middleDot: return "U+00B7"
         case .dotOperator: return "U+22C5"
         case .space: return "U+0020"
+        }
+    }
+}
+
+// リットルの記号(内部は常に大文字 L で保持し、表示/確定時にこの設定へ変換)。
+// SI では l と L がどちらも正式。ℓ は規格外の慣用字形。
+enum LitreSymbolOption: String, CaseIterable, Identifiable {
+    case small    // l 小文字エル(初期設定)
+    case capital  // L 大文字エル
+    case script   // ℓ U+2113 スクリプト小文字エル
+
+    var id: String { rawValue }
+
+    var character: String {
+        switch self {
+        case .small: return "l"
+        case .capital: return "L"
+        case .script: return "\u{2113}"
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .small: return "l"
+        case .capital: return "L"
+        case .script: return "ℓ"
+        }
+    }
+
+    // 設定カードに併記する、記号ごとのSI上の位置づけ。
+    var standardNote: String {
+        switch self {
+        case .small:
+            return "l: 1879年に CIPM が採用した最初の記号。SI で正式に認められています。"
+        case .capital:
+            return "L: 1979年の第16回 CGPM が、数字の 1 との混同を避けるために追加した記号。SI では l と同格で、どちらを使ってもかまいません。"
+        case .script:
+            return "ℓ: SI にも ISO/JIS にも規定のない、日本などで広く使われる慣用の字形です。"
         }
     }
 }

@@ -486,4 +486,37 @@ final class KeyboardModeTransitionTests: XCTestCase {
             )
         }
     }
+
+    // リットルは単位ドラムに収録され、接頭辞と組んで hL・cL・mL が作れること。
+    func testLitreUnitIsAvailableWithPrefixes() {
+        let litre = SIUnitCatalog.siNamed.first { $0.symbol == "L" }
+        XCTAssertNotNil(litre, "単位ドラムにリットルが無い")
+        XCTAssertEqual(litre?.reading, "リットル")
+
+        // ワインで使う hL・cL・mL の接頭辞が揃っていること。
+        for prefix in ["h", "c", "m"] {
+            XCTAssertTrue(
+                SIUnitCatalog.prefixes.contains { $0.symbol == prefix },
+                "接頭辞 \(prefix) が無く \(prefix)L が作れない"
+            )
+        }
+    }
+
+    // 表示用グリフ(l / ℓ)への置換は大文字 L の単純置換で行うため、
+    // 記号に大文字 L を含む単位はリットルただ1つでなければならない。
+    // ここが破れると、新しく足した単位の L まで一緒に置換されて壊れる。
+    func testCapitalLIsUsedOnlyByLitre() {
+        let allUnits = SIUnitCatalog.siBase + SIUnitCatalog.siDerived + SIUnitCatalog.siNamed
+        let withCapitalL = allUnits.filter { $0.symbol.contains("L") }
+        XCTAssertEqual(
+            withCapitalL.map(\.symbol), ["L"],
+            "大文字 L を含む単位がリットル以外にある。単純置換が壊れる: \(withCapitalL.map(\.symbol))"
+        )
+
+        // 接頭辞側にも大文字 L があってはならない(prefix + symbol を一括置換するため)。
+        XCTAssertTrue(
+            SIUnitCatalog.prefixes.allSatisfy { !$0.symbol.contains("L") },
+            "接頭辞に大文字 L がある"
+        )
+    }
 }
