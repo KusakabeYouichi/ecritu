@@ -130,7 +130,12 @@ enum SIUnitCatalog {
         SIUnit(symbol: "kat", reading: "カタール", quantity: "酵素活性", group: "角度・時間・その他"),
         // t(トン)は SI併用の非SI単位。接頭辞2連ドラムに馴染まないため固有側に暫定収録。
         // 将来「非SI併用単位」カテゴリーを設けたら移す。
-        SIUnit(symbol: "t", reading: "トン", quantity: "質量(SI併用単位)", group: "非SI併用単位")
+        SIUnit(symbol: "t", reading: "トン", quantity: "質量(SI併用単位)", group: "非SI併用単位"),
+        // L(リットル)も SI併用の非SI単位。接頭辞ドラムと組んで hL・cL・mL を作るため固有側に収録する。
+        // 記号は内部では常に大文字 L で保持する(小文字 l は mol・lm・lx・J/mol 等と衝突し、
+        // 表示用グリフへの置換が安全に行えないため)。表示・確定時に設定 numberLitreSymbol の
+        // グリフ(l / L / ℓ)へ変換する。
+        SIUnit(symbol: "L", reading: "リットル", quantity: "体積(SI併用単位)", group: "非SI併用単位")
     ]
 
     // 金額カテゴリーの通貨記号。記号モード(KeyboardRootViewSupportTypes.currencySymbols)の全24種に

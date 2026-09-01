@@ -1314,6 +1314,7 @@ struct FormatNumeriqueSettingsSection: View {
     @Binding var groupFourDigits: Bool
     @Binding var decimalSeparator: DecimalSeparatorOption
     @Binding var unitProductSeparator: UnitProductSeparatorOption
+    @Binding var litreSymbol: LitreSymbolOption
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -1363,6 +1364,24 @@ struct FormatNumeriqueSettingsSection: View {
                 Text("N·m のような組立単位の積の記号です。\n・U+00B7: 一般テキストや化学式・単位の積を表す中黒\n・U+22C5: 数学的なドット演算子\n・U+0020: 1文字分のスペース")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
+            }
+
+            subItem("リットルの記号") {
+                Picker("リットルの記号", selection: $litreSymbol) {
+                    ForEach(LitreSymbolOption.allCases) { option in
+                        Text(option.title).tag(option)
+                    }
+                }
+                .pickerStyle(.segmented)
+
+                Text(
+                    "単位ドラムのリットルに使う字形です。接頭辞と組み合わせた h\u{2113}・c\u{2113}・m\u{2113} にも反映されます。初期設定は l です。\n・"
+                    + LitreSymbolOption.small.standardNote
+                    + "\n・" + LitreSymbolOption.capital.standardNote
+                    + "\n・" + LitreSymbolOption.script.standardNote
+                )
+                .font(.footnote)
+                .foregroundStyle(.secondary)
             }
         }
         .settingsCardStyle()
