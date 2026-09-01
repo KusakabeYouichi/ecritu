@@ -12916,6 +12916,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(hage.first, "多いと禿げるよ", "multi=\(hage)")
     }
 
+    // しらなかった(ユーザ報告 2753): misc curated の なかった(〜がなかった のかな正書)と、
+    // しら がたまたま持つ辞書のかなエントリ(rank2 のかな収穫)が噛み合い、提示層がかなを
+    // 先頭維持して 知らなかった が2番目に沈んでいた。否定辞で終わり、読み全体が辞書の用言へ
+    // 脱活用できる場合(しらなかった→しる=知る)はこの根拠を立てない。
+    func testRegressionRealLMShiranakattaKeepKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "しらなかった"))
+        // 本来の用途(脱活用できない かな正書)は維持されること
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "そんなものはなかった"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ことでもなかった"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "とにかくやってみる"))
+    }
+
     // 歯科矯正/歯列矯正(ユーザ報告 2753): 矯正歯科・歯科医師・歯科衛生士 は収録済みなのに
     // この2語だけ収穫の穴で、しか(助詞用法が強い)+きょうせい の分割になり しか強制/しか共生 が並んでいた。
     // 歯科 は rank6 でペア重みでは勝たせにくいため misc curated で1ノード化する。
