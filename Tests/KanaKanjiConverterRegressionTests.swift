@@ -12916,6 +12916,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(hage.first, "多いと禿げるよ", "multi=\(hage)")
     }
 
+    // 歯科矯正/歯列矯正(ユーザ報告 2753): 矯正歯科・歯科医師・歯科衛生士 は収録済みなのに
+    // この2語だけ収穫の穴で、しか(助詞用法が強い)+きょうせい の分割になり しか強制/しか共生 が並んでいた。
+    // 歯科 は rank6 でペア重みでは勝たせにくいため misc curated で1ノード化する。
+    func testRegressionRealLMVocabShikaKyousei() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        let shika = converter.candidates(for: "しかきょうせい", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(shika.first, "歯科矯正", "list=\(shika)")
+        let shiretsu = converter.candidates(for: "しれつきょうせい", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(shiretsu.first, "歯列矯正", "list=\(shiretsu)")
+    }
+
     // ロマラン(romarin=ローズマリーの仏語名): エストラゴン・シブレット・セルフィーユ・ローリエ など
     // 同種の仏語ハーブは基底辞書にあるのに、ロマランだけ抜けていて ろまらんふうみ が変換できなかった。
     // vin.plist の料理・食材へ追加して供給する(部品を登録すれば風味以外の複合にも効く)。

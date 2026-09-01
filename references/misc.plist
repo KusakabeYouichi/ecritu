@@ -239,6 +239,8 @@
 	<dict><key>phrase</key><string>とんかつ屋</string><key>shortcut</key><string>とんかつや</string><key>pos</key><string>名詞</string></dict>	<!-- とんかつ屋: Sudachi 未収録の複合。連文節で トン+勝谷(かつや の名前収穫)の分割に負けるため curated 化(単文節は seed でも供給) -->
 	<dict><key>phrase</key><string>網脂</string><key>shortcut</key><string>あみあぶら</string><key>pos</key><string>名詞</string></dict>	<!-- 網脂: Sudachi 未収録の複合(調理用語)。網+油/阿弥+油/編み+油 の合成しか出ないため curated 供給 -->
 	<dict><key>phrase</key><string>大麻草</string><key>shortcut</key><string>たいまそう</string></dict>	<!-- 大麻草: 辞書・LMとも未収録で たい増そう/対まそう 等の合成に落ちる -->
+	<dict><key>phrase</key><string>歯科矯正</string><key>shortcut</key><string>しかきょうせい</string><key>pos</key><string>名詞</string></dict>	<!-- 歯科矯正: 矯正歯科/歯科医師/歯科衛生士 は収録済みなのにこれだけ抜けた収穫の穴。しか は助詞用法が強く 歯科(rank6)が勝てないため、ペア重みでなく1ノード化(ユーザ報告 2753) -->
+	<dict><key>phrase</key><string>歯列矯正</string><key>shortcut</key><string>しれつきょうせい</string><key>pos</key><string>名詞</string></dict>	<!-- 歯列矯正: 歯科矯正と同じ語族の抜け -->
 	<dict><key>phrase</key><string>聞き間違い</string><key>shortcut</key><string>ききまちがい</string></dict>	<!-- ききまちがい が 機器間違い/危機間違い 等になる。書き間違い は1語収録済みなのに 聞き間違い が無い収穫の穴(聞き 自体は Sudachi に有る。2742 検査で確認) -->
 	<dict><key>phrase</key><string>聞きまちがい</string><key>shortcut</key><string>ききまちがい</string></dict>
 	<dict><key>phrase</key><string>聞き間違える</string><key>shortcut</key><string>ききまちがえる</string><key>pos</key><string>一段</string></dict>
