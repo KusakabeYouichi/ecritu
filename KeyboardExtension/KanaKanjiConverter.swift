@@ -981,6 +981,31 @@ final class KanaKanjiConverter {
         return false
     }
 
+    // curated かな正書として登録してあるが、動詞未然形にも接続する否定辞。これで終わる読みは
+    // 「〜がなかった」(かな正書)と「知らなかった」(活用形)の両方があり得るため、後者を
+    // 取り違えないよう脱活用で判別する。
+    static let kanaNegativeAuxiliaryCuratedSuffixes: Set<String> = ["なかった", "なくて", "ない"]
+
+    // 読みが辞書の用言(漢字表記を持つ基底)へ脱活用できるか。活用形の判別に使う。
+    private func deinflectsToDictionaryPredicate(_ reading: String) -> Bool {
+        guard let lastCharacter = reading.last,
+            let ruleIndices = Self.deinflectionRulesByReadingLastCharacter[lastCharacter] else {
+            return false
+        }
+        for index in ruleIndices {
+            let rule = Self.allInflectionRules[index]
+            guard !rule.readingSuffix.isEmpty, reading.hasSuffix(rule.readingSuffix) else { continue }
+            let stem = reading.dropLast(rule.readingSuffix.count)
+            guard stem.count >= 1 else { continue }
+            let baseReading = String(stem) + rule.baseReadingSuffix
+            if systemCandidates(for: baseReading, mode: .lesDeux)
+                .contains(where: { Self.containsKanjiCandidate($0) }) {
+                return true
+            }
+        }
+        return false
+    }
+
     func shouldKeepKanaIdentityLeading(for reading: String) -> Bool {
         let normalized = KanaTextNormalizer.normalizedReading(reading)
         guard !normalized.isEmpty else {
@@ -1488,6 +1513,15 @@ final class KanaKanjiConverter {
                 let suffix = String(normalized.suffix(suffixLength))
                 guard (initialDictionary[suffix] ?? []).contains(suffix)
                     || (manualDictionary[suffix] ?? []).contains(suffix) else { continue }
+                // 否定辞(なかった 等)は curated のかな正書(じかんがなかった)であると同時に
+                // 動詞未然形にも付く(しら+なかった=知らなかった)。読み全体が辞書の用言へ
+                // 脱活用できるなら活用形なので、この根拠は立てない — しら がたまたま辞書に
+                // かなエントリを持つ(rank2 のかな収穫)ために しらなかった のかなが先頭に
+                // 居座っていた(ユーザ報告 2753)。
+                if Self.kanaNegativeAuxiliaryCuratedSuffixes.contains(suffix),
+                    deinflectsToDictionaryPredicate(normalized) {
+                    continue
+                }
                 let prefix = String(normalized.dropLast(suffixLength))
                 if prefix.count >= 2,
                     systemCandidates(for: prefix, mode: .lesDeux).contains(prefix)
