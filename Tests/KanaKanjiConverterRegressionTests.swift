@@ -12929,6 +12929,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(shiretsu.first, "歯列矯正", "list=\(shiretsu)")
     }
 
+    // おきた(ユーザ報告 2753): 基底順が 沖田0/オキタ1/置田2/起多3… と固有名詞ばかりで、
+    // 日常最頻の 起きた(辞書エントリが無く 起きる の活用供給)がカタカナ収穫 オキタ の下だった。
+    func testRegressionRealLMOkitaOrdering() throws {
+        try prepareRealLMDictionary()
+
+        let list = converter.candidates(for: "おきた", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["起きた", "沖田"], "list=\(list)")
+        // カタカナ収穫の オキタ は5番目以降へ(ユーザ指定)
+        if let index = list.firstIndex(of: "オキタ") {
+            XCTAssertGreaterThanOrEqual(index, 4, "list=\(list)")
+        }
+    }
+
     // ロマラン(romarin=ローズマリーの仏語名): エストラゴン・シブレット・セルフィーユ・ローリエ など
     // 同種の仏語ハーブは基底辞書にあるのに、ロマランだけ抜けていて ろまらんふうみ が変換できなかった。
     // vin.plist の料理・食材へ追加して供給する(部品を登録すれば風味以外の複合にも効く)。
