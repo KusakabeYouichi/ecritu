@@ -30,5 +30,14 @@
 
 ## 状態
 
-- [ ] 6.9インチ 6枚撮影(未)
+- [x] 6.9インチ 6枚撮影済み(2026-09-01、iPhone 17 Pro Max シミュレータ、1320×2868 確認済み)
+  - `01-kana.png` きょうのかいぎは+連文節候補 / `02-comma-flick.png` 、キーのフリック?プレビュー
+  - `03-flags.png` 🇫🇷長押しFranceバブル / `04-kaomoji-search.png` よみ「わーい」の顔文字候補
+  - `05-number-calendar.png` 書式化数値カレンダー(9月17日) / `06-settings.png` アクセント/テーマカラー
 - テキスト素材は `appstore/metadata.md` に完成済み
+
+## 撮影メモ(再撮影用)
+
+- シミュレータ操作は CGEvent 自動化(scratchpad/shoot/cgclick.py ほか)で実施
+- ステータスバーは `xcrun simctl status_bar <UD> override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4`
+- 入力ページは scratchpad/shoot/field.html(要 `<meta charset="utf-8">`)を `python3 -m http.server` で配信
