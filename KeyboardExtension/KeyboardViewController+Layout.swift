@@ -181,15 +181,50 @@ extension KeyboardViewController {
 
         // 実際の算出は KeyboardLayoutMetrics.preferredHeight(純粋関数)に委譲する。
         // ここは環境値を集めるだけ。横組みにするかの判定もビュー側と同じ metrics が持つ。
-        return layoutMetrics.preferredHeight(
+        let profile = portraitHeightProfile()
+        let height = layoutMetrics.preferredHeight(
             KeyboardLayoutMetrics.HeightInputs(
-                profile: portraitHeightProfile(),
+                profile: profile,
                 isLandscapeOrientation: isLandscapeOrientation,
                 shorterScreenEdge: shorterScreenEdge,
                 hasExpandedHeader: hasExpandedHeaderForHeight(using: configuration),
                 portraitBottomInset: effectivePortraitBottomInset(for: shorterScreenEdge),
                 usesKanaLandscapeHeightForCompactGrid: shouldUseKanaLandscapeHeightForCompactGrid()
             )
+        )
+        logPreferredKeyboardHeightIfChanged(
+            height: height,
+            profile: profile,
+            isLandscapeOrientation: isLandscapeOrientation,
+            screenBounds: screenBounds
+        )
+        return height
+    }
+
+    // 高さ要求が変わったときだけ critical で残す。メッセージ.app で回転を挟むと
+    // ホスト側の placeholder / compat view / tracking の3値が食い違ったまま固定され、
+    // 会話の最終行が入力欄の下に潜り込む症状が出る(2026-09-01 実機再現)。統合ログには
+    // écritu が何ptを要求したかが残らず突き合わせができなかったため、ここで記録する。
+    // 毎フレーム呼ばれる経路なので、変化時のみ・1行だけに絞る。
+    private func logPreferredKeyboardHeightIfChanged(
+        height: CGFloat,
+        profile: PortraitHeightProfile,
+        isLandscapeOrientation: Bool,
+        screenBounds: CGRect
+    ) {
+        let rounded = (height * 2).rounded() / 2
+        guard abs(rounded - lastLoggedPreferredKeyboardHeight) > 0.5
+            || lastLoggedPreferredKeyboardHeightIsLandscape != isLandscapeOrientation else {
+            return
+        }
+        lastLoggedPreferredKeyboardHeight = rounded
+        lastLoggedPreferredKeyboardHeightIsLandscape = isLandscapeOrientation
+        let orientation = isLandscapeOrientation ? "横" : "縦"
+        appendKeyboardDiagnosticsLog(
+            "高さ要求 \(rounded)pt profile=\(profile) \(orientation)"
+                + " 画面=\(Int(screenBounds.width))x\(Int(screenBounds.height))"
+                + " 下端インセット=\(Int(view.window?.safeAreaInsets.bottom ?? 0))",
+            critical: true
         )
     }
 

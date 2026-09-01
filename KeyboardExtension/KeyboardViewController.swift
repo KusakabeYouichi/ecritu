@@ -201,6 +201,9 @@ final class KeyboardViewController: UIInputViewController {
     var cachedPortraitSafeAreaBottomInset: CGFloat?
     var isObservingSettingsDidChange = false
     var keyboardHeightLockValue: CGFloat?
+    // 高さ要求の診断ログ用(変化時だけ1行残す。logPreferredKeyboardHeightIfChanged 参照)
+    var lastLoggedPreferredKeyboardHeight: CGFloat = -1
+    var lastLoggedPreferredKeyboardHeightIsLandscape = false
     var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
     var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
     var dictionaryPreloadWorkItem: DispatchWorkItem?
