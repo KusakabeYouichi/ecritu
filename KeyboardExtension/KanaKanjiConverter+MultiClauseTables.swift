@@ -144,7 +144,10 @@ extension KanaKanjiConverter {
     // ここに含まれる基底になる場合のみ、スパン先頭活用形にボーナスを与える。
     // たつ: せきをたつ→籍を絶つ(を→絶つ 4890 < を→立つ 5988、籍→を 483 < 席→を 1156 の
     // Wikipedia 統計)。seed たつ={立つ,経つ,建つ} の先頭 立つ 族を連文節でも優先(2663)
-    static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる", "おく", "たつ"]
+    // おきる: おきた の辞書登録は 沖田/オキタ/置田 と固有名詞ばかりで、起きた は活用供給のため
+    // LM 未収録扱い(派生OOV 7200)になり、Wikipedia 観測済みの 沖田 に一律負けていた。
+    // おきたきがする→沖田気がする、おきたところ→沖田ところ になっていた(ユーザ報告 2753)
+    static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる", "おく", "たつ", "おきる"]
     // (b2b) 未代表族の追加供給に先行ボーナス(800)を与える基底読みのopt-in。
     // 上の seed順allowlist と分離する — 共用すると主ループのspan判定(脱活用先が一致)が
     // 既存族の先頭(這ったら)にも同じボーナスを与えて同点に戻る(2424の検証で確認)。
@@ -262,6 +265,9 @@ extension KanaKanjiConverter {
 
     static let multiClauseSeedOrderNounBonusesByReading: [String: Int] = [
         "にほん": 800, "ほうだい": 800, "おん": 800, "うち": 800, "そうりょう": 4200,
+        // くると: クルト(Kurt)は Wikipedia 観測で unigram が安く、活用供給の 来ると(派生OOV 7200)に
+        // 一律勝っていた。seed 先頭 来ると を連文節でも通す(ユーザ報告 2753)
+        "くると": 3000,
         // みな はかなが主流(LM みな5809≈皆5748)だが wc 皆4233≪みな7460 で連文節は漢字が勝つ。
         // 短span床(かな識別=wc7460 床上げ)ぶんを跨いで反転する値
         "みな": 3300,
