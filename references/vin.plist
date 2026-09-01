@@ -8671,6 +8671,7 @@
 	<dict><key>phrase</key><string>メレンゲ</string><key>shortcut</key><string>めれんげ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>メロン</string><key>shortcut</key><string>めろん</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ローズマリー</string><key>shortcut</key><string>ろーずまりー</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ロマラン</string><key>shortcut</key><string>ろまらん</string></dict>	<!-- romarin: ローズマリーの仏語名。エストラゴン等の同種の仏語ハーブは基底にあるがこれだけ抜けていた -->
 	<dict><key>phrase</key><string>ローリエ</string><key>shortcut</key><string>ろーりえ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ローレル</string><key>shortcut</key><string>ろーれる</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ヴァニラ</string><key>shortcut</key><string>ゔぁにら</string></dict>	<!-- Sudachiにもある -->
