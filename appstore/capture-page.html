@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- ホーム画面に追加してから起動すると Safari の UI(下部バー、キーボード上の
+     ドメイン表示ピル)が一切出ない。App Store 用スクリーンショットはこの状態で撮る。 -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="メモ">
+<title>メモ</title>
+<style>
+  /* padding と border を幅に含める。これが無いと width:100% が右にはみ出す。 */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    padding: 24px;
+    padding-top: calc(24px + env(safe-area-inset-top));
+    font-family: -apple-system, BlinkMacSystemFont, "Hiragino Sans", sans-serif;
+    background: #fff;
+    color: #111;
+  }
+
+  h1 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+  }
+
+  textarea {
+    display: block;
+    width: 100%;
+    height: 140px;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 22px;
+    line-height: 1.5;
+    color: inherit;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    resize: none;
+  }
+</style>
+</head>
+<body>
+  <h1>メモ</h1>
+  <textarea id="t" autofocus placeholder="ここに入力"></textarea>
+  <script>
+    window.addEventListener('load', function () {
+      setTimeout(function () { document.getElementById('t').focus(); }, 400);
+    });
+  </script>
+</body>
+</html>
