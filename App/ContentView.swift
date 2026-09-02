@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260902200835"
+    private static let editionUpdatedAtRaw: String = "20260902201633"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1366,6 +1366,9 @@ struct ContentView: View {
                         .padding(20)
                     }
                     .disabled(isBootstrappingInitialData)
+                    // ロゴ長押しメニューの表示中はスクロールを止める。止めないと指を項目へ下ろした
+                    // 瞬間に ScrollView のパンがドラッグを奪い、メニューは残るが項目が選ばれない(2762)
+                    .scrollDisabled(logoMenuGesture.isActive)
             }
             .task {
                 guard !didRenderInitialFrame else {
