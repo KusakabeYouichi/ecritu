@@ -504,6 +504,14 @@ extension KeyboardViewController {
                     )
                 }
 
+                // 欧文サジェスト見送りの薄ピンクは「今のラテン入力で欧文候補が出せていない」の
+                // 表示に限る(ユーザ指定 2767)。ラテン入力を離れたら消し、次にラテン文字を打って
+                // また見送られたときだけ再点灯する(判定フラグ自体は store 側に残す)
+                if previousMode == .latin, mode != .latin,
+                    self.candidateBarModel.latinSuggestionSkippedForDebugDisplay {
+                    self.candidateBarModel.latinSuggestionSkippedForDebugDisplay = false
+                }
+
                 if mode != .kana {
                     self.clearComposingState()
                 }
