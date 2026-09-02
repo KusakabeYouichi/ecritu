@@ -56,6 +56,93 @@ extension KanaKanjiConverter {
         return false
     }
 
+    // 格助詞・係助詞。用言に付く場合は連用形(一段の 立て/五段の 立ち)が受け皿で、
+    // 五段のえ段(命令形・仮定形の語幹)には付かない。
+    static let caseParticlePostfixSuffixes: Set<String> = [
+        "に", "を", "が", "へ", "で", "と", "は", "も", "の", "から", "まで", "より", "には", "では", "とは"
+    ]
+
+    // 読みの末尾がえ段か(五段のえ段判定の前段)。
+    private static func endsWithEDanKana(_ reading: String) -> Bool {
+        guard let last = reading.last else {
+            return false
+        }
+        return "えけげせぜてでねへべぺめれ".contains(last)
+    }
+
+    // 五段動詞のえ段(命令形・仮定形の語幹)に格助詞を付ける合成を弾く。
+    //
+    // たて の候補には 経て/断て/裁て/佇て/絶て/截て(いずれも五段カ行/タ行のえ段)が
+    // 単独候補として供給されており、接尾機構が素通しで に を付けて 経てに/断てに… を
+    // 作っていた。同じ理由で うてに→打てに/撃てに/討てに も出る系統的な誤活用
+    // (ユーザ報告 2755)。え段+ば(たてば→断てば)は仮定形として正しいので触らない。
+    //
+    // 一段動詞の連用形は同じ表層でも正当(立てる→立てに行く)なので、候補ごとに
+    // 「一段の基底(語幹+る)が辞書にあるか」で判定する。
+    func filterGodanEDanStemsForCaseParticle(
+        _ candidates: [String],
+        stemReading: String,
+        nextSuffix: String
+    ) -> [String] {
+        guard Self.caseParticlePostfixSuffixes.contains(nextSuffix),
+            Self.endsWithEDanKana(stemReading) else {
+            return candidates
+        }
+
+        // 語幹読みに対応する五段の辞書形(たて→たつ)と一段の辞書形(たて→たてる)。
+        let godanBaseReading = String(stemReading.dropLast()) + Self.uDanForEDan(stemReading.last!)
+        let ichidanBaseReading = stemReading + "る"
+        let godanMetadata = inflectionMetadata(for: godanBaseReading)
+        let ichidanMetadata = inflectionMetadata(for: ichidanBaseReading)
+        guard godanMetadata.hasMetadata else {
+            return candidates
+        }
+
+        return candidates.filter { candidate in
+            // その表層が五段の活用形として説明できるか(断て→断つ)。
+            // え段の1文字を辞書形のう段へ置き換える(追加ではない)。
+            guard !candidate.isEmpty else {
+                return true
+            }
+            let godanBase = String(candidate.dropLast()) + Self.dictionaryFormTail(for: stemReading)
+            let isGodanEDan = godanMetadata.classMap[godanBase]?.hasPrefix("godan-") == true
+            guard isGodanEDan else {
+                return true
+            }
+            // 同じ表層が一段の連用形としても説明できるなら正当(立て→立てる)
+            let ichidanBase = candidate + "る"
+            return ichidanMetadata.classMap[ichidanBase] == InflectionClass.ichidan
+        }
+    }
+
+    // え段かなに対応するう段かな(五段の辞書形末尾)。
+    private static func uDanForEDan(_ character: Character) -> String {
+        switch character {
+        case "え": return "う"
+        case "け": return "く"
+        case "げ": return "ぐ"
+        case "せ": return "す"
+        case "ぜ": return "ず"
+        case "て": return "つ"
+        case "で": return "づ"
+        case "ね": return "ぬ"
+        case "へ": return "ふ"
+        case "べ": return "ぶ"
+        case "ぺ": return "ぷ"
+        case "め": return "む"
+        case "れ": return "る"
+        default: return ""
+        }
+    }
+
+    // 表層を五段の辞書形に戻すための末尾(断て→断つ の つ)。
+    private static func dictionaryFormTail(for stemReading: String) -> String {
+        guard let last = stemReading.last else {
+            return ""
+        }
+        return uDanForEDan(last)
+    }
+
     func normalizedTaggedCandidates(for reading: String) -> Set<String> {
         store.systemCandidates(
             for: reading,

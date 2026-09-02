@@ -119,8 +119,12 @@ extension KanaKanjiConverter {
                 stemReading: stem,
                 nextSuffix: passthrough
             )
-            let filteredStemCandidates = filterNonVerbalCandidatesForVerbalPostfix(
-                nEndingFiltered,
+            let filteredStemCandidates = filterGodanEDanStemsForCaseParticle(
+                filterNonVerbalCandidatesForVerbalPostfix(
+                    nEndingFiltered,
+                    stemReading: stem,
+                    nextSuffix: passthrough
+                ),
                 stemReading: stem,
                 nextSuffix: passthrough
             )
@@ -281,8 +285,12 @@ extension KanaKanjiConverter {
                         nextSuffix: nextSuffix
                     )
                     let filteredStemCandidates = filterConjugableStemsForNegativeAuxiliaryPostfix(
-                        filterNonVerbalCandidatesForVerbalPostfix(
-                            nEndingFiltered,
+                        filterGodanEDanStemsForCaseParticle(
+                            filterNonVerbalCandidatesForVerbalPostfix(
+                                nEndingFiltered,
+                                stemReading: nextStem,
+                                nextSuffix: nextSuffix
+                            ),
                             stemReading: nextStem,
                             nextSuffix: nextSuffix
                         ),

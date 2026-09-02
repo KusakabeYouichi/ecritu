@@ -12976,6 +12976,48 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaita.first, "書いたときに", "multi=\(Array(kaita.prefix(3)))")
     }
 
+    // たてに / ときは / うてに(ユーザ報告 2755)。
+    //
+    // たてに: 辞書エントリが無く全て合成。五段のえ段(命令形・仮定形の語幹)へ接尾機構が
+    // 素通しで格助詞を付け、経てに/佇てに/截てに/斷てに 等の非文が並んでいた。
+    // うてに→伐てに/搏てに/摶てに も同型で、たて 固有ではない系統的な誤活用だった。
+    // ときは: misc に かな/時は の curated はあったが、curated は維持のみで昇格しないため
+    // 時は が先頭のままだった。並び矯正は seed の役目。
+    func testRegressionRealLMTateniAndTokiha() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        // たてに: 名詞を先頭に、動詞は 立てる/建てる 系のみ(ユーザ指定の並び)
+        let tateni = converter.candidates(for: "たてに", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(tateni.prefix(5)),
+            ["縦に", "立てに", "建てに", "楯に", "盾に"],
+            "list=\(tateni)"
+        )
+        // 五段のえ段+格助詞の非文が消えていること
+        for wrong in ["経てに", "佇てに", "截てに", "斷てに", "立テに"] {
+            XCTAssertFalse(tateni.contains(wrong), "\(wrong) が残っている list=\(tateni)")
+        }
+
+        // うてに: 同型の誤活用が構造ゲートで落ちること(打てに/撃てに は可能動詞で正当)
+        let uteni = converter.candidates(for: "うてに", limit: 12, systemCandidateMode: .surface)
+        for wrong in ["伐てに", "搏てに", "摶てに"] {
+            XCTAssertFalse(uteni.contains(wrong), "\(wrong) が残っている list=\(uteni)")
+        }
+
+        // え段+ば(仮定形)は正しいので触らないこと
+        let tateba = converter.candidates(for: "たてば", limit: 6, systemCandidateMode: .surface)
+        XCTAssertTrue(tateba.contains("経てば"), "list=\(tateba)")
+
+        // ときは: かなを先頭に
+        let tokiha = converter.candidates(for: "ときは", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(tokiha.prefix(3)),
+            ["ときは", "時は", "トキハ"],
+            "list=\(tokiha)"
+        )
+    }
+
     // 歯科矯正/歯列矯正(ユーザ報告 2753): 矯正歯科・歯科医師・歯科衛生士 は収録済みなのに
     // この2語だけ収穫の穴で、しか(助詞用法が強い)+きょうせい の分割になり しか強制/しか共生 が並んでいた。
     // 歯科 は rank6 でペア重みでは勝たせにくいため misc curated で1ノード化する。
