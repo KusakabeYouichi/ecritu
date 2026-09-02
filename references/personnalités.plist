@@ -823,6 +823,7 @@
 	<dict><key>phrase</key><string>桑田佳祐</string><key>shortcut</key><string>くわたけいすけ</string></dict>
 	<dict><key>phrase</key><string>尾崎紀世彦</string><key>shortcut</key><string>おざききよひこ</string></dict>
 	<dict><key>phrase</key><string>楠瀬誠志郎</string><key>shortcut</key><string>くすのせせいしろう</string></dict>
+	<dict><key>phrase</key><string>木村拓哉</string><key>shortcut</key><string>きむらたくや</string></dict>
 
 	<!-- グループ・バンド -->
 	<dict><key>phrase</key><string>ペドロ&amp;カプリシャス</string><key>shortcut</key><string>ぺどろあんどかぷりしゃす</string></dict>
