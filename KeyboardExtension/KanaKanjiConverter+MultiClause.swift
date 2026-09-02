@@ -1386,6 +1386,11 @@ extension KanaKanjiConverter {
                 if reading == "ん" {
                     isForbiddenInitialExempt = prev != Self.multiClauseBOSMarker
                         && (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
+                } else if reading == "っけ", surface == reading {
+                    // 想起の終助詞 っけ(かな表層のみ。っ気 は対象外)は た/だ 直後(でしたっけ/
+                    // だったっけ)だけ正当な っ 始まり。塞ぐと でした+っけ が立てず 弟子たっけ が
+                    // 最良になっていた(2757)
+                    isForbiddenInitialExempt = prev.hasSuffix("た") || prev.hasSuffix("だ")
                 } else {
                     // っぽい族(名詞接尾)も正当な っ 始まり(赤+っぽく。2650)
                     isForbiddenInitialExempt = Self.multiClauseForbiddenInitialExemptReadings.contains(reading)
