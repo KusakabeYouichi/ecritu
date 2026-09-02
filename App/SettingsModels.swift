@@ -576,7 +576,8 @@ struct CategoryChoiceDescriptor: Identifiable, Hashable {
 
 enum KaomojiCategoryChoice {
     // Mirrored from KeyboardExtension/KeyboardRootViewSupportTypes.swift (KaomojiCategory)
-    // and KeyboardExtension/KaomojiCatalog.swift (importedCategoryOrder).
+    // and KeyboardExtension/KaomojiCatalog.swift (displayCategoryOrder).
+    // 先頭3件(基本→ショートカット→検索)の順はこちらが正で、キーボード側をこれに合わせている。
     static let defaultID = "existing"
 
     static let all: [CategoryChoiceDescriptor] = {
@@ -586,24 +587,28 @@ enum KaomojiCategoryChoice {
             CategoryChoiceDescriptor(id: "search", title: "検索", icon: "🔎")
         ]
 
+        // 分類の並びは KeyboardExtension/KaomojiCatalog.swift の displayCategoryOrder を写す
+        // (別ターゲットのため直接参照できない。キーボードのカテゴリーバーと同じ順に保つこと)。
+        // 以前は importedCategoryOrder(辞書の反復順)を写していたため、導入時からキーボードと
+        // 並びが食い違っていた(2026-09-02 是正)
         let importedCategories: [(name: String, icon: String)] = [
-            ("キャラ", "🧑"),
-            ("ライン", "💬"),
-            ("挨拶", "🙋"),
-            ("キモい", "🤪"),
-            ("特殊", "✨"),
             ("笑", "😂"),
-            ("焦り", "💦"),
             ("かわいい", "🥰"),
-            ("驚き", "😲"),
-            ("怒", "😠"),
+            ("照れ", "😊"),
+            ("焦り", "💦"),
             ("しょぼん", "😔"),
+            ("悲", "😢"),
+            ("怒", "😠"),
+            ("驚き", "😲"),
+            ("くそねみ", "😴"),
+            ("挨拶", "🙋"),
             ("ラブ", "❤️"),
             ("激しい", "💥"),
-            ("照れ", "😊"),
-            ("くそねみ", "😴"),
-            ("悲", "😢"),
-            ("うごき", "🏃")
+            ("うごき", "🏃"),
+            ("キモい", "🤪"),
+            ("キャラ", "🧑"),
+            ("特殊", "✨"),
+            ("ライン", "💬")
         ]
 
         entries.append(contentsOf: importedCategories.map {
