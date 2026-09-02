@@ -17,35 +17,18 @@ extension KeyboardRootView {
     }
 
     var kaomojiCategories: [KaomojiCategory] {
-        let preferredImportedCategoryOrder: [String] = [
-            "笑",
-            "かわいい",
-            "照れ",
-            "焦り",
-            "しょぼん",
-            "悲",
-            "怒",
-            "驚き",
-            "くそねみ",
-            "挨拶",
-            "ラブ",
-            "激しい",
-            "うごき",
-            "キモい",
-            "キャラ",
-            "特殊",
-            "ライン"
-        ]
-
+        // 分類の表示順は KaomojiCatalog.displayCategoryOrder に一元化(設定アプリも同じ並びを写す)
         let importedCategorySet = Set(KaomojiCatalog.importedCategoryOrder)
-        let orderedImportedCategories = preferredImportedCategoryOrder
+        let orderedImportedCategories = KaomojiCatalog.displayCategoryOrder
             .filter { importedCategorySet.contains($0) }
         let remainingImportedCategories = KaomojiCatalog.importedCategoryOrder
             .filter { !orderedImportedCategories.contains($0) }
 
+        // 先頭3件(基本→ショートカット→検索)は設定アプリの選択肢と同じ順。
+        // 導入時から ⚡→🙂→🔎 で設定側(🙂→⚡→🔎)と食い違っていたのを是正(ユーザ指示 2755)
         var categories: [KaomojiCategory] = [
-            KaomojiCategory(kind: .shortcut),
             KaomojiCategory(kind: .existing),
+            KaomojiCategory(kind: .shortcut),
             KaomojiCategory(kind: .search)
         ]
 

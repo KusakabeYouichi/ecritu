@@ -487,6 +487,28 @@ final class KeyboardModeTransitionTests: XCTestCase {
         }
     }
 
+    // 顔文字パネルの分類カテゴリーの表示順(2026-09-02)。設定アプリの選択肢
+    // (App/SettingsModels.swift KaomojiCategoryChoice、別ターゲットなので直接参照不可)は
+    // この並びを写している。導入時から設定側だけ辞書の反復順になっており食い違っていたので、
+    // ここで並びを固定し、変えるときは設定側も同時に直す合図にする。
+    func testKaomojiDisplayCategoryOrderIsStable() {
+        XCTAssertEqual(
+            KaomojiCatalog.displayCategoryOrder,
+            ["笑", "かわいい", "照れ", "焦り", "しょぼん", "悲", "怒", "驚き", "くそねみ",
+             "挨拶", "ラブ", "激しい", "うごき", "キモい", "キャラ", "特殊", "ライン"]
+        )
+        // 表示順に載っている分類は全て実データに存在すること(誤字で並びから落ちるのを防ぐ)
+        let imported = Set(KaomojiCatalog.importedCategoryOrder)
+        for name in KaomojiCatalog.displayCategoryOrder {
+            XCTAssertTrue(imported.contains(name), "\(name) が importedEntriesByCategory に無い")
+        }
+        // 逆に、実データにあって表示順に載っていない分類が無いこと(新分類の追加漏れを検知)
+        XCTAssertEqual(
+            Set(KaomojiCatalog.displayCategoryOrder), imported,
+            "表示順に載っていない分類: \(imported.subtracting(KaomojiCatalog.displayCategoryOrder))"
+        )
+    }
+
     // リットルは単位ドラムに収録され、接頭辞と組んで hL・cL・mL が作れること。
     func testLitreUnitIsAvailableWithPrefixes() {
         let litre = SIUnitCatalog.siNamed.first { $0.symbol == "L" }
