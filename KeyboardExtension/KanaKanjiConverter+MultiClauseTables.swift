@@ -1270,4 +1270,47 @@ extension KanaKanjiConverter {
         return nil
     }
 
+    // 派生ノードの入口 bigram 借用に使う語幹トークンを切り出すための、コーパス A単位の
+    // 助動詞トークン(長い順)。上の multiClauseInflectionAuxTails と違い った/いた/した/んだ は
+    // 含めない — それらは「語幹の末尾+た」で、A単位は 治っ+た / 読ん+だ と切れるため、
+    // 借用に使う語幹は 治っ/読ん でなければ LM の統計に一致しない。
+    // 連用形に付く ます/ました/ません/たい/です/てる/よう は入れない。連用形(下り/通り/帰り/なし)は
+    // 名詞と同表層で、名詞用法の bigram(上りと下り の と→下り、問題はなし の は→なし)が動詞
+    // 下ります/なして に流れ込む(ときどきとおります→ときどきと下ります、今日話して→今日はなして
+    // に倒れた)。切り出した語幹の形も stemHeadForBigramBorrow で 音便形/未然形 に限定する
+    static let multiClauseInflectionStemAuxTokens: [String] = [
+        "なかった", "ないで", "ない", "て", "た", "で", "だ"
+    ]
+    // 音便形の末尾(五段: 治っ/読ん/書い)。た/て系の前でこの形になる語幹は名詞と衝突しない。
+    // 一段・サ行の連用形(起き/食べ/話し/なし)は名詞化と同表層なので対象外
+    static let multiClauseOnbinStemTails: Set<Character> = ["っ", "ん", "い"]
+    // 未然形の末尾(五段 あ段: 治ら/書か/読ま/買わ)。ない系の前でこの形になる語幹は名詞と衝突しない
+    static let multiClauseMizenStemTails: Set<Character> = [
+        "あ", "か", "が", "さ", "ざ", "た", "だ", "な", "ば", "ま", "ら", "わ"
+    ]
+
+    // 派生ノードの入口側 bigram 借用(2026-09-02)。auxTailForBigramBorrow の鏡像。
+    //
+    // 合成ノード「治った」は表層が LM に無く、入口 bigram(が→治った)を引けない。同じ読みの
+    // 同族(直った)も同様なので、両者は文脈に関係なく一律の派生 OOV コストで並び、辞書順や seed 順
+    // だけで決まっていた(なおった: 病気が でも 故障が でも同じ側が勝つ)。
+    // コーパスは A単位で 治っ+た と切るので、語幹トークン 治っ には入口 bigram(が→治っ 5373)が
+    // 在る。これを借用して派生ノードにも文脈を効かせる。使うのは「観測の有無」だけで、値は
+    // 派生 OOV 上限から backoff 分を引くに留める(呼び出し側 — 生の値を通した版の退行はそちらのコメント)。
+    static func stemHeadForBigramBorrow(of surface: String) -> String? {
+        for token in multiClauseInflectionStemAuxTokens where surface.hasSuffix(token) {
+            let stem = String(surface.dropLast(token.count))
+            // 語幹が空、または助動詞だけの表層(ない 単体)は借用しない
+            guard let tail = stem.last else {
+                return nil
+            }
+            let allowedTails = token.hasPrefix("な") ? multiClauseMizenStemTails : multiClauseOnbinStemTails
+            guard allowedTails.contains(tail) else {
+                return nil
+            }
+            return stem
+        }
+        return nil
+    }
+
 }

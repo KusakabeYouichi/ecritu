@@ -763,9 +763,18 @@ extension KanaKanjiConverter {
                     let prevNode = nodes[prevIdx]
                     let auxTail = Self.auxTailForBigramBorrow(of: prevNode)
                     for curIdx in nodesStartingAt[boundary] {
-                        addPair(prevNode.surface, nodes[curIdx].surface)
+                        let curNode = nodes[curIdx]
+                        addPair(prevNode.surface, curNode.surface)
                         if let auxTail {
-                            addPair(auxTail, nodes[curIdx].surface)
+                            addPair(auxTail, curNode.surface)
+                        }
+                        // 派生ノードの入口 bigram は語幹トークンでも引く(定義コメント参照)
+                        if curNode.isInflectionDerived,
+                            let stemHead = Self.stemHeadForBigramBorrow(of: curNode.surface) {
+                            addPair(prevNode.surface, stemHead)
+                            if let auxTail {
+                                addPair(auxTail, stemHead)
+                            }
                         }
                     }
                 }
@@ -997,12 +1006,24 @@ extension KanaKanjiConverter {
                 let prevAllowsInflectionDiscount =
                     Self.multiClauseCaseParticleSurfaces.contains(prev)
                     || Self.multiClauseCompoundParticles.contains(prev)
-                base = min(
-                    base,
-                    prevAllowsInflectionDiscount
-                        ? Self.multiClauseInflectionAfterParticleCost
-                        : Self.multiClauseInflectionDerivedOOVCost
-                )
+                var cap = prevAllowsInflectionDiscount
+                    ? Self.multiClauseInflectionAfterParticleCost
+                    : Self.multiClauseInflectionDerivedOOVCost
+                // 語幹 bigram 借用(stemHeadForBigramBorrow)。表層(治った)は LM に無く同族(直った)と
+                // 一律の派生 OOV に並ぶので、語幹トークン(治っ)の入口 bigram が観測されていれば
+                // 上限を backoff 分だけ下げ、未観測の同族より先に出す。借用値そのもの(に→あっ 2989)は
+                // 使わない — ある/いる 等のかな動詞は語幹 bigram が桁違いに安く、生の値を通すと
+                // 人に会った→人にあった に倒れる(2757 の検証)。観測の有無だけを兄弟間の順位に反映する
+                // 前ノードが派生(置いて)なら表層は LM に無いので、出口側借用と同じく助動詞末尾
+                // (て→あっ)でも観測を見る。片側だけ観測されて おいてあって(かな おいて はトークン)が
+                // 置いてあって に勝つのを防ぐ
+                if prev != Self.multiClauseBOSMarker, !deniesBigramBorrow,
+                    let stemHead = Self.stemHeadForBigramBorrow(of: surface),
+                    bigramCosts[prev + "\t" + stemHead] != nil
+                        || (prevAuxTail.map { bigramCosts[$0 + "\t" + stemHead] != nil } ?? false) {
+                    cap -= Self.multiClauseBackoffCost
+                }
+                base = min(base, cap)
             }
             // 追加語彙/学習語彙は強い下限で優遇(自然な LM コストがより安ければそちらを尊重)。
             // ただし絵文字/記号のみの表層(sacoche の €/🇮🇳/₿ 等)は本文へ割り込ませないため優遇せず、
