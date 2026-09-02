@@ -1024,12 +1024,12 @@ struct KeyboardRootView: View {
         #if !DEBUG
         return nil
         #endif
-        // 「バースト数(実回数)」。1バーストで4回来た場合は 1(4)。実回数がバースト数と同じなら
-        // 2以上のときだけ数字を出す(ユーザ指定 2702)
+        // 「バースト数 (実回数)」。1バーストで4回来た場合は 1 (4)(空白あり。ユーザ指定 2768)。
+        // 実回数がバースト数と同じなら 2以上のときだけ数字を出す(ユーザ指定 2702)
         let bursts = candidateBarModel.memoryWarningBurstCountForDebugDisplay
         let raw = candidateBarModel.memoryWarningCountForDebugDisplay
         if raw > bursts, bursts >= 1 {
-            return "\(bursts)(\(raw))"
+            return "\(bursts) (\(raw))"
         }
         return bursts >= 2 ? String(bursts) : nil
     }
