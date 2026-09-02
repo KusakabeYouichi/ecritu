@@ -311,11 +311,15 @@ struct KeyboardRootView: View {
         keyHeight: CGFloat? = nil
     ) -> some View {
         let resolvedKeyHeight = keyHeight ?? compactActionKeyHeight
+        // 縦向きの QWERTY/AZERTY の / . - は数字 clavier と同じサイズ(定義コメント参照)。
+        // フリック配列の !?@&/ や横向きは従来の 20pt
+        let usesClavierSymbolSizes = !isLandscapeLayout
+            && (latinLayoutMode == .qwerty || latinLayoutMode == .azerty)
 
         ForEach(symbols, id: \.self) { symbol in
             ActionKeyButton(
                 title: symbol,
-                fontSize: 20,
+                fontSize: usesClavierSymbolSizes ? clavierInlineSymbolFontSize(for: symbol) : 20,
                 fixedWidth: fixedWidth,
                 action: { commitText(symbol) }
             )
@@ -903,8 +907,15 @@ struct KeyboardRootView: View {
         return .bold
     }
 
-    // clavier 配列はメイン letter キーも system 行の inline 記号キーも 26pt に統一する。
+    // 数字 clavier 配列のメインキー(1〜9/0、漢数字は -4)の基準サイズ。
     var clavierKeyFontSize: CGFloat { 26 }
+
+    // iPhone 縦向きの最下行に並ぶ記号キー(@ / . -)のサイズ。ラテン(QWERTY/AZERTY)と
+    // 数字 clavier で別実装だったため 22/20 と 26 に割れていたのを揃える(ユーザ指定 2759):
+    // 字面の大きい @ と / は 24pt、. と - は 26pt。数字 clavier の shift 面(・〜…±)は 26pt
+    func clavierInlineSymbolFontSize(for symbol: String) -> CGFloat {
+        symbol == "@" || symbol == "/" ? 24 : 26
+    }
 
     // clavier system 行に並べる 4 つの記号(shift 状態で切替)。
     // 配置順: index 0 = delete 跡(AZERTY の `@` 位置)、index 1 = space-left(`/`)、
