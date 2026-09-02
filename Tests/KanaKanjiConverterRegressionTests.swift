@@ -13043,6 +13043,27 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(gakusei.first, "学生層", "\(Array(gakusei.prefix(3)))")
     }
 
+    // 再現したりしなかったりする(2757): 1ノード上限(12字)を超えるため 再現したり+しなかったりする
+    // の2ノードが要るが、かな しなかったりする は活用供給から除外(かな識別)され素通り 56000 で、
+    // 再現したりしなかった+利する が最良だった。misc でかな句を1ノード化し、活用規則にも
+    // なかったり系(一段/五段/サ変)と たりしなかったりする を追加(単文節・複合用)
+    func testRegressionShinakattariSuruParallelNegative() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("さいげんしたりしなかったりする", "再現したりしなかったりする"),
+            ("たべたりたべなかったりする", "食べたり食べなかったりする"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(Array(multi.prefix(4)))")
+            XCTAssertFalse(multi.contains(where: { $0.contains("利する") }), "\(reading): \(multi)")
+        }
+        let single = converter.candidates(for: "さいげんしたりしなかったりする", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "再現したりしなかったりする", "\(single)")
+        let ikanakattari = converter.candidates(for: "いかなかったり", limit: 3, systemCandidateMode: .surface)
+        XCTAssertTrue(ikanakattari.contains("行かなかったり"), "\(ikanakattari)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、

@@ -114,6 +114,10 @@
 	<dict><key>phrase</key><string>にしたり</string><key>shortcut</key><string>にしたり</string></dict>
 	<dict><key>phrase</key><string>したら</string><key>shortcut</key><string>したら</string></dict>
 	<dict><key>phrase</key><string>したり</string><key>shortcut</key><string>したり</string></dict>
+	<dict><key>phrase</key><string>しなかったり</string><key>shortcut</key><string>しなかったり</string></dict>	<!-- 否定の並列 しなかったり(する/した/して)。かな表層は活用供給から除外されるため素通り(7000/字)になり、再現したり+しなかったりする が 再現したりしなかった+利する に負けていた(ユーザ報告 2757) -->
+	<dict><key>phrase</key><string>しなかったりする</string><key>shortcut</key><string>しなかったりする</string></dict>
+	<dict><key>phrase</key><string>しなかったりした</string><key>shortcut</key><string>しなかったりした</string></dict>
+	<dict><key>phrase</key><string>しなかったりして</string><key>shortcut</key><string>しなかったりして</string></dict>
 	<dict><key>phrase</key><string>してたら</string><key>shortcut</key><string>してたら</string></dict>
 	<dict><key>phrase</key><string>にしても</string><key>shortcut</key><string>にしても</string></dict>	<!-- にする の逆接・許容形。にした/にして/にする/にしよう/にしたら の並びで漏れていた(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>にしながら</string><key>shortcut</key><string>にしながら</string></dict>	<!-- にしながら: 読みの候補が 西名柄(収穫底値10000)だけで句を割る(ユーザ指定 2564) -->
