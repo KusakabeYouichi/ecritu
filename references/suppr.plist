@@ -8,6 +8,7 @@
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
 	<dict><key>phrase</key><string>締目</string><key>shortcut</key><string>しめ</string></dict>	<!-- 締め目 なら読みは しめめ。しめ読みでの供給が seed {締め、〆、〆め、絞め} に割り込む(2643) -->
 	<dict><key>phrase</key><string>せん門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の部分かな書き(Sudachi実在)。ばかリ と同型の交ぜ書きエントリ(2637) -->
+	<dict><key>phrase</key><string>斷つ</string><key>shortcut</key><string>たつ</string></dict>	<!-- 断つ の旧字体。字形が似ていて選び間違えやすく、活用形(斷て/斷った)まで候補を汚す(ユーザ指定 2755) -->
 	<dict><key>phrase</key><string>き損</string><key>shortcut</key><string>きそん</string></dict>	<!-- 毀損 の交ぜ書き(新聞表記)(2638) -->
 	<dict><key>phrase</key><string>出えん</string><key>shortcut</key><string>しゅつえん</string></dict>	<!-- 出捐 の交ぜ書き(2638) -->
 	<dict><key>phrase</key><string>ふん装</string><key>shortcut</key><string>ふんそう</string></dict>	<!-- 扮装 の交ぜ書き(2638) -->
@@ -176,6 +177,7 @@
 	<dict><key>phrase</key><string>本もの</string><key>shortcut</key><string>ほんもの</string></dict>
 	<dict><key>phrase</key><string>良い</string><key>shortcut</key><string>いい</string></dict>
 	<dict><key>phrase</key><string>石ユ</string><key>shortcut</key><string>いしく</string></dict>
+	<dict><key>phrase</key><string>立テ</string><key>shortcut</key><string>たて</string></dict>	<!-- たて の交ぜ書き収穫。たてに→立テに 等を汚す(ユーザ指定 2755) -->
 	<dict><key>phrase</key><string>ぜい金</string><key>shortcut</key><string>ぜいきん</string></dict>
 	<!-- ※ サンガ: さんが rank0(京都サンガ/僧伽)。敬称「〜さんが」(X さん+が)が圧倒的に頻出で 根路銘さんが→根路銘サンガ 等の分断を作る。exactReadingOnlySeed で さんが 完全一致時のみ末尾へ -->
 	<!-- ※ カイソウ: 海藻 のカタカナ表記ゆれ収穫(かいそう rank6)。単独カタカナ需要は無く候補を汚すため抑制 -->
