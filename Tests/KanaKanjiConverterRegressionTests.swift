@@ -13005,9 +13005,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         for reading in ["でしたっけ", "だったっけ"] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertFalse(multi.contains(where: { $0.contains("弟子") || $0.contains("っ気") }), "\(reading): \(multi)")
-            if let first = multi.first {
-                XCTAssertEqual(first, reading, "\(reading): \(multi)")
-            }
+            // かな最良は終助詞 っけ 免除でエコー抑制されず、変換候補として返る(候補なし にならない。2758)
+            XCTAssertEqual(multi.first, reading, "\(reading): \(multi)")
         }
     }
 
