@@ -12,6 +12,8 @@ enum KanaKanjiStorageKeys {
     static let systemDictionarySQLiteFilename = "kana_kanji_dictionary.sqlite"
     static let systemDictionaryFilename = "ÉcrituPremierVocab.json"
     static let supplementalSystemDictionaryFilename = "ÉcrituSecondVocab.json"
+    // 補助語彙から前計算した欧文サジェスト索引(tools/build_latin_suggestion_supplemental.swift)
+    static let latinSuggestionSupplementalFilename = "LatinSuggestionSupplemental.txt"
     static let systemCandidateSourcesFilename = "kana_kanji_candidate_sources.json"
     static let inflectionDictionaryFilename = "kana_kanji_inflection_dictionary.json"
     static let initialUserDictionaryResourceName = "InitialAjoutVocabMigration"

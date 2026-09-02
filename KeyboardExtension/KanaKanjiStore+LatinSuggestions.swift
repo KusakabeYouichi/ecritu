@@ -147,7 +147,8 @@ struct GenericLatinLexiconFileIndex {
 
 
 // ラテン(英字)入力のサジェスト。読み検索キーの正規化・二分探索・候補判定を担う。
-// 索引 latinSuggestionEntries は起動時に一度構築してキャッシュする。
+// 索引は2層とも同梱ファイルの mmap(追加語彙由来 LatinSuggestionSupplemental.txt と
+// 汎用レキシコン LatinSuggestionLexicon_{lang}.txt)で、実行時構築は行わない。
 extension KanaKanjiStore {
     // 語句全体(空白込みトークン)で一致ゼロのときは、空白/改行の直後から検索を
     // やり直して段階的に縮める(grand ch→ch)。空白入りentry(追加語彙のワイン語句等)の
@@ -186,27 +187,21 @@ extension KanaKanjiStore {
             return []
         }
 
-        let entries = latinSuggestionEntries()
-        let startIndex = lowerBoundLatinSuggestionEntryIndex(
-            entries: entries,
-            for: normalizedPrefix
-        )
         var results: [String] = []
         var seenCandidates = Set<String>()
         var seenSearchKeys = Set<String>()
-        var index = startIndex
 
-        while index < entries.count,
-            entries[index].searchKey.hasPrefix(normalizedPrefix),
-            results.count < limit {
-            let candidate = entries[index].candidate
-
-            if seenCandidates.insert(candidate).inserted {
-                results.append(candidate)
-                seenSearchKeys.insert(entries[index].searchKey)
+        // 追加語彙由来(前計算ファイルの mmap 索引)。キー順+同キー内は候補の大小文字無視順
+        if let supplementalIndex = latinSupplementalIndex() {
+            for entry in supplementalIndex.matchedEntries(
+                normalizedPrefix: normalizedPrefix,
+                excludedSearchKeys: []
+            ) where results.count < limit {
+                if seenCandidates.insert(entry.candidate).inserted {
+                    results.append(entry.candidate)
+                    seenSearchKeys.insert(entry.searchKey)
+                }
             }
-
-            index += 1
         }
 
         // 汎用語彙(別レイヤー)は追加語彙の後ろへ頻度順で合流する。追加語彙と同キー
@@ -309,82 +304,26 @@ extension KanaKanjiStore {
         return index
     }
 
-    func latinSuggestionEntries() -> [LatinSuggestionEntry] {
-        if let cached = withCacheLock({ cachedLatinSuggestionEntries }) {
+    // 追加語彙(補助語彙 SecondVocab)由来の欧文サジェスト索引。ビルド時に
+    // tools/build_latin_suggestion_supplemental.swift が実行時と同一のフィルタ・折り畳みで前計算した
+    // LatinSuggestionSupplemental.txt(key\tcandidate\t0、キーのバイト順)を Data(mappedIfSafe) で保持する。
+    // 以前は起動後に補助語彙 15k 件を走査して配列を組んでいた(fp +8MB の瞬間ピーク、alloc の
+    // ラチェット成長、8/26 の jetsam 死のトドメ)。前計算でピークも常駐もヒープ外になり、
+    // 高水位の見送りゲート(52MB)と削除キーの薄ピンク表示は不要になった(2770)。
+    // 読み込み元は補助語彙 JSON と同じ(App Group の共有コンテナ→バンドル。テストは override)
+    func latinSupplementalIndex() -> GenericLatinLexiconFileIndex? {
+        if let cached = withCacheLock({ cachedLatinSupplementalIndex }) {
             return cached
         }
-
-        // loadSupplementalSystemDictionary() 自身が cacheLock を取るため、ロックの外で呼ぶ。
-        // 高水位ゲート(2664): この構築は補助語彙約15k件の全走査(trim/regex×2/Set)で一時確保が
-        // 大きく(実測 fp +8MB、8/26 12:38 の死のトドメ: fp73.8 で欧文 [th] 入力→構築→77MB)。
-        // fp≥58 では見送り、キャッシュも書かない(圧迫が去った次回に再判定)。圧迫中は
-        // 欧文サジェスト無しで打てる方を優先する(汎用レキシコンは mmap 索引なので影響なし)
-        if let footprintMB = MemoryForensics.currentPhysFootprintMB(),
-            footprintMB >= Self.latinSuggestionBuildMaxFootprintMB {
-            if !didSkipLatinSuggestionBuildForPressure {
-                MemoryForensics.logSink?(
-                    "欧文サジェスト構築を見送り(高水位) footprintMB=\(String(format: "%.1f", footprintMB))"
-                )
-            }
-            didSkipLatinSuggestionBuildForPressure = true
-            return []
+        let filename = KanaKanjiStorageKeys.latinSuggestionSupplementalFilename
+        let url = genericLatinLexiconDirectoryURLOverride?.appendingPathComponent(filename)
+            ?? sharedOrBundledDictionaryURL(filename: filename)
+        guard let url, let data = try? Data(contentsOf: url, options: .mappedIfSafe), !data.isEmpty else {
+            return nil
         }
-        didSkipLatinSuggestionBuildForPressure = false
-
-        // 構築コストの記録(2724): 補助語彙ロード+エントリ構築の同期Δ(simulator 実測 1.7+0.4MB)
-        let buildSnapshot = MemoryForensics.snapshot()
-        defer { MemoryForensics.noteSyncDelta("欧文サジェスト構築", since: buildSnapshot, minDeltaMB: 1.0) }
-        let supplementalDictionary = loadSupplementalSystemDictionary()
-
-        guard !supplementalDictionary.isEmpty else {
-            return []
-        }
-
-        var seenCandidates = Set<String>()
-        var entries: [LatinSuggestionEntry] = []
-
-        supplementalDictionary.forEachCandidate { candidate in
-            // 欧文/数字を1文字も含まない候補(補助語彙の大半=日本語)は trim も regex も
-            // Set 挿入もせず即除外し、一時確保を欧文候補ぶんだけに絞る(2664)
-            guard Self.mayContainLatinLetterOrDigit(candidate) else {
-                return
-            }
-            let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmedCandidate.isEmpty,
-                isLatinSuggestionCandidate(trimmedCandidate),
-                seenCandidates.insert(trimmedCandidate).inserted else {
-                return
-            }
-
-            let searchKey = latinSuggestionSearchKey(trimmedCandidate)
-
-            guard !searchKey.isEmpty else {
-                return
-            }
-
-            entries.append(
-                LatinSuggestionEntry(
-                    searchKey: searchKey,
-                    candidate: trimmedCandidate
-                )
-            )
-        }
-
-        guard !entries.isEmpty else {
-            return []
-        }
-
-        entries.sort { lhs, rhs in
-            if lhs.searchKey == rhs.searchKey {
-                return lhs.candidate.localizedCaseInsensitiveCompare(rhs.candidate) == .orderedAscending
-            }
-
-            return lhs.searchKey < rhs.searchKey
-        }
-
-        withCacheLock { cachedLatinSuggestionEntries = entries }
-        return entries
+        let index = GenericLatinLexiconFileIndex(data: data)
+        withCacheLock { cachedLatinSupplementalIndex = index }
+        return index
     }
 
     func latinSuggestionSearchKey(
@@ -410,53 +349,5 @@ extension KanaKanjiStore {
             )
             .lowercased()
     }
-
-    // 欧文サジェスト構築を見送る footprint(2664→2724)。警告は fp≈60 で届く(8/30 10:43 Safari の
-    // URL 欄: fp 57.1 でゲートを通過→補助語彙ロード 1.7MB+エントリ 0.4MB+欧文盤面で 61.2→警告2回)。
-    // 58 では構築自身が警告を起こすので、構築コスト(約4MB)+余裕ぶん下げる。汎用レキシコン
-    // (mmap 索引、ヒープ 0MB 実測)は対象外なので、見送り中も一般語の欧文サジェストは出る
-    static let latinSuggestionBuildMaxFootprintMB: Double = 52
-
-    // ASCII 英数字か Latin-1/拡張(é/ü 等)の scalar を1つでも含むか。regex 前の高速事前判定
-    static func mayContainLatinLetterOrDigit(_ candidate: String) -> Bool {
-        for scalar in candidate.unicodeScalars {
-            let value = scalar.value
-            if (0x30...0x39).contains(value) || (0x41...0x5A).contains(value)
-                || (0x61...0x7A).contains(value) || (0x00C0...0x024F).contains(value) {
-                return true
-            }
-        }
-        return false
-    }
-
-    func isLatinSuggestionCandidate(_ candidate: String) -> Bool {
-        guard candidate.range(of: #"[\p{Latin}0-9]"#, options: .regularExpression) != nil else {
-            return false
-        }
-
-        return candidate.range(
-            of: #"^[\p{Latin}\p{M}0-9 \-\.&'’/,+:;()!?]+$"#,
-            options: .regularExpression
-        ) != nil
-    }
-
-    func lowerBoundLatinSuggestionEntryIndex(
-        entries: [LatinSuggestionEntry],
-        for key: String
-    ) -> Int {
-        var low = 0
-        var high = entries.count
-
-        while low < high {
-            let mid = (low + high) / 2
-
-            if entries[mid].searchKey < key {
-                low = mid + 1
-            } else {
-                high = mid
-            }
-        }
-
-        return low
-    }
+    // 候補のフィルタ(欧文字を含む/許容文字だけ)はビルド時の tools/build_latin_suggestion_supplemental.swift に移した
 }

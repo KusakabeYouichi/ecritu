@@ -510,7 +510,7 @@ final class KeyboardViewController: UIInputViewController {
     // elevated 62: 長寿命プロセスの実測ベースライン(最大58.5)を超えて育ったとき(候補14/欧文18/
     //   ショートカット20、共有キャッシュ破棄)。critical 70: 死の7MB手前の最終縮小(候補8/欧文0/全キャッシュ破棄)。
     // recover 6: elevated→normal は56未満、critical→elevated は64未満(58〜62 の往復でばたつかない幅)。
-    // 別系統の予防ゲート(絵文字切替前解放 50 / 欧文構築見送り 52)はそのまま
+    // 別系統の予防ゲート(絵文字切替前解放 50)はそのまま(欧文構築見送り 52 は 2770 で構築自体を廃止)
     static let memoryFailSafeElevatedStartMB: Double = 62
     static let memoryFailSafeCriticalStartMB: Double = 70
     static let memoryFailSafeRecoverDeltaMB: Double = 6
@@ -649,8 +649,6 @@ final class KeyboardViewController: UIInputViewController {
         diagnosticsState.lastMemoryWarningAt = 0
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryWarningBurstCountForDebugDisplay = 0
-        // 薄ピンクはセッションを跨いで引き継がない(今のラテン入力で見送られたときだけ点ける。2767)
-        candidateBarModel.latinSuggestionSkippedForDebugDisplay = false
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
@@ -2037,21 +2035,6 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     func latinSuggestions(prefix: String, limit: Int) -> [String] {
-        let suggestions = kanaKanjiStore.latinSuggestions(prefix: prefix, limit: limit)
-        // 高水位で構築を見送った状態を削除キー(薄ピンク)へ反映(2664)
-        let skipped = kanaKanjiStore.didSkipLatinSuggestionBuildForPressure
-        if Thread.isMainThread {
-            if candidateBarModel.latinSuggestionSkippedForDebugDisplay != skipped {
-                candidateBarModel.latinSuggestionSkippedForDebugDisplay = skipped
-            }
-        } else {
-            DispatchQueue.main.async { [weak self] in
-                guard let self, self.candidateBarModel.latinSuggestionSkippedForDebugDisplay != skipped else {
-                    return
-                }
-                self.candidateBarModel.latinSuggestionSkippedForDebugDisplay = skipped
-            }
-        }
-        return suggestions
+        kanaKanjiStore.latinSuggestions(prefix: prefix, limit: limit)
     }
 }
