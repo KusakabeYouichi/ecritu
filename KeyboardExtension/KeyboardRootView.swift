@@ -1007,8 +1007,8 @@ struct KeyboardRootView: View {
         // 色はバースト数(2秒以内の連続警告は1イベント)で決める。1回=黄、2回以上=橙
         switch candidateBarModel.memoryWarningBurstCountForDebugDisplay {
         case 0:
-            // 警告前の段階: 欧文サジェスト構築を高水位(fp≥58)で見送り中なら薄ピンク
-            // (ユーザ指定 2664。警告が来たら黄/橙が優先)
+            // 警告前の段階: 今のラテン入力で欧文サジェスト構築を高水位(fp≥52)で見送ったら薄ピンク
+            // (ユーザ指定 2664。警告が来たら黄/橙が優先)。ラテン入力を離れると消える(2767)
             if candidateBarModel.latinSuggestionSkippedForDebugDisplay {
                 return Color(red: 1.0, green: 0.78, blue: 0.84).opacity(0.9)
             }

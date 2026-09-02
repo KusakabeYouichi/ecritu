@@ -645,7 +645,8 @@ final class KeyboardViewController: UIInputViewController {
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryWarningBurstCountForDebugDisplay = 0
         candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
-        candidateBarModel.latinSuggestionSkippedForDebugDisplay = kanaKanjiStore.didSkipLatinSuggestionBuildForPressure
+        // 薄ピンクはセッションを跨いで引き継がない(今のラテン入力で見送られたときだけ点ける。2767)
+        candidateBarModel.latinSuggestionSkippedForDebugDisplay = false
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
