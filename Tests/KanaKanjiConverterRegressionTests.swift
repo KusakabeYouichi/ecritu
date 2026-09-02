@@ -12996,6 +12996,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // でしたっけ(2757): っ始まり禁止で でした+っけ が立てず、弟子+たっけ(素通り)が最良だった。
+    // かな っけ は た/だ 直後だけ免除。最良は全かなエコーで抑制され multi は空(かなチップに委ねる)。
+    // っ気 は免除しない(でしたっ気 が変種に浮上していた)
+    func testRegressionDeshitakkeKanaRecallParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["でしたっけ", "だったっけ"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertFalse(multi.contains(where: { $0.contains("弟子") || $0.contains("っ気") }), "\(reading): \(multi)")
+            if let first = multi.first {
+                XCTAssertEqual(first, reading, "\(reading): \(multi)")
+            }
+        }
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
