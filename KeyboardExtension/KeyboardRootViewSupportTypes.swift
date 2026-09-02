@@ -15,10 +15,9 @@ final class KeyboardCandidateBarModel: ObservableObject {
     // 打つたびに候補バー除外判定をすり抜けて全キーを作り直していた
     @Published var kanaPostModifierButtonState: KanaPostModifierButtonState = .kaomoji
     // メモリ切迫の可視化(でばぐ用途。後で取り除く可能性あり)。かな削除キーの背景色に反映:
-    // 1回目=黄 / 2回目以降=橙+回数 / 2回目以降+footprint臨界(sqliteアンロード)=えんじ。
+    // 1回目=黄 / 2回目以降=橙+回数(えんじ=sqlite アンロードは 2769 で撤去)。
     @Published var memoryWarningCountForDebugDisplay: Int = 0
     @Published var memoryWarningBurstCountForDebugDisplay: Int = 0
-    @Published var memoryPressureSQLiteUnloadedForDebugDisplay: Bool = false
     // 欧文サジェスト構築を高水位で見送り中(削除キー薄ピンク。ユーザ指定 2664)
     @Published var latinSuggestionSkippedForDebugDisplay: Bool = false
 }

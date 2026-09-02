@@ -505,10 +505,15 @@ final class KeyboardViewController: UIInputViewController {
     static let isMultiClauseConversionEnabled = true
     // メモリフェイルセーフは jetsam 実値(phys_footprint)で判定する。RSS(resident_size)は
     // 共有/クリーンページや mmap を含み jetsam 圧を過大評価するため使わない。
-    // 閾値は実測(通常ピーク約48MB)に十分な余裕を持たせた footprint MB。
-    static let memoryFailSafeElevatedStartMB: Double = 90
-    static let memoryFailSafeCriticalStartMB: Double = 115
-    static let memoryFailSafeRecoverDeltaMB: Double = 12
+    // 閾値の基準は拡張プロセスの per-process 上限 77MB(2026-08 に jetsam 死のカーネルログ4件で実測)。
+    // 旧値 90/115/12 は上限を知る前(通常ピーク48の2.4倍)に決めたもので到達不能だった(2769 で見直し)。
+    // elevated 62: 長寿命プロセスの実測ベースライン(最大58.5)を超えて育ったとき(候補14/欧文18/
+    //   ショートカット20、共有キャッシュ破棄)。critical 70: 死の7MB手前の最終縮小(候補8/欧文0/全キャッシュ破棄)。
+    // recover 6: elevated→normal は56未満、critical→elevated は64未満(58〜62 の往復でばたつかない幅)。
+    // 別系統の予防ゲート(絵文字切替前解放 50 / 欧文構築見送り 52)はそのまま
+    static let memoryFailSafeElevatedStartMB: Double = 62
+    static let memoryFailSafeCriticalStartMB: Double = 70
+    static let memoryFailSafeRecoverDeltaMB: Double = 6
     private static let refreshQueueDropThresholdInCriticalMode = 2
     #if DEBUG
     static let diagnosticsFlightRecorderWindowSec: TimeInterval = 6
@@ -635,7 +640,7 @@ final class KeyboardViewController: UIInputViewController {
         }
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
 
-        // メモリ警告カウントと sqlite 再オープン抑止は「表示セッション」単位でリセットする。
+        // メモリ警告カウントは「表示セッション」単位でリセットする。
         // 拡張プロセスはアプリ切替をまたいで長生きするため、プロセス生涯で累積させると
         // どこかで警告2回に達した時点で辞書が永久停止し、「みまん→候補なし」の辞書なし
         // キーボードに退化したまま戻らない(いじょう→異常 だけ残るのは学習語彙経路)。
@@ -644,13 +649,11 @@ final class KeyboardViewController: UIInputViewController {
         diagnosticsState.lastMemoryWarningAt = 0
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryWarningBurstCountForDebugDisplay = 0
-        candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = false
         // 薄ピンクはセッションを跨いで引き継がない(今のラテン入力で見送られたときだけ点ける。2767)
         candidateBarModel.latinSuggestionSkippedForDebugDisplay = false
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
-        kanaKanjiConverter.store.allowSQLiteReopenAfterMemoryPressure()
         kanaKanjiConverter.store.exitConstrainedMemoryCacheMode()
         // サスペンド中に取りこぼした設定変更(学習リセット等)を、世代カウンタの変化で検知して
         // 反映する。Darwin 通知を受け損ねても表示のたびに保険が効く。
@@ -1381,23 +1384,8 @@ final class KeyboardViewController: UIInputViewController {
                 line: #line,
                 function: #function
             )
-            // sqlite アンロードは「自分の footprint が critical 以上」のときだけの真の
-            // 最終手段にする。メモリ警告は周囲(ホストアプリ)由来でも飛んでくるが、
-            // sqlite クローズの実節約は約2MB(read-only・mmapなし=ページキャッシュのみ)
-            // で、footprint が小さいときに辞書を殺しても系全体は救われず UX 全損だけが
-            // 残る。critical 超えは jetsam が現実味を帯びた状態なので閉じて延命する。
-            let footprintMB = currentFootprintMB() ?? 0
-            if footprintMB >= Self.memoryFailSafeCriticalStartMB {
-                kanaKanjiConverter.unloadSystemDictionarySQLiteForMemoryPressure()
-                candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay = true
-                appendKeyboardDiagnosticsLog(
-                    "メモリ警告\(diagnosticsState.memoryWarningCountThisSession)回目+footprint臨界のため連文節LM(sqlite)を最終手段アンロード footprintMB=\(diagnosticsFootprintMBText())",
-                    critical: true,
-                    file: #fileID,
-                    line: #line,
-                    function: #function
-                )
-            }
+            // sqlite の最終手段アンロード(footprint 115 以上で閉じる)は 2769 で撤去。上限 77MB に
+            // 到達不能な条件で、閉じても約 2MB しか返らず UX 全損だけが残る設計だった
         }
 
         if view.window == nil {

@@ -59,7 +59,6 @@ final class KanaKanjiStore {
     // clearSystemDictionaryCaches が didAttemptSQLiteIndexLoad をリセットするため
     // 次の変換で即再オープンされ、最終手段のアンロードが close→reopen の空回りに
     // なっていた。辞書ファイル差し替え(reopenSystemDictionary)では解除する。
-    private var isSQLiteReopenSuppressed = false
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: SupplementalVocabCompactStore?
     var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
@@ -217,10 +216,6 @@ final class KanaKanjiStore {
         systemDictionaryQueue.sync {
             if let sqliteIndex {
                 return sqliteIndex
-            }
-
-            guard !isSQLiteReopenSuppressed else {
-                return nil
             }
 
             guard let databaseURL = sharedOrBundledDictionaryURL(
@@ -851,37 +846,14 @@ final class KanaKanjiStore {
     }
 
     // sqlite インデックスも含めて完全に閉じる(辞書ファイル差し替え時の再オープン用)。
-    // メモリ対策では使わない — unloadSQLiteIndexForMemoryPressure を使うこと。
+    // メモリ対策としての sqlite アンロード(最終手段)は 2769 で撤去した: 発火条件の footprint 115MB は
+    // 拡張の上限 77MB(jetsam 実測)に到達不能で、閉じても返るのは約 2MB(read-only・mmap なし)だった。
     func clearSystemDictionaryCaches() {
         clearSystemDictionaryJSONCaches()
 
         systemDictionaryQueue.sync {
             sqliteIndex = nil
             didAttemptSQLiteIndexLoad = false
-            isSQLiteReopenSuppressed = false
-        }
-    }
-
-    // メモリ圧迫の最終手段: sqlite を閉じ、再オープンをスティッキーに禁止する
-    // (連文節は単文節フォールバックへ劣化)。JSONフォールバックへ落ちないよう、JSON側の
-    // キャッシュも合わせて破棄+サイズゲートで巨大JSONのデコードは常時拒否済み。
-    // 抑止の解除は次のキーボード表示(viewWillAppear→allowSQLiteReopenAfterMemoryPressure)。
-    func unloadSQLiteIndexForMemoryPressure() {
-        clearSystemDictionaryJSONCaches()
-
-        systemDictionaryQueue.sync {
-            sqliteIndex = nil
-            didAttemptSQLiteIndexLoad = false
-            isSQLiteReopenSuppressed = true
-        }
-    }
-
-    // キーボードの新しい表示セッションで sqlite 再オープン抑止を解除する。抑止を
-    // プロセス生涯スティッキーにすると、警告2回で辞書が永久停止する(拡張プロセスは
-    // アプリ切替をまたいで長生きする)。同一表示中の close→reopen 空回り防止は維持される。
-    func allowSQLiteReopenAfterMemoryPressure() {
-        systemDictionaryQueue.sync {
-            isSQLiteReopenSuppressed = false
         }
     }
 
