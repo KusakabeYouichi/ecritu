@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260902203747"
+    private static let editionUpdatedAtRaw: String = "20260902204440"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1415,10 +1415,10 @@ struct ContentView: View {
             }
 #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
-            // 初期ロード中はナビバーを隠し、ローディング表示を
-            // セーフエリア中央(RootLoadingView/LaunchScreenと同じ基準)に置く。
-            // ナビバーがあると "écritu" タイトル分だけ下にずれてしまうため。
-            .toolbar(didCompleteInitialDataSnapshot ? .visible : .hidden, for: .navigationBar)
+            // ナビバー(タイトル écritu)は最初から出す。以前は初期ロード中に隠していた
+            // (7d5226a: ローディングの縦位置合わせ)が、UI を即表示する方式(cf4a75c)以降は
+            // ローディング表示が NavigationStack 外の overlay になりナビバーの有無に影響されない。
+            // 隠したままだと初期化完了時にナビバーが現れてロゴ以下がガクンと下がる(2766)
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("écritu")
