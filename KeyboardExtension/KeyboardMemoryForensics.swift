@@ -227,7 +227,7 @@ enum MemoryForensics {
         #endif
     }
 
-    // store 側の高水位ゲート(欧文サジェスト構築の見送り 2664)からも参照するため internal
+    // 計測各所から参照するため internal(store 側の欧文構築ゲートからの参照は 2770 で無くなった)
     static func currentPhysFootprintMB() -> Double? {
         var info = task_vm_info_data_t()
         var count = mach_msg_type_number_t(

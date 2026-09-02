@@ -42,10 +42,6 @@ final class KanaKanjiStore {
         "かった\t交った": -1_000_000_000,
         "かった\t支った": -1_000_000_000
     ]
-    struct LatinSuggestionEntry {
-        let searchKey: String
-        let candidate: String
-    }
     // 汎用Latinサジェスト語彙(同梱の頻度リスト。追加語彙とは別レイヤー)のエントリ。
     // rank はリスト内の頻度順位(小さいほど高頻度)。
     struct GenericLatinLexiconEntry {
@@ -55,21 +51,17 @@ final class KanaKanjiStore {
     }
     private var sqliteIndex: KanaKanjiSQLiteIndex?
     private var didAttemptSQLiteIndexLoad = false
-    // メモリ圧迫でのアンロード後は再オープンを禁止する(スティッキー)。以前は
-    // clearSystemDictionaryCaches が didAttemptSQLiteIndexLoad をリセットするため
-    // 次の変換で即再オープンされ、最終手段のアンロードが close→reopen の空回りに
-    // なっていた。辞書ファイル差し替え(reopenSystemDictionary)では解除する。
     private var cachedSystemDictionary: [String: [String]]?
     private var cachedSupplementalSystemDictionary: SupplementalVocabCompactStore?
-    var cachedLatinSuggestionEntries: [LatinSuggestionEntry]?
+    // 追加語彙(補助語彙 SecondVocab)由来の欧文サジェスト索引。ビルド時に前計算した
+    // LatinSuggestionSupplemental.txt(キーのバイト順ソート済み)を mmap で保持するだけで、
+    // 実行時構築(補助語彙 15k 件の走査で fp +8MB のピーク)は無くなった(2770)
+    var cachedLatinSupplementalIndex: GenericLatinLexiconFileIndex?
     // 汎用Latinサジェスト語彙のmmap索引キャッシュ(言語別)と有効言語
     // (既定は全言語OFF。設定で言語別にON)。索引は Data(mappedIfSafe) 保持のみで
     // 常駐フットプリントを持たない(GenericLatinLexiconFileIndex 定義コメント参照)。
     var cachedGenericLatinLexiconIndexByLanguage: [String: GenericLatinLexiconFileIndex] = [:]
     var genericLatinLexiconEnabledLanguages: Set<String> = []
-    // 欧文サジェスト構築を高水位で見送った状態(削除キー薄ピンクの可視化用。2664)。
-    // 構築が成功したら false に戻る
-    var didSkipLatinSuggestionBuildForPressure = false
     // テスト用: bundle 未同梱の環境(unit test)でリポジトリのtxtを直接読ませるディレクトリ
     var genericLatinLexiconDirectoryURLOverride: URL?
     // 漢字1文字ピッカーの索引(mmap)。テスト用に読み込み元を差し替えられるようにする。
@@ -152,7 +144,7 @@ final class KanaKanjiStore {
     // (containermanagerd の解決/作成)ため、テストはローカルディレクトリーで代替する(2515)。
     static var sharedContainerURLOverride: URL?
 
-    private func sharedOrBundledDictionaryURL(filename: String) -> URL? {
+    func sharedOrBundledDictionaryURL(filename: String) -> URL? {
         let sharedURL: URL? = (Self.sharedContainerURLOverride
             ?? fileManager.containerURL(forSecurityApplicationGroupIdentifier: appGroupID)
         ).map { $0.appendingPathComponent(filename) }
@@ -814,7 +806,7 @@ final class KanaKanjiStore {
         withCacheLock {
             "sysDict=\(cachedSystemDictionary?.count ?? -1)"
                 + " suppl=\(cachedSupplementalSystemDictionary?.readingCount ?? -1)"
-                + " latin=\(cachedLatinSuggestionEntries?.count ?? -1)"
+                + " latin=\(cachedLatinSupplementalIndex?.entryCount ?? -1)"
                 + " latinIdx=\(cachedGenericLatinLexiconIndexByLanguage.count)"
                 + " lmUni=\(cachedWordLMUnigram.count)"
                 + " lmBi=\(cachedWordLMBigram.count)"
@@ -833,7 +825,7 @@ final class KanaKanjiStore {
         withCacheLock {
             cachedSystemDictionary = nil
             cachedSupplementalSystemDictionary = nil
-            cachedLatinSuggestionEntries = nil
+            cachedLatinSupplementalIndex = nil
             cachedGenericLatinLexiconIndexByLanguage = [:]
             cachedKanjiRadicalIndex = nil
             cachedSystemCandidateSources = nil

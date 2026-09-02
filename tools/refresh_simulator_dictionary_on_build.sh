@@ -28,6 +28,7 @@ TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
 TMP_WORD_LM="$ROOT_DIR/tmp/word_lm.json"
 TMP_EMOJI_READING="$ROOT_DIR/tmp/EmojiReadingVocab.json"
+TMP_LATIN_SUPPL="$ROOT_DIR/tmp/LatinSuggestionSupplemental.txt"
 TMP_SQLITE="$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite"
 
 REF_RYUKYU_PLIST="$ROOT_DIR/references/ryukyu.plist"
@@ -185,6 +186,22 @@ python3 tools/build_second_vocab_from_references.py \
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_SUPPR_PLIST" \
   --output "$TMP_INITIAL_SUPPR_HIDDEN"
+
+# 欧文サジェストの追加語彙側索引(2770)。補助語彙 JSON から実行時と同一のフィルタ・折り畳みで
+# key\tcandidate\t0 をキーのバイト順に前計算する(実行時構築の fp +8MB ピークを無くす)。
+# swift スクリプトの起動は約2秒なので、補助語彙が前回から変わっていないときは飛ばす。
+latin_suppl_stamp="$ROOT_DIR/tmp/.LatinSuggestionSupplemental.src.sha"
+latin_suppl_src_sha="$(shasum -a 256 "$TMP_SECOND" tools/build_latin_suggestion_supplemental.swift | shasum -a 256 | cut -d' ' -f1)"
+if [[ ! -f "$TMP_LATIN_SUPPL" || ! -f "$latin_suppl_stamp" || "$(cat "$latin_suppl_stamp")" != "$latin_suppl_src_sha" ]]; then
+  # Xcode のビルド環境は SDKROOT が iOS SDK を指すため、スクリプト実行は macOS SDK を明示する
+  if SDKROOT="$(xcrun --sdk macosx --show-sdk-path)" swift tools/build_latin_suggestion_supplemental.swift "$TMP_SECOND" "$TMP_LATIN_SUPPL"; then
+    echo "$latin_suppl_src_sha" > "$latin_suppl_stamp"
+  else
+    echo "[dict] Warning: 欧文サジェスト索引の前計算に失敗しました。同梱済みの前回分で継続します。"
+  fi
+else
+  echo "[dict] 欧文サジェスト索引は最新(補助語彙に変更なし)。"
+fi
 
 # 絵文字の読み(emoji.plist=CLDR由来を整備したもの)→ 読み→[絵文字] JSON。
 # 絵文字候補(emojiCandidateDisplayEnabled配下)専用で、通常のかな漢字変換(sqlite)には入れない。
@@ -436,6 +453,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR_HIDDEN" "InitialSupprHiddenVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_SQLITE" "kana_kanji_dictionary.sqlite"
   copy_into_bundle_if_exists "$TMP_EMOJI_READING" "EmojiReadingVocab.json"
+  copy_into_bundle_if_exists "$TMP_LATIN_SUPPL" "LatinSuggestionSupplemental.txt"
 else
   echo "[dict] Skip bundle overwrite (TARGET_BUILD_DIR/UNLOCALIZED_RESOURCES_FOLDER_PATH not set)."
 fi

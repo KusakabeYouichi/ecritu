@@ -11735,6 +11735,34 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                 try fileManager.copyItem(at: secondVocabSource, to: secondVocabDestination)
             }
         }
+        // 欧文サジェストの追加語彙側索引(ビルドが tmp に前計算する。2770)
+        let latinSupplementalSource = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/LatinSuggestionSupplemental.txt")
+        if fileManager.fileExists(atPath: latinSupplementalSource.path) {
+            let latinSupplementalDestination = container.appendingPathComponent("LatinSuggestionSupplemental.txt")
+            if !fileManager.fileExists(atPath: latinSupplementalDestination.path) {
+                try fileManager.copyItem(at: latinSupplementalSource, to: latinSupplementalDestination)
+            }
+        }
+    }
+
+    // 欧文サジェストの追加語彙側は前計算ファイルの mmap 索引(2770)。実行時構築(補助語彙 15k 件の
+    // 走査で fp +8MB)と高水位の見送りゲートを廃止したので、ヒープに載らず常に引ける
+    func testLatinSupplementalSuggestionsFromPrecomputedIndex() throws {
+        try prepareRealLMDictionary()
+        let store = converter.store
+        guard let index = store.latinSupplementalIndex() else {
+            throw XCTSkip("tmp/LatinSuggestionSupplemental.txt が無い(ビルドが未生成)")
+        }
+        XCTAssertGreaterThan(index.entryCount, 3000, "entries=\(index.entryCount)")
+        let kover = store.latinSuggestions(prefix: "kover", limit: 5)
+        XCTAssertTrue(kover.contains("Kövérszőlő"), "アクセント無視のキーで補完: \(kover)")
+        let upper = store.latinSuggestions(prefix: "KÖVÉR", limit: 5)
+        XCTAssertEqual(upper, kover, "大文字・アクセント付き入力でも同じ: \(upper)")
+        let phrase = store.latinSuggestions(prefix: "rouge vio", limit: 5)
+        XCTAssertTrue(phrase.contains("Rouge violet"), "空白入りの語句: \(phrase)")
+        XCTAssertTrue(store.latinSuggestions(prefix: "zzzzq", limit: 5).isEmpty)
+        // 使ったあとも索引は mmap 保持だけ(Data の実体は同じ)
+        XCTAssertNotNil(store.latinSupplementalIndex())
     }
 
     // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現する。

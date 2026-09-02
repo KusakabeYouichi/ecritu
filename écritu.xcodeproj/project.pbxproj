@@ -39,6 +39,7 @@
 		0AF6674FC22E71B601C7EDC4 /* KeyboardRootViewSupportTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */; };
 		0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
 		0E1ADAEAC5203559B876C146 /* ÉcrituSecondVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 88923D70417B1F65997342BF /* ÉcrituSecondVocab.json */; };
+		0DCCA3903BD7D63921F10452 /* LatinSuggestionSupplemental.txt in Resources */ = {isa = PBXBuildFile; fileRef = 47994CBD17D5B21F0D8F4067 /* LatinSuggestionSupplemental.txt */; };
 		0F8A21202683F7A7645F26B6 /* KeyboardCandidateMergingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2626823DE41575D1188F5DEA /* KeyboardCandidateMergingTests.swift */; };
 		11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76B28FF828484D75B08C5780 /* KeyboardModeTransition.swift */; };
 		121829EFE660D70A60BCE836 /* ContentView+Bootstrap.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAD29F752D4216C2DEF3BD80 /* ContentView+Bootstrap.swift */; };
@@ -236,6 +237,7 @@
 		7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+DictionaryStore.swift"; sourceTree = "<group>"; };
 		83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleEmojiCatalog.swift; sourceTree = "<group>"; };
 		88923D70417B1F65997342BF /* ÉcrituSecondVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituSecondVocab.json"; sourceTree = "<group>"; };
+		47994CBD17D5B21F0D8F4067 /* LatinSuggestionSupplemental.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = LatinSuggestionSupplemental.txt; sourceTree = "<group>"; };
 		8C2E0B5F7A9D3B1E6C4F2D10 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A736682B523FF46CC7E3B566 /* InitialShortcutVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialShortcutVocabMigration.json; sourceTree = "<group>"; };
 		A884772319A4160D03A970D9 /* KeyboardRootView+GridLayouts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+GridLayouts.swift"; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 			children = (
 				0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */,
 				88923D70417B1F65997342BF /* ÉcrituSecondVocab.json */,
+				47994CBD17D5B21F0D8F4067 /* LatinSuggestionSupplemental.txt */,
 				753727472F0FBB8C1E318336 /* kana_kanji_candidate_sources.json */,
 				2D2A68C12E9937EB406DC707 /* kana_kanji_dictionary.sqlite */,
 				3E243E0E4A8BE9229D7694DE /* kana_kanji_inflection_dictionary.json */,
@@ -588,6 +591,7 @@
 				04AB9BFCE6B8D05C0BCFBE4F /* kana_kanji_inflection_dictionary.json in Resources */,
 				DBBA852BCC8D33CCF73645E9 /* ÉcrituPremierVocab.json in Resources */,
 				0E1ADAEAC5203559B876C146 /* ÉcrituSecondVocab.json in Resources */,
+				0DCCA3903BD7D63921F10452 /* LatinSuggestionSupplemental.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
