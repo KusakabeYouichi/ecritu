@@ -12976,6 +12976,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaita.first, "書いたときに", "multi=\(Array(kaita.prefix(3)))")
     }
 
+    // なおった(2757): 単独は 直った を先頭(seed なおる)。病気が/風邪が なおった は連文節の
+    // 語幹 bigram 借用(が→治っ 観測、が→直っ 未観測)で 治った が先頭。表層 治った/直った は
+    // Sudachi A 単位で LM に無いため、従来は派生 OOV 一律で seed 順(直った)に負けていた
+    func testRegressionNaottaStandaloneVsContext() throws {
+        try prepareRealLMDictionary()
+        for reading in ["なおった", "なおる", "なおって"] {
+            let single = converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface)
+            XCTAssertTrue(single.first?.hasPrefix("直") == true, "\(reading): \(single)")
+            XCTAssertTrue(single.dropFirst().first?.hasPrefix("治") == true, "\(reading): \(single)")
+        }
+        for (reading, expected) in [
+            ("びょうきがなおった", "病気が治った"),
+            ("けががなおった", "怪我が治った"),
+            ("きぶんがなおった", "気分が治った"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(Array(multi.prefix(3)))")
+        }
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
