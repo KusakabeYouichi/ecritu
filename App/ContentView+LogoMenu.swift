@@ -185,7 +185,6 @@ struct SettingsStash: Codable {
 }
 
 extension ContentView {
-    static let logoMenuCoordinateSpace = "logoMenuSpace"
     static let logoMenuLogoFrameKey = "logo"
     static let aboutCopyrightText = "Copyright © 2026 Kusakabe Youichi"
 
@@ -283,13 +282,12 @@ extension ContentView {
 
     // ──── ジェスチャー ────
 
-    // ドラッグ座標はロゴのローカル座標で受け、GeometryReader で測ったロゴ枠を足してメニュー座標へ
-    // 変換する。DragGesture(coordinateSpace: .named) の座標は GeometryReader.frame(in: .named) と
-    // 原点がステータスバー分ずれ、指より約1項目上を指していた(2764: 1〜1.5項目下げると光る症状)。
-    // 枠の計測を GeometryReader の1系統に揃えればずれない
+    // ロゴ枠・メニュー項目枠・ドラッグ座標はすべて .global(ウィンドウ座標)で測る。
+    // 名前付き座標系(.named)は overlay の ignoresSafeArea とセーフエリアの絡みで計測が一貫せず、
+    // 指より約1項目上(2764)→半項目上(2765)と判定がずれ続けた。ウィンドウ座標なら3者の原点が同じ
     var logoPressAndDragGesture: some Gesture {
         LongPressGesture(minimumDuration: 0.5)
-            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
+            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .global))
             .updating($logoMenuGesture) { value, state, _ in
                 switch value {
                 case .second(true, let drag):
@@ -302,7 +300,7 @@ extension ContentView {
             }
             .onEnded { value in
                 guard case .second(true, let drag?) = value,
-                    let action = logoMenuAction(atLogoLocalPoint: drag.location) else {
+                    let action = logoMenuAction(at: drag.location) else {
                     return
                 }
                 performLogoMenuAction(action)
@@ -310,13 +308,11 @@ extension ContentView {
     }
 
     var logoMenuHighlightedAction: LogoMenuAction? {
-        logoMenuGesture.location.flatMap(logoMenuAction(atLogoLocalPoint:))
+        logoMenuGesture.location.flatMap(logoMenuAction(at:))
     }
 
-    func logoMenuAction(atLogoLocalPoint local: CGPoint) -> LogoMenuAction? {
-        guard let logoFrame = logoMenuFrames[Self.logoMenuLogoFrameKey] else { return nil }
-        let point = CGPoint(x: logoFrame.minX + local.x, y: logoFrame.minY + local.y)
-        return LogoMenuAction.allCases.first { logoMenuFrames[$0.rawValue]?.contains(point) == true }
+    func logoMenuAction(at point: CGPoint) -> LogoMenuAction? {
+        LogoMenuAction.allCases.first { logoMenuFrames[$0.rawValue]?.contains(point) == true }
     }
 
     // ──── メニュー表示 ────
@@ -336,12 +332,11 @@ extension ContentView {
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
                 // ロゴの真下に隙間なく置く(指がロゴにある状態からそのまま下へ滑らせる)。
-                // ロゴ枠が未取得なら上端に置く
+                // ロゴ枠はウィンドウ座標なので、overlay 全体を ignoresSafeArea にして原点をウィンドウ
+                // 上端に揃える(overlay の中身は既定でセーフエリア内側に置かれる)。未取得なら上端
                 .padding(.top, max(logoFrame.maxY, 0))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            // overlay の中身は既定でセーフエリアの内側に置かれ、ロゴ枠(ビュー全体の座標)と
-            // 原点がステータスバー分ずれる。全体を ignoresSafeArea にして座標系を一致させる(2763)
             .ignoresSafeArea()
             .allowsHitTesting(false)   // 指はロゴ上のジェスチャーが追い続ける
             .transition(.opacity)
@@ -371,7 +366,7 @@ extension ContentView {
             GeometryReader { proxy in
                 Color.clear.preference(
                     key: LogoMenuFramePreferenceKey.self,
-                    value: [action.rawValue: proxy.frame(in: .named(Self.logoMenuCoordinateSpace))]
+                    value: [action.rawValue: proxy.frame(in: .global)]
                 )
             }
         )

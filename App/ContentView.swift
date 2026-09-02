@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260902203324"
+    private static let editionUpdatedAtRaw: String = "20260902203747"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1039,7 +1039,7 @@ struct ContentView: View {
                                             GeometryReader { proxy in
                                                 Color.clear.preference(
                                                     key: LogoMenuFramePreferenceKey.self,
-                                                    value: [Self.logoMenuLogoFrameKey: proxy.frame(in: .named(Self.logoMenuCoordinateSpace))]
+                                                    value: [Self.logoMenuLogoFrameKey: proxy.frame(in: .global)]
                                                 )
                                             }
                                         )
@@ -1440,7 +1440,6 @@ struct ContentView: View {
         .overlay {
             logoMenuOverlay
         }
-        .coordinateSpace(name: Self.logoMenuCoordinateSpace)
         .onPreferenceChange(LogoMenuFramePreferenceKey.self) { frames in
             logoMenuFrames.merge(frames) { _, new in new }
         }
