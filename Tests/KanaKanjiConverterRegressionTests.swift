@@ -13011,6 +13011,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // そうなんだけどねえ(2757): かな な(連体形)直後の 準体助詞 ん/んだけど クラスタが
+    // ん始まり禁止で塞がれ、遭難+だけど+ねえ が最良だった。な 直後は免除する
+    func testRegressionSounandakedoKanaAfterNa() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("そうなんだけどねえ", "そうなんだけどねえ"),
+            ("そうなのだけどねえ", "そうなのだけどねえ"),
+            ("すきなんです", "好きなんです"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(Array(multi.prefix(4)))")
+        }
+        let single = converter.candidates(for: "そうなんだけどねえ", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "そうなんだけどねえ", "\(single)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
