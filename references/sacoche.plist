@@ -33,6 +33,7 @@
 	        <dict><key>phrase</key><string>宗和好み</string><key>shortcut</key><string>そうわごのみ</string></dict>
 	        <dict><key>phrase</key><string>寿美久</string><key>shortcut</key><string>すみきゅう</string></dict>
 	        <dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すさき</string></dict>
+	        <dict><key>phrase</key><string>洲さき</string><key>shortcut</key><string>すざき</string></dict>
 	        <dict><key>phrase</key><string>礼華</string><key>shortcut</key><string>あやか</string></dict>
 	        <dict><key>phrase</key><string>稲豊園</string><key>shortcut</key><string>とうほうえん</string></dict>
 	        <dict><key>phrase</key><string>角正</string><key>shortcut</key><string>かくしょう</string></dict>	<!-- Sudachiにもある -->
