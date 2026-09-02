@@ -154,17 +154,17 @@ extension KeyboardViewController {
 
     // 後置修飾(濁点/小書き等)の判定に使う「直前文脈」。未確定入力→変換確定文脈→
     // 同期済み末尾→本文、の順で最初に非空のものを採る。
+    // 後置修飾ボタンの表示状態(アヒルの大小・濁点/半濁点の印)を決める文脈。
+    //
+    // 後置修飾は未確定文字にしか作用しない(applyKanaPostModifier は確定済み文字列の末尾に
+    // 濁点/半濁点/小書きを適用しない)。したがって表示も未確定文字だけから決める。
+    // 以前は未確定が無いとき activeConversion.committedText → lastSynchronizedContextBeforeInputTail
+    // → currentTextContextBeforeInput() と確定済み文脈へ落ちていたため、キーが作用しない
+    // 状況で「小書きにできる」印(小さいアヒル)が出ていた。さらに lastSynchronized… は
+    // 診断リセット時にしか空に戻らないキャッシュで、ホスト側で文字を消しても古い末尾を
+    // 根拠に小さいアヒルが残り続けた(ユーザ報告 2755)。
     private func postModifierContextForRender() -> String? {
-        if !composingRawText.isEmpty {
-            return composingRawText
-        }
-        if let activeConversion {
-            return activeConversion.committedText
-        }
-        if !lastSynchronizedContextBeforeInputTail.isEmpty {
-            return lastSynchronizedContextBeforeInputTail
-        }
-        return currentTextContextBeforeInput()
+        composingRawText.isEmpty ? nil : composingRawText
     }
 
     // 修飾キーのフリックガイド表示: 個別設定があればそれ、無ければ かな 設定を継承。
