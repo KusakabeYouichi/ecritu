@@ -12976,6 +12976,40 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaita.first, "書いたときに", "multi=\(Array(kaita.prefix(3)))")
     }
 
+    // 実機報告のまとめ(2755 第2陣)。いずれも「単文節は正しいのに連文節で崩れる」型。
+    // たて: seed は完全一致にしか効かず、たてにしたら/たてには は 接尾機構が たて+にしたら で
+    //   合成するため届いていなかった。基底 たて 側に seed を置き、連文節にも読み別ボーナスで通す
+    // じしん: 頻度実感の順(自信>地震>自身>磁針>侍臣)へ。かなは末尾
+    // よろしくー: 連文節が よろし(古語の形容詞)+クー に割って よろしクー を先頭にしていた
+    func testRegressionRealLMSeedOrderSecondBatch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        // たて: 単文節・連文節とも 縦 が先頭
+        XCTAssertEqual(
+            converter.candidates(for: "たて", limit: 3, systemCandidateMode: .surface).first,
+            "縦"
+        )
+        for reading in ["たてにしたら", "たてには"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasPrefix("縦") == true, "\(reading) multi=\(Array(multi.prefix(3)))")
+        }
+
+        // じしん: ユーザー指定の順
+        let jishin = converter.candidates(for: "じしん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            Array(jishin.prefix(5)),
+            ["自信", "地震", "自身", "磁針", "侍臣"],
+            "list=\(jishin)"
+        )
+
+        // よろしくー: 連文節の よろし+クー 分割を止める
+        XCTAssertEqual(
+            converter.candidates(for: "よろしくー", limit: 2, systemCandidateMode: .surface).first,
+            "よろしくー"
+        )
+    }
+
     // たてに / ときは / うてに(ユーザ報告 2755)。
     //
     // たてに: 辞書エントリが無く全て合成。五段のえ段(命令形・仮定形の語幹)へ接尾機構が
