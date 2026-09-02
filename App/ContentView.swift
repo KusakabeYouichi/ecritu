@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260902194232"
+    private static let editionUpdatedAtRaw: String = "20260902200554"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -26,7 +26,7 @@ struct ContentView: View {
         CNContactPhoneticFamilyNameKey as CNKeyDescriptor
     ]
 
-    private static let editionNumberText: String = {
+    static let editionNumberText: String = {
         let info = Bundle.main.infoDictionary ?? [:]
         let editionNumber = (info["CFBundleVersion"] as? String) ?? "?"
 
@@ -425,7 +425,12 @@ struct ContentView: View {
     @State var isBootstrappingInitialData = true
     @State var containerBootstrapFailSafeWorkItem: DispatchWorkItem?
     @GestureState private var isEditionNumberPressed = false
-    @State private var showsSettingsYAMLCopiedToast = false
+    // ロゴ長押しメニュー(ContentView+LogoMenu.swift)
+    @GestureState var logoMenuGesture: LogoMenuGestureState = .inactive
+    @State var logoMenuFrames: [String: CGRect] = [:]
+    @State var pendingLogoMenuAction: LogoMenuAction?
+    @State var logoMenuInfo: LogoMenuInfo?
+    @State var settingsToastMessage: String?
     // 初回フレーム軽量化: 設定カード群は最初の描画後に構築する(起動直後の白背景 Loading 対策)。
     @State private var didRenderInitialFrame = false
     // 設定カード群の構築計測(2587)。didRenderInitialFrame を立てた時刻と、カード群の
@@ -508,7 +513,7 @@ struct ContentView: View {
 
     // 設定内容の YAML エクスポート(ロゴ長押しでクリップボードへ)。項目は設定画面の
     // グループ・表示順に合わせ、コメントにアプリ内のタイトルを付ける。
-    private func settingsYAMLExportText() -> String {
+    func settingsYAMLExportText() -> String {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -604,25 +609,18 @@ struct ContentView: View {
         return lines.joined(separator: "\n") + "\n"
     }
 
-    private func copySettingsYAMLToPasteboard() {
+    func copySettingsYAMLToPasteboard() {
 #if os(iOS)
         UIPasteboard.general.string = settingsYAMLExportText()
 #endif
-        withAnimation(.easeOut(duration: 0.15)) {
-            showsSettingsYAMLCopiedToast = true
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8) {
-            withAnimation(.easeIn(duration: 0.3)) {
-                showsSettingsYAMLCopiedToast = false
-            }
-        }
+        showSettingsToast("設定を YAML 形式でコピーしました")
     }
 
     @ViewBuilder
-    private var settingsYAMLCopiedToast: some View {
-        if showsSettingsYAMLCopiedToast {
+    private var settingsToast: some View {
+        if let settingsToastMessage {
             VStack {
-                Text("設定を YAML 形式でコピーしました")
+                Text(settingsToastMessage)
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.primary)
                     .padding(.horizontal, 14)
@@ -1035,12 +1033,19 @@ struct ContentView: View {
                                         .frame(width: 92, height: 92)
                                         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                                         .shadow(color: Color.black.opacity(0.12), radius: 5, y: 2)
-                                        // ロゴ長押し=設定内容を YAML でクリップボードへコピー。
-                                        .onLongPressGesture(minimumDuration: 0.5) {
-                                            copySettingsYAMLToPasteboard()
-                                        }
+                                        // ロゴ長押し=押している間だけメニュー(初期設定/YAML コピー/退避・復元/について)。
+                                        // 指を項目まで滑らせて離すと実行(ContentView+LogoMenu.swift)
+                                        .background(
+                                            GeometryReader { proxy in
+                                                Color.clear.preference(
+                                                    key: LogoMenuFramePreferenceKey.self,
+                                                    value: [Self.logoMenuLogoFrameKey: proxy.frame(in: .named(Self.logoMenuCoordinateSpace))]
+                                                )
+                                            }
+                                        )
+                                        .highPriorityGesture(logoPressAndDragGesture)
                                         .accessibilityLabel("アプリロゴ")
-                                        .accessibilityHint("長押しで設定内容を YAML 形式でコピーします")
+                                        .accessibilityHint("長押しで設定メニューを表示します")
 
                                     Text(Self.editionNumberText)
                                         .font(.system(size: 4, weight: .regular, design: .monospaced))
@@ -1427,7 +1432,41 @@ struct ContentView: View {
             initialLoadingToast
         }
         .overlay {
-            settingsYAMLCopiedToast
+            settingsToast
+        }
+        .overlay {
+            logoMenuOverlay
+        }
+        .coordinateSpace(name: Self.logoMenuCoordinateSpace)
+        .onPreferenceChange(LogoMenuFramePreferenceKey.self) { frames in
+            logoMenuFrames.merge(frames) { _, new in new }
+        }
+        .alert(
+            pendingLogoMenuAction?.title ?? "",
+            isPresented: Binding(
+                get: { pendingLogoMenuAction != nil },
+                set: { if !$0 { pendingLogoMenuAction = nil } }
+            ),
+            presenting: pendingLogoMenuAction
+        ) { action in
+            Button("適用", role: .destructive) {
+                confirmLogoMenuAction(action)
+            }
+            Button("キャンセル", role: .cancel) {}
+        } message: { action in
+            Text(logoMenuConfirmationMessage(for: action))
+        }
+        .alert(
+            logoMenuInfo?.title ?? "",
+            isPresented: Binding(
+                get: { logoMenuInfo != nil },
+                set: { if !$0 { logoMenuInfo = nil } }
+            ),
+            presenting: logoMenuInfo
+        ) { _ in
+            Button("OK", role: .cancel) {}
+        } message: { info in
+            Text(info.message)
         }
     }
 }
