@@ -321,7 +321,6 @@ extension ContentView {
             let logoFrame = logoMenuFrames[Self.logoMenuLogoFrameKey] ?? .zero
             ZStack(alignment: .top) {
                 Color.black.opacity(0.18)
-                    .ignoresSafeArea()
                 VStack(spacing: 0) {
                     ForEach(LogoMenuAction.allCases) { action in
                         logoMenuRow(action, isHighlighted: logoMenuHighlightedAction == action)
@@ -330,10 +329,14 @@ extension ContentView {
                 .frame(width: 300)
                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
                 .shadow(color: .black.opacity(0.18), radius: 14, y: 6)
-                // ロゴの直下(指がロゴにある状態から下へ滑らせる)。ロゴ枠が未取得なら上端に置く
-                .padding(.top, max(logoFrame.maxY + 10, 0))
+                // ロゴの真下に隙間なく置く(指がロゴにある状態からそのまま下へ滑らせる)。
+                // ロゴ枠が未取得なら上端に置く
+                .padding(.top, max(logoFrame.maxY, 0))
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            // overlay の中身は既定でセーフエリアの内側に置かれ、ロゴ枠(ビュー全体の座標)と
+            // 原点がステータスバー分ずれる。全体を ignoresSafeArea にして座標系を一致させる(2763)
+            .ignoresSafeArea()
             .allowsHitTesting(false)   // 指はロゴ上のジェスチャーが追い続ける
             .transition(.opacity)
         }
