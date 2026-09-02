@@ -1798,6 +1798,21 @@ extension KanaKanjiConverter {
                             !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
                             cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
                         }
+                        // かな語直後の そう(推量・指示)+コピュラ/否定(そうでもない/そうだ/そうじゃない)。
+                        // 文末の全漢字減点(multiClauseSentenceFinalAllKanjiPenaltyReadings)の文中版:
+                        // が→相 3427(A単位の 相転移/相関 由来)が が→そう 4241 より安く、
+                        // ところが相でもない が最良になっていた(2757)。漢字名詞直後(学生層で)は
+                        // 生産的な複合なので直前々ノードがひらがな終わりのときだけ減点する
+                        if node.surface == node.reading,
+                            Self.multiClauseSouCopulaFollowerReadings.contains(node.reading),
+                            Self.multiClauseSentenceFinalAllKanjiPenaltyReadings.contains(prevNode.reading),
+                            KanaKanjiConverter.isAllKanjiSurface(prevNode.surface),
+                            !prevNode.isCurated,
+                            backPointer[prevIdx] >= 0,
+                            let prevPrevLast = nodes[backPointer[prevIdx]].surface.unicodeScalars.last,
+                            (0x3041...0x3096).contains(prevPrevLast.value) {
+                            cost += Self.multiClauseFinalParticleKanjiPenalty
+                        }
                         // 述語直後の 人(にん/じん) は文法として接続しない(定数コメント参照)。
                         if node.surface == "人",
                             Self.multiClausePersonSuffixSinoReadings.contains(node.reading),

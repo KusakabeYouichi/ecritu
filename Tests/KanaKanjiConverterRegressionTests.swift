@@ -13028,6 +13028,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single.first, "そうなんだけどねえ", "\(single)")
     }
 
+    // ところがそうでもない(2757): が→相 3427(A単位 相転移 由来)< が→そう 4241 で、実機語彙の
+    // でもない(curated 定額)が続くと bigram 差がそのまま順位になり ところが相でもない が最良だった。
+    // かな語直後の 全漢字そう+コピュラ/否定 に文末と同じ減点。接続詞 ところが は misc で1ノード化
+    func testRegressionTokorogaSoudemonaiKanaSou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["ところがそうでもない", "それがそうでもない", "だがそうでもない"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, reading, "\(reading): \(Array(multi.prefix(4)))")
+        }
+        // 漢字名詞直後(学生層/富裕層)は生産的な複合なので減点しない
+        let gakusei = converter.multiClauseCandidates(for: "がくせいそう", systemCandidateMode: .surface)
+        XCTAssertEqual(gakusei.first, "学生層", "\(Array(gakusei.prefix(3)))")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
