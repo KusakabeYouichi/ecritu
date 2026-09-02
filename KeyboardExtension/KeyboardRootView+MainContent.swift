@@ -170,18 +170,18 @@ extension KeyboardRootView {
                 if usesPortraitLatinInlineDeleteLayout {
                     ActionKeyButton(
                         title: portraitLatinDeleteReplacementSymbol,
-                        fontSize: 22,
+                        fontSize: clavierInlineSymbolFontSize(for: portraitLatinDeleteReplacementSymbol),
                         fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                         action: { commitText(portraitLatinDeleteReplacementSymbol) }
                     )
                         .frame(height: unifiedActionRowHeight)
                 } else if usesPortraitClavierInlineDeleteLayout {
                     // delete 自体は行3 右端に配置済み。AZERTY 行末の `@` と同じスロットには
-                    // clavier の最初の記号(`#`/shift時 `!`)を置き、space 位置を AZERTY と
-                    // 揃える。フォントサイズは clavier の他キーと統一(26pt)。
+                    // clavier の最初の記号(`@`/shift時 `・`)を置き、space 位置を AZERTY と
+                    // 揃える。フォントサイズは記号ごと(clavierInlineSymbolFontSize)。
                     ActionKeyButton(
                         title: clavierInlineSymbol(at: 0),
-                        fontSize: clavierKeyFontSize,
+                        fontSize: clavierInlineSymbolFontSize(for: clavierInlineSymbol(at: 0)),
                         fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                         action: { commitText(clavierInlineSymbol(at: 0)) }
                     )
@@ -209,7 +209,7 @@ extension KeyboardRootView {
                     // AZERTY の space-left 位置(`/`)に clavier の2番目の記号を置く。
                     ActionKeyButton(
                         title: clavierInlineSymbol(at: 1),
-                        fontSize: clavierKeyFontSize,
+                        fontSize: clavierInlineSymbolFontSize(for: clavierInlineSymbol(at: 1)),
                         fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                         action: { commitText(clavierInlineSymbol(at: 1)) }
                     )
@@ -230,7 +230,7 @@ extension KeyboardRootView {
                     ForEach([2, 3], id: \.self) { index in
                         ActionKeyButton(
                             title: clavierInlineSymbol(at: index),
-                            fontSize: clavierKeyFontSize,
+                            fontSize: clavierInlineSymbolFontSize(for: clavierInlineSymbol(at: index)),
                             fixedWidth: portraitLatinInlineActionSymbolKeyWidth,
                             action: { commitText(clavierInlineSymbol(at: index)) }
                         )
