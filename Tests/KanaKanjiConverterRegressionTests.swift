@@ -13063,6 +13063,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(ikanakattari.contains("行かなかったり"), "\(ikanakattari)")
     }
 
+    // じしょ に 事象(読みは じしょう)が出ていた。最初期の seed の誤記(2770)
+    func testRegressionJishoDoesNotSupplyJishou() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "じしょ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "辞書", "\(single)")
+        XCTAssertFalse(single.contains("事象"), "\(single)")
+        let jishou = converter.candidates(for: "じしょう", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(jishou.contains("事象"), "\(jishou)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
