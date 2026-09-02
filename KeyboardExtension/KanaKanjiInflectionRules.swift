@@ -237,6 +237,14 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "なく", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "ず", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 否定の並列(食べなかったり/食べなかったりする)。連文節の1ノード上限(12字)を超える
+        // 食べたり食べなかったりする は 食べたり+食べなかったりする の2ノードで組む必要があり、
+        // 後半が派生に無いと しなかった+利する に負ける(2757)
+        InflectionRule(readingSuffix: "なかったり", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なかったりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なかったりした", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なかったりして", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "なかったりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "なかったら", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 否定テ形(食べなくて/食べなくても)。願望否定テ(たくなくて)だけあって素の形が
         // 無かった(いかなくて→いか+なくて/凧なくて 等の断片合成に全長を取られる)
@@ -474,6 +482,12 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "たりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たりしない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たりしなかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 〜たりしなかったりする(食べたり食べなかったりする)。たり+し+なかった+り+する の
+        // 断片連鎖は しなかったり が派生に無く、しなかった+利する に負けていた(2757)
+        InflectionRule(readingSuffix: "たりしなかったりする", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たりしなかったりした", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たりしなかったりして", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "たりしなかったりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たりします", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たりしますか", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "たりしました", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -956,6 +970,12 @@ extension KanaKanjiConverter {
                 pattern.aForm + "なく",
                 pattern.aForm + "なかった",
                 pattern.aForm + "なかったら",
+                // 否定の並列(行かなかったり/行かなかったりする。一段側のコメント参照)
+                pattern.aForm + "なかったり",
+                pattern.aForm + "なかったりする",
+                pattern.aForm + "なかったりした",
+                pattern.aForm + "なかったりして",
+                pattern.aForm + "なかったりします",
                 // 否定テ形(行かなくて/行かなくても)
                 pattern.aForm + "なくて",
                 pattern.aForm + "なくても",
@@ -1185,6 +1205,12 @@ extension KanaKanjiConverter {
     private static func makeSuruInflectionRules() -> [InflectionRule] { [
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "する", allowedClasses: .suru),
+        // 否定の並列(再現しなかったり/しなかったりする。一段側のコメント参照)
+        InflectionRule(readingSuffix: "しなかったり", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりする", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりした", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりして", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりします", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなければ", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなければならない", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなければいけない", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1371,6 +1397,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "したりする", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしない", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしなかった", baseReadingSuffix: "する", allowedClasses: .suru),
+        // 〜したりしなかったりする(再現したりしなかったりする。ichidan 側のコメント参照)
+        InflectionRule(readingSuffix: "したりしなかったりする", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "したりしなかったりした", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "したりしなかったりして", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "したりしなかったりします", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりします", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしますか", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしました", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1485,6 +1516,11 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "すべきではない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったり", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりする", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりした", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりして", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しなかったりします", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなければ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなければならない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しなくて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
@@ -1625,6 +1661,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "したりする", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしない", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしなかった", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "したりしなかったりする", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "したりしなかったりした", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "したりしなかったりして", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "したりしなかったりします", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりします", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしますか", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "したりしました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
@@ -1959,6 +1999,8 @@ extension KanaKanjiConverter {
         "してました", "きてました", "でました", "てました", "してます", "きてます", "でます", "てます",
         "していない", "きていない", "でいない", "ていない", "してない", "きてない", "でない", "てない",
         "していた", "きていた", "でいた", "ていた", "してた", "きてた", "でた", "てた",
+        "たりしなかったりします", "たりしなかったりする", "たりしなかったりした", "たりしなかったりして",
+        "なかったりします", "なかったりする", "なかったりした", "なかったりして", "なかったり",
         "たりするのですか", "たりしませんか", "たりしますか", "たりしなかった", "たりしません", "たりしました", "たりします", "たりしない", "たりする",
         "したり", "きたり", "んだり", "いだり", "いたり", "ったり", "たり", "だり",
         // 仮定形(書けば/言えば/読めば 等)。無いと 書けば(980)が 駆け場(辞書1200)に沈む
