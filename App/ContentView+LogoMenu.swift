@@ -283,9 +283,13 @@ extension ContentView {
 
     // ──── ジェスチャー ────
 
+    // ドラッグ座標はロゴのローカル座標で受け、GeometryReader で測ったロゴ枠を足してメニュー座標へ
+    // 変換する。DragGesture(coordinateSpace: .named) の座標は GeometryReader.frame(in: .named) と
+    // 原点がステータスバー分ずれ、指より約1項目上を指していた(2764: 1〜1.5項目下げると光る症状)。
+    // 枠の計測を GeometryReader の1系統に揃えればずれない
     var logoPressAndDragGesture: some Gesture {
         LongPressGesture(minimumDuration: 0.5)
-            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .named(Self.logoMenuCoordinateSpace)))
+            .sequenced(before: DragGesture(minimumDistance: 0, coordinateSpace: .local))
             .updating($logoMenuGesture) { value, state, _ in
                 switch value {
                 case .second(true, let drag):
@@ -298,7 +302,7 @@ extension ContentView {
             }
             .onEnded { value in
                 guard case .second(true, let drag?) = value,
-                    let action = logoMenuAction(at: drag.location) else {
+                    let action = logoMenuAction(atLogoLocalPoint: drag.location) else {
                     return
                 }
                 performLogoMenuAction(action)
@@ -306,11 +310,13 @@ extension ContentView {
     }
 
     var logoMenuHighlightedAction: LogoMenuAction? {
-        logoMenuGesture.location.flatMap(logoMenuAction(at:))
+        logoMenuGesture.location.flatMap(logoMenuAction(atLogoLocalPoint:))
     }
 
-    func logoMenuAction(at point: CGPoint) -> LogoMenuAction? {
-        LogoMenuAction.allCases.first { logoMenuFrames[$0.rawValue]?.contains(point) == true }
+    func logoMenuAction(atLogoLocalPoint local: CGPoint) -> LogoMenuAction? {
+        guard let logoFrame = logoMenuFrames[Self.logoMenuLogoFrameKey] else { return nil }
+        let point = CGPoint(x: logoFrame.minX + local.x, y: logoFrame.minY + local.y)
+        return LogoMenuAction.allCases.first { logoMenuFrames[$0.rawValue]?.contains(point) == true }
     }
 
     // ──── メニュー表示 ────
