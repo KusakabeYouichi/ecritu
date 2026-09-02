@@ -993,17 +993,14 @@ struct KeyboardRootView: View {
     let landscapeLatinTypewriterMiddleRowOffsetFactor: CGFloat = 0.25
     let landscapeLatinTypewriterBottomRowOffsetFromMiddleFactor: CGFloat = 0.5
 
-    // メモリ切迫の可視化(でばぐ表示。後で取り除く可能性あり)。かな削除キーの背景色:
-    // 警告1回目=黄 / 2回目以降=橙+左下に回数 / 2回目以降+footprint臨界(sqliteアンロード)=えんじ。
+    // メモリ切迫の可視化(でばぐ表示、常設)。かな削除キーの背景色:
+    // 警告1回目=黄 / 2回目以降=橙+左下に回数 / 警告前の欧文構築見送り=薄ピンク。
+    // えんじ(sqlite 最終手段アンロード)は到達不能な閾値(115MB>上限77MB)だったため 2769 で撤去
     var memoryPressureDeleteKeyColor: Color? {
         // でばぐ可視化は開発ビルド専用(リリースでは通常キー色のまま)
         #if !DEBUG
         return nil
         #endif
-        if candidateBarModel.memoryPressureSQLiteUnloadedForDebugDisplay {
-            // えんじ(臙脂)#A22041
-            return Color(red: 162.0 / 255.0, green: 32.0 / 255.0, blue: 65.0 / 255.0).opacity(0.92)
-        }
         // 色はバースト数(2秒以内の連続警告は1イベント)で決める。1回=黄、2回以上=橙
         switch candidateBarModel.memoryWarningBurstCountForDebugDisplay {
         case 0:

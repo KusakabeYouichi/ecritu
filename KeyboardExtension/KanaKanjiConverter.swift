@@ -155,18 +155,6 @@ final class KanaKanjiConverter {
         }
     }
 
-    // メモリ警告が繰り返されるときの最終手段。連文節は単文節フォールバックに劣化するが、
-    // jetsam で拡張ごと落ちるよりよい(初回警告では呼ばない = LM保持の方針を維持)。
-    // 再オープンはセッション中スティッキーに禁止される(以前は次の変換で即再オープンされ
-    // 空回りだった)。
-    func unloadSystemDictionarySQLiteForMemoryPressure() {
-        store.unloadSQLiteIndexForMemoryPressure()
-
-        stateQueue.sync {
-            invalidateCandidateCache()
-        }
-    }
-
     // メモリ内訳census用: converter 側キャッシュの件数+store 側の要約を1行で返す。
     func diagnosticsCacheCountsSummary() -> String {
         let converterPart = stateQueue.sync {
