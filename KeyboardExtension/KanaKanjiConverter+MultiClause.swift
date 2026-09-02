@@ -816,7 +816,8 @@ extension KanaKanjiConverter {
             isCollocationPreferredVerb: Bool = false,
             scriptVariantPenalty: Int = 0,
             prevDeniesOutgoingBigram: Bool = false,
-            isSupplementalKatakanaExempt: Bool = false
+            isSupplementalKatakanaExempt: Bool = false,
+            prevStartsSentence: Bool = false
         ) -> Int {
             var base: Int
             var penaltyForNounHoshii = 0
@@ -1380,12 +1381,21 @@ extension KanaKanjiConverter {
             // 脱げ+ん のような非述語直後の偽準体助詞は禁止する — ろーぬげんさん→ロー脱げんさん の
             // ような「ん始まり文節」の誤分割を個別語ではなく汎用ルールで排除する。
             // って/っていう(引用・話題)は従来どおり無条件免除。
+            // かな な(形容動詞/のだ縮約の連体形: そうな+ん+だ、好きな+んです)の直後も準体助詞
+            // ん とその口語クラスタ(んだけど 等)を立てる。そうなんだけどねえ が そう+な+ん… を
+            // 塞がれて 遭難だけどねえ に倒れていた(2757)。名詞+な+ん(花なんです)も文法的。
+            // 文頭の な は連体形ではない(なんだろう=何だろう を な+んだろう にしない)
+            let prevIsKanaNa = prev == "な" && prevReading == "な" && !prevStartsSentence
             if let first = reading.first,
                 Self.multiClauseForbiddenInitials.contains(first) {
                 let isForbiddenInitialExempt: Bool
                 if reading == "ん" {
                     isForbiddenInitialExempt = prev != Self.multiClauseBOSMarker
-                        && (prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
+                        && ((prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
+                            || prevIsKanaNa)
+                } else if first == "ん", prevIsKanaNa,
+                    Self.multiClauseColloquialExplanatoryTailReadings.contains(reading) {
+                    isForbiddenInitialExempt = true
                 } else if reading == "っけ", surface == reading {
                     // 想起の終助詞 っけ(かな表層のみ。っ気 は対象外)は た/だ 直後(でしたっけ/
                     // だったっけ)だけ正当な っ 始まり。塞ぐと でした+っけ が立てず 弟子たっけ が
@@ -1634,7 +1644,8 @@ extension KanaKanjiConverter {
                             isCollocationPreferredVerb: nodeIsCollocationPreferredVerb,
                             scriptVariantPenalty: nodeScriptVariantPenalty,
                             prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
-                            isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
+                            isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt,
+                            prevStartsSentence: prevNode.start == 0
                         ) - preferredInflectionBonus + nodeTanContractionPenalty
                         // 連用形+に(目的)は移動動詞が続くときの用法。文末でも格助詞直後の活用割引
                         // (5000)が効くと 千島を裂きに が 千島を先に(を→先4557+先→に532)を
@@ -2086,7 +2097,8 @@ extension KanaKanjiConverter {
                         : (scriptVariantDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 6000 : 0))
                         + (collocationDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
                             ? Self.multiClauseCollocationDemotionPenalty
-                            : 0)
+                            : 0),
+                    prevStartsSentence: pos > 0 && nodes[pathIndices[pos - 1]].start == 0
                 )
                 // DP で足していたノード単位のボーナス(seed 順/単文節先頭/の を挟む連語)を変種の差分にも反映する(2738)。
                 // 無いと 郡が溶けて(seed 順ボーナス 800 を持つ 氷 との差)や 公衆の果皮(連語 2500)が負の delta になり
@@ -2128,7 +2140,8 @@ extension KanaKanjiConverter {
                             : (scriptVariantDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 6000 : 0))
                             + (collocationDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)")
                                 ? Self.multiClauseCollocationDemotionPenalty
-                                : 0)
+                                : 0),
+                        prevStartsSentence: node.start == 0
                     )
                 } else {
                     var eosCost = transitionCost(
