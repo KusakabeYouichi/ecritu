@@ -12976,6 +12976,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(kaita.first, "書いたときに", "multi=\(Array(kaita.prefix(3)))")
     }
 
+    // 実機報告 第3陣(2756)。
+    // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
+    // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
+    //   されたりしないのかな→去れたりしないのかな だった。去れる を抑制
+    func testRegressionRealLMThirdBatch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let tameshita = converter.multiClauseCandidates(for: "ためしたことない", systemCandidateMode: .surface)
+        XCTAssertEqual(tameshita.first, "試したことない", "multi=\(Array(tameshita.prefix(3)))")
+
+        let saretari = converter.multiClauseCandidates(for: "されたりしないのかな", systemCandidateMode: .surface)
+        XCTAssertEqual(saretari.first, "されたりしないのかな", "multi=\(Array(saretari.prefix(3)))")
+        XCTAssertFalse(saretari.contains { $0.contains("去れ") }, "去れ が残っている multi=\(saretari)")
+    }
+
     // 実機報告のまとめ(2755 第2陣)。いずれも「単文節は正しいのに連文節で崩れる」型。
     // たて: seed は完全一致にしか効かず、たてにしたら/たてには は 接尾機構が たて+にしたら で
     //   合成するため届いていなかった。基底 たて 側に seed を置き、連文節にも読み別ボーナスで通す

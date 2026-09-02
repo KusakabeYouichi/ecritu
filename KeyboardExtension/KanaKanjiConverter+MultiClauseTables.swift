@@ -147,7 +147,9 @@ extension KanaKanjiConverter {
     // おきる: おきた の辞書登録は 沖田/オキタ/置田 と固有名詞ばかりで、起きた は活用供給のため
     // LM 未収録扱い(派生OOV 7200)になり、Wikipedia 観測済みの 沖田 に一律負けていた。
     // おきたきがする→沖田気がする、おきたところ→沖田ところ になっていた(ユーザ報告 2753)
-    static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる", "おく", "たつ", "おきる"]
+    // ためす: ためしたことない が連文節で かな ためした/為した に負け、単文節では先頭の 試した が
+    // 連文節の上位4件にも入っていなかった(ユーザ報告 2756)
+    static let multiClauseSeedOrderInflectionBaseReadings: Set<String> = ["つかえる", "おく", "たつ", "おきる", "ためす"]
     // (b2b) 未代表族の追加供給に先行ボーナス(800)を与える基底読みのopt-in。
     // 上の seed順allowlist と分離する — 共用すると主ループのspan判定(脱活用先が一致)が
     // 既存族の先頭(這ったら)にも同じボーナスを与えて同点に戻る(2424の検証で確認)。

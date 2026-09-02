@@ -128,6 +128,7 @@
 	<dict><key>phrase</key><string>見谷</string><key>shortcut</key><string>みたに</string></dict>
 
 	<!-- ■ 収穫ノイズ: レア語・レア読み(実在するが日常入力では雑音) -->
+	<dict><key>phrase</key><string>去れる</string><key>shortcut</key><string>される</string></dict>	<!-- 去る の可能形。される(する の受身、かな正書)の唯一の辞書候補として全活用形(去れたり/去れた)を汚し、されたりしないのかな→去れたりしないのかな になっていた。可能形としての使用は稀(ユーザ指定 2756) -->
 	<dict><key>phrase</key><string>阿刀</string><key>shortcut</key><string>あとの</string></dict>	<!-- 阿刀(あとの): Sudachi実在のレア姓(読みはアト/アトノ両方、wc9770=底値降格の閾値未満)。 あとの の先頭に居座り 後の/跡の を抑えるため抑制。完全一致時のみ末尾再供給(二段構え) -->
 	<dict><key>phrase</key><string>源</string><key>shortcut</key><string>みなもとの</string></dict>
 	<dict><key>phrase</key><string>岡</string><key>shortcut</key><string>おかの</string></dict>	<!-- 岡(おかの)は 源=みなもとの と同型の「の込み」読み収穫。rank2 に居座り 岡の の合成を抑えるため二段構え(exactReadingOnly で末尾再供給。2637) -->
