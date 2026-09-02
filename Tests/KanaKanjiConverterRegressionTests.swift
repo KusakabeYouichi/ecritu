@@ -12952,6 +12952,30 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ga.first, "警告が来ると", "multi=\(Array(ga.prefix(3)))")
     }
 
+    // おいた(ユーザ報告 2755): 辞書の おいた は 尾板/及田/笈田 等の固有名詞だけで、
+    // 置いた も 老いた も活用供給。単文節は seed で 置いた が先頭だが、連文節では
+    // 老いた→とき/ばかり が Wikipedia で観測済みなのに 置いた→とき が未観測のため、
+    // 日常頻度と逆に 老いたときに/老いたばかり が先頭になっていた。
+    // ところ/のは/あとで では 置いた が勝っており、後続語しだいで割れる典型。
+    func testRegressionRealLMOitaPrefersOku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+
+        for reading in ["おいたときに", "おいたばかり", "おいたところ", "おいたのは"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(
+                multi.first?.hasPrefix("置いた") == true,
+                "\(reading) multi=\(Array(multi.prefix(3)))"
+            )
+        }
+        // 単文節も 置いた が先頭のまま
+        let single = converter.candidates(for: "おいた", limit: 4, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "置いた", "single=\(single)")
+        // 同型の godan-ku(競合する一段が無い)は無傷
+        let kaita = converter.multiClauseCandidates(for: "かいたときに", systemCandidateMode: .surface)
+        XCTAssertEqual(kaita.first, "書いたときに", "multi=\(Array(kaita.prefix(3)))")
+    }
+
     // 歯科矯正/歯列矯正(ユーザ報告 2753): 矯正歯科・歯科医師・歯科衛生士 は収録済みなのに
     // この2語だけ収穫の穴で、しか(助詞用法が強い)+きょうせい の分割になり しか強制/しか共生 が並んでいた。
     // 歯科 は rank6 でペア重みでは勝たせにくいため misc curated で1ノード化する。
