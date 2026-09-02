@@ -187,7 +187,7 @@ struct SettingsStash: Codable {
 extension ContentView {
     static let logoMenuCoordinateSpace = "logoMenuSpace"
     static let logoMenuLogoFrameKey = "logo"
-    static let aboutCopyrightText = "Copyright © 2026 Youichi Kusakabe"
+    static let aboutCopyrightText = "Copyright © 2026 Kusakabe Youichi"
 
     // ユーザが変えられる設定のキー(設定画面の全項目)。settingsYAMLExportText と同じ集合を保つこと。
     // 語彙・学習・診断ログなどのデータ系キーは含めない(初期設定に戻しても消えない)
