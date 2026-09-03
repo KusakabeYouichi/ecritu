@@ -11765,6 +11765,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertNotNil(store.latinSupplementalIndex())
     }
 
+    // references/vin-acronyme.plist(欧文専用)は shortcut をキーに前計算索引へ合流する。
+    // phrase から導出したキー(a.o.c.)ではなく shortcut(aoc)で『A.O.C.』が引ける。
+    func testLatinSupplementalIncludesVinAcronymeShortcuts() throws {
+        try prepareRealLMDictionary()
+        let store = converter.store
+        guard store.latinSupplementalIndex() != nil else {
+            throw XCTSkip("tmp/LatinSuggestionSupplemental.txt が無い(ビルドが未生成)")
+        }
+        let aoc = store.latinSuggestions(prefix: "aoc", limit: 5)
+        XCTAssertTrue(aoc.contains("A.O.C."), "ピリオド無しの shortcut で引ける: \(aoc)")
+        let dac = store.latinSuggestions(prefix: "dac", limit: 5)
+        XCTAssertTrue(dac.contains("D.A.C.") && dac.contains("DAC"), "同キーの複数表記を両方出す: \(dac)")
+        let bop = store.latinSuggestions(prefix: "bop", limit: 5)
+        XCTAssertTrue(bop.contains("B.O.P.") && bop.contains("B.O.P. Fannings"), "prefix 照合で空白入りキーも: \(bop)")
+    }
+
     // 実機の抑制状態(suppr.plist 由来はテストバンドルに載らない)を defaults 側で再現する。
     private func injectSuppression(_ suppression: [String: [String]]) throws {
         let suppressionData = try JSONEncoder().encode(suppression)
