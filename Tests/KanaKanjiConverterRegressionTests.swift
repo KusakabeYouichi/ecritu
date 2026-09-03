@@ -254,6 +254,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(tori.first?.hasSuffix("り忘れている") ?? false, "tori=\(tori)")
     }
 
+    // 麴(正字)は 麹 と字形が似て混在しやすいので suppr で一括抑制(人名 麴嘉/麴雍 は残す)。
+    // 麴塵 だけは 麹 版が辞書に無いため きくじん→麹塵 を misc、あおいろ→麹塵 を exactReadingOnlySeed で補充(ユーザ指定 2792)
+    func testRegressionRealLMKikuVariantSuppressedWithKojijinSupplement() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["こめこうじ", "こうじ", "こうじまち", "しおこうじ"] {
+            let list = converter.candidates(for: reading, limit: 20, systemCandidateMode: .surface)
+            XCTAssertFalse(list.contains { $0.contains("麴") }, "reading=\(reading) list=\(list)")
+            XCTAssertTrue(list.contains { $0.contains("麹") }, "reading=\(reading) list=\(list)")
+        }
+        let aoiro = converter.candidates(for: "あおいろ", limit: 20, systemCandidateMode: .surface)
+        XCTAssertTrue(aoiro.contains("麹塵") && !aoiro.contains("麴塵"), "aoiro=\(aoiro)")
+        XCTAssertEqual(aoiro.first, "青色", "aoiro=\(aoiro)")
+        let kikujin = converter.candidates(for: "きくじん", limit: 20, systemCandidateMode: .surface)
+        XCTAssertEqual(kikujin.first, "麹塵", "kikujin=\(kikujin)")
+        // 人名は抑制しない
+        let kikuka = converter.candidates(for: "きくか", limit: 20, systemCandidateMode: .surface)
+        XCTAssertTrue(kikuka.contains("麴嘉"), "kikuka=\(kikuka)")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {

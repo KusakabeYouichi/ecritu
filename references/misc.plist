@@ -265,6 +265,7 @@
 	<dict><key>phrase</key><string>聞き間違える</string><key>shortcut</key><string>ききまちがえる</string><key>pos</key><string>一段</string></dict>
 	<dict><key>phrase</key><string>殻付き</string><key>shortcut</key><string>からつき</string><key>pos</key><string>名詞</string></dict>	<!-- 殻付き: 複合語が辞書に無く、連文節で から(助詞・激安)+付き 分割に負けて 殻付き が出ない(からつきのほうが→から付きの方が)。curated 化(コスト1500)で連文節でも 殻付き を勝たせる。単文節は seed でも供給 -->
 	<dict><key>phrase</key><string>康熙字典</string><key>shortcut</key><string>こうきじてん</string><key>pos</key><string>名詞</string></dict>	<!-- 康熙字典(こうきじてん): SudachiDict/LM に無い(じてん→字典 のみ)。curated で供給 -->
+	<dict><key>phrase</key><string>麹塵</string><key>shortcut</key><string>きくじん</string><key>pos</key><string>名詞</string></dict>	<!-- 麹塵: 装束色の伝統名。辞書は正字 麴塵(あおいろ 読みのみ)しか持たず、麴 を抑制すると候補が消えるため 麹 表記を補充(ユーザ指定 2792)。あおいろ 読みは 青色 の先頭を守るため exactReadingOnlySeed 側で末尾供給 -->
 	<dict><key>phrase</key><string>お盆</string><key>shortcut</key><string>おぼん</string><key>pos</key><string>名詞</string></dict>	<!-- お盆: おぼん の辞書エントリはかな1件だけ(wc10005=収穫底値)で、お盆 は辞書にもLMにも無い。候補は丁寧接頭辞 お+ぼん の合成で、ぼん の読み別 wc が 梵7407 < 盆7453 と46だけ梵が安いため お梵 が先頭に立つ。お菓子 と同型の供給欠落なので curated で供給する -->
 	<dict><key>phrase</key><string>お菓子</string><key>shortcut</key><string>おかし</string><key>pos</key><string>名詞</string></dict>	<!-- お菓子: おかし の辞書エントリは 御菓子(wc7812)だけで、現代正書の お菓子 が1件も無い(LM には表層 お菓子6785 が在るのに読みの組が欠落)。御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし→ボルドーの丘し のように 丘(LM5514)+し の分割に負ける。curated で供給する -->
 
