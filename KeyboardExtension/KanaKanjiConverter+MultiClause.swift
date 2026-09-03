@@ -845,8 +845,14 @@ extension KanaKanjiConverter {
                 }
                 return false
             }()
-            let deniesBigramBorrow = (Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
-                .contains(reading) ?? false) || prevDeniesOutgoingBigram || crossReadingBigramDenied
+            // 表層別の借用禁止(化(か)/人(にん)/四(よ) 等)。ただし 化(か) はカタカナ語の直後だけ許す:
+            // 外来語+化(スリム化/デジタル化/グローバル化)は最も生産的な接辞用法で、LM も スリム→化 955 と
+            // 強く支持する。禁止の理由(色化なー のような裸の接辞断片)はかな/漢字 prev の話で、
+            // カタカナ語+化 の後ろに終助詞が続く断片は現実に無い(すりむかする→刷無化する の是正。2777)
+            let surfaceDeniesBorrow = (Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
+                .contains(reading) ?? false)
+                && !(surface == "化" && prev.count >= 2 && Self.isKatakanaString(prev))
+            let deniesBigramBorrow = surfaceDeniesBorrow || prevDeniesOutgoingBigram || crossReadingBigramDenied
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
             // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
