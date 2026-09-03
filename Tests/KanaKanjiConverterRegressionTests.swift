@@ -13223,8 +13223,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.candidates(for: "かし", limit: 12, systemCandidateMode: .surface).contains("\u{00B0}F"))
         let celsius = converter.candidates(for: "せるしうす", limit: 5, systemCandidateMode: .surface)
         XCTAssertTrue(celsius.contains("\u{00B0}C") && celsius.contains("Celsius"), "\(celsius)")
-        let fahrenheit = converter.candidates(for: "ふぁーれんはいと", limit: 5, systemCandidateMode: .surface)
+        let fahrenheit = converter.candidates(for: "ふぁーれんはいと", limit: 8, systemCandidateMode: .surface)
         XCTAssertTrue(fahrenheit.contains("\u{00B0}F") && fahrenheit.contains("Fahrenheit"), "\(fahrenheit)")
+        // 漢字音訳(2779)
+        XCTAssertTrue(fahrenheit.contains("華倫海特"), "\(fahrenheit)")
+        XCTAssertTrue(converter.candidates(for: "せるしうす", limit: 8, systemCandidateMode: .surface).contains("摂爾修斯"))
     }
 
     // すりむかする(2777): 化(か)の bigram 借用禁止(色化なー 対策)が スリム→化 955 まで塞ぎ、
