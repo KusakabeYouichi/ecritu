@@ -225,7 +225,9 @@ extension KanaKanjiConverter {
     // しか出なかった。ただし全一段に開くと 溜め/占め 等が既存の並びを崩す(ため→為 が
     // 溜め に、買い占めよね が 買いしめよね に退行)ため、報告のあった語だけ有効にする。
     // 空の readingSuffix = 読み全体が語幹(derivedCandidates 側で分岐)
-    static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる"]
+    // のせる: のせわすれた が の+世話+擦れた になっていた。連用形 乗せ/載せ を供給し、複合動詞の
+    // 前部要素ボーナス(multiClauseCompoundVerbRenyouStemReadings)と対で 載せ忘れた を組む(2792)
+    static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる", "のせる"]
 
     // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、
     // 命令形として使う頻度より同音語の実害が大きいもの(2026-08-27)

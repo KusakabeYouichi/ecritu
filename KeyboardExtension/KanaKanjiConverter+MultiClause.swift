@@ -793,7 +793,7 @@ extension KanaKanjiConverter {
         for node in nodes
         where Self.multiClauseCompoundVerbRenyouStemReadings.contains(node.reading)
             && node.surface != node.reading
-            && node.surface.hasSuffix("り") {
+            && node.surface.last == node.reading.last {
             compoundVerbRenyouNodeKeys.insert("\(node.start)-\(node.end)-\(node.surface)")
         }
 
