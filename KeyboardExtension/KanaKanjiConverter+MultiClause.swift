@@ -1520,14 +1520,25 @@ extension KanaKanjiConverter {
         // 第2候補として作るために、開始ノードを1つに限定して再実行できるようにする
         // forcedBoundary(2772): その位置に文節境界を強制する(跨ぐノードを使わない)最良経路。
         // 助詞を呑んだ派生動詞(出直してた)の代替経路(で+直してた)を作るのに使う
-        func solveViterbi(allowedStartNodeIndex: Int?, forcedBoundary: Int? = nil) -> (best: [Int], backPointer: [Int], bestTotal: Int, bestEndIndex: Int, pathIndices: [Int])? {
+        // requiredNodeIndices(2773): 指定ノードを必ず使う最良経路(並列動詞の表記を揃えた経路用)。
+        // 指定ノードのスパンと重なる他ノードは使わない
+        func solveViterbi(
+            allowedStartNodeIndex: Int?,
+            forcedBoundary: Int? = nil,
+            requiredNodeIndices: Set<Int> = []
+        ) -> (best: [Int], backPointer: [Int], bestTotal: Int, bestEndIndex: Int, pathIndices: [Int])? {
             var best = Array(repeating: infinity, count: nodes.count)
             var backPointer = Array(repeating: -1, count: nodes.count)
+            let requiredNodes = requiredNodeIndices.map { nodes[$0] }
 
             for boundary in 1...n {
                 for idx in nodesEndingAt[boundary] {
                     let node = nodes[idx]
                     if let forcedBoundary, node.start < forcedBoundary, forcedBoundary < node.end {
+                        continue
+                    }
+                    if !requiredNodeIndices.isEmpty, !requiredNodeIndices.contains(idx),
+                        requiredNodes.contains(where: { $0.start < node.end && node.start < $0.end }) {
                         continue
                     }
                     // スパン先頭(seed/辞書順で最優先)の活用形へのボーナス(定数コメント参照)。
@@ -1958,11 +1969,73 @@ extension KanaKanjiConverter {
         guard let solved = solveViterbi(allowedStartNodeIndex: nil) else {
             return []
         }
-        let best = solved.best
-        let backPointer = solved.backPointer
-        let bestTotal = solved.bestTotal
-        let bestEndIndex = solved.bestEndIndex
+        var best = solved.best
+        var backPointer = solved.backPointer
+        var bestTotal = solved.bestTotal
+        var bestEndIndex = solved.bestEndIndex
         var pathIndices = solved.pathIndices
+
+        // 並列動詞の表記整合(2773): かうかかわないか の最良が 買うか+飼わないか(か→飼わ の bigram だけ
+        // 観測)のように、同じ読み語幹の動詞が2か所で別の漢字になった経路は、片方だけ bigram が
+        // 引けた偶然の産物で、読み手には筋が通らない。両スパンに同じ漢字語幹の兄弟が揃うとき
+        // (買う/飼う と 買わない/飼わない)は、漢字を揃えた2経路を必須ノード指定で再最適化し、
+        // 安い方を最良、もう一方を第2候補、元の混在経路をその次に回す
+        var coordinatedAlternatives: [(delta: Int, joined: String)] = []
+        if pathIndices.count >= 3 {
+            func kanjiStem(_ surface: String) -> String {
+                String(surface.prefix { !("ぁ"..."ゖ").contains($0) && $0 != "ー" })
+            }
+            func isVerbLike(_ node: MultiClauseNode) -> Bool {
+                node.isInflectionDerived || node.isDictionaryFormPredicate
+            }
+            outer: for posA in 0..<(pathIndices.count - 1) {
+                let nodeA = nodes[pathIndices[posA]]
+                guard isVerbLike(nodeA), nodeA.surface != nodeA.reading else { continue }
+                let stemA = kanjiStem(nodeA.surface)
+                guard !stemA.isEmpty, stemA.count < nodeA.surface.count, let readingHead = nodeA.reading.first else { continue }
+                for posB in (posA + 1)..<pathIndices.count {
+                    let nodeB = nodes[pathIndices[posB]]
+                    guard isVerbLike(nodeB), nodeB.surface != nodeB.reading, nodeB.reading.first == readingHead else { continue }
+                    let stemB = kanjiStem(nodeB.surface)
+                    guard !stemB.isEmpty, stemB.count < nodeB.surface.count, stemA != stemB else { continue }
+                    // 兄弟: A のスパンに 語幹B+同じ活用末尾、B のスパンに 語幹A+同じ活用末尾
+                    let tailA = String(nodeA.surface.dropFirst(stemA.count))
+                    let tailB = String(nodeB.surface.dropFirst(stemB.count))
+                    guard let altAIdx = nodes.indices.first(where: {
+                            nodes[$0].start == nodeA.start && nodes[$0].end == nodeA.end && nodes[$0].surface == stemB + tailA
+                        }),
+                        let altBIdx = nodes.indices.first(where: {
+                            nodes[$0].start == nodeB.start && nodes[$0].end == nodeB.end && nodes[$0].surface == stemA + tailB
+                        }) else {
+                        continue
+                    }
+                    let keepA = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [pathIndices[posA], altBIdx])
+                    let keepB = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [altAIdx, pathIndices[posB]])
+                    let candidates = [keepA, keepB].compactMap { $0 }
+                        .filter { $0.pathIndices.count >= 2 }
+                        .sorted { $0.bestTotal < $1.bestTotal }
+                    guard let newBest = candidates.first,
+                        newBest.bestTotal - bestTotal <= Self.multiClauseCoordinatedVerbMaxDelta else {
+                        continue
+                    }
+                    let mixedJoined = pathIndices.map { nodes[$0].surface }.joined()
+                    let mixedTotal = bestTotal
+                    best = newBest.best
+                    backPointer = newBest.backPointer
+                    bestTotal = newBest.bestTotal
+                    bestEndIndex = newBest.bestEndIndex
+                    pathIndices = newBest.pathIndices
+                    if candidates.count >= 2 {
+                        let second = candidates[1]
+                        coordinatedAlternatives.append((second.bestTotal - bestTotal, second.pathIndices.map { nodes[$0].surface }.joined()))
+                    }
+                    // 元の混在経路は揃えた2経路の後ろへ(delta は第2候補の直後に固定)
+                    let mixedDelta = (coordinatedAlternatives.last?.delta ?? (bestTotal - mixedTotal)) + Self.multiClauseSeedOrderVariantStep
+                    coordinatedAlternatives.append((mixedDelta, mixedJoined))
+                    break outer
+                }
+            }
+        }
         // 第2候補: 先頭文節が seed 先頭なら、seed 2番目の表層で始まる最良経路を残りごと再最適化して作る
         // (こうしゅうのかひ: 甲州の果皮 の次に 講習の可否。1文節差し替えの変種では 講習の果皮 しか作れない。2736)
         // 対象は先頭・次順位とも漢字の内容語(甲州/講習)に限る。かな識別との入れ替え(そこ/其処、水/みず、
@@ -2407,6 +2480,16 @@ extension KanaKanjiConverter {
         // 助詞に割った代替経路(2772)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
             variants.append((particleSplitAlternativeDelta, -2, particleSplitAlternativeJoined))
+            variants.sort { lhs, rhs in
+                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
+            }
+        }
+        // 並列動詞を揃えた第2経路と元の混在経路(2773)は、1文節変種(元の混在経路より安い負の
+        // delta を持ち得る)より必ず前に置く。元の混在経路と同文字列の1文節変種は後段の重複除去で畳まれる
+        if !coordinatedAlternatives.isEmpty {
+            for (offset, alternative) in coordinatedAlternatives.enumerated() where alternative.joined != joined {
+                variants.append((Int.min / 2 + offset, -3, alternative.joined))
+            }
             variants.sort { lhs, rhs in
                 lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
             }
