@@ -29,120 +29,328 @@ extension KeyboardRootView {
     }
 }
 
-// 字キー。ヒラギノ明朝にグリフが無い字(実機では PingFang 等で描かれる)は色を変えて
-// 区別する。判定は表示中のセルぶんだけ実行するのでデータに印は持たせない(2445)。
-struct KanjiCharacterKeyButton: View {
+// 字グリッド(2783): SwiftUI の LazyVGrid から UICollectionView+UILabel(セル再利用)へ。
+// 実機実測(2782)で部首1つの一覧を約30秒スクロールすると used +16.6MB、退出後も +9.7MB が残った。
+// 内訳は明朝グリフキャッシュ約5MB(上限付きで頭打ち)+ SwiftUI 側約10MB(LazyVGrid が生成した
+// セル/AttributeGraph を閉じるまで保持)。絵文字パネル(EmojiGridCollectionView 2633)と同じ処方で
+// 同時生存のセルを画面分に固定する。描画倍率は落とさない(ぼやける。ユーザ指定)。
+// タップ=確定、0.35秒の長押し=字典風の吹き出し(読み/U+XXXX/区点)。長押し成立後は離しても確定しない。
+struct KanjiCharacterGridCollectionView: UIViewRepresentable {
+    typealias Item = (id: String, kind: KeyboardRootKanjiRadicalSectionView.CharacterListItem)
+
+    let items: [Item]
+    let columnCount: Int
+    let itemSpacing: CGFloat
+    let itemHeight: CGFloat
+    /// 部首の切替検知(変わったら先頭へスクロール)
+    let formKey: String
+    let onCommit: (String) -> Void
+
     // 別フォントで描かれる字の色。薄いブルー系。ライト/ダークで明度を入れ替えて、
     // どちらの背景でも読める濃さにする(2485)
-    static let fallbackGlyphColor = Color(
-        UIColor { traits in
-            traits.userInterfaceStyle == .dark
-                ? UIColor(red: 0.58, green: 0.76, blue: 1.0, alpha: 1.0)
-                : UIColor(red: 0.32, green: 0.52, blue: 0.88, alpha: 1.0)
-        }
-    )
-
-    let entry: KanjiRadicalFileIndex.Entry
-    let height: CGFloat
-    let onCommit: (String) -> Void
-    // ロングタップの吹き出しはセクション側のオーバーレイが描く(キー内に描くと隣のキーが
-    // 上に載って潜り、スクロール領域の端で見切れる。2481)。キーの矩形を渡して位置を決める。
-    let onInspect: (KanjiRadicalFileIndex.Entry?, CGRect) -> Void
-
-    // ロングタップ中だけ字典風のポップアップを出す。押し込みで確定してしまわないよう、
-    // シフトキーと同じ didTriggerLongPress ガードでタップ動作を抑止する(モードも維持)。
-    @State private var didTriggerLongPress = false
-    @State private var isInspecting = false
-    @State private var pendingInspect: DispatchWorkItem?
-
-    private var hasMincho: Bool {
-        KanaKanjiStore.hasMinchoGlyph(for: entry.character)
+    static let fallbackGlyphColor = UIColor { traits in
+        traits.userInterfaceStyle == .dark
+            ? UIColor(red: 0.58, green: 0.76, blue: 1.0, alpha: 1.0)
+            : UIColor(red: 0.32, green: 0.52, blue: 0.88, alpha: 1.0)
     }
 
-    var body: some View {
-        Button {
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIView(context: Context) -> UICollectionView {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = itemSpacing
+        layout.minimumLineSpacing = itemSpacing
+        layout.sectionInset = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        view.backgroundColor = .clear
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
+        view.alwaysBounceVertical = true
+        view.delaysContentTouches = false
+        view.register(KanjiCharacterGridCell.self, forCellWithReuseIdentifier: KanjiCharacterGridCell.reuseIdentifier)
+        view.register(KanjiTotalStrokeMarkerGridCell.self, forCellWithReuseIdentifier: KanjiTotalStrokeMarkerGridCell.reuseIdentifier)
+        view.dataSource = context.coordinator
+        view.delegate = context.coordinator
+        context.coordinator.parent = self
+        let longPress = UILongPressGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleLongPress(_:)))
+        longPress.minimumPressDuration = 0.35
+        longPress.cancelsTouchesInView = false
+        view.addGestureRecognizer(longPress)
+        return view
+    }
+
+    func updateUIView(_ uiView: UICollectionView, context: Context) {
+        let coordinator = context.coordinator
+        let formChanged = coordinator.parent.formKey != formKey
+        let itemsChanged = coordinator.parent.items.count != items.count || formChanged
+        coordinator.parent = self
+        if let layout = uiView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.minimumInteritemSpacing = itemSpacing
+            layout.minimumLineSpacing = itemSpacing
+        }
+        if itemsChanged {
+            coordinator.hideBubble()
+            uiView.reloadData()
+            if formChanged {
+                uiView.setContentOffset(.zero, animated: false)
+            }
+        }
+    }
+
+    final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+        var parent: KanjiCharacterGridCollectionView
+        private weak var bubble: UIView?
+        // 長押しが成立したタッチでは離しても確定しない(旧 didTriggerLongPress)
+        private var didTriggerLongPress = false
+
+        init(parent: KanjiCharacterGridCollectionView) {
+            self.parent = parent
+        }
+
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            parent.items.count
+        }
+
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            switch parent.items[indexPath.item].kind {
+            case .totalStrokeMarker(let strokes):
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: KanjiTotalStrokeMarkerGridCell.reuseIdentifier, for: indexPath
+                )
+                (cell as? KanjiTotalStrokeMarkerGridCell)?.configure(strokes: strokes)
+                return cell
+            case .character(let entry):
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: KanjiCharacterGridCell.reuseIdentifier, for: indexPath
+                )
+                (cell as? KanjiCharacterGridCell)?.configure(entry: entry)
+                return cell
+            }
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            sizeForItemAt indexPath: IndexPath
+        ) -> CGSize {
+            let columns = max(1, parent.columnCount)
+            let available = collectionView.bounds.width - parent.itemSpacing * CGFloat(columns - 1)
+            let width = floor(max(1, available / CGFloat(columns)))
+            return CGSize(width: width, height: parent.itemHeight)
+        }
+
+        func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+            if case .character = parent.items[indexPath.item].kind {
+                return true
+            }
+            return false
+        }
+
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
             if didTriggerLongPress {
                 didTriggerLongPress = false
                 return
             }
-            onCommit(entry.character)
-        } label: {
-            Text(entry.character)
-                .font(.custom("HiraMinProN-W3", size: 22))
-                .foregroundStyle(hasMincho ? Color(.label) : Self.fallbackGlyphColor)
-                .lineLimit(1)
-                .minimumScaleFactor(0.7)
-                .frame(maxWidth: .infinity)
-                .frame(height: height)
-                .background(
-                    RoundedRectangle(cornerRadius: 6, style: .continuous)
-                        .fill(Color(.systemBackground))
-                )
-                .contentShape(Rectangle())
+            if case .character(let entry) = parent.items[indexPath.item].kind {
+                parent.onCommit(entry.character)
+            }
         }
-        // 押下は ButtonStyle の isPressed だけで見る。DragGesture/LongPressGesture を足すと
-        // ScrollView のスクロールを奪う(2490/2503の退行)。記号キーの吹き出しと同じ作法で、
-        // スクロールが始まるとボタン押下がキャンセルされ isPressed=false になるので吹き出しも消える。
-        .buttonStyle(
-            KanjiCharacterKeyPressStyle { isPressing in
-                if isPressing {
-                    scheduleInspect()
-                } else {
-                    cancelInspect()
-                    isInspecting = false
+
+        func collectionView(_ collectionView: UICollectionView, didUnhighlightItemAt indexPath: IndexPath) {
+            // 指が離れた/スクロールで押下が取り消された
+            hideBubble()
+        }
+
+        func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+            hideBubble()
+        }
+
+        @objc func handleLongPress(_ recognizer: UILongPressGestureRecognizer) {
+            guard let collectionView = recognizer.view as? UICollectionView else { return }
+            switch recognizer.state {
+            case .began:
+                let point = recognizer.location(in: collectionView)
+                guard let indexPath = collectionView.indexPathForItem(at: point),
+                    case .character(let entry) = parent.items[indexPath.item].kind,
+                    let cell = collectionView.cellForItem(at: indexPath) else {
+                    return
                 }
+                didTriggerLongPress = true
+                showBubble(for: entry, above: cell, in: collectionView)
+            case .ended, .cancelled, .failed:
+                hideBubble()
+                // 長押し中に離した場合、didSelect は来ないことがあるのでフラグは次のタップ開始で戻す
+                DispatchQueue.main.async { [weak self] in self?.didTriggerLongPress = false }
+            default:
+                break
             }
-        )
-        // キーの矩形は長押しが成立した瞬間にだけ読む。
-        .background(
-            GeometryReader { proxy in
-                Color.clear
-                    .onChange(of: isInspecting) { inspecting in
-                        onInspect(
-                            inspecting ? entry : nil,
-                            inspecting
-                                ? proxy.frame(in: .named(KanjiInspectBubble.coordinateSpaceName))
-                                : .zero
-                        )
-                    }
-            }
-        )
-        .accessibilityLabel("\(entry.character) \(entry.readings)")
-    }
-
-    // 押しっぱなし 0.35秒でロングタップ成立(タップ確定は didTriggerLongPress で抑止)
-    private func scheduleInspect() {
-        cancelInspect()
-        let work = DispatchWorkItem {
-            didTriggerLongPress = true
-            isInspecting = true
         }
-        pendingInspect = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.35, execute: work)
-    }
 
-    private func cancelInspect() {
-        pendingInspect?.cancel()
-        pendingInspect = nil
-    }
-}
+        // 字典風の吹き出し(旧 KanjiInspectBubble と同じ寸法・配置規則)。可視領域の座標で置く
+        private func showBubble(for entry: KanjiRadicalFileIndex.Entry, above cell: UIView, in host: UICollectionView) {
+            hideBubble()
+            let visibleSize = host.bounds.size
+            let cellFrameInContent = cell.convert(cell.bounds, to: host)
+            let keyFrameVisible = cellFrameInContent.offsetBy(dx: -host.contentOffset.x, dy: -host.contentOffset.y)
+            let origin = KanjiInspectBubble.placement(forKey: keyFrameVisible, in: visibleSize)
 
-// 押下状態だけを親へ知らせる ButtonStyle。ジェスチャーを追加しないので ScrollView と共存する。
-private struct KanjiCharacterKeyPressStyle: ButtonStyle {
-    let onPressingChanged: (Bool) -> Void
+            let container = UIView(frame: CGRect(
+                x: origin.x + host.contentOffset.x,
+                y: origin.y + host.contentOffset.y,
+                width: KanjiInspectBubble.bubbleWidth,
+                height: KanjiInspectBubble.bubbleHeight
+            ))
+            container.backgroundColor = UIColor.black.withAlphaComponent(0.86)
+            container.layer.cornerRadius = 8
+            container.layer.cornerCurve = .continuous
+            container.layer.shadowColor = UIColor.black.cgColor
+            container.layer.shadowOpacity = 0.25
+            container.layer.shadowRadius = 6
+            container.layer.shadowOffset = CGSize(width: 0, height: 2)
+            container.isUserInteractionEnabled = false
 
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.94 : 1)
-            .animation(.easeOut(duration: 0.08), value: configuration.isPressed)
-            .onChange(of: configuration.isPressed) { isPressed in
-                onPressingChanged(isPressed)
+            let readings = UILabel()
+            readings.text = KanjiInspectBubble.readingsDisplayText(for: entry.readings)
+            readings.font = Self.roundedFont(size: 12, weight: .bold)
+            readings.textColor = .white
+            readings.textAlignment = .center
+            readings.numberOfLines = 2
+            readings.adjustsFontSizeToFitWidth = true
+            readings.minimumScaleFactor = 0.7
+            let code = UILabel()
+            let codePoint = entry.character.unicodeScalars.first.map { String(format: "U+%04X", $0.value) } ?? "—"
+            code.text = "\(codePoint)  区点 \(entry.kuten)"
+            code.font = Self.roundedFont(size: 10.5, weight: .medium)
+            code.textColor = UIColor.white.withAlphaComponent(0.82)
+            code.textAlignment = .center
+            code.adjustsFontSizeToFitWidth = true
+            code.minimumScaleFactor = 0.8
+            let inner = KanjiInspectBubble.bubbleWidth - 20
+            readings.frame = CGRect(x: 10, y: 5, width: inner, height: 22)
+            code.frame = CGRect(x: 10, y: 28, width: inner, height: 13)
+            container.addSubview(readings)
+            container.addSubview(code)
+            host.addSubview(container)
+            bubble = container
+        }
+
+        private static func roundedFont(size: CGFloat, weight: UIFont.Weight) -> UIFont {
+            let base = UIFont.systemFont(ofSize: size, weight: weight)
+            if let descriptor = base.fontDescriptor.withDesign(.rounded) {
+                return UIFont(descriptor: descriptor, size: size)
             }
+            return base
+        }
+
+        func hideBubble() {
+            bubble?.removeFromSuperview()
+            bubble = nil
+        }
     }
 }
 
-// 字のロングタップで出す字典風ポップアップ(読み / U+XXXX / JIS X 0208区点)。
-// セクション側のオーバーレイが描く(キー内に描くと隣のキーの下に潜る)。位置はキーの矩形から
+final class KanjiCharacterGridCell: UICollectionViewCell {
+    static let reuseIdentifier = "KanjiCharacterGridCell"
+    private let label = UILabel()
+    private static let minchoFont = UIFont(name: "HiraMinProN-W3", size: 22) ?? UIFont.systemFont(ofSize: 22)
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.backgroundColor = .systemBackground
+        contentView.layer.cornerRadius = 6
+        contentView.layer.cornerCurve = .continuous
+        label.font = Self.minchoFont
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.7
+        label.isAccessibilityElement = false
+        contentView.addSubview(label)
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        label.frame = contentView.bounds
+    }
+
+    // ヒラギノ明朝にグリフが無い字(実機では PingFang 等で描かれる)は色を変えて区別する。
+    // 判定は表示中のセルぶんだけ実行するのでデータに印は持たせない(2445)
+    func configure(entry: KanjiRadicalFileIndex.Entry) {
+        label.text = entry.character
+        label.textColor = KanaKanjiStore.hasMinchoGlyph(for: entry.character)
+            ? .label
+            : KanjiCharacterGridCollectionView.fallbackGlyphColor
+        accessibilityLabel = "\(entry.character) \(entry.readings)"
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            let pressed = isHighlighted
+            UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
+                self.contentView.transform = pressed ? CGAffineTransform(scaleX: 0.94, y: 0.94) : .identity
+            }
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        contentView.transform = .identity
+    }
+}
+
+// 総画数の区切り(タップできない)。カプセル+輪郭線+「総N画」(2483/2488)
+final class KanjiTotalStrokeMarkerGridCell: UICollectionViewCell {
+    static let reuseIdentifier = "KanjiTotalStrokeMarkerGridCell"
+    private let label = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.backgroundColor = .tertiarySystemFill
+        contentView.layer.borderColor = UIColor.separator.cgColor
+        contentView.layer.borderWidth = 1
+        let base = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        label.font = base.fontDescriptor.withDesign(.rounded).map { UIFont(descriptor: $0, size: 12) } ?? base
+        label.textColor = UIColor.label.withAlphaComponent(0.7)
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.6
+        contentView.addSubview(label)
+        isAccessibilityElement = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        label.frame = contentView.bounds.insetBy(dx: 2, dy: 0)
+        contentView.layer.cornerRadius = contentView.bounds.height / 2
+    }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+        contentView.layer.borderColor = UIColor.separator.cgColor
+    }
+
+    func configure(strokes: Int) {
+        label.text = "総\(strokes)画"
+        accessibilityLabel = "総画数\(strokes)画"
+    }
+}
+
+// 字のロングタップで出す字典風ポップアップ(読み / U+XXXX / JIS X 0208区点)の寸法・配置規則。
+// 描画は KanjiCharacterGridCollectionView の Coordinator(UIKit)が行う(2783)。位置はキーの矩形から
 // 決め、上に出す余地が無い最上段では指に隠れないよう横へ逃がす。左右上下ともスクロール領域内に
 // クランプするので見切れない(2481、2490でキー矩形基準に変更)。
 struct KanjiInspectBubble: View {
@@ -290,33 +498,6 @@ struct RadicalFormKeyButton: View {
     }
 }
 
-// 字グリッドの総画数の区切り(タップできない)。部首一覧の区切り(塗りの角丸)とは形で
-// 区別し、カプセル+輪郭線+「総N画」にする(部首の画数と総画数の混同を防ぐ。2483)。
-// 枠だけ+淡色だと読みづらかったので、枠の中に塗りを入れ、文字も少し大きく濃くした(2488)。
-struct KanjiTotalStrokeMarkerCell: View {
-    let strokes: Int
-    let height: CGFloat
-
-    var body: some View {
-        Text("総\(strokes)画")
-            .font(.system(size: 12, weight: .semibold, design: .rounded))
-            .foregroundStyle(Color(.label).opacity(0.7))
-            .lineLimit(1)
-            .minimumScaleFactor(0.6)
-            .frame(maxWidth: .infinity)
-            .frame(height: height)
-            .background(
-                Capsule(style: .continuous)
-                    .fill(Color(.tertiarySystemFill))
-                    .overlay(
-                        Capsule(style: .continuous)
-                            .strokeBorder(Color(.separator), lineWidth: 1)
-                    )
-            )
-            .accessibilityLabel("総画数\(strokes)画")
-    }
-}
-
 // 画数の区切り(タップできない)。「3画」のように示す。
 struct RadicalStrokeMarkerCell: View {
     let strokes: Int
@@ -355,21 +536,12 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let onSwitchToKana: () -> Void
     let onDeleteBackward: () -> Void
 
-    // ロングタップ中の字と接触点(セクション座標)。オーバーレイはキーより後に描かれるので
-    // 隣のキーの下に潜らない(2481)
-    @State private var inspectedEntry: KanjiRadicalFileIndex.Entry?
-    @State private var inspectedKeyFrame: CGRect = .zero
-
     private var forms: [RadicalForm] {
         KanjiRadicalCatalog.forms(in: selectedCategory, choices: strokeChoices)
     }
 
     private var radicalColumns: [GridItem] {
         Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 7)
-    }
-
-    private var characterColumns: [GridItem] {
-        Array(repeating: GridItem(.flexible(), spacing: emojiGridSpacing), count: 9)
     }
 
     // 字グリッドに総画数の区切り(タップ不可)を挟む。索引は総画数順に並んでいるので
@@ -419,47 +591,17 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     var body: some View {
         VStack(spacing: keyboardRowSpacing) {
             if let form = selectedForm {
-                // 戻るはヘッダー(◀ 偏 › 氵(さんずい))が担う。行内にパンくずは置かない
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVGrid(columns: characterColumns, spacing: emojiGridSpacing) {
-                        ForEach(characterListItems(for: form), id: \.id) { item in
-                            switch item.kind {
-                            case .totalStrokeMarker(let strokes):
-                                KanjiTotalStrokeMarkerCell(
-                                    strokes: strokes,
-                                    height: compactEmojiKeyHeight
-                                )
-                            case .character(let entry):
-                                KanjiCharacterKeyButton(
-                                    entry: entry,
-                                    height: compactEmojiKeyHeight,
-                                    onCommit: onCommitCharacter,
-                                    onInspect: { inspected, keyFrame in
-                                        inspectedEntry = inspected
-                                        inspectedKeyFrame = keyFrame
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    .padding(.vertical, 2)
-                }
+                // 戻るはヘッダー(◀ 偏 › 氵(さんずい))が担う。行内にパンくずは置かない。
+                // 字グリッドは UICollectionView(セル再利用。吹き出しもその中で描く。2783)
+                KanjiCharacterGridCollectionView(
+                    items: characterListItems(for: form),
+                    columnCount: 9,
+                    itemSpacing: emojiGridSpacing,
+                    itemHeight: compactEmojiKeyHeight,
+                    formKey: form.id,
+                    onCommit: onCommitCharacter
+                )
                 .frame(height: fourRowAlignedTopContentHeight)
-                // 接触点とクランプ範囲の基準(この矩形の中に吹き出しを収める)
-                .coordinateSpace(name: KanjiInspectBubble.coordinateSpaceName)
-                .overlay(alignment: .topLeading) {
-                    GeometryReader { proxy in
-                        if let inspectedEntry {
-                            let origin = KanjiInspectBubble.placement(
-                                forKey: inspectedKeyFrame,
-                                in: proxy.size
-                            )
-                            KanjiInspectBubble(entry: inspectedEntry)
-                                .offset(x: origin.x, y: origin.y)
-                        }
-                    }
-                    .allowsHitTesting(false)
-                }
             } else {
                 ScrollView(.vertical, showsIndicators: false) {
                     LazyVGrid(columns: radicalColumns, spacing: emojiGridSpacing) {
