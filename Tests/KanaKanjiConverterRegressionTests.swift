@@ -13253,6 +13253,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(kashita.contains(where: { $0.contains("\u{00B0}F") }), "\(kashita)")
     }
 
+    // めもりーくうやつ(2777): 空(主読み そら)の読み跨ぎ床 7172 が 食う(6911+500)を 239 差で跨ぎ、
+    // めもりーくう 単体(食う→EOS が勝つ)と やつ 付きで1位2位が逆転していた。seed 順ボーナスで 食う を先頭に
+    func testRegressionMemoryKuuYatsu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["めもりーくう", "めもりーくうやつ"] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.first?.hasPrefix("メモリー食う") == true, "\(reading): \(Array(multi.prefix(3)))")
+        }
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
