@@ -13276,6 +13276,17 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(noru.first, "軌道に乗る", "\(Array(noru.prefix(3)))")
     }
 
+    // おかねかかるのね(2777): かな かかる が述語判定されず のね クランプが 係る 側だけに効いていた。
+    // ある/する と同じかな述語の許可リストに かかる を追加
+    func testRegressionOkaneKakaruNone() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "おかねかかるのね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "お金かかるのね", "\(Array(multi.prefix(3)))")
+        let jikan = converter.multiClauseCandidates(for: "じかんがかかる", systemCandidateMode: .surface)
+        XCTAssertEqual(jikan.first, "時間がかかる", "\(Array(jikan.prefix(3)))")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、

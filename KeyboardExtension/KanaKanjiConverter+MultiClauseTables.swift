@@ -77,7 +77,9 @@ extension KanaKanjiConverter {
     // (あるのね→有るのね 逆転の防止)。漢字が主の動詞(買う/見る 等)は含めない。
     // する を追加(2618): するのね→擦るのね — かな する は述語判定されず のね クランプが
     // 擦る(辞書形述語)側だけに効いていた
-    static let multiClauseKanaPredicateIdentities: Set<String> = ["ある", "する"]
+    // かかる を追加(2777): おかねかかるのね→お金係るのね — かな かかる(時間/お金がかかる はかなが主)は
+    // 述語判定されず のね クランプが 係る/掛かる 側だけに効いていた
+    static let multiClauseKanaPredicateIdentities: Set<String> = ["ある", "する", "かかる"]
 
     // 同音異義 あう の出し分け(best-effort): 前の名詞が人物なら 会う、それ以外は 合う を優先。
     // 辞書に動物性タグが無く助詞跨ぎ bigram も無いため、名詞の人物性を語彙+敬称接尾で近似する。
