@@ -300,13 +300,27 @@ enum DegreeSymbolOption: String, CaseIterable, Identifiable {
         return Locale.autoupdatingCurrent.measurementSystem == .us
     }
 
-    var title: String {
+    var symbol: String {
         switch (self, Self.prefersFahrenheit) {
         case (.composed, false): return "°C"
         case (.compat, false): return "℃"
         case (.composed, true): return "°F"
         case (.compat, true): return "℉"
         }
+    }
+
+    // 符号位置の注記(選択肢に併記。ユーザ指定 2776)
+    var codePointNote: String {
+        switch (self, Self.prefersFahrenheit) {
+        case (.composed, false): return "U+00B0+C"
+        case (.compat, false): return "U+2103"
+        case (.composed, true): return "U+00B0+F"
+        case (.compat, true): return "U+2109"
+        }
+    }
+
+    var title: String {
+        symbol + " (" + codePointNote + ")"
     }
 }
 
