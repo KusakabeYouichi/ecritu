@@ -539,9 +539,15 @@ extension KanaKanjiConverter {
             reading.count > suffix.count else {
             return
         }
+        // 元の い形容詞がかな正書(seed 先頭がかな: うまい/すごい、misc の かな識別: おいしい)なら
+        // かな派生(うまそうな/うまそうに)にも同じ加点をして先頭を保つ。うまそう は個別 seed で
+        // かな先頭だったが、そうな/そうに は漢字だけが +220 されて 旨そうな が先頭になっていた(2792)
+        let adjectiveBase = String(reading.dropLast(suffix.count)) + "い"
+        let keepsKanaLead = KanaKanjiSeedDictionary.seed[adjectiveBase]?.first == adjectiveBase
+            || hasCuratedKanaIdentity(for: adjectiveBase)
         for candidate in inflectionDerivedCandidates where candidate.hasSuffix(suffix) {
             // かな識別(買いそう が かな のまま=かいそう)は素通りと同じなので対象外。
-            guard candidate != reading, containsKanji(candidate) else {
+            guard (candidate != reading && containsKanji(candidate)) || (candidate == reading && keepsKanaLead) else {
                 continue
             }
             scores[candidate, default: 0] += Self.stativeSouBoost
