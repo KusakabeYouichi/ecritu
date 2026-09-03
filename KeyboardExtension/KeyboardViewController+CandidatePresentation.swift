@@ -400,9 +400,12 @@ extension KeyboardViewController {
             }
         )
 
+        // 温度の度記号を設定の字形へ(内部正規形 °C/°F → ℃/℉ 等。同じになった候補は畳む。2773)
+        let styled = degreeSymbolStyle.styled(boosted)
+
         let presentation = CandidatePresentation(
             composingText: cacheKey.composingRawText,
-            candidates: boosted,
+            candidates: styled,
             selectedIndex: nil
         )
 

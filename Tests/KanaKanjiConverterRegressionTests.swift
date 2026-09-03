@@ -13195,6 +13195,31 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(converter.multiClauseCandidates(for: "あるちゅう", systemCandidateMode: .surface).isEmpty)
     }
 
+    // degré(2773): 温度の度記号。内部正規形は SI 形 °C/°F、設定 compat で ℃/℉ に置換。
+    // misc の せっし/かし/せるしうす/ふぁーれんはいと と、数字+ど の助数詞供給
+    func testRegressionDegreeSymbolStyleAndSupply() throws {
+        // 字形の置換(同じ文字列になった併記は畳む)
+        XCTAssertEqual(DegreeSymbolStyle.compat.styled(["36\u{00B0}C", "\u{00B0}F", "度", "\u{2103}"]), ["36\u{2103}", "\u{2109}", "度", "\u{2103}"])
+        XCTAssertEqual(DegreeSymbolStyle.compat.styled(["\u{00B0}C", "\u{2103}"]), ["\u{2103}"], "併記は畳む")
+        XCTAssertEqual(DegreeSymbolStyle.composed.styled(["\u{2103}", "\u{2109}", "\u{00B0}"]), ["\u{00B0}C", "\u{00B0}F", "\u{00B0}"])
+        XCTAssertEqual(DegreeSymbolStyle(sharedRawValue: nil), .composed)
+        XCTAssertEqual(DegreeSymbolStyle(sharedRawValue: "compat"), .compat)
+        // 数字+ど → 度, °C, °F
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(["度", "ど"], reading: "ど", precedingCharacter: "6")
+        XCTAssertEqual(Array(boosted.prefix(3)), ["度", "\u{00B0}C", "\u{00B0}F"], "\(boosted)")
+        // 数字文脈でなければ供給しない
+        XCTAssertFalse(KanaKanjiConverter.digitContextCounterBoostedCandidates(["度", "ど"], reading: "ど", precedingCharacter: "は").contains("\u{00B0}C"))
+        // misc 供給
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertTrue(converter.candidates(for: "せっし", limit: 5, systemCandidateMode: .surface).contains("\u{00B0}C"))
+        XCTAssertTrue(converter.candidates(for: "かし", limit: 12, systemCandidateMode: .surface).contains("\u{00B0}F"))
+        let celsius = converter.candidates(for: "せるしうす", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(celsius.contains("\u{00B0}C") && celsius.contains("Celsius"), "\(celsius)")
+        let fahrenheit = converter.candidates(for: "ふぁーれんはいと", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(fahrenheit.contains("\u{00B0}F") && fahrenheit.contains("Fahrenheit"), "\(fahrenheit)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、

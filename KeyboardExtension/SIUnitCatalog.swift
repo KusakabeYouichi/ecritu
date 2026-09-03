@@ -126,7 +126,8 @@ enum SIUnitCatalog {
         SIUnit(symbol: "rad", reading: "ラジアン", quantity: "平面角", group: "角度・時間・その他"),
         SIUnit(symbol: "sr", reading: "ステラジアン", quantity: "立体角", group: "角度・時間・その他"),
         SIUnit(symbol: "Hz", reading: "ヘルツ", quantity: "周波数", group: "角度・時間・その他"),
-        SIUnit(symbol: "℃", reading: "セルシウス度", quantity: "セルシウス温度", group: "角度・時間・その他"),
+        // 度記号は内部では SI 形 °C(U+00B0 + C)で保持し、表示・確定時に設定 degreeSymbol(°C / ℃)へ変換する
+        SIUnit(symbol: "\u{00B0}C", reading: "セルシウス度", quantity: "セルシウス温度", group: "角度・時間・その他"),
         SIUnit(symbol: "kat", reading: "カタール", quantity: "酵素活性", group: "角度・時間・その他"),
         // t(トン)は SI併用の非SI単位。接頭辞2連ドラムに馴染まないため固有側に暫定収録。
         // 将来「非SI併用単位」カテゴリーを設けたら移す。
@@ -193,5 +194,40 @@ enum SIUnitCatalog {
         case .calendar:
             return []
         }
+    }
+}
+
+// 温度の度記号の字形(設定 degreeSymbol。2773)。内部の正規形は SI 形 °C/°F(度記号 U+00B0 + 大文字)で、
+// 表示・確定の最終段でこの設定へ変換する。℃/℉(U+2103/U+2109)は SI の規定にない互換文字だが
+// 日本語環境で慣用(保守的初期設定はこちら)。単位ドラム・変換候補(せっし/かし/数字+ど)に一様に効く
+enum DegreeSymbolStyle: String {
+    case composed
+    case compat
+
+    static let sharedDefaultsKey = "degreeSymbol"
+
+    init(sharedRawValue: String?) {
+        self = sharedRawValue == DegreeSymbolStyle.compat.rawValue ? .compat : .composed
+    }
+
+    func styled(_ text: String) -> String {
+        switch self {
+        case .composed:
+            guard text.contains("\u{2103}") || text.contains("\u{2109}") else { return text }
+            return text
+                .replacingOccurrences(of: "\u{2103}", with: "\u{00B0}C")
+                .replacingOccurrences(of: "\u{2109}", with: "\u{00B0}F")
+        case .compat:
+            guard text.contains("\u{00B0}") else { return text }
+            return text
+                .replacingOccurrences(of: "\u{00B0}C", with: "\u{2103}")
+                .replacingOccurrences(of: "\u{00B0}F", with: "\u{2109}")
+        }
+    }
+
+    // 候補列に適用し、変換で同じ文字列になったもの(°C と ℃ の併記など)は先勝ちで畳む
+    func styled(_ candidates: [String]) -> [String] {
+        var seen = Set<String>()
+        return candidates.map(styled).filter { seen.insert($0).inserted }
     }
 }

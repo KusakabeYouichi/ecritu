@@ -463,6 +463,9 @@ extension KeyboardRootView {
         if litre != "L" {
             result = result.replacingOccurrences(of: "L", with: litre)
         }
+        // 度記号(内部は SI 形 °C)→ 設定 degreeSymbol の字形(°C / ℃)
+        result = DegreeSymbolStyle(sharedRawValue: formattedNumberSharedDefaults?.string(forKey: DegreeSymbolStyle.sharedDefaultsKey))
+            .styled(result)
         return result
     }
 
