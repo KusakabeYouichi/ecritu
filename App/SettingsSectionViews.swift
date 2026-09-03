@@ -1338,8 +1338,14 @@ struct DegreSettingsSection: View {
     }
 
     private static func description(prefersFahrenheit: Bool, otherScaleNote: String) -> String {
-        var text = "SI(国際単位系)では、セルシウス温度の単位記号は度記号「°」と大文字「C」の 2 文字 °C と規定され、数値との間に空白を置きます(25 °C)。"
-        text += "℃(1 文字)は SI の規定にはない互換文字で、日本語環境で広く使われています。\n"
+        var text: String
+        if prefersFahrenheit {
+            text = "SI(国際単位系)では、Celsius 温度についてしか規定されていませんが、度記号「°」の後に大文字「C」の 2 文字で表すことになっています(Fahrenheit に当てはめると 77 °F)。"
+            text += "℉(1 文字)は SI の規定にはない互換文字で、日本語環境で広く使われています。\n"
+        } else {
+            text = "SI(国際単位系)では、Celsius 温度の単位記号は度記号「°」と大文字「C」の 2 文字 °C と規定され、数値との間に空白を置きます(25 °C)。"
+            text += "℃(1 文字)は SI の規定にはない互換文字で、日本語環境で広く使われています。\n"
+        }
         let ownReadings = prefersFahrenheit ? "かし・ふぁーれんはいと" : "せっし・せるしうす"
         text += "ここで選んだ字形は、数値入力モードの単位ドラムと、変換候補(" + ownReadings + "、数字のあとの「ど」)の両方に使われます。"
         text += "初期設定は " + (prefersFahrenheit ? "°F" : "°C") + " です。\n"
