@@ -13240,6 +13240,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(color.first?.contains("化") ?? false, "\(color)")
     }
 
+    // °C/°F(misc の せっし/かし)は語形扱いしない(2777): curated 床が付くと かし を含む読みを °F が
+    // 乗っ取る(すりむかした→スリム°Fた)
+    func testRegressionDegreeSymbolIsNotWordLike() throws {
+        XCTAssertFalse(KanaKanjiConverter.isWordLikeSurface("\u{00B0}C"))
+        XCTAssertFalse(KanaKanjiConverter.isWordLikeSurface("\u{00B0}F"))
+        XCTAssertTrue(KanaKanjiConverter.isWordLikeSurface("Celsius"))
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let kashita = converter.multiClauseCandidates(for: "ほんをかした", systemCandidateMode: .surface)
+        XCTAssertEqual(kashita.first, "本を貸した", "\(Array(kashita.prefix(3)))")
+        XCTAssertFalse(kashita.contains(where: { $0.contains("\u{00B0}F") }), "\(kashita)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
