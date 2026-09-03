@@ -13287,6 +13287,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(jikan.first, "時間がかかる", "\(Array(jikan.prefix(3)))")
     }
 
+    // じゅうりょうかきん(2778): 従量 は Sudachi にあるが 従量課金 は無く、LM の 重量 5424 ≪ 従量 7884 で
+    // 重量課金 が先頭だった。misc で 従量課金/従量料金 を1ノード化
+    func testRegressionJuuryouKakin() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "じゅうりょうかきん", limit: 3, systemCandidateMode: .surface).first, "従量課金")
+        let multi = converter.multiClauseCandidates(for: "じゅうりょうかきんにする", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "従量課金にする", "\(Array(multi.prefix(3)))")
+        // 重量 自体は主語彙のまま
+        XCTAssertEqual(converter.candidates(for: "じゅうりょう", limit: 2, systemCandidateMode: .surface).first, "重量")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
