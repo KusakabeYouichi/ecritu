@@ -13147,6 +13147,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Set(multi).count, multi.count, "重複なし: \(multi)")
     }
 
+    // ぴんくだし(2773): ピン+下し(下し 5852)が ピンク+だし(だし 6401+500)に勝っていた。
+    // 体言直後のかなコピュラ・クラスタ(だし/だから/だけど…)を述語直後の終助詞と同じ水準へクランプ
+    func testRegressionNounCopulaClusterKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("ぴんくだし", "ピンクだし"),
+            ("ぴんくだけど", "ピンクだけど"),
+            // 漢字名詞は対象外(かな正書との競合を壊さない)。既存の順位のまま
+            ("そうでしょ", "そうでしょ"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(Array(multi.prefix(3)))")
+        }
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
