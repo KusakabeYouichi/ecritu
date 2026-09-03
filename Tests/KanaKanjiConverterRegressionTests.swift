@@ -237,6 +237,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(tameni.first, "そのためにした", "tameni=\(tameni)")
     }
 
+    // のせわすれた: 一段 のせる の連用形 乗せ/載せ が供給されず(載せ は のせ の word_costs に無い)、
+    // の+世話+擦れた が最良になっていた。ichidanRenyouNounBaseReadings に のせる、seed のせ に 載せ、
+    // 複合動詞前部要素ボーナスの対象に のせ(送り仮名一致で判定)を追加(2792)
+    func testRegressionRealLMNosewasuretaCompoundVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let nose = converter.candidates(for: "のせ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(nose.prefix(2)), ["乗せ", "載せ"], "nose=\(nose)")
+        let multi = converter.multiClauseCandidates(for: "のせわすれた", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "載せ忘れた", "multi=\(multi)")
+        XCTAssertTrue(multi.contains("乗せ忘れた"), "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.contains("世話") }, "multi=\(multi)")
+        // 既存の とり/はり 系は従来どおり
+        let tori = converter.multiClauseCandidates(for: "とりわすれている", systemCandidateMode: .surface)
+        XCTAssertTrue(tori.first?.hasSuffix("り忘れている") ?? false, "tori=\(tori)")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {
