@@ -13124,17 +13124,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionSwallowedParticleAlternativePath() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
+        // 期間名詞(数分/3時間)の直後は で に割った側を最良に、元の経路を第2候補に(2772)
         for (reading, best, alternative) in [
-            ("すうふんでなおしてた", "数分出直してた", "数分で直してた"),
-            ("すうふんでなおし", "数分出直し", "数分で直し"),
-        ] {
+            ("すうふんでなおしてた", "数分で直してた", "数分出直してた"),
+            ("すうふんでなおし", "数分で直し", "数分出直し"),
+            // 数時間 は Sudachi にあり 数時間→で が引けるので元から で 分割が最良(代替生成の対象外)
+            ("すうじかんでなおした", "数時間で直した", nil),
+        ] as [(String, String, String?)] {
             let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
             XCTAssertEqual(multi.first, best, "\(reading): \(multi)")
-            XCTAssertTrue(multi.dropFirst().prefix(2).contains(alternative), "\(reading): \(multi)")
+            if let alternative {
+                XCTAssertEqual(multi.dropFirst().first, alternative, "元の経路は第2候補: \(reading): \(multi)")
+            }
         }
-        // 明日出直します は最良のまま(代替は後続に出るだけ)
+        // 時点の名詞は 明日出直します が最良のまま(代替 明日で直します は後続)
         let ashita = converter.multiClauseCandidates(for: "あしたでなおします", systemCandidateMode: .surface)
         XCTAssertEqual(ashita.first, "明日出直します", "\(Array(ashita.prefix(3)))")
+        XCTAssertTrue(ashita.dropFirst().prefix(2).contains("明日で直します"), "\(Array(ashita.prefix(3)))")
     }
 
     // かうかかわないか(2771): 最良が 買うか+飼わないか(か→飼わ の bigram だけ観測)で動詞が割れていた。

@@ -2121,7 +2121,24 @@ extension KanaKanjiConverter {
                     continue
                 }
                 let altJoined = altSurfaces.joined()
-                if altJoined != normalized {
+                guard altJoined != normalized else {
+                    break
+                }
+                // 期間の名詞(数分/3時間/2週間…)+で は「その期間で〜する」の定型で、期間名詞の直後に
+                // 出直す/取る 等の動詞が助詞なしで続く読みはほぼ無い。この場合だけ割った側を最良にし、
+                // 元の経路を第2候補へ(数分で直してた。ユーザ指定 2772)。時点の名詞(明日/来週)は
+                // 明日出直します が自然なので従来どおり
+                if head == "で", Self.isDurationNounSurface(prevNode.surface) {
+                    let originalJoined = pathIndices.map { nodes[$0].surface }.joined()
+                    best = alternative.best
+                    backPointer = alternative.backPointer
+                    bestTotal = alternative.bestTotal
+                    bestEndIndex = alternative.bestEndIndex
+                    pathIndices = alternative.pathIndices
+                    // 元の経路(数分出直してた)は第2候補に固定する(同スパン派生の 治した/療した は delta 0 で並ぶため)
+                    particleSplitAlternativeJoined = originalJoined
+                    particleSplitAlternativeDelta = Int.min / 2
+                } else {
                     particleSplitAlternativeJoined = altJoined
                     particleSplitAlternativeDelta = alternative.bestTotal - bestTotal
                 }
@@ -2581,6 +2598,17 @@ extension KanaKanjiConverter {
             (0x0041...0x005A).contains(scalar.value)
                 || (0x0061...0x007A).contains(scalar.value)
         }
+    }
+
+    // 期間を表す数量名詞か(数分/3時間/２週間/数か月/五年間 等。2772)。数詞(算用/漢数字/数/何)+期間の助数詞。
+    // 日/月/年 単独は時点(3日=三日目)と両義なので入れない(日間/年間 は入れる)
+    static func isDurationNounSurface(_ surface: String) -> Bool {
+        guard let counter = multiClauseDurationCounterSuffixes.first(where: { surface.hasSuffix($0) }) else {
+            return false
+        }
+        let numeral = surface.dropLast(counter.count)
+        guard !numeral.isEmpty else { return false }
+        return numeral.allSatisfy { multiClauseNumeralCharacters.contains($0) }
     }
 
     static func isKatakanaString(_ text: String) -> Bool {
