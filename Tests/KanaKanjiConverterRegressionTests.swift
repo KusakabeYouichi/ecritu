@@ -274,6 +274,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(kikuka.contains("麴嘉"), "kikuka=\(kikuka)")
     }
 
+    // うまそうな/うまそうに: 様態そう の加点(applyStativeSouBoost)が漢字派生だけに乗り、seed で
+    // かな先頭の うまい 族なのに 旨そうな が先頭になっていた(うまそう は個別 seed で無事)。
+    // 元の形容詞がかな正書(seed 先頭かな/misc かな識別)なら かな派生にも同じ加点(ユーザ指定 2792)
+    func testRegressionRealLMUmaiFamilyKeepsKanaLeading() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["うまそうな", "うまそうに", "うまそう", "うまそうだ", "うまい", "うまかった", "うまく",
+                        "うまくない", "うますぎる", "うまいな", "うまそうなの", "うまそうだね", "うまそうなので",
+                        "おいしそうな", "おいしそうに"] {
+            let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, reading, "single=\(single)")
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertTrue(multi.isEmpty || multi.first == reading, "reading=\(reading) multi=\(multi)")
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), "keepKana \(reading)")
+        }
+        // 漢字正書の形容詞(高い)は従来どおり漢字先頭
+        let taka = converter.candidates(for: "たかそうな", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(taka.first, "高そうな", "taka=\(taka)")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {
