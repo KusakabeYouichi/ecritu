@@ -112,13 +112,13 @@
 	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>mpf</string></dict>	<!-- macération préfermentaire à froid(発酵前低温浸漬) -->
 	<dict><key>phrase</key><string>MLF</string><key>shortcut</key><string>mlf</string></dict>	<!-- malolactic fermentation(マロラクティック発酵) -->
 	<dict><key>phrase</key><string>MCC</string><key>shortcut</key><string>mcc</string></dict>	<!-- Méthode Cap Classique(南ア) -->
-	<dict><key>phrase</key><string>MC法</string><key>shortcut</key><string>mc</string></dict>	<!-- Méthode Champenoise / Macération Carbonique -->
+	<dict><key>phrase</key><string>MC</string><key>shortcut</key><string>mc</string></dict>	<!-- MC法 / 炭酸ガス浸漬法 / Macération Carbonique -->
 	<dict><key>phrase</key><string>VSP</string><key>shortcut</key><string>vsp</string></dict>	<!-- Vertical Shoot Positioning(垂直梢仕立て) -->
 	<dict><key>phrase</key><string>GSM</string><key>shortcut</key><string>gsm</string></dict>	<!-- Grenache・Syrah・Mourvèdre -->
 	<dict><key>phrase</key><string>TCA</string><key>shortcut</key><string>tca</string></dict>	<!-- trichloroanisole(ブショネ) -->
 	<dict><key>phrase</key><string>TCP</string><key>shortcut</key><string>tcp</string></dict>	<!-- trichlorophenol -->
 	<dict><key>phrase</key><string>IBMP</string><key>shortcut</key><string>ibmp</string></dict>	<!-- isobutyl methoxypyrazine(青臭さの成分) -->
-	<dict><key>phrase</key><string>ESCA</string><key>shortcut</key><string>esca</string></dict>	<!-- ブドウ樹の幹の病害 -->
+	<dict><key>phrase</key><string>ESCA</string><key>shortcut</key><string>esca</string></dict>	<!-- ぶどう樹の幹の病害 -->
 	<dict><key>phrase</key><string>AXR</string><key>shortcut</key><string>axr</string></dict>	<!-- 台木 AxR1 -->
 	<dict><key>phrase</key><string>MV6</string><key>shortcut</key><string>mv6</string></dict>	<!-- ピノ・ノワールのクローン -->
 	<dict><key>phrase</key><string>DNA</string><key>shortcut</key><string>dna</string></dict>
