@@ -1317,8 +1317,8 @@ struct DegreSettingsSection: View {
     var body: some View {
         let prefersFahrenheit = DegreeSymbolOption.prefersFahrenheit
         let otherScaleNote = prefersFahrenheit
-            ? "Celsius でも同様です(°C / ℃)。"
-            : "Fahrenheit でも同様です(°F / ℉)。"
+            ? "Celsius(せっし・せるしうす)でも同様です(°C / ℃)。"
+            : "Fahrenheit(かし・ふぁーれんはいと)でも同様です(°F / ℉)。"
         VStack(alignment: .leading, spacing: 16) {
             Text("degré")
                 .font(.headline)
@@ -1340,7 +1340,8 @@ struct DegreSettingsSection: View {
     private static func description(prefersFahrenheit: Bool, otherScaleNote: String) -> String {
         var text = "SI(国際単位系)では、セルシウス温度の単位記号は度記号「°」と大文字「C」の 2 文字 °C と規定され、数値との間に空白を置きます(25 °C)。"
         text += "℃(1 文字)は SI の規定にはない互換文字で、日本語環境で広く使われています。\n"
-        text += "ここで選んだ字形は、数値入力モードの単位ドラムと、変換候補(せっし・かし・せるしうす・ふぁーれんはいと、数字のあとの「ど」)の両方に使われます。"
+        let ownReadings = prefersFahrenheit ? "かし・ふぁーれんはいと" : "せっし・せるしうす"
+        text += "ここで選んだ字形は、数値入力モードの単位ドラムと、変換候補(" + ownReadings + "、数字のあとの「ど」)の両方に使われます。"
         text += otherScaleNote
         text += "\n初期設定は " + (prefersFahrenheit ? "°F" : "°C") + " です。"
         return text
