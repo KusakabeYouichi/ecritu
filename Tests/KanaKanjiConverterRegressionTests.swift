@@ -13163,6 +13163,24 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // ひける(2773): 辞書の可能動詞行は 曳ける が最安で {曳ける, 彎ける, …, 弾ける, ひける, 引ける} だった。
+    // seed で 引ける を先頭、楽器名の直後は 弾 系を優遇、異体字 曵 は抑制
+    func testRegressionHikeruOrderAndInstrumentBonus() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let single = converter.candidates(for: "ひける", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["引ける", "弾ける"], "\(single)")
+        XCTAssertFalse(single.contains("曵ける"), "異体字は抑制: \(single)")
+        let cello = converter.multiClauseCandidates(for: "ちぇろひける", systemCandidateMode: .surface)
+        XCTAssertEqual(cello.first, "チェロ弾ける", "\(Array(cello.prefix(3)))")
+        XCTAssertFalse(cello.contains("チェロ曵ける"), "\(cello)")
+        let piano = converter.multiClauseCandidates(for: "ぴあのをひける", systemCandidateMode: .surface)
+        XCTAssertEqual(piano.first, "ピアノを弾ける", "\(Array(piano.prefix(3)))")
+        // 楽器でなければ 引 が先頭
+        let kuruma = converter.multiClauseCandidates(for: "くるまをひける", systemCandidateMode: .surface)
+        XCTAssertEqual(kuruma.first, "車を引ける", "\(Array(kuruma.prefix(3)))")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
