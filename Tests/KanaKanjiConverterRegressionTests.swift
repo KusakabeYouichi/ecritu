@@ -13104,7 +13104,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    // たいして(副詞、かな正書。2772): 単文節はかな先頭だが連文節は 対し+て(に対して の統計)が最良で
+    // たいして(副詞、かな正書。2771): 単文節はかな先頭だが連文節は 対し+て(に対して の統計)が最良で
     // たいしてうまくない→対してうまくない だった。かな副詞クランプ+seed 順変種で {たいして, 大して, 対して}
     func testRegressionTaishiteKanaAdverb() throws {
         try prepareRealLMDictionary()
@@ -13117,7 +13117,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single, ["たいして", "大して", "対して"], "\(single)")
     }
 
-    // すうふんでなおしてた(2772): 数分+出直してた(名詞直後の派生 7200)が 数分+で+直してた(2597+5000)に
+    // すうふんでなおしてた(2771): 数分+出直してた(名詞直後の派生 7200)が 数分+で+直してた(2597+5000)に
     // 397 差で勝ち、欲しい 数分で直してた が候補に無かった(数分 は Sudachi で 数+分 に割れ LM に無く
     // 数分→で の bigram が引けない)。意味は LM で判定できないので、助詞を呑んだ読みの動詞/名詞に対して
     // 助詞直後に境界を強制した再最適化経路を第2候補群に出す
@@ -13137,7 +13137,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ashita.first, "明日出直します", "\(Array(ashita.prefix(3)))")
     }
 
-    // かうかかわないか(2773): 最良が 買うか+飼わないか(か→飼わ の bigram だけ観測)で動詞が割れていた。
+    // かうかかわないか(2771): 最良が 買うか+飼わないか(か→飼わ の bigram だけ観測)で動詞が割れていた。
     // 同じ読み語幹の動詞が並列で別漢字になったら、揃えた2経路を再最適化して先頭2つに、混在を3番目に
     func testRegressionCoordinatedVerbConsistency() throws {
         try prepareRealLMDictionary()
@@ -13147,7 +13147,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Set(multi).count, multi.count, "重複なし: \(multi)")
     }
 
-    // ぴんくだし(2773): ピン+下し(下し 5852)が ピンク+だし(だし 6401+500)に勝っていた。
+    // ぴんくだし(2771): ピン+下し(下し 5852)が ピンク+だし(だし 6401+500)に勝っていた。
     // 体言直後のかなコピュラ・クラスタ(だし/だから/だけど…)を述語直後の終助詞と同じ水準へクランプ
     func testRegressionNounCopulaClusterKana() throws {
         try prepareRealLMDictionary()
@@ -13163,7 +13163,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
-    // ひける(2773): 辞書の可能動詞行は 曳ける が最安で {曳ける, 彎ける, …, 弾ける, ひける, 引ける} だった。
+    // ひける(2771): 辞書の可能動詞行は 曳ける が最安で {曳ける, 彎ける, …, 弾ける, ひける, 引ける} だった。
     // seed で 引ける を先頭、楽器名の直後は 弾 系を優遇、異体字 曵 は抑制
     func testRegressionHikeruOrderAndInstrumentBonus() throws {
         try prepareRealLMDictionary()
@@ -13179,6 +13179,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 楽器でなければ 引 が先頭
         let kuruma = converter.multiClauseCandidates(for: "くるまをひける", systemCandidateMode: .surface)
         XCTAssertEqual(kuruma.first, "車を引ける", "\(Array(kuruma.prefix(3)))")
+    }
+
+    // あるちゅう(2771): 辞書にある アル中 が単文節先頭なのに連文節の ある+中 が提示層で先に出ていた。
+    // 読み全体の seed で単文節に委ねる
+    func testRegressionAruchuuSeed() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.candidates(for: "あるちゅう", limit: 3, systemCandidateMode: .surface).first, "アル中")
+        XCTAssertTrue(converter.multiClauseCandidates(for: "あるちゅう", systemCandidateMode: .surface).isEmpty)
     }
 
     // 実機報告 第3陣(2756)。

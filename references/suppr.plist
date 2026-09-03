@@ -224,7 +224,7 @@
 	<dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict>	<!-- 黒 に似る(黑 は 黒 の旧字体) -->
 	<dict><key>phrase</key><string>出來る</string><key>shortcut</key><string>できる</string></dict>	<!-- 出来る に似る(來 は 来 の旧字体) -->
 	<dict><key>phrase</key><string>摸型</string><key>shortcut</key><string>もけい</string></dict>	<!-- 模型 に似る(摸 は 模 と手偏/木偏違いの別字) -->
-	<dict><key>phrase</key><string>曵く</string><key>shortcut</key><string>ひく</string></dict>	<!-- 曳く の異体字。ひける の候補を 曳ける/曵ける の二重で汚す(ユーザ指定 2773)。活用形は基底抑制で消える -->
+	<dict><key>phrase</key><string>曵く</string><key>shortcut</key><string>ひく</string></dict>	<!-- 曳く の異体字。ひける の候補を 曳ける/曵ける の二重で汚す(ユーザ指定 2771)。活用形は基底抑制で消える -->
 	<dict><key>phrase</key><string>曵ける</string><key>shortcut</key><string>ひける</string></dict>	<!-- 同上(辞書に可能動詞の行が直接あるため別途抑制) -->
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
