@@ -221,6 +221,22 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertNotEqual(multi.first, "かかれている")
     }
 
+    // ためしてみて: かな ため(形式名詞 3867)+curated してみて(床1500)の合成が 試してみて
+    // (活用OOV 6400)を undercut し、為してみて/爲してみて/溜めしてみて まで変種に並んでいた。
+    // ため 直後の する 活用かなクラスタに減点(multiClauseTameSuruClusterPenalty。2792)
+    func testRegressionRealLMTameshitemitePrefersTameshite() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let single = converter.candidates(for: "ためしてみて", limit: 10, systemCandidateMode: .surface)
+        XCTAssertEqual(single.first, "試してみて", "single=\(single)")
+        let multi = converter.multiClauseCandidates(for: "ためしてみて", systemCandidateMode: .surface)
+        XCTAssertTrue(multi.isEmpty || multi.first == "試してみて", "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.hasPrefix("為") || $0.hasPrefix("爲") || $0.hasPrefix("溜め") }, "multi=\(multi)")
+        // 正当な ため+に/の は影響を受けない
+        let tameni = converter.multiClauseCandidates(for: "そのためにした", systemCandidateMode: .surface)
+        XCTAssertEqual(tameni.first, "そのためにした", "tameni=\(tameni)")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {

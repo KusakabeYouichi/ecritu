@@ -1726,6 +1726,12 @@ extension KanaKanjiConverter {
                             node.surface != node.reading {
                             cost += Self.multiClauseFormalNounKanjiPenalty
                         }
+                        // 形式名詞 ため の直後の する 活用かなクラスタ(定数コメント参照)。
+                        if prevNode.reading == "ため", node.surface == node.reading,
+                            node.reading == "し"
+                                || Self.multiClauseSuruClusterKanaPrefixes.contains(where: { node.reading.hasPrefix($0) }) {
+                            cost += Self.multiClauseTameSuruClusterPenalty
+                        }
                         // 連用形+に(目的)の直後は移動動詞(来る/行く 系)が来る(食べに来た/飲みに行く)。
                         // 前ノードが b5 の 連用形+に なら、移動動詞にボーナスを与え 北 等の名詞化を退ける。
                         if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),

@@ -984,6 +984,14 @@ extension KanaKanjiConverter {
     static let multiClauseFormalNounKanjiPenalty = 1000
     // 形式名詞と同形の実質名詞(時は金なり/事の起こり/事あるごとに)。文頭に立つ とき/こと は
     // 「時間という概念」「事柄」そのものを指す実質名詞なので漢字が正書(ユーザー方針)。
+    // 形式名詞 ため(ため/為/爲/溜め)の直後に する 活用のかなクラスタ(して/した/してみて 等)は
+    // 立たない(ため は に/の/だ か読点に続く)。ためしてみて が かな ため(3867)+curated してみて
+    // (床1500)の合成で 試してみて(活用OOV 6400)を undercut し、為してみて/溜めしてみて まで
+    // 変種に並んでいた(2792)。ためし(試し)の1ノードは読みが違うので影響しない
+    static let multiClauseTameSuruClusterPenalty = 3000
+    static let multiClauseSuruClusterKanaPrefixes: [String] = [
+        "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"
+    ]
     // 述語直後(〜したとき/〜すること)は上の逆向きペナルティでかなを優先しており、
     // 文頭限定なので衝突しない。値は seed 順ボーナス(とき800)を上回る必要がある(2459)
     static let multiClauseSubstantiveNounReadings: Set<String> = ["とき", "こと"]
