@@ -13220,6 +13220,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(fahrenheit.contains("\u{00B0}F") && fahrenheit.contains("Fahrenheit"), "\(fahrenheit)")
     }
 
+    // すりむかする(2777): 化(か)の bigram 借用禁止(色化なー 対策)が スリム→化 955 まで塞ぎ、
+    // 刷+無化する が最良だった。カタカナ語(外来語)の直後だけ 化 の借用を許す
+    func testRegressionKatakanaPlusKaSuffix() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, expected) in [
+            ("すりむかする", "スリム化する"),
+            ("すりむかした", "スリム化した"),
+            ("でじたるかする", "デジタル化する"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "\(reading): \(Array(multi.prefix(3)))")
+        }
+        // かな/漢字 prev では従来どおり禁止(色化なー を作らない)
+        let iro = converter.multiClauseCandidates(for: "いろかなー", systemCandidateMode: .surface)
+        XCTAssertFalse(iro.contains(where: { $0.contains("化") }), "\(iro)")
+        let color = converter.multiClauseCandidates(for: "からーかなー", systemCandidateMode: .surface)
+        XCTAssertFalse(color.first?.contains("化") ?? false, "\(color)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
