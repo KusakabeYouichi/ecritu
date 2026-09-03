@@ -13104,6 +13104,19 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // たいして(副詞、かな正書。2772): 単文節はかな先頭だが連文節は 対し+て(に対して の統計)が最良で
+    // たいしてうまくない→対してうまくない だった。かな副詞クランプ+seed 順変種で {たいして, 大して, 対して}
+    func testRegressionTaishiteKanaAdverb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "たいしてうまくない", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(3)), ["たいしてうまくない", "大してうまくない", "対してうまくない"], "\(multi)")
+        let kawaranai = converter.multiClauseCandidates(for: "たいしてかわらない", systemCandidateMode: .surface)
+        XCTAssertEqual(kawaranai.first, "たいして変わらない", "\(Array(kawaranai.prefix(3)))")
+        let single = converter.candidates(for: "たいして", limit: 3, systemCandidateMode: .surface)
+        XCTAssertEqual(single, ["たいして", "大して", "対して"], "\(single)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
