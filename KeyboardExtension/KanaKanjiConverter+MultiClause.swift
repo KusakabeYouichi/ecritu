@@ -1430,6 +1430,20 @@ extension KanaKanjiConverter {
                 Self.multiClauseBOSPenalizedParticles.contains(surface) {
                 penalty += Self.multiClauseBOSParticlePenalty
             }
+            // 体言直後のかなコピュラ・クラスタ(だし/だから/だけど…)はクランプ(定数コメント参照。2773)。
+            // 直前がカタカナ語(外来語名詞)で、助詞・述語(活用派生/辞書形)でないときだけ。
+            // 漢字名詞にも掛けると 層でしょ/奴ですね/遭難だけど/何処だろうか のような同音の誤変換名詞が
+            // かな正書(そう/やつ/どこ)に勝ってしまう(全網で6件退行)。カタカナ語にはかな識別の競合相手が無い
+            if surface == reading,
+                Self.multiClauseNounCopulaClusterReadings.contains(reading),
+                prev != Self.multiClauseBOSMarker,
+                prev != prevReading,
+                Self.isKatakanaString(prev),
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate,
+                !Self.multiClauseCaseParticleSurfaces.contains(prev),
+                !Self.multiClauseCompoundParticles.contains(prev) {
+                base = min(base, Self.multiClauseFinalParticleAfterPredicateCost)
+            }
             // 述語直後の終助詞かなクラスタはクランプ(定数コメント参照。2628)。
             // 1字(な/ね/し 等)は対象外 — 来ん(派生)+な が こんな を乗っ取る(検証で2件退行)。
             // のね/のよ も対象外 — 名詞除外付きの既存厳格ゲート(ExplanatoryFinal)に委譲
