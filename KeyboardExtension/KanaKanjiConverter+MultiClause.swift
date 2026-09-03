@@ -1518,13 +1518,18 @@ extension KanaKanjiConverter {
         let infinity = Int.max / 4
         // DP 本体を関数化(2736): 最良経路のほか「先頭文節を seed の次順位に固定した最良経路」を
         // 第2候補として作るために、開始ノードを1つに限定して再実行できるようにする
-        func solveViterbi(allowedStartNodeIndex: Int?) -> (best: [Int], backPointer: [Int], bestTotal: Int, bestEndIndex: Int, pathIndices: [Int])? {
+        // forcedBoundary(2772): その位置に文節境界を強制する(跨ぐノードを使わない)最良経路。
+        // 助詞を呑んだ派生動詞(出直してた)の代替経路(で+直してた)を作るのに使う
+        func solveViterbi(allowedStartNodeIndex: Int?, forcedBoundary: Int? = nil) -> (best: [Int], backPointer: [Int], bestTotal: Int, bestEndIndex: Int, pathIndices: [Int])? {
             var best = Array(repeating: infinity, count: nodes.count)
             var backPointer = Array(repeating: -1, count: nodes.count)
 
             for boundary in 1...n {
                 for idx in nodesEndingAt[boundary] {
                     let node = nodes[idx]
+                    if let forcedBoundary, node.start < forcedBoundary, forcedBoundary < node.end {
+                        continue
+                    }
                     // スパン先頭(seed/辞書順で最優先)の活用形へのボーナス(定数コメント参照)。
                     // 読み末尾が名詞化の さ のとき、形容動詞語幹(語幹→な の bigram 実績)ノードへ
                     // ボーナス。される 分割由来の安い bigram(検挙→さ532 等)を持つサ変名詞は
@@ -1980,6 +1985,54 @@ extension KanaKanjiConverter {
                 }
             }
         }
+        // 助詞を呑んだ派生動詞の代替経路(2772): 名詞直後の活用派生ノードの読みが格助詞で始まる
+        // (数分+出直してた の でなおしてた、明日+出直します 等)とき、そのノードを外して再最適化した
+        // 経路(数分+で+直してた)を第2候補群に加える。数分 は Sudachi では 数+分 に割れ LM に無く
+        // 数分→で の bigram が引けないため、助詞の backoff 500 ぶんだけ で 分割が負けていた(397差)。
+        // 意味(数分で直す / 明日出直す)は LM では判定できないのでコストは動かさず、両方を提示する。
+        // 変種は1文節差し替えしか作らないため、区切りの違う経路はこの再最適化でしか出せない
+        var particleSplitAlternativeJoined: String? = nil
+        var particleSplitAlternativeDelta = 0
+        if pathIndices.count >= 2 {
+            for pos in 1..<pathIndices.count {
+                let node = nodes[pathIndices[pos]]
+                let prevNode = nodes[pathIndices[pos - 1]]
+                // 対象ノード: 辞書語か活用派生(出直してた/出直し)で読みが格助詞で始まるもの。
+                // 前ノードは名詞など(かな素通り・助詞は除く。数分 は数詞合成で派生扱いなので派生も許す)
+                guard node.isInflectionDerived || node.isDictWord,
+                    node.surface != node.reading,
+                    node.reading.count >= 3,
+                    let head = node.reading.first,
+                    Self.multiClauseSwallowedParticleHeads.contains(head),
+                    prevNode.surface != prevNode.reading || prevNode.isCurated,
+                    !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface),
+                    let alternative = solveViterbi(allowedStartNodeIndex: nil, forcedBoundary: node.start + 1),
+                    alternative.pathIndices.count > pathIndices.count,
+                    alternative.bestTotal - bestTotal <= Self.multiClauseSwallowedParticleAlternativeMaxDelta else {
+                    continue
+                }
+                // 代替経路が実際に「その位置で助詞に割れ、続きが語(辞書語/派生。かな素通りの断片でない)」
+                // であることを確認する(家電話→家+で+んわ のような断片経路は出さない)
+                let altSurfaces = alternative.pathIndices.map { nodes[$0].surface }
+                guard let splitPos = alternative.pathIndices.firstIndex(where: { nodes[$0].start == node.start }),
+                    splitPos + 1 < alternative.pathIndices.count,
+                    nodes[alternative.pathIndices[splitPos]].surface == String(head),
+                    nodes[alternative.pathIndices[splitPos]].reading == String(head) else {
+                    continue
+                }
+                let afterParticle = nodes[alternative.pathIndices[splitPos + 1]]
+                guard afterParticle.isDictWord || afterParticle.isInflectionDerived || afterParticle.isCurated,
+                    afterParticle.surface != afterParticle.reading || afterParticle.isCurated else {
+                    continue
+                }
+                let altJoined = altSurfaces.joined()
+                if altJoined != normalized {
+                    particleSplitAlternativeJoined = altJoined
+                    particleSplitAlternativeDelta = alternative.bestTotal - bestTotal
+                }
+                break
+            }
+        }
         #if DEBUG
         // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
         if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
@@ -2347,6 +2400,13 @@ extension KanaKanjiConverter {
         // こおりがとけて で 凍りが溶けて が 氷が解けて(僅差の末尾変種)より前に出た
         if let leadAlternativeJoined, leadAlternativeJoined != joined {
             variants.append((leadAlternativeDelta, -1, leadAlternativeJoined))
+            variants.sort { lhs, rhs in
+                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
+            }
+        }
+        // 助詞に割った代替経路(2772)もコスト差で同列に並べる
+        if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
+            variants.append((particleSplitAlternativeDelta, -2, particleSplitAlternativeJoined))
             variants.sort { lhs, rhs in
                 lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
             }

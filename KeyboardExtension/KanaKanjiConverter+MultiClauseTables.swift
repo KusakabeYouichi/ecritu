@@ -236,6 +236,10 @@ extension KanaKanjiConverter {
     static let multiClauseExistentialAttaAfterGaBonus = 1500
     // 先頭文節を seed 2番目に固定した再最適化経路を第2候補に採る許容差(最良との合計コスト差。2736)
     static let multiClauseLeadAlternativeMaxDelta = 6000
+    // 助詞を呑んだ派生動詞(でなおす=出直す / で+直す)の代替経路(2772、適用箇所のコメント参照)。
+    // 対象は読みがこれらの格助詞で始まる派生ノード。に は 逃げる/似合う 等の頻出動詞と衝突しやすいので入れない
+    static let multiClauseSwallowedParticleHeads: Set<Character> = ["で", "と", "が", "を", "は"]
+    static let multiClauseSwallowedParticleAlternativeMaxDelta = 2500
     // 変種の差分に反映する seed 順ボーナスの上限(2738。pairCost 参照)
     static let multiClauseVariantSeedBonusCap = 600
     // 活用派生の変種で語幹が LM 未収録(熔け 等)のときの加算(2739。変種ループ参照)
