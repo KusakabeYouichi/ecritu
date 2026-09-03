@@ -106,4 +106,5 @@ do {
     FileHandle.standardError.write("failed to write \(outputURL.path): \(error)\n".data(using: .utf8)!)
     exit(1)
 }
+
 print("[latin-suppl] \(entries.count) entries -> \(outputURL.path)")

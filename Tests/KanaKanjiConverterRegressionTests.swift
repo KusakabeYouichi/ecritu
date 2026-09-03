@@ -11903,10 +11903,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMGoutenAndTakusanNomeru() throws {
         try prepareRealLMDictionary()
 
-        XCTAssertEqual(
-            Array(converter.candidates(for: "ごうてん", limit: 3, systemCandidateMode: .surface).prefix(2)),
-            ["号店", "合点"]
-        )
+        // 合点(がってん/がてん)の併記は誤りだったので 2771 で外した
+        XCTAssertEqual(converter.candidates(for: "ごうてん", limit: 3, systemCandidateMode: .surface).first, "号店")
         XCTAssertEqual(converter.candidates(for: "のめる", limit: 3, systemCandidateMode: .surface).first, "飲める")
         for (probe, expected) in [
             ("たくさんのめると", "たくさん飲めると"),
@@ -13099,6 +13097,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(single.contains("事象"), "\(single)")
         let jishou = converter.candidates(for: "じしょう", limit: 12, systemCandidateMode: .surface)
         XCTAssertTrue(jishou.contains("事象"), "\(jishou)")
+        // seed の Sudachi 照合(2771)で見つかった同型の誤読み供給
+        for (reading, wrong) in [("うつる", "現る"), ("ごうてん", "合点"), ("だと", "打つ")] {
+            let candidates = converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface)
+            XCTAssertFalse(candidates.contains(wrong), "\(reading): \(candidates)")
+        }
     }
 
     // 実機報告 第3陣(2756)。
