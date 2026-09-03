@@ -201,6 +201,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // かかれている: かかる の可能形 係れる/掛れる が辞書エントリで先頭、かく の受身 書かれ* は
+    // 活用派生のみで 5 位。連文節は全 OOV 7200 タイで列挙先勝ちのかな かかれている が先頭、
+    // keepKana も かかれて→かかる 脱活用で true になり実機バーでかなが先頭に残っていた。
+    // per-form seed(いわれ* と同型)で 書かれ*→描かれ* を先頭、かなは末尾側に(2792)
+    func testRegressionRealLMKakareteiruPrefersKakareru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for reading in ["かかれる", "かかれて", "かかれた", "かかれている"] {
+            let single = converter.candidates(for: reading, limit: 10, systemCandidateMode: .surface)
+            XCTAssertEqual(single.first, "書か" + reading.dropFirst(2), "reading=\(reading) single=\(single)")
+            XCTAssertEqual(single.dropFirst().first, "描か" + reading.dropFirst(2), "reading=\(reading) single=\(single)")
+            if let kanaIndex = single.firstIndex(of: reading) {
+                XCTAssertGreaterThanOrEqual(kanaIndex, 4, "かなは末尾側 reading=\(reading) single=\(single)")
+            }
+        }
+        let multi = converter.multiClauseCandidates(for: "かかれている", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "書かれている", "multi=\(multi)")
+        XCTAssertNotEqual(multi.first, "かかれている")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {

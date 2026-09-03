@@ -382,9 +382,11 @@ extension KanaKanjiConverter {
                 )
 
             // 補助クラス(いる=一段 等、sqlite が1クラスしか持てない同表記多クラス語の補完)
-            // も許可判定に含める。
+            // も許可判定に含める。sqlite に無い seed 供給のみの基底(かかれる→書かれる)は
+            // 本クラスが nil なので、補助クラスの許可分をそのまま採用する(2792)
             let supplementaryClasses = Self.supplementaryInflectionClassesByReading[baseReading]?[candidate] ?? []
-            guard let inflectionClass,
+            guard let inflectionClass = inflectionClass
+                    ?? supplementaryClasses.first(where: { rule.allowedClasses.contains(className: $0) }),
                 rule.allowedClasses.contains(className: inflectionClass)
                     || rule.allowedClasses.intersects(classNames: supplementaryClasses) else {
                 continue
