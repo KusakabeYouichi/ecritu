@@ -2,41 +2,41 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- ワインの略語・記号(ラテン文字)。欧文サジェスチョン専用: shortcut は phrase のラテン文字部分を小文字化・アクサン除去した
+	<!-- ワインの略語・記号(ラテン文字)。欧文サジェスチョン専用: shortcut は phrase のラテン文字部分を小文字化・アクサン除去・ピリオド除去した
 	     検索キー(実行時 latinSuggestionSearchKey と同じ折り畳み。ß はそのまま)。かな読みは持たない。『■ 』=カテゴリー、『□ 』=サブカテゴリー -->
 
 	<!-- ■ 原産地呼称・品質分類制度(EU 共通の品質表示) -->
-	<dict><key>phrase</key><string>P.D.O.</string><key>shortcut</key><string>p.d.o.</string></dict>	<!-- Protected Designation of Origin -->
-	<dict><key>phrase</key><string>P.G.I.</string><key>shortcut</key><string>p.g.i.</string></dict>	<!-- Protected Geographical Indication -->
-	<dict><key>phrase</key><string>T.S.G.</string><key>shortcut</key><string>t.s.g.</string></dict>	<!-- Traditional Speciality Guaranteed -->
-	<dict><key>phrase</key><string>g.U.</string><key>shortcut</key><string>g.u.</string></dict>	<!-- geschützte Ursprungsbezeichnung(独) -->
-	<dict><key>phrase</key><string>g.g.A.</string><key>shortcut</key><string>g.g.a.</string></dict>	<!-- geschützte geografische Angabe(独) -->
-	<dict><key>phrase</key><string>I.G.P.</string><key>shortcut</key><string>i.g.p.</string></dict>	<!-- Indication Géographique Protégée(仏) -->
-	<dict><key>phrase</key><string>I.G.T.</string><key>shortcut</key><string>i.g.t.</string></dict>	<!-- Indicazione Geografica Tipica(伊) -->
-	<dict><key>phrase</key><string>V.S.I.G.</string><key>shortcut</key><string>v.s.i.g.</string></dict>	<!-- Vin Sans Indication Géographique(仏) -->
-	<dict><key>phrase</key><string>I.G.</string><key>shortcut</key><string>i.g.</string></dict>	<!-- Indicação Geográfica(葡) -->
+	<dict><key>phrase</key><string>P.D.O.</string><key>shortcut</key><string>pdo</string></dict>	<!-- Protected Designation of Origin -->
+	<dict><key>phrase</key><string>P.G.I.</string><key>shortcut</key><string>pgi</string></dict>	<!-- Protected Geographical Indication -->
+	<dict><key>phrase</key><string>T.S.G.</string><key>shortcut</key><string>tsg</string></dict>	<!-- Traditional Speciality Guaranteed -->
+	<dict><key>phrase</key><string>g.U.</string><key>shortcut</key><string>gu</string></dict>	<!-- geschützte Ursprungsbezeichnung(独) -->
+	<dict><key>phrase</key><string>g.g.A.</string><key>shortcut</key><string>gga</string></dict>	<!-- geschützte geografische Angabe(独) -->
+	<dict><key>phrase</key><string>I.G.P.</string><key>shortcut</key><string>igp</string></dict>	<!-- Indication Géographique Protégée(仏) -->
+	<dict><key>phrase</key><string>I.G.T.</string><key>shortcut</key><string>igt</string></dict>	<!-- Indicazione Geografica Tipica(伊) -->
+	<dict><key>phrase</key><string>V.S.I.G.</string><key>shortcut</key><string>vsig</string></dict>	<!-- Vin Sans Indication Géographique(仏) -->
+	<dict><key>phrase</key><string>I.G.</string><key>shortcut</key><string>ig</string></dict>	<!-- Indicação Geográfica(葡) -->
 
 	<!-- ■ 原産地呼称・品質分類制度(各国) -->
-	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>d.a.c.</string></dict>	<!-- Districtus Austriae Controllatus(墺) -->
+	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>dac</string></dict>	<!-- Districtus Austriae Controllatus(墺) -->
 	<dict><key>phrase</key><string>DAC</string><key>shortcut</key><string>dac</string></dict>	<!-- 同上(ピリオドなし) -->
 	<dict><key>phrase</key><string>DO</string><key>shortcut</key><string>do</string></dict>	<!-- Denominación de Origen(西)/Denominação de Origem(葡) -->
-	<dict><key>phrase</key><string>V.P.</string><key>shortcut</key><string>v.p.</string></dict>	<!-- Vino de Pago(西) -->
-	<dict><key>phrase</key><string>V.R.</string><key>shortcut</key><string>v.r.</string></dict>	<!-- Vinho Regional(葡) -->
-	<dict><key>phrase</key><string>V.Q.A.</string><key>shortcut</key><string>v.q.a.</string></dict>	<!-- Vintners Quality Alliance(加) -->
-	<dict><key>phrase</key><string>D.V.A.</string><key>shortcut</key><string>d.v.a.</string></dict>	<!-- Designated Viticultural Area(加 BC) -->
-	<dict><key>phrase</key><string>W.O.</string><key>shortcut</key><string>w.o.</string></dict>	<!-- Wine of Origin(南ア) -->
-	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>g.i.</string></dict>	<!-- Geographical Indication(豪) -->
-	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>g.i.c.</string></dict>	<!-- Geographical Indications Committee(豪) -->
+	<dict><key>phrase</key><string>V.P.</string><key>shortcut</key><string>vp</string></dict>	<!-- Vino de Pago(西) -->
+	<dict><key>phrase</key><string>V.R.</string><key>shortcut</key><string>vr</string></dict>	<!-- Vinho Regional(葡) -->
+	<dict><key>phrase</key><string>V.Q.A.</string><key>shortcut</key><string>vqa</string></dict>	<!-- Vintners Quality Alliance(加) -->
+	<dict><key>phrase</key><string>D.V.A.</string><key>shortcut</key><string>dva</string></dict>	<!-- Designated Viticultural Area(加 BC) -->
+	<dict><key>phrase</key><string>W.O.</string><key>shortcut</key><string>wo</string></dict>	<!-- Wine of Origin(南ア) -->
+	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>gi</string></dict>	<!-- Geographical Indication(豪) -->
+	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>gic</string></dict>	<!-- Geographical Indications Committee(豪) -->
 	<dict><key>phrase</key><string>UK Quality Wine Schemes</string><key>shortcut</key><string>uk quality wine schemes</string></dict>
 
 	<!-- □ ドイツ VDP(Verband Deutscher Prädikatsweingüter)の格付け -->
-	<dict><key>phrase</key><string>VDP.</string><key>shortcut</key><string>vdp.</string></dict>
-	<dict><key>phrase</key><string>VDP. Die Prädikatsweingüter</string><key>shortcut</key><string>vdp. die pradikatsweinguter</string></dict>
-	<dict><key>phrase</key><string>VDP. Gutswein</string><key>shortcut</key><string>vdp. gutswein</string></dict>
-	<dict><key>phrase</key><string>VDP. Ortswein</string><key>shortcut</key><string>vdp. ortswein</string></dict>
-	<dict><key>phrase</key><string>VDP. Erste Lage</string><key>shortcut</key><string>vdp. erste lage</string></dict>
-	<dict><key>phrase</key><string>VDP. Große Lage</string><key>shortcut</key><string>vdp. große lage</string></dict>
-	<dict><key>phrase</key><string>VDP. Großes Gewächs</string><key>shortcut</key><string>vdp. großes gewachs</string></dict>
+	<dict><key>phrase</key><string>VDP.</string><key>shortcut</key><string>vdp</string></dict>
+	<dict><key>phrase</key><string>VDP. Die Prädikatsweingüter</string><key>shortcut</key><string>vdp die pradikatsweinguter</string></dict>
+	<dict><key>phrase</key><string>VDP. Gutswein</string><key>shortcut</key><string>vdp gutswein</string></dict>
+	<dict><key>phrase</key><string>VDP. Ortswein</string><key>shortcut</key><string>vdp ortswein</string></dict>
+	<dict><key>phrase</key><string>VDP. Erste Lage</string><key>shortcut</key><string>vdp erste lage</string></dict>
+	<dict><key>phrase</key><string>VDP. Große Lage</string><key>shortcut</key><string>vdp große lage</string></dict>
+	<dict><key>phrase</key><string>VDP. Großes Gewächs</string><key>shortcut</key><string>vdp großes gewachs</string></dict>
 
 	<!-- ■ 持続可能性・有機・倫理の認証 -->
 	<dict><key>phrase</key><string>CCOF</string><key>shortcut</key><string>ccof</string></dict>	<!-- California Certified Organic Farmers -->
@@ -49,15 +49,15 @@
 	<dict><key>phrase</key><string>BWI</string><key>shortcut</key><string>bwi</string></dict>	<!-- Biodiversity & Wine Initiative(南ア) -->
 
 	<!-- ■ 甘口・酒精強化・蒸留酒の区分と熟成表示 -->
-	<dict><key>phrase</key><string>V.D.N.</string><key>shortcut</key><string>v.d.n.</string></dict>	<!-- Vin Doux Naturel -->
-	<dict><key>phrase</key><string>V.D.L.</string><key>shortcut</key><string>v.d.l.</string></dict>	<!-- Vin de Liqueur -->
-	<dict><key>phrase</key><string>L.B.V</string><key>shortcut</key><string>l.b.v</string></dict>	<!-- Late Bottled Vintage(ポート) -->
+	<dict><key>phrase</key><string>V.D.N.</string><key>shortcut</key><string>vdn</string></dict>	<!-- Vin Doux Naturel -->
+	<dict><key>phrase</key><string>V.D.L.</string><key>shortcut</key><string>vdl</string></dict>	<!-- Vin de Liqueur -->
+	<dict><key>phrase</key><string>L.B.V</string><key>shortcut</key><string>lbv</string></dict>	<!-- Late Bottled Vintage(ポート) -->
 	<dict><key>phrase</key><string>VS</string><key>shortcut</key><string>vs</string></dict>	<!-- Very Special(コニャック等) -->
-	<dict><key>phrase</key><string>V.S.O.P.</string><key>shortcut</key><string>v.s.o.p.</string></dict>	<!-- Very Superior Old Pale -->
+	<dict><key>phrase</key><string>V.S.O.P.</string><key>shortcut</key><string>vsop</string></dict>	<!-- Very Superior Old Pale -->
 	<dict><key>phrase</key><string>XO</string><key>shortcut</key><string>xo</string></dict>	<!-- Extra Old -->
-	<dict><key>phrase</key><string>V.O.</string><key>shortcut</key><string>v.o.</string></dict>	<!-- Very Old -->
-	<dict><key>phrase</key><string>V.O.S.</string><key>shortcut</key><string>v.o.s.</string></dict>	<!-- Very Old Sherry(12年以上) -->
-	<dict><key>phrase</key><string>V.O.R.S.</string><key>shortcut</key><string>v.o.r.s.</string></dict>	<!-- Very Old Rare Sherry(20年以上) -->
+	<dict><key>phrase</key><string>V.O.</string><key>shortcut</key><string>vo</string></dict>	<!-- Very Old -->
+	<dict><key>phrase</key><string>V.O.S.</string><key>shortcut</key><string>vos</string></dict>	<!-- Very Old Sherry(12年以上) -->
+	<dict><key>phrase</key><string>V.O.R.S.</string><key>shortcut</key><string>vors</string></dict>	<!-- Very Old Rare Sherry(20年以上) -->
 
 	<!-- ■ シャンパーニュの生産者区分(ラベルの登録業態) -->
 	<dict><key>phrase</key><string>NM</string><key>shortcut</key><string>nm</string></dict>	<!-- Négociant-Manipulant -->
@@ -92,8 +92,8 @@
 	<dict><key>phrase</key><string>DIAM</string><key>shortcut</key><string>diam</string></dict>	<!-- コルク栓のブランド -->
 
 	<!-- ■ 団体・機関・行政 -->
-	<dict><key>phrase</key><string>I.N.A.O.</string><key>shortcut</key><string>i.n.a.o.</string></dict>	<!-- Institut National de l'Origine et de la Qualité(仏) -->
-	<dict><key>phrase</key><string>O.I.V.</string><key>shortcut</key><string>o.i.v.</string></dict>	<!-- Organisation Internationale de la Vigne et du Vin -->
+	<dict><key>phrase</key><string>I.N.A.O.</string><key>shortcut</key><string>inao</string></dict>	<!-- Institut National de l'Origine et de la Qualité(仏) -->
+	<dict><key>phrase</key><string>O.I.V.</string><key>shortcut</key><string>oiv</string></dict>	<!-- Organisation Internationale de la Vigne et du Vin -->
 	<dict><key>phrase</key><string>CIVC</string><key>shortcut</key><string>civc</string></dict>	<!-- Comité Interprofessionnel du Vin de Champagne -->
 	<dict><key>phrase</key><string>INV</string><key>shortcut</key><string>inv</string></dict>	<!-- Instituto Nacional de Vitivinicultura(亜) -->
 	<dict><key>phrase</key><string>KWV</string><key>shortcut</key><string>kwv</string></dict>	<!-- 南アフリカの旧協同組合 -->
@@ -123,8 +123,8 @@
 	<dict><key>phrase</key><string>FCL</string><key>shortcut</key><string>fcl</string></dict>	<!-- Full Container Load -->
 	<dict><key>phrase</key><string>LCL</string><key>shortcut</key><string>lcl</string></dict>	<!-- Less than Container Load -->
 	<dict><key>phrase</key><string>EPA</string><key>shortcut</key><string>epa</string></dict>	<!-- 経済連携協定 -->
-	<dict><key>phrase</key><string>B.O.B.</string><key>shortcut</key><string>b.o.b.</string></dict>	<!-- Buyer's Own Brand -->
-	<dict><key>phrase</key><string>O.E.M.</string><key>shortcut</key><string>o.e.m.</string></dict>	<!-- Original Equipment Manufacturer -->
+	<dict><key>phrase</key><string>B.O.B.</string><key>shortcut</key><string>bob</string></dict>	<!-- Buyer's Own Brand -->
+	<dict><key>phrase</key><string>O.E.M.</string><key>shortcut</key><string>oem</string></dict>	<!-- Original Equipment Manufacturer -->
 
 	<!-- ■ 生産者・製品名 -->
 	<dict><key>phrase</key><string>DRC</string><key>shortcut</key><string>drc</string></dict>	<!-- Domaine de la Romanée-Conti -->
@@ -154,12 +154,12 @@
 	<dict><key>phrase</key><string>OVP</string><key>shortcut</key><string>ovp</string></dict>
 	<dict><key>phrase</key><string>TPO</string><key>shortcut</key><string>tpo</string></dict>
 	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>koj</string></dict>
-	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string>d.h.c.</string></dict>
-	<dict><key>phrase</key><string>G.C.D.O.</string><key>shortcut</key><string>g.c.d.o.</string></dict>
-	<dict><key>phrase</key><string>G.D.O.</string><key>shortcut</key><string>g.d.o.</string></dict>
-	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>m.p.f.</string></dict>
-	<dict><key>phrase</key><string>O.F.J.</string><key>shortcut</key><string>o.f.j.</string></dict>
-	<dict><key>phrase</key><string>V.C.</string><key>shortcut</key><string>v.c.</string></dict>
-	<dict><key>phrase</key><string>V.C.P.</string><key>shortcut</key><string>v.c.p.</string></dict>
+	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string>dhc</string></dict>
+	<dict><key>phrase</key><string>G.C.D.O.</string><key>shortcut</key><string>gcdo</string></dict>
+	<dict><key>phrase</key><string>G.D.O.</string><key>shortcut</key><string>gdo</string></dict>
+	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>mpf</string></dict>
+	<dict><key>phrase</key><string>O.F.J.</string><key>shortcut</key><string>ofj</string></dict>
+	<dict><key>phrase</key><string>V.C.</string><key>shortcut</key><string>vc</string></dict>
+	<dict><key>phrase</key><string>V.C.P.</string><key>shortcut</key><string>vcp</string></dict>
 </array>
 </plist>
