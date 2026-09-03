@@ -541,7 +541,7 @@ extension KanaKanjiConverter {
         }
         // 元の い形容詞がかな正書(seed 先頭がかな: うまい/すごい、misc の かな識別: おいしい)なら
         // かな派生(うまそうな/うまそうに)にも同じ加点をして先頭を保つ。うまそう は個別 seed で
-        // かな先頭だったが、そうな/そうに は漢字だけが +220 されて 旨そうな が先頭になっていた(2792)
+        // かな先頭だったが、そうな/そうに は漢字だけが +220 されて 旨そうな が先頭になっていた(2784)
         let adjectiveBase = String(reading.dropLast(suffix.count)) + "い"
         let keepsKanaLead = KanaKanjiSeedDictionary.seed[adjectiveBase]?.first == adjectiveBase
             || hasCuratedKanaIdentity(for: adjectiveBase)

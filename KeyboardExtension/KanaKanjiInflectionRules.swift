@@ -84,7 +84,7 @@ extension KanaKanjiConverter {
     // 巻き添えで godan-ru のみ登録され、居る系一段の います/いた/いて が導出できない)。
     // 辞書再ビルドで複数クラス化するまでのコード側補完(既存クラスに追加。置換しない)。
     // かかれる: 書かれる/描かれる は seed 供給のみで inflection_classes に無く、かかれる 基底からの
-    // 一段派生(かかれている/かかれた 等)が 係れている 族だけになっていた(2792)
+    // 一段派生(かかれている/かかれた 等)が 係れている 族だけになっていた(2784)
     static let supplementaryInflectionClassesByReading: [String: [String: Set<String>]] = [
         "いる": ["いる": [InflectionClass.ichidan]],
         "かかれる": ["書かれる": [InflectionClass.ichidan], "描かれる": [InflectionClass.ichidan]]
@@ -226,7 +226,7 @@ extension KanaKanjiConverter {
     // 溜め に、買い占めよね が 買いしめよね に退行)ため、報告のあった語だけ有効にする。
     // 空の readingSuffix = 読み全体が語幹(derivedCandidates 側で分岐)
     // のせる: のせわすれた が の+世話+擦れた になっていた。連用形 乗せ/載せ を供給し、複合動詞の
-    // 前部要素ボーナス(multiClauseCompoundVerbRenyouStemReadings)と対で 載せ忘れた を組む(2792)
+    // 前部要素ボーナス(multiClauseCompoundVerbRenyouStemReadings)と対で 載せ忘れた を組む(2784)
     static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる", "のせる"]
 
     // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、

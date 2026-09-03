@@ -204,7 +204,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     // かかれている: かかる の可能形 係れる/掛れる が辞書エントリで先頭、かく の受身 書かれ* は
     // 活用派生のみで 5 位。連文節は全 OOV 7200 タイで列挙先勝ちのかな かかれている が先頭、
     // keepKana も かかれて→かかる 脱活用で true になり実機バーでかなが先頭に残っていた。
-    // per-form seed(いわれ* と同型)で 書かれ*→描かれ* を先頭、かなは末尾側に(2792)
+    // per-form seed(いわれ* と同型)で 書かれ*→描かれ* を先頭、かなは末尾側に(2784)
     func testRegressionRealLMKakareteiruPrefersKakareru() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -223,7 +223,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // ためしてみて: かな ため(形式名詞 3867)+curated してみて(床1500)の合成が 試してみて
     // (活用OOV 6400)を undercut し、為してみて/爲してみて/溜めしてみて まで変種に並んでいた。
-    // ため 直後の する 活用かなクラスタに減点(multiClauseTameSuruClusterPenalty。2792)
+    // ため 直後の する 活用かなクラスタに減点(multiClauseTameSuruClusterPenalty。2784)
     func testRegressionRealLMTameshitemitePrefersTameshite() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -239,7 +239,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // のせわすれた: 一段 のせる の連用形 乗せ/載せ が供給されず(載せ は のせ の word_costs に無い)、
     // の+世話+擦れた が最良になっていた。ichidanRenyouNounBaseReadings に のせる、seed のせ に 載せ、
-    // 複合動詞前部要素ボーナスの対象に のせ(送り仮名一致で判定)を追加(2792)
+    // 複合動詞前部要素ボーナスの対象に のせ(送り仮名一致で判定)を追加(2784)
     func testRegressionRealLMNosewasuretaCompoundVerb() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -255,7 +255,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // 麴(正字)は 麹 と字形が似て混在しやすいので suppr で一括抑制(人名 麴嘉/麴雍 は残す)。
-    // 麴塵 だけは 麹 版が辞書に無いため きくじん→麹塵 を misc、あおいろ→麹塵 を exactReadingOnlySeed で補充(ユーザ指定 2792)
+    // 麴塵 だけは 麹 版が辞書に無いため きくじん→麹塵 を misc、あおいろ→麹塵 を exactReadingOnlySeed で補充(ユーザ指定 2784)
     func testRegressionRealLMKikuVariantSuppressedWithKojijinSupplement() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -276,7 +276,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
     // うまそうな/うまそうに: 様態そう の加点(applyStativeSouBoost)が漢字派生だけに乗り、seed で
     // かな先頭の うまい 族なのに 旨そうな が先頭になっていた(うまそう は個別 seed で無事)。
-    // 元の形容詞がかな正書(seed 先頭かな/misc かな識別)なら かな派生にも同じ加点(ユーザ指定 2792)
+    // 元の形容詞がかな正書(seed 先頭かな/misc かな識別)なら かな派生にも同じ加点(ユーザ指定 2784)
     func testRegressionRealLMUmaiFamilyKeepsKanaLeading() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
@@ -7568,7 +7568,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(single.prefix(8).contains("飼いそう"), "single=\(single)")
         // 解そう系は出ない(2153)/海藻は上位維持
         XCTAssertFalse(single.contains(where: { ["解そう", "会そう", "介そう"].contains($0) }), "single=\(single)")
-        XCTAssertEqual(converter.candidates(for: "おいしそう", limit: 3, systemCandidateMode: .surface).first, "美味しそう")
+        // おいしい は misc のかな識別なので かな派生が先頭(2784 で様態そうの加点をかなにも)。美味しそう は直下
+        XCTAssertEqual(Array(converter.candidates(for: "おいしそう", limit: 3, systemCandidateMode: .surface).prefix(2)), ["おいしそう", "美味しそう"])
         XCTAssertEqual(converter.candidates(for: "なりそう", limit: 3, systemCandidateMode: .surface).first, "成りそう")
     }
 
