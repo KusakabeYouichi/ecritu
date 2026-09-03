@@ -1843,6 +1843,14 @@ extension KanaKanjiConverter {
                             (0x3041...0x3096).contains(prevPrevLast.value) {
                             cost += Self.multiClauseFinalParticleKanjiPenalty
                         }
+                        // 楽器名の直後(または 楽器名+を の直後)の 弾く 系(定数コメント参照。2773)
+                        if node.surface.hasPrefix("弾"),
+                            node.isInflectionDerived || node.isDictionaryFormPredicate,
+                            Self.multiClauseInstrumentNounSurfaces.contains(prevNode.surface)
+                                || (prevNode.surface == "を" && backPointer[prevIdx] >= 0
+                                    && Self.multiClauseInstrumentNounSurfaces.contains(nodes[backPointer[prevIdx]].surface)) {
+                            cost -= Self.multiClauseInstrumentPlayVerbBonus
+                        }
                         // 述語直後の 人(にん/じん) は文法として接続しない(定数コメント参照)。
                         if node.surface == "人",
                             Self.multiClausePersonSuffixSinoReadings.contains(node.reading),
