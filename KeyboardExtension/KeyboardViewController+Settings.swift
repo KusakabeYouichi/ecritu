@@ -58,6 +58,10 @@ extension KeyboardViewController {
             fallback: true
         )
 
+        degreeSymbolStyle = DegreeSymbolStyle(
+            sharedRawValue: sharedDefaults?.string(forKey: SharedDefaultsKeys.degreeSymbol)
+        )
+
         // 汎用Latinサジェスト語彙(同梱頻度リスト)の言語別トグル。既定は全言語OFF。
         var latinLexiconLanguages: Set<String> = []
         let latinLexiconKeysByLanguage: [(String, String)] = [

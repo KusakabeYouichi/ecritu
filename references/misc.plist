@@ -239,6 +239,12 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>°C</string><key>shortcut</key><string>せっし</string></dict>	<!-- 温度の単位記号(2773)。内部は SI 形 °C で持ち、設定 degré で ℃ にも置換される。℃ 自体は読みで一切出なかった -->
+	<dict><key>phrase</key><string>°F</string><key>shortcut</key><string>かし</string></dict>
+	<dict><key>phrase</key><string>°C</string><key>shortcut</key><string>せるしうす</string></dict>
+	<dict><key>phrase</key><string>Celsius</string><key>shortcut</key><string>せるしうす</string></dict>	<!-- Anders Celsius(スウェーデンの天文学者) -->
+	<dict><key>phrase</key><string>°F</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>
+	<dict><key>phrase</key><string>Fahrenheit</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>	<!-- Daniel Gabriel Fahrenheit(ドイツの物理学者) -->
 	<dict><key>phrase</key><string>被差別</string><key>shortcut</key><string>ひさべつ</string><key>pos</key><string>名詞</string></dict>	<!-- 被差別: Sudachi core/LM とも無い完全供給欠落(単文節は seed)。連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため curated 化(被差別部落 等) -->
 	<dict><key>phrase</key><string>とんかつ屋</string><key>shortcut</key><string>とんかつや</string><key>pos</key><string>名詞</string></dict>	<!-- とんかつ屋: Sudachi 未収録の複合。連文節で トン+勝谷(かつや の名前収穫)の分割に負けるため curated 化(単文節は seed でも供給) -->
 	<dict><key>phrase</key><string>網脂</string><key>shortcut</key><string>あみあぶら</string><key>pos</key><string>名詞</string></dict>	<!-- 網脂: Sudachi 未収録の複合(調理用語)。網+油/阿弥+油/編み+油 の合成しか出ないため curated 供給 -->

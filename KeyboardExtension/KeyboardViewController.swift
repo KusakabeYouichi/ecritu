@@ -301,6 +301,8 @@ final class KeyboardViewController: UIInputViewController {
     // サスペンド時スリム化(キーボード非表示時のキャッシュ破棄+ページ返却)。
     // コンテナーアプリでOn/Off可、既定オン(2640)
     var isSuspendMemorySlimmingEnabled = true
+    // 温度の度記号の字形(設定 degreeSymbol。提示層で °C/℃ を置換する)
+    var degreeSymbolStyle: DegreeSymbolStyle = .composed
     // MEMFORENSICS(時限計測 2651): プロセス初回変換スパイクの解剖は1回だけ
     nonisolated(unsafe) static var didProbeFirstConversionSpike = false
     var hasDeferredSharedSettingsCatchUp = false
@@ -415,6 +417,7 @@ final class KeyboardViewController: UIInputViewController {
         static let mazegakiCandidateMode = "mazegakiCandidateMode"
         static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
         static let latinLexiconEnglishEnabled = "latinLexiconEnglishEnabled"
+        static let degreeSymbol = DegreeSymbolStyle.sharedDefaultsKey
         static let latinLexiconFrenchEnabled = "latinLexiconFrenchEnabled"
         static let latinLexiconGermanEnabled = "latinLexiconGermanEnabled"
         static let latinLexiconItalianEnabled = "latinLexiconItalianEnabled"

@@ -33,6 +33,7 @@ enum SettingsKeys {
     static let numberGroupFourDigits = "numberGroupFourDigits"
     static let numberUnitProductSeparator = "numberUnitProductSeparator"
     static let numberLitreSymbol = "numberLitreSymbol"
+    static let degreeSymbol = "degreeSymbol"
     static let calendarWeekStart = "calendarWeekStart"
     static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
     static let calendarSundayColor = "calendarSundayColor"
@@ -278,6 +279,33 @@ enum LitreSymbolOption: String, CaseIterable, Identifiable {
             return "L: 1979年の第16回 CGPM が、数字の 1 との混同を避けるために追加した記号。SI では l と同格で、どちらを使ってもかまいません。"
         case .script:
             return "ℓ: SI にも ISO/JIS にも規定のない、日本などで広く使われる慣用の字形です。"
+        }
+    }
+}
+
+// 温度の度記号(degré)。内部の正規形は SI 形(° + 大文字。°C/°F)で、表示・確定時にこの設定へ変換する。
+// 数値入力モードの単位ドラムだけでなく、変換候補(せっし→°C、数字+ど→度/°C/°F)にも効く。
+enum DegreeSymbolOption: String, CaseIterable, Identifiable {
+    case composed   // °C / °F(SI・ISO の規定。度記号 U+00B0 + 文字)。標準の初期設定
+    case compat     // ℃ / ℉(U+2103 / U+2109。日本語環境の互換文字、1文字幅)
+
+    var id: String { rawValue }
+
+    // iOS の温度単位設定(設定 > 一般 > 言語と地域 > 温度)に合わせて、選択肢は Celsius か Fahrenheit の
+    // どちらか一方の字面で示す(もう一方も同じ規則で変わる旨を説明文に書く)
+    static var prefersFahrenheit: Bool {
+        if let raw = UserDefaults.standard.string(forKey: "AppleTemperatureUnit") {
+            return raw.lowercased().hasPrefix("f")
+        }
+        return Locale.autoupdatingCurrent.measurementSystem == .us
+    }
+
+    var title: String {
+        switch (self, Self.prefersFahrenheit) {
+        case (.composed, false): return "°C"
+        case (.compat, false): return "℃"
+        case (.composed, true): return "°F"
+        case (.compat, true): return "℉"
         }
     }
 }

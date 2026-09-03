@@ -200,7 +200,7 @@ extension ContentView {
         SettingsKeys.kanaPostModifierEmptyTapEmojiCategory, SettingsKeys.kanaPostModifierEmptyTapSymbolCategory,
         SettingsKeys.kanaPostModifierFlickDakutenEnabled,
         SettingsKeys.numberThousandsSeparator, SettingsKeys.numberGroupFourDigits, SettingsKeys.numberDecimalSeparator,
-        SettingsKeys.numberUnitProductSeparator, SettingsKeys.numberLitreSymbol,
+        SettingsKeys.numberUnitProductSeparator, SettingsKeys.numberLitreSymbol, SettingsKeys.degreeSymbol,
         SettingsKeys.calendarWeekStart, SettingsKeys.calendarWeekdayLanguage, SettingsKeys.calendarSundayColor,
         SettingsKeys.calendarSaturdayColor, SettingsKeys.calendarFridayColor, SettingsKeys.dateFormatStyle,
         SettingsKeys.latinLexiconFrenchEnabled, SettingsKeys.latinLexiconItalianEnabled,
@@ -245,6 +245,7 @@ extension ContentView {
         SettingsKeys.numberDecimalSeparator: DecimalSeparatorOption.dot.rawValue,
         SettingsKeys.numberUnitProductSeparator: UnitProductSeparatorOption.dotOperator.rawValue,
         SettingsKeys.numberLitreSymbol: LitreSymbolOption.small.rawValue,
+        SettingsKeys.degreeSymbol: DegreeSymbolOption.compat.rawValue,   // 保守的=℃(日本語環境の慣用)。標準は °C
         SettingsKeys.calendarWeekStart: CalendarWeekStartOption.monday.rawValue,
         SettingsKeys.calendarWeekdayLanguage: CalendarWeekdayLanguageOption.french.rawValue,
         SettingsKeys.calendarSundayColor: CalendarDayColorOption.dic156.rawValue,

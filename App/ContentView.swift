@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260903114350"
+    private static let editionUpdatedAtRaw: String = "20260903121815"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -126,6 +126,12 @@ struct ContentView: View {
         store: Self.sharedDefaults
     )
     private var numberLitreSymbolRawValue: String = LitreSymbolOption.small.rawValue
+
+    @AppStorage(
+        SettingsKeys.degreeSymbol,
+        store: Self.sharedDefaults
+    )
+    private var degreeSymbolRawValue: String = DegreeSymbolOption.composed.rawValue
 
     @AppStorage(
         SettingsKeys.calendarWeekStart,
@@ -472,6 +478,7 @@ struct ContentView: View {
             String(numberGroupFourDigits),
             numberUnitProductSeparatorRawValue,
             numberLitreSymbolRawValue,
+            degreeSymbolRawValue,
             calendarWeekStartRawValue,
             calendarWeekdayLanguageRawValue,
             calendarSundayColorRawValue,
@@ -566,6 +573,7 @@ struct ContentView: View {
         str(SettingsKeys.numberDecimalSeparator, numberDecimalSeparatorRawValue, "format numérique: Séparateur décimal")
         str(SettingsKeys.numberUnitProductSeparator, numberUnitProductSeparatorRawValue, "format numérique: 単位の積の記号")
         str(SettingsKeys.numberLitreSymbol, numberLitreSymbolRawValue, "format numérique: リットルの記号")
+        str(SettingsKeys.degreeSymbol, degreeSymbolRawValue, "degré: 温度の度記号(composed=°C・°F / compat=℃・℉)")
         str(SettingsKeys.calendarWeekStart, calendarWeekStartRawValue, "カレンダー: 週開始")
         str(SettingsKeys.calendarWeekdayLanguage, calendarWeekdayLanguageRawValue, "カレンダー: 曜日表記")
         str(SettingsKeys.calendarSundayColor, calendarSundayColorRawValue, "カレンダー: 日曜列の色")
@@ -730,6 +738,12 @@ struct ContentView: View {
     private var numberLitreSymbolSelection: Binding<LitreSymbolOption> {
         rawValueSelection(from: numberLitreSymbolRawValue, default: .small) {
             numberLitreSymbolRawValue = $0
+        }
+    }
+
+    private var degreeSymbolSelection: Binding<DegreeSymbolOption> {
+        rawValueSelection(from: degreeSymbolRawValue, default: .composed) {
+            degreeSymbolRawValue = $0
         }
     }
 
@@ -1129,6 +1143,8 @@ struct ContentView: View {
                             unitProductSeparator: numberUnitProductSeparatorSelection,
                             litreSymbol: numberLitreSymbolSelection
                         )
+
+                        DegreSettingsSection(degreeSymbol: degreeSymbolSelection)
 
                         CalendarSettingsGroupSection(
                             weekStart: calendarWeekStartSelection,
