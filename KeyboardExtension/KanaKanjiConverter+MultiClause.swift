@@ -1430,7 +1430,7 @@ extension KanaKanjiConverter {
                 Self.multiClauseBOSPenalizedParticles.contains(surface) {
                 penalty += Self.multiClauseBOSParticlePenalty
             }
-            // 体言直後のかなコピュラ・クラスタ(だし/だから/だけど…)はクランプ(定数コメント参照。2773)。
+            // 体言直後のかなコピュラ・クラスタ(だし/だから/だけど…)はクランプ(定数コメント参照。2771)。
             // 直前がカタカナ語(外来語名詞)で、助詞・述語(活用派生/辞書形)でないときだけ。
             // 漢字名詞にも掛けると 層でしょ/奴ですね/遭難だけど/何処だろうか のような同音の誤変換名詞が
             // かな正書(そう/やつ/どこ)に勝ってしまう(全網で6件退行)。カタカナ語にはかな識別の競合相手が無い
@@ -1532,9 +1532,9 @@ extension KanaKanjiConverter {
         let infinity = Int.max / 4
         // DP 本体を関数化(2736): 最良経路のほか「先頭文節を seed の次順位に固定した最良経路」を
         // 第2候補として作るために、開始ノードを1つに限定して再実行できるようにする
-        // forcedBoundary(2772): その位置に文節境界を強制する(跨ぐノードを使わない)最良経路。
+        // forcedBoundary(2771): その位置に文節境界を強制する(跨ぐノードを使わない)最良経路。
         // 助詞を呑んだ派生動詞(出直してた)の代替経路(で+直してた)を作るのに使う
-        // requiredNodeIndices(2773): 指定ノードを必ず使う最良経路(並列動詞の表記を揃えた経路用)。
+        // requiredNodeIndices(2771): 指定ノードを必ず使う最良経路(並列動詞の表記を揃えた経路用)。
         // 指定ノードのスパンと重なる他ノードは使わない
         func solveViterbi(
             allowedStartNodeIndex: Int?,
@@ -1843,7 +1843,7 @@ extension KanaKanjiConverter {
                             (0x3041...0x3096).contains(prevPrevLast.value) {
                             cost += Self.multiClauseFinalParticleKanjiPenalty
                         }
-                        // 楽器名の直後(または 楽器名+を の直後)の 弾く 系(定数コメント参照。2773)
+                        // 楽器名の直後(または 楽器名+を の直後)の 弾く 系(定数コメント参照。2771)
                         if node.surface.hasPrefix("弾"),
                             node.isInflectionDerived || node.isDictionaryFormPredicate,
                             Self.multiClauseInstrumentNounSurfaces.contains(prevNode.surface)
@@ -1997,7 +1997,7 @@ extension KanaKanjiConverter {
         var bestEndIndex = solved.bestEndIndex
         var pathIndices = solved.pathIndices
 
-        // 並列動詞の表記整合(2773): かうかかわないか の最良が 買うか+飼わないか(か→飼わ の bigram だけ
+        // 並列動詞の表記整合(2771): かうかかわないか の最良が 買うか+飼わないか(か→飼わ の bigram だけ
         // 観測)のように、同じ読み語幹の動詞が2か所で別の漢字になった経路は、片方だけ bigram が
         // 引けた偶然の産物で、読み手には筋が通らない。両スパンに同じ漢字語幹の兄弟が揃うとき
         // (買う/飼う と 買わない/飼わない)は、漢字を揃えた2経路を必須ノード指定で再最適化し、
@@ -2080,7 +2080,7 @@ extension KanaKanjiConverter {
                 }
             }
         }
-        // 助詞を呑んだ派生動詞の代替経路(2772): 名詞直後の活用派生ノードの読みが格助詞で始まる
+        // 助詞を呑んだ派生動詞の代替経路(2771): 名詞直後の活用派生ノードの読みが格助詞で始まる
         // (数分+出直してた の でなおしてた、明日+出直します 等)とき、そのノードを外して再最適化した
         // 経路(数分+で+直してた)を第2候補群に加える。数分 は Sudachi では 数+分 に割れ LM に無く
         // 数分→で の bigram が引けないため、助詞の backoff 500 ぶんだけ で 分割が負けていた(397差)。
@@ -2499,14 +2499,14 @@ extension KanaKanjiConverter {
                 lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
             }
         }
-        // 助詞に割った代替経路(2772)もコスト差で同列に並べる
+        // 助詞に割った代替経路(2771)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
             variants.append((particleSplitAlternativeDelta, -2, particleSplitAlternativeJoined))
             variants.sort { lhs, rhs in
                 lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
             }
         }
-        // 並列動詞を揃えた第2経路と元の混在経路(2773)は、1文節変種(元の混在経路より安い負の
+        // 並列動詞を揃えた第2経路と元の混在経路(2771)は、1文節変種(元の混在経路より安い負の
         // delta を持ち得る)より必ず前に置く。元の混在経路と同文字列の1文節変種は後段の重複除去で畳まれる
         if !coordinatedAlternatives.isEmpty {
             for (offset, alternative) in coordinatedAlternatives.enumerated() where alternative.joined != joined {
