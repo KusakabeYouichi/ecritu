@@ -1342,8 +1342,8 @@ struct DegreSettingsSection: View {
         text += "℃(1 文字)は SI の規定にはない互換文字で、日本語環境で広く使われています。\n"
         let ownReadings = prefersFahrenheit ? "かし・ふぁーれんはいと" : "せっし・せるしうす"
         text += "ここで選んだ字形は、数値入力モードの単位ドラムと、変換候補(" + ownReadings + "、数字のあとの「ど」)の両方に使われます。"
+        text += "初期設定は " + (prefersFahrenheit ? "°F" : "°C") + " です。\n"
         text += otherScaleNote
-        text += "\n初期設定は " + (prefersFahrenheit ? "°F" : "°C") + " です。"
         return text
     }
 }
