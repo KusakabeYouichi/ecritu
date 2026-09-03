@@ -10,17 +10,22 @@
 //   latinSuggestionSearchKey(diacritic/case/width insensitive, fr_FR, lowercased)
 // rank は 0 固定(追加語彙側の並びはキー順+同キー内は候補の localizedCaseInsensitiveCompare 順)。
 //
-// 使い方: swift tools/build_latin_suggestion_supplemental.swift <SecondVocab.json> <出力.txt>
+// 3 つめ以降の引数は欧文サジェスト専用 plist(references/vin-acronyme.plist)。shortcut を検索キー、
+// phrase を候補としてそのまま合流する(キーは phrase から導出しない: 『D.A.C.』を dac で引くため)。
+// キーには実行時と同じ折り畳みを掛けるので、plist 側は小文字・ピリオド除去済みでなくても揃う。
+//
+// 使い方: swift tools/build_latin_suggestion_supplemental.swift <SecondVocab.json> <出力.txt> [<欧文専用.plist>...]
 import Foundation
 
 let arguments = CommandLine.arguments
-guard arguments.count == 3 else {
-    FileHandle.standardError.write("usage: build_latin_suggestion_supplemental.swift <SecondVocab.json> <output.txt>\n".data(using: .utf8)!)
+guard arguments.count >= 3 else {
+    FileHandle.standardError.write("usage: build_latin_suggestion_supplemental.swift <SecondVocab.json> <output.txt> [<latin-only.plist>...]\n".data(using: .utf8)!)
     exit(2)
 }
 
 let inputURL = URL(fileURLWithPath: arguments[1])
 let outputURL = URL(fileURLWithPath: arguments[2])
+let latinOnlyPlistURLs = arguments.dropFirst(3).map { URL(fileURLWithPath: $0) }
 
 guard let data = try? Data(contentsOf: inputURL),
     let dictionary = try? JSONSerialization.jsonObject(with: data) as? [String: [String]] else {
@@ -84,6 +89,30 @@ for reading in dictionary.keys.sorted() {
     }
 }
 
+// 欧文専用 plist: shortcut がキー。同じ候補が補助語彙側にあっても(キーが違うので)別行として残す
+var seenPairs = Set<String>()
+var latinOnlyCount = 0
+for plistURL in latinOnlyPlistURLs {
+    guard let plistData = try? Data(contentsOf: plistURL),
+        let rows = try? PropertyListSerialization.propertyList(from: plistData, format: nil) as? [[String: Any]] else {
+        FileHandle.standardError.write("failed to read \(plistURL.path)\n".data(using: .utf8)!)
+        exit(1)
+    }
+    for row in rows {
+        guard let rawShortcut = row["shortcut"] as? String, let rawPhrase = row["phrase"] as? String else { continue }
+        let candidate = rawPhrase.trimmingCharacters(in: .whitespacesAndNewlines)
+        let key = searchKey(rawShortcut)
+        guard !candidate.isEmpty, !key.isEmpty else { continue }
+        guard isLatinSuggestionCandidate(candidate), !candidate.contains("\t"), !candidate.contains("\n") else {
+            FileHandle.standardError.write("[latin-suppl] skip non-latin phrase: \(candidate) (\(plistURL.lastPathComponent))\n".data(using: .utf8)!)
+            continue
+        }
+        guard seenPairs.insert(key + "\t" + candidate).inserted else { continue }
+        entries.append(Entry(keyBytes: Array(key.utf8), key: key, candidate: candidate))
+        latinOnlyCount += 1
+    }
+}
+
 entries.sort { lhs, rhs in
     if lhs.keyBytes == rhs.keyBytes {
         return lhs.candidate.localizedCaseInsensitiveCompare(rhs.candidate) == .orderedAscending
@@ -107,4 +136,4 @@ do {
     exit(1)
 }
 
-print("[latin-suppl] \(entries.count) entries -> \(outputURL.path)")
+print("[latin-suppl] \(entries.count) entries (latin-only plist: \(latinOnlyCount)) -> \(outputURL.path)")
