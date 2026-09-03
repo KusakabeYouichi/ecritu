@@ -17,6 +17,14 @@
 	<dict><key>phrase</key><string>I.G.</string><key>shortcut</key><string>ig</string></dict>	<!-- Indicação Geográfica(葡) -->
 
 	<!-- ■ 原産地呼称・品質分類制度(各国) -->
+	<dict><key>phrase</key><string>A.O.C.</string><key>shortcut</key><string>aoc</string></dict>	<!-- Appellation d'Origine Contrôlée(仏) -->
+	<dict><key>phrase</key><string>A.O.P.</string><key>shortcut</key><string>aop</string></dict>	<!-- Appellation d'Origine Protégée(仏) -->
+	<dict><key>phrase</key><string>A.V.A.</string><key>shortcut</key><string>ava</string></dict>	<!-- American Viticultural Area(米) -->
+	<dict><key>phrase</key><string>D.O.</string><key>shortcut</key><string>do</string></dict>	<!-- Denominación de Origen(西)/Denominação de Origem(葡) -->
+	<dict><key>phrase</key><string>D.O.Ca.</string><key>shortcut</key><string>doca</string></dict>	<!-- Denominación de Origen Calificada(西) -->
+	<dict><key>phrase</key><string>D.O.P.</string><key>shortcut</key><string>dop</string></dict>	<!-- Denominación de Origen Protegida(西)/Denominazione di Origine Protetta(伊) -->
+	<dict><key>phrase</key><string>D.O.C.</string><key>shortcut</key><string>doc</string></dict>	<!-- Denominazione di Origine Controllata(伊)/Denominação de Origem Controlada(葡) -->
+	<dict><key>phrase</key><string>D.O.C.G.</string><key>shortcut</key><string>docg</string></dict>	<!-- Denominazione di Origine Controllata e Garantita(伊) -->
 	<dict><key>phrase</key><string>D.A.C.</string><key>shortcut</key><string>dac</string></dict>	<!-- Districtus Austriae Controllatus(墺) -->
 	<dict><key>phrase</key><string>DAC</string><key>shortcut</key><string>dac</string></dict>	<!-- 同上(ピリオドなし) -->
 	<dict><key>phrase</key><string>DO</string><key>shortcut</key><string>do</string></dict>	<!-- Denominación de Origen(西)/Denominação de Origem(葡) -->
@@ -28,6 +36,20 @@
 	<dict><key>phrase</key><string>G.I.</string><key>shortcut</key><string>gi</string></dict>	<!-- Geographical Indication(豪) -->
 	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>gic</string></dict>	<!-- Geographical Indications Committee(豪) -->
 	<dict><key>phrase</key><string>UK Quality Wine Schemes</string><key>shortcut</key><string>uk quality wine schemes</string></dict>
+
+	<!-- □ ルーマニア D.O.C. の収穫区分(CMD=完熟収穫 Cules la Maturitate Deplină / CT=遅摘み Cules Târziu / CIB=貴腐収穫 Cules la Înnobilarea Boabelor) -->
+	<dict><key>phrase</key><string>D.O.C.-CMD</string><key>shortcut</key><string>doc-cmd</string></dict>
+	<dict><key>phrase</key><string>D.O.C.-CT</string><key>shortcut</key><string>doc-ct</string></dict>
+	<dict><key>phrase</key><string>D.O.C.-CIB</string><key>shortcut</key><string>doc-cib</string></dict>
+	<dict><key>phrase</key><string>D.O.C.-CMT</string><key>shortcut</key><string>doc-cmt</string></dict>	<!-- CMT は上記に当てはまらない(要確認) -->
+	<dict><key>phrase</key><string>CMD</string><key>shortcut</key><string>cmd</string></dict>
+	<dict><key>phrase</key><string>CT</string><key>shortcut</key><string>ct</string></dict>
+	<dict><key>phrase</key><string>CIB</string><key>shortcut</key><string>cib</string></dict>
+
+	<!-- □ ドイツの品質等級・検査番号 -->
+	<dict><key>phrase</key><string>Q.b.A.</string><key>shortcut</key><string>qba</string></dict>	<!-- Qualitätswein bestimmter Anbaugebiete(独) -->
+	<dict><key>phrase</key><string>Sekt b.A.</string><key>shortcut</key><string>sekt ba</string></dict>	<!-- Sekt bestimmter Anbaugebiete(独) -->
+	<dict><key>phrase</key><string>A.P. Nr.</string><key>shortcut</key><string>ap nr</string></dict>	<!-- Amtliche Prüfungsnummer(独 公的検査番号) -->
 
 	<!-- □ ドイツ VDP(Verband Deutscher Prädikatsweingüter)の格付け -->
 	<dict><key>phrase</key><string>VDP.</string><key>shortcut</key><string>vdp</string></dict>
@@ -75,6 +97,7 @@
 	<dict><key>phrase</key><string>KMW糖度</string><key>shortcut</key><string>kmw</string></dict>
 
 	<!-- ■ 醸造・栽培・品質欠陥の用語 -->
+	<dict><key>phrase</key><string>M.L.F.</string><key>shortcut</key><string>mlf</string></dict>	<!-- malolactic fermentation(ピリオド付き表記) -->
 	<dict><key>phrase</key><string>MLF</string><key>shortcut</key><string>mlf</string></dict>	<!-- malolactic fermentation(マロラクティック発酵) -->
 	<dict><key>phrase</key><string>MCC</string><key>shortcut</key><string>mcc</string></dict>	<!-- Méthode Cap Classique(南ア) -->
 	<dict><key>phrase</key><string>MC法</string><key>shortcut</key><string>mc</string></dict>	<!-- Méthode Champenoise / Macération Carbonique -->
@@ -131,22 +154,22 @@
 	<dict><key>phrase</key><string>DRCエイベル</string><key>shortcut</key><string>drc</string></dict>
 	<dict><key>phrase</key><string>Grange Hermitage BIN1</string><key>shortcut</key><string>grange hermitage bin1</string></dict>
 
-	<!-- ■ 不明(要確認: 正体が分からないもの、CIVC の誤記に見えるもの) -->
+	<!-- ■ 茶(紅茶の製法・等級。ワインではないがこのファイルで管理) -->
+	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>ctc</string></dict>	<!-- Crush, Tear, Curl(紅茶の製法) -->
+	<dict><key>phrase</key><string>CTC製法</string><key>shortcut</key><string>ctc</string></dict>
+	<dict><key>phrase</key><string>B.O.P. Fannings</string><key>shortcut</key><string>bop fannings</string></dict>	<!-- Broken Orange Pekoe Fannings(紅茶の等級) -->
+
+	<!-- ■ 不明(要確認: 正体が分からないもの、CICV/CVCI/CVIC は CIVC の誤記に見える) -->
 	<dict><key>phrase</key><string>AVEC</string><key>shortcut</key><string>avec</string></dict>
 	<dict><key>phrase</key><string>BYO</string><key>shortcut</key><string>byo</string></dict>
 	<dict><key>phrase</key><string>CBA</string><key>shortcut</key><string>cba</string></dict>
 	<dict><key>phrase</key><string>CCPA</string><key>shortcut</key><string>ccpa</string></dict>
-	<dict><key>phrase</key><string>CIB</string><key>shortcut</key><string>cib</string></dict>
 	<dict><key>phrase</key><string>CICV</string><key>shortcut</key><string>cicv</string></dict>
 	<dict><key>phrase</key><string>CVCI</string><key>shortcut</key><string>cvci</string></dict>
 	<dict><key>phrase</key><string>CVIC</string><key>shortcut</key><string>cvic</string></dict>
-	<dict><key>phrase</key><string>CMD</string><key>shortcut</key><string>cmd</string></dict>
 	<dict><key>phrase</key><string>CNES</string><key>shortcut</key><string>cnes</string></dict>
 	<dict><key>phrase</key><string>COPNC</string><key>shortcut</key><string>copnc</string></dict>
 	<dict><key>phrase</key><string>COPNL</string><key>shortcut</key><string>copnl</string></dict>
-	<dict><key>phrase</key><string>CT</string><key>shortcut</key><string>ct</string></dict>
-	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>ctc</string></dict>
-	<dict><key>phrase</key><string>CTC製法</string><key>shortcut</key><string>ctc</string></dict>
 	<dict><key>phrase</key><string>DOPSTOP</string><key>shortcut</key><string>dopstop</string></dict>
 	<dict><key>phrase</key><string>HPO</string><key>shortcut</key><string>hpo</string></dict>
 	<dict><key>phrase</key><string>HSO</string><key>shortcut</key><string>hso</string></dict>
