@@ -243,8 +243,15 @@
 	<dict><key>phrase</key><string>°F</string><key>shortcut</key><string>かし</string></dict>
 	<dict><key>phrase</key><string>°C</string><key>shortcut</key><string>せるしうす</string></dict>
 	<dict><key>phrase</key><string>Celsius</string><key>shortcut</key><string>せるしうす</string></dict>	<!-- Anders Celsius(スウェーデンの天文学者) -->
+	<dict><key>phrase</key><string>摂爾修</string><key>shortcut</key><string>せるしうす</string></dict>	<!-- 漢字音訳(ユーザ指定 2779) -->
+	<dict><key>phrase</key><string>摂爾修斯</string><key>shortcut</key><string>せるしうす</string></dict>
+	<dict><key>phrase</key><string>攝爾修斯</string><key>shortcut</key><string>せるしうす</string></dict>
+	<dict><key>phrase</key><string>摄尔修斯</string><key>shortcut</key><string>せるしうす</string></dict>
 	<dict><key>phrase</key><string>°F</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>
 	<dict><key>phrase</key><string>Fahrenheit</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>	<!-- Daniel Gabriel Fahrenheit(ドイツの物理学者) -->
+	<dict><key>phrase</key><string>華倫海</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>	<!-- 漢字音訳(ユーザ指定 2779) -->
+	<dict><key>phrase</key><string>華倫海特</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>
+	<dict><key>phrase</key><string>华伦海特</string><key>shortcut</key><string>ふぁーれんはいと</string></dict>
 	<dict><key>phrase</key><string>従量課金</string><key>shortcut</key><string>じゅうりょうかきん</string></dict>	<!-- Sudachi に 従量/従量制 はあるが 従量課金 は無く、LM の 重量 5424 ≪ 従量 7884 で 重量課金 が先頭だった(ユーザ報告 2778) -->
 	<dict><key>phrase</key><string>従量料金</string><key>shortcut</key><string>じゅうりょうりょうきん</string></dict>
 	<dict><key>phrase</key><string>被差別</string><key>shortcut</key><string>ひさべつ</string><key>pos</key><string>名詞</string></dict>	<!-- 被差別: Sudachi core/LM とも無い完全供給欠落(単文節は seed)。連文節は seed ノード(dictUnknown 8700)が 日(ひ)+差別 分割に負けるため curated 化(被差別部落 等) -->
