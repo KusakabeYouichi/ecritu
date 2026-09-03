@@ -2,8 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <array>
-	<!-- ワインの略語・記号(ラテン文字)。欧文サジェスチョン専用: shortcut は phrase のラテン文字部分を小文字化・アクサン除去・ピリオド除去した
-	     検索キー(実行時 latinSuggestionSearchKey と同じ折り畳み。ß はそのまま)。かな読みは持たない。『■ 』=カテゴリー、『□ 』=サブカテゴリー -->
+	<!-- ワインの略語・記号(ラテン文字)。欧文サジェスチョン専用: 検索キー(実行時 latinSuggestionSearchKey と同じ折り畳み。ßはそのまま)。『■ 』=カテゴリー、『□ 』=サブカテゴリー -->
 
 	<!-- ■ 原産地呼称・品質分類制度(EU 共通の品質表示) -->
 	<dict><key>phrase</key><string>P.D.O.</string><key>shortcut</key><string>pdo</string></dict>	<!-- Protected Designation of Origin -->
@@ -54,7 +53,6 @@
 	<dict><key>phrase</key><string>D.O.C.-CMD</string><key>shortcut</key><string>doc-cmd</string></dict>
 	<dict><key>phrase</key><string>D.O.C.-CT</string><key>shortcut</key><string>doc-ct</string></dict>
 	<dict><key>phrase</key><string>D.O.C.-CIB</string><key>shortcut</key><string>doc-cib</string></dict>
-	<dict><key>phrase</key><string>D.O.C.-CMT</string><key>shortcut</key><string>doc-cmt</string></dict>	<!-- CMT は上記に当てはまらない(要確認) -->
 	<dict><key>phrase</key><string>CMD</string><key>shortcut</key><string>cmd</string></dict>
 	<dict><key>phrase</key><string>CT</string><key>shortcut</key><string>ct</string></dict>
 	<dict><key>phrase</key><string>CIB</string><key>shortcut</key><string>cib</string></dict>
@@ -104,12 +102,9 @@
 	<dict><key>phrase</key><string>SR</string><key>shortcut</key><string>sr</string></dict>	<!-- Société de Récoltants -->
 	<dict><key>phrase</key><string>ND</string><key>shortcut</key><string>nd</string></dict>	<!-- Négociant-Distributeur -->
 	<dict><key>phrase</key><string>MA</string><key>shortcut</key><string>ma</string></dict>	<!-- Marque d'Acheteur -->
-	<dict><key>phrase</key><string>登録業態MA</string><key>shortcut</key><string>ma</string></dict>
 
 	<!-- ■ 糖度の単位(KMW=クロスターノイブルク糖度、オーストリア) -->
 	<dict><key>phrase</key><string>KMW</string><key>shortcut</key><string>kmw</string></dict>	<!-- Klosterneuburger Mostwaage -->
-	<dict><key>phrase</key><string>KMW値</string><key>shortcut</key><string>kmw</string></dict>
-	<dict><key>phrase</key><string>KMW糖度</string><key>shortcut</key><string>kmw</string></dict>
 
 	<!-- ■ 醸造・栽培・品質欠陥の用語 -->
 	<dict><key>phrase</key><string>M.L.F.</string><key>shortcut</key><string>mlf</string></dict>	<!-- malolactic fermentation(ピリオド付き表記) -->
@@ -119,7 +114,6 @@
 	<dict><key>phrase</key><string>MCC</string><key>shortcut</key><string>mcc</string></dict>	<!-- Méthode Cap Classique(南ア) -->
 	<dict><key>phrase</key><string>MC法</string><key>shortcut</key><string>mc</string></dict>	<!-- Méthode Champenoise / Macération Carbonique -->
 	<dict><key>phrase</key><string>VSP</string><key>shortcut</key><string>vsp</string></dict>	<!-- Vertical Shoot Positioning(垂直梢仕立て) -->
-	<dict><key>phrase</key><string>VSP仕立</string><key>shortcut</key><string>vsp</string></dict>
 	<dict><key>phrase</key><string>GSM</string><key>shortcut</key><string>gsm</string></dict>	<!-- Grenache・Syrah・Mourvèdre -->
 	<dict><key>phrase</key><string>TCA</string><key>shortcut</key><string>tca</string></dict>	<!-- trichloroanisole(ブショネ) -->
 	<dict><key>phrase</key><string>TCP</string><key>shortcut</key><string>tcp</string></dict>	<!-- trichlorophenol -->
@@ -127,8 +121,7 @@
 	<dict><key>phrase</key><string>ESCA</string><key>shortcut</key><string>esca</string></dict>	<!-- ブドウ樹の幹の病害 -->
 	<dict><key>phrase</key><string>AXR</string><key>shortcut</key><string>axr</string></dict>	<!-- 台木 AxR1 -->
 	<dict><key>phrase</key><string>MV6</string><key>shortcut</key><string>mv6</string></dict>	<!-- ピノ・ノワールのクローン -->
-	<dict><key>phrase</key><string>DNA解析</string><key>shortcut</key><string>dna</string></dict>
-	<dict><key>phrase</key><string>DNA鑑定</string><key>shortcut</key><string>dna</string></dict>
+	<dict><key>phrase</key><string>DNA</string><key>shortcut</key><string>dna</string></dict>
 	<dict><key>phrase</key><string>DIAM</string><key>shortcut</key><string>diam</string></dict>	<!-- コルク栓のブランド -->
 
 	<!-- ■ 団体・機関・行政 -->
@@ -153,20 +146,20 @@
 	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>koj</string></dict>	<!-- Koshu of Japan -->
 	<dict><key>phrase</key><string>CNES</string><key>shortcut</key><string>cnes</string></dict>	<!-- フランス国立宇宙研究センター(ワイン外) -->
 	<dict><key>phrase</key><string>EU</string><key>shortcut</key><string>eu</string></dict>
-	<dict><key>phrase</key><string>EUシンボルマーク</string><key>shortcut</key><string>eu</string></dict>
-	<dict><key>phrase</key><string>EUレベル</string><key>shortcut</key><string>eu</string></dict>
-	<dict><key>phrase</key><string>EU圏内</string><key>shortcut</key><string>eu</string></dict>
 	<dict><key>phrase</key><string>WHO</string><key>shortcut</key><string>who</string></dict>
 	<dict><key>phrase</key><string>ISO</string><key>shortcut</key><string>iso</string></dict>
 	<dict><key>phrase</key><string>CFR</string><key>shortcut</key><string>cfr</string></dict>	<!-- Code of Federal Regulations(米) -->
 
+	<!-- ■ 茶(紅茶の製法・等級) -->
+	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>ctc</string></dict>	<!-- Crush, Tear, Curl(紅茶の製法) -->
+	<dict><key>phrase</key><string>B.O.P.</string><key>shortcut</key><string>bop</string></dict>	<!-- Broken Orange Pekoe(紅茶の等級) -->
+	<dict><key>phrase</key><string>B.O.P. Fannings</string><key>shortcut</key><string>bop fannings</string></dict>	<!-- Broken Orange Pekoe Fannings(紅茶の等級) -->
+
 	<!-- ■ 貿易・物流条件(インコタームズ等) -->
 	<dict><key>phrase</key><string>CIF</string><key>shortcut</key><string>cif</string></dict>	<!-- Cost, Insurance and Freight -->
-	<dict><key>phrase</key><string>貿易条件CIF</string><key>shortcut</key><string>cif</string></dict>
 	<dict><key>phrase</key><string>FOB</string><key>shortcut</key><string>fob</string></dict>	<!-- Free On Board -->
 	<dict><key>phrase</key><string>FCA</string><key>shortcut</key><string>fca</string></dict>	<!-- Free Carrier -->
 	<dict><key>phrase</key><string>EXW</string><key>shortcut</key><string>exw</string></dict>	<!-- Ex Works -->
-	<dict><key>phrase</key><string>EXW条件下</string><key>shortcut</key><string>exw</string></dict>
 	<dict><key>phrase</key><string>FCL</string><key>shortcut</key><string>fcl</string></dict>	<!-- Full Container Load -->
 	<dict><key>phrase</key><string>LCL</string><key>shortcut</key><string>lcl</string></dict>	<!-- Less than Container Load -->
 	<dict><key>phrase</key><string>EPA</string><key>shortcut</key><string>epa</string></dict>	<!-- 経済連携協定 -->
@@ -175,15 +168,9 @@
 
 	<!-- ■ 生産者・製品名 -->
 	<dict><key>phrase</key><string>DRC</string><key>shortcut</key><string>drc</string></dict>	<!-- Domaine de la Romanée-Conti -->
-	<dict><key>phrase</key><string>DRCエイベル</string><key>shortcut</key><string>drc</string></dict>
 	<dict><key>phrase</key><string>Grange Hermitage BIN1</string><key>shortcut</key><string>grange hermitage bin1</string></dict>
 
 	<!-- ■ 販売・サービスの慣習 -->
 	<dict><key>phrase</key><string>BYO</string><key>shortcut</key><string>byo</string></dict>	<!-- Bring Your Own(オーストラリアの持ち込み制) -->
-
-	<!-- ■ 茶(紅茶の製法・等級。ワインではないがこのファイルで管理) -->
-	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>ctc</string></dict>	<!-- Crush, Tear, Curl(紅茶の製法) -->
-	<dict><key>phrase</key><string>CTC製法</string><key>shortcut</key><string>ctc</string></dict>
-	<dict><key>phrase</key><string>B.O.P. Fannings</string><key>shortcut</key><string>bop fannings</string></dict>	<!-- Broken Orange Pekoe Fannings(紅茶の等級) -->
 </array>
 </plist>
