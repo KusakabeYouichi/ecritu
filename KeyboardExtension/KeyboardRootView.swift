@@ -540,6 +540,18 @@ struct KeyboardRootView: View {
             )
         }
         nonmutating set {
+            // MEMFORENSICS(時限計測 2782): 漢字ピッカー(部首→漢字一覧、SwiftUI LazyVGrid+明朝グリフ)の
+            // 表示/退出の footprint 推移。絵文字パネルの 絵文字切替/絵文字退出 と同じ窓(1.2s と 5s)
+            let enteringKanjiRadical = newValue.inputMode == .emoji && newValue.emojiInputSubmode == .kanjiRadical
+            let wasKanjiRadical = inputMode == .emoji && emojiInputSubmode == .kanjiRadical
+            if enteringKanjiRadical, !wasKanjiRadical {
+                MemoryForensics.noteOperation("漢字ピッカー切替")
+                MemoryForensics.noteSpikeWindow("漢字ピッカー切替")
+                MemoryForensics.noteSpikeWindow("漢字ピッカー切替+5s", delaySeconds: 5.0)
+            } else if wasKanjiRadical, !enteringKanjiRadical {
+                MemoryForensics.noteSpikeWindow("漢字ピッカー退出", minDeltaMB: -1_000)
+                MemoryForensics.noteSpikeWindow("漢字ピッカー退出+5s", delaySeconds: 5.0, minDeltaMB: -1_000)
+            }
             inputMode = newValue.inputMode
             diacriticMode = newValue.diacriticMode
             kanaCharacterMode = newValue.kanaCharacterMode
