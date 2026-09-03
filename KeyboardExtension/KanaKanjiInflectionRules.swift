@@ -83,8 +83,11 @@ extension KanaKanjiConverter {
     // 一段と五段が同居する語で片方が失われる(いる: かな表記が 要る/入る 系の五段に
     // 巻き添えで godan-ru のみ登録され、居る系一段の います/いた/いて が導出できない)。
     // 辞書再ビルドで複数クラス化するまでのコード側補完(既存クラスに追加。置換しない)。
+    // かかれる: 書かれる/描かれる は seed 供給のみで inflection_classes に無く、かかれる 基底からの
+    // 一段派生(かかれている/かかれた 等)が 係れている 族だけになっていた(2792)
     static let supplementaryInflectionClassesByReading: [String: [String: Set<String>]] = [
-        "いる": ["いる": [InflectionClass.ichidan]]
+        "いる": ["いる": [InflectionClass.ichidan]],
+        "かかれる": ["書かれる": [InflectionClass.ichidan], "描かれる": [InflectionClass.ichidan]]
     ]
 
     struct InflectionRule {
