@@ -13117,6 +13117,26 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(single, ["たいして", "大して", "対して"], "\(single)")
     }
 
+    // すうふんでなおしてた(2772): 数分+出直してた(名詞直後の派生 7200)が 数分+で+直してた(2597+5000)に
+    // 397 差で勝ち、欲しい 数分で直してた が候補に無かった(数分 は Sudachi で 数+分 に割れ LM に無く
+    // 数分→で の bigram が引けない)。意味は LM で判定できないので、助詞を呑んだ読みの動詞/名詞に対して
+    // 助詞直後に境界を強制した再最適化経路を第2候補群に出す
+    func testRegressionSwallowedParticleAlternativePath() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, best, alternative) in [
+            ("すうふんでなおしてた", "数分出直してた", "数分で直してた"),
+            ("すうふんでなおし", "数分出直し", "数分で直し"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, best, "\(reading): \(multi)")
+            XCTAssertTrue(multi.dropFirst().prefix(2).contains(alternative), "\(reading): \(multi)")
+        }
+        // 明日出直します は最良のまま(代替は後続に出るだけ)
+        let ashita = converter.multiClauseCandidates(for: "あしたでなおします", systemCandidateMode: .surface)
+        XCTAssertEqual(ashita.first, "明日出直します", "\(Array(ashita.prefix(3)))")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
