@@ -920,7 +920,7 @@ extension KanaKanjiConverter {
     // 対象ノードは「読みが下の集合 かつ 表層の末尾が読みの末尾かな(送り仮名)と一致する漢字表記」
     // =連用形(取り/乗せ。能勢/鳥 は末尾が漢字なので対象外)。
     // 同一スパンの連用形どうしには等しく効くので相対順(取り→撮り→捕り→採り)は変わらない。
-    // のせ(一段 のせる の連用形 乗せ/載せ)を追加: のせわすれた が の+世話+擦れた に負けていた(2792)
+    // のせ(一段 のせる の連用形 乗せ/載せ)を追加: のせわすれた が の+世話+擦れた に負けていた(2784)
     static let multiClauseCompoundVerbRenyouStemReadings: Set<String> = ["とり", "はり", "のせ"]
 
     static let multiClauseCompoundVerbRenyouBonus = 3000
@@ -987,7 +987,7 @@ extension KanaKanjiConverter {
     // 形式名詞 ため(ため/為/爲/溜め)の直後に する 活用のかなクラスタ(して/した/してみて 等)は
     // 立たない(ため は に/の/だ か読点に続く)。ためしてみて が かな ため(3867)+curated してみて
     // (床1500)の合成で 試してみて(活用OOV 6400)を undercut し、為してみて/溜めしてみて まで
-    // 変種に並んでいた(2792)。ためし(試し)の1ノードは読みが違うので影響しない
+    // 変種に並んでいた(2784)。ためし(試し)の1ノードは読みが違うので影響しない
     static let multiClauseTameSuruClusterPenalty = 3000
     static let multiClauseSuruClusterKanaPrefixes: [String] = [
         "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"

@@ -226,7 +226,7 @@
 	<dict><key>phrase</key><string>摸型</string><key>shortcut</key><string>もけい</string></dict>	<!-- 模型 に似る(摸 は 模 と手偏/木偏違いの別字) -->
 	<dict><key>phrase</key><string>曵く</string><key>shortcut</key><string>ひく</string></dict>	<!-- 曳く の異体字。ひける の候補を 曳ける/曵ける の二重で汚す(ユーザ指定 2771)。活用形は基底抑制で消える -->
 	<dict><key>phrase</key><string>曵ける</string><key>shortcut</key><string>ひける</string></dict>	<!-- 同上(辞書に可能動詞の行が直接あるため別途抑制) -->
-	<dict><key>phrase</key><string>麴</string><key>shortcut</key><string>こうじ</string></dict>	<!-- 麹 の正字(康熙字典体)。現代日本語の食品・醸造用途は 麹 で、字形が似て混在しやすい(ユーザ指定 2792)。人名 麴嘉/麴雍 は残す。麴塵 は misc に 麹塵 を追加した上で抑制 -->
+	<dict><key>phrase</key><string>麴</string><key>shortcut</key><string>こうじ</string></dict>	<!-- 麹 の正字(康熙字典体)。現代日本語の食品・醸造用途は 麹 で、字形が似て混在しやすい(ユーザ指定 2784)。人名 麴嘉/麴雍 は残す。麴塵 は misc に 麹塵 を追加した上で抑制 -->
 	<dict><key>phrase</key><string>麴</string><key>shortcut</key><string>きく</string></dict>
 	<dict><key>phrase</key><string>黒麴</string><key>shortcut</key><string>くろこうじ</string></dict>
 	<dict><key>phrase</key><string>麴漬け</string><key>shortcut</key><string>こうじづけ</string></dict>
