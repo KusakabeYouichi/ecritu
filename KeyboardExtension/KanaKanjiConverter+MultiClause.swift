@@ -2576,6 +2576,12 @@ extension KanaKanjiConverter {
 
     // 語形(かな・漢字・ラテン字を含む)か。絵文字/記号のみなら false。curated 優遇の対象判定に使う。
     static func isWordLikeSurface(_ text: String) -> Bool {
+        // 温度の単位記号(°C/°F)はラテン字を含むが記号として扱う。misc の せっし/かし→°C/°F を
+        // 語形扱いすると連文節で curated 床(1500)が付き、かし を含む読み(貸した/化した)を
+        // °F が乗っ取る(すりむかした→スリム°Fた。2777)
+        if text == "\u{00B0}C" || text == "\u{00B0}F" {
+            return false
+        }
         for scalar in text.unicodeScalars {
             let value = scalar.value
             if (0x3041...0x3096).contains(value)      // ひらがな
