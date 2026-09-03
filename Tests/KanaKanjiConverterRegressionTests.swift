@@ -13137,6 +13137,16 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(ashita.first, "明日出直します", "\(Array(ashita.prefix(3)))")
     }
 
+    // かうかかわないか(2773): 最良が 買うか+飼わないか(か→飼わ の bigram だけ観測)で動詞が割れていた。
+    // 同じ読み語幹の動詞が並列で別漢字になったら、揃えた2経路を再最適化して先頭2つに、混在を3番目に
+    func testRegressionCoordinatedVerbConsistency() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "かうかかわないか", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(3)), ["買うか買わないか", "飼うか飼わないか", "買うか飼わないか"], "\(multi)")
+        XCTAssertEqual(Set(multi).count, multi.count, "重複なし: \(multi)")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、

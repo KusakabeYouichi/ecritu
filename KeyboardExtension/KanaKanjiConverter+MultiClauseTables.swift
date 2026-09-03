@@ -240,6 +240,9 @@ extension KanaKanjiConverter {
     // 対象は読みがこれらの格助詞で始まる派生ノード。に は 逃げる/似合う 等の頻出動詞と衝突しやすいので入れない
     static let multiClauseSwallowedParticleHeads: Set<Character> = ["で", "と", "が", "を", "は"]
     static let multiClauseSwallowedParticleAlternativeMaxDelta = 2500
+    // 並列動詞の表記整合(2773、適用箇所のコメント参照): 漢字を揃えた経路が元の混在経路より
+    // この差までなら揃えた方を最良にする(かうかかわないか: 揃え 買う…買わない は +100 程度)
+    static let multiClauseCoordinatedVerbMaxDelta = 3000
     // 変種の差分に反映する seed 順ボーナスの上限(2738。pairCost 参照)
     static let multiClauseVariantSeedBonusCap = 600
     // 活用派生の変種で語幹が LM 未収録(熔け 等)のときの加算(2739。変種ループ参照)
