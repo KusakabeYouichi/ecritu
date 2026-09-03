@@ -13264,6 +13264,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // きどう(2777): 辞書順・LM とも 軌道 が先頭だが日常入力では 起動 が主。seed で単文節 起動 を先頭、
+    // seed 順ボーナスで 起動禁止 も先頭に。軌道に乗る は 軌道→に の bigram でそのまま
+    func testRegressionKidouPrefersKidou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(Array(converter.candidates(for: "きどう", limit: 3, systemCandidateMode: .surface)), ["起動", "軌道", "機動"])
+        let kinshi = converter.multiClauseCandidates(for: "きどうきんし", systemCandidateMode: .surface)
+        XCTAssertEqual(kinshi.first, "起動禁止", "\(Array(kinshi.prefix(3)))")
+        let noru = converter.multiClauseCandidates(for: "きどうにのる", systemCandidateMode: .surface)
+        XCTAssertEqual(noru.first, "軌道に乗る", "\(Array(noru.prefix(3)))")
+    }
+
     // 実機報告 第3陣(2756)。
     // ためす: 連文節で かな ためした/為した が勝ち 試した が上位4件にも無かった。活用族 allowlist へ
     // される: 唯一の辞書候補 去れる(去る の可能形、稀)が全活用形を汚し、
