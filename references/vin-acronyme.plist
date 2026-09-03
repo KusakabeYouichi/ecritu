@@ -37,6 +37,19 @@
 	<dict><key>phrase</key><string>G.I.C.</string><key>shortcut</key><string>gic</string></dict>	<!-- Geographical Indications Committee(豪) -->
 	<dict><key>phrase</key><string>UK Quality Wine Schemes</string><key>shortcut</key><string>uk quality wine schemes</string></dict>
 
+	<!-- □ ハンガリー -->
+	<dict><key>phrase</key><string>HU CLASSIFICATION</string><key>shortcut</key><string>hu classification</string></dict>	<!-- ハンガリーワインの格付け -->
+	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string>dhc</string></dict>	<!-- ハンガリーの品質分類(Districtus Hungaricus Controllatus) -->
+	<dict><key>phrase</key><string>O.F.J.</string><key>shortcut</key><string>ofj</string></dict>	<!-- ハンガリーの品質分類の1つ(Oltalom alatt álló Földrajzi Jelzés=P.G.I. 相当) -->
+
+	<!-- □ ブルガリア(旧分類。現在は P.D.O. に統合) -->
+	<dict><key>phrase</key><string>G.C.D.O.</string><key>shortcut</key><string>gcdo</string></dict>	<!-- ブルガリアの旧品質分類 -->
+	<dict><key>phrase</key><string>G.D.O.</string><key>shortcut</key><string>gdo</string></dict>	<!-- ブルガリアの旧品質分類 -->
+
+	<!-- □ ウルグアイ・スペインの伝統的カテゴリー -->
+	<dict><key>phrase</key><string>V.C.</string><key>shortcut</key><string>vc</string></dict>	<!-- Vino Común(ウルグアイ)/スペインの伝統的呼称のカテゴリー -->
+	<dict><key>phrase</key><string>V.C.P.</string><key>shortcut</key><string>vcp</string></dict>	<!-- Vino de Calidad Preferente(ウルグアイ) -->
+
 	<!-- □ ルーマニア D.O.C. の収穫区分(CMD=完熟収穫 Cules la Maturitate Deplină / CT=遅摘み Cules Târziu / CIB=貴腐収穫 Cules la Înnobilarea Boabelor) -->
 	<dict><key>phrase</key><string>D.O.C.-CMD</string><key>shortcut</key><string>doc-cmd</string></dict>
 	<dict><key>phrase</key><string>D.O.C.-CT</string><key>shortcut</key><string>doc-ct</string></dict>
@@ -69,6 +82,8 @@
 	<dict><key>phrase</key><string>IPW</string><key>shortcut</key><string>ipw</string></dict>	<!-- Integrated Production of Wine(南ア) -->
 	<dict><key>phrase</key><string>WIETA</string><key>shortcut</key><string>wieta</string></dict>	<!-- Wine and Agricultural Ethical Trade Association(南ア) -->
 	<dict><key>phrase</key><string>BWI</string><key>shortcut</key><string>bwi</string></dict>	<!-- Biodiversity & Wine Initiative(南ア) -->
+	<dict><key>phrase</key><string>DOPSTOP</string><key>shortcut</key><string>dopstop</string></dict>	<!-- 南アフリカの Dop Stop(賃金の酒類払い=ドップ制廃絶の運動) -->
+	<dict><key>phrase</key><string>OVP</string><key>shortcut</key><string>ovp</string></dict>	<!-- Old Vine Project(南アフリカの古木保護・認証) -->
 
 	<!-- ■ 甘口・酒精強化・蒸留酒の区分と熟成表示 -->
 	<dict><key>phrase</key><string>V.D.N.</string><key>shortcut</key><string>vdn</string></dict>	<!-- Vin Doux Naturel -->
@@ -98,6 +113,8 @@
 
 	<!-- ■ 醸造・栽培・品質欠陥の用語 -->
 	<dict><key>phrase</key><string>M.L.F.</string><key>shortcut</key><string>mlf</string></dict>	<!-- malolactic fermentation(ピリオド付き表記) -->
+	<dict><key>phrase</key><string>HSO</string><key>shortcut</key><string>hso</string></dict>	<!-- head space oxygen(ヘッドスペースの酸素) -->
+	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>mpf</string></dict>	<!-- macération préfermentaire à froid(発酵前低温浸漬) -->
 	<dict><key>phrase</key><string>MLF</string><key>shortcut</key><string>mlf</string></dict>	<!-- malolactic fermentation(マロラクティック発酵) -->
 	<dict><key>phrase</key><string>MCC</string><key>shortcut</key><string>mcc</string></dict>	<!-- Méthode Cap Classique(南ア) -->
 	<dict><key>phrase</key><string>MC法</string><key>shortcut</key><string>mc</string></dict>	<!-- Méthode Champenoise / Macération Carbonique -->
@@ -128,6 +145,13 @@
 	<dict><key>phrase</key><string>BATF</string><key>shortcut</key><string>batf</string></dict>	<!-- Bureau of Alcohol, Tobacco and Firearms(米、TTB の前身) -->
 	<dict><key>phrase</key><string>CVRVV</string><key>shortcut</key><string>cvrvv</string></dict>	<!-- Comissão de Viticultura da Região dos Vinhos Verdes(葡) -->
 	<dict><key>phrase</key><string>MOVI</string><key>shortcut</key><string>movi</string></dict>	<!-- Movimiento de Viñateros Independientes(智) -->
+	<dict><key>phrase</key><string>AVEC</string><key>shortcut</key><string>avec</string></dict>	<!-- スペインの Cava 生産者協会 -->
+	<dict><key>phrase</key><string>CBA</string><key>shortcut</key><string>cba</string></dict>	<!-- Chenin Blanc Association(南アフリカ) -->
+	<dict><key>phrase</key><string>CCPA</string><key>shortcut</key><string>ccpa</string></dict>	<!-- Cap Classique Producers Association(南アフリカ) -->
+	<dict><key>phrase</key><string>COPNC</string><key>shortcut</key><string>copnc</string></dict>	<!-- Central Otago Pinot Noir Celebration(NZ) -->
+	<dict><key>phrase</key><string>COPNL</string><key>shortcut</key><string>copnl</string></dict>	<!-- Central Otago Pinot Noir Limited(NZ) -->
+	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>koj</string></dict>	<!-- Koshu of Japan -->
+	<dict><key>phrase</key><string>CNES</string><key>shortcut</key><string>cnes</string></dict>	<!-- フランス国立宇宙研究センター(ワイン外) -->
 	<dict><key>phrase</key><string>EU</string><key>shortcut</key><string>eu</string></dict>
 	<dict><key>phrase</key><string>EUシンボルマーク</string><key>shortcut</key><string>eu</string></dict>
 	<dict><key>phrase</key><string>EUレベル</string><key>shortcut</key><string>eu</string></dict>
@@ -154,35 +178,12 @@
 	<dict><key>phrase</key><string>DRCエイベル</string><key>shortcut</key><string>drc</string></dict>
 	<dict><key>phrase</key><string>Grange Hermitage BIN1</string><key>shortcut</key><string>grange hermitage bin1</string></dict>
 
+	<!-- ■ 販売・サービスの慣習 -->
+	<dict><key>phrase</key><string>BYO</string><key>shortcut</key><string>byo</string></dict>	<!-- Bring Your Own(オーストラリアの持ち込み制) -->
+
 	<!-- ■ 茶(紅茶の製法・等級。ワインではないがこのファイルで管理) -->
 	<dict><key>phrase</key><string>CTC</string><key>shortcut</key><string>ctc</string></dict>	<!-- Crush, Tear, Curl(紅茶の製法) -->
 	<dict><key>phrase</key><string>CTC製法</string><key>shortcut</key><string>ctc</string></dict>
 	<dict><key>phrase</key><string>B.O.P. Fannings</string><key>shortcut</key><string>bop fannings</string></dict>	<!-- Broken Orange Pekoe Fannings(紅茶の等級) -->
-
-	<!-- ■ 不明(要確認: 正体が分からないもの、CICV/CVCI/CVIC は CIVC の誤記に見える) -->
-	<dict><key>phrase</key><string>AVEC</string><key>shortcut</key><string>avec</string></dict>
-	<dict><key>phrase</key><string>BYO</string><key>shortcut</key><string>byo</string></dict>
-	<dict><key>phrase</key><string>CBA</string><key>shortcut</key><string>cba</string></dict>
-	<dict><key>phrase</key><string>CCPA</string><key>shortcut</key><string>ccpa</string></dict>
-	<dict><key>phrase</key><string>CICV</string><key>shortcut</key><string>cicv</string></dict>
-	<dict><key>phrase</key><string>CVCI</string><key>shortcut</key><string>cvci</string></dict>
-	<dict><key>phrase</key><string>CVIC</string><key>shortcut</key><string>cvic</string></dict>
-	<dict><key>phrase</key><string>CNES</string><key>shortcut</key><string>cnes</string></dict>
-	<dict><key>phrase</key><string>COPNC</string><key>shortcut</key><string>copnc</string></dict>
-	<dict><key>phrase</key><string>COPNL</string><key>shortcut</key><string>copnl</string></dict>
-	<dict><key>phrase</key><string>DOPSTOP</string><key>shortcut</key><string>dopstop</string></dict>
-	<dict><key>phrase</key><string>HPO</string><key>shortcut</key><string>hpo</string></dict>
-	<dict><key>phrase</key><string>HSO</string><key>shortcut</key><string>hso</string></dict>
-	<dict><key>phrase</key><string>HU CLASSIFICATION</string><key>shortcut</key><string>hu classification</string></dict>
-	<dict><key>phrase</key><string>OVP</string><key>shortcut</key><string>ovp</string></dict>
-	<dict><key>phrase</key><string>TPO</string><key>shortcut</key><string>tpo</string></dict>
-	<dict><key>phrase</key><string>KOJ</string><key>shortcut</key><string>koj</string></dict>
-	<dict><key>phrase</key><string>D.H.C.</string><key>shortcut</key><string>dhc</string></dict>
-	<dict><key>phrase</key><string>G.C.D.O.</string><key>shortcut</key><string>gcdo</string></dict>
-	<dict><key>phrase</key><string>G.D.O.</string><key>shortcut</key><string>gdo</string></dict>
-	<dict><key>phrase</key><string>M.P.F.</string><key>shortcut</key><string>mpf</string></dict>
-	<dict><key>phrase</key><string>O.F.J.</string><key>shortcut</key><string>ofj</string></dict>
-	<dict><key>phrase</key><string>V.C.</string><key>shortcut</key><string>vc</string></dict>
-	<dict><key>phrase</key><string>V.C.P.</string><key>shortcut</key><string>vcp</string></dict>
 </array>
 </plist>
