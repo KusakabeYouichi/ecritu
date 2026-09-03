@@ -608,6 +608,12 @@ extension KanaKanjiConverter {
                 guard tail.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) else {
                     continue
                 }
+                // 1字のかな末尾は助詞(で/に/も…)か付属語の頭だけ許す。それ以外の1字(る/す/ら 等)は
+                // 助数詞+活用語尾の断片(1どる→度る/°Cる)を作るだけで、読み全体の語(ドル/$)を
+                // 数字直後に押し下げていた(ユーザ報告 2778)
+                if tail.count == 1, !(tail.first.map { "もはがをにでとへのやかね".contains($0) } ?? false) {
+                    continue
+                }
                 // 助詞で始まる末尾(も/は/が/を/に/で/と…+述語)は「助数詞+助詞+文」の形。
                 // 末尾の変換形は 交ぜ書き(も押したことない)が正解なので全漢字制限を外す
                 let particleLedTail = tail.count >= 3

@@ -13209,6 +13209,13 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(boosted.prefix(3)), ["度", "\u{00B0}C", "\u{00B0}F"], "\(boosted)")
         // 数字文脈でなければ供給しない
         XCTAssertFalse(KanaKanjiConverter.digitContextCounterBoostedCandidates(["度", "ど"], reading: "ど", precedingCharacter: "は").contains("\u{00B0}C"))
+        // 1どる: 助数詞 ど+1字末尾 る の断片(度る/°Cる)を合成せず、読み全体の ドル/$ を先頭のままに(2778)
+        let doru = KanaKanjiConverter.digitContextCounterBoostedCandidates(["ドル", "$", "取る", "どる"], reading: "どる", precedingCharacter: "1")
+        XCTAssertEqual(Array(doru.prefix(2)), ["ドル", "$"], "\(doru)")
+        XCTAssertFalse(doru.contains(where: { $0.hasSuffix("る") && $0.count == 2 && $0 != "取る" && $0 != "どる" }), "\(doru)")
+        // 助詞末尾は従来どおり合成する(3どで→3度で)
+        let dode = KanaKanjiConverter.digitContextCounterBoostedCandidates(["どで"], reading: "どで", precedingCharacter: "3")
+        XCTAssertTrue(dode.contains("度で"), "\(dode)")
         // misc 供給
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
