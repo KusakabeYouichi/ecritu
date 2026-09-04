@@ -13648,3 +13648,29 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(multi.first, "ロマラン風味", "multi=\(multi)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2799: 2798 バッチの積み残し 3 件。
+    // かけん: 活用形 seed の並びを連文節の b2 供給にも反映(描けん が topK 外で seed 供給扱いになっていた)
+    // おもち: バラの お+連用形は先頭 1 件だけ名詞合成(お餅)より前(お以ち/お保ち は後ろ)
+    // せいこうすべく: 文語サ変 す を べき/べく/べし の直前だけかな供給(成功巣べく→成功すべく)
+    func testRegressionRealLMBatch2799Readings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(
+            Array(converter.multiClauseCandidates(for: "まともにかけんのか", systemCandidateMode: .surface).prefix(2)),
+            ["まともに書けんのか", "まともに描けんのか"]
+        )
+        XCTAssertEqual(
+            Array(converter.candidates(for: "おもち", limit: 8, systemCandidateMode: .surface).prefix(2)),
+            ["お持ち", "お餅"]
+        )
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "せいこうすべく", systemCandidateMode: .surface).first,
+            "成功すべく"
+        )
+        // す の供給は べき 直前限定: 蜂の巣 の す には触れない(とりのす は鳥栖に取られる既存挙動、対象外)
+        let nest = converter.multiClauseCandidates(for: "はちのすをみつけた", systemCandidateMode: .surface)
+        XCTAssertTrue(nest.first?.contains("巣") ?? false, "nest=\(nest)")
+    }
+}
