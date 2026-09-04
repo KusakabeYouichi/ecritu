@@ -20,6 +20,8 @@ extension KeyboardViewController {
         let radicalStrokeCountStyleRawValue: String
         let spaceToastTrigger: Int
         let returnKeySystemImageName: String?
+        // UIReturnKeyType の文字ラベル(送信/開く/完了/次へ/移動 等。nil=⏎)。2785
+        let returnKeyTitleOverride: String?
         let isReturnKeyEnabled: Bool
         let kanaFlickGuideDisplayMode: FlickGuideDisplayMode
         let latinFlickGuideDisplayMode: FlickGuideDisplayMode
@@ -93,6 +95,7 @@ extension KeyboardViewController {
                 radicalStrokeCountStyleRawValue: radicalStrokeCountStyleRawValue,
                 spaceToastTrigger: spaceToastTrigger,
                 returnKeySystemImageName: returnKeySystemImageName,
+                returnKeyTitleOverride: returnKeyTitleOverride,
                 isReturnKeyEnabled: isReturnKeyEnabled,
                 kanaFlickGuideDisplayMode: kanaFlickGuideDisplayMode,
                 latinFlickGuideDisplayMode: latinFlickGuideDisplayMode,
@@ -246,6 +249,8 @@ extension KeyboardViewController {
         let hasAnyText = textDocumentProxy.hasText
         let hasPendingComposingText = !candidatePresentation.composingText.isEmpty
         let returnKeySystemImageName: String? = returnKeyType == .search ? "magnifyingglass" : nil
+        // .search 以外の種別も表示に反映する(以前は全部 ⏎ で、送信欄で「改行」と読まれていた。2785)
+        let returnKeyTitleOverride: String? = returnKeyType.flatMap(Self.returnKeyTitle(for:))
         let isReturnKeyEnabled = hasPendingComposingText || (returnKeyType == .search ? hasAnyText : true)
         let kanaFlickGuideDisplayMode = sharedFlickGuideDisplayModeValue(
             from: sharedDefaults,
@@ -348,6 +353,7 @@ extension KeyboardViewController {
             radicalStrokeCountStyleRawValue: radicalStrokeCountStyleRawValue,
             spaceToastTrigger: spaceToastTrigger,
             returnKeySystemImageName: returnKeySystemImageName,
+            returnKeyTitleOverride: returnKeyTitleOverride,
             isReturnKeyEnabled: isReturnKeyEnabled,
             kanaFlickGuideDisplayMode: kanaFlickGuideDisplayMode,
             latinFlickGuideDisplayMode: latinFlickGuideDisplayMode,
@@ -529,6 +535,7 @@ extension KeyboardViewController {
             radicalStrokeCountStyleRawValue: configuration.radicalStrokeCountStyleRawValue,
             spaceToastTrigger: configuration.spaceToastTrigger,
             returnKeySystemImageName: configuration.returnKeySystemImageName,
+            returnKeyTitleOverride: configuration.returnKeyTitleOverride,
             isReturnKeyEnabled: configuration.isReturnKeyEnabled,
             kanaFlickGuideDisplayMode: configuration.kanaFlickGuideDisplayMode,
             latinFlickGuideDisplayMode: configuration.latinFlickGuideDisplayMode,
@@ -556,5 +563,18 @@ extension KeyboardViewController {
         // 寸法・位置の端末別分岐(KeyboardLayoutMetrics)。引数順に依存しないよう生成後に渡す。
         rootView.layoutMetrics = layoutMetrics
         return rootView
+    }
+
+    // UIReturnKeyType → キーの文字ラベル。純正キーボードの日本語表記に合わせる。
+    // .default/.search(アイコン)/.join/.route/.emergencyCall/.continue は nil(⏎)
+    static func returnKeyTitle(for type: UIReturnKeyType) -> String? {
+        switch type {
+        case .go: return "開く"
+        case .send: return "送信"
+        case .done: return "完了"
+        case .next: return "次へ"
+        case .google, .yahoo: return "検索"
+        default: return nil
+        }
     }
 }

@@ -11767,6 +11767,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             radicalStrokeCountStyleRawValue: "",
             spaceToastTrigger: 0,
             returnKeySystemImageName: nil,
+            returnKeyTitleOverride: nil,
             isReturnKeyEnabled: true,
             kanaFlickGuideDisplayMode: .fourDirections,
             latinFlickGuideDisplayMode: .fourDirections,
