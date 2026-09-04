@@ -32,7 +32,7 @@
 文節をまたいだ連文節変換に対応。確定した候補は端末内で学習され、使うほどあなたの言葉に馴染みます。単語の手動登録(追加語彙)、出したくない候補を隠す抑制語彙、定型文のショートカット語彙、iOS の連絡先やユーザ辞書との連携も。
 
 ■ 絵文字・顔文字・記号のパネル
-カテゴリー分けされた絵文字(国旗は長押しで国名表示)、読みから探せる顔文字検索、通貨・単位・数学記号・矢印・囲み文字。漢字1字を部首から探せるピッカーも備えています。
+カテゴリー分けされた絵文字(国旗は長押しで国名をフランス語表示)、読みから探せる顔文字検索、通貨・単位・数学記号・矢印・囲み文字。漢字1字を部首から探せるピッカーも備えています。
 
 ■ 数字・単位・日付の入力補助
 数字モードでは 3,000 のような桁区切り、km や ℃ などの単位、金額、日付や曜日(カレンダー表示つき)まで、書式化された数値をそのまま入力できます。
@@ -63,11 +63,15 @@
 
 ## 審査ノート(Notes for Review 欄)
 
-App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。ネットワーク通信を行うコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は本体アプリのみが連絡先を読み取り、AES-GCM で暗号化して端末内に保存します。パスワード等の secure フィールドでは学習を行いません。
+App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもすべての入力・変換機能が動作します(学習と設定の反映だけが行われません)。ネットワーク通信を行うコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、AES-GCM で暗号化して端末内に保存します。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。キーボード拡張は約 400MB の変換辞書を同梱し、完全オフラインで動作します(ダウンロードサイズが大きいのはこのためです)。
 
 (英語で求められた場合)
-Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. The app contains no networking code; nothing typed ever leaves the device. The optional contact-name feature reads contacts only in the container app and stores an encrypted (AES-GCM) mapping on device. No learning occurs in secure text fields.
+Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: every input and conversion feature works without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores an encrypted (AES-GCM) mapping on device. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles a ~400 MB conversion dictionary and works fully offline, which is why the download is large.
+
+## 輸出コンプライアンス(暗号化)
+
+ITSAppUsesNonExemptEncryption = NO で申告済み。使用する暗号は Apple 提供の CryptoKit(AES-GCM)のみで、用途は端末内データ(連絡先対応表)の保護。輸出規制の免除対象(暗号を「端末内のデータ保護」に限って使用)に該当し、通信・DRM・独自暗号は無い。ASC で質問が出た場合は「免除に該当」を選ぶ。
 
 ## 年齢レーティング
 
-すべて「なし」で 4+ 想定。
+すべて「なし」で 4+。根拠: IME の辞書にワイン等の語が含まれることは「アルコール使用の描写・言及」に当たらない(Apple 純正キーボード・辞書アプリも 4+)。欧文サジェストは差別語・強い卑語を除外リストで提案から外している(tools/latin_suggestion_blocklist.txt、2026-09-04)。
