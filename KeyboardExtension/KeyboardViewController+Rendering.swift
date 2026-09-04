@@ -41,6 +41,9 @@ extension KeyboardViewController {
         let landscapeNumberPaneSideRawValue: String
         let landscapeLatinSuggestionModeRawValue: String
         let showsNextKeyboardKey: Bool
+        // キーボードビューのウィンドウ座標の枠(0.5pt 丸め)。iPad 互換モードでは UIScreen.main(iPad 全幅)
+        // と食い違い、幅の見積もりを UIScreen から取ると盤面が中央の箱からはみ出す(2786)。zero=未レイアウト
+        let containerFrame: CGRect
         let shortcutVocabulary: [String]
         let composingText: String
         let conversionCandidates: [String]
@@ -115,6 +118,7 @@ extension KeyboardViewController {
                 landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
                 landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
                 showsNextKeyboardKey: showsNextKeyboardKey,
+                containerFrame: containerFrame,
                 shortcutVocabulary: shortcutVocabulary,
                 composingText: fields.composingText,
                 conversionCandidates: fields.conversionCandidates,
@@ -372,7 +376,10 @@ extension KeyboardViewController {
             landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
-            showsNextKeyboardKey: needsInputModeSwitchKey,
+            // iPad(互換モード含む)は複数キーボード時にシステムが下端バーに 🌐 を出すので、
+            // needsInputModeSwitchKey=true でも自前の 🌐 は描かない(二重表示の回避。2786)
+            showsNextKeyboardKey: needsInputModeSwitchKey && !Self.isRunningOnIPadHardware,
+            containerFrame: Self.roundedToHalfPoint(view.convert(view.bounds, to: nil)),
             shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,
             conversionCandidates: candidatePresentation.candidates,
@@ -521,6 +528,7 @@ extension KeyboardViewController {
                 self?.updateKeyboardHeightIfNeeded()
             },
             showsNextKeyboardKey: configuration.showsNextKeyboardKey,
+            containerFrame: configuration.containerFrame,
             directionProfile: configuration.directionProfile,
             kanaLayoutMode: configuration.kanaLayoutMode,
             kanaModifierPlacementMode: configuration.kanaModifierPlacementMode,
@@ -577,4 +585,20 @@ extension KeyboardViewController {
         default: return nil
         }
     }
+
+    static func roundedToHalfPoint(_ rect: CGRect) -> CGRect {
+        func r(_ v: CGFloat) -> CGFloat { (v * 2).rounded() / 2 }
+        return CGRect(x: r(rect.minX), y: r(rect.minY), width: r(rect.width), height: r(rect.height))
+    }
+
+    // 実ハードウェアが iPad か(iPhone 専用アプリの互換モードでは userInterfaceIdiom が .phone を返すため
+    // sysctl hw.machine で判定。"iPad8,3" 等)。必須理由 API ではない
+    static let isRunningOnIPadHardware: Bool = {
+        var size = 0
+        sysctlbyname("hw.machine", nil, &size, nil, 0)
+        guard size > 0 else { return false }
+        var buffer = [CChar](repeating: 0, count: size)
+        sysctlbyname("hw.machine", &buffer, &size, nil, 0)
+        return String(cString: buffer).hasPrefix("iPad")
+    }()
 }

@@ -29,7 +29,28 @@ private struct FlickDirectionProfileKey: EnvironmentKey {
     static let defaultValue: FlickDirectionProfile = .ecritu
 }
 
+// キーボードのルートビューのグローバル座標での枠。iPad 互換モード(iPhone 専用アプリの拡張が
+// 画面中央の小さな箱で出る)では UIScreen.main が iPad 全幅を返し、吹き出し・候補パネルの
+// はみ出し判定が箱の外を基準にしてしまうため、実枠でクランプする(2786)。zero=未計測(UIScreen で代用)
+private struct KeyboardContainerFrameKey: EnvironmentKey {
+    static let defaultValue: CGRect = .zero
+}
+
 extension EnvironmentValues {
+    var keyboardContainerFrame: CGRect {
+        get { self[KeyboardContainerFrameKey.self] }
+        set { self[KeyboardContainerFrameKey.self] = newValue }
+    }
+
+    // 横方向のクランプ範囲: 実枠が測れていれば [minX, maxX]、未計測なら画面全幅
+    var keyboardHorizontalBounds: (minX: CGFloat, maxX: CGFloat) {
+        let frame = keyboardContainerFrame
+        if frame.width > 0 {
+            return (frame.minX, frame.maxX)
+        }
+        return (0, UIScreen.main.bounds.width)
+    }
+
     var keyboardAccentColor: Color {
         get { self[KeyboardAccentColorKey.self] }
         set { self[KeyboardAccentColorKey.self] = newValue }
@@ -110,6 +131,7 @@ struct FlickKeyView: View {
     @Environment(\.keyboardAccentColor) private var accentColor
     @Environment(\.flickGuideDisplayMode) private var flickGuideDisplayMode
     @Environment(\.flickDirectionProfile) private var flickDirectionProfile
+    @Environment(\.keyboardHorizontalBounds) private var keyboardHorizontalBounds
 
     private let keyLabelColor = KeyboardThemePalette.keyLabel
 
@@ -518,7 +540,8 @@ struct FlickKeyView: View {
 
         let count = CGFloat(longPressCandidates.count)
         let sideInset = Metrics.panelHorizontalMargin + Metrics.panelSafetyInset + Metrics.panelEdgeBuffer
-        let maxPanelWidth = UIScreen.main.bounds.width - sideInset * 2
+        let bounds = keyboardHorizontalBounds
+        let maxPanelWidth = (bounds.maxX - bounds.minX) - sideInset * 2
         let availableContentWidth = maxPanelWidth - Metrics.candidatePanelContentInset - max(0, count - 1) * Metrics.candidateSpacing
         let maxCellWidth = floor(availableContentWidth / count)
 
@@ -532,11 +555,11 @@ struct FlickKeyView: View {
         }
 
         let panelWidth = candidatePanelWidth
-        let screenWidth = UIScreen.main.bounds.width
+        let bounds = keyboardHorizontalBounds
         let panelMinX = keyFrameInGlobal.midX - panelWidth * 0.5
         let panelMaxX = keyFrameInGlobal.midX + panelWidth * 0.5
-        let minX = Metrics.panelHorizontalMargin + Metrics.panelSafetyInset + Metrics.panelEdgeBuffer
-        let maxX = screenWidth - minX
+        let minX = bounds.minX + Metrics.panelHorizontalMargin + Metrics.panelSafetyInset + Metrics.panelEdgeBuffer
+        let maxX = bounds.maxX - (Metrics.panelHorizontalMargin + Metrics.panelSafetyInset + Metrics.panelEdgeBuffer)
         var shift: CGFloat = 0
 
         if panelMinX < minX {

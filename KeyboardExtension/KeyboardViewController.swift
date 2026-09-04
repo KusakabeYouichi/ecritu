@@ -1425,6 +1425,13 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         applyKeyboardBaseBackground()
+
+        // 実幅が描画時の見積もりと違えば作り直す(初回は幅 0 で描き、レイアウト後に確定。
+        // iPad 互換モードの箱幅や回転で変わる。2786)
+        let frame = Self.roundedToHalfPoint(view.convert(view.bounds, to: nil))
+        if frame.width > 0, frame != configuration.containerFrame {
+            refreshKeyboardState(trigger: "containerFrame")
+        }
     }
 
     // 回転(サイズ遷移)の正規の入口。UIKit はここで遷移先サイズを確定値として渡す。
