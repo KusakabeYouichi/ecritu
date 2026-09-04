@@ -1,3 +1,6 @@
+# 注意: 正本は écritu.xcodeproj/project.pbxproj(手動編集)。この YAML は XcodeGen 用の写しで、
+# `xcodegen generate` は運用していない(実行すると手動登録した資源・設定が落ちる。2785)。
+# 変更は pbxproj に入れ、この YAML は同じ内容を追記して同期を保つ。
 name: écritu
 options:
   deploymentTarget:
@@ -75,6 +78,34 @@ targets:
       - path: KeyboardExtension/DefaultDictionaryResources/kana_kanji_inflection_dictionary.json
         buildPhase: resources
       - path: KeyboardExtension/DefaultDictionaryResources/kana_kanji_dictionary.sqlite
+        buildPhase: resources
+      - path: KeyboardExtension/DefaultDictionaryResources/LatinSuggestionSupplemental.txt
+        buildPhase: resources
+      - path: KeyboardExtension/LatinSuggestionLexicon_en.txt
+        buildPhase: resources
+      - path: KeyboardExtension/LatinSuggestionLexicon_fr.txt
+        buildPhase: resources
+      - path: KeyboardExtension/LatinSuggestionLexicon_de.txt
+        buildPhase: resources
+      - path: KeyboardExtension/LatinSuggestionLexicon_it.txt
+        buildPhase: resources
+      - path: KeyboardExtension/KanjiRadicalIndex.txt
+        buildPhase: resources
+      - path: KeyboardExtension/InitialAjoutVocabMigration.json
+        buildPhase: resources
+      - path: KeyboardExtension/InitialMiscVocabMigration.json
+        buildPhase: resources
+      - path: KeyboardExtension/InitialShortcutVocabMigration.json
+        buildPhase: resources
+      - path: KeyboardExtension/InitialSupprVocabMigration.json
+        buildPhase: resources
+      - path: KeyboardExtension/InitialSupprHiddenVocabMigration.json
+        buildPhase: resources
+      - path: KeyboardExtension/PrivacyInfo.xcprivacy
+        buildPhase: resources
+      - path: references/bushu.plist
+        buildPhase: resources
+      - path: references/grammaire.plist
         buildPhase: resources
     preBuildScripts:
       - name: Enforce Blank Line After Top-Level Brace
