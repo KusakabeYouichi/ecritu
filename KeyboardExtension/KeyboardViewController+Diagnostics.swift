@@ -928,9 +928,7 @@ extension KeyboardViewController {
     static let diagnosticsCriticalLogMaxLineCount = 60
     func appendKeyboardDiagnosticsCriticalLog(_ entry: String, to defaults: UserDefaults) {
         // 開発ビルド専用(appendKeyboardDiagnosticsLog と同方針)
-        #if !DEBUG
-        return
-        #endif
+        #if DEBUG
         var lines = diagnosticsLogLines(
             from: defaults,
             key: SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
@@ -944,6 +942,9 @@ extension KeyboardViewController {
             to: defaults,
             key: SharedDefaultsKeys.keyboardDiagnosticsCriticalLogLines
         )
+        #else
+        return
+        #endif
     }
 
     // メモリ内バッファの永続化スロットル。クラッシュ時に失われ得るのは最大この秒数分だが、
@@ -1227,9 +1228,7 @@ extension KeyboardViewController {
     ) {
         // 診断ログは開発ビルド専用(App Store ガイドライン4.4.2: キーボードの
         // 入力周辺情報を保存しない)。リリースでは一切書き込まない。
-        #if !DEBUG
-        return
-        #endif
+        #if DEBUG
         let sourceFile = (file as NSString).lastPathComponent
         let timestamp = Self.diagnosticsTimestampFormatter.string(from: Date())
         let entry =
@@ -1275,6 +1274,9 @@ extension KeyboardViewController {
         sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)
         sharedDefaults.set(Date().timeIntervalSince1970, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastHeartbeat)
         sharedDefaults.set(diagnosticsState.diagnosticsSessionID, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastSessionID)
+        #else
+        return
+        #endif
     }
 
     func updateKeyboardDiagnosticsHeartbeat(
@@ -1295,9 +1297,7 @@ extension KeyboardViewController {
         persistKeyboardDiagnosticsFailSafeProfile(in: sharedDefaults)
 
         // ここから先はログ書き込み(開発ビルド専用)。failSafe の永続化は機能なので残す。
-        #if !DEBUG
-        return
-        #endif
+        #if DEBUG
         let sourceFile = (file as NSString).lastPathComponent
         let summary = "\(event) [\(diagnosticsRuntimeContext())] @ \(sourceFile):\(line) \(function)"
 
@@ -1314,6 +1314,9 @@ extension KeyboardViewController {
         if appendLog {
             appendKeyboardDiagnosticsLog(event, critical: criticalLog, file: file, line: line, function: function)
         }
+        #else
+        return
+        #endif
     }
 
     func startKeyboardDiagnosticsSession() {
