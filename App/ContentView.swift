@@ -454,10 +454,15 @@ struct ContentView: View {
     @Environment(\.scenePhase) private var scenePhase
 
     private let setupSteps: [String] = [
-        "設定 > 一般 > キーボード > キーボード > 新しいキーボードを追加",
-        "作成したキーボードを有効化",
-        "入力画面で地球儀キーから切り替え"
+        "iOS の 設定 › 一般 › キーボード › キーボード › 新しいキーボードを追加 で「écritu」を追加",
+        "一覧の「日本語入力 — écritu」をタップし、[フルアクセスを許可] をオン(任意。学習と設定の反映に使います)",
+        "文字を打つ画面で地球儀 🌐 を長押しして「日本語入力 — écritu」を選ぶ"
     ]
+
+    // 操作マニュアルとプライバシーポリシー(GitHub Pages)。App Store の説明文「アプリ内からも参照できる
+    // 操作マニュアル」と一致させるため本体から Link で開く(外部ブラウザ。2785)
+    static let manualURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/")!
+    static let privacyPolicyURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/privacy.html")!
 
     var isContainerBusy: Bool {
         isBootstrappingInitialData || isLoadingFirstVocabularyEntries || isLoadingSecondVocabularyEntries
@@ -1083,9 +1088,13 @@ struct ContentView: View {
                                 Spacer(minLength: 0)
                             }
 
-                        Text("このアプリはカスタムキーボード拡張の設定・管理を行うコンテナー・アプリ (Containing App) です。キーボード本体は拡張ターゲット側で実装されています。")
+                        Text("écritu は日本語フリック入力のキーボードです。このアプリでは、キーボードの設定と語彙(追加・抑制・学習・ショートカット)を管理します。")
                             .font(.body)
                             .foregroundStyle(.secondary)
+
+                        SetupStepsSection(steps: setupSteps)
+
+                        ManualLinksSection(manualURL: Self.manualURL, privacyPolicyURL: Self.privacyPolicyURL)
 
                         // 設定カード群は初回フレーム描画後に遅延構築する(下の .task が1フレーム後に
                         // フラグを立てる)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
@@ -1335,8 +1344,6 @@ struct ContentView: View {
                         )
 
                         // ──── アプリ情報 ────
-
-                        SetupStepsSection(steps: setupSteps)
 
                         ThirdPartyLicensesSection()
 
