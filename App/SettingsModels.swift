@@ -181,8 +181,8 @@ enum DirectionOption: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .apple: return "Apple"
-        case .ecritu: return "écritu"
+        case .apple: return "style iPhone"
+        case .ecritu: return "style écritu"
         }
     }
 }

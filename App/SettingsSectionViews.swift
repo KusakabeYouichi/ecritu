@@ -1004,7 +1004,7 @@ struct DirectionSettingsSection: View {
             selection: $selection,
             options: Array(DirectionOption.allCases),
             optionTitle: { $0.title },
-            footnote: "Apple / écritu の切り替えは次回のキーボード表示時に反映されます。"
+            footnote: "style iPhone は iPhone 標準キーボードと同じ方向割り当て、style écritu は écritu 独自の割り当てです。切り替えは次回のキーボード表示時に反映されます。"
         )
     }
 }
@@ -1034,7 +1034,7 @@ struct KanaLayoutSettingsSection: View {
             selection: $selection,
             options: Array(KanaLayoutOption.allCases),
             optionTitle: { $0.title },
-            footnote: "かなモードで使う配列を切り替えます。標準は 5x2、3x3+わ は Apple標準の日本語配列に合わせて各段5ボタン(3かな + 機能2)で表示します。"
+            footnote: "かなモードで使う配列を切り替えます。標準は 5x2、3x3+わ は iPhone 標準の日本語配列に合わせて各段5ボタン(3かな + 機能2)で表示します。"
         )
     }
 }

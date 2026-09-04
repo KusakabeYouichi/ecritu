@@ -403,7 +403,7 @@ extension ContentView {
         case .strategicDefaults:
             return "すべての設定を初期設定(標準)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
-            return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・Apple 式フリック 等)にします。語彙・学習内容はそのままです。"
+            return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・style iPhone のフリック 等)にします。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
             if let stash = loadSettingsStash() {
                 let formatter = DateFormatter()
