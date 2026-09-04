@@ -54,6 +54,8 @@ extension KeyboardRootView {
                     .padding(.leading, 2)
                     .padding(.top, emojiHeaderTopPadding)
                     .allowsHitTesting(false)
+            } else if showsFullAccessNotice {
+                fullAccessNoticeHeaderView
             } else {
                 Color.clear
                     .allowsHitTesting(false)

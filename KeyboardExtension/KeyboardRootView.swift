@@ -85,7 +85,11 @@ struct KeyboardRootView: View {
     @State private var lastLatinShiftTapAt: Date? = nil
     // フルアクセス案内を閉じたか。オフのままでも変換は動くので、閉じれば通常どおり使える。
     // ビュー階層が作り直されると戻る(未設定という異常状態なので、また出るのが妥当)。
-    @State private var didDismissFullAccessNotice = false
+    // フルアクセス未許可の案内を閉じた記録。拡張ローカルの UserDefaults.standard に永続化する
+    // (フルアクセス無しでも書ける)。以前は @State で、アプリ切替ごとに案内が全面に再表示され
+    // 「フルアクセス必須」に見えていた(ガイドライン 4.4.1。2785)
+    @State private var didDismissFullAccessNotice = UserDefaults.standard.bool(forKey: KeyboardRootView.fullAccessNoticeDismissedKey)
+    static let fullAccessNoticeDismissedKey = "didDismissFullAccessNotice"
     @State var isAwaitingLatinModeSwitchSecondTap = false
     @State var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     @State var selectedEmojiCategory: EmojiCategory = .people
@@ -1153,48 +1157,40 @@ struct KeyboardRootView: View {
         .environment(\.flickDirectionProfile, directionProfile)
         .environment(\.flickGuideDisplayMode, currentFlickGuideDisplayMode)
         .environment(\.keyboardAccentColor, accentColor)
-        .overlay {
-            if !hasFullAccess, !didDismissFullAccessNotice {
-                fullAccessRequiredOverlay
-            }
-        }
     }
 
-    // フルアクセス未許可の案内。インストール直後や削除→再インストールの直後はオフに戻るが、
-    // 読み取りだけは効くため見た目が設定どおりで気づけない。学習・設定の保存・診断が
-    // 黙って失敗し続けるので、キー面を覆って明示する。変換自体は動くので
-    // 「このまま使う」で閉じられるようにし、閉じている間は通常のキーボードとして使える。
-    private var fullAccessRequiredOverlay: some View {
-        ZStack {
-            Rectangle()
-                .fill(.regularMaterial)
-                .ignoresSafeArea()
+    // フルアクセス未許可の案内(候補ヘッダー行に出す 1 行バナー)。インストール直後や削除→
+    // 再インストールの直後はオフに戻るが、読み取りだけは効くため見た目が設定どおりで気づけない。
+    // 学習・設定の保存が黙って失敗し続けるので候補が無い間だけヘッダーで知らせる。変換・入力は
+    // フルアクセス無しでも全部動くので、キー面(地球儀を含む)は決して覆わない(2785)。
+    var showsFullAccessNotice: Bool {
+        !hasFullAccess && !didDismissFullAccessNotice
+    }
 
-            VStack(spacing: 10) {
-                Text("フルアクセスが必要です")
-                    .font(.headline)
+    var fullAccessNoticeHeaderView: some View {
+        HStack(spacing: 8) {
+            Text("フルアクセスがオフです — 学習・設定の保存は反映されません(設定 › 一般 › キーボード › キーボード › 日本語入力 — écritu)")
+                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .foregroundStyle(keyLabelColor.opacity(0.75))
+                .lineLimit(2)
+                .minimumScaleFactor(0.7)
+                .frame(maxWidth: .infinity, alignment: .leading)
 
-                Text("設定 › 一般 › キーボード › キーボード › écritu で\n[フルアクセスを許可]をオンにしてください。")
-                    .font(.footnote)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text("オフのままだと、学習・設定の保存・追加語彙が反映されません。")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Button("このまま使う") {
-                    didDismissFullAccessNotice = true
-                }
-                .font(.callout.weight(.semibold))
-                .buttonStyle(.borderedProminent)
-                .tint(accentColor)
-                .padding(.top, 2)
+            Button {
+                didDismissFullAccessNotice = true
+                UserDefaults.standard.set(true, forKey: Self.fullAccessNoticeDismissedKey)
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 16))
+                    .foregroundStyle(keyLabelColor.opacity(0.6))
+                    .padding(6)
+                    .contentShape(Rectangle())
             }
-            .padding(.horizontal, 20)
+            .buttonStyle(.plain)
+            .accessibilityLabel("この案内を閉じる")
         }
+        .padding(.leading, 2)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
 }
