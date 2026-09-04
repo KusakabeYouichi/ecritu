@@ -37,6 +37,7 @@ struct KeyboardRootView: View {
     let radicalStrokeCountStyleRawValue: String
     let spaceToastTrigger: Int
     let returnKeySystemImageName: String?
+    let returnKeyTitleOverride: String?
     let isReturnKeyEnabled: Bool
     let kanaFlickGuideDisplayMode: FlickGuideDisplayMode
     let latinFlickGuideDisplayMode: FlickGuideDisplayMode
@@ -428,6 +429,9 @@ struct KeyboardRootView: View {
             return "確定"
         }
 
+        if returnKeySystemImageName == nil, let returnKeyTitleOverride {
+            return returnKeyTitleOverride
+        }
         return returnKeySystemImageName == nil ? "⏎" : ""
     }
 
@@ -440,6 +444,9 @@ struct KeyboardRootView: View {
             return "確定"
         }
 
+        if returnKeySystemImageName == nil, let returnKeyTitleOverride {
+            return returnKeyTitleOverride
+        }
         return returnKeySystemImageName == nil ? "改行" : "検索"
     }
 
@@ -1227,6 +1234,7 @@ struct KeyboardRootView: View {
         radicalStrokeCountStyleRawValue: "",
         spaceToastTrigger: 1,
         returnKeySystemImageName: nil,
+        returnKeyTitleOverride: nil,
         isReturnKeyEnabled: true,
         kanaFlickGuideDisplayMode: .fourDirections,
         latinFlickGuideDisplayMode: .fourDirections,

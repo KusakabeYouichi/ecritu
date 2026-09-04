@@ -5,7 +5,7 @@ import Darwin
 
 extension KeyboardRootView {
     var returnActionKeyFontSize: CGFloat {
-        isReturnActsAsCommitKey ? 16 : 22
+        (isReturnActsAsCommitKey || (returnKeySystemImageName == nil && returnKeyTitleOverride != nil)) ? 16 : 22
     }
 
     func kanaThreeByThreeMainLabelFontSize(for displayMode: FlickGuideDisplayMode) -> CGFloat {
