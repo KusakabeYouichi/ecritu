@@ -21,6 +21,8 @@ Cleaning policy (v1):
   ピリオド(略語)は除外。
 - 3文字未満は除外(補完サジェストとして無意味な短語と、伊語エリジオンの切り株を
   まとめて落とす)。
+- 差別語・強い性的卑語は tools/latin_suggestion_blocklist.txt で提案から除外(2785)。
+  生成済みリストへの再適用は tools/apply_latin_suggestion_blocklist.py。
 - en/fr/it: 大文字始まりを除外(固有名詞対策。文頭大文字の一般語は小文字側が上位に
   居るので取りこぼしなし)。
 - de: 名詞が大文字正書のため大文字始まりを許可。ALLCAPS(略語)のみ除外。
@@ -43,6 +45,9 @@ import subprocess
 import unicodedata
 from collections import defaultdict
 from pathlib import Path
+
+# 差別語・強い性的卑語の除外(提案からのみ。tools/latin_suggestion_blocklist.txt。2785)
+from apply_latin_suggestion_blocklist import fold as fold_for_blocklist, is_blocked, load_blocklist
 
 WORD_PATTERN = re.compile(r"^[^\W\d_][^\W\d_'’\-]*(?:['’\-][^\W\d_]+)*$")
 TRAILING_APOSTROPHE_ALLOWLIST_IT = {"po'"}
@@ -312,11 +317,17 @@ def main() -> None:
     if args.lexique:
         lists["fr"] = load_lexique(args.lexique)[: args.top_fr or args.top]
     args.output_dir.mkdir(parents=True, exist_ok=True)
+    blocklist, blocklist_exceptions = load_blocklist()
     for lang, words in lists.items():
         keys = fold_search_keys(words)
-        # 実行時は読むだけで検索できるよう、キー順にソートして key\tword\trank で出力
+        # 実行時は読むだけで検索できるよう、キー順にソートして key\tword\trank で出力。
+        # 順位(rank)は除外前の番号のまま(欠番可): 除外語だけを提案から外す
         rows = sorted(
-            ((keys[i], words[i], i) for i in range(len(words))),
+            (
+                (keys[i], words[i], i)
+                for i in range(len(words))
+                if not is_blocked(fold_for_blocklist(words[i]), lang, blocklist, blocklist_exceptions)
+            ),
             key=lambda row: (row[0], row[2]),
         )
         out = args.output_dir / f"LatinSuggestionLexicon_{lang}.txt"

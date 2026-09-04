@@ -11701,7 +11701,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         let buildMs = (CFAbsoluteTimeGetCurrent() - builtAt) * 1000
         print("PROBE lexicon mmap: \(Int(buildMs))ms, entries=\(loadedCounts)")
-        XCTAssertEqual(loadedCounts, [15000, 15000, 60000, 15000])
+        // 差別語・強い性的卑語の除外(tools/latin_suggestion_blocklist.txt。2785)ぶんだけ 15000/60000 から欠ける
+        XCTAssertEqual(loadedCounts, [14969, 14971, 59947, 14974])
+        for prefix in ["nigg", "fagg", "schwucht", "fotz", "négr", "encul", "putta", "cazz"] {
+            let suggestions = store.latinSuggestions(prefix: prefix, limit: 8)
+            XCTAssertTrue(suggestions.isEmpty, "blocklisted prefix \(prefix): \(suggestions)")
+        }
+        // 他言語では中立な同綴り語は残す(dick=独「厚い」、retard=仏「遅れ」)
+        XCTAssertTrue(store.latinSuggestions(prefix: "dick", limit: 8).contains("dick"))
+        XCTAssertTrue(store.latinSuggestions(prefix: "retar", limit: 8).contains("retard"))
         let english = store.latinSuggestions(prefix: "informa", limit: 8)
         XCTAssertTrue(english.contains("information"), "suggestions=\(english)")
         let french = store.latinSuggestions(prefix: "voil", limit: 8)

@@ -3054,9 +3054,6 @@ connait	connaît	709
 connaitra	connaîtra	11540
 connaitras	connaîtras	14355
 connaitre	connaître	801
-connard	connard	983
-connards	connards	4251
-connasse	connasse	5797
 conne	conne	3970
 connecte	connecté	10409
 connecter	connecter	14963
@@ -3318,8 +3315,6 @@ coucou	coucou	3911
 coude	coude	7391
 coudes	coudes	7857
 coudre	coudre	7867
-couille	couille	9620
-couilles	couilles	1731
 couillon	couillon	6098
 couillons	couillons	12306
 coulait	coulait	10813
@@ -5052,10 +5047,6 @@ encourage	encourage	8950
 encourage	encouragé	14633
 encourager	encourager	8360
 encre	encre	6454
-encule	enculé	2075
-encule	encule	12426
-enculer	enculer	6914
-encules	enculés	4729
 endommage	endommagé	9341
 endormi	endormi	3285
 endormie	endormie	5149
@@ -6692,7 +6683,6 @@ gosse	gosse	1087
 gosses	gosses	1376
 goudron	goudron	9895
 gouffre	gouffre	9844
-gouine	gouine	10086
 gourde	gourde	10013
 gourmand	gourmand	12399
 gout	goût	1305
@@ -9221,9 +9211,6 @@ negociations	négociations	8951
 negocie	négocie	12036
 negocie	négocié	14813
 negocier	négocier	4123
-negre	nègre	3961
-negres	nègres	6511
-negro	négro	8095
 neige	neige	1486
 neiges	neiges	14410
 nene	néné	9303
@@ -9262,9 +9249,6 @@ nies	nies	10826
 niez	niez	14271
 nigaud	nigaud	14553
 nim	nim	14698
-nique	nique	11289
-nique	niqué	12510
-niquer	niquer	10176
 niveau	niveau	1414
 niveaux	niveaux	7500
 noble	noble	2215
@@ -10029,8 +10013,6 @@ pecheurs	pêcheurs	7531
 pecheurs	pécheurs	8787
 pedale	pédale	7238
 pedales	pédales	7607
-pede	pédé	2254
-pedes	pédés	5821
 pediatre	pédiatre	13575
 peigne	peigne	6254
 peignoir	peignoir	6864
@@ -10347,7 +10329,6 @@ pis	pis	1824
 piscine	piscine	2538
 pisse	pisse	3889
 pisse	pissé	7308
-pisser	pisser	2668
 pissou	pissou	7470
 piste	piste	1472
 pistes	pistes	5177
@@ -10586,7 +10567,6 @@ porcelaine	porcelaine	11087
 porche	porche	10853
 porcherie	porcherie	11398
 porcs	porcs	4418
-porno	porno	3633
 pornographie	pornographie	14555
 pornos	pornos	10525
 port	port	1995
@@ -11243,10 +11223,6 @@ purifier	purifier	11747
 purs	purs	9437
 pus	pus	11090
 put	put	7628
-putain	putain	266
-putains	putains	2873
-pute	pute	809
-putes	putes	3069
 puzzle	puzzle	8432
 pyjama	pyjama	6055
 pyramide	pyramide	7489
@@ -12602,8 +12578,6 @@ salades	salades	6883
 salaire	salaire	2458
 salaires	salaires	9833
 salami	salami	13541
-salaud	salaud	882
-salauds	salauds	2340
 sale	sale	594
 sale	salé	11050
 salee	salée	10320
@@ -12624,10 +12598,8 @@ salons	salons	12961
 saloon	saloon	8089
 salopard	salopard	3194
 salopards	salopards	7376
-salope	salope	1094
 saloperie	saloperie	2810
 saloperies	saloperies	6912
-salopes	salopes	8370
 salue	salue	3041
 salue	salué	12437
 saluer	saluer	4135
@@ -12991,7 +12963,6 @@ shampooing	shampooing	12461
 sherif	shérif	1408
 sheriff	sheriff	11701
 sherry	sherry	11347
-shit	shit	10738
 shoote	shoote	11560
 shooter	shooter	14239
 shopping	shopping	7135
