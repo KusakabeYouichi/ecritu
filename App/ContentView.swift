@@ -480,7 +480,13 @@ struct ContentView: View {
 
     static func detectKeyboardEnabled() -> Bool {
         let keyboardBundleID = (Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as? String ?? "") + ".keyboard"
-        return UITextInputMode.activeInputModes.contains { $0.description.contains(keyboardBundleID) }
+        let modes = UITextInputMode.activeInputModes
+        #if DEBUG
+        // 照合の切り分け用: 一覧の description をそのまま残す(Release には無い)
+        let summary = modes.map { "\($0.primaryLanguage ?? "-"):\($0.description)" }.joined(separator: " | ")
+        UserDefaults.standard.set("\(Date()) target=\(keyboardBundleID) modes=\(summary)", forKey: "debugActiveInputModes")
+        #endif
+        return modes.contains { $0.description.contains(keyboardBundleID) }
     }
     static let privacyPolicyURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/privacy.html")!
 
