@@ -27,7 +27,7 @@ private struct RootLoadingView: View {
                         ProgressView()
                             .controlSize(.small)
 
-                        Text("Loading... 起動準備中")
+                        Text("起動準備中")
                             .font(.footnote.weight(.semibold))
                             .foregroundStyle(.primary)
                     }
