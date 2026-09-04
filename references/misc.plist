@@ -106,6 +106,11 @@
 	<dict><key>phrase</key><string>売ってしまう</string><key>shortcut</key><string>うってしまう</string></dict>
 
 	<!-- ■ かな正書の語・句(かな識別 curated。漢字化・カタカナ化・全かなエコー抑制から守る) -->
+	<dict><key>phrase</key><string>べき</string><key>shortcut</key><string>べき</string></dict>	<!-- 当為の助動詞。辞書は 冪0/ベキ1/べき2 で連文節にかなが供給されず ふむべき→府務冪 になっていた(ユーザ報告 2798) -->
+	<dict><key>phrase</key><string>べし</string><key>shortcut</key><string>べし</string></dict>
+	<dict><key>phrase</key><string>べく</string><key>shortcut</key><string>べく</string></dict>
+	<dict><key>phrase</key><string>とか</string><key>shortcut</key><string>とか</string></dict>	<!-- 並立助詞 とか はかなが正書。LM にトークンが無く辞書 rank5 で、とかはでない が と+彼は出ない に分割されていた(ユーザ報告 2798) -->
+	<dict><key>phrase</key><string>いそう</string><key>shortcut</key><string>いそう</string></dict>	<!-- 様態 いる+そう はかなが正書。連文節で名詞 位相/移送+ですね に負けていた(ユーザ報告 2798) -->
 	<dict><key>phrase</key><string>にした</string><key>shortcut</key><string>にした</string></dict>	<!-- 「にする」文法クラスタ: コーパスA単位分割の影響で に+した が 西+た 等の単漢字断片に負けるため、 かな識別のcuratedノードとしてラティスに供給する -->
 	<dict><key>phrase</key><string>にして</string><key>shortcut</key><string>にして</string></dict>
 	<dict><key>phrase</key><string>にする</string><key>shortcut</key><string>にする</string></dict>

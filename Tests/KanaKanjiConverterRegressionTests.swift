@@ -320,6 +320,69 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(Array(list.prefix(4)), ["もち米", "餅米", "糯米", "モチ米"], "list=\(list)")
     }
 
+    // かいさつとおって: 助詞 と(改札→と 1795)+追って(と→追っ bigram で活用OOV 4500)が、1 動詞の 通って
+    // (改札→通っ の bigram 無し=7200)を undercut していた。「助詞 1 字+活用派生」の分割と同じ幅を覆う
+    // 活用派生の語幹 unigram(通っ 5563 ≤ 追っ 6057+500)なら分割側に減点(2797)
+    func testRegressionRealLMKaisatsuTootteMergesVerbHead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let kaisatsu = converter.multiClauseCandidates(for: "かいさつとおって", systemCandidateMode: .surface)
+        XCTAssertEqual(kaisatsu.first, "改札通って", "kaisatsu=\(kaisatsu)")
+        let michi = converter.multiClauseCandidates(for: "みちとおって", systemCandidateMode: .surface)
+        XCTAssertEqual(michi.first, "道通って", "michi=\(michi)")
+        // 分割側の語幹が優勢な正当分割(会っ ≪ 似合っ)は従来どおり
+        let eki = converter.multiClauseCandidates(for: "えきにあった", systemCandidateMode: .surface)
+        XCTAssertTrue(eki.first?.hasPrefix("駅に") ?? false, "分割が維持される eki=\(eki)")
+        XCTAssertFalse(eki.contains("駅似合った"), "eki=\(eki)")
+        let wo = converter.multiClauseCandidates(for: "かいさつをとおって", systemCandidateMode: .surface)
+        XCTAssertEqual(wo.first, "改札を通って", "wo=\(wo)")
+    }
+
+    // 2798 バッチ(ユーザ報告 9 件)。実機語彙込み
+    func testRegressionRealLMBatch2798Readings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func single(_ r: String) -> [String] { converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        // えー/あとあと: 間投詞・副詞はかな先頭
+        XCTAssertEqual(single("えー").first, "えー")
+        XCTAssertEqual(Array(single("あとあと").prefix(2)), ["あとあと", "後々"])
+        // しんせん: 新線(Wikipedia LM)より 新鮮→神泉→深圳
+        XCTAssertEqual(Array(single("しんせん").prefix(4)), ["新鮮", "神泉", "深圳", "新線"])
+        XCTAssertEqual(Array(multi("しんせんだと").prefix(3)), ["新鮮だと", "神泉だと", "深圳だと"])
+        // いそう: 様態そう はかな→居そう→名詞
+        XCTAssertEqual(Array(single("いそうですね").prefix(3)), ["いそうですね", "居そうですね", "位相ですね"])
+        XCTAssertEqual(multi("いそうですね").first, "いそうですね")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いそうですね"))
+        // はんにち: 連文節でも 半日程度
+        XCTAssertEqual(multi("はんにちていど").first, "半日程度")
+        // ふむべき: 当為 べき(postfix 供給+かな curated)。ムベキ 収穫は抑制
+        XCTAssertEqual(single("ふむべき").first, "踏むべき")
+        XCTAssertFalse(single("ふむべき").contains("府ムベキ"))
+        XCTAssertEqual(multi("ふむべき").first, "踏むべき")
+        XCTAssertEqual(multi("いくべし").first, "行くべし")
+        // かけん: 書けん/描けん が先、かなは末尾側
+        XCTAssertEqual(Array(single("かけんのか").prefix(2)), ["書けんのか", "描けんのか"])
+        XCTAssertEqual(multi("まともにかけんのか").first, "まともに書けんのか")
+        // でない: 文頭は 出ない、名詞の後はコピュラ でない のまま
+        XCTAssertEqual(multi("でないようにした").first, "出ないようにした")
+        XCTAssertEqual(multi("そうでない").first, "そうでない")
+        XCTAssertEqual(multi("がくせいでないと").first, "学生でないと")
+        XCTAssertFalse(single("でない").contains("手ない"), "手@で は抑制")
+        // とか: かな正書(curated)。彼@か 抑制で と+彼は の分割が消える
+        XCTAssertEqual(multi("とかはでない").first, "とかは出ない")
+        // ておく 補助動詞はかな、本動詞 置く は不変
+        XCTAssertEqual(multi("さくじょしておきながら").first, "削除しておきながら")
+        XCTAssertEqual(multi("やっておいて").first, "やっておいて")
+        XCTAssertEqual(multi("ほんをおく").first, "本を置く")
+        XCTAssertEqual(multi("つくえにおいた").first, "机に置いた")
+        // おもち: 収穫底値の 尾持 で丁寧接頭辞合成が塞がれていた
+        XCTAssertEqual(single("おもち").first, "お持ち")
+        XCTAssertTrue(single("おもち").contains("お餅"))
+        XCTAssertEqual(single("おかね").first, "お金")
+        XCTAssertEqual(single("おそい").first, "遅い", "フル読みの常用語(遅い)は従来どおり接頭辞合成を塞ぐ")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {
