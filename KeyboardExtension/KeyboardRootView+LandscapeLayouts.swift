@@ -269,7 +269,7 @@ extension KeyboardRootView {
     }
 
     func landscapeCandidateSidebarWidth() -> CGFloat {
-        let screenWidth = max(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        let screenWidth = keyboardContainerWidth
         let ratio: CGFloat = isKanaFiveByTwoMode ? 0.34 : 0.4
         let desired = screenWidth * ratio
         return min(max(desired, 180), 320)

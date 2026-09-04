@@ -636,6 +636,7 @@ private struct SymbolInspectButtonStyle: ButtonStyle {
 // キー上に吹き出しを配置する。なるべく1行で表示し、画面端に当たる場合は内側へずらす。
 // 1行で最大幅を超える長い名前(バチカン等)のみ2行に折り返す。
 private struct SymbolInspectBubbleOverlay: View {
+    @Environment(\.keyboardHorizontalBounds) private var keyboardHorizontalBounds
     let text: String
     var backgroundColor: Color = Color.black.opacity(0.82)
 
@@ -660,13 +661,14 @@ private struct SymbolInspectBubbleOverlay: View {
 
         GeometryReader { proxy in
             let keyFrame = proxy.frame(in: .global)
-            let screenWidth = UIScreen.main.bounds.width
+            // キーボード枠(iPad 互換モードでは画面より狭い箱)の内側にクランプ(2786)
+            let bounds = keyboardHorizontalBounds
             let half = bubbleWidth / 2
             let keyCenterX = keyFrame.midX
-            // 吹き出し中心を画面内[margin+half, width-margin-half]にクランプし、はみ出しを内側へずらす。
+            // 吹き出し中心を枠内[minX+margin+half, maxX-margin-half]にクランプし、はみ出しを内側へずらす。
             let clampedCenterX = min(
-                max(keyCenterX, screenMargin + half),
-                max(screenMargin + half, screenWidth - screenMargin - half)
+                max(keyCenterX, bounds.minX + screenMargin + half),
+                max(bounds.minX + screenMargin + half, bounds.maxX - screenMargin - half)
             )
             let dx = clampedCenterX - keyCenterX
 
@@ -1065,11 +1067,15 @@ struct EmojiGridCollectionView: UIViewRepresentable {
             label.frame = CGRect(x: 10, y: 0, width: textWidth, height: bubbleHeight)
             container.addSubview(label)
             let cellFrame = cell.convert(cell.bounds, to: host)
-            let screenWidth = UIScreen.main.bounds.width
-            let hostOriginX = host.convert(CGPoint.zero, to: nil).x
+            // 枠=ホスト(グリッド)のウィンドウ座標。iPad 互換モードの箱でも枠内に収まる(2786)
+            let hostFrameInWindow = host.convert(host.bounds, to: nil)
+            let hostOriginX = hostFrameInWindow.minX
             let half = bubbleWidth / 2
             let centerXInScreen = hostOriginX + cellFrame.midX
-            let clampedCenterX = min(max(centerXInScreen, 6 + half), max(6 + half, screenWidth - 6 - half))
+            let clampedCenterX = min(
+                max(centerXInScreen, hostFrameInWindow.minX + 6 + half),
+                max(hostFrameInWindow.minX + 6 + half, hostFrameInWindow.maxX - 6 - half)
+            )
             let centerX = clampedCenterX - hostOriginX
             container.frame = CGRect(
                 x: centerX - half,

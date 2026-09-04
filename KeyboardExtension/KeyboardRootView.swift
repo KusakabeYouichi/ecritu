@@ -20,6 +20,10 @@ struct KeyboardRootView: View {
     let onInputModeChanged: (KeyboardInputMode) -> Void
     var onFormattedNumberCategoryChanged: () -> Void = {}
     let showsNextKeyboardKey: Bool
+    // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
+    // width が盤面の幅見積もり、minX/maxX が吹き出しのクランプに使われる。zero=未レイアウト
+    let containerFrame: CGRect
+    var containerWidth: CGFloat { containerFrame.width }
     let directionProfile: FlickDirectionProfile
     let kanaLayoutMode: KanaLayoutMode
     let kanaModifierPlacementMode: KanaModifierPlacementMode
@@ -198,7 +202,7 @@ struct KeyboardRootView: View {
 
         let estimatedKeyboardWidth = max(
             1,
-            UIScreen.main.bounds.width - keyboardHorizontalPadding * 2
+            keyboardContainerWidth - keyboardHorizontalPadding * 2
         )
         let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
             ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
@@ -225,7 +229,7 @@ struct KeyboardRootView: View {
 
         let estimatedKeyboardWidth = max(
             1,
-            UIScreen.main.bounds.width - keyboardHorizontalPadding * 2
+            keyboardContainerWidth - keyboardHorizontalPadding * 2
         )
         let leadingControlWidth: CGFloat = showsCompactLeftModeSwitchButtons
             ? (leftModeSwitchButtonWidth + keyboardRowSpacing)
@@ -778,7 +782,13 @@ struct KeyboardRootView: View {
     }
 
     private var shorterScreenEdge: CGFloat {
-        min(UIScreen.main.bounds.width, UIScreen.main.bounds.height)
+        min(keyboardContainerWidth, UIScreen.main.bounds.height)
+    }
+
+    // 盤面の幅見積もりの基準。KeyboardViewController が view.bounds.width を渡す(レイアウト後に更新)。
+    // 未レイアウト(0)のときだけ UIScreen.main で代用する(2786)
+    var keyboardContainerWidth: CGFloat {
+        containerWidth > 0 ? containerWidth : UIScreen.main.bounds.width
     }
 
     var usesCompactKanaFiveByTwoBottomActionRow: Bool {
@@ -811,7 +821,7 @@ struct KeyboardRootView: View {
 
         let estimatedKeyboardWidth = max(
             1,
-            UIScreen.main.bounds.width - keyboardHorizontalPadding * 2
+            keyboardContainerWidth - keyboardHorizontalPadding * 2
         )
         let leadingControlWidth: CGFloat = shouldShowCompactLeftModeSwitchInBottomActionRow
             ? leftModeSwitchButtonWidth
@@ -1166,6 +1176,8 @@ struct KeyboardRootView: View {
         .environment(\.flickDirectionProfile, directionProfile)
         .environment(\.flickGuideDisplayMode, currentFlickGuideDisplayMode)
         .environment(\.keyboardAccentColor, accentColor)
+        // 吹き出し・候補パネルのクランプ基準(UIKit 側で測ったウィンドウ座標の枠。2786)
+        .environment(\.keyboardContainerFrame, containerFrame)
     }
 
     // フルアクセス未許可の案内(候補ヘッダー行に出す 1 行バナー)。インストール直後や削除→
@@ -1220,6 +1232,7 @@ struct KeyboardRootView: View {
         onUpgradeRecentKanaCommitToKatakana: { false },
         onInputModeChanged: { _ in },
         showsNextKeyboardKey: true,
+        containerFrame: .zero,
         directionProfile: .ecritu,
         kanaLayoutMode: .fiveByTwo,
         kanaModifierPlacementMode: .prefix,

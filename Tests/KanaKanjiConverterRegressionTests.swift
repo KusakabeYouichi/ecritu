@@ -11770,6 +11770,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             onUpgradeRecentKanaCommitToKatakana: { false },
             onInputModeChanged: { _ in },
             showsNextKeyboardKey: false,
+            containerFrame: .zero,
             directionProfile: .apple,
             kanaLayoutMode: .threeByThreePlusWa,
             kanaModifierPlacementMode: .postfix,
