@@ -54,9 +54,41 @@ information. Keep the two in sync.
 
 The bundled Latin suggestion lists `LatinSuggestionLexicon_{en,fr,de,it}.txt`
 are provided under CC BY-SA 4.0 (several sources are ShareAlike-licensed).
+Position taken (2026-09-04): the CC BY-SA files are unencrypted plain data
+inside the .ipa and may be extracted and redistributed under CC BY-SA 4.0;
+the app's sale terms impose no additional restriction on them (CC BY-SA
+4.0 §2(a)(5)(B)). Stated in the in-app notices.
 
-Vocabulary plists under `references/` (vin / ryukyu / it / personnalités /
-drapeaux / monnaies etc.) are the author's original compilations, not
-imports from external dictionaries (confirmed 2026-08-31).
+SUBTLEX (one of wordfreq's inputs) is distributed for research use by its
+authors; wordfreq redistributes the derived frequencies under CC BY-SA 4.0
+and we bundle only word forms with wordfreq's ordinal ranks (no SUBTLEX
+counts). Determination (2026-09-04): use is covered by wordfreq's license;
+the SUBTLEX authors are credited as wordfreq requires.
+
+Profanity/slur filtering: `tools/latin_suggestion_blocklist.txt` removes a
+small set of words from the *suggestion* lists only (2026-09-04).
+
+Vocabulary plists under `references/` (vin / vin-acronyme / ryukyu / it /
+personnalités / drapeaux / monnaies / sacoche / misc / suppr / poubelle)
+are the author's original compilations, not imports from external
+dictionaries (confirmed 2026-08-31; drapeaux readings re-confirmed
+2026-09-04). `LatinSuggestionSupplemental.txt` is generated from those
+files (tools/build_latin_suggestion_supplemental.swift).
+
+`references/bushu.plist` (radical position table used by the kanji picker):
+radical numbers are cross-checked against Unihan kRSKangxi; the provenance
+of the radical names / position classes / stroke counts is TO BE CONFIRMED
+by the author (open item, 2026-09-04). If any of it derives from
+KANJIDIC2/RADKFILE (EDRDG, CC BY-SA 3.0) add attribution here and in the
+in-app notices.
+
+Flag names shown on long-press are generated at runtime from Foundation's
+`Locale(identifier: "fr_FR")` region names (no bundled table; 2026-09-04).
+
+## Unicode License text
+
+`third_party/unicode/UNICODE-LICENSE.txt` (Unicode License v3) is bundled
+and shown in the in-app license screen, as required for the Unihan and
+CLDR derived data.
 
 Re-verify upstream LICENSE/notice documents before each release.

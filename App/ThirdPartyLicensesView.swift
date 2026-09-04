@@ -30,6 +30,13 @@ private enum ThirdPartyLicenseCatalog {
             summary: "SudachiDict に付随する第三者由来データの法的表示です。",
             resourceName: "LEGAL",
             resourceExtension: nil
+        ),
+        ThirdPartyLicenseDocument(
+            id: "unicode-license",
+            title: "Unicode License v3",
+            summary: "部首索引(Unihan)と絵文字の読み(CLDR)が依拠する Unicode のライセンス本文です。",
+            resourceName: "UNICODE-LICENSE",
+            resourceExtension: "txt"
         )
     ]
 

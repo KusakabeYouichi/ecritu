@@ -8,6 +8,7 @@ required_source_files=(
   "third_party/APP_STORE_OPEN_SOURCE_NOTICES.md"
   "third_party/sudachidict/LICENSE-2.0.txt"
   "third_party/sudachidict/LEGAL"
+  "third_party/unicode/UNICODE-LICENSE.txt"
 )
 
 missing=0
@@ -25,6 +26,7 @@ if [[ $# -ge 1 ]]; then
     "APP_STORE_OPEN_SOURCE_NOTICES.md"
     "LICENSE-2.0.txt"
     "LEGAL"
+    "UNICODE-LICENSE.txt"
   )
 
   for file in "${required_bundle_files[@]}"; do
