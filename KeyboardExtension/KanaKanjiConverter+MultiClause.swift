@@ -309,13 +309,28 @@ extension KanaKanjiConverter {
                     // かな識別の除外(b2 の where 相当)後に topK 件を確保できるよう、
                     // 取得は topK の2倍にする(limit ちょうどだと かな が枠を潰し、
                     // かって の 勝って(4番目)が入れない)。
-                    let inflected = inflectionCandidates(
+                    // 活用形そのものに seed(かけん=書けん/描けん/掛けん/欠けん 等)があるときは、
+                    // 取得幅を広げてから単文節と同じ並びに矯正し、その上で topK を切る。辞書 rank 順
+                    // (掛ける 2≪描ける 18)のままだと 描けん が取得 6 件にも入らず、a2 の seed 供給
+                    // (派生扱いでないので +3700)だけになって まともに描けんのか が 掛けん/欠けん の
+                    // 後ろに沈む(2799)。seed 持ちの読みは少数なので取得幅拡大のコストは限定的
+                    let seedOrder = KanaKanjiSeedDictionary.seed[segmentReading]
+                    var inflected = inflectionCandidates(
                         for: segmentReading,
                         userDictionary: manualUserDictionary,
                         initialUserDictionary: initialUserDictionary,
                         systemCandidateMode: systemCandidateMode,
-                        limit: Self.multiClauseInflectionTopK * 2
+                        limit: seedOrder == nil
+                            ? Self.multiClauseInflectionTopK * 2
+                            : Self.multiClauseInflectionTopK * 2 + Self.multiClauseSeededInflectionExtraFetch
                     )
+                    if let seedOrder {
+                        let seedSet = Set(seedOrder)
+                        let seeded = seedOrder.filter { inflected.contains($0) }
+                        if !seeded.isEmpty {
+                            inflected = seeded + inflected.filter { !seedSet.contains($0) }
+                        }
+                    }
                     stateQueue.sync {
                         if multiClauseInflectionCache.count >= multiClauseInflectionCacheLimit {
                             multiClauseInflectionCache.removeAll(keepingCapacity: true)
@@ -436,6 +451,16 @@ extension KanaKanjiConverter {
                         isCurated: false,
                         wordCost: costMap[collocation.surface]
                     )
+                }
+
+                // (b3) 文語サ変 す+当為(成功すべく/注意すべき/為すべし): かな す は word_costs に無く
+                //      素通り(7000)しか立たないので、直後が べき/べく/べし のときだけ辞書語扱いの
+                //      かな す(LM unigram 4850、辞書形述語)を供給する。せいこうすべく→成功巣べく(2799)
+                if segmentReading == "す", end < chars.count {
+                    let remainder = String(chars[end...])
+                    if Self.multiClauseBekiReadings.contains(where: { remainder.hasPrefix($0) }) {
+                        add("す", isDictWord: true, isCurated: false, isDictionaryFormPredicate: true)
+                    }
                 }
 
                 // (b2) 活用派生ノード: 活用形(買った/行ける 等)は辞書に収穫しない設計のため、

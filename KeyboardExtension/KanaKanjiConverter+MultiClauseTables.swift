@@ -23,6 +23,7 @@ extension KanaKanjiConverter {
     // ので、列挙が広がっても最良経路の質は落ちない)。
     static let multiClauseTopK = 14
     static let multiClauseInflectionTopK = 3        // 活用派生ノードの1文節あたり上限
+    static let multiClauseSeededInflectionExtraFetch = 14  // 活用形に seed がある読みの取得幅の上乗せ(2799、定義箇所コメント参照)
     // 活用派生ノードが LM 未収録(普通)のときの専用コスト。LM コーパスは Sudachi A単位で
     // 活用形を「買っ+た」に分割するため、正しい活用表層(買った)は unigram に無い。
     // 一律 dictUnknown(8700)だと LM 収録済みのかな断片チェーン(かっ7079+た2102)や
