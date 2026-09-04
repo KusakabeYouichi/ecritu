@@ -82,3 +82,26 @@ annotations (https://cldr.unicode.org/).
   (https://www.unicode.org/license.txt).
 - The bundled data (EmojiReadingVocab.json, generated from
   references/emoji.plist) is a cleaned and reading-normalized subset.
+
+See the bundled document "Unicode License v3" for the full text of the
+Unicode License that governs the Unihan and CLDR derived data above.
+
+## ShareAlike data and this app
+
+The CC BY-SA 4.0 licensed files bundled in this app are the four Latin
+suggestion lists (LatinSuggestionLexicon_{en,fr,de,it}.txt) and, to the
+extent it is considered an adaptation, the Wikipedia-derived word n-gram
+table inside kana_kanji_dictionary.sqlite. These files are plain data
+files inside the application bundle, are not encrypted or otherwise
+technologically protected by us, and may be freely extracted, copied and
+redistributed under CC BY-SA 4.0 regardless of the terms under which the
+app itself is sold. No other part of the app is subject to ShareAlike.
+
+## Author-original data
+
+The following bundled data was compiled by the author and is not derived
+from third-party dictionaries or corpora: the curated vocabulary files
+under references/ (vin, vin-acronyme, ryukyu, it, personnalités,
+drapeaux, monnaies, sacoche, misc, suppr, poubelle), the precomputed
+Latin index of those files (LatinSuggestionSupplemental.txt), and all
+artwork and code.

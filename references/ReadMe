@@ -5,16 +5,17 @@ poubelle.plist			# 『抑制語彙』の初期設定
 # 以下の語彙plist(vin/ryukyu/it/personnalités/drapeaux/monnaies 等)は作者のオリジナル編纂
 # (外部辞書・コーパスからの取り込みではない。2026-08-31 作者確認)
 vin.plist				# [ワイン]
-vin-acronyme.plist		# 読み込まれない
+vin-acronyme.plist		# [ワイン略語] 欧文サジェスト専用(shortcut=検索キー、phrase=候補)。LatinSuggestionSupplemental.txt に合流(2026-09-04〜)
 vin-add.plist			# 読み込まれない
 etc.plist				# 読み込まれない
 
 ryukyu.plist			# [沖縄辞書]
 it.plist				# [IT]
-drapeaux.plist			# [国旗]
+drapeaux.plist			# [国旗] 読みは作者付与(2026-09-04 確認)。長押しの仏語国名は Locale(fr_FR) から実行時生成で、表は持たない
 monnaies.plist			# [通貨]
 emoji.plist				# [絵文字] CLDR ja アノテーション由来(SudachiPyで読み化+手動整備。2026-08-31 に全読みのCLDR帰着を検証済み、f8c4c10)
 personnalités.plist	# [人名]
+bushu.plist				# [部首] 漢字ピッカーの部首→位置分類表(拡張に同梱)。部首番号は Unihan kRSKangxi と照合。部首名・位置分類・画数の出所は作者確認待ち(2026-09-04)
 
 # ---AIが使う
 misc.plist						# 変換対策の curated 語彙。初期投入されるがアプリの『追加語彙』一覧には表示しない(連文節の区切りを勝たせる用途: 殻付き/仕方ない/とんかつ屋 等)
