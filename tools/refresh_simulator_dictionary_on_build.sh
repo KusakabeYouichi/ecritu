@@ -2,9 +2,17 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-AUTO_FETCH_SUDACHI_ON_BUILD="${ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD:-1}"
+# Release(Archive)ではネットワーク取得と対話ダイアログを既定で無効にする(2785)。
+# 素材(tmp/)が無ければ copy_into_bundle_if_exists が警告し、提出前の verify_archive_artifacts.sh が
+# 同梱 sqlite の行数検査で止める。開発ビルド(Debug)は従来どおり自動取得・確認ダイアログ。
+if [[ "${CONFIGURATION:-}" == "Release" ]]; then
+  AUTO_FETCH_SUDACHI_ON_BUILD="${ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD:-0}"
+  PROMPT_ON_SUDACHI_FALLBACK="${ECRITU_PROMPT_ON_SUDACHI_FALLBACK:-0}"
+else
+  AUTO_FETCH_SUDACHI_ON_BUILD="${ECRITU_AUTO_FETCH_SUDACHI_ON_BUILD:-1}"
+  PROMPT_ON_SUDACHI_FALLBACK="${ECRITU_PROMPT_ON_SUDACHI_FALLBACK:-1}"
+fi
 AUTO_FETCH_SUDACHI_INCLUDE_FULL="${ECRITU_AUTO_FETCH_SUDACHI_INCLUDE_FULL:-0}"
-PROMPT_ON_SUDACHI_FALLBACK="${ECRITU_PROMPT_ON_SUDACHI_FALLBACK:-1}"
 SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT="${ECRITU_SUDACHI_FALLBACK_NONINTERACTIVE_DEFAULT:-continue}"
 
 is_simulator_build=false
