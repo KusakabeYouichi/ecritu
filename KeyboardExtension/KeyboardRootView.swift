@@ -1015,9 +1015,7 @@ struct KeyboardRootView: View {
     // 薄ピンク(欧文サジェスト構築の高水位見送り)は構築自体を前計算ファイル化して無くした(2770)
     var memoryPressureDeleteKeyColor: Color? {
         // でばぐ可視化は開発ビルド専用(リリースでは通常キー色のまま)
-        #if !DEBUG
-        return nil
-        #endif
+        #if DEBUG
         // 色はバースト数(2秒以内の連続警告は1イベント)で決める。1回=黄、2回以上=橙
         switch candidateBarModel.memoryWarningBurstCountForDebugDisplay {
         case 0:
@@ -1027,12 +1025,13 @@ struct KeyboardRootView: View {
         default:
             return Color.orange.opacity(0.9)
         }
+        #else
+        return nil
+        #endif
     }
 
     var memoryPressureDeleteKeyBadge: String? {
-        #if !DEBUG
-        return nil
-        #endif
+        #if DEBUG
         // 「バースト数 (実回数)」。1バーストで4回来た場合は 1 (4)(空白あり。ユーザ指定 2768)。
         // 実回数がバースト数と同じなら 2以上のときだけ数字を出す(ユーザ指定 2702)
         let bursts = candidateBarModel.memoryWarningBurstCountForDebugDisplay
@@ -1041,6 +1040,9 @@ struct KeyboardRootView: View {
             return "\(bursts) (\(raw))"
         }
         return bursts >= 2 ? String(bursts) : nil
+        #else
+        return nil
+        #endif
     }
 
     @ViewBuilder

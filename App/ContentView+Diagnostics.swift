@@ -66,6 +66,8 @@ extension ContentView {
     }
 
     func clearKeyboardDiagnosticsIfInstallChanged() {
+        // 開発ビルド専用(Release は診断キーを書かないので掃除も不要。2785)
+        #if DEBUG
         guard let defaults = Self.sharedDefaults else {
             return
         }
@@ -87,6 +89,7 @@ extension ContentView {
         }
 
         keyboardDiagnosticsInstallMarker = currentMarker
+        #endif
     }
 
     // 設定>一般>キーボード の登録状態を毎回記録する。
@@ -123,9 +126,7 @@ extension ContentView {
 
     func recordKeyboardExtensionRegistrationState() {
         // 開発ビルド専用(AppleKeyboards 非公開キー依存。Releaseでは何も記録しない)
-        #if !DEBUG
-        return
-        #endif
+        #if DEBUG
         guard let defaults = Self.sharedDefaults else {
             return
         }
@@ -153,9 +154,12 @@ extension ContentView {
         if let data = try? JSONEncoder().encode(history) {
             defaults.set(data, forKey: SettingsKeys.keyboardDiagnosticsRegistrationHistory)
         }
+        #endif
     }
 
     func loadKeyboardDiagnosticsState() {
+        // 診断状態は開発ビルド専用の診断セクションだけが使う(2785)
+        #if DEBUG
         guard let defaults = Self.sharedDefaults else {
             keyboardDiagnosticsLogLines = []
             keyboardDiagnosticsCriticalLogLines = []
@@ -216,8 +220,10 @@ extension ContentView {
         keyboardDiagnosticsAttachLateRecoveryCount = defaults.integer(
             forKey: SettingsKeys.keyboardDiagnosticsAttachLateRecoveryCount
         )
+        #endif
     }
 
+    #if DEBUG
     func clearKeyboardDiagnosticsState() {
         guard let defaults = Self.sharedDefaults else {
             return
@@ -241,7 +247,11 @@ extension ContentView {
 
         loadKeyboardDiagnosticsState()
     }
+    #endif
 
+    // ──── 以下、診断セクション(開発ビルド専用 UI)からしか呼ばれない表示・書き出し系。
+    // Release バイナリからログ整形・ペーストボード書き出しごと除く(2785) ────
+    #if DEBUG
     func normalizedKeyboardDiagnosticsFailSafeProfile(_ rawValue: String) -> String {
         switch rawValue {
         case "normal", "elevated", "critical":
@@ -434,6 +444,7 @@ extension ContentView {
         UIPasteboard.general.string = keyboardDiagnosticsExportText(detail: detail)
 #endif
     }
+    #endif
 
     func containerDiagnosticsProcessLabel() -> String {
         let bundleID = Bundle.main.bundleIdentifier ?? "unknown.container.bundle"
@@ -497,6 +508,8 @@ extension ContentView {
         line: Int = #line,
         function: String = #function
     ) {
+        // コンテナー側の診断ログも開発ビルド専用(Release では一切書かない。ガイドライン 4.4.2 / 5.1.1。2785)
+        #if DEBUG
         guard let defaults = Self.sharedDefaults else {
             return
         }
@@ -520,6 +533,7 @@ extension ContentView {
         }
 
         saveStringArray(lines, forKey: SettingsKeys.keyboardDiagnosticsLogLines, defaults: defaults)
+        #endif
     }
 
     func containerDiagnosticsElapsedMilliseconds(since start: CFAbsoluteTime) -> Int {
@@ -529,6 +543,8 @@ extension ContentView {
     // 設定カード群の末尾が画面に載った時点で1回だけ記録する(2587)。
     // didRenderInitialFrame を立ててからここまでが、カード群の構築+レイアウトの実コスト。
     func logSettingsCardsRenderedIfNeeded() {
+        // 開発ビルド専用(2785)
+        #if DEBUG
         guard !didLogSettingsCardsRendered, settingsCardsBuildStartedAt > 0 else {
             return
         }
@@ -538,11 +554,15 @@ extension ContentView {
         let startOffset = max(0, containerBootstrapOffsetMilliseconds() - buildMs)
         recordBootstrapTimingPart("cardsAtMs=\(startOffset) cardsBuildMs=\(buildMs)")
         appendContainerDiagnosticsLog("設定カード群の描画完了 buildMs=\(buildMs)")
+        #endif
     }
 
     // 起動計測の断片を溜める。段の順序どおりに並ぶよう、計測した側から呼ぶ。
     func recordBootstrapTimingPart(_ part: String) {
+        // 開発ビルド専用(2785)
+        #if DEBUG
         bootstrapTimingParts.append(part)
+        #endif
     }
 
     // 起動からの経過(ms)。所要時間だけでは事象の位置が分からないため併記する。
@@ -557,6 +577,8 @@ extension ContentView {
     // 1起動を1行にまとめて専用キーへ残す。共有ログと違い拡張側の書き込みで流れないので、
     // 遅い回と速い回を後から比べられる(起動時間はばらつくため単発の計測では判断できない)。
     func flushBootstrapTimingHistory(totalMs: Int) {
+        // 起動計測の履歴も開発ビルド専用(2785)
+        #if DEBUG
         guard let defaults = Self.sharedDefaults else {
             return
         }
@@ -595,5 +617,6 @@ extension ContentView {
             forKey: SettingsKeys.containerBootstrapTimingHistory,
             defaults: defaults
         )
+        #endif
     }
 }

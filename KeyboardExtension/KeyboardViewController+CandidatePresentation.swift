@@ -425,9 +425,7 @@ extension KeyboardViewController {
         mode: KanaKanjiCandidateSourceMode
     ) {
         // 打鍵内容そのものを記録するため開発ビルド専用(App Store ガイドライン4.4.2)。
-        #if !DEBUG
-        return
-        #endif
+        #if DEBUG
         guard let sharedDefaults else {
             return
         }
@@ -440,6 +438,9 @@ extension KeyboardViewController {
         // 単文節の点数内訳(2732。Mac/実機の並び差の切り分け用)
         let scoreTrace = kanaKanjiConverter.scoreTraceForDiagnostics(reading: reading).map { "\n点数: \($0)" } ?? ""
         sharedDefaults.set(trace + scoreTrace, forKey: SharedDefaultsKeys.keyboardConversionLastTrace)
+        #else
+        return
+        #endif
     }
 
     func kanaKanjiCandidates(

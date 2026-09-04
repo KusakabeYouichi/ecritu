@@ -261,6 +261,8 @@ struct ConversionCacheSettingsSection: View {
     }
 }
 
+// キーボード/コンテナー診断の表示・コピー UI。開発ビルド専用(Release には型ごと存在しない。2785)
+#if DEBUG
 struct KeyboardDiagnosticsSection: View {
     let isSessionActive: Bool
     let failSafeProfile: String
@@ -440,6 +442,8 @@ struct KeyboardDiagnosticsSection: View {
         .settingsCardStyle()
     }
 }
+
+#endif
 
 struct KanaModeSwitcherAssignmentSection: View {
     @Binding var tapSelection: KanaModeSwitcherActionOption
