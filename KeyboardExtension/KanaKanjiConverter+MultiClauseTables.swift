@@ -243,6 +243,8 @@ extension KanaKanjiConverter {
     // 対象は読みがこれらの格助詞で始まる派生ノード。に は 逃げる/似合う 等の頻出動詞と衝突しやすいので入れない
     static let multiClauseSwallowedParticleHeads: Set<Character> = ["で", "と", "が", "を", "は"]
     static let multiClauseSwallowedParticleAlternativeMaxDelta = 2500
+    // 文中の と+し で終わる経路に対する、とし を 1 ノード(都市/年)で覆う代替経路の許容差(2802。目標とし→目標都市 は 3300)
+    static let multiClauseToShiMergedAlternativeMaxDelta = 4500
     // 期間名詞の判定(isDurationNounSurface。2772)。長い順に照合する
     static let multiClauseDurationCounterSuffixes: [String] = [
         "時間", "週間", "日間", "年間", "分間", "秒間", "か月", "ヶ月", "カ月", "ケ月", "箇月", "か月間", "ヶ月間",

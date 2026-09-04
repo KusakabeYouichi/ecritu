@@ -2249,6 +2249,30 @@ extension KanaKanjiConverter {
                 break
             }
         }
+        // 文中の と+し で終わる最良経路(目標とし。2801 の減点除外で通るようになった)の代替(2802):
+        // 同じ とし スパンを 1 ノードで覆う漢字辞書語(都市/年)を強制して再最適化した経路を第2候補群に
+        // 加える。変種は 1 文節差し替えしか作らないため、2 ノード(と+し)→1 ノード(都市)の区切り違いは
+        // ここでしか出せず、目標とし の次に 目標都市 が無くなっていた
+        var toShiMergedAlternativeJoined: String? = nil
+        var toShiMergedAlternativeDelta = 0
+        if pathIndices.count >= 3 {
+            let last = nodes[pathIndices[pathIndices.count - 1]]
+            let prev = nodes[pathIndices[pathIndices.count - 2]]
+            if last.end == n, last.surface == "し", last.reading == "し",
+                prev.surface == "と", prev.reading == "と", prev.start > 0,
+                let mergedIdx = nodesStartingAt[prev.start].first(where: {
+                    nodes[$0].end == n && nodes[$0].isDictWord && containsKanji(nodes[$0].surface)
+                        && unigramCosts[nodes[$0].surface] != nil
+                }),
+                let alternative = solveViterbi(allowedStartNodeIndex: nil, requiredNodeIndices: [mergedIdx]),
+                alternative.bestTotal - bestTotal <= Self.multiClauseToShiMergedAlternativeMaxDelta {
+                let altJoined = alternative.pathIndices.map { nodes[$0].surface }.joined()
+                if altJoined != normalized {
+                    toShiMergedAlternativeJoined = altJoined
+                    toShiMergedAlternativeDelta = alternative.bestTotal - bestTotal
+                }
+            }
+        }
         #if DEBUG
         // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
         if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
@@ -2625,6 +2649,13 @@ extension KanaKanjiConverter {
         // 助詞に割った代替経路(2771)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
             variants.append((particleSplitAlternativeDelta, -2, particleSplitAlternativeJoined))
+            variants.sort { lhs, rhs in
+                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
+            }
+        }
+        // とし を 1 ノードで覆う代替経路(2802)は先頭差し替えと同じ刻みで、1 文節変種(木標とし 等)より前に置く
+        if let toShiMergedAlternativeJoined, toShiMergedAlternativeJoined != joined {
+            variants.append((min(toShiMergedAlternativeDelta, Self.multiClauseSeedOrderVariantStep), -2, toShiMergedAlternativeJoined))
             variants.sort { lhs, rhs in
                 lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
             }
