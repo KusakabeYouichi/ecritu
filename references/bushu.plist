@@ -13,7 +13,9 @@
      ・strokesTraditional は旧字体(伝統)で数えた画数。流儀が分かれる字形にだけ持たせ、
        無い場合は strokes と同じ扱い。コンテナーアプリの設定で新字体/旧字体を切り替える
        (艹 3/4、辶 3/4、礻 4/5、飠 7/8)。
-     ※語彙plist(sacoche/misc 等)とはスキーマが別。build_second_vocab_from_references.py の対象外。 -->
+     ※語彙plist(sacoche/misc 等)とはスキーマが別。build_second_vocab_from_references.py の対象外。
+     ・出所: 部首名は一般に使われている慣用名、位置分類は字形から判断(作者が全件確認)、画数は事実。
+       部首番号のみ Unihan kRSKangxi と照合。KANJIDIC2/RADKFILE 等の外部データベースからの取り込みではない(2026-09-04)。 -->
 <array>
 	<dict>
 		<key>form</key>
