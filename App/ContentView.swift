@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260904134035"
+    private static let editionUpdatedAtRaw: String = "20260904135433"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -465,8 +465,8 @@ struct ContentView: View {
 
     // 有効化手順カードの配置: 拡張が一度も表示されていない(印なし)かつ手動で隠していない間だけ先頭。
     // それ以外は末尾の「アプリ情報」へ(先頭に居続けると邪魔。ユーザ指定 2789)
-    @AppStorage(SettingsKeys.keyboardExtensionHasAppeared, store: Self.sharedDefaults)
-    var keyboardExtensionHasAppeared: Bool = false
+    // 拡張(別プロセス)が書く値なので @AppStorage では変更を拾えない。表示時と復帰時に読み直す
+    @State var keyboardExtensionHasAppeared: Bool = ContentView.sharedDefaults?.bool(forKey: SettingsKeys.keyboardExtensionHasAppeared) ?? false
     @AppStorage(SettingsKeys.setupStepsDismissed)
     var setupStepsDismissed: Bool = false
 
@@ -1442,6 +1442,9 @@ struct ContentView: View {
                 guard newPhase == .active else {
                     return
                 }
+
+                // 拡張が App Group に書いた「一度表示された」印を読み直す(有効化手順カードの配置。2790)
+                keyboardExtensionHasAppeared = Self.sharedDefaults?.bool(forKey: SettingsKeys.keyboardExtensionHasAppeared) ?? false
 
                 // バックグラウンド滞在中に拡張が書いた診断(起動/未到達カウント・
                 // ログ行)を表示へ反映する。onAppearは復帰では再発火しないため、
