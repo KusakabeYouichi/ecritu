@@ -2293,10 +2293,6 @@ cavo	cavo	4423
 cavoli	cavoli	12992
 cavolo	cavolo	3376
 cavour	cavour	12182
-cazzata	cazzata	6320
-cazzate	cazzate	3377
-cazzi	cazzi	3464
-cazzo	cazzo	198
 ceca	ceca	9629
 cecilia	cecilia	11223
 cede	cede	11056
@@ -2674,8 +2670,6 @@ coesione	coesione	11593
 coetanei	coetanei	14418
 coglie	coglie	12808
 cogliere	cogliere	6326
-coglione	coglione	3466
-coglioni	coglioni	3112
 cognato	cognato	12809
 cognizione	cognizione	13925
 cognome	cognome	3242
@@ -3711,7 +3705,6 @@ cultura	cultura	472
 culturale	culturale	1066
 culturali	culturali	1939
 culture	culture	3823
-cum	cum	12379
 cuneo	cuneo	7799
 cuoco	cuoco	8398
 cuoio	cuoio	12380
@@ -4215,7 +4208,6 @@ diciamo	diciamo	1545
 diciannove	diciannove	14439
 diciassette	diciassette	11814
 diciotto	diciotto	8111
-dick	dick	11088
 dico	dico	459
 dicono	dicono	720
 didattica	didattica	8551
@@ -5543,7 +5535,6 @@ fiat	fiat	4617
 fiato	fiato	5370
 fibra	fibra	6214
 fibre	fibre	7247
-fica	fica	12214
 fico	fico	7980
 fiction	fiction	8130
 fida	fida	13233
@@ -5560,7 +5551,6 @@ fiere	fiere	9996
 fieri	fieri	9321
 fiero	fiero	6845
 fifa	fifa	7667
-figa	figa	2916
 figata	figata	9144
 fighe	fighe	12626
 figli	figli	396
@@ -5808,8 +5798,6 @@ fotografie	fotografie	4448
 fotografo	fotografo	5576
 fotte	fotte	13238
 fottuta	fottuta	10720
-fottuti	fottuti	13752
-fottuto	fottuto	7113
 foundation	foundation	11105
 fox	fox	7983
 fra	fra	258
@@ -5896,7 +5884,6 @@ frutti	frutti	3843
 frutto	frutto	2317
 fucile	fucile	6589
 fucili	fucili	10352
-fuck	fuck	12218
 fuga	fuga	2042
 fugge	fugge	12019
 fuggire	fuggire	4255
@@ -8349,7 +8336,6 @@ minacciando	minacciando	13545
 minacciare	minacciare	13298
 minacciata	minacciata	13792
 minacciato	minacciato	7271
-minchia	minchia	6372
 mind	mind	14729
 mine	mine	14730
 minerale	minerale	10204
@@ -8731,8 +8717,6 @@ negozi	negozi	2744
 negoziare	negoziare	12251
 negoziati	negoziati	11492
 negozio	negozio	1666
-negri	negri	8158
-negro	negro	8302
 nei	nei	68
 neil	neil	12449
 nel	nel	11
@@ -10009,7 +9993,6 @@ porca	porca	3782
 porci	porci	13089
 porco	porco	6387
 pordenone	pordenone	12261
-porno	porno	3072
 porre	porre	3015
 porsche	porsche	14528
 porsi	porsi	10042
@@ -10724,8 +10707,6 @@ puri	puri	13584
 puro	puro	2944
 purtroppo	purtroppo	977
 putin	putin	4822
-puttana	puttana	4639
-puttane	puttane	7166
 puzza	puzza	5927
 puzzle	puzzle	13097
 qatar	qatar	12704
@@ -12149,7 +12130,6 @@ sconvolta	sconvolta	10250
 sconvolto	sconvolto	10612
 scooter	scooter	12725
 scopa	scopa	8186
-scopare	scopare	6514
 scopata	scopata	11347
 scoperta	scoperta	1916
 scoperte	scoperte	5405
@@ -13288,11 +13268,8 @@ stringere	stringere	9230
 strisce	strisce	6920
 striscia	striscia	5313
 striscione	striscione	14109
-stronza	stronza	6652
 stronzata	stronzata	9231
 stronzate	stronzate	4738
-stronzi	stronzi	5943
-stronzo	stronzo	3720
 strumentale	strumentale	10626
 strumenti	strumenti	1192
 strumento	strumento	1325
@@ -14099,8 +14076,6 @@ triste	triste	1570
 tristezza	tristezza	4141
 tristi	tristi	6794
 trofeo	trofeo	8054
-troia	troia	3992
-troie	troie	12760
 troll	troll	7461
 tromba	tromba	10819
 tronco	tronco	9602
@@ -14378,7 +14353,6 @@ vaccino	vaccino	7060
 vada	vada	1874
 vadano	vadano	6527
 vado	vado	638
-vaffanculo	vaffanculo	5222
 vaga	vaga	10271
 vagamente	vagamente	13152
 vagina	vagina	8940

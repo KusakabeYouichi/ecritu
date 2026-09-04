@@ -3439,8 +3439,6 @@ arsch	Arsch	1136
 arsche	Ärsche	25495
 arschfick	Arschfick	45977
 arschgeigen	Arschgeigen	53356
-arschloch	Arschloch	3406
-arschlocher	Arschlöcher	9838
 arschlochern	Arschlöchern	45978
 arsen	arsen	27140
 arsenal	Arsenal	7574
@@ -5844,7 +5842,6 @@ bassisten	Bassisten	47254
 basso	basso	56268
 bast	Bast	47942
 basta	basta	26733
-bastard	Bastard	11365
 bastarde	Bastarde	25543
 bastei	Bastei	43427
 bastel	bastel	34979
@@ -8513,8 +8510,6 @@ bisweilen	bisweilen	10225
 bit	bit	7880
 bitburg	Bitburg	41618
 bitburger	Bitburger	44092
-bitch	bitch	17332
-bitches	bitches	38730
 bitcoin	Bitcoin	6395
 bitcoins	Bitcoins	18228
 bite	bite	52683
@@ -8722,8 +8717,6 @@ blosses	bloßes	37636
 blossgestellt	bloßgestellt	48660
 blossstellen	bloßstellen	47974
 blow	blow	28883
-blowjob	Blowjob	13232
-blowjobs	Blowjobs	49309
 blu	blu	11568
 bludenz	Bludenz	47975
 blue	blue	4865
@@ -9644,7 +9637,6 @@ bulletin	bulletin	20102
 bulli	bulli	45371
 bullock	bullock	38186
 bulls	bulls	24024
-bullshit	Bullshit	10769
 bumerang	Bumerang	46703
 bummel	bummel	46041
 bummeln	bummeln	35572
@@ -10552,7 +10544,6 @@ cobra	cobra	22552
 coburg	Coburg	9684
 coca	coca	15414
 cochem	Cochem	34510
-cock	cock	35017
 cockpit	Cockpit	12804
 cocktail	Cocktail	13237
 cocktails	Cocktails	15929
@@ -10873,7 +10864,6 @@ cuisine	cuisine	57063
 culpa	culpa	44110
 cultural	cultural	22925
 culture	culture	15168
-cum	cum	6766
 cumberland	Cumberland	58599
 cumshot	Cumshot	37106
 cup	cup	3284
@@ -11934,8 +11924,6 @@ diktaturen	Diktaturen	28015
 diktieren	diktieren	31141
 diktiert	diktiert	26785
 diktion	Diktion	59384
-dildo	Dildo	14934
-dildos	Dildos	41655
 dilemma	Dilemma	10777
 dill	Dill	21466
 dillenburg	Dillenburg	28016
@@ -16690,7 +16678,6 @@ faden	Fäden	10627
 fadenkreuz	Fadenkreuz	42922
 fadens	Fadens	53530
 fadenscheinigen	fadenscheinigen	59440
-fag	fag	52774
 fagott	Fagott	41165
 fahig	fähig	6065
 fahige	fähige	28957
@@ -17549,12 +17536,9 @@ ficht	ficht	57152
 fichte	Fichte	17376
 fichtelgebirge	Fichtelgebirge	31193
 fichten	Fichten	26010
-fick	fick	2636
 ficke	ficke	26416
-ficken	ficken	2592
 ficker	Ficker	25248
 fickst	fickst	39992
-fickt	fickt	7474
 fickte	fickte	46766
 fiction	fiction	10795
 fide	fide	45452
@@ -18402,8 +18386,6 @@ fotos	Fotos	957
 fotoshooting	Fotoshooting	26832
 fotostrecke	Fotostrecke	40619
 fotus	Fötus	27255
-fotze	Fotze	8384
-fotzen	fotzen	17064
 foul	Foul	16222
 foulelfmeter	Foulelfmeter	56413
 fouls	fouls	43568
@@ -18941,9 +18923,6 @@ ftw	ftw	38262
 fuchs	Fuchs	4510
 fuchse	Füchse	16506
 fuchsen	Füchsen	56419
-fuck	fuck	3873
-fucked	fucked	51396
-fucking	fucking	8690
 fuerteventura	Fuerteventura	46779
 fug	Fug	48772
 fuge	füge	19846
@@ -19863,7 +19842,6 @@ gefesselt	gefesselt	10442
 gefesselten	gefesselten	57193
 gefestigt	gefestigt	22613
 gefeuert	gefeuert	13957
-gefickt	gefickt	6787
 gefieder	Gefieder	39417
 gefiederten	gefiederten	54290
 gefiel	gefiel	9199
@@ -23554,7 +23532,6 @@ handhabt	handhabt	55035
 handhabung	Handhabung	13719
 handicap	Handicap	23357
 handisch	händisch	57274
-handjob	Handjob	31694
 handlanger	Handlanger	28552
 handle	handle	11218
 handler	Händler	3592
@@ -25743,10 +25720,6 @@ hupfte	hüpfte	55764
 hur	hur	43635
 hurde	Hürde	9373
 hurden	Hürden	10098
-hure	Hure	8550
-huren	Huren	11442
-hurensohn	Hurensohn	4336
-hurensohne	Hurensöhne	20854
 hurra	hurra	12013
 hurrikan	Hurrikan	25676
 hurt	hurt	40083
@@ -34292,7 +34265,6 @@ misserfolge	Misserfolge	43100
 missfallen	missfallen	31788
 missfallt	missfällt	37858
 missfiel	missfiel	58910
-missgeburt	Missgeburt	41900
 missgeschick	Missgeschick	29958
 missgluckte	missglückte	52981
 missgluckten	missglückten	38411
@@ -35008,7 +34980,6 @@ mot	mot	38989
 motel	Motel	28200
 mother	mother	20897
 motherboard	motherboard	52282
-motherfucker	motherfucker	54460
 motion	motion	16570
 motiv	Motiv	3895
 motivation	Motivation	3676
@@ -35226,8 +35197,6 @@ musa	Musa	40177
 muschel	Muschel	26537
 muschelkalk	Muschelkalk	45679
 muscheln	Muscheln	17147
-muschi	Muschi	6096
-muschis	Muschis	29525
 muscle	muscle	43109
 musculus	Musculus	48263
 muse	Muse	18368
@@ -36027,11 +35996,8 @@ negativer	negativer	16843
 negatives	negatives	15263
 negativitat	Negativität	52292
 negativzinsen	Negativzinsen	49596
-neger	Neger	11863
-negern	Negern	52293
 negieren	negieren	53774
 negiert	negiert	44342
-negro	negro	40187
 neh	neh	50223
 nehm	nehm	5989
 nehme	nehme	1579
@@ -36465,7 +36431,6 @@ nigerianer	Nigerianer	36326
 nigerianische	nigerianische	48942
 nigerianischen	nigerianischen	45017
 nigerias	Nigerias	57413
-nigger	nigger	33224
 night	night	4624
 nightingale	nightingale	58178
 nightmare	nightmare	45692
@@ -36821,8 +36786,6 @@ nussknacker	Nussknacker	45019
 nut	Nut	33728
 nutella	Nutella	16311
 nutrition	nutrition	47616
-nutte	Nutte	13115
-nutten	Nutten	12265
 nutz	nutz	20575
 nutzbar	nutzbar	11868
 nutzbare	nutzbare	35270
@@ -38835,7 +38798,6 @@ pisa	Pisa	13347
 piss	piss	34245
 pisse	pisse	22727
 pissen	pissen	15782
-pisser	pisser	30877
 pisst	pisst	25365
 pistazien	Pistazien	54510
 piste	piste	16859
@@ -39265,7 +39227,6 @@ populistischen	populistischen	43151
 por	por	20587
 poren	Poren	26971
 pork	pork	55926
-porno	porno	3900
 pornodarsteller	Pornodarsteller	55230
 pornofilm	Pornofilm	50953
 pornofilme	Pornofilme	31345
@@ -40256,13 +40217,11 @@ puschkin	Puschkin	57455
 push	push	16590
 pushen	pushen	25377
 pusht	pusht	53058
-pussy	pussy	8594
 puste	puste	34257
 pusteln	Pusteln	55242
 pusten	pusten	32753
 pustet	pustet	41962
 put	put	19940
-pute	pute	45737
 putin	Putin	3191
 putins	Putins	16869
 putsch	Putsch	12477
@@ -43477,9 +43436,7 @@ scheint	scheint	449
 scheinwerfer	Scheinwerfer	14286
 scheinwerferlicht	Scheinwerferlicht	59009
 scheinwerfern	Scheinwerfern	43805
-scheiss	Scheiß	965
 scheissdreck	Scheißdreck	23110
-scheisse	Scheiße	602
 scheissegal	scheißegal	11071
 scheissen	scheißen	14287
 scheisser	Scheißer	47018
@@ -43754,8 +43711,6 @@ schlagzeuger	Schlagzeuger	19963
 schlamassel	Schlamassel	39642
 schlamm	Schlamm	12704
 schlammschlacht	Schlammschlacht	47021
-schlampe	Schlampe	4816
-schlampen	schlampen	14288
 schlampig	schlampig	30030
 schlampige	schlampige	59012
 schland	Schland	41990
@@ -44854,8 +44809,6 @@ schwor	schwor	36869
 schwore	schwöre	9972
 schworen	schwören	16610
 schwort	schwört	26187
-schwuchtel	Schwuchtel	21292
-schwuchteln	Schwuchteln	48381
 schwul	schwul	5095
 schwul	schwül	36870
 schwule	schwule	6345
@@ -45510,7 +45463,6 @@ shirley	Shirley	27007
 shirt	Shirt	3617
 shirts	shirts	6714
 shisha	shisha	27008
-shit	shit	6347
 shitstorm	shitstorm	18732
 shitstorms	Shitstorms	58291
 shiva	Shiva	39085
@@ -46559,7 +46511,6 @@ spasse	Späße	40299
 spassen	spaßen	45799
 spassig	spaßig	23867
 spassige	spassige	51037
-spasti	Spasti	47727
 spat	spät	1249
 spatantike	spätantike	42024
 spatburgunder	Spätburgunder	59806
@@ -49993,7 +49944,6 @@ titelte	titelte	58352
 titeltrager	Titelträger	45159
 titelverteidiger	Titelverteidiger	12524
 title	title	28743
-titten	Titten	4545
 tituliert	tituliert	40919
 titus	Titus	20991
 tivoli	Tivoli	32830
@@ -50368,7 +50318,6 @@ trank	trank	11707
 tranke	tränke	42062
 tranken	tranken	26625
 tranken	tränken	53961
-tranny	tranny	29647
 trans	trans	9451
 transaktion	Transaktion	17826
 transaktionen	Transaktionen	15834
@@ -57570,7 +57519,6 @@ wichita	Wichita	59196
 wichs	wichs	56162
 wichse	wichse	41524
 wichsen	wichsen	14364
-wichser	Wichser	12980
 wichst	wichst	41525
 wicht	Wicht	39196
 wichtig	wichtig	403
@@ -59012,7 +58960,6 @@ zigarette	Zigarette	7716
 zigaretten	Zigaretten	6027
 zigarre	Zigarre	27098
 zigarren	Zigarren	27524
-zigeuner	Zigeuner	17279
 zigeunern	zigeunern	56910
 zillertal	Zillertal	37537
 zimbabwe	Zimbabwe	58453

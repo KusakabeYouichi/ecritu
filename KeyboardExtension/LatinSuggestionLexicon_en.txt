@@ -844,8 +844,6 @@ assessment	assessment	3094
 assessments	assessments	9424
 asset	asset	4671
 assets	assets	2559
-asshole	asshole	3871
-assholes	assholes	10673
 assign	assign	11490
 assigned	assigned	3546
 assignment	assignment	5131
@@ -1188,8 +1186,6 @@ basis	basis	1550
 basket	basket	6147
 basketball	basketball	2560
 bass	bass	4292
-bastard	bastard	8153
-bastards	bastards	12014
 bat	bat	4155
 batch	batch	7895
 bates	bates	11834
@@ -1418,8 +1414,6 @@ bisexual	bisexual	10852
 bishop	bishop	3621
 bishops	bishops	9297
 bit	bit	377
-bitch	bitch	1705
-bitches	bitches	8756
 bitcoin	bitcoin	4592
 bite	bite	4083
 bites	bites	9431
@@ -1551,7 +1545,6 @@ bonnie	bonnie	11498
 bonus	bonus	3167
 bonuses	bonuses	9433
 boo	boo	7791
-boobs	boobs	8014
 boogie	boogie	13465
 book	book	315
 booked	booked	6355
@@ -1827,7 +1820,6 @@ bulletin	bulletin	9438
 bullets	bullets	6674
 bullied	bullied	11022
 bulls	bulls	7208
-bullshit	bullshit	3039
 bully	bully	8393
 bullying	bullying	7209
 bum	bum	10048
@@ -2559,7 +2551,6 @@ cobb	cobb	14481
 cobra	cobra	14284
 coca	coca	11850
 cocaine	cocaine	7108
-cock	cock	4689
 cockpit	cockpit	12562
 cocktail	cocktail	8161
 cocktails	cocktails	12563
@@ -3360,10 +3351,8 @@ cultural	cultural	1740
 culturally	culturally	11862
 culture	culture	919
 cultures	cultures	4959
-cum	cum	6478
 cumulative	cumulative	13491
 cunningham	cunningham	13685
-cunt	cunt	8403
 cup	cup	742
 cups	cups	5775
 curator	curator	13492
@@ -3844,9 +3833,7 @@ diarrhea	diarrhea	13497
 diary	diary	5949
 diaz	diaz	12934
 dice	dice	9906
-dick	dick	1955
 dickens	dickens	14087
-dicks	dicks	12040
 dictate	dictate	12935
 dictator	dictator	11523
 dictatorship	dictatorship	11869
@@ -5018,7 +5005,6 @@ faculty	faculty	4027
 fade	fade	8535
 faded	faded	10395
 fading	fading	12394
-faggot	faggot	14950
 fail	fail	2347
 failed	failed	1520
 failing	failing	4170
@@ -5591,12 +5577,7 @@ frustrated	frustrated	6063
 frustrating	frustrating	7235
 frustration	frustration	7236
 fry	fry	8189
-fuck	fuck	355
-fucked	fucked	2443
-fucker	fucker	11360
 fuckin	fuckin	3957
-fucking	fucking	420
-fucks	fucks	8056
 fuel	fuel	1862
 fueled	fueled	13126
 fuels	fuels	9068
@@ -8737,7 +8718,6 @@ motel	motel	12434
 moth	moth	14563
 mother	mother	528
 mother's	mother's	3705
-motherfucker	motherfucker	12435
 mothers	mothers	4043
 motion	motion	2450
 motions	motions	13557
@@ -8948,7 +8928,6 @@ negotiated	negotiated	9636
 negotiating	negotiating	9637
 negotiation	negotiation	9638
 negotiations	negotiations	4911
-negro	negro	10430
 neighbor	neighbor	5810
 neighborhood	neighborhood	2902
 neighborhoods	neighborhoods	7723
@@ -9028,7 +9007,6 @@ niece	niece	9102
 nigel	nigel	9806
 nigeria	nigeria	3971
 nigerian	nigerian	6302
-nigga	nigga	12101
 night	night	187
 night's	night's	8334
 nightclub	nightclub	11760
@@ -10126,7 +10104,6 @@ por	por	14586
 porcelain	porcelain	13384
 porch	porch	8712
 pork	pork	6624
-porn	porn	2906
 pornography	pornography	11595
 porsche	porsche	10943
 port	port	1833
@@ -10639,7 +10616,6 @@ push	push	1536
 pushed	pushed	3330
 pushes	pushes	9974
 pushing	pushing	3271
-pussy	pussy	4641
 put	put	175
 putin	putin	5658
 puts	puts	2746
@@ -11300,7 +11276,6 @@ retained	retained	6222
 retaining	retaining	9667
 retains	retains	11955
 retaliation	retaliation	13595
-retarded	retarded	10453
 retention	retention	9252
 retire	retire	6420
 retired	retired	3274
@@ -12110,9 +12085,6 @@ ships	ships	2659
 shirley	shirley	10465
 shirt	shirt	2274
 shirts	shirts	4828
-shit	shit	279
-shits	shits	11967
-shitty	shitty	6538
 shock	shock	3146
 shocked	shocked	4416
 shocking	shocking	5920
@@ -12359,7 +12331,6 @@ slowed	slowed	10804
 slower	slower	7184
 slowing	slowing	10805
 slowly	slowly	2276
-slut	slut	9988
 smack	smack	11968
 small	small	255
 smaller	smaller	1597
@@ -13652,7 +13623,6 @@ titans	titans	8130
 title	title	775
 titled	titled	5926
 titles	titles	3469
-tits	tits	6975
 toast	toast	7406
 tobacco	tobacco	5116
 toby	toby	11466
@@ -14716,7 +14686,6 @@ wholesale	wholesale	7300
 wholesome	wholesome	14427
 wholly	wholly	9007
 whom	whom	1438
-whore	whore	8623
 whose	whose	854
 why	why	97
 wicked	wicked	7092
