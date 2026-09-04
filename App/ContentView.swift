@@ -299,7 +299,9 @@ struct ContentView: View {
         SettingsKeys.contactCandidateDisplayMode,
         store: Self.sharedDefaults
     )
-    var contactCandidateDisplayModeRawValue: String = ContactCandidateDisplayModeOption.namesOnly.rawValue
+    // 既定はオフ(2785): 初回起動でいきなり連絡先の許可ダイアログが出ないように。オンにした操作の
+    // onChange だけが requestContactsAccessIfNeededInBackground を呼ぶ(ガイドライン 5.1.1)
+    var contactCandidateDisplayModeRawValue: String = ContactCandidateDisplayModeOption.off.rawValue
 
     @AppStorage(
         SettingsKeys.emojiCandidateDisplayEnabled,
@@ -832,7 +834,7 @@ struct ContentView: View {
     }
 
     private var contactCandidateDisplayModeSelection: Binding<ContactCandidateDisplayModeOption> {
-        rawValueSelection(from: contactCandidateDisplayModeRawValue, default: .namesOnly) {
+        rawValueSelection(from: contactCandidateDisplayModeRawValue, default: .off) {
             contactCandidateDisplayModeRawValue = $0
         }
     }
@@ -844,7 +846,7 @@ struct ContentView: View {
     }
 
     var shouldUseContactCandidates: Bool {
-        (ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .namesOnly) != .off
+        (ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .off) != .off
     }
 
     private var accentPaletteSelection: Binding<AccentColorOption> {
@@ -1402,7 +1404,7 @@ struct ContentView: View {
                 SettingsSyncNotification.postSettingsDidChange()
             }
             .onChange(of: contactCandidateDisplayModeRawValue) { newValue in
-                let mode = ContactCandidateDisplayModeOption(rawValue: newValue) ?? .namesOnly
+                let mode = ContactCandidateDisplayModeOption(rawValue: newValue) ?? .off
 
                 guard mode != .off else {
                     syncContactCandidatesCacheFromContainerApp()
