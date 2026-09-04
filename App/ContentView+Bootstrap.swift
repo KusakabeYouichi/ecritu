@@ -508,6 +508,7 @@ extension ContentView {
             if defaults.object(forKey: cacheKey) != nil || defaults.object(forKey: sealedKey) != nil {
                 defaults.removeObject(forKey: cacheKey)
                 defaults.removeObject(forKey: sealedKey)
+                ContactCacheCipher.deleteKeychainKey()
                 SettingsSyncNotification.postSettingsDidChange()
             }
         }
@@ -1109,6 +1110,8 @@ private enum ContactCacheCipher {
         query.removeValue(forKey: kSecMatchLimit as String)
         query[kSecValueData as String] = keyData
         query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        // iCloud キーチェーンには同期しない(既定 false だが意図を明示。2785)
+        query[kSecAttrSynchronizable as String] = false
         let addStatus = SecItemAdd(query as CFDictionary, nil)
         guard addStatus == errSecSuccess || addStatus == errSecDuplicateItem else {
             return nil
@@ -1117,6 +1120,16 @@ private enum ContactCacheCipher {
             return keychainKey(createNew: false)
         }
         return key
+    }
+
+    // 連絡先候補をオフにしたとき、対応表と一緒に鍵も消す(鍵だけ残す理由が無い。2785)
+    static func deleteKeychainKey() {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: keychainService,
+            kSecAttrAccount as String: keychainAccount
+        ]
+        SecItemDelete(query as CFDictionary)
     }
 }
 
