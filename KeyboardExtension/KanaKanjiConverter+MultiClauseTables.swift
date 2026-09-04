@@ -364,6 +364,8 @@ extension KanaKanjiConverter {
         // ため も同方針の形式名詞(ユーザー指定 2538)。unigram はかな優位(3227≪5103)だが
         // bigram(為→に603<ため→に753 等の文語バイアス)で 為 が勝つ文脈を反転する
         "ため": 800,
+        // はんにち: 半日 6988 vs 反日 6955 の僅差で連文節だけ 反日程度 になっていた(ユーザ報告 2798)
+        "はんにち": 600,
         // かたん は 下端 を先頭に(ユーザ指定 2535。設計/工作で頻用)。word_cost 差
         // (下端7404 − 加担6518 = 886)+勝たん等の活用OOV との差を跨いで反転する値
         "かたん": 2000,
@@ -508,7 +510,7 @@ extension KanaKanjiConverter {
     // さすが: かな副詞クランプ(4000)で 流石(7272)が変種上限を超えて消えるため、
     // seed {さすが, 流石} の順で 流石Apple を2番目に残す(ユーザ指定 2666)
     // たいして: 同じ構図(かな副詞クランプで最良、seed {たいして, 大して, 対して} の順に変種を出す。2771)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして"]
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "あとあと"]
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
@@ -516,7 +518,7 @@ extension KanaKanjiConverter {
     // 陽一 先頭(2688)。seed 順をノードコストにも反映する
     // かじ: LM は 梶6391<火事6491<舵6617<鍛冶6676<家事6658 で、連文節が 舵が起きた/舵を手伝う
     // を先頭にしていた。seed 順(家事→火事→鍛冶)をノードコストへ(2689)
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん"]
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -997,6 +999,36 @@ extension KanaKanjiConverter {
     static let multiClauseParticleSwallowedVerbHeadParticles: Set<String> = ["と", "に", "が", "は", "を", "で", "も", "へ"]
     static let multiClauseParticleSwallowedVerbHeadStemMargin = 500
     static let multiClauseParticleSwallowedVerbHeadPenalty = 2500
+    // 補助動詞 ておく(2798)。さくじょしておきながら が 削除して置きながら になっていた: 補助動詞は
+    // かなが正書だが、b2 の供給は「かなが第1候補のときだけ」のため かな おきながら ノード自体が無く、
+    // 置き/擱き/於き しか立たなかった。おく に脱活用できる読みは かなも供給し、て/で 直後の
+    // 漢字 置/擱/於 頭を減点する。本動詞(本を置く=を の後)には触れない
+    // 文頭のかな助詞 で(2798): でないようにした が で(2597)+ない(bigram 2889)=5486 で、1 動詞の 出ない
+    // (活用OOV 7200)に勝っていた(で+ない を減点したら で+内容 に流れたので、で 自体を減点する)。
+    // 格助詞 で は名詞の後にしか立たず、文頭で で 始まりの活用派生(出ない/出た/できない/でかい)が立つときは
+    // その語の頭とみるのが自然。名詞+でない(そうでない/学生でないと)や でも/では/です には触れない
+    static let multiClauseSentenceInitialDeParticlePenalty = 3000
+    // 当為の べき/べし/べく(2798): ふむべき が 踏む+冪 になっていた。述語(辞書形/活用派生)直後の
+    // べき は助動詞でかなが正書。漢字表記(冪/可き)を減点
+    static let multiClauseBekiReadings: Set<String> = ["べき", "べし", "べく", "べきだ", "べきです"]
+    static let multiClauseBekiKanjiPenalty = 3000
+    static let multiClauseOkuKanjiHeads: Set<Character> = ["置", "擱", "於"]
+    static let multiClauseOkuAuxiliaryKanjiPenalty = 2500
+
+    static func isOkuAuxiliaryReading(_ reading: String) -> Bool {
+        guard reading.hasPrefix("お"), reading.count >= 2 else { return false }
+        if reading == "おく" { return true }
+        guard let last = reading.last, let ruleIndices = deinflectionRulesByReadingLastCharacter[last] else { return false }
+        for index in ruleIndices {
+            let rule = allInflectionRules[index]
+            guard !rule.readingSuffix.isEmpty, reading.hasSuffix(rule.readingSuffix) else { continue }
+            let stem = reading.dropLast(rule.readingSuffix.count)
+            if !stem.isEmpty, stem + rule.baseReadingSuffix == "おく" {
+                return true
+            }
+        }
+        return false
+    }
     static let multiClauseSuruClusterKanaPrefixes: [String] = [
         "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"
     ]
