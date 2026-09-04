@@ -346,21 +346,36 @@ extension KanaKanjiConverter {
         // 持つなら、それは丁寧接頭辞ではなく1語。お+[語幹候補]の総なめ合成(お添い/お沿い/お初位…
         // =おそい の誤分割)を止める。お名前/お仕事(フル語なし)や お金/お店(丸ごと辞書語)は
         // この判定に該当しないため温存される。
-        let fullReadingHasStandaloneWord = candidatesForReading(
+        // ただし収穫底値(word_cost>=10000)のレア語(尾持=姓の収穫 等)は「1語がある」とは見なさない。
+        // おもち が 尾持 だけで塞がれ、お持ち/お餅 が一切出なかった(ユーザ報告 2798)。LM に
+        // 表層が実在する語は常用と見て従来どおり塞ぐ
+        let fullReadingWordCosts = store.wordCosts(for: reading)
+        let fullReadingCandidates = candidatesForReading(
             reading,
             userDictionary: userDictionary,
             initialUserDictionary: initialUserDictionary,
             systemCandidateMode: systemCandidateMode
-        ).contains { candidate in
+        )
+        let fullReadingUnigrams = store.wordLMUnigramCosts(for: fullReadingCandidates)
+        let fullReadingHasStandaloneWord = fullReadingCandidates.contains { candidate in
             guard let firstScalar = candidate.unicodeScalars.first else {
                 return false
             }
             if candidate.hasPrefix("お") || candidate.hasPrefix("ご") || candidate.hasPrefix("御") {
                 return false
             }
-            return (0x4E00...0x9FFF).contains(firstScalar.value)
+            let isKanjiLead = (0x4E00...0x9FFF).contains(firstScalar.value)
                 || (0x3400...0x4DBF).contains(firstScalar.value)
                 || firstScalar.value == 0x3005
+            guard isKanjiLead else {
+                return false
+            }
+            if let wordCost = fullReadingWordCosts[candidate],
+                wordCost >= CandidateScore.harvestTierWordCostFloor,
+                fullReadingUnigrams[candidate] == nil {
+                return false
+            }
+            return true
         }
 
         for prefix in Self.politePrefixPassthroughPrefixes where reading.hasPrefix(prefix) {
