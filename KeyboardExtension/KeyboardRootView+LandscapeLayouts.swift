@@ -238,14 +238,12 @@ extension KeyboardRootView {
                     action: onReturn
                 )
                     .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight * 2 + rowSpacing)
+                    .frame(height: threeByThreeReturnKeyHeight(rowHeight: rowHeight, rowSpacing: rowSpacing))
             }
             .frame(width: keyWidth, height: rowHeight, alignment: .top)
             .zIndex(KeyboardLayerZIndex.rightEdgeUtilityColumn)
 
-            Color.clear
-                .allowsHitTesting(false)
-                .frame(width: keyWidth, height: rowHeight)
+            threeByThreeFourthRowUtilitySlot(width: keyWidth, rowHeight: rowHeight)
         }
     }
 

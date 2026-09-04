@@ -1178,6 +1178,7 @@ extension KeyboardRootView {
                 action: { switchInputMode(.kana) }
             )
             .frame(height: height)
+            PanelAdvanceKeyboardKey(action: showsNextKeyboardKey ? onAdvanceKeyboard : nil, height: height)
 
             ForEach(FormattedNumberCategory.allCases) { category in
                 formattedNumberCategoryKey(category)

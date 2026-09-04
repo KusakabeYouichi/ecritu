@@ -596,6 +596,8 @@ extension KeyboardRootView {
         let onTextInput: (String) -> Void
         let onSwitchToKana: () -> Void
         let onDeleteBackward: () -> Void
+        // 地球儀キーが要る機種(ホームボタン機)だけ非 nil。あい の右に 🌐 を置く(4.4.1。2785)
+        var onAdvanceKeyboard: (() -> Void)? = nil
         // 圧迫可視化(削除キーの色/回数)。かなレイアウトの⌫と同じ状態を絵文字パネルでも見せる(2673)
         var deleteKeyBackgroundColorOverride: Color? = nil
         var deleteKeyCornerBadgeText: String? = nil
@@ -624,6 +626,7 @@ extension KeyboardRootView {
                         action: onSwitchToKana
                     )
                     .frame(height: mainFlickKeyHeight)
+                    PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
 
                     ForEach(KeyboardRootView.EmojiCategory.allCases, id: \.self) { category in
                         EmojiCategoryKeyButton(
@@ -716,6 +719,7 @@ extension KeyboardRootView {
         let onTextInput: (String) -> Void
         let onSwitchToKana: () -> Void
         let onDeleteBackward: () -> Void
+        var onAdvanceKeyboard: (() -> Void)? = nil
 
         var body: some View {
             VStack(spacing: keyboardRowSpacing) {
@@ -734,6 +738,7 @@ extension KeyboardRootView {
                         action: onSwitchToKana
                     )
                     .frame(height: mainFlickKeyHeight)
+                    PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
 
                     ForEach(KeyboardRootView.SymbolCategory.allCases, id: \.self) { category in
                         SymbolCategoryKeyButton(
@@ -1158,3 +1163,24 @@ extension KeyboardRootView {
             }
         }
     }
+
+// パネル(絵文字/顔文字/記号/漢字ピッカー/書式化数値)下段の 🌐。地球儀キーが要る機種
+// (needsInputModeSwitchKey=true のホームボタン機)だけ action が渡され、それ以外は何も描かない
+// (iPhone 15/16 等の表示は不変)。かなが 3×3 のときパネルからしか純正へ戻れないケースの受け皿(2785)
+struct PanelAdvanceKeyboardKey: View {
+    let action: (() -> Void)?
+    let height: CGFloat
+
+    var body: some View {
+        if let action {
+            ActionKeyButton(
+                title: "🌐",
+                accessibilityLabel: "次のキーボード",
+                fontSize: 22,
+                fixedWidth: 44,
+                action: action
+            )
+            .frame(height: height)
+        }
+    }
+}

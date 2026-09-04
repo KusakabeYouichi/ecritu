@@ -24,7 +24,8 @@ extension KeyboardRootView {
                 switchInputMode(.kana)
             },
             onSwitchToKana: { switchInputMode(.kana) },
-            onDeleteBackward: onDeleteBackward
+            onDeleteBackward: onDeleteBackward,
+            onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
     }
 }
@@ -535,6 +536,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let onCommitCharacter: (String) -> Void
     let onSwitchToKana: () -> Void
     let onDeleteBackward: () -> Void
+    var onAdvanceKeyboard: (() -> Void)? = nil
 
     private var forms: [RadicalForm] {
         KanjiRadicalCatalog.forms(in: selectedCategory, choices: strokeChoices)
@@ -636,6 +638,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                     action: onSwitchToKana
                 )
                 .frame(height: mainFlickKeyHeight)
+                PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
 
                 ForEach(RadicalPositionCategory.allCases) { category in
                     RadicalCategoryKeyButton(

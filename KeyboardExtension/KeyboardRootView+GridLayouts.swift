@@ -356,7 +356,7 @@ extension KeyboardRootView {
                         action: onReturn
                     )
                         .frame(maxWidth: .infinity)
-                        .frame(height: rowHeight * 2 + rowSpacing)
+                        .frame(height: threeByThreeReturnKeyHeight(rowHeight: rowHeight, rowSpacing: rowSpacing))
                 }
                     .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight, alignment: .top)
                 .zIndex(KeyboardLayerZIndex.rightEdgeUtilityColumn)
@@ -416,9 +416,7 @@ extension KeyboardRootView {
                     .frame(maxWidth: .infinity)
                     .frame(height: rowHeight)
 
-                Color.clear
-                    .allowsHitTesting(false)
-                    .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)
+                threeByThreeFourthRowUtilitySlot(width: rightEdgeUtilityColumnWidth, rowHeight: rowHeight)
             }
             .zIndex(zIndex(for: 3))
         }
@@ -548,14 +546,12 @@ extension KeyboardRootView {
                     action: onReturn
                 )
                     .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight * 2 + rowSpacing)
+                    .frame(height: threeByThreeReturnKeyHeight(rowHeight: rowHeight, rowSpacing: rowSpacing))
             }
             .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight, alignment: .top)
             .zIndex(KeyboardLayerZIndex.rightEdgeUtilityColumn)
         case 3:
-            Color.clear
-                .allowsHitTesting(false)
-                .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)
+            threeByThreeFourthRowUtilitySlot(width: rightEdgeUtilityColumnWidth, rowHeight: rowHeight)
         default:
             Color.clear
                 .allowsHitTesting(false)
@@ -585,6 +581,32 @@ extension KeyboardRootView {
                 }
                 .zIndex(zIndex(for: rowIndex))
             }
+        }
+    }
+
+    // 3×3 系(3x3+わ / 数字・ラテン 3×3 / 横画面コンパクト数字)の右列 4 段目。
+    // 地球儀キーが要る機種(ホームボタン機: needsInputModeSwitchKey=true、iOS の地球儀バーが無い)では
+    // 2 段ぶち抜きだった ⏎ を 1 段に戻し、空いた 4 段目に 🌐 を置く(ガイドライン 4.4.1: 次の
+    // キーボードへ切り替える手段。以前は 3×3 系だけ 🌐 が無く、SE 系で純正へ戻れなかった。2785)。
+    // 地球儀バーのある機種(iPhone 15/16 等)は従来どおり ⏎ 2 段+空きで表示は変わらない。
+    func threeByThreeReturnKeyHeight(rowHeight: CGFloat, rowSpacing: CGFloat) -> CGFloat {
+        showsNextKeyboardKey ? rowHeight : rowHeight * 2 + rowSpacing
+    }
+
+    @ViewBuilder
+    func threeByThreeFourthRowUtilitySlot(width: CGFloat, rowHeight: CGFloat) -> some View {
+        if showsNextKeyboardKey {
+            ActionKeyButton(
+                title: "🌐",
+                accessibilityLabel: "次のキーボード",
+                fontSize: 22,
+                action: onAdvanceKeyboard
+            )
+                .frame(width: width, height: rowHeight)
+        } else {
+            Color.clear
+                .allowsHitTesting(false)
+                .frame(width: width, height: rowHeight)
         }
     }
 }
