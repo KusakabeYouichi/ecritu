@@ -84,6 +84,11 @@ struct UserDictionarySettingsSection: View {
                 isVisible: isScrollIndexVisible
             )
 
+            Text("あらかじめ例としていくつかの単語(店名・地名・専門用語など)が入っています。よく使う単語を足していきましょう。最初から入っているもので邪魔なものは削除できます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+
             if entries.isEmpty {
                 Text("登録済みの追加単語はありません。")
                     .font(.footnote)
