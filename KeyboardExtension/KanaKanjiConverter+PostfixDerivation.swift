@@ -341,6 +341,7 @@ extension KanaKanjiConverter {
         }
 
         var derived: [String] = []
+        var deferredBareRenyou: [String] = []
 
         // フル読み自体が「お/ご/御 始まりでない漢字語」(おそい→遅い、おもい→重い 等)を辞書に
         // 持つなら、それは丁寧接頭辞ではなく1語。お+[語幹候補]の総なめ合成(お添い/お沿い/お初位…
@@ -395,6 +396,21 @@ extension KanaKanjiConverter {
                 )
             )
 
+            // バラの お+連用形(お持ち/お以ち/お保ち)は先頭の1件だけ名詞合成(お餅)より前に置き、
+            // 同読みの別動詞由来(以つ/保つ)は名詞の後ろへ回す。お持ち→お以ち→お保ち→お餅 と
+            // レア動詞の連用形が名詞を押し下げていた(ユーザ報告 2799)
+            if !fullReadingHasStandaloneWord {
+                let bareRenyou = politePrefixRenyouCandidates(
+                    prefix: prefix,
+                    trailingSuffix: "",
+                    renyouReading: stem,
+                    userDictionary: userDictionary,
+                    initialUserDictionary: initialUserDictionary,
+                    systemCandidateMode: systemCandidateMode
+                )
+                derived.append(contentsOf: bareRenyou.prefix(1))
+                deferredBareRenyou.append(contentsOf: bareRenyou.dropFirst())
+            }
             derived.append(
                 contentsOf: politePrefixRenyouCandidates(
                     prefix: prefix,
@@ -402,7 +418,7 @@ extension KanaKanjiConverter {
                     userDictionary: userDictionary,
                     initialUserDictionary: initialUserDictionary,
                     systemCandidateMode: systemCandidateMode,
-                    allowBareRenyou: !fullReadingHasStandaloneWord
+                    allowBareRenyou: false
                 )
             )
 
@@ -480,6 +496,7 @@ extension KanaKanjiConverter {
             }
         }
 
+        derived.append(contentsOf: deferredBareRenyou)
         return Array(uniqueCandidates(from: derived).prefix(limit))
     }
 
