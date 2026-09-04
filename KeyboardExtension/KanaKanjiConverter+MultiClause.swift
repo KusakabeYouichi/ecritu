@@ -681,8 +681,23 @@ extension KanaKanjiConverter {
         unigramSurfaces.insert(Self.multiClauseEOSMarker)
         for node in nodes {
             unigramSurfaces.insert(node.surface)
+            // 活用派生ノードの語幹トークン(通っ/追っ)も引く: 助詞が動詞の頭を食う分割の比較に使う(定数コメント参照)
+            if node.isInflectionDerived, let stem = Self.stemHeadForBigramBorrow(of: node.surface) {
+                unigramSurfaces.insert(stem)
+            }
         }
         let unigramCosts = store.wordLMUnigramCosts(for: Array(unigramSurfaces))
+
+        // 「助詞 1 字+活用派生」の分割と同じ読み幅を 1 ノードで覆う活用派生(と+追って ↔ 通って)。
+        // スパンごとに、語幹 unigram が最良のものを控える(定数コメント参照。2797)
+        var mergedVerbStemCostBySpan: [String: Int] = [:]
+        for node in nodes
+        where node.isInflectionDerived && node.reading.count >= 3
+            && Self.multiClauseParticleSwallowedVerbHeadParticles.contains(String(node.reading.first!)) {
+            guard let stem = Self.stemHeadForBigramBorrow(of: node.surface), let uni = unigramCosts[stem] else { continue }
+            let key = "\(node.start)-\(node.end)"
+            mergedVerbStemCostBySpan[key] = min(mergedVerbStemCostBySpan[key] ?? Int.max, uni)
+        }
         // 読み跨ぎ unigram 借用の遮断用(定数コメント参照)。旧形式 DB では空=機能オフ。
         let candidateMinWordCosts = store.candidateMinWordCosts(for: Array(unigramSurfaces))
 
@@ -1725,6 +1740,21 @@ extension KanaKanjiConverter {
                             Self.multiClauseFormalNounKanaReadings.contains(node.reading),
                             node.surface != node.reading {
                             cost += Self.multiClauseFormalNounKanjiPenalty
+                        }
+                        // 助詞 1 字が動詞の頭を食う分割(改札と+追って)より、同じ幅の 1 動詞(通って)を優先(定数コメント参照)
+                        if node.isInflectionDerived,
+                            prevNode.surface == prevNode.reading,
+                            Self.multiClauseParticleSwallowedVerbHeadParticles.contains(prevNode.reading),
+                            let mergedStemCost = mergedVerbStemCostBySpan["\(prevNode.start)-\(node.end)"],
+                            let splitStem = Self.stemHeadForBigramBorrow(of: node.surface) {
+                            // 分割側の語幹が LM 未収録なら合体側が優位とみなす(Int.max との加算はしない)
+                            if let splitStemCost = unigramCosts[splitStem] {
+                                if mergedStemCost <= splitStemCost + Self.multiClauseParticleSwallowedVerbHeadStemMargin {
+                                    cost += Self.multiClauseParticleSwallowedVerbHeadPenalty
+                                }
+                            } else {
+                                cost += Self.multiClauseParticleSwallowedVerbHeadPenalty
+                            }
                         }
                         // 形式名詞 ため の直後の する 活用かなクラスタ(定数コメント参照)。
                         if prevNode.reading == "ため", node.surface == node.reading,

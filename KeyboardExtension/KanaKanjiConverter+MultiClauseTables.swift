@@ -989,6 +989,14 @@ extension KanaKanjiConverter {
     // (床1500)の合成で 試してみて(活用OOV 6400)を undercut し、為してみて/溜めしてみて まで
     // 変種に並んでいた(2784)。ためし(試し)の1ノードは読みが違うので影響しない
     static let multiClauseTameSuruClusterPenalty = 3000
+    // 助詞 1 字が動詞の頭を食う分割の是正(2797)。かいさつとおって が 改札と+追って(と→追っ の bigram 6040 が
+    // 活用 OOV を 4500 に下げる)になり、1 動詞の 通って(改札→通っ の bigram 無し=7200)が負けていた。
+    // 「助詞 1 字+活用派生」の遷移で、同じ読み幅を覆う活用派生ノード(通って)が存在し、その語幹 unigram
+    // (通っ 5563)が分割側の語幹(追っ 6057)以下+マージンなら分割側に減点する。駅に会った(会っ≪似合っ)の
+    // ように分割側の語幹が優勢な正当分割には発火しない。
+    static let multiClauseParticleSwallowedVerbHeadParticles: Set<String> = ["と", "に", "が", "は", "を", "で", "も", "へ"]
+    static let multiClauseParticleSwallowedVerbHeadStemMargin = 500
+    static let multiClauseParticleSwallowedVerbHeadPenalty = 2500
     static let multiClauseSuruClusterKanaPrefixes: [String] = [
         "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"
     ]
