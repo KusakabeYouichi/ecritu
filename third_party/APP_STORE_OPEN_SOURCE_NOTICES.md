@@ -102,6 +102,9 @@ app itself is sold. No other part of the app is subject to ShareAlike.
 The following bundled data was compiled by the author and is not derived
 from third-party dictionaries or corpora: the curated vocabulary files
 under references/ (vin, vin-acronyme, ryukyu, it, personnalités,
-drapeaux, monnaies, sacoche, misc, suppr, poubelle), the precomputed
-Latin index of those files (LatinSuggestionSupplemental.txt), and all
-artwork and code.
+drapeaux, monnaies, sacoche, misc, suppr, poubelle), the kanji radical
+position table (references/bushu.plist: customary radical names, position
+classes and stroke counts compiled from general knowledge; only the Kangxi
+radical numbers are cross-checked against Unihan), the precomputed Latin
+index of those files (LatinSuggestionSupplemental.txt), and all artwork
+and code.

@@ -75,12 +75,14 @@ dictionaries (confirmed 2026-08-31; drapeaux readings re-confirmed
 2026-09-04). `LatinSuggestionSupplemental.txt` is generated from those
 files (tools/build_latin_suggestion_supplemental.swift).
 
-`references/bushu.plist` (radical position table used by the kanji picker):
-radical numbers are cross-checked against Unihan kRSKangxi; the provenance
-of the radical names / position classes / stroke counts is TO BE CONFIRMED
-by the author (open item, 2026-09-04). If any of it derives from
-KANJIDIC2/RADKFILE (EDRDG, CC BY-SA 3.0) add attribution here and in the
-in-app notices.
+`references/bushu.plist` (radical position table used by the kanji picker)
+was compiled from general knowledge, not imported from KANJIDIC2/RADKFILE
+or any other database (confirmed 2026-09-04): the radical names are the
+customary Japanese names in public use, the position classes (偏/旁/冠/
+脚/垂/繞/構/独立) follow from the glyph shapes and were checked entry by
+entry by the author, and the stroke counts are facts. Only the Kangxi
+radical numbers are cross-checked against Unihan kRSKangxi (Unicode
+License, bundled).
 
 Flag names shown on long-press are generated at runtime from Foundation's
 `Locale(identifier: "fr_FR")` region names (no bundled table; 2026-09-04).
