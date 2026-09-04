@@ -61,6 +61,10 @@
 	<dict><key>phrase</key><string>現ってた</string><key>shortcut</key><string>うつってた</string></dict>
 	<dict><key>phrase</key><string>現った</string><key>shortcut</key><string>うつった</string></dict>
 
+	<dict><key>phrase</key><string>手</string><key>shortcut</key><string>で</string></dict>	<!-- 手 を で と読むのは 苦手/派手 等の連濁の中だけで、単独の読みではない。でない→手ない の合成を作っていた(ユーザ報告 2798) -->
+	<dict><key>phrase</key><string>彼</string><key>shortcut</key><string>か</string></dict>	<!-- 彼 の か 読み(彼の=かの 由来の断片)。とかは→と彼は の分割を作っていた(ユーザ報告 2798) -->
+	<dict><key>phrase</key><string>ムベキ</string><key>shortcut</key><string>むべき</string></dict>	<!-- 「むべき」のカタカナ収穫(単独で成立する語ではない)。ふむべき→府ムベキ の合成を作っていた(ユーザ報告 2798) -->
+
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
 	<dict><key>phrase</key><string>スルト</string><key>shortcut</key><string>すると</string></dict>	<!-- スルト(すると): Sudachi の人名固有名詞(北欧神話 Surtr)。すると の唯一の辞書語で rank0 を占め、接続詞 すると(かな)を跨いでいた(ユーザ指定 2688) -->
 	<dict><key>phrase</key><string>本途</string><key>shortcut</key><string>ほんと</string></dict>	<!-- 本途/本斗/本登(ほんと): LM 不在のレア人名・地名収穫。ほんと の かな先頭化は seed で行うため、これらが2番手以降に居座らないよう抑制する(旧: 本当 を抑制していたが ほんとだ/ほんとに 等の合成から 本当 が消えるため seed へ移行。2583) -->
