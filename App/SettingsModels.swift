@@ -636,27 +636,27 @@ enum KaomojiCategoryChoice {
         // 以前は importedCategoryOrder(辞書の反復順)を写していたため、導入時からキーボードと
         // 並びが食い違っていた(2026-09-02 是正)
         let importedCategories: [(name: String, icon: String)] = [
-            ("笑", "😂"),
-            ("かわいい", "🥰"),
-            ("照れ", "😊"),
-            ("焦り", "💦"),
-            ("しょぼん", "😔"),
-            ("悲", "😢"),
-            ("怒", "😠"),
-            ("驚き", "😲"),
-            ("くそねみ", "😴"),
-            ("挨拶", "🙋"),
-            ("ラブ", "❤️"),
-            ("激しい", "💥"),
-            ("うごき", "🏃"),
-            ("キモい", "🤪"),
-            ("キャラ", "🧑"),
-            ("特殊", "✨"),
-            ("ライン", "💬")
+            ("rire", "😂"),
+            ("kawaii", "🥰"),
+            ("timide", "😊"),
+            ("panique", "💦"),
+            ("decu", "😔"),
+            ("triste", "😢"),
+            ("colere", "😠"),
+            ("surprise", "😲"),
+            ("dodo", "😴"),
+            ("coucou", "🙋"),
+            ("amour", "❤️"),
+            ("excite", "💥"),
+            ("action", "🏃"),
+            ("bizarre", "🤪"),
+            ("heros", "🧑"),
+            ("special", "✨"),
+            ("lignes", "💬")
         ]
 
         entries.append(contentsOf: importedCategories.map {
-            CategoryChoiceDescriptor(id: "imported:\($0.name)", title: $0.name, icon: $0.icon)
+            CategoryChoiceDescriptor(id: "imported:\($0.name)", title: KaomojiCategoryChoice.displayTitle(forID: "imported:\($0.name)"), icon: $0.icon)
         })
 
         return entries
@@ -666,34 +666,55 @@ enum KaomojiCategoryChoice {
     // 設定YAMLエクスポートで ID の代わりに使う
     static func displayTitle(forID id: String) -> String {
         switch id {
-        case "shortcut": return "Raccourcis (ショートカット)"
-        case "existing": return "Base (基本)"
-        case "search": return "Recherche (検索)"
+        case "shortcut": return "Raccourcis"
+        case "existing": return "Base"
+        case "search": return "Recherche"
         default: break
         }
         guard id.hasPrefix("imported:") else { return id }
         let name = String(id.dropFirst("imported:".count))
-        switch name {
-        case "笑": return "Sourire / Rire (笑顔)"
-        case "かわいい": return "Kawaii / Chou (かわいい)"
-        case "照れ": return "Timide (照れ・恥ずかしがり)"
-        case "焦り": return "Stress / Panique (焦り・緊張・パニック)"
-        case "しょぼん": return "Dé çu Dé primé (がっかり・しょぼん)"
-        case "悲": return "Triste (悲しい)"
-        case "怒": return "En colè re (怒り)"
-        case "驚き": return "Surprise (驚き)"
-        case "くそねみ": return "Dodo (くそねみ・超眠い・ねんね)"
-        case "挨拶": return "Coucou (やあ!・親しい挨拶)"
-        case "ラブ": return "Amour (ラブ・愛)"
-        case "激しい": return "Excité / Crazy (激しい・狂気)"
-        case "うごき": return "Action (アクシオン・動き)"
-        case "キモい": return "Bizarre (奇妙・キモい)"
-        case "キャラ": return "Hé ros (主人公・キャラ)"
-        case "特殊": return "Spé cial (特殊)"
-        case "ライン": return "Lignes (区切り線)"
+        switch legacyCategoryKeys[name] ?? name {
+        case "rire": return "Sourire / Rire"
+        case "kawaii": return "Kawaii / Chou"
+        case "timide": return "Timide"
+        case "panique": return "Stress / Panique"
+        case "decu": return "Déçu / Déprimé"
+        case "triste": return "Triste"
+        case "colere": return "En colère"
+        case "surprise": return "Surprise"
+        case "dodo": return "Dodo"
+        case "coucou": return "Coucou"
+        case "amour": return "Amour"
+        case "excite": return "Excité / Crazy"
+        case "action": return "Action"
+        case "bizarre": return "Bizarre"
+        case "heros": return "Héros"
+        case "special": return "Spécial"
+        case "lignes": return "Lignes"
         default: return name
         }
     }
+
+    // 旧キー(日本語名)→新キー。KaomojiCatalog.legacyCategoryKeys のミラー(別ターゲット)
+    static let legacyCategoryKeys: [String: String] = [
+        "笑": "rire",
+        "かわいい": "kawaii",
+        "照れ": "timide",
+        "焦り": "panique",
+        "しょぼん": "decu",
+        "悲": "triste",
+        "怒": "colere",
+        "驚き": "surprise",
+        "くそねみ": "dodo",
+        "挨拶": "coucou",
+        "ラブ": "amour",
+        "激しい": "excite",
+        "うごき": "action",
+        "キモい": "bizarre",
+        "キャラ": "heros",
+        "特殊": "special",
+        "ライン": "lignes",
+    ]
 }
 
 enum EmojiCategoryChoice {

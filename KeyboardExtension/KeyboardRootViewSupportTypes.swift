@@ -206,50 +206,50 @@ extension KeyboardRootView {
         var title: String {
             switch kind {
             case .shortcut:
-                return "Raccourcis (ショートカット)"
+                return "Raccourcis"
             case .existing:
-                return "Base (基本)"
+                return "Base"
             case .imported(let name):
-                switch name {
-                case "笑":
-                    return "Sourire / Rire (笑顔)"
-                case "かわいい":
-                    return "Kawaii / Chou (かわいい)"
-                case "照れ":
-                    return "Timide (照れ・恥ずかしがり)"
-                case "焦り":
-                    return "Stress / Panique (焦り・緊張・パニック)"
-                case "しょぼん":
-                    return "Dé çu Dé primé (がっかり・しょぼん)"
-                case "悲":
-                    return "Triste (悲しい)"
-                case "怒":
-                    return "En colè re (怒り)"
-                case "驚き":
-                    return "Surprise (驚き)"
-                case "くそねみ":
-                    return "Dodo (くそねみ・超眠い・ねんね)"
-                case "挨拶":
-                    return "Coucou (やあ!・親しい挨拶)"
-                case "ラブ":
-                    return "Amour (ラブ・愛)"
-                case "激しい":
-                    return "Excité / Crazy (激しい・狂気)"
-                case "うごき":
-                    return "Action (アクシオン・動き)"
-                case "キモい":
-                    return "Bizarre (奇妙・キモい)"
-                case "キャラ":
-                    return "Hé ros (主人公・キャラ)"
-                case "特殊":
-                    return "Spé cial (特殊)"
-                case "ライン":
-                    return "Lignes (区切り線)"
+                switch KaomojiCatalog.canonicalCategoryKey(name) {
+                case "rire":
+                    return "Sourire / Rire"
+                case "kawaii":
+                    return "Kawaii / Chou"
+                case "timide":
+                    return "Timide"
+                case "panique":
+                    return "Stress / Panique"
+                case "decu":
+                    return "Déçu / Déprimé"
+                case "triste":
+                    return "Triste"
+                case "colere":
+                    return "En colère"
+                case "surprise":
+                    return "Surprise"
+                case "dodo":
+                    return "Dodo"
+                case "coucou":
+                    return "Coucou"
+                case "amour":
+                    return "Amour"
+                case "excite":
+                    return "Excité / Crazy"
+                case "action":
+                    return "Action"
+                case "bizarre":
+                    return "Bizarre"
+                case "heros":
+                    return "Héros"
+                case "special":
+                    return "Spécial"
+                case "lignes":
+                    return "Lignes"
                 default:
                     return name
                 }
             case .search:
-                return "Recherche (検索)"
+                return "Recherche"
             }
         }
 
@@ -260,41 +260,41 @@ extension KeyboardRootView {
             case .existing:
                 return "🙂"
             case .imported(let name):
-                switch name {
-                case "キャラ":
-                    return "🧑"
-                case "ライン":
-                    return "💬"
-                case "挨拶":
-                    return "🙋"
-                case "キモい":
-                    return "🤪"
-                case "特殊":
-                    return "✨"
-                case "笑":
+                switch KaomojiCatalog.canonicalCategoryKey(name) {
+                case "rire":
                     return "😂"
-                case "焦り":
-                    return "💦"
-                case "かわいい":
+                case "kawaii":
                     return "🥰"
-                case "驚き":
-                    return "😲"
-                case "怒":
-                    return "😠"
-                case "しょぼん":
-                    return "😔"
-                case "ラブ":
-                    return "❤️"
-                case "激しい":
-                    return "💥"
-                case "照れ":
+                case "timide":
                     return "😊"
-                case "くそねみ":
-                    return "😴"
-                case "悲":
+                case "panique":
+                    return "💦"
+                case "decu":
+                    return "😔"
+                case "triste":
                     return "😢"
-                case "うごき":
+                case "colere":
+                    return "😠"
+                case "surprise":
+                    return "😲"
+                case "dodo":
+                    return "😴"
+                case "coucou":
+                    return "🙋"
+                case "amour":
+                    return "❤️"
+                case "excite":
+                    return "💥"
+                case "action":
                     return "🏃"
+                case "bizarre":
+                    return "🤪"
+                case "heros":
+                    return "🧑"
+                case "special":
+                    return "✨"
+                case "lignes":
+                    return "💬"
                 default:
                     return "🗂️"
                 }
