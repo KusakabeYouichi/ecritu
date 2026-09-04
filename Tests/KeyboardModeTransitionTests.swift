@@ -494,8 +494,8 @@ final class KeyboardModeTransitionTests: XCTestCase {
     func testKaomojiDisplayCategoryOrderIsStable() {
         XCTAssertEqual(
             KaomojiCatalog.displayCategoryOrder,
-            ["笑", "かわいい", "照れ", "焦り", "しょぼん", "悲", "怒", "驚き", "くそねみ",
-             "挨拶", "ラブ", "激しい", "うごき", "キモい", "キャラ", "特殊", "ライン"]
+            ["rire", "kawaii", "timide", "panique", "decu", "triste", "colere", "surprise", "dodo",
+             "coucou", "amour", "excite", "action", "bizarre", "heros", "special", "lignes"]
         )
         // 表示順に載っている分類は全て実データに存在すること(誤字で並びから落ちるのを防ぐ)
         let imported = Set(KaomojiCatalog.importedCategoryOrder)
