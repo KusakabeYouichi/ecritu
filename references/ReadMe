@@ -1,5 +1,6 @@
 # --- 手動で追加削除してよい
-sacoche.plist			# 『追加語彙』の初期設定
+sacoche.plist			# 『追加語彙』の初期設定(コンテナーアプリの一覧に表示される唯一の初期語彙)
+compenser.plist			# sacoche から分離した補完語彙(2026-09-05)。misc と同じ立ち位置(curated 供給、アプリの一覧には表示しない)で InitialMiscVocabMigration に合流。主に作者が手作業で追加削除する
 poubelle.plist			# 『抑制語彙』の初期設定
 
 # 以下の語彙plist(vin/ryukyu/it/personnalités/drapeaux/monnaies 等)は作者のオリジナル編纂
@@ -18,7 +19,7 @@ personnalités.plist	# [人名]
 bushu.plist				# [部首] 漢字ピッカーの部首→位置分類表(拡張に同梱)。部首名は慣用名、位置分類は字形から判断(作者が全件確認)、画数は事実。部首番号のみ Unihan kRSKangxi と照合。KANJIDIC 等からの取り込みではない(2026-09-04 確認)
 
 # ---AIが使う
-misc.plist						# 変換対策の curated 語彙。初期投入されるがアプリの『追加語彙』一覧には表示しない(連文節の区切りを勝たせる用途: 殻付き/仕方ない/とんかつ屋 等)
+misc.plist						# 変換対策の curated 語彙(AI が触る側。手作業の補完語彙は compenser.plist)。初期投入されるがアプリの『追加語彙』一覧には表示しない(連文節の区切りを勝たせる用途: 殻付き/仕方ない/とんかつ屋 等)
 suppr.plist						# 変換対策の隠し抑制。SudachiDict の誤エントリ・旧字体・カタカナ収穫等を理由別グループで抑制(アプリの『抑制語彙』一覧には出ない。見える側は poubelle.plist)
 
 apple_missing_examples.md		# (再生成可)「Apple の変換では出るが écritu 辞書に無い語」の点検レポート。generate_missing_apple_examples.pyで再生成可能
