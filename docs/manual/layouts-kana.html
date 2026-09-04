@@ -41,13 +41,13 @@
 </header>
 <main>
   <h1><span class="chapno">第8章</span>配列リファレンス(かな)</h1>
-  <p class="lede">この章は、かなモードの全キー・全フリック方向を図で確認するためのリファレンスです。かな配列(5×2 / 3×3+わ)、フリック方向(écritu / Apple)、修飾キー(前置 / 後置)のすべての組み合わせを掲載しています。英字と数字は<a href="layouts-latin-number.html">次のページ</a>、横画面は<a href="layouts-landscape.html">その次のページ</a>にあります。</p>
+  <p class="lede">この章は、かなモードの全キー・全フリック方向を図で確認するためのリファレンスです。かな配列(5×2 / 3×3+わ)、フリック方向(style écritu / style iPhone)、修飾キー(前置 / 後置)のすべての組み合わせを掲載しています。英字と数字は<a href="layouts-latin-number.html">次のページ</a>、横画面は<a href="layouts-landscape.html">その次のページ</a>にあります。</p>
 
   <div class="note"><b>図の見かた:</b>キーボード全体図はソースコードの寸法・配色を HTML で描画したものです(iPhone 17・地球儀キーなし基準)。早見表は 1 マスが 1 キーで、<b>中央の大きい文字=タップ</b>、上下左右の緑の文字=その方向へのフリックで入る文字です。</div>
 
   <!-- ================================================================ -->
-  <h2 id="direction-profiles">フリック方向 — écritu 方向と Apple 方向</h2>
-  <p>écritu には、フリックの方向割り当てが 2 方式あります(設定は<a href="settings.html#flick-direction">第7章「フリック方向」</a>)。初期設定の <b>écritu 方向</b>は「上→右→左→下」の順に 2 文字目〜5 文字目を割り当てる本キーボード独自の方式、<b>Apple 方向</b>は iOS 標準キーボードと同じ「左→上→右→下」の方式です。「あ」キーで比べると次のようになります。</p>
+  <h2 id="direction-profiles">フリック方向 — style écritu と style iPhone</h2>
+  <p>écritu には、フリックの方向割り当てが 2 方式あります(設定は<a href="settings.html#flick-direction">第7章「フリック方向」</a>)。初期設定の <b>style écritu</b>は「上→右→左→下」の順に 2 文字目〜5 文字目を割り当てる本キーボード独自の方式、<b>style iPhone</b>は iOS 標準キーボードと同じ「左→上→右→下」の方式です。「あ」キーで比べると次のようになります。</p>
 
   <div class="explain">
     <div class="cross">
@@ -62,7 +62,7 @@
       <div class="arrow r">▶</div>
     </div>
     <dl class="legend">
-      <dt>écritu 方向(初期設定)</dt>
+      <dt>style écritu(初期設定)</dt>
       <dd>タップ=あ、上=い、右=う、左=え、下=お。2 文字目の「い」が上、3 文字目の「う」が右に来ます。</dd>
     </dl>
     <div class="cross">
@@ -77,14 +77,14 @@
       <div class="arrow r">▶</div>
     </div>
     <dl class="legend">
-      <dt>Apple 方向</dt>
+      <dt>style iPhone</dt>
       <dd>タップ=あ、左=い、上=う、右=え、下=お。iOS 標準キーボードと同じ並びです。</dd>
     </dl>
   </div>
 
   <p>両方式の対応は機械的で、どのキーでも次の規則で入れ替わります。</p>
   <div class="tablewrap"><table class="spec">
-    <tr><th>五十音の順番(例: あ行)</th><th>écritu 方向</th><th>Apple 方向</th></tr>
+    <tr><th>五十音の順番(例: あ行)</th><th>style écritu</th><th>style iPhone</th></tr>
     <tr><td>1 文字目(あ)</td><td>タップ</td><td>タップ</td></tr>
     <tr><td>2 文字目(い)</td><td>上</td><td>左</td></tr>
     <tr><td>3 文字目(う)</td><td>右</td><td>上</td></tr>
@@ -95,7 +95,7 @@
   <div class="note"><b>方向プロファイルが影響する範囲:</b>フリック方向の設定で変わるのは、<b>かなの文字キー(あ〜わ)と数字キーのフリック</b>だけです。<a href="#punctuation-key">、キー</a>・<a href="#modifier-key">修飾キー(小)</a>・<a href="#emoji-switcher-key">☺︎ キー</a>、そして英字 3×3 のフリック(<a href="layouts-latin-number.html#latin-flick">次ページ</a>)は、どちらの方式でも同じ方向割り当てです。</div>
 
   <h3 id="direction-guide-order">ガイド文字の並び順も変わります</h3>
-  <p>フリックガイドを「4方向」で表示しているときは、ガイド文字が各方向の位置にそのまま出るので迷いません。ガイドを「下」(キー下部に 1 行でまとめて表示)にしているときは、並び順が方式に追従します — écritu 方向では「上・右・左・下」の順、Apple 方向では「左・上・右・下」の順に文字が並びます。かなキーはどちらの方式でも五十音順(い う え お)に見えるように設計されています。</p>
+  <p>フリックガイドを「4方向」で表示しているときは、ガイド文字が各方向の位置にそのまま出るので迷いません。ガイドを「下」(キー下部に 1 行でまとめて表示)にしているときは、並び順が方式に追従します — style écrituでは「上・右・左・下」の順、style iPhoneでは「左・上・右・下」の順に文字が並びます。かなキーはどちらの方式でも五十音順(い う え お)に見えるように設計されています。</p>
 
   <!-- ================================================================ -->
   <h2 id="kana-five-by-two">かな 5×2(初期設定)</h2>
@@ -135,7 +135,7 @@
           <div class="k ret" style="font-size:22px">⏎</div>
         </div>
       </div>
-      <figcaption>かな 5×2・ライト(初期設定: écritu 方向・前置修飾・ガイド 4 方向)。未入力のため候補バーは空です。</figcaption>
+      <figcaption>かな 5×2・ライト(初期設定: style écritu・前置修飾・ガイド 4 方向)。未入力のため候補バーは空です。</figcaption>
     </figure>
     <figure>
       <div class="kb dark">
@@ -203,7 +203,7 @@
           <div class="k ret" style="font-size:22px">⏎</div>
         </div>
       </div>
-      <figcaption>Apple 方向・テーマ rose sakura poudré の例。ガイド文字の配置が変わります(や キーは 『 が左・』 が右になり、2 段フリックで 4 種すべての括弧が使えます)。</figcaption>
+      <figcaption>style iPhone・テーマ rose sakura poudré の例。ガイド文字の配置が変わります(や キーは 『 が左・』 が右になり、2 段フリックで 4 種すべての括弧が使えます)。</figcaption>
     </figure>
   </div>
 
@@ -217,7 +217,7 @@
   </table></div>
   <p>空白キーは、未確定の文字があるときは「変換」、⏎ キーは「確定」という表示に変わります(<a href="basics.html">第3章</a>)。また空白キーを<b>上にフリックするとタブ(⇥)</b>が入ります。地球儀キーがキーボード内に必要な機種(ホームボタンのある iPhone)では、アクション行の ☺︎ の右に 🌐 キーが加わります(3×3+わ では右列最下段に 🌐 が入り、⏎ が 1 段になります)(画面幅の狭い機種では ☺︎ の役割が 🌐 キーのフリックに統合され、全体が少し詰まった配置になります)。</p>
 
-  <h3 id="kana-refgrid-ecritu">全キー早見 — écritu 方向(初期設定)</h3>
+  <h3 id="kana-refgrid-ecritu">全キー早見 — style écritu(初期設定)</h3>
   <div class="refgrid">
     <div class="refkey"><span class="c">あ</span><span class="u">い</span><span class="r">う</span><span class="d">お</span><span class="l">え</span></div>
     <div class="refkey"><span class="c">か</span><span class="u">き</span><span class="r">く</span><span class="d">こ</span><span class="l">け</span></div>
@@ -233,7 +233,7 @@
   </div>
   <p>わ キーには「を」「ん」に加えて長音「ー」と波ダッシュ「〜」、や キーには二重かぎ括弧「『」「』」が割り当てられています。、キーの詳細は<a href="#punctuation-key">後述</a>、『』からの 2 段フリックは<a href="#ya-bracket-flick">次項</a>を見てください。</p>
 
-  <h3 id="kana-refgrid-apple">全キー早見 — Apple 方向</h3>
+  <h3 id="kana-refgrid-apple">全キー早見 — style iPhone</h3>
   <div class="refgrid">
     <div class="refkey"><span class="c">あ</span><span class="u">う</span><span class="r">え</span><span class="d">お</span><span class="l">い</span></div>
     <div class="refkey"><span class="c">か</span><span class="u">く</span><span class="r">け</span><span class="d">こ</span><span class="l">き</span></div>
@@ -247,28 +247,28 @@
     <div class="refkey"><span class="c">わ</span><span class="u">ん</span><span class="r">ー</span><span class="d">〜</span><span class="l">を</span></div>
     <div class="refkey"><span class="c">、</span><span class="u">?</span><span class="r">!</span><span class="d">・</span><span class="l">。</span></div>
   </div>
-  <p>iOS 標準キーボードと同じ並びです(や キーの括弧が「」ではなく『』である点だけが異なります)。<b>、キーは方向プロファイルの対象外</b>なので、Apple 方向でも écritu 方向と同じ「上=?/右=!/下=・/左=。」のままです。</p>
+  <p>iOS 標準キーボードと同じ並びです(や キーの括弧が「」ではなく『』である点だけが異なります)。<b>、キーは方向プロファイルの対象外</b>なので、style iPhone でも style écritu と同じ「上=?/右=!/下=・/左=。」のままです。</p>
 
   <h3 id="ya-bracket-flick">や キーの 2 段フリック(括弧)</h3>
   <p>や キーの『』は、フリックしたあと<b>指を離さずに上下へ動かす</b>と別の括弧に切り替わる「2 段フリック」に対応しています。2 段目が使えるのは<b>左右方向のフリックだけ</b>なので、方向プロファイルによって使える組み合わせが変わります。</p>
   <div class="tablewrap"><table class="spec">
     <tr><th>方向プロファイル</th><th>1 段目</th><th>そのまま上へ</th><th>そのまま下へ</th></tr>
-    <tr><td>écritu 方向(初期設定)</td><td>左フリック=』</td><td>)</td><td>」</td></tr>
-    <tr><td rowspan="2">Apple 方向</td><td>左フリック=『</td><td>(</td><td>「</td></tr>
+    <tr><td>style écritu(初期設定)</td><td>左フリック=』</td><td>)</td><td>」</td></tr>
+    <tr><td rowspan="2">style iPhone</td><td>左フリック=『</td><td>(</td><td>「</td></tr>
     <tr><td>右フリック=』</td><td>)</td><td>」</td></tr>
   </table></div>
-  <p>écritu 方向では『は上フリックのため 2 段目がなく、「(」「「」は や キーからは入力できません。丸括弧は<a href="#modifier-key">修飾キーの長押し(括弧で囲む)</a>や数字モード(<a href="layouts-latin-number.html#number-calculette">次ページ</a>)、かぎ括弧は数字モードの 7 キーから入力できます。</p>
+  <p>style écrituでは『は上フリックのため 2 段目がなく、「(」「「」は や キーからは入力できません。丸括弧は<a href="#modifier-key">修飾キーの長押し(括弧で囲む)</a>や数字モード(<a href="layouts-latin-number.html#number-calculette">次ページ</a>)、かぎ括弧は数字モードの 7 キーから入力できます。</p>
 
   <h3 id="wa-historical-kana-flick">わ キーの 2 段フリック(ゐ・ゑ と ー・〜)</h3>
   <p>わ キーも 2 段フリックに対応しています。旧仮名の「ゐ」「ゑ」と、方向プロファイルごとに 1 段目から移した文字がここに入ります。</p>
   <div class="tablewrap"><table class="spec">
     <tr><th>方向プロファイル</th><th>1 段目</th><th>そのまま下へ</th></tr>
-    <tr><td rowspan="2">écritu 方向(初期設定)</td><td>左フリック=ー</td><td>ゑ</td></tr>
+    <tr><td rowspan="2">style écritu(初期設定)</td><td>左フリック=ー</td><td>ゑ</td></tr>
     <tr><td>右フリック=ん</td><td>〜</td></tr>
-    <tr><td rowspan="2">Apple 方向</td><td>左フリック=を</td><td>ゐ</td></tr>
+    <tr><td rowspan="2">style iPhone</td><td>左フリック=を</td><td>ゐ</td></tr>
     <tr><td>右フリック=ー</td><td>ゑ</td></tr>
   </table></div>
-  <p>écritu 方向のわ キーは、母音の方向(上=い段、下=お段)に合わせて<b>上フリック=ゐ、下フリック=を</b>です。「〜」は右フリック(ん)からの 2 段に移りました。Apple 方向は従来の 1 段割り当てのまま、「ゐ」「ゑ」を 2 段で追加しています。カタカナの「ヰ」「ヱ」は、入力したかなのカタカナ確定(かな候補チップの長押し)で得られます。</p>
+  <p>style écrituのわ キーは、母音の方向(上=い段、下=お段)に合わせて<b>上フリック=ゐ、下フリック=を</b>です。「〜」は右フリック(ん)からの 2 段に移りました。style iPhoneは従来の 1 段割り当てのまま、「ゐ」「ゑ」を 2 段で追加しています。カタカナの「ヰ」「ヱ」は、入力したかなのカタカナ確定(かな候補チップの長押し)で得られます。</p>
 
   <h3 id="punctuation-key">、キー — モードを切り替えずに ?!・。</h3>
   <p>読点キー 1 つに、よく使う文末記号がまとまっています。どちらの方向プロファイルでも同じ割り当てです。</p>
@@ -329,10 +329,10 @@
         <div style="flex:0 0 84px"></div>
       </div>
     </div>
-    <figcaption>かな 3×3+わ(écritu 方向・前置修飾)。図はラテン文字配列が初期設定(azerty)のときの幅で描いています — 左のモード切り替え列は 32pt、右の機能列は 84pt。ラテン文字配列も「3×3」にしている場合は左列が 58pt(表示は「あいう」)、右列が 58pt になります。</figcaption>
+    <figcaption>かな 3×3+わ(style écritu・前置修飾)。図はラテン文字配列が初期設定(azerty)のときの幅で描いています — 左のモード切り替え列は 32pt、右の機能列は 84pt。ラテン文字配列も「3×3」にしている場合は左列が 58pt(表示は「あいう」)、右列が 58pt になります。</figcaption>
   </figure>
 
-  <p>各かなキーのフリック割り当ては 5×2 とまったく同じです — <a href="#kana-refgrid-ecritu">écritu 方向の早見表</a>/<a href="#kana-refgrid-apple">Apple 方向の早見表</a>をそのまま読み替えてください。5×2 との違いは次の 3 点だけです。</p>
+  <p>各かなキーのフリック割り当ては 5×2 とまったく同じです — <a href="#kana-refgrid-ecritu">style écrituの早見表</a>/<a href="#kana-refgrid-apple">style iPhoneの早見表</a>をそのまま読み替えてください。5×2 との違いは次の 3 点だけです。</p>
   <ul>
     <li>わ キーが最下段中央、、キーが最下段右、修飾キー(小)が最下段左に移ります。</li>
     <li>数字ストリップ(1〜0 の段)はありません。数字は <kbd>123</kbd> で数字モードに切り替えて入力します。</li>
