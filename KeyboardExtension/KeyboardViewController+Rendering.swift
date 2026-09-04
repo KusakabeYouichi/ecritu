@@ -342,6 +342,7 @@ extension KeyboardViewController {
         let latinSuggestionQuery = currentLatinSuggestionQueryFromTextContext()
         let latinSuggestions = currentLatinSuggestions()
 
+        let containerFrame = Self.roundedToHalfPoint(view.convert(view.bounds, to: nil))
         return RenderConfiguration(
             directionProfile: directionProfile,
             kanaLayoutMode: kanaLayoutMode,
@@ -376,10 +377,11 @@ extension KeyboardViewController {
             landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
             landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
             landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
-            // iPad(互換モード含む)は複数キーボード時にシステムが下端バーに 🌐 を出すので、
-            // needsInputModeSwitchKey=true でも自前の 🌐 は描かない(二重表示の回避。2786)
-            showsNextKeyboardKey: needsInputModeSwitchKey && !Self.isRunningOnIPadHardware,
-            containerFrame: Self.roundedToHalfPoint(view.convert(view.bounds, to: nil)),
+            // iPad のフローティング表示では、システムが箱の下のバーに 🌐 を出すのに
+            // needsInputModeSwitchKey=true が返るので二重になる。フル表示では純正同様に枠内の 🌐 が
+            // 必要(システムは枠外に出さない)。箱の幅が画面より明らかに狭いときだけ抑える(2788)
+            showsNextKeyboardKey: needsInputModeSwitchKey && !Self.isIPadFloatingContainer(containerFrame),
+            containerFrame: containerFrame,
             shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,
             conversionCandidates: candidatePresentation.candidates,
@@ -589,6 +591,13 @@ extension KeyboardViewController {
     static func roundedToHalfPoint(_ rect: CGRect) -> CGRect {
         func r(_ v: CGFloat) -> CGFloat { (v * 2).rounded() / 2 }
         return CGRect(x: r(rect.minX), y: r(rect.minY), width: r(rect.width), height: r(rect.height))
+    }
+
+    // iPad のフローティングキーボード(画面中央の小さな箱)か。互換モードの iPhone 専用拡張も
+    // この箱で出る。箱の幅は 300〜400pt 台で、画面幅(縦 744〜1032pt)より明らかに狭い
+    static func isIPadFloatingContainer(_ frame: CGRect) -> Bool {
+        guard isRunningOnIPadHardware, frame.width > 0 else { return false }
+        return frame.width < UIScreen.main.bounds.width - 120
     }
 
     // 実ハードウェアが iPad か(iPhone 専用アプリの互換モードでは userInterfaceIdiom が .phone を返すため
