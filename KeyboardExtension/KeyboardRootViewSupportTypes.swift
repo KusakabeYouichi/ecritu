@@ -206,50 +206,50 @@ extension KeyboardRootView {
         var title: String {
             switch kind {
             case .shortcut:
-                return "Raccourcis"
+                return "Raccourcis (ショートカット)"
             case .existing:
-                return "Base"
+                return "Base (基本)"
             case .imported(let name):
                 switch KaomojiCatalog.canonicalCategoryKey(name) {
                 case "rire":
-                    return "Sourire / Rire"
+                    return "Sourire / Rire (笑顔)"
                 case "kawaii":
-                    return "Kawaii / Chou"
+                    return "Kawaii / Chou (かわいい)"
                 case "timide":
-                    return "Timide"
+                    return "Timide (照れ)"
                 case "panique":
-                    return "Stress / Panique"
+                    return "Stress / Panique (焦り)"
                 case "decu":
-                    return "Déçu / Déprimé"
+                    return "Déçu / Déprimé (がっかり)"
                 case "triste":
-                    return "Triste"
+                    return "Triste (悲しい)"
                 case "colere":
-                    return "En colère"
+                    return "En colère (怒り)"
                 case "surprise":
-                    return "Surprise"
+                    return "Surprise (驚き)"
                 case "dodo":
-                    return "Dodo"
+                    return "Dodo (眠い)"
                 case "coucou":
-                    return "Coucou"
+                    return "Coucou (挨拶)"
                 case "amour":
-                    return "Amour"
+                    return "Amour (愛)"
                 case "excite":
-                    return "Excité / Crazy"
+                    return "Excité / Crazy (興奮)"
                 case "action":
-                    return "Action"
+                    return "Action (動き)"
                 case "bizarre":
-                    return "Bizarre"
+                    return "Bizarre (奇妙)"
                 case "heros":
-                    return "Héros"
+                    return "Héros (キャラ)"
                 case "special":
-                    return "Spécial"
+                    return "Spécial (特殊)"
                 case "lignes":
-                    return "Lignes"
+                    return "Lignes (区切り線)"
                 default:
                     return name
                 }
             case .search:
-                return "Recherche"
+                return "Recherche (検索)"
             }
         }
 

@@ -666,31 +666,31 @@ enum KaomojiCategoryChoice {
     // 設定YAMLエクスポートで ID の代わりに使う
     static func displayTitle(forID id: String) -> String {
         switch id {
-        case "shortcut": return "Raccourcis"
-        case "existing": return "Base"
-        case "search": return "Recherche"
+        case "shortcut": return "Raccourcis (ショートカット)"
+        case "existing": return "Base (基本)"
+        case "search": return "Recherche (検索)"
         default: break
         }
         guard id.hasPrefix("imported:") else { return id }
         let name = String(id.dropFirst("imported:".count))
         switch legacyCategoryKeys[name] ?? name {
-        case "rire": return "Sourire / Rire"
-        case "kawaii": return "Kawaii / Chou"
-        case "timide": return "Timide"
-        case "panique": return "Stress / Panique"
-        case "decu": return "Déçu / Déprimé"
-        case "triste": return "Triste"
-        case "colere": return "En colère"
-        case "surprise": return "Surprise"
-        case "dodo": return "Dodo"
-        case "coucou": return "Coucou"
-        case "amour": return "Amour"
-        case "excite": return "Excité / Crazy"
-        case "action": return "Action"
-        case "bizarre": return "Bizarre"
-        case "heros": return "Héros"
-        case "special": return "Spécial"
-        case "lignes": return "Lignes"
+        case "rire": return "Sourire / Rire (笑顔)"
+        case "kawaii": return "Kawaii / Chou (かわいい)"
+        case "timide": return "Timide (照れ)"
+        case "panique": return "Stress / Panique (焦り)"
+        case "decu": return "Déçu / Déprimé (がっかり)"
+        case "triste": return "Triste (悲しい)"
+        case "colere": return "En colère (怒り)"
+        case "surprise": return "Surprise (驚き)"
+        case "dodo": return "Dodo (眠い)"
+        case "coucou": return "Coucou (挨拶)"
+        case "amour": return "Amour (愛)"
+        case "excite": return "Excité / Crazy (興奮)"
+        case "action": return "Action (動き)"
+        case "bizarre": return "Bizarre (奇妙)"
+        case "heros": return "Héros (キャラ)"
+        case "special": return "Spécial (特殊)"
+        case "lignes": return "Lignes (区切り線)"
         default: return name
         }
     }
