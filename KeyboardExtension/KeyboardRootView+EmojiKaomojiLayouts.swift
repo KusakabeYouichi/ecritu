@@ -220,6 +220,7 @@ extension KeyboardRootView {
             onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
             onDeleteBackward: onDeleteBackward,
+            onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil,
             deleteKeyBackgroundColorOverride: memoryPressureDeleteKeyColor,
             deleteKeyCornerBadgeText: memoryPressureDeleteKeyBadge
         )
@@ -241,7 +242,8 @@ extension KeyboardRootView {
             keyRepeatInterval: keyRepeatInterval,
             onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
-            onDeleteBackward: onDeleteBackward
+            onDeleteBackward: onDeleteBackward,
+            onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
     }
 
@@ -446,6 +448,10 @@ extension KeyboardRootView {
                         action: { switchInputMode(.kana) }
                     )
                         .frame(height: mainFlickKeyHeight)
+                    PanelAdvanceKeyboardKey(
+                        action: showsNextKeyboardKey ? onAdvanceKeyboard : nil,
+                        height: mainFlickKeyHeight
+                    )
 
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: keyboardRowSpacing) {
