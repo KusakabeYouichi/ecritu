@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260904141420"
+    private static let editionUpdatedAtRaw: String = "20260904142522"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -466,10 +466,11 @@ struct ContentView: View {
     // 有効化手順カードの配置: 拡張が一度も表示されていない(印なし)かつ手動で隠していない間だけ先頭。
     // それ以外は末尾の「アプリ情報」へ(先頭に居続けると邪魔。ユーザ指定 2789)
     // écritu のキーボードが現在有効か。UITextInputMode.activeInputModes(必須理由 API、3EC4.1 =
-    // カスタムキーボードアプリが自分の有効状態を判定する用途)で一覧を見る。要素に公開の識別子が無いので
-    // description に含まれるバンドル ID で見分ける。「一度表示された印」は保険として併用していたが、
-    // App Group はアプリ削除後も残るため「削除したら先頭に戻る」(ユーザ指定)を打ち消していたので外した
-    // (2792)。照合が効かない環境では「手順を隠す」で下げる
+    // カスタムキーボードアプリが自分の有効状態を判定する用途)で一覧を見る。要素に公開の識別子は無く
+    // description にも出ない(iPad 実測: 純正=<UIKeyboardInputMode>、他社製=<UIKeyboardExtensionInputMode>)ので、
+    // 「primaryLanguage が ja-JP の他社製(型名に Extension を含む)モードがある」を有効と見なす。
+    // 他の日本語他社製キーボードだけが有効なときも真になるが、有効化手順カードの位置決めだけの用途なので許容。
+    // 「一度表示された印」は App Group がアプリ削除後も残るため外した(2792〜2793)。効かない環境は「手順を隠す」
     @State var isKeyboardCurrentlyEnabled: Bool = ContentView.detectKeyboardEnabled()
     @AppStorage(SettingsKeys.setupStepsDismissed)
     var setupStepsDismissed: Bool = false
@@ -479,14 +480,10 @@ struct ContentView: View {
     }
 
     static func detectKeyboardEnabled() -> Bool {
-        let keyboardBundleID = (Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as? String ?? "") + ".keyboard"
-        let modes = UITextInputMode.activeInputModes
-        #if DEBUG
-        // 照合の切り分け用: 一覧の description をそのまま残す(Release には無い)
-        let summary = modes.map { "\($0.primaryLanguage ?? "-"):\($0.description)" }.joined(separator: " | ")
-        UserDefaults.standard.set("\(Date()) target=\(keyboardBundleID) modes=\(summary)", forKey: "debugActiveInputModes")
-        #endif
-        return modes.contains { $0.description.contains(keyboardBundleID) }
+        UITextInputMode.activeInputModes.contains { mode in
+            mode.primaryLanguage?.hasPrefix("ja") == true
+                && NSStringFromClass(type(of: mode)).contains("Extension")
+        }
     }
     static let privacyPolicyURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/privacy.html")!
 
