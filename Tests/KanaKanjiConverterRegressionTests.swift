@@ -9271,6 +9271,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let sanKakoku = converter.candidates(for: "さんかこく", limit: 6, systemCandidateMode: .surface)
         // 参加国 は実語なので先頭を争わせず、算用合成が直後に居ることだけ固定
         XCTAssertEqual(Array(sanKakoku.prefix(2)), ["参加国", "3か国"], "sanKakoku=\(sanKakoku)")
+        // 連文節でも か国 先頭(2801): LM は 数カ国 が安く 数カ国対応 が先頭だった
+        let multi = converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "数か国対応", "multi=\(multi)")
     }
 
     // えんさつ: 辞書未収録。助数詞マップに えんさつ=[円札] を追加(なんえんさつ→何円札/
@@ -13693,5 +13696,23 @@ extension KanaKanjiConverterRegressionTests {
         try loadDeviceAddedVocabulary()
         let multi = converter.multiClauseCandidates(for: "としによる", systemCandidateMode: .surface)
         XCTAssertEqual(Array(multi.prefix(2)), ["都市による", "年による"], "multi=\(multi)")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2801: もくひょうとし は 入力末尾の裸の し 減点(6000)で 目標都市 が先頭だった。文中の格助詞 と 直後の し
+    // (〜を目標とし、)は サ変連用形で正文なので減点から除外。おんどをはかる は を→図る の LM バイアスで
+    // 温度を図る が先頭。を を挟む連語 温度→計/測 のボーナスで 計る→測る→図る の順に
+    func testRegressionRealLMBatch2801Readings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let toshi = converter.multiClauseCandidates(for: "もくひょうとし", systemCandidateMode: .surface)
+        XCTAssertEqual(toshi.first, "目標とし", "toshi=\(toshi)")
+        // 文頭の と+し は引き続き減点(としによる→都市による)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "としによる", systemCandidateMode: .surface).first, "都市による")
+        let ondo = converter.multiClauseCandidates(for: "おんどをはかる", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ondo.prefix(3)), ["温度を計る", "温度を測る", "温度を図る"], "ondo=\(ondo)")
+        // 連語は 温度 限定: 改善を図る は従来どおり
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かいぜんをはかる", systemCandidateMode: .surface).first, "改善を図る")
     }
 }
