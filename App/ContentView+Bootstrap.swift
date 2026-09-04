@@ -502,7 +502,7 @@ extension ContentView {
 
         let cacheKey = SettingsKeys.contactCandidatesByReadingCache
         let sealedKey = SettingsKeys.contactCandidatesByReadingCacheSealed
-        let mode = ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .namesOnly
+        let mode = ContactCandidateDisplayModeOption(rawValue: contactCandidateDisplayModeRawValue) ?? .off
 
         func removeCacheIfPresent() {
             if defaults.object(forKey: cacheKey) != nil || defaults.object(forKey: sealedKey) != nil {
@@ -981,7 +981,6 @@ extension ContentView {
                 recordBootstrapTimingPart(
                     "reappearWaitMs=\(containerDiagnosticsElapsedMilliseconds(since: reappearQueuedAt))"
                 )
-                requestContactsAccessIfNeededInBackground()
                 clearKeyboardDiagnosticsIfInstallChanged()
                 recordKeyboardExtensionRegistrationState()
                 loadKeyboardDiagnosticsState()
@@ -1028,7 +1027,8 @@ extension ContentView {
             await Task.yield()
             let firstFrameMs = containerDiagnosticsElapsedMilliseconds(since: bootstrapStartedAt)
 
-            requestContactsAccessIfNeededInBackground()
+            // 連絡先の許可要求は起動時にはしない(設定をオンにした操作の onChange だけ。2785)。
+            // 既に許可済みならキャッシュ同期は finish 側の syncContactCandidatesCacheFromContainerApp が担う
 
             let preludeStartedAt = CFAbsoluteTimeGetCurrent()
             clearLegacyKeyboardDebugLogKeysIfNeeded()

@@ -309,10 +309,10 @@ extension KeyboardViewController {
         let rawValue = sharedStringValue(
             from: defaults,
             key: SharedDefaultsKeys.contactCandidateDisplayMode,
-            fallback: ContactCandidateDisplayMode.namesOnly.rawValue
+            fallback: ContactCandidateDisplayMode.off.rawValue
         )
 
-        return ContactCandidateDisplayMode(rawValue: rawValue) ?? .namesOnly
+        return ContactCandidateDisplayMode(rawValue: rawValue) ?? .off
     }
 
     func currentUserDictionaryCandidateDisplayMode(
