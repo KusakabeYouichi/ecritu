@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260904135651"
+    private static let editionUpdatedAtRaw: String = "20260904141420"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -459,16 +459,17 @@ struct ContentView: View {
         "文字を打つ画面で地球儀 🌐 を長押しして「日本語入力 — écritu」を選ぶ"
     ]
 
-    // 操作マニュアルとプライバシーポリシー(GitHub Pages)。App Store の説明文「アプリ内からも参照できる
-    // 操作マニュアル」と一致させるため本体から Link で開く(外部ブラウザ。2785)
+    // 操作マニュアルとプライバシーポリシー(GitHub Pages)。アイコン長押しメニューから Safari で開く
+    // (カードは置かない。ユーザ指定 2792)
     static let manualURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/")!
 
     // 有効化手順カードの配置: 拡張が一度も表示されていない(印なし)かつ手動で隠していない間だけ先頭。
     // それ以外は末尾の「アプリ情報」へ(先頭に居続けると邪魔。ユーザ指定 2789)
     // écritu のキーボードが現在有効か。UITextInputMode.activeInputModes(必須理由 API、3EC4.1 =
     // カスタムキーボードアプリが自分の有効状態を判定する用途)で一覧を見る。要素に公開の識別子が無いので
-    // description に含まれるバンドル ID で見分ける。書式が変わって見分けられない場合の保険として、
-    // 拡張が App Group に書く「一度表示された」印も併用する(2791)
+    // description に含まれるバンドル ID で見分ける。「一度表示された印」は保険として併用していたが、
+    // App Group はアプリ削除後も残るため「削除したら先頭に戻る」(ユーザ指定)を打ち消していたので外した
+    // (2792)。照合が効かない環境では「手順を隠す」で下げる
     @State var isKeyboardCurrentlyEnabled: Bool = ContentView.detectKeyboardEnabled()
     @AppStorage(SettingsKeys.setupStepsDismissed)
     var setupStepsDismissed: Bool = false
@@ -479,9 +480,7 @@ struct ContentView: View {
 
     static func detectKeyboardEnabled() -> Bool {
         let keyboardBundleID = (Bundle.main.object(forInfoDictionaryKey: "CFBundleIdentifier") as? String ?? "") + ".keyboard"
-        let listed = UITextInputMode.activeInputModes.contains { $0.description.contains(keyboardBundleID) }
-        let hasAppeared = sharedDefaults?.bool(forKey: SettingsKeys.keyboardExtensionHasAppeared) ?? false
-        return listed || hasAppeared
+        return UITextInputMode.activeInputModes.contains { $0.description.contains(keyboardBundleID) }
     }
     static let privacyPolicyURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/privacy.html")!
 
@@ -1369,8 +1368,6 @@ struct ContentView: View {
                         if !showsSetupStepsAtTop {
                             SetupStepsSection(steps: setupSteps)
                         }
-
-                        ManualLinksSection(manualURL: Self.manualURL, privacyPolicyURL: Self.privacyPolicyURL)
 
                         ThirdPartyLicensesSection()
 

@@ -421,9 +421,6 @@ final class KeyboardViewController: UIInputViewController {
         static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
         static let latinLexiconEnglishEnabled = "latinLexiconEnglishEnabled"
         static let degreeSymbol = DegreeSymbolStyle.sharedDefaultsKey
-        // 拡張が一度でも表示された印(コンテナーが有効化手順カードを先頭から末尾へ下げる判断に使う。
-        // フルアクセスが無いと書けないので、その場合はカードの「手順を隠す」で代替。2789)
-        static let keyboardExtensionHasAppeared = "keyboardExtensionHasAppeared"
         static let latinLexiconFrenchEnabled = "latinLexiconFrenchEnabled"
         static let latinLexiconGermanEnabled = "latinLexiconGermanEnabled"
         static let latinLexiconItalianEnabled = "latinLexiconItalianEnabled"
@@ -821,9 +818,6 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
-        if let sharedDefaults, !sharedDefaults.bool(forKey: SharedDefaultsKeys.keyboardExtensionHasAppeared) {
-            sharedDefaults.set(true, forKey: SharedDefaultsKeys.keyboardExtensionHasAppeared)
-        }
         if !didLogControllerCreationDelta {
             didLogControllerCreationDelta = true
             MemoryForensics.noteSyncDelta(

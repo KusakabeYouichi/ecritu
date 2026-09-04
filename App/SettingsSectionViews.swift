@@ -223,34 +223,6 @@ struct SetupStepsSection: View {
     }
 }
 
-// 操作マニュアル・プライバシーポリシーへのリンク(外部ブラウザで開く)。
-struct ManualLinksSection: View {
-    let manualURL: URL
-    let privacyPolicyURL: URL
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text("マニュアル")
-                .font(.headline)
-
-            Link(destination: manualURL) {
-                Label("操作マニュアル(全9章)を開く", systemImage: "book")
-                    .font(.subheadline)
-            }
-
-            Link(destination: privacyPolicyURL) {
-                Label("プライバシーポリシー", systemImage: "hand.raised")
-                    .font(.subheadline)
-            }
-
-            Text("いずれも Safari で開きます。écritu 自体はネットワーク通信を行いません。")
-                .font(.footnote)
-                .foregroundStyle(.secondary)
-        }
-        .settingsCardStyle()
-    }
-}
-
 // 変換キャッシュのクリア。キーボード拡張はプロセス内に読みごとの候補キャッシュ(96件)を持ち、
 // quick postfix 経路がそれを語幹の候補列として読むため内容が並びに影響する。設定変更の世代
 // カウンタを +1 すると、キーボード側が次の表示または Darwin 通知で clearSharedDataCaches() を
