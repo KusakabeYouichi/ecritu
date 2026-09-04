@@ -142,6 +142,8 @@ enum ContactCacheCipher {
         query.removeValue(forKey: kSecMatchLimit as String)
         query[kSecValueData as String] = keyData
         query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        // iCloud キーチェーンには同期しない(既定 false だが意図を明示。2785)
+        query[kSecAttrSynchronizable as String] = false
         let addStatus = SecItemAdd(query as CFDictionary, nil)
         guard addStatus == errSecSuccess || addStatus == errSecDuplicateItem else {
             return nil

@@ -107,6 +107,8 @@ enum SettingsStashStore {
     static func save(_ data: Data) -> Bool {
         var query = baseQuery
         query[kSecAttrAccessible as String] = kSecAttrAccessibleAfterFirstUnlock
+        // iCloud キーチェーンには同期しない(既定 false だが意図を明示。2785)
+        query[kSecAttrSynchronizable as String] = false
         query[kSecValueData as String] = data
         let status = SecItemAdd(query as CFDictionary, nil)
         if status == errSecDuplicateItem {
