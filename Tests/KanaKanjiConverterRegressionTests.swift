@@ -8079,13 +8079,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(mangoku.contains("万石"), "\(mangoku)")
     }
 
+    // 2800: 助数詞表層の順を か月 と揃えた(か国→カ国→ヶ国→ヵ国→箇国→ケ国)
     func testRegressionRealLMKakokuCounter() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["かこく": ["カコク"]])
         converter.clearAllCaches()
         let cands = converter.candidates(for: "かこく", limit: 16, systemCandidateMode: .surface)
         let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "かこく", precedingCharacter: "3")
-        XCTAssertEqual(Array(boosted.prefix(2)), ["か国", "箇国"], "boosted=\(boosted.prefix(6))")
+        XCTAssertEqual(Array(boosted.prefix(2)), ["か国", "カ国"], "boosted=\(boosted.prefix(6))")
         // 過酷/苛酷 は counter の後ろ。
         guard let iKa = boosted.firstIndex(of: "か国"), let iKakoku = boosted.firstIndex(of: "過酷") else {
             return XCTFail("boosted=\(boosted)")
@@ -9262,6 +9263,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(san.first, "3か月", "san=\(san)")
         let suu = converter.candidates(for: "すうかげつ", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(suu.first, "数か月", "suu=\(suu)")
+        // か国 も同じ構図(2800): 数カ国 rank0 が先頭化していた
+        let kakoku = converter.candidates(for: "すうかこく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(kakoku.prefix(5)), ["数か国", "数カ国", "数ヶ国", "数ヵ国", "数箇国"], "kakoku=\(kakoku)")
+        let nanKakoku = converter.candidates(for: "なんかこく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(nanKakoku.first, "何か国", "nanKakoku=\(nanKakoku)")
+        let sanKakoku = converter.candidates(for: "さんかこく", limit: 6, systemCandidateMode: .surface)
+        // 参加国 は実語なので先頭を争わせず、算用合成が直後に居ることだけ固定
+        XCTAssertEqual(Array(sanKakoku.prefix(2)), ["参加国", "3か国"], "sanKakoku=\(sanKakoku)")
     }
 
     // えんさつ: 辞書未収録。助数詞マップに えんさつ=[円札] を追加(なんえんさつ→何円札/
@@ -13672,5 +13681,17 @@ extension KanaKanjiConverterRegressionTests {
         // す の供給は べき 直前限定: 蜂の巣 の す には触れない(とりのす は鳥栖に取られる既存挙動、対象外)
         let nest = converter.multiClauseCandidates(for: "はちのすをみつけた", systemCandidateMode: .surface)
         XCTAssertTrue(nest.first?.contains("巣") ?? false, "nest=\(nest)")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2800: としによる が と(2099)+し(bigram 873)+による の助詞列で 都市/年+による に勝っていた。
+    // 文頭の と+し に減点。変種側は curated かな(による)の区間で LM 未収録の漢字辞書語(似寄る)が
+    // natural 基準で delta 0 になり 都市似寄る が 年による の前に出ていたので、派生と同じ床基準にする
+    func testRegressionRealLMToshiNiYoru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "としによる", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["都市による", "年による"], "multi=\(multi)")
     }
 }
