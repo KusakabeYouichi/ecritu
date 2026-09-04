@@ -44,6 +44,7 @@ REF_VIN_PLIST="$ROOT_DIR/references/vin.plist"
 REF_IT_PLIST="$ROOT_DIR/references/it.plist"
 REF_SACOCHE_PLIST="$ROOT_DIR/references/sacoche.plist"
 REF_MISC_PLIST="$ROOT_DIR/references/misc.plist"
+REF_COMPENSER_PLIST="$ROOT_DIR/references/compenser.plist"
 REF_SUPPR_PLIST="$ROOT_DIR/references/suppr.plist"
 REF_POUBELLE_PLIST="$ROOT_DIR/references/poubelle.plist"
 REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
@@ -179,8 +180,11 @@ python3 tools/build_second_vocab_from_references.py \
   --output-inflections "$TMP_INITIAL_AJOUT_INFLECTIONS"
 
 # misc = 変換対策の単語追加(初期投入されるが「追加語彙」には表示しない)。
+# compenser = sacoche から分離した作者手作業の補完語彙(2026-09-05)。misc と同じ立ち位置(curated、UI非表示)で
+# 同じ JSON(InitialMiscVocabMigration)に合流する。
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_MISC_PLIST" \
+  --input-plist "$REF_COMPENSER_PLIST" \
   --output "$TMP_INITIAL_MISC" \
   --output-inflections "$TMP_INITIAL_MISC_INFLECTIONS"
 
