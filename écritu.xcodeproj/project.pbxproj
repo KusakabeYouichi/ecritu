@@ -60,6 +60,7 @@
 		2C9612062F1AA2CA24C41264 /* KanaKanjiTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */; };
 		2D41A6A9E4C2789278485192 /* LEGAL in Resources */ = {isa = PBXBuildFile; fileRef = F5ED4830F4FA66EFEFE9B5AB /* LEGAL */; };
 		B2C3D4E5F60718293A4B5C6D /* UNICODE-LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* UNICODE-LICENSE.txt */; };
+		D4E5F60718293A4B5C6D7E8F /* MOZC-LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = C3D4E5F60718293A4B5C6D7E /* MOZC-LICENSE */; };
 		2FB61A019A327E122984C488 /* FlickKanaLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */; };
 		30C12A3041A204821A7DE60A /* KeyboardRootView+Interaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = C70D58332DA6C2CA250CEDAD /* KeyboardRootView+Interaction.swift */; };
 		36EEA841B7E5EC402DA055A5 /* InitialAjoutVocabMigration.json in Resources */ = {isa = PBXBuildFile; fileRef = 24E2C5A3655BB8C0DFC8F2F3 /* InitialAjoutVocabMigration.json */; };
@@ -288,6 +289,7 @@
 		F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+SupplementaryCandidates.swift"; sourceTree = "<group>"; };
 		F5ED4830F4FA66EFEFE9B5AB /* LEGAL */ = {isa = PBXFileReference; path = LEGAL; sourceTree = "<group>"; };
 		A1B2C3D4E5F60718293A4B5C /* UNICODE-LICENSE.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "UNICODE-LICENSE.txt"; path = "unicode/UNICODE-LICENSE.txt"; sourceTree = "<group>"; };
+		C3D4E5F60718293A4B5C6D7E /* MOZC-LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = "MOZC-LICENSE"; path = "mozc/MOZC-LICENSE"; sourceTree = "<group>"; };
 		FAD29F752D4216C2DEF3BD80 /* ContentView+Bootstrap.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "ContentView+Bootstrap.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -449,6 +451,7 @@
 			children = (
 				C1ECA6389592415ABEA9CA17 /* APP_STORE_OPEN_SOURCE_NOTICES.md */,
 				A1B2C3D4E5F60718293A4B5C /* UNICODE-LICENSE.txt */,
+				C3D4E5F60718293A4B5C6D7E /* MOZC-LICENSE */,
 			);
 			path = third_party;
 			sourceTree = "<group>";
@@ -608,6 +611,7 @@
 				2D41A6A9E4C2789278485192 /* LEGAL in Resources */,
 				3CE284AC441A0CC766575E9E /* LICENSE-2.0.txt in Resources */,
 				B2C3D4E5F60718293A4B5C6D /* UNICODE-LICENSE.txt in Resources */,
+				D4E5F60718293A4B5C6D7E8F /* MOZC-LICENSE in Resources */,
 				A1B2C3D4E5F600000000AB01 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

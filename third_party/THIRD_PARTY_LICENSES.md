@@ -87,6 +87,18 @@ License, bundled).
 Flag names shown on long-press are generated at runtime from Foundation's
 `Locale(identifier: "fr_FR")` region names (no bundled table; 2026-09-04).
 
+## Mozc (Google Japanese Input) — kaomoji dictionary
+
+- https://github.com/google/mozc — BSD 3-Clause, Copyright 2010-2018 Google Inc.
+- About 440 emoticons with readings (categories SMILE/SADNESS/SWEAT/DISPLEASURE/
+  OTHER mapped to this app's 17 categories) are taken from Mozc's emoticon
+  dictionary; `third_party/mozc/MOZC-LICENSE` is bundled and shown in-app.
+- The remaining ~1,320 emoticons: strings are widely circulated character
+  sequences; readings and category assignments were authored for this app
+  (2026-09-04, tools/build_kaomoji_catalog.py from tmp/kaomoji_merged.json).
+  An earlier build had used readings/categories scraped from a third-party
+  keyboard's website; those were removed and re-authored.
+
 ## Unicode License text
 
 `third_party/unicode/UNICODE-LICENSE.txt` (Unicode License v3) is bundled

@@ -37,6 +37,13 @@ private enum ThirdPartyLicenseCatalog {
             summary: "部首索引(Unihan)と絵文字の読み(CLDR)が依拠する Unicode のライセンス本文です。",
             resourceName: "UNICODE-LICENSE",
             resourceExtension: "txt"
+        ),
+        ThirdPartyLicenseDocument(
+            id: "mozc-license",
+            title: "Mozc (Google 日本語入力) BSD License",
+            summary: "顔文字パネルの一部(顔文字と読み)が由来する Mozc の顔文字辞書のライセンス本文です。",
+            resourceName: "MOZC-LICENSE",
+            resourceExtension: nil
         )
     ]
 
