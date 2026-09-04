@@ -294,6 +294,23 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(taka.first, "高そうな", "taka=\(taka)")
     }
 
+    // 国旗の仏語国名は同梱表(ISO 3166 仏語短称)から Foundation の Locale 生成へ(2785)。
+    // 全国旗(地域コード付き)に名前があり、非国旗(EU 等)は別表のまま
+    func testFlagOfficialNamesAreGeneratedFromLocale() {
+        XCTAssertEqual(AppleEmojiCatalog.regionCode(forFlagEmoji: "🇯🇵"), "JP")
+        XCTAssertNil(AppleEmojiCatalog.flagOfficialNames["🇪🇺"], "EU は非国旗の別表")
+        XCTAssertEqual(AppleEmojiCatalog.flagOfficialNames["🇫🇷"], "France")
+        XCTAssertEqual(AppleEmojiCatalog.flagOfficialNames["🇬🇧"], "Royaume-Uni")
+        XCTAssertEqual(AppleEmojiCatalog.flagOfficialNames["🇸🇰"], "Slovaquie")
+        let regionFlags = AppleEmojiCatalog.flags.filter {
+            AppleEmojiCatalog.regionCode(forFlagEmoji: $0) != nil && AppleEmojiCatalog.flagNonCountryNames[$0] == nil
+        }
+        XCTAssertGreaterThan(regionFlags.count, 200)
+        for flag in regionFlags {
+            XCTAssertNotNil(AppleEmojiCatalog.flagOfficialNames[flag], "name missing for \(flag)")
+        }
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {
