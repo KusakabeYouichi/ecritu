@@ -1788,6 +1788,11 @@ extension KanaKanjiConverter {
                                 || (prevNode.surface.last.map(Self.multiClauseDictionaryFormTailCharacters.contains) ?? false) {
                             cost += Self.multiClauseBekiKanjiPenalty
                         }
+                        // 文頭の かな助詞 と+し(としによる→と+し+による、定数コメント参照)
+                        if prevNode.start == 0, prevNode.surface == "と", prevNode.reading == "と",
+                            node.surface == "し", node.reading == "し" {
+                            cost += Self.multiClauseSentenceInitialToShiPenalty
+                        }
                         // て/で 形の直後の 補助動詞 おく(しておきながら/やっておいて)は漢字 置/擱/於 を減点(定数コメント参照)
                         if node.isInflectionDerived, node.surface != node.reading,
                             let head = node.surface.first, Self.multiClauseOkuKanjiHeads.contains(head),
@@ -2497,7 +2502,9 @@ extension KanaKanjiConverter {
                     containsKanji(alt.surface) {
                     continue
                 }
-                let effectiveBase = (alt.isInflectionDerived && containsKanji(alt.surface))
+                // LM 未収録の漢字辞書語(似寄る wc9428 等のレア収穫)も派生と同じ扱い。natural 基準だと
+                // 都市似寄る が delta 0 で 年による より前に並ぶ(2800)
+                let effectiveBase = ((alt.isInflectionDerived || unigramCosts[alt.surface] == nil) && containsKanji(alt.surface))
                     ? baseCostCurated
                     : baseCost
                 var delta = pairCost(alt) - effectiveBase

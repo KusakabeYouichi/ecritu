@@ -1009,6 +1009,10 @@ extension KanaKanjiConverter {
     // 格助詞 で は名詞の後にしか立たず、文頭で で 始まりの活用派生(出ない/出た/できない/でかい)が立つときは
     // その語の頭とみるのが自然。名詞+でない(そうでない/学生でないと)や でも/では/です には触れない
     static let multiClauseSentenceInitialDeParticlePenalty = 3000
+    // 文頭の かな助詞 と+かな し(2800): としによる が と(2099)+し(bigram 873)+による で 都市/年+による に勝っていた。
+    // 文頭で と し と続く助詞列は日本語として立たない(として/としても は curated の1ノード、しない/して は
+    // 1ノードなので対象外)。文中の 〜を目標とし、 には触れない(文頭限定)
+    static let multiClauseSentenceInitialToShiPenalty = 3000
     // 当為の べき/べし/べく(2798): ふむべき が 踏む+冪 になっていた。述語(辞書形/活用派生)直後の
     // べき は助動詞でかなが正書。漢字表記(冪/可き)を減点
     static let multiClauseBekiReadings: Set<String> = ["べき", "べし", "べく", "べきだ", "べきです"]
