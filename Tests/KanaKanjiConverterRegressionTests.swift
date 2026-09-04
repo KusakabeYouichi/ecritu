@@ -311,6 +311,15 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
     }
 
+    // もちごめ: 主表記 もち米(辞書 rank3)が交ぜ書き抑制(糯米 の部分列)で候補から消えていた。
+    // seed 先頭で免除し {もち米, 餅米, 糯米, モチ米} の順に(ユーザ指定 2796)
+    func testRegressionRealLMMochigomePrefersMochiKome() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let list = converter.candidates(for: "もちごめ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(4)), ["もち米", "餅米", "糯米", "モチ米"], "list=\(list)")
+    }
+
     // いがい: 貽貝(word_cost 3700)と表記ゆれ収穫(イガイ/イ貝/い貝)が上位を独占し、
     // LM 最頻出の 以外(4226)が2番目以降に沈んでいた。seed で常用語を先頭群に固定する。
     func testRegressionRealLMIgaiPrefersCommonWords() throws {
