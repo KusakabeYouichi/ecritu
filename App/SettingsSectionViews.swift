@@ -186,11 +186,20 @@ struct IdleCommitSettingsSection: View {
 
 struct SetupStepsSection: View {
     let steps: [String]
+    // 先頭に出ているときだけ「手順を隠す」を見せる(押すと末尾のアプリ情報へ移る)
+    var onDismiss: (() -> Void)? = nil
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("有効化手順")
-                .font(.headline)
+            HStack {
+                Text("有効化手順")
+                    .font(.headline)
+                Spacer()
+                if let onDismiss {
+                    Button("手順を隠す", action: onDismiss)
+                        .font(.footnote)
+                }
+            }
 
             ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
                 HStack(alignment: .top, spacing: 8) {

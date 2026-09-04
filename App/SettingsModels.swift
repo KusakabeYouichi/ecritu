@@ -34,6 +34,10 @@ enum SettingsKeys {
     static let numberUnitProductSeparator = "numberUnitProductSeparator"
     static let numberLitreSymbol = "numberLitreSymbol"
     static let degreeSymbol = "degreeSymbol"
+    // 拡張が一度でも表示された印(拡張側が App Group に書く。有効化手順カードの配置判断)
+    static let keyboardExtensionHasAppeared = "keyboardExtensionHasAppeared"
+    // 有効化手順カードを利用者が手動で末尾へ下げた印(アプリローカル)
+    static let setupStepsDismissed = "setupStepsDismissed"
     static let calendarWeekStart = "calendarWeekStart"
     static let calendarWeekdayLanguage = "calendarWeekdayLanguage"
     static let calendarSundayColor = "calendarSundayColor"

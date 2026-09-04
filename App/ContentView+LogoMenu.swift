@@ -14,6 +14,8 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
     case copyYAML
     case stashSettings
     case restoreStashedSettings
+    case openManual
+    case openPrivacyPolicy
     case about
 
     var id: String { rawValue }
@@ -25,6 +27,8 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         case .copyYAML: return "設定をクリップボードにコピー"
         case .stashSettings: return "現在の設定を退避"
         case .restoreStashedSettings: return "退避した設定を復元"
+        case .openManual: return "操作マニュアル"
+        case .openPrivacyPolicy: return "プライバシーポリシー"
         case .about: return "écritu について"
         }
     }
@@ -36,6 +40,8 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         case .copyYAML: return "YAML 形式"
         case .stashSettings: return "再インストール後も残る場所に保存"
         case .restoreStashedSettings: return "退避していた設定に戻す"
+        case .openManual: return "Safari で開く(全9章)"
+        case .openPrivacyPolicy: return "Safari で開く"
         case .about: return "édition と著作権表示"
         }
     }
@@ -47,6 +53,8 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         case .copyYAML: return "doc.on.clipboard"
         case .stashSettings: return "tray.and.arrow.down"
         case .restoreStashedSettings: return "tray.and.arrow.up"
+        case .openManual: return "book"
+        case .openPrivacyPolicy: return "hand.raised"
         case .about: return "info.circle"
         }
     }
@@ -55,7 +63,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
     var needsConfirmation: Bool {
         switch self {
         case .strategicDefaults, .conservativeDefaults, .restoreStashedSettings: return true
-        case .copyYAML, .stashSettings, .about: return false
+        case .copyYAML, .stashSettings, .openManual, .openPrivacyPolicy, .about: return false
         }
     }
 }
@@ -392,6 +400,10 @@ extension ContentView {
                 title: "écritu",
                 message: "\(Self.editionNumberText)\n\(Self.aboutCopyrightText)"
             )
+        case .openManual:
+            UIApplication.shared.open(Self.manualURL)
+        case .openPrivacyPolicy:
+            UIApplication.shared.open(Self.privacyPolicyURL)
         case .strategicDefaults, .conservativeDefaults, .restoreStashedSettings:
             break
         }
@@ -412,7 +424,7 @@ extension ContentView {
                 return "\(formatter.string(from: stash.savedAt)) に退避した設定(édition n°\(stash.editionNumber))に戻します。現在の設定は失われます。"
             }
             return "退避した設定がありません。"
-        case .copyYAML, .stashSettings, .about:
+        case .copyYAML, .stashSettings, .openManual, .openPrivacyPolicy, .about:
             return ""
         }
     }
@@ -431,7 +443,7 @@ extension ContentView {
             } else {
                 logoMenuInfo = LogoMenuInfo(title: "復元できません", message: "退避した設定がありません。")
             }
-        case .copyYAML, .stashSettings, .about:
+        case .copyYAML, .stashSettings, .openManual, .openPrivacyPolicy, .about:
             break
         }
     }

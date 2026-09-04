@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260904133026"
+    private static let editionUpdatedAtRaw: String = "20260904134035"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -462,6 +462,17 @@ struct ContentView: View {
     // 操作マニュアルとプライバシーポリシー(GitHub Pages)。App Store の説明文「アプリ内からも参照できる
     // 操作マニュアル」と一致させるため本体から Link で開く(外部ブラウザ。2785)
     static let manualURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/")!
+
+    // 有効化手順カードの配置: 拡張が一度も表示されていない(印なし)かつ手動で隠していない間だけ先頭。
+    // それ以外は末尾の「アプリ情報」へ(先頭に居続けると邪魔。ユーザ指定 2789)
+    @AppStorage(SettingsKeys.keyboardExtensionHasAppeared, store: Self.sharedDefaults)
+    var keyboardExtensionHasAppeared: Bool = false
+    @AppStorage(SettingsKeys.setupStepsDismissed)
+    var setupStepsDismissed: Bool = false
+
+    var showsSetupStepsAtTop: Bool {
+        !keyboardExtensionHasAppeared && !setupStepsDismissed
+    }
     static let privacyPolicyURL = URL(string: "https://kusakabeyouichi.github.io/ecritu/manual/privacy.html")!
 
     var isContainerBusy: Bool {
@@ -1092,9 +1103,9 @@ struct ContentView: View {
                             .font(.body)
                             .foregroundStyle(.secondary)
 
-                        SetupStepsSection(steps: setupSteps)
-
-                        ManualLinksSection(manualURL: Self.manualURL, privacyPolicyURL: Self.privacyPolicyURL)
+                        if showsSetupStepsAtTop {
+                            SetupStepsSection(steps: setupSteps, onDismiss: { setupStepsDismissed = true })
+                        }
 
                         // 設定カード群は初回フレーム描画後に遅延構築する(下の .task が1フレーム後に
                         // フラグを立てる)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
@@ -1344,6 +1355,12 @@ struct ContentView: View {
                         )
 
                         // ──── アプリ情報 ────
+
+                        if !showsSetupStepsAtTop {
+                            SetupStepsSection(steps: setupSteps)
+                        }
+
+                        ManualLinksSection(manualURL: Self.manualURL, privacyPolicyURL: Self.privacyPolicyURL)
 
                         ThirdPartyLicensesSection()
 
