@@ -21,6 +21,16 @@
 				<string>1C8F.1</string>
 			</array>
 		</dict>
+		<dict>
+			<key>NSPrivacyAccessedAPIType</key>
+			<string>NSPrivacyAccessedAPICategoryActiveKeyboards</string>
+			<key>NSPrivacyAccessedAPITypeReasons</key>
+			<array>
+				<!-- 3EC4.1: カスタムキーボードアプリが、自分のキーボードが有効かを判定するために
+				     UITextInputMode.activeInputModes を読む(有効化手順カードの表示位置の判断のみ) -->
+				<string>3EC4.1</string>
+			</array>
+		</dict>
 	</array>
 </dict>
 </plist>
