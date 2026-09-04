@@ -9,6 +9,7 @@ required_source_files=(
   "third_party/sudachidict/LICENSE-2.0.txt"
   "third_party/sudachidict/LEGAL"
   "third_party/unicode/UNICODE-LICENSE.txt"
+  "third_party/mozc/MOZC-LICENSE"
 )
 
 missing=0
@@ -27,6 +28,7 @@ if [[ $# -ge 1 ]]; then
     "LICENSE-2.0.txt"
     "LEGAL"
     "UNICODE-LICENSE.txt"
+    "MOZC-LICENSE"
   )
 
   for file in "${required_bundle_files[@]}"; do

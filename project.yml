@@ -28,6 +28,8 @@ targets:
         buildPhase: resources
       - path: third_party/unicode/UNICODE-LICENSE.txt
         buildPhase: resources
+      - path: third_party/mozc/MOZC-LICENSE
+        buildPhase: resources
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(ECRITU_APP_BUNDLE_IDENTIFIER)
