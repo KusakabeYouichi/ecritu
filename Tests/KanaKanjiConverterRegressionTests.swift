@@ -10272,14 +10272,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // か: 蚊 は読み か のエントリが辞書に無く(語LMには 6955 で在る)候補にすら出なかった。
-    // 名詞として唯一自立する 蚊 を先頭に、接頭辞・接尾辞の 科/下/過/加、古語的な 彼/鹿 と続ける。
+    // 名詞として唯一自立する 蚊 を先頭に、接頭辞・接尾辞の 科/下/過/加、古語的な 鹿 と続ける(彼@か は 2798 で抑制: とかは→と彼は の分割源)。
     // ので: 辞書には 能出/野出/野手(収穫底値)しか無く、かなの接続助詞が候補に無かった(2507)
     func testRegressionKaAndNodeKanaSeeded() throws {
         try prepareRealLMDictionary()
         let ka = converter.candidates(for: "か", limit: 16, systemCandidateMode: .surface)
         XCTAssertEqual(
             Array(ka.prefix(15)),
-            ["蚊", "科", "化", "下", "家", "過", "加", "仮", "彼", "鹿", "花", "華", "夏", "貨", "柯"],
+            ["蚊", "科", "化", "下", "家", "過", "加", "仮", "鹿", "花", "華", "夏", "貨", "柯", "佳"],
             "ka=\(ka)"
         )
         let node = converter.candidates(for: "ので", limit: 4, systemCandidateMode: .surface)
