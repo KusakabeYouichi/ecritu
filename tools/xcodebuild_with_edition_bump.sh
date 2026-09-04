@@ -14,8 +14,14 @@ bash tools/normalize_unicode_project_names.sh
 is_build_like_command=false
 for arg in "$@"; do
   case "$arg" in
-    build|build-for-testing|test|test-without-building|archive)
+    build|build-for-testing|test|test-without-building)
       is_build_like_command=true
+      break
+      ;;
+    archive)
+      # Archive は bump しない: 回帰テストを通した edition のまま提出するため(2785)。
+      # スタイル検査だけは通す
+      bash tools/check_top_level_brace_blank_lines.sh
       break
       ;;
   esac
