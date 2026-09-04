@@ -1771,8 +1771,11 @@ extension KanaKanjiConverter {
                         }
                         // 入力末尾の裸の接続助詞「し」は述語直後にしか立てない(定数コメント参照)。
                         // 文中の し はサ変の連用形(勉強し+まくり)なので対象外にする。
+                        // 文中の格助詞 と 直後の し(〜を目標とし、)は サ変 する の連用形で正文なので除外(2801)。
+                        // 文頭の と+し は別則(multiClauseSentenceInitialToShiPenalty)で減点する
                         if node.end == n, node.reading == "し", node.surface == "し",
-                            !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
+                            !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
+                            !(prevNode.surface == "と" && prevNode.reading == "と" && prevNode.start > 0) {
                             cost += Self.multiClauseKanaShiAfterNonPredicatePenalty
                         }
                         // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
