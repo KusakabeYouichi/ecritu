@@ -476,8 +476,11 @@ extension KanaKanjiConverter {
                     // topK 件を採る。
                     var suppliedInflectionCount = 0
                     var suppliedInflectionSurfaces = Set<String>()
+                    // 補助動詞 ておく の活用(おいて/おきながら 等)はかなが正書なので、かなが第1候補で
+                    // なくても供給する(て/で 直後の漢字 置き には DP 側で減点。定数コメント参照)
+                    let suppliesKanaForOkuAuxiliary = Self.isOkuAuxiliaryReading(segmentReading)
                     for (offset, surface) in inflected.enumerated() {
-                        if surface == segmentReading, offset != 0 {
+                        if surface == segmentReading, offset != 0, !suppliesKanaForOkuAuxiliary {
                             continue
                         }
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
@@ -802,6 +805,18 @@ extension KanaKanjiConverter {
             }
         }
         let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
+
+        // 文頭のかな助詞 で(定数コメント参照)。読み で で始まる活用派生(出ない/出た/できない/でかい 等、
+        // 幅 3 以上)が立っているときだけ減点する。でも/では/です は別ノードなので無関係
+        let hasSentenceInitialDeVerb: Bool = inflectedSurfacesBySpan.keys.contains { key in
+            key.hasPrefix("0-") && (Int(key.dropFirst(2)) ?? 0) >= 3
+        }
+        func sentenceInitialDeParticlePenalty(for node: MultiClauseNode) -> Int {
+            guard hasSentenceInitialDeVerb, node.start == 0, node.surface == "で", node.reading == "で" else {
+                return 0
+            }
+            return Self.multiClauseSentenceInitialDeParticlePenalty
+        }
 
         // 複合動詞の前部要素になる連用形ノード(定数コメント参照)。列挙後に一度だけ走査する。
         var compoundVerbRenyouNodeKeys = Set<String>()
@@ -1664,6 +1679,7 @@ extension KanaKanjiConverter {
                             scriptVariantPenalty: nodeScriptVariantPenalty,
                             isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
                         ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
+                            + sentenceInitialDeParticlePenalty(for: node)
                         if cost < best[idx] {
                             best[idx] = cost
                             backPointer[idx] = -1
@@ -1740,6 +1756,19 @@ extension KanaKanjiConverter {
                             Self.multiClauseFormalNounKanaReadings.contains(node.reading),
                             node.surface != node.reading {
                             cost += Self.multiClauseFormalNounKanjiPenalty
+                        }
+                        // 述語直後の当為 べき/べし/べく は助動詞=かな(冪/可き の漢字化を減点。定数コメント参照)
+                        if Self.multiClauseBekiReadings.contains(node.reading), node.surface != node.reading,
+                            prevNode.isDictionaryFormPredicate || prevNode.isInflectionDerived
+                                || (prevNode.surface.last.map(Self.multiClauseDictionaryFormTailCharacters.contains) ?? false) {
+                            cost += Self.multiClauseBekiKanjiPenalty
+                        }
+                        // て/で 形の直後の 補助動詞 おく(しておきながら/やっておいて)は漢字 置/擱/於 を減点(定数コメント参照)
+                        if node.isInflectionDerived, node.surface != node.reading,
+                            let head = node.surface.first, Self.multiClauseOkuKanjiHeads.contains(head),
+                            prevNode.surface.hasSuffix("て") || prevNode.surface.hasSuffix("で"),
+                            Self.isOkuAuxiliaryReading(node.reading) {
+                            cost += Self.multiClauseOkuAuxiliaryKanjiPenalty
                         }
                         // 助詞 1 字が動詞の頭を食う分割(改札と+追って)より、同じ幅の 1 動詞(通って)を優先(定数コメント参照)
                         if node.isInflectionDerived,
