@@ -544,7 +544,7 @@ extension KeyboardViewController {
         markTextProxyEdit()
         textDocumentProxy.unmarkText()
 
-        if !recentKanaPlainCommit.sourceReading.isEmpty {
+        if !recentKanaPlainCommit.sourceReading.isEmpty, allowsLearningInCurrentField {
             kanaKanjiConverter.learn(
                 reading: recentKanaPlainCommit.sourceReading,
                 candidate: katakanaText
@@ -825,10 +825,23 @@ extension KeyboardViewController {
     // パスワード等の secure フィールド(isSecureTextEntry)では入力内容を学習語彙に残さない
     // (ガイドライン5.1.1)。実際には iOS が secure 欄でカスタムキーボードを純正に自動で
     // 差し替えるため通常この経路には到達しないが、ホスト実装の不備や将来の挙動変化に
-    // 備えて全学習経路の合流点(kanaKanjiConverter.learn の2呼び出し)で防御的に遮断する
+    // 備えて全学習経路の合流点(kanaKanjiConverter.learn の3呼び出し)で防御的に遮断する。
+    // secure でないことが多いワンタイムコード・クレジットカード番号・パスワード種別の
+    // textContentType も対象(2785)
     var allowsLearningInCurrentField: Bool {
-        textDocumentProxy.isSecureTextEntry != true
+        guard textDocumentProxy.isSecureTextEntry != true else {
+            return false
+        }
+        // textContentType は UITextContentType?? (プロトコル要件 optional の optional)
+        guard let contentType = textDocumentProxy.textContentType ?? nil else {
+            return true
+        }
+        return !Self.learningDeniedTextContentTypes.contains(contentType)
     }
+
+    static let learningDeniedTextContentTypes: Set<UITextContentType> = [
+        .password, .newPassword, .oneTimeCode, .creditCardNumber
+    ]
 
     func commitComposingText(
         sourceText: String,
