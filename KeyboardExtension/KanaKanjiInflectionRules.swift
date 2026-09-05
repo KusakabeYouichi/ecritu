@@ -1351,6 +1351,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しておきます", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しておきました", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しておきません", baseReadingSuffix: "する", allowedClasses: .suru),
+        // 仮定形・命令形(攻撃しておけば/しておけ)。縮約 しとけば はあるのに非縮約が抜けていて、
+        // こうげきしておけば が こう+激しておけば(激する の 1 ノード)に負けていた(2812)
+        InflectionRule(readingSuffix: "しておけば", baseReadingSuffix: "する", allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しておけ", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しとく", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しといた", baseReadingSuffix: "する", allowedClasses: .suru),
         InflectionRule(readingSuffix: "しといて", baseReadingSuffix: "する", allowedClasses: .suru),
@@ -1611,6 +1615,8 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "しておきます", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しておきました", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しておきません", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しておけば", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
+        InflectionRule(readingSuffix: "しておけ", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しとく", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しといた", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
         InflectionRule(readingSuffix: "しといて", baseReadingSuffix: "", baseCandidateSuffixes: [""], allowedClasses: .suru),
