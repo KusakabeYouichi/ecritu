@@ -13837,3 +13837,30 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ぱしゃっととった", systemCandidateMode: .surface).first, "ぱしゃっと取った")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2812: こうげきしておけば — サ変の活用ルールに しとけば(縮約)はあって しておけば/しておけ が無く、
+    // 攻撃して+置けば(派生 2 ノード+て置 減点)が こう+激しておけば(激する の 1 ノード)に負けていた。
+    // きゅうりょうあげろ — 丘陵 が辞書 rank 0・LM 5950 で 給料(6381)より前。seed 給料 先頭+連文節コスト反映
+    func testRegressionRealLMKougekiShiteokebaAndKyuuryou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "こうげきしておけば", limit: 4, systemCandidateMode: .surface).first, "攻撃しておけば")
+        XCTAssertEqual(converter.candidates(for: "こうげきしておけ", limit: 4, systemCandidateMode: .surface).first, "攻撃しておけ")
+        let multi = converter.multiClauseCandidates(for: "こうげきしておけば", systemCandidateMode: .surface)
+        XCTAssertFalse(multi.contains { $0.hasPrefix("こう激") }, "multi=\(multi)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きゅうりょうあげろ", systemCandidateMode: .surface).first, "給料上げろ")
+        XCTAssertEqual(converter.candidates(for: "きゅうりょう", limit: 2, systemCandidateMode: .surface), ["給料", "丘陵"])
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    func testTmpDiag2813() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        print("DIAG single", converter.candidates(for: "あかわいんよう", limit: 8, systemCandidateMode: .surface))
+        setenv("MULTI_TRACE_EDGES", "1", 1)
+        print("DIAG multi", converter.multiClauseCandidates(for: "あかわいんよう", systemCandidateMode: .surface))
+        unsetenv("MULTI_TRACE_EDGES")
+    }
+}
