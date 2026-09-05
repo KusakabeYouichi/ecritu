@@ -13820,3 +13820,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "おはし", limit: 3, systemCandidateMode: .surface).first, "お箸")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2810: すいへいたいこうえんじん が 水平対抗/太閤/体腔+エンジン。対向 は たいこう の rank 7・LM 7079 で
+    // 水平→対向 の bigram も無い。固定複合 水平対向 を misc に登録
+    func testRegressionRealLMSuiheiTaikouEngine() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "すいへいたいこうえんじん", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "水平対向エンジン", "multi=\(multi)")
+        XCTAssertEqual(converter.candidates(for: "すいへいたいこう", limit: 3, systemCandidateMode: .surface).first, "水平対向")
+    }
+}
