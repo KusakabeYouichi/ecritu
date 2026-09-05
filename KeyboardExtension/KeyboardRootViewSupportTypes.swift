@@ -938,54 +938,39 @@ extension KeyboardRootView {
                 Button {
                     onSelectConversionCandidate(index)
                 } label: {
-                    if showsParenthesesWrapper {
-                        HStack(spacing: 0) {
-                            Text("(")
-                                .foregroundStyle(isSelected ? Color.white : accentColor)
+                    // 括弧付き/なしでラベル内容だけ分岐し、チップの装飾(余白・背景・枠)は共通(2805 で 2 重を解消)
+                    Group {
+                        if showsParenthesesWrapper {
+                            HStack(spacing: 0) {
+                                Text("(")
+                                    .foregroundStyle(isSelected ? Color.white : accentColor)
+                                CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
+                                Text(")")
+                                    .foregroundStyle(isSelected ? Color.white : accentColor)
+                            }
+                            .font(.system(size: candidateTextFontSize, weight: .semibold))
+                        } else {
                             CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
-                            Text(")")
-                                .foregroundStyle(isSelected ? Color.white : accentColor)
                         }
-                        .font(.system(size: candidateTextFontSize, weight: .semibold))
-                        .lineLimit(1)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .fill(
-                                    isSelected
-                                        ? accentColor.opacity(0.9)
-                                        : KeyboardThemePalette.candidateHeaderChipBackground
-                                )
-                        )
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                .stroke(
-                                    KeyboardThemePalette.candidateHeaderBorder,
-                                    lineWidth: isSelected ? 0 : 1
-                                )
-                        )
-                    } else {
-                        CandidateGlyphText(candidate, fontSize: candidateTextFontSize, color: isSelected ? Color.white : keyLabelColor)
-                            .lineLimit(1)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .fill(
-                                        isSelected
-                                            ? accentColor.opacity(0.9)
-                                            : KeyboardThemePalette.candidateHeaderChipBackground
-                                    )
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 7, style: .continuous)
-                                    .stroke(
-                                        KeyboardThemePalette.candidateHeaderBorder,
-                                        lineWidth: isSelected ? 0 : 1
-                                    )
-                            )
                     }
+                    .lineLimit(1)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .fill(
+                                isSelected
+                                    ? accentColor.opacity(0.9)
+                                    : KeyboardThemePalette.candidateHeaderChipBackground
+                            )
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 7, style: .continuous)
+                            .stroke(
+                                KeyboardThemePalette.candidateHeaderBorder,
+                                lineWidth: isSelected ? 0 : 1
+                            )
+                    )
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(candidate)

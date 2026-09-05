@@ -463,18 +463,7 @@ extension KeyboardRootView {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 5)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
-        )
+        .modifier(LandscapeSidebarContainer())
     }
 
     var landscapeLatinSuggestionSidebar: some View {
@@ -525,18 +514,7 @@ extension KeyboardRootView {
                 }
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .frame(maxHeight: .infinity, alignment: .top)
-        .padding(.horizontal, 6)
-        .padding(.vertical, 5)
-        .background(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
-        )
+        .modifier(LandscapeSidebarContainer())
     }
 
     var landscapeLatinReferenceClusterHeight: CGFloat {
@@ -1074,5 +1052,24 @@ extension KeyboardRootView {
         }
 
         return 0
+    }
+}
+
+// 横向きのサイドバー(かな候補/欧文サジェスト)の外枠。2 か所で同じ装飾チェーンを書いていたのを集約(2805)
+private struct LandscapeSidebarContainer: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .frame(maxHeight: .infinity, alignment: .top)
+            .padding(.horizontal, 6)
+            .padding(.vertical, 5)
+            .background(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .fill(KeyboardThemePalette.candidateHeaderSubtleBackground)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(KeyboardThemePalette.candidateHeaderBorder, lineWidth: 1)
+            )
     }
 }
