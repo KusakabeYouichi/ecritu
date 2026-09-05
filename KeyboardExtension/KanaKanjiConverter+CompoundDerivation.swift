@@ -450,7 +450,7 @@ extension KanaKanjiConverter {
         "と": ["斗"],
         "とう": ["等", "棟"],
         "とおり": ["通り", "通"],
-        "とん": ["瓲", "噸"],
+        "とん": ["トン", "瓲", "噸"],
         // 温度(36ど→36度/36°C/36°F)。字形(°C/℃)は提示層の設定 degré で置換(2773)
         "ど": ["度", "\u{00B0}C", "\u{00B0}F"],
         "どおり": ["通り", "通"],
@@ -501,7 +501,31 @@ extension KanaKanjiConverter {
         "れん": ["連"],
         "ろり": ["露里"],
         "わけ": ["分", "分け"],
-        "わり": ["割", "割り"]
+        "わり": ["割", "割り"],
+        // 助数詞の供給漏れ(ユーザ指摘 2814: 魚の 2尾 等)。数字直後の監査で表層が 4 位以下 or 無かったもの
+        "び": ["尾"],
+        "わ": ["羽", "話", "把"],
+        "はい": ["敗"],
+        "せい": ["世"],
+        "つう": ["通"],
+        "ふう": ["封"],
+        "びん": ["便"],
+        "ぜん": ["膳"],
+        "ふく": ["服", "幅"],
+        "く": ["句"],
+        "はち": ["鉢"],
+        "じゅん": ["巡"],
+        "るい": ["塁"],
+        "あんだ": ["安打"],
+        "じげん": ["次元", "時限"],
+        "ご": ["語"],
+        "じ": ["字"],
+        "かいせん": ["回戦"],
+        "さいじ": ["歳児"],
+        "ぐらむ": ["グラム"],
+        "せんち": ["センチ"]
+        // 〜目 の序数はここに載せない: め/目 の先後はコンテナー設定(applyMeSuffixPreferences)が決めるため、
+        // 目形だけを前置すると設定を無視する。助数詞本表に基底(かい/まい 等)があれば 回目/回め が設定順で先頭に補生成される
     ]
 
     // 助数詞として使うが numericCounterSuffixCandidatesByReading には入れられない表層。
@@ -594,10 +618,15 @@ extension KanaKanjiConverter {
             // 本来の 号店 を押しのけていた。合成は語が無いときの受け皿なので、人手宣言のある
             // 読みでは出番がない
             let readingHasSeedWord = KanaKanjiSeedDictionary.seed[reading] != nil
+            // 序数(助数詞読み+め: かいめ/まいめ 等)は applyMeSuffixPreferences が 回目/回め を設定順で先頭に
+            // 置いている。ここで短い助数詞の前方一致(か+いめ→課いめ)を合成して前置すると序数を押し下げるので
+            // 合成しない(2814)
+            let isOrdinalMeReading = reading.hasSuffix("め")
+                && numericCounterSuffixCandidatesByReading[String(reading.dropLast())] != nil
             for counterReading in Set(numericCounterSuffixCandidatesByReading.keys)
                 .union(digitContextAdditionalCounterSurfacesByReading.keys)
                 .sorted(by: { $0.count != $1.count ? $0.count > $1.count : $0 < $1 })
-            where !readingHasSeedWord
+            where !readingHasSeedWord && !isOrdinalMeReading
                 && reading.count > counterReading.count && reading.hasPrefix(counterReading) {
                 let surfaces = Self.digitBoostCounterSurfaces(for: counterReading) ?? []
                 let tail = String(reading.dropFirst(counterReading.count))
@@ -673,6 +702,9 @@ extension KanaKanjiConverter {
 
     // 順序の『目』が付く語幹の末尾文字(助数詞表層の末字+番/代/丁/つ/行 等)。
     // め/目 選好の序数判定に使う — 跡目/片目 等の一般名詞を巻き込まないためのゲート。
+    // 辞書に序数として定着している非助数詞の語幹末尾(番目/代目/丁目/つ目/行目/駅目)。
+    // この語幹の候補が在る読みでは、助数詞表からの 目/め 補生成を前置しない
+    static let ordinalMeEstablishedStemTailCharacters: Set<Character> = ["番", "代", "丁", "つ", "行", "駅"]
     static let ordinalMeStemTailCharacters: Set<Character> = {
         var characters = Set<Character>()
         for surfaces in numericCounterSuffixCandidatesByReading.values {
@@ -689,7 +721,7 @@ extension KanaKanjiConverter {
                 }
             }
         }
-        for extra in "番代丁つ行駅" {
+        for extra in ordinalMeEstablishedStemTailCharacters {
             characters.insert(extra)
         }
         return characters
@@ -714,8 +746,10 @@ extension KanaKanjiConverter {
         // 語幹読みが助数詞そのもの(さつめ=さつ+め 等)なら、助数詞+目/め を先頭へ補生成
         // する。辞書に地名等の直接ヒット(佐津目)しか無く、序数フォールバックが走らない
         // 読みでも 冊目/冊め を供給する(3さつめ 対策。数字直後はさらに digit boost が前置)
-        // 誤爆ガード: 1字の助数詞読み(こ=米/じ=字 等の実語と衝突)は対象外。既に序数らしい
-        // 候補(語幹末尾が助数詞文字の 〜目/〜め: 代目/本目/回目 等)が居るなら供給済みとみなす
+        // 誤爆ガード: 1字の助数詞読み(こ=米/じ=字 等の実語と衝突)は対象外。辞書に序数の定着語
+        // (語幹末尾が 番/代/丁/つ/行/駅 の 〜目/〜め: 代目 等)が居るなら辞書の並びを尊重して触らない
+        // (だいめ は 台目 でなく 代目)。それ以外は 助数詞+目/め を既存位置から外して先頭へ置き直す
+        // (回目 は かいめ の 18 位で 買い目/櫂め/階目 の後ろだった。2814)
         if stemReading.count >= 2,
             let counterSurfaces = Self.numericCounterSuffixCandidatesByReading[stemReading],
             let counter = counterSurfaces.first,
@@ -725,12 +759,13 @@ extension KanaKanjiConverter {
                     let stemTail = candidate.dropLast().last else {
                     return false
                 }
-                return Self.ordinalMeStemTailCharacters.contains(stemTail)
+                return Self.ordinalMeEstablishedStemTailCharacters.contains(stemTail)
             }) {
             let pair = ordinalMeKanjiPreferred
                 ? [counter + "目", counter + "め"]
                 : [counter + "め", counter + "目"]
-            for (offset, form) in pair.enumerated() where !result.contains(form) {
+            result.removeAll { pair.contains($0) }
+            for (offset, form) in pair.enumerated() {
                 result.insert(form, at: min(offset, result.count))
             }
         }
