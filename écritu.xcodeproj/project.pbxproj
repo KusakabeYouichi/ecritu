@@ -142,6 +142,10 @@
 		D1CDEBCB8939BC969433777A /* FlickKanaMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */; };
 		D2A3F64295CDC6096E2250C1 /* KeyboardRootView+EmojiKaomojiLayouts.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */; };
 		DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */; };
+		10649A8BA50D14B32F1F5DC2 /* SettingsSectionViews+Appearance.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7F40B3144040C731821A98F /* SettingsSectionViews+Appearance.swift */; };
+		53064A42B69324283D71BDF8 /* SettingsSectionViews+Formats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13CA63D706B8F9C3D66781CC /* SettingsSectionViews+Formats.swift */; };
+		0692248F5D9689409B82D529 /* SettingsSectionViews+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B6C5680C2D88C7A2490CE34 /* SettingsSectionViews+Layout.swift */; };
+		70DEE994ABC1B2843608C0FD /* SettingsSectionViews+Conversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22A343B2F9E4EEF9CDFB1A26 /* SettingsSectionViews+Conversion.swift */; };
 		DB967B134FC1CDBD2C451957 /* SupplementaryCandidateMerger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66A8F5EFF71215E8B8F00101 /* SupplementaryCandidateMerger.swift */; };
 		DBBA852BCC8D33CCF73645E9 /* ÉcrituPremierVocab.json in Resources */ = {isa = PBXBuildFile; fileRef = 0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */; };
 		E21AE995B20E7DF2B75B6F82 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
@@ -230,6 +234,10 @@
 		4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaTextNormalizer.swift; sourceTree = "<group>"; };
 		4FCBC2AEE4D692642405836F /* KeyboardRootView+FontSizes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+FontSizes.swift"; sourceTree = "<group>"; };
 		52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsSectionViews.swift; sourceTree = "<group>"; };
+		F7F40B3144040C731821A98F /* SettingsSectionViews+Appearance.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsSectionViews+Appearance.swift"; sourceTree = "<group>"; };
+		13CA63D706B8F9C3D66781CC /* SettingsSectionViews+Formats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsSectionViews+Formats.swift"; sourceTree = "<group>"; };
+		6B6C5680C2D88C7A2490CE34 /* SettingsSectionViews+Layout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsSectionViews+Layout.swift"; sourceTree = "<group>"; };
+		22A343B2F9E4EEF9CDFB1A26 /* SettingsSectionViews+Conversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsSectionViews+Conversion.swift"; sourceTree = "<group>"; };
 		5BD446779BCC5D4386967F9A /* Ecritu.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Ecritu.entitlements; sourceTree = "<group>"; };
 		5C7FFC5AF8872DE4A3040949 /* InitialSupprVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprVocabMigration.json; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000BB02 /* InitialSupprHiddenVocabMigration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = InitialSupprHiddenVocabMigration.json; sourceTree = "<group>"; };
@@ -314,6 +322,10 @@
 				A1B2C3D4E5F600000000AB02 /* PrivacyInfo.xcprivacy */,
 				105353784C776E1A40C7A8AE /* SettingsModels.swift */,
 				52EE3BD3294D58DDFF8071B1 /* SettingsSectionViews.swift */,
+				F7F40B3144040C731821A98F /* SettingsSectionViews+Appearance.swift */,
+				13CA63D706B8F9C3D66781CC /* SettingsSectionViews+Formats.swift */,
+				6B6C5680C2D88C7A2490CE34 /* SettingsSectionViews+Layout.swift */,
+				22A343B2F9E4EEF9CDFB1A26 /* SettingsSectionViews+Conversion.swift */,
 				1101C5F140F04B38C98D298F /* ThirdPartyLicensesView.swift */,
 				2D815BB97FDB1F3F743DACDD /* SettingsComponents.swift */,
 				CB1CCE234EAA56677B307285 /* DictionarySettingsSections.swift */,
@@ -787,6 +799,10 @@
 				8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */,
 				B03E6564B72E74C154837470 /* SettingsModels.swift in Sources */,
 				DB34668D73DDDCE6D95BF320 /* SettingsSectionViews.swift in Sources */,
+				10649A8BA50D14B32F1F5DC2 /* SettingsSectionViews+Appearance.swift in Sources */,
+				53064A42B69324283D71BDF8 /* SettingsSectionViews+Formats.swift in Sources */,
+				0692248F5D9689409B82D529 /* SettingsSectionViews+Layout.swift in Sources */,
+				70DEE994ABC1B2843608C0FD /* SettingsSectionViews+Conversion.swift in Sources */,
 				AA96FF3BF4C2394ED6E45AA9 /* ThirdPartyLicensesView.swift in Sources */,
 				B81FC3000865E20CAEE4D4E9 /* SettingsComponents.swift in Sources */,
 				CBAC06FB9B0379B8CDDE4F94 /* DictionarySettingsSections.swift in Sources */,
