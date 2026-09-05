@@ -13730,3 +13730,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(tail.first, "いいんですかね", "tail=\(tail)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2804: たとえていうなら が {例えて, 喩えて, 譬えて, 例えていうなら} で、かなの たとえて言うなら が出なかった。
+    // 活用形 seed たとえて=[例えて, たとえて, 喩えて, 譬えて] を追加し、b2 は seed にかなが載る読みでかなを供給、
+    // 変種は厳密 seed 順 opt-in で派生同士の同点を割る
+    func testRegressionRealLMTatoeteIunara() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "たとえていうなら", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(4)), ["例えて言うなら", "たとえて言うなら", "喩えて言うなら", "譬えて言うなら"], "multi=\(multi)")
+        XCTAssertEqual(Array(converter.candidates(for: "たとえて", limit: 4, systemCandidateMode: .surface)), ["例えて", "たとえて", "喩えて", "譬えて"])
+    }
+}

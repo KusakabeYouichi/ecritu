@@ -517,7 +517,10 @@ extension KanaKanjiConverter {
     // さすが: かな副詞クランプ(4000)で 流石(7272)が変種上限を超えて消えるため、
     // seed {さすが, 流石} の順で 流石Apple を2番目に残す(ユーザ指定 2666)
     // たいして: 同じ構図(かな副詞クランプで最良、seed {たいして, 大して, 対して} の順に変種を出す。2771)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "あとあと"]
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "あとあと", "たとえて"]
+    // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
+    // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
+    static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて"]
     // seed 先頭語のコスト救済(2677)を「LM 収録済みでも」適用する読みの opt-in。
     // せいかい: Sudachi は 正解6465<政界7140 なのに Wikipedia LM は 政界6236<正解6479 で
     // 政界では が先頭だった。無条件適用は7件退行(位置から遣り直す/占いしか/東京中 等)
