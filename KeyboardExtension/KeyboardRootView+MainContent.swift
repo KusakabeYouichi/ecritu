@@ -317,20 +317,10 @@ extension KeyboardRootView {
                     }
                 }
 
-                ActionKeyButton(
-                    title: returnActionKeyTitle,
-                    systemImageName: returnActionKeySystemImageName,
-                    accessibilityLabel: returnActionKeyAccessibilityLabel,
-                    fontSize: returnActionKeyFontSize,
+                returnActionKey(
                     fixedWidth: (usesPortraitLatinInlineDeleteLayout || usesPortraitClavierInlineDeleteLayout)
                         ? portraitLatinInlineReturnKeyWidth
-                        : bottomActionRowReturnKeyWidth,
-                    isEnabled: isReturnKeyEnabled,
-                    onLongPress: returnKeyKatakanaLongPressAction,
-                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                    action: onReturn
+                        : bottomActionRowReturnKeyWidth
                 )
                     .frame(height: unifiedActionRowHeight)
             }

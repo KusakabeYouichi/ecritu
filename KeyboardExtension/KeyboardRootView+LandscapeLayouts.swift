@@ -217,18 +217,7 @@ extension KeyboardRootView {
             ZStack(alignment: .top) {
                 Color.clear
 
-                ActionKeyButton(
-                    title: returnActionKeyTitle,
-                    systemImageName: returnActionKeySystemImageName,
-                    accessibilityLabel: returnActionKeyAccessibilityLabel,
-                    fontSize: returnActionKeyFontSize,
-                    isEnabled: isReturnKeyEnabled,
-                    onLongPress: returnKeyKatakanaLongPressAction,
-                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                    action: onReturn
-                )
+                returnActionKey()
                     .frame(maxWidth: .infinity)
                     .frame(height: threeByThreeReturnKeyHeight(rowHeight: rowHeight, rowSpacing: rowSpacing))
             }
@@ -708,19 +697,7 @@ extension KeyboardRootView {
                 )
                     .frame(width: kanaFiveByTwoTrailingKeyWidth, height: selectorKeySize)
 
-                ActionKeyButton(
-                    title: returnActionKeyTitle,
-                    systemImageName: returnActionKeySystemImageName,
-                    accessibilityLabel: returnActionKeyAccessibilityLabel,
-                    fontSize: returnActionKeyFontSize,
-                    fixedWidth: 72,
-                    isEnabled: isReturnKeyEnabled,
-                    onLongPress: returnKeyKatakanaLongPressAction,
-                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                    action: onReturn
-                )
+                returnActionKey(fixedWidth: 72)
                     .frame(height: mainFlickKeyHeight)
             }
             .zIndex(zIndex(for: rows.count))
@@ -841,18 +818,7 @@ extension KeyboardRootView {
     }
 
     func landscapeLatinInlineReturnKey(fixedWidth: CGFloat) -> some View {
-        ActionKeyButton(
-            title: returnActionKeyTitle,
-            systemImageName: returnActionKeySystemImageName,
-            accessibilityLabel: returnActionKeyAccessibilityLabel,
-            fontSize: returnActionKeyFontSize,
-            isEnabled: isReturnKeyEnabled,
-            onLongPress: returnKeyKatakanaLongPressAction,
-            onDoubleTap: returnKeyKatakanaDoubleTapAction,
-            doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-            prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-            action: onReturn
-        )
+        returnActionKey()
             .frame(width: fixedWidth, height: mainFlickKeyHeight)
     }
 
@@ -1053,18 +1019,7 @@ extension KeyboardRootView {
 
                         spaceKeyButton(fixedWidth: nil)
 
-                        ActionKeyButton(
-                            title: returnActionKeyTitle,
-                            systemImageName: returnActionKeySystemImageName,
-                            accessibilityLabel: returnActionKeyAccessibilityLabel,
-                            fontSize: returnActionKeyFontSize,
-                            isEnabled: isReturnKeyEnabled,
-                            onLongPress: returnKeyKatakanaLongPressAction,
-                            onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                            doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                            prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                            action: onReturn
-                        )
+                        returnActionKey()
                             .frame(maxWidth: .infinity)
                             .frame(height: compactActionKeyHeight)
                     }

@@ -333,18 +333,7 @@ extension KeyboardRootView {
                 ZStack(alignment: .top) {
                     Color.clear
 
-                    ActionKeyButton(
-                        title: returnActionKeyTitle,
-                        systemImageName: returnActionKeySystemImageName,
-                        accessibilityLabel: returnActionKeyAccessibilityLabel,
-                        fontSize: returnActionKeyFontSize,
-                        isEnabled: isReturnKeyEnabled,
-                        onLongPress: returnKeyKatakanaLongPressAction,
-                        onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                        doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                        prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                        action: onReturn
-                    )
+                    returnActionKey()
                         .frame(maxWidth: .infinity)
                         .frame(height: threeByThreeReturnKeyHeight(rowHeight: rowHeight, rowSpacing: rowSpacing))
                 }
@@ -513,18 +502,7 @@ extension KeyboardRootView {
             ZStack(alignment: .top) {
                 Color.clear
 
-                ActionKeyButton(
-                    title: returnActionKeyTitle,
-                    systemImageName: returnActionKeySystemImageName,
-                    accessibilityLabel: returnActionKeyAccessibilityLabel,
-                    fontSize: returnActionKeyFontSize,
-                    isEnabled: isReturnKeyEnabled,
-                    onLongPress: returnKeyKatakanaLongPressAction,
-                    onDoubleTap: returnKeyKatakanaDoubleTapAction,
-                    doubleTapThreshold: katakanaCommitDoubleTapThreshold,
-                    prefersImmediateSingleTapWhenDoubleTapEnabled: true,
-                    action: onReturn
-                )
+                returnActionKey()
                     .frame(maxWidth: .infinity)
                     .frame(height: threeByThreeReturnKeyHeight(rowHeight: rowHeight, rowSpacing: rowSpacing))
             }
