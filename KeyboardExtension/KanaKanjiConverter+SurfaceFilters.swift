@@ -276,82 +276,85 @@ extension KanaKanjiConverter {
         return false
     }
 
+    // 読み側で決まる部分(どの活用ルールが読みに掛かり、その基底読みに抑制があるか)を先に絞った探針。
+    // 候補ごとの判定は探針列に対する hasSuffix と Set 参照だけになる。以前は候補 1 件ごとに
+    // 末尾文字バケット(る/た 等で百件規模)を全部なめ直していて、単文節候補取得の 2 割を占めた(2805)
+    struct DeinflectionSuppressionProbe {
+        let candidateSuffix: String        // 候補側の末尾(outputCandidateSuffix or 可能動詞の readingSuffix)
+        let suppressedSet: Set<String>     // 基底読みの抑制集合
+        let baseCandidateSuffixes: [String] // 候補語幹に付けて抑制集合を引く接尾(可能動詞は baseReadingSuffix 1 本)
+    }
+
+    func deinflectionSuppressionProbes(
+        reading: String,
+        suppressedByReading: [String: Set<String>]
+    ) -> [DeinflectionSuppressionProbe] {
+        guard !suppressedByReading.isEmpty, let readingLastCharacter = reading.last else {
+            return []
+        }
+        var probes: [DeinflectionSuppressionProbe] = []
+
+        func addProbe(for rule: InflectionRule) {
+            guard reading.hasSuffix(rule.readingSuffix) else { return }
+            let readingStem = String(reading.dropLast(rule.readingSuffix.count))
+            if readingStem.isEmpty,
+                !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
+                return
+            }
+            guard let suppressedSet = suppressedByReading[readingStem + rule.baseReadingSuffix],
+                !suppressedSet.isEmpty else {
+                return
+            }
+            var suffixes: [String] = []
+            rule.forEachBaseCandidateSuffix { suffixes.append($0) }
+            probes.append(DeinflectionSuppressionProbe(
+                candidateSuffix: rule.outputCandidateSuffix,
+                suppressedSet: suppressedSet,
+                baseCandidateSuffixes: suffixes
+            ))
+        }
+
+        for index in Self.deinflectionRulesByReadingLastCharacter[readingLastCharacter] ?? [] {
+            addProbe(for: Self.allInflectionRules[index])
+        }
+        for rule in Self.deinflectionRulesWithEmptyReadingSuffix {
+            addProbe(for: rule)
+        }
+        for mapping in Self.godanPotentialDeinflectionMappingsByReadingLastCharacter[readingLastCharacter] ?? [] {
+            guard reading.hasSuffix(mapping.readingSuffix) else { continue }
+            let readingStem = String(reading.dropLast(mapping.readingSuffix.count))
+            guard !readingStem.isEmpty,
+                let suppressedSet = suppressedByReading[readingStem + mapping.baseReadingSuffix] else {
+                continue
+            }
+            probes.append(DeinflectionSuppressionProbe(
+                candidateSuffix: mapping.readingSuffix,
+                suppressedSet: suppressedSet,
+                baseCandidateSuffixes: [mapping.baseReadingSuffix]
+            ))
+        }
+        return probes
+    }
+
+    func isDeinflectedSuppressed(candidate: String, probes: [DeinflectionSuppressionProbe]) -> Bool {
+        for probe in probes where candidate.hasSuffix(probe.candidateSuffix) {
+            let candidateStem = String(candidate.dropLast(probe.candidateSuffix.count))
+            for suffix in probe.baseCandidateSuffixes where probe.suppressedSet.contains(candidateStem + suffix) {
+                return true
+            }
+        }
+        return false
+    }
+
     func isDeinflectedSuppressed(
         candidate: String,
         reading: String,
         suppressedByReading: [String: Set<String>]
     ) -> Bool {
-        guard !suppressedByReading.isEmpty else {
-            return false
-        }
-
-        guard let readingLastCharacter = reading.last else {
-            return false
-        }
-        let bucketedRuleIndices = Self.deinflectionRulesByReadingLastCharacter[readingLastCharacter] ?? []
-
-        func isSuppressedVia(_ rule: InflectionRule) -> Bool {
-            guard reading.hasSuffix(rule.readingSuffix),
-                candidate.hasSuffix(rule.outputCandidateSuffix) else {
-                return false
-            }
-
-            let readingStem = String(reading.dropLast(rule.readingSuffix.count))
-            let candidateStem = String(candidate.dropLast(rule.outputCandidateSuffix.count))
-
-            if readingStem.isEmpty,
-                !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
-                return false
-            }
-
-            let baseReading = readingStem + rule.baseReadingSuffix
-
-            guard let suppressedSet = suppressedByReading[baseReading],
-                !suppressedSet.isEmpty else {
-                return false
-            }
-
-            var matched = false
-            rule.forEachBaseCandidateSuffix { baseCandidateSuffix in
-                if !matched, suppressedSet.contains(candidateStem + baseCandidateSuffix) {
-                    matched = true
-                }
-            }
-            return matched
-        }
-
-        for index in bucketedRuleIndices where isSuppressedVia(Self.allInflectionRules[index]) {
-            return true
-        }
-        for rule in Self.deinflectionRulesWithEmptyReadingSuffix where isSuppressedVia(rule) {
-            return true
-        }
-
-        let bucketedMappings = Self.godanPotentialDeinflectionMappingsByReadingLastCharacter[readingLastCharacter] ?? []
-
-        for mapping in bucketedMappings {
-            guard reading.hasSuffix(mapping.readingSuffix),
-                candidate.hasSuffix(mapping.readingSuffix) else {
-                continue
-            }
-
-            let readingStem = String(reading.dropLast(mapping.readingSuffix.count))
-            let candidateStem = String(candidate.dropLast(mapping.readingSuffix.count))
-
-            guard !readingStem.isEmpty else {
-                continue
-            }
-
-            let baseReading = readingStem + mapping.baseReadingSuffix
-            let baseCandidate = candidateStem + mapping.baseReadingSuffix
-
-            if let suppressedSet = suppressedByReading[baseReading],
-                suppressedSet.contains(baseCandidate) {
-                return true
-            }
-        }
-
-        return false
+        isDeinflectedSuppressed(
+            candidate: candidate,
+            probes: deinflectionSuppressionProbes(reading: reading, suppressedByReading: suppressedByReading)
+        )
     }
 
 
