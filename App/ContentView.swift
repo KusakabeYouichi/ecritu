@@ -889,8 +889,13 @@ struct ContentView: View {
         }
     }
 
+    // スライダーの値が初期値の近傍(snapThreshold 以内)なら初期値に吸着させる
+    private func snappedValue(_ value: Double, to defaultValue: Double, threshold: Double) -> Double {
+        abs(value - defaultValue) <= threshold ? defaultValue : value
+    }
+
     private func snappedRepeatValue(_ value: Double, to defaultValue: Double) -> Double {
-        abs(value - defaultValue) <= RepeatSettings.snapThreshold ? defaultValue : value
+        snappedValue(value, to: defaultValue, threshold: RepeatSettings.snapThreshold)
     }
 
     private var keyRepeatInitialDelayBinding: Binding<Double> {
@@ -911,9 +916,9 @@ struct ContentView: View {
         Binding(
             get: { idleCommitInterval },
             set: {
-                idleCommitInterval = abs($0 - IdleCommitSettings.intervalDefault) <= IdleCommitSettings.snapThreshold
-                    ? IdleCommitSettings.intervalDefault
-                    : $0
+                idleCommitInterval = snappedValue(
+                    $0, to: IdleCommitSettings.intervalDefault, threshold: IdleCommitSettings.snapThreshold
+                )
             }
         )
     }
@@ -940,27 +945,6 @@ struct ContentView: View {
         rawValueSelection(from: kanaPostModifierEmptyTapActionRawValue, default: .default) {
             kanaPostModifierEmptyTapActionRawValue = $0
         }
-    }
-
-    private var kanaPostModifierEmptyTapKaomojiCategoryBinding: Binding<String> {
-        Binding(
-            get: { kanaPostModifierEmptyTapKaomojiCategoryID },
-            set: { kanaPostModifierEmptyTapKaomojiCategoryID = $0 }
-        )
-    }
-
-    private var kanaPostModifierEmptyTapEmojiCategoryBinding: Binding<String> {
-        Binding(
-            get: { kanaPostModifierEmptyTapEmojiCategoryID },
-            set: { kanaPostModifierEmptyTapEmojiCategoryID = $0 }
-        )
-    }
-
-    private var kanaPostModifierEmptyTapSymbolCategoryBinding: Binding<String> {
-        Binding(
-            get: { kanaPostModifierEmptyTapSymbolCategoryID },
-            set: { kanaPostModifierEmptyTapSymbolCategoryID = $0 }
-        )
     }
 
     private var delimiterAutoCommitCandidateSelection: Binding<DelimiterAutoCommitCandidateOption> {
@@ -1161,9 +1145,9 @@ struct ContentView: View {
 
                         KanaPostModifierEmptyTapAssignmentSection(
                             actionSelection: kanaPostModifierEmptyTapActionSelection,
-                            kaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryBinding,
-                            emojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryBinding,
-                            symbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryBinding
+                            kaomojiCategoryID: $kanaPostModifierEmptyTapKaomojiCategoryID,
+                            emojiCategoryID: $kanaPostModifierEmptyTapEmojiCategoryID,
+                            symbolCategoryID: $kanaPostModifierEmptyTapSymbolCategoryID
                         )
 
                         KanaPostModifierFlickDakutenSettingsSection(
