@@ -4,7 +4,7 @@ import Security
 
 
 enum KanaKanjiStorageKeys {
-    static let userDictionary = "ÉcrituAjoutVocab"
+    static let ajoutVocabulary = "ÉcrituAjoutVocab"
     static let learnedDictionary = "kanaKanjiLearnedVocabulary"
     static let shortcutVocabulary = "ÉcrituShortcutVocab"
     static let suppressionVocabulary = "ÉcrituSuppr_Vocab"
@@ -16,7 +16,7 @@ enum KanaKanjiStorageKeys {
     static let latinSuggestionSupplementalFilename = "LatinSuggestionSupplemental.txt"
     static let systemCandidateSourcesFilename = "kana_kanji_candidate_sources.json"
     static let inflectionDictionaryFilename = "kana_kanji_inflection_dictionary.json"
-    static let initialUserDictionaryResourceName = "InitialAjoutVocabMigration"
+    static let initialAjoutVocabularyResourceName = "InitialAjoutVocabMigration"
     // 変換対策の単語追加(misc)。変換には注入するが、コンテナアプリの「追加語彙」には表示しない。
     static let initialMiscDictionaryResourceName = "InitialMiscVocabMigration"
     static let initialShortcutVocabularyResourceName = "InitialShortcutVocabMigration"

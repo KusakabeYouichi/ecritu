@@ -409,8 +409,8 @@ extension KanaKanjiConverter {
         // 品詞が明示(systemClassMap)されている語はそちらが優先される。
         let normalizedStemReading = KanaTextNormalizer.normalizedReading(stemReading)
         let userCandidateSet = Set(
-            combinedUserCandidates(for: stemReading, userDictionary: store.userDictionary())
-        ).union(store.initialUserDictionary()[normalizedStemReading] ?? [])
+            combinedUserCandidates(for: stemReading, ajoutVocabulary: store.ajoutVocabulary())
+        ).union(store.initialAjoutVocabulary()[normalizedStemReading] ?? [])
 
         return candidates.filter { candidate in
             if candidate.hasSuffix("する")
@@ -681,18 +681,18 @@ extension KanaKanjiConverter {
         filterArchaicAdjectiveSurfaceCandidates(
             for: reading,
             candidates: candidates,
-            userDictionary: nil,
+            ajoutVocabulary: nil,
             learnedDictionary: nil,
-            initialUserDictionary: nil
+            initialAjoutVocabulary: nil
         )
     }
 
     func filterArchaicAdjectiveSurfaceCandidates(
         for reading: String,
         candidates: [String],
-        userDictionary: [String: [String]]?,
+        ajoutVocabulary: [String: [String]]?,
         learnedDictionary: [String: [String]]?,
-        initialUserDictionary: [String: [String]]?
+        initialAjoutVocabulary: [String: [String]]?
     ) -> [String] {
         guard reading.hasSuffix("かる") || reading.hasSuffix("かり") else {
             return candidates
@@ -705,9 +705,9 @@ extension KanaKanjiConverter {
         }
 
         let baseReading = baseReadingStem + "い"
-        let userBaseCandidates = userDictionary?[baseReading] ?? []
+        let userBaseCandidates = ajoutVocabulary?[baseReading] ?? []
         let learnedBaseCandidates = learnedDictionary?[baseReading] ?? []
-        let initialBaseCandidates = initialUserDictionary?[baseReading] ?? []
+        let initialBaseCandidates = initialAjoutVocabulary?[baseReading] ?? []
         let storeBaseCandidates = store.systemCandidates(
             for: baseReading,
             mode: .lesDeux
@@ -778,7 +778,7 @@ extension KanaKanjiConverter {
             !Self.katakanaRunsAreSeedProtected(candidate) else {
             return false
         }
-        if (store.userDictionary()[reading] ?? []).contains(candidate)
+        if (store.ajoutVocabulary()[reading] ?? []).contains(candidate)
             || (store.learnedDictionary()[reading] ?? []).contains(candidate) {
             return false
         }

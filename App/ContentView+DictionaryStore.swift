@@ -246,7 +246,7 @@ extension ContentView {
         return [:]
     }
 
-    func loadBundledInitialUserDictionaryEntries() -> [String: [String]] {
+    func loadBundledInitialAjoutVocabularyEntries() -> [String: [String]] {
         loadBundledInitialDictionaryEntries(filename: "InitialAjoutVocabMigration")
     }
 
@@ -392,7 +392,7 @@ extension ContentView {
         SettingsSyncNotification.postSettingsDidChange()
     }
 
-    func userDictionaryEntriesSnapshot() -> [VocabularyEntry] {
+    func ajoutVocabularyEntriesSnapshot() -> [VocabularyEntry] {
         let dictionary = normalizedDictionaryEntries(
             loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
         )
@@ -441,15 +441,15 @@ extension ContentView {
         }
     }
 
-    func loadUserDictionaryEntries() {
-        userDictionaryEntries = userDictionaryEntriesSnapshot()
+    func loadAjoutVocabularyEntries() {
+        ajoutVocabularyEntries = ajoutVocabularyEntriesSnapshot()
     }
 
     func loadLearnedDictionaryEntries() {
         learnedDictionaryEntries = learnedDictionaryEntriesSnapshot()
     }
 
-    func saveUserDictionary(_ entriesByReading: [String: [String]]) {
+    func saveAjoutVocabulary(_ entriesByReading: [String: [String]]) {
         saveDictionaryEntries(entriesByReading, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
     }
 
@@ -457,9 +457,9 @@ extension ContentView {
         saveDictionaryEntries(entriesByReading, forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
     }
 
-    func addUserDictionaryEntry() {
-        let reading = normalizedKanaReading(from: userDictionaryReadingInput)
-        let candidate = userDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+    func addAjoutVocabularyEntry() {
+        let reading = normalizedKanaReading(from: ajoutVocabularyReadingInput)
+        let candidate = ajoutVocabularyCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !reading.isEmpty,
                 !candidate.isEmpty else {
@@ -476,16 +476,16 @@ extension ContentView {
 
         candidates.insert(candidate, at: 0)
         dictionary[reading] = Array(candidates.prefix(32))
-        saveUserDictionary(dictionary)
+        saveAjoutVocabulary(dictionary)
 
-        userDictionaryReadingInput = ""
-        userDictionaryCandidateInput = ""
-        loadUserDictionaryEntries()
+        ajoutVocabularyReadingInput = ""
+        ajoutVocabularyCandidateInput = ""
+        loadAjoutVocabularyEntries()
     }
 
-    func updateUserDictionaryEntry(_ originalEntry: VocabularyEntry) {
-        let reading = normalizedKanaReading(from: userDictionaryReadingInput)
-        let candidate = userDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
+    func updateAjoutVocabularyEntry(_ originalEntry: VocabularyEntry) {
+        let reading = normalizedKanaReading(from: ajoutVocabularyReadingInput)
+        let candidate = ajoutVocabularyCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !reading.isEmpty,
             !candidate.isEmpty else {
@@ -512,13 +512,13 @@ extension ContentView {
         targetCandidates.insert(candidate, at: 0)
         dictionary[reading] = Array(targetCandidates.prefix(32))
 
-        saveUserDictionary(dictionary)
-        userDictionaryReadingInput = ""
-        userDictionaryCandidateInput = ""
-        loadUserDictionaryEntries()
+        saveAjoutVocabulary(dictionary)
+        ajoutVocabularyReadingInput = ""
+        ajoutVocabularyCandidateInput = ""
+        loadAjoutVocabularyEntries()
     }
 
-    func removeUserDictionaryEntry(_ entry: VocabularyEntry) {
+    func removeAjoutVocabularyEntry(_ entry: VocabularyEntry) {
         var dictionary = loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
 
         var candidates = dictionary[entry.reading] ?? []
@@ -530,13 +530,13 @@ extension ContentView {
             dictionary[entry.reading] = candidates
         }
 
-        saveUserDictionary(dictionary)
-        loadUserDictionaryEntries()
+        saveAjoutVocabulary(dictionary)
+        loadAjoutVocabularyEntries()
     }
 
-    func removeAllUserDictionaryEntries() {
-        saveUserDictionary([:])
-        loadUserDictionaryEntries()
+    func removeAllAjoutVocabularyEntries() {
+        saveAjoutVocabulary([:])
+        loadAjoutVocabularyEntries()
     }
 
     func removeLearnedDictionaryEntry(_ entry: VocabularyEntry) {
@@ -559,15 +559,15 @@ extension ContentView {
         loadLearnedDictionaryEntries()
     }
 
-    func reimportInitialUserDictionaryEntries() {
+    func reimportInitialAjoutVocabularyEntries() {
         guard let defaults = Self.sharedDefaults else {
             return
         }
 
-        defaults.removeObject(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
-        defaults.removeObject(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSignature)
-        migrateInitialUserDictionaryIfNeeded()
-        loadUserDictionaryEntries()
+        defaults.removeObject(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyMigrated)
+        defaults.removeObject(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSignature)
+        migrateInitialAjoutVocabularyIfNeeded()
+        loadAjoutVocabularyEntries()
         SettingsSyncNotification.postSettingsDidChange()
     }
 

@@ -12,7 +12,7 @@ extension KanaKanjiStore {
             return
         }
 
-        var dictionary = userDictionary()
+        var dictionary = ajoutVocabulary()
         var candidates = dictionary[normalizedReading] ?? []
 
         if let existingIndex = candidates.firstIndex(of: trimmedCandidate) {
@@ -21,8 +21,8 @@ extension KanaKanjiStore {
 
         candidates.insert(trimmedCandidate, at: 0)
         dictionary[normalizedReading] = Array(candidates.prefix(32))
-        withCacheLock { cachedUserDictionary = dictionary }
-        saveUserDictionary(dictionary)
+        withCacheLock { cachedAjoutVocabulary = dictionary }
+        saveAjoutVocabulary(dictionary)
     }
 
     func addLearnedEntry(reading: String, candidate: String, allowKanaIdentity: Bool = false) {
@@ -182,13 +182,13 @@ extension KanaKanjiStore {
         scheduleLearningPersist()
     }
 
-    func saveUserDictionary(_ dictionary: [String: [String]]) {
+    func saveAjoutVocabulary(_ dictionary: [String: [String]]) {
         guard let defaults,
                 let encoded = try? JSONEncoder().encode(dictionary) else {
             return
         }
 
-        defaults.set(encoded, forKey: KanaKanjiStorageKeys.userDictionary)
+        defaults.set(encoded, forKey: KanaKanjiStorageKeys.ajoutVocabulary)
     }
 
     func saveLearnedDictionary(_ dictionary: [String: [String]]) {

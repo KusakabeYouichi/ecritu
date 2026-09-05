@@ -268,7 +268,7 @@ extension ContentView {
 
     func buildInitialDataSnapshot() -> InitialDataSnapshot {
         return InitialDataSnapshot(
-            userDictionaryEntries: userDictionaryEntriesSnapshot(),
+            ajoutVocabularyEntries: ajoutVocabularyEntriesSnapshot(),
             learnedDictionaryEntries: learnedDictionaryEntriesSnapshot(),
             suppressionDictionaryEntries: suppressionDictionaryEntriesSnapshot(),
             shortcutDictionaryEntries: shortcutDictionaryEntriesSnapshot()
@@ -283,7 +283,7 @@ extension ContentView {
     @discardableResult
     func applyInitialDataSnapshot(_ snapshot: InitialDataSnapshot) -> Bool {
         let current = InitialDataSnapshot(
-            userDictionaryEntries: userDictionaryEntries,
+            ajoutVocabularyEntries: ajoutVocabularyEntries,
             learnedDictionaryEntries: learnedDictionaryEntries,
             suppressionDictionaryEntries: suppressionDictionaryEntries,
             shortcutDictionaryEntries: shortcutDictionaryEntries
@@ -292,7 +292,7 @@ extension ContentView {
             return false
         }
 
-        userDictionaryEntries = snapshot.userDictionaryEntries
+        ajoutVocabularyEntries = snapshot.ajoutVocabularyEntries
         learnedDictionaryEntries = snapshot.learnedDictionaryEntries
         suppressionDictionaryEntries = snapshot.suppressionDictionaryEntries
         shortcutDictionaryEntries = snapshot.shortcutDictionaryEntries
@@ -311,7 +311,7 @@ extension ContentView {
     func performInitialMigrationsInBackground() async {
         await withCheckedContinuation { continuation in
             DispatchQueue.global(qos: .utility).async {
-                migrateInitialUserDictionaryIfNeeded()
+                migrateInitialAjoutVocabularyIfNeeded()
                 cleanupLegacyMiscEraAjoutResidueIfNeeded()
                 migrateInitialShortcutVocabularyIfNeeded()
                 migrateInitialSuppressionDictionaryIfNeeded()
@@ -342,7 +342,7 @@ extension ContentView {
 
             recordBootstrapTimingPart("snapAtMs=\(containerBootstrapOffsetMilliseconds()) snapWaitMs=\(waitMs) snapLoadMs=\(loadMs) snapApplyMs=\(applyMs)")
             appendContainerDiagnosticsLog(
-                "\(logEventPrefix) snapshot反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: snapshotStartedAt)) waitMs=\(waitMs) loadMs=\(loadMs) applyMs=\(applyMs) user=\(snapshot.userDictionaryEntries.count) learned=\(snapshot.learnedDictionaryEntries.count) suppression=\(snapshot.suppressionDictionaryEntries.count) shortcut=\(snapshot.shortcutDictionaryEntries.count)"
+                "\(logEventPrefix) snapshot反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: snapshotStartedAt)) waitMs=\(waitMs) loadMs=\(loadMs) applyMs=\(applyMs) user=\(snapshot.ajoutVocabularyEntries.count) learned=\(snapshot.learnedDictionaryEntries.count) suppression=\(snapshot.suppressionDictionaryEntries.count) shortcut=\(snapshot.shortcutDictionaryEntries.count)"
             )
             loadKeyboardDiagnosticsState()
             onCompleted?()
@@ -368,7 +368,7 @@ extension ContentView {
 
             recordBootstrapTimingPart("migAtMs=\(containerBootstrapOffsetMilliseconds()) migWaitMs=\(waitMs) migMs=\(migrateMs) migApplyMs=\(applyMs) migChanged=\(didApply)")
             appendContainerDiagnosticsLog(
-                "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) waitMs=\(waitMs) migrateMs=\(migrateMs) reloadMs=\(reloadMs) applyMs=\(applyMs) changed=\(didApply) user=\(migratedSnapshot.userDictionaryEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
+                "コンテナ初回表示 migration反映完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: migrationStartedAt)) waitMs=\(waitMs) migrateMs=\(migrateMs) reloadMs=\(reloadMs) applyMs=\(applyMs) changed=\(didApply) user=\(migratedSnapshot.ajoutVocabularyEntries.count) learned=\(migratedSnapshot.learnedDictionaryEntries.count) suppression=\(migratedSnapshot.suppressionDictionaryEntries.count) shortcut=\(migratedSnapshot.shortcutDictionaryEntries.count)"
             )
             loadKeyboardDiagnosticsState()
             SettingsSyncNotification.postSettingsDidChange()
@@ -632,7 +632,7 @@ extension ContentView {
     // (AppliedSeed)が無い端末の初回削除同期でのみ使う既知リスト(手動追加語彙は対象外)。
     // 抑制側と違い「現状=全て播種由来」とは見なせない(ユーザはUIで手動追加語彙を使う)ため、
     // 撤回済みと確定しているペアだけを列挙する。
-    static let legacyRetractedInitialUserDictionaryEntries: [String: [String]] = [
+    static let legacyRetractedInitialAjoutVocabularyEntries: [String: [String]] = [
         "にほん": ["2本"],
         "まいくろ": ["µ"],
         "いちえんだま": ["1円玉"], "いちじ": ["1次"], "いちだい": ["1台"], "いちまい": ["1枚"],
@@ -758,12 +758,12 @@ extension ContentView {
         defaults.set(true, forKey: SettingsKeys.kanaKanjiMiscEraAjoutResidueCleanupCompleted)
     }
 
-    func migrateInitialUserDictionaryIfNeeded() {
+    func migrateInitialAjoutVocabularyIfNeeded() {
         guard let defaults = Self.sharedDefaults else {
             return
         }
 
-        let initialDictionary = loadBundledInitialUserDictionaryEntries()
+        let initialDictionary = loadBundledInitialAjoutVocabularyEntries()
 
         guard !initialDictionary.isEmpty else {
             return
@@ -771,13 +771,13 @@ extension ContentView {
 
         let initialSignature = dictionarySignature(initialDictionary)
         let appliedSignature = defaults.string(
-            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSignature
+            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSignature
         )
 
         // 播種記録(AppliedSeed)が無い端末では、署名が一致していても一度だけ削除同期を実行する
         // (削除同期導入前に撤回済みエントリが残留しているのを回収するため。抑制側 1889 と同機構)。
         let hasAppliedSeed = defaults.object(
-            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSeed
+            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed
         ) != nil
         guard appliedSignature != initialSignature || !hasAppliedSeed else {
             return
@@ -791,10 +791,10 @@ extension ContentView {
         // 初回(播種記録なし)は手動追加語彙と区別できないため、撤回済みと確定している
         // 既知リスト(legacyRetracted…)だけをベースラインにする。
         let previouslySeeded = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSeed)
+            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed)
         )
         let removalBaseline = previouslySeeded.isEmpty
-            ? Self.legacyRetractedInitialUserDictionaryEntries
+            ? Self.legacyRetractedInitialAjoutVocabularyEntries
             : previouslySeeded
         for (reading, candidates) in removalBaseline {
             let retracted = Set(candidates).subtracting(Set(initialDictionary[reading] ?? []))
@@ -817,12 +817,12 @@ extension ContentView {
 
         saveDictionaryEntries(
             initialDictionary,
-            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSeed
+            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed
         )
-        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialUserDictionaryMigrated)
+        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyMigrated)
         defaults.set(
             initialSignature,
-            forKey: SettingsKeys.kanaKanjiInitialUserDictionaryAppliedSignature
+            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSignature
         )
     }
 
@@ -921,7 +921,7 @@ extension ContentView {
             return
         }
 
-        let currentUserDictionary = normalizedDictionaryEntries(
+        let currentAjoutVocabulary = normalizedDictionaryEntries(
             loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
         )
         let currentLearnedDictionary = normalizedDictionaryEntries(
@@ -936,7 +936,7 @@ extension ContentView {
             }
 
             // Legacy mixed data cannot be distinguished reliably. Keep ambiguous items on manual side.
-            if currentUserDictionary[entry.reading]?.contains(entry.candidate) == true {
+            if currentAjoutVocabulary[entry.reading]?.contains(entry.candidate) == true {
                 continue
             }
 
@@ -1007,7 +1007,7 @@ extension ContentView {
                     totalMs: containerDiagnosticsElapsedMilliseconds(since: reappearQueuedAt)
                 )
                 appendContainerDiagnosticsLog(
-                    "コンテナ再表示 refresh完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: refreshStartedAt)) user=\(userDictionaryEntries.count) learned=\(learnedDictionaryEntries.count) suppression=\(suppressionDictionaryEntries.count) shortcut=\(shortcutDictionaryEntries.count)"
+                    "コンテナ再表示 refresh完了 elapsedMs=\(containerDiagnosticsElapsedMilliseconds(since: refreshStartedAt)) user=\(ajoutVocabularyEntries.count) learned=\(learnedDictionaryEntries.count) suppression=\(suppressionDictionaryEntries.count) shortcut=\(shortcutDictionaryEntries.count)"
                 )
                 loadKeyboardDiagnosticsState()
             }

@@ -820,8 +820,8 @@ extension KanaKanjiConverter {
     func ordinalMeFallbackCandidates(
         for reading: String,
         hasDirectCandidates: Bool,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int
     ) -> [String] {
@@ -845,13 +845,13 @@ extension KanaKanjiConverter {
         var stemCandidates = uniqueCandidates(
             from: candidatesForReading(
                 stem,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             ) + inflectionCandidates(
                 for: stem,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode,
                 limit: limit
             )
@@ -865,13 +865,13 @@ extension KanaKanjiConverter {
                 stemCandidates = uniqueCandidates(
                     from: candidatesForReading(
                         trimmedStem,
-                        userDictionary: userDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: ajoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode
                     ) + inflectionCandidates(
                         for: trimmedStem,
-                        userDictionary: userDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: ajoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
                         limit: limit
                     )
@@ -937,8 +937,8 @@ extension KanaKanjiConverter {
 
     func numericCounterCompoundCandidates(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int
     ) -> [String] {
@@ -983,8 +983,8 @@ extension KanaKanjiConverter {
             let prefixCandidates = uniqueCandidates(
                 from: candidatesForReading(
                     prefixReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             ).filter { allowedPrefixes.contains($0) }
@@ -999,8 +999,8 @@ extension KanaKanjiConverter {
                 uniqueCandidates(
                     from: candidatesForReading(
                         suffixReading,
-                        userDictionary: userDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: ajoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode
                     )
                 ).filter { allowedSuffixes.contains($0) },
@@ -1036,8 +1036,8 @@ extension KanaKanjiConverter {
             let prefixCandidates = uniqueCandidates(
                 from: candidatesForReading(
                     prefixReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             ).filter { allowedPrefixes.contains($0) }
@@ -1142,13 +1142,13 @@ extension KanaKanjiConverter {
         guard stemReading.count >= 2, containsKanji(stemSurface) else {
             return false
         }
-        let userDictionary = store.userDictionary()
-        let initialUserDictionary = store.initialUserDictionary()
+        let ajoutVocabulary = store.ajoutVocabulary()
+        let initialAjoutVocabulary = store.initialAjoutVocabulary()
         // 全読みが辞書語(お土産 等)なら派生ではなく通常の辞書語同士の勝負に任せる
         let wholeCandidates = candidatesForReading(
             reading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
+            ajoutVocabulary: ajoutVocabulary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: .surface
         )
         if wholeCandidates.contains(singleBest) {
@@ -1157,8 +1157,8 @@ extension KanaKanjiConverter {
         let stemCandidates = orderedDerivationBaseCandidates(
             candidatesForReading(
                 stemReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: .surface
             ),
             reading: stemReading
@@ -1171,8 +1171,8 @@ extension KanaKanjiConverter {
     // 辞書語(餞別等)は system 候補が上位に来るため、補完として低めのスコアで併置する。
     func nounKanjiAffixCandidates(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int
     ) -> [String] {
@@ -1189,8 +1189,8 @@ extension KanaKanjiConverter {
             return uniqueCandidates(
                 from: candidatesForReading(
                     stemReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             ).filter { candidate in

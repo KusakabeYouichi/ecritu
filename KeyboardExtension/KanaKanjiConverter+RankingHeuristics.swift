@@ -258,7 +258,7 @@ extension KanaKanjiConverter {
             let seeded = seedOrder.filter { ordered.contains($0) }
             ordered = seeded + ordered.filter { !seedSet.contains($0) }
         } else if !Self.derivationLMPromotionDeniedReadings.contains(reading),
-            store.userDictionary()[reading] == nil,
+            store.ajoutVocabulary()[reading] == nil,
             store.learnedDictionary()[reading] == nil,
             let currentFirst = ordered.first {
             let kanjiCandidates = ordered.filter { $0 != reading && Self.containsKanjiCandidate($0) }
@@ -438,8 +438,8 @@ extension KanaKanjiConverter {
 
     func applyInflectionRankingHeuristics(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         systemCandidates: [String],
         inflectionDerivedCandidates: Set<String>,
@@ -448,15 +448,15 @@ extension KanaKanjiConverter {
         guard let matchedSuffix = matchingInflectionRankingSuffix(for: reading) else {
             applyGodanImperativeBoost(
                 for: reading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode,
                 to: &scores
             )
             applyGodanVolitionalBoost(
                 for: reading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode,
                 to: &scores
             )
@@ -509,15 +509,15 @@ extension KanaKanjiConverter {
         applyKuruCandidateBoost(for: reading, to: &scores)
         applyGodanImperativeBoost(
             for: reading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
+            ajoutVocabulary: ajoutVocabulary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
         applyGodanVolitionalBoost(
             for: reading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
+            ajoutVocabulary: ajoutVocabulary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode,
             to: &scores
         )
@@ -895,8 +895,8 @@ extension KanaKanjiConverter {
 
     func applyGodanImperativeBoost(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         to scores: inout [String: Int]
     ) {
@@ -909,8 +909,8 @@ extension KanaKanjiConverter {
             let baseCandidates = Set(
                 candidatesForReading(
                     baseReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -939,8 +939,8 @@ extension KanaKanjiConverter {
     // るため対象外。ここは godan(oForm≠よ)専用。
     func applyGodanVolitionalBoost(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         to scores: inout [String: Int]
     ) {
@@ -956,8 +956,8 @@ extension KanaKanjiConverter {
             let baseCandidates = Set(
                 candidatesForReading(
                     baseReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -974,8 +974,8 @@ extension KanaKanjiConverter {
                 let suruReading = stem + "する"
                 let suruCandidates = candidatesForReading(
                     suruReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
                 return !suruCandidates.isEmpty
