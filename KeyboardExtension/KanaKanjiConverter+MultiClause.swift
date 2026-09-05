@@ -2000,6 +2000,12 @@ extension KanaKanjiConverter {
                             Self.multiClauseColorTintStemSurfaces.contains(nodes[backPointer[prevIdx]].surface) {
                             cost += Self.multiClauseKanjiAfterColorGaPenalty
                         }
+                        #if DEBUG
+                        // 時限トレース(2803): MULTI_TRACE_EDGES=1 で全遷移の累積コストを吐く(最良以外の prev も見える)
+                        if ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil {
+                            print("MULTIEDGE \(prevNode.surface)→\(node.surface) cum=\(cost) (prev cum=\(best[prevIdx]))")
+                        }
+                        #endif
                         if cost < best[idx] {
                             best[idx] = cost
                             backPointer[idx] = prevIdx
