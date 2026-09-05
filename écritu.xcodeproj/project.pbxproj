@@ -86,6 +86,7 @@
 		B2C3D4E5F6A700000000FF01 /* KanaKanjiStore+Learning.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */; };
 		A1B2C3D4E5F600000000EE01 /* KanaKanjiSQLiteIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */; };
 		A69D0CF4F6634A4FB50443E1 /* KanaKanjiConverter+Inflection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */; };
+		1C95BF648CCE7E4D46C133D7 /* KanaKanjiConverter+KanaIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */; };
 		4734C94872E64FB3B73C9518 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */; };
 		0D22D01D5F54458B8AC30432 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */; };
 		CFF9B0163E5247C5A9BDA3B6 /* KanaKanjiConverter+RankingHeuristics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */; };
@@ -157,6 +158,7 @@
 		B2C3D4E5F6A700000000FF02 /* KanaKanjiStore+Learning.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */; };
 		A1B2C3D4E5F600000000EE02 /* KanaKanjiSQLiteIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */; };
 		0BC3CAC6405B450D9B804EB3 /* KanaKanjiConverter+Inflection.swift in Sources */ = {isa = PBXBuildFile; fileRef = F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */; };
+		3BA3DC19F07809AF51C65796 /* KanaKanjiConverter+KanaIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */; };
 		36371FDAA33E4893ABDAE864 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */; };
 		275ECC90B0E942DFA3DE2EF5 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */; };
 		D4C98B3B37BF4A51954BE3ED /* KanaKanjiConverter+RankingHeuristics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */; };
@@ -265,6 +267,7 @@
 		B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiStore+Learning.swift"; sourceTree = "<group>"; };
 		A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiSQLiteIndex.swift; sourceTree = "<group>"; };
 		F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+Inflection.swift"; sourceTree = "<group>"; };
+		2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+KanaIdentity.swift"; sourceTree = "<group>"; };
 		FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+CompoundDerivation.swift"; sourceTree = "<group>"; };
 		4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+PostfixDerivation.swift"; sourceTree = "<group>"; };
 		940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiConverter+RankingHeuristics.swift"; sourceTree = "<group>"; };
@@ -398,6 +401,7 @@
 				B2C3D4E5F6A700000000FF03 /* KanaKanjiStore+Learning.swift */,
 				A1B2C3D4E5F600000000EE03 /* KanaKanjiSQLiteIndex.swift */,
 				F047B9E61D3B4C70B04344B2 /* KanaKanjiConverter+Inflection.swift */,
+				2D41D114494590F355DDD0B5 /* KanaKanjiConverter+KanaIdentity.swift */,
 				FE149C0EAA98417AAF394051 /* KanaKanjiConverter+CompoundDerivation.swift */,
 				4E225984C8C346C49B2C37A2 /* KanaKanjiConverter+PostfixDerivation.swift */,
 				940CAA33AC5A452DA5B06B46 /* KanaKanjiConverter+RankingHeuristics.swift */,
@@ -753,6 +757,7 @@
 				B2C3D4E5F6A700000000FF01 /* KanaKanjiStore+Learning.swift in Sources */,
 				A1B2C3D4E5F600000000EE01 /* KanaKanjiSQLiteIndex.swift in Sources */,
 				A69D0CF4F6634A4FB50443E1 /* KanaKanjiConverter+Inflection.swift in Sources */,
+				1C95BF648CCE7E4D46C133D7 /* KanaKanjiConverter+KanaIdentity.swift in Sources */,
 				4734C94872E64FB3B73C9518 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */,
 				0D22D01D5F54458B8AC30432 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */,
 				CFF9B0163E5247C5A9BDA3B6 /* KanaKanjiConverter+RankingHeuristics.swift in Sources */,
@@ -812,6 +817,7 @@
 				B2C3D4E5F6A700000000FF02 /* KanaKanjiStore+Learning.swift in Sources */,
 				A1B2C3D4E5F600000000EE02 /* KanaKanjiSQLiteIndex.swift in Sources */,
 				0BC3CAC6405B450D9B804EB3 /* KanaKanjiConverter+Inflection.swift in Sources */,
+				3BA3DC19F07809AF51C65796 /* KanaKanjiConverter+KanaIdentity.swift in Sources */,
 				36371FDAA33E4893ABDAE864 /* KanaKanjiConverter+CompoundDerivation.swift in Sources */,
 				275ECC90B0E942DFA3DE2EF5 /* KanaKanjiConverter+PostfixDerivation.swift in Sources */,
 				D4C98B3B37BF4A51954BE3ED /* KanaKanjiConverter+RankingHeuristics.swift in Sources */,
