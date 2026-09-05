@@ -428,6 +428,24 @@ struct KeyboardRootView: View {
         inputMode == .kana && !composingText.isEmpty
     }
 
+    // 改行/確定キー(タイトル・アイコン・カタカナ確定の長押し/ダブルタップを束ねる)。
+    // 各レイアウトで同じ引数列を 7 か所に書いていたのを集約(2805)
+    func returnActionKey(fixedWidth: CGFloat? = nil) -> ActionKeyButton {
+        ActionKeyButton(
+            title: returnActionKeyTitle,
+            systemImageName: returnActionKeySystemImageName,
+            accessibilityLabel: returnActionKeyAccessibilityLabel,
+            fontSize: returnActionKeyFontSize,
+            fixedWidth: fixedWidth,
+            isEnabled: isReturnKeyEnabled,
+            onLongPress: returnKeyKatakanaLongPressAction,
+            onDoubleTap: returnKeyKatakanaDoubleTapAction,
+            doubleTapThreshold: katakanaCommitDoubleTapThreshold,
+            prefersImmediateSingleTapWhenDoubleTapEnabled: true,
+            action: onReturn
+        )
+    }
+
     var returnActionKeyTitle: String {
         if isReturnActsAsCommitKey {
             return "確定"
