@@ -294,11 +294,16 @@ extension KanaKanjiConverter {
         "春慶塗\t箸": 2500,
     ]
     // 連語の後段は表層の前方一致で引く(解けて/解けてきます 等の活用派生ノードにも効かせる。2739)
+    // 後段は丁寧接頭辞 お/ご を剥がした表層でも照合する(春慶塗の お箸。2809)
     static func acrossParticleCollocationBonus(prevPrev: String, surface: String) -> Int? {
         var best: Int? = nil
+        let stripped: Substring? = (surface.hasPrefix("お") || surface.hasPrefix("ご")) && surface.count >= 2
+            ? surface.dropFirst()
+            : nil
         for (key, bonus) in multiClauseAcrossNoCollocationBonuses {
             let parts = key.split(separator: "\t", maxSplits: 1).map(String.init)
-            guard parts.count == 2, parts[0] == prevPrev, surface.hasPrefix(parts[1]) else { continue }
+            guard parts.count == 2, parts[0] == prevPrev,
+                surface.hasPrefix(parts[1]) || (stripped?.hasPrefix(parts[1]) ?? false) else { continue }
             best = max(best ?? 0, bonus)
         }
         return best
