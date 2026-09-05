@@ -27,6 +27,7 @@
 		A1B2C3D4E5F600000T000011 /* KeyboardRootViewSupportTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5CC113350DED3CCDEF21E28B /* KeyboardRootViewSupportTypes.swift */; };
 		A1B2C3D4E5F600000T000012 /* KeyboardViewController+CandidatePresentation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A6337D42D6140E18CCA1AD5 /* KeyboardViewController+CandidatePresentation.swift */; };
 		A1B2C3D4E5F600000T000013 /* KeyboardViewController+Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */; };
+		7CDF556B7B48E4D2F201B488 /* KeyboardViewController+MallocCensus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F394172DDE64DDC1A7D8766 /* KeyboardViewController+MallocCensus.swift */; };
 		A1B2C3D4E5F600000T000014 /* KeyboardViewController+InputHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEBF85556C12EA4F6FBD4883 /* KeyboardViewController+InputHandling.swift */; };
 		A1B2C3D4E5F600000T000015 /* KeyboardViewController+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */; };
 		A1B2C3D4E5F600000T000016 /* KeyboardViewController+MarkedTextCommit.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEFC195B623C4F8B8493F505 /* KeyboardViewController+MarkedTextCommit.swift */; };
@@ -162,6 +163,7 @@
 		6181BCCBB3784740A7CC7802 /* KanaKanjiConverter+SurfaceFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2EA6857DEF7B4AD5AF584721 /* KanaKanjiConverter+SurfaceFilters.swift */; };
 		9F66315689C04FCE886B08C2 /* KanaKanjiConverter+MultiClause.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F366FBFCE640FD9FAF12CA /* KanaKanjiConverter+MultiClause.swift */; };
 		F807D4921FE2F90C8C2AC439 /* KeyboardViewController+Diagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */; };
+		ED612FD56E8E6B72DEE3811A /* KeyboardViewController+MallocCensus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F394172DDE64DDC1A7D8766 /* KeyboardViewController+MallocCensus.swift */; };
 		FC91CDA19A4DE7BCD13D9440 /* KeyboardRootView+FontSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4FCBC2AEE4D692642405836F /* KeyboardRootView+FontSizes.swift */; };
 /* End PBXBuildFile section */
 
@@ -285,6 +287,7 @@
 		DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayerZIndex.swift; sourceTree = "<group>"; };
 		DE9D906E4DF49E1393F8CA35 /* KeyboardRootView+EmojiKaomojiLayouts.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+EmojiKaomojiLayouts.swift"; sourceTree = "<group>"; };
 		E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+Diagnostics.swift"; sourceTree = "<group>"; };
+		2F394172DDE64DDC1A7D8766 /* KeyboardViewController+MallocCensus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardViewController+MallocCensus.swift"; sourceTree = "<group>"; };
 		E5F74D99919C4D40677DFB1B /* FlickKanaMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKanaMap.swift; sourceTree = "<group>"; };
 		E807A57473C85475BCAA585B /* EcrituApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EcrituApp.swift; sourceTree = "<group>"; };
 		E9737BDAEF466B520663D3C6 /* écritu.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "écritu.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -420,6 +423,7 @@
 				5A6337D42D6140E18CCA1AD5 /* KeyboardViewController+CandidatePresentation.swift */,
 				6EE34AD2022A99BC02FBDD3C /* DefaultDictionaryResources */,
 				E350B63B760B3D9746E360EF /* KeyboardViewController+Diagnostics.swift */,
+				2F394172DDE64DDC1A7D8766 /* KeyboardViewController+MallocCensus.swift */,
 				EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */,
 				F17E916A7D82944FB7C4BAE9 /* KeyboardViewController+SupplementaryCandidates.swift */,
 				CFBF1A2F721846F282B160F1 /* KeyboardViewController+Settings.swift */,
@@ -726,6 +730,7 @@
 				A1B2C3D4E5F600000T000011 /* KeyboardRootViewSupportTypes.swift in Sources */,
 				A1B2C3D4E5F600000T000012 /* KeyboardViewController+CandidatePresentation.swift in Sources */,
 				A1B2C3D4E5F600000T000013 /* KeyboardViewController+Diagnostics.swift in Sources */,
+				7CDF556B7B48E4D2F201B488 /* KeyboardViewController+MallocCensus.swift in Sources */,
 				A1B2C3D4E5F600000T000014 /* KeyboardViewController+InputHandling.swift in Sources */,
 				A1B2C3D4E5F600000T000015 /* KeyboardViewController+Layout.swift in Sources */,
 				A1B2C3D4E5F600000T000016 /* KeyboardViewController+MarkedTextCommit.swift in Sources */,
@@ -830,6 +835,7 @@
 				8C5911AA60D14959949436AB /* KeyboardViewController+CandidatePresentation.swift in Sources */,
 				4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */,
 				F807D4921FE2F90C8C2AC439 /* KeyboardViewController+Diagnostics.swift in Sources */,
+				ED612FD56E8E6B72DEE3811A /* KeyboardViewController+MallocCensus.swift in Sources */,
 				ECDBEEB3F6EF91C0EB7C3E85 /* KeyboardViewController+Layout.swift in Sources */,
 				B22E76DC1B5D975F1DC62A62 /* KeyboardViewController+SupplementaryCandidates.swift in Sources */,
 				C62F944FB8A8DE4CE9BF51FF /* KeyboardViewController+Settings.swift in Sources */,

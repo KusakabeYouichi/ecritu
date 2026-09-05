@@ -57,7 +57,7 @@ def main() -> int:
 
     like_quoted = re.escape(like_name)
     ref_match = re.search(
-        rf"^\t\t([0-9A-F]{{24}}) /\* {like_quoted} \*/ = \{{isa = PBXFileReference;.*\n", text, re.M
+        rf"^\t\t([0-9A-Z]{{24}}) /\* {like_quoted} \*/ = \{{isa = PBXFileReference;.*\n", text, re.M
     )
     if not ref_match:
         print(f"手本の PBXFileReference が見つからない: {like_name}", file=sys.stderr)
@@ -67,7 +67,7 @@ def main() -> int:
 
     build_matches = list(
         re.finditer(
-            rf"^\t\t([0-9A-F]{{24}}) /\* {like_quoted} in Sources \*/ = \{{isa = PBXBuildFile; fileRef = {like_ref_id} /\* {like_quoted} \*/; \}};\n",
+            rf"^\t\t([0-9A-Z]{{24}}) /\* {like_quoted} in Sources \*/ = \{{isa = PBXBuildFile; fileRef = {like_ref_id} /\* {like_quoted} \*/; \}};\n",
             text,
             re.M,
         )
