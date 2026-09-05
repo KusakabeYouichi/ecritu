@@ -158,3 +158,15 @@ final class KeyboardCandidateMergingTests: XCTestCase {
     }
 }
 
+
+extension KeyboardCandidateMergingTests {
+    // 2810: ほんと の 本当 は表示の最後尾(絵文字より後ろ)。読みが違えば触らない
+    func testPresentationTailSeedDemotesHontouAfterEmoji() {
+        let input = ["ほんと", "本当", "ホント", "🤔", "本途"]
+        XCTAssertEqual(
+            SupplementaryCandidateMerger.demotingPresentationTailSeed(input, reading: "ほんと"),
+            ["ほんと", "ホント", "🤔", "本途", "本当"]
+        )
+        XCTAssertEqual(SupplementaryCandidateMerger.demotingPresentationTailSeed(input, reading: "ほんとだ"), input)
+    }
+}

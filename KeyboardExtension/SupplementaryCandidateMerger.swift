@@ -231,6 +231,20 @@ enum SupplementaryCandidateMerger {
         return (replaced != candidate && candidateSet.contains(replaced)) ? replaced : nil
     }
 
+    // 読みが完全一致するときだけ、KanaKanjiSeedDictionary.presentationTailSeed の表層を最後尾へ回す
+    // (ほんと→本当。絵文字・顔文字より後ろ。候補としては残す。2810)
+    static func demotingPresentationTailSeed(_ candidates: [String], reading: String) -> [String] {
+        guard let tail = KanaKanjiSeedDictionary.presentationTailSeed[reading] else {
+            return candidates
+        }
+        let tailSet = Set(tail)
+        let demoted = candidates.filter { tailSet.contains($0) }
+        guard !demoted.isEmpty else {
+            return candidates
+        }
+        return candidates.filter { !tailSet.contains($0) } + tail.filter { demoted.contains($0) }
+    }
+
     // ユーザ方針: 「出来る」系は候補に出してよいが、必ず「できる」系より後ろ。
     // 「出来」の直後がひらがな(できる活用の頭 る/た/て/ま/な/ち/れ)で、同一リストに
     // 「でき」へ置換した版が存在する場合のみ、漢字版をかな版の直後へ回す。
