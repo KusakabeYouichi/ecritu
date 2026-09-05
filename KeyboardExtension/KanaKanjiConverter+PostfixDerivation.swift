@@ -385,6 +385,11 @@ extension KanaKanjiConverter {
             guard !stem.isEmpty else {
                 continue
             }
+            // ご+助数詞読み(ごかこく/ごかしょ/ごほん 等)は数詞 5 の複合(5か国)で、丁寧接頭辞ではない。
+            // ご箇国/ご過酷 の合成が 5か国 を押し下げていた(2814)。本表の助数詞(2 文字以上)に限る
+            if prefix == "ご", stem.count >= 2, Self.numericCounterSuffixCandidatesByReading[stem] != nil {
+                continue
+            }
 
             derived.append(
                 contentsOf: politePrefixSuruCandidates(
