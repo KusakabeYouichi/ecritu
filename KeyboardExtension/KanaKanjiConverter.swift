@@ -169,9 +169,9 @@ final class KanaKanjiConverter {
     }
 
     func preloadSharedDataCachesIfNeeded() {
-        _ = store.userDictionary()
+        _ = store.ajoutVocabulary()
         _ = store.learnedDictionary()
-        _ = store.initialUserDictionary()
+        _ = store.initialAjoutVocabulary()
         _ = store.suppressedCandidatesByReading()
         _ = store.learningScores(for: "あ")
     }
@@ -182,7 +182,7 @@ final class KanaKanjiConverter {
     //   > 数値単位 > BFS postfix > 名詞漢字接辞 > 活用 > ガル形。
     // 補正(ブースト/ペナルティ)は +RankingHeuristics の定数を参照。
     enum CandidateScore {
-        static let userDictionary = 2400        // 追加語彙(手動+初期)
+        static let ajoutVocabulary = 2400        // 追加語彙(手動+初期)
         static let learnedDictionary = 2280     // 学習語彙
         // 補助語彙(ryukyu/vin/it.plist=SecondVocab)。人手で足した語なので辞書より上に置く。
         // 既定 word_cost が高め(3字11000/4字7500)なので、そのままだと同読みの収穫語より後ろに
@@ -228,9 +228,9 @@ final class KanaKanjiConverter {
         let reading: String
         let limit: Int
         let mode: KanaKanjiCandidateSourceMode
-        let userDictionary: [String: [String]]
+        let ajoutVocabulary: [String: [String]]
         let learnedDictionary: [String: [String]]
-        let initialUserDictionary: [String: [String]]
+        let initialAjoutVocabulary: [String: [String]]
         let learningScoresForReading: [String: Int]
         let suppressedCandidatesByReading: [String: Set<String>]
         let systemCandidates: [String]
@@ -324,14 +324,14 @@ final class KanaKanjiConverter {
         limit: Int,
         mode: KanaKanjiCandidateSourceMode
     ) -> CandidateGenerationContext {
-        let manualUserDictionary = store.userDictionary()
+        let manualAjoutVocabulary = store.ajoutVocabulary()
         let learnedDictionary = store.learnedDictionary()
-        let initialUserDictionary = store.initialUserDictionary()
+        let initialAjoutVocabulary = store.initialAjoutVocabulary()
 
         let systemCandidates = systemCandidates(for: reading, mode: mode)
         let userCandidates = uniqueCandidates(
-            from: (manualUserDictionary[reading] ?? [])
-                + (initialUserDictionary[reading] ?? [])
+            from: (manualAjoutVocabulary[reading] ?? [])
+                + (initialAjoutVocabulary[reading] ?? [])
         )
         let userCandidateSet = Set(userCandidates)
         let learnedCandidates = uniqueCandidates(
@@ -344,9 +344,9 @@ final class KanaKanjiConverter {
             reading: reading,
             limit: limit,
             mode: mode,
-            userDictionary: manualUserDictionary,
+            ajoutVocabulary: manualAjoutVocabulary,
             learnedDictionary: learnedDictionary,
-            initialUserDictionary: initialUserDictionary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             learningScoresForReading: store.learningScores(for: reading),
             suppressedCandidatesByReading: store.suppressedCandidatesByReading(),
             systemCandidates: systemCandidates,
@@ -408,7 +408,7 @@ final class KanaKanjiConverter {
         )
         addCandidates(normalSystemCandidates, baseScore: CandidateScore.systemDictionary, to: &scores)
         addCandidates(harvestTierCandidates, baseScore: CandidateScore.harvestTierDictionary, to: &scores)
-        addCandidates(context.userCandidates, baseScore: CandidateScore.userDictionary, to: &scores)
+        addCandidates(context.userCandidates, baseScore: CandidateScore.ajoutVocabulary, to: &scores)
         addCandidates(context.learnedCandidates, baseScore: CandidateScore.learnedDictionary, to: &scores)
         // 完全一致専用候補(踊り字 等)。入力全体がこの読みと一致した単文節でのみ供給する。
         // systemCandidates には入れていないので、語幹合成・連文節には現れない。
@@ -440,8 +440,8 @@ final class KanaKanjiConverter {
 
         let inflectionDerivedCandidates = inflectionCandidates(
             for: reading,
-            userDictionary: context.userDictionary,
-            initialUserDictionary: context.initialUserDictionary,
+            ajoutVocabulary: context.ajoutVocabulary,
+            initialAjoutVocabulary: context.initialAjoutVocabulary,
             systemCandidateMode: context.mode,
             limit: limit * 3
         )
@@ -450,8 +450,8 @@ final class KanaKanjiConverter {
         addCandidates(
             adjectiveGaruCandidates(
                 for: reading,
-                userDictionary: context.userDictionary,
-                initialUserDictionary: context.initialUserDictionary,
+                ajoutVocabulary: context.ajoutVocabulary,
+                initialAjoutVocabulary: context.initialAjoutVocabulary,
                 systemCandidateMode: context.mode,
                 limit: limit * 3
             ),
@@ -462,8 +462,8 @@ final class KanaKanjiConverter {
         addCandidates(
             politePrefixPassthroughCandidates(
                 for: reading,
-                userDictionary: context.userDictionary,
-                initialUserDictionary: context.initialUserDictionary,
+                ajoutVocabulary: context.ajoutVocabulary,
+                initialAjoutVocabulary: context.initialAjoutVocabulary,
                 systemCandidateMode: context.mode,
                 limit: limit * 2
             ),
@@ -475,8 +475,8 @@ final class KanaKanjiConverter {
             ordinalMeFallbackCandidates(
                 for: reading,
                 hasDirectCandidates: context.hasDirectCandidates,
-                userDictionary: context.userDictionary,
-                initialUserDictionary: context.initialUserDictionary,
+                ajoutVocabulary: context.ajoutVocabulary,
+                initialAjoutVocabulary: context.initialAjoutVocabulary,
                 systemCandidateMode: context.mode,
                 limit: limit * 2
             ),
@@ -499,8 +499,8 @@ final class KanaKanjiConverter {
 
         let numericCounterCompound = numericCounterCompoundCandidates(
             for: reading,
-            userDictionary: context.userDictionary,
-            initialUserDictionary: context.initialUserDictionary,
+            ajoutVocabulary: context.ajoutVocabulary,
+            initialAjoutVocabulary: context.initialAjoutVocabulary,
             systemCandidateMode: context.mode,
             limit: limit * 2
         )
@@ -529,8 +529,8 @@ final class KanaKanjiConverter {
         // 評価(1200)を越えていた(候補数 limit≥8 で合成 表化 が届くとき。limit 3 のテストでは見えなかった)
         let affixCandidates = nounKanjiAffixCandidates(
             for: reading,
-            userDictionary: context.userDictionary,
-            initialUserDictionary: context.initialUserDictionary,
+            ajoutVocabulary: context.ajoutVocabulary,
+            initialAjoutVocabulary: context.initialAjoutVocabulary,
             systemCandidateMode: context.mode,
             limit: limit * 2
         )
@@ -558,8 +558,8 @@ final class KanaKanjiConverter {
         } else {
             postfixCandidates = postfixPassthroughCandidates(
                 for: reading,
-                userDictionary: context.userDictionary,
-                initialUserDictionary: context.initialUserDictionary,
+                ajoutVocabulary: context.ajoutVocabulary,
+                initialAjoutVocabulary: context.initialAjoutVocabulary,
                 systemCandidateMode: context.mode,
                 limit: limit * 3
             )
@@ -583,8 +583,8 @@ final class KanaKanjiConverter {
     ) {
         applyInflectionRankingHeuristics(
             for: context.reading,
-            userDictionary: context.userDictionary,
-            initialUserDictionary: context.initialUserDictionary,
+            ajoutVocabulary: context.ajoutVocabulary,
+            initialAjoutVocabulary: context.initialAjoutVocabulary,
             systemCandidateMode: context.mode,
             systemCandidates: context.systemCandidates,
             inflectionDerivedCandidates: Set(inflectionDerivedCandidates),
@@ -889,9 +889,9 @@ final class KanaKanjiConverter {
         let archaicAdjectiveFiltered = filterArchaicAdjectiveSurfaceCandidates(
             for: context.reading,
             candidates: sortedCandidates,
-            userDictionary: context.userDictionary,
+            ajoutVocabulary: context.ajoutVocabulary,
             learnedDictionary: context.learnedDictionary,
-            initialUserDictionary: context.initialUserDictionary
+            initialAjoutVocabulary: context.initialAjoutVocabulary
         )
 
         let filteredSortedCandidates = filterHistoricalKanaSurfaceCandidates(
@@ -1182,8 +1182,8 @@ final class KanaKanjiConverter {
             // ダッケ suppr 後の だっけ は辞書エントリが空で systemCandidates では拾えず、
             // keepKana=false → 提示層がかな最良(だっけな)を退避して候補なしになる。
             if stem.count >= 2,
-                (store.initialUserDictionary()[stem] ?? []).contains(stem)
-                    || (store.userDictionary()[stem] ?? []).contains(stem) {
+                (store.initialAjoutVocabulary()[stem] ?? []).contains(stem)
+                    || (store.ajoutVocabulary()[stem] ?? []).contains(stem) {
                 return true
             }
             // かな機能語クラスタ(のに/のは 等の準体助詞+助詞)も語幹の根拠(のになあ→のに。
@@ -1490,15 +1490,15 @@ final class KanaKanjiConverter {
         if normalized.count > 3, normalized.hasSuffix("のかー") {
             return true
         }
-        if (store.initialUserDictionary()[normalized] ?? []).contains(normalized) {
+        if (store.initialAjoutVocabulary()[normalized] ?? []).contains(normalized) {
             return true
         }
         // curated かな識別(やって/やってみる 等の misc 登録)で終わり、前半が辞書のかな語
         // (とにかく 等)なら根拠あり(とにかくやってみる)。前半+curated末尾 の全かな句は
         // かなが正書とみなす。
         if normalized.count >= 5 {
-            let initialDictionary = store.initialUserDictionary()
-            let manualDictionary = store.userDictionary()
+            let initialDictionary = store.initialAjoutVocabulary()
+            let manualDictionary = store.ajoutVocabulary()
             let maxSuffix = min(8, normalized.count - 2)
             for suffixLength in 3...maxSuffix {
                 let suffix = String(normalized.suffix(suffixLength))
@@ -1536,7 +1536,7 @@ final class KanaKanjiConverter {
                 return true
             }
         }
-        if (store.userDictionary()[normalized] ?? []).contains(normalized) {
+        if (store.ajoutVocabulary()[normalized] ?? []).contains(normalized) {
             return true
         }
         if systemCandidates(for: normalized, mode: .lesDeux).contains(normalized) {
@@ -1866,8 +1866,8 @@ final class KanaKanjiConverter {
 
     func candidatesForReading(
         _ reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
@@ -1879,8 +1879,8 @@ final class KanaKanjiConverter {
         let candidates = uniqueCandidates(
             from: combinedUserCandidates(
                 for: normalizedReading,
-                userDictionary: userDictionary
-            ) + (initialUserDictionary[normalizedReading] ?? [])
+                ajoutVocabulary: ajoutVocabulary
+            ) + (initialAjoutVocabulary[normalizedReading] ?? [])
                 + systemCandidates(for: normalizedReading, mode: systemCandidateMode)
         )
 
@@ -1907,7 +1907,7 @@ final class KanaKanjiConverter {
 
     func combinedUserCandidates(
         for reading: String,
-        userDictionary: [String: [String]]
+        ajoutVocabulary: [String: [String]]
     ) -> [String] {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
 
@@ -1918,7 +1918,7 @@ final class KanaKanjiConverter {
         let learnedDictionary = store.learnedDictionary()
 
         return uniqueCandidates(
-            from: (userDictionary[normalizedReading] ?? [])
+            from: (ajoutVocabulary[normalizedReading] ?? [])
                 + (learnedDictionary[normalizedReading] ?? [])
         )
     }

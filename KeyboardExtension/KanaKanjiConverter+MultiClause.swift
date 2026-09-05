@@ -101,9 +101,9 @@ extension KanaKanjiConverter {
         // 「何でもカタカナ化抑止」ペナルティから免除するために引く(ジャングリア 対策)。
         let supplementalSystemDictionary = store.loadSupplementalSystemDictionary()
         // 追加語彙(sacoche/misc.plist 等の手動キュレーション)と学習語彙。どちらもユーザ意図なので優遇する。
-        let initialUserDictionary = store.initialUserDictionary()
+        let initialAjoutVocabulary = store.initialAjoutVocabulary()
         let learnedDictionary = store.learnedDictionary()
-        let manualUserDictionary = store.userDictionary()
+        let manualAjoutVocabulary = store.ajoutVocabulary()
 
         // --- 1. ラティスのノード列挙 ---
         var nodes: [MultiClauseNode] = []
@@ -230,12 +230,12 @@ extension KanaKanjiConverter {
                 //     — 手動キュレーションの単語であり、かな文丸ごとの学習汚染(ですね事件)とは
                 //     異なる。学習語彙側のかな識別スキップは維持。
                 //     追加語彙はユーザ明示登録なので装飾フィルタも免除(あ・うん 等の実在固有名)。
-                for surface in initialUserDictionary[segmentReading] ?? [] {
+                for surface in initialAjoutVocabulary[segmentReading] ?? [] {
                     add(surface, isDictWord: true, isCurated: true, exemptDecorative: true)
                 }
                 // 手動追加語彙(アプリの語彙管理から登録)も同格の curated として列挙する
                 // (従来は連文節に載らない既存ギャップだった)。
-                for surface in manualUserDictionary[segmentReading] ?? [] {
+                for surface in manualAjoutVocabulary[segmentReading] ?? [] {
                     add(surface, isDictWord: true, isCurated: true, exemptDecorative: true)
                 }
                 for surface in learnedDictionary[segmentReading] ?? [] where surface != segmentReading {
@@ -350,8 +350,8 @@ extension KanaKanjiConverter {
                     let seedOrder = KanaKanjiSeedDictionary.seed[segmentReading]
                     var inflected = inflectionCandidates(
                         for: segmentReading,
-                        userDictionary: manualUserDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: manualAjoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
                         limit: seedOrder == nil
                             ? Self.multiClauseInflectionTopK * 2
@@ -569,8 +569,8 @@ extension KanaKanjiConverter {
                     if suppliedInflectionCount >= Self.multiClauseInflectionTopK {
                         let families = inflectionCandidateFamilies(
                             for: segmentReading,
-                            userDictionary: manualUserDictionary,
-                            initialUserDictionary: initialUserDictionary,
+                            ajoutVocabulary: manualAjoutVocabulary,
+                            initialAjoutVocabulary: initialAjoutVocabulary,
                             systemCandidateMode: systemCandidateMode,
                             perFamilyLimit: 2
                         )
@@ -609,8 +609,8 @@ extension KanaKanjiConverter {
                     firstChar == "お" || firstChar == "ご" {
                     let polite = politePrefixPassthroughCandidates(
                         for: segmentReading,
-                        userDictionary: manualUserDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: manualAjoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
                         limit: Self.multiClauseInflectionTopK
                     )
@@ -640,8 +640,8 @@ extension KanaKanjiConverter {
                     }
                     let numeric = numericCounterCompoundCandidates(
                         for: segmentReading,
-                        userDictionary: manualUserDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: manualAjoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
                         limit: Self.multiClauseInflectionTopK
                     )
@@ -686,8 +686,8 @@ extension KanaKanjiConverter {
                     let renyouNi = verbRenyouPlusSuffixCandidates(
                         renyouReading: renyouReading,
                         trailingSuffix: "に",
-                        userDictionary: manualUserDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: manualAjoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode
                     )
                     for surface in renyouNi.prefix(Self.multiClauseInflectionTopK)

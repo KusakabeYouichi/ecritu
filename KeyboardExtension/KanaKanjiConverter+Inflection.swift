@@ -27,8 +27,8 @@ extension KanaKanjiConverter {
 
     func inflectionCandidates(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int
     ) -> [String] {
@@ -43,8 +43,8 @@ extension KanaKanjiConverter {
         derived.append(
             contentsOf: deriveIkuIrregularCandidates(
                 for: reading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             )
         )
@@ -104,8 +104,8 @@ extension KanaKanjiConverter {
     // 使う — 単文節の並び(既存の語別調整が乗っている)には影響させない(2423)。
     func inflectionCandidateFamilies(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         perFamilyLimit: Int
     ) -> [(items: [String], familyKey: Int, baseReading: String)] {
@@ -117,8 +117,8 @@ extension KanaKanjiConverter {
 
         let iku = deriveIkuIrregularCandidates(
             for: reading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
+            ajoutVocabulary: ajoutVocabulary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode
         ).filter { seen.insert($0).inserted }
         if !iku.isEmpty {
@@ -154,8 +154,8 @@ extension KanaKanjiConverter {
 
     func adjectiveGaruCandidates(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int
     ) -> [String] {
@@ -175,8 +175,8 @@ extension KanaKanjiConverter {
             let baseReading = readingStem + "い"
             let baseCandidates = candidatesForReading(
                 baseReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             )
 
@@ -195,8 +195,8 @@ extension KanaKanjiConverter {
             let userCandidateSet = Set(
                 combinedUserCandidates(
                     for: baseReading,
-                    userDictionary: userDictionary
-                ) + (initialUserDictionary[baseReading] ?? [])
+                    ajoutVocabulary: ajoutVocabulary
+                ) + (initialAjoutVocabulary[baseReading] ?? [])
             )
 
             for candidate in baseCandidates {
@@ -224,8 +224,8 @@ extension KanaKanjiConverter {
 
     func deriveIkuIrregularCandidates(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         var results: [String] = []
@@ -238,8 +238,8 @@ extension KanaKanjiConverter {
             let baseReading = stem + "く"
             for candidate in candidatesForReading(
                 baseReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             ) where candidate.hasSuffix("行く") {
                 let prefix = String(candidate.dropLast("行く".count))
@@ -274,8 +274,8 @@ extension KanaKanjiConverter {
     func derivedCandidates(
         for reading: String,
         rule: InflectionRule,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> (items: [String], familyKey: Int) {
         // 空の readingSuffix は「読み全体が語幹」を意味する(一段の連用形: たべ→食べる の 食べ)。
@@ -314,8 +314,8 @@ extension KanaKanjiConverter {
         let baseWordCostsForKansaiGate = isKansaiNegativeContraction ? store.wordCosts(for: baseReading) : [:]
         var baseCandidates = candidatesForReading(
             baseReading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
+            ajoutVocabulary: ajoutVocabulary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode
         ).filter {
             // カタカナ強調の語幹(ウマい 等)は合成前に弾く(postfix 語幹と同じ判定。2402)
@@ -342,16 +342,16 @@ extension KanaKanjiConverter {
         baseCandidates = orderedDerivationBaseCandidates(baseCandidates, reading: baseReading)
 
         let metadata = inflectionMetadata(for: baseReading)
-        // 追加語彙(sacoche/misc.plist 等=initialUserDictionary)も手動追加と同様にサ変推論の対象に
+        // 追加語彙(sacoche/misc.plist 等=initialAjoutVocabulary)も手動追加と同様にサ変推論の対象に
         // 含める。以前は「本当の手動追加分のみ」に絞っていたが、まかいぞうしてる→魔改造してる
         // のような追加語彙由来サ変名詞の活用が導出できず、し→市 等の誤分割だけが残っていた。
         // 暴発は inferredSahen 側のゲート(isLikelySahenPhraseStem 等)で抑えられており、
         // そもそも該当読み(Xしてる)を打った時しか発動しない。
-        let initialCandidatesForBase = Set(initialUserDictionary[baseReading] ?? [])
+        let initialCandidatesForBase = Set(initialAjoutVocabulary[baseReading] ?? [])
         let initialOrUserCandidateSet = Set(
             combinedUserCandidates(
                 for: baseReading,
-                userDictionary: userDictionary
+                ajoutVocabulary: ajoutVocabulary
             )
         ).union(initialCandidatesForBase)
         let userOwnCandidateSet = initialOrUserCandidateSet

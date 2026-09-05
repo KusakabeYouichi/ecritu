@@ -1329,9 +1329,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         _ = KanaKanjiSeedDictionary.exactReadingOnlySeed.count
         report("Z:seed静的表", z)
         z = stats()
-        _ = converter.store.initialUserDictionary()
+        _ = converter.store.initialAjoutVocabulary()
         _ = converter.store.learnedDictionary()
-        _ = converter.store.userDictionary()
+        _ = converter.store.ajoutVocabulary()
         report("Z:追加/学習語彙", z)
         z = stats()
         _ = converter.store.loadSystemCandidateSources()
@@ -1351,7 +1351,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         _ = converter.systemCandidates(for: "が", mode: .surface)
         report("Z2:converter.systemCandidates[が]", z)
         z = stats()
-        _ = converter.candidatesForReading("が", userDictionary: [:], initialUserDictionary: [:], systemCandidateMode: .surface)
+        _ = converter.candidatesForReading("が", ajoutVocabulary: [:], initialAjoutVocabulary: [:], systemCandidateMode: .surface)
         report("Z2:candidatesForReading[が]", z)
         print("WATERMARK hist前: \(KeyboardViewController.diagnosticsMallocSizeHistogram())")
         // ── A: 1字読みの単文節(実機台帳の主犯疑い)を読み別に ──
@@ -2879,7 +2879,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         ]
         // 追加語彙(Ajout)で覆われた読みは、ユーザの明示登録が LM 最良より優先されるのが
         // 正なのでスイープ対象外(香信/核種/線量/カイエン 等の誤NG防止。2550)
-        let userVocabReadings = Set(converter.store.userDictionary().keys)
+        let userVocabReadings = Set(converter.store.ajoutVocabulary().keys)
         var checked = 0
         var ngCount = 0
         for line in tsv.split(separator: "\n") {
@@ -6134,14 +6134,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(reloaded.hasLearnedKanaIdentity(for: "ちゃんと"))
     }
 
-    func testRegressionInitialUserDictionarySahenNounDerivesConjugations() {
-        // 追加語彙(void.plist=initialUserDictionary)のサ変名詞も活用推論の対象になる
+    func testRegressionInitialAjoutVocabularySahenNounDerivesConjugations() {
+        // 追加語彙(void.plist=initialAjoutVocabulary)のサ変名詞も活用推論の対象になる
         // (まかいぞうしてる→魔改造してる)。以前は手動追加分のみで、void 由来は
         // し→市 等の誤分割だけが残っていた。
         let derived = converter.inflectionCandidates(
             for: "まかいぞうしてる",
-            userDictionary: [:],
-            initialUserDictionary: ["まかいぞう": ["魔改造"]],
+            ajoutVocabulary: [:],
+            initialAjoutVocabulary: ["まかいぞう": ["魔改造"]],
             systemCandidateMode: .surface,
             limit: 5
         )
@@ -6282,7 +6282,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // 実LM回帰: 実機相当の追加語彙(sacoche+misc 全部)込みでの検証。テストバンドルには
-    // 追加語彙 JSON が載らず initialUserDictionary が空のため、エンジン直呼びだけでは
+    // 追加語彙 JSON が載らず initialAjoutVocabulary が空のため、エンジン直呼びだけでは
     // 実機と乖離する(ろーまにいたる事件の教訓)。curated のか(疑問形)が 〜のかお を
     // のか+お に分断して 顔 のスパンが消えていた(あんたのかお南海揉みたい/乃佳お 等)。
     // 分断される側の 顔 も curated 化して救済(同床なら文節数の少ない区切りが勝つ)。
@@ -6292,7 +6292,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let supprData = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/InitialSupprHiddenVocabMigration.json"))
         UserDefaults(suiteName: defaultsSuiteName)?.set(supprData, forKey: "ÉcrituSuppr_Vocab")
         // 実機相当の追加語彙(sacoche+misc)を注入 — テストバンドルには JSON が載らず
-        // initialUserDictionary が空のため(ろーまにいたる事件の教訓)
+        // initialAjoutVocabulary が空のため(ろーまにいたる事件の教訓)
         for name in ["InitialAjoutVocabMigration", "InitialMiscVocabMigration"] {
             let data = try Data(contentsOf: URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/KeyboardExtension/\(name).json"))
             let dict = try JSONDecoder().decode([String: [String]].self, from: data)
@@ -8221,11 +8221,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // 実機同様に追加語彙(sacoche=InitialAjout + 変換対策 misc=InitialMisc)と抑制
-    // (InitialSupprHidden)をテストの store へ投入する。ストアの initialUserDictionary() は
+    // (InitialSupprHidden)をテストの store へ投入する。ストアの initialAjoutVocabulary() は
     // Bundle(for: KanaKanjiStore.self) のバンドル同梱JSONを読むが、テストバンドルには
     // これらが同梱されない(=追加語彙が空になり、実機のみ再現するバグがMacで再現しない根本原因)。
     // ここではリポジトリの生成済みJSONを直接読み、manual追加語彙(ÉcrituAjoutVocab)へ一括投入して
-    // 実機の initialUserDictionary 相当を再現する(multi では同格の curated 供給として扱われる)。
+    // 実機の initialAjoutVocabulary 相当を再現する(multi では同格の curated 供給として扱われる)。
     // 追加語彙由来の「実機のみ」誤変換(ろーぬげんさん→raw脱げんさん 等)の回帰検知に使う。
     private func loadDeviceAddedVocabulary(
         includeMisc: Bool = true,
@@ -8252,7 +8252,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         guard let defaults = UserDefaults(suiteName: defaultsSuiteName) else {
             throw XCTSkip("no defaults suite in this environment")
         }
-        // 実機の userDictionary() が読む形式(JSON Data の [String:[String]])で一括書き込みする
+        // 実機の ajoutVocabulary() が読む形式(JSON Data の [String:[String]])で一括書き込みする
         // (addUserEntry の1件ずつ保存だと数百件で低速なため)。
         let combinedData = try JSONEncoder().encode(combined)
         defaults.set(combinedData, forKey: "ÉcrituAjoutVocab")
@@ -8277,7 +8277,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         // sacoche に ろー→raw が実在することを前提にした回帰(存在しなければ前提が崩れるので確認)。
         XCTAssertTrue(
-            converter.store.userDictionary()["ろー"]?.contains("raw") ?? false,
+            converter.store.ajoutVocabulary()["ろー"]?.contains("raw") ?? false,
             "前提: sacoche 由来の ろー→raw が追加語彙にロードされていること"
         )
 
@@ -10883,8 +10883,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         _ = isolated.shouldKeepKanaIdentityLeading(for: "きょうは")
         isolated.store.addLearnedEntry(reading: "てすと", candidate: "テスト")
         _ = isolated.store.learnedDictionary()
-        _ = isolated.store.userDictionary()
-        _ = isolated.store.initialUserDictionary()
+        _ = isolated.store.ajoutVocabulary()
+        _ = isolated.store.initialAjoutVocabulary()
         _ = isolated.store.suppressedCandidatesByReading()
         _ = isolated.store.shortcutVocabulary()
         _ = isolated.store.loadSupplementalSystemDictionary()

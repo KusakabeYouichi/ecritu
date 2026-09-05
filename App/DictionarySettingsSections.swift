@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
-struct UserDictionarySettingsSection: View {
+struct AjoutVocabularySettingsSection: View {
     @Binding var entries: [VocabularyEntry]
     @Binding var readingInput: String
     @Binding var candidateInput: String

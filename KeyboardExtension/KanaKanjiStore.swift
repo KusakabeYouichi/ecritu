@@ -114,9 +114,9 @@ final class KanaKanjiStore {
     private var activeWordCostsCacheLimit: Int {
         isConstrainedMemoryCacheMode ? Self.wordCostsCacheLimitConstrained : Self.wordCostsCacheLimit
     }
-    private var cachedInitialUserDictionary: [String: [String]]?
+    private var cachedInitialAjoutVocabulary: [String: [String]]?
     private var cachedInitialShortcutVocabulary: [String]?
-    var cachedUserDictionary: [String: [String]]?
+    var cachedAjoutVocabulary: [String: [String]]?
     var cachedLearnedDictionary: [String: [String]]?
     private var cachedSuppressedCandidatesByReading: [String: Set<String>]?
     private var cachedShortcutVocabulary: [String]?
@@ -793,8 +793,8 @@ final class KanaKanjiStore {
         return withCacheLock {
             "structKB: suppl=\(kb(cachedSupplementalSystemDictionary?.estimatedBytes ?? -1))"
                 + " sysDict=\(kb(dictBytes(cachedSystemDictionary)))"
-                + " initialUser=\(kb(dictBytes(cachedInitialUserDictionary)))"
-                + " user=\(kb(dictBytes(cachedUserDictionary)))"
+                + " initialUser=\(kb(dictBytes(cachedInitialAjoutVocabulary)))"
+                + " user=\(kb(dictBytes(cachedAjoutVocabulary)))"
                 + " learned=\(kb(dictBytes(cachedLearnedDictionary)))"
                 + " infl=\(kb(inflectionBytes(cachedInflectionDictionary)))"
         }
@@ -858,7 +858,7 @@ final class KanaKanjiStore {
         // 未保存の学習をキャッシュ破棄前に書き出す(デバウンス中のデータを失わない)
         flushPendingLearningPersists()
         withCacheLock {
-            cachedUserDictionary = nil
+            cachedAjoutVocabulary = nil
             cachedLearnedDictionary = nil
             cachedSuppressedCandidatesByReading = nil
             cachedLearningScores = nil
@@ -869,18 +869,18 @@ final class KanaKanjiStore {
         }
     }
 
-    func userDictionary() -> [String: [String]] {
-        if let cached = withCacheLock({ cachedUserDictionary }) {
+    func ajoutVocabulary() -> [String: [String]] {
+        if let cached = withCacheLock({ cachedAjoutVocabulary }) {
             return cached
         }
 
-        guard let decoded = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.userDictionary) else {
-            withCacheLock { cachedUserDictionary = [:] }
+        guard let decoded = decodedStringArrayDictionary(forKey: KanaKanjiStorageKeys.ajoutVocabulary) else {
+            withCacheLock { cachedAjoutVocabulary = [:] }
             return [:]
         }
 
         let normalized = normalizeDictionary(decoded)
-        withCacheLock { cachedUserDictionary = normalized }
+        withCacheLock { cachedAjoutVocabulary = normalized }
         return normalized
     }
 
@@ -912,8 +912,8 @@ final class KanaKanjiStore {
         return cleaned
     }
 
-    func initialUserDictionary() -> [String: [String]] {
-        if let cached = withCacheLock({ cachedInitialUserDictionary }) {
+    func initialAjoutVocabulary() -> [String: [String]] {
+        if let cached = withCacheLock({ cachedInitialAjoutVocabulary }) {
             return cached
         }
 
@@ -931,13 +931,13 @@ final class KanaKanjiStore {
             return decoded
         }
 
-        var combined = loadBundled(KanaKanjiStorageKeys.initialUserDictionaryResourceName)
+        var combined = loadBundled(KanaKanjiStorageKeys.initialAjoutVocabularyResourceName)
         for (reading, candidates) in loadBundled(KanaKanjiStorageKeys.initialMiscDictionaryResourceName) {
             combined[reading, default: []].append(contentsOf: candidates)
         }
 
         let normalized = normalizeDictionary(combined)
-        withCacheLock { cachedInitialUserDictionary = normalized }
+        withCacheLock { cachedInitialAjoutVocabulary = normalized }
         return normalized
     }
 
@@ -1014,7 +1014,7 @@ final class KanaKanjiStore {
     }
 
     // suppr.plist 由来の抑制(バンドル同梱、UI非表示)。poubelle の UserDefaults 経路とは別に
-    // キーボードが直接読む。実機/バンドル解決は追加語彙(initialUserDictionary)と同じ仕組み。
+    // キーボードが直接読む。実機/バンドル解決は追加語彙(initialAjoutVocabulary)と同じ仕組み。
     private func bundledHiddenSuppressionDictionary() -> [String: [String]] {
         if let cached = withCacheLock({ cachedBundledHiddenSuppression }) {
             return cached

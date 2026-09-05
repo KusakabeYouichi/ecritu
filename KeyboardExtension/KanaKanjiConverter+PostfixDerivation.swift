@@ -174,8 +174,8 @@ extension KanaKanjiConverter {
 
     func postfixPassthroughCandidates(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int
     ) -> [String] {
@@ -231,8 +231,8 @@ extension KanaKanjiConverter {
                     let suppressedStemSurfaces = suppressedByReading[nextStem] ?? []
                     let inflectedStemCandidates = inflectionCandidates(
                         for: nextStem,
-                        userDictionary: userDictionary,
-                        initialUserDictionary: initialUserDictionary,
+                        ajoutVocabulary: ajoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
                         limit: limit
                     )
@@ -240,8 +240,8 @@ extension KanaKanjiConverter {
                         uniqueCandidates(
                             from: candidatesForReading(
                                 nextStem,
-                                userDictionary: userDictionary,
-                                initialUserDictionary: initialUserDictionary,
+                                ajoutVocabulary: ajoutVocabulary,
+                                initialAjoutVocabulary: initialAjoutVocabulary,
                                 systemCandidateMode: systemCandidateMode
                             ) + inflectedStemCandidates
                         ).filter {
@@ -330,8 +330,8 @@ extension KanaKanjiConverter {
 
     func politePrefixPassthroughCandidates(
         for reading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         limit: Int
     ) -> [String] {
@@ -353,8 +353,8 @@ extension KanaKanjiConverter {
         let fullReadingWordCosts = store.wordCosts(for: reading)
         let fullReadingCandidates = candidatesForReading(
             reading,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
+            ajoutVocabulary: ajoutVocabulary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode
         )
         let fullReadingUnigrams = store.wordLMUnigramCosts(for: fullReadingCandidates)
@@ -390,8 +390,8 @@ extension KanaKanjiConverter {
                 contentsOf: politePrefixSuruCandidates(
                     prefix: prefix,
                     stemReading: stem,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -404,8 +404,8 @@ extension KanaKanjiConverter {
                     prefix: prefix,
                     trailingSuffix: "",
                     renyouReading: stem,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
                 derived.append(contentsOf: bareRenyou.prefix(1))
@@ -415,8 +415,8 @@ extension KanaKanjiConverter {
                 contentsOf: politePrefixRenyouCandidates(
                     prefix: prefix,
                     stemReading: stem,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode,
                     allowBareRenyou: false
                 )
@@ -426,8 +426,8 @@ extension KanaKanjiConverter {
                 contentsOf: politePrefixSoftRequestCandidates(
                     prefix: prefix,
                     stemReading: stem,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -442,8 +442,8 @@ extension KanaKanjiConverter {
             let stemCandidates = orderedDerivationBaseCandidates(
                 candidatesForReading(
                     stem,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 ),
                 reading: stem
@@ -457,8 +457,8 @@ extension KanaKanjiConverter {
             let userCandidateSet = Set(
                 combinedUserCandidates(
                     for: stem,
-                    userDictionary: userDictionary
-                ) + (initialUserDictionary[stem] ?? [])
+                    ajoutVocabulary: ajoutVocabulary
+                ) + (initialAjoutVocabulary[stem] ?? [])
             )
             // 収穫底値(wc>=10000)の語=レア人名収穫(皿野/紗良乃 等)に敬語接頭は
             // 付かない。お皿野 が8700定額で立ち、正解の お+皿+の 経路(連文節)を
@@ -503,8 +503,8 @@ extension KanaKanjiConverter {
     func politePrefixSoftRequestCandidates(
         prefix: String,
         stemReading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard prefix == "お" else {
@@ -524,8 +524,8 @@ extension KanaKanjiConverter {
                     prefix: prefix,
                     stemReading: baseStemReading,
                     trailingSuffix: requestSuffix,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -535,8 +535,8 @@ extension KanaKanjiConverter {
                     prefix: prefix,
                     trailingSuffix: requestSuffix,
                     renyouReading: baseStemReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -549,8 +549,8 @@ extension KanaKanjiConverter {
         prefix: String,
         stemReading: String,
         trailingSuffix: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard !stemReading.isEmpty else {
@@ -560,8 +560,8 @@ extension KanaKanjiConverter {
         let stemCandidates = orderedDerivationBaseCandidates(
             candidatesForReading(
                 stemReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             ),
             reading: stemReading
@@ -598,8 +598,8 @@ extension KanaKanjiConverter {
     func politePrefixRenyouCandidates(
         prefix: String,
         stemReading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode,
         allowBareRenyou: Bool = true
     ) -> [String] {
@@ -618,8 +618,8 @@ extension KanaKanjiConverter {
                     prefix: prefix,
                     trailingSuffix: "",
                     renyouReading: stemReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -636,8 +636,8 @@ extension KanaKanjiConverter {
                     prefix: prefix,
                     trailingSuffix: naruSuffix,
                     renyouReading: renyouReading,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -653,8 +653,8 @@ extension KanaKanjiConverter {
     func verbRenyouPlusSuffixCandidates(
         renyouReading: String,
         trailingSuffix: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard !renyouReading.isEmpty else {
@@ -668,8 +668,8 @@ extension KanaKanjiConverter {
             dictionaryEnding: "る",
             renyouEnding: "",
             trailingSuffix: trailingSuffix,
-            userDictionary: userDictionary,
-            initialUserDictionary: initialUserDictionary,
+            ajoutVocabulary: ajoutVocabulary,
+            initialAjoutVocabulary: initialAjoutVocabulary,
             systemCandidateMode: systemCandidateMode
         ))
         // 五段: 連用形(i段)→ 基本形(u段)。飲み→飲む、書き→書く
@@ -683,8 +683,8 @@ extension KanaKanjiConverter {
                 dictionaryEnding: pattern.dictionaryEnding,
                 renyouEnding: pattern.iForm,
                 trailingSuffix: trailingSuffix,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             ))
         }
@@ -697,8 +697,8 @@ extension KanaKanjiConverter {
         dictionaryEnding: String,
         renyouEnding: String,
         trailingSuffix: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard !baseReading.isEmpty, !dictionaryEnding.isEmpty else {
@@ -707,8 +707,8 @@ extension KanaKanjiConverter {
         let baseCandidates = orderedDerivationBaseCandidates(
             candidatesForReading(
                 baseReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             ),
             reading: baseReading
@@ -718,8 +718,8 @@ extension KanaKanjiConverter {
         }
         let metadata = inflectionMetadata(for: baseReading)
         let userCandidateSet = Set(
-            combinedUserCandidates(for: baseReading, userDictionary: userDictionary)
-                + (initialUserDictionary[baseReading] ?? [])
+            combinedUserCandidates(for: baseReading, ajoutVocabulary: ajoutVocabulary)
+                + (initialAjoutVocabulary[baseReading] ?? [])
         )
         var derived: [String] = []
         for candidate in baseCandidates {
@@ -750,8 +750,8 @@ extension KanaKanjiConverter {
         prefix: String,
         trailingSuffix: String,
         renyouReading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard !renyouReading.isEmpty else {
@@ -768,8 +768,8 @@ extension KanaKanjiConverter {
                 expectedInflectionClass: InflectionClass.ichidan,
                 dictionaryEnding: "る",
                 renyouEnding: "",
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             )
         )
@@ -789,8 +789,8 @@ extension KanaKanjiConverter {
                     expectedInflectionClass: pattern.inflectionClass,
                     dictionaryEnding: pattern.dictionaryEnding,
                     renyouEnding: pattern.iForm,
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
@@ -806,8 +806,8 @@ extension KanaKanjiConverter {
         expectedInflectionClass: String,
         dictionaryEnding: String,
         renyouEnding: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard !baseReading.isEmpty,
@@ -818,8 +818,8 @@ extension KanaKanjiConverter {
         let baseCandidates = orderedDerivationBaseCandidates(
             candidatesForReading(
                 baseReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             ),
             reading: baseReading
@@ -833,8 +833,8 @@ extension KanaKanjiConverter {
         let userCandidateSet = Set(
             combinedUserCandidates(
                 for: baseReading,
-                userDictionary: userDictionary
-            ) + (initialUserDictionary[baseReading] ?? [])
+                ajoutVocabulary: ajoutVocabulary
+            ) + (initialAjoutVocabulary[baseReading] ?? [])
         )
         var derived: [String] = []
 
@@ -868,8 +868,8 @@ extension KanaKanjiConverter {
     func politePrefixSuruCandidates(
         prefix: String,
         stemReading: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
+        ajoutVocabulary: [String: [String]],
+        initialAjoutVocabulary: [String: [String]],
         systemCandidateMode: KanaKanjiCandidateSourceMode
     ) -> [String] {
         guard prefix == "お" else {

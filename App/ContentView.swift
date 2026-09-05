@@ -387,12 +387,12 @@ struct ContentView: View {
     )
     private var mazegakiCandidateModeRawValue: String = ScriptVariantModeOption.suppress.rawValue
 
-    @State var userDictionaryEntries: [VocabularyEntry] = []
-    @State var userDictionaryReadingInput = ""
-    @State var userDictionaryCandidateInput = ""
-    @State private var isUserDictionaryRegistrationVisible = false
-    @State private var userDictionaryScrollIndexTitle = ""
-    @State private var isUserDictionaryScrollIndexVisible = false
+    @State var ajoutVocabularyEntries: [VocabularyEntry] = []
+    @State var ajoutVocabularyReadingInput = ""
+    @State var ajoutVocabularyCandidateInput = ""
+    @State private var isAjoutVocabularyRegistrationVisible = false
+    @State private var ajoutVocabularyScrollIndexTitle = ""
+    @State private var isAjoutVocabularyScrollIndexVisible = false
     @State var learnedDictionaryEntries: [VocabularyEntry] = []
     @State private var learnedDictionaryScrollIndexTitle = ""
     @State private var isLearnedDictionaryScrollIndexVisible = false
@@ -969,9 +969,9 @@ struct ContentView: View {
         }
     }
 
-    private var canAddUserDictionaryEntry: Bool {
-        !normalizedKanaReading(from: userDictionaryReadingInput).isEmpty
-            && !userDictionaryCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    private var canAddAjoutVocabularyEntry: Bool {
+        !normalizedKanaReading(from: ajoutVocabularyReadingInput).isEmpty
+            && !ajoutVocabularyCandidateInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
 
     private var canAddSuppressionDictionaryEntry: Bool {
@@ -1003,7 +1003,7 @@ struct ContentView: View {
     }
 
     struct InitialDataSnapshot: Equatable {
-        let userDictionaryEntries: [VocabularyEntry]
+        let ajoutVocabularyEntries: [VocabularyEntry]
         let learnedDictionaryEntries: [VocabularyEntry]
         let suppressionDictionaryEntries: [VocabularyEntry]
         let shortcutDictionaryEntries: [VocabularyEntry]
@@ -1273,20 +1273,20 @@ struct ContentView: View {
 
                         // ──── 語彙管理 ────
 
-                        UserDictionarySettingsSection(
-                            entries: $userDictionaryEntries,
-                            readingInput: $userDictionaryReadingInput,
-                            candidateInput: $userDictionaryCandidateInput,
-                            isRegistrationVisible: $isUserDictionaryRegistrationVisible,
-                            scrollIndexTitle: $userDictionaryScrollIndexTitle,
-                            isScrollIndexVisible: $isUserDictionaryScrollIndexVisible,
-                            canAddEntry: canAddUserDictionaryEntry,
-                            listHeight: userVocabularyListHeight(for: userDictionaryEntries.count),
-                            onAddEntry: addUserDictionaryEntry,
-                            onUpdateEntry: updateUserDictionaryEntry,
-                            onDeleteEntry: removeUserDictionaryEntry,
-                            onDeleteAll: removeAllUserDictionaryEntries,
-                            onReimportInitialEntries: reimportInitialUserDictionaryEntries
+                        AjoutVocabularySettingsSection(
+                            entries: $ajoutVocabularyEntries,
+                            readingInput: $ajoutVocabularyReadingInput,
+                            candidateInput: $ajoutVocabularyCandidateInput,
+                            isRegistrationVisible: $isAjoutVocabularyRegistrationVisible,
+                            scrollIndexTitle: $ajoutVocabularyScrollIndexTitle,
+                            isScrollIndexVisible: $isAjoutVocabularyScrollIndexVisible,
+                            canAddEntry: canAddAjoutVocabularyEntry,
+                            listHeight: userVocabularyListHeight(for: ajoutVocabularyEntries.count),
+                            onAddEntry: addAjoutVocabularyEntry,
+                            onUpdateEntry: updateAjoutVocabularyEntry,
+                            onDeleteEntry: removeAjoutVocabularyEntry,
+                            onDeleteAll: removeAllAjoutVocabularyEntries,
+                            onReimportInitialEntries: reimportInitialAjoutVocabularyEntries
                         )
 
                         LearnedDictionarySettingsSection(
