@@ -182,6 +182,8 @@ final class KanaKanjiConverter {
     //   > 数値単位 > BFS postfix > 名詞漢字接辞 > 活用 > ガル形。
     // 補正(ブースト/ペナルティ)は +RankingHeuristics の定数を参照。
     enum CandidateScore {
+        // 漢数字+ケ/ヶ の地名断片(二ケ所 等)を数詞複合の後ろへ下げる幅(辞書 1200 → 複合 400 未満に)
+        static let kanjiNumeralKePlaceNameDemotion = 1000
         static let ajoutVocabulary = 2400        // 追加語彙(手動+初期)
         static let learnedDictionary = 2280     // 学習語彙
         // 補助語彙(ryukyu/vin/it.plist=SecondVocab)。人手で足した語なので辞書より上に置く。
@@ -509,6 +511,17 @@ final class KanaKanjiConverter {
             baseScore: CandidateScore.numericCounterCompound,
             to: &scores
         )
+
+        // 漢数字+ケ/ヶ の辞書語(二ケ所/五ケ所/六ヶ所/三ヶ日 等)は地名の収穫で、数詞複合(2か所)が
+        // 作れる読みでは地名断片が rank 0 で先頭を取っていた(ユーザ指摘 2814)。生成した複合(2か所/二か所)
+        // より後ろへ下げる。六ヶ所村/五ヶ所湾 のような完全な地名は読みが違うので無傷
+        if !arabicNumericCompound.isEmpty {
+            let generated = Set(arabicNumericCompound + numericCounterCompound)
+            for candidate in Array(scores.keys)
+            where !generated.contains(candidate) && Self.isKanjiNumeralKePlaceNameFragment(candidate) {
+                scores[candidate, default: 0] -= CandidateScore.kanjiNumeralKePlaceNameDemotion
+            }
+        }
 
         // 連濁・促音便形の助数詞(3ぼん/6ぽん/3びき)は数詞に付いたときにしか現れないため、
         // 数詞複合を辞書級へ引き上げる(さんぼん→三盆/山本 に負けていた)。
@@ -1062,5 +1075,17 @@ final class KanaKanjiConverter {
 
     func uniqueCandidates(from candidates: [String]) -> [String] {
         candidates.uniquedTrimmedCandidates()
+    }
+}
+
+extension KanaKanjiConverter {
+    // 漢数字で始まり 2 文字目が ケ/ヶ の表層(二ケ所/六ヶ所/三ヶ日)。Sudachi では地名(および地名の断片)。
+    // 数詞複合の表層(2か所/二か所/二箇所)はこの形にならない(か/箇/カ/ヵ を使う)
+    static func isKanjiNumeralKePlaceNameFragment(_ candidate: String) -> Bool {
+        let chars = Array(candidate)
+        guard chars.count >= 3, "一二三四五六七八九十百千".contains(chars[0]) else {
+            return false
+        }
+        return chars[1] == "ケ" || chars[1] == "ヶ"
     }
 }
