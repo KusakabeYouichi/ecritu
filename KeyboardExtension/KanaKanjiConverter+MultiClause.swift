@@ -1403,6 +1403,12 @@ extension KanaKanjiConverter {
                 !isSupplementalKatakanaExempt {
                 penalty += Self.multiClauseKatakanaNativeCost
             }
+            // 1 モーラのカタカナ識別ノード(リ/ム/テ 等)は単独の語として立たない(2807)。Wikipedia LM に
+            // unigram がある(リ 6461: 分割断片の統計)ため上の免除に掛かり、あとからじゃむりですね が
+            // ジャム+リ+ですね(カタカナ語直後の ですね クランプに便乗)で 無理 を跨いでいた。curated は除く
+            if Self.isKatakanaString(surface), reading.count == 1, !isCurated {
+                penalty += Self.multiClauseKatakanaNativeCost
+            }
             // を 跨ぎ文節の防止。ただし curated(気をつけて/気が合う 等、を/が 含みで明示登録
             // された慣用句)は正当な1文節なので免除する — でないと misc の 気を〜 慣用句群が
             // 連文節に一切乗れず、きをつけて→機をつけて 等の分割に負ける。
