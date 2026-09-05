@@ -413,7 +413,7 @@ extension KeyboardRootView {
 
     // 千の位区切り文字(既定=空白)。sep_mil オン時に3桁ごとに挿入。
     var formattedNumberThousandsSeparator: String {
-        switch formattedNumberSharedDefaults?.string(forKey: "numberThousandsSeparator") {
+        switch formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberThousandsSeparator) {
         case "comma": return ","
         case "dot": return "."
         default: return " "
@@ -422,17 +422,17 @@ extension KeyboardRootView {
 
     // 小数点区切り文字(既定=".")。小数点キーの表示/挿入に反映。
     var formattedNumberDecimalSeparator: String {
-        formattedNumberSharedDefaults?.string(forKey: "numberDecimalSeparator") == "comma" ? "," : "."
+        formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberDecimalSeparator) == "comma" ? "," : "."
     }
 
     // que quatre: オンなら4桁の数値にも千区切りを付ける(オフは4桁を例外にする)。
     private var formattedNumberGroupsFourDigits: Bool {
-        formattedNumberSharedDefaults?.bool(forKey: "numberGroupFourDigits") ?? false
+        formattedNumberSharedDefaults?.bool(forKey: KeyboardViewController.SharedDefaultsKeys.numberGroupFourDigits) ?? false
     }
 
     // 単位の積の記号。内部は U+00B7(中点)で保持し、表示/確定時にこの設定へ変換する。
     private var formattedNumberUnitProductSeparator: String {
-        switch formattedNumberSharedDefaults?.string(forKey: "numberUnitProductSeparator") {
+        switch formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberUnitProductSeparator) {
         case "dotOperator": return "\u{22C5}"
         case "space": return " "
         default: return "\u{00B7}"
@@ -442,7 +442,7 @@ extension KeyboardRootView {
     // リットルの記号。内部は常に大文字 L で保持し、表示/確定時にこの設定へ変換する。
     // 既定は小文字 l(SI が1879年から用いる記号)。
     private var formattedNumberLitreSymbol: String {
-        switch formattedNumberSharedDefaults?.string(forKey: "numberLitreSymbol") {
+        switch formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.numberLitreSymbol) {
         case "capital": return "L"
         case "script": return "\u{2113}"
         default: return "l"
@@ -471,7 +471,7 @@ extension KeyboardRootView {
 
     // テンキー配列: téléphone(上段123)か calculette(上段789、既定)か。
     private var formattedNumberKeypadIsTelephone: Bool {
-        formattedNumberSharedDefaults?.string(forKey: "formattedNumberKeypadLayout") == "telephone"
+        formattedNumberSharedDefaults?.string(forKey: KeyboardViewController.SharedDefaultsKeys.formattedNumberKeypadLayout) == "telephone"
     }
 
     // 数字3行の並び(電話=昇順123始まり / 電卓=降順789始まり)。
@@ -484,7 +484,7 @@ extension KeyboardRootView {
     // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。1=日/2=月/7=土。
     private var formattedNumberCalendarFirstWeekday: Int {
         switch formattedNumberSharedDefaults?
-            .string(forKey: "calendarWeekStart") {
+            .string(forKey: KeyboardViewController.SharedDefaultsKeys.calendarWeekStart) {
         case "sunday": return 1
         case "saturday": return 7
         default: return 2
@@ -493,7 +493,7 @@ extension KeyboardRootView {
 
     private var formattedNumberCalendarLanguage: DateFormatCatalog.CalendarWeekdayLanguage {
         let raw = formattedNumberSharedDefaults?
-            .string(forKey: "calendarWeekdayLanguage") ?? ""
+            .string(forKey: KeyboardViewController.SharedDefaultsKeys.calendarWeekdayLanguage) ?? ""
         // 既定は仏語(dim lun mar)。
         return DateFormatCatalog.CalendarWeekdayLanguage(rawValue: raw) ?? .french
     }
@@ -527,9 +527,9 @@ extension KeyboardRootView {
     }
 
     // 既定: 日曜=DIC-156(色あり)、金曜/土曜=オフ。
-    private var formattedNumberCalendarSundayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSundayColor", fallback: "dic156") }
-    private var formattedNumberCalendarFridayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarFridayColor", fallback: "off") }
-    private var formattedNumberCalendarSaturdayColor: Color? { formattedNumberCalendarDayColor(forKey: "calendarSaturdayColor", fallback: "off") }
+    private var formattedNumberCalendarSundayColor: Color? { formattedNumberCalendarDayColor(forKey: KeyboardViewController.SharedDefaultsKeys.calendarSundayColor, fallback: "dic156") }
+    private var formattedNumberCalendarFridayColor: Color? { formattedNumberCalendarDayColor(forKey: KeyboardViewController.SharedDefaultsKeys.calendarFridayColor, fallback: "off") }
+    private var formattedNumberCalendarSaturdayColor: Color? { formattedNumberCalendarDayColor(forKey: KeyboardViewController.SharedDefaultsKeys.calendarSaturdayColor, fallback: "off") }
 
     // 書式プルダウン: 内部書式でなくサンプル日付(3月4日・水)でレンダリングした実例を表示。
     private var formattedNumberDateFormatMenu: some View {
@@ -552,7 +552,7 @@ extension KeyboardRootView {
     // 方式(日本/仏/英/米)はコンテナー設定で選ぶ。共有 UserDefaults から直接読む。
     private var formattedNumberDateStyle: DateFormatStyle {
         let raw = formattedNumberSharedDefaults?
-            .string(forKey: "dateFormatStyle") ?? ""
+            .string(forKey: KeyboardViewController.SharedDefaultsKeys.dateFormatStyle) ?? ""
         return DateFormatStyle(rawValue: raw) ?? .japanese
     }
 
