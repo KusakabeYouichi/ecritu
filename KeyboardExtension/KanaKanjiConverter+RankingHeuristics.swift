@@ -208,7 +208,8 @@ extension KanaKanjiConverter {
     // かな非掲載(=漢字正書の人手宣言。とる {取る,…} 等)なら、corpus 優位のかな識別が
     // 派生形で先頭化するのを防ぐ。基底 seed にかなを掲載した族(ある/うまい 等)は不発。
     func derivationBaseSeedSkipsKanaLead(for reading: String) -> Bool {
-        for rule in Self.allInflectionRules {
+        for ruleIndex in Self.candidateInflectionRuleIndices(forReadingEndingWith: reading.last) {
+            let rule = Self.allInflectionRules[ruleIndex]
             guard let stem = removingSuffix(reading, suffix: rule.readingSuffix),
                 !stem.isEmpty else {
                 continue

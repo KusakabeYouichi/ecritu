@@ -27,6 +27,9 @@ final class KanaKanjiConverter {
     // 学習・抑制・設定変更時は invalidateCandidateCache で一緒に消える。
     var multiClauseInflectionCache: [String: [String]] = [:]
     let multiClauseInflectionCacheLimit = 1024
+    // 名詞+た の遮断判定(isInflectedTaFormOfKnownVerb)のメモ。DP の遷移ごとに活用エンジンを呼んでいて
+    // 連文節の処理時間の約7%を占めていた(2805 プロファイル)。キー "prevReading\tprevSurface"
+    var multiClauseTaFormCheckCache: [String: Bool] = [:]
 
     // shouldKeepKanaIdentityLeading のメモ(結果適用のたび main で全ルール走査+sqlite点
     // クエリが走っていた)。学習・抑制・設定変更で invalidateCandidateCache と一緒に消える。
@@ -1815,14 +1818,15 @@ final class KanaKanjiConverter {
         guard !normalizedReading.isEmpty else {
             return false
         }
-        return (store.userDictionary()[normalizedReading] ?? []).contains(normalizedReading)
-            || (store.initialUserDictionary()[normalizedReading] ?? []).contains(normalizedReading)
+        return (store.ajoutVocabulary()[normalizedReading] ?? []).contains(normalizedReading)
+            || (store.initialAjoutVocabulary()[normalizedReading] ?? []).contains(normalizedReading)
     }
 
     func invalidateCandidateCache() {
         candidateCache.removeAll(keepingCapacity: true)
         candidateCacheOrder.removeAll(keepingCapacity: true)
         multiClauseInflectionCache.removeAll(keepingCapacity: true)
+        multiClauseTaFormCheckCache.removeAll(keepingCapacity: true)
         kanaIdentityLeadingCache.removeAll(keepingCapacity: true)
     }
 
