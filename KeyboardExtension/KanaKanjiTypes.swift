@@ -153,3 +153,22 @@ enum ContactCacheCipher {
     }
 }
 
+
+extension Array where Element == String {
+    // 前後空白を除いた表層で重複を畳み、空文字を捨てる(出現順を保つ)。
+    // keepingOriginalText=true なら比較だけ trimmed で行い、返す要素は元の文字列(ショートカット語彙の表示用)。
+    // 以前は converter/store/merger/RootView に同じループが 5 本あった(2805 リファクタで集約)
+    func uniquedTrimmedCandidates(keepingOriginalText: Bool = false) -> [String] {
+        var seen = Set<String>()
+        var result: [String] = []
+        result.reserveCapacity(count)
+        for candidate in self {
+            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !trimmed.isEmpty, seen.insert(trimmed).inserted else {
+                continue
+            }
+            result.append(keepingOriginalText ? candidate : trimmed)
+        }
+        return result
+    }
+}

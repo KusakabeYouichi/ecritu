@@ -266,27 +266,9 @@ enum MemoryForensics {
     nonisolated(unsafe) private static var anatomyPinnedFlags: UnsafeMutablePointer<Bool>?
     nonisolated(unsafe) private static var anatomyPinnedClassCounts = [UInt: Int](minimumCapacity: 4096)
     nonisolated(unsafe) private static var anatomyPinnedRawCountBySize = [Int: Int](minimumCapacity: 64)
-    nonisolated(unsafe) private static let anatomyClassNamesByPointer: [UInt: String] = {
-        let declared = objc_getClassList(nil, 0)
-        guard declared > 0 else { return [:] }
-        // AnyClass 経由の要素アクセス(objc_copyClassList の list[i])は swift_dynamicCast を
-        // 挟み、NSObject 系メソッドを実装しない内部クラス(__NSGenericDeallocHandler 等)で
-        // forwarding abort する(2611でテスト実測)。生ポインタのまま受け取り、
-        // 名前取得はメッセージ送信しない class_getName(メタデータ直読み)だけに留める。
-        var raw = [UnsafeRawPointer?](repeating: nil, count: Int(declared))
-        let filled = raw.withUnsafeMutableBufferPointer { buffer -> Int32 in
-            guard let base = buffer.baseAddress else { return 0 }
-            return base.withMemoryRebound(to: AnyClass.self, capacity: buffer.count) { rebound in
-                objc_getClassList(AutoreleasingUnsafeMutablePointer(rebound), declared)
-            }
-        }
-        var names = [UInt: String](minimumCapacity: Int(filled))
-        for index in 0..<Int(min(filled, declared)) {
-            guard let pointer = raw[index] else { continue }
-            names[UInt(bitPattern: pointer)] = String(cString: class_getName(unsafeBitCast(pointer, to: AnyClass.self)))
-        }
-        return names
-    }()
+    // 登録済み Objective-C クラスの「ポインタ→名前」(KeyboardViewController.diagnosticsClassNamesByPointer と同一の表。
+    // 以前は同じ列挙を 2 か所に持っていた。2805 リファクタで共有)
+    private static var anatomyClassNamesByPointer: [UInt: String] { KeyboardViewController.diagnosticsClassNamesByPointer }
 
     // 解剖の間隔ガード(全ブロック列挙+ページクエリで100ms級。連続警告で繰り返さない)
     nonisolated(unsafe) private static var lastAnatomyAt: CFAbsoluteTime = 0

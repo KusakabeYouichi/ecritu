@@ -1933,21 +1933,6 @@ final class KanaKanjiConverter {
     }
 
     func uniqueCandidates(from candidates: [String]) -> [String] {
-        var seen = Set<String>()
-        var result: [String] = []
-
-        for candidate in candidates {
-            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmed.isEmpty,
-                    !seen.contains(trimmed) else {
-                continue
-            }
-
-            seen.insert(trimmed)
-            result.append(trimmed)
-        }
-
-        return result
+        candidates.uniquedTrimmedCandidates()
     }
 }

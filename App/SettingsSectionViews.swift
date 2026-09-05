@@ -2,6 +2,16 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
+// 設定カード内の小見出し付き項目(複数セクションで共用)
+@ViewBuilder
+func settingsSubItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
+    VStack(alignment: .leading, spacing: 6) {
+        Text(title)
+            .font(.subheadline.weight(.semibold))
+        content()
+    }
+}
+
 struct KeyRepeatSettingsSection: View {
     @Binding var keyRepeatInitialDelay: Double
     @Binding var keyRepeatInterval: Double
@@ -1144,7 +1154,7 @@ struct NumberLayoutSettingsSection: View {
             Text("数字配列")
                 .font(.headline)
 
-            subItem("数字入力") {
+            settingsSubItem("数字入力") {
                 Picker("数字入力", selection: $selection) {
                     ForEach(NumberLayoutOption.allCases) { option in
                         Text(option.title).tag(option)
@@ -1157,7 +1167,7 @@ struct NumberLayoutSettingsSection: View {
                     .foregroundStyle(.secondary)
             }
 
-            subItem("書式化数値入力") {
+            settingsSubItem("書式化数値入力") {
                 Picker("書式化数値入力", selection: $formattedNumberKeypad) {
                     ForEach(FormattedNumberKeypadOption.allCases) { option in
                         Text(option.title).tag(option)
@@ -1227,7 +1237,7 @@ struct CalendarSettingsGroupSection: View {
             Text("カレンダー")
                 .font(.headline)
 
-            subItem("週開始") {
+            settingsSubItem("週開始") {
                 Picker("週開始", selection: $weekStart) {
                     ForEach(CalendarWeekStartOption.allCases) { option in
                         Text(option.title).tag(option)
@@ -1236,7 +1246,7 @@ struct CalendarSettingsGroupSection: View {
                 .pickerStyle(.segmented)
             }
 
-            subItem("曜日表記") {
+            settingsSubItem("曜日表記") {
                 Picker("曜日表記", selection: $weekdayLanguage) {
                     ForEach(CalendarWeekdayLanguageOption.allCases) { option in
                         Text(option.title).tag(option)
@@ -1249,7 +1259,7 @@ struct CalendarSettingsGroupSection: View {
             dayColorSubItem("土曜列の色", binding: $saturdayColor, choices: Self.blueChoices, defaultOn: .dic641)
             dayColorSubItem("金曜列の色", binding: $fridayColor, choices: Self.redChoices, defaultOn: .bourgogne)
 
-            subItem("日付書式") {
+            settingsSubItem("日付書式") {
                 Picker("日付書式", selection: $dateFormatStyle) {
                     ForEach(DateFormatStyleOption.allCases) { option in
                         Text(option.title).tag(option)
@@ -1273,7 +1283,7 @@ struct CalendarSettingsGroupSection: View {
         choices: [CalendarDayColorOption],
         defaultOn: CalendarDayColorOption
     ) -> some View {
-        subItem(title) {
+        settingsSubItem(title) {
             Toggle("色を付ける", isOn: colorOnBinding(binding, defaultOn: defaultOn))
             if binding.wrappedValue != .off {
                 HStack(spacing: 8) {
@@ -1361,7 +1371,7 @@ struct FormatNumeriqueSettingsSection: View {
             Text("format numérique")
                 .font(.headline)
 
-            subItem("Séparateur de milliers") {
+            settingsSubItem("Séparateur de milliers") {
                 separatorPicker(
                     options: Array(ThousandsSeparatorOption.allCases),
                     isSelected: { $0 == thousandsSeparator },
@@ -1380,7 +1390,7 @@ struct FormatNumeriqueSettingsSection: View {
                     .foregroundStyle(.secondary)
             }
 
-            subItem("Séparateur décimal") {
+            settingsSubItem("Séparateur décimal") {
                 separatorPicker(
                     options: Array(DecimalSeparatorOption.allCases),
                     isSelected: { $0 == decimalSeparator },
@@ -1393,7 +1403,7 @@ struct FormatNumeriqueSettingsSection: View {
                     .foregroundStyle(.secondary)
             }
 
-            subItem("単位の積の記号") {
+            settingsSubItem("単位の積の記号") {
                 Picker("単位の積の記号", selection: $unitProductSeparator) {
                     ForEach(UnitProductSeparatorOption.allCases) { option in
                         Text(option.title).tag(option)
@@ -1406,7 +1416,7 @@ struct FormatNumeriqueSettingsSection: View {
                     .foregroundStyle(.secondary)
             }
 
-            subItem("リットルの記号") {
+            settingsSubItem("リットルの記号") {
                 Picker("リットルの記号", selection: $litreSymbol) {
                     ForEach(LitreSymbolOption.allCases) { option in
                         Text(option.title).tag(option)
