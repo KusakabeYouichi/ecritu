@@ -290,6 +290,8 @@ extension KanaKanjiConverter {
         // 計 を先頭、測 を次に(bigram 差 計 5184/測 4466/図 3529 に seed 先頭 測る の加点も乗るため 計 は 3500)
         "温度\t計": 3500,
         "温度\t測": 1500,
+        // 春慶塗の箸(ユーザ指定 2808): の→橋 4532 < の→箸 6360 で 橋 が先頭。漆器の後は 箸
+        "春慶塗\t箸": 2500,
     ]
     // 連語の後段は表層の前方一致で引く(解けて/解けてきます 等の活用派生ノードにも効かせる。2739)
     static func acrossParticleCollocationBonus(prevPrev: String, surface: String) -> Int? {
@@ -517,7 +519,7 @@ extension KanaKanjiConverter {
     // さすが: かな副詞クランプ(4000)で 流石(7272)が変種上限を超えて消えるため、
     // seed {さすが, 流石} の順で 流石Apple を2番目に残す(ユーザ指定 2666)
     // たいして: 同じ構図(かな副詞クランプで最良、seed {たいして, 大して, 対して} の順に変種を出す。2771)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "あとあと", "たとえて"]
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて"]
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて"]
@@ -1290,7 +1292,8 @@ extension KanaKanjiConverter {
     static let multiClauseBOSParticlePenalty = 2000
     // かね(終助詞、seed でかな先頭)と 疑問の か も文頭には立たない: かねもってて が かね(5954)+持ってて、次いで
     // か(BOS bigram 4065)+ね(3177) の断片連鎖で 金持ってて(単漢字名詞→動詞の無助詞減点 600 込み)に勝っていた(2803)
-    static let multiClauseBOSPenalizedParticles: Set<String> = ["は", "が", "を", "へ", "も", "に", "か", "かね"]
+    // て(接続助詞)も文頭には立たない(2806): てでやってた が て(BOS bigram 2591)+で で 手(6932)+で に勝ち、手で が候補に 1 つも出なかった
+    static let multiClauseBOSPenalizedParticles: Set<String> = ["は", "が", "を", "へ", "も", "に", "か", "かね", "て"]
     // 接続助詞「し」は述語(動詞終止形/形容詞/だ)にしか付かない。ただし文中・文頭の し は
     // 「する」の連用形(して/した/しない/しまう の分割由来、サ変の 勉強し+まくり)なので、
     // 適用は「入力末尾の裸の し」に限る ─ 限定しないと してもらった→シテもらった、
