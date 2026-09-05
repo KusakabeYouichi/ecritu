@@ -148,7 +148,7 @@ extension KeyboardViewController {
         // 保存されている signature が現行スキーマ(v2 接頭辞付き)でないキャッシュは
         // インデックス化ロジックが古い可能性があるので破棄する。これがないと、
         // 旧スキームで生成された「候補側カナ抽出キー」混入キャッシュが
-        // 起動毎に in-memory へ復活し続けてしまう。
+        // 起動ごとに in-memory へ復活し続けてしまう。
         let storedSignature = defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) ?? ""
         guard storedSignature.hasPrefix("v3:") else {
             defaults.removeObject(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)

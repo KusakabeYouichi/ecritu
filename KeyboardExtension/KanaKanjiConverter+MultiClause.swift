@@ -499,7 +499,7 @@ extension KanaKanjiConverter {
                 // (b2) 活用派生ノード: 活用形(買った/行ける 等)は辞書に収穫しない設計のため、
                 //      活用エンジンから供給する。表層は LM 未収録が普通で dictUnknown(8700)が
                 //      付くが、断片合成(核+た)や素通りよりは安く、「いきだけかったぜ→
-                //      行きだけ買ったぜ」型の分割を可能にする。コスト抑制のため span 長 2〜8、
+                //      行きだけ買ったぜ」型の分割を可能にする。コスト抑制のため span 長 2〜12(multiClauseInflectionMaxSegmentReadingCount)、
                 //      活用ルール末尾文字に一致する読みのみ、上位3件に限定。
                 if inflectionSupplyGateSatisfied {
                     let inflected = cachedInflectedCandidates()
@@ -956,7 +956,7 @@ extension KanaKanjiConverter {
             // (層2489<そう2945 が 学生層 を守る、さん2020<三3455 が 柚香さん を守る)まで
             // 消える(2094/2101/今回の全面無効で三度検証済み)。フォールバック(2119)との
             // 中間へ圧縮することで、過大な文末選好だけを弱める。
-            // ペアキーは1回だけ連結して両判定で使い回す(エッジ毎に呼ばれるため、
+            // ペアキーは1回だけ連結して両判定で使い回す(エッジごとに呼ばれるため、
             // 二重連結は DP 全体で数千個の一時 String になる。アリーナ肥大対策 2560)
             let bigramPairKey = prev + "\t" + surface
             if prev != Self.multiClauseBOSMarker,
