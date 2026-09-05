@@ -1040,6 +1040,305 @@ struct ContentView: View {
         }
     }
 
+    // 設定カード群(body の見出しコメントごとに小さなビューへ分割。1 つの body に 40 枚以上を並べると
+    // 型検査と Release(WMO)のコンパイルが重く、過去にクラッシュもした。2805 リファクタ)
+    @ViewBuilder
+    private var layoutSettingsCards: some View {
+        KanaLayoutSettingsSection(selection: kanaLayoutSelection)
+
+        LatinLayoutSettingsSection(selection: latinLayoutSelection)
+
+        NumberLayoutSettingsSection(
+            selection: numberLayoutSelection,
+            formattedNumberKeypad: formattedNumberKeypadSelection
+        )
+
+        BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
+
+        KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
+    }
+
+    @ViewBuilder
+    private var inputSettingsCards: some View {
+        DirectionSettingsSection(selection: directionSelection)
+
+        KeyRepeatSettingsSection(
+            keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
+            keyRepeatInterval: keyRepeatIntervalBinding
+        )
+
+        IdleCommitSettingsSection(
+            idleCommitEnabled: $idleCommitEnabled,
+            idleCommitInterval: idleCommitIntervalBinding
+        )
+
+        KanaModeSwitcherAssignmentSection(
+            tapSelection: kanaModeSwitcherTapActionSelection,
+            rightFlickSelection: kanaModeSwitcherRightFlickActionSelection,
+            upFlickSelection: kanaModeSwitcherUpFlickActionSelection
+        )
+
+        KanaPostModifierEmptyTapAssignmentSection(
+            actionSelection: kanaPostModifierEmptyTapActionSelection,
+            kaomojiCategoryID: $kanaPostModifierEmptyTapKaomojiCategoryID,
+            emojiCategoryID: $kanaPostModifierEmptyTapEmojiCategoryID,
+            symbolCategoryID: $kanaPostModifierEmptyTapSymbolCategoryID
+        )
+
+        KanaPostModifierFlickDakutenSettingsSection(
+            isEnabled: $kanaPostModifierFlickDakutenEnabled
+        )
+
+        FormatNumeriqueSettingsSection(
+            thousandsSeparator: numberThousandsSeparatorSelection,
+            groupFourDigits: $numberGroupFourDigits,
+            decimalSeparator: numberDecimalSeparatorSelection,
+            unitProductSeparator: numberUnitProductSeparatorSelection,
+            litreSymbol: numberLitreSymbolSelection
+        )
+
+        DegreSettingsSection(degreeSymbol: degreeSymbolSelection)
+
+        CalendarSettingsGroupSection(
+            weekStart: calendarWeekStartSelection,
+            weekdayLanguage: calendarWeekdayLanguageSelection,
+            sundayColor: calendarSundayColorSelection,
+            fridayColor: calendarFridayColorSelection,
+            saturdayColor: calendarSaturdayColorSelection,
+            dateFormatStyle: dateFormatStyleSelection
+        )
+
+        LatinLexiconSettingsSection(
+            enablesEnglish: $latinLexiconEnglishEnabled,
+            enablesFrench: $latinLexiconFrenchEnabled,
+            enablesGerman: $latinLexiconGermanEnabled,
+            enablesItalian: $latinLexiconItalianEnabled
+        )
+    }
+
+    @ViewBuilder
+    private var keyDisplaySettingsCards: some View {
+        FlickGuideDisplaySettingsSection(
+            kanaSelection: kanaFlickGuideDisplayModeSelection,
+            latinSelection: latinFlickGuideDisplayModeSelection,
+            numberSelection: numberFlickGuideDisplayModeSelection,
+            modifierSelection: modifierFlickGuideDisplayModeSelection,
+            isLatinGuideAvailable: isLatinFlickLayoutSelected
+        )
+    }
+
+    @ViewBuilder
+    private var displaySettingsCards: some View {
+        LandscapeCandidateSideSettingsSection(
+            selection: landscapeCandidateSideSelection,
+            latinSuggestionMode: landscapeLatinSuggestionModeSelection
+        )
+
+        LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
+
+        AccentColorSettingsSection(selection: accentPaletteSelection)
+
+        ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
+    }
+
+    @ViewBuilder
+    private var conversionSettingsCards: some View {
+        DelimiterAutoCommitCandidateSettingsSection(
+            selection: delimiterAutoCommitCandidateSelection
+        )
+
+        KanaKanjiCandidateSourceModeSettingsSection(
+            selection: kanaKanjiCandidateSourceModeSelection
+        )
+
+        HistoricalKanaCandidatesSettingsSection(
+            isEnabled: $historicalKanaCandidatesEnabled
+        )
+
+        IterationMarkCandidatesSettingsSection(
+            isEnabled: $iterationMarkCandidatesEnabled
+        )
+
+        ScriptVariantModeSettingsSection(
+            title: "カタカナ強調表記の候補",
+            selectionRawValue: $katakanaEmphasisCandidateModeRawValue,
+            footnote: "辞書が収穫した『ウマイ/コレ/ばかリ』のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(初期設定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
+        )
+
+        ScriptVariantModeSettingsSection(
+            title: "交ぜ書きの候補",
+            selectionRawValue: $mazegakiCandidateModeRawValue,
+            footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(初期設定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
+        )
+
+        RadicalStrokeCountSettingsSection(
+            rawValue: $radicalStrokeCountStyleRawValue
+        )
+
+        MeSuffixCandidateSettingsSection(
+            ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
+            adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
+        )
+
+        EmojiKaomojiCandidateSettingsSection(
+            enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
+            enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
+        )
+
+        ContactCandidateDisplaySettingsSection(
+            selection: contactCandidateDisplayModeSelection
+        )
+
+        UserDictionaryCandidateDisplaySettingsSection(
+            selection: userDictionaryCandidateDisplayModeSelection
+        )
+    }
+
+    @ViewBuilder
+    private var vocabularySettingsCards: some View {
+        AjoutVocabularySettingsSection(
+            entries: $ajoutVocabularyEntries,
+            readingInput: $ajoutVocabularyReadingInput,
+            candidateInput: $ajoutVocabularyCandidateInput,
+            isRegistrationVisible: $isAjoutVocabularyRegistrationVisible,
+            scrollIndexTitle: $ajoutVocabularyScrollIndexTitle,
+            isScrollIndexVisible: $isAjoutVocabularyScrollIndexVisible,
+            canAddEntry: canAddAjoutVocabularyEntry,
+            listHeight: userVocabularyListHeight(for: ajoutVocabularyEntries.count),
+            onAddEntry: addAjoutVocabularyEntry,
+            onUpdateEntry: updateAjoutVocabularyEntry,
+            onDeleteEntry: removeAjoutVocabularyEntry,
+            onDeleteAll: removeAllAjoutVocabularyEntries,
+            onReimportInitialEntries: reimportInitialAjoutVocabularyEntries
+        )
+
+        LearnedDictionarySettingsSection(
+            entries: $learnedDictionaryEntries,
+            scrollIndexTitle: $learnedDictionaryScrollIndexTitle,
+            isScrollIndexVisible: $isLearnedDictionaryScrollIndexVisible,
+            listHeight: userVocabularyListHeight(for: learnedDictionaryEntries.count),
+            onDeleteEntry: removeLearnedDictionaryEntry,
+            onDeleteAll: removeAllLearnedDictionaryEntries,
+            onResetLearning: resetKanaKanjiLearning
+        )
+
+        SuppressionDictionarySettingsSection(
+            entries: $suppressionDictionaryEntries,
+            readingInput: $suppressionDictionaryReadingInput,
+            candidateInput: $suppressionDictionaryCandidateInput,
+            isRegistrationVisible: $isSuppressionDictionaryRegistrationVisible,
+            scrollIndexTitle: $suppressionDictionaryScrollIndexTitle,
+            isScrollIndexVisible: $isSuppressionDictionaryScrollIndexVisible,
+            canAddEntry: canAddSuppressionDictionaryEntry,
+            listHeight: userVocabularyListHeight(for: suppressionDictionaryEntries.count),
+            onAddEntry: addSuppressionDictionaryEntry,
+            onUpdateEntry: updateSuppressionDictionaryEntry,
+            onDeleteEntry: removeSuppressionDictionaryEntry
+        )
+
+        ShortcutDictionarySettingsSection(
+            entries: $shortcutDictionaryEntries,
+            candidateInput: $shortcutDictionaryCandidateInput,
+            isRegistrationVisible: $isShortcutDictionaryRegistrationVisible,
+            canAddEntry: canAddShortcutDictionaryEntry,
+            listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
+            onAddEntry: addShortcutDictionaryEntry,
+            onUpdateEntry: updateShortcutDictionaryEntry,
+            onDeleteEntry: removeShortcutDictionaryEntry
+        )
+
+        ReadOnlyDictionarySettingsSection(
+            title: "第1語彙",
+            entries: firstVocabularyEntries,
+            scrollIndexTitle: $firstVocabularyScrollIndexTitle,
+            isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
+            listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
+            emptyMessage: isLoadingFirstVocabularyEntries
+                ? "第1語彙を読み込み中..."
+                : "第1語彙はまだ読み込まれていません。",
+            description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。",
+            actionButtonTitle: didLoadFirstVocabularyEntries
+                ? "第1語彙を再読み込み"
+                : "第1語彙を読み込む",
+            actionButtonLoadingTitle: "第1語彙を読み込み中...",
+            isActionLoading: isLoadingFirstVocabularyEntries,
+            isActionDisabled: isLoadingSecondVocabularyEntries,
+            onAction: {
+                requestFirstSystemVocabularyEntriesLoadIfNeeded(force: true)
+            }
+        )
+
+        ReadOnlyDictionarySettingsSection(
+            title: "第2語彙",
+            entries: secondVocabularyEntries,
+            scrollIndexTitle: $secondVocabularyScrollIndexTitle,
+            isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
+            listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
+            emptyMessage: isLoadingSecondVocabularyEntries
+                ? "第2語彙を読み込み中..."
+                : "第2語彙はまだ読み込まれていません。",
+            description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。",
+            actionButtonTitle: didLoadSecondVocabularyEntries
+                ? "第2語彙を再読み込み"
+                : "第2語彙を読み込む",
+            actionButtonLoadingTitle: "第2語彙を読み込み中...",
+            isActionLoading: isLoadingSecondVocabularyEntries,
+            isActionDisabled: isLoadingFirstVocabularyEntries,
+            onAction: {
+                requestSecondSystemVocabularyEntriesLoadIfNeeded(force: true)
+            }
+        )
+    }
+
+    @ViewBuilder
+    private var appInfoSettingsCards: some View {
+        if !showsSetupStepsAtTop {
+            SetupStepsSection(steps: setupSteps)
+        }
+
+        ThirdPartyLicensesSection()
+    }
+
+    @ViewBuilder
+    private var diagnosticsSettingsCards: some View {
+        ConversionCacheSettingsSection(
+            suspendMemorySlimmingEnabled: $suspendMemorySlimmingEnabled
+        )
+
+        // キーボード診断ログは開発ビルド専用(キーボード側の記録も
+        // DEBUG 専用のため、リリースでは常に空。審査ガイドライン2.2対策)
+        #if DEBUG
+        KeyboardDiagnosticsSection(
+            isSessionActive: keyboardDiagnosticsSessionActive,
+            failSafeProfile: keyboardDiagnosticsFailSafeProfile,
+            lastHeartbeatText: keyboardDiagnosticsLastHeartbeatText(),
+            lastEvent: keyboardDiagnosticsLastEvent,
+            lastSessionID: keyboardDiagnosticsLastSessionID,
+            installMarker: keyboardDiagnosticsInstallMarker,
+            logLines: keyboardDiagnosticsLogLines,
+            launchCount: keyboardDiagnosticsLaunchCount,
+            attachFailureCount: keyboardDiagnosticsAttachFailureCount,
+            attachLateRecoveryCount: keyboardDiagnosticsAttachLateRecoveryCount,
+            onReload: {
+                clearKeyboardDiagnosticsIfInstallChanged()
+                loadKeyboardDiagnosticsState()
+            },
+            onCopy: { copyKeyboardDiagnosticsToPasteboard() },
+            onCopyDetail: { copyKeyboardDiagnosticsToPasteboard(detail: true) },
+            onClear: clearKeyboardDiagnosticsState
+        )
+        #endif
+
+        Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
+            .font(.footnote)
+            .foregroundStyle(.secondary)
+            // Loading が長い件の切り分け(2587)。段別計測で「実作業は約100ms、
+            // 残りは main actor の待ち」と分かったが、塞いでいるのが本当に
+            // 設定カード群の構築なのかは未確認だった。カード群の最後の要素が
+            // 画面に載った時刻を出せば、構築に何ms掛かったかが直接分かる。
+            .onAppear { logSettingsCardsRenderedIfNeeded() }
+    }
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -1107,296 +1406,22 @@ struct ContentView: View {
                         // フラグを立てる)。起動直後はロゴ+ヘッダーだけを即描画し、白背景の
                         // Loading 表示が長引かないようにする。
                         if didRenderInitialFrame {
-
-                        // ──── キー配列 ────
-
-                        KanaLayoutSettingsSection(selection: kanaLayoutSelection)
-
-                        LatinLayoutSettingsSection(selection: latinLayoutSelection)
-
-                        NumberLayoutSettingsSection(
-                            selection: numberLayoutSelection,
-                            formattedNumberKeypad: formattedNumberKeypadSelection
-                        )
-
-                        BasicSymbolOrderSettingsSection(selection: basicSymbolOrderSelection)
-
-                        KanaModifierSettingsSection(selection: kanaModifierPlacementSelection)
-
-                        // ──── 入力 ────
-
-                        DirectionSettingsSection(selection: directionSelection)
-
-                        KeyRepeatSettingsSection(
-                            keyRepeatInitialDelay: keyRepeatInitialDelayBinding,
-                            keyRepeatInterval: keyRepeatIntervalBinding
-                        )
-
-                        IdleCommitSettingsSection(
-                            idleCommitEnabled: $idleCommitEnabled,
-                            idleCommitInterval: idleCommitIntervalBinding
-                        )
-
-                        KanaModeSwitcherAssignmentSection(
-                            tapSelection: kanaModeSwitcherTapActionSelection,
-                            rightFlickSelection: kanaModeSwitcherRightFlickActionSelection,
-                            upFlickSelection: kanaModeSwitcherUpFlickActionSelection
-                        )
-
-                        KanaPostModifierEmptyTapAssignmentSection(
-                            actionSelection: kanaPostModifierEmptyTapActionSelection,
-                            kaomojiCategoryID: $kanaPostModifierEmptyTapKaomojiCategoryID,
-                            emojiCategoryID: $kanaPostModifierEmptyTapEmojiCategoryID,
-                            symbolCategoryID: $kanaPostModifierEmptyTapSymbolCategoryID
-                        )
-
-                        KanaPostModifierFlickDakutenSettingsSection(
-                            isEnabled: $kanaPostModifierFlickDakutenEnabled
-                        )
-
-                        FormatNumeriqueSettingsSection(
-                            thousandsSeparator: numberThousandsSeparatorSelection,
-                            groupFourDigits: $numberGroupFourDigits,
-                            decimalSeparator: numberDecimalSeparatorSelection,
-                            unitProductSeparator: numberUnitProductSeparatorSelection,
-                            litreSymbol: numberLitreSymbolSelection
-                        )
-
-                        DegreSettingsSection(degreeSymbol: degreeSymbolSelection)
-
-                        CalendarSettingsGroupSection(
-                            weekStart: calendarWeekStartSelection,
-                            weekdayLanguage: calendarWeekdayLanguageSelection,
-                            sundayColor: calendarSundayColorSelection,
-                            fridayColor: calendarFridayColorSelection,
-                            saturdayColor: calendarSaturdayColorSelection,
-                            dateFormatStyle: dateFormatStyleSelection
-                        )
-
-                        LatinLexiconSettingsSection(
-                            enablesEnglish: $latinLexiconEnglishEnabled,
-                            enablesFrench: $latinLexiconFrenchEnabled,
-                            enablesGerman: $latinLexiconGermanEnabled,
-                            enablesItalian: $latinLexiconItalianEnabled
-                        )
-
-                        // ──── キー表示 ────
-
-                        FlickGuideDisplaySettingsSection(
-                            kanaSelection: kanaFlickGuideDisplayModeSelection,
-                            latinSelection: latinFlickGuideDisplayModeSelection,
-                            numberSelection: numberFlickGuideDisplayModeSelection,
-                            modifierSelection: modifierFlickGuideDisplayModeSelection,
-                            isLatinGuideAvailable: isLatinFlickLayoutSelected
-                        )
-
-                        // ──── 表示 ────
-
-                        LandscapeCandidateSideSettingsSection(
-                            selection: landscapeCandidateSideSelection,
-                            latinSuggestionMode: landscapeLatinSuggestionModeSelection
-                        )
-
-                        LandscapeNumberPaneSideSettingsSection(selection: landscapeNumberPaneSideSelection)
-
-                        AccentColorSettingsSection(selection: accentPaletteSelection)
-
-                        ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
-
-                        // ──── 変換 ────
-
-                        DelimiterAutoCommitCandidateSettingsSection(
-                            selection: delimiterAutoCommitCandidateSelection
-                        )
-
-                        KanaKanjiCandidateSourceModeSettingsSection(
-                            selection: kanaKanjiCandidateSourceModeSelection
-                        )
-
-                        HistoricalKanaCandidatesSettingsSection(
-                            isEnabled: $historicalKanaCandidatesEnabled
-                        )
-
-                        IterationMarkCandidatesSettingsSection(
-                            isEnabled: $iterationMarkCandidatesEnabled
-                        )
-
-                        ScriptVariantModeSettingsSection(
-                            title: "カタカナ強調表記の候補",
-                            selectionRawValue: $katakanaEmphasisCandidateModeRawValue,
-                            footnote: "辞書が収穫した『ウマイ/コレ/ばかリ』のような読みのカタカナ化表記の扱いです。抑制=候補に出さない(初期設定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。パンやアンケートのような外来語のカタカナは対象外です。"
-                        )
-
-                        ScriptVariantModeSettingsSection(
-                            title: "交ぜ書きの候補",
-                            selectionRawValue: $mazegakiCandidateModeRawValue,
-                            footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(初期設定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
-                        )
-
-                        RadicalStrokeCountSettingsSection(
-                            rawValue: $radicalStrokeCountStyleRawValue
-                        )
-
-                        MeSuffixCandidateSettingsSection(
-                            ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
-                            adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
-                        )
-
-                        EmojiKaomojiCandidateSettingsSection(
-                            enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
-                            enablesKaomojiCandidates: $kaomojiCandidateDisplayEnabled
-                        )
-
-                        ContactCandidateDisplaySettingsSection(
-                            selection: contactCandidateDisplayModeSelection
-                        )
-
-                        UserDictionaryCandidateDisplaySettingsSection(
-                            selection: userDictionaryCandidateDisplayModeSelection
-                        )
-
-                        // ──── 語彙管理 ────
-
-                        AjoutVocabularySettingsSection(
-                            entries: $ajoutVocabularyEntries,
-                            readingInput: $ajoutVocabularyReadingInput,
-                            candidateInput: $ajoutVocabularyCandidateInput,
-                            isRegistrationVisible: $isAjoutVocabularyRegistrationVisible,
-                            scrollIndexTitle: $ajoutVocabularyScrollIndexTitle,
-                            isScrollIndexVisible: $isAjoutVocabularyScrollIndexVisible,
-                            canAddEntry: canAddAjoutVocabularyEntry,
-                            listHeight: userVocabularyListHeight(for: ajoutVocabularyEntries.count),
-                            onAddEntry: addAjoutVocabularyEntry,
-                            onUpdateEntry: updateAjoutVocabularyEntry,
-                            onDeleteEntry: removeAjoutVocabularyEntry,
-                            onDeleteAll: removeAllAjoutVocabularyEntries,
-                            onReimportInitialEntries: reimportInitialAjoutVocabularyEntries
-                        )
-
-                        LearnedDictionarySettingsSection(
-                            entries: $learnedDictionaryEntries,
-                            scrollIndexTitle: $learnedDictionaryScrollIndexTitle,
-                            isScrollIndexVisible: $isLearnedDictionaryScrollIndexVisible,
-                            listHeight: userVocabularyListHeight(for: learnedDictionaryEntries.count),
-                            onDeleteEntry: removeLearnedDictionaryEntry,
-                            onDeleteAll: removeAllLearnedDictionaryEntries,
-                            onResetLearning: resetKanaKanjiLearning
-                        )
-
-                        SuppressionDictionarySettingsSection(
-                            entries: $suppressionDictionaryEntries,
-                            readingInput: $suppressionDictionaryReadingInput,
-                            candidateInput: $suppressionDictionaryCandidateInput,
-                            isRegistrationVisible: $isSuppressionDictionaryRegistrationVisible,
-                            scrollIndexTitle: $suppressionDictionaryScrollIndexTitle,
-                            isScrollIndexVisible: $isSuppressionDictionaryScrollIndexVisible,
-                            canAddEntry: canAddSuppressionDictionaryEntry,
-                            listHeight: userVocabularyListHeight(for: suppressionDictionaryEntries.count),
-                            onAddEntry: addSuppressionDictionaryEntry,
-                            onUpdateEntry: updateSuppressionDictionaryEntry,
-                            onDeleteEntry: removeSuppressionDictionaryEntry
-                        )
-
-                        ShortcutDictionarySettingsSection(
-                            entries: $shortcutDictionaryEntries,
-                            candidateInput: $shortcutDictionaryCandidateInput,
-                            isRegistrationVisible: $isShortcutDictionaryRegistrationVisible,
-                            canAddEntry: canAddShortcutDictionaryEntry,
-                            listHeight: userVocabularyListHeight(for: shortcutDictionaryEntries.count),
-                            onAddEntry: addShortcutDictionaryEntry,
-                            onUpdateEntry: updateShortcutDictionaryEntry,
-                            onDeleteEntry: removeShortcutDictionaryEntry
-                        )
-
-                        ReadOnlyDictionarySettingsSection(
-                            title: "第1語彙",
-                            entries: firstVocabularyEntries,
-                            scrollIndexTitle: $firstVocabularyScrollIndexTitle,
-                            isScrollIndexVisible: $isFirstVocabularyScrollIndexVisible,
-                            listHeight: userVocabularyListHeight(for: firstVocabularyEntries.count),
-                            emptyMessage: isLoadingFirstVocabularyEntries
-                                ? "第1語彙を読み込み中..."
-                                : "第1語彙はまだ読み込まれていません。",
-                            description: "Dictionnaire système premier (読み取り専用) 追加や削除はできません。",
-                            actionButtonTitle: didLoadFirstVocabularyEntries
-                                ? "第1語彙を再読み込み"
-                                : "第1語彙を読み込む",
-                            actionButtonLoadingTitle: "第1語彙を読み込み中...",
-                            isActionLoading: isLoadingFirstVocabularyEntries,
-                            isActionDisabled: isLoadingSecondVocabularyEntries,
-                            onAction: {
-                                requestFirstSystemVocabularyEntriesLoadIfNeeded(force: true)
-                            }
-                        )
-
-                        ReadOnlyDictionarySettingsSection(
-                            title: "第2語彙",
-                            entries: secondVocabularyEntries,
-                            scrollIndexTitle: $secondVocabularyScrollIndexTitle,
-                            isScrollIndexVisible: $isSecondVocabularyScrollIndexVisible,
-                            listHeight: userVocabularyListHeight(for: secondVocabularyEntries.count),
-                            emptyMessage: isLoadingSecondVocabularyEntries
-                                ? "第2語彙を読み込み中..."
-                                : "第2語彙はまだ読み込まれていません。",
-                            description: "Dictionnaire système secondaire (読み取り専用) 追加や削除はできません。",
-                            actionButtonTitle: didLoadSecondVocabularyEntries
-                                ? "第2語彙を再読み込み"
-                                : "第2語彙を読み込む",
-                            actionButtonLoadingTitle: "第2語彙を読み込み中...",
-                            isActionLoading: isLoadingSecondVocabularyEntries,
-                            isActionDisabled: isLoadingFirstVocabularyEntries,
-                            onAction: {
-                                requestSecondSystemVocabularyEntriesLoadIfNeeded(force: true)
-                            }
-                        )
-
-                        // ──── アプリ情報 ────
-
-                        if !showsSetupStepsAtTop {
-                            SetupStepsSection(steps: setupSteps)
-                        }
-
-                        ThirdPartyLicensesSection()
-
-                        // ──── 診断 ────
-
-                        ConversionCacheSettingsSection(
-                            suspendMemorySlimmingEnabled: $suspendMemorySlimmingEnabled
-                        )
-
-                        // キーボード診断ログは開発ビルド専用(キーボード側の記録も
-                        // DEBUG 専用のため、リリースでは常に空。審査ガイドライン2.2対策)
-                        #if DEBUG
-                        KeyboardDiagnosticsSection(
-                            isSessionActive: keyboardDiagnosticsSessionActive,
-                            failSafeProfile: keyboardDiagnosticsFailSafeProfile,
-                            lastHeartbeatText: keyboardDiagnosticsLastHeartbeatText(),
-                            lastEvent: keyboardDiagnosticsLastEvent,
-                            lastSessionID: keyboardDiagnosticsLastSessionID,
-                            installMarker: keyboardDiagnosticsInstallMarker,
-                            logLines: keyboardDiagnosticsLogLines,
-                            launchCount: keyboardDiagnosticsLaunchCount,
-                            attachFailureCount: keyboardDiagnosticsAttachFailureCount,
-                            attachLateRecoveryCount: keyboardDiagnosticsAttachLateRecoveryCount,
-                            onReload: {
-                                clearKeyboardDiagnosticsIfInstallChanged()
-                                loadKeyboardDiagnosticsState()
-                            },
-                            onCopy: { copyKeyboardDiagnosticsToPasteboard() },
-                            onCopyDetail: { copyKeyboardDiagnosticsToPasteboard(detail: true) },
-                            onClear: clearKeyboardDiagnosticsState
-                        )
-                        #endif
-
-                        Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            // Loading が長い件の切り分け(2587)。段別計測で「実作業は約100ms、
-                            // 残りは main actor の待ち」と分かったが、塞いでいるのが本当に
-                            // 設定カード群の構築なのかは未確認だった。カード群の最後の要素が
-                            // 画面に載った時刻を出せば、構築に何ms掛かったかが直接分かる。
-                            .onAppear { logSettingsCardsRenderedIfNeeded() }
-
+                            // ──── キー配列 ────
+                            layoutSettingsCards
+                            // ──── 入力 ────
+                            inputSettingsCards
+                            // ──── キー表示 ────
+                            keyDisplaySettingsCards
+                            // ──── 表示 ────
+                            displaySettingsCards
+                            // ──── 変換 ────
+                            conversionSettingsCards
+                            // ──── 語彙管理 ────
+                            vocabularySettingsCards
+                            // ──── アプリ情報 ────
+                            appInfoSettingsCards
+                            // ──── 診断 ────
+                            diagnosticsSettingsCards
                         } // didRenderInitialFrame
                         }
                         .padding(20)
