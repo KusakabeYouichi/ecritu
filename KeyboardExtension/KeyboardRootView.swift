@@ -1046,17 +1046,30 @@ struct KeyboardRootView: View {
         #endif
     }
 
-    @ViewBuilder
-    func inlineLatinDeleteKey(fixedWidth: CGFloat? = nil) -> some View {
-        let deleteKey = ActionKeyButton(
+    // 削除キー(⌫、長押しリピート)。各レイアウトで同じ引数列を 10 か所に書いていたのを集約(2805)。
+    // showsMemoryPressure はかな配列(5x2/3x3)だけ true(DEBUG のメモリ圧迫可視化: 黄/橙の背景と回数バッジ)
+    func deleteActionKey(
+        fixedWidth: CGFloat? = nil,
+        showsMemoryPressure: Bool = false,
+        action: (() -> Void)? = nil
+    ) -> ActionKeyButton {
+        ActionKeyButton(
             title: "⌫",
             accessibilityLabel: "削除",
             fontSize: 26,
+            fixedWidth: fixedWidth,
             repeatsWhileHolding: true,
             repeatInitialDelay: keyRepeatInitialDelay,
             repeatInterval: keyRepeatInterval,
-            action: onDeleteBackward
+            backgroundColorOverride: showsMemoryPressure ? memoryPressureDeleteKeyColor : nil,
+            cornerBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyBadge : nil,
+            action: action ?? onDeleteBackward
         )
+    }
+
+    @ViewBuilder
+    func inlineLatinDeleteKey(fixedWidth: CGFloat? = nil) -> some View {
+        let deleteKey = deleteActionKey()
 
         if let fixedWidth {
             deleteKey

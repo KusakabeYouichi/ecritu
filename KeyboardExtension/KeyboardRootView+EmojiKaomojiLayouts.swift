@@ -469,16 +469,7 @@ extension KeyboardRootView {
                     }
                     .frame(maxWidth: .infinity)
 
-                    ActionKeyButton(
-                        title: "⌫",
-                        accessibilityLabel: "削除",
-                        fontSize: 26,
-                        fixedWidth: 56,
-                        repeatsWhileHolding: true,
-                        repeatInitialDelay: keyRepeatInitialDelay,
-                        repeatInterval: keyRepeatInterval,
-                        action: onDeleteBackward
-                    )
+                    deleteActionKey(fixedWidth: 56)
                         .frame(height: mainFlickKeyHeight)
                 }
                 .frame(height: mainFlickKeyHeight)

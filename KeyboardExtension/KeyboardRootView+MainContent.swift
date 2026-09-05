@@ -187,16 +187,7 @@ extension KeyboardRootView {
                     )
                         .frame(height: unifiedActionRowHeight)
                 } else {
-                    ActionKeyButton(
-                        title: "⌫",
-                        accessibilityLabel: "削除",
-                        fontSize: 26,
-                        fixedWidth: bottomActionRowDeleteKeyWidth,
-                        repeatsWhileHolding: true,
-                        repeatInitialDelay: keyRepeatInitialDelay,
-                        repeatInterval: keyRepeatInterval,
-                        action: onDeleteBackward
-                    )
+                    deleteActionKey(fixedWidth: bottomActionRowDeleteKeyWidth)
                         .frame(height: unifiedActionRowHeight)
                 }
 

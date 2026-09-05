@@ -208,15 +208,7 @@ extension KeyboardRootView {
         keyWidth: CGFloat
     ) -> some View {
         VStack(spacing: rowSpacing) {
-            ActionKeyButton(
-                title: "⌫",
-                accessibilityLabel: "削除",
-                fontSize: 26,
-                repeatsWhileHolding: true,
-                repeatInitialDelay: keyRepeatInitialDelay,
-                repeatInterval: keyRepeatInterval,
-                action: onDeleteBackward
-            )
+            deleteActionKey()
                 .frame(width: keyWidth, height: rowHeight)
 
             spaceActionKeyButton(title: "")
@@ -674,16 +666,7 @@ extension KeyboardRootView {
                         .frame(height: mainFlickKeyHeight)
                 }
 
-                ActionKeyButton(
-                    title: "⌫",
-                    accessibilityLabel: "削除",
-                    fontSize: 26,
-                    fixedWidth: 64,
-                    repeatsWhileHolding: true,
-                    repeatInitialDelay: keyRepeatInitialDelay,
-                    repeatInterval: keyRepeatInterval,
-                    action: onDeleteBackward
-                )
+                deleteActionKey(fixedWidth: 64)
                     .frame(height: mainFlickKeyHeight)
 
                 spaceKeyButton(fixedWidth: nil, keyHeight: mainFlickKeyHeight)
@@ -853,15 +836,7 @@ extension KeyboardRootView {
     }
 
     func landscapeLatinInlineDeleteKey(fixedWidth: CGFloat) -> some View {
-        ActionKeyButton(
-            title: "⌫",
-            accessibilityLabel: "削除",
-            fontSize: 26,
-            repeatsWhileHolding: true,
-            repeatInitialDelay: keyRepeatInitialDelay,
-            repeatInterval: keyRepeatInterval,
-            action: onDeleteBackward
-        )
+        deleteActionKey()
             .frame(width: fixedWidth, height: mainFlickKeyHeight)
     }
 
@@ -1072,15 +1047,7 @@ extension KeyboardRootView {
                                 .frame(height: compactActionKeyHeight)
                         }
 
-                        ActionKeyButton(
-                            title: "⌫",
-                            accessibilityLabel: "削除",
-                            fontSize: 26,
-                            repeatsWhileHolding: true,
-                            repeatInitialDelay: keyRepeatInitialDelay,
-                            repeatInterval: keyRepeatInterval,
-                            action: onDeleteBackward
-                        )
+                        deleteActionKey()
                             .frame(maxWidth: .infinity)
                             .frame(height: compactActionKeyHeight)
 
