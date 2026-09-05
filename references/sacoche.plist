@@ -29,6 +29,8 @@
 	        <dict><key>phrase</key><string>三番叟</string><key>shortcut</key><string>さんばそう</string></dict>
 	        <dict><key>phrase</key><string>中山七里</string><key>shortcut</key><string>なかやましちり</string></dict>
 	        <dict><key>phrase</key><string>久寿玉</string><key>shortcut</key><string>くすだま</string></dict>
+	        <dict><key>phrase</key><string>春慶塗</string><key>shortcut</key><string>しゅんけいぬり</string><key>pos</key><string>名詞</string></dict>	<!-- 辞書は 春慶 だけで、連文節が 春慶+塗野(姓の収穫)に割れていた(2808) -->
+	        <dict><key>phrase</key><string>春慶塗り</string><key>shortcut</key><string>しゅんけいぬり</string><key>pos</key><string>名詞</string></dict>
 	        <dict><key>phrase</key><string>井之下</string><key>shortcut</key><string>いのした</string></dict>	<!-- Sudachiにもある(姓、コスト10000の収穫底値で基底6位。届かないので登録) -->
 	        <dict><key>phrase</key><string>宗和好み</string><key>shortcut</key><string>そうわごのみ</string></dict>
 	        <dict><key>phrase</key><string>寿美久</string><key>shortcut</key><string>すみきゅう</string></dict>
