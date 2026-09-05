@@ -2424,6 +2424,21 @@ extension KanaKanjiConverter {
             let prevSurface = pos > 0 ? nodes[pathIndices[pos - 1]].surface : Self.multiClauseBOSMarker
             let nextNode: MultiClauseNode? = pos + 1 < pathIndices.count ? nodes[pathIndices[pos + 1]] : nil
 
+            // 変種評価で transitionCost に渡すノード別フラグ(選好/抑制の記録から引く)。node と nextNode の
+            // 2 か所に同じ 4 引数を書いていたのを 1 本に(2805)。DP 側と違い politeSupplement の降格は含めない(従来どおり)
+            func variantFlags(_ node: MultiClauseNode) -> (
+                isShortCuratedFragment: Bool, isCollocationPreferredKana: Bool,
+                isCollocationPreferredVerb: Bool, scriptVariantPenalty: Int
+            ) {
+                (
+                    shortCuratedFragmentNodeKeys.contains(node.key),
+                    collocationPreferredKanaNodeKeys.contains(node.key),
+                    collocationPreferredVerbNodeKeys.contains(node.key),
+                    (scriptVariantSuppressedNodeKeys.contains(node.key) ? 100000
+                        : (scriptVariantDemotedNodeKeys.contains(node.key) ? 6000 : 0))
+                        + (collocationDemotedNodeKeys.contains(node.key) ? Self.multiClauseCollocationDemotionPenalty : 0)
+                )
+            }
             func pairCost(_ node: MultiClauseNode, asCurated: Bool = true) -> Int {
                 let prevAuxTail: String? = pos > 0
                     ? Self.auxTailForBigramBorrow(of: nodes[pathIndices[pos - 1]])
@@ -2431,6 +2446,7 @@ extension KanaKanjiConverter {
                 let prevIsDictionaryFormPredicate = pos > 0
                     ? nodes[pathIndices[pos - 1]].isDictionaryFormPredicate
                     : false
+                let nodeFlags = variantFlags(node)
                 let incoming = transitionCost(
                     prev: prevSurface,
                     prevAuxTail: prevAuxTail,
@@ -2446,14 +2462,10 @@ extension KanaKanjiConverter {
                         ? nodes[pathIndices[pos - 1]].isInflectionDerived
                         : false,
                     prevReading: pos > 0 ? nodes[pathIndices[pos - 1]].reading : nil,
-                    isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains(node.key),
-                    isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains(node.key),
-                    isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains(node.key),
-                    scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains(node.key) ? 100000
-                        : (scriptVariantDemotedNodeKeys.contains(node.key) ? 6000 : 0))
-                        + (collocationDemotedNodeKeys.contains(node.key)
-                            ? Self.multiClauseCollocationDemotionPenalty
-                            : 0),
+                    isShortCuratedFragment: nodeFlags.isShortCuratedFragment,
+                    isCollocationPreferredKana: nodeFlags.isCollocationPreferredKana,
+                    isCollocationPreferredVerb: nodeFlags.isCollocationPreferredVerb,
+                    scriptVariantPenalty: nodeFlags.scriptVariantPenalty,
                     prevStartsSentence: pos > 0 && nodes[pathIndices[pos - 1]].start == 0
                 )
                 // DP で足していたノード単位のボーナス(seed 順/単文節先頭/の を挟む連語)を変種の差分にも反映する(2738)。
@@ -2476,6 +2488,7 @@ extension KanaKanjiConverter {
                 }
                 let outgoing: Int
                 if let nextNode {
+                    let nextFlags = variantFlags(nextNode)
                     outgoing = transitionCost(
                         prev: node.surface,
                         prevAuxTail: Self.auxTailForBigramBorrow(of: node),
@@ -2489,14 +2502,10 @@ extension KanaKanjiConverter {
                         prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsInflectionDerived: node.isInflectionDerived,
                         prevReading: node.reading,
-                        isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains(nextNode.key),
-                        isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains(nextNode.key),
-                        isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains(nextNode.key),
-                        scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains(nextNode.key) ? 100000
-                            : (scriptVariantDemotedNodeKeys.contains(nextNode.key) ? 6000 : 0))
-                            + (collocationDemotedNodeKeys.contains(nextNode.key)
-                                ? Self.multiClauseCollocationDemotionPenalty
-                                : 0),
+                        isShortCuratedFragment: nextFlags.isShortCuratedFragment,
+                        isCollocationPreferredKana: nextFlags.isCollocationPreferredKana,
+                        isCollocationPreferredVerb: nextFlags.isCollocationPreferredVerb,
+                        scriptVariantPenalty: nextFlags.scriptVariantPenalty,
                         prevStartsSentence: node.start == 0
                     )
                 } else {
