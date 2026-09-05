@@ -13865,3 +13865,49 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "たいへいよう", systemCandidateMode: .surface).first ?? converter.candidates(for: "たいへいよう", limit: 1, systemCandidateMode: .surface).first, "太平洋")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2814: 助数詞の供給漏れ(魚の 2尾 等)を数字直後ブースト表に補充。〜目 の順序表現も同型で補充。
+    // フィグ(いちじく)を misc に。いれているひといないかなあ は 人→以内 の bigram(3人以内 の統計)で
+    // 人以内 になっていたので、人(ひと)直後の範囲接尾を減点(3人以内 は にん なので無傷)
+    func testRegressionRealLMCounterGapsAndHitoInai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, want) in [("び", "尾"), ("わ", "羽"), ("はい", "倍"), ("つう", "通"), ("びん", "便"), ("ぜん", "膳"),
+                                ("とん", "トン"), ("じげん", "次元")] {
+            let cands = converter.candidates(for: reading, limit: 16, systemCandidateMode: .surface)
+            let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: reading, precedingCharacter: "2")
+            XCTAssertEqual(boosted.first, want, "\(reading): \(boosted.prefix(4))")
+        }
+        // 〜目 の序数は表示層の め/目 選好(コンテナー設定)を通した後に数字直後ブーストが掛かる。設定の先後を保つこと
+        defer { converter.setOrdinalMeKanjiPreferred(true) }
+        for (pref, expected) in [(true, ["回目", "回め"]), (false, ["回め", "回目"])] {
+            converter.setOrdinalMeKanjiPreferred(pref)
+            let c = converter.candidates(for: "かいめ", limit: 16, systemCandidateMode: .surface)
+            let me = converter.applyMeSuffixPreferences(reading: "かいめ", to: c)
+            let b = KanaKanjiConverter.digitContextCounterBoostedCandidates(me, reading: "かいめ", precedingCharacter: "2")
+            XCTAssertEqual(Array(b.prefix(2)), expected, "pref=\(pref) \(b.prefix(4))")
+        }
+        XCTAssertEqual(converter.candidates(for: "ふぃぐ", limit: 2, systemCandidateMode: .surface).first, "フィグ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いれているひといないかなあ", systemCandidateMode: .surface).first, "入れている人いないかなあ")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さんにんいないで", systemCandidateMode: .surface).first, "3人以内で")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2814: 数詞+か+助数詞 の精査。Sudachi の地名断片(二ケ所/五ケ所/六ケ所/三ヶ所)が rank 0 で 2か所 の前に
+    // 出ていたので数詞複合の後ろへ。ご+助数詞(ごかこく)は丁寧接頭辞の合成(ご箇国)でなく 5か国。
+    // かしょ/すうかしょ は か所 先頭(か月/か国 と同順)
+    func testRegressionRealLMKaCounterCompounds() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (r, want) in [("にかしょ", "2か所"), ("ろっかしょ", "6か所"), ("ごかこく", "5か国"), ("ごかしょ", "5か所"),
+                          ("なんかしょ", "何か所"), ("すうかしょ", "数か所"), ("いっかげつ", "1か月"), ("じゅうかこく", "10か国")] {
+            let c = converter.candidates(for: r, limit: 6, systemCandidateMode: .surface)
+            XCTAssertEqual(c.first, want, "\(r): \(c)")
+        }
+        let roku = converter.candidates(for: "ろっかしょ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(roku.contains("六ケ所") || roku.contains("六ヶ所"), "地名は候補として残す: \(roku)")
+        XCTAssertEqual(converter.candidates(for: "ろっかしょむら", limit: 3, systemCandidateMode: .surface).first, "六ヶ所村")
+    }
+}
