@@ -743,12 +743,17 @@ extension KanaKanjiConverter {
 
         // --- 2. LM コスト(unigram/bigram)を一括ロード(sqlite アクセスを最小化) ---
         var unigramSurfaces = Set<String>()
+        unigramSurfaces.insert(Self.multiClauseBOSMarker)
         unigramSurfaces.insert(Self.multiClauseEOSMarker)
         for node in nodes {
             unigramSurfaces.insert(node.surface)
             // 活用派生ノードの語幹トークン(通っ/追っ)も引く: 助詞が動詞の頭を食う分割の比較に使う(定数コメント参照)
             if node.isInflectionDerived, let stem = Self.stemHeadForBigramBorrow(of: node.surface) {
                 unigramSurfaces.insert(stem)
+            }
+            // bigram 借用の補助動詞尾(auxTailForBigramBorrow)も引く(下の bigram 問い合わせの絞り込みに使う)
+            if let auxTail = Self.auxTailForBigramBorrow(of: node) {
+                unigramSurfaces.insert(auxTail)
             }
         }
         let unigramCosts = store.wordLMUnigramCosts(for: Array(unigramSurfaces))
@@ -829,7 +834,13 @@ extension KanaKanjiConverter {
 
         var bigramPairs: [(String, String)] = []
         var seenPairs = Set<String>()
+        // LM の bigram は両トークンが unigram 表に在るものしか無い(word_lm_bigram の prev/cur 全 1,096,380 件を
+        // 照合、例外 0 件。2805)。どちらかが unigram 未収録(派生 OOV/かな素通り/収穫語)なら sqlite を引かずに
+        // 未観測扱いにする。結果は不変で、連文節の bigram 問い合わせ(処理時間の約 2 割)を大きく減らす
         func addPair(_ prev: String, _ cur: String) {
+            guard unigramCosts[prev] != nil, unigramCosts[cur] != nil else {
+                return
+            }
             if seenPairs.insert("\(prev)\t\(cur)").inserted {
                 bigramPairs.append((prev, cur))
             }
