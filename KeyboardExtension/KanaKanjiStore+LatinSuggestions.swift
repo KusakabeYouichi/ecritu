@@ -32,113 +32,45 @@ struct GenericLatinLexiconFileIndex {
         excludedSearchKeys: Set<String>
     ) -> [KanaKanjiStore.GenericLatinLexiconEntry] {
         let prefix = Array(normalizedPrefix.utf8)
-        guard !prefix.isEmpty, !data.isEmpty else {
-            return []
-        }
         var results: [KanaKanjiStore.GenericLatinLexiconEntry] = []
-        data.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
-            let bytes = buffer.bindMemory(to: UInt8.self)
+        // キー(\t まで)に対する前方一致なので keyEndsAtTab=true
+        SortedTSVBlob.forEachLine(in: data, withKeyPrefix: prefix, keyEndsAtTab: true) { bytes, cursor, lineEnd in
             let n = bytes.count
-
-            // offset を含む行の先頭(直前の改行の次)
-            func lineStart(atOrBefore offset: Int) -> Int {
-                var i = offset
-                while i > 0, bytes[i - 1] != 0x0A {
-                    i -= 1
-                }
-                return i
+            // フィールド分解: key \t candidate \t rank \n
+            var tab1 = cursor + prefix.count
+            while tab1 < n, bytes[tab1] != 0x09, bytes[tab1] != 0x0A {
+                tab1 += 1
             }
-            // 行頭 start のキー(\tまで)と prefix のバイト辞書式比較: キーが小さければ true
-            func keyIsLess(lineStart start: Int) -> Bool {
-                var i = start
-                var j = 0
-                while j < prefix.count {
-                    if i >= n || bytes[i] == 0x09 || bytes[i] == 0x0A {
-                        return true  // キーが prefix より短い(=prefix の途中で尽きた)
-                    }
-                    if bytes[i] != prefix[j] {
-                        return bytes[i] < prefix[j]
-                    }
-                    i += 1
-                    j += 1
-                }
-                return false  // キー >= prefix(prefix を含む)
+            guard tab1 < n, bytes[tab1] == 0x09 else {
+                return
             }
-
-            // 下限探索: キー >= prefix となる最初の行頭
-            var low = 0
-            var high = n
-            while low < high {
-                let mid = (low + high) / 2
-                let start = lineStart(atOrBefore: mid)
-                if keyIsLess(lineStart: start) {
-                    // この行の終端+1 へ
-                    var end = mid
-                    while end < n, bytes[end] != 0x0A {
-                        end += 1
-                    }
-                    low = end + 1
-                } else {
-                    high = start
-                }
+            var tab2 = tab1 + 1
+            while tab2 < lineEnd, bytes[tab2] != 0x09 {
+                tab2 += 1
             }
-
-            // 前方一致する行を順に収集
-            var cursor = low
-            while cursor < n {
-                // prefix 照合
-                var i = cursor
-                var j = 0
-                var isPrefix = true
-                while j < prefix.count {
-                    if i >= n || bytes[i] != prefix[j] {
-                        isPrefix = false
-                        break
-                    }
-                    i += 1
-                    j += 1
-                }
-                guard isPrefix else {
-                    break
-                }
-                // フィールド分解: key \t candidate \t rank \n
-                var tab1 = i
-                while tab1 < n, bytes[tab1] != 0x09, bytes[tab1] != 0x0A {
-                    tab1 += 1
-                }
-                var lineEnd = tab1
-                while lineEnd < n, bytes[lineEnd] != 0x0A {
-                    lineEnd += 1
-                }
-                if tab1 < n, bytes[tab1] == 0x09 {
-                    var tab2 = tab1 + 1
-                    while tab2 < lineEnd, bytes[tab2] != 0x09 {
-                        tab2 += 1
-                    }
-                    if tab2 < lineEnd {
-                        var rank = 0
-                        var hasDigits = false
-                        var k = tab2 + 1
-                        while k < lineEnd, bytes[k] >= 0x30, bytes[k] <= 0x39 {
-                            rank = rank * 10 + Int(bytes[k] - 0x30)
-                            hasDigits = true
-                            k += 1
-                        }
-                        if hasDigits, k == lineEnd {
-                            let searchKey = String(decoding: bytes[cursor..<tab1], as: UTF8.self)
-                            if !excludedSearchKeys.contains(searchKey) {
-                                results.append(
-                                    KanaKanjiStore.GenericLatinLexiconEntry(
-                                        searchKey: searchKey,
-                                        candidate: String(decoding: bytes[(tab1 + 1)..<tab2], as: UTF8.self),
-                                        rank: rank
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-                cursor = lineEnd + 1
+            guard tab2 < lineEnd else {
+                return
+            }
+            var rank = 0
+            var hasDigits = false
+            var k = tab2 + 1
+            while k < lineEnd, bytes[k] >= 0x30, bytes[k] <= 0x39 {
+                rank = rank * 10 + Int(bytes[k] - 0x30)
+                hasDigits = true
+                k += 1
+            }
+            guard hasDigits, k == lineEnd else {
+                return
+            }
+            let searchKey = String(decoding: bytes[cursor..<tab1], as: UTF8.self)
+            if !excludedSearchKeys.contains(searchKey) {
+                results.append(
+                    KanaKanjiStore.GenericLatinLexiconEntry(
+                        searchKey: searchKey,
+                        candidate: String(decoding: bytes[(tab1 + 1)..<tab2], as: UTF8.self),
+                        rank: rank
+                    )
+                )
             }
         }
         return results
