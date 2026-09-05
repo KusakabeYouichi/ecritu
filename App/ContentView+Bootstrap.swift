@@ -759,42 +759,69 @@ extension ContentView {
     }
 
     func migrateInitialAjoutVocabularyIfNeeded() {
+        migrateSeededDictionaryIfNeeded(
+            bundled: loadBundledInitialAjoutVocabularyEntries(),
+            vocabularyKey: SettingsKeys.kanaKanjiAjoutVocabulary,
+            appliedSeedKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed,
+            appliedSignatureKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSignature,
+            migratedFlagKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyMigrated,
+            // 初回(播種記録なし)は手動追加語彙と区別できないため、撤回済みと確定している
+            // 既知リスト(legacyRetracted…)だけをベースラインにする
+            firstRunRemovalBaseline: { _ in Self.legacyRetractedInitialAjoutVocabularyEntries }
+        )
+    }
+
+    func migrateInitialSuppressionDictionaryIfNeeded() {
+        migrateSeededDictionaryIfNeeded(
+            bundled: loadBundledInitialSuppressionDictionaryEntries(),
+            vocabularyKey: SettingsKeys.kanaKanjiSuppressionVocabulary,
+            appliedSeedKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSeed,
+            appliedSignatureKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSignature,
+            migratedFlagKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated,
+            // 初回(播種記録なし)は「現状は全て播種由来」とみなす — 抑制は plist→バンドル経由でのみ
+            // 運用しており、アプリUIでの手動抑制は使っていない前提
+            firstRunRemovalBaseline: { current in current }
+        )
+    }
+
+    // バンドル同梱の初期語彙(追加語彙/抑制語彙)を端末の語彙へ播種する共通手順(2805 で 2 本を統合)。
+    // 署名(バンドル内容のハッシュ)が前回適用時と同じなら何もしない。ただし播種記録(AppliedSeed)が無い
+    // 端末では、署名が一致していても一度だけ削除同期を実行する(削除同期導入前に撤回済みエントリが
+    // 残留しているのを回収するため。抑制側 1889 と同機構)。
+    // 削除同期: 過去に播種したもののうち新バンドルに無いペアを端末からも除去する(撤回が実機に届くように)。
+    // 初回のベースラインは呼び出し側が決める(firstRunRemovalBaseline)。
+    private func migrateSeededDictionaryIfNeeded(
+        bundled initialDictionary: [String: [String]],
+        vocabularyKey: String,
+        appliedSeedKey: String,
+        appliedSignatureKey: String,
+        migratedFlagKey: String,
+        firstRunRemovalBaseline: ([String: [String]]) -> [String: [String]]
+    ) {
         guard let defaults = Self.sharedDefaults else {
             return
         }
-
-        let initialDictionary = loadBundledInitialAjoutVocabularyEntries()
 
         guard !initialDictionary.isEmpty else {
             return
         }
 
         let initialSignature = dictionarySignature(initialDictionary)
-        let appliedSignature = defaults.string(
-            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSignature
-        )
-
-        // 播種記録(AppliedSeed)が無い端末では、署名が一致していても一度だけ削除同期を実行する
-        // (削除同期導入前に撤回済みエントリが残留しているのを回収するため。抑制側 1889 と同機構)。
-        let hasAppliedSeed = defaults.object(
-            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed
-        ) != nil
+        let appliedSignature = defaults.string(forKey: appliedSignatureKey)
+        let hasAppliedSeed = defaults.object(forKey: appliedSeedKey) != nil
         guard appliedSignature != initialSignature || !hasAppliedSeed else {
             return
         }
 
         var currentDictionary = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+            loadDictionaryEntries(forKey: vocabularyKey)
         )
 
-        // 削除同期: 過去に播種したもののうち新バンドルに無いペアを端末からも除去する。
-        // 初回(播種記録なし)は手動追加語彙と区別できないため、撤回済みと確定している
-        // 既知リスト(legacyRetracted…)だけをベースラインにする。
         let previouslySeeded = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed)
+            loadDictionaryEntries(forKey: appliedSeedKey)
         )
         let removalBaseline = previouslySeeded.isEmpty
-            ? Self.legacyRetractedInitialAjoutVocabularyEntries
+            ? firstRunRemovalBaseline(currentDictionary)
             : previouslySeeded
         for (reading, candidates) in removalBaseline {
             let retracted = Set(candidates).subtracting(Set(initialDictionary[reading] ?? []))
@@ -809,88 +836,13 @@ extension ContentView {
 
         let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
 
-        if merged != normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
-        ) {
-            saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiAjoutVocabulary)
+        if merged != normalizedDictionaryEntries(loadDictionaryEntries(forKey: vocabularyKey)) {
+            saveDictionaryEntries(merged, forKey: vocabularyKey)
         }
 
-        saveDictionaryEntries(
-            initialDictionary,
-            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSeed
-        )
-        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyMigrated)
-        defaults.set(
-            initialSignature,
-            forKey: SettingsKeys.kanaKanjiInitialAjoutVocabularyAppliedSignature
-        )
-    }
-
-    func migrateInitialSuppressionDictionaryIfNeeded() {
-        guard let defaults = Self.sharedDefaults else {
-            return
-        }
-
-        let initialDictionary = loadBundledInitialSuppressionDictionaryEntries()
-
-        guard !initialDictionary.isEmpty else {
-            return
-        }
-
-        let initialSignature = dictionarySignature(initialDictionary)
-        let appliedSignature = defaults.string(
-            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSignature
-        )
-
-        // 播種記録(AppliedSeed)が無い端末では、署名が一致していても一度だけ削除同期を
-        // 実行する(削除同期導入前に撤回済みエントリが残留しているのを回収するため)。
-        let hasAppliedSeed = defaults.object(
-            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSeed
-        ) != nil
-        guard appliedSignature != initialSignature || !hasAppliedSeed else {
-            return
-        }
-
-        var currentDictionary = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-        )
-
-        // 削除同期: 過去にバンドルから播種した抑制のうち、新しいバンドルに無くなったものは
-        // 端末からも取り除く(撤回が実機に届くように)。初回(播種記録なし)は「現状は全て
-        // 播種由来」とみなす — 抑制は plist→バンドル経由でのみ運用しており、アプリUIでの
-        // 手動抑制は使っていない前提。
-        let previouslySeeded = normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSeed)
-        )
-        let removalBaseline = previouslySeeded.isEmpty ? currentDictionary : previouslySeeded
-        for (reading, candidates) in removalBaseline {
-            let retracted = Set(candidates).subtracting(Set(initialDictionary[reading] ?? []))
-            guard !retracted.isEmpty else { continue }
-            let kept = (currentDictionary[reading] ?? []).filter { !retracted.contains($0) }
-            if kept.isEmpty {
-                currentDictionary.removeValue(forKey: reading)
-            } else {
-                currentDictionary[reading] = kept
-            }
-        }
-
-        let merged = mergedDictionary(preferred: currentDictionary, fallback: initialDictionary)
-
-        if merged != normalizedDictionaryEntries(
-            loadDictionaryEntries(forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-        ) {
-            saveDictionaryEntries(merged, forKey: SettingsKeys.kanaKanjiSuppressionVocabulary)
-        }
-
-        saveDictionaryEntries(
-            initialDictionary,
-            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSeed
-        )
-        defaults.set(true, forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryMigrated)
-        defaults.set(
-            initialSignature,
-            forKey: SettingsKeys.kanaKanjiInitialSuppressionDictionaryAppliedSignature
-        )
+        saveDictionaryEntries(initialDictionary, forKey: appliedSeedKey)
+        defaults.set(true, forKey: migratedFlagKey)
+        defaults.set(initialSignature, forKey: appliedSignatureKey)
     }
 
     func migrateInitialShortcutVocabularyIfNeeded() {
