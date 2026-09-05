@@ -13776,3 +13776,42 @@ extension KanaKanjiConverterRegressionTests {
         print(String(format: "PERF multi (candidate caches cleared, store warm) avg per reading=%.1fms", hotMs / Double(readings.count * rounds)))
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2806: てでやってた が 文頭のかな て(BOS bigram 2591)+で で 手(6932)+で に勝ち、手で が候補に 1 つも出なかった
+    // (変種は 1 文節差し替えで 手 が許容差 4000 超)。文頭の裸の助詞減点に て を追加。うーむ は間投詞としてかな先頭(seed)
+    func testRegressionRealLMTedeYattetaAndUumu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "てでやってた", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "手でやってた", "multi=\(multi)")
+        XCTAssertEqual(Array(converter.candidates(for: "うーむ", limit: 4, systemCandidateMode: .surface).prefix(2)), ["うーむ", "ウーム"])
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2807: あとからじゃむりですね が 後からジャムリですね に。ジャムリ という語は無く、ジャム+リ(1 モーラのカタカナ識別、
+    // Wikipedia LM に unigram 6461 があるためカタカナ化ペナルティを免除されていた)+ですね(カタカナ語直後のコピュラ
+    // クラスタ クランプ 1200 に便乗)。無理→ですね は 21000 の素通りで、無理 経路が跨がれていた。1 モーラの
+    // カタカナ識別ノードは語として立たないので減点する
+    func testRegressionRealLMAtokaraJaMuriDesune() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "あとからじゃむりですね", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "後からじゃ無理ですね", "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.contains("ジャムリ") || $0.contains("むリ") }, "multi=\(multi)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あとからじゃむり", systemCandidateMode: .surface).first, "後からじゃ無理")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2808: しゅんけいぬりの が 春慶+塗野(姓の収穫 9500。EOS 直前の の より安い)で 春慶塗野 に、
+    // しゅんけいぬりのはし は の→橋 で 春慶塗りの橋 に。春慶塗/春慶塗り を misc に登録し、の を挟む連語 春慶塗→箸 を追加
+    func testRegressionRealLMShunkeiNuri() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "しゅんけいぬりの", systemCandidateMode: .surface).prefix(2)), ["春慶塗の", "春慶塗りの"])
+        let hashi = converter.multiClauseCandidates(for: "しゅんけいぬりのはし", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(hashi.prefix(3)), ["春慶塗の箸", "春慶塗りの箸", "春慶塗の橋"], "hashi=\(hashi)")
+    }
+}
