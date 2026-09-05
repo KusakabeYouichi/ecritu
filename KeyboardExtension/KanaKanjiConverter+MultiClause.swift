@@ -757,6 +757,12 @@ extension KanaKanjiConverter {
             }
         }
         let unigramCosts = store.wordLMUnigramCosts(for: Array(unigramSurfaces))
+        // 漢字/カタカナの辞書語(派生でない)が立っている読み。オノマトペ「〜っと」のかなクランプを、
+        // デメリット(でめりっと)のような辞書語のある読みに掛けないため(2811)
+        var readingsWithScriptedDictWord = Set<String>()
+        for node in nodes where node.isDictWord && !node.isInflectionDerived && node.surface != node.reading {
+            readingsWithScriptedDictWord.insert(node.reading)
+        }
 
         // 「助詞 1 字+活用派生」の分割と同じ読み幅を 1 ノードで覆う活用派生(と+追って ↔ 通って)。
         // スパンごとに、語幹 unigram が最良のものを控える(定数コメント参照。2797)
@@ -1337,13 +1343,16 @@ extension KanaKanjiConverter {
                     || Self.multiClauseColloquialExplanatoryTailReadings.contains(reading) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
-            // オノマトペ「〜っと」(4文字以上の全かな。ぱしゃっと/ばたっと/ふわっと 等)はかなが正書。
+            // オノマトペ「〜っと」(4〜5文字の全かな。ぱしゃっと/ばたっと/ふわっと 等)はかなが正書。
             // ぱ+シャット のような かな断片+カタカナ語 の合成に勝たせる。きっと/ずっと/もっと(3文字)
             // は文字数条件で対象外(既存の価格付けを尊重)。かな副詞が末尾に埋まった区間
             // (〜はもっと 等)はオノマトペではないので除外(定数コメント参照)。
+            // 上限 5 文字と「辞書語の無い読み」の条件は 2811: えんじんのでめりっと(10 文字)/のでめりっと(6 文字)の全かな素通りと
+            // でめりっと(デメリット が辞書に在る)が 4000 に張り付き、エンジンのデメリット が組めなかった
             if surface == reading,
-                reading.count >= 4,
+                reading.count >= 4, reading.count <= 5,
                 reading.hasSuffix("っと"),
+                !readingsWithScriptedDictWord.contains(reading),
                 !Self.multiClauseSokuonToAdverbTails.contains(where: {
                     reading != $0 && reading.hasSuffix($0)
                 }) {
