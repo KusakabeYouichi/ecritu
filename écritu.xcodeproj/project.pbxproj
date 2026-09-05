@@ -78,6 +78,7 @@
 		37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
 		3AEC6F8EE21646908F9365B7 /* KanaKanjiInflectionRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */; };
 		B2C3D4E5F6A700000000EE01 /* KanaKanjiStore+LatinSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */; };
+		CEEF9731868B8828CFBBBAAD /* SortedTSVBlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */; };
 		DEADBEEF000000000000000A /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */; };
 		DEADBEEF0000000000000007 /* KanjiRadicalCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */; };
 		DEADBEEF0000000000000003 /* KanaKanjiStore+KanjiRadicals.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */; };
@@ -148,6 +149,7 @@
 		F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */; };
 		405E08C8A5D34B7FBFB7990A /* KanaKanjiInflectionRules.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */; };
 		B2C3D4E5F6A700000000EE02 /* KanaKanjiStore+LatinSuggestions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */; };
+		74440734139ED343A66DBD07 /* SortedTSVBlob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */; };
 		DEADBEEF0000000000000009 /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */; };
 		DEADBEEF0000000000000006 /* KanjiRadicalCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */; };
 		DEADBEEF0000000000000004 /* KanaKanjiStore+KanjiRadicals.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */; };
@@ -254,6 +256,7 @@
 		B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiConverter.swift; sourceTree = "<group>"; };
 		2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiInflectionRules.swift; sourceTree = "<group>"; };
 		B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiStore+LatinSuggestions.swift"; sourceTree = "<group>"; };
+		41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortedTSVBlob.swift; sourceTree = "<group>"; };
 		DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KeyboardRootView+KanjiRadicalLayout.swift"; sourceTree = "<group>"; };
 		DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanjiRadicalCatalog.swift"; sourceTree = "<group>"; };
 		DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KanaKanjiStore+KanjiRadicals.swift"; sourceTree = "<group>"; };
@@ -385,6 +388,7 @@
 				B40E7E9146201A6F655CCD5D /* KanaKanjiConverter.swift */,
 				2992579AD50D4D629ED7B731 /* KanaKanjiInflectionRules.swift */,
 				B2C3D4E5F6A700000000EE03 /* KanaKanjiStore+LatinSuggestions.swift */,
+				41A35F243F58B23D5582D129 /* SortedTSVBlob.swift */,
 				DEADBEEF000000000000000B /* KeyboardRootView+KanjiRadicalLayout.swift */,
 				DEADBEEF0000000000000008 /* KanjiRadicalCatalog.swift */,
 				DEADBEEF0000000000000005 /* KanaKanjiStore+KanjiRadicals.swift */,
@@ -737,6 +741,7 @@
 				37DD1CCB2A1328749D93F728 /* KanaKanjiConverter.swift in Sources */,
 				3AEC6F8EE21646908F9365B7 /* KanaKanjiInflectionRules.swift in Sources */,
 				B2C3D4E5F6A700000000EE01 /* KanaKanjiStore+LatinSuggestions.swift in Sources */,
+				CEEF9731868B8828CFBBBAAD /* SortedTSVBlob.swift in Sources */,
 				DEADBEEF000000000000000A /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */,
 				DEADBEEF0000000000000007 /* KanjiRadicalCatalog.swift in Sources */,
 				DEADBEEF0000000000000003 /* KanaKanjiStore+KanjiRadicals.swift in Sources */,
@@ -795,6 +800,7 @@
 				F769B10A75C8DE3CBA5F9F78 /* KanaKanjiConverter.swift in Sources */,
 				405E08C8A5D34B7FBFB7990A /* KanaKanjiInflectionRules.swift in Sources */,
 				B2C3D4E5F6A700000000EE02 /* KanaKanjiStore+LatinSuggestions.swift in Sources */,
+				74440734139ED343A66DBD07 /* SortedTSVBlob.swift in Sources */,
 				DEADBEEF0000000000000009 /* KeyboardRootView+KanjiRadicalLayout.swift in Sources */,
 				DEADBEEF0000000000000006 /* KanjiRadicalCatalog.swift in Sources */,
 				DEADBEEF0000000000000004 /* KanaKanjiStore+KanjiRadicals.swift in Sources */,

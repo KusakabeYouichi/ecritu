@@ -30,97 +30,36 @@ struct KanjiRadicalFileIndex {
         }
         let key = Array(String(format: "%03d\t", radical).utf8)
         var results: [Entry] = []
-        data.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) in
-            let bytes = buffer.bindMemory(to: UInt8.self)
-            let n = bytes.count
-
-            func lineStart(atOrBefore offset: Int) -> Int {
-                var i = offset
-                while i > 0, bytes[i - 1] != 0x0A {
-                    i -= 1
+        // キーはタブ込みの完全一致なので keyEndsAtTab=false(SortedTSVBlob の定義コメント参照)
+        SortedTSVBlob.forEachLine(in: data, withKeyPrefix: key, keyEndsAtTab: false) { bytes, cursor, lineEnd in
+            // フィールド分解: radical \t strokes \t 字 \t 区点 \t 読み \t 総画数
+            var fieldStarts: [Int] = [cursor]
+            var scan = cursor
+            while scan < lineEnd {
+                if bytes[scan] == 0x09 {
+                    fieldStarts.append(scan + 1)
                 }
-                return i
+                scan += 1
             }
-            // 行頭 start のキー("NNN\t")が key より小さいか
-            func keyIsLess(lineStart start: Int) -> Bool {
-                var i = start
-                var j = 0
-                while j < key.count {
-                    if i >= n || bytes[i] == 0x0A {
-                        return true
-                    }
-                    if bytes[i] != key[j] {
-                        return bytes[i] < key[j]
-                    }
-                    i += 1
-                    j += 1
-                }
-                return false
+            guard fieldStarts.count >= 5 else {
+                return
             }
-
-            var low = 0
-            var high = n
-            while low < high {
-                let mid = (low + high) / 2
-                let start = lineStart(atOrBefore: mid)
-                if keyIsLess(lineStart: start) {
-                    var end = mid
-                    while end < n, bytes[end] != 0x0A {
-                        end += 1
-                    }
-                    low = end + 1
-                } else {
-                    high = start
-                }
+            func field(_ index: Int) -> String {
+                let start = fieldStarts[index]
+                let end = index + 1 < fieldStarts.count ? fieldStarts[index + 1] - 1 : lineEnd
+                return String(decoding: bytes[start..<end], as: UTF8.self)
             }
-
-            var cursor = low
-            while cursor < n {
-                var matches = true
-                var i = cursor
-                for byte in key {
-                    if i >= n || bytes[i] != byte {
-                        matches = false
-                        break
-                    }
-                    i += 1
-                }
-                guard matches else {
-                    break
-                }
-                var lineEnd = cursor
-                while lineEnd < n, bytes[lineEnd] != 0x0A {
-                    lineEnd += 1
-                }
-                // フィールド分解: radical \t strokes \t 字 \t 区点 \t 読み \t 総画数
-                var fieldStarts: [Int] = [cursor]
-                var scan = cursor
-                while scan < lineEnd {
-                    if bytes[scan] == 0x09 {
-                        fieldStarts.append(scan + 1)
-                    }
-                    scan += 1
-                }
-                if fieldStarts.count >= 5 {
-                    func field(_ index: Int) -> String {
-                        let start = fieldStarts[index]
-                        let end = index + 1 < fieldStarts.count ? fieldStarts[index + 1] - 1 : lineEnd
-                        return String(decoding: bytes[start..<end], as: UTF8.self)
-                    }
-                    let character = field(2)
-                    if !character.isEmpty {
-                        results.append(
-                            Entry(
-                                character: character,
-                                residualStrokes: Int(field(1)) ?? 0,
-                                kuten: field(3),
-                                readings: field(4),
-                                totalStrokes: fieldStarts.count >= 6 ? (Int(field(5)) ?? 0) : 0
-                            )
-                        )
-                    }
-                }
-                cursor = lineEnd + 1
+            let character = field(2)
+            if !character.isEmpty {
+                results.append(
+                    Entry(
+                        character: character,
+                        residualStrokes: Int(field(1)) ?? 0,
+                        kuten: field(3),
+                        readings: field(4),
+                        totalStrokes: fieldStarts.count >= 6 ? (Int(field(5)) ?? 0) : 0
+                    )
+                )
             }
         }
         return results
