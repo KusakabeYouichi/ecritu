@@ -20,6 +20,7 @@ targets:
     sources:
       - path: App
       - path: KeyboardExtension/DakutenDuckIcon.swift
+      - path: KeyboardExtension/ContactCacheCipher.swift
       - path: third_party/APP_STORE_OPEN_SOURCE_NOTICES.md
         buildPhase: resources
       - path: third_party/sudachidict/LICENSE-2.0.txt
