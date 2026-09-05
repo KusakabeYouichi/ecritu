@@ -60,12 +60,13 @@ extension KanaKanjiConverter {
         // あやまった→過った/あやまっている→過っている になっていた。族ごと後方へ(2731)。
         // 常用表層を1つでも持つ読み(える=選る 10096/得る)は対象外
         var rareBaseDerived: [String] = []
-        for rule in Self.allInflectionRules {
+        for ruleIndex in Self.candidateInflectionRuleIndices(forReadingEndingWith: reading.last) {
+            let rule = Self.allInflectionRules[ruleIndex]
             let items = derivedCandidates(
                 for: reading,
                 rule: rule,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             ).items
             guard !items.isEmpty else {
@@ -126,12 +127,13 @@ extension KanaKanjiConverter {
             families.append((items: Array(iku.prefix(perFamilyLimit)), familyKey: ikuKey, baseReading: "いく"))
         }
 
-        for rule in Self.allInflectionRules {
+        for ruleIndex in Self.candidateInflectionRuleIndices(forReadingEndingWith: reading.last) {
+            let rule = Self.allInflectionRules[ruleIndex]
             let (rawItems, familyKey) = derivedCandidates(
                 for: reading,
                 rule: rule,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
+                ajoutVocabulary: ajoutVocabulary,
+                initialAjoutVocabulary: initialAjoutVocabulary,
                 systemCandidateMode: systemCandidateMode
             )
             // かな識別は除外(b2b の追加供給はかなを扱わないため、枠(perFamilyLimit)を

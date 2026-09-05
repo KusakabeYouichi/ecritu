@@ -13743,3 +13743,36 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "たとえて", limit: 4, systemCandidateMode: .surface)), ["例えて", "たとえて", "喩えて", "譬えて"])
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 変換速度の目安(PERF_PROFILE=1 のときだけ実行。Debug ビルド・シミュレータの値で、機械負荷で 2 倍程度ぶれる)。
+    // 2805 の計測: 連文節(候補キャッシュ空・store 温)1 読みあたり 237ms → 118ms(活用ルールの末尾文字バケット化 等)
+    func testPerfProfileMultiClauseConversion() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["PERF_PROFILE"] != nil, "PERF_PROFILE=1 で実行")
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let readings = ["としによる", "かねもってて", "たとえていうなら", "おんどをはかる", "すうかこくたいおう", "まともにかけんのか", "さくじょしておきながら", "でないようにした", "かいさつとおって", "せいこうすべく", "きょうはてんきがいいのででかけよう", "あしたのかいぎはじゅうじからです", "ぱそこんのでんげんをいれてください"]
+        // warm
+        for r in readings { _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface); _ = converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        converter.clearAllCaches()
+        var multiMs = 0.0, singleMs = 0.0
+        for r in readings {
+            var t = CFAbsoluteTimeGetCurrent()
+            _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            multiMs += (CFAbsoluteTimeGetCurrent() - t) * 1000
+            t = CFAbsoluteTimeGetCurrent()
+            _ = converter.candidates(for: r, limit: 8, systemCandidateMode: .surface)
+            singleMs += (CFAbsoluteTimeGetCurrent() - t) * 1000
+        }
+        print(String(format: "PERF cold multi=%.1fms single=%.1fms (n=%d)", multiMs, singleMs, readings.count))
+        var hotMs = 0.0
+        let rounds = Int(ProcessInfo.processInfo.environment["PERF_ROUNDS"] ?? "") ?? 3
+        for _ in 0..<rounds { for r in readings {
+            converter.invalidateCandidateCache()
+            let t = CFAbsoluteTimeGetCurrent()
+            _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface)
+            hotMs += (CFAbsoluteTimeGetCurrent() - t) * 1000
+        } }
+        print(String(format: "PERF multi (candidate caches cleared, store warm) avg per reading=%.1fms", hotMs / Double(readings.count * rounds)))
+    }
+}

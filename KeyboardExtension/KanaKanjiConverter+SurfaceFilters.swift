@@ -209,6 +209,31 @@ extension KanaKanjiConverter {
     }()
     static let deinflectionRulesWithEmptyReadingSuffix: [InflectionRule] =
         allInflectionRules.filter { $0.readingSuffix.isEmpty }
+    static let deinflectionRuleIndicesWithEmptyReadingSuffix: [Int] =
+        allInflectionRules.indices.filter { allInflectionRules[$0].readingSuffix.isEmpty }
+
+    // 読みに適用し得る活用ルールの添字列(定義順を保存)。readingSuffix の末尾文字が読みの末尾と
+    // 一致するルールと、空 readingSuffix のルール(どの読みにも掛かる)を添字昇順に併合する。
+    // 全ルール(約850件)の線形走査は removingSuffix(hasSuffix)が支配的で、連文節は span ごとに
+    // 呼ぶため活用派生が処理時間の6割を占めていた(2805 プロファイル)。結果は全走査と同一
+    static func candidateInflectionRuleIndices(forReadingEndingWith last: Character?) -> [Int] {
+        let empty = deinflectionRuleIndicesWithEmptyReadingSuffix
+        guard let last, let matched = deinflectionRulesByReadingLastCharacter[last] else {
+            return empty
+        }
+        if empty.isEmpty { return matched }
+        var merged: [Int] = []
+        merged.reserveCapacity(matched.count + empty.count)
+        var i = 0, j = 0
+        while i < matched.count || j < empty.count {
+            if j >= empty.count || (i < matched.count && matched[i] < empty[j]) {
+                merged.append(matched[i]); i += 1
+            } else {
+                merged.append(empty[j]); j += 1
+            }
+        }
+        return merged
+    }
     static let godanPotentialDeinflectionMappingsByReadingLastCharacter: [Character: [(readingSuffix: String, baseReadingSuffix: String)]] = {
         var buckets: [Character: [(readingSuffix: String, baseReadingSuffix: String)]] = [:]
         for mapping in godanPotentialDeinflectionMappings {

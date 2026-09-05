@@ -18,6 +18,28 @@ extension KanaKanjiConverter {
         // (炊く: uni7666→wc9118)ため、床上げを免除する。読み跨ぎの頻出表層
         // (良く(いく)等)はクラス未登録なので免除されず、床の保護は維持される。
         var isDictionaryFormPredicate: Bool = false
+        // ノード集合(ボーナス/減点/選好の記録)のキー。以前は 26 箇所で "\(start)-\(end)-\(surface)" を
+        // 遷移ごとにその場で組み立てていた。生成時に 1 回だけ作る(2805 リファクタ)
+        let key: String
+        let spanKey: String
+
+        init(
+            start: Int, end: Int, surface: String, reading: String,
+            isDictWord: Bool, isCurated: Bool, isInflectionDerived: Bool, wordCost: Int?,
+            isDictionaryFormPredicate: Bool = false
+        ) {
+            self.start = start
+            self.end = end
+            self.surface = surface
+            self.reading = reading
+            self.isDictWord = isDictWord
+            self.isCurated = isCurated
+            self.isInflectionDerived = isInflectionDerived
+            self.wordCost = wordCost
+            self.isDictionaryFormPredicate = isDictionaryFormPredicate
+            self.key = "\(start)-\(end)-\(surface)"
+            self.spanKey = "\(start)-\(end)"
+        }
     }
 
     // minReadingCountOverride: 通常は4かな以上だが、単文節が候補ゼロの読み(のいみ 等の
@@ -30,14 +52,25 @@ extension KanaKanjiConverter {
         guard let prevReading, !prevReading.isEmpty else {
             return false
         }
+        let cacheKey = prevReading + "\t" + prevSurface
+        if let cached = stateQueue.sync(execute: { multiClauseTaFormCheckCache[cacheKey] }) {
+            return cached
+        }
         let forms = inflectionCandidates(
             for: prevReading + "た",
-            userDictionary: store.userDictionary(),
-            initialUserDictionary: store.initialUserDictionary(),
+            ajoutVocabulary: store.ajoutVocabulary(),
+            initialAjoutVocabulary: store.initialAjoutVocabulary(),
             systemCandidateMode: .surface,
             limit: 16
         )
-        return forms.contains(prevSurface + "た")
+        let result = forms.contains(prevSurface + "た")
+        stateQueue.sync {
+            if multiClauseTaFormCheckCache.count >= multiClauseInflectionCacheLimit {
+                multiClauseTaFormCheckCache.removeAll(keepingCapacity: true)
+            }
+            multiClauseTaFormCheckCache[cacheKey] = result
+        }
+        return result
     }
 
     func multiClauseCandidates(
@@ -727,7 +760,7 @@ extension KanaKanjiConverter {
         where node.isInflectionDerived && node.reading.count >= 3
             && Self.multiClauseParticleSwallowedVerbHeadParticles.contains(String(node.reading.first!)) {
             guard let stem = Self.stemHeadForBigramBorrow(of: node.surface), let uni = unigramCosts[stem] else { continue }
-            let key = "\(node.start)-\(node.end)"
+            let key = node.spanKey
             mergedVerbStemCostBySpan[key] = min(mergedVerbStemCostBySpan[key] ?? Int.max, uni)
         }
         // 読み跨ぎ unigram 借用の遮断用(定数コメント参照)。旧形式 DB では空=機能オフ。
@@ -743,10 +776,10 @@ extension KanaKanjiConverter {
             // 最良になるため、そこだけ保護する。
             var spanHasKanjiSurface = Set<String>()
             for node in nodes where containsKanji(node.surface) {
-                spanHasKanjiSurface.insert("\(node.start)-\(node.end)")
+                spanHasKanjiSurface.insert(node.spanKey)
             }
             for node in nodes where !node.isCurated {
-                let key = "\(node.start)-\(node.end)-\(node.surface)"
+                let key = node.key
                 if katakanaEmphasisCandidateMode != .normal,
                     node.surface != node.reading,
                     let hira = KanaKanjiConverter.hiraganizedKanaOnlySurface(node.surface),
@@ -761,7 +794,7 @@ extension KanaKanjiConverter {
                         isEmphasis = (altUni != nil && altUni! < kataUni)
                     } else {
                         isEmphasis = altUni != nil
-                            || spanHasKanjiSurface.contains("\(node.start)-\(node.end)")
+                            || spanHasKanjiSurface.contains(node.spanKey)
                     }
                     if isEmphasis {
                         if katakanaEmphasisCandidateMode == .suppress {
@@ -853,7 +886,7 @@ extension KanaKanjiConverter {
         where Self.multiClauseCompoundVerbRenyouStemReadings.contains(node.reading)
             && node.surface != node.reading
             && node.surface.last == node.reading.last {
-            compoundVerbRenyouNodeKeys.insert("\(node.start)-\(node.end)-\(node.surface)")
+            compoundVerbRenyouNodeKeys.insert(node.key)
         }
 
         // --- 3. コスト関数(sim_lm.py と一致): bigram / unigram+backoff / 辞書OOV / 素通りper-char ---
@@ -1601,6 +1634,11 @@ extension KanaKanjiConverter {
         // 助詞を呑んだ派生動詞(出直してた)の代替経路(で+直してた)を作るのに使う
         // requiredNodeIndices(2771): 指定ノードを必ず使う最良経路(並列動詞の表記を揃えた経路用)。
         // 指定ノードのスパンと重なる他ノードは使わない
+        #if DEBUG
+        // 環境変数の参照は 1 回だけ(遷移ごとに ProcessInfo.environment を引くと辞書を毎回組み直す。2805 プロファイル)
+        let traceEdges = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
+        let traceEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
+        #endif
         func solveViterbi(
             allowedStartNodeIndex: Int?,
             forcedBoundary: Int? = nil,
@@ -1637,7 +1675,7 @@ extension KanaKanjiConverter {
                     }
                     // ノードキーは1回だけ生成して使い回す(以前は判定ごとに再生成しており、
                     // DP 全体で数千個の一時 String を作っていた。アリーナ肥大対策 2560)
-                    let nodeKeySV = "\(node.start)-\(node.end)-\(node.surface)"
+                    let nodeKeySV = node.key
                     let preferredInflectionBonus = (preferredInflectedNodeKeys.contains(nodeKeySV)
                         ? Self.multiClausePreferredInflectionBonus
                         : 0)
@@ -1830,7 +1868,7 @@ extension KanaKanjiConverter {
                         }
                         // 連用形+に(目的)の直後は移動動詞(来る/行く 系)が来る(食べに来た/飲みに行く)。
                         // 前ノードが b5 の 連用形+に なら、移動動詞にボーナスを与え 北 等の名詞化を退ける。
-                        if renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                        if renyouNiNodeKeys.contains(prevNode.key),
                             Self.isMotionVerbSurface(node.surface) {
                             cost -= Self.multiClauseRenyouNiMotionVerbBonus
                         }
@@ -1858,7 +1896,7 @@ extension KanaKanjiConverter {
                         }
                         // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
                         // 鳥忘れている に勝たせる。
-                        if compoundVerbRenyouNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                        if compoundVerbRenyouNodeKeys.contains(prevNode.key),
                             node.isInflectionDerived || node.isDictionaryFormPredicate {
                             cost -= Self.multiClauseCompoundVerbRenyouBonus
                         }
@@ -1868,7 +1906,7 @@ extension KanaKanjiConverter {
                         // 触れない。上に着て(重ね着)は稀用法として許容する。連用形+に(飲みに)の直後にも
                         // 等しく与え、のみ+に+来た が 飲みに+来た を新ボーナス差で逆転しないようにする。
                         if (prevNode.surface == "に" && prevNode.reading == "に")
-                            || renyouNiNodeKeys.contains("\(prevNode.start)-\(prevNode.end)-\(prevNode.surface)"),
+                            || renyouNiNodeKeys.contains(prevNode.key),
                             node.isInflectionDerived,
                             Self.multiClauseKuruFormSurfaces[node.reading] == node.surface {
                             cost -= Self.multiClauseNiKuruArrivalBonus
@@ -2006,7 +2044,7 @@ extension KanaKanjiConverter {
                         }
                         #if DEBUG
                         // 時限トレース(2803): MULTI_TRACE_EDGES=1 で全遷移の累積コストを吐く(最良以外の prev も見える)
-                        if ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil {
+                        if traceEdges {
                             print("MULTIEDGE \(prevNode.surface)→\(node.surface) cum=\(cost) (prev cum=\(best[prevIdx]))")
                         }
                         #endif
@@ -2285,7 +2323,7 @@ extension KanaKanjiConverter {
         }
         #if DEBUG
         // 時限トレース(2642): MULTI_TRACE=1 のときだけ、全ノードの累積コストと選択経路を吐く
-        if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
+        if traceEnabled {
             print("MULTITRACE reading=\(normalized) bestTotal=\(bestTotal)")
             for (i, node) in nodes.enumerated() where best[i] < infinity {
                 let bp = backPointer[i] >= 0 ? nodes[backPointer[i]].surface : "BOS"
@@ -2408,12 +2446,12 @@ extension KanaKanjiConverter {
                         ? nodes[pathIndices[pos - 1]].isInflectionDerived
                         : false,
                     prevReading: pos > 0 ? nodes[pathIndices[pos - 1]].reading : nil,
-                    isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
-                    isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
-                    isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)"),
-                    scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 100000
-                        : (scriptVariantDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)") ? 6000 : 0))
-                        + (collocationDemotedNodeKeys.contains("\(node.start)-\(node.end)-\(node.surface)")
+                    isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains(node.key),
+                    isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains(node.key),
+                    isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains(node.key),
+                    scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains(node.key) ? 100000
+                        : (scriptVariantDemotedNodeKeys.contains(node.key) ? 6000 : 0))
+                        + (collocationDemotedNodeKeys.contains(node.key)
                             ? Self.multiClauseCollocationDemotionPenalty
                             : 0),
                     prevStartsSentence: pos > 0 && nodes[pathIndices[pos - 1]].start == 0
@@ -2421,7 +2459,7 @@ extension KanaKanjiConverter {
                 // DP で足していたノード単位のボーナス(seed 順/単文節先頭/の を挟む連語)を変種の差分にも反映する(2738)。
                 // 無いと 郡が溶けて(seed 順ボーナス 800 を持つ 氷 との差)や 公衆の果皮(連語 2500)が負の delta になり
                 // 最良の直後に並んでいた
-                let nodeKey = "\(node.start)-\(node.end)-\(node.surface)"
+                let nodeKey = node.key
                 // 単文節先頭のボーナス(2720)は先頭の並びを決めるタイブレークなので変種の差分には含めない
                 // (含めると それぞれを/それはいくつ の漢字変種が許容差を超えて消えた)
                 // seed 順ボーナスは変種の差分では上限付き(みな/いくつ の 3300 級をそのまま足すと 幾つ の漢字変種が許容差を超えて消える。
@@ -2451,12 +2489,12 @@ extension KanaKanjiConverter {
                         prevIsDictionaryFormPredicate: node.isDictionaryFormPredicate,
                         prevIsInflectionDerived: node.isInflectionDerived,
                         prevReading: node.reading,
-                        isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
-                        isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
-                        isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)"),
-                        scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 100000
-                            : (scriptVariantDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)") ? 6000 : 0))
-                            + (collocationDemotedNodeKeys.contains("\(nextNode.start)-\(nextNode.end)-\(nextNode.surface)")
+                        isShortCuratedFragment: shortCuratedFragmentNodeKeys.contains(nextNode.key),
+                        isCollocationPreferredKana: collocationPreferredKanaNodeKeys.contains(nextNode.key),
+                        isCollocationPreferredVerb: collocationPreferredVerbNodeKeys.contains(nextNode.key),
+                        scriptVariantPenalty: (scriptVariantSuppressedNodeKeys.contains(nextNode.key) ? 100000
+                            : (scriptVariantDemotedNodeKeys.contains(nextNode.key) ? 6000 : 0))
+                            + (collocationDemotedNodeKeys.contains(nextNode.key)
                                 ? Self.multiClauseCollocationDemotionPenalty
                                 : 0),
                         prevStartsSentence: node.start == 0
@@ -2534,8 +2572,8 @@ extension KanaKanjiConverter {
                 // 連語クランプ区間(めどが立つ 等)では、非選好の漢字動詞変種
                 // (経った/建った/足った)は使いものにならないので出さない。
                 // かな変種(たったら)は残す(2559)。
-                if collocationPreferredVerbNodeKeys.contains("\(chosen.start)-\(chosen.end)-\(chosen.surface)"),
-                    !collocationPreferredVerbNodeKeys.contains("\(alt.start)-\(alt.end)-\(alt.surface)"),
+                if collocationPreferredVerbNodeKeys.contains(chosen.key),
+                    !collocationPreferredVerbNodeKeys.contains(alt.key),
                     containsKanji(alt.surface) {
                     continue
                 }
@@ -2594,7 +2632,7 @@ extension KanaKanjiConverter {
                 }
                 // 連語の名詞スパンの表記変種(めど/メド 等、かな識別か seed 掲載)は
                 // 変種枠の主役なので delta 上限を緩和する(2559)
-                let isCollocationNounScriptVariant = collocationNounSpans.contains("\(chosen.start)-\(chosen.end)")
+                let isCollocationNounScriptVariant = collocationNounSpans.contains(chosen.spanKey)
                     && (alt.surface == alt.reading
                         || KanaKanjiSeedDictionary.seed[alt.reading]?.contains(alt.surface) == true)
                 let variantMaxDelta = isCollocationNounScriptVariant
@@ -2681,12 +2719,16 @@ extension KanaKanjiConverter {
             for (offset, alternative) in coordinatedAlternatives.enumerated() where alternative.joined != joined {
                 variants.append((Int.min / 2 + offset, -3, alternative.joined))
             }
-            variants.sort { lhs, rhs in
-                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
-            }
+        }
+        // 同 delta のタイブレークはノード列挙順(=seed/base優先順)。文字コード順だと
+        // 採<撮 で 採れてる が 撮れてる を不当に上回る(でとれてる→で採れてる が先)。
+        // 代替経路(order -1〜-3)を全部足してから 1 回だけ並べる(sort は安定なので、追記ごとに
+        // 並べ直していた従来と結果は同じ)
+        variants.sort { lhs, rhs in
+            lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
         }
         #if DEBUG
-        if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
+        if traceEnabled {
             print("MULTITRACE variants[\(normalized)] " + variants.prefix(8).map { "\($0.joined)=\($0.delta)" }.joined(separator: " "))
         }
         #endif
