@@ -1020,18 +1020,6 @@ extension KeyboardRootView {
 
     // ドラム行ラベル: 記号は固定サイズ、読みは小さい固定サイズ。幅が足りないときは
     // 縮小せず読みの末尾を「…」で切り詰める(truncationMode(.tail))。
-    private func formattedNumberDrumLabel(symbol: String, reading: String) -> Text {
-        var symbolPart = AttributedString(symbol)
-        symbolPart.font = .system(size: 18, weight: .semibold)
-        guard !reading.isEmpty else {
-            return Text(symbolPart)
-        }
-        var readingPart = AttributedString((symbol.isEmpty ? "" : " ") + reading)
-        readingPart.font = .system(size: 11)
-        readingPart.foregroundColor = KeyboardThemePalette.keyLabel.opacity(0.6)
-        return Text(symbolPart + readingPart)
-    }
-
     // 単位ドラム。SI単位系(基本/組立/固有)は「接頭辞ドラム+単位ドラム」の2連。金額は単ドラム、
     // カレンダーは占位。
     @ViewBuilder

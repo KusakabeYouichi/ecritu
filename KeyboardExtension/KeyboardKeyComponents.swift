@@ -495,52 +495,6 @@ struct SpaceFlickActionKeyButton: View {
     }
 }
 
-struct EmojiKeyButton: View {
-    let emoji: String
-    let longPressLabel: String?
-    let longPressLabelKind: SymbolInspectBubbleKind
-    let action: () -> Void
-
-    init(
-        emoji: String,
-        longPressLabel: String? = nil,
-        longPressLabelKind: SymbolInspectBubbleKind = .standard,
-        action: @escaping () -> Void
-    ) {
-        self.emoji = emoji
-        self.longPressLabel = longPressLabel
-        self.longPressLabelKind = longPressLabelKind
-        self.action = action
-    }
-
-    var body: some View {
-        Group {
-            if let longPressLabel {
-                Button(action: action) { emojiLabel }
-                    .buttonStyle(SymbolInspectButtonStyle(label: longPressLabel, kind: longPressLabelKind))
-            } else {
-                Button(action: action) { emojiLabel }
-                    .buttonStyle(EmojiTapFeedbackButtonStyle())
-            }
-        }
-        .accessibilityLabel(accessibilityText)
-    }
-
-    private var emojiLabel: some View {
-        Text(emoji)
-            .font(.system(size: 24))
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .contentShape(Rectangle())
-    }
-
-    private var accessibilityText: String {
-        guard let longPressLabel else {
-            return emoji
-        }
-        return "\(emoji) \(longPressLabel)"
-    }
-}
-
 struct SymbolKeyButton: View {
     let symbol: String
     let font: Font

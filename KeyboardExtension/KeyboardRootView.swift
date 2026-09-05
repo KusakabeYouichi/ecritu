@@ -1015,8 +1015,6 @@ struct KeyboardRootView: View {
         return 8
     }
 
-    private let kaomojiModeReturnIconFontSize: CGFloat = 32
-
     var kanaFiveByTwoTopNumberKeys: [String] {
         ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]
     }

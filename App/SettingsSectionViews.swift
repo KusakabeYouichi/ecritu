@@ -1172,15 +1172,6 @@ struct NumberLayoutSettingsSection: View {
         }
         .settingsCardStyle()
     }
-
-    @ViewBuilder
-    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-            content()
-        }
-    }
 }
 
 // カレンダー関連設定を1囲みにまとめる(週開始→曜日表記→日曜列の色→日付書式)。
@@ -1309,15 +1300,6 @@ struct CalendarSettingsGroupSection: View {
                     }
                 }
             }
-        }
-    }
-
-    @ViewBuilder
-    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-            content()
         }
     }
 }
@@ -1496,15 +1478,6 @@ struct FormatNumeriqueSettingsSection: View {
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
                 .foregroundStyle(.primary)
-        }
-    }
-
-    @ViewBuilder
-    private func subItem<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(title)
-                .font(.subheadline.weight(.semibold))
-            content()
         }
     }
 }

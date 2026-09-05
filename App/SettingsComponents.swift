@@ -31,32 +31,6 @@ struct SegmentedSettingsCard<Option: Hashable>: View {
 }
 
 // 脚注をビューで組み立てる版。箇条書きや消し線のように、ひとつの文字列では表せない説明に使う。
-struct SegmentedSettingsCardWithFootnoteContent<Option: Hashable, Footnote: View>: View {
-    let title: String
-    let pickerTitle: String
-    @Binding var selection: Option
-    let options: [Option]
-    let optionTitle: (Option) -> String
-    @ViewBuilder let footnoteContent: () -> Footnote
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.headline)
-
-            Picker(pickerTitle, selection: $selection) {
-                ForEach(options, id: \.self) { option in
-                    Text(optionTitle(option)).tag(option)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            footnoteContent()
-        }
-        .settingsCardStyle()
-    }
-}
-
 enum LatinCandidatePaneArrangementItem: String, CaseIterable, Identifiable {
     case latin
     case candidate

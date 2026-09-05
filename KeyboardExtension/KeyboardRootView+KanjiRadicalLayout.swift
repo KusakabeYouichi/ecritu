@@ -355,8 +355,6 @@ final class KanjiTotalStrokeMarkerGridCell: UICollectionViewCell {
 // 決め、上に出す余地が無い最上段では指に隠れないよう横へ逃がす。左右上下ともスクロール領域内に
 // クランプするので見切れない(2481、2490でキー矩形基準に変更)。
 struct KanjiInspectBubble: View {
-    static let coordinateSpaceName = "kanjiCharacterGrid"
-
     static let bubbleWidth: CGFloat = 176
     // 2行(読み+コード)+上下パディングの見込み。配置計算にだけ使う
     static let bubbleHeight: CGFloat = 46

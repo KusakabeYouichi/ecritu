@@ -13,22 +13,6 @@ final class KeyboardViewController: UIInputViewController {
     private static let sharedKanaKanjiStore = KanaKanjiStore(appGroupID: SharedDefaultsKeys.appGroupID)
     private static let sharedKanaKanjiConverter = KanaKanjiConverter(store: sharedKanaKanjiStore)
     static let isSupplementaryExternalCandidatesEnabled = true
-    static let organizationPrefixReadingsToTrim: [String] = [
-        "かぶしきがいしゃ",
-        "ゆうげんがいしゃ",
-        "ごうどうがいしゃ",
-        "ごうめいがいしゃ",
-        "ごうしがいしゃ",
-        "いっぱんしゃだんほうじん",
-        "いっぱんざいだんほうじん",
-        "こうえきしゃだんほうじん",
-        "こうえきざいだんほうじん",
-        "とくていひえいりかつどうほうじん",
-        "しゃかいふくしほうじん",
-        "いりょうほうじん",
-        "がっこうほうじん",
-        "しゅうきょうほうじん"
-    ]
     // 手書きの厳選読み(顔・仕草など)。emoji.plist(CLDR由来)より優先してマージする。
     private static let curatedEmojiReadingCandidatesByReading: [String: [String]] = {
         let allCandidates = Set(
@@ -1625,34 +1609,7 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     // 自前で insertText を発行した直後にキャッシュ末尾を更新して XPC 再取得を回避する。
-    func applyCachedContextInsertion(_ text: String) {
-        guard !text.isEmpty,
-            var cached = cachedContextBeforeInput else {
-            return
-        }
-
-        cached.append(text)
-
-        if cached.count > TextContextLimits.cachedContextBeforeInputMaxLength {
-            cached = String(cached.suffix(TextContextLimits.cachedContextBeforeInputMaxLength))
-        }
-
-        cachedContextBeforeInput = cached
-    }
-
     // 自前で deleteBackward を発行した直後にキャッシュ末尾を縮めて XPC 再取得を回避する。
-    func applyCachedContextDeletion(count: Int = 1) {
-        guard count > 0,
-            var cached = cachedContextBeforeInput,
-            !cached.isEmpty else {
-            return
-        }
-
-        let removeCount = min(count, cached.count)
-        cached = String(cached.dropLast(removeCount))
-        cachedContextBeforeInput = cached
-    }
-
     func invalidateTextContextCache() {
         cachedContextBeforeInput = nil
         cachedContextAfterInput = nil

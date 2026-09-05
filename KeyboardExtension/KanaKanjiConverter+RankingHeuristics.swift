@@ -17,8 +17,6 @@ extension KanaKanjiConverter {
     // 追加語彙(2400)/学習語彙(2280)には届かない = ユーザ意図は常に優先される。
     static let voicedCounterNumericCompoundBoost = 900
 
-    static let numericCounterCompoundCandidateBoost = 360
-
     static let sameReadingPureKatakanaPenalty = 128
 
     static let seedLeadingKanjiCandidateBoost = 1600
