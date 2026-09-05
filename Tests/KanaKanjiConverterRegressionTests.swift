@@ -13745,10 +13745,10 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
-    // 変換速度の目安(PERF_PROFILE=1 のときだけ実行。Debug ビルド・シミュレータの値で、機械負荷で 2 倍程度ぶれる)。
+    // 変換速度の目安(TEST_RUNNER_PERF_PROFILE=1 を xcodebuild に渡したときだけ実行。TEST_RUNNER_PERF_ROUNDS で周回数。Debug ビルド・シミュレータの値で、機械負荷で 2 倍程度ぶれる)。
     // 2805 の計測: 連文節(候補キャッシュ空・store 温)1 読みあたり 237ms → 118ms(活用ルールの末尾文字バケット化 等)
     func testPerfProfileMultiClauseConversion() throws {
-        try XCTSkipUnless(ProcessInfo.processInfo.environment["PERF_PROFILE"] != nil, "PERF_PROFILE=1 で実行")
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["PERF_PROFILE"] != nil, "TEST_RUNNER_PERF_PROFILE=1 で実行")
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
         let readings = ["としによる", "かねもってて", "たとえていうなら", "おんどをはかる", "すうかこくたいおう", "まともにかけんのか", "さくじょしておきながら", "でないようにした", "かいさつとおって", "せいこうすべく", "きょうはてんきがいいのででかけよう", "あしたのかいぎはじゅうじからです", "ぱそこんのでんげんをいれてください"]
