@@ -23,7 +23,6 @@ final class KeyboardCandidateBarModel: ObservableObject {
 enum KeyboardThemePalette {
     static let keyLabel = Color(uiColor: .label)
     static let keyLabelSecondary = Color(uiColor: .secondaryLabel)
-    static let keyLabelTertiary = Color(uiColor: .tertiaryLabel)
 
     static let keyBackground = Color(uiColor: .secondarySystemBackground).opacity(0.92)
     static let keyBackgroundDisabled = Color(uiColor: .tertiarySystemFill).opacity(0.92)
@@ -82,8 +81,6 @@ enum KeyboardThemePalette {
         }
     )
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
-
-    static let iconHighlight = Color(uiColor: .systemBackground)
 }
 
 // iOS17+ でのみ ScrollView のクリップを無効化する(iOS16では従来どおりクリップ)。

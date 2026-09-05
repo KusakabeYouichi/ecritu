@@ -2686,32 +2686,18 @@ extension KanaKanjiConverter {
             }
         }
 
-        // 同 delta のタイブレークはノード列挙順(=seed/base優先順)。文字コード順だと
-        // 採<撮 で 採れてる が 撮れてる を不当に上回る(でとれてる→で採れてる が先)。
-        variants.sort { lhs, rhs in
-            lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
-        }
         // 先頭差し替えの再最適化経路は、コスト差で1文節変種と同列に並べる(2738)。固定で2位にすると
         // こおりがとけて で 凍りが溶けて が 氷が解けて(僅差の末尾変種)より前に出た
         if let leadAlternativeJoined, leadAlternativeJoined != joined {
             variants.append((leadAlternativeDelta, -1, leadAlternativeJoined))
-            variants.sort { lhs, rhs in
-                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
-            }
         }
         // 助詞に割った代替経路(2771)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
             variants.append((particleSplitAlternativeDelta, -2, particleSplitAlternativeJoined))
-            variants.sort { lhs, rhs in
-                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
-            }
         }
         // とし を 1 ノードで覆う代替経路(2802)は先頭差し替えと同じ刻みで、1 文節変種(木標とし 等)より前に置く
         if let toShiMergedAlternativeJoined, toShiMergedAlternativeJoined != joined {
             variants.append((min(toShiMergedAlternativeDelta, Self.multiClauseSeedOrderVariantStep), -2, toShiMergedAlternativeJoined))
-            variants.sort { lhs, rhs in
-                lhs.delta != rhs.delta ? lhs.delta < rhs.delta : lhs.order < rhs.order
-            }
         }
         // 並列動詞を揃えた第2経路と元の混在経路(2771)は、1文節変種(元の混在経路より安い負の
         // delta を持ち得る)より必ず前に置く。元の混在経路と同文字列の1文節変種は後段の重複除去で畳まれる

@@ -43,7 +43,6 @@ final class CandidateGenerationSequencer {
 // 表示用フィルタ(かな識別の扱い)・Latin サジェストのクエリ/トークン判定。
 extension KeyboardViewController {
     enum CandidateLimits {
-        static let presentationDefault = 24
         static let conversionDefault = 24
         static let latinSuggestionDefault = 40
     }

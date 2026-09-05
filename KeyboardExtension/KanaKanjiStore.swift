@@ -837,18 +837,6 @@ final class KanaKanjiStore {
         }
     }
 
-    // sqlite インデックスも含めて完全に閉じる(辞書ファイル差し替え時の再オープン用)。
-    // メモリ対策としての sqlite アンロード(最終手段)は 2769 で撤去した: 発火条件の footprint 115MB は
-    // 拡張の上限 77MB(jetsam 実測)に到達不能で、閉じても返るのは約 2MB(read-only・mmap なし)だった。
-    func clearSystemDictionaryCaches() {
-        clearSystemDictionaryJSONCaches()
-
-        systemDictionaryQueue.sync {
-            sqliteIndex = nil
-            didAttemptSQLiteIndexLoad = false
-        }
-    }
-
     // メモリ警告が続くときの縮小モード: LM/word_costs キャッシュを破棄した上で上限を
     // 下げ、再成長を抑える(sqlite クローズと違い変換品質は維持される)。
     func enterConstrainedMemoryCacheMode() {
@@ -1232,7 +1220,6 @@ struct SupplementalVocabCompactStore: Equatable {
         var blob: [UInt8] = []
         var readingOffsets: [UInt32] = []
         var surfaceListStarts: [UInt32] = []
-        var surfaceOffsets: [UInt32] = []
         blob.reserveCapacity(dictionary.count * 24)
         readingOffsets.reserveCapacity(sortedReadings.count + 1)
         surfaceListStarts.reserveCapacity(sortedReadings.count + 1)

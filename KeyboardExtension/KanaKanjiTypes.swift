@@ -88,9 +88,6 @@ enum ContactCandidateDisplayMode: String {
         self != .off
     }
 
-    var includesFullNameForNameMatches: Bool {
-        self == .namesPlusFullName
-    }
 }
 
 // 連絡先キャッシュの暗号化(2026-08-31)。氏名・読みの対応表を共有defaultsへ平文で

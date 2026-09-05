@@ -373,26 +373,8 @@ extension KeyboardViewController {
         )
     }
 
-    func currentUserDictionaryCandidateDisplayModeFromSharedDefaults() -> UserDictionaryCandidateDisplayMode {
-        currentUserDictionaryCandidateDisplayMode(
-            from: sharedDefaults
-        )
-    }
-
     func currentContactCandidateDisplayModeFromSharedDefaults() -> ContactCandidateDisplayMode {
         currentContactCandidateDisplayMode(
-            from: sharedDefaults
-        )
-    }
-
-    func currentEmojiCandidateDisplayEnabledFromSharedDefaults() -> Bool {
-        currentEmojiCandidateDisplayEnabled(
-            from: sharedDefaults
-        )
-    }
-
-    func currentKaomojiCandidateDisplayEnabledFromSharedDefaults() -> Bool {
-        currentKaomojiCandidateDisplayEnabled(
             from: sharedDefaults
         )
     }

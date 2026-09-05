@@ -136,14 +136,6 @@ extension KeyboardViewController {
         return String(format: "%.1f", mb)
     }
 
-    func currentResidentMemoryMB() -> Double? {
-        guard let bytes = currentResidentMemoryBytes() else {
-            return nil
-        }
-
-        return Double(bytes) / 1_048_576
-    }
-
     // 今この瞬間、別インスタンスがセッションのオーナーかどうか。lostActiveOwnershipAt は
     // 降格時に立つ一度きりのフラグなので、破壊的な解放の直前には現在値を取り直す。
     func isConfirmedNonOwnerSession() -> Bool {
