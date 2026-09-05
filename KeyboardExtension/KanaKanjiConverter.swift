@@ -698,10 +698,13 @@ final class KanaKanjiConverter {
             }
         }
 
-        for candidate in Array(scores.keys) where isDeinflectedSuppressed(
-            candidate: candidate,
+        let deinflectionProbes = deinflectionSuppressionProbes(
             reading: context.reading,
             suppressedByReading: context.suppressedCandidatesByReading
+        )
+        for candidate in Array(scores.keys) where isDeinflectedSuppressed(
+            candidate: candidate,
+            probes: deinflectionProbes
         ) || isComposedSuppressed(
             candidate: candidate,
             reading: context.reading,
@@ -1891,17 +1894,14 @@ final class KanaKanjiConverter {
         }
 
         let directSuppressed = suppressedByReading[normalizedReading] ?? []
+        let probes = deinflectionSuppressionProbes(reading: normalizedReading, suppressedByReading: suppressedByReading)
 
         return candidates.filter { candidate in
             if directSuppressed.contains(candidate) {
                 return false
             }
 
-            return !isDeinflectedSuppressed(
-                candidate: candidate,
-                reading: normalizedReading,
-                suppressedByReading: suppressedByReading
-            )
+            return !isDeinflectedSuppressed(candidate: candidate, probes: probes)
         }
     }
 
