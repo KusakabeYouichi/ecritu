@@ -748,21 +748,7 @@ struct KeyboardRootView: View {
     }
 
     var shortcutVocabularyEntries: [String] {
-        var seen = Set<String>()
-        var result: [String] = []
-
-        for candidate in shortcutVocabulary {
-            let normalized = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !normalized.isEmpty,
-                seen.insert(normalized).inserted else {
-                continue
-            }
-
-            result.append(candidate)
-        }
-
-        return result
+        shortcutVocabulary.uniquedTrimmedCandidates(keepingOriginalText: true)
     }
 
     var mainFlickKeyHeight: CGFloat {

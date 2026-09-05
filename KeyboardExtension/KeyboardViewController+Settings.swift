@@ -296,35 +296,18 @@ extension KeyboardViewController {
     }
 
     func currentKanaKanjiCandidateSourceMode(from defaults: UserDefaults?) -> KanaKanjiCandidateSourceMode {
-        let rawValue = sharedStringValue(
-            from: defaults,
-            key: SharedDefaultsKeys.kanaKanjiCandidateSourceMode,
-            fallback: KanaKanjiCandidateSourceMode.surface.rawValue
-        )
-
-        return KanaKanjiCandidateSourceMode(rawValue: rawValue) ?? .surface
+        sharedEnumValue(from: defaults, key: SharedDefaultsKeys.kanaKanjiCandidateSourceMode, fallback: .surface)
     }
 
     func currentContactCandidateDisplayMode(from defaults: UserDefaults?) -> ContactCandidateDisplayMode {
-        let rawValue = sharedStringValue(
-            from: defaults,
-            key: SharedDefaultsKeys.contactCandidateDisplayMode,
-            fallback: ContactCandidateDisplayMode.off.rawValue
-        )
-
-        return ContactCandidateDisplayMode(rawValue: rawValue) ?? .off
+        sharedEnumValue(from: defaults, key: SharedDefaultsKeys.contactCandidateDisplayMode, fallback: .off)
     }
 
+    // iOS 本体のユーザ辞書(écritu の追加語彙ではない)の候補表示
     func currentUserDictionaryCandidateDisplayMode(
         from defaults: UserDefaults?
     ) -> UserDictionaryCandidateDisplayMode {
-        let rawValue = sharedStringValue(
-            from: defaults,
-            key: SharedDefaultsKeys.userDictionaryCandidateDisplayMode,
-            fallback: UserDictionaryCandidateDisplayMode.on.rawValue
-        )
-
-        return UserDictionaryCandidateDisplayMode(rawValue: rawValue) ?? .on
+        sharedEnumValue(from: defaults, key: SharedDefaultsKeys.userDictionaryCandidateDisplayMode, fallback: .on)
     }
 
     func currentEmojiCandidateDisplayEnabled(from defaults: UserDefaults?) -> Bool {

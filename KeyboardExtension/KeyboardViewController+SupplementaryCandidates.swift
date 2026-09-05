@@ -138,7 +138,7 @@ extension KeyboardViewController {
             return
         }
 
-        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID),
+        guard let defaults = sharedDefaults,
             let cachedDictionary = defaults.dictionary(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
                 as? [String: [String]],
             !cachedDictionary.isEmpty else {
@@ -250,7 +250,7 @@ extension KeyboardViewController {
 
     // 永続キャッシュの署名だけを読む(辞書本体のデコードなし)。
     func persistedSupplementaryLexiconIndexSignature() -> String? {
-        UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)?
+        sharedDefaults?
             .string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature)
     }
 
@@ -266,7 +266,7 @@ extension KeyboardViewController {
     }
 
     func cachedSupplementaryLexiconIndex(signature: String) -> [String: [String]]? {
-        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID),
+        guard let defaults = sharedDefaults,
             defaults.string(forKey: SharedDefaultsKeys.supplementaryLexiconIndexSignature) == signature,
             let dictionary = defaults.dictionary(forKey: SharedDefaultsKeys.supplementaryLexiconIndexCacheByReading)
                 as? [String: [String]],
@@ -281,7 +281,7 @@ extension KeyboardViewController {
         signature: String,
         dictionary: [String: [String]]
     ) {
-        guard let defaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID) else {
+        guard let defaults = sharedDefaults else {
             return
         }
 
@@ -386,7 +386,7 @@ extension KeyboardViewController {
     }
 
     func cachedContactCandidatesFromSharedDefaults() -> [String: [String]] {
-        guard let sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID) else {
+        guard let sharedDefaults else {
             return [:]
         }
 

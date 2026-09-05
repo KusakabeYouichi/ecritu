@@ -887,107 +887,17 @@ extension KanaKanjiConverter {
                 continue
             }
 
+            // 一段/五段の連用形+接尾の生成は お〜になる 系と同じ(politePrefixRenyouCandidates の連用形版に委譲)
             derived.append(
-                contentsOf: politePrefixSuruCandidates(
+                contentsOf: politePrefixRenyouCandidates(
                     prefix: prefix,
-                    suruSuffix: suruSuffix,
-                    baseReading: renyouReading + "る",
-                    expectedInflectionClass: InflectionClass.ichidan,
-                    dictionaryEnding: "る",
-                    renyouEnding: "",
-                    userDictionary: userDictionary,
-                    initialUserDictionary: initialUserDictionary,
+                    trailingSuffix: suruSuffix,
+                    renyouReading: renyouReading,
+                    ajoutVocabulary: ajoutVocabulary,
+                    initialAjoutVocabulary: initialAjoutVocabulary,
                     systemCandidateMode: systemCandidateMode
                 )
             )
-
-            for pattern in Self.godanPatterns where renyouReading.hasSuffix(pattern.iForm) {
-                guard let readingStem = removingSuffix(renyouReading, suffix: pattern.iForm) else {
-                    continue
-                }
-
-                let baseReading = readingStem + pattern.dictionaryEnding
-
-                derived.append(
-                    contentsOf: politePrefixSuruCandidates(
-                        prefix: prefix,
-                        suruSuffix: suruSuffix,
-                        baseReading: baseReading,
-                        expectedInflectionClass: pattern.inflectionClass,
-                        dictionaryEnding: pattern.dictionaryEnding,
-                        renyouEnding: pattern.iForm,
-                        userDictionary: userDictionary,
-                        initialUserDictionary: initialUserDictionary,
-                        systemCandidateMode: systemCandidateMode
-                    )
-                )
-            }
-        }
-
-        return uniqueCandidates(from: derived)
-    }
-
-    func politePrefixSuruCandidates(
-        prefix: String,
-        suruSuffix: String,
-        baseReading: String,
-        expectedInflectionClass: String,
-        dictionaryEnding: String,
-        renyouEnding: String,
-        userDictionary: [String: [String]],
-        initialUserDictionary: [String: [String]],
-        systemCandidateMode: KanaKanjiCandidateSourceMode
-    ) -> [String] {
-        guard !baseReading.isEmpty,
-            !dictionaryEnding.isEmpty else {
-            return []
-        }
-
-        let baseCandidates = orderedDerivationBaseCandidates(
-            candidatesForReading(
-                baseReading,
-                userDictionary: userDictionary,
-                initialUserDictionary: initialUserDictionary,
-                systemCandidateMode: systemCandidateMode
-            ),
-            reading: baseReading
-        )
-
-        guard !baseCandidates.isEmpty else {
-            return []
-        }
-
-        let metadata = inflectionMetadata(for: baseReading)
-        let userCandidateSet = Set(
-            combinedUserCandidates(
-                for: baseReading,
-                userDictionary: userDictionary
-            ) + (initialUserDictionary[baseReading] ?? [])
-        )
-        var derived: [String] = []
-
-        for candidate in baseCandidates {
-            let resolvedClass = resolvedInflectionClass(
-                for: candidate,
-                baseReading: baseReading,
-                systemClassMap: metadata.classMap,
-                hasSystemMetadata: metadata.hasMetadata,
-                userCandidateSet: userCandidateSet
-            )
-
-            guard resolvedClass == expectedInflectionClass,
-                candidate.hasSuffix(dictionaryEnding) else {
-                continue
-            }
-
-            let stem = String(candidate.dropLast(dictionaryEnding.count))
-            let renyouCandidate = stem + renyouEnding
-
-            guard shouldApplyPolitePrefix(prefix, to: renyouCandidate) else {
-                continue
-            }
-
-            derived.append(prefix + renyouCandidate + suruSuffix)
         }
 
         return uniqueCandidates(from: derived)

@@ -288,20 +288,6 @@ enum SupplementaryCandidateMerger {
     }
 
     private static func uniqueTrimmedCandidates(from candidates: [String]) -> [String] {
-        var result: [String] = []
-        var seen = Set<String>()
-
-        for candidate in candidates {
-            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmed.isEmpty,
-                seen.insert(trimmed).inserted else {
-                continue
-            }
-
-            result.append(trimmed)
-        }
-
-        return result
+        candidates.uniquedTrimmedCandidates()
     }
 }

@@ -1144,41 +1144,11 @@ final class KanaKanjiStore {
     }
 
     private func uniqueCandidates(from candidates: [String]) -> [String] {
-        var seen = Set<String>()
-        var result: [String] = []
-
-        for candidate in candidates {
-            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmed.isEmpty,
-                    !seen.contains(trimmed) else {
-                continue
-            }
-
-            seen.insert(trimmed)
-            result.append(trimmed)
-        }
-
-        return result
+        candidates.uniquedTrimmedCandidates()
     }
 
     private func uniqueShortcutCandidates(from candidates: [String]) -> [String] {
-        var seen = Set<String>()
-        var result: [String] = []
-
-        for candidate in candidates {
-            let normalized = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !normalized.isEmpty,
-                    !seen.contains(normalized) else {
-                continue
-            }
-
-            seen.insert(normalized)
-            result.append(candidate)
-        }
-
-        return result
+        candidates.uniquedTrimmedCandidates(keepingOriginalText: true)
     }
 
     private func mergedSystemCandidates(primary: [String], supplemental: [String]) -> [String] {

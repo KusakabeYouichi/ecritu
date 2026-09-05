@@ -45,11 +45,11 @@ extension KeyboardViewController {
         // と食い違い、幅の見積もりを UIScreen から取ると盤面が中央の箱からはみ出す(2786)。zero=未レイアウト
         let containerFrame: CGRect
         let shortcutVocabulary: [String]
-        let composingText: String
-        let conversionCandidates: [String]
-        let selectedConversionCandidateIndex: Int?
-        let latinSuggestionQuery: String
-        let latinSuggestions: [String]
+        var composingText: String
+        var conversionCandidates: [String]
+        var selectedConversionCandidateIndex: Int?
+        var latinSuggestionQuery: String
+        var latinSuggestions: [String]
         let showsParenthesesWrapper: Bool
         // フィールドの keyboardType から決まる初期入力モード。フィールド移動で trait が
         // 変わったときに rootView 差し替えガード(== / equalIgnoringCandidateBar)を通すため
@@ -61,73 +61,18 @@ extension KeyboardViewController {
         func equalIgnoringCandidateBar(_ other: RenderConfiguration) -> Bool {
             var normalizedSelf = self
             var normalizedOther = other
-            normalizedSelf = normalizedSelf.replacingCandidateBarFields(with: RenderConfiguration.candidateBarFieldPlaceholder)
-            normalizedOther = normalizedOther.replacingCandidateBarFields(with: RenderConfiguration.candidateBarFieldPlaceholder)
+            normalizedSelf.clearCandidateBarFields()
+            normalizedOther.clearCandidateBarFields()
             return normalizedSelf == normalizedOther
         }
 
-        private static let candidateBarFieldPlaceholder = (
-            composingText: "",
-            conversionCandidates: [String](),
-            selectedConversionCandidateIndex: Int?.none,
-            latinSuggestionQuery: "",
-            latinSuggestions: [String]()
-        )
-
-        private func replacingCandidateBarFields(
-            with fields: (
-                composingText: String,
-                conversionCandidates: [String],
-                selectedConversionCandidateIndex: Int?,
-                latinSuggestionQuery: String,
-                latinSuggestions: [String]
-            )
-        ) -> RenderConfiguration {
-            RenderConfiguration(
-                directionProfile: directionProfile,
-                kanaLayoutMode: kanaLayoutMode,
-                kanaModifierPlacementMode: kanaModifierPlacementMode,
-                numberLayoutMode: numberLayoutMode,
-                latinLayoutMode: latinLayoutMode,
-                accentPaletteRawValue: accentPaletteRawValue,
-                isSystemDictionaryFallback: isSystemDictionaryFallback,
-                hasFullAccess: hasFullAccess,
-                keyboardBackgroundThemeRawValue: keyboardBackgroundThemeRawValue,
-                basicSymbolOrderRawValue: basicSymbolOrderRawValue,
-                temperatureUnitRawValue: temperatureUnitRawValue,
-                radicalStrokeCountStyleRawValue: radicalStrokeCountStyleRawValue,
-                spaceToastTrigger: spaceToastTrigger,
-                returnKeySystemImageName: returnKeySystemImageName,
-                returnKeyTitleOverride: returnKeyTitleOverride,
-                isReturnKeyEnabled: isReturnKeyEnabled,
-                kanaFlickGuideDisplayMode: kanaFlickGuideDisplayMode,
-                latinFlickGuideDisplayMode: latinFlickGuideDisplayMode,
-                numberFlickGuideDisplayMode: numberFlickGuideDisplayMode,
-                modifierFlickGuideDisplayMode: modifierFlickGuideDisplayMode,
-                keyRepeatInitialDelay: keyRepeatInitialDelay,
-                keyRepeatInterval: keyRepeatInterval,
-                kanaModeSwitcherTapActionRawValue: kanaModeSwitcherTapActionRawValue,
-                kanaModeSwitcherRightFlickActionRawValue: kanaModeSwitcherRightFlickActionRawValue,
-                kanaModeSwitcherUpFlickActionRawValue: kanaModeSwitcherUpFlickActionRawValue,
-                kanaPostModifierEmptyTapActionRawValue: kanaPostModifierEmptyTapActionRawValue,
-                kanaPostModifierEmptyTapKaomojiCategoryID: kanaPostModifierEmptyTapKaomojiCategoryID,
-                kanaPostModifierEmptyTapEmojiCategoryID: kanaPostModifierEmptyTapEmojiCategoryID,
-                kanaPostModifierEmptyTapSymbolCategoryID: kanaPostModifierEmptyTapSymbolCategoryID,
-                kanaPostModifierFlickDakutenEnabled: kanaPostModifierFlickDakutenEnabled,
-                landscapeCandidateSideRawValue: landscapeCandidateSideRawValue,
-                landscapeNumberPaneSideRawValue: landscapeNumberPaneSideRawValue,
-                landscapeLatinSuggestionModeRawValue: landscapeLatinSuggestionModeRawValue,
-                showsNextKeyboardKey: showsNextKeyboardKey,
-                containerFrame: containerFrame,
-                shortcutVocabulary: shortcutVocabulary,
-                composingText: fields.composingText,
-                conversionCandidates: fields.conversionCandidates,
-                selectedConversionCandidateIndex: fields.selectedConversionCandidateIndex,
-                latinSuggestionQuery: fields.latinSuggestionQuery,
-                latinSuggestions: fields.latinSuggestions,
-                showsParenthesesWrapper: showsParenthesesWrapper,
-                initialInputMode: initialInputMode
-            )
+        // 候補バー系 5 フィールドだけ空にする(比較用)。以前は全 45 フィールドを転記して再構築していた
+        private mutating func clearCandidateBarFields() {
+            composingText = ""
+            conversionCandidates = []
+            selectedConversionCandidateIndex = nil
+            latinSuggestionQuery = ""
+            latinSuggestions = []
         }
     }
 

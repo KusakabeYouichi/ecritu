@@ -483,7 +483,7 @@ extension KeyboardRootView {
 
     // カレンダー設定(共有 UserDefaults から直接読む)。既定は月曜始まり。1=日/2=月/7=土。
     private var formattedNumberCalendarFirstWeekday: Int {
-        switch UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+        switch formattedNumberSharedDefaults?
             .string(forKey: "calendarWeekStart") {
         case "sunday": return 1
         case "saturday": return 7
@@ -492,7 +492,7 @@ extension KeyboardRootView {
     }
 
     private var formattedNumberCalendarLanguage: DateFormatCatalog.CalendarWeekdayLanguage {
-        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+        let raw = formattedNumberSharedDefaults?
             .string(forKey: "calendarWeekdayLanguage") ?? ""
         // 既定は仏語(dim lun mar)。
         return DateFormatCatalog.CalendarWeekdayLanguage(rawValue: raw) ?? .french
@@ -500,7 +500,7 @@ extension KeyboardRootView {
 
     // 曜日列の色(オフ=nil)。DIC は近似値(正確値は要確認)。共有キーから読む。
     private func formattedNumberCalendarDayColor(forKey key: String, fallback: String) -> Color? {
-        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+        let raw = formattedNumberSharedDefaults?
             .string(forKey: key) ?? fallback
         switch raw {
         case "bordeaux":
@@ -551,7 +551,7 @@ extension KeyboardRootView {
 
     // 方式(日本/仏/英/米)はコンテナー設定で選ぶ。共有 UserDefaults から直接読む。
     private var formattedNumberDateStyle: DateFormatStyle {
-        let raw = UserDefaults(suiteName: KeyboardViewController.SharedDefaultsKeys.appGroupID)?
+        let raw = formattedNumberSharedDefaults?
             .string(forKey: "dateFormatStyle") ?? ""
         return DateFormatStyle(rawValue: raw) ?? .japanese
     }
