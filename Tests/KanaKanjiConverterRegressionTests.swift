@@ -13855,12 +13855,13 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
-    func testTmpDiag2813() throws {
+    // 2813: あかわいんよう が 赤ワイン洋。用 は接尾の常用語(unigram 4020)だが読み別 wc 7143 の床上げで 洋(7027)に負けていた。
+    // 時/系/計 と同じく床上げ免除
+    func testRegressionRealLMAkaWineYou() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
-        print("DIAG single", converter.candidates(for: "あかわいんよう", limit: 8, systemCandidateMode: .surface))
-        setenv("MULTI_TRACE_EDGES", "1", 1)
-        print("DIAG multi", converter.multiClauseCandidates(for: "あかわいんよう", systemCandidateMode: .surface))
-        unsetenv("MULTI_TRACE_EDGES")
+        let multi = converter.multiClauseCandidates(for: "あかわいんよう", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(2)), ["赤ワイン用", "赤ワイン洋"], "multi=\(multi)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たいへいよう", systemCandidateMode: .surface).first ?? converter.candidates(for: "たいへいよう", limit: 1, systemCandidateMode: .surface).first, "太平洋")
     }
 }
