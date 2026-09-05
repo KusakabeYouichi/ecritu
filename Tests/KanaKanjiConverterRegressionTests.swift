@@ -13717,3 +13717,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かいぜんをはかる", systemCandidateMode: .surface).first, "改善を図る")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2803: かねもってて が 文頭の終助詞 かね(かな識別、unigram 5954)+持ってて で 金持ってて に勝っていた。
+    // 文頭の裸の助詞減点に かね を加える(文末の 〜ですかね は無傷)
+    func testRegressionRealLMKaneMottete() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let multi = converter.multiClauseCandidates(for: "かねもってて", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "金持ってて", "multi=\(multi)")
+        let tail = converter.multiClauseCandidates(for: "いいんですかね", systemCandidateMode: .surface)
+        XCTAssertEqual(tail.first, "いいんですかね", "tail=\(tail)")
+    }
+}
