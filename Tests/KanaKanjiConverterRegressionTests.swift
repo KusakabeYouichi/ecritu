@@ -13830,5 +13830,10 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "すいへいたいこうえんじん", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "水平対向エンジン", "multi=\(multi)")
         XCTAssertEqual(converter.candidates(for: "すいへいたいこう", limit: 3, systemCandidateMode: .surface).first, "水平対向")
+        // 2811: 〜のでめりっと が オノマトペ「〜っと」のかなクランプ(4000)に掛かり、全かな素通り/のでめりっと が
+        // エンジン+の+デメリット を跨いでいた。クランプは 4〜5 文字かつ辞書語(デメリット)の無い読みに限定
+        let demerit = converter.multiClauseCandidates(for: "すいへいたいこうえんじんのでめりっと", systemCandidateMode: .surface)
+        XCTAssertEqual(demerit.first, "水平対向エンジンのデメリット", "demerit=\(demerit)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ぱしゃっととった", systemCandidateMode: .surface).first, "ぱしゃっと取った")
     }
 }
