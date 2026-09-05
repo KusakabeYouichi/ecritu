@@ -540,7 +540,7 @@ extension KanaKanjiConverter {
     // を先頭にしていた。seed 順(家事→火事→鍛冶)をノードコストへ(2689)
     // すうかこく(2801): LM は 数カ国7590<数か国7884 で 数カ国対応 が先頭。seed 順(か国 先頭、か月 と同じ)をノードコストへ
     // きゅうりょう(2812): LM は 丘陵 5950<給料 6381。seed 順(給料 先頭)をノードコストへ
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "すうかこく", "きゅうりょう"]
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "すうかこく", "すうかしょ", "きゅうりょう"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -1034,6 +1034,11 @@ extension KanaKanjiConverter {
     // 文頭で と し と続く助詞列は日本語として立たない(として/としても は curated の1ノード、しない/して は
     // 1ノードなので対象外)。文中の 〜を目標とし、 には触れない(文頭限定)
     static let multiClauseSentenceInitialToShiPenalty = 3000
+    // 人(ひと)の直後の 以内/以上/以下/未満(2814): 人→以内 の bigram 3835 は「3人以内」(にん)の統計で、
+    // 人(ひと)の後に範囲接尾は立たない。いれているひといないかなあ が 入れている人以内かなあ になっていた
+    // (人+いない は派生 OOV 7200+単漢字名詞→動詞 600)。予算以内/期限以内 等の名詞+接尾には触れない(ひと 限定)
+    static let multiClauseRangeSuffixSurfaces: Set<String> = ["以内", "以上", "以下", "未満"]
+    static let multiClauseRangeSuffixAfterHitoPenalty = 5000
     // 当為の べき/べし/べく(2798): ふむべき が 踏む+冪 になっていた。述語(辞書形/活用派生)直後の
     // べき は助動詞でかなが正書。漢字表記(冪/可き)を減点
     static let multiClauseBekiReadings: Set<String> = ["べき", "べし", "べく", "べきだ", "べきです"]
