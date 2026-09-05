@@ -13813,5 +13813,10 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.multiClauseCandidates(for: "しゅんけいぬりの", systemCandidateMode: .surface).prefix(2)), ["春慶塗の", "春慶塗りの"])
         let hashi = converter.multiClauseCandidates(for: "しゅんけいぬりのはし", systemCandidateMode: .surface)
         XCTAssertEqual(Array(hashi.prefix(3)), ["春慶塗の箸", "春慶塗りの箸", "春慶塗の橋"], "hashi=\(hashi)")
+        // 2809: お+はし の合成は 橋/端/箸 が同額で辞書順に並び お橋 が先頭だった。seed おはし=[お箸] と、
+        // の を挟む連語の後段を お/ご 剥がしでも照合することで お箸 を先頭に
+        let ohashi = converter.multiClauseCandidates(for: "しゅんけいぬりのおはし", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(ohashi.prefix(2)), ["春慶塗のお箸", "春慶塗りのお箸"], "ohashi=\(ohashi)")
+        XCTAssertEqual(converter.candidates(for: "おはし", limit: 3, systemCandidateMode: .surface).first, "お箸")
     }
 }
