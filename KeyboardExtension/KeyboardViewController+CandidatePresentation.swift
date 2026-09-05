@@ -493,6 +493,10 @@ extension KeyboardViewController {
         // 出来事/出来高/出来上がる 等(直後が漢字 or あ 等)は対象外。
         candidates = SupplementaryCandidateMerger.demotingDekiKanjiBelowKana(candidates)
 
+        // 読みが完全一致するときだけ、指定表層を表示リストの最後尾(絵文字・顔文字より後ろ)へ回す
+        // (ほんと→本当。抑制すると ほんとだ 等の合成から消えるので、順位だけ落とす。2810)
+        candidates = SupplementaryCandidateMerger.demotingPresentationTailSeed(candidates, reading: composingReading)
+
         guard !composingText.isEmpty else {
             return candidates
         }
