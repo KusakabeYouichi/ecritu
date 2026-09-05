@@ -503,7 +503,11 @@ extension KanaKanjiConverter {
                     var suppliedInflectionSurfaces = Set<String>()
                     // 補助動詞 ておく の活用(おいて/おきながら 等)はかなが正書なので、かなが第1候補で
                     // なくても供給する(て/で 直後の漢字 置き には DP 側で減点。定数コメント参照)
+                    // seed がその活用形の並びにかなを載せている(たとえて=例えて/たとえて/喩えて/譬えて)ときも、
+                    // かなが第1候補でなくても供給する。無いと たとえて言うなら が変種に出ず、喩えて/譬えて の
+                    // 稀表記だけが並ぶ(2804)。コストは他の派生と同じ定額で、順位は seed 順の列挙順(タイブレーク)
                     let suppliesKanaForOkuAuxiliary = Self.isOkuAuxiliaryReading(segmentReading)
+                        || (KanaKanjiSeedDictionary.seed[segmentReading]?.contains(segmentReading) ?? false)
                     for (offset, surface) in inflected.enumerated() {
                         if surface == segmentReading, offset != 0, !suppliesKanaForOkuAuxiliary {
                             continue
@@ -2581,7 +2585,12 @@ extension KanaKanjiConverter {
                     let seedList = KanaKanjiSeedDictionary.seed[alt.reading],
                     let chosenIndex = seedList.firstIndex(of: chosen.surface),
                     let altIndex = seedList.firstIndex(of: alt.surface) {
-                    delta = min(delta, max(1, altIndex - chosenIndex) * Self.multiClauseSeedOrderVariantStep)
+                    let seedDelta = max(1, altIndex - chosenIndex) * Self.multiClauseSeedOrderVariantStep
+                    // 厳密 opt-in(2804): 派生同士の同点(delta 0)を seed 順で割り、かな(たとえて)を
+                    // 稀表記(喩えて/譬えて)より前に出す。min だけでは同点の 喩えて を後ろへ動かせない
+                    delta = Self.multiClauseSeedOrderVariantStrictReadings.contains(alt.reading)
+                        ? seedDelta
+                        : min(delta, seedDelta)
                 }
                 // 連語の名詞スパンの表記変種(めど/メド 等、かな識別か seed 掲載)は
                 // 変種枠の主役なので delta 上限を緩和する(2559)
