@@ -14086,3 +14086,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(multi("かいぎをおこなって").contains { $0.hasSuffix("行なって") }, "multi=\(multi("かいぎをおこなって"))")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 令制国の別称(○州)の欠落 19 語を sacoche に追加(2820)。播州 は Sudachi に ばんしゅう で入っている
+    func testRegressionRealLMKyuseikokuShuAbbreviations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        for (reading, surface) in [("びしゅう", "美州"), ("のうしゅう", "濃州"), ("ごうしゅう", "江州"), ("ほうしゅう", "豊州"), ("おんしゅう", "隠州"), ("さんしゅう", "参州")] {
+            XCTAssertTrue(converter.candidates(for: reading, limit: 12, systemCandidateMode: .surface).contains(surface), "\(reading)")
+        }
+        let multi = converter.multiClauseCandidates(for: "ばんしゅうはりま", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "播州播磨", "multi=\(multi)")
+    }
+}
