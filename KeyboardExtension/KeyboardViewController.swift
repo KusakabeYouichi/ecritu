@@ -426,6 +426,7 @@ final class KeyboardViewController: UIInputViewController {
         static let emojiCandidateDisplayEnabled = "emojiCandidateDisplayEnabled"
         static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
         static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
+        static let kaCounterVariantPreference = "kaCounterVariantPreference"
         static let adjectiveMeKanjiCandidatesEnabled = "adjectiveMeKanjiCandidatesEnabled"
         static let suspendMemorySlimmingEnabled = "suspendMemorySlimmingEnabled"
         static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"

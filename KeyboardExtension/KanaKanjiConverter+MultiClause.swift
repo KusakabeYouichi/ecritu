@@ -2776,7 +2776,11 @@ extension KanaKanjiConverter {
             results.removeAll { directSuppressed.contains($0) }
         }
         // 旧仮名遣い(ゐゑヰヱ 等)の抑制は単文節と同じく連文節にも適用する(ぐらゐかなー 等)。
-        return filterHistoricalKanaSurfaceCandidates(for: normalized, candidates: results)
+        // 助数詞「か」の表記(数か国対応/数か月前)は設定順に並べ直す(区切りは変えない。2816)
+        return applyKaCounterVariantPreference(
+            reading: normalized,
+            to: filterHistoricalKanaSurfaceCandidates(for: normalized, candidates: results)
+        )
     }
 
     // 仮定「なら」の直前が述語(動詞辞書形/形容詞/タ形、または活用派生)か。

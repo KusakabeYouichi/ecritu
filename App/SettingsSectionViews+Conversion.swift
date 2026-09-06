@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import UniformTypeIdentifiers
 
 // 変換・候補まわりの設定セクション(後置修飾/確定/候補ソース/連絡先/ユーザ辞書/部首/め接尾/絵文字顔文字/欧文/旧仮名/踊り字/表記変種)。SettingsSectionViews.swift(1737 行)から分割(2805 リファクタ)
 
@@ -356,5 +357,93 @@ struct ScriptVariantModeSettingsSection: View {
                 .foregroundStyle(.secondary)
         }
         .settingsCardStyle()
+    }
+}
+
+// 助数詞の「か」の表記(1か所/数か月/何か国 の か・箇・ヶ・カ・ヵ・個・ケ)。行をドラッグして順序を、
+// トグルで出す/出さないを決める。値は "か,箇,ヶ,カ,ヵ,-個,-ケ" の文字列で共有 UserDefaults に保存(2816)
+struct KaCounterVariantSettingsSection: View {
+    @Binding var rawValue: String
+
+    @State private var draggingVariant: KaCounterVariant?
+
+    private var preference: KaCounterVariantPreference {
+        KaCounterVariantPreference.decode(rawValue)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("un endroit, deux endroits, …")
+                .font(.headline)
+
+            VStack(spacing: 8) {
+                ForEach(preference.order) { variant in
+                    variantRow(variant)
+                }
+            }
+
+            Text("数を数える言い方の『か』(1か所、数か月、何か国 など)を、どの表記で、どの順に出すかを決めます。行を長押しして動かすと順序が変わり、スイッチを切った表記は候補に出しません。初期設定は か → 箇 → ヶ → カ → ヵ の 5 つを出し、個 と ケ は出しません。\n\n公用文では『か所・か月』または『箇所・箇月』と書くのが標準で、新聞は『か所・か月』です。ここで決めた順は変換候補の並びの初期状態で、いつも選ぶ表記は学習によってその上に出ます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .settingsCardStyle()
+    }
+
+    private func variantRow(_ variant: KaCounterVariant) -> some View {
+        let isEnabled = preference.enabled.contains(variant)
+        return HStack(spacing: 10) {
+            Image(systemName: "line.3.horizontal")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+            Text(variant.title)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(isEnabled ? .primary : .secondary)
+            Spacer(minLength: 0)
+            Toggle("", isOn: Binding(
+                get: { isEnabled },
+                set: { newValue in
+                    var next = preference
+                    if newValue {
+                        next.enabled.insert(variant)
+                    } else {
+                        next.enabled.remove(variant)
+                    }
+                    rawValue = next.encoded
+                }
+            ))
+            .labelsHidden()
+            .toggleStyle(.switch)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(AppTheme.controlBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(
+                    draggingVariant == variant ? Color.accentColor.opacity(0.55) : AppTheme.subtleBorder,
+                    lineWidth: draggingVariant == variant ? 1.4 : 1
+                )
+        )
+        .onDrag {
+            draggingVariant = variant
+            return NSItemProvider(object: NSString(string: variant.rawValue))
+        }
+        .onDrop(
+            of: [UTType.text],
+            delegate: PanePairSwapDropDelegate(
+                targetItem: variant,
+                orderedItems: preference.order,
+                draggingItem: $draggingVariant,
+                onReorder: { newOrder in
+                    var next = preference
+                    next.order = newOrder
+                    rawValue = next.encoded
+                }
+            )
+        )
     }
 }

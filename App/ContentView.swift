@@ -322,6 +322,12 @@ struct ContentView: View {
     private var ordinalMeKanjiPreferred = true
 
     @AppStorage(
+        SettingsKeys.kaCounterVariantPreference,
+        store: Self.sharedDefaults
+    )
+    private var kaCounterVariantPreferenceRawValue: String = KaCounterVariantPreference.default.encoded
+
+    @AppStorage(
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled,
         store: Self.sharedDefaults
     )
@@ -533,6 +539,7 @@ struct ContentView: View {
             String(emojiCandidateDisplayEnabled),
             radicalStrokeCountStyleRawValue,
             String(ordinalMeKanjiPreferred),
+            kaCounterVariantPreferenceRawValue,
             String(adjectiveMeKanjiCandidatesEnabled),
             String(suspendMemorySlimmingEnabled),
             String(kaomojiCandidateDisplayEnabled),
@@ -638,6 +645,7 @@ struct ContentView: View {
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "première…: 順序の『目』を漢字で先に")
+        str(SettingsKeys.kaCounterVariantPreference, kaCounterVariantPreferenceRawValue, "助数詞の か の表記(出す表記と順。- は出さない)")
         bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "un peu …: 形容詞語幹の『目』候補も出す")
         bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
@@ -1179,6 +1187,8 @@ struct ContentView: View {
             ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
             adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
         )
+
+        KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
 
         EmojiKaomojiCandidateSettingsSection(
             enablesEmojiCandidates: $emojiCandidateDisplayEnabled,

@@ -223,7 +223,7 @@ extension ContentView {
         SettingsKeys.historicalKanaCandidatesEnabled, SettingsKeys.iterationMarkCandidatesEnabled,
         SettingsKeys.katakanaEmphasisCandidateMode, SettingsKeys.mazegakiCandidateMode,
         SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.radicalStrokeCountStyle,
-        SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled,
+        SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.kaCounterVariantPreference,
         SettingsKeys.suspendMemorySlimmingEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled,
         SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode
     ]
@@ -284,6 +284,7 @@ extension ContentView {
         SettingsKeys.emojiCandidateDisplayEnabled: true,
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
+        SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.default.encoded,
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,

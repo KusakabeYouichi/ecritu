@@ -8079,14 +8079,18 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertTrue(mangoku.contains("万石"), "\(mangoku)")
     }
 
-    // 2800: 助数詞表層の順を か月 と揃えた(か国→カ国→ヶ国→ヵ国→箇国→ケ国)
+    // 2800: 助数詞表層の順を か月 と揃えた。2816 からは設定(初期 か→箇→ヶ→カ→ヵ)が並びを決める
     func testRegressionRealLMKakokuCounter() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["かこく": ["カコク"]])
         converter.clearAllCaches()
         let cands = converter.candidates(for: "かこく", limit: 16, systemCandidateMode: .surface)
-        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "かこく", precedingCharacter: "3")
-        XCTAssertEqual(Array(boosted.prefix(2)), ["か国", "カ国"], "boosted=\(boosted.prefix(6))")
+        // 表示層と同じく、数字直後ブーストの後に か の表記設定(初期 か→箇→ヶ→カ→ヵ)を通す
+        let boosted = converter.applyKaCounterVariantPreference(
+            reading: "かこく",
+            to: KanaKanjiConverter.digitContextCounterBoostedCandidates(cands, reading: "かこく", precedingCharacter: "3")
+        )
+        XCTAssertEqual(Array(boosted.prefix(2)), ["か国", "箇国"], "boosted=\(boosted.prefix(6))")
         // 過酷/苛酷 は counter の後ろ。
         guard let iKa = boosted.firstIndex(of: "か国"), let iKakoku = boosted.firstIndex(of: "過酷") else {
             return XCTFail("boosted=\(boosted)")
@@ -9265,7 +9269,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertEqual(suu.first, "数か月", "suu=\(suu)")
         // か国 も同じ構図(2800): 数カ国 rank0 が先頭化していた
         let kakoku = converter.candidates(for: "すうかこく", limit: 6, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(kakoku.prefix(5)), ["数か国", "数カ国", "数ヶ国", "数ヵ国", "数箇国"], "kakoku=\(kakoku)")
+        XCTAssertEqual(Array(kakoku.prefix(5)), ["数か国", "数箇国", "数ヶ国", "数カ国", "数ヵ国"], "kakoku=\(kakoku)")
         let nanKakoku = converter.candidates(for: "なんかこく", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(nanKakoku.first, "何か国", "nanKakoku=\(nanKakoku)")
         let sanKakoku = converter.candidates(for: "さんかこく", limit: 6, systemCandidateMode: .surface)
@@ -13909,8 +13913,36 @@ extension KanaKanjiConverterRegressionTests {
             let c = converter.candidates(for: r, limit: 6, systemCandidateMode: .surface)
             XCTAssertEqual(c.first, want, "\(r): \(c)")
         }
-        let roku = converter.candidates(for: "ろっかしょ", limit: 8, systemCandidateMode: .surface)
-        XCTAssertTrue(roku.contains("六ケ所") || roku.contains("六ヶ所"), "地名は候補として残す: \(roku)")
+        // 六ケ所(地名)は 2816 の か 表記設定で 六か所 の表記群に畳まれる(ヶ がオンなら 六ヶ所 として残る)
+        let roku = converter.candidates(for: "ろっかしょ", limit: 10, systemCandidateMode: .surface)
+        XCTAssertTrue(roku.contains("六ヶ所"), "roku=\(roku)")
         XCTAssertEqual(converter.candidates(for: "ろっかしょむら", limit: 3, systemCandidateMode: .surface).first, "六ヶ所村")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2816: 助数詞「か」の表記(か/箇/ヶ/カ/ヵ/個/ケ)の順と出す/出さないをコンテナー設定で一括制御。
+    // 単文節(1か所/数か所/何か所/三か所)・連文節(数か国対応)のどの経路でも同じ並びになり、seed(かげつ/かこく/かしょ…)は撤去
+    func testRegressionRealLMKaCounterVariantPreference() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        defer { converter.setKaCounterVariantPreference(.default) }
+        let defaultOrder = ["か", "箇", "ヶ", "カ", "ヵ"]
+        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), defaultOrder.map { "1\($0)所" })
+        XCTAssertEqual(converter.candidates(for: "すうかげつ", limit: 8, systemCandidateMode: .surface), defaultOrder.map { "数\($0)月" })
+        XCTAssertEqual(Array(converter.candidates(for: "かこく", limit: 8, systemCandidateMode: .surface).prefix(5)), defaultOrder.map { "\($0)国" })
+        XCTAssertEqual(converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface), defaultOrder.map { "数\($0)国対応" })
+        // 個/ケ は初期設定では出さない
+        XCTAssertFalse(converter.candidates(for: "すうかしょ", limit: 8, systemCandidateMode: .surface).contains("数個所"))
+        // 地名は触らない
+        XCTAssertEqual(converter.candidates(for: "ろっかしょむら", limit: 3, systemCandidateMode: .surface).first, "六ヶ所村")
+        // 設定を変える: 箇 → ヶ だけ出す
+        converter.setKaCounterVariantPreference(KaCounterVariantPreference(encoded: "箇,ヶ,-か,-カ,-ヵ,-個,-ケ"))
+        XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), ["1箇所", "1ヶ所"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface), ["数箇国対応", "数ヶ国対応"])
+        // 永続形式の往復
+        let pref = KaCounterVariantPreference(encoded: "ヶ,か,-箇")
+        XCTAssertEqual(pref.enabledInOrder, [.smallKe, .hiragana])
+        XCTAssertEqual(pref.encoded, "ヶ,か,-箇,-カ,-ヵ,-個,-ケ")
     }
 }
