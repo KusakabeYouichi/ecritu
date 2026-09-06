@@ -328,6 +328,12 @@ struct ContentView: View {
     private var kaCounterVariantPreferenceRawValue: String = KaCounterVariantPreference.default.encoded
 
     @AppStorage(
+        SettingsKeys.okuriganaVariantPreference,
+        store: Self.sharedDefaults
+    )
+    private var okuriganaVariantPreferenceRawValue: String = OkuriganaVariantPreference.default.encoded
+
+    @AppStorage(
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled,
         store: Self.sharedDefaults
     )
@@ -540,6 +546,7 @@ struct ContentView: View {
             radicalStrokeCountStyleRawValue,
             String(ordinalMeKanjiPreferred),
             kaCounterVariantPreferenceRawValue,
+            okuriganaVariantPreferenceRawValue,
             String(adjectiveMeKanjiCandidatesEnabled),
             String(suspendMemorySlimmingEnabled),
             String(kaomojiCandidateDisplayEnabled),
@@ -646,6 +653,7 @@ struct ContentView: View {
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
         str(SettingsKeys.kaCounterVariantPreference, kaCounterVariantPreferenceRawValue, "助数詞型suffixe / 数詞類別suffixe – ka(un endroit…): か の表記(出す表記と順。- は出さない)")
+        str(SettingsKeys.okuriganaVariantPreference, okuriganaVariantPreferenceRawValue, "送り仮名の許容形 – orthographe: 語幹の中(stem)/複合語の前部要素(compound)/名詞化(noun)ごとに standardOnly(本則だけ)/standardFirst(本則を先に)/permittedFirst(許容を先に)")
         bool(SettingsKeys.adjectiveMeKanjiCandidatesEnabled, adjectiveMeKanjiCandidatesEnabled, "形状名詞化suffixe / 傾向派生suffixe – me(un peu …): 形容詞語幹の『目』候補も出す")
         bool(SettingsKeys.suspendMemorySlimmingEnabled, suspendMemorySlimmingEnabled, "キーボードが閉じたときにメモリを整理")
         bool(SettingsKeys.kaomojiCandidateDisplayEnabled, kaomojiCandidateDisplayEnabled, "emojis & les émoticônes: émoticône (^_^)")
@@ -1184,6 +1192,8 @@ struct ContentView: View {
         )
 
         KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
+
+        OkuriganaVariantSettingsSection(rawValue: $okuriganaVariantPreferenceRawValue)
 
         MeSuffixCandidateSettingsSection(
             ordinalKanjiPreferred: $ordinalMeKanjiPreferred,

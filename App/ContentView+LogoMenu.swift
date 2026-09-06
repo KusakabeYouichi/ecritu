@@ -224,6 +224,7 @@ extension ContentView {
         SettingsKeys.katakanaEmphasisCandidateMode, SettingsKeys.mazegakiCandidateMode,
         SettingsKeys.emojiCandidateDisplayEnabled, SettingsKeys.radicalStrokeCountStyle,
         SettingsKeys.ordinalMeKanjiPreferred, SettingsKeys.adjectiveMeKanjiCandidatesEnabled, SettingsKeys.kaCounterVariantPreference,
+        SettingsKeys.okuriganaVariantPreference,
         SettingsKeys.suspendMemorySlimmingEnabled, SettingsKeys.kaomojiCandidateDisplayEnabled,
         SettingsKeys.contactCandidateDisplayMode, SettingsKeys.userDictionaryCandidateDisplayMode
     ]
@@ -285,6 +286,7 @@ extension ContentView {
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
         SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
+        SettingsKeys.okuriganaVariantPreference: OkuriganaVariantPreference.conservative.encoded,  // 保守的=本則を先に許容も出す(標準は本則だけ)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,

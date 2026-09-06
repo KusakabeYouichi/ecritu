@@ -58,6 +58,8 @@ final class KanaKanjiConverter {
     var ordinalMeKanjiPreferred: Bool = true
     // 助数詞「か」の表記(1か所/数か月)の表示順とオン/オフ(コンテナー設定。2816)
     var kaCounterVariantPreference: KaCounterVariantPreference = .default
+    // 送り仮名の許容形(終る/取扱う/届)の扱い(コンテナー設定。2820)
+    var okuriganaVariantPreference: OkuriganaVariantPreference = .default
     var adjectiveMeKanjiCandidatesEnabled: Bool = false
 
     init(store: KanaKanjiStore) {
@@ -102,6 +104,16 @@ final class KanaKanjiConverter {
                 return
             }
             kaCounterVariantPreference = preference
+            invalidateCandidateCache()
+        }
+    }
+
+    func setOkuriganaVariantPreference(_ preference: OkuriganaVariantPreference) {
+        stateQueue.sync {
+            guard okuriganaVariantPreference != preference else {
+                return
+            }
+            okuriganaVariantPreference = preference
             invalidateCandidateCache()
         }
     }
@@ -315,6 +327,8 @@ final class KanaKanjiConverter {
         }
         // 助数詞「か」の表記(1か所/数か月/何か国)を設定順に並べ、出さない表記を外す(2816)
         finalCandidates = applyKaCounterVariantPreference(reading: normalizedReading, to: finalCandidates)
+        // 送り仮名の許容形(終る/届)を設定に従って並べ替え・除去(2820)
+        finalCandidates = applyOkuriganaVariantPreference(reading: normalizedReading, to: finalCandidates)
 
         if !finalCandidates.isEmpty {
             stateQueue.sync {
