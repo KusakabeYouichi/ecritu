@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>重そう</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重そう(じゅうそう): 重そう は おもそう(重い+そう)であり じゅうそう と読む語ではない(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
 	<dict><key>phrase</key><string>締目</string><key>shortcut</key><string>しめ</string></dict>	<!-- 締め目 なら読みは しめめ。しめ読みでの供給が seed {締め、〆、〆め、絞め} に割り込む(2643) -->
 	<dict><key>phrase</key><string>せん門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の部分かな書き(Sudachi実在)。ばかリ と同型の交ぜ書きエントリ(2637) -->
@@ -66,6 +67,7 @@
 	<dict><key>phrase</key><string>ムベキ</string><key>shortcut</key><string>むべき</string></dict>	<!-- 「むべき」のカタカナ収穫(単独で成立する語ではない)。ふむべき→府ムベキ の合成を作っていた(ユーザ報告 2798) -->
 
 	<!-- ■ 収穫ノイズ: レア人名・レア姓(1ノードで安く、合成や連文節を汚す) -->
+	<dict><key>phrase</key><string>重走</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重走(じゅうそう): レア姓の収穫(wc 10000)。じゅうそうで の末尾に並んでいた(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>スルト</string><key>shortcut</key><string>すると</string></dict>	<!-- スルト(すると): Sudachi の人名固有名詞(北欧神話 Surtr)。すると の唯一の辞書語で rank0 を占め、接続詞 すると(かな)を跨いでいた(ユーザ指定 2688) -->
 	<dict><key>phrase</key><string>本途</string><key>shortcut</key><string>ほんと</string></dict>	<!-- 本途/本斗/本登(ほんと): LM 不在のレア人名・地名収穫。ほんと の かな先頭化は seed で行うため、これらが2番手以降に居座らないよう抑制する(旧: 本当 を抑制していたが ほんとだ/ほんとに 等の合成から 本当 が消えるため seed へ移行。2583) -->
 	<dict><key>phrase</key><string>本斗</string><key>shortcut</key><string>ほんと</string></dict>
@@ -194,6 +196,7 @@
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
+	<dict><key>phrase</key><string>繁榮</string><key>shortcut</key><string>はんえい</string></dict>	<!-- 繁榮(はんえい): 繁栄 の旧字体。見間違えて混ざる(ユーザ指定 2818) -->
 	<dict><key>phrase</key><string>鰺</string><key>shortcut</key><string>あじ</string></dict>	<!-- 鯵 の異体字。字形が似て選び間違える(2642) -->
 	<dict><key>phrase</key><string>歷史</string><key>shortcut</key><string>れきし</string></dict>	<!-- 歴史 の旧字体(歷)。字形が似て選び間違える(2637) -->
 	<dict><key>phrase</key><string>專門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の旧字体(專)。字形が似て選び間違える(2637) -->
