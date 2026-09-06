@@ -1075,6 +1075,7 @@ extension KanaKanjiConverter {
                 let prevAllowsInflectionDiscount =
                     Self.multiClauseCaseParticleSurfaces.contains(prev)
                     || Self.multiClauseCompoundParticles.contains(prev)
+                    || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
                 base = prevAllowsInflectionDiscount
                     ? Self.multiClauseInflectionAfterParticleCost
                     : Self.multiClauseInflectionDerivedOOVCost
@@ -1122,6 +1123,7 @@ extension KanaKanjiConverter {
                 let prevAllowsInflectionDiscount =
                     Self.multiClauseCaseParticleSurfaces.contains(prev)
                     || Self.multiClauseCompoundParticles.contains(prev)
+                    || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
                 var cap = prevAllowsInflectionDiscount
                     ? Self.multiClauseInflectionAfterParticleCost
                     : Self.multiClauseInflectionDerivedOOVCost
@@ -1839,6 +1841,19 @@ extension KanaKanjiConverter {
                         }
                         // 入力末尾の裸の接続助詞「し」は述語直後にしか立てない(定数コメント参照)。
                         // 文中の し はサ変の連用形(勉強し+まくり)なので対象外にする。
+                        // 文頭の裸の格助詞(が/は/を/に/も)の直後が活用派生の述語(出ない/でかい/来た)なら、文頭助詞の
+                        // 減点を打ち消す(定数コメント参照。2818)。文の途中から打ち始める「がでないのだけど」は
+                        // が+出ない が自然で、画+で+ないのだ に負けていた
+                        if prevNode.start == 0, prevNode.surface == prevNode.reading,
+                            Self.multiClauseBOSParticleBeforePredicateExemptParticles.contains(prevNode.surface),
+                            node.isInflectionDerived {
+                            cost -= Self.multiClauseBOSParticlePenalty
+                        }
+                        // に/と の直後の かな であっても は 出会っても の場面(定数コメント参照。2818)
+                        if node.surface == "であっても", node.reading == "であっても",
+                            prevNode.reading == "に" || prevNode.reading == "と" {
+                            cost += Self.multiClauseDeattemoAfterCaseParticlePenalty
+                        }
                         // 人(ひと)の直後の範囲接尾 以内/以上/以下/未満(定数コメント参照。2814)
                         if prevNode.reading == "ひと", prevNode.surface == "人",
                             Self.multiClauseRangeSuffixSurfaces.contains(node.surface) {
@@ -2124,6 +2139,12 @@ extension KanaKanjiConverter {
                     eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
                 }
                 var total = best[idx] + eosCost
+                #if DEBUG
+                if traceEdges {
+                    print("MULTIEDGE \(nodes[idx].surface)→<EOS> total=\(total) (prev cum=\(best[idx]))")
+                }
+                #endif
+
                 // 文末終助詞クラスタの最長一致ボーナス: かなー(3字) を なー(2字) より優先する
                 // (こんないろかなー→色香+なー でなく 色+かなー。文末クラスタは最長で切るのが自然)。
                 // 長さ×400 の差分なので、辞書語が明確に安い場合(ばか+なー 等)は逆転しない。

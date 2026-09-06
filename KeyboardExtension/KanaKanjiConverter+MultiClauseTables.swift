@@ -190,7 +190,10 @@ extension KanaKanjiConverter {
         "きぐ": ["器具"],
         // 用(よう) は名詞に広く付く接尾(unigram 4020)なのに読み別 wc 7143 で床上げされ、洋(wc 7027)に負けて
         // あかわいんよう→赤ワイン洋 になっていた。洋 は 太平洋/外洋 等の固定語の一部で生産的な接尾ではない(2813)
-        "よう": ["用"]
+        "よう": ["用"],
+        // 食い(くい) は 食う の連用形(unigram 6925)なのに読み別 wc 9019 で床上げされ、悔い(7159)に負けて
+        // くいおわってる→悔い終わってる になっていた(ユーザ報告 2818)
+        "くい": ["食い"]
     ]
 
     // 「先頭の語+格助詞1字」(かじゅうの/かじゅうを 等)の入力で、先頭文節の並びを単文節の最終順位に
@@ -527,7 +530,7 @@ extension KanaKanjiConverter {
     // さすが: かな副詞クランプ(4000)で 流石(7272)が変種上限を超えて消えるため、
     // seed {さすが, 流石} の順で 流石Apple を2番目に残す(ユーザ指定 2666)
     // たいして: 同じ構図(かな副詞クランプで最良、seed {たいして, 大して, 対して} の順に変種を出す。2771)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて"]
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても"]
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて"]
@@ -540,7 +543,7 @@ extension KanaKanjiConverter {
     // を先頭にしていた。seed 順(家事→火事→鍛冶)をノードコストへ(2689)
     // すうかこく/すうかしょ(2801/2814)はここに居たが、か の表記は設定(KaCounterVariantPreference)の後段置換に移して撤去(2816)
     // きゅうりょう(2812): LM は 丘陵 5950<給料 6381。seed 順(給料 先頭)をノードコストへ
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう"]
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
@@ -783,7 +786,14 @@ extension KanaKanjiConverter {
         // おいしい: お(助詞的接頭辞 LM4363)+石井(姓 LM5382)の分割が おいしい(LM6491)に
         // 勝ってしまう。石井 は姓として残すので、接頭辞 お の直後に 石井 が来る組み合わせを
         // 重くする(お石井 という語は無い)。おいしいよね/おいしいね 等に効く(2564)
-        "お\t石井": -1500
+        "お\t石井": -1500,
+        // お待ち(misc curated、2818)と 雄町(酒米・地名、おまち)の使い分け: 目的語・主語の格助詞(を/が/は)が続くなら
+        // 名詞 雄町(雄町を使った酒)。お待ちに/お待ちください/お待ちの方 は従来どおり お待ち。curated 床 1500 と dictUnknown 8700 の差を跨ぐ幅
+        "お待ち\tを": -7500,
+        "お待ち\tが": -7500,
+        "お待ち\tは": -7500,
+        // 同じ理由で かな お+待ち の 2 ノード分割(待ち→を の bigram で安い)も抑える。お待ち は curated 1 ノードが受け皿
+        "お\t待ち": -3000
     ]
     // 準体助詞 の のクランプ対象になる連体詞表層(こういうの/そういうの 等の名詞化)。
     static let multiClausePrenominalAdjectivalSurfaces: Set<String> = [
@@ -817,6 +827,10 @@ extension KanaKanjiConverter {
     static let multiClauseColloquialExplanatoryTailReadings: Set<String> = [
         "んだが", "んだけど", "んだけれど", "んだけれども",
         "んですが", "んですけど", "んですけれど", "んですけれども",
+        // 非縮約の のだ+逆接(のだけど/のだが/のですが)も同じクラスタ(2818)。無いと がでないのだけど が
+        // 画+で+ないのだ+けど(ないのだ が安い)に割れ、が+出ない+のだけど(のだけど 素通り 28000)が負けていた
+        "のだが", "のだけど", "のだけれど", "のだけれども",
+        "のですが", "のですけど", "のですけれど", "のですけれども",
         "んだよ", "んだね", "んだよね", "んだな",
         "んですよ", "んですね", "んですよね",
         "んだもん", "んだもの", "んだっけ",
@@ -1039,6 +1053,8 @@ extension KanaKanjiConverter {
     // (人+いない は派生 OOV 7200+単漢字名詞→動詞 600)。予算以内/期限以内 等の名詞+接尾には触れない(ひと 限定)
     static let multiClauseRangeSuffixSurfaces: Set<String> = ["以内", "以上", "以下", "未満"]
     static let multiClauseRangeSuffixAfterHitoPenalty = 5000
+    // 格助詞 に/と の直後のかな であっても(curated、コピュラ)は 出会っても(動詞)の場面(友達に出会っても)なので減点(2818)
+    static let multiClauseDeattemoAfterCaseParticlePenalty = 7000
     // 当為の べき/べし/べく(2798): ふむべき が 踏む+冪 になっていた。述語(辞書形/活用派生)直後の
     // べき は助動詞でかなが正書。漢字表記(冪/可き)を減点
     static let multiClauseBekiReadings: Set<String> = ["べき", "べし", "べく", "べきだ", "べきです"]
@@ -1308,6 +1324,19 @@ extension KanaKanjiConverter {
     // か(BOS bigram 4065)+ね(3177) の断片連鎖で 金持ってて(単漢字名詞→動詞の無助詞減点 600 込み)に勝っていた(2803)
     // て(接続助詞)も文頭には立たない(2806): てでやってた が て(BOS bigram 2591)+で で 手(6932)+で に勝ち、手で が候補に 1 つも出なかった
     static let multiClauseBOSPenalizedParticles: Set<String> = ["は", "が", "を", "へ", "も", "に", "か", "かね", "て"]
+    // 文頭助詞の減点を、直後が活用派生の述語のときに打ち消す助詞(2818)。がでないのだけど(が+出ない)のように
+    // 文の途中から打ち始めた入力では格助詞+述語が自然。か/かね/て(接続助詞・終助詞)は対象外
+    static let multiClauseBOSParticleBeforePredicateExemptParticles: Set<String> = ["は", "が", "を", "も", "に"]
+    // 格助詞込みの副詞的 1 ノード(次に/一気に/まるで 等: 漢字+末尾かな に/で で、読みも同じ助詞で終わる)の直後は、
+    // 助詞直後と同じく述語が続くのが自然なので活用派生の割引を許す(2818)。つぎにきたきゃく が
+    // 次に(curated)+来た(OOV 7200)で 次に+北+客 に負けていた。かな識別(ついで 等)や 1 字は対象外
+    static func isParticleTailedAdverbialSurface(_ surface: String, reading: String?) -> Bool {
+        guard surface.count >= 2, let last = surface.last, last == "に" || last == "で",
+            let reading, reading.last == last, surface != reading else {
+            return false
+        }
+        return surface.contains { !("ぁ"..."ゖ").contains($0) && $0 != "ー" }
+    }
     // 接続助詞「し」は述語(動詞終止形/形容詞/だ)にしか付かない。ただし文中・文頭の し は
     // 「する」の連用形(して/した/しない/しまう の分割由来、サ変の 勉強し+まくり)なので、
     // 適用は「入力末尾の裸の し」に限る ─ 限定しないと してもらった→シテもらった、
