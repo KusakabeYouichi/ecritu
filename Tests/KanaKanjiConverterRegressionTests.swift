@@ -13956,3 +13956,33 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(pref.encoded, "ヶ,か,-箇,-カ,-ヵ,-個,-ケ")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2818 バッチ: じゅうそう(seed+連文節反映、重走/重そう 抑制)、がでないのだけど(のだけど クラスタ+文頭助詞の減点打ち消し)、
+    // くいおわってる(食い の床上げ免除)、つぎにきたきゃく(misc 次に+副詞末尾 に/で の後の派生割引)、
+    // なかでおまちに(misc お待ち、雄町 は を/が/は の前で優先)、まだであっても(misc であっても、に/と の後は 出会っても)
+    func testRegressionRealLMBatch2818Readings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        func multi(_ r: String) -> [String] { converter.multiClauseCandidates(for: r, systemCandidateMode: .surface) }
+        XCTAssertEqual(Array(converter.candidates(for: "じゅうそう", limit: 8, systemCandidateMode: .surface).prefix(4)), ["重曹", "重奏", "十三", "縦走"])
+        XCTAssertEqual(Array(multi("じゅうそうで").prefix(2)), ["重曹で", "重奏で"])
+        XCTAssertFalse(converter.candidates(for: "じゅうそう", limit: 16, systemCandidateMode: .surface).contains { $0 == "重走" || $0 == "重そう" })
+        XCTAssertEqual(multi("がでないのだけど").first, "が出ないのだけど")
+        XCTAssertEqual(multi("はなにみず").first, "花に水")
+        XCTAssertEqual(multi("くいおわってる").first, "食い終わってる")
+        XCTAssertEqual(multi("つぎにきたきゃく").first, "次に来た客")
+        XCTAssertEqual(multi("なかでおまちに").first, "中でお待ちに")
+        XCTAssertEqual(multi("おまちをつかったさけ").first, "雄町を使った酒")
+        XCTAssertEqual(multi("おまちください").first, "お待ちください")
+        XCTAssertEqual(Array(multi("まだであっても").prefix(2)), ["まだであっても", "まだ出会っても"])
+        XCTAssertEqual(multi("ともだちにであっても").first, "友達に出会っても")
+        // どうこう: 瞳孔 が 9 位だった。seed で 動向→同行→瞳孔→…
+        XCTAssertEqual(Array(converter.candidates(for: "どうこう", limit: 10, systemCandidateMode: .surface).prefix(4)), ["動向", "同行", "瞳孔", "導光"])
+        // はんえい: 反映 を先頭、旧字 繁榮 は抑制。もうまく: 連文節の も+うまく を seed で単文節(網膜)に委ねる
+        XCTAssertEqual(Array(converter.candidates(for: "はんえいされない", limit: 6, systemCandidateMode: .surface).prefix(2)), ["反映されない", "繁栄されない"])
+        XCTAssertFalse(converter.candidates(for: "はんえい", limit: 8, systemCandidateMode: .surface).contains("繁榮"))
+        XCTAssertEqual(converter.candidates(for: "もうまく", limit: 4, systemCandidateMode: .surface).first, "網膜")
+        XCTAssertTrue(multi("もうまく").isEmpty, "multi=\(multi("もうまく"))")
+    }
+}
