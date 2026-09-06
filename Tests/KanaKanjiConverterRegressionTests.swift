@@ -14099,3 +14099,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(multi.first, "播州播磨", "multi=\(multi)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // はんせい(2820): 単文節は辞書順(半生 rank0)、連文節は LM(反省 6054<半生 6625)で先頭が食い違っていた。
+    // seed+SeedFirstLMOverride で 反省 を先頭に統一
+    func testRegressionRealLMHanseiPrefersHansei() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(Array(converter.candidates(for: "はんせい", limit: 6, systemCandidateMode: .surface).prefix(3)), ["反省", "半生", "藩政"])
+        XCTAssertEqual(converter.candidates(for: "はんせいの", limit: 6, systemCandidateMode: .surface).first, "反省の")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "はんせいの", systemCandidateMode: .surface).first, "反省の")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "はんせいのため", systemCandidateMode: .surface).first, "反省のため")
+    }
+}
