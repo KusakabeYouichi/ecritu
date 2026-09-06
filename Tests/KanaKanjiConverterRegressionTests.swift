@@ -14111,3 +14111,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "はんせいのため", systemCandidateMode: .surface).first, "反省のため")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 1確定→ねんまえの: 数字文脈の助数詞合成の末尾変換が 単文節先頭(まえの→前野=姓 rank0)を取り、年前野 が先頭に
+    // 出ていた。末尾が助詞で終わるときは 助詞を残した形(前の)を選ぶ(2820)
+    func testRegressionDigitContextTailKeepsParticle() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.counterTailConversion("まえの"), "前の")
+        XCTAssertEqual(converter.counterTailConversion("しけん"), "試験")
+        XCTAssertEqual(converter.counterTailConversion("もおしたことない"), "も押したことない")
+        let base = converter.multiClauseCandidates(for: "ねんまえの", systemCandidateMode: .surface)
+            + converter.candidates(for: "ねんまえの", limit: 8, systemCandidateMode: .surface)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            base, reading: "ねんまえの", precedingCharacter: "1",
+            tailConversion: { [converter] tail in converter!.counterTailConversion(tail) }
+        )
+        XCTAssertEqual(boosted.first, "年前の", "boosted=\(boosted.prefix(4))")
+        XCTAssertFalse(boosted.contains("年前野"), "boosted=\(boosted.prefix(4))")
+    }
+}

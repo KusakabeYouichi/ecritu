@@ -388,14 +388,8 @@ extension KeyboardViewController {
             suppressedCandidates: kanaKanjiConverter.store
                 .suppressedCandidatesByReading()[cacheKey.reading] ?? [],
             tailConversion: { [weak self] tail in
-                // 助数詞の後ろの読みを変換した形(しけん→試験)を合成供給に使う(2645)。
-                // 4かな以上の末尾(もおしたことない 等)は連文節の最良を使う(2700)
-                guard let converter = self?.kanaKanjiConverter else { return nil }
-                if tail.count >= 4,
-                    let multi = converter.multiClauseCandidates(for: tail, systemCandidateMode: .surface).first {
-                    return multi
-                }
-                return converter.candidates(for: tail, limit: 1, systemCandidateMode: .surface).first
+                // 助数詞の後ろの読みを変換した形(しけん→試験、まえの→前の)を合成供給に使う(2645/2700/2820)
+                self?.kanaKanjiConverter.counterTailConversion(tail)
             }
         )
         // 助数詞「か」の表記(1か所/数か月)を設定順に(連文節混じりの一覧にも一様に効かせる。2816)

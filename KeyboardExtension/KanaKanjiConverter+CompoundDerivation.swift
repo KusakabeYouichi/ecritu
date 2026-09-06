@@ -587,6 +587,22 @@ extension KanaKanjiConverter {
     // tailConversion: 助数詞+かな末尾の合成供給時に、末尾を変換して漢字形も併せて
     // 供給するためのフック(2確定→じしけん→次試験。static のため呼び出し側が
     // converter.candidates を閉じ込めて渡す。2645)
+    // 数字文脈の助数詞合成で、助数詞の後ろの読み(しけん→試験、まえの→前の)を変換する(提示層の tailConversion 用)。
+    // 4 かな以上は連文節の最良(もおしたことない→も押したことない、2700)。短い末尾は単文節だが、末尾が助詞なら
+    // 助詞を残した形を優先する(まえの の先頭は姓 前野(rank0)で 年前野 を作ってしまう。2820)
+    static let counterTailParticleCharacters: Set<Character> = Set("のにでをがはもとへ")
+    func counterTailConversion(_ tail: String) -> String? {
+        if tail.count >= 4, let multi = multiClauseCandidates(for: tail, systemCandidateMode: .surface).first {
+            return multi
+        }
+        let singles = candidates(for: tail, limit: 6, systemCandidateMode: .surface)
+        if tail.count >= 2, let particle = tail.last, Self.counterTailParticleCharacters.contains(particle),
+            let kept = singles.first(where: { $0.last == particle && $0 != tail }) {
+            return kept
+        }
+        return singles.first
+    }
+
     static func digitContextCounterBoostedCandidates(
         _ candidates: [String],
         reading: String,
