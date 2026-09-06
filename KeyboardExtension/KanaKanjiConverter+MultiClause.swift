@@ -896,6 +896,19 @@ extension KanaKanjiConverter {
             }
             return Self.multiClauseSentenceInitialDeParticlePenalty
         }
+        // 文頭の裸の助詞(も/は/が…)を跨いで、LM が知る辞書語(網膜=もうまく)が文頭から立っているときは、助詞から
+        // 始まる断片解釈をさらに重くする(定数コメント参照。2819)。がでないのだけど(画 は 1 字で跨がない)には掛からない
+        let hasScriptedDictWordFromStart: Bool = nodes.contains { node in
+            node.start == 0 && node.end >= 2 && node.isDictWord && !node.isInflectionDerived
+                && node.surface != node.reading && unigramCosts[node.surface] != nil
+        }
+        func sentenceInitialParticleOverlapPenalty(for node: MultiClauseNode) -> Int {
+            guard hasScriptedDictWordFromStart, node.start == 0, node.surface == node.reading,
+                Self.multiClauseBOSPenalizedParticles.contains(node.surface) else {
+                return 0
+            }
+            return Self.multiClauseSentenceInitialParticleOverlapPenalty
+        }
 
         // 複合動詞の前部要素になる連用形ノード(定数コメント参照)。列挙後に一度だけ走査する。
         var compoundVerbRenyouNodeKeys = Set<String>()
@@ -1775,6 +1788,7 @@ extension KanaKanjiConverter {
                             isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt
                         ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
                             + sentenceInitialDeParticlePenalty(for: node)
+                            + sentenceInitialParticleOverlapPenalty(for: node)
                         if cost < best[idx] {
                             best[idx] = cost
                             backPointer[idx] = -1
