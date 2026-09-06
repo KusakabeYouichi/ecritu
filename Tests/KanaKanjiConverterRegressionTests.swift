@@ -589,8 +589,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMMoushikomiJiPrefersToki() throws {
         try prepareRealLMDictionary()
 
+        // 申込み時 は複合語の前部要素の許容形(2820)。初期設定では出さないので保守的設定で並びを見る
+        converter.setOkuriganaVariantPreference(.conservative)
+        defer { converter.setOkuriganaVariantPreference(.default) }
         let multi = converter.multiClauseCandidates(for: "もうしこみじ", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(multi.prefix(3)), ["申し込み時", "申込時", "申込み時"], "multi=\(multi)")
+        XCTAssertEqual(Array(multi.prefix(3)), ["申し込み時", "申込み時", "申込時"], "multi=\(multi)")
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "もうしこみじ", systemCandidateMode: .surface).prefix(2)), ["申し込み時", "申込み時"])
     }
 
     // すくなかった(ので): ルール定義順で 酸い族(LM未収録のレア語)が 少ない族(unigram 4804)に
@@ -3088,7 +3092,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let expectations: [(String, [String])] = [
             ("こくない", ["国内", "濃くない"]),
             ("みずから", ["みずから", "水から", "自ら", "自から", "美豆から"]),
-            ("おこない", ["行ない", "行い"]),
+            ("おこない", ["行い"]),  // 行ない は通則1 の許容形(2820: 初期設定では出さない)
             ("しゃない", ["社内", "車内"]),
             ("あきない", ["商い", "商", "あきない", "飽きない", "厭きない", "倦きない"]),
             ("あてない", ["当てない", "宛てない", "アテナイ"]),
@@ -13987,5 +13991,87 @@ extension KanaKanjiConverterRegressionTests {
         // もうまくも: 文頭の裸の助詞を跨ぐ辞書語(網膜)が立つときは助詞始まりの断片を重くする(2819)
         XCTAssertEqual(multi("もうまくも").first, "網膜も", "multi=\(multi("もうまくも"))")
         XCTAssertEqual(multi("がでないのだけど").first, "が出ないのだけど")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2820: 送り仮名の許容形(終る/取扱う/届)をコンテナー設定の 3 グループで一括制御。戦略的初期設定は本則だけ、
+    // 保守的初期設定は本則を先に許容も。慣用で送らない語(受付/取引/話/光/入口)は対象外
+    func testOkuriganaVariantRelationClassification() {
+        typealias C = KanaKanjiConverter
+        func rel(_ a: String, _ b: String) -> (String, String, OkuriganaVariantGroup)? {
+            C.okuriganaVariantRelation(a, b).map { ($0.standard, $0.variant, $0.group) }
+        }
+        XCTAssertEqual(rel("終わる", "終る").map { "\($0.0)|\($0.1)|\($0.2)" }, "終わる|終る|stemInternal")
+        XCTAssertEqual(rel("食い終ってる", "食い終わってる").map { "\($0.0)|\($0.1)|\($0.2)" }, "食い終わってる|食い終ってる|stemInternal")
+        XCTAssertEqual(rel("当たり", "当り").map { "\($0.0)|\($0.2)" }, "当たり|stemInternal")
+        // リスト外の語幹の中のゆれ(辞書の誤表記 困まる/謝まる/為め)は触らない
+        XCTAssertNil(rel("困まった", "困った"))
+        XCTAssertNil(rel("謝まって", "謝って"))
+        XCTAssertNil(rel("為め", "為"))
+        XCTAssertEqual(rel("代わり", "代り").map { "\($0.0)|\($0.2)" }, "代わり|stemInternal")
+        XCTAssertEqual(rel("取り扱う", "取扱う").map { "\($0.0)|\($0.1)|\($0.2)" }, "取り扱う|取扱う|compoundFront")
+        XCTAssertEqual(rel("打合せ", "打ち合わせ").map { "\($0.0)|\($0.1)|\($0.2)" }, "打ち合わせ|打合せ|compoundFront")
+        XCTAssertEqual(rel("引っ越し", "引越").map { "\($0.2)" }, "compoundFront")
+        XCTAssertEqual(rel("届け", "届").map { "\($0.0)|\($0.1)|\($0.2)" }, "届け|届|nominalized")
+        XCTAssertEqual(rel("答え", "答").map { "\($0.2)" }, "nominalized")
+        XCTAssertEqual(rel("お届け", "お届").map { "\($0.2)" }, "nominalized")
+        // 名詞化はリスト語だけ(部首名の供給 甘い/甘、人名 茂る/茂・渡り/渡、別の名詞 香り/香 を巻き込まない)
+        XCTAssertNil(rel("咳", "咳き"))
+        XCTAssertNil(rel("甘い", "甘"))
+        XCTAssertNil(rel("茂る", "茂"))
+        XCTAssertNil(rel("渡り", "渡"))
+        XCTAssertNil(rel("香り", "香"))
+        XCTAssertNil(rel("商い", "商"))
+        // 通則1 の 6 語は長い方が許容形
+        XCTAssertEqual(rel("行う", "行なう").map { "\($0.0)|\($0.1)|\($0.2)" }, "行う|行なう|stemInternal")
+        XCTAssertEqual(rel("現われる", "現れる").map { "\($0.0)|\($0.1)" }, "現れる|現われる")
+        // 対象外: 慣用で送らない語、助詞の省略、漢字列が違う、ひらがな以外の差
+        XCTAssertNil(rel("受け付け", "受付"))
+        XCTAssertNil(rel("申し込み書", "申込書"))
+        XCTAssertNil(rel("話し", "話"))
+        XCTAssertNil(rel("何割り", "何割"))
+        XCTAssertNil(rel("春慶塗りの箸", "春慶塗の箸"))
+        XCTAssertNil(rel("次ぎに来た客", "次に来た客"))
+        XCTAssertNil(rel("晴れ", "晴"))
+        XCTAssertNil(rel("入り口", "入口"))
+        XCTAssertNil(rel("山に登る", "山登る"))
+        XCTAssertNil(rel("終わる", "終える"))
+        XCTAssertNil(rel("もうまく", "もうま"))
+        // 永続形式の往復と初期設定
+        XCTAssertEqual(OkuriganaVariantPreference.default.encoded, "stem:standardOnly,compound:standardOnly,noun:standardOnly")
+        let decoded = OkuriganaVariantPreference.decode("noun:permittedFirst,stem:standardFirst")
+        XCTAssertEqual(decoded.mode(for: .nominalized), .permittedFirst)
+        XCTAssertEqual(decoded.mode(for: .stemInternal), .standardFirst)
+        XCTAssertEqual(decoded.mode(for: .compoundFront), .standardOnly)
+    }
+
+    func testRegressionRealLMOkuriganaVariantPreference() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        defer { converter.setOkuriganaVariantPreference(.default) }
+        func multi(_ reading: String) -> [String] {
+            converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+        }
+        // 戦略的初期設定: 許容形は出さない
+        XCTAssertFalse(converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface).contains("終って"))
+        XCTAssertEqual(converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface).first, "終わって")
+        XCTAssertFalse(multi("くいおわってる").contains("食い終ってる"))
+        XCTAssertEqual(multi("くいおわってる").first, "食い終わってる")
+        XCTAssertFalse(converter.candidates(for: "とどけ", limit: 8, systemCandidateMode: .surface).contains("届"))
+        XCTAssertFalse(converter.candidates(for: "とりあつかい", limit: 8, systemCandidateMode: .surface).contains("取扱い"))
+        // 慣用語はそのまま
+        XCTAssertTrue(converter.candidates(for: "うけつけ", limit: 8, systemCandidateMode: .surface).contains("受付"))
+        XCTAssertTrue(converter.candidates(for: "はなし", limit: 8, systemCandidateMode: .surface).contains("話"))
+        // 保守的初期設定: 本則の直後に許容形
+        converter.setOkuriganaVariantPreference(.conservative)
+        let owatte = converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(owatte.firstIndex(of: "終って"), owatte.firstIndex(of: "終わって").map { $0 + 1 }, "\(owatte)")
+        let todoke = converter.candidates(for: "とどけ", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(todoke.firstIndex(of: "届"), todoke.firstIndex(of: "届け").map { $0 + 1 }, "\(todoke)")
+        // 許容を先に(語幹の中だけ)
+        converter.setOkuriganaVariantPreference(OkuriganaVariantPreference.decode("stem:permittedFirst,compound:standardOnly,noun:standardOnly"))
+        XCTAssertEqual(Array(converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface).prefix(2)), ["終って", "終わって"])
+        XCTAssertEqual(Array(multi("くいおわってる").prefix(2)), ["食い終ってる", "食い終わってる"])
     }
 }

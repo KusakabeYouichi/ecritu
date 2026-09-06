@@ -446,3 +446,55 @@ struct KaCounterVariantSettingsSection: View {
         )
     }
 }
+
+// 送り仮名の許容形(終る/取扱う/届)。『送り仮名の付け方』(1973 年内閣告示)の許容を 3 グループに分け、
+// グループごとに 本則だけ/本則を先に/許容を先に を選ぶ。値は "stem:standardOnly,compound:…,noun:…" で共有 UserDefaults に保存(2820)
+struct OkuriganaVariantSettingsSection: View {
+    @Binding var rawValue: String
+
+    private var preference: OkuriganaVariantPreference {
+        OkuriganaVariantPreference.decode(rawValue)
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            SettingsCardTitle(title: "送り仮名の許容形 – orthographe", subtitle: "送り仮名の付け方(1973 年内閣告示)の許容")
+
+            VStack(alignment: .leading, spacing: 12) {
+                ForEach(OkuriganaVariantGroup.allCases) { group in
+                    groupRow(group)
+                }
+            }
+
+            Text("送り仮名には本則のほかに許容された書き方があります(終わる⇄終る、取り扱う⇄取扱う、届け⇄届)。許容形を候補に出すか、出すならどちらを先にするかをグループごとに決めます。初期設定はどのグループも本則だけを出します(保守的初期設定では本則を先に許容形も出します)。\n\n慣用で送り仮名を付けない語(受付、取引、割引、申込、日付、番組、入口、締切 など)と、名詞として送らない語(話、光、係、組、次、隣 など)はここでの対象外で、常にそのまま出ます。学習した表記はいつもこの並びの上に出ます。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .settingsCardStyle()
+    }
+
+    private func groupRow(_ group: OkuriganaVariantGroup) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text(group.title)
+                .font(.subheadline.weight(.semibold))
+            Text(group.examples)
+                .font(.caption)
+                .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+            Picker(group.title, selection: Binding(
+                get: { preference.mode(for: group) },
+                set: { newValue in
+                    var next = preference
+                    next.modes[group] = newValue
+                    rawValue = next.encoded
+                }
+            )) {
+                ForEach(OkuriganaVariantMode.allCases) { mode in
+                    Text(mode.title).tag(mode)
+                }
+            }
+            .pickerStyle(.segmented)
+        }
+    }
+}

@@ -399,7 +399,10 @@ extension KeyboardViewController {
             }
         )
         // 助数詞「か」の表記(1か所/数か月)を設定順に(連文節混じりの一覧にも一様に効かせる。2816)
-        let kaOrdered = kanaKanjiConverter.applyKaCounterVariantPreference(reading: cacheKey.reading, to: boosted)
+        let kaOrdered = kanaKanjiConverter.applyOkuriganaVariantPreference(
+            reading: cacheKey.reading,
+            to: kanaKanjiConverter.applyKaCounterVariantPreference(reading: cacheKey.reading, to: boosted)
+        )
 
         // 温度の度記号を設定の字形へ(内部正規形 °C/°F → ℃/℉ 等。同じになった候補は畳む。2773)
         let styled = degreeSymbolStyle.styled(kaOrdered)

@@ -2813,9 +2813,13 @@ extension KanaKanjiConverter {
         }
         // 旧仮名遣い(ゐゑヰヱ 等)の抑制は単文節と同じく連文節にも適用する(ぐらゐかなー 等)。
         // 助数詞「か」の表記(数か国対応/数か月前)は設定順に並べ直す(区切りは変えない。2816)
-        return applyKaCounterVariantPreference(
+        // 送り仮名の許容形(食い終ってる 等)も同様に設定順へ(2820)
+        return applyOkuriganaVariantPreference(
             reading: normalized,
-            to: filterHistoricalKanaSurfaceCandidates(for: normalized, candidates: results)
+            to: applyKaCounterVariantPreference(
+                reading: normalized,
+                to: filterHistoricalKanaSurfaceCandidates(for: normalized, candidates: results)
+            )
         )
     }
 
