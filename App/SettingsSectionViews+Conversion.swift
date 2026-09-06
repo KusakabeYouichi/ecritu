@@ -217,7 +217,8 @@ struct MeSuffixCandidateSettingsSection: View {
 
     var body: some View {
         SegmentedSettingsCard(
-            title: "première、deuxième、troisième、…",
+            title: "序数化suffixe ― me",
+            subtitle: "première、deuxième、troisième、…",
             pickerTitle: "順序の『め/目』",
             selection: ordinalSelection,
             options: Array(OrdinalMePreferenceOption.allCases),
@@ -226,8 +227,7 @@ struct MeSuffixCandidateSettingsSection: View {
         )
 
         VStack(alignment: .leading, spacing: 10) {
-            Text("un peu …")
-                .font(.headline)
+            SettingsCardTitle(title: "形状名詞化suffixe / 傾向派生suffixe ― me", subtitle: "un peu …")
 
             Toggle("程度の『め』に漢字『目』の候補も出す", isOn: $adjectiveKanjiEnabled)
                 .toggleStyle(.switch)
@@ -373,8 +373,7 @@ struct KaCounterVariantSettingsSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("un endroit, deux endroits, …")
-                .font(.headline)
+            SettingsCardTitle(title: "助数詞型suffixe / 数詞類別suffixe ― ka", subtitle: "un endroit, deux endroits, …")
 
             VStack(spacing: 8) {
                 ForEach(preference.order) { variant in

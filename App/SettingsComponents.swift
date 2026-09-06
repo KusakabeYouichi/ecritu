@@ -2,8 +2,27 @@ import SwiftUI
 import UIKit
 import UniformTypeIdentifiers
 
+// 設定カードの見出し。subtitle(旧タイトルの仏語例など)は小さく薄い字で 2 行目に置く(2817)
+struct SettingsCardTitle: View {
+    let title: String
+    var subtitle: String? = nil
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text(title)
+                .font(.headline)
+            if let subtitle {
+                Text(subtitle)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        }
+    }
+}
+
 struct SegmentedSettingsCard<Option: Hashable>: View {
     let title: String
+    var subtitle: String? = nil
     let pickerTitle: String
     @Binding var selection: Option
     let options: [Option]
@@ -12,8 +31,7 @@ struct SegmentedSettingsCard<Option: Hashable>: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(title)
-                .font(.headline)
+            SettingsCardTitle(title: title, subtitle: subtitle)
 
             Picker(pickerTitle, selection: $selection) {
                 ForEach(options, id: \.self) { option in
