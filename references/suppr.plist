@@ -244,6 +244,7 @@
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
 	<dict><key>phrase</key><string>其麼</string><key>shortcut</key><string>そんな</string></dict>	<!-- 其麼(そんな): 白話文由来の当て字(什麼/怎麼 と同族)。読めないので候補に並ぶと困る(ユーザ指定)。かな そんな は wc4833/rank0 で基底が健在なので供給には影響しない。抑制だけ入れると そんなことないのに が候補ゼロになるため、keepKana の準体助詞クラスタ剥がしと同時に入れた(2584) -->
+	<dict><key>phrase</key><string>六ヶ敷い</string><key>shortcut</key><string>むつかしい</string></dict>	<!-- 六ヶ敷い(むつかしい): 難しい の戯書的な当て字。数詞+ケ 型の辞書語の精査で発見(ユーザ指定 2815) -->
 	<dict><key>phrase</key><string>鍛治</string><key>shortcut</key><string>かじ</string></dict>	<!-- 鍛治(かじ): 鍛冶 の誤用表記(治 は「おさめる」で鍛冶の意味を持たない)。姓の 鍛治 は別読み・別語彙で供給される(ユーザ指定 2689) -->
 	<!-- 殼(殻の旧字体): 字形がほぼ同じで見分けられず候補を圧迫するため全7件を抑制(ユーザ指定 2026-08-27) -->
 	<dict><key>phrase</key><string>地殼</string><key>shortcut</key><string>ちかく</string></dict>
