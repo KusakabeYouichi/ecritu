@@ -543,7 +543,8 @@ extension KanaKanjiConverter {
     // を先頭にしていた。seed 順(家事→火事→鍛冶)をノードコストへ(2689)
     // すうかこく/すうかしょ(2801/2814)はここに居たが、か の表記は設定(KaCounterVariantPreference)の後段置換に移して撤去(2816)
     // きゅうりょう(2812): LM は 丘陵 5950<給料 6381。seed 順(給料 先頭)をノードコストへ
-    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう"]
+    // はんせい(2820): 連文節 はんせいの は 半生の が先頭(半生→の の bigram)。seed 順(反省 先頭)をノードコストへ
+    static let multiClauseSeedFirstLMOverrideReadings: Set<String> = ["せいかい", "よういち", "かじ", "たんにん", "しんせん", "きゅうりょう", "じゅうそう", "はんせい"]
     // 接頭辞「お」(かな)直後の そい(添い/沿い 等)は おそい(遅い)の誤分割(お+そい)であることが
     // ほとんど。N-best 変種(お添いよね/お沿いよね)から落とすため減点する。寄り添い等の複合
     // (prev≠お)や お茶/お金(reading≠そい)は無傷。
