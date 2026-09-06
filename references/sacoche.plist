@@ -99,5 +99,7 @@
 	<!--既存<dict><key>phrase</key><string>グラデイション</string><key>shortcut</key><string>ぐらでいしょん</string></dict> -->
 	<!--既存<dict><key>phrase</key><string>ケイブル</string><key>shortcut</key><string>けいぶる</string></dict> -->
 	        <dict><key>phrase</key><string>インヴォイス</string><key>shortcut</key><string>いんゔぉいす</string></dict>
+	<!-- 動詞の送り仮名で本則以外のを使うための例外 -->
+	        <dict><key>phrase</key><string>行なう</string><key>shortcut</key><string>おこなう</string></dict>
 </array>
 </plist>
