@@ -14073,5 +14073,16 @@ extension KanaKanjiConverterRegressionTests {
         converter.setOkuriganaVariantPreference(OkuriganaVariantPreference.decode("stem:permittedFirst,compound:standardOnly,noun:standardOnly"))
         XCTAssertEqual(Array(converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface).prefix(2)), ["終って", "終わって"])
         XCTAssertEqual(Array(multi("くいおわってる").prefix(2)), ["食い終ってる", "食い終わってる"])
+        // 本則だけでも、追加語彙(手動)に登録した許容形(行なう)は活用形(行なって)まで守られて出る
+        converter.setOkuriganaVariantPreference(.default)
+        XCTAssertFalse(converter.candidates(for: "おこなう", limit: 8, systemCandidateMode: .surface).contains("行なう"))
+        var ajout = converter.store.ajoutVocabulary()
+        ajout["おこなう", default: []].append("行なう")
+        converter.store.saveAjoutVocabulary(ajout)
+        converter.store.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        XCTAssertTrue(converter.candidates(for: "おこなう", limit: 8, systemCandidateMode: .surface).contains("行なう"))
+        XCTAssertTrue(converter.candidates(for: "おこなって", limit: 8, systemCandidateMode: .surface).contains("行なって"))
+        XCTAssertTrue(multi("かいぎをおこなって").contains { $0.hasSuffix("行なって") }, "multi=\(multi("かいぎをおこなって"))")
     }
 }
