@@ -13889,6 +13889,9 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(Array(b.prefix(2)), expected, "pref=\(pref) \(b.prefix(4))")
         }
         XCTAssertEqual(converter.candidates(for: "ふぃぐ", limit: 2, systemCandidateMode: .surface).first, "フィグ")
+        // 2815: 六ヶ敷い(むつかしい の戯書的当て字)は抑制
+        let mutsukashii = converter.candidates(for: "むつかしい", limit: 6, systemCandidateMode: .surface)
+        XCTAssertFalse(mutsukashii.contains("六ヶ敷い"), "mutsukashii=\(mutsukashii)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "いれているひといないかなあ", systemCandidateMode: .surface).first, "入れている人いないかなあ")
         XCTAssertEqual(converter.multiClauseCandidates(for: "さんにんいないで", systemCandidateMode: .surface).first, "3人以内で")
     }
