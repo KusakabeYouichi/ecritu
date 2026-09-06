@@ -5,7 +5,7 @@ import Foundation
 // かなの位置から『送り仮名の付け方』(1973 年内閣告示)のどの許容か(語幹の中/複合語の前部要素/名詞化)を判定し、
 // グループごとの設定(本則だけ/本則を先に/許容を先に)に従って並べ替え・除去する。
 // 区切りを変えないので単文節・連文節・表示層のどの経路の文字列にも一様に効く。DP のコストは触らない。
-// 学習済みの表層はユーザの選択なので対象外(位置を保つ)。
+// 学習済み・追加語彙(手動)の表層はユーザの選択なので対象外(位置を保つ)。行なう だけ使いたいなら 追加語彙 に登録する。
 extension KanaKanjiConverter {
     // 通則1 の許容: 活用語尾の前の音節から送れる 6 語(表わす/著わす/現われる/行なう/断わる/賜わる)。
     // この 6 語だけは「長い方」が許容形(本則は 表す/行う …)。漢字+送り始めのかな で照合する
@@ -150,7 +150,23 @@ extension KanaKanjiConverter {
             return candidates
         }
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
-        let learned = Set(store.learnedDictionary()[normalizedReading] ?? [])
+        // 学習済みと追加語彙(手動)の表記はユーザの選択なので設定に関わらず守る。追加語彙の動詞は活用形も
+        // 派生される(行なう→行なって)ので、読みと表記の語幹(末尾 1 字を落としたもの)が一致する候補も守る
+        var protected = Set(store.learnedDictionary()[normalizedReading] ?? [])
+        for (ajoutReading, surfaces) in store.ajoutVocabulary() {
+            if ajoutReading == normalizedReading {
+                protected.formUnion(surfaces)
+                continue
+            }
+            guard ajoutReading.count >= 3, normalizedReading.hasPrefix(ajoutReading.dropLast()) else { continue }
+            for surface in surfaces where surface.count >= 2 && surface.contains(where: Self.isKanji) {
+                protected.insert("\u{0}" + String(surface.dropLast()))  // 語幹の印(接頭の NUL で区別)
+            }
+        }
+        let protectedStems = protected.filter { $0.hasPrefix("\u{0}") }.map { String($0.dropFirst()) }
+        func isProtected(_ candidate: String) -> Bool {
+            protected.contains(candidate) || protectedStems.contains(where: { candidate.hasPrefix($0) })
+        }
 
         // 許容形 → (本則, グループ)。本則は連鎖(取り扱い→取扱い→取扱)の根へ辿る
         var relationByVariant: [String: OkuriganaVariantRelation] = [:]
@@ -158,7 +174,7 @@ extension KanaKanjiConverter {
             for i in bucket.indices {
                 for j in bucket.indices where j > i {
                     let a = candidates[bucket[i]], b = candidates[bucket[j]]
-                    guard !learned.contains(a), !learned.contains(b),
+                    guard !isProtected(a), !isProtected(b),
                         let relation = Self.okuriganaVariantRelation(a, b) else { continue }
                     if let existing = relationByVariant[relation.variant], existing.standard.count >= relation.standard.count {
                         continue
