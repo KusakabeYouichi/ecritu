@@ -13982,7 +13982,10 @@ extension KanaKanjiConverterRegressionTests {
         // はんえい: 反映 を先頭、旧字 繁榮 は抑制。もうまく: 連文節の も+うまく を seed で単文節(網膜)に委ねる
         XCTAssertEqual(Array(converter.candidates(for: "はんえいされない", limit: 6, systemCandidateMode: .surface).prefix(2)), ["反映されない", "繁栄されない"])
         XCTAssertFalse(converter.candidates(for: "はんえい", limit: 8, systemCandidateMode: .surface).contains("繁榮"))
-        XCTAssertEqual(converter.candidates(for: "もうまく", limit: 4, systemCandidateMode: .surface).first, "網膜")
+        XCTAssertEqual(Array(converter.candidates(for: "もうまく", limit: 5, systemCandidateMode: .surface).prefix(3)), ["網膜", "もうまく", "も上手く"])
         XCTAssertTrue(multi("もうまく").isEmpty, "multi=\(multi("もうまく"))")
+        // もうまくも: 文頭の裸の助詞を跨ぐ辞書語(網膜)が立つときは助詞始まりの断片を重くする(2819)
+        XCTAssertEqual(multi("もうまくも").first, "網膜も", "multi=\(multi("もうまくも"))")
+        XCTAssertEqual(multi("がでないのだけど").first, "が出ないのだけど")
     }
 }
