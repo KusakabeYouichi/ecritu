@@ -151,6 +151,7 @@
 	<dict><key>phrase</key><string>しまって</string><key>shortcut</key><string>しまって</string></dict>
 	<dict><key>phrase</key><string>しまおう</string><key>shortcut</key><string>しまおう</string></dict>
 	<dict><key>phrase</key><string>でもない</string><key>shortcut</key><string>でもない</string></dict>	<!-- 活用形 なかった は LM に無く(Sudachi の A単位は ない+た に分割)、連文節は基底 ない の並び(dict rank は 無い が0位)を継ぐため それほどでも無かった が先頭になる。でも→ない の bigram も未観測で文脈補正が効かない。句として登録する(ユーザ指定 2564) -->
+	<dict><key>phrase</key><string>であっても</string><key>shortcut</key><string>であっても</string></dict>	<!-- コピュラ で+あっても(たとえ〜であっても)。連文節は 出会っても(派生)しか作らず、まだであっても が候補に出なかった(ユーザ報告 2818)。に/と の直後(友達に出会っても)は DP 側で 出会っても を保つ -->
 	<dict><key>phrase</key><string>でもなかった</string><key>shortcut</key><string>でもなかった</string></dict>
 	<dict><key>phrase</key><string>でもなく</string><key>shortcut</key><string>でもなく</string></dict>
 	<dict><key>phrase</key><string>でもなくて</string><key>shortcut</key><string>でもなくて</string></dict>
@@ -277,6 +278,8 @@
 	<dict><key>phrase</key><string>お菓子</string><key>shortcut</key><string>おかし</string><key>pos</key><string>名詞</string></dict>	<!-- お菓子: おかし の辞書エントリは 御菓子(wc7812)だけで、現代正書の お菓子 が1件も無い(LM には表層 お菓子6785 が在るのに読みの組が欠落)。御菓子 は LM 未収録なので連文節では dictUnknown 扱いになり、ぼるどーのおかし→ボルドーの丘し のように 丘(LM5514)+し の分割に負ける。curated で供給する -->
 
 	<!-- ■ 分割・断片に負ける語の救済(連文節の区切りを勝たせる固定句) -->
+	<dict><key>phrase</key><string>次に</string><key>shortcut</key><string>つぎに</string></dict>	<!-- 副詞 次に。連文節が 次+に(bigram 1404)より 継ぎに/次ぎに(連用形+目的の に の派生 7200)を採り、つぎにきたきゃく→継ぎに来た客 になっていた(ユーザ報告 2818) -->
+	<dict><key>phrase</key><string>お待ち</string><key>shortcut</key><string>おまち</string></dict>	<!-- お待ち(ください/になる)。連文節に お+待ち の丁寧合成ノードが立たず、なかでおまちに が 中で雄町に(酒米/地名)になっていた(ユーザ報告 2818) -->
 	<dict><key>phrase</key><string>仕方ない</string><key>shortcut</key><string>しかたない</string><key>pos</key><string>形容詞</string></dict>	<!-- 仕方ない: 辞書に在る(wc7696)が連文節で から+仕方ない の区切りが 枯らし+方+ない 分割に負ける(まけたからしかたない→負けた枯らし方ない)。curated化(連文節1500)で区切りを勝たせる -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>合格圏内</string><key>shortcut</key><string>ごうかくけんない</string><key>pos</key><string>名詞</string></dict>	<!-- 合格圏内: 辞書に在る(圏内 wc8004)が連文節で 合格+圏+ない 分割(合格圏ない)に負ける。curated化で区切りを勝たせる -->
 	<dict><key>phrase</key><string>断線</string><key>shortcut</key><string>だんせん</string></dict>	<!-- 断線: 実在語(wc6518)だが LM unigram 7369 が弱く、Wikipediaバイアスの断片連鎖 段+戦(段→戦=1716 将棋記事、の→段=4936 文楽記事)に1181差で負ける(けいぶるのだんせん→ケイブルの段戦) -->	<!-- Sudachiにもある -->
