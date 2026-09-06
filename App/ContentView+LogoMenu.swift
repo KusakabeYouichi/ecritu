@@ -284,7 +284,7 @@ extension ContentView {
         SettingsKeys.emojiCandidateDisplayEnabled: true,
         SettingsKeys.radicalStrokeCountStyle: "140:4,113:5,184:8",
         SettingsKeys.ordinalMeKanjiPreferred: false,
-        SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.default.encoded,
+        SettingsKeys.kaCounterVariantPreference: KaCounterVariantPreference.conservative.encoded,  // 保守的=か・箇・ヶ・カ をオン(標準は か のみ)
         SettingsKeys.adjectiveMeKanjiCandidatesEnabled: true,
         SettingsKeys.suspendMemorySlimmingEnabled: true,
         SettingsKeys.kaomojiCandidateDisplayEnabled: true,

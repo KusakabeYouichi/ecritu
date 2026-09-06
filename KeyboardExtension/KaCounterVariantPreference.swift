@@ -35,11 +35,16 @@ struct KaCounterVariantPreference: Equatable {
     var order: [KaCounterVariant]
     var enabled: Set<KaCounterVariant>
 
-    // 初期設定(ユーザ指定 2816): か → 箇 → ヶ → カ → ヵ を出す(公用文の か/箇 が先)。個 と ケ は出さない
-    // (個所/ケ所 は現代の一般的な表記ではない。ケ は地名(六ケ所)に残る)
+    // 初期設定(戦略的初期設定。ユーザ指定 2817): か だけを出す。並びは か → 箇 → ヶ → カ → ヵ → 個 → ケ
+    // (公用文の か/箇 が先。個所/ケ所 は現代の一般的な表記ではなく、ケ は地名(六ケ所)に残る)。
+    // 保守的初期設定(作者の実運用)は か・箇・ヶ・カ をオン(ContentView+LogoMenu の conservativePresetValues)
     static let `default` = KaCounterVariantPreference(
         order: [.hiragana, .kanji, .smallKe, .katakana, .smallKa, .ko, .ke],
-        enabled: [.hiragana, .kanji, .smallKe, .katakana, .smallKa]
+        enabled: [.hiragana]
+    )
+    static let conservative = KaCounterVariantPreference(
+        order: KaCounterVariantPreference.default.order,
+        enabled: [.hiragana, .kanji, .smallKe, .katakana]
     )
 
     // オンの表記だけを設定順に

@@ -1183,12 +1183,12 @@ struct ContentView: View {
             rawValue: $radicalStrokeCountStyleRawValue
         )
 
+        KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
+
         MeSuffixCandidateSettingsSection(
             ordinalKanjiPreferred: $ordinalMeKanjiPreferred,
             adjectiveKanjiEnabled: $adjectiveMeKanjiCandidatesEnabled
         )
-
-        KaCounterVariantSettingsSection(rawValue: $kaCounterVariantPreferenceRawValue)
 
         EmojiKaomojiCandidateSettingsSection(
             enablesEmojiCandidates: $emojiCandidateDisplayEnabled,
