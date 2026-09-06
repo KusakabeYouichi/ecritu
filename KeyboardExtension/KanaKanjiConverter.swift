@@ -56,6 +56,8 @@ final class KanaKanjiConverter {
     // 序数(première…): true=漢字『目』を先に(既定。1973年内閣告示第2号 通則4 の表記)。
     // 形容詞語幹(un peu…): true=『目』形も出す(かな『め』が先)。既定はオフ(告示 付表の語1)。
     var ordinalMeKanjiPreferred: Bool = true
+    // 助数詞「か」の表記(1か所/数か月)の表示順とオン/オフ(コンテナー設定。2816)
+    var kaCounterVariantPreference: KaCounterVariantPreference = .default
     var adjectiveMeKanjiCandidatesEnabled: Bool = false
 
     init(store: KanaKanjiStore) {
@@ -90,6 +92,16 @@ final class KanaKanjiConverter {
                 return
             }
             ordinalMeKanjiPreferred = enabled
+            invalidateCandidateCache()
+        }
+    }
+
+    func setKaCounterVariantPreference(_ preference: KaCounterVariantPreference) {
+        stateQueue.sync {
+            guard kaCounterVariantPreference != preference else {
+                return
+            }
+            kaCounterVariantPreference = preference
             invalidateCandidateCache()
         }
     }
@@ -301,6 +313,8 @@ final class KanaKanjiConverter {
                 suppressedCandidates: context.suppressedCandidatesByReading[normalizedReading] ?? []
             )
         }
+        // 助数詞「か」の表記(1か所/数か月/何か国)を設定順に並べ、出さない表記を外す(2816)
+        finalCandidates = applyKaCounterVariantPreference(reading: normalizedReading, to: finalCandidates)
 
         if !finalCandidates.isEmpty {
             stateQueue.sync {

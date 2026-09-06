@@ -44,6 +44,9 @@ extension KeyboardViewController {
                 fallback: true
             )
         )
+        kanaKanjiConverter.setKaCounterVariantPreference(
+            KaCounterVariantPreference.decode(sharedDefaults?.string(forKey: SharedDefaultsKeys.kaCounterVariantPreference))
+        )
         kanaKanjiConverter.setAdjectiveMeKanjiCandidatesEnabled(
             sharedBoolValue(
                 from: sharedDefaults,
