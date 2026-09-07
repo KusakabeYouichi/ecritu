@@ -2703,6 +2703,13 @@ extension KanaKanjiConverter {
                         ? seedDelta
                         : min(delta, seedDelta)
                 }
+                // 文脈の pair bonus(行→返る 等、multiClauseBigramPairBonuses の正値)が付く変種は、seed 順(帰る が先)より
+                // 文脈の選好を優先して変種の先頭に出す。DP ではすでに 返る<帰る なのに、変種順だけ seed 順で
+                // 帰る/買える が前に並び、変種枠(3)から 返る が漏れていた(2ぎょうかえるはず、2820)
+                if let contextBonus = Self.multiClauseBigramPairBonuses[prevSurface + "\t" + alt.surface], contextBonus > 0,
+                    Self.multiClauseBigramPairBonuses[prevSurface + "\t" + chosen.surface] == nil {
+                    delta = max(1, delta - contextBonus)
+                }
                 // 連語の名詞スパンの表記変種(めど/メド 等、かな識別か seed 掲載)は
                 // 変種枠の主役なので delta 上限を緩和する(2559)
                 let isCollocationNounScriptVariant = collocationNounSpans.contains(chosen.spanKey)
