@@ -251,8 +251,54 @@ extension KanaKanjiConverter {
     //     スイープ真性90件の一掃。ガードは 2545 と同じ gap/主読み/ユーザ矯正済み除外。2639)
     // (3) かな識別(候補==読み)は LM 優位なら先頭へ(ある/やる 等)、劣位で先頭に居る
     //     場合は末尾へ(かく 等)。生の辞書順は 書く rank15・有る先頭 等の歪みがある。
+    // 可能動詞(のみほせる=飲み干せる)が五段動詞(のみほす=飲み干す)と別の辞書エントリとして収録されていて、
+    // その順が 飲乾せる→飲干せる→飲み乾せる→飲み干せる と五段側(飲み干す rank0)と食い違う。派生(のみほせない)
+    // は可能動詞の一段ルールが先に立つのでこの順が表に出ていた(2820)。五段側の並びに揃える
+    private static let potentialVerbEndingToGodan: [Character: Character] = [
+        "せ": "す", "け": "く", "げ": "ぐ", "て": "つ", "ね": "ぬ", "べ": "ぶ", "め": "む", "れ": "る", "え": "う"
+    ]
+    func potentialVerbBaseCandidatesAlignedToGodan(_ candidates: [String], reading: String) -> [String] {
+        let chars = Array(reading)
+        // seed のある読み(ならせる=鳴らせる 先頭 等)は人手の並びが最終なので触らない
+        guard chars.count >= 3, chars.last == "る", candidates.count >= 2,
+            KanaKanjiSeedDictionary.seed[reading] == nil,
+            let godanEnding = Self.potentialVerbEndingToGodan[chars[chars.count - 2]] else {
+            return candidates
+        }
+        let godanReading = String(chars.dropLast(2)) + String(godanEnding)
+        let godanCandidates = candidatesForReading(
+            godanReading,
+            ajoutVocabulary: store.ajoutVocabulary(),
+            initialAjoutVocabulary: store.initialAjoutVocabulary(),
+            systemCandidateMode: .surface
+        )
+        guard !godanCandidates.isEmpty else {
+            return candidates
+        }
+        // 五段の語幹(飲み干)順に、対応する可能動詞(飲み干せる)を並べ直す。漢字候補の全部が五段に対応する
+        // (=純粋な可能動詞の読み)ときだけ。かける(書ける/描ける は 書く/描く に対応するが 掛ける は一段の別語)の
+        // ような混在読みは触らない(掛ける を沈めてしまう)
+        let potentialEnding = String(chars.suffix(2))
+        let kanjiCandidates = candidates.filter { $0 != reading && Self.containsKanjiCandidate($0) }
+        guard !kanjiCandidates.isEmpty else {
+            return candidates
+        }
+        let godanStems = Set(godanCandidates.filter { $0.count >= 2 }.map { String($0.dropLast()) })
+        guard kanjiCandidates.allSatisfy({ $0.count >= 3 && godanStems.contains(String($0.dropLast(2))) }) else {
+            return candidates
+        }
+        var aligned: [String] = []
+        for godan in godanCandidates where godan.count >= 2 {
+            let potential = String(godan.dropLast()) + potentialEnding
+            if kanjiCandidates.contains(potential), !aligned.contains(potential) {
+                aligned.append(potential)
+            }
+        }
+        return aligned + candidates.filter { !aligned.contains($0) }
+    }
+
     func orderedDerivationBaseCandidates(_ candidates: [String], reading: String) -> [String] {
-        var ordered = candidates
+        var ordered = potentialVerbBaseCandidatesAlignedToGodan(candidates, reading: reading)
         if let seedOrder = KanaKanjiSeedDictionary.seed[reading] {
             let seedSet = Set(seedOrder)
             let seeded = seedOrder.filter { ordered.contains($0) }
