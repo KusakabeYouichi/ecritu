@@ -73,6 +73,7 @@
 	        <dict><key>phrase</key><string>カ行変格活用</string><key>shortcut</key><string>かぎょうへんかくかつよう</string></dict>
 	        <dict><key>phrase</key><string>名詞形</string><key>shortcut</key><string>めいしけい</string></dict>
 	<!-- 技術 -->
+	        <dict><key>phrase</key><string>不達</string><key>shortcut</key><string>ふたつ</string><key>pos</key><string>名詞</string></dict>	<!-- 不達(ふたつ): 届かないこと(メール不達/設定不達)。Sudachi・LM ともに無い(ユーザ指摘 2820) -->
 	        <dict><key>phrase</key><string>Microwave</string><key>shortcut</key><string>まいくろうえいゔ</string></dict>
 	        <dict><key>phrase</key><string>Square</string><key>shortcut</key><string>すくえあ</string></dict>
 	        <dict><key>phrase</key><string>US-BUYER</string><key>shortcut</key><string>ゆーえすばいやー</string></dict>
