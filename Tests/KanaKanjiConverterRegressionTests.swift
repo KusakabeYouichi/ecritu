@@ -3092,7 +3092,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let expectations: [(String, [String])] = [
             ("こくない", ["国内", "濃くない"]),
             ("みずから", ["みずから", "水から", "自ら", "自から", "美豆から"]),
-            ("おこない", ["行い"]),  // 行ない は通則1 の許容形(2820: 初期設定では出さない)
+            ("おこない", ["行ない", "行い"]),  // 行ない は通則1 の許容形だが 行なう は出荷時の追加語彙に登録してあり、追加語彙として先頭(2820)
             ("しゃない", ["社内", "車内"]),
             ("あきない", ["商い", "商", "あきない", "飽きない", "厭きない", "倦きない"]),
             ("あてない", ["当てない", "宛てない", "アテナイ"]),
@@ -14073,15 +14073,18 @@ extension KanaKanjiConverterRegressionTests {
         converter.setOkuriganaVariantPreference(OkuriganaVariantPreference.decode("stem:permittedFirst,compound:standardOnly,noun:standardOnly"))
         XCTAssertEqual(Array(converter.candidates(for: "おわって", limit: 8, systemCandidateMode: .surface).prefix(2)), ["終って", "終わって"])
         XCTAssertEqual(Array(multi("くいおわってる").prefix(2)), ["食い終ってる", "食い終わってる"])
-        // 本則だけでも、追加語彙(手動)に登録した許容形(行なう)は活用形(行なって)まで守られて出る
+        // 本則だけでも、追加語彙に登録した許容形は活用形まで守られて出る。行なう は出荷時の追加語彙(sacoche)に
+        // 登録済みなので初期設定でも出る。ここでは 断わる を手動登録して同じ経路を確かめる
         converter.setOkuriganaVariantPreference(.default)
-        XCTAssertFalse(converter.candidates(for: "おこなう", limit: 8, systemCandidateMode: .surface).contains("行なう"))
+        XCTAssertTrue(converter.candidates(for: "おこなう", limit: 8, systemCandidateMode: .surface).contains("行なう"))
+        XCTAssertFalse(converter.candidates(for: "ことわる", limit: 8, systemCandidateMode: .surface).contains("断わる"))
         var ajout = converter.store.ajoutVocabulary()
-        ajout["おこなう", default: []].append("行なう")
+        ajout["ことわる", default: []].append("断わる")
         converter.store.saveAjoutVocabulary(ajout)
         converter.store.clearSharedDataCaches()
         converter.invalidateCandidateCache()
-        XCTAssertTrue(converter.candidates(for: "おこなう", limit: 8, systemCandidateMode: .surface).contains("行なう"))
+        XCTAssertTrue(converter.candidates(for: "ことわる", limit: 8, systemCandidateMode: .surface).contains("断わる"))
+        XCTAssertTrue(converter.candidates(for: "ことわって", limit: 8, systemCandidateMode: .surface).contains("断わって"))
         XCTAssertTrue(converter.candidates(for: "おこなって", limit: 8, systemCandidateMode: .surface).contains("行なって"))
         XCTAssertTrue(multi("かいぎをおこなって").contains { $0.hasSuffix("行なって") }, "multi=\(multi("かいぎをおこなって"))")
     }
