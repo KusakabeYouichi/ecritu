@@ -197,6 +197,29 @@
 	<dict><key>phrase</key><string>連れて言って</string><key>shortcut</key><string>つれていって</string></dict>	<!-- 連れて行って が正書。誤選択で学習しても復活させない(抑制は学習より強い) -->
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
+	<!-- 吞(U+541F)は 呑(U+541E)の異体字(康熙字典体/中国の字形)。日本語の標準は 呑 で、字形が似ていて候補で見分けられないので 吞 を含む Sudachi の全 22 語を抑制(ユーザ指定 2820) -->
+	<dict><key>phrase</key><string>あわせ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
+	<dict><key>phrase</key><string>併せ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
+	<dict><key>phrase</key><string>鵜吞み</string><key>shortcut</key><string>うのみ</string></dict>
+	<dict><key>phrase</key><string>ぐい吞み</string><key>shortcut</key><string>ぐいのみ</string></dict>
+	<dict><key>phrase</key><string>剣吞</string><key>shortcut</key><string>けんのん</string></dict>
+	<dict><key>phrase</key><string>乳吞</string><key>shortcut</key><string>ちのみ</string></dict>
+	<dict><key>phrase</key><string>吞馬</string><key>shortcut</key><string>どんば</string></dict>
+	<dict><key>phrase</key><string>吞み下す</string><key>shortcut</key><string>のみくだす</string></dict>
+	<dict><key>phrase</key><string>吞み込み</string><key>shortcut</key><string>のみこみ</string></dict>
+	<dict><key>phrase</key><string>吞みこむ</string><key>shortcut</key><string>のみこむ</string></dict>
+	<dict><key>phrase</key><string>吞み込む</string><key>shortcut</key><string>のみこむ</string></dict>
+	<dict><key>phrase</key><string>吞みこめる</string><key>shortcut</key><string>のみこめる</string></dict>
+	<dict><key>phrase</key><string>吞み込める</string><key>shortcut</key><string>のみこめる</string></dict>
+	<dict><key>phrase</key><string>吞み干す</string><key>shortcut</key><string>のみほす</string></dict>
+	<dict><key>phrase</key><string>吞み物</string><key>shortcut</key><string>のみもの</string></dict>
+	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>
+	<dict><key>phrase</key><string>吞める</string><key>shortcut</key><string>のめる</string></dict>
+	<dict><key>phrase</key><string>吞気</string><key>shortcut</key><string>のんき</string></dict>
+	<dict><key>phrase</key><string>併吞</string><key>shortcut</key><string>へいどん</string></dict>
+	<dict><key>phrase</key><string>魔吞</string><key>shortcut</key><string>まのん</string></dict>
+	<dict><key>phrase</key><string>湯吞</string><key>shortcut</key><string>ゆのみ</string></dict>
+	<dict><key>phrase</key><string>湯吞み</string><key>shortcut</key><string>ゆのみ</string></dict>
 	<dict><key>phrase</key><string>繁榮</string><key>shortcut</key><string>はんえい</string></dict>	<!-- 繁榮(はんえい): 繁栄 の旧字体。見間違えて混ざる(ユーザ指定 2818) -->
 	<dict><key>phrase</key><string>鰺</string><key>shortcut</key><string>あじ</string></dict>	<!-- 鯵 の異体字。字形が似て選び間違える(2642) -->
 	<dict><key>phrase</key><string>歷史</string><key>shortcut</key><string>れきし</string></dict>	<!-- 歴史 の旧字体(歷)。字形が似て選び間違える(2637) -->
