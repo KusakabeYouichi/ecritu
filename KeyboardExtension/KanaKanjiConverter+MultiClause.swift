@@ -2213,7 +2213,6 @@ extension KanaKanjiConverter {
         var best = solved.best
         var backPointer = solved.backPointer
         var bestTotal = solved.bestTotal
-        var bestEndIndex = solved.bestEndIndex
         var pathIndices = solved.pathIndices
 
         // 並列動詞の表記整合(2771): かうかかわないか の最良が 買うか+飼わないか(か→飼わ の bigram だけ
@@ -2264,7 +2263,6 @@ extension KanaKanjiConverter {
                     best = newBest.best
                     backPointer = newBest.backPointer
                     bestTotal = newBest.bestTotal
-                    bestEndIndex = newBest.bestEndIndex
                     pathIndices = newBest.pathIndices
                     if candidates.count >= 2 {
                         let second = candidates[1]
@@ -2352,7 +2350,6 @@ extension KanaKanjiConverter {
                     best = alternative.best
                     backPointer = alternative.backPointer
                     bestTotal = alternative.bestTotal
-                    bestEndIndex = alternative.bestEndIndex
                     pathIndices = alternative.pathIndices
                     // 元の経路(数分出直してた)は第2候補に固定する(同スパン派生の 治した/療した は delta 0 で並ぶため)
                     particleSplitAlternativeJoined = originalJoined
