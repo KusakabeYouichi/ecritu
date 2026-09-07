@@ -327,6 +327,8 @@ final class KanaKanjiConverter {
         }
         // 助数詞「か」の表記(1か所/数か月/何か国)を設定順に並べ、出さない表記を外す(2816)
         finalCandidates = applyKaCounterVariantPreference(reading: normalizedReading, to: finalCandidates)
+        // 可能動詞の辞書順を五段の並びに揃える(のみほせる: 飲乾せる→…→飲み干せる を 飲み干せる 先頭に。2820)
+        finalCandidates = potentialVerbBaseCandidatesAlignedToGodan(finalCandidates, reading: normalizedReading)
         // 送り仮名の許容形(終る/届)を設定に従って並べ替え・除去(2820)
         finalCandidates = applyOkuriganaVariantPreference(reading: normalizedReading, to: finalCandidates)
 
