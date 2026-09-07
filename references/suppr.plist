@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>帰える</string><key>shortcut</key><string>かえる</string></dict>	<!-- 帰る の誤った送り仮名(告示の本則・許容のどちらにも無い)。活用形(帰えって/帰えります)まで候補を汚す(ユーザ指摘 2820) -->
 	<dict><key>phrase</key><string>重そう</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重そう(じゅうそう): 重そう は おもそう(重い+そう)であり じゅうそう と読む語ではない(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
 	<dict><key>phrase</key><string>締目</string><key>shortcut</key><string>しめ</string></dict>	<!-- 締め目 なら読みは しめめ。しめ読みでの供給が seed {締め、〆、〆め、絞め} に割り込む(2643) -->
@@ -247,7 +248,8 @@
 
 	<!-- ■ 現代的に流行っていない言い方(古語・文語・旧仮名・非標準表記) -->
 	<dict><key>phrase</key><string>其麼</string><key>shortcut</key><string>そんな</string></dict>	<!-- 其麼(そんな): 白話文由来の当て字(什麼/怎麼 と同族)。読めないので候補に並ぶと困る(ユーザ指定)。かな そんな は wc4833/rank0 で基底が健在なので供給には影響しない。抑制だけ入れると そんなことないのに が候補ゼロになるため、keepKana の準体助詞クラスタ剥がしと同時に入れた(2584) -->
-	<dict><key>phrase</key><string>六ヶ敷い</string><key>shortcut</key><string>むつかしい</string></dict>	<!-- 六ヶ敷い(むつかしい): 難しい の戯書的な当て字。数詞+ケ 型の辞書語の精査で発見(ユーザ指定 2815) -->
+	<dict><key>phrase</key><string>六ヶ敷い</string><key>shortcut</key><string>むつかしい</string></dict>
+	<dict><key>phrase</key><string>満てる</string><key>shortcut</key><string>みてる</string></dict>	<!-- 満てる(みてる): 文語 満つ の口語化した自動詞(=満ちる)。現代語では 満ちる/満たす しか使わず、みてる rank0 の唯一の辞書語として 見てる(派生)を押しのけ、みてないか に 満てないか を立てていた(ユーザ指摘 2820) -->	<!-- 六ヶ敷い(むつかしい): 難しい の戯書的な当て字。数詞+ケ 型の辞書語の精査で発見(ユーザ指定 2815) -->
 	<dict><key>phrase</key><string>鍛治</string><key>shortcut</key><string>かじ</string></dict>	<!-- 鍛治(かじ): 鍛冶 の誤用表記(治 は「おさめる」で鍛冶の意味を持たない)。姓の 鍛治 は別読み・別語彙で供給される(ユーザ指定 2689) -->
 	<!-- 殼(殻の旧字体): 字形がほぼ同じで見分けられず候補を圧迫するため全7件を抑制(ユーザ指定 2026-08-27) -->
 	<dict><key>phrase</key><string>地殼</string><key>shortcut</key><string>ちかく</string></dict>
