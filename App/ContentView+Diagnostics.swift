@@ -346,6 +346,14 @@ extension ContentView {
         var sections: [String] = []
         sections.append("installMarker: \(keyboardDiagnosticsInstallMarker)")
         sections.append("buildConfiguration: \(Self.buildConfigurationLabel)")
+        // App Group の実体。entitlement に群が無いと iOS では containerURL が nil になり、コンテナーと拡張が
+        // それぞれ自分のサンドボックスに書いて「設定が届かない/拡張のログが見えない」になる(ベータテスター調査 2818)
+        let appGroupContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SettingsKeys.appGroupID)
+        sections.append(
+            "appGroup: \(SettingsKeys.appGroupID) container="
+                + (appGroupContainer == nil ? "なし(entitlement に App Group が無い疑い)" : "あり")
+                + " bundle=\(Bundle.main.bundleIdentifier ?? "?")"
+        )
         sections.append("sessionActive: \(keyboardDiagnosticsSessionActive ? "true" : "false")")
         sections.append("failSafeProfile: \(keyboardDiagnosticsFailSafeProfile)")
         sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
