@@ -728,7 +728,7 @@ extension KanaKanjiConverter {
         // 在るだけだと きたんだ(語幹 きた=正書は 来た)まで通り、かな きたんだが が候補上位に残る。
         // 辞書先頭で判定する案は ある/ひらがな(辞書先頭は漢字)を巻き添えにした(2512)
         for suffix in ["のは", "のが", "のも", "のを", "のに", "のね", "のよ", "のです", "んです", "のだ", "んだ"] where normalized.hasSuffix(suffix) {
-            var stem = String(normalized.dropLast(suffix.count))
+            let stem = String(normalized.dropLast(suffix.count))
             // コピュラ「な」を挟む形(ひらがなな+のは=ひらがな+な+のは)は な も剥がす。
             if stem.count >= 3, stem.hasSuffix("な") {
                 let withoutCopula = String(stem.dropLast())

@@ -326,7 +326,7 @@ final class KanaKanjiStore {
     // 源泉は references/grammaire.plist(バンドル直読み・同期不要)。phrase=表層/
     // shortcut=読み で、語自体は候補に残し活用クラスだけ否認する
     nonisolated(unsafe) private static var cachedInflectionClassDeniedSurfaces: [String: Set<String>]?
-    nonisolated(unsafe) private static let inflectionClassDeniedLock = NSLock()
+    private static let inflectionClassDeniedLock = NSLock()
 
     static func inflectionClassDeniedSurfacesByReading() -> [String: Set<String>] {
         inflectionClassDeniedLock.lock()
