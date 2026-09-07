@@ -530,7 +530,7 @@ extension KanaKanjiConverter {
     // さすが: かな副詞クランプ(4000)で 流石(7272)が変種上限を超えて消えるため、
     // seed {さすが, 流石} の順で 流石Apple を2番目に残す(ユーザ指定 2666)
     // たいして: 同じ構図(かな副詞クランプで最良、seed {たいして, 大して, 対して} の順に変種を出す。2771)
-    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても"]
+    static let multiClauseSeedOrderVariantKanaLeadReadings: Set<String> = ["いまだ", "さすが", "たいして", "いそう", "とか", "えー", "うーむ", "あとあと", "たとえて", "であっても", "すみません"]
     // seed 順を変種の差分にそのまま使う(min でなく置換)読みの opt-in(2804)。派生同士は OOV 定額で同点になり、
     // min 方式では seed 2 番目のかな(たとえて)を同点 0 の 喩えて より前に出せない
     static let multiClauseSeedOrderVariantStrictReadings: Set<String> = ["たとえて"]
@@ -799,7 +799,9 @@ extension KanaKanjiConverter {
         // 副詞 もう の直後に 膜 が来る文は無いので、この組だけ重くして 網膜も に固定する
         "もう\t膜": -2000,
         // ばんしゅうはりま(2820): 播州播磨 が 晩秋播磨 に負ける。播州 の直後の 播磨 は定型なので加点
-        "播州\t播磨": 3000
+        "播州\t播磨": 3000,
+        // 2ぎょうかえるはず(2820): 行(ぎょう)の直後の 返る(7537)を 帰る(6180)より前、変える(5524)より後ろの 2 位に
+        "行\t返る": 1500
     ]
     // 準体助詞 の のクランプ対象になる連体詞表層(こういうの/そういうの 等の名詞化)。
     static let multiClausePrenominalAdjectivalSurfaces: Set<String> = [
