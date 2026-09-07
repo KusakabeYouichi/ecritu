@@ -370,6 +370,14 @@ extension ContentView {
         case .none: registrationState = "判定不能"
         }
         sections.append("キーボード登録: \(registrationState)")
+        #if DEBUG
+        // 有効キーボード一覧のうち écritu 系を全部出す。別 bundle id の écritu(作者の配布版と自前ビルド等)が
+        // 同居していると、使っているキーボードと開いているコンテナーが別の App Group を見て「設定が届かない」になる
+        if let enabled = UserDefaults.standard.object(forKey: "AppleKeyboards") as? [String] {
+            let ecrituKeyboards = enabled.filter { $0.localizedCaseInsensitiveContains("ecritu") }
+            sections.append("有効キーボードのうち écritu 系: \(ecrituKeyboards.isEmpty ? "なし" : ecrituKeyboards.joined(separator: ", "))")
+        }
+        #endif
         let registrationHistory = Self.sharedDefaults.map {
             decodeStringArray(forKey: SettingsKeys.keyboardDiagnosticsRegistrationHistory, defaults: $0)
         } ?? []
