@@ -1174,11 +1174,13 @@ extension KanaKanjiConverter {
             // たにた→で は bigram 未観測(unigram 2597)なので では はクランプせず、
             // で+はかったら(計ったら)の は始まり動詞分割を潰さない(たにたではかったら対策)。
             // 文頭(BOS 直後)も除外し でも→デモ/では→出は 等の巻き添えを防ぐ。
+            // クランプ値は一律 1200 ではなく「基底の格助詞の bigram+係助詞ぶん」を下限にする。一律だと
+            // 日→と 2746 でも 日とも が 1200 になり、ほかのひとも が 他の日とも(人→も 1987)に化ける(2820)
             if prev != Self.multiClauseBOSMarker,
                 surface == reading,
                 Self.multiClauseCompoundParticles.contains(surface),
-                bigramCosts["\(prev)\t\(String(surface.dropLast()))"] != nil {
-                base = min(base, Self.multiClauseCompoundParticleCost)
+                let baseParticleBigram = bigramCosts["\(prev)\t\(String(surface.dropLast()))"] {
+                base = min(base, max(Self.multiClauseCompoundParticleCost, baseParticleBigram + Self.multiClauseCompoundParticleBindingParticleCost))
             }
             // っぽい族(名詞接尾)は体言直後を安価にクランプ(赤+っぽく/子供+っぽい。2650)。
             // かな素通り扱いだと1字7000で経路が組めない。BOS直後は対象外
@@ -1289,6 +1291,13 @@ extension KanaKanjiConverter {
             // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
                 penalty -= bonus
+            }
+            // 方向・位置の 1 字漢字(下/上/左/右/前/後…)+カタカナ語(フリック/スワイプ/ページ)は複合名詞。
+            // した は し+た(bigram 547)の動詞がかな名詞 下(4332)より安く、したふりっく が したフリック
+            // (連体修飾)になっていた(ユーザ報告 2820)。上/左/右 は動詞に割れないので元から通る
+            if Self.multiClauseDirectionalPrefixSurfaces.contains(prev),
+                reading.count >= 3, Self.isKatakanaString(surface) {
+                penalty -= Self.multiClauseDirectionalPrefixKatakanaCompoundBonus
             }
             // 色語の直後の がかった(seed かなノード)を優先: みどり/青海(かな識別・同音地名)+がかった より
             // 緑/青み+がかった を採る(定数コメント参照。2731)
@@ -2085,6 +2094,14 @@ extension KanaKanjiConverter {
                             if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface) {
                                 cost += Self.multiClauseAuPersonMismatchPenalty
                             }
+                        }
+                        // 述語+と(条件)の直後の 1 字終助詞 な/ね/よ(しておかないとな/行かないとね)。1 字終助詞は
+                        // こんな(来ん+な)退行のため一般にはクランプしないが、直前が述語直後の と なら 名/菜 の
+                        // 名詞解釈は無い。かな素通り(7000)のままだと しておかないと名 になっていた(ユーザ報告 2820)
+                        if node.surface == node.reading, Self.multiClauseFinalParticleAfterConditionalToReadings.contains(node.reading),
+                            prevNode.surface == "と", prevNode.reading == "と", backPointer[prevIdx] >= 0,
+                            Self.isPredicateLikePrevForConditional(nodes[backPointer[prevIdx]]) {
+                            cost -= Self.multiClauseFinalParticleAfterConditionalToBonus
                         }
                         // の を挟む連語(甲州の果皮 等。定数コメント参照。2736)
                     if Self.multiClauseCollocationBridgeParticles.contains(prevNode.surface), prevNode.surface == prevNode.reading, backPointer[prevIdx] >= 0,

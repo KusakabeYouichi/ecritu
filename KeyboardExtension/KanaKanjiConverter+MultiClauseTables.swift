@@ -58,6 +58,16 @@ extension KanaKanjiConverter {
     // 複合助詞ノードのクランプ後コスト。名詞→格助詞の実 bigram(便利→に=1427 等)より
     // 安くして単位経路を勝たせる一方、極端に安くして別解を歪めない中庸値。
     static let multiClauseCompoundParticleCost = 1200
+    // 複合助詞クランプの下限に足す係助詞(は/も)ぶんのコスト。基底の格助詞 bigram(日→と 2746)にこれを足した値と
+    // 1200 の大きい方でクランプする(2820)
+    static let multiClauseCompoundParticleBindingParticleCost = 900
+    // 述語+と(条件)の直後の 1 字終助詞(しておかないとな)。かな素通り 7000 から 名(bigram 経由 約 4500)を下回る水準まで下げる(2820)
+    static let multiClauseFinalParticleAfterConditionalToReadings: Set<String> = ["な", "ね", "よ"]
+    static let multiClauseFinalParticleAfterConditionalToBonus = 5000
+    // 方向・位置の 1 字漢字の直後のカタカナ語(下フリック/左スワイプ/前ページ)の複合名詞ボーナス(2820)。
+    // した(し+た 3284)と 下(4832)の差 1548 を埋めて余る幅
+    static let multiClauseDirectionalPrefixSurfaces: Set<String> = ["下", "上", "左", "右", "前", "後", "横", "縦", "内", "外", "逆"]
+    static let multiClauseDirectionalPrefixKatakanaCompoundBonus = 2500
     // 名詞化節(準体助詞の+係/格助詞)。述語形(動詞終止形/形容詞/タ形)直後の
     // のが/のは/のを/のも/のに は「炊くのが好き」型の名詞化でかな単位が正書。Sudachi は
     // の+が に分割するため word_costs に無く、動詞→の の bigram も未観測が多い
