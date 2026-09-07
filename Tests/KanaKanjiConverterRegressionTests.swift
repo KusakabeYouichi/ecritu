@@ -14185,3 +14185,70 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "みてる", limit: 5, systemCandidateMode: .surface).first, "見てる")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // のみほせない(2820): 可能動詞 のみほせる(飲乾せる rank0)の辞書順が五段 のみほす(飲み干す rank0)と食い違い、
+    // 派生 飲み乾せない が 2 位、連文節の TopK から 飲み干せない が漏れて スープは飲干せない になっていた。
+    // 可能動詞の基底を五段の並びに揃える一般対応。吞(異体字)は全語抑制
+    func testRegressionRealLMNomihosuPotentialAlignedToGodan() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "のみほせる", limit: 6, systemCandidateMode: .surface).prefix(2)), ["飲み干せる", "飲み乾せる"])
+        let negative = converter.candidates(for: "のみほせない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(negative.first, "飲み干せない", "\(negative)")
+        XCTAssertFalse(negative.contains { $0.contains("吞") }, "\(negative)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "すーぷはのみほせないな", systemCandidateMode: .surface).first, "スープは飲み干せないな")
+        XCTAssertFalse(converter.candidates(for: "のみほす", limit: 12, systemCandidateMode: .surface).contains("吞み干す"))
+    }
+
+    // だなあ/なんと/でなんとでるか/せっていふたつ(2820)
+    func testRegressionRealLMDanaaNantoFutatsu() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.candidates(for: "だなあ", limit: 4, systemCandidateMode: .surface).first, "だなあ")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "だなあ"))
+        XCTAssertEqual(Array(converter.candidates(for: "なんと", limit: 6, systemCandidateMode: .surface).prefix(2)), ["何と", "なんと"])
+        // 何斗(と=斗 の助数詞合成)が で の後で 何と を乗っ取っていた。と/て/で は数字直後限定の表へ
+        let multi = converter.multiClauseCandidates(for: "でなんとでるか", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "で何と出るか", "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.contains("何斗") }, "multi=\(multi)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なんとでるか", systemCandidateMode: .surface).first, "何と出るか")
+        // 数字直後の 斗/手 は従来どおり
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "と", limit: 8, systemCandidateMode: .surface), reading: "と", precedingCharacter: "3"
+        )
+        XCTAssertTrue(boosted.contains("斗"), "boosted=\(boosted)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "せっていふたつ", systemCandidateMode: .surface).first, "設定不達")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // ほかのひとも(2820): 複合助詞 とも の一律クランプ(1200)が 日→と 2746 の後でも効き、他の日とも が 他の人も(人→も 1987)
+    // を跨いでいた。クランプ値を 基底の格助詞 bigram+係助詞ぶん を下限に。
+    // しておかないとな: 述語+と(条件)直後の 1 字終助詞 な/ね/よ をかな素通りから引き下げる(名 の乗っ取り防止)
+    func testRegressionRealLMHokanohitomoAndShiteokanaitona() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ほかのひとも", systemCandidateMode: .surface).first, "他の人も")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ほかのひと", systemCandidateMode: .surface).first, "他の人")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しておかないとな", systemCandidateMode: .surface).first, "しておかないとな")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いかないとね", systemCandidateMode: .surface).first, "行かないとね")
+        // こんな(来ん+な)は無傷
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こんなかんじ", systemCandidateMode: .surface).first, "こんな感じ")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // したふりっく(2820): した が し+た(bigram 547)の動詞で 下(4332)より安く、したフリック(連体修飾)だけになっていた。
+    // 方向・位置の 1 字漢字+カタカナ語の複合名詞ボーナスで 下フリック を先頭に
+    func testRegressionRealLMShitaFlickCompound() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "したふりっく", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "下フリック", "multi=\(multi)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "うえふりっく", systemCandidateMode: .surface).first, "上フリック")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "したふりっくで", systemCandidateMode: .surface).first, "下フリックで")
+        // 動詞 した のままの文は無傷
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きのうしたしごと", systemCandidateMode: .surface).first?.hasSuffix("した仕事"), true)
+    }
+}
