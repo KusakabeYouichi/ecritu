@@ -2986,7 +2986,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("ふごうか", ["符号化"]),
             ("よけ", ["除け", "避け", "よけ"]),
             ("ちょうきょうし", ["調教師", "調教し"]),
-            ("かえる", ["帰る", "変える", "買える", "蛙"]),
+            ("かえる", ["帰る", "変える", "買える", "返る"]),  // 返る を 蛙 より前に(ユーザ指定 2820)
             ("たんけんか", ["探検家", "探険家", "探検か", "探険か", "単券か"]),
             ("しばた", ["柴田", "芝田"]),
             ("いしだ", ["石田"]),
@@ -14131,5 +14131,57 @@ extension KanaKanjiConverterRegressionTests {
         )
         XCTAssertEqual(boosted.first, "年前の", "boosted=\(boosted.prefix(4))")
         XCTAssertFalse(boosted.contains("年前野"), "boosted=\(boosted.prefix(4))")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // かな(2820): 語尾の打ち足りない断片として ひらがな を先頭に(辞書順は カナ→仮名→かな)。提示層の keepKana も真
+    func testRegressionKanaFragmentPrefersHiragana() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(Array(converter.candidates(for: "かな", limit: 6, systemCandidateMode: .surface).prefix(3)), ["かな", "仮名", "カナ"])
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "かな"))
+        // 連文節では文脈があれば 仮名 のまま(seed は単文節の並びだけ)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かなをかく", systemCandidateMode: .surface).first?.hasPrefix("仮名"), true)
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // かえる(2820): 返る を 蛙 より前に、帰える(誤った送り仮名)は抑制。2[ぎょうかえるはず] は 行返るはず を 2 位に
+    func testRegressionRealLMKaeruOrderAndGyouKaeru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "かえる", limit: 12, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(7)), ["帰る", "変える", "買える", "返る", "代える", "替える", "蛙"], "single=\(single)")
+        XCTAssertFalse(single.contains("帰える"), "single=\(single)")
+        XCTAssertFalse(converter.candidates(for: "かえって", limit: 12, systemCandidateMode: .surface).contains("帰えって"))
+        let multi = converter.multiClauseCandidates(for: "ぎょうかえるはず", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "行変えるはず", "multi=\(multi)")
+        XCTAssertEqual(multi.dropFirst().first, "行返るはず", "multi=\(multi)")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // すみませんが(2820): 挨拶のかな正書を misc curated+seed で先頭に。済みません → 住みません の順
+    func testRegressionRealLMSumimasengaKanaLeading() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "すみませんが", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(multi.prefix(3)), ["すみませんが", "済みませんが", "住みませんが"], "multi=\(multi)")
+        XCTAssertEqual(Array(converter.candidates(for: "すみません", limit: 5, systemCandidateMode: .surface).prefix(3)), ["すみません", "済みません", "住みません"])
+        XCTAssertEqual(converter.multiClauseCandidates(for: "すみませんでした", systemCandidateMode: .surface).first, "すみませんでした")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // みてないか(2820): 文語動詞 満てる(みてる rank0)の派生 満てないか が 見てないか より前に立っていた。満てる を抑制
+    func testRegressionRealLMMitenaikaNoMiteru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "みてないか", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "見てないか", "multi=\(multi)")
+        XCTAssertFalse(multi.contains { $0.hasPrefix("満て") }, "multi=\(multi)")
+        let single = converter.candidates(for: "みてないか", limit: 12, systemCandidateMode: .surface)
+        XCTAssertFalse(single.prefix(7).contains { $0.hasPrefix("満て") }, "single=\(single)")
+        XCTAssertEqual(converter.candidates(for: "みてる", limit: 5, systemCandidateMode: .surface).first, "見てる")
     }
 }
