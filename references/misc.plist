@@ -151,7 +151,8 @@
 	<dict><key>phrase</key><string>しまって</string><key>shortcut</key><string>しまって</string></dict>
 	<dict><key>phrase</key><string>しまおう</string><key>shortcut</key><string>しまおう</string></dict>
 	<dict><key>phrase</key><string>でもない</string><key>shortcut</key><string>でもない</string></dict>	<!-- 活用形 なかった は LM に無く(Sudachi の A単位は ない+た に分割)、連文節は基底 ない の並び(dict rank は 無い が0位)を継ぐため それほどでも無かった が先頭になる。でも→ない の bigram も未観測で文脈補正が効かない。句として登録する(ユーザ指定 2564) -->
-	<dict><key>phrase</key><string>であっても</string><key>shortcut</key><string>であっても</string></dict>	<!-- コピュラ で+あっても(たとえ〜であっても)。連文節は 出会っても(派生)しか作らず、まだであっても が候補に出なかった(ユーザ報告 2818)。に/と の直後(友達に出会っても)は DP 側で 出会っても を保つ -->
+	<dict><key>phrase</key><string>であっても</string><key>shortcut</key><string>であっても</string></dict>
+	<dict><key>phrase</key><string>すみません</string><key>shortcut</key><string>すみません</string></dict>	<!-- 挨拶のかな正書。辞書語(rank0)だがかな識別ノード(9500)が 住みません/済みません(派生床 7200)に負け、すみませんが が 住みませんが になっていた(ユーザ報告 2820) -->	<!-- コピュラ で+あっても(たとえ〜であっても)。連文節は 出会っても(派生)しか作らず、まだであっても が候補に出なかった(ユーザ報告 2818)。に/と の直後(友達に出会っても)は DP 側で 出会っても を保つ -->
 	<dict><key>phrase</key><string>でもなかった</string><key>shortcut</key><string>でもなかった</string></dict>
 	<dict><key>phrase</key><string>でもなく</string><key>shortcut</key><string>でもなく</string></dict>
 	<dict><key>phrase</key><string>でもなくて</string><key>shortcut</key><string>でもなくて</string></dict>
