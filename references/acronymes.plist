@@ -8,9 +8,9 @@
 	     足したら ⌘R(ビルド)で反映。『■ 』=カテゴリー、『□ 』=サブカテゴリー -->
 
 	<!-- ■ 団体・組織(酒類業界) -->
-	<dict><key>phrase</key><string>J.S.A.</string><key>shortcut</key><string>jsa</string></dict>	<!-- Japan Sommelier Association(一般社団法人 日本ソムリエ協会)。vin-acronyme から移動(2830) -->
-	<dict><key>phrase</key><string>N.B.A.</string><key>shortcut</key><string>nba</string></dict>	<!-- Nippon Bartenders Association(一般社団法人 日本バーテンダー協会、bartender.or.jp)。2832 -->
-	<dict><key>phrase</key><string>HBA</string><key>shortcut</key><string>hba</string></dict>	<!-- Hotel Barmen's Association(一般社団法人 日本ホテルバーメンズ協会、hotel-barmen-hba.or.jp)。2832 -->
-	<dict><key>phrase</key><string>PBO</string><key>shortcut</key><string>pbo</string></dict>	<!-- Professional Bartenders Organization(NPO法人 プロフェッショナル・バーテンダーズ機構、pbo.gr.jp)。2832 -->
+	<dict><key>phrase</key><string>J.S.A.</string><key>shortcut</key><string>jsa</string></dict>	<!-- Japan Sommelier Association(一般社団法人日本ソムリエ協会、sommelier.jp)。2830 -->
+	<dict><key>phrase</key><string>N.B.A.</string><key>shortcut</key><string>nba</string></dict>	<!-- Nippon Bartenders Association(一般社団法人日本バーテンダー協会、bartender.or.jp)。2832 -->
+	<dict><key>phrase</key><string>HBA</string><key>shortcut</key><string>hba</string></dict>	<!-- Hotel Barmen's Association(一般社団法人日本ホテルバーメンズ協会、hotel-barmen-hba.or.jp)。2832 -->
+	<dict><key>phrase</key><string>PBO</string><key>shortcut</key><string>pbo</string></dict>	<!-- Professional Bartenders Organization(NPO法人プロフェッショナル・バーテンダーズ機構、pbo.gr.jp)。2832 -->
 </array>
 </plist>
