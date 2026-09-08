@@ -5,6 +5,7 @@
 
 	<!-- ワイン -->
 	        <dict><key>phrase</key><string>アペロ</string><key>shortcut</key><string>あぺろ</string></dict>
+	        <dict><key>phrase</key><string>デセール</string><key>shortcut</key><string>デセール</string></dict>
 	        <dict><key>phrase</key><string>蔵付き酵母</string><key>shortcut</key><string>くらつきこうぼ</string></dict>
 	        <dict><key>phrase</key><string>日本ソムリエ協会</string><key>shortcut</key><string>にほんそむりえきょうかい</string></dict>
 	        <dict><key>phrase</key><string>ソムリエ協会</string><key>shortcut</key><string>そむりえきょうかい</string></dict>
@@ -25,6 +26,7 @@
 	        <dict><key>phrase</key><string>AntiOx</string><key>shortcut</key><string>あんてぃおっくす</string></dict>
 	        <dict><key>phrase</key><string>Vacu Vin</string><key>shortcut</key><string>ゔぁきゅゔぁん</string></dict>
 	        <dict><key>phrase</key><string>Vacu Vin</string><key>shortcut</key><string>ばきゅばん</string></dict>
+	        <dict><key>phrase</key><string>ガンパウダー</string><key>shortcut</key><string>がんぱうだー</string></dict>
 	<!-- 服飾 -->
 	        <dict><key>phrase</key><string>黄麻</string><key>shortcut</key><string>こうま</string></dict>	<!-- Sudachiにもある(基底3位/24、コスト7404) -->
 	        <dict><key>phrase</key><string>ヴェロア</string><key>shortcut</key><string>ゔぇろあ</string></dict>
@@ -94,6 +96,19 @@
 	        <dict><key>phrase</key><string>線量計</string><key>shortcut</key><string>せんりょうけい</string></dict>	<!-- Sudachiにもある(基底1位/1、コスト19360の収穫底値で連文節では沈む) -->
 	        <dict><key>phrase</key><string>短焦点</string><key>shortcut</key><string>たんしょうてん</string></dict>
 	<!-- 料理・食材 -->
+	<!-- 〜放題(連用形+放題)。Sudachi は 見放題/し放題 しか持たず、のみほうだい は のみ(副助詞、LM 3929)+放題 で 飲み放題 が出なかった(ユーザ報告 2823) -->
+	        <dict><key>phrase</key><string>飲み放題</string><key>shortcut</key><string>のみほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>呑み放題</string><key>shortcut</key><string>のみほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>食べ放題</string><key>shortcut</key><string>たべほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>使い放題</string><key>shortcut</key><string>つかいほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>読み放題</string><key>shortcut</key><string>よみほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>聴き放題</string><key>shortcut</key><string>ききほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>聞き放題</string><key>shortcut</key><string>ききほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>乗り放題</string><key>shortcut</key><string>のりほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>かけ放題</string><key>shortcut</key><string>かけほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>話し放題</string><key>shortcut</key><string>はなしほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>やり放題</string><key>shortcut</key><string>やりほうだい</string><key>pos</key><string>名詞</string></dict>
+	        <dict><key>phrase</key><string>言い放題</string><key>shortcut</key><string>いいほうだい</string><key>pos</key><string>名詞</string></dict>
 	        <!-- アイユ: 辞書に実在(あいゆ wc2148)だが、同読みの漢字収穫(愛由/藍結=収穫底値10000)が
 	             あるためカタカナ強調抑止で候補から消える。追加語彙登録で復活させる -->
 	        <dict><key>phrase</key><string>アイユ</string><key>shortcut</key><string>あいゆ</string></dict>	<!-- Sudachiにもある(基底1位/3、コスト2148。単文節は既に先頭) -->
