@@ -248,6 +248,7 @@
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
 	<dict><key>phrase</key><string>水平対向</string><key>shortcut</key><string>すいへいたいこう</string><key>pos</key><string>名詞</string></dict>	<!-- 水平対向エンジン の固定複合。辞書は 水平/対向 が別で、対向 は たいこう の rank 7(対抗 0)かつ LM 7079、水平→対向 の bigram も無く 対抗/太閤/体腔 に負けていた(ユーザ報告 2810) -->
 	<dict><key>phrase</key><string>フィグ</string><key>shortcut</key><string>ふぃぐ</string><key>pos</key><string>名詞</string></dict>	<!-- figue(いちじく)の片仮名。Sudachi 未収録(ユーザ指定 2814) -->
+	<dict><key>phrase</key><string>銀だこ</string><key>shortcut</key><string>ぎんだこ</string><key>pos</key><string>名詞</string></dict>	<!-- たこ焼きチェーン(築地銀だこ)。Sudachi 未収録(ユーザ指定 2826) -->
 	<dict><key>phrase</key><string>°C</string><key>shortcut</key><string>せっし</string></dict>	<!-- 温度の単位記号(2773)。内部は SI 形 °C で持ち、設定 degré で ℃ にも置換される。℃ 自体は読みで一切出なかった -->
 	<dict><key>phrase</key><string>°F</string><key>shortcut</key><string>かし</string></dict>
 	<dict><key>phrase</key><string>°C</string><key>shortcut</key><string>せるしうす</string></dict>
