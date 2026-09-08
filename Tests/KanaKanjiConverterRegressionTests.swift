@@ -10551,7 +10551,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionNaAdjectiveKanaOrthographyInflection() throws {
         try prepareRealLMDictionary()
         let iyade = converter.candidates(for: "いやで", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(iyade.prefix(3)), ["イヤで", "いやで", "嫌で"], "iyade=\(iyade)")
+        XCTAssertEqual(Array(iyade.prefix(3)), ["いやで", "イヤで", "嫌で"], "iyade=\(iyade)")
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いやで"))
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "むらで"))
         // 名詞+で の巻き込みが無いこと(2406 の判断を維持)
@@ -10801,12 +10801,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionKatakanaOrthographyExceptions() throws {
         try prepareRealLMDictionary()
         let iya = converter.candidates(for: "いや", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(iya.prefix(5)), ["イヤ", "いや", "嫌", "否", "厭"], "iya=\(iya)")
+        XCTAssertEqual(Array(iya.prefix(5)), ["いや", "イヤ", "嫌", "否", "厭"], "iya=\(iya)")  // 2829: ひらがな先頭
         // 合成(いや+で)にも seed 順が伝わる
         let iyade = converter.candidates(for: "いやで", limit: 8, systemCandidateMode: .surface)
         XCTAssertEqual(
             Array(iyade.prefix(5)),
-            ["イヤで", "いやで", "嫌で", "否で", "厭で"],
+            ["いやで", "イヤで", "嫌で", "否で", "厭で"],
             "iyade=\(iyade)"
         )
         let mura = converter.candidates(for: "むら", limit: 8, systemCandidateMode: .surface)
