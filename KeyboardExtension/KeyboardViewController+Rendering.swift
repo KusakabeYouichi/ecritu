@@ -325,7 +325,9 @@ extension KeyboardViewController {
             // iPad のフローティング表示では、システムが箱の下のバーに 🌐 を出すのに
             // needsInputModeSwitchKey=true が返るので二重になる。フル表示では純正同様に枠内の 🌐 が
             // 必要(システムは枠外に出さない)。箱の幅が画面より明らかに狭いときだけ抑える(2788)
-            showsNextKeyboardKey: needsInputModeSwitchKey && !Self.isIPadFloatingContainer(containerFrame),
+            // needsInputModeSwitchKey は viewDidAppear で取った値を使う。描画ごとに直接読むと、ホスト接続前の
+            // 呼び出しとして UIKit がエラーログを出し続ける(実機統合ログで 30 分に 1,244 件。2824)
+            showsNextKeyboardKey: cachedNeedsInputModeSwitchKey && !Self.isIPadFloatingContainer(containerFrame),
             containerFrame: containerFrame,
             shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,

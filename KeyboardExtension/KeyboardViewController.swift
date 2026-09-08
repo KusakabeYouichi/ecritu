@@ -288,6 +288,9 @@ final class KeyboardViewController: UIInputViewController {
     // サスペンド時スリム化(キーボード非表示時のキャッシュ破棄+ページ返却)。
     // コンテナーアプリでOn/Off可、既定オン(2640)
     var isSuspendMemorySlimmingEnabled = true
+    // 地球儀キーの要否(needsInputModeSwitchKey)。ホスト接続後(viewDidAppear)に読んで保持し、描画では
+    // この値を使う(描画ごとの直接参照は接続前呼び出しの UIKit エラーログを量産する。2824)
+    var cachedNeedsInputModeSwitchKey = false
     // 温度の度記号の字形(設定 degreeSymbol。提示層で °C/℃ を置換する)
     var degreeSymbolStyle: DegreeSymbolStyle = .composed
     // MEMFORENSICS(時限計測 2651): プロセス初回変換スパイクの解剖は1回だけ
@@ -817,6 +820,12 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
+        // ホスト接続が確立した後に地球儀キーの要否を 1 回だけ読む(定義コメント参照。2824)。変わっていれば再描画
+        let needsSwitchKey = needsInputModeSwitchKey
+        if needsSwitchKey != cachedNeedsInputModeSwitchKey {
+            cachedNeedsInputModeSwitchKey = needsSwitchKey
+            refreshKeyboardStateAsync()
+        }
         if !didLogControllerCreationDelta {
             didLogControllerCreationDelta = true
             MemoryForensics.noteSyncDelta(

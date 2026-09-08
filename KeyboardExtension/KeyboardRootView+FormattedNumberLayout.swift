@@ -1362,8 +1362,11 @@ final class UnitWheelScrollView: UIScrollView, UIScrollViewDelegate {
     private func scrollToTag(_ tag: String, animated: Bool) {
         let index = indexOf(tag: tag)
         let target = CGFloat(index) * rowHeight - contentInset.top
-        setContentOffset(CGPoint(x: 0, y: target), animated: animated)
+        // 先に報告済み添字を合わせる。setContentOffset は同期に scrollViewDidScroll を呼ぶので、後から合わせると
+        // 途中の行が onLiveChange で通知され、SwiftUI の updateUIView(=ビュー更新中)から @State を書いて
+        // 「Modifying state during view update」になる(実機統合ログで書式化数値モード切替時に 4 件。2824)
         lastReportedIndex = index
+        setContentOffset(CGPoint(x: 0, y: target), animated: animated)
         updateRowAppearance()
     }
 
