@@ -14322,3 +14322,15 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ろぐをとって", systemCandidateMode: .surface).first, "ログをとって")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // こんぶすい(2833): 水(すい)は接尾(昆布水/炭酸水)なのに読み別 wc の床上げで 錐 に 20 差で負けていた → 床免除。
+    // つけめん: 辞書順(付け麺 rank0)でなく実際の表記 つけ麺 を先頭に(seed)
+    func testRegressionRealLMKonbusuiAndTsukemen() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こんぶすい", systemCandidateMode: .surface).first, "昆布水")
+        XCTAssertEqual(converter.candidates(for: "たんさんすい", limit: 3, systemCandidateMode: .surface).first, "炭酸水")
+        XCTAssertEqual(Array(converter.candidates(for: "つけめん", limit: 6, systemCandidateMode: .surface).prefix(4)), ["つけ麺", "つけめん", "付け麺", "付けめん"])
+    }
+}
