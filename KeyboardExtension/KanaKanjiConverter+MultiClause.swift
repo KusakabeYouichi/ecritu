@@ -1328,6 +1328,18 @@ extension KanaKanjiConverter {
                 gaBigram < Self.multiClauseGaDropNaiMaxGaBigram {
                 penalty -= Self.multiClauseGaDropNaiBonus
             }
+            // を を落とした口語の カタカナ名詞+漢字動詞(ログ取って/データ取って/メモ取って)。名詞→を の bigram が強い名詞の
+            // 直後に限る(定数コメント参照。2828)。漢字名詞まで広げると 機能+値上がりした/土地+似合った/規約+煮そう のような
+            // 誤分割を後押しした(全網で 8 件退行)ので、語境界が明確なカタカナ語だけ
+            if isInflectionDerived, surface != reading,
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate, prev != prevReading,
+                prev != Self.multiClauseBOSMarker, prev.count >= 2,
+                Self.isKatakanaString(prev),
+                !Self.multiClauseWoDropIntransitiveReadingPrefixes.contains(where: { reading.hasPrefix($0) }),
+                let woBigram = store.wordLMBigramCosts(for: [(prev, "を")])["\(prev)\tを"],
+                woBigram < Self.multiClauseWoDropVerbMaxWoBigram {
+                penalty -= Self.multiClauseWoDropVerbBonus
+            }
             // 方向・位置の 1 字漢字(下/上/左/右/前/後…)+カタカナ語(フリック/スワイプ/ページ)は複合名詞。
             // した は し+た(bigram 547)の動詞がかな名詞 下(4332)より安く、したふりっく が したフリック
             // (連体修飾)になっていた(ユーザ報告 2820)。上/左/右 は動詞に割れないので元から通る
