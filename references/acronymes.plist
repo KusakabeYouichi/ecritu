@@ -9,5 +9,10 @@
 
 	<!-- ■ 団体・組織 -->
 	<dict><key>phrase</key><string>J.S.A.</string><key>shortcut</key><string>jsa</string></dict>	<!-- Japan Sommelier Association(日本ソムリエ協会)。vin-acronyme から移動(2830) -->
+	<dict><key>phrase</key><string>N.B.A.</string><key>shortcut</key><string>nba</string></dict>	<!-- ユーザ指定 2832 -->
+
+	<!-- ■ その他 -->
+	<dict><key>phrase</key><string>HBA</string><key>shortcut</key><string>hba</string></dict>	<!-- ユーザ指定 2832 -->
+	<dict><key>phrase</key><string>PBO</string><key>shortcut</key><string>pbo</string></dict>	<!-- ユーザ指定 2832 -->
 </array>
 </plist>
