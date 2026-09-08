@@ -107,6 +107,7 @@
 		494D3AC7F382B16B0C6F478A /* KeyboardLayerZIndex.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCD9B73E7496C0E678230735 /* KeyboardLayerZIndex.swift */; };
 		4B117742728D546BC84BDC01 /* KeyboardViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BE8ED69072A5EAA44DDACB9E /* KeyboardViewController.swift */; };
 		AB0000000000000000002618 /* MemoryForensicsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002617 /* MemoryForensicsTests.swift */; };
+		B2F96E4FACF872E0C99909F7 /* TestSupport+StoreHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */; };
 		AB0000000000000000002611 /* KeyboardLayoutMetricsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB0000000000000000002612 /* KeyboardLayoutMetricsTests.swift */; };
 		500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */; };
 		524BCC76C91E62075115AF3A /* ContentView+DictionaryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ADCEB866223BD3028FABD48 /* ContentView+DictionaryStore.swift */; };
@@ -244,6 +245,7 @@
 		3E9058C9AC20A9C771D55DFC /* Edition.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Edition.xcconfig; sourceTree = "<group>"; };
 		4B5F60406235BC88C1D35F20 /* KeyboardExtension.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = KeyboardExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		AB0000000000000000002617 /* MemoryForensicsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryForensicsTests.swift; sourceTree = "<group>"; };
+		D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TestSupport+StoreHelpers.swift"; sourceTree = "<group>"; };
 		AB0000000000000000002612 /* KeyboardLayoutMetricsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardLayoutMetricsTests.swift; sourceTree = "<group>"; };
 		4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardModeTransitionTests.swift; sourceTree = "<group>"; };
 		4E47697B4A1DF6C69AD1AD3A /* FlickKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlickKeyView.swift; sourceTree = "<group>"; };
@@ -509,6 +511,7 @@
 				B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */,
 				2626823DE41575D1188F5DEA /* KeyboardCandidateMergingTests.swift */,
 				AB0000000000000000002617 /* MemoryForensicsTests.swift */,
+				D47DAE19C6007C33FE1974E9 /* TestSupport+StoreHelpers.swift */,
 				AB0000000000000000002612 /* KeyboardLayoutMetricsTests.swift */,
 				4BEF6D5508A6FD899B260559 /* KeyboardModeTransitionTests.swift */,
 			);
@@ -812,6 +815,7 @@
 				0F8A21202683F7A7645F26B6 /* KeyboardCandidateMergingTests.swift in Sources */,
 				11A915FC905E04AF64E07BC6 /* KeyboardModeTransition.swift in Sources */,
 				AB0000000000000000002618 /* MemoryForensicsTests.swift in Sources */,
+				B2F96E4FACF872E0C99909F7 /* TestSupport+StoreHelpers.swift in Sources */,
 				AB0000000000000000002611 /* KeyboardLayoutMetricsTests.swift in Sources */,
 				500517A2A72AC3F984FF7674 /* KeyboardModeTransitionTests.swift in Sources */,
 				23B05161BF547868088CAA9A /* SupplementaryCandidateMerger.swift in Sources */,

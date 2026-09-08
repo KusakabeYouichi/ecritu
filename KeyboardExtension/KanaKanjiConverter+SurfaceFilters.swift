@@ -346,17 +346,6 @@ extension KanaKanjiConverter {
         return false
     }
 
-    func isDeinflectedSuppressed(
-        candidate: String,
-        reading: String,
-        suppressedByReading: [String: Set<String>]
-    ) -> Bool {
-        isDeinflectedSuppressed(
-            candidate: candidate,
-            probes: deinflectionSuppressionProbes(reading: reading, suppressedByReading: suppressedByReading)
-        )
-    }
-
 
     // 否定の助動詞 ない 系(ない/なく/なかった/なくて/なければ/なきゃ)は用言の終止形には付かない
     // (動詞は未然形+ない=活用規則が担う、形容詞は 高くない)。postfix 素通り合成が 酸く+なく/漉く+なく

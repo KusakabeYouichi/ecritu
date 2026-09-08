@@ -99,7 +99,6 @@ struct RadicalStrokeOption: Equatable, Hashable, Identifiable {
     let strokes: Int
 
     var id: String { "\(form)-\(strokes)" }
-    var title: String { "\(form) \(strokes)画" }
 }
 
 enum RadicalStrokeChoiceCatalog {
@@ -165,14 +164,6 @@ struct RadicalStrokeChoices: Equatable {
         self.init(strokesByRadical: parsed)
     }
 
-    var rawValue: String {
-        RadicalStrokeChoiceCatalog.orderedRadicals
-            .compactMap { radical in
-                strokesByRadical[radical].map { "\(radical):\($0)" }
-            }
-            .joined(separator: ",")
-    }
-
     // 未指定なら選択肢の先頭(=Unihan 基準)
     func selectedOption(forRadical radical: Int) -> RadicalStrokeOption? {
         let options = RadicalStrokeChoiceCatalog.options(forRadical: radical)
@@ -189,9 +180,6 @@ struct RadicalStrokeChoices: Equatable {
         selectedOption(forRadical: radical)?.strokes
     }
 
-    mutating func setStrokes(_ strokes: Int, forRadical radical: Int) {
-        strokesByRadical[radical] = strokes
-    }
 }
 
 struct RadicalForm: Identifiable, Equatable {
@@ -203,7 +191,6 @@ struct RadicalForm: Identifiable, Equatable {
     let strokesTraditional: Int?
     let name: String
     let categories: [String]
-    let examples: String
 
     var id: String { "\(radical)-\(form)" }
 
@@ -314,8 +301,7 @@ enum KanjiRadicalCatalog {
                 strokes: strokes,
                 strokesTraditional: entry["strokesTraditional"] as? Int,
                 name: name,
-                categories: categories,
-                examples: entry["examples"] as? String ?? ""
+                categories: categories
             )
         }
     }

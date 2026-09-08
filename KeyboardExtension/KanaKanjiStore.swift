@@ -1279,13 +1279,4 @@ struct SupplementalVocabCompactStore: Equatable {
         }
         return false
     }
-
-    // 欧文サジェスト索引の構築用: 全表層を一度だけ列挙する
-    func forEachCandidate(_ body: (String) -> Void) {
-        for index in 0..<readingCount {
-            for slot in Int(surfaceListStarts[index])..<Int(surfaceListStarts[index + 1]) {
-                body(String(decoding: surfaceBytes(slot: slot, ownerReadingIndex: index), as: UTF8.self))
-            }
-        }
-    }
 }

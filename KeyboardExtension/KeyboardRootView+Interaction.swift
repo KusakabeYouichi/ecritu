@@ -296,30 +296,40 @@ extension KeyboardRootView {
         katakanaCommitFeedbackText = nil
     }
 
-    func selectKanaModeSwitcher(_ output: String) {
-        selectKanaModeSwitcher(output, direction: .milieu)
+    // キー部品の onCommit/onCommitWithDirection の型に合わせて出力文字列を受けるが、切替キーは
+    // ラベル文字を出力しないので使わない(GridLayouts が関数値として渡す)
+    func selectKanaModeSwitcher(_: String) {
+        selectKanaModeSwitcher(direction: .milieu)
     }
 
-    func selectCompactKeyboardSwitchKey(_ output: String) {
-        selectCompactKeyboardSwitchKey(output, direction: .milieu)
+    func selectKanaModeSwitcher(_: String, direction: FlickDirection) {
+        selectKanaModeSwitcher(direction: direction)
     }
 
-    func selectCompactKeyboardSwitchKey(_ output: String, direction: FlickDirection) {
+    func selectCompactKeyboardSwitchKey(_: String) {
+        selectCompactKeyboardSwitchKey(direction: .milieu)
+    }
+
+    func selectCompactKeyboardSwitchKey(_: String, direction: FlickDirection) {
+        selectCompactKeyboardSwitchKey(direction: direction)
+    }
+
+    func selectCompactKeyboardSwitchKey(direction: FlickDirection) {
         switch direction {
         case .milieu:
             onAdvanceKeyboard()
         case .droite, .haut:
-            selectKanaModeSwitcher(output, direction: direction)
+            selectKanaModeSwitcher(direction: direction)
         default:
             return
         }
     }
 
     func handleCompactKeyboardSwitchLongPress() {
-        selectKanaModeSwitcher(kanaModeSwitcherTapAction.keyLabel, direction: .milieu)
+        selectKanaModeSwitcher(direction: .milieu)
     }
 
-    func selectKanaModeSwitcher(_ output: String, direction: FlickDirection) {
+    func selectKanaModeSwitcher(direction: FlickDirection) {
         // 下フリックは部首ピッカー固定(タップ/右/上の3スロットは設定で割り当て可)
         if direction == .bas {
             enterKanjiRadicalMode()
