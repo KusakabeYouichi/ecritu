@@ -14308,3 +14308,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(boosted("じしけん").first, "次試験")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ろぐとって(2828): を落ちの 名詞+動詞(ログ取って)が 名詞+名詞 ログ取手 に 90 差で負けていた。名詞→を の bigram が
+    // 強い名詞の直後の漢字活用派生を割り引く。写真 は pair bonus で 撮って を先頭に
+    func testRegressionRealLMWoDropVerbAfterNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ろぐとって", systemCandidateMode: .surface).first, "ログ取って")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "でーたとって", systemCandidateMode: .surface).first, "データ取って")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しゃしんとって", systemCandidateMode: .surface).first, "写真撮って")
+        // を があるときは従来どおり(かな とって 先頭)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ろぐをとって", systemCandidateMode: .surface).first, "ログをとって")
+    }
+}
