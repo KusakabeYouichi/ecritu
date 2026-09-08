@@ -813,6 +813,34 @@ extension KanaKanjiConverter {
         // 2ぎょうかえるはず(2820): 行(ぎょう)の直後の 返る(7537)を 帰る(6180)より前、変える(5524)より後ろの 2 位に
         "行\t返る": 1500
     ]
+    // が を落とした口語の 名詞+ない(返事ない/時間ない/意味ない/問題ない)。名詞→が の bigram が強い(この値未満)ときだけ、
+    // 名詞→ない を割り引く。へんじないし で 変じる(文語寄りの一段動詞)の派生 変じない(床 7200)が
+    // 返事(6725)+ない(3617)を跨いでいた(ユーザ報告 2823)
+    // 3000 では 返事+ない+し が 変じない+し(11756)に約 300 届かなかったので 4000
+    static let multiClauseGaDropNaiMaxGaBigram = 1200
+    static let multiClauseGaDropNaiBonus = 4000
+    // 活用エンジンが作れない活用形を seed で供給する読み(しすぎ: する 単独の 連用+すぎ)。a2 の seed ノードに
+    // 活用派生フラグを付けて、格助詞直後の活用割引を受けさせる(に+しすぎ が にしすぎ(に+する の派生)に負けない。2823)
+    static let multiClauseSeedInflectionDerivedReadings: Set<String> = ["しすぎ"]
+    // 接続助詞 なら の直後も述語が続くのが自然(あるならさせて/行くなら教えて)。格助詞と同じ活用割引の対象にする。
+    // 無いと ある+なら+させて(7200)が ある+鳴らさせて(派生床 7200 の 1 ノード)に負ける(ユーザ報告 2823)
+    static let multiClauseInflectionDiscountConjunctiveParticles: Set<String> = ["なら"]
+    // 文頭の接続詞 でも/では(かな)。Sudachi が で+も に分割するため LM unigram が無く、文頭では複合助詞クランプも
+    // 掛からず素通り(7000/字)になり、でもふらんす が デモフランス になっていた。デモ(5547、BOS→デモ 5827)を
+    // 下回る水準に置く(ユーザ報告 2823)
+    static let multiClauseSentenceInitialKanaConjunctions: Set<String> = ["でも", "では"]
+    static let multiClauseSentenceInitialKanaConjunctionCost = 4800
+    // カタカナ名詞直後の 1 字 な(フランスな/大人な 型の口語連体・言いさし)。かな素通り(7000)のままだと
+    // でも+振らん+砂 が でも+フランス+な を跨いだ(でもふらんすな、2823)
+    static let multiClauseKatakanaNounNaCost = 2500
+    // 連用形(活用派生)直後の すぎ は 過ぎ/すぎ(間違えられ過ぎ)。杉/椙 の名詞は文法として接続しないので減点(2823)
+    static let multiClauseSugiSuffixSurfaces: Set<String> = ["過ぎ", "すぎ"]
+    static let multiClauseSugiOtherAfterDerivedPenalty = 3000
+    // 連用形の末尾に立つ受身・使役のかな助動詞(間違え+られ、し+させ)。この直後も連用形直後と同じ扱い
+    static let multiClauseRenyouAuxKanaSurfaces: Set<String> = ["れ", "られ", "せ", "させ", "され"]
+    // 辞書形述語+活用派生の直接連結(ある鳴らさせて)の減点。例外は形式名詞化した連用形(できる限り/する度/行く通り)
+    static let multiClausePredicateAdjacentDerivedPenalty = 2500
+    static let multiClausePredicateAdjacentRenyouNounReadings: Set<String> = ["かぎり", "しだい", "たび", "とおり", "かわり", "おき", "つもり", "ばかり"]
     // 準体助詞 の のクランプ対象になる連体詞表層(こういうの/そういうの 等の名詞化)。
     static let multiClausePrenominalAdjectivalSurfaces: Set<String> = [
         "こういう", "そういう", "ああいう", "どういう"

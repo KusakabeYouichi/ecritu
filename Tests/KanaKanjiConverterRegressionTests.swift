@@ -14245,3 +14245,46 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "きのうしたしごと", systemCandidateMode: .surface).first?.hasSuffix("した仕事"), true)
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // へんじないし(2823): 變(変 の旧字体)を含む 9 語を抑制。変じる の派生 変じない(床 7200)が 返事+ない を跨いでいたので、
+    // 名詞→が の bigram が強い名詞の直後の ない(が落ち口語)を割り引く一般則。ばかにしすぎ: 酸い(しい)を抑制、
+    // する 単独の しすぎ を seed で供給し、連文節では活用派生扱いにして に+しすぎ を通す
+    func testRegressionRealLMHenjinaishiAndBakanishisugi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let henji = converter.multiClauseCandidates(for: "へんじないし", systemCandidateMode: .surface)
+        XCTAssertEqual(henji.first, "返事ないし", "multi=\(henji)")
+        XCTAssertFalse(henji.contains { $0.contains("變") }, "multi=\(henji)")
+        XCTAssertFalse(converter.candidates(for: "へんかく", limit: 8, systemCandidateMode: .surface).contains("變革"))
+        XCTAssertEqual(converter.multiClauseCandidates(for: "じかんないし", systemCandidateMode: .surface).first, "時間ないし")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "もんだいないよ", systemCandidateMode: .surface).first, "問題ないよ")
+        // が を落とさない文はそのまま
+        XCTAssertEqual(converter.multiClauseCandidates(for: "へんじがないし", systemCandidateMode: .surface).first, "返事がないし")
+        let baka = converter.multiClauseCandidates(for: "ばかにしすぎ", systemCandidateMode: .surface)
+        XCTAssertEqual(baka.first, "馬鹿にしすぎ", "multi=\(baka)")
+        XCTAssertFalse(baka.contains { $0.contains("酸") }, "multi=\(baka)")
+        XCTAssertEqual(converter.candidates(for: "しすぎ", limit: 4, systemCandidateMode: .surface), ["しすぎ", "し過ぎ"])
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2823 バッチ: 〜放題(compenser 12 語)、連用形直後の すぎ(過ぎ/すぎ を 杉/椙 より前)、接続助詞 なら 直後の活用割引と
+    // 辞書形述語+派生の直接連結の減点(あるならさせて)、文頭の接続詞 でも(seed+文頭クランプ)、カタカナ語+な の許容
+    func testRegressionRealLMBatch2823Readings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(Array(converter.candidates(for: "のみほうだい", limit: 4, systemCandidateMode: .surface).prefix(2)), ["飲み放題", "呑み放題"])
+        XCTAssertEqual(converter.candidates(for: "たべほうだい", limit: 4, systemCandidateMode: .surface).first, "食べ放題")
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "まちがえられすぎ", systemCandidateMode: .surface).prefix(2)), ["間違えられ過ぎ", "間違えられすぎ"])
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "たべられすぎ", systemCandidateMode: .surface).prefix(2)), ["食べられ過ぎ", "食べられすぎ"])
+        let arunara = converter.multiClauseCandidates(for: "あるならさせて", systemCandidateMode: .surface)
+        XCTAssertEqual(arunara.first, "あるならさせて", "multi=\(arunara)")
+        XCTAssertFalse(arunara.contains { $0.contains("鳴らさせて") }, "multi=\(arunara)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "でもふらんす", systemCandidateMode: .surface).first, "でもフランス")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "でもふらんすな", systemCandidateMode: .surface).first, "でもフランスな")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "でもいい", systemCandidateMode: .surface).first, "でもいい")
+        // 名詞 デモ は文中では従来どおり
+        XCTAssertEqual(converter.multiClauseCandidates(for: "でもにさんか", systemCandidateMode: .surface).first?.hasSuffix("に参加"), true)
+    }
+}

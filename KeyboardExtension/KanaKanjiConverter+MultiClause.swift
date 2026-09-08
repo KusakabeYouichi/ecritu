@@ -410,7 +410,9 @@ extension KanaKanjiConverter {
                     if costMap[surface] == nil
                         || (costMap[surface] ?? 0) >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
                         inflectionSupplyGateSatisfied,
-                        cachedInflectedCandidates().contains(surface) {
+                        cachedInflectedCandidates().contains(surface)
+                            // 活用エンジンが作れない活用形の seed(しすぎ 等。定数コメント参照。2823)
+                            || Self.multiClauseSeedInflectionDerivedReadings.contains(segmentReading) {
                         seedIsInflectionDerived = true
                     }
                     add(
@@ -1089,6 +1091,7 @@ extension KanaKanjiConverter {
                 let prevAllowsInflectionDiscount =
                     Self.multiClauseCaseParticleSurfaces.contains(prev)
                     || Self.multiClauseCompoundParticles.contains(prev)
+                    || Self.multiClauseInflectionDiscountConjunctiveParticles.contains(prev)
                     || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
                 base = prevAllowsInflectionDiscount
                     ? Self.multiClauseInflectionAfterParticleCost
@@ -1137,6 +1140,7 @@ extension KanaKanjiConverter {
                 let prevAllowsInflectionDiscount =
                     Self.multiClauseCaseParticleSurfaces.contains(prev)
                     || Self.multiClauseCompoundParticles.contains(prev)
+                    || Self.multiClauseInflectionDiscountConjunctiveParticles.contains(prev)
                     || Self.isParticleTailedAdverbialSurface(prev, reading: prevReading)
                 var cap = prevAllowsInflectionDiscount
                     ? Self.multiClauseInflectionAfterParticleCost
@@ -1181,6 +1185,15 @@ extension KanaKanjiConverter {
                 Self.multiClauseCompoundParticles.contains(surface),
                 let baseParticleBigram = bigramCosts["\(prev)\t\(String(surface.dropLast()))"] {
                 base = min(base, max(Self.multiClauseCompoundParticleCost, baseParticleBigram + Self.multiClauseCompoundParticleBindingParticleCost))
+            }
+            // 文頭の接続詞 でも/では(かな)。LM unigram が無く、文頭ではクランプもされず素通り 14000 になっていた(定数コメント参照。2823)
+            if prev == Self.multiClauseBOSMarker, surface == reading,
+                Self.multiClauseSentenceInitialKanaConjunctions.contains(surface) {
+                base = min(base, Self.multiClauseSentenceInitialKanaConjunctionCost)
+            }
+            // カタカナ名詞直後の 1 字 な(フランスな)。定数コメント参照(2823)
+            if surface == "な", reading == "な", prev.count >= 2, Self.isKatakanaString(prev) {
+                base = min(base, Self.multiClauseKatakanaNounNaCost)
             }
             // っぽい族(名詞接尾)は体言直後を安価にクランプ(赤+っぽく/子供+っぽい。2650)。
             // かな素通り扱いだと1字7000で経路が組めない。BOS直後は対象外
@@ -1291,6 +1304,29 @@ extension KanaKanjiConverter {
             // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
                 penalty -= bonus
+            }
+            // 連用形(活用派生)直後の すぎ は 過ぎ/すぎ。杉/椙 を減点(定数コメント参照。2823)
+            // 受身・使役のかな助動詞(られ/れ/させ/され)で切れた連用形の後ろも同じ(間違え+られ+すぎ の 3 分割経路)
+            if reading == "すぎ", !Self.multiClauseSugiSuffixSurfaces.contains(surface),
+                prevIsInflectionDerived || (prev == prevReading && Self.multiClauseRenyouAuxKanaSurfaces.contains(prev)) {
+                penalty += Self.multiClauseSugiOtherAfterDerivedPenalty
+            }
+            // 辞書形述語(ある/する/行く)の直後に助詞なしで活用派生の述語が続く(ある鳴らさせて)のは非文。形式名詞化
+            // (できる限り/する度)は除く(定数コメント参照。2823)
+            if prevIsDictionaryFormPredicate, isInflectionDerived, prev != Self.multiClauseBOSMarker,
+                !Self.multiClauseFormalNounKanaReadings.contains(reading),
+                !Self.multiClausePredicateAdjacentRenyouNounReadings.contains(reading) {
+                penalty += Self.multiClausePredicateAdjacentDerivedPenalty
+            }
+            // が を落とした口語の 名詞+ない(返事ない/時間ない)。名詞→が の bigram が強い名詞の直後に限る(定数コメント参照。2823)
+            // 1 字の名詞(皮/事)は除外 — 買うか買わないか→買うか皮ないか、押したことない→押した事ない を作った
+            if surface == "ない", reading == "ない",
+                !prevIsInflectionDerived, !prevIsDictionaryFormPredicate, prev != prevReading,
+                prev != Self.multiClauseBOSMarker, prev.count >= 2, containsKanji(prev),
+                // が はラティスの隣接ペア先読みに載らないので store の点クエリ(キャッシュ済み。そう/さ の な と同型)
+                let gaBigram = store.wordLMBigramCosts(for: [(prev, "が")])["\(prev)\tが"],
+                gaBigram < Self.multiClauseGaDropNaiMaxGaBigram {
+                penalty -= Self.multiClauseGaDropNaiBonus
             }
             // 方向・位置の 1 字漢字(下/上/左/右/前/後…)+カタカナ語(フリック/スワイプ/ページ)は複合名詞。
             // した は し+た(bigram 547)の動詞がかな名詞 下(4332)より安く、したふりっく が したフリック
@@ -1845,10 +1881,13 @@ extension KanaKanjiConverter {
                         // ただし直後が の/ん(なので/なのは/なのに/なんです)は断定の助動詞 な
                         // (だ の連体形)で全名詞に付くため対象外 ─ 除外しないと
                         // ひらがななのは→平仮名夏乃波 のように名前へ流れる。
+                        // カタカナ語(オシャレな/リアルな/フランスな)は形容動詞的に な が付くのが生産的で、bigram 実績の
+                        // 無い語も多いので対象外(でもふらんすな→でも振らん砂 の回避。2823)
                         if node.surface == "な", node.reading == "な",
                             !(node.end < n && (chars[node.end] == "の" || chars[node.end] == "ん")),
                             !prevNode.isInflectionDerived,
                             !prevNode.isDictionaryFormPredicate,
+                            !(prevNode.surface.count >= 2 && Self.isKatakanaString(prevNode.surface)),
                             !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
                             (bigramCosts[prevNode.surface + "\tな"] ?? Int.max)
                                 > Self.multiClauseNaAdjectiveBigramThreshold {
@@ -2041,7 +2080,9 @@ extension KanaKanjiConverter {
                             node.reading == "な",
                             node.surface == "な",
                             !Self.isPredicateLikePrevForConditional(prevNode),
-                            !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
+                            !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface),
+                            // カタカナ語+な の言いさし(フランスな…)は許す(2823)
+                            !(prevNode.surface.count >= 2 && Self.isKatakanaString(prevNode.surface)) {
                             cost += Self.multiClauseSentenceFinalNaAfterNounPenalty
                         }
                         // かな語直後の そう(推量・指示)+コピュラ/否定(そうでもない/そうだ/そうじゃない)。
