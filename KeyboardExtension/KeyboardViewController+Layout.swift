@@ -24,8 +24,8 @@ extension KeyboardViewController {
         keyboardSizingView = sizingView
     }
 
-    func beginKeyboardHeightLock(using configuration: RenderConfiguration? = nil) {
-        let lockHeight = preferredKeyboardHeight(using: configuration)
+    func beginKeyboardHeightLock() {
+        let lockHeight = preferredKeyboardHeight()
         keyboardHeightLockValue = lockHeight
         keyboardHeightLockReleaseTime = CFAbsoluteTimeGetCurrent() + Self.keyboardSwitchHeightLockDuration
         synchronizePreferredContentSize(height: lockHeight)
@@ -47,7 +47,7 @@ extension KeyboardViewController {
         )
     }
 
-    func effectivePreferredKeyboardHeight(using configuration: RenderConfiguration? = nil) -> CGFloat {
+    func effectivePreferredKeyboardHeight() -> CGFloat {
         if let keyboardHeightLockValue,
             CFAbsoluteTimeGetCurrent() < keyboardHeightLockReleaseTime {
             return keyboardHeightLockValue
@@ -58,7 +58,7 @@ extension KeyboardViewController {
             keyboardHeightLockReleaseTime = 0
         }
 
-        return preferredKeyboardHeight(using: configuration)
+        return preferredKeyboardHeight()
     }
 
     func synchronizePreferredContentSize(height: CGFloat) {
@@ -99,7 +99,7 @@ extension KeyboardViewController {
         )
     }
 
-    func hasExpandedHeaderForHeight(using configuration: RenderConfiguration? = nil) -> Bool {
+    func hasExpandedHeaderForHeight() -> Bool {
         // 候補表示の有無でボタン群が上下しないよう、テキスト系モードでは常に候補ヘッダー領域を確保する。
         switch currentInputMode {
         case .emoji, .kana, .number, .latin, .formattedNumber:
@@ -169,7 +169,7 @@ extension KeyboardViewController {
         return 0
     }
 
-    func preferredKeyboardHeight(using configuration: RenderConfiguration? = nil) -> CGFloat {
+    func preferredKeyboardHeight() -> CGFloat {
         let screenBounds = view.window?.windowScene?.screen.bounds
             ?? view.window?.bounds
             ?? UIScreen.main.bounds
@@ -204,7 +204,7 @@ extension KeyboardViewController {
                 profile: profile,
                 isLandscapeOrientation: isLandscapeOrientation,
                 shorterScreenEdge: shorterScreenEdge,
-                hasExpandedHeader: hasExpandedHeaderForHeight(using: configuration),
+                hasExpandedHeader: hasExpandedHeaderForHeight(),
                 portraitBottomInset: effectivePortraitBottomInset(
                     for: shorterScreenEdge,
                     isLandscapeOrientation: isLandscapeOrientation
@@ -248,8 +248,8 @@ extension KeyboardViewController {
         )
     }
 
-    func installKeyboardHeightConstraintIfNeeded(using configuration: RenderConfiguration? = nil) {
-        let initialHeight = effectivePreferredKeyboardHeight(using: configuration)
+    func installKeyboardHeightConstraintIfNeeded() {
+        let initialHeight = effectivePreferredKeyboardHeight()
         synchronizePreferredContentSize(height: initialHeight)
         guard let sizingView = inputView ?? view else {
             return
@@ -282,7 +282,7 @@ extension KeyboardViewController {
         keyboardHeightConstraint = constraint
     }
 
-    func updateKeyboardHeightIfNeeded(using configuration: RenderConfiguration? = nil) {
+    func updateKeyboardHeightIfNeeded() {
         guard let sizingView = inputView ?? view else {
             return
         }
@@ -290,11 +290,11 @@ extension KeyboardViewController {
         migrateKeyboardConstraintsIfNeeded(to: sizingView)
 
         guard let keyboardHeightConstraint else {
-            installKeyboardHeightConstraintIfNeeded(using: configuration)
+            installKeyboardHeightConstraintIfNeeded()
             return
         }
 
-        let nextHeight = effectivePreferredKeyboardHeight(using: configuration)
+        let nextHeight = effectivePreferredKeyboardHeight()
         synchronizePreferredContentSize(height: nextHeight)
 
         let needsEqualHeightUpdate = abs(keyboardHeightConstraint.constant - nextHeight) > 0.5

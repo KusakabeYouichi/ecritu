@@ -323,8 +323,7 @@ extension KeyboardViewController {
                     cacheKey: pendingKey,
                     converterCandidates: converterCandidates,
                     multiClauseLeadingKana: multiClauseLeadingKana,
-                    presentationLimit: presentationLimit,
-                    systemCandidateMode: systemCandidateMode
+                    presentationLimit: presentationLimit
                 )
             }
         }
@@ -335,8 +334,7 @@ extension KeyboardViewController {
         cacheKey: CandidatePresentationCacheKey,
         converterCandidates: [String],
         multiClauseLeadingKana: Bool = false,
-        presentationLimit: Int,
-        systemCandidateMode: KanaKanjiCandidateSourceMode
+        presentationLimit: Int
     ) {
         guard candidateGenerationSequencer.isCurrent(generation) else {
             return

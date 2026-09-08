@@ -1292,9 +1292,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         XCTAssertEqual(store.candidates(for: "みとうろく"), [])
         XCTAssertFalse(store.contains(reading: "みとうろく", surface: "亜"))
-        var collected: Set<String> = []
-        store.forEachCandidate { collected.insert($0) }
-        XCTAssertEqual(collected, Set(dictionary.values.flatMap { $0 }))
         // 空辞書
         XCTAssertTrue(SupplementalVocabCompactStore.empty.isEmpty)
         XCTAssertEqual(SupplementalVocabCompactStore.empty.candidates(for: "あ"), [])
@@ -1357,7 +1354,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         z = stats()
         _ = converter.candidatesForReading("が", ajoutVocabulary: [:], initialAjoutVocabulary: [:], systemCandidateMode: .surface)
         report("Z2:candidatesForReading[が]", z)
-        print("WATERMARK hist前: \(KeyboardViewController.diagnosticsMallocSizeHistogram())")
         // ── A: 1字読みの単文節(実機台帳の主犯疑い)を読み別に ──
         for r in ["が", "に", "と", "し", "か", "は", "の", "て", "も", "で"] {
             let b1 = stats()
@@ -1366,7 +1362,6 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         }
         print("WATERMARK キャッシュ: \(converter.diagnosticsCacheCountsSummary())")
         print("WATERMARK sqlite/fp: \(MemoryForensics.summaryLine())")
-        print("WATERMARK hist後: \(KeyboardViewController.diagnosticsMallocSizeHistogram())")
         print("WATERMARK 構造: \(converter.store.diagnosticsStructureBytesSummary())")
         var b = stats()
 
@@ -10961,7 +10956,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                 let keys = ordered.map { [$0.strokes(choices: choices), $0.radical] }
                 XCTAssertEqual(keys, keys.sorted { lhs, rhs in
                     lhs[0] != rhs[0] ? lhs[0] < rhs[0] : lhs[1] < rhs[1]
-                }, "\(category.title)/\(choices.rawValue) の並びが画数順でない")
+                }, "\(category.title)/\(String(describing: choices)) の並びが画数順でない")
             }
         }
 
@@ -10978,10 +10973,8 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
 
         let kusa = try XCTUnwrap(forms.first { $0.form == "艹" })
         XCTAssertEqual(kusa.strokes(choices: RadicalStrokeChoices()), 3)
-        var custom = RadicalStrokeChoices()
-        custom.setStrokes(6, forRadical: 140)
+        let custom = RadicalStrokeChoices(strokesByRadical: [140: 6])
         XCTAssertEqual(kusa.strokes(choices: custom), 6)
-        XCTAssertEqual(custom.rawValue, "140:6")
         // 一覧・見出しの字形も選択に追随する(2503)
         XCTAssertEqual(kusa.displayForm(choices: custom), "艸")
         XCTAssertEqual(kusa.displayForm(choices: RadicalStrokeChoices()), "⺾")

@@ -12,26 +12,6 @@ final class MemoryForensicsTests: XCTestCase {
         XCTAssertTrue(line.contains("internal="), "line=\(line)")
     }
 
-    func testHeapAnatomyReportsPagesAndBlocks() {
-        // アリーナを確実に育ててから解剖する: 8MB 確保→解放で dirty ページを作る
-        var junk: [[UInt8]] = []
-        for _ in 0..<64 {
-            junk.append([UInt8](repeating: 0xA5, count: 128 * 1024))
-        }
-        junk.removeAll()
-
-        let line = MemoryForensics.heapAnatomySummary(ignoreThrottle: true)
-        print("FORENSICS \(MemoryForensics.summaryLine())")
-        print("FORENSICS \(line)")
-        XCTAssertTrue(line.contains("anatomy regions="), "line=\(line)")
-        XCTAssertTrue(line.contains("dirty内訳"), "line=\(line)")
-        // ブロック数と生存量が正の値で出ること(列挙が実際に走った証拠)
-        let blocks = Self.intValue(after: "blocks=", in: line)
-        XCTAssertGreaterThan(blocks ?? -1, 100, "line=\(line)")
-        let liveMB = Self.doubleValue(after: "liveMB=", in: line)
-        XCTAssertGreaterThan(liveMB ?? -1, 0.1, "line=\(line)")
-    }
-
     func testVMRegionSummaryProducesTags() {
         let line = MemoryForensics.vmRegionSummaryByTag()
         print("FORENSICS \(line)")
@@ -118,13 +98,4 @@ final class MemoryForensicsTests: XCTestCase {
         print(String(format: "CATALOG total(touched)=%.2fMB", usedMB()))
     }
 
-    private static func intValue(after prefix: String, in line: String) -> Int? {
-        guard let range = line.range(of: prefix) else { return nil }
-        return Int(line[range.upperBound...].prefix(while: { $0.isNumber }))
-    }
-
-    private static func doubleValue(after prefix: String, in line: String) -> Double? {
-        guard let range = line.range(of: prefix) else { return nil }
-        return Double(line[range.upperBound...].prefix(while: { $0.isNumber || $0 == "." }))
-    }
 }

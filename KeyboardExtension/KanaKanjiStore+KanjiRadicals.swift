@@ -8,6 +8,7 @@ import Foundation
 struct KanjiRadicalFileIndex {
     struct Entry {
         let character: String
+        // 部首内画数。描画には使わないが、索引ファイルの並び(総画数→部首内画数)の検査(テスト)が読む
         let residualStrokes: Int
         let kuten: String
         let readings: String
@@ -20,8 +21,6 @@ struct KanjiRadicalFileIndex {
     init(data: Data) {
         self.data = data
     }
-
-    var isEmpty: Bool { data.isEmpty }
 
     // 部首番号(1〜214)に属する字を、ファイル順(総画数→部首内画数→コードポイント)で返す。
     func entries(radical: Int) -> [Entry] {

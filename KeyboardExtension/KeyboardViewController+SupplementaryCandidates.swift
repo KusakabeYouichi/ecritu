@@ -175,7 +175,7 @@ extension KeyboardViewController {
             }
 
             let userInput = entry.userInput.trimmingCharacters(in: .whitespacesAndNewlines)
-            var readingKeys = supplementaryReadingKeys(userInput: userInput, candidate: candidate)
+            var readingKeys = supplementaryReadingKeys(userInput: userInput)
 
             guard !readingKeys.isEmpty else {
                 continue
@@ -508,7 +508,7 @@ extension KeyboardViewController {
         return limited
     }
 
-    func supplementaryReadingKeys(userInput: String, candidate: String) -> [String] {
+    func supplementaryReadingKeys(userInput: String) -> [String] {
         var readingKeys: [String] = []
 
         let normalizedUserInput = KanaTextNormalizer.normalizedReading(userInput)

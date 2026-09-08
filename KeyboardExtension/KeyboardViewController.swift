@@ -670,7 +670,7 @@ final class KeyboardViewController: UIInputViewController {
         ensureKeyboardViewIfNeeded()
         // viewDidLoad 直後の初回表示では setupKeyboardView が構築した設定をそのまま使い、
         // 設定全読みの二重実行を避ける(設定変更は observer 経由で反映されるため安全)。
-        beginKeyboardHeightLock(using: lastRenderConfiguration ?? makeRenderConfiguration())
+        beginKeyboardHeightLock()
         configureInputAssistantBar()
         prepareKeyboardVisualForTransition()
         spaceToastTrigger += 1
@@ -1152,8 +1152,8 @@ final class KeyboardViewController: UIInputViewController {
         // 設定系フィールドだけなので、直近の描画設定を再利用し、フル構築(defaults約25キー
         // 読み+候補提示の再evaluate)は初回のみに抑える。
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
-        installKeyboardHeightConstraintIfNeeded(using: configuration)
-        updateKeyboardHeightIfNeeded(using: configuration)
+        installKeyboardHeightConstraintIfNeeded()
+        updateKeyboardHeightIfNeeded()
     }
 
     override func viewDidLayoutSubviews() {
@@ -1161,8 +1161,8 @@ final class KeyboardViewController: UIInputViewController {
         logLayoutGeometryIfChanged()
 
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
-        installKeyboardHeightConstraintIfNeeded(using: configuration)
-        updateKeyboardHeightIfNeeded(using: configuration)
+        installKeyboardHeightConstraintIfNeeded()
+        updateKeyboardHeightIfNeeded()
 
         updateKeyboardVisualVisibility(using: configuration)
 
@@ -1206,8 +1206,8 @@ final class KeyboardViewController: UIInputViewController {
 
         // 遷移先の確定値で1回だけ算出して publish する。
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
-        installKeyboardHeightConstraintIfNeeded(using: configuration)
-        updateKeyboardHeightIfNeeded(using: configuration)
+        installKeyboardHeightConstraintIfNeeded()
+        updateKeyboardHeightIfNeeded()
 
         coordinator.animate(alongsideTransition: nil) { [weak self] _ in
             guard let self else {
@@ -1217,8 +1217,8 @@ final class KeyboardViewController: UIInputViewController {
             // 確定値で再算出してホストと同期し直す。
             pendingSizeTransitionTargetSize = nil
             let settled = lastRenderConfiguration ?? makeRenderConfiguration()
-            installKeyboardHeightConstraintIfNeeded(using: settled)
-            updateKeyboardHeightIfNeeded(using: settled)
+            installKeyboardHeightConstraintIfNeeded()
+            updateKeyboardHeightIfNeeded()
         }
     }
 
@@ -1241,8 +1241,8 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         let configuration = makeRenderConfiguration()
-        installKeyboardHeightConstraintIfNeeded(using: configuration)
-        updateKeyboardHeightIfNeeded(using: configuration)
+        installKeyboardHeightConstraintIfNeeded()
+        updateKeyboardHeightIfNeeded()
     }
 
     private func setupKeyboardView() {
@@ -1263,8 +1263,8 @@ final class KeyboardViewController: UIInputViewController {
         ])
 
         // Keep keyboard height scaled to the current iPhone screen size.
-        installKeyboardHeightConstraintIfNeeded(using: configuration)
-        updateKeyboardHeightIfNeeded(using: configuration)
+        installKeyboardHeightConstraintIfNeeded()
+        updateKeyboardHeightIfNeeded()
 
         host.didMove(toParent: self)
         hostingController = host
@@ -1580,7 +1580,7 @@ final class KeyboardViewController: UIInputViewController {
 
         applyKeyboardBaseBackground()
         installKeyboardHeightConstraintIfNeeded()
-        updateKeyboardHeightIfNeeded(using: configuration)
+        updateKeyboardHeightIfNeeded()
 
         guard configuration != lastRenderConfiguration else {
             let refreshElapsedMs = performanceElapsedMilliseconds(since: refreshStartedAt)

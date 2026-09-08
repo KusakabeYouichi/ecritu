@@ -715,7 +715,6 @@ struct EmojiCategoryKeyButton: View {
     let icon: String
     let isSelected: Bool
     let action: () -> Void
-    private let keyLabelColor = KeyboardThemePalette.keyLabel
 
     var body: some View {
         Button(action: action) {

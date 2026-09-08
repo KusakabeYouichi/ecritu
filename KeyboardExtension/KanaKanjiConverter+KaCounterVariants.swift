@@ -27,7 +27,6 @@ extension KanaKanjiConverter {
 
     struct KaCounterOccurrence {
         let variantIndex: Int        // か の位置(Character 配列の添字)
-        let baseLength: Int
         let coversWholeCandidate: Bool  // 接頭+か+基底 が候補全体(1か所/数か月/三か所)か、文中の一部(数か月前の話)か
     }
 
@@ -59,7 +58,7 @@ extension KanaKanjiConverter {
                     continue
                 }
                 return KaCounterOccurrence(
-                    variantIndex: index, baseLength: baseLength,
+                    variantIndex: index,
                     coversWholeCandidate: start == 0 && index + 1 + baseLength == chars.count
                 )
             }
@@ -70,14 +69,12 @@ extension KanaKanjiConverter {
             if kanjiStart < index {
                 // 漢数字接頭は候補全体が一致するときだけ(三か所)
                 if kanjiStart == 0, index + 1 + baseLength == chars.count {
-                    return KaCounterOccurrence(variantIndex: index, baseLength: baseLength, coversWholeCandidate: true)
+                    return KaCounterOccurrence(variantIndex: index, coversWholeCandidate: true)
                 }
                 continue
             }
             if index == 0 {
-                return KaCounterOccurrence(
-                    variantIndex: index, baseLength: baseLength, coversWholeCandidate: 1 + baseLength == chars.count
-                )
+                return KaCounterOccurrence(variantIndex: index, coversWholeCandidate: 1 + baseLength == chars.count)
             }
         }
         return nil

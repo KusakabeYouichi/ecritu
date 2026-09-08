@@ -231,15 +231,7 @@ enum UnitProductSeparatorOption: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    var character: String {
-        switch self {
-        case .middleDot: return "\u{00B7}"
-        case .dotOperator: return "\u{22C5}"
-        case .space: return " "
-        }
-    }
-
-    // コンテナーアプリの表示はグリフでなくユニコードのコードで示す。
+    // コンテナーアプリの表示はグリフでなくユニコードのコードで示す(実際の文字への変換はキーボード側)。
     var title: String {
         switch self {
         case .middleDot: return "U+00B7"
@@ -257,14 +249,6 @@ enum LitreSymbolOption: String, CaseIterable, Identifiable {
     case script   // ℓ U+2113 スクリプト小文字エル
 
     var id: String { rawValue }
-
-    var character: String {
-        switch self {
-        case .small: return "l"
-        case .capital: return "L"
-        case .script: return "\u{2113}"
-        }
-    }
 
     var title: String {
         switch self {
@@ -387,15 +371,7 @@ enum ThousandsSeparatorOption: String, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
-    // 実際に挿入する文字。space はノーブレークスペース(U+00A0)ではなく通常空白。
-    var character: String {
-        switch self {
-        case .space: return " "
-        case .comma: return ","
-        case .dot: return "."
-        }
-    }
-
+    // 実際に挿入する文字への変換はキーボード側(space はノーブレークスペースではなく通常空白)
     var title: String {
         switch self {
         case .space: return "espace"
@@ -411,13 +387,6 @@ enum DecimalSeparatorOption: String, CaseIterable, Identifiable {
     case comma
 
     var id: String { rawValue }
-
-    var character: String {
-        switch self {
-        case .dot: return "."
-        case .comma: return ","
-        }
-    }
 
     var title: String {
         switch self {
@@ -800,13 +769,6 @@ enum LandscapeCandidateSideOption: String, CaseIterable, Identifiable {
     case right
 
     var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .left: return "左"
-        case .right: return "右"
-        }
-    }
 }
 
 enum LandscapeLatinSuggestionModeOption: String, CaseIterable, Identifiable {
@@ -814,13 +776,6 @@ enum LandscapeLatinSuggestionModeOption: String, CaseIterable, Identifiable {
     case off
 
     var id: String { rawValue }
-
-    var title: String {
-        switch self {
-        case .sidebar: return "使う"
-        case .off: return "使わない"
-        }
-    }
 }
 
 enum AccentColorOption: String, CaseIterable, Identifiable {

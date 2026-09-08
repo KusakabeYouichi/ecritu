@@ -2,29 +2,9 @@ import Foundation
 
 // 学習語彙(手動追加=追加語彙 / 自動学習=学習語彙)の読み書きと学習スコア。
 // UserDefaults 上の ÉcrituAjoutVocab / 学習辞書 / 学習スコアを更新・集計する。
+// 追加語彙の書き込み(addUserEntry/saveAjoutVocabulary)はコンテナーアプリが App Group の defaults に直接行い、
+// キーボード側は読むだけ。テストが使う書き込み補助は Tests/TestSupport+StoreHelpers.swift(2822)
 extension KanaKanjiStore {
-    func addUserEntry(reading: String, candidate: String) {
-        let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
-        let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-        guard !normalizedReading.isEmpty,
-                !trimmedCandidate.isEmpty else {
-            return
-        }
-
-        var dictionary = ajoutVocabulary()
-        var candidates = dictionary[normalizedReading] ?? []
-
-        if let existingIndex = candidates.firstIndex(of: trimmedCandidate) {
-            candidates.remove(at: existingIndex)
-        }
-
-        candidates.insert(trimmedCandidate, at: 0)
-        dictionary[normalizedReading] = Array(candidates.prefix(32))
-        withCacheLock { cachedAjoutVocabulary = dictionary }
-        saveAjoutVocabulary(dictionary)
-    }
-
     func addLearnedEntry(reading: String, candidate: String, allowKanaIdentity: Bool = false) {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         let trimmedCandidate = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -101,13 +81,6 @@ extension KanaKanjiStore {
         persistDirtyLearningNow()
     }
 
-    // テスト用: 学習永続化の完了を待つ(フレッシュな store で defaults を読む前に呼ぶ)。
-    // デバウンス待ちの分も即時に書き出す。
-    func waitForPendingLearningPersists() {
-        persistDirtyLearningNow()
-        learningPersistQueue.sync {}
-    }
-
     func learningScores() -> [String: Int] {
         if let cached = withCacheLock({ cachedLearningScores }) {
             return cached
@@ -180,15 +153,6 @@ extension KanaKanjiStore {
             learningPersistDirtyScores = true
         }
         scheduleLearningPersist()
-    }
-
-    func saveAjoutVocabulary(_ dictionary: [String: [String]]) {
-        guard let defaults,
-                let encoded = try? JSONEncoder().encode(dictionary) else {
-            return
-        }
-
-        defaults.set(encoded, forKey: KanaKanjiStorageKeys.ajoutVocabulary)
     }
 
     func saveLearnedDictionary(_ dictionary: [String: [String]]) {
