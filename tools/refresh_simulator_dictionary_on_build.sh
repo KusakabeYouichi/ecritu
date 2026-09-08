@@ -201,14 +201,16 @@ python3 tools/build_second_vocab_from_references.py \
 
 # 欧文サジェストの追加語彙側索引(2770)。補助語彙 JSON から実行時と同一のフィルタ・折り畳みで
 # key\tcandidate\t0 をキーのバイト順に前計算する(実行時構築の fp +8MB ピークを無くす)。
-# references/vin-acronyme.plist(欧文専用: shortcut がキー、phrase が候補)もここで合流する。
+# references/vin-acronyme.plist と acronymes.plist(欧文専用: shortcut がキー、phrase が候補)もここで合流する。
 # swift スクリプトの起動は約2秒なので、補助語彙が前回から変わっていないときは飛ばす。
 latin_suppl_stamp="$ROOT_DIR/tmp/.LatinSuggestionSupplemental.src.sha"
 REF_VIN_ACRONYME_PLIST="$ROOT_DIR/references/vin-acronyme.plist"
-latin_suppl_src_sha="$(shasum -a 256 "$TMP_SECOND" "$REF_VIN_ACRONYME_PLIST" tools/build_latin_suggestion_supplemental.swift | shasum -a 256 | cut -d' ' -f1)"
+# references/acronymes.plist(ワイン以外の略語、欧文専用。同じ書式)も合流する(2830)
+REF_ACRONYMES_PLIST="$ROOT_DIR/references/acronymes.plist"
+latin_suppl_src_sha="$(shasum -a 256 "$TMP_SECOND" "$REF_VIN_ACRONYME_PLIST" "$REF_ACRONYMES_PLIST" tools/build_latin_suggestion_supplemental.swift | shasum -a 256 | cut -d' ' -f1)"
 if [[ ! -f "$TMP_LATIN_SUPPL" || ! -f "$latin_suppl_stamp" || "$(cat "$latin_suppl_stamp")" != "$latin_suppl_src_sha" ]]; then
   # Xcode のビルド環境は SDKROOT が iOS SDK を指すため、スクリプト実行は macOS SDK を明示する
-  if SDKROOT="$(xcrun --sdk macosx --show-sdk-path)" swift tools/build_latin_suggestion_supplemental.swift "$TMP_SECOND" "$TMP_LATIN_SUPPL" "$REF_VIN_ACRONYME_PLIST"; then
+  if SDKROOT="$(xcrun --sdk macosx --show-sdk-path)" swift tools/build_latin_suggestion_supplemental.swift "$TMP_SECOND" "$TMP_LATIN_SUPPL" "$REF_VIN_ACRONYME_PLIST" "$REF_ACRONYMES_PLIST"; then
     echo "$latin_suppl_src_sha" > "$latin_suppl_stamp"
   else
     echo "[dict] Warning: 欧文サジェスト索引の前計算に失敗しました。同梱済みの前回分で継続します。"

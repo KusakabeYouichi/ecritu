@@ -5,7 +5,6 @@
 	<!-- ワインの略語・記号(ラテン文字)。欧文サジェスチョン専用: 検索キー(実行時 latinSuggestionSearchKey と同じ折り畳み。ßはそのまま)。『■ 』=カテゴリー、『□ 』=サブカテゴリー -->
 
 	<!-- ■ 原産地呼称・品質分類制度(EU 共通の品質表示) -->
-	<dict><key>phrase</key><string>J.S.A.</string><key>shortcut</key><string>jsa</string></dict>	<!-- Japan Sommelier Association(日本ソムリエ協会)。ユーザ指定 2830 -->
 	<dict><key>phrase</key><string>P.D.O.</string><key>shortcut</key><string>pdo</string></dict>	<!-- Protected Designation of Origin -->
 	<dict><key>phrase</key><string>P.G.I.</string><key>shortcut</key><string>pgi</string></dict>	<!-- Protected Geographical Indication -->
 	<dict><key>phrase</key><string>T.S.G.</string><key>shortcut</key><string>tsg</string></dict>	<!-- Traditional Speciality Guaranteed -->
