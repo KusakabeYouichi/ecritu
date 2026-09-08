@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- ワイン以外の略語・記号(ラテン文字)。欧文サジェスチョン専用(2830): shortcut=打鍵する文字列(小文字・ピリオド無しで書く。
+	     実行時の latinSuggestionSearchKey と同じ折り畳みが掛かる)、phrase=候補。ワインの略語は vin-acronyme.plist へ。
+	     ビルド時に tools/build_latin_suggestion_supplemental.swift が同梱索引 LatinSuggestionSupplemental.txt に取り込むので、
+	     足したら ⌘R(ビルド)で反映。『■ 』=カテゴリー、『□ 』=サブカテゴリー -->
+
+	<!-- ■ 団体・組織 -->
+	<dict><key>phrase</key><string>J.S.A.</string><key>shortcut</key><string>jsa</string></dict>	<!-- Japan Sommelier Association(日本ソムリエ協会)。vin-acronyme から移動(2830) -->
+</array>
+</plist>

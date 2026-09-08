@@ -10,7 +10,7 @@
 //   latinSuggestionSearchKey(diacritic/case/width insensitive, fr_FR, lowercased)
 // rank は 0 固定(追加語彙側の並びはキー順+同キー内は候補の localizedCaseInsensitiveCompare 順)。
 //
-// 3 つめ以降の引数は欧文サジェスト専用 plist(references/vin-acronyme.plist)。shortcut を検索キー、
+// 3 つめ以降の引数は欧文サジェスト専用 plist(references/vin-acronyme.plist、acronymes.plist)。shortcut を検索キー、
 // phrase を候補としてそのまま合流する(キーは phrase から導出しない: 『D.A.C.』を dac で引くため)。
 // キーには実行時と同じ折り畳みを掛けるので、plist 側は小文字・ピリオド除去済みでなくても揃う。
 //
