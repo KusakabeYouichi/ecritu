@@ -14288,3 +14288,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "でもにさんか", systemCandidateMode: .surface).first?.hasSuffix("に参加"), true)
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 84[えんに](2825): 数字直後の 助数詞+かな末尾 の前置が、助数詞の字で始まるだけの辞書語(円爾=僧名、円賀)も
+    // 拾って 円に より前に出していた。残りがかなの合成形だけを前置する
+    func testRegressionDigitContextCounterTailExcludesKanjiWords() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        func boosted(_ r: String) -> [String] {
+            KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                converter.candidates(for: r, limit: 8, systemCandidateMode: .surface), reading: r, precedingCharacter: "4",
+                tailConversion: { [converter] tail in converter!.counterTailConversion(tail) }
+            )
+        }
+        XCTAssertEqual(boosted("えんに").first, "円に", "\(boosted("えんに"))")
+        XCTAssertEqual(boosted("えんが").first, "円が", "\(boosted("えんが"))")
+        XCTAssertEqual(boosted("えんで").first, "円で")
+        // 末尾の変換形(次試験/回も押したことない)は従来どおり
+        XCTAssertEqual(boosted("じしけん").first, "次試験")
+    }
+}

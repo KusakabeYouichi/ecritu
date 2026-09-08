@@ -682,8 +682,12 @@ extension KanaKanjiConverter {
                             matched.append(convertedForm)
                         }
                     }
+                    // 末尾が助詞 1 字(に/が/で…)のときは 助数詞+助詞 のかな形だけを前置する。助数詞の字で始まるだけの
+                    // 辞書語(円爾=えんに の僧名、円賀=えんが)は助詞を漢字に当てた別語で、84円に で 円に より前に出ていた
+                    // (ユーザ報告 2825)。長い末尾(まえの→前の)の漢字残りは従来どおり合成として扱う
                     let existing = candidates.filter {
                         $0.count > surface.count && $0.hasPrefix(surface) && !matched.contains($0)
+                            && (tail.count > 1 || $0.dropFirst(surface.count).allSatisfy({ ("ぁ"..."ゖ").contains($0) }))
                     }
                     if existing.isEmpty {
                         // 助数詞が辞書 rank 圏外だと合成候補自体が立たない(回ぐらい 等)。
