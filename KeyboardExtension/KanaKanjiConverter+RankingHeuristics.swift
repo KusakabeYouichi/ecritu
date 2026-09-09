@@ -5,6 +5,44 @@ import Foundation
 extension KanaKanjiConverter {
     static let kuruKanjiCandidateBoost = 1450
 
+    // 文頭の感動詞(2846): おっと は「おっと、忘れてた」の感動詞用法ではかなが正書だが、辞書順も LM も
+    // 同音の名詞(夫 uni5318 ≪ おっと 7995)が上位で、行頭で打っても 夫 が先頭だった(ユーザ報告)。
+    // 直前に確定文字が無い(行頭・改行直後・句読点直後)ときだけ、かな識別を先頭へ繰り上げる。
+    // 文中(彼女の夫)は従来どおり 夫 が先頭 — 読み全体がこの語のときだけなので連文節の途中にも掛からない
+    static let sentenceInitialInterjectionKanaLeadReadings: Set<String> = ["おっと"]
+    // 文の切れ目とみなす直前 1 文字(句読点・終止符・開き括弧・空白)。改行と「直前が空」も切れ目
+    static let sentenceInitialBoundaryCharacters: Set<Character> = [
+        "。", "、", "．", "，", ".", ",", "!", "?", "！", "？", "「", "『", "(", "（", "【", "〔", " ", "\u{3000}"
+    ]
+
+    static func isSentenceInitialContext(precedingCharacter: Character?) -> Bool {
+        guard let precedingCharacter else {
+            return true
+        }
+        if precedingCharacter.isNewline {
+            return true
+        }
+        return sentenceInitialBoundaryCharacters.contains(precedingCharacter)
+    }
+
+    // 文頭の感動詞のかな識別を先頭へ(定数コメント参照)。候補集合は変えず順序だけ入れ替える
+    static func sentenceInitialInterjectionPromotedCandidates(
+        _ candidates: [String],
+        reading: String,
+        precedingCharacter: Character?
+    ) -> [String] {
+        guard sentenceInitialInterjectionKanaLeadReadings.contains(reading),
+            isSentenceInitialContext(precedingCharacter: precedingCharacter),
+            let index = candidates.firstIndex(of: reading),
+            index > 0 else {
+            return candidates
+        }
+        var reordered = candidates
+        reordered.remove(at: index)
+        reordered.insert(reading, at: 0)
+        return reordered
+    }
+
     static let godanImperativeCandidateBoost = 320
 
     static let godanVolitionalCandidateBoost = 320
