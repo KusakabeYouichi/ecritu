@@ -2333,10 +2333,13 @@ extension KanaKanjiConverter {
                 // 文末 そう の全漢字表層(層/僧/草)への減点(定数コメント参照)。直前ノードの
                 // 表層がひらがな終わり(ほとんど/たぶん/これも 等)に限定 — 漢字名詞直後は
                 // 学生層/富裕層 等の生産的な複合なので減点しない(がくせいそう の防護)。
+                // 連体の の の直後は名詞が続くのが自然(油の層/雲の層)なので減点しない。〜のそう を
+                // 文末のかな そう で終える言い方はほぼ無い(あぶらのそう→油のそう が先頭で 層 が変種にも無かった。2840)
                 if Self.multiClauseSentenceFinalAllKanjiPenaltyReadings.contains(nodes[idx].reading),
                     KanaKanjiConverter.isAllKanjiSurface(nodes[idx].surface),
                     !nodes[idx].isCurated,
                     backPointer[idx] >= 0,
+                    nodes[backPointer[idx]].surface != "の",
                     let prevLast = nodes[backPointer[idx]].surface.unicodeScalars.last,
                     (0x3041...0x3096).contains(prevLast.value) {
                     total += Self.multiClauseFinalParticleKanjiPenalty
