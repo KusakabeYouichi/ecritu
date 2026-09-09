@@ -10,6 +10,7 @@
 		A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
 		A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		5C73BA92F9B707E8D0F8F160 /* ContactCacheCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */; };
+		7E91929B15D3EC153828D400 /* AppGroupDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139BEDE269A8770429B08C32 /* AppGroupDiagnostics.swift */; };
 		0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
 		A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F600000000FF08 /* DateFormatCatalog.swift */; };
@@ -130,6 +131,7 @@
 		8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E807A57473C85475BCAA585B /* EcrituApp.swift */; };
 		8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		B7067E4631919AD2BEF06FD1 /* ContactCacheCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */; };
+		3D3004F9FC0F69BC3BEAE480 /* AppGroupDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139BEDE269A8770429B08C32 /* AppGroupDiagnostics.swift */; };
 		4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
 		8D78613535A703BDB593E778 /* KanaKanjiStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */; };
@@ -161,6 +163,7 @@
 		E720F22020AECD4CA0A2E3F7 /* KanaKanjiConverterRegressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B334B844356306350487E012 /* KanaKanjiConverterRegressionTests.swift */; };
 		EC8FDC01B55FCFCE162E0226 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		60B06C587F133C40555963C6 /* ContactCacheCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */; };
+		C081F56A5D19B4DA170E5CAF /* AppGroupDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139BEDE269A8770429B08C32 /* AppGroupDiagnostics.swift */; };
 		CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */; };
 		5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */; };
 		ECDBEEB3F6EF91C0EB7C3E85 /* KeyboardViewController+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBCA2A2C0BECA4CEC1F55BFB /* KeyboardViewController+Layout.swift */; };
@@ -239,6 +242,7 @@
 		31B98B9E42E4E93025B51ECB /* KeyboardKeyComponents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardKeyComponents.swift; sourceTree = "<group>"; };
 		39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DakutenDuckIcon.swift; sourceTree = "<group>"; };
 		2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCacheCipher.swift; sourceTree = "<group>"; };
+		139BEDE269A8770429B08C32 /* AppGroupDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppGroupDiagnostics.swift; sourceTree = "<group>"; };
 		3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KaCounterVariantPreference.swift; sourceTree = "<group>"; };
 		81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OkuriganaVariantPreference.swift; sourceTree = "<group>"; };
 		3E243E0E4A8BE9229D7694DE /* kana_kanji_inflection_dictionary.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = kana_kanji_inflection_dictionary.json; sourceTree = "<group>"; };
@@ -408,6 +412,7 @@
 				83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */,
 				39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */,
 				2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */,
+				139BEDE269A8770429B08C32 /* AppGroupDiagnostics.swift */,
 				3C3AF807717D293F1CFC3598 /* KaCounterVariantPreference.swift */,
 				81D934D40B6494AEA0275382 /* OkuriganaVariantPreference.swift */,
 				175BA54F5130F67FF3A05039 /* FlickKanaLayout.swift */,
@@ -755,6 +760,7 @@
 				A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */,
 				A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */,
 				5C73BA92F9B707E8D0F8F160 /* ContactCacheCipher.swift in Sources */,
+				7E91929B15D3EC153828D400 /* AppGroupDiagnostics.swift in Sources */,
 				0DE7B13833F2917EFD596F15 /* KaCounterVariantPreference.swift in Sources */,
 				C1E5DB422C47D25880BCC0D8 /* OkuriganaVariantPreference.swift in Sources */,
 				A1B2C3D4E5F600000T000002 /* DateFormatCatalog.swift in Sources */,
@@ -829,6 +835,7 @@
 				4295AC8BC709B3CD3FE6E133 /* ContentView.swift in Sources */,
 				EC8FDC01B55FCFCE162E0226 /* DakutenDuckIcon.swift in Sources */,
 				60B06C587F133C40555963C6 /* ContactCacheCipher.swift in Sources */,
+				3D3004F9FC0F69BC3BEAE480 /* AppGroupDiagnostics.swift in Sources */,
 				CDF448E37D898133E60724A8 /* KaCounterVariantPreference.swift in Sources */,
 				5912EF241EFFCF00FE3C59AE /* OkuriganaVariantPreference.swift in Sources */,
 				8BCC1E4F9906F5BEA4C9AFCF /* EcrituApp.swift in Sources */,
@@ -856,6 +863,7 @@
 				2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */,
 				8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */,
 				B7067E4631919AD2BEF06FD1 /* ContactCacheCipher.swift in Sources */,
+				C081F56A5D19B4DA170E5CAF /* AppGroupDiagnostics.swift in Sources */,
 				4A33C802ABCB82C4980C79A3 /* KaCounterVariantPreference.swift in Sources */,
 				18CDA1EACCF5CD1A23660FEC /* OkuriganaVariantPreference.swift in Sources */,
 				0B7C9000DDE3B341088C24C3 /* FlickKanaLayout.swift in Sources */,

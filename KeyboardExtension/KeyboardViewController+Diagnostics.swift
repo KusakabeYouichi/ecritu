@@ -2,6 +2,7 @@ import SwiftUI
 import UIKit
 import CoreFoundation
 import Darwin
+import os
 
 // 診断まわりの帳簿状態。VC本体の状態肥大を防ぐため分離(挙動不変の移動)。
 extension KeyboardViewController {
@@ -1198,9 +1199,13 @@ extension KeyboardViewController {
             defaultsRoundTrip = sharedDefaults.string(forKey: probeKey) == probeValue ? "ok" : "mismatch"
         }
 
-        appendKeyboardDiagnosticsLog(
-            "AppGroup健全性 group=\(SharedDefaultsKeys.appGroupID) containerURL=\(containerReachable ? "ok" : "nil") defaults=\(defaultsRoundTrip)"
-        )
+        let healthLine = "AppGroup健全性 \(AppGroupDiagnostics.summaryLine(groupID: SharedDefaultsKeys.appGroupID)) fullAccess=\(hasFullAccess ? 1 : 0) containerURL=\(containerReachable ? "ok" : "nil") defaults=\(defaultsRoundTrip)"
+        appendKeyboardDiagnosticsLog(healthLine)
+        // フルアクセスがオフだと App Group へ書けず上の行自体が残らない(ベータテスター 2026-09-09: containermanagerd が
+        // not entitled で拒否、拡張側の記録ゼロ)。その状況でも読めるように、同じ行を iOS の統合ログにも出す
+        // (`log collect --device` → `log show --predicate 'process == "KeyboardExtension"'`)。notice は既定で永続化される
+        let unifiedLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ecritu.keyboard", category: "diagnostics")
+        unifiedLogger.notice("\(healthLine, privacy: .public)")
     }
 
     // ---- 押下表示残留(赤キー)の証拠収集 ----
