@@ -14,12 +14,14 @@ final class KanaKanjiSQLiteIndex {
     private var selectCandidatesWithExactSourceStatement: OpaquePointer?
     private var selectInflectionStatement: OpaquePointer?
     private var selectWordCostStatement: OpaquePointer?
+    private var selectPersonNameStatement: OpaquePointer?
     private var selectWordLMUnigramStatement: OpaquePointer?
     private var selectWordLMBigramStatement: OpaquePointer?
     private var selectCandidateMinWordCostStatement: OpaquePointer?
     private(set) var hasSourceMetadata = false
     private(set) var hasInflectionMetadata = false
     private(set) var hasWordCostMetadata = false
+    private(set) var hasPersonNameMetadata = false
     private(set) var hasWordLMMetadata = false
     private(set) var hasCandidateMinWordCostMetadata = false
     private(set) var hasAnyEntries = false
@@ -95,6 +97,14 @@ final class KanaKanjiSQLiteIndex {
             )
         }
 
+        // 人名区分(姓/名。Sudachi の 名詞,固有名詞,人名 由来)。旧形式の DB には表が無い=機能オフ(2845)
+        hasPersonNameMetadata = tableExists("person_names")
+        if hasPersonNameMetadata {
+            selectPersonNameStatement = prepareStatement(
+                sql: "SELECT candidate, kind FROM person_names WHERE reading = ?"
+            )
+        }
+
         // 連文節変換(案1: 自前単語 n-gram LM)。unigram/bigram の両テーブルが揃って初めて有効。
         hasWordLMMetadata = tableExists("word_lm_unigram") && tableExists("word_lm_bigram")
         if hasWordLMMetadata {
@@ -142,6 +152,10 @@ final class KanaKanjiSQLiteIndex {
 
         if let selectWordCostStatement {
             sqlite3_finalize(selectWordCostStatement)
+        }
+
+        if let selectPersonNameStatement {
+            sqlite3_finalize(selectPersonNameStatement)
         }
 
         if let selectWordLMUnigramStatement {
@@ -224,6 +238,42 @@ final class KanaKanjiSQLiteIndex {
                 }
 
                 result[candidate] = inflectionClass
+            }
+
+            return result
+        }
+    }
+
+    // 読みに対する人名候補(表層→姓/名)。表が無ければ空
+    func personNameKindMap(for reading: String) -> [String: String] {
+        queryQueue.sync {
+            guard hasPersonNameMetadata,
+                let statement = selectPersonNameStatement else {
+                return [:]
+            }
+
+            resetStatement(statement)
+
+            let bindResult = reading.withCString { readingCString in
+                sqlite3_bind_text(statement, 1, readingCString, -1, sqliteTransientDestructor)
+            }
+
+            guard bindResult == SQLITE_OK else {
+                return [:]
+            }
+
+            var result: [String: String] = [:]
+
+            while sqlite3_step(statement) == SQLITE_ROW {
+                guard let candidateCString = sqlite3_column_text(statement, 0),
+                    let kindCString = sqlite3_column_text(statement, 1) else {
+                    continue
+                }
+                let candidate = String(cString: candidateCString)
+                guard !candidate.isEmpty else {
+                    continue
+                }
+                result[candidate] = String(cString: kindCString)
             }
 
             return result

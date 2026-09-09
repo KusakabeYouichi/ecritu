@@ -14513,3 +14513,22 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single.prefix(3)), ["人", "ひと", "他人"], "single=\(single)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 人名の 2 規則(sqlite person_names、2845):
+    // きたがわさん: LM は 北側 5663 < 北川 6010 で 北側さん が先頭だった。かなの敬称の直前は人名(姓/名)を優先
+    // いつもまんせきな: マン+昔奈(姓、wc10000)が 満席+な を押し出していた。収穫底値の人名は 1 字断片の直後に立たない
+    // 単文節 [きたがわ] は 北側 先頭のまま(ユーザ了承)、お客さん(客 は人名でない)は不変
+    func testRegressionRealLMPersonNameHonorificAndFragment() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きたがわさん", systemCandidateMode: .surface).first, "北川さん")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たなかさん", systemCandidateMode: .surface).first, "田中さん")
+        // お客さん は丸ごと辞書語(連文節は空)なので単文節側で見る
+        XCTAssertEqual(converter.candidates(for: "おきゃくさん", limit: 3, systemCandidateMode: .surface).first, "お客さん")
+        XCTAssertEqual(converter.candidates(for: "きたがわ", limit: 3, systemCandidateMode: .surface).first, "北側")
+        let manseki = converter.multiClauseCandidates(for: "いつもまんせきな", systemCandidateMode: .surface)
+        XCTAssertEqual(manseki.first, "いつも満席な", "multi=\(manseki)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "まんせきな", systemCandidateMode: .surface).first, "満席な")
+    }
+}
