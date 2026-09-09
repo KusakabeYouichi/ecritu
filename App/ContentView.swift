@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260910004710"
+    private static let editionUpdatedAtRaw: String = "20260910012859"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1369,7 +1369,10 @@ struct ContentView: View {
                 // initialLoadingToast(小さいトースト)を重ね、.disabled で操作だけ止める
                 // (白背景の全画面 Loading で待たせない。ユーザ方針)。
                 ScrollView {
-                        VStack(alignment: .leading, spacing: 16) {
+                        // LazyVStack: 設定カードは約 290 個のコントロールを 8 群に持つ。VStack だと初回フレームで
+                        // 全部を構築し、実機で cardsBuildMs=380〜460(= firstFrameMs のほぼ全部、OS のハング検出 0.44s)
+                        // だった。画面に入る分だけ構築させる(2849)
+                        LazyVStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 Spacer(minLength: 0)
 
