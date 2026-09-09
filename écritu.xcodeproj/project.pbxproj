@@ -589,7 +589,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2660;
+				LastUpgradeCheck = 9999;
 				TargetAttributes = {
 					65E0D8750AA690D94732710E = {
 						DevelopmentTeam = "$(ECRITU_DEVELOPMENT_TEAM)";
