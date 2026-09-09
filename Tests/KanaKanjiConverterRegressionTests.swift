@@ -14334,3 +14334,34 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(converter.candidates(for: "つけめん", limit: 6, systemCandidateMode: .surface).prefix(4)), ["つけ麺", "つけめん", "付け麺", "付けめん"])
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // のむんでしょ(2834): 準体の ん は bigram の有無で 行く→ん 2576 / 飲む→ん 4958 と差が付き、の+ムン+でしょ に負けていた。
+    // 述語(辞書形・活用派生)直後の ん を名詞化節と同じ水準にクランプ
+    func testRegressionRealLMNomundeshoJuntaiN() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("のむんでしょ", "飲むんでしょ"), ("のむんじゃない", "飲むんじゃない"), ("くるんでしょ", "来るんでしょ"),
+                                    ("たかいんでしょ", "高いんでしょ"), ("みたんでしょ", "見たんでしょ"), ("いくんでしょ", "行くんでしょ")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        // こんな(来ん+な)は無傷
+        XCTAssertEqual(converter.candidates(for: "こんな", limit: 3, systemCandidateMode: .surface).first, "こんな")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2834: 準体の ん は動詞の種類を問わず(む 終わり: 噛む/詰む/読む も)。まぜぐあい は一段 混ぜる の連用形 opt-in で 混ぜ具合。
+    // だったんそば(韃靼蕎麦)は ん の直後が そ なので準体扱いされず丸ごと語が残る
+    func testRegressionRealLMJuntaiNAcrossVerbsAndMazeguai() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("かむんでしょ", "噛むんでしょ"), ("つむんでしょ", "積むんでしょ"), ("よむんでしょ", "読むんでしょ"),
+                                    ("はなすんでしょ", "話すんでしょ"), ("おきるんでしょ", "起きるんでしょ")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+        let maze = converter.multiClauseCandidates(for: "まぜぐあい", systemCandidateMode: .surface)
+        XCTAssertEqual(maze.first, "混ぜ具合", "multi=\(maze)")
+        XCTAssertTrue(converter.multiClauseCandidates(for: "だったんそば", systemCandidateMode: .surface).contains { $0.hasPrefix("韃靼") || $0.hasPrefix("脱炭") })
+    }
+}

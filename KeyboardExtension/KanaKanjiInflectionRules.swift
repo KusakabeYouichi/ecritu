@@ -227,7 +227,8 @@ extension KanaKanjiConverter {
     // 空の readingSuffix = 読み全体が語幹(derivedCandidates 側で分岐)
     // のせる: のせわすれた が の+世話+擦れた になっていた。連用形 乗せ/載せ を供給し、複合動詞の
     // 前部要素ボーナス(multiClauseCompoundVerbRenyouStemReadings)と対で 載せ忘れた を組む(2784)
-    static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる", "のせる"]
+    // まぜる: まぜぐあい が 馬瀬具合/間瀬具合(姓)にしかならず 混ぜ具合 が組めなかった(ユーザ報告 2834)
+    static let ichidanRenyouNounBaseReadings: Set<String> = ["たべる", "のせる", "まぜる"]
 
     // 一段命令形(ろ/よ)を供給しない基底読み。居ろ が 色 を、射ろ が 意呂 を跨ぐ等、
     // 命令形として使う頻度より同音語の実害が大きいもの(2026-08-27)

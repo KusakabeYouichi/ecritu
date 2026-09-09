@@ -330,9 +330,11 @@ extension KanaKanjiConverter {
                 let costMap = store.wordCosts(for: segmentReading)
 
                 // (b2) の供給ゲートと同条件。a2 の派生形判定でも使うため先に評価する。
+                // 一段の連用形 opt-in(たべ/のせ/まぜ)は末尾かなが活用語尾でないので、読み全体+る で別途通す(まぜぐあい→混ぜ具合。2834)
                 let inflectionSupplyGateSatisfied = len >= 2
                     && len <= Self.multiClauseInflectionMaxSegmentReadingCount
-                    && segmentReading.last.map { Self.inflectionRuleSuffixLastCharacters.contains($0) } == true
+                    && (segmentReading.last.map { Self.inflectionRuleSuffixLastCharacters.contains($0) } == true
+                        || Self.ichidanRenyouNounBaseReadings.contains(segmentReading + "る"))
                 // 活用エンジン供給の候補(b2 と a2 で共有。キャッシュは systemCandidateMode 込み)
                 func cachedInflectedCandidates() -> [String] {
                     let inflectionCacheKey = "\(systemCandidateMode)|\(segmentReading)"
@@ -1795,6 +1797,15 @@ extension KanaKanjiConverter {
                     let nodeIsSupplementalKatakanaExempt = supplementalKatakanaExemptNodeKeys.contains(nodeKeySV)
                     // 〜ったん の丸ごと語 vs コピュラ過去+準体助詞(定数コメント参照)
                     let nodeTanContractionPenalty: Int = {
+                        // かな識別の 〜たん 縮約ノード(みたん=見た+ん の丸ごとかな)は、漢字述語+ん の分割(見た 7200+ん 666)より
+                        // 安い 7200 で立ち、みたんでしょ が漢字にならなかった。文頭でも文中でも分割より後ろに置く(2834)
+                        // 漢字の派生(充たん/満たん=満たさない の縮約)も、直後が んだ/んでしょ の準体文脈なら同じ(見た+ん と同点で
+                        // 列挙順勝ちしていた)
+                        if node.isInflectionDerived, node.reading.count >= 3, node.reading.hasSuffix("たん"),
+                            node.surface == node.reading
+                                || (node.end < n && Self.multiClauseJuntaiNFollowerCharacters.contains(chars[node.end])) {
+                            return Self.multiClauseKanaTanContractionPenalty
+                        }
                         guard node.reading.hasSuffix("ったん"),
                             node.surface != node.reading,
                             !node.isInflectionDerived,
@@ -2147,6 +2158,18 @@ extension KanaKanjiConverter {
                             if let nounSurface, Self.multiClauseTemporalElapseNounSurfaces.contains(nounSurface) {
                                 cost += Self.multiClauseAuPersonMismatchPenalty
                             }
+                        }
+                        // 準体の ん(=の。飲むん+でしょ/行くん+じゃない)は述語(辞書形・活用派生)直後で、直後に だ/で/じ/か/の/な/
+                        // よ/ね/け(んだ/んでしょ/んじゃ/んか/んの/んな/んよ/んね/んけど)が続くときだけ名詞化節と同じ水準に。
+                        // bigram の有無で 行く→ん 2576 / 飲む→ん 4958 と差が付き、のむんでしょ が の+ムン+でしょ に負けていた
+                        // (ユーザ報告 2834)。直後を見ないと だったん+そば(韃靼蕎麦)の丸ごと語を潰す
+                        // かな識別の派生(みた)には掛けない — 漢字の述語(見た)と同点になりかなが先頭に出る。かな正書の述語
+                        // (ある/する/かかる)は例外
+                        if node.surface == "ん", node.reading == "ん", node.end < n,
+                            Self.multiClauseJuntaiNFollowerCharacters.contains(chars[node.end]),
+                            prevNode.isDictionaryFormPredicate || prevNode.isInflectionDerived,
+                            prevNode.surface != prevNode.reading || Self.multiClauseKanaPredicateIdentities.contains(prevNode.reading) {
+                            cost = min(cost, prevCost + Self.multiClauseNominalizerAfterPredicateCost)
                         }
                         // 述語+と(条件)の直後の 1 字終助詞 な/ね/よ(しておかないとな/行かないとね)。1 字終助詞は
                         // こんな(来ん+な)退行のため一般にはクランプしないが、直前が述語直後の と なら 名/菜 の
