@@ -787,6 +787,10 @@ extension KanaKanjiConverter {
         var unigramSurfaces = Set<String>()
         unigramSurfaces.insert(Self.multiClauseBOSMarker)
         unigramSurfaces.insert(Self.multiClauseEOSMarker)
+        // 単独名詞判定の連接先(が/を/は/の/に/も)はラティスに無くても unigram を引いておく(addPair の門番を通すため。2841)
+        for follower in Self.multiClauseStandaloneNounEvidenceFollowers {
+            unigramSurfaces.insert(follower)
+        }
         for node in nodes {
             unigramSurfaces.insert(node.surface)
             // 活用派生ノードの語幹トークン(通っ/追っ)も引く: 助詞が動詞の頭を食う分割の比較に使う(定数コメント参照)
@@ -925,7 +929,33 @@ extension KanaKanjiConverter {
                 addPair(auxTail, Self.multiClauseEOSMarker)
             }
         }
+        // 単独名詞になれない 1 字漢字の LM 側判定(定数コメント参照。2841): LM 収録の 1 字漢字辞書語について
+        // 格助詞/の/文末への連接を引く(1 字あたり 7 対、ラティス内の該当ノードは十数個)
+        let standaloneKanjiProbeSurfaces: Set<String> = Set(nodes.compactMap { node -> String? in
+            guard node.surface.count == 1, node.isDictWord, !node.isInflectionDerived, !node.isCurated,
+                node.surface != node.reading, KanaKanjiConverter.isAllKanjiSurface(node.surface),
+                unigramCosts[node.surface] != nil else {
+                return nil
+            }
+            return node.surface
+        })
+        for surface in standaloneKanjiProbeSurfaces {
+            for follower in Self.multiClauseStandaloneNounEvidenceFollowers {
+                addPair(surface, follower)
+            }
+        }
         let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
+        let weakStandaloneKanjiSurfaces: Set<String> = standaloneKanjiProbeSurfaces.filter { surface in
+            let evidence = Self.multiClauseStandaloneNounEvidenceFollowers.filter { follower in
+                bigramCosts["\(surface)\t\(follower)"] != nil
+            }.count
+            return evidence < Self.multiClauseStandaloneNounMinEvidence
+        }
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil {
+            print("MULTITRACE weakStandaloneKanji probe=\(standaloneKanjiProbeSurfaces.sorted()) weak=\(weakStandaloneKanjiSurfaces.sorted())")
+        }
+        #endif
 
         // 文頭のかな助詞 で(定数コメント参照)。読み で で始まる活用派生(出ない/出た/できない/でかい 等、
         // 幅 3 以上)が立っているときだけ減点する。でも/では/です は別ノードなので無関係
@@ -1691,6 +1721,12 @@ extension KanaKanjiConverter {
             if prev == Self.multiClauseBOSMarker, surface == reading,
                 Self.multiClauseBOSPenalizedParticles.contains(surface) {
                 penalty += Self.multiClauseBOSParticlePenalty
+            }
+            // 単独名詞になれない 1 字漢字(総/想 等)の直後に格助詞/の/文末は立たない(定数コメント参照。2841)
+            if weakStandaloneKanjiSurfaces.contains(prev),
+                surface == Self.multiClauseEOSMarker || surface == "の"
+                    || Self.multiClauseCaseParticleSurfaces.contains(surface) {
+                penalty += Self.multiClauseWeakStandaloneKanjiBeforeParticlePenalty
             }
             // 体言直後のかなコピュラ・クラスタ(だし/だから/だけど…)はクランプ(定数コメント参照。2771)。
             // 直前がカタカナ語(外来語名詞)で、助詞・述語(活用派生/辞書形)でないときだけ。
@@ -2863,7 +2899,12 @@ extension KanaKanjiConverter {
                 // 無条件に許すと などという→等という/にほんビール が復活する
                 let allowsSeedOrderFromKanaLead =
                     Self.multiClauseSeedOrderVariantKanaLeadReadings.contains(alt.reading)
+                // 単独名詞になれない 1 字漢字(総/想: 定数コメント参照。2841)が名詞の位置(直後が格助詞/の/文末)に
+                // ある変種は seed 順で繰り上げない(seed の そう→層→総→想 は単文節の並び用)。DP の減点をそのまま使う
+                let isWeakStandaloneAltInNounSlot = weakStandaloneKanjiSurfaces.contains(alt.surface)
+                    && (nextNode.map { $0.surface == "の" || Self.multiClauseCaseParticleSurfaces.contains($0.surface) } ?? true)
                 if alt.reading == chosen.reading,
+                    !isWeakStandaloneAltInNounSlot,
                     alt.surface != alt.reading || allowsSeedOrderFromKanaLead,
                     chosen.surface != chosen.reading || allowsSeedOrderFromKanaLead,
                     delta <= Self.multiClauseVariantMaxDelta || allowsSeedOrderFromKanaLead,
