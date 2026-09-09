@@ -941,9 +941,14 @@ extension KanaKanjiConverter {
         // 文頭の裸の助詞(も/は/が…)を跨いで、LM が知る 3 字以上の辞書語(網膜=もうまく)が文頭から立っているときは、
         // 助詞から始まる断片解釈をさらに重くする(定数コメント参照。2819)。がでないのだけど(画 は 1 字)には掛からず、
         // 2 字の語(這う=はう、乳=にう)で はうまいなあ/にうっかり の は/に を潰さないよう 3 字以上に限る
+        // 2 字の語でも LM unigram が強い常用語(何=なに 4529)は対象にする(定数コメント参照。2840)
         let hasScriptedDictWordFromStart: Bool = nodes.contains { node in
-            node.start == 0 && node.end >= 3 && node.isDictWord && !node.isInflectionDerived
-                && node.surface != node.reading && unigramCosts[node.surface] != nil
+            guard node.start == 0, node.isDictWord, !node.isInflectionDerived,
+                node.surface != node.reading, let unigram = unigramCosts[node.surface] else {
+                return false
+            }
+            return node.end >= 3
+                || (node.end == 2 && unigram <= Self.multiClauseBOSOverlapStrongTwoCharUnigramMax)
         }
         func sentenceInitialParticleOverlapPenalty(for node: MultiClauseNode) -> Int {
             guard hasScriptedDictWordFromStart, node.start == 0, node.surface == node.reading,

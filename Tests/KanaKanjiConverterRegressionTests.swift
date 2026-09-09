@@ -14471,3 +14471,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ほとんどそう", systemCandidateMode: .surface).first, "ほとんどそう")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // なにするひと(ユーザ報告 2840): 文頭の な(かな識別 3394)+にする(curated 床 1500)+人 が 何(5029)+する(3758)+人 を
+    // 大差で下回り、何する人 が候補から消えていた。文頭の裸の助詞に な を追加し、文頭から LM 収録語が立つときの
+    // 重ね減点(3500)を「2 字でも unigram ≤5000 の常用語(何)」に拡張。はうまいなあ(這う 7272)/にうっかり(乳 6054)は閾値外
+    func testRegressionRealLMNanisuruHitoKeepsNani() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let hito = converter.multiClauseCandidates(for: "なにするひと", systemCandidateMode: .surface)
+        XCTAssertEqual(hito.first, "何する人", "multi=\(hito)")
+        let dakke = converter.multiClauseCandidates(for: "なにするひとだっけ", systemCandidateMode: .surface)
+        XCTAssertEqual(dakke.first, "何する人だっけ", "multi=\(dakke)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "なにしてるの", systemCandidateMode: .surface).first, "何してるの")
+    }
+}
