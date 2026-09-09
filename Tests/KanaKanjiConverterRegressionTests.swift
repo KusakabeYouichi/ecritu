@@ -14456,3 +14456,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertNotEqual(atta.dropFirst().first, "熱田が", "multi=\(atta)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // あぶらのそう(ユーザ報告 2840): 文末 そう の全漢字減点が助詞 の の直後にも効き、油のそう が先頭で
+    // 層 が変種(3 枠)にも無かった。の 直後は減点対象外にし、の\t層 の連語ボーナスで 僧/総/相 の LM 偏りを跨ぐ。
+    // 油の層 が先頭になれば 脂の層 は先頭区間の変種として出る。ほとんどそう(かな)/がくせいそう(学生層)は不変
+    func testRegressionRealLMAburaNoSouPrefersLayer() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "あぶらのそう", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "油の層", "multi=\(multi)")
+        XCTAssertTrue(multi.contains("脂の層"), "multi=\(multi)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "くものそう", systemCandidateMode: .surface).first, "雲の層")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ほとんどそう", systemCandidateMode: .surface).first, "ほとんどそう")
+    }
+}
