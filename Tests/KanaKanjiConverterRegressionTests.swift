@@ -14394,10 +14394,10 @@ extension KanaKanjiConverterRegressionTests {
         // 連語ボーナスは 印刷 が続くときだけ(神に祈る は不変)
         XCTAssertEqual(converter.multiClauseCandidates(for: "かみにいのる", systemCandidateMode: .surface).first, "神に祈る")
         XCTAssertEqual(Array(converter.multiClauseCandidates(for: "したほうが", systemCandidateMode: .surface).prefix(2)), ["したほうが", "した方が"])
-        // 死んだ の後は LM が 霊 を好む(死んだ霊も)。芯だ例も が消えて 死んだ〜 が先頭、例も が候補に残ることを固定
+        // 芯だ例も が消えて 死んだ例も が先頭(例 はレア読み床の免除で 霊 に勝つ。2837)。変種は seed 順(礼/零/レイ)
         let shinda = converter.multiClauseCandidates(for: "しんだれいも", systemCandidateMode: .surface)
-        XCTAssertEqual(shinda.first?.hasPrefix("死んだ"), true, "multi=\(shinda)")
-        XCTAssertTrue(shinda.contains("死んだ例も"), "multi=\(shinda)")
+        XCTAssertEqual(shinda.first, "死んだ例も", "multi=\(shinda)")
+        XCTAssertFalse(shinda.contains { $0.hasPrefix("芯だ") }, "multi=\(shinda)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "しんだひと", systemCandidateMode: .surface).first, "死んだ人")
         // 既存の連語(頭が最良)は従来どおり
         XCTAssertEqual(converter.multiClauseCandidates(for: "こうしゅうのかひ", systemCandidateMode: .surface).first, "甲州の果皮")
