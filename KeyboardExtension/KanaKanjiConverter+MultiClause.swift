@@ -1099,9 +1099,11 @@ extension KanaKanjiConverter {
                 // 仕様書 wc13674/uni6386)は、Sudachi の連接コストが高いだけの正当な複合語。
                 // 床上げすると 杯+賞金 や テストしよう+署 のような分割に必ず負ける
                 // 読み5かな以上に限る: 短い読み(あった 等)は word_costs にその読みの行しか無い
-                // 表層(熱田)でも乖離ゼロになり、除外が効きすぎる(あったが で 熱田が が2位に)
+                // 表層(熱田)でも乖離ゼロになり、除外が効きすぎる(あったが で 熱田が が2位に)。
+                // ただし辞書形述語(活用表に載る動詞。向く wc10699/uni6325)は人手選別済みの実在語なので
+                // 読みの長さを問わない(さかなにむく→魚に無垢 が先頭で 魚に向く が変種にも無かった。2839)
                 let isOwnMainReadingWellKnownCompound: Bool = {
-                    guard reading.count >= 5,
+                    guard reading.count >= 5 || isDictionaryFormPredicate,
                         let wordCost, let unigram = unigramCosts[surface],
                         unigram < Self.multiClauseDictUnknownCost,
                         let minWordCost = candidateMinWordCosts[surface] else {
