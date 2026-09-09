@@ -14438,3 +14438,21 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ふくをきていました", systemCandidateMode: .surface).first, "服を着ていました")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // さかなにむく(ユーザ報告 2839): 向く は wc 10699 の収穫底値扱いで OOV 水準(9500)に床上げされ、
+    // 無垢(uni 7005)/椋/剥く に負けて変種にも居なかった。辞書形述語は読みの長さを問わず
+    // 「自身の主読み+LM 既知」の例外(2678)に含める。あったが(熱田 除外)は従来どおり
+    func testRegressionRealLMSakanaNiMukuPrefersMuku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "さかなにむく", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "魚に向く", "multi=\(multi)")
+        // 単文節も seed で 向く→剥く→無垢→むく(ユーザ指定: 向く はかなり上位に)
+        let single = converter.candidates(for: "むく", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(4)), ["向く", "剥く", "無垢", "むく"], "single=\(single)")
+        let atta = converter.multiClauseCandidates(for: "あったが", systemCandidateMode: .surface)
+        XCTAssertEqual(atta.first, "あったが", "multi=\(atta)")
+        XCTAssertNotEqual(atta.dropFirst().first, "熱田が", "multi=\(atta)")
+    }
+}
