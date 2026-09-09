@@ -10,6 +10,8 @@ enum FlickGuideDisplayMode: String {
 // KeyboardViewController が viewDidLoad で設定し、watchdog が強制解除した時に呼ぶ。
 enum KeyboardStuckTouchDiagnostics {
     static var onForceClear: ((String) -> Void)?
+    // 調査用ログ(記号面切替 2838): touchForensicsLabel 付きのキーが commit したときの接触詳細。原因判明後に外す
+    static var onTouchForensics: ((String) -> Void)?
 }
 
 enum LongPressCandidatePanelPlacement {
@@ -113,7 +115,10 @@ struct FlickKeyView: View {
     var downDirectionalHintFontScale: CGFloat = 1
     var downDirectionalHintVerticalOffsetAdjustment: CGFloat = 0
     var onTouchStateChanged: (Bool) -> Void = { _ in }
+    // 調査用ログ(記号面切替 2838): 設定するとこのキーの commit ごとに接触詳細(開始位置/移動量/接触時間)を診断へ流す。原因判明後に外す
+    var touchForensicsLabel: String? = nil
 
+    @State private var touchBeganAt: Date?
     @State private var activeDirection: FlickDirection = .milieu
     @State private var isTouching = false
     @State private var longPressIsActive = false
@@ -594,6 +599,7 @@ struct FlickKeyView: View {
                     scheduleLongPressIfNeeded()
                     resetSecondaryFlickState()
                     scheduleStuckTouchWatchdog()
+                    touchBeganAt = value.time
                 }
                 isTouching = true
                 latestTouchLocationX = value.location.x
@@ -672,6 +678,20 @@ struct FlickKeyView: View {
                 } else {
                     committedText = kana.output(for: committedDirection)
                     committedDirectionForCallback = committedDirection
+                }
+
+                // 調査用ログ(記号面切替 2838): 触った覚えの無い左下キー commit の接触詳細。原因判明後に外す
+                if let touchForensicsLabel {
+                    let size = keyFrameInGlobal.size
+                    let start = value.startLocation
+                    let durationMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) } ?? -1
+                    let detail = String(
+                        format: "%@ dir=%@ start=(%.0f,%.0f)/key=(%.0f,%.0f) move=(%.0f,%.0f) durMs=%d longPress=%d",
+                        touchForensicsLabel, String(describing: committedDirectionForCallback),
+                        start.x, start.y, size.width, size.height,
+                        value.translation.width, value.translation.height, durationMs, longPressIsActive ? 1 : 0
+                    )
+                    KeyboardStuckTouchDiagnostics.onTouchForensics?(detail)
                 }
 
                 finalizeTouchInteractionState()

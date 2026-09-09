@@ -126,7 +126,8 @@ extension KeyboardRootView {
                         )
                     },
                     activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
-                    directionalHintHorizontalOffset: 16
+                    directionalHintHorizontalOffset: 16,
+                    touchForensicsLabel: "左下キー(5x2)"  // 調査用ログ(記号面切替 2838)
                 )
                     .frame(width: leftModeSwitchButtonWidth, height: height)
             } else if inputMode == .latin {
@@ -192,7 +193,8 @@ extension KeyboardRootView {
                 directionalHintHorizontalOffset: 16,
                 onTouchStateChanged: { isTouching in
                     updateActiveLayer(isTouching, layerIndex: 3)
-                }
+                },
+                touchForensicsLabel: "左下キー(3x3)"  // 調査用ログ(記号面切替 2838)
             )
                 .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
         }

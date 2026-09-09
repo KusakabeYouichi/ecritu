@@ -646,6 +646,10 @@ final class KeyboardViewController: UIInputViewController {
         KeyboardStuckTouchDiagnostics.onForceClear = { [weak self] detail in
             self?.recordStuckTouchForceClear(detail)
         }
+        // 調査用ログ(記号面切替 2838): 左下キーの commit ごとの接触詳細。原因判明後に外す
+        KeyboardStuckTouchDiagnostics.onTouchForensics = { [weak self] detail in
+            self?.appendKeyboardDiagnosticsLog("接触詳細 \(detail)")
+        }
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
 
         // メモリ警告カウントは「表示セッション」単位でリセットする。
