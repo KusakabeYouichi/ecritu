@@ -11855,7 +11855,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             onCommitComposingText: {},
             onCommitComposingTextAsKatakana: {},
             onUpgradeRecentKanaCommitToKatakana: { false },
-            onInputModeChanged: { _ in },
+            onInputModeChanged: { _, _ in },
             showsNextKeyboardKey: false,
             containerFrame: .zero,
             directionProfile: .apple,

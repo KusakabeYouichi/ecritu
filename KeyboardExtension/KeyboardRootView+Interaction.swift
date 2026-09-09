@@ -85,6 +85,8 @@ extension KeyboardRootView {
     }
 
     func performPostModifierEmptyTapAction() {
+        // 調査用ログ(記号面切替 2838): 未確定なしで修飾キーをタップした経路。原因判明後に外す
+        inputModeChangeTrigger = "修飾キー空タップ(\(kanaPostModifierEmptyTapActionRawValue))"
         switch kanaPostModifierEmptyTapActionRawValue {
         case "emoji":
             if let rawValue = Int(kanaPostModifierEmptyTapEmojiCategoryID),
@@ -326,10 +328,12 @@ extension KeyboardRootView {
     }
 
     func handleCompactKeyboardSwitchLongPress() {
-        selectKanaModeSwitcher(direction: .milieu)
+        selectKanaModeSwitcher(direction: .milieu, triggerLabel: "左下キー長押し(コンパクト)")
     }
 
-    func selectKanaModeSwitcher(direction: FlickDirection) {
+    func selectKanaModeSwitcher(direction: FlickDirection, triggerLabel: String? = nil) {
+        // 調査用ログ(記号面切替 2838): どの操作で面が変わったかを記録。原因判明後に外す
+        inputModeChangeTrigger = triggerLabel ?? "左下キー \(direction)"
         // 下フリックは部首ピッカー固定(タップ/右/上の3スロットは設定で割り当て可)
         if direction == .bas {
             enterKanjiRadicalMode()

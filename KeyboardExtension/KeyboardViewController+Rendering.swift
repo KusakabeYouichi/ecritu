@@ -408,7 +408,7 @@ extension KeyboardViewController {
 
                 return upgraded
             },
-            onInputModeChanged: { [weak self] mode in
+            onInputModeChanged: { [weak self] mode, changeDetail in
                 guard let self else {
                     return
                 }
@@ -425,8 +425,9 @@ extension KeyboardViewController {
                 }
 
                 self.currentInputMode = mode
+                // 調査用ログ(記号面切替 2838): 引き金(changeDetail)を添える。原因判明後に外す
                 self.updateKeyboardDiagnosticsHeartbeat(
-                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode))",
+                    event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode)) 引き金=\(changeDetail)",
                     appendLog: true
                 )
 
