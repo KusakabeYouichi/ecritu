@@ -167,6 +167,7 @@
 	<dict><key>phrase</key><string>体が</string><key>shortcut</key><string>からだが</string></dict>	<!-- からだが: curated かな識別 だが(1500)が 空(から)+だが 分割を安くし、体(からだ)+が(が→EOS 3831が重い)を218差で逆転するため固定句化。空だが/殻だが は単文節側に温存される -->
 	<dict><key>phrase</key><string>うっかり</string><key>shortcut</key><string>うっかり</string></dict>	<!-- うっかり: かな正書語。かな識別curatedが無いと に+うっかり(最良)が全かなエコー抑制で捨てられ、同コスト(dictUnknown8700)変種の うツかり(Sudachiの促音大書き表記ゆれエントリ、supprで抑制済み)等が繰り上がる -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>それぞれ</string><key>shortcut</key><string>それぞれ</string></dict>	<!-- それぞれ: かな正書語(uni4329≪其々7995)。かな識別curatedが無いと それぞれ+を(最良)が全かなエコー抑制で捨てられ 其々を が繰り上がる(うっかり と同型) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>ここ</string><key>shortcut</key><string>ここ</string></dict>	<!-- ここ: かな正書の指示語(uni4556、此処 は硬い表記)。かな識別curatedが無いと [ここで] が 個々で/ココで/斯で の順で かな が末尾だった(ユーザ報告 2846)。個々 は候補に残る -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>なぜ</string><key>shortcut</key><string>なぜ</string></dict>	<!-- なぜ: かな正書語(uni5289<何故6391)。かな識別curatedが無いと なぜそれが(最良・全かな)がエコー抑制で捨てられ 何故それが が先頭化する(それぞれ と同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしい</string><key>shortcut</key><string>おいしい</string><key>pos</key><string>形容詞</string></dict>	<!-- おいしい/おいしく: かな正書寄りの高頻度語(uni おいしく7143実在)。かな識別curatedが無いと どちらもおいしく(最良)が全かなエコー抑制で捨てられ、同スパン敬語合成 お石工/お石ユ が繰り上がる(うっかり同型) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>おいしく</string><key>shortcut</key><string>おいしく</string></dict>

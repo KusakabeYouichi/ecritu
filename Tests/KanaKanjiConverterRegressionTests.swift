@@ -14562,3 +14562,20 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ここで(ユーザ報告 2846): 個々で/ココで/斯で の順で かな が末尾だった。ここ をかな識別 curated(misc)に登録して先頭へ。
+    // 個々 は候補に残す。そこで/どこで(既にかな先頭)は不変
+    func testRegressionKokodeKanaLeads() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let kokode = converter.candidates(for: "ここで", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(kokode.first, "ここで", "single=\(kokode)")
+        XCTAssertTrue(kokode.contains("個々で"), "single=\(kokode)")
+        XCTAssertEqual(converter.candidates(for: "ここ", limit: 4, systemCandidateMode: .surface).first, "ここ")
+        for reading in ["そこで", "どこで"] {
+            XCTAssertEqual(converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface).first, reading)
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ここでまとう", systemCandidateMode: .surface).first, "ここで待とう")
+    }
+}
