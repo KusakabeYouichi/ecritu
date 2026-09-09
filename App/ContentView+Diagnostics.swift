@@ -348,12 +348,8 @@ extension ContentView {
         sections.append("buildConfiguration: \(Self.buildConfigurationLabel)")
         // App Group の実体。entitlement に群が無いと iOS では containerURL が nil になり、コンテナーと拡張が
         // それぞれ自分のサンドボックスに書いて「設定が届かない/拡張のログが見えない」になる(ベータテスター調査 2818)
-        let appGroupContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SettingsKeys.appGroupID)
-        sections.append(
-            "appGroup: \(SettingsKeys.appGroupID) container="
-                + (appGroupContainer == nil ? "なし(entitlement に App Group が無い疑い)" : "あり")
-                + " bundle=\(Bundle.main.bundleIdentifier ?? "?")"
-        )
+        // 実体(コンテナーのパス末尾)と埋め込みプロファイルが許す群の一覧も出す(2844。拡張側は AppGroup健全性 行に同じ形式)
+        sections.append("appGroup: " + AppGroupDiagnostics.summaryLine(groupID: SettingsKeys.appGroupID))
         sections.append("sessionActive: \(keyboardDiagnosticsSessionActive ? "true" : "false")")
         sections.append("failSafeProfile: \(keyboardDiagnosticsFailSafeProfile)")
         sections.append("lastHeartbeat: \(keyboardDiagnosticsLastHeartbeatText())")
