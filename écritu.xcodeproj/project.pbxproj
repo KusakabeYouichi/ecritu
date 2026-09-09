@@ -530,6 +530,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 51A4CB275692308FFE4AF988 /* Build configuration list for PBXNativeTarget "écritu" */;
 			buildPhases = (
+				73881471BCB7622DF1D93733 /* Verify Signing Identity */,
 				3779834627D07EB92CE0379F /* Enforce Blank Line After Top-Level Brace */,
 				7033AAA35E85A2153F4A5E58 /* Sources */,
 				DBFDF8AE2497155E13CCADDE /* Resources */,
@@ -566,6 +567,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */;
 			buildPhases = (
+				98C563A65F5003CBC778E453 /* Verify Signing Identity */,
 				912055C11BAEE6ECCC43B589 /* Enforce Blank Line After Top-Level Brace */,
 				AF6737C5790E3B38F48F08BC /* Sources */,
 				DAFC31EE8DBF17957F350584 /* Resources */,
@@ -674,6 +676,44 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		73881471BCB7622DF1D93733 /* Verify Signing Identity */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Verify Signing Identity";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/tools/verify_signing_identity.sh\"\n";
+		};
+		98C563A65F5003CBC778E453 /* Verify Signing Identity */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Verify Signing Identity";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/tools/verify_signing_identity.sh\"\n";
+		};
 		3779834627D07EB92CE0379F /* Enforce Blank Line After Top-Level Brace */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
