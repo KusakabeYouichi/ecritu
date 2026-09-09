@@ -14403,3 +14403,26 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "こうしゅうのかひ", systemCandidateMode: .surface).first, "甲州の果皮")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 〜水(すい)は生産的な接尾(ユーザ指摘 2837): 辞書に丸ごとある語(蒸留水/水素水/過酸化水素水/電解水)も、
+    // 合成が要る語(塩素水/アルカリイオン水)も 水 で出ること。すい→水 はレア読み床の免除表で保護
+    func testRegressionRealLMSuiSuffixCompounds() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let cases: [(String, String)] = [
+            ("あるかりいおんすい", "アルカリイオン水"),
+            ("じょうりゅうすい", "蒸留水"),
+            ("えんそすい", "塩素水"),
+            ("すいそすい", "水素水"),
+            ("かさんかすいそすい", "過酸化水素水"),
+            ("でんかいすい", "電解水"),
+        ]
+        // 丸ごと辞書にある語は単文節が担い連文節は空、合成が要る語は逆(単文節が空)。先頭はどちらか一方で見る
+        for (reading, expected) in cases {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first ?? single.first, expected, "multi[\(reading)]=\(multi) single=\(single)")
+        }
+    }
+}
