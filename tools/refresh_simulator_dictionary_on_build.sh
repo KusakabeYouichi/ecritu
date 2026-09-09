@@ -34,6 +34,7 @@ TMP_INITIAL_MISC_INFLECTIONS="$ROOT_DIR/tmp/references_misc_inflections.json"
 TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
+TMP_PERSON_NAMES="$ROOT_DIR/tmp/kana_kanji_person_names.json"
 TMP_WORD_LM="$ROOT_DIR/tmp/word_lm.json"
 TMP_EMOJI_READING="$ROOT_DIR/tmp/EmojiReadingVocab.json"
 TMP_LATIN_SUPPL="$ROOT_DIR/tmp/LatinSuggestionSupplemental.txt"
@@ -246,6 +247,7 @@ outputs = [
     root / "tmp" / "kana_kanji_candidate_sources.json",
     root / "tmp" / "kana_kanji_inflection_dictionary.json",
     root / "tmp" / "kana_kanji_word_costs.json",
+    root / "tmp" / "kana_kanji_person_names.json",
 ]
 
 if not inputs or any(not out.exists() for out in outputs):
@@ -279,6 +281,10 @@ needs_sqlite_regeneration() {
   fi
 
   if [[ -f "$TMP_WORD_LM" && "$TMP_WORD_LM" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
+  if [[ -f "$TMP_PERSON_NAMES" && "$TMP_PERSON_NAMES" -nt "$TMP_SQLITE" ]]; then
     return 0
   fi
 
@@ -354,6 +360,10 @@ regenerate_sqlite_if_possible() {
     sqlite_args+=(--word-lm-json "$TMP_WORD_LM")
   fi
 
+  if [[ -f "$TMP_PERSON_NAMES" ]]; then
+    sqlite_args+=(--person-names-json "$TMP_PERSON_NAMES")
+  fi
+
   if [[ -f "$TMP_SECOND_INFLECTIONS" ]]; then
     sqlite_args+=(--inflections-json "$TMP_SECOND_INFLECTIONS")
   fi
@@ -400,6 +410,7 @@ if ((${#SUDACHI_CSV_FILES[@]} > 0)); then
       --output-sources "$TMP_SOURCES"
       --output-inflections "$TMP_INFLECTIONS"
       --output-costs "$TMP_COSTS"
+      --output-person-names "$TMP_PERSON_NAMES"
       --max-candidates 24
       --min-reading-len 1
       --max-reading-len 10

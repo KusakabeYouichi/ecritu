@@ -956,6 +956,33 @@ extension KanaKanjiConverter {
             print("MULTITRACE weakStandaloneKanji probe=\(standaloneKanjiProbeSurfaces.sorted()) weak=\(weakStandaloneKanjiSurfaces.sorted())")
         }
         #endif
+        // 人名ノード(定数コメント参照。2845): 漢字辞書語の読みごとに person_names を引く(読み単位でキャッシュ)
+        var personNameKindByNodeKey: [String: String] = [:]
+        do {
+            var kindsByReading: [String: [String: String]] = [:]
+            for node in nodes where node.isDictWord && !node.isInflectionDerived && node.surface != node.reading {
+                if kindsByReading[node.reading] == nil {
+                    kindsByReading[node.reading] = store.personNameKinds(for: node.reading)
+                }
+                if let kind = kindsByReading[node.reading]?[node.surface] {
+                    personNameKindByNodeKey[node.key] = kind
+                }
+            }
+        }
+        // 人名減点の「割られた語」判定: LM が知る辞書語(満席)がまたぐ境界(まん|せきな の 2)。
+        // 何|円札 は 何円 が LM 未収録なので対象外 → 何円札 は従来どおり(2845)
+        var lmKnownWordCrossesBoundary = [Bool](repeating: false, count: n + 1)
+        for node in nodes where node.isDictWord && !node.isInflectionDerived && node.surface != node.reading
+            && node.end - node.start >= 2 && unigramCosts[node.surface] != nil {
+            for boundary in (node.start + 1)..<node.end {
+                lmKnownWordCrossesBoundary[boundary] = true
+            }
+        }
+        // 職業・店の 〜屋(鍛冶屋/花屋)が同じ区間に立つときは、敬称の前でも人名を優先しない(かじやさん=鍛冶屋さん)
+        var occupationalYaSpanKeys = Set<String>()
+        for node in nodes where node.isDictWord && node.surface.hasSuffix("屋") && node.surface.count >= 2 {
+            occupationalYaSpanKeys.insert(node.spanKey)
+        }
 
         // 文頭のかな助詞 で(定数コメント参照)。読み で で始まる活用派生(出ない/出た/できない/でかい 等、
         // 幅 3 以上)が立っているときだけ減点する。でも/では/です は別ノードなので無関係
@@ -2007,6 +2034,26 @@ extension KanaKanjiConverter {
                             Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
                             cost += Self.multiClauseInflectionDerivedOOVCost
                                 - Self.multiClauseInflectionAfterParticleCost
+                        }
+                        // 人名の 2 規則(定数コメント参照。2845)
+                        // seed で並びを決めている読み(ゆずか: 柚花→柚香)は seed に委ね、〜屋 が同区間に立つ読み(かじや)は職業優先
+                        if node.surface == node.reading,
+                            Self.multiClausePersonNameHonorificReadings.contains(node.reading),
+                            personNameKindByNodeKey[prevNode.key] != nil,
+                            KanaKanjiSeedDictionary.seed[prevNode.reading] == nil,
+                            !occupationalYaSpanKeys.contains(prevNode.spanKey) {
+                            cost -= Self.multiClausePersonNameBeforeHonorificBonus
+                        }
+                        // 収穫底値の人名が立てるのは 文頭(BOS 分岐で別扱い)/かな(助詞・かな語)/curated の直後と、姓+名 の並びだけ。
+                        // 漢字・カタカナの断片(マン/万/満)の直後は分割の産物なので減点。Sudachi はカタカナ語(マン)や
+                        // 1 字(満)も人名に持つため「前も人名なら許す」では抜ける — 姓→名 の順序まで見る
+                        if let nodeKind = personNameKindByNodeKey[node.key],
+                            (node.wordCost ?? 0) >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                            prevNode.surface != prevNode.reading,
+                            !prevNode.isCurated,
+                            lmKnownWordCrossesBoundary[node.start],
+                            !(personNameKindByNodeKey[prevNode.key] == "姓" && nodeKind == "名") {
+                            cost += Self.multiClauseHarvestedPersonNameAfterFragmentPenalty
                         }
                         // 名詞直後の裸のかな「な」は形容動詞語幹にしか付かない(定数コメント参照)。
                         // ただし直後が の/ん(なので/なのは/なのに/なんです)は断定の助動詞 な

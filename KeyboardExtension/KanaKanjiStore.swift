@@ -71,6 +71,8 @@ final class KanaKanjiStore {
     private var cachedInflectionDictionary: [String: [String: String]]?
     // 読み別の inflection_classes キャッシュ(連文節の辞書形述語判定用)
     private var cachedInflectionClassMapsByReading: [String: [String: String]] = [:]
+    // 読み別の人名区分キャッシュ(連文節の人名判定用。表層→姓/名。空も覚える)
+    private var cachedPersonNameKindsByReading: [String: [String: String]] = [:]
     // 連文節 DP の LM 点引きキャッシュ。前置き入力ではスパン/ペアの大半が毎キーストロークで
     // 再出現するため、点クエリ(1変換あたり unigram 数百+bigram 千超)を初出のみに抑える。
     // 「未観測」も番兵(-1)で覚える — LM のヒット率は低く、negative キャッシュが本体。
@@ -387,6 +389,17 @@ final class KanaKanjiStore {
         }
         withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
         return classMap[candidate] != nil
+    }
+
+    // 連文節用: 読みに対する人名候補(表層→姓/名)。sqlite の person_names 表(Sudachi の 名詞,固有名詞,人名)。
+    // 表が無い旧 DB やテスト用の JSON 経路では空(2845)
+    func personNameKinds(for reading: String) -> [String: String] {
+        if let cached = withCacheLock({ cachedPersonNameKindsByReading[reading] }) {
+            return cached
+        }
+        let kinds = sqliteIndexIfAvailable()?.personNameKindMap(for: reading) ?? [:]
+        withCacheLock { cachedPersonNameKindsByReading[reading] = kinds }
+        return kinds
     }
 
     // 案A(連文節ビタビ)用: 読みに対する語コスト(Sudachi由来, 小さいほど高頻度)。
@@ -831,6 +844,7 @@ final class KanaKanjiStore {
             cachedSystemCandidateSources = nil
             cachedInflectionDictionary = nil
             cachedInflectionClassMapsByReading = [:]
+            cachedPersonNameKindsByReading = [:]
             cachedWordLMUnigram = [:]
             cachedWordLMBigram = [:]
             cachedWordCostsByReading = [:]

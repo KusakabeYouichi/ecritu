@@ -57,6 +57,12 @@ def parse_args() -> argparse.Namespace:
         help="Optional reading->candidate->SudachiWordCost JSON(連文節/案A用, repeatable)",
     )
     parser.add_argument(
+        "--person-names-json",
+        action="append",
+        default=[],
+        help="Optional reading->candidate->人名区分(姓/名) JSON (repeatable)",
+    )
+    parser.add_argument(
         "--word-lm-json",
         help="Optional word n-gram LM JSON({unigram,bigram,params})(連文節/案1用)",
     )
@@ -241,6 +247,7 @@ def build_sqlite(
     inflection_extra_vocab: Dict[str, Set[str]] = {},
     costs: Dict[str, Dict[str, int]] = {},
     word_lm=None,
+    person_names: Dict[str, Dict[str, str]] = {},
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
     if output_path.exists():
@@ -283,6 +290,16 @@ def build_sqlite(
 
             CREATE INDEX idx_inflection_classes_lookup
                 ON inflection_classes (reading, candidate);
+
+            CREATE TABLE person_names (
+                reading TEXT NOT NULL,
+                candidate TEXT NOT NULL,
+                kind TEXT NOT NULL,
+                PRIMARY KEY (reading, candidate)
+            );
+
+            CREATE INDEX idx_person_names_lookup
+                ON person_names (reading);
 
             CREATE TABLE word_costs (
                 reading TEXT NOT NULL,
@@ -368,6 +385,21 @@ def build_sqlite(
             conn.executemany(
                 "INSERT INTO inflection_classes(reading, candidate, inflection_class) VALUES (?, ?, ?)",
                 inflection_rows,
+            )
+
+        # 人名区分(姓/名)。dictionary_entries に載る候補のみ保持(2845)
+        person_rows: List[Tuple[str, str, str]] = []
+        for reading, candidate_map in person_names.items():
+            allowed_candidates = dictionary_candidate_set.get(reading)
+            if not allowed_candidates:
+                continue
+            for candidate, kind in candidate_map.items():
+                if candidate in allowed_candidates:
+                    person_rows.append((reading, candidate, kind))
+        if person_rows:
+            conn.executemany(
+                "INSERT INTO person_names(reading, candidate, kind) VALUES (?, ?, ?)",
+                person_rows,
             )
 
         # 語コスト(案A ビタビ用)。dictionary_entries に載る候補のみ保持。
@@ -467,8 +499,9 @@ def main() -> int:
     inflection_paths = [Path(path) for path in args.inflections_json]
     extra_vocab_paths = [Path(path) for path in args.inflection_extra_vocab_json]
     cost_paths = [Path(path) for path in args.costs_json]
+    person_name_paths = [Path(path) for path in args.person_names_json]
 
-    for path in vocab_paths + source_paths + inflection_paths + extra_vocab_paths + cost_paths:
+    for path in vocab_paths + source_paths + inflection_paths + extra_vocab_paths + cost_paths + person_name_paths:
         if not path.exists():
             raise FileNotFoundError(path)
 
@@ -476,6 +509,8 @@ def main() -> int:
     sources = merge_sources(source_paths)
     inflections = merge_inflections(inflection_paths)
     costs = merge_costs(cost_paths)
+    # 形が inflections(reading->candidate->str)と同じなので merge_inflections を流用
+    person_names = merge_inflections(person_name_paths)
 
     word_lm = None
     if args.word_lm_json:
@@ -496,6 +531,7 @@ def main() -> int:
         inflection_extra_vocab=extra_vocab,
         costs=costs,
         word_lm=word_lm,
+        person_names=person_names,
     )
     return 0
 

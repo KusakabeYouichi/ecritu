@@ -414,7 +414,9 @@ def build_index(
     require_kanji_candidate: bool,
     candidate_policy: str,
     adjective_garu_allowlist: Dict[str, Set[str]],
-) -> Tuple[Dict[str, List[str]], Dict[str, Dict[str, str]], Dict[str, Dict[str, List[str]]]]:
+) -> Tuple[
+    Dict[str, List[str]], Dict[str, Dict[str, str]], Dict[str, Dict[str, List[str]]], Dict[str, Dict[str, int]], Dict[str, Dict[str, str]]
+]:
     counters: Dict[str, Dict[str, int]] = defaultdict(lambda: defaultdict(int))
     cost_stats: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
         lambda: defaultdict(lambda: {"sum": 0, "count": 0, "min": UNKNOWN_COST_SENTINEL})
@@ -427,6 +429,9 @@ def build_index(
     source_counters: Dict[str, Dict[str, Dict[str, int]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(int))
     )
+    # 人名(名詞,固有名詞,人名,姓/名)の印。読み→表層→{姓,名,一般}。連文節で「敬称の前は人名を優先」
+    # 「1 字の断片の直後に収穫底値の人名は立たない」の判定に使う(きたがわさん/いつもまんせきな。2845)
+    person_kinds: Dict[str, Dict[str, Set[str]]] = defaultdict(lambda: defaultdict(set))
 
     include_normalized = candidate_policy in (CANDIDATE_POLICY_NORMALIZED, CANDIDATE_POLICY_BOTH)
     include_surface = candidate_policy in (CANDIDATE_POLICY_SURFACE, CANDIDATE_POLICY_BOTH)
@@ -525,6 +530,13 @@ def build_index(
                 continue
 
             counters[reading][candidate] += 1
+
+            if (
+                len(row) > SUDACHI_POS_INDEX + 3
+                and row[SUDACHI_POS_INDEX + 1].strip() == "固有名詞"
+                and row[SUDACHI_POS_INDEX + 2].strip() == "人名"
+            ):
+                person_kinds[reading][candidate].add(row[SUDACHI_POS_INDEX + 3].strip() or "一般")
 
             if candidate_cost is not None:
                 stats = cost_stats[reading][candidate]
@@ -674,7 +686,21 @@ def build_index(
         if not metadata_map:
             candidate_source_index.pop(reading, None)
 
-    return index, inflection_index, candidate_source_index, cost_index
+    person_name_index: Dict[str, Dict[str, str]] = {}
+    for reading, candidates in index.items():
+        kinds_by_candidate = person_kinds.get(reading)
+        if not kinds_by_candidate:
+            continue
+        candidate_map: Dict[str, str] = {}
+        for candidate in candidates:
+            kinds = kinds_by_candidate.get(candidate)
+            if not kinds:
+                continue
+            candidate_map[candidate] = "姓" if "姓" in kinds else ("名" if "名" in kinds else sorted(kinds)[0])
+        if candidate_map:
+            person_name_index[reading] = candidate_map
+
+    return index, inflection_index, candidate_source_index, cost_index, person_name_index
 
 
 def parse_args() -> argparse.Namespace:
@@ -700,6 +726,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-costs",
         help="Optional output path for reading->candidate->SudachiWordCost JSON(連文節/案A用)",
+    )
+    parser.add_argument(
+        "--output-person-names",
+        help="Optional output path for reading->candidate->人名区分(姓/名) JSON(連文節の人名判定用)",
     )
     parser.add_argument(
         "--adjective-garu-allowlist",
@@ -772,7 +802,7 @@ def main() -> int:
         print(f"No files matched: {args.input_glob}")
         return 1
 
-    index, inflection_index, candidate_source_index, cost_index = build_index(
+    index, inflection_index, candidate_source_index, cost_index, person_name_index = build_index(
         paths=paths,
         max_candidates=max(1, args.max_candidates),
         min_reading_len=max(1, args.min_reading_len),
@@ -813,6 +843,12 @@ def main() -> int:
         print(
             f"wrote {len(inflection_index)} readings with inflection classes -> {args.output_inflections}"
         )
+
+    if args.output_person_names:
+        os.makedirs(os.path.dirname(args.output_person_names) or ".", exist_ok=True)
+        with open(args.output_person_names, "w", encoding="utf-8") as f:
+            json.dump(person_name_index, f, ensure_ascii=False, sort_keys=True)
+        print(f"wrote {len(person_name_index)} readings with person-name kinds -> {args.output_person_names}")
 
     if args.output_costs:
         os.makedirs(os.path.dirname(args.output_costs) or ".", exist_ok=True)

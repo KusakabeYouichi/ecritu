@@ -1264,6 +1264,10 @@ extension KanaKanjiConverter {
     // 日常頻出の名詞相当の値を unigram の代わりに置く(seed で人手選別済みの表層のみ)
     static let multiClauseLMSplitCompoundUnigramSubstitutes: [String: Int] = [
         "その他": 6000,
+        // 何円(なんえん): 何+助数詞のうち LM に無いのはこれだけ(何人 6251/何回 6411/何日 6940/何時 6911/何個 7537)。
+        // Sudachi wc 5000 の常用語なのに dictUnknown 8700 になり、なんえんさつ が 何円+札 でなく 何+円札(収穫底値の姓 円札)で
+        // 成立していた。人名の断片減点(2845)で 円札 が沈むと 南苑札 に化けたため、何人/何回 と同じ水準を置く
+        "何円": 6300,
     ]
     static let multiClauseConversationalTemporalNounUnigramCaps: [String: Int] = [
         "昨日": 4300,
@@ -1437,6 +1441,15 @@ extension KanaKanjiConverter {
         "ひと": ["他人"]
     ]
     static let multiClauseUnmodifiableRareReadingAfterModifierPenalty = 3000
+
+    // 人名(sqlite person_names: Sudachi の 名詞,固有名詞,人名,姓/名)を使う 2 規則(2845):
+    // (1) かなの敬称(さん/さま/くん/ちゃん)の直前は人名を優先。きたがわさん は LM が 北側 5663 < 北川 6010 で
+    //     北側さん が先頭だった(→さん の bigram はどちらも未観測)。差 350 を跨ぐ幅
+    // (2) 収穫底値(wc≥10000)の人名は、漢字/カタカナの断片(非かな・非人名・非 curated)の直後には立たない。いつもまんせきな が
+    //     マン+昔奈(姓 せきな、wc10000)で 満席+な を押し出していた(な の名詞直後減点 9394 より 昔奈 9500 が僅差で安い)
+    static let multiClausePersonNameHonorificReadings: Set<String> = ["さん", "さま", "くん", "ちゃん"]
+    static let multiClausePersonNameBeforeHonorificBonus = 1500
+    static let multiClauseHarvestedPersonNameAfterFragmentPenalty = 3000
     // 格助詞込みの副詞的 1 ノード(次に/一気に/まるで 等: 漢字+末尾かな に/で で、読みも同じ助詞で終わる)の直後は、
     // 助詞直後と同じく述語が続くのが自然なので活用派生の割引を許す(2818)。つぎにきたきゃく が
     // 次に(curated)+来た(OOV 7200)で 次に+北+客 に負けていた。かな識別(ついで 等)や 1 字は対象外
