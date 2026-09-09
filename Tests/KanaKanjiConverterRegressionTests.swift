@@ -14367,3 +14367,39 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "だったん", limit: 4, systemCandidateMode: .surface).first, "韃靼")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // りょうじんえい(2836): 連文節の辞書ノード TopK(14)が Sudachi の wc 順で、両(wc 8073、LM 4524)が 15 位で切られていた。
+    // 生産的な接頭辞の opt-in 表(multiClauseAlwaysSuppliedPrefixSurfacesByReading)で 両 を供給し、両→陣営 の bigram で 両陣営 が組める
+    // (TopK を LM 順に変える案は 見/機/男 等が入り込み全網 20 件退行)
+    func testRegressionRealLMRyouPrefixTopKByEffectiveCost() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [("りょうじんえい", "両陣営"), ("りょうちーむ", "両チーム"), ("りょうせんしゅ", "両選手"), ("りょうしゅのう", "両首脳"),
+                                    ("ぜんせかい", "全世界"), ("こんぶすい", "昆布水")] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first, expected, reading)
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2836 バッチ: かみにいんさつ(橋渡し助詞 に を頭固定で複製し、頭が最良でない連語 紙に印刷 のボーナスを評価)、
+    // したほうが(curated かな区間の漢字別解は curated 基準で評価 → 邦画/萌芽 が消え 方が が 2 位)、
+    // しんだれいも(名詞+だ の直後の漢字名詞は非文法 → 死んだ例も)
+    func testRegressionRealLMBatch2836Readings() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かみにいんさつ", systemCandidateMode: .surface).first, "紙に印刷")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かみにいんさつしたほうが", systemCandidateMode: .surface).first, "紙に印刷したほうが")
+        // 連語ボーナスは 印刷 が続くときだけ(神に祈る は不変)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かみにいのる", systemCandidateMode: .surface).first, "神に祈る")
+        XCTAssertEqual(Array(converter.multiClauseCandidates(for: "したほうが", systemCandidateMode: .surface).prefix(2)), ["したほうが", "した方が"])
+        // 死んだ の後は LM が 霊 を好む(死んだ霊も)。芯だ例も が消えて 死んだ〜 が先頭、例も が候補に残ることを固定
+        let shinda = converter.multiClauseCandidates(for: "しんだれいも", systemCandidateMode: .surface)
+        XCTAssertEqual(shinda.first?.hasPrefix("死んだ"), true, "multi=\(shinda)")
+        XCTAssertTrue(shinda.contains("死んだ例も"), "multi=\(shinda)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しんだひと", systemCandidateMode: .surface).first, "死んだ人")
+        // 既存の連語(頭が最良)は従来どおり
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こうしゅうのかひ", systemCandidateMode: .surface).first, "甲州の果皮")
+    }
+}

@@ -68,6 +68,11 @@ extension KanaKanjiConverter {
     static let multiClauseJuntaiNFollowerCharacters: Set<Character> = ["だ", "で", "じ", "か", "の", "な", "よ", "ね", "け"]
     // かな識別の 〜たん 縮約ノード(みたん)への加算。漢字述語+ん の分割(見た+ん、ん は上のクランプで 666)を上回る幅(2834)
     static let multiClauseKanaTanContractionPenalty = 1000
+    // 生産的な接頭辞で、Sudachi の読み別 wc が高く連文節の辞書ノード TopK(14)から漏れるもの(読み→表層)。
+    // 両(りょう)=wc 8073 で 15 位(りょうじんえい→量陣営、ユーザ報告 2836)。足すときは word_costs で順位を確かめる
+    static let multiClauseAlwaysSuppliedPrefixSurfacesByReading: [String: Set<String>] = [
+        "りょう": ["両"]
+    ]
     // 方向・位置の 1 字漢字の直後のカタカナ語(下フリック/左スワイプ/前ページ)の複合名詞ボーナス(2820)。
     // した(し+た 3284)と 下(4832)の差 1548 を埋めて余る幅
     static let multiClauseDirectionalPrefixSurfaces: Set<String> = ["下", "上", "左", "右", "前", "後", "横", "縦", "内", "外", "逆"]
@@ -315,6 +320,9 @@ extension KanaKanjiConverter {
         "温度\t測": 1500,
         // 春慶塗の箸(ユーザ指定 2808): の→橋 4532 < の→箸 6360 で 橋 が先頭。漆器の後は 箸
         "春慶塗\t箸": 2500,
+        // 紙に印刷(ユーザ報告 2836): 連文節は LM で 神(4401、神→に 1415)が 紙(5086、紙→に 1034)に 300 差で勝ち、
+        // かみにいんさつ が 神に印刷 になっていた(単文節 かみに は seed 順で 紙に が先頭)。印刷 が続くなら 紙
+        "紙\t印刷": 1500,
     ]
     // 連語の後段は表層の前方一致で引く(解けて/解けてきます 等の活用派生ノードにも効かせる。2739)
     // 後段は丁寧接頭辞 お/ご を剥がした表層でも照合する(春慶塗の お箸。2809)
@@ -332,7 +340,8 @@ extension KanaKanjiConverter {
         return best
     }
     // 上の連語を挟める1字助詞(の/が/を/は)
-    static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は"]
+    // に も橋渡しに含める(紙に印刷。2836)。表は prevPrev\t表層 の完全一致なので、に を足しても他の組には影響しない
+    static let multiClauseCollocationBridgeParticles: Set<String> = ["の", "が", "を", "は", "に"]
     // 1字の格助詞(multiClauseCaseParticleSurfaces の1字分)+連体の の
     static let multiClauseSingleTopParticleTails: Set<Character> = ["に", "を", "が", "へ", "と", "で", "は", "も", "の"]
 
@@ -1273,6 +1282,8 @@ extension KanaKanjiConverter {
     // コピュラ終止「だ」(単独ノード)の直後に動詞(活用派生/辞書形述語)が続くのは文中では
     // 非文法(災厄だ+蹴落として 等。正しくは だけ+落として)。引用(だと言った)は と を挟むので無傷。
     static let multiClauseCopulaDaBeforeVerbPenalty = 4000
+    // コピュラ終止「だ」直後の漢字名詞(芯だ例/芯だ人)の減点。死んだ(派生 7200)+例 と 芯(6228)+だ+例(だ→例 3809)の差を埋める幅(2836)
+    static let multiClauseCopulaDaBeforeNounPenalty = 3000
     // 並列助詞「や」(単独かなノード)の直後に敬称「さん」(読み)が続くのは 〜屋さん の誤分割
     // (くすりやさん→薬や+さん)。正当な並列(田中や佐藤さん)は間に名詞が挟まり直接遷移しない。
     static let multiClauseParallelYaBeforeSanPenalty = 4000
