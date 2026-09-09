@@ -1161,10 +1161,8 @@ final class KeyboardViewController: UIInputViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
 
-        // レイアウトパスはアニメーション中に毎フレーム走る。高さの設置/更新に必要なのは
-        // 設定系フィールドだけなので、直近の描画設定を再利用し、フル構築(defaults約25キー
-        // 読み+候補提示の再evaluate)は初回のみに抑える。
-        let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
+        // 高さの設置/更新は描画設定を引数に取らない(どちらも自身で読む)。以前は
+        // 直近の描画設定を渡していた名残で束縛だけが残っていた(2848 で除去)。
         installKeyboardHeightConstraintIfNeeded()
         updateKeyboardHeightIfNeeded()
     }
@@ -1218,7 +1216,6 @@ final class KeyboardViewController: UIInputViewController {
         super.viewWillTransition(to: size, with: coordinator)
 
         // 遷移先の確定値で1回だけ算出して publish する。
-        let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded()
         updateKeyboardHeightIfNeeded()
 
@@ -1229,7 +1226,6 @@ final class KeyboardViewController: UIInputViewController {
             // 遷移完了。ここで初めて window/view のジオメトリが確定するので、
             // 確定値で再算出してホストと同期し直す。
             pendingSizeTransitionTargetSize = nil
-            let settled = lastRenderConfiguration ?? makeRenderConfiguration()
             installKeyboardHeightConstraintIfNeeded()
             updateKeyboardHeightIfNeeded()
         }
@@ -1253,7 +1249,6 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
 
-        let configuration = makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded()
         updateKeyboardHeightIfNeeded()
     }
