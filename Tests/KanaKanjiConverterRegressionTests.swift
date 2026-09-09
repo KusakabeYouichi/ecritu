@@ -14486,3 +14486,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "なにしてるの", systemCandidateMode: .surface).first, "何してるの")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // なのか(ユーザ指定 2840): 基底は 七日 が rank0 だが、かな(〜なのか)を先頭、七日 を 2 位に。残りは人名で順不同
+    func testRegressionNanokaKanaFirstThenSevenDays() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let single = converter.candidates(for: "なのか", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(2)), ["なのか", "七日"], "single=\(single)")
+    }
+}
