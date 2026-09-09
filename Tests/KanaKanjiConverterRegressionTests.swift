@@ -14532,3 +14532,33 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "まんせきな", systemCandidateMode: .surface).first, "満席な")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // おっと(ユーザ報告 2846): 感動詞用法(行頭の「おっと、」)ではかなが正書だが、辞書順も LM も 夫(uni5318)が上位で
+    // 行頭でも 夫 が先頭だった。直前に確定文字が無い(行頭/改行直後/句読点直後)ときだけ かな を先頭へ。文中は 夫 のまま
+    func testRegressionSentenceInitialInterjectionKanaLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let base = converter.candidates(for: "おっと", limit: 5, systemCandidateMode: .surface)
+        XCTAssertTrue(base.contains("おっと"), "single=\(base)")
+        // 行頭(直前なし)・改行直後・句読点直後はかな先頭
+        for preceding in [nil, Character("\n"), Character("。"), Character("、")] {
+            let ordered = KanaKanjiConverter.sentenceInitialInterjectionPromotedCandidates(
+                base, reading: "おっと", precedingCharacter: preceding
+            )
+            XCTAssertEqual(ordered.first, "おっと", "preceding=\(String(describing: preceding)) list=\(ordered)")
+            XCTAssertEqual(Set(ordered), Set(base), "候補集合は不変")
+        }
+        // 文中(直前が確定文字)は従来どおり
+        let midSentence = KanaKanjiConverter.sentenceInitialInterjectionPromotedCandidates(
+            base, reading: "おっと", precedingCharacter: Character("の")
+        )
+        XCTAssertEqual(midSentence, base, "list=\(midSentence)")
+        // 対象外の読みは行頭でも並び替えない
+        let tsuma = converter.candidates(for: "つま", limit: 5, systemCandidateMode: .surface)
+        XCTAssertEqual(
+            KanaKanjiConverter.sentenceInitialInterjectionPromotedCandidates(tsuma, reading: "つま", precedingCharacter: nil),
+            tsuma
+        )
+    }
+}

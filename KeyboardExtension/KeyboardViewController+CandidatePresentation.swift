@@ -396,8 +396,15 @@ extension KeyboardViewController {
             to: kanaKanjiConverter.applyKaCounterVariantPreference(reading: cacheKey.reading, to: boosted)
         )
 
+        // 文頭の感動詞(おっと 等)はかなを先頭へ(定数コメント参照。2846)。main 実行なので proxy 可
+        let interjectionOrdered = KanaKanjiConverter.sentenceInitialInterjectionPromotedCandidates(
+            kaOrdered,
+            reading: cacheKey.reading,
+            precedingCharacter: textDocumentProxy.documentContextBeforeInput?.last
+        )
+
         // 温度の度記号を設定の字形へ(内部正規形 °C/°F → ℃/℉ 等。同じになった候補は畳む。2773)
-        let styled = degreeSymbolStyle.styled(kaOrdered)
+        let styled = degreeSymbolStyle.styled(interjectionOrdered)
 
         let presentation = CandidatePresentation(
             composingText: cacheKey.composingRawText,
