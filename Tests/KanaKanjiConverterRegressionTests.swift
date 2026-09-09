@@ -14467,6 +14467,8 @@ extension KanaKanjiConverterRegressionTests {
         let multi = converter.multiClauseCandidates(for: "あぶらのそう", systemCandidateMode: .surface)
         XCTAssertEqual(multi.first, "油の層", "multi=\(multi)")
         XCTAssertTrue(multi.contains("脂の層"), "multi=\(multi)")
+        // 総/想 は単独名詞になれない(LM の格助詞・文末への連接 総 0 件/想 1 件)。文末位置の変種から退く(2841)
+        XCTAssertFalse(multi.contains { $0.hasSuffix("の総") || $0.hasSuffix("の想") }, "multi=\(multi)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "くものそう", systemCandidateMode: .surface).first, "雲の層")
         XCTAssertEqual(converter.multiClauseCandidates(for: "ほとんどそう", systemCandidateMode: .surface).first, "ほとんどそう")
     }

@@ -1423,6 +1423,13 @@ extension KanaKanjiConverter {
     // この値以下の常用語(何 4529)が文頭から立つなら同じく適用する。なにするひと→な+にする+人 で 何する人 が
     // 候補から消えていた(ユーザ報告 2840)。這う/乳 は閾値の外
     static let multiClauseBOSOverlapStrongTwoCharUnigramMax = 5000
+    // 単独名詞になれない 1 字漢字(総/想/双/葬/曹 等。品詞表は無い)の LM 側の代理判定(2841): 格助詞・の・文末への
+    // 連接が LM で観測されている数が閾値未満なら「単独で名詞の位置に立たない字」とみなし、直後が格助詞/の/文末のとき減点。
+    // 実測(あぶらのそう): 層 7 件 / 相・僧 7 / 草・宋 4〜5 / 想 1(を のみ)/ 総・双・葬・曹・倉 0。
+    // 油の総/脂の想 が変種に並んでいた(ユーザ報告)。倉(くら)のような低頻度の実名詞は巻き込むが、単独用法は稀
+    static let multiClauseStandaloneNounEvidenceFollowers: [String] = ["が", "を", "は", "の", "に", "も", multiClauseEOSMarker]
+    static let multiClauseStandaloneNounMinEvidence = 2
+    static let multiClauseWeakStandaloneKanjiBeforeParticlePenalty = 2500
     // 格助詞込みの副詞的 1 ノード(次に/一気に/まるで 等: 漢字+末尾かな に/で で、読みも同じ助詞で終わる)の直後は、
     // 助詞直後と同じく述語が続くのが自然なので活用派生の割引を許す(2818)。つぎにきたきゃく が
     // 次に(curated)+来た(OOV 7200)で 次に+北+客 に負けていた。かな識別(ついで 等)や 1 字は対象外
