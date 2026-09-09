@@ -64,6 +64,10 @@ extension KanaKanjiConverter {
     // 述語+と(条件)の直後の 1 字終助詞(しておかないとな)。かな素通り 7000 から 名(bigram 経由 約 4500)を下回る水準まで下げる(2820)
     static let multiClauseFinalParticleAfterConditionalToReadings: Set<String> = ["な", "ね", "よ"]
     static let multiClauseFinalParticleAfterConditionalToBonus = 5000
+    // 準体の ん の直後に来る文字(んだ/んでしょ/んじゃ/んか/んの/んな/んよ/んね/んけど)。これ以外(だったん+そば)は準体扱いしない(2834)
+    static let multiClauseJuntaiNFollowerCharacters: Set<Character> = ["だ", "で", "じ", "か", "の", "な", "よ", "ね", "け"]
+    // かな識別の 〜たん 縮約ノード(みたん)への加算。漢字述語+ん の分割(見た+ん、ん は上のクランプで 666)を上回る幅(2834)
+    static let multiClauseKanaTanContractionPenalty = 1000
     // 方向・位置の 1 字漢字の直後のカタカナ語(下フリック/左スワイプ/前ページ)の複合名詞ボーナス(2820)。
     // した(し+た 3284)と 下(4832)の差 1548 を埋めて余る幅
     static let multiClauseDirectionalPrefixSurfaces: Set<String> = ["下", "上", "左", "右", "前", "後", "横", "縦", "内", "外", "逆"]
