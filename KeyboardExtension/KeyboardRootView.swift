@@ -17,7 +17,8 @@ struct KeyboardRootView: View {
     let onCommitComposingText: () -> Void
     let onCommitComposingTextAsKatakana: () -> Void
     let onUpgradeRecentKanaCommitToKatakana: () -> Bool
-    let onInputModeChanged: (KeyboardInputMode) -> Void
+    // 第2引数は調査用ログ(記号面切替 2838): 切替の引き金とサブモード。原因判明後に外す
+    let onInputModeChanged: (KeyboardInputMode, String) -> Void
     var onFormattedNumberCategoryChanged: () -> Void = {}
     let showsNextKeyboardKey: Bool
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
@@ -105,6 +106,9 @@ struct KeyboardRootView: View {
     @State var selectedKaomojiReadingPrefix: String? = nil
     @State var selectedKaomojiReading: String? = nil
     @State var emojiInputSubmode: EmojiInputSubmode = .emoji
+    // 調査用ログ(記号面切替 2838): 直近のモード切替の引き金(左下キー タップ/フリック、修飾キー空タップ 等)。
+    // 「触っていないのに記号面になった」の再現待ち。原因判明後に外す
+    @State var inputModeChangeTrigger: String = "面内キー"
     @State var returnToKanaAfterNextCommit: Bool = false
     @State var formattedNumberBuffer: String = ""
     @State var selectedFormattedNumberCategory: FormattedNumberCategory = FormattedNumberPreferences.lastCategory()
@@ -1170,7 +1174,7 @@ struct KeyboardRootView: View {
             if inputMode != initialInputMode {
                 inputMode = initialInputMode
             }
-            onInputModeChanged(inputMode)
+            onInputModeChanged(inputMode, "初期表示")
             showInitialSpaceToastIfNeeded()
         }
         // inputMode の変化通知に加えて、フィールド移動での keyboardType trait 変化
@@ -1245,7 +1249,7 @@ struct KeyboardRootView: View {
         onCommitComposingText: {},
         onCommitComposingTextAsKatakana: {},
         onUpgradeRecentKanaCommitToKatakana: { false },
-        onInputModeChanged: { _ in },
+        onInputModeChanged: { _, _ in },
         showsNextKeyboardKey: true,
         containerFrame: .zero,
         directionProfile: .ecritu,
@@ -1313,12 +1317,19 @@ extension KeyboardRootView {
 
         if let previous, previous.initialInputMode != signal.initialInputMode {
             if inputMode != signal.initialInputMode {
+                inputModeChangeTrigger = "フィールド trait 追従"
                 inputMode = signal.initialInputMode
                 return
             }
         }
         if previous == nil || previous?.inputMode != signal.inputMode {
-            onInputModeChanged(signal.inputMode)
+            // 調査用ログ(記号面切替 2838): 引き金とサブモードを添える。原因判明後に外す
+            var detail = inputModeChangeTrigger
+            if signal.inputMode == .emoji {
+                detail += " sub=\(emojiInputSubmode)"
+            }
+            onInputModeChanged(signal.inputMode, detail)
+            inputModeChangeTrigger = "面内キー"
         }
     }
 }
