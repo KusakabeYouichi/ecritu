@@ -18,6 +18,10 @@ extension KanaKanjiConverter {
         // (炊く: uni7666→wc9118)ため、床上げを免除する。読み跨ぎの頻出表層
         // (良く(いく)等)はクラス未登録なので免除されず、床の保護は維持される。
         var isDictionaryFormPredicate: Bool = false
+        // 連語の橋渡し助詞(紙+に+印刷 の に)を、連語の頭(紙)にだけ接続する複製ノードの印(2836)。
+        // 通常の に ノードは最良の前ノード(神)しか backPointer に持たず、頭が最良でない連語(紙に印刷)を
+        // 跨ぐボーナスが評価されなかった。頭を固定した複製を並走させ、次の遷移で連語ボーナスを受ける
+        var boundHeadSurface: String? = nil
         // ノード集合(ボーナス/減点/選好の記録)のキー。以前は 26 箇所で "\(start)-\(end)-\(surface)" を
         // 遷移ごとにその場で組み立てていた。生成時に 1 回だけ作る(2805 リファクタ)
         let key: String
@@ -475,6 +479,16 @@ extension KanaKanjiConverter {
                             break
                         }
                     }
+                    // 生産的な接頭辞(両/各/全 …)は wc 順の TopK から漏れても供給する(2836)。両(りょう)は wc 8073 で
+                    // 15 位に落ち、両→陣営 2401 の bigram があっても 両陣営 が組めず 量陣営/領陣営 になっていた。
+                    // TopK の選別を LM 順に変える案は 見/機/男 等の頻出 1 字が入り込み全網 20 件退行したため、opt-in の表にする
+                    if let prefixes = Self.multiClauseAlwaysSuppliedPrefixSurfacesByReading[segmentReading] {
+                        for surface in prefixes where !suppressedByReading[segmentReading, default: []].contains(surface) {
+                            if let cost = costMap[surface] {
+                                add(surface, isDictWord: true, isCurated: false, wordCost: cost, isDictionaryFormPredicate: false)
+                            }
+                        }
+                    }
                 }
 
                 // 連語の優先表層(見/自信 等)が word_cost 順の TopK から漏れると、クランプ対象
@@ -741,6 +755,30 @@ extension KanaKanjiConverter {
                     ))
                     nodesEndingAt[end].append(index)
                     nodesStartingAt[start].append(index)
+                }
+            }
+        }
+
+        // 連語の橋渡し助詞の頭固定複製(定義コメント参照。2836): 表の頭(紙)がこの助詞(に)の直前に立ち、
+        // 表の後段(印刷)が直後に立つときだけ、prev を頭に固定した複製ノードを足す
+        do {
+            let collocationHeads = Set(Self.multiClauseAcrossNoCollocationBonuses.keys.compactMap { $0.split(separator: "\t").first.map(String.init) })
+            for particleIndex in nodes.indices {
+                let particle = nodes[particleIndex]
+                guard particle.start > 0, particle.surface == particle.reading,
+                    Self.multiClauseCollocationBridgeParticles.contains(particle.surface) else { continue }
+                for headIndex in nodesEndingAt[particle.start] where collocationHeads.contains(nodes[headIndex].surface) {
+                    let head = nodes[headIndex].surface
+                    let hasTail = particle.end < n && nodesStartingAt[particle.end].contains { tailIndex in
+                        Self.acrossParticleCollocationBonus(prevPrev: head, surface: nodes[tailIndex].surface) != nil
+                    }
+                    guard hasTail else { continue }
+                    var bound = particle
+                    bound.boundHeadSurface = head
+                    let index = nodes.count
+                    nodes.append(bound)
+                    nodesEndingAt[particle.end].append(index)
+                    nodesStartingAt[particle.start].append(index)
                 }
             }
         }
@@ -1172,7 +1210,13 @@ extension KanaKanjiConverter {
             // ロー脱げんさん 等の誤分割を抑止する。長い辞書語が無い正当な短語(やつ/気を)は床維持。
             // 単文節(ろー だけ入力→ロー/raw)は別経路なので従来どおり先頭に出る。
             if isCurated, Self.isWordLikeSurface(surface), !isShortCuratedFragment {
-                base = min(base, Self.multiClauseCuratedWordCost)
+                // 1 字漢字の curated(芯/夜/瓶/顔)は床 1500 でなく LM 水準を下限にする(2836)。単独供給のための登録が連文節では
+                // 激安ノードになり、芯(1500)+だ+例 が 死んだ(派生 7200)+例 を跨いで しんだれいも→芯だ例も になっていた
+                if surface.count == 1, containsKanji(surface), let unigram = unigramCosts[surface] {
+                    base = min(base, max(Self.multiClauseCuratedWordCost, unigram + Self.multiClauseBackoffCost))
+                } else {
+                    base = min(base, Self.multiClauseCuratedWordCost)
+                }
             }
             // 複合助詞(かな表層)を単位ノードとして安価にクランプ。ただし基底の格助詞
             // (には→に/では→で)が直前語からの bigram で期待される時だけに限定する。
@@ -1473,6 +1517,18 @@ extension KanaKanjiConverter {
             if prev == "だ",
                 isInflectionDerived || isDictionaryFormPredicate {
                 penalty += Self.multiClauseCopulaDaBeforeVerbPenalty
+            }
+            // コピュラ終止「だ」直後の漢字名詞(芯だ+例/芯だ+人)も非文法。しんだれいも が 芯だ例も になり 死んだ例も が
+            // 出なかった(だ→例 3809/だ→人 3419 の bigram は「〜だ。人」跨ぎの統計)。形式名詞かな(こと/もの)は対象外(2836)
+            // 名詞+だ の合成 1 ノード(芯だ: 表層も読みも だ 終わりで漢字含み、活用派生でない)も同じ扱い
+            let prevIsBareCopulaDa = prev == "だ" && prevReading == "だ"
+            let prevIsNounPlusCopulaDa = prev.count >= 2 && prev.hasSuffix("だ") && (prevReading?.hasSuffix("だ") ?? false)
+                && prev != prevReading && !prevIsInflectionDerived && containsKanji(prev)
+            if prevIsBareCopulaDa || prevIsNounPlusCopulaDa,
+                isDictWord, !isInflectionDerived, !isDictionaryFormPredicate, !isCurated,
+                surface != reading, containsKanji(surface),
+                !Self.multiClauseFormalNounKanaReadings.contains(reading) {
+                penalty += Self.multiClauseCopulaDaBeforeNounPenalty
             }
             // 並列助詞「や」直後の敬称さん(定数コメント参照)。薬屋さん/花屋さん の 屋 分断を排除。
             if prev == "や", reading == "さん" {
@@ -1869,6 +1925,10 @@ extension KanaKanjiConverter {
                             continue
                         }
                         let prevNode = nodes[prevIdx]
+                        // 頭固定の複製助詞ノードは、その頭からしか入れない(定義コメント参照。2836)
+                        if let head = node.boundHeadSurface, prevNode.surface != head {
+                            continue
+                        }
                         let prevDeniesOutgoingBigram = Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
                             .contains(prevNode.reading) ?? false
                         var cost = prevCost + transitionCost(
@@ -2180,8 +2240,10 @@ extension KanaKanjiConverter {
                             cost -= Self.multiClauseFinalParticleAfterConditionalToBonus
                         }
                         // の を挟む連語(甲州の果皮 等。定数コメント参照。2736)
-                    if Self.multiClauseCollocationBridgeParticles.contains(prevNode.surface), prevNode.surface == prevNode.reading, backPointer[prevIdx] >= 0,
-                        let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: nodes[backPointer[prevIdx]].surface, surface: node.surface) {
+                    // 頭固定の複製助詞(boundHeadSurface)なら頭は確定、通常の助詞なら backPointer の最良前ノードで見る
+                    if Self.multiClauseCollocationBridgeParticles.contains(prevNode.surface), prevNode.surface == prevNode.reading,
+                        let prevPrevSurface = prevNode.boundHeadSurface ?? (backPointer[prevIdx] >= 0 ? nodes[backPointer[prevIdx]].surface : nil),
+                        let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: prevPrevSurface, surface: node.surface) {
                         cost -= collocationBonus
                     }
                     // が の直後の存在動詞 あった系はかな(定数コメント参照。2740)。直前の名詞が 合う 慣用なら対象外
@@ -2745,9 +2807,18 @@ extension KanaKanjiConverter {
                 }
                 // LM 未収録の漢字辞書語(似寄る wc9428 等のレア収穫)も派生と同じ扱い。natural 基準だと
                 // 都市似寄る が delta 0 で 年による より前に並ぶ(2800)
-                let effectiveBase = ((alt.isInflectionDerived || unigramCosts[alt.surface] == nil) && containsKanji(alt.surface))
-                    ? baseCostCurated
-                    : baseCost
+                // LM 収録済みの辞書語も同じ(2836): curated かな(ほうが)の区間で 邦画/萌芽/宝賀 が natural 基準の負の delta で
+                // 変種の先頭に並び、方が(curated、delta 0)を変種枠から押し出していた(したほうが)。chosen が curated かなで
+                // なければ baseCostCurated == baseCost なので他の区間の挙動は変わらない。
+                // ただし seed にかなと並記された漢字(それぞれ→其々)は正当な兄弟表記なので natural 基準のまま
+                // (curated 基準だと delta 6495 で上限 4000 を超え、其々を が変種から消える)
+                let isSeedListedSibling = KanaKanjiSeedDictionary.seed[alt.reading]?.contains(alt.surface) == true
+                let effectiveBase: Int
+                if containsKanji(alt.surface), alt.isInflectionDerived || unigramCosts[alt.surface] == nil || !isSeedListedSibling {
+                    effectiveBase = baseCostCurated
+                } else {
+                    effectiveBase = baseCost
+                }
                 var delta = pairCost(alt) - effectiveBase
                 // 活用派生同士の変種は OOV で同点になりやすく、列挙順(辞書順)で 熔けて/釈けて のような稀な表記が
                 // 解けて の直後に並んだ。派生語幹(先頭2字: 溶け/解け/熔け)の LM unigram で差を付ける(2739):
