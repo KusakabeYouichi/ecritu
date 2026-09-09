@@ -14362,6 +14362,8 @@ extension KanaKanjiConverterRegressionTests {
         }
         let maze = converter.multiClauseCandidates(for: "まぜぐあい", systemCandidateMode: .surface)
         XCTAssertEqual(maze.first, "混ぜ具合", "multi=\(maze)")
-        XCTAssertTrue(converter.multiClauseCandidates(for: "だったんそば", systemCandidateMode: .surface).contains { $0.hasPrefix("韃靼") || $0.hasPrefix("脱炭") })
+        // だったんそば は 韃靼そば を先頭に(seed+SeedFirstLMOverride。2835)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "だったんそば", systemCandidateMode: .surface).first, "韃靼そば")
+        XCTAssertEqual(converter.candidates(for: "だったん", limit: 4, systemCandidateMode: .surface).first, "韃靼")
     }
 }
