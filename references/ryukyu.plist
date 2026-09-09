@@ -5224,6 +5224,11 @@
 	<dict><key>phrase</key><string>真境名経由</string><key>shortcut</key><string>まじきなけいゆ</string></dict>
 	<dict><key>phrase</key><string>真境名由康</string><key>shortcut</key><string>まじきなゆうこう</string></dict>
 	<dict><key>phrase</key><string>真志取</string><key>shortcut</key><string>ましとり</string></dict>	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>眞志取</string><key>shortcut</key><string>ましとり</string></dict>
+	<dict><key>phrase</key><string>真志取</string><key>shortcut</key><string>ましどり</string></dict>
+	<dict><key>phrase</key><string>眞志取</string><key>shortcut</key><string>ましどり</string></dict>
+	<dict><key>phrase</key><string>ましどり整形</string><key>shortcut</key><string>ましどりせいけい</string></dict>
+	<dict><key>phrase</key><string>ましどり整形外科</string><key>shortcut</key><string>ましどりせいけいげか</string></dict>
 	<dict><key>phrase</key><string>マジバナリ</string><key>shortcut</key><string>まじばなり</string></dict>
 	<dict><key>phrase</key><string>真謝</string><key>shortcut</key><string>まじゃ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>真謝のチュラ福木</string><key>shortcut</key><string>まじゃのちゅらふくぎ</string></dict>
