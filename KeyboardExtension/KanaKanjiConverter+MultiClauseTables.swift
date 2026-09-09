@@ -1430,6 +1430,13 @@ extension KanaKanjiConverter {
     static let multiClauseStandaloneNounEvidenceFollowers: [String] = ["が", "を", "は", "の", "に", "も", multiClauseEOSMarker]
     static let multiClauseStandaloneNounMinEvidence = 2
     static let multiClauseWeakStandaloneKanjiBeforeParticlePenalty = 2500
+    // 連体修飾を受けない稀読み(読み→表層。2842): 他人(ひと) は Sudachi で たにん 2546 ≪ ひと 6548 と稀な読みで、
+    // 使われるのは 他人の言うことは/他人に言われて のような裸の主題名詞の位置。赤の他人/死んだ他人 のように
+    // 述語・の・な の連体修飾を受けた 他人 は たにん と読む(ユーザ指摘)。修飾直後は減点し、seed 順の変種繰り上げからも外す
+    static let multiClauseUnmodifiableRareReadingSurfacesByReading: [String: Set<String>] = [
+        "ひと": ["他人"]
+    ]
+    static let multiClauseUnmodifiableRareReadingAfterModifierPenalty = 3000
     // 格助詞込みの副詞的 1 ノード(次に/一気に/まるで 等: 漢字+末尾かな に/で で、読みも同じ助詞で終わる)の直後は、
     // 助詞直後と同じく述語が続くのが自然なので活用派生の割引を許す(2818)。つぎにきたきゃく が
     // 次に(curated)+来た(OOV 7200)で 次に+北+客 に負けていた。かな識別(ついで 等)や 1 字は対象外

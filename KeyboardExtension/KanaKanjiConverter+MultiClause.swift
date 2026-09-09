@@ -1728,6 +1728,11 @@ extension KanaKanjiConverter {
                     || Self.multiClauseCaseParticleSurfaces.contains(surface) {
                 penalty += Self.multiClauseWeakStandaloneKanjiBeforeParticlePenalty
             }
+            // 連体修飾を受けない稀読み(他人=ひと: 定数コメント参照。2842)。直前が述語(活用派生/辞書形)か の/な なら減点
+            if Self.multiClauseUnmodifiableRareReadingSurfacesByReading[reading]?.contains(surface) == true,
+                prevIsInflectionDerived || prevIsDictionaryFormPredicate || prev == "の" || prev == "な" {
+                penalty += Self.multiClauseUnmodifiableRareReadingAfterModifierPenalty
+            }
             // 体言直後のかなコピュラ・クラスタ(だし/だから/だけど…)はクランプ(定数コメント参照。2771)。
             // 直前がカタカナ語(外来語名詞)で、助詞・述語(活用派生/辞書形)でないときだけ。
             // 漢字名詞にも掛けると 層でしょ/奴ですね/遭難だけど/何処だろうか のような同音の誤変換名詞が
@@ -2903,8 +2908,19 @@ extension KanaKanjiConverter {
                 // ある変種は seed 順で繰り上げない(seed の そう→層→総→想 は単文節の並び用)。DP の減点をそのまま使う
                 let isWeakStandaloneAltInNounSlot = weakStandaloneKanjiSurfaces.contains(alt.surface)
                     && (nextNode.map { $0.surface == "の" || Self.multiClauseCaseParticleSurfaces.contains($0.surface) } ?? true)
+                // 連体修飾を受けない稀読み(他人=ひと: 定数コメント参照。2842)も、修飾直後では seed 順で繰り上げない
+                let isUnmodifiableRareReadingAltAfterModifier: Bool = {
+                    guard Self.multiClauseUnmodifiableRareReadingSurfacesByReading[alt.reading]?.contains(alt.surface) == true,
+                        pos > 0 else {
+                        return false
+                    }
+                    let prevNode = nodes[pathIndices[pos - 1]]
+                    return prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
+                        || prevNode.surface == "の" || prevNode.surface == "な"
+                }()
                 if alt.reading == chosen.reading,
                     !isWeakStandaloneAltInNounSlot,
+                    !isUnmodifiableRareReadingAltAfterModifier,
                     alt.surface != alt.reading || allowsSeedOrderFromKanaLead,
                     chosen.surface != chosen.reading || allowsSeedOrderFromKanaLead,
                     delta <= Self.multiClauseVariantMaxDelta || allowsSeedOrderFromKanaLead,

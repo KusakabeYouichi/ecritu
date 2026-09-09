@@ -14498,3 +14498,18 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(Array(single.prefix(2)), ["なのか", "七日"], "single=\(single)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 他人(ひと)は連体修飾を受けない(ユーザ指摘 2842): 死んだ他人 は たにん の読みなので ひと の変種から退く。
+    // 裸の主題名詞(他人の言うことは)と単文節 [ひと] の並び(人/ひと/他人)は不変
+    func testRegressionRealLMTaninHitoNotAfterModifier() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let shinda = converter.multiClauseCandidates(for: "しんだひと", systemCandidateMode: .surface)
+        XCTAssertEqual(shinda.first, "死んだ人", "multi=\(shinda)")
+        XCTAssertFalse(shinda.contains("死んだ他人"), "multi=\(shinda)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ひとのいうことは", systemCandidateMode: .surface).first, "人の言うことは")
+        let single = converter.candidates(for: "ひと", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["人", "ひと", "他人"], "single=\(single)")
+    }
+}
