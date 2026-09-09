@@ -14426,3 +14426,15 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ふくてまも(ユーザ報告 2837): →手間 の bigram が全候補で未観測のため ふく の語コスト順で 副手間も が先頭だった。
+    // 拭く\t手間 の連語ボーナスで 拭く手間も を先頭に。ふくをきていました(服を着ていました)は不変
+    func testRegressionRealLMFukutemamoPrefersFuku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let multi = converter.multiClauseCandidates(for: "ふくてまも", systemCandidateMode: .surface)
+        XCTAssertEqual(multi.first, "拭く手間も", "multi=\(multi)")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ふくをきていました", systemCandidateMode: .surface).first, "服を着ていました")
+    }
+}
