@@ -34,7 +34,7 @@
 
 - 共有スキームファイルの表記ゆれを防ぐため、pre-commit フックを同梱しています。
 - 初回のみ、リポジトリルートで `git config core.hooksPath .githooks` を実行してください。
-- コミット時に `tools/normalize_unicode_project_names.sh` を実行し、`.xcscheme` が書き換わった場合はコミットを停止して再ステージを促します。
+- コミット時に `tools/normalize_unicode_project_names.sh` を実行し、`.xcscheme` の é を合成形へ正規化します。ステージ済みなら自動で入れ直してそのままコミットが通り、ステージしていない場合は作業ツリーだけ直します(コミットは止まりません)。
 
 ## GitHub 共同開発セットアップ (無料アカウント前提)
 
