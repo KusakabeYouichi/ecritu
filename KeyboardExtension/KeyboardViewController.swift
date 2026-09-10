@@ -1240,6 +1240,12 @@ final class KeyboardViewController: UIInputViewController {
         with coordinator: any UIViewControllerTransitionCoordinator
     ) {
         pendingSizeTransitionTargetSize = size
+        // 前の遷移で予約した再通知は、この時点で必ず取り消す(2862)。取り消さないと
+        // 往復回転(横→縦を 0.5 秒で戻す)のとき、横向きで採った値がそのまま縦の最中に
+        // publish される。実機ログでは 34.972 に縦 242 を通知した後 35.014 に横 176 を
+        // 再通知していた ─ ホストを混乱させる側に回っていた
+        keyboardHeightRepublishWorkItem?.cancel()
+        keyboardHeightRepublishWorkItem = nil
         // 幅が変わる遷移(回転、iPad の分割幅変更)かどうか。ホストが古い向きの高さで
         // 一度レイアウトを確定させるのはこの場合だけなので、再通知もここに限る
         let widthWillChange = abs(size.width - view.bounds.width) > 0.5

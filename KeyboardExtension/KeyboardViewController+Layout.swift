@@ -121,6 +121,13 @@ extension KeyboardViewController {
     // ホスト側で同一フレームに畳まれ、正味「変化なし」になって計算し直しが起きない
     // (2860 の実機ログでは再通知が発火しているのに重なりが残った)
     private func republishKeyboardHeightToHost(height: CGFloat, settled: Bool, elapsedProbes: Int) {
+        // 予約から発火までの間に次の回転が始まっていたら何もしない(2862)。
+        // 遷移中(pendingSizeTransitionTargetSize が非nil)か、採ったときの値と今の値が
+        // 食い違っていたら、この通知は古い ─ 新しい遷移が自分の分を予約する
+        guard pendingSizeTransitionTargetSize == nil,
+            abs(effectivePreferredKeyboardHeight() - height) <= 0.5 else {
+            return
+        }
         synchronizePreferredContentSize(height: height - 1)
         updateKeyboardHeightIfNeeded()
 
