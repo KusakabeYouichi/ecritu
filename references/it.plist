@@ -251,5 +251,7 @@
 	<dict><key>phrase</key><string>EVERING</string><key>shortcut</key><string>えゔりんぐ</string></dict>
 	<dict><key>phrase</key><string>スイッチボット</string><key>shortcut</key><string>すいっちぼっと</string></dict>
 	<dict><key>phrase</key><string>SwitchBot</string><key>shortcut</key><string>すいっちぼっと</string></dict>
+	<dict><key>phrase</key><string>ナノリーフ</string><key>shortcut</key><string>なのりーふ</string></dict>
+	<dict><key>phrase</key><string>Nanoleaf</string><key>shortcut</key><string>なのりーふ</string></dict>
 </array>
 </plist>
