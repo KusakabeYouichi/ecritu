@@ -152,7 +152,14 @@ extension KeyboardViewController {
             )
             : 0
 
-        if measuredInset > 0.5 {
+        // 横向きの値(21)を縦の値として掴まないための門番(定数コメント参照。2855)。
+        // 向き判定より先にセーフエリアだけが切り替わる瞬間があり、その値をキャッシュすると次の回転に響く
+        if measuredInset > 0.5,
+            KeyboardLayoutMetrics.isPlausiblePortraitBottomInset(
+                measuredInset,
+                shorterScreenEdge: shorterScreenEdge,
+                isPhone: traitCollection.userInterfaceIdiom == .phone
+            ) {
             cachedPortraitSafeAreaBottomInset = measuredInset
             return measuredInset
         }

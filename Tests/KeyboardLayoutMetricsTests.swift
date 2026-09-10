@@ -188,4 +188,16 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
             KeyboardLayoutMetrics.isLandscapeTransitionTarget(targetWidth: 393.4, shorterScreenEdge: 393)
         )
     }
+
+    // 回転中にセーフエリアの横向き値(21)を縦の値としてキャッシュしていた(ユーザ報告 2855)。
+    // 実機ログ: 縦→横 の途中で「高さ要求 255pt 縦 下端インセット=21」を publish し、その 21 が
+    // キャッシュされて次の 横→縦 でも 255pt(正しくは 242pt)を要求 → ホストの入力欄が隠れた。
+    // 縦 34 / 横 21 なので、ホームインジケーターのある iPhone では 30 未満を縦の値として採用しない
+    func testPortraitBottomInsetRejectsLandscapeValue() {
+        XCTAssertTrue(KeyboardLayoutMetrics.isPlausiblePortraitBottomInset(34, shorterScreenEdge: 393, isPhone: true))
+        XCTAssertFalse(KeyboardLayoutMetrics.isPlausiblePortraitBottomInset(21, shorterScreenEdge: 393, isPhone: true))
+        // 短辺が小さい端末と iPad は実測値をそのまま信じる(ホームインジケーターの有無が違う)
+        XCTAssertTrue(KeyboardLayoutMetrics.isPlausiblePortraitBottomInset(21, shorterScreenEdge: 320, isPhone: true))
+        XCTAssertTrue(KeyboardLayoutMetrics.isPlausiblePortraitBottomInset(20, shorterScreenEdge: 834, isPhone: false))
+    }
 }
