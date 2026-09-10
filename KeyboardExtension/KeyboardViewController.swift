@@ -188,8 +188,6 @@ final class KeyboardViewController: UIInputViewController {
     // ジオメトリでなくこの確定値を根拠にする(preferredKeyboardHeight 参照)。
     var pendingSizeTransitionTargetSize: CGSize?
     var isObservingSettingsDidChange = false
-    // 調査用ログ(回転先出し 2866)
-    var isObservingDeviceOrientationProbe = false
     var keyboardHeightLockValue: CGFloat?
     // 高さ要求の診断ログ用(変化時だけ1行残す。logPreferredKeyboardHeightIfChanged 参照)
     var lastLoggedPreferredKeyboardHeight: CGFloat = -1
@@ -588,7 +586,6 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
-        startDeviceOrientationProbe()
         configureKeyboardContainerSizing()
         beginKeyboardHeightLock()
         prepareKeyboardVisualForTransition()
@@ -1227,37 +1224,6 @@ final class KeyboardViewController: UIInputViewController {
     // それをホストへ publish してしまう。実機ログでは 242→255→176→242 と揺れ、
     // ホスト側は placeholder 300(正しくは317)を掴んだまま固定され、メッセージ.app で
     // 会話の最終行が入力欄の下に潜り込んでいた(2026-09-02 再現、画面オフ→オンで解消)。
-    // 端末の回転通知が拡張に届くか、ホストの遷移より何 ms 早いかの実測(2866、調査用)。
-    // 実機ログではホストが遷移を始めてから 15ms で本文の余白(guide)を確定させ、écritu の
-    // 正しい高さが届くのは 40ms 遅れる。端末の回転自体は backboardd が 146ms 早く検知して
-    // いるので、そこを手掛かりにできれば間に合う。ただし縦固定のホストで誤った高さを出す
-    // 危険があるため、この版では高さを一切変えず、届くかどうかと時刻だけを残す。
-    // 調査が終わったら grep "調査用ログ(回転先出し 2866)" で外す
-    private func startDeviceOrientationProbe() {
-        guard !isObservingDeviceOrientationProbe else {
-            return
-        }
-        isObservingDeviceOrientationProbe = true
-        UIDevice.current.beginGeneratingDeviceOrientationNotifications()
-        NotificationCenter.default.addObserver(
-            forName: UIDevice.orientationDidChangeNotification,
-            object: nil,
-            queue: .main
-        ) { [weak self] _ in
-            guard let self else {
-                return
-            }
-            let device = UIDevice.current.orientation
-            let interface = view.window?.windowScene?.interfaceOrientation
-            appendKeyboardDiagnosticsLog(
-                "調査用ログ(回転先出し 2866) 端末回転通知 端末=\(device.rawValue)"
-                    + " 画面向き=\(interface.map { String($0.rawValue) } ?? "不明")"
-                    + " 窓=\(Int(view.window?.bounds.width ?? 0))x\(Int(view.window?.bounds.height ?? 0))",
-                critical: true
-            )
-        }
-    }
-
     override func viewWillTransition(
         to size: CGSize,
         with coordinator: any UIViewControllerTransitionCoordinator
