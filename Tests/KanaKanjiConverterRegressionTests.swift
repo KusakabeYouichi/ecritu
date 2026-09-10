@@ -15235,3 +15235,31 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 方向接頭辞+カタカナの加点は接頭辞の読みのときだけ(2876、抜き取り検査 2025 のクイズ文)。
+    // 下/上/内/外+カタカナ(下フリック/内ポケット)の複合ボーナス(2820)が読みを見ておらず、
+    // 内(ない)+ワイン にも加点されて「地理的表示のないワイン」が 地理的表示の内ワイン になっていた。
+    // 接頭辞として立つのは訓読み。音読みの 内(ない)は接尾用法(校内/社内)で、その場合は
+    // 直前が名詞なので の の直後には来ない
+    func testRegressionDirectionalPrefixNeedsKunReading() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let wine = converter.multiClauseCandidates(for: "ちりてきひょうじのないわいん", systemCandidateMode: mode)
+            XCTAssertEqual(wine.first, "地理的表示のないワイン", "mode=\(mode.rawValue) multi=\(wine)")
+            // 本来の対象(訓読みの接頭辞)は不変
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "したふりっく", systemCandidateMode: mode).first,
+                "下フリック",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "うちぽけっと", systemCandidateMode: mode).first,
+                "内ポケット",
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
