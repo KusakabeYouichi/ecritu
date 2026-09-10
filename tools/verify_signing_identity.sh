@@ -64,13 +64,24 @@ if [[ -n "$product_bundle_id" ]]; then
 fi
 
 # 4. entitlements の群がリテラルに置き換わっていないか(App Groups をキャパビリティ画面から
-#    追加すると $(...) が実値に書き換わる)。ファイルはソース側を見る
+#    追加すると $(...) が実値に書き換わる)。ファイルはソース側を見る。
+#    リテラルでも値が派生値と一致していれば実害は無いので警告に留め、食い違うときだけ止める(2854)
 for entitlements in "${SRCROOT:-.}/App/Ecritu.entitlements" "${SRCROOT:-.}/KeyboardExtension/KeyboardExtension.entitlements"; do
   [[ -f "$entitlements" ]] || continue
 
-  if ! grep -q 'ECRITU_APP_GROUP_IDENTIFIER' "$entitlements"; then
-    report "$(basename "$entitlements") の App Group がリテラルに書き換わっています(画面から追加した疑い)"
-    echo "note: git checkout -- ${entitlements#"${SRCROOT:-.}/"} で戻し、Config/Signing.local.xcconfig で bundle ID を変えてください"
+  grep -q 'ECRITU_APP_GROUP_IDENTIFIER' "$entitlements" && continue
+
+  # キー名にドットを含むため plutil -extract は使えない(パス区切りと解釈される)。PlistBuddy で読む
+  literal_groups="$(/usr/libexec/PlistBuddy -c "Print :com.apple.security.application-groups" "$entitlements" 2>/dev/null \
+    | sed -n '2,$p' | sed 's/^ *//' | grep -v '^}$' | paste -sd' ' -)"
+  rel="${entitlements#"${SRCROOT:-.}/"}"
+
+  if [[ "$literal_groups" == "$app_group_id" ]]; then
+    echo "warning: [署名識別子] $(basename "$entitlements") の App Group がリテラル($literal_groups)です。値は合っているので通しますが、bundle ID を変えても追従しません"
+    echo "note: git checkout -- $rel で \$(ECRITU_APP_GROUP_IDENTIFIER) に戻せます"
+  else
+    report "$(basename "$entitlements") の App Group がリテラルで、しかも派生値と違います: ${literal_groups:-(読めず)} ≠ $app_group_id"
+    echo "note: git checkout -- $rel で戻し、Config/Signing.local.xcconfig で bundle ID を変えてください"
   fi
 done
 

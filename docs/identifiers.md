@@ -167,7 +167,7 @@ containermanagerd … error=(55|3|0)
 1. App Group == `group.` + アプリの bundle ID
 2. 拡張の bundle ID == アプリの bundle ID + `.keyboard`
 3. 実際にビルドされる `PRODUCT_BUNDLE_IDENTIFIER` が派生値と一致(= 画面での上書きが無い)
-4. entitlements の群が `$(ECRITU_APP_GROUP_IDENTIFIER)` のまま(= 画面から追加していない)
+4. entitlements の群が `$(ECRITU_APP_GROUP_IDENTIFIER)` のまま(= 画面から追加していない)。リテラルでも値が派生値と一致していれば警告に留めて通す
 5. 実機ビルドで、設定されている Team ID の署名証明書が手元にあるか(= `Config/Signing.local.xcconfig` の作り忘れ検出)。
    証明書の OU を読んで判定するので、ファイルの有無ではなく実効値で見る。シミュレーターと CI(`CODE_SIGNING_ALLOWED=NO`)は対象外
 
