@@ -1505,6 +1505,12 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) || prev.allSatisfy({ $0.isNumber }) {
                 penalty -= Self.multiClauseGotoSuffixAfterNounBonus
             }
+            // 接尾の 屋 は bigram 実績のある相手にしか付かない(定数コメント参照。2873)
+            if surface == "屋", reading == "や",
+                prev != Self.multiClauseBOSMarker,
+                bigramCosts[prev + "\t屋"] == nil {
+                penalty += Self.multiClauseTradeSuffixKanjiWithoutEvidencePenalty
+            }
             // 期間の直後の たつ は「経つ」(定数コメント参照。2873)
             if Self.multiClauseElapsedTimeVerbStems.contains(where: { surface.hasPrefix($0) }),
                 prev != Self.multiClauseBOSMarker,
