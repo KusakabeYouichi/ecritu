@@ -1454,6 +1454,8 @@ extension KanaKanjiConverter {
             // した は し+た(bigram 547)の動詞がかな名詞 下(4332)より安く、したふりっく が したフリック
             // (連体修飾)になっていた(ユーザ報告 2820)。上/左/右 は動詞に割れないので元から通る
             if Self.multiClauseDirectionalPrefixSurfaces.contains(prev),
+                // 接頭辞用法の読みのときだけ(定数コメント参照。2876)
+                prevReading.map { Self.multiClauseDirectionalPrefixReadings[prev]?.contains($0) ?? false } ?? false,
                 reading.count >= 3, Self.isKatakanaString(surface) {
                 penalty -= Self.multiClauseDirectionalPrefixKatakanaCompoundBonus
             }
