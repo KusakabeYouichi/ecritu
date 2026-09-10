@@ -14762,3 +14762,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 接尾の ごと(2859、抜き取り検査): 名詞+ごと はかなが本則(毎 は使わない)。LM は 語 4085 が
+    // かな ごと 4766 より安く、括弧ごと入力 が 括弧+語+と+入力 に 1 点差で負けていた。
+    // 秒ごとに も 秒毎に が先頭だった。名詞直後に限った加点で両方を是正する
+    func testRegressionGotoSuffixPrefersKanaAfterNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let kakko = converter.multiClauseCandidates(for: "かっこごとにゅうりょく", systemCandidateMode: mode)
+            XCTAssertEqual(kakko.first, "括弧ごと入力", "mode=\(mode.rawValue) multi=\(kakko)")
+            let byou = converter.multiClauseCandidates(for: "びょうごとに", systemCandidateMode: mode)
+            XCTAssertEqual(byou.first, "秒ごとに", "mode=\(mode.rawValue) multi=\(byou)")
+            let mode2 = converter.multiClauseCandidates(for: "にゅうりょくもーどごとかたかなに", systemCandidateMode: mode)
+            XCTAssertEqual(mode2.first, "入力モードごとカタカナに", "mode=\(mode.rawValue) multi=\(mode2)")
+            // 名詞でない前文脈(たまご+とり)は無関係: ごと のスパン自体が立たない
+            let tamago = converter.multiClauseCandidates(for: "たまごとり", systemCandidateMode: mode)
+            XCTAssertFalse(tamago.contains(where: { $0.contains("ごと") }), "multi=\(tamago)")
+        }
+    }
+}
