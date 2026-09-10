@@ -14815,6 +14815,13 @@ extension KanaKanjiConverterRegressionTests {
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             let multi = converter.multiClauseCandidates(for: "かなはいれつにはもう", systemCandidateMode: mode)
             XCTAssertEqual(multi.first, "かな配列にはもう", "mode=\(mode.rawValue) multi=\(multi)")
+            // 文頭の格助詞から始まる場合(実機報告 2861)。BOS の助詞は「直後が活用派生の述語なら
+            // 減点を打ち消す」規則(2818)があり、この減点(2500)が払い戻し(2000)に食われていた
+            let bare = converter.multiClauseCandidates(for: "にはもう", systemCandidateMode: mode)
+            XCTAssertEqual(bare.first, "にはもう", "mode=\(mode.rawValue) multi=\(bare)")
+            // 打ち消しが要る側(が+出ない)は無傷: 読みが は/も で始まらないので条件に掛からない
+            let deNai = converter.multiClauseCandidates(for: "がでないのだけど", systemCandidateMode: mode)
+            XCTAssertEqual(deNai.first, "が出ないのだけど", "mode=\(mode.rawValue) multi=\(deNai)")
             for (reading, expected) in [
                 ("がっこうにはいる", "学校に入る"), ("へやにはいった", "部屋に入った"), ("がっこうにはいろう", "学校に入ろう")
             ] {

@@ -2055,6 +2055,7 @@ extension KanaKanjiConverter {
                             isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt,
                             prevStartsSentence: prevNode.start == 0
                         ) - preferredInflectionBonus + nodeTanContractionPenalty
+
                         // 連用形+に(目的)は移動動詞が続くときの用法。文末でも格助詞直後の活用割引
                         // (5000)が効くと 千島を裂きに が 千島を先に(を→先4557+先→に532)を
                         // 89 差で押し切るため、文末に限り割引を取り消して素の OOV 値に戻す。
@@ -2113,9 +2114,14 @@ extension KanaKanjiConverter {
                         // 文頭の裸の格助詞(が/は/を/に/も)の直後が活用派生の述語(出ない/でかい/来た)なら、文頭助詞の
                         // 減点を打ち消す(定数コメント参照。2818)。文の途中から打ち始める「がでないのだけど」は
                         // が+出ない が自然で、画+で+ないのだ に負けていた
+                        // ただし述語の読みが係助詞 は/も で始まる場合は打ち消さない(2859)。
+                        // それは「格助詞+係助詞」を跨いで動詞が始まる形(にはもう→に食もう)で、
+                        // まさに減点したい経路。打ち消すと transitionCost の減点(2500)が
+                        // ここでの払い戻し(2000)に食われて効かなくなる(実機報告で発覚)
                         if prevNode.start == 0, prevNode.surface == prevNode.reading,
                             Self.multiClauseBOSParticleBeforePredicateExemptParticles.contains(prevNode.surface),
-                            node.isInflectionDerived {
+                            node.isInflectionDerived,
+                            !(node.reading.first.map { $0 == "は" || $0 == "も" } ?? false) {
                             cost -= Self.multiClauseBOSParticlePenalty
                         }
                         // に/と の直後の かな であっても は 出会っても の場面(定数コメント参照。2818)
