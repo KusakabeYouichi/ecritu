@@ -14960,3 +14960,35 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 補助形容詞の 様態そう(2870、ユーザ報告): にくい/にくく/にくかった/にくさ は 1 ノードで
+    // 供給されるのに にくそう だけ無く、やりにくそう が 槍+にくそう に割れていた。
+    // やり は名詞 槍 と同形なので、供給が無いと分割側が勝つ(食べ/使い は同形の名詞が無く無事だった)。
+    // 提示層のかな先頭維持(やすい/にくい/づらい)も そう 形に広げる
+    func testRegressionNikusouComposition() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            // 1 ノードで供給されること(分割 槍+にくそう が消えること)が要点。かなの位置は
+            // 候補ソースの設定で変わる(normalisé では 2 番手、surface では 遣り 族が並ぶ)
+            let single = converter.candidates(for: "やりにくそう", limit: 8, systemCandidateMode: mode)
+            XCTAssertTrue(single.contains("やりにくそう"), "mode=\(mode.rawValue) list=\(single)")
+            XCTAssertFalse(single.contains("槍にくそう"), "mode=\(mode.rawValue) list=\(single)")
+            for (reading, expected) in [("たべにくそう", "食べにくそう"), ("つかいにくそう", "使いにくそう")] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                let all = multi.isEmpty ? converter.candidates(for: reading, limit: 4, systemCandidateMode: mode) : multi
+                XCTAssertEqual(all.first, expected, "mode=\(mode.rawValue) list=\(all)")
+            }
+            // にくい 側は従来どおりかな先頭
+            XCTAssertEqual(
+                converter.candidates(for: "やりにくい", limit: 3, systemCandidateMode: mode).first,
+                "やりにくい",
+                "mode=\(mode.rawValue)"
+            )
+        }
+        // 提示層でかな先頭を維持する根拠が立つ(にくい と同じ扱い)
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やりにくそう"))
+    }
+}

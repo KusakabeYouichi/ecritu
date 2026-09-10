@@ -314,7 +314,9 @@ extension KanaKanjiConverter {
             if probe.count > 2, probe.hasSuffix("ので") {
                 probe = String(probe.dropLast(2))
             }
-            for auxiliary in ["やすい", "にくい", "づらい"]
+            // 様態そう(やりにくそう/使いやすそう)も同じ扱い(2870)。にくい はかな先頭なのに
+            // にくそう だけ 遣りにくそう が先頭になっていた(合成の供給は 2870 で追加済み)
+            for auxiliary in ["やすい", "にくい", "づらい", "やすそう", "にくそう", "づらそう"]
             where probe.count > auxiliary.count && probe.hasSuffix(auxiliary) {
                 let renyou = String(probe.dropLast(auxiliary.count))
                 guard renyou.count >= 2 else { continue }
