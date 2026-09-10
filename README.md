@@ -43,6 +43,7 @@
 	1. `cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig`
 	2. `ECRITU_DEVELOPMENT_TEAM` を自分の Team ID に変更
 	3. `ECRITU_APP_BUNDLE_IDENTIFIER` を一意な値に変更 (例: `com.<yourname>.ecritu.dev`)
+	**書き換えるのはこの 2 行だけです。** 残る 3 行 (拡張/テストの bundle ID と App Group) は上の 1 行から自動で作られるので、そのままにしてください。
 	作り忘れたまま実機ビルドすると、`tools/verify_signing_identity.sh` が「Team ID の署名証明書がこの Mac にありません」でビルドを止めます(シミュレーターと CI は対象外)。
 - `LastUpgradeCheck` は意図的に `9999` にしてあります。Xcode の「Update to recommended settings」を止めるためで、提案の中身は 2026-09-10 に確認済み: `ENABLE_USER_SCRIPT_SANDBOXING` を有効にすると辞書再生成スクリプトが `tmp/` に書けなくなりビルドが壊れる、String Catalog のシンボル生成は `.xcstrings` が無いので無効果、Asset Symbol は既定でオフ。将来 Xcode が有用な提案をしても黙るので、Xcode をメジャー更新したときは一度 `2660` 等に戻して提案内容を確認してください。
 - 識別子(bundle ID / App Group / Team ID)が何をして、どこに書かれ、どう伝わるかは [docs/identifiers.md](docs/identifiers.md) に一通りまとめてあります。
