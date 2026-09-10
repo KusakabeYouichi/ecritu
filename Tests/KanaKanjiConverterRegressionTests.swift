@@ -14636,8 +14636,11 @@ extension KanaKanjiConverterRegressionTests {
         let deshou = converter.multiClauseCandidates(for: "だめでしょう", systemCandidateMode: .surface)
         XCTAssertEqual(deshou.first, "だめでしょう", "multi=\(deshou)")
         let deshoo = converter.multiClauseCandidates(for: "だめでしょー", systemCandidateMode: .surface)
-        XCTAssertEqual(deshoo.first, "だめでしょー", "multi=\(deshoo)")
+        XCTAssertEqual(Array(deshoo.prefix(3)), ["だめでしょー", "ダメでしょー", "駄目でしょー"], "multi=\(deshoo)")
         XCTAssertFalse(deshoo.contains { $0.contains("ショー") }, "長音でカタカナ化しない multi=\(deshoo)")
+        // 終助詞クラスタのクランプを読みでも判定する(2852)ガード: め終わりの体言+クラスタは従来どおり
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かいしめよね", systemCandidateMode: .surface).first, "買い占めよね")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かわいいなあ", systemCandidateMode: .surface).first, "かわいいなあ")
 
         // ガード: 駄 は数字直後なら従来どおり助数詞として出す
         XCTAssertEqual(converter.candidates(for: "3だ", limit: 3, systemCandidateMode: .surface).first, "駄")
