@@ -14646,3 +14646,17 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "3だ", limit: 3, systemCandidateMode: .surface).first, "駄")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 名(めい)はレア読み床の免除へ(ユーザ報告 2854): Sudachi の読み別コストは 姪 4230 ≪ 名 6830 だが、
+    // LM の unigram は 名 4025 ≪ 姪 6461 で実勢が逆。床上げで 名 が沈み ぎいんめい→議員姪 になっていた。
+    // 時/系/用/水/例 と同型(名詞に広く付く接尾)
+    func testRegressionRealLMMeiSuffixPrefersName() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ぎいんめい", systemCandidateMode: .surface).first, "議員名")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しょうひんめい", systemCandidateMode: .surface).first, "商品名")
+        // 単独の めい は従来どおり(姪 が候補に残る)
+        XCTAssertTrue(converter.candidates(for: "めい", limit: 5, systemCandidateMode: .surface).contains("姪"))
+    }
+}
