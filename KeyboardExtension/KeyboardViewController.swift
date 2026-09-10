@@ -310,10 +310,6 @@ final class KeyboardViewController: UIInputViewController {
     let controllerCreatedAt: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
     // 測定(2721): 個体1体を立ち上げる(init→初回 viewDidAppear)コスト。init 時点の snapshot
     let controllerCreationSnapshot = MemoryForensics.snapshot()
-    // 個体 1 個あたりの費用の切り分け用(2861)。構築(setupKeyboardView)は実測 0.0MB だったので、
-    // 残る候補は viewDidLoad の他の処理と、初回レイアウト/描画(viewWillAppear→viewDidAppear)
-    var viewDidLoadSnapshot: MemoryForensics.Snapshot?
-    var firstRenderSnapshot: MemoryForensics.Snapshot?
     var didLogControllerCreationDelta = false
     // 非アクティブ降格を検知した時刻(deinit までのゾンビ滞留時間の計測に使う)
     var lostActiveOwnershipAt: CFAbsoluteTime = 0
@@ -565,16 +561,11 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewDidLoadSnapshot = MemoryForensics.snapshot()
         // 起動計測: 初回起動が iOS の拡張起動デッドラインを超えると純正キーボードに
         // 差し替えられるため、同期区間の実測を診断ログへ残す(遅い時のみ)。
         let launchStartedAt = CFAbsoluteTimeGetCurrent()
         keyboardLaunchViewDidLoadAt = launchStartedAt
-        // 個体1個あたりの費用の切り分け(2869)。診断セッションの開始も個体ごとに走り、
-        // defaults の読み書きと過去ログの走査を含む。DEBUG 専用の費用かどうかを見る
-        let diagnosticsSessionSnapshot = MemoryForensics.snapshot()
         startKeyboardDiagnosticsSession()
-        MemoryForensics.noteSyncDelta("診断セッション開始", since: diagnosticsSessionSnapshot, minDeltaMB: -1)
         // MEMFORENSICS(時限計測 2611): 高水位台帳の出力先。剥がすときはこのブロックと
         // KeyboardMemoryForensics.swift を削除(grep MEMFORENSICS)
         // 出力先は「そのとき生きている個体」を書き込み時に選ぶ(2721)。以前は viewDidLoad の個体を
@@ -587,24 +578,16 @@ final class KeyboardViewController: UIInputViewController {
             }
         }
         MemoryForensics.noteOperation("起動")
-        // 個体1個あたりの費用の切り分け(2873)。診断ログの復元は 0.2MB しかなく、
-        // 個体生成→表示の +1.7MB(used)の大半は viewDidLoad の他の処理にある。
-        // 段ごとに測って場所を確定する。noteSyncDelta と snapshot はリリースでは何もしない
-        func measureLaunchStep(_ tag: String, _ body: () -> Void) {
-            let snapshot = MemoryForensics.snapshot()
-            body()
-            MemoryForensics.noteSyncDelta("起動段階 " + tag, since: snapshot, minDeltaMB: -1)
-        }
-        measureLaunchStep("心拍") { updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true) }
-        measureLaunchStep("AppGroup健全性") { recordKeyboardDiagnosticsAppGroupHealth() }
-        measureLaunchStep("attach監視") { startKeyboardAttachWatchdog() }
-        measureLaunchStep("容器サイズ") { configureKeyboardContainerSizing() }
-        measureLaunchStep("高さロック") { beginKeyboardHeightLock() }
-        measureLaunchStep("遷移準備") { prepareKeyboardVisualForTransition() }
-        measureLaunchStep("補助バー") { configureInputAssistantBar() }
+        updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
+        recordKeyboardDiagnosticsAppGroupHealth()
+        startKeyboardAttachWatchdog()
+        configureKeyboardContainerSizing()
+        beginKeyboardHeightLock()
+        prepareKeyboardVisualForTransition()
+        configureInputAssistantBar()
         Self.liveControllerCensus.add(self)
-        measureLaunchStep("設定監視") { startObservingSettingsDidChange() }
-        measureLaunchStep("機能フラグ") { applyConverterFeatureFlagsFromSharedDefaults() }
+        startObservingSettingsDidChange()
+        applyConverterFeatureFlagsFromSharedDefaults()
         let setupStartedAt = CFAbsoluteTimeGetCurrent()
         setupKeyboardView()
         let totalMs = Int((CFAbsoluteTimeGetCurrent() - launchStartedAt) * 1000)
@@ -649,13 +632,6 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if let viewDidLoadSnapshot {
-            MemoryForensics.noteSyncDelta("viewDidLoad全体", since: viewDidLoadSnapshot, minDeltaMB: -1)
-            self.viewDidLoadSnapshot = nil
-        }
-        if firstRenderSnapshot == nil {
-            firstRenderSnapshot = MemoryForensics.snapshot()
-        }
         cancelKeyboardAttachWatchdog()
         // 未到達と数えた後に表示が来たなら遅延復帰として数え直す(cancel より後に呼ぶ)
         recordKeyboardAttachLateRecoveryIfNeeded()
@@ -853,10 +829,6 @@ final class KeyboardViewController: UIInputViewController {
         if needsSwitchKey != cachedNeedsInputModeSwitchKey {
             cachedNeedsInputModeSwitchKey = needsSwitchKey
             refreshKeyboardStateAsync()
-        }
-        if let firstRenderSnapshot {
-            MemoryForensics.noteSyncDelta("初回レイアウト/描画", since: firstRenderSnapshot, minDeltaMB: -1)
-            self.firstRenderSnapshot = nil
         }
         if !didLogControllerCreationDelta {
             didLogControllerCreationDelta = true
@@ -1292,17 +1264,8 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func setupKeyboardView() {
-        // ビュー木の構築コストを個別に測る(2859)。個体生成→表示の実測は used +1.7〜2.0MB /
-        // fp +0.7〜1.4MB で、解放しても malloc アリーナには 0.4MB しか戻らない(=ラチェット)。
-        // ただしその内訳(SwiftUI の木/UIKit のレイヤー/設定読み)は分かっていない。
-        // 木の使い回しは表示中のキーボードを壊しかねない改修なので、まず切り分けを残す。
-        let buildSnapshot = MemoryForensics.snapshot()
         let configuration = makeRenderConfiguration()
-        MemoryForensics.noteSyncDelta("キーボード描画設定の組み立て", since: buildSnapshot, minDeltaMB: -1)
-
-        let rootViewSnapshot = MemoryForensics.snapshot()
         let host = UIHostingController(rootView: makeRootView(from: configuration))
-        MemoryForensics.noteSyncDelta("SwiftUIビュー木の生成", since: rootViewSnapshot, minDeltaMB: -1)
         addChild(host)
         host.view.translatesAutoresizingMaskIntoConstraints = false
         host.view.clipsToBounds = false
@@ -1326,7 +1289,6 @@ final class KeyboardViewController: UIInputViewController {
         lastRenderConfiguration = configuration
         prepareKeyboardVisualForTransition()
         applyKeyboardBaseBackground()
-        MemoryForensics.noteSyncDelta("キーボードビュー構築(合計)", since: buildSnapshot, minDeltaMB: -1)
     }
 
     private func scheduleKeyboardBootstrapIfNeeded() {
