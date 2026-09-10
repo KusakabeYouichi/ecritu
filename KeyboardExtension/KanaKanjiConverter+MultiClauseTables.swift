@@ -225,7 +225,11 @@ extension KanaKanjiConverter {
         // 選択(せんたく) は unigram 4895 で 洗濯(6049)より安いのに、読み別 wc が 選択6473 > 洗濯4012 と
         // 実勢の逆で、床上げ後に 6473 > 6049 と逆転する。こうほがせんたくされ が 候補が洗濯され に
         // なっていた(抜き取り検査 2859)。単文節の並び(辞書 rank は 洗濯 が先)は動かさない
-        "せんたく": ["選択"]
+        "せんたく": ["選択"],
+        // 背(せ) は LM 5820 で 畝6883/瀬6925 より 1000 以上安い最頻出語なのに、読み1字の床上げで
+        // 読み別 wc 8098 に持ち上げられ、畝(7918)に 180 差で負けていた(せにしながら→畝にしながら。
+        // ユーザ報告 2868)。背 の読みは せ だけで、読み跨ぎの疑いも無い
+        "せ": ["背"]
     ]
 
     // 「先頭の語+格助詞1字」(かじゅうの/かじゅうを 等)の入力で、先頭文節の並びを単文節の最終順位に
@@ -261,6 +265,12 @@ extension KanaKanjiConverter {
     static let multiClauseBindingParticleSwallowedAfterCaseParticles: Set<String> = ["に", "で", "と", "へ", "から", "まで", "より"]
     static let multiClauseBindingParticleSwallowedRemainderMaxUnigram = 5000
     static let multiClauseBindingParticleSwallowedPenalty = 2500
+    // 格助詞の直後に立つ裸のかな1字の減点(2868、ユーザ報告 かべをせにしながら→壁をせにしながら)。
+    // を+せ の bigram(4322)は古語・助詞用法の統計で、これが 背(5236)に勝っていた。
+    // 短spanレア読み床(かな せ の wc 8528)は bigram が観測されていると迂回されるため効かない。
+    // 助詞・終助詞・助動詞など「1字で正当に立つかな」は multiClauseKanaIdentityFloorExemptReadings が
+    // ちょうどその一覧なので、それを白名簿として使う(に/を/が/て/た/ん/か/ね… は無傷)
+    static let multiClauseBareKanaAfterCaseParticlePenalty = 2000
     // 連体の な(大きな/小さな/静かな 等、漢字含み・2字以上・な終わり)の直後は名詞が続く。辞書形述語
     // (足る)や活用派生が続くのは非文なので減点し、おおきなたる→大きな足る を 大きな樽 に(2731)。
     // かなの な終わり(みんな 等の名詞)は対象外

@@ -1505,6 +1505,14 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) || prev.allSatisfy({ $0.isNumber }) {
                 penalty -= Self.multiClauseGotoSuffixAfterNounBonus
             }
+            // 格助詞の直後の裸のかな1字(定数コメント参照。2868)
+            if surface == reading, reading.count == 1,
+                !isCurated,
+                !Self.multiClauseKanaIdentityFloorExemptReadings.contains(reading),
+                prevReading == prev,
+                Self.multiClauseCaseParticleSurfaces.contains(prev) {
+                penalty += Self.multiClauseBareKanaAfterCaseParticlePenalty
+            }
             // 格助詞の直後で係助詞 は/も を呑んだ活用派生(定数コメント参照。2859)
             if isInflectionDerived, reading.count >= 3,
                 let head = reading.first, head == "は" || head == "も",
