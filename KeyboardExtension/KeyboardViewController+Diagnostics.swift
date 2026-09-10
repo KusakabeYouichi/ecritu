@@ -1198,8 +1198,11 @@ extension KeyboardViewController {
             defaultsRoundTrip = sharedDefaults.string(forKey: probeKey) == probeValue ? "ok" : "mismatch"
         }
 
+        // フルアクセスの実効値も残す(2857): オフだと共有 UserDefaults に書けず、設定も学習も拡張へ届かない。
+        // 削除→再インストールで既定のオフに戻るため、一般の利用者が最も踏みやすい。問い合わせで最初に見る値
         appendKeyboardDiagnosticsLog(
-            "AppGroup健全性 group=\(SharedDefaultsKeys.appGroupID) containerURL=\(containerReachable ? "ok" : "nil") defaults=\(defaultsRoundTrip)"
+            "AppGroup健全性 group=\(SharedDefaultsKeys.appGroupID) fullAccess=\(hasFullAccess ? 1 : 0)"
+                + " containerURL=\(containerReachable ? "ok" : "nil") defaults=\(defaultsRoundTrip)"
         )
     }
 
