@@ -14912,3 +14912,34 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // おさめる(2868、ユーザ報告): 可能動詞の並べ替え(のみほせる→のみほす の順に揃える。2820)が
+    // 一段動詞にも当たっていた。おさめる は「おさむ の可能形」ではないのに、おさむ を基底と
+    // 誤認して人名の辞書順(オサム/修/収/治/治虫…)で塗り替え、収める 先頭が 治める 先頭に反転していた。
+    // 基底が本物の五段動詞(inflection_classes に godan-*)のときだけ並べ替える
+    func testRegressionOsameruKeepsDictionaryOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                Array(converter.candidates(for: "おさめる", limit: 4, systemCandidateMode: mode).prefix(2)),
+                ["収める", "納める"],
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.candidates(for: "おさめて", limit: 4, systemCandidateMode: mode).first,
+                "収めて",
+                "mode=\(mode.rawValue)"
+            )
+            let multi = converter.multiClauseCandidates(for: "どうがにおさめて", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first, "動画に収めて", "mode=\(mode.rawValue) multi=\(multi)")
+        }
+        // 本来の対象(可能動詞)は従来どおり五段の並びに揃う(normalisé では漢字が候補集合に無い)
+        XCTAssertEqual(
+            converter.candidates(for: "のみほせる", limit: 4, systemCandidateMode: .surface).first,
+            "飲み干せる"
+        )
+    }
+}
