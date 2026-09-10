@@ -14875,3 +14875,33 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 読点/長音(2859、抜き取り検査): 読点 は dict rank1(当店 に word_cost 4 点差負け)で実機では
+    // 5 番目、連文節の 読点キー は 等(4051)+テンキー(6940)に 2100 差で負けていた。
+    // 長音 は dict rank5(調音 が rank0)だが LM は 長音 6685 < 調音 7040 で実勢が逆
+    func testRegressionPunctuationAndChouonNames() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.candidates(for: "とうてん", limit: 4, systemCandidateMode: mode).first,
+                "読点",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.candidates(for: "くてん", limit: 4, systemCandidateMode: mode).first,
+                "句点",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.candidates(for: "ちょうおん", limit: 4, systemCandidateMode: mode).first,
+                "長音",
+                "mode=\(mode.rawValue)"
+            )
+            let key = converter.multiClauseCandidates(for: "とうてんきー", systemCandidateMode: mode)
+            XCTAssertEqual(key.first, "読点キー", "mode=\(mode.rawValue) multi=\(key)")
+        }
+    }
+}
