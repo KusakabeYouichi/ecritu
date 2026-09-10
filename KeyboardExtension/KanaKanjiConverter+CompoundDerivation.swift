@@ -315,6 +315,10 @@ extension KanaKanjiConverter {
         "と": ["斗"],
         "て": ["手"],
         "で": ["手"],
+        // 駄(荷物の古い単位: 一駄)。本表に置くと 駄 が「序数の語幹になれる字」に入り、
+        // 駄目 を N駄目 の序数と誤解して 駄め を補生成していた(だめ→駄め が先頭。ユーザ報告 2851)。
+        // 読み だ はコピュラと同音の 1 かななので、と/て/で と同じく数字直後だけで作る
+        "だ": ["駄"],
         "かい": ["階"],
         // 歳/才(年齢)と 菜(品数: 一汁三菜)。本表(numericCounter…)に足すと 第2歳 等の
         // 序数誤生成に波及するため数字直後ブースト専用にする(2さい→2歳。2535)
@@ -434,7 +438,6 @@ extension KanaKanjiConverter {
         "たび": ["度"],
         "たま": ["球", "玉", "珠"],
         "たん": ["段", "反", "端"],
-        "だ": ["駄"],
         "だて": ["立", "立て"],
         "だま": ["球", "玉", "珠"],
         "だん": ["段"],
@@ -727,6 +730,10 @@ extension KanaKanjiConverter {
     // 辞書に序数として定着している非助数詞の語幹末尾(番目/代目/丁目/つ目/行目/駅目)。
     // この語幹の候補が在る読みでは、助数詞表からの 目/め 補生成を前置しない
     static let ordinalMeEstablishedStemTailCharacters: Set<Character> = ["番", "代", "丁", "つ", "行", "駅"]
+    // 助数詞表に居るが序数の語幹にはならない 1 字(ユーザ報告 2851)。駄 は荷物の古い単位(一駄)で、
+    // 駄目 を「N 駄目」の序数と誤解して 駄め を補生成し、だめ の候補上位に出ていた。
+    // 数字が付く形(3駄目)は下の stem.contains(isNumber) 側で通るので、ここで除くのは裸の 1 字だけ
+    static let ordinalMeExcludedBareStems: Set<String> = ["駄"]
     static let ordinalMeStemTailCharacters: Set<Character> = {
         var characters = Set<Character>()
         for surfaces in numericCounterSuffixCandidatesByReading.values {
@@ -834,6 +841,10 @@ extension KanaKanjiConverter {
             guard let tail = stem.last,
                 Self.ordinalMeStemTailCharacters.contains(tail)
                     || stem.contains(where: \.isNumber) else {
+                continue
+            }
+            // 裸の 1 字で序数にならない語幹(駄目→駄め。定数コメント参照。2851)
+            if Self.ordinalMeExcludedBareStems.contains(stem) {
                 continue
             }
             // 両形とも常に出す(スイッチは順序のみ)。辞書に片方しか無い語

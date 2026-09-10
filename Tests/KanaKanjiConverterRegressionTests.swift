@@ -14616,3 +14616,30 @@ extension KanaKanjiConverterRegressionTests {
         )
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // だめ 一式(ユーザ報告 2851)。3 つの独立した不具合が重なっていた:
+    // (1) 駄め: 助数詞表の 駄(荷物の古い単位)が「序数の語幹になれる字」に入り、駄目 を N駄目 とみなして
+    //     欠け側の め 形を補生成していた。裸 1 字の 駄 を除外(数字付き 3駄目 は従来どおり)
+    // (2) 並び: 辞書順は 駄目→溜め→ダメ→だめ、LM も ダメ 6112 < だめ 6450 でかなが最後だった。
+    //     seed でかな先頭、misc のかな識別 curated で連文節側も かな先頭に
+    // (3) でしょー: 末尾の長音でカタカナ語とみなされ でショー が支配していた。終助詞クラスタの読みに追加
+    func testRegressionDameKanaLeadsAndNoOrdinalMe() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let dame = converter.candidates(for: "だめ", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(dame.prefix(3)), ["だめ", "ダメ", "駄目"], "single=\(dame)")
+        XCTAssertFalse(dame.contains("駄め"), "序数の め 形は作らない single=\(dame)")
+
+        let desu = converter.multiClauseCandidates(for: "だめです", systemCandidateMode: .surface)
+        XCTAssertEqual(Array(desu.prefix(2)), ["だめです", "ダメです"], "multi=\(desu)")
+        let deshou = converter.multiClauseCandidates(for: "だめでしょう", systemCandidateMode: .surface)
+        XCTAssertEqual(deshou.first, "だめでしょう", "multi=\(deshou)")
+        let deshoo = converter.multiClauseCandidates(for: "だめでしょー", systemCandidateMode: .surface)
+        XCTAssertEqual(deshoo.first, "だめでしょー", "multi=\(deshoo)")
+        XCTAssertFalse(deshoo.contains { $0.contains("ショー") }, "長音でカタカナ化しない multi=\(deshoo)")
+
+        // ガード: 駄 は数字直後なら従来どおり助数詞として出す
+        XCTAssertEqual(converter.candidates(for: "3だ", limit: 3, systemCandidateMode: .surface).first, "駄")
+    }
+}
