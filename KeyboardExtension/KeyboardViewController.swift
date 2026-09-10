@@ -1269,8 +1269,17 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func setupKeyboardView() {
+        // ビュー木の構築コストを個別に測る(2859)。個体生成→表示の実測は used +1.7〜2.0MB /
+        // fp +0.7〜1.4MB で、解放しても malloc アリーナには 0.4MB しか戻らない(=ラチェット)。
+        // ただしその内訳(SwiftUI の木/UIKit のレイヤー/設定読み)は分かっていない。
+        // 木の使い回しは表示中のキーボードを壊しかねない改修なので、まず切り分けを残す。
+        let buildSnapshot = MemoryForensics.snapshot()
         let configuration = makeRenderConfiguration()
+        MemoryForensics.noteSyncDelta("キーボード描画設定の組み立て", since: buildSnapshot, minDeltaMB: -1)
+
+        let rootViewSnapshot = MemoryForensics.snapshot()
         let host = UIHostingController(rootView: makeRootView(from: configuration))
+        MemoryForensics.noteSyncDelta("SwiftUIビュー木の生成", since: rootViewSnapshot, minDeltaMB: -1)
         addChild(host)
         host.view.translatesAutoresizingMaskIntoConstraints = false
         host.view.clipsToBounds = false
@@ -1294,6 +1303,7 @@ final class KeyboardViewController: UIInputViewController {
         lastRenderConfiguration = configuration
         prepareKeyboardVisualForTransition()
         applyKeyboardBaseBackground()
+        MemoryForensics.noteSyncDelta("キーボードビュー構築(合計)", since: buildSnapshot, minDeltaMB: -1)
     }
 
     private func scheduleKeyboardBootstrapIfNeeded() {
