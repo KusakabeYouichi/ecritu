@@ -1,20 +1,47 @@
 #!/usr/bin/env bash
+# 共有スキームの é 表記ゆれを止める(2026-04 導入、2026-09-10 に自動再ステージ化)。
+#
+# Xcode はプロジェクトを開く/ビルドするたびに .xcscheme の BuildableName / BlueprintName /
+# ReferencedContainer を分解形(e + U+0301)や実体参照で書き直すことがある。書き方が一定でないため、
+# 放置すると コミットのたびに é の表記が行き来して差分が出る。合成形(U+00E9)を正として収束させる。
+#
+# 以前はここでコミットを止めて再ステージを促していたが、実務では毎回 2 回コミットすることになるので、
+# ステージ済みのスキームは自動で入れ直してそのまま通す。ステージしていないスキームは
+# 作業ツリーだけ直して黙って進む(そのコミットに巻き込まない)。
 set -euo pipefail
 
 ROOT_DIR="$(git rev-parse --show-toplevel)"
 cd "$ROOT_DIR"
 
-before_scheme_diff="$(git diff -- ':(glob)**/*.xcscheme')"
+scheme_paths() {
+  git ls-files -- ':(glob)**/*.xcscheme'
+}
+
+# 正規化前のハッシュを控える(内容が変わったファイルだけを対象にするため)
+declare -a paths=()
+declare -a before=()
+while IFS= read -r path; do
+  [[ -f "$path" ]] || continue
+  paths+=("$path")
+  before+=("$(git hash-object -- "$path")")
+done < <(scheme_paths)
 
 bash tools/normalize_unicode_project_names.sh
 
-after_scheme_diff="$(git diff -- ':(glob)**/*.xcscheme')"
+staged_schemes="$(git diff --cached --name-only -- ':(glob)**/*.xcscheme' || true)"
 
-# If normalization rewrites any shared scheme file, stop this commit
-# so the normalized result can be reviewed and staged explicitly.
-if [[ "$before_scheme_diff" != "$after_scheme_diff" ]]; then
-  echo "[pre-commit] Normalized .xcscheme file(s)." >&2
-  echo "[pre-commit] Review and stage these files, then commit again:" >&2
-  git diff --name-only -- ':(glob)**/*.xcscheme' >&2
-  exit 1
-fi
+for i in "${!paths[@]}"; do
+  path="${paths[$i]}"
+  after="$(git hash-object -- "$path")"
+
+  [[ "$after" != "${before[$i]}" ]] || continue
+
+  if printf '%s\n' "$staged_schemes" | grep -Fxq "$path"; then
+    git add -- "$path"
+    echo "[pre-commit] $path を合成形へ正規化して入れ直しました。" >&2
+  else
+    echo "[pre-commit] $path を合成形へ正規化しました(このコミットには含めません)。" >&2
+  fi
+done
+
+exit 0
