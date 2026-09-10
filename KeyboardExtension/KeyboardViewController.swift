@@ -570,7 +570,11 @@ final class KeyboardViewController: UIInputViewController {
         // 差し替えられるため、同期区間の実測を診断ログへ残す(遅い時のみ)。
         let launchStartedAt = CFAbsoluteTimeGetCurrent()
         keyboardLaunchViewDidLoadAt = launchStartedAt
+        // 個体1個あたりの費用の切り分け(2869)。診断セッションの開始も個体ごとに走り、
+        // defaults の読み書きと過去ログの走査を含む。DEBUG 専用の費用かどうかを見る
+        let diagnosticsSessionSnapshot = MemoryForensics.snapshot()
         startKeyboardDiagnosticsSession()
+        MemoryForensics.noteSyncDelta("診断セッション開始", since: diagnosticsSessionSnapshot, minDeltaMB: -1)
         // MEMFORENSICS(時限計測 2611): 高水位台帳の出力先。剥がすときはこのブロックと
         // KeyboardMemoryForensics.swift を削除(grep MEMFORENSICS)
         // 出力先は「そのとき生きている個体」を書き込み時に選ぶ(2721)。以前は viewDidLoad の個体を
