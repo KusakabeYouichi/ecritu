@@ -17,6 +17,7 @@
 #   2. 拡張の bundle ID == <アプリの bundle ID>.keyboard
 #   3. 実際にビルドされる PRODUCT_BUNDLE_IDENTIFIER が上の派生値と一致(=画面での上書きが無い)
 #   4. entitlements ファイルの群が $(ECRITU_APP_GROUP_IDENTIFIER) のまま(=画面での追加が無い)
+#   5. 実機ビルドで、設定されている Team ID の署名証明書が手元にあるか(=ローカル設定の作り忘れ検出。2853)
 set -uo pipefail
 
 fail=0
@@ -72,6 +73,27 @@ for entitlements in "${SRCROOT:-.}/App/Ecritu.entitlements" "${SRCROOT:-.}/Keybo
     echo "note: git checkout -- ${entitlements#"${SRCROOT:-.}/"} で戻し、Config/Signing.local.xcconfig で bundle ID を変えてください"
   fi
 done
+
+# 5. Config/Signing.local.xcconfig の作り忘れ検出(2853)。実機向けビルドのときだけ、
+#    設定されている Team ID が手元の署名証明書(Apple Development の OU)に在るかを見る。
+#    無ければ他人のチーム ID でビルドしようとしている = ローカル設定を作っていない。
+#    ファイルの有無ではなく実効値で判定するので、作者(既定値が自分のチーム)は素通りする。
+#    シミュレーターと CI(CODE_SIGNING_ALLOWED=NO)は対象外
+if [[ "${PLATFORM_NAME:-}" == "iphoneos" && "${CODE_SIGNING_ALLOWED:-YES}" != "NO" ]]; then
+  team="${ECRITU_DEVELOPMENT_TEAM:-}"
+  local_teams="$(security find-certificate -a -c "Apple Development" -p 2>/dev/null \
+    | awk '/BEGIN CERT/{c++} {print > ("/tmp/.ecritu_cert_" c ".pem")}' 2>/dev/null; \
+    for f in /tmp/.ecritu_cert_*.pem; do
+      [[ -f "$f" ]] || continue
+      openssl x509 -in "$f" -noout -subject 2>/dev/null | sed -nE 's/.*OU *= *([A-Z0-9]+).*/\1/p'
+    done | sort -u; rm -f /tmp/.ecritu_cert_*.pem)"
+
+  if [[ -n "$team" && -n "$local_teams" ]] && ! printf '%s\n' "$local_teams" | grep -Fxq "$team"; then
+    report "Team ID $team の署名証明書がこの Mac にありません(手元にあるのは: $(echo $local_teams))"
+    echo "note: Config/Signing.local.xcconfig を作って自分の Team ID と bundle ID を設定してください" >&2
+    echo "note: cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig" >&2
+  fi
+fi
 
 if ((fail)); then
   echo "note: 各自の値は Config/Signing.local.xcconfig で設定します(cp Config/Signing.local.xcconfig.example Config/Signing.local.xcconfig)。README の「GitHub 共同開発セットアップ」参照"
