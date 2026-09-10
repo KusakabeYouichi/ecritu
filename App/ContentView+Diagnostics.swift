@@ -552,23 +552,6 @@ extension ContentView {
         max(0, Int((CFAbsoluteTimeGetCurrent() - start) * 1000))
     }
 
-    // 設定カード群の末尾が画面に載った時点で1回だけ記録する(2587)。
-    // didRenderInitialFrame を立ててからここまでが、カード群の構築+レイアウトの実コスト。
-    func logSettingsCardsRenderedIfNeeded() {
-        // 開発ビルド専用(2785)
-        #if DEBUG
-        guard !didLogSettingsCardsRendered, settingsCardsBuildStartedAt > 0 else {
-            return
-        }
-
-        didLogSettingsCardsRendered = true
-        let buildMs = containerDiagnosticsElapsedMilliseconds(since: settingsCardsBuildStartedAt)
-        let startOffset = max(0, containerBootstrapOffsetMilliseconds() - buildMs)
-        recordBootstrapTimingPart("cardsAtMs=\(startOffset) cardsBuildMs=\(buildMs)")
-        appendContainerDiagnosticsLog("設定カード群の描画完了 buildMs=\(buildMs)")
-        #endif
-    }
-
     // 起動計測の断片を溜める。段の順序どおりに並ぶよう、計測した側から呼ぶ。
     func recordBootstrapTimingPart(_ part: String) {
         // 開発ビルド専用(2785)

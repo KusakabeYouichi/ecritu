@@ -455,8 +455,6 @@ struct ContentView: View {
     @State private var didRenderInitialFrame = false
     // 設定カード群の構築計測(2587)。didRenderInitialFrame を立てた時刻と、カード群の
     // 最後の要素が画面に載った時刻の差が構築コストそのもの。
-    @State var settingsCardsBuildStartedAt: CFAbsoluteTime = 0
-    @State var didLogSettingsCardsRendered = false
     // 1起動ぶんの計測断片。bootstrap完了で1行にまとめて履歴キーへ流す。
     @State var bootstrapTimingParts: [String] = []
     // 各事象が起動から何ms後に起きたかを出すための基準時刻。
@@ -1352,11 +1350,6 @@ struct ContentView: View {
         Text("フリック入力に加えて、かな漢字変換・追加単語・抑制単語に対応しています。")
             .font(.footnote)
             .foregroundStyle(.secondary)
-            // Loading が長い件の切り分け(2587)。段別計測で「実作業は約100ms、
-            // 残りは main actor の待ち」と分かったが、塞いでいるのが本当に
-            // 設定カード群の構築なのかは未確認だった。カード群の最後の要素が
-            // 画面に載った時刻を出せば、構築に何ms掛かったかが直接分かる。
-            .onAppear { logSettingsCardsRenderedIfNeeded() }
     }
 
     var body: some View {
@@ -1370,8 +1363,8 @@ struct ContentView: View {
                 // (白背景の全画面 Loading で待たせない。ユーザ方針)。
                 ScrollView {
                         // LazyVStack: 設定カードは約 290 個のコントロールを 8 群に持つ。VStack だと初回フレームで
-                        // 全部を構築し、実機で cardsBuildMs=380〜460(= firstFrameMs のほぼ全部、OS のハング検出 0.44s)
-                        // だった。画面に入る分だけ構築させる(2849)
+                        // 全部を構築し、実機で初回フレームまで 400〜900ms(OS のハング検出 0.44s)だった。
+                        // 画面に入る分だけ構築させる(2849)。実測は 44〜51ms へ短縮
                         LazyVStack(alignment: .leading, spacing: 16) {
                             HStack {
                                 Spacer(minLength: 0)
@@ -1460,7 +1453,6 @@ struct ContentView: View {
                 }
                 // 1フレーム分だけ譲ってヘッダーを先に描画してから、カード群を構築する。
                 await Task.yield()
-                settingsCardsBuildStartedAt = CFAbsoluteTimeGetCurrent()
                 didRenderInitialFrame = true
             }
             .onAppear {
