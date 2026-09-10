@@ -281,6 +281,14 @@ extension KanaKanjiConverter {
     // コピュラ(だ/です)か終助詞(よ/ね/や/か)のかなだけ。接尾の 屋 や名詞が付く形は無い。
     // ん+だ には既にボーナス(multiClauseNominalizerNDaContinuationBonus)があり、その裏側
     static let multiClauseKanjiAfterNominalizerNPenalty = 3000
+    // 補助形容詞のかな(やすい/にくい/づらい)が連用形以外の直後に立つときの減点
+    // (2872、ユーザ報告 やすいのかうか→やすいの買うか)。かな やすい の unigram 4890 は
+    // 「使いやすい」が A 単位で 使い+やすい に割れた統計で、単独の 安い(6114)より安く出る。
+    // 補助形容詞は連用形にしか付かない(使いやすい/読みにくい)ので、文頭や助詞の直後に
+    // 裸で立つのは形容詞(安い)の誤りとみなす。合成済みの1ノード(使いやすい)は表層が
+    // 読みと違うので対象外
+    static let multiClauseAuxiliaryAdjectiveKanaReadings: Set<String> = ["やすい", "にくい", "づらい"]
+    static let multiClauseAuxiliaryAdjectiveKanaAfterNonRenyouPenalty = 2000
     // 連体の な(大きな/小さな/静かな 等、漢字含み・2字以上・な終わり)の直後は名詞が続く。辞書形述語
     // (足る)や活用派生が続くのは非文なので減点し、おおきなたる→大きな足る を 大きな樽 に(2731)。
     // かなの な終わり(みんな 等の名詞)は対象外

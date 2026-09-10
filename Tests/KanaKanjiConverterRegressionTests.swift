@@ -15094,3 +15094,38 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 補助形容詞のかな(2872、ユーザ報告 やすいのかうか→やすいの買うか)。
+    // かな やすい の unigram 4890 は「使いやすい」が A 単位で 使い+やすい に割れた統計で、
+    // 単独の 安い(6114)より安く出る。補助形容詞は連用形にしか付かない(使いやすい/読みにくい)ので、
+    // 文頭や助詞の直後に裸で立つのは形容詞(安い)の誤り。合成済みの 1 ノードは表層が読みと違うので無傷
+    func testRegressionAuxiliaryAdjectiveKanaNeedsRenyou() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("やすいのかうか", "安いの買うか"),
+                ("やすいのかうのか", "安いの買うのか"),
+                ("これはやすい", "これは安い")
+            ] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(multi.first, expected, "mode=\(mode.rawValue) multi=\(multi)")
+            }
+            // 連用形の直後(本来の補助形容詞)は従来どおりかな
+            XCTAssertEqual(
+                converter.candidates(for: "つかいやすい", limit: 3, systemCandidateMode: mode).first,
+                "使いやすい",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.candidates(for: "よみにくい", limit: 3, systemCandidateMode: mode).first,
+                "読みにくい",
+                "mode=\(mode.rawValue)"
+            )
+            let composed = converter.multiClauseCandidates(for: "つかいやすいのかうか", systemCandidateMode: mode)
+            XCTAssertEqual(composed.first, "使いやすいの買うか", "mode=\(mode.rawValue) multi=\(composed)")
+        }
+    }
+}
