@@ -7,6 +7,16 @@ extension KanaKanjiConverter {
         "ねおち"
     ]
 
+    // サ変派生の並びを「名詞そのものの unigram」で決める読み(opt-in。2859)。
+    // 派生形(選択され/洗濯され)は表層が LM 未収録で同コストになり、順は辞書 rank
+    // (=Sudachi の読み別 word_cost)頼みになる。せんたく はその word_cost が
+    // 洗濯 4012 < 選択 6473 と実勢(unigram は 選択 4895 < 洗濯 6049)の逆で、
+    // 連文節が「候補が洗濯され」を先頭にしていた(抜き取り検査 2859)。
+    // 名詞頻度での一律並べ替えは不可 — 商談/棲息 等の人手で決めた例外読み(2639)を壊す。
+    static let inflectionNounUnigramOrderReadings: Set<String> = [
+        "せんたく"
+    ]
+
     static let sahenPhraseParticleSuffixes: [String] = [
         "には", "では", "とは", "へは",
         "が", "を", "に", "で", "と", "へ", "は", "も", "の", "や"
@@ -462,6 +472,26 @@ extension KanaKanjiConverter {
                 if order != Array(results.indices) {
                     results = order.map { results[$0] }
                     contributingBases = order.map { contributingBases[$0] }
+                }
+            } else if Self.inflectionNounUnigramOrderReadings.contains(sahenNounReading) {
+                // 辞書形(Xする)が LM に 1 つも無い読みの、名詞 unigram による並べ替え(定数コメント参照)
+                let nounCosts = store.wordLMUnigramCosts(for: contributingBases.filter { $0 != baseReading })
+                var nounKnown: [(cost: Int, index: Int)] = []
+                var nounOthers: [Int] = []
+                for (index, base) in contributingBases.enumerated() {
+                    if base != baseReading, let cost = nounCosts[base] {
+                        nounKnown.append((cost, index))
+                    } else {
+                        nounOthers.append(index)
+                    }
+                }
+                if nounKnown.count >= 2 {
+                    let order = nounKnown.sorted { $0.cost != $1.cost ? $0.cost < $1.cost : $0.index < $1.index }
+                        .map(\.index) + nounOthers
+                    if order != Array(results.indices) {
+                        results = order.map { results[$0] }
+                        contributingBases = order.map { contributingBases[$0] }
+                    }
                 }
             }
         }

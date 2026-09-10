@@ -14848,3 +14848,30 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // せんとう(2859、抜き取り検査): LM の 戦闘 5016 < 先頭 5473 は Wikipedia の合戦記述の偏り。
+    // せんたく は Sudachi の読み別 word_cost(洗濯4012 < 選択6473)が unigram(選択4895 < 洗濯6049)と
+    // 逆で、活用派生(選択され/洗濯され)が同コストになり辞書順で 洗濯され が先着していた
+    func testRegressionSentouAndSentakuInSentence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let sentence = converter.multiClauseCandidates(for: "せんとうのこうほがせんたくされ", systemCandidateMode: mode)
+            XCTAssertEqual(sentence.first, "先頭の候補が選択され", "mode=\(mode.rawValue) multi=\(sentence)")
+            let head = converter.multiClauseCandidates(for: "せんとうのこうほ", systemCandidateMode: mode)
+            XCTAssertEqual(head.first, "先頭の候補", "mode=\(mode.rawValue) multi=\(head)")
+            let mada = converter.multiClauseCandidates(for: "こうほはまだせんたくされていない", systemCandidateMode: mode)
+            XCTAssertEqual(mada.first, "候補はまだ選択されていない", "mode=\(mode.rawValue) multi=\(mada)")
+            // 洗濯 の日常用法は動かさない(単文節の並びも辞書順のまま)
+            let mono = converter.multiClauseCandidates(for: "せんたくものをほす", systemCandidateMode: mode)
+            XCTAssertEqual(mono.first?.hasPrefix("洗濯物"), true, "mode=\(mode.rawValue) multi=\(mono)")
+            XCTAssertEqual(
+                converter.candidates(for: "せんたく", limit: 3, systemCandidateMode: mode).first,
+                "洗濯",
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
