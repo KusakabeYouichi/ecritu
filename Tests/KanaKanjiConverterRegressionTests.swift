@@ -15150,3 +15150,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 期間+たつ は「経つ」(2873、ユーザ報告 2かげつたって→2か月立って)。
+    // 連文節の読みは数字接頭を落とすので、裸の助数詞(か月)も期間とみなす。
+    // 併せて、裸の格助詞の直後の文末終助詞1字をクランプする(のにな が の+ニナ に負けていた)
+    func testRegressionElapsedTimeAfterDuration() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let short = converter.multiClauseCandidates(for: "2かげつたって", systemCandidateMode: mode)
+            XCTAssertEqual(short.first, "か月経って", "mode=\(mode.rawValue) multi=\(short)")
+            let long = converter.multiClauseCandidates(for: "2かげつたっていないのにな", systemCandidateMode: mode)
+            XCTAssertEqual(long.first, "か月経っていないのにな", "mode=\(mode.rawValue) multi=\(long)")
+            // 助詞直後の終助詞は従来どおり(遅いからな)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "おそいからな", systemCandidateMode: mode).first,
+                "遅いからな",
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
