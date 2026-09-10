@@ -1237,6 +1237,12 @@ extension KeyboardViewController {
         // (旧 JSON 形式ならテキストへ変換)。保存は critical 行のみ即時、他は5秒バッチ。
         let maxLineCount = 320
         if diagnosticsState.diagnosticsLogTextBuffer == nil {
+            // 個体1個あたりの費用の切り分け(2869)。この復元は個体ごとに 1 回走り、
+            // 160KB のバッファ確保と 320 行の読み直しを行う。個体生成→表示の +1.8MB(used)は
+            // ビュー木でも初回描画でもなかったので、ここが本命。DEBUG 専用なので、
+            // 大きければ「リリースでは払っていない費用」と分かる
+            let restoreSnapshot = MemoryForensics.snapshot()
+            defer { MemoryForensics.noteSyncDelta("診断ログの復元", since: restoreSnapshot, minDeltaMB: -1) }
             let existing = diagnosticsLogLines(from: sharedDefaults).suffix(maxLineCount)
             var buffer = Data(capacity: 160 * 1024)
             var count = 0
