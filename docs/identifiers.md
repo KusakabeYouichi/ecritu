@@ -176,8 +176,11 @@ containermanagerd … error=(55|3|0)
 拡張は起動時に App Group の健全性を 1 行残す(コンテナーを引けたか、共有 UserDefaults に書いて読み戻せたか)。
 
 ```
-AppGroup健全性 group=group.… containerURL=ok defaults=ok
+AppGroup健全性 group=group.… fullAccess=1 containerURL=ok defaults=ok
 ```
+
+`fullAccess=0` なら、共有領域への書き込みが成立しないので設定も学習も拡張へ届かない。
+削除して入れ直すと既定のオフに戻るため、一般の利用者が最も踏みやすい。まずここを見る。
 
 コンテナーアプリの診断テキストにも要求している群と解決結果が出る。
 
