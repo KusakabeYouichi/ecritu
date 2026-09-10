@@ -2217,7 +2217,8 @@ extension KanaKanjiConverter {
                         // 単独 ん ノードは語頭禁止の免除条件により述語直後にしか生き残らない
                         if prevNode.surface == "ん", prevNode.reading == "ん",
                             node.surface == node.reading,
-                            node.reading.first == "だ" {
+                            node.reading.first == "だ"
+                                || Self.multiClauseNominalizerNFinalParticles.contains(node.reading) {
                             cost -= Self.multiClauseNominalizerNDaContinuationBonus
                         }
                         // かな て(接続助詞・補助動詞)は連用形接続(定数コメント参照)。

@@ -15129,3 +15129,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ん の直後の終助詞(2873、ユーザ報告 いくんや→遺訓屋)。いくんだ は 行くんだ になるのに
+    // いくんや が 遺訓屋 になっていた ─ 継続ボーナスが だ 系にしか無かったため。
+    // 2870 の「ん の直後の漢字を減点」は ん ノードが立った経路にしか効かず、遺訓+屋 のように
+    // ん が消える経路には届かない。正しい経路を安くする側で対処する
+    func testRegressionNominalizerNFinalParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("いくんや", "行くんや"), ("いくんだ", "行くんだ"),
+                ("たべるんや", "食べるんや"), ("なににつかうんや", "何に使うんや")
+            ] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(multi.first, expected, "mode=\(mode.rawValue) multi=\(multi)")
+            }
+        }
+    }
+}

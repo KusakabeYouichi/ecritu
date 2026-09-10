@@ -1314,6 +1314,12 @@ extension KanaKanjiConverter {
     // ん を一律 5000 にすると だったん+そば(韃靼そば)まで割れるため、のだ縮約の継続
     // (ん の直後の だ 始まりかな)に限って上乗せする(2511)
     static let multiClauseNominalizerNDaContinuationBonus = 2000
+    // ん の直後に立つ終助詞(2873、ユーザ報告 いくんや→遺訓屋)。いくんだ は 行くんだ になるのに
+    // いくんや が 遺訓屋 になっていたのは、継続ボーナスが だ 系にしか無かったため。
+    // 準体助詞 ん の後ろに来るのはコピュラか終助詞だけなので、同じ扱いにする。
+    // 2870 の「ん の直後の漢字を減点」は ん ノードが立った経路にしか効かず、
+    // 遺訓+屋 のように ん が消える経路には届かない ─ 正しい経路を安くする側で対処する
+    static let multiClauseNominalizerNFinalParticles: Set<String> = ["や", "よ", "ね", "か", "な", "の", "さ"]
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
