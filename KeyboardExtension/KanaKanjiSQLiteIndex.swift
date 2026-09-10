@@ -80,7 +80,12 @@ final class KanaKanjiSQLiteIndex {
                 // 表記ゆれを畳むための情報で、かな表記そのものには意味がない。いきなり は表記形タグしか
                 // 持たないため normalise モードで候補集合から消え、唯一残った 行形(いきなり)が先頭に出ていた。
                 // かなが正書かどうかの判定(LM 比較)は候補が残っていないと働けない
-                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (e.candidate = e.reading OR NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?)) ORDER BY e.rank ASC"
+                // その読みに指定ソースの候補が1つも無いときは絞り込まない(2871): タグは
+                // 漢字語の表記ゆれを畳むための情報で、Sudachi が付け忘れている読みがある。
+                // けせる は 消せる/けせる とも 表記形タグしか持たず、normalise では 消せる が
+                // 消えてかな けせる だけが残り、活用の供給元が失われて
+                // かげはけせないからな が 影はけせないからな になっていた
+                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (e.candidate = e.reading OR NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?) OR NOT EXISTS (SELECT 1 FROM candidate_sources s_reading WHERE s_reading.reading = e.reading AND s_reading.source = ?)) ORDER BY e.rank ASC"
             )
             selectCandidatesWithExactSourceStatement = prepareStatement(
                 sql: "SELECT e.candidate FROM dictionary_entries e INNER JOIN candidate_sources s ON s.reading = e.reading AND s.candidate = e.candidate WHERE e.reading = ? AND s.source = ? ORDER BY e.rank ASC"
@@ -427,12 +432,18 @@ final class KanaKanjiSQLiteIndex {
         }
 
         if let source {
+            // 2 番目=候補ごとの照合、3 番目=読み全体に指定ソースが在るかの照合(2871)。
+            // 完全一致用の文(?は2つ)には 3 番目が無いので、失敗しても無視してよい
             let sourceBindResult = source.withCString { sourceCString in
                 sqlite3_bind_text(statement, 2, sourceCString, -1, sqliteTransientDestructor)
             }
 
             guard sourceBindResult == SQLITE_OK else {
                 return []
+            }
+
+            _ = source.withCString { sourceCString in
+                sqlite3_bind_text(statement, 3, sourceCString, -1, sqliteTransientDestructor)
             }
         }
 

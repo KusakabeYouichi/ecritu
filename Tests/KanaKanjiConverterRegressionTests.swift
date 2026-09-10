@@ -15047,3 +15047,50 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 消せない(2871、ユーザ報告 かげはけせないからなあ→影はけせないからなあ)。
+    // けせる の辞書エントリは 消せる/けせる とも Sudachi の表記形タグしか持たない。
+    //     候補ソースが normalisé の設定では 消せる が候補集合から落ち、かな識別は常に残す規則
+    //     (2854)で けせる だけが生き残る。活用の供給元がかなだけになり 消せない が作れない。
+    //     その読みに指定ソースの候補が 1 つも無いときは絞り込まない(タグは表記ゆれを畳むための
+    //     情報で、1 つも無い読みで絞ると語ごと消える)
+    // 供給さえ戻れば漢字側も同じ経路で加点されるので、点数側の調整は要らなかった
+    // (かな識別の合算をやめる案と +500 をかな識別に付けない案は、かな正書 9 件
+    //  (います/もらった/しって/そうしちゃう 等)を漢字先頭に壊したので撤回した)
+    func testRegressionKesenaiPrefersKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.candidates(for: "けせない", limit: 3, systemCandidateMode: mode).first,
+                "消せない",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.candidates(for: "けせる", limit: 3, systemCandidateMode: mode).first,
+                "消せる",
+                "mode=\(mode.rawValue)"
+            )
+            for reading in ["かげはけせないからな", "かげはけせないからなあ"] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(multi.first, "影は" + reading.dropFirst(3).replacingOccurrences(of: "けせない", with: "消せない"), "mode=\(mode.rawValue) multi=\(multi)")
+            }
+        }
+    }
+
+    // 候補ソース normalisé の絞り込みで、かな正書の判定材料が消えないこと(2854/2859 の維持)
+    func testRegressionNormaliseSourceKeepsKanaOrthography() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for (reading, expected) in [("いきなり", "いきなり"), ("かたかな", "カタカナ"), ("ひらがな", "ひらがな"), ("だめ", "だめ")] {
+            XCTAssertEqual(
+                converter.candidates(for: reading, limit: 3, systemCandidateMode: .normalise).first,
+                expected,
+                "reading=\(reading)"
+            )
+        }
+    }
+}
