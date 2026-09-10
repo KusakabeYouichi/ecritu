@@ -1498,6 +1498,13 @@ extension KanaKanjiConverter {
                 Self.multiClauseFeelSuffixCompetitorSurfaces.allSatisfy({ bigramCosts[prev + "\t" + $0] == nil }) {
                 penalty -= Self.multiClauseFeelSuffixAfterNounBonus
             }
+            // 名詞+ごと は接尾(定数コメント参照。2859)。漢数字・算用数字の助数詞(3秒ごと)も名詞扱い
+            if reading == "ごと", surface == "ごと",
+                prev != Self.multiClauseBOSMarker,
+                !prevIsInflectionDerived,
+                containsKanji(prev) || Self.isKatakanaString(prev) || prev.allSatisfy({ $0.isNumber }) {
+                penalty -= Self.multiClauseGotoSuffixAfterNounBonus
+            }
             penalty += penaltyForNounHoshii
             // 係助詞「は」(では/には/とは 等の複合助詞末尾含む)直後の ある は漢字化しない=
             // かな正書(定数コメント参照)。変種生成(pairCost)も本関数を通るため 有る/在る/或る を
