@@ -11053,9 +11053,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         XCTAssertFalse(index.entries(radical: 214).isEmpty)
 
         // ヒラギノ明朝のグリフ有無(色分けの判定)
-        XCTAssertTrue(KanaKanjiStore.hasMinchoGlyph(for: "漢"))
+        XCTAssertTrue(KanjiGlyphAvailability.hasMinchoGlyph(for: "漢"))
         // 东(U+4E1C、簡体字)はヒラギノ明朝に無く、実機では PingFang 等で描かれる=色分け対象
-        XCTAssertFalse(KanaKanjiStore.hasMinchoGlyph(for: "东"), "簡体字は明朝に無い")
+        XCTAssertFalse(KanjiGlyphAvailability.hasMinchoGlyph(for: "东"), "簡体字は明朝に無い")
     }
 
     // ことでもなく: かな なく の識別wc10363(収穫底値)が短spanかな床+底値unigram不信

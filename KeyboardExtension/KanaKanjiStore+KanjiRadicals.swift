@@ -1,4 +1,3 @@
-import CoreText
 import Foundation
 
 // 漢字1文字ピッカーの索引。KanjiRadicalIndex.txt(部首番号→総画数→部首内画数→コードポイント順に
@@ -80,19 +79,4 @@ extension KanaKanjiStore {
         return index
     }
 
-    // 表示中のセルぶんだけ「ヒラギノ明朝にグリフがあるか」を判定する。無い字は
-    // CoreText のフォールバック(PingFang 等)で描かれるため、色を変えて区別する。
-    // 1画面100字程度の問い合わせなので事前計算もデータ側の印も持たない(2443)。
-    static func hasMinchoGlyph(for character: String, fontName: String = "HiraMinProN-W3") -> Bool {
-        guard !character.isEmpty else {
-            return false
-        }
-        let font = CTFontCreateWithName(fontName as CFString, 16, nil)
-        var chars = Array(character.utf16)
-        var glyphs = [CGGlyph](repeating: 0, count: chars.count)
-        guard CTFontGetGlyphsForCharacters(font, &chars, &glyphs, chars.count) else {
-            return false
-        }
-        return glyphs.allSatisfy { $0 != 0 }
-    }
 }

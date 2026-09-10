@@ -562,6 +562,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 89EFB5B4FCA50044964A2E00 /* Build configuration list for PBXNativeTarget "KeyboardExtension" */;
 			buildPhases = (
+				04213E07AE8D3D02884523B2 /* Verify Conversion Core Portability */,
 				98C563A65F5003CBC778E453 /* Verify Signing Identity */,
 				912055C11BAEE6ECCC43B589 /* Enforce Blank Line After Top-Level Brace */,
 				AF6737C5790E3B38F48F08BC /* Sources */,
@@ -708,6 +709,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "bash \"$SRCROOT/tools/verify_signing_identity.sh\"\n";
+		};
+		04213E07AE8D3D02884523B2 /* Verify Conversion Core Portability */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Verify Conversion Core Portability";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "bash \"$SRCROOT/tools/verify_conversion_core_portability.sh\"\n";
 		};
 		3779834627D07EB92CE0379F /* Enforce Blank Line After Top-Level Brace */ = {
 			isa = PBXShellScriptBuildPhase;
