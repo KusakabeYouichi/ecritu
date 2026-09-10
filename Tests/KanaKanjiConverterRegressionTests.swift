@@ -14784,3 +14784,22 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // あおいばぶる(2859、抜き取り検査): 歯(ば)は連濁読みで後部要素専用、医(い)は熟語専用。
+    // 医→歯 の bigram(1394=医歯薬 のA単位分割)を借用した単漢字断片連鎖 青+医+歯+ブル が
+    // 青い+バブル に勝っていた。読み1字なので短span床(読み3字以上)では捕まらない
+    func testRegressionAoiBubbleNoSingleKanjiChain() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let multi = converter.multiClauseCandidates(for: "あおいばぶる", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first, "青いバブル", "mode=\(mode.rawValue) multi=\(multi)")
+            XCTAssertFalse(multi.contains(where: { $0.contains("医歯") }), "multi=\(multi)")
+            // 正当な連濁複合(入れ歯)は 1 語として辞書にあるので無傷(先頭は活用形のかな いれば)
+            let ireba = converter.candidates(for: "いれば", limit: 6, systemCandidateMode: mode)
+            XCTAssertTrue(ireba.contains("入れ歯"), "mode=\(mode.rawValue) list=\(ireba)")
+        }
+    }
+}
