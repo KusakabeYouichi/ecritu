@@ -15189,3 +15189,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 政治・経済の語+政策(2873、ユーザ報告 えんやすせいさく→円安制作)。
+    // せいさく の LM は 制作 4410 < 製作 4643 < 政策 4746 で 政策 が 3 番手。連語に限って持ち上げる
+    func testRegressionSeisakuPolicyCollocation() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "えんやすせいさく", systemCandidateMode: mode).first,
+                "円安政策",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "だいとうりょうのせいさく", systemCandidateMode: mode).first,
+                "大統領の政策",
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
