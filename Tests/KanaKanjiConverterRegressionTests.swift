@@ -14803,3 +14803,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // にはもう(2859、抜き取り検査): 格助詞+係助詞(には/にも)は最頻の並びで、そこを跨いで
+    // 動詞が始まる読みは稀。かな配列にはもう が レア動詞 食む の意志形(食もう)に呑まれていた。
+    // 剥がした残りがかな1語として LM に強く在るときだけ発火させるので、学校に入る系は無傷
+    func testRegressionNihaMouKeepsParticleSplit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let multi = converter.multiClauseCandidates(for: "かなはいれつにはもう", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first, "かな配列にはもう", "mode=\(mode.rawValue) multi=\(multi)")
+            for (reading, expected) in [
+                ("がっこうにはいる", "学校に入る"), ("へやにはいった", "部屋に入った"), ("がっこうにはいろう", "学校に入ろう")
+            ] {
+                let control = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(control.first, expected, "mode=\(mode.rawValue) multi=\(control)")
+            }
+        }
+    }
+}

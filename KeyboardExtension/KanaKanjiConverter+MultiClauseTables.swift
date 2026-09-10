@@ -249,6 +249,14 @@ extension KanaKanjiConverter {
     // 負けていた(毎 5440 も 秒毎に を先頭にしていた)。名詞の直後に限って かな ごと を加点し、
     // 分割(語+と)と 毎 の両方に勝たせる。文頭や かな断片の後には効かない(2859、抜き取り検査)
     static let multiClauseGotoSuffixAfterNounBonus = 1500
+    // 格助詞の直後で係助詞 は/も を呑んだ活用派生(に+食もう ← にはもう)の減点(2859、抜き取り検査)。
+    // 格助詞+係助詞(には/にも/では/でも)は最頻の並びで、そこを跨いで動詞が始まる読みは稀。
+    // ただし 学校に入る(にはいる)のような正当例があるので、剥がした残りがかな1語として
+    // LM に強く在るときだけ発火させる(にはもう→もう 4963 は在る、にはいろう→いろう は無い)。
+    // 入る/入った は辞書語・LM 既知なので活用派生の条件で外れる
+    static let multiClauseBindingParticleSwallowedAfterCaseParticles: Set<String> = ["に", "で", "と", "へ", "から", "まで", "より"]
+    static let multiClauseBindingParticleSwallowedRemainderMaxUnigram = 5000
+    static let multiClauseBindingParticleSwallowedPenalty = 2500
     // 連体の な(大きな/小さな/静かな 等、漢字含み・2字以上・な終わり)の直後は名詞が続く。辞書形述語
     // (足る)や活用派生が続くのは非文なので減点し、おおきなたる→大きな足る を 大きな樽 に(2731)。
     // かなの な終わり(みんな 等の名詞)は対象外
