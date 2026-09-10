@@ -276,6 +276,11 @@ extension KanaKanjiConverter {
     // 直後に立つのは、正しい語(買う)の分断で出た残りかす。
     // 実測: 高い|のか|う|のか(14791)が 高い|の|買う|のか に約 200 差で勝っていた
     static let multiClauseBareVolitionalUAfterNonPredicatePenalty = 3000
+    // のだ縮約の ん の直後に来る漢字の減点(2870、ユーザ報告 なににつかうんや→何に使うん屋)。
+    // 単独の ん ノードは語頭禁止の免除により述語直後にしか生き残らず、その後ろに来るのは
+    // コピュラ(だ/です)か終助詞(よ/ね/や/か)のかなだけ。接尾の 屋 や名詞が付く形は無い。
+    // ん+だ には既にボーナス(multiClauseNominalizerNDaContinuationBonus)があり、その裏側
+    static let multiClauseKanjiAfterNominalizerNPenalty = 3000
     // 連体の な(大きな/小さな/静かな 等、漢字含み・2字以上・な終わり)の直後は名詞が続く。辞書形述語
     // (足る)や活用派生が続くのは非文なので減点し、おおきなたる→大きな足る を 大きな樽 に(2731)。
     // かなの な終わり(みんな 等の名詞)は対象外
