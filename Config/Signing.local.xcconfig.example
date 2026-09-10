@@ -1,5 +1,13 @@
 // Copy this file to Config/Signing.local.xcconfig and adjust values for your team.
 // This file is tracked; Signing.local.xcconfig is gitignored.
+//
+// 書き換えるのは下の 2 行だけ:
+//   ECRITU_DEVELOPMENT_TEAM      = 自分の Team ID
+//   ECRITU_APP_BUNDLE_IDENTIFIER = 自分だけの bundle ID
+// 残る 3 行(拡張/テストの bundle ID と App Group)は上の 1 行から自動で作られるので触らないこと。
+// Xcode の画面(Signing & Capabilities)で bundle ID や App Groups を変更するのも禁止。
+// 画面で触ると 1 か所だけがリテラルになり、変数由来の残りが古い値のまま取り残される。
+// 詳細は docs/identifiers.md を参照。
 
 ECRITU_DEVELOPMENT_TEAM = YOUR_TEAM_ID
 ECRITU_APP_BUNDLE_IDENTIFIER = com.yourdomain.ecritu
