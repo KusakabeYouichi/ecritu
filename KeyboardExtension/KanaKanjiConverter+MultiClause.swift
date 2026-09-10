@@ -1505,6 +1505,15 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) || prev.allSatisfy({ $0.isNumber }) {
                 penalty -= Self.multiClauseGotoSuffixAfterNounBonus
             }
+            // 格助詞の直後で係助詞 は/も を呑んだ活用派生(定数コメント参照。2859)
+            if isInflectionDerived, reading.count >= 3,
+                let head = reading.first, head == "は" || head == "も",
+                Self.multiClauseBindingParticleSwallowedAfterCaseParticles.contains(prev),
+                prevReading == prev,
+                let remainder = unigramCosts[String(reading.dropFirst())],
+                remainder <= Self.multiClauseBindingParticleSwallowedRemainderMaxUnigram {
+                penalty += Self.multiClauseBindingParticleSwallowedPenalty
+            }
             penalty += penaltyForNounHoshii
             // 係助詞「は」(では/には/とは 等の複合助詞末尾含む)直後の ある は漢字化しない=
             // かな正書(定数コメント参照)。変種生成(pairCost)も本関数を通るため 有る/在る/或る を
