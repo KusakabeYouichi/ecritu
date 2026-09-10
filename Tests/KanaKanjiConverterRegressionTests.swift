@@ -15211,3 +15211,27 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 接尾の 屋 は bigram 実績のある相手にしか付かない(2873、ユーザ報告 きりかきや→切り欠き屋)。
+    // 実在する複合は辞書に 1 語で載る(本屋/花屋/八百屋)か bigram がある(ラーメン→屋 1247)
+    func testRegressionTradeSuffixNeedsEvidence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "きりかきや", systemCandidateMode: mode).first,
+                "切り欠きや",
+                "mode=\(mode.rawValue)"
+            )
+            for (reading, expected) in [
+                ("らーめんやにいく", "ラーメン屋に行く"), ("ほんやにいく", "本屋に行く"),
+                ("はなやでかう", "花屋で買う"), ("やおやといえば", "八百屋と言えば")
+            ] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(multi.first, expected, "mode=\(mode.rawValue) multi=\(multi)")
+            }
+        }
+    }
+}

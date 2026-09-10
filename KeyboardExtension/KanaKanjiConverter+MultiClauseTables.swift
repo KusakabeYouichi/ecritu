@@ -1351,6 +1351,11 @@ extension KanaKanjiConverter {
     static let multiClauseElapsedTimeAfterDurationBonus = 2000
     // 裸の格助詞の直後に立てる文末の終助詞1字(のにな/からな/までね/のにさ)。2873
     static let multiClauseSentenceFinalKanaParticles: Set<String> = ["な", "ね", "よ", "さ", "か"]
+    // 接尾の 屋 は「その語+屋」が語として実在するときだけ立つ(本屋/花屋/ラーメン屋)。
+    // 実在する複合はたいてい辞書に 1 語で載るか、bigram(ラーメン→屋 1247)が観測されている。
+    // 観測が無い相手に付く 屋 は分割の産物で、並立・終助詞の や を食う
+    // (きりかきや→切り欠き屋。ユーザ報告 2873)。1 字の 屋 ノードに限って減点する
+    static let multiClauseTradeSuffixKanjiWithoutEvidencePenalty = 2500
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
