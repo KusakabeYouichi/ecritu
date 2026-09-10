@@ -431,8 +431,6 @@ extension KeyboardViewController {
 
         keyboardHeightLockReleaseWorkItem?.cancel()
         keyboardHeightLockReleaseWorkItem = nil
-        keyboardHeightRepublishWorkItem?.cancel()
-        keyboardHeightRepublishWorkItem = nil
         keyboardHeightLockValue = nil
         keyboardHeightLockReleaseTime = 0
 
