@@ -1505,6 +1505,14 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) || prev.allSatisfy({ $0.isNumber }) {
                 penalty -= Self.multiClauseGotoSuffixAfterNounBonus
             }
+            // 補助形容詞のかな(やすい/にくい/づらい)は連用形にしか付かない(定数コメント参照。2872)。
+            // 文頭も対象にするため DP のループでなく遷移コスト側に置く(BOS は別の呼び出し口を通る)
+            if surface == reading,
+                Self.multiClauseAuxiliaryAdjectiveKanaReadings.contains(reading),
+                !prevIsInflectionDerived,
+                !(prev.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
+                penalty += Self.multiClauseAuxiliaryAdjectiveKanaAfterNonRenyouPenalty
+            }
             // 格助詞の直後の裸のかな1字(定数コメント参照。2868)
             if surface == reading, reading.count == 1,
                 !isCurated,
