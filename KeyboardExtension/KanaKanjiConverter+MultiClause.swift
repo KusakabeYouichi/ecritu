@@ -1489,6 +1489,15 @@ extension KanaKanjiConverter {
                 bigramCosts[prev + "\t町"] == nil, bigramCosts[prev + "\t街"] == nil {
                 penalty -= Self.multiClauseWaitSuffixAfterNounBonus
             }
+            // 名詞+かん は接尾 感(定数コメント参照。2850)。カタカナ語(サイズ)と漢字語の両方を対象にする
+            if reading == "かん", surface == "感",
+                prev != Self.multiClauseBOSMarker,
+                !prevIsInflectionDerived,
+                prev.count >= 2,
+                containsKanji(prev) || Self.isKatakanaString(prev),
+                Self.multiClauseFeelSuffixCompetitorSurfaces.allSatisfy({ bigramCosts[prev + "\t" + $0] == nil }) {
+                penalty -= Self.multiClauseFeelSuffixAfterNounBonus
+            }
             penalty += penaltyForNounHoshii
             // 係助詞「は」(では/には/とは 等の複合助詞末尾含む)直後の ある は漢字化しない=
             // かな正書(定数コメント参照)。変種生成(pairCost)も本関数を通るため 有る/在る/或る を
