@@ -587,16 +587,24 @@ final class KeyboardViewController: UIInputViewController {
             }
         }
         MemoryForensics.noteOperation("起動")
-        updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
-        recordKeyboardDiagnosticsAppGroupHealth()
-        startKeyboardAttachWatchdog()
-        configureKeyboardContainerSizing()
-        beginKeyboardHeightLock()
-        prepareKeyboardVisualForTransition()
-        configureInputAssistantBar()
+        // 個体1個あたりの費用の切り分け(2873)。診断ログの復元は 0.2MB しかなく、
+        // 個体生成→表示の +1.7MB(used)の大半は viewDidLoad の他の処理にある。
+        // 段ごとに測って場所を確定する。noteSyncDelta と snapshot はリリースでは何もしない
+        func measureLaunchStep(_ tag: String, _ body: () -> Void) {
+            let snapshot = MemoryForensics.snapshot()
+            body()
+            MemoryForensics.noteSyncDelta("起動段階 " + tag, since: snapshot, minDeltaMB: -1)
+        }
+        measureLaunchStep("心拍") { updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true) }
+        measureLaunchStep("AppGroup健全性") { recordKeyboardDiagnosticsAppGroupHealth() }
+        measureLaunchStep("attach監視") { startKeyboardAttachWatchdog() }
+        measureLaunchStep("容器サイズ") { configureKeyboardContainerSizing() }
+        measureLaunchStep("高さロック") { beginKeyboardHeightLock() }
+        measureLaunchStep("遷移準備") { prepareKeyboardVisualForTransition() }
+        measureLaunchStep("補助バー") { configureInputAssistantBar() }
         Self.liveControllerCensus.add(self)
-        startObservingSettingsDidChange()
-        applyConverterFeatureFlagsFromSharedDefaults()
+        measureLaunchStep("設定監視") { startObservingSettingsDidChange() }
+        measureLaunchStep("機能フラグ") { applyConverterFeatureFlagsFromSharedDefaults() }
         let setupStartedAt = CFAbsoluteTimeGetCurrent()
         setupKeyboardView()
         let totalMs = Int((CFAbsoluteTimeGetCurrent() - launchStartedAt) * 1000)
