@@ -38,6 +38,57 @@ enum MemoryForensics {
     nonisolated(unsafe) private static var allocHighWaterBytes = 0
     nonisolated(unsafe) private static var ledgerEventCount = 0
 
+    // A2. フットプリント変化台帳(2855)
+    // 高水位台帳は「alloc が育ったとき」しか出ないので、alloc が動かないまま footprint だけ
+    // 上がる経路(compressed への移動、malloc 外の領域、ゾンビ個体の積み上がり)を取り逃す。
+    // 実機 2026-09-10 は fp 35 → 56 の上昇が 1 行も残らず、警告の直前で初めて見えた。
+    // 5MB 動いたら理由付きで 1 行残す。読みは task_info 1 回で数μs、0.5 秒に 1 回までに絞る。
+    nonisolated(unsafe) private static var lastLoggedFootprintMB: Double = 0
+    nonisolated(unsafe) private static var lastFootprintCheckAt: CFAbsoluteTime = 0
+    static let footprintDriftThresholdMB: Double = 5
+
+    static func noteFootprintDrift(_ context: @autoclosure () -> String) {
+        #if DEBUG
+        let now = CFAbsoluteTimeGetCurrent()
+
+        ledgerLock.lock()
+        let throttled = now - lastFootprintCheckAt < 0.5
+        if !throttled {
+            lastFootprintCheckAt = now
+        }
+        ledgerLock.unlock()
+
+        guard !throttled, let footprint = currentPhysFootprintMB() else {
+            return
+        }
+
+        ledgerLock.lock()
+        let previous = lastLoggedFootprintMB
+        let isFirst = previous == 0
+        guard isFirst || abs(footprint - previous) >= footprintDriftThresholdMB else {
+            ledgerLock.unlock()
+            return
+        }
+        lastLoggedFootprintMB = footprint
+        ledgerLock.unlock()
+
+        var stats = malloc_statistics_t()
+        malloc_zone_statistics(nil, &stats)
+        let delta = isFirst ? 0 : footprint - previous
+        logSink?(
+            "MEMFORENSICSフットプリント変化"
+                + (isFirst
+                    ? "(ベースライン) fp=\(String(format: "%.1f", footprint))"
+                    : " \(String(format: "%.1f", previous))→\(String(format: "%.1f", footprint))"
+                        + "(\(delta > 0 ? "+" : "")\(String(format: "%.1f", delta)))")
+                + " op=\(context())"
+                + " alloc=\(String(format: "%.1f", Double(stats.size_allocated) / 1_048_576))"
+                + " used=\(String(format: "%.1f", Double(stats.size_in_use) / 1_048_576))"
+                + " \(loadSummary)"
+        )
+        #endif
+    }
+
     /// 操作の終端で呼ぶ。DefaultMallocZone の alloc(dirty 高水位)が前回記録から
     /// 1MB 以上育っていたら、操作タグ付きで台帳に刻む。コストは数μs(統計読み1回)。
     /// 初回呼び出しはベースラインとして必ず1件出る。

@@ -1284,6 +1284,9 @@ extension KeyboardViewController {
         appendLog: Bool = false,
         criticalLog: Bool = false
     ) {
+        // 節目(表示/非表示/モード変更/警告 等)ごとにフットプリントの変化を拾う(2855)
+        MemoryForensics.noteFootprintDrift(event)
+
         guard let sharedDefaults else {
             return
         }
