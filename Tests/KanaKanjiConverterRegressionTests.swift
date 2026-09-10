@@ -14942,4 +14942,21 @@ extension KanaKanjiConverterRegressionTests {
             "飲み干せる"
         )
     }
+
+    // 背(せ)(2868、ユーザ報告): LM は 背 5820 ≪ 畝 6883 / 瀬 6925 なのに、読み1字の床上げで
+    // 読み別 word_cost 8098 に持ち上げられ 畝(7918)に 180 差で負け、せにしながら が
+    // 畝にしながら になっていた。床上げの免除(例/名/水/選択 と同じ表)と seed で是正する
+    func testRegressionSeBackNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let single = converter.candidates(for: "せ", limit: 4, systemCandidateMode: mode)
+            XCTAssertEqual(single.first, "背", "mode=\(mode.rawValue)")
+            let bare = converter.multiClauseCandidates(for: "せにしながら", systemCandidateMode: mode)
+            XCTAssertEqual(bare.first, "背にしながら", "mode=\(mode.rawValue) multi=\(bare)")
+            let withNoun = converter.multiClauseCandidates(for: "かべをせにしながら", systemCandidateMode: mode)
+            XCTAssertEqual(withNoun.first, "壁を背にしながら", "mode=\(mode.rawValue) multi=\(withNoun)")
+        }
+    }
 }
