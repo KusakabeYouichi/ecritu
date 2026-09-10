@@ -1229,9 +1229,19 @@ final class KeyboardViewController: UIInputViewController {
         with coordinator: any UIViewControllerTransitionCoordinator
     ) {
         pendingSizeTransitionTargetSize = size
+        // 遷移先の高さを、他の処理より先に publish する(2865)。ホストは遷移を始めてから
+        // 約 15ms で本文の余白(KeyboardLayoutGuide)を確定させる。実機ログでは écritu の
+        // 正しい値が届くのが 53ms 後で、ホストは古い高さで guide を決めてから 400ms 後に
+        // 訂正していた。純正キーボードは guide を一度しか設定せず、最初から正しい値。
+        // super とレイアウト計算(SwiftUI の再配置)を挟むと 40ms 遅れるので、
+        // プロパティの代入だけを先に済ませる。幅も遷移先の値を使う(view.bounds はまだ旧幅)
+        synchronizePreferredContentSize(
+            height: effectivePreferredKeyboardHeight(),
+            widthOverride: size.width
+        )
         super.viewWillTransition(to: size, with: coordinator)
 
-        // 遷移先の確定値で1回だけ算出して publish する。
+        // 遷移先の確定値でレイアウトを合わせる。
         installKeyboardHeightConstraintIfNeeded()
         updateKeyboardHeightIfNeeded()
 

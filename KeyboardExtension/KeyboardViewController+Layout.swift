@@ -61,8 +61,9 @@ extension KeyboardViewController {
         return preferredKeyboardHeight()
     }
 
-    func synchronizePreferredContentSize(height: CGFloat) {
-        let targetWidth = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
+    func synchronizePreferredContentSize(height: CGFloat, widthOverride: CGFloat? = nil) {
+        let measuredWidth = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
+        let targetWidth = widthOverride ?? measuredWidth
         let targetSize = CGSize(width: targetWidth, height: height)
 
         guard abs(preferredContentSize.height - targetSize.height) > 0.5
