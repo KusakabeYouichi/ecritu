@@ -298,6 +298,11 @@ final class KanaKanjiStore {
         }
 
         let filteredPrimaryCandidates = baseCandidates.filter { candidate in
+            // かな識別(表層==読み)は常に残す(sqlite 側と同条件。2854)
+            if candidate == normalizedReading {
+                return true
+            }
+
             guard let candidateSources = sourceMap[candidate],
                 !candidateSources.isEmpty else {
                 // Keep fallback candidates even when no source metadata exists.

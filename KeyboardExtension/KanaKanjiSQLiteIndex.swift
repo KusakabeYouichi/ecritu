@@ -76,7 +76,11 @@ final class KanaKanjiSQLiteIndex {
         hasSourceMetadata = tableExists("candidate_sources")
         if hasSourceMetadata {
             selectCandidatesBySourceStatement = prepareStatement(
-                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?)) ORDER BY e.rank ASC"
+                // かな識別(表層==読み)は常に残す(2854): 正規化形/表記形の区別は Sudachi が漢字語の
+                // 表記ゆれを畳むための情報で、かな表記そのものには意味がない。いきなり は表記形タグしか
+                // 持たないため normalise モードで候補集合から消え、唯一残った 行形(いきなり)が先頭に出ていた。
+                // かなが正書かどうかの判定(LM 比較)は候補が残っていないと働けない
+                sql: "SELECT e.candidate FROM dictionary_entries e WHERE e.reading = ? AND (e.candidate = e.reading OR NOT EXISTS (SELECT 1 FROM candidate_sources s_any WHERE s_any.reading = e.reading AND s_any.candidate = e.candidate) OR EXISTS (SELECT 1 FROM candidate_sources s WHERE s.reading = e.reading AND s.candidate = e.candidate AND s.source = ?)) ORDER BY e.rank ASC"
             )
             selectCandidatesWithExactSourceStatement = prepareStatement(
                 sql: "SELECT e.candidate FROM dictionary_entries e INNER JOIN candidate_sources s ON s.reading = e.reading AND s.candidate = e.candidate WHERE e.reading = ? AND s.source = ? ORDER BY e.rank ASC"

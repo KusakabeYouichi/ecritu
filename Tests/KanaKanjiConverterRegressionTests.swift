@@ -14659,4 +14659,22 @@ extension KanaKanjiConverterRegressionTests {
         // 単独の めい は従来どおり(姪 が候補に残る)
         XCTAssertTrue(converter.candidates(for: "めい", limit: 5, systemCandidateMode: .surface).contains("姪"))
     }
+
+    // かな識別は候補ソースのモードで捨てない(ユーザ報告 2854): normalise モードは Sudachi の正規化形タグが
+    // 付いた候補だけを残すが、かな表記そのものには正規化形/表記形の区別が無い。いきなり は表記形タグしか
+    // 持たず normalise で消え、唯一残った 行形(いきなり)が先頭になっていた。かなが正書かの判定(LM 比較)は
+    // 候補が残っていないと働けないので、表層==読み は常に残す
+    func testRegressionKanaIdentitySurvivesNormaliseMode() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface, .lesDeux] {
+            let list = converter.candidates(for: "いきなり", limit: 4, systemCandidateMode: mode)
+            XCTAssertEqual(list.first, "いきなり", "mode=\(mode.rawValue) list=\(list)")
+        }
+        // misc 登録済みのかな正書語は従来どおり
+        for reading in ["ここ", "それぞれ", "なぜ", "さっき", "だめ"] {
+            let list = converter.candidates(for: reading, limit: 4, systemCandidateMode: .normalise)
+            XCTAssertEqual(list.first, reading, "reading=\(reading) list=\(list)")
+        }
+    }
 }
