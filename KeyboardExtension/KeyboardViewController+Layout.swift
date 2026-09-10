@@ -73,6 +73,67 @@ extension KeyboardViewController {
         preferredContentSize = targetSize
     }
 
+    // 回転が終わってからホストに最終値でもう一度計算させる(2859、実機ログで確認した順序への手当て)。
+    // ホストは拡張より約 40ms 先に動く。メッセージ.app は縦へ戻る途中で「横のときの高さ 176」を
+    // 縦の幅に当てて 234 と算出し、そのまま本文の下端余白を決めていた(2026-09-10 16:46:33 の実機ログ)。
+    // écritu が 242 を通知するのはその 10ms 後で、最終的なジオメトリ(placeholder 300 / guide 334)は
+    // 正しく揃うのに、会話の最終行は入力欄の下に潜ったままになる。ホスト内部の余白は読めないので、
+    // 遷移が落ち着いた後に 1pt ずらして戻し、確実に1回計算し直させる。1フレームの 1pt なので目には見えない。
+    // 幅が変わる遷移のときだけ、1回だけ走る。効いたかどうかは診断ログの「回転後の再通知」で追える。
+    func scheduleKeyboardHeightRepublishAfterSizeTransition() {
+        keyboardHeightRepublishWorkItem?.cancel()
+        probeKeyboardGeometryUntilSettled(attempt: 0, previousSample: nil)
+    }
+
+    // 「回転が終わった」の判定は遷移コーディネーターの完了だけに頼らない(ユーザ指摘 2859)。
+    // 完了コールバックの後もセーフエリアと窓の幅は数フレーム動く。固定の待ち時間で決め打ちすると
+    // 端末やホストが変わったときに外れるので、幅と算出高さが 2 回続けて同じ値になった時点を
+    // 「落ち着いた」とみなす。上限に達したらそのときの値で打ち切る(無限に待たない)。
+    private func probeKeyboardGeometryUntilSettled(attempt: Int, previousSample: CGSize?) {
+        let workItem = DispatchWorkItem { [weak self] in
+            guard let self else {
+                return
+            }
+
+            let sample = CGSize(width: view.bounds.width, height: effectivePreferredKeyboardHeight())
+            let isSettled = previousSample.map {
+                abs($0.width - sample.width) <= 0.5 && abs($0.height - sample.height) <= 0.5
+            } ?? false
+
+            guard isSettled || attempt >= Self.keyboardHeightRepublishMaxProbes else {
+                probeKeyboardGeometryUntilSettled(attempt: attempt + 1, previousSample: sample)
+                return
+            }
+
+            republishKeyboardHeightToHost(
+                height: sample.height,
+                settled: isSettled,
+                elapsedProbes: attempt
+            )
+        }
+        keyboardHeightRepublishWorkItem = workItem
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.keyboardHeightRepublishProbeInterval, execute: workItem)
+    }
+
+    // ホストに最終値でもう一度計算させる。同じ値の再代入は UIKit が握り潰すので、
+    // 1pt ずらしてから戻す。1 フレームの 1pt なので見た目には出ない
+    private func republishKeyboardHeightToHost(height: CGFloat, settled: Bool, elapsedProbes: Int) {
+        synchronizePreferredContentSize(height: height - 1)
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self else {
+                return
+            }
+
+            synchronizePreferredContentSize(height: height)
+            updateKeyboardHeightIfNeeded()
+            appendKeyboardDiagnosticsLog(
+                "回転後の再通知 \(height)pt 収束=\(settled ? "済" : "打ち切り") 待ち=\(elapsedProbes)回",
+                critical: true
+            )
+        }
+    }
+
     func effectiveKanaLayoutModeForHeight() -> KanaLayoutMode {
         if let mode = lastRenderConfiguration?.kanaLayoutMode {
             return mode

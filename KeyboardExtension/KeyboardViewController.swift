@@ -187,6 +187,8 @@ final class KeyboardViewController: UIInputViewController {
     // 非nilの間は「サイズ遷移が進行中」を意味し、高さ算出は生のウィンドウ・ビューの
     // ジオメトリでなくこの確定値を根拠にする(preferredKeyboardHeight 参照)。
     var pendingSizeTransitionTargetSize: CGSize?
+    // 回転完了後の再通知(scheduleKeyboardHeightRepublishAfterSizeTransition 参照。2859)
+    var keyboardHeightRepublishWorkItem: DispatchWorkItem?
     var isObservingSettingsDidChange = false
     var keyboardHeightLockValue: CGFloat?
     // 高さ要求の診断ログ用(変化時だけ1行残す。logPreferredKeyboardHeightIfChanged 参照)
@@ -496,6 +498,11 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     static let keyboardSwitchHeightLockDuration: TimeInterval = 0.45
+    // 回転後の再通知(scheduleKeyboardHeightRepublishAfterSizeTransition 参照)。
+    // ジオメトリが落ち着いたかを一定間隔で見に行く。実機ログでは回転の開始から最終値の確定まで
+    // 約 0.4 秒なので、80ms 間隔・最大 12 回(約 1 秒)で足りる
+    static let keyboardHeightRepublishProbeInterval: TimeInterval = 0.08
+    static let keyboardHeightRepublishMaxProbes = 12
     private static let deviceSystemDictionaryPreloadDelay: TimeInterval = 1.2
     private static let minimumPhysicalMemoryForSystemDictionaryPreload: UInt64 = 5 * 1024 * 1024 * 1024
     private static let maximumFootprintMBForSystemDictionaryPreload: Double = 100
@@ -627,6 +634,7 @@ final class KeyboardViewController: UIInputViewController {
         keyboardBootstrapWorkItem?.cancel()
         dictionaryPreloadWorkItem?.cancel()
         keyboardHeightLockReleaseWorkItem?.cancel()
+        keyboardHeightRepublishWorkItem?.cancel()
         stopObservingSettingsDidChange()
     }
 
@@ -1213,6 +1221,9 @@ final class KeyboardViewController: UIInputViewController {
         with coordinator: any UIViewControllerTransitionCoordinator
     ) {
         pendingSizeTransitionTargetSize = size
+        // 幅が変わる遷移(回転、iPad の分割幅変更)かどうか。ホストが古い向きの高さで
+        // 一度レイアウトを確定させるのはこの場合だけなので、再通知もここに限る
+        let widthWillChange = abs(size.width - view.bounds.width) > 0.5
         super.viewWillTransition(to: size, with: coordinator)
 
         // 遷移先の確定値で1回だけ算出して publish する。
@@ -1228,6 +1239,10 @@ final class KeyboardViewController: UIInputViewController {
             pendingSizeTransitionTargetSize = nil
             installKeyboardHeightConstraintIfNeeded()
             updateKeyboardHeightIfNeeded()
+
+            if widthWillChange {
+                scheduleKeyboardHeightRepublishAfterSizeTransition()
+            }
         }
     }
 
