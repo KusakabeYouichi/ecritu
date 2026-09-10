@@ -1515,7 +1515,10 @@ extension KanaKanjiConverter {
     // 短span床(wc そば=5755)を通しても かな そば(5965)に勝ってしまい
     // 「そばをたべる→側を食べる」「しきなそば→識名側」を作る。単文節の候補列には残して
     // 明示選択できるようにし、連文節でだけ減点する(ユーザー報告 2608)。
-    static let multiClauseKanaOrthodoxReadings: Set<String> = ["そば"]
+    // ひらがな/かたかな も同型(2859)。文字種の呼び分けは [カタカナ]/[ひらがな] と書くのが
+    // 一般の慣用で、écritu のマニュアル自身も カタカナ42/ひらがな14 に対し 片仮名0/平仮名0。
+    // curated(misc の カタカナ/ひらがな)は除外条件で素通りするので、漢字表層だけが下がる。
+    static let multiClauseKanaOrthodoxReadings: Set<String> = ["そば", "ひらがな", "かたかな"]
     static let multiClauseKanaOrthodoxKanjiPenalty = 1500
 
     // かなの母音(引き伸ばし判定用)。ねえ=ね(e)+え、なあ=な(a)+あ のような終助詞の

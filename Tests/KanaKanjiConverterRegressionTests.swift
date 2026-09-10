@@ -7131,19 +7131,21 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     }
 
     // ひらがな: dict は 平仮名0/平がな1/ひらがな2 で交ぜ書きが かな に先行し、合成の
-    // 二重加点(平がな=辞書+postfix)が 平仮名 をも脅かす。seed=[平仮名, ひらがな]+
-    // seed内相対順の正規化(スコア再割当)で 平仮名→ひらがな の順に固定。合成にも効く。
-    // 者(は)は複合語内読みの収穫で、連文節の の+者 が のは を食うため suppr。
+    // 二重加点(平がな=辞書+postfix)が 平仮名 をも脅かす。seed で順を固定する構図は同じだが、
+    // 2859 で並びを [ひらがな, 平仮名] へ反転(文字種の呼び分けは [カタカナ]/[ひらがな] が
+    // 一般の慣用で、écritu のマニュアル自身も ひらがな14件/平仮名0件。旧テスト名の
+    // 「KanaSecond」は反転前の名残)。者(は)は複合語内読みの収穫で、連文節の の+者 が
+    // のは を食うため suppr。
     func testRegressionRealLMHiraganaKanaSecond() throws {
         try prepareRealLMDictionary()
         try injectSuppression(["は": ["者"]])
         let single = converter.candidates(for: "ひらがな", limit: 8, systemCandidateMode: .surface)
         // 平がな は交ぜ書きクラス抑制(既定)で候補から消える(2350〜)
-        XCTAssertEqual(Array(single.prefix(2)), ["平仮名", "ひらがな"], "single=\(single)")
+        XCTAssertEqual(Array(single.prefix(2)), ["ひらがな", "平仮名"], "single=\(single)")
         let composed = converter.candidates(for: "ひらがなのは", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(composed.prefix(2)), ["平仮名のは", "ひらがなのは"], "composed=\(composed)")
+        XCTAssertEqual(Array(composed.prefix(2)), ["ひらがなのは", "平仮名のは"], "composed=\(composed)")
         let multi = converter.multiClauseCandidates(for: "ひらがなのは", systemCandidateMode: .surface)
-        XCTAssertEqual(multi.first, "平仮名のは", "multi=\(multi)")
+        XCTAssertEqual(multi.first, "ひらがなのは", "multi=\(multi)")
         XCTAssertFalse(multi.contains(where: { $0.contains("者") }), "multi=\(multi)")
     }
 
@@ -7272,7 +7274,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try injectSuppression(["は": ["者"]])
         let multi = converter.multiClauseCandidates(for: "ひらがなのは", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(multi.prefix(2)), ["平仮名のは", "ひらがなのは"], "multi=\(multi)")
+        XCTAssertEqual(Array(multi.prefix(2)), ["ひらがなのは", "平仮名のは"], "multi=\(multi)")  // 2859 で かな先頭に反転
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひらがなのは"))
         XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かってみようかな"))
         // 既存の名詞化節挙動は不変
@@ -7428,7 +7430,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try injectSuppression(["は": ["者"]])
         let multi = converter.multiClauseCandidates(for: "ひらがななのは", systemCandidateMode: .surface)
-        XCTAssertEqual(Array(multi.prefix(2)), ["平仮名なのは", "ひらがななのは"], "multi=\(multi)")
+        XCTAssertEqual(Array(multi.prefix(2)), ["ひらがななのは", "平仮名なのは"], "multi=\(multi)")  // 2859 で かな先頭に反転
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ひらがななのは"))
     }
 
@@ -12589,8 +12591,9 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         let single = converter.candidates(for: "きくかも", limit: 6, systemCandidateMode: .surface)
         XCTAssertEqual(single.first, "聞くかも", "\(single)")
         XCTAssertFalse(single.prefix(3).contains("菊鹿も"), "\(single)")
-        // 語幹 ひらが は用言でないので対象外(従来の先頭 平仮名 を維持)
-        XCTAssertEqual(converter.candidates(for: "ひらがな", limit: 3, systemCandidateMode: .surface).first, "平仮名")
+        // 語幹 ひらが は用言でないので対象外(この規則で先頭が動かないことの確認。
+        // 先頭が ひらがな なのは 2859 の seed 反転による。testRegressionRealLMHiraganaKanaSecond 参照)
+        XCTAssertEqual(converter.candidates(for: "ひらがな", limit: 3, systemCandidateMode: .surface).first, "ひらがな")
     }
 
     // 用言語幹に名詞接辞(か→課/可/化/科/下)を付けない(来れる課 等の無用合成。2700)
@@ -14679,7 +14682,6 @@ extension KanaKanjiConverterRegressionTests {
     }
 }
 
-
 extension KanaKanjiConverterRegressionTests {
     // 抜き取り検査(2859): 「読み<TAB>期待する表記」の TSV を読み、変換の先頭候補が期待と一致するかを見る。
     // TSV は tools/derive_readings_for_corpus.py が文章から作る(読みが 1 つに定まる語だけ使う)。
@@ -14728,6 +14730,35 @@ extension KanaKanjiConverterRegressionTests {
         print("CORPUS 合計=\(total) 一致=\(matched) 不一致=\(mismatches.count)")
         for line in mismatches {
             print("CORPUS不一致 \(line)")
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 文字種の名前(抜き取り検査 2859): Sudachi は 片仮名/平仮名 を正規化形として持つため、候補ソースが
+    // normalisé だと カタカナ・ひらがな が候補集合から落ちる。かたかな は 方(かた)+かな の分割に負けて
+    // 方かな確定 になっていた。カタカナ/ひらがなで書き分けるのが通例(マニュアルでも漢字表記は 0 回)
+    func testRegressionCharacterClassNamesUseKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.candidates(for: "かたかな", limit: 3, systemCandidateMode: mode).first,
+                "カタカナ",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.candidates(for: "ひらがな", limit: 3, systemCandidateMode: mode).first,
+                "ひらがな",
+                "mode=\(mode.rawValue)"
+            )
+            let kakutei = converter.multiClauseCandidates(for: "かたかなかくてい", systemCandidateMode: mode)
+            XCTAssertEqual(kakutei.first, "カタカナ確定", "mode=\(mode.rawValue) multi=\(kakutei)")
+            XCTAssertFalse(kakutei.contains { $0.hasPrefix("方かな") }, "multi=\(kakutei)")
+            // 連文節でも漢字表記に落ちない(multiClauseKanaOrthodoxReadings)
+            let hiraMulti = converter.multiClauseCandidates(for: "ひらがなにする", systemCandidateMode: mode)
+            XCTAssertEqual(hiraMulti.first, "ひらがなにする", "mode=\(mode.rawValue) multi=\(hiraMulti)")
         }
     }
 }
