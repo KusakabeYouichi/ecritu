@@ -173,19 +173,29 @@ containermanagerd … error=(55|3|0)
 
 ### 実行時のログ
 
-アプリと拡張の両方が、起動時に自分の状態を 1 行で出す。
+拡張は起動時に App Group の健全性を 1 行残す(コンテナーを引けたか、共有 UserDefaults に書いて読み戻せたか)。
 
 ```
-AppGroup健全性 group=… container=… profileGroups=[…] bundle=… fullAccess=0/1 containerURL=ok defaults=ok
+AppGroup健全性 group=group.… containerURL=ok defaults=ok
 ```
 
-拡張側は同じ行を iOS の統合ログにも出す。フルアクセスがオフで共有コンテナーに書けない状況でも読めるようにするため。
+コンテナーアプリの診断テキストにも要求している群と解決結果が出る。
+
+```
+appGroup: group.… container=あり bundle=…
+```
+
+**この行が 1 つも残っていないときは、共有コンテナーに書けていない**(= App Group が拒否されている、
+またはフルアクセスがオフ)。その場合は iOS の統合ログを見る。
 
 ```
 sudo log collect --device-name "<iPhone 名>" --last 10m
-/usr/bin/log show --archive <出力>.logarchive --style compact \
-  --predicate 'process == "KeyboardExtension" AND category == "diagnostics"'
+/usr/bin/log show --archive <出力>.logarchive --style compact --info --debug > all.txt
+grep "not entitled" all.txt
 ```
+
+`container_create_or_lookup_app_group_path_by_app_group_identifier: client is not entitled` が出ていれば、
+要求した群が署名の entitlements に無い(= 上のビルド時検査で防ぐ状態)。
 
 ---
 
