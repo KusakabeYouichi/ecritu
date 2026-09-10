@@ -2626,7 +2626,13 @@ extension KanaKanjiConverter {
                 // 出直す/取る 等の動詞が助詞なしで続く読みはほぼ無い。この場合だけ割った側を最良にし、
                 // 元の経路を第2候補へ(数分で直してた。ユーザ指定 2772)。時点の名詞(明日/来週)は
                 // 明日出直します が自然なので従来どおり
-                if head == "で", Self.isDurationNounSurface(prevNode.surface) {
+                // 動作名詞(サ変。長押し/タップ/操作)+で も「その操作で〜する」の手段の定型で、
+                // 動作名詞の直後に外来語が助詞なしで続く複合(長押しデコード)より優勢。
+                // 長押しでコードが分かる が 長押しデコードが に負けていた(2859、抜き取り検査)
+                let prevIsMeansNoun = head == "で"
+                    && (Self.isDurationNounSurface(prevNode.surface)
+                        || store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface))
+                if prevIsMeansNoun {
                     let originalJoined = pathIndices.map { nodes[$0].surface }.joined()
                     best = alternative.best
                     backPointer = alternative.backPointer
