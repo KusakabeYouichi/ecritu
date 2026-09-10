@@ -249,5 +249,7 @@
 	<dict><key>phrase</key><string>Dell</string><key>shortcut</key><string>でる</string></dict>	<!-- 企業名。単文節 でる は seed で 出る/でる/Dell/デル の順(ユーザ指定 2736) -->
 	<dict><key>phrase</key><string>エヴリング</string><key>shortcut</key><string>えゔりんぐ</string></dict>
 	<dict><key>phrase</key><string>EVERING</string><key>shortcut</key><string>えゔりんぐ</string></dict>
+	<dict><key>phrase</key><string>スイッチボット</string><key>shortcut</key><string>すいっちぼっと</string></dict>
+	<dict><key>phrase</key><string>SwitchBot</string><key>shortcut</key><string>すいっちぼっと</string></dict>
 </array>
 </plist>

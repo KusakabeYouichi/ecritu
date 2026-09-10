@@ -116,11 +116,15 @@ extension KeyboardViewController {
     }
 
     // ホストに最終値でもう一度計算させる。同じ値の再代入は UIKit が握り潰すので、
-    // 1pt ずらしてから戻す。1 フレームの 1pt なので見た目には出ない
+    // 1pt ずらしてから戻す。1 フレームの 1pt なので見た目には出ない。
+    // 戻しは次の実行ループでなく 1 フレーム跨いでから行う(2861): 連続ターンで出すと
+    // ホスト側で同一フレームに畳まれ、正味「変化なし」になって計算し直しが起きない
+    // (2860 の実機ログでは再通知が発火しているのに重なりが残った)
     private func republishKeyboardHeightToHost(height: CGFloat, settled: Bool, elapsedProbes: Int) {
         synchronizePreferredContentSize(height: height - 1)
+        updateKeyboardHeightIfNeeded()
 
-        DispatchQueue.main.async { [weak self] in
+        let workItem = DispatchWorkItem { [weak self] in
             guard let self else {
                 return
             }
@@ -132,6 +136,11 @@ extension KeyboardViewController {
                 critical: true
             )
         }
+        keyboardHeightRepublishWorkItem = workItem
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + Self.keyboardHeightRepublishNudgeHold,
+            execute: workItem
+        )
     }
 
     func effectiveKanaLayoutModeForHeight() -> KanaLayoutMode {

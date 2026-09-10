@@ -503,6 +503,9 @@ final class KeyboardViewController: UIInputViewController {
     // 約 0.4 秒なので、80ms 間隔・最大 12 回(約 1 秒)で足りる
     static let keyboardHeightRepublishProbeInterval: TimeInterval = 0.08
     static let keyboardHeightRepublishMaxProbes = 12
+    // 1pt ずらした値を保持する時間(2861)。同じ実行ループの連続ターンで戻すとホスト側で
+    // 1 フレームに畳まれて変化として扱われない。3 フレーム分(約 50ms)保持してから戻す
+    static let keyboardHeightRepublishNudgeHold: TimeInterval = 0.05
     private static let deviceSystemDictionaryPreloadDelay: TimeInterval = 1.2
     private static let minimumPhysicalMemoryForSystemDictionaryPreload: UInt64 = 5 * 1024 * 1024 * 1024
     private static let maximumFootprintMBForSystemDictionaryPreload: Double = 100
