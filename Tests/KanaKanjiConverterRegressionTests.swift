@@ -14579,3 +14579,40 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "ここでまとう", systemCandidateMode: .surface).first, "ここで待とう")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // サイズ感(ユーザ報告 2850): LM は 官 5297 < 観 5446 < 感 5626 < 缶 5866 で 感 が中位、さらに カン→は 1114 が
+    // 感→は 1780 より安く、さいずかんは が サイズカンは になり 感 は変種にも残らなかった(seed 順の 缶/勘/観 が枠を占有)。
+    // 名詞+かん は接尾 感 として加点する(名詞+待ち と同型)。映画→観/館 のように実在複合の bigram があるときは触らない
+    func testRegressionRealLMFeelSuffixAfterNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "さいずかん", systemCandidateMode: .surface).first, "サイズ感")
+        let wa = converter.multiClauseCandidates(for: "さいずかんは", systemCandidateMode: .surface)
+        XCTAssertEqual(wa.first, "サイズ感は", "multi=\(wa)")
+        // ガード: LM が 1 語で持つ複合(空き缶/違和感)と、実在複合の bigram がある 映画館 は不変
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あきかんを", systemCandidateMode: .surface).first, "空き缶を")
+        XCTAssertEqual(converter.candidates(for: "えいがかん", limit: 3, systemCandidateMode: .surface).first, "映画館")
+    }
+
+    // 保険が効く/薬が効く(ユーザ報告 2850): LM は 聞く 5878 ≪ 効く 6911・利く 6971 で 保険が聞く/薬が利く が上だった。
+    // 連語表(後段は前方一致)で 効く/効いた をまとめて拾う。話を聞く/音楽を聴く は不変
+    func testRegressionRealLMKikuCollocationForInsuranceAndMedicine() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for (reading, expected) in [
+            ("ほけんきくのかな", "保険効くのかな"),
+            ("ほけんがきく", "保険が効く"),
+            ("ほけんはきく", "保険は効く"),
+            ("ほけんがきいた", "保険が効いた"),
+            ("くすりがきく", "薬が効く"),
+        ] {
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface)
+            XCTAssertEqual(multi.first, expected, "multi[\(reading)]=\(multi)")
+        }
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おんがくをきく", systemCandidateMode: .surface).first, "音楽を聴く")
+        XCTAssertTrue(
+            converter.multiClauseCandidates(for: "はなしをきく", systemCandidateMode: .surface).contains("話を聞く")
+        )
+    }
+}
