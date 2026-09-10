@@ -312,6 +312,10 @@ final class KeyboardViewController: UIInputViewController {
     let controllerCreatedAt: CFAbsoluteTime = CFAbsoluteTimeGetCurrent()
     // 測定(2721): 個体1体を立ち上げる(init→初回 viewDidAppear)コスト。init 時点の snapshot
     let controllerCreationSnapshot = MemoryForensics.snapshot()
+    // 個体 1 個あたりの費用の切り分け用(2861)。構築(setupKeyboardView)は実測 0.0MB だったので、
+    // 残る候補は viewDidLoad の他の処理と、初回レイアウト/描画(viewWillAppear→viewDidAppear)
+    var viewDidLoadSnapshot: MemoryForensics.Snapshot?
+    var firstRenderSnapshot: MemoryForensics.Snapshot?
     var didLogControllerCreationDelta = false
     // 非アクティブ降格を検知した時刻(deinit までのゾンビ滞留時間の計測に使う)
     var lostActiveOwnershipAt: CFAbsoluteTime = 0
@@ -571,6 +575,7 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewDidLoadSnapshot = MemoryForensics.snapshot()
         // 起動計測: 初回起動が iOS の拡張起動デッドラインを超えると純正キーボードに
         // 差し替えられるため、同期区間の実測を診断ログへ残す(遅い時のみ)。
         let launchStartedAt = CFAbsoluteTimeGetCurrent()
@@ -643,6 +648,13 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        if let viewDidLoadSnapshot {
+            MemoryForensics.noteSyncDelta("viewDidLoad全体", since: viewDidLoadSnapshot, minDeltaMB: -1)
+            self.viewDidLoadSnapshot = nil
+        }
+        if firstRenderSnapshot == nil {
+            firstRenderSnapshot = MemoryForensics.snapshot()
+        }
         cancelKeyboardAttachWatchdog()
         // 未到達と数えた後に表示が来たなら遅延復帰として数え直す(cancel より後に呼ぶ)
         recordKeyboardAttachLateRecoveryIfNeeded()
@@ -840,6 +852,10 @@ final class KeyboardViewController: UIInputViewController {
         if needsSwitchKey != cachedNeedsInputModeSwitchKey {
             cachedNeedsInputModeSwitchKey = needsSwitchKey
             refreshKeyboardStateAsync()
+        }
+        if let firstRenderSnapshot {
+            MemoryForensics.noteSyncDelta("初回レイアウト/描画", since: firstRenderSnapshot, minDeltaMB: -1)
+            self.firstRenderSnapshot = nil
         }
         if !didLogControllerCreationDelta {
             didLogControllerCreationDelta = true
