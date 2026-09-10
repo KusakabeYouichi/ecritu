@@ -1112,6 +1112,15 @@ extension KanaKanjiConverter {
                     }
                 } else {
                     base = bigram
+                    // 助詞の読みを持つ 1 字漢字(は→波/歯/刃、が→蛾、を→尾)は、bigram が
+                    // 観測されていても読み別 word_cost を下限にする(2876)。短spanレア読み床は
+                    // unigram の枝にしか無く、bigram が観測されていると迂回される。
+                    // 青海→波 1341(青海波 の統計)で 青海+波 が 正解+は を跨いでいた
+                    // (せいかいはめるろです→青海波メルロです。抜き取り検査)
+                    if let wordCost, surface.count == 1, containsKanji(surface),
+                        Self.multiClauseParticleReadingsForKanjiGuard.contains(reading) {
+                        base = max(base, wordCost)
+                    }
                 }
             } else if !deniesBigramBorrow,
                 let prevAuxTail,

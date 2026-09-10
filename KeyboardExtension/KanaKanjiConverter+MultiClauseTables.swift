@@ -1363,6 +1363,10 @@ extension KanaKanjiConverter {
     // 観測が無い相手に付く 屋 は分割の産物で、並立・終助詞の や を食う
     // (きりかきや→切り欠き屋。ユーザ報告 2873)。1 字の 屋 ノードに限って減点する
     static let multiClauseTradeSuffixKanjiWithoutEvidencePenalty = 2500
+    // 助詞の読みを持つ 1 字漢字のガード(2876)。この読みのときは bigram が観測されていても
+    // 読み別 word_cost を下限にする。は→波(wc 9103、主読み なみ)のような表層は、
+    // 複合語(青海波)の統計で bigram だけ極端に安くなり、助詞の は を跨ぐ
+    static let multiClauseParticleReadingsForKanjiGuard: Set<String> = ["は", "が", "を", "に", "へ", "と", "も", "の"]
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限

@@ -15263,3 +15263,43 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 助詞の読みを持つ 1 字漢字は bigram でも床上げを迂回させない(2876、抜き取り検査)。
+    // は→波(wc 9103、主読み なみ)は 青海波 の統計で 青海→波 1341 と極端に安く、
+    // せいかいはめるろです が 青海波メルロです になっていた。短spanレア読み床は unigram の
+    // 枝にしか無く、bigram が観測されていると効かない
+    func testRegressionParticleReadingKanjiGuard() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "せいかいはめるろです", systemCandidateMode: mode).first,
+                "正解はメルロです",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "せいかいは", systemCandidateMode: mode).first,
+                "正解は",
+                "mode=\(mode.rawValue)"
+            )
+            // 1 語として辞書にある複合(木の葉/東京都)や助詞の と は無傷
+            XCTAssertEqual(
+                converter.candidates(for: "このは", limit: 3, systemCandidateMode: mode).first,
+                "木の葉",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "とうきょうとにすむ", systemCandidateMode: mode).first,
+                "東京都に住む",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "おおさかとにいがた", systemCandidateMode: mode).first,
+                "大阪と新潟",
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
