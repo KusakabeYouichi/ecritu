@@ -180,7 +180,14 @@ extension KeyboardViewController {
         let screenBounds = view.window?.windowScene?.screen.bounds
             ?? view.window?.bounds
             ?? UIScreen.main.bounds
-        let shorterScreenEdge = min(screenBounds.width, screenBounds.height)
+        // 画面の短辺は向きに依存しない値なので、回らない座標系から採る(2859)。
+        // UIScreen.bounds は表示の向きに追随して回るため、回転の最中は「縦と判定して
+        // いるのに 852x393」という不整合が出る(2026-09-10 実機ログ)。min を取る限り
+        // 同じ値になるので今回の高さ自体は正しかったが、window.bounds への
+        // フォールバックは iPad の分割表示で画面でなく窓の短辺を返す。固定座標系を優先する。
+        let fixedScreenBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds
+        let shorterScreenEdge = fixedScreenBounds.map { min($0.width, $0.height) }
+            ?? min(screenBounds.width, screenBounds.height)
         let isLandscapeOrientation: Bool = {
             // サイズ遷移中は、UIKit が viewWillTransition で渡した遷移先サイズだけが
             // 一貫した根拠になる。interfaceOrientation は他のジオメトリより先に切り替わる
@@ -223,7 +230,8 @@ extension KeyboardViewController {
             height: height,
             profile: profile,
             isLandscapeOrientation: isLandscapeOrientation,
-            screenBounds: screenBounds
+            screenBounds: screenBounds,
+            shorterScreenEdge: shorterScreenEdge
         )
         return height
     }
@@ -237,7 +245,8 @@ extension KeyboardViewController {
         height: CGFloat,
         profile: PortraitHeightProfile,
         isLandscapeOrientation: Bool,
-        screenBounds: CGRect
+        screenBounds: CGRect,
+        shorterScreenEdge: CGFloat
     ) {
         let rounded = (height * 2).rounded() / 2
         guard abs(rounded - lastLoggedPreferredKeyboardHeight) > 0.5
@@ -247,9 +256,14 @@ extension KeyboardViewController {
         lastLoggedPreferredKeyboardHeight = rounded
         lastLoggedPreferredKeyboardHeightIsLandscape = isLandscapeOrientation
         let orientation = isLandscapeOrientation ? "横" : "縦"
+        // 実測の画面寸法は回転の途中で向きと食い違う。短辺は固定座標系から採るので影響を
+        // 受けないが、食い違い自体が遷移中かどうかの手掛かりになるので両方残す(2859)
+        let liveIsLandscape = screenBounds.width > screenBounds.height
+        let inconsistency = liveIsLandscape == isLandscapeOrientation ? "" : "(向きと不一致)"
         appendKeyboardDiagnosticsLog(
             "高さ要求 \(rounded)pt profile=\(profile) \(orientation)"
-                + " 画面=\(Int(screenBounds.width))x\(Int(screenBounds.height))"
+                + " 短辺=\(Int(shorterScreenEdge))"
+                + " 画面=\(Int(screenBounds.width))x\(Int(screenBounds.height))\(inconsistency)"
                 + " 下端インセット=\(Int(view.window?.safeAreaInsets.bottom ?? 0))",
             critical: true
         )
