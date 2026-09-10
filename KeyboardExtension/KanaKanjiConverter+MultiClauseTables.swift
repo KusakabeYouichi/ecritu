@@ -1590,7 +1590,10 @@ extension KanaKanjiConverter {
     // ひらがな/かたかな も同型(2859)。文字種の呼び分けは [カタカナ]/[ひらがな] と書くのが
     // 一般の慣用で、écritu のマニュアル自身も カタカナ42/ひらがな14 に対し 片仮名0/平仮名0。
     // curated(misc の カタカナ/ひらがな)は除外条件で素通りするので、漢字表層だけが下がる。
-    static let multiClauseKanaOrthodoxReadings: Set<String> = ["そば", "ひらがな", "かたかな"]
+    // せい(所為)も同型(2873、ユーザ報告 日本政府のせい→日本政府の姓)。理由の せい はかなが正書で、
+    // LM の の→姓 4190 < の→せい 4761 は Wikipedia の人名記事の偏り。単文節の並びは動かさないので
+    // 姓/性 は候補に残る
+    static let multiClauseKanaOrthodoxReadings: Set<String> = ["そば", "ひらがな", "かたかな", "せい"]
     static let multiClauseKanaOrthodoxKanjiPenalty = 1500
 
     // かなの母音(引き伸ばし判定用)。ねえ=ね(e)+え、なあ=な(a)+あ のような終助詞の
