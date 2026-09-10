@@ -14824,3 +14824,27 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 動作名詞+で(2859、抜き取り検査): 長押しでコードが分かる が 長押しデコードが になっていた
+    // (デコード 6609 < で 2097 + コード 4709 + backoff)。サ変名詞の直後の で は手段の定型で、
+    // 動作名詞に外来語が助詞なしで続く複合より優勢。期間名詞(数分で)と同じ扱いにする
+    func testRegressionSuruNounPlusDeParticleSplit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let multi = converter.multiClauseCandidates(for: "ながおしでこーどが", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first, "長押しでコードが", "mode=\(mode.rawValue) multi=\(multi)")
+            // デコード自体は第2候補に残る(意味は LM では決められないので両方出す)
+            XCTAssertTrue(multi.contains("長押しデコードが"), "multi=\(multi)")
+            // で で始まる語すべてを割るわけではない: できる/できない/データ は無傷
+            for (reading, expected) in [
+                ("そうさできる", "操作できる"), ("さくじょできない", "削除できない"), ("たっぷでーた", "タップデータ")
+            ] {
+                let control = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(control.first, expected, "mode=\(mode.rawValue) multi=\(control)")
+            }
+        }
+    }
+}

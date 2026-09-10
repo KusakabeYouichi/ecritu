@@ -396,6 +396,23 @@ final class KanaKanjiStore {
         return classMap[candidate] != nil
     }
 
+    // サ変名詞(動作名詞。長押し/タップ/操作/削除 = inflection_classes の suru)かどうか。
+    // 連文節で「動作名詞+で」(手段の定型)を、助詞を呑んだ外来語1語(長押しデコード)より
+    // 優先するために使う(2859)。上と同じ読み単位キャッシュに相乗りする。
+    func isSuruNoun(reading: String, candidate: String) -> Bool {
+        if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
+            return cached[candidate] == "suru"
+        }
+        let classMap: [String: String]
+        if let sqliteIndex = sqliteIndexIfAvailable() {
+            classMap = sqliteIndex.inflectionClassMap(for: reading)
+        } else {
+            classMap = loadInflectionDictionary()[reading] ?? [:]
+        }
+        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
+        return classMap[candidate] == "suru"
+    }
+
     // 連文節用: 読みに対する人名候補(表層→姓/名)。sqlite の person_names 表(Sudachi の 名詞,固有名詞,人名)。
     // 表が無い旧 DB やテスト用の JSON 経路では空(2845)
     func personNameKinds(for reading: String) -> [String: String] {
