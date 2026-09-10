@@ -1505,6 +1505,12 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) || prev.allSatisfy({ $0.isNumber }) {
                 penalty -= Self.multiClauseGotoSuffixAfterNounBonus
             }
+            // 期間の直後の たつ は「経つ」(定数コメント参照。2873)
+            if Self.multiClauseElapsedTimeVerbStems.contains(where: { surface.hasPrefix($0) }),
+                prev != Self.multiClauseBOSMarker,
+                Self.isDurationNounSurface(prev) || Self.multiClauseDurationCounterBareSurfaces.contains(prev) {
+                penalty -= Self.multiClauseElapsedTimeAfterDurationBonus
+            }
             // 補助形容詞のかな(やすい/にくい/づらい)は連用形にしか付かない(定数コメント参照。2872)。
             // 文頭も対象にするため DP のループでなく遷移コスト側に置く(BOS は別の呼び出し口を通る)
             if surface == reading,
@@ -2110,6 +2116,10 @@ extension KanaKanjiConverter {
                             !(node.end < n && (chars[node.end] == "の" || chars[node.end] == "ん")),
                             !prevNode.isInflectionDerived,
                             !prevNode.isDictionaryFormPredicate,
+                            // 裸の格助詞の直後は対象外(2873): のにな は 準体助詞の+に+終助詞な で、
+                            // 形容動詞の連体 な とは別物。減点すると の+ニナ(人名)に負ける
+                            !(prevNode.surface == prevNode.reading
+                                && Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface)),
                             !(prevNode.surface.count >= 2 && Self.isKatakanaString(prevNode.surface)),
                             !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
                             (bigramCosts[prevNode.surface + "\tな"] ?? Int.max)
@@ -2315,6 +2325,16 @@ extension KanaKanjiConverter {
                         if node.reading == "かち", node.surface == "価値",
                             prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
                             cost -= Self.multiClausePredicateKachiValueBonus
+                        }
+                        // 文末の終助詞1字が裸の格助詞の直後(のにな/からな/までな)は正当な言い回し。
+                        // bigram 未観測だと素通り相当まで落ち、人名カタカナ(の+ニナ=7989)に負ける
+                        // (2かげつたっていないのにな→…のニナ。ユーザ報告 2873)。述語直後の
+                        // 終助詞クラスタと同じ文法クランプを当てる
+                        if node.end == n, node.surface == node.reading, node.reading.count == 1,
+                            Self.multiClauseSentenceFinalKanaParticles.contains(node.reading),
+                            prevNode.surface == prevNode.reading,
+                            Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
+                            cost = min(cost, prevCost + Self.multiClauseFinalParticleAfterPredicateCost)
                         }
                         // 文末の終助詞「な」直前が非述語(地名/名詞)なら減点(三田な を避け 見た+な を優先)。
                         // 助詞(から/まで 等)直後の な は正当(遅いからな)なので免除する。

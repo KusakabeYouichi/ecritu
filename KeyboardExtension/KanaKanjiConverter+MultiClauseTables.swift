@@ -1320,6 +1320,18 @@ extension KanaKanjiConverter {
     // 2870 の「ん の直後の漢字を減点」は ん ノードが立った経路にしか効かず、
     // 遺訓+屋 のように ん が消える経路には届かない ─ 正しい経路を安くする側で対処する
     static let multiClauseNominalizerNFinalParticles: Set<String> = ["や", "よ", "ね", "か", "な", "の", "さ"]
+    // 期間の直後の たつ は「経つ」(2873、ユーザ報告 2かげつたって→2か月立って)。
+    // LM は 立っ が優勢(年→経っ 4795 は在るが か月→経っ は未観測)で、期間名詞の後でも
+    // 立って が勝つ。期間+たって は時間の経過以外に読みようがないので加点する。
+    // 連文節の読みは数字接頭を落とす(2かげつ→かげつ)ため、裸の助数詞も期間とみなす
+    // 活用形は列挙でなく語幹の前方一致で見る(経って/経った/経っていない/経ってない/経てば/経つ/経ち)
+    static let multiClauseElapsedTimeVerbStems: [String] = ["経っ", "経て", "経つ", "経ち"]
+    static let multiClauseDurationCounterBareSurfaces: Set<String> = [
+        "か月", "ヶ月", "カ月", "ケ月", "箇月", "ヵ月", "年", "日", "時間", "週間", "週", "分", "秒", "年間", "日間", "月"
+    ]
+    static let multiClauseElapsedTimeAfterDurationBonus = 2000
+    // 裸の格助詞の直後に立てる文末の終助詞1字(のにな/からな/までね/のにさ)。2873
+    static let multiClauseSentenceFinalKanaParticles: Set<String> = ["な", "ね", "よ", "さ", "か"]
     // 名詞直後の ほしい への減点(定義位置の транз コメント参照)
     static let multiClauseNounHoshiiPenalty = 2000
     static let multiClauseInflectionMaxSegmentReadingCount = 12  // 活用派生を試みる span 長上限
