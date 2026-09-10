@@ -304,6 +304,13 @@ extension KanaKanjiConverter {
             return candidates
         }
         let godanReading = String(chars.dropLast(2)) + String(godanEnding)
+        // 基底が本物の五段動詞のときだけ並べ替える(2868)。おさめる は一段動詞で、
+        // おさむ は動詞として登録が無い(オサム/修/収/治 等の人名)。それを可能動詞の基底と
+        // 誤認して、収める 先頭の辞書順が人名の並び(治→修→納→収)で塗り替えられていた。
+        // のみほせる の基底 のみほす は全候補が godan-su を持つので従来どおり働く
+        guard store.hasGodanVerbClass(reading: godanReading) else {
+            return candidates
+        }
         let godanCandidates = candidatesForReading(
             godanReading,
             ajoutVocabulary: store.ajoutVocabulary(),

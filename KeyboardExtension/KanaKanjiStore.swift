@@ -396,6 +396,24 @@ final class KanaKanjiStore {
         return classMap[candidate] != nil
     }
 
+    // その読みが五段動詞として登録されているか(inflection_classes の godan-*)。
+    // 可能動詞の並べ替え(のみほせる→のみほす)を、基底が本物の五段動詞のときだけに絞るために使う(2868)。
+    // おさむ のように動詞として登録が無い読み(人名の 修/収/治)を基底と誤認すると、
+    // おさめる の並びが人名の辞書順で塗り替えられる。
+    func hasGodanVerbClass(reading: String) -> Bool {
+        if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
+            return cached.values.contains { $0.hasPrefix("godan") }
+        }
+        let classMap: [String: String]
+        if let sqliteIndex = sqliteIndexIfAvailable() {
+            classMap = sqliteIndex.inflectionClassMap(for: reading)
+        } else {
+            classMap = loadInflectionDictionary()[reading] ?? [:]
+        }
+        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
+        return classMap.values.contains { $0.hasPrefix("godan") }
+    }
+
     // サ変名詞(動作名詞。長押し/タップ/操作/削除 = inflection_classes の suru)かどうか。
     // 連文節で「動作名詞+で」(手段の定型)を、助詞を呑んだ外来語1語(長押しデコード)より
     // 優先するために使う(2859)。上と同じ読み単位キャッシュに相乗りする。
