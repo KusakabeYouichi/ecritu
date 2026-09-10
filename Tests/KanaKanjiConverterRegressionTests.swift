@@ -15017,3 +15017,33 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // のだ縮約の ん の直後(2870、ユーザ報告): なににつかうんや が 何に使うん屋 になっていた。
+    // 単独の ん ノードの後ろに来るのはコピュラか終助詞のかなだけで、接尾の 屋 は付かない
+    func testRegressionKanjiAfterNominalizerN() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let multi = converter.multiClauseCandidates(for: "なににつかうんや", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first, "何に使うんや", "mode=\(mode.rawValue) multi=\(multi)")
+            // 1 語の 本屋/八百屋 と ん+だ は無傷(ん ノードを挟まない/かなが続く)
+            XCTAssertEqual(
+                converter.candidates(for: "ほんや", limit: 3, systemCandidateMode: mode).first,
+                "本屋",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.candidates(for: "やおや", limit: 3, systemCandidateMode: mode).first,
+                "八百屋",
+                "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "するんだ", systemCandidateMode: mode).first,
+                "するんだ",
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}

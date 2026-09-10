@@ -2223,6 +2223,12 @@ extension KanaKanjiConverter {
                             !derivedForExtendedSpan.contains(prevNode.surface + "て") {
                             cost += Self.multiClauseKanaTeAfterNonPredicatePenalty
                         }
+                        // のだ縮約の ん の直後は、コピュラか終助詞のかな(だ/です/よ/ね/や)しか来ない
+                        // (定数コメント参照。2870)。漢字が来るのは分割の産物
+                        if prevNode.surface == "ん", prevNode.reading == "ん",
+                            containsKanji(node.surface) {
+                            cost += Self.multiClauseKanjiAfterNominalizerNPenalty
+                        }
                         // 裸のかな う(意志・推量の助動詞)は述語の未然形にしか付かない(定数コメント参照。2870)
                         if node.reading == "う", node.surface == "う",
                             !prevNode.isInflectionDerived,
