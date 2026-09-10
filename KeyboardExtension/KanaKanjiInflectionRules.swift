@@ -351,6 +351,10 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "にくく", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "にくくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "にくかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        // 補助形容詞の 様態そう(やりにくそう/食べにくそう)。にくい/にくく/にくかった は在るのに
+        // にくそう だけ無く、1ノードで供給されないため連文節が 槍+にくそう に割れていた
+        // (やりにくそう→槍にくそう。ユーザ報告 2870)
+        InflectionRule(readingSuffix: "にくそう", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 補助形容詞の さ名詞化(食べやすさ/見えにくさ)。やすい は在るのに やすさ が無く
         // うちやすさ→内安さ になっていた(ユーザー報告 2614)
         InflectionRule(readingSuffix: "にくさ", baseReadingSuffix: "る", allowedClasses: .ichidan),
@@ -559,6 +563,7 @@ extension KanaKanjiConverter {
         InflectionRule(readingSuffix: "やすく", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "やすくない", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "やすかった", baseReadingSuffix: "る", allowedClasses: .ichidan),
+        InflectionRule(readingSuffix: "やすそう", baseReadingSuffix: "る", allowedClasses: .ichidan),
         InflectionRule(readingSuffix: "やすさ", baseReadingSuffix: "る", allowedClasses: .ichidan),
         // 「〜やすい」の漢字「易い」候補(食べ易い 等)
         InflectionRule(readingSuffix: "やすい", baseReadingSuffix: "る", outputCandidateSuffix: "易い", allowedClasses: .ichidan),
@@ -1080,6 +1085,9 @@ extension KanaKanjiConverter {
                 pattern.iForm + "そーに",
                 pattern.iForm + "そーで",
                 pattern.iForm + "にくい",
+                // 補助形容詞の 様態そう(やりにくそう。2870。一段側と対)
+                pattern.iForm + "にくそう",
+                pattern.iForm + "やすそう",
                 pattern.iForm + "にくく",
                 pattern.iForm + "にくくない",
                 pattern.iForm + "にくかった",
