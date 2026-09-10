@@ -15173,3 +15173,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 理由の せい はかなが正書(2873、ユーザ報告 日本政府のせい→日本政府の姓)。
+    // LM の の→姓 4190 < の→せい 4761 は Wikipedia の人名記事の偏り。連文節でだけ漢字を減点し、
+    // 単文節の並び(姓/性 も選べる)は動かさない
+    func testRegressionNoSeiPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let multi = converter.multiClauseCandidates(for: "にほんせいふのせい", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first, "日本政府のせい", "mode=\(mode.rawValue) multi=\(multi)")
+            XCTAssertTrue(multi.contains("日本政府の姓"), "姓 も候補に残る multi=\(multi)")
+        }
+    }
+}
