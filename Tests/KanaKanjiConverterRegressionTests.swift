@@ -14678,3 +14678,56 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+
+extension KanaKanjiConverterRegressionTests {
+    // 抜き取り検査(2859): 「読み<TAB>期待する表記」の TSV を読み、変換の先頭候補が期待と一致するかを見る。
+    // TSV は tools/derive_readings_for_corpus.py が文章から作る(読みが 1 つに定まる語だけ使う)。
+    // 環境変数 ECRITU_CORPUS_TSV が無ければ何もしない。合否は判定せず、食い違いを一覧に出すだけ
+    // (固有名詞や稀語は再現できなくて当然なので、人が見て不具合かどうかを判断する)
+    func testCorpusSpotCheck() throws {
+        guard let path = ProcessInfo.processInfo.environment["ECRITU_CORPUS_TSV"],
+            let raw = try? String(contentsOfFile: path, encoding: .utf8) else {
+            throw XCTSkip("ECRITU_CORPUS_TSV が未指定")
+        }
+
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        var total = 0
+        var matched = 0
+        var mismatches: [String] = []
+
+        for line in raw.split(separator: "\n") {
+            let parts = line.split(separator: "\t", maxSplits: 1).map(String.init)
+            guard parts.count == 2 else { continue }
+            let (reading, expected) = (parts[0], parts[1])
+
+            let mode: KanaKanjiCandidateSourceMode = ProcessInfo.processInfo.environment["ECRITU_CORPUS_SURFACE"] != nil
+                ? .surface
+                : .normalise
+            // 実機の候補バーは数件しか見えないが、順位の実態を知るため 12 件まで見る(4 件では
+            // 5 位の 読点 を「出ていない」と誤判定した。2859)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+            let single = converter.candidates(for: reading, limit: 12, systemCandidateMode: mode)
+            let alternatives = multi.isEmpty ? single : multi
+            let top = alternatives.first ?? ""
+
+            total += 1
+            if top == expected {
+                matched += 1
+            } else {
+                let rank = alternatives.firstIndex(of: expected).map { "\($0 + 1)位" } ?? "圏外"
+                mismatches.append(
+                    "\(reading)\t期待=\(expected)\t先頭=\(top)\t期待の順位=\(rank)"
+                        + "\t候補数=\(alternatives.count)\t候補=\(Array(alternatives.prefix(6)))"
+                )
+            }
+        }
+
+        print("CORPUS 合計=\(total) 一致=\(matched) 不一致=\(mismatches.count)")
+        for line in mismatches {
+            print("CORPUS不一致 \(line)")
+        }
+    }
+}
