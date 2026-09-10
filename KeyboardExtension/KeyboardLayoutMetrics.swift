@@ -272,4 +272,25 @@ extension KeyboardLayoutMetrics {
     ) -> Bool {
         targetWidth > shorterScreenEdge + 0.5
     }
+
+    // 実測したセーフエリア下端を「縦向きの値」として採用してよいか(2855)。
+    // ホームインジケーターのある iPhone は縦 34pt / 横 21pt。回転では、こちらの向き判定が
+    // 切り替わる前にウィンドウのセーフエリアだけが先に横の値へ変わる瞬間があり、その 21 を
+    // 縦の値としてキャッシュすると、次の回転で 276-21=255pt(正しくは 276-34=242pt)を
+    // publish してホスト側の入力欄が隠れる(2026-09-10 実機ログで確認)。
+    // 横の値の帯(おおむね 21)は縦としては小さすぎるので採用しない。
+    static let portraitBottomInsetMinimum: CGFloat = 30
+
+    static func isPlausiblePortraitBottomInset(
+        _ inset: CGFloat,
+        shorterScreenEdge: CGFloat,
+        isPhone: Bool
+    ) -> Bool {
+        guard isPhone, shorterScreenEdge >= 375 else {
+            // ホームインジケーターの無い端末や iPad は実測値をそのまま信じる
+            return true
+        }
+
+        return inset >= portraitBottomInsetMinimum
+    }
 }
