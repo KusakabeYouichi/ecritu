@@ -362,6 +362,8 @@
 	<dict><key>phrase</key><string>ℓ</string><key>shortcut</key><string>りっとる</string></dict>
 	<dict><key>phrase</key><string>ホッキョクグマ</string><key>shortcut</key><string>ほっきょくぐま</string></dict>	<!-- ホッキョクグマ(ほっきょくぐま): 辞書・語LMに 北極熊 も無く変換できない(LMに ホッキョクグマ の unigram はあるが辞書エントリが無いため候補にならない) -->
 	<dict><key>phrase</key><string>北極熊</string><key>shortcut</key><string>ほっきょくぐま</string></dict>
+	<dict><key>phrase</key><string>読点</string><key>shortcut</key><string>とうてん</string></dict>	<!-- 読点(とうてん): LM の unigram が 7489 と低く、連文節で 読点キー が 等(4051)+テンキー(6940) に 2100 差で負けていた。文章記号の名前として日常的に使うので curated で 1 ノードを供給する(抜き取り検査 2859) -->	<!-- Sudachiにもある -->
+	<dict><key>phrase</key><string>句点</string><key>shortcut</key><string>くてん</string></dict>	<!-- 句点(くてん): 上と対。dict rank2(クテン/区点 の後ろ)、unigram 7884 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>後置き</string><key>shortcut</key><string>あとおき</string></dict>	<!-- 後置き(あとおき): 辞書に丸ごとのエントリが無く単文節は空、連文節は 沖(wc5165)が 置き(7714)より安いため 後沖/後起き になる。未登録の複合語なので curated で供給する -->
 
 	<!-- ■ 装飾フィルタからの復活(中黒などで既定候補から外れる実在固有名) -->
