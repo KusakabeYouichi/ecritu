@@ -1,5 +1,6 @@
 import SwiftUI
 import UIKit
+import CoreText
 
 // 漢字1文字ピッカー: 8カテゴリー(偏/旁/冠/脚/垂/繞/構/独立)→ 部首一覧 → 字グリッド。
 // 絵文字・記号モードと同じ「上=内容スクロール / 下=カテゴリーバー」の骨格に合わせる(2444)。
@@ -287,7 +288,7 @@ final class KanjiCharacterGridCell: UICollectionViewCell {
     // 判定は表示中のセルぶんだけ実行するのでデータに印は持たせない(2445)
     func configure(entry: KanjiRadicalFileIndex.Entry) {
         label.text = entry.character
-        label.textColor = KanaKanjiStore.hasMinchoGlyph(for: entry.character)
+        label.textColor = KanjiGlyphAvailability.hasMinchoGlyph(for: entry.character)
             ? .label
             : KanjiCharacterGridCollectionView.fallbackGlyphColor
         accessibilityLabel = "\(entry.character) \(entry.readings)"
@@ -661,5 +662,27 @@ struct KeyboardRootKanjiRadicalSectionView: View {
             }
         }
         .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+    }
+}
+
+// 字形の有無(描画の関心事なので UI 層に置く。2858 で KanaKanjiStore から移動)。
+// 表示中のセルぶんだけ「ヒラギノ明朝にグリフがあるか」を判定する。無い字は CoreText の
+// フォールバック(PingFang 等)で描かれるため、色を変えて区別する。
+// 1 画面 100 字程度の問い合わせなので事前計算もデータ側の印も持たない(2443)。
+enum KanjiGlyphAvailability {
+    static func hasMinchoGlyph(for character: String, fontName: String = "HiraMinProN-W3") -> Bool {
+        guard !character.isEmpty else {
+            return false
+        }
+
+        let font = CTFontCreateWithName(fontName as CFString, 16, nil)
+        var chars = Array(character.utf16)
+        var glyphs = [CGGlyph](repeating: 0, count: chars.count)
+
+        guard CTFontGetGlyphsForCharacters(font, &chars, &glyphs, chars.count) else {
+            return false
+        }
+
+        return glyphs.allSatisfy { $0 != 0 }
     }
 }
