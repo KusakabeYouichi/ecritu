@@ -14992,3 +14992,28 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "やりにくそう"))
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 裸のかな う(2870、ユーザ報告): たかいのかうのか が 高いのかうのか になっていた。
+    // 高い|のか|う|のか(14791)が 高い|の|買う|のか に約 200 差で勝つ経路で、
+    // 助動詞 う が独立ノードとして助詞クラスタの直後に立っていた。う は述語の未然形にしか付かない
+    func testRegressionBareVolitionalUNeedsPredicate() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let takai = converter.multiClauseCandidates(for: "たかいのかうのか", systemCandidateMode: mode)
+            XCTAssertEqual(takai.first, "高いの買うのか", "mode=\(mode.rawValue) multi=\(takai)")
+            let yasui = converter.multiClauseCandidates(for: "やすいのかうのか", systemCandidateMode: mode)
+            XCTAssertTrue(yasui.first?.hasSuffix("の買うのか") ?? false, "mode=\(mode.rawValue) multi=\(yasui)")
+            // 正当な意志形(1 ノード)は無傷
+            for (reading, expected) in [("かおう", "買おう"), ("そうしよう", "そうしよう")] {
+                XCTAssertEqual(
+                    converter.candidates(for: reading, limit: 4, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue)"
+                )
+            }
+        }
+    }
+}

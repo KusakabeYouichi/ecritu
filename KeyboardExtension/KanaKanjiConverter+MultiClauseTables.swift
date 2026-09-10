@@ -271,6 +271,11 @@ extension KanaKanjiConverter {
     // 助詞・終助詞・助動詞など「1字で正当に立つかな」は multiClauseKanaIdentityFloorExemptReadings が
     // ちょうどその一覧なので、それを白名簿として使う(に/を/が/て/た/ん/か/ね… は無傷)
     static let multiClauseBareKanaAfterCaseParticlePenalty = 2000
+    // 裸のかな う(意志・推量の助動詞)の減点(2870、ユーザ報告 たかいのかうのか→高いのかうのか)。
+    // う は述語の未然形にしか付かない(行こう/買おう)。独立ノードとして助詞やクラスタの
+    // 直後に立つのは、正しい語(買う)の分断で出た残りかす。
+    // 実測: 高い|のか|う|のか(14791)が 高い|の|買う|のか に約 200 差で勝っていた
+    static let multiClauseBareVolitionalUAfterNonPredicatePenalty = 3000
     // 連体の な(大きな/小さな/静かな 等、漢字含み・2字以上・な終わり)の直後は名詞が続く。辞書形述語
     // (足る)や活用派生が続くのは非文なので減点し、おおきなたる→大きな足る を 大きな樽 に(2731)。
     // かなの な終わり(みんな 等の名詞)は対象外

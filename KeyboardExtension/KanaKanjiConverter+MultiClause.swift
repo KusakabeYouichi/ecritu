@@ -2223,6 +2223,13 @@ extension KanaKanjiConverter {
                             !derivedForExtendedSpan.contains(prevNode.surface + "て") {
                             cost += Self.multiClauseKanaTeAfterNonPredicatePenalty
                         }
+                        // 裸のかな う(意志・推量の助動詞)は述語の未然形にしか付かない(定数コメント参照。2870)
+                        if node.reading == "う", node.surface == "う",
+                            !prevNode.isInflectionDerived,
+                            !prevNode.isDictionaryFormPredicate,
+                            !(prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
+                            cost += Self.multiClauseBareVolitionalUAfterNonPredicatePenalty
+                        }
                         // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
                         // 鳥忘れている に勝たせる。
                         if compoundVerbRenyouNodeKeys.contains(prevNode.key),
