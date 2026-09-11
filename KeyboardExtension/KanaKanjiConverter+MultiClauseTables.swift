@@ -1270,6 +1270,15 @@ extension KanaKanjiConverter {
     // 活用派生は両方 OOV 定額のため列挙順で 煮ている が勝っていた(2878、抜き取り検査 10 件)。
     // 本動詞の 煮る は を を取る(野菜を煮る)ので に/と 直後に限れば巻き込まない
     static let multiClauseResembleAfterParticleBonus = 800
+    // 列挙の といった(A、B といった C)。かな 4 字の素通り(28000)しかノードが無く、
+    // と+行った/言った(7099)に勝てない。引用の と+言った(述語直後)以外はかなにクランプする
+    // (2878、抜き取り検査 8 件)
+    static let multiClauseEnumerationToIttaKanaCost = 2500
+
+    static func isEnumerationToIttaKanaNode(surface: String, reading: String) -> Bool {
+        reading == "といった" && surface == reading
+    }
+
     // 補助動詞 おる の活用読み(2877、抜き取り検査で 39 件)。「乾燥しており」が 乾燥して折り に
     // なっていた。ておく と同型で、て/で の直後の おる 系はかなが正書(〜ており/〜ておりました)。
     // 本動詞の 折る/織る は を の後(紙を折る)に立つので、て/で 直後に限れば巻き込まない。

@@ -2062,7 +2062,7 @@ extension KanaKanjiConverter {
                                 && node.surface == node.reading
                                 && !isFormalKotoUsage
                         ) ? Self.multiClauseSubstantiveNounKanaPenalty : 0
-                        let cost = transitionCost(
+                        var cost = transitionCost(
                             prev: Self.multiClauseBOSMarker,
                             prevAuxTail: nil,
                             surface: node.surface,
@@ -2080,6 +2080,10 @@ extension KanaKanjiConverter {
                         ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
                             + sentenceInitialDeParticlePenalty(for: node)
                             + sentenceInitialParticleOverlapPenalty(for: node)
+                        // 列挙の といった(定数コメント参照。2878)。文頭は直前が述語になり得ないので無条件
+                        if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading) {
+                            cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)
+                        }
                         if cost < best[idx] {
                             best[idx] = cost
                             backPointer[idx] = -1
@@ -2253,6 +2257,16 @@ extension KanaKanjiConverter {
                             prevNode.surface == prevNode.reading,
                             prevNode.reading == "に" || prevNode.reading == "と" {
                             cost -= Self.multiClauseResembleAfterParticleBonus
+                        }
+                        // 列挙の といった(定数コメント参照。2878)。直前が述語なら引用の と+言った なので触れない
+                        // LM 未収録の稀語(遺句 等)は「述語でない prev」として抜け道になる(述語の
+                        // 行く+と+言った より 遺句+といった が安くなる)ので、prev は LM 実在語
+                        // またはカタカナ語(タルディーヴァ 等の固有名は LM 未収録でも正当)に限る
+                        if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading),
+                            !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
+                            unigramCosts[prevNode.surface] != nil || Self.isKatakanaString(prevNode.surface),
+                            !(prevNode.surface.last.map(Self.multiClauseDictionaryFormTailCharacters.contains) ?? false) {
+                            cost = min(cost, prevCost + Self.multiClauseEnumerationToIttaKanaCost)
                         }
                         // 助詞 1 字が動詞の頭を食う分割(改札と+追って)より、同じ幅の 1 動詞(通って)を優先(定数コメント参照)
                         if node.isInflectionDerived,
