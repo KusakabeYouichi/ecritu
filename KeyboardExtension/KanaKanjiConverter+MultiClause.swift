@@ -645,8 +645,25 @@ extension KanaKanjiConverter {
                     let spanHasRealDictWord = costMap.values.contains {
                         $0 < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor
                     }
+                    // 語幹が LM 未収録なら合成しない(2879、ユーザ報告 おみせがわは→お三瀬川は)。
+                    // お+三瀬川(地名、LM 未収録)が 1 ノード 8700 で お店+側 の 2 ノードを
+                    // 下回っていた。お渡し/お預かり/お届け の語幹(渡し/預かり/届け)は LM 収録済み
+                    let politeStemSurfaces = polite.compactMap { surface -> String? in
+                        guard let first = surface.first,
+                            first == "お" || first == "ご" || first == "御" else {
+                            return nil
+                        }
+                        return String(surface.dropFirst())
+                    }
+                    let politeStemLMCosts = politeStemSurfaces.isEmpty
+                        ? [:]
+                        : store.wordLMUnigramCosts(for: politeStemSurfaces)
                     for surface in polite.prefix(Self.multiClauseInflectionTopK)
                     where surface != segmentReading {
+                        if let first = surface.first, first == "お" || first == "ご" || first == "御",
+                            politeStemLMCosts[String(surface.dropFirst())] == nil {
+                            continue
+                        }
                         add(surface, isDictWord: true, isCurated: false)
                         if spanHasRealDictWord {
                             politeSupplementDemotedNodeKeys.insert("\(start)-\(end)-\(surface)")
@@ -2274,6 +2291,12 @@ extension KanaKanjiConverter {
                                 surface: node.surface, reading: node.reading, end: node.end, chars: chars
                             ) || isParticleHeadedRareVerb(node: node) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
+                        }
+                        // 名詞直後の副詞漢字(却って。定数コメント参照。2879)
+                        if Self.multiClauseAdverbKanjiAfterNounSurfaces.contains(node.surface),
+                            prevNode.surface != prevNode.reading,
+                            !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate {
+                            cost += Self.multiClauseAdverbKanjiAfterNounPenalty
                         }
                         // 格助詞 に/と の直後の にる 系は 似る(定数コメント参照。2878)
                         if node.isInflectionDerived, node.surface.hasPrefix("似"),
