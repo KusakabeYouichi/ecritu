@@ -15828,3 +15828,28 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // いう の未然形はかなより 言わ〜(2881、ユーザ報告 いわずに→いわずに)。かな活用形との OOV 同点を割る。
+    // という/そういう(かなが正書)と 岩(いわ の名詞)は無傷
+    func testRegressionIuMizenPrefersKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("いわずに", "言わずに"),
+                ("いわないで", "言わないで"),
+                ("そういうこと", "そういうこと"),
+                ("というわけで", "というわけで"),
+                ("いわがある", "岩がある")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
