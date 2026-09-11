@@ -219,3 +219,44 @@ entitlements は `git checkout --` で戻す。
 
 その後 Clean Build Folder → 実機を選んで ⌘R。実機からアプリを削除して入れ直し、
 キーボードを追加し直してフルアクセスをオンにする(再インストールでキーボードの登録が外れることがある)。
+
+---
+
+## 8. 2026-09-11: 既定の bundle ID が登録できなくなった
+
+`com.kusakabe.ecritu` は Apple 側で押さえられた状態になり、**チームからは再登録できない**。
+
+```
+Xcode:  Failed Registering Bundle Identifier: The app identifier
+        "com.kusakabe.ecritu" cannot be registered to your development team
+        because it is not available.
+ポータルの手動登録: An App ID with Identifier 'com.kusakabe.ecritu' is not available.
+```
+
+経緯: 2026-09-11 11:58 に無料プロビジョニングのプロファイル(作成から7日で失効)が切れ、
+Xcode が App ID を取り直そうとして弾かれた。同日 Apple Developer Program(個人、Team ID は
+同じ `487V53DJMW`)に加入したが、加入後もこの文字列は取得できないまま。ポータルの
+Identifiers に App ID は 1 件も無いのに拒否されるので、無料プロビジョニング時代の一時登録が
+解放されずに残っているとみられる。App Group(`group.com.kusakabe.ecritu` ほか)は残っている。
+
+**この失効は実機側では「アプリも拡張も起動しなくなる」形で出る。**
+署名が切れたバンドルは spawn 時に `NSPOSIXErrorDomain Code=85 "Bad executable (or shared library)"
+/ Launchd job spawn failed` で失敗する。すでに起動中のプロセスは動き続けるので、
+「1時間半使えていたのに、あるとき突然 iOS が純正キーボードに切り替わって戻らない」という
+出方をした。変換ロジックの不具合と紛らわしいので、実機で拡張が起動しない時はまず
+`log collect` で error 85 を確認する(§6 の手順)。
+
+暫定対応として、`Config/Signing.local.xcconfig`(git 管理外)で自ドメイン由来の bundle ID に
+切り替えている:
+
+```
+ECRITU_APP_BUNDLE_IDENTIFIER = jp.or.pleiades.merope.ecritu
+```
+
+App Group も派生に従って `group.jp.or.pleiades.merope.ecritu` になる(§2 の不変条件を崩さない)。
+そのため **旧 App Group に入っている設定・学習語彙は引き継がれない**。旧データは実機に残るので、
+必要なら devicectl で旧グループの Preferences を吸い出して新グループへ移す。
+
+元に戻す条件と手順: Apple サポートに `com.kusakabe.ecritu` の解放を依頼し、通ったら
+`Config/Signing.local.xcconfig` を削除するだけでよい(既定値に戻る)。
+
