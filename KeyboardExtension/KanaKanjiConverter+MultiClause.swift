@@ -2320,6 +2320,18 @@ extension KanaKanjiConverter {
                                 cost += Self.multiClauseNoIchiNumeralPenalty
                             }
                         }
+                        // 述語+と の直後の いった/いって は引用の 言った(定数コメント参照。2881)
+                        if node.isInflectionDerived, node.surface.hasPrefix("言"), node.reading.hasPrefix("い"),
+                            prevNode.surface == "と", prevNode.reading == "と" {
+                            let prevPrevIndex = backPointer[prevIdx]
+                            if prevPrevIndex >= 0 {
+                                let prevPrev = nodes[prevPrevIndex]
+                                if prevPrev.isInflectionDerived || prevPrev.isDictionaryFormPredicate
+                                    || (prevPrev.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
+                                    cost -= Self.multiClauseQuotativeIuAfterPredicateBonus
+                                }
+                            }
+                        }
                         // 名詞直後の かえって は 帰って(本国帰って/実家帰って = に を落とした口語。2880、ユーザ報告)。
                         // 却って の減点だけでは 買えって/飼えって/かな と同点になり 帰って が上がらない
                         if node.isInflectionDerived, node.surface.hasPrefix("帰"), node.reading.hasPrefix("かえ"),

@@ -2975,7 +2975,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("しゃしんか", ["写真家", "写真か"]),
             ("かん", ["缶", "勘", "観"]),
             ("ふじた", ["藤田"]),
-            ("かき", ["下記", "柿", "書き", "牡蠣"]),
+            ("かき", ["下記", "柿", "牡蠣", "書き"]),
             ("みる", ["見る", "観る", "みる", "診る"]),
             ("うちだ", ["内田", "ウチダ", "うちだ", "家だ", "内だ"]),
             ("ふごうか", ["符号化"]),
@@ -15794,5 +15794,37 @@ extension KanaKanjiConverterRegressionTests {
         )
         XCTAssertEqual(reordered.first, "醗酵を行う", "\(reordered)")
         XCTAssertEqual(reordered.firstIndex(of: "発行を行なう").map { $0 > 0 }, true, "\(reordered)")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ指定 2881: かき は単独・かきの で 下記、かきを のときだけ 柿/牡蠣 / 書き方>描き方 /
+    // 飲み方 をちょっとだけ優先 / 雨・雪+ふる は 降る / 述語+と の いった は 言った
+    func testRegressionUserPreferences2881() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "かき", limit: 2, systemCandidateMode: mode).first, "下記", "mode=\(mode.rawValue)")
+            for (reading, expected) in [
+                ("かきのたね", "下記の種"),
+                ("かきをたべる", "柿を食べる"),
+                ("かきかたをおしえる", "書き方を教える"),
+                ("のみかたをおしえる", "飲み方を教える"),
+                ("かれのみかた", "彼の見方"),
+                ("あめがふっている", "雨が降っている"),
+                ("ゆきがふる", "雪が降る"),
+                ("てをふる", "手を振る"),
+                ("いくといったあとで", "行くと言った後で"),
+                ("たべるといっていた", "食べると言っていた"),
+                ("まらがといったさんち", "マラガといった産地")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
     }
 }
