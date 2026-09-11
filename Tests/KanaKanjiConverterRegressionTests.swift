@@ -15717,3 +15717,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 連体の の 直後の数詞 一 は名詞になりにくい(島の一はいいね。2880)。最良経路は 位置、変種順でも
+    // 一 は 市 より後ろ。三分の一(直前が 分)は免除
+    func testRegressionNoIchiNumeralDemotion() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let variants = converter.multiClauseCandidates(for: "しまのいちはいいね", systemCandidateMode: mode)
+            XCTAssertEqual(variants.first, "島の位置はいいね", "mode=\(mode.rawValue)")
+            if let ichi = variants.firstIndex(of: "島の一はいいね"), let shi = variants.firstIndex(of: "島の市はいいね") {
+                XCTAssertGreaterThan(ichi, shi, "mode=\(mode.rawValue) \(variants.prefix(4))")
+            }
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "さんぶんのいちです", systemCandidateMode: mode).first,
+                "三分の一です", "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}

@@ -76,6 +76,12 @@ extension KanaKanjiConverter {
         // 最+方位 の隣接ボーナス(multiClauseBigramPairBonuses)はノードが立たないと効かない
         "さい": ["最"]
     ]
+    // 変種の並びだけを下げる隣接ペア(prev\t表層 → 加算)。DP の最良経路は別の規則で守られている
+    // (三分の一 は直前が 分 のとき免除)が、変種順は各ノードの素のコスト差で決まるため DP 側の減点が
+    // 届かない。島の一はいいね で 一 が 市 より前に並ぶのを直す(ユーザ指定 3 番目以降。2880)
+    static let multiClauseVariantDemotionPairs: [String: Int] = [
+        "の\t一": 2500
+    ]
     // 方向・位置の 1 字漢字の直後のカタカナ語(下フリック/左スワイプ/前ページ)の複合名詞ボーナス(2820)。
     // した(し+た 3284)と 下(4832)の差 1548 を埋めて余る幅
     static let multiClauseDirectionalPrefixSurfaces: Set<String> = ["下", "上", "左", "右", "前", "後", "横", "縦", "内", "外", "逆"]
@@ -1644,6 +1650,15 @@ extension KanaKanjiConverter {
     // 帰って(活用派生 OOV 7200)より LM(6896)が安いため 本国却って になっていた
     // (2879、ユーザ報告)。名詞直後に限って減点する
     static let multiClauseAdverbKanjiAfterNounSurfaces: Set<String> = ["却って"]
+    // 連体の の 直後の数詞 一(いち)は単独では名詞になりにくい(島の一はいいね。2880、ユーザ指定で
+    // 3 番目以降)。の→一 2779 は 三分の一/四分の一 の統計なので、直前が 分 か数字のときは免除する。
+    // 市(の→市 4287+4420)の後ろに回すには、出側 bigram(一→は は頻出)の差も跨ぐ必要がある
+    static let multiClauseNoIchiNumeralPenalty = 4500
+    static let multiClauseNoIchiNumeralExemptPrevPrevTailCharacters: Set<Character> = [
+        "分", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "百", "千", "万",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "０", "１", "２", "３", "４", "５", "６", "７", "８", "９"
+    ]
+    static let multiClauseAdverbKanjiAfterNounPenalty = 2500
     // 名詞直後の 帰って/帰る 系へのボーナス(適用箇所のコメント参照。2880)。派生同士の同点を割る幅
     static let multiClauseKaeruAfterNounBonus = 800
     static let multiClauseBOSParticlePenalty = 2000
