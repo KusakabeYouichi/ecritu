@@ -1266,6 +1266,10 @@ extension KanaKanjiConverter {
     static let multiClauseBekiKanjiPenalty = 3000
     static let multiClauseOkuKanjiHeads: Set<Character> = ["置", "擱", "於"]
     static let multiClauseOkuAuxiliaryKanjiPenalty = 2500
+    // 格助詞 に/と の直後の にる 系は 似る(〜に似ている/〜と似ています)。辞書 rank は 煮る が先で
+    // 活用派生は両方 OOV 定額のため列挙順で 煮ている が勝っていた(2878、抜き取り検査 10 件)。
+    // 本動詞の 煮る は を を取る(野菜を煮る)ので に/と 直後に限れば巻き込まない
+    static let multiClauseResembleAfterParticleBonus = 800
     // 補助動詞 おる の活用読み(2877、抜き取り検査で 39 件)。「乾燥しており」が 乾燥して折り に
     // なっていた。ておく と同型で、て/で の直後の おる 系はかなが正書(〜ており/〜ておりました)。
     // 本動詞の 折る/織る は を の後(紙を折る)に立つので、て/で 直後に限れば巻き込まない。

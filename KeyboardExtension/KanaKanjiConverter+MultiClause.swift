@@ -2248,6 +2248,12 @@ extension KanaKanjiConverter {
                                 || (prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
                             cost += Self.multiClauseOkuAuxiliaryKanjiPenalty
                         }
+                        // 格助詞 に/と の直後の にる 系は 似る(定数コメント参照。2878)
+                        if node.isInflectionDerived, node.surface.hasPrefix("似"),
+                            prevNode.surface == prevNode.reading,
+                            prevNode.reading == "に" || prevNode.reading == "と" {
+                            cost -= Self.multiClauseResembleAfterParticleBonus
+                        }
                         // 助詞 1 字が動詞の頭を食う分割(改札と+追って)より、同じ幅の 1 動詞(通って)を優先(定数コメント参照)
                         if node.isInflectionDerived,
                             prevNode.surface == prevNode.reading,
