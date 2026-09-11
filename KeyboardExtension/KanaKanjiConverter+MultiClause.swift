@@ -718,6 +718,23 @@ extension KanaKanjiConverter {
                     }
                 }
 
+                // (b5c) サ変名詞の連用中止形(東部に位置し、土壌を有し)。活用ルール表は接続込みの形
+                //       (位置して/位置します)しか持たず、連用形単独のノードが立たないため、
+                //       位置(4366)+し の分割が組めず 人名 1 ノードの 一志(6685)に負けていた
+                //       (2878、抜き取り検査 40 件)。同じ start の 1 字短いスパン(=名詞)の
+                //       ノードから作るので、サ変名詞の読みが 2 字以上のときだけ立つ
+                //       (1 字の 化(か)から 化し を作ると 本を貸した→本を化した になる)
+                if len >= 3, segmentReading.hasSuffix("し") {
+                    for index in nodesStartingAt[start] where nodes[index].end == end - 1 {
+                        let noun = nodes[index]
+                        guard noun.isDictWord, noun.surface != noun.reading,
+                            store.isSuruNoun(reading: noun.reading, candidate: noun.surface) else {
+                            continue
+                        }
+                        add(noun.surface + "し", isDictWord: true, isCurated: false, isInflectionDerived: true)
+                    }
+                }
+
                 // (c) word_costs にも無ければかな素通り(最後の手段)。ローンワード的読みはカタカナ表記。
                 //     ※以前は candidates() で補完していたが、多字 span に dictUnknown 一律コストの
                 //       blob(例: てんきです→天気です)を作り、正しい細分割(天気+です)を大域的に
