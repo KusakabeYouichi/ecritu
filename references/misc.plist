@@ -8,6 +8,7 @@
 	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 気がする: 単独では供給経路が無い(気が+する はサ変名詞と見なされず、逆に 帰臥/起臥 の2字漢語がサ変推論で 帰臥した 等を作る)。きがした→帰臥した 対策。気が 単独の curated は 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため句で登録する -->
+	<dict><key>phrase</key><string>有する</string><key>shortcut</key><string>ゆうする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 有する: Sudachi の ゆう は 言う/結う(五段)だけでサ変が無く、土壌を有しています が かな のままだった。名詞 有(ゆう) で登録すると ゆう 全域(言う/結う/夕/優)に波及するので、辞書形の 有する を登録して活用だけ供給する(2878、ユーザ指定) -->
 	<dict><key>phrase</key><string>心配する</string><key>shortcut</key><string>しんぱいする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 心配する: Sudachi収穫の inflection_classes が しんぱい に 親拝/進拝 だけを suru 登録し 心配 が未登録(メタデータ穴)。エンジンの推論防御により 心配しなくて 等が導出されず 親拝しなくて が先頭化する。句登録で活用供給 -->
 	<dict><key>phrase</key><string>少ない</string><key>shortcut</key><string>すくない</string><key>pos</key><string>形容詞</string></dict>	<!-- 少ない: ランキング一般則(suffix一致+500)だけでは実機の すくないなあ で 酸くない 語幹合成が残るため、curatedで全経路先頭を保証 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>あり得る</string><key>shortcut</key><string>ありえる</string><key>pos</key><string>一段</string></dict>	<!-- あり得る: Sudachi に無く(ありえる はアリエルのみ)、ありえない が 有江ない 等の名前合成に落ちる。一段登録で あり得ない/あり得なかった 等の活用を供給 -->
