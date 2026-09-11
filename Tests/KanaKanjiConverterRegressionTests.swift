@@ -15486,3 +15486,29 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // カタカナ地名+産(2878、抜き取り検査 23 件)。地域接尾(愛知県産)と同じ扱いにする。
+    // カタカナの人名(マリアさん)は person_names の 姓/名 で除く
+    func testRegressionKatakanaPlaceNameProduceSuffix() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("おーくはあめりかさんのおーくです", "オークはアメリカ産のオークです"),
+                ("ぎりしゃさんのあにす", "ギリシャ産のアニス"),
+                ("だにえーれさんぷろしゅーと", "ダニエーレ産プロシュート"),
+                ("まりあさんのほん", "マリアさんの本"),
+                ("あいちけんさんのやさい", "愛知県産の野菜"),
+                ("たなかさんとあう", "田中さんと会う")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

@@ -624,6 +624,19 @@ extension KanaKanjiConverter {
     static let multiClauseHonorificKanjiPenalty = 3000
     // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
     static let multiClauseRegionalProduceBonus = 3000
+
+    // 産 が産地表記になる文脈。地域接尾(愛知県産)に加えて、カタカナの地名
+    // (ギリシャ産/アメリカ産/ザクセン産)も対象にする(2878、抜き取り検査 23 件)。
+    // カタカナの人名(マリアさん)は person_names の 姓/名 で除く — 国名・地名は
+    // Sudachi では 一般 か未収録なので切り分けられる
+    static func isRegionalProduceContext(prevSurface: String, prevPersonNameKind: String?) -> Bool {
+        if let prevLast = prevSurface.last,
+            KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLast) {
+            return true
+        }
+        return prevSurface.count >= 2 && isKatakanaString(prevSurface)
+            && prevPersonNameKind != "姓" && prevPersonNameKind != "名"
+    }
     // 述語直後の かち→価値 ボーナス(定義箇所のコメント参照)。床差396+マージン
     static let multiClausePredicateKachiValueBonus = 1500
     // 連体の の 直後の いち→位置 ボーナス(地図上の位置 等。ユーザー指定で seed も位置先頭)。
