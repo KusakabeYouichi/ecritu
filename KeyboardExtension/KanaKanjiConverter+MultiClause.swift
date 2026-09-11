@@ -2325,13 +2325,15 @@ extension KanaKanjiConverter {
                             }
                         }
                         // 述語+と の直後の いった/いって は引用の 言った(定数コメント参照。2881)
+                        // そうは言っても のように 係助詞 は を挟む形も同じ
                         if node.isInflectionDerived, node.surface.hasPrefix("言"), node.reading.hasPrefix("い"),
-                            prevNode.surface == "と", prevNode.reading == "と" {
+                            prevNode.surface == prevNode.reading, prevNode.reading == "と" || prevNode.reading == "は" {
                             let prevPrevIndex = backPointer[prevIdx]
                             if prevPrevIndex >= 0 {
                                 let prevPrev = nodes[prevPrevIndex]
                                 if prevPrev.isInflectionDerived || prevPrev.isDictionaryFormPredicate
-                                    || (prevPrev.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
+                                    || (prevPrev.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false)
+                                    || Self.multiClauseQuotativeAdverbReadings.contains(prevPrev.reading) {
                                     cost -= Self.multiClauseQuotativeIuAfterPredicateBonus
                                 }
                             }
