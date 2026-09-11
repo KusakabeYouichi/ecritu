@@ -15660,3 +15660,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // サ変の連用中止形は辞書形(〜する)側の登録からも作る(2879)。misc.plist の 有する/瓶詰めする は
+    // 名詞単体(有/瓶詰め)がノードとして立たず、名詞ノード経由では 有し が出なかった
+    func testRegressionSuruRenyouChushiFromDictionaryForm() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "しゅとざぐれぶをゆうし", systemCandidateMode: mode).first,
+                "首都ザグレブを有し", "mode=\(mode.rawValue)"
+            )
+            let bottled = converter.multiClauseCandidates(for: "わいんをびんづめし", systemCandidateMode: mode)
+            XCTAssertTrue(
+                bottled.first == "ワインをビン詰めし" || bottled.first == "ワインを瓶詰めし",
+                "mode=\(mode.rawValue) \(bottled.prefix(3))"
+            )
+        }
+    }
+}

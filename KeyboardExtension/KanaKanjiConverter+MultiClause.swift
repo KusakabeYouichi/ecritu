@@ -751,13 +751,32 @@ extension KanaKanjiConverter {
                 //       ノードから作るので、サ変名詞の読みが 2 字以上のときだけ立つ
                 //       (1 字の 化(か)から 化し を作ると 本を貸した→本を化した になる)
                 if len >= 3, segmentReading.hasSuffix("し") {
+                    let nounReading = String(chars[start..<(end - 1)])
+                    let dictionaryFormReading = nounReading + "する"
+                    // 辞書形 〜する が misc/追加語彙で明示登録されているか(有する/瓶詰めする)。
+                    // 〜する 経由の判定は 1 字の語幹(産する→産し、Sudachi 由来)だと
+                    // 根路銘さんしか→根路銘産しか のように敬称+接続助詞を食うので、明示登録に限る
+                    func isRegisteredSuruForm(_ stem: String) -> Bool {
+                        (initialAjoutVocabulary[dictionaryFormReading]?.contains(stem + "する") ?? false)
+                            || (manualAjoutVocabulary[dictionaryFormReading]?.contains(stem + "する") ?? false)
+                    }
                     for index in nodesStartingAt[start] where nodes[index].end == end - 1 {
                         let noun = nodes[index]
-                        guard noun.isDictWord, noun.surface != noun.reading,
-                            store.isSuruNoun(reading: noun.reading, candidate: noun.surface) else {
-                            continue
-                        }
+                        guard noun.isDictWord, noun.surface != noun.reading else { continue }
+                        // 名詞読みにクラスが付いていれば従来どおり。misc.plist の pos 付き登録は
+                        // 辞書形の読みでクラスが付くので 〜する 側も見る(瓶詰めし。2879)
+                        let viaNoun = store.isSuruNoun(reading: noun.reading, candidate: noun.surface)
+                        let viaDictionaryForm = store.isSuruNoun(reading: dictionaryFormReading, candidate: noun.surface + "する")
+                            && (noun.surface.count >= 2 || isRegisteredSuruForm(noun.surface))
+                        guard viaNoun || viaDictionaryForm else { continue }
                         add(noun.surface + "し", isDictWord: true, isCurated: false, isInflectionDerived: true)
+                    }
+                    // 名詞ノードが無い語(有=ゆう は単独では立たない)は辞書形 〜する の登録から直接引く。
+                    // add は同一表層を dedupe するので上と重なっても二重にはならない
+                    for stem in store.suruVerbStems(dictionaryFormReading: dictionaryFormReading)
+                    where stem != nounReading {
+                        guard stem.count >= 2 || isRegisteredSuruForm(stem) else { continue }
+                        add(stem + "し", isDictWord: true, isCurated: false, isInflectionDerived: true)
                     }
                 }
 

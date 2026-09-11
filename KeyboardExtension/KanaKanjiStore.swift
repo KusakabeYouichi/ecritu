@@ -431,6 +431,32 @@ final class KanaKanjiStore {
         return classMap[candidate] == "suru"
     }
 
+    // 連文節用: 辞書形の読み(〜する)に suru クラスで登録された表層の語幹(〜する を外したもの)。
+    // misc.plist の pos 付き登録(有する/瓶詰めする)は名詞単体(有/瓶詰め)がノードとして
+    // 立たないことがあり、連用中止形(有し)を名詞ノードから作れない。辞書形側から直接引く(2879)
+    func suruVerbStems(dictionaryFormReading: String) -> [String] {
+        guard dictionaryFormReading.hasSuffix("する") else {
+            return []
+        }
+        let classMap: [String: String]
+        if let cached = withCacheLock({ cachedInflectionClassMapsByReading[dictionaryFormReading] }) {
+            classMap = cached
+        } else if let sqliteIndex = sqliteIndexIfAvailable() {
+            classMap = sqliteIndex.inflectionClassMap(for: dictionaryFormReading)
+            withCacheLock { cachedInflectionClassMapsByReading[dictionaryFormReading] = classMap }
+        } else {
+            classMap = loadInflectionDictionary()[dictionaryFormReading] ?? [:]
+            withCacheLock { cachedInflectionClassMapsByReading[dictionaryFormReading] = classMap }
+        }
+        return classMap.compactMap { surface, inflectionClass -> String? in
+            guard inflectionClass == "suru", surface.hasSuffix("する"),
+                surface != dictionaryFormReading else {
+                return nil
+            }
+            return String(surface.dropLast(2))
+        }.sorted()
+    }
+
     // 連文節用: 読みに対する人名候補(表層→姓/名)。sqlite の person_names 表(Sudachi の 名詞,固有名詞,人名)。
     // 表が無い旧 DB やテスト用の JSON 経路では空(2845)
     func personNameKinds(for reading: String) -> [String: String] {
