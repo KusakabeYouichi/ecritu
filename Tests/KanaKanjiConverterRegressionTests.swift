@@ -15853,3 +15853,28 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2882: 副詞+と/は の いった は 言った / 旗を振る・橋を渡る の連語 / word_costs 同値の第 2 キーは辞書 rank
+    func testRegressionUserPreferences2882() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("なんといっても", "何と言っても"),
+                ("かれはそういった", "彼はそう言った"),
+                ("ともだちといった", "友達といった"),
+                ("はたをふって", "旗を振って"),
+                ("はしをわたる", "橋を渡る"),
+                ("いわすに", "言わすに")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
