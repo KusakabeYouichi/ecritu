@@ -15331,3 +15331,29 @@ extension KanaKanjiConverterRegressionTests {
     }
 }
 
+extension KanaKanjiConverterRegressionTests {
+    // サ変名詞の連用中止形(2878、抜き取り検査 40 件)。活用ルール表は接続込みの形しか持たず
+    // 位置し のノードが立たないため、東部に位置し が 人名 1 ノードの 東部に一志 に負けていた。
+    // 1 字の名詞(化)からは作らない ─ 本を貸した が 本を化した になる
+    func testRegressionSuruNounRenyouChushi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("とうぶにいちし", "東部に位置し"),
+                ("さいなんたんにいちし", "最南端に位置し"),
+                ("ほんをかした", "本を貸した"),
+                ("はなしをする", "話をする"),
+                ("べんきょうしまくり", "勉強しまくり"),
+                ("しけんまえだし", "試験前だし")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
