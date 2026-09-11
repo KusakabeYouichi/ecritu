@@ -2,7 +2,10 @@
 // Treat this as a build number; test/failed builds may increment it.
 // VSCode build task increments the number and updates the timestamp.
 ECRITU_DEVELOPMENT_TEAM = 487V53DJMW
-ECRITU_APP_BUNDLE_IDENTIFIER = com.kusakabe.ecritu
+// 2026-09-11: 既定を com.kusakabe.ecritu から変更。旧 ID は無料プロビジョニング時代の一時登録が
+// Apple 側で解放されず取得不能になった(docs/identifiers.md §8)。保持ドメイン pleiades.or.jp の
+// 逆順を正式な ID とする。旧 ID が解放されても戻さない(ユーザ判断)
+ECRITU_APP_BUNDLE_IDENTIFIER = jp.or.pleiades.merope.ecritu
 ECRITU_KEYBOARD_BUNDLE_IDENTIFIER = $(ECRITU_APP_BUNDLE_IDENTIFIER).keyboard
 ECRITU_TESTS_BUNDLE_IDENTIFIER = $(ECRITU_APP_BUNDLE_IDENTIFIER).tests
 ECRITU_APP_GROUP_IDENTIFIER = group.$(ECRITU_APP_BUNDLE_IDENTIFIER)
@@ -20,8 +23,8 @@ ECRITU_APP_GROUP_IDENTIFIER = group.$(ECRITU_APP_BUNDLE_IDENTIFIER)
 // 単一バイナリに戻す。増分ビルドの高速化は失うが、拡張が起動しないほうが致命的。
 ENABLE_DEBUG_DYLIB = NO
 
-ECRITU_EDITION_NUMBER = 2878
-ECRITU_EDITION_UPDATED_AT = 20260911105038
+ECRITU_EDITION_NUMBER = 2879
+ECRITU_EDITION_UPDATED_AT = 20260911180342
 
 // Optional per-developer signing overrides (ignored from git).
 #include? "Signing.local.xcconfig"
