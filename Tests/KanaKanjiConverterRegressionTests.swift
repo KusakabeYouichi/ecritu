@@ -8265,7 +8265,12 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         defaults.set(combinedData, forKey: "ÉcrituAjoutVocab")
 
         if includeSuppression {
-            let suppression = loadJSON("InitialSupprHiddenVocabMigration")
+            // 実機は hidden(バンドル直読み)と poubelle(アプリ移行で ÉcrituSuppr_Vocab へ)の
+            // 両方が効く。hidden だけだと 全て/発酵/沈殿 のような抑制済みの表記が検査に出る(2879)
+            var suppression = loadJSON("InitialSupprHiddenVocabMigration")
+            for (reading, candidates) in loadJSON("InitialSupprVocabMigration") {
+                suppression[reading, default: []].append(contentsOf: candidates)
+            }
             if !suppression.isEmpty {
                 let suppressionData = try JSONEncoder().encode(suppression)
                 defaults.set(suppressionData, forKey: "ÉcrituSuppr_Vocab")
