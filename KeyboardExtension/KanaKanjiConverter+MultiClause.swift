@@ -1488,6 +1488,10 @@ extension KanaKanjiConverter {
                 prevIsInflectionDerived || prev.hasSuffix("し") {
                 penalty += Self.multiClauseImperativeParticlePenalty
             }
+            // いう の未然形はかなより 言わ〜(定数コメント参照。2881)
+            if isInflectionDerived, surface == reading, reading.hasPrefix("いわ") {
+                penalty += Self.multiClauseKanaMizenIuPenalty
+            }
             // bigram 未観測ペアの補完(定数コメント参照)。観測が無いと unigram 差だけで
             // 決まり、文として成立しない組み合わせが勝つ(柔らかくて農耕 等。2564)
             if let bonus = Self.multiClauseBigramPairBonuses[prev + "\t" + surface] {
