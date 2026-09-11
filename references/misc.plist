@@ -8,6 +8,9 @@
 	<dict><key>phrase</key><string>気になる</string><key>shortcut</key><string>きになる</string><key>pos</key><string>五段</string></dict>
 	<dict><key>phrase</key><string>気にする</string><key>shortcut</key><string>きにする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>気がする</string><key>shortcut</key><string>きがする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 気がする: 単独では供給経路が無い(気が+する はサ変名詞と見なされず、逆に 帰臥/起臥 の2字漢語がサ変推論で 帰臥した 等を作る)。きがした→帰臥した 対策。気が 単独の curated は 危害(きがい)/着替え(きがえ)/気軽(きがる)/飢餓 を分断するため句で登録する -->
+	<dict><key>phrase</key><string>言い間違い</string><key>shortcut</key><string>いいまちがい</string></dict>	<!-- 言い間違い/言い間違え: Sudachi に無く、言い(五段連用形)のノードも立たないため いい間違い になる。連用形単独の一般供給は いい→言い の退行 19 件で撤回し、語で登録(2880、ユーザ報告) -->
+	<dict><key>phrase</key><string>言い間違え</string><key>shortcut</key><string>いいまちがえ</string></dict>
+	<dict><key>phrase</key><string>言い間違える</string><key>shortcut</key><string>いいまちがえる</string><key>pos</key><string>一段</string></dict>
 	<dict><key>phrase</key><string>瓶詰めする</string><key>shortcut</key><string>びんづめする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 瓶詰めする/ビン詰めする: Sudachi の inflection_classes に びんづめ のサ変が1件も無く、ワインをビン詰めし が ビン詰め+市 になる。心配する と同型のメタデータ穴(2879、ユーザ指定) -->
 	<dict><key>phrase</key><string>ビン詰めする</string><key>shortcut</key><string>びんづめする</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>有する</string><key>shortcut</key><string>ゆうする</string><key>pos</key><string>サ変名詞</string></dict>	<!-- 有する: Sudachi の ゆう は 言う/結う(五段)だけでサ変が無く、土壌を有しています が かな のままだった。名詞 有(ゆう) で登録すると ゆう 全域(言う/結う/夕/優)に波及するので、辞書形の 有する を登録して活用だけ供給する(2878、ユーザ指定) -->
