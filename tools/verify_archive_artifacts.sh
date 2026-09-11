@@ -31,11 +31,27 @@ fi
 APPEX=$(ls -d "$APP"/PlugIns/*.appex 2>/dev/null | head -1)
 echo "対象: $APP"
 
-# 1) バンドルID
+# 1) バンドルID。期待値はリテラルでなく xcconfig から解決する(Config/Signing.local.xcconfig の
+#    上書きを尊重。2026-09-11 に既定の com.kusakabe.ecritu が取得不能になり jp.or.pleiades.merope.ecritu
+#    へ切り替えたため。docs/identifiers.md §8)
+ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+resolve_xcconfig_value() {
+  local key="$1" value=""
+  for f in "$ROOT_DIR/Config/Edition.xcconfig" "$ROOT_DIR/Config/Signing.local.xcconfig"; do
+    [[ -f "$f" ]] || continue
+    local v
+    v=$(grep -E "^[[:space:]]*${key}[[:space:]]*=" "$f" | tail -1 | sed -E 's/^[^=]*=[[:space:]]*//; s/[[:space:]]*$//')
+    [[ -n "$v" ]] && value="$v"
+  done
+  echo "$value"
+}
+EXPECTED_APP_ID=$(resolve_xcconfig_value ECRITU_APP_BUNDLE_IDENTIFIER)
+[[ -z "$EXPECTED_APP_ID" ]] && EXPECTED_APP_ID="jp.or.pleiades.merope.ecritu"
+EXPECTED_KB_ID="${EXPECTED_APP_ID}.keyboard"
 APP_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APP/Info.plist" 2>/dev/null)
 KB_ID=$(/usr/libexec/PlistBuddy -c "Print CFBundleIdentifier" "$APPEX/Info.plist" 2>/dev/null)
-[[ "$APP_ID" == "com.kusakabe.ecritu" ]] && ok "アプリID: $APP_ID" || bad "アプリIDが本番でない: $APP_ID"
-[[ "$KB_ID" == "com.kusakabe.ecritu.keyboard" ]] && ok "拡張ID: $KB_ID" || bad "拡張IDが本番でない: $KB_ID"
+[[ "$APP_ID" == "$EXPECTED_APP_ID" ]] && ok "アプリID: $APP_ID" || bad "アプリIDが設定と不一致: $APP_ID(期待 $EXPECTED_APP_ID)"
+[[ "$KB_ID" == "$EXPECTED_KB_ID" ]] && ok "拡張ID: $KB_ID" || bad "拡張IDが設定と不一致: $KB_ID(期待 $EXPECTED_KB_ID)"
 
 # 2) デバッグ用バイナリの混入
 STRAY=$(find "$APP" -name "*.debug.dylib" -o -name "__preview.dylib" 2>/dev/null)

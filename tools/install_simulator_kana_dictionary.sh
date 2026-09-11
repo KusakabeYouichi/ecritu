@@ -7,8 +7,8 @@ SECOND_DICT_PATH="${ECRITU_SECOND_DICT_PATH:-$ROOT_DIR/tmp/ÉcrituSecondVocab.js
 INFLECTION_DICT_PATH="${2:-$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json}"
 SOURCE_TAG_DICT_PATH="${3:-$ROOT_DIR/tmp/kana_kanji_candidate_sources.json}"
 SQLITE_DICT_PATH="${4:-$ROOT_DIR/tmp/kana_kanji_dictionary.sqlite}"
-APP_BUNDLE_ID="${ECRITU_APP_BUNDLE_IDENTIFIER:-com.kusakabe.ecritu}"
-APP_GROUP_ID="${ECRITU_APP_GROUP_IDENTIFIER:-group.com.kusakabe.ecritu}"
+APP_BUNDLE_ID="${ECRITU_APP_BUNDLE_IDENTIFIER:-jp.or.pleiades.merope.ecritu}"
+APP_GROUP_ID="${ECRITU_APP_GROUP_IDENTIFIER:-group.jp.or.pleiades.merope.ecritu}"
 
 if [[ ! -f "$DICT_PATH" ]]; then
   echo "Dictionary file not found: $DICT_PATH" >&2

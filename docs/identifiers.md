@@ -10,18 +10,20 @@
 
 ## 1. 登場する識別子
 
-| 識別子 | 例 | 役割 | 決める人 |
+**現在の値**(2026-09-11 に既定を `com.kusakabe.ecritu` から変更。経緯は §8):
+
+| 識別子 | 現在の値 | 役割 | 決める人 |
 |---|---|---|---|
 | Team ID | `487V53DJMW` | Apple 開発者チームの識別子。署名と App ID の名前空間 | Apple が発行 |
 | App ID prefix | `487V53DJMW` | entitlements 内で `$(AppIdentifierPrefix)` として展開される。通常は Team ID と同じ | Apple |
-| アプリの bundle ID | `com.kusakabe.ecritu` | アプリ本体の一意名。App ID の実体 | 開発者(Apple に登録) |
-| 拡張の bundle ID | `com.kusakabe.ecritu.keyboard` | キーボード拡張の一意名。アプリの bundle ID を接頭辞に持つ必要がある | 同上 |
-| テストの bundle ID | `com.kusakabe.ecritu.tests` | テストバンドル用 | 同上 |
-| App Group ID | `group.com.kusakabe.ecritu` | アプリと拡張が共有するコンテナーの名前。`group.` で始まる必要がある | 開発者(Apple に登録) |
-| keychain access group | `487V53DJMW.com.kusakabe.ecritu` | Keychain 項目の共有範囲 | 派生 |
+| アプリの bundle ID | `jp.or.pleiades.merope.ecritu` | アプリ本体の一意名。App ID の実体 | 開発者(Apple に登録) |
+| 拡張の bundle ID | `jp.or.pleiades.merope.ecritu.keyboard` | キーボード拡張の一意名。アプリの bundle ID を接頭辞に持つ必要がある | 同上 |
+| テストの bundle ID | `jp.or.pleiades.merope.ecritu.tests` | テストバンドル用 | 同上 |
+| App Group ID | `group.jp.or.pleiades.merope.ecritu` | アプリと拡張が共有するコンテナーの名前。`group.` で始まる必要がある | 開発者(Apple に登録) |
+| keychain access group | `487V53DJMW.jp.or.pleiades.merope.ecritu` | Keychain 項目の共有範囲 | 派生 |
 | 拡張ポイント識別子 | `com.apple.keyboard-service` | 「これはキーボード拡張である」という宣言。iOS が拡張の種類を判別する | Apple 定義(固定) |
 | 主クラス名 | `<モジュール名>.KeyboardViewController` | 拡張の起動時に iOS が生成するクラス | 開発者 |
-| Darwin 通知名 | `com.kusakabe.ecritu.settings-changed.group.com.kusakabe.ecritu` | 設定変更をプロセス間に知らせる合図の名前 | 派生(コード内で組み立て) |
+| Darwin 通知名 | `com.kusakabe.ecritu.settings-changed.group.jp.or.pleiades.merope.ecritu` | 設定変更をプロセス間に知らせる合図の名前 | 派生(コード内で組み立て) |
 
 Apple 側にも登録が要るのは **App ID**(アプリと拡張の 2 つ)と **App Group** の 3 つ。Xcode の自動署名が裏で登録する。
 
@@ -33,11 +35,14 @@ Apple 側にも登録が要るのは **App ID**(アプリと拡張の 2 つ)と 
 
 ```
 ECRITU_DEVELOPMENT_TEAM      = 487V53DJMW
-ECRITU_APP_BUNDLE_IDENTIFIER = com.kusakabe.ecritu          ← ここだけが本当の入力
+ECRITU_APP_BUNDLE_IDENTIFIER = jp.or.pleiades.merope.ecritu   ← ここだけが本当の入力
 ECRITU_KEYBOARD_BUNDLE_IDENTIFIER = $(ECRITU_APP_BUNDLE_IDENTIFIER).keyboard
 ECRITU_TESTS_BUNDLE_IDENTIFIER    = $(ECRITU_APP_BUNDLE_IDENTIFIER).tests
 ECRITU_APP_GROUP_IDENTIFIER       = group.$(ECRITU_APP_BUNDLE_IDENTIFIER)
 ```
+
+Darwin 通知名の接頭辞 `com.kusakabe.ecritu.settings-changed.` と GCD キュー名・Keychain サービス名の
+`com.kusakabe.ecritu.*` はコード内の固定ラベルで、識別子としては使われない(bundle ID とは独立)。
 
 各自の値で上書きするための仕組みが `Config/Signing.local.xcconfig`(git 管理外)。
 `Edition.xcconfig` の末尾で `#include?` されており、あれば後から読まれて既定値を上書きする。
@@ -222,9 +227,9 @@ entitlements は `git checkout --` で戻す。
 
 ---
 
-## 8. 2026-09-11: 既定の bundle ID が登録できなくなった
+## 8. 2026-09-11: 既定の bundle ID を `jp.or.pleiades.merope.ecritu` に変更した
 
-`com.kusakabe.ecritu` は Apple 側で押さえられた状態になり、**チームからは再登録できない**。
+旧既定 `com.kusakabe.ecritu` は Apple 側で押さえられた状態になり、**チームからは再登録できない**。
 
 ```
 Xcode:  Failed Registering Bundle Identifier: The app identifier
@@ -237,26 +242,18 @@ Xcode:  Failed Registering Bundle Identifier: The app identifier
 Xcode が App ID を取り直そうとして弾かれた。同日 Apple Developer Program(個人、Team ID は
 同じ `487V53DJMW`)に加入したが、加入後もこの文字列は取得できないまま。ポータルの
 Identifiers に App ID は 1 件も無いのに拒否されるので、無料プロビジョニング時代の一時登録が
-解放されずに残っているとみられる。App Group(`group.com.kusakabe.ecritu` ほか)は残っている。
+解放されずに残っているとみられる。
+
+**判断**: 保持ドメイン pleiades.or.jp の逆順 `jp.or.pleiades.merope.ecritu` を正式な ID とし、
+`Config/Edition.xcconfig` の既定値を書き換えた(App Group も派生で `group.jp.or.pleiades.merope.ecritu`)。
+App Store は未公開なので公開後の ID 変更という問題は起きない。旧 ID は Apple に解放を依頼済みだが、
+解放されても戻さない。旧 ID で入っていたアプリは別アプリ扱いになるので、実機では旧 écritu を削除して
+キーボードを追加し直す(旧 App Group のデータは引き継がれない。学習は毎回リセットしていたので実害なし)。
 
 **この失効は実機側では「アプリも拡張も起動しなくなる」形で出る。**
 署名が切れたバンドルは spawn 時に `NSPOSIXErrorDomain Code=85 "Bad executable (or shared library)"
 / Launchd job spawn failed` で失敗する。すでに起動中のプロセスは動き続けるので、
 「1時間半使えていたのに、あるとき突然 iOS が純正キーボードに切り替わって戻らない」という
 出方をした。変換ロジックの不具合と紛らわしいので、実機で拡張が起動しない時はまず
-`log collect` で error 85 を確認する(§6 の手順)。
-
-暫定対応として、`Config/Signing.local.xcconfig`(git 管理外)で自ドメイン由来の bundle ID に
-切り替えている:
-
-```
-ECRITU_APP_BUNDLE_IDENTIFIER = jp.or.pleiades.merope.ecritu
-```
-
-App Group も派生に従って `group.jp.or.pleiades.merope.ecritu` になる(§2 の不変条件を崩さない)。
-そのため **旧 App Group に入っている設定・学習語彙は引き継がれない**。旧データは実機に残るので、
-必要なら devicectl で旧グループの Preferences を吸い出して新グループへ移す。
-
-元に戻す条件と手順: Apple サポートに `com.kusakabe.ecritu` の解放を依頼し、通ったら
-`Config/Signing.local.xcconfig` を削除するだけでよい(既定値に戻る)。
-
+`log collect` で error 85 を確認する(§6 の手順)。有料メンバーシップ(年1回更新)になったので、
+以後プロファイルは1年ものになり、7日失効は起きない。
