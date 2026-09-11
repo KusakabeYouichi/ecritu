@@ -15738,3 +15738,32 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 言い間違い は語で登録(2880)。連用形単独ノードの一般供給は いい→言い の退行(でもいい/いい本でした/
+    // いいねえ 等 19 件)で撤回した。いい 系がかなのままであることも固定する
+    func testRegressionIimachigaiRegisteredWord() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            // 語で登録したので読み全体が 1 語 = 単文節側に出る(連文節は 1 ノードの結果を返さない)
+            XCTAssertEqual(
+                converter.candidates(for: "いいまちがい", limit: 3, systemCandidateMode: mode).first,
+                "言い間違い", "mode=\(mode.rawValue)"
+            )
+            for (reading, expected) in [
+                ("いいてんきだ", "いい天気だ"),
+                ("でもいい", "でもいい"),
+                ("いいほんでした", "いい本でした"),
+                ("ほんをかした", "本を貸した")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
