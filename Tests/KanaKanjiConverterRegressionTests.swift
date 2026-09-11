@@ -15385,3 +15385,29 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 出側 bigram で負ける複合語の seed 順(2878)。使用/州都/辛口/甘口 はノード単体では
+    // 分割や同音語より安いか僅差なのに、続く助詞の bigram が未観測で経路ごと負けていた
+    func testRegressionCompoundSeedOrderAgainstSplit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("のめいしょうのしようが", "の名称の使用が"),
+                ("きかいのしようをきめる", "機械の使用を決める"),
+                ("しゅうとみらのは", "州都ミラノは"),
+                ("しゅうとぼろーにゃのにしがわ", "州都ボローニャの西側"),
+                ("からくちでどくとくのしおあじがあります", "辛口で独特の塩味があります"),
+                ("あまくちからからくちまで", "甘口から辛口まで")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
