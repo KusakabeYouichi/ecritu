@@ -1096,9 +1096,13 @@ extension KanaKanjiConverter {
             // 外来語+化(スリム化/デジタル化/グローバル化)は最も生産的な接辞用法で、LM も スリム→化 955 と
             // 強く支持する。禁止の理由(色化なー のような裸の接辞断片)はかな/漢字 prev の話で、
             // カタカナ語+化 の後ろに終助詞が続く断片は現実に無い(すりむかする→刷無化する の是正。2777)
+            // 漢語2字以上の直後も同じ生産的な接辞用法(簡略化/民主化/自動化)。簡略→化 は 78 と
+            // 極めて強い実績があるのに借用禁止で捨てており、簡略かした方式 になっていた
+            // (2878、抜き取り検査)。禁止の理由(色化なー)は 1 字の prev なので巻き込まない
             let surfaceDeniesBorrow = (Self.multiClauseBigramBorrowDeniedReadingsBySurface[surface]?
                 .contains(reading) ?? false)
-                && !(surface == "化" && prev.count >= 2 && Self.isKatakanaString(prev))
+                && !(surface == "化" && prev.count >= 2
+                    && (Self.isKatakanaString(prev) || Self.isKanjiOnlyString(prev)))
             let deniesBigramBorrow = surfaceDeniesBorrow || prevDeniesOutgoingBigram || crossReadingBigramDenied
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、

@@ -15411,3 +15411,27 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 接辞 化(か)の bigram 借用は漢語 2 字以上の直後でも許す(2878)。簡略→化 は 78 と
+    // 強い実績があるのに借用禁止で捨てており 簡略かした方式 になっていた。
+    // 禁止の理由(1 字の prev から出る裸の接辞断片)は従来どおり
+    func testRegressionKaSuffixBorrowsBigramAfterKangoNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("をかんりゃくかしたほうしき", "を簡略化した方式"),
+                ("すりむかする", "スリム化する"),
+                ("いろかなー", "色かなー")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
