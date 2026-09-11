@@ -15357,3 +15357,31 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 産地/気候 の seed 順(2878、抜き取り検査 49 件/10 件)。どちらも僅差で 山地/機構 に負ける。
+    // 固有名の 〜山地(bigram 0〜1200)と 農研機構/行政機構 は seed 順ボーナスを跨いで残る
+    func testRegressionSanchiKikouSeedOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("なんあめりかさいだいのぶどうさんちです", "南アメリカ最大のブドウ産地です"),
+                ("りーすりんぐのじゅうようさんちです", "リースリングの重要産地です"),
+                ("はーるとさんちから", "ハールト山地から"),
+                ("さんちきこうをおびる", "山地気候を帯びる"),
+                ("きこうはおんだんです", "気候は温暖です"),
+                ("きこうへんどう", "気候変動"),
+                ("のうけんきこう", "農研機構"),
+                ("ぎょうせいきこうのかいかく", "行政機構の改革")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
