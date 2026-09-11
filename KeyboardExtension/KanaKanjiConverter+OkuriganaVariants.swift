@@ -214,19 +214,31 @@ extension KanaKanjiConverter {
                 variantsBefore[standard, default: []].append(candidate)
             }
         }
+        // 組(本則+許容形)は、その組の最初のメンバーが現れた位置にまとめて出す。以前は許容形を飛ばして
+        // 本則の位置で出していたため、最良候補が許容形(醗酵を行なう)だと組ごと本則(3 位)の位置まで
+        // 落ち、無関係な 2 位(発行を行なう)が先頭に繰り上がっていた(2880)
+        func emitGroup(standard: String) {
+            for variant in variantsBefore[standard] ?? [] where inserted.insert(variant).inserted {
+                result.append(variant)
+            }
+            if inserted.insert(standard).inserted {
+                result.append(standard)
+            }
+            for variant in variantsAfter[standard] ?? [] where inserted.insert(variant).inserted {
+                result.append(variant)
+            }
+        }
         for candidate in candidates {
+            if inserted.contains(candidate) {
+                continue
+            }
             if relationByVariant[candidate] != nil {
-                continue  // 許容形は本則の前後にまとめて出す
+                // 本則のみの設定でも、許容形が現れた位置に本則を出す(順位を保つ)。許容形だけを捨てると
+                // 最良候補(醗酵を行なう)が消えて本則が 3 位の位置に落ち、無関係な 2 位が先頭になる
+                emitGroup(standard: root(of: candidate))
+                continue
             }
-            for variant in variantsBefore[candidate] ?? [] where inserted.insert(variant).inserted {
-                result.append(variant)
-            }
-            if inserted.insert(candidate).inserted {
-                result.append(candidate)
-            }
-            for variant in variantsAfter[candidate] ?? [] where inserted.insert(variant).inserted {
-                result.append(variant)
-            }
+            emitGroup(standard: candidate)
         }
         return result
     }
