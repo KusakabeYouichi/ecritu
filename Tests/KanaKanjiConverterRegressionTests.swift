@@ -15767,3 +15767,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 送り仮名の許容形を本則へ寄せる並べ替えは、組(本則+許容形)を最初のメンバーの位置に出す(2880)。
+    // 以前は許容形(醗酵を行なう=最良)を飛ばして本則の位置(3 位)で出していたため、
+    // 無関係な 2 位(発行を行なう)が先頭になっていた
+    func testRegressionOkuriganaGroupKeepsRank() {
+        let reordered = converter.applyOkuriganaVariantPreference(
+            reading: "はっこうをおこなう",
+            to: ["醗酵を行なう", "発行を行なう", "醗酵を行う", "発光を行なう"]
+        )
+        XCTAssertEqual(reordered.first, "醗酵を行う", "\(reordered)")
+        XCTAssertEqual(reordered.firstIndex(of: "発行を行なう").map { $0 > 0 }, true, "\(reordered)")
+    }
+}
