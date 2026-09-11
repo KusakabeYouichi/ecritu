@@ -5,6 +5,17 @@ import Foundation
 // 静的テーブル群は KanaKanjiConverter+MultiClauseTables.swift に分離(2026-08-17)。
 extension KanaKanjiConverter {
 
+    // word_costs に収穫底値未満の同値が 2 つ以上あるか(辞書 rank による同点割りが要るか)
+    static func hasRealWordCostTie(_ costMap: [String: Int]) -> Bool {
+        var seen = Set<Int>()
+        for cost in costMap.values where cost < KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor {
+            if !seen.insert(cost).inserted {
+                return true
+            }
+        }
+        return false
+    }
+
     func isParticleHeadedRareVerb(node: MultiClauseNode) -> Bool {
         isParticleHeadedRareVerb(
             surface: node.surface,
@@ -451,8 +462,26 @@ extension KanaKanjiConverter {
                 //     Sudachi の複合語内読み(核=カッ 等)由来の漢字ノードがジャンク合成
                 //     (いきだけかったぜ→行きだけ核たぜ)を作るため、漢字含み表層は弾く。
                 if !costMap.isEmpty {
+                    // 同値のときの第 2 キーは文字コード順だったが、それだと 云わす(U+4E91)が 言わす(U+8A00)の
+                    // 前に格子へ入り DP の同点勝ちをする(いわすに→云わすに。2882、ユーザ報告)。実在語同士
+                    // (収穫底値未満)の同値があるときだけ辞書 rank を引いて第 2 キーにする(sqlite 1 回)
+                    var dictionaryRank: [String: Int] = [:]
+                    if Self.hasRealWordCostTie(costMap) {
+                        for (rank, candidate) in store.systemCandidates(for: segmentReading, mode: systemCandidateMode).enumerated() {
+                            dictionaryRank[candidate] = rank
+                        }
+                    }
+                    // 辞書 rank を使うのは頭が漢字同士の同値だけ。カタカナ頭対漢字頭(スネ肉/臑肉)は文字コード順で
+                    // カタカナが先に来ていた従来の並びを保つ(臑肉 のような稀字が rank で繰り上がるのを避ける)
                     let ordered = costMap.sorted { lhs, rhs in
-                        lhs.value != rhs.value ? lhs.value < rhs.value : lhs.key < rhs.key
+                        if lhs.value != rhs.value { return lhs.value < rhs.value }
+                        if let l = lhs.key.first, let r = rhs.key.first,
+                            containsKanji(String(l)), containsKanji(String(r)) {
+                            let lhsRank = dictionaryRank[lhs.key] ?? Int.max
+                            let rhsRank = dictionaryRank[rhs.key] ?? Int.max
+                            if lhsRank != rhsRank { return lhsRank < rhsRank }
+                        }
+                        return lhs.key < rhs.key
                     }
                     var dictCount = 0
                     for (surface, cost) in ordered {
