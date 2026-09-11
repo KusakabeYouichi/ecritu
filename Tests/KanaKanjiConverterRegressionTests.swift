@@ -15458,3 +15458,31 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 列挙の といった(2878、抜き取り検査 8 件)。かな 4 字の素通りしかノードが無く
+    // と+行った に勝てなかった。引用(述語の直後)は従来どおり漢字
+    func testRegressionEnumerationToIttaStaysKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("といったじょうけんがあります", "といった条件があります"),
+                ("まらがといったでんとうてきなさんちです", "マラガといった伝統的な産地です")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            // 述語の直後は引用なので漢字のまま(言った/行った の別は LM に委ねる)
+            XCTAssertFalse(
+                converter.multiClauseCandidates(for: "いくといったあとで", systemCandidateMode: mode)
+                    .first?.contains("といった") ?? true,
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
