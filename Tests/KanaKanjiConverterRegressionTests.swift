@@ -15367,7 +15367,7 @@ extension KanaKanjiConverterRegressionTests {
 
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             for (reading, expected) in [
-                ("なんあめりかさいだいのぶどうさんちです", "南アメリカ最大のブドウ産地です"),
+                ("なんあめりかさいだいのぶどうさんちです", "南アメリカ最大のぶどう産地です"),
                 ("りーすりんぐのじゅうようさんちです", "リースリングの重要産地です"),
                 ("はーるとさんちから", "ハールト山地から"),
                 ("さんちきこうをおびる", "山地気候を帯びる"),
@@ -15509,6 +15509,48 @@ extension KanaKanjiConverterRegressionTests {
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )
             }
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // ぶどう はかなが正書(ユーザー指定 2878)。並びは {ぶどう, ブドウ, 葡萄}。
+    // LM は ブドウ 6075 < 葡萄 6625 < ぶどう 6808 で、出側 bigram(ブドウ→を 1141)も
+    // カタカナ側にしか無いため、表外訓の減点(1500)に seed 順ボーナスを足して跨ぐ
+    func testRegressionBudouPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ぶどうさんちです", "ぶどう産地です"),
+                ("ぶどうをつかう", "ぶどうを使う"),
+                ("ぶどうがそだつ", "ぶどうが育つ"),
+                ("こくさんぶどう", "国産ぶどう"),
+                ("しろぶどうひんしゅ", "白ぶどう品種")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            // 単文節の並びも {ぶどう, ブドウ, 葡萄}
+            XCTAssertEqual(
+                Array(converter.candidates(for: "ぶどう", limit: 3, systemCandidateMode: mode)),
+                ["ぶどう", "ブドウ", "葡萄"],
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    func testZZProbeBatch() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        for r in ["どじょうをゆうしています", "しゅとざぐれぶをゆうし", "ゆうする", "ゆうしゃがくる", "ゆうしをうける", "ゆうめいなわいん"] {
+            print("PROBE \(r)\t連=\(Array(converter.multiClauseCandidates(for: r, systemCandidateMode: .normalise).prefix(3)))\t単=\(Array(converter.candidates(for: r, limit: 3, systemCandidateMode: .normalise)))")
         }
     }
 }
