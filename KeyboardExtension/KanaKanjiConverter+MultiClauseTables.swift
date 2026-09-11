@@ -1616,6 +1616,37 @@ extension KanaKanjiConverter {
     // (で飲む 等)ので禁止ではなく減点にとどめ、拮抗した勝負だけを覆す。
     // で は名詞に付く格助詞として断片継続(でのむ/でいく)が実用的なので対象外(2606)。
     static let multiClauseBOSParticlePenalty = 2000
+    // 助詞の読みを持つ 1 字漢字(歯=は/煮=に/都=と/二=に…)は、直後が助詞でない位置では
+    // 助詞として読むのが正しい(2879、抜き取り検査 64 件)。文頭の「はメンドーサ州の」が
+    // 歯メンドーサ州の、「にふくまれる」が 煮含まれる、述語直後の「〜だとされています」が
+    // 〜だ賭されています になっていた。文頭の裸助詞には減点(2000)が掛かるぶん、
+    // 1 字漢字(歯 wc5745)が素通りのかなより安くなるのが原因。
+    // 直後が助詞なら本来の名詞用法(歯を磨く/歯が痛い/戸を開ける)なので免除する
+    static let multiClauseParticleReadingKanjiAtClauseHeadPenalty = 4500
+    static let multiClauseParticleReadingsForClauseHeadGuard: Set<String> = [
+        "は", "が", "を", "に", "と", "も", "で", "へ"
+    ]
+    // 上の免除条件: 1 字漢字の直後にこの文字が来るなら名詞用法
+    static let multiClauseParticleFollowerCharacters: Set<Character> = [
+        "は", "が", "を", "に", "と", "も", "で", "へ", "の", "や", "か", "ね", "よ", "な"
+    ]
+
+    // 直後が助詞でない(=名詞用法として支えが無い)位置かどうか
+    static func isParticleReadingKanjiWithoutNounSupport(
+        surface: String,
+        reading: String,
+        end: Int,
+        chars: [Character]
+    ) -> Bool {
+        guard surface.count == 1, surface != reading,
+            multiClauseParticleReadingsForClauseHeadGuard.contains(reading) else {
+            return false
+        }
+        guard end < chars.count else {
+            return false
+        }
+        return !multiClauseParticleFollowerCharacters.contains(chars[end])
+    }
     // かね(終助詞、seed でかな先頭)と 疑問の か も文頭には立たない: かねもってて が かね(5954)+持ってて、次いで
     // か(BOS bigram 4065)+ね(3177) の断片連鎖で 金持ってて(単漢字名詞→動詞の無助詞減点 600 込み)に勝っていた(2803)
     // て(接続助詞)も文頭には立たない(2806): てでやってた が て(BOS bigram 2591)+で で 手(6932)+で に勝ち、手で が候補に 1 つも出なかった

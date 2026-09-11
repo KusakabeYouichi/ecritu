@@ -15577,3 +15577,31 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 助詞の読みを持つ 1 字漢字は文頭・述語直後では助詞(2879、抜き取り検査 64 件)。
+    // 直後が助詞なら名詞用法(歯を磨く)なので免除。助詞ごと飲み込む稀な動詞(煮含む/賭する)も同じ
+    func testRegressionParticleReadingKanjiAtClauseHead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("はめんどーさしゅうのさぶ", "はメンドーサ州のサブ"),
+                ("にふくまれるさんそのことです", "に含まれる酸素のことです"),
+                ("であるとされています", "であるとされています"),
+                // 名詞用法・正当な動詞は無傷
+                ("はをみがく", "歯を磨く"),
+                ("はぶらしをかう", "歯ブラシを買う"),
+                ("とじまりをする", "戸締まりをする"),
+                ("にたやつがある", "似たやつがある")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

@@ -509,6 +509,28 @@ extension KanaKanjiConverter {
     // (どれ→取れ/どれば→取れば)の基底から除く(おおいのはどれ→多いのは取れ 対策)。
     // 判定は単漢字連濁(墓/ばか)と同じ「清音読みに同表層がより安く実在する」コスト比較 —
     // 出る/出す 等の正当な濁音動詞は清音読みエントリ自体が無いため対象外。
+    // 助詞で始まる読みを持つ稀な動詞(煮含む=にふくむ/賭する=とする)が、文頭や述語直後で
+    // 助詞ごと飲み込む問題(2879、抜き取り検査)。「にふくまれる」が 煮含まれる、
+    // 「〜だとされています」が 〜だ賭されています になっていた。活用派生は OOV 定額なので
+    // 1 ノードで span を覆うほうが 助詞+動詞 の 2 ノードより安くなる。
+    // 「頭の漢字が助詞1字として読めるか」で機械判定すると 似た/煮た/出ない まで巻き込む
+    // (どれも 似=に/煮=に/出=で が word_costs にある)。基底が LM 未収録かで切りたいが
+    // DP 側から基底が引けないため、実害のあった語幹だけを列挙する
+    static let multiClauseParticleSwallowingVerbSurfacePrefixes: Set<String> = [
+        "煮含", "煮ふく", "賭し", "賭さ", "賭す", "賭せ"
+    ]
+
+    func isParticleHeadedRareVerb(surface: String, reading: String, isInflectionDerived: Bool) -> Bool {
+        guard isInflectionDerived, surface.count >= 2, reading.count >= 2,
+            let particleChar = reading.first,
+            KanaKanjiConverter.multiClauseParticleReadingsForClauseHeadGuard.contains(String(particleChar)) else {
+            return false
+        }
+        return KanaKanjiConverter.multiClauseParticleSwallowingVerbSurfacePrefixes.contains {
+            surface.hasPrefix($0)
+        }
+    }
+
     func isRendakuHarvestVerbBase(_ surface: String, baseReading: String) -> Bool {
         guard surface != baseReading,
             let firstChar = baseReading.first,

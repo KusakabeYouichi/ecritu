@@ -4,6 +4,15 @@ import Foundation
 // ラティスを組み、Viterbi 最尤経路を候補にする。コスト定数・読み集合・連語表などの
 // 静的テーブル群は KanaKanjiConverter+MultiClauseTables.swift に分離(2026-08-17)。
 extension KanaKanjiConverter {
+
+    func isParticleHeadedRareVerb(node: MultiClauseNode) -> Bool {
+        isParticleHeadedRareVerb(
+            surface: node.surface,
+            reading: node.reading,
+            isInflectionDerived: node.isInflectionDerived
+        )
+    }
+
     struct MultiClauseNode {
         let start: Int
         let end: Int
@@ -2080,6 +2089,12 @@ extension KanaKanjiConverter {
                         ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
                             + sentenceInitialDeParticlePenalty(for: node)
                             + sentenceInitialParticleOverlapPenalty(for: node)
+                        // 助詞の読みを持つ 1 字漢字は文頭では助詞(定数コメント参照。2879)
+                        if Self.isParticleReadingKanjiWithoutNounSupport(
+                            surface: node.surface, reading: node.reading, end: node.end, chars: chars
+                        ) || isParticleHeadedRareVerb(node: node) {
+                            cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
+                        }
                         // 列挙の といった(定数コメント参照。2878)。文頭は直前が述語になり得ないので無条件
                         if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading) {
                             cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)
@@ -2251,6 +2266,14 @@ extension KanaKanjiConverter {
                                 || (prevNode.surface == prevNode.reading && prevNode.reading == "し")
                                 || (prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
                             cost += Self.multiClauseOkuAuxiliaryKanjiPenalty
+                        }
+                        // 述語直後の 1 字漢字も同じ(〜だとされています→〜だ賭されています。2879)
+                        if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
+                            || (prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
+                            Self.isParticleReadingKanjiWithoutNounSupport(
+                                surface: node.surface, reading: node.reading, end: node.end, chars: chars
+                            ) || isParticleHeadedRareVerb(node: node) {
+                            cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
                         // 格助詞 に/と の直後の にる 系は 似る(定数コメント参照。2878)
                         if node.isInflectionDerived, node.surface.hasPrefix("似"),
