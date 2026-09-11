@@ -15213,6 +15213,33 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 補助動詞 おる(2877、抜き取り検査で 39 件)。かな おり は辞書に無いのでノードを常設し、
+    // て/で 直後の 折り/檻/オリ と、て を取り込んだ 手織り を減点する。
+    // 本動詞の 折る/織る/降りる は を の後・単独では従来どおり
+    func testRegressionTeOruAuxiliaryStaysKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("かんそうしており", "乾燥しており"),
+                ("ちきゅうじょうにそんざいしており", "地球上に存在しており"),
+                ("みなみむきのしゃめんにいちしており", "南向きの斜面に位置しており"),
+                ("しごとをしております", "仕事をしております"),
+                ("でんしゃをおりる", "電車を降りる"),
+                ("てをあらっておく", "手を洗っておく")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 接尾の 屋 は bigram 実績のある相手にしか付かない(2873、ユーザ報告 きりかきや→切り欠き屋)。
     // 実在する複合は辞書に 1 語で載る(本屋/花屋/八百屋)か bigram がある(ラーメン→屋 1247)
     func testRegressionTradeSuffixNeedsEvidence() throws {
@@ -15303,3 +15330,4 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
