@@ -15635,3 +15635,28 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ指定の並び(2879): 香味>小海 / 果汁>荷重 / 保証>保障 / 蒸溜>蒸留 / もっとも(かな)
+    func testRegressionWineTermSeedOrder2879() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("こうみのばらんすがよく", "香味のバランスがよく"),
+                ("かじゅうとともに", "果汁と共に"),
+                ("とうせいほしょうげんさんち", "統制保証原産地"),
+                ("しゃかいほしょうせいど", "社会保障制度"),
+                ("ぶどうのしぼりかすをじょうりゅうした", "ぶどうの絞りかすを蒸溜した"),
+                ("もっともゆうめいな", "もっとも有名な")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
