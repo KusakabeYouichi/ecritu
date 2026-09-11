@@ -527,15 +527,31 @@ extension KanaKanjiConverter {
     // 連濁形は複合語の内部でしか現れないので、単独入力の候補(単文節の最終段)では多字表層も
     // 弾くのが正しい(でま→手間 は誤り)。一方ラティス/合成の供給では 人+込み(ひとごみ)の
     // ような複合語内の連濁が要るため、既定は従来どおり単漢字だけに絞る(2485)。
+    // 拗音の小書きかなは前のかなと1モーラを成す。文字数で数えると ぎょう(経)が3字となり
+    // 「読み3字以上は複合語の後部」の判定をすり抜ける(行変える→経変える。2879)
+    static let smallKanaCharacters: Set<Character> = [
+        "ゃ", "ゅ", "ょ", "ぁ", "ぃ", "ぅ", "ぇ", "ぉ",
+        "ャ", "ュ", "ョ", "ァ", "ィ", "ゥ", "ェ", "ォ"
+    ]
+
+    static func moraCount(of reading: String) -> Int {
+        reading.count { !smallKanaCharacters.contains($0) }
+    }
+
     func isRendakuHarvestSurface(
         _ surface: String,
         reading: String,
         includingMultiCharacterSurfaces: Bool = false
     ) -> Bool {
+        // ラティス供給側(既定)は「読みが2字以下」の連濁だけ弾く(2879、ユーザー指摘)。
+        // 危ないのは 歯(ば)/墓(ばか)/口(ぐち)/棚(だな)/種(だね) のように読みが短く、
+        // 助詞・終助詞・口語と正面衝突するもの(単漢字531件のうち397件が読み2字)。
+        // 読み3字以上(畑=ばたけ/桜=ざくら/柱=ばしら/頭=がしら、134件)は複合語の後部そのもので、
+        // 弾くと ぶどう畑/山桜/電信柱 が組めない。表層が単漢字かどうかは本質ではなかった
         guard reading.count >= 2,
             includingMultiCharacterSurfaces
                 ? Self.containsKanjiCandidate(surface)
-                : Self.isSingleKanjiCandidate(surface),
+                : (Self.isSingleKanjiCandidate(surface) && Self.moraCount(of: reading) <= 2),
             let firstChar = reading.first,
             let devoicedFirst = Self.rendakuDevoicedKanaCharacter[firstChar] else {
             return false

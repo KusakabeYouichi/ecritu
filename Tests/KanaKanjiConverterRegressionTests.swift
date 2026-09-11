@@ -15546,11 +15546,34 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
-    func testZZProbeBatch() throws {
+    // 連濁収穫フィルタは「読みが2字以下」の単漢字だけ弾く(2879、ユーザー指摘)。
+    // 危ないのは 歯(ば)/墓(ばか)/棚(だな)/種(だね)/癖(ぐせ) のように読みが短く助詞や
+    // 口語と衝突するもので、読み3字以上(畑=ばたけ/桜=ざくら/柱=ばしら)は複合語の後部そのもの。
+    // 表層が単漢字かどうかは本質ではなかった
+    func testRegressionRendakuHarvestFilterUsesReadingLength() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        for r in ["どじょうをゆうしています", "しゅとざぐれぶをゆうし", "ゆうする", "ゆうしゃがくる", "ゆうしをうける", "ゆうめいなわいん"] {
-            print("PROBE \(r)\t連=\(Array(converter.multiClauseCandidates(for: r, systemCandidateMode: .normalise).prefix(3)))\t単=\(Array(converter.candidates(for: r, limit: 3, systemCandidateMode: .normalise)))")
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                // 読み3字以上の連濁は複合語として組める
+                ("ぶどうばたけをみる", "ぶどう畑を見る"),
+                ("でんしんばしらのよこ", "電信柱の横"),
+                // 読み2字の連濁は従来どおり弾く(単漢字断片の連結を作らない)
+                ("あおいばぶる", "青いバブル"),
+                ("にわにみず", "庭に水"),
+                ("そうだね", "そうだね"),
+                ("いいんだな", "いいんだな"),
+                // 連濁でない読みは無傷
+                ("たなをつくる", "棚を作る"),
+                ("くせになる", "癖になる")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
         }
     }
 }
