@@ -204,6 +204,9 @@ extension KanaKanjiConverter {
     // とり忘れてる 等7件が退行したため不可(2499)。
     static let multiClauseRareReadingFloorExemptSurfacesByReading: [String: Set<String>] = [
         "むき": ["向き"],
+        // 岐阜(ぎふ) は読み別 wc 9219(収穫底値手前)で床上げされ、義父(7399)に負ける。
+        // LM unigram は 岐阜 5733 と 義父 6658 より安く、地名として日常語(2879、ユーザ報告)
+        "ぎふ": ["岐阜"],
         // 時(じ) は unigram 3807 の最頻出語なのに読み別 wc 6156 で床上げされ、字(wc4066)に
         // 一律負けて 申し込み時 が 申し込み字 になっていた(名詞+時 接尾の一般対策。2535)
         "じ": ["時"],
@@ -1615,6 +1618,11 @@ extension KanaKanjiConverter {
     // 「文頭の助詞」という非文が成立してしまう。日本語の入力断片としては ありえなくはない
     // (で飲む 等)ので禁止ではなく減点にとどめ、拮抗した勝負だけを覆す。
     // で は名詞に付く格助詞として断片継続(でのむ/でいく)が実用的なので対象外(2606)。
+    // 副詞 却って(かえって)は文頭や読点の後に立つ語で、名詞の直後には来ない。
+    // 帰って(活用派生 OOV 7200)より LM(6896)が安いため 本国却って になっていた
+    // (2879、ユーザ報告)。名詞直後に限って減点する
+    static let multiClauseAdverbKanjiAfterNounSurfaces: Set<String> = ["却って"]
+    static let multiClauseAdverbKanjiAfterNounPenalty = 2500
     static let multiClauseBOSParticlePenalty = 2000
     // 助詞の読みを持つ 1 字漢字(歯=は/煮=に/都=と/二=に…)は、直後が助詞でない位置では
     // 助詞として読むのが正しい(2879、抜き取り検査 64 件)。文頭の「はメンドーサ州の」が

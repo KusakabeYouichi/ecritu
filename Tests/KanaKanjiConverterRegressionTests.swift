@@ -15605,3 +15605,33 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ報告 2879: お店側(丁寧接頭辞が LM 未収録の地名 三瀬川 と合成していた)/
+    // 岐阜(短span床)/ 本国却って(名詞直後の副詞)
+    func testRegressionUserReports2879() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "おみせがわは", systemCandidateMode: mode).first,
+                "お店側は", "mode=\(mode.rawValue)"
+            )
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "ぎふじゃない", systemCandidateMode: mode).first,
+                "岐阜じゃない", "mode=\(mode.rawValue)"
+            )
+            // 丁寧接頭辞の正当な合成は残る
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "おわたしします", systemCandidateMode: mode).first,
+                "お渡しします", "mode=\(mode.rawValue)"
+            )
+            // 名詞直後の 却って は先頭に来ない(帰って の先頭化は活用供給順の課題で未達)
+            XCTAssertNotEqual(
+                converter.multiClauseCandidates(for: "ほんごくかえって", systemCandidateMode: mode).first,
+                "本国却って", "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
