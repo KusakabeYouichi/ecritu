@@ -684,7 +684,10 @@ extension KanaKanjiConverter {
                     // っぽい族(名詞接尾)も常設 — っ始まりのかなノードは辞書に無く
                     // 立たないため、赤+っぽく が組めず あ闊歩句 等の断片が最良化していた
                     // (あかっぽく 対策。2650)
-                    || Self.multiClausePpoiFamilySurfaces.contains(segmentReading) {
+                    || Self.multiClausePpoiFamilySurfaces.contains(segmentReading)
+                    // 補助動詞 おる(〜ており/〜ております)も常設 — かな おり は辞書に無く、
+                    // 折り/檻/オリ しかノードが立たないので減点しても受け皿がない(2877)
+                    || Self.isOruAuxiliaryReading(segmentReading) {
                     add(segmentReading, isDictWord: false, isCurated: false)
                 }
 
@@ -2203,10 +2206,25 @@ extension KanaKanjiConverter {
                             cost += Self.multiClauseSentenceInitialToShiPenalty
                         }
                         // て/で 形の直後の 補助動詞 おく(しておきながら/やっておいて)は漢字 置/擱/於 を減点(定数コメント参照)
-                        if node.isInflectionDerived, node.surface != node.reading,
-                            let head = node.surface.first, Self.multiClauseOkuKanjiHeads.contains(head),
+                        if node.surface != node.reading,
+                            let head = node.surface.first,
                             prevNode.surface.hasSuffix("て") || prevNode.surface.hasSuffix("で"),
-                            Self.isOkuAuxiliaryReading(node.reading) {
+                            (node.isInflectionDerived
+                                && Self.multiClauseOkuKanjiHeads.contains(head)
+                                && Self.isOkuAuxiliaryReading(node.reading))
+                                // おる 側は活用派生に限らず表記も限定しない(2877): 折り/檻/オリ が
+                                // いずれも辞書にあり、派生でないノードとして立つ(乾燥して折り)。
+                                // 読みの側を閉じた列挙にしてあるので、かな以外は一律に減点してよい
+                                || Self.isOruAuxiliaryReading(node.reading) {
+                            cost += Self.multiClauseOkuAuxiliaryKanjiPenalty
+                        }
+                        // て/で ごと 1 ノードになった 補助動詞 おる(ており→手織り。定数コメント参照)。
+                        // 述語(活用派生・辞書形・サ変連用形 し)の直後なら補助動詞なのでかなが正書
+                        if Self.multiClauseTeOruAuxiliaryReadings.contains(node.reading),
+                            node.surface != node.reading,
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
+                                || (prevNode.surface == prevNode.reading && prevNode.reading == "し")
+                                || (prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false) {
                             cost += Self.multiClauseOkuAuxiliaryKanjiPenalty
                         }
                         // 助詞 1 字が動詞の頭を食う分割(改札と+追って)より、同じ幅の 1 動詞(通って)を優先(定数コメント参照)

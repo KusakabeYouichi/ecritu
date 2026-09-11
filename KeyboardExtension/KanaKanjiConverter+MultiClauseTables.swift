@@ -1250,21 +1250,50 @@ extension KanaKanjiConverter {
     static let multiClauseBekiKanjiPenalty = 3000
     static let multiClauseOkuKanjiHeads: Set<Character> = ["置", "擱", "於"]
     static let multiClauseOkuAuxiliaryKanjiPenalty = 2500
+    // 補助動詞 おる の活用読み(2877、抜き取り検査で 39 件)。「乾燥しており」が 乾燥して折り に
+    // なっていた。ておく と同型で、て/で の直後の おる 系はかなが正書(〜ており/〜ておりました)。
+    // 本動詞の 折る/織る は を の後(紙を折る)に立つので、て/で 直後に限れば巻き込まない。
+    // 行ベースの開いた判定にすると 降りた/折り曲げる まで巻き込む(おり+た、おり+まげる)ため、
+    // 接続を閉じた集合で持つ
+    static let multiClauseOruAuxiliaryReadings: Set<String> = [
+        "おり", "おる", "おれ", "おら",
+        "おります", "おりました", "おりまして", "おりません", "おりませんでした",
+        "おりましょう", "おりましたら", "おりますが", "おりますね", "おりますよ",
+        "おれば", "おらず", "おらぬ", "おらん", "おらない", "おらなかった"
+    ]
+
+    // て/で を取り込んで 1 ノードになった補助動詞(ており→手織り)。述語の連用形の直後に
+    // 名詞 手織り は立たない
+    static let multiClauseTeOruAuxiliaryReadings: Set<String> = Set(
+        multiClauseOruAuxiliaryReadings.flatMap { ["て" + $0, "で" + $0] }
+    )
+
+    static func isOruAuxiliaryReading(_ reading: String) -> Bool {
+        multiClauseOruAuxiliaryReadings.contains(reading)
+    }
 
     static func isOkuAuxiliaryReading(_ reading: String) -> Bool {
-        guard reading.hasPrefix("お"), reading.count >= 2 else { return false }
-        if reading == "おく" { return true }
-        guard let last = reading.last, let ruleIndices = deinflectionRulesByReadingLastCharacter[last] else { return false }
-        for index in ruleIndices {
-            let rule = allInflectionRules[index]
-            guard !rule.readingSuffix.isEmpty, reading.hasSuffix(rule.readingSuffix) else { continue }
-            let stem = reading.dropLast(rule.readingSuffix.count)
-            if !stem.isEmpty, stem + rule.baseReadingSuffix == "おく" {
-                return true
-            }
-        }
-        return false
+        isTeAuxiliaryReading(reading, base: "おく")
     }
+
+    // 補助動詞(ておく/ておる)の活用読みか。活用ルール表は 連用形 単独(おき/おり)を
+    // 持たない(ます形などの接続込みでしか登録されていない)ので、語幹+行 で直接判定する。
+    // 「おり」が判定できないと 乾燥しており の減点が効かなかった(2877)
+    static func isTeAuxiliaryReading(_ reading: String, base: String) -> Bool {
+        guard let baseLast = base.last, let row = multiClauseAuxiliaryConjugationRows[baseLast] else {
+            return false
+        }
+        let stem = base.dropLast()
+        guard reading.hasPrefix(stem), reading.count >= base.count else { return false }
+        let head = reading[reading.index(reading.startIndex, offsetBy: stem.count)]
+        return row.contains(head)
+    }
+
+    // 五段活用の語尾行(+音便)。おる 側は上の閉じた列挙で判定するのでここは か行だけ
+    static let multiClauseAuxiliaryConjugationRows: [Character: Set<Character>] = [
+        "く": ["か", "き", "く", "け", "こ", "い"]
+    ]
+
     static let multiClauseSuruClusterKanaPrefixes: [String] = [
         "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"
     ]
