@@ -2311,6 +2311,15 @@ extension KanaKanjiConverter {
                             ) || isParticleHeadedRareVerb(node: node) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
+                        // 連体の の 直後の数詞 一(いち)は名詞になりにくい(定数コメント参照。2880)
+                        if node.surface == "一", node.reading == "いち",
+                            prevNode.surface == "の", prevNode.reading == "の" {
+                            let prevPrevIndex = backPointer[prevIdx]
+                            let prevPrevTail: Character? = prevPrevIndex >= 0 ? nodes[prevPrevIndex].surface.last : nil
+                            if !(prevPrevTail.map(Self.multiClauseNoIchiNumeralExemptPrevPrevTailCharacters.contains) ?? false) {
+                                cost += Self.multiClauseNoIchiNumeralPenalty
+                            }
+                        }
                         // 名詞直後の かえって は 帰って(本国帰って/実家帰って = に を落とした口語。2880、ユーザ報告)。
                         // 却って の減点だけでは 買えって/飼えって/かな と同点になり 帰って が上がらない
                         if node.isInflectionDerived, node.surface.hasPrefix("帰"), node.reading.hasPrefix("かえ"),
@@ -3227,6 +3236,10 @@ extension KanaKanjiConverter {
                 if let contextBonus = Self.multiClauseBigramPairBonuses[prevSurface + "\t" + alt.surface], contextBonus > 0,
                     Self.multiClauseBigramPairBonuses[prevSurface + "\t" + chosen.surface] == nil {
                     delta = max(1, delta - contextBonus)
+                }
+                // 変種順だけを下げる隣接ペア(の→一。定数コメント参照。2880)
+                if let demotion = Self.multiClauseVariantDemotionPairs[prevSurface + "\t" + alt.surface] {
+                    delta += demotion
                 }
                 // 連語の名詞スパンの表記変種(めど/メド 等、かな識別か seed 掲載)は
                 // 変種枠の主役なので delta 上限を緩和する(2559)
