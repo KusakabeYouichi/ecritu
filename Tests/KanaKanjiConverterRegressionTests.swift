@@ -15435,3 +15435,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 格助詞 に/と の直後の にる 系は 似る(2878、抜き取り検査 10 件)。本動詞の 煮る は
+    // を を取るので巻き込まない
+    func testRegressionNiruResemblesAfterParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("せいどとにていますが", "制度と似ていますが"),
+                ("きこうがぶるごーにゅににている", "気候がブルゴーニュに似ている"),
+                ("やさいをにている", "野菜を煮ている")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
