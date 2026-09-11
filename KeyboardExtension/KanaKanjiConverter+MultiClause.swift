@@ -2375,8 +2375,10 @@ extension KanaKanjiConverter {
                             containsKanji(node.surface),
                             !Self.isNumericContextForHonorific(prevSurface: prevNode.surface, prevReading: prevNode.reading) {
                             if node.surface == "産",
-                                let prevLast = prevNode.surface.last,
-                                KanaKanjiConverter.regionalSuffixCharactersBeforeSan.contains(prevLast) {
+                                Self.isRegionalProduceContext(
+                                    prevSurface: prevNode.surface,
+                                    prevPersonNameKind: personNameKindByNodeKey[prevNode.key]
+                                ) {
                                 cost -= Self.multiClauseRegionalProduceBonus
                             } else {
                                 cost += Self.multiClauseHonorificKanjiPenalty
