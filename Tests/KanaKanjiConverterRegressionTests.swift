@@ -15695,7 +15695,7 @@ extension KanaKanjiConverterRegressionTests {
 
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             for (reading, expected) in [
-                ("はっこうをおこなう", "醗酵を行う"),
+                ("はっこうをおこなう", "醗酵を行なう"),  // 行なう は sacoche 登録の送り仮名(2881)
                 ("はっこうさせる", "醗酵させる"),
                 ("あるこーるはっこう", "アルコール醗酵"),
                 ("こうしのほねつきすねにく", "仔牛の骨付きスネ肉"),
@@ -15764,6 +15764,21 @@ extension KanaKanjiConverterRegressionTests {
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )
             }
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 追加語彙に登録した送り仮名(sacoche の 行なう)は文中でも守る(2881、ユーザ報告)。
+    // 以前は読みが登録読みで始まるときしか守らず、醗酵を行なう が 醗酵を行う の後ろへ動いていた
+    func testRegressionOkuriganaAjoutProtectedMidSentence() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        XCTAssertTrue(converter.store.ajoutVocabulary()["おこなう"]?.contains("行なう") ?? false, "前提: sacoche の 行なう")
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let candidates = converter.multiClauseCandidates(for: "はっこうをおこなう", systemCandidateMode: mode)
+            XCTAssertEqual(candidates.first, "醗酵を行なう", "mode=\(mode.rawValue) \(candidates.prefix(4))")
         }
     }
 }

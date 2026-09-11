@@ -152,20 +152,23 @@ extension KanaKanjiConverter {
         let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
         // 学習済みと追加語彙(手動)の表記はユーザの選択なので設定に関わらず守る。追加語彙の動詞は活用形も
         // 派生される(行なう→行なって)ので、読みと表記の語幹(末尾 1 字を落としたもの)が一致する候補も守る
+        // 連文節の結合結果(醗酵を行なう)では登録語が文中に来るので、読みの接頭一致ではなく
+        // 「読みのどこかに登録読みの語幹が含まれ、候補表層にその語幹が含まれる」で守る(2881、ユーザ報告)。
+        // 以前は読みが登録読みで始まる場合しか守らず、追加語彙の 行なう が本則 行う の後ろへ動かされていた
         var protected = Set(store.learnedDictionary()[normalizedReading] ?? [])
+        var protectedStems: [String] = []
         for (ajoutReading, surfaces) in store.ajoutVocabulary() {
             if ajoutReading == normalizedReading {
                 protected.formUnion(surfaces)
                 continue
             }
-            guard ajoutReading.count >= 3, normalizedReading.hasPrefix(ajoutReading.dropLast()) else { continue }
+            guard ajoutReading.count >= 3, normalizedReading.contains(ajoutReading.dropLast()) else { continue }
             for surface in surfaces where surface.count >= 2 && surface.contains(where: Self.isKanji) {
-                protected.insert("\u{0}" + String(surface.dropLast()))  // 語幹の印(接頭の NUL で区別)
+                protectedStems.append(String(surface.dropLast()))
             }
         }
-        let protectedStems = protected.filter { $0.hasPrefix("\u{0}") }.map { String($0.dropFirst()) }
         func isProtected(_ candidate: String) -> Bool {
-            protected.contains(candidate) || protectedStems.contains(where: { candidate.hasPrefix($0) })
+            protected.contains(candidate) || protectedStems.contains(where: { candidate.contains($0) })
         }
 
         // 許容形 → (本則, グループ)。本則は連鎖(取り扱い→取扱い→取扱)の根へ辿る
