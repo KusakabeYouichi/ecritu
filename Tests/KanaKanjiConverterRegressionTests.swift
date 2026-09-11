@@ -12973,7 +12973,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
     func testRegressionRealLMMashoInflection() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
-        for (reading, expected) in [("かきましょ", "書きましょ"), ("たべましょ", "食べましょ"), ("はっこうしましょ", "発行しましょ")] {
+        for (reading, expected) in [("かきましょ", "書きましょ"), ("たべましょ", "食べましょ"), ("はっこうしましょ", "醗酵しましょ")] {
             let single = converter.candidates(for: reading, limit: 4, systemCandidateMode: .surface)
             XCTAssertEqual(single.first, expected, "\(reading): \(single)")
         }
@@ -15683,6 +15683,37 @@ extension KanaKanjiConverterRegressionTests {
                 bottled.first == "ワインをビン詰めし" || bottled.first == "ワインを瓶詰めし",
                 "mode=\(mode.rawValue) \(bottled.prefix(3))"
             )
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // ユーザ指定の並び(2880): 醗酵>発行(無条件)/ 仔牛>孔子 / 最東部>際東部 / 対処策>対処柵
+    func testRegressionUserPreferences2880() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("はっこうをおこなう", "醗酵を行う"),
+                ("はっこうさせる", "醗酵させる"),
+                ("あるこーるはっこう", "アルコール醗酵"),
+                ("こうしのほねつきすねにく", "仔牛の骨付きスネ肉"),
+                ("くろあちあさいとうぶにあり", "クロアチア最東部にあり"),
+                ("さいせいぶにある", "最西部にある"),
+                ("さいこうのわいん", "最高のワイン"),
+                ("ゆうこうなたいしょさく", "有効な対処策"),
+                ("かいけつさくをさがす", "解決策を探す"),
+                ("ほんごくかえって", "本国帰って"),
+                ("じっかにかえって", "実家に帰って"),
+                ("かつらむきする", "桂剥きする")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
         }
     }
 }
