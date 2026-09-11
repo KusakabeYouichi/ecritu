@@ -564,6 +564,14 @@ extension KanaKanjiConverter {
             || (0xF900...0xFAFF).contains(scalar.value)
     }
 
+    // 漢字だけで構成される表層(漢語の複合判定用)。空文字は false
+    static func isKanjiOnlyString(_ text: String) -> Bool {
+        guard !text.isEmpty else { return false }
+        return text.unicodeScalars.allSatisfy {
+            (0x4E00...0x9FFF).contains($0.value) || (0x3400...0x4DBF).contains($0.value)
+        }
+    }
+
     static func containsKanjiCandidate(_ candidate: String) -> Bool {
         for scalar in candidate.unicodeScalars {
             if (0x3400...0x4DBF).contains(scalar.value)
