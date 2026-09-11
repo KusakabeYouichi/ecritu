@@ -2311,6 +2311,13 @@ extension KanaKanjiConverter {
                             ) || isParticleHeadedRareVerb(node: node) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
+                        // 名詞直後の かえって は 帰って(本国帰って/実家帰って = に を落とした口語。2880、ユーザ報告)。
+                        // 却って の減点だけでは 買えって/飼えって/かな と同点になり 帰って が上がらない
+                        if node.isInflectionDerived, node.surface.hasPrefix("帰"), node.reading.hasPrefix("かえ"),
+                            prevNode.surface != prevNode.reading, containsKanji(prevNode.surface),
+                            !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate {
+                            cost -= Self.multiClauseKaeruAfterNounBonus
+                        }
                         // 名詞直後の副詞漢字(却って。定数コメント参照。2879)
                         if Self.multiClauseAdverbKanjiAfterNounSurfaces.contains(node.surface),
                             prevNode.surface != prevNode.reading,
