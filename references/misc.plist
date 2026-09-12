@@ -371,6 +371,7 @@
 	<dict><key>phrase</key><string>読点</string><key>shortcut</key><string>とうてん</string></dict>	<!-- 読点(とうてん): LM の unigram が 7489 と低く、連文節で 読点キー が 等(4051)+テンキー(6940) に 2100 差で負けていた。文章記号の名前として日常的に使うので curated で 1 ノードを供給する(抜き取り検査 2859) -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>句点</string><key>shortcut</key><string>くてん</string></dict>	<!-- 句点(くてん): 上と対。dict rank2(クテン/区点 の後ろ)、unigram 7884 -->	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>後置き</string><key>shortcut</key><string>あとおき</string></dict>	<!-- 後置き(あとおき): 辞書に丸ごとのエントリが無く単文節は空、連文節は 沖(wc5165)が 置き(7714)より安いため 後沖/後起き になる。未登録の複合語なので curated で供給する -->
+	<dict><key>phrase</key><string>酒類飲料</string><key>shortcut</key><string>しゅるいいんりょう</string></dict>	<!-- 酒類飲料(しゅるいいんりょう): しゅるい は LM で 種類 が圧倒的に安く、酒類飲料概論 が 種類飲料概論 になる(抜き取り検査 21 件、2885)。飲料 と組む しゅるい は 酒類 なので複合語で登録 -->
 
 	<!-- ■ 装飾フィルタからの復活(中黒などで既定候補から外れる実在固有名) -->
 	<dict><key>phrase</key><string>あ・うん</string><key>shortcut</key><string>あうん</string></dict>	<!-- 中黒装飾フィルタで既定候補から外れた実在固有名の復活(映画/ゆうちょ/出版社) -->	<!-- Sudachiにもある -->
