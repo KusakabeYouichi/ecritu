@@ -16014,6 +16014,21 @@ extension KanaKanjiConverterRegressionTests {
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )
             }
+            // 連濁読み(かぶじたて)は vin.plist の登録語で単文節が受ける。〜仕立(て無し)で登録されていて
+            // て付きが候補に出なかった(ユーザ報告 2885)。plist の 9 語を 〜仕立て に是正
+            for (reading, expected) in [
+                ("かぶじたて", "株仕立て"),
+                ("ぼうじたて", "棒仕立て"),
+                ("たなじたて", "棚仕立て"),
+                ("かきねじたて", "垣根仕立て"),
+                ("こるどんしたて", "コルドン仕立て")
+            ] {
+                XCTAssertEqual(
+                    converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
         }
     }
 }
