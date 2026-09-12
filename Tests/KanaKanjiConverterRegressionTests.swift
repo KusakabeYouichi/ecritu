@@ -16761,3 +16761,32 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2890: Wikipedia 偏りの同音語(ユーザ指定): 完了>官僚、人名>人命、故障>呼称、下線>河川、待機>大気、退避>対比、
+    // 格好(かっこ)は抑制。胡椒/主導 は現状維持
+    func testRegressionWikipediaHomophoneDemotions() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("かんりょう", "完了"),
+                ("じんめいのつづり", "人名の綴り"),
+                ("こしょうではありません", "故障ではありません"),
+                ("かせんつき", "下線付き"),
+                ("たいきじょうたい", "待機状態"),
+                ("たいひしたせってい", "退避した設定"),
+                ("かっこ", "括弧"),
+                ("しゅどうでとうろくした", "主導で登録した")
+            ] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                let top = multi.first ?? converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first
+                XCTAssertEqual(top, expected, "mode=\(mode.rawValue) reading=\(reading)")
+            }
+            XCTAssertEqual(converter.candidates(for: "じんめい", limit: 3, systemCandidateMode: mode).first, "人名", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "たいき", limit: 3, systemCandidateMode: mode).first, "待機", "mode=\(mode.rawValue)")
+            XCTAssertFalse(converter.candidates(for: "かっこ", limit: 10, systemCandidateMode: mode).contains("格好"), "mode=\(mode.rawValue)")
+        }
+    }
+}

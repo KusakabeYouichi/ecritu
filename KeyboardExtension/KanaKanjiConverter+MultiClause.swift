@@ -2053,6 +2053,17 @@ extension KanaKanjiConverter {
                 Self.multiClauseKanaOrthodoxReadings.contains(reading) {
                 penalty += Self.multiClauseKanaOrthodoxKanjiPenalty
             }
+            // Wikipedia 偏りの同音語(官僚/呼称/河川/大気/対比/人命)を連文節でだけ後ろへ(定数コメント参照。2890)。
+            // サ変派生(対比した/退避した)は読み・表層とも接頭一致で見る
+            if surface != reading {
+                for (readingKey, demotions) in Self.multiClauseHomophoneDemotionsByReading
+                where reading == readingKey || (isInflectionDerived && reading.hasPrefix(readingKey)) {
+                    for (demotedSurface, demotion) in demotions
+                    where surface == demotedSurface || (isInflectionDerived && surface.hasPrefix(demotedSurface)) {
+                        penalty += demotion
+                    }
+                }
+            }
             // 稀な語幹の活用派生(動じよう)は同点の常用語(同じよう)の後ろに(定数コメント参照。2890)。
             // 格助詞の直後(何事にも動じない)は本来の用法なので触らない
             if isInflectionDerived, !Self.multiClauseCaseParticleSurfaces.contains(prev), prev != "にも" {

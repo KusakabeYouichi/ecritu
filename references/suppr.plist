@@ -5,6 +5,7 @@
 	<!-- 変換抑制の語彙(キーボードが直接読む。アプリの抑制語彙UIには非表示)。『■ 』で始まる行がグループ見出し(直前に空行)。エントリ行の後ろのコメントはその語の個別理由。『※ 』で始まる行は、対応するエントリが今は無い補足メモ。 -->
 
 	<!-- ■ 誤エントリ: 辞書の誤った読み・存在しない表記(学習でも古語でもなく明確な誤り) -->
+	<dict><key>phrase</key><string>格好</string><key>shortcut</key><string>かっこ</string></dict>	<!-- 格好 の読みは かっこう。かっこ(rank0、wc 1930)は俗な短縮で、かっこ→括弧 を 2 位に落としていた(マニュアル検査、ユーザ指定 2890) -->
 	<dict><key>phrase</key><string>帰える</string><key>shortcut</key><string>かえる</string></dict>	<!-- 帰る の誤った送り仮名(告示の本則・許容のどちらにも無い)。活用形(帰えって/帰えります)まで候補を汚す(ユーザ指摘 2820) -->
 	<dict><key>phrase</key><string>重そう</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重そう(じゅうそう): 重そう は おもそう(重い+そう)であり じゅうそう と読む語ではない(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
