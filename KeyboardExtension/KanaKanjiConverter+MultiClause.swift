@@ -615,7 +615,17 @@ extension KanaKanjiConverter {
                     // 稀表記だけが並ぶ(2804)。コストは他の派生と同じ定額で、順位は seed 順の列挙順(タイブレーク)
                     let suppliesKanaForOkuAuxiliary = Self.isOkuAuxiliaryReading(segmentReading)
                         || (KanaKanjiSeedDictionary.seed[segmentReading]?.contains(segmentReading) ?? false)
-                    for (offset, surface) in inflected.enumerated() {
+                    // 関西方言の ている→とる 縮約形(騙しとった/欺しとった/瞞しとった)は標準形の後ろに回してから
+                    // topK を採る。surface モードは 欺す/瞞す の異体が残るため縮約形だけで枠が埋まり、
+                    // 騙し取った が立たなかった(かれをだましとった→彼を騙しとった。2888)。offset は元の並び
+                    // (かな第 1 候補の判定に使う)のまま持ち回す
+                    let inflectedOrdered = inflected.enumerated().sorted { lhs, rhs in
+                        let lhsKansai = lhs.element != segmentReading && Self.isKansaiTeOruContractionSurface(lhs.element)
+                        let rhsKansai = rhs.element != segmentReading && Self.isKansaiTeOruContractionSurface(rhs.element)
+                        if lhsKansai != rhsKansai { return !lhsKansai }
+                        return lhs.offset < rhs.offset
+                    }
+                    for (offset, surface) in inflectedOrdered {
                         if surface == segmentReading, offset != 0, !suppliesKanaForOkuAuxiliary {
                             continue
                         }
@@ -2325,6 +2335,7 @@ extension KanaKanjiConverter {
                             node.isInflectionDerived,
                             !(node.reading.first.map { $0 == "は" || $0 == "も" } ?? false) {
                             cost -= Self.multiClauseBOSParticlePenalty
+                        }
                         }
                         // に/と の直後の かな であっても は 出会っても の場面(定数コメント参照。2818)
                         if node.surface == "であっても", node.reading == "であっても",
