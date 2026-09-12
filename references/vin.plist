@@ -3385,6 +3385,10 @@
 	<dict><key>phrase</key><string>太平洋</string><key>shortcut</key><string>たいへいよう</string></dict>	<!-- Sudachiにもある -->
 
 	<!-- ■ 格付けや分類、ワインのタイプ、区分、種別、種類 -->
+	<dict><key>phrase</key><string>原産地産</string><key>shortcut</key><string>げんさんちさん</string></dict>	<!-- DOC(Denominazione di Origine Controllata)系の訳語。〜地産 の 産 が さん になっていた(抜き取り検査 13 件、2885) -->
+	<dict><key>phrase</key><string>統制保証原産地産</string><key>shortcut</key><string>とうせいほしょうげんさんちさん</string></dict>
+	<dict><key>phrase</key><string>統制保証原産地産伝統的ワイン</string><key>shortcut</key><string>とうせいほしょうげんさんちさんでんとうてきわいん</string></dict>
+	<dict><key>phrase</key><string>統制保証原産地産最上級ワイン</string><key>shortcut</key><string>とうせいほしょうげんさんちさんさいじょうきゅうわいん</string></dict>
 	<dict><key>phrase</key><string>ジャンティ</string><key>shortcut</key><string>じゃんてぃ</string></dict>	<!-- ジャンティ(Gentil): アルザスの品種ブレンド表記。品種名ではなくワインのタイプ -->
 	<dict><key>phrase</key><string>ペアルヴァイン</string><key>shortcut</key><string>ぺあるゔぁいん</string></dict>
 	<dict><key>phrase</key><string>メディエヴァル・デ・オウレン</string><key>shortcut</key><string>めでぃえゔぁるでおうれん</string></dict>
