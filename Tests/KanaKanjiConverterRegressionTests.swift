@@ -16385,3 +16385,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2887: 山羊刺し/ヤギ刺し を ryukyu.plist に登録(やぎさし は ヤギ差し/屋宜さし の合成しか出なかった。ユーザ報告)
+    func testRegressionYagisashiRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                Array(converter.candidates(for: "やぎさし", limit: 5, systemCandidateMode: mode).prefix(2)),
+                ["山羊刺し", "ヤギ刺し"],
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
