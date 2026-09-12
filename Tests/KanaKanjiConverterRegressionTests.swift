@@ -16513,3 +16513,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2889: わかんない/わかんなかった を misc のかな正書に登録(単独で 分かんない が先頭に出ていた。ユーザ指定)。
+    // かわんない は 変わんない のまま
+    func testRegressionWakannaiKeepsKanaLeading() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "わかんない"))
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "わかんなかった"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "かわんない"))
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "わかんない", limit: 3, systemCandidateMode: mode).first, "わかんない", "mode=\(mode.rawValue)")
+        }
+    }
+}
