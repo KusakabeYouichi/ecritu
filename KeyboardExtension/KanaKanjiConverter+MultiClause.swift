@@ -2448,6 +2448,13 @@ extension KanaKanjiConverter {
                                 cost -= bonus
                             }
                         }
+                        // 述語(辞書形/た形)直後の形式名詞 とき(去るときに。定数コメント参照。2887)
+                        if node.reading.hasPrefix("とき"),
+                            node.surface.hasPrefix("とき") || node.surface.hasPrefix("時"),
+                            prevNode.isDictionaryFormPredicate
+                                || (prevNode.isInflectionDerived && prevNode.surface.hasSuffix("た")) {
+                            cost -= Self.multiClauseTokiAfterPredicateBonus
+                        }
                         // 述語の連体修飾を受ける同音名詞の選好(と思う感性。定数コメント参照。2887)
                         if let preferred = Self.multiClausePrenominalVerbNounPreferences[node.reading],
                             node.surface == preferred,

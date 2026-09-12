@@ -16401,3 +16401,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2887: 述語(辞書形/た形)直後の形式名詞 とき(さるときに→猿ときに)。名詞+の は無傷
+    func testRegressionTokiAfterPredicate() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("さるときに", "去るときに"),
+                ("かえったときに", "帰ったときに"),
+                ("さるのしっぽ", "猿の尻尾")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
