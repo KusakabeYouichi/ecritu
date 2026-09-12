@@ -16186,3 +16186,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2885: 文頭の助詞読み 1 字漢字は直後のノードで判定(文字判定は ハイブリッド/東部/長野 の頭文字を助詞と誤認。歯ハイブリッド品種で)。歯を磨く/歯が痛い は無傷
+    func testRegressionParticleKanjiAtHeadByNode() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ははいぶりっどひんしゅで", "はハイブリッド品種で"),
+                ("ははぷすぶるくおうきゅうで", "はハプスブルク王宮で"),
+                ("はをみがく", "歯を磨く")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

@@ -2184,10 +2184,9 @@ extension KanaKanjiConverter {
                         ) - preferredInflectionBonus + substantivePenalty + nodeTanContractionPenalty
                             + sentenceInitialDeParticlePenalty(for: node)
                             + sentenceInitialParticleOverlapPenalty(for: node)
-                        // 助詞の読みを持つ 1 字漢字は文頭では助詞(定数コメント参照。2879)
-                        if Self.isParticleReadingKanjiWithoutNounSupport(
-                            surface: node.surface, reading: node.reading, end: node.end, chars: chars
-                        ) || isParticleHeadedRareVerb(node: node) {
+                        // 助詞頭の稀動詞は文頭では助詞+動詞(定数コメント参照。2879)。助詞読みの 1 字漢字(歯/都)は
+                        // 文字でなく直後のノードで判定するので遷移側(prevNode.start == 0 の分岐)へ移した(2885)
+                        if isParticleHeadedRareVerb(node: node) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
                         // 列挙の といった(定数コメント参照。2878)。文頭は直前が述語になり得ないので無条件
@@ -2413,6 +2412,15 @@ extension KanaKanjiConverter {
                                     cost -= Self.multiClauseQuotativeIuAfterPredicateBonus
                                 }
                             }
+                        }
+                        // 文頭の助詞読み 1 字漢字(歯=は/都=と/煮=に)は、直後がかな助詞ノードのときだけ名詞用法
+                        // (歯を磨く/歯が痛い)。それ以外の後続(ハイブリッド/東部/長野県)なら文頭の助詞だったと見て減点
+                        // (定数コメント参照。2879 の文字判定を置き換え。2885)
+                        if prevNode.start == 0, prevNode.surface.count == 1, prevNode.surface != prevNode.reading,
+                            containsKanji(prevNode.surface),
+                            Self.multiClauseParticleReadingsForClauseHeadGuard.contains(prevNode.reading),
+                            !(node.surface == node.reading && Self.multiClauseParticleFollowerSurfaces.contains(node.surface)) {
+                            cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
                         // 来た(curated)は は/を の直前に立たない(来たは/来たを は非文。北はオーストリア/北をチェコ。2885)
                         if prevNode.surface == "来た", prevNode.reading == "きた", prevNode.isCurated,
