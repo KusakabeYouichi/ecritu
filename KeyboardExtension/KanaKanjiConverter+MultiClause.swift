@@ -2431,6 +2431,13 @@ extension KanaKanjiConverter {
                             !(node.surface == node.reading && Self.multiClauseParticleFollowerSurfaces.contains(node.surface)) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
+                        // 述語の連体修飾を受ける同音名詞の選好(と思う感性。定数コメント参照。2887)
+                        if let preferred = Self.multiClausePrenominalVerbNounPreferences[node.reading],
+                            node.surface == preferred,
+                            prevNode.isDictionaryFormPredicate
+                                || (prevNode.isInflectionDerived && prevNode.surface.hasSuffix("た")) {
+                            cost -= Self.multiClausePrenominalVerbNounBonus
+                        }
                         // 格助詞+いい を丸ごと飲む漢字語(廃位/配位)は体言の直後に立たない(定数コメント参照。2886)
                         if Self.multiClauseParticleIiSwallowingReadings.contains(node.reading),
                             node.surface != node.reading, KanaKanjiConverter.isAllKanjiSurface(node.surface),
