@@ -16053,3 +16053,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2885: あつい は前後の気候語で 暑い に(ユーザ指定。乾燥して厚い気候/夏は厚い気候)。本が厚い は無傷
+    func testRegressionAtsuiClimateContext() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("かんそうしてあついきこう", "乾燥して暑い気候"),
+                ("なつはあついきこうです", "夏は暑い気候です"),
+                ("なつはあつい", "夏は暑い"),
+                ("ほんがあつい", "本が厚い")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
