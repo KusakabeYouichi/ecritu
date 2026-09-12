@@ -34,11 +34,21 @@ def load_readings():
         return json.load(handle)
 
 
+# 支配的読みでも誤る複合語の読み(横画面=よこ+かく+つら と割れる等)。ユーザ確認済みの読みだけ置く(2890)
+MANUAL_READINGS = {
+    "横画面": "よこがめん",
+    "縦画面": "たてがめん",
+    "画面": "がめん",
+}
+
+
 def load_dominant():
     if os.environ.get("ECRITU_CORPUS_DOMINANT") != "1" or not os.path.exists(DOMINANT_PATH):
-        return {}
+        return dict(MANUAL_READINGS)
     with open(DOMINANT_PATH, encoding="utf-8") as handle:
-        return json.load(handle)
+        dominant = json.load(handle)
+    dominant.update(MANUAL_READINGS)
+    return dominant
 
 
 def segment(text, readings, dominant=None):
@@ -61,6 +71,10 @@ def segment(text, readings, dominant=None):
             word = text[index:index + length]
             candidates = readings.get(word)
             if not candidates:
+                # 手動指定の複合語(横画面)は Sudachi の表に無くても最長一致に参加させる
+                if word in MANUAL_READINGS:
+                    matched = (word, MANUAL_READINGS[word])
+                    break
                 continue
 
             hiragana = sorted({c.translate(KATAKANA_TO_HIRAGANA) for c in candidates})
