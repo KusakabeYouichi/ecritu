@@ -16656,3 +16656,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2890: 稀な語幹の活用派生(動じよう)は同点の常用語(同じよう)の後ろ。格助詞直後の 何事にも動じない は無傷
+    func testRegressionRareDerivedStemPenalty() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("どうじようにみえる", "同じように見える"),
+                ("なにごとにもどうじない", "何事にも動じない")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

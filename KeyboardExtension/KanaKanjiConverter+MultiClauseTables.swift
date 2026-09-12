@@ -1841,6 +1841,11 @@ extension KanaKanjiConverter {
     static let multiClauseBigramPrefixPairBonuses: [String: Int] = [
         "ほぼ\t変わ": 2000,
     ]
+    // 稀な語幹の活用派生を同点の常用語より後ろへ(表層接頭 → 加算)。どうじように で 動じよう(動じる 7369)と
+    // 同じよう(同じ 4186)が派生定額で同点になり、文字コード順で 動 が先頭だった(マニュアル検査 2890)
+    static let multiClauseRareDerivedStemPenalties: [String: Int] = [
+        "動じ": 500
+    ]
     // 述語の連体修飾(思う/思った+名詞)を受ける同音名詞の選好(ユーザ報告 2887 とおもうかんせい→と思う完成)。
     // 完成/慣性/管制 のような事象・術語名詞は動詞の連体形に修飾されにくく、感性(〜と思う感性)が自然。
     // 単文節や の/な の後(計画の完成)は動かさない
