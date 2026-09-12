@@ -2053,6 +2053,13 @@ extension KanaKanjiConverter {
                 Self.multiClauseKanaOrthodoxReadings.contains(reading) {
                 penalty += Self.multiClauseKanaOrthodoxKanjiPenalty
             }
+            // 稀な語幹の活用派生(動じよう)は同点の常用語(同じよう)の後ろに(定数コメント参照。2890)。
+            // 格助詞の直後(何事にも動じない)は本来の用法なので触らない
+            if isInflectionDerived, !Self.multiClauseCaseParticleSurfaces.contains(prev), prev != "にも" {
+                for (stem, rareStemPenalty) in Self.multiClauseRareDerivedStemPenalties where surface.hasPrefix(stem) {
+                    penalty += rareStemPenalty
+                }
+            }
             // 関西方言の ている→とる 縮約(騙しとった)は標準形(騙し取った)の後ろに(定数コメント参照。2887)
             if isInflectionDerived, surface != reading, Self.isKansaiTeOruContractionSurface(surface) {
                 penalty += Self.multiClauseKansaiTeOruContractionPenalty
