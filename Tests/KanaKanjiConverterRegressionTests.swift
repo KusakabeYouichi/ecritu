@@ -16423,3 +16423,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2887: ちゅうぶん の並び(中文 先頭。ユーザ指定)+ 中分する のサ変供給(misc、辞書形で登録)
+    func testRegressionChubunOrderAndSuru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "ちゅうぶん", limit: 3, systemCandidateMode: mode).first, "中文", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "ちゅうぶんして", limit: 3, systemCandidateMode: mode).first, "中分して", "mode=\(mode.rawValue)")
+        }
+    }
+}
