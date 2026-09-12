@@ -112,11 +112,14 @@ extension KanaKanjiConverter {
         return result
     }
 
+    // precedingCharacter: 入力欄で読みの直前にある確定済み文字(数字なら文頭の助数詞を持ち上げる。2887)
     func multiClauseCandidates(
         for reading: String,
         systemCandidateMode: KanaKanjiCandidateSourceMode,
-        minReadingCountOverride: Int? = nil
+        minReadingCountOverride: Int? = nil,
+        precedingCharacter: Character? = nil
     ) -> [String] {
+        let digitPrefixed = precedingCharacter.map(Self.isCounterBoostDigit) ?? false
         guard store.hasWordLMMetadata else {
             return []
         }
@@ -2197,7 +2200,10 @@ extension KanaKanjiConverter {
                         if isParticleHeadedRareVerb(node: node) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
-                    }
+                        // 確定済み数字の直後は文頭の助数詞を持ち上げる(2+じしけんが→時試験が。定数コメント参照。2887)
+                        if digitPrefixed, Self.digitBoostCounterSurfaces(for: node.reading)?.contains(node.surface) ?? false {
+                            cost -= Self.multiClauseDigitContextCounterBonus
+                        }
                         // 列挙の といった(定数コメント参照。2878)。文頭は直前が述語になり得ないので無条件
                         if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading) {
                             cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)

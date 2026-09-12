@@ -16313,6 +16313,28 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2887: 確定済み数字の直後は連文節でも文頭の助数詞を持ち上げる(2 確定→じしけんが→時試験が)
+    func testRegressionDigitContextCounterInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("じしけんが", "次試験が"),
+                ("じしけんは", "次試験は"),
+                ("じしけんにうかる", "次試験に受かる")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode, precedingCharacter: "2").first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2887: 五段ら行の口語縮約 らない→んない(変わんない/変わんなかった)。ほぼかわんない は Hobo 側で検査
     func testRegressionGodanRuNnaiContraction() throws {
         try prepareRealLMDictionary()
