@@ -15975,3 +15975,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2884: 香味 の seed 順ボーナスを 2500 に(抜き取り検査 芳醇な香味を形成する→芳醇な子海を形成する)
+    func testRegressionKoumiSeedBonus() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ほうじゅんなこうみをけいせいする", "芳醇な香味を形成する"),
+                ("こうみのばらんす", "香味のバランス")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
