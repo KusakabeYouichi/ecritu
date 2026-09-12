@@ -16017,3 +16017,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2884: 割合の語+占め の の/を跨ぎボーナス(抜き取り検査 半分を占めています→半分を締めています)。ねじを締める は無傷
+    func testRegressionShimeruAfterProportionNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("はんぶんをしめています", "半分を占めています"),
+                ("ねじをしめて", "ねじを締めて")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
