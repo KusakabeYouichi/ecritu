@@ -15952,3 +15952,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2884: 〜市 の辞書語がある span に連用中止(講習し)を立てない + 甲州市 の seed 順(抜き取り検査 山梨県甲州市→山梨県講習し)。位置し/有し は無傷
+    func testRegressionCitySpanSkipsSuruRenyouChushi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("こうしゅうしかつぬまちょうに", "甲州市勝沼町に"),
+                ("やまなしけんこうしゅうし", "山梨県甲州市"),
+                ("とうぶにいちし", "東部に位置し"),
+                ("どじょうをゆうし", "土壌を有し")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
