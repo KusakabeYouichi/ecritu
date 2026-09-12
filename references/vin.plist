@@ -6021,7 +6021,7 @@
 	<dict><key>phrase</key><string>結果枝</string><key>shortcut</key><string>けっかし</string></dict>
 	<dict><key>phrase</key><string>結果母枝</string><key>shortcut</key><string>けっかぼし</string></dict>
 	<dict><key>phrase</key><string>垣根</string><key>shortcut</key><string>かきね</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>垣根仕立</string><key>shortcut</key><string>かきねじたて</string></dict>
+	<dict><key>phrase</key><string>垣根仕立て</string><key>shortcut</key><string>かきねじたて</string></dict>
 	<dict><key>phrase</key><string>垣根方式</string><key>shortcut</key><string>かきねほうしき</string></dict>
 	<dict><key>phrase</key><string>垣根栽培</string><key>shortcut</key><string>かきねさいばい</string></dict>
 	<dict><key>phrase</key><string>Guyot式剪定法</string><key>shortcut</key><string>ぎよしきせんていほう</string></dict>
@@ -6057,12 +6057,12 @@
 	<dict><key>phrase</key><string>Vertical Shoot Position</string><key>shortcut</key><string>ゔぁーてぃかるしゅーとぽじしょん</string></dict>
 	<dict><key>phrase</key><string>Vinha ao alto</string><key>shortcut</key><string>ゔぃーにゃあおあると</string></dict>
 	<dict><key>phrase</key><string>スマート・マイヨルガ</string><key>shortcut</key><string>すまーとまいよるが</string></dict>
-	<dict><key>phrase</key><string>スマート・マイヨルガ仕立</string><key>shortcut</key><string>すまーとまいよるがじたて</string></dict>
+	<dict><key>phrase</key><string>スマート・マイヨルガ仕立て</string><key>shortcut</key><string>すまーとまいよるがじたて</string></dict>
 	<dict><key>phrase</key><string>バスケット型</string><key>shortcut</key><string>ばすけっとがた</string></dict>
 	<dict><key>phrase</key><string>バスケット状</string><key>shortcut</key><string>ばすけっとじょう</string></dict>
-	<dict><key>phrase</key><string>株仕立</string><key>shortcut</key><string>かぶじたて</string></dict>
-	<dict><key>phrase</key><string>棒仕立</string><key>shortcut</key><string>ぼうじたて</string></dict>
-	<dict><key>phrase</key><string>棚仕立</string><key>shortcut</key><string>たなじたて</string></dict>
+	<dict><key>phrase</key><string>株仕立て</string><key>shortcut</key><string>かぶじたて</string></dict>
+	<dict><key>phrase</key><string>棒仕立て</string><key>shortcut</key><string>ぼうじたて</string></dict>
+	<dict><key>phrase</key><string>棚仕立て</string><key>shortcut</key><string>たなじたて</string></dict>
 	<dict><key>phrase</key><string>輪 Cordon</string><key>shortcut</key><string>わこるどん</string></dict>
 	<dict><key>phrase</key><string>コルドン・ロワイヤ</string><key>shortcut</key><string>こるどんろわいや</string></dict>
 	<dict><key>phrase</key><string>Accolage</string><key>shortcut</key><string>あこらーじゅ</string></dict>
@@ -6073,14 +6073,14 @@
 	<dict><key>phrase</key><string>ギヨ・ドゥブル</string><key>shortcut</key><string>ぎよどぅぶる</string></dict>
 	<dict><key>phrase</key><string>グリーン・ハーベスト</string><key>shortcut</key><string>ぐりーんはーべすと</string></dict>
 	<dict><key>phrase</key><string>コルドン</string><key>shortcut</key><string>こるどん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>コルドン仕立</string><key>shortcut</key><string>こるどんしたて</string></dict>
+	<dict><key>phrase</key><string>コルドン仕立て</string><key>shortcut</key><string>こるどんしたて</string></dict>
 	<dict><key>phrase</key><string>ゴブレ</string><key>shortcut</key><string>ごぶれ</string></dict>
-	<dict><key>phrase</key><string>スマートマイヨーガー仕立</string><key>shortcut</key><string>すまーとまいよーがーしたて</string></dict>
+	<dict><key>phrase</key><string>スマートマイヨーガー仕立て</string><key>shortcut</key><string>すまーとまいよーがーしたて</string></dict>
 	<dict><key>phrase</key><string>ハヤシ・スマート・システム</string><key>shortcut</key><string>はやしすまーとしすてむ</string></dict>
 	<dict><key>phrase</key><string>ヘッド・トレーニング</string><key>shortcut</key><string>へっどとれーにんぐ</string></dict>
 	<dict><key>phrase</key><string>ペルゴラ</string><key>shortcut</key><string>ぺるごら</string></dict>
 	<dict><key>phrase</key><string>リラ仕立て</string><key>shortcut</key><string>りらしたて</string></dict>
-	<dict><key>phrase</key><string>改良スマート仕立</string><key>shortcut</key><string>かいりょうすまーとしたて</string></dict>
+	<dict><key>phrase</key><string>改良スマート仕立て</string><key>shortcut</key><string>かいりょうすまーとしたて</string></dict>
 
 	<!-- ■ 醸造技術 -->
 	<dict><key>phrase</key><string>Crush</string><key>shortcut</key><string>くらっしゅ</string></dict>
@@ -8353,7 +8353,7 @@
 	<dict><key>phrase</key><string>山鶉</string><key>shortcut</key><string>やまうずら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>雌山羊</string><key>shortcut</key><string>めすやぎ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>手長エビ</string><key>shortcut</key><string>てながえび</string></dict>
-	<dict><key>phrase</key><string>赤ワインソース仕立</string><key>shortcut</key><string>あかわいんそーすしたて</string></dict>
+	<dict><key>phrase</key><string>赤ワインソース仕立て</string><key>shortcut</key><string>あかわいんそーすしたて</string></dict>
 	<dict><key>phrase</key><string>川マス</string><key>shortcut</key><string>かわます</string></dict>
 	<dict><key>phrase</key><string>鱈</string><key>shortcut</key><string>たら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>鳥類</string><key>shortcut</key><string>ちょうるい</string></dict>	<!-- Sudachiにもある -->
