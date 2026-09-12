@@ -5679,6 +5679,8 @@
 	<dict><key>phrase</key><string>ヤガンナ島</string><key>shortcut</key><string>やがんなしま</string></dict>
 	<dict><key>phrase</key><string>屋宜</string><key>shortcut</key><string>やぎ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>ヤキータマン</string><key>shortcut</key><string>やきーたまん</string></dict>
+	<dict><key>phrase</key><string>山羊刺し</string><key>shortcut</key><string>やぎさし</string></dict>	<!-- やぎさし は ヤギ差し/屋宜さし 等の合成しか出なかった(ユーザ報告 2887)。山羊刺し→ヤギ刺し の順 -->
+	<dict><key>phrase</key><string>ヤギ刺し</string><key>shortcut</key><string>やぎさし</string></dict>
 	<dict><key>phrase</key><string>山羊汁</string><key>shortcut</key><string>やぎじる</string></dict>
 	<dict><key>phrase</key><string>山羊そば</string><key>shortcut</key><string>やぎそば</string></dict>
 	<dict><key>phrase</key><string>屋宜原</string><key>shortcut</key><string>やぎばる</string></dict>	<!-- Sudachiにもある -->
