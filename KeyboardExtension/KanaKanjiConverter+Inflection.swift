@@ -274,8 +274,15 @@ extension KanaKanjiConverter {
                 set.insert(pattern.aForm + tail)
             }
         }
+        set.formUnion(godanRuNnaiContractionSuffixes)
         return set
     }()
+    // 五段ら行の口語縮約 らない→んない(わかんない/変わんない。2887)。稀な動詞の同ゲートに加え、語幹 1 かなの
+    // 動詞(蹴る→蹴んない/刈る→刈んない/遣る→やんない)には組まない: けんない/かんない の候補列に
+    // 蹴んない/刈んない が混ざり、県内/管内 が先頭から落ちた(全網テストで検出)
+    static let godanRuNnaiContractionSuffixes: Set<String> = [
+        "んない", "んなかった", "んなくて", "んなくちゃ", "んなきゃ", "んなければ"
+    ]
 
     // ウ音便の五段う動詞(促音便形 った/って を作らず、うた/うて が正)。
     // 現代語で頻出の 問う/請う/乞う を中心に、辞書に載る同型のみ
@@ -306,6 +313,12 @@ extension KanaKanjiConverter {
 
         if readingStem.isEmpty,
             !Self.emptyStemAllowedBaseReadingSuffixes.contains(rule.baseReadingSuffix) {
+            return ([], Int.max)
+        }
+
+        // らない→んない 縮約は語幹 2 かな以上(定義コメント参照。2887)
+        if rule.baseReadingSuffix == "る", Self.godanRuNnaiContractionSuffixes.contains(rule.readingSuffix),
+            readingStem.count < 2 {
             return ([], Int.max)
         }
 
