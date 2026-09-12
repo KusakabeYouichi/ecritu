@@ -16635,3 +16635,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2890: へんかん は連文節で 変換 を優先(から→返還 の bigram。マニュアル検査 読みから変換→読みから返還)。沖縄返還 は無傷
+    func testRegressionHenkanSeedBonus() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("よみからへんかん", "読みから変換"),
+                ("おきなわへんかん", "沖縄返還")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
