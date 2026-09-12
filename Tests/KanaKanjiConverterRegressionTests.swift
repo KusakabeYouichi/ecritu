@@ -16719,3 +16719,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2890: 他社製/自社製/トグル を misc に登録(他者性キーボード/とグルがオン)
+    func testRegressionMiscTasyaseiToggle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("たしゃせいきーぼーど", "他社製キーボード"),
+                ("とぐるがおんのとき", "トグルがオンのとき")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
