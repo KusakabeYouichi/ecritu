@@ -216,10 +216,14 @@ extension KeyboardViewController {
             // 連文節変換(案1: 自前単語LM): フラグ on の時のみ、連文節候補を上位(先頭候補の次)へ
             // 合流。既存の単文節候補は必ず残し、重複は除外する(退行防止)。
             if Self.isMultiClauseConversionEnabled {
+                // 直前の確定済み文字が数字なら文頭の助数詞を持ち上げる(2 確定→じしけんが→次試験が。2887)。
+                // 単文節側の digitContextCounterBoostedCandidates と同じ文脈判定
+                let precedingCharacter = self?.textDocumentProxy.documentContextBeforeInput?.last
                 var multiClause = autoreleasepool {
                     converter.multiClauseCandidates(
                         for: reading,
-                        systemCandidateMode: systemCandidateMode
+                        systemCandidateMode: systemCandidateMode,
+                        precedingCharacter: precedingCharacter
                     )
                 }
                 // 候補ゼロ救済(2642): 単文節も連文節(4かな以上)も空の短い読み

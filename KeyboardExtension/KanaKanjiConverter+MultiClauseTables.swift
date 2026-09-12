@@ -1774,6 +1774,11 @@ extension KanaKanjiConverter {
         "は", "が", "を", "に", "と", "も", "で", "へ", "の", "や", "か", "ね", "よ", "な",
         "には", "では", "とは", "から", "まで", "より", "でも", "って"
     ]
+    // 確定済み数字の直後(2 を確定して じしけんが)は文頭の助数詞読みを助数詞表(numericCounterSuffixCandidatesByReading 等)
+    // の表層に寄せる(2887、ユーザ報告 2+じしけんが→時試験が)。単文節は提示層の digitContextCounterBoostedCandidates が
+    // 同じ判定で 次 を先頭にするが、連文節は数字を知らず 時(3807)が 次(3982+短span床)に常勝していた。
+    // 文頭 次 8051 vs 時 4307 の差 3744 を覆す幅
+    static let multiClauseDigitContextCounterBonus = 4500
     // 隣接ペアの表層接頭一致ボーナス(prev 完全一致 \t 現ノードの接頭)。活用派生ノード(変わんない/変わらなかった)は
     // 表層が形ごとに違うので multiClauseBigramPairBonuses(完全一致)では拾えない。
     // ほぼ+変わ(ほぼかわんない→ほぼ買わんない。ユーザ報告 2887): 買わん/飼わん/変わん は派生 OOV 定額で同点になり
