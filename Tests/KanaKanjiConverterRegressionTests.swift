@@ -16283,3 +16283,31 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2887: かんせい の単文節の並び(ユーザ指定 完成/歓声/感性/閑静/管制/慣性…。かな かんせい を 2 番手から外す)と、
+    // 述語の連体修飾を受けるときは 感性(とおもうかんせい→と思う完成)。計画の完成/完成した は無傷
+    func testRegressionKanseiOrderAndPrenominal() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                Array(converter.candidates(for: "かんせい", limit: 10, systemCandidateMode: mode).prefix(6)),
+                ["完成", "歓声", "感性", "閑静", "管制", "慣性"],
+                "mode=\(mode.rawValue)"
+            )
+            for (reading, expected) in [
+                ("とおもうかんせい", "と思う感性"),
+                ("けいかくのかんせい", "計画の完成"),
+                ("かんせいした", "完成した")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
