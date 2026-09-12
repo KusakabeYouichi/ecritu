@@ -15907,3 +15907,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2884: かな正書の読みの漢字/カタカナ表層(最も/ブドウ)は bigram も引かない(抜き取り検査 もっとも南に位置する→最も南に、ぶどう栽培→ブドウ栽培)
+    func testRegressionKanaOrthodoxDeniesBigram() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("もっともみなみにいちする", "もっとも南に位置する"),
+                ("にとってもっともけんいある", "にとってもっとも権威ある"),
+                ("ぶどうさいばい", "ぶどう栽培"),
+                ("ぶどうさんちです", "ぶどう産地です")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
