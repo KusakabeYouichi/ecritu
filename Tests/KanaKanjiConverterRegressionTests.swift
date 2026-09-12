@@ -16156,3 +16156,33 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2885: 北/来た(misc curated の 来た が 北 に常勝していた。抜き取り検査 32 件)。急に来たよ/来たから大丈夫 は無傷
+    func testRegressionKitaVersusCuratedKita() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("きたはおーすとりあ", "北はオーストリア"),
+                ("きたをちぇこ", "北をチェコ"),
+                ("そのきた", "その北"),
+                ("べーずのきた", "ベーズの北"),
+                ("きたからみなみへ", "北から南へ"),
+                ("きたとひがし", "北と東"),
+                ("きたからじゅんに", "北から順に"),
+                ("きゅうにきたよ", "急に来たよ"),
+                ("きたからだいじょうぶ", "来たから大丈夫")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            // 北半球 は辞書 1 語(単文節が受ける)
+            XCTAssertEqual(converter.candidates(for: "きたはんきゅう", limit: 3, systemCandidateMode: mode).first, "北半球", "mode=\(mode.rawValue)")
+        }
+    }
+}
