@@ -16464,3 +16464,29 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2888: 文頭の裸の格助詞+漢字 2 字以上の派生述語(に指定されています)は跨ぎ減点も払い戻す。
+    // もうまく→網膜(2819)/がでないのだけど(2818)は無傷
+    func testRegressionBOSParticleBeforeKanjiPredicate() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("にしていされています", "に指定されています"),
+                ("にしていされた", "に指定された"),
+                ("にせっていした", "に設定した"),
+                ("がでないのだけど", "が出ないのだけど")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            // もうまく は 1 語(単文節が受ける)。も+うまく(かな派生)は払い戻し対象外
+            XCTAssertEqual(converter.candidates(for: "もうまく", limit: 3, systemCandidateMode: mode).first, "網膜", "mode=\(mode.rawValue)")
+        }
+    }
+}
