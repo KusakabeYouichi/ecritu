@@ -16740,3 +16740,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2890: を/が+更新(をこうしんした→を香信した)。単文節の こうしん は seed どおり 香信 先頭
+    func testRegressionKoushinAfterParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("をこうしんしたちょくご", "を更新した直後")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            XCTAssertEqual(converter.candidates(for: "こうしん", limit: 3, systemCandidateMode: mode).first, "香信", "mode=\(mode.rawValue)")
+        }
+    }
+}
