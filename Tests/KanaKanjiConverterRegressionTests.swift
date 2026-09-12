@@ -16126,3 +16126,33 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2885: 原産地産 系(DOC 訳語)を vin.plist に登録(抜き取り検査 原産地さん 13 件)
+    func testRegressionGensanchisanRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("とうせいほしょうげんさんちさんさいじょうきゅうわいん", "統制保証原産地産最上級ワイン")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            for (reading, expected) in [
+                ("げんさんちさん", "原産地産"),
+                ("とうせいほしょうげんさんちさん", "統制保証原産地産")
+            ] {
+                XCTAssertEqual(
+                    converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
