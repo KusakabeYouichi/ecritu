@@ -16076,3 +16076,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2885: コスト・費用の語+抑える(ユーザ指定。コストを押さえた)。手を押さえた は無傷
+    func testRegressionOsaeruAfterCostNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("こすとをおさえた", "コストを抑えた"),
+                ("ひようをおさえる", "費用を抑える")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
