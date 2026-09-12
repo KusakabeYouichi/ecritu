@@ -259,6 +259,9 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>他社製</string><key>shortcut</key><string>たしゃせい</string></dict>	<!-- 他社製/自社製: 辞書に丸ごとのエントリが無く、他社+製(1 字床 7346)が収穫語 他者性(11735) の 1 ノードに負ける(たしゃせいきーぼーど→他者性キーボード。マニュアル検査 2890) -->
+	<dict><key>phrase</key><string>自社製</string><key>shortcut</key><string>じしゃせい</string></dict>
+	<dict><key>phrase</key><string>トグル</string><key>shortcut</key><string>とぐる</string></dict>	<!-- トグル(UI 用語): Sudachi に有り(wc 2148)だが LM 未収録で dictUnknown+カタカナ化減点(11700)になり、と+グル(8292)に負けて とぐるがおん→とグルがオン になっていた(マニュアル検査 2890) -->
 	<dict><key>phrase</key><string>水平対向</string><key>shortcut</key><string>すいへいたいこう</string><key>pos</key><string>名詞</string></dict>	<!-- 水平対向エンジン の固定複合。辞書は 水平/対向 が別で、対向 は たいこう の rank 7(対抗 0)かつ LM 7079、水平→対向 の bigram も無く 対抗/太閤/体腔 に負けていた(ユーザ報告 2810) -->
 	<dict><key>phrase</key><string>フィグ</string><key>shortcut</key><string>ふぃぐ</string><key>pos</key><string>名詞</string></dict>	<!-- figue(いちじく)の片仮名。Sudachi 未収録(ユーザ指定 2814) -->
 	<dict><key>phrase</key><string>銀だこ</string><key>shortcut</key><string>ぎんだこ</string><key>pos</key><string>名詞</string></dict>	<!-- たこ焼きチェーン(築地銀だこ)。Sudachi 未収録(ユーザ指定 2826) -->
