@@ -16,6 +16,9 @@ import re
 import sys
 
 READINGS_PATH = os.path.join(os.path.dirname(__file__), "..", "tmp", "sudachi_readings_by_surface.json")
+# 読みが複数ある語でも、word_costs で最安の読みが 2 位を大きく引き離すもの(行く=いく 等)は
+# その読みを採る。環境変数 ECRITU_CORPUS_DOMINANT=1 のときだけ(検査の網を広げる。2883)
+DOMINANT_PATH = os.path.join(os.path.dirname(__file__), "..", "tmp", "dominant_readings_by_surface.json")
 KATAKANA_TO_HIRAGANA = str.maketrans({chr(c): chr(c - 0x60) for c in range(0x30A1, 0x30F7)})
 KANA_RE = re.compile(r"[ぁ-ゖー]")
 KANA_ONLY_RE = re.compile(r"[ぁ-ゖー]+\Z")
@@ -31,8 +34,16 @@ def load_readings():
         return json.load(handle)
 
 
-def segment(text, readings):
+def load_dominant():
+    if os.environ.get("ECRITU_CORPUS_DOMINANT") != "1" or not os.path.exists(DOMINANT_PATH):
+        return {}
+    with open(DOMINANT_PATH, encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def segment(text, readings, dominant=None):
     """最長一致で区切る。読みが 1 つに定まらない語や未知語があれば None"""
+    dominant = dominant or {}
     segments = []
     index = 0
 
@@ -55,6 +66,8 @@ def segment(text, readings):
             hiragana = sorted({c.translate(KATAKANA_TO_HIRAGANA) for c in candidates})
             if len(hiragana) == 1 and KANA_ONLY_RE.match(hiragana[0]):
                 matched = (word, hiragana[0])
+            elif word in dominant and KANA_ONLY_RE.match(dominant[word]):
+                matched = (word, dominant[word])
             break
 
         if matched is None:
@@ -68,6 +81,7 @@ def segment(text, readings):
 
 def main():
     readings = load_readings()
+    dominant = load_dominant()
     seen = set()
 
     for chunk in SENTENCE_SPLIT_RE.split(sys.stdin.read()):
@@ -75,7 +89,7 @@ def main():
         if not (2 <= len(chunk) <= 24) or UNSUPPORTED_RE.search(chunk):
             continue
 
-        segments = segment(chunk, readings)
+        segments = segment(chunk, readings, dominant)
         if segments is None:
             continue
 
