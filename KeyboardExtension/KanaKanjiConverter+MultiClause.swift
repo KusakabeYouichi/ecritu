@@ -1192,7 +1192,14 @@ extension KanaKanjiConverter {
                 .contains(reading) ?? false)
                 && !(surface == "化" && prev.count >= 2
                     && (Self.isKatakanaString(prev) || Self.isKanjiOnlyString(prev)))
+            // かな正書の読みの漢字/カタカナ表層(最も/ブドウ)は bigram も引かない: 減点 1500 は
+            // 最も→南 3767 や ブドウ→栽培 1462 の観測 bigram に覆され、もっとも南に位置する→最も南に、
+            // ぶどう栽培→ブドウ栽培 になっていた(2884、抜き取り検査 37+65 件)。かな側と同じ
+            // unigram+バックオフで評価して減点だけで並びを決める。出側は DP ループ側で同じ判定
+            let orthodoxDeniesBorrow = surface != reading && !isCurated
+                && Self.multiClauseKanaOrthodoxReadings.contains(reading)
             let deniesBigramBorrow = surfaceDeniesBorrow || prevDeniesOutgoingBigram || crossReadingBigramDenied
+                || orthodoxDeniesBorrow
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
             // キーボードの断片入力(文中から打ち始めることが多い)と系統的に食い違い、
             // かくのが→各のが(BOS→各 3715 ≪ BOS→書く 6265)のような歪みを生むため、
@@ -2198,8 +2205,11 @@ extension KanaKanjiConverter {
                         if let head = node.boundHeadSurface, prevNode.surface != head {
                             continue
                         }
-                        let prevDeniesOutgoingBigram = Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
-                            .contains(prevNode.reading) ?? false
+                        let prevDeniesOutgoingBigram = (Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
+                            .contains(prevNode.reading) ?? false)
+                            // かな正書の読みの漢字/カタカナ表層(最も/ブドウ)は出側の bigram も引かない(transitionCost 側のコメント参照。2884)
+                            || (prevNode.surface != prevNode.reading && !prevNode.isCurated
+                                && Self.multiClauseKanaOrthodoxReadings.contains(prevNode.reading))
                         var cost = prevCost + transitionCost(
                             prev: prevNode.surface,
                             prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),
