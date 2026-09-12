@@ -113,6 +113,8 @@
 	<dict><key>phrase</key><string>売ってしまう</string><key>shortcut</key><string>うってしまう</string></dict>
 
 	<!-- ■ かな正書の語・句(かな識別 curated。漢字化・カタカナ化・全かなエコー抑制から守る) -->
+	<dict><key>phrase</key><string>わかんない</string><key>shortcut</key><string>わかんない</string></dict>	<!-- わかんない/わかんなかった: らない→んない 縮約(2887)で 分かんない が組めるようになり、単独では 分かんない が先頭に出た。口語縮約はかなが正書(ユーザ指定 2889) -->
+	<dict><key>phrase</key><string>わかんなかった</string><key>shortcut</key><string>わかんなかった</string></dict>
 	<dict><key>phrase</key><string>べき</string><key>shortcut</key><string>べき</string></dict>	<!-- 当為の助動詞。辞書は 冪0/ベキ1/べき2 で連文節にかなが供給されず ふむべき→府務冪 になっていた(ユーザ報告 2798) -->
 	<dict><key>phrase</key><string>べし</string><key>shortcut</key><string>べし</string></dict>
 	<dict><key>phrase</key><string>べく</string><key>shortcut</key><string>べく</string></dict>
