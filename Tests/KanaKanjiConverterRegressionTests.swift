@@ -16572,3 +16572,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2889: 身体の語+押さえる(てをおさえた→手を抑えた。ユーザ指定)。コストを抑えた は無傷
+    func testRegressionOsaeruAfterBodyPart() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("てをおさえた", "手を押さえた"),
+                ("くちをおさえて", "口を押さえて"),
+                ("こすとをおさえた", "コストを抑えた")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
