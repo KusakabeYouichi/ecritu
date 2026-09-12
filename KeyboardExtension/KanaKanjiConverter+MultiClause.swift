@@ -2335,7 +2335,15 @@ extension KanaKanjiConverter {
                             node.isInflectionDerived,
                             !(node.reading.first.map { $0 == "は" || $0 == "も" } ?? false) {
                             cost -= Self.multiClauseBOSParticlePenalty
-                        }
+                            // 文頭助詞の跨ぎ減点(3500。網膜=もうまく 対策)も、直後が漢字 2 字以上で始まる派生述語
+                            // (指定され/設定した)なら払い戻す。にしていされています が にして(curated 1500)+医されています に
+                            // 負けていた(抜き取り検査 6 件、2888)。うまく(かな)/出ない(1 字)は対象外で 網膜 は無傷
+                            if hasScriptedDictWordFromStart,
+                                Self.multiClauseBOSPenalizedParticles.contains(prevNode.surface),
+                                node.surface.count >= 2,
+                                node.surface.prefix(2).allSatisfy({ containsKanji(String($0)) }) {
+                                cost -= Self.multiClauseSentenceInitialParticleOverlapPenalty
+                            }
                         }
                         // に/と の直後の かな であっても は 出会っても の場面(定数コメント参照。2818)
                         if node.surface == "であっても", node.reading == "であっても",
