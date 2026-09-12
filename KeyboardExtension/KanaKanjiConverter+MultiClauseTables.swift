@@ -1698,6 +1698,10 @@ extension KanaKanjiConverter {
         // なるのか→成るのか になっていた。鐘が鳴る は が→鳴る bigram(4741 < なる 5110)で保たれる
         // (ユーザ報告 2673)
         "なる",
+        // ほぼ(副詞、かな正書): LM は ほぼ 4604 ≪ 保母 7406 なのに、かな識別の短span床(wc 9044)で
+        // 保母(7400)より重くなり ほぼかわらない→保母変わらない、ほぼかわんない→保母買わんない に
+        // なっていた(ユーザ報告 2887)
+        "ほぼ",
     ]
     static let multiClausePassthroughPerCharCost = 7000 // 未変換かな 1文字あたり(点1: 余りを強く減点)
     static let multiClauseKatakanaNativeCost = 3000 // native 読みなのにカタカナ実体(何でもカタカナ化の抑止)

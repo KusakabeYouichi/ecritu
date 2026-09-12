@@ -16261,3 +16261,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2887: ほぼ(副詞)のかな識別床免除(ほぼかわらない→保母変わらない)。ほぼ同じ も
+    func testRegressionHoboKanaIdentityFloorExempt() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ほぼかわんない", "ほぼ変わんない"),
+                ("ほぼかわらない", "ほぼ変わらない"),
+                ("ほぼおなじ", "ほぼ同じ")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

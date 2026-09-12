@@ -2197,6 +2197,7 @@ extension KanaKanjiConverter {
                         if isParticleHeadedRareVerb(node: node) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
+                    }
                         // 列挙の といった(定数コメント参照。2878)。文頭は直前が述語になり得ないので無条件
                         if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading) {
                             cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)
