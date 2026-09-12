@@ -16436,3 +16436,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2888: surface モードでも 騙し取った の 1 ノードが立つ(関西縮約形を topK の後ろへ回す)。方言形は候補に残す
+    func testRegressionKansaiContractionSupplyOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let candidates = converter.multiClauseCandidates(for: "かれをだましとった", systemCandidateMode: mode)
+            XCTAssertEqual(candidates.first, "彼を騙し取った", "mode=\(mode.rawValue) \(candidates)")
+            XCTAssertTrue(candidates.contains("彼を騙しとった"), "mode=\(mode.rawValue) \(candidates)")
+        }
+    }
+}
