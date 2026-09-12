@@ -1127,6 +1127,20 @@ extension KanaKanjiConverter {
                     pattern.aForm + "んかったら"
                 ])
             }
+            // 五段ら行の口語縮約「らない→んない」(わからない→わかんない、変わらない→変わんない、
+            // つまらない→つまんない、やらない→やんない)。無いと かわんない が 買わん+ない の
+            // 2 ノードにしか組めず 保母買わんない/ほぼ買わんない になる(ユーザ報告 2887)。
+            // ら行だけの縮約なので pattern.aForm(ら)を ん に置き換えた形を足す
+            if pattern.inflectionClass == InflectionClass.godanRu {
+                suffixes.append(contentsOf: [
+                    "んない",
+                    "んなかった",
+                    "んなくて",
+                    "んなくちゃ",
+                    "んなきゃ",
+                    "んなければ"
+                ])
+            }
 
             suffixes.append(contentsOf: KanaKanjiConverter.taRiSuruInflectionSuffixes(for: pattern.taForm))
             suffixes.append(contentsOf: KanaKanjiConverter.taiGaruInflectionSuffixes(for: pattern.iForm))

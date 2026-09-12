@@ -2431,6 +2431,13 @@ extension KanaKanjiConverter {
                             !(node.surface == node.reading && Self.multiClauseParticleFollowerSurfaces.contains(node.surface)) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
+                        // 隣接ペアの表層接頭一致ボーナス(ほぼ+変わ。定数コメント参照。2887)
+                        for (key, bonus) in Self.multiClauseBigramPrefixPairBonuses {
+                            let parts = key.split(separator: "\t", maxSplits: 1)
+                            if parts.count == 2, prevNode.surface == parts[0], node.surface.hasPrefix(parts[1]) {
+                                cost -= bonus
+                            }
+                        }
                         // 述語の連体修飾を受ける同音名詞の選好(と思う感性。定数コメント参照。2887)
                         if let preferred = Self.multiClausePrenominalVerbNounPreferences[node.reading],
                             node.surface == preferred,

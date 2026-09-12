@@ -16311,3 +16311,29 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2887: 五段ら行の口語縮約 らない→んない(変わんない/変わんなかった)。ほぼかわんない は Hobo 側で検査
+    func testRegressionGodanRuNnaiContraction() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            // 単文節(1 語扱い): かな識別の次に 変わんない が立つ(縮約が組めるようになった証拠)
+            for (reading, expected) in [
+                ("かわんない", "変わんない"),
+                ("かわんなかった", "変わんなかった")
+            ] {
+                XCTAssertTrue(
+                    converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).contains(expected),
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "なにもかわんないよ", systemCandidateMode: mode).first,
+                "何も変わんないよ",
+                "mode=\(mode.rawValue)"
+            )
+        }
+    }
+}
