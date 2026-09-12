@@ -16450,3 +16450,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2888: かわんない 単独でも 変わんない を先頭に(seed。わかんない はかなのまま)
+    func testRegressionKawannaiSeed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "かわんない", limit: 3, systemCandidateMode: mode).first, "変わんない", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "かわんなかった", limit: 3, systemCandidateMode: mode).first, "変わんなかった", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "わかんない", limit: 3, systemCandidateMode: mode).first, "わかんない", "mode=\(mode.rawValue)")
+        }
+    }
+}
