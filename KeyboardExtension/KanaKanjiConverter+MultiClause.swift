@@ -794,7 +794,11 @@ extension KanaKanjiConverter {
                 //       (2878、抜き取り検査 40 件)。同じ start の 1 字短いスパン(=名詞)の
                 //       ノードから作るので、サ変名詞の読みが 2 字以上のときだけ立つ
                 //       (1 字の 化(か)から 化し を作ると 本を貸した→本を化した になる)
-                if len >= 3, segmentReading.hasSuffix("し") {
+                // 同じ span に 〜市 の辞書語(甲州市/広州市)があるときは立てない: 派生 OOV 定額(7200)が
+                // 収穫コストの市名(甲州市 7489)を常に下回り、山梨県甲州市→山梨県講習し になる
+                // (2884、抜き取り検査)。位置し/有し/瓶詰めし の span に市名は無いので無傷
+                if len >= 3, segmentReading.hasSuffix("し"),
+                    !surfaces.contains(where: { $0.isDictWord && !$0.isInflectionDerived && $0.surface.hasSuffix("市") }) {
                     let nounReading = String(chars[start..<(end - 1)])
                     let dictionaryFormReading = nounReading + "する"
                     // 辞書形 〜する が misc/追加語彙で明示登録されているか(有する/瓶詰めする)。
