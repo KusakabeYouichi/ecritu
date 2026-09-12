@@ -16614,3 +16614,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2890: えいじ は 英字 先頭(seed+連文節ボーナス。マニュアル検査 英字の入力→エイジの入力 12 件)
+    func testRegressionEijiSeed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("えいじのにゅうりょく", "英字の入力")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            XCTAssertEqual(converter.candidates(for: "えいじ", limit: 3, systemCandidateMode: mode).first, "英字", "mode=\(mode.rawValue)")
+        }
+    }
+}
