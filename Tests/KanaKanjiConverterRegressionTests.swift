@@ -16490,3 +16490,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2888: 名詞直後の なんか/なんて は副助詞(ほぞんなんかしてない→保存南下してない。ユーザ報告)。助詞の後の 南下 は無傷
+    func testRegressionNankaAfterNounIsAdverbial() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ほぞんなんかしてない", "保存なんかしてない"),
+                ("ほぞんなんか", "保存なんか"),
+                ("ぐんはなんかした", "軍は南下した"),
+                ("かおなんかいもみたい", "顔何回も見たい")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

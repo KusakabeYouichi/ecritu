@@ -1104,7 +1104,15 @@ extension KanaKanjiConverter {
     static let multiClauseSeedInflectionDerivedReadings: Set<String> = ["しすぎ"]
     // 接続助詞 なら の直後も述語が続くのが自然(あるならさせて/行くなら教えて)。格助詞と同じ活用割引の対象にする。
     // 無いと ある+なら+させて(7200)が ある+鳴らさせて(派生床 7200 の 1 ノード)に負ける(ユーザ報告 2823)
-    static let multiClauseInflectionDiscountConjunctiveParticles: Set<String> = ["なら"]
+    // 副助詞 なんか/なんて の直後も述語が自然(保存なんかしてない/仕事なんてしない。2888)
+    static let multiClauseInflectionDiscountConjunctiveParticles: Set<String> = ["なら", "なんか", "なんて"]
+    // 名詞の直後の なんか/なんて は副助詞(保存なんかしてない→保存南下してない。ユーザ報告 2888)。
+    // LM は 南下 6054 < なんか 6450 で、名詞+名詞の 保存南下 や 1 ノードのサ変派生 南下してない(定額 7200)が
+    // かな+してない を常に下回る。かな以外の表層(南下/軟化/何か)を減点し、かなに加点する。
+    // 助詞・述語の直後(軍は南下して)は対象外
+    static let multiClauseNankaAdverbialReadings: Set<String> = ["なんか", "なんて"]
+    static let multiClauseNankaKanjiAfterNounPenalty = 3500
+    static let multiClauseNankaKanaAfterNounBonus = 2000
     // 文頭の接続詞 でも/では(かな)。Sudachi が で+も に分割するため LM unigram が無く、文頭では複合助詞クランプも
     // 掛からず素通り(7000/字)になり、でもふらんす が デモフランス になっていた。デモ(5547、BOS→デモ 5827)を
     // 下回る水準に置く(ユーザ報告 2823)

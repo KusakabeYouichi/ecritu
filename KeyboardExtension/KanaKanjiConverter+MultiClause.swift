@@ -2467,6 +2467,19 @@ extension KanaKanjiConverter {
                                 cost -= bonus
                             }
                         }
+                        // 名詞直後の なんか/なんて は副助詞(保存なんかしてない。定数コメント参照。2888)
+                        if prevNode.surface != prevNode.reading, containsKanji(prevNode.surface),
+                            !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
+                            let nankaReading = Self.multiClauseNankaAdverbialReadings.first(where: { node.reading.hasPrefix($0) }) {
+                            // 読みが なんか/なんて そのもの(なんか/南下/軟化)か、そのサ変派生(南下してない)だけ。
+                            // なんかい(何回)のような別語は対象外(全網テストで 顔何回も見たい が崩れた)
+                            if node.reading == nankaReading, node.surface == node.reading {
+                                cost -= Self.multiClauseNankaKanaAfterNounBonus
+                            } else if node.reading == nankaReading || node.isInflectionDerived,
+                                !node.surface.hasPrefix(nankaReading) {
+                                cost += Self.multiClauseNankaKanjiAfterNounPenalty
+                            }
+                        }
                         // 述語(辞書形/た形)直後の形式名詞 とき(去るときに。定数コメント参照。2887)
                         if node.reading.hasPrefix("とき"),
                             node.surface.hasPrefix("とき") || node.surface.hasPrefix("時"),
