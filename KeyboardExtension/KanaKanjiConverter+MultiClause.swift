@@ -1344,7 +1344,11 @@ extension KanaKanjiConverter {
                     !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
                     base = max(base, wordCost)
                 }
-            } else if isInflectionDerived {
+            } else if isInflectionDerived
+                // する の否定かな形(しない 等)は (b) word_costs の かな識別(wc 9493、LM 未収録)として立ち、活用派生の
+                // 合流が無いと dictUnknown(8700)になる。かな正書の述語なので派生と同じ価格付けにする
+                // (しごとなんてしない→仕事なんて市内。定数コメント参照。2889)
+                || (surface == reading && Self.multiClauseKanaSuruNegativeIdentities.contains(surface)) {
                 // 格助詞・複合助詞(には/では 等)の直後は述語が続くのが自然なので割引する。
                 let prevAllowsInflectionDiscount =
                     Self.multiClauseCaseParticleSurfaces.contains(prev)

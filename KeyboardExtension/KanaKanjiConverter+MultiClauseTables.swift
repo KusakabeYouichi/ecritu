@@ -1104,6 +1104,11 @@ extension KanaKanjiConverter {
     static let multiClauseSeedInflectionDerivedReadings: Set<String> = ["しすぎ"]
     // 接続助詞 なら の直後も述語が続くのが自然(あるならさせて/行くなら教えて)。格助詞と同じ活用割引の対象にする。
     // 無いと ある+なら+させて(7200)が ある+鳴らさせて(派生床 7200 の 1 ノード)に負ける(ユーザ報告 2823)
+    // する の否定かな形。word_costs の かな識別(しない 9493)が先着して活用派生(b2)の合流を阻むと
+    // dictUnknown(8700)になる(適用箇所のコメント参照。2889)
+    static let multiClauseKanaSuruNegativeIdentities: Set<String> = [
+        "しない", "しなかった", "しなくて", "しなきゃ", "しなければ", "しません", "しないで", "しなくちゃ"
+    ]
     // 副助詞 なんか/なんて の直後も述語が自然(保存なんかしてない/仕事なんてしない。2888)
     static let multiClauseInflectionDiscountConjunctiveParticles: Set<String> = ["なら", "なんか", "なんて"]
     // 名詞の直後の なんか/なんて は副助詞(保存なんかしてない→保存南下してない。ユーザ報告 2888)。
