@@ -16233,3 +16233,31 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2886: 収穫コストの 4 かな市名(堺市 11165)が 稀な動詞の 連用形+に(境しに、定額 7200)に負けていた
+    // (ユーザ報告 さかいしにある→境しにある)。漢字地名は収穫床の免除を読み 4 字から認め、地名の直後には 連用形+に を立てない。
+    // 食べに行く/飲みに来る/千島を先に は無傷
+    func testRegressionCityNameBeatsRenyouNi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("さかいしにある", "堺市にある"),
+                ("さかいしにあるぐらいの", "堺市にあるぐらいの"),
+                ("さかいしに", "堺市に"),
+                ("あげおしにいく", "上尾市に行く"),
+                ("たべにいく", "食べに行く"),
+                ("のみにくる", "飲みに来る"),
+                ("ちしまをさきに", "千島を先に")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
