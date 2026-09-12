@@ -2414,6 +2414,17 @@ extension KanaKanjiConverter {
                                 }
                             }
                         }
+                        // 来た(curated)は は/を の直前に立たない(来たは/来たを は非文。北はオーストリア/北をチェコ。2885)
+                        if prevNode.surface == "来た", prevNode.reading == "きた", prevNode.isCurated,
+                            node.surface == node.reading, node.surface == "は" || node.surface == "を" {
+                            cost += Self.multiClauseKitaCuratedNonPredicatePenalty
+                        }
+                        // の+来た で文が終わることもない(その北/ベーズの北。連体の の来た は後続の名詞が要る。2885)。
+                        // 直前は読みで見る(その が 其 に逃げて 其来た になる)
+                        if node.surface == "来た", node.reading == "きた", node.isCurated, node.end == n,
+                            prevNode.reading.hasSuffix("の") {
+                            cost += Self.multiClauseKitaCuratedNonPredicatePenalty
+                        }
                         // 名詞直後の かえって は 帰って(本国帰って/実家帰って = に を落とした口語。2880、ユーザ報告)。
                         // 却って の減点だけでは 買えって/飼えって/かな と同点になり 帰って が上がらない
                         if node.isInflectionDerived, node.surface.hasPrefix("帰"), node.reading.hasPrefix("かえ"),
