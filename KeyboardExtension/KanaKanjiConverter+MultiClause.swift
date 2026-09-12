@@ -2422,6 +2422,12 @@ extension KanaKanjiConverter {
                             !(node.surface == node.reading && Self.multiClauseParticleFollowerSurfaces.contains(node.surface)) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
+                        // 格助詞+いい を丸ごと飲む漢字語(廃位/配位)は体言の直後に立たない(定数コメント参照。2886)
+                        if Self.multiClauseParticleIiSwallowingReadings.contains(node.reading),
+                            node.surface != node.reading, KanaKanjiConverter.isAllKanjiSurface(node.surface),
+                            prevNode.surface != prevNode.reading, !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate {
+                            cost += Self.multiClauseParticleIiSwallowingPenalty
+                        }
                         // 来た(curated)は は/を の直前に立たない(来たは/来たを は非文。北はオーストリア/北をチェコ。2885)
                         if prevNode.surface == "来た", prevNode.reading == "きた", prevNode.isCurated,
                             node.surface == node.reading, node.surface == "は" || node.surface == "を" {

@@ -16208,3 +16208,28 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2886: 格助詞+いい を丸ごと飲む漢字語(はいい=廃位)は体言の直後に立たない(ユーザ報告 わしょくはいいなー→和食廃位なー)。
+    // 助詞の後の 王の廃位 は無傷
+    func testRegressionParticleIiSwallowingKanjiAfterNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("わしょくはいいなー", "和食はいいなー"),
+                ("わしょくはいいな", "和食はいいな"),
+                ("わしょくはいいねー", "和食はいいねー"),
+                ("てんきがいいなー", "天気がいいなー"),
+                ("おうのはいい", "王の廃位")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
