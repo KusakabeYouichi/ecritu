@@ -225,6 +225,8 @@ final class KanaKanjiConverter {
         static let bfsPostfix = 1040            // postfix(BFS完全探索)
         static let nounKanjiAffix = 1000        // 名詞+漢字接辞(課/可/別 等)
         static let inflection = 980             // 活用形派生
+        // 関西方言の ている→とる 縮約形(騙しとった)を同経路の標準形(騙し取った)より後ろへ下げる幅(2887)
+        static let kansaiContractionDemotion = 60
         static let adjectiveGaru = 970          // ガル形派生
         // 歴史的経緯: 数詞複合はブースト値(360)を基礎点として流用してきた。
         // 辞書語より大きく下に置く意図はそのまま名前だけ明示する。
@@ -478,6 +480,11 @@ final class KanaKanjiConverter {
             limit: limit * 3
         )
         addCandidates(inflectionDerivedCandidates, baseScore: CandidateScore.inflection, to: &scores)
+        // 関西方言の ている→とる 縮約(騙しとった)は標準形の複合(騙し取った)の後ろに(ユーザ報告 2887)。
+        // 連文節側の multiClauseKansaiTeOruContractionPenalty と同じ判定
+        for candidate in inflectionDerivedCandidates where Self.isKansaiTeOruContractionSurface(candidate) {
+            scores[candidate, default: 0] -= CandidateScore.kansaiContractionDemotion
+        }
 
         addCandidates(
             adjectiveGaruCandidates(

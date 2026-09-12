@@ -1779,6 +1779,22 @@ extension KanaKanjiConverter {
     // 同じ判定で 次 を先頭にするが、連文節は数字を知らず 時(3807)が 次(3982+短span床)に常勝していた。
     // 文頭 次 8051 vs 時 4307 の差 3744 を覆す幅
     static let multiClauseDigitContextCounterBonus = 4500
+    // 関西方言の ている→とる 縮約(騙して→騙しとった)は活用派生の定額で標準形の複合(騙し取った)と同点になり、
+    // 文字コード順(かな と < 漢字 取)で先頭に出ていた(ユーザ報告 2887 だましとった)。方言形は標準形の後ろに置く。
+    // 連用形のかな+とる系の形だけ(取った 等の漢字表層は対象外)
+    static let multiClauseKansaiTeOruContractionPenalty = 300
+    static let multiClauseKansaiTeOruContractionSuffixes: [String] = [
+        "とる", "とった", "とって", "とったら", "とらん", "とらない", "とります", "とりました",
+        "どる", "どった", "どって", "どったら", "どらん", "どらない", "どります"
+    ]
+    static func isKansaiTeOruContractionSurface(_ surface: String) -> Bool {
+        for suffix in multiClauseKansaiTeOruContractionSuffixes where surface.hasSuffix(suffix) {
+            let stem = surface.dropLast(suffix.count)
+            // 直前は連用形のかな(し/い/み/っ 等)。かな識別の全かな(だましとった)は対象外(surface != reading で除外済み)
+            if let scalar = stem.last?.unicodeScalars.first, (0x3041...0x309F).contains(scalar.value) { return true }
+        }
+        return false
+    }
     // 隣接ペアの表層接頭一致ボーナス(prev 完全一致 \t 現ノードの接頭)。活用派生ノード(変わんない/変わらなかった)は
     // 表層が形ごとに違うので multiClauseBigramPairBonuses(完全一致)では拾えない。
     // ほぼ+変わ(ほぼかわんない→ほぼ買わんない。ユーザ報告 2887): 買わん/飼わん/変わん は派生 OOV 定額で同点になり

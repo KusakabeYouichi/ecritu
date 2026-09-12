@@ -2039,6 +2039,10 @@ extension KanaKanjiConverter {
                 Self.multiClauseKanaOrthodoxReadings.contains(reading) {
                 penalty += Self.multiClauseKanaOrthodoxKanjiPenalty
             }
+            // 関西方言の ている→とる 縮約(騙しとった)は標準形(騙し取った)の後ろに(定数コメント参照。2887)
+            if isInflectionDerived, surface != reading, Self.isKansaiTeOruContractionSurface(surface) {
+                penalty += Self.multiClauseKansaiTeOruContractionPenalty
+            }
             // カタカナ強調/交ぜ書きモードのノード別ペナルティ(suppress=100000/demote=6000)
             penalty += scriptVariantPenalty
             return base + penalty

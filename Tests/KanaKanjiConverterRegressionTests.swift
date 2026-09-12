@@ -16335,6 +16335,32 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2887: 関西方言の ている→とる 縮約(騙しとった)は標準形の複合(騙し取った)の後ろ(ユーザ報告)
+    func testRegressionKansaiTeOruContractionAfterStandard() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            // 単文節(1 語扱い)の並び: 取った 系が とった 系より前
+            let candidates = converter.candidates(for: "だましとった", limit: 12, systemCandidateMode: mode)
+            let standard = candidates.firstIndex(of: "騙し取った")
+            let dialect = candidates.firstIndex(of: "騙しとった")
+            XCTAssertNotNil(standard, "mode=\(mode.rawValue) \(candidates)")
+            XCTAssertNotNil(dialect, "mode=\(mode.rawValue) 方言形は候補に残す: \(candidates)")
+            if let standard, let dialect {
+                XCTAssertLessThan(standard, dialect, "mode=\(mode.rawValue) \(candidates)")
+            }
+        }
+        // 連文節(文中)は normalise だけ: surface では 騙し取った の 1 ノードが供給されず、騙し+取った(派生 7200)の
+        // 2 ノードでは方言形 1 ノードに届かない(供給側の課題、2887 時点)
+        XCTAssertEqual(
+            converter.multiClauseCandidates(for: "かれをだましとった", systemCandidateMode: .normalise).first,
+            "彼を騙し取った"
+        )
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2887: 五段ら行の口語縮約 らない→んない(変わんない/変わんなかった)。ほぼかわんない は Hobo 側で検査
     func testRegressionGodanRuNnaiContraction() throws {
         try prepareRealLMDictionary()
