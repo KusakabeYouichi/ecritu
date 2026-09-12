@@ -15930,3 +15930,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2884: 助詞頭の稀動詞(賭され/煮含まれ/徒渉)は名詞直後も減点(抜き取り検査 ぶどう樹とされています→ぶどう樹賭されています)
+    func testRegressionParticleHeadedRareVerbAfterNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("としょうされています", "と称されています"),
+                ("ぶどうじゅとされています", "ぶどう樹とされています"),
+                ("かうんてぃにふくまれる", "カウンティに含まれる")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

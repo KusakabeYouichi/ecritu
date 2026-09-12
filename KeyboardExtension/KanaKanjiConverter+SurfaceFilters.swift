@@ -516,8 +516,9 @@ extension KanaKanjiConverter {
     // 「頭の漢字が助詞1字として読めるか」で機械判定すると 似た/煮た/出ない まで巻き込む
     // (どれも 似=に/煮=に/出=で が word_costs にある)。基底が LM 未収録かで切りたいが
     // DP 側から基底が引けないため、実害のあった語幹だけを列挙する
+    // 徒渉/渡渉(としょう=と+称 を飲む。としょうされています→徒渉されています。2884、抜き取り検査)
     static let multiClauseParticleSwallowingVerbSurfacePrefixes: Set<String> = [
-        "煮含", "煮ふく", "賭し", "賭さ", "賭す", "賭せ"
+        "煮含", "煮ふく", "賭し", "賭さ", "賭す", "賭せ", "徒渉", "渡渉"
     ]
 
     func isParticleHeadedRareVerb(surface: String, reading: String, isInflectionDerived: Bool) -> Bool {

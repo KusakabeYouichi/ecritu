@@ -2366,7 +2366,13 @@ extension KanaKanjiConverter {
                             || (prevNode.surface.last.map(Self.multiClausePredicateTailCharacters.contains) ?? false),
                             Self.isParticleReadingKanjiWithoutNounSupport(
                                 surface: node.surface, reading: node.reading, end: node.end, chars: chars
-                            ) || isParticleHeadedRareVerb(node: node) {
+                            ) {
+                            cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
+                        } else if isParticleHeadedRareVerb(node: node),
+                            !Self.multiClauseCaseParticleSurfaces.contains(prevNode.surface) {
+                            // 助詞頭の稀動詞は名詞直後も同じ(ぶどう樹とされています→ぶどう樹賭されています、
+                            // カウンティに含まれる→カウンティ煮含まれる。2884、抜き取り検査)。格助詞の直後
+                            // (野菜を煮含める)だけが正当な立ち位置
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
                         // 連体の の 直後の数詞 一(いち)は名詞になりにくい(定数コメント参照。2880)
