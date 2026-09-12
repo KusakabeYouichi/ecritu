@@ -2539,8 +2539,18 @@ extension KanaKanjiConverter {
                         // 行く+と+言った より 遺句+といった が安くなる)ので、prev は LM 実在語
                         // またはカタカナ語(タルディーヴァ 等の固有名は LM 未収録でも正当)に限る
                         // 人を表す名詞(友達/彼/先生)や人名の直後は「〜と行った/言った」で列挙ではない(2883、ユーザ指定)
+                        // 指示副詞の読み(そう/こう/どう/ああ)の漢字表層(相/総/双/請う 等)+と は、副詞+と(そうと言った/どうと)
+                        // の乗っ取り。と の前では減点する(かれはそうといった→彼は相と言った。2889)
+                        if node.surface == "と", node.reading == "と",
+                            prevNode.surface != prevNode.reading, !prevNode.isInflectionDerived,
+                            Self.multiClauseQuotativeAdverbReadings.contains(prevNode.reading), prevNode.reading != "なん" {
+                            cost += Self.multiClauseDemonstrativeAdverbKanjiBeforeToPenalty
+                        }
+                        // 指示副詞(そう/こう/どう/ああ/なん)の直後も引用(そうと言った)。相(そう)のような同音の漢字表層に
+                        // 逃げて列挙クランプを受けていた(かれはそうといった→彼は相といった。2889)
                         if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading),
                             !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
+                            !Self.multiClauseQuotativeAdverbReadings.contains(prevNode.reading),
                             !isPersonReferentNode(prevNode, personNameKind: personNameKindByNodeKey[prevNode.key], mode: systemCandidateMode),
                             unigramCosts[prevNode.surface] != nil || Self.isKatakanaString(prevNode.surface),
                             !(prevNode.surface.last.map(Self.multiClauseDictionaryFormTailCharacters.contains) ?? false) {
