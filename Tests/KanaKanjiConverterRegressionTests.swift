@@ -15996,3 +15996,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2884: ぶどう樹の 〜仕立て の隣接ボーナス(抜き取り検査 垣根仕立て→垣根し縦、株仕立て→歌舞したて)
+    func testRegressionShitateCollocation() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("かきねしたて", "垣根仕立て"),
+                ("かぶしたて", "株仕立て")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
