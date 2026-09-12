@@ -16550,3 +16550,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2889: 指示副詞+と+いった は引用(かれはそうといった→彼は相といった)
+    func testRegressionSouToItta() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("かれはそうといった", "彼はそうと言った"),
+                ("ともだちといった", "友達と行った"),
+                ("かれはそういった", "彼はそう言った")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

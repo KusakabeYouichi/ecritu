@@ -1762,6 +1762,9 @@ extension KanaKanjiConverter {
     static let multiClauseQuotativeIuAfterPredicateBonus = 800
     // 副詞+と の直後も引用(なんといっても/そういった/そうはいっても。2882)。と の前の読みがこれらなら述語と同じ扱い
     static let multiClauseQuotativeAdverbReadings: Set<String> = ["なん", "なんと", "そう", "こう", "どう", "ああ"]
+    // 指示副詞の読みの漢字表層(相/総/双)+と の減点(適用箇所のコメント参照。2889)。は→そう 3955 < は→相 4588 でも
+    // 相→と の bigram が そう→と より安く 相 に逃げる
+    static let multiClauseDemonstrativeAdverbKanjiBeforeToPenalty = 2000
     // 名詞直後の 帰って/帰る 系へのボーナス(適用箇所のコメント参照。2880)。派生同士の同点を割る幅
     static let multiClauseKaeruAfterNounBonus = 800
     static let multiClauseBOSParticlePenalty = 2000
