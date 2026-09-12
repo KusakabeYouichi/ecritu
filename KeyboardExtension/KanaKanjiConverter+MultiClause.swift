@@ -5,6 +5,21 @@ import Foundation
 // 静的テーブル群は KanaKanjiConverter+MultiClauseTables.swift に分離(2026-08-17)。
 extension KanaKanjiConverter {
 
+    // 人を指すノードか: 人名詞の表層(友達/彼)、その読みの辞書候補に人名詞があるもの(ともだち→友達)、
+    // 敬称(さん/さま)、person_names の姓/名(2883)
+    func isPersonReferentNode(_ node: MultiClauseNode, personNameKind: String?, mode: KanaKanjiCandidateSourceMode) -> Bool {
+        if Self.multiClausePersonNounSurfaces.contains(node.surface) || personNameKind != nil {
+            return true
+        }
+        if node.surface == node.reading, Self.multiClausePersonNameHonorificReadings.contains(node.reading) {
+            return true
+        }
+        if node.surface == node.reading {
+            return store.systemCandidates(for: node.reading, mode: mode).contains { Self.multiClausePersonNounSurfaces.contains($0) }
+        }
+        return false
+    }
+
     // word_costs に収穫底値未満の同値が 2 つ以上あるか(辞書 rank による同点割りが要るか)
     static func hasRealWordCostTie(_ costMap: [String: Int]) -> Bool {
         var seen = Set<Int>()
@@ -2367,6 +2382,18 @@ extension KanaKanjiConverter {
                                 }
                             }
                         }
+                        // 人+と の直後の いった/いって は同行の 行った(友達と行った。2883、ユーザ指定)。
+                        // 言った は 2 番手に残る(派生同士の同点を割る幅)
+                        if node.isInflectionDerived, node.surface.hasPrefix("行"), node.reading.hasPrefix("い"),
+                            prevNode.surface == "と", prevNode.reading == "と" {
+                            let prevPrevIndex = backPointer[prevIdx]
+                            if prevPrevIndex >= 0 {
+                                let prevPrev = nodes[prevPrevIndex]
+                                if isPersonReferentNode(prevPrev, personNameKind: personNameKindByNodeKey[prevPrev.key], mode: systemCandidateMode) {
+                                    cost -= Self.multiClauseQuotativeIuAfterPredicateBonus
+                                }
+                            }
+                        }
                         // 名詞直後の かえって は 帰って(本国帰って/実家帰って = に を落とした口語。2880、ユーザ報告)。
                         // 却って の減点だけでは 買えって/飼えって/かな と同点になり 帰って が上がらない
                         if node.isInflectionDerived, node.surface.hasPrefix("帰"), node.reading.hasPrefix("かえ"),
@@ -2390,8 +2417,10 @@ extension KanaKanjiConverter {
                         // LM 未収録の稀語(遺句 等)は「述語でない prev」として抜け道になる(述語の
                         // 行く+と+言った より 遺句+といった が安くなる)ので、prev は LM 実在語
                         // またはカタカナ語(タルディーヴァ 等の固有名は LM 未収録でも正当)に限る
+                        // 人を表す名詞(友達/彼/先生)や人名の直後は「〜と行った/言った」で列挙ではない(2883、ユーザ指定)
                         if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading),
                             !prevNode.isInflectionDerived, !prevNode.isDictionaryFormPredicate,
+                            !isPersonReferentNode(prevNode, personNameKind: personNameKindByNodeKey[prevNode.key], mode: systemCandidateMode),
                             unigramCosts[prevNode.surface] != nil || Self.isKatakanaString(prevNode.surface),
                             !(prevNode.surface.last.map(Self.multiClauseDictionaryFormTailCharacters.contains) ?? false) {
                             cost = min(cost, prevCost + Self.multiClauseEnumerationToIttaKanaCost)

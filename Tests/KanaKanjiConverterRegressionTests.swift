@@ -15864,7 +15864,7 @@ extension KanaKanjiConverterRegressionTests {
             for (reading, expected) in [
                 ("なんといっても", "何と言っても"),
                 ("かれはそういった", "彼はそう言った"),
-                ("ともだちといった", "友達といった"),
+                ("ともだちといった", "友達と行った"),  // 人+と は同行(2883)
                 ("はたをふって", "旗を振って"),
                 ("はしをわたる", "橋を渡る"),
                 ("いわすに", "言わすに")
@@ -15875,6 +15875,35 @@ extension KanaKanjiConverterRegressionTests {
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )
             }
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 人を指す語(友達/彼/先生/〜さん)+と の直後の いった は同行の 行った、言った が 2 番手(2883、ユーザ指定)。
+    // 列挙の といった(マラガといった/文頭)と 副詞+と(そう言った)は従来どおり
+    func testRegressionPersonToIttaPrefersIku() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ともだちといった", "友達と行った"),
+                ("かれといった", "彼と行った"),
+                ("たなかさんといった", "田中さんと行った"),
+                ("せんせいといってきた", "先生と行ってきた"),
+                ("まらがといったさんち", "マラガといった産地"),
+                ("といったじょうけん", "といった条件"),
+                ("かれはそういった", "彼はそう言った")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            let friend = converter.multiClauseCandidates(for: "ともだちといった", systemCandidateMode: mode)
+            XCTAssertEqual(friend.dropFirst().first, "友達と言った", "mode=\(mode.rawValue) \(friend.prefix(3))")
         }
     }
 }
