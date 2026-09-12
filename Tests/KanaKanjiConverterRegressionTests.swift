@@ -16097,3 +16097,32 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2885: 酒類飲料 を misc に登録(抜き取り検査 酒類飲料概論→種類飲料概論 21 件)
+    func testRegressionShuruiInryoRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("しゅるいいんりょうがいろん", "酒類飲料概論")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            for (reading, expected) in [
+                ("しゅるいいんりょう", "酒類飲料")
+            ] {
+                XCTAssertEqual(
+                    converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
