@@ -1770,6 +1770,16 @@ extension KanaKanjiConverter {
         "は", "が", "を", "に", "と", "も", "で", "へ", "の", "や", "か", "ね", "よ", "な",
         "には", "では", "とは", "から", "まで", "より", "でも", "って"
     ]
+    // 漢字の行政地名(〜市/町/村/区/郡/県)。Sudachi の市名は 4 かな読みでも収穫コスト(堺市 11165、上尾市 11548 …
+    // 450 語)で床 8700 に落ち、稀な動詞の 連用形+に(境す→境しに、定額 7200)や断片連鎖に負ける
+    // (さかいしにある→境しにある。ユーザ報告 2886)。収穫床の免除(2678)を地名なら読み 4 字から認め、
+    // 直前の span に地名があるときは 連用形+に を立てない
+    static let multiClauseKanjiPlaceNameSuffixCharacters: Set<Character> = ["市", "町", "村", "区", "郡", "県"]
+    static func isKanjiPlaceNameSurface(_ surface: String) -> Bool {
+        guard surface.count >= 2, let last = surface.last,
+            multiClauseKanjiPlaceNameSuffixCharacters.contains(last) else { return false }
+        return KanaKanjiConverter.isAllKanjiSurface(surface)
+    }
     // 格助詞+いい を丸ごと飲む漢字語(はいい=廃位/配位/配意)は名詞の直後には立たない(和食廃位なー。ユーザ報告 2886)。
     // 廃位(6338)は 和食 の後で は(2483)+いい(4508)より 153 安く、な(1 字)は いい→な 2535 で救われるが
     // なー(2 字クラスタ)は述語直後クランプ(読み末尾 い)で両者 1200 に揃い 廃位 が勝つ。王の廃位 のように

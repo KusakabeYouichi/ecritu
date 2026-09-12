@@ -772,7 +772,13 @@ extension KanaKanjiConverter {
                 //      エンジンの終点でないため 食べ 単独ノードが立たず、たべにきたとり→た部に…
                 //      のような断片合成に落ちる。連用形+に を1単位で供給する(食べに/飲みに)。
                 //      名詞+に(机に 等)は連用形が導出できず空になるので誤爆しない。
-                if len >= 3, segmentReading.hasSuffix("に") {
+                //      直前の span が漢字地名(堺市/上尾市)なら立てない: 稀な動詞の派生(境す→境しに、定額 7200)が
+                //      収穫コストの市名+に を常に下回る(さかいしにある→境しにある。ユーザ報告 2886)
+                if len >= 3, segmentReading.hasSuffix("に"),
+                    !nodesStartingAt[start].contains(where: {
+                        nodes[$0].end == end - 1 && nodes[$0].isDictWord && !nodes[$0].isInflectionDerived
+                            && Self.isKanjiPlaceNameSurface(nodes[$0].surface)
+                    }) {
                     let renyouReading = String(segmentReading.dropLast())
                     let renyouNi = verbRenyouPlusSuffixCandidates(
                         renyouReading: renyouReading,
@@ -1297,8 +1303,10 @@ extension KanaKanjiConverter {
                 // 表層(熱田)でも乖離ゼロになり、除外が効きすぎる(あったが で 熱田が が2位に)。
                 // ただし辞書形述語(活用表に載る動詞。向く wc10699/uni6325)は人手選別済みの実在語なので
                 // 読みの長さを問わない(さかなにむく→魚に無垢 が先頭で 魚に向く が変種にも無かった。2839)
+                // 漢字の行政地名(堺市/上尾市)は読み 4 字から認める(定数コメント参照。2886)
                 let isOwnMainReadingWellKnownCompound: Bool = {
-                    guard reading.count >= 5 || isDictionaryFormPredicate,
+                    guard reading.count >= 5 || isDictionaryFormPredicate
+                        || (reading.count >= 4 && Self.isKanjiPlaceNameSurface(surface)),
                         let wordCost, let unigram = unigramCosts[surface],
                         unigram < Self.multiClauseDictUnknownCost,
                         let minWordCost = candidateMinWordCosts[surface] else {
