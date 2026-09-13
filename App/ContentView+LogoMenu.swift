@@ -42,7 +42,7 @@ enum LogoMenuAction: String, CaseIterable, Identifiable {
         case .restoreStashedSettings: return "退避していた設定に戻す"
         case .openManual: return "Safari で開く(全9章)"
         case .openPrivacyPolicy: return "Safari で開く"
-        case .about: return "édition と著作権表示"
+        case .about: return "version・édition と著作権表示"
         }
     }
 
@@ -197,6 +197,11 @@ struct SettingsStash: Codable {
 extension ContentView {
     static let logoMenuLogoFrameKey = "logo"
     static let aboutCopyrightText = "Copyright © 2026 Kusakabe Youichi"
+    // App Store/TestFlight に表に出る版(CFBundleShortVersionString=MARKETING_VERSION)。edition(ビルド番号)と別に示す(2899、ユーザ指定)
+    static let marketingVersionText: String = {
+        let version = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "?"
+        return "version \(version)"
+    }()
 
     // ユーザが変えられる設定のキー(設定画面の全項目)。settingsYAMLExportText と同じ集合を保つこと。
     // 語彙・学習・診断ログなどのデータ系キーは含めない(初期設定に戻しても消えない)
@@ -401,7 +406,7 @@ extension ContentView {
         case .about:
             logoMenuInfo = LogoMenuInfo(
                 title: "écritu",
-                message: "\(Self.editionNumberText)\n\(Self.aboutCopyrightText)"
+                message: "\(Self.marketingVersionText)\n\(Self.editionNumberText)\n\(Self.aboutCopyrightText)"
             )
         case .openManual:
             UIApplication.shared.open(Self.manualURL)
