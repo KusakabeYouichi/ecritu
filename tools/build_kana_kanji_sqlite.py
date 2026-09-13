@@ -39,6 +39,12 @@ def parse_args() -> argparse.Namespace:
         help="Path to reading->candidates JSON (repeatable)",
     )
     parser.add_argument(
+        "--normalized-vocab-json",
+        action="append",
+        default=[],
+        help="この語彙 JSON の候補には normalized/surface の両タグを付ける(補助語彙 plist。Sudachi が surface しか持たない うお座 等を正規化モードでも出す。2897)",
+    )
+    parser.add_argument(
         "--sources-json",
         action="append",
         default=[],
@@ -507,6 +513,13 @@ def main() -> int:
 
     vocab = merge_vocab(vocab_paths)
     sources = merge_sources(source_paths)
+    # 補助語彙(plist)の候補は作者が選んだ表記なので、Sudachi 側のタグに依らず正規化モードでも出す(2897)。
+    # うお座 は Sudachi では 魚座 の surface 異表記(surface タグのみ)で、normalise モードでは候補から消えていた
+    for path in args.normalized_vocab_json:
+        for reading, candidates in merge_vocab([Path(path)]).items():
+            candidate_map = sources.setdefault(reading, {})
+            for candidate in candidates:
+                candidate_map.setdefault(candidate, set()).update({"normalized", "surface"})
     inflections = merge_inflections(inflection_paths)
     costs = merge_costs(cost_paths)
     # 形が inflections(reading->candidate->str)と同じなので merge_inflections を流用

@@ -342,6 +342,7 @@ regenerate_sqlite_if_possible() {
   local sqlite_args=(
     python3 tools/build_kana_kanji_sqlite.py
     --vocab-json "$TMP_SECOND"
+    --normalized-vocab-json "$TMP_SECOND"
     --vocab-json "$TMP_PREMIER"
     --output "$TMP_SQLITE"
   )
