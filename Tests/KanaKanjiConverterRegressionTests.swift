@@ -17046,3 +17046,30 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2898: より(は/も)+まし は比較の まし(ないよりはましだ→ないよりは倍田。ユーザ報告)。増した/増田さん は無傷
+    func testRegressionYoriMashi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ないよりはましだ", "ないよりはましだ"),
+                ("それよりましだ", "それよりましだ"),
+                ("なにもないよりもまし", "何もないよりもまし"),
+                ("しゅうにゅうがました", "収入が増した"),
+                ("ますださんです", "増田さんです")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            // 変種の並び(マシ/無い)はカタカナ強調・交ぜ書きの設定に依るので先頭だけ固定する
+            let variants = converter.multiClauseCandidates(for: "ないよりはましだ", systemCandidateMode: mode)
+            XCTAssertFalse(variants.contains("ないよりは倍田"), "mode=\(mode.rawValue) \(variants)")
+        }
+    }
+}

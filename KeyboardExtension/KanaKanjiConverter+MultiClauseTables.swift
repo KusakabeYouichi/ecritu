@@ -785,6 +785,12 @@ extension KanaKanjiConverter {
     static let multiClauseTrailingProlongationAfterPredicateCost = 1200
     // 終助詞(か/よ/ね/な/わ)+ー は既存の終助詞クラスタ(かー/よー/ねー)が受けるので含めない(なのかー の変種に 七日ー が混ざる)
     static let multiClauseTrailingProlongationPredicateTails: Set<Character> = ["た", "す", "だ", "い", "う", "る"]
+    // より(は/も) の直後の まし は比較の「まし(マシ)」でかなが正書(ないよりはましだ→ないよりは倍田。ユーザ報告 2898)。
+    // ましだ には収穫底値の姓(倍田/眞志田/真志田 wc 10000)が 1 ノードで立ち、かな助詞直後は人名を許す規則の抜け道になる。
+    // より 系の直後の まし 始まりは、かな/カタカナ頭を加点し漢字頭を減点する
+    static let multiClauseYoriMashiPrevReadingSuffixes: [String] = ["よりは", "よりも", "より"]
+    static let multiClauseYoriMashiBonus = 3000
+    static let multiClauseYoriMashiKanjiPenalty = 3000
     // 連用形+副助詞(呼びさえ/読みすら/書きこそ)の供給(b5b)。五段の連用形単独は辞書に無い限りノードが立たず
     // (呼び は Sudachi に無く 予備 だけ)、よびさえすれば が 予備さえすれば になっていた(ユーザ報告 2894)。
     // この形は「連用形+さえ+する」の慣用(呼びさえすれば/読みすらしない)に限って自然で、名詞+さえ(予備さえあれば)
