@@ -779,6 +779,12 @@ extension KanaKanjiConverter {
         "わしざ": "わし座"
     ]
     static let multiClauseConstellationKanjiPenalty = 3000
+    // 文末の長音 ー(おくりましたー/たべましたー)は述語の引き伸ばし。素通り(7000/字)だと 送りました+ー が
+    // 送り+増し+たー(派生 増し 6251+かな たー)に負けて 送り増したー になる(ユーザ報告 2898)。述語(活用派生/辞書形/
+    // ます・です・た 等の末尾)直後の文末 ー は終助詞クラスタと同じ 1200 に置く
+    static let multiClauseTrailingProlongationAfterPredicateCost = 1200
+    // 終助詞(か/よ/ね/な/わ)+ー は既存の終助詞クラスタ(かー/よー/ねー)が受けるので含めない(なのかー の変種に 七日ー が混ざる)
+    static let multiClauseTrailingProlongationPredicateTails: Set<Character> = ["た", "す", "だ", "い", "う", "る"]
     // 連用形+副助詞(呼びさえ/読みすら/書きこそ)の供給(b5b)。五段の連用形単独は辞書に無い限りノードが立たず
     // (呼び は Sudachi に無く 予備 だけ)、よびさえすれば が 予備さえすれば になっていた(ユーザ報告 2894)。
     // この形は「連用形+さえ+する」の慣用(呼びさえすれば/読みすらしない)に限って自然で、名詞+さえ(予備さえあれば)
