@@ -17011,3 +17011,15 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2898: こうにん は 公認/後任 の順(ユーザ指定。辞書 rank は 公認/肯認/降任/後任)
+    func testRegressionKouninOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(Array(converter.candidates(for: "こうにん", limit: 6, systemCandidateMode: mode).prefix(2)), ["公認", "後任"], "mode=\(mode.rawValue)")
+        }
+    }
+}
