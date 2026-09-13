@@ -2653,6 +2653,16 @@ extension KanaKanjiConverter {
                             Self.isMotionVerbSurface(node.surface) {
                             cost -= Self.multiClauseRenyouNiMotionVerbBonus
                         }
+                        // より(は/も)+まし は比較の まし/マシ(定数コメント参照。2898)
+                        // 直前の切り方(よりは 1 ノード/より+は)に依らず、読み列で より(は/も) を見る
+                        if node.reading.hasPrefix("まし"), node.start >= 2,
+                            Self.multiClauseYoriMashiPrevReadingSuffixes.contains(where: { String(chars[0..<node.start]).hasSuffix($0) }) {
+                            if node.surface.hasPrefix("まし") || node.surface.hasPrefix("マシ") {
+                                cost -= Self.multiClauseYoriMashiBonus
+                            } else if let head = node.surface.first, containsKanji(String(head)) {
+                                cost += Self.multiClauseYoriMashiKanjiPenalty
+                            }
+                        }
                         // 文末の長音 ー は述語の引き伸ばし(送りましたー。定数コメント参照。2898)
                         if node.surface == "ー", node.reading == "ー", node.end == n,
                             prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate

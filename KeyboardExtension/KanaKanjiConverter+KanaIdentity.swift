@@ -96,6 +96,11 @@ extension KanaKanjiConverter {
         if hasLearnedKanaIdentity(for: normalized) || hasCuratedKanaIdentity(for: normalized) {
             return true
         }
+        // 比較の より(は/も)+まし(ないよりはましだ)はかなが正書。連文節はかな最良を返すが、根拠が無いと全かなエコー抑制で
+        // 落ちて 増しだ/倍田 の変種だけが残る(ユーザ報告 2898)
+        for phrase in ["よりはまし", "よりもまし", "よりまし"] where normalized.contains(phrase) {
+            return true
+        }
         // 口語の否定コピュラ・断定(じゃない/じゃん/だろう/でしょ 等)で終わる読みは、かなが
         // 正書の話し言葉(そうじゃないか/きれいじゃない 等)。連文節は全語彙経路として これらを
         // 最良に選べる(allNodesAreDictWords 非抑制)ので、提示層でも先頭かなを保持する根拠とする。
