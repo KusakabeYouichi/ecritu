@@ -549,5 +549,12 @@
 	<dict><key>phrase</key><string>Sextans</string><key>shortcut</key><string>せくすたんす</string></dict>	<!-- ろくぶんぎ座 -->
 	<dict><key>phrase</key><string>わし座</string><key>shortcut</key><string>わしざ</string></dict>
 	<dict><key>phrase</key><string>Aquila</string><key>shortcut</key><string>あくいら</string></dict>	<!-- わし座 -->
+
+	<!-- ■ その他(天文の一般語。compenser.plist の「天文」節から移した。2896) -->
+	<dict><key>phrase</key><string>南極老人星</string><key>shortcut</key><string>なんきょくろうじんせい</string></dict>
+	<dict><key>phrase</key><string>部分日蝕</string><key>shortcut</key><string>ぶぶんにっしょく</string></dict>
+	<dict><key>phrase</key><string>半影蝕</string><key>shortcut</key><string>はんえいしょく</string></dict>
+	<dict><key>phrase</key><string>金環蝕</string><key>shortcut</key><string>きんかんしょく</string></dict>
+	<dict><key>phrase</key><string>金環日蝕</string><key>shortcut</key><string>きんかんにっしょく</string></dict>
 </array>
 </plist>
