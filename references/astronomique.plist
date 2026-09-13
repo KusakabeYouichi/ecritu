@@ -1,0 +1,553 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<!-- 天文(astronomique): 恒星の固有名(IAU 承認名)と 88 星座。作者編纂(2026-09-13)。カタカナと原語(IAU 名)を同じ読みで登録し、行末コメントに星座と記号(バイエル符号)を置く。等級は視等級の概数 -->
+
+	<!-- ■ 恒星の固有名 □ 1等星(視等級 1.5 未満、明るい順) -->
+	<dict><key>phrase</key><string>シリウス</string><key>shortcut</key><string>しりうす</string></dict>	<!-- おおいぬ座 α CMa -1.46等 -->
+	<dict><key>phrase</key><string>Sirius</string><key>shortcut</key><string>しりうす</string></dict>
+	<dict><key>phrase</key><string>カノープス</string><key>shortcut</key><string>かのーぷす</string></dict>	<!-- りゅうこつ座 α Car -0.74等 -->
+	<dict><key>phrase</key><string>Canopus</string><key>shortcut</key><string>かのーぷす</string></dict>
+	<dict><key>phrase</key><string>リギル・ケンタウルス</string><key>shortcut</key><string>りぎるけんたうるす</string></dict>	<!-- ケンタウルス座 α Cen A -0.27等 -->
+	<dict><key>phrase</key><string>Rigil Kentaurus</string><key>shortcut</key><string>りぎるけんたうるす</string></dict>
+	<dict><key>phrase</key><string>アルクトゥルス</string><key>shortcut</key><string>あるくとぅるす</string></dict>	<!-- うしかい座 α Boo -0.05等 -->
+	<dict><key>phrase</key><string>Arcturus</string><key>shortcut</key><string>あるくとぅるす</string></dict>
+	<dict><key>phrase</key><string>ベガ</string><key>shortcut</key><string>べが</string></dict>	<!-- こと座 α Lyr 0.03等 -->
+	<dict><key>phrase</key><string>Vega</string><key>shortcut</key><string>べが</string></dict>
+	<dict><key>phrase</key><string>カペラ</string><key>shortcut</key><string>かぺら</string></dict>	<!-- ぎょしゃ座 α Aur 0.08等 -->
+	<dict><key>phrase</key><string>Capella</string><key>shortcut</key><string>かぺら</string></dict>
+	<dict><key>phrase</key><string>リゲル</string><key>shortcut</key><string>りげる</string></dict>	<!-- オリオン座 β Ori 0.13等 -->
+	<dict><key>phrase</key><string>Rigel</string><key>shortcut</key><string>りげる</string></dict>
+	<dict><key>phrase</key><string>プロキオン</string><key>shortcut</key><string>ぷろきおん</string></dict>	<!-- こいぬ座 α CMi 0.34等 -->
+	<dict><key>phrase</key><string>Procyon</string><key>shortcut</key><string>ぷろきおん</string></dict>
+	<dict><key>phrase</key><string>アケルナル</string><key>shortcut</key><string>あけるなる</string></dict>	<!-- エリダヌス座 α Eri 0.46等 -->
+	<dict><key>phrase</key><string>Achernar</string><key>shortcut</key><string>あけるなる</string></dict>
+	<dict><key>phrase</key><string>ベテルギウス</string><key>shortcut</key><string>べてるぎうす</string></dict>	<!-- オリオン座 α Ori 0.50等 -->
+	<dict><key>phrase</key><string>Betelgeuse</string><key>shortcut</key><string>べてるぎうす</string></dict>
+	<dict><key>phrase</key><string>ハダル</string><key>shortcut</key><string>はだる</string></dict>	<!-- ケンタウルス座 β Cen 0.61等 -->
+	<dict><key>phrase</key><string>Hadar</string><key>shortcut</key><string>はだる</string></dict>
+	<dict><key>phrase</key><string>アルタイル</string><key>shortcut</key><string>あるたいる</string></dict>	<!-- わし座 α Aql 0.76等 -->
+	<dict><key>phrase</key><string>Altair</string><key>shortcut</key><string>あるたいる</string></dict>
+	<dict><key>phrase</key><string>アクルックス</string><key>shortcut</key><string>あくるっくす</string></dict>	<!-- みなみじゅうじ座 α Cru 0.76等 -->
+	<dict><key>phrase</key><string>Acrux</string><key>shortcut</key><string>あくるっくす</string></dict>
+	<dict><key>phrase</key><string>アルデバラン</string><key>shortcut</key><string>あるでばらん</string></dict>	<!-- おうし座 α Tau 0.86等 -->
+	<dict><key>phrase</key><string>Aldebaran</string><key>shortcut</key><string>あるでばらん</string></dict>
+	<dict><key>phrase</key><string>アンタレス</string><key>shortcut</key><string>あんたれす</string></dict>	<!-- さそり座 α Sco 0.96等 -->
+	<dict><key>phrase</key><string>Antares</string><key>shortcut</key><string>あんたれす</string></dict>
+	<dict><key>phrase</key><string>スピカ</string><key>shortcut</key><string>すぴか</string></dict>	<!-- おとめ座 α Vir 0.97等 -->
+	<dict><key>phrase</key><string>Spica</string><key>shortcut</key><string>すぴか</string></dict>
+	<dict><key>phrase</key><string>ポルックス</string><key>shortcut</key><string>ぽるっくす</string></dict>	<!-- ふたご座 β Gem 1.14等 -->
+	<dict><key>phrase</key><string>Pollux</string><key>shortcut</key><string>ぽるっくす</string></dict>
+	<dict><key>phrase</key><string>フォーマルハウト</string><key>shortcut</key><string>ふぉーまるはうと</string></dict>	<!-- みなみのうお座 α PsA 1.16等 -->
+	<dict><key>phrase</key><string>Fomalhaut</string><key>shortcut</key><string>ふぉーまるはうと</string></dict>
+	<dict><key>phrase</key><string>デネブ</string><key>shortcut</key><string>でねぶ</string></dict>	<!-- はくちょう座 α Cyg 1.25等 -->
+	<dict><key>phrase</key><string>Deneb</string><key>shortcut</key><string>でねぶ</string></dict>
+	<dict><key>phrase</key><string>ミモザ</string><key>shortcut</key><string>みもざ</string></dict>	<!-- みなみじゅうじ座 β Cru 1.25等 -->
+	<dict><key>phrase</key><string>Mimosa</string><key>shortcut</key><string>みもざ</string></dict>
+	<dict><key>phrase</key><string>レグルス</string><key>shortcut</key><string>れぐるす</string></dict>	<!-- しし座 α Leo 1.35等 -->
+	<dict><key>phrase</key><string>Regulus</string><key>shortcut</key><string>れぐるす</string></dict>
+
+	<!-- □ 2等星(1.5〜2.5) -->
+	<dict><key>phrase</key><string>アダラ</string><key>shortcut</key><string>あだら</string></dict>	<!-- おおいぬ座 ε CMa 1.50等 -->
+	<dict><key>phrase</key><string>Adhara</string><key>shortcut</key><string>あだら</string></dict>
+	<dict><key>phrase</key><string>カストル</string><key>shortcut</key><string>かすとる</string></dict>	<!-- ふたご座 α Gem 1.58等 -->
+	<dict><key>phrase</key><string>Castor</string><key>shortcut</key><string>かすとる</string></dict>
+	<dict><key>phrase</key><string>ガクルックス</string><key>shortcut</key><string>がくるっくす</string></dict>	<!-- みなみじゅうじ座 γ Cru 1.63等 -->
+	<dict><key>phrase</key><string>Gacrux</string><key>shortcut</key><string>がくるっくす</string></dict>
+	<dict><key>phrase</key><string>シャウラ</string><key>shortcut</key><string>しゃうら</string></dict>	<!-- さそり座 λ Sco 1.62等 -->
+	<dict><key>phrase</key><string>Shaula</string><key>shortcut</key><string>しゃうら</string></dict>
+	<dict><key>phrase</key><string>ベラトリックス</string><key>shortcut</key><string>べらとりっくす</string></dict>	<!-- オリオン座 γ Ori 1.64等 -->
+	<dict><key>phrase</key><string>Bellatrix</string><key>shortcut</key><string>べらとりっくす</string></dict>
+	<dict><key>phrase</key><string>エルナト</string><key>shortcut</key><string>えるなと</string></dict>	<!-- おうし座 β Tau 1.65等 -->
+	<dict><key>phrase</key><string>Elnath</string><key>shortcut</key><string>えるなと</string></dict>
+	<dict><key>phrase</key><string>ミアプラキドゥス</string><key>shortcut</key><string>みあぷらきどぅす</string></dict>	<!-- りゅうこつ座 β Car 1.68等 -->
+	<dict><key>phrase</key><string>Miaplacidus</string><key>shortcut</key><string>みあぷらきどぅす</string></dict>
+	<dict><key>phrase</key><string>アルニラム</string><key>shortcut</key><string>あるにらむ</string></dict>	<!-- オリオン座 ε Ori 1.69等 -->
+	<dict><key>phrase</key><string>Alnilam</string><key>shortcut</key><string>あるにらむ</string></dict>
+	<dict><key>phrase</key><string>アルナイル</string><key>shortcut</key><string>あるないる</string></dict>	<!-- つる座 α Gru 1.74等 -->
+	<dict><key>phrase</key><string>Alnair</string><key>shortcut</key><string>あるないる</string></dict>
+	<dict><key>phrase</key><string>アルニタク</string><key>shortcut</key><string>あるにたく</string></dict>	<!-- オリオン座 ζ Ori 1.77等 -->
+	<dict><key>phrase</key><string>Alnitak</string><key>shortcut</key><string>あるにたく</string></dict>
+	<dict><key>phrase</key><string>アリオト</string><key>shortcut</key><string>ありおと</string></dict>	<!-- おおぐま座 ε UMa 1.77等 -->
+	<dict><key>phrase</key><string>Alioth</string><key>shortcut</key><string>ありおと</string></dict>
+	<dict><key>phrase</key><string>ドゥーベ</string><key>shortcut</key><string>どぅーべ</string></dict>	<!-- おおぐま座 α UMa 1.79等 -->
+	<dict><key>phrase</key><string>Dubhe</string><key>shortcut</key><string>どぅーべ</string></dict>
+	<dict><key>phrase</key><string>ミルファク</string><key>shortcut</key><string>みるふぁく</string></dict>	<!-- ペルセウス座 α Per 1.80等 -->
+	<dict><key>phrase</key><string>Mirfak</string><key>shortcut</key><string>みるふぁく</string></dict>
+	<dict><key>phrase</key><string>ウェズン</string><key>shortcut</key><string>うぇずん</string></dict>	<!-- おおいぬ座 δ CMa 1.84等 -->
+	<dict><key>phrase</key><string>Wezen</string><key>shortcut</key><string>うぇずん</string></dict>
+	<dict><key>phrase</key><string>サルガス</string><key>shortcut</key><string>さるがす</string></dict>	<!-- さそり座 θ Sco 1.87等 -->
+	<dict><key>phrase</key><string>Sargas</string><key>shortcut</key><string>さるがす</string></dict>
+	<dict><key>phrase</key><string>カウス・アウストラリス</string><key>shortcut</key><string>かうすあうすとらりす</string></dict>	<!-- いて座 ε Sgr 1.85等 -->
+	<dict><key>phrase</key><string>Kaus Australis</string><key>shortcut</key><string>かうすあうすとらりす</string></dict>
+	<dict><key>phrase</key><string>アヴィオール</string><key>shortcut</key><string>あゔぃおーる</string></dict>	<!-- りゅうこつ座 ε Car 1.86等 -->
+	<dict><key>phrase</key><string>Avior</string><key>shortcut</key><string>あゔぃおーる</string></dict>
+	<dict><key>phrase</key><string>アルカイド</string><key>shortcut</key><string>あるかいど</string></dict>	<!-- おおぐま座 η UMa 1.86等 -->
+	<dict><key>phrase</key><string>Alkaid</string><key>shortcut</key><string>あるかいど</string></dict>
+	<dict><key>phrase</key><string>メンカリナン</string><key>shortcut</key><string>めんかりなん</string></dict>	<!-- ぎょしゃ座 β Aur 1.90等 -->
+	<dict><key>phrase</key><string>Menkalinan</string><key>shortcut</key><string>めんかりなん</string></dict>
+	<dict><key>phrase</key><string>アトリア</string><key>shortcut</key><string>あとりあ</string></dict>	<!-- みなみのさんかく座 α TrA 1.91等 -->
+	<dict><key>phrase</key><string>Atria</string><key>shortcut</key><string>あとりあ</string></dict>
+	<dict><key>phrase</key><string>アルヘナ</string><key>shortcut</key><string>あるへな</string></dict>	<!-- ふたご座 γ Gem 1.93等 -->
+	<dict><key>phrase</key><string>Alhena</string><key>shortcut</key><string>あるへな</string></dict>
+	<dict><key>phrase</key><string>ピーコック</string><key>shortcut</key><string>ぴーこっく</string></dict>	<!-- くじゃく座 α Pav 1.94等 -->
+	<dict><key>phrase</key><string>Peacock</string><key>shortcut</key><string>ぴーこっく</string></dict>
+	<dict><key>phrase</key><string>アルセフィナ</string><key>shortcut</key><string>あるせふぃな</string></dict>	<!-- ほ座 δ Vel 1.96等 -->
+	<dict><key>phrase</key><string>Alsephina</string><key>shortcut</key><string>あるせふぃな</string></dict>
+	<dict><key>phrase</key><string>ミルザム</string><key>shortcut</key><string>みるざむ</string></dict>	<!-- おおいぬ座 β CMa 1.98等 -->
+	<dict><key>phrase</key><string>Mirzam</string><key>shortcut</key><string>みるざむ</string></dict>
+	<dict><key>phrase</key><string>ポラリス</string><key>shortcut</key><string>ぽらりす</string></dict>	<!-- こぐま座 α UMi 1.98等 -->
+	<dict><key>phrase</key><string>Polaris</string><key>shortcut</key><string>ぽらりす</string></dict>
+	<dict><key>phrase</key><string>アルフェラッツ</string><key>shortcut</key><string>あるふぇらっつ</string></dict>	<!-- アンドロメダ座 α And 2.06等 -->
+	<dict><key>phrase</key><string>Alpheratz</string><key>shortcut</key><string>あるふぇらっつ</string></dict>
+	<dict><key>phrase</key><string>ハマル</string><key>shortcut</key><string>はまる</string></dict>	<!-- おひつじ座 α Ari 2.00等 -->
+	<dict><key>phrase</key><string>Hamal</string><key>shortcut</key><string>はまる</string></dict>
+	<dict><key>phrase</key><string>ディフダ</string><key>shortcut</key><string>でぃふだ</string></dict>	<!-- くじら座 β Cet 2.02等 -->
+	<dict><key>phrase</key><string>Diphda</string><key>shortcut</key><string>でぃふだ</string></dict>
+	<dict><key>phrase</key><string>アルファルド</string><key>shortcut</key><string>あるふぁるど</string></dict>	<!-- うみへび座 α Hya 1.98等 -->
+	<dict><key>phrase</key><string>Alphard</string><key>shortcut</key><string>あるふぁるど</string></dict>
+	<dict><key>phrase</key><string>ヌンキ</string><key>shortcut</key><string>ぬんき</string></dict>	<!-- いて座 σ Sgr 2.05等 -->
+	<dict><key>phrase</key><string>Nunki</string><key>shortcut</key><string>ぬんき</string></dict>
+	<dict><key>phrase</key><string>メンケント</string><key>shortcut</key><string>めんけんと</string></dict>	<!-- ケンタウルス座 θ Cen 2.06等 -->
+	<dict><key>phrase</key><string>Menkent</string><key>shortcut</key><string>めんけんと</string></dict>
+	<dict><key>phrase</key><string>ミラク</string><key>shortcut</key><string>みらく</string></dict>	<!-- アンドロメダ座 β And 2.05等 -->
+	<dict><key>phrase</key><string>Mirach</string><key>shortcut</key><string>みらく</string></dict>
+	<dict><key>phrase</key><string>アルギエバ</string><key>shortcut</key><string>あるぎえば</string></dict>	<!-- しし座 γ Leo 2.08等 -->
+	<dict><key>phrase</key><string>Algieba</string><key>shortcut</key><string>あるぎえば</string></dict>
+	<dict><key>phrase</key><string>サイフ</string><key>shortcut</key><string>さいふ</string></dict>	<!-- オリオン座 κ Ori 2.09等 -->
+	<dict><key>phrase</key><string>Saiph</string><key>shortcut</key><string>さいふ</string></dict>
+	<dict><key>phrase</key><string>コカブ</string><key>shortcut</key><string>こかぶ</string></dict>	<!-- こぐま座 β UMi 2.08等 -->
+	<dict><key>phrase</key><string>Kochab</string><key>shortcut</key><string>こかぶ</string></dict>
+	<dict><key>phrase</key><string>ラサルハゲ</string><key>shortcut</key><string>らさるはげ</string></dict>	<!-- へびつかい座 α Oph 2.08等 -->
+	<dict><key>phrase</key><string>Rasalhague</string><key>shortcut</key><string>らさるはげ</string></dict>
+	<dict><key>phrase</key><string>アルゴル</string><key>shortcut</key><string>あるごる</string></dict>	<!-- ペルセウス座 β Per 2.12等 -->
+	<dict><key>phrase</key><string>Algol</string><key>shortcut</key><string>あるごる</string></dict>
+	<dict><key>phrase</key><string>アルマク</string><key>shortcut</key><string>あるまく</string></dict>	<!-- アンドロメダ座 γ And 2.10等 -->
+	<dict><key>phrase</key><string>Almach</string><key>shortcut</key><string>あるまく</string></dict>
+	<dict><key>phrase</key><string>デネボラ</string><key>shortcut</key><string>でねぼら</string></dict>	<!-- しし座 β Leo 2.14等 -->
+	<dict><key>phrase</key><string>Denebola</string><key>shortcut</key><string>でねぼら</string></dict>
+	<dict><key>phrase</key><string>ティアキ</string><key>shortcut</key><string>てぃあき</string></dict>	<!-- つる座 β Gru 2.11等 -->
+	<dict><key>phrase</key><string>Tiaki</string><key>shortcut</key><string>てぃあき</string></dict>
+	<dict><key>phrase</key><string>ムリファイン</string><key>shortcut</key><string>むりふぁいん</string></dict>	<!-- ケンタウルス座 γ Cen 2.17等 -->
+	<dict><key>phrase</key><string>Muhlifain</string><key>shortcut</key><string>むりふぁいん</string></dict>
+	<dict><key>phrase</key><string>ナオス</string><key>shortcut</key><string>なおす</string></dict>	<!-- とも座 ζ Pup 2.25等 -->
+	<dict><key>phrase</key><string>Naos</string><key>shortcut</key><string>なおす</string></dict>
+	<dict><key>phrase</key><string>アスピディスケ</string><key>shortcut</key><string>あすぴでぃすけ</string></dict>	<!-- りゅうこつ座 ι Car 2.21等 -->
+	<dict><key>phrase</key><string>Aspidiske</string><key>shortcut</key><string>あすぴでぃすけ</string></dict>
+	<dict><key>phrase</key><string>アルフェッカ</string><key>shortcut</key><string>あるふぇっか</string></dict>	<!-- かんむり座 α CrB 2.23等 -->
+	<dict><key>phrase</key><string>Alphecca</string><key>shortcut</key><string>あるふぇっか</string></dict>
+	<dict><key>phrase</key><string>スハイル</string><key>shortcut</key><string>すはいる</string></dict>	<!-- ほ座 λ Vel 2.21等 -->
+	<dict><key>phrase</key><string>Suhail</string><key>shortcut</key><string>すはいる</string></dict>
+	<dict><key>phrase</key><string>ミザール</string><key>shortcut</key><string>みざーる</string></dict>	<!-- おおぐま座 ζ UMa 2.23等 -->
+	<dict><key>phrase</key><string>Mizar</string><key>shortcut</key><string>みざーる</string></dict>
+	<dict><key>phrase</key><string>サドル</string><key>shortcut</key><string>さどる</string></dict>	<!-- はくちょう座 γ Cyg 2.23等 -->
+	<dict><key>phrase</key><string>Sadr</string><key>shortcut</key><string>さどる</string></dict>
+	<dict><key>phrase</key><string>シェダル</string><key>shortcut</key><string>しぇだる</string></dict>	<!-- カシオペヤ座 α Cas 2.24等 -->
+	<dict><key>phrase</key><string>Schedar</string><key>shortcut</key><string>しぇだる</string></dict>
+	<dict><key>phrase</key><string>エルタニン</string><key>shortcut</key><string>えるたにん</string></dict>	<!-- りゅう座 γ Dra 2.24等 -->
+	<dict><key>phrase</key><string>Eltanin</string><key>shortcut</key><string>えるたにん</string></dict>
+	<dict><key>phrase</key><string>ミンタカ</string><key>shortcut</key><string>みんたか</string></dict>	<!-- オリオン座 δ Ori 2.25等 -->
+	<dict><key>phrase</key><string>Mintaka</string><key>shortcut</key><string>みんたか</string></dict>
+	<dict><key>phrase</key><string>カフ</string><key>shortcut</key><string>かふ</string></dict>	<!-- カシオペヤ座 β Cas 2.28等 -->
+	<dict><key>phrase</key><string>Caph</string><key>shortcut</key><string>かふ</string></dict>
+	<dict><key>phrase</key><string>ジュバ</string><key>shortcut</key><string>じゅば</string></dict>	<!-- さそり座 δ Sco 2.29等 -->
+	<dict><key>phrase</key><string>Dschubba</string><key>shortcut</key><string>じゅば</string></dict>
+	<dict><key>phrase</key><string>ララワグ</string><key>shortcut</key><string>ららわぐ</string></dict>	<!-- さそり座 ε Sco 2.29等 -->
+	<dict><key>phrase</key><string>Larawag</string><key>shortcut</key><string>ららわぐ</string></dict>
+	<dict><key>phrase</key><string>メラク</string><key>shortcut</key><string>めらく</string></dict>	<!-- おおぐま座 β UMa 2.37等 -->
+	<dict><key>phrase</key><string>Merak</string><key>shortcut</key><string>めらく</string></dict>
+	<dict><key>phrase</key><string>イザール</string><key>shortcut</key><string>いざーる</string></dict>	<!-- うしかい座 ε Boo 2.37等 -->
+	<dict><key>phrase</key><string>Izar</string><key>shortcut</key><string>いざーる</string></dict>
+	<dict><key>phrase</key><string>エニフ</string><key>shortcut</key><string>えにふ</string></dict>	<!-- ペガスス座 ε Peg 2.39等 -->
+	<dict><key>phrase</key><string>Enif</string><key>shortcut</key><string>えにふ</string></dict>
+	<dict><key>phrase</key><string>ギルタブ</string><key>shortcut</key><string>ぎるたぶ</string></dict>	<!-- さそり座 κ Sco 2.39等 -->
+	<dict><key>phrase</key><string>Girtab</string><key>shortcut</key><string>ぎるたぶ</string></dict>
+	<dict><key>phrase</key><string>アンカア</string><key>shortcut</key><string>あんかあ</string></dict>	<!-- ほうおう座 α Phe 2.40等 -->
+	<dict><key>phrase</key><string>Ankaa</string><key>shortcut</key><string>あんかあ</string></dict>
+	<dict><key>phrase</key><string>フェクダ</string><key>shortcut</key><string>ふぇくだ</string></dict>	<!-- おおぐま座 γ UMa 2.44等 -->
+	<dict><key>phrase</key><string>Phecda</string><key>shortcut</key><string>ふぇくだ</string></dict>
+	<dict><key>phrase</key><string>サビク</string><key>shortcut</key><string>さびく</string></dict>	<!-- へびつかい座 η Oph 2.43等 -->
+	<dict><key>phrase</key><string>Sabik</string><key>shortcut</key><string>さびく</string></dict>
+	<dict><key>phrase</key><string>シェアト</string><key>shortcut</key><string>しぇあと</string></dict>	<!-- ペガスス座 β Peg 2.42等 -->
+	<dict><key>phrase</key><string>Scheat</string><key>shortcut</key><string>しぇあと</string></dict>
+	<dict><key>phrase</key><string>アルデラミン</string><key>shortcut</key><string>あるでらみん</string></dict>	<!-- ケフェウス座 α Cep 2.45等 -->
+	<dict><key>phrase</key><string>Alderamin</string><key>shortcut</key><string>あるでらみん</string></dict>
+	<dict><key>phrase</key><string>アルドラ</string><key>shortcut</key><string>あるどら</string></dict>	<!-- おおいぬ座 η CMa 2.45等 -->
+	<dict><key>phrase</key><string>Aludra</string><key>shortcut</key><string>あるどら</string></dict>
+	<dict><key>phrase</key><string>アルジャナー</string><key>shortcut</key><string>あるじゃなー</string></dict>	<!-- はくちょう座 ε Cyg 2.46等 -->
+	<dict><key>phrase</key><string>Aljanah</string><key>shortcut</key><string>あるじゃなー</string></dict>
+	<dict><key>phrase</key><string>マルカブ</string><key>shortcut</key><string>まるかぶ</string></dict>	<!-- ペガスス座 α Peg 2.49等 -->
+	<dict><key>phrase</key><string>Markab</string><key>shortcut</key><string>まるかぶ</string></dict>
+
+	<!-- □ 3等星(2.5〜3.5) -->
+	<dict><key>phrase</key><string>マルケブ</string><key>shortcut</key><string>まるけぶ</string></dict>	<!-- ほ座 κ Vel 2.50等 -->
+	<dict><key>phrase</key><string>Markeb</string><key>shortcut</key><string>まるけぶ</string></dict>
+	<dict><key>phrase</key><string>メンカル</string><key>shortcut</key><string>めんかる</string></dict>	<!-- くじら座 α Cet 2.53等 -->
+	<dict><key>phrase</key><string>Menkar</string><key>shortcut</key><string>めんかる</string></dict>
+	<dict><key>phrase</key><string>ゾスマ</string><key>shortcut</key><string>ぞすま</string></dict>	<!-- しし座 δ Leo 2.56等 -->
+	<dict><key>phrase</key><string>Zosma</string><key>shortcut</key><string>ぞすま</string></dict>
+	<dict><key>phrase</key><string>アクラブ</string><key>shortcut</key><string>あくらぶ</string></dict>	<!-- さそり座 β Sco 2.56等 -->
+	<dict><key>phrase</key><string>Acrab</string><key>shortcut</key><string>あくらぶ</string></dict>
+	<dict><key>phrase</key><string>ギェナー</string><key>shortcut</key><string>ぎぇなー</string></dict>	<!-- からす座 γ Crv 2.59等 -->
+	<dict><key>phrase</key><string>Gienah</string><key>shortcut</key><string>ぎぇなー</string></dict>
+	<dict><key>phrase</key><string>ズベン・エスカマリ</string><key>shortcut</key><string>ずべんえすかまり</string></dict>	<!-- てんびん座 β Lib 2.61等 -->
+	<dict><key>phrase</key><string>Zubeneschamali</string><key>shortcut</key><string>ずべんえすかまり</string></dict>
+	<dict><key>phrase</key><string>ウヌクアルハイ</string><key>shortcut</key><string>うぬくあるはい</string></dict>	<!-- へび座 α Ser 2.63等 -->
+	<dict><key>phrase</key><string>Unukalhai</string><key>shortcut</key><string>うぬくあるはい</string></dict>
+	<dict><key>phrase</key><string>シェラタン</string><key>shortcut</key><string>しぇらたん</string></dict>	<!-- おひつじ座 β Ari 2.64等 -->
+	<dict><key>phrase</key><string>Sheratan</string><key>shortcut</key><string>しぇらたん</string></dict>
+	<dict><key>phrase</key><string>アスケラ</string><key>shortcut</key><string>あすけら</string></dict>	<!-- いて座 ζ Sgr 2.60等 -->
+	<dict><key>phrase</key><string>Ascella</string><key>shortcut</key><string>あすけら</string></dict>
+	<dict><key>phrase</key><string>クラズ</string><key>shortcut</key><string>くらず</string></dict>	<!-- からす座 β Crv 2.65等 -->
+	<dict><key>phrase</key><string>Kraz</string><key>shortcut</key><string>くらず</string></dict>
+	<dict><key>phrase</key><string>マハシム</string><key>shortcut</key><string>まはしむ</string></dict>	<!-- ぎょしゃ座 θ Aur 2.65等 -->
+	<dict><key>phrase</key><string>Mahasim</string><key>shortcut</key><string>まはしむ</string></dict>
+	<dict><key>phrase</key><string>ハッサレー</string><key>shortcut</key><string>はっされー</string></dict>	<!-- ぎょしゃ座 ι Aur 2.69等 -->
+	<dict><key>phrase</key><string>Hassaleh</string><key>shortcut</key><string>はっされー</string></dict>
+	<dict><key>phrase</key><string>ルクバー</string><key>shortcut</key><string>るくばー</string></dict>	<!-- カシオペヤ座 δ Cas 2.68等 -->
+	<dict><key>phrase</key><string>Ruchbah</string><key>shortcut</key><string>るくばー</string></dict>
+	<dict><key>phrase</key><string>カウス・メディア</string><key>shortcut</key><string>かうすめでぃあ</string></dict>	<!-- いて座 δ Sgr 2.70等 -->
+	<dict><key>phrase</key><string>Kaus Media</string><key>shortcut</key><string>かうすめでぃあ</string></dict>
+	<dict><key>phrase</key><string>タラゼド</string><key>shortcut</key><string>たらぜど</string></dict>	<!-- わし座 γ Aql 2.72等 -->
+	<dict><key>phrase</key><string>Tarazed</string><key>shortcut</key><string>たらぜど</string></dict>
+	<dict><key>phrase</key><string>ムフリッド</string><key>shortcut</key><string>むふりっど</string></dict>	<!-- うしかい座 η Boo 2.68等 -->
+	<dict><key>phrase</key><string>Muphrid</string><key>shortcut</key><string>むふりっど</string></dict>
+	<dict><key>phrase</key><string>ポリマ</string><key>shortcut</key><string>ぽりま</string></dict>	<!-- おとめ座 γ Vir 2.74等 -->
+	<dict><key>phrase</key><string>Porrima</string><key>shortcut</key><string>ぽりま</string></dict>
+	<dict><key>phrase</key><string>ズベン・エルゲヌビ</string><key>shortcut</key><string>ずべんえるげぬび</string></dict>	<!-- てんびん座 α Lib 2.75等 -->
+	<dict><key>phrase</key><string>Zubenelgenubi</string><key>shortcut</key><string>ずべんえるげぬび</string></dict>
+	<dict><key>phrase</key><string>レサト</string><key>shortcut</key><string>れさと</string></dict>	<!-- さそり座 υ Sco 2.70等 -->
+	<dict><key>phrase</key><string>Lesath</string><key>shortcut</key><string>れさと</string></dict>
+	<dict><key>phrase</key><string>イエド・プリオル</string><key>shortcut</key><string>いえどぷりおる</string></dict>	<!-- へびつかい座 δ Oph 2.73等 -->
+	<dict><key>phrase</key><string>Yed Prior</string><key>shortcut</key><string>いえどぷりおる</string></dict>
+	<dict><key>phrase</key><string>ケバルライ</string><key>shortcut</key><string>けばるらい</string></dict>	<!-- へびつかい座 β Oph 2.76等 -->
+	<dict><key>phrase</key><string>Cebalrai</string><key>shortcut</key><string>けばるらい</string></dict>
+	<dict><key>phrase</key><string>ラスタバン</string><key>shortcut</key><string>らすたばん</string></dict>	<!-- りゅう座 β Dra 2.79等 -->
+	<dict><key>phrase</key><string>Rastaban</string><key>shortcut</key><string>らすたばん</string></dict>
+	<dict><key>phrase</key><string>コルネフォロス</string><key>shortcut</key><string>こるねふぉろす</string></dict>	<!-- ヘルクレス座 β Her 2.78等 -->
+	<dict><key>phrase</key><string>Kornephoros</string><key>shortcut</key><string>こるねふぉろす</string></dict>
+	<dict><key>phrase</key><string>トゥレイス</string><key>shortcut</key><string>とぅれいす</string></dict>	<!-- とも座 ρ Pup 2.78等 -->
+	<dict><key>phrase</key><string>Tureis</string><key>shortcut</key><string>とぅれいす</string></dict>
+	<dict><key>phrase</key><string>パイカウハレ</string><key>shortcut</key><string>ぱいかうはれ</string></dict>	<!-- さそり座 τ Sco 2.82等 -->
+	<dict><key>phrase</key><string>Paikauhale</string><key>shortcut</key><string>ぱいかうはれ</string></dict>
+	<dict><key>phrase</key><string>イマイ</string><key>shortcut</key><string>いまい</string></dict>	<!-- みなみじゅうじ座 δ Cru 2.79等 -->
+	<dict><key>phrase</key><string>Imai</string><key>shortcut</key><string>いまい</string></dict>
+	<dict><key>phrase</key><string>アルゲニブ</string><key>shortcut</key><string>あるげにぶ</string></dict>	<!-- ペガスス座 γ Peg 2.83等 -->
+	<dict><key>phrase</key><string>Algenib</string><key>shortcut</key><string>あるげにぶ</string></dict>
+	<dict><key>phrase</key><string>クルサ</string><key>shortcut</key><string>くるさ</string></dict>	<!-- エリダヌス座 β Eri 2.79等 -->
+	<dict><key>phrase</key><string>Cursa</string><key>shortcut</key><string>くるさ</string></dict>
+	<dict><key>phrase</key><string>カウス・ボレアリス</string><key>shortcut</key><string>かうすぼれありす</string></dict>	<!-- いて座 λ Sgr 2.81等 -->
+	<dict><key>phrase</key><string>Kaus Borealis</string><key>shortcut</key><string>かうすぼれありす</string></dict>
+	<dict><key>phrase</key><string>ヴィンデミアトリックス</string><key>shortcut</key><string>ゔぃんでみあとりっくす</string></dict>	<!-- おとめ座 ε Vir 2.83等 -->
+	<dict><key>phrase</key><string>Vindemiatrix</string><key>shortcut</key><string>ゔぃんでみあとりっくす</string></dict>
+	<dict><key>phrase</key><string>アルバルダー</string><key>shortcut</key><string>あるばるだー</string></dict>	<!-- いて座 π Sgr 2.89等 -->
+	<dict><key>phrase</key><string>Albaldah</string><key>shortcut</key><string>あるばるだー</string></dict>
+	<dict><key>phrase</key><string>アルシオネ</string><key>shortcut</key><string>あるしおね</string></dict>	<!-- おうし座 η Tau 2.87等 -->
+	<dict><key>phrase</key><string>Alcyone</string><key>shortcut</key><string>あるしおね</string></dict>
+	<dict><key>phrase</key><string>デネブ・アルゲディ</string><key>shortcut</key><string>でねぶあるげでぃ</string></dict>	<!-- やぎ座 δ Cap 2.87等 -->
+	<dict><key>phrase</key><string>Deneb Algedi</string><key>shortcut</key><string>でねぶあるげでぃ</string></dict>
+	<dict><key>phrase</key><string>ザウラク</string><key>shortcut</key><string>ざうらく</string></dict>	<!-- エリダヌス座 γ Eri 2.95等 -->
+	<dict><key>phrase</key><string>Zaurak</string><key>shortcut</key><string>ざうらく</string></dict>
+	<dict><key>phrase</key><string>アカマル</string><key>shortcut</key><string>あかまる</string></dict>	<!-- エリダヌス座 θ Eri 2.88等 -->
+	<dict><key>phrase</key><string>Acamar</string><key>shortcut</key><string>あかまる</string></dict>
+	<dict><key>phrase</key><string>ファング</string><key>shortcut</key><string>ふぁんぐ</string></dict>	<!-- さそり座 π Sco 2.89等 -->
+	<dict><key>phrase</key><string>Fang</string><key>shortcut</key><string>ふぁんぐ</string></dict>
+	<dict><key>phrase</key><string>ゴメイサ</string><key>shortcut</key><string>ごめいさ</string></dict>	<!-- こいぬ座 β CMi 2.89等 -->
+	<dict><key>phrase</key><string>Gomeisa</string><key>shortcut</key><string>ごめいさ</string></dict>
+	<dict><key>phrase</key><string>マタル</string><key>shortcut</key><string>またる</string></dict>	<!-- ペガスス座 η Peg 2.94等 -->
+	<dict><key>phrase</key><string>Matar</string><key>shortcut</key><string>またる</string></dict>
+	<dict><key>phrase</key><string>テジャト</string><key>shortcut</key><string>てじゃと</string></dict>	<!-- ふたご座 μ Gem 2.87等 -->
+	<dict><key>phrase</key><string>Tejat</string><key>shortcut</key><string>てじゃと</string></dict>
+	<dict><key>phrase</key><string>サダルスウド</string><key>shortcut</key><string>さだるすうど</string></dict>	<!-- みずがめ座 β Aqr 2.87等 -->
+	<dict><key>phrase</key><string>Sadalsuud</string><key>shortcut</key><string>さだるすうど</string></dict>
+	<dict><key>phrase</key><string>コル・カロリ</string><key>shortcut</key><string>こるかろり</string></dict>	<!-- りょうけん座 α CVn 2.90等 -->
+	<dict><key>phrase</key><string>Cor Caroli</string><key>shortcut</key><string>こるかろり</string></dict>
+	<dict><key>phrase</key><string>アルゴラブ</string><key>shortcut</key><string>あるごらぶ</string></dict>	<!-- からす座 δ Crv 2.94等 -->
+	<dict><key>phrase</key><string>Algorab</string><key>shortcut</key><string>あるごらぶ</string></dict>
+	<dict><key>phrase</key><string>アルナスル</string><key>shortcut</key><string>あるなする</string></dict>	<!-- いて座 γ Sgr 2.98等 -->
+	<dict><key>phrase</key><string>Alnasl</string><key>shortcut</key><string>あるなする</string></dict>
+	<dict><key>phrase</key><string>フルド</string><key>shortcut</key><string>ふるど</string></dict>	<!-- おおいぬ座 ζ CMa 3.02等 -->
+	<dict><key>phrase</key><string>Furud</string><key>shortcut</key><string>ふるど</string></dict>
+	<dict><key>phrase</key><string>メブスタ</string><key>shortcut</key><string>めぶすた</string></dict>	<!-- ふたご座 ε Gem 3.06等 -->
+	<dict><key>phrase</key><string>Mebsuta</string><key>shortcut</key><string>めぶすた</string></dict>
+	<dict><key>phrase</key><string>サダルメリク</string><key>shortcut</key><string>さだるめりく</string></dict>	<!-- みずがめ座 α Aqr 2.94等 -->
+	<dict><key>phrase</key><string>Sadalmelik</string><key>shortcut</key><string>さだるめりく</string></dict>
+	<dict><key>phrase</key><string>アルマーズ</string><key>shortcut</key><string>あるまーず</string></dict>	<!-- ぎょしゃ座 ε Aur 3.03等 -->
+	<dict><key>phrase</key><string>Almaaz</string><key>shortcut</key><string>あるまーず</string></dict>
+	<dict><key>phrase</key><string>アルニヤト</string><key>shortcut</key><string>あるにやと</string></dict>	<!-- さそり座 σ Sco 2.88等 -->
+	<dict><key>phrase</key><string>Alniyat</string><key>shortcut</key><string>あるにやと</string></dict>
+	<dict><key>phrase</key><string>フェルカド</string><key>shortcut</key><string>ふぇるかど</string></dict>	<!-- こぐま座 γ UMi 3.05等 -->
+	<dict><key>phrase</key><string>Pherkad</string><key>shortcut</key><string>ふぇるかど</string></dict>
+	<dict><key>phrase</key><string>アルビレオ</string><key>shortcut</key><string>あるびれお</string></dict>	<!-- はくちょう座 β Cyg 3.08等 -->
+	<dict><key>phrase</key><string>Albireo</string><key>shortcut</key><string>あるびれお</string></dict>
+	<dict><key>phrase</key><string>ダビー</string><key>shortcut</key><string>だびー</string></dict>	<!-- やぎ座 β Cap 3.05等 -->
+	<dict><key>phrase</key><string>Dabih</string><key>shortcut</key><string>だびー</string></dict>
+	<dict><key>phrase</key><string>タリタ</string><key>shortcut</key><string>たりた</string></dict>	<!-- おおぐま座 ι UMa 3.14等 -->
+	<dict><key>phrase</key><string>Talitha</string><key>shortcut</key><string>たりた</string></dict>
+	<dict><key>phrase</key><string>タニア・アウストラリス</string><key>shortcut</key><string>たにああうすとらりす</string></dict>	<!-- おおぐま座 μ UMa 3.06等 -->
+	<dict><key>phrase</key><string>Tania Australis</string><key>shortcut</key><string>たにああうすとらりす</string></dict>
+	<dict><key>phrase</key><string>アルタイス</string><key>shortcut</key><string>あるたいす</string></dict>	<!-- りゅう座 δ Dra 3.07等 -->
+	<dict><key>phrase</key><string>Altais</string><key>shortcut</key><string>あるたいす</string></dict>
+	<dict><key>phrase</key><string>ラス・アルゲティ</string><key>shortcut</key><string>らすあるげてぃ</string></dict>	<!-- ヘルクレス座 α Her 3.08等 -->
+	<dict><key>phrase</key><string>Rasalgethi</string><key>shortcut</key><string>らすあるげてぃ</string></dict>
+	<dict><key>phrase</key><string>セギヌス</string><key>shortcut</key><string>せぎぬす</string></dict>	<!-- うしかい座 γ Boo 3.03等 -->
+	<dict><key>phrase</key><string>Seginus</string><key>shortcut</key><string>せぎぬす</string></dict>
+	<dict><key>phrase</key><string>アルフィルク</string><key>shortcut</key><string>あるふぃるく</string></dict>	<!-- ケフェウス座 β Cep 3.23等 -->
+	<dict><key>phrase</key><string>Alfirk</string><key>shortcut</key><string>あるふぃるく</string></dict>
+	<dict><key>phrase</key><string>エラキス</string><key>shortcut</key><string>えらきす</string></dict>	<!-- ケフェウス座 γ Cep 3.21等 -->
+	<dict><key>phrase</key><string>Errai</string><key>shortcut</key><string>えらきす</string></dict>
+	<dict><key>phrase</key><string>スラファト</string><key>shortcut</key><string>すらふぁと</string></dict>	<!-- こと座 γ Lyr 3.25等 -->
+	<dict><key>phrase</key><string>Sulafat</string><key>shortcut</key><string>すらふぁと</string></dict>
+	<dict><key>phrase</key><string>スカト</string><key>shortcut</key><string>すかと</string></dict>	<!-- みずがめ座 δ Aqr 3.27等 -->
+	<dict><key>phrase</key><string>Skat</string><key>shortcut</key><string>すかと</string></dict>
+	<dict><key>phrase</key><string>メグレズ</string><key>shortcut</key><string>めぐれず</string></dict>	<!-- おおぐま座 δ UMa 3.31等 -->
+	<dict><key>phrase</key><string>Megrez</string><key>shortcut</key><string>めぐれず</string></dict>
+	<dict><key>phrase</key><string>プロプス</string><key>shortcut</key><string>ぷろぷす</string></dict>	<!-- ふたご座 η Gem 3.31等 -->
+	<dict><key>phrase</key><string>Propus</string><key>shortcut</key><string>ぷろぷす</string></dict>
+	<dict><key>phrase</key><string>チェルタン</string><key>shortcut</key><string>ちぇるたん</string></dict>	<!-- しし座 θ Leo 3.33等 -->
+	<dict><key>phrase</key><string>Chertan</string><key>shortcut</key><string>ちぇるたん</string></dict>
+	<dict><key>phrase</key><string>セギン</string><key>shortcut</key><string>せぎん</string></dict>	<!-- カシオペヤ座 ε Cas 3.37等 -->
+	<dict><key>phrase</key><string>Segin</string><key>shortcut</key><string>せぎん</string></dict>
+	<dict><key>phrase</key><string>ムスキダ</string><key>shortcut</key><string>むすきだ</string></dict>	<!-- おおぐま座 ο UMa 3.35等 -->
+	<dict><key>phrase</key><string>Muscida</string><key>shortcut</key><string>むすきだ</string></dict>
+	<dict><key>phrase</key><string>ホマム</string><key>shortcut</key><string>ほまむ</string></dict>	<!-- ペガスス座 ζ Peg 3.40等 -->
+	<dict><key>phrase</key><string>Homam</string><key>shortcut</key><string>ほまむ</string></dict>
+	<dict><key>phrase</key><string>ミラ</string><key>shortcut</key><string>みら</string></dict>	<!-- くじら座 ο Cet 3.40等 -->
+	<dict><key>phrase</key><string>Mira</string><key>shortcut</key><string>みら</string></dict>
+
+	<!-- □ 4等星以下・その他のよく知られた星 -->
+	<dict><key>phrase</key><string>タニア・ボレアリス</string><key>shortcut</key><string>たにあぼれありす</string></dict>	<!-- おおぐま座 λ UMa 3.45等 -->
+	<dict><key>phrase</key><string>Tania Borealis</string><key>shortcut</key><string>たにあぼれありす</string></dict>
+	<dict><key>phrase</key><string>ワサト</string><key>shortcut</key><string>わさと</string></dict>	<!-- ふたご座 δ Gem 3.53等 -->
+	<dict><key>phrase</key><string>Wasat</string><key>shortcut</key><string>わさと</string></dict>
+	<dict><key>phrase</key><string>シェリアク</string><key>shortcut</key><string>しぇりあく</string></dict>	<!-- こと座 β Lyr 3.52等 -->
+	<dict><key>phrase</key><string>Sheliak</string><key>shortcut</key><string>しぇりあく</string></dict>
+	<dict><key>phrase</key><string>ネッカル</string><key>shortcut</key><string>ねっかる</string></dict>	<!-- うしかい座 β Boo 3.49等 -->
+	<dict><key>phrase</key><string>Nekkar</string><key>shortcut</key><string>ねっかる</string></dict>
+	<dict><key>phrase</key><string>ビハム</string><key>shortcut</key><string>びはむ</string></dict>	<!-- ペガスス座 θ Peg 3.52等 -->
+	<dict><key>phrase</key><string>Biham</string><key>shortcut</key><string>びはむ</string></dict>
+	<dict><key>phrase</key><string>ギナン</string><key>shortcut</key><string>ぎなん</string></dict>	<!-- みなみじゅうじ座 ε Cru 3.59等 -->
+	<dict><key>phrase</key><string>Ginan</string><key>shortcut</key><string>ぎなん</string></dict>
+	<dict><key>phrase</key><string>アルゲディ</string><key>shortcut</key><string>あるげでぃ</string></dict>	<!-- やぎ座 α2 Cap 3.57等 -->
+	<dict><key>phrase</key><string>Algedi</string><key>shortcut</key><string>あるげでぃ</string></dict>
+	<dict><key>phrase</key><string>トゥバン</string><key>shortcut</key><string>とぅばん</string></dict>	<!-- りゅう座 α Dra 3.65等 -->
+	<dict><key>phrase</key><string>Thuban</string><key>shortcut</key><string>とぅばん</string></dict>
+	<dict><key>phrase</key><string>ナシラ</string><key>shortcut</key><string>なしら</string></dict>	<!-- やぎ座 γ Cap 3.69等 -->
+	<dict><key>phrase</key><string>Nashira</string><key>shortcut</key><string>なしら</string></dict>
+	<dict><key>phrase</key><string>バテン・カイトス</string><key>shortcut</key><string>ばてんかいとす</string></dict>	<!-- くじら座 ζ Cet 3.74等 -->
+	<dict><key>phrase</key><string>Baten Kaitos</string><key>shortcut</key><string>ばてんかいとす</string></dict>
+	<dict><key>phrase</key><string>アルシャイン</string><key>shortcut</key><string>あるしゃいん</string></dict>	<!-- わし座 β Aql 3.71等 -->
+	<dict><key>phrase</key><string>Alshain</string><key>shortcut</key><string>あるしゃいん</string></dict>
+	<dict><key>phrase</key><string>ヌサカン</string><key>shortcut</key><string>ぬさかん</string></dict>	<!-- かんむり座 β CrB 3.68等 -->
+	<dict><key>phrase</key><string>Nusakan</string><key>shortcut</key><string>ぬさかん</string></dict>
+	<dict><key>phrase</key><string>アルレシャ</string><key>shortcut</key><string>あるれしゃ</string></dict>	<!-- うお座 α Psc 3.82等 -->
+	<dict><key>phrase</key><string>Alrescha</string><key>shortcut</key><string>あるれしゃ</string></dict>
+	<dict><key>phrase</key><string>アルラ・アウストラリス</string><key>shortcut</key><string>あるらあうすとらりす</string></dict>	<!-- おおぐま座 ξ UMa 3.79等 -->
+	<dict><key>phrase</key><string>Alula Australis</string><key>shortcut</key><string>あるらあうすとらりす</string></dict>
+	<dict><key>phrase</key><string>メサルティム</string><key>shortcut</key><string>めさるてぃむ</string></dict>	<!-- おひつじ座 γ Ari 3.86等 -->
+	<dict><key>phrase</key><string>Mesarthim</string><key>shortcut</key><string>めさるてぃむ</string></dict>
+	<dict><key>phrase</key><string>ズベン・エラクラブ</string><key>shortcut</key><string>ずべんえらくらぶ</string></dict>	<!-- てんびん座 γ Lib 3.91等 -->
+	<dict><key>phrase</key><string>Zubenelhakrabi</string><key>shortcut</key><string>ずべんえらくらぶ</string></dict>
+	<dict><key>phrase</key><string>アルコル</string><key>shortcut</key><string>あるこる</string></dict>	<!-- おおぐま座 80 UMa 3.99等 -->
+	<dict><key>phrase</key><string>Alcor</string><key>shortcut</key><string>あるこる</string></dict>
+	<dict><key>phrase</key><string>メンキブ</string><key>shortcut</key><string>めんきぶ</string></dict>	<!-- ペルセウス座 ξ Per 4.04等 -->
+	<dict><key>phrase</key><string>Menkib</string><key>shortcut</key><string>めんきぶ</string></dict>
+	<dict><key>phrase</key><string>アルケス</string><key>shortcut</key><string>あるけす</string></dict>	<!-- コップ座 α Crt 4.07等 -->
+	<dict><key>phrase</key><string>Alkes</string><key>shortcut</key><string>あるけす</string></dict>
+	<dict><key>phrase</key><string>チャラ</string><key>shortcut</key><string>ちゃら</string></dict>	<!-- りょうけん座 β CVn 4.26等 -->
+	<dict><key>phrase</key><string>Chara</string><key>shortcut</key><string>ちゃら</string></dict>
+	<dict><key>phrase</key><string>アルカルロプス</string><key>shortcut</key><string>あるかるろぷす</string></dict>	<!-- うしかい座 μ Boo 4.31等 -->
+	<dict><key>phrase</key><string>Alkalurops</string><key>shortcut</key><string>あるかるろぷす</string></dict>
+	<dict><key>phrase</key><string>アルヤ</string><key>shortcut</key><string>あるや</string></dict>	<!-- へび座 θ Ser 4.62等 -->
+	<dict><key>phrase</key><string>Alya</string><key>shortcut</key><string>あるや</string></dict>
+	<dict><key>phrase</key><string>バーナード星</string><key>shortcut</key><string>ばーなーどせい</string></dict>	<!-- へびつかい座 9.5等 -->
+	<dict><key>phrase</key><string>Barnard's Star</string><key>shortcut</key><string>ばーなーどせい</string></dict>
+	<dict><key>phrase</key><string>プロキシマ・ケンタウリ</string><key>shortcut</key><string>ぷろきしまけんたうり</string></dict>	<!-- ケンタウルス座 α Cen C 11.1等 -->
+	<dict><key>phrase</key><string>Proxima Centauri</string><key>shortcut</key><string>ぷろきしまけんたうり</string></dict>
+
+	<!-- □ 別表記・和名 -->
+	<dict><key>phrase</key><string>アークトゥルス</string><key>shortcut</key><string>あーくとぅるす</string></dict>	<!-- うしかい座 α Boo。アルクトゥルス の別表記 -->
+	<dict><key>phrase</key><string>デネブ・カイトス</string><key>shortcut</key><string>でねぶかいとす</string></dict>	<!-- くじら座 β Cet。Diphda の別名 -->
+	<dict><key>phrase</key><string>北極星</string><key>shortcut</key><string>ほっきょくせい</string></dict>	<!-- こぐま座 α UMi。ポラリス -->
+	<dict><key>phrase</key><string>プロキシマ</string><key>shortcut</key><string>ぷろきしま</string></dict>	<!-- ケンタウルス座 α Cen C。プロキシマ・ケンタウリ の略 -->
+
+	<!-- ■ 88 星座(日本天文学会の和名と IAU ラテン語名。ラテン語名の読みはラテン語読み) -->
+	<dict><key>phrase</key><string>アンドロメダ座</string><key>shortcut</key><string>あんどろめだざ</string></dict>
+	<dict><key>phrase</key><string>Andromeda</string><key>shortcut</key><string>あんどろめだ</string></dict>	<!-- アンドロメダ座 -->
+	<dict><key>phrase</key><string>いっかくじゅう座</string><key>shortcut</key><string>いっかくじゅうざ</string></dict>
+	<dict><key>phrase</key><string>Monoceros</string><key>shortcut</key><string>ものけろす</string></dict>	<!-- いっかくじゅう座 -->
+	<dict><key>phrase</key><string>いて座</string><key>shortcut</key><string>いてざ</string></dict>
+	<dict><key>phrase</key><string>Sagittarius</string><key>shortcut</key><string>さぎったりうす</string></dict>	<!-- いて座 -->
+	<dict><key>phrase</key><string>いるか座</string><key>shortcut</key><string>いるかざ</string></dict>
+	<dict><key>phrase</key><string>Delphinus</string><key>shortcut</key><string>でるふぃぬす</string></dict>	<!-- いるか座 -->
+	<dict><key>phrase</key><string>インディアン座</string><key>shortcut</key><string>いんでぃあんざ</string></dict>
+	<dict><key>phrase</key><string>Indus</string><key>shortcut</key><string>いんどぅす</string></dict>	<!-- インディアン座 -->
+	<dict><key>phrase</key><string>うお座</string><key>shortcut</key><string>うおざ</string></dict>
+	<dict><key>phrase</key><string>Pisces</string><key>shortcut</key><string>ぴすけす</string></dict>	<!-- うお座 -->
+	<dict><key>phrase</key><string>うさぎ座</string><key>shortcut</key><string>うさぎざ</string></dict>
+	<dict><key>phrase</key><string>Lepus</string><key>shortcut</key><string>れぷす</string></dict>	<!-- うさぎ座 -->
+	<dict><key>phrase</key><string>うしかい座</string><key>shortcut</key><string>うしかいざ</string></dict>
+	<dict><key>phrase</key><string>Boötes</string><key>shortcut</key><string>ぼおてす</string></dict>	<!-- うしかい座 -->
+	<dict><key>phrase</key><string>うみへび座</string><key>shortcut</key><string>うみへびざ</string></dict>
+	<dict><key>phrase</key><string>Hydra</string><key>shortcut</key><string>ひどら</string></dict>	<!-- うみへび座 -->
+	<dict><key>phrase</key><string>エリダヌス座</string><key>shortcut</key><string>えりだぬすざ</string></dict>
+	<dict><key>phrase</key><string>Eridanus</string><key>shortcut</key><string>えりだぬす</string></dict>	<!-- エリダヌス座 -->
+	<dict><key>phrase</key><string>おうし座</string><key>shortcut</key><string>おうしざ</string></dict>
+	<dict><key>phrase</key><string>Taurus</string><key>shortcut</key><string>たうるす</string></dict>	<!-- おうし座 -->
+	<dict><key>phrase</key><string>おおいぬ座</string><key>shortcut</key><string>おおいぬざ</string></dict>
+	<dict><key>phrase</key><string>Canis Major</string><key>shortcut</key><string>かにすまいよる</string></dict>	<!-- おおいぬ座 -->
+	<dict><key>phrase</key><string>おおかみ座</string><key>shortcut</key><string>おおかみざ</string></dict>
+	<dict><key>phrase</key><string>Lupus</string><key>shortcut</key><string>るぷす</string></dict>	<!-- おおかみ座 -->
+	<dict><key>phrase</key><string>おおぐま座</string><key>shortcut</key><string>おおぐまざ</string></dict>
+	<dict><key>phrase</key><string>Ursa Major</string><key>shortcut</key><string>うるさまいよる</string></dict>	<!-- おおぐま座 -->
+	<dict><key>phrase</key><string>おとめ座</string><key>shortcut</key><string>おとめざ</string></dict>
+	<dict><key>phrase</key><string>Virgo</string><key>shortcut</key><string>うぃるご</string></dict>	<!-- おとめ座 -->
+	<dict><key>phrase</key><string>おひつじ座</string><key>shortcut</key><string>おひつじざ</string></dict>
+	<dict><key>phrase</key><string>Aries</string><key>shortcut</key><string>ありえす</string></dict>	<!-- おひつじ座 -->
+	<dict><key>phrase</key><string>オリオン座</string><key>shortcut</key><string>おりおんざ</string></dict>
+	<dict><key>phrase</key><string>Orion</string><key>shortcut</key><string>おりおん</string></dict>	<!-- オリオン座 -->
+	<dict><key>phrase</key><string>がか座</string><key>shortcut</key><string>がかざ</string></dict>
+	<dict><key>phrase</key><string>Pictor</string><key>shortcut</key><string>ぴくとる</string></dict>	<!-- がか座 -->
+	<dict><key>phrase</key><string>カシオペヤ座</string><key>shortcut</key><string>かしおぺやざ</string></dict>
+	<dict><key>phrase</key><string>Cassiopeia</string><key>shortcut</key><string>かっしおぺいあ</string></dict>	<!-- カシオペヤ座 -->
+	<dict><key>phrase</key><string>かじき座</string><key>shortcut</key><string>かじきざ</string></dict>
+	<dict><key>phrase</key><string>Dorado</string><key>shortcut</key><string>どらど</string></dict>	<!-- かじき座 -->
+	<dict><key>phrase</key><string>かに座</string><key>shortcut</key><string>かにざ</string></dict>
+	<dict><key>phrase</key><string>Cancer</string><key>shortcut</key><string>かんける</string></dict>	<!-- かに座 -->
+	<dict><key>phrase</key><string>かみのけ座</string><key>shortcut</key><string>かみのけざ</string></dict>
+	<dict><key>phrase</key><string>Coma Berenices</string><key>shortcut</key><string>こまべれにけす</string></dict>	<!-- かみのけ座 -->
+	<dict><key>phrase</key><string>カメレオン座</string><key>shortcut</key><string>かめれおんざ</string></dict>
+	<dict><key>phrase</key><string>Chamaeleon</string><key>shortcut</key><string>かまえれおん</string></dict>	<!-- カメレオン座 -->
+	<dict><key>phrase</key><string>からす座</string><key>shortcut</key><string>からすざ</string></dict>
+	<dict><key>phrase</key><string>Corvus</string><key>shortcut</key><string>こるうぃす</string></dict>	<!-- からす座 -->
+	<dict><key>phrase</key><string>かんむり座</string><key>shortcut</key><string>かんむりざ</string></dict>
+	<dict><key>phrase</key><string>Corona Borealis</string><key>shortcut</key><string>ころなぼれありす</string></dict>	<!-- かんむり座 -->
+	<dict><key>phrase</key><string>きょしちょう座</string><key>shortcut</key><string>きょしちょうざ</string></dict>
+	<dict><key>phrase</key><string>Tucana</string><key>shortcut</key><string>とぅかな</string></dict>	<!-- きょしちょう座 -->
+	<dict><key>phrase</key><string>ぎょしゃ座</string><key>shortcut</key><string>ぎょしゃざ</string></dict>
+	<dict><key>phrase</key><string>Auriga</string><key>shortcut</key><string>あうりが</string></dict>	<!-- ぎょしゃ座 -->
+	<dict><key>phrase</key><string>きりん座</string><key>shortcut</key><string>きりんざ</string></dict>
+	<dict><key>phrase</key><string>Camelopardalis</string><key>shortcut</key><string>かめろぱるだりす</string></dict>	<!-- きりん座 -->
+	<dict><key>phrase</key><string>くじゃく座</string><key>shortcut</key><string>くじゃくざ</string></dict>
+	<dict><key>phrase</key><string>Pavo</string><key>shortcut</key><string>ぱうぉ</string></dict>	<!-- くじゃく座 -->
+	<dict><key>phrase</key><string>くじら座</string><key>shortcut</key><string>くじらざ</string></dict>
+	<dict><key>phrase</key><string>Cetus</string><key>shortcut</key><string>けとぅす</string></dict>	<!-- くじら座 -->
+	<dict><key>phrase</key><string>ケフェウス座</string><key>shortcut</key><string>けふぇうすざ</string></dict>
+	<dict><key>phrase</key><string>Cepheus</string><key>shortcut</key><string>けふぇうす</string></dict>	<!-- ケフェウス座 -->
+	<dict><key>phrase</key><string>ケンタウルス座</string><key>shortcut</key><string>けんたうるすざ</string></dict>
+	<dict><key>phrase</key><string>Centaurus</string><key>shortcut</key><string>けんたうるす</string></dict>	<!-- ケンタウルス座 -->
+	<dict><key>phrase</key><string>けんびきょう座</string><key>shortcut</key><string>けんびきょうざ</string></dict>
+	<dict><key>phrase</key><string>Microscopium</string><key>shortcut</key><string>みくろすこぴうむ</string></dict>	<!-- けんびきょう座 -->
+	<dict><key>phrase</key><string>こいぬ座</string><key>shortcut</key><string>こいぬざ</string></dict>
+	<dict><key>phrase</key><string>Canis Minor</string><key>shortcut</key><string>かにすみのる</string></dict>	<!-- こいぬ座 -->
+	<dict><key>phrase</key><string>こうま座</string><key>shortcut</key><string>こうまざ</string></dict>
+	<dict><key>phrase</key><string>Equuleus</string><key>shortcut</key><string>えくうれうす</string></dict>	<!-- こうま座 -->
+	<dict><key>phrase</key><string>こぎつね座</string><key>shortcut</key><string>こぎつねざ</string></dict>
+	<dict><key>phrase</key><string>Vulpecula</string><key>shortcut</key><string>うるぺくら</string></dict>	<!-- こぎつね座 -->
+	<dict><key>phrase</key><string>こぐま座</string><key>shortcut</key><string>こぐまざ</string></dict>
+	<dict><key>phrase</key><string>Ursa Minor</string><key>shortcut</key><string>うるさみのる</string></dict>	<!-- こぐま座 -->
+	<dict><key>phrase</key><string>こじし座</string><key>shortcut</key><string>こじしざ</string></dict>
+	<dict><key>phrase</key><string>Leo Minor</string><key>shortcut</key><string>れおみのる</string></dict>	<!-- こじし座 -->
+	<dict><key>phrase</key><string>コップ座</string><key>shortcut</key><string>こっぷざ</string></dict>
+	<dict><key>phrase</key><string>Crater</string><key>shortcut</key><string>くらてる</string></dict>	<!-- コップ座 -->
+	<dict><key>phrase</key><string>こと座</string><key>shortcut</key><string>ことざ</string></dict>
+	<dict><key>phrase</key><string>Lyra</string><key>shortcut</key><string>りら</string></dict>	<!-- こと座 -->
+	<dict><key>phrase</key><string>コンパス座</string><key>shortcut</key><string>こんぱすざ</string></dict>
+	<dict><key>phrase</key><string>Circinus</string><key>shortcut</key><string>きるきぬす</string></dict>	<!-- コンパス座 -->
+	<dict><key>phrase</key><string>さいだん座</string><key>shortcut</key><string>さいだんざ</string></dict>
+	<dict><key>phrase</key><string>Ara</string><key>shortcut</key><string>あら</string></dict>	<!-- さいだん座 -->
+	<dict><key>phrase</key><string>さそり座</string><key>shortcut</key><string>さそりざ</string></dict>
+	<dict><key>phrase</key><string>Scorpius</string><key>shortcut</key><string>すこるぴうす</string></dict>	<!-- さそり座 -->
+	<dict><key>phrase</key><string>さんかく座</string><key>shortcut</key><string>さんかくざ</string></dict>
+	<dict><key>phrase</key><string>Triangulum</string><key>shortcut</key><string>とりあんぐるむ</string></dict>	<!-- さんかく座 -->
+	<dict><key>phrase</key><string>しし座</string><key>shortcut</key><string>ししざ</string></dict>
+	<dict><key>phrase</key><string>Leo</string><key>shortcut</key><string>れお</string></dict>	<!-- しし座 -->
+	<dict><key>phrase</key><string>じょうぎ座</string><key>shortcut</key><string>じょうぎざ</string></dict>
+	<dict><key>phrase</key><string>Norma</string><key>shortcut</key><string>のるま</string></dict>	<!-- じょうぎ座 -->
+	<dict><key>phrase</key><string>たて座</string><key>shortcut</key><string>たてざ</string></dict>
+	<dict><key>phrase</key><string>Scutum</string><key>shortcut</key><string>すくとぅむ</string></dict>	<!-- たて座 -->
+	<dict><key>phrase</key><string>ちょうこくぐ座</string><key>shortcut</key><string>ちょうこくぐざ</string></dict>
+	<dict><key>phrase</key><string>Caelum</string><key>shortcut</key><string>かえるむ</string></dict>	<!-- ちょうこくぐ座 -->
+	<dict><key>phrase</key><string>ちょうこくしつ座</string><key>shortcut</key><string>ちょうこくしつざ</string></dict>
+	<dict><key>phrase</key><string>Sculptor</string><key>shortcut</key><string>すくるぷとる</string></dict>	<!-- ちょうこくしつ座 -->
+	<dict><key>phrase</key><string>つる座</string><key>shortcut</key><string>つるざ</string></dict>
+	<dict><key>phrase</key><string>Grus</string><key>shortcut</key><string>ぐるす</string></dict>	<!-- つる座 -->
+	<dict><key>phrase</key><string>テーブルさん座</string><key>shortcut</key><string>てーぶるさんざ</string></dict>
+	<dict><key>phrase</key><string>Mensa</string><key>shortcut</key><string>めんさ</string></dict>	<!-- テーブルさん座 -->
+	<dict><key>phrase</key><string>てんびん座</string><key>shortcut</key><string>てんびんざ</string></dict>
+	<dict><key>phrase</key><string>Libra</string><key>shortcut</key><string>りぶら</string></dict>	<!-- てんびん座 -->
+	<dict><key>phrase</key><string>とかげ座</string><key>shortcut</key><string>とかげざ</string></dict>
+	<dict><key>phrase</key><string>Lacerta</string><key>shortcut</key><string>らけるた</string></dict>	<!-- とかげ座 -->
+	<dict><key>phrase</key><string>とけい座</string><key>shortcut</key><string>とけいざ</string></dict>
+	<dict><key>phrase</key><string>Horologium</string><key>shortcut</key><string>ほろろぎうむ</string></dict>	<!-- とけい座 -->
+	<dict><key>phrase</key><string>とびうお座</string><key>shortcut</key><string>とびうおざ</string></dict>
+	<dict><key>phrase</key><string>Volans</string><key>shortcut</key><string>うぉらんす</string></dict>	<!-- とびうお座 -->
+	<dict><key>phrase</key><string>とも座</string><key>shortcut</key><string>ともざ</string></dict>
+	<dict><key>phrase</key><string>Puppis</string><key>shortcut</key><string>ぷっぴす</string></dict>	<!-- とも座 -->
+	<dict><key>phrase</key><string>はえ座</string><key>shortcut</key><string>はえざ</string></dict>
+	<dict><key>phrase</key><string>Musca</string><key>shortcut</key><string>むすか</string></dict>	<!-- はえ座 -->
+	<dict><key>phrase</key><string>はくちょう座</string><key>shortcut</key><string>はくちょうざ</string></dict>
+	<dict><key>phrase</key><string>Cygnus</string><key>shortcut</key><string>きぐぬす</string></dict>	<!-- はくちょう座 -->
+	<dict><key>phrase</key><string>はちぶんぎ座</string><key>shortcut</key><string>はちぶんぎざ</string></dict>
+	<dict><key>phrase</key><string>Octans</string><key>shortcut</key><string>おくたんす</string></dict>	<!-- はちぶんぎ座 -->
+	<dict><key>phrase</key><string>はと座</string><key>shortcut</key><string>はとざ</string></dict>
+	<dict><key>phrase</key><string>Columba</string><key>shortcut</key><string>こるんば</string></dict>	<!-- はと座 -->
+	<dict><key>phrase</key><string>ふうちょう座</string><key>shortcut</key><string>ふうちょうざ</string></dict>
+	<dict><key>phrase</key><string>Apus</string><key>shortcut</key><string>あぷす</string></dict>	<!-- ふうちょう座 -->
+	<dict><key>phrase</key><string>ふたご座</string><key>shortcut</key><string>ふたござ</string></dict>
+	<dict><key>phrase</key><string>Gemini</string><key>shortcut</key><string>げみに</string></dict>	<!-- ふたご座 -->
+	<dict><key>phrase</key><string>ペガスス座</string><key>shortcut</key><string>ぺがすすざ</string></dict>
+	<dict><key>phrase</key><string>Pegasus</string><key>shortcut</key><string>ぺがすす</string></dict>	<!-- ペガスス座 -->
+	<dict><key>phrase</key><string>へび座</string><key>shortcut</key><string>へびざ</string></dict>
+	<dict><key>phrase</key><string>Serpens</string><key>shortcut</key><string>せるぺんす</string></dict>	<!-- へび座 -->
+	<dict><key>phrase</key><string>へびつかい座</string><key>shortcut</key><string>へびつかいざ</string></dict>
+	<dict><key>phrase</key><string>Ophiuchus</string><key>shortcut</key><string>おふぃうくす</string></dict>	<!-- へびつかい座 -->
+	<dict><key>phrase</key><string>ヘルクレス座</string><key>shortcut</key><string>へるくれすざ</string></dict>
+	<dict><key>phrase</key><string>Hercules</string><key>shortcut</key><string>へるくれす</string></dict>	<!-- ヘルクレス座 -->
+	<dict><key>phrase</key><string>ペルセウス座</string><key>shortcut</key><string>ぺるせうすざ</string></dict>
+	<dict><key>phrase</key><string>Perseus</string><key>shortcut</key><string>ぺるせうす</string></dict>	<!-- ペルセウス座 -->
+	<dict><key>phrase</key><string>ほ座</string><key>shortcut</key><string>ほざ</string></dict>
+	<dict><key>phrase</key><string>Vela</string><key>shortcut</key><string>うぇら</string></dict>	<!-- ほ座 -->
+	<dict><key>phrase</key><string>ぼうえんきょう座</string><key>shortcut</key><string>ぼうえんきょうざ</string></dict>
+	<dict><key>phrase</key><string>Telescopium</string><key>shortcut</key><string>てれすこぴうむ</string></dict>	<!-- ぼうえんきょう座 -->
+	<dict><key>phrase</key><string>ほうおう座</string><key>shortcut</key><string>ほうおうざ</string></dict>
+	<dict><key>phrase</key><string>Phoenix</string><key>shortcut</key><string>ふぇにくす</string></dict>	<!-- ほうおう座 -->
+	<dict><key>phrase</key><string>ポンプ座</string><key>shortcut</key><string>ぽんぷざ</string></dict>
+	<dict><key>phrase</key><string>Antlia</string><key>shortcut</key><string>あんとりあ</string></dict>	<!-- ポンプ座 -->
+	<dict><key>phrase</key><string>みずがめ座</string><key>shortcut</key><string>みずがめざ</string></dict>
+	<dict><key>phrase</key><string>Aquarius</string><key>shortcut</key><string>あくありうす</string></dict>	<!-- みずがめ座 -->
+	<dict><key>phrase</key><string>みずへび座</string><key>shortcut</key><string>みずへびざ</string></dict>
+	<dict><key>phrase</key><string>Hydrus</string><key>shortcut</key><string>ひどるす</string></dict>	<!-- みずへび座 -->
+	<dict><key>phrase</key><string>みなみじゅうじ座</string><key>shortcut</key><string>みなみじゅうじざ</string></dict>
+	<dict><key>phrase</key><string>Crux</string><key>shortcut</key><string>くるくす</string></dict>	<!-- みなみじゅうじ座 -->
+	<dict><key>phrase</key><string>みなみのうお座</string><key>shortcut</key><string>みなみのうおざ</string></dict>
+	<dict><key>phrase</key><string>Piscis Austrinus</string><key>shortcut</key><string>ぴすきすあうすとりぬす</string></dict>	<!-- みなみのうお座 -->
+	<dict><key>phrase</key><string>みなみのかんむり座</string><key>shortcut</key><string>みなみのかんむりざ</string></dict>
+	<dict><key>phrase</key><string>Corona Australis</string><key>shortcut</key><string>ころなあうすとらりす</string></dict>	<!-- みなみのかんむり座 -->
+	<dict><key>phrase</key><string>みなみのさんかく座</string><key>shortcut</key><string>みなみのさんかくざ</string></dict>
+	<dict><key>phrase</key><string>Triangulum Australe</string><key>shortcut</key><string>とりあんぐるむあうすとらーれ</string></dict>	<!-- みなみのさんかく座 -->
+	<dict><key>phrase</key><string>や座</string><key>shortcut</key><string>やざ</string></dict>
+	<dict><key>phrase</key><string>Sagitta</string><key>shortcut</key><string>さぎった</string></dict>	<!-- や座 -->
+	<dict><key>phrase</key><string>やぎ座</string><key>shortcut</key><string>やぎざ</string></dict>
+	<dict><key>phrase</key><string>Capricornus</string><key>shortcut</key><string>かぷりこるぬす</string></dict>	<!-- やぎ座 -->
+	<dict><key>phrase</key><string>やまねこ座</string><key>shortcut</key><string>やまねこざ</string></dict>
+	<dict><key>phrase</key><string>Lynx</string><key>shortcut</key><string>りんくす</string></dict>	<!-- やまねこ座 -->
+	<dict><key>phrase</key><string>らしんばん座</string><key>shortcut</key><string>らしんばんざ</string></dict>
+	<dict><key>phrase</key><string>Pyxis</string><key>shortcut</key><string>ぴくしす</string></dict>	<!-- らしんばん座 -->
+	<dict><key>phrase</key><string>りゅう座</string><key>shortcut</key><string>りゅうざ</string></dict>
+	<dict><key>phrase</key><string>Draco</string><key>shortcut</key><string>どらこ</string></dict>	<!-- りゅう座 -->
+	<dict><key>phrase</key><string>りゅうこつ座</string><key>shortcut</key><string>りゅうこつざ</string></dict>
+	<dict><key>phrase</key><string>Carina</string><key>shortcut</key><string>かりーな</string></dict>	<!-- りゅうこつ座 -->
+	<dict><key>phrase</key><string>りょうけん座</string><key>shortcut</key><string>りょうけんざ</string></dict>
+	<dict><key>phrase</key><string>Canes Venatici</string><key>shortcut</key><string>かねすうぇなてぃき</string></dict>	<!-- りょうけん座 -->
+	<dict><key>phrase</key><string>レチクル座</string><key>shortcut</key><string>れちくるざ</string></dict>
+	<dict><key>phrase</key><string>Reticulum</string><key>shortcut</key><string>れてぃくるむ</string></dict>	<!-- レチクル座 -->
+	<dict><key>phrase</key><string>ろ座</string><key>shortcut</key><string>ろざ</string></dict>
+	<dict><key>phrase</key><string>Fornax</string><key>shortcut</key><string>ふぉるなくす</string></dict>	<!-- ろ座 -->
+	<dict><key>phrase</key><string>ろくぶんぎ座</string><key>shortcut</key><string>ろくぶんぎざ</string></dict>
+	<dict><key>phrase</key><string>Sextans</string><key>shortcut</key><string>せくすたんす</string></dict>	<!-- ろくぶんぎ座 -->
+	<dict><key>phrase</key><string>わし座</string><key>shortcut</key><string>わしざ</string></dict>
+	<dict><key>phrase</key><string>Aquila</string><key>shortcut</key><string>あくいら</string></dict>	<!-- わし座 -->
+</array>
+</plist>

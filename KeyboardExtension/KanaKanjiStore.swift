@@ -1241,7 +1241,7 @@ final class KanaKanjiStore {
 
 }
 
-// 補助語彙(SecondVocab: vin/it/ryukyu/personnalites/drapeaux/monnaies)の常駐用コンパクト表。
+// 補助語彙(SecondVocab: vin/it/ryukyu/personnalites/drapeaux/monnaies/astronomique)の常駐用コンパクト表。
 // [String: [String]] だと Swift 辞書+String ヒープのオーバーヘッドで約6.8MB常駐する
 // (15,901読み。初回変換の used +6.8MB の主因 — 高水位台帳 2615 で実測)。
 // 消費点は「読み単位の点引き」(候補マージ/昇格判定/カタカナ化抑止免除)と
