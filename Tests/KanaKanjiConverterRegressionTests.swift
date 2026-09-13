@@ -16946,3 +16946,39 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2895: astronomique.plist(恒星の固有名+88 星座)を補助語彙に組み込む(ユーザ指定)。カタカナと原語が同じ読みで出る
+    func testRegressionAstronomiqueVocabulary() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expectedAll) in [
+                ("しりうす", ["シリウス", "Sirius"]),
+                ("べてるぎうす", ["ベテルギウス", "Betelgeuse"]),
+                ("おりおんざ", ["オリオン座"]),
+                ("うるさまいよる", ["Ursa Major"]),
+                ("ぽらりす", ["ポラリス", "Polaris"]),
+                ("さそりざ", ["さそり座"])
+            ] {
+                let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: mode)
+                for expected in expectedAll {
+                    XCTAssertTrue(list.contains(expected), "mode=\(mode.rawValue) reading=\(reading) list=\(list)")
+                }
+            }
+            for (reading, expected) in [
+                ("みなみじゅうじざのあくるっくす", "みなみじゅうじ座のアクルックス"),
+                ("ぽらりすはこぐまざ", "ポラリスはこぐま座"),
+                ("さそりざのあんたれす", "さそり座のアンタレス"),
+                ("ぎんざにいく", "銀座に行く")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

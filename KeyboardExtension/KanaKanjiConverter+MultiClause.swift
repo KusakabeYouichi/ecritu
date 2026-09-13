@@ -491,12 +491,14 @@ extension KanaKanjiConverter {
                             dictionaryRank[candidate] = rank
                         }
                     }
-                    // 辞書 rank を使うのは頭が漢字同士の同値だけ。カタカナ頭対漢字頭(スネ肉/臑肉)は文字コード順で
-                    // カタカナが先に来ていた従来の並びを保つ(臑肉 のような稀字が rank で繰り上がるのを避ける)
+                    // 辞書 rank を使うのは頭が漢字同士の同値と、片方が欧文(ASCII)始まりの同値。カタカナ頭対漢字頭(スネ肉/臑肉)は
+                    // 文字コード順でカタカナが先に来ていた従来の並びを保つ(臑肉 のような稀字が rank で繰り上がるのを避ける)。
+                    // 欧文対カタカナ(Acrux/アクルックス)は文字コード順だと欧文が必ず先になるので、plist の並び(=rank)に従う(2895)
+                    func isASCIIHead(_ c: Character) -> Bool { c.isASCII && c.isLetter }
                     let ordered = costMap.sorted { lhs, rhs in
                         if lhs.value != rhs.value { return lhs.value < rhs.value }
                         if let l = lhs.key.first, let r = rhs.key.first,
-                            containsKanji(String(l)), containsKanji(String(r)) {
+                            (containsKanji(String(l)) && containsKanji(String(r))) || isASCIIHead(l) != isASCIIHead(r) {
                             let lhsRank = dictionaryRank[lhs.key] ?? Int.max
                             let rhsRank = dictionaryRank[rhs.key] ?? Int.max
                             if lhsRank != rhsRank { return lhsRank < rhsRank }
@@ -546,6 +548,12 @@ extension KanaKanjiConverter {
                                 add(surface, isDictWord: true, isCurated: false, wordCost: cost, isDictionaryFormPredicate: false)
                             }
                         }
+                    }
+                    // 星座の標準和名(さそり座 wc 18554)も TopK(蠍座/サソリ座 3703、かな 8734)から漏れるので供給する(2895)
+                    if let standard = Self.multiClauseConstellationStandardSurfacesByReading[segmentReading],
+                        let cost = costMap[standard],
+                        !suppressedByReading[segmentReading, default: []].contains(standard) {
+                        add(standard, isDictWord: true, isCurated: false, wordCost: cost, isDictionaryFormPredicate: false)
                     }
                 }
 
@@ -1013,8 +1021,10 @@ extension KanaKanjiConverter {
                         continue
                     }
                 }
+                // 星座の標準和名(さそり座/おおぐま座)は かな+座 が正書で交ぜ書きではない(定数コメント参照。2895)
                 if mazegakiCandidateMode != .normal,
                     !node.isInflectionDerived,
+                    Self.multiClauseConstellationStandardSurfacesByReading[node.reading] != node.surface,
                     let kanjiPart = KanaKanjiConverter.mazegakiKanjiPart(node.surface, reading: node.reading) {
                     let sameReadingCosts = store.wordCosts(for: node.reading)
                     let fullKanjiExists = sameReadingCosts.keys.contains { full in
@@ -2070,6 +2080,15 @@ extension KanaKanjiConverter {
             // 表外訓はかな正書が実勢(定数コメント参照)。連文節でだけ漢字表層を減点する。
             if !isCurated, Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading) {
                 penalty += Self.multiClauseKanaOrthodoxKanjiPenalty
+            }
+            // 星座は標準和名(定数コメント参照。2895)。標準名以外の 〜座(大熊座/サソリ座)を減点
+            if let standard = Self.multiClauseConstellationStandardSurfacesByReading[reading] {
+                if surface == standard {
+                    // 標準名は収穫コスト(18554 級→床 8700)でかな素通り(さそりざ 8734)にも負けるので持ち上げる
+                    penalty -= Self.multiClauseConstellationKanjiPenalty
+                } else if surface.hasSuffix("座") {
+                    penalty += Self.multiClauseConstellationKanjiPenalty
+                }
             }
             // Wikipedia 偏りの同音語(官僚/呼称/河川/大気/対比/人命)を連文節でだけ後ろへ(定数コメント参照。2890)。
             // サ変派生(対比した/退避した)は読み・表層とも接頭一致で見る
