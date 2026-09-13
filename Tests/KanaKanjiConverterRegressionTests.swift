@@ -16839,9 +16839,10 @@ extension KanaKanjiConverterRegressionTests {
                     "mode=\(mode.rawValue) reading=\(reading)"
                 )
             }
-            // 人名の かな(加奈/佳奈/香奈)は枠の外: 仮名/カナ にならなければよい
-            let name = converter.multiClauseCandidates(for: "かなちゃんがきた", systemCandidateMode: mode).first ?? ""
-            XCTAssertFalse(name.hasPrefix("仮名") || name.hasPrefix("カナ"), "mode=\(mode.rawValue) \(name)")
+            // 敬称の前は人名(2893、ユーザ指定): かな識別は対象外、収穫底値の 2 かな人名は LM 順(佳奈 6796 が先頭)
+            XCTAssertEqual(converter.multiClauseCandidates(for: "かなちゃんがきた", systemCandidateMode: mode).first, "佳奈ちゃんが来た", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "かなさんです", systemCandidateMode: mode).first, "佳奈さんです", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "きたがわさん", systemCandidateMode: mode).first, "北川さん", "mode=\(mode.rawValue)")
         }
     }
 }
@@ -16854,7 +16855,7 @@ extension KanaKanjiConverterRegressionTests {
 
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             XCTAssertEqual(converter.candidates(for: "こしょう", limit: 3, systemCandidateMode: mode).first, "胡椒", "mode=\(mode.rawValue)")
-            XCTAssertEqual(converter.candidates(for: "つうか", limit: 3, systemCandidateMode: mode).first, "通過", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "つうか", limit: 3, systemCandidateMode: mode).first, "通貨", "mode=\(mode.rawValue)")
             // こしょうする/つうかする は 1 語(単文節が受ける)
             XCTAssertEqual(converter.candidates(for: "こしょうする", limit: 3, systemCandidateMode: mode).first, "故障する", "mode=\(mode.rawValue)")
             XCTAssertEqual(converter.candidates(for: "つうかする", limit: 3, systemCandidateMode: mode).first, "通過する", "mode=\(mode.rawValue)")
