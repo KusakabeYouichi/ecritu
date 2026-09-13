@@ -16790,3 +16790,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2891: 耳下腺/耳下腺炎 を misc に登録(Sudachi の word_cost 11060/17374 が収穫底値帯で連文節の床 8700 に落ちる。ユーザ指定)
+    func testRegressionJikasenCurated() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "じかせんが", systemCandidateMode: mode).first, "耳下腺が", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "じかせんえん", limit: 3, systemCandidateMode: mode).first, "耳下腺炎", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "かせんつき", systemCandidateMode: mode).first, "下線付き", "mode=\(mode.rawValue)")
+        }
+    }
+}

@@ -259,6 +259,8 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>耳下腺</string><key>shortcut</key><string>じかせん</string></dict>	<!-- 耳下腺/耳下腺炎: Sudachi に 1 語で有る(rank0)が word_cost が 11060/17374 と収穫底値帯(≥10000)で、連文節では床 8700 の弱い語になる。LM unigram も無く、時(4307)+下線(7440) の分割と僅差(下線 の同音語調整で 時下線 に割れた)。curated にして 1 語で勝たせる(ユーザ指定 2891) -->
+	<dict><key>phrase</key><string>耳下腺炎</string><key>shortcut</key><string>じかせんえん</string></dict>
 	<dict><key>phrase</key><string>他社製</string><key>shortcut</key><string>たしゃせい</string></dict>	<!-- 他社製/自社製: 辞書に丸ごとのエントリが無く、他社+製(1 字床 7346)が収穫語 他者性(11735) の 1 ノードに負ける(たしゃせいきーぼーど→他者性キーボード。マニュアル検査 2890) -->
 	<dict><key>phrase</key><string>自社製</string><key>shortcut</key><string>じしゃせい</string></dict>
 	<dict><key>phrase</key><string>トグル</string><key>shortcut</key><string>とぐる</string></dict>	<!-- トグル(UI 用語): Sudachi に有り(wc 2148)だが LM 未収録で dictUnknown+カタカナ化減点(11700)になり、と+グル(8292)に負けて とぐるがおん→とグルがオン になっていた(マニュアル検査 2890) -->
