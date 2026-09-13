@@ -14141,8 +14141,8 @@ extension KanaKanjiConverterRegressionTests {
         try prepareRealLMDictionary()
         XCTAssertEqual(Array(converter.candidates(for: "かな", limit: 6, systemCandidateMode: .surface).prefix(3)), ["かな", "仮名", "カナ"])
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "かな"))
-        // 連文節では文脈があれば 仮名 のまま(seed は単文節の並びだけ)
-        XCTAssertEqual(converter.multiClauseCandidates(for: "かなをかく", systemCandidateMode: .surface).first?.hasPrefix("仮名"), true)
+        // 連文節も かな が正書(2892 でかな正書の枠に 仮名/カナ を入れた。以前は文脈があれば 仮名 のまま)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かなをかく", systemCandidateMode: .surface).first?.hasPrefix("かな"), true)
     }
 }
 
@@ -16801,6 +16801,23 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(converter.multiClauseCandidates(for: "じかせんが", systemCandidateMode: mode).first, "耳下腺が", "mode=\(mode.rawValue)")
             XCTAssertEqual(converter.candidates(for: "じかせんえん", limit: 3, systemCandidateMode: mode).first, "耳下腺炎", "mode=\(mode.rawValue)")
             XCTAssertEqual(converter.multiClauseCandidates(for: "かせんつき", systemCandidateMode: mode).first, "下線付き", "mode=\(mode.rawValue)")
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2892: 数字直後の かな助数詞 つ+付属語(1+つも→1ツモ。ユーザ報告)
+    func testRegressionDigitTsuWithParticle() throws {
+        try prepareRealLMDictionary()
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [("つも", "つも"), ("つの", "つの"), ("つしか", "つしか"), ("つ", "つ")] {
+                let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                    converter.candidates(for: reading, limit: 8, systemCandidateMode: mode),
+                    reading: reading,
+                    precedingCharacter: "1"
+                )
+                XCTAssertEqual(boosted.first, expected, "mode=\(mode.rawValue) reading=\(reading) list=\(boosted)")
+            }
         }
     }
 }
