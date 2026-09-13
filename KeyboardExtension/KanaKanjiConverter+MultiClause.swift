@@ -2295,12 +2295,27 @@ extension KanaKanjiConverter {
                         }
                         // 人名の 2 規則(定数コメント参照。2845)
                         // seed で並びを決めている読み(ゆずか: 柚花→柚香)は seed に委ね、〜屋 が同区間に立つ読み(かじや)は職業優先
+                        // かな識別(かな=名 も person_names に有る)は「人名を優先」の対象外(かなちゃん→佳奈ちゃん。2893、ユーザ指定)
                         if node.surface == node.reading,
                             Self.multiClausePersonNameHonorificReadings.contains(node.reading),
                             personNameKindByNodeKey[prevNode.key] != nil,
-                            KanaKanjiSeedDictionary.seed[prevNode.reading] == nil,
+                            prevNode.surface != prevNode.reading,
+                            // seed が「この人名の並び」を決めている(ゆずか: 柚花→柚香 = seed に漢字の人名が載る)ときはその読み全体を
+                            // seed に委ねる(載っていない 柚佳 だけ持ち上げると seed の並びが崩れる)。かな のように seed が
+                            // かな識別と 仮名/カナ を並べているだけの読みでは、人名(佳奈)は seed の外なので優先してよい(2893)
+                            !(KanaKanjiSeedDictionary.seed[prevNode.reading]?.contains(where: { seeded in
+                                containsKanji(seeded) && personNameKindByNodeKey["\(prevNode.start)-\(prevNode.end)-\(seeded)"] != nil
+                            }) ?? false),
                             !occupationalYaSpanKeys.contains(prevNode.spanKey) {
                             cost -= Self.multiClausePersonNameBeforeHonorificBonus
+                            // 収穫底値の 2 かな人名(佳奈/加奈 wc 11358)は短span床でその wc に張り付き、かな(7276)に届かない。
+                            // 敬称の直前に限り LM unigram+バックオフの自然コストに戻す(LM 未収録の 嘉奈 等は据え置き)
+                            if let wordCost = prevNode.wordCost,
+                                wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
+                                let unigram = unigramCosts[prevNode.surface],
+                                unigram + Self.multiClauseBackoffCost < wordCost {
+                                cost -= wordCost - (unigram + Self.multiClauseBackoffCost)
+                            }
                         }
                         // 収穫底値の人名が立てるのは 文頭(BOS 分岐で別扱い)/かな(助詞・かな語)/curated の直後と、姓+名 の並びだけ。
                         // 漢字・カタカナの断片(マン/万/満)の直後は分割の産物なので減点。Sudachi はカタカナ語(マン)や
