@@ -14,6 +14,7 @@ ryukyu.plist			# [沖縄辞書]
 it.plist				# [IT]
 drapeaux.plist			# [国旗] 読みは作者付与(2026-09-04 確認)。長押しの仏語国名は Locale(fr_FR) から実行時生成で、表は持たない
 monnaies.plist			# [通貨]
+astronomique.plist		# [天文] 恒星の固有名(IAU 承認名。カタカナ+原語、等級別、コメントに星座)と 88 星座(和名+IAU ラテン語名)。作者編纂(2026-09-13)
 emoji.plist				# [絵文字] CLDR ja アノテーション由来(SudachiPyで読み化+手動整備。2026-08-31 に全読みのCLDR帰着を検証済み、f8c4c10)
 personnalités.plist	# [人名]
 bushu.plist				# [部首] 漢字ピッカーの部首→位置分類表(拡張に同梱)。部首名は慣用名、位置分類は字形から判断(作者が全件確認)、画数は事実。部首番号のみ Unihan kRSKangxi と照合。KANJIDIC 等からの取り込みではない(2026-09-04 確認)

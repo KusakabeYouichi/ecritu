@@ -51,6 +51,7 @@ REF_POUBELLE_PLIST="$ROOT_DIR/references/poubelle.plist"
 REF_PERSONNALITES_PLIST="$ROOT_DIR/references/personnalités.plist"
 REF_DRAPEAUX_PLIST="$ROOT_DIR/references/drapeaux.plist"
 REF_MONNAIES_PLIST="$ROOT_DIR/references/monnaies.plist"
+REF_ASTRONOMIQUE_PLIST="$ROOT_DIR/references/astronomique.plist"
 REF_EMOJI_PLIST="$ROOT_DIR/references/emoji.plist"
 REF_ADJECTIVE_GARU_ALLOWLIST="$ROOT_DIR/references/adjective_garu_allowlist.json"
 REF_WORD_LM_GZ="$ROOT_DIR/references/word_lm.json.gz"
@@ -171,6 +172,7 @@ python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_PERSONNALITES_PLIST" \
   --input-plist "$REF_DRAPEAUX_PLIST" \
   --input-plist "$REF_MONNAIES_PLIST" \
+  --input-plist "$REF_ASTRONOMIQUE_PLIST" \
   --output "$TMP_SECOND" \
   --output-inflections "$TMP_SECOND_INFLECTIONS"
 
