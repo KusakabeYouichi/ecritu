@@ -17023,3 +17023,26 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2898: 文末の長音 ー は述語の引き伸ばし(おくりましたー→送り増したー。ユーザ報告)。ラーメン/コーヒー は無傷
+    func testRegressionTrailingProlongationAfterPredicate() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("おくりましたー", "送りましたー"),
+                ("たべましたー", "食べましたー"),
+                ("いきますよー", "行きますよー"),
+                ("らーめんをたべた", "ラーメンを食べた")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

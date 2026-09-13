@@ -2653,6 +2653,12 @@ extension KanaKanjiConverter {
                             Self.isMotionVerbSurface(node.surface) {
                             cost -= Self.multiClauseRenyouNiMotionVerbBonus
                         }
+                        // 文末の長音 ー は述語の引き伸ばし(送りましたー。定数コメント参照。2898)
+                        if node.surface == "ー", node.reading == "ー", node.end == n,
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
+                                || (prevNode.surface.last.map(Self.multiClauseTrailingProlongationPredicateTails.contains) ?? false) {
+                            cost = min(cost, prevCost + Self.multiClauseTrailingProlongationAfterPredicateCost)
+                        }
                         // 連用形+副助詞(呼びさえ)は直後の する系(すれば/しない)で加点、それ以外は減点(定数コメント参照。2894)
                         if renyouFocusNodeKeys.contains(prevNode.key) {
                             if Self.isSuruFormKanaSurface(node.surface, reading: node.reading) {
