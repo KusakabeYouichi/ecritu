@@ -16894,3 +16894,28 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2893: が/は/も+痛い(はがいたい→歯が居たい)、身体の語+腫れ(じかせんがはれた→耳下腺が晴れた)。ここに居たい/空が晴れた は無傷(に の後の いたい は従来どおり)
+    func testRegressionItaiAndHareruCollocations() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("はがいたい", "歯が痛い"),
+                ("あたまがいたい", "頭が痛い"),
+                ("じかせんがはれた", "耳下腺が腫れた"),
+                ("かおがはれている", "顔が腫れている"),
+                ("ここにいたい", "ここに居たい"),
+                ("そらがはれた", "空が晴れた")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
