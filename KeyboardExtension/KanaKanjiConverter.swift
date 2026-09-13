@@ -313,6 +313,20 @@ final class KanaKanjiConverter {
         inflectionDerivedCandidatesForScriptVariant = []
 
         var finalCandidates = finalizeSortedCandidates(context, scores: scores)
+        // 星座の標準和名(さそり座)を先頭へ(2897、実機報告 さそりざ→蠍座)。Sudachi の別表記(蠍座 wc 3703)は辞書点 1200、
+        // 標準名(18554)は収穫底値点 1030 で負け、normalise モードでは正規化形(魚座)の並び替えにも押される。
+        // 点数でなく最終列で動かす(連文節側の標準名供給と対)。学習・追加語彙がある読みは触らない
+        if context.userCandidates.isEmpty, context.learnedCandidates.isEmpty,
+            let standard = Self.multiClauseConstellationStandardSurfacesByReading[normalizedReading],
+            scores[standard] != nil, finalCandidates.first != standard {
+            if let index = finalCandidates.firstIndex(of: standard) {
+                finalCandidates.remove(at: index)
+            } else if finalCandidates.count >= limit {
+                // limit で切られて列に無い(surface モードの さそり座 は 蠍座/サソリ座/かな の後)。末尾を落として先頭へ
+                finalCandidates.removeLast()
+            }
+            finalCandidates.insert(standard, at: 0)
+        }
         // め終わり読みの『め/目』選好(序数/形容詞語幹。設定に応じたペア整列・補生成・除去)。
         finalCandidates = applyMeSuffixPreferences(reading: normalizedReading, to: finalCandidates)
         // 助数詞+付属語(かい+しか 等)の合成をレア語合成(芥子か 等)より前へ(先頭候補の直後)。
