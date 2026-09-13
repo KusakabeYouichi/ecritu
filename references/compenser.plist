@@ -42,12 +42,6 @@
 	        <dict><key>phrase</key><string>寅の日</string><key>shortcut</key><string>とらのひ</string></dict>
 	        <dict><key>phrase</key><string>巳の日</string><key>shortcut</key><string>みのひ</string></dict>
 	        <dict><key>phrase</key><string>己巳の日</string><key>shortcut</key><string>つちのとみのひ</string></dict>
-	<!-- 天文 -->
-	        <dict><key>phrase</key><string>南極老人星</string><key>shortcut</key><string>なんきょくろうじんせい</string></dict>
-	        <dict><key>phrase</key><string>部分日蝕</string><key>shortcut</key><string>ぶぶんにっしょく</string></dict>
-	        <dict><key>phrase</key><string>半影蝕</string><key>shortcut</key><string>はんえいしょく</string></dict>
-	        <dict><key>phrase</key><string>金環蝕</string><key>shortcut</key><string>きんかんしょく</string></dict>
-	        <dict><key>phrase</key><string>金環日蝕</string><key>shortcut</key><string>きんかんにっしょく</string></dict>
 	<!-- 音楽 -->
 	        <dict><key>phrase</key><string>McIntosh</string><key>shortcut</key><string>まっきんとっしゅ</string></dict>
 	        <dict><key>phrase</key><string>Fostex</string><key>shortcut</key><string>ふぉすてっくす</string></dict>
