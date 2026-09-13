@@ -16959,13 +16959,16 @@ extension KanaKanjiConverterRegressionTests {
                 ("べてるぎうす", ["ベテルギウス", "Betelgeuse"]),
                 ("おりおんざ", ["オリオン座"]),
                 ("うるさまいよる", ["Ursa Major"]),
-                ("ぽらりす", ["ポラリス", "Polaris"]),
-                ("さそりざ", ["さそり座"])
+                ("ぽらりす", ["ポラリス", "Polaris"])
             ] {
                 let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: mode)
                 for expected in expectedAll {
                     XCTAssertTrue(list.contains(expected), "mode=\(mode.rawValue) reading=\(reading) list=\(list)")
                 }
+            }
+            // 単文節でも標準和名が先頭(2897、実機報告 さそりざ→蠍座)。Sudachi の別表記(蠍座 3703/山羊座 7379/琴座 7380)は後ろ
+            for (reading, expected) in [("さそりざ", "さそり座"), ("やぎざ", "やぎ座"), ("ことざ", "こと座"), ("うおざ", "うお座"), ("ろざ", "ろ座")] {
+                XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, expected, "mode=\(mode.rawValue) reading=\(reading)")
             }
             for (reading, expected) in [
                 ("みなみじゅうじざのあくるっくす", "みなみじゅうじ座のアクルックス"),
