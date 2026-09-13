@@ -16982,3 +16982,29 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2896: 蝕 を 食 より優先(日蝕/月蝕。ユーザ方針、蒸溜/沈澱 と同系)。compenser から astronomique へ移した 金環日蝕/部分日蝕 が
+    // 補助語彙の既定コストになっても 金環+日食 の合成に負けない
+    func testRegressionShokuPrefersOldForm() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "にっしょく", limit: 3, systemCandidateMode: mode).first, "日蝕", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "げっしょく", limit: 3, systemCandidateMode: mode).first, "月蝕", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "なんきょくろうじんせい", limit: 3, systemCandidateMode: mode).first, "南極老人星", "mode=\(mode.rawValue)")
+            // 1 語に収まる読み(金環日蝕)は連文節が空を返して単文節に委ねる。提示層と同じ合流で先頭を見る
+            for (reading, expected) in [
+                ("きんかんにっしょく", "金環日蝕"),
+                ("ぶぶんにっしょく", "部分日蝕"),
+                ("にっしょくをみた", "日蝕を見た"),
+                ("げっしょくのよる", "月蝕の夜")
+            ] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                let top = multi.first ?? converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first
+                XCTAssertEqual(top, expected, "mode=\(mode.rawValue) reading=\(reading)")
+            }
+        }
+    }
+}
