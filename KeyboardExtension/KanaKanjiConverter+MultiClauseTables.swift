@@ -681,6 +681,16 @@ extension KanaKanjiConverter {
     // 連用形+に(目的)直後の移動動詞ボーナス。北(名詞)5190+に→北4818 級を、来た(活用OOV
     // 7200)が上回れる水準に。移動動詞は 来/行/帰/戻 始まりの漢字表層で判定する。
     static let multiClauseRenyouNiMotionVerbBonus = 3500
+    // 連用形+副助詞(呼びさえ/読みすら/書きこそ)の供給(b5b)。五段の連用形単独は辞書に無い限りノードが立たず
+    // (呼び は Sudachi に無く 予備 だけ)、よびさえすれば が 予備さえすれば になっていた(ユーザ報告 2894)。
+    // この形は「連用形+さえ+する」の慣用(呼びさえすれば/読みすらしない)に限って自然で、名詞+さえ(予備さえあれば)
+    // と競合するため、直後が する系(すれば/しない/する/しません)のときだけ加点し、それ以外と文末では減点する
+    static let multiClauseRenyouFocusParticles: [String] = ["さえ", "すら", "こそ"]
+    static let multiClauseRenyouFocusBeforeSuruBonus = 3500
+    static let multiClauseRenyouFocusWithoutSuruPenalty = 4000
+    static func isSuruFormKanaSurface(_ surface: String, reading: String) -> Bool {
+        surface == reading && (reading.hasPrefix("す") || reading.hasPrefix("し"))
+    }
     // 格助詞 に 直後のカ変(来る)到着点ボーナス。一段 着る 派生(着て+しまいました)との
     // 同コスト帯を確実に逆転できる控えめな値(に を伴わない文脈の 着て は不変)。
     static let multiClauseNiKuruArrivalBonus = 1500
