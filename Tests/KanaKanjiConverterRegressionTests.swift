@@ -16919,3 +16919,30 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2894: 連用形+副助詞(呼びさえ/読みすら)の供給(b5b)。五段の連用形は辞書に無い限りノードが立たず よびさえすれば が
+    // 予備さえすれば になっていた(ユーザ報告)。名詞+さえ(予備さえあれば)は無傷
+    func testRegressionRenyouFocusParticleSupply() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("よびさえすれば", "呼びさえすれば"),
+                ("のみさえすれば", "飲みさえすれば"),
+                ("かきさえすれば", "書きさえすれば"),
+                ("よみすらしない", "読みすらしない"),
+                ("よびさえすればいい", "呼びさえすればいい"),
+                ("よびさえあれば", "予備さえあれば"),
+                ("よびをよぶ", "予備を呼ぶ")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}

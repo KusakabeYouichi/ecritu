@@ -160,6 +160,8 @@ extension KanaKanjiConverter {
         var singleTopLeadNodeBonuses: [String: Int] = [:]
         // (b5) 連用形+に(目的)ノードのキー。直後の移動動詞(来る/行く)を優先するのに使う。
         var renyouNiNodeKeys = Set<String>()
+        // (b5b) 連用形+副助詞(呼びさえ/読みすら)ノードのキー。直後の する系で加点、それ以外で減点(定数コメント参照。2894)
+        var renyouFocusNodeKeys = Set<String>()
         // スパン別の活用派生表層(キー "start-end")。かな て の連用形接続判定に使う。
         var inflectedSurfacesBySpan: [String: Set<String>] = [:]
         // 短い追加語彙断片(ろー→ロー/raw 等)のうち、同じ開始位置により長い辞書語(ろーぬ→ローヌ)が
@@ -804,6 +806,23 @@ extension KanaKanjiConverter {
                     where surface != segmentReading {
                         add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                         renyouNiNodeKeys.insert("\(start)-\(end)-\(surface)")
+                    }
+                }
+
+                // (b5b) 連用形+副助詞(呼びさえ/読みすら/書きこそ)。(b5) と同じ供給で末尾だけ副助詞(定数コメント参照。2894)
+                if len >= 4, let focus = Self.multiClauseRenyouFocusParticles.first(where: { segmentReading.hasSuffix($0) }) {
+                    let renyouReading = String(segmentReading.dropLast(focus.count))
+                    let renyouFocus = verbRenyouPlusSuffixCandidates(
+                        renyouReading: renyouReading,
+                        trailingSuffix: focus,
+                        ajoutVocabulary: manualAjoutVocabulary,
+                        initialAjoutVocabulary: initialAjoutVocabulary,
+                        systemCandidateMode: systemCandidateMode
+                    )
+                    for surface in renyouFocus.prefix(Self.multiClauseInflectionTopK)
+                    where surface != segmentReading {
+                        add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
+                        renyouFocusNodeKeys.insert("\(start)-\(end)-\(surface)")
                     }
                 }
 
@@ -2615,6 +2634,14 @@ extension KanaKanjiConverter {
                             Self.isMotionVerbSurface(node.surface) {
                             cost -= Self.multiClauseRenyouNiMotionVerbBonus
                         }
+                        // 連用形+副助詞(呼びさえ)は直後の する系(すれば/しない)で加点、それ以外は減点(定数コメント参照。2894)
+                        if renyouFocusNodeKeys.contains(prevNode.key) {
+                            if Self.isSuruFormKanaSurface(node.surface, reading: node.reading) {
+                                cost -= Self.multiClauseRenyouFocusBeforeSuruBonus
+                            } else {
+                                cost += Self.multiClauseRenyouFocusWithoutSuruPenalty
+                            }
+                        }
                         // のだ縮約の準体助詞 ん(定数コメント参照)。述語(活用派生)の直後に限る。
                         if node.reading == "ん", node.surface == "ん", prevNode.isInflectionDerived {
                             cost -= Self.multiClauseNominalizerNContractionBonus
@@ -2884,6 +2911,10 @@ extension KanaKanjiConverter {
                 // curated ノードは EOS 遷移を上限クランプ(定数コメント参照)。
                 if nodes[idx].isCurated {
                     eosCost = min(eosCost, Self.multiClauseCuratedEOSCost)
+                }
+                // 連用形+副助詞(呼びさえ)で文が終わることはない(定数コメント参照。2894)
+                if renyouFocusNodeKeys.contains(nodes[idx].key) {
+                    eosCost += Self.multiClauseRenyouFocusWithoutSuruPenalty
                 }
                 var total = best[idx] + eosCost
                 #if DEBUG
