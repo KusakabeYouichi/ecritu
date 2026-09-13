@@ -16845,3 +16845,29 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2892: 単独入力の選好(こしょう→胡椒、つうか→通過。seed)。文脈付きの 故障する/故障ではありません/通過する は連文節側
+    func testRegressionStandaloneReadingPreferences() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "こしょう", limit: 3, systemCandidateMode: mode).first, "胡椒", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "つうか", limit: 3, systemCandidateMode: mode).first, "通過", "mode=\(mode.rawValue)")
+            // こしょうする/つうかする は 1 語(単文節が受ける)
+            XCTAssertEqual(converter.candidates(for: "こしょうする", limit: 3, systemCandidateMode: mode).first, "故障する", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "つうかする", limit: 3, systemCandidateMode: mode).first, "通過する", "mode=\(mode.rawValue)")
+            for (reading, expected) in [
+                ("こしょうではありません", "故障ではありません"),
+                ("くるまがこしょうした", "車が故障した")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
