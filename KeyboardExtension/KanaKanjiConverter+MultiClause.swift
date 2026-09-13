@@ -1219,8 +1219,8 @@ extension KanaKanjiConverter {
             // 最も→南 3767 や ブドウ→栽培 1462 の観測 bigram に覆され、もっとも南に位置する→最も南に、
             // ぶどう栽培→ブドウ栽培 になっていた(2884、抜き取り検査 37+65 件)。かな側と同じ
             // unigram+バックオフで評価して減点だけで並びを決める。出側は DP ループ側で同じ判定
-            let orthodoxDeniesBorrow = surface != reading && !isCurated
-                && Self.multiClauseKanaOrthodoxReadings.contains(reading)
+            let orthodoxDeniesBorrow = !isCurated
+                && Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading)
             let deniesBigramBorrow = surfaceDeniesBorrow || prevDeniesOutgoingBigram || crossReadingBigramDenied
                 || orthodoxDeniesBorrow
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
@@ -2049,8 +2049,7 @@ extension KanaKanjiConverter {
                 penalty += Self.multiClauseKanaShiAfterNonPredicatePenalty
             }
             // 表外訓はかな正書が実勢(定数コメント参照)。連文節でだけ漢字表層を減点する。
-            if surface != reading, !isCurated,
-                Self.multiClauseKanaOrthodoxReadings.contains(reading) {
+            if !isCurated, Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading) {
                 penalty += Self.multiClauseKanaOrthodoxKanjiPenalty
             }
             // Wikipedia 偏りの同音語(官僚/呼称/河川/大気/対比/人命)を連文節でだけ後ろへ(定数コメント参照。2890)。
@@ -2262,8 +2261,8 @@ extension KanaKanjiConverter {
                         let prevDeniesOutgoingBigram = (Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
                             .contains(prevNode.reading) ?? false)
                             // かな正書の読みの漢字/カタカナ表層(最も/ブドウ)は出側の bigram も引かない(transitionCost 側のコメント参照。2884)
-                            || (prevNode.surface != prevNode.reading && !prevNode.isCurated
-                                && Self.multiClauseKanaOrthodoxReadings.contains(prevNode.reading))
+                            || (!prevNode.isCurated
+                                && Self.isKanaOrthodoxDemotedSurface(surface: prevNode.surface, reading: prevNode.reading))
                         var cost = prevCost + transitionCost(
                             prev: prevNode.surface,
                             prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),

@@ -16821,3 +16821,27 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2892: かな(仮名)は連文節でかな正書(表層 仮名 だけ下げる。マニュアル検査 53 件、ユーザ指定)。人名 加奈 は無傷
+    func testRegressionKanaOrthodoxKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("かなもーどのまま", "かなモードのまま"),
+                ("かなかくていしたないよう", "かな確定した内容")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+            // 人名の かな(加奈/佳奈/香奈)は枠の外: 仮名/カナ にならなければよい
+            let name = converter.multiClauseCandidates(for: "かなちゃんがきた", systemCandidateMode: mode).first ?? ""
+            XCTAssertFalse(name.hasPrefix("仮名") || name.hasPrefix("カナ"), "mode=\(mode.rawValue) \(name)")
+        }
+    }
+}

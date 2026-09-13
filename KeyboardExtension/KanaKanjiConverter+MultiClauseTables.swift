@@ -2012,6 +2012,18 @@ extension KanaKanjiConverter {
     static let multiClauseKanaOrthodoxReadings: Set<String> = [
         "そば", "ひらがな", "かたかな", "せい", "ぶどう", "もっとも"
     ]
+    // 表層を限定するかな正書(読み → 減点する表層)。かな(仮名)は écritu のマニュアルが かな/かなモード と書く
+    // (仮名 は 0 件。マニュアル検査で かな→仮名 が 53 件と最多、ユーザ指定 2892)が、かな 読みには
+    // 加奈/佳奈/香奈 の人名や 哉 もあり、読み全体を枠に入れると かなちゃん/かなさん の人名が潰れる。仮名 だけ下げる
+    static let multiClauseKanaOrthodoxDemotedSurfacesByReading: [String: Set<String>] = [
+        // 仮名 を下げると次は カナ(カタカナ収穫)が出る(かなモード→カナモード)ので両方
+        "かな": ["仮名", "カナ"]
+    ]
+    static func isKanaOrthodoxDemotedSurface(surface: String, reading: String) -> Bool {
+        guard surface != reading else { return false }
+        if multiClauseKanaOrthodoxReadings.contains(reading) { return true }
+        return multiClauseKanaOrthodoxDemotedSurfacesByReading[reading]?.contains(surface) ?? false
+    }
     static let multiClauseKanaOrthodoxKanjiPenalty = 1500
 
     // かなの母音(引き伸ばし判定用)。ねえ=ね(e)+え、なあ=な(a)+あ のような終助詞の
