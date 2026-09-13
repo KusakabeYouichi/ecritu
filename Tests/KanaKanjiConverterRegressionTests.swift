@@ -16871,3 +16871,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2892: 北(きた)+道 は 来た道(彼の来た道→彼の北道。ユーザ指定のスポット対処)。北川さん/その北 は無傷
+    func testRegressionKitaBeforeMichi() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("かれのきたみち", "彼の来た道"),
+                ("きたがわさん", "北川さん"),
+                ("そのきた", "その北")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected,
+                    "mode=\(mode.rawValue) reading=\(reading)"
+                )
+            }
+        }
+    }
+}
