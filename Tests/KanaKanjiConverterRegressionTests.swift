@@ -17379,13 +17379,18 @@ extension KanaKanjiConverterRegressionTests {
                 ("らこんゔぃえった", ["ラ・コンヴィエッタ", "La Conviette"]),
                 ("いずにーさんとめーる", ["イズニー・サントメール", "Isigny Sainte-Mère"]),
                 ("とりべおー", ["トリベオー", "Tribéhou"]),
-                ("えとれ", ["エトレ", "Étrez"])
+                ("えとれ", ["エトレ", "Étrez"]),
+                // 2912: ブレス は Sudachi 側だけで Bresse(curated)の後ろ、イズニー は末尾 ー の keepKana でかなの直下に落ちて Isigny の後ろだった
+                ("ぶれす", ["ブレス", "Bresse"]),
+                ("いずにー", ["イズニー", "Isigny"]),
+                ("えしれ", ["エシレ", "Échiré"])
             ] {
                 let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: mode)
                 for surface in expected {
                     XCTAssertTrue(list.contains(surface), "mode=\(mode.rawValue) reading=\(reading) \(surface) \(list)")
                 }
                 XCTAssertEqual(list.first, expected[0], "mode=\(mode.rawValue) reading=\(reading) \(list)")
+                XCTAssertLessThan(list.firstIndex(of: expected[0]) ?? 99, list.firstIndex(of: expected[1]) ?? 99, "mode=\(mode.rawValue) reading=\(reading) \(list)")
             }
         }
     }
