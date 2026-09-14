@@ -296,15 +296,35 @@
 	        <dict><key>phrase</key><string>Ficelle</string><key>shortcut</key><string>ふぃせる</string></dict>
 	        <dict><key>phrase</key><string>Parisien</string><key>shortcut</key><string>ぱりじゃん</string></dict>
 	        <dict><key>phrase</key><string>Batard</string><key>shortcut</key><string>ばたーる</string></dict>
-	<!-- バター -->
-	        <dict><key>phrase</key><string>エシレ</string><key>shortcut</key><string>えしれ</string></dict>
-	        <dict><key>phrase</key><string>イズニー</string><key>shortcut</key><string>いずにー</string></dict>
-	        <dict><key>phrase</key><string>レスキュール</string><key>shortcut</key><string>れすきゅーる</string></dict>
-	<!--既存<dict><key>phrase</key><string>ブレス</string><key>shortcut</key><string>ぶれす</string></dict> -->
-	        <dict><key>phrase</key><string>Échiré</string><key>shortcut</key><string>えしれ</string></dict>
+	<!-- バター(AOP バターの産地と銘柄。カタカナと原語を同じ読みで。ユーザ提供の資料 2911) -->
+	<!-- □ AOP(原産地呼称) -->
+	        <dict><key>phrase</key><string>シャラント・ポワトゥー</string><key>shortcut</key><string>しゃらんとぽわとぅー</string></dict>	<!-- AOP 最大の産地。12 時間以上の長期熟成、ナッツのような香り。溶けにくく伸びが良い -->
+	        <dict><key>phrase</key><string>Charentes-Poitou</string><key>shortcut</key><string>しゃらんとぽわとぅー</string></dict>
+	        <dict><key>phrase</key><string>イズニー</string><key>shortcut</key><string>いずにー</string></dict>	<!-- ノルマンディ。ミネラル豊富な牧草、ミルクの甘みとクリーミーなコク -->
 	        <dict><key>phrase</key><string>Isigny</string><key>shortcut</key><string>いずにー</string></dict>
-	        <dict><key>phrase</key><string>Lescure</string><key>shortcut</key><string>れすきゅーる</string></dict>
+	<!--既存<dict><key>phrase</key><string>ブレス</string><key>shortcut</key><string>ぶれす</string></dict> -->	<!-- フランス東部。濃い黄色、力強いコク -->
 	        <dict><key>phrase</key><string>Bresse</string><key>shortcut</key><string>ぶれす</string></dict>
+	<!-- □ 銘柄(シャラント・ポワトゥー) -->
+	        <dict><key>phrase</key><string>エシレ</string><key>shortcut</key><string>えしれ</string></dict>
+	        <dict><key>phrase</key><string>Échiré</string><key>shortcut</key><string>えしれ</string></dict>
+	        <dict><key>phrase</key><string>レスキュール</string><key>shortcut</key><string>れすきゅーる</string></dict>
+	        <dict><key>phrase</key><string>Lescure</string><key>shortcut</key><string>れすきゅーる</string></dict>
+	        <dict><key>phrase</key><string>パンプリー</string><key>shortcut</key><string>ぱんぷりー</string></dict>
+	        <dict><key>phrase</key><string>Pamplie</string><key>shortcut</key><string>ぱんぷりー</string></dict>
+	        <dict><key>phrase</key><string>ラ・コンヴィエッタ</string><key>shortcut</key><string>らこんゔぃえった</string></dict>
+	        <dict><key>phrase</key><string>La Conviette</string><key>shortcut</key><string>らこんゔぃえった</string></dict>
+	        <dict><key>phrase</key><string>モンタイギュ</string><key>shortcut</key><string>もんたいぎゅ</string></dict>
+	        <dict><key>phrase</key><string>Montaigu</string><key>shortcut</key><string>もんたいぎゅ</string></dict>
+	        <dict><key>phrase</key><string>ラ・ヴィエット</string><key>shortcut</key><string>らゔぃえっと</string></dict>
+	        <dict><key>phrase</key><string>La Viette</string><key>shortcut</key><string>らゔぃえっと</string></dict>
+	<!-- □ 銘柄(イズニー) -->
+	        <dict><key>phrase</key><string>イズニー・サントメール</string><key>shortcut</key><string>いずにーさんとめーる</string></dict>
+	        <dict><key>phrase</key><string>Isigny Sainte-Mère</string><key>shortcut</key><string>いずにーさんとめーる</string></dict>
+	        <dict><key>phrase</key><string>トリベオー</string><key>shortcut</key><string>とりべおー</string></dict>
+	        <dict><key>phrase</key><string>Tribéhou</string><key>shortcut</key><string>とりべおー</string></dict>
+	<!-- □ 銘柄(ブレス) -->
+	        <dict><key>phrase</key><string>エトレ</string><key>shortcut</key><string>えとれ</string></dict>
+	        <dict><key>phrase</key><string>Étrez</string><key>shortcut</key><string>えとれ</string></dict>
 	<!-- ポルシェ -->
 	        <dict><key>phrase</key><string>カレラ</string><key>shortcut</key><string>かれら</string></dict>	<!-- Sudachiにもある(基底1位/2、コスト5496。単文節は既に先頭) -->
 	<!--既存<dict><key>phrase</key><string>スパイダー</string><key>shortcut</key><string>すぱいだー</string></dict> -->
