@@ -206,6 +206,15 @@ extension KanaKanjiConverter {
                 !derivationBaseSeedSkipsKanaLead(for: reading) {
                 let maxOther = others.map { scores[$0, default: 0] }.max() ?? 0
                 scores[reading] = max(identityScore, maxOther + 1)
+            } else if Self.kanaHarvestDemotedReadings.contains(reading) {
+                // 置き先は LM 最良の漢字の直下(定数コメント参照。2902)。全漢字の最上位-1 だと、正規化モードで消える
+                // 異表記(ぶし の 五倍子)の点に合わせてしまい 武士 と同点→文字コード順でかなが先頭に戻る
+                let kanji = others.filter { KanaKanjiConverter.containsKanjiCandidate($0) }
+                let unigrams = store.wordLMUnigramCosts(for: kanji)
+                if let bestKanji = kanji.filter({ unigrams[$0] != nil }).min(by: { unigrams[$0]! < unigrams[$1]! }),
+                    let bestScore = scores[bestKanji] {
+                    scores[reading] = min(identityScore, bestScore - 1)
+                }
             }
         }
 
@@ -275,6 +284,20 @@ extension KanaKanjiConverter {
         }
         return others.allSatisfy { (costs[$0] ?? Int.max) > kanaCost }
     }
+
+    // 辞書にかな表層の収穫(ひつよう rank2/ほけん rank3/ぶし rank0)があるだけの漢字正書の名詞。収穫点+識別供給の二重加算で
+    // 単語だけ打つとかなが 必要/保険/武士 の上に出ていた(実機確認 ひつよう/ほけん)。BCCWJ 短単位語彙表(書き言葉の
+    // 同音異義語 5,309 組)との突き合わせで見つかった 150 読みのうち、seed 宣言(ふだん 等)と かな/カナ 正書(みかん/ふぐ)を
+    // 除き、LM でかながその漢字に 800 以上劣る 69 読み(2902)。一般規則(LM 劣位のかなを一律降格)は いいね/したら/しって 等
+    // の口語かな正書 8 件を退行させたので表で限定する。効果: 単文節でかな識別を LM 最良の漢字の直下へ、keepKana は立てない
+    static let kanaHarvestDemotedReadings: Set<String> = [
+        "ひつよう", "りよう", "ないよう", "ほけん", "じょうたい", "ぜったい", "きけん", "さいこう", "かんとく", "じたい", "しょうぼう", "はけん", "かっこう",
+        "ひこう", "ぶたい", "たいよう", "えいよう", "いったい", "はかせ", "ぜんこう", "せいよう", "きんよう", "ぶし", "こうたい", "ぐんたい", "ゆうそう",
+        "だとう", "いっこう", "りこう", "じか", "ていたい", "かめん", "じゅうたい", "すいそう", "やとう", "しゃたい", "すいたい", "ようそう", "ほそう",
+        "さくい", "ようこう", "くない", "しっそう", "ほうたい", "かびん", "のうよう", "やくそう", "ふとう", "はながら", "がろう", "ふくめん", "きょうじん",
+        "いろう", "せいじゃ", "しょうよう", "ほうが", "かんじん", "ちょうけい", "じょたい", "ころう", "ちょうば", "ほうとう", "ようらん", "ここう", "わこう",
+        "いっとう", "ひとう", "きんたい", "いとく"
+    ]
 
     // 派生基底のLM優位昇格の例外読み(ユーザレビュー 2639: 現状の辞書順が正)。
     // 商談/閉廷/棲息/沈澱 が先頭のままで良い(LM最良の 昇段/平定/生息/沈殿 を上げない)

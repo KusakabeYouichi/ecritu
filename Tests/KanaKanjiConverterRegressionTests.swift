@@ -17118,3 +17118,27 @@ extension KanaKanjiConverterRegressionTests {
         print("DUMP 件数=\(lines.count) 出力=\(out)")
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2902: 辞書にかな表層の収穫があるだけの漢字正書の名詞(ひつよう/ほけん/ぶし)で、かなが先頭に居座らない
+    // (BCCWJ 語彙表との突き合わせ、実機確認 ひつよう/ほけん)。かな正書(ちゃんと/ほぼ/やっぱり)と seed(ふだん)は無傷
+    func testRegressionKanaHarvestDoesNotLead() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("ひつよう", "必要"), ("ほけん", "保険"), ("ぶし", "武士"), ("ぜったい", "絶対"), ("きけん", "危険"),
+                ("りよう", "利用"), ("ぶたい", "舞台"), ("はかせ", "博士"), ("かめん", "仮面")
+            ] {
+                XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, expected, "mode=\(mode.rawValue) reading=\(reading)")
+                XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: reading), "reading=\(reading)")
+            }
+            // たいよう は 大洋/太陽 の並び(同音語順、別件)があるので「かなが先頭でない」だけ見る
+            XCTAssertNotEqual(converter.candidates(for: "たいよう", limit: 3, systemCandidateMode: mode).first, "たいよう", "mode=\(mode.rawValue)")
+            for reading in ["ちゃんと", "ほぼ", "やっぱり", "そして", "ふだん", "みかん"] {
+                XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, reading, "mode=\(mode.rawValue) reading=\(reading)")
+            }
+        }
+    }
+}

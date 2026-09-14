@@ -96,6 +96,11 @@ extension KanaKanjiConverter {
         if hasLearnedKanaIdentity(for: normalized) || hasCuratedKanaIdentity(for: normalized) {
             return true
         }
+        // 漢字正書の名詞のかな収穫(ひつよう/ほけん。定数コメント参照。2902)。辞書にかな表層があるだけの根拠
+        // (systemCandidates.contains)や活用形解釈(ほけ+ん→ほける)で立つのを、学習・curated の直後で止める
+        if Self.kanaHarvestDemotedReadings.contains(normalized) {
+            return false
+        }
         // 比較の より(は/も)+まし(ないよりはましだ)はかなが正書。連文節はかな最良を返すが、根拠が無いと全かなエコー抑制で
         // 落ちて 増しだ/倍田 の変種だけが残る(ユーザ報告 2898)
         for phrase in ["よりはまし", "よりもまし", "よりまし"] where normalized.contains(phrase) {
