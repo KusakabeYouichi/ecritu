@@ -17381,6 +17381,9 @@ extension KanaKanjiConverterRegressionTests {
                 ("とりべおー", ["トリベオー", "Tribéhou"]),
                 ("えとれ", ["エトレ", "Étrez"]),
                 // 2912: ブレス は Sudachi 側だけで Bresse(curated)の後ろ、イズニー は末尾 ー の keepKana でかなの直下に落ちて Isigny の後ろだった
+                // 2914: non-A.O.P. 銘柄(ユーザ追加)
+                ("ぼるでぃえ", ["ボルディエ", "Le Beurre Bordier"]),
+                ("おーぼんぶーる", ["オー・ボン・ブール", "Aux Bons Beurres"]),
                 ("ぶれす", ["ブレス", "Bresse"]),
                 ("いずにー", ["イズニー", "Isigny"]),
                 ("えしれ", ["エシレ", "Échiré"])
