@@ -2273,6 +2273,11 @@ extension KanaKanjiConverter {
                         if isParticleHeadedRareVerb(node: node) {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
+                        // 文頭の稀な「名」が一般語の分割を割る(定数コメント参照。2917)
+                        if personNameKindByNodeKey[node.key] == "名", node.end < n, node.reading.count >= 3,
+                            (node.wordCost ?? 0) >= Self.multiClauseSentenceInitialGivenNameWordCostFloor {
+                            cost += Self.multiClauseSentenceInitialGivenNameSplitPenalty
+                        }
                         // 確定済み数字の直後は文頭の助数詞を持ち上げる(2+じしけんが→時試験が。定数コメント参照。2887)
                         if digitPrefixed, Self.digitBoostCounterSurfaces(for: node.reading)?.contains(node.surface) ?? false {
                             cost -= Self.multiClauseDigitContextCounterBonus

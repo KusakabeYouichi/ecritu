@@ -2110,6 +2110,12 @@ extension KanaKanjiConverter {
     //     マン+昔奈(姓 せきな、wc10000)で 満席+な を押し出していた(な の名詞直後減点 9394 より 昔奈 9500 が僅差で安い)
     static let multiClausePersonNameHonorificReadings: Set<String> = ["さん", "さま", "くん", "ちゃん"]
     static let multiClausePersonNameBeforeHonorificBonus = 1500
+    // 文頭の「名(名前)」1 ノードが一般語の分割を割るのを止める(いつおきた→五男来た。ユーザ報告 2917)。
+    // 五男(いつお)は Sudachi の人名で word_cost 9123、しかも同表層 五男(ごなん)の LM unigram 6856 を読み跨ぎで借りるため
+    // いつ(6386)+起きた(派生 6400)より安くなっていた。姓は文頭に立つのが普通(田中です)なので対象外、
+    // Sudachi の実績が薄い(word_cost 8700 以上)名だけ、かつ入力全体がその名前でないときに減点する
+    static let multiClauseSentenceInitialGivenNameWordCostFloor = 8700
+    static let multiClauseSentenceInitialGivenNameSplitPenalty = 4500
     static let multiClauseHarvestedPersonNameAfterFragmentPenalty = 3000
     // 格助詞込みの副詞的 1 ノード(次に/一気に/まるで 等: 漢字+末尾かな に/で で、読みも同じ助詞で終わる)の直後は、
     // 助詞直後と同じく述語が続くのが自然なので活用派生の割引を許す(2818)。つぎにきたきゃく が
