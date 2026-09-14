@@ -17251,3 +17251,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: 姓に お/ご 接頭辞派生を付けない(しょーとかっとごいの→ショートカットご井野。ユーザ報告)。お花/ご相談 は無傷
+    func testRegressionPolitePrefixSkipsSurnames() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "しょーとかっとごいの", systemCandidateMode: mode).first, "ショートカット語彙の", "mode=\(mode.rawValue)")
+            XCTAssertFalse(converter.candidates(for: "ごいの", limit: 8, systemCandidateMode: mode).contains("ご井野"), "mode=\(mode.rawValue)")
+            XCTAssertTrue(converter.candidates(for: "おはな", limit: 3, systemCandidateMode: mode).contains("お花"), "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "ごそうだん", limit: 3, systemCandidateMode: mode).first, "ご相談", "mode=\(mode.rawValue)")
+        }
+    }
+}
