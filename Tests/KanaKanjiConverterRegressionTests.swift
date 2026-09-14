@@ -17089,3 +17089,32 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 検査用: 読み一覧(1 行 1 読み)ごとに単文節の上位候補を吐く(ECRITU_DUMP_TSV)。
+    // 外部コーパス(BCCWJ 語彙表 等)との候補順の突き合わせに使う。単文節の順(dictionary_entries rank+seed+抑制)を
+    // 実機の候補バーと同じ mode(normalise)で見る
+    func testDumpSingleSegmentCandidates() throws {
+        guard let path = ProcessInfo.processInfo.environment["ECRITU_DUMP_TSV"],
+            let raw = try? String(contentsOfFile: path, encoding: .utf8) else {
+            throw XCTSkip("ECRITU_DUMP_TSV が未指定")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let mode: KanaKanjiCandidateSourceMode = ProcessInfo.processInfo.environment["ECRITU_DUMP_SURFACE"] != nil ? .surface : .normalise
+        var lines: [String] = []
+        for line in raw.split(separator: "\n") {
+            let reading = String(line.split(separator: "\t").first ?? "")
+            guard !reading.isEmpty else { continue }
+            // 列 1: keepKana(かな正書の根拠)、列 2: 連文節の候補列(| 区切り)、以降: 単文節の上位候補。
+            // 実機の候補バーは 連文節 → 単文節 の合流(先勝ち dedupe)で、かな識別は keepKana=0 なら末尾チップ
+            let keep = converter.shouldKeepKanaIdentityLeading(for: reading)
+            let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+            let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: mode)
+            lines.append("DUMP\t\(reading)\t\(keep ? 1 : 0)\t" + multi.joined(separator: "|") + "\t" + list.joined(separator: "\t"))
+        }
+        let out = ProcessInfo.processInfo.environment["ECRITU_DUMP_OUT"] ?? (path + ".out")
+        try lines.joined(separator: "\n").write(toFile: out, atomically: true, encoding: .utf8)
+        print("DUMP 件数=\(lines.count) 出力=\(out)")
+    }
+}
