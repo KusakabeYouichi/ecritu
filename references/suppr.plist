@@ -8,6 +8,7 @@
 	<dict><key>phrase</key><string>格好</string><key>shortcut</key><string>かっこ</string></dict>	<!-- 格好 の読みは かっこう。かっこ(rank0、wc 1930)は俗な短縮で、かっこ→括弧 を 2 位に落としていた(マニュアル検査、ユーザ指定 2890) -->
 	<dict><key>phrase</key><string>紹待</string><key>shortcut</key><string>しょうたい</string></dict>	<!-- 招待 の誤字(Sudachi の surface 異表記、正規化先は 招待)。しょうたい の 4 番手に出ていた(ユーザ指摘 2900) -->
 	<dict><key>phrase</key><string>しょう待</string><key>shortcut</key><string>しょうたい</string></dict>	<!-- 同じく 招待 の交ぜ書き異表記 -->
+	<dict><key>phrase</key><string>眼ぶた</string><key>shortcut</key><string>まぶた</string></dict>	<!-- 瞼 の交ぜ書き異表記。実機で先頭に出ていた(ユーザ指摘 2905) -->
 	<dict><key>phrase</key><string>帰える</string><key>shortcut</key><string>かえる</string></dict>	<!-- 帰る の誤った送り仮名(告示の本則・許容のどちらにも無い)。活用形(帰えって/帰えります)まで候補を汚す(ユーザ指摘 2820) -->
 	<dict><key>phrase</key><string>重そう</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重そう(じゅうそう): 重そう は おもそう(重い+そう)であり じゅうそう と読む語ではない(ユーザ指摘 2818) -->
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
