@@ -2663,6 +2663,11 @@ extension KanaKanjiConverter {
                                 cost += Self.multiClauseYoriMashiKanjiPenalty
                             }
                         }
+                        // 述語直後の よう→用 は名詞接尾の誤用(追加しておく用。定数コメント参照。2910)
+                        if node.reading == "よう", node.surface == "用",
+                            prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
+                            cost += Self.multiClauseYouAfterPredicatePenalty
+                        }
                         // 文末の長音 ー は述語の引き伸ばし(送りましたー。定数コメント参照。2898)
                         if node.surface == "ー", node.reading == "ー", node.end == n,
                             prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate

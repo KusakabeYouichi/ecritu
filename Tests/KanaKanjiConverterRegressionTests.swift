@@ -17209,3 +17209,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: 述語直後の よう は かな(ついかしておくようえいあいにしじ→追加しておく用AIに師事。ユーザ報告)。名詞+用(赤ワイン用)は無傷
+    func testRegressionYouAfterPredicateStaysKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "ついかしておくようえいあいにしじ", systemCandidateMode: mode).first, "追加しておくようAIに指示", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "わすれないようにめもする", systemCandidateMode: mode).first, "忘れないようにメモする", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "あかわいんようのぐらす", systemCandidateMode: mode).first, "赤ワイン用のグラス", "mode=\(mode.rawValue)")
+        }
+    }
+}
