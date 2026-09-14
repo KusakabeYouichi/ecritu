@@ -17282,3 +17282,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: おくれない は 送れない/遅れない/贈れない/後れない(ユーザ指定)。おくれないな もこの順で、お紅な/お暮れないな は後ろ
+    func testRegressionOkurenaiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(Array(converter.candidates(for: "おくれない", limit: 6, systemCandidateMode: mode).prefix(4)), ["送れない", "遅れない", "贈れない", "後れない"], "mode=\(mode.rawValue)")
+            let na = converter.multiClauseCandidates(for: "おくれないな", systemCandidateMode: mode)
+            let single = converter.candidates(for: "おくれないな", limit: 8, systemCandidateMode: mode)
+            XCTAssertEqual(Array((na.isEmpty ? single : na).prefix(2)), ["送れないな", "遅れないな"], "mode=\(mode.rawValue) multi=\(na) single=\(single)")
+        }
+    }
+}
