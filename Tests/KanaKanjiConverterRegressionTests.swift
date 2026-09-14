@@ -17223,3 +17223,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: 漢字を含まない語幹+め は め を 目 の前に(えいあいめ→AI目。ユーザ指定)。序数(2番目)と 人目 は無傷
+    func testRegressionNonKanjiStemMePrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let ai = converter.candidates(for: "えいあいめ", limit: 6, systemCandidateMode: mode)
+            XCTAssertEqual(ai.first, "AIめ", "mode=\(mode.rawValue) \(ai)")
+            XCTAssertLessThan(ai.firstIndex(of: "AIめ") ?? 99, ai.firstIndex(of: "AI目") ?? 99, "mode=\(mode.rawValue) \(ai)")
+            XCTAssertTrue(["一目", "人目"].contains(converter.candidates(for: "ひとめ", limit: 3, systemCandidateMode: mode).first ?? ""), "mode=\(mode.rawValue)")
+        }
+    }
+}
