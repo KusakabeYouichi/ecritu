@@ -17073,3 +17073,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2900: 紹待/しょう待(招待 の誤字・交ぜ書き異表記)を抑制(ユーザ指摘)
+    func testRegressionShoutaiMisspellingSuppressed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let list = converter.candidates(for: "しょうたい", limit: 10, systemCandidateMode: mode)
+            XCTAssertFalse(list.contains("紹待") || list.contains("しょう待"), "mode=\(mode.rawValue) \(list)")
+            XCTAssertTrue(list.contains("招待") && list.contains("正体"), "mode=\(mode.rawValue) \(list)")
+        }
+    }
+}
