@@ -802,6 +802,29 @@ extension KanaKanjiConverter {
                 result.insert(form, at: min(offset, result.count))
             }
         }
+        // 漢字を含まない語幹(AI/カタカナ語)+め は、目 が序数・熟語(人目/節目)を作らないので め を先に
+        // (えいあいめ→英愛め/AI目。ユーザ指定 2910: 他につながらない語尾の め は 目 より め)。列の先頭が め/目 形なら
+        // 非漢字語幹の め形をまとめて先頭へ、そうでなければ対応する 目 形の直前へ
+        let nonKanjiMeForms = result.filter { candidate in
+            guard candidate.count >= 2, candidate.hasSuffix("め") else { return false }
+            let stem = String(candidate.dropLast())
+            return !Self.containsKanjiCandidate(stem)
+                && stem.contains(where: { ($0.isASCII && $0.isLetter) || ("ァ"..."ヶ").contains($0) })
+        }
+        if !nonKanjiMeForms.isEmpty {
+            if let first = result.first, first.hasSuffix("め") || first.hasSuffix("目") {
+                result.removeAll { nonKanjiMeForms.contains($0) }
+                result.insert(contentsOf: nonKanjiMeForms, at: 0)
+            } else {
+                for meForm in nonKanjiMeForms {
+                    let kanjiForm = String(meForm.dropLast()) + "目"
+                    if let kanjiIndex = result.firstIndex(of: kanjiForm), let meIndex = result.firstIndex(of: meForm), kanjiIndex < meIndex {
+                        result.remove(at: meIndex)
+                        result.insert(meForm, at: kanjiIndex)
+                    }
+                }
+            }
+        }
         var stems: [String] = []
         var seenStems = Set<String>()
         for candidate in result where candidate.count >= 2 && candidate != reading {
