@@ -17183,3 +17183,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: きゅうせい は 旧姓/急性/急逝/旧制(ユーザ指定)
+    func testRegressionKyuseiOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(Array(converter.candidates(for: "きゅうせい", limit: 6, systemCandidateMode: mode).prefix(4)), ["旧姓", "急性", "急逝", "旧制"], "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "きゅうせいだった", systemCandidateMode: mode).first, "旧姓だった", "mode=\(mode.rawValue)")
+        }
+    }
+}
