@@ -17326,3 +17326,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: 助詞の言いさし+ー(はずなのでー→はずなのデー。ユーザ報告)
+    func testRegressionParticleProlongationStaysKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "はずなのでー", systemCandidateMode: mode).first, "はずなのでー", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "いくのでー", systemCandidateMode: mode).first, "行くのでー", "mode=\(mode.rawValue)")
+        }
+    }
+}
