@@ -17266,3 +17266,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: 名詞の後の きて は 来て(しゅるいきてます→種類着てます。ユーザ報告)。服を着て は無傷
+    func testRegressionKiteAfterNounPrefersKuru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "しゅるいきてます", systemCandidateMode: mode).first, "種類来てます", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "きてます", limit: 3, systemCandidateMode: mode).first, "来てます", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "ふくをきてます", systemCandidateMode: mode).first, "服を着てます", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "ふくをきた", systemCandidateMode: mode).first, "服を着た", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "きて", limit: 3, systemCandidateMode: mode).first, "来て", "mode=\(mode.rawValue)")
+        }
+    }
+}
