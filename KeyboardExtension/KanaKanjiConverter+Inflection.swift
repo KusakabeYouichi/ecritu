@@ -469,6 +469,13 @@ extension KanaKanjiConverter {
                 continue
             }
 
+            // かな識別(候補==基底読み)の語幹に補助形容詞の漢字「易い」は付けない。おい易い/よみ易い/つかい易い のような
+            // 交ぜ書きの誤供給(ユーザ報告 2916)。漢字表記の基底(読む→読み易い)は従来どおり。
+            // 「方」(やり方)と「始める」(やり始める)はかな語幹でも正書なので対象外
+            if candidate == baseReading, rule.outputCandidateSuffix.contains("易") {
+                continue
+            }
+
             let stem = String(candidate.dropLast(matchedSuffix.count))
             results.append(stem + rule.outputCandidateSuffix)
             contributingBases.append(candidate)
