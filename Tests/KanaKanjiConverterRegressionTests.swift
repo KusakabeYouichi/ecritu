@@ -17365,3 +17365,28 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2911: AOP バターの産地と銘柄(compenser.plist、カタカナ+原語を同じ読みで。ユーザ提供)
+    func testRegressionButterAOPVocabulary() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, expected) in [
+                ("しゃらんとぽわとぅー", ["シャラント・ポワトゥー", "Charentes-Poitou"]),
+                ("ぱんぷりー", ["パンプリー", "Pamplie"]),
+                ("らこんゔぃえった", ["ラ・コンヴィエッタ", "La Conviette"]),
+                ("いずにーさんとめーる", ["イズニー・サントメール", "Isigny Sainte-Mère"]),
+                ("とりべおー", ["トリベオー", "Tribéhou"]),
+                ("えとれ", ["エトレ", "Étrez"])
+            ] {
+                let list = converter.candidates(for: reading, limit: 6, systemCandidateMode: mode)
+                for surface in expected {
+                    XCTAssertTrue(list.contains(surface), "mode=\(mode.rawValue) reading=\(reading) \(surface) \(list)")
+                }
+                XCTAssertEqual(list.first, expected[0], "mode=\(mode.rawValue) reading=\(reading) \(list)")
+            }
+        }
+    }
+}
