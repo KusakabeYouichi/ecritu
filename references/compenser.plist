@@ -302,7 +302,7 @@
 	        <dict><key>phrase</key><string>Charentes-Poitou</string><key>shortcut</key><string>しゃらんとぽわとぅー</string></dict>
 	        <dict><key>phrase</key><string>イズニー</string><key>shortcut</key><string>いずにー</string></dict>	<!-- ノルマンディ。ミネラル豊富な牧草、ミルクの甘みとクリーミーなコク -->
 	        <dict><key>phrase</key><string>Isigny</string><key>shortcut</key><string>いずにー</string></dict>
-	<!--既存<dict><key>phrase</key><string>ブレス</string><key>shortcut</key><string>ぶれす</string></dict> -->	<!-- フランス東部。濃い黄色、力強いコク -->
+	        <dict><key>phrase</key><string>ブレス</string><key>shortcut</key><string>ぶれす</string></dict>	<!-- フランス東部。濃い黄色、力強いコク。Sudachi にもあるが、原語 Bresse(curated)より後ろに落ちるので curated に揃える(2912) -->
 	        <dict><key>phrase</key><string>Bresse</string><key>shortcut</key><string>ぶれす</string></dict>
 	<!-- □ 銘柄(シャラント・ポワトゥー) -->
 	        <dict><key>phrase</key><string>エシレ</string><key>shortcut</key><string>えしれ</string></dict>

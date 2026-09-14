@@ -150,10 +150,14 @@ extension KanaKanjiConverter {
             .map { scores[$0, default: 0] }
             .min() ?? 0
 
-        let protectedKatakanaCandidates = preferredLeadingKatakanaCandidates(
+        var protectedKatakanaCandidates = preferredLeadingKatakanaCandidates(
             fromSystemCandidates: systemCandidates,
             reading: reading
         )
+        // curated(plist/追加語彙)のカタカナ語も外来語・固有名として保護する(2912): いずにー は辞書に無く保護カタカナが空で、
+        // keepKana の根拠(末尾 ー)が立つとかな識別 1500 の直下 1499 に落とされ、原語 Isigny(2399)の後ろに沈んでいた
+        let curatedForReading = (store.initialAjoutVocabulary()[reading] ?? []) + (store.ajoutVocabulary()[reading] ?? [])
+        protectedKatakanaCandidates.formUnion(curatedForReading.filter { Self.isPureKatakanaCandidate($0) })
 
         // かな識別が同読みグループ内で LM 優位(ここ4556 vs 個々/ココ…)なら、
         // グループ首位へ引き上げる(此処/個々 等の辞書順よりかな正書を優先)。
