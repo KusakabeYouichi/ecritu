@@ -17352,3 +17352,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: 形容詞 て形の後は形容詞(かるくてこい→軽くてこい。ユーザ報告)
+    func testRegressionAdjectiveAfterKute() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "かるくてこい", systemCandidateMode: mode).first, "軽くて濃い", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "やすくてうまい", systemCandidateMode: mode).first, "安くてうまい", "mode=\(mode.rawValue)")
+        }
+    }
+}

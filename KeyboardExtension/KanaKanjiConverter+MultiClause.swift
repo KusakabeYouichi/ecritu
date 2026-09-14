@@ -2673,6 +2673,11 @@ extension KanaKanjiConverter {
                             !node.isInflectionDerived, node.surface != node.reading, containsKanji(node.surface) {
                             cost += Self.multiClauseClauseInitialDaBeforeNounPenalty
                         }
+                        // 形容詞 て形+形容詞(定数コメント参照。2910)
+                        if prevNode.isInflectionDerived, prevNode.surface.hasSuffix("くて"), prevNode.reading.hasSuffix("くて"),
+                            node.isDictionaryFormPredicate, node.surface.hasSuffix("い"), node.surface != node.reading {
+                            cost -= Self.multiClauseAdjectiveAfterKuteBonus
+                        }
                         // 文末の長音 ー は述語の引き伸ばし(送りましたー。定数コメント参照。2898)
                         if node.surface == "ー", node.reading == "ー", node.end == n,
                             prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate
