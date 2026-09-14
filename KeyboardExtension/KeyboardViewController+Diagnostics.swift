@@ -569,6 +569,12 @@ extension KeyboardViewController {
             return
         }
 
+        // でばぐ可視化用にセッション最大値を更新(切り上げ。定数コメント参照。2918)
+        let peakMB = Int(footprintMB.rounded(.up))
+        if peakMB > candidateBarModel.memoryFootprintPeakMBForDebugDisplay {
+            candidateBarModel.memoryFootprintPeakMBForDebugDisplay = peakMB
+        }
+
         let nextProfile = nextMemoryFailSafeProfile(for: footprintMB)
 
         guard nextProfile != memoryFailSafeProfile else {
