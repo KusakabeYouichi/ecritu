@@ -32,6 +32,7 @@
   アプリ内ライセンス画面参照)
 
 ## 提出前チェックリスト
+- [ ] **でばぐ可視化を戻す**: `KeyboardRootView.memoryPressureVisualizationEnabled` を `false` に(TestFlight 配布中だけ削除キーに黄/橙と数字を出している。2918)
 
 - [ ] 本番バンドルID(.devなし)の App ID / App Group / プロビジョニング
 - [ ] Archive は Release 構成(スキームの ArchiveAction は Release 済み)

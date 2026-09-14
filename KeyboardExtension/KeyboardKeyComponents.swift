@@ -109,6 +109,7 @@ struct ActionKeyButton: View {
     var backgroundColorOverride: Color? = nil
     // キー左下隅の小さな注記(メモリ警告回数 等)。
     var cornerBadgeText: String? = nil
+    var topTrailingBadgeText: String? = nil
     let action: () -> Void
     @State private var didTriggerLongPress = false
     @State private var pendingSingleTapWorkItem: DispatchWorkItem?
@@ -154,6 +155,15 @@ struct ActionKeyButton: View {
                         .foregroundStyle(keyLabelColor)
                         .padding(.leading, 4)
                         .padding(.bottom, 2)
+                }
+            }
+            .overlay(alignment: .topTrailing) {
+                if let topTrailingBadgeText {
+                    Text(topTrailingBadgeText)
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .foregroundStyle(keyLabelColor)
+                        .padding(.trailing, 4)
+                        .padding(.top, 2)
                 }
             }
         }
