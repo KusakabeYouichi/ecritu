@@ -17083,7 +17083,9 @@ extension KanaKanjiConverterRegressionTests {
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             let list = converter.candidates(for: "しょうたい", limit: 10, systemCandidateMode: mode)
             XCTAssertFalse(list.contains("紹待") || list.contains("しょう待"), "mode=\(mode.rawValue) \(list)")
-            XCTAssertTrue(list.contains("招待") && list.contains("正体"), "mode=\(mode.rawValue) \(list)")
+            // 並びは 招待/正体/尚泰/小隊(seed、2901)。かな しょうたい は末尾
+            XCTAssertEqual(Array(list.prefix(4)), ["招待", "正体", "尚泰", "小隊"], "mode=\(mode.rawValue) \(list)")
+            if let kana = list.firstIndex(of: "しょうたい") { XCTAssertEqual(kana, list.count - 1, "mode=\(mode.rawValue) \(list)") }
         }
     }
 }
