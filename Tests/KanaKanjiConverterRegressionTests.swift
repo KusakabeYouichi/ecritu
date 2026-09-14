@@ -14876,14 +14876,11 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(head.first, "先頭の候補", "mode=\(mode.rawValue) multi=\(head)")
             let mada = converter.multiClauseCandidates(for: "こうほはまだせんたくされていない", systemCandidateMode: mode)
             XCTAssertEqual(mada.first, "候補はまだ選択されていない", "mode=\(mode.rawValue) multi=\(mada)")
-            // 洗濯 の日常用法は動かさない(単文節の並びも辞書順のまま)
+            // 洗濯 の日常用法(洗濯物)は連文節で動かさない。単文節の並びは 2906 で 選択/洗濯(両コーパスとも 選択 が 1 位。
+            // CEJC 66 vs 64 の僅差なので、話し言葉で 洗濯 を戻すなら seed を入れ替える)
             let mono = converter.multiClauseCandidates(for: "せんたくものをほす", systemCandidateMode: mode)
             XCTAssertEqual(mono.first?.hasPrefix("洗濯物"), true, "mode=\(mode.rawValue) multi=\(mono)")
-            XCTAssertEqual(
-                converter.candidates(for: "せんたく", limit: 3, systemCandidateMode: mode).first,
-                "洗濯",
-                "mode=\(mode.rawValue)"
-            )
+            XCTAssertEqual(Array(converter.candidates(for: "せんたく", limit: 3, systemCandidateMode: mode).prefix(2)), ["選択", "洗濯"], "mode=\(mode.rawValue)")
         }
     }
 }
@@ -17148,6 +17145,26 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(Array(converter.candidates(for: "しろ", limit: 4, systemCandidateMode: mode).prefix(3)), ["白", "城", "しろ"], "mode=\(mode.rawValue)")
             for reading in ["ちゃんと", "ほぼ", "やっぱり", "そして", "ふだん", "みかん"] {
                 XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, reading, "mode=\(mode.rawValue) reading=\(reading)")
+            }
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2906: 話し言葉優先の同音語順(CEJC 1 位 → BCCWJ 1 位 → 旧先頭。docs/homophone_register_divergence.md)。
+    // seed に並べた語がこの相対順で候補に出て、先頭が CEJC 1 位(かな書き優勢なら かな)になる
+    func testRegressionSpokenRegisterHomophoneOrder() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let expectations: [(String, [String])] = [("だいたい", ["大体", "代替"]), ("きのう", ["きのう", "昨日", "機能"]), ("しゅうかん", ["週間", "習慣"]), ("かし", ["菓子"]), ("じてん", ["自転", "時点"]), ("しょうちゅう", ["焼酎", "尚忠"]), ("かんせん", ["幹線", "感染"]), ("じこ", ["自己", "事故"]), ("きじ", ["生地", "記事"]), ("こうほう", ["広報", "工法"]), ("ちゅうしゃ", ["駐車", "注射"]), ("かいじょう", ["会場", "海上"]), ("がっき", ["学期", "楽器"]), ("せんたく", ["選択", "洗濯"]), ("かがく", ["科学", "化学"]), ("こうか", ["効果", "高価"]), ("せいかく", ["性格", "正確"]), ("いらい", ["依頼", "以来"]), ("せいしん", ["精神", "清新"]), ("たいちょう", ["体調", "隊長"]), ("ぼうし", ["帽子", "防止"]), ("たいしょう", ["対象", "大正"]), ("へんしん", ["返信", "変身"]), ("ようじ", ["用事", "幼児"]), ("きょうぎ", ["協議", "競技"]), ("せいふく", ["制服", "征服"]), ("きげん", ["期限", "起源"]), ("はんちょう", ["班長", "藩庁", "半丁"]), ("めいし", ["名刺", "名詞"]), ("きょうせい", ["強制", "共生"]), ("ぎじ", ["議事", "疑似"]), ("こうせき", ["鉱石", "功績"]), ("こうりつ", ["効率", "公立"]), ("たいきょく", ["太極", "対局"]), ("かんじょう", ["感情", "勘定"]), ("しょうてん", ["商店", "焦点"]), ("しんり", ["心理", "真理"]), ("せいきょう", ["生協", "正教"]), ("しんちょう", ["身長", "慎重", "伸長"]), ("きせい", ["規制", "寄生"]), ("いじ", ["意地", "維持"]), ("きょうよう", ["教養", "強要"]), ("りこう", ["理工", "履行", "利口"]), ("あさいち", ["朝市", "朝一"]), ("かっぱ", ["河童"]), ("きき", ["危機", "機器"]), ("こうひょう", ["講評", "公表"]), ("せんこう", ["線香", "選考"]), ("いちょう", ["いちょう", "銀杏", "萎凋"]), ("こうてい", ["肯定", "皇帝", "工程"]), ("しぼう", ["脂肪", "死亡"]), ("ぼうちょう", ["傍聴", "膨張"]), ("かいひ", ["会費", "回避"]), ("こどう", ["古道", "鼓動", "跨道"]), ("じきゅう", ["時給", "自給"]), ("とうにゅう", ["豆乳", "投入"]), ("しょうがい", ["渉外", "障害"]), ("じょうすい", ["上水", "浄水"]), ("とうこう", ["登校", "投稿"]), ("はんてん", ["半纏", "反転"]), ("ようりょう", ["容量", "要領"]), ("さんどう", ["参道", "賛同"]), ("ていじ", ["定時", "提示"]), ("こしつ", ["個室", "固執"]), ("えんしゅう", ["円周", "演習"]), ("かんぱち", ["環八", "間八"]), ("こうしゃ", ["校舎", "後者"]), ("ふじん", ["不尽", "夫人"]), ("ようせい", ["養成", "要請"])]
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            for (reading, order) in expectations {
+                let list = converter.candidates(for: reading, limit: 8, systemCandidateMode: mode)
+                XCTAssertEqual(list.first, order[0], "mode=\(mode.rawValue) reading=\(reading) \(list)")
+                let positions = order.compactMap { list.firstIndex(of: $0) }
+                XCTAssertEqual(positions.count, order.count, "mode=\(mode.rawValue) reading=\(reading) 欠落 \(list)")
+                XCTAssertEqual(positions, positions.sorted(), "mode=\(mode.rawValue) reading=\(reading) 順序 \(list)")
             }
         }
     }
