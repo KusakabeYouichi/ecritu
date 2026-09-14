@@ -17297,3 +17297,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: そしたら はかな(misc curated)。祖したら が唯一の候補だった(ユーザ報告)
+    func testRegressionSoshitaraKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "そしたら", limit: 3, systemCandidateMode: mode).first, "そしたら", "mode=\(mode.rawValue)")
+            let multi = converter.multiClauseCandidates(for: "そしたらいこう", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first?.hasPrefix("そしたら"), true, "mode=\(mode.rawValue) \(multi)")
+        }
+    }
+}
