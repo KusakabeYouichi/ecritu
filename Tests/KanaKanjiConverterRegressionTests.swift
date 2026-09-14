@@ -17339,3 +17339,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: リハッシュ(it.plist、サ変名詞)
+    func testRegressionRehashVocabulary() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "りはっしゅ", limit: 3, systemCandidateMode: mode).first, "リハッシュ", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.candidates(for: "りはっしゅする", limit: 3, systemCandidateMode: mode).first, "リハッシュする", "mode=\(mode.rawValue)")
+        }
+    }
+}
