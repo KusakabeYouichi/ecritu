@@ -469,12 +469,20 @@ extension KanaKanjiConverter {
             // 付かない。お皿野 が8700定額で立ち、正解の お+皿+の 経路(連文節)を
             // 跨いでいた(おさらのちょっけい→お皿野直径。ユーザ報告 2647)
             let stemWordCosts = store.wordCosts(for: stem)
+            // 稀な姓(井野 9410/伊野 9410。person_names の 姓 で wc 9000 以上)にも敬語接頭は付かない。ご井野 が定額 8700 で
+            // 立ち、正解の 語彙+の 経路を跨いで しょーとかっとごいの→ショートカットご井野 になっていた(ユーザ報告 2910)。
+            // 花(4268、名/姓 両登録)のような常用語は残す(お花)
+            let stemPersonNames = store.personNameKinds(for: stem)
 
             for candidate in stemCandidates {
                 if let wc = stemWordCosts[candidate],
                     wc >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
                     !userCandidateSet.contains(candidate),
                     !(KanaKanjiSeedDictionary.seed[stem]?.contains(candidate) ?? false) {
+                    continue
+                }
+                if stemPersonNames[candidate] == "姓", !userCandidateSet.contains(candidate),
+                    (stemWordCosts[candidate] ?? 0) >= 9000 {
                     continue
                 }
                 let resolvedClass = resolvedInflectionClass(
