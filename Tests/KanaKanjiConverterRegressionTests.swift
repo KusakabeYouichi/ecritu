@@ -17139,7 +17139,9 @@ extension KanaKanjiConverterRegressionTests {
             }
             // たいよう は 大洋/太陽 の並び(同音語順、別件)があるので「かなが先頭でない」だけ見る
             XCTAssertNotEqual(converter.candidates(for: "たいよう", limit: 3, systemCandidateMode: mode).first, "たいよう", "mode=\(mode.rawValue)")
-            for reading in ["ちゃんと", "ほぼ", "やっぱり", "そして", "ふだん", "みかん", "しろ"] {
+            // しろ は seed で 白/城/しろ(ユーザ指定 2904)
+            XCTAssertEqual(Array(converter.candidates(for: "しろ", limit: 4, systemCandidateMode: mode).prefix(3)), ["白", "城", "しろ"], "mode=\(mode.rawValue)")
+            for reading in ["ちゃんと", "ほぼ", "やっぱり", "そして", "ふだん", "みかん"] {
                 XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, reading, "mode=\(mode.rawValue) reading=\(reading)")
             }
         }
