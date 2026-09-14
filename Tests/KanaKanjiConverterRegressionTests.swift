@@ -17390,3 +17390,19 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2912: あさのみ は 麻の実(朝のみ が連文節で勝っていた。ユーザ報告)
+    func testRegressionAsanomiPrefersHempSeed() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "あさのみ", limit: 3, systemCandidateMode: mode).first, "麻の実", "mode=\(mode.rawValue)")
+            XCTAssertFalse(converter.candidates(for: "あさのみ", limit: 8, systemCandidateMode: mode).contains("麻実"), "mode=\(mode.rawValue)")
+            let multi = converter.multiClauseCandidates(for: "あさのみ", systemCandidateMode: mode)
+            XCTAssertEqual(multi.first ?? "麻の実", "麻の実", "mode=\(mode.rawValue) \(multi)")
+            // 文中(あさのみをたべる/あさのみあける)は LM の 朝+のみ が勝つ場面もあるので単独のみ固定(ユーザ報告は単独)
+        }
+    }
+}
