@@ -17311,3 +17311,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: 文頭の だ+名詞 は非文(だくてん→だ句点。ユーザ報告)
+    func testRegressionDakutenNotSplit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let multi = converter.multiClauseCandidates(for: "だくてん", systemCandidateMode: mode)
+            let single = converter.candidates(for: "だくてん", limit: 3, systemCandidateMode: mode)
+            XCTAssertEqual((multi.isEmpty ? single : multi).first, "濁点", "mode=\(mode.rawValue) multi=\(multi)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "だくてんをつける", systemCandidateMode: mode).first, "濁点をつける", "mode=\(mode.rawValue)")
+        }
+    }
+}
