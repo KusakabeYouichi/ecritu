@@ -17169,3 +17169,17 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: て形 seed(よんで=読んで/呼んで)を補助動詞連鎖の派生(よんでみて)にも適用(もよんでみてね→も呼んでみてね。ユーザ報告)
+    func testRegressionTeFormSeedAppliesToAuxiliaryChain() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.candidates(for: "よんでみて", limit: 3, systemCandidateMode: mode).first, "読んでみて", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "もよんでみてね", systemCandidateMode: mode).first, "も読んでみてね", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "よんでみてね", systemCandidateMode: mode).first, "読んでみてね", "mode=\(mode.rawValue)")
+        }
+    }
+}
