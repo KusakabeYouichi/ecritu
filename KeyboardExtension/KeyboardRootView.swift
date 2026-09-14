@@ -1036,9 +1036,16 @@ struct KeyboardRootView: View {
     // 警告1回目=黄 / 2回目以降=橙+左下に回数。
     // えんじ(sqlite 最終手段アンロード)は到達不能な閾値(115MB>上限77MB)だったため 2769 で撤去。
     // 薄ピンク(欧文サジェスト構築の高水位見送り)は構築自体を前計算ファイル化して無くした(2770)
+    // でばぐ可視化を出すか。開発ビルドは常に出す。リリースは TestFlight でテスターの画面にも出したいので true。
+    // **App Store 提出前に false へ戻す**(docs/appstore-submission-notes.md のチェックにも記載。2918)。
+    // 目的: キーが赤くなる描画異常(緑・青が落ちる)が起きたとき、同じ画面にメモリ警告の有無が写るようにして
+    // 「メモリ切迫が引き金か」を 1 枚で判定する。黄も橙も緑・青が落ちれば真っ赤になるが、数字は白なので読める
+    static let memoryPressureVisualizationEnabled = true
+
     var memoryPressureDeleteKeyColor: Color? {
-        // でばぐ可視化は開発ビルド専用(リリースでは通常キー色のまま)
-        #if DEBUG
+        guard Self.memoryPressureVisualizationEnabled else {
+            return nil
+        }
         // 色はバースト数(2秒以内の連続警告は1イベント)で決める。1回=黄、2回以上=橙
         switch candidateBarModel.memoryWarningBurstCountForDebugDisplay {
         case 0:
@@ -1048,13 +1055,12 @@ struct KeyboardRootView: View {
         default:
             return Color.orange.opacity(0.9)
         }
-        #else
-        return nil
-        #endif
     }
 
     var memoryPressureDeleteKeyBadge: String? {
-        #if DEBUG
+        guard Self.memoryPressureVisualizationEnabled else {
+            return nil
+        }
         // 「バースト数 (実回数)」。1バーストで4回来た場合は 1 (4)(空白あり。ユーザ指定 2768)。
         // 実回数がバースト数と同じなら 2以上のときだけ数字を出す(ユーザ指定 2702)
         let bursts = candidateBarModel.memoryWarningBurstCountForDebugDisplay
@@ -1063,9 +1069,16 @@ struct KeyboardRootView: View {
             return "\(bursts) (\(raw))"
         }
         return bursts >= 2 ? String(bursts) : nil
-        #else
-        return nil
-        #endif
+    }
+
+    // 削除キー右上: このセッションの footprint 最大値(MB)。左下の警告回数と重ならない位置に(ユーザ指定)。62 で軽量化・70 で最小化・上限 77 なので、
+    // この 1 つで「切迫の手前まで行ったか」が読める(定数コメント参照。2918)
+    var memoryPressureDeleteKeyPeakBadge: String? {
+        guard Self.memoryPressureVisualizationEnabled else {
+            return nil
+        }
+        let peak = candidateBarModel.memoryFootprintPeakMBForDebugDisplay
+        return peak > 0 ? String(peak) : nil
     }
 
     // 削除キー(⌫、長押しリピート)。各レイアウトで同じ引数列を 10 か所に書いていたのを集約(2805)。
@@ -1085,6 +1098,7 @@ struct KeyboardRootView: View {
             repeatInterval: keyRepeatInterval,
             backgroundColorOverride: showsMemoryPressure ? memoryPressureDeleteKeyColor : nil,
             cornerBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyBadge : nil,
+            topTrailingBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyPeakBadge : nil,
             action: action ?? onDeleteBackward
         )
     }

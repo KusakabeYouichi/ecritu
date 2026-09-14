@@ -661,6 +661,7 @@ final class KeyboardViewController: UIInputViewController {
         diagnosticsState.lastMemoryWarningAt = 0
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryWarningBurstCountForDebugDisplay = 0
+        candidateBarModel.memoryFootprintPeakMBForDebugDisplay = 0
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
