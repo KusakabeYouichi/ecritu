@@ -17438,3 +17438,18 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2917: 文頭の稀な「名」1 ノードが一般語の分割を割らない(いつおきた→五男来た。ユーザ報告)。
+    // 入力全体が名前のとき(いつお)は従来どおり
+    func testRegressionSentenceInitialGivenNameDoesNotSplit() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "いつおきた", systemCandidateMode: mode).first, "いつ起きた", "mode=\(mode.rawValue)")
+            // いつおきたか は別口(興隆=おきたか が こうりゅう の LM 実績を読み跨ぎで借りる)で未解決
+            XCTAssertEqual(converter.candidates(for: "いつお", limit: 3, systemCandidateMode: mode).first, "五男", "mode=\(mode.rawValue)")
+        }
+    }
+}
