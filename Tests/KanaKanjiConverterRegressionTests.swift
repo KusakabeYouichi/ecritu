@@ -17129,14 +17129,17 @@ extension KanaKanjiConverterRegressionTests {
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             for (reading, expected) in [
                 ("ひつよう", "必要"), ("ほけん", "保険"), ("ぶし", "武士"), ("ぜったい", "絶対"), ("きけん", "危険"),
-                ("りよう", "利用"), ("ぶたい", "舞台"), ("はかせ", "博士"), ("かめん", "仮面")
+                ("りよう", "利用"), ("ぶたい", "舞台"), ("はかせ", "博士"), ("かめん", "仮面"),
+                // 第 2 弾(2903): 同音語でない単独名詞でもかな収穫が先頭に出ていた
+                ("まえ", "前"), ("こえ", "声"), ("だれ", "誰"), ("そら", "空"), ("あいて", "相手"), ("すがた", "姿"),
+                ("ぜんたい", "全体"), ("じんじゃ", "神社"), ("ちず", "地図"), ("はたけ", "畑"), ("くつした", "靴下"), ("なっとう", "納豆")
             ] {
                 XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, expected, "mode=\(mode.rawValue) reading=\(reading)")
                 XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: reading), "reading=\(reading)")
             }
             // たいよう は 大洋/太陽 の並び(同音語順、別件)があるので「かなが先頭でない」だけ見る
             XCTAssertNotEqual(converter.candidates(for: "たいよう", limit: 3, systemCandidateMode: mode).first, "たいよう", "mode=\(mode.rawValue)")
-            for reading in ["ちゃんと", "ほぼ", "やっぱり", "そして", "ふだん", "みかん"] {
+            for reading in ["ちゃんと", "ほぼ", "やっぱり", "そして", "ふだん", "みかん", "しろ"] {
                 XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, reading, "mode=\(mode.rawValue) reading=\(reading)")
             }
         }
