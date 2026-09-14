@@ -17196,3 +17196,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: に+指示(えいあいにしじ→AIに師事。ユーザ報告)
+    func testRegressionNiShijiPrefersInstruction() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(converter.multiClauseCandidates(for: "えいあいにしじ", systemCandidateMode: mode).first, "AIに指示", "mode=\(mode.rawValue)")
+            XCTAssertEqual(converter.multiClauseCandidates(for: "ぶかにしじした", systemCandidateMode: mode).first, "部下に指示した", "mode=\(mode.rawValue)")
+        }
+    }
+}
