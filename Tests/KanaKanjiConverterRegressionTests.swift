@@ -17416,3 +17416,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2916: おいやすい は 追いやすい/老いやすい/追い易い/老い易い(seed)。かな語幹+易い(おい易い/よみ易い)は作らない
+    func testRegressionOiyasuiOrderAndKanaStemYasui() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let list = converter.candidates(for: "おいやすい", limit: 8, systemCandidateMode: mode)
+            XCTAssertEqual(Array(list.prefix(4)), ["追いやすい", "老いやすい", "追い易い", "老い易い"], "mode=\(mode.rawValue) \(list)")
+            XCTAssertFalse(list.contains("おい易い"), "mode=\(mode.rawValue) \(list)")
+            for (reading, mixed, kept) in [("よみやすい", "よみ易い", "読み易い"), ("つかいやすい", "つかい易い", "使い易い")] {
+                let l = converter.candidates(for: reading, limit: 8, systemCandidateMode: mode)
+                XCTAssertFalse(l.contains(mixed), "mode=\(mode.rawValue) reading=\(reading) \(l)")
+                XCTAssertTrue(l.contains(kept), "mode=\(mode.rawValue) reading=\(reading) \(l)")
+            }
+            // やり方/やり始める(かな語幹でも正書)は無傷
+            XCTAssertTrue(converter.candidates(for: "やりかた", limit: 6, systemCandidateMode: mode).contains("やり方"), "mode=\(mode.rawValue)")
+            XCTAssertTrue(converter.candidates(for: "やりはじめる", limit: 6, systemCandidateMode: mode).contains("やり始める"), "mode=\(mode.rawValue)")
+        }
+    }
+}
