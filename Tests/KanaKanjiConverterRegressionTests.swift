@@ -17400,7 +17400,7 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
-    // 2912: あさのみ は 麻の実(朝のみ が連文節で勝っていた。ユーザ報告)
+    // 2912-2915: あさのみ は 麻の実(朝のみ が連文節で勝っていた。ユーザ報告)。misc curated で供給、麻実(表層異表記)は抑制
     func testRegressionAsanomiPrefersHempSeed() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
