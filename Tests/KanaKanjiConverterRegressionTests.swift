@@ -17139,6 +17139,11 @@ extension KanaKanjiConverterRegressionTests {
             }
             // たいよう は 大洋/太陽 の並び(同音語順、別件)があるので「かなが先頭でない」だけ見る
             XCTAssertNotEqual(converter.candidates(for: "たいよう", limit: 3, systemCandidateMode: mode).first, "たいよう", "mode=\(mode.rawValue)")
+            // まぶた はかなが正書(seed)、交ぜ書きの 眼ぶた は抑制(ユーザ指定 2905)
+            let mabuta = converter.candidates(for: "まぶた", limit: 5, systemCandidateMode: mode)
+            XCTAssertEqual(Array(mabuta.prefix(2)), ["まぶた", "瞼"], "mode=\(mode.rawValue) \(mabuta)")
+            XCTAssertFalse(mabuta.contains("眼ぶた"), "mode=\(mode.rawValue) \(mabuta)")
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "まぶた"))
             // しろ は seed で 白/城/しろ(ユーザ指定 2904)
             XCTAssertEqual(Array(converter.candidates(for: "しろ", limit: 4, systemCandidateMode: mode).prefix(3)), ["白", "城", "しろ"], "mode=\(mode.rawValue)")
             for reading in ["ちゃんと", "ほぼ", "やっぱり", "そして", "ふだん", "みかん"] {
