@@ -155,6 +155,7 @@
 	<dict><key>phrase</key><string>エミュレイター</string><key>shortcut</key><string>えみゅれいたー</string></dict>
 	<dict><key>phrase</key><string>シミュレイター</string><key>shortcut</key><string>しみゅれいたー</string></dict>
 	<dict><key>phrase</key><string>アップデイト</string><key>shortcut</key><string>あっぷでいと</string><key>pos</key><string>サ変名詞</string></dict>
+	<dict><key>phrase</key><string>リハッシュ</string><key>shortcut</key><string>りはっしゅ</string><key>pos</key><string>サ変名詞</string></dict>	<!-- ユーザ指定 2910 -->
 	<dict><key>phrase</key><string>プレヴュー</string><key>shortcut</key><string>ぷれゔゅー</string><key>pos</key><string>サ変名詞</string></dict>
 	<dict><key>phrase</key><string>ペイスト</string><key>shortcut</key><string>ぺいすと</string><key>pos</key><string>サ変名詞</string></dict>	<!-- Sudachiにもある -->
 
