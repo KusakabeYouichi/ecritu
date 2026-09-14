@@ -17238,3 +17238,16 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2910: よかった は かな/良かった の順(ユーザ指定)
+    func testRegressionYokattaKanaFirst() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(Array(converter.candidates(for: "よかった", limit: 4, systemCandidateMode: mode).prefix(2)), ["よかった", "良かった"], "mode=\(mode.rawValue)")
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "よかった"))
+        }
+    }
+}
