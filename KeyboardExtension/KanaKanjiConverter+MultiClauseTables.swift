@@ -790,6 +790,9 @@ extension KanaKanjiConverter {
     static let multiClauseYouAfterPredicatePenalty = 3000
     // 文頭の だ(コピュラ)+漢字名詞(だくてん→だ句点)は非文。句点 は curated(床 1500)で だ+句点 5680 が 濁点 7505 に勝っていた(2910)
     static let multiClauseClauseInitialDaBeforeNounPenalty = 3000
+    // 形容詞の て形(軽くて/安くて)の直後は形容詞が続くのが自然(軽くて濃い)。辞書形述語の い形容詞に加点し、
+    // かるくてこい→軽くてこい/恋/故意 を是正(ユーザ報告 2910)
+    static let multiClauseAdjectiveAfterKuteBonus = 2000
     // 文末の長音 ー(おくりましたー/たべましたー)は述語の引き伸ばし。素通り(7000/字)だと 送りました+ー が
     // 送り+増し+たー(派生 増し 6251+かな たー)に負けて 送り増したー になる(ユーザ報告 2898)。述語(活用派生/辞書形/
     // ます・です・た 等の末尾)直後の文末 ー は終助詞クラスタと同じ 1200 に置く
