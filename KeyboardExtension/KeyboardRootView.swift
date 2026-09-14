@@ -1071,13 +1071,21 @@ struct KeyboardRootView: View {
         return bursts >= 2 ? String(bursts) : nil
     }
 
-    // 削除キー右上: このセッションの footprint 最大値(MB)。左下の警告回数と重ならない位置に(ユーザ指定)。62 で軽量化・70 で最小化・上限 77 なので、
-    // この 1 つで「切迫の手前まで行ったか」が読める(定数コメント参照。2918)
+    // 平常時(20〜35MB)は出さない閾値。62 で軽量化・70 で最小化・上限 77 なので、最初のフェイルセーフの 10MB 手前から見せる(2919)
+    static let memoryPressurePeakBadgeMinMB = 45
+
+    // 削除キー右上: このセッションの footprint 最大値(MB)。左下の警告回数と重ならない位置に(ユーザ指定)。
+    // 45MB 以上のときだけ出す。ただし警告が来ていれば閾値未満でも出す ─ 赤くなる描画異常の判定では
+    // 「警告は無いが 68MB まで行っていた」と「30MB で余裕だった」を区別できることが肝で、消すと決着がつかない(2919)
     var memoryPressureDeleteKeyPeakBadge: String? {
         guard Self.memoryPressureVisualizationEnabled else {
             return nil
         }
         let peak = candidateBarModel.memoryFootprintPeakMBForDebugDisplay
+        guard peak >= Self.memoryPressurePeakBadgeMinMB
+            || candidateBarModel.memoryWarningBurstCountForDebugDisplay >= 1 else {
+            return nil
+        }
         return peak > 0 ? String(peak) : nil
     }
 
