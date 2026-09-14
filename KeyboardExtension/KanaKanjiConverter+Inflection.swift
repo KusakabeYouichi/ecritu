@@ -104,7 +104,37 @@ extension KanaKanjiConverter {
         derived.append(contentsOf: otherDerived)
         derived.append(contentsOf: rareBaseDerived)
 
-        return Array(uniqueCandidates(from: derived).prefix(limit))
+        // て形など活用形そのものに seed があり、その後に補助動詞連鎖(みて/おいて 等)が続く派生(よんでみて)は、
+        // seed の並び(よんで=読んで/呼んで)で揃える。基底の読みが別々(よぶ/よむ)なので基底 seed では拾えず、
+        // 辞書順(呼ぶ族先行)のまま 呼んでみて が先頭だった(もよんでみてね→も呼んでみてね。ユーザ報告 2910)
+        return Array(Self.reorderingDerivedBySeededPrefix(uniqueCandidates(from: derived), reading: reading).prefix(limit))
+    }
+
+    // 読みの真の接頭部分に seed があれば、その seed 表層で始まる派生候補を seed の順に並べ直す(相対位置は先頭の候補の位置)
+    static func reorderingDerivedBySeededPrefix(_ candidates: [String], reading: String) -> [String] {
+        let chars = Array(reading)
+        guard chars.count >= 3 else { return candidates }
+        for length in stride(from: chars.count - 1, through: 2, by: -1) {
+            let prefix = String(chars[0..<length])
+            // 対象は活用形の seed だけ: て/で形(+補助動詞連鎖 みて/おいて/います)と ない形(+終助詞 な/よ/ね)。
+            // 名詞・語幹の seed(すすめ/しめ/うまそう/みえ)まで拾うと 進めて/占めています/旨そう/見えにくさ が退行した
+            let tail = String(chars[length...])
+            let isTeForm = (prefix.hasSuffix("て") || prefix.hasSuffix("で"))
+                && ["み", "おい", "おき", "おく", "い", "しま", "あ", "くだ", "ちゃ", "じゃ", "ほし", "も", "は", "ね", "よ", "な"].contains(where: { tail.hasPrefix($0) })
+            let isNaiForm = prefix.hasSuffix("ない") && KanaKanjiConverter.multiClauseFinalParticleReadings.contains(tail)
+            guard isTeForm || isNaiForm, let seedOrder = KanaKanjiSeedDictionary.seed[prefix] else { continue }
+            func seedRank(_ candidate: String) -> Int? {
+                seedOrder.firstIndex { candidate.count > $0.count && candidate.hasPrefix($0) }
+            }
+            let indices = candidates.indices.filter { seedRank(candidates[$0]) != nil }
+            guard indices.count >= 2, let first = indices.first else { return candidates }
+            // seed に並ぶ語のグループを、先頭メンバーの位置にまとめて置く(お紅な/お暮れないな のような接頭辞派生を
+            // 間に挟まない。おくれないな。2910)
+            let group = indices.map { candidates[$0] }.sorted { seedRank($0)! < seedRank($1)! }
+            let rest = candidates.enumerated().filter { !indices.contains($0.offset) }.map { $0.element }
+            return Array(rest[0..<first]) + group + Array(rest[first...])
+        }
+        return candidates
     }
 
     // 基底読み族(=活用ルール)単位のグループ列。並びは inflectionCandidates と同一
