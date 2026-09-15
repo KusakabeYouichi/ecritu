@@ -7317,6 +7317,8 @@
 	<dict><key>phrase</key><string>Meisterstück</string><key>shortcut</key><string>まいすたーしゅてゅっく</string></dict>
 	<dict><key>phrase</key><string>Henschke Hill of Grace</string><key>shortcut</key><string>へんちきひるおゔぐれいす</string></dict>
 	<dict><key>phrase</key><string>エーデルワイン</string><key>shortcut</key><string>えーでるわいん</string></dict>
+	<dict><key>phrase</key><string>ティオ・ペペ</string><key>shortcut</key><string>てぃおぺぺ</string></dict>	<!-- González Byass のフィノ(ヘレス)。世界で最も売れているシェリー(ユーザ指定 2939) -->
+	<dict><key>phrase</key><string>TIO PEPE</string><key>shortcut</key><string>てぃおぺぺ</string></dict>
 
 	<!-- ■ 生産者・ワイナリー -->
 	<dict><key>phrase</key><string>ウィラケンジー</string><key>shortcut</key><string>うぃらけんじー</string></dict>
