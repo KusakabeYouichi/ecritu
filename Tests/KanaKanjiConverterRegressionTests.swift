@@ -17453,3 +17453,31 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+extension KanaKanjiConverterRegressionTests {
+    // 2923: 格助詞+終助詞かな+内容語 は正しい語の割れ残り(と+な+居る ← なおる)。
+    // 節末の終助詞(いいなー/そうだよな)と な形容詞+名詞(きれいな絵)は無傷。
+    // 実勢のある おる(居る)は据え置き(ここにおる→ここに居る)
+    func testRegressionFinalKanaParticleBeforeContentWordPenalised() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "ひらきなおすとなおるか", systemCandidateMode: mode).first,
+                "開き直すと直るか", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "ここにおる", systemCandidateMode: mode).first,
+                "ここに居る", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "いいなー", systemCandidateMode: mode).first,
+                "いいなー", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "そうだよな", systemCandidateMode: mode).first,
+                "そうだよな", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "きれいなえ", systemCandidateMode: mode).first,
+                "きれいな絵", "mode=\(mode.rawValue)")
+        }
+    }
+}

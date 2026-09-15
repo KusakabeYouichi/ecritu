@@ -302,6 +302,14 @@ extension KanaKanjiConverter {
     // 助詞・終助詞・助動詞など「1字で正当に立つかな」は multiClauseKanaIdentityFloorExemptReadings が
     // ちょうどその一覧なので、それを白名簿として使う(に/を/が/て/た/ん/か/ね… は無傷)
     static let multiClauseBareKanaAfterCaseParticlePenalty = 2000
+    // 終助詞のかな(な/ね/よ 等)は節末にしか立たない。格助詞の直後に立って、さらに内容語が
+    // 続く並びは、正しい語を割った残りかす(ひらきなおすとなおるか で と+な+居る が
+    // と+直る を跨いでいた。居る(おる)は主読み いる の unigram を読み跨ぎで借りて安い)。
+    // 上の「格助詞直後の裸のかな1字」減点は終助詞を白名簿で外している(いいなー/そうだよな を
+    // 守るため)ので、その裏側の「後ろに内容語が続く」場合だけを補う。
+    // 曖昧な さ(大きさ)/し(連用形)は入れない(2923)
+    static let multiClauseFinalKanaParticlesBeforeContentWord: Set<String> = ["な", "ね", "よ", "わ", "ぞ", "ぜ"]
+    static let multiClauseFinalParticleBeforeContentWordPenalty = 3000
     // 裸のかな う(意志・推量の助動詞)の減点(2870、ユーザ報告 たかいのかうのか→高いのかうのか)。
     // う は述語の未然形にしか付かない(行こう/買おう)。独立ノードとして助詞やクラスタの
     // 直後に立つのは、正しい語(買う)の分断で出た残りかす。
