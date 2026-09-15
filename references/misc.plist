@@ -264,6 +264,14 @@
 	<dict><key>phrase</key><string>麻の実</string><key>shortcut</key><string>あさのみ</string></dict>	<!-- 麻の実: Sudachi にあるが LM 未収録(dictUnknown 8700)で、連文節では 朝+のみ に負けていた(あさのみをかいに→朝のみを買いに)。seed+ボーナスの細工(2912/2913)は撤回し curated で供給(ユーザ指定 2915)。麻実(表層異表記)は suppr -->
 	<dict><key>phrase</key><string>耳下腺</string><key>shortcut</key><string>じかせん</string></dict>	<!-- 耳下腺/耳下腺炎: Sudachi に 1 語で有る(rank0)が word_cost が 11060/17374 と収穫底値帯(≥10000)で、連文節では床 8700 の弱い語になる。LM unigram も無く、時(4307)+下線(7440) の分割と僅差(下線 の同音語調整で 時下線 に割れた)。curated にして 1 語で勝たせる(ユーザ指定 2891) -->
 	<dict><key>phrase</key><string>耳下腺炎</string><key>shortcut</key><string>じかせんえん</string></dict>
+	<!-- □ 書き言葉優先の目視判定(2927)で「辞書にその表層が無い」と分かった 7 語。docs/homophone_written_order_review.md -->
+	<dict><key>phrase</key><string>労使</string><key>shortcut</key><string>ろうし</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 599。辞書は 老子/蝋紙/牢死 だけで 労使 が無い -->
+	<dict><key>phrase</key><string>胃腸</string><key>shortcut</key><string>いちょう</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 539。辞書は 萎凋/銀杏/移庁 だけ -->
+	<dict><key>phrase</key><string>耕地</string><key>shortcut</key><string>こうち</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 501。辞書は 高知/高地/巧緻 だけ -->
+	<dict><key>phrase</key><string>家中</string><key>shortcut</key><string>かちゅう</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 413。辞書は 華胄/火中/渦中 だけ -->
+	<dict><key>phrase</key><string>長蛇</string><key>shortcut</key><string>ちょうだ</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 115(長蛇の列)。辞書は 町田 と 長だ 等の合成だけ -->
+	<dict><key>phrase</key><string>多糖</string><key>shortcut</key><string>たとう</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 113(多糖類)。辞書は 畳/たとう/立とう だけ -->
+	<dict><key>phrase</key><string>電算</string><key>shortcut</key><string>でんさん</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 108。辞書は 伝産/電産 だけ -->
 	<dict><key>phrase</key><string>短大生</string><key>shortcut</key><string>たんだいせい</string><key>pos</key><string>名詞</string></dict>	<!-- 短大生: 辞書に読み たんだいせい が 1 件も無く(短大 は有る)、端大井/タン大井 しか出なかった。小学生/大学生/高校生 は 1 語で有る(ユーザ指摘 2925) -->
 	<dict><key>phrase</key><string>他社製</string><key>shortcut</key><string>たしゃせい</string></dict>	<!-- 他社製/自社製: 辞書に丸ごとのエントリが無く、他社+製(1 字床 7346)が収穫語 他者性(11735) の 1 ノードに負ける(たしゃせいきーぼーど→他者性キーボード。マニュアル検査 2890) -->
 	<dict><key>phrase</key><string>自社製</string><key>shortcut</key><string>じしゃせい</string></dict>
