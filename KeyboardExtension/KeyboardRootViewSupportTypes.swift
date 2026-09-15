@@ -21,6 +21,9 @@ final class KeyboardCandidateBarModel: ObservableObject {
     // このセッションの footprint 最大値(MB、切り上げ)。赤くなる描画異常の調査用: 画面を撮るのは現象の後なので
     // 現在値では「そのとき切迫していたか」が分からない。警告(62MB 手前)より下の帯もこれなら見える(2918)
     @Published var memoryFootprintPeakMBForDebugDisplay: Int = 0
+    // プロセス生涯の footprint 最大値。セッション側は表示のたびに 0 に戻るので、
+    // 「いつか 45 を超えた」記録はこちらにしか残らない(ユーザ指定 2924)
+    @Published var memoryFootprintProcessPeakMBForDebugDisplay: Int = 0
 }
 
 enum KeyboardThemePalette {
