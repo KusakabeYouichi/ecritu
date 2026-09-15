@@ -17519,9 +17519,14 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(
                 converter.multiClauseCandidates(for: "どうろのぜんちょう", systemCandidateMode: mode).first,
                 "道路の全長", label)
-            XCTAssertTrue(
-                converter.multiClauseCandidates(for: "つりばしのぜんちょう", systemCandidateMode: mode)
-                    .first?.hasSuffix("の全長") ?? false, label)
+            // 送り仮名の本則は 吊り橋(BCCWJ 128 回、吊橋 は 0 回)。連文節だけ LM の 152 点差で
+            // 吊橋 を採っていたので seed 順ボーナスで揃えた(2949)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "つりばしのぜんちょう", systemCandidateMode: mode).first,
+                "吊り橋の全長", label)
+            XCTAssertEqual(
+                converter.candidates(for: "つりばし", limit: 3, systemCandidateMode: mode).first,
+                "吊り橋", label)
         }
     }
 
