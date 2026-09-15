@@ -12,6 +12,10 @@ enum KeyboardStuckTouchDiagnostics {
     static var onForceClear: ((String) -> Void)?
     // 調査用ログ(記号面切替 2838): touchForensicsLabel 付きのキーが commit したときの接触詳細。原因判明後に外す
     static var onTouchForensics: ((String) -> Void)?
+    // 直近の commit の接触時間(ms)。面を切り替えるキーだけが「短すぎる接触は採らない」判定に使う(2938)。
+    // FlickKeyView に格納プロパティを足すとキー群の巨大なタプルが太る(2921 のスタック超過)ので、
+    // キー側でなくここへ置いて受け手(selectKanaModeSwitcher)が読む。測れなかったときは nil
+    static var lastCommitDurationMs: Int?
 }
 
 enum LongPressCandidatePanelPlacement {
@@ -680,11 +684,14 @@ struct FlickKeyView: View {
                     committedDirectionForCallback = committedDirection
                 }
 
+                // 面を切り替えるキーの「短すぎる接触」判定に使う(定数コメント参照。2938)
+                let commitDurationMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) }
+                KeyboardStuckTouchDiagnostics.lastCommitDurationMs = commitDurationMs
                 // 調査用ログ(記号面切替 2838): 触った覚えの無い左下キー commit の接触詳細。原因判明後に外す
                 if let touchForensicsLabel {
                     let size = keyFrameInGlobal.size
                     let start = value.startLocation
-                    let durationMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) } ?? -1
+                    let durationMs = commitDurationMs ?? -1
                     let detail = String(
                         format: "%@ dir=%@ start=(%.0f,%.0f)/key=(%.0f,%.0f) move=(%.0f,%.0f) durMs=%d longPress=%d",
                         touchForensicsLabel, String(describing: committedDirectionForCallback),
