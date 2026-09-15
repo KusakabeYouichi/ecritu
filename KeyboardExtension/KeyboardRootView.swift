@@ -551,18 +551,6 @@ struct KeyboardRootView: View {
         modifierFlickGuideDisplayMode == .off
     }
 
-    private var keyboardBackgroundTheme: KeyboardBackgroundTheme {
-        KeyboardBackgroundTheme(rawValue: keyboardBackgroundThemeRawValue) ?? .bleu
-    }
-
-    private var keyboardBackgroundGradient: LinearGradient {
-        LinearGradient(
-            gradient: Gradient(stops: keyboardBackgroundTheme.gradientStops(for: colorScheme)),
-            startPoint: .top,
-            endPoint: .bottom
-        )
-    }
-
     var transitionState: KeyboardModeTransitionState {
         get {
             KeyboardModeTransitionState(
@@ -1124,8 +1112,12 @@ struct KeyboardRootView: View {
     }
 
     var body: some View {
+        // 背景のグラデーションは UIKit 側(KeyboardViewController の backgroundGradientLayer)が描く。
+        // SwiftUI 側に置くと横画面で安全領域の左右余白ぶん(片側 60pt)塗れず、上 2 隅の角 R も付けられなかった(2920)。
+        // ZStack の要素は減らさず透明で残す ─ 要素を消すと body の不透明型が変わり Release の WMO が
+        // 「Possible non-terminating type substitution」で落ちる(既知の脆さ。project_release_wmo_body_limit 参照)
         ZStack {
-            keyboardBackgroundGradient
+            Color.clear
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
                 .ignoresSafeArea()
 
