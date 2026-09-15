@@ -1042,6 +1042,9 @@ struct KeyboardRootView: View {
     // 「メモリ切迫が引き金か」を 1 枚で判定する。黄も橙も緑・青が落ちれば真っ赤になるが、数字は白なので読める
     static let memoryPressureVisualizationEnabled = true
 
+    // 平常時(20〜35MB)は出さない閾値。62 で軽量化・70 で最小化・上限 77 なので、最初のフェイルセーフの 10MB 手前から見せる(2919)
+    static let memoryPressurePeakBadgeMinMB = 45
+
     var memoryPressureDeleteKeyColor: Color? {
         guard Self.memoryPressureVisualizationEnabled else {
             return nil
@@ -1057,36 +1060,32 @@ struct KeyboardRootView: View {
         }
     }
 
+    // 削除キー左下のバッジ。1 行目=メモリ警告のバースト数(実回数)、2 行目=このセッションの footprint 最大値(MB)。
+    // 45MB 以上か警告ありのときだけ数字を出す(平常は 20〜35MB。62 で軽量化・70 で最小化・上限 77)。
+    // **バッジは 1 本にまとめること**(2921): ActionKeyButton に格納プロパティを足すと、キー群の巨大なタプルが
+    // その分だけ太り、横画面の body 構築で App Extension のスタックを食い潰して落ちた
     var memoryPressureDeleteKeyBadge: String? {
         guard Self.memoryPressureVisualizationEnabled else {
             return nil
         }
+
         // 「バースト数 (実回数)」。1バーストで4回来た場合は 1 (4)(空白あり。ユーザ指定 2768)。
         // 実回数がバースト数と同じなら 2以上のときだけ数字を出す(ユーザ指定 2702)
         let bursts = candidateBarModel.memoryWarningBurstCountForDebugDisplay
         let raw = candidateBarModel.memoryWarningCountForDebugDisplay
+        var lines: [String] = []
         if raw > bursts, bursts >= 1 {
-            return "\(bursts) (\(raw))"
+            lines.append("\(bursts) (\(raw))")
+        } else if bursts >= 2 {
+            lines.append(String(bursts))
         }
-        return bursts >= 2 ? String(bursts) : nil
-    }
 
-    // 平常時(20〜35MB)は出さない閾値。62 で軽量化・70 で最小化・上限 77 なので、最初のフェイルセーフの 10MB 手前から見せる(2919)
-    static let memoryPressurePeakBadgeMinMB = 45
-
-    // 削除キー右上: このセッションの footprint 最大値(MB)。左下の警告回数と重ならない位置に(ユーザ指定)。
-    // 45MB 以上のときだけ出す。ただし警告が来ていれば閾値未満でも出す ─ 赤くなる描画異常の判定では
-    // 「警告は無いが 68MB まで行っていた」と「30MB で余裕だった」を区別できることが肝で、消すと決着がつかない(2919)
-    var memoryPressureDeleteKeyPeakBadge: String? {
-        guard Self.memoryPressureVisualizationEnabled else {
-            return nil
-        }
         let peak = candidateBarModel.memoryFootprintPeakMBForDebugDisplay
-        guard peak >= Self.memoryPressurePeakBadgeMinMB
-            || candidateBarModel.memoryWarningBurstCountForDebugDisplay >= 1 else {
-            return nil
+        if peak > 0, peak >= Self.memoryPressurePeakBadgeMinMB || bursts >= 1 {
+            lines.append(String(peak))
         }
-        return peak > 0 ? String(peak) : nil
+
+        return lines.isEmpty ? nil : lines.joined(separator: "\n")
     }
 
     // 削除キー(⌫、長押しリピート)。各レイアウトで同じ引数列を 10 か所に書いていたのを集約(2805)。
@@ -1106,7 +1105,6 @@ struct KeyboardRootView: View {
             repeatInterval: keyRepeatInterval,
             backgroundColorOverride: showsMemoryPressure ? memoryPressureDeleteKeyColor : nil,
             cornerBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyBadge : nil,
-            topTrailingBadgeText: showsMemoryPressure ? memoryPressureDeleteKeyPeakBadge : nil,
             action: action ?? onDeleteBackward
         )
     }
