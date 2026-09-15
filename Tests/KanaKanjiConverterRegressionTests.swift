@@ -17494,6 +17494,37 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2944: サ変名詞+の+事象名詞(ユーザ提案)。前兆 が取るのは出来事、全長 が取るのは物の寸法。
+    // の の前が suru クラス(サ変名詞)なら 前兆 を優先する。道路/吊り橋 は サ変名詞でないので無傷
+    func testRegressionEventNounAfterSuruNoun() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "こしょうのぜんちょうかも", systemCandidateMode: mode).first,
+                "故障の前兆かも", label)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "ほうかいのぜんちょう", systemCandidateMode: mode).first,
+                "崩壊の前兆", label)
+            // サ変でない「になる」型の出来事名詞(ユーザ指摘: 炎症になる→炎症の前兆)も人手の表で拾う
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "えんしょうのぜんちょう", systemCandidateMode: mode).first,
+                "炎症の前兆", label)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "たいふうのぜんちょう", systemCandidateMode: mode).first,
+                "台風の前兆", label)
+            // サ変名詞でない語の後ろは従来どおり 全長
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "どうろのぜんちょう", systemCandidateMode: mode).first,
+                "道路の全長", label)
+            XCTAssertTrue(
+                converter.multiClauseCandidates(for: "つりばしのぜんちょう", systemCandidateMode: mode)
+                    .first?.hasSuffix("の全長") ?? false, label)
+        }
+    }
+
     // 2939: 変種枠を文節位置で散らす。コスト差順に詰めるだけだと 1 文節が枠を独占し、
     // 故障の前兆(コスト差 451)が 1 つも出なかった。無条件に散らすと表記変種の枠を奪って
     // 数カ国大王(2963)級が入るので、上限 1200 以内の変種だけ散らす
@@ -17503,9 +17534,11 @@ extension KanaKanjiConverterRegressionTests {
 
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             let label = "mode=\(mode.rawValue)"
+            // 2944 で先頭は 故障の前兆かも になった。枠を散らす効果は「第 1 文節を替えた変種
+            // (胡椒/呼称)だけで埋めず、第 3 文節を替えた 故障の全長かも も残す」ところに出る
             let kosho = converter.multiClauseCandidates(for: "こしょうのぜんちょうかも", systemCandidateMode: mode)
-            XCTAssertEqual(kosho.first, "故障の全長かも", "\(label) \(kosho)")
-            XCTAssertTrue(kosho.contains("故障の前兆かも"), "\(label) \(kosho)")
+            XCTAssertEqual(kosho.first, "故障の前兆かも", "\(label) \(kosho)")
+            XCTAssertTrue(kosho.contains("故障の全長かも"), "\(label) \(kosho)")
             // 表記変種の枠は奪わない(数か国対応 の ヶ/箇/カ は後段のフィルタで 1 つに畳まれる)
             XCTAssertEqual(
                 converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface),
