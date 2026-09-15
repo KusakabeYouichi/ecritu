@@ -2937,6 +2937,17 @@ extension KanaKanjiConverter {
                         let collocationBonus = Self.acrossParticleCollocationBonus(prevPrev: prevPrevSurface, surface: node.surface) {
                         cost -= collocationBonus
                     }
+                    // サ変名詞+の+事象名詞(定数コメント参照。2944)。の の前が出来事(suru クラス)なら
+                    // 前兆 を採る。道路の全長/吊り橋の全長 は サ変名詞でないので無傷
+                    if let eventBonus = Self.multiClauseEventNounAfterSuruNounBonuses[node.surface],
+                        prevNode.surface == "の", prevNode.reading == "の",
+                        backPointer[prevIdx] >= 0 {
+                        let prevPrev = nodes[backPointer[prevIdx]]
+                        if store.isSuruNoun(reading: prevPrev.reading, candidate: prevPrev.surface)
+                            || Self.multiClauseEventNounsForPrecursor.contains(prevPrev.surface) {
+                            cost -= eventBonus
+                        }
+                    }
                     // が の直後の存在動詞 あった系はかな(定数コメント参照。2740)。直前の名詞が 合う 慣用なら対象外
                     if node.surface == node.reading, Self.multiClauseExistentialAttaReadings.contains(node.reading),
                         prevNode.surface == "が", prevNode.reading == "が",
