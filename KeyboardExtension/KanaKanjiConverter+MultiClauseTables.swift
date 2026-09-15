@@ -1829,6 +1829,19 @@ extension KanaKanjiConverter {
     // 本規則は従来「解像度 保護」で床を免除していた読み3字以上の穴を埋める
     // (解像度 は単一読みで乖離0=無傷)。seed 掲載語は人手選別のため免除。
     static let multiClauseCrossReadingUnigramGapThreshold = 2500
+    // 辞書ビルドの補助語彙既定コスト(tools/build_kana_kanji_sqlite.py の
+    // DEFAULT_SUPPLEMENTAL_VOCAB_COST)。word_cost がこの値ちょうどの行は
+    // 「その(読み,表層)のコスト実証が無く既定値を置いただけ」の印で、Sudachi が
+    // 実コストを持つ行(和子(かずこ)8710 等)とはっきり区別できる。
+    static let multiClauseGeneratedVocabDefaultWordCost = 7500
+    // 生成既定コストのままの人名(名)読みが、表層の主読みが稼いだ unigram を借りるのを
+    // 止める乖離。表層により安い別読みがある(=常用語としての実績はそちらの読み)なら
+    // 借用させず dictUnknown に置く。いつおきたか → いつ興隆(興隆(おきたか)7500 が
+    // こうりゅう(6518)用の unigram 6406 に乗って いつ+起きた+か を跨いでいた)。
+    // 本閾値 500 で該当するのは実測 71 組(利用(としもち)/成立(しげたつ)/正月(まさつき)/
+    // 通用(みちもち) 等)で、すべて生成人名読み。実コストを持つ 和子(かずこ)/一樹(かずき)/
+    // 一夫(かずお) は word_cost が 7500 でないため無傷(2923)
+    static let multiClauseGeneratedNameReadingCrossReadingGap = 500
     // curated ノードの EOS 遷移上限。かな正書の口語語彙(でかい 等)は X→EOS bigram が
     // Wikipedia文語コーパスに無く、出口で dictUnknown(8700)を払わされて断片連結
     // (出+会: 会→EOS 1571)に逆転される。人手で正書登録した curated は文末利用も
