@@ -16,6 +16,7 @@
 	<dict><key>phrase</key><string>ママぁ</string><key>shortcut</key><string>まま</string></dict>	<!-- 読み違いの誤エントリ(ままぁ であるべき)。まま の候補は seed {ママ、まま、侭、間々} -->
 	<dict><key>phrase</key><string>締目</string><key>shortcut</key><string>しめ</string></dict>	<!-- 締め目 なら読みは しめめ。しめ読みでの供給が seed {締め、〆、〆め、絞め} に割り込む(2643) -->
 	<dict><key>phrase</key><string>せん門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の部分かな書き(Sudachi実在)。ばかリ と同型の交ぜ書きエントリ(2637) -->
+	<dict><key>phrase</key><string>瘦身</string><key>shortcut</key><string>そうしん</string></dict>	<!-- 痩身(U+75E9)の旧字体 瘦(U+7626)。字形がほぼ同じで選び間違えやすく、そうしん の候補に並ぶと紛らわしい(ユーザ指定 2939) -->
 	<dict><key>phrase</key><string>斷つ</string><key>shortcut</key><string>たつ</string></dict>	<!-- 断つ の旧字体。字形が似ていて選び間違えやすく、活用形(斷て/斷った)まで候補を汚す(ユーザ指定 2755) -->
 	<dict><key>phrase</key><string>き損</string><key>shortcut</key><string>きそん</string></dict>	<!-- 毀損 の交ぜ書き(新聞表記)(2638) -->
 	<dict><key>phrase</key><string>出えん</string><key>shortcut</key><string>しゅつえん</string></dict>	<!-- 出捐 の交ぜ書き(2638) -->
