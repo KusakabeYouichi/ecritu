@@ -1119,13 +1119,14 @@ extension KanaKanjiConverter {
         #endif
         // 人名ノード(定数コメント参照。2845): 漢字辞書語の読みごとに person_names を引く(読み単位でキャッシュ)
         var personNameKindByNodeKey: [String: String] = [:]
+        // transitionCost 側(読み跨ぎ借用の遮断)からも読み×表層で引くため外に出す
+        var personNameKindsByReading: [String: [String: String]] = [:]
         do {
-            var kindsByReading: [String: [String: String]] = [:]
             for node in nodes where node.isDictWord && !node.isInflectionDerived && node.surface != node.reading {
-                if kindsByReading[node.reading] == nil {
-                    kindsByReading[node.reading] = store.personNameKinds(for: node.reading)
+                if personNameKindsByReading[node.reading] == nil {
+                    personNameKindsByReading[node.reading] = store.personNameKinds(for: node.reading)
                 }
-                if let kind = kindsByReading[node.reading]?[node.surface] {
+                if let kind = personNameKindsByReading[node.reading]?[node.surface] {
                     personNameKindByNodeKey[node.key] = kind
                 }
             }
@@ -1366,12 +1367,34 @@ extension KanaKanjiConverter {
                 // 表層の全読み最安より大きく乖離していたら unigram は主読みの実績とみなし、
                 // word_cost を下限にする(後(うしろ)→後ろ 等。読み3字以上のみ=≤2は短span床
                 // 適用済み。単一読みの正直な高コスト語(解像度)は乖離0で無傷)。
+                // 読み2字以下の辞書形述語は、上の短spanレア読み床の辞書形述語免除と本規則の
+                // reading.count >= 3 の両方から漏れて借用が素通りする(居る(おる wc9381)が
+                // 主読み いる(6049)用の unigram 6523 に乗る)。2923 でこの穴を塞ぐ案を実測したが
+                // 該当16組(入る(いる)/守る(もる)/築く(づく)/退く(のく) 等)のうち 居る(おる)と
+                // 打つ(ぶつ)は実勢のある読みで、床上げすると ここにおる→ここに折る、
+                // かべをぶつ→壁を打つ が4位 の退行になる。塞いで直る不具合は無かった
+                // (開き直すとな居るか は終助詞かなの減点側で是正済み)ため見送る。
+                // 再挑戦するなら「実勢のある読み」を免除表で個別に外すことが前提
                 if let wordCost,
                     reading.count >= 3,
                     let minWordCost = candidateMinWordCosts[surface],
                     wordCost - minWordCost >= Self.multiClauseCrossReadingUnigramGapThreshold,
                     !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
                     base = max(base, wordCost)
+                }
+                // 生成既定コスト(定数コメント参照)のままの人名(名)読みは、その読みのコスト実証が
+                // 無い。表層により安い別読みがあるなら unigram はそちらの実績なので借りさせず、
+                // LM から見て未知語と同じ(dictUnknown)に置く。既定コスト 7500 を下限にするだけでは
+                // 594 点しか動かず いつ+起きた+か(活用派生の定額 6400)を跨げなかった。
+                // いつおきたか → いつ興隆 の是正(2923)
+                if let wordCost,
+                    wordCost == Self.multiClauseGeneratedVocabDefaultWordCost,
+                    surface.count >= 2,
+                    personNameKindsByReading[reading]?[surface] == "名",
+                    let minWordCost = candidateMinWordCosts[surface],
+                    wordCost - minWordCost >= Self.multiClauseGeneratedNameReadingCrossReadingGap,
+                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    base = max(base, Self.multiClauseDictUnknownCost)
                 }
             } else if isInflectionDerived
                 // する の否定かな形(しない 等)は (b) word_costs の かな識別(wc 9493、LM 未収録)として立ち、活用派生の

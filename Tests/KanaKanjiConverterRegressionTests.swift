@@ -17448,8 +17448,23 @@ extension KanaKanjiConverterRegressionTests {
 
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             XCTAssertEqual(converter.multiClauseCandidates(for: "いつおきた", systemCandidateMode: mode).first, "いつ起きた", "mode=\(mode.rawValue)")
-            // いつおきたか は別口(興隆=おきたか が こうりゅう の LM 実績を読み跨ぎで借りる)で未解決
+            // いつおきたか は別口(興隆=おきたか の読み跨ぎ借用)で、2923 で是正した
             XCTAssertEqual(converter.candidates(for: "いつお", limit: 3, systemCandidateMode: mode).first, "五男", "mode=\(mode.rawValue)")
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    // 2923: 生成既定コスト(7500)のままの人名(名)読みは、表層の主読みが稼いだ unigram を
+    // 借りられない(興隆(おきたか)が こうりゅう 用の 6406 に乗って いつ+起きた+か を跨いでいた)
+    func testRegressionGeneratedNameReadingDoesNotBorrowUnigram() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "いつおきたか", systemCandidateMode: mode).first,
+                "いつ起きたか", "mode=\(mode.rawValue)")
         }
     }
 }
