@@ -17455,6 +17455,24 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2925: たんだいせい は辞書に読みごと存在せず 端大井/タン大井 しか出なかった。
+    // 小学生/大学生/高校生 は 1 語で有る。misc.plist の供給欠落節に登録
+    func testRegressionTandaiseiRegistered() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.candidates(for: "たんだいせい", limit: 4, systemCandidateMode: mode).first,
+                "短大生", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "たんだいせいです", systemCandidateMode: mode).first,
+                "短大生です", "mode=\(mode.rawValue)")
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2925: あいもーど は辞書に読みごと存在しなかった(i-mode/iモード とも)。it.plist に登録
     func testRegressionIModeRegistered() throws {
         try prepareRealLMDictionary()
