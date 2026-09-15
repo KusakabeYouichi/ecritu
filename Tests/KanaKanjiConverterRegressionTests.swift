@@ -17455,6 +17455,25 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2925: あと 単独入力はかなを先頭に(ユーザ指定)。提示層の keepKana は「維持のみで
+    // 昇格しない」ので seed の基底順そのものを変える。合成の基底順も継ぐため、
+    // 連体の あとの は 後の 先頭(5be8ac02 のユーザ指定)を明示 seed で守る
+    func testRegressionAtoPrefersKanaButAtonoKeepsKanji() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                Array(converter.candidates(for: "あと", limit: 3, systemCandidateMode: mode).prefix(3)),
+                ["あと", "後", "跡"], "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                Array(converter.candidates(for: "あとの", limit: 3, systemCandidateMode: mode).prefix(3)),
+                ["後の", "跡の", "あとの"], "mode=\(mode.rawValue)")
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2925: たんだいせい は辞書に読みごと存在せず 端大井/タン大井 しか出なかった。
     // 小学生/大学生/高校生 は 1 語で有る。misc.plist の供給欠落節に登録
     func testRegressionTandaiseiRegistered() throws {
