@@ -739,6 +739,10 @@ final class KeyboardViewController: UIInputViewController {
         if candidateBarModel.memoryFootprintPeakMBForDebugDisplay != peak {
             candidateBarModel.memoryFootprintPeakMBForDebugDisplay = peak
         }
+        let processPeak = diagnosticsState.memoryFootprintProcessPeakMB
+        if candidateBarModel.memoryFootprintProcessPeakMBForDebugDisplay != processPeak {
+            candidateBarModel.memoryFootprintProcessPeakMBForDebugDisplay = processPeak
+        }
     }
 
     override func textDidChange(_ textInput: UITextInput?) {
