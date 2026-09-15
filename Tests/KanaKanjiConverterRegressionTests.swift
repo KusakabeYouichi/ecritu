@@ -17494,6 +17494,33 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2939: 変種枠を文節位置で散らす。コスト差順に詰めるだけだと 1 文節が枠を独占し、
+    // 故障の前兆(コスト差 451)が 1 つも出なかった。無条件に散らすと表記変種の枠を奪って
+    // 数カ国大王(2963)級が入るので、上限 1200 以内の変種だけ散らす
+    func testRegressionVariantSlotsSpreadAcrossClauses() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            let kosho = converter.multiClauseCandidates(for: "こしょうのぜんちょうかも", systemCandidateMode: mode)
+            XCTAssertEqual(kosho.first, "故障の全長かも", "\(label) \(kosho)")
+            XCTAssertTrue(kosho.contains("故障の前兆かも"), "\(label) \(kosho)")
+            // 表記変種の枠は奪わない(数か国対応 の ヶ/箇/カ は後段のフィルタで 1 つに畳まれる)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface),
+                ["数か国対応"], label)
+            // 最小コスト差の変種は 1 巡目の先頭で採られるので第 2 候補は動かない
+            XCTAssertEqual(
+                Array(converter.multiClauseCandidates(for: "しかくとらないと", systemCandidateMode: mode).prefix(2)),
+                ["資格取らないと", "資格採らないと"], label)
+        }
+    }
+}
+
+
+
+extension KanaKanjiConverterRegressionTests {
     // 2938: 机に置いた衝撃で部首入力面になった(ユーザ報告)。実測は接触 58ms・開始位置が
     // キーの外・移動量 41pt の下フリック。面の切り替えという戻しにくい操作にだけ接触時間の
     // 下限を設ける。文字入力のキーはこの判定を通らない
