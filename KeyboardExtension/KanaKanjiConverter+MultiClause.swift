@@ -2673,6 +2673,15 @@ extension KanaKanjiConverter {
                             prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
                             cost += Self.multiClauseYouAfterPredicatePenalty
                         }
+                        // 格助詞+終助詞かな+内容語 は正しい語の割れ残り(定数コメント参照。2923)
+                        if prevNode.surface == prevNode.reading,
+                            Self.multiClauseFinalKanaParticlesBeforeContentWord.contains(prevNode.reading),
+                            prevNode.start >= 1,
+                            Self.multiClauseCaseParticleSurfaces.contains(
+                                where: { String(chars[0..<prevNode.start]).hasSuffix($0) }),
+                            node.surface != node.reading {
+                            cost += Self.multiClauseFinalParticleBeforeContentWordPenalty
+                        }
                         // 文頭の だ+漢字名詞 は非文(定数コメント参照。2910)
                         if prevNode.start == 0, prevNode.surface == "だ", prevNode.reading == "だ",
                             !node.isInflectionDerived, node.surface != node.reading, containsKanji(node.surface) {
