@@ -1048,7 +1048,8 @@ struct KeyboardRootView: View {
         }
     }
 
-    // 削除キー左下のバッジ。1 行目=メモリ警告のバースト数(実回数)、2 行目=このセッションの footprint 最大値(MB)。
+    // 削除キー左下のバッジ。1 行目=メモリ警告のバースト数(実回数)、
+    // 2 行目=footprint のセッション最大値 (プロセス生涯の最大値)(MB)。
     // 45MB 以上か警告ありのときだけ数字を出す(平常は 20〜35MB。62 で軽量化・70 で最小化・上限 77)。
     // **バッジは 1 本にまとめること**(2921): ActionKeyButton に格納プロパティを足すと、キー群の巨大なタプルが
     // その分だけ太り、横画面の body 構築で App Extension のスタックを食い潰して落ちた
@@ -1068,9 +1069,19 @@ struct KeyboardRootView: View {
             lines.append(String(bursts))
         }
 
+        // footprint は「このセッションの最大 (プロセス生涯の最大)」。セッション側は表示のたびに
+        // 0 に戻るので今の水位が読め、括弧の中に「いつか超えた」記録が残る(警告回数と同じ書式)。
+        // 行数は従来どおり最大 2 行に保つ(キー高 46pt に 10pt 2 行+下余白で収まる)。
+        // 点灯の判定はプロセス側で行う(記録が消えないように)
         let peak = candidateBarModel.memoryFootprintPeakMBForDebugDisplay
-        if peak > 0, peak >= Self.memoryPressurePeakBadgeMinMB || bursts >= 1 {
-            lines.append(String(peak))
+        let processPeak = max(peak, candidateBarModel.memoryFootprintProcessPeakMBForDebugDisplay)
+        if processPeak > 0, processPeak >= Self.memoryPressurePeakBadgeMinMB || bursts >= 1 {
+            // 表示直後はセッション側が 0(viewWillAppear で戻る)なので、その間は記録だけ出す
+            if peak <= 0 {
+                lines.append(String(processPeak))
+            } else {
+                lines.append(processPeak > peak ? "\(peak) (\(processPeak))" : String(peak))
+            }
         }
 
         return lines.isEmpty ? nil : lines.joined(separator: "\n")
