@@ -331,7 +331,31 @@ extension KeyboardRootView {
         selectKanaModeSwitcher(direction: .milieu, triggerLabel: "左下キー長押し(コンパクト)")
     }
 
+    /// 面の切り替えを「短すぎる接触」として無視するか(定数コメント参照。2938)。
+    /// 測れなかったとき(nil)と負値は通す。文字入力のキーはこの判定を通らない
+    static func shouldIgnoreModeSwitchForShortTouch(commitDurationMs: Int?) -> Bool {
+        guard let commitDurationMs, commitDurationMs >= 0 else {
+            return false
+        }
+        return commitDurationMs < kanaModeSwitcherMinimumTouchDurationMs
+    }
+
     func selectKanaModeSwitcher(direction: FlickDirection, triggerLabel: String? = nil) {
+        // 短すぎる接触では面を切り替えない(2938、ユーザ報告: 机に置いた衝撃で部首入力面になった)。
+        // 実測の誤発火は接触 58ms・開始位置がキーの外(-6,44)・移動量 41pt の下フリック。人のタップは
+        // 概ね 80〜150ms なので、面の切り替えという戻しにくい操作にだけ下限を設ける。
+        // 文字入力のキーは対象外(この分岐を通らない)。測れなかったとき(nil)は通す。
+        // 却下は診断へ残すので、実使用で弾かれるようなら閾値を下げるか撤去する
+        if Self.shouldIgnoreModeSwitchForShortTouch(
+            commitDurationMs: KeyboardStuckTouchDiagnostics.lastCommitDurationMs
+        ) {
+            let durationMs = KeyboardStuckTouchDiagnostics.lastCommitDurationMs ?? -1
+            KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                "面切替を却下(接触が短すぎ) dir=\(direction) durMs=\(durationMs)"
+                    + " 下限=\(Self.kanaModeSwitcherMinimumTouchDurationMs)ms"
+            )
+            return
+        }
         // 調査用ログ(記号面切替 2838): どの操作で面が変わったかを記録。原因判明後に外す
         inputModeChangeTrigger = triggerLabel ?? "左下キー \(direction)"
         // 下フリックは部首ピッカー固定(タップ/右/上の3スロットは設定で割り当て可)
