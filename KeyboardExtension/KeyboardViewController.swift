@@ -488,6 +488,9 @@ final class KeyboardViewController: UIInputViewController {
         return formatter
     }()
 
+    // 背景グラデーションの層(2920)。SwiftUI ではなく UIKit 側に置く理由は applyKeyboardBaseBackground のコメント参照
+    private var backgroundGradientLayer: CAGradientLayer?
+
     private static let hostTopOverlap: CGFloat = 0
     // 寸法・位置の定数は KeyboardLayoutMetrics に集約した(2609)。
     // 端末別の値はそちらの .phone / .pad を触る。
@@ -1182,6 +1185,7 @@ final class KeyboardViewController: UIInputViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         logLayoutGeometryIfChanged()
+        updateBackgroundGradientAppearance()
 
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
         installKeyboardHeightConstraintIfNeeded()
@@ -1802,10 +1806,56 @@ final class KeyboardViewController: UIInputViewController {
         #endif
     }
 
+    // キーボード上辺の角 R(2920)。メッセージ/メモ/メイル等 Apple 純正アプリは入力領域に角丸のグレイを描くので、
+    // 四角のまま塗ると桜色が角からはみ出して見えた。角は透明にしてホスト側の描画に馴染ませる。
+    // コンテナの clipsToBounds は false のまま(長押しパネルやフリック案内がキーボードの外に描くため)
+    static let keyboardBackgroundCornerRadius: CGFloat = 12
+
     private func applyKeyboardBaseBackground() {
-        view.backgroundColor = Self.baseKeyboardBackgroundColor
-        inputView?.backgroundColor = Self.baseKeyboardBackgroundColor
-        hostingController?.view.backgroundColor = Self.baseKeyboardBackgroundColor
+        // 下地は透明。塗りは backgroundGradientLayer が全域に行う(角 R の外はホストが見える)
+        view.backgroundColor = .clear
+        inputView?.backgroundColor = .clear
+        hostingController?.view.backgroundColor = .clear
+        installBackgroundGradientLayerIfNeeded()
+        updateBackgroundGradientAppearance()
+    }
+
+    private func installBackgroundGradientLayerIfNeeded() {
+        guard backgroundGradientLayer == nil else {
+            return
+        }
+
+        let layer = CAGradientLayer()
+        layer.startPoint = CGPoint(x: 0.5, y: 0)
+        layer.endPoint = CGPoint(x: 0.5, y: 1)
+        layer.cornerRadius = Self.keyboardBackgroundCornerRadius
+        layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        layer.needsDisplayOnBoundsChange = true
+        view.layer.insertSublayer(layer, at: 0)
+        backgroundGradientLayer = layer
+    }
+
+    // 色(テーマ×明暗)と寸法を view.bounds に合わせる。安全領域を経由しないので横画面でも端まで塗れる
+    func updateBackgroundGradientAppearance() {
+        guard let backgroundGradientLayer else {
+            return
+        }
+
+        CATransaction.begin()
+        CATransaction.setDisableActions(true)
+        backgroundGradientLayer.frame = view.bounds
+        let rawValue = lastRenderConfiguration?.keyboardBackgroundThemeRawValue
+            ?? sharedStringValue(
+                from: sharedDefaults,
+                key: SharedDefaultsKeys.keyboardBackgroundTheme,
+                fallback: "bleu"
+            )
+        let theme = KeyboardRootView.KeyboardBackgroundTheme(rawValue: rawValue) ?? .bleu
+        let scheme: ColorScheme = traitCollection.userInterfaceStyle == .dark ? .dark : .light
+        let stops = theme.gradientStops(for: scheme)
+        backgroundGradientLayer.colors = stops.map { UIColor($0.color).cgColor }
+        backgroundGradientLayer.locations = stops.map { NSNumber(value: Double($0.location)) }
+        CATransaction.commit()
     }
 
     private func prepareKeyboardVisualForTransition() {
