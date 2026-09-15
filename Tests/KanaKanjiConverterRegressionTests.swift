@@ -17458,6 +17458,26 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2938: 机に置いた衝撃で部首入力面になった(ユーザ報告)。実測は接触 58ms・開始位置が
+    // キーの外・移動量 41pt の下フリック。面の切り替えという戻しにくい操作にだけ接触時間の
+    // 下限を設ける。文字入力のキーはこの判定を通らない
+    func testModeSwitchIgnoresTooShortTouch() throws {
+        typealias V = KeyboardRootView
+        // 実測の誤発火(58ms)は却下する
+        XCTAssertTrue(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: 58))
+        XCTAssertTrue(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: 0))
+        XCTAssertTrue(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: 69))
+        // 人のタップ・フリックの範囲は通す
+        XCTAssertFalse(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: 70))
+        XCTAssertFalse(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: 120))
+        XCTAssertFalse(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: 800))
+        // 測れなかった場合は通す(判定材料が無いのに塞がない)
+        XCTAssertFalse(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: nil))
+        XCTAssertFalse(V.shouldIgnoreModeSwitchForShortTouch(commitDurationMs: -1))
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2927: 書き言葉(BCCWJ)優先の目視判定を反映した同音語順(ユーザ判断 B = 書き言葉側)。
     // 一覧は docs/homophone_written_order_review.md。抜き取りで並びを固定する
     func testRegressionWrittenCorpusHomophoneOrder() throws {

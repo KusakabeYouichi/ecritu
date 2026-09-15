@@ -96,6 +96,10 @@ struct KeyboardRootView: View {
     // 「フルアクセス必須」に見えていた(ガイドライン 4.4.1。2785)
     @State private var didDismissFullAccessNotice = UserDefaults.standard.bool(forKey: KeyboardRootView.fullAccessNoticeDismissedKey)
     static let fullAccessNoticeDismissedKey = "didDismissFullAccessNotice"
+    // 面を切り替えるキー(左下)の接触時間の下限(ms)。これより短い接触では面を変えない(2938)。
+    // 根拠: 机に置いた衝撃での誤発火が 58ms(開始位置はキーの外、移動量 41pt の下フリック)。
+    // 人の意図的なタップ/フリックは概ね 80ms 以上。文字入力のキーには効かせない
+    static let kanaModeSwitcherMinimumTouchDurationMs = 70
     @State var isAwaitingLatinModeSwitchSecondTap = false
     @State var pendingLatinModeSwitchSecondTapResetWorkItem: DispatchWorkItem?
     @State var selectedEmojiCategory: EmojiCategory = .people
