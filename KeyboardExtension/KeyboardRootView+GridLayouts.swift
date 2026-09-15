@@ -209,41 +209,21 @@ extension KeyboardRootView {
     ) -> some View {
         VStack(spacing: rowSpacing) {
             HStack(spacing: rowSpacing) {
-                FlickKeyView(
-                    kana: kanaRows[0][0],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 0)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
-
-                FlickKeyView(
-                    kana: kanaRows[0][1],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 0)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
-
-                FlickKeyView(
-                    kana: kanaRows[0][2],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 0)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
+                // 3 つのかなキーは ForEach でまとめる(2921): 1 つずつ並べると巨大なタプル型になり、
+                // body 構築時のスタックを食い潰して App Extension が落ちる(Xcode 27 で縦画面でも越えた)
+                ForEach(0..<3, id: \.self) { column in
+                    FlickKeyView(
+                        kana: kanaRows[0][column],
+                        onCommit: commitText,
+                        mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
+                        showsDirectionalHints: showsFlickGuideCharacters,
+                        onTouchStateChanged: { isTouching in
+                            updateActiveLayer(isTouching, layerIndex: 0)
+                        }
+                    )
+                        .frame(maxWidth: .infinity)
+                        .frame(height: rowHeight)
+                }
 
                 deleteActionKey(showsMemoryPressure: true)
                     .frame(width: rightEdgeUtilityColumnWidth, height: rowHeight)
@@ -251,41 +231,21 @@ extension KeyboardRootView {
             .zIndex(zIndex(for: 0))
 
             HStack(spacing: rowSpacing) {
-                FlickKeyView(
-                    kana: kanaRows[1][0],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 1)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
-
-                FlickKeyView(
-                    kana: kanaRows[1][1],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 1)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
-
-                FlickKeyView(
-                    kana: kanaRows[1][2],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 1)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
+                // 3 つのかなキーは ForEach でまとめる(2921): 1 つずつ並べると巨大なタプル型になり、
+                // body 構築時のスタックを食い潰して App Extension が落ちる(Xcode 27 で縦画面でも越えた)
+                ForEach(0..<3, id: \.self) { column in
+                    FlickKeyView(
+                        kana: kanaRows[1][column],
+                        onCommit: commitText,
+                        mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
+                        showsDirectionalHints: showsFlickGuideCharacters,
+                        onTouchStateChanged: { isTouching in
+                            updateActiveLayer(isTouching, layerIndex: 1)
+                        }
+                    )
+                        .frame(maxWidth: .infinity)
+                        .frame(height: rowHeight)
+                }
 
                 spaceActionKeyButton(
                     title: spaceKeyDisplayTitle,
@@ -296,41 +256,21 @@ extension KeyboardRootView {
             .zIndex(zIndex(for: 1))
 
             HStack(spacing: rowSpacing) {
-                FlickKeyView(
-                    kana: kanaRows[2][0],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 2)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
-
-                FlickKeyView(
-                    kana: kanaRows[2][1],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 2)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
-
-                FlickKeyView(
-                    kana: kanaRows[2][2],
-                    onCommit: commitText,
-                    mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
-                    showsDirectionalHints: showsFlickGuideCharacters,
-                    onTouchStateChanged: { isTouching in
-                        updateActiveLayer(isTouching, layerIndex: 2)
-                    }
-                )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: rowHeight)
+                // 3 つのかなキーは ForEach でまとめる(2921): 1 つずつ並べると巨大なタプル型になり、
+                // body 構築時のスタックを食い潰して App Extension が落ちる(Xcode 27 で縦画面でも越えた)
+                ForEach(0..<3, id: \.self) { column in
+                    FlickKeyView(
+                        kana: kanaRows[2][column],
+                        onCommit: commitText,
+                        mainLabelFontSize: kanaThreeByThreeMainLabelFontSize,
+                        showsDirectionalHints: showsFlickGuideCharacters,
+                        onTouchStateChanged: { isTouching in
+                            updateActiveLayer(isTouching, layerIndex: 2)
+                        }
+                    )
+                        .frame(maxWidth: .infinity)
+                        .frame(height: rowHeight)
+                }
 
                 ZStack(alignment: .top) {
                     Color.clear
