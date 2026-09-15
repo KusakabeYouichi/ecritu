@@ -17455,6 +17455,20 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2923: そうか は相槌のかなが正書で先頭、2 番手は地名の 草加(ユーザ指定)。
+    // 辞書 rank は 瘡痂/創価/爽果… で見たこともない語が並んでいた。
+    // 2 文字目が U+25CF の壊れたエントリ 創● は抑制する
+    func testRegressionSoukaPrefersKanaThenSoka() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let candidates = converter.candidates(for: "そうか", limit: 8, systemCandidateMode: mode)
+            XCTAssertEqual(Array(candidates.prefix(3)), ["そうか", "草加", "創価"], "mode=\(mode.rawValue)")
+            XCTAssertFalse(candidates.contains("創\u{25CF}"), "mode=\(mode.rawValue)")
+        }
+    }
+
     // 2923: 生成既定コスト(7500)のままの人名(名)読みは、表層の主読みが稼いだ unigram を
     // 借りられない(興隆(おきたか)が こうりゅう 用の 6406 に乗って いつ+起きた+か を跨いでいた)
     func testRegressionGeneratedNameReadingDoesNotBorrowUnigram() throws {
