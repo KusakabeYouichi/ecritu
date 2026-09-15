@@ -3337,7 +3337,7 @@ extension KanaKanjiConverter {
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
         //        視覚/資格/四角…)で第2候補以降を提示するため。1文字区間(助詞等)は対象外。
-        var variants: [(delta: Int, order: Int, joined: String)] = []
+        var variants: [(delta: Int, order: Int, position: Int, joined: String)] = []
         var variantOrder = 0
         for (pos, nodeIdx) in pathIndices.enumerated() {
             let chosen = nodes[nodeIdx]
@@ -3649,7 +3649,7 @@ extension KanaKanjiConverter {
                         continue
                     }
                 }
-                variants.append((delta, variantOrder, variantJoined))
+                variants.append((delta, variantOrder, pos, variantJoined))
                 variantOrder += 1
             }
         }
@@ -3657,21 +3657,21 @@ extension KanaKanjiConverter {
         // 先頭差し替えの再最適化経路は、コスト差で1文節変種と同列に並べる(2738)。固定で2位にすると
         // こおりがとけて で 凍りが溶けて が 氷が解けて(僅差の末尾変種)より前に出た
         if let leadAlternativeJoined, leadAlternativeJoined != joined {
-            variants.append((leadAlternativeDelta, -1, leadAlternativeJoined))
+            variants.append((leadAlternativeDelta, -1, -1, leadAlternativeJoined))
         }
         // 助詞に割った代替経路(2771)もコスト差で同列に並べる
         if let particleSplitAlternativeJoined, particleSplitAlternativeJoined != joined {
-            variants.append((particleSplitAlternativeDelta, -2, particleSplitAlternativeJoined))
+            variants.append((particleSplitAlternativeDelta, -2, -1, particleSplitAlternativeJoined))
         }
         // とし を 1 ノードで覆う代替経路(2802)は先頭差し替えと同じ刻みで、1 文節変種(木標とし 等)より前に置く
         if let toShiMergedAlternativeJoined, toShiMergedAlternativeJoined != joined {
-            variants.append((min(toShiMergedAlternativeDelta, Self.multiClauseSeedOrderVariantStep), -2, toShiMergedAlternativeJoined))
+            variants.append((min(toShiMergedAlternativeDelta, Self.multiClauseSeedOrderVariantStep), -2, -1, toShiMergedAlternativeJoined))
         }
         // 並列動詞を揃えた第2経路と元の混在経路(2771)は、1文節変種(元の混在経路より安い負の
         // delta を持ち得る)より必ず前に置く。元の混在経路と同文字列の1文節変種は後段の重複除去で畳まれる
         if !coordinatedAlternatives.isEmpty {
             for (offset, alternative) in coordinatedAlternatives.enumerated() where alternative.joined != joined {
-                variants.append((Int.min / 2 + offset, -3, alternative.joined))
+                variants.append((Int.min / 2 + offset, -3, -1, alternative.joined))
             }
         }
         // 同 delta のタイブレークはノード列挙順(=seed/base優先順)。文字コード順だと
@@ -3687,8 +3687,26 @@ extension KanaKanjiConverter {
         }
         #endif
         var results = suppressAllKanaBest ? [] : [joined]
-        for variant in variants where !results.contains(variant.joined) {
-            results.append(variant.joined)
+        // 変種枠は文節位置で散らす(定数コメント参照。2939)。1 巡目は「まだ使っていない文節」かつ
+        // コスト差が上限以内の変種を 1 つずつ採り、2 巡目で残りをコスト差順に詰める。
+        // 代替経路(position -1)は位置を占有しない
+        var usedPositions = Set<Int>()
+        var taken = Set<Int>()
+        for pass in 0..<2 {
+            for (index, variant) in variants.enumerated() where !taken.contains(index) {
+                guard results.count < 1 + Self.multiClauseVariantLimit else { break }
+                if pass == 0, variant.position >= 0,
+                    usedPositions.contains(variant.position)
+                        || variant.delta > Self.multiClauseVariantSpreadMaxDelta {
+                    continue
+                }
+                taken.insert(index)
+                guard !results.contains(variant.joined) else { continue }
+                results.append(variant.joined)
+                if variant.position >= 0 {
+                    usedPositions.insert(variant.position)
+                }
+            }
             if results.count >= 1 + Self.multiClauseVariantLimit {
                 break
             }
