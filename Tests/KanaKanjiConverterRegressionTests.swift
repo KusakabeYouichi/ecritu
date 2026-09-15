@@ -17455,6 +17455,24 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2925: 逆接の のに はかなが正書。辞書に のに のエントリが無く の(乃/之/野/廼/幅)+に の
+    // 合成だけが立っていた。misc.plist の かな正書 curated に登録
+    func testRegressionNoniPrefersKana() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.candidates(for: "のに", limit: 4, systemCandidateMode: mode).first,
+                "のに", "mode=\(mode.rawValue)")
+        }
+        // 正規化モードでは 乃に/之に/廻に の合成が落ちる(surface モードは異表記を残す仕様)
+        XCTAssertFalse(
+            converter.candidates(for: "のに", limit: 4, systemCandidateMode: .normalise).contains("乃に"))
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2925: あと 単独入力はかなを先頭に(ユーザ指定)。提示層の keepKana は「維持のみで
     // 昇格しない」ので seed の基底順そのものを変える。合成の基底順も継ぐため、
     // 連体の あとの は 後の 先頭(5be8ac02 のユーザ指定)を明示 seed で守る
