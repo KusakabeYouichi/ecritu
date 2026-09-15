@@ -17458,6 +17458,42 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2939: ユーザ報告 4 件の語彙。送信元は Sudachi に rank0 で有るが word_cost 12183 が
+    // 収穫底値帯で降格され、そうしん(痩身…)+もと の合成に候補ごと押し出されていた(耳下腺 と同型)。
+    // 瘦身(U+7626)は 痩身(U+75E9)の旧字体で紛らわしいので抑制。まいかーど/てぃおぺぺ は読みごと未収録。
+    // ここね は かな rank0 なのに 個々+ね の合成が先に立っていた
+    func testRegressionUserReportedVocabulary2939() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            XCTAssertEqual(
+                converter.candidates(for: "そうしんもと", limit: 4, systemCandidateMode: mode).first,
+                "送信元", label)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "そうしんもとをみる", systemCandidateMode: mode).first,
+                "送信元を見る", label)
+            // 痩身(U+75E9)は残し、旧字体 瘦身(U+7626)だけ落とす
+            let soushin = converter.candidates(for: "そうしん", limit: 8, systemCandidateMode: mode)
+            XCTAssertEqual(soushin.first, "送信", label)
+            XCTAssertTrue(soushin.contains("\u{75E9}\u{8EAB}"), "\(label) \(soushin)")
+            XCTAssertFalse(soushin.contains("\u{7626}\u{8EAB}"), "\(label) \(soushin)")
+            XCTAssertEqual(
+                converter.candidates(for: "まいかーど", limit: 2, systemCandidateMode: mode).first,
+                "マイカード", label)
+            XCTAssertEqual(
+                converter.candidates(for: "ここね", limit: 3, systemCandidateMode: mode).first,
+                "ここね", label)
+            XCTAssertEqual(
+                Array(converter.candidates(for: "てぃおぺぺ", limit: 3, systemCandidateMode: mode).prefix(2)),
+                ["ティオ・ペペ", "TIO PEPE"], label)
+        }
+    }
+
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2938: 机に置いた衝撃で部首入力面になった(ユーザ報告)。実測は接触 58ms・開始位置が
     // キーの外・移動量 41pt の下フリック。面の切り替えという戻しにくい操作にだけ接触時間の
     // 下限を設ける。文字入力のキーはこの判定を通らない
