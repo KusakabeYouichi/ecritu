@@ -42,6 +42,9 @@ extension KeyboardViewController {
         var stuckTouchForceClearCount = 0
         // 診断: このセッションで受けたメモリ警告の回数。2回目以降は最終手段として
         // 連文節LM(sqlite)もアンロードする(初回は ef56d52 の方針どおり保持)。
+        // footprint のセッション最大値(MB、切り上げ)。**publish しない** ─ レイアウト経路から
+        // @Published を書くと再描画→レイアウトの輪になる(2921)
+        var memoryFootprintPeakMB = 0
         var memoryWarningCountThisSession = 0
         // 診断: 警告の「バースト」数。iOS は警告を数百ms内に複数回投げる(実測 16:44:42 に0.6秒で
         // 4回)ので、2秒以内の連続は1イベントとして数える。表示は バースト(実回数) の形(2702)
@@ -569,11 +572,12 @@ extension KeyboardViewController {
             return
         }
 
-        // でばぐ可視化用にセッション最大値を更新(切り上げ。定数コメント参照。2918)
-        let peakMB = Int(footprintMB.rounded(.up))
-        if peakMB > candidateBarModel.memoryFootprintPeakMBForDebugDisplay {
-            candidateBarModel.memoryFootprintPeakMBForDebugDisplay = peakMB
-        }
+        // でばぐ可視化用にセッション最大値を更新(切り上げ)。ここは viewDidLayoutSubviews →
+        // makeRenderConfiguration から呼ばれるレイアウト経路なので publish しない(2921)
+        diagnosticsState.memoryFootprintPeakMB = max(
+            diagnosticsState.memoryFootprintPeakMB,
+            Int(footprintMB.rounded(.up))
+        )
 
         let nextProfile = nextMemoryFailSafeProfile(for: footprintMB)
 

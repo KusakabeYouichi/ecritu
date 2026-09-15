@@ -662,6 +662,7 @@ final class KeyboardViewController: UIInputViewController {
         candidateBarModel.memoryWarningCountForDebugDisplay = 0
         candidateBarModel.memoryWarningBurstCountForDebugDisplay = 0
         candidateBarModel.memoryFootprintPeakMBForDebugDisplay = 0
+        diagnosticsState.memoryFootprintPeakMB = 0
         // 非アクティブ降格時に解除した Darwin observer を再登録する(多重ガードあり)。
         startObservingSettingsDidChange()
         lostActiveOwnershipAt = 0
@@ -729,9 +730,18 @@ final class KeyboardViewController: UIInputViewController {
         stopMarkedTextWatchdog()
     }
 
+    // footprint 最大値をでばぐ表示へ反映する。**レイアウト経路から呼ばないこと**(2921)
+    func publishMemoryFootprintPeakForDebugDisplay() {
+        let peak = diagnosticsState.memoryFootprintPeakMB
+        if candidateBarModel.memoryFootprintPeakMBForDebugDisplay != peak {
+            candidateBarModel.memoryFootprintPeakMBForDebugDisplay = peak
+        }
+    }
+
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
+        publishMemoryFootprintPeakForDebugDisplay()
 
         // textDidChange は host 側のテキストが変化した(送信/autocorrect/paste/選択など
         // 何らかの理由で)シグナルなので、自前/外部を問わずキャッシュを必ず無効化する。
@@ -1045,6 +1055,7 @@ final class KeyboardViewController: UIInputViewController {
         // メモリ切迫の可視化(でばぐ表示): かな削除キーの背景色に反映する。
         candidateBarModel.memoryWarningCountForDebugDisplay = diagnosticsState.memoryWarningCountThisSession
         candidateBarModel.memoryWarningBurstCountForDebugDisplay = diagnosticsState.memoryWarningBurstCountThisSession
+        publishMemoryFootprintPeakForDebugDisplay()
         persistBufferedKeyboardDiagnostics()
         updateKeyboardDiagnosticsHeartbeat(
             event: "メモリ警告受信(\(diagnosticsState.memoryWarningCountThisSession)回目) キャッシュ解放開始",
