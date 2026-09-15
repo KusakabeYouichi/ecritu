@@ -17455,6 +17455,27 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2926: 数字確定後の助数詞合成で、助詞始まりの末尾を単独変換すると先頭の助詞が
+    // 動詞語幹に化ける(にはじめたのか→煮始めたのか)。17 確定→にちにはじめたのか が
+    // 「日煮始めたのか」になっていた(ユーザ報告)。助数詞の直後の に/で は助詞
+    func testRegressionCounterTailKeepsLeadingParticle() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        let converterForTail = converter
+        let base = converter.candidates(for: "にちにはじめたのか", limit: 8, systemCandidateMode: .surface)
+        let boosted = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            base, reading: "にちにはじめたのか", precedingCharacter: "7",
+            tailConversion: { tail in converterForTail?.counterTailConversion(tail) }
+        )
+        XCTAssertFalse(boosted.contains("日煮始めたのか"), "boost=\(boosted.prefix(6))")
+        XCTAssertNotEqual(boosted.first, "日煮始めたのか", "boost=\(boosted.prefix(6))")
+        // 助数詞+助詞の かな形(日にはじめたのか)は従来どおり供給される
+        XCTAssertTrue(boosted.contains(where: { $0.hasPrefix("日に") }), "boost=\(boosted.prefix(6))")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2925: うる の先頭は 売る(ユーザ指定)。連文節は LM(得る4907 ≪ 売る6203)で
     // 得る を採っていた。読み別 seed 順ボーナスで連文節にも seed 先頭を通す
     func testRegressionUruPrefersUru() throws {
