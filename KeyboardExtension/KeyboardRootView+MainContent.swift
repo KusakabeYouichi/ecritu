@@ -6,18 +6,22 @@ import SwiftUI
 extension KeyboardRootView {
     @ViewBuilder
     var keyboardMainContent: some View {
+        // 特殊モード(書式化数値・絵文字・顔文字・記号・部首)は AnyView で型を消す(2921)。
+        // この分岐は 300 行超の巨大な条件型になり、Xcode 27 の最適化が壊れた値を retain して落ちる。
+        // かな入力の本流はここを通らないので、型消去による再構築の不利は受けない
+        // (モード切替のときだけ通り、そこでは元々作り直しになる)
         if inputMode == .formattedNumber {
-            formattedNumberKeyboardView
+            AnyView(formattedNumberKeyboardView)
         } else if inputMode == .emoji {
             switch emojiInputSubmode {
             case .emoji:
-                emojiKeyboardView
+                AnyView(emojiKeyboardView)
             case .kaomoji:
-                kaomojiKeyboardView
+                AnyView(kaomojiKeyboardView)
             case .symbols:
-                symbolKeyboardView
+                AnyView(symbolKeyboardView)
             case .kanjiRadical:
-                kanjiRadicalKeyboardView
+                AnyView(kanjiRadicalKeyboardView)
             }
         } else if usesLandscapeLatinTypewriterLayout {
             HStack(spacing: keyboardRowSpacing) {
