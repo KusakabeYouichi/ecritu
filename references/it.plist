@@ -133,6 +133,8 @@
 	<dict><key>phrase</key><string>Apple Card</string><key>shortcut</key><string>あっぷるかーど</string></dict>
 	<dict><key>phrase</key><string>Spotify</string><key>shortcut</key><string>すぽてぃふぁい</string></dict>
 	<dict><key>phrase</key><string>Spotify Premium</string><key>shortcut</key><string>すぽてぃふぁいぷれみあむ</string></dict>
+	<dict><key>phrase</key><string>i-mode</string><key>shortcut</key><string>あいもーど</string></dict>	<!-- NTT ドコモの携帯電話向けインターネット接続サーヴィス。公式表記は小文字 i + ハイフン(ユーザ指定 2925) -->
+	<dict><key>phrase</key><string>iモード</string><key>shortcut</key><string>あいもーど</string></dict>	<!-- 日本語表記。読み あいもーど は辞書に 1 件も無かった -->
 
 	<!-- アプリ -->
 	<dict><key>phrase</key><string>Finder</string><key>shortcut</key><string>ふぁいんだー</string></dict>
