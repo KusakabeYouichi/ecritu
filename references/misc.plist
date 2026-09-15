@@ -272,6 +272,7 @@
 	<dict><key>phrase</key><string>長蛇</string><key>shortcut</key><string>ちょうだ</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 115(長蛇の列)。辞書は 町田 と 長だ 等の合成だけ -->
 	<dict><key>phrase</key><string>多糖</string><key>shortcut</key><string>たとう</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 113(多糖類)。辞書は 畳/たとう/立とう だけ -->
 	<dict><key>phrase</key><string>電算</string><key>shortcut</key><string>でんさん</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 108。辞書は 伝産/電産 だけ -->
+	<dict><key>phrase</key><string>送信元</string><key>shortcut</key><string>そうしんもと</string><key>pos</key><string>名詞</string></dict>	<!-- 送信元: Sudachi に rank0 で有るが word_cost 12183 が収穫底値帯(>=10000)で降格され、そうしん(痩身/喪心…)+もと の合成に候補ごと押し出されていた。耳下腺 と同型(ユーザ報告 2939) -->
 	<dict><key>phrase</key><string>短大生</string><key>shortcut</key><string>たんだいせい</string><key>pos</key><string>名詞</string></dict>	<!-- 短大生: 辞書に読み たんだいせい が 1 件も無く(短大 は有る)、端大井/タン大井 しか出なかった。小学生/大学生/高校生 は 1 語で有る(ユーザ指摘 2925) -->
 	<dict><key>phrase</key><string>他社製</string><key>shortcut</key><string>たしゃせい</string></dict>	<!-- 他社製/自社製: 辞書に丸ごとのエントリが無く、他社+製(1 字床 7346)が収穫語 他者性(11735) の 1 ノードに負ける(たしゃせいきーぼーど→他者性キーボード。マニュアル検査 2890) -->
 	<dict><key>phrase</key><string>自社製</string><key>shortcut</key><string>じしゃせい</string></dict>
