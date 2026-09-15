@@ -678,9 +678,18 @@ extension KanaKanjiConverter {
                     // 付属語末尾(しか/だけ 等)は変換しない(回鹿 の誤供給防止)。
                     // 変換形は全漢字のみ(分行き 等の交ぜ形は供給しない)。助詞始まりの末尾は
                     // 漢字を含めば可(2700)
+                    // 助詞始まりの末尾は、変換形でも先頭の助詞がかなのまま残ること。末尾だけを
+                    // 単独で変換すると先頭の助詞が動詞語幹に化ける(にはじめたのか→煮始めたのか、
+                    // 煮始める は実在の複合動詞なので単独では妥当)。助数詞の直後の に/で/が は
+                    // 助詞なので、その形を助数詞に足すと 17日煮始めたのか になる(ユーザ報告 2926)。
+                    // かな形(日にはじめたのか)は下の既存経路で供給されるので候補は失われない
+                    let keepsLeadingParticle: (String) -> Bool = { converted in
+                        !particleLedTail || converted.first == tail.first
+                    }
                     if !counterPromotableKanaTails.contains(tail),
                         let convertedTail = tailConversion?(tail),
                         convertedTail != tail,
+                        keepsLeadingParticle(convertedTail),
                         KanaKanjiConverter.isAllKanjiSurface(convertedTail)
                             || (particleLedTail && containsKanjiCandidate(convertedTail)) {
                         let convertedForm = surface + convertedTail
