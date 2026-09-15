@@ -17455,6 +17455,27 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2925: うる の先頭は 売る(ユーザ指定)。連文節は LM(得る4907 ≪ 売る6203)で
+    // 得る を採っていた。読み別 seed 順ボーナスで連文節にも seed 先頭を通す
+    func testRegressionUruPrefersUru() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            XCTAssertEqual(
+                converter.candidates(for: "うる", limit: 3, systemCandidateMode: mode).first,
+                "売る", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "うるとしたら", systemCandidateMode: mode).first,
+                "売るとしたら", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "とちをうる", systemCandidateMode: mode).first,
+                "土地を売る", "mode=\(mode.rawValue)")
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2925: 逆接の のに はかなが正書。辞書に のに のエントリが無く の(乃/之/野/廼/幅)+に の
     // 合成だけが立っていた。misc.plist の かな正書 curated に登録
     func testRegressionNoniPrefersKana() throws {
