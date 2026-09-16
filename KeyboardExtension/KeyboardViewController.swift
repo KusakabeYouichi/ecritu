@@ -746,16 +746,12 @@ final class KeyboardViewController: UIInputViewController {
             critical: true
         )
         // 素の unmarkText はメモ(Notes)では下線が残る(2685 実機。通常の確定キーも同じ理由で
-        // カーソル微動 ±1 を挟む clearPass を使っている)。
-        // ここで同期の clearPass を 2 回やるだけだと、その直後にホストがタップ処理で
-        // テキストを変えるため下線が残る(2985 ユーザ報告: 離れた行をタップすると文字は
-        // 消えないが下線付きのまま)。通常の確定と同じ後追い(hostSync/async/30〜900ms の
-        // 遅延パス)まで回して、ホストの処理が終わった後にも掃除させる
-        let committedLength = (activeConversion?.committedText ?? composingRawText).count
+        // カーソル微動 ±1 を挟む clearPass を使っている)。同期的に届く範囲で同じ手順を2回行う。
+        performNonDestructiveUnderlineClearPass(stage: "willChange-1", nudgeWidth: 1)
+        performNonDestructiveUnderlineClearPass(stage: "willChange-2", nudgeWidth: 1)
         activeConversion = nil
         clearComposingState()
         stopMarkedTextWatchdog()
-        clearMarkedTextArtifactsAfterCommit(committedTextLength: committedLength)
     }
 
     // footprint 最大値をでばぐ表示へ反映する。**レイアウト経路から呼ばないこと**(2921)
