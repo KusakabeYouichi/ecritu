@@ -314,9 +314,15 @@ final class KeyboardViewController: UIInputViewController {
     // 非アクティブ降格を検知した時刻(deinit までのゾンビ滞留時間の計測に使う)
     var lostActiveOwnershipAt: CFAbsoluteTime = 0
     // 最後に反映済みの設定変更世代。-1 は未初期化(初回表示で現在値に合わせるだけで破棄しない)。
-    var lastSeenSettingsChangeGeneration = -1
-    // 学習リセットの世代(2968)。-1 は未初期化
-    var lastSeenLearningResetGeneration = -1
+    // **プロセス単位で持つこと**(2972)。キャッシュ(学習/追加語彙/候補)は静的な共有ストアに
+    // あってプロセス生涯で生きるのに、以前はこの世代をビュー・コントローラーの
+    // インスタンス変数にしていた。キーボードの表示ごとに新しい VC が作られるため毎回
+    // 未初期化に戻り、「VC が居ない間に起きた設定変更」は次の VC の初回 viewWillAppear で
+    // 現在値に合わせるだけになって破棄されない。学習リセットを押してからキーボードを開くと
+    // まさにこの順序になり、リセットがまったく反映されていなかった(実機ログで確認)。
+    static var lastSeenSettingsChangeGeneration = -1
+    // 学習リセットの世代(2968)。-1 は未初期化。上と同じ理由でプロセス単位
+    static var lastSeenLearningResetGeneration = -1
 
     struct ActiveConversion: Equatable {
         let reading: String
