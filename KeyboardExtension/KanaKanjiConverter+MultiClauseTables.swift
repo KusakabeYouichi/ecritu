@@ -211,6 +211,14 @@ extension KanaKanjiConverter {
     // おきる を足す案は撤回(2973): 棚に置きます→棚に起きます、本を置きますか→本を起きますか に
     // なる。おく と両方に先行ボーナスが乗ると 起きる 側が全面的に勝ってしまう
     static let multiClauseInflectionFamilyPreferenceBaseReadings: Set<String> = ["はる", "おく", "まつ", "すくない", "くう", "くる"]
+    // 未代表族の追加供給(b2b)を、寄与基底の LM 優劣ゲート抜きで許す基底読み(2980、ユーザ報告
+    // ひんぱんにおきますか)。おきます の族は 置く が上の族選好で先頭に固まり、surface モードでは
+    // 異体(擱きます/於きます)まで昇格して topK=3 を使い切るため 起きます がノードとして立たず、
+    // 地震が起きます/事件が起きました/朝早く起きます も surface では作れなかった
+    // (normalise は 擱く が normalized タグを持たないため 3 枠目に滑り込んでいた)。
+    // b2b の既定ゲート(familyKey < 既代表の最小)は 置く(LM 優勢)に阻まれて発動しない。
+    // 供給を足すだけでボーナスは与えない(順位は DP と既存の連語ボーナスに委ねる)
+    static let multiClauseInflectionFamilySupplyBaseReadings: Set<String> = ["おきる"]
     // 連文節でも seed 先頭の「名詞」を勝たせたい読み(オプトイン)と読み別ボーナス値。
     // 数量詞複合(2本/二本)や分割に押されて seed 既定(日本)が沈むのを是正する。
     // a2 seed の先頭候補ノードにボーナス。既定は 800(multiClausePreferredInflectionBonus と同値)。

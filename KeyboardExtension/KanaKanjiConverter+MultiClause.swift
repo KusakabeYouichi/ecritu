@@ -695,7 +695,9 @@ extension KanaKanjiConverter {
                             .min() ?? Int.max
                         for family in families
                         where !family.items.contains(where: { suppliedInflectionSurfaces.contains($0) })
-                            && family.familyKey < representedBestKey {
+                            && (family.familyKey < representedBestKey
+                                || Self.multiClauseInflectionFamilySupplyBaseReadings
+                                    .contains(family.baseReading)) {
                             for (offset, surface) in family.items.enumerated() where surface != segmentReading {
                                 add(surface, isDictWord: true, isCurated: false, isInflectionDerived: true)
                                 // 追加は後着列挙のため、OOV同点(全候補LM未収録=7200)の
