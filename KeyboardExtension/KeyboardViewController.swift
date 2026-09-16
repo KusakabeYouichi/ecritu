@@ -315,6 +315,8 @@ final class KeyboardViewController: UIInputViewController {
     var lostActiveOwnershipAt: CFAbsoluteTime = 0
     // 最後に反映済みの設定変更世代。-1 は未初期化(初回表示で現在値に合わせるだけで破棄しない)。
     var lastSeenSettingsChangeGeneration = -1
+    // 学習リセットの世代(2968)。-1 は未初期化
+    var lastSeenLearningResetGeneration = -1
 
     struct ActiveConversion: Equatable {
         let reading: String
@@ -465,6 +467,9 @@ final class KeyboardViewController: UIInputViewController {
         // Darwin 通知を取りこぼしても、次のキーボード表示でこの値の変化を見て共有キャッシュを
         // 破棄し、学習リセット等を確実に反映する。App 側 SettingsKeys と同一キー文字列。
         static let settingsChangeGeneration = "settingsChangeGeneration"
+        // 学習リセットの世代カウンタ(2968)。通常の設定変更と分けているのは、リセットでは
+        // プロセス内の学習キャッシュを「書き出さずに」捨てる必要があるため。App 側と同一キー文字列。
+        static let learningResetGeneration = "learningResetGeneration"
         static var settingsDidChangeDarwinNotificationName: String {
             "com.kusakabe.ecritu.settings-changed.\(appGroupID)"
         }
