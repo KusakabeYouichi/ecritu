@@ -1,4 +1,6 @@
-# 書き言葉(BCCWJ)と écritu で 1 位が食い違う同音語(337 組)
+# 書き言葉(BCCWJ)と 1 位が食い違う同音語・頻度比 10 倍の帯(337 組)
+
+続きは [頻度比 5 倍の帯](homophone_written_order_review_5x.md)。
 
 作成: 2026-09-15(edition 2923 時点)。**この表は目視で採用/不採用を決めるための作業用一覧。**
 話し言葉(CEJC)側の食い違いは [homophone_register_divergence.md](homophone_register_divergence.md) にあり、
