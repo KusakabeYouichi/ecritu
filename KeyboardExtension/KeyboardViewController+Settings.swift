@@ -176,7 +176,10 @@ extension KeyboardViewController {
                 appendLog: true
             )
             self.applyConverterFeatureFlagsFromSharedDefaults()
-            self.kanaKanjiConverter.clearSharedDataCaches()
+            // 学習リセットが混じっていたら先に「書き出さずに捨てる」を通す(2968)
+            if !self.applyLearningResetIfNeeded(trigger: "handleSharedSettingsDidChange") {
+                self.kanaKanjiConverter.clearSharedDataCaches()
+            }
             self.invalidateSettledCandidatePresentation()
 
             if self.memoryFailSafeProfile == .critical {
@@ -213,6 +216,39 @@ extension KeyboardViewController {
         lastSeenSettingsChangeGeneration = sharedDefaults.integer(
             forKey: SharedDefaultsKeys.settingsChangeGeneration
         )
+        lastSeenLearningResetGeneration = sharedDefaults.integer(
+            forKey: SharedDefaultsKeys.learningResetGeneration
+        )
+    }
+
+    // 学習リセットが行われていたら、プロセス内の学習キャッシュを「書き出さずに」捨てる(2968)。
+    // 通常の破棄(clearSharedDataCaches)は捨てる前に書き出すため、これを先に通さないと
+    // リセット前の学習が共有領域へ書き戻り、リセットが取り消される。
+    // 返り値: リセットを適用したか
+    @discardableResult
+    func applyLearningResetIfNeeded(trigger: String) -> Bool {
+        guard let sharedDefaults else {
+            return false
+        }
+        let generation = sharedDefaults.integer(
+            forKey: SharedDefaultsKeys.learningResetGeneration
+        )
+        guard lastSeenLearningResetGeneration >= 0 else {
+            lastSeenLearningResetGeneration = generation
+            return false
+        }
+        guard generation != lastSeenLearningResetGeneration else {
+            return false
+        }
+        lastSeenLearningResetGeneration = generation
+        kanaKanjiConverter.applyLearningReset()
+        appendKeyboardDiagnosticsLog(
+            "学習リセットを反映(世代=\(generation)) trigger=\(trigger)",
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
+        return true
     }
 
     // サスペンド等で Darwin 通知を取りこぼした設定変更(学習リセット/追加語彙編集等)を、
@@ -235,7 +271,10 @@ extension KeyboardViewController {
             return
         }
         lastSeenSettingsChangeGeneration = generation
-        kanaKanjiConverter.clearSharedDataCaches()
+        // 学習リセットが混じっていたら先に「書き出さずに捨てる」を通す(2968)
+        if !applyLearningResetIfNeeded(trigger: trigger) {
+            kanaKanjiConverter.clearSharedDataCaches()
+        }
         appendKeyboardDiagnosticsLog(
             "取りこぼした設定変更を表示時に反映(世代=\(generation)) trigger=\(trigger)",
             file: #fileID,

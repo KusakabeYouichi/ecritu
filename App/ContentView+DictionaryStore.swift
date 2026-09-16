@@ -574,6 +574,14 @@ extension ContentView {
     func resetKanaKanjiLearning() {
         Self.sharedDefaults?.removeObject(forKey: SettingsKeys.kanaKanjiLearningScores)
         Self.sharedDefaults?.removeObject(forKey: SettingsKeys.kanaKanjiLearnedVocabulary)
+        // 学習リセット専用の世代を上げる(定数コメント参照。2968)。これを見たキーボードは
+        // プロセス内の学習キャッシュを「書き出さずに」捨てる。上げないと、拡張が持っている
+        // リセット前の学習が clearSharedDataCaches の書き出しで共有領域へ戻り、リセットが
+        // 取り消される(実機ログで拡張プロセスが作り直されないまま復活するのを確認)
+        if let defaults = Self.sharedDefaults {
+            let next = defaults.integer(forKey: SettingsKeys.learningResetGeneration) &+ 1
+            defaults.set(next, forKey: SettingsKeys.learningResetGeneration)
+        }
         loadLearnedDictionaryEntries()
         SettingsSyncNotification.postSettingsDidChange()
     }
