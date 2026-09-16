@@ -261,6 +261,7 @@
 	<dict><key>phrase</key><string>ほんとだ</string><key>shortcut</key><string>ほんとだ</string></dict>	<!-- ほんとだ(本当だ の口語): かな ほんと(wc4550)は 本当(2581)より重く、連文節・単文節とも 本当だ が先頭になる。口語の相づちはかな表記が普通(ユーザー指定)なので、かな識別を curated で供給して先頭化する(うまく/さっき/いいね と同じ処方) -->
 
 	<!-- ■ 供給欠落の補充(Sudachi 未収録の複合語・固有名。そもそも候補が作れない) -->
+	<dict><key>phrase</key><string>根気よく</string><key>shortcut</key><string>こんきよく</string></dict>	<!-- 根気よく: 定型の副詞だが辞書に 1 語で無く、根気(uni7884)+よく が 今季(uni6578)+よく に負けて こんきよく→今季よく になっていた。単独の こんき は BCCWJ も 今季845>根気462 なので触らない(ユーザ報告 2973) -->
 	<dict><key>phrase</key><string>柿の種</string><key>shortcut</key><string>かきのたね</string><key>pos</key><string>名詞</string></dict>	<!-- 柿の種: 柿(uni6641)+の(bigram 896)が 下記(uni5245)+の(213)に約 2000 負け、かきのたね が 下記の種 になっていた。下記のとおり 由来の偏りで、語としての 柿の種 は組めない。麻の実 と同型(ユーザ指定 2967) -->
 	<dict><key>phrase</key><string>麻の実</string><key>shortcut</key><string>あさのみ</string></dict>	<!-- 麻の実: Sudachi にあるが LM 未収録(dictUnknown 8700)で、連文節では 朝+のみ に負けていた(あさのみをかいに→朝のみを買いに)。seed+ボーナスの細工(2912/2913)は撤回し curated で供給(ユーザ指定 2915)。麻実(表層異表記)は suppr -->
 	<dict><key>phrase</key><string>耳下腺</string><key>shortcut</key><string>じかせん</string></dict>	<!-- 耳下腺/耳下腺炎: Sudachi に 1 語で有る(rank0)が word_cost が 11060/17374 と収穫底値帯(≥10000)で、連文節では床 8700 の弱い語になる。LM unigram も無く、時(4307)+下線(7440) の分割と僅差(下線 の同音語調整で 時下線 に割れた)。curated にして 1 語で勝たせる(ユーザ指定 2891) -->

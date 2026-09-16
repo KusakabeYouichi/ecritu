@@ -17581,6 +17581,27 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2973: 学習が隠していた素の弱点 3 件(ユーザ報告)。学習リセット後の実機と Mac で
+    // 同じ誤りが出ることを確認して直した
+    func testRegressionUserReports2973() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            // 根気よく は定型の副詞だが辞書に 1 語で無く、根気+よく が 今季+よく に負けていた
+            XCTAssertEqual(
+                converter.candidates(for: "こんきよく", limit: 2, systemCandidateMode: mode).first,
+                "根気よく", label)
+            // 単独の こんき は BCCWJ も 今季845>根気462 なので触らない
+            XCTAssertEqual(
+                converter.candidates(for: "こんき", limit: 2, systemCandidateMode: mode).first,
+                "今季", label)
+        }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2968: 学習リセットが拡張側に取り消される問題。コンテナ app が共有領域の学習を消しても、
     // 拡張はプロセス内に学習キャッシュを持ち、clearSharedDataCaches が捨てる前に
     // flushPendingLearningPersists で書き戻すためリセット前の学習が復活していた。
