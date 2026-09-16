@@ -57,6 +57,14 @@ extension KeyboardViewController {
     }
 
     func setMarkedComposingText(_ text: String) {
+        // 調査用ログ(タップ消失 2982): 打鍵の時刻を残してタップとの前後関係を確定させる。
+        // 毎打鍵だと流れるので、未確定が空から立ち上がった 1 打目だけ記録する
+        if text.count == 1 {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "調査用ログ(タップ消失 2982) 未確定を開始 len=1",
+                critical: true
+            )
+        }
         // setMarkedText は documentContextBeforeInput/AfterInput を変えないため
         // キャッシュ無効化は不要(タイムスタンプのみ更新)。
         noteOwnTextProxyEditTimestamp()
