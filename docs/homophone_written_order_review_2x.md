@@ -4,6 +4,7 @@
 [10 倍](homophone_written_order_review_10x.md)・
 [5 倍](homophone_written_order_review_5x.md)・
 [3 倍](homophone_written_order_review_3x.md)の帯を反映した後の状態で測り直した、**その続き**。
+書き言葉側はこの帯で打ち切り。続きは [話し言葉(CEJC)側の検査](homophone_spoken_order_review.md)。
 
 ## 前回との違い
 
