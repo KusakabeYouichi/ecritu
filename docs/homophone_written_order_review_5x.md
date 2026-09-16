@@ -2,6 +2,7 @@
 
 作成: 2026-09-16(edition 2951 時点)。**目視で採用/不採用を決めるための作業用一覧。**
 [10 倍の帯の一覧](homophone_written_order_review_10x.md)を反映した後の状態で測り直した、**その続き**。
+続きは [頻度比 3 倍の帯](homophone_written_order_review_3x.md)。
 
 ## 前回との違い
 
