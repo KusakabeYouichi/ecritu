@@ -171,6 +171,12 @@ final class KanaKanjiConverter {
         }
     }
 
+    // 学習リセットの反映(2968)。学習キャッシュを書き出さずに捨ててから通常の破棄を行う
+    func applyLearningReset() {
+        store.discardLearningCachesWithoutPersist()
+        clearSharedDataCaches()
+    }
+
     // メモリ対策用の全キャッシュ破棄。sqlite インデックス(連文節LM)は保持する
     // (close しても解放量はごく僅かなのに連文節が停止して劣化変換になるため)。
     func clearAllCaches() {

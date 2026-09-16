@@ -934,8 +934,26 @@ final class KanaKanjiStore {
         withCacheLock { isConstrainedMemoryCacheMode = false }
     }
 
+    // 学習リセット専用: プロセス内の学習キャッシュを「書き出さずに」捨てる(2968)。
+    // 通常の clearSharedDataCaches は捨てる前に書き出すため、コンテナ app が共有領域の
+    // 学習を消しても、拡張が持っていたリセット前の学習が書き戻ってリセットが取り消される。
+    // dirty フラグも落とし、デバウンス中の書き出し予約も取り消す。
+    func discardLearningCachesWithoutPersist() {
+        withCacheLock {
+            learningPersistWorkItem?.cancel()
+            learningPersistWorkItem = nil
+            learningPersistDirtyLearned = false
+            learningPersistDirtyScores = false
+            cachedLearnedDictionary = nil
+            cachedLearningScores = nil
+            cachedLearningScoresByReading = nil
+        }
+    }
+
     func clearSharedDataCaches() {
-        // 未保存の学習をキャッシュ破棄前に書き出す(デバウンス中のデータを失わない)
+        // 未保存の学習をキャッシュ破棄前に書き出す(デバウンス中のデータを失わない)。
+        // 学習リセット経由のときは呼び出し側が先に discardLearningCachesWithoutPersist を
+        // 呼んでいるので、ここで書き戻るものは無い(2968)
         flushPendingLearningPersists()
         withCacheLock {
             cachedAjoutVocabulary = nil

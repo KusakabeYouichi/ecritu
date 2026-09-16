@@ -132,6 +132,11 @@ enum SettingsKeys {
     // 通知取りこぼし後も次回表示で共有キャッシュを破棄・再読込するのに使う(学習リセット等の
     // 確実な反映)。KeyboardExtension 側 SharedDefaultsKeys と同一キー文字列。
     static let settingsChangeGeneration = "settingsChangeGeneration"
+    // 学習リセットの世代カウンタ(リセットのたび +1)。通常の設定変更と分けているのは、
+    // キーボード側が「書き出してから捨てる」ではなく「書き出さずに捨てる」必要があるため。
+    // 拡張はプロセス内に学習キャッシュを持ち、clearSharedDataCaches は捨てる前に
+    // flushPendingLearningPersists で書き戻すので、リセットが取り消されていた(2968)
+    static let learningResetGeneration = "learningResetGeneration"
 }
 
 enum RepeatSettings {

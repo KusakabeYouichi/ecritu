@@ -17581,6 +17581,37 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2968: 学習リセットが拡張側に取り消される問題。コンテナ app が共有領域の学習を消しても、
+    // 拡張はプロセス内に学習キャッシュを持ち、clearSharedDataCaches が捨てる前に
+    // flushPendingLearningPersists で書き戻すためリセット前の学習が復活していた。
+    // 実機ログで、拡張プロセスが作り直されないまま復活するのを確認した。
+    // discardLearningCachesWithoutPersist は書き出さずに捨てる
+    func testLearningResetDiscardsCachesWithoutPersisting() throws {
+        try prepareRealLMDictionary()
+
+        let store = converter.store
+        store.addLearnedEntry(reading: "てすとがくしゅう", candidate: "試験学習")
+        XCTAssertEqual(store.learnedDictionary()["てすとがくしゅう"], ["試験学習"])
+
+        // 共有領域を消す = コンテナ app の学習リセット相当
+        store.saveLearnedDictionary([:])
+        // 書き出さずに捨てる(従来の clearSharedDataCaches ならここで書き戻っていた)
+        store.discardLearningCachesWithoutPersist()
+        store.clearSharedDataCaches()
+
+        XCTAssertNil(store.learnedDictionary()["てすとがくしゅう"],
+                     "学習リセット後にキャッシュから復活してはいけない")
+
+        // 比較: 書き出す経路だと復活する(この順序を踏まないこと、という回帰の証拠)
+        store.addLearnedEntry(reading: "てすとがくしゅう", candidate: "試験学習")
+        store.saveLearnedDictionary([:])
+        store.clearSharedDataCaches()
+        XCTAssertEqual(store.learnedDictionary()["てすとがくしゅう"], ["試験学習"],
+                       "書き出してから捨てる経路では復活する(この挙動が原因だった)")
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2963: 話し言葉(CEJC)側の目視判定(ユーザ判断 C = 話し言葉側)。
     // CEJC の 1 位が écritu の先頭と違う 55 組のうち採用した 8 組。
     // いちょう/ようし/とうき は書き言葉側の判定を後から上書きしている。
