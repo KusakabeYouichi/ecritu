@@ -703,7 +703,17 @@ final class KeyboardViewController: UIInputViewController {
     // 外部変更の直前通知。完了ボタンでは textDidChange(文脈空)の 8ms 前に文脈そのままで届く(2684 実機)
     override func textWillChange(_ textInput: UITextInput?) {
         super.textWillChange(textInput)
-        commitComposingTextOnExternalTextWillChangeIfNeeded()
+        commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "textWillChange")
+    }
+
+    // 入力欄のタップ(カーソル移動)はテキストが変わらないので textWillChange が来ず、
+    // selectionWillChange だけが「ホストが動く前」に届く。ここで確定しないと、ホストが
+    // marked セッションを終了する(確定するか捨てるかはアプリ依存)ため未確定が消える
+    // ことがある。文節区切りの指定は拡張には不可能(タッチ位置を取る API が無い)だが、
+    // 消失は確定に置き換えられる(2979、ユーザ報告)
+    override func selectionWillChange(_ textInput: UITextInput?) {
+        super.selectionWillChange(textInput)
+        commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "selectionWillChange")
     }
 
     // ホスト起因の変更が「起きる前」に届く唯一のフック。メモの完了ボタンでは textDidChange
@@ -718,7 +728,7 @@ final class KeyboardViewController: UIInputViewController {
     // 直近打鍵から一定時間は見送る
     static let externalCommitKeystrokeQuiescenceSec: TimeInterval = 1.0
 
-    func commitComposingTextOnExternalTextWillChangeIfNeeded() {
+    func commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: String) {
         guard shouldTreatAsExternalTextChange(),
             activeConversion != nil || !composingRawText.isEmpty else {
             return
@@ -726,13 +736,13 @@ final class KeyboardViewController: UIInputViewController {
         let sinceOwnEdit = CFAbsoluteTimeGetCurrent() - lastTextProxyEditAt
         if sinceOwnEdit < Self.externalCommitKeystrokeQuiescenceSec {
             appendKeyboardDiagnosticsLogFromInputHandling(
-                "外部変更確定を打鍵直後のため見送り sinceOwnEditMs=\(Int(sinceOwnEdit * 1000)) composingLen=\(composingRawText.count)",
+                "外部変更確定を打鍵直後のため見送り trigger=\(trigger) sinceOwnEditMs=\(Int(sinceOwnEdit * 1000)) composingLen=\(composingRawText.count)",
                 critical: true
             )
             return
         }
         appendKeyboardDiagnosticsLogFromInputHandling(
-            "外部変更の直前に未確定を確定 composingLen=\(composingRawText.count) active=\(activeConversion != nil)",
+            "外部変更の直前に未確定を確定 trigger=\(trigger) composingLen=\(composingRawText.count) active=\(activeConversion != nil)",
             critical: true
         )
         // 素の unmarkText はメモ(Notes)では下線が残る(2685 実機。通常の確定キーも同じ理由で
