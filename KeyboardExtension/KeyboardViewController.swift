@@ -703,22 +703,7 @@ final class KeyboardViewController: UIInputViewController {
     // 外部変更の直前通知。完了ボタンでは textDidChange(文脈空)の 8ms 前に文脈そのままで届く(2684 実機)
     override func textWillChange(_ textInput: UITextInput?) {
         super.textWillChange(textInput)
-        logHostCallbackArrivalForTapInvestigation(trigger: "textWillChange")
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "textWillChange")
-    }
-
-    // 調査用ログ(タップ消失 2982): 未確定があるときだけ、ホスト起因コールバックの到達を
-    // 素通しで記録する。タップの回ごとに「消えたまま/1 文字で復活」が分かれる理由を、
-    // どのコールバックが来てどのガードで止まったかで切り分ける。grep "調査用ログ(タップ消失" で外す
-    func logHostCallbackArrivalForTapInvestigation(trigger: String) {
-        guard activeConversion != nil || !composingRawText.isEmpty else {
-            return
-        }
-        let sinceOwnEdit = Int((CFAbsoluteTimeGetCurrent() - lastTextProxyEditAt) * 1000)
-        appendKeyboardDiagnosticsLogFromInputHandling(
-            "調査用ログ(タップ消失 2982) \(trigger) sinceOwnEditMs=\(sinceOwnEdit) external=\(shouldTreatAsExternalTextChange()) composingLen=\(composingRawText.count) active=\(activeConversion != nil) before=\(inputHandlingTextLengthSummary(currentTextContextBeforeInput()))",
-            critical: true
-        )
     }
 
     // 入力欄のタップ(カーソル移動)はテキストが変わらないので textWillChange が来ず、
@@ -728,7 +713,6 @@ final class KeyboardViewController: UIInputViewController {
     // 消失は確定に置き換えられる(2979、ユーザ報告)
     override func selectionWillChange(_ textInput: UITextInput?) {
         super.selectionWillChange(textInput)
-        logHostCallbackArrivalForTapInvestigation(trigger: "selectionWillChange")
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "selectionWillChange")
     }
 
@@ -784,7 +768,6 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
-        logHostCallbackArrivalForTapInvestigation(trigger: "textDidChange")
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
         publishMemoryFootprintPeakForDebugDisplay()
 
@@ -810,7 +793,6 @@ final class KeyboardViewController: UIInputViewController {
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
-        logHostCallbackArrivalForTapInvestigation(trigger: "selectionDidChange")
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
 
         // 多重生存の非アクティブインスタンスでも、未確定の確定/クリアと下線残留クリアは
