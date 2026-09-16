@@ -15805,9 +15805,6 @@ extension KanaKanjiConverterRegressionTests {
             // 2881 は 下記 先頭だったが、2963 の話し言葉側の目視で 牡蠣 に(CEJC 36 / 下記 は 0)
             XCTAssertEqual(converter.candidates(for: "かき", limit: 2, systemCandidateMode: mode).first, "牡蠣", "mode=\(mode.rawValue)")
             for (reading, expected) in [
-                // 単文節の かき は 2963 で 牡蠣 にしたが、連文節の かきのたね は 下記の種 のまま。
-                // LM が 下記 を安く見ており seed の並びでは動かない(別途の課題)
-                ("かきのたね", "下記の種"),
                 ("かきをたべる", "柿を食べる"),
                 ("かきかたをおしえる", "書き方を教える"),
                 ("のみかたをおしえる", "飲み方を教える"),
@@ -17602,6 +17599,18 @@ extension KanaKanjiConverterRegressionTests {
                     converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first,
                     expected, "mode=\(mode.rawValue) reading=\(reading)")
             }
+            // 柿の種 は 1 語として登録(2967)。柿+の が 下記+の に約 2000 負けていた
+            // (下記→の の bigram が 213)。読み全体が curated なので連文節は空を返し、
+            // 提示層では単文節の 柿の種 が出る。下記の通り は無傷
+            XCTAssertEqual(
+                converter.candidates(for: "かきのたね", limit: 2, systemCandidateMode: mode).first,
+                "柿の種", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "かきのたねをたべる", systemCandidateMode: mode).first,
+                "柿の種を食べる", "mode=\(mode.rawValue)")
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "かきのとおり", systemCandidateMode: mode).first,
+                "下記の通り", "mode=\(mode.rawValue)")
             // かきを は 2881 の意図どおり食べ物が先(変更前は 下記を が先頭だった)
             XCTAssertEqual(
                 Array(converter.candidates(for: "かきを", limit: 3, systemCandidateMode: mode).prefix(2)),
