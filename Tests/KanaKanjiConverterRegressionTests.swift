@@ -17619,6 +17619,16 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(
                 converter.multiClauseCandidates(for: "たべようとおもう", systemCandidateMode: mode).first,
                 "食べようと思う", label)
+            // 餃子の複合語は辞書の読みが ぎょーざ で、ぎょうざ では引けなかった(2973)
+            XCTAssertEqual(
+                converter.candidates(for: "むしぎょうざ", limit: 3, systemCandidateMode: mode).first,
+                "蒸し餃子", label)
+            XCTAssertEqual(
+                converter.candidates(for: "やきぎょうざ", limit: 3, systemCandidateMode: mode).first,
+                "焼き餃子", label)
+            XCTAssertEqual(
+                converter.candidates(for: "すいぎょうざ", limit: 3, systemCandidateMode: mode).first,
+                "水餃子", label)
             // とおも が続かない同じ読みは無傷(名詞の 意向性)
             XCTAssertEqual(
                 converter.candidates(for: "いこうせい", limit: 2, systemCandidateMode: mode).first,
