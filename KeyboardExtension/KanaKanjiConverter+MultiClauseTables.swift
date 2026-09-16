@@ -310,6 +310,13 @@ extension KanaKanjiConverter {
     // 曖昧な さ(大きさ)/し(連用形)は入れない(2923)
     static let multiClauseFinalKanaParticlesBeforeContentWord: Set<String> = ["な", "ね", "よ", "わ", "ぞ", "ぜ"]
     static let multiClauseFinalParticleBeforeContentWordPenalty = 3000
+    // 意志形(〜う/〜よう)+と+思う の加点(2973、ユーザ報告 いこうとおもったら→以降と思ったら)。
+    // 「〜うと思う」は意志を述べる定型で、と思う の前に名詞は立たない(以降と思った は非文)。
+    // LM は名詞が安い(以降 4513 対 行こう 6496)ので、活用で供給される意志形が一律負ける。
+    // 読みの先読みで「この span の直後が とおも で始まる」ときだけ効かせる。
+    // 値は実測の最大不利(約 2000)を超える幅
+    static let multiClauseVolitionalBeforeOmouBonus = 2500
+    static let multiClauseVolitionalBeforeOmouReadingPrefix = "とおも"
     // 裸のかな う(意志・推量の助動詞)の減点(2870、ユーザ報告 たかいのかうのか→高いのかうのか)。
     // う は述語の未然形にしか付かない(行こう/買おう)。独立ノードとして助詞やクラスタの
     // 直後に立つのは、正しい語(買う)の分断で出た残りかす。
