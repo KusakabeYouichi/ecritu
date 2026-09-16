@@ -213,10 +213,10 @@ extension KeyboardViewController {
         guard let sharedDefaults else {
             return
         }
-        lastSeenSettingsChangeGeneration = sharedDefaults.integer(
+        Self.lastSeenSettingsChangeGeneration = sharedDefaults.integer(
             forKey: SharedDefaultsKeys.settingsChangeGeneration
         )
-        lastSeenLearningResetGeneration = sharedDefaults.integer(
+        Self.lastSeenLearningResetGeneration = sharedDefaults.integer(
             forKey: SharedDefaultsKeys.learningResetGeneration
         )
     }
@@ -233,14 +233,14 @@ extension KeyboardViewController {
         let generation = sharedDefaults.integer(
             forKey: SharedDefaultsKeys.learningResetGeneration
         )
-        guard lastSeenLearningResetGeneration >= 0 else {
-            lastSeenLearningResetGeneration = generation
+        guard Self.lastSeenLearningResetGeneration >= 0 else {
+            Self.lastSeenLearningResetGeneration = generation
             return false
         }
-        guard generation != lastSeenLearningResetGeneration else {
+        guard generation != Self.lastSeenLearningResetGeneration else {
             return false
         }
-        lastSeenLearningResetGeneration = generation
+        Self.lastSeenLearningResetGeneration = generation
         kanaKanjiConverter.applyLearningReset()
         appendKeyboardDiagnosticsLog(
             "学習リセットを反映(世代=\(generation)) trigger=\(trigger)",
@@ -263,14 +263,14 @@ extension KeyboardViewController {
             forKey: SharedDefaultsKeys.settingsChangeGeneration
         )
         // 未初期化(セッション開始直後)は、フレッシュに defaults を読むため破棄不要。現在値に合わせる。
-        guard lastSeenSettingsChangeGeneration >= 0 else {
-            lastSeenSettingsChangeGeneration = generation
+        guard Self.lastSeenSettingsChangeGeneration >= 0 else {
+            Self.lastSeenSettingsChangeGeneration = generation
             return
         }
-        guard generation != lastSeenSettingsChangeGeneration else {
+        guard generation != Self.lastSeenSettingsChangeGeneration else {
             return
         }
-        lastSeenSettingsChangeGeneration = generation
+        Self.lastSeenSettingsChangeGeneration = generation
         // 学習リセットが混じっていたら先に「書き出さずに捨てる」を通す(2968)
         if !applyLearningResetIfNeeded(trigger: trigger) {
             kanaKanjiConverter.clearSharedDataCaches()
