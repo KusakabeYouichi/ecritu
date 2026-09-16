@@ -2629,7 +2629,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("せいい", ["誠意", "征夷", "青衣"]),
             ("せんりょう", ["線量", "占領", "染料"]),
             ("だん", ["段", "談", "団"]),
-            ("ちし", ["地誌", "致死", "致仕", "致事", "知歯"]),
+            ("ちし", ["致死", "地誌", "致仕", "致事", "知歯"]),  // 2952 の目視で書き言葉側(致死)を先頭に
             ("てい", ["亭", "低", "底", "丁"]),
             ("とうか", ["透過", "投下", "等価", "灯火", "桃花", "灯下"]),
             ("ねぎ", ["ねぎ", "葱", "ネギ", "禰宜"]),
@@ -3005,7 +3005,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             ("いとう", ["伊藤", "伊東"]),
             ("いち", ["位置", "一", "市", "いち"]),
             ("せんもんか", ["専門家", "専門科", "専門か"]),
-            ("きし", ["棋士", "岸"]),
+            ("きし", ["騎士", "棋士", "岸"]),  // 2952 の目視で書き言葉側(騎士)を先頭に
             ("ほんるいだ", ["本塁打"]),
             ("しはいか", ["支配下"]),
             ("てつや", ["徹夜", "哲也"]),
@@ -17580,7 +17580,7 @@ extension KanaKanjiConverterRegressionTests {
 
 extension KanaKanjiConverterRegressionTests {
     // 2927: 書き言葉(BCCWJ)優先の目視判定を反映した同音語順(ユーザ判断 B = 書き言葉側)。
-    // 一覧は docs/homophone_written_order_review.md。抜き取りで並びを固定する
+    // 一覧は docs/homophone_written_order_review_10x.md。抜き取りで並びを固定する
     func testRegressionWrittenCorpusHomophoneOrder() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -17593,7 +17593,13 @@ extension KanaKanjiConverterRegressionTests {
             ("ろうし", "労使"), ("いちょう", "胃腸"), ("こうち", "耕地"), ("かちゅう", "家中"),
             ("ちょうだ", "長蛇"), ("たとう", "多糖"), ("でんさん", "電算"),
             // 既存 seed をその場で並べ替えた分
-            ("こうしん", "更新"), ("こうこ", "公庫"), ("きない", "機内"), ("しんちょう", "慎重")
+            ("こうしん", "更新"), ("こうこ", "公庫"), ("きない", "機内"), ("しんちょう", "慎重"),
+            // 2952: 頻度比 5 倍の帯(docs/homophone_written_order_review_5x.md)からの抜き取り
+            ("いぜん", "以前"), ("じゅよう", "需要"), ("たいよう", "太陽"), ("しさく", "施策"),
+            ("ぜんしん", "全身"), ("ようぼう", "要望"), ("しがい", "市街"), ("こうふ", "交付"),
+            // 既存 seed をその場で並べ替えた分。話し言葉優先と衝突した 4 読み
+            // (いじ/えんしゅう/せんこう/とうにゅう)は話し言葉側へ戻したのでここには入れない
+            ("きし", "騎士"), ("ちし", "致死")
         ]
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             for (reading, expected) in expectations {
@@ -17603,7 +17609,9 @@ extension KanaKanjiConverterRegressionTests {
             }
         }
         // é(écritu の現状のまま)と判定した読みは触らない
-        for (reading, expected) in [("なんかい", "何回"), ("なんど", "何度"), ("こうしゅう", "甲州")] {
+        for (reading, expected) in [("なんかい", "何回"), ("なんど", "何度"), ("こうしゅう", "甲州"),
+                                    // 2952 の 5 倍の帯で現状のままにした分
+                                    ("ていじ", "定時"), ("いど", "緯度"), ("きゅうせい", "旧姓")] {
             XCTAssertEqual(
                 converter.candidates(for: reading, limit: 3, systemCandidateMode: .surface).first,
                 expected, "reading=\(reading)")
