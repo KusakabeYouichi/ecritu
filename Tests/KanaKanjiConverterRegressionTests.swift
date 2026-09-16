@@ -17597,6 +17597,17 @@ extension KanaKanjiConverterRegressionTests {
             XCTAssertEqual(
                 converter.candidates(for: "こんき", limit: 2, systemCandidateMode: mode).first,
                 "今季", label)
+            // 意志形+と+思う。と思う の前に名詞は立たない(以降と思った は非文)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "いこうとおもったら", systemCandidateMode: mode).first,
+                "行こうと思ったら", label)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "たべようとおもう", systemCandidateMode: mode).first,
+                "食べようと思う", label)
+            // とおも が続かない同じ読みは無傷(名詞の 意向性)
+            XCTAssertEqual(
+                converter.candidates(for: "いこうせい", limit: 2, systemCandidateMode: mode).first,
+                "意向性", label)
         }
     }
 }
