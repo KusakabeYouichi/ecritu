@@ -17598,14 +17598,15 @@ extension KanaKanjiConverterRegressionTests {
                 converter.candidates(for: "こんき", limit: 2, systemCandidateMode: mode).first,
                 "今季", label)
             // 頻繁に は副詞なので 置く の目的語にならない。棚に置きます 型は無傷。
-            // surface モードは未解決: おきます の span に 起きる 族が供給されず、
-            // 2 文字の 起き+ます へ割ると ます が 4633 かかって 置きます(1 語 12042)に届かない。
-            // 族選好に おきる を足す案は 棚に起きます/本を起きますか になるため撤回した
-            if mode == .normalise {
-                XCTAssertEqual(
-                    converter.multiClauseCandidates(for: "ひんぱんにおきますか", systemCandidateMode: mode).first,
-                    "頻繁に起きますか", label)
-            }
+            // surface モードは 起きます が topK=3 に入れずノード自体が無かった(2980 で
+            // b2b の未代表族供給を おきる に開いて解消)
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: "ひんぱんにおきますか", systemCandidateMode: mode).first,
+                "頻繁に起きますか", label)
+            // 起きます が候補に出ること自体(surface モードでは供給ごと欠けていた)
+            XCTAssertTrue(
+                converter.multiClauseCandidates(for: "じけんがおきました", systemCandidateMode: mode)
+                    .contains("事件が起きました"), label)
             XCTAssertEqual(
                 converter.multiClauseCandidates(for: "たなにおきます", systemCandidateMode: mode).first,
                 "棚に置きます", label)
