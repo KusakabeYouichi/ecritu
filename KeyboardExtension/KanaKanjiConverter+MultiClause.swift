@@ -7,6 +7,27 @@ extension KanaKanjiConverter {
 
     // 人を指すノードか: 人名詞の表層(友達/彼)、その読みの辞書候補に人名詞があるもの(ともだち→友達)、
     // 敬称(さん/さま)、person_names の姓/名(2883)
+    // 意志形(〜う/〜よう)+と+思う か(定数コメント参照。2973)。読みの先読みで判定する。
+    // 表層が「かな + う」で終わること(行こう/食べよう)を条件にし、漢字で終わる名詞(以降)と
+    // かな識別(いこう)は除く。活用供給か辞書語かは問わない
+    static func isVolitionalBeforeOmou(node: MultiClauseNode, chars: [Character], n: Int) -> Bool {
+        guard node.surface != node.reading,
+            node.surface.hasSuffix("う"),
+            node.reading.hasSuffix("う"),
+            node.surface.count >= 3 else {
+            return false
+        }
+        let beforeU = Array(node.surface)[node.surface.count - 2]
+        guard "こそとのぼもよろお".contains(beforeU) else {
+            return false
+        }
+        let prefix = multiClauseVolitionalBeforeOmouReadingPrefix
+        guard node.end + prefix.count <= n else {
+            return false
+        }
+        return String(chars[node.end..<n]).hasPrefix(prefix)
+    }
+
     func isPersonReferentNode(_ node: MultiClauseNode, personNameKind: String?, mode: KanaKanjiCandidateSourceMode) -> Bool {
         if Self.multiClausePersonNounSurfaces.contains(node.surface) || personNameKind != nil {
             return true
@@ -2309,6 +2330,10 @@ extension KanaKanjiConverter {
                         if Self.isEnumerationToIttaKanaNode(surface: node.surface, reading: node.reading) {
                             cost = min(cost, Self.multiClauseEnumerationToIttaKanaCost)
                         }
+                        // 意志形+と+思う(定数コメント参照。2973)。文頭がこの形の典型(いこうと思ったら)
+                        if Self.isVolitionalBeforeOmou(node: node, chars: chars, n: n) {
+                            cost -= Self.multiClauseVolitionalBeforeOmouBonus
+                        }
                         if cost < best[idx] {
                             best[idx] = cost
                             backPointer[idx] = -1
@@ -2695,6 +2720,10 @@ extension KanaKanjiConverter {
                         if node.reading == "よう", node.surface == "用",
                             prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate {
                             cost += Self.multiClauseYouAfterPredicatePenalty
+                        }
+                        // 意志形+と+思う(定数コメント参照。2973)
+                        if Self.isVolitionalBeforeOmou(node: node, chars: chars, n: n) {
+                            cost -= Self.multiClauseVolitionalBeforeOmouBonus
                         }
                         // 格助詞+終助詞かな+内容語 は正しい語の割れ残り(定数コメント参照。2923)
                         if prevNode.surface == prevNode.reading,
