@@ -17158,7 +17158,7 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
-    // 2906: 話し言葉優先の同音語順(CEJC 1 位 → BCCWJ 1 位 → 旧先頭。docs/homophone_register_divergence.md)。
+    // 2906: 話し言葉優先の同音語順(CEJC 1 位 → BCCWJ 1 位 → 旧先頭。notes/homophone_register_divergence.md)。
     // seed に並べた語がこの相対順で候補に出て、先頭が CEJC 1 位(かな書き優勢なら かな)になる。
     // ただし書き言葉側の目視判定が後から上書きした読みはそちらが正(2927: しんちょう→慎重、
     // いちょう→胃腸 / 2957: がっき→楽器、はんてん→反転、こうしゃ→後者)。
@@ -17719,7 +17719,7 @@ extension KanaKanjiConverterRegressionTests {
     // 2963: 話し言葉(CEJC)側の目視判定(ユーザ判断 C = 話し言葉側)。
     // CEJC の 1 位が écritu の先頭と違う 55 組のうち採用した 8 組。
     // いちょう/ようし/とうき は書き言葉側の判定を後から上書きしている。
-    // 一覧は docs/homophone_spoken_order_review.md
+    // 一覧は notes/homophone_spoken_order_review.md
     func testRegressionSpokenCorpusHomophoneOrder() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -17756,7 +17756,7 @@ extension KanaKanjiConverterRegressionTests {
 
 extension KanaKanjiConverterRegressionTests {
     // 2927: 書き言葉(BCCWJ)優先の目視判定を反映した同音語順(ユーザ判断 B = 書き言葉側)。
-    // 一覧は docs/homophone_written_order_review_10x.md。抜き取りで並びを固定する
+    // 一覧は notes/homophone_written_order_review_10x.md。抜き取りで並びを固定する
     func testRegressionWrittenCorpusHomophoneOrder() throws {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary(includeSuppression: true)
@@ -17771,18 +17771,18 @@ extension KanaKanjiConverterRegressionTests {
             ("ちょうだ", "長蛇"), ("たとう", "多糖"), ("でんさん", "電算"),
             // 既存 seed をその場で並べ替えた分
             ("こうしん", "更新"), ("こうこ", "公庫"), ("きない", "機内"), ("しんちょう", "慎重"),
-            // 2952: 頻度比 5 倍の帯(docs/homophone_written_order_review_5x.md)からの抜き取り
+            // 2952: 頻度比 5 倍の帯(notes/homophone_written_order_review_5x.md)からの抜き取り
             ("いぜん", "以前"), ("じゅよう", "需要"), ("たいよう", "太陽"), ("しさく", "施策"),
             ("ぜんしん", "全身"), ("ようぼう", "要望"), ("しがい", "市街"), ("こうふ", "交付"),
             // 既存 seed をその場で並べ替えた分。話し言葉優先と衝突した 4 読み
             // (いじ/えんしゅう/せんこう/とうにゅう)は話し言葉側へ戻したのでここには入れない
             ("きし", "騎士"), ("ちし", "致死"),
-            // 2957: 頻度比 3 倍の帯(docs/homophone_written_order_review_3x.md)からの抜き取り。
+            // 2957: 頻度比 3 倍の帯(notes/homophone_written_order_review_3x.md)からの抜き取り。
             // 後ろ 5 つは既存 seed の並べ替えで、うち 3 つは話し言葉優先の判断を上書きしている
             ("けいき", "景気"), ("こうがい", "公害"), ("しゅし", "趣旨"), ("さんせい", "賛成"),
             ("せいやく", "制約"), ("いしょう", "衣装"),
             ("がっき", "楽器"), ("こうしゃ", "後者"), ("はんてん", "反転"),
-            // 2961: 頻度比 2 倍の帯(docs/homophone_written_order_review_2x.md)からの抜き取り
+            // 2961: 頻度比 2 倍の帯(notes/homophone_written_order_review_2x.md)からの抜き取り
             ("けんぶん", "見聞"), ("しょくたく", "食卓"), ("ぼうちょう", "膨張"), ("えんじゃ", "縁者"),
             // 既存の指定を優先して据え置いた読み(目視判定は 戦闘 だった)
             ("せんとう", "先頭")

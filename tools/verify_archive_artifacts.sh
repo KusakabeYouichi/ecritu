@@ -33,7 +33,7 @@ echo "対象: $APP"
 
 # 1) バンドルID。期待値はリテラルでなく xcconfig から解決する(Config/Signing.local.xcconfig の
 #    上書きを尊重。2026-09-11 に既定の com.kusakabe.ecritu が取得不能になり jp.or.pleiades.merope.ecritu
-#    へ切り替えたため。docs/identifiers.md §8)
+#    へ切り替えたため。notes/identifiers.md §8)
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 resolve_xcconfig_value() {
   local key="$1" value=""
