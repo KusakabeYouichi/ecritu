@@ -688,6 +688,18 @@ final class KanaKanjiStore {
             return cached
         }
 
+        // ビルド時に畳んだ版(3030)があればそれを読む。JSON を [String: [String]](16,226 読み)へ
+        // 復元してから畳む従来経路は、その一瞬の辞書が malloc アリーナを +8MB 広げて返さなかった
+        // (実機の区間計測: 「直接候補: 補助語彙の読み込み alloc 28→36」)。畳んだ版なら配列 4 本を
+        // 作るだけで済む。旧環境向けに JSON 経路は残す
+        if let compactData = sharedOrBundledDictionaryData(
+            filename: KanaKanjiStorageKeys.supplementalSystemDictionaryCompactFilename
+        ),
+            let compact = SupplementalVocabCompactStore(serialized: compactData) {
+            withCacheLock { cachedSupplementalSystemDictionary = compact }
+            return compact
+        }
+
         guard let data = sharedOrBundledDictionaryData(
             filename: KanaKanjiStorageKeys.supplementalSystemDictionaryFilename
         ),
