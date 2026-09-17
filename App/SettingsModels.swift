@@ -190,8 +190,9 @@ enum KanaModifierPlacementOption: String, CaseIterable, Identifiable {
 
 // フリック方向の割り当て。永続値は既存互換のため apple / ecritu のまま(3010)
 enum DirectionOption: String, CaseIterable, Identifiable {
-    case apple
+    // 並び順はピッカーの表示順(ユーザ指定 3016)
     case hanabi
+    case apple
     case ecritu
 
     var id: String { rawValue }
