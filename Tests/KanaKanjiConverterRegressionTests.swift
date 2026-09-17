@@ -17683,6 +17683,31 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3037: どうやるか→銅やルカ(ユーザ報告)。かな やる は seed のみで辞書 wc 8372 の床が掛かり、
+    // 演る(LM 8139)より高く付いて や+ルカ の分割に負けていた。misc に やる(五段)を curated 登録し、
+    // 単漢字名詞→動詞の無助詞接続の減点が掛かるよう かな述語(multiClauseKanaPredicateIdentities)に加えた
+    func testRegressionUserReports3037() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            for (reading, expected) in [
+                ("どうやるか", "どうやるか"), ("どうやる", "どうやる"), ("どうやるの", "どうやるの"),
+                ("どうやった", "どうやった"), ("どうする", "どうする"), ("どうよむか", "どう読むか"),
+                ("しゅくだいをやる", "宿題をやる"), ("なにをやるか", "何をやるか"), ("やるきがでない", "やる気が出ない"),
+                ("それをやるのは", "それをやるのは"), ("いまやる", "今やる"), ("これやる", "これやる")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected, "\(label) reading=\(reading)")
+            }
+            // やる を含む 1 動詞(流行る/追いやる)は curated やる の分割に食われない
+            XCTAssertEqual(converter.candidates(for: "はやる", limit: 2, systemCandidateMode: mode).first, "流行る", label)
+            XCTAssertEqual(converter.candidates(for: "おいやる", limit: 2, systemCandidateMode: mode).first, "追いやる", label)
+        }
+    }
+
     // 2973: 学習が隠していた素の弱点 3 件(ユーザ報告)。学習リセット後の実機と Mac で
     // 同じ誤りが出ることを確認して直した
     func testRegressionUserReports2973() throws {
