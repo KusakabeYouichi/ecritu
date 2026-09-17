@@ -108,6 +108,8 @@ enum SettingsKeys {
     static let kaomojiCandidateDisplayEnabled = "kaomojiCandidateDisplayEnabled"
     static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
     static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
+    // 畳んだ表を封緘した版(3020)。拡張はこちらを優先し、無ければ上の JSON 版へ落ちる
+    static let contactCandidatesByReadingCacheCompactSealed = "contactCandidatesByReadingCacheCompactSealed"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
     static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
