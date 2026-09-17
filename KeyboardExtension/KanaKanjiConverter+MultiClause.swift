@@ -1286,10 +1286,14 @@ extension KanaKanjiConverter {
             scriptVariantPenalty: Int = 0,
             prevDeniesOutgoingBigram: Bool = false,
             isSupplementalKatakanaExempt: Bool = false,
-            prevStartsSentence: Bool = false
+            prevStartsSentence: Bool = false,
+            isKanaOrthodoxDemoted: Bool? = nil
         ) -> Int {
             var base: Int
             var penaltyForNounHoshii = 0
+            // かな正書の読みの漢字/カタカナ表層か(2884)。DP からはノードごとの事前計算値が渡る(3038)
+            let surfaceIsKanaOrthodoxDemoted = isKanaOrthodoxDemoted
+                ?? (!isCurated && Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading))
             // 読み跨ぎ bigram 借用の遮断(定数コメント参照。人(にん/じん)/頭(ず) 等)。
             // 一般則(2423): bigram は表層単位の統計なので、この読みの word_cost が
             // 収穫底値(>=10000)または表層の最安読みから大きく乖離(>=2500)している場合は
@@ -1329,8 +1333,7 @@ extension KanaKanjiConverter {
             // 最も→南 3767 や ブドウ→栽培 1462 の観測 bigram に覆され、もっとも南に位置する→最も南に、
             // ぶどう栽培→ブドウ栽培 になっていた(2884、抜き取り検査 37+65 件)。かな側と同じ
             // unigram+バックオフで評価して減点だけで並びを決める。出側は DP ループ側で同じ判定
-            let orthodoxDeniesBorrow = !isCurated
-                && Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading)
+            let orthodoxDeniesBorrow = surfaceIsKanaOrthodoxDemoted
             let deniesBigramBorrow = surfaceDeniesBorrow || prevDeniesOutgoingBigram || crossReadingBigramDenied
                 || orthodoxDeniesBorrow
             // BOS bigram は使わない: LMコーパス(Wikipedia)の「文頭に来やすい語」統計は
@@ -2181,7 +2184,7 @@ extension KanaKanjiConverter {
                 penalty += Self.multiClauseKanaShiAfterNonPredicatePenalty
             }
             // 表外訓はかな正書が実勢(定数コメント参照)。連文節でだけ漢字表層を減点する。
-            if !isCurated, Self.isKanaOrthodoxDemotedSurface(surface: surface, reading: reading) {
+            if surfaceIsKanaOrthodoxDemoted {
                 penalty += Self.multiClauseKanaOrthodoxKanjiPenalty
             }
             // 星座は標準和名(定数コメント参照。2895)。標準名以外の 〜座(大熊座/サソリ座)を減点
@@ -2252,6 +2255,10 @@ extension KanaKanjiConverter {
         // 指定ノードのスパンと重なる他ノードは使わない
         // 借用用の助動詞末尾はノードごとに 1 回だけ求める(遷移ごとに hasSuffix の列挙を繰り返していた。3038)
         let auxTailByNode: [String?] = nodes.map { Self.auxTailForBigramBorrow(of: $0) }
+        // かな正書の読みの漢字/カタカナ表層(2884 の判定)もノードごとに 1 回(遷移ごとに Set/辞書を 2 回引いていた。3038)
+        let kanaOrthodoxDemotedByNode: [Bool] = nodes.map {
+            !$0.isCurated && Self.isKanaOrthodoxDemotedSurface(surface: $0.surface, reading: $0.reading)
+        }
         #if DEBUG
         // 環境変数の参照は 1 回だけ(遷移ごとに ProcessInfo.environment を引くと辞書を毎回組み直す。2805 プロファイル)
         let traceEdges = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
@@ -2415,8 +2422,7 @@ extension KanaKanjiConverter {
                         let prevDeniesOutgoingBigram = (Self.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface[prevNode.surface]?
                             .contains(prevNode.reading) ?? false)
                             // かな正書の読みの漢字/カタカナ表層(最も/ブドウ)は出側の bigram も引かない(transitionCost 側のコメント参照。2884)
-                            || (!prevNode.isCurated
-                                && Self.isKanaOrthodoxDemotedSurface(surface: prevNode.surface, reading: prevNode.reading))
+                            || kanaOrthodoxDemotedByNode[prevIdx]
                         var cost = prevCost + transitionCost(
                             prev: prevNode.surface,
                             prevAuxTail: auxTailByNode[prevIdx],
@@ -2436,7 +2442,8 @@ extension KanaKanjiConverter {
                             scriptVariantPenalty: nodeScriptVariantPenalty,
                             prevDeniesOutgoingBigram: prevDeniesOutgoingBigram,
                             isSupplementalKatakanaExempt: nodeIsSupplementalKatakanaExempt,
-                            prevStartsSentence: prevNode.start == 0
+                            prevStartsSentence: prevNode.start == 0,
+                            isKanaOrthodoxDemoted: kanaOrthodoxDemotedByNode[idx]
                         ) - preferredInflectionBonus + nodeTanContractionPenalty
 
                         // 連用形+に(目的)は移動動詞が続くときの用法。文末でも格助詞直後の活用割引
