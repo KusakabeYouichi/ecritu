@@ -13843,6 +13843,27 @@ extension KanaKanjiConverterRegressionTests {
             hotMs += (CFAbsoluteTimeGetCurrent() - t) * 1000
         } }
         print(String(format: "PERF multi (candidate caches cleared, store warm) avg per reading=%.1fms", hotMs / Double(readings.count * rounds)))
+        print("PERF bigram queries requested=\(KanaKanjiStore.diagnosticsLMBigramRequested) fetchedFromSQLite=\(KanaKanjiStore.diagnosticsLMBigramFetched)")
+        // 打鍵の実態(同じ読みが 1 字ずつ伸びる)での 1 変換あたり。上の巡回計測はキャッシュに不利な
+        // 最悪パターンなので、実機の体感に近いのはこちら(3039)
+        KanaKanjiStore.diagnosticsLMBigramRequested = 0
+        KanaKanjiStore.diagnosticsLMBigramFetched = 0
+        var incrementalMs = 0.0
+        var incrementalCount = 0
+        for _ in 0..<max(1, rounds / 3) { for r in readings {
+            converter.invalidateCandidateCache()
+            let chars = Array(r)
+            for length in 4...chars.count {
+                let prefix = String(chars[0..<length])
+                let t = CFAbsoluteTimeGetCurrent()
+                _ = converter.multiClauseCandidates(for: prefix, systemCandidateMode: .surface)
+                _ = converter.candidates(for: prefix, limit: 8, systemCandidateMode: .surface)
+                incrementalMs += (CFAbsoluteTimeGetCurrent() - t) * 1000
+                incrementalCount += 1
+            }
+        } }
+        print(String(format: "PERF incremental (keystroke simulation, multi+single) avg per keystroke=%.1fms (n=%d)", incrementalMs / Double(incrementalCount), incrementalCount))
+        print("PERF incremental bigram queries requested=\(KanaKanjiStore.diagnosticsLMBigramRequested) fetchedFromSQLite=\(KanaKanjiStore.diagnosticsLMBigramFetched)")
     }
 }
 

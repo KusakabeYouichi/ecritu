@@ -82,8 +82,36 @@ final class KanaKanjiStore {
     // String がヒープに散在して malloc アリーナを断片化させるのを防ぐ(2566)。
     // Hasher はプロセス内で安定(キャッシュはプロセス内限り)。64bit 衝突(〜10^-10)は
     // コスト近似として許容。
-    private var cachedWordLMUnigram: [UInt64: Int] = [:]
-    private var cachedWordLMBigram: [UInt64: Int] = [:]
+    // 2 世代方式(3038): 以前は上限到達で全消しだったため、1 変換で数百〜千件強の点クエリが続く
+    // 連続入力では数変換ごとに全部捨てて sqlite を引き直していた(perf テストの warm 計測で
+    // 実行時間の約 18% が sqlite3_step)。半分ずつ世代を送ることで、直近 limit/2 件は必ず残る
+    struct TwoGenerationLMCache {
+        private var current: [UInt64: Int] = [:]
+        private var previous: [UInt64: Int] = [:]
+        var count: Int { current.count + previous.count }
+        subscript(key: UInt64) -> Int? {
+            current[key] ?? previous[key]
+        }
+        mutating func set(_ value: Int, for key: UInt64, limit: Int) {
+            if current.count >= max(1, limit / 2) {
+                previous = current
+                current = [:]
+                current.reserveCapacity(max(1, limit / 2))
+            }
+            current[key] = value
+        }
+        mutating func removeAll(keepingCapacity: Bool) {
+            current.removeAll(keepingCapacity: keepingCapacity)
+            previous.removeAll(keepingCapacity: false)
+        }
+    }
+    private var cachedWordLMUnigram = TwoGenerationLMCache()
+    private var cachedWordLMBigram = TwoGenerationLMCache()
+    #if DEBUG
+    // perf テスト用: bigram 点クエリの要求数と sqlite まで行った数(ヒット率の確認。3038)
+    nonisolated(unsafe) static var diagnosticsLMBigramRequested = 0
+    nonisolated(unsafe) static var diagnosticsLMBigramFetched = 0
+    #endif
     private static func lmCacheKey(_ a: String) -> UInt64 {
         var hasher = Hasher()
         hasher.combine(a)
@@ -517,15 +545,13 @@ final class KanaKanjiStore {
         }
         let fetched = sqliteIndex.wordLMUnigramCosts(for: uncached)
         withCacheLock {
-            if cachedWordLMUnigram.count + uncached.count > activeWordLMCacheLimit {
-                cachedWordLMUnigram.removeAll(keepingCapacity: true)
-            }
+            let limit = activeWordLMCacheLimit
             for surface in uncached {
                 if let cost = fetched[surface] {
-                    cachedWordLMUnigram[Self.lmCacheKey(surface)] = cost
+                    cachedWordLMUnigram.set(cost, for: Self.lmCacheKey(surface), limit: limit)
                     result[surface] = cost
                 } else {
-                    cachedWordLMUnigram[Self.lmCacheKey(surface)] = Self.wordLMMissingSentinel
+                    cachedWordLMUnigram.set(Self.wordLMMissingSentinel, for: Self.lmCacheKey(surface), limit: limit)
                 }
             }
         }
@@ -577,6 +603,9 @@ final class KanaKanjiStore {
         guard let sqliteIndex = sqliteIndexIfAvailable() else {
             return [:]
         }
+        #if DEBUG
+        Self.diagnosticsLMBigramRequested += pairs.count
+        #endif
         var result: [String: Int] = [:]
         var uncached: [(String, String)] = []
         withCacheLock {
@@ -593,19 +622,20 @@ final class KanaKanjiStore {
         guard !uncached.isEmpty else {
             return result
         }
+        #if DEBUG
+        Self.diagnosticsLMBigramFetched += uncached.count
+        #endif
         let fetched = sqliteIndex.wordLMBigramCosts(for: uncached)
         withCacheLock {
-            if cachedWordLMBigram.count + uncached.count > activeWordLMCacheLimit {
-                cachedWordLMBigram.removeAll(keepingCapacity: true)
-            }
+            let limit = activeWordLMCacheLimit
             for (prev, cur) in uncached {
                 let key = prev + "\t" + cur
                 let hashedKey = Self.lmCacheKey(prev, cur)
                 if let cost = fetched[key] {
-                    cachedWordLMBigram[hashedKey] = cost
+                    cachedWordLMBigram.set(cost, for: hashedKey, limit: limit)
                     result[key] = cost
                 } else {
-                    cachedWordLMBigram[hashedKey] = Self.wordLMMissingSentinel
+                    cachedWordLMBigram.set(Self.wordLMMissingSentinel, for: hashedKey, limit: limit)
                 }
             }
         }
@@ -928,8 +958,8 @@ final class KanaKanjiStore {
             cachedInflectionDictionary = nil
             cachedInflectionClassMapsByReading = [:]
             cachedPersonNameKindsByReading = [:]
-            cachedWordLMUnigram = [:]
-            cachedWordLMBigram = [:]
+            cachedWordLMUnigram = TwoGenerationLMCache()
+            cachedWordLMBigram = TwoGenerationLMCache()
             cachedWordCostsByReading = [:]
         }
     }
