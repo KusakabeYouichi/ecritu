@@ -27,6 +27,10 @@ extension KeyboardViewController {
     // 依存させないので、採取そのものはここで差し込む。記録するのはプロセス初回の変換だけで、
     // 2 回目以降はフックが即座に戻る。出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)限定
     nonisolated(unsafe) static var firstConversionProbeSnapshot: MemoryForensics.Snapshot?
+    // 区間の行は溜めて、初回変換の記録が終わった時点(CandidatePresentation)でまとめて書く。
+    // 各区間で即座に defaults へ書くと、その書き込みの一時確保(数百 KB → 領域 1 つ=alloc +4MB)が
+    // 次の区間に付いて回り、word_costs 引き/辞書引きの犯人に見えていた(3032)
+    nonisolated(unsafe) static var firstConversionProbeLines: [String] = []
 
     static func installFirstConversionMemoryProbeIfNeeded() {
 #if ECRITU_PRERELEASE_DIAGNOSTICS
@@ -38,8 +42,20 @@ extension KeyboardViewController {
                 return
             }
             let before = firstConversionProbeSnapshot ?? MemoryForensics.snapshot()
-            MemoryForensics.noteSyncDelta("初回変換の区間 \(label)", since: before, minDeltaMB: -1_000)
+            if let line = MemoryForensics.syncDeltaLine("初回変換の区間 \(label)", since: before, minDeltaMB: -1_000) {
+                firstConversionProbeLines.append(line)
+            }
             firstConversionProbeSnapshot = MemoryForensics.snapshot()
+        }
+#endif
+    }
+
+    func flushFirstConversionProbeLines() {
+#if ECRITU_PRERELEASE_DIAGNOSTICS
+        let lines = Self.firstConversionProbeLines
+        Self.firstConversionProbeLines = []
+        for line in lines {
+            appendKeyboardDiagnosticsLogFromInputHandling(line, critical: true)
         }
 #endif
     }
