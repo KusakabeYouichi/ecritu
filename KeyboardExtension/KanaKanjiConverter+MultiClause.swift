@@ -1005,6 +1005,25 @@ extension KanaKanjiConverter {
         // 読み跨ぎ unigram 借用の遮断用(定数コメント参照)。旧形式 DB では空=機能オフ。
         let candidateMinWordCosts = store.candidateMinWordCosts(for: Array(unigramSurfaces))
 
+        // 旧字体(氣持/會社/變更 等)のノード抑制(2987、単文節側と同基準)。同じスパンに
+        // 新字体版のノードが立っているときだけ落とす。新字体版が無い固有名詞(國場組/守禮門/
+        // 和氣あず未、魚香肉絲 等)は残る。curated(追加語彙/misc/補助語彙)と seed は対象外
+        do {
+            var spanSurfaces: [String: Set<String>] = [:]
+            for node in nodes {
+                spanSurfaces[node.spanKey, default: []].insert(node.surface)
+            }
+            for node in nodes where !node.isCurated {
+                guard let modern = KanaKanjiConverter.modernizedKyujitaiSurface(node.surface),
+                    modern != node.surface,
+                    spanSurfaces[node.spanKey]?.contains(modern) == true,
+                    !(KanaKanjiSeedDictionary.seed[node.reading]?.contains(node.surface) ?? false) else {
+                    continue
+                }
+                scriptVariantSuppressedNodeKeys.insert(node.key)
+            }
+        }
+
         // カタカナ強調表記/交ぜ書きのモード適用(供給後の一括分類。単文節側と同じ述語)。
         // curated(ユーザ明示)は対象外。外来語(パン 等)は「カタカナ側が unigram 優位」で保護。
         // suppress は +100000(事実上不採用)、demote は +6000(後方)を transitionCost で加える。
