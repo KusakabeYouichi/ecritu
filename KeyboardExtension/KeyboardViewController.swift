@@ -451,6 +451,8 @@ final class KeyboardViewController: UIInputViewController {
         static let contactCandidatesByReadingCache = "contactCandidatesByReadingCache"
         // AES-GCM封緘版(平文キーは移行後に削除される)
         static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
+        // 畳んだ表を封緘した版(3020)
+        static let contactCandidatesByReadingCacheCompactSealed = "contactCandidatesByReadingCacheCompactSealed"
         static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
         static let supplementaryLexiconIndexSignature = "supplementaryLexiconIndexSignature"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
@@ -523,9 +525,7 @@ final class KeyboardViewController: UIInputViewController {
     private static let refreshQueueWaitSlowThresholdMs = 60
     private static let renderConfigurationSlowThresholdMs = 16
     private static let refreshKeyboardStateSlowThresholdMs = 28
-    static let maximumContactCandidateReadings = 4096
-    static let maximumContactCandidateTotalEntries = 16384
-    static let maximumContactCandidatesPerReading = 48
+    // 上限は ContactCacheCipher.Limits に移した(3020。コンテナー側も同じ規則で切るため)
     static let maximumSupplementaryMergedCandidateCacheEntries = 512
     static let isCommitUnderlineDiagnosticsLoggingEnabled = false
     // 連文節変換(案1: 自前単語 n-gram LM のラティス Viterbi)。連文節候補を先頭の次へ合流する
