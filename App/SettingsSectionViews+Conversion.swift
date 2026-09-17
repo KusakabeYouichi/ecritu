@@ -304,16 +304,27 @@ struct ScriptVariantSuppressionSettingsSection: View {
             Text("旧字体・異体字の候補")
                 .font(.headline)
 
-            Toggle("旧字体を抑制する(氣持→気持、會社→会社)", isOn: $kyujitai)
-                .toggleStyle(.switch)
-            Toggle("異体字を抑制する(飜訳→翻訳、每日→毎日)", isOn: $itaiji)
-                .toggleStyle(.switch)
-            Toggle("略字を抑制する(仝じ→同じ、卆→卒)", isOn: $ryakuji)
-                .toggleStyle(.switch)
-            Toggle("紛らわしい別字を抑制する(聯合→連合)", isOn: $confusable)
-                .toggleStyle(.switch)
-            Toggle("人名で生きている異体字も抑制する(邊→辺、龍→竜、嶋→島)", isOn: $personNameVariant)
-                .toggleStyle(.switch)
+            // 例の括弧の前で必ず改行する(端末幅で中途半端に折り返すと読みにくい。ユーザ指定 3001)
+            Toggle(isOn: $kyujitai) {
+                Text("旧字体を抑制\n(氣持→気持、會社→会社)")
+            }
+            .toggleStyle(.switch)
+            Toggle(isOn: $itaiji) {
+                Text("異体字を抑制\n(飜訳→翻訳、每日→毎日)")
+            }
+            .toggleStyle(.switch)
+            Toggle(isOn: $ryakuji) {
+                Text("略字を抑制\n(仝じ→同じ、卆→卒)")
+            }
+            .toggleStyle(.switch)
+            Toggle(isOn: $confusable) {
+                Text("紛らわしい別字を抑制\n(聯合→連合)")
+            }
+            .toggleStyle(.switch)
+            Toggle(isOn: $personNameVariant) {
+                Text("人名で生きている異体字も抑制\n(邊→辺、龍→竜、嶋→島)")
+            }
+            .toggleStyle(.switch)
 
             Text("同じ読みに現代の標準字体の候補があるときだけ、古い字体の候補を出さないようにします。標準字体の候補が無い語(和氣あず未、國場組、守禮門、魚香肉絲 など)はそのまま出ます。人名の姓・名(小野澤、千惠、眞子)は設定に関わらず常に出ます。追加語彙に登録した語も対象外です。最後の項目は初期設定はオフで、辺/邊 のように人名表記として生きている字を残します。")
                 .font(.footnote)
