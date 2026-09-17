@@ -1014,8 +1014,29 @@ extension KanaKanjiConverter {
             // 辞書唯一・LM未収録)まで抑制すると、LM実在の断片(さ+ジェス+チョン)がジャンク
             // 最良になるため、そこだけ保護する。
             var spanHasKanjiSurface = Set<String>()
+            // 同スパンの「漢字を含む表層」の unigram 最小値。カタカナ側が LM 収録のときの
+            // 外来語保護をこれと比べる(単文節側と同基準。2987、ユーザ報告 きもち)。
+            // 以前はかな識別の unigram だけが比較対象で、キモチ(7489)は きもち(7995)より
+            // 安いため保護され、標準表記の 気持ち(5798)が比較から漏れていた
+            var spanBestKanjiUnigram: [String: Int] = [:]
             for node in nodes where containsKanji(node.surface) {
                 spanHasKanjiSurface.insert(node.spanKey)
+                // 別読みからの借用(でま→手間: この読みでの wc9327 に対し全読み最小 6955)は
+                // 比較対象にしない。入れると デマ(wc2137 の正規語)が強調扱いで消える
+                // (でまがひろまる→手間が広まる)。気持ち は きもち が主読み(差 0)なので残る
+                if let wordCost = node.wordCost,
+                    let minWordCost = candidateMinWordCosts[node.surface],
+                    wordCost - minWordCost >= Self.multiClauseKatakanaAlternativeCrossReadingGap {
+                    continue
+                }
+                if let uni = unigramCosts[node.surface] {
+                    let key = node.spanKey
+                    if let current = spanBestKanjiUnigram[key] {
+                        spanBestKanjiUnigram[key] = min(current, uni)
+                    } else {
+                        spanBestKanjiUnigram[key] = uni
+                    }
+                }
             }
             for node in nodes where !node.isCurated {
                 let key = node.key
@@ -1027,7 +1048,9 @@ extension KanaKanjiConverter {
                     !(KanaKanjiSeedDictionary.exactReadingOnlySeed[node.reading]?.contains(node.surface) ?? false),
                     !KanaKanjiConverter.katakanaRunsAreSeedProtected(node.surface) {
                     let kataUni = unigramCosts[node.surface]
-                    let altUni = unigramCosts[node.reading]
+                    let altUni = [unigramCosts[node.reading], spanBestKanjiUnigram[node.spanKey]]
+                        .compactMap { $0 }
+                        .min()
                     let isEmphasis: Bool
                     if let kataUni {
                         isEmphasis = (altUni != nil && altUni! < kataUni)
