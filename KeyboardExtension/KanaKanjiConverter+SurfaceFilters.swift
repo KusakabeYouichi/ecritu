@@ -832,13 +832,17 @@ extension KanaKanjiConverter {
                 >= KanaKanjiConverter.CandidateScore.loanwordKatakanaWordCostGap {
             return false
         }
-        let uni = store.wordLMUnigramCosts(for: [candidate, reading])
+        // 比較対象はかな識別だけでなく、同読みの漢字を含む表層(気持ち 等の送り仮名付き
+        // 標準表記)も含める(単文節側と同基準。2987)
+        let kanjiBearingAlternatives = readingWordCosts.keys.filter { Self.containsKanjiCandidate($0) }
+        let uni = store.wordLMUnigramCosts(for: [candidate, reading] + kanjiBearingAlternatives)
         if let kataUni = uni[candidate] {
-            // カタカナ側が LM 収録: かな識別より安ければ正当な外来語表記(パン 等)
-            guard let kanaUni = uni[reading] else {
+            // カタカナ側が LM 収録: かな識別・漢字表記のどれよりも安ければ正当な外来語表記(パン 等)
+            let altBest = (kanjiBearingAlternatives.compactMap { uni[$0] } + [uni[reading]].compactMap { $0 }).min()
+            guard let altBest else {
                 return false
             }
-            return kanaUni < kataUni
+            return altBest < kataUni
         }
         // LM 未収録のカタカナ化は、かな/漢字の代替が実在する限り強調(単語単位と同基準)
         return uni[reading] != nil
