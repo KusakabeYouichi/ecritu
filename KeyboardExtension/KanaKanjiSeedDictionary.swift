@@ -119,7 +119,7 @@ enum KanaKanjiSeedDictionary {
         // 話し言葉優先の同音語順(2906、ユーザ方針: 書き言葉と食い違えば話し言葉)。CEJC(日本語日常会話コーパス)短単位語彙表で
         // 同読み名詞の 1 位が écritu の先頭と違う 69 読み。[CEJC 1 位, BCCWJ 1 位, それまでの écritu 先頭] の順。CEJC 頻度 10 未満と
         // 候補に無い語、seed 既存の読みは対象外。CEJC の転記でかな書きが優勢な語(きのう/いちょう)はかなを先頭に。
-        // 一覧と根拠: docs/homophone_register_divergence.md
+        // 一覧と根拠: notes/homophone_register_divergence.md
         "だいたい": ["大体", "代替"],  // 両コーパス一致 CEJC 660/BCCWJ 5994, 旧先頭 代替
         "きのう": ["きのう", "昨日", "機能"],  // 食い違い CEJC 595/BCCWJ 11912, 旧先頭 機能
         "しゅうかん": ["週間", "習慣"],  // 両コーパス一致 CEJC 229/BCCWJ 9354, 旧先頭 習慣
@@ -195,7 +195,7 @@ enum KanaKanjiSeedDictionary {
         // 「書き言葉側を採る」と判定された分。[BCCWJ 1 位, それまでの écritu 先頭] の順。
         // écritu の現状のままにした 32 読み、既存 seed のある 5 読み(その場で並べ替え)、
         // 辞書に表層が無い 8 読み(別途 misc.plist に登録)は含まない。
-        // 一覧と判断: docs/homophone_written_order_review_10x.md
+        // 一覧と判断: notes/homophone_written_order_review_10x.md
         "たいさく": ["対策", "大作"],  // BCCWJ 対策, 旧先頭 大作
         "だいじん": ["大臣", "大神"],  // BCCWJ 大臣, 旧先頭 大神
         "すいしん": ["推進", "水深"],  // BCCWJ 推進, 旧先頭 水深
@@ -478,7 +478,7 @@ enum KanaKanjiSeedDictionary {
         // 書き言葉優先の同音語順・頻度比 5 倍の帯(2952、ユーザ判断)。上の 10 倍の帯を反映した後で
         // 測り直し、比の下限を 5 倍に下げた続き。187 組を目視して「書き言葉側を採る」と判定された分。
         // [BCCWJ 1 位, それまでの écritu 先頭] の順。現状のままにした 13 組と、既存 seed のある
-        // 6 読み(その場で並べ替え)は含まない。一覧と判断: docs/homophone_written_order_review_5x.md
+        // 6 読み(その場で並べ替え)は含まない。一覧と判断: notes/homophone_written_order_review_5x.md
         "いぜん": ["以前", "依然"],  // BCCWJ 以前(13099), 旧先頭 依然
         "じゅよう": ["需要", "受容"],  // BCCWJ 需要(5616), 旧先頭 受容
         "たいよう": ["太陽", "大洋"],  // BCCWJ 太陽(5377), 旧先頭 大洋
@@ -650,7 +650,7 @@ enum KanaKanjiSeedDictionary {
         // 書き言葉優先の同音語順・頻度比 3 倍の帯(2957、ユーザ判断)。5 倍の帯を反映した後で
         // 測り直し、比の下限を 3 倍に下げた続き。167 組を目視して「書き言葉側を採る」と判定された分。
         // [BCCWJ 1 位, それまでの écritu 先頭] の順。現状のままにした 38 組と、既存 seed のある
-        // 5 読み(その場で並べ替え)は含まない。一覧と判断: docs/homophone_written_order_review_3x.md
+        // 5 読み(その場で並べ替え)は含まない。一覧と判断: notes/homophone_written_order_review_3x.md
         "けいき": ["景気", "契機"],  // BCCWJ 景気(4610), 旧先頭 契機
         "こうがい": ["公害", "郊外"],  // BCCWJ 公害(4480), 旧先頭 郊外
         "しゅし": ["趣旨", "種子"],  // BCCWJ 趣旨(3036), 旧先頭 種子
@@ -777,7 +777,7 @@ enum KanaKanjiSeedDictionary {
         "とちょう": ["都庁", "徒長"],  // BCCWJ 都庁(100), 旧先頭 徒長
         // 話し言葉(CEJC)側の目視判定(2963、ユーザ判断)。CEJC の 1 位が écritu の先頭と違う
         // 55 組を目視して「話し言葉側を採る」と判定された分のうち、seed が無かった読み。
-        // [CEJC 1 位, それまでの écritu 先頭] の順。一覧: docs/homophone_spoken_order_review.md
+        // [CEJC 1 位, それまでの écritu 先頭] の順。一覧: notes/homophone_spoken_order_review.md
         "かいき": ["回忌", "回帰"],  // CEJC 回忌(33)/回帰(0)
         "ほうか": ["放課", "放火"],  // CEJC 放課(14)/放火(0)。放課後 の一部として出る
         "かみがた": ["髪型", "上方"],  // CEJC 髪型(11)/上方(0)
@@ -785,7 +785,7 @@ enum KanaKanjiSeedDictionary {
         // 測り直した最後の帯。187 組を目視して「書き言葉側を採る」と判定された分。
         // [BCCWJ 1 位, それまでの écritu 先頭] の順。現状のままにした 106 組、既存 seed のある
         // 2 読み(その場で並べ替え)、既存の指定を優先して保留した せんとう は含まない。
-        // 一覧と判断: docs/homophone_written_order_review_2x.md
+        // 一覧と判断: notes/homophone_written_order_review_2x.md
         "じょうき": ["上記", "蒸気"],  // BCCWJ 上記(2974), 旧先頭 蒸気
         "しめい": ["氏名", "指名"],  // BCCWJ 氏名(2903), 旧先頭 指名
         "けっしょう": ["決勝", "結晶"],  // BCCWJ 決勝(1897), 旧先頭 結晶

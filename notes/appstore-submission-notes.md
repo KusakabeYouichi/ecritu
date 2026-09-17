@@ -11,7 +11,10 @@
 > fully functional for typing and conversion without Full Access.
 > Contacts access (optional, in the container app) is used only to add
 > contact names to conversion candidates on device; no data leaves the
-> device.
+> device. The contact cache stored in the App Group is encrypted with
+> AES-GCM (Apple CryptoKit, key in the shared Keychain); this is the only
+> use of cryptography in the app and it protects local data only, which is
+> why the app declares ITSAppUsesNonExemptEncryption = NO.
 
 ## App Store Connect プライバシー質問票の回答方針
 
@@ -30,6 +33,30 @@
 - 欧文(英仏独伊)のサジェスト対応
 - 辞書: SudachiDict ベース+Wikipedia由来の言語モデル統計(帰属表示は
   アプリ内ライセンス画面参照)
+
+## 暗号(輸出コンプライアンス)の申告根拠
+
+`ITSAppUsesNonExemptEncryption = NO` で申告する。使っている暗号は次の 1 か所だけ:
+
+- 連絡先キャッシュ(読み→名前の対応表)を App Group に置くときの AES-GCM 暗号化。
+  鍵は共有 Keychain に保存。実装は Apple の CryptoKit のみで、独自の暗号アルゴリズムは
+  実装していない。
+
+用途は**端末内データの保護のみ**で、通信も認証も行わない(そもそもネットワークコードが
+無い)。Apple の輸出規制の免除(Category 5 Part 2 の付随的な用途/OS 提供の暗号の利用)に
+該当するため NO とする。審査ノートにも 1 行入れる。
+
+## ShareAlike データの扱い(CC BY-SA)
+
+同梱データのうち次は CC BY-SA 4.0 由来:
+
+- 欧文サジェストの 4 リスト(LatinSuggestionLexicon_{en,fr,de,it}.txt) — wordfreq / Lexique
+- Wikipedia 由来の語 n-gram 表(kana_kanji_dictionary.sqlite 内)
+
+third_party/APP_STORE_OPEN_SOURCE_NOTICES.md に「これらのファイル自体は BY-SA で提供し、
+暗号化も技術的保護もしていないので自由に取り出して再配布できる」と明記済み(アプリ内の
+ライセンス画面から読める)。有償で販売する場合もこの扱いは変わらない — アプリ本体の
+販売条件と、同梱データの再配布条件は別物として整理している。
 
 ## 提出前チェックリスト
 - [ ] **でばぐ可視化を戻す**: `KeyboardRootView.memoryPressureVisualizationEnabled` を `false` に(TestFlight 配布中だけ削除キーに黄/橙と数字を出している。2918)
