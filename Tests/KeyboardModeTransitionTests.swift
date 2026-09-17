@@ -410,13 +410,48 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(ecritu.remapped(for: .apple), ecritu)
         // 5×2 の rows にも同じセットが載ること。3×3+わ は わキーを rows に含まず
         // waSet() 経由で別置きする構成なので、rows 側に わ が無いことだけ確認する
-        for profile in [FlickDirectionProfile.ecritu, .apple] {
+        // hanabi方向: 1998年の Newton OS 版 Hanabi(中央=わ/右=を/上=ん/左=ー)。下は空いていたので 〜 を置く
+        let hanabi = FlickKanaLayout.waSet(for: .none, profile: .hanabi)
+        XCTAssertEqual(hanabi.up, "ん")
+        XCTAssertEqual(hanabi.right, "を")
+        XCTAssertEqual(hanabi.down, "〜")
+        XCTAssertEqual(hanabi.left, "ー")
+        // 2段フリックは左右からしか起動しない。を→下=ゐ、ー→下=ゑ が出せること
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: hanabi.right, verticalDirection: .bas), "ゐ")
+        XCTAssertEqual(
+            FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: hanabi.left, verticalDirection: .bas), "ゑ")
+        for profile in [FlickDirectionProfile.ecritu, .apple, .hanabi] {
             let rows = FlickKanaLayout.rows(for: .none, layoutMode: .fiveByTwo, profile: profile)
             let wa = rows.flatMap { $0 }.first { $0.label == "わ" }
             XCTAssertEqual(wa, FlickKanaLayout.waSet(for: .none, profile: profile), "profile=\(profile)")
 
             let threeByThree = FlickKanaLayout.rows(for: .none, layoutMode: .threeByThreePlusWa, profile: profile)
             XCTAssertNil(threeByThree.flatMap { $0 }.first { $0.label == "わ" })
+        }
+    }
+
+    // 3方式の母音配置(3010)。style-écritu=上い/右う/左え/下お、style-i=左い/上う/右え/下お、
+    // style-hanabi=右い/下う/左え/上お。ガイド文字の並びも五十音順に見えること
+    func testFlickDirectionProfilesPlaceVowelsAsDocumented() {
+        let base = FlickKanaLayout.fiveByTwoRows[0][0]
+        XCTAssertEqual(base.center, "あ")
+
+        let ecritu = base.remapped(for: .ecritu)
+        XCTAssertEqual([ecritu.up, ecritu.right, ecritu.left, ecritu.down], ["い", "う", "え", "お"])
+
+        let apple = base.remapped(for: .apple)
+        XCTAssertEqual([apple.left, apple.up, apple.right, apple.down], ["い", "う", "え", "お"])
+
+        let hanabi = base.remapped(for: .hanabi)
+        XCTAssertEqual([hanabi.right, hanabi.down, hanabi.left, hanabi.up], ["い", "う", "え", "お"])
+
+        for profile in [FlickDirectionProfile.ecritu, .apple, .hanabi] {
+            XCTAssertEqual(
+                base.remapped(for: profile).orderedDirectionalGuideTexts(for: profile),
+                ["い", "う", "え", "お"],
+                "profile=\(profile)"
+            )
         }
     }
 
