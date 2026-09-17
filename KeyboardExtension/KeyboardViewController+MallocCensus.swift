@@ -23,6 +23,30 @@ extension KeyboardViewController {
         return "staticKB: kaomoji=\(kb(kaomoji)) emojiPartial=\(kb(emoji))"
     }
 
+    // 面の切り替えで増えた分の居場所を名指しする計測(3019)。入力モードが変わるたびに
+    // malloc ゾーン別の used/alloc と自前キャッシュの件数を 1 行に残す。切替の前後を比べると
+    // 「UI(レイヤー・グリフキャッシュ)」と「データ(表・キャッシュ)」のどちらが増えたかが割れる。
+    // 静的カタログの実サイズは測定自体が materialize を誘発するのでプロセスに 1 回だけ採る。
+    // 出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)限定 — App Store 版には入らない
+    static var didLogStaticCatalogBytes = false
+
+    func logPaneChangeMemoryAttribution(op: String) {
+#if ECRITU_PRERELEASE_DIAGNOSTICS
+        let footprint = currentFootprintMB().map { String(format: "%.1f", $0) } ?? "?"
+        var parts = [
+            "面切替の帰属 op=\(op)",
+            "fp=\(footprint)",
+            Self.diagnosticsAllMallocZonesSummary(),
+            kanaKanjiConverter.diagnosticsCacheCountsSummary()
+        ]
+        if !Self.didLogStaticCatalogBytes {
+            Self.didLogStaticCatalogBytes = true
+            parts.append(Self.diagnosticsStaticCatalogBytesSummary())
+        }
+        appendKeyboardDiagnosticsLogFromInputHandling(parts.joined(separator: " "), critical: true)
+#endif
+    }
+
     // 全 malloc ゾーンの used/alloc を列挙する(census v2、2570)。
     // malloc_zone_statistics(nil) はデフォルトゾーンのみで、Nano ゾーン(≤256Bの小粒)が
     // 見えないため、スラックの居場所(小粒か中粒か)を特定できるようにする。

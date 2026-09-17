@@ -430,6 +430,13 @@ extension KeyboardViewController {
                     event: "入力モード変更 \(self.keyboardInputModeName(previousMode)) -> \(self.keyboardInputModeName(mode)) 引き金=\(changeDetail)",
                     appendLog: true
                 )
+                // 面切替で増えた 5〜6MB の居場所を名指しする計測(3019)。切替直後と 5 秒後を採り、
+                // ゾーン別 used/alloc の差で「戻る/戻らない」を判定する
+                let paneChangeLabel = "\(self.keyboardInputModeName(previousMode))->\(self.keyboardInputModeName(mode))"
+                self.logPaneChangeMemoryAttribution(op: paneChangeLabel)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) { [weak self] in
+                    self?.logPaneChangeMemoryAttribution(op: "\(paneChangeLabel)+5s")
+                }
 
                 // 絵文字モードはピッカー構築で footprint が跳ねる。長寿命プロセスが高水位の
                 // まま切り替えると per-process limit の jetsam で即死する(2026-08-14 17:01
