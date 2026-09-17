@@ -469,6 +469,7 @@ final class KanaKanjiConverter {
             }
             return store.wordLMUnigramCosts(for: others).isEmpty
         }()
+        Self.memoryProbe?("辞書引き: LM unigram(補助語彙昇格判定)")
         var normalSystemCandidates: [String] = []
         var harvestTierCandidates: [String] = []
         var supplementalSystemCandidates: [String] = []
@@ -492,6 +493,7 @@ final class KanaKanjiConverter {
         addCandidates(harvestTierCandidates, baseScore: CandidateScore.harvestTierDictionary, to: &scores)
         addCandidates(context.userCandidates, baseScore: CandidateScore.ajoutVocabulary, to: &scores)
         addCandidates(context.learnedCandidates, baseScore: CandidateScore.learnedDictionary, to: &scores)
+        Self.memoryProbe?("辞書引き: 候補の登録")
         // 完全一致専用候補(踊り字 等)。入力全体がこの読みと一致した単文節でのみ供給する。
         // systemCandidates には入れていないので、語幹合成・連文節には現れない。
         if let exactOnly = KanaKanjiSeedDictionary.exactReadingOnlySeed[context.reading] {
@@ -502,6 +504,7 @@ final class KanaKanjiConverter {
         if let radicalForms = KanjiRadicalCatalog.formsByKanaName[context.reading] {
             addCandidates(radicalForms, baseScore: CandidateScore.exactReadingOnly, to: &scores)
         }
+        Self.memoryProbe?("辞書引き: exactReadingOnly/部首表")
         // 末尾を長音で引き伸ばした形(なるほどー)は辞書に無く、単文節では候補が1件も
         // 作れない。keepKana(末尾長音の剥がし)が根拠を認める読みに限り、かな全長を
         // 供給する。keepKana は既にあるかな候補を維持するだけで供給はしないため(2564)
