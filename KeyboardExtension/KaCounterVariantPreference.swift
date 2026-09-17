@@ -3,17 +3,38 @@ import Foundation
 // 助数詞の「か」の表記(1か所/数か月/何か国 の か・カ・ヶ・ヵ・箇・個・ケ)をどれを出し、どの順で並べるかの設定。
 // コンテナーアプリで並べ替え+オン/オフし、キーボード拡張は共有 UserDefaults の文字列を読む。
 // 両ターゲットに同梱する(2816)。
+// 永続値は ASCII の識別子(3004)。以前は rawValue が表記そのもの("か" 等)で、
+// 共有 UserDefaults に日本語が入っていた。旧形式の読み込みは init(encoded:) が受け付ける
 enum KaCounterVariant: String, CaseIterable, Identifiable, Codable {
-    case hiragana = "か"
-    case katakana = "カ"
-    case smallKe = "ヶ"
-    case smallKa = "ヵ"
-    case kanji = "箇"
-    case ko = "個"
-    case ke = "ケ"
+    case hiragana
+    case katakana
+    case smallKe
+    case smallKa
+    case kanji
+    case ko
+    case ke
 
     var id: String { rawValue }
-    var character: Character { rawValue.first! }
+
+    var character: Character {
+        switch self {
+        case .hiragana: return "か"
+        case .katakana: return "カ"
+        case .smallKe: return "ヶ"
+        case .smallKa: return "ヵ"
+        case .kanji: return "箇"
+        case .ko: return "個"
+        case .ke: return "ケ"
+        }
+    }
+
+    // 旧形式(表記そのもの)からの読み替え
+    init?(legacyCharacter: String) {
+        guard let match = KaCounterVariant.allCases.first(where: { String($0.character) == legacyCharacter }) else {
+            return nil
+        }
+        self = match
+    }
 
     var title: String {
         switch self {
@@ -52,7 +73,8 @@ struct KaCounterVariantPreference: Equatable {
         order.filter { enabled.contains($0) }
     }
 
-    // 永続形式: "か,カ,ヶ,ヵ,箇,-個,-ケ"(- 接頭がオフ)。欠けた表記は末尾にオフで補う
+    // 永続形式: "hiragana,katakana,smallKe,smallKa,kanji,-ko,-ke"(- 接頭がオフ)。
+    // 欠けた表記は末尾にオフで補う。旧形式("か,カ,…" の表記そのもの)も読める
     var encoded: String {
         order.map { (enabled.contains($0) ? "" : "-") + $0.rawValue }.joined(separator: ",")
     }
@@ -68,7 +90,8 @@ struct KaCounterVariantPreference: Equatable {
         for token in encoded.split(separator: ",") {
             let isDisabled = token.hasPrefix("-")
             let raw = isDisabled ? String(token.dropFirst()) : String(token)
-            guard let variant = KaCounterVariant(rawValue: raw), !order.contains(variant) else {
+            guard let variant = KaCounterVariant(rawValue: raw) ?? KaCounterVariant(legacyCharacter: raw),
+                !order.contains(variant) else {
                 continue
             }
             order.append(variant)

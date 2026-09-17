@@ -13958,9 +13958,13 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "いっかしょ", limit: 8, systemCandidateMode: .surface), ["1箇所", "1ヶ所"])
         XCTAssertEqual(converter.multiClauseCandidates(for: "すうかこくたいおう", systemCandidateMode: .surface), ["数箇国対応", "数ヶ国対応"])
         // 永続形式の往復
+        // 旧形式(表記そのもの)も読める。書き出しは ASCII 識別子(3004)
         let pref = KaCounterVariantPreference(encoded: "ヶ,か,-箇")
         XCTAssertEqual(pref.enabledInOrder, [.smallKe, .hiragana])
-        XCTAssertEqual(pref.encoded, "ヶ,か,-箇,-カ,-ヵ,-個,-ケ")
+        XCTAssertEqual(pref.encoded, "smallKe,hiragana,-kanji,-katakana,-smallKa,-ko,-ke")
+        let asciiPref = KaCounterVariantPreference(encoded: "smallKe,hiragana,-kanji")
+        XCTAssertEqual(asciiPref.enabledInOrder, [.smallKe, .hiragana])
+        XCTAssertEqual(asciiPref.encoded, pref.encoded)
     }
 }
 
