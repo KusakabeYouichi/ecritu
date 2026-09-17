@@ -1900,6 +1900,10 @@ extension KanaKanjiConverter {
     // 通用(みちもち) 等)で、すべて生成人名読み。実コストを持つ 和子(かずこ)/一樹(かずき)/
     // 一夫(かずお) は word_cost が 7500 でないため無傷(2923)
     static let multiClauseGeneratedNameReadingCrossReadingGap = 500
+    // カタカナ強調判定の比較対象から「別読みからの借用」を外す閾値(2987)。この読みでの word_cost が
+    // 全読み最小より この幅以上 高い候補は、その読みの語ではない(でま→手間: 9327 対 最小 6955=差 2372)。
+    // 主読みの語は差 0(きもち→気持ち 3592=最小)なので残る
+    static let multiClauseKatakanaAlternativeCrossReadingGap = 1000
     // curated ノードの EOS 遷移上限。かな正書の口語語彙(でかい 等)は X→EOS bigram が
     // Wikipedia文語コーパスに無く、出口で dictUnknown(8700)を払わされて断片連結
     // (出+会: 会→EOS 1571)に逆転される。人手で正書登録した curated は文末利用も

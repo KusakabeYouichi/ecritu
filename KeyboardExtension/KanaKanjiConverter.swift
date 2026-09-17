@@ -830,6 +830,13 @@ final class KanaKanjiConverter {
         var allKanjiSameReading: [String] = []
 
         for candidate in scores.keys where !exemptCandidates.contains(candidate) {
+            // 外来語保護の比較対象(下記)。全漢字だけでなく漢字を含む表層(気持ち 等の
+            // 送り仮名付き標準表記)も入れる。全漢字限定だと キモチ(7489)が 気持(7537)より
+            // 安いだけで「正当な外来語」と誤判定され、標準表記の 気持ち(5798)が比較から
+            // 漏れていた(2987、ユーザ報告 きもち)
+            if Self.containsKanjiCandidate(candidate), !kanjiAlternatives.contains(candidate) {
+                kanjiAlternatives.append(candidate)
+            }
             if katakanaMode != .normal,
                 candidate != reading,
                 let hira = Self.hiraganizedKanaOnlySurface(candidate),
@@ -844,12 +851,14 @@ final class KanaKanjiConverter {
                 allKanjiSameReading.append(candidate)
             }
         }
-        for candidate in context.systemCandidates where Self.isAllKanjiSurface(candidate) {
-            if !allKanjiSameReading.contains(candidate) {
+        for candidate in context.systemCandidates {
+            if Self.isAllKanjiSurface(candidate), !allKanjiSameReading.contains(candidate) {
                 allKanjiSameReading.append(candidate)
             }
+            if Self.containsKanjiCandidate(candidate), !kanjiAlternatives.contains(candidate) {
+                kanjiAlternatives.append(candidate)
+            }
         }
-        kanjiAlternatives = allKanjiSameReading
 
         if mazegakiMode != .normal {
             // 全漢字側は LM unigram 実在(蔓延/作品 等の常用語)を要求 — 名前収穫(中野/夏羽 等)を
