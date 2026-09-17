@@ -40,6 +40,13 @@ enum FlickKanaLayout {
         label: "わ", center: "わ", up: "ん", right: "ー", down: "〜", left: "を",
         usesProfileDependentGuideOrder: false
     )
+    // hanabi方向: 1998年の Newton OS 版 Hanabi の わ キー(中央=わ / 右=を / 上=ん / 左=ー)。
+    // 下は空いていたので 〜 を置く — 2段フリックは左右からしか起動しないため、ん が上にあると
+    // 〜 の出口が無くなる。2段は を→下=ゐ、ー→下=ゑ で旧仮名も出せる(3010)
+    static let kanaWaSetHanabi = FlickKanaSet(
+        label: "わ", center: "わ", up: "ん", right: "を", down: "〜", left: "ー",
+        usesProfileDependentGuideOrder: false
+    )
     static let kanaYaSet = FlickKanaSet(label: "や", center: "や", up: "『", right: "ゆ", down: "よ", left: "』")
 
     // 2段フリック(横フリック後、指を離さず上下)の出力表。や の括弧に加え、
@@ -125,7 +132,7 @@ enum FlickKanaLayout {
 
         // わ はプロファイル別定義(汎用置換の対象外)なのでここで差し替える
         sourceRows = sourceRows.map { row in
-            row.map { $0.label == "わ" ? (profile == .apple ? kanaWaSetApple : kanaWaSetEcritu) : $0 }
+            row.map { $0.label == "わ" ? (waSetBase(for: profile)) : $0 }
         }
 
         guard let map = characterMap(for: mode) else {
@@ -137,8 +144,16 @@ enum FlickKanaLayout {
         }
     }
 
+    static func waSetBase(for profile: FlickDirectionProfile) -> FlickKanaSet {
+        switch profile {
+        case .apple: return kanaWaSetApple
+        case .hanabi: return kanaWaSetHanabi
+        case .ecritu: return kanaWaSetEcritu
+        }
+    }
+
     static func waSet(for mode: DiacriticMode, profile: FlickDirectionProfile = .ecritu) -> FlickKanaSet {
-        let base = profile == .apple ? kanaWaSetApple : kanaWaSetEcritu
+        let base = waSetBase(for: profile)
         guard let map = characterMap(for: mode) else {
             return base
         }
@@ -465,6 +480,19 @@ enum FlickKanaLayout {
                 right: right,
                 down: down,
                 left: left,
+                usesProfileDependentGuideOrder: usesProfileDependentGuideOrder
+            )
+        }
+
+        if profile == .hanabi {
+            // hanabi mode order: tap, right, down, left, up(引数は apple 並びの left,up,right,down)
+            return FlickKanaSet(
+                label: center,
+                center: center,
+                up: down,
+                right: left,
+                down: up,
+                left: right,
                 usesProfileDependentGuideOrder: usesProfileDependentGuideOrder
             )
         }

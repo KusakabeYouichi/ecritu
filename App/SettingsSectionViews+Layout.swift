@@ -13,7 +13,7 @@ struct DirectionSettingsSection: View {
             selection: $selection,
             options: Array(DirectionOption.allCases),
             optionTitle: { $0.title },
-            footnote: "style iPhone は iPhone 標準キーボードと同じ方向割り当て、style écritu は écritu 独自の割り当てです。切り替えは次回のキーボード表示時に反映されます。"
+            footnote: "あ キーで言うと、母音の置き場所が違います。style-i は 左=い・上=う・右=え・下=お(iPhone 標準キーボードと同じ)。style-hanabi は 右=い・下=う・左=え・上=お(1998 年の Newton OS 向け入力方式 Hanabi と同じ)。style-écritu は 上=い・右=う・左=え・下=お(い段が上・お段が下で五十音図の向きと揃う)。切り替えは次回のキーボード表示時に反映されます。"
         )
     }
 }
