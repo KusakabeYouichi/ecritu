@@ -547,8 +547,14 @@ extension ContentView {
                 }
 
                 let hadPlaintext = defaults.object(forKey: cacheKey) != nil
+                // 畳んだ版がまだ無い既存ユーザーはここで書き足す(3021)。連絡先が変わらない限り
+                // 下の封緘まで到達しないため、この条件が無いと旧経路(拡張側で辞書を組み立てる)の
+                // ままになる
+                let hasCompact = defaults.data(
+                    forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed
+                ) != nil
 
-                guard previous != dictionary || hadPlaintext else {
+                guard previous != dictionary || hadPlaintext || !hasCompact else {
                     return
                 }
 
