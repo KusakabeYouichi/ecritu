@@ -2250,6 +2250,8 @@ extension KanaKanjiConverter {
         // 助詞を呑んだ派生動詞(出直してた)の代替経路(で+直してた)を作るのに使う
         // requiredNodeIndices(2771): 指定ノードを必ず使う最良経路(並列動詞の表記を揃えた経路用)。
         // 指定ノードのスパンと重なる他ノードは使わない
+        // 借用用の助動詞末尾はノードごとに 1 回だけ求める(遷移ごとに hasSuffix の列挙を繰り返していた。3038)
+        let auxTailByNode: [String?] = nodes.map { Self.auxTailForBigramBorrow(of: $0) }
         #if DEBUG
         // 環境変数の参照は 1 回だけ(遷移ごとに ProcessInfo.environment を引くと辞書を毎回組み直す。2805 プロファイル)
         let traceEdges = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
@@ -2417,7 +2419,7 @@ extension KanaKanjiConverter {
                                 && Self.isKanaOrthodoxDemotedSurface(surface: prevNode.surface, reading: prevNode.reading))
                         var cost = prevCost + transitionCost(
                             prev: prevNode.surface,
-                            prevAuxTail: Self.auxTailForBigramBorrow(of: prevNode),
+                            prevAuxTail: auxTailByNode[prevIdx],
                             surface: node.surface,
                             reading: node.reading,
                             isDictWord: node.isDictWord,
@@ -2649,10 +2651,10 @@ extension KanaKanjiConverter {
                             cost += Self.multiClauseParticleReadingKanjiAtClauseHeadPenalty
                         }
                         // 隣接ペアの表層接頭一致ボーナス(ほぼ+変わ。定数コメント参照。2887)
-                        for (key, bonus) in Self.multiClauseBigramPrefixPairBonuses {
-                            let parts = key.split(separator: "\t", maxSplits: 1)
-                            if parts.count == 2, prevNode.surface == parts[0], node.surface.hasPrefix(parts[1]) {
-                                cost -= bonus
+                        // (prev 表層で事前にまとめた表を引く。遷移ごとの全走査+split は 3038 で撤去)
+                        if let prefixBonuses = Self.multiClauseBigramPrefixPairBonusesByPrev[prevNode.surface] {
+                            for entry in prefixBonuses where node.surface.hasPrefix(entry.prefix) {
+                                cost -= entry.bonus
                             }
                         }
                         // 名詞直後の なんか/なんて は副助詞(保存なんかしてない。定数コメント参照。2888)
@@ -3089,7 +3091,7 @@ extension KanaKanjiConverter {
                 }
                 var eosCost = transitionCost(
                     prev: nodes[idx].surface,
-                    prevAuxTail: Self.auxTailForBigramBorrow(of: nodes[idx]),
+                    prevAuxTail: auxTailByNode[idx],
                     surface: Self.multiClauseEOSMarker,
                     reading: "",
                     isDictWord: true,
