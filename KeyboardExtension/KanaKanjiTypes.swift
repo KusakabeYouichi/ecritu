@@ -67,6 +67,25 @@ enum KanaKanjiCandidateSourceMode: String {
     }
 }
 
+// 旧字体・異体字の抑制の小分類(コンテナー設定で個別にオン/オフ。2991)。
+// 人名(Sudachi の姓/名)は分類に関わらず常に対象外 — 小野澤/千惠/眞子 は消さない。
+enum ScriptVariantSuppressionCategory: String, CaseIterable {
+    case kyujitai          // 旧字体(康熙字体): 氣→気、會→会、變→変
+    case itaiji            // 異体字(印刷標準字体レベルの差): 飜→翻、每→毎、步→歩
+    case ryakuji           // 略字: 仝→同、卆→卒
+    case confusable        // 紛らわしい別字: 聯→連、聨→連
+    case personNameVariant // 人名で生きている異体字: 邊→辺、龍→竜、嶋→島(初期設定オフ)
+
+    // 初期設定で抑制する分類(人名で生きている異体字だけオフ)
+    static let defaultEnabled: Set<ScriptVariantSuppressionCategory> = [
+        .kyujitai, .itaiji, .ryakuji, .confusable
+    ]
+
+    var settingsKey: String {
+        "scriptVariantSuppress" + rawValue.prefix(1).uppercased() + rawValue.dropFirst()
+    }
+}
+
 enum UserDictionaryCandidateDisplayMode: String {
     case off
     case on
