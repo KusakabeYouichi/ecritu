@@ -24,6 +24,7 @@ cd "$ROOT_DIR"
 
 TMP_PREMIER="$ROOT_DIR/tmp/ÉcrituPremierVocab.json"
 TMP_SECOND="$ROOT_DIR/tmp/ÉcrituSecondVocab.json"
+TMP_SECOND_COMPACT="$ROOT_DIR/tmp/ÉcrituSecondVocab.eccs"
 TMP_INITIAL_AJOUT="$ROOT_DIR/tmp/InitialAjoutVocabMigration.json"
 TMP_INITIAL_MISC="$ROOT_DIR/tmp/InitialMiscVocabMigration.json"
 TMP_INITIAL_SUPPR="$ROOT_DIR/tmp/InitialSupprVocabMigration.json"
@@ -201,6 +202,29 @@ python3 tools/build_second_vocab_from_references.py \
 python3 tools/build_second_vocab_from_references.py \
   --input-plist "$REF_SUPPR_PLIST" \
   --output "$TMP_INITIAL_SUPPR_HIDDEN"
+
+# 補助語彙をビルド時に畳む(3030)。拡張が起動後の初回変換で JSON を 16,226 読みの辞書へ復元して
+# 畳んでいた工程を、ここへ移す(その一瞬の辞書が malloc アリーナを +8MB 広げて返さなかった。実機計測)。
+# 正規化・重複排除を拡張と同じにするため、拡張のソース 3 本をいっしょに swiftc でコンパイルする。
+second_compact_stamp="$ROOT_DIR/tmp/.ÉcrituSecondVocab.eccs.src.sha"
+second_compact_tool="$ROOT_DIR/tmp/build_second_vocab_compact"
+second_compact_src_sha="$(shasum -a 256 "$TMP_SECOND" tools/build_second_vocab_compact.swift \
+  KeyboardExtension/KanaTextNormalizer.swift KeyboardExtension/SupplementalVocabCompactStore.swift \
+  KeyboardExtension/KanaKanjiTypes.swift | shasum -a 256 | cut -d' ' -f1)"
+if [[ ! -f "$TMP_SECOND_COMPACT" || ! -f "$second_compact_stamp" || "$(cat "$second_compact_stamp")" != "$second_compact_src_sha" ]]; then
+  if SDKROOT="$(xcrun --sdk macosx --show-sdk-path)" swiftc -O -parse-as-library \
+      tools/build_second_vocab_compact.swift KeyboardExtension/KanaTextNormalizer.swift \
+      KeyboardExtension/SupplementalVocabCompactStore.swift KeyboardExtension/KanaKanjiTypes.swift \
+      -o "$second_compact_tool" \
+    && "$second_compact_tool" "$TMP_SECOND" "$TMP_SECOND_COMPACT"; then
+    echo "$second_compact_src_sha" > "$second_compact_stamp"
+  else
+    echo "[dict] Warning: 補助語彙の畳み込みに失敗しました。拡張は JSON 経路で継続します。"
+    rm -f "$TMP_SECOND_COMPACT"
+  fi
+else
+  echo "[dict] 畳んだ補助語彙は最新(変更なし)。"
+fi
 
 # 欧文サジェストの追加語彙側索引(2770)。補助語彙 JSON から実行時と同一のフィルタ・折り畳みで
 # key\tcandidate\t0 をキーのバイト順に前計算する(実行時構築の fp +8MB ピークを無くす)。
@@ -477,6 +501,7 @@ if [[ -n "${TARGET_BUILD_DIR:-}" && -n "${UNLOCALIZED_RESOURCES_FOLDER_PATH:-}" 
   # 事故は行数ガード(exit 1)で遮断済み。sqlite が開けない場合は劣化運転せず fallback 表示に任せる。
   # ÉcrituSecondVocab.json(補助語彙)だけは通常経路の常用層なので残す。
   copy_into_bundle_if_exists "$TMP_SECOND" "ÉcrituSecondVocab.json"
+  copy_into_bundle_if_exists "$TMP_SECOND_COMPACT" "ÉcrituSecondVocab.eccs"
   copy_into_bundle_if_exists "$TMP_INITIAL_AJOUT" "InitialAjoutVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_MISC" "InitialMiscVocabMigration.json"
   copy_into_bundle_if_exists "$TMP_INITIAL_SUPPR" "InitialSupprVocabMigration.json"
