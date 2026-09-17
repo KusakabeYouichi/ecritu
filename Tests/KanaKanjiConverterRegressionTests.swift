@@ -17704,6 +17704,32 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3041: しめちゃうらしいぞ に 閉めちゃう が無い(ユーザ報告)。基底 しめる の seed 順を 閉める 先頭にし
+    // (活用派生と連文節 topK=3 の供給に継がれる)、占める は 3 番目に残して 半分を占めています の供給を守る。
+    // 目的語による書き分けは を を挟む連語表(ドア→閉/ネクタイ→締/首→絞)
+    func testRegressionUserReports3041() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            for (reading, expected) in [
+                ("しめちゃうらしいぞ", "閉めちゃうらしいぞ"), ("どあをしめる", "ドアを閉める"), ("まどをしめて", "窓を閉めて"),
+                ("かぎをしめる", "鍵を閉める"), ("ねくたいをしめる", "ネクタイを締める"), ("べるとをしめて", "ベルトを締めて"),
+                ("おびをしめる", "帯を締める"), ("くびをしめる", "首を絞める"),
+                ("はんぶんをしめています", "半分を占めています"), ("わりあいをしめる", "割合を占める"),
+                ("きをひきしめる", "気を引き締める")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected, "\(label) reading=\(reading)")
+            }
+            XCTAssertEqual(converter.candidates(for: "しめる", limit: 3, systemCandidateMode: mode).first, "閉める", label)
+            XCTAssertEqual(converter.candidates(for: "しめちゃう", limit: 3, systemCandidateMode: mode).first, "閉めちゃう", label)
+            XCTAssertEqual(converter.candidates(for: "しめきり", limit: 2, systemCandidateMode: mode).first, "締め切り", label)
+        }
+    }
+
     // 3037: どうやるか→銅やルカ(ユーザ報告)。かな やる は seed のみで辞書 wc 8372 の床が掛かり、
     // 演る(LM 8139)より高く付いて や+ルカ の分割に負けていた。misc に やる(五段)を curated 登録し、
     // 単漢字名詞→動詞の無助詞接続の減点が掛かるよう かな述語(multiClauseKanaPredicateIdentities)に加えた
