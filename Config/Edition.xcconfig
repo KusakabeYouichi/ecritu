@@ -23,8 +23,18 @@ ECRITU_APP_GROUP_IDENTIFIER = group.$(ECRITU_APP_BUNDLE_IDENTIFIER)
 // 単一バイナリに戻す。増分ビルドの高速化は失うが、拡張が起動しないほうが致命的。
 ENABLE_DEBUG_DYLIB = NO
 
-ECRITU_EDITION_NUMBER = 3002
-ECRITU_EDITION_UPDATED_AT = 20260917132820
+// 出荷前診断(TestFlight 配布中だけ入れる計測・可視化)を組み込むか。
+// 1 = 組み込む(開発・TestFlight) / 0 = 組み込まない(**App Store 提出はこちら**)。
+// 0 にすると Swift の #if ECRITU_PRERELEASE_DIAGNOSTICS が丸ごと消えるので、
+// でばぐ可視化(削除キーの黄/橙と数値バッジ)と診断カウンターはバイナリに入らない。
+// tools/verify_archive_artifacts.sh が 1 のままのアーカイブを弾く(2026-09-17)
+ECRITU_PRERELEASE_DIAGNOSTICS = 1
+ECRITU_PRERELEASE_DIAGNOSTICS_FLAG_1 = ECRITU_PRERELEASE_DIAGNOSTICS
+ECRITU_PRERELEASE_DIAGNOSTICS_FLAG_0 =
+ECRITU_PRERELEASE_DIAGNOSTICS_FLAG = $(ECRITU_PRERELEASE_DIAGNOSTICS_FLAG_$(ECRITU_PRERELEASE_DIAGNOSTICS))
+
+ECRITU_EDITION_NUMBER = 3003
+ECRITU_EDITION_UPDATED_AT = 20260917133552
 
 // Optional per-developer signing overrides (ignored from git).
 #include? "Signing.local.xcconfig"
