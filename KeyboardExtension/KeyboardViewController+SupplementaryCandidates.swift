@@ -336,11 +336,8 @@ extension KeyboardViewController {
                 self.contactCandidatesLastRefreshAt = Date()
 
                 let previous = self.contactCandidatesByReading
-                let compactSnapshot = MemoryForensics.snapshot()
-                self.contactCandidatesByReading = SupplementalVocabCompactStore(dictionary: cachedCandidates)
+                self.contactCandidatesByReading = cachedCandidates
                 self.supplementaryMergedCandidatesCacheByKey = [:]
-                // 測定(2725): compact 化後の増分(復号した辞書はこのスコープを抜ければ解放される)
-                MemoryForensics.noteSyncDelta("連絡先キャッシュcompact化 readings=\(cachedCandidates.count)", since: compactSnapshot, minDeltaMB: -1)
 
                 if previous != self.contactCandidatesByReading {
                     self.refreshKeyboardStateAsync()
@@ -360,13 +357,13 @@ extension KeyboardViewController {
     }
 
     func loadCachedContactCandidatesInBackground(
-        completion: @escaping ([String: [String]]) -> Void
+        completion: @escaping (SupplementalVocabCompactStore) -> Void
     ) {
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self else {
                 // 個体が消えても completion は必ず呼ぶ(共有の読込中フラグを戻すため。2655)
                 DispatchQueue.main.async {
-                    completion([:])
+                    completion(.empty)
                 }
                 return
             }
@@ -375,14 +372,41 @@ extension KeyboardViewController {
             // 8/30 10:43 Safari の警告は bootstrap 直後 1.2 秒で used +4.4MB(latin/補助語彙は未ロード)で、
             // この復号(NSDictionary→Swift 辞書のブリッジ二重化)が有力候補。復号前後を必ず記録する
             let decodeSnapshot = MemoryForensics.snapshot()
+            // 畳んだ版があれば辞書を経由しない(3020)
+            if let compact = self.cachedContactCompactStoreFromSharedDefaults() {
+                MemoryForensics.noteSyncDelta(
+                    "連絡先キャッシュ復号(畳んだ版) readings=\(compact.readingCount)",
+                    since: decodeSnapshot,
+                    minDeltaMB: -1
+                )
+                DispatchQueue.main.async {
+                    completion(compact)
+                }
+                return
+            }
+
+            // 旧形式(JSON 辞書の封緘/平文)。コンテナーが次回同期で畳んだ版へ置き換える
             let decoded = self.cachedContactCandidatesFromSharedDefaults()
             MemoryForensics.noteSyncDelta("連絡先キャッシュ復号 readings=\(decoded.count)", since: decodeSnapshot, minDeltaMB: -1)
-            let cachedCandidates = self.limitContactCandidateDictionary(decoded)
+            let cachedCandidates = ContactCacheCipher.limited(decoded)
 
             DispatchQueue.main.async {
-                completion(cachedCandidates)
+                completion(SupplementalVocabCompactStore(dictionary: cachedCandidates))
             }
         }
+    }
+
+    // 畳んだ表を封緘した版(3020)。あればこれを使い、復元の途中で 4,126 読みの辞書を
+    // 作らない(その一瞬の辞書が malloc アリーナを 4MB 広げて返さなかった。実機計測)
+    func cachedContactCompactStoreFromSharedDefaults() -> SupplementalVocabCompactStore? {
+        guard let sharedDefaults,
+            let sealed = sharedDefaults.data(
+                forKey: SharedDefaultsKeys.contactCandidatesByReadingCacheCompactSealed
+            ),
+            let key = ContactCacheCipher.keychainKey(createNew: false) else {
+            return nil
+        }
+        return ContactCacheCipher.openCompact(sealed, key: key)
     }
 
     func cachedContactCandidatesFromSharedDefaults() -> [String: [String]] {
@@ -425,88 +449,8 @@ extension KeyboardViewController {
         }
     }
 
-    func appendCandidates(
-        _ candidates: [String],
-        forReadingText readingText: String,
-        to dictionary: inout [String: [String]],
-        totalCandidateCount: inout Int
-    ) {
-        let normalizedReading = KanaTextNormalizer.normalizedReading(readingText)
 
-        guard !normalizedReading.isEmpty else {
-            return
-        }
 
-        if dictionary[normalizedReading] == nil,
-            dictionary.count >= Self.maximumContactCandidateReadings {
-            return
-        }
-
-        guard totalCandidateCount < Self.maximumContactCandidateTotalEntries else {
-            return
-        }
-
-        var existingCandidates = dictionary[normalizedReading] ?? []
-        var existingCandidateSet = Set(existingCandidates)
-
-        for candidate in candidates {
-            if existingCandidates.count >= Self.maximumContactCandidatesPerReading
-                || totalCandidateCount >= Self.maximumContactCandidateTotalEntries {
-                break
-            }
-
-            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
-
-            guard !trimmed.isEmpty,
-                existingCandidateSet.insert(trimmed).inserted else {
-                continue
-            }
-
-            existingCandidates.append(trimmed)
-            totalCandidateCount += 1
-        }
-
-        if !existingCandidates.isEmpty {
-            dictionary[normalizedReading] = existingCandidates
-        }
-    }
-
-    func hasReachedContactCandidateBuildLimit(
-        readingCount: Int,
-        totalCandidateCount: Int
-    ) -> Bool {
-        readingCount >= Self.maximumContactCandidateReadings
-            || totalCandidateCount >= Self.maximumContactCandidateTotalEntries
-    }
-
-    func limitContactCandidateDictionary(
-        _ source: [String: [String]]
-    ) -> [String: [String]] {
-        guard !source.isEmpty else {
-            return [:]
-        }
-
-        var limited: [String: [String]] = [:]
-        var totalCandidateCount = 0
-
-        for (reading, candidates) in source {
-            if hasReachedContactCandidateBuildLimit(
-                readingCount: limited.count,
-                totalCandidateCount: totalCandidateCount
-            ) {
-                break
-            }
-
-            appendCandidates(
-                candidates,
-                forReadingText: reading,
-                to: &limited,
-                totalCandidateCount: &totalCandidateCount
-            )
-        }
-
-        return limited
-    }
 
     func supplementaryReadingKeys(userInput: String) -> [String] {
         var readingKeys: [String] = []

@@ -1297,6 +1297,54 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         // 空辞書
         XCTAssertTrue(SupplementalVocabCompactStore.empty.isEmpty)
         XCTAssertEqual(SupplementalVocabCompactStore.empty.candidates(for: "あ"), [])
+
+        // 直列化(3020。連絡先キャッシュを畳んだまま受け渡すために使う)
+        let restored = SupplementalVocabCompactStore(serialized: store.serializedData())
+        XCTAssertEqual(restored, store)
+        XCTAssertEqual(restored?.readingCount, store.readingCount)
+        for (reading, candidates) in dictionary {
+            XCTAssertEqual(restored?.candidates(for: reading), candidates, "reading=\(reading)")
+        }
+        XCTAssertEqual(
+            SupplementalVocabCompactStore(serialized: SupplementalVocabCompactStore.empty.serializedData()),
+            SupplementalVocabCompactStore.empty
+        )
+        // 壊れた入力は nil(途中で切れた/別形式)
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: Data("ECCS1".utf8)))
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: store.serializedData().dropLast(4)))
+        XCTAssertNil(SupplementalVocabCompactStore(serialized: Data(repeating: 0, count: 64)))
+    }
+
+    // 3020: 連絡先キャッシュの上限・正規化・重複排除を共有実装へ集約した(コンテナーが
+    // 畳んでから渡すため、両ターゲットが同じ規則で切る必要がある)
+    func testContactCacheLimitedNormalizesAndCaps() {
+        let limited = ContactCacheCipher.limited([
+            "たなか": [" 田中 ", "田中", "", "田中太郎"],
+            "": ["捨てられる"],
+            "スズキ": ["鈴木"]
+        ])
+        XCTAssertEqual(limited["たなか"], ["田中", "田中太郎"], "前後空白の除去と重複排除")
+        XCTAssertNil(limited[""], "空読みは捨てる")
+        XCTAssertEqual(limited["すずき"], ["鈴木"], "読みはひらがなへ正規化")
+
+        // 読みはかなだけにする(正規化が数字を落とすので、数字入りだと全部同じ読みに潰れる)
+        let kanaDigits = Array("あいうえおかきくけこ")
+        func kanaReading(_ index: Int) -> String {
+            String(String(index).map { kanaDigits[Int(String($0))!] })
+        }
+        var oversized: [String: [String]] = [:]
+        for index in 0..<(ContactCacheCipher.Limits.maximumReadings + 50) {
+            oversized[kanaReading(index)] = ["名前\(index)"]
+        }
+        XCTAssertEqual(ContactCacheCipher.limited(oversized).count, ContactCacheCipher.Limits.maximumReadings)
+
+        let manyPerReading = ContactCacheCipher.limited([
+            "おなじよみ": (0..<(ContactCacheCipher.Limits.maximumCandidatesPerReading + 10)).map { "名前\($0)" }
+        ])
+        XCTAssertEqual(
+            manyPerReading["おなじよみ"]?.count,
+            ContactCacheCipher.Limits.maximumCandidatesPerReading
+        )
     }
 
     // ★時限診断(MEMFORENSICS 2615): 変換1回あたりの malloc アリーナ成長をチャネル別に測る。

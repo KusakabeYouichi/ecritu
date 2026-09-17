@@ -552,11 +552,17 @@ extension ContentView {
                     return
                 }
 
-                guard let sealed = ContactCacheCipher.seal(dictionary, key: key) else {
+                // 畳んだ表で渡す(3020)。拡張側は配列 4 本を作るだけで復元でき、
+                // 4,126 読みの辞書を一瞬作って malloc アリーナを 4MB 広げる問題が消える。
+                // 旧形式(JSON 辞書)も当面は書いておき、古い拡張との組み合わせでも動くようにする
+                let compactStore = SupplementalVocabCompactStore(dictionary: ContactCacheCipher.limited(dictionary))
+                guard let sealedCompact = ContactCacheCipher.sealCompact(compactStore, key: key),
+                    let sealed = ContactCacheCipher.seal(dictionary, key: key) else {
                     appendContainerDiagnosticsLog("連絡先キャッシュ封緘スキップ reason=sealFailed")
                     return
                 }
 
+                defaults.set(sealedCompact, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed)
                 defaults.set(sealed, forKey: sealedKey)
                 defaults.removeObject(forKey: cacheKey)
                 SettingsSyncNotification.postSettingsDidChange()
