@@ -290,6 +290,39 @@ struct LatinLexiconSettingsSection: View {
     }
 }
 
+// 旧字体・異体字の抑制(小分類ごと。2991、ユーザ指定)。人名(Sudachi の姓/名)は
+// 分類に関わらず常に残すため設定項目にしない
+struct ScriptVariantSuppressionSettingsSection: View {
+    @Binding var kyujitai: Bool
+    @Binding var itaiji: Bool
+    @Binding var ryakuji: Bool
+    @Binding var confusable: Bool
+    @Binding var personNameVariant: Bool
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("旧字体・異体字の候補")
+                .font(.headline)
+
+            Toggle("旧字体を抑制する(氣持→気持、會社→会社)", isOn: $kyujitai)
+                .toggleStyle(.switch)
+            Toggle("異体字を抑制する(飜訳→翻訳、每日→毎日)", isOn: $itaiji)
+                .toggleStyle(.switch)
+            Toggle("略字を抑制する(仝じ→同じ、卆→卒)", isOn: $ryakuji)
+                .toggleStyle(.switch)
+            Toggle("紛らわしい別字を抑制する(聯合→連合)", isOn: $confusable)
+                .toggleStyle(.switch)
+            Toggle("人名で生きている異体字も抑制する(邊→辺、龍→竜、嶋→島)", isOn: $personNameVariant)
+                .toggleStyle(.switch)
+
+            Text("同じ読みに現代の標準字体の候補があるときだけ、古い字体の候補を出さないようにします。標準字体の候補が無い語(和氣あず未、國場組、守禮門、魚香肉絲 など)はそのまま出ます。人名の姓・名(小野澤、千惠、眞子)は設定に関わらず常に出ます。追加語彙に登録した語も対象外です。最後の項目は初期設定はオフで、辺/邊 のように人名表記として生きている字を残します。")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+        }
+        .settingsCardStyle()
+    }
+}
+
 struct HistoricalKanaCandidatesSettingsSection: View {
     @Binding var isEnabled: Bool
 

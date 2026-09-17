@@ -17583,6 +17583,46 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 2991: 旧字体・異体字の抑制を小分類ごとに設定できるようにした。既定は
+    // [旧字体/異体字/略字/別字]オン、[人名で生きている異体字]オフ。人名(Sudachi の姓/名)は
+    // 分類に関わらず常に残す
+    func testRegressionScriptVariantSuppressionCategories() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            func list(_ reading: String) -> [String] {
+                converter.candidates(for: reading, limit: 12, systemCandidateMode: mode)
+            }
+            // 既定で消えるもの(同読みに標準字体がある)
+            XCTAssertFalse(list("きもち").contains("氣持"), label)          // 旧字体
+            XCTAssertFalse(list("おなじ").contains("仝じ"), label)          // 略字
+            XCTAssertFalse(list("そつ").contains("卆"), label)              // 略字
+            XCTAssertFalse(list("れんごう").contains("聯合"), label)        // 別字
+            XCTAssertFalse(list("れんごう").contains("聨合"), label)
+            // 既定で残るもの
+            XCTAssertTrue(list("りゅうぐう").contains("龍宮"), label)       // 人名で生きている異体字(既定オフ)
+            XCTAssertTrue(list("おのざわ").contains("小野澤"), label)       // 人名は常に残す
+            XCTAssertTrue(list("たきぐち").contains("瀧口"), label)
+            XCTAssertEqual(list("きもち").first, "気持ち", label)
+        }
+
+        // 分類オフ: 旧字体が戻る
+        converter.setScriptVariantSuppressionCategories([])
+        XCTAssertTrue(
+            converter.candidates(for: "きもち", limit: 12, systemCandidateMode: .surface).contains("氣持"))
+        // 全分類オン: 人名で生きている異体字も消える。人名(瀧口=姓)は消えない
+        converter.setScriptVariantSuppressionCategories(Set(ScriptVariantSuppressionCategory.allCases))
+        XCTAssertFalse(
+            converter.candidates(for: "りゅうぐう", limit: 12, systemCandidateMode: .surface).contains("龍宮"))
+        XCTAssertTrue(
+            converter.candidates(for: "たきぐち", limit: 12, systemCandidateMode: .surface).contains("瀧口"))
+        converter.setScriptVariantSuppressionCategories(ScriptVariantSuppressionCategory.defaultEnabled)
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
     // 2973: 学習が隠していた素の弱点 3 件(ユーザ報告)。学習リセット後の実機と Mac で
     // 同じ誤りが出ることを確認して直した
     func testRegressionUserReports2973() throws {

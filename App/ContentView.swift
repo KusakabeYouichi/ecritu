@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260917093451"
+    private static let editionUpdatedAtRaw: String = "20260917102918"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -399,6 +399,22 @@ struct ContentView: View {
     )
     private var mazegakiCandidateModeRawValue: String = ScriptVariantModeOption.suppress.rawValue
 
+    // 旧字体・異体字の抑制(小分類ごと。2991)。人名(Sudachi の姓/名)は分類に関わらず常に残す
+    @AppStorage(SettingsKeys.scriptVariantSuppressKyujitai, store: Self.sharedDefaults)
+    private var scriptVariantSuppressKyujitai = true
+
+    @AppStorage(SettingsKeys.scriptVariantSuppressItaiji, store: Self.sharedDefaults)
+    private var scriptVariantSuppressItaiji = true
+
+    @AppStorage(SettingsKeys.scriptVariantSuppressRyakuji, store: Self.sharedDefaults)
+    private var scriptVariantSuppressRyakuji = true
+
+    @AppStorage(SettingsKeys.scriptVariantSuppressConfusable, store: Self.sharedDefaults)
+    private var scriptVariantSuppressConfusable = true
+
+    @AppStorage(SettingsKeys.scriptVariantSuppressPersonNameVariant, store: Self.sharedDefaults)
+    private var scriptVariantSuppressPersonNameVariant = false
+
     @State var ajoutVocabularyEntries: [VocabularyEntry] = []
     @State var ajoutVocabularyReadingInput = ""
     @State var ajoutVocabularyCandidateInput = ""
@@ -552,6 +568,11 @@ struct ContentView: View {
             String(iterationMarkCandidatesEnabled),
             katakanaEmphasisCandidateModeRawValue,
             mazegakiCandidateModeRawValue,
+            String(scriptVariantSuppressKyujitai),
+            String(scriptVariantSuppressItaiji),
+            String(scriptVariantSuppressRyakuji),
+            String(scriptVariantSuppressConfusable),
+            String(scriptVariantSuppressPersonNameVariant),
             String(latinLexiconEnglishEnabled),
             String(latinLexiconFrenchEnabled),
             String(latinLexiconGermanEnabled),
@@ -647,6 +668,11 @@ struct ContentView: View {
         bool(SettingsKeys.iterationMarkCandidatesEnabled, iterationMarkCandidatesEnabled, "仮名の踊り字候補")
         str(SettingsKeys.katakanaEmphasisCandidateMode, katakanaEmphasisCandidateModeRawValue, "カタカナ強調表記の候補")
         str(SettingsKeys.mazegakiCandidateMode, mazegakiCandidateModeRawValue, "交ぜ書きの候補")
+        bool(SettingsKeys.scriptVariantSuppressKyujitai, scriptVariantSuppressKyujitai, "旧字体を抑制")
+        bool(SettingsKeys.scriptVariantSuppressItaiji, scriptVariantSuppressItaiji, "異体字を抑制")
+        bool(SettingsKeys.scriptVariantSuppressRyakuji, scriptVariantSuppressRyakuji, "略字を抑制")
+        bool(SettingsKeys.scriptVariantSuppressConfusable, scriptVariantSuppressConfusable, "紛らわしい別字を抑制")
+        bool(SettingsKeys.scriptVariantSuppressPersonNameVariant, scriptVariantSuppressPersonNameVariant, "人名で生きている異体字を抑制")
         bool(SettingsKeys.emojiCandidateDisplayEnabled, emojiCandidateDisplayEnabled, "emojis & les émoticônes: emoji 😀")
         str(SettingsKeys.radicalStrokeCountStyle, radicalStrokeCountStyleRawValue, "部首の画数の数え方")
         bool(SettingsKeys.ordinalMeKanjiPreferred, ordinalMeKanjiPreferred, "序数化suffixe – me(première…): 順序の『目』を漢字で先に")
@@ -1183,6 +1209,14 @@ struct ContentView: View {
             title: "交ぜ書きの候補",
             selectionRawValue: $mazegakiCandidateModeRawValue,
             footnote: "『まん延(蔓延)』『作ひん(作品)』のような、漢字の一部をかなに開いた交ぜ書き表記の扱いです。抑制=候補に出さない(初期設定)、リスト後方=候補の末尾に回す、同列に使う=通常の順位。『子ども』など定着した表記は対象外です。"
+        )
+
+        ScriptVariantSuppressionSettingsSection(
+            kyujitai: $scriptVariantSuppressKyujitai,
+            itaiji: $scriptVariantSuppressItaiji,
+            ryakuji: $scriptVariantSuppressRyakuji,
+            confusable: $scriptVariantSuppressConfusable,
+            personNameVariant: $scriptVariantSuppressPersonNameVariant
         )
 
         RadicalStrokeCountSettingsSection(

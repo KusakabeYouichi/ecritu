@@ -413,6 +413,12 @@ final class KeyboardViewController: UIInputViewController {
         static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
         static let katakanaEmphasisCandidateMode = "katakanaEmphasisCandidateMode"
         static let mazegakiCandidateMode = "mazegakiCandidateMode"
+        // 旧字体・異体字の抑制(小分類ごと。2991)。値は ScriptVariantSuppressionCategory.settingsKey
+        static let scriptVariantSuppressKyujitai = "scriptVariantSuppressKyujitai"
+        static let scriptVariantSuppressItaiji = "scriptVariantSuppressItaiji"
+        static let scriptVariantSuppressRyakuji = "scriptVariantSuppressRyakuji"
+        static let scriptVariantSuppressConfusable = "scriptVariantSuppressConfusable"
+        static let scriptVariantSuppressPersonNameVariant = "scriptVariantSuppressPersonNameVariant"
         static let iterationMarkCandidatesEnabled = "iterationMarkCandidatesEnabled"
         static let latinLexiconEnglishEnabled = "latinLexiconEnglishEnabled"
         static let degreeSymbol = DegreeSymbolStyle.sharedDefaultsKey

@@ -84,6 +84,12 @@ enum SettingsKeys {
     static let historicalKanaCandidatesEnabled = "historicalKanaCandidatesEnabled"
     // カタカナ強調表記/交ぜ書きの扱い(suppress/demote/normal)。KeyboardExtension 側と同一キー
     static let katakanaEmphasisCandidateMode = "katakanaEmphasisCandidateMode"
+    // 旧字体・異体字の抑制(小分類ごと。2991)。人名(Sudachi の姓/名)は分類に関わらず常に対象外
+    static let scriptVariantSuppressKyujitai = "scriptVariantSuppressKyujitai"
+    static let scriptVariantSuppressItaiji = "scriptVariantSuppressItaiji"
+    static let scriptVariantSuppressRyakuji = "scriptVariantSuppressRyakuji"
+    static let scriptVariantSuppressConfusable = "scriptVariantSuppressConfusable"
+    static let scriptVariantSuppressPersonNameVariant = "scriptVariantSuppressPersonNameVariant"
     static let radicalStrokeCountStyle = "radicalStrokeCountStyle"
     static let ordinalMeKanjiPreferred = "ordinalMeKanjiPreferred"
     static let kaCounterVariantPreference = "kaCounterVariantPreference"
