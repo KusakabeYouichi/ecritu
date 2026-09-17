@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260917112310"
+    private static let editionUpdatedAtRaw: String = "20260917115459"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1129,25 +1129,6 @@ struct ContentView: View {
             isEnabled: $kanaPostModifierFlickDakutenEnabled
         )
 
-        FormatNumeriqueSettingsSection(
-            thousandsSeparator: numberThousandsSeparatorSelection,
-            groupFourDigits: $numberGroupFourDigits,
-            decimalSeparator: numberDecimalSeparatorSelection,
-            unitProductSeparator: numberUnitProductSeparatorSelection,
-            litreSymbol: numberLitreSymbolSelection
-        )
-
-        DegreSettingsSection(degreeSymbol: degreeSymbolSelection)
-
-        CalendarSettingsGroupSection(
-            weekStart: calendarWeekStartSelection,
-            weekdayLanguage: calendarWeekdayLanguageSelection,
-            sundayColor: calendarSundayColorSelection,
-            fridayColor: calendarFridayColorSelection,
-            saturdayColor: calendarSaturdayColorSelection,
-            dateFormatStyle: dateFormatStyleSelection
-        )
-
         LatinLexiconSettingsSection(
             enablesEnglish: $latinLexiconEnglishEnabled,
             enablesFrench: $latinLexiconFrenchEnabled,
@@ -1179,6 +1160,30 @@ struct ContentView: View {
         AccentColorSettingsSection(selection: accentPaletteSelection)
 
         ThemeColorSettingsSection(selection: keyboardBackgroundThemeSelection)
+    }
+
+    // 書式(数値・温度・カレンダー)。入力の挙動ではなく「出力の書き方」を決める設定なので
+    // 入力カテゴリーから独立させた(ユーザ指定 3002)
+    @ViewBuilder
+    private var formatSettingsCards: some View {
+        FormatNumeriqueSettingsSection(
+            thousandsSeparator: numberThousandsSeparatorSelection,
+            groupFourDigits: $numberGroupFourDigits,
+            decimalSeparator: numberDecimalSeparatorSelection,
+            unitProductSeparator: numberUnitProductSeparatorSelection,
+            litreSymbol: numberLitreSymbolSelection
+        )
+
+        DegreSettingsSection(degreeSymbol: degreeSymbolSelection)
+
+        CalendarSettingsGroupSection(
+            weekStart: calendarWeekStartSelection,
+            weekdayLanguage: calendarWeekdayLanguageSelection,
+            sundayColor: calendarSundayColorSelection,
+            fridayColor: calendarFridayColorSelection,
+            saturdayColor: calendarSaturdayColorSelection,
+            dateFormatStyle: dateFormatStyleSelection
+        )
     }
 
     @ViewBuilder
@@ -1464,6 +1469,8 @@ struct ContentView: View {
                             keyDisplaySettingsCards
                             // ──── 表示 ────
                             displaySettingsCards
+                            // ──── 書式 ────
+                            formatSettingsCards
                             // ──── 変換 ────
                             conversionSettingsCards
                             // ──── 語彙管理 ────
