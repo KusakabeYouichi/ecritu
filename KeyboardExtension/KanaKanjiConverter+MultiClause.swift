@@ -1013,11 +1013,24 @@ extension KanaKanjiConverter {
             for node in nodes {
                 spanSurfaces[node.spanKey, default: []].insert(node.surface)
             }
-            for node in nodes where !node.isCurated {
-                guard let modern = KanaKanjiConverter.modernizedKyujitaiSurface(node.surface),
+            var personNameKindsCache: [String: [String: String]] = [:]
+            let variantCategories = stateQueue.sync { scriptVariantSuppressionCategories }
+            for node in nodes where !node.isCurated && !variantCategories.isEmpty {
+                guard let modern = KanaKanjiConverter.standardizedScriptVariantSurface(
+                        node.surface,
+                        categories: variantCategories
+                    ),
                     modern != node.surface,
                     spanSurfaces[node.spanKey]?.contains(modern) == true,
                     !(KanaKanjiSeedDictionary.seed[node.reading]?.contains(node.surface) ?? false) else {
+                    continue
+                }
+                // 人名(Sudachi の姓/名)の旧字体表記は残す(小野澤/千惠/眞子。辞書全体で
+                // 抑制対象 6868 組のうち 5661 組が人名。ユーザ指定 2991)
+                if personNameKindsCache[node.reading] == nil {
+                    personNameKindsCache[node.reading] = store.personNameKinds(for: node.reading)
+                }
+                if personNameKindsCache[node.reading]?[node.surface] != nil {
                     continue
                 }
                 scriptVariantSuppressedNodeKeys.insert(node.key)

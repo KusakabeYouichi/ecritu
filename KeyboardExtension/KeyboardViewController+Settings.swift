@@ -37,6 +37,16 @@ extension KeyboardViewController {
         ) ?? .suppress
         kanaKanjiConverter.setMazegakiCandidateMode(mazegakiMode)
 
+        // 旧字体・異体字の抑制(小分類ごと。人名で生きている異体字だけ初期設定オフ。2991)
+        var variantCategories = Set<ScriptVariantSuppressionCategory>()
+        for category in ScriptVariantSuppressionCategory.allCases {
+            let fallback = ScriptVariantSuppressionCategory.defaultEnabled.contains(category)
+            if sharedBoolValue(from: sharedDefaults, key: category.settingsKey, fallback: fallback) {
+                variantCategories.insert(category)
+            }
+        }
+        kanaKanjiConverter.setScriptVariantSuppressionCategories(variantCategories)
+
         kanaKanjiConverter.setOrdinalMeKanjiPreferred(
             sharedBoolValue(
                 from: sharedDefaults,

@@ -52,6 +52,9 @@ final class KanaKanjiConverter {
     // 交ぜ書き(まん延/作ひん 等=常用漢字外を嫌ったかな開き)の扱い。既定は抑制。
     var katakanaEmphasisCandidateMode: ScriptVariantCandidateMode = .suppress
     var mazegakiCandidateMode: ScriptVariantCandidateMode = .suppress
+    // 旧字体・異体字の抑制(小分類ごとにコンテナー設定。人名は分類に関わらず常に対象外。2991)
+    var scriptVariantSuppressionCategories: Set<ScriptVariantSuppressionCategory> =
+        ScriptVariantSuppressionCategory.defaultEnabled
     // め終わり読みの『め/目』選好(コンテナー設定。applyMeSuffixPreferences 参照)。
     // 序数(première…): true=漢字『目』を先に(既定。1973年内閣告示第2号 通則4 の表記)。
     // 形容詞語幹(un peu…): true=『目』形も出す(かな『め』が先)。既定はオフ(告示 付表の語1)。
@@ -134,6 +137,16 @@ final class KanaKanjiConverter {
                 return
             }
             katakanaEmphasisCandidateMode = mode
+            invalidateCandidateCache()
+        }
+    }
+
+    func setScriptVariantSuppressionCategories(_ categories: Set<ScriptVariantSuppressionCategory>) {
+        stateQueue.sync {
+            guard scriptVariantSuppressionCategories != categories else {
+                return
+            }
+            scriptVariantSuppressionCategories = categories
             invalidateCandidateCache()
         }
     }
@@ -803,18 +816,24 @@ final class KanaKanjiConverter {
             inflectionDerivedCandidates: inflectionDerivedCandidatesForScriptVariant,
             to: &scores
         )
-        applyKyujitaiSuppression(context, to: &scores)
+        applyScriptVariantSurfaceSuppression(context, to: &scores)
     }
 
-    // 旧字体(氣持/會社/變更 等)は、同じ読みに新字体版の候補が実在するときだけ落とす(2987)。
-    // 新字体版が無い固有名詞(和氣あず未/國場組/守禮門、魚香肉絲 等)や、ユーザが明示した語
-    // (追加語彙/学習/seed/補助語彙)は対象外。旧仮名(ゐゑ)と違い設定は設けない — 旧字体を
-    // 使いたい語は plist に登録する運用(既に ryukyu/personnalités 等で多数登録済み)
-    private func applyKyujitaiSuppression(
+    // 旧字体・異体字(氣持/會社/變更/仝じ/聯合 等)は、同じ読みに標準字体版の候補が実在する
+    // ときだけ落とす(2987、小分類の設定化は 2991)。標準字体版が無い固有名詞(和氣あず未/
+    // 國場組/守禮門、魚香肉絲 等)や、ユーザが明示した語(追加語彙/学習/seed/補助語彙)、
+    // 人名(Sudachi の姓/名)は対象外。小分類は scriptVariantSuppressionCategories で制御
+    private func applyScriptVariantSurfaceSuppression(
         _ context: CandidateGenerationContext,
         to scores: inout [String: Int]
     ) {
-        let targets = scores.keys.filter { Self.modernizedKyujitaiSurface($0) != nil }
+        let categories = stateQueue.sync { scriptVariantSuppressionCategories }
+        guard !categories.isEmpty else {
+            return
+        }
+        let targets = scores.keys.filter {
+            Self.standardizedScriptVariantSurface($0, categories: categories) != nil
+        }
         guard !targets.isEmpty else {
             return
         }
@@ -824,12 +843,15 @@ final class KanaKanjiConverter {
         exempt.formUnion(store.loadSupplementalSystemDictionary().candidates(for: context.reading))
         // 部首名から供給する字形(せい→齊 等)は旧字体でも字そのものが目的なので落とさない
         exempt.formUnion(KanjiRadicalCatalog.formsByKanaName[context.reading] ?? [])
-        exempt.formUnion(Self.kyujitaiKeepSurfaces)
+        exempt.formUnion(Self.scriptVariantKeepSurfaces)
+        // 人名(Sudachi の姓/名)の旧字体表記は残す。小野澤/千惠/眞子/濱二 等、辞書全体で
+        // 抑制対象 6868 組のうち 5661 組が人名だった(ユーザ指定 2991)
+        exempt.formUnion(store.personNameKinds(for: context.reading).keys)
         let pool = Set(scores.keys).union(context.systemCandidates)
         for candidate in targets where !exempt.contains(candidate) {
-            guard let modern = Self.modernizedKyujitaiSurface(candidate),
-                modern != candidate,
-                pool.contains(modern) else {
+            guard let standard = Self.standardizedScriptVariantSurface(candidate, categories: categories),
+                standard != candidate,
+                pool.contains(standard) else {
                 continue
             }
             scores.removeValue(forKey: candidate)

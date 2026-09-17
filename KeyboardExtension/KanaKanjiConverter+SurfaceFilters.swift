@@ -681,58 +681,86 @@ extension KanaKanjiConverter {
     // 旧仮名遣い専用の仮名。ゐ/ゑ(ひらがな)・ヰ/ヱ(カタカナ)。設定「旧仮名遣いの候補を含める」で制御。
     static let historicalKanaScalars: Set<Character> = ["ゐ", "ゑ", "ヰ", "ヱ"]
 
-    // 旧字体(康熙字体)→ 新字体。氣持/會社/變更 等が同読みの新字体候補と並ぶのを抑えるために使う
-    // (2987、ユーザ報告 きもち→氣持/氣持ち)。抑制は「同じ読みに新字体版の候補が実在するとき」だけで、
-    // 新字体版が無い固有名詞(和氣あず未/國場組/守禮門/澤岻、魚香肉絲、攝爾修斯 等)はそのまま残る。
-    // 現代語でも通用する異体字(龍/嶋/曾/彌/髙/﨑/桧 等)は、旧字体ではあっても表記として生きているので
-    // 入れない。人名用の 邊/邉 も別字として使われるため対象外
-    static let kyujitaiToShinjitai: [Character: Character] = [
-        "亞": "亜", "惡": "悪", "壓": "圧", "圍": "囲", "醫": "医", "飮": "飲", "隱": "隠", "榮": "栄",
-        "營": "営", "衞": "衛", "驛": "駅", "圓": "円", "緣": "縁", "應": "応", "歐": "欧", "毆": "殴",
-        "穩": "穏", "假": "仮", "價": "価", "畫": "画", "會": "会", "壞": "壊", "懷": "懐", "樂": "楽",
-        "學": "学", "陷": "陥", "勸": "勧", "卷": "巻", "寬": "寛", "歡": "歓", "關": "関", "氣": "気",
-        "歸": "帰", "犧": "犠", "舊": "旧", "據": "拠", "擧": "挙", "峽": "峡", "狹": "狭", "鄕": "郷",
-        "曉": "暁", "區": "区", "驅": "駆", "勳": "勲", "徑": "径", "惠": "恵", "揭": "掲", "溪": "渓",
-        "經": "経", "繼": "継", "莖": "茎", "螢": "蛍", "輕": "軽", "藝": "芸", "缺": "欠", "儉": "倹",
-        "劍": "剣", "圈": "圏", "檢": "検", "權": "権", "獻": "献", "縣": "県", "險": "険", "顯": "顕",
-        "驗": "験", "嚴": "厳", "效": "効", "廣": "広", "恆": "恒", "鑛": "鉱", "號": "号", "國": "国",
-        "濟": "済", "碎": "砕", "齋": "斎", "齊": "斉", "雜": "雑", "參": "参", "慘": "惨", "棧": "桟",
-        "贊": "賛", "殘": "残", "絲": "糸", "齒": "歯", "兒": "児", "辭": "辞", "濕": "湿", "實": "実",
-        "舍": "舎", "寫": "写", "釋": "釈", "壽": "寿", "收": "収", "從": "従", "澁": "渋", "獸": "獣",
-        "縱": "縦", "肅": "粛", "處": "処", "緖": "緒", "燒": "焼", "奬": "奨", "將": "将", "稱": "称",
-        "證": "証", "乘": "乗", "剩": "剰", "壤": "壌", "孃": "嬢", "條": "条", "淨": "浄", "疊": "畳",
-        "讓": "譲", "釀": "醸", "囑": "嘱", "觸": "触", "寢": "寝", "愼": "慎", "眞": "真", "盡": "尽",
-        "圖": "図", "粹": "粋", "醉": "酔", "隨": "随", "髓": "髄", "數": "数", "樞": "枢", "瀨": "瀬",
-        "靜": "静", "攝": "摂", "竊": "窃", "專": "専", "戰": "戦", "淺": "浅", "潛": "潜", "纖": "繊",
-        "踐": "践", "錢": "銭", "禪": "禅", "雙": "双", "壯": "壮", "搜": "捜", "插": "挿", "巢": "巣",
-        "爭": "争", "總": "総", "莊": "荘", "裝": "装", "藏": "蔵", "臟": "臓", "屬": "属", "續": "続",
-        "墮": "堕", "體": "体", "對": "対", "帶": "帯", "滯": "滞", "臺": "台", "擇": "択", "澤": "沢",
-        "擔": "担", "單": "単", "團": "団", "彈": "弾", "斷": "断", "癡": "痴", "遲": "遅", "晝": "昼",
-        "蟲": "虫", "鑄": "鋳", "廳": "庁", "徵": "徴", "聽": "聴", "敕": "勅", "鎭": "鎮", "轉": "転",
-        "傳": "伝", "燈": "灯", "當": "当", "黨": "党", "盜": "盗", "稻": "稲", "德": "徳", "獨": "独",
-        "讀": "読", "屆": "届", "繩": "縄", "拜": "拝", "賣": "売", "髮": "髪", "拔": "抜", "蠻": "蛮",
-        "祕": "秘", "濱": "浜", "佛": "仏", "拂": "払", "變": "変", "辨": "弁", "瓣": "弁", "辯": "弁",
-        "舖": "舗", "步": "歩", "寶": "宝", "豐": "豊", "沒": "没", "飜": "翻", "每": "毎", "萬": "万",
-        "滿": "満", "麥": "麦", "默": "黙", "藥": "薬", "譯": "訳", "豫": "予", "餘": "余", "與": "与",
-        "譽": "誉", "搖": "揺", "樣": "様", "謠": "謡", "來": "来", "賴": "頼", "亂": "乱", "覽": "覧",
-        "兩": "両", "獵": "猟", "綠": "緑", "淚": "涙", "壘": "塁", "勵": "励", "禮": "礼", "靈": "霊",
-        "齡": "齢", "曆": "暦", "歷": "歴", "戀": "恋", "爐": "炉", "勞": "労", "樓": "楼", "灣": "湾",
-        "惱": "悩", "腦": "脳", "廢": "廃", "晚": "晩", "顏": "顔", "卽": "即", "狀": "状"
+    // 旧字体・異体字 → 現代の標準字体。小分類ごとにコンテナー設定でオン/オフする(2991)。
+    // 抑制は「同じ読みに標準字体版の候補が実在するとき」だけで、標準字体版が無い固有名詞
+    // (和氣あず未/國場組/守禮門/魚香肉絲 等)はそのまま残る。人名(Sudachi の姓/名)は
+    // 分類に関わらず常に対象外(小野澤/千惠/眞子)。
+    struct ScriptVariantMapping {
+        let standard: Character
+        let category: ScriptVariantSuppressionCategory
+        init(_ standard: Character, _ category: ScriptVariantSuppressionCategory) {
+            self.standard = standard
+            self.category = category
+        }
+    }
+
+    static let scriptVariantToStandard: [Character: ScriptVariantMapping] = [
+        // 旧字体(康熙字体)
+        "亞": .init("亜", .kyujitai), "惡": .init("悪", .kyujitai), "壓": .init("圧", .kyujitai), "圍": .init("囲", .kyujitai), "醫": .init("医", .kyujitai), "飮": .init("飲", .kyujitai), "隱": .init("隠", .kyujitai), "榮": .init("栄", .kyujitai),
+        "營": .init("営", .kyujitai), "衞": .init("衛", .kyujitai), "驛": .init("駅", .kyujitai), "圓": .init("円", .kyujitai), "緣": .init("縁", .kyujitai), "應": .init("応", .kyujitai), "歐": .init("欧", .kyujitai), "毆": .init("殴", .kyujitai),
+        "穩": .init("穏", .kyujitai), "假": .init("仮", .kyujitai), "價": .init("価", .kyujitai), "畫": .init("画", .kyujitai), "會": .init("会", .kyujitai), "壞": .init("壊", .kyujitai), "懷": .init("懐", .kyujitai), "樂": .init("楽", .kyujitai),
+        "學": .init("学", .kyujitai), "陷": .init("陥", .kyujitai), "勸": .init("勧", .kyujitai), "卷": .init("巻", .kyujitai), "寬": .init("寛", .kyujitai), "歡": .init("歓", .kyujitai), "關": .init("関", .kyujitai), "氣": .init("気", .kyujitai),
+        "歸": .init("帰", .kyujitai), "犧": .init("犠", .kyujitai), "舊": .init("旧", .kyujitai), "據": .init("拠", .kyujitai), "擧": .init("挙", .kyujitai), "峽": .init("峡", .kyujitai), "狹": .init("狭", .kyujitai), "鄕": .init("郷", .kyujitai),
+        "曉": .init("暁", .kyujitai), "區": .init("区", .kyujitai), "驅": .init("駆", .kyujitai), "勳": .init("勲", .kyujitai), "徑": .init("径", .kyujitai), "惠": .init("恵", .kyujitai), "經": .init("経", .kyujitai), "繼": .init("継", .kyujitai),
+        "莖": .init("茎", .kyujitai), "螢": .init("蛍", .kyujitai), "輕": .init("軽", .kyujitai), "藝": .init("芸", .kyujitai), "缺": .init("欠", .kyujitai), "儉": .init("倹", .kyujitai), "劍": .init("剣", .kyujitai), "圈": .init("圏", .kyujitai),
+        "檢": .init("検", .kyujitai), "權": .init("権", .kyujitai), "獻": .init("献", .kyujitai), "縣": .init("県", .kyujitai), "險": .init("険", .kyujitai), "顯": .init("顕", .kyujitai), "驗": .init("験", .kyujitai), "嚴": .init("厳", .kyujitai),
+        "效": .init("効", .kyujitai), "廣": .init("広", .kyujitai), "鑛": .init("鉱", .kyujitai), "號": .init("号", .kyujitai), "國": .init("国", .kyujitai), "濟": .init("済", .kyujitai), "碎": .init("砕", .kyujitai), "齋": .init("斎", .kyujitai),
+        "齊": .init("斉", .kyujitai), "雜": .init("雑", .kyujitai), "參": .init("参", .kyujitai), "慘": .init("惨", .kyujitai), "棧": .init("桟", .kyujitai), "贊": .init("賛", .kyujitai), "殘": .init("残", .kyujitai), "齒": .init("歯", .kyujitai),
+        "兒": .init("児", .kyujitai), "辭": .init("辞", .kyujitai), "濕": .init("湿", .kyujitai), "實": .init("実", .kyujitai), "舍": .init("舎", .kyujitai), "寫": .init("写", .kyujitai), "釋": .init("釈", .kyujitai), "壽": .init("寿", .kyujitai),
+        "收": .init("収", .kyujitai), "從": .init("従", .kyujitai), "澁": .init("渋", .kyujitai), "獸": .init("獣", .kyujitai), "縱": .init("縦", .kyujitai), "肅": .init("粛", .kyujitai), "處": .init("処", .kyujitai), "燒": .init("焼", .kyujitai),
+        "將": .init("将", .kyujitai), "稱": .init("称", .kyujitai), "證": .init("証", .kyujitai), "乘": .init("乗", .kyujitai), "剩": .init("剰", .kyujitai), "壤": .init("壌", .kyujitai), "孃": .init("嬢", .kyujitai), "條": .init("条", .kyujitai),
+        "淨": .init("浄", .kyujitai), "疊": .init("畳", .kyujitai), "讓": .init("譲", .kyujitai), "釀": .init("醸", .kyujitai), "囑": .init("嘱", .kyujitai), "觸": .init("触", .kyujitai), "寢": .init("寝", .kyujitai), "愼": .init("慎", .kyujitai),
+        "眞": .init("真", .kyujitai), "盡": .init("尽", .kyujitai), "圖": .init("図", .kyujitai), "粹": .init("粋", .kyujitai), "醉": .init("酔", .kyujitai), "隨": .init("随", .kyujitai), "髓": .init("髄", .kyujitai), "數": .init("数", .kyujitai),
+        "樞": .init("枢", .kyujitai), "瀨": .init("瀬", .kyujitai), "靜": .init("静", .kyujitai), "攝": .init("摂", .kyujitai), "竊": .init("窃", .kyujitai), "專": .init("専", .kyujitai), "戰": .init("戦", .kyujitai), "淺": .init("浅", .kyujitai),
+        "潛": .init("潜", .kyujitai), "纖": .init("繊", .kyujitai), "踐": .init("践", .kyujitai), "錢": .init("銭", .kyujitai), "禪": .init("禅", .kyujitai), "雙": .init("双", .kyujitai), "壯": .init("壮", .kyujitai), "搜": .init("捜", .kyujitai),
+        "插": .init("挿", .kyujitai), "巢": .init("巣", .kyujitai), "爭": .init("争", .kyujitai), "總": .init("総", .kyujitai), "莊": .init("荘", .kyujitai), "裝": .init("装", .kyujitai), "藏": .init("蔵", .kyujitai), "臟": .init("臓", .kyujitai),
+        "屬": .init("属", .kyujitai), "續": .init("続", .kyujitai), "墮": .init("堕", .kyujitai), "體": .init("体", .kyujitai), "對": .init("対", .kyujitai), "帶": .init("帯", .kyujitai), "滯": .init("滞", .kyujitai), "臺": .init("台", .kyujitai),
+        "擇": .init("択", .kyujitai), "澤": .init("沢", .kyujitai), "擔": .init("担", .kyujitai), "單": .init("単", .kyujitai), "團": .init("団", .kyujitai), "彈": .init("弾", .kyujitai), "斷": .init("断", .kyujitai), "癡": .init("痴", .kyujitai),
+        "遲": .init("遅", .kyujitai), "晝": .init("昼", .kyujitai), "蟲": .init("虫", .kyujitai), "鑄": .init("鋳", .kyujitai), "廳": .init("庁", .kyujitai), "徵": .init("徴", .kyujitai), "聽": .init("聴", .kyujitai), "鎭": .init("鎮", .kyujitai),
+        "轉": .init("転", .kyujitai), "傳": .init("伝", .kyujitai), "燈": .init("灯", .kyujitai), "當": .init("当", .kyujitai), "黨": .init("党", .kyujitai), "盜": .init("盗", .kyujitai), "稻": .init("稲", .kyujitai), "德": .init("徳", .kyujitai),
+        "獨": .init("独", .kyujitai), "讀": .init("読", .kyujitai), "屆": .init("届", .kyujitai), "繩": .init("縄", .kyujitai), "拜": .init("拝", .kyujitai), "賣": .init("売", .kyujitai), "髮": .init("髪", .kyujitai), "拔": .init("抜", .kyujitai),
+        "蠻": .init("蛮", .kyujitai), "濱": .init("浜", .kyujitai), "佛": .init("仏", .kyujitai), "拂": .init("払", .kyujitai), "變": .init("変", .kyujitai), "辨": .init("弁", .kyujitai), "瓣": .init("弁", .kyujitai), "辯": .init("弁", .kyujitai),
+        "寶": .init("宝", .kyujitai), "豐": .init("豊", .kyujitai), "萬": .init("万", .kyujitai), "滿": .init("満", .kyujitai), "麥": .init("麦", .kyujitai), "默": .init("黙", .kyujitai), "藥": .init("薬", .kyujitai), "譯": .init("訳", .kyujitai),
+        "豫": .init("予", .kyujitai), "餘": .init("余", .kyujitai), "與": .init("与", .kyujitai), "譽": .init("誉", .kyujitai), "搖": .init("揺", .kyujitai), "樣": .init("様", .kyujitai), "謠": .init("謡", .kyujitai), "來": .init("来", .kyujitai),
+        "賴": .init("頼", .kyujitai), "亂": .init("乱", .kyujitai), "覽": .init("覧", .kyujitai), "兩": .init("両", .kyujitai), "獵": .init("猟", .kyujitai), "綠": .init("緑", .kyujitai), "淚": .init("涙", .kyujitai), "壘": .init("塁", .kyujitai),
+        "勵": .init("励", .kyujitai), "禮": .init("礼", .kyujitai), "靈": .init("霊", .kyujitai), "齡": .init("齢", .kyujitai), "曆": .init("暦", .kyujitai), "歷": .init("歴", .kyujitai), "戀": .init("恋", .kyujitai), "爐": .init("炉", .kyujitai),
+        "勞": .init("労", .kyujitai), "樓": .init("楼", .kyujitai), "灣": .init("湾", .kyujitai), "惱": .init("悩", .kyujitai), "腦": .init("脳", .kyujitai), "廢": .init("廃", .kyujitai),
+        // 異体字(印刷標準字体レベルの差)
+        "揭": .init("掲", .itaiji), "溪": .init("渓", .itaiji), "恆": .init("恒", .itaiji), "絲": .init("糸", .itaiji), "緖": .init("緒", .itaiji), "奬": .init("奨", .itaiji), "敕": .init("勅", .itaiji), "祕": .init("秘", .itaiji),
+        "舖": .init("舗", .itaiji), "步": .init("歩", .itaiji), "沒": .init("没", .itaiji), "飜": .init("翻", .itaiji), "每": .init("毎", .itaiji), "晚": .init("晩", .itaiji), "顏": .init("顔", .itaiji), "卽": .init("即", .itaiji),
+        "狀": .init("状", .itaiji),
+        // 略字
+        "仝": .init("同", .ryakuji), "卆": .init("卒", .ryakuji),
+        // 紛らわしい別字
+        "聯": .init("連", .confusable), "聨": .init("連", .confusable),
+        // 人名で生きている異体字(初期設定はオフ)
+        "邊": .init("辺", .personNameVariant), "邉": .init("辺", .personNameVariant), "龍": .init("竜", .personNameVariant), "瀧": .init("滝", .personNameVariant), "嶋": .init("島", .personNameVariant), "嶌": .init("島", .personNameVariant), "曾": .init("曽", .personNameVariant), "彌": .init("弥", .personNameVariant),
+        "髙": .init("高", .personNameVariant), "﨑": .init("崎", .personNameVariant), "栁": .init("柳", .personNameVariant), "濵": .init("浜", .personNameVariant), "桒": .init("桑", .personNameVariant), "槇": .init("槙", .personNameVariant), "籔": .init("藪", .personNameVariant)
     ]
 
     // 新字体版が辞書にあっても残す旧字体(固有名詞・原語表記)。plist 登録(補助語彙/追加語彙)や
     // seed で守れないものだけをここに置く
-    static let kyujitaiKeepSurfaces: Set<String> = [
+    static let scriptVariantKeepSurfaces: Set<String> = [
         // 台灣: 繁体字の国名表記。台湾 が辞書にあるため一括抑制の対象になるが、原語表記として残す(2529/2531 の並びを維持)
         "台灣"
     ]
 
-    // 旧字体を含むなら新字体へ写した表層、含まないなら nil
-    static func modernizedKyujitaiSurface(_ surface: String) -> String? {
-        guard surface.contains(where: { kyujitaiToShinjitai[$0] != nil }) else {
+    // 有効な分類の旧字体・異体字を含むなら標準字体へ写した表層、含まないなら nil
+    static func standardizedScriptVariantSurface(
+        _ surface: String,
+        categories: Set<ScriptVariantSuppressionCategory>
+    ) -> String? {
+        func mapped(_ character: Character) -> Character? {
+            guard let mapping = scriptVariantToStandard[character],
+                categories.contains(mapping.category) else {
+                return nil
+            }
+            return mapping.standard
+        }
+        guard surface.contains(where: { mapped($0) != nil }) else {
             return nil
         }
-        return String(surface.map { kyujitaiToShinjitai[$0] ?? $0 })
+        return String(surface.map { mapped($0) ?? $0 })
     }
     // かな踊り字(繰り返し記号)。ゝ/ゞ(ひらがな)・ヽ/ヾ(カタカナ)。設定「仮名の踊り字の候補を含める」で
     // 制御(旧仮名遣いとは独立)。※漢字の 々(人々/時々 等で正当)は除外。
