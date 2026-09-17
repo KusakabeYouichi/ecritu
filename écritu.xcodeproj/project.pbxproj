@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C6FE2CFFEE225D820459E2D1 /* KanaTextNormalizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */; };
+		26AAE912515D7C2168E06A5E /* SupplementalVocabCompactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */; };
+		0B77621898C089EA619439E5 /* SupplementalVocabCompactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */; };
+		5D120A86CB3819D22C4FF0CD /* SupplementalVocabCompactStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */; };
 		A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F54F6835629848F61C8D81 /* AppleEmojiCatalog.swift */; };
 		A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39716214A902EFE0258ECF45 /* DakutenDuckIcon.swift */; };
 		5C73BA92F9B707E8D0F8F160 /* ContactCacheCipher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B70228F070A1B08A805E031 /* ContactCacheCipher.swift */; };
@@ -214,6 +218,7 @@
 /* Begin PBXFileReference section */
 		0B48E53773A110FCDB0D91D7 /* ÉcrituPremierVocab.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "ÉcrituPremierVocab.json"; sourceTree = "<group>"; };
 		0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KanaKanjiStore.swift; sourceTree = "<group>"; };
+		3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupplementalVocabCompactStore.swift; sourceTree = "<group>"; };
 		105353784C776E1A40C7A8AE /* SettingsModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsModels.swift; sourceTree = "<group>"; };
 		1101C5F140F04B38C98D298F /* ThirdPartyLicensesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThirdPartyLicensesView.swift; sourceTree = "<group>"; };
 		1350C355909AB4D0F84C48DF /* IndexedVocabularyList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = IndexedVocabularyList.swift; sourceTree = "<group>"; };
@@ -447,6 +452,7 @@
 				A1B2C3D4E5F600000000AB05 /* KanaKanjiConverter+MultiClauseTables.swift */,
 				280DC806280D22AF5EF91508 /* KanaKanjiSeedDictionary.swift */,
 				0CDFD7A0DB06E1D737E502DF /* KanaKanjiStore.swift */,
+				3BEDB9F2531DDB35F1DCE849 /* SupplementalVocabCompactStore.swift */,
 				273590BA984813E0EEEABE45 /* KanaKanjiTypes.swift */,
 				4F0D1FE5173616F003E85277 /* KanaTextNormalizer.swift */,
 				C52949EB4A52E9D891A305A3 /* KaomojiCatalog.swift */,
@@ -812,6 +818,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0B77621898C089EA619439E5 /* SupplementalVocabCompactStore.swift in Sources */,
 				A1B2C3D4E5F600000T000000 /* AppleEmojiCatalog.swift in Sources */,
 				A1B2C3D4E5F600000T000001 /* DakutenDuckIcon.swift in Sources */,
 				5C73BA92F9B707E8D0F8F160 /* ContactCacheCipher.swift in Sources */,
@@ -886,6 +893,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6FE2CFFEE225D820459E2D1 /* KanaTextNormalizer.swift in Sources */,
+				26AAE912515D7C2168E06A5E /* SupplementalVocabCompactStore.swift in Sources */,
 				4295AC8BC709B3CD3FE6E133 /* ContentView.swift in Sources */,
 				EC8FDC01B55FCFCE162E0226 /* DakutenDuckIcon.swift in Sources */,
 				60B06C587F133C40555963C6 /* ContactCacheCipher.swift in Sources */,
@@ -913,6 +922,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D120A86CB3819D22C4FF0CD /* SupplementalVocabCompactStore.swift in Sources */,
 				2653402FC791880CEEA47249 /* AppleEmojiCatalog.swift in Sources */,
 				8C430DDA862C1BE5CE3F4275 /* DakutenDuckIcon.swift in Sources */,
 				B7067E4631919AD2BEF06FD1 /* ContactCacheCipher.swift in Sources */,

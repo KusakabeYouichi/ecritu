@@ -29,6 +29,72 @@ enum ContactCacheCipher {
         return dictionary
     }
 
+    // 連絡先キャッシュの上限(拡張の常駐量を抑えるための頭打ち)。以前は拡張側だけが持ち、
+    // 復号した辞書を拡張で切り詰めていた。畳んだ表で渡す方式(3020)ではコンテナー側が
+    // 同じ規則で切ってから畳む必要があるため、両ターゲットが使うこのファイルへ移した
+    enum Limits {
+        static let maximumReadings = 4096
+        static let maximumTotalEntries = 16384
+        static let maximumCandidatesPerReading = 48
+    }
+
+    // 読みの正規化・前後空白の除去・重複排除・上限の適用。読みの昇順で切るので、
+    // 上限に掛かったときにどれが落ちるかが決まる(以前は辞書の反復順で不定だった)
+    static func limited(_ source: [String: [String]]) -> [String: [String]] {
+        guard !source.isEmpty else {
+            return [:]
+        }
+        var limited: [String: [String]] = [:]
+        var totalCandidateCount = 0
+        for reading in source.keys.sorted() {
+            if limited.count >= Limits.maximumReadings
+                || totalCandidateCount >= Limits.maximumTotalEntries {
+                break
+            }
+            let normalizedReading = KanaTextNormalizer.normalizedReading(reading)
+            guard !normalizedReading.isEmpty else {
+                continue
+            }
+            if limited[normalizedReading] == nil, limited.count >= Limits.maximumReadings {
+                continue
+            }
+            var candidates = limited[normalizedReading] ?? []
+            var seen = Set(candidates)
+            for candidate in source[reading] ?? [] {
+                if candidates.count >= Limits.maximumCandidatesPerReading
+                    || totalCandidateCount >= Limits.maximumTotalEntries {
+                    break
+                }
+                let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+                guard !trimmed.isEmpty, seen.insert(trimmed).inserted else {
+                    continue
+                }
+                candidates.append(trimmed)
+                totalCandidateCount += 1
+            }
+            if !candidates.isEmpty {
+                limited[normalizedReading] = candidates
+            }
+        }
+        return limited
+    }
+
+    // 畳んだ表のまま封緘する版(3020)。JSON 辞書で渡すと拡張側が復元のたびに
+    // 4,126 読みの [String: [String]] を一瞬だけ作り、malloc アリーナを 4MB 広げて
+    // 返さなかった(実機計測)。連絡先はめったに変わらないので、コンテナー側で
+    // コンパクト表に畳んでから封緘する
+    static func sealCompact(_ store: SupplementalVocabCompactStore, key: SymmetricKey) -> Data? {
+        try? AES.GCM.seal(store.serializedData(), using: key).combined
+    }
+
+    static func openCompact(_ data: Data, key: SymmetricKey) -> SupplementalVocabCompactStore? {
+        guard let box = try? AES.GCM.SealedBox(combined: data),
+            let raw = try? AES.GCM.open(box, using: key) else {
+            return nil
+        }
+        return SupplementalVocabCompactStore(serialized: raw)
+    }
+
     static func keychainKey(createNew: Bool) -> SymmetricKey? {
         var query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
