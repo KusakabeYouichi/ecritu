@@ -17,7 +17,6 @@
 	<dict><key>phrase</key><string>締目</string><key>shortcut</key><string>しめ</string></dict>	<!-- 締め目 なら読みは しめめ。しめ読みでの供給が seed {締め、〆、〆め、絞め} に割り込む(2643) -->
 	<dict><key>phrase</key><string>せん門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の部分かな書き(Sudachi実在)。ばかリ と同型の交ぜ書きエントリ(2637) -->
 	<dict><key>phrase</key><string>瘦身</string><key>shortcut</key><string>そうしん</string></dict>	<!-- 痩身(U+75E9)の旧字体 瘦(U+7626)。字形がほぼ同じで選び間違えやすく、そうしん の候補に並ぶと紛らわしい(ユーザ指定 2939) -->
-	<dict><key>phrase</key><string>斷つ</string><key>shortcut</key><string>たつ</string></dict>	<!-- 断つ の旧字体。字形が似ていて選び間違えやすく、活用形(斷て/斷った)まで候補を汚す(ユーザ指定 2755) -->
 	<dict><key>phrase</key><string>き損</string><key>shortcut</key><string>きそん</string></dict>	<!-- 毀損 の交ぜ書き(新聞表記)(2638) -->
 	<dict><key>phrase</key><string>出えん</string><key>shortcut</key><string>しゅつえん</string></dict>	<!-- 出捐 の交ぜ書き(2638) -->
 	<dict><key>phrase</key><string>ふん装</string><key>shortcut</key><string>ふんそう</string></dict>	<!-- 扮装 の交ぜ書き(2638) -->
@@ -205,15 +204,6 @@
 
 	<!-- ■ 字形が似ていて間違えやすいので抑制する旧字体・異体字・紛らわし表記(誤確定防止) -->
 	<!-- 變 は 変 の旧字体。單漢字 變(へん)が 次(じ)と合成して へんじないし→變次ないし を先頭にしていた。Sudachi の 變 を含む全 9 語を抑制(ユーザ指定 2823) -->
-	<dict><key>phrase</key><string>再變</string><key>shortcut</key><string>さいへん</string></dict>
-	<dict><key>phrase</key><string>事變</string><key>shortcut</key><string>じへん</string></dict>
-	<dict><key>phrase</key><string>變</string><key>shortcut</key><string>へん</string></dict>
-	<dict><key>phrase</key><string>變革</string><key>shortcut</key><string>へんかく</string></dict>
-	<dict><key>phrase</key><string>變更</string><key>shortcut</key><string>へんこう</string></dict>
-	<dict><key>phrase</key><string>變事</string><key>shortcut</key><string>へんじ</string></dict>
-	<dict><key>phrase</key><string>變字</string><key>shortcut</key><string>へんじ</string></dict>
-	<dict><key>phrase</key><string>變じる</string><key>shortcut</key><string>へんじる</string></dict>
-	<dict><key>phrase</key><string>變貌</string><key>shortcut</key><string>へんぼう</string></dict>
 	<!-- 吞(U+541F)は 呑(U+541E)の異体字(康熙字典体/中国の字形)。日本語の標準は 呑 で、字形が似ていて候補で見分けられないので 吞 を含む Sudachi の全 22 語を抑制(ユーザ指定 2820) -->
 	<dict><key>phrase</key><string>あわせ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
 	<dict><key>phrase</key><string>併せ吞む</string><key>shortcut</key><string>あわせのむ</string></dict>
@@ -237,13 +227,7 @@
 	<dict><key>phrase</key><string>魔吞</string><key>shortcut</key><string>まのん</string></dict>
 	<dict><key>phrase</key><string>湯吞</string><key>shortcut</key><string>ゆのみ</string></dict>
 	<dict><key>phrase</key><string>湯吞み</string><key>shortcut</key><string>ゆのみ</string></dict>
-	<dict><key>phrase</key><string>繁榮</string><key>shortcut</key><string>はんえい</string></dict>	<!-- 繁榮(はんえい): 繁栄 の旧字体。見間違えて混ざる(ユーザ指定 2818) -->
 	<dict><key>phrase</key><string>鰺</string><key>shortcut</key><string>あじ</string></dict>	<!-- 鯵 の異体字。字形が似て選び間違える(2642) -->
-	<dict><key>phrase</key><string>歷史</string><key>shortcut</key><string>れきし</string></dict>	<!-- 歴史 の旧字体(歷)。字形が似て選び間違える(2637) -->
-	<dict><key>phrase</key><string>專門</string><key>shortcut</key><string>せんもん</string></dict>	<!-- 専門 の旧字体(專)。字形が似て選び間違える(2637) -->
-	<dict><key>phrase</key><string>飜訳</string><key>shortcut</key><string>ほんやく</string></dict>	<!-- 翻訳 の異体字(飜)。字形が似て選び間違える(2637) -->
-	<dict><key>phrase</key><string>飜譯</string><key>shortcut</key><string>ほんやく</string></dict>	<!-- 翻訳 の旧字体(飜譯)。字形が似て選び間違える(2637) -->
-	<dict><key>phrase</key><string>壘</string><key>shortcut</key><string>るい</string></dict>	<!-- 塁 の旧字体。字形が似て選び間違える -->
 	<dict><key>phrase</key><string>瘠せる</string><key>shortcut</key><string>やせる</string></dict>	<!-- 痩せる の異体字(瘠)。字形が似て選び間違える(ユーザ指定 2731) -->
 	<dict><key>phrase</key><string>瘦せる</string><key>shortcut</key><string>やせる</string></dict>	<!-- 痩せる の旧字体(瘦)。同上 -->
 	<dict><key>phrase</key><string>少い</string><key>shortcut</key><string>すくない</string></dict>	<!-- 少ない の旧送り仮名。派生 少く/少かった が 少なく の隣に並び紛らわしい(ユーザ指定 2732) -->
@@ -256,21 +240,12 @@
 	<dict><key>phrase</key><string>草する</string><key>shortcut</key><string>そうする</string></dict>	<!-- 文語サ変(草稿を書く)。同上 -->
 	<dict><key>phrase</key><string>ススメる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- カタカナ強調の収穫。派生(ススメて/ススメていて)が常に3位に並ぶ雑音(ユーザ指定 2741) -->
 	<dict><key>phrase</key><string>ススめる</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 交ぜ書き収穫。同上 -->
-	<dict><key>phrase</key><string>奬める</string><key>shortcut</key><string>すすめる</string></dict>	<!-- 奨める の異体字(奬)。字形がそっくりで選び間違える(ユーザ指定 2741) -->
 	<dict><key>phrase</key><string>纍</string><key>shortcut</key><string>るい</string></dict>	<!-- 累 の異体字。字形が似て選び間違える -->
-	<dict><key>phrase</key><string>南鄕</string><key>shortcut</key><string>なんごう</string></dict>	<!-- 南郷 の旧字体異体字収穫。見た目がほぼ同一で重複に見える -->
-	<dict><key>phrase</key><string>會社</string><key>shortcut</key><string>かいしゃ</string></dict>	<!-- 会社 の旧字体(株式會社 等の合成にも混入していた) -->
-	<dict><key>phrase</key><string>來れる</string><key>shortcut</key><string>これる</string></dict>	<!-- 来れる の旧字体ら抜き形。活用派生(來れやすい 等)の温床でもある -->
 	<dict><key>phrase</key><string>宣野座</string><key>shortcut</key><string>ぎのざ</string></dict>	<!-- 正しくは 宜野座(沖縄県宜野座村)。宣(せん)と宜(ぎ)の字形類似で辞書収穫にも混入した誤表記 -->
 	<dict><key>phrase</key><string>大睦</string><key>shortcut</key><string>たいりく</string></dict>	<!-- 大陸 と字形類似のレア人名収穫。たいりく で出したい場面が無い -->
-	<dict><key>phrase</key><string>沖繩</string><key>shortcut</key><string>おきなわ</string></dict>	<!-- 沖縄 に似る(繩 は 縄 の旧字体) -->
-	<dict><key>phrase</key><string>多數</string><key>shortcut</key><string>たすう</string></dict>	<!-- 多数 に似る(數 は 数 の旧字体) -->
 	<dict><key>phrase</key><string>吞む</string><key>shortcut</key><string>のむ</string></dict>	<!-- 呑む に似る(吞 は 呑 の正字体。ほぼ同形で見分け困難) -->
 	<dict><key>phrase</key><string>醱酵</string><key>shortcut</key><string>はっこう</string></dict>	<!-- 醗酵 に似る(醱 は 醗 の旧字体。使いたいのは 醗酵) -->
-	<dict><key>phrase</key><string>反對</string><key>shortcut</key><string>はんたい</string></dict>	<!-- 反対 に似る(對 は 対 の旧字体) -->
-	<dict><key>phrase</key><string>單位</string><key>shortcut</key><string>たんい</string></dict>	<!-- 単位 に似る(單 は 単 の旧字体) -->
 	<dict><key>phrase</key><string>黑</string><key>shortcut</key><string>くろ</string></dict>	<!-- 黒 に似る(黑 は 黒 の旧字体) -->
-	<dict><key>phrase</key><string>出來る</string><key>shortcut</key><string>できる</string></dict>	<!-- 出来る に似る(來 は 来 の旧字体) -->
 	<dict><key>phrase</key><string>摸型</string><key>shortcut</key><string>もけい</string></dict>	<!-- 模型 に似る(摸 は 模 と手偏/木偏違いの別字) -->
 	<dict><key>phrase</key><string>曵く</string><key>shortcut</key><string>ひく</string></dict>	<!-- 曳く の異体字。ひける の候補を 曳ける/曵ける の二重で汚す(ユーザ指定 2771)。活用形は基底抑制で消える -->
 	<dict><key>phrase</key><string>曵ける</string><key>shortcut</key><string>ひける</string></dict>	<!-- 同上(辞書に可能動詞の行が直接あるため別途抑制) -->
@@ -419,7 +394,6 @@
 	<dict><key>phrase</key><string>衣</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>枝</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>穢</string><key>shortcut</key><string>え</string></dict>
-	<dict><key>phrase</key><string>畫</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>重</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>慧</string><key>shortcut</key><string>え</string></dict>
 	<dict><key>phrase</key><string>会</string><key>shortcut</key><string>え</string></dict>
