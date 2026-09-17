@@ -17704,6 +17704,36 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 速度の門番(3042): 打鍵シミュレーション(読みを 1 字ずつ伸ばす、multi+single)の 1 打鍵あたりを
+    // 3 回測って最小値で見る(機械負荷は最小値にはほぼ乗らない)。現在値 58ms(Debug/シミュレーター。この 4 読みは長めで perf テストの 13 読み平均 47ms より高い)、
+    // 2887 型の倍増(→115ms)を捕まえる幅として 100ms。ユーザ判断「今ぐらいが許容ギリギリ」(2026-09-18)。
+    // 常設で走らせる(TEST_RUNNER_PERF_PROFILE は不要)。落ちたら perf テストで内訳を見る
+    func testPerfBudgetKeystrokeSimulation() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let readings = ["としによる", "たとえていうなら", "さくじょしておきながら", "きょうはてんきがいいのででかけよう"]
+        var bestMs = Double.greatestFiniteMagnitude
+        for _ in 0..<3 {
+            converter.invalidateCandidateCache()
+            var totalMs = 0.0
+            var count = 0
+            for reading in readings {
+                let chars = Array(reading)
+                for length in 4...chars.count {
+                    let prefix = String(chars[0..<length])
+                    let started = CFAbsoluteTimeGetCurrent()
+                    _ = converter.multiClauseCandidates(for: prefix, systemCandidateMode: .surface)
+                    _ = converter.candidates(for: prefix, limit: 8, systemCandidateMode: .surface)
+                    totalMs += (CFAbsoluteTimeGetCurrent() - started) * 1000
+                    count += 1
+                }
+            }
+            bestMs = min(bestMs, totalMs / Double(count))
+        }
+        print(String(format: "PERF budget keystroke simulation best-of-3=%.1fms/keystroke", bestMs))
+        XCTAssertLessThan(bestMs, 100, "1 打鍵あたりの変換が予算(100ms)を超えた。perf テスト(TEST_RUNNER_PERF_PROFILE=1)で内訳を見る")
+    }
+
     // 3041: しめちゃうらしいぞ に 閉めちゃう が無い(ユーザ報告)。基底 しめる の seed 順を 閉める 先頭にし
     // (活用派生と連文節 topK=3 の供給に継がれる)、占める は 3 番目に残して 半分を占めています の供給を守る。
     // 目的語による書き分けは を を挟む連語表(ドア→閉/ネクタイ→締/首→絞)
