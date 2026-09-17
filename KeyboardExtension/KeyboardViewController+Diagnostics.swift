@@ -774,7 +774,10 @@ extension KeyboardViewController {
     // (実測5.0〜5.3秒)に発火するので、これを超える遅れは失敗として数えない。
     static let keyboardAttachWatchdogLateFireToleranceSec: TimeInterval = 5
 
+    // 出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)。記録は起動回数(整数)と時刻だけで
+    // ユーザーの入力文字は含まないが、App Store 版には入れない(3009)
     func startKeyboardAttachWatchdog() {
+#if ECRITU_PRERELEASE_DIAGNOSTICS
         guard let sharedDefaults else {
             return
         }
@@ -832,6 +835,7 @@ extension KeyboardViewController {
             deadline: .now() + Self.keyboardAttachWatchdogDelaySec,
             execute: workItem
         )
+#endif
     }
 
     func cancelKeyboardAttachWatchdog() {
@@ -870,7 +874,9 @@ extension KeyboardViewController {
     // 表示されたインスタンスがオーナー権(重い処理を担う権利)を主張する。viewWillAppear から
     // 呼ぶ。オーナー権を viewDidLoad で主張しないのは startKeyboardDiagnosticsSession の
     // コメント参照(投機生成VCによる横取りを防ぐ)。
+    // 出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)。書くのはセッションの UUID と時刻のみ(同上)
     func claimKeyboardSessionOwnership() {
+#if ECRITU_PRERELEASE_DIAGNOSTICS
         guard let sharedDefaults else {
             return
         }
@@ -886,6 +892,7 @@ extension KeyboardViewController {
         appendKeyboardDiagnosticsLog(
             "表示インスタンスがオーナー権を取得 previousOwner=\(storedToken ?? "none") currentOwner=\(token)"
         )
+#endif
     }
 
     // オーナー権を手放す(未表示のまま解放されるインスタンス用)。保持したままだと
@@ -1203,7 +1210,10 @@ extension KeyboardViewController {
 
     // App Group への書き込み健全性を起動時に1回記録する(コンテナURL到達性と
     // defaults の書き戻し確認)。書けない環境では診断が空になるため、その事実自体を残す。
+    // 出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)。App Group への読み書き可否を調べる固定値の
+    // プローブだけで、ユーザーの入力文字は含まない(同上)
     func recordKeyboardDiagnosticsAppGroupHealth() {
+#if ECRITU_PRERELEASE_DIAGNOSTICS
         let containerReachable = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: SharedDefaultsKeys.appGroupID
         ) != nil
@@ -1222,6 +1232,7 @@ extension KeyboardViewController {
             "AppGroup健全性 group=\(SharedDefaultsKeys.appGroupID) fullAccess=\(hasFullAccess ? 1 : 0)"
                 + " containerURL=\(containerReachable ? "ok" : "nil") defaults=\(defaultsRoundTrip)"
         )
+#endif
     }
 
     // ---- 押下表示残留(赤キー)の証拠収集 ----

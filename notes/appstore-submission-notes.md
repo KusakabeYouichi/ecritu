@@ -58,6 +58,24 @@ third_party/APP_STORE_OPEN_SOURCE_NOTICES.md に「これらのファイル自�
 ライセンス画面から読める)。有償で販売する場合もこの扱いは変わらない — アプリ本体の
 販売条件と、同梱データの再配布条件は別物として整理している。
 
+## 出荷前診断のスイッチ(提出時に 1 か所だけ変える)
+
+TestFlight 配布中だけ入れたい計測・可視化は、すべて Swift の
+`#if ECRITU_PRERELEASE_DIAGNOSTICS` で括ってある。組み込みは
+**Config/Edition.xcconfig の `ECRITU_PRERELEASE_DIAGNOSTICS`** 1 行で決まる。
+
+- `1`(既定) — 開発・TestFlight。でばぐ可視化と診断カウンターが入る
+- `0` — **App Store 提出はこちら**。`#if` の中身ごとバイナリから消える
+
+`tools/verify_archive_artifacts.sh` が 1 のままのアーカイブを ❌ で弾くので、
+戻し忘れは提出前に止まる。現在この `#if` で括ってあるもの:
+
+- `KeyboardRootView.memoryPressureVisualizationEnabled`(削除キーの黄/橙と数値バッジ)
+- 診断カウンター 3 か所(起動回数・セッション UUID・App Group 健全性プローブ)
+
+そのほか一時的な仕掛けを残すときはコメントに `APP_STORE_BLOCKER:` と書く。
+検証スクリプトが App/ と KeyboardExtension/ を走査して残っていれば落とす。
+
 ## 提出前チェックリスト
 - [ ] **でばぐ可視化を戻す**: `KeyboardRootView.memoryPressureVisualizationEnabled` を `false` に(TestFlight 配布中だけ削除キーに黄/橙と数字を出している。2918)
 
