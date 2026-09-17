@@ -5,7 +5,7 @@
 #   --tag   : 検証OKのとき submitted-<version>-<build> の git タグを打つ(追跡性の記録)
 # 検査項目: バンドルID / debug.dylib等の混入 / ITSAppUsesNonExemptEncryption /
 #           アイコンのアルファ / appexサイズ / 辞書sqliteがtmpと同一(=テスト済みの辞書) /
-#           プロビジョニングの失効日 / gitツリーの汚れ
+#           プロビジョニングの失効日 / 出荷前診断フラグ / APP_STORE_BLOCKER の印 / gitツリーの汚れ
 set -u
 FAIL=0
 ok()   { echo "  ✅ $1"; }
@@ -91,6 +91,24 @@ if [[ -f "$PROF" ]]; then
   ok "プロビジョニング失効日: ${EXP:-不明}"
 else
   warn "embedded.mobileprovision なし(simulatorビルド?)"
+fi
+
+# 9) 出荷前診断の組み込み(ECRITU_PRERELEASE_DIAGNOSTICS)。提出ビルドは 0 でなければならない。
+#    1 のままだとでばぐ可視化(削除キーの黄/橙と数値バッジ)と診断カウンターがバイナリに入る
+DIAG=$(grep -E "^ECRITU_PRERELEASE_DIAGNOSTICS = " Config/Edition.xcconfig | head -1 | sed 's/.*= *//')
+if [[ "$DIAG" == "0" ]]; then
+  ok "出荷前診断は組み込まれていない(ECRITU_PRERELEASE_DIAGNOSTICS=0)"
+else
+  bad "ECRITU_PRERELEASE_DIAGNOSTICS=$DIAG のままです。Config/Edition.xcconfig を 0 にして再アーカイブしてください"
+fi
+
+# 10) 提出前に解消すべき印(APP_STORE_BLOCKER)。個別の一時的な仕掛け用
+BLOCKERS=$(grep -rn "APP_STORE_BLOCKER:" App KeyboardExtension 2>/dev/null || true)
+if [[ -n "$BLOCKERS" ]]; then
+  bad "提出前に解消する印(APP_STORE_BLOCKER)が残っています:"
+  echo "$BLOCKERS" | sed 's/^/      /'
+else
+  ok "APP_STORE_BLOCKER の印なし"
 fi
 
 # 8) gitツリー
