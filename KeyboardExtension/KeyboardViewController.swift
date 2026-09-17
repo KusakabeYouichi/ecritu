@@ -598,6 +598,7 @@ final class KeyboardViewController: UIInputViewController {
             }
         }
         MemoryForensics.noteOperation("起動")
+        Self.installFirstConversionMemoryProbeIfNeeded()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
