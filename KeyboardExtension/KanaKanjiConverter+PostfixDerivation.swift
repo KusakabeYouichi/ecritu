@@ -5,7 +5,12 @@ import Foundation
 extension KanaKanjiConverter {
     static let politePrefixPassthroughPrefixes: [String] = ["お", "ご"]
 
+    // 呼ばれるたびに組んで並べ替えていた(サンプルで約 2%。3038)。内容は静的なので 1 回だけ作る
     static func honorificOSuruInflectionSuffixes() -> [String] {
+        honorificOSuruInflectionSuffixesCache
+    }
+
+    private static let honorificOSuruInflectionSuffixesCache: [String] = {
         var suffixes = ["する"]
         suffixes.append(contentsOf: KanaKanjiConverter.suruInflectionRules.map(\.readingSuffix))
 
@@ -27,7 +32,7 @@ extension KanaKanjiConverter {
 
             return $0 > $1
         }
-    }
+    }()
 
     static let honorificONaruInflectionSuffixes: [String] = [
         "になりません",

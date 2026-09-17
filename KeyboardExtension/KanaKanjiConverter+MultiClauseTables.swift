@@ -150,9 +150,10 @@ extension KanaKanjiConverter {
         "時間", "時", "月日", "年月", "歳月", "日にち", "日数", "とき", "日"
     ]
     // たつ 活用の表層先頭漢字(経 以外の たつ 族への減点判定に使う)。
+    private static let tatsuVerbLeadingKanjiSet: Set<Character> = Set("立建経断絶発起勃佇")
     static func tatsuVerbLeadingKanji(of surface: String) -> Character? {
         guard let first = surface.first,
-            "立建経断絶発起勃佇".contains(first) else {
+            tatsuVerbLeadingKanjiSet.contains(first) else {
             return nil
         }
         return first
@@ -528,16 +529,28 @@ extension KanaKanjiConverter {
     ]
     // 連語の後段は表層の前方一致で引く(解けて/解けてきます 等の活用派生ノードにも効かせる。2739)
     // 後段は丁寧接頭辞 お/ご を剥がした表層でも照合する(春慶塗の お箸。2809)
+    // prevPrev 表層でまとめた形(3038)。遷移ごとに表を全走査+split していたのを O(1) の引きに
+    static let multiClauseAcrossNoCollocationBonusesByPrevPrev: [String: [(prefix: String, bonus: Int)]] = {
+        var byPrevPrev: [String: [(prefix: String, bonus: Int)]] = [:]
+        for (key, bonus) in multiClauseAcrossNoCollocationBonuses {
+            let parts = key.split(separator: "\t", maxSplits: 1)
+            guard parts.count == 2 else { continue }
+            byPrevPrev[String(parts[0]), default: []].append((String(parts[1]), bonus))
+        }
+        return byPrevPrev
+    }()
+
     static func acrossParticleCollocationBonus(prevPrev: String, surface: String) -> Int? {
+        guard let entries = multiClauseAcrossNoCollocationBonusesByPrevPrev[prevPrev] else {
+            return nil
+        }
         var best: Int? = nil
         let stripped: Substring? = (surface.hasPrefix("お") || surface.hasPrefix("ご")) && surface.count >= 2
             ? surface.dropFirst()
             : nil
-        for (key, bonus) in multiClauseAcrossNoCollocationBonuses {
-            let parts = key.split(separator: "\t", maxSplits: 1).map(String.init)
-            guard parts.count == 2, parts[0] == prevPrev,
-                surface.hasPrefix(parts[1]) || (stripped?.hasPrefix(parts[1]) ?? false) else { continue }
-            best = max(best ?? 0, bonus)
+        for entry in entries
+        where surface.hasPrefix(entry.prefix) || (stripped?.hasPrefix(entry.prefix) ?? false) {
+            best = max(best ?? 0, entry.bonus)
         }
         return best
     }
@@ -2072,6 +2085,17 @@ extension KanaKanjiConverter {
     // 表層が形ごとに違うので multiClauseBigramPairBonuses(完全一致)では拾えない。
     // ほぼ+変わ(ほぼかわんない→ほぼ買わんない。ユーザ報告 2887): 買わん/飼わん/変わん は派生 OOV 定額で同点になり
     // 辞書順で 買 が勝つ。LM の ほぼ→変わら 2586 は ん 縮約形に届かない
+    // DP の遷移ごとに引く用に prev 表層でまとめた形(3038)。元の表を遷移ごとに全走査+split していたのが
+    // 連文節 1 読みあたり約 30% の時間を食っていた(sample 実測。2887 以降の速度低下の主因)
+    static let multiClauseBigramPrefixPairBonusesByPrev: [String: [(prefix: String, bonus: Int)]] = {
+        var byPrev: [String: [(prefix: String, bonus: Int)]] = [:]
+        for (key, bonus) in multiClauseBigramPrefixPairBonuses {
+            let parts = key.split(separator: "\t", maxSplits: 1)
+            guard parts.count == 2 else { continue }
+            byPrev[String(parts[0]), default: []].append((String(parts[1]), bonus))
+        }
+        return byPrev
+    }()
     static let multiClauseBigramPrefixPairBonuses: [String: Int] = [
         "ほぼ\t変わ": 2000,
         // を/が+更新(をこうしんした→を香信した。マニュアル検査 2890)。香信(compenser の curated、床 1500)は Sudachi に無く

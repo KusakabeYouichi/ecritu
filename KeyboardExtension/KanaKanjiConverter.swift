@@ -1203,13 +1203,17 @@ final class KanaKanjiConverter {
         )
     }
 
+    // 活用派生の内側で最も多く呼ばれる(サンプルで約 6%。3038)。String.hasSuffix は正規化込みの比較で高いので
+    // UTF-8 バイト列で比べる。読み・表層は正規化済みのかな/漢字で、末尾一致は必ずスカラー境界に揃う
     func removingSuffix(_ text: String, suffix: String) -> String? {
-        guard !suffix.isEmpty,
-                text.hasSuffix(suffix) else {
+        let textUTF8 = text.utf8
+        let suffixUTF8 = suffix.utf8
+        guard !suffixUTF8.isEmpty,
+            suffixUTF8.count <= textUTF8.count,
+            textUTF8.suffix(suffixUTF8.count).elementsEqual(suffixUTF8) else {
             return nil
         }
-
-        return String(text.dropLast(suffix.count))
+        return String(decoding: textUTF8.prefix(textUTF8.count - suffixUTF8.count), as: UTF8.self)
     }
 
     func uniqueCandidates(from candidates: [String]) -> [String] {
