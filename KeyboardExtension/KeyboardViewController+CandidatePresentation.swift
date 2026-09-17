@@ -143,9 +143,18 @@ extension KeyboardViewController {
         // 空を返すと1打鍵ごとに [消去→変換→表示] のチラつきになる(連文節導入以降の体感悪化の原因)。
         // 古い候補のタップ事故は handleConversionCandidateSelection 側の鮮度ガードで防ぐ。
         if let cached = settledCandidatePresentation, !cached.candidates.isEmpty {
+            // 前の読みのかなそのもの(かな識別: これぐらいか)は残さない(3043、ユーザ報告)。新しい未確定(これぐらいが)と
+            // 一致しないので かなチップでなく変換候補の見た目で 30〜90ms 描かれ、結果が来て消える「ちらつき」になっていた
+            let previousReading = settledCandidatePresentationKey?.reading
+            var carried = cached.candidates.filter { $0 != cached.composingText && $0 != previousReading }
+            // 残せる候補が無いとき列を空にすると、行の畳み込みで未確定ラベルと先頭候補が瞬く(ユーザ報告 3043 の 2 巡目:
+            // く→ぐ/か/が の打鍵)。新しい読みのかな(結果でもほぼ必ず出る)を仮に置いて行の形を保つ
+            if carried.isEmpty {
+                carried = [composingRawText]
+            }
             return CandidatePresentation(
                 composingText: composingRawText,
-                candidates: cached.candidates,
+                candidates: carried,
                 selectedIndex: nil
             )
         }
