@@ -200,6 +200,7 @@
 	<dict><key>phrase</key><string>あの辺</string><key>shortcut</key><string>あのへん</string></dict>
 	<dict><key>phrase</key><string>どの辺</string><key>shortcut</key><string>どのへん</string></dict>
 	<dict><key>phrase</key><string>気が合う</string><key>shortcut</key><string>きがあう</string><key>pos</key><string>五段</string></dict>
+	<dict><key>phrase</key><string>やる</string><key>shortcut</key><string>やる</string><key>pos</key><string>五段</string></dict>	<!-- やる の終止形もかな識別で供給(3037、ユーザ報告 どうやるか→銅やルカ)。seed のかな やる は辞書 wc 8372 のままラティスに立ち、演る(LM 8139)より高く付いて や+ルカ の分割に負けていた -->
 	<dict><key>phrase</key><string>やって</string><key>shortcut</key><string>やって</string></dict>	<!-- やる はかなが正書(遣る/殺る等は抑制済み)。やって をかな識別で供給し、 やってそうな 等の合成で先頭に来られるようにする -->
 	<dict><key>phrase</key><string>やってる</string><key>shortcut</key><string>やってる</string></dict>
 	<dict><key>phrase</key><string>やってみる</string><key>shortcut</key><string>やってみる</string></dict>	<!-- やる+てみる アスペクト(かな正書)。とにかくやってみる 等で提示層かな維持の根拠にもなる -->
