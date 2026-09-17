@@ -188,16 +188,19 @@ enum KanaModifierPlacementOption: String, CaseIterable, Identifiable {
     }
 }
 
+// フリック方向の割り当て。永続値は既存互換のため apple / ecritu のまま(3010)
 enum DirectionOption: String, CaseIterable, Identifiable {
     case apple
+    case hanabi
     case ecritu
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .apple: return "style iPhone"
-        case .ecritu: return "style écritu"
+        case .apple: return "style-i"
+        case .hanabi: return "style-hanabi"
+        case .ecritu: return "style-écritu"
         }
     }
 }
