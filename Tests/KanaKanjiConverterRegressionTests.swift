@@ -1116,9 +1116,11 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
         try prepareRealLMDictionary()
         try loadDeviceAddedVocabulary()
 
-        let expectedOrder = ["関しては", "冠しては", "箝しては", "緘しては", "關しては", "姦しては"]
+        // 旧字体の 關しては は 2987 の一括抑制(同読みに新字体 関しては が在る)で候補から消えた
+        let expectedOrder = ["関しては", "冠しては", "箝しては", "緘しては", "姦しては"]
         let kanshiteha = converter.candidates(for: "かんしては", limit: 8, systemCandidateMode: .surface)
-        XCTAssertEqual(Array(kanshiteha.prefix(6)), expectedOrder, "list=\(kanshiteha)")
+        XCTAssertEqual(Array(kanshiteha.prefix(5)), expectedOrder, "list=\(kanshiteha)")
+        XCTAssertFalse(kanshiteha.contains("關しては"), "旧字体は出さない list=\(kanshiteha)")
         XCTAssertEqual(kanshiteha.last, "かんしては", "かなは末尾 list=\(kanshiteha)")
         // 基底と て形も同じ並び
         XCTAssertEqual(

@@ -803,6 +803,37 @@ final class KanaKanjiConverter {
             inflectionDerivedCandidates: inflectionDerivedCandidatesForScriptVariant,
             to: &scores
         )
+        applyKyujitaiSuppression(context, to: &scores)
+    }
+
+    // 旧字体(氣持/會社/變更 等)は、同じ読みに新字体版の候補が実在するときだけ落とす(2987)。
+    // 新字体版が無い固有名詞(和氣あず未/國場組/守禮門、魚香肉絲 等)や、ユーザが明示した語
+    // (追加語彙/学習/seed/補助語彙)は対象外。旧仮名(ゐゑ)と違い設定は設けない — 旧字体を
+    // 使いたい語は plist に登録する運用(既に ryukyu/personnalités 等で多数登録済み)
+    private func applyKyujitaiSuppression(
+        _ context: CandidateGenerationContext,
+        to scores: inout [String: Int]
+    ) {
+        let targets = scores.keys.filter { Self.modernizedKyujitaiSurface($0) != nil }
+        guard !targets.isEmpty else {
+            return
+        }
+        var exempt = context.userCandidateSet.union(context.learnedCandidates)
+        exempt.formUnion(KanaKanjiSeedDictionary.seed[context.reading] ?? [])
+        exempt.formUnion(KanaKanjiSeedDictionary.exactReadingOnlySeed[context.reading] ?? [])
+        exempt.formUnion(store.loadSupplementalSystemDictionary().candidates(for: context.reading))
+        // 部首名から供給する字形(せい→齊 等)は旧字体でも字そのものが目的なので落とさない
+        exempt.formUnion(KanjiRadicalCatalog.formsByKanaName[context.reading] ?? [])
+        exempt.formUnion(Self.kyujitaiKeepSurfaces)
+        let pool = Set(scores.keys).union(context.systemCandidates)
+        for candidate in targets where !exempt.contains(candidate) {
+            guard let modern = Self.modernizedKyujitaiSurface(candidate),
+                modern != candidate,
+                pool.contains(modern) else {
+                continue
+            }
+            scores.removeValue(forKey: candidate)
+        }
     }
 
     // カタカナ強調表記(ウマイ/ばかリ 等)と交ぜ書き(まん延/作ひん 等)へ、コンテナ設定の
