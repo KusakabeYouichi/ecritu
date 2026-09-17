@@ -9,6 +9,9 @@ enum KanaKanjiStorageKeys {
     static let systemDictionarySQLiteFilename = "kana_kanji_dictionary.sqlite"
     static let systemDictionaryFilename = "ÉcrituPremierVocab.json"
     static let supplementalSystemDictionaryFilename = "ÉcrituSecondVocab.json"
+    // 補助語彙をビルド時に畳んだもの(SupplementalVocabCompactStore の直列化形式 ECCS1。3030)。
+    // あればこちらを読み、無ければ上の JSON へ落ちる
+    static let supplementalSystemDictionaryCompactFilename = "ÉcrituSecondVocab.eccs"
     // 補助語彙から前計算した欧文サジェスト索引(tools/build_latin_suggestion_supplemental.swift)
     static let latinSuggestionSupplementalFilename = "LatinSuggestionSupplemental.txt"
     static let systemCandidateSourcesFilename = "kana_kanji_candidate_sources.json"

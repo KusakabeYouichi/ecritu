@@ -12000,6 +12000,14 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
                 try fileManager.copyItem(at: secondVocabSource, to: secondVocabDestination)
             }
         }
+        // 畳んだ補助語彙(ビルドが tmp に書き出す。3030)。あれば実機同様にこちらが優先される
+        let secondVocabCompactSource = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/ÉcrituSecondVocab.eccs")
+        if fileManager.fileExists(atPath: secondVocabCompactSource.path) {
+            let destination = container.appendingPathComponent("ÉcrituSecondVocab.eccs")
+            if !fileManager.fileExists(atPath: destination.path) {
+                try fileManager.copyItem(at: secondVocabCompactSource, to: destination)
+            }
+        }
         // 欧文サジェストの追加語彙側索引(ビルドが tmp に前計算する。2770)
         let latinSupplementalSource = URL(fileURLWithPath: "/Users/kusakabe/Git/ecritu/tmp/LatinSuggestionSupplemental.txt")
         if fileManager.fileExists(atPath: latinSupplementalSource.path) {
