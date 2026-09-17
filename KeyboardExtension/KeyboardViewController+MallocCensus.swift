@@ -23,6 +23,27 @@ extension KeyboardViewController {
         return "staticKB: kaomoji=\(kb(kaomoji)) emojiPartial=\(kb(emoji))"
     }
 
+    // 初回変換の +8MB を区間ごとに割る計測(3022)。変換中核(KanaKanjiConverter)は OS に
+    // 依存させないので、採取そのものはここで差し込む。記録するのはプロセス初回の変換だけで、
+    // 2 回目以降はフックが即座に戻る。出荷前診断(ECRITU_PRERELEASE_DIAGNOSTICS)限定
+    nonisolated(unsafe) static var firstConversionProbeSnapshot: MemoryForensics.Snapshot?
+
+    static func installFirstConversionMemoryProbeIfNeeded() {
+#if ECRITU_PRERELEASE_DIAGNOSTICS
+        guard KanaKanjiConverter.memoryProbe == nil else {
+            return
+        }
+        KanaKanjiConverter.memoryProbe = { label in
+            guard !KeyboardViewController.didProbeFirstConversionSpike else {
+                return
+            }
+            let before = firstConversionProbeSnapshot ?? MemoryForensics.snapshot()
+            MemoryForensics.noteSyncDelta("初回変換の区間 \(label)", since: before, minDeltaMB: -1_000)
+            firstConversionProbeSnapshot = MemoryForensics.snapshot()
+        }
+#endif
+    }
+
     // 面の切り替えで増えた分の居場所を名指しする計測(3019)。入力モードが変わるたびに
     // malloc ゾーン別の used/alloc と自前キャッシュの件数を 1 行に残す。切替の前後を比べると
     // 「UI(レイヤー・グリフキャッシュ)」と「データ(表・キャッシュ)」のどちらが増えたかが割れる。
