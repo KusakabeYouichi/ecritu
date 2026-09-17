@@ -269,6 +269,8 @@ extension KeyboardViewController {
                 )
                 if isFirstConversion {
                     KeyboardViewController.didProbeFirstConversionSpike = true
+                    // 区間計測の行はここでまとめて書く(計測中に書くと書き込み自体が区間に紛れる。3032)
+                    self?.flushFirstConversionProbeLines()
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
                         guard let self else { return }
                         self.appendKeyboardDiagnosticsLog(

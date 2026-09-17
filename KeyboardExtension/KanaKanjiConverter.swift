@@ -318,6 +318,8 @@ final class KanaKanjiConverter {
             return cachedCandidates
         }
 
+        // 最初の probe は基準点(差分 0)。これが無いと DB オープン+辞書引きが未計測になる(3032)
+        Self.memoryProbe?("単文節: 開始")
         let context = makeGenerationContext(
             reading: normalizedReading,
             limit: limit,
@@ -325,7 +327,7 @@ final class KanaKanjiConverter {
         )
 
         var scores: [String: Int] = [:]
-        Self.memoryProbe?("単文節: 文脈作成まで")
+        Self.memoryProbe?("単文節: 文脈作成まで(DB オープン+辞書引き)")
         collectDirectCandidates(context, into: &scores)
         Self.memoryProbe?("単文節: 直接候補(辞書引き)")
         let inflectionDerivedCandidates = collectDerivedCandidates(context, into: &scores)
