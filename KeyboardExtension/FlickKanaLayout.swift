@@ -146,7 +146,7 @@ enum FlickKanaLayout {
 
     static func waSetBase(for profile: FlickDirectionProfile) -> FlickKanaSet {
         switch profile {
-        case .apple: return kanaWaSetApple
+        case .littlebear: return kanaWaSetApple
         case .hanabi: return kanaWaSetHanabi
         case .ecritu: return kanaWaSetEcritu
         }
@@ -472,7 +472,7 @@ enum FlickKanaLayout {
     ) -> FlickKanaSet {
         let usesProfileDependentGuideOrder = !preservesAppleDirectionalOrder
 
-        if profile == .apple || preservesAppleDirectionalOrder {
+        if profile == .littlebear || preservesAppleDirectionalOrder {
             return FlickKanaSet(
                 label: center,
                 center: center,

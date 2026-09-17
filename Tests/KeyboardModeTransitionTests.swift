@@ -251,7 +251,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(ecrituYaKey.left, "』")
         XCTAssertEqual(ecrituYaKey.down, "よ")
 
-        let appleYaKey = ecrituYaKey.remapped(for: .apple)
+        let appleYaKey = ecrituYaKey.remapped(for: .littlebear)
         XCTAssertEqual(appleYaKey.center, "や")
         XCTAssertEqual(appleYaKey.left, "『")
         XCTAssertEqual(appleYaKey.up, "ゆ")
@@ -260,7 +260,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
     }
 
     func testNumberOneDirectionalArrowsAreSameAcrossProfiles() {
-        let appleOne = FlickKanaLayout.numberRows(for: .apple, layoutMode: .telephone)[0][0]
+        let appleOne = FlickKanaLayout.numberRows(for: .littlebear, layoutMode: .telephone)[0][0]
         let ecrituOne = FlickKanaLayout.numberRows(for: .ecritu, layoutMode: .telephone)[0][0]
 
         XCTAssertEqual(appleOne.up, ecrituOne.up)
@@ -271,24 +271,24 @@ final class KeyboardModeTransitionTests: XCTestCase {
 
     func testDownGuideOrderUsesProfileSpecificDirectionOrderForStandardKeys() {
         let ecrituYa = FlickKanaLayout.kanaYaSet
-        let appleYa = ecrituYa.remapped(for: .apple)
+        let appleYa = ecrituYa.remapped(for: .littlebear)
 
         XCTAssertEqual(
             ecrituYa.orderedDirectionalGuideTexts(for: .ecritu),
             ["『", "ゆ", "』", "よ"]
         )
         XCTAssertEqual(
-            appleYa.orderedDirectionalGuideTexts(for: .apple),
+            appleYa.orderedDirectionalGuideTexts(for: .littlebear),
             ["『", "ゆ", "』", "よ"]
         )
     }
 
     func testDownGuideOrderKeepsFixedOrderForExceptionKeys() {
-        let appleOne = FlickKanaLayout.numberRows(for: .apple, layoutMode: .telephone)[0][0]
+        let appleOne = FlickKanaLayout.numberRows(for: .littlebear, layoutMode: .telephone)[0][0]
         let ecrituOne = FlickKanaLayout.numberRows(for: .ecritu, layoutMode: .telephone)[0][0]
 
         XCTAssertEqual(
-            appleOne.orderedDirectionalGuideTexts(for: .apple),
+            appleOne.orderedDirectionalGuideTexts(for: .littlebear),
             ["←", "↑", "→", "↓"]
         )
         XCTAssertEqual(
@@ -307,7 +307,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
         )
 
         XCTAssertEqual(
-            dakutenKey.orderedDirectionalGuideTexts(for: .apple),
+            dakutenKey.orderedDirectionalGuideTexts(for: .littlebear),
             ["カ", "゛", "…", "゜"]
         )
         XCTAssertEqual(
@@ -401,13 +401,13 @@ final class KeyboardModeTransitionTests: XCTestCase {
         XCTAssertEqual(ecritu.left, "ー")
         XCTAssertEqual(ecritu.right, "ん")
         // Apple方向: 従来の1段割り当てを無傷で維持
-        let apple = FlickKanaLayout.waSet(for: .none, profile: .apple)
+        let apple = FlickKanaLayout.waSet(for: .none, profile: .littlebear)
         XCTAssertEqual(apple.up, "ん")
         XCTAssertEqual(apple.down, "〜")
         XCTAssertEqual(apple.left, "を")
         XCTAssertEqual(apple.right, "ー")
         // remapped がわキーを二重変換しないこと(profile非依存フラグ)
-        XCTAssertEqual(ecritu.remapped(for: .apple), ecritu)
+        XCTAssertEqual(ecritu.remapped(for: .littlebear), ecritu)
         // 5×2 の rows にも同じセットが載ること。3×3+わ は わキーを rows に含まず
         // waSet() 経由で別置きする構成なので、rows 側に わ が無いことだけ確認する
         // hanabi方向: 1998年の Newton OS 版 Hanabi(中央=わ/右=を/上=ん/左=ー)。下は空いていたので 〜 を置く
@@ -421,7 +421,7 @@ final class KeyboardModeTransitionTests: XCTestCase {
             FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: hanabi.right, verticalDirection: .bas), "ゐ")
         XCTAssertEqual(
             FlickKanaLayout.secondaryBracketFlickOutput(forPrimaryOutput: hanabi.left, verticalDirection: .bas), "ゑ")
-        for profile in [FlickDirectionProfile.ecritu, .apple, .hanabi] {
+        for profile in [FlickDirectionProfile.ecritu, .littlebear, .hanabi] {
             let rows = FlickKanaLayout.rows(for: .none, layoutMode: .fiveByTwo, profile: profile)
             let wa = rows.flatMap { $0 }.first { $0.label == "わ" }
             XCTAssertEqual(wa, FlickKanaLayout.waSet(for: .none, profile: profile), "profile=\(profile)")
@@ -431,8 +431,20 @@ final class KeyboardModeTransitionTests: XCTestCase {
         }
     }
 
-    // 3方式の母音配置(3010)。style-écritu=上い/右う/左え/下お、style-i=左い/上う/右え/下お、
-    // style-hanabi=右い/下う/左え/上お。ガイド文字の並びも五十音順に見えること
+    // 永続値は画面上の名前(hanabi / littlebear / écritu)。旧値 apple / ecritu も読める(3036)
+    func testFlickDirectionProfileReadsLegacyStoredValues() {
+        XCTAssertEqual(FlickDirectionProfile.littlebear.rawValue, "littlebear")
+        XCTAssertEqual(FlickDirectionProfile.hanabi.rawValue, "hanabi")
+        XCTAssertEqual(FlickDirectionProfile.ecritu.rawValue, "écritu")
+        XCTAssertEqual(FlickDirectionProfile(rawValue: "apple"), .littlebear)
+        XCTAssertEqual(FlickDirectionProfile(rawValue: "ecritu"), .ecritu)
+        XCTAssertEqual(FlickDirectionProfile(rawValue: "écritu"), .ecritu)
+        XCTAssertEqual(FlickDirectionProfile(rawValue: "littlebear"), .littlebear)
+        XCTAssertNil(FlickDirectionProfile(rawValue: "style-i"))
+    }
+
+    // 3方式の母音配置(3010)。écritu式=上い/右う/左え/下お、littlebear式=左い/上う/右え/下お、
+    // hanabi式=右い/下う/左え/上お。ガイド文字の並びも五十音順に見えること
     func testFlickDirectionProfilesPlaceVowelsAsDocumented() {
         let base = FlickKanaLayout.fiveByTwoRows[0][0]
         XCTAssertEqual(base.center, "あ")
@@ -440,13 +452,13 @@ final class KeyboardModeTransitionTests: XCTestCase {
         let ecritu = base.remapped(for: .ecritu)
         XCTAssertEqual([ecritu.up, ecritu.right, ecritu.left, ecritu.down], ["い", "う", "え", "お"])
 
-        let apple = base.remapped(for: .apple)
+        let apple = base.remapped(for: .littlebear)
         XCTAssertEqual([apple.left, apple.up, apple.right, apple.down], ["い", "う", "え", "お"])
 
         let hanabi = base.remapped(for: .hanabi)
         XCTAssertEqual([hanabi.right, hanabi.down, hanabi.left, hanabi.up], ["い", "う", "え", "お"])
 
-        for profile in [FlickDirectionProfile.ecritu, .apple, .hanabi] {
+        for profile in [FlickDirectionProfile.ecritu, .littlebear, .hanabi] {
             XCTAssertEqual(
                 base.remapped(for: profile).orderedDirectionalGuideTexts(for: profile),
                 ["い", "う", "え", "お"],

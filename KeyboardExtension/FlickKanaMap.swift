@@ -77,13 +77,22 @@ enum NumberLayoutMode: String {
     case clavier
 }
 
-// フリック方向の割り当て。永続値は既存互換のため apple / ecritu のまま
-// (画面上の名前は style-i / style-hanabi / style-écritu。3010)。
-// あ行で言うと い の置き場所が違う: apple=左 / hanabi=右 / ecritu=上
+// フリック方向の割り当て。画面上の名前 hanabi / littlebear / écritu をそのまま永続値にする(3036)。
+// 旧永続値 apple(=littlebear)/ ecritu(=écritu)も読める。
+// あ行で言うと い の置き場所が違う: littlebear=左 / hanabi=右 / écritu=上
 enum FlickDirectionProfile: String {
-    case apple
+    case littlebear
     case hanabi
-    case ecritu
+    case ecritu = "écritu"
+
+    init?(rawValue: String) {
+        switch rawValue {
+        case "littlebear", "apple": self = .littlebear
+        case "hanabi": self = .hanabi
+        case "écritu", "ecritu": self = .ecritu
+        default: return nil
+        }
+    }
 }
 
 struct FlickKanaSet: Identifiable, Hashable {
@@ -129,7 +138,7 @@ struct FlickKanaSet: Identifiable, Hashable {
         switch profile {
         case .ecritu:
             return self
-        case .apple:
+        case .littlebear:
             guard usesProfileDependentGuideOrder else {
                 return self
             }
@@ -169,7 +178,7 @@ struct FlickKanaSet: Identifiable, Hashable {
 
         if usesProfileDependentGuideOrder {
             switch profile {
-            case .apple:
+            case .littlebear:
                 directionalOrder = [.gauche, .haut, .droite, .bas]
             case .hanabi:
                 directionalOrder = [.droite, .bas, .gauche, .haut]
