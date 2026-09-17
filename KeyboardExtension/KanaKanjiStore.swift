@@ -692,9 +692,14 @@ final class KanaKanjiStore {
         // 復元してから畳む従来経路は、その一瞬の辞書が malloc アリーナを +8MB 広げて返さなかった
         // (実機の区間計測: 「直接候補: 補助語彙の読み込み alloc 28→36」)。畳んだ版なら配列 4 本を
         // 作るだけで済む。旧環境向けに JSON 経路は残す
-        if let compactData = sharedOrBundledDictionaryData(
+        // mmap で開く(3031): Data(contentsOf:) で読むと heap にコピーが乗り、配列 4 本の復元でも
+        // 約 1.5MB を確保して malloc アリーナを 4MB 広げていた。mappedIfSafe なら読み取り専用の
+        // ファイルページとして OS が管理し、heap にも phys_footprint にも乗らない
+        if let compactURL = sharedOrBundledDictionaryURL(
             filename: KanaKanjiStorageKeys.supplementalSystemDictionaryCompactFilename
         ),
+            let compactData = try? Data(contentsOf: compactURL, options: .mappedIfSafe),
+            compactData.count <= Self.dictionaryDataMaxByteCount,
             let compact = SupplementalVocabCompactStore(serialized: compactData) {
             withCacheLock { cachedSupplementalSystemDictionary = compact }
             return compact
