@@ -229,16 +229,27 @@ enum MemoryForensics {
     /// (minDeltaMB を負にすると必ず記録)。
     static func noteSyncDelta(_ tag: String, since before: Snapshot, minDeltaMB: Double = 3.0) {
         #if DEBUG
+        guard let line = syncDeltaLine(tag, since: before, minDeltaMB: minDeltaMB) else { return }
+        logSink?(line)
+        #endif
+    }
+
+    /// noteSyncDelta の行を作るだけで、記録はしない。ログ書き込み(defaults への保存)自体が
+    /// 数百 KB の一時確保を伴い、直後の区間に紛れ込むので、連続する区間計測では行を溜めて
+    /// 最後にまとめて記録する(3032: 初回変換の区間計測で +4MB がログ書き込みの直後の区間に
+    /// 常に付いて回った)。
+    static func syncDeltaLine(_ tag: String, since before: Snapshot, minDeltaMB: Double = 3.0) -> String? {
+        #if DEBUG
         let after = snapshot()
         guard after.allocMB - before.allocMB >= minDeltaMB
-            || abs(after.fpMB - before.fpMB) >= minDeltaMB else { return }
+            || abs(after.fpMB - before.fpMB) >= minDeltaMB else { return nil }
         func fmt(_ value: Double) -> String { String(format: "%.1f", value) }
-        logSink?(
-            "MEMFORENSICS同期Δ op=\(tag)"
-                + " used=\(fmt(before.usedMB))→\(fmt(after.usedMB))(+\(fmt(after.usedMB - before.usedMB)))"
-                + " alloc=\(fmt(before.allocMB))→\(fmt(after.allocMB))(+\(fmt(after.allocMB - before.allocMB)))"
-                + " fp=\(fmt(before.fpMB))→\(fmt(after.fpMB))(+\(fmt(after.fpMB - before.fpMB)))"
-        )
+        return "MEMFORENSICS同期Δ op=\(tag)"
+            + " used=\(fmt(before.usedMB))→\(fmt(after.usedMB))(+\(fmt(after.usedMB - before.usedMB)))"
+            + " alloc=\(fmt(before.allocMB))→\(fmt(after.allocMB))(+\(fmt(after.allocMB - before.allocMB)))"
+            + " fp=\(fmt(before.fpMB))→\(fmt(after.fpMB))(+\(fmt(after.fpMB - before.fpMB)))"
+        #else
+        return nil
         #endif
     }
 
