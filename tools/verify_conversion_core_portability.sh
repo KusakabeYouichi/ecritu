@@ -39,7 +39,7 @@ while IFS= read -r file; do
 done < <(git ls-files -- 'KeyboardExtension/KanaKanji*.swift')
 
 if ((fail)); then
-  echo "note: 変換中核は Foundation と SQLite3 だけに保ちます(将来の macOS/Android 移植でソースを分岐させないため)。詳細は docs/architecture-layers.md" >&2
+  echo "note: 変換中核は Foundation と SQLite3 だけに保ちます(将来の macOS/Android 移植でソースを分岐させないため)。詳細は notes/architecture-layers.md" >&2
   exit 1
 fi
 
