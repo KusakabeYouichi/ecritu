@@ -190,20 +190,30 @@ enum KanaModifierPlacementOption: String, CaseIterable, Identifiable {
     }
 }
 
-// フリック方向の割り当て。永続値は既存互換のため apple / ecritu のまま(3010)
+// フリック方向の割り当て。画面上の名前をそのまま永続値にする(3036)。
+// 旧永続値 apple(=littlebear)/ ecritu(=écritu)も読める(拡張側 FlickDirectionProfile と対)
 enum DirectionOption: String, CaseIterable, Identifiable {
     // 並び順はピッカーの表示順(ユーザ指定 3016)
     case hanabi
-    case apple
-    case ecritu
+    case littlebear
+    case ecritu = "écritu"
+
+    init?(rawValue: String) {
+        switch rawValue {
+        case "hanabi": self = .hanabi
+        case "littlebear", "apple": self = .littlebear
+        case "écritu", "ecritu": self = .ecritu
+        default: return nil
+        }
+    }
 
     var id: String { rawValue }
 
     var title: String {
         switch self {
-        case .apple: return "style-i"
-        case .hanabi: return "style-hanabi"
-        case .ecritu: return "style-écritu"
+        case .littlebear: return "littlebear"
+        case .hanabi: return "hanabi"
+        case .ecritu: return "écritu"
         }
     }
 }

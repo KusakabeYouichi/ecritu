@@ -246,7 +246,7 @@ extension ContentView {
         SettingsKeys.formattedNumberKeypadLayout: FormattedNumberKeypadOption.calculette.rawValue,
         SettingsKeys.basicSymbolOrder: BasicSymbolOrderOption.ansi.rawValue,
         SettingsKeys.kanaModifierPlacement: KanaModifierPlacementOption.postfix.rawValue,
-        SettingsKeys.directionProfile: DirectionOption.apple.rawValue,
+        SettingsKeys.directionProfile: DirectionOption.littlebear.rawValue,
         SettingsKeys.keyRepeatInitialDelay: 0.5,
         SettingsKeys.keyRepeatInterval: 0.1,
         SettingsKeys.idleCommitEnabled: false,
@@ -432,7 +432,7 @@ extension ContentView {
         case .strategicDefaults:
             return "すべての設定を初期設定(標準)に戻します。語彙・学習内容はそのままです。"
         case .conservativeDefaults:
-            return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・style-i のフリック 等)にします。語彙・学習内容はそのままです。"
+            return "すべての設定を作者の使用設定(3x3+わ・AZERTY・後置修飾・littlebear式のフリック 等)にします。語彙・学習内容はそのままです。"
         case .restoreStashedSettings:
             if let stash = loadSettingsStash() {
                 let formatter = DateFormatter()

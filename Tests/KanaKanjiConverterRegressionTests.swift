@@ -11915,7 +11915,7 @@ final class KanaKanjiConverterRegressionTests: XCTestCase {
             onInputModeChanged: { _, _ in },
             showsNextKeyboardKey: false,
             containerFrame: .zero,
-            directionProfile: .apple,
+            directionProfile: .littlebear,
             kanaLayoutMode: .threeByThreePlusWa,
             kanaModifierPlacementMode: .postfix,
             numberLayoutMode: .calculette,
