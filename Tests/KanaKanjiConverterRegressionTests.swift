@@ -17704,6 +17704,30 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3051: きょく は 曲 を先頭に、かな きょく は末尾、数字直後(1きょく)も 曲(ユーザ指定)。
+    // 巨軀(軀=躯 の旧字体)は一括抑制で消え、巨躯 だけ残る
+    func testRegressionUserReports3051() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            let list = converter.candidates(for: "きょく", limit: 8, systemCandidateMode: mode)
+            XCTAssertEqual(list.first, "曲", "\(label) list=\(list)")
+            XCTAssertEqual(list.last, "きょく", "\(label) list=\(list)")
+            XCTAssertTrue(list.contains("巨躯"), "\(label) list=\(list)")
+            XCTAssertFalse(list.contains("巨軀"), "\(label) list=\(list)")
+            let afterDigit = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+                list,
+                reading: "きょく",
+                precedingCharacter: "1",
+                suppressedCandidates: []
+            )
+            XCTAssertEqual(afterDigit.first, "曲", "\(label) list=\(afterDigit)")
+            XCTAssertEqual(afterDigit.last, "きょく", "\(label) list=\(afterDigit)")
+        }
+    }
+
     // 速度の門番(3042): 打鍵シミュレーション(読みを 1 字ずつ伸ばす、multi+single)の 1 打鍵あたりを
     // 3 回測って最小値で見る(機械負荷は最小値にはほぼ乗らない)。現在値 58ms(Debug/シミュレーター。この 4 読みは長めで perf テストの 13 読み平均 47ms より高い)、
     // 2887 型の倍増(→115ms)を捕まえる幅として 100ms。ユーザ判断「今ぐらいが許容ギリギリ」(2026-09-18)。
