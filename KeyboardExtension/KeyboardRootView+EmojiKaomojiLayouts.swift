@@ -334,8 +334,9 @@ extension KeyboardRootView {
             )
 
             VStack(spacing: keyboardRowSpacing) {
-                ScrollView(.vertical, showsIndicators: false) {
+                Group {
                     if isKaomojiSearchCategorySelected {
+                        ScrollView(.vertical, showsIndicators: false) {
                         VStack(alignment: .leading, spacing: keyboardRowSpacing) {
                             Text("1) 上の文字を選ぶ  2) 読みを選ぶ  3) 下の顔文字をタップ")
                                 .font(.system(size: 11, weight: .semibold, design: .rounded))
@@ -427,15 +428,22 @@ extension KeyboardRootView {
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.vertical, 2)
-                    } else {
-                        LazyVStack(alignment: .leading, spacing: keyboardRowSpacing) {
-                            kaomojiRowLayoutsView(
-                                categoryRows,
-                                availableWidth: geometry.size.width,
-                                sectionID: "kaomoji-category-\(selectedKaomojiCategoryID)"
-                            )
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                    } else {
+                        // 分類の顔文字一覧は UICollectionView(セル再利用)で描く(3084)。SwiftUI の VStack/HStack だと分類の全顔文字
+                        // (百数十個)のビューを一度に実体化し、パネル表示のたび fp +5.6MB(実機)。絵文字パネル(2633)と同型
+                        KaomojiGridCollectionView(
+                            rows: categoryRows.map { row in
+                                KaomojiGridCollectionView.Row(
+                                    items: row.items.map { KaomojiGridCollectionView.Item(text: $0, width: min(measuredKaomojiWidth($0), geometry.size.width)) },
+                                    spacing: row.spacing
+                                )
+                            },
+                            rowSpacing: keyboardRowSpacing,
+                            itemHeight: compactKaomojiKeyHeight,
+                            categoryKey: "\(selectedKaomojiCategoryID)",
+                            onTextInput: commitEmojiKaomojiSymbolText
+                        )
                         .padding(.vertical, 2)
                     }
                 }
