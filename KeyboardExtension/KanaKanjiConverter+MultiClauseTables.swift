@@ -507,6 +507,8 @@ extension KanaKanjiConverter {
         "ネクタイ\t締": 3500, "ベルト\t締": 3500, "帯\t締": 3500, "紐\t締": 3500, "ひも\t締": 3500, "ねじ\t締": 3500,
         "ネジ\t締": 3500, "財布\t締": 3500,
         "首\t絞": 3500,
+        // 眼鏡/橋+掛(めがねをかけてる→眼鏡を欠けてる。3091、seed で 欠ける を先頭にした副作用。を→欠け/掛け は共に bigram 未観測)
+        "眼鏡\t掛": 3500, "めがね\t掛": 3500, "メガネ\t掛": 3500, "橋\t架": 3500, "橋\t掛": 3000,
         // 〜の政策(2873、ユーザ報告 えんやすせいさく→円安制作)。せいさく の LM は
         // 制作 4410 < 製作 4643 < 政策 4746 で 政策 が 3 番手。政治・経済の語の後に続くときだけ
         // 政策 を持ち上げる(せいさく 全体を上げると 映像の制作 まで壊れる)
@@ -1778,6 +1780,13 @@ extension KanaKanjiConverter {
     static let multiClauseTeFormConjunctiveReadings: Set<String> = ["て", "で", "ても", "でも", "ては", "では", "も", "は"]
     static let multiClauseIruAuxiliaryReadings: Set<String> = ["いない", "いる", "いた", "いて", "います", "いません", "いなかった", "いれば", "いよう"]
     static let multiClauseIruAuxiliaryKanjiAfterTePenalty = 2500
+    // かな語幹の識別ノード かけ(名詞 かけ の LM unigram が安く、BOS 直後 4903 で 欠け 7582/掛け 7852 を
+    // 大差で下す)を、目的語の格助詞(を/に/へ)直後以外で減点する。かけてもいない/もかけてるね/かけてるやつも
+    // のかなが 欠けて/賭けて/書けて/描けて より前に立っていた(ユーザ指定 3091)。電話をかける/声をかけて/
+    // 時間をかけて はかなが正書なので を 直後は対象外(bigram を→かけ が既に安く、そのまま勝つ)。
+    // 助詞無しの名詞直後(でんわかけて)も対象外(文頭か、かな識別の助詞直後に限る)
+    static let multiClauseKanaVerbStemDemotedReadings: Set<String> = ["かけ"]
+    static let multiClauseKanaVerbStemDemotedPenalty = 3500
     // 述語(辞書形/活用派生)の直後の引用・伝聞の って(違うって/行くって/食べたって)。LM に 違う→って が無く
     // unigram+backoff の約 6000 になり、血+が+売って(1303+1500)の断片連鎖に 2800 差で負けていた(ちがうってのが→血が売ってのが。3086)
     static let multiClauseQuotativeTteAfterPredicateCost = 1500
@@ -2484,6 +2493,7 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseFinalParticleReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseTeFormConjunctiveReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseIruAuxiliaryReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaVerbStemDemotedReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseForbiddenInitialExemptReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFormalNounKanaReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFunctionalSingleKanaSurfaces.sorted() { add(s) }
@@ -2641,6 +2651,7 @@ extension KanaKanjiConverter {
         static let の = MultiClauseSymbols.id("の")
         static let のか = MultiClauseSymbols.id("のか")
         static let は = MultiClauseSymbols.id("は")
+        static let へ = MultiClauseSymbols.id("へ")
         static let ひと = MultiClauseSymbols.id("ひと")
         static let ほうが = MultiClauseSymbols.id("ほうが")
         static let ほうがいい = MultiClauseSymbols.id("ほうがいい")
@@ -2695,6 +2706,7 @@ extension KanaKanjiConverter {
     static let multiClauseFinalParticleReadingsID = MultiClauseIDSet(multiClauseFinalParticleReadings)
     static let multiClauseTeFormConjunctiveReadingsID = MultiClauseIDSet(multiClauseTeFormConjunctiveReadings)
     static let multiClauseIruAuxiliaryReadingsID = MultiClauseIDSet(multiClauseIruAuxiliaryReadings)
+    static let multiClauseKanaVerbStemDemotedReadingsID = MultiClauseIDSet(multiClauseKanaVerbStemDemotedReadings)
     static let multiClauseForbiddenInitialExemptReadingsID = MultiClauseIDSet(multiClauseForbiddenInitialExemptReadings)
     static let multiClauseFormalNounKanaReadingsID = MultiClauseIDSet(multiClauseFormalNounKanaReadings)
     static let multiClauseFunctionalSingleKanaSurfacesID = MultiClauseIDSet(multiClauseFunctionalSingleKanaSurfaces)
