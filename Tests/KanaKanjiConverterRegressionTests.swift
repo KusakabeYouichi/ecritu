@@ -17751,6 +17751,37 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3086: かけてる 族(ユーザ報告)。surface モードの辞書順で 欠ける が 5 位・描ける 19 位、活用供給の枠 3 で
+    // 欠けてる/描けてる/賭けてる が連文節に立たなかった。seed で基底順を決め、かけ- の文節だけ枠を 7 に。
+    // 掛ケる/カケる(漢字+カタカナ混じりの収穫)は抑制
+    func testRegressionUserReports3086() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            let base = converter.candidates(for: "かける", limit: 8, systemCandidateMode: mode)
+            XCTAssertEqual(Array(base.prefix(7)), ["かける", "掛ける", "欠ける", "書ける", "描ける", "賭ける", "駆ける"], "\(label) list=\(base)")
+            // 連文節の変種枠は 3 なので、欠けてる は変種に入ること、描けてる/賭けてる は単文節側の並びで出ることを見る
+            for reading in ["もかけてるね", "かけてるやつもなぞ"] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(multi.first, reading == "もかけてるね" ? "もかけてるね" : "かけてるやつも謎", "\(label) multi=\(multi)")
+                XCTAssertTrue(multi.contains { $0.contains("欠けてる") }, "\(label) reading=\(reading) multi=\(multi)")
+                XCTAssertFalse(multi.contains { $0.contains("掛ケ") || $0.contains("カケ") }, "\(label) multi=\(multi)")
+            }
+            let kaketeru = converter.candidates(for: "かけてる", limit: 12, systemCandidateMode: mode)
+            XCTAssertEqual(Array(kaketeru.prefix(7)), ["かけてる", "掛けてる", "欠けてる", "書けてる", "描けてる", "賭けてる", "駆けてる"], "\(label) list=\(kaketeru)")
+            XCTAssertFalse(kaketeru.contains("掛ケてる"), label)
+            // かけてもいない: て/ても の直後の いる系はかな。居ない/射ない/以内 が変種枠を食って 欠けてもいない が出なかった
+            let kaketemo = converter.multiClauseCandidates(for: "かけてもいない", systemCandidateMode: mode)
+            XCTAssertEqual(kaketemo.first, "かけてもいない", "\(label) multi=\(kaketemo)")
+            XCTAssertTrue(kaketemo.prefix(2).contains("欠けてもいない"), "\(label) multi=\(kaketemo)")
+            // ちがうってのが: 述語+って が高く 血+が+売って の断片連鎖に負けていた
+            XCTAssertEqual(converter.multiClauseCandidates(for: "ちがうってのが", systemCandidateMode: mode).first, "違うってのが", label)
+            XCTAssertEqual(converter.multiClauseCandidates(for: "ちがうって", systemCandidateMode: mode).first, "違うって", label)
+        }
+    }
+
     // 3085: らん の並びはユーザ指定(蘭/欄/乱/ラン/卵/藍/Rhin/覧/爛/鸞/婪、かなは末尾)。Rhin は vin.plist の補助語彙
     func testRegressionUserReports3085() throws {
         try prepareRealLMDictionary()
