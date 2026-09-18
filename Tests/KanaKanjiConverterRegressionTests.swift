@@ -18449,7 +18449,11 @@ enum AllocationCensus {
         let hasZone = (type & 8) != 0
         let isAlloc = (type & 2) != 0
         let isFree = (type & 4) != 0
-        if isAlloc, s[13] != 0 { recordFrames() }
+        if isAlloc, s[13] != 0 {
+            // state[14] = 記録する最小サイズ(バイト)。大きな確保(アリーナを育てる側)だけ帰属を見るときに使う
+            let size = (isFree ? (hasZone ? arg3 : arg2) : (hasZone ? arg2 : arg1))
+            if Int(size) >= s[14] { recordFrames() }
+        }
         if isAlloc && isFree {
             let old = hasZone ? arg2 : arg1
             let size = hasZone ? arg3 : arg2
@@ -18498,6 +18502,7 @@ extension KanaKanjiConverterRegressionTests {
         converter.invalidateCandidateCache()
         let recordStacks = ProcessInfo.processInfo.environment["ALLOC_CENSUS_STACKS"] != nil
         XCTAssertTrue(AllocationCensus.install(), "malloc_logger を差し込めない")
+        AllocationCensus.state[14] = Int(ProcessInfo.processInfo.environment["ALLOC_CENSUS_MIN_SIZE"] ?? "") ?? 0
         var keystrokes = 0
         var multi = (count: 0, bytes: 0, peak: 0, hist: [Int](repeating: 0, count: 8))
         var single = (count: 0, bytes: 0, peak: 0, hist: [Int](repeating: 0, count: 8))
