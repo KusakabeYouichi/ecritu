@@ -158,6 +158,16 @@
 	<dict><key>phrase</key><string>できれば</string><key>shortcut</key><string>できれば</string></dict>	<!-- できれば: 出来れば(11155)しか無い。提示層の demotingDekiKanjiBelowKana と併せてかなを先頭に(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>できても</string><key>shortcut</key><string>できても</string></dict>
 	<dict><key>phrase</key><string>できます</string><key>shortcut</key><string>できます</string></dict>
+	<dict><key>phrase</key><string>できなく</string><key>shortcut</key><string>できなく</string></dict>	<!-- 実質できなく(なった)。派生 OOV 7200 が 実質+で(bigram 2137)+着なく(格助詞後 5000)の分割に 63 差で負けていた(ユーザ報告 3081) -->
+	<dict><key>phrase</key><string>できなくて</string><key>shortcut</key><string>できなくて</string></dict>
+	<dict><key>phrase</key><string>できなくなった</string><key>shortcut</key><string>できなくなった</string></dict>	<!-- できなく(1500)+なった(派生かな 7200)が で+着なくなった(格助詞後 5000)に負ける。頻出形は直接登録 -->
+	<dict><key>phrase</key><string>できなくなって</string><key>shortcut</key><string>できなくなって</string></dict>
+	<dict><key>phrase</key><string>できなくなる</string><key>shortcut</key><string>できなくなる</string></dict>
+	<dict><key>phrase</key><string>できなかった</string><key>shortcut</key><string>できなかった</string></dict>
+	<dict><key>phrase</key><string>できず</string><key>shortcut</key><string>できず</string></dict>
+	<dict><key>phrase</key><string>できません</string><key>shortcut</key><string>できません</string></dict>
+	<dict><key>phrase</key><string>できました</string><key>shortcut</key><string>できました</string></dict>
+	<dict><key>phrase</key><string>かなあ</string><key>shortcut</key><string>かなあ</string></dict>	<!-- 終助詞 かな+引き伸ばし。辞書に受け皿が無く 蚊なあ/科なあ… だけだった(ユーザ報告 3081)。かなー は辞書に在る -->
 	<dict><key>phrase</key><string>しまった</string><key>shortcut</key><string>しまった</string></dict>	<!-- 補助動詞 しまう のかな正書。しまおう は 縞王(7380)/島王(10000) しか無い(ユーザ指定 2564) -->
 	<dict><key>phrase</key><string>しまって</string><key>shortcut</key><string>しまって</string></dict>
 	<dict><key>phrase</key><string>しまおう</string><key>shortcut</key><string>しまおう</string></dict>

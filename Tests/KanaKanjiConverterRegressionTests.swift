@@ -17751,6 +17751,31 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3081(ユーザ報告 3 件): かなあ はかな先頭(misc の curated 受け皿+終止クラスタ)、じっしつできなく→実質できなく
+    // (できなく 族を misc に)、なった は かな/成る系 → ナッタ は 5 番目(seed)
+    func testRegressionUserReports3081() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            XCTAssertEqual(converter.candidates(for: "かなあ", limit: 3, systemCandidateMode: mode).first, "かなあ", label)
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "かなあ"), label)
+            for (reading, expected) in [
+                ("じっしつできなく", "実質できなく"), ("じっしつできなくなった", "実質できなくなった"),
+                ("じっしつできない", "実質できない"), ("りようできなくて", "利用できなくて"), ("そうなった", "そうなった")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected, "\(label) reading=\(reading)")
+            }
+            let natta = converter.candidates(for: "なった", limit: 8, systemCandidateMode: mode)
+            XCTAssertEqual(natta.first, "なった", "\(label) list=\(natta)")
+            XCTAssertEqual(natta.firstIndex(of: "ナッタ"), 4, "\(label) list=\(natta)")
+            XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "なった"), label)
+        }
+    }
+
     // 3069: ふか の並びはユーザ指定(負荷/不可/附加/孵化/付加/鱶/賦課)
     func testRegressionUserReports3069() throws {
         try prepareRealLMDictionary()
