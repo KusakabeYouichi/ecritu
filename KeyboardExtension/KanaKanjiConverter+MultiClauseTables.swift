@@ -23,6 +23,10 @@ extension KanaKanjiConverter {
     // ので、列挙が広がっても最良経路の質は落ちない)。
     static let multiClauseTopK = 14
     static let multiClauseInflectionTopK = 3        // 活用派生ノードの1文節あたり上限
+    // 同音の動詞が多い読み(かけ-: 掛/欠/書/描/駆/賭)は 3 枠では 欠けてる/描けてる が立たない(ユーザ報告 3086、surface モードで
+    // 辞書順 かける/書ける/掛ける/駆ける/欠ける)。読みの接頭が一致する文節だけ枠を広げる
+    static let multiClauseInflectionTopKWide = 7
+    static let multiClauseInflectionWideSupplyReadingPrefixes: [String] = ["かけ"]
     static let multiClauseSeededInflectionExtraFetch = 14  // 活用形に seed がある読みの取得幅の上乗せ(2799、定義箇所コメント参照)
     // 活用派生ノードが LM 未収録(普通)のときの専用コスト。LM コーパスは Sudachi A単位で
     // 活用形を「買っ+た」に分割するため、正しい活用表層(買った)は unigram に無い。
@@ -1768,6 +1772,15 @@ extension KanaKanjiConverter {
     static let multiClauseHougaAfterNonPredicatePenalty = 4000
     // 1字かな素通りノードが1字かなノードに続くときの減点(バブル連鎖の遮断。2642)
     static let multiClauseKanaMoraChainPenalty = 4000
+    // て/で/ても/でも の直後の いる系(いない/いる/いた…)はかなが正書(かけてもいない)。居ない/射ない/以内 の漢字表層が
+    // 変種枠(3)を食い、欠けてもいない(先頭文節の変種)が入れなかった(ユーザ報告 3086)。射ない は日常でほぼ言わない
+    // も/は も含める(誰もいない/彼はいない)。かけてもいない の経路は かけ+て+も+いない と割れ、prev は も になる
+    static let multiClauseTeFormConjunctiveReadings: Set<String> = ["て", "で", "ても", "でも", "ては", "では", "も", "は"]
+    static let multiClauseIruAuxiliaryReadings: Set<String> = ["いない", "いる", "いた", "いて", "います", "いません", "いなかった", "いれば", "いよう"]
+    static let multiClauseIruAuxiliaryKanjiAfterTePenalty = 2500
+    // 述語(辞書形/活用派生)の直後の引用・伝聞の って(違うって/行くって/食べたって)。LM に 違う→って が無く
+    // unigram+backoff の約 6000 になり、血+が+売って(1303+1500)の断片連鎖に 2800 差で負けていた(ちがうってのが→血が売ってのが。3086)
+    static let multiClauseQuotativeTteAfterPredicateCost = 1500
     // バブル遮断の対象外にする機能モーラ(助動詞・活用断片・接続の1字かな)。
     // 助詞・終助詞・名詞化は既存セットで除外済みなので、ここはそれ以外の文法1字
     // の は CaseParticleSurfaces に意図的に入っていない(名詞化は のが/のは 側)ため明記
@@ -2469,6 +2482,8 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseFinalKanaParticlesBeforeContentWord.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFinalParticleAfterConditionalToReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFinalParticleReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseTeFormConjunctiveReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseIruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseForbiddenInitialExemptReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFormalNounKanaReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFunctionalSingleKanaSurfaces.sorted() { add(s) }
@@ -2678,6 +2693,8 @@ extension KanaKanjiConverter {
     static let multiClauseFinalKanaParticlesBeforeContentWordID = MultiClauseIDSet(multiClauseFinalKanaParticlesBeforeContentWord)
     static let multiClauseFinalParticleAfterConditionalToReadingsID = MultiClauseIDSet(multiClauseFinalParticleAfterConditionalToReadings)
     static let multiClauseFinalParticleReadingsID = MultiClauseIDSet(multiClauseFinalParticleReadings)
+    static let multiClauseTeFormConjunctiveReadingsID = MultiClauseIDSet(multiClauseTeFormConjunctiveReadings)
+    static let multiClauseIruAuxiliaryReadingsID = MultiClauseIDSet(multiClauseIruAuxiliaryReadings)
     static let multiClauseForbiddenInitialExemptReadingsID = MultiClauseIDSet(multiClauseForbiddenInitialExemptReadings)
     static let multiClauseFormalNounKanaReadingsID = MultiClauseIDSet(multiClauseFormalNounKanaReadings)
     static let multiClauseFunctionalSingleKanaSurfacesID = MultiClauseIDSet(multiClauseFunctionalSingleKanaSurfaces)

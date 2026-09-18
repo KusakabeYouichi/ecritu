@@ -408,6 +408,10 @@ extension KanaKanjiConverter {
                     && len <= Self.multiClauseInflectionMaxSegmentReadingCount
                     && (segmentReading.last.map { Self.inflectionRuleSuffixLastCharacters.contains($0) } == true
                         || Self.ichidanRenyouNounBaseReadings.contains(segmentReading + "る"))
+                // 活用派生の枠(定数コメント参照。3086)
+                let inflectionTopK = Self.multiClauseInflectionWideSupplyReadingPrefixes.contains(where: { segmentReading.hasPrefix($0) })
+                    ? Self.multiClauseInflectionTopKWide
+                    : Self.multiClauseInflectionTopK
                 // 活用エンジン供給の候補(b2 と a2 で共有。キャッシュは systemCandidateMode 込み)
                 func cachedInflectedCandidates() -> [String] {
                     let inflectionCacheKey = "\(systemCandidateMode)|\(segmentReading)"
@@ -429,8 +433,8 @@ extension KanaKanjiConverter {
                         initialAjoutVocabulary: initialAjoutVocabulary,
                         systemCandidateMode: systemCandidateMode,
                         limit: seedOrder == nil
-                            ? Self.multiClauseInflectionTopK * 2
-                            : Self.multiClauseInflectionTopK * 2 + Self.multiClauseSeededInflectionExtraFetch
+                            ? inflectionTopK * 2
+                            : inflectionTopK * 2 + Self.multiClauseSeededInflectionExtraFetch
                     )
                     if let seedOrder {
                         let seedSet = Set(seedOrder)
@@ -677,7 +681,7 @@ extension KanaKanjiConverter {
                             preferredInflectedNodeKeys.insert("\(start)-\(end)-\(surface)")
                         }
                         suppliedInflectionCount += 1
-                        if suppliedInflectionCount >= Self.multiClauseInflectionTopK {
+                        if suppliedInflectionCount >= inflectionTopK {
                             break
                         }
                     }
@@ -689,7 +693,7 @@ extension KanaKanjiConverter {
                     // 追加供給する — 供給の追加のみで既存の並び・ボーナスには触れない。
                     // 優劣ゲートが無いと、借用統計に乗るジャンク族(充て(みて)←あて 等、
                     // 基底が LM 未収録の文語)まで入って既存の最良を壊す。
-                    if suppliedInflectionCount >= Self.multiClauseInflectionTopK {
+                    if suppliedInflectionCount >= inflectionTopK {
                         let families = inflectionCandidateFamilies(
                             for: segmentReading,
                             ajoutVocabulary: manualAjoutVocabulary,
@@ -1981,6 +1985,20 @@ extension KanaKanjiConverter {
                 !prevIsBOS,
                 prev.allSatisfy({ ("ぁ"..."ゖ").contains($0) || $0 == "ー" }) {
                 base = min(base, Self.multiClauseKanaAdverbCost)
+            }
+            // 述語の直後の引用の って はかな単位で安く(定数コメント参照。3086)
+            // prev は辞書形述語に限る。活用派生(下がっちゃっ)まで許すと 下がっちゃ+って+ルネ の分割を安くして退行した
+            if isKanaIdentity, prevIsDictionaryFormPredicate, !prevIsKanaIdentity, reading == "って" {
+                base = min(base, Self.multiClauseQuotativeTteAfterPredicateCost)
+            }
+            // て/ても の直後の いる系はかなが正書(定数コメント参照。3086)。漢字表層(居ない/射ない/以内)を減点し、
+            // 変種枠を先頭文節(欠けても)に譲る。prev はかな識別の て形接続助詞に限る
+            // prev は て形接続助詞そのもの(かな識別)か、ても を呑んだ派生ノード(かけても)。読み末尾で見る
+            if !isKanaIdentity, Self.multiClauseIruAuxiliaryReadingsID.contains(readingID),
+                prevIsKanaIdentity || prevIsInflectionDerived,
+                let prevReading,
+                Self.multiClauseTeFormConjunctiveReadings.contains(where: { prevReading.hasSuffix($0) }) {
+                penalty += Self.multiClauseIruAuxiliaryKanjiAfterTePenalty
             }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
