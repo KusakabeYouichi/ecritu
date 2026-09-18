@@ -719,8 +719,25 @@ final class KeyboardViewController: UIInputViewController {
     // 外部変更の直前通知。完了ボタンでは textDidChange(文脈空)の 8ms 前に文脈そのままで届く(2684 実機)
     override func textWillChange(_ textInput: UITextInput?) {
         super.textWillChange(textInput)
+        #if DEBUG
+        let probeStartedAt = CFAbsoluteTimeGetCurrent()
+        defer { logHostCallbackProbe("textWillChange", startedAt: probeStartedAt) }
+        #endif
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "textWillChange")
     }
+
+    #if DEBUG
+    // 調査用計測(送信 3095): ホストの本文変更通知 1 回あたりの écritu 側処理時間。メッセージの送信ボタン→反映が
+    // 遅いというユーザ報告。通知の処理が長いとホストの反映が遅れる可能性を見る。文脈長も添える(送信なら N→0)。
+    // grep "調査用計測(送信 3095)" で外す
+    func logHostCallbackProbe(_ name: String, startedAt: CFAbsoluteTime) {
+        let elapsedMs = performanceElapsedMilliseconds(since: startedAt)
+        appendKeyboardDiagnosticsLog(
+            "調査用計測(送信 3095) callback=\(name) ms=\(elapsedMs) contextLen=\(currentTextContextBeforeInput().count) composingLen=\(composingRawText.count) suppressed=\(shouldSuppressHeavyOperations(reason: "probe"))",
+            file: #fileID, line: #line, function: #function
+        )
+    }
+    #endif
 
     // 入力欄のタップ(カーソル移動)はテキストが変わらないので textWillChange が来ず、
     // selectionWillChange だけが「ホストが動く前」に届く。ここで確定しないと、ホストが
@@ -729,6 +746,10 @@ final class KeyboardViewController: UIInputViewController {
     // 消失は確定に置き換えられる(2979、ユーザ報告)
     override func selectionWillChange(_ textInput: UITextInput?) {
         super.selectionWillChange(textInput)
+        #if DEBUG
+        let probeStartedAt = CFAbsoluteTimeGetCurrent()
+        defer { logHostCallbackProbe("selectionWillChange", startedAt: probeStartedAt) }
+        #endif
         commitComposingTextOnExternalTextWillChangeIfNeeded(trigger: "selectionWillChange")
     }
 
@@ -784,6 +805,10 @@ final class KeyboardViewController: UIInputViewController {
 
     override func textDidChange(_ textInput: UITextInput?) {
         super.textDidChange(textInput)
+        #if DEBUG
+        let probeStartedAt = CFAbsoluteTimeGetCurrent()
+        defer { logHostCallbackProbe("textDidChange", startedAt: probeStartedAt) }
+        #endif
         updateKeyboardDiagnosticsHeartbeat(event: "textDidChange")
         publishMemoryFootprintPeakForDebugDisplay()
 
@@ -809,6 +834,10 @@ final class KeyboardViewController: UIInputViewController {
 
     override func selectionDidChange(_ textInput: UITextInput?) {
         super.selectionDidChange(textInput)
+        #if DEBUG
+        let probeStartedAt = CFAbsoluteTimeGetCurrent()
+        defer { logHostCallbackProbe("selectionDidChange", startedAt: probeStartedAt) }
+        #endif
         updateKeyboardDiagnosticsHeartbeat(event: "selectionDidChange")
 
         // 多重生存の非アクティブインスタンスでも、未確定の確定/クリアと下線残留クリアは
