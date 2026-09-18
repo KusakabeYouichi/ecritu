@@ -2414,3 +2414,304 @@ extension KanaKanjiConverter {
     }
 
 }
+
+// MARK: - 記号表(表層・読みの整数 ID 化。3052)
+// 非 ASCII の String は == も hash も正規化つきで高く(遷移内の合計で実行時間の約 2 割)、遷移ごとに文字列を
+// 連結・比較・照合していた。規則が参照する全文字列(リテラル・集合の要素・辞書のキー・区切り・助動詞末尾)を
+// 起動時に 1 回だけ ID 化し、ノードの表層/読みも変換ごとに 1 回だけ ID にして、遷移内は整数だけで回す。
+// このブロックは scratchpad/gen_symbols.pl が MultiClause.swift の遷移内を走査して生成した(手で編集してよい)
+extension KanaKanjiConverter {
+    enum MultiClauseSymbols {
+        // 登録簿(添字が ID)。順序は決定的(リテラル → 集合 → 辞書キー → 対キーの部品 → 助動詞末尾)
+        static let registry: [String] = {
+            var seen = Set<String>()
+            var list: [String] = []
+            func add(_ s: String) { if seen.insert(s).inserted { list.append(s) } }
+            add("")
+            add(KanaKanjiConverter.multiClauseBOSMarker)
+            add(KanaKanjiConverter.multiClauseEOSMarker)
+            for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "行って"] { add(s) }
+            for s in KanaKanjiConverter.multiClauseAdverbKanjiAfterNounSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseAuVerbReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseAuxiliaryAdjectiveKanaReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBOSParticleBeforePredicateExemptParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBOSPenalizedParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBekiReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBindingParticleSwallowedAfterCaseParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseCaseParticleEndingPhrases.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseCaseParticleSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseClauseInitialKanaExistentialPasts.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseCollocationBridgeParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseColloquialExplanatoryTailReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseColorTintStemSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseCompoundParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseDemonstrativeSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseDirectionalPrefixSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseDurationCounterBareSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseEventNounsForPrecursor.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseExistentialAttaReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseExplanatoryFinalSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseFinalKanaParticlesBeforeContentWord.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseFinalParticleAfterConditionalToReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseFinalParticleReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseForbiddenInitialExemptReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseFormalNounKanaReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseFunctionalSingleKanaSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseHonorificSuffixReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseInflectionDiscountConjunctiveParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseInstrumentNounSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaAdverbReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaIdentityFloorExemptReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaPredicateIdentities.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaSuruNegativeIdentities.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseNominalizerNFinalParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseNominalizerSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseNounCopulaClusterReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseParticleFollowerSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseParticleIiSwallowingReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseParticleReadingsForClauseHeadGuard.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseParticleReadingsForKanjiGuard.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseParticleSwallowedVerbHeadParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePersonNameHonorificReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePersonSuffixSinoReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePpoiFamilySurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePredicateAdjacentRenyouNounReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePrenominalAdjectivalSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseQuotativeAdverbReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseRangeSuffixSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseRenyouAuxKanaSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSeedFirstLMOverrideReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSentenceFinalAllKanjiPenaltyReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSentenceFinalKanaParticles.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSentenceInitialKanaConjunctions.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSouCopulaFollowerReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSubstantiveNounReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSugiSuffixSurfaces.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseTeOruAuxiliaryReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBigramPrefixPairBonusesByPrev.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseConstellationStandardSurfacesByReading.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseConversationalTemporalNounUnigramCaps.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseDirectionalPrefixReadings.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseEventNounAfterSuruNounBonuses.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKuruFormSurfaces.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseLMSplitCompoundUnigramSubstitutes.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseOutgoingBigramBorrowDeniedReadingsBySurface.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClausePrenominalVerbNounPreferences.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseRareReadingFloorExemptSurfacesByReading.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSeedOrderNounBonusesByReading.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseSeedSupplyCostFloors.keys.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseUnmodifiableRareReadingSurfacesByReading.keys.sorted() { add(s) }
+            for key in KanaKanjiConverter.multiClauseBigramPairDenied.sorted() { for part in key.split(separator: "\t") { add(String(part)) } }
+            for key in KanaKanjiConverter.multiClauseBigramPairBonuses.keys.sorted() { for part in key.split(separator: "\t") { add(String(part)) } }
+            for s in KanaKanjiConverter.multiClauseInflectionAuxTails { add(s) }
+            return list
+        }()
+        static let index: [String: Int32] = {
+            var map: [String: Int32] = [:]
+            map.reserveCapacity(registry.count)
+            for (offset, s) in registry.enumerated() { map[s] = Int32(offset) }
+            return map
+        }()
+        static let count = Int32(registry.count)
+        static func id(_ s: String) -> Int32 {
+            guard let id = index[s] else { preconditionFailure("記号表に無い文字列: \(s)") }
+            return id
+        }
+        @inline(__always) static func pairKey(_ a: Int32, _ b: Int32) -> UInt64 {
+            (UInt64(UInt32(bitPattern: a)) << 32) | UInt64(UInt32(bitPattern: b))
+        }
+        static func byID<V>(_ dict: [String: V]) -> [Int32: V] {
+            var out: [Int32: V] = [:]
+            out.reserveCapacity(dict.count)
+            for (key, value) in dict { out[id(key)] = value }
+            return out
+        }
+        static func pairSet(_ keys: Set<String>) -> Set<UInt64> {
+            Set(keys.map { key in
+                let parts = key.split(separator: "\t", maxSplits: 1).map(String.init)
+                return pairKey(id(parts[0]), id(parts[1]))
+            })
+        }
+        static func pairDict(_ dict: [String: Int]) -> [UInt64: Int] {
+            var out: [UInt64: Int] = [:]
+            for (key, value) in dict {
+                let parts = key.split(separator: "\t", maxSplits: 1).map(String.init)
+                out[pairKey(id(parts[0]), id(parts[1]))] = value
+            }
+            return out
+        }
+    }
+
+    // 登録簿 ID のビット表。登録簿外の ID(変換内の一時 ID)は常に非該当
+    struct MultiClauseIDSet {
+        private let bits: [Bool]
+        init(_ strings: Set<String>) {
+            var bits = [Bool](repeating: false, count: Int(MultiClauseSymbols.count))
+            for s in strings { bits[Int(MultiClauseSymbols.id(s))] = true }
+            self.bits = bits
+        }
+        @inline(__always) func contains(_ id: Int32) -> Bool {
+            id >= 0 && Int(id) < bits.count && bits[Int(id)]
+        }
+        @inline(__always) func contains(_ id: Int32?) -> Bool {
+            guard let id else { return false }
+            return contains(id)
+        }
+    }
+
+    // 規則のリテラルの ID 定数(識別子はかな・漢字そのまま)
+    enum SID {
+        static let empty = MultiClauseSymbols.id("")
+        static let BOS = MultiClauseSymbols.id(multiClauseBOSMarker)
+        static let EOS = MultiClauseSymbols.id(multiClauseEOSMarker)
+        static let ある = MultiClauseSymbols.id("ある")
+        static let いう = MultiClauseSymbols.id("いう")
+        static let いち = MultiClauseSymbols.id("いち")
+        static let いって = MultiClauseSymbols.id("いって")
+        static let う = MultiClauseSymbols.id("う")
+        static let お = MultiClauseSymbols.id("お")
+        static let おそい = MultiClauseSymbols.id("おそい")
+        static let か = MultiClauseSymbols.id("か")
+        static let かち = MultiClauseSymbols.id("かち")
+        static let かん = MultiClauseSymbols.id("かん")
+        static let かんじ = MultiClauseSymbols.id("かんじ")
+        static let が = MultiClauseSymbols.id("が")
+        static let きた = MultiClauseSymbols.id("きた")
+        static let くらい = MultiClauseSymbols.id("くらい")
+        static let ぐらい = MultiClauseSymbols.id("ぐらい")
+        static let こと = MultiClauseSymbols.id("こと")
+        static let ご = MultiClauseSymbols.id("ご")
+        static let ごと = MultiClauseSymbols.id("ごと")
+        static let さ = MultiClauseSymbols.id("さ")
+        static let さん = MultiClauseSymbols.id("さん")
+        static let し = MultiClauseSymbols.id("し")
+        static let した = MultiClauseSymbols.id("した")
+        static let して = MultiClauseSymbols.id("して")
+        static let します = MultiClauseSymbols.id("します")
+        static let じん = MultiClauseSymbols.id("じん")
+        static let すぎ = MultiClauseSymbols.id("すぎ")
+        static let する = MultiClauseSymbols.id("する")
+        static let そい = MultiClauseSymbols.id("そい")
+        static let そう = MultiClauseSymbols.id("そう")
+        static let た = MultiClauseSymbols.id("た")
+        static let たい = MultiClauseSymbols.id("たい")
+        static let ため = MultiClauseSymbols.id("ため")
+        static let だ = MultiClauseSymbols.id("だ")
+        static let っけ = MultiClauseSymbols.id("っけ")
+        static let であっても = MultiClauseSymbols.id("であっても")
+        static let でも = MultiClauseSymbols.id("でも")
+        static let と = MultiClauseSymbols.id("と")
+        static let な = MultiClauseSymbols.id("な")
+        static let ない = MultiClauseSymbols.id("ない")
+        static let ないで = MultiClauseSymbols.id("ないで")
+        static let なん = MultiClauseSymbols.id("なん")
+        static let に = MultiClauseSymbols.id("に")
+        static let にも = MultiClauseSymbols.id("にも")
+        static let の = MultiClauseSymbols.id("の")
+        static let のか = MultiClauseSymbols.id("のか")
+        static let は = MultiClauseSymbols.id("は")
+        static let ひと = MultiClauseSymbols.id("ひと")
+        static let ほうが = MultiClauseSymbols.id("ほうが")
+        static let ほうがいい = MultiClauseSymbols.id("ほうがいい")
+        static let ほしい = MultiClauseSymbols.id("ほしい")
+        static let まだ = MultiClauseSymbols.id("まだ")
+        static let まち = MultiClauseSymbols.id("まち")
+        static let も = MultiClauseSymbols.id("も")
+        static let もう = MultiClauseSymbols.id("もう")
+        static let や = MultiClauseSymbols.id("や")
+        static let よう = MultiClauseSymbols.id("よう")
+        static let を = MultiClauseSymbols.id("を")
+        static let ん = MultiClauseSymbols.id("ん")
+        static let ー = MultiClauseSymbols.id("ー")
+        static let 一 = MultiClauseSymbols.id("一")
+        static let 一手 = MultiClauseSymbols.id("一手")
+        static let 人 = MultiClauseSymbols.id("人")
+        static let 位置 = MultiClauseSymbols.id("位置")
+        static let 価値 = MultiClauseSymbols.id("価値")
+        static let 化 = MultiClauseSymbols.id("化")
+        static let 屋 = MultiClauseSymbols.id("屋")
+        static let 待ち = MultiClauseSymbols.id("待ち")
+        static let 感 = MultiClauseSymbols.id("感")
+        static let 来た = MultiClauseSymbols.id("来た")
+        static let 漢字 = MultiClauseSymbols.id("漢字")
+        static let 産 = MultiClauseSymbols.id("産")
+        static let 用 = MultiClauseSymbols.id("用")
+        static let 行って = MultiClauseSymbols.id("行って")
+    }
+
+    static let multiClauseAdverbKanjiAfterNounSurfacesID = MultiClauseIDSet(multiClauseAdverbKanjiAfterNounSurfaces)
+    static let multiClauseAuVerbReadingsID = MultiClauseIDSet(multiClauseAuVerbReadings)
+    static let multiClauseAuxiliaryAdjectiveKanaReadingsID = MultiClauseIDSet(multiClauseAuxiliaryAdjectiveKanaReadings)
+    static let multiClauseBOSParticleBeforePredicateExemptParticlesID = MultiClauseIDSet(multiClauseBOSParticleBeforePredicateExemptParticles)
+    static let multiClauseBOSPenalizedParticlesID = MultiClauseIDSet(multiClauseBOSPenalizedParticles)
+    static let multiClauseBekiReadingsID = MultiClauseIDSet(multiClauseBekiReadings)
+    static let multiClauseBindingParticleSwallowedAfterCaseParticlesID = MultiClauseIDSet(multiClauseBindingParticleSwallowedAfterCaseParticles)
+    static let multiClauseCaseParticleEndingPhrasesID = MultiClauseIDSet(multiClauseCaseParticleEndingPhrases)
+    static let multiClauseCaseParticleSurfacesID = MultiClauseIDSet(multiClauseCaseParticleSurfaces)
+    static let multiClauseClauseInitialKanaExistentialPastsID = MultiClauseIDSet(multiClauseClauseInitialKanaExistentialPasts)
+    static let multiClauseCollocationBridgeParticlesID = MultiClauseIDSet(multiClauseCollocationBridgeParticles)
+    static let multiClauseColloquialExplanatoryTailReadingsID = MultiClauseIDSet(multiClauseColloquialExplanatoryTailReadings)
+    static let multiClauseColorTintStemSurfacesID = MultiClauseIDSet(multiClauseColorTintStemSurfaces)
+    static let multiClauseCompoundParticlesID = MultiClauseIDSet(multiClauseCompoundParticles)
+    static let multiClauseDemonstrativeSurfacesID = MultiClauseIDSet(multiClauseDemonstrativeSurfaces)
+    static let multiClauseDirectionalPrefixSurfacesID = MultiClauseIDSet(multiClauseDirectionalPrefixSurfaces)
+    static let multiClauseDurationCounterBareSurfacesID = MultiClauseIDSet(multiClauseDurationCounterBareSurfaces)
+    static let multiClauseEventNounsForPrecursorID = MultiClauseIDSet(multiClauseEventNounsForPrecursor)
+    static let multiClauseExistentialAttaReadingsID = MultiClauseIDSet(multiClauseExistentialAttaReadings)
+    static let multiClauseExplanatoryFinalSurfacesID = MultiClauseIDSet(multiClauseExplanatoryFinalSurfaces)
+    static let multiClauseFinalKanaParticlesBeforeContentWordID = MultiClauseIDSet(multiClauseFinalKanaParticlesBeforeContentWord)
+    static let multiClauseFinalParticleAfterConditionalToReadingsID = MultiClauseIDSet(multiClauseFinalParticleAfterConditionalToReadings)
+    static let multiClauseFinalParticleReadingsID = MultiClauseIDSet(multiClauseFinalParticleReadings)
+    static let multiClauseForbiddenInitialExemptReadingsID = MultiClauseIDSet(multiClauseForbiddenInitialExemptReadings)
+    static let multiClauseFormalNounKanaReadingsID = MultiClauseIDSet(multiClauseFormalNounKanaReadings)
+    static let multiClauseFunctionalSingleKanaSurfacesID = MultiClauseIDSet(multiClauseFunctionalSingleKanaSurfaces)
+    static let multiClauseHonorificSuffixReadingsID = MultiClauseIDSet(multiClauseHonorificSuffixReadings)
+    static let multiClauseInflectionDiscountConjunctiveParticlesID = MultiClauseIDSet(multiClauseInflectionDiscountConjunctiveParticles)
+    static let multiClauseInstrumentNounSurfacesID = MultiClauseIDSet(multiClauseInstrumentNounSurfaces)
+    static let multiClauseKanaAdverbReadingsID = MultiClauseIDSet(multiClauseKanaAdverbReadings)
+    static let multiClauseKanaIdentityFloorExemptReadingsID = MultiClauseIDSet(multiClauseKanaIdentityFloorExemptReadings)
+    static let multiClauseKanaPredicateIdentitiesID = MultiClauseIDSet(multiClauseKanaPredicateIdentities)
+    static let multiClauseKanaSuruNegativeIdentitiesID = MultiClauseIDSet(multiClauseKanaSuruNegativeIdentities)
+    static let multiClauseNominalizerNFinalParticlesID = MultiClauseIDSet(multiClauseNominalizerNFinalParticles)
+    static let multiClauseNominalizerSurfacesID = MultiClauseIDSet(multiClauseNominalizerSurfaces)
+    static let multiClauseNounCopulaClusterReadingsID = MultiClauseIDSet(multiClauseNounCopulaClusterReadings)
+    static let multiClauseParticleFollowerSurfacesID = MultiClauseIDSet(multiClauseParticleFollowerSurfaces)
+    static let multiClauseParticleIiSwallowingReadingsID = MultiClauseIDSet(multiClauseParticleIiSwallowingReadings)
+    static let multiClauseParticleReadingsForClauseHeadGuardID = MultiClauseIDSet(multiClauseParticleReadingsForClauseHeadGuard)
+    static let multiClauseParticleReadingsForKanjiGuardID = MultiClauseIDSet(multiClauseParticleReadingsForKanjiGuard)
+    static let multiClauseParticleSwallowedVerbHeadParticlesID = MultiClauseIDSet(multiClauseParticleSwallowedVerbHeadParticles)
+    static let multiClausePersonNameHonorificReadingsID = MultiClauseIDSet(multiClausePersonNameHonorificReadings)
+    static let multiClausePersonSuffixSinoReadingsID = MultiClauseIDSet(multiClausePersonSuffixSinoReadings)
+    static let multiClausePpoiFamilySurfacesID = MultiClauseIDSet(multiClausePpoiFamilySurfaces)
+    static let multiClausePredicateAdjacentRenyouNounReadingsID = MultiClauseIDSet(multiClausePredicateAdjacentRenyouNounReadings)
+    static let multiClausePrenominalAdjectivalSurfacesID = MultiClauseIDSet(multiClausePrenominalAdjectivalSurfaces)
+    static let multiClauseQuotativeAdverbReadingsID = MultiClauseIDSet(multiClauseQuotativeAdverbReadings)
+    static let multiClauseRangeSuffixSurfacesID = MultiClauseIDSet(multiClauseRangeSuffixSurfaces)
+    static let multiClauseRenyouAuxKanaSurfacesID = MultiClauseIDSet(multiClauseRenyouAuxKanaSurfaces)
+    static let multiClauseSeedFirstLMOverrideReadingsID = MultiClauseIDSet(multiClauseSeedFirstLMOverrideReadings)
+    static let multiClauseSentenceFinalAllKanjiPenaltyReadingsID = MultiClauseIDSet(multiClauseSentenceFinalAllKanjiPenaltyReadings)
+    static let multiClauseSentenceFinalKanaParticlesID = MultiClauseIDSet(multiClauseSentenceFinalKanaParticles)
+    static let multiClauseSentenceInitialKanaConjunctionsID = MultiClauseIDSet(multiClauseSentenceInitialKanaConjunctions)
+    static let multiClauseSouCopulaFollowerReadingsID = MultiClauseIDSet(multiClauseSouCopulaFollowerReadings)
+    static let multiClauseSubstantiveNounReadingsID = MultiClauseIDSet(multiClauseSubstantiveNounReadings)
+    static let multiClauseSugiSuffixSurfacesID = MultiClauseIDSet(multiClauseSugiSuffixSurfaces)
+    static let multiClauseTeOruAuxiliaryReadingsID = MultiClauseIDSet(multiClauseTeOruAuxiliaryReadings)
+
+    static let multiClauseBigramBorrowDeniedReadingsBySurfaceByID = MultiClauseSymbols.byID(multiClauseBigramBorrowDeniedReadingsBySurface)
+    static let multiClauseBigramPrefixPairBonusesByPrevByID = MultiClauseSymbols.byID(multiClauseBigramPrefixPairBonusesByPrev)
+    static let multiClauseConstellationStandardSurfacesByReadingByID = MultiClauseSymbols.byID(multiClauseConstellationStandardSurfacesByReading)
+    static let multiClauseConversationalTemporalNounUnigramCapsByID = MultiClauseSymbols.byID(multiClauseConversationalTemporalNounUnigramCaps)
+    static let multiClauseDirectionalPrefixReadingsByID = MultiClauseSymbols.byID(multiClauseDirectionalPrefixReadings)
+    static let multiClauseEventNounAfterSuruNounBonusesByID = MultiClauseSymbols.byID(multiClauseEventNounAfterSuruNounBonuses)
+    static let multiClauseKuruFormSurfacesByID = MultiClauseSymbols.byID(multiClauseKuruFormSurfaces)
+    static let multiClauseLMSplitCompoundUnigramSubstitutesByID = MultiClauseSymbols.byID(multiClauseLMSplitCompoundUnigramSubstitutes)
+    static let multiClauseOutgoingBigramBorrowDeniedReadingsBySurfaceByID = MultiClauseSymbols.byID(multiClauseOutgoingBigramBorrowDeniedReadingsBySurface)
+    static let multiClausePrenominalVerbNounPreferencesByID = MultiClauseSymbols.byID(multiClausePrenominalVerbNounPreferences)
+    static let multiClauseRareReadingFloorExemptSurfacesByReadingByID = MultiClauseSymbols.byID(multiClauseRareReadingFloorExemptSurfacesByReading)
+    static let multiClauseSeedOrderNounBonusesByReadingByID = MultiClauseSymbols.byID(multiClauseSeedOrderNounBonusesByReading)
+    static let multiClauseSeedSupplyCostFloorsByID = MultiClauseSymbols.byID(multiClauseSeedSupplyCostFloors)
+    static let multiClauseUnmodifiableRareReadingSurfacesByReadingByID = MultiClauseSymbols.byID(multiClauseUnmodifiableRareReadingSurfacesByReading)
+    static let multiClauseBigramPairDeniedID = MultiClauseSymbols.pairSet(multiClauseBigramPairDenied)
+    static let multiClauseBigramPairBonusesID = MultiClauseSymbols.pairDict(multiClauseBigramPairBonuses)
+}
