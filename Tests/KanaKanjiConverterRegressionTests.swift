@@ -17705,6 +17705,17 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3069: ふか の並びはユーザ指定(負荷/不可/附加/孵化/付加/鱶/賦課)
+    func testRegressionUserReports3069() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let list = converter.candidates(for: "ふか", limit: 7, systemCandidateMode: mode)
+            XCTAssertEqual(list, ["負荷", "不可", "附加", "孵化", "付加", "鱶", "賦課"], "mode=\(mode.rawValue)")
+        }
+    }
+
     // 3068: どうかな→同かな(ユーザ報告)。指示副詞(そう/こう/どう/ああ)の漢字表層+終助詞クラスタを減点(2889 の +と の拡張)。
     // 銅かな のような実名詞+終助詞は変種に残す
     func testRegressionUserReports3068() throws {
