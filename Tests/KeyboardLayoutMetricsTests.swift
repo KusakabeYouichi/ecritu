@@ -200,4 +200,18 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
         XCTAssertTrue(KeyboardLayoutMetrics.isPlausiblePortraitBottomInset(21, shorterScreenEdge: 320, isPhone: true))
         XCTAssertTrue(KeyboardLayoutMetrics.isPlausiblePortraitBottomInset(20, shorterScreenEdge: 834, isPhone: false))
     }
+
+    // テスター報告(iPhone SE 第 3 世代 ×2、3087): 実測インセットが 0 のとき幅 375 以上の iPhone を
+    // 一律ホームインジケーター機とみなして 34 を引いていたため、高さ要求が約 30pt 足りず候補欄の上が欠けた。
+    // ホームボタン機(375×667、414×736)は縦横比 1.78 なので除き、mini(375×812)などは従来どおり 34 を仮定する
+    func testHomeIndicatorAssumptionExcludesHomeButtonPhones() {
+        XCTAssertFalse(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 375, longerScreenEdge: 667, isPhone: true))
+        XCTAssertFalse(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 414, longerScreenEdge: 736, isPhone: true))
+        XCTAssertTrue(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 375, longerScreenEdge: 812, isPhone: true))
+        XCTAssertTrue(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 393, longerScreenEdge: 852, isPhone: true))
+        XCTAssertTrue(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 440, longerScreenEdge: 956, isPhone: true))
+        // 短辺 320(SE 第 1 世代)と iPad は従来どおり 0
+        XCTAssertFalse(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 320, longerScreenEdge: 568, isPhone: true))
+        XCTAssertFalse(KeyboardLayoutMetrics.assumesHomeIndicator(shorterScreenEdge: 834, longerScreenEdge: 1194, isPhone: false))
+    }
 }
