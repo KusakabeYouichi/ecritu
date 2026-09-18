@@ -17705,6 +17705,33 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3054: 受諾後(後(ご) の読み跨ぎ床の免除)と 更新された(curated 名詞 香信 の直後の される を非文に。ユーザ報告)
+    func testRegressionUserReports3054() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            for (reading, expected) in [
+                ("じゅだくご", "受諾後"), ("じゅだくごに", "受諾後に"), ("しゅうりょうご", "終了後"), ("かくにんご", "確認後"),
+                ("こうしんされた", "更新された"), ("こうしんした", "更新した"), ("をこうしんした", "を更新した"),
+                ("こうしんです", "香信です"), ("にほんご", "日本語"), ("えいごをこうしんした", "英語を更新した")
+            ] {
+                // 候補バーの先頭 = 連文節の最良、無ければ単文節の先頭
+                let best = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first
+                    ?? converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first
+                XCTAssertEqual(best, expected, "\(label) reading=\(reading)")
+            }
+            XCTAssertEqual(converter.candidates(for: "こうしん", limit: 2, systemCandidateMode: mode).first, "更新", label)
+            // pos サ変で登録した curated(有する)は 香信 の規則の対象外(normalise では別件で かな先頭。surface で確認)
+            if mode == .surface {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: "どじょうをゆうしています", systemCandidateMode: mode).first,
+                    "土壌を有しています", label)
+            }
+        }
+    }
+
     // 3051: きょく は 曲 を先頭に、かな きょく は末尾、数字直後(1きょく)も 曲(ユーザ指定)。
     // 巨軀(軀=躯 の旧字体)は一括抑制で消え、巨躯 だけ残る
     func testRegressionUserReports3051() throws {
