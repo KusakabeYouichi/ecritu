@@ -17751,6 +17751,19 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3085: らん の並びはユーザ指定(蘭/欄/乱/ラン/卵/藍/Rhin/覧/爛/鸞/婪、かなは末尾)。Rhin は vin.plist の補助語彙
+    func testRegressionUserReports3085() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let list = converter.candidates(for: "らん", limit: 16, systemCandidateMode: mode)
+            XCTAssertEqual(Array(list.prefix(11)), ["蘭", "欄", "乱", "ラン", "卵", "藍", "Rhin", "覧", "爛", "鸞", "婪"], "mode=\(mode.rawValue) list=\(list)")
+            // かなは指定 11 語より後(稀字 苒 との前後は問わない)
+            XCTAssertTrue((list.firstIndex(of: "らん") ?? -1) >= 11, "mode=\(mode.rawValue) list=\(list)")
+        }
+    }
+
     // 3081(ユーザ報告 3 件): かなあ はかな先頭(misc の curated 受け皿+終止クラスタ)、じっしつできなく→実質できなく
     // (できなく 族を misc に)、なった は かな/成る系 → ナッタ は 5 番目(seed)
     func testRegressionUserReports3081() throws {
