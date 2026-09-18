@@ -14,7 +14,16 @@ final class KanaKanjiConverter {
 
     let store: KanaKanjiStore
 
-    let stateQueue = DispatchQueue(label: "com.kusakabe.ecritu.kana-kanji.converter-state")
+    // 変換器の可変状態(キャッシュ等)の排他。以前は DispatchQueue.sync だったが、ジェネリックな sync は呼び出しごとに
+    // 脱抽象化サンクの箱を確保する(打鍵あたり約 1500 回。3096 の確保実測)。NSLock なら確保ゼロ。全部 sync 利用だったので意味は同じ
+    let stateLock = NSLock()
+
+    @inline(__always)
+    func withStateLock<T>(_ body: () throws -> T) rethrows -> T {
+        stateLock.lock()
+        defer { stateLock.unlock() }
+        return try body()
+    }
 
     var candidateCache: [CandidateCacheKey: [String]] = [:]
 
@@ -35,11 +44,11 @@ final class KanaKanjiConverter {
     // クエリが走っていた)。学習・抑制・設定変更で invalidateCandidateCache と一緒に消える。
     var kanaIdentityLeadingCache: [String: Bool] = [:]
     let kanaIdentityLeadingCacheLimit = 256
-    // 直近の単文節 finalize の点数内訳(DEBUG の実機トレース用。stateQueue 保護。2732)
+    // 直近の単文節 finalize の点数内訳(DEBUG の実機トレース用。stateLock 保護。2732)
     var lastScoreTraceForDiagnostics: String = ""
     var scoreLedgerForDiagnostics: [String: [Int]] = [:]
     func scoreTraceForDiagnostics(reading: String) -> String? {
-        let trace = stateQueue.sync { lastScoreTraceForDiagnostics }
+        let trace = withStateLock { lastScoreTraceForDiagnostics }
         return trace.hasPrefix(reading + ": ") ? String(trace.dropFirst(reading.count + 2)) : nil
     }
 
@@ -75,7 +84,7 @@ final class KanaKanjiConverter {
     }
 
     func setHistoricalKanaSurfaceAllowed(_ allowed: Bool) {
-        stateQueue.sync {
+        withStateLock {
             guard historicalKanaSurfaceAllowed != allowed else {
                 return
             }
@@ -86,7 +95,7 @@ final class KanaKanjiConverter {
     }
 
     func setIterationMarkSurfaceAllowed(_ allowed: Bool) {
-        stateQueue.sync {
+        withStateLock {
             guard iterationMarkSurfaceAllowed != allowed else {
                 return
             }
@@ -97,7 +106,7 @@ final class KanaKanjiConverter {
     }
 
     func setOrdinalMeKanjiPreferred(_ enabled: Bool) {
-        stateQueue.sync {
+        withStateLock {
             guard ordinalMeKanjiPreferred != enabled else {
                 return
             }
@@ -107,7 +116,7 @@ final class KanaKanjiConverter {
     }
 
     func setKaCounterVariantPreference(_ preference: KaCounterVariantPreference) {
-        stateQueue.sync {
+        withStateLock {
             guard kaCounterVariantPreference != preference else {
                 return
             }
@@ -117,7 +126,7 @@ final class KanaKanjiConverter {
     }
 
     func setOkuriganaVariantPreference(_ preference: OkuriganaVariantPreference) {
-        stateQueue.sync {
+        withStateLock {
             guard okuriganaVariantPreference != preference else {
                 return
             }
@@ -127,7 +136,7 @@ final class KanaKanjiConverter {
     }
 
     func setAdjectiveMeKanjiCandidatesEnabled(_ enabled: Bool) {
-        stateQueue.sync {
+        withStateLock {
             guard adjectiveMeKanjiCandidatesEnabled != enabled else {
                 return
             }
@@ -137,7 +146,7 @@ final class KanaKanjiConverter {
     }
 
     func setKatakanaEmphasisCandidateMode(_ mode: ScriptVariantCandidateMode) {
-        stateQueue.sync {
+        withStateLock {
             guard katakanaEmphasisCandidateMode != mode else {
                 return
             }
@@ -147,7 +156,7 @@ final class KanaKanjiConverter {
     }
 
     func setScriptVariantSuppressionCategories(_ categories: Set<ScriptVariantSuppressionCategory>) {
-        stateQueue.sync {
+        withStateLock {
             guard scriptVariantSuppressionCategories != categories else {
                 return
             }
@@ -157,7 +166,7 @@ final class KanaKanjiConverter {
     }
 
     func setMazegakiCandidateMode(_ mode: ScriptVariantCandidateMode) {
-        stateQueue.sync {
+        withStateLock {
             guard mazegakiCandidateMode != mode else {
                 return
             }
@@ -173,7 +182,7 @@ final class KanaKanjiConverter {
                 return
             }
 
-            self.stateQueue.sync {
+            self.withStateLock {
                 self.invalidateCandidateCache()
             }
 
@@ -184,7 +193,7 @@ final class KanaKanjiConverter {
     func clearSharedDataCaches() {
         store.clearSharedDataCaches()
 
-        stateQueue.sync {
+        withStateLock {
             invalidateCandidateCache()
         }
     }
@@ -201,14 +210,14 @@ final class KanaKanjiConverter {
         store.clearSystemDictionaryJSONCaches()
         store.clearSharedDataCaches()
 
-        stateQueue.sync {
+        withStateLock {
             invalidateCandidateCache()
         }
     }
 
     // メモリ内訳census用: converter 側キャッシュの件数+store 側の要約を1行で返す。
     func diagnosticsCacheCountsSummary() -> String {
-        let converterPart = stateQueue.sync {
+        let converterPart = withStateLock {
             "cand=\(candidateCache.count)"
                 + " kanaLead=\(kanaIdentityLeadingCache.count)"
                 + " multiInfl=\(multiClauseInflectionCache.count)"
@@ -314,7 +323,7 @@ final class KanaKanjiConverter {
             hasDigitPrefix: hasDigitPrefix
         )
 
-        if let cachedCandidates = stateQueue.sync(execute: { candidateCache[cacheKey] }) {
+        if let cachedCandidates = withStateLock({ candidateCache[cacheKey] }) {
             return cachedCandidates
         }
 
@@ -380,7 +389,7 @@ final class KanaKanjiConverter {
         finalCandidates = applyOkuriganaVariantPreference(reading: normalizedReading, to: finalCandidates)
 
         if !finalCandidates.isEmpty {
-            stateQueue.sync {
+            withStateLock {
                 if candidateCache[cacheKey] == nil {
                     candidateCacheOrder.append(cacheKey)
                 }
@@ -845,7 +854,7 @@ final class KanaKanjiConverter {
         _ context: CandidateGenerationContext,
         to scores: inout [String: Int]
     ) {
-        let categories = stateQueue.sync { scriptVariantSuppressionCategories }
+        let categories = withStateLock { scriptVariantSuppressionCategories }
         guard !categories.isEmpty else {
             return
         }
@@ -1023,19 +1032,19 @@ final class KanaKanjiConverter {
         #if DEBUG
         // 時限トレース(2660): SINGLE_TRACE=1 のときだけ単文節の最終スコア上位を吐く
         // (MULTI_TRACE の単文節版。チャネル基準値 1200/1120/1040/980 からの増減で経路が読める)
-        if ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil {
+        if Self.singleTraceEnabled {
             for (index, candidate) in sortedCandidates.prefix(14).enumerated() {
                 print("SINGLETRACE[\(context.reading)] #\(index) \(candidate) score=\(scores[candidate, default: 0])")
             }
         }
         // 実機の変換トレース(keyboardConversionLastTrace)向けに上位の点数内訳を残す(2732)。
         // 実機では環境変数が使えず、Mac と実機で単文節の並びが違う(ひょうか: 表化/評価)ときの切り分け用
-        let ledger = stateQueue.sync { scoreLedgerForDiagnostics }
+        let ledger = withStateLock { scoreLedgerForDiagnostics }
         let scoreTrace = sortedCandidates.prefix(8).map { candidate in
             let paths = (ledger[candidate] ?? []).map(String.init).joined(separator: "+")
             return "\(candidate)=\(scores[candidate, default: 0])[\(paths)]"
         }.joined(separator: " ")
-        stateQueue.sync {
+        withStateLock {
             lastScoreTraceForDiagnostics = "\(context.reading): \(scoreTrace)"
             scoreLedgerForDiagnostics.removeAll(keepingCapacity: true)
         }
@@ -1090,7 +1099,7 @@ final class KanaKanjiConverter {
         )
         store.incrementLearning(reading: normalizedReading, candidate: trimmedCandidate)
 
-        stateQueue.sync {
+        withStateLock {
             // 学習は派生基底(かう→かった 等)経由で任意の読みに波及するため、読みで絞る
             // 部分無効化は stale 候補(学習が効かない)の温床になる。全無効化のままとし、
             // 再計算コストは store 層の LM/wordCosts キャッシュ(learn では無効化されない)

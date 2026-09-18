@@ -111,18 +111,28 @@ extension KanaKanjiConverter {
     }
 
     // 読みの真の接頭部分に seed があれば、その seed 表層で始まる派生候補を seed の順に並べ直す(相対位置は先頭の候補の位置)
+    static let seededPrefixTeFormTailHeads: [String] = ["み", "おい", "おき", "おく", "い", "しま", "あ", "くだ", "ちゃ", "じゃ", "ほし", "も", "は", "ね", "よ", "な"]
+
     static func reorderingDerivedBySeededPrefix(_ candidates: [String], reading: String) -> [String] {
-        let chars = Array(reading)
-        guard chars.count >= 3 else { return candidates }
-        for length in stride(from: chars.count - 1, through: 2, by: -1) {
-            let prefix = String(chars[0..<length])
+        // 活用候補の列ごとに呼ばれるので確保を避ける(3096): 読みを Array にせず、分割点を String.Index で
+        // 後ろから動かし、前後は Substring のまま判定する。String 化は seed を引く直前だけ
+        let readingCount = reading.count
+        guard readingCount >= 3 else { return candidates }
+        var splitIndex = reading.index(before: reading.endIndex)
+        var length = readingCount - 1
+        while length >= 2 {
+            let prefix = reading[..<splitIndex]
             // 対象は活用形の seed だけ: て/で形(+補助動詞連鎖 みて/おいて/います)と ない形(+終助詞 な/よ/ね)。
             // 名詞・語幹の seed(すすめ/しめ/うまそう/みえ)まで拾うと 進めて/占めています/旨そう/見えにくさ が退行した
-            let tail = String(chars[length...])
+            let tail = reading[splitIndex...]
             let isTeForm = (prefix.hasSuffix("て") || prefix.hasSuffix("で"))
-                && ["み", "おい", "おき", "おく", "い", "しま", "あ", "くだ", "ちゃ", "じゃ", "ほし", "も", "は", "ね", "よ", "な"].contains(where: { tail.hasPrefix($0) })
-            let isNaiForm = prefix.hasSuffix("ない") && KanaKanjiConverter.multiClauseFinalParticleReadings.contains(tail)
-            guard isTeForm || isNaiForm, let seedOrder = KanaKanjiSeedDictionary.seed[prefix] else { continue }
+                && seededPrefixTeFormTailHeads.contains(where: { tail.hasPrefix($0) })
+            let isNaiForm = prefix.hasSuffix("ない") && KanaKanjiConverter.multiClauseFinalParticleReadings.contains(String(tail))
+            defer {
+                length -= 1
+                if length >= 2 { splitIndex = reading.index(before: splitIndex) }
+            }
+            guard isTeForm || isNaiForm, let seedOrder = KanaKanjiSeedDictionary.seed[String(prefix)] else { continue }
             func seedRank(_ candidate: String) -> Int? {
                 seedOrder.firstIndex { candidate.count > $0.count && candidate.hasPrefix($0) }
             }
