@@ -89,6 +89,20 @@ enum KeyboardThemePalette {
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
 }
 
+// iOS 26 以降のスクロール縁の効果(Liquid Glass のぼかし。上の縁から下へ弱まる)を切る(3106)。
+// テスター(iPhone 15 Pro、iOS 27)の候補バーで、状態カプセルから かなチップまで横スクロールの中身だけが
+// 上 6 割ほどぼやけて見えた(ユーザ報告の画像 IMG_0235)。iOS 26.7 の端末では出ない。候補バーは
+// 短い横スクロールで縁の効果は要らない
+struct KeyboardScrollEdgeEffectHiddenModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 26.0, *) {
+            content.scrollEdgeEffectHidden(true, for: .all)
+        } else {
+            content
+        }
+    }
+}
+
 // iOS17+ でのみ ScrollView のクリップを無効化する(iOS16では従来どおりクリップ)。
 private struct SymbolScrollClipDisabledModifier: ViewModifier {
     func body(content: Content) -> some View {
@@ -1093,6 +1107,7 @@ extension KeyboardRootView {
                     proxy.scrollTo(index, anchor: .center)
                 }
             }
+            .modifier(KeyboardScrollEdgeEffectHiddenModifier())
             }
         }
     }
