@@ -64,7 +64,13 @@ extension KeyboardViewController {
         return preferredKeyboardHeight()
     }
 
+    // 3103 で false(設定しない)を試したが 470pt の枠は変わらず、自前の preferredContentSize は無関係と判明。元に戻す
+    static let synchronizesPreferredContentSize = true
+
     func synchronizePreferredContentSize(height: CGFloat, widthOverride: CGFloat? = nil) {
+        guard Self.synchronizesPreferredContentSize else {
+            return
+        }
         let measuredWidth = view.bounds.width > 0 ? view.bounds.width : UIScreen.main.bounds.width
         let targetWidth = widthOverride ?? measuredWidth
         let targetSize = CGSize(width: targetWidth, height: height)
