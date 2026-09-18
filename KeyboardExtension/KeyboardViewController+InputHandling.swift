@@ -315,8 +315,23 @@ extension KeyboardViewController {
     }
 
     func handleConversionCandidateSelection(_ index: Int) {
+        #if DEBUG
+        // 調査用計測(確定 3093): タップ処理の入口からの所要時間。定義コメント参照(KeyboardViewController.commitProbeReplaceMs)
+        let tapStartedAt = CFAbsoluteTimeGetCurrent()
+        defer {
+            appendKeyboardDiagnosticsLogFromInputHandling(
+                "調査用計測(確定 3093) tapHandler total=\(performanceElapsedMilliseconds(since: tapStartedAt))ms index=\(index) composingLen=\(composingRawText.count)"
+            )
+        }
+        #endif
         reconcileHostCommittedMarkedTextIfNeeded(trigger: "candidate")
         clearRecentKanaPlainCommitUpgradeContext()
+        #if DEBUG
+        let reconcileMs = performanceElapsedMilliseconds(since: tapStartedAt)
+        if reconcileMs >= 4 {
+            appendKeyboardDiagnosticsLogFromInputHandling("調査用計測(確定 3093) reconcile ms=\(reconcileMs)")
+        }
+        #endif
 
         // stale-while-revalidate 表示中(前回読みの候補を暫定表示)にタップされた場合、
         // 古い候補を現在の読みへ確定する事故を防ぐ(表示が確定していない間は無視)。
@@ -324,6 +339,9 @@ extension KeyboardViewController {
             activeConversion == nil,
             !composingReading.isEmpty,
             settledCandidatePresentationKey?.reading != composingReading {
+            #if DEBUG
+            appendKeyboardDiagnosticsLogFromInputHandling("調査用計測(確定 3093) タップ無視(候補未確定) composingLen=\(composingRawText.count)")
+            #endif
             return
         }
 
@@ -853,11 +871,22 @@ extension KeyboardViewController {
     ) {
         MemoryForensics.noteCommitted(characters: committedText.count + trailingText.count)
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
+        #if DEBUG
+        // 調査用計測(確定 3093): 候補バーからの確定はこちらを通る。定義コメント参照(KeyboardViewController.commitProbeReplaceMs)
+        let probeStartedAt = CFAbsoluteTimeGetCurrent()
+        Self.commitProbeReplaceMs = 0
+        Self.commitProbeClearMs = 0
+        Self.commitProbeBranch = "-"
+        #endif
         commitMarkedTextByReplacingCurrentMarkedText(
             currentMarkedText: sourceText,
             committedText: committedTextForInsertion,
             sourceTextForFallbackReplacement: sourceText
         )
+        #if DEBUG
+        let hostMs = performanceElapsedMilliseconds(since: probeStartedAt)
+        let learnStartedAt = CFAbsoluteTimeGetCurrent()
+        #endif
 
         if learn, allowsLearningInCurrentField {
             kanaKanjiConverter.learn(
@@ -866,8 +895,18 @@ extension KeyboardViewController {
                 allowKanaIdentity: learnKanaIdentity
             )
         }
+        #if DEBUG
+        let learnMs = performanceElapsedMilliseconds(since: learnStartedAt)
+        #endif
 
         clearComposingState()
+        #if DEBUG
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "調査用計測(確定 3093) composing total=\(performanceElapsedMilliseconds(since: probeStartedAt))ms host=\(hostMs)ms"
+                + "(replace=\(Self.commitProbeReplaceMs) clear=\(Self.commitProbeClearMs) branch=\(Self.commitProbeBranch))"
+                + " learn=\(learnMs)ms committedLen=\(committedTextForInsertion.count) markedLen=\(sourceText.count)"
+        )
+        #endif
     }
 
     func commitActiveConversion(learn: Bool) {
