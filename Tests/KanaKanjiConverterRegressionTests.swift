@@ -17760,22 +17760,31 @@ extension KanaKanjiConverterRegressionTests {
 
         for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
             let label = "mode=\(mode.rawValue)"
+            // 3091(ユーザ指定): かなは末尾。かけて のかなが 欠けて/賭けて/書けて/描けて より前に出ない
             let base = converter.candidates(for: "かける", limit: 8, systemCandidateMode: mode)
-            XCTAssertEqual(Array(base.prefix(7)), ["かける", "掛ける", "欠ける", "書ける", "描ける", "賭ける", "駆ける"], "\(label) list=\(base)")
-            // 連文節の変種枠は 3 なので、欠けてる は変種に入ること、描けてる/賭けてる は単文節側の並びで出ることを見る
+            XCTAssertEqual(Array(base.prefix(7)), ["欠ける", "掛ける", "書ける", "描ける", "賭ける", "駆ける", "かける"], "\(label) list=\(base)")
             for reading in ["もかけてるね", "かけてるやつもなぞ"] {
                 let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
-                XCTAssertEqual(multi.first, reading == "もかけてるね" ? "もかけてるね" : "かけてるやつも謎", "\(label) multi=\(multi)")
-                XCTAssertTrue(multi.contains { $0.contains("欠けてる") }, "\(label) reading=\(reading) multi=\(multi)")
+                XCTAssertEqual(multi.first, reading == "もかけてるね" ? "も欠けてるね" : "欠けてるやつも謎", "\(label) multi=\(multi)")
+                XCTAssertFalse(multi.prefix(4).contains { $0.contains("かけ") }, "\(label) reading=\(reading) multi=\(multi)")
                 XCTAssertFalse(multi.contains { $0.contains("掛ケ") || $0.contains("カケ") }, "\(label) multi=\(multi)")
             }
             let kaketeru = converter.candidates(for: "かけてる", limit: 12, systemCandidateMode: mode)
-            XCTAssertEqual(Array(kaketeru.prefix(7)), ["かけてる", "掛けてる", "欠けてる", "書けてる", "描けてる", "賭けてる", "駆けてる"], "\(label) list=\(kaketeru)")
+            XCTAssertEqual(Array(kaketeru.prefix(7)), ["欠けてる", "掛けてる", "書けてる", "描けてる", "賭けてる", "駆けてる", "かけてる"], "\(label) list=\(kaketeru)")
             XCTAssertFalse(kaketeru.contains("掛ケてる"), label)
-            // かけてもいない: て/ても の直後の いる系はかな。居ない/射ない/以内 が変種枠を食って 欠けてもいない が出なかった
+            // かけてもいない: て/ても の直後の いる系はかな。居ない/射ない/以内 が変種枠を食って 欠けてもいない が出なかった。
+            // かな語幹 かけ は文頭/かな助詞直後で減点(3091)なので、かな版は先頭 4 に入らない
             let kaketemo = converter.multiClauseCandidates(for: "かけてもいない", systemCandidateMode: mode)
-            XCTAssertEqual(kaketemo.first, "かけてもいない", "\(label) multi=\(kaketemo)")
-            XCTAssertTrue(kaketemo.prefix(2).contains("欠けてもいない"), "\(label) multi=\(kaketemo)")
+            XCTAssertEqual(kaketemo.first, "欠けてもいない", "\(label) multi=\(kaketemo)")
+            XCTAssertFalse(kaketemo.prefix(4).contains { $0.hasPrefix("かけ") }, "\(label) multi=\(kaketemo)")
+            // 目的語つきの かける はかなが正書のまま(を 直後は減点しない)。眼鏡/橋 は 掛 に寄せる(across ボーナス)
+            for (reading, expected) in [
+                ("でんわをかける", "電話をかける"), ("こえをかけて", "声をかけて"), ("じかんをかけて", "時間をかけて"),
+                ("しおをかけて", "塩をかけて"), ("でんわかけて", "電話かけて"),
+                ("めがねをかけてる", "眼鏡を掛けてる"), ("はしをかけてる", "橋を掛けてる"), ("はがかけてる", "歯が欠けてる")
+            ] {
+                XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first, expected, label)
+            }
             // ちがうってのが: 述語+って が高く 血+が+売って の断片連鎖に負けていた
             XCTAssertEqual(converter.multiClauseCandidates(for: "ちがうってのが", systemCandidateMode: mode).first, "違うってのが", label)
             XCTAssertEqual(converter.multiClauseCandidates(for: "ちがうって", systemCandidateMode: mode).first, "違うって", label)

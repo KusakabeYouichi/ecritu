@@ -2000,6 +2000,12 @@ extension KanaKanjiConverter {
                 Self.multiClauseTeFormConjunctiveReadings.contains(where: { prevReading.hasSuffix($0) }) {
                 penalty += Self.multiClauseIruAuxiliaryKanjiAfterTePenalty
             }
+            // かな語幹 かけ は目的語の格助詞(を/に/へ)直後以外で減点(定数コメント参照。3091)
+            if isKanaIdentity, Self.multiClauseKanaVerbStemDemotedReadingsID.contains(readingID),
+                prevIsBOS || prevIsKanaIdentity,
+                prevID != SID.を, prevID != SID.に, prevID != SID.へ {
+                penalty += Self.multiClauseKanaVerbStemDemotedPenalty
+            }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
             if prev.count == 1,
