@@ -1634,7 +1634,8 @@ extension KanaKanjiConverter {
     // curated の名詞(香信: compenser、床 1500)の直後に助詞なしで する/される の付属部(された/した/して 等)が続くのは、
     // その語がサ変名詞(inflection_classes の suru)でない限り非文。派生 更新された(OOV 7200)が 香信(1500)+された の
     // 合成に負けて こうしんされた→香信された になっていた(ユーザ報告 3054)。有する 等 pos サ変の curated は対象外
-    static let multiClauseCuratedNonSuruBeforeSuruClusterPenalty = 3000
+    // 3000 では 香信+された が 更新された(7200)の直後の変種に残った(差 300 以内)。変種枠からも外す幅にする
+    static let multiClauseCuratedNonSuruBeforeSuruClusterPenalty = 6000
     // サ変名詞の直後の 後(ご)。受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
     // 後(ご) の床免除(rareReadingFloorExempt)だけでは 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負ける(3054)
     static let multiClauseSuruNounGoSuffixBonus = 1000
@@ -1732,6 +1733,10 @@ extension KanaKanjiConverter {
     static let multiClauseSuruClusterKanaPrefixes: [String] = [
         "して", "した", "する", "しな", "しま", "しよ", "しろ", "しちゃ", "しと"
     ]
+    // 残りの読み列が する/される の付属部で始まるか(切り方に依らない判定。3067)
+    static func readingStartsWithSuruCluster(_ rest: String) -> Bool {
+        rest.hasPrefix("され") || multiClauseSuruClusterKanaPrefixes.contains(where: { rest.hasPrefix($0) })
+    }
     // 形式名詞と同形の実質名詞(時は金なり/事の起こり/事あるごとに)。文頭に立つ とき/こと は
     // 「時間という概念」「事柄」そのものを指す実質名詞なので漢字が正書(ユーザー方針)。
     // 述語直後(〜したとき/〜すること)は上の逆向きペナルティでかなを優先しており、

@@ -17723,6 +17723,14 @@ extension KanaKanjiConverterRegressionTests {
                 XCTAssertEqual(best, expected, "\(label) reading=\(reading)")
             }
             XCTAssertEqual(converter.candidates(for: "こうしん", limit: 2, systemCandidateMode: mode).first, "更新", label)
+            // 香信(椎茸)は pos 無しの curated 名詞で、同読みに辞書のサ変名詞が在るのでサ変化しない(3067)
+            for reading in ["こうしんされた", "こうしんした"] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                let single = converter.candidates(for: reading, limit: 8, systemCandidateMode: mode)
+                XCTAssertFalse(multi.contains { $0.hasPrefix("香信") }, "\(label) multi=\(multi)")
+                XCTAssertFalse(single.contains { $0.hasPrefix("香信") }, "\(label) single=\(single)")
+            }
+            XCTAssertTrue(converter.candidates(for: "こうしん", limit: 8, systemCandidateMode: mode).contains("香信"), label)
             // pos サ変で登録した curated(有する)は 香信 の規則の対象外(normalise では別件で かな先頭。surface で確認)
             if mode == .surface {
                 XCTAssertEqual(
