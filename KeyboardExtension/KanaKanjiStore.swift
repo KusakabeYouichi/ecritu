@@ -10,9 +10,16 @@ final class KanaKanjiStore {
     private let appGroupID: String
     let defaults: UserDefaults?
     private let fileManager = FileManager.default
-    private let systemDictionaryQueue = DispatchQueue(
-        label: "com.kusakabe.ecritu.kana-kanji.system-dictionary"
-    )
+    // システム辞書 JSON キャッシュの排他。DispatchQueue.sync はジェネリックな sync が呼び出しごとに箱を確保する
+    // (供給段で打鍵あたり約 250 回。3096)ので NSLock に。全部 sync 利用だったので意味は同じ
+    private let systemDictionaryLock = NSLock()
+
+    @inline(__always)
+    private func withSystemDictionaryLock<T>(_ body: () throws -> T) rethrows -> T {
+        systemDictionaryLock.lock()
+        defer { systemDictionaryLock.unlock() }
+        return try body()
+    }
     // キャッシュ保護ロック。変換は通常 candidateGenerationQueue(直列)で走るが、
     // 変換キーの同期変換(main)とメモリ警告時のキャッシュ解放(main)が並行し得るため、
     // 可変キャッシュへのアクセスはすべてこのロック越しに行う。sqlite クエリや JSON
@@ -237,7 +244,7 @@ final class KanaKanjiStore {
     }
 
     private func sqliteIndexIfAvailable() -> KanaKanjiSQLiteIndex? {
-        systemDictionaryQueue.sync {
+        withSystemDictionaryLock {
             if let sqliteIndex {
                 return sqliteIndex
             }
@@ -614,6 +621,71 @@ final class KanaKanjiStore {
     }
 
     // 連文節 DP 用: (prev, cur) 対の bigram コストをまとめて取得(キー "prev\tcur"、点引きキャッシュ経由)。
+    // 1 対だけ(遷移コスト内の その場引き用)。配列・辞書・鍵文字列を作らない(3096)
+    func wordLMBigramCost(prev: String, cur: String) -> Int? {
+        guard let sqliteIndex = sqliteIndexIfAvailable() else {
+            return nil
+        }
+        #if DEBUG
+        Self.diagnosticsLMBigramRequested += 1
+        #endif
+        let hashedKey = Self.lmCacheKey(prev, cur)
+        if let cached = withCacheLock({ cachedWordLMBigram[hashedKey] }) {
+            return cached == Self.wordLMMissingSentinel ? nil : cached
+        }
+        #if DEBUG
+        Self.diagnosticsLMBigramFetched += 1
+        #endif
+        let fetched = sqliteIndex.wordLMBigramCost(prev: prev, cur: cur)
+        withCacheLock {
+            cachedWordLMBigram.set(fetched ?? Self.wordLMMissingSentinel, for: hashedKey, limit: activeWordLMCacheLimit)
+        }
+        return fetched
+    }
+
+    // 入力と同じ並びで返す(鍵文字列を作らない版。連文節の一括引き用。3096)
+    func wordLMBigramCostsAligned(for pairs: [(String, String)]) -> [Int?] {
+        var result = [Int?](repeating: nil, count: pairs.count)
+        guard let sqliteIndex = sqliteIndexIfAvailable() else {
+            return result
+        }
+        #if DEBUG
+        Self.diagnosticsLMBigramRequested += pairs.count
+        #endif
+        var uncachedIndices: [Int] = []
+        withCacheLock {
+            for (index, pair) in pairs.enumerated() {
+                if let cached = cachedWordLMBigram[Self.lmCacheKey(pair.0, pair.1)] {
+                    if cached != Self.wordLMMissingSentinel {
+                        result[index] = cached
+                    }
+                } else {
+                    uncachedIndices.append(index)
+                }
+            }
+        }
+        guard !uncachedIndices.isEmpty else {
+            return result
+        }
+        #if DEBUG
+        Self.diagnosticsLMBigramFetched += uncachedIndices.count
+        #endif
+        let fetched = sqliteIndex.wordLMBigramCostsAligned(for: uncachedIndices.map { pairs[$0] })
+        withCacheLock {
+            let limit = activeWordLMCacheLimit
+            for (position, index) in uncachedIndices.enumerated() {
+                let hashedKey = Self.lmCacheKey(pairs[index].0, pairs[index].1)
+                if let cost = fetched[position] {
+                    cachedWordLMBigram.set(cost, for: hashedKey, limit: limit)
+                    result[index] = cost
+                } else {
+                    cachedWordLMBigram.set(Self.wordLMMissingSentinel, for: hashedKey, limit: limit)
+                }
+            }
+        }
+        return result
+    }
+
     func wordLMBigramCosts(for pairs: [(String, String)]) -> [String: Int] {
         guard let sqliteIndex = sqliteIndexIfAvailable() else {
             return [:]

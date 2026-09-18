@@ -7,7 +7,16 @@ import SQLite3
 private let sqliteTransientDestructor = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
 final class KanaKanjiSQLiteIndex {
-    private let queryQueue = DispatchQueue(label: "com.kusakabe.ecritu.kana-kanji.sqlite-index")
+    // 問い合わせの排他。以前は DispatchQueue.sync だったが、ジェネリックな sync は呼び出しごとに脱抽象化サンクの
+    // 箱を確保する(点引き 1 回に約 5 個。3096 の確保実測)。全部 sync 利用だったので NSLock と意味は同じ
+    private let queryLock = NSLock()
+
+    @inline(__always)
+    private func withQueryLock<T>(_ body: () throws -> T) rethrows -> T {
+        queryLock.lock()
+        defer { queryLock.unlock() }
+        return try body()
+    }
     private var database: OpaquePointer?
     private var selectCandidatesStatement: OpaquePointer?
     private var selectCandidatesBySourceStatement: OpaquePointer?
@@ -185,7 +194,7 @@ final class KanaKanjiSQLiteIndex {
     }
 
     func candidates(for reading: String, requiredSources: Set<String>?) -> [String] {
-        queryQueue.sync {
+        withQueryLock {
             if let requiredSources,
                 requiredSources.count == 1,
                 hasSourceMetadata,
@@ -203,7 +212,7 @@ final class KanaKanjiSQLiteIndex {
     }
 
     func candidates(withExactSource source: String, for reading: String) -> [String] {
-        queryQueue.sync {
+        withQueryLock {
             guard hasSourceMetadata,
                 let statement = selectCandidatesWithExactSourceStatement else {
                 return []
@@ -214,7 +223,7 @@ final class KanaKanjiSQLiteIndex {
     }
 
     func inflectionClassMap(for reading: String) -> [String: String] {
-        queryQueue.sync {
+        withQueryLock {
             guard hasInflectionMetadata,
                 let statement = selectInflectionStatement else {
                 return [:]
@@ -255,7 +264,7 @@ final class KanaKanjiSQLiteIndex {
 
     // 読みに対する人名候補(表層→姓/名)。表が無ければ空
     func personNameKindMap(for reading: String) -> [String: String] {
-        queryQueue.sync {
+        withQueryLock {
             guard hasPersonNameMetadata,
                 let statement = selectPersonNameStatement else {
                 return [:]
@@ -290,7 +299,7 @@ final class KanaKanjiSQLiteIndex {
     }
 
     func wordCostMap(for reading: String) -> [String: Int] {
-        queryQueue.sync {
+        withQueryLock {
             guard hasWordCostMetadata,
                 let statement = selectWordCostStatement else {
                 return [:]
@@ -327,7 +336,7 @@ final class KanaKanjiSQLiteIndex {
 
     // 連文節 DP 用: 与えた表層集合の unigram コストをまとめて引く(1 回の sync 内で完結)。
     func wordLMUnigramCosts(for surfaces: [String]) -> [String: Int] {
-        queryQueue.sync {
+        withQueryLock {
             guard hasWordLMMetadata,
                 let statement = selectWordLMUnigramStatement else {
                 return [:]
@@ -337,15 +346,8 @@ final class KanaKanjiSQLiteIndex {
             result.reserveCapacity(surfaces.count)
 
             for surface in surfaces where result[surface] == nil {
-                resetStatement(statement)
-                let bindResult = surface.withCString { surfaceCString in
-                    sqlite3_bind_text(statement, 1, surfaceCString, -1, sqliteTransientDestructor)
-                }
-                guard bindResult == SQLITE_OK else {
-                    continue
-                }
-                if sqlite3_step(statement) == SQLITE_ROW {
-                    result[surface] = Int(sqlite3_column_int(statement, 0))
+                if let cost = singleTextKeyCost(statement, surface) {
+                    result[surface] = cost
                 }
             }
 
@@ -355,7 +357,7 @@ final class KanaKanjiSQLiteIndex {
 
     // 読み跨ぎ借用遮断用: 表層集合の全読み最安 word_cost をまとめて引く。
     func candidateMinWordCosts(for candidates: [String]) -> [String: Int] {
-        queryQueue.sync {
+        withQueryLock {
             guard hasCandidateMinWordCostMetadata,
                 let statement = selectCandidateMinWordCostStatement else {
                 return [:]
@@ -365,15 +367,8 @@ final class KanaKanjiSQLiteIndex {
             result.reserveCapacity(candidates.count)
 
             for candidate in candidates where result[candidate] == nil {
-                resetStatement(statement)
-                let bindResult = candidate.withCString { candidateCString in
-                    sqlite3_bind_text(statement, 1, candidateCString, -1, sqliteTransientDestructor)
-                }
-                guard bindResult == SQLITE_OK else {
-                    continue
-                }
-                if sqlite3_step(statement) == SQLITE_ROW {
-                    result[candidate] = Int(sqlite3_column_int(statement, 0))
+                if let cost = singleTextKeyCost(statement, candidate) {
+                    result[candidate] = cost
                 }
             }
 
@@ -383,7 +378,7 @@ final class KanaKanjiSQLiteIndex {
 
     // 連文節 DP 用: 与えた (prev, cur) 対の bigram コストをまとめて引く。キーは "prev\tcur"。
     func wordLMBigramCosts(for pairs: [(String, String)]) -> [String: Int] {
-        queryQueue.sync {
+        withQueryLock {
             guard hasWordLMMetadata,
                 let statement = selectWordLMBigramStatement else {
                 return [:]
@@ -397,22 +392,63 @@ final class KanaKanjiSQLiteIndex {
                 if result[key] != nil {
                     continue
                 }
-                resetStatement(statement)
-                let prevBind = prev.withCString { prevCString in
-                    sqlite3_bind_text(statement, 1, prevCString, -1, sqliteTransientDestructor)
-                }
-                let curBind = cur.withCString { curCString in
-                    sqlite3_bind_text(statement, 2, curCString, -1, sqliteTransientDestructor)
-                }
-                guard prevBind == SQLITE_OK, curBind == SQLITE_OK else {
-                    continue
-                }
-                if sqlite3_step(statement) == SQLITE_ROW {
-                    result[key] = Int(sqlite3_column_int(statement, 0))
+                if let cost = bigramCost(statement, prev, cur) {
+                    result[key] = cost
                 }
             }
 
             return result
+        }
+    }
+
+    // 入力と同じ並びで返す(鍵文字列を作らない。連文節の bigram 一括引きは対ごとに "prev\tcur" を 2 回組んでいた。3096)
+    func wordLMBigramCostsAligned(for pairs: [(String, String)]) -> [Int?] {
+        withQueryLock {
+            var result = [Int?](repeating: nil, count: pairs.count)
+            guard hasWordLMMetadata,
+                let statement = selectWordLMBigramStatement else {
+                return result
+            }
+            for (index, pair) in pairs.enumerated() {
+                result[index] = bigramCost(statement, pair.0, pair.1)
+            }
+            return result
+        }
+    }
+
+    // 1 対だけ引く(遷移コスト内の その場引き用。配列も辞書も作らない)
+    func wordLMBigramCost(prev: String, cur: String) -> Int? {
+        withQueryLock {
+            guard hasWordLMMetadata,
+                let statement = selectWordLMBigramStatement else {
+                return nil
+            }
+            return bigramCost(statement, prev, cur)
+        }
+    }
+
+    // 文字列 1 本を鍵に 1 行の整数を引く。C 文字列の寿命内で bind→step を済ませるので SQLITE_STATIC(複製なし)で足りる。
+    // reset しても束縛は残るが、次の呼び出しで必ず全パラメータを束縛し直すので古いポインタは参照されない
+    private func singleTextKeyCost(_ statement: OpaquePointer, _ key: String) -> Int? {
+        resetStatement(statement)
+        return key.withCString { keyCString -> Int? in
+            guard sqlite3_bind_text(statement, 1, keyCString, -1, nil) == SQLITE_OK else {
+                return nil
+            }
+            return sqlite3_step(statement) == SQLITE_ROW ? Int(sqlite3_column_int(statement, 0)) : nil
+        }
+    }
+
+    private func bigramCost(_ statement: OpaquePointer, _ prev: String, _ cur: String) -> Int? {
+        resetStatement(statement)
+        return prev.withCString { prevCString -> Int? in
+            cur.withCString { curCString -> Int? in
+                guard sqlite3_bind_text(statement, 1, prevCString, -1, nil) == SQLITE_OK,
+                    sqlite3_bind_text(statement, 2, curCString, -1, nil) == SQLITE_OK else {
+                    return nil
+                }
+                return sqlite3_step(statement) == SQLITE_ROW ? Int(sqlite3_column_int(statement, 0)) : nil
+            }
         }
     }
 

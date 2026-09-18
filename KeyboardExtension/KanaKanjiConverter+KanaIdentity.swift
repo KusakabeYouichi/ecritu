@@ -57,11 +57,11 @@ extension KanaKanjiConverter {
         guard !normalized.isEmpty else {
             return false
         }
-        if let cached = stateQueue.sync(execute: { kanaIdentityLeadingCache[normalized] }) {
+        if let cached = withStateLock({ kanaIdentityLeadingCache[normalized] }) {
             return cached
         }
         let result = computeShouldKeepKanaIdentityLeading(normalized: normalized)
-        stateQueue.sync {
+        withStateLock {
             if kanaIdentityLeadingCache.count >= kanaIdentityLeadingCacheLimit {
                 kanaIdentityLeadingCache.removeAll(keepingCapacity: true)
             }
