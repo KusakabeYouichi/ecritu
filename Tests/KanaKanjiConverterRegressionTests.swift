@@ -13863,6 +13863,7 @@ extension KanaKanjiConverterRegressionTests {
             }
         } }
         print(String(format: "PERF incremental (keystroke simulation, multi+single) avg per keystroke=%.1fms (n=%d)", incrementalMs / Double(incrementalCount), incrementalCount))
+        print("PERF symbol registry count=\(KanaKanjiConverter.MultiClauseSymbols.count)")
         print("PERF incremental bigram queries requested=\(KanaKanjiStore.diagnosticsLMBigramRequested) fetchedFromSQLite=\(KanaKanjiStore.diagnosticsLMBigramFetched)")
     }
 }
