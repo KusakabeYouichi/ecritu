@@ -79,6 +79,8 @@ extension KanaKanjiConverter {
         // 表層・読みの整数 ID(記号表 + 変換内の一時 ID)。列挙後に一括で振る(3052)
         var surfaceID: Int32 = -1
         var readingID: Int32 = -1
+        var isSeedListed = false      // KanaKanjiSeedDictionary.seed[reading] に表層が載っているか(3053)
+        var minWordCost: Int? = nil   // 表層の全読み最安 word_cost(candidate_min_word_costs。3053)
         // 連語の橋渡し助詞(紙+に+印刷 の に)を、連語の頭(紙)にだけ接続する複製ノードの印(2836)。
         // 通常の に ノードは最良の前ノード(神)しか backPointer に持たず、頭が最良でない連語(紙に印刷)を
         // 跨ぐボーナスが評価されなかった。頭を固定した複製を並走させ、次の遷移で連語ボーナスを受ける
@@ -1012,6 +1014,28 @@ extension KanaKanjiConverter {
         }
         // 読み跨ぎ unigram 借用の遮断用(定数コメント参照)。旧形式 DB では空=機能オフ。
         let candidateMinWordCosts = store.candidateMinWordCosts(for: Array(unigramSurfaces))
+        // 表層・読みの整数 ID 化(3052)。記号表(規則が参照する文字列)にあればその ID、無ければ変換内の一時 ID。
+        // 遷移内の比較・集合照合・LM 引きはこの ID で行い、String の正規化つき比較/ハッシュを避ける
+        var localSymbolIndex: [String: Int32] = [:]
+        func symbolID(_ text: String) -> Int32 {
+            if let id = MultiClauseSymbols.index[text] { return id }
+            if let id = localSymbolIndex[text] { return id }
+            let id = MultiClauseSymbols.count + Int32(localSymbolIndex.count)
+            localSymbolIndex[text] = id
+            return id
+        }
+        for index in nodes.indices {
+            nodes[index].surfaceID = symbolID(nodes[index].surface)
+            nodes[index].readingID = symbolID(nodes[index].reading)
+            // seed 掲載か・表層の全読み最安 word_cost(遷移ごとに String 辞書を引いていた 5+4 か所ぶん。3053)
+            nodes[index].isSeedListed = KanaKanjiSeedDictionary.seed[nodes[index].reading]?.contains(nodes[index].surface) ?? false
+            nodes[index].minWordCost = candidateMinWordCosts[nodes[index].surface]
+        }
+        var unigramCostByID: [Int32: Int] = [:]
+        unigramCostByID.reserveCapacity(unigramCosts.count)
+        for (surface, cost) in unigramCosts {
+            unigramCostByID[symbolID(surface)] = cost
+        }
 
         // 旧字体(氣持/會社/變更 等)のノード抑制(2987、単文節側と同基準)。同じスパンに
         // 新字体版のノードが立っているときだけ落とす。新字体版が無い固有名詞(國場組/守禮門/
@@ -1132,38 +1156,41 @@ extension KanaKanjiConverter {
         }
 
         var bigramPairs: [(String, String)] = []
-        var seenPairs = Set<String>()
+        var seenPairs = Set<UInt64>()
         // LM の bigram は両トークンが unigram 表に在るものしか無い(word_lm_bigram の prev/cur 全 1,096,380 件を
         // 照合、例外 0 件。2805)。どちらかが unigram 未収録(派生 OOV/かな素通り/収穫語)なら sqlite を引かずに
         // 未観測扱いにする。結果は不変で、連文節の bigram 問い合わせ(処理時間の約 2 割)を大きく減らす
-        func addPair(_ prev: String, _ cur: String) {
-            guard unigramCosts[prev] != nil, unigramCosts[cur] != nil else {
+        // 対の重複除去と unigram 有無は ID で(文字列連結+ハッシュを対ごとに払っていた。3053)
+        func addPair(_ prev: String, _ cur: String, _ prevID: Int32, _ curID: Int32) {
+            guard unigramCostByID[prevID] != nil, unigramCostByID[curID] != nil else {
                 return
             }
-            if seenPairs.insert("\(prev)\t\(cur)").inserted {
+            if seenPairs.insert(MultiClauseSymbols.pairKey(prevID, curID)).inserted {
                 bigramPairs.append((prev, cur))
             }
         }
         for idx in nodesStartingAt[0] {
-            addPair(Self.multiClauseBOSMarker, nodes[idx].surface)
+            addPair(Self.multiClauseBOSMarker, nodes[idx].surface, SID.BOS, nodes[idx].surfaceID)
         }
         if n >= 1 {
             for boundary in 1..<n {
                 for prevIdx in nodesEndingAt[boundary] {
                     let prevNode = nodes[prevIdx]
                     let auxTail = Self.auxTailForBigramBorrow(of: prevNode)
+                    let auxTailID = auxTail.map(symbolID)
                     for curIdx in nodesStartingAt[boundary] {
                         let curNode = nodes[curIdx]
-                        addPair(prevNode.surface, curNode.surface)
-                        if let auxTail {
-                            addPair(auxTail, curNode.surface)
+                        addPair(prevNode.surface, curNode.surface, prevNode.surfaceID, curNode.surfaceID)
+                        if let auxTail, let auxTailID {
+                            addPair(auxTail, curNode.surface, auxTailID, curNode.surfaceID)
                         }
                         // 派生ノードの入口 bigram は語幹トークンでも引く(定義コメント参照)
                         if curNode.isInflectionDerived,
                             let stemHead = Self.stemHeadForBigramBorrow(of: curNode.surface) {
-                            addPair(prevNode.surface, stemHead)
-                            if let auxTail {
-                                addPair(auxTail, stemHead)
+                            let stemHeadID = symbolID(stemHead)
+                            addPair(prevNode.surface, stemHead, prevNode.surfaceID, stemHeadID)
+                            if let auxTail, let auxTailID {
+                                addPair(auxTail, stemHead, auxTailID, stemHeadID)
                             }
                         }
                     }
@@ -1171,9 +1198,9 @@ extension KanaKanjiConverter {
             }
         }
         for idx in nodesEndingAt[n] {
-            addPair(nodes[idx].surface, Self.multiClauseEOSMarker)
+            addPair(nodes[idx].surface, Self.multiClauseEOSMarker, nodes[idx].surfaceID, SID.EOS)
             if let auxTail = Self.auxTailForBigramBorrow(of: nodes[idx]) {
-                addPair(auxTail, Self.multiClauseEOSMarker)
+                addPair(auxTail, Self.multiClauseEOSMarker, symbolID(auxTail), SID.EOS)
             }
         }
         // 単独名詞になれない 1 字漢字の LM 側判定(定数コメント参照。2841): LM 収録の 1 字漢字辞書語について
@@ -1187,30 +1214,12 @@ extension KanaKanjiConverter {
             return node.surface
         })
         for surface in standaloneKanjiProbeSurfaces {
+            let surfaceID = symbolID(surface)
             for follower in Self.multiClauseStandaloneNounEvidenceFollowers {
-                addPair(surface, follower)
+                addPair(surface, follower, surfaceID, symbolID(follower))
             }
         }
         let bigramCosts = store.wordLMBigramCosts(for: bigramPairs)
-        // 表層・読みの整数 ID 化(3052)。記号表(規則が参照する文字列)にあればその ID、無ければ変換内の一時 ID。
-        // 遷移内の比較・集合照合・LM 引きはこの ID で行い、String の正規化つき比較/ハッシュを避ける
-        var localSymbolIndex: [String: Int32] = [:]
-        func symbolID(_ text: String) -> Int32 {
-            if let id = MultiClauseSymbols.index[text] { return id }
-            if let id = localSymbolIndex[text] { return id }
-            let id = MultiClauseSymbols.count + Int32(localSymbolIndex.count)
-            localSymbolIndex[text] = id
-            return id
-        }
-        for index in nodes.indices {
-            nodes[index].surfaceID = symbolID(nodes[index].surface)
-            nodes[index].readingID = symbolID(nodes[index].reading)
-        }
-        var unigramCostByID: [Int32: Int] = [:]
-        unigramCostByID.reserveCapacity(unigramCosts.count)
-        for (surface, cost) in unigramCosts {
-            unigramCostByID[symbolID(surface)] = cost
-        }
         var bigramCostByIDPair: [UInt64: Int] = [:]
         bigramCostByIDPair.reserveCapacity(bigramCosts.count)
         for (prev, cur) in bigramPairs {
@@ -1309,6 +1318,9 @@ extension KanaKanjiConverter {
             surfaceID: Int32? = nil,
             readingID: Int32? = nil,
             prevReadingID: Int32? = nil,
+            isSeedListed: Bool? = nil,
+            minWordCostKnown: Bool = false,
+            surfaceMinWordCost: Int? = nil,
             isDictWord: Bool,
             isCurated: Bool,
             isInflectionDerived: Bool,
@@ -1334,6 +1346,14 @@ extension KanaKanjiConverter {
             let readingID = readingID ?? symbolID(reading)
             let prevReadingID: Int32? = prevReadingID ?? prevReading.map(symbolID)
             let prevAuxTailID: Int32? = prevAuxTailID ?? prevAuxTail.map(symbolID)
+            // seed 掲載・最安 wc は使う場所で初めて求める(先頭で無条件に引くと、ID を渡さない変種評価の呼び出しで
+            // seed 辞書の String ハッシュ+配列走査が毎回走り 6ms 遅くなった。3053 の A/B)
+            func isSeedListedValue() -> Bool {
+                isSeedListed ?? (KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false)
+            }
+            func surfaceMinWordCostValue() -> Int? {
+                minWordCostKnown ? surfaceMinWordCost : candidateMinWordCosts[surface]
+            }
             // 遷移ごとに何十回も繰り返していた同値比較を 1 回に(非 ASCII の String == は正規化込みで高い。3039)
             let isKanaIdentity = surfaceID == readingID
             let prevIsKanaIdentity = prevReadingID == prevID
@@ -1353,13 +1373,13 @@ extension KanaKanjiConverter {
                 // かな bigram を没収して漢字側に負ける)。seed 掲載語も人手選別のため免除。
                 guard let wordCost,
                     !isKanaIdentity,
-                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) else {
+                    !isSeedListedValue() else {
                     return false
                 }
                 if wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor {
                     return true
                 }
-                if let minWordCost = candidateMinWordCosts[surface],
+                if let minWordCost = surfaceMinWordCostValue(),
                     wordCost - minWordCost >= Self.multiClauseCrossReadingUnigramGapThreshold {
                     return true
                 }
@@ -1482,7 +1502,7 @@ extension KanaKanjiConverter {
                         || (reading.count >= 4 && Self.isKanjiPlaceNameSurface(surface)),
                         let wordCost, let unigram = unigramCostByID[surfaceID],
                         unigram < Self.multiClauseDictUnknownCost,
-                        let minWordCost = candidateMinWordCosts[surface] else {
+                        let minWordCost = surfaceMinWordCostValue() else {
                         return false
                     }
                     return wordCost - minWordCost < Self.multiClauseCrossReadingUnigramGapThreshold
@@ -1490,7 +1510,7 @@ extension KanaKanjiConverter {
                 if let wordCost,
                     wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
                     !isOwnMainReadingWellKnownCompound,
-                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    !isSeedListedValue() {
                     base = max(base, Self.multiClauseHarvestTierUnknownCost)
                 }
                 // 読み跨ぎ unigram 借用の一般遮断(定数コメント参照): この読みの word_cost が
@@ -1507,9 +1527,9 @@ extension KanaKanjiConverter {
                 // 再挑戦するなら「実勢のある読み」を免除表で個別に外すことが前提
                 if let wordCost,
                     reading.count >= 3,
-                    let minWordCost = candidateMinWordCosts[surface],
+                    let minWordCost = surfaceMinWordCostValue(),
                     wordCost - minWordCost >= Self.multiClauseCrossReadingUnigramGapThreshold,
-                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    !isSeedListedValue() {
                     base = max(base, wordCost)
                 }
                 // 生成既定コスト(定数コメント参照)のままの人名(名)読みは、その読みのコスト実証が
@@ -1521,9 +1541,9 @@ extension KanaKanjiConverter {
                     wordCost == Self.multiClauseGeneratedVocabDefaultWordCost,
                     surface.count >= 2,
                     personNameKindsByReading[reading]?[surface] == "名",
-                    let minWordCost = candidateMinWordCosts[surface],
+                    let minWordCost = surfaceMinWordCostValue(),
                     wordCost - minWordCost >= Self.multiClauseGeneratedNameReadingCrossReadingGap,
-                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    !isSeedListedValue() {
                     base = max(base, Self.multiClauseDictUnknownCost)
                 }
             } else if isInflectionDerived
@@ -1550,7 +1570,7 @@ extension KanaKanjiConverter {
                 // wc が底値でも人手で代表に選んだ語)は単文節の降格と同様に免除する。
                 if let wordCost,
                     wordCost >= KanaKanjiConverter.CandidateScore.harvestTierWordCostFloor,
-                    !(KanaKanjiSeedDictionary.seed[reading]?.contains(surface) ?? false) {
+                    !isSeedListedValue() {
                     base = Self.multiClauseHarvestTierUnknownCost
                 }
             } else {
@@ -1858,8 +1878,8 @@ extension KanaKanjiConverter {
                 penalty += Self.multiClauseTradeSuffixKanjiWithoutEvidencePenalty
             }
             // 期間の直後の たつ は「経つ」(定数コメント参照。2873)
-            if Self.multiClauseElapsedTimeVerbStems.contains(where: { surface.hasPrefix($0) }),
-                !prevIsBOS,
+            if !prevIsBOS,
+                Self.multiClauseElapsedTimeVerbStems.contains(where: { surface.hasPrefix($0) }),
                 Self.isDurationNounSurface(prev) || Self.multiClauseDurationCounterBareSurfacesID.contains(prevID) {
                 penalty -= Self.multiClauseElapsedTimeAfterDurationBonus
             }
@@ -2420,6 +2440,9 @@ extension KanaKanjiConverter {
                             prevID: SID.BOS,
                             surfaceID: node.surfaceID,
                             readingID: node.readingID,
+                            isSeedListed: node.isSeedListed,
+                            minWordCostKnown: true,
+                            surfaceMinWordCost: node.minWordCost,
                             isDictWord: node.isDictWord,
                             isCurated: node.isCurated,
                             isInflectionDerived: node.isInflectionDerived,
@@ -2484,6 +2507,9 @@ extension KanaKanjiConverter {
                             surfaceID: node.surfaceID,
                             readingID: node.readingID,
                             prevReadingID: prevNode.readingID,
+                            isSeedListed: node.isSeedListed,
+                            minWordCostKnown: true,
+                            surfaceMinWordCost: node.minWordCost,
                             isDictWord: node.isDictWord,
                             isCurated: node.isCurated,
                             isInflectionDerived: node.isInflectionDerived,
@@ -3161,6 +3187,9 @@ extension KanaKanjiConverter {
                     prevAuxTailID: auxTailIDByNode[idx],
                     surfaceID: SID.EOS,
                     readingID: SID.empty,
+                    isSeedListed: false,
+                    minWordCostKnown: true,
+                    surfaceMinWordCost: nil,
                     isDictWord: true,
                     isCurated: false,
                     isInflectionDerived: false
