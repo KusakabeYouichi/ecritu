@@ -17173,6 +17173,52 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 診断用: 長い入力セッションの模擬(ECRITU_SESSION_TSV=読み一覧、1 行 1 読み)。各読みを 4 字から 1 字ずつ伸ばして
+    // 変換(打鍵の実態)し、N 読みごとに malloc used/alloc を出す。alloc が used を置いて伸びる=断片化(ラチェット)を
+    // Mac で観察するため(3075)。最後に共有キャッシュを捨てて、返るものと残るものを分ける
+    func testDiagMemoryLongSession() throws {
+        guard let path = ProcessInfo.processInfo.environment["ECRITU_SESSION_TSV"],
+            let raw = try? String(contentsOfFile: path, encoding: .utf8) else {
+            throw XCTSkip("ECRITU_SESSION_TSV が未指定")
+        }
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+        let limit = Int(ProcessInfo.processInfo.environment["ECRITU_SESSION_LIMIT"] ?? "") ?? 400
+        let readings = raw.split(separator: "\n").map(String.init).filter { !$0.isEmpty }.prefix(limit)
+        func stats() -> (used: Double, alloc: Double) {
+            var s = malloc_statistics_t()
+            malloc_zone_statistics(nil, &s)
+            return (Double(s.size_in_use) / 1_048_576, Double(s.size_allocated) / 1_048_576)
+        }
+        func line(_ label: String) {
+            let s = stats()
+            print(String(format: "SESSION %@ used=%.2f alloc=%.1f slack=%.2f", label, s.used, s.alloc, s.alloc - s.used)
+                + " " + converter.diagnosticsCacheCountsSummary())
+        }
+        line("開始")
+        var count = 0
+        var keystrokes = 0
+        for reading in readings {
+            let chars = Array(reading)
+            for length in min(4, chars.count)...chars.count {
+                let prefix = String(chars[0..<length])
+                _ = converter.multiClauseCandidates(for: prefix, systemCandidateMode: .surface)
+                _ = converter.candidates(for: prefix, limit: 8, systemCandidateMode: .surface)
+                keystrokes += 1
+            }
+            count += 1
+            if count % 25 == 0 {
+                line("読み\(count)件(打鍵\(keystrokes))")
+            }
+        }
+        line("終了")
+        converter.clearAllCaches()
+        converter.store.clearSystemDictionaryJSONCaches()
+        line("キャッシュ全解放後")
+        malloc_zone_pressure_relief(nil, 0)
+        line("pressure_relief後")
+    }
+
     // 検査用: 読み一覧(1 行 1 読み)ごとに単文節の上位候補を吐く(ECRITU_DUMP_TSV)。
     // 外部コーパス(BCCWJ 語彙表 等)との候補順の突き合わせに使う。単文節の順(dictionary_entries rank+seed+抑制)を
     // 実機の候補バーと同じ mode(normalise)で見る
