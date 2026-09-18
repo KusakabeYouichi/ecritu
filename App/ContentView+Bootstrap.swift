@@ -553,6 +553,10 @@ extension ContentView {
                 let hasCompact = defaults.data(
                     forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed
                 ) != nil
+                // 畳んだ版が既に在って印だけ無い(3080 より前に書いた)なら、印を付けるだけで再封緘はしない
+                if hasCompact, defaults.string(forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp) == nil {
+                    defaults.set(UUID().uuidString, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp)
+                }
 
                 guard previous != dictionary || hadPlaintext || !hasCompact else {
                     return
@@ -569,6 +573,7 @@ extension ContentView {
                 }
 
                 defaults.set(sealedCompact, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealed)
+                defaults.set(UUID().uuidString, forKey: SettingsKeys.contactCandidatesByReadingCacheCompactSealedStamp)
                 defaults.set(sealed, forKey: sealedKey)
                 defaults.removeObject(forKey: cacheKey)
                 SettingsSyncNotification.postSettingsDidChange()

@@ -214,6 +214,9 @@ final class KeyboardViewController: UIInputViewController {
     static var sharedContactCandidatesByReading: SupplementalVocabCompactStore = .empty
     static var sharedIsRefreshingContactCandidates = false
     static var sharedContactCandidatesLastRefreshAt: Date?
+    // 復号済みの畳んだ封緘版の印(コンテナーが書く UUID)。個体が作られるたび(bootstrap の force 読込)に同じ blob を
+    // 復号し直し、そのたび約 1MB の Data を確保して malloc の領域を 1 つ開けていた(実機 3080: 48→52)。印が同じなら共有表をそのまま使う
+    static var sharedContactCandidatesStamp: String?
     var contactCandidatesByReading: SupplementalVocabCompactStore {
         get { Self.sharedContactCandidatesByReading }
         set { Self.sharedContactCandidatesByReading = newValue }
@@ -453,6 +456,7 @@ final class KeyboardViewController: UIInputViewController {
         static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
         // 畳んだ表を封緘した版(3020)
         static let contactCandidatesByReadingCacheCompactSealed = "contactCandidatesByReadingCacheCompactSealed"
+        static let contactCandidatesByReadingCacheCompactSealedStamp = "contactCandidatesByReadingCacheCompactSealedStamp"
         static let supplementaryLexiconIndexCacheByReading = "supplementaryLexiconIndexCacheByReading"
         static let supplementaryLexiconIndexSignature = "supplementaryLexiconIndexSignature"
         static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
