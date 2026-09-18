@@ -169,8 +169,13 @@ extension KeyboardViewController {
             return cachedPortraitSafeAreaBottomInset
         }
 
-        if traitCollection.userInterfaceIdiom == .phone,
-            shorterScreenEdge >= 375 {
+        // 実測が取れないときの既定。ホームボタン機(SE/8、下端 0)は縦横比で除く(3087)
+        let fixedBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds ?? UIScreen.main.bounds
+        if KeyboardLayoutMetrics.assumesHomeIndicator(
+            shorterScreenEdge: shorterScreenEdge,
+            longerScreenEdge: max(fixedBounds.width, fixedBounds.height),
+            isPhone: traitCollection.userInterfaceIdiom == .phone
+        ) {
             return 34
         }
 
