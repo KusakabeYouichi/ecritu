@@ -2169,9 +2169,11 @@ extension KanaKanjiConverter {
                 penalty += Self.multiClauseBOSParticlePenalty
             }
             // 単独名詞になれない 1 字漢字(総/想 等)の直後に格助詞/の/文末は立たない(定数コメント参照。2841)
+            // 終助詞クラスタ(かな/かも/よね…)の前も名詞の位置(同かな は文節として成り立たない。3068)
             if weakStandaloneKanjiSurfaces.contains(prev),
                 surfaceID == SID.EOS || surfaceID == SID.の
-                    || Self.multiClauseCaseParticleSurfacesID.contains(surfaceID) {
+                    || Self.multiClauseCaseParticleSurfacesID.contains(surfaceID)
+                    || (isKanaIdentity && Self.multiClauseFinalParticleReadingsID.contains(readingID)) {
                 penalty += Self.multiClauseWeakStandaloneKanjiBeforeParticlePenalty
             }
             // 連体修飾を受けない稀読み(他人=ひと: 定数コメント参照。2842)。直前が述語(活用派生/辞書形)か の/な なら減点
@@ -2817,6 +2819,15 @@ extension KanaKanjiConverter {
                         // 指示副詞の読み(そう/こう/どう/ああ)の漢字表層(相/総/双/請う 等)+と は、副詞+と(そうと言った/どうと)
                         // の乗っ取り。と の前では減点する(かれはそうといった→彼は相と言った。2889)
                         if node.surfaceID == SID.と, node.readingID == SID.と,
+                            !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
+                            Self.multiClauseQuotativeAdverbReadingsID.contains(prevNode.readingID), prevNode.readingID != SID.なん {
+                            cost += Self.multiClauseDemonstrativeAdverbKanjiBeforeToPenalty
+                        }
+                        // 同じく指示副詞の漢字表層+終助詞クラスタ(かな/か/かも/よね…)。どうかな→同かな(同 4323 ≪ どう 4771 の
+                        // Wikipedia 頻度)。銅かな(銅は?)のような実名詞+終助詞は成り立つので減点に留め、変種に残す(ユーザ報告 3068)
+                        if node.isKanaIdentity,
+                            Self.multiClauseFinalParticleReadingsID.contains(node.readingID)
+                                || Self.multiClauseSentenceFinalKanaParticlesID.contains(node.readingID),
                             !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
                             Self.multiClauseQuotativeAdverbReadingsID.contains(prevNode.readingID), prevNode.readingID != SID.なん {
                             cost += Self.multiClauseDemonstrativeAdverbKanjiBeforeToPenalty
