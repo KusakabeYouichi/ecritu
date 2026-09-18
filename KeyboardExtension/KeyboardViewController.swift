@@ -294,6 +294,13 @@ final class KeyboardViewController: UIInputViewController {
     // 地球儀キーの要否(needsInputModeSwitchKey)。ホスト接続後(viewDidAppear)に読んで保持し、描画では
     // この値を使う(描画ごとの直接参照は接続前呼び出しの UIKit エラーログを量産する。2824)
     var cachedNeedsInputModeSwitchKey = false
+    // 表示直後の高さ落ち着き待ち(3100)。純正など高さの違うキーボードから切り替えた直後、ウィンドウは前のキーボードの
+    // 高さ(実測 461/471pt)のままで、こちらの高さ制約(242pt)が効くまでの 1 フレームを écritu が描いてしまう
+    // (面が約 220pt 上にずれて見える「跳ね」。ユーザ報告の録画 03:07)。view の高さが要求値に一致するまで面を隠す。
+    // 取り付け失敗などで一致しない場合に見えないままにならないよう、期限を過ぎたら必ず見せる
+    var isAwaitingInitialHeightSettle = false
+    var initialHeightSettleDeadline: CFAbsoluteTime = 0
+    static let initialHeightSettleTimeoutSec: CFAbsoluteTime = 0.25
     // 温度の度記号の字形(設定 degreeSymbol。提示層で °C/℃ を置換する)
     var degreeSymbolStyle: DegreeSymbolStyle = .composed
     // MEMFORENSICS(時限計測 2651): プロセス初回変換スパイクの解剖は1回だけ
@@ -676,6 +683,9 @@ final class KeyboardViewController: UIInputViewController {
             self?.appendKeyboardDiagnosticsLog("接触詳細 \(detail)")
         }
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
+        // 高さが落ち着くまで面を隠す(定義コメント参照。3100)
+        isAwaitingInitialHeightSettle = true
+        initialHeightSettleDeadline = CFAbsoluteTimeGetCurrent() + Self.initialHeightSettleTimeoutSec
 
         // メモリ警告カウントは「表示セッション」単位でリセットする。
         // 拡張プロセスはアプリ切替をまたいで長生きするため、プロセス生涯で累積させると
@@ -1900,6 +1910,32 @@ final class KeyboardViewController: UIInputViewController {
     }
 
     private func updateKeyboardVisualVisibility(using _: RenderConfiguration) {
+        // 表示直後の高さ落ち着き待ち(定義コメント参照。3100): view の高さが要求値から 1pt 超ずれている間は
+        // 面を隠す。一致するか期限を過ぎたら見せる。回転などの通常時は awaiting=false なので素通り
+        if isAwaitingInitialHeightSettle {
+            let expectedHeight = keyboardHeightConstraint?.constant ?? effectivePreferredKeyboardHeight()
+            let actualHeight = view.bounds.height
+            let settled = abs(actualHeight - expectedHeight) <= 1
+            let timedOut = CFAbsoluteTimeGetCurrent() >= initialHeightSettleDeadline
+            if !settled && !timedOut {
+                if view.alpha != 0 {
+                    view.alpha = 0
+                    appendKeyboardDiagnosticsLog(
+                        "表示ゲート 高さ不一致で非表示 view=\(Int(actualHeight)) 期待=\(Int(expectedHeight))",
+                        file: #fileID, line: #line, function: #function
+                    )
+                }
+                return
+            }
+            isAwaitingInitialHeightSettle = false
+            if view.alpha != 1 {
+                appendKeyboardDiagnosticsLog(
+                    "表示ゲート 解除 view=\(Int(actualHeight)) 期待=\(Int(expectedHeight)) timedOut=\(timedOut)",
+                    file: #fileID, line: #line, function: #function
+                )
+            }
+        }
+
         if view.alpha != 1 {
             view.alpha = 1
         }
