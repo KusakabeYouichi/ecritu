@@ -17705,6 +17705,28 @@ extension KanaKanjiConverterRegressionTests {
 }
 
 extension KanaKanjiConverterRegressionTests {
+    // 3068: どうかな→同かな(ユーザ報告)。指示副詞(そう/こう/どう/ああ)の漢字表層+終助詞クラスタを減点(2889 の +と の拡張)。
+    // 銅かな のような実名詞+終助詞は変種に残す
+    func testRegressionUserReports3068() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            for (reading, expected) in [
+                ("どうかな", "どうかな"), ("どうかなあ", "どうかなあ"), ("そうかな", "そうかな"), ("こうかな", "こうかな"),
+                ("どうだろう", "どうだろう"), ("それはどうかな", "それはどうかな"), ("どうかね", "どうかね")
+            ] {
+                XCTAssertEqual(
+                    converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first,
+                    expected, "\(label) reading=\(reading)")
+                XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), "\(label) reading=\(reading)")
+            }
+            let doukana = converter.multiClauseCandidates(for: "どうかな", systemCandidateMode: mode)
+            XCTAssertTrue(doukana.contains("銅かな"), "\(label) list=\(doukana)")
+        }
+    }
+
     // 3054: 受諾後(後(ご) の読み跨ぎ床の免除)と 更新された(curated 名詞 香信 の直後の される を非文に。ユーザ報告)
     func testRegressionUserReports3054() throws {
         try prepareRealLMDictionary()
