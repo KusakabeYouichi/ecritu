@@ -110,6 +110,8 @@ enum SettingsKeys {
     static let contactCandidatesByReadingCacheSealed = "contactCandidatesByReadingCacheSealed"
     // 畳んだ表を封緘した版(3020)。拡張はこちらを優先し、無ければ上の JSON 版へ落ちる
     static let contactCandidatesByReadingCacheCompactSealed = "contactCandidatesByReadingCacheCompactSealed"
+    // 畳んだ封緘版を書き換えるたびに更新する印(UUID)。拡張は印が変わらなければ復号をやり直さない(3080)
+    static let contactCandidatesByReadingCacheCompactSealedStamp = "contactCandidatesByReadingCacheCompactSealedStamp"
     static let kanaKanjiLearningScores = "kanaKanjiLearningScores"
     static let legacyKeyboardDebugLogCleanupCompleted = "legacyKeyboardDebugLogCleanupCompleted"
     static let keyboardDiagnosticsLogLines = "keyboardDiagnosticsLogLines"
