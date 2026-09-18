@@ -18346,3 +18346,253 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 }
+
+// 確保の実測(3096): malloc_logger(libsystem_malloc の公開されていない大域フック)を dlsym で差し込み、
+// 打鍵 1 回(連文節+単文節)あたりの確保回数・総バイト・一時ピーク(生きたバイトの最高水位−開始時)を数える。
+// フックの中では一切 Swift の確保をしない(再入する)。表は事前に malloc した生配列。
+// TEST_RUNNER_ALLOC_CENSUS=1 で実行。変換の一時確保を減らす改修(計画文書 案 1 最終段/案 2)の物差し
+enum AllocationCensus {
+    typealias Logger = @convention(c) (UInt32, UInt, UInt, UInt, UInt, UInt32) -> Void
+    // フック内で触れるのは static let の生ポインタ 2 本だけ。static var は swift_beginAccess(スレッド局所領域を確保)、
+    // Swift Array/for-in は確保を呼び、malloc_logger に再入して落ちる(3 回の実測: SIGTRAP/SIGSEGV/SIGBUS)
+    // state: 0 allocCount 1 allocBytes 2 freeCount 3 liveBytes 4 peakLiveBytes 5..12 histogram(≤16 ≤32 ≤64 ≤128 ≤256 ≤1K ≤16K >16K)
+    static let state: UnsafeMutablePointer<Int> = {
+        let p = UnsafeMutablePointer<Int>.allocate(capacity: 16); p.initialize(repeating: 0, count: 16); return p
+    }()
+    static let capacity = 1 << 21
+    static let table: UnsafeMutablePointer<UInt> = {  // [ptr, size] × capacity(開番地法)
+        let p = UnsafeMutablePointer<UInt>.allocate(capacity: (1 << 21) * 2); p.initialize(repeating: 0, count: (1 << 21) * 2); return p
+    }()
+    nonisolated(unsafe) static var previousLogger: Logger? = nil
+    nonisolated(unsafe) static var slot: UnsafeMutablePointer<Logger?>? = nil
+    // 呼び出し元の帰属(state[13] != 0 のときだけ): backtrace の 3〜13 段目の戻り番地を数える(関数ごとの包含カウント)。
+    // addrTable: [addr, count] × addrCapacity。後で dladdr で記号名に畳む
+    static let addrCapacity = 1 << 16
+    static let addrTable: UnsafeMutablePointer<UInt> = {
+        let p = UnsafeMutablePointer<UInt>.allocate(capacity: (1 << 16) * 2); p.initialize(repeating: 0, count: (1 << 16) * 2); return p
+    }()
+    static let frameBuffer: UnsafeMutablePointer<UnsafeMutableRawPointer?> = {
+        let p = UnsafeMutablePointer<UnsafeMutableRawPointer?>.allocate(capacity: 32); p.initialize(repeating: nil, count: 32); return p
+    }()
+    static func bump(addr: UInt) {
+        if addr == 0 { return }
+        let t = addrTable
+        var index = Int((addr >> 2) & UInt(addrCapacity - 1))
+        var probe = 0
+        while probe < 128 {
+            probe += 1
+            let key = t[index * 2]
+            if key == 0 || key == addr {
+                t[index * 2] = addr
+                t[index * 2 + 1] += 1
+                return
+            }
+            index = (index + 1) & (addrCapacity - 1)
+        }
+    }
+    static func recordFrames() {
+        let n = Int(backtrace(frameBuffer, 20))
+        var i = 3
+        while i < n && i < 16 {
+            if let f = frameBuffer[i] { bump(addr: UInt(bitPattern: f)) }
+            i += 1
+        }
+    }
+
+    static var allocCount: Int { state[0] }
+    static var allocBytes: Int { state[1] }
+    static var freeCount: Int { state[2] }
+    static var liveBytes: Int { state[3] }
+    static var peakLiveBytes: Int { state[4] }
+    static func histogram(_ i: Int) -> Int { state[5 + i] }
+
+    static func bucket(_ size: UInt) -> Int {
+        size <= 16 ? 0 : size <= 32 ? 1 : size <= 64 ? 2 : size <= 128 ? 3 : size <= 256 ? 4 : size <= 1024 ? 5 : size <= 16384 ? 6 : 7
+    }
+    static func record(ptr: UInt, size: UInt) {
+        if ptr == 0 { return }
+        let t = table
+        var index = Int((ptr >> 4) & UInt(capacity - 1))
+        var probe = 0
+        while probe < 64 {
+            probe += 1
+            let key = t[index * 2]
+            if key == 0 || key == ptr {
+                t[index * 2] = ptr
+                t[index * 2 + 1] = size
+                return
+            }
+            index = (index + 1) & (capacity - 1)
+        }
+    }
+    static func forget(ptr: UInt) -> UInt {
+        if ptr == 0 { return 0 }
+        let t = table
+        var index = Int((ptr >> 4) & UInt(capacity - 1))
+        var probe = 0
+        while probe < 64 {
+            probe += 1
+            let key = t[index * 2]
+            if key == 0 { return 0 }
+            if key == ptr {
+                let size = t[index * 2 + 1]
+                t[index * 2 + 1] = 0
+                return size
+            }
+            index = (index + 1) & (capacity - 1)
+        }
+        return 0
+    }
+    static let logger: Logger = { type, arg1, arg2, arg3, result, _ in
+        if pthread_main_np() == 0 { return }  // 主スレッド(変換)だけ数える。他スレッドは競合もするので見ない
+        let s = state
+        let hasZone = (type & 8) != 0
+        let isAlloc = (type & 2) != 0
+        let isFree = (type & 4) != 0
+        if isAlloc, s[13] != 0 { recordFrames() }
+        if isAlloc && isFree {
+            let old = hasZone ? arg2 : arg1
+            let size = hasZone ? arg3 : arg2
+            let oldSize = forget(ptr: old)
+            s[3] -= Int(oldSize)
+            s[0] += 1; s[1] += Int(size); s[5 + bucket(size)] += 1
+            record(ptr: result, size: size); s[3] += Int(size)
+        } else if isAlloc {
+            let size = hasZone ? arg2 : arg1
+            s[0] += 1; s[1] += Int(size); s[5 + bucket(size)] += 1
+            record(ptr: result, size: size); s[3] += Int(size)
+        } else if isFree {
+            let ptr = hasZone ? arg2 : arg1
+            let size = forget(ptr: ptr)
+            if size > 0 { s[2] += 1; s[3] -= Int(size) }
+        }
+        if s[3] > s[4] { s[4] = s[3] }
+    }
+    static func install() -> Bool {
+        guard let handle = dlopen(nil, RTLD_NOW), let symbol = dlsym(handle, "malloc_logger") else { return false }
+        _ = state; _ = table; _ = logger; _ = addrTable; _ = frameBuffer  // 遅延初期化をフック差し込み前に済ませる
+        let s = symbol.assumingMemoryBound(to: Logger?.self)
+        slot = s
+        previousLogger = s.pointee
+        s.pointee = logger
+        return true
+    }
+    static func uninstall() {
+        slot?.pointee = previousLogger
+        slot = nil
+    }
+    static func resetCounters() {
+        state[0] = 0; state[1] = 0; state[2] = 0; state[4] = state[3]
+        var i = 0
+        while i < 8 { state[5 + i] = 0; i += 1 }
+    }
+}
+
+extension KanaKanjiConverterRegressionTests {
+    func testDiagAllocationCensusMultiClause() throws {
+        try XCTSkipUnless(ProcessInfo.processInfo.environment["ALLOC_CENSUS"] != nil, "TEST_RUNNER_ALLOC_CENSUS=1 で実行")
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        let readings = ["としによる", "かねもってて", "たとえていうなら", "おんどをはかる", "すうかこくたいおう", "まともにかけんのか", "さくじょしておきながら", "でないようにした", "かいさつとおって", "せいこうすべく", "きょうはてんきがいいのででかけよう", "めがねをかけてる", "じっしつできなくなった"]
+        for r in readings { _ = converter.multiClauseCandidates(for: r, systemCandidateMode: .surface); _ = converter.candidates(for: r, limit: 8, systemCandidateMode: .surface) }
+        converter.invalidateCandidateCache()
+        let recordStacks = ProcessInfo.processInfo.environment["ALLOC_CENSUS_STACKS"] != nil
+        XCTAssertTrue(AllocationCensus.install(), "malloc_logger を差し込めない")
+        var keystrokes = 0
+        var multi = (count: 0, bytes: 0, peak: 0, hist: [Int](repeating: 0, count: 8))
+        var single = (count: 0, bytes: 0, peak: 0, hist: [Int](repeating: 0, count: 8))
+        var worst: (reading: String, peak: Int) = ("", 0)
+        // 段階別(供給/表・前計算/DP/代替経路/変種/結果)の確保数・バイト。前回境界からの差分を段階名に積む
+        var phaseAllocs: [String: (count: Int, bytes: Int)] = [:]
+        var phaseOrder: [String] = []
+        var lastCount = 0, lastBytes = 0
+        // ALLOC_CENSUS_PHASE=DP のように段階名を与えると、戻り番地の記録をその段階の間だけにする
+        let phaseOrderFixed = ["供給", "表・前計算", "DP", "代替経路", "変種", "結果"]
+        let focusPhase = ProcessInfo.processInfo.environment["ALLOC_CENSUS_PHASE"]
+        let focusStartLabel: String? = focusPhase.flatMap { phase in
+            phaseOrderFixed.firstIndex(of: phase).flatMap { $0 > 0 ? phaseOrderFixed[$0 - 1] : nil }
+        }
+        KanaKanjiConverter.multiClausePhaseProbe = { label in
+            if let focusPhase {
+                if label == focusStartLabel { AllocationCensus.state[13] = 1 }
+                if label == focusPhase { AllocationCensus.state[13] = 0 }
+            }
+            let c = AllocationCensus.allocCount, b = AllocationCensus.allocBytes
+            let e = phaseAllocs[label] ?? (0, 0)
+            phaseAllocs[label] = (e.count + c - lastCount, e.bytes + b - lastBytes)
+            if !phaseOrder.contains(label) { phaseOrder.append(label) }
+            lastCount = c; lastBytes = b
+        }
+        defer { KanaKanjiConverter.multiClausePhaseProbe = nil }
+        for r in readings {
+            converter.invalidateCandidateCache()
+            let chars = Array(r)
+            for length in 4...chars.count {
+                let prefix = String(chars[0..<length])
+                AllocationCensus.resetCounters()
+                lastCount = 0; lastBytes = 0
+                let liveBefore = AllocationCensus.liveBytes
+                AllocationCensus.state[13] = (recordStacks && (focusPhase == nil || focusPhase == phaseOrderFixed.first)) ? 1 : 0
+                _ = converter.multiClauseCandidates(for: prefix, systemCandidateMode: .surface)
+                AllocationCensus.state[13] = 0
+                multi.count += AllocationCensus.allocCount; multi.bytes += AllocationCensus.allocBytes
+                let peakM = AllocationCensus.peakLiveBytes - liveBefore
+                multi.peak = max(multi.peak, peakM)
+                if peakM > worst.peak { worst = (prefix, peakM) }
+                for i in 0..<8 { multi.hist[i] += AllocationCensus.histogram(i) }
+                AllocationCensus.resetCounters()
+                let liveBefore2 = AllocationCensus.liveBytes
+                _ = converter.candidates(for: prefix, limit: 8, systemCandidateMode: .surface)
+                single.count += AllocationCensus.allocCount; single.bytes += AllocationCensus.allocBytes
+                single.peak = max(single.peak, AllocationCensus.peakLiveBytes - liveBefore2)
+                for i in 0..<8 { single.hist[i] += AllocationCensus.histogram(i) }
+                keystrokes += 1
+            }
+        }
+        AllocationCensus.uninstall()
+        let k = Double(keystrokes)
+        print(String(format: "ALLOC multi  per keystroke: allocs=%.0f bytes=%.0fKB  worst transient peak=%.0fKB (%@)", Double(multi.count) / k, Double(multi.bytes) / k / 1024, Double(multi.peak) / 1024, worst.reading))
+        print("ALLOC multi  size histogram ≤16/≤32/≤64/≤128/≤256/≤1K/≤16K/>16K = \(multi.hist.map { $0 / keystrokes })")
+        print(String(format: "ALLOC single per keystroke: allocs=%.0f bytes=%.0fKB  worst transient peak=%.0fKB", Double(single.count) / k, Double(single.bytes) / k / 1024, Double(single.peak) / 1024))
+        print("ALLOC single size histogram = \(single.hist.map { $0 / keystrokes })")
+        for label in phaseOrder {
+            let e = phaseAllocs[label] ?? (0, 0)
+            print(String(format: "ALLOC phase %@: allocs=%.0f bytes=%.0fKB per keystroke", label, Double(e.count) / k, Double(e.bytes) / k / 1024))
+        }
+        print("ALLOC keystrokes=\(keystrokes)")
+        if recordStacks {
+            // 戻り番地を記号名に畳む(同じ関数の複数の呼び出し点を合算)。Swift の名前は mangled のまま出す(swift demangle で読む)
+            var bySymbol: [String: Int] = [:]
+            for i in 0..<AllocationCensus.addrCapacity {
+                let addr = AllocationCensus.addrTable[i * 2]
+                let count = Int(AllocationCensus.addrTable[i * 2 + 1])
+                guard addr != 0, count > 0 else { continue }
+                var info = Dl_info()
+                var name = "?"
+                if dladdr(UnsafeRawPointer(bitPattern: addr), &info) != 0, let sname = info.dli_sname {
+                    let image = info.dli_fname.map { String(cString: $0) } ?? ""
+                    name = ((image as NSString).lastPathComponent) + " " + String(cString: sname)
+                }
+                bySymbol[name, default: 0] += count
+            }
+            for (name, count) in bySymbol.sorted(by: { $0.value > $1.value }).prefix(60) {
+                print(String(format: "ALLOCSYM %8.0f  %@", Double(count) / k, name))
+            }
+            // 番地ごと(呼び出し点別)。自モジュール内だけ、像先頭からのオフセットで出す(atos -o <binary> -l 0x0 で行番号に引ける)
+            var addrRows: [(offset: UInt, count: Int)] = []
+            for i in 0..<AllocationCensus.addrCapacity {
+                let addr = AllocationCensus.addrTable[i * 2]
+                let count = Int(AllocationCensus.addrTable[i * 2 + 1])
+                guard addr != 0, count > 0 else { continue }
+                var info = Dl_info()
+                guard dladdr(UnsafeRawPointer(bitPattern: addr), &info) != 0,
+                    let fname = info.dli_fname, String(cString: fname).contains("critu"),
+                    let base = info.dli_fbase else { continue }
+                addrRows.append((addr - UInt(bitPattern: base), count))
+            }
+            for row in addrRows.sorted(by: { $0.count > $1.count }).prefix(45) {
+                print(String(format: "ALLOCADDR %8.0f 0x%llx", Double(row.count) / k, UInt64(row.offset)))
+            }
+        }
+    }
+}

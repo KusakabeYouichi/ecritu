@@ -73,7 +73,7 @@ extension KanaKanjiConverter {
             scores[candidate, default: 0] += max(1, baseScore - index)
             #if DEBUG
             // 登録経路の台帳(2733): 実機トレースで「どの経路が何点足したか」を見る
-            stateQueue.sync { scoreLedgerForDiagnostics[candidate, default: []].append(max(1, baseScore - index)) }
+            withStateLock { scoreLedgerForDiagnostics[candidate, default: []].append(max(1, baseScore - index)) }
             #endif
         }
     }

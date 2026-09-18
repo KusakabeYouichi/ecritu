@@ -118,7 +118,10 @@ extension Array where Element == String {
         var result: [String] = []
         result.reserveCapacity(count)
         for candidate in self {
-            let trimmed = candidate.trimmingCharacters(in: .whitespacesAndNewlines)
+            // 前後に空白が無ければ Foundation の trimming(候補 1 件ごとに NSString を経由して確保)を通さない(3096)
+            let needsTrimming = candidate.first.map { $0.isWhitespace || $0.isNewline } ?? false
+                || candidate.last.map { $0.isWhitespace || $0.isNewline } ?? false
+            let trimmed = needsTrimming ? candidate.trimmingCharacters(in: .whitespacesAndNewlines) : candidate
             guard !trimmed.isEmpty, seen.insert(trimmed).inserted else {
                 continue
             }

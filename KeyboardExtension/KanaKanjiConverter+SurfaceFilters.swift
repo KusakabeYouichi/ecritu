@@ -257,21 +257,27 @@ extension KanaKanjiConverter {
         guard !suppressedByReading.isEmpty else {
             return false
         }
-        let readingChars = Array(reading)
-        guard readingChars.count >= 2 else {
+        // 候補ごとに呼ばれるので確保を避ける(3096): 読みを Array にせず String.Index で切り、末尾一致は
+        // Substring 同士で見る。読み前方の String 化(辞書の鍵)と候補先頭の String 化は一致したときだけ
+        let readingCount = reading.count
+        guard readingCount >= 2 else {
             return false
         }
-        for prefixLength in 1..<readingChars.count {
-            let tail = String(readingChars[prefixLength...])
-            guard candidate.count > tail.count, candidate.hasSuffix(tail) else {
-                continue
+        let candidateCount = candidate.count
+        var splitIndex = reading.index(after: reading.startIndex)
+        var prefixLength = 1
+        while prefixLength < readingCount {
+            let tail = reading[splitIndex...]
+            let tailCount = readingCount - prefixLength
+            if candidateCount > tailCount, candidate.hasSuffix(tail),
+                let suppressedSet = suppressedByReading[String(reading[..<splitIndex])] {
+                let headEnd = candidate.index(candidate.endIndex, offsetBy: -tailCount)
+                if suppressedSet.contains(String(candidate[..<headEnd])) {
+                    return true
+                }
             }
-            guard let suppressedSet = suppressedByReading[String(readingChars[0..<prefixLength])] else {
-                continue
-            }
-            if suppressedSet.contains(String(candidate.dropLast(tail.count))) {
-                return true
-            }
+            splitIndex = reading.index(after: splitIndex)
+            prefixLength += 1
         }
         return false
     }
@@ -770,7 +776,7 @@ extension KanaKanjiConverter {
         for reading: String,
         candidates: [String]
     ) -> [String] {
-        let (historicalAllowed, iterationAllowed) = stateQueue.sync {
+        let (historicalAllowed, iterationAllowed) = withStateLock {
             (historicalKanaSurfaceAllowed, iterationMarkSurfaceAllowed)
         }
 

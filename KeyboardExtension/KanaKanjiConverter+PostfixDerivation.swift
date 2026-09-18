@@ -103,7 +103,7 @@ extension KanaKanjiConverter {
                 hasDigitPrefix: false
             )
 
-            guard let cachedStemCandidates = stateQueue.sync(execute: { candidateCache[stemKey] }),
+            guard let cachedStemCandidates = withStateLock({ candidateCache[stemKey] }),
                     !cachedStemCandidates.isEmpty else {
                 continue
             }
