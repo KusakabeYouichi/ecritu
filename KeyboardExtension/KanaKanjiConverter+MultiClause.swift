@@ -8,6 +8,33 @@ extension KanaKanjiConverter {
     // 通常は nil(Optional の nil 判定 1 回だけ)
     nonisolated(unsafe) static var multiClausePhaseProbe: ((String) -> Void)?
     // トレース用の環境変数は 1 回だけ読む(ProcessInfo.environment は呼ぶたびに辞書を組み直し、変換ごとに約 800 回確保していた。3096)
+    // 変換ごとの大きな作業容器を使い回す(計画文書 案 2。3097)。ノード配列や ID 対の表は 1 回の変換で数十 KB の
+    // 大きな確保になり、毎回作り直すとアリーナの大きな塊の区画を出入りして断片化を育てる。容量を保ったまま空にして
+    // 次の変換に渡す。同時に走る変換(背景の候補生成と主スレッド)にはそれぞれ別の容器が渡る(プールが空なら新規)。
+    // 中身は次の変換の先頭で空にする(戻す時点では入れ子関数の文脈がまだ配列を参照していて、その場で空にすると複製になる)
+    final class MultiClauseScratch {
+        var nodes: [MultiClauseNode] = []
+        var unigramSurfaces = Set<String>()
+        var localSymbolIndex: [String: Int32] = [:]
+        var unigramCostByID: [Int32: Int] = [:]
+        var bigramPairs: [(String, String)] = []
+        var seenPairs = Set<UInt64>()
+        var bigramCostByIDPair: [UInt64: Int] = [:]
+        var bigramCosts: [String: Int] = [:]
+    }
+
+    func takeMultiClauseScratch() -> MultiClauseScratch {
+        withStateLock { multiClauseScratchPool.popLast() } ?? MultiClauseScratch()
+    }
+
+    func returnMultiClauseScratch(_ scratch: MultiClauseScratch) {
+        withStateLock {
+            if multiClauseScratchPool.count < 2 {
+                multiClauseScratchPool.append(scratch)
+            }
+        }
+    }
+
     static let multiClauseTraceEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
     static let multiClauseTraceEdgesEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
     static let singleTraceEnabled = ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil
@@ -213,7 +240,14 @@ extension KanaKanjiConverter {
         let manualAjoutVocabulary = store.ajoutVocabulary()
 
         // --- 1. ラティスのノード列挙 ---
-        var nodes: [MultiClauseNode] = []
+        let scratch = takeMultiClauseScratch()
+        var nodes: [MultiClauseNode] = scratch.nodes
+        scratch.nodes = []
+        nodes.removeAll(keepingCapacity: true)
+        defer {
+            scratch.nodes = nodes
+            returnMultiClauseScratch(scratch)
+        }
         // b2 活用供給の各スパン先頭(orderedDerivationBaseCandidates=seed/辞書順で最優先)の
         // 活用形ノードのキー("start-end-surface")。連文節でも seed の並び意図を効かせるため、
         // DP でこのノードに軽いボーナスを与える(単文節の seed leading boost の連文節版)。
@@ -1017,7 +1051,10 @@ extension KanaKanjiConverter {
         Self.memoryProbe?("連文節: ノード列挙")
 
         // --- 2. LM コスト(unigram/bigram)を一括ロード(sqlite アクセスを最小化) ---
-        var unigramSurfaces = Set<String>()
+        var unigramSurfaces = scratch.unigramSurfaces
+        scratch.unigramSurfaces = []
+        unigramSurfaces.removeAll(keepingCapacity: true)
+        defer { scratch.unigramSurfaces = unigramSurfaces }
         unigramSurfaces.insert(Self.multiClauseBOSMarker)
         unigramSurfaces.insert(Self.multiClauseEOSMarker)
         // 単独名詞判定の連接先(が/を/は/の/に/も)はラティスに無くても unigram を引いておく(addPair の門番を通すため。2841)
@@ -1058,7 +1095,10 @@ extension KanaKanjiConverter {
         let candidateMinWordCosts = store.candidateMinWordCosts(for: Array(unigramSurfaces))
         // 表層・読みの整数 ID 化(3052)。記号表(規則が参照する文字列)にあればその ID、無ければ変換内の一時 ID。
         // 遷移内の比較・集合照合・LM 引きはこの ID で行い、String の正規化つき比較/ハッシュを避ける
-        var localSymbolIndex: [String: Int32] = [:]
+        var localSymbolIndex = scratch.localSymbolIndex
+        scratch.localSymbolIndex = [:]
+        localSymbolIndex.removeAll(keepingCapacity: true)
+        defer { scratch.localSymbolIndex = localSymbolIndex }
         func symbolID(_ text: String) -> Int32 {
             if let id = MultiClauseSymbols.index[text] { return id }
             if let id = localSymbolIndex[text] { return id }
@@ -1073,8 +1113,11 @@ extension KanaKanjiConverter {
             nodes[index].isSeedListed = KanaKanjiSeedDictionary.seed[nodes[index].reading]?.contains(nodes[index].surface) ?? false
             nodes[index].minWordCost = candidateMinWordCosts[nodes[index].surface]
         }
-        var unigramCostByID: [Int32: Int] = [:]
+        var unigramCostByID = scratch.unigramCostByID
+        scratch.unigramCostByID = [:]
+        unigramCostByID.removeAll(keepingCapacity: true)
         unigramCostByID.reserveCapacity(unigramCosts.count)
+        defer { scratch.unigramCostByID = unigramCostByID }
         for (surface, cost) in unigramCosts {
             unigramCostByID[symbolID(surface)] = cost
         }
@@ -1197,8 +1240,16 @@ extension KanaKanjiConverter {
             }
         }
 
-        var bigramPairs: [(String, String)] = []
-        var seenPairs = Set<UInt64>()
+        var bigramPairs = scratch.bigramPairs
+        scratch.bigramPairs = []
+        bigramPairs.removeAll(keepingCapacity: true)
+        var seenPairs = scratch.seenPairs
+        scratch.seenPairs = []
+        seenPairs.removeAll(keepingCapacity: true)
+        defer {
+            scratch.bigramPairs = bigramPairs
+            scratch.seenPairs = seenPairs
+        }
         // LM の bigram は両トークンが unigram 表に在るものしか無い(word_lm_bigram の prev/cur 全 1,096,380 件を
         // 照合、例外 0 件。2805)。どちらかが unigram 未収録(派生 OOV/かな素通り/収穫語)なら sqlite を引かずに
         // 未観測扱いにする。結果は不変で、連文節の bigram 問い合わせ(処理時間の約 2 割)を大きく減らす
@@ -1264,15 +1315,20 @@ extension KanaKanjiConverter {
         // 一括引きは入力順の配列で受け、ID 対の表を直接組む。文字列鍵の表(遷移内に残る String 参照用)は
         // 当たった対だけ作る(以前は全対で "prev\tcur" を store 側と合わせて 2 回組んでいた。3096)
         let alignedBigramCosts = store.wordLMBigramCostsAligned(for: bigramPairs)
-        var bigramCostByIDPair: [UInt64: Int] = [:]
-        var bigramCostsBuilt: [String: Int] = [:]
-        bigramCostByIDPair.reserveCapacity(bigramPairs.count / 2)
+        var bigramCostByIDPair = scratch.bigramCostByIDPair
+        scratch.bigramCostByIDPair = [:]
+        bigramCostByIDPair.removeAll(keepingCapacity: true)
+        var bigramCostsBuilt = scratch.bigramCosts
+        scratch.bigramCosts = [:]
+        bigramCostsBuilt.removeAll(keepingCapacity: true)
+        defer { scratch.bigramCostByIDPair = bigramCostByIDPair }
         for (index, pair) in bigramPairs.enumerated() {
             guard let cost = alignedBigramCosts[index] else { continue }
             bigramCostByIDPair[MultiClauseSymbols.pairKey(symbolID(pair.0), symbolID(pair.1))] = cost
             bigramCostsBuilt[pair.0 + "\t" + pair.1] = cost
         }
         let bigramCosts = bigramCostsBuilt
+        defer { scratch.bigramCosts = bigramCosts }
         let weakStandaloneKanjiSurfaces: Set<String> = standaloneKanjiProbeSurfaces.filter { surface in
             let surfaceID = symbolID(surface)
             let evidence = Self.multiClauseStandaloneNounEvidenceFollowers.reduce(0) { count, follower in

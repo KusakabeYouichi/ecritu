@@ -26,6 +26,10 @@ final class KanaKanjiSQLiteIndex {
     private var selectPersonNameStatement: OpaquePointer?
     private var selectWordLMUnigramStatement: OpaquePointer?
     private var selectWordLMBigramStatement: OpaquePointer?
+    // 32 対をまとめて引く文(VALUES の CTE と結合)。点引きは 1 対ごとに VDBE のカーソル等を確保し直す
+    // (連文節 1 打鍵で未キャッシュ 600 対超=確保 600 回超。3097)。まとめ引きなら 1 チャンクに数回
+    static let wordLMBigramBatchSize = 32
+    private var selectWordLMBigramBatchStatement: OpaquePointer?
     private var selectCandidateMinWordCostStatement: OpaquePointer?
     private(set) var hasSourceMetadata = false
     private(set) var hasInflectionMetadata = false
@@ -129,6 +133,14 @@ final class KanaKanjiSQLiteIndex {
             selectWordLMUnigramStatement = prepareStatement(
                 sql: "SELECT cost FROM word_lm_unigram WHERE surface = ?"
             )
+            let rows = (0..<Self.wordLMBigramBatchSize).map { row in
+                "(?\(row * 3 + 1), ?\(row * 3 + 2), ?\(row * 3 + 3))"
+            }.joined(separator: ", ")
+            selectWordLMBigramBatchStatement = prepareStatement(
+                sql: "WITH pairs(idx, prev, cur) AS (VALUES \(rows)) "
+                    + "SELECT pairs.idx, word_lm_bigram.cost FROM pairs JOIN word_lm_bigram "
+                    + "ON word_lm_bigram.prev = pairs.prev AND word_lm_bigram.cur = pairs.cur"
+            )
             selectWordLMBigramStatement = prepareStatement(
                 sql: "SELECT cost FROM word_lm_bigram WHERE prev = ? AND cur = ?"
             )
@@ -182,6 +194,7 @@ final class KanaKanjiSQLiteIndex {
 
         if let selectWordLMBigramStatement {
             sqlite3_finalize(selectWordLMBigramStatement)
+        sqlite3_finalize(selectWordLMBigramBatchStatement)
         }
 
         if let selectCandidateMinWordCostStatement {
@@ -409,8 +422,55 @@ final class KanaKanjiSQLiteIndex {
                 let statement = selectWordLMBigramStatement else {
                 return result
             }
-            for (index, pair) in pairs.enumerated() {
-                result[index] = bigramCost(statement, pair.0, pair.1)
+            guard pairs.count >= 4, let batched = selectWordLMBigramBatchStatement else {
+                for (index, pair) in pairs.enumerated() {
+                    result[index] = bigramCost(statement, pair.0, pair.1)
+                }
+                return result
+            }
+            // 対の文字列を 1 本の UTF-8 バッファに NUL 区切りで並べ、その中を指す SQLITE_STATIC で束縛する
+            // (対ごとの withCString 入れ子や複製束縛を避ける)。余った行は NULL(結合しない)
+            let batchSize = Self.wordLMBigramBatchSize
+            var buffer: [UInt8] = []
+            buffer.reserveCapacity(batchSize * 24)
+            var offsets = [Int](repeating: 0, count: batchSize * 2)
+            var start = 0
+            while start < pairs.count {
+                let end = min(start + batchSize, pairs.count)
+                buffer.removeAll(keepingCapacity: true)
+                for row in 0..<(end - start) {
+                    offsets[row * 2] = buffer.count
+                    buffer.append(contentsOf: pairs[start + row].0.utf8)
+                    buffer.append(0)
+                    offsets[row * 2 + 1] = buffer.count
+                    buffer.append(contentsOf: pairs[start + row].1.utf8)
+                    buffer.append(0)
+                }
+                resetStatement(batched)
+                buffer.withUnsafeBufferPointer { base in
+                    guard let baseAddress = base.baseAddress else { return }
+                    baseAddress.withMemoryRebound(to: CChar.self, capacity: base.count) { chars in
+                        for row in 0..<batchSize {
+                            let parameter = Int32(row * 3 + 1)
+                            if row < end - start {
+                                sqlite3_bind_int(batched, parameter, Int32(row))
+                                sqlite3_bind_text(batched, parameter + 1, chars + offsets[row * 2], -1, nil)
+                                sqlite3_bind_text(batched, parameter + 2, chars + offsets[row * 2 + 1], -1, nil)
+                            } else {
+                                sqlite3_bind_int(batched, parameter, -1)
+                                sqlite3_bind_null(batched, parameter + 1)
+                                sqlite3_bind_null(batched, parameter + 2)
+                            }
+                        }
+                        while sqlite3_step(batched) == SQLITE_ROW {
+                            let row = Int(sqlite3_column_int(batched, 0))
+                            if row >= 0, row < end - start {
+                                result[start + row] = Int(sqlite3_column_int(batched, 1))
+                            }
+                        }
+                    }
+                }
+                start = end
             }
             return result
         }

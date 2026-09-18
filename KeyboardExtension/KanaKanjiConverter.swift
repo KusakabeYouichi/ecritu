@@ -35,6 +35,8 @@ final class KanaKanjiConverter {
     // 毎キーストロークで再出現し、活用派生はルール全走査×基底候補取得で最も高くつくため。
     // 学習・抑制・設定変更時は invalidateCandidateCache で一緒に消える。
     var multiClauseInflectionCache: [String: [String]] = [:]
+    // 連文節の作業容器プール(定義コメント参照。案 2、3097)。stateLock 保護
+    var multiClauseScratchPool: [MultiClauseScratch] = []
     let multiClauseInflectionCacheLimit = 1024
     // 名詞+た の遮断判定(isInflectedTaFormOfKnownVerb)のメモ。DP の遷移ごとに活用エンジンを呼んでいて
     // 連文節の処理時間の約7%を占めていた(2805 プロファイル)。キー "prevReading\tprevSurface"
