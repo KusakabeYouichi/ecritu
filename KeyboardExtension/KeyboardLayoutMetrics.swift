@@ -280,6 +280,16 @@ extension KeyboardLayoutMetrics {
     // publish してホスト側の入力欄が隠れる(2026-09-10 実機ログで確認)。
     // 横の値の帯(おおむね 21)は縦としては小さすぎるので採用しない。
     static let portraitBottomInsetMinimum: CGFloat = 30
+    // ホームインジケーターがある iPhone か(下端 34pt を仮定してよいか)。幅 375 以上でも SE(第 2/3 世代)や 8/8 Plus は
+    // ホームボタン機で下端 0。幅だけでは mini(375、インジケーターあり)と区別できないので画面の縦横比で見る
+    // (ホームボタン機 667/375=1.78、736/414=1.78。インジケーター機は 812/375=2.17 以上)。SE で候補欄の上が
+    // 約 30pt 欠けていた(テスター 2 名、3087)
+    static func assumesHomeIndicator(shorterScreenEdge: CGFloat, longerScreenEdge: CGFloat, isPhone: Bool) -> Bool {
+        guard isPhone, shorterScreenEdge >= 375, shorterScreenEdge > 0 else {
+            return false
+        }
+        return longerScreenEdge / shorterScreenEdge > 2.0
+    }
 
     static func isPlausiblePortraitBottomInset(
         _ inset: CGFloat,
