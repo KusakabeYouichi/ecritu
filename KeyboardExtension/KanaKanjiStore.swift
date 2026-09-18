@@ -85,14 +85,14 @@ final class KanaKanjiStore {
     // 2 世代方式(3038): 以前は上限到達で全消しだったため、1 変換で数百〜千件強の点クエリが続く
     // 連続入力では数変換ごとに全部捨てて sqlite を引き直していた(perf テストの warm 計測で
     // 実行時間の約 18% が sqlite3_step)。半分ずつ世代を送ることで、直近 limit/2 件は必ず残る
-    struct TwoGenerationLMCache {
-        private var current: [UInt64: Int] = [:]
-        private var previous: [UInt64: Int] = [:]
+    struct TwoGenerationCache<Key: Hashable, Value> {
+        private var current: [Key: Value] = [:]
+        private var previous: [Key: Value] = [:]
         var count: Int { current.count + previous.count }
-        subscript(key: UInt64) -> Int? {
+        subscript(key: Key) -> Value? {
             current[key] ?? previous[key]
         }
-        mutating func set(_ value: Int, for key: UInt64, limit: Int) {
+        mutating func set(_ value: Value, for key: Key, limit: Int) {
             if current.count >= max(1, limit / 2) {
                 previous = current
                 current = [:]
@@ -105,6 +105,7 @@ final class KanaKanjiStore {
             previous.removeAll(keepingCapacity: false)
         }
     }
+    typealias TwoGenerationLMCache = TwoGenerationCache<UInt64, Int>
     private var cachedWordLMUnigram = TwoGenerationLMCache()
     private var cachedWordLMBigram = TwoGenerationLMCache()
     #if DEBUG
@@ -132,7 +133,8 @@ final class KanaKanjiStore {
     private static let wordLMCacheLimitConstrained = 2048
     private static let wordLMMissingSentinel = -1
     // 読み別 word_costs キャッシュ(連文節のノード列挙が span ごとに引く)
-    private var cachedWordCostsByReading: [String: [String: Int]] = [:]
+    // 2 世代方式(3075): 上限で全消しだと数十変換ごとに読み別 word_costs を全部引き直していた(Mac の長セッション模擬で wc=4025→309)
+    private var cachedWordCostsByReading = TwoGenerationCache<String, [String: Int]>()
     private static let wordCostsCacheLimit = 4096
     private static let wordCostsCacheLimitConstrained = 1024
     // メモリ警告が続くときの縮小モード(cacheLock 保護)。キャッシュ上限を下げて再成長を
@@ -525,10 +527,7 @@ final class KanaKanjiStore {
         }
         let costMap = sqliteIndex.wordCostMap(for: normalizedReading)
         withCacheLock {
-            if cachedWordCostsByReading.count >= activeWordCostsCacheLimit {
-                cachedWordCostsByReading.removeAll(keepingCapacity: true)
-            }
-            cachedWordCostsByReading[normalizedReading] = costMap
+            cachedWordCostsByReading.set(costMap, for: normalizedReading, limit: activeWordCostsCacheLimit)
         }
         return costMap
     }
@@ -976,7 +975,7 @@ final class KanaKanjiStore {
             cachedPersonNameKindsByReading = [:]
             cachedWordLMUnigram = TwoGenerationLMCache()
             cachedWordLMBigram = TwoGenerationLMCache()
-            cachedWordCostsByReading = [:]
+            cachedWordCostsByReading = TwoGenerationCache()
         }
     }
 
