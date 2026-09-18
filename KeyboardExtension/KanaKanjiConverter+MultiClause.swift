@@ -2855,12 +2855,11 @@ extension KanaKanjiConverter {
                         // curated の名詞(香信 等)の直後に助詞なしで する/される の付属部が続くのは、その語がサ変名詞でない限り
                         // 非文(定数コメント参照。3054)。かな識別・派生の curated と、pos サ変で登録された語(有する)は対象外
                         // 直後の切り方(された 1 ノード/さ+れ+た の断片)に依らず、残りの読み列で される/した… を見る
-                        if prevNode.isCurated, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, node.isKanaIdentity,
+                        // 続くノードはかな(さ/された)でも漢字(下=した)でも対象(香信下 が変種に残った)
+                        if prevNode.isCurated, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived,
                             node.start < n,
                             !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface) {
-                            let rest = String(chars[node.start..<n])
-                            if rest.hasPrefix("され")
-                                || Self.multiClauseSuruClusterKanaPrefixes.contains(where: { rest.hasPrefix($0) }) {
+                            if Self.readingStartsWithSuruCluster(String(chars[node.start..<n])) {
                                 cost += Self.multiClauseCuratedNonSuruBeforeSuruClusterPenalty
                             }
                         }
@@ -3357,6 +3356,10 @@ extension KanaKanjiConverter {
             if containsKanji(lead.surface),
                 let seedList = KanaKanjiSeedDictionary.seed[lead.reading], seedList.first == lead.surface, seedList.count >= 2,
                 containsKanji(seedList[1]),
+                // サ変名詞+される/した… の先頭を、サ変でない seed 2 番目(香信)に差し替えない(3067)
+                !(lead.end < n && store.isSuruNoun(reading: lead.reading, candidate: lead.surface)
+                    && Self.readingStartsWithSuruCluster(String(chars[lead.end..<n]))
+                    && !store.isSuruNoun(reading: lead.reading, candidate: seedList[1])),
                 let altIdx = nodes.firstIndex(where: { $0.start == lead.start && $0.end == lead.end && $0.surface == seedList[1] }),
                 let alternative = solveViterbi(allowedStartNodeIndex: altIdx), alternative.pathIndices.count >= 2,
                 alternative.bestTotal - bestTotal <= Self.multiClauseLeadAlternativeMaxDelta {
@@ -3736,6 +3739,12 @@ extension KanaKanjiConverter {
                 // なければ baseCostCurated == baseCost なので他の区間の挙動は変わらない。
                 // ただし seed にかなと並記された漢字(それぞれ→其々)は正当な兄弟表記なので natural 基準のまま
                 // (curated 基準だと delta 6495 で上限 4000 を超え、其々を が変種から消える)
+                // サ変名詞+される/した… の名詞を、サ変でない同読み語(香信=椎茸)に差し替えない(こうしんされた→香信された が変種に。3067)
+                if chosen.end < n, store.isSuruNoun(reading: chosen.reading, candidate: chosen.surface),
+                    Self.readingStartsWithSuruCluster(String(chars[chosen.end..<n])),
+                    !store.isSuruNoun(reading: alt.reading, candidate: alt.surface) {
+                    continue
+                }
                 let isSeedListedSibling = KanaKanjiSeedDictionary.seed[alt.reading]?.contains(alt.surface) == true
                 let effectiveBase: Int
                 if containsKanji(alt.surface), alt.isInflectionDerived || unigramCosts[alt.surface] == nil || !isSeedListedSibling {
@@ -3903,7 +3912,7 @@ extension KanaKanjiConverter {
         }
         #if DEBUG
         if traceEnabled {
-            print("MULTITRACE variants[\(normalized)] " + variants.prefix(8).map { "\($0.joined)=\($0.delta)" }.joined(separator: " "))
+            print("MULTITRACE variants[\(normalized)] " + variants.prefix(8).map { "\($0.joined)=\($0.delta)/o\($0.order)/p\($0.position)" }.joined(separator: " "))
         }
         #endif
         var results = suppressAllKanaBest ? [] : [joined]
