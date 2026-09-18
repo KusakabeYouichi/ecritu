@@ -2852,6 +2852,25 @@ extension KanaKanjiConverter {
                                 || Self.multiClauseSuruClusterKanaPrefixes.contains(where: { node.reading.hasPrefix($0) }) {
                             cost += Self.multiClauseTameSuruClusterPenalty
                         }
+                        // curated の名詞(香信 等)の直後に助詞なしで する/される の付属部が続くのは、その語がサ変名詞でない限り
+                        // 非文(定数コメント参照。3054)。かな識別・派生の curated と、pos サ変で登録された語(有する)は対象外
+                        // 直後の切り方(された 1 ノード/さ+れ+た の断片)に依らず、残りの読み列で される/した… を見る
+                        if prevNode.isCurated, !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, node.isKanaIdentity,
+                            node.start < n,
+                            !store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface) {
+                            let rest = String(chars[node.start..<n])
+                            if rest.hasPrefix("され")
+                                || Self.multiClauseSuruClusterKanaPrefixes.contains(where: { rest.hasPrefix($0) }) {
+                                cost += Self.multiClauseCuratedNonSuruBeforeSuruClusterPenalty
+                            }
+                        }
+                        // サ変名詞+後(ご): 受諾後/終了後/確認後 は最も生産的な接尾で、語(ご) は 国名+語 以外では立たない。
+                        // 後(ご) は床免除後も 語→EOS 2114 < 後→EOS 2716 の文末統計で 46 差負けていた(定数コメント参照。3054)
+                        if node.readingID == SID.ご, node.surface == "後",
+                            !prevNode.isKanaIdentity, !prevNode.isInflectionDerived, containsKanji(prevNode.surface),
+                            store.isSuruNoun(reading: prevNode.reading, candidate: prevNode.surface) {
+                            cost -= Self.multiClauseSuruNounGoSuffixBonus
+                        }
                         // 連用形+に(目的)の直後は移動動詞(来る/行く 系)が来る(食べに来た/飲みに行く)。
                         // 前ノードが b5 の 連用形+に なら、移動動詞にボーナスを与え 北 等の名詞化を退ける。
                         if renyouNiNodeKeys.contains(prevNode.key),
