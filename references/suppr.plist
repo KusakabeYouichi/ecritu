@@ -10,6 +10,8 @@
 	<dict><key>phrase</key><string>しょう待</string><key>shortcut</key><string>しょうたい</string></dict>	<!-- 同じく 招待 の交ぜ書き異表記 -->
 	<dict><key>phrase</key><string>眼ぶた</string><key>shortcut</key><string>まぶた</string></dict>	<!-- 瞼 の交ぜ書き異表記。実機で先頭に出ていた(ユーザ指摘 2905) -->
 	<dict><key>phrase</key><string>麻実</string><key>shortcut</key><string>あさのみ</string></dict>	<!-- 麻の実 の表層異表記(Sudachi、正規化先 麻の実)。読みとして一般的でない(ユーザ指定 2912) -->
+	<dict><key>phrase</key><string>掛ケる</string><key>shortcut</key><string>かける</string></dict>	<!-- 掛ける の漢字+カタカナ混じり異表記(Sudachi 収穫)。掛ケてる/掛ケた が並んでいた(ユーザ指摘 3086) -->
+	<dict><key>phrase</key><string>カケる</string><key>shortcut</key><string>かける</string></dict>	<!-- 同じくカタカナ+かな混じりの異表記 -->
 	<dict><key>phrase</key><string>創●</string><key>shortcut</key><string>そうか</string></dict>	<!-- 2 文字目が U+25CF(黒丸)の壊れたエントリ。伏せ字か記号の取り込み事故で、語として成立しない(ユーザ指摘 2923) -->
 	<dict><key>phrase</key><string>帰える</string><key>shortcut</key><string>かえる</string></dict>	<!-- 帰る の誤った送り仮名(告示の本則・許容のどちらにも無い)。活用形(帰えって/帰えります)まで候補を汚す(ユーザ指摘 2820) -->
 	<dict><key>phrase</key><string>重そう</string><key>shortcut</key><string>じゅうそう</string></dict>	<!-- 重そう(じゅうそう): 重そう は おもそう(重い+そう)であり じゅうそう と読む語ではない(ユーザ指摘 2818) -->
