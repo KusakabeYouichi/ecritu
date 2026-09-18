@@ -459,6 +459,22 @@ final class KanaKanjiStore {
         return classMap[candidate] == "suru"
     }
 
+    // この読みに辞書(inflection_classes)のサ変名詞が 1 つでも在るか。pos 無しの curated 名詞(香信=椎茸)を
+    // サ変と推論するかの門番に使う(3067)
+    func hasSuruNoun(reading: String) -> Bool {
+        if let cached = withCacheLock({ cachedInflectionClassMapsByReading[reading] }) {
+            return cached.values.contains("suru")
+        }
+        let classMap: [String: String]
+        if let sqliteIndex = sqliteIndexIfAvailable() {
+            classMap = sqliteIndex.inflectionClassMap(for: reading)
+        } else {
+            classMap = loadInflectionDictionary()[reading] ?? [:]
+        }
+        withCacheLock { cachedInflectionClassMapsByReading[reading] = classMap }
+        return classMap.values.contains("suru")
+    }
+
     // 連文節用: 辞書形の読み(〜する)に suru クラスで登録された表層の語幹(〜する を外したもの)。
     // misc.plist の pos 付き登録(有する/瓶詰めする)は名詞単体(有/瓶詰め)がノードとして
     // 立たないことがあり、連用中止形(有し)を名詞ノードから作れない。辞書形側から直接引く(2879)

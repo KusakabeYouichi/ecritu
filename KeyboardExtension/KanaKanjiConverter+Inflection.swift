@@ -633,6 +633,12 @@ extension KanaKanjiConverter {
         guard userCandidateSet.contains(candidate) else {
             return nil
         }
+        // 同じ読みに辞書のサ変名詞(更新/行進/交信)が既に在るなら、pos 無しの curated(香信=椎茸)は名詞として
+        // 登録されたものとみなして推論しない。こうしんされた→{更新された, 香信された, 行進された…} で椎茸の
+        // 香信 がサ変化して 2 位に居た(ユーザ報告 3067)。魔改造(まかいぞう)のように辞書にサ変が無い読みは従来どおり
+        if store.hasSuruNoun(reading: baseReading) {
+            return nil
+        }
 
         if !containsHiragana(candidate) {
             return InflectionClass.suru
