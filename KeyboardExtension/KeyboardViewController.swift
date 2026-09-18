@@ -217,6 +217,11 @@ final class KeyboardViewController: UIInputViewController {
     // 復号済みの畳んだ封緘版の印(コンテナーが書く UUID)。個体が作られるたび(bootstrap の force 読込)に同じ blob を
     // 復号し直し、そのたび約 1MB の Data を確保して malloc の領域を 1 つ開けていた(実機 3080: 48→52)。印が同じなら共有表をそのまま使う
     static var sharedContactCandidatesStamp: String?
+    // 調査用計測(確定が遅い 3093): 確定 1 回の内訳(ホスト置換/下線消し/学習)を ms で診断ログに残す。
+    // メッセージアプリで顕著というユーザ報告。Debug 専用。grep "調査用計測(確定 3093)" で外す
+    nonisolated(unsafe) static var commitProbeReplaceMs = 0
+    nonisolated(unsafe) static var commitProbeClearMs = 0
+    nonisolated(unsafe) static var commitProbeBranch = ""
     var contactCandidatesByReading: SupplementalVocabCompactStore {
         get { Self.sharedContactCandidatesByReading }
         set { Self.sharedContactCandidatesByReading = newValue }

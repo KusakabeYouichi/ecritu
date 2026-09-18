@@ -191,6 +191,17 @@ extension KeyboardViewController {
         nudgeWidth: Int
     ) {
         let resolvedNudgeWidth = max(0, nudgeWidth)
+        #if DEBUG
+        // 調査用計測(確定 3093): 1 パス(unmark+文脈 2 読み+カーソル往復+unmark=ホスト呼び出し約 6 回)が
+        // 8ms を超えたら段階名つきで残す。遅延パス(30/120/480/900ms)は次の打鍵中に走るので、その重さも見える
+        let passStartedAt = CFAbsoluteTimeGetCurrent()
+        defer {
+            let passMs = performanceElapsedMilliseconds(since: passStartedAt)
+            if passMs >= 8 {
+                appendKeyboardDiagnosticsLogFromInputHandling("調査用計測(確定 3093) clearPass stage=\(stage) ms=\(passMs) nudge=\(resolvedNudgeWidth)")
+            }
+        }
+        #endif
 
         appendCommitUnderlineDiagnostics(
             "clearPass:start:\(stage)",
@@ -575,6 +586,15 @@ extension KeyboardViewController {
             committedTextLength: committedText.count,
             markedTextLength: currentMarkedText.count
         )
+        // 調査用計測(確定 3093): 定義コメント参照(KeyboardViewController.commitProbeReplaceMs)
+        let probeStartedAt = CFAbsoluteTimeGetCurrent()
+        func noteProbe(branch: String, replaceMs: Int, clearMs: Int) {
+            #if DEBUG
+            Self.commitProbeBranch = branch
+            Self.commitProbeReplaceMs = replaceMs
+            Self.commitProbeClearMs = clearMs
+            #endif
+        }
 
         if let sourceTextForFallbackReplacement,
             !sourceTextForFallbackReplacement.isEmpty,
@@ -601,12 +621,15 @@ extension KeyboardViewController {
                     deleteBackwardCharacterCount(sourceTextForFallbackReplacement.count)
                     markTextProxyEdit()
                     textDocumentProxy.insertText(committedText)
+                    let replaceMs = performanceElapsedMilliseconds(since: probeStartedAt)
 
                     let clearNudgeWidth = shouldAvoidCursorNudgeAfterCommit(committedText) ? 0 : 1
                     clearMarkedTextArtifactsAfterCommit(
                         committedTextLength: committedText.count,
                         nudgeWidth: clearNudgeWidth
                     )
+                    noteProbe(branch: "source置換", replaceMs: replaceMs,
+                              clearMs: performanceElapsedMilliseconds(since: probeStartedAt) - replaceMs)
                     return
                 }
             }
@@ -619,6 +642,7 @@ extension KeyboardViewController {
                 markedTextLength: currentMarkedText.count
             )
             finalizeCommitWithoutReplacingText(committedText)
+            noteProbe(branch: "sameText", replaceMs: 0, clearMs: performanceElapsedMilliseconds(since: probeStartedAt))
             return
         }
 
@@ -645,12 +669,15 @@ extension KeyboardViewController {
             committedText,
             selectedRange: NSRange(location: committedText.utf16.count, length: 0)
         )
+        let replaceMs = performanceElapsedMilliseconds(since: probeStartedAt)
 
         let clearNudgeWidth = shouldAvoidCursorNudgeAfterCommit(committedText) ? 0 : 1
         clearMarkedTextArtifactsAfterCommit(
             committedTextLength: committedText.count,
             nudgeWidth: clearNudgeWidth
         )
+        noteProbe(branch: canLikelyReplaceMarkedText ? "setMarked" : "setMarked(fallback)", replaceMs: replaceMs,
+                  clearMs: performanceElapsedMilliseconds(since: probeStartedAt) - replaceMs)
     }
 
     func shouldAvoidCursorNudgeAfterCommit(_ committedText: String) -> Bool {
