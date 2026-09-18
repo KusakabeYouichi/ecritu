@@ -359,11 +359,26 @@ extension KeyboardViewController {
     func loadCachedContactCandidatesInBackground(
         completion: @escaping (SupplementalVocabCompactStore) -> Void
     ) {
+        // 復号済みの印と共有表は main で読んでから背景へ渡す(共有状態のアクセスは main に限る)
+        let knownStamp = Self.sharedContactCandidatesStamp
+        let sharedStore = Self.sharedContactCandidatesByReading
         DispatchQueue.global(qos: .utility).async { [weak self] in
             guard let self else {
                 // 個体が消えても completion は必ず呼ぶ(共有の読込中フラグを戻すため。2655)
                 DispatchQueue.main.async {
                     completion(.empty)
+                }
+                return
+            }
+            // 印(コンテナーが畳んだ封緘版を書くたびに更新する UUID)が復号済みのものと同じなら、blob を読まず
+            // 復号もしない(3080)。個体が作られるたびの force 読込で同じ blob を復号し直し、約 1MB の Data の
+            // 確保が malloc の領域を 1 つ開けていた(実機 48→52)。印が無い(コンテナー未更新)なら従来どおり復号
+            let stamp = self.sharedDefaults?.string(
+                forKey: SharedDefaultsKeys.contactCandidatesByReadingCacheCompactSealedStamp
+            )
+            if let stamp, stamp == knownStamp, !sharedStore.isEmpty {
+                DispatchQueue.main.async {
+                    completion(sharedStore)
                 }
                 return
             }
@@ -380,6 +395,7 @@ extension KeyboardViewController {
                     minDeltaMB: -1
                 )
                 DispatchQueue.main.async {
+                    KeyboardViewController.sharedContactCandidatesStamp = stamp
                     completion(compact)
                 }
                 return
