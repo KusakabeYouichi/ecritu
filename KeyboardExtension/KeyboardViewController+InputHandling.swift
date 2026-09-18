@@ -890,12 +890,23 @@ extension KeyboardViewController {
     ) {
         let committedTextForInsertion = wrappedCommittedTextIfNeeded(committedText) + trailingText
         MemoryForensics.noteCommitted(characters: committedTextForInsertion.count)
+        #if DEBUG
+        // 調査用計測(確定 3093): 定義コメント参照(KeyboardViewController.commitProbeReplaceMs)
+        let probeStartedAt = CFAbsoluteTimeGetCurrent()
+        Self.commitProbeReplaceMs = 0
+        Self.commitProbeClearMs = 0
+        Self.commitProbeBranch = "-"
+        #endif
 
         commitMarkedTextByReplacingCurrentMarkedText(
             currentMarkedText: conversion.committedText,
             committedText: committedTextForInsertion,
             sourceTextForFallbackReplacement: conversion.sourceText
         )
+        #if DEBUG
+        let hostMs = performanceElapsedMilliseconds(since: probeStartedAt)
+        let learnStartedAt = CFAbsoluteTimeGetCurrent()
+        #endif
 
         if learn, allowsLearningInCurrentField {
             kanaKanjiConverter.learn(
@@ -903,9 +914,19 @@ extension KeyboardViewController {
                 candidate: committedText
             )
         }
+        #if DEBUG
+        let learnMs = performanceElapsedMilliseconds(since: learnStartedAt)
+        #endif
 
         self.activeConversion = nil
         clearComposingState()
+        #if DEBUG
+        appendKeyboardDiagnosticsLogFromInputHandling(
+            "調査用計測(確定 3093) total=\(performanceElapsedMilliseconds(since: probeStartedAt))ms host=\(hostMs)ms"
+                + "(replace=\(Self.commitProbeReplaceMs) clear=\(Self.commitProbeClearMs) branch=\(Self.commitProbeBranch))"
+                + " learn=\(learnMs)ms committedLen=\(committedTextForInsertion.count) markedLen=\(conversion.committedText.count)"
+        )
+        #endif
     }
 
     func applyKanaPostModifier(
