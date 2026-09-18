@@ -5,10 +5,10 @@ import Darwin
 
 extension KeyboardViewController {
     func configureKeyboardContainerSizing() {
-        // 自前の高さ制約(必須優先度)で大きさを決めるので、入力ビューの自己サイズ決定を許す(3101)。
-        // false(5/15 から。理由の記録なし)だとシステムが前のキーボードの高さ(実測 461/471pt)で枠を作り、
-        // こちらの制約が効くまでの 1 フレームだけホストの入力欄が約 2 倍の高さの位置に出ていた(ユーザ報告 3100)
-        inputView?.allowsSelfSizing = true
+        // 3101 で true を試したが、切り替え直後にウィンドウが前のキーボードの高さ(470pt)で開く挙動は変わらず
+        // (実機ログ: viewWillAppear で view=470 → 25ms 後に 242)、ホストの入力欄が 1 フレーム跳ねる件には
+        // 効かなかったので 5/15 からの false に戻す。枠の初期高さはシステムが決め、拡張側からは動かせない
+        inputView?.allowsSelfSizing = false
 
         if let inputView {
             migrateKeyboardConstraintsIfNeeded(to: inputView)
