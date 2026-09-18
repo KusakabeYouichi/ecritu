@@ -1211,3 +1211,183 @@ struct CandidateGlyphText: View {
         }
     }
 }
+
+// 顔文字パネルの分類一覧を UICollectionView で描く(3084)。SwiftUI の VStack/HStack(kaomojiRowLayoutsView)だと
+// 分類の全顔文字(百数十個)のボタンを一度に実体化し、パネル表示のたび footprint +5.6MB(実機、メッセージ/メモ)が
+// 乗っていた。絵文字パネル(EmojiGridCollectionView、2633)と同型で、セル再利用により見えている行ぶんしか作らない。
+// 行の切り方と幅・間隔は従来の kaomojiRows(幅計測+均等配分)をそのまま受け取り、1 行=1 セクションで並べる
+struct KaomojiGridCollectionView: UIViewRepresentable {
+    struct Item: Equatable {
+        let text: String
+        let width: CGFloat
+    }
+    struct Row: Equatable {
+        let items: [Item]
+        let spacing: CGFloat
+    }
+
+    let rows: [Row]
+    let rowSpacing: CGFloat
+    let itemHeight: CGFloat
+    // 分類が変わったらスクロール位置を先頭へ
+    let categoryKey: String
+    let onTextInput: (String) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIView(context: Context) -> UICollectionView {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 0
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        view.backgroundColor = .clear
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
+        view.alwaysBounceVertical = true
+        view.delaysContentTouches = false
+        view.register(KaomojiGridCell.self, forCellWithReuseIdentifier: KaomojiGridCell.reuseIdentifier)
+        view.dataSource = context.coordinator
+        view.delegate = context.coordinator
+        context.coordinator.parent = self
+        return view
+    }
+
+    func updateUIView(_ uiView: UICollectionView, context: Context) {
+        let coordinator = context.coordinator
+        let categoryChanged = coordinator.parent.categoryKey != categoryKey
+        let rowsChanged = coordinator.parent.rows != rows
+        coordinator.parent = self
+        if categoryChanged || rowsChanged {
+            uiView.reloadData()
+            if categoryChanged {
+                uiView.setContentOffset(.zero, animated: false)
+            }
+        }
+    }
+
+    final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+        var parent: KaomojiGridCollectionView
+
+        init(parent: KaomojiGridCollectionView) {
+            self.parent = parent
+        }
+
+        func numberOfSections(in collectionView: UICollectionView) -> Int {
+            parent.rows.count
+        }
+
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            parent.rows[section].items.count
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            cellForItemAt indexPath: IndexPath
+        ) -> UICollectionViewCell {
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: KaomojiGridCell.reuseIdentifier,
+                for: indexPath
+            )
+            (cell as? KaomojiGridCell)?.configure(text: parent.rows[indexPath.section].items[indexPath.item].text)
+            return cell
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            sizeForItemAt indexPath: IndexPath
+        ) -> CGSize {
+            let item = parent.rows[indexPath.section].items[indexPath.item]
+            // 行の幅計算は kaomojiRows 側で済んでいる。丸め誤差で 2 行に割れないよう幅を切り下げる
+            return CGSize(width: floor(min(item.width, collectionView.bounds.width)), height: parent.itemHeight)
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            minimumInteritemSpacingForSectionAt section: Int
+        ) -> CGFloat {
+            // 均等配分の間隔。切り下げた幅ぶんの余りは末尾に残る(左寄せ)
+            floor(parent.rows[section].spacing)
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            insetForSectionAt section: Int
+        ) -> UIEdgeInsets {
+            UIEdgeInsets(top: 0, left: 0, bottom: section == parent.rows.count - 1 ? 0 : parent.rowSpacing, right: 0)
+        }
+
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+            parent.onTextInput(parent.rows[indexPath.section].items[indexPath.item].text)
+        }
+    }
+}
+
+final class KaomojiGridCell: UICollectionViewCell {
+    static let reuseIdentifier = "KaomojiGridCell"
+    private let label = UILabel()
+    private let feedback = UIView()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        // KaomojiTapFeedbackButtonStyle と同じ見た目(角丸 8 の塗り+縁、押下で 0.98 倍)
+        feedback.backgroundColor = UIColor(KeyboardThemePalette.pressFeedbackRounded)
+        feedback.layer.cornerRadius = 8
+        feedback.layer.cornerCurve = .continuous
+        feedback.layer.borderWidth = 1
+        feedback.layer.borderColor = UIColor(KeyboardThemePalette.pressFeedbackRoundedBorder).cgColor
+        feedback.isHidden = true
+        feedback.isUserInteractionEnabled = false
+        var font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        if let descriptor = font.fontDescriptor.withDesign(.rounded) {
+            font = UIFont(descriptor: descriptor, size: 18)
+        }
+        label.font = font
+        label.textColor = UIColor(KeyboardThemePalette.keyLabel)
+        label.textAlignment = .center
+        label.numberOfLines = 1
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.45
+        label.isAccessibilityElement = false
+        contentView.addSubview(feedback)
+        contentView.addSubview(label)
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        feedback.frame = contentView.bounds
+        label.frame = contentView.bounds.insetBy(dx: 4, dy: 0)
+    }
+
+    func configure(text: String) {
+        label.text = text
+        accessibilityLabel = text
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            let pressed = isHighlighted
+            UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
+                self.label.transform = pressed ? CGAffineTransform(scaleX: 0.98, y: 0.98) : .identity
+                self.feedback.isHidden = !pressed
+            }
+        }
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        label.transform = .identity
+        feedback.isHidden = true
+    }
+}
