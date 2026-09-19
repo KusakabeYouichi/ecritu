@@ -609,6 +609,15 @@ extension KanaKanjiConverter {
                         return lhs.key < rhs.key
                     }
                     var dictCount = 0
+                    // かな表記の い形容詞(うまい/おいしい/いい)も辞書形述語として扱う(3108)。判定は漢字表層の形状
+                    // (旨い/美味しい)にしか掛けていなかったので、かな識別 うまい の直後で 形式名詞 もん の漢字化(門)を
+                    // 減点する規則が効かず うまい門 が先頭だった。同読みに い形容詞の漢字辞書形があれば、そのかな表記も述語
+                    let kanaIdentityIsAdjectivePredicate: Bool = segmentReading.hasSuffix("い")
+                        && ordered.contains { entry in
+                            let surface = entry.key
+                            return surface != segmentReading && surface.hasSuffix("い") && containsKanji(surface)
+                                && store.isShortReadingDictionaryFormPredicate(reading: segmentReading, candidate: surface)
+                        }
                     for (surface, cost) in ordered {
                         if segmentEndsWithSokuon, containsKanji(surface) {
                             continue
@@ -625,6 +634,8 @@ extension KanaKanjiConverter {
                                 reading: segmentReading,
                                 candidate: surface
                             )
+                        } else if surface == segmentReading, kanaIdentityIsAdjectivePredicate {
+                            isDictionaryFormPredicate = true
                         }
                         add(
                             surface,
@@ -2769,9 +2780,14 @@ extension KanaKanjiConverter {
                         // 述語(活用派生・辞書形)直後の形式名詞・副助詞はかな表記が正書
                         // (行ったとき/貸し出すだけ 等)。漢字表記に減点。
                         if prevNode.isInflectionDerived || prevNode.isDictionaryFormPredicate,
-                            Self.multiClauseFormalNounKanaReadingsID.contains(node.readingID),
-                            !node.isKanaIdentity {
-                            cost += Self.multiClauseFormalNounKanjiPenalty
+                            Self.multiClauseFormalNounKanaReadingsID.contains(node.readingID) {
+                            if node.isKanaIdentity {
+                                // かな側にも加点(3108): やすいもん は競合が 安い門 でなく人名 安井+門 で、漢字側の減点だけでは
+                                // 安いもん(6114+5938)が 安井門(6251+5199)に約 600 負けていた
+                                cost -= Self.multiClauseFormalNounKanaBonus
+                            } else {
+                                cost += Self.multiClauseFormalNounKanjiPenalty
+                            }
                         }
                         // 述語直後の当為 べき/べし/べく は助動詞=かな(冪/可き の漢字化を減点。定数コメント参照)
                         if Self.multiClauseBekiReadingsID.contains(node.readingID), !node.isKanaIdentity,
