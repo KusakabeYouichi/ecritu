@@ -17791,6 +17791,25 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3109(ユーザ報告): ふつうにつかえるわけ→普通に仕える訳。LM は に→仕える 4426 < に→使える 4467(Wikipedia 偏り)で、文末の
+    // EOS 連接が無い位置では 仕える が 41 差で勝つ。に→使える に加点し、仕える の典型目的語(神/主人/王…)は 仕 へ寄せる。
+    // わけ は述語直後をかなに(形式名詞)
+    func testRegressionUserReports3109() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            for (reading, expected) in [
+                ("ふつうにつかえる", "普通に使える"), ("ふつうにつかえるわけ", "普通に使えるわけ"),
+                ("つかえるわけがない", "使えるわけがない"), ("しごとにつかえる", "仕事に使える"),
+                ("かみにつかえる", "神に仕える"), ("しゅじんにつかえる", "主人に仕える"), ("おうにつかえる", "王に仕える")
+            ] {
+                XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first, expected, label)
+            }
+        }
+    }
+
     // 3108(ユーザ報告 2 件): うまいもん→うまい門(もん=物 の話し言葉を形式名詞かな扱いに、かな形容詞を辞書形述語扱いに、
     // 述語直後のかな形式名詞に加点)、ふちのこうか→淵の効果(縁 は主読み えん の統計で辞書順 10 位・床上げ。seed と免除)
     func testRegressionUserReports3108() throws {
