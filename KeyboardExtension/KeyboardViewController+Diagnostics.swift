@@ -226,7 +226,8 @@ extension KeyboardViewController {
         let zombieSec = lostActiveOwnershipAt > 0
             ? String(format: "%.1f", CFAbsoluteTimeGetCurrent() - lostActiveOwnershipAt)
             : "-"
-        return "id=\(diagnosticsState.diagnosticsControllerID.prefix(8)) age=\(age)s zombie=\(zombieSec)s"
+        // addr はメモリーグラフ(leaks --trace)で保持経路を辿るための実アドレス(3107)
+        return "id=\(diagnosticsState.diagnosticsControllerID.prefix(8)) addr=\(String(UInt(bitPattern: Unmanaged.passUnretained(self).toOpaque()), radix: 16)) age=\(age)s zombie=\(zombieSec)s"
             + " window=\(v?.window != nil) superview=\(v?.superview != nil)"
             + " parentVC=\(parent != nil) hosting=\(hostingController != nil)"
             + " observing=\(isObservingSettingsDidChange)"
