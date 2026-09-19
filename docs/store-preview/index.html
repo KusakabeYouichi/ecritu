@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>écritu ストア掲載プレビュー</title>
+<link rel="stylesheet" href="../manual/assets/manual.css">
+<style>
+  .store-head { display:flex; gap:20px; align-items:flex-start; margin:1.5rem 0 1rem; }
+  .store-head img { width:120px; height:120px; border-radius:27px; box-shadow:0 2px 8px rgba(0,0,0,.12); flex:none; }
+  .store-head h1 { margin:0; font-size:1.9rem; line-height:1.3; }
+  .store-head .sub { margin:.2rem 0 0; color:var(--ink-sub); font-size:1.05rem; }
+  .promo { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:.9rem 1.1rem; margin:1rem 0 1.5rem; }
+  .gallery { display:flex; gap:12px; overflow-x:auto; padding:4px 0 12px; scroll-snap-type:x mandatory; }
+  .gallery figure { flex:0 0 auto; width:min(62vw, 300px); margin:0; scroll-snap-align:start; }
+  .gallery img { width:100%; height:auto; border-radius:18px; border:1px solid var(--line); display:block; }
+  .gallery figcaption { font-size:.85rem; color:var(--ink-sub); margin-top:.3rem; }
+  .desc h3 { margin:1.3rem 0 .3rem; font-size:1.05rem; }
+  .meta { color:var(--ink-sub); font-size:.9rem; }
+</style>
+</head>
+<body>
+<main>
+  <p class="meta">これは App Store に載せる予定の文面と画像の確認用ページです(テスター向け・未公開)。文面は appstore/metadata.md と同期しています。</p>
+  <div class="store-head">
+    <img src="icon.png" alt="écritu のアイコン">
+    <div>
+      <h1>écritu</h1>
+      <p class="sub">サン・ストレスな日本語フリックキーボード</p>
+      <p class="meta">カテゴリ: ユーティリティ · 年齢: 4+ · 対応: iPhone</p>
+    </div>
+  </div>
+  <div class="gallery"><figure><img src="01-kana.png" alt="かな入力と候補バー" width="1320" height="2868" loading="lazy"><figcaption>かな入力と候補バー</figcaption></figure><figure><img src="02-comma-flick.png" alt="や キーの 2 段フリック(sakura テーマ)" width="1320" height="2868" loading="lazy"><figcaption>や キーの 2 段フリック(sakura テーマ)</figcaption></figure><figure><img src="03-flags.png" alt="国旗の長押し" width="1320" height="2868" loading="lazy"><figcaption>国旗の長押し</figcaption></figure><figure><img src="04-kaomoji-search.png" alt="顔文字の読み検索" width="1320" height="2868" loading="lazy"><figcaption>顔文字の読み検索</figcaption></figure><figure><img src="05-number-unit.png" alt="書式化数値(単位)" width="1320" height="2868" loading="lazy"><figcaption>書式化数値(単位)</figcaption></figure><figure><img src="06-settings.png" alt="設定アプリ" width="1320" height="2868" loading="lazy"><figcaption>設定アプリ</figcaption></figure></div>
+  <div class="promo">「?」「。」「〜」「…」括弧まで、かなのまま打てる日本語フリックキーボード。通信は一切なし — 入力内容が端末の外に出ることはありません。連文節変換、絵文字・顔文字・記号パネル、単位や日付の入力補助まで、1 つのキーボードで。</div>
+  <div class="desc"><p>écritu(エクリチュ)は、「モード切り替えを最小に」を合言葉に設計された iPhone 用の日本語フリック入力キーボードです。</p><h3>通信ゼロ。入力内容は端末の外に出ません</h3><p>écritu にはネットワーク通信を行うコードそのものがありません。入力した文字、変換履歴、学習した語彙が開発者を含む誰かに送られることは、仕組みの上でありえません。解析SDK・広告SDKも不使用。フルアクセスの用途は、本体アプリとキーボードの間で設定と学習語彙を共有することだけです。</p><h3>モードを切り替えずに、そのまま打てる</h3><p>「?」「!」「。」「・」は読点キーのフリックに、「〜」「ー」はわキーに、『』などの括弧はやキーに。よく使う記号のためにいちいち記号モードへ入る必要はありません。やキー・わキーは「2段フリック」に対応し、()「」や旧仮名の「ゐ」「ゑ」まで指を離さずに入力できます。</p><h3>賢い変換と、育つ辞書</h3><p>文節をまたいだ連文節変換に対応。確定した候補は端末内で学習され、使うほどあなたの言葉に馴染みます。単語の手動登録(追加語彙)、出したくない候補を隠す抑制語彙、定型文のショートカット語彙、iOS の連絡先やユーザ辞書との連携も。</p><h3>絵文字・顔文字・記号のパネル</h3><p>カテゴリー分けされた絵文字(国旗は長押しで国名をフランス語表示)、読みから探せる顔文字検索、通貨・単位・数学記号・矢印・囲み文字。漢字1字を部首から探せるピッカーも備えています。</p><h3>数字・単位・日付の入力補助</h3><p>数字モードでは 3,000 のような桁区切り、km や ℃ などの単位、金額、日付や曜日(カレンダー表示つき)まで、書式化された数値をそのまま入力できます。</p><h3>欧文もサジェスト</h3><p>英語・フランス語・ドイツ語・イタリア語の入力補完を搭載(オフライン辞書)。アクセント付き文字も長押しで。メールアドレスやURLの欄では自動的に英字配列で開きます。</p><h3>細かな設定</h3><p>かな配列(5×2 / 3×3+わ)、フリック方向(hanabi / littlebear / écritu)、英字配列(QWERTY / AZERTY / 3×3)、テーマとアクセントカラー、フリックガイドの表示方法など、細部まで好みに合わせられます。</p><p>操作方法の詳しい説明は、操作マニュアル(全9章。アプリのアイコンを長押ししたメニューから Safari で開けます)をご覧ください。</p></div>
+  <h3>キーワード(検索用・ストアには表示されません)</h3>
+  <p class="meta">エクリチュ,日本語入力,フリック,かな,IME,連文節,変換,絵文字,顔文字,記号,オフライン,辞書,旧仮名,部首,単位,フランス語</p>
+  <p class="meta">ご意見は TestFlight のフィードバック、または <a href="mailto:écritu@merope.pleiades.or.jp">écritu@merope.pleiades.or.jp</a> へ。</p>
+</main>
+</body>
+</html>
