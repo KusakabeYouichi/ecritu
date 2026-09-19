@@ -133,6 +133,19 @@ extension KanaKanjiConverter {
                 return true
             }
         }
+        // 話し言葉の形式名詞 もん(=物。うまいもん/やすいもん/そんなもん)はかなが正書(ユーザ報告 3108)。
+        // とき と同じく連体修飾(用言の連体形語尾、連体詞 そんな/こんな/あんな/どんな、の)の直後だけ根拠にする。
+        // 正門/質問 のような 1 語(せいもん/しつもん)は語幹が用言でないか、用言であっても keepKana は昇格しないので
+        // 表示は変わらない
+        for tail in ["もん", "もんだ", "もんな", "もんね", "もんか", "もんで", "もんを", "もんが", "もんは", "もんも"]
+        where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
+            let stem = String(normalized.dropLast(tail.count))
+            guard let last = stem.last else { continue }
+            if stem.hasSuffix("そんな") || stem.hasSuffix("こんな") || stem.hasSuffix("あんな") || stem.hasSuffix("どんな")
+                || stem.hasSuffix("の") || "るたないだいくうつむぶぬすぐ".contains(last) {
+                return true
+            }
+        }
         // かな正書の語+助詞1字+かな正書の語(2683): いまだとまだ が keepKana=false で提示層に
         // 降格され、実機だけ 今だとまだ が先頭になっていた(いまだ/まだ 単独はどちらも true)。
         // 連結部は格助詞・接続助詞の1字に限り、両側とも根拠のある語のときだけ成立させる

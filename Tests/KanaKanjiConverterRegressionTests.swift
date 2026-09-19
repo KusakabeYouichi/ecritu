@@ -17791,6 +17791,42 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3108(ユーザ報告 2 件): うまいもん→うまい門(もん=物 の話し言葉を形式名詞かな扱いに、かな形容詞を辞書形述語扱いに、
+    // 述語直後のかな形式名詞に加点)、ふちのこうか→淵の効果(縁 は主読み えん の統計で辞書順 10 位・床上げ。seed と免除)
+    func testRegressionUserReports3108() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            // かな正書の形容詞・連体詞の後: 全体がかな
+            for reading in ["うまいもん", "おいしいもん", "いいもん", "そんなもん"] {
+                let multi = converter.multiClauseCandidates(for: reading, systemCandidateMode: mode)
+                XCTAssertEqual(multi.first, reading, "\(label) multi=\(multi)")
+                XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), "\(label) reading=\(reading)")
+            }
+            // 漢字の形容詞の後: 形容詞は漢字、もん はかな(門 でない)
+            for (reading, expected) in [("やすいもん", "安いもん"), ("たかいもん", "高いもん")] {
+                XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first, expected, label)
+            }
+            XCTAssertEqual(converter.multiClauseCandidates(for: "うまいもんだ", systemCandidateMode: mode).first, "うまいもんだ", label)
+            // いいのにね(ユーザ報告: 飯野にね/猪野にね が先頭だった)。かな形容詞 いい が述語扱いになり のに の連鎖がかなで組める
+            for reading in ["いいのにね", "いいのに", "いいのになあ"] {
+                XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first, reading, label)
+                XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: reading), "\(label) reading=\(reading)")
+            }
+            // 1 語の もん(正門/質問)は変えない
+            XCTAssertEqual(converter.candidates(for: "せいもん", limit: 3, systemCandidateMode: mode).first, "正門", label)
+            XCTAssertEqual(converter.candidates(for: "しつもん", limit: 3, systemCandidateMode: mode).first, "質問", label)
+
+            let fuchi = converter.candidates(for: "ふち", limit: 4, systemCandidateMode: mode)
+            XCTAssertEqual(Array(fuchi.prefix(3)), ["縁", "淵", "渕"], "\(label) list=\(fuchi)")
+            for (reading, expected) in [("ふちのこうか", "縁の効果"), ("かわのふち", "川の縁"), ("めのふち", "目の縁")] {
+                XCTAssertEqual(converter.multiClauseCandidates(for: reading, systemCandidateMode: mode).first, expected, label)
+            }
+        }
+    }
+
     // 3085: らん の並びはユーザ指定(蘭/欄/乱/ラン/卵/藍/Rhin/覧/爛/鸞/婪、かなは末尾)。Rhin は vin.plist の補助語彙
     func testRegressionUserReports3085() throws {
         try prepareRealLMDictionary()
