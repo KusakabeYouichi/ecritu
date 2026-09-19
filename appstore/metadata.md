@@ -23,7 +23,7 @@
 écritu(エクリチュ)は、『同じことを毎回選ばされない』ことを第一に設計された iPhone 用の日本語フリック入力キーボードです。『?』を打つたびに『?』か『？』かを選ぶ、句読点や括弧を打つたびに候補から確定する、といった操作を無くしました。記号に未確定の状態はなく、打った瞬間にいつも同じ形でそのまま入るので、選ぶ場面そのものがありません。
 
 ■ 通信ゼロ。入力内容は端末の外に出ません
-écritu にはネットワーク通信を行うコードそのものがありません。入力した文字、変換履歴、学習した語彙が開発者を含む誰かに送られることは、仕組みの上でありえません。解析SDK・広告SDKも不使用。フルアクセスの用途は、本体アプリとキーボードの間で設定と学習語彙を共有することだけです。
+écritu にはネットワーク通信を行なうコードそのものがありません。入力した文字、変換履歴、学習した語彙が開発者を含む誰かに送られることは、仕組みの上でありえません。解析SDK・広告SDKも不使用。フルアクセスの用途は、本体アプリとキーボードの間で設定と学習語彙を共有することだけです。
 
 ■ ついでに、よく使う記号はかな入力の画面で
 『?』『!』『。』『・』は読点キーのフリックに、『〜』『ー』はわキーに、括弧はやキーに置きました。よく使う記号のために記号モードへ入る回数も減ります。やキー・わキーは『2段フリック』に対応し、() や「」などの括弧、旧仮名の『ゐ』『ゑ』まで指を離さずに入力できます。
@@ -72,7 +72,7 @@
 
 ## 審査ノート(Notes for Review 欄)
 
-App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもすべての入力・変換機能が動作します(学習と設定の反映だけが行われません)。ネットワーク通信を行うコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、AES-GCM で暗号化して端末内に保存します。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。キーボード拡張は約 400MB の変換辞書を同梱し、完全オフラインで動作します(ダウンロードサイズが大きいのはこのためです)。
+App Group を用いて本体アプリとキーボード拡張の間で設定・学習語彙を共有するためにフルアクセスを使用します。フルアクセスは任意で、オフでもすべての入力・変換機能が動作します(学習と設定の反映だけが行なわれません)。ネットワーク通信を行なうコードは含まれておらず、入力内容が端末外へ送信されることはありません。連絡先名の変換候補機能は初期設定でオフで、ユーザーが設定でオンにしたときだけ許可を求め、本体アプリのみが連絡先を読み取り、AES-GCM で暗号化して端末内に保存します。パスワード・ワンタイムコード・カード番号等のフィールドでは学習を行いません。キーボード拡張は約 400MB の変換辞書を同梱し、完全オフラインで動作します(ダウンロードサイズが大きいのはこのためです)。
 
 (英語で求められた場合)
 Full Access is used solely to share settings and the learned vocabulary between the container app and the keyboard extension via an App Group. Full Access is optional: every input and conversion feature works without it (only learning persistence and settings sync are skipped). The app contains no networking code; nothing typed ever leaves the device. The optional contact-name feature is off by default, asks for permission only when the user turns it on in Settings, reads contacts only in the container app, and stores an encrypted (AES-GCM) mapping on device. No learning occurs in password, one-time-code or credit-card fields. The keyboard extension bundles a ~400 MB conversion dictionary and works fully offline, which is why the download is large.
