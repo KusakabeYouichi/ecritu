@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # appstore/metadata.md から docs/store-preview/index.html を生成する(テスター向けのストア掲載プレビュー)。
-# スクリーンショットは appstore/screenshots/*.png を docs/store-preview/ へコピーして参照する
+# スクリーンショットは appstore/screenshots/*.png を docs/store-preview/ へコピーして参照する。実行: python3 appstore/build-store-preview.py
 import re, html, shutil, os, subprocess
 root=os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 md=open(f'{root}/appstore/metadata.md',encoding='utf-8').read()
