@@ -25,7 +25,7 @@ Safari のドメイン表示ピルもツールバーも写っていない。音�
 | 03 | 03-flags.png | 本文に🇭🇺を入れた状態で🇸🇰を長押し(Slovaquie バブル) |
 | 04 | 04-kaomoji-search.png | 顔文字検索 よみ「わーい」の候補 |
 | 05 | 05-number-unit.png | 書式化数値の単位 `36 200 000 hℓ`(sep mil + espace + 接頭辞 h + ℓ) |
-| 06 | 06-settings.png | 設定アプリのアクセントカラー/テーマカラー |
+| 06 | 06-settings.png | 設定アプリのアクセントカラー/テーマカラー(take 4、2026-09-19: ステータスバーの「◀ Safari」を消すため撮り直し) |
 
 **02 の設定**(撮影時だけ変更し、撮影後に既定へ戻した):
 `keyboardBackgroundTheme=sakura` / `flickDirectionProfile=apple` /
@@ -54,3 +54,17 @@ Safari のバーが残る。ホーム画面から起動すればスタンドア�
 - シミュレータ操作は CGEvent 自動化(scratchpad/shoot/cgclick.py ほか)で実施
 - ステータスバーは `xcrun simctl status_bar <UD> override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4`
 - 入力ページは上記「撮影用の入力ページ」を参照(`appstore/capture-page.html`)
+
+## 06 の撮り直し手順(2026-09-19、take 4)
+
+Xcode 27 には Simulator.app の UI が同梱されておらず、CGEvent/AppleScript での操作ができない。代わりに
+ContentView に一時的な scroll フック(環境変数 `ECRITU_SCREENSHOT_SCROLL_TO` があれば `.id("screenshot-anchor")`
+を付けた 数字ペイン配列 (horizontal) のカードへ 1.5/2.5/3.5/4.5 秒後に scrollTo。LazyVStack は 1 回だと行き過ぎる)を
+入れて撮り、撮影後に `git checkout -- App/ContentView.swift` で外した(コミットしない)。
+
+1. `xcrun simctl boot B907C0B8-…`(iPhone 17 Pro Max)→ `xcodebuild build -scheme écritu -destination "platform=iOS Simulator,id=…"`
+2. `xcrun simctl install … Debug-iphonesimulator/écritu.app`
+3. `xcrun simctl spawn … defaults write group.jp.or.pleiades.merope.ecritu accentPalette -string emeraude`(theme は bleu)
+4. `xcrun simctl status_bar … override --time 9:41 --batteryState charged --batteryLevel 100 --wifiBars 3 --cellularBars 4`
+5. `SIMCTL_CHILD_ECRITU_SCREENSHOT_SCROLL_TO=1 xcrun simctl launch … jp.or.pleiades.merope.ecritu` → 6 秒待って `simctl io … screenshot`
+アプリはホーム画面(simctl launch)から起動するので「◀ Safari」は出ない。
