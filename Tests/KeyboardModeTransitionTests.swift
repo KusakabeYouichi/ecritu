@@ -589,3 +589,47 @@ final class KeyboardModeTransitionTests: XCTestCase {
         )
     }
 }
+
+// 個体の解放検査(3107): 実機で KeyboardViewController が閉じたあとも 22 体、最長 14 時間 retain=5 で残っていた
+// (2026-09-19 のログ)。表示→非表示→参照を捨てる の後に deinit するかを Mac で直接見る。
+// 解放されなければプロセス内(écritu 側)に掴んでいるものがある
+final class KeyboardViewControllerLifecycleTests: XCTestCase {
+    @MainActor
+    func testControllerDeallocatesAfterDismissal() {
+        weak var weakController: KeyboardViewController?
+        weak var weakView: UIView?
+        autoreleasepool {
+            let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
+            let controller = KeyboardViewController()
+            weakController = controller
+            window.rootViewController = controller
+            window.makeKeyAndVisible()
+            controller.loadViewIfNeeded()
+            weakView = controller.view
+            controller.beginAppearanceTransition(true, animated: false)
+            controller.endAppearanceTransition()
+            RunLoop.main.run(until: Date().addingTimeInterval(0.8))
+            controller.beginAppearanceTransition(false, animated: false)
+            controller.endAppearanceTransition()
+            window.rootViewController = nil
+            window.isHidden = true
+        }
+        // 遅延実行(下線消し 900ms、bootstrap 2s、取り付け監視 5s)が [weak self] なら待たずに解放されるはずだが、
+        // 強参照で握っている場合に区別できるよう 6 秒まで待つ
+        let deadline = Date().addingTimeInterval(6)
+        while weakController != nil && Date() < deadline {
+            RunLoop.main.run(until: Date().addingTimeInterval(0.1))
+        }
+        XCTAssertNil(weakController, "KeyboardViewController が閉じたあとも解放されない(retain=\(weakController.map { CFGetRetainCount($0) } ?? 0))")
+        if let v = weakView {
+            print("LIFECYCLE view alive retain=\(CFGetRetainCount(v)) window=\(v.window != nil) superview=\(v.superview != nil) subviews=\(v.subviews.count) constraints=\(v.constraints.count) sublayers=\(v.layer.sublayers?.count ?? 0) nextResponder=\(String(describing: v.next))")
+            for c in v.constraints { print("LIFECYCLE constraint \(c)") }
+            for sv in v.subviews { print("LIFECYCLE subview \(type(of: sv)) retain=\(CFGetRetainCount(sv))") }
+        }
+        // root の UIInputView はテストホスト(アプリ)の入力系に掴まれて残る(_UIInputViewContent ×2、retain=4)。
+        // 実機の個体ごとの残留と同じ現象かは実機のメモリーグラフで確かめる。ここでは観察だけにして落とさない
+        if weakView != nil {
+            print("LIFECYCLE note: root UIInputView はコントローラー解放後も残る(テストホスト側の保持の可能性)")
+        }
+    }
+}
