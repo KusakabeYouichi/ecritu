@@ -26,6 +26,11 @@ extension KeyboardViewController {
         // 読み手(diagnosticsLogLines / アプリの decodeStringArray)は旧 JSON 形式も受け付ける。
         var diagnosticsLogTextBuffer: Data?
         var diagnosticsLogTextLineCount = 0
+        // 上 2 つと dirty/flushWorkItem を守るロック(3111)。追記はメインだけでなく候補生成キュー
+        // (初回変換の区間計測 e93b85ae)からも来る。無防備だと片方が enumerated で切り詰め位置を
+        // 数えている間にもう片方が先頭を落とし、removeSubrange が範囲外で SIGTRAP
+        // (実機 3106/3110 で 2 件、いずれも Data.removeSubrange ← appendDiagnosticsLogLine)。
+        let diagnosticsLogLock = NSLock()
         // 診断ログの defaults 保存を間引く(2704): 以前は1行ごとに320行を JSON 化(約130KB の
         // 一時確保+XPC)していた。非 critical 行は dirty にして5秒後にまとめて保存し、
         // critical/非表示/警告時は即時保存する
@@ -426,8 +431,10 @@ extension KeyboardViewController {
         // 実測: alive=10→37.0MB / 12→40.6MB / 15→46.7MB と1体あたり約1.3MB増えていた。
         // 再表示されたら次の追記時に defaults から読み直される(nil=未ロード)。
         persistBufferedKeyboardDiagnostics()
-        diagnosticsState.diagnosticsLogTextBuffer = nil
-        diagnosticsState.diagnosticsLogTextLineCount = 0
+        diagnosticsState.diagnosticsLogLock.withLock {
+            diagnosticsState.diagnosticsLogTextBuffer = nil
+            diagnosticsState.diagnosticsLogTextLineCount = 0
+        }
         #if DEBUG
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
         #endif
@@ -1075,32 +1082,49 @@ extension KeyboardViewController {
             flushDiagnosticsLogLinesIfDirty()
             return
         }
-        guard diagnosticsState.diagnosticsLogFlushWorkItem == nil else {
-            return
+        let state = diagnosticsState
+        let scheduled: DispatchWorkItem? = state.diagnosticsLogLock.withLock {
+            guard state.diagnosticsLogFlushWorkItem == nil else {
+                return nil
+            }
+            let work = DispatchWorkItem { [weak self] in
+                guard let self else { return }
+                self.diagnosticsState.diagnosticsLogLock.withLock {
+                    self.diagnosticsState.diagnosticsLogFlushWorkItem = nil
+                }
+                self.flushDiagnosticsLogLinesIfDirty()
+            }
+            state.diagnosticsLogFlushWorkItem = work
+            return work
         }
-        let work = DispatchWorkItem { [weak self] in
-            guard let self else { return }
-            self.diagnosticsState.diagnosticsLogFlushWorkItem = nil
-            self.flushDiagnosticsLogLinesIfDirty()
+        if let scheduled {
+            DispatchQueue.main.asyncAfter(deadline: .now() + Self.diagnosticsLogFlushDelay, execute: scheduled)
         }
-        diagnosticsState.diagnosticsLogFlushWorkItem = work
-        DispatchQueue.main.asyncAfter(deadline: .now() + Self.diagnosticsLogFlushDelay, execute: work)
     }
 
     func flushDiagnosticsLogLinesIfDirty() {
-        guard diagnosticsState.diagnosticsLogLinesDirty,
-            let sharedDefaults,
-            let text = diagnosticsState.diagnosticsLogTextBuffer else {
+        guard let sharedDefaults else {
             return
         }
-        saveDiagnosticsLogText(text, to: sharedDefaults)
-        diagnosticsState.diagnosticsLogLinesDirty = false
+        let state = diagnosticsState
+        let text: Data? = state.diagnosticsLogLock.withLock {
+            guard state.diagnosticsLogLinesDirty, let text = state.diagnosticsLogTextBuffer else {
+                return nil
+            }
+            state.diagnosticsLogLinesDirty = false
+            return text
+        }
+        if let text {
+            saveDiagnosticsLogText(text, to: sharedDefaults)
+        }
     }
 
     // メモリ内バッファを defaults へ確定させる(終了・警告・バックグラウンド遷移時)。
     func persistBufferedKeyboardDiagnostics() {
-        diagnosticsState.diagnosticsLogFlushWorkItem?.cancel()
-        diagnosticsState.diagnosticsLogFlushWorkItem = nil
+        diagnosticsState.diagnosticsLogLock.withLock {
+            diagnosticsState.diagnosticsLogFlushWorkItem?.cancel()
+            diagnosticsState.diagnosticsLogFlushWorkItem = nil
+        }
         flushDiagnosticsLogLinesIfDirty()
         guard let sharedDefaults else {
             return
@@ -1165,8 +1189,10 @@ extension KeyboardViewController {
         defaults.removeObject(forKey: SharedDefaultsKeys.keyboardDiagnosticsFlightRecorderEvents)
         // criticalLogLines は意図的に消さない(install 変更をまたいで重大イベントの
         // 証拠を残す。明示クリアはコンテナアプリの診断クリア操作から行う)
-        diagnosticsState.diagnosticsLogTextBuffer = nil
-        diagnosticsState.diagnosticsLogTextLineCount = 0
+        diagnosticsState.diagnosticsLogLock.withLock {
+            diagnosticsState.diagnosticsLogTextBuffer = nil
+            diagnosticsState.diagnosticsLogTextLineCount = 0
+        }
         #if DEBUG
         diagnosticsState.diagnosticsFlightRecorderBuffer = nil
         #endif
@@ -1265,35 +1291,40 @@ extension KeyboardViewController {
 
         // メモリ内バッファは改行区切りの連続テキスト(2707)。未ロードなら defaults から復元
         // (旧 JSON 形式ならテキストへ変換)。保存は critical 行のみ即時、他は5秒バッチ。
+        // バッファーの変異はロック下で行ない、defaults への書き込みは Data の写し(COW)で外に出す。
         let maxLineCount = 320
-        if diagnosticsState.diagnosticsLogTextBuffer == nil {
-            let existing = diagnosticsLogLines(from: sharedDefaults).suffix(maxLineCount)
-            var buffer = Data(capacity: 160 * 1024)
-            var count = 0
-            for line in existing {
-                Self.appendDiagnosticsLogLine(line, to: &buffer, lineCount: &count, maxLineCount: maxLineCount)
+        let state = diagnosticsState
+        let immediateSave: Data? = state.diagnosticsLogLock.withLock {
+            if state.diagnosticsLogTextBuffer == nil {
+                let existing = diagnosticsLogLines(from: sharedDefaults).suffix(maxLineCount)
+                var buffer = Data(capacity: 160 * 1024)
+                var count = 0
+                for line in existing {
+                    Self.appendDiagnosticsLogLine(line, to: &buffer, lineCount: &count, maxLineCount: maxLineCount)
+                }
+                state.diagnosticsLogTextBuffer = buffer
+                state.diagnosticsLogTextLineCount = count
             }
-            diagnosticsState.diagnosticsLogTextBuffer = buffer
-            diagnosticsState.diagnosticsLogTextLineCount = count
-        }
-        Self.appendDiagnosticsLogLine(
-            entry,
-            to: &diagnosticsState.diagnosticsLogTextBuffer!,
-            lineCount: &diagnosticsState.diagnosticsLogTextLineCount,
-            maxLineCount: maxLineCount
-        )
-        if critical {
-            if let text = diagnosticsState.diagnosticsLogTextBuffer {
-                saveDiagnosticsLogText(text, to: sharedDefaults)
-            }
-            diagnosticsState.diagnosticsLogLinesDirty = false
-            appendKeyboardDiagnosticsCriticalLog(entry, to: sharedDefaults)
-        } else if diagnosticsState.diagnosticsIsDeinitializing {
+            Self.appendDiagnosticsLogLine(
+                entry,
+                to: &state.diagnosticsLogTextBuffer!,
+                lineCount: &state.diagnosticsLogTextLineCount,
+                maxLineCount: maxLineCount
+            )
             // 解体中: 作業項目([weak self])を作らず、その場で保存する
-            saveDiagnosticsLogText(diagnosticsState.diagnosticsLogTextBuffer ?? Data(), to: sharedDefaults)
-            diagnosticsState.diagnosticsLogLinesDirty = false
+            if critical || state.diagnosticsIsDeinitializing {
+                state.diagnosticsLogLinesDirty = false
+                return state.diagnosticsLogTextBuffer ?? Data()
+            }
+            state.diagnosticsLogLinesDirty = true
+            return nil
+        }
+        if let immediateSave {
+            saveDiagnosticsLogText(immediateSave, to: sharedDefaults)
+            if critical {
+                appendKeyboardDiagnosticsCriticalLog(entry, to: sharedDefaults)
+            }
         } else {
-            diagnosticsState.diagnosticsLogLinesDirty = true
             scheduleDiagnosticsLogFlushIfNeeded()
         }
         sharedDefaults.set(entry, forKey: SharedDefaultsKeys.keyboardDiagnosticsLastEvent)

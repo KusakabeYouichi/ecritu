@@ -594,6 +594,34 @@ final class KeyboardModeTransitionTests: XCTestCase {
 // (2026-09-19 のログ)。表示→非表示→参照を捨てる の後に deinit するかを Mac で直接見る。
 // 解放されなければプロセス内(écritu 側)に掴んでいるものがある
 final class KeyboardViewControllerLifecycleTests: XCTestCase {
+    // 診断ログの追記はメインと候補生成キューの両方から来る(初回変換の区間計測 e93b85ae)。
+    // バッファーの切り詰め(320 行超)を同時に走らせると removeSubrange が範囲外で SIGTRAP
+    // (実機 3106/3110 で 2 件、数時間放置→数文字打つと落ちる)。ロック下でなければここで落ちる。
+    @MainActor
+    func testDiagnosticsLogAppendIsSafeAcrossThreads() throws {
+        let controller = KeyboardViewController()
+        guard controller.sharedDefaults != nil else {
+            throw XCTSkip("App Group の UserDefaults が無い環境")
+        }
+        let group = DispatchGroup()
+        let queues = (0..<4).map { DispatchQueue(label: "diag-race-\($0)") }
+        for (index, queue) in queues.enumerated() {
+            group.enter()
+            queue.async {
+                for i in 0..<1_500 {
+                    controller.appendKeyboardDiagnosticsLog("競合試験 q\(index) #\(i) " + String(repeating: "x", count: 40))
+                }
+                group.leave()
+            }
+        }
+        for i in 0..<1_500 {
+            controller.appendKeyboardDiagnosticsLog("競合試験 main #\(i)")
+        }
+        XCTAssertEqual(group.wait(timeout: .now() + 60), .success)
+        controller.persistBufferedKeyboardDiagnostics()
+        XCTAssertLessThanOrEqual(controller.diagnosticsState.diagnosticsLogTextLineCount, 320)
+    }
+
     @MainActor
     func testControllerDeallocatesAfterDismissal() {
         weak var weakController: KeyboardViewController?
