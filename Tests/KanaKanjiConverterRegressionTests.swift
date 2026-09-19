@@ -17791,6 +17791,24 @@ extension KanaKanjiConverterRegressionTests {
         }
     }
 
+    // 3110(ユーザ報告): わたしがうちまちがえる→私がうち間違える/家間違える。打ち間違える は Sudachi に無い(打ち間違い のみ)ので
+    // misc に一段登録。同型で無い 打ち終える/打ち始める/打ち終わる/打ち損じる も
+    func testRegressionUserReports3110() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary(includeSuppression: true)
+
+        for mode in [KanaKanjiCandidateSourceMode.normalise, .surface] {
+            let label = "mode=\(mode.rawValue)"
+            XCTAssertEqual(converter.multiClauseCandidates(for: "わたしがうちまちがえる", systemCandidateMode: mode).first, "私が打ち間違える", label)
+            for (reading, expected) in [("うちまちがえる", "打ち間違える"), ("うちまちがえた", "打ち間違えた"), ("うちまちがえて", "打ち間違えて"),
+                                        ("うちおわった", "打ち終わった"), ("うちおえた", "打ち終えた")] {
+                XCTAssertEqual(converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first, expected, label)
+            }
+            // 名詞の うち(家)は変えない
+            XCTAssertEqual(converter.multiClauseCandidates(for: "うちのなか", systemCandidateMode: mode).first, "うちの中", label)
+        }
+    }
+
     // 3109(ユーザ報告): ふつうにつかえるわけ→普通に仕える訳。LM は に→仕える 4426 < に→使える 4467(Wikipedia 偏り)で、文末の
     // EOS 連接が無い位置では 仕える が 41 差で勝つ。に→使える に加点し、仕える の典型目的語(神/主人/王…)は 仕 へ寄せる。
     // わけ は述語直後をかなに(形式名詞)
