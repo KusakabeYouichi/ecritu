@@ -2097,8 +2097,10 @@ extension KanaKanjiConverter {
                 base = min(base, Self.multiClauseKanaAdverbCost)
             }
             // 述語の直後の引用の って はかな単位で安く(定数コメント参照。3086)
-            // prev は辞書形述語に限る。活用派生(下がっちゃっ)まで許すと 下がっちゃ+って+ルネ の分割を安くして退行した
-            if isKanaIdentity, prevIsDictionaryFormPredicate, !prevIsKanaIdentity, reading == "って" {
+            // prev は辞書形述語に限る。活用派生(下がっちゃっ)まで許すと 下がっちゃ+って+ルネ の分割を安くして退行した。
+            // かな識別でも辞書形述語(かな正書の い形容詞 いい/うまい。3108)なら対象 — 除外していると 善い だけが割引を受け
+            // いいって→善いって に逆転していた(ユーザ報告 3112。3086 導入時はかな識別に述語印が無かった)
+            if isKanaIdentity, prevIsDictionaryFormPredicate, reading == "って" {
                 base = min(base, Self.multiClauseQuotativeTteAfterPredicateCost)
             }
             // て/ても の直後の いる系はかなが正書(定数コメント参照。3086)。漢字表層(居ない/射ない/以内)を減点し、
