@@ -599,8 +599,8 @@ final class KeyboardViewControllerLifecycleTests: XCTestCase {
     // (実機 3106/3110 で 2 件、数時間放置→数文字打つと落ちる)。ロック下でなければここで落ちる。
     @MainActor
     func testDiagnosticsLogAppendIsSafeAcrossThreads() throws {
-        let controller = KeyboardViewController()
-        guard controller.sharedDefaults != nil else {
+        var controllerHolder: KeyboardViewController? = KeyboardViewController()
+        guard let controller = controllerHolder, controller.sharedDefaults != nil else {
             throw XCTSkip("App Group の UserDefaults が無い環境")
         }
         let group = DispatchGroup()
@@ -620,6 +620,9 @@ final class KeyboardViewControllerLifecycleTests: XCTestCase {
         XCTAssertEqual(group.wait(timeout: .now() + 60), .success)
         controller.persistBufferedKeyboardDiagnostics()
         XCTAssertLessThanOrEqual(controller.diagnosticsState.diagnosticsLogTextLineCount, 320)
+        controllerHolder = nil
+        // 個体の deinit が張るスパイク窓(1.2 秒)を、次のテスト(MemoryForensicsTests の窓計数)へ漏らさない
+        RunLoop.main.run(until: Date().addingTimeInterval(1.5))
     }
 
     @MainActor
