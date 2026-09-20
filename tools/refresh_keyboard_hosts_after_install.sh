@@ -30,12 +30,20 @@ HOST_PATTERNS=(
   "Spotlight.app/Spotlight"
 )
 
+# 実行記録(スキームの pre-action は出力を捨てるので、効いたかどうかをここに残す。2026-09-20)
+LOG_DIR="${HOME}/Library/Logs/ecritu"
+mkdir -p "${LOG_DIR}" 2>/dev/null && exec > >(tee -a "${LOG_DIR}/keyboard-hosts.log") 2>&1
+echo "[keyboard-hosts] $(date '+%Y-%m-%d %H:%M:%S') start"
 DEVICE="${1:-}"
 if [[ -z "${DEVICE}" ]]; then
+  # 実機の行だけを見る。以前は UUID 形式(8-4-4-4-12)で拾っていたため、実機の UDID
+  # (8-16 形式 00008120-…)に合わず、起動中のシミュレーター(connected 表示)を掴んで
+  # 実機のホストが 1 つも終了されていなかった(2026-09-20 統合ログ: メモが旧 UUID で
+  # 「no such plugin (uuid not found)」×3→純正フォールバック)。
   DEVICE=$(xcrun devicectl list devices 2>/dev/null \
-    | awk '/connected/ {
+    | awk '/connected/ && /physical/ {
         for (i = 1; i <= NF; i++)
-          if ($i ~ /^[0-9A-Fa-f]{8}(-[0-9A-Fa-f]{4}){3}-[0-9A-Fa-f]{12}$/) { print $i; exit }
+          if ($(i + 1) == "(UDID)") { print $i; exit }
       }')
 fi
 if [[ -z "${DEVICE}" ]]; then
@@ -54,7 +62,9 @@ for pattern in "${HOST_PATTERNS[@]}"; do
   while IFS= read -r pid; do
     [[ -n "${pid}" ]] || continue
     found=1
-    if xcrun devicectl device process terminate --device "${DEVICE}" --pid "${pid}" >/dev/null 2>&1; then
+    if [[ -n "${KEYBOARD_HOSTS_DRY_RUN:-}" ]]; then
+      echo "[keyboard-hosts] dry-run: would terminate ${pattern##*/} (pid ${pid})"
+    elif xcrun devicectl device process terminate --device "${DEVICE}" --pid "${pid}" >/dev/null 2>&1; then
       echo "[keyboard-hosts] terminated ${pattern##*/} (pid ${pid})"
     else
       echo "[keyboard-hosts] terminate failed ${pattern##*/} (pid ${pid})"
