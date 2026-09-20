@@ -7,7 +7,7 @@ import UIKit
 
 struct ContentView: View {
     static let sharedDefaults = UserDefaults(suiteName: SettingsKeys.appGroupID)
-    private static let editionUpdatedAtRaw: String = "20260920102850"
+    private static let editionUpdatedAtRaw: String = "20260920105245"
     static let diagnosticsTimestampFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
@@ -1527,6 +1527,10 @@ struct ContentView: View {
                 clearKeyboardDiagnosticsIfInstallChanged()
                 recordKeyboardExtensionRegistrationState()
                 loadKeyboardDiagnosticsState()
+                // 学習語彙は拡張が書く唯一の語彙リスト。起動時のスナップショットのままだと、
+                // アプリを背景に置いて打っている間の学習(ぴの→ピノ)が一覧に出ず「学習されていないのに
+                // 候補順が変わった」ように見える(ユーザ報告 3113)。追加/抑制はこのアプリしか書かないので対象外
+                loadLearnedDictionaryEntries()
 
                 if shouldUseContactCandidates {
                     syncContactCandidatesCacheFromContainerApp()
