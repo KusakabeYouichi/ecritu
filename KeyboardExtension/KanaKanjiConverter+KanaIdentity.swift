@@ -625,8 +625,11 @@ extension KanaKanjiConverter {
         // 形容詞化の ない 系を剥がした語幹が「辞書のかな語」かつ「LM でかな優位」なら
         // かなが正書(もったいない: もったい 7272<勿体 7715。読み全体は辞書/LM に無い)。
         // 知らない 等は語幹の漢字(白/知ら…)が LM 優位なので発火しない(2406)。
+        // 読み全体が辞書の用言の活用形(たりない=足りる の未然+ない)なら対象外(3112): 語幹 たり は
+        // 並立助詞のかなが LM 優位で、足りない より かな たりない が先頭に残っていた
         for tail in ["なかった", "なくて", "ない"]
-        where normalized.count > tail.count + 1 && normalized.hasSuffix(tail) {
+        where normalized.count > tail.count + 1 && normalized.hasSuffix(tail)
+            && !deinflectsToDictionaryPredicate(normalized) {
             let stem = String(normalized.dropLast(tail.count))
             let stemCandidates = systemCandidates(for: stem, mode: .lesDeux)
             guard stemCandidates.contains(stem) else { continue }
