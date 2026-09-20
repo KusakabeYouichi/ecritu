@@ -36,6 +36,7 @@ TMP_SOURCES="$ROOT_DIR/tmp/kana_kanji_candidate_sources.json"
 TMP_INFLECTIONS="$ROOT_DIR/tmp/kana_kanji_inflection_dictionary.json"
 TMP_COSTS="$ROOT_DIR/tmp/kana_kanji_word_costs.json"
 TMP_PERSON_NAMES="$ROOT_DIR/tmp/kana_kanji_person_names.json"
+REF_PERSON_NAMES_ADD="$ROOT_DIR/references/person_names_add.json"
 TMP_WORD_LM="$ROOT_DIR/tmp/word_lm.json"
 TMP_EMOJI_READING="$ROOT_DIR/tmp/EmojiReadingVocab.json"
 TMP_LATIN_SUPPL="$ROOT_DIR/tmp/LatinSuggestionSupplemental.txt"
@@ -310,6 +311,10 @@ needs_sqlite_regeneration() {
     return 0
   fi
 
+  if [[ -f "$REF_PERSON_NAMES_ADD" && "$REF_PERSON_NAMES_ADD" -nt "$TMP_SQLITE" ]]; then
+    return 0
+  fi
+
   if [[ -f "$TMP_PERSON_NAMES" && "$TMP_PERSON_NAMES" -nt "$TMP_SQLITE" ]]; then
     return 0
   fi
@@ -389,6 +394,12 @@ regenerate_sqlite_if_possible() {
 
   if [[ -f "$TMP_PERSON_NAMES" ]]; then
     sqlite_args+=(--person-names-json "$TMP_PERSON_NAMES")
+  fi
+
+  # Sudachi に無い人名の補い(桃原(とうばる)=姓 等。敬称の前の人名優先が Sudachi 掲載の 当原 だけに効き
+  # 桃原さん が負けていた。3112)。reading→candidate→姓/名 の JSON、dictionary_entries に載る候補だけ有効
+  if [[ -f "$REF_PERSON_NAMES_ADD" ]]; then
+    sqlite_args+=(--person-names-json "$REF_PERSON_NAMES_ADD")
   fi
 
   if [[ -f "$TMP_SECOND_INFLECTIONS" ]]; then
