@@ -18673,4 +18673,53 @@ extension KanaKanjiConverterRegressionTests {
             }
         }
     }
+
+    // 3112: ユーザ報告 4 件。学習リセット(3110)で表面化した既存の並び 2 件(とうばるさん/ほうが)、
+    // 09-18 の 述語+って 割引(3086)による退行 1 件(いいって)、活用形への keepKana 誤発火 1 件(たりない)
+    func testRegression3112QuotativeTteAfterKanaAdjectiveKeepsKana() throws {
+        try prepareRealLMDictionary()
+        // 3086 の割引が漢字述語(善い)だけに効き、かな識別の い形容詞(いい。3108 で述語印)が外れていた
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いいって", systemCandidateMode: .surface).first, "いいって")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "いいってことだよ", systemCandidateMode: .surface).first, "いいってことだよ")
+    }
+
+    func testRegression3112HougaCuratedOrderWins() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        // ほうが は misc curated(ほうが→方が)なのに kanaHarvestDemotedReadings(2902)が漢字 3 語を持ち上げ
+        // {萌芽, 奉加, 奉賀, 方が, ほうが} になっていた。curated の並びを正とし表から外す
+        let list = converter.candidates(for: "ほうが", limit: 8, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(list.prefix(2)), ["ほうが", "方が"], "list=\(list)")
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "ほうが"))
+    }
+
+    func testRegression3112TarinaiDoesNotKeepKanaLeading() throws {
+        try prepareRealLMDictionary()
+        // ない 剥がしの語幹 たり(並立助詞のかなが LM 優位)で keepKana が立ち、足りない より かな が先頭だった。
+        // 読み全体が用言の活用形(足りる)なら対象外
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "たりない"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "たりなかった"))
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "しらない"))
+        // 防護: 派生専用のかな語(勿体+ない の合成のみ)は従来どおり
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "もったいない"))
+        let list = converter.candidates(for: "たりない", limit: 8, systemCandidateMode: .surface)
+        XCTAssertTrue(list.contains("足りない"), "list=\(list)")
+    }
+
+    func testRegression3112ToubaruSanPrefersSupplementedSurname() throws {
+        try prepareRealLMDictionary()
+        // 敬称の前は人名優先(2845)が Sudachi 人名表の 当原 だけに効き、辞書 rank0 の 桃原(沖縄の姓、Sudachi 未掲載)が
+        // 負けていた。references/person_names_add.json で 桃原=姓 を補う
+        XCTAssertEqual(converter.multiClauseCandidates(for: "とうばるさん", systemCandidateMode: .surface).first, "桃原さん")
+        XCTAssertEqual(converter.candidates(for: "とうばる", limit: 4, systemCandidateMode: .surface).first, "桃原")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "きたがわさん", systemCandidateMode: .surface).first, "北川さん")
+    }
+
+    func testRegression3112TaVariantCharacterIsSuppressible() {
+        // 夛(多 の異体字)が表に無く、たりない の 夛利ない が旧字体・異体字の抑制を素通りしていた
+        XCTAssertEqual(
+            KanaKanjiConverter.standardizedScriptVariantSurface("夛利ない", categories: ScriptVariantSuppressionCategory.defaultEnabled),
+            "多利ない"
+        )
+    }
 }
