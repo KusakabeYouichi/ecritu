@@ -143,10 +143,21 @@ extension KeyboardViewController {
         // 空を返すと1打鍵ごとに [消去→変換→表示] のチラつきになる(連文節導入以降の体感悪化の原因)。
         // 古い候補のタップ事故は handleConversionCandidateSelection 側の鮮度ガードで防ぐ。
         if let cached = settledCandidatePresentation, !cached.candidates.isEmpty {
-            // 前の読みのかなそのもの(かな識別: これぐらいか)は残さない(3043、ユーザ報告)。新しい未確定(これぐらいが)と
-            // 一致しないので かなチップでなく変換候補の見た目で 30〜90ms 描かれ、結果が来て消える「ちらつき」になっていた
+            // 前の読みのかなそのもの(かな識別: これぐらいか)は、新しい未確定(これぐらいが)と一致しないので
+            // かなチップでなく変換候補の見た目で描かれてしまう(3043、ユーザ報告)。ただし **取り除くと列が左へ詰まり**、
+            // 打鍵ごとに 1 コマ(約 50ms)だけ並びが動いて「一度書いて書き直す」ちらつきに見える(録画のコマ送りで確認。3134)。
+            // 位置は保ったまま、今打っているかなへ差し替える ─ 結果にもほぼ必ず出る文字列なので消えたようには見えない
             let previousReading = settledCandidatePresentationKey?.reading
-            var carried = cached.candidates.filter { $0 != cached.composingText && $0 != previousReading }
+            var seen = Set<String>()
+            var carried: [String] = []
+            for candidate in cached.candidates {
+                let replaced = (candidate == cached.composingText || candidate == previousReading)
+                    ? composingRawText
+                    : candidate
+                if seen.insert(replaced).inserted {
+                    carried.append(replaced)
+                }
+            }
             // 残せる候補が無いとき列を空にすると、行の畳み込みで未確定ラベルと先頭候補が瞬く(ユーザ報告 3043 の 2 巡目:
             // く→ぐ/か/が の打鍵)。新しい読みのかな(結果でもほぼ必ず出る)を仮に置いて行の形を保つ
             if carried.isEmpty {
