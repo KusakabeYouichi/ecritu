@@ -843,6 +843,20 @@ struct KaomojiCategoryKeyButton: View {
 // セルを閉じるまで保持していた)。
 
 /// 絵文字パネルのグリッド。セクションの間に区切り線(ヘッダー)を挟む。
+// UIKit のスクロールビューにもスクロール縁の効果(Liquid Glass のぼかし)が付く(iOS 26 で追加、実測で
+// 描かれ始めたのは 27)。SwiftUI 側の scrollEdgeEffectHidden は UIViewRepresentable の中の
+// UIScrollView には伝播しないため、顔文字・絵文字の面(UICollectionView)だけ 3122 の対処が効かなかった
+// (ユーザ報告)。UIKit 側は 4 辺それぞれの hidden を立てる
+@MainActor
+func hideScrollEdgeEffects(_ scrollView: UIScrollView) {
+    if #available(iOS 26.0, *) {
+        scrollView.topEdgeEffect.isHidden = true
+        scrollView.bottomEdgeEffect.isHidden = true
+        scrollView.leftEdgeEffect.isHidden = true
+        scrollView.rightEdgeEffect.isHidden = true
+    }
+}
+
 struct EmojiGridCollectionView: UIViewRepresentable {
     struct Section: Equatable {
         let emojis: [String]
@@ -876,6 +890,7 @@ struct EmojiGridCollectionView: UIViewRepresentable {
         view.showsHorizontalScrollIndicator = false
         view.alwaysBounceVertical = true
         view.delaysContentTouches = false
+        hideScrollEdgeEffects(view)
         // 国旗の吹き出しが最上段で見切れないようクリップしない(旧 SymbolScrollClipDisabledModifier 相当)
         view.clipsToBounds = false
         view.register(EmojiGridCell.self, forCellWithReuseIdentifier: EmojiGridCell.reuseIdentifier)
@@ -1247,6 +1262,7 @@ struct KaomojiGridCollectionView: UIViewRepresentable {
         view.showsHorizontalScrollIndicator = false
         view.alwaysBounceVertical = true
         view.delaysContentTouches = false
+        hideScrollEdgeEffects(view)
         view.register(KaomojiGridCell.self, forCellWithReuseIdentifier: KaomojiGridCell.reuseIdentifier)
         view.dataSource = context.coordinator
         view.delegate = context.coordinator
