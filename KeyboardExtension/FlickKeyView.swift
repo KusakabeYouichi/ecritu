@@ -141,6 +141,8 @@ struct FlickKeyView: View {
     @State private var longPressIsActive = false
     @State private var highlightedLongPressIndex = 0
     @State private var latestTouchLocationY: CGFloat = 0
+    // 調査用(3130): 指が触れてから押下表示(緑)が出るまでの遅れを測る。原因判明後に外す
+    @State private var touchBeganWallClock: CFAbsoluteTime = 0
     @State private var longPressWorkItem: DispatchWorkItem?
     @State private var stuckTouchWatchdogWorkItem: DispatchWorkItem?
     @State private var didTriggerLongPressAction = false
@@ -269,6 +271,15 @@ struct FlickKeyView: View {
         )
         .onPreferenceChange(FlickKeyFramePreferenceKey.self) { newValue in
             keyFrameInGlobal = newValue
+        }
+        .onChange(of: isTouching) { touching in
+            #if DEBUG
+            // 調査用(3130): 触ってから押下表示が出るまで。touchForensicsLabel のあるキーだけ
+            if touching, let touchForensicsLabel, touchBeganWallClock > 0 {
+                let ms = Int((CFAbsoluteTimeGetCurrent() - touchBeganWallClock) * 1000)
+                KeyboardStuckTouchDiagnostics.onTouchForensics?("押下表示まで \(touchForensicsLabel) \(ms)ms")
+            }
+            #endif
         }
         .onChange(of: isGestureInProgress) { inProgress in
             if !inProgress {
@@ -647,6 +658,7 @@ struct FlickKeyView: View {
             }
             .onChanged { value in
                 if !isTouching {
+                    touchBeganWallClock = CFAbsoluteTimeGetCurrent()
                     onTouchStateChanged(true)
                     didTriggerLongPressAction = false
                     scheduleLongPressIfNeeded()
