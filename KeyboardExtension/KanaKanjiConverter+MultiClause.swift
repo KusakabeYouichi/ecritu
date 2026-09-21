@@ -1984,6 +1984,14 @@ extension KanaKanjiConverter {
                 containsKanji(prev) || Self.isKatakanaString(prev) || prev.allSatisfy({ $0.isNumber }) {
                 penalty -= Self.multiClauseGotoSuffixAfterNounBonus
             }
+            // 名詞+欄 / 名詞+製 の接尾(定数コメント参照。3123)
+            if readingID == SID.らん, surfaceID == SID.欄,
+                !prevIsBOS,
+                !prevIsInflectionDerived,
+                prev.count >= 2,
+                containsKanji(prev) || Self.isKatakanaString(prev) {
+                penalty -= Self.multiClauseNounKanjiSuffixAfterNounBonus
+            }
             // 接尾の 屋 は bigram 実績のある相手にしか付かない(定数コメント参照。2873)
             if surfaceID == SID.屋, readingID == SID.や,
                 !prevIsBOS,
