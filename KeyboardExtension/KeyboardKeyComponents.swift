@@ -876,14 +876,15 @@ struct LongPressVerticalCandidatePanel: View {
         return n * cellHeight + max(0, n - 1) * spacing + verticalPadding * 2
     }
 
-    // キーの上辺(ローカル座標 y = 0)より上に積んだ盤の何段目かを、指の y から決める。
-    // index 0 は最下段(指に近い側)
-    static func index(forLocalY y: CGFloat, count: Int) -> Int {
+    // 何段目かは「長押しが成立した位置からの上への移動量」で決める(3125)。キーの局所座標は
+    // 盤が出た瞬間に ZStack の高さが伸びて原点がずれる(実測で半〜2 段のずれ)ので使えない。
+    // index 0 は最下段(指を動かさない位置)。1 段ぶん(37pt)上げるごとに 1 つ進む
+    static func index(forUpwardDistance distance: CGFloat, count: Int) -> Int {
         guard count > 0 else {
             return 0
         }
         let slot = cellHeight + spacing
-        let raw = Int(floor((-y - gap) / slot))
+        let raw = Int(round(distance / slot))
         return max(0, min(count - 1, raw))
     }
 
@@ -940,8 +941,11 @@ struct ReturnToKanaPaletteKey: View {
     @State private var highlightedIndex = 0
     @State private var longPressWorkItem: DispatchWorkItem?
     @State private var keyHeight: CGFloat = 0
+    @State private var latestLocationY: CGFloat = 0
+    @State private var anchorLocationY: CGFloat = 0
 
-    private static let longPressDelay: TimeInterval = 0.4
+    // 面の切り替えは「選び直し」ではないので待たせない(ユーザ指定 3125)
+    private static let longPressDelay: TimeInterval = 0.2
 
     var body: some View {
         ZStack {
@@ -982,9 +986,10 @@ struct ReturnToKanaPaletteKey: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
+                    latestLocationY = value.location.y
                     if paletteIsActive {
                         highlightedIndex = LongPressVerticalCandidatePanel.index(
-                            forLocalY: value.location.y,
+                            forUpwardDistance: anchorLocationY - value.location.y,
                             count: candidates.count
                         )
                         return
@@ -995,6 +1000,7 @@ struct ReturnToKanaPaletteKey: View {
                     let work = DispatchWorkItem {
                         paletteIsActive = true
                         highlightedIndex = 0
+                        anchorLocationY = latestLocationY
                     }
                     longPressWorkItem = work
                     DispatchQueue.main.asyncAfter(deadline: .now() + Self.longPressDelay, execute: work)
