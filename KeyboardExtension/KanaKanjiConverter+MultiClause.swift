@@ -2123,7 +2123,7 @@ extension KanaKanjiConverter {
             }
             // 否定の ん で終わる派生述語+格助詞(定数コメント参照。3120)
             if isKanaIdentity, prevIsInflectionDerived, prev.hasSuffix("ん"), prevReading?.hasSuffix("ん") == true,
-                readingID == SID.に || readingID == SID.を || readingID == SID.へ || readingID == SID.が || readingID == SID.は {
+                let head = reading.first, Self.multiClauseNegativeNFollowingParticleHeads.contains(head) {
                 penalty += Self.multiClauseNegativeNDerivedBeforeCaseParticlePenalty
             }
             // 行き先の に/へ 直後のかな いく 族は 行く が正書(定数コメント参照。3119)
@@ -3708,10 +3708,39 @@ extension KanaKanjiConverter {
         // 選んだ結果(の+こと+です 等、かなが正書の機能語句)。素通りエコーではないので
         // 抑制しない(のことです が の事です に負けて最良を失うのを防ぐ)。
         let allNodesAreDictWords = !pathIndices.contains(where: { !nodes[$0].isDictWord })
+        // 上の 2 つの緩い免除(終助詞で終わる/全ノード辞書語)は、経路の内容語のかなが正書のときに限る(3122)。
+        // ちかくか は ちかく(辞書にかな収穫あり・seed ではかなが末尾=近く が正書)+か で両方の免除に当たり、
+        // 全かな素通りが最良のまま返っていた。提示層は multiClauseLeadingKana で先頭を維持するので、
+        // keepKana を false にしただけでは実機の並びが変わらなかった。判定は内容語(2 字以上のかな識別で
+        // curated でも活用派生でも述語でもないノード)が 1 つでも非正書なら免除を取り消す
+        func kanaEchoHasNonOrthographicKanaContent() -> Bool {
+            for index in pathIndices {
+                let node = nodes[index]
+                guard node.isKanaIdentity, node.reading.count >= 2, !node.isCurated else {
+                    continue
+                }
+                // seed 宣言のある読みは人手の並びが正。かなが先頭でなければ非正書(ちかく=近く が先頭)。
+                // ちかく は 近い の連用形でもあるため活用派生ノードとして立つ ─ 派生を一律に見逃すと素通りする
+                if let seeded = KanaKanjiSeedDictionary.seed[node.reading] {
+                    if seeded.first != node.reading {
+                        return true
+                    }
+                    continue
+                }
+                // 宣言の無い読みは触らない。辞書のかな有無で判定すると でしたっけ(でした は辞書に無い)まで
+                // 巻き込んで候補が消える(実測 1 件)
+            }
+            return false
+        }
+        let nonOrthographicKanaContent = (lastIsKanaFinalParticle || allNodesAreDictWords)
+            && joined == normalized
+            && kanaEchoHasNonOrthographicKanaContent()
+        let lastIsKanaFinalParticleEffective = lastIsKanaFinalParticle && !nonOrthographicKanaContent
+        let allNodesAreDictWordsEffective = allNodesAreDictWords && !nonOrthographicKanaContent
         let suppressAllKanaBest = joined == normalized
             && !pathIndices.contains(where: { nodes[$0].isCurated })
-            && !lastIsKanaFinalParticle
-            && !allNodesAreDictWords
+            && !lastIsKanaFinalParticleEffective
+            && !allNodesAreDictWordsEffective
             // て/で+授受補助動詞のかな連鎖で終わる全かな(してくれないかな 等)はかなが正書。
             // b4 常設ノードが くれないかな を1スパン化すると末尾ノードの終助詞免除が
             // 外れるため、joined 全体の一般判定で免除する(keepKana 側と同じ述語)
