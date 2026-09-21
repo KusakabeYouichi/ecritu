@@ -72,6 +72,7 @@ struct KanjiCharacterGridCollectionView: UIViewRepresentable {
         view.showsHorizontalScrollIndicator = false
         view.alwaysBounceVertical = true
         view.delaysContentTouches = false
+        hideScrollEdgeEffects(view)
         view.register(KanjiCharacterGridCell.self, forCellWithReuseIdentifier: KanjiCharacterGridCell.reuseIdentifier)
         view.register(KanjiTotalStrokeMarkerGridCell.self, forCellWithReuseIdentifier: KanjiTotalStrokeMarkerGridCell.reuseIdentifier)
         view.dataSource = context.coordinator

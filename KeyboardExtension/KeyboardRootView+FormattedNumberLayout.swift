@@ -1196,6 +1196,7 @@ struct FormattedNumberUnitWheel: UIViewRepresentable {
 
     func makeUIView(context: Context) -> UnitWheelScrollView {
         let view = UnitWheelScrollView()
+        hideScrollEdgeEffects(view)
         view.symbolColor = UIColor(KeyboardThemePalette.keyLabel)
         view.readingColor = UIColor(KeyboardThemePalette.keyLabel).withAlphaComponent(0.6)
         view.onLiveChange = onLive
