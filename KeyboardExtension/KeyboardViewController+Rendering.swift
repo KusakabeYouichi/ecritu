@@ -357,6 +357,11 @@ extension KeyboardViewController {
         }
     }
 
+    // 根に被せる修飾(定義コメント参照。3122)
+    func makeKeyboardRootHostView(from configuration: RenderConfiguration) -> KeyboardRootHostView {
+        makeRootView(from: configuration).modifier(KeyboardScrollEdgeEffectHiddenModifier())
+    }
+
     func makeRootView(from configuration: RenderConfiguration) -> KeyboardRootView {
         var rootView = KeyboardRootView(
             onTextInput: { [weak self] text in
