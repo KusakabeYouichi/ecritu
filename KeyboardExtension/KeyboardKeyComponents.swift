@@ -875,6 +875,8 @@ struct LongPressVerticalCandidatePanel: View {
     ]
 
     static let cellHeight: CGFloat = 34
+    static let horizontalPadding: CGFloat = 8
+    static var panelWidth: CGFloat { 104 + horizontalPadding * 2 }
     static let spacing: CGFloat = 3
     static let verticalPadding: CGFloat = 3
     // 盤の下端とキーの上辺の間隔(押している指で最下段が隠れない分)
@@ -929,7 +931,7 @@ struct LongPressVerticalCandidatePanel: View {
                     )
             }
         }
-        .padding(.horizontal, 8)
+        .padding(.horizontal, Self.horizontalPadding)
         .padding(.vertical, Self.verticalPadding)
         .background(
             RoundedRectangle(cornerRadius: 10, style: .continuous)
@@ -947,6 +949,13 @@ struct LongPressVerticalCandidatePanel: View {
 // 面の下段の あい(かなへ戻る)キー。タップで戻り、長押しで面選択のパレットを出す(3124)。
 // ActionKeyButton に機能を足すと、あのキーは盤面のあちこちで使われていて型が膨らむ(本体の注記参照)ため、
 // 見た目だけ合わせた専用のキーにしている
+private struct ReturnToKanaKeyFramePreferenceKey: PreferenceKey {
+    static var defaultValue: CGRect = .zero
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
+    }
+}
+
 struct ReturnToKanaPaletteKey: View {
     let title: String
     var fontSize: CGFloat = 16
@@ -958,12 +967,23 @@ struct ReturnToKanaPaletteKey: View {
     @State private var paletteIsActive = false
     @State private var highlightedIndex = 0
     @State private var longPressWorkItem: DispatchWorkItem?
-    @State private var keyHeight: CGFloat = 0
+    @State private var keyFrame: CGRect = .zero
     @State private var latestLocationY: CGFloat = 0
     @State private var anchorLocationY: CGFloat = 0
 
     // 面の切り替えは「選び直し」ではないので待たせない(ユーザ指定 3125)
     private static let longPressDelay: TimeInterval = 0.2
+
+    // 盤が画面の左端からはみ出さないよう内側へ寄せる(3127)。左端のキー(あい)で盤の左が切れていた
+    private var paletteOffsetX: CGFloat {
+        guard keyFrame.width > 0 else {
+            return 0
+        }
+        let panelWidth = LongPressVerticalCandidatePanel.panelWidth
+        let leftInset: CGFloat = 8
+        let leftEdge = keyFrame.midX - panelWidth * 0.5
+        return leftEdge < leftInset ? leftInset - leftEdge : 0
+    }
 
     var body: some View {
         ZStack {
@@ -986,7 +1006,8 @@ struct ReturnToKanaPaletteKey: View {
                     highlightedIndex: highlightedIndex
                 )
                     .offset(
-                        y: -(keyHeight * 0.5
+                        x: paletteOffsetX,
+                        y: -(keyFrame.height * 0.5
                             + LongPressVerticalCandidatePanel.gap
                             + LongPressVerticalCandidatePanel.panelHeight(count: candidates.count) * 0.5)
                     )
@@ -998,9 +1019,10 @@ struct ReturnToKanaPaletteKey: View {
         .accessibilityLabel(title)
         .background(
             GeometryReader { proxy in
-                Color.clear.onAppear { keyHeight = proxy.size.height }
+                Color.clear.preference(key: ReturnToKanaKeyFramePreferenceKey.self, value: proxy.frame(in: .global))
             }
         )
+        .onPreferenceChange(ReturnToKanaKeyFramePreferenceKey.self) { keyFrame = $0 }
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
