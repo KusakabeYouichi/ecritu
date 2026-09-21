@@ -883,7 +883,7 @@ struct LongPressVerticalCandidatePanel: View {
         "記号": Icon("⌘", 15),
         "絵文字": Icon("☺︎", 22),
         "顔文字": Icon("^_^", 13),
-        "部首": Icon("熙", 18, mincho: true),
+        "部首": Icon("熙", 16, mincho: true),
         "書式化": Icon("1,000", 11)
     ]
     static let iconColumnWidth: CGFloat = 38
