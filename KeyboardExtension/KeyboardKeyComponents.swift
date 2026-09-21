@@ -863,16 +863,30 @@ func hideScrollEdgeEffects(_ scrollView: UIScrollView) {
 struct LongPressVerticalCandidatePanel: View {
     let candidates: [String]
     let highlightedIndex: Int
-    var cellWidth: CGFloat = 104
+    var cellWidth: CGFloat = 116
 
-    // 名前だけだと分かりにくいので、面のアイコン(キーに出ているもの)を頭に付ける(ユーザ指定 3126)
-    static let iconByLabel: [String: String] = [
-        "記号": "⌘",
-        "絵文字": "☺︎",
-        "顔文字": "^_^",
-        "部首": "部",
-        "書式化": "12"
+    // 名前だけだと分かりにくいので、面のアイコンを頭に付ける(ユーザ指定 3126/3135)。
+    // 絵文字は他より大きく、部首は康熙字典の 熙 を明朝で、書式化は桁区切りの見本を小さく出す
+    struct Icon {
+        let text: String
+        let size: CGFloat
+        let usesMincho: Bool
+
+        init(_ text: String, _ size: CGFloat, mincho: Bool = false) {
+            self.text = text
+            self.size = size
+            self.usesMincho = mincho
+        }
+    }
+
+    static let iconByLabel: [String: Icon] = [
+        "記号": Icon("⌘", 15),
+        "絵文字": Icon("☺︎", 22),
+        "顔文字": Icon("^_^", 13),
+        "部首": Icon("熙", 18, mincho: true),
+        "書式化": Icon("1,000", 11)
     ]
+    static let iconColumnWidth: CGFloat = 38
 
     static let cellHeight: CGFloat = 33
     static let horizontalPadding: CGFloat = 8
@@ -904,12 +918,17 @@ struct LongPressVerticalCandidatePanel: View {
     var body: some View {
         VStack(spacing: Self.spacing) {
             ForEach(Array(candidates.enumerated()).reversed(), id: \.offset) { index, candidate in
+                let icon = Self.iconByLabel[candidate]
                 HStack(spacing: 6) {
-                    Text(Self.iconByLabel[candidate] ?? "")
-                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                    Text(icon?.text ?? "")
+                        .font(
+                            icon?.usesMincho == true
+                                ? .custom("HiraMinProN-W6", size: icon?.size ?? 14)
+                                : .system(size: icon?.size ?? 14, weight: .semibold, design: .rounded)
+                        )
                         .lineLimit(1)
                         .minimumScaleFactor(0.6)
-                        .frame(width: 26, alignment: .center)
+                        .frame(width: Self.iconColumnWidth, alignment: .center)
                     Text(candidate)
                         .font(.system(size: 15, weight: .semibold, design: .rounded))
                         .lineLimit(1)
