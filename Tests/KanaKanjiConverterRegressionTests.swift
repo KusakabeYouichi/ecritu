@@ -18797,4 +18797,18 @@ extension KanaKanjiConverterRegressionTests {
             )
         }
     }
+
+    // 3123: 名詞+接尾の 製/欄。せい の「かな正書」枠は読み全体に掛けていて 製 まで巻き添えにしていた
+    func testRegression3123NounSuffixSeiAndRan() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "じゅしせい", systemCandidateMode: .surface).first, "樹脂製")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "じゅしせいの", systemCandidateMode: .surface).first, "樹脂製の")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こうほらんまで", systemCandidateMode: .surface).first, "候補欄まで")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こうほらん", systemCandidateMode: .surface).first, "候補欄")
+        // 防護: 1 語の 〜性/〜乱/〜蘭 と、理由の せい(2873)は不変
+        XCTAssertEqual(converter.candidates(for: "ごかんせい", limit: 3, systemCandidateMode: .surface).first, "互換性")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かのうせいが", systemCandidateMode: .surface).first, "可能性が")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "こんらんした", systemCandidateMode: .surface).first, "混乱した")
+        XCTAssertEqual(converter.candidates(for: "こちょうらん", limit: 3, systemCandidateMode: .surface).first, "胡蝶蘭")
+    }
 }
