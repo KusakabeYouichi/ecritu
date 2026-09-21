@@ -257,7 +257,6 @@ final class KeyboardViewController: UIInputViewController {
     var kanaKanjiConverter: KanaKanjiConverter { Self.sharedKanaKanjiConverter }
     lazy var sharedDefaults = UserDefaults(suiteName: SharedDefaultsKeys.appGroupID)
     #if DEBUG
-    var lastLoggedLayoutGeometry = ""
     #endif
     let diagnosticsState = DiagnosticsState()
     var pendingRefreshKeyboardStateRequests = 0
@@ -609,7 +608,6 @@ final class KeyboardViewController: UIInputViewController {
             }
         }
         MemoryForensics.noteOperation("起動")
-        Self.installFirstConversionMemoryProbeIfNeeded()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidLoad", appendLog: true)
         recordKeyboardDiagnosticsAppGroupHealth()
         startKeyboardAttachWatchdog()
@@ -1232,7 +1230,6 @@ final class KeyboardViewController: UIInputViewController {
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        logLayoutGeometryIfChanged()
         updateBackgroundGradientAppearance()
 
         let configuration = lastRenderConfiguration ?? makeRenderConfiguration()
@@ -1833,27 +1830,6 @@ final class KeyboardViewController: UIInputViewController {
         }
     }
 
-    // レイアウト幾何の診断(iPad フル表示で面が出ない件の切り分け。DEBUG 専用。2790)
-    private func logLayoutGeometryIfChanged() {
-        #if DEBUG
-        let host = hostingController?.view
-        let summary = String(
-            format: "view=%.0fx%.0f@%.0f,%.0f host=%@ alpha=%.1f hidden=%d win=%@ pcs=%.0fx%.0f superview=%d",
-            view.bounds.width, view.bounds.height,
-            view.convert(view.bounds, to: nil).minX, view.convert(view.bounds, to: nil).minY,
-            host.map { String(format: "%.0fx%.0f@%.0f,%.0f", $0.frame.width, $0.frame.height, $0.frame.minX, $0.frame.minY) } ?? "nil",
-            Double(view.alpha), view.isHidden ? 1 : 0,
-            view.window.map { String(format: "%.0fx%.0f", $0.bounds.width, $0.bounds.height) } ?? "nil",
-            preferredContentSize.width, preferredContentSize.height,
-            view.superview == nil ? 0 : 1
-        )
-        if summary != lastLoggedLayoutGeometry {
-            lastLoggedLayoutGeometry = summary
-            appendKeyboardDiagnosticsLog("レイアウト幾何 \(summary)", file: #fileID, line: #line, function: #function)
-        }
-        #endif
-    }
-
     // キーボード上辺の角 R(2920)。メッセージ/メモ/メイル等 Apple 純正アプリは入力領域に角丸のグレイを描くので、
     // 四角のまま塗ると桜色が角からはみ出して見えた。角は透明にしてホスト側の描画に馴染ませる。
     // コンテナの clipsToBounds は false のまま(長押しパネルやフリック案内がキーボードの外に描くため)
@@ -1920,19 +1896,14 @@ final class KeyboardViewController: UIInputViewController {
             let settled = abs(actualHeight - expectedHeight) <= 1
             let timedOut = CFAbsoluteTimeGetCurrent() >= initialHeightSettleDeadline
             if !settled && !timedOut {
-                if view.alpha != 0 {
-                    view.alpha = 0
-                    appendKeyboardDiagnosticsLog(
-                        "表示ゲート 高さ不一致で非表示 view=\(Int(actualHeight)) 期待=\(Int(expectedHeight))",
-                        file: #fileID, line: #line, function: #function
-                    )
-                }
+                view.alpha = 0
                 return
             }
             isAwaitingInitialHeightSettle = false
-            if view.alpha != 1 {
+            // 通常経路(1 フレームで一致)はログしない。期限切れで見せたときだけ残す(3116 でログ整理)
+            if view.alpha != 1, timedOut {
                 appendKeyboardDiagnosticsLog(
-                    "表示ゲート 解除 view=\(Int(actualHeight)) 期待=\(Int(expectedHeight)) timedOut=\(timedOut)",
+                    "表示ゲート 期限切れで表示 view=\(Int(actualHeight)) 期待=\(Int(expectedHeight))",
                     file: #fileID, line: #line, function: #function
                 )
             }

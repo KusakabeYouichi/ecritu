@@ -1059,7 +1059,6 @@ extension KanaKanjiConverter {
             }
         }
 
-        Self.memoryProbe?("連文節: ノード列挙")
 
         // --- 2. LM コスト(unigram/bigram)を一括ロード(sqlite アクセスを最小化) ---
         var unigramSurfaces = scratch.unigramSurfaces
@@ -2448,7 +2447,6 @@ extension KanaKanjiConverter {
             }
         }
 
-        Self.memoryProbe?("連文節: LM 一括ロード")
 
         // --- 4. Viterbi DP(ノード = (span, 表層)) ---
         let infinity = Int.max / 4
@@ -3709,7 +3707,6 @@ extension KanaKanjiConverter {
             // かなを返さないと漢字が先頭のままになる
             && !shouldKeepKanaIdentityLeading(for: normalized)
 
-        Self.memoryProbe?("連文節: DP・バックトラック")
 
         // --- 7. Nベスト風バリアント: 最良経路の1文節だけを同区間の別表層に差し替えた変種を
         //        コスト差の小さい順に付ける。bigram が拮抗する読み(しかくとらないと→
