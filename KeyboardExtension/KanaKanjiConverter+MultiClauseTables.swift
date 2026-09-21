@@ -280,6 +280,9 @@ extension KanaKanjiConverter {
         // 実勢の逆で、床上げ後に 6473 > 6049 と逆転する。こうほがせんたくされ が 候補が洗濯され に
         // なっていた(抜き取り検査 2859)。単文節の並び(辞書 rank は 洗濯 が先)は動かさない
         "せんたく": ["選択"],
+        // 欄(らん) は名詞に付く接尾(候補欄/記入欄/備考欄。unigram 5539)なのに読み別 wc 6187 で床上げされ、
+        // かな素通りの別分割に僅差で負けていた(こうほらんまで→候補らんまで。ユーザ報告 3123)
+        "らん": ["欄"],
         // 背(せ) は LM 5820 で 畝6883/瀬6925 より 1000 以上安い最頻出語なのに、読み1字の床上げで
         // 読み別 wc 8098 に持ち上げられ、畝(7918)に 180 差で負けていた(せにしながら→畝にしながら。
         // ユーザ報告 2868)。背 の読みは せ だけで、読み跨ぎの疑いも無い
@@ -311,6 +314,13 @@ extension KanaKanjiConverter {
     // 負けていた(毎 5440 も 秒毎に を先頭にしていた)。名詞の直後に限って かな ごと を加点し、
     // 分割(語+と)と 毎 の両方に勝たせる。文頭や かな断片の後には効かない(2859、抜き取り検査)
     static let multiClauseGotoSuffixAfterNounBonus = 1500
+    // 名詞+欄(候補欄/記入欄/備考欄)と 名詞+製(樹脂製/鉄製/ガラス製)。どちらも生産的な接尾だが、LM が 1 語として
+    // 知らない複合では読み別 wc(欄 6187/製 7346)で立つため、かな素通りの別分割や同音の名詞に僅差で負ける
+    // (こうほらんまで→候補らんまで は 116 点差、じゅしせいの→樹脂清野。ユーザ報告 3123)。
+    // 前の語が漢字 2 字以上かカタカナ語のときに加点する。bigram の有無では分けない ─ 樹脂→製 は観測済み(1194)
+    // なのに短span床が勝って使われず、床免除を入れてもなお かな せい(6066)に 701 差で負けたため。
+    // 実在の 1 語(特製/精製/混乱)は 1 ノードで立つのでこの規則に掛からない
+    static let multiClauseNounKanjiSuffixAfterNounBonus = 1500
     // 格助詞の直後で係助詞 は/も を呑んだ活用派生(に+食もう ← にはもう)の減点(2859、抜き取り検査)。
     // 格助詞+係助詞(には/にも/では/でも)は最頻の並びで、そこを跨いで動詞が始まる読みは稀。
     // ただし 学校に入る(にはいる)のような正当例があるので、剥がした残りがかな1語として
@@ -2361,6 +2371,13 @@ extension KanaKanjiConverter {
     static let multiClauseKanaOrthodoxReadings: Set<String> = [
         "そば", "ひらがな", "かたかな", "せい", "ぶどう", "もっとも"
     ]
+    // 上の「読み全体」の枠から外す表層(3123)。せい の枠は理由の せい(所為)のためだが、生産的な接尾 製
+    // (樹脂製/鉄製/ガラス製)まで巻き添えで 1500 減点+bigram 遮断になり、樹脂→製 の観測 bigram(1194)が
+    // 使われず じゅしせい→樹脂せい になっていた(ユーザ報告)。枠を外すと 姓 が 正/聖 に埋もれる(2873 の回帰)ので
+    // 表層だけを抜く
+    static let multiClauseKanaOrthodoxExemptSurfacesByReading: [String: Set<String>] = [
+        "せい": ["製"]
+    ]
     // 表層を限定するかな正書(読み → 減点する表層)。かな(仮名)は écritu のマニュアルが かな/かなモード と書く
     // (仮名 は 0 件。マニュアル検査で かな→仮名 が 53 件と最多、ユーザ指定 2892)が、かな 読みには
     // 加奈/佳奈/香奈 の人名や 哉 もあり、読み全体を枠に入れると かなちゃん/かなさん の人名が潰れる。仮名 だけ下げる
@@ -2374,7 +2391,9 @@ extension KanaKanjiConverter {
     ]
     static func isKanaOrthodoxDemotedSurface(surface: String, reading: String) -> Bool {
         guard surface != reading else { return false }
-        if multiClauseKanaOrthodoxReadings.contains(reading) { return true }
+        if multiClauseKanaOrthodoxReadings.contains(reading) {
+            return !(multiClauseKanaOrthodoxExemptSurfacesByReading[reading]?.contains(surface) ?? false)
+        }
         return multiClauseKanaOrthodoxDemotedSurfacesByReading[reading]?.contains(surface) ?? false
     }
     static let multiClauseKanaOrthodoxKanjiPenalty = 1500
@@ -2503,6 +2522,8 @@ extension KanaKanjiConverter {
             add("")
             add(KanaKanjiConverter.multiClauseBOSMarker)
             add(KanaKanjiConverter.multiClauseEOSMarker)
+            // 名詞+欄/製 の接尾(3123)
+            for s in ["らん", "せい", "欄", "製"] { add(s) }
             for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "行って"] { add(s) }
             for s in KanaKanjiConverter.multiClauseAdverbKanjiAfterNounSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuVerbReadings.sorted() { add(s) }
@@ -2696,6 +2717,10 @@ extension KanaKanjiConverter {
         static let ほしい = MultiClauseSymbols.id("ほしい")
         static let まだ = MultiClauseSymbols.id("まだ")
         static let まち = MultiClauseSymbols.id("まち")
+        static let らん = MultiClauseSymbols.id("らん")
+        static let せい = MultiClauseSymbols.id("せい")
+        static let 欄 = MultiClauseSymbols.id("欄")
+        static let 製 = MultiClauseSymbols.id("製")
         static let も = MultiClauseSymbols.id("も")
         static let もう = MultiClauseSymbols.id("もう")
         static let や = MultiClauseSymbols.id("や")
