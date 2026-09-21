@@ -117,6 +117,8 @@ struct FlickKeyView: View {
     var longPressCandidateAxis: LongPressCandidateAxis = .horizontal
     // 縦並びのときの 1 項目の幅(語のラベル用)。横並びでは使わない
     var longPressCandidateCellWidth: CGFloat? = nil
+    // 長押し成立までの待ち時間の上書き(面選択のパレットは待たせない。3125)
+    var longPressDelayOverride: TimeInterval? = nil
     var onLongPress: (() -> Void)? = nil
     var allowsDirectionalFlick: Bool = true
     var directionalFlickThreshold: CGFloat = 18
@@ -144,6 +146,7 @@ struct FlickKeyView: View {
     @State private var didTriggerLongPressAction = false
     @State private var latestTouchLocationX: CGFloat = 0
     @State private var longPressAnchorLocationX: CGFloat = 0
+    @State private var longPressAnchorLocationY: CGFloat = 0
     @State private var keyFrameInGlobal: CGRect = .zero
     @State private var secondaryFlickPrimaryDirection: FlickDirection?
     @State private var secondaryFlickVerticalDirection: FlickDirection?
@@ -834,11 +837,15 @@ struct FlickKeyView: View {
             longPressIsActive = true
             activeDirection = .milieu
             longPressAnchorLocationX = latestTouchLocationX
+            longPressAnchorLocationY = latestTouchLocationY
             highlightedLongPressIndex = 0
         }
 
         longPressWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + Metrics.longPressDelay, execute: workItem)
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + (longPressDelayOverride ?? Metrics.longPressDelay),
+            execute: workItem
+        )
     }
 
     private func cancelLongPressTimer() {
@@ -876,6 +883,7 @@ struct FlickKeyView: View {
         longPressIsActive = false
         latestTouchLocationX = 0
         longPressAnchorLocationX = 0
+        longPressAnchorLocationY = 0
         didTriggerLongPressAction = false
 
         if isTouching {
@@ -890,7 +898,10 @@ struct FlickKeyView: View {
             return 0
         }
 
-        return LongPressVerticalCandidatePanel.index(forLocalY: locationY, count: longPressCandidates.count)
+        return LongPressVerticalCandidatePanel.index(
+            forUpwardDistance: longPressAnchorLocationY - locationY,
+            count: longPressCandidates.count
+        )
     }
 
     private func longPressIndex(for locationX: CGFloat) -> Int {
