@@ -1164,6 +1164,8 @@ extension KeyboardRootView {
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
             }
+            // かな側(3095)と同じく iOS 26 以降のスクロール縁のぼかしを切る。欧文面だけ残っていた(ユーザ報告 3119、iOS 27)
+            .modifier(KeyboardScrollEdgeEffectHiddenModifier())
         }
     }
 
