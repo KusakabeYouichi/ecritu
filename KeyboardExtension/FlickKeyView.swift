@@ -617,6 +617,26 @@ struct FlickKeyView: View {
             shift -= panelMaxX - maxX
         }
 
+        // 実枠(keyboardHorizontalBounds)が取れていない/狭いときの保険(3127): 画面座標でも必ず内側に置く。
+        // 面選択のパレットが左端のキーで左へはみ出し、アイコン列が切れていた(ユーザ報告の画像)
+        let leftInset: CGFloat = 8
+        let leftEdge = keyFrameInGlobal.midX + shift - panelWidth * 0.5
+        if leftEdge < leftInset {
+            shift += leftInset - leftEdge
+        }
+
+        #if DEBUG
+        if longPressCandidateAxis == .vertical {
+            KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                String(
+                    format: "パレット位置 key=(%.0f,%.0f,w%.0f) bounds=(%.0f,%.0f) panelW=%.0f shift=%.0f",
+                    keyFrameInGlobal.minX, keyFrameInGlobal.midX, keyFrameInGlobal.width,
+                    bounds.minX, bounds.maxX, panelWidth, shift
+                )
+            )
+        }
+        #endif
+
         return shift
     }
 
