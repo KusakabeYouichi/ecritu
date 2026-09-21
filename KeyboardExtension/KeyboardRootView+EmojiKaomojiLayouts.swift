@@ -219,6 +219,7 @@ extension KeyboardRootView {
             keyRepeatInterval: keyRepeatInterval,
             onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
+            onSelectModePalette: { _ = selectModePalette($0) },
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil,
             deleteKeyBackgroundColorOverride: memoryPressureDeleteKeyColor,
@@ -242,6 +243,7 @@ extension KeyboardRootView {
             keyRepeatInterval: keyRepeatInterval,
             onTextInput: commitEmojiKaomojiSymbolText,
             onSwitchToKana: { switchInputMode(.kana) },
+            onSelectModePalette: { _ = selectModePalette($0) },
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
@@ -450,10 +452,11 @@ extension KeyboardRootView {
                 .frame(height: fourRowAlignedTopContentHeight)
 
                 HStack(spacing: keyboardRowSpacing) {
-                    ActionKeyButton(
+                    ReturnToKanaPaletteKey(
                         title: "あい",
-                        fixedWidth: 56,
-                        action: { switchInputMode(.kana) }
+                        candidates: KeyboardRootView.modePaletteLabels,
+                        onReturn: { switchInputMode(.kana) },
+                        onSelectCandidate: { _ = selectModePalette($0) }
                     )
                         .frame(height: mainFlickKeyHeight)
                     PanelAdvanceKeyboardKey(

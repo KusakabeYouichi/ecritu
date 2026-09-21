@@ -613,6 +613,8 @@ extension KeyboardRootView {
         let keyRepeatInterval: TimeInterval
         let onTextInput: (String) -> Void
         let onSwitchToKana: () -> Void
+        // あい の長押しで出す面選択のパレット(3124)
+        let onSelectModePalette: (String) -> Void
         let onDeleteBackward: () -> Void
         // 地球儀キーが要る機種(ホームボタン機)だけ非 nil。あい の右に 🌐 を置く(4.4.1。2785)
         var onAdvanceKeyboard: (() -> Void)? = nil
@@ -638,10 +640,11 @@ extension KeyboardRootView {
                 .frame(height: fourRowAlignedTopContentHeight)
 
                 HStack(spacing: keyboardRowSpacing) {
-                    ActionKeyButton(
+                    ReturnToKanaPaletteKey(
                         title: "あい",
-                        fixedWidth: 56,
-                        action: onSwitchToKana
+                        candidates: KeyboardRootView.modePaletteLabels,
+                        onReturn: onSwitchToKana,
+                        onSelectCandidate: onSelectModePalette
                     )
                     .frame(height: mainFlickKeyHeight)
                     PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
@@ -736,6 +739,8 @@ extension KeyboardRootView {
         let keyRepeatInterval: TimeInterval
         let onTextInput: (String) -> Void
         let onSwitchToKana: () -> Void
+        // あい の長押しで出す面選択のパレット(3124)
+        let onSelectModePalette: (String) -> Void
         let onDeleteBackward: () -> Void
         var onAdvanceKeyboard: (() -> Void)? = nil
 
@@ -750,10 +755,11 @@ extension KeyboardRootView {
                 .modifier(SymbolScrollClipDisabledModifier())
 
                 HStack(spacing: keyboardRowSpacing) {
-                    ActionKeyButton(
+                    ReturnToKanaPaletteKey(
                         title: "あい",
-                        fixedWidth: 56,
-                        action: onSwitchToKana
+                        candidates: KeyboardRootView.modePaletteLabels,
+                        onReturn: onSwitchToKana,
+                        onSelectCandidate: onSelectModePalette
                     )
                     .frame(height: mainFlickKeyHeight)
                     PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)
