@@ -16102,7 +16102,7 @@ extension KanaKanjiConverterRegressionTests {
                 ("ぼうじたて", "棒仕立て"),
                 ("たなじたて", "棚仕立て"),
                 ("かきねじたて", "垣根仕立て"),
-                ("こるどんしたて", "コルドン仕立て")
+                ("こるどんじたて", "コルドン仕立て")
             ] {
                 XCTAssertEqual(
                     converter.candidates(for: reading, limit: 3, systemCandidateMode: mode).first,
@@ -18732,5 +18732,35 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertLessThan(composed.firstIndex(of: "神殿だから") ?? 99, composed.firstIndex(of: "新田だから") ?? 99, "list=\(composed)")
         // 連文節は据え置き(死んでんだから が最良、神殿に は 神殿 が先頭)
         XCTAssertEqual(converter.multiClauseCandidates(for: "しんでんに", systemCandidateMode: .surface).first, "神殿に")
+    }
+
+    // たいようしん→太陽神(ユーザ報告 3119): 名詞+神(しん)の接辞合成で候補を作り、常用語は misc curated で先頭に
+    func testRegression3119SunGodComposition() throws {
+        try prepareRealLMDictionary()
+        let bare = converter.candidates(for: "たいようしん", limit: 12, systemCandidateMode: .surface)
+        XCTAssertTrue(bare.contains("太陽神"), "list=\(bare)")
+        let kaishin = converter.candidates(for: "かいしん", limit: 12, systemCandidateMode: .surface)
+        XCTAssertFalse(kaishin.first?.hasSuffix("神") ?? false, "list=\(kaishin)")  // 既存の辞書語は接辞合成に押されない
+        try loadDeviceAddedVocabulary()
+        converter.store.clearSharedDataCaches()  // 上の bare 問い合わせで空の追加語彙がキャッシュされる(実機では変更通知で捨てる)
+        converter.invalidateCandidateCache()
+        let curated = converter.candidates(for: "たいようしん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(curated.first, "太陽神", "list=\(curated)")
+    }
+
+    // 3119 のユーザ報告 3 件: 文頭の副助詞 のみ、行き先 に/へ 直後のかな いく、か 剥がしの語幹の根拠
+    func testRegression3119SentenceInitialNomiAndIkuAfterNi() throws {
+        try prepareRealLMDictionary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "のみはじめ", systemCandidateMode: .surface).first, "飲み始め")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ごごにいくよてい", systemCandidateMode: .surface).first, "午後に行く予定")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "ごごにいく", systemCandidateMode: .surface).first, "午後に行く")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みにいく", systemCandidateMode: .surface).first, "見に行く")
+        // 防護: 〜ていく(補助動詞)はかなのまま
+        XCTAssertEqual(converter.multiClauseCandidates(for: "つれていく", systemCandidateMode: .surface).first, "連れていく")
+        // ちかくか: 語幹 ちかく は seed でかなが末尾なので keepKana は立たない
+        XCTAssertFalse(converter.shouldKeepKanaIdentityLeading(for: "ちかくか"))
+        XCTAssertEqual(converter.candidates(for: "ちかくか", limit: 4, systemCandidateMode: .surface).first, "近くか")
+        // 防護: かな優位の語幹(いくつか)は従来どおり
+        XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いくつか"))
     }
 }
