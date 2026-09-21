@@ -16,6 +16,8 @@ enum KeyboardStuckTouchDiagnostics {
     // FlickKeyView に格納プロパティを足すとキー群の巨大なタプルが太る(2921 のスタック超過)ので、
     // キー側でなくここへ置いて受け手(selectKanaModeSwitcher)が読む。測れなかったときは nil
     static var lastCommitDurationMs: Int?
+    // 調査用(3136): UIKit が触れたと判断した時刻。SwiftUI のジェスチャへ届くまでの遅れを測る。原因判明後に外す
+    static var lastRawTouchBeganAt: CFAbsoluteTime = 0
 }
 
 enum LongPressCandidatePanelPlacement {
@@ -647,6 +649,13 @@ struct FlickKeyView: View {
             }
             .onChanged { value in
                 if !isTouching {
+                    #if DEBUG
+                    // 調査用(3136): 触れてから SwiftUI の判定に届くまで(押下表示が遅い件)
+                    if let touchForensicsLabel, KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
+                        let ms = Int((CFAbsoluteTimeGetCurrent() - KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt) * 1000)
+                        KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで \(touchForensicsLabel) \(ms)ms")
+                    }
+                    #endif
                     onTouchStateChanged(true)
                     didTriggerLongPressAction = false
                     scheduleLongPressIfNeeded()

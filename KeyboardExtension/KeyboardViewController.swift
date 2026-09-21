@@ -1331,7 +1331,27 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardHeightIfNeeded()
     }
 
+    // 調査用(3136): UIKit が触れたと判断した時刻を記録するだけの認識器。状態を変えないので他の操作を邪魔しない。
+    // 押下表示(緑)が出るまでの体感の遅さが、UIKit→SwiftUI の受け渡しにあるのかを測るために入れた。原因判明後に外す
+    private final class RawTouchProbeGestureRecognizer: UIGestureRecognizer {
+        override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
+            KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt = CFAbsoluteTimeGetCurrent()
+            super.touchesBegan(touches, with: event)
+        }
+    }
+
+    private func installRawTouchProbeIfNeeded() {
+        #if DEBUG
+        let probe = RawTouchProbeGestureRecognizer(target: nil, action: nil)
+        probe.cancelsTouchesInView = false
+        probe.delaysTouchesBegan = false
+        probe.delaysTouchesEnded = false
+        view.addGestureRecognizer(probe)
+        #endif
+    }
+
     private func setupKeyboardView() {
+        installRawTouchProbeIfNeeded()
         let configuration = makeRenderConfiguration()
         let host = UIHostingController(rootView: makeKeyboardRootHostView(from: configuration))
         addChild(host)
