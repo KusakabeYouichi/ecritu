@@ -25,6 +25,7 @@ extension KeyboardRootView {
                 switchInputMode(.kana)
             },
             onSwitchToKana: { switchInputMode(.kana) },
+            onSelectModePalette: { _ = selectModePalette($0) },
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
@@ -535,6 +536,8 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let onLookupEntries: (Int) -> [KanjiRadicalFileIndex.Entry]
     let onCommitCharacter: (String) -> Void
     let onSwitchToKana: () -> Void
+    // あい の長押しで出す面選択のパレット(3124)
+    let onSelectModePalette: (String) -> Void
     let onDeleteBackward: () -> Void
     var onAdvanceKeyboard: (() -> Void)? = nil
 
@@ -632,10 +635,11 @@ struct KeyboardRootKanjiRadicalSectionView: View {
             }
 
             HStack(spacing: keyboardRowSpacing) {
-                ActionKeyButton(
+                ReturnToKanaPaletteKey(
                     title: "あい",
-                    fixedWidth: 56,
-                    action: onSwitchToKana
+                    candidates: KeyboardRootView.modePaletteLabels,
+                    onReturn: onSwitchToKana,
+                    onSelectCandidate: onSelectModePalette
                 )
                 .frame(height: mainFlickKeyHeight)
                 PanelAdvanceKeyboardKey(action: onAdvanceKeyboard, height: mainFlickKeyHeight)

@@ -23,6 +23,14 @@ enum LongPressCandidatePanelPlacement {
     case below
 }
 
+// 長押し候補パネルの並び。既定は横(欧文のアクセント選択)。縦は面選択のパレット(3124):
+// 左下キーの真上に縦に積み、指を上へ滑らせて離すと決まる。項目が 2〜3 文字の語なので横だと
+// 盤が盤面いっぱいに広がってしまう
+enum LongPressCandidateAxis {
+    case horizontal
+    case vertical
+}
+
 private struct KeyboardAccentColorKey: EnvironmentKey {
     static let defaultValue = Color(red: 0.06, green: 0.73, blue: 0.56)
 }
@@ -106,6 +114,9 @@ struct FlickKeyView: View {
     var idleReplacement: AnyView? = nil
     var longPressCandidates: [String] = []
     var longPressCandidatePanelPlacement: LongPressCandidatePanelPlacement = .above
+    var longPressCandidateAxis: LongPressCandidateAxis = .horizontal
+    // 縦並びのときの 1 項目の幅(語のラベル用)。横並びでは使わない
+    var longPressCandidateCellWidth: CGFloat? = nil
     var onLongPress: (() -> Void)? = nil
     var allowsDirectionalFlick: Bool = true
     var directionalFlickThreshold: CGFloat = 18
@@ -127,6 +138,7 @@ struct FlickKeyView: View {
     @State private var isTouching = false
     @State private var longPressIsActive = false
     @State private var highlightedLongPressIndex = 0
+    @State private var latestTouchLocationY: CGFloat = 0
     @State private var longPressWorkItem: DispatchWorkItem?
     @State private var stuckTouchWatchdogWorkItem: DispatchWorkItem?
     @State private var didTriggerLongPressAction = false
@@ -498,28 +510,48 @@ struct FlickKeyView: View {
         return baseOffset
     }
 
+    @ViewBuilder
+    private func longPressCandidateCell(index: Int, candidate: String, cellWidth: CGFloat, fontSize: CGFloat) -> some View {
+        Text(candidate)
+            .font(.system(size: fontSize, weight: .semibold, design: .rounded))
+            .lineLimit(1)
+            .minimumScaleFactor(0.7)
+            .foregroundStyle(KeyboardThemePalette.longPressPanelText)
+            .frame(width: cellWidth, height: Metrics.candidateCellHeight)
+            .background(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .fill(
+                        index == highlightedLongPressIndex
+                            ? KeyboardThemePalette.longPressPanelCellHighlight
+                            : KeyboardThemePalette.longPressPanelCellBackground
+                    )
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
+            )
+    }
+
+    @ViewBuilder
     private var longPressCandidatePanel: some View {
+        if longPressCandidateAxis == .vertical {
+            LongPressVerticalCandidatePanel(
+                candidates: longPressCandidates,
+                highlightedIndex: highlightedLongPressIndex,
+                cellWidth: longPressCandidateCellWidth ?? Metrics.candidateCellWidth
+            )
+        } else {
+            longPressCandidateHorizontalPanel
+        }
+    }
+
+    private var longPressCandidateHorizontalPanel: some View {
         let cellWidth = effectiveCandidateCellWidth
         let candidateFontSize: CGFloat = cellWidth < 30 ? 18 : 20
 
         return HStack(spacing: Metrics.candidateSpacing) {
             ForEach(Array(longPressCandidates.enumerated()), id: \.offset) { index, candidate in
-                Text(candidate)
-                    .font(.system(size: candidateFontSize, weight: .semibold, design: .rounded))
-                    .foregroundStyle(KeyboardThemePalette.longPressPanelText)
-                    .frame(width: cellWidth, height: Metrics.candidateCellHeight)
-                    .background(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(
-                                index == highlightedLongPressIndex
-                                    ? KeyboardThemePalette.longPressPanelCellHighlight
-                                    : KeyboardThemePalette.longPressPanelCellBackground
-                            )
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
-                    )
+                longPressCandidateCell(index: index, candidate: candidate, cellWidth: cellWidth, fontSize: candidateFontSize)
             }
         }
         .padding(.horizontal, Metrics.candidatePanelPadding)
@@ -537,6 +569,9 @@ struct FlickKeyView: View {
     }
 
     private var candidatePanelWidth: CGFloat {
+        if longPressCandidateAxis == .vertical {
+            return (longPressCandidateCellWidth ?? Metrics.candidateCellWidth) + Metrics.candidatePanelContentInset
+        }
         let count = CGFloat(longPressCandidates.count)
         let contentWidth = count * effectiveCandidateCellWidth + max(0, count - 1) * Metrics.candidateSpacing
         return contentWidth + Metrics.candidatePanelContentInset
@@ -583,6 +618,12 @@ struct FlickKeyView: View {
     }
 
     private var candidatePanelOffsetY: CGFloat {
+        if longPressCandidateAxis == .vertical {
+            // キーの上辺から gap だけ離した位置に盤の下端が来るよう、キー中心からの距離で置く
+            let panelHeight = LongPressVerticalCandidatePanel.panelHeight(count: longPressCandidates.count)
+            let keyHeight = keyFrameInGlobal.height > 0 ? keyFrameInGlobal.height : Metrics.candidateCellHeight
+            return -(keyHeight * 0.5 + LongPressVerticalCandidatePanel.gap + panelHeight * 0.5)
+        }
         switch longPressCandidatePanelPlacement {
         case .above:
             return -Metrics.previewDistance
@@ -607,13 +648,16 @@ struct FlickKeyView: View {
                 }
                 isTouching = true
                 latestTouchLocationX = value.location.x
+                latestTouchLocationY = value.location.y
 
                 if didTriggerLongPressAction {
                     return
                 }
 
                 if longPressIsActive {
-                    highlightedLongPressIndex = longPressIndex(for: value.location.x)
+                    highlightedLongPressIndex = longPressCandidateAxis == .vertical
+                        ? longPressIndex(forVertical: value.location.y)
+                        : longPressIndex(for: value.location.x)
                     return
                 }
 
@@ -838,6 +882,15 @@ struct FlickKeyView: View {
             isTouching = false
             onTouchStateChanged(false)
         }
+    }
+
+    // 縦並び: キー上辺(local y = 0)より上に積んだ盤の何段目かを、指の y から決める
+    private func longPressIndex(forVertical locationY: CGFloat) -> Int {
+        guard !longPressCandidates.isEmpty else {
+            return 0
+        }
+
+        return LongPressVerticalCandidatePanel.index(forLocalY: locationY, count: longPressCandidates.count)
     }
 
     private func longPressIndex(for locationX: CGFloat) -> Int {
