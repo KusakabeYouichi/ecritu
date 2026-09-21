@@ -18773,5 +18773,28 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "たかさがへんに", systemCandidateMode: .surface).first, "高さが変に")
         // 防護: 音便の ん+で は対象外
         XCTAssertEqual(converter.multiClauseCandidates(for: "みずをのんで", systemCandidateMode: .surface).first, "水を飲んで")
+        // 実機と同じ条件(curated の になる が 1 ノードで立つ)。減点が に 1 字にしか掛からず素通りしていた(3122)
+        try loadDeviceAddedVocabulary()
+        converter.store.clearSharedDataCaches()
+        converter.invalidateCandidateCache()
+        let withCurated = converter.multiClauseCandidates(for: "たかさがへんになる", systemCandidateMode: .surface)
+        XCTAssertEqual(withCurated.first, "高さが変になる", "list=\(withCurated.prefix(4))")
+    }
+
+    // 3122: 全かな素通りの免除(終助詞で終わる/全ノード辞書語)は、経路の内容語のかなが正書のときだけ。
+    // ちかくか は連文節が全かなを最良に返し、提示層が multiClauseLeadingKana で先頭維持していた(実機のみ)
+    func testRegression3122KanaEchoNeedsOrthographicContent() throws {
+        try prepareRealLMDictionary()
+        let chikakuka = converter.multiClauseCandidates(for: "ちかくか", systemCandidateMode: .surface)
+        XCTAssertEqual(chikakuka.first, "近くか", "list=\(chikakuka.prefix(4))")
+        XCTAssertFalse(chikakuka.contains("ちかくか"), "list=\(chikakuka.prefix(4))")
+        // 防護: かなが正書の機能語句・終助詞クラスタ(keepKana 成立)は従来どおり全かなが最良
+        for reading in ["のことです", "いくつか", "ここでは", "そんなもんか"] {
+            XCTAssertEqual(
+                converter.multiClauseCandidates(for: reading, systemCandidateMode: .surface).first,
+                reading,
+                "reading=\(reading)"
+            )
+        }
     }
 }
