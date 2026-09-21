@@ -874,7 +874,7 @@ struct LongPressVerticalCandidatePanel: View {
         "書式化": "12"
     ]
 
-    static let cellHeight: CGFloat = 34
+    static let cellHeight: CGFloat = 33
     static let horizontalPadding: CGFloat = 8
     // キーの左辺からの寄せ。左端のキーでも画面内に収まる(キー自身が枠の内側に置かれているため)
     static let keyLeadingInset: CGFloat = 2
@@ -888,15 +888,15 @@ struct LongPressVerticalCandidatePanel: View {
         return n * cellHeight + max(0, n - 1) * spacing + verticalPadding * 2
     }
 
-    // 何段目かは「長押しが成立した位置からの上への移動量」で決める(3125)。キーの局所座標は
-    // 盤が出た瞬間に ZStack の高さが伸びて原点がずれる(実測で半〜2 段のずれ)ので使えない。
-    // index 0 は最下段(指を動かさない位置)。1 段ぶん(37pt)上げるごとに 1 つ進む
-    static func index(forUpwardDistance distance: CGFloat, count: Int) -> Int {
+    // 何段目かは指の位置(キー上辺 y=0 のローカル座標)で決める。盤を overlay に変えてキーの
+    // 枠が伸びなくなったので、指が乗っている段がそのまま選ばれる(3129: 1 つ上が選ばれていた)。
+    // index 0 は最下段
+    static func index(forLocalY y: CGFloat, count: Int) -> Int {
         guard count > 0 else {
             return 0
         }
         let slot = cellHeight + spacing
-        let raw = Int(round(distance / slot))
+        let raw = Int(floor((-y - gap) / slot))
         return max(0, min(count - 1, raw))
     }
 
@@ -1008,7 +1008,7 @@ struct ReturnToKanaPaletteKey: View {
                     latestLocationY = value.location.y
                     if paletteIsActive {
                         highlightedIndex = LongPressVerticalCandidatePanel.index(
-                            forUpwardDistance: anchorLocationY - value.location.y,
+                            forLocalY: value.location.y,
                             count: candidates.count
                         )
                         return
