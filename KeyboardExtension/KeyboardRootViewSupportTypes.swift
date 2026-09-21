@@ -89,7 +89,8 @@ enum KeyboardThemePalette {
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
 }
 
-// iOS 26 以降のスクロール縁の効果(Liquid Glass のぼかし。上の縁から下へ弱まる)を切る(3106)。
+// スクロール縁の効果(Liquid Glass のぼかし。上の縁から下へ弱まる)を切る(3106)。API は iOS 26 からだが、
+// 描かれ始めるのは実測で 27(下の 26.7 の記述と対。ユーザ指摘 3122)。
 // テスター(iPhone 15 Pro、iOS 27)の候補バーで、状態カプセルから かなチップまで横スクロールの中身だけが
 // 上 6 割ほどぼやけて見えた(ユーザ報告の画像 IMG_0235)。iOS 26.7 の端末では出ない。候補バーは
 // 短い横スクロールで縁の効果は要らない
