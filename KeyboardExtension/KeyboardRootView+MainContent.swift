@@ -278,10 +278,12 @@ extension KeyboardRootView {
                         // しているので system 行右端には何も追加しない。
                         EmptyView()
                     } else {
-                        ActionKeyButton(
+                        ReturnToKanaPaletteKey(
                             title: "あい",
                             fixedWidth: 58,
-                            action: { switchInputMode(.kana) }
+                            candidates: KeyboardRootView.modePaletteLabels,
+                            onReturn: { switchInputMode(.kana) },
+                            onSelectCandidate: { _ = selectModePalette($0) }
                         )
                             .frame(height: unifiedActionRowHeight)
 
@@ -304,10 +306,12 @@ extension KeyboardRootView {
                     }
                 } else {
                     if !showsCompactLeftModeSwitchButtons {
-                        ActionKeyButton(
+                        ReturnToKanaPaletteKey(
                             title: "あい",
                             fixedWidth: 58,
-                            action: { switchInputMode(.kana) }
+                            candidates: KeyboardRootView.modePaletteLabels,
+                            onReturn: { switchInputMode(.kana) },
+                            onSelectCandidate: { _ = selectModePalette($0) }
                         )
                             .frame(height: unifiedActionRowHeight)
 

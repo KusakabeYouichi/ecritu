@@ -298,13 +298,42 @@ extension KeyboardRootView {
         katakanaCommitFeedbackText = nil
     }
 
-    // キー部品の onCommit/onCommitWithDirection の型に合わせて出力文字列を受けるが、切替キーは
-    // ラベル文字を出力しないので使わない(GridLayouts が関数値として渡す)
-    func selectKanaModeSwitcher(_: String) {
+    // 面選択のパレット(左下キーの長押しで縦に出す。3124)。よく使う面はタップとフリックに残し、
+    // たまにしか使わない面はラベルを読んで選べるようにする。長押しの書式化入力もここへ移した
+    static let modePaletteLabels: [String] = ["記号", "絵文字", "顔文字", "部首", "書式化"]
+
+    func selectModePalette(_ label: String) -> Bool {
+        switch label {
+        case "記号":
+            enterSymbolsMode()
+        case "絵文字":
+            enterEmojiMode()
+        case "顔文字":
+            enterKaomojiMode()
+        case "部首":
+            enterKanjiRadicalMode()
+        case "書式化":
+            enterFormattedNumberMode()
+        default:
+            return false
+        }
+        inputModeChangeTrigger = "面選択パレット(\(label))"
+        return true
+    }
+
+    // キー部品の onCommit/onCommitWithDirection の型に合わせて出力文字列を受ける。切替キーは通常
+    // ラベル文字を出力しないが、パレットから決めたときだけ選んだ面のラベルが渡る
+    func selectKanaModeSwitcher(_ text: String) {
+        if selectModePalette(text) {
+            return
+        }
         selectKanaModeSwitcher(direction: .milieu)
     }
 
-    func selectKanaModeSwitcher(_: String, direction: FlickDirection) {
+    func selectKanaModeSwitcher(_ text: String, direction: FlickDirection) {
+        if selectModePalette(text) {
+            return
+        }
         selectKanaModeSwitcher(direction: direction)
     }
 

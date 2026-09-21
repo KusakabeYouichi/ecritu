@@ -111,7 +111,9 @@ extension KeyboardRootView {
                     mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                     showsDirectionalHints: showsFlickGuideCharacters,
                     showsGuideText: false,
-                    onLongPress: enterFormattedNumberMode,
+                    longPressCandidates: Self.modePaletteLabels,
+                    longPressCandidateAxis: .vertical,
+                    longPressCandidateCellWidth: 62,
                     activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                     activeMainLabelFontSizeProvider: { direction, mainText in
                         kanaModeSwitcherMainLabelFontSizeForDirection(
@@ -175,7 +177,9 @@ extension KeyboardRootView {
                 mainLabelFontSize: kanaModeSwitcherMainLabelFontSize,
                 showsDirectionalHints: showsFlickGuideCharacters,
                 showsGuideText: false,
-                onLongPress: enterFormattedNumberMode,
+                longPressCandidates: Self.modePaletteLabels,
+                longPressCandidateAxis: .vertical,
+                longPressCandidateCellWidth: 62,
                 activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                 activeMainLabelFontSizeProvider: { direction, mainText in
                     kanaModeSwitcherMainLabelFontSizeForDirection(

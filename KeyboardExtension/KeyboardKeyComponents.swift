@@ -857,6 +857,170 @@ func hideScrollEdgeEffects(_ scrollView: UIScrollView) {
     }
 }
 
+// 面選択のパレット(3124)。長押しでキーの真上に縦に積み、指を滑らせて離すと決まる。
+// 欧文のアクセント選択(FlickKeyView の長押し候補)と同じ操作で、項目が語のラベルなので縦に置く。
+// FlickKeyView と、面の下段の あい キー(ReturnToKanaPaletteKey)の両方から使う
+struct LongPressVerticalCandidatePanel: View {
+    let candidates: [String]
+    let highlightedIndex: Int
+    var cellWidth: CGFloat = 62
+
+    static let cellHeight: CGFloat = 34
+    static let spacing: CGFloat = 3
+    static let verticalPadding: CGFloat = 3
+    // 盤の下端とキーの上辺の間隔(押している指で最下段が隠れない分)
+    static let gap: CGFloat = 10
+
+    static func panelHeight(count: Int) -> CGFloat {
+        let n = CGFloat(max(0, count))
+        return n * cellHeight + max(0, n - 1) * spacing + verticalPadding * 2
+    }
+
+    // キーの上辺(ローカル座標 y = 0)より上に積んだ盤の何段目かを、指の y から決める。
+    // index 0 は最下段(指に近い側)
+    static func index(forLocalY y: CGFloat, count: Int) -> Int {
+        guard count > 0 else {
+            return 0
+        }
+        let slot = cellHeight + spacing
+        let raw = Int(floor((-y - gap) / slot))
+        return max(0, min(count - 1, raw))
+    }
+
+    var body: some View {
+        VStack(spacing: Self.spacing) {
+            ForEach(Array(candidates.enumerated()).reversed(), id: \.offset) { index, candidate in
+                Text(candidate)
+                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.7)
+                    .foregroundStyle(KeyboardThemePalette.longPressPanelText)
+                    .frame(width: cellWidth, height: Self.cellHeight)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(
+                                index == highlightedIndex
+                                    ? KeyboardThemePalette.longPressPanelCellHighlight
+                                    : KeyboardThemePalette.longPressPanelCellBackground
+                            )
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
+                    )
+            }
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, Self.verticalPadding)
+        .background(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .fill(KeyboardThemePalette.longPressPanelBackground)
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .stroke(KeyboardThemePalette.longPressPanelBorder, lineWidth: 1)
+        )
+        .shadow(color: KeyboardThemePalette.longPressPanelShadow, radius: 4, y: 1)
+        .allowsHitTesting(false)
+    }
+}
+
+// 面の下段の あい(かなへ戻る)キー。タップで戻り、長押しで面選択のパレットを出す(3124)。
+// ActionKeyButton に機能を足すと、あのキーは盤面のあちこちで使われていて型が膨らむ(本体の注記参照)ため、
+// 見た目だけ合わせた専用のキーにしている
+struct ReturnToKanaPaletteKey: View {
+    let title: String
+    var fontSize: CGFloat = 16
+    var fixedWidth: CGFloat? = 56
+    let candidates: [String]
+    let onReturn: () -> Void
+    let onSelectCandidate: (String) -> Void
+
+    @State private var paletteIsActive = false
+    @State private var highlightedIndex = 0
+    @State private var longPressWorkItem: DispatchWorkItem?
+    @State private var keyHeight: CGFloat = 0
+
+    private static let longPressDelay: TimeInterval = 0.4
+
+    var body: some View {
+        ZStack {
+            Text(title)
+                .font(.system(size: fontSize, weight: .semibold, design: .rounded))
+                .foregroundStyle(KeyboardThemePalette.keyLabel)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .fill(KeyboardThemePalette.keyBackground)
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                        .stroke(KeyboardThemePalette.keyBorder, lineWidth: 1)
+                )
+
+            if paletteIsActive {
+                LongPressVerticalCandidatePanel(
+                    candidates: candidates,
+                    highlightedIndex: highlightedIndex
+                )
+                    .offset(
+                        y: -(keyHeight * 0.5
+                            + LongPressVerticalCandidatePanel.gap
+                            + LongPressVerticalCandidatePanel.panelHeight(count: candidates.count) * 0.5)
+                    )
+                    .zIndex(KeyboardLayerZIndex.floatingOverlay)
+            }
+        }
+        .frame(width: fixedWidth)
+        .contentShape(Rectangle())
+        .accessibilityLabel(title)
+        .background(
+            GeometryReader { proxy in
+                Color.clear.onAppear { keyHeight = proxy.size.height }
+            }
+        )
+        .gesture(
+            DragGesture(minimumDistance: 0)
+                .onChanged { value in
+                    if paletteIsActive {
+                        highlightedIndex = LongPressVerticalCandidatePanel.index(
+                            forLocalY: value.location.y,
+                            count: candidates.count
+                        )
+                        return
+                    }
+                    guard longPressWorkItem == nil else {
+                        return
+                    }
+                    let work = DispatchWorkItem {
+                        paletteIsActive = true
+                        highlightedIndex = 0
+                    }
+                    longPressWorkItem = work
+                    DispatchQueue.main.asyncAfter(deadline: .now() + Self.longPressDelay, execute: work)
+                }
+                .onEnded { _ in
+                    longPressWorkItem?.cancel()
+                    longPressWorkItem = nil
+                    guard paletteIsActive else {
+                        onReturn()
+                        return
+                    }
+                    paletteIsActive = false
+                    guard candidates.indices.contains(highlightedIndex) else {
+                        return
+                    }
+                    onSelectCandidate(candidates[highlightedIndex])
+                }
+        )
+        .onDisappear {
+            longPressWorkItem?.cancel()
+            longPressWorkItem = nil
+            paletteIsActive = false
+        }
+    }
+}
+
 struct EmojiGridCollectionView: UIViewRepresentable {
     struct Section: Equatable {
         let emojis: [String]
