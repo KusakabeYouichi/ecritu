@@ -18763,4 +18763,15 @@ extension KanaKanjiConverterRegressionTests {
         // 防護: かな優位の語幹(いくつか)は従来どおり
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "いくつか"))
     }
+
+    // たかさがへんになる: 否定の ん 派生(経ん/歴ん)+に が 変+に と拮抗し実機で逆転していた(ユーザ報告 3120)
+    func testRegression3120HenNiNaruPrefersNoun() throws {
+        try prepareRealLMDictionary()
+        let list = converter.multiClauseCandidates(for: "たかさがへんになる", systemCandidateMode: .surface)
+        XCTAssertEqual(list.first, "高さが変になる", "list=\(list.prefix(4))")
+        XCTAssertFalse(list.prefix(2).contains("高さが経んになる"), "list=\(list.prefix(4))")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たかさがへんに", systemCandidateMode: .surface).first, "高さが変に")
+        // 防護: 音便の ん+で は対象外
+        XCTAssertEqual(converter.multiClauseCandidates(for: "みずをのんで", systemCandidateMode: .surface).first, "水を飲んで")
+    }
 }
