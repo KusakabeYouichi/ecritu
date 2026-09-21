@@ -863,7 +863,16 @@ func hideScrollEdgeEffects(_ scrollView: UIScrollView) {
 struct LongPressVerticalCandidatePanel: View {
     let candidates: [String]
     let highlightedIndex: Int
-    var cellWidth: CGFloat = 62
+    var cellWidth: CGFloat = 104
+
+    // 名前だけだと分かりにくいので、面のアイコン(キーに出ているもの)を頭に付ける(ユーザ指定 3126)
+    static let iconByLabel: [String: String] = [
+        "記号": "⌘",
+        "絵文字": "☺︎",
+        "顔文字": "^_^",
+        "部首": "部",
+        "書式化": "12"
+    ]
 
     static let cellHeight: CGFloat = 34
     static let spacing: CGFloat = 3
@@ -891,11 +900,20 @@ struct LongPressVerticalCandidatePanel: View {
     var body: some View {
         VStack(spacing: Self.spacing) {
             ForEach(Array(candidates.enumerated()).reversed(), id: \.offset) { index, candidate in
-                Text(candidate)
-                    .font(.system(size: 15, weight: .semibold, design: .rounded))
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+                HStack(spacing: 6) {
+                    Text(Self.iconByLabel[candidate] ?? "")
+                        .font(.system(size: 14, weight: .semibold, design: .rounded))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.6)
+                        .frame(width: 26, alignment: .center)
+                    Text(candidate)
+                        .font(.system(size: 15, weight: .semibold, design: .rounded))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.7)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
                     .foregroundStyle(KeyboardThemePalette.longPressPanelText)
+                    .padding(.horizontal, 8)
                     .frame(width: cellWidth, height: Self.cellHeight)
                     .background(
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
