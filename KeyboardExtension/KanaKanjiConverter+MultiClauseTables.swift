@@ -1578,9 +1578,13 @@ extension KanaKanjiConverter {
     // =連用形(取り/乗せ。能勢/鳥 は末尾が漢字なので対象外)。
     // 同一スパンの連用形どうしには等しく効くので相対順(取り→撮り→捕り→採り)は変わらない。
     // のせ(一段 のせる の連用形 乗せ/載せ)を追加: のせわすれた が の+世話+擦れた に負けていた(2784)
-    static let multiClauseCompoundVerbRenyouStemReadings: Set<String> = ["とり", "はり", "のせ"]
+    // のみ(飲み)を追加: のみはじめ が の+実+始め / 野見始め に負け 飲み始め が消えていた(ユーザ報告 3119)
+    static let multiClauseCompoundVerbRenyouStemReadings: Set<String> = ["とり", "はり", "のせ", "のみ"]
 
     static let multiClauseCompoundVerbRenyouBonus = 3000
+    // 後部要素が連用形名詞(飲み始め/取り忘れ/書き直し)のときも複合動詞として優遇する。辞書ではこれらは
+    // 名詞ノード(始め rank1)で、動詞判定(派生/辞書形述語)に掛からなかった(3119)
+    static let multiClauseCompoundVerbTailRenyouNounSurfaces: Set<String> = ["始め", "終わり", "過ぎ", "忘れ", "直し", "込み"]
 
     static let kanaOrthographyNaAdjectiveStems: Set<String> = ["いや", "むら"]
 
@@ -1799,6 +1803,18 @@ extension KanaKanjiConverter {
     // 時間をかけて はかなが正書なので を 直後は対象外(bigram を→かけ が既に安く、そのまま勝つ)。
     // 助詞無しの名詞直後(でんわかけて)も対象外(文頭か、かな識別の助詞直後に限る)
     static let multiClauseKanaVerbStemDemotedReadings: Set<String> = ["かけ"]
+    // 文頭の副助詞 のみ と裸の連体助詞 の は非文。のみはじめ が のみ(4322)+始め、次いで の(BOS 2135)+実+始め で
+    // 飲み(派生 8469)+始め に勝ち、飲み始め が候補から消えていた(ユーザ報告 3119)。格助詞の文頭減点(3500、辞書語の
+    // 跨ぎが条件)では届かないので別枠。ばかり/しか 等は入れない(ばかりだから のような文中からの打ち始めが実用で、
+    // 既存テストも かな先頭を期待)。のに/ので/のは は curated の 1 ノードで対象外
+    static let multiClauseBOSAdverbialParticleReadings: Set<String> = ["のみ", "の"]
+    static let multiClauseBOSAdverbialParticlePenalty = 5000
+    // 行き先の格助詞 に/へ の直後の いく 族は本動詞の 行く が正書。LM は いく→予定 3361 を持ち 行く→予定 は未観測で、
+    // ごごにいくよてい が 午後にいく予定 になっていた(ユーザ報告 3119)。〜ていく(補助動詞)は prev が て なので対象外
+    static let multiClauseKanaIkuAfterDestinationParticleReadings: Set<String> = [
+        "いく", "いった", "いって", "いき", "いこう", "いかない", "いける", "いけば", "いきます", "いきたい"
+    ]
+    static let multiClauseKanaIkuAfterDestinationParticlePenalty = 1500
     static let multiClauseKanaVerbStemDemotedPenalty = 3500
     // 述語(辞書形/活用派生)の直後の引用・伝聞の って(違うって/行くって/食べたって)。LM に 違う→って が無く
     // unigram+backoff の約 6000 になり、血+が+売って(1303+1500)の断片連鎖に 2800 差で負けていた(ちがうってのが→血が売ってのが。3086)
@@ -2507,6 +2523,8 @@ extension KanaKanjiConverter {
             for s in KanaKanjiConverter.multiClauseTeFormConjunctiveReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseIruAuxiliaryReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseKanaVerbStemDemotedReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseBOSAdverbialParticleReadings.sorted() { add(s) }
+            for s in KanaKanjiConverter.multiClauseKanaIkuAfterDestinationParticleReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseForbiddenInitialExemptReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFormalNounKanaReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseFunctionalSingleKanaSurfaces.sorted() { add(s) }
@@ -2720,6 +2738,8 @@ extension KanaKanjiConverter {
     static let multiClauseTeFormConjunctiveReadingsID = MultiClauseIDSet(multiClauseTeFormConjunctiveReadings)
     static let multiClauseIruAuxiliaryReadingsID = MultiClauseIDSet(multiClauseIruAuxiliaryReadings)
     static let multiClauseKanaVerbStemDemotedReadingsID = MultiClauseIDSet(multiClauseKanaVerbStemDemotedReadings)
+    static let multiClauseBOSAdverbialParticleReadingsID = MultiClauseIDSet(multiClauseBOSAdverbialParticleReadings)
+    static let multiClauseKanaIkuAfterDestinationParticleReadingsID = MultiClauseIDSet(multiClauseKanaIkuAfterDestinationParticleReadings)
     static let multiClauseForbiddenInitialExemptReadingsID = MultiClauseIDSet(multiClauseForbiddenInitialExemptReadings)
     static let multiClauseFormalNounKanaReadingsID = MultiClauseIDSet(multiClauseFormalNounKanaReadings)
     static let multiClauseFunctionalSingleKanaSurfacesID = MultiClauseIDSet(multiClauseFunctionalSingleKanaSurfaces)
