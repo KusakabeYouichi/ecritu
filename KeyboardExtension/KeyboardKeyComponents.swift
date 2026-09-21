@@ -966,7 +966,7 @@ struct ReturnToKanaPaletteKey: View {
     @State private var anchorLocationY: CGFloat = 0
 
     // 面の切り替えは「選び直し」ではないので待たせない(ユーザ指定 3125)
-    private static let longPressDelay: TimeInterval = 0.2
+    private static let longPressDelay: TimeInterval = 0.15
 
     var body: some View {
         ZStack {
