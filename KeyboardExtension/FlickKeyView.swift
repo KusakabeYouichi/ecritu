@@ -277,7 +277,13 @@ struct FlickKeyView: View {
             // 調査用(3130): 触ってから押下表示が出るまで。touchForensicsLabel のあるキーだけ
             if touching, let touchForensicsLabel, touchBeganWallClock > 0 {
                 let ms = Int((CFAbsoluteTimeGetCurrent() - touchBeganWallClock) * 1000)
-                KeyboardStuckTouchDiagnostics.onTouchForensics?("押下表示まで \(touchForensicsLabel) \(ms)ms")
+                let began = touchBeganWallClock
+                let label = touchForensicsLabel
+                // 状態が変わった時点(ms)と、更新が一巡して描画に回った時点(次の run loop)の両方を残す
+                DispatchQueue.main.async {
+                    let drawnMs = Int((CFAbsoluteTimeGetCurrent() - began) * 1000)
+                    KeyboardStuckTouchDiagnostics.onTouchForensics?("押下表示まで \(label) 状態\(ms)ms 反映\(drawnMs)ms")
+                }
             }
             #endif
         }
