@@ -177,9 +177,11 @@ final class KeyboardViewController: UIInputViewController {
         ]
         return buildSupplementarySymbolCandidatesByReading(entries: entries, allowedCandidates: allCandidates)
     }()
-    // 面の根。iOS 26 以降のスクロール縁の効果(ぼかし)を切る修飾を根で被せ、記号・部首・絵文字・顔文字の
+    // 面の根。スクロール縁の効果(Liquid Glass のぼかし)を切る修飾を根で被せ、記号・部首・絵文字・顔文字の
     // 各面の縦スクロールにも効かせる(3122)。scrollEdgeEffectHidden は View への修飾で、下位のスクロールへ
-    // 伝播する。KeyboardRootView.body を触ると Release の WMO が落ちやすい(project_release_wmo_body_limit)ので
+    // 伝播する。#available が iOS 26 なのは API が 26 で入ったからで、**実際に描かれ始めたのは 27**
+    // (実測: iPhone 15 は 26.6 では出ず 27 で出た。15 Pro/27 のテスターは候補バーで出たが SE3/27 では出ない ─
+    // OS の版だけでは決まらない)。26 で切っても害は無いので分岐はそのまま。KeyboardRootView.body を触ると Release の WMO が落ちやすい(project_release_wmo_body_limit)ので
     // 包む側で当てる
     typealias KeyboardRootHostView = ModifiedContent<KeyboardRootView, KeyboardScrollEdgeEffectHiddenModifier>
     var hostingController: UIHostingController<KeyboardRootHostView>?
