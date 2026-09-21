@@ -6082,7 +6082,7 @@
 	<dict><key>phrase</key><string>ハヤシ・スマート・システム</string><key>shortcut</key><string>はやしすまーとしすてむ</string></dict>
 	<dict><key>phrase</key><string>ヘッド・トレーニング</string><key>shortcut</key><string>へっどとれーにんぐ</string></dict>
 	<dict><key>phrase</key><string>ペルゴラ</string><key>shortcut</key><string>ぺるごら</string></dict>
-	<dict><key>phrase</key><string>リラ仕立て</string><key>shortcut</key><string>りらしたて</string></dict>
+	<dict><key>phrase</key><string>リラ仕立て</string><key>shortcut</key><string>りらじたて</string></dict>
 	<dict><key>phrase</key><string>改良スマート仕立て</string><key>shortcut</key><string>かいりょうすまーとじたて</string></dict>
 
 	<!-- ■ 醸造技術 -->
@@ -8358,7 +8358,7 @@
 	<dict><key>phrase</key><string>山鶉</string><key>shortcut</key><string>やまうずら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>雌山羊</string><key>shortcut</key><string>めすやぎ</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>手長エビ</string><key>shortcut</key><string>てながえび</string></dict>
-	<dict><key>phrase</key><string>赤ワインソース仕立て</string><key>shortcut</key><string>あかわいんそーすしたて</string></dict>
+	<dict><key>phrase</key><string>赤ワインソース仕立て</string><key>shortcut</key><string>あかわいんそーすじたて</string></dict>
 	<dict><key>phrase</key><string>川マス</string><key>shortcut</key><string>かわます</string></dict>
 	<dict><key>phrase</key><string>鱈</string><key>shortcut</key><string>たら</string></dict>	<!-- Sudachiにもある -->
 	<dict><key>phrase</key><string>鳥類</string><key>shortcut</key><string>ちょうるい</string></dict>	<!-- Sudachiにもある -->
