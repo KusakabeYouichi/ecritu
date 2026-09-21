@@ -289,7 +289,7 @@ struct FlickKeyView: View {
             // 面選択のパレットでは、押している間のキーの表示は面のアイコンだけにする(ユーザ指定 3129)。
             // 語のラベル(顔文字 等)はキーの幅に入らず 2 行に折り返してしまう
             if longPressCandidateAxis == .vertical {
-                return LongPressVerticalCandidatePanel.iconByLabel[candidate] ?? candidate
+                return LongPressVerticalCandidatePanel.iconByLabel[candidate]?.text ?? candidate
             }
             return candidate
         }
