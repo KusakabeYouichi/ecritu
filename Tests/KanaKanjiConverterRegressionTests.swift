@@ -18722,4 +18722,15 @@ extension KanaKanjiConverterRegressionTests {
             "多利ない"
         )
     }
+
+    // しんでん: 辞書順(新田 rank0)より 神殿 を先頭に。合成(しんでんだから)も同じ並びになる(ユーザ指定 3118)
+    func testRegression3118ShindenPrefersShrine() throws {
+        try prepareRealLMDictionary()
+        let single = converter.candidates(for: "しんでん", limit: 6, systemCandidateMode: .surface)
+        XCTAssertEqual(Array(single.prefix(3)), ["神殿", "新田", "神田"], "list=\(single)")
+        let composed = converter.candidates(for: "しんでんだから", limit: 8, systemCandidateMode: .surface)
+        XCTAssertLessThan(composed.firstIndex(of: "神殿だから") ?? 99, composed.firstIndex(of: "新田だから") ?? 99, "list=\(composed)")
+        // 連文節は据え置き(死んでんだから が最良、神殿に は 神殿 が先頭)
+        XCTAssertEqual(converter.multiClauseCandidates(for: "しんでんに", systemCandidateMode: .surface).first, "神殿に")
+    }
 }
