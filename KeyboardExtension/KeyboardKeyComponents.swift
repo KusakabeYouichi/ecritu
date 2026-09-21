@@ -880,8 +880,9 @@ struct LongPressVerticalCandidatePanel: View {
     static let keyLeadingInset: CGFloat = 2
     static let spacing: CGFloat = 3
     static let verticalPadding: CGFloat = 3
-    // 盤の下端とキーの上辺の間隔(押している指で最下段が隠れない分)
-    static let gap: CGFloat = 10
+    // 盤の下端とキーの上辺の間隔。0 = キーの上辺に接する。盤面の上端で最上段が見切れるため、
+    // キーに接するまで下げた(ユーザ指定 3132。段の判定もこの値を基準にしているので自動で追従する)
+    static let gap: CGFloat = 0
 
     static func panelHeight(count: Int) -> CGFloat {
         let n = CGFloat(max(0, count))
