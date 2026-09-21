@@ -278,20 +278,6 @@ extension KeyboardViewController {
                 )
                 if isFirstConversion {
                     KeyboardViewController.didProbeFirstConversionSpike = true
-                    // 区間計測の行はここでまとめて書く(計測中に書くと書き込み自体が区間に紛れる。3032)
-                    self?.flushFirstConversionProbeLines()
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in
-                        guard let self else { return }
-                        self.appendKeyboardDiagnosticsLog(
-                            "MEMFORENSICS初回変換census2 \(KeyboardViewController.diagnosticsAllMallocZonesSummary())"
-                                + " | \(self.kanaKanjiConverter.store.diagnosticsStructureBytesSummary())"
-                                + " | \(self.kanaKanjiConverter.diagnosticsCacheCountsSummary())",
-                            critical: true,
-                            file: #fileID,
-                            line: #line,
-                            function: #function
-                        )
-                    }
                 }
                 // 連文節エンジンが全かなを最良に選んだか(提示層のかな識別退避を免除する根拠。
                 // エンジン側は全かな結果を素通りエコーから守る妥当性フィルタ(curated/終助詞/
