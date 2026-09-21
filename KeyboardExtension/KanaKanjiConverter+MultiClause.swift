@@ -2117,6 +2117,15 @@ extension KanaKanjiConverter {
                 prevID != SID.を, prevID != SID.に, prevID != SID.へ {
                 penalty += Self.multiClauseKanaVerbStemDemotedPenalty
             }
+            // 文頭の副助詞(のみ/ばかり 等)は非文(定数コメント参照。3119)
+            if isKanaIdentity, prevIsBOS, Self.multiClauseBOSAdverbialParticleReadingsID.contains(readingID) {
+                penalty += Self.multiClauseBOSAdverbialParticlePenalty
+            }
+            // 行き先の に/へ 直後のかな いく 族は 行く が正書(定数コメント参照。3119)
+            if isKanaIdentity, prevIsKanaIdentity, prevID == SID.に || prevID == SID.へ,
+                Self.multiClauseKanaIkuAfterDestinationParticleReadingsID.contains(readingID) {
+                penalty += Self.multiClauseKanaIkuAfterDestinationParticlePenalty
+            }
             // 単漢字名詞→動詞の無助詞接続の減点(定数コメント参照)。prev が単漢字の
             // 漢字表層で、現ノードが動詞(活用派生 or 辞書形述語)のとき。
             if prev.count == 1,
@@ -3117,7 +3126,8 @@ extension KanaKanjiConverter {
                         // 複合動詞の前部要素(連用形)+動詞(定数コメント参照)。取り/撮り忘れている を
                         // 鳥忘れている に勝たせる。
                         if compoundVerbRenyouNodeKeys.contains(prevNode.key),
-                            node.isInflectionDerived || node.isDictionaryFormPredicate {
+                            node.isInflectionDerived || node.isDictionaryFormPredicate
+                                || Self.multiClauseCompoundVerbTailRenyouNounSurfaces.contains(node.surface) {
                             cost -= Self.multiClauseCompoundVerbRenyouBonus
                         }
                         // 格助詞 に 直後のカ変(来る)活用は移動の到着点用法で最頻(職場に来て/こっちに来た)。
