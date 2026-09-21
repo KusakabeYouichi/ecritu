@@ -2121,6 +2121,11 @@ extension KanaKanjiConverter {
             if isKanaIdentity, prevIsBOS, Self.multiClauseBOSAdverbialParticleReadingsID.contains(readingID) {
                 penalty += Self.multiClauseBOSAdverbialParticlePenalty
             }
+            // 否定の ん で終わる派生述語+格助詞(定数コメント参照。3120)
+            if isKanaIdentity, prevIsInflectionDerived, prev.hasSuffix("ん"), prevReading?.hasSuffix("ん") == true,
+                readingID == SID.に || readingID == SID.を || readingID == SID.へ || readingID == SID.が || readingID == SID.は {
+                penalty += Self.multiClauseNegativeNDerivedBeforeCaseParticlePenalty
+            }
             // 行き先の に/へ 直後のかな いく 族は 行く が正書(定数コメント参照。3119)
             if isKanaIdentity, prevIsKanaIdentity, prevID == SID.に || prevID == SID.へ,
                 Self.multiClauseKanaIkuAfterDestinationParticleReadingsID.contains(readingID) {

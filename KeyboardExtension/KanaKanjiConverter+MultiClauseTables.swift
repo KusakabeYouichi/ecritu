@@ -1815,6 +1815,10 @@ extension KanaKanjiConverter {
         "いく", "いった", "いって", "いき", "いこう", "いかない", "いける", "いけば", "いきます", "いきたい"
     ]
     static let multiClauseKanaIkuAfterDestinationParticlePenalty = 1500
+    // 否定の ん(経ん/歴ん/食べん)で終わる活用派生の直後に格助詞・係助詞(に/を/へ/が/は)は続かない。派生コストは
+    // 一律 5000 で 変(5277+500)より安く、たかさがへんになる が 高さが経んになる と 173 差の拮抗になっていた
+    // (実機では逆転。ユーザ報告 3120)。飲ん+で(音便)は で なので対象外
+    static let multiClauseNegativeNDerivedBeforeCaseParticlePenalty = 2500
     static let multiClauseKanaVerbStemDemotedPenalty = 3500
     // 述語(辞書形/活用派生)の直後の引用・伝聞の って(違うって/行くって/食べたって)。LM に 違う→って が無く
     // unigram+backoff の約 6000 になり、血+が+売って(1303+1500)の断片連鎖に 2800 差で負けていた(ちがうってのが→血が売ってのが。3086)
