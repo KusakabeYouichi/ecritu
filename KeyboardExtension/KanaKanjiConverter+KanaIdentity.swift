@@ -92,6 +92,16 @@ extension KanaKanjiConverter {
         return kanaUni < altBest + 800
     }
 
+    // 語幹のかなが「優位」か。seed 宣言のある読みは人手の並びに従う(かなが先頭なら真、末尾や非掲載なら偽:
+    // ちかく=[近く,…,ちかく])。宣言が無ければ従来どおり辞書にかな表層があれば真(こう/いくつ)。LM 比較は
+    // 口/工 のような読み跨ぎの安い単漢字に負けて こうかな を落とすので使わない
+    func isKanaPreferredStem(_ stem: String) -> Bool {
+        if let seed = KanaKanjiSeedDictionary.seed[stem] {
+            return seed.first == stem
+        }
+        return systemCandidates(for: stem, mode: .lesDeux).contains(stem)
+    }
+
     func computeShouldKeepKanaIdentityLeading(normalized: String) -> Bool {
         if hasLearnedKanaIdentity(for: normalized) || hasCuratedKanaIdentity(for: normalized) {
             return true
@@ -690,7 +700,10 @@ extension KanaKanjiConverter {
         where normalized.count > tail.count && normalized.hasSuffix(tail) {
             let stem = String(normalized.dropLast(tail.count))
             guard stem.count >= 2 else { continue }
-            if systemCandidates(for: stem, mode: .lesDeux).contains(stem) {
+            // 語幹にかな表層が「在る」だけでは根拠にしない(3119): ちかくか は seed が 近く→…→ちかく(末尾)なのに
+            // かな在りで keepKana が立ち、ちかくか が 近くか の前に出ていた。seed 宣言があればかな先頭のときだけ、
+            // 無ければ LM でかなが漢字に迫るとき(isKanaOrthographyStem)だけ根拠にする
+            if isKanaPreferredStem(stem) {
                 return true
             }
             for verb in ["ある", "いる"]
