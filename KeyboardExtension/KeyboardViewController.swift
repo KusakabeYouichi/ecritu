@@ -177,7 +177,12 @@ final class KeyboardViewController: UIInputViewController {
         ]
         return buildSupplementarySymbolCandidatesByReading(entries: entries, allowedCandidates: allCandidates)
     }()
-    var hostingController: UIHostingController<KeyboardRootView>?
+    // 面の根。iOS 26 以降のスクロール縁の効果(ぼかし)を切る修飾を根で被せ、記号・部首・絵文字・顔文字の
+    // 各面の縦スクロールにも効かせる(3122)。scrollEdgeEffectHidden は View への修飾で、下位のスクロールへ
+    // 伝播する。KeyboardRootView.body を触ると Release の WMO が落ちやすい(project_release_wmo_body_limit)ので
+    // 包む側で当てる
+    typealias KeyboardRootHostView = ModifiedContent<KeyboardRootView, KeyboardScrollEdgeEffectHiddenModifier>
+    var hostingController: UIHostingController<KeyboardRootHostView>?
     var lastRenderConfiguration: RenderConfiguration?
     var keyboardHeightConstraint: NSLayoutConstraint?
     var keyboardMaxHeightConstraint: NSLayoutConstraint?
@@ -1326,7 +1331,7 @@ final class KeyboardViewController: UIInputViewController {
 
     private func setupKeyboardView() {
         let configuration = makeRenderConfiguration()
-        let host = UIHostingController(rootView: makeRootView(from: configuration))
+        let host = UIHostingController(rootView: makeKeyboardRootHostView(from: configuration))
         addChild(host)
         host.view.translatesAutoresizingMaskIntoConstraints = false
         host.view.clipsToBounds = false
@@ -1691,7 +1696,7 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         UIView.performWithoutAnimation {
-            hostingController?.rootView = makeRootView(from: configuration)
+            hostingController?.rootView = makeKeyboardRootHostView(from: configuration)
             hostingController?.view.layoutIfNeeded()
         }
 
