@@ -54,11 +54,6 @@ final class KanaKanjiConverter {
         return trace.hasPrefix(reading + ": ") ? String(trace.dropFirst(reading.count + 2)) : nil
     }
 
-    // 区間計測のフック(3022)。中核は OS に依存させないので、実際の採取は
-    // 呼び出し側(キーボード拡張)が差し込む。出荷前診断のときだけ設定され、
-    // 通常は nil でほぼ無コスト。初回変換の +8MB の内訳を割るために入れた
-    static var memoryProbe: ((String) -> Void)?
-
     // applyScriptVariantCandidateModes へ活用派生集合を渡すための一時置き場(candidates() 内のみ使用)
     var inflectionDerivedCandidatesForScriptVariant: Set<String> = []
     var historicalKanaSurfaceAllowed: Bool = false
@@ -330,7 +325,6 @@ final class KanaKanjiConverter {
         }
 
         // 最初の probe は基準点(差分 0)。これが無いと DB オープン+辞書引きが未計測になる(3032)
-        Self.memoryProbe?("単文節: 開始")
         let context = makeGenerationContext(
             reading: normalizedReading,
             limit: limit,
@@ -338,11 +332,8 @@ final class KanaKanjiConverter {
         )
 
         var scores: [String: Int] = [:]
-        Self.memoryProbe?("単文節: 文脈作成まで(DB オープン+辞書引き)")
         collectDirectCandidates(context, into: &scores)
-        Self.memoryProbe?("単文節: 直接候補(辞書引き)")
         let inflectionDerivedCandidates = collectDerivedCandidates(context, into: &scores)
-        Self.memoryProbe?("単文節: 派生候補(活用/postfix)")
         applyRankingAdjustments(
             context,
             inflectionDerivedCandidates: inflectionDerivedCandidates,
@@ -351,10 +342,8 @@ final class KanaKanjiConverter {
         inflectionDerivedCandidatesForScriptVariant = Set(inflectionDerivedCandidates)
         applySuppressionsAndDecorativeFilter(context, to: &scores)
         inflectionDerivedCandidatesForScriptVariant = []
-        Self.memoryProbe?("単文節: 補正・抑制")
 
         var finalCandidates = finalizeSortedCandidates(context, scores: scores)
-        Self.memoryProbe?("単文節: 整列・確定")
         // 星座の標準和名(さそり座)を先頭へ(2897、実機報告 さそりざ→蠍座)。Sudachi の別表記(蠍座 wc 3703)は辞書点 1200、
         // 標準名(18554)は収穫底値点 1030 で負け、normalise モードでは正規化形(魚座)の並び替えにも押される。
         // 点数でなく最終列で動かす(連文節側の標準名供給と対)。学習・追加語彙がある読みは触らない
@@ -460,16 +449,13 @@ final class KanaKanjiConverter {
         // 読みに正規の語(wc<10000)しか無い通常ケースや、全候補が収穫底値の読み
         // (相対順維持)は無影響。
         let wordCosts = store.wordCosts(for: context.reading)
-        Self.memoryProbe?("直接候補: word_costs 引き")
         // seed 掲載語は人手の選別済みなので降格しない(柚香 等、wc が収穫底値でも
         // 正規の代表候補として seed に載せた語を守る)。
         let seedExempt = Set(KanaKanjiSeedDictionary.seed[context.reading] ?? [])
-        Self.memoryProbe?("直接候補: seed 表の実体化")
         // 補助語彙の昇格判定(定数コメント参照)。同読みに語LM実在の一般語があれば昇格しない。
         let supplementalCandidates = Set(
             store.loadSupplementalSystemDictionary().candidates(for: context.reading)
         )
-        Self.memoryProbe?("直接候補: 補助語彙の読み込み")
         let promotesSupplemental: Bool = {
             guard !supplementalCandidates.isEmpty else {
                 return false
@@ -480,7 +466,6 @@ final class KanaKanjiConverter {
             }
             return store.wordLMUnigramCosts(for: others).isEmpty
         }()
-        Self.memoryProbe?("辞書引き: LM unigram(補助語彙昇格判定)")
         var normalSystemCandidates: [String] = []
         var harvestTierCandidates: [String] = []
         var supplementalSystemCandidates: [String] = []
@@ -504,7 +489,6 @@ final class KanaKanjiConverter {
         addCandidates(harvestTierCandidates, baseScore: CandidateScore.harvestTierDictionary, to: &scores)
         addCandidates(context.userCandidates, baseScore: CandidateScore.ajoutVocabulary, to: &scores)
         addCandidates(context.learnedCandidates, baseScore: CandidateScore.learnedDictionary, to: &scores)
-        Self.memoryProbe?("辞書引き: 候補の登録")
         // 完全一致専用候補(踊り字 等)。入力全体がこの読みと一致した単文節でのみ供給する。
         // systemCandidates には入れていないので、語幹合成・連文節には現れない。
         if let exactOnly = KanaKanjiSeedDictionary.exactReadingOnlySeed[context.reading] {
@@ -515,7 +499,6 @@ final class KanaKanjiConverter {
         if let radicalForms = KanjiRadicalCatalog.formsByKanaName[context.reading] {
             addCandidates(radicalForms, baseScore: CandidateScore.exactReadingOnly, to: &scores)
         }
-        Self.memoryProbe?("辞書引き: exactReadingOnly/部首表")
         // 末尾を長音で引き伸ばした形(なるほどー)は辞書に無く、単文節では候補が1件も
         // 作れない。keepKana(末尾長音の剥がし)が根拠を認める読みに限り、かな全長を
         // 供給する。keepKana は既にあるかな候補を維持するだけで供給はしないため(2564)
