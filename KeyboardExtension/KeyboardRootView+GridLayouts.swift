@@ -113,7 +113,7 @@ extension KeyboardRootView {
                     showsGuideText: false,
                     longPressCandidates: Self.modePaletteLabels,
                     longPressCandidateAxis: .vertical,
-                    longPressCandidateCellWidth: 104,
+                    longPressCandidateCellWidth: 116,
                     longPressDelayOverride: 0.15,
                     activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                     activeMainLabelFontSizeProvider: { direction, mainText in
@@ -180,7 +180,7 @@ extension KeyboardRootView {
                 showsGuideText: false,
                 longPressCandidates: Self.modePaletteLabels,
                 longPressCandidateAxis: .vertical,
-                longPressCandidateCellWidth: 104,
+                longPressCandidateCellWidth: 116,
                 longPressDelayOverride: 0.15,
                 activePreviewFontSize: kanaModeSwitcherPreviewFontSize,
                 activeMainLabelFontSizeProvider: { direction, mainText in
