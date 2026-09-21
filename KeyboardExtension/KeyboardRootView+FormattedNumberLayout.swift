@@ -1160,10 +1160,11 @@ extension KeyboardRootView {
     // 下段バー。内部ボタンも指定高さで作る(外枠だけ縮めるとボタンがはみ出して上にずれるため)。
     private func formattedNumberBottomBar(height: CGFloat) -> some View {
         HStack(spacing: keyboardRowSpacing) {
-            ActionKeyButton(
+            ReturnToKanaPaletteKey(
                 title: "あい",
-                fixedWidth: 56,
-                action: { switchInputMode(.kana) }
+                candidates: KeyboardRootView.modePaletteLabels,
+                onReturn: { switchInputMode(.kana) },
+                onSelectCandidate: { _ = selectModePalette($0) }
             )
             .frame(height: height)
             PanelAdvanceKeyboardKey(action: showsNextKeyboardKey ? onAdvanceKeyboard : nil, height: height)
