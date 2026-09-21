@@ -6060,7 +6060,7 @@
 	<dict><key>phrase</key><string>Vertical Shoot Position</string><key>shortcut</key><string>ゔぁーてぃかるしゅーとぽじしょん</string></dict>
 	<dict><key>phrase</key><string>Vinha ao alto</string><key>shortcut</key><string>ゔぃーにゃあおあると</string></dict>
 	<dict><key>phrase</key><string>スマート・マイヨルガ</string><key>shortcut</key><string>すまーとまいよるが</string></dict>
-	<dict><key>phrase</key><string>スマート・マイヨルガ仕立て</string><key>shortcut</key><string>すまーとまいよるがしたて</string></dict>
+	<dict><key>phrase</key><string>スマート・マイヨルガ仕立て</string><key>shortcut</key><string>すまーとまいよるがじたて</string></dict>
 	<dict><key>phrase</key><string>バスケット型</string><key>shortcut</key><string>ばすけっとがた</string></dict>
 	<dict><key>phrase</key><string>バスケット状</string><key>shortcut</key><string>ばすけっとじょう</string></dict>
 	<dict><key>phrase</key><string>株仕立て</string><key>shortcut</key><string>かぶじたて</string></dict>
@@ -6076,14 +6076,14 @@
 	<dict><key>phrase</key><string>ギヨ・ドゥブル</string><key>shortcut</key><string>ぎよどぅぶる</string></dict>
 	<dict><key>phrase</key><string>グリーン・ハーベスト</string><key>shortcut</key><string>ぐりーんはーべすと</string></dict>
 	<dict><key>phrase</key><string>コルドン</string><key>shortcut</key><string>こるどん</string></dict>	<!-- Sudachiにもある -->
-	<dict><key>phrase</key><string>コルドン仕立て</string><key>shortcut</key><string>こるどんしたて</string></dict>
+	<dict><key>phrase</key><string>コルドン仕立て</string><key>shortcut</key><string>こるどんじたて</string></dict>
 	<dict><key>phrase</key><string>ゴブレ</string><key>shortcut</key><string>ごぶれ</string></dict>
-	<dict><key>phrase</key><string>スマートマイヨーガー仕立て</string><key>shortcut</key><string>すまーとまいよーがーしたて</string></dict>
+	<dict><key>phrase</key><string>スマートマイヨーガー仕立て</string><key>shortcut</key><string>すまーとまいよーがーじたて</string></dict>
 	<dict><key>phrase</key><string>ハヤシ・スマート・システム</string><key>shortcut</key><string>はやしすまーとしすてむ</string></dict>
 	<dict><key>phrase</key><string>ヘッド・トレーニング</string><key>shortcut</key><string>へっどとれーにんぐ</string></dict>
 	<dict><key>phrase</key><string>ペルゴラ</string><key>shortcut</key><string>ぺるごら</string></dict>
 	<dict><key>phrase</key><string>リラ仕立て</string><key>shortcut</key><string>りらしたて</string></dict>
-	<dict><key>phrase</key><string>改良スマート仕立て</string><key>shortcut</key><string>かいりょうすまーとしたて</string></dict>
+	<dict><key>phrase</key><string>改良スマート仕立て</string><key>shortcut</key><string>かいりょうすまーとじたて</string></dict>
 
 	<!-- ■ 醸造技術 -->
 	<dict><key>phrase</key><string>Crush</string><key>shortcut</key><string>くらっしゅ</string></dict>
