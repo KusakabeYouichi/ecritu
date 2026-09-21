@@ -232,9 +232,30 @@ struct FlickKeyView: View {
             }
 
             if longPressIsActive,
-                !longPressCandidates.isEmpty {
+                !longPressCandidates.isEmpty,
+                longPressCandidateAxis == .horizontal {
                 longPressCandidatePanel
                     .offset(x: candidatePanelOffsetX, y: candidatePanelOffsetY)
+                    .zIndex(KeyboardLayerZIndex.floatingOverlay)
+            }
+        }
+        // 縦の盤(面選択のパレット)はキーの左上を基準に置く(3128)。キー枠の測定値(preference)は
+        // 実機でずっと (0,0) のままで寄せが効かず、盤の左が画面外へ出ていた(ユーザ報告の画像)。
+        // overlay はレイアウトに影響せず、キーの枠に揃うので測定が要らない
+        .overlay(alignment: .topLeading) {
+            if longPressIsActive,
+                !longPressCandidates.isEmpty,
+                longPressCandidateAxis == .vertical {
+                LongPressVerticalCandidatePanel(
+                    candidates: longPressCandidates,
+                    highlightedIndex: highlightedLongPressIndex,
+                    cellWidth: longPressCandidateCellWidth ?? Metrics.candidateCellWidth
+                )
+                    .offset(
+                        x: LongPressVerticalCandidatePanel.keyLeadingInset,
+                        y: -(LongPressVerticalCandidatePanel.panelHeight(count: longPressCandidates.count)
+                            + LongPressVerticalCandidatePanel.gap)
+                    )
                     .zIndex(KeyboardLayerZIndex.floatingOverlay)
             }
         }
@@ -535,20 +556,7 @@ struct FlickKeyView: View {
             )
     }
 
-    @ViewBuilder
     private var longPressCandidatePanel: some View {
-        if longPressCandidateAxis == .vertical {
-            LongPressVerticalCandidatePanel(
-                candidates: longPressCandidates,
-                highlightedIndex: highlightedLongPressIndex,
-                cellWidth: longPressCandidateCellWidth ?? Metrics.candidateCellWidth
-            )
-        } else {
-            longPressCandidateHorizontalPanel
-        }
-    }
-
-    private var longPressCandidateHorizontalPanel: some View {
         let cellWidth = effectiveCandidateCellWidth
         let candidateFontSize: CGFloat = cellWidth < 30 ? 18 : 20
 
@@ -572,9 +580,6 @@ struct FlickKeyView: View {
     }
 
     private var candidatePanelWidth: CGFloat {
-        if longPressCandidateAxis == .vertical {
-            return (longPressCandidateCellWidth ?? Metrics.candidateCellWidth) + Metrics.candidatePanelContentInset
-        }
         let count = CGFloat(longPressCandidates.count)
         let contentWidth = count * effectiveCandidateCellWidth + max(0, count - 1) * Metrics.candidateSpacing
         return contentWidth + Metrics.candidatePanelContentInset
@@ -617,36 +622,10 @@ struct FlickKeyView: View {
             shift -= panelMaxX - maxX
         }
 
-        // 実枠(keyboardHorizontalBounds)が取れていない/狭いときの保険(3127): 画面座標でも必ず内側に置く。
-        // 面選択のパレットが左端のキーで左へはみ出し、アイコン列が切れていた(ユーザ報告の画像)
-        let leftInset: CGFloat = 8
-        let leftEdge = keyFrameInGlobal.midX + shift - panelWidth * 0.5
-        if leftEdge < leftInset {
-            shift += leftInset - leftEdge
-        }
-
-        #if DEBUG
-        if longPressCandidateAxis == .vertical {
-            KeyboardStuckTouchDiagnostics.onTouchForensics?(
-                String(
-                    format: "パレット位置 key=(%.0f,%.0f,w%.0f) bounds=(%.0f,%.0f) panelW=%.0f shift=%.0f",
-                    keyFrameInGlobal.minX, keyFrameInGlobal.midX, keyFrameInGlobal.width,
-                    bounds.minX, bounds.maxX, panelWidth, shift
-                )
-            )
-        }
-        #endif
-
         return shift
     }
 
     private var candidatePanelOffsetY: CGFloat {
-        if longPressCandidateAxis == .vertical {
-            // キーの上辺から gap だけ離した位置に盤の下端が来るよう、キー中心からの距離で置く
-            let panelHeight = LongPressVerticalCandidatePanel.panelHeight(count: longPressCandidates.count)
-            let keyHeight = keyFrameInGlobal.height > 0 ? keyFrameInGlobal.height : Metrics.candidateCellHeight
-            return -(keyHeight * 0.5 + LongPressVerticalCandidatePanel.gap + panelHeight * 0.5)
-        }
         switch longPressCandidatePanelPlacement {
         case .above:
             return -Metrics.previewDistance
