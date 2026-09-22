@@ -650,10 +650,15 @@ struct FlickKeyView: View {
             .onChanged { value in
                 if !isTouching {
                     #if DEBUG
-                    // 調査用(3136): 触れてから SwiftUI の判定に届くまで(押下表示が遅い件)
-                    if let touchForensicsLabel, KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
+                    // 調査用(3136/3138): 触れてから SwiftUI の判定に届くまで。キーの位置で違うのかを見るため、
+                    // 左下キー以外でも 150ms を超えたものは記録する(画面端のシステム操作による配送遅れの疑い)
+                    if KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
                         let ms = Int((CFAbsoluteTimeGetCurrent() - KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt) * 1000)
-                        KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで \(touchForensicsLabel) \(ms)ms")
+                        if let touchForensicsLabel {
+                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで \(touchForensicsLabel) \(ms)ms")
+                        } else if ms >= 150 {
+                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで キー[\(kana.center)] \(ms)ms")
+                        }
                     }
                     #endif
                     onTouchStateChanged(true)
@@ -727,6 +732,14 @@ struct FlickKeyView: View {
 
                 let committedText: String
                 let committedDirectionForCallback: FlickDirection
+
+                if longPressIsActive,
+                    longPressCandidateAxis == .vertical,
+                    !longPressCandidates.indices.contains(highlightedLongPressIndex) {
+                    // 盤を出したまま、どれも選ばずに離した ─ 何も起きない(ユーザ指定 3138)
+                    finalizeTouchInteractionState()
+                    return
+                }
 
                 if longPressIsActive,
                     !longPressCandidates.isEmpty,
@@ -852,7 +865,10 @@ struct FlickKeyView: View {
             activeDirection = .milieu
             longPressAnchorLocationX = latestTouchLocationX
             longPressAnchorLocationY = latestTouchLocationY
-            highlightedLongPressIndex = 0
+            // 縦(面選択のパレット)は、指が盤に入るまでどれも選ばない(ユーザ指定 3138)
+            highlightedLongPressIndex = longPressCandidateAxis == .vertical
+                ? LongPressVerticalCandidatePanel.noSelection
+                : 0
         }
 
         longPressWorkItem = workItem

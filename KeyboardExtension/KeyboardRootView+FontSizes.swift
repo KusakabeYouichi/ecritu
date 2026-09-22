@@ -253,6 +253,11 @@ extension KeyboardRootView {
 
         if !usesWideLeftModeSwitchButtons {
             if direction == .milieu {
+                // 面選択のパレットを出している間、キーには選択中の面のアイコンが出る。字ごとに見え方が
+                // 違うので個別に決める(☺︎ は小さく見え、^_^ は大きく見える。ユーザ指定 3138)
+                if let size = paletteKeyIconFontSize(for: mainText) {
+                    return size
+                }
                 return kanaModeSwitcherMainLabelFontSize
             }
 
@@ -304,6 +309,23 @@ extension KeyboardRootView {
 
     var compactKanaModeSwitcherPreviewIconFontSize: CGFloat {
         18
+    }
+
+    // 面選択のパレット中にキーへ出すアイコンの大きさ(3138)。盤の中の大きさとは別物 ─ キーは正方形に近く
+    // 1 文字が大きく見えるので、絵文字は上げ、顔文字(3 文字)は下げる
+    func paletteKeyIconFontSize(for text: String) -> CGFloat? {
+        switch text {
+        case "☺︎":
+            return compactKanaModeSwitcherEmojiActiveIconFontSize + 4
+        case "^_^":
+            return 15
+        case "熙":
+            return 20
+        case "1,000":
+            return 13
+        default:
+            return nil
+        }
     }
 
     // 幅狭・縦画面の ☺︎ は文字ラベル基準(13pt)由来で小さすぎた。タップ面・フリック中
