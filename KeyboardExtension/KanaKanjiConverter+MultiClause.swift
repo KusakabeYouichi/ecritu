@@ -35,7 +35,17 @@ extension KanaKanjiConverter {
         }
     }
 
+    #if DEBUG
+    // テストからトレースを点けるための口。xcodebuild のコマンドラインからは
+    // 環境変数がテスト実行プロセスまで届かないことがあるため(3141)
+    nonisolated(unsafe) static var multiClauseTraceForced = false
+    static var multiClauseTraceEnabled: Bool {
+        multiClauseTraceForced || multiClauseTraceEnabledFromEnvironment
+    }
+    static let multiClauseTraceEnabledFromEnvironment = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
+    #else
     static let multiClauseTraceEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE"] != nil
+    #endif
     static let multiClauseTraceEdgesEnabled = ProcessInfo.processInfo.environment["MULTI_TRACE_EDGES"] != nil
     static let singleTraceEnabled = ProcessInfo.processInfo.environment["SINGLE_TRACE"] != nil
     // 連語ボーナス表の頭(紙\t印刷 → 紙)。変換ごとに split で組み直していた(3096)
@@ -1402,6 +1412,25 @@ extension KanaKanjiConverter {
             }
             return node.end >= 3
                 || (node.end == 2 && unigram <= Self.multiClauseBOSOverlapStrongTwoCharUnigramMax)
+        }
+        // 文頭から 3 字以上の活用派生述語(入った=はいった、走らない=はしらない)が立つとき。
+        // 辞書語の跨ぎ(上)と違い重ね減点はしないが、文頭助詞の減点(2000)の払い戻し
+        // (直後が活用派生の述語なら打ち消す規則)だけは止める。は+行った(6983)が
+        // 入った(派生 OOV 7200)に 217 差で勝ち、はいったばかり に 入ったばかり が
+        // 出なかった(ユーザー報告 3141)
+        let hasInflectionDerivedWordFromStart: Bool = nodes.contains { node in
+            guard node.start == 0, node.isInflectionDerived, !node.isKanaIdentity, node.end >= 3 else {
+                return false
+            }
+            // 活用派生は読める形なら何でも作れる(煮とって/似とって)ので、語幹が LM に載っている
+            // 実在語(入っ 4729、走っ 5769)に限る。語尾は 1〜2 字落として見る
+            for drop in 1...2 {
+                let stem = String(node.surface.dropLast(drop))
+                if stem.count >= 2, unigramCosts[stem] != nil {
+                    return true
+                }
+            }
+            return false
         }
         func sentenceInitialParticleOverlapPenalty(for node: MultiClauseNode) -> Int {
             guard hasScriptedDictWordFromStart, node.start == 0, node.isKanaIdentity,
@@ -2770,6 +2799,8 @@ extension KanaKanjiConverter {
                         if prevNode.start == 0, prevNode.isKanaIdentity,
                             Self.multiClauseBOSParticleBeforePredicateExemptParticlesID.contains(prevNode.surfaceID),
                             node.isInflectionDerived,
+                            // 文頭から丸ごと活用形が読めるなら払い戻さない(定義コメント参照。3141)
+                            !hasInflectionDerivedWordFromStart,
                             !(node.reading.first.map { $0 == "は" || $0 == "も" } ?? false) {
                             cost -= Self.multiClauseBOSParticlePenalty
                             // 文頭助詞の跨ぎ減点(3500。網膜=もうまく 対策)も、直後が漢字 2 字以上で始まる派生述語
