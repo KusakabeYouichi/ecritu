@@ -199,6 +199,8 @@ final class KeyboardViewController: UIInputViewController {
     var lastLoggedKeyboardHeightMismatch: CGFloat = 0
     // 枠がこちらの要求より小さいままのときに、もう一度要求を届けた回数(3158)。一致したら 0 に戻す
     var keyboardHeightRetryCount = 0
+    // この表示で「その向きの最大の高さ」を一度通したか(3160)
+    var didPrimeMaximumKeyboardHeight = false
     static let keyboardHeightRetryLimit = 3
     var lastLoggedPreferredKeyboardHeightIsLandscape = false
     var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
@@ -582,7 +584,7 @@ final class KeyboardViewController: UIInputViewController {
         return UIColor(red: 0.89, green: 0.90, blue: 0.92, alpha: 1.0)
     }
 
-    enum PortraitHeightProfile {
+    enum PortraitHeightProfile: CaseIterable {
         case kanaThreeByThree
         case compactGrid
         case compactActionRow
@@ -1315,6 +1317,8 @@ final class KeyboardViewController: UIInputViewController {
         with coordinator: any UIViewControllerTransitionCoordinator
     ) {
         pendingSizeTransitionTargetSize = size
+        // 向きが変わると枠の高さはホストが取り直すので、その向きの最大の高さも通し直す(3160)
+        didPrimeMaximumKeyboardHeight = false
         // 遷移先の高さを、他の処理より先に publish する(2865)。ホストは遷移を始めてから
         // 約 15ms で本文の余白(KeyboardLayoutGuide)を確定させる。実機ログでは écritu の
         // 正しい値が届くのが 53ms 後で、ホストは古い高さで guide を決めてから 400ms 後に
