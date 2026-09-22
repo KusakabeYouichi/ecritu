@@ -191,7 +191,13 @@ struct FlickKeyView: View {
                             weight: .bold,
                             design: .rounded
                         )
+                        // 書式化の見本 1,000 は 5 字ぶん横に長い。幅の詰まった字面にして、
+                        // それでも入らなければ縮める(ユーザー指摘 3155)。1 字のキーには影響しない
+                        .width(displayTextNeedsCondensedWidth ? .condensed : .standard)
                     )
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+                    .padding(.horizontal, 2)
                     .foregroundStyle(Color.white)
             } else if let idleReplacement {
                 idleReplacement
@@ -283,6 +289,11 @@ struct FlickKeyView: View {
             finalizeTouchInteractionState()
         }
         .zIndex(isTouching ? KeyboardLayerZIndex.touchingKey : 0)
+    }
+
+    // 横に長い字面(書式化の 1,000)かどうか。押している間のキーの描き方を変える
+    private var displayTextNeedsCondensedWidth: Bool {
+        displayText.count >= 4
     }
 
     private var displayText: String {
