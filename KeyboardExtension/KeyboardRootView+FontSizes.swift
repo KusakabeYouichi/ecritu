@@ -281,6 +281,11 @@ extension KeyboardRootView {
         }
 
         if direction == .milieu {
+            // 幅広の左列でも、パレットを出している間はアイコンを出す(3152 まで幅狭の列にしか
+            // 掛かっておらず、幅広の並びでは大きさが変わらなかった。ユーザー報告 3153)
+            if let size = paletteKeyIconFontSize(for: mainText) {
+                return size
+            }
             return kanaModeSwitcherMainLabelFontSize
         }
 
