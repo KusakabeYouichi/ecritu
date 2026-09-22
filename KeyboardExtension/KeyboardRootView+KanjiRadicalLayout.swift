@@ -29,6 +29,7 @@ extension KeyboardRootView {
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
+        .modifier(KeyboardScrollEdgeEffectHiddenModifier())
     }
 }
 
