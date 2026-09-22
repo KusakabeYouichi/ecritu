@@ -308,8 +308,13 @@ extension KeyboardViewController {
             return
         }
         let hostHeight = hostingController?.view.bounds.height ?? -1
+        // 制約に入れた値も添える(3156)。横画面で面を切り替えたとき、要求 188 に対して実寸が
+        // 176 のままだった。こちらが制約を更新できていないのか、ホストが拒んでいるのかを分ける
+        let equalConstant = keyboardHeightConstraint.map { Int($0.constant) } ?? -1
+        let maxConstant = keyboardMaxHeightConstraint.map { Int($0.constant) } ?? -1
         appendKeyboardDiagnosticsLog(
             "高さ実寸 差=\(gap)pt 要求=\(Int(expected)) view=\(Int(actual)) 面=\(Int(hostHeight))"
+                + " 制約=\(equalConstant)/上限\(maxConstant)"
                 + " 下端インセット view=\(Int(view.safeAreaInsets.bottom))"
                 + "/窓=\(Int(view.window?.safeAreaInsets.bottom ?? 0))"
                 + "/inputView=\(Int(inputView?.safeAreaInsets.bottom ?? 0))"
