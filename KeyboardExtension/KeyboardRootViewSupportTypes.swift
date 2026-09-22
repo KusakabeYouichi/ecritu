@@ -190,6 +190,48 @@ struct CandidateBarTopMarginProbe: ViewModifier {
     #endif
 }
 
+// 面の中身を、与えられた高さに収める(3170)。横画面では ホストが枠を広げてくれず
+// (3156-3162 の実測)、記号・絵文字・顔文字・部首・書式化の中身が枠より高くて上下が
+// 切れていた。中身は自然な高さで組んでから、入りきらないときだけ縮める。
+// 縮尺はレイアウトの大きさを変えないので、測った自然な高さが揺れ戻ることはない
+private struct KeyboardPanelNaturalHeightKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
+struct KeyboardPanelFitsProposedHeightModifier: ViewModifier {
+    @State private var naturalHeight: CGFloat = 0
+
+    func body(content: Content) -> some View {
+        GeometryReader { proxy in
+            let available = proxy.size.height
+            let scale = (available > 0 && naturalHeight > available + 0.5)
+                ? available / naturalHeight
+                : 1
+            content
+                .fixedSize(horizontal: false, vertical: true)
+                .background(
+                    GeometryReader { inner in
+                        Color.clear.preference(
+                            key: KeyboardPanelNaturalHeightKey.self,
+                            value: inner.size.height
+                        )
+                    }
+                )
+                .scaleEffect(scale, anchor: .top)
+                .frame(width: proxy.size.width, height: available, alignment: .top)
+        }
+        .onPreferenceChange(KeyboardPanelNaturalHeightKey.self) { value in
+            if abs(value - naturalHeight) > 0.5 {
+                naturalHeight = value
+            }
+        }
+    }
+}
+
 // スクロールの縁に出る効果(Liquid Glass のぼかし。上の縁から下へ弱まる)を切る(3106)。
 // API は iOS 26 からだが、描かれ始めるのは実測で 27(iPhone 15 は 26.6 では出ず 27 で出た。
 // テスターの iPhone 15 Pro/27 は候補バーの中身が上 6 割ほどぼやけた ─ 画像 IMG_0235)。

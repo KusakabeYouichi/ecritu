@@ -227,6 +227,8 @@ extension KeyboardRootView {
             deleteKeyCornerBadgeText: memoryPressureDeleteKeyBadge
         )
         .modifier(KeyboardScrollEdgeEffectHiddenModifier())
+        // 枠に収まらないときだけ縮める(定義箇所のコメント参照。3170)
+        .modifier(KeyboardPanelFitsProposedHeightModifier())
     }
 
     var symbolKeyboardView: some View {
@@ -250,6 +252,8 @@ extension KeyboardRootView {
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
         .modifier(KeyboardScrollEdgeEffectHiddenModifier())
+        // 枠に収まらないときだけ縮める(定義箇所のコメント参照。3170)
+        .modifier(KeyboardPanelFitsProposedHeightModifier())
     }
 
     func kaomojiSearchPrefixButton(
@@ -492,6 +496,8 @@ extension KeyboardRootView {
         }
         .frame(height: fourRowAlignedClusterHeight, alignment: .top)
         .modifier(KeyboardScrollEdgeEffectHiddenModifier())
+        // 枠に収まらないときだけ縮める(定義箇所のコメント参照。3170)
+        .modifier(KeyboardPanelFitsProposedHeightModifier())
     }
 
     var emojiHeaderTitle: String {
