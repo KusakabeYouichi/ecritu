@@ -205,6 +205,7 @@ extension KeyboardRootView {
         }
     }
 
+    // 面ごとにスクロール縁のぼかしを切る(3140)。根で被せると候補欄の上余白まで消えた
     var emojiKeyboardView: some View {
         KeyboardRootEmojiKeyboardSectionView(
             selectedEmojiCategory: $selectedEmojiCategory,
@@ -225,6 +226,7 @@ extension KeyboardRootView {
             deleteKeyBackgroundColorOverride: memoryPressureDeleteKeyColor,
             deleteKeyCornerBadgeText: memoryPressureDeleteKeyBadge
         )
+        .modifier(KeyboardScrollEdgeEffectHiddenModifier())
     }
 
     var symbolKeyboardView: some View {
@@ -247,6 +249,7 @@ extension KeyboardRootView {
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
+        .modifier(KeyboardScrollEdgeEffectHiddenModifier())
     }
 
     func kaomojiSearchPrefixButton(
@@ -488,6 +491,7 @@ extension KeyboardRootView {
             .frame(height: fourRowAlignedClusterHeight, alignment: .top)
         }
         .frame(height: fourRowAlignedClusterHeight, alignment: .top)
+        .modifier(KeyboardScrollEdgeEffectHiddenModifier())
     }
 
     var emojiHeaderTitle: String {
