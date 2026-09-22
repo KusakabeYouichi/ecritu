@@ -5,10 +5,9 @@ import Darwin
 
 extension KeyboardViewController {
     func configureKeyboardContainerSizing() {
-        // 3101 で true を試したときは、切り替え直後にウィンドウが前のキーボードの高さ(470pt)で開く件に
-        // 効かず false に戻した。3159 で再度 true にする ─ 別の症状(横画面で面を切り替えても枠が
-        // 広がらない。制約は 188 なのに view は 176 のまま)に対して、枠を自分で決められるかを試す
-        inputView?.allowsSelfSizing = true
+        // 3101(切り替え直後の 470pt)でも 3159(横画面で枠が広がらない)でも true は効かなかった。
+        // 枠の高さはホストが決めていて、拡張側からは動かせない
+        inputView?.allowsSelfSizing = false
 
         if let inputView {
             migrateKeyboardConstraintsIfNeeded(to: inputView)
@@ -364,6 +363,78 @@ extension KeyboardViewController {
         }
     }
 
+    // 横画面のホストは「その表示で一度も使っていない高さ」へは枠を広げない(3156-3159 の実測。
+    // かな 176 で開くと、記号 188 を要求しても 176 のままで上下が切れる。縮める方向は常に通る)。
+    // 最初の 1 回だけ、その向きで使いうる最大の高さを通しておけば、あとは縮小だけで済む(3160)
+    func maximumKeyboardHeightForCurrentOrientation() -> CGFloat {
+        let base = effectivePreferredKeyboardHeight()
+        let screenBounds = view.window?.windowScene?.screen.bounds
+            ?? view.window?.bounds
+            ?? UIScreen.main.bounds
+        let fixedScreenBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds
+        let shorterScreenEdge = fixedScreenBounds.map { min($0.width, $0.height) }
+            ?? min(screenBounds.width, screenBounds.height)
+        let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape
+            ?? (traitCollection.verticalSizeClass == .compact)
+        let bottomInset = effectivePortraitBottomInset(
+            for: shorterScreenEdge,
+            isLandscapeOrientation: isLandscape
+        )
+        var maxHeight = base
+        for profile in PortraitHeightProfile.allCases {
+            let height = layoutMetrics.preferredHeight(
+                KeyboardLayoutMetrics.HeightInputs(
+                    profile: profile,
+                    isLandscapeOrientation: isLandscape,
+                    shorterScreenEdge: shorterScreenEdge,
+                    hasExpandedHeader: true,
+                    portraitBottomInset: bottomInset,
+                    usesKanaLandscapeHeightForCompactGrid: false
+                )
+            )
+            maxHeight = max(maxHeight, height)
+        }
+        return maxHeight
+    }
+
+    // この向きで使いうる最大の高さを、向きごとに一度だけ通す(定義コメント参照。3160)。
+    // 直後の更新が本来の高さへ縮める。表示は高さが落ち着くまで隠しているので(3100)一瞬の高さは見えない
+    func primeMaximumKeyboardHeightIfNeeded(on sizingView: UIView, currentHeight: CGFloat) {
+        guard !didPrimeMaximumKeyboardHeight else {
+            return
+        }
+        didPrimeMaximumKeyboardHeight = true
+        let primeHeight = maximumKeyboardHeightForCurrentOrientation()
+        guard primeHeight > currentHeight + 0.5 else {
+            return
+        }
+        appendKeyboardDiagnosticsLog(
+            "高さの先出し \(Int(primeHeight))pt(この向きの最大。本来は \(Int(currentHeight))pt)",
+            critical: true
+        )
+        UIView.performWithoutAnimation {
+            if let keyboardMaxHeightConstraint {
+                keyboardMaxHeightConstraint.constant = primeHeight
+            } else {
+                let maxConstraint = sizingView.heightAnchor.constraint(lessThanOrEqualToConstant: primeHeight)
+                maxConstraint.priority = .required
+                maxConstraint.isActive = true
+                keyboardMaxHeightConstraint = maxConstraint
+            }
+            if let keyboardHeightConstraint {
+                keyboardHeightConstraint.constant = primeHeight
+            } else {
+                let constraint = sizingView.heightAnchor.constraint(equalToConstant: primeHeight)
+                constraint.priority = .required
+                constraint.isActive = true
+                keyboardHeightConstraint = constraint
+            }
+            synchronizePreferredContentSize(height: primeHeight)
+            sizingView.layoutIfNeeded()
+            view.superview?.layoutIfNeeded()
+        }
+    }
+
     func installKeyboardHeightConstraintIfNeeded() {
         let initialHeight = effectivePreferredKeyboardHeight()
         synchronizePreferredContentSize(height: initialHeight)
@@ -372,6 +443,8 @@ extension KeyboardViewController {
         }
 
         migrateKeyboardConstraintsIfNeeded(to: sizingView)
+
+        primeMaximumKeyboardHeightIfNeeded(on: sizingView, currentHeight: initialHeight)
 
         if let keyboardMaxHeightConstraint {
             if abs(keyboardMaxHeightConstraint.constant - initialHeight) > 0.5 {
@@ -411,6 +484,7 @@ extension KeyboardViewController {
         }
 
         let nextHeight = effectivePreferredKeyboardHeight()
+        primeMaximumKeyboardHeightIfNeeded(on: sizingView, currentHeight: nextHeight)
         synchronizePreferredContentSize(height: nextHeight)
 
         let needsEqualHeightUpdate = abs(keyboardHeightConstraint.constant - nextHeight) > 0.5
