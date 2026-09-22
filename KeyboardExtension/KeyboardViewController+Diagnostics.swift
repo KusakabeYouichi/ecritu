@@ -185,6 +185,9 @@ extension KeyboardViewController {
             return false
         }
 
+        // 別個体が画面を持っている間に届いた更新。この個体は予備(表示予定なし)の可能性が高い(3147)
+        observedAnotherInstanceAsDisplayOwner = true
+
         let now = CFAbsoluteTimeGetCurrent()
 
         if now - lastInactiveSessionSuppressionLogAt >= 1.0 {
@@ -827,6 +830,18 @@ extension KeyboardViewController {
             }
             guard let defaults = self.sharedDefaults else {
                 self.releaseNeverDisplayedKeyboardResources(reason: "noDefaults")
+                return
+            }
+            // 予備の個体(定数コメント参照。3147)は未到達に数えない。別勘定で残す
+            if self.observedAnotherInstanceAsDisplayOwner {
+                let spareCount =
+                    defaults.integer(forKey: SharedDefaultsKeys.keyboardDiagnosticsSpareControllerCount) + 1
+                defaults.set(spareCount, forKey: SharedDefaultsKeys.keyboardDiagnosticsSpareControllerCount)
+                self.appendKeyboardDiagnosticsLog(
+                    "予備の個体として除外(読み込み中に別個体が画面を持っていた) 累計\(spareCount)回",
+                    critical: true
+                )
+                self.releaseNeverDisplayedKeyboardResources(reason: "spareController")
                 return
             }
             let failureCount =

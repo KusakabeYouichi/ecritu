@@ -313,6 +313,8 @@ final class KeyboardViewController: UIInputViewController {
     var hasDeferredSharedSettingsCatchUp = false
     var lastInactiveSessionSuppressionLogAt: CFAbsoluteTime = 0
     var didApplyInactiveSessionMitigation = false
+    // 読み込みから表示までの間に、別個体が画面を持っていたか(3147)。予備個体の判定に使う
+    var observedAnotherInstanceAsDisplayOwner = false
     // ──── 多重生存の原因特定用センサス(でばぐ計測。後で外す可能性あり)────
     // 全インスタンスの弱参照レジストリ。セッション開始・非アクティブ降格・メモリ警告時に
     // 生存一覧とアンカー(window/superview/parent/CF参照数)をログし、「誰が保持しているか」の
@@ -490,6 +492,11 @@ final class KeyboardViewController: UIInputViewController {
         // 未到達と数えた後に viewWillAppear が遅れて来た回数。ホスト接続の再確立が遅いだけで
         // attach は成立しており、真の失敗と区別しないと統計が実態からずれる(実測6.5秒。2564)
         static let keyboardDiagnosticsAttachLateRecoveryCount = "keyboardDiagnosticsAttachLateRecoveryCount"
+        // 表示予定のない予備の個体だった回数(3147)。ホストはキーボードを閉じる際に、次に備えて
+        // 入力ビューの個体をもう 1 つ作ることがある。実機の統合ログで確認: Facebook が
+        // 「セッション無効化 → すぐ次の remote view controller を要求 → 12 秒後に破棄」を行い、
+        // その間キーボードは画面に無い(placeholder 393x0)。未到達と数えると実態からずれる
+        static let keyboardDiagnosticsSpareControllerCount = "keyboardDiagnosticsSpareControllerCount"
         // デバッグ用: 直近1回の変換トレース(上書き式)。実機のみ再現する誤変換の層特定に使う。
         // reading→連文節上位|単文節上位|LM/フェイルセーフ/モード を記録。ローテなし・単一値。
         static let keyboardConversionLastTrace = "keyboardConversionLastTrace"
