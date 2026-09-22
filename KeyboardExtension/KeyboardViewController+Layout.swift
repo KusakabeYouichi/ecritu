@@ -374,14 +374,26 @@ extension KeyboardViewController {
         let fixedScreenBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds
         let shorterScreenEdge = fixedScreenBounds.map { min($0.width, $0.height) }
             ?? min(screenBounds.width, screenBounds.height)
-        let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape
-            ?? (traitCollection.verticalSizeClass == .compact)
+        // 回転の最中は interfaceOrientation がまだ古い。遷移先のサイズがあればそちらを信じる(3162)
+        let isLandscape: Bool = {
+            if let target = pendingSizeTransitionTargetSize {
+                return KeyboardLayoutMetrics.isLandscapeTransitionTarget(
+                    targetWidth: target.width,
+                    shorterScreenEdge: shorterScreenEdge
+                )
+            }
+            return view.window?.windowScene?.interfaceOrientation.isLandscape
+                ?? (traitCollection.verticalSizeClass == .compact)
+        }()
         let bottomInset = effectivePortraitBottomInset(
             for: shorterScreenEdge,
             isLandscapeOrientation: isLandscape
         )
         var maxHeight = base
-        for profile in PortraitHeightProfile.allCases {
+        // 書式化は高さ計算では emoji プロファイルに写す(portraitHeightProfile 参照)ので、
+        // ここでも実際に使う集合だけを見る。入れると縦画面で 333pt という使わない値になり、
+        // ホストに丸ごと無視されていた(3160 の実測)
+        for profile in PortraitHeightProfile.allCases where profile != .formattedNumber {
             let height = layoutMetrics.preferredHeight(
                 KeyboardLayoutMetrics.HeightInputs(
                     profile: profile,
