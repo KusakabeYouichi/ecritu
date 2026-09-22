@@ -220,6 +220,9 @@ extension ContentView {
         keyboardDiagnosticsAttachLateRecoveryCount = defaults.integer(
             forKey: SettingsKeys.keyboardDiagnosticsAttachLateRecoveryCount
         )
+        keyboardDiagnosticsSpareControllerCount = defaults.integer(
+            forKey: SettingsKeys.keyboardDiagnosticsSpareControllerCount
+        )
         #endif
     }
 
@@ -362,6 +365,7 @@ extension ContentView {
         sections.append(
             "起動\(keyboardDiagnosticsLaunchCount)回 / 表示未到達(attach失敗の疑い)\(keyboardDiagnosticsAttachFailureCount)回"
                 + " / 遅延復帰\(keyboardDiagnosticsAttachLateRecoveryCount)回"
+                + " / 予備の個体\(keyboardDiagnosticsSpareControllerCount)回"
         )
         let registrationState: String
         switch isKeyboardExtensionRegistered() {
