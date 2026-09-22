@@ -906,13 +906,19 @@ struct LongPressVerticalCandidatePanel: View {
     // 何段目かは指の位置(キー上辺 y=0 のローカル座標)で決める。盤を overlay に変えてキーの
     // 枠が伸びなくなったので、指が乗っている段がそのまま選ばれる(3129: 1 つ上が選ばれていた)。
     // index 0 は最下段
+    // 指が盤に入っていなければ noSelection(どれも選ばれていない。ユーザ指定 3138)
+    static let noSelection = -1
+
     static func index(forLocalY y: CGFloat, count: Int) -> Int {
         guard count > 0 else {
-            return 0
+            return noSelection
         }
         let slot = cellHeight + spacing
-        let raw = Int(floor((-y - gap) / slot))
-        return max(0, min(count - 1, raw))
+        let distance = -y - gap
+        guard distance >= 0 else {
+            return noSelection
+        }
+        return min(count - 1, Int(floor(distance / slot)))
     }
 
     var body: some View {
@@ -1038,7 +1044,7 @@ struct ReturnToKanaPaletteKey: View {
                     }
                     let work = DispatchWorkItem {
                         paletteIsActive = true
-                        highlightedIndex = 0
+                        highlightedIndex = LongPressVerticalCandidatePanel.noSelection
                         anchorLocationY = latestLocationY
                     }
                     longPressWorkItem = work
@@ -1052,6 +1058,7 @@ struct ReturnToKanaPaletteKey: View {
                         return
                     }
                     paletteIsActive = false
+                    // 何も選ばれていない位置で離したときは何もしない(かなへも戻らない)
                     guard candidates.indices.contains(highlightedIndex) else {
                         return
                     }
