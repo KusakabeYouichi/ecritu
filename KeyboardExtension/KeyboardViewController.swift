@@ -908,8 +908,18 @@ final class KeyboardViewController: UIInputViewController {
         textDocumentProxy.unmarkText()
     }
 
+    // 左下キーだけ、触れてから SwiftUI の判定に届くまで 755ms かかる(実測 5 回とも 754〜756ms)。
+    // 配信遅れもメインスレッドの詰まりも 30ms 未満だったので、touch を握っているのは UIKit の
+    // ジェスチャー調停。画面端のシステム操作(ホームインジケータ/端スワイプ)の門番は
+    // およそ 0.75 秒 touch を保留するので、下端と左端の保留を切って確かめる(3149)。
+    // 効くなら「キーボード表示中は端のシステム操作を 1 回ぶん遅らせる」という代償と釣り合うかを判断する
+    override var preferredScreenEdgesDeferringSystemGestures: UIRectEdge {
+        [.bottom, .left]
+    }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        setNeedsUpdateOfScreenEdgesDeferringSystemGestures()
         updateKeyboardDiagnosticsHeartbeat(event: "viewDidAppear", appendLog: true)
         // ホスト接続が確立した後に地球儀キーの要否を 1 回だけ読む(定義コメント参照。2824)。変わっていれば再描画
         let needsSwitchKey = needsInputModeSwitchKey
