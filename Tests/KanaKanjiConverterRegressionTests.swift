@@ -17622,7 +17622,6 @@ extension KanaKanjiConverterRegressionTests {
                 ["ティオ・ペペ", "TIO PEPE"], label)
         }
     }
-
 }
 
 extension KanaKanjiConverterRegressionTests {
@@ -18810,5 +18809,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "かのうせいが", systemCandidateMode: .surface).first, "可能性が")
         XCTAssertEqual(converter.multiClauseCandidates(for: "こんらんした", systemCandidateMode: .surface).first, "混乱した")
         XCTAssertEqual(converter.candidates(for: "こちょうらん", limit: 3, systemCandidateMode: .surface).first, "胡蝶蘭")
+    }
+
+    // わたしもせんしゅう: 単文節は 先週 が rank 0 なのに、連文節は LM unigram で 千秋/選集/専修 に
+    // 負け、私も先週 が候補から消えていた(ユーザー報告 3141)
+    func testSenshuuLeadsInMultiClause() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "わたしもせんしゅう", systemCandidateMode: .surface).first, "私も先週")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "わたしもせんしゅうきた", systemCandidateMode: .surface).first, "私も先週来た")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "せんしゅうのこと", systemCandidateMode: .surface).first, "先週のこと")
+        XCTAssertEqual(converter.candidates(for: "せんしゅう", limit: 3, systemCandidateMode: .surface).first, "先週")
     }
 }
