@@ -1357,6 +1357,22 @@ final class KeyboardViewController: UIInputViewController {
     private final class RawTouchProbeGestureRecognizer: UIGestureRecognizer {
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
             KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt = CFAbsoluteTimeGetCurrent()
+            // 遅れが「指→拡張プロセス」で生じているのか「拡張プロセスの中」なのかを分ける(3148)。
+            // UITouch.timestamp は端末が指を検出した時刻(systemUptime と同じ基準)なので、
+            // 受け取った瞬間との差が iOS 側の配信遅れになる。あわせてメインキューに空の仕事を
+            // 積み、それが走るまでの時間でメインスレッドの詰まりを測る
+            let deliveryDelayMs = touches.first.map {
+                Int((ProcessInfo.processInfo.systemUptime - $0.timestamp) * 1000)
+            } ?? -1
+            let queuedAt = CFAbsoluteTimeGetCurrent()
+            DispatchQueue.main.async {
+                let mainDelayMs = Int((CFAbsoluteTimeGetCurrent() - queuedAt) * 1000)
+                if deliveryDelayMs > 30 || mainDelayMs > 30 {
+                    KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                        "生タッチの内訳 配信遅れ\(deliveryDelayMs)ms メインの詰まり\(mainDelayMs)ms"
+                    )
+                }
+            }
             // ログの時刻そのもので突き合わせるため、生のタッチ側にも 1 行残す(差分計算の当てにならなさを排除)
             KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ began n=\(touches.count)")
             super.touchesBegan(touches, with: event)
