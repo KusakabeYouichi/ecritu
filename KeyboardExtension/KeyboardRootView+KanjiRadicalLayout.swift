@@ -30,6 +30,8 @@ extension KeyboardRootView {
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
         .modifier(KeyboardScrollEdgeEffectHiddenModifier())
+        // 枠に収まらないときだけ縮める(定義箇所のコメント参照。3170)
+        .modifier(KeyboardPanelFitsProposedHeightModifier())
     }
 }
 
