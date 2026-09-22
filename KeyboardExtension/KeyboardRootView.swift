@@ -162,6 +162,11 @@ struct KeyboardRootView: View {
         frameMetrics.rowSpacing - (trimsPortraitContentForHomeIndicator ? 1 : 0)
     }
     private var keyboardTopPadding: CGFloat {
+        // 帯のぶんの詰め(定義コメント参照。3166): キーを 1pt 戻したぶんを上の 3pt から出す
+        if trimsPortraitContentForHomeIndicator {
+            return 0
+        }
+
         if isLandscapeLayout
             && (inputMode == .kana || inputMode == .number || isLandscapeLatinThreeByThreeMode) {
             return frameMetrics.topPaddingWhenRowsAreDense
@@ -178,7 +183,8 @@ struct KeyboardRootView: View {
             ? Self.portraitBottomGapOverHomeIndicator
             : frameMetrics.bottomPadding
     }
-    static let portraitBottomGapOverHomeIndicator: CGFloat = 8
+    // 3165 は 8pt。キーを 1pt 戻したぶんを上 3pt・下 1pt から出す(ユーザー指定 3166)
+    static let portraitBottomGapOverHomeIndicator: CGFloat = 7
     let candidateStateFontSize: CGFloat = 15
     let candidateTextFontSize: CGFloat = 16
     var compactActionKeyHeight: CGFloat { frameMetrics.actionKeyHeight }
@@ -789,8 +795,8 @@ struct KeyboardRootView: View {
         if isLandscapeLayout {
             return 40
         }
-        // 帯のぶんの詰め(定義コメント参照。3165)
-        return trimsPortraitContentForHomeIndicator ? 44 : 46
+        // 帯のぶんの詰め(定義コメント参照。3165→3166 でキーを 1pt 戻した)
+        return trimsPortraitContentForHomeIndicator ? 45 : 46
     }
 
     var fourRowAlignedClusterHeight: CGFloat {
