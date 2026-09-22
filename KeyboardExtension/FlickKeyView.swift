@@ -18,6 +18,8 @@ enum KeyboardStuckTouchDiagnostics {
     static var lastCommitDurationMs: Int?
     // 調査用(3136): UIKit が触れたと判断した時刻。SwiftUI のジェスチャへ届くまでの遅れを測る。原因判明後に外す
     static var lastRawTouchBeganAt: CFAbsoluteTime = 0
+    // 同(3151): 触れた位置(キーボードの枠の中の座標)。遅れが画面のどのあたりで出るのかを見る
+    nonisolated(unsafe) static var lastRawTouchLocation: CGPoint = .zero
 }
 
 enum LongPressCandidatePanelPlacement {
@@ -654,10 +656,13 @@ struct FlickKeyView: View {
                     // 左下キー以外でも 150ms を超えたものは記録する(画面端のシステム操作による配送遅れの疑い)
                     if KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
                         let ms = Int((CFAbsoluteTimeGetCurrent() - KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt) * 1000)
+                        let point = KeyboardStuckTouchDiagnostics.lastRawTouchLocation
+                        let where_ = "位置=(\(Int(point.x)),\(Int(point.y)))"
                         if let touchForensicsLabel {
-                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで \(touchForensicsLabel) \(ms)ms")
-                        } else if ms >= 150 {
-                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで キー[\(kana.center)] \(ms)ms")
+                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで \(touchForensicsLabel) \(ms)ms \(where_)")
+                        } else {
+                            // 調査中(3151)は全キーを記録して、遅れが画面のどのあたりで出るのかを見る
+                            KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで キー[\(kana.center)] \(ms)ms \(where_)")
                         }
                     }
                     #endif
