@@ -18832,5 +18832,10 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "はしったばかり", systemCandidateMode: .surface).first, "走ったばかり")
         XCTAssertEqual(converter.multiClauseCandidates(for: "がでないのだけど", systemCandidateMode: .surface).first, "が出ないのだけど")
         XCTAssertEqual(converter.multiClauseCandidates(for: "はなにみず", systemCandidateMode: .surface).first, "花に水")
+        // 助詞に割った読み(直前に名詞を確定してから打つ形)も 2 位・3 位に残す(ユーザー指定 3142)
+        XCTAssertEqual(
+            Array(converter.multiClauseCandidates(for: "はいったばかり", systemCandidateMode: .surface).prefix(3)),
+            ["入ったばかり", "は行ったばかり", "は言ったばかり"]
+        )
     }
 }

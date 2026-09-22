@@ -3647,6 +3647,52 @@ extension KanaKanjiConverter {
                 break
             }
         }
+        // 文頭の裸の助詞に割った代替経路(3142): 最良経路の先頭が「文頭から丸ごと読んだ活用形」
+        // (入った=はいった)で、その読みが文頭助詞で始まるときは、助詞に割った経路(は+行った)も
+        // 第2候補群に出す。どちらの読みかは文脈次第(直前に名詞を確定していれば は+行った)なので、
+        // コストは動かさず両方を提示する。同スパンの兄弟(言った)も1つだけ添える(ユーザー指定 3142)
+        var bosParticleSplitAlternatives: [String] = []
+        if let firstIndex = pathIndices.first {
+            let first = nodes[firstIndex]
+            if first.start == 0, first.isInflectionDerived, !first.isKanaIdentity, first.end >= 3,
+                let head = first.reading.first,
+                Self.multiClauseBOSPenalizedParticles.contains(String(head)),
+                let alternative = solveViterbi(allowedStartNodeIndex: nil, forcedBoundary: 1),
+                alternative.pathIndices.count >= 2,
+                alternative.bestTotal - bestTotal <= Self.multiClauseBOSParticleSplitAlternativeMaxDelta {
+                let particleNode = nodes[alternative.pathIndices[0]]
+                let verbIndex = alternative.pathIndices[1]
+                let verbNode = nodes[verbIndex]
+                if particleNode.surface == String(head), particleNode.reading == String(head),
+                    verbNode.isInflectionDerived || verbNode.isDictWord,
+                    !verbNode.isKanaIdentity, verbNode.surface != verbNode.reading {
+                    var surfaces = alternative.pathIndices.map { nodes[$0].surface }
+                    let joinedAlt = surfaces.joined()
+                    let bestJoined = pathIndices.map { nodes[$0].surface }.joined()
+                    if joinedAlt != bestJoined {
+                        bosParticleSplitAlternatives.append(joinedAlt)
+                        // 助詞直後の同スパン兄弟(行った→言った)を、その経路での累積コスト順に1つ
+                        let sibling = nodesStartingAt[verbNode.start]
+                            .filter { index in
+                                let candidate = nodes[index]
+                                return index != verbIndex && candidate.end == verbNode.end
+                                    && candidate.surface != verbNode.surface
+                                    && !candidate.isKanaIdentity
+                                    && candidate.surface != candidate.reading
+                                    && alternative.best[index] < infinity
+                            }
+                            .min { alternative.best[$0] < alternative.best[$1] }
+                        if let sibling {
+                            surfaces[1] = nodes[sibling].surface
+                            let siblingJoined = surfaces.joined()
+                            if siblingJoined != bestJoined {
+                                bosParticleSplitAlternatives.append(siblingJoined)
+                            }
+                        }
+                    }
+                }
+            }
+        }
         // 文中の と+し で終わる最良経路(目標とし。2801 の減点除外で通るようになった)の代替(2802):
         // 同じ とし スパンを 1 ノードで覆う漢字辞書語(都市/年)を強制して再最適化した経路を第2候補群に
         // 加える。変種は 1 文節差し替えしか作らないため、2 ノード(と+し)→1 ノード(都市)の区切り違いは
@@ -4130,6 +4176,11 @@ extension KanaKanjiConverter {
         // とし を 1 ノードで覆う代替経路(2802)は先頭差し替えと同じ刻みで、1 文節変種(木標とし 等)より前に置く
         if let toShiMergedAlternativeJoined, toShiMergedAlternativeJoined != joined {
             variants.append((min(toShiMergedAlternativeDelta, Self.multiClauseSeedOrderVariantStep), -2, -1, toShiMergedAlternativeJoined))
+        }
+        // 文頭助詞に割った代替(定義箇所のコメント参照。3142)は、同スパンの稀な兄弟表記
+        // (這入った/侵った)より前に置く
+        for (offset, alternative) in bosParticleSplitAlternatives.enumerated() where alternative != joined {
+            variants.append((Int.min / 4 + offset, -4, -1, alternative))
         }
         // 並列動詞を揃えた第2経路と元の混在経路(2771)は、1文節変種(元の混在経路より安い負の
         // delta を持ち得る)より必ず前に置く。元の混在経路と同文字列の1文節変種は後段の重複除去で畳まれる
