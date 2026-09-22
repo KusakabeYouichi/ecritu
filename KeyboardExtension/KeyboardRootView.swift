@@ -150,7 +150,17 @@ struct KeyboardRootView: View {
     private var frameMetrics: KeyboardLayoutMetrics.FrameMetrics {
         layoutMetrics.frame(usesCompactLandscapeLayout: isLandscapeLayout)
     }
-    var keyboardRowSpacing: CGFloat { frameMetrics.rowSpacing }
+    // 縦向きでホームインジケーターの帯が枠の外にある機種では、中身が枠より 24pt 高く、
+    // 上下にはみ出していた(3163 の実測)。下に 8pt の隙間を残したうえで枠に収めるため、
+    // 段間を 1pt、段の高さを 2pt だけ詰める(合計 12pt。ユーザー指定 3165)。
+    // 帯の無い機種(ホームボタン機)と横向きは従来どおり
+    var trimsPortraitContentForHomeIndicator: Bool {
+        bottomSafeAreaOutsideFrame > 0 && !isLandscapeLayout
+    }
+
+    var keyboardRowSpacing: CGFloat {
+        frameMetrics.rowSpacing - (trimsPortraitContentForHomeIndicator ? 1 : 0)
+    }
     private var keyboardTopPadding: CGFloat {
         if isLandscapeLayout
             && (inputMode == .kana || inputMode == .number || isLandscapeLatinThreeByThreeMode) {
@@ -160,11 +170,15 @@ struct KeyboardRootView: View {
         return frameMetrics.topPadding
     }
     private var keyboardHorizontalPadding: CGFloat { frameMetrics.horizontalPadding }
-    // 下の余白は、枠の外にホームインジケーターの帯がある縦向きでは二重になる(定義コメント参照。3164)。
-    // 帯のぶんを差し引く。帯が無い機種(ホームボタン機)や横向きでは従来どおり
+    // 下の余白。枠の外にホームインジケーターの帯がある縦向きでは、帯のぶんが二重になるので
+    // 20pt は使わず 8pt に整理する(ユーザー指定 3165。高さの表も同じ前提で 12pt 多く要求する)。
+    // 帯が無い機種(ホームボタン機)や横向きでは従来どおり
     private var keyboardBottomPadding: CGFloat {
-        max(0, frameMetrics.bottomPadding - bottomSafeAreaOutsideFrame)
+        bottomSafeAreaOutsideFrame > 0
+            ? Self.portraitBottomGapOverHomeIndicator
+            : frameMetrics.bottomPadding
     }
+    static let portraitBottomGapOverHomeIndicator: CGFloat = 8
     let candidateStateFontSize: CGFloat = 15
     let candidateTextFontSize: CGFloat = 16
     var compactActionKeyHeight: CGFloat { frameMetrics.actionKeyHeight }
@@ -772,7 +786,11 @@ struct KeyboardRootView: View {
     }
 
     var mainFlickKeyHeight: CGFloat {
-        isLandscapeLayout ? 40 : 46
+        if isLandscapeLayout {
+            return 40
+        }
+        // 帯のぶんの詰め(定義コメント参照。3165)
+        return trimsPortraitContentForHomeIndicator ? 44 : 46
     }
 
     var fourRowAlignedClusterHeight: CGFloat {
