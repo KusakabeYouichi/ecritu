@@ -1163,11 +1163,11 @@ extension KeyboardRootView {
                     }
 
                 }
+                .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: true))
                 .padding(.horizontal, 2)
                 .padding(.top, kanaCandidateHeaderTopPadding)
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
-                .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: true))
             }
             .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: false))
             .onChange(of: selectedConversionCandidateIndex) { index in

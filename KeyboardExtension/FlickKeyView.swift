@@ -657,7 +657,10 @@ struct FlickKeyView: View {
                     if KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
                         let ms = Int((CFAbsoluteTimeGetCurrent() - KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt) * 1000)
                         let point = KeyboardStuckTouchDiagnostics.lastRawTouchLocation
-                        let where_ = "位置=(\(Int(point.x)),\(Int(point.y)))"
+                        // 事象そのものの時刻(value.time)との差。生タッチの記録が取り違わっていても
+                        // この値だけは「指が触れてから SwiftUI が処理するまで」を正しく表す(3152)
+                        let sinceEventMs = Int(Date().timeIntervalSince(value.time) * 1000)
+                        let where_ = "位置=(\(Int(point.x)),\(Int(point.y))) 事象からの遅れ\(sinceEventMs)ms"
                         if let touchForensicsLabel {
                             KeyboardStuckTouchDiagnostics.onTouchForensics?("触れてから判定まで \(touchForensicsLabel) \(ms)ms \(where_)")
                         } else {
