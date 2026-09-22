@@ -1336,6 +1336,8 @@ final class KeyboardViewController: UIInputViewController {
     private final class RawTouchProbeGestureRecognizer: UIGestureRecognizer {
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
             KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt = CFAbsoluteTimeGetCurrent()
+            // ログの時刻そのもので突き合わせるため、生のタッチ側にも 1 行残す(差分計算の当てにならなさを排除)
+            KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ began n=\(touches.count)")
             super.touchesBegan(touches, with: event)
         }
     }
