@@ -311,16 +311,13 @@ extension KeyboardRootView {
         18
     }
 
-    // 面選択のパレット中にキーへ出すアイコンの大きさ(3138)。盤の中の大きさとは別物 ─ キーは正方形に近く
-    // 1 文字が大きく見えるので、絵文字は上げ、顔文字(3 文字)は下げる
+    // 面選択のパレット中にキーへ出すアイコンの大きさ(3138)。
+    // ☺︎ と ^_^ はパレットの項目の先頭に出しているアイコンと同じ大きさに揃える(ユーザー指定 3149)。
+    // 熙 と 1,000 はキー側だけ大きめ・小さめに決めた値をそのまま使う
     func paletteKeyIconFontSize(for text: String) -> CGFloat? {
         switch text {
-        case "☺︎":
-            // ☺︎ は線が細く小さく見えるので大きめに(27→31。ユーザー指定 3148)
-            return compactKanaModeSwitcherEmojiActiveIconFontSize + 8
-        case "^_^":
-            // ^_^ は 3 文字ぶん横に広く、逆に大きく見える(15→14。ユーザー指定 3148)
-            return 14
+        case "☺︎", "^_^":
+            return LongPressVerticalCandidatePanel.iconByText[text]?.size
         case "熙":
             return 20
         case "1,000":

@@ -886,6 +886,10 @@ struct LongPressVerticalCandidatePanel: View {
         "部首": Icon("熙", 16, mincho: true),
         "書式化": Icon("1,000", 11)
     ]
+    // 表層からの逆引き。押している間のキーにも同じ大きさで出す(ユーザー指定 3149)
+    static let iconByText: [String: Icon] = Dictionary(
+        uniqueKeysWithValues: iconByLabel.values.map { ($0.text, $0) }
+    )
     static let iconColumnWidth: CGFloat = 38
 
     static let cellHeight: CGFloat = 33
