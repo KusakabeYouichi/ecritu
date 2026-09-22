@@ -688,6 +688,20 @@ final class KeyboardViewController: UIInputViewController {
         KeyboardStuckTouchDiagnostics.onTouchForensics = { [weak self] detail in
             self?.appendKeyboardDiagnosticsLog("接触詳細 \(detail)")
         }
+        #if DEBUG
+        // 調査用ログ(候補欄の上余白 3145): 実測の余白が変わった瞬間だけ。原因判明後に外す
+        KeyboardCandidateBarLayoutForensics.onReport = { [weak self] detail in
+            guard let self else {
+                return
+            }
+            // 面の上端も添える。余白が「詰まった」のか「バーごと上にずれた」のかを区別するため
+            let keyboardTopY = Int(self.view.convert(self.view.bounds, to: nil).minY)
+            self.appendKeyboardDiagnosticsLog(
+                detail + " 面上端=\(keyboardTopY) 面高さ=\(Int(self.view.bounds.height))",
+                critical: true
+            )
+        }
+        #endif
         updateKeyboardDiagnosticsHeartbeat(event: "viewWillAppear", appendLog: true)
         // 高さが落ち着くまで面を隠す(定義コメント参照。3100)
         isAwaitingInitialHeightSettle = true
