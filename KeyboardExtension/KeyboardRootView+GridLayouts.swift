@@ -361,6 +361,8 @@ extension KeyboardRootView {
                 rowHeight: rowHeight,
                 rowSpacing: rowSpacing
             )
+            // 段の束の重なり順(定義箇所のコメント参照。3168)
+            .zIndex(kanaMainClusterZIndex)
         }
     }
 
