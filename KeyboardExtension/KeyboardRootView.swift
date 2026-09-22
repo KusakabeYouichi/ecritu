@@ -86,6 +86,9 @@ struct KeyboardRootView: View {
     @State var diacriticMode: DiacriticMode = .none
     @State var kanaCharacterMode: KanaCharacterMode = .hiragana
     @State var activeLayerIndex: Int? = nil
+    // 触れているのが左の面切替の列か(3167)。列は段より前に描いているので、
+    // 段のキーの左フリックの吹き出しが列に隠れていた。列側が触られていないときは列を下げる
+    @State var isTouchingLeftModeSwitchColumn = false
     @State var spaceToastText: String? = nil
     @State var spaceToastOpacity: Double = 0
     @State var lastShownSpaceToastTrigger = -1
