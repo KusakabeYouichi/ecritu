@@ -147,7 +147,11 @@ struct KeyboardRootView: View {
     let katakanaCommitDoubleTapThreshold: TimeInterval = 0.2
     let katakanaCommitFeedbackDelay: TimeInterval = 0.14
     let keyLabelColor = KeyboardThemePalette.keyLabel
-    private var candidateHeaderExpandedHeight: CGFloat { layoutMetrics.candidateHeaderExpandedHeight }
+    // 候補欄の枠の高さ。帯のぶんを詰める縦向き(定義コメント参照。3165-3166)では、
+    // 空のときに上へ大きく空いて見えるので 4pt 詰め、そのぶんをキーの高さへ回す(ユーザー報告 3169)
+    private var candidateHeaderExpandedHeight: CGFloat {
+        layoutMetrics.candidateHeaderExpandedHeight - (trimsPortraitContentForHomeIndicator ? 4 : 0)
+    }
     private let candidateHeaderContentDownshift: CGFloat = 4
     // 寸法・位置は KeyboardLayoutMetrics に集約(2609)。端末別の値はそちらで分岐する。
     private var frameMetrics: KeyboardLayoutMetrics.FrameMetrics {
@@ -663,7 +667,10 @@ struct KeyboardRootView: View {
     }
 
     var kanaCandidateHeaderTopPadding: CGFloat {
-        (isKanaThreeByThreeMode ? 6 : 4) + candidateHeaderContentDownshift
+        // 枠を 4pt 詰めた縦向き(3169)ではチップの上余白も詰める。中身が枠に収まるようになって
+        // 以前は隠れていた余白が全部見えるようになったため(ユーザー報告)
+        let downshift = trimsPortraitContentForHomeIndicator ? 0 : candidateHeaderContentDownshift
+        return (isKanaThreeByThreeMode ? 6 : 4) + downshift
     }
 
     var usesThreeByThreeGridForNumberOrLatin: Bool {
@@ -798,8 +805,8 @@ struct KeyboardRootView: View {
         if isLandscapeLayout {
             return 40
         }
-        // 帯のぶんの詰め(定義コメント参照。3165→3166 でキーを 1pt 戻した)
-        return trimsPortraitContentForHomeIndicator ? 45 : 46
+        // 帯のぶんの詰め(定義コメント参照)。3166 で 45pt、3169 で候補欄を 4pt 詰めて 46pt へ戻した
+        return 46
     }
 
     var fourRowAlignedClusterHeight: CGFloat {
