@@ -18821,4 +18821,16 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "せんしゅうのこと", systemCandidateMode: .surface).first, "先週のこと")
         XCTAssertEqual(converter.candidates(for: "せんしゅう", limit: 3, systemCandidateMode: .surface).first, "先週")
     }
+
+    // はいったばかり: 文頭の裸の は の直後が活用派生だと文頭助詞の減点が払い戻され、は行った が
+    // 入った(派生 OOV)に 217 差で勝っていた(ユーザー報告 3141)。文頭から丸ごと活用形が
+    // 読めるときは払い戻さない。が+出ない のような正当な断片は据え置き
+    func testSentenceInitialParticleDoesNotUndercutWholeSpanVerb() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.multiClauseCandidates(for: "はいったばかり", systemCandidateMode: .surface).first, "入ったばかり")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "はしったばかり", systemCandidateMode: .surface).first, "走ったばかり")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "がでないのだけど", systemCandidateMode: .surface).first, "が出ないのだけど")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "はなにみず", systemCandidateMode: .surface).first, "花に水")
+    }
 }
