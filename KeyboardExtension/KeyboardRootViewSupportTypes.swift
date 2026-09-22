@@ -121,6 +121,43 @@ enum KeyboardThemePalette {
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
 }
 
+#if DEBUG
+// 調査用(3163): 面の中身が枠からはみ出していないか。ZStack は中身を中央に置くので、
+// 中身が枠より高いと上下に同じだけはみ出す(= 上の余白が消える / 上下が切れる)。
+// 中身の上端・下端を枠の座標で残す。原因が分かったら外す
+enum KeyboardRootOverflowForensics {
+    static var onReport: ((String) -> Void)?
+    nonisolated(unsafe) static var lastTop: CGFloat = .nan
+
+    static func note(top: CGFloat, bottom: CGFloat) {
+        guard !lastTop.isFinite || abs(top - lastTop) > 0.5 else {
+            return
+        }
+        lastTop = top
+        onReport?("面の中身 上端=\(Int(top)) 下端=\(Int(bottom))")
+    }
+}
+
+struct KeyboardRootOverflowProbe: ViewModifier {
+    func body(content: Content) -> some View {
+        content.background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear { report(proxy.frame(in: .global)) }
+                    .onChange(of: proxy.frame(in: .global).minY) { _ in
+                        report(proxy.frame(in: .global))
+                    }
+            }
+        )
+    }
+
+    private func report(_ frame: CGRect) {
+        KeyboardRootOverflowForensics.note(top: frame.minY, bottom: frame.maxY)
+    }
+}
+
+#endif
+
 // 調査用(3145): 候補欄の上余白の実測。DEBUG 以外では何もしない
 struct CandidateBarTopMarginProbe: ViewModifier {
     let expected: CGFloat
