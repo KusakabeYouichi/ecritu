@@ -752,13 +752,13 @@ extension KeyboardRootView {
     // 左の面切替の列の重なり順(3167)。列のキーを触っているあいだ、または何も触っていないときは
     // 段より前(列の吹き出しが段に隠れないように)。段のキーを触っているあいだは段より後ろへ下げ、
     // あ・た・濁点の左フリックの吹き出しが列に隠れないようにする。休んでいる段(0)よりは前に置く
+    // 列と段の束は HStack の兄弟なので、勝ち負けはこの 2 つの値だけで決まる(段の内部の
+    // zIndex は束の中の順序にしか効かない。3167 はここを取り違えて効かなかった)
     var leftModeSwitchColumnZIndex: Double {
-        if isTouchingLeftModeSwitchColumn || activeLayerIndex == nil {
-            return KeyboardLayerZIndex.activeRow + 1
-        }
-
-        return 1
+        isTouchingLeftModeSwitchColumn || activeLayerIndex == nil ? 2 : 0
     }
+
+    var kanaMainClusterZIndex: Double { 1 }
 
     func zIndex(for layerIndex: Int) -> Double {
         activeLayerIndex == layerIndex ? KeyboardLayerZIndex.activeRow : 0
