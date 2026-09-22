@@ -24,6 +24,8 @@ struct KeyboardRootView: View {
     // キーボードビューのウィンドウ座標の枠(KeyboardViewController が view.convert で測る)。
     // width が盤面の幅見積もり、minX/maxX が吹き出しのクランプに使われる。zero=未レイアウト
     let containerFrame: CGRect
+    // 枠の外にある下端セーフエリア(ホームインジケーターの帯)。0 のときは従来どおり
+    var bottomSafeAreaOutsideFrame: CGFloat = 0
     var containerWidth: CGFloat { containerFrame.width }
     let directionProfile: FlickDirectionProfile
     let kanaLayoutMode: KanaLayoutMode
@@ -158,7 +160,11 @@ struct KeyboardRootView: View {
         return frameMetrics.topPadding
     }
     private var keyboardHorizontalPadding: CGFloat { frameMetrics.horizontalPadding }
-    private var keyboardBottomPadding: CGFloat { frameMetrics.bottomPadding }
+    // 下の余白は、枠の外にホームインジケーターの帯がある縦向きでは二重になる(定義コメント参照。3164)。
+    // 帯のぶんを差し引く。帯が無い機種(ホームボタン機)や横向きでは従来どおり
+    private var keyboardBottomPadding: CGFloat {
+        max(0, frameMetrics.bottomPadding - bottomSafeAreaOutsideFrame)
+    }
     let candidateStateFontSize: CGFloat = 15
     let candidateTextFontSize: CGFloat = 16
     var compactActionKeyHeight: CGFloat { frameMetrics.actionKeyHeight }
