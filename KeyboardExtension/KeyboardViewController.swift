@@ -701,6 +701,16 @@ final class KeyboardViewController: UIInputViewController {
             self?.appendKeyboardDiagnosticsLog("接触詳細 \(detail)")
         }
         #if DEBUG
+        // 調査用ログ(3163): 面の中身が枠に収まっているか。枠の高さも添える
+        KeyboardRootOverflowForensics.onReport = { [weak self] detail in
+            guard let self else {
+                return
+            }
+            self.appendKeyboardDiagnosticsLog(
+                detail + " 枠高さ=\(Int(self.view.bounds.height)) モード=\(self.currentInputMode)",
+                critical: true
+            )
+        }
         // 調査用ログ(候補欄の上余白 3145): 実測の余白が変わった瞬間だけ。原因判明後に外す
         KeyboardCandidateBarLayoutForensics.onReport = { [weak self] detail in
             guard let self else {

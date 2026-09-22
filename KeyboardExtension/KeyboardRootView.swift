@@ -1200,6 +1200,10 @@ struct KeyboardRootView: View {
             .padding(.top, keyboardTopPadding)
             .padding(.horizontal, keyboardHorizontalPadding)
             .padding(.bottom, keyboardBottomPadding)
+            #if DEBUG
+            // 調査用(3163): 中身の実寸。下揃えなので、中身が枠より高いと上へはみ出す
+            .modifier(KeyboardRootOverflowProbe())
+            #endif
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
