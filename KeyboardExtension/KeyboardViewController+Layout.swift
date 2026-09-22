@@ -287,7 +287,9 @@ extension KeyboardViewController {
     // 候補欄の上の余白が時々消える件(3141)。要求値と実寸の食い違いが疑わしいので、
     // 食い違いが出た/消えた瞬間だけ 1 行残す。毎フレーム呼ばれる経路なので閾値と重複抑止を置く
     func logKeyboardHeightMismatchIfChanged() {
-        guard !isAwaitingInitialHeightSettle else {
+        // 表示前(viewWillAppear 未到達)は view が画面全体の寸法のままなので見ない。
+        // 実測で毎回 610pt の食い違いとして出ていた(3143)
+        guard !isAwaitingInitialHeightSettle, view.window != nil, view.superview != nil else {
             return
         }
         let expected = keyboardHeightConstraint?.constant ?? effectivePreferredKeyboardHeight()
