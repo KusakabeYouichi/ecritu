@@ -2,6 +2,38 @@ import Foundation
 import SwiftUI
 import UIKit
 
+#if DEBUG
+// 調査用(3145): 候補欄の上の余白が時々ほとんど無くなる件。原因が分かったら外す。
+// 実際に描かれた「スクロール枠の上端」と「チップの上端」の差を測り、指定した余白
+// (kanaCandidateHeaderTopPadding)とずれた瞬間だけ 1 行残す。SwiftUI 側から呼ぶので
+// ビュー(値型)に状態を持たせず、ここへ置く
+enum KeyboardCandidateBarLayoutForensics {
+    static var onReport: ((String) -> Void)?
+    nonisolated(unsafe) static var scrollTopY: CGFloat = .nan
+    nonisolated(unsafe) static var contentTopY: CGFloat = .nan
+    nonisolated(unsafe) static var lastReportedGap: CGFloat = .nan
+
+    static func note(scrollTopY newScrollTopY: CGFloat? = nil, contentTopY newContentTopY: CGFloat? = nil, expected: CGFloat) {
+        if let newScrollTopY {
+            scrollTopY = newScrollTopY
+        }
+        if let newContentTopY {
+            contentTopY = newContentTopY
+        }
+        guard scrollTopY.isFinite, contentTopY.isFinite else {
+            return
+        }
+        let gap = ((contentTopY - scrollTopY) * 2).rounded() / 2
+        guard !lastReportedGap.isFinite || abs(gap - lastReportedGap) > 0.5 else {
+            return
+        }
+        lastReportedGap = gap
+        onReport?("候補欄の余白 実測=\(gap)pt 指定=\(expected)pt 枠上端=\(Int(scrollTopY)) チップ上端=\(Int(contentTopY))")
+    }
+}
+
+#endif
+
 // 候補バー系の状態(未確定文字列/変換候補/選択位置/英字サジェスト)。毎打鍵で変わるのは
 // ここだけなので、rootView 差し替えではなく publish で更新して SwiftUI に差分再評価させる。
 final class KeyboardCandidateBarModel: ObservableObject {
@@ -89,14 +121,42 @@ enum KeyboardThemePalette {
     static let thinDivider = Color(uiColor: .separator).opacity(0.5)
 }
 
-// スクロール縁の効果(Liquid Glass のぼかし。上の縁から下へ弱まる)を切る(3106)。API は iOS 26 からだが、
-// 描かれ始めるのは実測で 27(下の 26.7 の記述と対。ユーザ指摘 3122)。
-// テスター(iPhone 15 Pro、iOS 27)の候補バーで、状態カプセルから かなチップまで横スクロールの中身だけが
-// 上 6 割ほどぼやけて見えた(ユーザ報告の画像 IMG_0235)。iOS 26.7 の端末では出ない。候補バーは
-// 短い横スクロールで縁の効果は要らない
-// スクロールの縁に出る効果(ぼかし)を切る。#available が iOS 26 なのは API が 26 で入ったからで、
-// 実際に描かれ始めたのは 27(実測: iPhone 15 は 26.6 では出ず 27 で出た)。当てる先は面ごと ─
-// 根にまとめて被せると候補欄の上の余白まで消える(3122 で入れて 3140 で撤回)。
+// 調査用(3145): 候補欄の上余白の実測。DEBUG 以外では何もしない
+struct CandidateBarTopMarginProbe: ViewModifier {
+    let expected: CGFloat
+    let isContent: Bool
+
+    func body(content: Content) -> some View {
+        #if DEBUG
+        content.background(
+            GeometryReader { proxy in
+                Color.clear
+                    .onAppear { report(proxy.frame(in: .global).minY) }
+                    .onChange(of: proxy.frame(in: .global).minY) { value in
+                        report(value)
+                    }
+            }
+        )
+        #else
+        content
+        #endif
+    }
+
+    #if DEBUG
+    private func report(_ minY: CGFloat) {
+        if isContent {
+            KeyboardCandidateBarLayoutForensics.note(contentTopY: minY, expected: expected)
+        } else {
+            KeyboardCandidateBarLayoutForensics.note(scrollTopY: minY, expected: expected)
+        }
+    }
+    #endif
+}
+
+// スクロールの縁に出る効果(Liquid Glass のぼかし。上の縁から下へ弱まる)を切る(3106)。
+// API は iOS 26 からだが、描かれ始めるのは実測で 27(iPhone 15 は 26.6 では出ず 27 で出た。
+// テスターの iPhone 15 Pro/27 は候補バーの中身が上 6 割ほどぼやけた ─ 画像 IMG_0235)。
+// 当てる先は面ごと ─ 根にまとめて被せると候補欄の上の余白まで消える(3122 で入れて 3140 で撤回)。
 struct KeyboardScrollEdgeEffectHiddenModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
@@ -1107,7 +1167,9 @@ extension KeyboardRootView {
                 .padding(.top, kanaCandidateHeaderTopPadding)
                 .padding(.bottom, 0)
                 .frame(maxHeight: .infinity, alignment: .top)
+                .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: true))
             }
+            .modifier(CandidateBarTopMarginProbe(expected: kanaCandidateHeaderTopPadding, isContent: false))
             .onChange(of: selectedConversionCandidateIndex) { index in
                 guard let index else {
                     return
