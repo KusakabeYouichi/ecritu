@@ -199,6 +199,20 @@ struct FlickKeyView: View {
                     .minimumScaleFactor(0.6)
                     .padding(.horizontal, 2)
                     .foregroundStyle(Color.white)
+                    #if DEBUG
+                    // 調査用(3157): 実際に緑の面が描かれた時刻。ジェスチャの判定が届くのは 80ms でも、
+                    // 描き直しが遅ければ体感は遅い。触れてから描かれるまでを測る。原因判明後に外す
+                    .onAppear {
+                        if KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt > 0 {
+                            let ms = Int(
+                                (CFAbsoluteTimeGetCurrent() - KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt) * 1000
+                            )
+                            KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                                "緑になるまで キー[\(touchForensicsLabel ?? kana.center)] \(ms)ms"
+                            )
+                        }
+                    }
+                    #endif
             } else if let idleReplacement {
                 idleReplacement
                     .offset(y: centerLabelOffsetY)
