@@ -326,7 +326,8 @@ extension KeyboardRootView {
         case "熙":
             return 20
         case "1,000":
-            return 13
+            // 幅を詰めて描くので、1 字あたりは少し大きくできる(13→15。3155)
+            return 15
         default:
             return nil
         }
