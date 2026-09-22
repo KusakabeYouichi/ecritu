@@ -1393,6 +1393,17 @@ final class KeyboardViewController: UIInputViewController {
                     )
                 }
             }
+            // この touch を追っている認識器の一覧(3161)。縦画面でだけ 750ms 遅れる原因が
+            // システム側のジェスチャー調停なら、ここに名前が出る。delaysTouchesBegan も添える
+            if let touch = touches.first {
+                let names = (touch.gestureRecognizers ?? []).map { recognizer -> String in
+                    let name = String(describing: type(of: recognizer))
+                    return recognizer.delaysTouchesBegan ? name + "(遅延あり)" : name
+                }
+                KeyboardStuckTouchDiagnostics.onTouchForensics?(
+                    "生タッチの認識器 \(names.joined(separator: ", "))"
+                )
+            }
             // ログの時刻そのもので突き合わせるため、生のタッチ側にも 1 行残す(差分計算の当てにならなさを排除)
             KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ began n=\(touches.count)")
             super.touchesBegan(touches, with: event)
