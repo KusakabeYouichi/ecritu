@@ -198,14 +198,14 @@ extension KeyboardRootView {
                 activePreviewHorizontalPadding: kanaModeSwitcherPreviewHorizontalPadding,
                 directionalHintHorizontalOffset: 16,
                 onTouchStateChanged: { isTouching in
-                    updateActiveLayer(isTouching, layerIndex: 3)
+                    updateActiveLayer(isTouching, layerIndex: 3, isLeftModeSwitchColumn: true)
                 },
                 touchForensicsLabel: "左下キー(3x3)"  // 調査用ログ(記号面切替 2838)
             )
                 .frame(width: leftModeSwitchButtonWidth, height: rowHeight)
         }
-        // Keep left-column flick previews above the main 4th-row modifier cluster.
-        .zIndex(KeyboardLayerZIndex.activeRow + 1)
+        // 列の吹き出しは段より前、ただし段のキーを触っているあいだは後ろへ(定義箇所のコメント参照。3167)
+        .zIndex(leftModeSwitchColumnZIndex)
     }
 
     func threeByThreeKanaMainCluster(
