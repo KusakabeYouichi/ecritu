@@ -842,6 +842,18 @@ extension KeyboardViewController {
             // 数秒かかるケース(実測6.5秒)では、この後 viewWillAppear が来る。真の失敗と
             // 区別できないと統計が実態からずれる(2564)
             self.keyboardAttachWatchdogFiredAt = CFAbsoluteTimeGetCurrent()
+            // 失敗時の同居状況を残す(3145)。実測ではこの端末の未到達が全て「長生きプロセスに
+            // ゾンビ個体が溜まった状態」で起きており、相関を確かめるため。直前に別個体が
+            // 画面に出ていたか(=投機生成の疑い)も添える
+            let sinceOtherAttached = KeyboardViewController.lastAttachedViewWillAppearAt > 0
+                ? String(format: "%.1f", CFAbsoluteTimeGetCurrent() - KeyboardViewController.lastAttachedViewWillAppearAt)
+                : "なし"
+            self.appendKeyboardDiagnosticsLog(
+                "未到達の周辺 別個体の最終表示から\(sinceOtherAttached)秒 生存\(KeyboardViewController.liveControllerCensus.allObjects.count)個"
+                    + " 窓=\(self.view.window != nil) 親=\(self.parent != nil)",
+                critical: true
+            )
+            self.logLiveControllerCensus(trigger: "attachFailure")
             self.releaseNeverDisplayedKeyboardResources(reason: "attachFailure")
         }
         keyboardAttachWatchdogWorkItem = workItem
