@@ -1367,6 +1367,9 @@ final class KeyboardViewController: UIInputViewController {
     private final class RawTouchProbeGestureRecognizer: UIGestureRecognizer {
         override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent) {
             KeyboardStuckTouchDiagnostics.lastRawTouchBeganAt = CFAbsoluteTimeGetCurrent()
+            if let view, let touch = touches.first {
+                KeyboardStuckTouchDiagnostics.lastRawTouchLocation = touch.location(in: view)
+            }
             // 遅れが「指→拡張プロセス」で生じているのか「拡張プロセスの中」なのかを分ける(3148)。
             // UITouch.timestamp は端末が指を検出した時刻(systemUptime と同じ基準)なので、
             // 受け取った瞬間との差が iOS 側の配信遅れになる。あわせてメインキューに空の仕事を
