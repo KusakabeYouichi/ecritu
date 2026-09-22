@@ -1390,6 +1390,12 @@ final class KeyboardViewController: UIInputViewController {
             KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ began n=\(touches.count)")
             super.touchesBegan(touches, with: event)
         }
+
+        // 指を離した時刻も残す(3152)。SwiftUI の判定が離した後に来ているのかを見る
+        override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent) {
+            KeyboardStuckTouchDiagnostics.onTouchForensics?("生タッチ ended")
+            super.touchesEnded(touches, with: event)
+        }
     }
 
     private func installRawTouchProbeIfNeeded() {
