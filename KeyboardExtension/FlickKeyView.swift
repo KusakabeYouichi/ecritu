@@ -338,7 +338,12 @@ struct FlickKeyView: View {
     }
 
     private func resolvedActiveMainLabelFontSize(for direction: FlickDirection) -> CGFloat {
-        let currentText = kana.output(for: direction)
+        // 面選択のパレット中は、キーの出力ではなく選んでいる面のアイコンを描いている。
+        // 大きさの判定にキーの出力を渡すと別の字の指定が選ばれ、☺︎/^_^ の大きさが効かなかった
+        // (ユーザー報告 3154)。この場合だけ実際に描いている字を渡す
+        let currentText = longPressIsActive && longPressCandidateAxis == .vertical
+            ? displayText
+            : kana.output(for: direction)
 
         if let activeMainLabelFontSizeProvider {
             return activeMainLabelFontSizeProvider(direction, currentText)
