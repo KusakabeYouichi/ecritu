@@ -316,9 +316,11 @@ extension KeyboardRootView {
     func paletteKeyIconFontSize(for text: String) -> CGFloat? {
         switch text {
         case "☺︎":
-            return compactKanaModeSwitcherEmojiActiveIconFontSize + 4
+            // ☺︎ は線が細く小さく見えるので大きめに(27→31。ユーザー指定 3148)
+            return compactKanaModeSwitcherEmojiActiveIconFontSize + 8
         case "^_^":
-            return 15
+            // ^_^ は 3 文字ぶん横に広く、逆に大きく見える(15→14。ユーザー指定 3148)
+            return 14
         case "熙":
             return 20
         case "1,000":
