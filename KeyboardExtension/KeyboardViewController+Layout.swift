@@ -284,6 +284,38 @@ extension KeyboardViewController {
         )
     }
 
+    // 候補欄の上の余白が時々消える件(3141)。要求値と実寸の食い違いが疑わしいので、
+    // 食い違いが出た/消えた瞬間だけ 1 行残す。毎フレーム呼ばれる経路なので閾値と重複抑止を置く
+    func logKeyboardHeightMismatchIfChanged() {
+        guard !isAwaitingInitialHeightSettle else {
+            return
+        }
+        let expected = keyboardHeightConstraint?.constant ?? effectivePreferredKeyboardHeight()
+        let actual = view.bounds.height
+        guard expected > 0, actual > 0 else {
+            return
+        }
+        let gap = ((actual - expected) * 2).rounded() / 2
+        let previousGap = lastLoggedKeyboardHeightMismatch
+        guard abs(gap - previousGap) > 0.5 else {
+            return
+        }
+        lastLoggedKeyboardHeightMismatch = gap
+        // 一致し続けている間は無言。ずれた瞬間と、ずれが解消した瞬間だけ残す
+        guard abs(gap) > 0.5 || abs(previousGap) > 0.5 else {
+            return
+        }
+        let hostHeight = hostingController?.view.bounds.height ?? -1
+        appendKeyboardDiagnosticsLog(
+            "高さ実寸 差=\(gap)pt 要求=\(Int(expected)) view=\(Int(actual)) 面=\(Int(hostHeight))"
+                + " 下端インセット view=\(Int(view.safeAreaInsets.bottom))"
+                + "/窓=\(Int(view.window?.safeAreaInsets.bottom ?? 0))"
+                + "/inputView=\(Int(inputView?.safeAreaInsets.bottom ?? 0))"
+                + " モード=\(currentInputMode)",
+            critical: true
+        )
+    }
+
     func installKeyboardHeightConstraintIfNeeded() {
         let initialHeight = effectivePreferredKeyboardHeight()
         synchronizePreferredContentSize(height: initialHeight)
