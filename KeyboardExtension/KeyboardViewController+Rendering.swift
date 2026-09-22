@@ -44,6 +44,9 @@ extension KeyboardViewController {
         // キーボードビューのウィンドウ座標の枠(0.5pt 丸め)。iPad 互換モードでは UIScreen.main(iPad 全幅)
         // と食い違い、幅の見積もりを UIScreen から取ると盤面が中央の箱からはみ出す(2786)。zero=未レイアウト
         let containerFrame: CGRect
+        // 枠の外(ホームインジケーターの帯)にある下端セーフエリアの量。高さの表はこのぶんを
+        // 引いた値を要求しているのに、面を組む側は下の余白を足したままで二重になっていた(3164)
+        let bottomSafeAreaOutsideFrame: CGFloat
         let shortcutVocabulary: [String]
         var composingText: String
         var conversionCandidates: [String]
@@ -329,6 +332,7 @@ extension KeyboardViewController {
             // 呼び出しとして UIKit がエラーログを出し続ける(実機統合ログで 30 分に 1,244 件。2824)
             showsNextKeyboardKey: cachedNeedsInputModeSwitchKey && !Self.isIPadFloatingContainer(containerFrame),
             containerFrame: containerFrame,
+            bottomSafeAreaOutsideFrame: bottomSafeAreaOutsideKeyboardFrame(),
             shortcutVocabulary: effectiveShortcutVocabularyForRender(),
             composingText: candidatePresentation.composingText,
             conversionCandidates: candidatePresentation.candidates,
@@ -478,6 +482,7 @@ extension KeyboardViewController {
             },
             showsNextKeyboardKey: configuration.showsNextKeyboardKey,
             containerFrame: configuration.containerFrame,
+            bottomSafeAreaOutsideFrame: configuration.bottomSafeAreaOutsideFrame,
             directionProfile: configuration.directionProfile,
             kanaLayoutMode: configuration.kanaLayoutMode,
             kanaModifierPlacementMode: configuration.kanaModifierPlacementMode,

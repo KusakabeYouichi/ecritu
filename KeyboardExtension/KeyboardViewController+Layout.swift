@@ -190,6 +190,24 @@ extension KeyboardViewController {
         return 0
     }
 
+    // 枠の外にある下端セーフエリア(ホームインジケーターの帯)。縦向きだけ、高さの表がこのぶんを
+    // 引いて要求している(preferredHeight 参照)。面を組む側はこれを知らずに下の余白を足していたので、
+    // 中身が枠より高くなり上へはみ出していた(3164)
+    func bottomSafeAreaOutsideKeyboardFrame() -> CGFloat {
+        let screenBounds = view.window?.windowScene?.screen.bounds
+            ?? view.window?.bounds
+            ?? UIScreen.main.bounds
+        let fixedScreenBounds = view.window?.windowScene?.screen.fixedCoordinateSpace.bounds
+        let shorterScreenEdge = fixedScreenBounds.map { min($0.width, $0.height) }
+            ?? min(screenBounds.width, screenBounds.height)
+        let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape
+            ?? (traitCollection.verticalSizeClass == .compact)
+        guard !isLandscape else {
+            return 0
+        }
+        return effectivePortraitBottomInset(for: shorterScreenEdge, isLandscapeOrientation: false)
+    }
+
     func preferredKeyboardHeight() -> CGFloat {
         let screenBounds = view.window?.windowScene?.screen.bounds
             ?? view.window?.bounds
