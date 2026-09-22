@@ -734,7 +734,11 @@ extension KeyboardRootView {
         return CharacterSet.letters.contains(scalar)
     }
 
-    func updateActiveLayer(_ isTouching: Bool, layerIndex: Int) {
+    func updateActiveLayer(_ isTouching: Bool, layerIndex: Int, isLeftModeSwitchColumn: Bool = false) {
+        if isLeftModeSwitchColumn {
+            isTouchingLeftModeSwitchColumn = isTouching
+        }
+
         if isTouching {
             activeLayerIndex = layerIndex
             return
@@ -743,6 +747,17 @@ extension KeyboardRootView {
         if activeLayerIndex == layerIndex {
             activeLayerIndex = nil
         }
+    }
+
+    // 左の面切替の列の重なり順(3167)。列のキーを触っているあいだ、または何も触っていないときは
+    // 段より前(列の吹き出しが段に隠れないように)。段のキーを触っているあいだは段より後ろへ下げ、
+    // あ・た・濁点の左フリックの吹き出しが列に隠れないようにする。休んでいる段(0)よりは前に置く
+    var leftModeSwitchColumnZIndex: Double {
+        if isTouchingLeftModeSwitchColumn || activeLayerIndex == nil {
+            return KeyboardLayerZIndex.activeRow + 1
+        }
+
+        return 1
     }
 
     func zIndex(for layerIndex: Int) -> Double {
