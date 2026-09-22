@@ -182,6 +182,8 @@ extension KeyboardRootView {
         }
         .frame(height: formattedNumberClusterHeight, alignment: .top)
         .modifier(KeyboardScrollEdgeEffectHiddenModifier())
+        // 枠に収まらないときだけ縮める(定義箇所のコメント参照。3170)
+        .modifier(KeyboardPanelFitsProposedHeightModifier())
     }
 
     // 記号/絵文字と同じ基準クラスタ高さ+畳んだヘッダー分の余白(上部エリアに回す)。
