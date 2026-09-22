@@ -181,6 +181,7 @@ extension KeyboardRootView {
                 .frame(height: mainFlickKeyHeight)
         }
         .frame(height: formattedNumberClusterHeight, alignment: .top)
+        .modifier(KeyboardScrollEdgeEffectHiddenModifier())
     }
 
     // 記号/絵文字と同じ基準クラスタ高さ+畳んだヘッダー分の余白(上部エリアに回す)。

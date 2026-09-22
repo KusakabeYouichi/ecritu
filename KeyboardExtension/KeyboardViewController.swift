@@ -177,14 +177,9 @@ final class KeyboardViewController: UIInputViewController {
         ]
         return buildSupplementarySymbolCandidatesByReading(entries: entries, allowedCandidates: allCandidates)
     }()
-    // 面の根。スクロール縁の効果(Liquid Glass のぼかし)を切る修飾を根で被せ、記号・部首・絵文字・顔文字の
-    // 各面の縦スクロールにも効かせる(3122)。scrollEdgeEffectHidden は View への修飾で、下位のスクロールへ
-    // 伝播する。#available が iOS 26 なのは API が 26 で入ったからで、**実際に描かれ始めたのは 27**
-    // (実測: iPhone 15 は 26.6 では出ず 27 で出た。15 Pro/27 のテスターは候補バーで出たが SE3/27 では出ない ─
-    // OS の版だけでは決まらない)。26 で切っても害は無いので分岐はそのまま。KeyboardRootView.body を触ると Release の WMO が落ちやすい(project_release_wmo_body_limit)ので
-    // 包む側で当てる
-    typealias KeyboardRootHostView = ModifiedContent<KeyboardRootView, KeyboardScrollEdgeEffectHiddenModifier>
-    var hostingController: UIHostingController<KeyboardRootHostView>?
+    // スクロール縁の効果(ぼかし)を切る修飾は**面ごと**に当てる。3122 で根にまとめて被せたところ、
+    // 候補欄の上の余白まで消えた(ユーザ報告、切り分けビルドで確定)ので 3140 で撤回した。
+    var hostingController: UIHostingController<KeyboardRootView>?
     var lastRenderConfiguration: RenderConfiguration?
     var keyboardHeightConstraint: NSLayoutConstraint?
     var keyboardMaxHeightConstraint: NSLayoutConstraint?
@@ -198,6 +193,10 @@ final class KeyboardViewController: UIInputViewController {
     var keyboardHeightLockValue: CGFloat?
     // 高さ要求の診断ログ用(変化時だけ1行残す。logPreferredKeyboardHeightIfChanged 参照)
     var lastLoggedPreferredKeyboardHeight: CGFloat = -1
+    // 候補欄の上の余白が時々なくなる件(ユーザ報告 3141)。要求した高さと実際に与えられた高さが
+    // 食い違うと面が縮み、真っ先に上の余白が食われる、という筋を確かめるための記録。
+    // 食い違いの有無が変わったときだけ 1 行残す
+    var lastLoggedKeyboardHeightMismatch: CGFloat = 0
     var lastLoggedPreferredKeyboardHeightIsLandscape = false
     var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
     var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
@@ -1244,6 +1243,7 @@ final class KeyboardViewController: UIInputViewController {
         updateKeyboardHeightIfNeeded()
 
         updateKeyboardVisualVisibility(using: configuration)
+        logKeyboardHeightMismatchIfChanged()
 
         guard lastRenderConfiguration != nil else {
             return
@@ -1355,7 +1355,7 @@ final class KeyboardViewController: UIInputViewController {
     private func setupKeyboardView() {
         installRawTouchProbeIfNeeded()
         let configuration = makeRenderConfiguration()
-        let host = UIHostingController(rootView: makeKeyboardRootHostView(from: configuration))
+        let host = UIHostingController(rootView: makeRootView(from: configuration))
         addChild(host)
         host.view.translatesAutoresizingMaskIntoConstraints = false
         host.view.clipsToBounds = false
@@ -1720,7 +1720,7 @@ final class KeyboardViewController: UIInputViewController {
         }
 
         UIView.performWithoutAnimation {
-            hostingController?.rootView = makeKeyboardRootHostView(from: configuration)
+            hostingController?.rootView = makeRootView(from: configuration)
             hostingController?.view.layoutIfNeeded()
         }
 

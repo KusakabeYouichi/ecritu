@@ -94,6 +94,9 @@ enum KeyboardThemePalette {
 // テスター(iPhone 15 Pro、iOS 27)の候補バーで、状態カプセルから かなチップまで横スクロールの中身だけが
 // 上 6 割ほどぼやけて見えた(ユーザ報告の画像 IMG_0235)。iOS 26.7 の端末では出ない。候補バーは
 // 短い横スクロールで縁の効果は要らない
+// スクロールの縁に出る効果(ぼかし)を切る。#available が iOS 26 なのは API が 26 で入ったからで、
+// 実際に描かれ始めたのは 27(実測: iPhone 15 は 26.6 では出ず 27 で出た)。当てる先は面ごと ─
+// 根にまとめて被せると候補欄の上の余白まで消える(3122 で入れて 3140 で撤回)。
 struct KeyboardScrollEdgeEffectHiddenModifier: ViewModifier {
     func body(content: Content) -> some View {
         if #available(iOS 26.0, *) {
