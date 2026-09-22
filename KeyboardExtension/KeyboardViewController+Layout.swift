@@ -303,6 +303,9 @@ extension KeyboardViewController {
             return
         }
         lastLoggedKeyboardHeightMismatch = gap
+        if abs(gap) <= 0.5 {
+            keyboardHeightRetryCount = 0
+        }
         // 一致し続けている間は無言。ずれた瞬間と、ずれが解消した瞬間だけ残す
         guard abs(gap) > 0.5 || abs(previousGap) > 0.5 else {
             return
@@ -321,6 +324,44 @@ extension KeyboardViewController {
                 + " モード=\(currentInputMode)",
             critical: true
         )
+        requestKeyboardHeightAgainIfShrunk(expected: expected, actual: actual)
+    }
+
+    // 横画面で面を切り替えると、制約に 188 を入れてもホストが枠を 176 のままにすることがある
+    // (実機実測 3156: 回転直後の 1 回目で再現。2 回目以降は 29ms で追随する)。中身は
+    // 188 前提で組まれるので上下が切れる。ホストにもう一度要求を届けるため、制約の値を
+    // 一瞬だけ 0.5pt ずらして戻し、レイアウトをやり直させる。効かないときのために回数を区切る(3158)
+    func requestKeyboardHeightAgainIfShrunk(expected: CGFloat, actual: CGFloat) {
+        guard actual + 0.5 < expected,
+            keyboardHeightRetryCount < Self.keyboardHeightRetryLimit,
+            let constraint = keyboardHeightConstraint else {
+            return
+        }
+        keyboardHeightRetryCount += 1
+        let attempt = keyboardHeightRetryCount
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.08) { [weak self] in
+            guard let self, let sizingView = self.inputView ?? self.view else {
+                return
+            }
+            let target = constraint.constant
+            guard self.view.bounds.height + 0.5 < target else {
+                return
+            }
+            self.appendKeyboardDiagnosticsLog(
+                "高さの再要求 \(attempt)回目 要求=\(Int(target)) view=\(Int(self.view.bounds.height))",
+                critical: true
+            )
+            UIView.performWithoutAnimation {
+                constraint.constant = target + 0.5
+                self.keyboardMaxHeightConstraint?.constant = target + 0.5
+                sizingView.layoutIfNeeded()
+                constraint.constant = target
+                self.keyboardMaxHeightConstraint?.constant = target
+                self.synchronizePreferredContentSize(height: target)
+                sizingView.layoutIfNeeded()
+                self.view.superview?.layoutIfNeeded()
+            }
+        }
     }
 
     func installKeyboardHeightConstraintIfNeeded() {
