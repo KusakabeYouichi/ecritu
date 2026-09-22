@@ -197,6 +197,9 @@ final class KeyboardViewController: UIInputViewController {
     // 食い違うと面が縮み、真っ先に上の余白が食われる、という筋を確かめるための記録。
     // 食い違いの有無が変わったときだけ 1 行残す
     var lastLoggedKeyboardHeightMismatch: CGFloat = 0
+    // 枠がこちらの要求より小さいままのときに、もう一度要求を届けた回数(3158)。一致したら 0 に戻す
+    var keyboardHeightRetryCount = 0
+    static let keyboardHeightRetryLimit = 3
     var lastLoggedPreferredKeyboardHeightIsLandscape = false
     var keyboardHeightLockReleaseTime: CFAbsoluteTime = 0
     var keyboardHeightLockReleaseWorkItem: DispatchWorkItem?
