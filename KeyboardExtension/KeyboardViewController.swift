@@ -1448,11 +1448,14 @@ final class KeyboardViewController: UIInputViewController {
         var relaxed = 0
         for target in views {
             for recognizer in target.gestureRecognizers ?? [] {
-                guard recognizer.delaysTouchesBegan,
-                    String(describing: type(of: recognizer)).contains("SystemGestureGate") else {
+                guard String(describing: type(of: recognizer)).contains("SystemGestureGate") else {
                     continue
                 }
+                // 3172 では待ちの指定(delaysTouchesBegan)だけ外したが、実測では 754ms のままだった。
+                // 待たせているのは調停側(SwiftUI の認識器が門番の決着を待つ関係)なので、門番自体を止める。
+                // ホームへ戻るスワイプは SpringBoard 側が担当しているので、これで消えることはない(3173)
                 recognizer.delaysTouchesBegan = false
+                recognizer.isEnabled = false
                 relaxed += 1
             }
         }
@@ -1461,7 +1464,7 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
         appendKeyboardDiagnosticsLog(
-            "システム操作の門番の待ちを外した \(relaxed)個",
+            "システム操作の門番を止めた \(relaxed)個",
             critical: true
         )
     }
