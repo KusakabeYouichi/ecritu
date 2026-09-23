@@ -1049,10 +1049,15 @@ struct ReturnToKanaPaletteKey: View {
 
     @State private var latestLocationY: CGFloat = 0
     @State private var latestLocationX: CGFloat = 0
+    @State private var touchBeganAt: Date?
     @State private var anchorLocationY: CGFloat = 0
 
     // 面の切り替えは「選び直し」ではないので待たせない(ユーザ指定 3125)
-    private static let longPressDelay: TimeInterval = 0.15
+    // 盤は触れた瞬間に出す(ユーザー指定 3174)。押してから出るまでの待ちが、下端の帯の
+    // 配送遅れに上乗せされて遅く感じるため。タップとの区別は離すときの時間で付ける
+    private static let longPressDelay: TimeInterval = 0
+    // 何も選ばずにこれ以内で離したら「ただのタップ」= かなへ戻る
+    private static let paletteTapReleaseMaxMs = 400
 
     var body: some View {
         ZStack {
@@ -1094,6 +1099,9 @@ struct ReturnToKanaPaletteKey: View {
         .gesture(
             DragGesture(minimumDistance: 0)
                 .onChanged { value in
+                    if touchBeganAt == nil {
+                        touchBeganAt = value.time
+                    }
                     latestLocationY = value.location.y
                     latestLocationX = value.location.x
                     if paletteIsActive {
@@ -1116,16 +1124,23 @@ struct ReturnToKanaPaletteKey: View {
                     longPressWorkItem = work
                     DispatchQueue.main.asyncAfter(deadline: .now() + Self.longPressDelay, execute: work)
                 }
-                .onEnded { _ in
+                .onEnded { value in
                     longPressWorkItem?.cancel()
                     longPressWorkItem = nil
                     guard paletteIsActive else {
+                        touchBeganAt = nil
                         onReturn()
                         return
                     }
                     paletteIsActive = false
-                    // 何も選ばれていない位置で離したときは何もしない(かなへも戻らない)
+                    defer { touchBeganAt = nil }
                     guard candidates.indices.contains(highlightedIndex) else {
+                        // 盤を出したまま、どれも選ばずに離した。さっと離したならただのタップ =
+                        // かなへ戻る。長く押していたなら何もしない(3138 の指定を保つ)
+                        let heldMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) } ?? 0
+                        if heldMs <= Self.paletteTapReleaseMaxMs {
+                            onReturn()
+                        }
                         return
                     }
                     onSelectCandidate(candidates[highlightedIndex])
