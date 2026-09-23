@@ -18854,6 +18854,10 @@ extension KanaKanjiConverterRegressionTests {
         // 変換候補の先頭は 抱けで だった。かな正書として登録して先頭に立たせる(ユーザー報告 3186)
         XCTAssertTrue(converter.shouldKeepKanaIdentityLeading(for: "だけで"))
         XCTAssertEqual(converter.candidates(for: "だけで", limit: 3, systemCandidateMode: .surface).first, "だけで")
+        // ならんで: 並んで(派生 OOV)と かな ならん+で が同点で、列挙順で かな が勝っていた
+        // (ユーザー報告 3134/3187)。標準語の ならんで は 並んで
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たくさんならんで", systemCandidateMode: .surface).first, "たくさん並んで")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "たくさんならぶ", systemCandidateMode: .surface).first, "たくさん並ぶ")
         XCTAssertEqual(Set(afterDigit).count, afterDigit.count, "重複が混じっている: \(afterDigit)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface).first, "影が惜しい")
         // 押井 は残すが、惜しい・おしい より後ろ
