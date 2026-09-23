@@ -431,7 +431,7 @@ extension ContentView {
             VStack(alignment: .leading, spacing: 1) {
                 Text(action.title)
                     .font(.body.weight(.semibold))
-                Text(isEnabled ? action.subtitle : "今の設定と同じ")
+                Text(action.subtitle)
                     .font(.caption)
                     .foregroundStyle(subtitleColor)
             }
