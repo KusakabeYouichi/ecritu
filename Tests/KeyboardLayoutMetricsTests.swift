@@ -52,10 +52,10 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
     func testPhoneLandscapeHeightsAreUnchanged() {
         let metrics = KeyboardLayoutMetrics.phone
         let expected: [KeyboardViewController.PortraitHeightProfile: CGFloat] = [
-            .kanaThreeByThree: 176,
-            .compactGrid: 186,
-            .compactActionRow: 176,
-            .kanaFiveByTwo: 176,
+            .kanaThreeByThree: 188,
+            .compactGrid: 188,
+            .compactActionRow: 188,
+            .kanaFiveByTwo: 188,
             .emoji: 188,
             .formattedNumber: 230
         ]
@@ -68,7 +68,8 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
         }
     }
 
-    // 数字/ラテンフリックの compactGrid はかなと同じ横組み高さに揃える(既存挙動)。
+    // 数字/ラテンフリックの compactGrid はかなと同じ横組み高さに揃える。3175 で横画面は
+    // 全ての面を同じ高さ(188pt)にしたので、揃え先もその値になる
     func testPhoneLandscapeCompactGridFollowsKanaWhenRequested() {
         let metrics = KeyboardLayoutMetrics.phone
         let height = metrics.preferredHeight(
@@ -80,7 +81,7 @@ final class KeyboardLayoutMetricsTests: XCTestCase {
                 usesKanaLandscapeHeightForCompactGrid: true
             )
         )
-        XCTAssertEqual(height, 176)
+        XCTAssertEqual(height, 188)
     }
 
     func testPhoneStillUsesCompactLandscapeLayout() {
