@@ -76,7 +76,11 @@ final class KanaKanjiSQLiteIndex {
         // (既定約2MB、dirty=footprint寄与)を経由する。辞書は読み取り専用+immutable なので
         // mmap 読みに切り替える(mmap ページは clean で jetsam 圧にならず、OSが自由に回収
         // できる)。ページキャッシュは mmap が効くぶん 512KB まで絞る。
-        _ = sqlite3_exec(openedDatabase, "PRAGMA mmap_size=536870912;", nil, nil, nil)
+        // 上限は 512MB(=辞書全体)だったが、実機の常駐は RSS 151MB まで伸びていた(3196 の実測。
+        // footprint は 40MB で健全なのに常駐だけが大きい)。mmap ページは clean なので自プロセスの
+        // jetsam 圧にはならないものの、端末全体の物理メモリを押さえ、前面アプリが落とされる側に
+        // 加担する。よく引くページは収まる大きさに絞る(128MB)
+        _ = sqlite3_exec(openedDatabase, "PRAGMA mmap_size=134217728;", nil, nil, nil)
         _ = sqlite3_exec(openedDatabase, "PRAGMA cache_size=-512;", nil, nil, nil)
 
         guard let candidateStatement = prepareStatement(
