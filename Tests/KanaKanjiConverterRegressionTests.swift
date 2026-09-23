@@ -18843,6 +18843,14 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "うるちまい", limit: 3, systemCandidateMode: .surface).first, "うるち米")
         XCTAssertEqual(converter.candidates(for: "おしい", limit: 3, systemCandidateMode: .surface).first, "惜しい")
         XCTAssertEqual(converter.candidates(for: "どれも", limit: 3, systemCandidateMode: .surface).first, "どれも")
+        // 数字の直後の かいそう は 階層(ユーザー指定 3185)。学習に頼らず先頭へ
+        let afterDigit = KanaKanjiConverter.digitContextCounterBoostedCandidates(
+            converter.candidates(for: "かいそう", limit: 8, systemCandidateMode: .surface),
+            reading: "かいそう",
+            precedingCharacter: "1"
+        )
+        XCTAssertEqual(afterDigit.first, "階層")
+        XCTAssertEqual(Set(afterDigit).count, afterDigit.count, "重複が混じっている: \(afterDigit)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface).first, "影が惜しい")
         // 押井 は残すが、惜しい・おしい より後ろ
         let variants = converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface)
