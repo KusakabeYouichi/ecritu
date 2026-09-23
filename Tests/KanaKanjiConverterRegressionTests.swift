@@ -18858,6 +18858,12 @@ extension KanaKanjiConverterRegressionTests {
         // (ユーザー報告 3134/3187)。標準語の ならんで は 並んで
         XCTAssertEqual(converter.multiClauseCandidates(for: "たくさんならんで", systemCandidateMode: .surface).first, "たくさん並んで")
         XCTAssertEqual(converter.multiClauseCandidates(for: "たくさんならぶ", systemCandidateMode: .surface).first, "たくさん並ぶ")
+        // 押し分け(連用形の名詞が辞書に無かった)/お屠蘇(LM 未収録で人名収穫に負けていた)/
+        // 人名+様(敬称の漢字化減点から外す)。ユーザー報告 3187
+        XCTAssertEqual(converter.candidates(for: "おしわけ", limit: 3, systemCandidateMode: .surface).first, "押し分け")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "おとそでも", systemCandidateMode: .surface).first, "お屠蘇でも")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "まつおさまに", systemCandidateMode: .surface).first, "松尾様に")
+        XCTAssertFalse(converter.candidates(for: "おしわける", limit: 8, systemCandidateMode: .surface).contains("おし分る"))
         XCTAssertEqual(Set(afterDigit).count, afterDigit.count, "重複が混じっている: \(afterDigit)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface).first, "影が惜しい")
         // 押井 は残すが、惜しい・おしい より後ろ
