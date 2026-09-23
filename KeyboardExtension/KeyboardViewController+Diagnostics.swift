@@ -542,6 +542,9 @@ extension KeyboardViewController {
     // 来るため、その手前(50MB)で返しておけば警告に至りにくい。
     // 効果はログ「予防スリム化」で計測する(返却量が常にゼロなら閾値か頻度を見直す)
     static let preventiveReliefFootprintMB: Double = 50
+    // 横画面は面ごとに別レイアウトを組むぶん確保が増え、同じ上限(77MB)に早く近づく。
+    // 予防の返却をひと回り早く始める(ユーザー報告 3186: 横画面で削除キーが黄色になった)
+    static let preventiveReliefFootprintMBLandscape: Double = 42
     // 通常の非表示で共有キャッシュを捨てはじめる footprint(A/B 2727。performHiddenKeyboardMemoryTrim 参照)。
     // 警告は fp≈60 で届くので、その手前では作り直しコストの方が高い分を温存する
     static let hiddenCacheClearMinFootprintMB: Double = 55
@@ -550,14 +553,52 @@ extension KeyboardViewController {
     nonisolated(unsafe) static var lastPreventiveReliefLogAt: CFAbsoluteTime = 0
     nonisolated(unsafe) static var lastHiddenAttributionLogAt: CFAbsoluteTime = 0
 
+    // 回転直後の後始末(3186)。横画面は面ごとに別のレイアウトを組むため、回転のたびに
+    // 前の向きのビュー群が捨てられ、その跡地が malloc アリーナに残る(返らないと次の面で
+    // 4MB 刻みに伸びる=既知のラチェット)。捨てたページを OS へ返し、幅に依存する
+    // 補助語彙の候補も落とす。走査は数ms で、次に必要になれば作り直される
+    func performRotationMemoryTrim() {
+        guard isSuspendMemorySlimmingEnabled else {
+            return   // 「キーボードが閉じたときにメモリを整理」トグルに追従する
+        }
+        let before = currentFootprintMB() ?? 0
+        clearSupplementaryLexiconCandidatesForMemoryTrim()
+        // 高いときは共有キャッシュ(辞書 JSON)も落とす。回転は面を組み直す区切りなので、
+        // 作り直しの痛みが最も軽いタイミング(3186)
+        if before >= Self.rotationTrimClearCachesFootprintMB {
+            kanaKanjiConverter.store.clearSystemDictionaryJSONCaches()
+            kanaKanjiConverter.clearSharedDataCaches()
+        }
+        malloc_zone_pressure_relief(nil, 0)
+        let after = currentFootprintMB() ?? 0
+        guard abs(before - after) >= 1 || before >= Self.rotationTrimLogFootprintMB else {
+            return
+        }
+        appendKeyboardDiagnosticsLog(
+            "回転後の整理 fp=\(String(format: "%.1f", before))→\(String(format: "%.1f", after))",
+            critical: true
+        )
+    }
+
+    static let rotationTrimLogFootprintMB: Double = 40
+    // 回転時に共有キャッシュまで捨てる高さ。通常の非表示(55)より低くてよい ─ 回転は
+    // どのみち面を組み直すので、作り直しの費用が相対的に小さい
+    static let rotationTrimClearCachesFootprintMB: Double = 45
+
     func performPreventiveMallocReliefIfNeeded() {
         guard isSuspendMemorySlimmingEnabled else {
             return   // 「キーボードが閉じたときにメモリを整理」トグルに追従する
         }
         let now = CFAbsoluteTimeGetCurrent()
+        // 横画面は同じ上限に早く近づくので、返却を始める高さを下げる(定数コメント参照。3186)
+        let isLandscape = view.window?.windowScene?.interfaceOrientation.isLandscape
+            ?? (traitCollection.verticalSizeClass == .compact)
+        let threshold = isLandscape
+            ? Self.preventiveReliefFootprintMBLandscape
+            : Self.preventiveReliefFootprintMB
         guard now - Self.lastPreventiveReliefAt >= Self.preventiveReliefMinimumInterval,
             let footprintMB = currentFootprintMB(),
-            footprintMB >= Self.preventiveReliefFootprintMB else {
+            footprintMB >= threshold else {
             return
         }
         Self.lastPreventiveReliefAt = now
