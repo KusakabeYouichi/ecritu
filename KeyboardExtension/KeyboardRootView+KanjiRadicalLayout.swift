@@ -471,6 +471,223 @@ struct RadicalCategoryKeyButton: View {
     }
 }
 
+// 部首の一覧(約 600 セル)を UICollectionView で描く(3193)。SwiftUI の LazyVGrid は
+// 実体化したセルを画面を閉じるまで保持し、描いたグリフごとにシステムのキャッシュが積み上がる
+// (絵文字の格子 2668 で 601 枚 = 27.3MB を実測。字の格子は 2783 で移行済み)。実機の
+// メモリ警告時の内訳でも、辞書キャッシュは空なのに UI 側で 39MB 生きていた(3192 のログ)。
+// 最後に残っていたこの一覧もセル再利用へ移す
+struct RadicalFormGridCollectionView: UIViewRepresentable {
+    typealias Item = (id: String, kind: KeyboardRootKanjiRadicalSectionView.RadicalListItem)
+
+    let items: [Item]
+    let columnCount: Int
+    let itemSpacing: CGFloat
+    let itemHeight: CGFloat
+    let strokeChoices: RadicalStrokeChoices
+    let onSelect: (RadicalForm) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIView(context: Context) -> UICollectionView {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumInteritemSpacing = itemSpacing
+        layout.minimumLineSpacing = itemSpacing
+        layout.sectionInset = UIEdgeInsets(top: 2, left: 0, bottom: 2, right: 0)
+        let view = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        view.backgroundColor = .clear
+        view.showsVerticalScrollIndicator = false
+        view.showsHorizontalScrollIndicator = false
+        view.alwaysBounceVertical = true
+        view.delaysContentTouches = false
+        hideScrollEdgeEffects(view)
+        view.register(RadicalFormGridCell.self, forCellWithReuseIdentifier: RadicalFormGridCell.reuseIdentifier)
+        view.register(
+            RadicalStrokeMarkerGridCell.self,
+            forCellWithReuseIdentifier: RadicalStrokeMarkerGridCell.reuseIdentifier
+        )
+        view.dataSource = context.coordinator
+        view.delegate = context.coordinator
+        context.coordinator.parent = self
+        return view
+    }
+
+    func updateUIView(_ uiView: UICollectionView, context: Context) {
+        let coordinator = context.coordinator
+        let itemsChanged = coordinator.parent.items.count != items.count
+            || coordinator.parent.strokeChoices != strokeChoices
+        coordinator.parent = self
+        if let layout = uiView.collectionViewLayout as? UICollectionViewFlowLayout {
+            layout.minimumInteritemSpacing = itemSpacing
+            layout.minimumLineSpacing = itemSpacing
+        }
+        if itemsChanged {
+            uiView.reloadData()
+        }
+    }
+
+    final class Coordinator: NSObject, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+        var parent: RadicalFormGridCollectionView
+
+        init(parent: RadicalFormGridCollectionView) {
+            self.parent = parent
+        }
+
+        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+            parent.items.count
+        }
+
+        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+            switch parent.items[indexPath.item].kind {
+            case .strokeMarker(let strokes):
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: RadicalStrokeMarkerGridCell.reuseIdentifier, for: indexPath
+                )
+                (cell as? RadicalStrokeMarkerGridCell)?.configure(strokes: strokes)
+                return cell
+            case .form(let form):
+                let cell = collectionView.dequeueReusableCell(
+                    withReuseIdentifier: RadicalFormGridCell.reuseIdentifier, for: indexPath
+                )
+                (cell as? RadicalFormGridCell)?.configure(
+                    displayForm: form.displayForm(choices: parent.strokeChoices),
+                    name: form.name
+                )
+                return cell
+            }
+        }
+
+        func collectionView(
+            _ collectionView: UICollectionView,
+            layout collectionViewLayout: UICollectionViewLayout,
+            sizeForItemAt indexPath: IndexPath
+        ) -> CGSize {
+            let columns = max(1, parent.columnCount)
+            let available = collectionView.bounds.width - parent.itemSpacing * CGFloat(columns - 1)
+            let width = floor(max(1, available / CGFloat(columns)))
+            return CGSize(width: width, height: parent.itemHeight)
+        }
+
+        func collectionView(_ collectionView: UICollectionView, shouldHighlightItemAt indexPath: IndexPath) -> Bool {
+            if case .form = parent.items[indexPath.item].kind {
+                return true
+            }
+            return false
+        }
+
+        func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+            if case .form(let form) = parent.items[indexPath.item].kind {
+                parent.onSelect(form)
+            }
+        }
+    }
+}
+
+// 部首キーのセル(字形+読み)。SwiftUI の RadicalFormKeyButton と同じ見た目(3193)
+final class RadicalFormGridCell: UICollectionViewCell {
+    static let reuseIdentifier = "RadicalFormGridCell"
+    private let glyphLabel = UILabel()
+    private let nameLabel = UILabel()
+    private static let minchoFont = UIFont(name: "HiraMinProN-W3", size: 22) ?? UIFont.systemFont(ofSize: 22)
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.backgroundColor = .systemBackground
+        contentView.layer.cornerRadius = 6
+        contentView.layer.cornerCurve = .continuous
+        glyphLabel.font = Self.minchoFont
+        glyphLabel.textAlignment = .center
+        glyphLabel.adjustsFontSizeToFitWidth = true
+        glyphLabel.minimumScaleFactor = 0.6
+        glyphLabel.isAccessibilityElement = false
+        nameLabel.font = UIFont.systemFont(ofSize: 9)
+        nameLabel.textColor = .secondaryLabel
+        nameLabel.textAlignment = .center
+        nameLabel.adjustsFontSizeToFitWidth = true
+        nameLabel.minimumScaleFactor = 0.7
+        nameLabel.isAccessibilityElement = false
+        contentView.addSubview(glyphLabel)
+        contentView.addSubview(nameLabel)
+        isAccessibilityElement = true
+        accessibilityTraits = .button
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        let nameHeight: CGFloat = 11
+        glyphLabel.frame = CGRect(
+            x: 0,
+            y: 0,
+            width: contentView.bounds.width,
+            height: max(0, contentView.bounds.height - nameHeight)
+        )
+        nameLabel.frame = CGRect(
+            x: 2,
+            y: contentView.bounds.height - nameHeight,
+            width: max(0, contentView.bounds.width - 4),
+            height: nameHeight
+        )
+    }
+
+    func configure(displayForm: String, name: String) {
+        glyphLabel.text = displayForm
+        nameLabel.text = name
+        accessibilityLabel = "\(displayForm) \(name)"
+    }
+
+    override var isHighlighted: Bool {
+        didSet {
+            let pressed = isHighlighted
+            UIView.animate(withDuration: 0.08, delay: 0, options: [.curveEaseOut, .beginFromCurrentState]) {
+                self.contentView.transform = pressed ? CGAffineTransform(scaleX: 0.94, y: 0.94) : .identity
+            }
+        }
+    }
+}
+
+// 画数の区切り(タップできない)
+final class RadicalStrokeMarkerGridCell: UICollectionViewCell {
+    static let reuseIdentifier = "RadicalStrokeMarkerGridCell"
+    private let label = UILabel()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.backgroundColor = .tertiarySystemFill
+        contentView.layer.cornerRadius = 6
+        contentView.layer.cornerCurve = .continuous
+        let base = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        label.font = base.fontDescriptor.withDesign(.rounded).map { UIFont(descriptor: $0, size: 13) } ?? base
+        label.textColor = UIColor.label.withAlphaComponent(0.75)
+        label.textAlignment = .center
+        label.adjustsFontSizeToFitWidth = true
+        label.minimumScaleFactor = 0.7
+        contentView.addSubview(label)
+        isAccessibilityElement = true
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) is not supported")
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        label.frame = contentView.bounds.insetBy(dx: 2, dy: 0)
+    }
+
+    func configure(strokes: Int) {
+        label.text = "\(strokes)画"
+        accessibilityLabel = "\(strokes)画の部首"
+    }
+}
+
 // 部首キー。字形と読み(さんずい 等)を並べる。
 struct RadicalFormKeyButton: View {
     let form: RadicalForm
@@ -619,29 +836,15 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                 )
                 .frame(height: fourRowAlignedTopContentHeight)
             } else {
-                ScrollView(.vertical, showsIndicators: false) {
-                    LazyVGrid(columns: radicalColumns, spacing: emojiGridSpacing) {
-                        ForEach(radicalListItems, id: \.id) { item in
-                            switch item.kind {
-                            case .strokeMarker(let strokes):
-                                RadicalStrokeMarkerCell(
-                                    strokes: strokes,
-                                    height: compactEmojiKeyHeight
-                                )
-                            case .form(let form):
-                                RadicalFormKeyButton(
-                                    form: form,
-                                    displayForm: form.displayForm(choices: strokeChoices),
-                                    isSelected: false,
-                                    height: compactEmojiKeyHeight
-                                ) {
-                                    selectedForm = form
-                                }
-                            }
-                        }
-                    }
-                    .padding(.vertical, 2)
-                }
+                // 部首の一覧もセル再利用へ(定義箇所のコメント参照。3193)
+                RadicalFormGridCollectionView(
+                    items: radicalListItems,
+                    columnCount: radicalColumns.count,
+                    itemSpacing: emojiGridSpacing,
+                    itemHeight: compactEmojiKeyHeight,
+                    strokeChoices: strokeChoices,
+                    onSelect: { form in selectedForm = form }
+                )
                 .frame(height: fourRowAlignedTopContentHeight)
             }
 
