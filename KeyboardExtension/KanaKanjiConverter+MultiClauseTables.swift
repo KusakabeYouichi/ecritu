@@ -636,6 +636,8 @@ extension KanaKanjiConverter {
         // ならんで: 並んで と かな ならん+で が同点(13640)。ノード単体の差に加えて、て形は
         // 文末になりにくく 並んで→EOS が で→EOS より高いぶんも跨ぐ(3187)
         "ならんで": 1500,
+        // おとそ: お屠蘇 は LM 未収録で、人名収穫の 音祖 に負けていた(3187)
+        "おとそ": 2000,
         // かきかた: 書き方(6371)が 描き方(6536)に 1 ノード同士で負けていた。ちょっとだけ優先(2881、ユーザ指定)
         "かきかた": 600,
         // のみかた: 飲み方 は LM 未収録で seed 供給だと dictUnknown(8700)。の+見方(6778)をわずかに下回る幅
@@ -997,6 +999,9 @@ extension KanaKanjiConverter {
     // 接尾語にならない(名前+さん=かな敬称 が正書)ので、漢字表層に減点する。
     // 数字の後(十三/二十三 等)は正当な 三 なので免除する。
     static let multiClauseHonorificSuffixReadings: Set<String> = ["さん", "さま"]
+    // 人名の直後の さま は 様 が正書(松尾様)。敬称の漢字化減点(山/三/桟/讃 対策)から外し、
+    // かな さま より前に出す(ユーザー指定 3187)。人名でない語の直後(愛知県さま 等)は従来どおり
+    static let multiClauseHonorificSamaAfterPersonNameBonus = 900
     static let multiClauseHonorificKanjiPenalty = 3000
     // 地域接尾+産(産地表記)を かな敬称さん より優先するボーナス(2410)
     static let multiClauseRegionalProduceBonus = 3000
@@ -2539,7 +2544,7 @@ extension KanaKanjiConverter {
             add(KanaKanjiConverter.multiClauseEOSMarker)
             // 名詞+欄/製 の接尾(3123)
             for s in ["らん", "せい", "欄", "製"] { add(s) }
-            for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "行って"] { add(s) }
+            for s in ["ある", "いう", "いち", "いって", "う", "お", "おそい", "か", "かち", "かん", "かんじ", "が", "きた", "くらい", "ぐらい", "こと", "ご", "ごと", "さ", "さん", "し", "した", "して", "します", "じん", "すぎ", "する", "そい", "そう", "た", "たい", "ため", "だ", "っけ", "であっても", "でも", "と", "な", "ない", "ないで", "なん", "に", "にも", "の", "のか", "は", "ひと", "ほうが", "ほうがいい", "ほしい", "まだ", "まち", "も", "もう", "や", "よう", "を", "ん", "ー", "一", "一手", "人", "位置", "価値", "化", "屋", "待ち", "感", "来た", "漢字", "産", "用", "様", "行って"] { add(s) }
             for s in KanaKanjiConverter.multiClauseAdverbKanjiAfterNounSurfaces.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuVerbReadings.sorted() { add(s) }
             for s in KanaKanjiConverter.multiClauseAuxiliaryAdjectiveKanaReadings.sorted() { add(s) }
@@ -2755,6 +2760,7 @@ extension KanaKanjiConverter {
         static let 来た = MultiClauseSymbols.id("来た")
         static let 漢字 = MultiClauseSymbols.id("漢字")
         static let 産 = MultiClauseSymbols.id("産")
+        static let 様 = MultiClauseSymbols.id("様")
         static let 用 = MultiClauseSymbols.id("用")
         static let 行って = MultiClauseSymbols.id("行って")
     }
