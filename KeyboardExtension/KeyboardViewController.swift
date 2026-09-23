@@ -1451,11 +1451,11 @@ final class KeyboardViewController: UIInputViewController {
                 guard String(describing: type(of: recognizer)).contains("SystemGestureGate") else {
                     continue
                 }
-                // 3172 では待ちの指定(delaysTouchesBegan)だけ外したが、実測では 754ms のままだった。
-                // 待たせているのは調停側(SwiftUI の認識器が門番の決着を待つ関係)なので、門番自体を止める。
-                // ホームへ戻るスワイプは SpringBoard 側が担当しているので、これで消えることはない(3173)
+                // 3173 で門番自体を止めた(isEnabled = false)ところ、ホストアプリ(メモ)が
+                // 2 回落ちた(ユーザー報告 3181。クラッシュレポートは未生成だが、入れた直後から
+                // 起きている)。システムの認識器を止めるのは踏み込みすぎと判断して取り消す。
+                // 待ちの指定を外すだけなら実害が無いことは確認済みなので、そちらは残す(効果も無い)
                 recognizer.delaysTouchesBegan = false
-                recognizer.isEnabled = false
                 relaxed += 1
             }
         }
@@ -1464,7 +1464,7 @@ final class KeyboardViewController: UIInputViewController {
             return
         }
         appendKeyboardDiagnosticsLog(
-            "システム操作の門番を止めた \(relaxed)個",
+            "システム操作の門番の待ちを外した \(relaxed)個",
             critical: true
         )
     }
