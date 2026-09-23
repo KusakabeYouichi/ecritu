@@ -246,11 +246,22 @@ struct KeyboardScrollEdgeEffectHiddenModifier: ViewModifier {
     }
 }
 
-// iOS17+ でのみ ScrollView のクリップを無効化する(iOS16では従来どおりクリップ)。
+// 記号の一覧は、長押しの吹き出しが最上段で見切れないようクリップを外している(iOS17+)。
+// ただし外すと下側も描かれるため、枠が詰まる横画面では中身が下段バーに重なって見えていた
+// (ユーザー報告の画像 3190)。上だけ広げた覆いにして、下は枠で切る
 private struct SymbolScrollClipDisabledModifier: ViewModifier {
+    // 吹き出しが上へ出る余地(吹き出しの高さぶん)
+    static let bubbleAllowance: CGFloat = 56
+
     func body(content: Content) -> some View {
         if #available(iOS 17.0, *) {
-            content.scrollClipDisabled()
+            content
+                .scrollClipDisabled()
+                .mask(
+                    Rectangle()
+                        .padding(.top, -Self.bubbleAllowance)
+                        .ignoresSafeArea()
+                )
         } else {
             content
         }
