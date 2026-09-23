@@ -1166,6 +1166,7 @@ extension KeyboardRootView {
             ReturnToKanaPaletteKey(
                 title: "あい",
                 candidates: KeyboardRootView.modePaletteLabels,
+                paletteColumnCount: modePaletteColumnCount,
                 onReturn: { switchInputMode(.kana) },
                 onSelectCandidate: { _ = selectModePalette($0) }
             )

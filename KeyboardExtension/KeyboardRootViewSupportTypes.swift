@@ -757,6 +757,8 @@ extension KeyboardRootView {
         let onSwitchToKana: () -> Void
         // あい の長押しで出す面選択のパレット(3124)
         let onSelectModePalette: (String) -> Void
+        // 横画面は 2 列に折る(3171)
+        var paletteColumnCount: Int = 1
         let onDeleteBackward: () -> Void
         // 地球儀キーが要る機種(ホームボタン機)だけ非 nil。あい の右に 🌐 を置く(4.4.1。2785)
         var onAdvanceKeyboard: (() -> Void)? = nil
@@ -785,6 +787,7 @@ extension KeyboardRootView {
                     ReturnToKanaPaletteKey(
                         title: "あい",
                         candidates: KeyboardRootView.modePaletteLabels,
+                        paletteColumnCount: paletteColumnCount,
                         onReturn: onSwitchToKana,
                         onSelectCandidate: onSelectModePalette
                     )
@@ -883,6 +886,8 @@ extension KeyboardRootView {
         let onSwitchToKana: () -> Void
         // あい の長押しで出す面選択のパレット(3124)
         let onSelectModePalette: (String) -> Void
+        // 横画面は 2 列に折る(3171)
+        var paletteColumnCount: Int = 1
         let onDeleteBackward: () -> Void
         var onAdvanceKeyboard: (() -> Void)? = nil
 
@@ -900,6 +905,7 @@ extension KeyboardRootView {
                     ReturnToKanaPaletteKey(
                         title: "あい",
                         candidates: KeyboardRootView.modePaletteLabels,
+                        paletteColumnCount: paletteColumnCount,
                         onReturn: onSwitchToKana,
                         onSelectCandidate: onSelectModePalette
                     )

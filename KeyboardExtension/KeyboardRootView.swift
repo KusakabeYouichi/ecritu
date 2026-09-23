@@ -666,6 +666,9 @@ struct KeyboardRootView: View {
         inputMode == .kana && kanaLayoutMode == .fiveByTwo
     }
 
+    // 面選択のパレットの列数。横画面は盤の高さが足りないので 2 列に折る(ユーザー指定 3171)
+    var modePaletteColumnCount: Int { isLandscapeLayout ? 2 : 1 }
+
     var kanaCandidateHeaderTopPadding: CGFloat {
         // 枠を 4pt 詰めた縦向き(3169)ではチップの上余白も詰める。中身が枠に収まるようになって
         // 以前は隠れていた余白が全部見えるようになったため(ユーザー報告)

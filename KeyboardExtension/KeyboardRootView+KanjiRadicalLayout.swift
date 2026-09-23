@@ -26,6 +26,7 @@ extension KeyboardRootView {
             },
             onSwitchToKana: { switchInputMode(.kana) },
             onSelectModePalette: { _ = selectModePalette($0) },
+            paletteColumnCount: modePaletteColumnCount,
             onDeleteBackward: onDeleteBackward,
             onAdvanceKeyboard: showsNextKeyboardKey ? onAdvanceKeyboard : nil
         )
@@ -541,6 +542,8 @@ struct KeyboardRootKanjiRadicalSectionView: View {
     let onSwitchToKana: () -> Void
     // あい の長押しで出す面選択のパレット(3124)
     let onSelectModePalette: (String) -> Void
+    // 横画面は 2 列に折る(3171)
+    var paletteColumnCount: Int = 1
     let onDeleteBackward: () -> Void
     var onAdvanceKeyboard: (() -> Void)? = nil
 
@@ -641,6 +644,7 @@ struct KeyboardRootKanjiRadicalSectionView: View {
                 ReturnToKanaPaletteKey(
                     title: "あい",
                     candidates: KeyboardRootView.modePaletteLabels,
+                    paletteColumnCount: paletteColumnCount,
                     onReturn: onSwitchToKana,
                     onSelectCandidate: onSelectModePalette
                 )
