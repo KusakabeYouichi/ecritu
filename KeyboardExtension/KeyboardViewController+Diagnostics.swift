@@ -1288,9 +1288,19 @@ extension KeyboardViewController {
 
         // フルアクセスの実効値も残す(2857): オフだと共有 UserDefaults に書けず、設定も学習も拡張へ届かない。
         // 削除→再インストールで既定のオフに戻るため、一般の利用者が最も踏みやすい。問い合わせで最初に見る値
+        // 設定が既定値に戻っていた、という報告(3177)の裏取り用。代表的な 3 つの保存値を添える。
+        // 「未設定」が並んでいたら、その時刻に設定が消えていたと分かる(critical に残すので
+        // 詳細ログが流れた後でも追える)
+        func storedValue(_ key: String) -> String {
+            sharedDefaults?.string(forKey: key) ?? "未設定"
+        }
         appendKeyboardDiagnosticsLog(
             "AppGroup健全性 group=\(SharedDefaultsKeys.appGroupID) fullAccess=\(hasFullAccess ? 1 : 0)"
                 + " containerURL=\(containerReachable ? "ok" : "nil") defaults=\(defaultsRoundTrip)"
+                + " かな配列=\(storedValue(SharedDefaultsKeys.kanaLayoutMode))"
+                + " 欧文配列=\(storedValue(SharedDefaultsKeys.latinLayoutMode))"
+                + " 背景=\(storedValue(SharedDefaultsKeys.keyboardBackgroundTheme))",
+            critical: true
         )
 #endif
     }

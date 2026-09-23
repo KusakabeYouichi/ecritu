@@ -340,7 +340,44 @@ extension ContentView {
     }
 
     func logoMenuAction(at point: CGPoint) -> LogoMenuAction? {
-        LogoMenuAction.allCases.first { logoMenuFrames[$0.rawValue]?.contains(point) == true }
+        LogoMenuAction.allCases.first {
+            isLogoMenuActionEnabled($0) && logoMenuFrames[$0.rawValue]?.contains(point) == true
+        }
+    }
+
+    // 選んでも設定がどこも変わらない項目は灰色にして選べなくする(ユーザー指定 3177)。
+    // 初期設定の 2 項目だけが対象 ─ 他は設定の比較で「変わらない」と言えるものではない
+    func isLogoMenuActionEnabled(_ action: LogoMenuAction) -> Bool {
+        switch action {
+        case .strategicDefaults:
+            return !currentSettingsMatch(preset: [:])
+        case .conservativeDefaults:
+            return !currentSettingsMatch(preset: Self.conservativePresetValues)
+        default:
+            return true
+        }
+    }
+
+    // 「今の設定」が、その初期設定を当てた直後の状態と同じか。初期設定の適用は
+    // 「全キーを消してから preset を書く」なので、preset に無いキーは未設定が一致の条件
+    private func currentSettingsMatch(preset: [String: Any]) -> Bool {
+        guard let defaults = Self.sharedDefaults else {
+            return false
+        }
+        for key in Self.userSettingsKeys {
+            let stored = defaults.object(forKey: key)
+            guard let expected = preset[key] else {
+                if stored != nil {
+                    return false
+                }
+                continue
+            }
+            guard let stored = stored as? NSObject, let expected = expected as? NSObject,
+                stored.isEqual(expected) else {
+                return false
+            }
+        }
+        return true
     }
 
     // ──── メニュー表示 ────
@@ -353,7 +390,11 @@ extension ContentView {
                 Color.black.opacity(0.18)
                 VStack(spacing: 0) {
                     ForEach(LogoMenuAction.allCases) { action in
-                        logoMenuRow(action, isHighlighted: logoMenuHighlightedAction == action)
+                        logoMenuRow(
+                            action,
+                            isHighlighted: logoMenuHighlightedAction == action,
+                            isEnabled: isLogoMenuActionEnabled(action)
+                        )
                     }
                 }
                 .frame(width: 300)
@@ -371,25 +412,36 @@ extension ContentView {
         }
     }
 
-    private func logoMenuRow(_ action: LogoMenuAction, isHighlighted: Bool) -> some View {
-        HStack(spacing: 12) {
+    private func logoMenuRow(
+        _ action: LogoMenuAction,
+        isHighlighted: Bool,
+        isEnabled: Bool = true
+    ) -> some View {
+        // 今の設定と同じ初期設定は灰色(定義箇所のコメント参照。3177)
+        let labelColor: Color = isEnabled
+            ? (isHighlighted ? Color.white : Color.primary)
+            : Color.secondary.opacity(0.55)
+        let subtitleColor: Color = isEnabled
+            ? (isHighlighted ? Color.white.opacity(0.85) : Color.secondary)
+            : Color.secondary.opacity(0.45)
+        return HStack(spacing: 12) {
             Image(systemName: action.systemImage)
                 .font(.system(size: 18, weight: .medium))
                 .frame(width: 26)
             VStack(alignment: .leading, spacing: 1) {
                 Text(action.title)
                     .font(.body.weight(.semibold))
-                Text(action.subtitle)
+                Text(isEnabled ? action.subtitle : "今の設定と同じ")
                     .font(.caption)
-                    .foregroundStyle(isHighlighted ? Color.white.opacity(0.85) : Color.secondary)
+                    .foregroundStyle(subtitleColor)
             }
             Spacer(minLength: 0)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 9)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .foregroundStyle(isHighlighted ? Color.white : Color.primary)
-        .background(isHighlighted ? Color.accentColor : Color.clear)
+        .foregroundStyle(labelColor)
+        .background(isHighlighted && isEnabled ? Color.accentColor : Color.clear)
         .background(
             GeometryReader { proxy in
                 Color.clear.preference(
