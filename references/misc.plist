@@ -125,6 +125,8 @@
 	<dict><key>phrase</key><string>べき</string><key>shortcut</key><string>べき</string></dict>	<!-- 当為の助動詞。辞書は 冪0/ベキ1/べき2 で連文節にかなが供給されず ふむべき→府務冪 になっていた(ユーザ報告 2798) -->
 	<dict><key>phrase</key><string>べし</string><key>shortcut</key><string>べし</string></dict>
 	<dict><key>phrase</key><string>べく</string><key>shortcut</key><string>べく</string></dict>
+	<dict><key>phrase</key><string>したい</string><key>shortcut</key><string>したい</string></dict>	<!-- したい(する+たい): 辞書は 死体/支隊/肢体/姿態 ばかりで、動詞の したい が候補に無かった(したいね→死体ね。ユーザー報告 3197)。かな正書として供給する -->
+	<dict><key>phrase</key><string>したいね</string><key>shortcut</key><string>したいね</string></dict>
 	<dict><key>phrase</key><string>だけで</string><key>shortcut</key><string>だけで</string></dict>	<!-- 限定の だけ+で。かなが正書なのに、候補欄では 抱けで(抱ける の活用)/丈けで が先に出ていた。エンジンの点数では だけで=1120 が先頭でも、かな識別は「かな候補チップ」へ回されるため先頭に立てない(ユーザー報告 3186) -->
 	<dict><key>phrase</key><string>のに</string><key>shortcut</key><string>のに</string></dict>	<!-- 逆接の接続助詞 のに はかなが正書。辞書に のに のエントリが無く、の(乃/之/野/廼/幅)+に の合成だけが立っていた(ユーザ指摘 2925) -->
 	<dict><key>phrase</key><string>とか</string><key>shortcut</key><string>とか</string></dict>	<!-- 並立助詞 とか はかなが正書。LM にトークンが無く辞書 rank5 で、とかはでない が と+彼は出ない に分割されていた(ユーザ報告 2798) -->
