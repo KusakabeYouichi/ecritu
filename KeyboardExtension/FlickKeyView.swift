@@ -782,8 +782,22 @@ struct FlickKeyView: View {
                 if longPressIsActive,
                     longPressCandidateAxis == .vertical,
                     !longPressCandidates.indices.contains(highlightedLongPressIndex) {
-                    // 盤を出したまま、どれも選ばずに離した ─ 何も起きない(ユーザ指定 3138)
+                    // 盤を出したまま、どれも選ばずに離した。長く押していたなら何も起きない
+                    // (ユーザ指定 3138)。ただし盤は触れた瞬間に出る(3174)ので、さっと離した
+                    // ときは「ただのタップ」として扱う ─ でないと面切替のタップができなくなる
+                    let heldMs = touchBeganAt.map { Int(value.time.timeIntervalSince($0) * 1000) } ?? 0
+                    guard heldMs <= Self.paletteTapReleaseMaxMs else {
+                        finalizeTouchInteractionState()
+                        return
+                    }
+
+                    let tapText = kana.output(for: .milieu)
                     finalizeTouchInteractionState()
+                    if let onCommitWithDirection {
+                        onCommitWithDirection(tapText, .milieu)
+                    } else {
+                        onCommit(tapText)
+                    }
                     return
                 }
 
@@ -892,6 +906,9 @@ struct FlickKeyView: View {
         secondaryFlickVerticalDirection = nil
         secondaryFlickAnchorTranslation = .zero
     }
+
+    // 盤を出したまま何も選ばずに離したとき、これ以内なら「ただのタップ」とみなす(3174)
+    static let paletteTapReleaseMaxMs = 400
 
     private func scheduleLongPressIfNeeded() {
         guard !longPressCandidates.isEmpty || onLongPress != nil else {
