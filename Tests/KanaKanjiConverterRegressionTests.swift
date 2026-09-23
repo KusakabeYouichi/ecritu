@@ -18832,6 +18832,23 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.multiClauseCandidates(for: "はしったばかり", systemCandidateMode: .surface).first, "走ったばかり")
         XCTAssertEqual(converter.multiClauseCandidates(for: "がでないのだけど", systemCandidateMode: .surface).first, "が出ないのだけど")
         XCTAssertEqual(converter.multiClauseCandidates(for: "はなにみず", systemCandidateMode: .surface).first, "花に水")
+    }
+
+    // うるち米 は交ぜ書きの抑制に巻き込まれて候補から消えていた(粳 は常用漢字外なので
+    // うるち米 が現代の主表記)。おしい は LM で 押井 が先行していた。どれも は基底に無く
+    // どれ+も の合成で 何れも しか出なかった(ユーザー報告 3182-3183)
+    func testKanaOrthodoxAndSeedSuppliedWords() throws {
+        try prepareRealLMDictionary()
+        try loadDeviceAddedVocabulary()
+        XCTAssertEqual(converter.candidates(for: "うるちまい", limit: 3, systemCandidateMode: .surface).first, "うるち米")
+        XCTAssertEqual(converter.candidates(for: "おしい", limit: 3, systemCandidateMode: .surface).first, "惜しい")
+        XCTAssertEqual(converter.candidates(for: "どれも", limit: 3, systemCandidateMode: .surface).first, "どれも")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface).first, "影が惜しい")
+        // 押井 は残すが、惜しい・おしい より後ろ
+        let variants = converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface)
+        if let oshiiIndex = variants.firstIndex(of: "影がおしい"), let oshiiNameIndex = variants.firstIndex(of: "影が押井") {
+            XCTAssertLessThan(oshiiIndex, oshiiNameIndex)
+        }
         // 助詞に割った読み(直前に名詞を確定してから打つ形)も 2 位・3 位に残す(ユーザー指定 3142)
         XCTAssertEqual(
             Array(converter.multiClauseCandidates(for: "はいったばかり", systemCandidateMode: .surface).prefix(3)),
