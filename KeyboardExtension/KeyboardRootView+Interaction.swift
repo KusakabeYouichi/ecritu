@@ -300,7 +300,9 @@ extension KeyboardRootView {
 
     // 面選択のパレット(左下キーの長押しで縦に出す。3124)。よく使う面はタップとフリックに残し、
     // たまにしか使わない面はラベルを読んで選べるようにする。長押しの書式化入力もここへ移した
-    static let modePaletteLabels: [String] = ["記号", "絵文字", "顔文字", "部首", "書式化"]
+    // 「部首」→「単漢字」(ユーザー指定 3194)。部首を入力する面ではなく、部首や画数から
+    // 1 文字を探して入れる面なので、機能を言い当てる名前にする
+    static let modePaletteLabels: [String] = ["記号", "絵文字", "顔文字", "単漢字", "書式化"]
 
     func selectModePalette(_ label: String) -> Bool {
         switch label {
@@ -310,7 +312,7 @@ extension KeyboardRootView {
             enterEmojiMode()
         case "顔文字":
             enterKaomojiMode()
-        case "部首":
+        case "単漢字":
             enterKanjiRadicalMode()
         case "書式化":
             enterFormattedNumberMode()
