@@ -1051,6 +1051,7 @@ struct ReturnToKanaPaletteKey: View {
     @State private var latestLocationX: CGFloat = 0
     @State private var touchBeganAt: Date?
     @State private var anchorLocationY: CGFloat = 0
+    @Environment(\.keyboardAccentColor) private var accentColor
 
     // 面の切り替えは「選び直し」ではないので待たせない(ユーザ指定 3125)
     // 盤は触れた瞬間に出す(ユーザー指定 3174)。押してから出るまでの待ちが、下端の帯の
@@ -1059,15 +1060,39 @@ struct ReturnToKanaPaletteKey: View {
     // 何も選ばずにこれ以内で離したら「ただのタップ」= かなへ戻る
     private static let paletteTapReleaseMaxMs = 400
 
+    // 盤を出しているあいだは、左下の ⌘ キーと同じように緑にして選んでいる面のアイコンを出す
+    // (ユーザー指定 3177)。何も選んでいないときは元のラベルのまま
+    private var selectedIcon: LongPressVerticalCandidatePanel.Icon? {
+        guard paletteIsActive, candidates.indices.contains(highlightedIndex) else {
+            return nil
+        }
+        return LongPressVerticalCandidatePanel.iconByLabel[candidates[highlightedIndex]]
+    }
+
     var body: some View {
         ZStack {
-            Text(title)
-                .font(.system(size: fontSize, weight: .semibold, design: .rounded))
-                .foregroundStyle(KeyboardThemePalette.keyLabel)
+            Text(selectedIcon?.text ?? title)
+                .font(
+                    selectedIcon?.usesMincho == true
+                        ? .custom("HiraMinProN-W6", size: selectedIcon?.size ?? fontSize)
+                        : .system(
+                            size: selectedIcon?.size ?? fontSize,
+                            weight: paletteIsActive ? .bold : .semibold,
+                            design: .rounded
+                        )
+                )
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .padding(.horizontal, 2)
+                .foregroundStyle(paletteIsActive ? Color.white : KeyboardThemePalette.keyLabel)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill(KeyboardThemePalette.keyBackground)
+                        .fill(
+                            paletteIsActive
+                                ? accentColor.opacity(0.85)
+                                : KeyboardThemePalette.keyBackground
+                        )
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 10, style: .continuous)
