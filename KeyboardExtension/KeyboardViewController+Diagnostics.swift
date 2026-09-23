@@ -261,6 +261,68 @@ extension KeyboardViewController {
             line: #line,
             function: #function
         )
+        sweepForgottenDetachedControllers(trigger: trigger)
+    }
+
+    // 忘れられた離脱個体の掃除(3199)。
+    // 既存の回収機構(ゾンビ・カナリア、releaseHostingViewIfZombie、メモリ警告3回目の強制解放)は
+    // すべて lostActiveOwnershipAt > 0 = 降格経路を通ったことを前提にしている。降格は
+    // shouldSuppressHeavyOperations が「その個体に更新が届いたとき」にしか走らないので、
+    // 更新が来なくなった個体はどの機構からも見えない。実測(2026-09-24 08:17 JST の実機ログ):
+    //   id=68540833 age=1032.6s window=false superview=false parentVC=false hosting=true
+    //   observing=true retain=6 zombie=-s
+    // ビュー木から完全に外れているのに SwiftUI 階層と設定通知の observer を17分抱えたままで、
+    // ログには解放も見送りも1行も出ていなかった(=誰も見ていない)。1体あたり used 約2MB。
+    // 誤爆(表示中のキーボードを壊す、2604)を防ぐため、対象は次を全て満たすものだけにする:
+    //   - 降格経路を通っていない(通った個体はカナリアの担当なので二重に触らない)
+    //   - window/superview/parentVC/host.view.window が全て無い=完全離脱
+    //   - 生成から60秒以上(iOS が取り付ける前の投機生成個体を巻き込まない)
+    //   - 別に表示中の個体が実在する(自分が唯一の表示個体なら絶対に触らない)
+    func sweepForgottenDetachedControllers(trigger: String) {
+        let controllers = KeyboardViewController.liveControllerCensus.allObjects
+        let hasDisplayedSibling = controllers.contains { $0.viewIfLoaded?.window != nil }
+        guard hasDisplayedSibling else {
+            return
+        }
+        let now = CFAbsoluteTimeGetCurrent()
+        var releasedCount = 0
+        for controller in controllers where controller !== self {
+            guard let host = controller.hostingController else {
+                continue
+            }
+            let isEligible = ForgottenDetachedControllerGate.isEligible(
+                hasBeenDemoted: controller.lostActiveOwnershipAt > 0,
+                ageSeconds: now - controller.controllerCreatedAt,
+                isInWindow: controller.viewIfLoaded?.window != nil,
+                hasSuperview: controller.viewIfLoaded?.superview != nil,
+                hasParent: controller.parent != nil,
+                isHostingViewInWindow: host.view.window != nil,
+                hasDisplayedSibling: hasDisplayedSibling
+            )
+            guard isEligible else {
+                continue
+            }
+            // 対象個体のアンカー付きログは releaseDetachedKeyboardResources 側が残す
+            controller.releaseDetachedKeyboardResources(
+                reason: "forgottenDetached-\(trigger)",
+                logLabel: "忘れられた離脱個体の保持物を解放"
+            )
+            releasedCount += 1
+        }
+        guard releasedCount > 0 else {
+            return
+        }
+        // 解放したビュー階層のページをOSへ返す(2646 と同じ理由。malloc が抱えたままだと fp が動かない)
+        let beforeText = diagnosticsFootprintMBText()
+        malloc_zone_pressure_relief(nil, 0)
+        appendKeyboardDiagnosticsLog(
+            "忘れられた離脱個体の掃除を完了 count=\(releasedCount)"
+                + " footprintMB=\(beforeText)→\(diagnosticsFootprintMBText())",
+            critical: true,
+            file: #fileID,
+            line: #line,
+            function: #function
+        )
     }
 
     // ゾンビ・カナリア: 降格から一定時間後に弱参照で生存確認し、まだ生きていれば
@@ -1001,13 +1063,22 @@ extension KeyboardViewController {
     // 後から iOS が同じ VC を表示する可能性は残るため、破棄ではなく解放に留める
     // (viewWillAppear が observer を再登録し、hostingController は setupKeyboardView が再生成)。
     func releaseNeverDisplayedKeyboardResources(reason: String) {
+        releaseDetachedKeyboardResources(
+            reason: "neverDisplayed-\(reason)",
+            logLabel: "表示未到達インスタンスの保持物を解放"
+        )
+    }
+
+    // 表示に至らなかった個体(2532)と、降格経路を通らずに忘れられた離脱個体(3199)で共通の解放。
+    // 呼ぶ側が対象の資格を判定し、ここは解放の手順だけを持つ。
+    func releaseDetachedKeyboardResources(reason: String, logLabel: String) {
         guard viewIfLoaded?.window == nil else {
             return
         }
 
         releaseKeyboardSessionOwnershipIfHeld()
         performHiddenKeyboardMemoryTrim(
-            reason: "neverDisplayed-\(reason)",
+            reason: reason,
             releaseHostingView: true,
             includeSystemCaches: true
         )
@@ -1015,7 +1086,7 @@ extension KeyboardViewController {
         stopMarkedTextWatchdog()
 
         appendKeyboardDiagnosticsLog(
-            "表示未到達インスタンスの保持物を解放 reason=\(reason) \(instanceAnchorSummary())",
+            "\(logLabel) reason=\(reason) \(instanceAnchorSummary())",
             critical: true
         )
     }
@@ -1604,5 +1675,35 @@ extension KeyboardViewController {
 
     func performanceElapsedMilliseconds(since startedAt: CFAbsoluteTime) -> Int {
         max(0, Int((CFAbsoluteTimeGetCurrent() - startedAt) * 1000))
+    }
+}
+
+// 忘れられた離脱個体を解放してよいかの判定(3199)。
+// UIKit に触らない純関数にして、誤爆(表示中のキーボードを壊す、2604)の条件を回帰テストで固定する。
+enum ForgottenDetachedControllerGate {
+
+    // 生成直後の投機生成個体を巻き込まないための待ち時間。iOS が取り付けるまでの猶予。
+    static let minimumAgeSeconds: Double = 60
+
+    static func isEligible(
+        hasBeenDemoted: Bool,
+        ageSeconds: Double,
+        isInWindow: Bool,
+        hasSuperview: Bool,
+        hasParent: Bool,
+        isHostingViewInWindow: Bool,
+        hasDisplayedSibling: Bool
+    ) -> Bool {
+        // 降格済みはゾンビ・カナリアの担当(温存/keep-1 の判断がそちらにある)
+        guard !hasBeenDemoted else {
+            return false
+        }
+        guard hasDisplayedSibling else {
+            return false
+        }
+        guard ageSeconds >= minimumAgeSeconds else {
+            return false
+        }
+        return !isInWindow && !hasSuperview && !hasParent && !isHostingViewInWindow
     }
 }
