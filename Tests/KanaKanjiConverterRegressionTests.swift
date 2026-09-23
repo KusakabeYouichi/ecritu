@@ -18863,6 +18863,12 @@ extension KanaKanjiConverterRegressionTests {
         XCTAssertEqual(converter.candidates(for: "おしわけ", limit: 3, systemCandidateMode: .surface).first, "押し分け")
         XCTAssertEqual(converter.multiClauseCandidates(for: "おとそでも", systemCandidateMode: .surface).first, "お屠蘇でも")
         XCTAssertEqual(converter.multiClauseCandidates(for: "まつおさまに", systemCandidateMode: .surface).first, "松尾様に")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "まつおさま", systemCandidateMode: .surface).first, "松尾様")
+        // 人名でない語の直後は従来どおり(愛知県さま を 愛知県様 にしない)。さん も変えない
+        XCTAssertEqual(converter.multiClauseCandidates(for: "あいちけんさま", systemCandidateMode: .surface).first, "愛知県さま")
+        XCTAssertEqual(converter.multiClauseCandidates(for: "まつおさん", systemCandidateMode: .surface).first, "松尾さん")
+        // お雑煮: おぞうに の辞書エントリが無く合成頼みで、実機では作れていなかった(3188)
+        XCTAssertEqual(converter.candidates(for: "おぞうに", limit: 3, systemCandidateMode: .surface).first, "お雑煮")
         XCTAssertFalse(converter.candidates(for: "おしわける", limit: 8, systemCandidateMode: .surface).contains("おし分る"))
         XCTAssertEqual(Set(afterDigit).count, afterDigit.count, "重複が混じっている: \(afterDigit)")
         XCTAssertEqual(converter.multiClauseCandidates(for: "かげがおしい", systemCandidateMode: .surface).first, "影が惜しい")

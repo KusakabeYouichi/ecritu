@@ -287,7 +287,8 @@
 	<dict><key>phrase</key><string>耳下腺炎</string><key>shortcut</key><string>じかせんえん</string></dict>
 	<dict><key>phrase</key><string>HACCP</string><key>shortcut</key><string>はさっぷ</string></dict>
 	<dict><key>phrase</key><string>ミルフイユ</string><key>shortcut</key><string>みるふいゆ</string><key>pos</key><string>名詞</string></dict>
-	<dict><key>phrase</key><string>押し分け</string><key>shortcut</key><string>おしわけ</string><key>pos</key><string>名詞</string></dict>	<!-- 押し分け: 動詞 押し分ける はあるのに連用形の名詞が無く、おしわけ の候補は お仕分け/押分 だけだった(ユーザー報告 3187) -->	<!-- ミルフイユ(mille-feuille): 辞書には ミルフィユ(みるふぃゆ)と ミルフィーユ(みるふぃーゆ)しかなく、大きい イ の みるふいゆ で引くと候補ゼロだった。菓子の名として広く使われる表記(ユーザー指定 3184) -->	<!-- 食品衛生の管理手法(Hazard Analysis and Critical Control Point)。読みは はさっぷ(ユーザ指定 3082)。ハサップ のカタカナは辞書に無く、欧文はこちらで供給 -->
+	<dict><key>phrase</key><string>押し分け</string><key>shortcut</key><string>おしわけ</string><key>pos</key><string>名詞</string></dict>
+	<dict><key>phrase</key><string>お雑煮</string><key>shortcut</key><string>おぞうに</string><key>pos</key><string>名詞</string></dict>	<!-- お雑煮: おぞうに の辞書エントリが無く、丁寧接頭辞 お+ぞうに の合成頼み。実機では合成が届かず お像に/お蔵に/お増に だけだった(トレース確認 3188)。お盆・お菓子 と同型の供給欠落 -->	<!-- 押し分け: 動詞 押し分ける はあるのに連用形の名詞が無く、おしわけ の候補は お仕分け/押分 だけだった(ユーザー報告 3187) -->	<!-- ミルフイユ(mille-feuille): 辞書には ミルフィユ(みるふぃゆ)と ミルフィーユ(みるふぃーゆ)しかなく、大きい イ の みるふいゆ で引くと候補ゼロだった。菓子の名として広く使われる表記(ユーザー指定 3184) -->	<!-- 食品衛生の管理手法(Hazard Analysis and Critical Control Point)。読みは はさっぷ(ユーザ指定 3082)。ハサップ のカタカナは辞書に無く、欧文はこちらで供給 -->
 	<!-- □ 書き言葉優先の目視判定(2927)で「辞書にその表層が無い」と分かった 7 語。docs/homophone_written_order_review.md -->
 	<dict><key>phrase</key><string>労使</string><key>shortcut</key><string>ろうし</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 599。辞書は 老子/蝋紙/牢死 だけで 労使 が無い -->
 	<dict><key>phrase</key><string>胃腸</string><key>shortcut</key><string>いちょう</string><key>pos</key><string>名詞</string></dict>	<!-- BCCWJ 539。辞書は 萎凋/銀杏/移庁 だけ -->
